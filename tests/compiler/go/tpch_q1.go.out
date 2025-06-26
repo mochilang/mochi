@@ -1,0 +1,342 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
+	expect(_equal(result, []map[string]any{map[string]any{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": (950.0 + 1800.0), "sum_charge": ((950.0 * 1.07) + (1800.0 * 1.05)), "avg_qty": 26.5, "avg_price": 1500, "avg_disc": 0.07500000000000001, "count_order": 2}}))
+}
+
+var lineitem []map[string]any = []map[string]any{map[string]any{"l_quantity": 17, "l_extendedprice": 1000.0, "l_discount": 0.05, "l_tax": 0.07, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-08-01"}, map[string]any{"l_quantity": 36, "l_extendedprice": 2000.0, "l_discount": 0.1, "l_tax": 0.05, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-09-01"}, map[string]any{"l_quantity": 25, "l_extendedprice": 1500.0, "l_discount": 0.0, "l_tax": 0.08, "l_returnflag": "R", "l_linestatus": "F", "l_shipdate": "1998-09-03"}}
+var result []map[string]any = func() []map[string]any {
+	groups := map[string]*data.Group{}
+	order := []string{}
+	for _, row := range lineitem {
+		if _cast[string](row["l_shipdate"]) <= "1998-09-02" {
+			key := map[string]any{"returnflag": row["l_returnflag"], "linestatus": row["l_linestatus"]}
+			ks := fmt.Sprint(key)
+			g, ok := groups[ks]
+			if !ok {
+				g = &data.Group{Key: key}
+				groups[ks] = g
+				order = append(order, ks)
+			}
+			g.Items = append(g.Items, row)
+		}
+	}
+	items := []*data.Group{}
+	for _, ks := range order {
+		items = append(items, groups[ks])
+	}
+	_res := []map[string]any{}
+	for _, g := range items {
+		_res = append(_res, map[string]any{"returnflag": _cast[map[string]any](g.Key)["returnflag"], "linestatus": _cast[map[string]any](g.Key)["linestatus"], "sum_qty": _sum(func() []any {
+			_res := []any{}
+			for _, x := range g.Items {
+				_res = append(_res, _cast[map[string]any](x)["l_quantity"])
+			}
+			return _res
+		}()), "sum_base_price": _sum(func() []any {
+			_res := []any{}
+			for _, x := range g.Items {
+				_res = append(_res, _cast[map[string]any](x)["l_extendedprice"])
+			}
+			return _res
+		}()), "sum_disc_price": _sum(func() []any {
+			_res := []any{}
+			for _, x := range g.Items {
+				_res = append(_res, (_cast[float64](_cast[map[string]any](x)["l_extendedprice"]) * _cast[float64]((_cast[float64](1) - _cast[float64](_cast[map[string]any](x)["l_discount"])))))
+			}
+			return _res
+		}()), "sum_charge": _sum(func() []any {
+			_res := []any{}
+			for _, x := range g.Items {
+				_res = append(_res, (_cast[float64]((_cast[float64](_cast[map[string]any](x)["l_extendedprice"]) * _cast[float64]((_cast[float64](1) - _cast[float64](_cast[map[string]any](x)["l_discount"]))))) * _cast[float64]((float64(1) + _cast[float64](_cast[map[string]any](x)["l_tax"])))))
+			}
+			return _res
+		}()), "avg_qty": _avg(func() []any {
+			_res := []any{}
+			for _, x := range g.Items {
+				_res = append(_res, _cast[map[string]any](x)["l_quantity"])
+			}
+			return _res
+		}()), "avg_price": _avg(func() []any {
+			_res := []any{}
+			for _, x := range g.Items {
+				_res = append(_res, _cast[map[string]any](x)["l_extendedprice"])
+			}
+			return _res
+		}()), "avg_disc": _avg(func() []any {
+			_res := []any{}
+			for _, x := range g.Items {
+				_res = append(_res, _cast[map[string]any](x)["l_discount"])
+			}
+			return _res
+		}()), "count_order": _count(g)})
+	}
+	return _res
+}()
+
+func main() {
+	failures := 0
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("Q1 aggregates revenue and quantity by returnflag + linestatus")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _avg(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []bool:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		default:
+			panic("avg() expects list or group")
+		}
+	}
+	if len(items) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("avg() expects numbers")
+		}
+	}
+	return sum / float64(len(items))
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func _sum(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string, []bool:
+			panic("sum() expects numbers")
+		default:
+			panic("sum() expects list or group")
+		}
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("sum() expects numbers")
+		}
+	}
+	return sum
+}
