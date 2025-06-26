@@ -896,10 +896,28 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("r = java.nio.file.Files.newBufferedReader(java.nio.file.Path.of(path));")
 		c.indent--
 		c.writeln("}")
+		c.writeln("java.util.List<java.util.Map<String,Object>> out = new java.util.ArrayList<>();")
+		c.writeln("if (\"json\".equals(format)) {")
+		c.indent++
+		c.writeln("StringBuilder sb = new StringBuilder();")
+		c.writeln("for (String line; (line = r.readLine()) != null;) { sb.append(line); }")
+		c.writeln("r.close();")
+		c.writeln("Object data = _parseJson(sb.toString());")
+		c.writeln("if (data instanceof java.util.Map<?,?> m) {")
+		c.indent++
+		c.writeln("out.add(new java.util.HashMap<>( (java.util.Map<String,Object>) m));")
+		c.indent--
+		c.writeln("} else if (data instanceof java.util.List<?> l) {")
+		c.indent++
+		c.writeln("for (Object it : l) { if (it instanceof java.util.Map<?,?>) out.add(new java.util.HashMap<>( (java.util.Map<String,Object>) it)); }")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("}")
 		c.writeln("java.util.List<String> lines = new java.util.ArrayList<>();")
 		c.writeln("for (String line; (line = r.readLine()) != null;) { if (!line.isEmpty()) lines.add(line); }")
 		c.writeln("r.close();")
-		c.writeln("java.util.List<java.util.Map<String,Object>> out = new java.util.ArrayList<>();")
 		c.writeln("if (lines.isEmpty()) return out;")
 		c.writeln("String[] headers = lines.get(0).split(Character.toString(delim));")
 		c.writeln("int start = 0;")
@@ -939,6 +957,8 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("boolean header = opts != null && opts.get(\"header\") != null ? Boolean.parseBoolean(opts.get(\"header\").toString()) : false;")
 		c.writeln("char delim = ',';")
 		c.writeln("if (opts != null && opts.get(\"delimiter\") != null) { String d = opts.get(\"delimiter\").toString(); if (!d.isEmpty()) delim = d.charAt(0); }")
+		c.writeln("String format = opts != null && opts.get(\"format\") != null ? opts.get(\"format\").toString() : \"csv\";")
+		c.writeln("if (\"tsv\".equals(format)) { delim='\t'; format=\"csv\"; }")
 		c.writeln("java.io.BufferedWriter w;")
 		c.writeln("if (path == null || path.isEmpty() || path.equals(\"-\")) {")
 		c.indent++
@@ -949,6 +969,13 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("w = java.nio.file.Files.newBufferedWriter(java.nio.file.Path.of(path));")
 		c.indent--
 		c.writeln("}")
+		c.writeln("if (\"json\".equals(format)) {")
+		c.indent++
+		c.writeln("w.write(_toJson(rows.size() == 1 ? rows.get(0) : rows));")
+		c.writeln("w.newLine();")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
 		c.writeln("java.util.List<String> headers = rows.isEmpty() ? java.util.List.of() : new java.util.ArrayList<>(rows.get(0).keySet());")
 		c.writeln("java.util.Collections.sort(headers);")
 		c.writeln("if (header && !headers.isEmpty()) { w.write(String.join(Character.toString(delim), headers)); w.newLine(); }")
@@ -960,6 +987,8 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("w.newLine();")
 		c.indent--
 		c.writeln("}")
+		c.indent--
+		c.writeln("}")
 		c.writeln("w.flush(); if (path != null && !path.isEmpty() && !path.equals(\"-\")) w.close();")
 		c.indent--
 		c.writeln("} catch (Exception e) {")
@@ -967,14 +996,6 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("throw new RuntimeException(e);")
 		c.indent--
 		c.writeln("}")
-		c.indent--
-		c.writeln("}")
-	}
-	if c.helpers["_json"] {
-		c.writeln("")
-		c.writeln("static void _json(Object v) {")
-		c.indent++
-		c.writeln("System.out.println(_toJson(v));")
 		c.indent--
 		c.writeln("}")
 
@@ -1041,6 +1062,131 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("return _toJson(v.toString());")
 		c.indent--
 		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static Object _parseJson(String s) {")
+		c.indent++
+		c.writeln("int[] i = new int[]{0};")
+		c.writeln("return _parseJsonValue(s, i);")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static Object _parseJsonValue(String s, int[] i) {")
+		c.indent++
+		c.writeln("_skip(s, i);")
+		c.writeln("char c = s.charAt(i[0]);")
+		c.writeln("if (c == '{') return _parseJsonObject(s, i);")
+		c.writeln("if (c == '[') return _parseJsonArray(s, i);")
+		c.writeln("if (c == '\"') return _parseJsonString(s, i);")
+		c.writeln("if (c == '-' || Character.isDigit(c)) return _parseJsonNumber(s, i);")
+		c.writeln("if (s.startsWith(\"true\", i[0])) { i[0]+=4; return true; }")
+		c.writeln("if (s.startsWith(\"false\", i[0])) { i[0]+=5; return false; }")
+		c.writeln("if (s.startsWith(\"null\", i[0])) { i[0]+=4; return null; }")
+		c.writeln("throw new RuntimeException(\"invalid json\");")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static void _skip(String s, int[] i) { while (i[0] < s.length() && Character.isWhitespace(s.charAt(i[0]))) i[0]++; }")
+
+		c.writeln("")
+		c.writeln("static String _parseJsonString(String s, int[] i) {")
+		c.indent++
+		c.writeln("StringBuilder sb = new StringBuilder();")
+		c.writeln("i[0]++;")
+		c.writeln("while (i[0] < s.length()) {")
+		c.indent++
+		c.writeln("char ch = s.charAt(i[0]++);")
+		c.writeln("if (ch == '\"') break;")
+		c.writeln("if (ch == '\\') {")
+		c.indent++
+		c.writeln("char e = s.charAt(i[0]++);")
+		c.writeln("switch (e) {")
+		c.indent++
+		c.writeln("case '\"': sb.append('\"'); break;")
+		c.writeln("case '\\': sb.append('\\'); break;")
+		c.writeln("case '/': sb.append('/'); break;")
+		c.writeln("case 'b': sb.append('\b'); break;")
+		c.writeln("case 'f': sb.append('\f'); break;")
+		c.writeln("case 'n': sb.append('\n'); break;")
+		c.writeln("case 'r': sb.append('\r'); break;")
+		c.writeln("case 't': sb.append('\t'); break;")
+		c.writeln("case 'u': sb.append((char)Integer.parseInt(s.substring(i[0], i[0]+4), 16)); i[0]+=4; break;")
+		c.writeln("default: sb.append(e); break;")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln("sb.append(ch);")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return sb.toString();")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static Object _parseJsonNumber(String s, int[] i) {")
+		c.indent++
+		c.writeln("int start = i[0];")
+		c.writeln("if (s.charAt(i[0])=='-') i[0]++;")
+		c.writeln("while (i[0] < s.length() && Character.isDigit(s.charAt(i[0]))) i[0]++;")
+		c.writeln("boolean f = false;")
+		c.writeln("if (i[0] < s.length() && s.charAt(i[0])=='.') { f = true; i[0]++; while (i[0] < s.length() && Character.isDigit(s.charAt(i[0]))) i[0]++; }")
+		c.writeln("String num = s.substring(start, i[0]);")
+		c.writeln("return f ? Double.parseDouble(num) : Integer.parseInt(num);")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static java.util.List<Object> _parseJsonArray(String s, int[] i) {")
+		c.indent++
+		c.writeln("java.util.List<Object> a = new java.util.ArrayList<>();")
+		c.writeln("i[0]++; _skip(s,i); if (i[0] < s.length() && s.charAt(i[0])==']') { i[0]++; return a; }")
+		c.writeln("while (true) {")
+		c.indent++
+		c.writeln("a.add(_parseJsonValue(s,i));")
+		c.writeln("_skip(s,i);")
+		c.writeln("if (i[0] < s.length() && s.charAt(i[0])==']') { i[0]++; break; }")
+		c.writeln("if (i[0] < s.length() && s.charAt(i[0])==',') { i[0]++; continue; }")
+		c.writeln("throw new RuntimeException(\"invalid json array\");")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return a;")
+		c.indent--
+		c.writeln("}")
+
+		c.writeln("")
+		c.writeln("static java.util.Map<String,Object> _parseJsonObject(String s, int[] i) {")
+		c.indent++
+		c.writeln("java.util.Map<String,Object> m = new java.util.HashMap<>();")
+		c.writeln("i[0]++; _skip(s,i); if (i[0] < s.length() && s.charAt(i[0])=='}') { i[0]++; return m; }")
+		c.writeln("while (true) {")
+		c.indent++
+		c.writeln("String k = _parseJsonString(s,i);")
+		c.writeln("_skip(s,i);")
+		c.writeln("if (i[0] >= s.length() || s.charAt(i[0]) != ':') throw new RuntimeException(\"expected :\");")
+		c.writeln("i[0]++; Object v = _parseJsonValue(s,i); m.put(k,v); _skip(s,i);")
+		c.writeln("if (i[0] < s.length() && s.charAt(i[0])=='}') { i[0]++; break; }")
+		c.writeln("if (i[0] < s.length() && s.charAt(i[0])==',') { i[0]++; continue; }")
+		c.writeln("throw new RuntimeException(\"invalid json object\");")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_json"] {
+		c.writeln("")
+		c.writeln("static void _json(Object v) {")
+		c.indent++
+		c.writeln("System.out.println(_toJson(v));")
+		c.indent--
+		c.writeln("}")
+
 	}
 	if c.helpers["_query"] || c.helpers["_group_by"] {
 		c.writeln("")
