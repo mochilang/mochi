@@ -81,6 +81,9 @@ func IsStringExprVars(e *parser.Expr, sanitize func(string) string, stringVars, 
 					if v.Target.Lit != nil && v.Target.Lit.Str != nil {
 						return true
 					}
+					if v.Target.Fetch != nil {
+						return true
+					}
 					if v.Target.Selector != nil {
 						name := sanitize(v.Target.Selector.Root)
 						if stringVars[name] {
