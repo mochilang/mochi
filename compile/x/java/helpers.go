@@ -56,6 +56,7 @@ func isInt(t types.Type) bool    { _, ok := t.(types.IntType); return ok }
 func isFloat(t types.Type) bool  { _, ok := t.(types.FloatType); return ok }
 func isBool(t types.Type) bool   { _, ok := t.(types.BoolType); return ok }
 func isString(t types.Type) bool { _, ok := t.(types.StringType); return ok }
+func isAny(t types.Type) bool    { _, ok := t.(types.AnyType); return ok }
 
 func simpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil {
