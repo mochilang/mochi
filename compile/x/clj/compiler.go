@@ -1389,7 +1389,12 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		opts = v
 	}
 	c.use("_load")
-	return fmt.Sprintf("(_load %s %s)", path, opts), nil
+	expr := fmt.Sprintf("(_load %s %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		name := sanitizeName(*l.Type.Simple)
+		expr = fmt.Sprintf("(mapv %s %s)", name, expr)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
