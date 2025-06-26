@@ -690,6 +690,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + inner + ")", nil
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Load != nil:
+		return c.compileLoadExpr(p.Load)
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
@@ -1449,6 +1453,28 @@ func isCompositeParam(p *parser.Param) bool {
 		}
 	}
 	return false
+}
+
+func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
+	path := "\"\""
+	if l.Path != nil {
+		path = fmt.Sprintf("%q", *l.Path)
+	}
+	c.use("_load_json")
+	return fmt.Sprintf("_load_json(%s)", path), nil
+}
+
+func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
+	src, err := c.compileExpr(s.Src)
+	if err != nil {
+		return "", err
+	}
+	path := "\"\""
+	if s.Path != nil {
+		path = fmt.Sprintf("%q", *s.Path)
+	}
+	c.use("_save_json")
+	return fmt.Sprintf("_save_json(%s, %s)", src, path), nil
 }
 
 func exprVarSet(e *parser.Expr) map[string]bool {
