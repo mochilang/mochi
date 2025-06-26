@@ -1,0 +1,8 @@
+program main
+  implicit none
+  type :: Msg
+    character(:), allocatable :: message
+  end type Msg
+  integer(kind=8) :: v__
+  v__ = 0
+end program main

@@ -39,7 +39,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - slice expressions with a step
 - pattern matching with `match`
 - agents, streams and logic programming constructs (`fact`, `rule`, `query`)
-- foreign imports and dataset helpers (`fetch`, `load`, `save`)
+ - foreign imports
 - anonymous functions
 - extern declarations
 - range loops with step values other than `1`

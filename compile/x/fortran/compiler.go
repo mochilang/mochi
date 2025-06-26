@@ -1380,6 +1380,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.If != nil:
@@ -1567,6 +1569,15 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.saveJSONTypes[typName] = true
 	return fmt.Sprintf("call %s(%s, %s)", fname, src, path), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	_, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	// fetch not implemented; return placeholder value
+	return "0", nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
