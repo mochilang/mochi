@@ -1313,6 +1313,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "sum":
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", argStr), nil
+	case "min":
+		c.use("_min")
+		return fmt.Sprintf("_min(%s)", argStr), nil
+	case "max":
+		c.use("_max")
+		return fmt.Sprintf("_max(%s)", argStr), nil
 	case "now":
 		// performance.now() returns milliseconds as a float. Multiply
 		// by 1e6 so that `now()` is consistent with Go's UnixNano()
