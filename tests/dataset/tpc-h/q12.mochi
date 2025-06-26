@@ -24,20 +24,20 @@ let result =
   from l in lineitem
   join o in orders on o.o_orderkey == l.l_orderkey
   where
-    l.l_shipmode in ["MAIL", "SHIP"] &&
-    l.l_commitdate < l.l_receiptdate &&
-    l.l_shipdate < l.l_commitdate &&
-    l.l_receiptdate >= "1994-01-01" &&
-    l.l_receiptdate < "1995-01-01"
+    (l.l_shipmode in ["MAIL", "SHIP"]) &&
+    (l.l_commitdate < l.l_receiptdate) &&
+    (l.l_shipdate < l.l_commitdate) &&
+    (l.l_receiptdate >= "1994-01-01") &&
+    (l.l_receiptdate < "1995-01-01")
   group by l.l_shipmode into g
-  sort by l_shipmode
+  sort by g.key
   select {
     l_shipmode: g.key,
     high_line_count: sum(from x in g select if x.o.o_orderpriority in ["1-URGENT", "2-HIGH"] { 1 } else { 0 }),
     low_line_count: sum(from x in g select if !(x.o.o_orderpriority in ["1-URGENT", "2-HIGH"]) { 1 } else { 0 })
   }
 
-print result
+json(result)
 
 test "Q12 counts lineitems by ship mode and priority" {
   expect result == [
