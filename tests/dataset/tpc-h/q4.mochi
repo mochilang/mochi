@@ -38,7 +38,7 @@ let result =
     order_count: count(g)
   }
 
-print(result)
+json(result)
 
 test "Q4 returns count of orders with late lineitems in range" {
   expect result == [
