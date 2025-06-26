@@ -64,8 +64,8 @@ bench: install build-mochi ## Run Mochi benchmarks
 	@$(GO) run ./cmd/mochi-bench
 
 install: ## Install external tools (Deno)
-       @echo "🦕 Installing Deno if needed..."
-       @$(GO) run ./tools/install
+	@echo "🦕 Installing Deno if needed..."
+	@$(GO) run ./tools/install
 
 # --------------------------
 # Maintenance
