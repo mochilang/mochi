@@ -1,0 +1,2 @@
+let todo: map<string, string> = fetch "https://jsonplaceholder.typicode.com/todos/1"
+print(todo["title"])
