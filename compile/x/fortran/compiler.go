@@ -1422,6 +1422,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 			return "", fmt.Errorf("count expects 1 arg")
 		}
 		return fmt.Sprintf("size(%s)", args[0]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		return fmt.Sprintf("sum(%s)", args[0]), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str expects 1 arg")

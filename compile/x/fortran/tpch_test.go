@@ -16,6 +16,7 @@ func TestFortranCompiler_TPCH(t *testing.T) {
 		t.Skipf("fortran not installed: %v", err)
 	}
 	testutil.CompileTPCH(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return ftncode.New(env).Compile(prog)
+		_ = env
+		return ftncode.New().Compile(prog)
 	})
 }
