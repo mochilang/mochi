@@ -172,4 +172,3 @@ L10:
   Equal        r102, r100, r101
   Expect       r102
   Return       r0
-

@@ -42,13 +42,13 @@ L4:
   Const        r26, "l_shipdate"
   Index        r27, r16, r26
   LessEq       r28, r5, r27
-  Move         r29, r28
-  JumpIfFalse  r29, L3
-  Const        r30, "l_shipdate"
-  Index        r31, r16, r30
-  Move         r29, r31
+  Const        r29, "l_shipdate"
+  Index        r30, r16, r29
+  Less         r31, r30, r7
+  Move         r32, r28
+  JumpIfFalse  r32, L3
+  Move         r32, r31
 L3:
-  Less         r32, r29, r7
   JumpIfFalse  r32, L2
   // is_promo: "PROMO" in p.p_type,
   Const        r33, "is_promo"

@@ -27,13 +27,13 @@ L4:
   Const        r17, "l_shipdate"
   Index        r18, r16, r17
   LessEq       r19, r5, r18
-  Move         r20, r19
-  JumpIfFalse  r20, L1
-  Const        r21, "l_shipdate"
-  Index        r22, r16, r21
-  Move         r20, r22
+  Const        r20, "l_shipdate"
+  Index        r21, r16, r20
+  Less         r22, r21, r7
+  Move         r23, r19
+  JumpIfFalse  r23, L1
+  Move         r23, r22
 L1:
-  Less         r23, r20, r7
   JumpIfFalse  r23, L2
   // group by l.l_suppkey into g
   Const        r24, "l_suppkey"
