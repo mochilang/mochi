@@ -1,10 +1,14 @@
 program main
   implicit none
-  type :: Msg
-    character(:), allocatable :: message
-  end type Msg
-  character(:), allocatable :: v__
-  v__ = mochi_fetch('file://tests/compiler/fortran/fetch_builtin.json')
+  type :: Todo
+    integer(kind=8) :: userId
+    integer(kind=8) :: id
+    character(:), allocatable :: title
+    logical :: completed
+  end type Todo
+  type(Todo) :: todo
+  todo = mochi_fetch('https://jsonplaceholder.typicode.com/todos/1')
+  print *, todo%id
 contains
 
   function mochi_fetch(url) result(path)

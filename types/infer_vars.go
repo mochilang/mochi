@@ -87,17 +87,22 @@ func IsStringExprVars(e *parser.Expr, sanitize func(string) string, stringVars, 
 							return true
 						}
 					}
-					if v.Target.Call != nil {
-						name := sanitize(v.Target.Call.Func)
-						if funStr[name] {
-							return true
-						}
-					}
-					if v.Target.If != nil {
-						if IsStringIfExprVars(v.Target.If, sanitize, stringVars, funStr) {
-							return true
-						}
-					}
+                                       if v.Target.Call != nil {
+                                               name := sanitize(v.Target.Call.Func)
+                                               if funStr[name] {
+                                                       return true
+                                               }
+                                       }
+                                       if v.Target.Fetch != nil {
+                                               if v.Target.Fetch.Type == nil || (v.Target.Fetch.Type.Simple != nil && *v.Target.Fetch.Type.Simple == "string") {
+                                                       return true
+                                               }
+                                       }
+                                       if v.Target.If != nil {
+                                               if IsStringIfExprVars(v.Target.If, sanitize, stringVars, funStr) {
+                                                       return true
+                                               }
+                                       }
 				}
 				if v.Target != nil && v.Target.Group != nil {
 					return IsStringExprVars(v.Target.Group, sanitize, stringVars, funStr)

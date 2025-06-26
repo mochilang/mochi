@@ -1646,10 +1646,13 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 				}
 			}
 		}
-		if expected != nil {
-			return expected, nil
-		}
-		return AnyType{}, nil
+               if p.Fetch.Type != nil {
+                       return resolveTypeRef(p.Fetch.Type, env), nil
+               }
+               if expected != nil {
+                       return expected, nil
+               }
+               return AnyType{}, nil
 
 	case p.Load != nil:
 		var elem Type = AnyType{}

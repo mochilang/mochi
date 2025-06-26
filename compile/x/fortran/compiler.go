@@ -159,27 +159,33 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	collectVars(mainStmts, declared, listVars, stringVars, floatVars, listStructs, c.funReturnStr, c.funReturnFloat, c.funReturnList)
 	structVars := map[string]string{}
 	for _, st := range mainStmts {
-		if st.Let != nil {
-			if name, ok := structLitName(st.Let.Value); ok {
-				structVars[sanitizeName(st.Let.Name)] = name
-				delete(declared, sanitizeName(st.Let.Name))
-			} else if st.Let.Type != nil && st.Let.Type.Simple != nil {
-				typ := *st.Let.Type.Simple
-				if typ != "int" && typ != "float" && typ != "string" && typ != "bool" {
-					structVars[sanitizeName(st.Let.Name)] = sanitizeName(typ)
-					delete(declared, sanitizeName(st.Let.Name))
-				}
+               if st.Let != nil {
+                        if name, ok := structLitName(st.Let.Value); ok {
+                                structVars[sanitizeName(st.Let.Name)] = name
+                                delete(declared, sanitizeName(st.Let.Name))
+                        } else if t, ok := fetchTypeName(st.Let.Value); ok {
+                                structVars[sanitizeName(st.Let.Name)] = t
+                                delete(declared, sanitizeName(st.Let.Name))
+                        } else if st.Let.Type != nil && st.Let.Type.Simple != nil {
+                                typ := *st.Let.Type.Simple
+                                if typ != "int" && typ != "float" && typ != "string" && typ != "bool" {
+                                        structVars[sanitizeName(st.Let.Name)] = sanitizeName(typ)
+                                        delete(declared, sanitizeName(st.Let.Name))
+                                }
 			}
-		} else if st.Var != nil {
-			if name, ok := structLitName(st.Var.Value); ok {
-				structVars[sanitizeName(st.Var.Name)] = name
-				delete(declared, sanitizeName(st.Var.Name))
-			} else if st.Var.Type != nil && st.Var.Type.Simple != nil {
-				typ := *st.Var.Type.Simple
-				if typ != "int" && typ != "float" && typ != "string" && typ != "bool" {
-					structVars[sanitizeName(st.Var.Name)] = sanitizeName(typ)
-					delete(declared, sanitizeName(st.Var.Name))
-				}
+               } else if st.Var != nil {
+                        if name, ok := structLitName(st.Var.Value); ok {
+                                structVars[sanitizeName(st.Var.Name)] = name
+                                delete(declared, sanitizeName(st.Var.Name))
+                        } else if t, ok := fetchTypeName(st.Var.Value); ok {
+                                structVars[sanitizeName(st.Var.Name)] = t
+                                delete(declared, sanitizeName(st.Var.Name))
+                        } else if st.Var.Type != nil && st.Var.Type.Simple != nil {
+                                typ := *st.Var.Type.Simple
+                                if typ != "int" && typ != "float" && typ != "string" && typ != "bool" {
+                                        structVars[sanitizeName(st.Var.Name)] = sanitizeName(typ)
+                                        delete(declared, sanitizeName(st.Var.Name))
+                                }
 			}
 		}
 	}
@@ -1579,8 +1585,17 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
         if err != nil {
                 return "", err
         }
-        c.needsFetch = true
-        return fmt.Sprintf("mochi_fetch(%s)", urlStr), nil
+       c.needsFetch = true
+       if f.Type != nil && f.Type.Simple != nil {
+               typ := sanitizeName(*f.Type.Simple)
+               c.needsLoadJSON = true
+               if c.loadJSONTypes == nil {
+                       c.loadJSONTypes = map[string]bool{}
+               }
+               c.loadJSONTypes[typ] = true
+               return fmt.Sprintf("load_json_%s(mochi_fetch(%s))", typ, urlStr), nil
+       }
+       return fmt.Sprintf("mochi_fetch(%s)", urlStr), nil
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
@@ -2134,20 +2149,20 @@ func (c *Compiler) writeHelpers() {
                 c.writeln("end function mochi_now")
         }
 
-        if c.needsFetch {
-                c.blank()
-                c.writeln("function mochi_fetch(url) result(r)")
-                c.indent++
-                c.writeln("implicit none")
-                c.writeln("character(len=*), intent(in) :: url")
-                c.writeln("integer(kind=8) :: r")
-                c.writeln("character(len=1024) :: cmd")
-                c.writeln("cmd = 'curl -s ' // trim(url)")
-                c.writeln("call execute_command_line(cmd)")
-                c.writeln("r = 0")
-                c.indent--
-                c.writeln("end function mochi_fetch")
-        }
+       if c.needsFetch {
+               c.blank()
+               c.writeln("function mochi_fetch(url) result(path)")
+               c.indent++
+               c.writeln("implicit none")
+               c.writeln("character(len=*), intent(in) :: url")
+               c.writeln("character(len=256) :: path")
+               c.writeln("character(len=1024) :: cmd")
+               c.writeln("path = 'mochi_fetch_tmp.json'")
+               c.writeln("cmd = 'curl -s ' // trim(url) // ' -o ' // trim(path)")
+               c.writeln("call execute_command_line(cmd)")
+               c.indent--
+               c.writeln("end function mochi_fetch")
+       }
 
 	if c.needsLoadJSON {
 		for typ := range c.loadJSONTypes {
