@@ -1,0 +1,5 @@
+type Inner { b: int }
+type Outer { a: Inner }
+
+let x = Outer { a: Inner { b: 3 } }
+print(x.a.b)
