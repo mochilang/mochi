@@ -346,6 +346,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Continue != nil:
 		c.writeln("continue")
 		return nil
+	case s.Fetch != nil:
+		return c.compileFetchStmt(s.Fetch)
 	default:
 		return nil
 	}
@@ -507,6 +509,20 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	streamVar := unexportName(sanitizeName(e.Stream)) + "Stream"
 	c.writeln(fmt.Sprintf("%s.append(%s)", streamVar, lit))
 	c.use("_stream")
+	return nil
+}
+
+func (c *Compiler) compileFetchStmt(f *parser.FetchStmt) error {
+	expr, err := c.compileFetchExpr(&parser.FetchExpr{Pos: f.Pos, URL: f.URL, With: f.With})
+	if err != nil {
+		return err
+	}
+	name := sanitizeName(f.Target)
+	c.writeln(fmt.Sprintf("const %s = %s", name, expr))
+	if c.env != nil {
+		c.env.SetVar(f.Target, types.AnyType{}, false)
+	}
+	c.writeln(fmt.Sprintf(";(globalThis as any).%s = %s", name, name))
 	return nil
 }
 

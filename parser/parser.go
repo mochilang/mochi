@@ -70,6 +70,7 @@ type Statement struct {
 	For          *ForStmt          `parser:"| @@"`
 	Break        *BreakStmt        `parser:"| @@"`
 	Continue     *ContinueStmt     `parser:"| @@"`
+	Fetch        *FetchStmt        `parser:"| @@"`
 	Expr         *ExprStmt         `parser:"| @@"`
 }
 
@@ -208,6 +209,14 @@ type BreakStmt struct {
 
 type ContinueStmt struct {
 	Pos lexer.Position `parser:"'continue'"`
+}
+
+// FetchStmt performs an HTTP request and stores the result in a variable.
+type FetchStmt struct {
+	Pos    lexer.Position
+	URL    *Expr  `parser:"'fetch' @@"`
+	Target string `parser:"'into' @Ident"`
+	With   *Expr  `parser:"[ 'with' @@ ]"`
 }
 
 type ExternTypeDecl struct {
