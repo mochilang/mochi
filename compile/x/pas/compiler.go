@@ -48,7 +48,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
-	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants;")
+	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;")
 	c.writeln("")
 	c.writeln("type")
 	c.indent++
@@ -1621,8 +1621,21 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	optsStr := "nil"
+	if f.With != nil {
+		v, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		optsStr = v
+	}
+	if st, ok := c.expected.(types.StructType); ok {
+		c.use("_fetchJSON")
+		typ := sanitizeName(st.Name)
+		return fmt.Sprintf("specialize _fetchJSON<%s>(%s, %s)", typ, urlStr, optsStr), nil
+	}
 	c.use("_fetch")
-	return fmt.Sprintf("_fetch(%s)", urlStr), nil
+	return fmt.Sprintf("_fetch(%s, %s)", urlStr, optsStr), nil
 }
 
 func formatOption(e *parser.Expr) string {
@@ -1806,8 +1819,30 @@ func (c *Compiler) emitHelpers() {
 	for _, n := range names {
 		switch n {
 		case "_fetch":
-			c.writeln("function _fetch(url: string): string;")
-			c.writeln("var client: TFPHTTPClient;")
+			c.writeln("function _fetch(url: string; opts: specialize TFPGMap<string, Variant>): string;")
+			c.writeln("var client: TFPHTTPClient; sl: TStringList;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("if Pos('file://', url) = 1 then")
+			c.indent++
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("try")
+			c.indent++
+			c.writeln("sl.LoadFromFile(Copy(url, 8, Length(url)));")
+			c.writeln("Result := sl.Text;")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end")
+			c.indent--
+			c.writeln("else")
+			c.indent++
 			c.writeln("begin")
 			c.indent++
 			c.writeln("client := TFPHTTPClient.Create(nil);")
@@ -1818,6 +1853,27 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("finally")
 			c.indent++
 			c.writeln("client.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_fetchJSON":
+			c.writeln("generic function _fetchJSON<T>(url: string; opts: specialize TFPGMap<string, Variant>): T;")
+			c.writeln("var data: string; client: TFPHTTPClient; ds: TJSONDeStreamer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("data := _fetch(url, opts);")
+			c.writeln("ds := TJSONDeStreamer.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("ds.JSONToObject(GetJSON(data), @Result, TypeInfo(T));")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("ds.Free;")
 			c.indent--
 			c.writeln("end;")
 			c.indent--
