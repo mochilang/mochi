@@ -235,4 +235,16 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["load_data"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperLoad, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["save_data"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperSave, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 }

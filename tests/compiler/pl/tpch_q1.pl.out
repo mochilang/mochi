@@ -23,6 +23,13 @@ avg_list([], 0).
 avg_list(L, R) :- sum_list(L, S), length(L, N), N > 0, R is S / N.
 
 
+sum(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), sum_list(Items, R).
+sum(V, R) :-
+    is_list(V), !, sum_list(V, R).
+sum(_, _) :- throw(error('sum expects list or group')).
+
+
 expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
 
 
@@ -37,6 +44,10 @@ group_insert(Key, Item, [G|Gs], [G|Rs]) :- group_insert(Key, Item, Gs, Rs).
 group_pairs([], Acc, Res) :- reverse(Acc, Res).
 group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).
 group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).
+
+
+:- use_module(library(http/json)).
+json(V) :- json_write_dict(current_output, V), nl.
 
 
 		p__lambda0(Row, Res) :-
@@ -67,9 +78,9 @@ test_p_q1_aggregates_revenue_and_quantity_by_returnflag_+_linestatus :-
 	to_list(Lineitem, _V62),
 	dataset_filter(_V62, p__lambda0, _V63),
 	group_by(_V63, p__lambda1, _V64),
-	findall(_V65, (member(G, _V64), get_dict(key, G, _V12), get_dict(returnflag, _V12, _V13), get_dict(key, G, _V14), get_dict(linestatus, _V14, _V15), to_list(G, _V17), findall(_V18, (member(X, _V17), get_dict(l_quantity, X, _V16), _V18 = _V16), _V19), call(Sum, _V19, _V20), to_list(G, _V22), findall(_V23, (member(X, _V22), get_dict(l_extendedprice, X, _V21), _V23 = _V21), _V24), call(Sum, _V24, _V25), to_list(G, _V30), findall(_V31, (member(X, _V30), get_dict(l_extendedprice, X, _V26), get_dict(l_discount, X, _V27), _V28 is 1 - _V27, _V29 is _V26 * _V28, _V31 = _V29), _V32), call(Sum, _V32, _V33), to_list(G, _V41), findall(_V42, (member(X, _V41), get_dict(l_extendedprice, X, _V34), get_dict(l_discount, X, _V35), _V36 is 1 - _V35, _V39 is _V34 * _V36, get_dict(l_tax, X, _V37), _V38 is 1 + _V37, _V40 is _V39 * _V38, _V42 = _V40), _V43), call(Sum, _V43, _V44), to_list(G, _V46), findall(_V47, (member(X, _V46), get_dict(l_quantity, X, _V45), _V47 = _V45), _V48), avg(_V48, _V49), to_list(G, _V51), findall(_V52, (member(X, _V51), get_dict(l_extendedprice, X, _V50), _V52 = _V50), _V53), avg(_V53, _V54), to_list(G, _V56), findall(_V57, (member(X, _V56), get_dict(l_discount, X, _V55), _V57 = _V55), _V58), avg(_V58, _V59), count(G, _V60), dict_create(_V61, map, [returnflag-_V13, linestatus-_V15, sum_qty-_V20, sum_base_price-_V25, sum_disc_price-_V33, sum_charge-_V44, avg_qty-_V49, avg_price-_V54, avg_disc-_V59, count_order-_V60]), _V65 = _V61), _V66),
+	findall(_V65, (member(G, _V64), get_dict(key, G, _V12), get_dict(returnflag, _V12, _V13), get_dict(key, G, _V14), get_dict(linestatus, _V14, _V15), to_list(G, _V17), findall(_V18, (member(X, _V17), get_dict(l_quantity, X, _V16), _V18 = _V16), _V19), sum(_V19, _V20), to_list(G, _V22), findall(_V23, (member(X, _V22), get_dict(l_extendedprice, X, _V21), _V23 = _V21), _V24), sum(_V24, _V25), to_list(G, _V30), findall(_V31, (member(X, _V30), get_dict(l_extendedprice, X, _V26), get_dict(l_discount, X, _V27), _V28 is 1 - _V27, _V29 is _V26 * _V28, _V31 = _V29), _V32), sum(_V32, _V33), to_list(G, _V41), findall(_V42, (member(X, _V41), get_dict(l_extendedprice, X, _V34), get_dict(l_discount, X, _V35), _V36 is 1 - _V35, _V39 is _V34 * _V36, get_dict(l_tax, X, _V37), _V38 is 1 + _V37, _V40 is _V39 * _V38, _V42 = _V40), _V43), sum(_V43, _V44), to_list(G, _V46), findall(_V47, (member(X, _V46), get_dict(l_quantity, X, _V45), _V47 = _V45), _V48), avg(_V48, _V49), to_list(G, _V51), findall(_V52, (member(X, _V51), get_dict(l_extendedprice, X, _V50), _V52 = _V50), _V53), avg(_V53, _V54), to_list(G, _V56), findall(_V57, (member(X, _V56), get_dict(l_discount, X, _V55), _V57 = _V55), _V58), avg(_V58, _V59), count(G, _V60), dict_create(_V61, map, [returnflag-_V13, linestatus-_V15, sum_qty-_V20, sum_base_price-_V25, sum_disc_price-_V33, sum_charge-_V44, avg_qty-_V49, avg_price-_V54, avg_disc-_V59, count_order-_V60]), _V65 = _V61), _V66),
 	Result = _V66,
-	call(Json, Result, _V67),
+	json(Result),
 	test_p_q1_aggregates_revenue_and_quantity_by_returnflag_+_linestatus
 	.
 :- initialization(main, main).

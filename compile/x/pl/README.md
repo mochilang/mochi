@@ -307,6 +307,7 @@ The Prolog backend can compile a subset of Mochi focused on core control flow an
  - Dataset queries with optional filtering, sorting, joins and limits
 - Helper predicates `dataset_filter/3` and `dataset_paginate/4` for filtering
   and paginating row lists
+- Data loading and persistence helpers `load_data/3` and `save_data/3` for JSON files
 ## Unsupported Features
 
 The Prolog backend focuses on basic control flow and list operations. Several
@@ -323,5 +324,4 @@ Mochi language features are not yet implemented:
 - Model declarations
 - Generative AI helpers (`generate`, `model`)
 - Embedding generation with `generate embedding`
-- Data loading and persistence helpers (`fetch`, `load`, `save`)
 - Package imports and exports
