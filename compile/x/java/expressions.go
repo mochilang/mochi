@@ -352,13 +352,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 			}
 		}
-		return fmt.Sprintf("new %s[]{%s}", c.javaType(elemType), joinArgs(elems)), nil
+		typ := c.javaType(elemType)
+		if strings.Contains(typ, "<") {
+			typ = "Object"
+		}
+		return fmt.Sprintf("new %s[]{%s}", typ, joinArgs(elems)), nil
 	case p.Map != nil:
 		items := []string{}
 		for _, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
+			var k string
+			if ks, ok := simpleStringKey(it.Key); ok {
+				k = fmt.Sprintf("\"%s\"", ks)
+			} else {
+				var err error
+				k, err = c.compileExpr(it.Key)
+				if err != nil {
+					return "", err
+				}
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
@@ -569,8 +579,11 @@ func (c *Compiler) javaType(t types.Type) string {
 	case types.StringType:
 		return "String"
 	case types.ListType:
-		// only support list<int> -> int[] for now
-		return c.javaType(tt.Elem) + "[]"
+		elem := c.javaType(tt.Elem)
+		if strings.Contains(elem, "<") {
+			return "Object[]"
+		}
+		return elem + "[]"
 	case types.MapType:
 		key := c.javaType(tt.Key)
 		val := c.javaType(tt.Value)
@@ -978,7 +991,11 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					}
 					elems[i] = ev
 				}
-				return fmt.Sprintf("new %s[]{%s}", c.javaType(lt.Elem), joinArgs(elems)), nil
+				typ := c.javaType(lt.Elem)
+				if strings.Contains(typ, "<") {
+					typ = "Object"
+				}
+				return fmt.Sprintf("new %s[]{%s}", typ, joinArgs(elems)), nil
 			}
 		}
 	}
