@@ -32,6 +32,7 @@ type Compiler struct {
 	needSlice     bool
 	needIO        bool
 	needFetch     bool
+	needJSON      bool
 	needGenText   bool
 	needGenEmbed  bool
 	needGenStruct bool
@@ -878,7 +879,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					typ = resultType(op, l.typ, r.typ)
 				}
 			case "-", "*", "/", "%", "<", "<=", ">", ">=":
-				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
+				erlOp := op
+				if op == "<=" {
+					erlOp = "=<"
+				}
+				expr = fmt.Sprintf("(%s %s %s)", l.expr, erlOp, r.expr)
 				typ = resultType(op, l.typ, r.typ)
 			case "==", "!=":
 				erlOp := op
@@ -1225,6 +1230,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "input":
 			c.needInput = true
 			return "mochi_input()", nil
+		case "json":
+			c.needJSON = true
+			return fmt.Sprintf("mochi_json(%s)", argStr), nil
 		default:
 			if v, ok := c.vars[p.Call.Func]; ok {
 				return fmt.Sprintf("%s(%s)", v, argStr), nil
@@ -1290,8 +1298,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		child.SetVar(j.Var, je, true)
 	}
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		c.env = child
+		var whereExpr string
+		if q.Where != nil {
+			w, err := c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			whereExpr = w
+		}
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
@@ -1306,10 +1323,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		c.env = orig
+		srcExpr := src
+		if whereExpr != "" {
+			srcExpr = fmt.Sprintf("[%s || %s <- %s, %s]", capitalize(q.Var), capitalize(q.Var), src, whereExpr)
+		}
 		c.needGroup = true
 		c.needGroupBy = true
 		expr := fmt.Sprintf("[%s || %s <- mochi_group_by(%s, fun(%s) -> %s end)]",
-			val, capitalize(q.Group.Name), src, capitalize(q.Var), keyExpr)
+			val, capitalize(q.Group.Name), srcExpr, capitalize(q.Var), keyExpr)
 		return expr, nil
 	}
 	c.env = child

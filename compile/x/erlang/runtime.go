@@ -351,6 +351,32 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 	}
 
+	if c.needJSON {
+		c.writeln("")
+		c.writeln("mochi_escape_json([]) -> [];")
+		c.writeln("mochi_escape_json([H|T]) ->")
+		c.indent++
+		c.writeln("E = case H of")
+		c.indent++
+		c.writeln("$\\\\ -> \"\\\\\\\\\";")
+		c.writeln("$\" -> \"\\\\\"\";")
+		c.writeln("_ -> [H]")
+		c.indent--
+		c.writeln("end,")
+		c.writeln("E ++ mochi_escape_json(T).")
+		c.indent--
+
+		c.writeln("")
+		c.writeln(`mochi_to_json(V) when is_integer(V); is_float(V) -> lists:flatten(io_lib:format("~p", [V]));`)
+		c.writeln(`mochi_to_json(V) when is_binary(V) -> "\"" ++ mochi_escape_json(binary_to_list(V)) ++ "\"";`)
+		c.writeln(`mochi_to_json(V) when is_list(V), (V =:= [] orelse is_integer(hd(V))) -> "\"" ++ mochi_escape_json(V) ++ "\"";`)
+		c.writeln(`mochi_to_json(V) when is_list(V) -> "[" ++ lists:join(",", [mochi_to_json(X) || X <- V]) ++ "]";`)
+		c.writeln(`mochi_to_json(V) when is_map(V) -> "{" ++ lists:join(",", ["\"" ++ atom_to_list(K) ++ "\":" ++ mochi_to_json(Val) || {K,Val} <- maps:to_list(V)]) ++ "}";`)
+
+		c.writeln("")
+		c.writeln("mochi_json(V) -> io:format(\"~s~n\", [mochi_to_json(V)]).")
+	}
+
 	if c.needExpect {
 		c.writeln("")
 		c.writeln("mochi_expect(true) -> ok;")

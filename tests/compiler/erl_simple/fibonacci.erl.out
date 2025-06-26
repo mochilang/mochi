@@ -4,7 +4,7 @@
 
 fib(N) ->
 	try
-				case (N <= 1) of
+				case (N =< 1) of
 			true ->
 				throw({return, N});
 						_ -> ok
