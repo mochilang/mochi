@@ -89,6 +89,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	var tests []*parser.TestBlock
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
@@ -96,10 +97,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			c.writeln("")
 		} else if s.Test != nil {
-			if err := c.compileTestBlock(s.Test); err != nil {
-				return nil, err
-			}
-			c.writeln("")
+			tests = append(tests, s.Test)
 		}
 	}
 
@@ -113,11 +111,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(name + "();")
+	for _, tblock := range tests {
+		if err := c.compileTestLambda(tblock); err != nil {
+			return nil, err
 		}
+		name := "test_" + sanitizeName(tblock.Name)
+		c.writeln(name + "();")
 	}
 	c.writeln("return 0;")
 	c.indent--
@@ -512,9 +511,9 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	return nil
 }
 
-func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+func (c *Compiler) compileTestLambda(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
-	c.writeln("static void " + name + "() {")
+	c.writeln("auto " + name + " = [&]() {")
 	c.indent++
 	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -522,7 +521,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 		}
 	}
 	c.indent--
-	c.writeln("}")
+	c.writeln("};")
 	return nil
 }
 
