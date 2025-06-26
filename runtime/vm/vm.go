@@ -4477,6 +4477,40 @@ func valueLess(a, b Value) bool {
 			}
 			return len(a.List) < len(b.List)
 		}
+	case interpreter.TagMap:
+		if b.Tag == interpreter.TagMap {
+			keysA := make([]string, 0, len(a.Map))
+			for k := range a.Map {
+				keysA = append(keysA, k)
+			}
+			sort.Strings(keysA)
+			keysB := make([]string, 0, len(b.Map))
+			for k := range b.Map {
+				keysB = append(keysB, k)
+			}
+			sort.Strings(keysB)
+			n := len(keysA)
+			if len(keysB) < n {
+				n = len(keysB)
+			}
+			for i := 0; i < n; i++ {
+				if keysA[i] < keysB[i] {
+					return true
+				}
+				if keysB[i] < keysA[i] {
+					return false
+				}
+				va := a.Map[keysA[i]]
+				vb := b.Map[keysB[i]]
+				if valueLess(va, vb) {
+					return true
+				}
+				if valueLess(vb, va) {
+					return false
+				}
+			}
+			return len(a.Map) < len(b.Map)
+		}
 	}
 	return fmt.Sprint(valueToAny(a)) < fmt.Sprint(valueToAny(b))
 }

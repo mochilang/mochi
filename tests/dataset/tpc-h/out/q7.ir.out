@@ -1,4 +1,4 @@
-func main (regs=222)
+func main (regs=233)
   // let nation = [
   Const        r0, [{"n_name": "FRANCE", "n_nationkey": 1}, {"n_name": "GERMANY", "n_nationkey": 2}]
   Move         r1, r0
@@ -38,7 +38,7 @@ L18:
   JumpIfFalse  r24, L0
   Index        r25, r21, r23
   Move         r26, r25
-  // join from o in orders on o.o_orderkey == l.l_orderkey
+  // join o in orders on o.o_orderkey == l.l_orderkey
   IterPrep     r27, r7
   Len          r28, r27
   Const        r29, 0
@@ -53,7 +53,7 @@ L17:
   Index        r36, r26, r35
   Equal        r37, r34, r36
   JumpIfFalse  r37, L2
-  // join from c in customer on c.c_custkey == o.o_custkey
+  // join c in customer on c.c_custkey == o.o_custkey
   IterPrep     r38, r5
   Len          r39, r38
   Const        r40, 0
@@ -68,7 +68,7 @@ L16:
   Index        r47, r32, r46
   Equal        r48, r45, r47
   JumpIfFalse  r48, L3
-  // join from s in supplier on s.s_suppkey == l.l_suppkey
+  // join s in supplier on s.s_suppkey == l.l_suppkey
   IterPrep     r49, r3
   Len          r50, r49
   Const        r51, 0
@@ -83,7 +83,7 @@ L15:
   Index        r58, r26, r57
   Equal        r59, r56, r58
   JumpIfFalse  r59, L4
-  // join from n1 in nation on n1.n_nationkey == s.s_nationkey
+  // join n1 in nation on n1.n_nationkey == s.s_nationkey
   IterPrep     r60, r1
   Len          r61, r60
   Const        r62, 0
@@ -98,7 +98,7 @@ L14:
   Index        r69, r54, r68
   Equal        r70, r67, r69
   JumpIfFalse  r70, L5
-  // join from n2 in nation on n2.n_nationkey == c.c_nationkey
+  // join n2 in nation on n2.n_nationkey == c.c_nationkey
   IterPrep     r71, r1
   Len          r72, r71
   Const        r73, 0
@@ -113,7 +113,7 @@ L13:
   Index        r80, r43, r79
   Equal        r81, r78, r80
   JumpIfFalse  r81, L6
-  // where l.l_shipdate >= start_date && l.l_shipdate <= end_date && ((
+  // l.l_shipdate >= start_date && l.l_shipdate <= end_date &&
   Const        r82, "l_shipdate"
   Index        r83, r26, r82
   LessEq       r84, r11, r83
@@ -126,7 +126,7 @@ L7:
   LessEq       r88, r85, r13
   Move         r89, r88
   JumpIfFalse  r89, L8
-  // n1.n_name == nation1 && n2.n_name == nation2
+  // (n1.n_name == nation1 && n2.n_name == nation2) ||
   Const        r90, "n_name"
   Index        r91, r65, r90
   Equal        r92, r91, r15
@@ -137,10 +137,13 @@ L7:
   Move         r93, r95
 L9:
   Equal        r96, r93, r17
-  // ) || (
-  Move         r97, r96
+  // l.l_shipdate >= start_date && l.l_shipdate <= end_date &&
+  Move         r89, r96
+L8:
+  // (n1.n_name == nation1 && n2.n_name == nation2) ||
+  Move         r97, r89
   JumpIfTrue   r97, L10
-  // n1.n_name == nation2 && n2.n_name == nation1
+  // (n1.n_name == nation2 && n2.n_name == nation1)
   Const        r98, "n_name"
   Index        r99, r65, r98
   Equal        r100, r99, r17
@@ -151,13 +154,11 @@ L9:
   Move         r101, r103
 L11:
   Equal        r104, r101, r15
-  // ) || (
+  // (n1.n_name == nation1 && n2.n_name == nation2) ||
   Move         r97, r104
 L10:
-  // where l.l_shipdate >= start_date && l.l_shipdate <= end_date && ((
-  Move         r89, r97
-L8:
-  JumpIfFalse  r89, L6
+  // where (
+  JumpIfFalse  r97, L6
   // from l in lineitem
   Const        r105, "l"
   Move         r106, r26
@@ -222,31 +223,31 @@ L12:
   Append       r151, r150, r117
   SetIndex     r149, r148, r151
 L6:
-  // join from n2 in nation on n2.n_nationkey == c.c_nationkey
+  // join n2 in nation on n2.n_nationkey == c.c_nationkey
   Const        r152, 1
   Add          r153, r73, r152
   Move         r73, r153
   Jump         L13
 L5:
-  // join from n1 in nation on n1.n_nationkey == s.s_nationkey
+  // join n1 in nation on n1.n_nationkey == s.s_nationkey
   Const        r154, 1
   Add          r155, r62, r154
   Move         r62, r155
   Jump         L14
 L4:
-  // join from s in supplier on s.s_suppkey == l.l_suppkey
+  // join s in supplier on s.s_suppkey == l.l_suppkey
   Const        r156, 1
   Add          r157, r51, r156
   Move         r51, r157
   Jump         L15
 L3:
-  // join from c in customer on c.c_custkey == o.o_custkey
+  // join c in customer on c.c_custkey == o.o_custkey
   Const        r158, 1
   Add          r159, r40, r158
   Move         r40, r159
   Jump         L16
 L2:
-  // join from o in orders on o.o_orderkey == l.l_orderkey
+  // join o in orders on o.o_orderkey == l.l_orderkey
   Const        r160, 1
   Add          r161, r29, r160
   Move         r29, r161
@@ -327,21 +328,33 @@ L20:
   Move         r214, r206
   // select {
   MakeMap      r215, 4, r207
+  // sort by [supp_nation, cust_nation, l_year]
+  Move         r217, r216
+  Move         r219, r218
+  Move         r221, r220
+  MakeList     r222, 3, r217
+  Move         r223, r222
   // from l in lineitem
-  Append       r216, r18, r215
-  Move         r18, r216
-  Const        r217, 1
-  Add          r218, r164, r217
-  Move         r164, r218
+  Move         r224, r215
+  MakeList     r225, 2, r223
+  Append       r226, r18, r225
+  Move         r18, r226
+  Const        r227, 1
+  Add          r228, r164, r227
+  Move         r164, r228
   Jump         L22
 L19:
+  // sort by [supp_nation, cust_nation, l_year]
+  Sort         229,18,0,0
+  // from l in lineitem
+  Move         r18, r229
   // let result =
-  Move         r219, r18
+  Move         r230, r18
   // json(result)
-  JSON         r219
+  JSON         r230
   // expect result == [
-  Const        r220, [{"cust_nation": "GERMANY", "l_year": "1995", "revenue": 900, "supp_nation": "FRANCE"}]
-  Equal        r221, r219, r220
-  Expect       r221
+  Const        r231, [{"cust_nation": "GERMANY", "l_year": "1995", "revenue": 900, "supp_nation": "FRANCE"}]
+  Equal        r232, r230, r231
+  Expect       r232
   Return       r0
 

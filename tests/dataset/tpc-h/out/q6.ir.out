@@ -78,7 +78,7 @@ L5:
   Jump         L6
 L0:
   // select sum(l.l_extendedprice * l.l_discount)
-  Sum          41,2,0,0
+  Sum          r41, r2
   // let result = from l in lineitem
   Move         r42, r41
   // json(result)
