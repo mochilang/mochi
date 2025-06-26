@@ -3083,6 +3083,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["mochi/runtime/data"] = true
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", argStr), nil
+	case "min":
+		c.imports["mochi/runtime/data"] = true
+		c.use("_min")
+		return fmt.Sprintf("_min(%s)", argStr), nil
+	case "max":
+		c.imports["mochi/runtime/data"] = true
+		c.use("_max")
+		return fmt.Sprintf("_max(%s)", argStr), nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
