@@ -106,8 +106,18 @@ const (
 		"    Vec::new()\n" +
 		"}\n"
 
-	helperFetch = "fn _fetch(_url: &str, _opts: std::collections::HashMap<String, String>) -> String {\n" +
-		"    String::new()\n" +
+	helperFetch = "fn _fetch<T: serde::de::DeserializeOwned>(_url: &str, _opts: std::collections::HashMap<String, String>) -> T {\n" +
+		"    use std::process::Command;\n" +
+		"    let mut data = String::new();\n" +
+		"    if _url.starts_with(\"file://\") {\n" +
+		"        if let Ok(text) = std::fs::read_to_string(&_url[7..]) {\n" +
+		"            data = text;\n" +
+		"        }\n" +
+		"    } else {\n" +
+		"        let out = Command::new(\"curl\").arg(\"-s\").arg(_url).output().unwrap();\n" +
+		"        data = String::from_utf8_lossy(&out.stdout).to_string();\n" +
+		"    }\n" +
+		"    serde_json::from_str::<T>(&data).unwrap()\n" +
 		"}\n"
 
 	helperLoad = "fn _load<T: serde::de::DeserializeOwned>(_path: &str, _opts: std::collections::HashMap<String, String>) -> Vec<T> {\n" +
