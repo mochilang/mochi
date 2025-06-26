@@ -1524,7 +1524,9 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		withStr = "nil"
 	}
 	c.use("_fetch")
-	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
+	c.use("_structify")
+	c.useOpenStruct = true
+	return fmt.Sprintf("_structify(_fetch(%s, %s))", urlStr, withStr), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {

@@ -3,6 +3,17 @@ package rbcode
 import "sort"
 
 const (
+	helperStructify = `def _structify(v)
+  case v
+  when Hash
+    OpenStruct.new(v.transform_keys(&:to_sym).transform_values { |vv| _structify(vv) })
+  when Array
+    v.map { |vv| _structify(vv) }
+  else
+    v
+  end
+end`
+
 	helperFetch = `def _fetch(url, opts=nil)
   require 'net/http'
   require 'json'
@@ -11,7 +22,7 @@ const (
   if uri.scheme.nil? || uri.scheme == '' || uri.scheme == 'file'
     path = uri.scheme == 'file' ? uri.path : url
     data = File.read(path)
-    return JSON.parse(data)
+    return _structify(JSON.parse(data))
   end
   method = 'GET'
   headers = {}
@@ -34,7 +45,7 @@ const (
   req.body = body if body
   Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https', read_timeout: timeout) do |http|
     resp = http.request(req)
-    return JSON.parse(resp.body)
+    return _structify(JSON.parse(resp.body))
   end
 end`
 
@@ -363,6 +374,7 @@ end`
 )
 
 var helperMap = map[string]string{
+	"_structify":   helperStructify,
 	"_fetch":       helperFetch,
 	"_load":        helperLoad,
 	"_save":        helperSave,
