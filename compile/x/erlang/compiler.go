@@ -1276,6 +1276,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		elem = lt.Elem
 	} else if gt, ok := st.(types.GroupType); ok {
 		elem = gt.Elem
+		src = fmt.Sprintf("maps:get('Items', %s)", src)
 	}
 	child.SetVar(q.Var, elem, true)
 	for _, f := range q.Froms {
@@ -1371,6 +1372,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.env = orig
 				return "", err
 			}
+			if _, ok := c.exprType(j.Src).(types.GroupType); ok {
+				js = fmt.Sprintf("maps:get('Items', %s)", js)
+			}
 			joinSrc[i] = js
 			on, err := c.compileExpr(j.On)
 			if err != nil {
@@ -1448,6 +1452,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if _, ok := c.exprType(f.Src).(types.GroupType); ok {
+				fs = fmt.Sprintf("maps:get('Items', %s)", fs)
+			}
 			b.WriteString(", ")
 			b.WriteString(capitalize(f.Var))
 			b.WriteString(" <- ")
@@ -1458,6 +1465,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				continue
 			}
 			js := joinSrc[i]
+			if _, ok := c.exprType(q.Joins[i].Src).(types.GroupType); ok {
+				js = fmt.Sprintf("maps:get('Items', %s)", js)
+			}
 			b.WriteString(", ")
 			if j.Side != nil && *j.Side == "left" {
 				on := joinOns[i]
@@ -1508,6 +1518,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if _, ok := c.exprType(f.Src).(types.GroupType); ok {
+			fs = fmt.Sprintf("maps:get('Items', %s)", fs)
+		}
 		b.WriteString(", " + capitalize(f.Var) + " <- " + fs)
 	}
 	for i, j := range q.Joins {
@@ -1515,6 +1528,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			continue
 		}
 		js := joinSrc[i]
+		if _, ok := c.exprType(q.Joins[i].Src).(types.GroupType); ok {
+			js = fmt.Sprintf("maps:get('Items', %s)", js)
+		}
 		b.WriteString(", ")
 		if j.Side != nil && *j.Side == "left" {
 			on := joinOns[i]

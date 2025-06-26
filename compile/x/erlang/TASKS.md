@@ -1,8 +1,11 @@
 # Erlang Backend Tasks for TPCH Q1
 
-The Erlang backend can emit simple functions but dataset grouping is not yet implemented.
+Dataset queries for TPCH Q1 are now fully supported by the Erlang backend.
 
-- Represent each row as a map and build groups using list folds or `maps:update_with`.
-- Implement aggregation helpers `sum/1`, `avg/1` and `count/1` for grouped lists.
-- Use a JSON library such as `jiffy` to print the final result in tests.
-- Add a golden test for `q1.mochi` under `tests/compiler/erlang`.
+- Grouping is handled by `mochi_group_by/2` which returns maps containing
+  `key` and an `Items` list preserving order.
+- Aggregation helpers `mochi_sum/1`, `mochi_avg/1` and `mochi_count/1` work on
+  plain lists as well as groups.
+- Results are printed as JSON via the built in helpers.
+- Golden tests cover both `q1.mochi` and `tpch_q1.mochi` under
+  `tests/compiler/erl`.
