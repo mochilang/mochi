@@ -1077,23 +1077,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			c.env = orig
 
-			items := "_groups"
+			fn := fmt.Sprintf("_q%d", c.tmpCount)
+			c.tmpCount++
+			c.writeln(fmt.Sprintf("def %s():", fn))
+			c.indent++
+			c.writeln(fmt.Sprintf("_src = %s", src))
+			c.writeln(fmt.Sprintf("_rows = _query(_src, [%s], %s)", joinStr, opts))
+			c.writeln(fmt.Sprintf("_groups = _group_by(_rows, lambda %s: (%s))", allParams, keyExpr))
+			c.writeln("items = _groups")
 			if sortExpr != "" {
-				items = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", items, sanitizeName(q.Group.Name), sortExpr)
+				c.writeln(fmt.Sprintf("items = sorted(items, key=lambda %s: %s)", sanitizeName(q.Group.Name), sortExpr))
 			}
 			if skipExpr != "" {
-				items = fmt.Sprintf("(%s)[max(%s, 0):]", items, skipExpr)
+				c.writeln(fmt.Sprintf("items = (items)[max(%s, 0):]", skipExpr))
 			}
 			if takeExpr != "" {
-				items = fmt.Sprintf("(%s)[:max(%s, 0)]", items, takeExpr)
+				c.writeln(fmt.Sprintf("items = (items)[:max(%s, 0)]", takeExpr))
 			}
+			c.writeln(fmt.Sprintf("return [ %s for %s in items ]", val, sanitizeName(q.Group.Name)))
+			c.indent--
+			c.writeln("")
 
-			expr := fmt.Sprintf("(lambda _src=%s: (lambda _rows=_query(_src, [%s], %s): (lambda _groups=_group_by(_rows, lambda %s: (%s)): [ %s for %s in %s ])())())()", src, joinStr, opts, allParams, keyExpr, val, sanitizeName(q.Group.Name), items)
 			delete(c.tupleFields, sanitizeName(q.Group.Name))
 			c.use("_query")
 			c.use("_group_by")
 			c.use("_group")
-			return expr, nil
+			return fn + "()", nil
 		}
 
 		whereExpr := ""
