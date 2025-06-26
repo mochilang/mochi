@@ -1,0 +1,258 @@
+func main (regs=154)
+  // let customer = [
+  Const        r0, [{"c_acctbal": 600, "c_custkey": 1, "c_phone": "13-123-4567"}, {"c_acctbal": 100, "c_custkey": 2, "c_phone": "31-456-7890"}, {"c_acctbal": 700, "c_custkey": 3, "c_phone": "30-000-0000"}]
+  Move         r1, r0
+  // let orders = [
+  Const        r2, [{"o_custkey": 2, "o_orderkey": 10}]
+  Move         r3, r2
+  // let valid_codes = ["13", "31", "23", "29", "30", "18", "17"]
+  Const        r4, ["13", "31", "23", "29", "30", "18", "17"]
+  Move         r5, r4
+  // from c in customer
+  Const        r6, []
+  IterPrep     r7, r1
+  Len          r8, r7
+  Const        r9, 0
+L3:
+  Less         r10, r9, r8
+  JumpIfFalse  r10, L0
+  Index        r11, r7, r9
+  Move         r12, r11
+  // where c.c_acctbal > 0.0 && substring(c.c_phone, 0, 2) in valid_codes
+  Const        r13, "c_acctbal"
+  Index        r14, r12, r13
+  Const        r15, 0
+  LessFloat    r16, r15, r14
+  Move         r17, r16
+  JumpIfFalse  r17, L1
+  Const        r18, "c_phone"
+  Index        r19, r12, r18
+  Const        r20, 0
+  Const        r21, 2
+  Slice        r22, r19, r20, r21
+  Move         r17, r22
+L1:
+  In           r23, r17, r5
+  JumpIfFalse  r23, L2
+  // select c.c_acctbal
+  Const        r24, "c_acctbal"
+  Index        r25, r12, r24
+  // from c in customer
+  Append       r26, r6, r25
+  Move         r6, r26
+L2:
+  Const        r27, 1
+  Add          r28, r9, r27
+  Move         r9, r28
+  Jump         L3
+L0:
+  // avg(
+  Avg          r29, r6
+  // let avg_balance =
+  Move         r30, r29
+  // from c in customer
+  Const        r31, []
+  IterPrep     r32, r1
+  Len          r33, r32
+  Const        r34, 0
+L11:
+  Less         r35, r34, r33
+  JumpIfFalse  r35, L4
+  Index        r36, r32, r34
+  Move         r12, r36
+  // substring(c.c_phone, 0, 2) in valid_codes &&
+  Const        r37, "c_phone"
+  Index        r38, r12, r37
+  Const        r39, 0
+  Const        r40, 2
+  Slice        r41, r38, r39, r40
+  In           r42, r41, r5
+  Move         r43, r42
+  JumpIfFalse  r43, L5
+  // c.c_acctbal > avg_balance && (!exists(
+  Const        r44, "c_acctbal"
+  Index        r45, r12, r44
+  // substring(c.c_phone, 0, 2) in valid_codes &&
+  Move         r43, r45
+L5:
+  // c.c_acctbal > avg_balance && (!exists(
+  LessFloat    r46, r30, r43
+  Move         r47, r46
+  JumpIfFalse  r47, L6
+  // from o in orders
+  Const        r48, []
+  IterPrep     r49, r3
+  Len          r50, r49
+  Const        r51, 0
+L9:
+  Less         r52, r51, r50
+  JumpIfFalse  r52, L7
+  Index        r53, r49, r51
+  Move         r54, r53
+  // where o.o_custkey == c.c_custkey
+  Const        r55, "o_custkey"
+  Index        r56, r54, r55
+  Const        r57, "c_custkey"
+  Index        r58, r12, r57
+  Equal        r59, r56, r58
+  JumpIfFalse  r59, L8
+  // from o in orders
+  Append       r60, r48, r54
+  Move         r48, r60
+L8:
+  Const        r61, 1
+  Add          r62, r51, r61
+  Move         r51, r62
+  Jump         L9
+L7:
+  // c.c_acctbal > avg_balance && (!exists(
+  Exists       63,48,0,0
+  Not          r64, r63
+  Move         r47, r64
+L6:
+  // substring(c.c_phone, 0, 2) in valid_codes &&
+  JumpIfFalse  r47, L10
+  // select { cntrycode: substring(c.c_phone, 0, 2), c_acctbal: c.c_acctbal }
+  Const        r65, "cntrycode"
+  Const        r66, "c_phone"
+  Index        r67, r12, r66
+  Const        r68, 0
+  Const        r69, 2
+  Slice        r70, r67, r68, r69
+  Const        r71, "c_acctbal"
+  Const        r72, "c_acctbal"
+  Index        r73, r12, r72
+  Move         r74, r65
+  Move         r75, r70
+  Move         r76, r71
+  Move         r77, r73
+  MakeMap      r78, 2, r74
+  // from c in customer
+  Append       r79, r31, r78
+  Move         r31, r79
+L10:
+  Const        r80, 1
+  Add          r81, r34, r80
+  Move         r34, r81
+  Jump         L11
+L4:
+  // let eligible_customers =
+  Move         r82, r31
+  // from c in eligible_customers
+  Const        r83, []
+  IterPrep     r84, r82
+  Len          r85, r84
+  Const        r86, 0
+  MakeMap      r87, 0, r0
+  Const        r88, []
+L14:
+  Less         r89, r86, r85
+  JumpIfFalse  r89, L12
+  Index        r90, r84, r86
+  Move         r12, r90
+  // group by c.cntrycode into g
+  Const        r91, "cntrycode"
+  Index        r92, r12, r91
+  Str          r93, r92
+  In           r94, r93, r87
+  JumpIfTrue   r94, L13
+  // from c in eligible_customers
+  Const        r95, []
+  Const        r96, "__group__"
+  Const        r97, true
+  Const        r98, "key"
+  // group by c.cntrycode into g
+  Move         r99, r92
+  // from c in eligible_customers
+  Const        r100, "items"
+  Move         r101, r95
+  MakeMap      r102, 3, r96
+  SetIndex     r87, r93, r102
+  Append       r103, r88, r102
+  Move         r88, r103
+L13:
+  Const        r104, "items"
+  Index        r105, r87, r93
+  Index        r106, r105, r104
+  Append       r107, r106, r90
+  SetIndex     r105, r104, r107
+  Const        r108, 1
+  Add          r109, r86, r108
+  Move         r86, r109
+  Jump         L14
+L12:
+  Const        r110, 0
+  Len          r111, r88
+L18:
+  Less         r112, r110, r111
+  JumpIfFalse  r112, L15
+  Index        r113, r88, r110
+  Move         r114, r113
+  // cntrycode: g.key,
+  Const        r115, "cntrycode"
+  Const        r116, "key"
+  Index        r117, r114, r116
+  // numcust: count(g),
+  Const        r118, "numcust"
+  Count        r119, r114
+  // totacctbal: sum(from x in g select x.c_acctbal as float)
+  Const        r120, "totacctbal"
+  Const        r121, []
+  IterPrep     r122, r114
+  Len          r123, r122
+  Const        r124, 0
+L17:
+  Less         r125, r124, r123
+  JumpIfFalse  r125, L16
+  Index        r126, r122, r124
+  Move         r127, r126
+  Const        r128, "c_acctbal"
+  Index        r129, r127, r128
+  Cast         130,129,0,0
+  Append       r131, r121, r130
+  Move         r121, r131
+  Const        r132, 1
+  Add          r133, r124, r132
+  Move         r124, r133
+  Jump         L17
+L16:
+  Sum          r134, r121
+  // cntrycode: g.key,
+  Move         r135, r115
+  Move         r136, r117
+  // numcust: count(g),
+  Move         r137, r118
+  Move         r138, r119
+  // totacctbal: sum(from x in g select x.c_acctbal as float)
+  Move         r139, r120
+  Move         r140, r134
+  // select {
+  MakeMap      r141, 3, r135
+  // order by g.key
+  Const        r142, "key"
+  Index        r143, r114, r142
+  Move         r144, r143
+  // from c in eligible_customers
+  Move         r145, r141
+  MakeList     r146, 2, r144
+  Append       r147, r83, r146
+  Move         r83, r147
+  Const        r148, 1
+  Add          r149, r110, r148
+  Move         r110, r149
+  Jump         L18
+L15:
+  // order by g.key
+  Sort         150,83,0,0
+  // from c in eligible_customers
+  Move         r83, r150
+  // let result =
+  Move         r151, r83
+  // json(result)
+  JSON         r151
+  // expect result == [
+  Const        r152, [{"cntrycode": "13", "numcust": 1, "totacctbal": 600}, {"cntrycode": "30", "numcust": 1, "totacctbal": 700}]
+  Equal        r153, r151, r152
+  Expect       r153
+  Return       r0
+
