@@ -3,7 +3,7 @@ package cppcode
 // Runtime helper data for the C++ backend.
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "unionAll", "union", "except", "intersect", "json", "fetch", "input", "load", "save"}
+var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "unionAll", "union", "except", "intersect", "json", "cast", "fetch", "input", "load", "save"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -189,6 +189,34 @@ var helperCode = map[string][]string{
 		"}",
 		"template<typename T> string _to_json(const T& v) { stringstream ss; ss << v; return _to_json(ss.str()); }",
 		"template<typename T> void _json(const T& v) { cout << _to_json(v) << endl; }",
+	},
+	"cast": {
+		"template<typename T> T _cast(any v);",
+		"template<> inline int _cast<int>(any v) {",
+		"\tif (v.type() == typeid(int)) return any_cast<int>(v);",
+		"\tif (v.type() == typeid(double)) return int(any_cast<double>(v));",
+		"\tif (v.type() == typeid(string)) return stoi(any_cast<string>(v));",
+		"\treturn 0;",
+		"}",
+		"template<> inline double _cast<double>(any v) {",
+		"\tif (v.type() == typeid(double)) return any_cast<double>(v);",
+		"\tif (v.type() == typeid(int)) return double(any_cast<int>(v));",
+		"\tif (v.type() == typeid(string)) return stod(any_cast<string>(v));",
+		"\treturn 0.0;",
+		"}",
+		"template<> inline bool _cast<bool>(any v) {",
+		"\tif (v.type() == typeid(bool)) return any_cast<bool>(v);",
+		"\tif (v.type() == typeid(string)) return any_cast<string>(v)==\"true\";",
+		"\tif (v.type() == typeid(int)) return any_cast<int>(v)!=0;",
+		"\treturn false;",
+		"}",
+		"template<> inline string _cast<string>(any v) {",
+		"\tif (v.type() == typeid(string)) return any_cast<string>(v);",
+		"\tif (v.type() == typeid(int)) return to_string(any_cast<int>(v));",
+		"\tif (v.type() == typeid(double)) { stringstream ss; ss<<any_cast<double>(v); return ss.str(); }",
+		"\tif (v.type() == typeid(bool)) return any_cast<bool>(v)?\"true\":\"false\";",
+		"\treturn \"\";",
+		"}",
 	},
 	"fetch": {
 		"static unordered_map<string,string> _fetch_parse(const string& s) {",
