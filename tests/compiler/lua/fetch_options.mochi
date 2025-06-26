@@ -1,0 +1,12 @@
+type Msg {
+  message: string
+}
+
+let data: Msg = fetch "https://example.com" with {
+  method: "POST",
+  headers: { "Accept": "application/json" },
+  query: { q: "1" },
+  body: { text: "hi" },
+  timeout: 10.0
+}
+print(data.message)
