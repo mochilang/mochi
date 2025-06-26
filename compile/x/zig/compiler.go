@@ -20,6 +20,8 @@ type Compiler struct {
 	structs           map[string]bool
 	needsAvgInt       bool
 	needsAvgFloat     bool
+	needsSumInt       bool
+	needsSumFloat     bool
 	needsInListInt    bool
 	needsInListString bool
 	needsSetOps       bool
@@ -569,7 +571,76 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+	if q.Group != nil {
+		if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil {
+			return "", fmt.Errorf("unsupported query features")
+		}
+
+		src, err := c.compileExpr(q.Source, false)
+		if err != nil {
+			return "", err
+		}
+
+		var elemType types.Type = types.AnyType{}
+		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+			elemType = lt.Elem
+		}
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, elemType, true)
+		orig := c.env
+		c.env = child
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0], false)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+		c.env = genv
+		sel, err := c.compileExpr(q.Select, false)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		var cond string
+		if q.Where != nil {
+			cond, err = c.compileExpr(q.Where, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		resType := zigTypeOf(c.inferExprType(q.Select))
+		keyType := zigTypeOf(c.inferExprType(q.Group.Exprs[0]))
+		c.env = orig
+
+		groupElem := strings.TrimPrefix(zigTypeOf(elemType), "[]const ")
+		resElem := strings.TrimPrefix(resType, "[]const ")
+		groupType := "struct { key: " + keyType + "; Items: std.ArrayList(" + groupElem + ") }"
+		tmp := c.newTmp()
+		var b strings.Builder
+		c.needsEqual = true
+		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator); ")
+		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
+		if cond != "" {
+			b.WriteString(" if (!(" + cond + ")) continue;")
+		}
+		keyVar := c.newTmp()
+		b.WriteString(" const " + keyVar + " = " + keyExpr + ";")
+		idxVar := c.newTmp()
+		foundVar := c.newTmp()
+		b.WriteString(" var " + idxVar + ": usize = 0; var " + foundVar + " = false;")
+		b.WriteString(" for (0.." + tmp + ".items.len) |i| { if (_equal(" + tmp + ".items[i].key, " + keyVar + ")) { " + idxVar + " = i; " + foundVar + " = true; break; } }")
+		b.WriteString(" if (!" + foundVar + ") { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; " + tmp + ".append(g) catch unreachable; " + idxVar + " = " + tmp + ".items.len - 1; }")
+		b.WriteString(" " + tmp + ".items[" + idxVar + "].Items.append(" + sanitizeName(q.Var) + ") catch unreachable; }")
+		resVar := c.newTmp()
+		b.WriteString(" var " + resVar + " = std.ArrayList(" + resElem + ").init(std.heap.page_allocator);")
+		b.WriteString("for (" + tmp + ".items) |" + sanitizeName(q.Group.Name) + "| { " + resVar + ".append(" + sel + ") catch unreachable; }")
+		b.WriteString(" break :blk " + resVar + ".toOwnedSlice() catch unreachable; }")
+		return b.String(), nil
+	}
+
+	if len(q.Froms) > 0 || len(q.Joins) > 0 {
 		return "", fmt.Errorf("unsupported query features")
 	}
 
@@ -1025,6 +1096,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if c.isMapExpr(call.Args[0]) {
 			return fmt.Sprintf("%s.count()", arg), nil
 		}
+		if c.isGroupExpr(call.Args[0]) {
+			return fmt.Sprintf("(%s.Items.len)", arg), nil
+		}
 		return fmt.Sprintf("(%s).len", arg), nil
 	}
 	if name == "count" && len(call.Args) == 1 {
@@ -1034,6 +1108,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		if c.isMapExpr(call.Args[0]) {
 			return fmt.Sprintf("%s.count()", arg), nil
+		}
+		if c.isGroupExpr(call.Args[0]) {
+			return fmt.Sprintf("(%s.Items.len)", arg), nil
 		}
 		return fmt.Sprintf("(%s).len", arg), nil
 	}
@@ -1072,6 +1149,20 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needsAvgInt = true
 		return fmt.Sprintf("_avg_int(%s)", arg), nil
+	}
+	if name == "sum" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		if at, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+			if _, ok := at.Elem.(types.FloatType); ok {
+				c.needsSumFloat = true
+				return fmt.Sprintf("_sum_float(%s)", arg), nil
+			}
+		}
+		c.needsSumInt = true
+		return fmt.Sprintf("_sum_int(%s)", arg), nil
 	}
 	if name == "reduce" && len(call.Args) == 3 {
 		listArg, err := c.compileExpr(call.Args[0], false)
@@ -1431,6 +1522,41 @@ func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
 	if p.Selector != nil && c.env != nil {
 		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
 			if _, ok := t.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isGroupExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return c.isGroupUnary(e.Binary.Left)
+}
+
+func (c *Compiler) isGroupUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isGroupPostfix(u.Value)
+}
+
+func (c *Compiler) isGroupPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	return c.isGroupPrimary(p.Target)
+}
+
+func (c *Compiler) isGroupPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Selector != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.GroupType); ok {
 				return true
 			}
 		}
