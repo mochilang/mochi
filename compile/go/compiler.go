@@ -1890,7 +1890,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			elems[i] = v
 		}
-		return "[]" + elemType + "{" + strings.Join(elems, ", ") + "}", nil
+		return "[]" + elemType + "{" + joinItems(elems, c.indent, 3) + "}", nil
 	case p.Map != nil:
 		typ := c.inferPrimaryType(p)
 		if st, ok := typ.(types.StructType); ok {
@@ -1908,7 +1908,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(key)), v)
 			}
 			c.compileStructType(st)
-			return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
+			return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), joinItems(parts, c.indent, 1)), nil
 		}
 		keyType := "string"
 		valType := "any"
@@ -1942,7 +1942,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			parts[i] = fmt.Sprintf("%s: %s", k, v)
 		}
 
-		return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
+		return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, joinItems(parts, c.indent, 2)), nil
 
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
@@ -3061,7 +3061,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					}
 					elems[i] = ev
 				}
-				return "[]" + goType(lt.Elem) + "{" + strings.Join(elems, ", ") + "}", nil
+				return "[]" + goType(lt.Elem) + "{" + joinItems(elems, c.indent, 3) + "}", nil
 			}
 		}
 	}
@@ -3091,7 +3091,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					}
 					parts[i] = fmt.Sprintf("%s: %s", k, v)
 				}
-				return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, strings.Join(parts, ", ")), nil
+				return fmt.Sprintf("map[%s]%s{%s}", keyType, valType, joinItems(parts, c.indent, 2)), nil
 			}
 		}
 	}
@@ -3112,7 +3112,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(key)), v)
 				}
 				c.compileStructType(st)
-				return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
+				return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), joinItems(parts, c.indent, 1)), nil
 			}
 		}
 	}
