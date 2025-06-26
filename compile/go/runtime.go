@@ -396,6 +396,15 @@ const (
 		"        }\n" +
 		"        return true\n" +
 		"    }\n" +
+		"    if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {\n" +
+		"        if av.Len() != bv.Len() { return false }\n" +
+		"        for _, k := range av.MapKeys() {\n" +
+		"            bvVal := bv.MapIndex(k)\n" +
+		"            if !bvVal.IsValid() { return false }\n" +
+		"            if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) { return false }\n" +
+		"        }\n" +
+		"        return true\n" +
+		"    }\n" +
 		"    if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&\n" +
 		"       (bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {\n" +
 		"        return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()\n" +
