@@ -1014,7 +1014,22 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 			}
 		}
 	}
-	return c.compileExpr(e)
+	expr, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	exprT := c.exprType(e)
+	hintJava := c.javaType(hint)
+	exprJava := c.javaType(exprT)
+	if hintJava != "" && hintJava != exprJava && (isAny(exprT) || !equalTypes(hint, exprT)) {
+		box := boxedType(hintJava)
+		c.helpers["_cast"] = true
+		expr = fmt.Sprintf("_cast(%s.class, %s)", box, expr)
+		if box != hintJava {
+			expr = fmt.Sprintf("((%s)%s)", hintJava, expr)
+		}
+	}
+	return expr, nil
 }
 
 func joinArgs(args []string) string {
