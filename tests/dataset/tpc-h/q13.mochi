@@ -12,16 +12,13 @@ let orders = [
 
 let per_customer =
   from c in customer
-  let order_count =
-    count(
-      from o in orders
-      where (
-        o.o_custkey == c.c_custkey &&
-        (!("special" in o.o_comment)) &&
-        (!("requests" in o.o_comment))
-      )
-      select o
+  let order_count = count(from o in orders
+    where (
+      o.o_custkey == c.c_custkey &&
+      not ("special" in o.o_comment) &&
+      not ("requests" in o.o_comment)
     )
+    select o)
   select { c_count: order_count }
 
 let grouped =
