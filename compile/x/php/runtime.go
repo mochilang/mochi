@@ -110,7 +110,7 @@ const helperLoadJSON = "function _load_json($path) {\n" +
 	"    if (!$f) { throw new Exception('cannot open ' . $path); }\n" +
 	"    $data = stream_get_contents($f);\n" +
 	"    if ($path !== '' && $path !== '-') fclose($f);\n" +
-	"    $val = json_decode($data, true);\n" +
+	"    $val = json_decode($data);\n" +
 	"    if ($val === null) return [];\n" +
 	"    if (array_keys($val) !== range(0, count($val) - 1)) { return [$val]; }\n" +
 	"    return $val;\n" +
@@ -121,10 +121,32 @@ const helperSaveJSON = "function _save_json($rows, $path) {\n" +
 	"    if ($path === '' || $path === '-') { fwrite(STDOUT, $out . PHP_EOL); } else { file_put_contents($path, $out); }\n" +
 	"}\n"
 
+const helperFetch = "function _fetch($url, $opts = null) {\n" +
+	"    $args = ['-s'];\n" +
+	"    $method = $opts['method'] ?? 'GET';\n" +
+	"    $args[] = '-X'; $args[] = $method;\n" +
+	"    if (isset($opts['headers'])) {\n" +
+	"        foreach ($opts['headers'] as $k => $v) { $args[] = '-H'; $args[] = $k . ': ' . strval($v); }\n" +
+	"    }\n" +
+	"    if (isset($opts['query'])) {\n" +
+	"        $qs = http_build_query($opts['query']);\n" +
+	"        $sep = strpos($url, '?') !== false ? '&' : '?';\n" +
+	"        $url .= $sep . $qs;\n" +
+	"    }\n" +
+	"    if ($opts !== null && array_key_exists('body', $opts)) { $args[] = '-d'; $args[] = json_encode($opts['body']); }\n" +
+	"    if (isset($opts['timeout'])) { $args[] = '--max-time'; $args[] = strval($opts['timeout']); }\n" +
+	"    $args[] = $url;\n" +
+	"    $escaped = array_map('escapeshellarg', $args);\n" +
+	"    $cmd = 'curl ' . implode(' ', $escaped);\n" +
+	"    $data = shell_exec($cmd);\n" +
+	"    return json_decode($data);\n" +
+	"}\n"
+
 var helperMap = map[string]string{
 	"_query":     helperQuery,
 	"_group":     helperGroupClass,
 	"_group_by":  helperGroupBy,
+	"_fetch":     helperFetch,
 	"_load_json": helperLoadJSON,
 	"_save_json": helperSaveJSON,
 }

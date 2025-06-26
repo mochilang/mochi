@@ -690,6 +690,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + inner + ")", nil
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.Load != nil:
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
@@ -1475,6 +1477,25 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save_json")
 	return fmt.Sprintf("_save_json(%s, %s)", src, path), nil
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
+	urlStr, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
+	var withStr string
+	if f.With != nil {
+		w, err := c.compileExpr(f.With)
+		if err != nil {
+			return "", err
+		}
+		withStr = w
+	} else {
+		withStr = "null"
+	}
+	c.use("_fetch")
+	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
 }
 
 func exprVarSet(e *parser.Expr) map[string]bool {
