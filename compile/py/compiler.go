@@ -930,27 +930,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if !hasSide {
-		if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
-			keyExpr, err := c.compileExpr(q.Group.Exprs[0])
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-			genv := types.NewEnv(child)
-			genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
-			c.env = genv
-			val, err := c.compileExpr(q.Select)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-			c.env = orig
-			expr := fmt.Sprintf("[ %s for %s in _group_by(%s, lambda %s: %s) ]", val, sanitizeName(q.Group.Name), src, sanitizeName(q.Var), keyExpr)
-			c.use("_group_by")
-			c.use("_group")
-			return expr, nil
-		}
-
 		if q.Group != nil {
 			keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 			if err != nil {
