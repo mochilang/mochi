@@ -1,0 +1,2 @@
+let data: map<string,string> = (fetch "file:../../tests/compiler/py/fetch_builtin.json") as map<string,string>
+print(data["message"])
