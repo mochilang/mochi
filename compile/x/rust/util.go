@@ -197,3 +197,16 @@ func usedAliases(e *parser.Expr) map[string]struct{} {
 	walk(node)
 	return aliases
 }
+
+// compileIterExpr compiles an expression that will be iterated over. If the
+// expression yields a group value, its underlying item slice is returned.
+func (c *Compiler) compileIterExpr(e *parser.Expr) (string, error) {
+	expr, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.inferExprType(e).(types.GroupType); ok {
+		expr += ".items"
+	}
+	return expr, nil
+}
