@@ -1,8 +1,6 @@
 Address = Struct.new(:city, :zip, keyword_init: true)
 
-
 Person = Struct.new(:name, :home, keyword_init: true)
-
 
 p = Person.new(name: "Alice", home: Address.new(city: "SF", zip: 94107))
 puts([p.home.city].join(" "))
