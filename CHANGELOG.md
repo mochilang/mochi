@@ -1,4 +1,17 @@
 # 📦 CHANGELOG.md
+## [0.10.3] – 2025-06-26T18:37:31+07:00
+
+### Added
+
+* Typed `fetch` builtin with HTTP options and struct casting
+* Dataset load and save support for JSON across languages
+
+### Fixed
+
+* Type inference bug for dataset load generics
+* Pascal string quoting issue and golden file updates
+* Erlang fetch runtime corrections
+
 ## [0.10.2] – 2025-06-26T12:39:20+07:00
 
 ### Added
