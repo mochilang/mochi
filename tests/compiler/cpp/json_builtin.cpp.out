@@ -4,7 +4,7 @@ using namespace std;
 static string _escape_json(const string& s) {
 	string out;
 	for (char c : s) {
-		if (c == '"' || c == '\') out += '\';
+		if (c == '"' || c == '\\') out += '\\';
 		out += c;
 	}
 	return out;
@@ -20,6 +20,13 @@ inline string _to_json(const char* s) { return _to_json(string(s)); }
 inline string _to_json(int v) { return to_string(v); }
 inline string _to_json(double v) { stringstream ss; ss << v; return ss.str(); }
 inline string _to_json(bool v) { return v ? "true" : "false"; }
+inline string _to_json(const any& v) {
+	if (v.type() == typeid(int)) return _to_json(any_cast<int>(v));
+	if (v.type() == typeid(double)) return _to_json(any_cast<double>(v));
+	if (v.type() == typeid(bool)) return _to_json(any_cast<bool>(v));
+	if (v.type() == typeid(string)) return _to_json(any_cast<string>(v));
+	return "null";
+}
 template<typename T> string _to_json(const vector<T>& v) {
 	string out = "[";
 	for (size_t i=0;i<v.size();i++) { if (i>0) out += ','; out += _to_json(v[i]); }
