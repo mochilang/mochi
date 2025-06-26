@@ -140,6 +140,13 @@ const (
   let setB = Set.ofArray b
   Array.filter (fun x -> Set.contains x setB) a |> Array.distinct`
 
+	helperSeq = `let inline sum (xs: seq< ^T >) : ^T =
+  Seq.sum xs
+let inline avg (xs: seq< ^T >) : ^T =
+  Seq.average xs
+let count (xs: seq<'T>) : int =
+  Seq.length xs`
+
 	helperGroup = `type _Group<'T>(key: obj) =
   member val key = key with get, set
   member val Items = System.Collections.Generic.List<'T>() with get
@@ -210,6 +217,7 @@ var helperMap = map[string]string{
 	"_union":        helperUnion,
 	"_except":       helperExcept,
 	"_intersect":    helperIntersect,
+	"_seq_helpers":  helperSeq,
 	"_Group":        helperGroup,
 	"_group_by":     helperGroupBy,
 }

@@ -217,6 +217,11 @@ func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
 	return ok
 }
 
+func (c *Compiler) isGroupExpr(e *parser.Expr) bool {
+	_, ok := types.TypeOfExpr(e, c.env).(types.GroupType)
+	return ok
+}
+
 func intLiteral(e *parser.Expr) (int, bool) {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return 0, false
