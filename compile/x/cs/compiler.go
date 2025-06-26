@@ -1961,6 +1961,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum() expects 1 arg")
+		}
+		c.use("_sum")
+		return fmt.Sprintf("_sum(%s)", argStr), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str() expects 1 arg")
