@@ -12,7 +12,7 @@ class Todo {
 	}
 }
 
-$todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", null);
+$todo = new Todo((array)(_fetch("https://jsonplaceholder.typicode.com/todos/1", null)));
 echo $todo->title, PHP_EOL;
 
 function _fetch($url, $opts = null) {

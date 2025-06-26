@@ -634,6 +634,32 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				return "", err
 			}
 			expr = call
+		} else if op.Cast != nil {
+			typ := types.ResolveTypeRef(op.Cast.Type, c.env)
+			switch t := typ.(type) {
+			case types.IntType, types.Int64Type:
+				expr = fmt.Sprintf("(int)(%s)", expr)
+			case types.FloatType:
+				expr = fmt.Sprintf("(float)(%s)", expr)
+			case types.StringType:
+				expr = fmt.Sprintf("(string)(%s)", expr)
+			case types.BoolType:
+				expr = fmt.Sprintf("(bool)(%s)", expr)
+			case types.StructType:
+				if !c.typeNames[t.Name] {
+					c.compileStructType(t)
+				}
+				expr = fmt.Sprintf("new %s((array)%s)", sanitizeName(t.Name), expr)
+			case types.ListType:
+				if st, ok := t.Elem.(types.StructType); ok {
+					if !c.typeNames[st.Name] {
+						c.compileStructType(st)
+					}
+					expr = fmt.Sprintf("array_map(fn($it) => new %s((array)$it), %s)", sanitizeName(st.Name), expr)
+				}
+			default:
+				// ignore other types
+			}
 		}
 	}
 	return expr, nil
