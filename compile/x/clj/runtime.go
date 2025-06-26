@@ -42,6 +42,14 @@ const (
       (/ (reduce + lst) (double (count lst)))))
 `
 
+	helperSum = `(defn _sum [v]
+  (let [lst (cond
+              (and (map? v) (contains? v :Items)) (:Items v)
+              (sequential? v) v
+              :else (throw (ex-info "sum() expects list or group" {})))]
+    (reduce + 0 lst))
+`
+
 	helperGroup = `(defrecord _Group [key Items])
 `
 
@@ -261,6 +269,7 @@ var helperMap = map[string]string{
 	"_input":       helperInput,
 	"_count":       helperCount,
 	"_avg":         helperAvg,
+	"_sum":         helperSum,
 	"_Group":       helperGroup,
 	"_group_by":    helperGroupBy,
 	"_parse_csv":   helperParseCSV,
@@ -287,6 +296,7 @@ var helperOrder = []string{
 	"_input",
 	"_count",
 	"_avg",
+	"_sum",
 	"_Group",
 	"_group_by",
 	"_parse_csv",
