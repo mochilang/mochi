@@ -17,25 +17,21 @@ let end_date = "1993-08-01"
 
 let date_filtered_orders =
   from o in orders
-  where o.o_orderdate >= start_date and o.o_orderdate < end_date
+  where o.o_orderdate >= start_date && o.o_orderdate < end_date
   select o
 
 let late_orders =
   from o in date_filtered_orders
-  where exists (
-    l in lineitem
-    where l.l_orderkey == o.o_orderkey and l.l_commitdate < l.l_receiptdate
-  )
+  where exists(from l in lineitem where l.l_orderkey == o.o_orderkey && l.l_commitdate < l.l_receiptdate select l)
   select o
 
-let result =
-  from o in late_orders
+let result = from o in late_orders
   group by o.o_orderpriority
   select {
     o_orderpriority: o.o_orderpriority,
     order_count: count()
   }
-  order by o.o_orderpriority
+  sort by o.o_orderpriority
 
 print result
 

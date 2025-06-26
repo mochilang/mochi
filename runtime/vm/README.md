@@ -121,6 +121,7 @@ from the disassembler:
 | `Avg` | Average of numeric list B | `Avg r0, r1` |
 | `Min` | Minimum value of numeric list B | `Min r0, r1` |
 | `Max` | Maximum value of numeric list B | `Max r0, r1` |
+| `Exists` | Check if list/map/string B is non-empty | `Exists r0, r1` |
 | `Cast` | Cast value B to type index C | `Cast r0, r1, 0` |
 | `IterPrep` | Prepare iterable from B | `IterPrep r0, r1` |
 | `Load` | Load dataset from path B with options C | `Load r0, r1, r2` |

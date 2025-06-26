@@ -1,0 +1,2 @@
+print(exists([1]))
+print(exists([]))

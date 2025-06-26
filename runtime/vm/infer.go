@@ -147,5 +147,7 @@ func applyTags(tags []RegTag, ins Instr) {
 		tags[ins.A] = TagFloat
 	case OpMin, OpMax:
 		tags[ins.A] = TagUnknown
+	case OpExists:
+		tags[ins.A] = TagBool
 	}
 }
