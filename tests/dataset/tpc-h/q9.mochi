@@ -46,7 +46,7 @@ let prefix = "green"
 let start_date = "1995-01-01"
 let end_date = "1996-12-31"
 
-let result =
+let with_profit =
   from l in lineitem
   join p in part on p.p_partkey == l.l_partkey
   join s in supplier on s.s_suppkey == l.l_suppkey
@@ -55,15 +55,23 @@ let result =
   join n in nation on n.n_nationkey == s.s_nationkey
   where substring(p.p_name, 0, len(prefix)) == prefix &&
         o.o_orderdate >= start_date && o.o_orderdate <= end_date
-  let o_year = substring(o.o_orderdate, 0, 4)
-  let revenue = l.l_extendedprice * (1 - l.l_discount)
-  let cost = ps.ps_supplycost * l.l_quantity
-  let profit = revenue - cost
-  group by { nation: n.n_name, o_year }
-  select { nation, o_year, profit: sum(profit) }
-  sort by { nation, o_year desc }
+  select {
+    nation: n.n_name,
+    o_year: substring(o.o_orderdate, 0, 4),
+    profit: l.l_extendedprice * (1 - l.l_discount) - (ps.ps_supplycost * l.l_quantity)
+  }
 
-print result
+let result =
+  from r in with_profit
+  group by { nation: r.nation, o_year: r.o_year } into g
+  sort by [ g.key.nation, g.key.o_year ]
+  select {
+    nation: g.key.nation,
+    o_year: g.key.o_year,
+    profit: sum(from x in g select x.profit)
+  }
+
+json(result)
 
 test "Q9 computes profit for green parts by nation and year" {
   let revenue = 1000.0 * 0.9   // 900
