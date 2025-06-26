@@ -264,4 +264,3 @@ L18:
   Equal        r160, r158, r159
   Expect       r160
   Return       r0
-
