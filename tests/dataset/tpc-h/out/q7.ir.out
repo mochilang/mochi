@@ -357,4 +357,3 @@ L19:
   Equal        r232, r230, r231
   Expect       r232
   Return       r0
-

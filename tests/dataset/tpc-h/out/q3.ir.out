@@ -371,4 +371,3 @@ L17:
   Equal        r234, r210, r233
   Expect       r234
   Return       r0
-

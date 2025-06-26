@@ -163,4 +163,3 @@ L9:
   EqualFloat   r102, r89, r101
   Expect       r102
   Return       r0
-
