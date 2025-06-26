@@ -114,6 +114,100 @@ const (
 		"    return sum\n" +
 		"}\n"
 
+	helperMin = "func _min(v any) any {\n" +
+		"    if g, ok := v.(*data.Group); ok { v = g.Items }\n" +
+		"    switch s := v.(type) {\n" +
+		"    case []int:\n" +
+		"        if len(s) == 0 { return 0 }\n" +
+		"        m := s[0]\n" +
+		"        for _, n := range s[1:] { if n < m { m = n } }\n" +
+		"        return m\n" +
+		"    case []float64:\n" +
+		"        if len(s) == 0 { return 0.0 }\n" +
+		"        m := s[0]\n" +
+		"        for _, n := range s[1:] { if n < m { m = n } }\n" +
+		"        return m\n" +
+		"    case []any:\n" +
+		"        if len(s) == 0 { return 0 }\n" +
+		"        var m float64\n" +
+		"        var isFloat bool\n" +
+		"        switch n := s[0].(type) {\n" +
+		"        case int: m = float64(n)\n" +
+		"        case int64: m = float64(n)\n" +
+		"        case float64: m = n; isFloat = true\n" +
+		"        default: panic(\"min() expects numbers\") }\n" +
+		"        for _, it := range s[1:] {\n" +
+		"            switch v := it.(type) {\n" +
+		"            case int: if float64(v) < m { m = float64(v) }\n" +
+		"            case int64: if float64(v) < m { m = float64(v) }\n" +
+		"            case float64: if v < m { m = v }; isFloat = true\n" +
+		"            default: panic(\"min() expects numbers\") }\n" +
+		"        }\n" +
+		"        if isFloat { return m }\n" +
+		"        return int(m)\n" +
+		"    default:\n" +
+		"        rv := reflect.ValueOf(v)\n" +
+		"        if rv.Kind() == reflect.Slice {\n" +
+		"            if rv.Len() == 0 { return 0 }\n" +
+		"            m := rv.Index(0).Interface()\n" +
+		"            switch m.(type) {\n" +
+		"            case int, int64, float64:\n" +
+		"                items := make([]any, rv.Len())\n" +
+		"                for i := 0; i < rv.Len(); i++ { items[i] = rv.Index(i).Interface() }\n" +
+		"                return _min(items)\n" +
+		"            }\n" +
+		"        }\n" +
+		"        panic(\"min() expects list or group\")\n" +
+		"    }\n" +
+		"}\n"
+
+	helperMax = "func _max(v any) any {\n" +
+		"    if g, ok := v.(*data.Group); ok { v = g.Items }\n" +
+		"    switch s := v.(type) {\n" +
+		"    case []int:\n" +
+		"        if len(s) == 0 { return 0 }\n" +
+		"        m := s[0]\n" +
+		"        for _, n := range s[1:] { if n > m { m = n } }\n" +
+		"        return m\n" +
+		"    case []float64:\n" +
+		"        if len(s) == 0 { return 0.0 }\n" +
+		"        m := s[0]\n" +
+		"        for _, n := range s[1:] { if n > m { m = n } }\n" +
+		"        return m\n" +
+		"    case []any:\n" +
+		"        if len(s) == 0 { return 0 }\n" +
+		"        var m float64\n" +
+		"        var isFloat bool\n" +
+		"        switch n := s[0].(type) {\n" +
+		"        case int: m = float64(n)\n" +
+		"        case int64: m = float64(n)\n" +
+		"        case float64: m = n; isFloat = true\n" +
+		"        default: panic(\"max() expects numbers\") }\n" +
+		"        for _, it := range s[1:] {\n" +
+		"            switch v := it.(type) {\n" +
+		"            case int: if float64(v) > m { m = float64(v) }\n" +
+		"            case int64: if float64(v) > m { m = float64(v) }\n" +
+		"            case float64: if v > m { m = v }; isFloat = true\n" +
+		"            default: panic(\"max() expects numbers\") }\n" +
+		"        }\n" +
+		"        if isFloat { return m }\n" +
+		"        return int(m)\n" +
+		"    default:\n" +
+		"        rv := reflect.ValueOf(v)\n" +
+		"        if rv.Kind() == reflect.Slice {\n" +
+		"            if rv.Len() == 0 { return 0 }\n" +
+		"            m := rv.Index(0).Interface()\n" +
+		"            switch m.(type) {\n" +
+		"            case int, int64, float64:\n" +
+		"                items := make([]any, rv.Len())\n" +
+		"                for i := 0; i < rv.Len(); i++ { items[i] = rv.Index(i).Interface() }\n" +
+		"                return _max(items)\n" +
+		"            }\n" +
+		"        }\n" +
+		"        panic(\"max() expects list or group\")\n" +
+		"    }\n" +
+		"}\n"
+
 	helperInput = "func _input() string {\n" +
 		"    var s string\n" +
 		"    fmt.Scanln(&s)\n" +
@@ -475,6 +569,8 @@ var helperMap = map[string]string{
 	"_count":         helperCount,
 	"_avg":           helperAvg,
 	"_sum":           helperSum,
+	"_min":           helperMin,
+	"_max":           helperMax,
 	"_input":         helperInput,
 	"_genText":       helperGenText,
 	"_genEmbed":      helperGenEmbed,

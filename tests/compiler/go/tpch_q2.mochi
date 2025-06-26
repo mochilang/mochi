@@ -1,0 +1,100 @@
+let region = [
+  { r_regionkey: 1, r_name: "EUROPE" },
+  { r_regionkey: 2, r_name: "ASIA" }
+]
+
+let nation = [
+  { n_nationkey: 10, n_regionkey: 1, n_name: "FRANCE" },
+  { n_nationkey: 20, n_regionkey: 2, n_name: "CHINA" }
+]
+
+let supplier = [
+  {
+    s_suppkey: 100,
+    s_name: "BestSupplier",
+    s_address: "123 Rue",
+    s_nationkey: 10,
+    s_phone: "123",
+    s_acctbal: 1000.0,
+    s_comment: "Fast and reliable"
+  },
+  {
+    s_suppkey: 200,
+    s_name: "AltSupplier",
+    s_address: "456 Way",
+    s_nationkey: 20,
+    s_phone: "456",
+    s_acctbal: 500.0,
+    s_comment: "Slow"
+  }
+]
+
+let part = [
+  { p_partkey: 1000, p_type: "LARGE BRASS", p_size: 15, p_mfgr: "M1" },
+  { p_partkey: 2000, p_type: "SMALL COPPER", p_size: 15, p_mfgr: "M2" }
+]
+
+let partsupp = [
+  { ps_partkey: 1000, ps_suppkey: 100, ps_supplycost: 10.00 },
+  { ps_partkey: 1000, ps_suppkey: 200, ps_supplycost: 15.00 }
+]
+
+let europe_nations =
+  from r in region
+  join n in nation on n.n_regionkey == r.r_regionkey
+  where r.r_name == "EUROPE"
+  select n
+
+let europe_suppliers =
+  from s in supplier
+  join n in europe_nations on s.s_nationkey == n.n_nationkey
+  select { s: s, n: n }
+
+let target_parts =
+  from p in part
+  where p.p_size == 15 && p.p_type == "LARGE BRASS"
+  select p
+
+let target_partsupp =
+  from ps in partsupp
+  join p in target_parts on ps.ps_partkey == p.p_partkey
+  join s in europe_suppliers on ps.ps_suppkey == s.s.s_suppkey
+  select {
+    s_acctbal: s.s.s_acctbal,
+    s_name: s.s.s_name,
+    n_name: s.n.n_name,
+    p_partkey: p.p_partkey,
+    p_mfgr: p.p_mfgr,
+    s_address: s.s.s_address,
+    s_phone: s.s.s_phone,
+    s_comment: s.s.s_comment,
+    ps_supplycost: ps.ps_supplycost
+  }
+
+let costs = from x in target_partsupp select x.ps_supplycost
+
+let min_cost = min(costs)
+
+let result =
+  from x in target_partsupp
+  where x.ps_supplycost == min_cost
+  sort by -x.s_acctbal
+  select x
+
+json(result)
+
+test "Q2 returns only supplier with min cost in Europe for brass part" {
+  expect result == [
+    {
+      s_acctbal: 1000.0,
+      s_name: "BestSupplier",
+      n_name: "FRANCE",
+      p_partkey: 1000,
+      p_mfgr: "M1",
+      s_address: "123 Rue",
+      s_phone: "123",
+      s_comment: "Fast and reliable",
+      ps_supplycost: 10.0
+    }
+  ]
+}
