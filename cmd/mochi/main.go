@@ -104,7 +104,6 @@ type RunCmd struct {
 	Memoize  bool   `arg:"--memo" help:"Enable memoization of pure functions"`
 	Fold     bool   `arg:"--aot" help:"Fold pure calls before execution"`
 	PrintIR  bool   `arg:"--ir" help:"Print VM assembly and exit"`
-	Interp   bool   `arg:"--interp" help:"Run using interpreter"`
 }
 
 type TestCmd struct {
@@ -149,6 +148,9 @@ var (
 	cError              = color.New(color.FgRed, color.Bold).SprintFunc()
 	cTitle              = color.New(color.FgCyan, color.Bold).SprintFunc()
 	cFile               = color.New(color.FgHiBlue, color.Bold).SprintFunc()
+	cTest               = color.New(color.FgYellow).SprintFunc()
+	cOK                 = color.New(color.FgGreen).SprintFunc()
+	cFail               = color.New(color.FgRed).SprintFunc()
 	stableTargets       = []string{"go", "py", "ts"}
 	experimentalTargets = []string{
 		"c", "clj", "cobol", "cpp", "cs", "dart", "erlang", "ex",
@@ -191,6 +193,31 @@ func humanBuildTime() string {
 	return t.Format("Mon Jan 02 15:04:05 2006")
 }
 
+func printTestStart(name string) {
+	fmt.Printf("   %s %-30s ...", cTest("test"), name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" %s (%s)\n", cOK("ok"), formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" %s %v (%s)\n", cFail("fail"), err, formatDuration(d))
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
 func runFile(cmd *RunCmd) error {
 	start := time.Now()
 	prog, err := parseOrPrintError(cmd.File)
@@ -216,24 +243,17 @@ func runFile(cmd *RunCmd) error {
 		interpreter.FoldPureCalls(prog, env)
 	}
 
-	if cmd.Interp {
-		memo := cmd.Memoize || os.Getenv("MOCHI_MEMO") == "1" || strings.ToLower(os.Getenv("MOCHI_MEMO")) == "true"
-		interp := interpreter.New(prog, env, modRoot)
-		interp.SetMemoization(memo)
-		err = interp.Run()
-	} else {
-		os.Setenv("MOCHI_ROOT", modRoot)
-		p, errc := vm.Compile(prog, env)
-		if errc != nil {
-			return errc
-		}
-		if cmd.PrintIR {
-			fmt.Print(p.Disassemble(string(source)))
-			return nil
-		}
-		m := vm.New(p, os.Stdout)
-		err = m.Run()
+	os.Setenv("MOCHI_ROOT", modRoot)
+	p, errc := vm.Compile(prog, env)
+	if errc != nil {
+		return errc
 	}
+	if cmd.PrintIR {
+		fmt.Print(p.Disassemble(string(source)))
+		return nil
+	}
+	m := vm.New(p, os.Stdout)
+	err = m.Run()
 	status := "ok"
 	msg := ""
 	if err != nil {
@@ -326,10 +346,46 @@ func testFile(file string, cmd *TestCmd) error {
 	if cmd.Fold {
 		interpreter.FoldPureCalls(prog, env)
 	}
-	memo := cmd.Memoize || os.Getenv("MOCHI_MEMO") == "1" || strings.ToLower(os.Getenv("MOCHI_MEMO")) == "true"
-	interp := interpreter.New(prog, env, modRoot)
-	interp.SetMemoization(memo)
-	return interp.Test()
+
+	decls := make([]*parser.Statement, 0, len(prog.Statements))
+	for _, st := range prog.Statements {
+		if st.Fun != nil || st.Let != nil || st.Type != nil {
+			decls = append(decls, st)
+		}
+	}
+
+	var failures int
+	for _, st := range prog.Statements {
+		if st.Test == nil {
+			continue
+		}
+		printTestStart(st.Test.Name)
+		childEnv := types.NewEnv(env)
+		start := time.Now()
+		testProg := &parser.Program{Statements: append([]*parser.Statement(nil), decls...)}
+		testProg.Statements = append(testProg.Statements, st.Test.Body...)
+		os.Setenv("MOCHI_ROOT", modRoot)
+		p, errc := vm.Compile(testProg, childEnv)
+		var err error
+		if errc == nil {
+			m := vm.New(p, io.Discard)
+			err = m.Run()
+		} else {
+			err = errc
+		}
+		dur := time.Since(start)
+		if err != nil {
+			printTestFail(err, dur)
+			failures++
+		} else {
+			printTestPass(dur)
+		}
+	}
+	if failures > 0 {
+		fmt.Fprintf(os.Stderr, "\n%s %d test(s) failed.\n", cFail("[FAIL]"), failures)
+		return fmt.Errorf("test failed: %d test(s) failed", failures)
+	}
+	return nil
 }
 
 func runLLM(cmd *LLMCmd) error {
@@ -1167,7 +1223,6 @@ func newRunCmd() *cobra.Command {
 	c.Flags().BoolVar(&rc.Memoize, "memo", false, "Enable memoization of pure functions")
 	c.Flags().BoolVar(&rc.Fold, "aot", false, "Fold pure calls before execution")
 	c.Flags().BoolVar(&rc.PrintIR, "ir", false, "Print VM assembly and exit")
-	c.Flags().BoolVar(&rc.Interp, "interp", false, "Run using interpreter")
 	return c
 }
 
