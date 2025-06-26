@@ -31,6 +31,9 @@ type Compiler struct {
 	needContainsStr bool
 	needDataset     bool
 	needPaginate    bool
+	needSum         bool
+	needGroupBy     bool
+	needGroup       bool
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -64,6 +67,9 @@ func (c *Compiler) reset() {
 	c.needContainsStr = false
 	c.needDataset = false
 	c.needPaginate = false
+	c.needSum = false
+	c.needGroupBy = false
+	c.needGroup = false
 }
 
 // Compile generates Smalltalk code for prog.
@@ -829,6 +835,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needAvg = true
 		return fmt.Sprintf("(Main __avg: %s)", args[0]), nil
+	case "sum":
+		if len(args) != 1 {
+			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		c.needSum = true
+		return fmt.Sprintf("(Main __sum: %s)", args[0]), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
@@ -1015,7 +1027,7 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 || q.Group != nil {
+	if len(q.Joins) > 0 {
 		return "", fmt.Errorf("advanced query clauses not supported")
 	}
 	src, err := c.compileExpr(q.Source)
@@ -1023,6 +1035,54 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	orig := c.env
+
+	if q.Group != nil && len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		c.env = child
+		var cond string
+		if q.Where != nil {
+			cond, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(orig)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		sel, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+		c.needGroupBy = true
+		c.needGroup = true
+		var b strings.Builder
+		b.WriteString("((| rows groups |\n")
+		b.WriteString("rows := OrderedCollection new.\n")
+		b.WriteString(fmt.Sprintf("(%s) do: [:%s |\n", src, sanitizeName(q.Var)))
+		if cond != "" {
+			b.WriteString(fmt.Sprintf("\t(%s) ifTrue: [ rows add: %s ].\n", cond, sanitizeName(q.Var)))
+		} else {
+			b.WriteString(fmt.Sprintf("\trows add: %s.\n", sanitizeName(q.Var)))
+		}
+		b.WriteString("]\n")
+		b.WriteString(fmt.Sprintf("groups := (Main _group_by: rows keyFn: [:%s | %s]).\n", sanitizeName(q.Var), keyExpr))
+		b.WriteString("rows := OrderedCollection new.\n")
+		b.WriteString(fmt.Sprintf("(groups) do: [:%s |\n", sanitizeName(q.Group.Name)))
+		b.WriteString(fmt.Sprintf("\trows add: %s.\n", sel))
+		b.WriteString("]\n")
+		b.WriteString("rows := rows asArray.\n")
+		b.WriteString("rows))")
+		return b.String(), nil
+	}
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, types.AnyType{}, true)
 	fromSrcs := make([]string, len(q.Froms))
@@ -1216,6 +1276,52 @@ func (c *Compiler) emitHelpers() {
 	if c.needContinue {
 		c.writeln("Object subclass: #ContinueSignal instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
 	}
+	if c.needGroup {
+		c.writeln("Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!")
+		c.writeln("")
+		c.writeln("!_Group class methodsFor: 'instance creation'!")
+		c.writeln("key: k | g |")
+		c.indent++
+		c.writeln("g := self new.")
+		c.writeln("g key: k.")
+		c.writeln("g initialize.")
+		c.writeln("^ g")
+		c.indent--
+		c.writelnNoIndent("!")
+		c.writeln("!_Group methodsFor: 'initialization'!")
+		c.writeln("initialize")
+		c.indent++
+		c.writeln("items := OrderedCollection new.")
+		c.writeln("^ self")
+		c.indent--
+		c.writelnNoIndent("!")
+		c.writeln("!_Group methodsFor: 'accessing'!")
+		c.writeln("key")
+		c.indent++
+		c.writeln("^ key")
+		c.indent--
+		c.writelnNoIndent("!")
+		c.writeln("key: k")
+		c.indent++
+		c.writeln("key := k")
+		c.indent--
+		c.writelnNoIndent("!")
+		c.writeln("add: it")
+		c.indent++
+		c.writeln("items add: it")
+		c.indent--
+		c.writelnNoIndent("!")
+		c.writeln("do: blk")
+		c.indent++
+		c.writeln("items do: blk")
+		c.indent--
+		c.writelnNoIndent("!")
+		c.writeln("size")
+		c.indent++
+		c.writeln("^ items size")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
 	if c.needBreak || c.needContinue {
 		c.writeln("")
 	}
@@ -1338,6 +1444,17 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writelnNoIndent("!")
 	}
+	if c.needSum {
+		c.writeln("__sum: v")
+		c.indent++
+		c.writeln("(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]")
+		c.writeln("| s |")
+		c.writeln("s := 0.")
+		c.writeln("v do: [:it | s := s + it].")
+		c.writeln("^ s")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
 	if c.needDataset {
 		c.writeln("_load: path opts: o")
 		c.indent++
@@ -1360,6 +1477,25 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("start > 0 ifTrue: [ out := out copyFrom: start + 1 to: out size ].")
 		c.writeln("t notNil ifTrue: [ out := out copyFrom: 1 to: (t min: out size) ].")
 		c.writeln("^ out")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needGroupBy {
+		c.writeln("_group_by: src keyFn: blk")
+		c.indent++
+		c.writeln("| groups order |")
+		c.writeln("groups := Dictionary new.")
+		c.writeln("order := OrderedCollection new.")
+		c.writeln("src do: [:it |")
+		c.indent++
+		c.writeln("| key ks g |")
+		c.writeln("key := blk value: it.")
+		c.writeln("ks := key printString.")
+		c.writeln("g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].")
+		c.writeln("g add: it.")
+		c.indent--
+		c.writeln("]")
+		c.writeln("^ order collect: [:k | groups at: k ]")
 		c.indent--
 		c.writelnNoIndent("!")
 	}
