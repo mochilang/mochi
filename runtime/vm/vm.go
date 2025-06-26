@@ -2690,6 +2690,19 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 // optional WHERE filtering and SELECT projection. Only cross joins are
 // handled and results are accumulated into a list.
 func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
+	// Detect simple aggregate SELECT like `sum(x)` without GROUP BY.
+	var aggOp Op
+	var aggPos lexer.Position
+	if q.Group == nil {
+		if op, arg, pos, ok := aggregateCall(q.Select); ok {
+			aggOp = op
+			aggPos = pos
+			origSel := q.Select
+			q.Select = arg
+			defer func() { q.Select = origSel }()
+		}
+	}
+
 	dst := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
 	if q.Group != nil {
@@ -2729,6 +2742,11 @@ func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
 		out := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpSlice, A: out, B: dst, C: zero, D: end})
 		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: out})
+	}
+	if aggOp != 0 {
+		out := fc.newReg()
+		fc.emit(aggPos, Instr{Op: aggOp, A: out, B: dst})
+		dst = out
 	}
 	return dst
 }
