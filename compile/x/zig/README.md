@@ -356,7 +356,7 @@ LeetCode solutions:
 - asynchronous functions (`async`/`await`)
 - the `eval` builtin function
 - YAML dataset loading and saving
-- built-in helpers like `fetch`, `load`, `save` and `generate`
+ - built-in helpers like `fetch` and `generate`
 - logic programming constructs (`fact`, `rule`, `query`)
 - concurrency features such as streams or `spawn`
 - arrow function syntax (`fun(x: int): int => x + 1`)
