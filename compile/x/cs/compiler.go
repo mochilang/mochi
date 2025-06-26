@@ -1380,7 +1380,8 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		opts = w
+		c.use("_cast")
+		opts = fmt.Sprintf("_cast<Dictionary<string, object>>(%s)", w)
 	}
 	c.use("_fetch")
 	return fmt.Sprintf("_fetch(%s, %s)", urlStr, opts), nil

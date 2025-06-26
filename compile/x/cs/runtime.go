@@ -291,6 +291,12 @@ func (c *Compiler) emitRuntime() {
 				c.indent--
 				c.writeln("}")
 				c.writeln("var client = new HttpClient();")
+				c.writeln("if (opts != null && opts.ContainsKey(\"timeout\")) {")
+				c.indent++
+				c.writeln("var t = Convert.ToDouble(opts[\"timeout\"]);")
+				c.writeln("client.Timeout = TimeSpan.FromSeconds(t);")
+				c.indent--
+				c.writeln("}")
 				c.writeln("var resp = client.Send(req);")
 				c.writeln("var text = resp.Content.ReadAsStringAsync().Result;")
 				c.writeln("return JsonSerializer.Deserialize<dynamic>(text);")
