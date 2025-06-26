@@ -1,0 +1,31 @@
+let rec _read_all ic =
+  try let line = input_line ic in
+      line ^ "\n" ^ _read_all ic
+  with End_of_file -> "";;
+
+let _read_input path =
+  let ic = match path with
+    | None -> stdin
+    | Some p when p = "" || p = "-" -> stdin
+    | Some p -> open_in p in
+  let txt = _read_all ic in
+  if ic != stdin then close_in ic;
+  txt;;
+
+let _load path _ =
+  let text = _read_input path in
+  match Yojson.Basic.from_string text with
+  | `List items -> items
+  | json -> [json];;
+
+let _save rows path _ =
+  let oc = match path with
+    | None -> stdout
+    | Some p when p = "" || p = "-" -> stdout
+    | Some p -> open_out p in
+  Yojson.Basic.to_channel oc (`List rows);
+  output_char oc '\n';
+  if oc != stdout then close_out oc;;
+
+let rows = _load None (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "format" "json"; tbl);;
+_save rows None (let tbl = Hashtbl.create 1 in Hashtbl.add tbl "format" "json"; tbl);;
