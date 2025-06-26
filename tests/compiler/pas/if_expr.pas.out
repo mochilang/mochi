@@ -1,13 +1,14 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl;
+uses SysUtils, fgl, fphttpclient, Classes, Variants;
 
 type
 	generic TArray<T> = array of T;
 
 function abs_val(n: integer): integer;
+var
+	_tmp0: integer;
 begin
-	var _tmp0: integer;
 	if (n < 0) then
 	begin
 		_tmp0 := -n;

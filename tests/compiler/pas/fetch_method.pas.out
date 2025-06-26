@@ -1,0 +1,28 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants;
+
+type
+	generic TArray<T> = array of T;
+
+var
+	_tmp0: specialize TFPGMap<string, Variant>;
+	body: integer;
+
+function _fetch(url: string; opts: specialize TFPGMap<string, Variant>): string;
+var client: TFPHTTPClient;
+begin
+	client := TFPHTTPClient.Create(nil);
+	try
+		Result := client.Get(url);
+	finally
+		client.Free;
+	end;
+end;
+
+begin
+	_tmp0 := specialize TFPGMap<string, Variant>.Create;
+	_tmp0.AddOrSetData('method', 'GET');
+	body := _fetch('https://example.com', _tmp0);
+	writeln((Length(body) > 0));
+end.

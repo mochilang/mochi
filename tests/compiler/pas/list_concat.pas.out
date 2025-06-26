@@ -1,6 +1,6 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl;
+uses SysUtils, fgl, fphttpclient, Classes, Variants;
 
 type
 	generic TArray<T> = array of T;
@@ -8,10 +8,18 @@ type
 var
 	a: specialize TArray<integer>;
 
+generic function _indexList<T>(arr: specialize TArray<T>; i: integer): T;
+begin
+	if i < 0 then i := Length(arr) + i;
+	if (i < 0) or (i >= Length(arr)) then
+		raise Exception.Create('index out of range');
+	Result := arr[i];
+end;
+
 begin
 	a := Concat(specialize TArray<integer>([1, 2]), specialize TArray<integer>([3, 4]));
-	writeln(a[0]);
-	writeln(a[1]);
-	writeln(a[2]);
-	writeln(a[3]);
+	writeln(specialize _indexList<integer>(a, 0));
+	writeln(specialize _indexList<integer>(a, 1));
+	writeln(specialize _indexList<integer>(a, 2));
+	writeln(specialize _indexList<integer>(a, 3));
 end.

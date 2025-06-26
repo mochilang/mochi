@@ -1,6 +1,6 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl;
+uses SysUtils, fgl, fphttpclient, Classes, Variants;
 
 type
 	generic TArray<T> = array of T;

@@ -1,21 +1,22 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl;
+uses SysUtils, fgl, fphttpclient, Classes, Variants;
 
 type
 	generic TArray<T> = array of T;
 
 function twoSum(nums: specialize TArray<integer>; target: integer): specialize TArray<integer>;
+var
+	i: integer;
+	j: integer;
+	n: integer;
 begin
-	var i: integer;
-	var j: integer;
-	var n: integer;
 	n := Length(nums);
 	for i := 0 to n - 1 do
 	begin
 		for j := i + 1 to n - 1 do
 		begin
-			if (nums[i] + nums[j] = target) then
+			if (specialize _indexList<integer>(nums, i) + specialize _indexList<integer>(nums, j) = target) then
 			begin
 				result := specialize TArray<integer>([i, j]);
 				exit;
@@ -29,8 +30,16 @@ end;
 var
 	_result: specialize TArray<integer>;
 
+generic function _indexList<T>(arr: specialize TArray<T>; i: integer): T;
+begin
+	if i < 0 then i := Length(arr) + i;
+	if (i < 0) or (i >= Length(arr)) then
+		raise Exception.Create('index out of range');
+	Result := arr[i];
+end;
+
 begin
 	_result := twoSum(specialize TArray<integer>([2, 7, 11, 15]), 9);
-	writeln(_result[0]);
-	writeln(_result[1]);
+	writeln(specialize _indexList<integer>(_result, 0));
+	writeln(specialize _indexList<integer>(_result, 1));
 end.

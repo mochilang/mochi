@@ -1,0 +1,2 @@
+let body = fetch "https://example.com" with { method: "GET" }
+print(len(body) > 0)

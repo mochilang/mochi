@@ -1621,8 +1621,32 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	withStr := "nil"
+	if f.With != nil {
+		if f.With.Binary != nil && len(f.With.Binary.Right) == 0 {
+			if m := f.With.Binary.Left.Value.Target.Map; m != nil {
+				tmp := c.newTypedVar("specialize TFPGMap<string, Variant>")
+				c.writeln(fmt.Sprintf("%s := specialize TFPGMap<string, Variant>.Create;", tmp))
+				for _, it := range m.Items {
+					k, err := c.compileExpr(it.Key)
+					if err != nil {
+						return "", err
+					}
+					if name, ok := selectorName(it.Key); ok {
+						k = fmt.Sprintf("'%s'", name)
+					}
+					v, err := c.compileExpr(it.Value)
+					if err != nil {
+						return "", err
+					}
+					c.writeln(fmt.Sprintf("%s.AddOrSetData(%s, %s);", tmp, k, v))
+				}
+				withStr = tmp
+			}
+		}
+	}
 	c.use("_fetch")
-	return fmt.Sprintf("_fetch(%s)", urlStr), nil
+	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
 }
 
 func formatOption(e *parser.Expr) string {
@@ -1806,7 +1830,7 @@ func (c *Compiler) emitHelpers() {
 	for _, n := range names {
 		switch n {
 		case "_fetch":
-			c.writeln("function _fetch(url: string): string;")
+			c.writeln("function _fetch(url: string; opts: specialize TFPGMap<string, Variant>): string;")
 			c.writeln("var client: TFPHTTPClient;")
 			c.writeln("begin")
 			c.indent++

@@ -1,15 +1,15 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl, fphttpclient, Classes;
+uses SysUtils, fgl, fphttpclient, Classes, Variants;
 
 type
 	generic TArray<T> = array of T;
 
 var
+	_tmp0: integer;
 	ch: char;
 
 begin
-	var _tmp0: integer;
 	for _tmp0 := 1 to Length('cat') do
 	begin
 		ch := 'cat'[_tmp0];

@@ -3,39 +3,39 @@ program main;
 uses SysUtils, fgl, fphttpclient, Classes, Variants;
 
 type
-        generic TArray<T> = array of T;
-        type Person = record
-        name: string;
-        age: integer;
+	generic TArray<T> = array of T;
+type Person = record
+	name: string;
+	age: integer;
 end;
 
 var
-        _tmp0: Person;
-        _tmp1: Person;
-        _tmp2: Person;
-        _tmp3: specialize TArray<string>;
-        n: string;
-        names: specialize TArray<string>;
-        p: Person;
-        people: specialize TArray<Person>;
+	_tmp0: Person;
+	_tmp1: Person;
+	_tmp2: Person;
+	_tmp3: specialize TArray<string>;
+	n: string;
+	names: specialize TArray<string>;
+	p: Person;
+	people: specialize TArray<Person>;
 
 begin
-        _tmp0.name := 'Alice';
-        _tmp0.age := 30;
-        _tmp1.name := 'Bob';
-        _tmp1.age := 15;
-        _tmp2.name := 'Charlie';
-        _tmp2.age := 65;
-        people := specialize TArray<Person>([_tmp0, _tmp1, _tmp2]);
-        SetLength(_tmp3, 0);
-        for p in people do
-        begin
-                if not ((p.age >= 18)) then continue;
-                _tmp3 := Concat(_tmp3, [p.name]);
-        end;
-        names := _tmp3;
-        for n in names do
-        begin
-                writeln(n);
-        end;
+	_tmp0.name := 'Alice';
+	_tmp0.age := 30;
+	_tmp1.name := 'Bob';
+	_tmp1.age := 15;
+	_tmp2.name := 'Charlie';
+	_tmp2.age := 65;
+	people := specialize TArray<Person>([_tmp0, _tmp1, _tmp2]);
+	SetLength(_tmp3, 0);
+	for p in people do
+	begin
+		if not ((p.age >= 18)) then continue;
+		_tmp3 := Concat(_tmp3, [p.name]);
+	end;
+	names := _tmp3;
+	for n in names do
+	begin
+		writeln(n);
+	end;
 end.
