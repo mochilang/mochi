@@ -160,29 +160,32 @@ const (
 		"    }\n" +
 		"    return [for (var k in order) groups[k]!];\n" +
 		"}\n"
-	helperFetch = "dynamic _fetch(String url, Map<String,dynamic>? opts) {\n" +
-		"    var args = ['-s'];\n" +
+	helperFetch = "Future<dynamic> _fetch(String url, Map<String,dynamic>? opts) async {\n" +
 		"    var method = opts?['method']?.toString() ?? 'GET';\n" +
-		"    args.addAll(['-X', method]);\n" +
+		"    Uri uri = Uri.parse(url);\n" +
+		"    if (opts?['query'] != null) {\n" +
+		"        var q = (opts!['query'] as Map).map((k,v)=>MapEntry(k.toString(), v.toString()));\n" +
+		"        uri = uri.replace(queryParameters: {...uri.queryParameters, ...q});\n" +
+		"    }\n" +
+		"    var client = HttpClient();\n" +
+		"    if (opts?['timeout'] != null) {\n" +
+		"        var t = Duration(seconds: (opts!['timeout'] is num ? opts['timeout'].round() : int.parse(opts['timeout'].toString())));\n" +
+		"        client.connectionTimeout = t;\n" +
+		"    }\n" +
+		"    var req = await client.openUrl(method, uri);\n" +
 		"    if (opts?['headers'] != null) {\n" +
 		"        for (var e in (opts!['headers'] as Map).entries) {\n" +
-		"            args.addAll(['-H', '${e.key}: ${e.value}']);\n" +
+		"            req.headers.set(e.key.toString(), e.value.toString());\n" +
 		"        }\n" +
 		"    }\n" +
-		"    if (opts?['query'] != null) {\n" +
-		"        var qs = Uri(queryParameters: (opts!['query'] as Map).map((k,v)=>MapEntry(k.toString(), v.toString()))).query;\n" +
-		"        var sep = url.contains('?') ? '&' : '?';\n" +
-		"        url = url + sep + qs;\n" +
-		"    }\n" +
 		"    if (opts != null && opts.containsKey('body')) {\n" +
-		"        args.addAll(['-d', jsonEncode(opts['body'])]);\n" +
+		"        req.headers.contentType = ContentType('application', 'json', charset: 'utf-8');\n" +
+		"        req.write(jsonEncode(opts['body']));\n" +
 		"    }\n" +
-		"    if (opts?['timeout'] != null) {\n" +
-		"        args.addAll(['--max-time', opts!['timeout'].toString()]);\n" +
-		"    }\n" +
-		"    args.add(url);\n" +
-		"    var res = Process.runSync('curl', args);\n" +
-		"    return jsonDecode(res.stdout.toString());\n" +
+		"    var resp = await req.close();\n" +
+		"    var text = await resp.transform(utf8.decoder).join();\n" +
+		"    client.close();\n" +
+		"    return jsonDecode(text);\n" +
 		"}\n"
 	helperLoad = "List<Map<String,dynamic>> _load(String? path, Map<String,dynamic>? opts) {\n" +
 		"    var format = (opts?['format'] ?? 'csv').toString();\n" +
