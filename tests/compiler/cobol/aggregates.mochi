@@ -1,0 +1,7 @@
+let xs = [1, 2, 3]
+let s = sum(xs)
+let a = avg(xs)
+let c = count(xs)
+print s
+print a
+print c

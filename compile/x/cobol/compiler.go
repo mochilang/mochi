@@ -343,20 +343,57 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 	if name == "REDUCE" && len(n.Children) == 3 {
 		return c.compileReduceCall(n.Children[0], n.Children[1], n.Children[2])
 	}
-	if name == "ID" && len(n.Children) == 1 {
-		expr := c.expr(n.Children[0])
-		if isSimpleExpr(n.Children[0]) {
-			return expr
-		}
-		tmp := c.newTemp()
-		c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[0])))
-		if c.isString(n.Children[0]) {
-			c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
-		} else {
-			c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
-		}
-		return tmp
-	}
+        if name == "ID" && len(n.Children) == 1 {
+                expr := c.expr(n.Children[0])
+                if isSimpleExpr(n.Children[0]) {
+                        return expr
+                }
+                tmp := c.newTemp()
+                c.declare(fmt.Sprintf("01 %s %s", tmp, c.picForExpr(n.Children[0])))
+                if c.isString(n.Children[0]) {
+                        c.writeln(fmt.Sprintf("    MOVE %s TO %s", expr, tmp))
+                } else {
+                        c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, expr))
+                }
+                return tmp
+        }
+        if name == "COUNT" && len(n.Children) == 1 {
+                call := &ast.Node{Kind: "call", Value: "len"}
+                call.Children = append(call.Children, n.Children[0])
+                return c.compileCallExpr(call)
+        }
+        if name == "SUM" && len(n.Children) == 1 {
+                zero := &ast.Node{Kind: "int", Value: 0}
+                if c.isFloat(n.Children[0]) {
+                        zero = &ast.Node{Kind: "float", Value: 0.0}
+                }
+                addSel := &ast.Node{Kind: "selector", Value: "add"}
+                call := &ast.Node{Kind: "call", Value: "reduce"}
+                call.Children = append(call.Children, n.Children[0])
+                call.Children = append(call.Children, addSel)
+                call.Children = append(call.Children, zero)
+                return c.compileCallExpr(call)
+        }
+        if name == "AVG" && len(n.Children) == 1 {
+                sumCall := &ast.Node{Kind: "call", Value: "sum"}
+                sumCall.Children = append(sumCall.Children, n.Children[0])
+                sumRes := c.compileCallExpr(sumCall)
+                lenCall := &ast.Node{Kind: "call", Value: "len"}
+                lenCall.Children = append(lenCall.Children, n.Children[0])
+                lenRes := c.compileCallExpr(lenCall)
+                res := c.newTemp()
+                c.declare("01 " + res + " PIC 9(4)V9(4).")
+                c.writeln(fmt.Sprintf("    IF %s = 0", lenRes))
+                c.indent++
+                c.writeln("MOVE 0 TO " + res)
+                c.indent--
+                c.writeln("    ELSE")
+                c.indent++
+                c.writeln(fmt.Sprintf("COMPUTE %s = %s / %s", res, sumRes, lenRes))
+                c.indent--
+                c.writeln("    END-IF")
+                return res
+        }
 	if !ok {
 		return "0"
 	}
