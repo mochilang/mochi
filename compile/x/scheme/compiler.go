@@ -1224,7 +1224,8 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	c.needDataset = true
-	path := "''"
+	// pass an empty string when no path is provided so runtime treats it as stdin
+	path := "\"\""
 	if l.Path != nil {
 		path = strconv.Quote(*l.Path)
 	}
@@ -1245,7 +1246,8 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	path := "''"
+	// pass an empty string when no path is provided so runtime treats it as stdout
+	path := "\"\""
 	if s.Path != nil {
 		path = strconv.Quote(*s.Path)
 	}
