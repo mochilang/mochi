@@ -1,4 +1,4 @@
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 struct Counter {
     value: i64,
 }
@@ -15,4 +15,3 @@ fn main() {
     println!("{}", c.inc());
     println!("{}", c.inc());
 }
-

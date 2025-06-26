@@ -14,4 +14,3 @@ fn main() {
     println!("{}", foo(0));
     println!("{}", foo(3));
 }
-

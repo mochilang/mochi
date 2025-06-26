@@ -15,4 +15,3 @@ fn main() {
     println!("{}", result[(0) as usize]);
     println!("{}", result[(1) as usize]);
 }
-

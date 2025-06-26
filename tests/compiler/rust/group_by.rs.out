@@ -17,7 +17,7 @@ fn main() {
     let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
     for ks in order {
         let g = groups.get(&ks).unwrap().clone();
-        _res.push(std::collections::HashMap::from([(k.to_string(), g.key), (c.to_string(), g.len() as i32)]));
+        _res.push(std::collections::HashMap::from([("k".to_string(), g.key), ("c".to_string(), g.len() as i32)]));
     }
     _res
 }

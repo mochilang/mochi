@@ -10,4 +10,3 @@ fn main() {
     println!("{}", fib(1));
     println!("{}", fib(6));
 }
-

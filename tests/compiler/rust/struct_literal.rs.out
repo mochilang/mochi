@@ -1,10 +1,10 @@
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 struct Person {
     name: String,
     age: i64,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 struct Book {
     title: String,
     author: Person,

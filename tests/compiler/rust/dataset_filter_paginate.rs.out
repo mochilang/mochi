@@ -3,9 +3,8 @@ fn main() {
     let mut res = {
     let mut _res = Vec::new();
     for n in nums {
-        if n > 1 {
-            _res.push(n);
-        }
+        if !(n > 1) { continue; }
+        _res.push(n);
     }
     let mut skip = 1 as usize;
     if skip < _res.len() { _res = _res[skip..].to_vec(); } else { _res = Vec::new(); }
@@ -17,4 +16,3 @@ fn main() {
         println!("{}", v);
     }
 }
-

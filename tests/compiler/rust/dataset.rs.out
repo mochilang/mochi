@@ -1,4 +1,4 @@
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 struct Person {
     name: String,
     age: i64,
@@ -9,9 +9,8 @@ fn main() {
     let mut names = {
     let mut _res = Vec::new();
     for p in people {
-        if p.age >= 18 {
-            _res.push(p.name);
-        }
+        if !(p.age >= 18) { continue; }
+        _res.push(p.name);
     }
     _res
 };
@@ -19,4 +18,3 @@ fn main() {
         println!("{}", n);
     }
 }
-
