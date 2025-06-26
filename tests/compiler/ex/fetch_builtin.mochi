@@ -1,0 +1,10 @@
+ type Msg {
+   message: string
+ }
+
+ let data: Msg = fetch "file://tests/compiler/ex/fetch_builtin.json" with {
+   method: "GET",
+   headers: {"Accept": "application/json"},
+   timeout: 1.0
+ }
+ print(data.message)
