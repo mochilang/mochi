@@ -102,7 +102,7 @@ func TestVM_TPCH(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(files) == 0 {
-		t.Fatalf("no tpch source files: %s", pattern)
+		t.Fatalf("no tpc-h source files: %s", pattern)
 	}
 	found := false
 	for _, src := range files {
@@ -158,7 +158,7 @@ func TestVM_TPCH(t *testing.T) {
 		})
 	}
 	if !found {
-		t.Fatal("no tpch test files")
+		t.Fatal("no tpc-h test files")
 	}
 }
 

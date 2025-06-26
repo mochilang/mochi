@@ -10,6 +10,6 @@ Compilation of `tests/dataset/tpc-h/q1.mochi` with the Racket backend fails with
 3. **Aggregate functions**
    - Ensure `sum`, `avg`, and `count` operate over groups in generated Racket code.
 4. **Golden tests**
-   - After extending the compiler, add `tpch_q1.mochi` to `tests/compiler/rkt` with matching `.out` and `.rkt.out` files.
+   - After extending the compiler, add `tpc-h_q1.mochi` to `tests/compiler/rkt` with matching `.out` and `.rkt.out` files.
 
 Once these features are implemented, the Racket compiler should successfully build and execute TPC-H Q1.

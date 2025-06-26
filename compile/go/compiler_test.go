@@ -178,3 +178,69 @@ func runExample(t *testing.T, i int) {
 		})
 	}
 }
+
+func TestGoCompiler_TPCHQ1(t *testing.T) {
+	root := findRepoRoot(t)
+	src := filepath.Join(root, "tests", "dataset", "tpc-h", "q1.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	code, err := gocode.New(env).Compile(prog)
+	if err != nil {
+		t.Fatalf("compile error: %v", err)
+	}
+
+	codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", "q1.go.out")
+	wantCode, err := os.ReadFile(codeWantPath)
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
+	}
+	if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+		t.Errorf("generated code mismatch for q1.go.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, bytes.TrimSpace(wantCode))
+	}
+
+	dir := t.TempDir()
+	file := filepath.Join(dir, "main.go")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	cmd := exec.Command("go", "run", file)
+	cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("go run error: %v\n%s", err, out)
+	}
+	gotOut := bytes.TrimSpace(out)
+	outWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", "q1.out")
+	wantOut, err := os.ReadFile(outWantPath)
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
+	}
+	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+		t.Errorf("output mismatch for q1.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotOut, bytes.TrimSpace(wantOut))
+	}
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found (not in Go module)")
+	return ""
+}

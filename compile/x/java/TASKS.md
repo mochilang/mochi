@@ -14,6 +14,6 @@ Below is a list of tasks identified while attempting to add support:
    - Ensure `_group_by` and related helpers work with aggregate functions inside
      the `select` clause.
 4. **Add golden tests**
-   - Once compilation succeeds, add `tpch_q1.mochi` to `tests/compiler/java` with
+   - Once compilation succeeds, add `tpc-h_q1.mochi` to `tests/compiler/java` with
      expected Java output and runtime results.
 
