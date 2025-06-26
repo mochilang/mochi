@@ -1,15 +1,15 @@
 import Foundation
 
 func _slice<T>(_ arr: [T], _ i: Int, _ j: Int) -> [T] {
-	var start = i
-	var end = j
-	let n = arr.count
-	if start < 0 { start += n }
-	if end < 0 { end += n }
-	if start < 0 { start = 0 }
-	if end > n { end = n }
-	if end < start { end = start }
-	return Array(arr[start..<end])
+    var start = i
+    var end = j
+    let n = arr.count
+    if start < 0 { start += n }
+    if end < 0 { end += n }
+    if start < 0 { start = 0 }
+    if end > n { end = n }
+    if end < start { end = start }
+    return Array(arr[start..<end])
 }
 
 func main() {

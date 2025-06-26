@@ -11,8 +11,8 @@ func main() {
 	for _ in "ab" {
 		c = c + 1
 	}
-	var m = ["x": 1, "y": 2]
-	for _ in m {
+	var m: [String: Int] = ["x": 1, "y": 2]
+	for _ in m.keys {
 		c = c + 1
 	}
 	print(c)

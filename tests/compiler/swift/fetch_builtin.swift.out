@@ -1,12 +1,12 @@
 import Foundation
 
 func _fetch(_ urlStr: String, _ opts: [String: Any]?) -> Any {
-	guard let url = URL(string: urlStr) else { return [:] }
-	if let data = try? Data(contentsOf: url) {
-		if let obj = try? JSONSerialization.jsonObject(with: data) { return obj }
-		return String(data: data, encoding: .utf8) ?? ""
-	}
-	return [:]
+    guard let url = URL(string: urlStr) else { return [:] }
+    if let data = try? Data(contentsOf: url) {
+        if let obj = try? JSONSerialization.jsonObject(with: data) { return obj }
+        return String(data: data, encoding: .utf8) ?? ""
+    }
+    return [:]
 }
 
 struct Msg {

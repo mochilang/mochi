@@ -1,5 +1,13 @@
 import Foundation
 
+func _index<T>(_ arr: [T], _ i: Int) -> T {
+    var idx = i
+    let n = arr.count
+    if idx < 0 { idx += n }
+    if idx < 0 || idx >= n { fatalError("index out of range") }
+    return arr[idx]
+}
+
 func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
 	let nums = nums
 	let target = target
@@ -7,7 +15,7 @@ func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
 	let n = nums.count
 	for i in 0..<n {
 		for j in i + 1..<n {
-			if nums[i] + nums[j] == target {
+			if _index(nums, i) + _index(nums, j) == target {
 				return [i, j]
 			}
 		}
@@ -16,8 +24,8 @@ func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
 }
 
 func main() {
-	let result = twoSum([2, 7, 11, 15], 9)
-	print(result[0])
-	print(result[1])
+	let result: [Int] = twoSum([2, 7, 11, 15], 9)
+	print(_index(result, 0))
+	print(_index(result, 1))
 }
 main()
