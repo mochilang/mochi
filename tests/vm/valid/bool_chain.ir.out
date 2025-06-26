@@ -1,0 +1,73 @@
+func main (regs=33)
+  // print((1 < 2) && (2 < 3) && (3 < 4))
+  Const        r0, 1
+  Const        r1, 2
+  LessInt      r2, r0, r1
+  Move         r3, r2
+  JumpIfFalse  r3, L0
+  Const        r4, 2
+  Const        r5, 3
+  LessInt      r6, r4, r5
+  Move         r3, r6
+L0:
+  Move         r7, r3
+  JumpIfFalse  r7, L1
+  Const        r8, 3
+  Const        r9, 4
+  LessInt      r10, r8, r9
+  Move         r7, r10
+L1:
+  Print        r7
+  // print((1 < 2) && (2 > 3) && boom())
+  Const        r11, 1
+  Const        r12, 2
+  LessInt      r13, r11, r12
+  Move         r14, r13
+  JumpIfFalse  r14, L2
+  Const        r15, 2
+  Const        r16, 3
+  LessInt      r17, r16, r15
+  Move         r14, r17
+L2:
+  Move         r18, r14
+  JumpIfFalse  r18, L3
+  Call         r19, boom, 
+  Move         r18, r19
+L3:
+  Print        r18
+  // print((1 < 2) && (2 < 3) && (3 > 4) && boom())
+  Const        r20, 1
+  Const        r21, 2
+  LessInt      r22, r20, r21
+  Move         r23, r22
+  JumpIfFalse  r23, L4
+  Const        r24, 2
+  Const        r25, 3
+  LessInt      r26, r24, r25
+  Move         r23, r26
+L4:
+  Move         r27, r23
+  JumpIfFalse  r27, L5
+  Const        r28, 3
+  Const        r29, 4
+  LessInt      r30, r29, r28
+  Move         r27, r30
+L5:
+  Move         r31, r27
+  JumpIfFalse  r31, L6
+  Call         r32, boom, 
+  Move         r31, r32
+L6:
+  Print        r31
+  Return       r0
+
+  // fun boom(): bool {
+func boom (regs=2)
+  // print("boom")
+  Const        r0, "boom"
+  Print        r0
+  // return true
+  Const        r1, true
+  Return       r1
+  Return       r0
+
