@@ -235,7 +235,7 @@ func toInt(v any) (int, bool) {
 
 func builtinSubstring(i *Interpreter, c *parser.CallExpr) (any, error) {
 	if len(c.Args) != 3 {
-		return nil, fmt.Errorf("substring(s, start, end) takes exactly three arguments")
+		return nil, fmt.Errorf("substring(s, start, length) takes exactly three arguments")
 	}
 	val, err := i.evalExpr(c.Args[0])
 	if err != nil {
@@ -249,7 +249,7 @@ func builtinSubstring(i *Interpreter, c *parser.CallExpr) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	endAny, err := i.evalExpr(c.Args[2])
+	lenAny, err := i.evalExpr(c.Args[2])
 	if err != nil {
 		return nil, err
 	}
@@ -257,18 +257,19 @@ func builtinSubstring(i *Interpreter, c *parser.CallExpr) (any, error) {
 	if !ok {
 		return nil, fmt.Errorf("substring() expects int, got %T", startAny)
 	}
-	end, ok := toInt(endAny)
+	length, ok := toInt(lenAny)
 	if !ok {
-		return nil, fmt.Errorf("substring() expects int, got %T", endAny)
+		return nil, fmt.Errorf("substring() expects int, got %T", lenAny)
 	}
 	runes := []rune(str)
 	if start < 0 {
 		start += len(runes)
 	}
-	if end < 0 {
-		end += len(runes)
+	end := start + length
+	if end > len(runes) {
+		end = len(runes)
 	}
-	if start < 0 || end > len(runes) || start > end {
+	if start < 0 || start > end {
 		return nil, fmt.Errorf("invalid substring range")
 	}
 	return string(runes[start:end]), nil

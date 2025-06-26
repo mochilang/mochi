@@ -55,6 +55,7 @@ let result =
     cust_nation: n2.n_name,
     l_year: substring(l.l_shipdate, 0, 4)
   } into g
+  order by [ g.key.supp_nation, g.key.cust_nation, g.key.l_year ]
   select {
     supp_nation: g.key.supp_nation,
     cust_nation: g.key.cust_nation,

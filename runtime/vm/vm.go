@@ -2513,7 +2513,9 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		case "substring":
 			str := fc.compileExpr(p.Call.Args[0])
 			start := fc.compileExpr(p.Call.Args[1])
-			end := fc.compileExpr(p.Call.Args[2])
+			length := fc.compileExpr(p.Call.Args[2])
+			end := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpAddInt, A: end, B: start, C: length})
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpSlice, A: dst, B: str, C: start, D: end})
 			return dst
