@@ -78,27 +78,25 @@ L8:
   Const        r54, "o_orderdate"
   Index        r55, r26, r54
   LessEq       r56, r9, r55
-  Move         r57, r56
-  JumpIfFalse  r57, L5
   // o.o_orderdate < end_date &&
-  Const        r58, "o_orderdate"
-  Index        r59, r26, r58
+  Const        r57, "o_orderdate"
+  Index        r58, r26, r57
+  Less         r59, r58, r11
+  // l.l_returnflag == "R"
+  Const        r60, "l_returnflag"
+  Index        r61, r37, r60
+  Const        r62, "R"
+  Equal        r63, r61, r62
   // where o.o_orderdate >= start_date &&
-  Move         r57, r59
+  Move         r64, r56
+  JumpIfFalse  r64, L5
+  Move         r64, r59
 L5:
   // o.o_orderdate < end_date &&
-  Less         r60, r57, r11
-  Move         r61, r60
-  JumpIfFalse  r61, L6
-  // l.l_returnflag == "R"
-  Const        r62, "l_returnflag"
-  Index        r63, r37, r62
-  // o.o_orderdate < end_date &&
-  Move         r61, r63
+  Move         r65, r64
+  JumpIfFalse  r65, L6
+  Move         r65, r63
 L6:
-  // l.l_returnflag == "R"
-  Const        r64, "R"
-  Equal        r65, r61, r64
   // where o.o_orderdate >= start_date &&
   JumpIfFalse  r65, L4
   // from c in customer

@@ -24,4 +24,3 @@ func main (regs=18)
   Slice        r17, r12, r13, r15
   Print        r17
   Return       r0
-

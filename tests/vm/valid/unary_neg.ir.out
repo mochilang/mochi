@@ -10,4 +10,3 @@ func main (regs=6)
   AddInt       r5, r2, r4
   Print        r5
   Return       r0
-

@@ -4,4 +4,3 @@ func main (regs=2)
   Sum          r1, r0
   Print        r1
   Return       r0
-

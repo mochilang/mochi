@@ -21,4 +21,3 @@ func main (regs=13)
   Len          r12, r11
   Print        r12
   Return       r0
-

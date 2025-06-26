@@ -237,8 +237,6 @@ L19:
   NegInt       r145, r144
   Move         r146, r145
   Const        r147, "key"
-  Index        r148, r133, r147
-  Move         r149, r148
   MakeList     r150, 2, r146
   Move         r151, r150
   // from s in supplier
@@ -264,4 +262,3 @@ L18:
   Equal        r160, r158, r159
   Expect       r160
   Return       r0
-

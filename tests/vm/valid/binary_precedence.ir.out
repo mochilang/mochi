@@ -28,4 +28,3 @@ func main (regs=20)
   MulInt       r19, r15, r18
   Print        r19
   Return       r0
-

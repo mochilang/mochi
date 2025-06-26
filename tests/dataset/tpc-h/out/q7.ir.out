@@ -331,7 +331,6 @@ L20:
   // sort by [supp_nation, cust_nation, l_year]
   Move         r217, r216
   Move         r219, r218
-  Move         r221, r220
   MakeList     r222, 3, r217
   Move         r223, r222
   // from l in lineitem
