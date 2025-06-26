@@ -1625,13 +1625,55 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	return fmt.Sprintf("_fetch(%s)", urlStr), nil
 }
 
+func formatOption(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
+		return ""
+	}
+	for _, it := range u.Value.Target.Map.Items {
+		if name, ok := selectorName(it.Key); ok && name == "format" {
+			if it.Value != nil && it.Value.Binary != nil && len(it.Value.Binary.Right) == 0 {
+				if lit := it.Value.Binary.Left.Value.Target.Lit; lit != nil && lit.Str != nil {
+					return *lit.Str
+				}
+			}
+		}
+	}
+	return ""
+}
+
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	path := "\"\""
 	if l.Path != nil {
 		path = fmt.Sprintf("%q", *l.Path)
 	}
-	c.use("_load")
-	return fmt.Sprintf("_load(%s)", path), nil
+	typ := "integer"
+	if l.Type != nil {
+		if l.Type.Simple != nil {
+			if _, ok := c.env.GetStruct(*l.Type.Simple); ok {
+				typ = sanitizeName(*l.Type.Simple)
+			} else {
+				typ = c.typeRef(l.Type)
+			}
+		} else {
+			typ = c.typeRef(l.Type)
+		}
+	}
+	fmtOpt := formatOption(l.With)
+	switch fmtOpt {
+	case "json":
+		c.use("_loadJSON")
+		return fmt.Sprintf("specialize _loadJSON<%s>(%s)", typ, path), nil
+	case "jsonl":
+		c.use("_loadJSONL")
+		return fmt.Sprintf("specialize _loadJSONL<%s>(%s)", typ, path), nil
+	default:
+		c.use("_load")
+		return fmt.Sprintf("_load(%s)", path), nil
+	}
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
@@ -1643,8 +1685,18 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	if s.Path != nil {
 		path = fmt.Sprintf("%q", *s.Path)
 	}
-	c.use("_save")
-	return fmt.Sprintf("_save(%s, %s)", src, path), nil
+	fmtOpt := formatOption(s.With)
+	switch fmtOpt {
+	case "json":
+		c.use("_saveJSON")
+		return fmt.Sprintf("_saveJSON(%s, %s)", src, path), nil
+	case "jsonl":
+		c.use("_saveJSONL")
+		return fmt.Sprintf("_saveJSONL(%s, %s)", src, path), nil
+	default:
+		c.use("_save")
+		return fmt.Sprintf("_save(%s, %s)", src, path), nil
+	}
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
@@ -1840,6 +1892,132 @@ func (c *Compiler) emitHelpers() {
 			c.indent--
 			c.writeln("finally")
 			c.indent++
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_loadJSON":
+			c.writeln("generic function _loadJSON<T>(path: string): specialize TArray<T>;")
+			c.writeln("var sl: TStringList; data: TJSONData; arr: TJSONArray; i: Integer; ds: TJSONDeStreamer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("try")
+			c.indent++
+			c.writeln("sl.LoadFromFile(path);")
+			c.writeln("data := GetJSON(sl.Text);")
+			c.writeln("if data.JSONType = jtArray then")
+			c.indent++
+			c.writeln("arr := TJSONArray(data)")
+			c.indent--
+			c.writeln("else")
+			c.indent++
+			c.writeln("arr := TJSONArray.Create([data]);")
+			c.indent--
+			c.writeln("SetLength(Result, arr.Count);")
+			c.writeln("ds := TJSONDeStreamer.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("for i := 0 to arr.Count - 1 do")
+			c.indent++
+			c.writeln("ds.JSONToObject(arr.Objects[i], @Result[i], TypeInfo(T));")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("ds.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_loadJSONL":
+			c.writeln("generic function _loadJSONL<T>(path: string): specialize TArray<T>;")
+			c.writeln("var sl: TStringList; i: Integer; ds: TJSONDeStreamer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("try")
+			c.indent++
+			c.writeln("sl.LoadFromFile(path);")
+			c.writeln("SetLength(Result, sl.Count);")
+			c.writeln("ds := TJSONDeStreamer.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("for i := 0 to sl.Count - 1 do")
+			c.indent++
+			c.writeln("ds.JSONToObject(GetJSON(sl[i]), @Result[i], TypeInfo(T));")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("ds.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_saveJSON":
+			c.writeln("generic procedure _saveJSON<T>(data: specialize TArray<T>; path: string);")
+			c.writeln("var sl: TStringList; i: Integer; ds: TJSONStreamer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("ds := TJSONStreamer.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("sl.Add('[');")
+			c.writeln("for i := 0 to High(data) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl.Add(ds.ObjectToJSONString(@data[i], TypeInfo(T)));")
+			c.writeln("if i < High(data) then sl[sl.Count-1] := sl[sl.Count-1] + ',';")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("sl.Add(']');")
+			c.writeln("sl.SaveToFile(path);")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("ds.Free;")
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_saveJSONL":
+			c.writeln("generic procedure _saveJSONL<T>(data: specialize TArray<T>; path: string);")
+			c.writeln("var sl: TStringList; i: Integer; ds: TJSONStreamer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("ds := TJSONStreamer.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("for i := 0 to High(data) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl.Add(ds.ObjectToJSONString(@data[i], TypeInfo(T)));")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("sl.SaveToFile(path);")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("ds.Free;")
 			c.writeln("sl.Free;")
 			c.indent--
 			c.writeln("end;")
