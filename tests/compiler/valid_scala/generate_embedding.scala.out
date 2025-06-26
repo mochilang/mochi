@@ -1,9 +1,9 @@
 object Main {
 	def main(args: Array[String]): Unit = {
-		val vec = _genEmbed("hi", "", Map[String, Any]())
+		val vec: scala.collection.mutable.ArrayBuffer[Double] = _genEmbed("hi", "", Map[String, Any]())
 		println(vec.length)
 	}
-	def _genEmbed(text: String, model: String, params: Map[String, Any]): Seq[Double] = {
-		text.map(c => c.toDouble)
-	}
+}
+def _genEmbed(text: String, model: String, params: Map[String, Any]): Seq[Double] = {
+        text.map(c => c.toDouble)
 }
