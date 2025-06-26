@@ -70,11 +70,18 @@ func cTypeFromType(t types.Type) string {
 		if elem == "list_int" {
 			return "list_list_int"
 		}
+		if elem == "_GroupInt" {
+			return "list_group_int"
+		}
 	case types.MapType:
 		if _, ok := tt.Key.(types.IntType); ok {
 			if _, ok2 := tt.Value.(types.BoolType); ok2 {
 				return "map_int_bool"
 			}
+		}
+	case types.GroupType:
+		if _, ok := tt.Elem.(types.IntType); ok {
+			return "_GroupInt"
 		}
 	case types.FuncType:
 		ret := cTypeFromType(tt.Return)
@@ -168,4 +175,22 @@ func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 		}
 	}
 	return types.AnyType{}
+}
+
+func identName(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
 }

@@ -914,6 +914,52 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 // supports optional `sort by`, `skip` and `take` clauses in addition to basic
 // `from`/`where`/`select`. Joins and grouping remain unimplemented.
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		if name, ok := identName(q.Group.Exprs[0]); ok && name == q.Var {
+			src := c.compileExpr(q.Source)
+			srcT := c.exprType(q.Source)
+			if lt, ok := srcT.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.IntType); ok {
+					c.need(needGroupByInt)
+					groups := c.newTemp()
+					c.writeln(fmt.Sprintf("list_group_int %s = _group_by_int(%s);", groups, src))
+					oldEnv := c.env
+					if c.env != nil {
+						genv := types.NewEnv(c.env)
+						genv.SetVar(q.Group.Name, types.GroupType{Elem: lt.Elem}, true)
+						c.env = genv
+					}
+					val := c.compileExpr(q.Select)
+					retT := c.exprType(q.Select)
+					retList := types.ListType{Elem: retT}
+					listC := cTypeFromType(retList)
+					if listC == "list_string" {
+						c.need(needListString)
+					} else if listC == "list_float" {
+						c.need(needListFloat)
+					} else if listC == "list_list_int" {
+						c.need(needListListInt)
+					}
+					res := c.newTemp()
+					idx := c.newTemp()
+					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, res, listC, groups))
+					c.writeln(fmt.Sprintf("int %s = 0;", idx))
+					c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", groups))
+					c.indent++
+					c.writeln(fmt.Sprintf("_GroupInt %s = %s.data[i];", sanitizeName(q.Group.Name), groups))
+					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+					c.writeln(fmt.Sprintf("%s++;", idx))
+					c.indent--
+					c.writeln("}")
+					c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+					if c.env != nil {
+						c.env = oldEnv
+					}
+					return res
+				}
+			}
+		}
+	}
 	// only handle simple queries without joins or grouping
 	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
 		return "0"
@@ -1635,7 +1681,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			return ""
 		} else if p.Call.Func == "count" {
+			t := c.exprType(p.Call.Args[0])
 			arg := c.compileExpr(p.Call.Args[0])
+			if _, ok := t.(types.GroupType); ok {
+				c.need(needCount)
+				return fmt.Sprintf("_count(%s.items)", arg)
+			}
 			c.need(needCount)
 			return fmt.Sprintf("_count(%s)", arg)
 		} else if p.Call.Func == "sum" {
@@ -1752,6 +1803,18 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 		}
 	}
 	for _, f := range s.Tail {
+		if gt, ok := typ.(types.GroupType); ok {
+			if f == "key" {
+				expr += ".key"
+				typ = gt.Elem
+				continue
+			}
+			if f == "items" {
+				expr += ".items"
+				typ = types.ListType{Elem: gt.Elem}
+				continue
+			}
+		}
 		if ut, ok := typ.(types.UnionType); ok {
 			var variant string
 			var ft types.Type
