@@ -48,6 +48,7 @@ func sanitizeName(name string) string {
 }
 
 type Compiler struct {
+	structLits    map[*parser.MapLiteral]types.StructType
 	buf           bytes.Buffer
 	indent        int
 	tmp           int
@@ -63,6 +64,7 @@ type Compiler struct {
 func New(env *types.Env) *Compiler {
 	return &Compiler{
 		env:           env,
+		structLits:    map[*parser.MapLiteral]types.StructType{},
 		lambdas:       []string{},
 		needs:         map[string]bool{},
 		structs:       map[string]bool{},
@@ -502,6 +504,27 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 	return nil
 }
 
+func (c *Compiler) compileStructType(st types.StructType) {
+	name := sanitizeName(st.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln("typedef struct {")
+	c.indent++
+	for _, fn := range st.Order {
+		ft := st.Fields[fn]
+		c.writeln(fmt.Sprintf("%s %s;", cTypeFromType(ft), sanitizeName(fn)))
+	}
+	c.indent--
+	c.writeln(fmt.Sprintf("}%s;", name))
+	for _, ft := range st.Fields {
+		if sub, ok := ft.(types.StructType); ok {
+			c.compileStructType(sub)
+		}
+	}
+}
+
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Fun != nil:
@@ -612,6 +635,20 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		t = resolveTypeRef(stmt.Type, c.env)
 	} else if stmt.Value != nil {
 		t = c.exprType(stmt.Value)
+		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+			if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
+				t = types.ListType{Elem: st}
+				if c.env != nil {
+					c.env.SetStruct(st.Name, st)
+				}
+				c.compileStructType(st)
+				for _, el := range ll.Elems {
+					if ml := el.Binary.Left.Value.Target.Map; ml != nil {
+						c.structLits[ml] = st
+					}
+				}
+			}
+		}
 	}
 	if t == nil {
 		t = types.IntType{}
@@ -675,6 +712,20 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		t = resolveTypeRef(stmt.Type, c.env)
 	} else if stmt.Value != nil {
 		t = c.exprType(stmt.Value)
+		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+			if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
+				t = types.ListType{Elem: st}
+				if c.env != nil {
+					c.env.SetStruct(st.Name, st)
+				}
+				c.compileStructType(st)
+				for _, el := range ll.Elems {
+					if ml := el.Binary.Left.Value.Target.Map; ml != nil {
+						c.structLits[ml] = st
+					}
+				}
+			}
+		}
 	}
 	if t == nil {
 		t = types.IntType{}
@@ -1607,6 +1658,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		}
 		return name
 	case p.Map != nil:
+		if st, ok := c.structLits[p.Map]; ok {
+			parts := make([]string, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				key, _ := types.SimpleStringKey(it.Key)
+				v := c.compileExpr(it.Value)
+				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), v)
+			}
+			return fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+		}
 		name := c.newTemp()
 		c.need(needMapIntBool)
 		c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(%d);", name, len(p.Map.Items)))
@@ -2439,4 +2499,67 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 	} else {
 		c.writeln(fmt.Sprintf("_json_int(%s);", argExpr))
 	}
+}
+
+func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (types.StructType, bool) {
+	if ll == nil || len(ll.Elems) == 0 {
+		return types.StructType{}, false
+	}
+	first := ll.Elems[0]
+	if first.Binary == nil || len(first.Binary.Right) != 0 {
+		return types.StructType{}, false
+	}
+	fm := first.Binary.Left.Value.Target.Map
+	if fm == nil {
+		return types.StructType{}, false
+	}
+	fields := map[string]types.Type{}
+	order := make([]string, len(fm.Items))
+	for i, it := range fm.Items {
+		key, ok := types.SimpleStringKey(it.Key)
+		if !ok {
+			return types.StructType{}, false
+		}
+		order[i] = key
+		fields[key] = types.ExprType(it.Value, c.env)
+	}
+	for _, el := range ll.Elems[1:] {
+		if el.Binary == nil || len(el.Binary.Right) != 0 {
+			return types.StructType{}, false
+		}
+		ml := el.Binary.Left.Value.Target.Map
+		if ml == nil || len(ml.Items) != len(order) {
+			return types.StructType{}, false
+		}
+		for i, it := range ml.Items {
+			key, ok := types.SimpleStringKey(it.Key)
+			if !ok || key != order[i] {
+				return types.StructType{}, false
+			}
+			t := types.ExprType(it.Value, c.env)
+			if !equalTypes(fields[key], t) {
+				return types.StructType{}, false
+			}
+		}
+	}
+	stName := sanitizeName(name) + "Item"
+	idx := 1
+	base := stName
+	for {
+		if c.structs[stName] {
+			stName = fmt.Sprintf("%s%d", base, idx)
+			idx++
+		} else if c.env != nil {
+			if _, ok := c.env.GetStruct(stName); ok {
+				stName = fmt.Sprintf("%s%d", base, idx)
+				idx++
+			} else {
+				break
+			}
+		} else {
+			break
+		}
+	}
+	st := types.StructType{Name: stName, Fields: fields, Order: order}
+	return st, true
 }
