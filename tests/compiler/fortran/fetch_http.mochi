@@ -1,0 +1,2 @@
+let body = fetch "https://jsonplaceholder.typicode.com/todos/1"
+print(len(body) > 0)
