@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/types"
@@ -17,29 +18,75 @@ import (
 
 // Compiler translates a Mochi AST into TypeScript source code that can be run with Deno.
 type Compiler struct {
-	buf          bytes.Buffer
-	indent       int
-	helpers      map[string]bool
-	imports      map[string]string
-	env          *types.Env
-	structs      map[string]bool
-	agents       map[string]bool
-	handlerCount int
-	packages     map[string]bool
-	root         string
+	buf           bytes.Buffer
+	indent        int
+	helpers       map[string]bool
+	imports       map[string]string
+	env           *types.Env
+	structs       map[string]bool
+	agents        map[string]bool
+	handlerCount  int
+	packages      map[string]bool
+	root          string
+	pretty        bool
+	includeSource bool
+	sources       map[string][]string
 }
 
 // New creates a new TypeScript compiler instance.
 func New(env *types.Env, root string) *Compiler {
 	return &Compiler{
-		helpers:  make(map[string]bool),
-		imports:  make(map[string]string),
-		env:      env,
-		structs:  make(map[string]bool),
-		agents:   make(map[string]bool),
-		packages: make(map[string]bool),
-		root:     root,
+		helpers:       make(map[string]bool),
+		imports:       make(map[string]string),
+		env:           env,
+		structs:       make(map[string]bool),
+		agents:        make(map[string]bool),
+		packages:      make(map[string]bool),
+		root:          root,
+		pretty:        false,
+		includeSource: true,
+		sources:       make(map[string][]string),
 	}
+}
+
+// EnablePretty configures the compiler to format generated code using Deno.
+func (c *Compiler) EnablePretty() {
+	c.pretty = true
+}
+
+// DisableSourceComments prevents the compiler from embedding the original Mochi
+// source as comments in the generated code.
+func (c *Compiler) DisableSourceComments() { c.includeSource = false }
+
+func (c *Compiler) sourceLine(pos lexer.Position) string {
+	if pos.Filename == "" || pos.Line <= 0 {
+		return ""
+	}
+	lines, ok := c.sources[pos.Filename]
+	if !ok {
+		data, err := os.ReadFile(pos.Filename)
+		if err != nil {
+			return ""
+		}
+		lines = strings.Split(strings.ReplaceAll(string(data), "\r\n", "\n"), "\n")
+		c.sources[pos.Filename] = lines
+	}
+	if pos.Line-1 < 0 || pos.Line-1 >= len(lines) {
+		return ""
+	}
+	return strings.TrimSpace(lines[pos.Line-1])
+}
+
+func (c *Compiler) commentSource(pos lexer.Position) {
+	if !c.includeSource {
+		return
+	}
+	line := c.sourceLine(pos)
+	if line == "" {
+		return
+	}
+	c.writeIndent()
+	c.buf.WriteString("// > " + line + "\n")
 }
 
 func containsStreamCode(stmts []*parser.Statement) bool {
@@ -325,12 +372,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("main()")
 	}
 	c.writeln("")
-	return c.buf.Bytes(), nil
+	raw := bytes.TrimSpace(c.buf.Bytes())
+	out := raw
+	if c.pretty {
+		if formatted, err := formatWithDeno(raw); err == nil {
+			out = bytes.TrimSpace(formatted)
+		}
+	}
+	return out, nil
 }
 
 // --- Statement Compilation ---
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
+	c.commentSource(s.Pos)
 	switch {
 	case s.Let != nil:
 		return c.compileLet(s.Let)
@@ -571,6 +626,7 @@ func (c *Compiler) compileFetchStmt(f *parser.FetchStmt) error {
 }
 
 func (c *Compiler) compileAgentDecl(a *parser.AgentDecl) error {
+	c.commentSource(a.Pos)
 	st, ok := c.env.GetStruct(a.Name)
 	if !ok {
 		return fmt.Errorf("unknown agent: %s", a.Name)
@@ -677,6 +733,7 @@ func (c *Compiler) compileAgentDecl(a *parser.AgentDecl) error {
 }
 
 func (c *Compiler) compileAgentIntent(agentName string, env *types.Env, in *parser.IntentDecl) error {
+	c.commentSource(in.Pos)
 	name := sanitizeName(in.Name)
 	c.writeIndent()
 	c.buf.WriteString(name + "(")
@@ -705,6 +762,7 @@ func (c *Compiler) compileAgentIntent(agentName string, env *types.Env, in *pars
 }
 
 func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.OnHandler, id int) (string, error) {
+	c.commentSource(h.Pos)
 	st, ok := c.env.GetStream(h.Stream)
 	if !ok {
 		return "", fmt.Errorf("unknown stream: %s", h.Stream)
@@ -733,6 +791,7 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	c.commentSource(t.Pos)
 	name := sanitizeName(t.Name)
 
 	if len(t.Variants) > 0 {
@@ -913,6 +972,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
+	c.commentSource(fun.Pos)
 	name := sanitizeName(fun.Name)
 	c.writeIndent()
 	c.buf.WriteString("function " + name + "(")
@@ -997,6 +1057,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
+	c.commentSource(t.Pos)
 	name := "test_" + sanitizeName(t.Name)
 	c.writeIndent()
 	c.buf.WriteString("function " + name + "(): void {\n")

@@ -1,6 +1,7 @@
 package tscode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -60,4 +61,19 @@ func ensureDeno() error {
 		}
 	}
 	return fmt.Errorf("failed to install deno")
+}
+
+// formatWithDeno runs `deno fmt` to format TypeScript source.
+func formatWithDeno(src []byte) ([]byte, error) {
+	if err := ensureDeno(); err != nil {
+		return nil, err
+	}
+	cmd := exec.Command("deno", "fmt", "--ext", "ts", "-")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+	return out.Bytes(), nil
 }
