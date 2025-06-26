@@ -70,6 +70,20 @@ const (
 		"  return sum;\n" +
 		"}\n"
 
+	helperJSON = "function _json(v: any): string {\n" +
+		"  function _sort(x: any): any {\n" +
+		"    if (Array.isArray(x)) return x.map(_sort);\n" +
+		"    if (x && typeof x === 'object') {\n" +
+		"      const keys = Object.keys(x).sort();\n" +
+		"      const o: any = {};\n" +
+		"      for (const k of keys) o[k] = _sort(x[k]);\n" +
+		"      return o;\n" +
+		"    }\n" +
+		"    return x;\n" +
+		"  }\n" +
+		"  return JSON.stringify(_sort(v));\n" +
+		"}\n"
+
 	helperMin = "function _min(v: any): number {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
@@ -451,6 +465,7 @@ var helperMap = map[string]string{
 	"_agent":       helperAgent,
 	"_query":       helperQuery,
 	"_dataset":     helperDataset,
+	"_json":        helperJSON,
 }
 
 func (c *Compiler) use(name string) {

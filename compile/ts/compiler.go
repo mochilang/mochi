@@ -376,6 +376,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s", name, value))
 	}
+	c.writeln(fmt.Sprintf(";(globalThis as any).%s = %s", name, name))
 	return nil
 }
 
@@ -415,6 +416,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s", name, value))
 	}
+	c.writeln(fmt.Sprintf(";(globalThis as any).%s = %s", name, name))
 	return nil
 }
 
@@ -1325,7 +1327,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		// and the interpreter which return nanoseconds.
 		return "performance.now() * 1000000", nil
 	case "json":
-		return fmt.Sprintf("console.log(JSON.stringify(%s))", argStr), nil
+		c.use("_json")
+		return fmt.Sprintf("console.log(_json(%s))", argStr), nil
 	default:
 		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 	}
@@ -1555,8 +1558,21 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
+// compileIterExpr compiles an expression expected to be iterated over. If the
+// expression evaluates to a group value, its underlying item slice is used.
+func (c *Compiler) compileIterExpr(e *parser.Expr) (string, error) {
+	expr, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	if _, ok := c.inferExprType(e).(types.GroupType); ok {
+		expr += ".items"
+	}
+	return expr, nil
+}
+
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	src, err := c.compileExpr(q.Source)
+	src, err := c.compileIterExpr(q.Source)
 	if err != nil {
 		return "", err
 	}
@@ -1661,7 +1677,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = child
 		fromSrcs := make([]string, len(q.Froms))
 		for i, f := range q.Froms {
-			fs, err := c.compileExpr(f.Src)
+			fs, err := c.compileIterExpr(f.Src)
 			if err != nil {
 				c.env = orig
 				return "", err
@@ -1671,7 +1687,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		joinSrcs := make([]string, len(q.Joins))
 		joinOns := make([]string, len(q.Joins))
 		for i, j := range q.Joins {
-			js, err := c.compileExpr(j.Src)
+			js, err := c.compileIterExpr(j.Src)
 			if err != nil {
 				c.env = orig
 				return "", err
@@ -1693,7 +1709,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			genv := types.NewEnv(child)
-			genv.SetVar(q.Group.Name, types.AnyType{}, true)
+			genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
 			c.env = genv
 			val, err = c.compileExpr(q.Select)
 			if err != nil {
@@ -1773,7 +1789,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if q.Sort != nil {
 			if group {
 				genv := types.NewEnv(child)
-				genv.SetVar(q.Group.Name, types.AnyType{}, true)
+				genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
 				c.env = genv
 			}
 			sortExpr, err = c.compileExpr(q.Sort)
@@ -1859,7 +1875,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.env = child
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
-		fs, err := c.compileExpr(f.Src)
+		fs, err := c.compileIterExpr(f.Src)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1871,7 +1887,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	joinOns := make([]string, len(q.Joins))
 	paramCopy := append([]string(nil), varNames...)
 	for i, j := range q.Joins {
-		js, err := c.compileExpr(j.Src)
+		js, err := c.compileIterExpr(j.Src)
 		if err != nil {
 			c.env = orig
 			return "", err
@@ -1894,7 +1910,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
 		c.env = genv
 		val, err = c.compileExpr(q.Select)
 		if err != nil {
@@ -1920,7 +1936,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Sort != nil {
 		if q.Group != nil {
 			genv := types.NewEnv(child)
-			genv.SetVar(q.Group.Name, types.AnyType{}, true)
+			genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
 			c.env = genv
 		}
 		sortExpr, err = c.compileExpr(q.Sort)
