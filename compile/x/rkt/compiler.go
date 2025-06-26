@@ -20,7 +20,7 @@ const datasetHelpers = `(define (_fetch url opts)
   (when (hash-has-key? opts 'query)
     (define q (hash-ref opts 'query))
     (define qs (string-join (for/list ([k (hash-keys q)]) (format "~a=~a" k (hash-ref q k))) "&"))
-    (set! url (string-append url (if (regexp-match? #px"\?" url) "&" "?") qs)))
+    (set! url (string-append url (if (regexp-match? #px"\\?" url) "&" "?") qs)))
   (when (hash-has-key? opts 'body)
     (set! args (append args (list "-d" (jsexpr->string (hash-ref opts 'body))))) )
   (when (hash-has-key? opts 'timeout)
@@ -108,6 +108,7 @@ type Compiler struct {
 	needsDataset bool
 	needsSetOps  bool
 	needsMatch   bool
+	needsSum     bool
 	needsLLM     bool
 	needsJSON    bool
 	imports      []string
@@ -233,6 +234,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("  (let ([n (count x)])")
 	c.writeln("    (if (= n 0) 0")
 	c.writeln("        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))")
+	if c.needsSum {
+		c.writeln("(define (sum x)")
+		c.writeln("  (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))))")
+	}
 	c.writeln("")
 	c.writeln("(define (expect cond) (unless cond (error \"expect failed\")))")
 	c.writeln(";dataset-placeholder")
@@ -1013,6 +1018,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		name = "count"
 	case "avg":
 		name = "avg"
+	case "sum":
+		name = "sum"
+		c.needsSum = true
 	case "input":
 		name = "read-line"
 	case "now":
@@ -1033,6 +1041,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		v, err := c.compileExpr(a)
 		if err != nil {
 			return "", err
+		}
+		if i == 0 && (call.Func == "count" || call.Func == "avg" || call.Func == "sum") {
+			if _, ok := c.exprType(a).(types.GroupType); ok {
+				v = fmt.Sprintf("(_Group-Items %s)", v)
+			}
 		}
 		args[i] = v
 	}
@@ -1216,7 +1229,7 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
 		src, err := c.compileExpr(q.Source)
 		if err != nil {
 			return "", err
@@ -1225,6 +1238,37 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, types.AnyType{}, true)
 		c.env = child
+
+		var whereExpr, sortExpr, skipExpr, takeExpr string
+		if q.Where != nil {
+			whereExpr, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Sort != nil {
+			sortExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Skip != nil {
+			skipExpr, err = c.compileExpr(q.Skip)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Take != nil {
+			takeExpr, err = c.compileExpr(q.Take)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
@@ -1239,9 +1283,31 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		c.env = orig
+
 		c.needsDataset = true
-		return fmt.Sprintf("(map (lambda (%s) %s) (_group_by %s (lambda (%s) %s)))",
-			sanitizeName(q.Group.Name), valExpr, src, sanitizeName(q.Var), keyExpr), nil
+
+		var b strings.Builder
+		b.WriteString(fmt.Sprintf("(let ([_src %s])\n", src))
+		if whereExpr != "" {
+			b.WriteString(fmt.Sprintf("  (set! _src (filter (lambda (%s) %s) _src))\n", sanitizeName(q.Var), whereExpr))
+		}
+		if sortExpr != "" {
+			b.WriteString("  (set! _src (map cdr (sort (map (lambda (x) (cons " + sortExpr + " x)) _src) (lambda (a b)\n" +
+				"    (let ([ak (car a)] [bk (car b)])\n" +
+				"      (cond [(and (number? ak) (number? bk)) (< ak bk)]\n" +
+				"            [(and (string? ak) (string? bk)) (string<? ak bk)]\n" +
+				"            [else (string<? (format \"~a\" ak) (format \"~a\" bk))])))\n" +
+				"    #:key car)))\n")
+		}
+		if skipExpr != "" {
+			b.WriteString(fmt.Sprintf("  (set! _src (drop _src %s))\n", skipExpr))
+		}
+		if takeExpr != "" {
+			b.WriteString(fmt.Sprintf("  (set! _src (take _src %s))\n", takeExpr))
+		}
+		b.WriteString(fmt.Sprintf("  (map (lambda (%s) %s) (_group_by _src (lambda (%s) %s)))\n", sanitizeName(q.Group.Name), valExpr, sanitizeName(q.Var), keyExpr))
+		b.WriteString(")")
+		return b.String(), nil
 	}
 	if q.Group != nil {
 		return "", fmt.Errorf("group clause not supported")
