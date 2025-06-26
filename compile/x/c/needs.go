@@ -47,5 +47,6 @@ const (
 	needPrintListFloat       = "print_list_float"
 	needPrintListString      = "print_list_string"
 	needPrintListListInt     = "print_list_list_int"
+	needGroupByInt           = "group_by_int"
 	needStringHeader         = "string_h"
 )

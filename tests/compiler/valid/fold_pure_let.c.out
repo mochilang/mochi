@@ -8,13 +8,13 @@ static list_int list_int_create(int len) {
     l.data = (int*)malloc(sizeof(int)*len);
     return l;
 }
-int sum(int n){
+int sumN(int n){
 	return ((n * ((n + 1))) / 2);
 }
 
 int main() {
 	int n = 10;
-	printf("%d\n", sum(n));
+	printf("%d\n", sumN(n));
 	printf("%d\n", n);
 	return 0;
 }

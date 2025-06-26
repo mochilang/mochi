@@ -60,6 +60,27 @@ static int map_int_bool_contains(map_int_bool m, int key) {
     return 0;
 }`
 
+	helperGroupByInt = `typedef struct { int key; list_int items; } _GroupInt;
+typedef struct { int len; int cap; _GroupInt* data; } list_group_int;
+static list_group_int _group_by_int(list_int src) {
+    list_group_int res; res.len = 0; res.cap = 0; res.data = NULL;
+    for (int i=0; i<src.len; i++) {
+        int key = src.data[i];
+        int idx = -1;
+        for (int j=0; j<res.len; j++) if (res.data[j].key == key) { idx = j; break; }
+        if (idx == -1) {
+            if (res.len >= res.cap) { res.cap = res.cap ? res.cap*2 : 4; res.data = (_GroupInt*)realloc(res.data, sizeof(_GroupInt)*res.cap); }
+            res.data[res.len].key = key;
+            res.data[res.len].items = list_int_create(0);
+            idx = res.len++;
+        }
+        _GroupInt* g = &res.data[idx];
+        g->items.data = (int*)realloc(g->items.data, sizeof(int)*(g->items.len+1));
+        g->items.data[g->items.len++] = src.data[i];
+    }
+    return res;
+}`
+
 	helperConcatListInt = `static list_int concat_list_int(list_int a, list_int b) {
     list_int r = list_int_create(a.len + b.len);
     for (int i = 0; i < a.len; i++) r.data[i] = a.data[i];
@@ -512,6 +533,7 @@ var helperCode = map[string]string{
 	needPrintListFloat:       helperPrintListFloat,
 	needPrintListString:      helperPrintListString,
 	needPrintListListInt:     helperPrintListListInt,
+	needGroupByInt:           helperGroupByInt,
 }
 
 var helperOrder = []string{
@@ -560,6 +582,7 @@ var helperOrder = []string{
 	needPrintListFloat,
 	needPrintListString,
 	needPrintListListInt,
+	needGroupByInt,
 }
 
 func (c *Compiler) emitRuntime() {
