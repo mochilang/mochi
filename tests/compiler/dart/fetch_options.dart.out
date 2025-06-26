@@ -1,0 +1,43 @@
+import 'dart:io';
+import 'dart:convert';
+
+class Msg {
+	String message;
+	Msg({required this.message});
+	factory Msg.fromJson(Map<String,dynamic> m) {
+		return Msg(message: m['message'] as String);
+	}
+}
+_structParsers['Msg'] = (m) => Msg.fromJson(m);
+
+void main() {
+	Msg data = _fetch("file://tests/compiler/dart/fetch_options.json", {"method": "GET", "headers": {"User-Agent": "Mochi"}, "query": {"q": "foo"}, "body": {"foo": true}, "timeout": 5});
+	print(data.message);
+}
+
+dynamic _fetch(String url, Map<String,dynamic>? opts) {
+    var args = ['-s'];
+    var method = opts?['method']?.toString() ?? 'GET';
+    args.addAll(['-X', method]);
+    if (opts?['headers'] != null) {
+        for (var e in (opts!['headers'] as Map).entries) {
+            args.addAll(['-H', '${e.key}: ${e.value}']);
+        }
+    }
+    if (opts?['query'] != null) {
+        var qs = Uri(queryParameters: (opts!['query'] as Map).map((k,v)=>MapEntry(k.toString(), v.toString()))).query;
+        var sep = url.contains('?') ? '&' : '?';
+        url = url + sep + qs;
+    }
+    if (opts != null && opts.containsKey('body')) {
+        args.addAll(['-d', jsonEncode(opts['body'])]);
+    }
+    if (opts?['timeout'] != null) {
+        args.addAll(['--max-time', opts!['timeout'].toString()]);
+    }
+    args.add(url);
+    var res = Process.runSync('curl', args);
+    return jsonDecode(res.stdout.toString());
+}
+
+
