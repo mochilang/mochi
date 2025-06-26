@@ -316,7 +316,37 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("_ -> get")
 		c.indent--
 		c.writeln("end,")
-		c.writeln("case httpc:request(Method, {Url, []}, [], []) of")
+		c.writeln("Query = maps:get(query, Opts, undefined),")
+		c.writeln("Url1 = case Query of")
+		c.indent++
+		c.writeln("undefined -> Url;")
+		c.writeln("Q ->")
+		c.indent++
+		c.writeln("Pairs = [ K ++ \"=\" ++ lists:flatten(io_lib:format(\"~p\", [V])) || {K,V} <- maps:to_list(Q) ],")
+		c.writeln("Sep = case lists:member($?, Url) of true -> \"&\"; false -> \"?\" end,")
+		c.writeln("Url ++ Sep ++ string:join(Pairs, \"&\")")
+		c.indent--
+		c.writeln("end,")
+		c.indent--
+		c.writeln("HeadersMap = maps:get(headers, Opts, #{}),")
+		c.writeln("Headers = [ {K, case V of B when is_binary(V) -> binary_to_list(V); _ -> lists:flatten(io_lib:format(\"~p\", [V])) end} || {K,V} <- maps:to_list(HeadersMap) ],")
+		c.writeln("BodyOpt = maps:get(body, Opts, undefined),")
+		c.writeln("Req = case BodyOpt of")
+		c.indent++
+		c.writeln("undefined -> {Url1, Headers};")
+		c.writeln("B -> {Url1, Headers, \"application/json\", list_to_binary(mochi_to_json(B))}")
+		c.indent--
+		c.writeln("end,")
+		c.writeln("TimeoutOpt = maps:get(timeout, Opts, undefined),")
+		c.writeln("HTTPOpts = case TimeoutOpt of")
+		c.indent++
+		c.writeln("undefined -> [];")
+		c.writeln("T when is_integer(T) -> [{timeout, T * 1000}];")
+		c.writeln("T when is_float(T) -> [{timeout, trunc(T * 1000)}];")
+		c.writeln("_ -> []")
+		c.indent--
+		c.writeln("end,")
+		c.writeln("case httpc:request(Method, Req, HTTPOpts, []) of")
 		c.indent++
 		c.writeln("{ok, {{_, 200, _}, _H, Body}} -> Body;")
 		c.writeln("_ -> []")
