@@ -107,7 +107,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Write(typeCode)
 	c.buf.Write(funCode)
 	c.buf.Write(testCode)
-	if c.needCount || c.needAvg || c.needInput || c.needReduce || c.needBreak || c.needContinue || c.needUnionAll || c.needUnion || c.needExcept || c.needIntersect {
+	if c.needCount || c.needAvg || c.needInput || c.needReduce || c.needBreak ||
+		c.needContinue || c.needUnionAll || c.needUnion || c.needExcept ||
+		c.needIntersect || c.needIndexStr || c.needSliceStr ||
+		c.needContainsStr || c.needDataset || c.needFetch || c.needPaginate ||
+		c.needSum || c.needGroupBy || c.needGroup {
 		c.emitHelpers()
 	}
 	c.writelnNoIndent("!!")

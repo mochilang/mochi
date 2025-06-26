@@ -1,9 +1,12 @@
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
 !Main class methodsFor: 'types'!
-newMsg: message | dict |
+newTodo: userId id: id title: title completed: completed | dict |
 	dict := Dictionary new.
-	dict at: 'message' put: message.
+	dict at: 'userId' put: userId.
+	dict at: 'id' put: id.
+	dict at: 'title' put: title.
+	dict at: 'completed' put: completed.
 	^ dict
 !
 !Main class methodsFor: 'runtime'!
@@ -31,5 +34,6 @@ _fetch: url opts: o
 	^ JSONReader fromJSON: text
 !
 !!
-data := (Main _fetch: 'file://tests/compiler/st/fetch_builtin.json' opts: nil).
-(data at: 'message') displayOn: Transcript. Transcript cr.
+todo := (Main _fetch: 'https://jsonplaceholder.typicode.com/todos/1' opts: nil).
+((('Title: ') , (todo at: 'title'))) displayOn: Transcript. Transcript cr.
+((('Completed: ') , ((todo at: 'completed' printString)))) displayOn: Transcript. Transcript cr.
