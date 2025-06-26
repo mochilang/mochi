@@ -1,0 +1,13 @@
+type Msg {
+  message: string
+}
+
+let opts = {
+  method: "GET",
+  headers: {"X-Test": "1"},
+  query: {"q": "ok"},
+  body: {"x": 1},
+  timeout: 1
+}
+let data: Msg = fetch "file://tests/compiler/cpp/fetch_builtin.json" with opts
+print(data.message)

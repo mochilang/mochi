@@ -832,6 +832,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
 	case p.Query != nil:
 		q, _ := c.compileQuery(p.Query)
 		return q
@@ -991,6 +993,16 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) string {
 	}
 	c.helpers["save"] = true
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts)
+}
+
+func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) string {
+	url := c.compileExpr(f.URL)
+	opts := "unordered_map<string,any>{}"
+	if f.With != nil {
+		opts = c.compileExpr(f.With)
+	}
+	c.helpers["fetch"] = true
+	return fmt.Sprintf("_fetch(%s, %s)", url, opts)
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
