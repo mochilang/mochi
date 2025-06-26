@@ -138,7 +138,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			seen[name] = true
 			c.globals[name] = true
+			useExpr := false
 			if isLiteralExpr(s.Let.Value) || isPureExpr(s.Let.Value) {
+				vars := map[string]struct{}{}
+				exprVars(s.Let.Value, vars)
+				if len(vars) == 0 {
+					useExpr = true
+				}
+			}
+			if useExpr {
 				expr, err := c.compileExpr(s.Let.Value)
 				if err != nil {
 					return nil, err
@@ -155,7 +163,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			seen[name] = true
 			c.globals[name] = true
+			useExpr := false
 			if isLiteralExpr(s.Var.Value) || isPureExpr(s.Var.Value) {
+				vars := map[string]struct{}{}
+				exprVars(s.Var.Value, vars)
+				if len(vars) == 0 {
+					useExpr = true
+				}
+			}
+			if useExpr {
 				expr, err := c.compileExpr(s.Var.Value)
 				if err != nil {
 					return nil, err
@@ -1024,6 +1040,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			loop0 += " if " + whereExpr
 		}
 		loops := []string{loop0}
+		paramList := []string{sanitizeName(q.Var)}
 		for i, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
 			if err != nil {
@@ -1035,6 +1052,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				loop += " if " + whereExpr
 			}
 			loops = append(loops, loop)
+			paramList = append(paramList, sanitizeName(f.Var))
 		}
 		condParts := []string{}
 		joinSrcs := make([]string, len(q.Joins))
@@ -1052,39 +1070,48 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			condParts = append(condParts, on)
+			paramList = append(paramList, sanitizeName(j.Var))
 		}
 		c.env = orig
 		cond := ""
 		if len(condParts) > 0 {
 			cond = " if " + strings.Join(condParts, " and ")
 		}
-		if q.Sort == nil && q.Skip == nil && q.Take == nil {
-			return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
-		}
+		if len(q.Joins) == 0 {
+			if q.Sort == nil && q.Skip == nil && q.Take == nil {
+				return fmt.Sprintf("[ %s for %s%s ]", sel, strings.Join(loops, " for "), cond), nil
+			}
 
-		items := fmt.Sprintf("[ %s for %s%s ]", sanitizeName(q.Var), strings.Join(loops, " for "), cond)
-		if q.Sort != nil {
-			s, err := c.compileExpr(q.Sort)
-			if err != nil {
-				return "", err
+			items := fmt.Sprintf("[ %s for %s%s ]", sanitizeName(q.Var), strings.Join(loops, " for "), cond)
+			if q.Sort != nil {
+				c.env = child
+				s, err := c.compileExpr(q.Sort)
+				c.env = orig
+				if err != nil {
+					return "", err
+				}
+				items = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", items, strings.Join(paramList, ", "), s)
 			}
-			items = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", items, sanitizeName(q.Var), s)
-		}
-		if q.Skip != nil {
-			sk, err := c.compileExpr(q.Skip)
-			if err != nil {
-				return "", err
+			if q.Skip != nil {
+				c.env = child
+				sk, err := c.compileExpr(q.Skip)
+				c.env = orig
+				if err != nil {
+					return "", err
+				}
+				items = fmt.Sprintf("(%s)[max(%s, 0):]", items, sk)
 			}
-			items = fmt.Sprintf("(%s)[max(%s, 0):]", items, sk)
-		}
-		if q.Take != nil {
-			tk, err := c.compileExpr(q.Take)
-			if err != nil {
-				return "", err
+			if q.Take != nil {
+				c.env = child
+				tk, err := c.compileExpr(q.Take)
+				c.env = orig
+				if err != nil {
+					return "", err
+				}
+				items = fmt.Sprintf("(%s)[:max(%s, 0)]", items, tk)
 			}
-			items = fmt.Sprintf("(%s)[:max(%s, 0)]", items, tk)
+			return fmt.Sprintf("[ %s for %s in %s ]", sel, sanitizeName(q.Var), items), nil
 		}
-		return fmt.Sprintf("[ %s for %s in %s ]", sel, sanitizeName(q.Var), items), nil
 	}
 
 	fromSrcs := make([]string, len(q.Froms))
@@ -1108,14 +1135,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		joinSrcs[i] = js
+		c.env = child
 		on, err := c.compileExpr(j.On)
+		c.env = orig
 		if err != nil {
-			c.env = orig
 			return "", err
 		}
 		joinOns[i] = on
 		varNames = append(varNames, sanitizeName(j.Var))
 	}
+	c.env = child
 	val, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig
@@ -1123,30 +1152,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var whereExpr, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
+		c.env = child
 		whereExpr, err = c.compileExpr(q.Where)
+		c.env = orig
 		if err != nil {
-			c.env = orig
 			return "", err
 		}
 	}
 	if q.Sort != nil {
+		c.env = child
 		sortExpr, err = c.compileExpr(q.Sort)
+		c.env = orig
 		if err != nil {
-			c.env = orig
 			return "", err
 		}
 	}
 	if q.Skip != nil {
+		c.env = child
 		skipExpr, err = c.compileExpr(q.Skip)
+		c.env = orig
 		if err != nil {
-			c.env = orig
 			return "", err
 		}
 	}
 	if q.Take != nil {
+		c.env = child
 		takeExpr, err = c.compileExpr(q.Take)
+		c.env = orig
 		if err != nil {
-			c.env = orig
 			return "", err
 		}
 	}

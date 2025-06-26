@@ -15,6 +15,7 @@ class Counter:
 c = Counter(value=0)
 
 def main():
+	global c
 	c = Counter(value=0)
 	print(c.inc())
 	print(c.inc())

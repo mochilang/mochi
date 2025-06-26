@@ -10,6 +10,7 @@ def test_values():
 	print("done")
 
 def main():
+	global xs
 	xs = [((-1)), 0, 1]
 	test_values()
 
