@@ -11,4 +11,3 @@ func main (regs=6)
   In           r5, r4, r1
   Print        r5
   Return       r0
-

@@ -26,11 +26,11 @@ L1:
   Return       r0
 
   // fun boom(a: int, b: int): bool {
-func boom (regs=4)
+func boom (regs=3)
   // print("boom")
-  Const        r2, "boom"
-  Print        r2
+  Const        r1, "boom"
+  Print        r1
   // return true
-  Const        r3, true
-  Return       r3
+  Const        r2, true
+  Return       r2
   Return       r0

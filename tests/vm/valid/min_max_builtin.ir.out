@@ -9,4 +9,3 @@ func main (regs=4)
   Max          r3, r1
   Print        r3
   Return       r0
-
