@@ -2,10 +2,10 @@ object Main {
     def main(args: Array[String]): Unit = {
         val x: Int = 2
         val label: String = (x match {
-	case 1 => "one"
-	case 2 => "two"
-	case 3 => "three"
-	case _ => "unknown"
+    case 1 => "one"
+    case 2 => "two"
+    case 3 => "three"
+    case _ => "unknown"
 })
         println(label)
     }

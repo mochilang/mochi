@@ -2,16 +2,16 @@ object Main {
     def main(args: Array[String]): Unit = {
         val products: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("name" -> "Laptop", "price" -> 1500), scala.collection.mutable.Map("name" -> "Smartphone", "price" -> 900), scala.collection.mutable.Map("name" -> "Tablet", "price" -> 600), scala.collection.mutable.Map("name" -> "Monitor", "price" -> 300), scala.collection.mutable.Map("name" -> "Keyboard", "price" -> 100), scala.collection.mutable.Map("name" -> "Mouse", "price" -> 50), scala.collection.mutable.Map("name" -> "Headphones", "price" -> 200))
         val expensive: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = (() => {
-	val src = products
-	val res = _query(src, Seq(
-	), Map("select" -> (args: Seq[Any]) => {
-	val p = args(0)
-	p
+    val src = products
+    val res = _query(src, Seq(
+    ), Map("select" -> (args: Seq[Any]) => {
+    val p = args(0)
+    p
 }, "sortKey" -> (args: Seq[Any]) => {
-	val p = args(0)
-	(-p.price)
+    val p = args(0)
+    (-p.price)
 }, "skip" -> 1, "take" -> 3))
-	res
+    res
 })()
         println("--- Top products (excluding most expensive) ---")
         val it1 = expensive.iterator
