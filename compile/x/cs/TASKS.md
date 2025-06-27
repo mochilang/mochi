@@ -15,3 +15,10 @@ Currently only `q1.mochi` and `q2.mochi` compile successfully. Queries `q3.mochi
 through `q10.mochi` fail due to missing record generation and dictionary field
 projection. Implement LINQ-style joins and proper struct handling so these
 queries can be built and executed.
+
+## TPCH Queries
+
+`q1.mochi` compiles and runs when the `dotnet` SDK is available. `q2.mochi`
+also compiles, but we could not run the generated code in this environment
+because `dotnet` is missing. When `dotnet` is installed, capture the output of
+running the compiled program and add it as `tests/dataset/tpc-h/compiler/cs/q2.out`.
