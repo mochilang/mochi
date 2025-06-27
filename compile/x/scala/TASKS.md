@@ -11,3 +11,9 @@ Completed work:
 - Generated code lives under `tests/dataset/tpc-h/compiler/scala/q1.scala.out`.
 - Added golden test `TestScalaCompiler_JOBQ1` covering the JOB dataset query.
 - Added golden test `TestScalaCompiler_JOBQ2` covering the JOB dataset query.
+- Added golden test `TestScalaCompiler_JOB_Golden` compiling JOB queries `q1` through `q10`.
+
+Remaining work:
+
+- Scala output for JOB queries beyond `q2` fails to compile due to map field access using dot notation.
+- Implement map/struct field access so JOB queries `q3`-`q10` run successfully.
