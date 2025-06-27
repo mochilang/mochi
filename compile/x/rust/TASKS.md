@@ -19,3 +19,6 @@ Completed tasks:
   currently emits invalid syntax like `m.field.contains`.
 - [ ] Enable runtime tests for `job/q1.mochi` and `job/q2.mochi` once the
   generated code compiles successfully.
+- [ ] Extend TPCH support beyond `q1`. `q2.mochi` compiles to Rust source but
+  the generated code fails to build due to missing helpers and incorrect
+  type handling for joins and sorting.

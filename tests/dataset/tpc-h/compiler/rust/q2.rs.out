@@ -1,0 +1,88 @@
+fn test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() {
+    expect(result == vec![std::collections::HashMap::from([("s_acctbal".to_string(), 1000.0), ("s_name".to_string(), "BestSupplier"), ("n_name".to_string(), "FRANCE"), ("p_partkey".to_string(), 1000), ("p_mfgr".to_string(), "M1"), ("s_address".to_string(), "123 Rue"), ("s_phone".to_string(), "123"), ("s_comment".to_string(), "Fast and reliable"), ("ps_supplycost".to_string(), 10.0)])]);
+}
+
+fn main() {
+    let mut region = vec![std::collections::HashMap::from([("r_regionkey".to_string(), 1), ("r_name".to_string(), "EUROPE")]), std::collections::HashMap::from([("r_regionkey".to_string(), 2), ("r_name".to_string(), "ASIA")])];
+    let mut nation = vec![std::collections::HashMap::from([("n_nationkey".to_string(), 10), ("n_regionkey".to_string(), 1), ("n_name".to_string(), "FRANCE")]), std::collections::HashMap::from([("n_nationkey".to_string(), 20), ("n_regionkey".to_string(), 2), ("n_name".to_string(), "CHINA")])];
+    let mut supplier = vec![std::collections::HashMap::from([("s_suppkey".to_string(), 100), ("s_name".to_string(), "BestSupplier"), ("s_address".to_string(), "123 Rue"), ("s_nationkey".to_string(), 10), ("s_phone".to_string(), "123"), ("s_acctbal".to_string(), 1000.0), ("s_comment".to_string(), "Fast and reliable")]), std::collections::HashMap::from([("s_suppkey".to_string(), 200), ("s_name".to_string(), "AltSupplier"), ("s_address".to_string(), "456 Way"), ("s_nationkey".to_string(), 20), ("s_phone".to_string(), "456"), ("s_acctbal".to_string(), 500.0), ("s_comment".to_string(), "Slow")])];
+    let mut part = vec![std::collections::HashMap::from([("p_partkey".to_string(), 1000), ("p_type".to_string(), "LARGE BRASS"), ("p_size".to_string(), 15), ("p_mfgr".to_string(), "M1")]), std::collections::HashMap::from([("p_partkey".to_string(), 2000), ("p_type".to_string(), "SMALL COPPER"), ("p_size".to_string(), 15), ("p_mfgr".to_string(), "M2")])];
+    let mut partsupp = vec![std::collections::HashMap::from([("ps_partkey".to_string(), 1000), ("ps_suppkey".to_string(), 100), ("ps_supplycost".to_string(), 10.0)]), std::collections::HashMap::from([("ps_partkey".to_string(), 1000), ("ps_suppkey".to_string(), 200), ("ps_supplycost".to_string(), 15.0)])];
+    let mut europe_nations = {
+    let mut _res = Vec::new();
+    for r in region.clone() {
+        if !(_map_get(&r, &"r_name".to_string()) == "EUROPE") { continue; }
+        for n in nation.clone() {
+            if !(_map_get(&n, &"n_regionkey".to_string()) == _map_get(&r, &"r_regionkey".to_string())) { continue; }
+            if _map_get(&n, &"n_regionkey".to_string()) == _map_get(&r, &"r_regionkey".to_string()) {
+                _res.push(n);
+            }
+        }
+    }
+    _res
+};
+    let mut europe_suppliers = {
+    let mut _res = Vec::new();
+    for s in supplier.clone() {
+        for n in europe_nations.clone() {
+            if !(_map_get(&s, &"s_nationkey".to_string()) == _map_get(&n, &"n_nationkey".to_string())) { continue; }
+            if _map_get(&s, &"s_nationkey".to_string()) == _map_get(&n, &"n_nationkey".to_string()) {
+                _res.push(std::collections::HashMap::from([("s".to_string(), s), ("n".to_string(), n)]));
+            }
+        }
+    }
+    _res
+};
+    let mut target_parts = {
+    let mut _res = Vec::new();
+    for p in part {
+        if !(_map_get(&p, &"p_size".to_string()) == 15 && _map_get(&p, &"p_type".to_string()) == "LARGE BRASS") { continue; }
+        _res.push(p);
+    }
+    _res
+};
+    let mut target_partsupp = {
+    let mut _res = Vec::new();
+    for ps in partsupp.clone() {
+        for p in target_parts.clone() {
+            if !(_map_get(&ps, &"ps_partkey".to_string()) == _map_get(&p, &"p_partkey".to_string())) { continue; }
+            for s in europe_suppliers.clone() {
+                if !(_map_get(&ps, &"ps_suppkey".to_string()) == _map_get(&_map_get(&s, &"s".to_string()), &"s_suppkey".to_string())) { continue; }
+                if _map_get(&ps, &"ps_partkey".to_string()) == _map_get(&p, &"p_partkey".to_string()) && _map_get(&ps, &"ps_suppkey".to_string()) == _map_get(&_map_get(&s, &"s".to_string()), &"s_suppkey".to_string()) {
+                    _res.push(std::collections::HashMap::from([("s_acctbal".to_string(), _map_get(&_map_get(&s, &"s".to_string()), &"s_acctbal".to_string())), ("s_name".to_string(), _map_get(&_map_get(&s, &"s".to_string()), &"s_name".to_string())), ("n_name".to_string(), _map_get(&_map_get(&s, &"n".to_string()), &"n_name".to_string())), ("p_partkey".to_string(), _map_get(&p, &"p_partkey".to_string())), ("p_mfgr".to_string(), _map_get(&p, &"p_mfgr".to_string())), ("s_address".to_string(), _map_get(&_map_get(&s, &"s".to_string()), &"s_address".to_string())), ("s_phone".to_string(), _map_get(&_map_get(&s, &"s".to_string()), &"s_phone".to_string())), ("s_comment".to_string(), _map_get(&_map_get(&s, &"s".to_string()), &"s_comment".to_string())), ("ps_supplycost".to_string(), _map_get(&ps, &"ps_supplycost".to_string()))]));
+                }
+            }
+        }
+    }
+    _res
+};
+    let mut costs = {
+    let mut _res = Vec::new();
+    for x in target_partsupp {
+        _res.push(_map_get(&x, &"ps_supplycost".to_string()));
+    }
+    _res
+};
+    let mut min_cost = min(costs);
+    let mut result = {
+    let mut _pairs = Vec::new();
+    for x in target_partsupp {
+        if _map_get(&x, &"ps_supplycost".to_string()) == min_cost {
+            _pairs.push((-_map_get(&x, &"s_acctbal".to_string()), x));
+        }
+    }
+    _pairs.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+    let mut _res = Vec::new();
+    for p in _pairs { _res.push(p.1); }
+    _res
+};
+    json(result);
+    test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part();
+}
+
+fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {
+    m.get(k).unwrap().clone()
+}
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}
