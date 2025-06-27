@@ -1,6 +1,13 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Main where
 
 import Data.Maybe (fromMaybe)
+import Data.Time.Clock.POSIX (getPOSIXTime)
+import qualified Data.Map as Map
+import Data.List (intercalate, isPrefixOf)
+import qualified Data.List as List
+import qualified Data.Aeson as Aeson
+import qualified Data.ByteString.Lazy.Char8 as BSL
 
 
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
@@ -12,9 +19,31 @@ forLoop start end f = go start
               Nothing -> go (i + 1)
          | otherwise = Nothing
 
+whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
+whileLoop cond body = go ()
+  where
+    go _ | cond () =
+            case body () of
+              Just v -> Just v
+              Nothing -> go ()
+         | otherwise = Nothing
+
 avg :: Real a => [a] -> Double
 avg xs | null xs = 0
       | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
+
+data MGroup k a = MGroup { key :: k, items :: [a] } deriving (Show)
+
+_group_by :: Ord k => [a] -> (a -> k) -> [MGroup k a]
+_group_by src keyfn =
+  let go [] m order = (m, order)
+      go (x:xs) m order =
+        let k = keyfn x
+        in case Map.lookup k m of
+             Just is -> go xs (Map.insert k (is ++ [x]) m) order
+             Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+      (m, order) = go src Map.empty []
+  in [ MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order ]
 
 _indexString :: String -> Int -> String
 _indexString s i =
@@ -26,11 +55,86 @@ _indexString s i =
 _input :: IO String
 _input = getLine
 
+_now :: IO Int
+_now = fmap round getPOSIXTime
+
+_json :: Aeson.ToJSON a => a -> IO ()
+_json v = BSL.putStrLn (Aeson.encode v)
+
+_readInput :: Maybe String -> IO String
+_readInput Nothing = getContents
+_readInput (Just p)
+  | null p || p == "-" = getContents
+  | otherwise = readFile p
+
+_writeOutput :: Maybe String -> String -> IO ()
+_writeOutput mp text = case mp of
+  Nothing -> putStr text
+  Just p | null p || p == "-" -> putStr text
+         | otherwise -> writeFile p text
+
+_split :: Char -> String -> [String]
+_split _ "" = [""]
+_split d s =
+  let (h, t) = break (== d) s
+  in h : case t of
+            []      -> []
+            (_:rest) -> _split d rest
+
+_parseCSV :: String -> Bool -> Char -> [Map.Map String String]
+_parseCSV text header delim =
+  let ls = filter (not . null) (lines text)
+  in if null ls then [] else
+       let heads = if header
+                      then _split delim (head ls)
+                      else ["c" ++ show i | i <- [0 .. length (_split delim (head ls)) - 1]]
+           start = if header then 1 else 0
+           row line =
+             let parts = _split delim line
+             in Map.fromList [ (heads !! j, if j < length parts then parts !! j else "")
+                             | j <- [0 .. length heads - 1] ]
+       in map row (drop start ls)
+
+_load :: Maybe String -> Maybe (Map.Map String String) -> IO [Map.Map String String]
+_load path _ = do
+  txt <- _readInput path
+  pure (_parseCSV txt True ',')
+
+_save :: [Map.Map String String] -> Maybe String -> Maybe (Map.Map String String) -> IO ()
+_save rows path _ =
+  let headers = if null rows then [] else Map.keys (head rows)
+      toLine m = intercalate "," [Map.findWithDefault "" h m | h <- headers]
+      text = unlines (if null headers then [] else intercalate "," headers : map toLine rows)
+  in _writeOutput path text
+
+expect :: Bool -> IO ()
+expect True = pure ()
+expect False = error "expect failed"
+
 
 maxArea :: [Int] -> Int
 maxArea height = fromMaybe (0) $
-    (let left = 0 in (let right = (length height - 1) in (let maxArea = 0 in Just (maxArea))))
+    (let left = 0 in (let right = (length height - 1) in (let maxArea = 0 in case whileLoop (\() -> (left < right)) (\() -> (let width = (right - left) in (let h = 0 in case if ((height !! left) < (height !! right)) then (let h = (height !! left) in Nothing) else (let h = (height !! right) in Nothing) of Just v -> Just v; Nothing -> (let area = (h * width) in case if (area > maxArea) then (let maxArea = area in Nothing) else Nothing of Just v -> Just v; Nothing -> if ((height !! left) < (height !! right)) then (let left = (left + 1) in Nothing) else (let right = (right - 1) in Nothing))))) of Just v -> Just v; Nothing -> Just (maxArea))))
+
+test_example_1 :: IO ()
+test_example_1 = do
+    expect ((maxArea [1, 8, 6, 2, 5, 4, 8, 3, 7] == 49))
+
+test_example_2 :: IO ()
+test_example_2 = do
+    expect ((maxArea [1, 1] == 1))
+
+test_decreasing_heights :: IO ()
+test_decreasing_heights = do
+    expect ((maxArea [4, 3, 2, 1, 4] == 16))
+
+test_short_array :: IO ()
+test_short_array = do
+    expect ((maxArea [1, 2, 1] == 2))
 
 main :: IO ()
 main = do
-    return ()
+    test_example_1
+    test_example_2
+    test_decreasing_heights
+    test_short_array

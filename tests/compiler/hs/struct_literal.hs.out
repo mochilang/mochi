@@ -1,11 +1,13 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Main where
 
 import Data.Maybe (fromMaybe)
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import qualified Data.Map as Map
-import Data.List (intercalate)
+import Data.List (intercalate, isPrefixOf)
 import qualified Data.List as List
 import qualified Data.Aeson as Aeson
+import GHC.Generics (Generic)
 import qualified Data.ByteString.Lazy.Char8 as BSL
 
 
@@ -110,16 +112,19 @@ _save rows path _ =
 data Person = Person {
     name :: String,
     age :: Int
-} deriving (Show)
+} deriving (Show, Generic)
+instance Aeson.FromJSON Person
 
 
 data Book = Book {
     title :: String,
     author :: Person
-} deriving (Show)
+} deriving (Show, Generic)
+instance Aeson.FromJSON Book
 
+
+book = Book { title = "Go", author = Person { name = "Bob", age = 42 } }
 
 main :: IO ()
 main = do
-    let book = Book { title = "Go", author = Person { name = "Bob", age = 42 } }
     putStrLn (name (author (book)))
