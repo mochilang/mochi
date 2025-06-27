@@ -1,5 +1,18 @@
 open System
 
+let id = "id"
+let kind = "kind"
+let info = "info"
+let title = "title"
+let production_year = "production_year"
+let movie_id = "movie_id"
+let company_type_id = "company_type_id"
+let note = "note"
+let info_type_id = "info_type_id"
+let year = "year"
+let production_note = "production_note"
+let movie_title = "movie_title"
+let movie_year = "movie_year"
 let rec _to_json (v: obj) : string =
   match v with
   | null -> "null"

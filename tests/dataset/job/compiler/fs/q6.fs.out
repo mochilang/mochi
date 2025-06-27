@@ -1,5 +1,16 @@
 open System
 
+let movie_id = "movie_id"
+let person_id = "person_id"
+let id = "id"
+let keyword = "keyword"
+let keyword_id = "keyword_id"
+let name = "name"
+let title = "title"
+let production_year = "production_year"
+let movie_keyword = "movie_keyword"
+let actor_name = "actor_name"
+let marvel_movie = "marvel_movie"
 let rec _to_json (v: obj) : string =
   match v with
   | null -> "null"

@@ -29,6 +29,7 @@ type Compiler struct {
 	helpers     map[string]bool
 	tests       []testInfo
 	packages    map[string]bool
+	fields      map[string]bool
 }
 
 type loopCtx struct {
@@ -88,7 +89,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, locals: make(map[string]bool), helpers: make(map[string]bool), packages: make(map[string]bool)}
+	return &Compiler{env: env, locals: make(map[string]bool), helpers: make(map[string]bool), packages: make(map[string]bool), fields: make(map[string]bool)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -1771,9 +1772,16 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	}
 	items := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if name, ok := identOfExpr(it.Key); ok {
+			c.ensureFieldConst(name)
+			k = sanitizeName(name)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
