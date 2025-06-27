@@ -13,7 +13,7 @@ These tasks will bring the COBOL backend closer to running `tests/dataset/tpc-h/
 
 ## JOB Dataset Support
 
-Initial join handling and method call support now allow the COBOL backend to compile the `job` dataset queries `q1.mochi` and `q2.mochi`. Golden tests covering these queries live under `tests/dataset/job/compiler/cobol`.
+Initial join handling and method call support now allow the COBOL backend to compile the JOB dataset queries `q1.mochi` through `q10.mochi`. Golden tests covering these programs live under `tests/dataset/job/compiler/cobol` and are exercised by `job_test.go`.
 
 ### Remaining work
 
