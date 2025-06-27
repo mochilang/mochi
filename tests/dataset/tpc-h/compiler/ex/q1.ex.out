@@ -61,7 +61,7 @@ end
   Enum.map(order, fn k -> groups[k] end)
 end
 
-	defp _query(src, joins, opts \ %{}) do
+        defp _query(src, joins, opts \\ %{}) do
   where = Map.get(opts, :where)
   items = Enum.map(src, fn v -> [v] end)
   items = if where, do: Enum.filter(items, fn r -> where.(r) end), else: items

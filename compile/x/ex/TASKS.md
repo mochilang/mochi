@@ -1,8 +1,12 @@
 # Elixir Backend Tasks for TPCH Q1
 
-The Elixir backend is experimental and lacks dataset features.
+The Elixir backend is still experimental and TPCH queries compile but do not
+execute correctly. The generated `_query` helper emits `if` expressions as
+arguments without parentheses which causes syntax errors. Fixing the helper to
+wrap these `if` expressions is required before `q1` will run successfully.
 
-- Use `Enum.group_by` with filtering and ordering to implement query groups.
-- Compile Mochi structs to Elixir structs for `lineitem` and related data.
-- Provide aggregation helpers using `Enum.sum`, `Enum.count` and a custom average.
-- Output JSON via `Jason.encode!` and add tests under `tests/compiler/ex`.
+Remaining tasks:
+
+- Wrap `if` expressions in `_query` helper with parentheses.
+- Ensure compiled scripts run with `Mix.install([:jason])` for JSON output.
+- Update golden files once the runtime issues are resolved.
