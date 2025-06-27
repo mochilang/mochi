@@ -1,0 +1,80 @@
+let company_name = [
+  { id: 1, name: "Big Film Studios", country_code: "[us]" },
+  { id: 2, name: "Polish Film", country_code: "[pl]" }
+]
+
+let company_type = [
+  { id: 1, kind: "production companies" },
+  { id: 2, kind: "other" }
+]
+
+let keyword = [
+  { id: 1, keyword: "sequel" },
+  { id: 2, keyword: "action" }
+]
+
+let link_type = [
+  { id: 1, link: "follows" },
+  { id: 2, link: "related" }
+]
+
+let title = [
+  { id: 10, title: "Space Adventure II", production_year: 1990 },
+  { id: 20, title: "Past Year", production_year: 2010 }
+]
+
+let movie_companies = [
+  { movie_id: 10, company_id: 1, company_type_id: 1, note: null },
+  { movie_id: 20, company_id: 2, company_type_id: 1, note: null }
+]
+
+let movie_keyword = [
+  { movie_id: 10, keyword_id: 1 },
+  { movie_id: 20, keyword_id: 2 }
+]
+
+let movie_link = [
+  { movie_id: 10, link_type_id: 1 }
+]
+
+let rows =
+  from cn in company_name
+  join mc in movie_companies on cn.id == mc.company_id
+  join ct in company_type on ct.id == mc.company_type_id
+  join t in title on t.id == mc.movie_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join ml in movie_link on ml.movie_id == t.id
+  join lt in link_type on lt.id == ml.link_type_id
+  where cn.country_code != "[pl]"
+    and (cn.name like "%Film%" or cn.name like "%Warner%")
+    and ct.kind == "production companies"
+    and k.keyword == "sequel"
+    and lt.link like "%follow%"
+    and mc.note == null
+    and t.production_year >= 1950 and t.production_year <= 2000
+  select {
+    from_company: cn.name,
+    movie_link_type: lt.link,
+    non_polish_sequel_movie: t.title
+  }
+
+let result = [
+  {
+    from_company: min(from r in rows select r.from_company),
+    movie_link_type: min(from r in rows select r.movie_link_type),
+    non_polish_sequel_movie: min(from r in rows select r.non_polish_sequel_movie)
+  }
+]
+
+json(result)
+
+test "Q11 finds a non-Polish sequel production" {
+  expect result == [
+    {
+      from_company: "Big Film Studios",
+      movie_link_type: "follows",
+      non_polish_sequel_movie: "Space Adventure II"
+    }
+  ]
+}
