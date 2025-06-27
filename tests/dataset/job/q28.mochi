@@ -1,0 +1,114 @@
+let comp_cast_type = [
+  { id: 1, kind: "crew" },
+  { id: 2, kind: "complete+verified" },
+  { id: 3, kind: "partial" }
+]
+
+let complete_cast = [
+  { movie_id: 1, subject_id: 1, status_id: 3 },
+  { movie_id: 2, subject_id: 1, status_id: 2 }
+]
+
+let company_name = [
+  { id: 1, name: "Euro Films Ltd.", country_code: "[gb]" },
+  { id: 2, name: "US Studios", country_code: "[us]" }
+]
+
+let company_type = [
+  { id: 1 },
+  { id: 2 }
+]
+
+let movie_companies = [
+  { movie_id: 1, company_id: 1, company_type_id: 1, note: "production (2005) (UK)" },
+  { movie_id: 2, company_id: 2, company_type_id: 1, note: "production (USA)" }
+]
+
+let info_type = [
+  { id: 1, info: "countries" },
+  { id: 2, info: "rating" }
+]
+
+let keyword = [
+  { id: 1, keyword: "blood" },
+  { id: 2, keyword: "romance" }
+]
+
+let kind_type = [
+  { id: 1, kind: "movie" },
+  { id: 2, kind: "episode" }
+]
+
+let movie_info = [
+  { movie_id: 1, info_type_id: 1, info: "Germany" },
+  { movie_id: 2, info_type_id: 1, info: "USA" }
+]
+
+let movie_info_idx = [
+  { movie_id: 1, info_type_id: 2, info: 7.2 },
+  { movie_id: 2, info_type_id: 2, info: 9.0 }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 },
+  { movie_id: 2, keyword_id: 2 }
+]
+
+let title = [
+  { id: 1, kind_id: 1, production_year: 2005, title: "Dark Euro Film" },
+  { id: 2, kind_id: 1, production_year: 2005, title: "US Film" }
+]
+
+let allowed_keywords = ["murder", "murder-in-title", "blood", "violence"]
+let allowed_countries = [
+  "Sweden", "Norway", "Germany", "Denmark",
+  "Swedish", "Danish", "Norwegian", "German",
+  "USA", "American"
+]
+
+let matches =
+  from cc in complete_cast
+  join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  join cct2 in comp_cast_type on cct2.id == cc.status_id
+  join mc in movie_companies on mc.movie_id == cc.movie_id
+  join cn in company_name on cn.id == mc.company_id
+  join ct in company_type on ct.id == mc.company_type_id
+  join mk in movie_keyword on mk.movie_id == cc.movie_id
+  join k in keyword on k.id == mk.keyword_id
+  join mi in movie_info on mi.movie_id == cc.movie_id
+  join it1 in info_type on it1.id == mi.info_type_id
+  join mi_idx in movie_info_idx on mi_idx.movie_id == cc.movie_id
+  join it2 in info_type on it2.id == mi_idx.info_type_id
+  join t in title on t.id == cc.movie_id
+  join kt in kind_type on kt.id == t.kind_id
+  where (
+    cct1.kind == "crew" &&
+    cct2.kind != "complete+verified" &&
+    cn.country_code != "[us]" &&
+    it1.info == "countries" &&
+    it2.info == "rating" &&
+    (k.keyword in allowed_keywords) &&
+    (kt.kind in ["movie", "episode"]) &&
+    !mc.note.contains("(USA)") &&
+    mc.note.contains("(200") &&
+    (mi.info in allowed_countries) &&
+    mi_idx.info < 8.5 &&
+    t.production_year > 2000
+  )
+  select { company: cn.name, rating: mi_idx.info, title: t.title }
+
+let result = {
+  movie_company: min(from x in matches select x.company),
+  rating: min(from x in matches select x.rating),
+  complete_euro_dark_movie: min(from x in matches select x.title)
+}
+
+json(result)
+
+test "Q28 finds euro dark movie with minimal values" {
+  expect result == {
+    movie_company: "Euro Films Ltd.",
+    rating: 7.2,
+    complete_euro_dark_movie: "Dark Euro Film"
+  }
+}
