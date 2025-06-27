@@ -1,15 +1,46 @@
-(ns main)
+(ns main
+  (:require
+    [clojure.data.json :as json]
+  ))
 
+(defn _cast_struct [ctor m]
+  (let [fields (first (:arglists (meta ctor)))]
+    (apply ctor (map #(get m %) fields))))
 (defn _fetch [url opts]
-  (let [txt (slurp url)]
-    (clojure.data.json/read-str txt :key-fn keyword))
+  (let [method (get opts :method "GET")
+        q      (get opts :query nil)
+        url     (if q
+                   (let [qs (clojure.string/join "&"
+                             (map (fn [[k v]]
+                                    (str (java.net.URLEncoder/encode (name k) "UTF-8")
+                                         "="
+                                         (java.net.URLEncoder/encode (str v) "UTF-8")))
+                                  q))
+                         sep (if (clojure.string/includes? url "?") "&" "?")]
+                     (str url sep qs))
+                   url)
+        builder (doto (java.net.http.HttpRequest/newBuilder (java.net.URI/create url))
+                  (.method method
+                          (if (contains? opts :body)
+                            (java.net.http.HttpRequest$BodyPublishers/ofString
+                              (clojure.data.json/write-str (:body opts)))
+                            (java.net.http.HttpRequest$BodyPublishers/noBody))))]
+    (when-let [hs (:headers opts)]
+      (doseq [[k v] hs]
+        (.header builder (name k) (str v))))
+    (when-let [t (:timeout opts)]
+      (.timeout builder (java.time.Duration/ofSeconds (long t))))
+    (let [client (java.net.http.HttpClient/newHttpClient)
+          resp (.send client (.build builder)
+                      (java.net.http.HttpResponse$BodyHandlers/ofString))]
+      (clojure.data.json/read-str (.body resp) :key-fn keyword))))
 (defn Msg [message]
   {:__name "Msg" :message message}
 )
 
 
 (defn -main []
-  (def data (_fetch "file://tests/compiler/lua/fetch_builtin.json" nil))
+  (def data (_cast_struct Msg (_fetch "file://tests/compiler/lua/fetch_builtin.json" nil)))
   (println (:message data))
 )
 

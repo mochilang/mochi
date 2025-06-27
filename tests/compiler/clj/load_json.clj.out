@@ -45,7 +45,7 @@
 
 
 (defn -main []
-  (def people (_load "people.json" {:format "json"}))
+  (def people (mapv Person (_load "people.json" {:format "json"})))
   (def adults (vec (->> (for [p people :when (>= (:age p) 18)] {:name (:name p) :email (:email p)}))))
   (loop [_tmp0 (seq adults)]
     (when _tmp0

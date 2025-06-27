@@ -45,7 +45,7 @@
 
 
 (defn -main []
-  (def people (_load "people.csv" nil))
+  (def people (mapv Person (_load "people.csv" nil)))
   (def adults (vec (->> (for [p people :when (>= (:age p) 18)] {:name (:name p) :age (:age p)}))))
   (loop [_tmp0 (seq adults)]
     (when _tmp0

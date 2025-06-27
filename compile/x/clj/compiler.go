@@ -79,7 +79,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.emitRuntime(&finalBuf)
 	finalBuf.Write(c.buf.Bytes())
 
-	return finalBuf.Bytes(), nil
+	code := finalBuf.Bytes()
+	if formatted, err := Format(code); err == nil {
+		return formatted, nil
+	}
+	return code, nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -287,59 +291,59 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(st *parser.LetStmt) error {
-       expr, err := c.compileExpr(st.Value)
-       if err != nil {
-               return err
-       }
-       if st.Type != nil {
-               t := c.resolveTypeRef(st.Type)
-               switch tt := t.(type) {
-               case types.StructType:
-                       c.use("_cast_struct")
-                       expr = fmt.Sprintf("(_cast_struct %s %s)", sanitizeName(tt.Name), expr)
-               case types.ListType:
-                       if stt, ok := tt.Elem.(types.StructType); ok {
-                               c.use("_cast_struct_list")
-                               expr = fmt.Sprintf("(_cast_struct_list %s %s)", sanitizeName(stt.Name), expr)
-                       }
-               }
-       }
-       c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
-       if c.env != nil {
-               var typ types.Type = types.AnyType{}
-               if st.Type != nil {
-                       typ = c.resolveTypeRef(st.Type)
-               } else {
-                       typ = c.exprType(st.Value)
-               }
-               c.env.SetVar(st.Name, typ, true)
-       }
-       return nil
+	expr, err := c.compileExpr(st.Value)
+	if err != nil {
+		return err
+	}
+	if st.Type != nil {
+		t := c.resolveTypeRef(st.Type)
+		switch tt := t.(type) {
+		case types.StructType:
+			c.use("_cast_struct")
+			expr = fmt.Sprintf("(_cast_struct %s %s)", sanitizeName(tt.Name), expr)
+		case types.ListType:
+			if stt, ok := tt.Elem.(types.StructType); ok {
+				c.use("_cast_struct_list")
+				expr = fmt.Sprintf("(_cast_struct_list %s %s)", sanitizeName(stt.Name), expr)
+			}
+		}
+	}
+	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
+	if c.env != nil {
+		var typ types.Type = types.AnyType{}
+		if st.Type != nil {
+			typ = c.resolveTypeRef(st.Type)
+		} else {
+			typ = c.exprType(st.Value)
+		}
+		c.env.SetVar(st.Name, typ, true)
+	}
+	return nil
 }
 
 func (c *Compiler) compileVar(st *parser.VarStmt) error {
-       expr := "nil"
-       if st.Value != nil {
-               v, err := c.compileExpr(st.Value)
-               if err != nil {
-                       return err
-               }
-               expr = v
-       }
-       if st.Type != nil && expr != "nil" {
-               t := c.resolveTypeRef(st.Type)
-               switch tt := t.(type) {
-               case types.StructType:
-                       c.use("_cast_struct")
-                       expr = fmt.Sprintf("(_cast_struct %s %s)", sanitizeName(tt.Name), expr)
-               case types.ListType:
-                       if stt, ok := tt.Elem.(types.StructType); ok {
-                               c.use("_cast_struct_list")
-                               expr = fmt.Sprintf("(_cast_struct_list %s %s)", sanitizeName(stt.Name), expr)
-                       }
-               }
-       }
-       c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
+	expr := "nil"
+	if st.Value != nil {
+		v, err := c.compileExpr(st.Value)
+		if err != nil {
+			return err
+		}
+		expr = v
+	}
+	if st.Type != nil && expr != "nil" {
+		t := c.resolveTypeRef(st.Type)
+		switch tt := t.(type) {
+		case types.StructType:
+			c.use("_cast_struct")
+			expr = fmt.Sprintf("(_cast_struct %s %s)", sanitizeName(tt.Name), expr)
+		case types.ListType:
+			if stt, ok := tt.Elem.(types.StructType); ok {
+				c.use("_cast_struct_list")
+				expr = fmt.Sprintf("(_cast_struct_list %s %s)", sanitizeName(stt.Name), expr)
+			}
+		}
+	}
+	c.writeln(fmt.Sprintf("(def %s %s)", sanitizeName(st.Name), expr))
 	if c.env != nil {
 		var typ types.Type = types.AnyType{}
 		if st.Type != nil {
@@ -895,26 +899,26 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			continue
 		}
-               if op.Cast != nil {
-                        if op.Cast.Type != nil {
-                                t := c.resolveTypeRef(op.Cast.Type)
-                                switch tt := t.(type) {
-                                case types.FloatType:
-                                        expr = fmt.Sprintf("(double %s)", expr)
-                                case types.IntType:
-                                        expr = fmt.Sprintf("(int %s)", expr)
-                                case types.StructType:
-                                        c.use("_cast_struct")
-                                        expr = fmt.Sprintf("(_cast_struct %s %s)", sanitizeName(tt.Name), expr)
-                                case types.ListType:
-                                        if st, ok := tt.Elem.(types.StructType); ok {
-                                                c.use("_cast_struct_list")
-                                                expr = fmt.Sprintf("(_cast_struct_list %s %s)", sanitizeName(st.Name), expr)
-                                        }
-                                }
-                        }
-                        continue
-                }
+		if op.Cast != nil {
+			if op.Cast.Type != nil {
+				t := c.resolveTypeRef(op.Cast.Type)
+				switch tt := t.(type) {
+				case types.FloatType:
+					expr = fmt.Sprintf("(double %s)", expr)
+				case types.IntType:
+					expr = fmt.Sprintf("(int %s)", expr)
+				case types.StructType:
+					c.use("_cast_struct")
+					expr = fmt.Sprintf("(_cast_struct %s %s)", sanitizeName(tt.Name), expr)
+				case types.ListType:
+					if st, ok := tt.Elem.(types.StructType); ok {
+						c.use("_cast_struct_list")
+						expr = fmt.Sprintf("(_cast_struct_list %s %s)", sanitizeName(st.Name), expr)
+					}
+				}
+			}
+			continue
+		}
 	}
 	return expr, nil
 }
@@ -1452,10 +1456,10 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
-        url, err := c.compileExpr(f.URL)
-        if err != nil {
-                return "", err
-        }
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return "", err
+	}
 	opts := "nil"
 	if f.With != nil {
 		v, err := c.compileExpr(f.With)
@@ -1463,12 +1467,12 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 			return "", err
 		}
 		opts = v
-        }
-       c.use("_fetch")
-       if c.imports != nil {
-               c.imports["json"] = "clojure.data.json"
-       }
-       return fmt.Sprintf("(_fetch %s %s)", url, opts), nil
+	}
+	c.use("_fetch")
+	if c.imports != nil {
+		c.imports["json"] = "clojure.data.json"
+	}
+	return fmt.Sprintf("(_fetch %s %s)", url, opts), nil
 }
 
 func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
@@ -1673,19 +1677,19 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 	if model == "" {
 		model = "\"\""
 	}
-        if g.Target == "embedding" {
-                c.use("_gen_embed")
-                return fmt.Sprintf("(_gen_embed %s %s %s)", text, model, paramStr), nil
-        }
-        if c.env != nil {
-                if _, ok := c.env.GetStruct(g.Target); ok {
-                        c.use("_gen_struct")
-                       if c.imports != nil {
-                               c.imports["json"] = "clojure.data.json"
-                       }
-                        return fmt.Sprintf("(_gen_struct %s %s %s %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
-                }
-        }
+	if g.Target == "embedding" {
+		c.use("_gen_embed")
+		return fmt.Sprintf("(_gen_embed %s %s %s)", text, model, paramStr), nil
+	}
+	if c.env != nil {
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.use("_gen_struct")
+			if c.imports != nil {
+				c.imports["json"] = "clojure.data.json"
+			}
+			return fmt.Sprintf("(_gen_struct %s %s %s %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
+		}
+	}
 	c.use("_gen_text")
 	return fmt.Sprintf("(_gen_text %s %s %s)", prompt, model, paramStr), nil
 }
