@@ -40,6 +40,9 @@ func compileRun(t *testing.T, code []byte, stdin []byte) ([]byte, error) {
 }
 
 func TestCosmoSubsetPrograms(t *testing.T) {
+	if err := cosmo.EnsureCosmo(); err != nil {
+		t.Skipf("cosmo not installed: %v", err)
+	}
 	golden.Run(t, "tests/compiler/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
