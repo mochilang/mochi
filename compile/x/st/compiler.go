@@ -118,7 +118,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writelnNoIndent("!!")
 	c.buf.Write(mainCode)
 
-	return c.buf.Bytes(), nil
+	return format(c.buf.Bytes()), nil
 }
 
 func (c *Compiler) compileTypeDecls(prog *parser.Program) ([]byte, error) {

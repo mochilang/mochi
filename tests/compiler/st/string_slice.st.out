@@ -1,4 +1,17 @@
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
+!Main class methodsFor: 'runtime'!
+__slice_string: s start: i end: j
+	| start end n |
+	start := i.
+	end := j.
+	n := s size.
+	start < 0 ifTrue: [ start := start + n ].
+	end < 0 ifTrue: [ end := end + n ].
+	start < 0 ifTrue: [ start := 0 ].
+	end > n ifTrue: [ end := n ].
+	end < start ifTrue: [ end := start ].
+	^ (s copyFrom: start + 1 to: end)
+!
 !!
 ((Main __slice_string: 'hello' start: 1 end: 4)) displayOn: Transcript. Transcript cr.

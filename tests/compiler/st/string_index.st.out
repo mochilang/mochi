@@ -1,5 +1,14 @@
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
+!Main class methodsFor: 'runtime'!
+__index_string: s idx: i
+	| idx n |
+	idx := i.
+	n := s size.
+	idx < 0 ifTrue: [ idx := idx + n ].
+	(idx < 0 or: [ idx >= n ]) ifTrue: [ self error: 'index out of range' ].
+	^ (s at: idx + 1) asString
+!
 !!
 text := 'hello'.
 ((Main __index_string: text idx: 1)) displayOn: Transcript. Transcript cr.

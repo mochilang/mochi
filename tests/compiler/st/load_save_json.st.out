@@ -7,6 +7,39 @@ newPerson: name age: age | dict |
 	dict at: 'age' put: age.
 	^ dict
 !
+!Main class methodsFor: 'runtime'!
+_load: path opts: o
+	| fmt stream text data |
+	fmt := (o notNil and: [ o includesKey: 'format' ]) ifTrue: [ o at: 'format' ] ifFalse: [ 'json' ].
+	stream := (path isNil or: [ path = '' or: [ path = '-' ] ])
+		ifTrue: [ stdin ]
+		ifFalse: [ FileStream open: path mode: FileStream read ].
+	text := stream contents.
+	stream ~= stdin ifTrue: [ stream close ].
+	fmt = 'jsonl' ifTrue: [
+		| out |
+		out := OrderedCollection new.
+		text linesDo: [:l | l isEmpty ifFalse: [ out add: (JSONReader fromJSON: l) ] ].
+		^ out asArray
+	] .
+	data := JSONReader fromJSON: text.
+	(data isKindOf: OrderedCollection) ifTrue: [ ^ data asArray ].
+	^ Array with: data
+!
+_save: rows path: p opts: o
+	| fmt stream |
+	fmt := (o notNil and: [ o includesKey: 'format' ]) ifTrue: [ o at: 'format' ] ifFalse: [ 'json' ].
+	stream := (p isNil or: [ p = '' or: [ p = '-' ] ])
+		ifTrue: [ stdout ]
+		ifFalse: [ FileStream open: p mode: FileStream write ].
+	fmt = 'jsonl' ifTrue: [
+		rows do: [:r | stream nextPutAll: (JSONReader toJSON: r); nextPut: Character nl ].
+		] ifFalse: [
+			stream nextPutAll: (JSONReader toJSON: rows)
+		] .
+		stream ~= stdout ifTrue: [ stream close ].
+		^ self
+!
 !!
 people := (Main _load: nil opts: Dictionary from: {format -> 'json'}).
 (Main _save: people path: nil opts: Dictionary from: {format -> 'json'}).

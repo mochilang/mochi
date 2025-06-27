@@ -7,6 +7,15 @@ newProduct: name price: price | dict |
 	dict at: 'price' put: price.
 	^ dict
 !
+!Main class methodsFor: 'runtime'!
+_paginate: items skip: s take: t
+	| out start |
+	out := items asArray.
+	start := s ifNil: [ 0 ] ifNotNil: [ s ].
+	start > 0 ifTrue: [ out := out copyFrom: start + 1 to: out size ].
+	t notNil ifTrue: [ out := out copyFrom: 1 to: (t min: out size) ].
+	^ out
+!
 !!
 products := Array with: (Main newProduct: 'Laptop' price: 1500) with: (Main newProduct: 'Smartphone' price: 900) with: (Main newProduct: 'Tablet' price: 600) with: (Main newProduct: 'Monitor' price: 300) with: (Main newProduct: 'Keyboard' price: 100) with: (Main newProduct: 'Mouse' price: 50) with: (Main newProduct: 'Headphones' price: 200).
 expensive := ((| res |

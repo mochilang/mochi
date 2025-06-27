@@ -1,4 +1,8 @@
 Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
 
+!Main class methodsFor: 'runtime'!
+__contains_string: s sub: t
+	^ (s findString: t startingAt: 1) ~= 0
+!
 !!
 ((Main __contains_string: 'hello' sub: 'lo')) displayOn: Transcript. Transcript cr.
