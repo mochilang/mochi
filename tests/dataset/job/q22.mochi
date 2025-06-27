@@ -65,7 +65,7 @@ let rows =
     it2.info == "rating" &&
     (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
     (kt.kind == "movie" || kt.kind == "episode") &&
-    !(mc.note.contains("(USA)")) &&
+    mc.note.contains("(USA)") == false &&
     mc.note.contains("(200") &&
     (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
     mi_idx.info < 7.0 &&
