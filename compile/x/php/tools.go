@@ -1,7 +1,9 @@
 package phpcode
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -118,4 +120,32 @@ func EnsurePHPCBF() error {
 		return nil
 	}
 	return fmt.Errorf("phpcbf not installed")
+}
+
+// FormatPHP runs phpcbf with PSR12 on the provided PHP source code. If phpcbf
+// is unavailable or fails, the input is returned unchanged with a trailing
+// newline ensured.
+func FormatPHP(src []byte) []byte {
+	if err := EnsurePHPCBF(); err != nil {
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
+	}
+	cmd := exec.Command("phpcbf", "-q", "--standard=PSR12", "-")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = io.Discard
+	if err := cmd.Run(); err == nil {
+		res := out.Bytes()
+		if len(res) == 0 || res[len(res)-1] != '\n' {
+			res = append(res, '\n')
+		}
+		return res
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
