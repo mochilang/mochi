@@ -98,7 +98,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			case "==", "!=":
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
 			case "in":
-				expr = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", r.expr, r.expr, l.expr, r.expr, l.expr)
+				if r.isString || l.isString {
+					expr = fmt.Sprintf("String.contains?(%s, %s)", r.expr, l.expr)
+				} else {
+					expr = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", r.expr, r.expr, l.expr, r.expr, l.expr)
+				}
 			case "union_all":
 				c.use("_union_all")
 				expr = fmt.Sprintf("_union_all(%s, %s)", l.expr, r.expr)
