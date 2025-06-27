@@ -1,1 +1,28 @@
+(define (_union_all a b)
+  (append a b))
+
+(define (_union a b)
+  (let ((res a))
+    (for-each (lambda (it)
+                (when (not (member it res))
+                  (set! res (append res (list it)))))
+              b)
+    res))
+
+(define (_except a b)
+  (let ((res '()))
+    (for-each (lambda (it)
+                (when (not (member it b))
+                  (set! res (append res (list it)))))
+              a)
+    res))
+
+(define (_intersect a b)
+  (let ((res '()))
+    (for-each (lambda (it)
+                (when (and (member it b) (not (member it res)))
+                  (set! res (append res (list it)))))
+              a)
+    res))
+
 (begin (display (_intersect (list 1 2 3) (list 2 4))) (newline))

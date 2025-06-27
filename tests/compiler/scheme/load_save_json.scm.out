@@ -56,8 +56,8 @@
                   (else (string<? (format "~a" ka) (format "~a" kb))))))))
 
 (define (new-Person name age)
-	(list (cons 'name name) (cons 'age age))
+  (list (cons 'name name) (cons 'age age))
 )
 
-(define people (_load "" (list (cons format "json"))))
-(_save people "" (list (cons format "json")))
+(define people (_load "" (list (cons "format" "json"))))
+(_save people "" (list (cons "format" "json")))

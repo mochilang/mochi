@@ -15,8 +15,8 @@
     (when ok (print-test-pass))))
 
 (define (test_addition_works)
-	(define x (+ 1 2))
-	(when (not (= x 3)) (error "expect failed"))
+  (define x (+ 1 2))
+  (when (not (= x 3)) (error "expect failed"))
 )
 
 (begin (display "ok") (newline))

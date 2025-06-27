@@ -10,4 +10,3 @@
 (define xs (list (list 1 2) (list 3 4)))
 (set! xs (list-set xs 1 (list-set (list-ref xs 1) 0 9)))
 (begin (display (list-ref (list-ref xs 1) 0)) (newline))
-
