@@ -1,0 +1,98 @@
+let cast_info = [
+  { movie_id: 1, person_id: 1, note: "(writer)" },
+  { movie_id: 2, person_id: 2, note: "(writer)" }
+]
+
+let info_type = [
+  { id: 1, info: "genres" },
+  { id: 2, info: "votes" }
+]
+
+let keyword = [
+  { id: 1, keyword: "murder" },
+  { id: 2, keyword: "romance" }
+]
+
+let movie_info = [
+  { movie_id: 1, info_type_id: 1, info: "Horror" },
+  { movie_id: 2, info_type_id: 1, info: "Comedy" }
+]
+
+let movie_info_idx = [
+  { movie_id: 1, info_type_id: 2, info: 100 },
+  { movie_id: 2, info_type_id: 2, info: 50 }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 },
+  { movie_id: 2, keyword_id: 2 }
+]
+
+let name = [
+  { id: 1, name: "Mike", gender: "m" },
+  { id: 2, name: "Sue", gender: "f" }
+]
+
+let title = [
+  { id: 1, title: "Scary Movie" },
+  { id: 2, title: "Funny Movie" }
+]
+
+let allowed_notes = ["(writer)", "(head writer)", "(written by)", "(story)", "(story editor)"]
+let allowed_keywords = ["murder", "blood", "gore", "death", "female-nudity"]
+
+let matches =
+  from ci in cast_info
+  from it1 in info_type
+  from it2 in info_type
+  from k in keyword
+  from mi in movie_info
+  from mi_idx in movie_info_idx
+  from mk in movie_keyword
+  from n in name
+  from t in title
+  where (
+    (ci.note in allowed_notes) &&
+    it1.info == "genres" &&
+    it2.info == "votes" &&
+    (k.keyword in allowed_keywords) &&
+    mi.info == "Horror" &&
+    n.gender == "m" &&
+    t.id == mi.movie_id &&
+    t.id == mi_idx.movie_id &&
+    t.id == ci.movie_id &&
+    t.id == mk.movie_id &&
+    ci.movie_id == mi.movie_id &&
+    ci.movie_id == mi_idx.movie_id &&
+    ci.movie_id == mk.movie_id &&
+    mi.movie_id == mi_idx.movie_id &&
+    mi.movie_id == mk.movie_id &&
+    mi_idx.movie_id == mk.movie_id &&
+    n.id == ci.person_id &&
+    it1.id == mi.info_type_id &&
+    it2.id == mi_idx.info_type_id &&
+    k.id == mk.keyword_id
+  )
+  select {
+    budget: mi.info,
+    votes: mi_idx.info,
+    writer: n.name,
+    title: t.title
+  }
+
+let result = [
+  {
+    movie_budget: min(from x in matches select x.budget),
+    movie_votes: min(from x in matches select x.votes),
+    male_writer: min(from x in matches select x.writer),
+    violent_movie_title: min(from x in matches select x.title)
+  }
+]
+
+json(result)
+
+test "Q25 finds male horror writer with violent keywords" {
+  expect result == [
+    { movie_budget: "Horror", movie_votes: 100, male_writer: "Mike", violent_movie_title: "Scary Movie" }
+  ]
+}
