@@ -281,15 +281,15 @@ public class Main {
         for (Object v : src) { java.util.List<Object> r = new java.util.ArrayList<>(); r.add(v); items.add(r); }
         for (_JoinSpec j : joins) {
             java.util.List<java.util.List<Object>> joined = new java.util.ArrayList<>();
-            java.util.List<Object> jitems = j.items;
-            if (j.right && j.left) {
-                boolean[] matched = new boolean[jitems.size()];
-                for (java.util.List<Object> left : items) {
-                    boolean m = false;
-                    for (int ri=0; ri<jitems.size(); ri++) {
-                        Object right = jitems.get(ri);
+                    for (java.util.List<Object> left : items) {
                         boolean keep = true;
                         if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                    boolean m = false;
+                    if (j.left && !m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
+                }
+            items = joined;
+        }
                             Object[] args = new Object[left.size()+1];
                             for (int i=0;i<left.size();i++) args[i]=left.get(i);
                             args[left.size()] = right;
