@@ -783,6 +783,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpIndex:
 			src := fr.regs[ins.B]
 			idxVal := fr.regs[ins.C]
+			if src.Tag == interpreter.TagNull {
+				fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+				break
+			}
 			switch src.Tag {
 			case interpreter.TagList:
 				idx := idxVal.Int
@@ -790,7 +794,8 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					idx += len(src.List)
 				}
 				if idx < 0 || idx >= len(src.List) {
-					return Value{}, m.newError(fmt.Errorf("index out of range"), trace, ins.Line)
+					fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+					break
 				}
 				fr.regs[ins.A] = src.List[idx]
 			case interpreter.TagMap:
@@ -801,12 +806,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				case interpreter.TagInt:
 					key = fmt.Sprintf("%d", idxVal.Int)
 				default:
-					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
+					fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+					break
 				}
 				fr.regs[ins.A] = src.Map[key]
 			case interpreter.TagStr:
 				if idxVal.Tag != interpreter.TagInt {
-					return Value{}, m.newError(fmt.Errorf("string index must be int"), trace, ins.Line)
+					fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+					break
 				}
 				runes := []rune(src.Str)
 				idx := idxVal.Int
@@ -814,11 +821,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					idx += len(runes)
 				}
 				if idx < 0 || idx >= len(runes) {
-					return Value{}, m.newError(fmt.Errorf("index out of range"), trace, ins.Line)
+					fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+					break
 				}
 				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: string(runes[idx])}
 			default:
-				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
+				fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
 			}
 		case OpSlice:
 			src := fr.regs[ins.B]
@@ -1073,6 +1081,8 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpIterPrep:
 			src := fr.regs[ins.B]
 			switch src.Tag {
+			case interpreter.TagNull:
+				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: nil}
 			case interpreter.TagList:
 				fr.regs[ins.A] = src
 			case interpreter.TagMap:
