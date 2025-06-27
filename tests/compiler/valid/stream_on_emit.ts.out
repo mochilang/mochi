@@ -4,15 +4,15 @@ async function main(): Promise<void> {
   type Sensor = {
     id: string;
     temperature: number;
-  }
-  
-  const sensorStream = new Stream("Sensor")
+  };
+
+  const sensorStream = new Stream("Sensor");
   function _handler_0(ev: Sensor): void {
-    const s = ev
-    console.log(s.id, s.temperature)
+    const s = ev;
+    console.log(s.id, s.temperature);
   }
-  sensorStream.register(_handler_0)
-  sensorStream.append({id: "sensor-1", temperature: 22.5})
+  sensorStream.register(_handler_0);
+  sensorStream.append({ id: "sensor-1", temperature: 22.5 });
 }
 class Stream {
   name: string;
@@ -39,5 +39,5 @@ async function _waitAll(): Promise<void> {
   await Promise.all(_pending);
 }
 
-await main()
-await _waitAll()
+await main();
+await _waitAll();

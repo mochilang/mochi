@@ -2403,12 +2403,30 @@ func fieldFromPostfix(p *parser.PostfixExpr, varName string) (string, bool) {
 }
 
 func formatTS(src []byte) []byte {
-	cmd := exec.Command("npx", "--yes", "prettier", "--parser", "typescript")
-	cmd.Stdin = bytes.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err == nil {
-		return out.Bytes()
+	// Prefer Deno's built-in formatter as it matches the runtime
+	if err := ensureDeno(); err == nil {
+		cmd := exec.Command("deno", "fmt", "-q", "--ext", "ts", "-")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			return out.Bytes()
+		}
+	}
+
+	// Fallback to Prettier via npx if available
+	if _, err := exec.LookPath("npx"); err == nil {
+		cmd := exec.Command("npx", "--yes", "prettier", "--parser", "typescript")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			return out.Bytes()
+		}
+	}
+
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
 	}
 	return src
 }

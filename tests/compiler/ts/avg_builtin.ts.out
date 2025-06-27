@@ -4,15 +4,15 @@ function main(): void {
   let xs: Array<number> = [
     1,
     2,
-    3
-  ]
-  ;(globalThis as any).xs = xs
-  console.log(_avg(xs))
+    3,
+  ];
+  (globalThis as any).xs = xs;
+  console.log(_avg(xs));
 }
 function _avg(v: any): number {
   let list: any[] | null = null;
   if (Array.isArray(v)) list = v;
-  else if (v && typeof v === 'object') {
+  else if (v && typeof v === "object") {
     if (Array.isArray((v as any).items)) list = (v as any).items;
     else if (Array.isArray((v as any).Items)) list = (v as any).Items;
   }
@@ -22,4 +22,4 @@ function _avg(v: any): number {
   return sum / list.length;
 }
 
-main()
+main();

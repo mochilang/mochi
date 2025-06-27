@@ -2,11 +2,11 @@
 
 type Todo = {
   title: string;
-}
+};
 
 function main(): void {
-  let todo: Todo = {"title": "hi"}
-  ;(globalThis as any).todo = todo
-  console.log(todo.title)
+  let todo: Todo = { "title": "hi" };
+  (globalThis as any).todo = todo;
+  console.log(todo.title);
 }
-main()
+main();

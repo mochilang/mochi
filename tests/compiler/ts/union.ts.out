@@ -2,52 +2,67 @@
 
 type Leaf = {
   __name: "Leaf";
-}
+};
 
 type _Node = {
   __name: "Node";
   left: Tree;
   value: number;
   right: Tree;
-}
+};
 
-type Tree = Leaf | _Node
+type Tree = Leaf | _Node;
 
-function depth(t: Tree) : number {
+function depth(t: Tree): number {
   return (() => {
-	const _t = t;
-	if (_t.__name === "Leaf") { return 0 }
-	if (_t.__name === "Node") { return ((l, r) => (() => {
-    let dl: number = depth(l)
-    ;(globalThis as any).dl = dl
-    let dr: number = depth(r)
-    ;(globalThis as any).dr = dr
-    return (() => {
-  	const _t = (dl > dr);
-  	if (_equal(_t, true)) { return (dl + 1) }
-  	return (dr + 1)
-  })()
-})())(_t.left, _t.right) }
-	return undefined
-})()
+    const _t = t;
+    if (_t.__name === "Leaf") return 0;
+    if (_t.__name === "Node") {
+      return ((l, r) =>
+        (() => {
+          let dl: number = depth(l);
+          (globalThis as any).dl = dl;
+          let dr: number = depth(r);
+          (globalThis as any).dr = dr;
+          return (() => {
+            const _t = dl > dr;
+            if (_equal(_t, true)) return (dl + 1);
+            return (dr + 1);
+          })();
+        })())(_t.left, _t.right);
+    }
+    return undefined;
+  })();
 }
 
 function main(): void {
-  console.log(depth({__name: "Node", left: {__name: "Leaf"}, value: 1, right: {__name: "Leaf"}}))
+  console.log(
+    depth({
+      __name: "Node",
+      left: { __name: "Leaf" },
+      value: 1,
+      right: { __name: "Leaf" },
+    }),
+  );
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
-  if (a && b && typeof a === 'object' && typeof b === 'object') {
-    const ak = Object.keys(a); const bk = Object.keys(b);
+  if (a && b && typeof a === "object" && typeof b === "object") {
+    const ak = Object.keys(a);
+    const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
-    for (const k of ak) { if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) return false; }
+    for (const k of ak) {
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
+        return false;
+      }
+    }
     return true;
   }
   return a === b;
 }
 
-main()
+main();

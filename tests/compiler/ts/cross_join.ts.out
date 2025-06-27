@@ -3,74 +3,83 @@
 type Customer = {
   id: number;
   name: string;
-}
+};
 
 type Order = {
   id: number;
   customerId: number;
   total: number;
-}
+};
 
 type PairInfo = {
   orderId: number;
   orderCustomerId: number;
   pairedCustomerName: string;
   orderTotal: number;
-}
+};
 
 function main(): void {
   let customers: Array<Customer> = [
     {
-        id: 1,
-        name: "Alice"
-      },
+      id: 1,
+      name: "Alice",
+    },
     {
-        id: 2,
-        name: "Bob"
-      },
+      id: 2,
+      name: "Bob",
+    },
     {
-        id: 3,
-        name: "Charlie"
-      }
-  ]
-  ;(globalThis as any).customers = customers
+      id: 3,
+      name: "Charlie",
+    },
+  ];
+  (globalThis as any).customers = customers;
   let orders: Array<Order> = [
     {
-        id: 100,
-        customerId: 1,
-        total: 250
-      },
+      id: 100,
+      customerId: 1,
+      total: 250,
+    },
     {
-        id: 101,
-        customerId: 2,
-        total: 125
-      },
+      id: 101,
+      customerId: 2,
+      total: 125,
+    },
     {
-        id: 102,
-        customerId: 1,
-        total: 300
-      }
-  ]
-  ;(globalThis as any).orders = orders
+      id: 102,
+      customerId: 1,
+      total: 300,
+    },
+  ];
+  (globalThis as any).orders = orders;
   let result: Array<PairInfo> = (() => {
-	const _src = orders;
-	const _res = [];
-	for (const o of _src) {
-    for (const c of customers) {
-      _res.push({
-    orderId: o.id,
-    orderCustomerId: o.customerId,
-    pairedCustomerName: c.name,
-    orderTotal: o.total
-  })
+    const _src = orders;
+    const _res = [];
+    for (const o of _src) {
+      for (const c of customers) {
+        _res.push({
+          orderId: o.id,
+          orderCustomerId: o.customerId,
+          pairedCustomerName: c.name,
+          orderTotal: o.total,
+        });
+      }
     }
-  }
-	return _res;
-})()
-  ;(globalThis as any).result = result
-  console.log("--- Cross Join: All order-customer pairs ---")
+    return _res;
+  })();
+  (globalThis as any).result = result;
+  console.log("--- Cross Join: All order-customer pairs ---");
   for (const entry of result) {
-    console.log("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName)
+    console.log(
+      "Order",
+      entry.orderId,
+      "(customerId:",
+      entry.orderCustomerId,
+      ", total: $",
+      entry.orderTotal,
+      ") paired with",
+      entry.pairedCustomerName,
+    );
   }
 }
-main()
+main();

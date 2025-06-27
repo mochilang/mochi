@@ -2,7 +2,7 @@
 
 function main(): void {
   for (let i: number = 1; i < 4; i++) {
-    console.log(i)
+    console.log(i);
   }
 }
-main()
+main();

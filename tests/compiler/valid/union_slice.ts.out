@@ -2,20 +2,20 @@
 
 type Empty = {
   __name: "Empty";
-}
+};
 
 type _Node = {
   __name: "Node";
   child: Foo;
-}
+};
 
-type Foo = Empty | _Node
+type Foo = Empty | _Node;
 
-function listit() : Array<Foo> {
-  return [{__name: "Empty"}]
+function listit(): Array<Foo> {
+  return [{ __name: "Empty" }];
 }
 
 function main(): void {
-  console.log(listit().length)
+  console.log(listit().length);
 }
-main()
+main();

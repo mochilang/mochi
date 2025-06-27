@@ -3,12 +3,12 @@
 function main(): void {
   let groups: Array<Array<string>> = [
     ["eat"],
-    ["bat"]
-  ]
-  ;(globalThis as any).groups = groups
-  let idx: number = 0
-  ;(globalThis as any).idx = idx
-  groups[idx] = groups[idx].concat(["tea"])
-  console.log(groups)
+    ["bat"],
+  ];
+  (globalThis as any).groups = groups;
+  let idx: number = 0;
+  (globalThis as any).idx = idx;
+  groups[idx] = groups[idx].concat(["tea"]);
+  console.log(groups);
 }
-main()
+main();
