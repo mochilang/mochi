@@ -1,12 +1,13 @@
-# Pascal Backend Tasks for TPCH Q1
+# Pascal Backend Tasks for TPCH Queries
 
 The Pascal backend now supports executing the first TPCH query. Recent work
 added record types for dataset rows, dynamic arrays for query results and
 helper functions for aggregations. Groups are implemented using `TFPGMap` and
 a small JSON printer is included for test output.
 
-Future improvements could extend coverage to the remaining TPCH queries and
-expand runtime error handling.
+Work is ongoing to extend coverage to further TPCH queries and to improve
+runtime error handling. Query `q2` currently fails to compile due to missing
+support for complex record field accesses.
 
 ## JOB dataset
 
