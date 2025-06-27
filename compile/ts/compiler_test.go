@@ -239,55 +239,63 @@ func TestTSCompiler_TPCHQ1(t *testing.T) {
 	}
 }
 
-func TestTSCompiler_JOBQ1(t *testing.T) {
+func TestTSCompiler_JOBQueries(t *testing.T) {
 	if err := tscode.EnsureDeno(); err != nil {
 		t.Skipf("deno not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	src := filepath.Join(root, "tests", "dataset", "job", "q1.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
-	}
-	modRoot, _ := mod.FindRoot(filepath.Dir(src))
-	if modRoot == "" {
-		modRoot = filepath.Dir(src)
-	}
-	code, err := tscode.New(env, modRoot).Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-	codeWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "ts", "q1.ts.out")
-	wantCode, err := os.ReadFile(codeWantPath)
-	if err != nil {
-		t.Fatalf("read golden: %v", err)
-	}
-	if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-		t.Errorf("generated code mismatch for q1.ts.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, bytes.TrimSpace(wantCode))
-	}
-	dir := t.TempDir()
-	file := filepath.Join(dir, "main.ts")
-	if err := os.WriteFile(file, code, 0644); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
-	cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", file)
-	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("deno run error: %v\n%s", err, out)
-	}
-	gotOut := bytes.TrimSpace(out)
-	outWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "ts", "q1.out")
-	wantOut, err := os.ReadFile(outWantPath)
-	if err != nil {
-		t.Fatalf("read golden: %v", err)
-	}
-	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-		t.Errorf("output mismatch for q1.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotOut, bytes.TrimSpace(wantOut))
+	for i := 1; i <= 10; i++ {
+		base := fmt.Sprintf("q%d", i)
+		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
+		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "ts", base+".ts.out")
+		outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "ts", base+".out")
+		if _, err := os.Stat(codeWant); err != nil {
+			continue
+		}
+		t.Run(base, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			modRoot, _ := mod.FindRoot(filepath.Dir(src))
+			if modRoot == "" {
+				modRoot = filepath.Dir(src)
+			}
+			code, err := tscode.New(env, modRoot).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			wantCode, err := os.ReadFile(codeWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+				t.Errorf("generated code mismatch for %s.ts.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, bytes.TrimSpace(wantCode))
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.ts")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--ext=ts", file)
+			cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("deno run error: %v\n%s", err, out)
+			}
+			gotOut := bytes.TrimSpace(out)
+			wantOut, err := os.ReadFile(outWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, gotOut, bytes.TrimSpace(wantOut))
+			}
+		})
 	}
 }
 
