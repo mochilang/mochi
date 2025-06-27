@@ -115,10 +115,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeExpectFunc()
 	c.writeBuiltins()
 	c.buf.WriteString(body)
-	formatted, err := Format(c.buf.Bytes())
-	if err != nil {
-		return c.buf.Bytes(), nil
-	}
+	formatted := Format(c.buf.Bytes())
 	return formatted, nil
 }
 
