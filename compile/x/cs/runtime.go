@@ -48,6 +48,32 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("return _sum;")
 				c.indent--
 				c.writeln("}")
+			case "_min":
+				c.writeln("static dynamic _min(dynamic v) {")
+				c.indent++
+				c.writeln("if (v == null) return 0;")
+				c.writeln("dynamic _m = null;")
+				c.writeln("foreach (var it in v) {")
+				c.indent++
+				c.writeln("if (_m == null || Comparer<dynamic>.Default.Compare(it, _m) < 0) _m = it;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return _m;")
+				c.indent--
+				c.writeln("}")
+			case "_max":
+				c.writeln("static dynamic _max(dynamic v) {")
+				c.indent++
+				c.writeln("if (v == null) return 0;")
+				c.writeln("dynamic _m = null;")
+				c.writeln("foreach (var it in v) {")
+				c.indent++
+				c.writeln("if (_m == null || Comparer<dynamic>.Default.Compare(it, _m) > 0) _m = it;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return _m;")
+				c.indent--
+				c.writeln("}")
 			case "_in":
 				c.writeln("static bool _in(dynamic item, dynamic col) {")
 				c.indent++

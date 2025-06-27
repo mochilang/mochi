@@ -1058,7 +1058,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var buf strings.Builder
 		buf.WriteString(fmt.Sprintf("new Func<List<%s>>(() => {\n", resultType))
 		buf.WriteString(fmt.Sprintf("\tvar _res = new List<%s>();\n", resultType))
-		buf.WriteString(fmt.Sprintf("\tforeach (var %s in %s) {\n", v, src))
+		buf.WriteString(fmt.Sprintf("\tforeach (dynamic %s in %s) {\n", v, src))
 		indent := "\t\t"
 		if flt, ok := aliasFilters[v]; ok {
 			for _, fcond := range flt {
@@ -1066,7 +1066,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 		for i, f := range q.Froms {
-			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
+			buf.WriteString(fmt.Sprintf(indent+"foreach (dynamic %s in %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
 			indent += "\t"
 			if flt, ok := aliasFilters[sanitizeName(f.Var)]; ok {
 				for _, fcond := range flt {
@@ -1079,7 +1079,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		specialOuter := len(q.Joins) == 1 && joinSides[0] == "outer" && len(q.Froms) == 0
 		if specialLeft {
 			buf.WriteString(indent + "bool _matched = false;\n")
-			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(q.Joins[0].Var), joinSrcs[0]))
+			buf.WriteString(fmt.Sprintf(indent+"foreach (dynamic %s in %s) {\n", sanitizeName(q.Joins[0].Var), joinSrcs[0]))
 			indent += "\t"
 			buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[0]))
 			if cond != "" {
@@ -1110,9 +1110,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(indent + "}\n")
 		} else if specialRight {
 			buf.WriteString(indent + "bool _matched = false;\n")
-			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(q.Joins[0].Var), joinSrcs[0]))
+			buf.WriteString(fmt.Sprintf(indent+"foreach (dynamic %s in %s) {\n", sanitizeName(q.Joins[0].Var), joinSrcs[0]))
 			indent += "\t"
-			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", v, src))
+			buf.WriteString(fmt.Sprintf(indent+"foreach (dynamic %s in %s) {\n", v, src))
 			indent += "\t"
 			buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[0]))
 			if cond != "" {
@@ -1150,7 +1150,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		} else if specialOuter {
 			buf.WriteString(indent + "var _joinItems = new List<dynamic>(" + joinSrcs[0] + ");\n")
 			buf.WriteString(indent + "var _matched = new bool[_joinItems.Count];\n")
-			buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", v, src))
+			buf.WriteString(fmt.Sprintf(indent+"foreach (dynamic %s in %s) {\n", v, src))
 			indent += "\t"
 			buf.WriteString(indent + "bool _m = false;\n")
 			buf.WriteString(indent + "for (int i = 0; i < _joinItems.Count; i++) {\n")
@@ -1207,7 +1207,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString(indent + "}\n")
 		} else {
 			for i, j := range q.Joins {
-				buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(j.Var), joinSrcs[i]))
+				buf.WriteString(fmt.Sprintf(indent+"foreach (dynamic %s in %s) {\n", sanitizeName(j.Var), joinSrcs[i]))
 				indent += "\t"
 				buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[i]))
 				if flt, ok := aliasFilters[sanitizeName(j.Var)]; ok {
@@ -1883,6 +1883,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return expr, nil
 		}
+		if isAny(typ) && len(p.Selector.Tail) > 0 {
+			key := p.Selector.Tail[0]
+			expr = fmt.Sprintf("%s[%q]", expr, key)
+			for _, f := range p.Selector.Tail[1:] {
+				expr += "." + sanitizeName(f)
+			}
+			return expr, nil
+		}
 		if ut, ok := typ.(types.UnionType); ok && len(p.Selector.Tail) > 0 {
 			field := p.Selector.Tail[0]
 			var variant string
@@ -1985,6 +1993,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", argStr), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min() expects 1 arg")
+		}
+		c.use("_min")
+		return fmt.Sprintf("_min(%s)", argStr), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max() expects 1 arg")
+		}
+		c.use("_max")
+		return fmt.Sprintf("_max(%s)", argStr), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str() expects 1 arg")
