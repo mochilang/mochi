@@ -2,18 +2,18 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !Main class methodsFor: 'mochi'!
 twoSum: nums target: target | i j n |
-	n := nums size.
-	0 to: n - 1 do: [:i |
-		(i + 1) to: n - 1 do: [:j |
-			((((nums at: i + 1) + (nums at: j + 1)) = target)) ifTrue: [
-				^ Array with: i with: j
-			]
-			.
-		]
-		.
-	]
-	.
-	^ Array with: (1 negated) with: (1 negated)
+    n := (nums) size.
+    0 to: n - 1 do: [:i |
+        (i + 1) to: n - 1 do: [:j |
+            ((((nums at: i + 1) + (nums at: j + 1)) = target)) ifTrue: [
+                ^ Array with: i with: j
+            ]
+            .
+        ]
+        .
+    ]
+    .
+    ^ Array with: (1 negated) with: (1 negated)
 !
 
 !!
