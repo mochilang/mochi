@@ -3,7 +3,6 @@ func main (regs=3)
   Const        r0, 1
   // x = 2
   Const        r2, 2
-  Move         r1, r2
   // print(x)
-  Print        r1
+  Print        r2
   Return       r0

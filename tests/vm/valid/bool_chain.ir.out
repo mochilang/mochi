@@ -2,26 +2,16 @@ func main (regs=33)
   // print((1 < 2) && (2 < 3) && (3 < 4))
   Const        r0, 1
   Const        r10, true
-  Move         r7, r10
-  Print        r7
+  Print        r10
   // print((1 < 2) && (2 > 3) && boom())
-  Const        r17, false
-  Move         r14, r17
-  Move         r18, r14
   Jump         L0
   Call         r19, boom, 
-  Move         r18, r19
+  Print        r19
 L0:
-  Print        r18
   // print((1 < 2) && (2 < 3) && (3 > 4) && boom())
-  Const        r30, false
-  Move         r27, r30
-  Move         r31, r27
   Jump         L1
   Call         r32, boom, 
-  Move         r31, r32
-L1:
-  Print        r31
+  Print        r32
   Return       r0
 
   // fun boom(): bool {

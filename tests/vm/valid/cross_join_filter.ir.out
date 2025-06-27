@@ -4,62 +4,49 @@ func main (regs=47)
   Move         r1, r0
   // let letters = ["A", "B"]
   Const        r2, ["A", "B"]
-  Move         r3, r2
   // let pairs = from n in nums
-  Const        r4, []
   IterPrep     r5, r1
   Len          r6, r5
   Const        r7, 0
-L3:
   Less         r8, r7, r6
+L3:
   JumpIfFalse  r8, L0
   Index        r9, r5, r7
-  Move         r10, r9
   // where n % 2 == 0
   Const        r11, 2
-  Mod          r12, r10, r11
+  Mod          r12, r9, r11
   Const        r13, 0
   Equal        r14, r12, r13
   JumpIfFalse  r14, L1
   // from l in letters
-  IterPrep     r15, r3
+  IterPrep     r15, r2
   Len          r16, r15
   Const        r17, 0
-L2:
   Less         r18, r17, r16
+L2:
   JumpIfFalse  r18, L1
-  // let pairs = from n in nums
-  Append       r28, r4, r27
-  Move         r4, r28
-  // from l in letters
-  Const        r30, 1
-  Move         r17, r30
   Jump         L2
   // let pairs = from n in nums
-  Const        r32, 1
-  Move         r7, r32
   Jump         L3
-L0:
-  Move         r33, r4
   // print("--- Even pairs ---")
   Const        r34, "--- Even pairs ---"
   Print        r34
   // for p in pairs {
-  IterPrep     r35, r33
+  IterPrep     r35, r28
+L1:
   Len          r36, r35
   Const        r37, 0
-L5:
   Less         r38, r37, r36
   JumpIfFalse  r38, L4
+L0:
   Index        r39, r35, r37
-  Move         r40, r39
   // print(p.n, p.l)
   Const        r41, "n"
-  Index        r42, r40, r41
+  Index        r42, r39, r41
   Const        r43, "l"
-  Index        r44, r40, r43
+  Index        r44, r39, r43
   Print2       r42, r44
+L5:
   // for p in pairs {
   Jump         L5
-L4:
   Return       r0

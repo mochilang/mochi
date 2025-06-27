@@ -4,74 +4,62 @@ func main (regs=73)
   Move         r1, r0
   // let orders = [
   Const        r2, [{"customerId": 1, "id": 100, "total": 250}, {"customerId": 2, "id": 101, "total": 125}, {"customerId": 1, "id": 102, "total": 300}]
-  Move         r3, r2
   // let result = from o in orders
-  Const        r4, []
-  IterPrep     r5, r3
+  IterPrep     r5, r2
   Len          r6, r5
   Const        r7, 0
-L3:
   Less         r8, r7, r6
+L3:
   JumpIfFalse  r8, L0
   // from c in customers
   IterPrep     r11, r1
   Len          r12, r11
   Const        r13, 0
-L2:
   Less         r14, r13, r12
   JumpIfFalse  r14, L1
-  // let result = from o in orders
-  Append       r38, r4, r37
-  Move         r4, r38
-  // from c in customers
+L2:
   Jump         L2
   // let result = from o in orders
-  Const        r42, 1
-  Move         r7, r42
   Jump         L3
-L0:
-  Move         r43, r4
   // print("--- Cross Join: All order-customer pairs ---")
   Const        r44, "--- Cross Join: All order-customer pairs ---"
   Print        r44
+L1:
   // for entry in result {
-  IterPrep     r45, r43
+  IterPrep     r45, r38
   Len          r46, r45
   Const        r47, 0
-L5:
   Less         r48, r47, r46
+L0:
   JumpIfFalse  r48, L4
   Index        r49, r45, r47
-  Move         r50, r49
   // print("Order", entry.orderId,
   Const        r59, "Order"
   Move         r51, r59
   Const        r60, "orderId"
-  Index        r61, r50, r60
+  Index        r61, r49, r60
+L5:
   Move         r52, r61
   // "(customerId:", entry.orderCustomerId,
   Const        r62, "(customerId:"
   Move         r53, r62
   Const        r63, "orderCustomerId"
-  Index        r64, r50, r63
+  Index        r64, r49, r63
   Move         r54, r64
   // ", total: $", entry.orderTotal,
   Const        r65, ", total: $"
   Move         r55, r65
   Const        r66, "orderTotal"
-  Index        r67, r50, r66
+  Index        r67, r49, r66
   Move         r56, r67
   // ") paired with", entry.pairedCustomerName)
   Const        r68, ") paired with"
   Move         r57, r68
   Const        r69, "pairedCustomerName"
-  Index        r70, r50, r69
+  Index        r70, r49, r69
   Move         r58, r70
   // print("Order", entry.orderId,
   PrintN       r51, 8, r51
   // for entry in result {
-  Const        r72, 1
-  Move         r47, r72
   Jump         L5
-L4:
   Return       r0
