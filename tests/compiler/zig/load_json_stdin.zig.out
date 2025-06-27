@@ -1,33 +1,33 @@
 const std = @import("std");
 
 fn _read_input(path: ?[]const u8) []const u8 {
-	const alloc = std.heap.page_allocator;
-	if (path == null or std.mem.eql(u8, path.?, "-")) {
-		return std.io.getStdIn().readAllAlloc(alloc, 1 << 20) catch unreachable;
-	} else {
-		return std.fs.cwd().readFileAlloc(alloc, path.?, 1 << 20) catch unreachable;
-	}
+    const alloc = std.heap.page_allocator;
+    if (path == null or std.mem.eql(u8, path.?, "-")) {
+        return std.io.getStdIn().readAllAlloc(alloc, 1 << 20) catch unreachable;
+    } else {
+        return std.fs.cwd().readFileAlloc(alloc, path.?, 1 << 20) catch unreachable;
+    }
 }
 
 fn _write_output(path: ?[]const u8, data: []const u8) void {
-	if (path == null or std.mem.eql(u8, path.?, "-")) {
-		std.io.getStdOut().writeAll(data) catch unreachable;
-	} else {
-		std.fs.cwd().writeFile(path.?, data) catch unreachable;
-	}
+    if (path == null or std.mem.eql(u8, path.?, "-")) {
+        std.io.getStdOut().writeAll(data) catch unreachable;
+    } else {
+        std.fs.cwd().writeFile(path.?, data) catch unreachable;
+    }
 }
 
 fn _load_json(comptime T: type, path: ?[]const u8) []T {
-	const text = _read_input(path);
-	return std.json.parseFromSlice(T, std.heap.page_allocator, text, .{}).value;
+    const text = _read_input(path);
+    return std.json.parseFromSlice(T, std.heap.page_allocator, text, .{}).value;
 }
 
 const Person = struct {
-	name: []const u8,
-	age: i32,
+    name: []const u8,
+    age: i32,
 };
 
 pub fn main() void {
-	const people: []const i32 = _load_json([]Person, null);
-	std.debug.print("{any}\n", .{(people).len});
+    const people: []const i32 = _load_json([]Person, null);
+    std.debug.print("{any}\n", .{(people).len});
 }
