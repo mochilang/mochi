@@ -1,6 +1,7 @@
 package zigcode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -69,4 +70,20 @@ func EnsureZig() (string, error) {
 		return "", fmt.Errorf("zig not installed")
 	}
 	return bin, nil
+}
+
+// Format runs `zig fmt` on the provided source code. If the Zig compiler
+// isn't available, the input is returned unchanged.
+func Format(src []byte) ([]byte, error) {
+	zigc, err := EnsureZig()
+	if err != nil {
+		return src, nil
+	}
+	cmd := exec.Command(zigc, "fmt", "--stdin")
+	cmd.Stdin = bytes.NewReader(src)
+	out, err := cmd.Output()
+	if err != nil {
+		return src, err
+	}
+	return out, nil
 }

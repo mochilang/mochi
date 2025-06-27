@@ -1,21 +1,21 @@
 const std = @import("std");
 
 fn _concat_string(a: []const u8, b: []const u8) []const u8 {
-	var res = std.ArrayList(u8).init(std.heap.page_allocator);
-	defer res.deinit();
-	res.appendSlice(a) catch unreachable;
-	res.appendSlice(b) catch unreachable;
-	return res.toOwnedSlice() catch unreachable;
+    var res = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer res.deinit();
+    res.appendSlice(a) catch unreachable;
+    res.appendSlice(b) catch unreachable;
+    return res.toOwnedSlice() catch unreachable;
 }
 
 const Person = struct {
-	name: []const u8,
-	fn greet(self: *Person) []const u8 {
-		return _concat_string("hi ", self.name);
-	},
+    name: []const u8,
+    fn greet(self: *Person) []const u8 {
+        return _concat_string("hi ", name);
+    }
 };
 
 pub fn main() void {
-	const p: Person = Person{ .name = "Ada" };
-	std.debug.print("{any}\n", .{p.greet()});
+    const p: i32 = Person{ .name = "Ada" };
+    std.debug.print("{any}\n", .{p.greet()});
 }
