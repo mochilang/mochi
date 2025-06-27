@@ -1,6 +1,7 @@
 package rktcode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -56,4 +57,20 @@ func EnsureRacket() error {
 		return nil
 	}
 	return fmt.Errorf("racket not found")
+}
+
+// FormatRacket runs "raco fmt" on the given source code when available.
+// If the formatter is missing or fails, the input is returned unchanged.
+func FormatRacket(src []byte) []byte {
+	if _, err := exec.LookPath("raco"); err != nil {
+		return src
+	}
+	cmd := exec.Command("raco", "fmt", "--stdin")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		return out.Bytes()
+	}
+	return src
 }
