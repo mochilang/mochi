@@ -29,3 +29,14 @@ To run `tests/dataset/tpc-h/q1.mochi` the following work is required:
 - [ ] Add golden tests under `tests/compiler/c` covering the new grouping logic.
 
 Until these tasks are complete `mochi build --target c tests/dataset/tpc-h/q1.mochi` results in generated C that simply sets `result` to `0`.
+
+## JOB dataset queries
+
+Attempts to compile the JOB `q1.mochi`–`q10.mochi` programs fail because joins
+and grouping are not supported yet. The backend stops early when `join` clauses
+are present and emits `return 0`. Supporting these queries requires:
+
+- Implementing join processing similar to the Go runtime.
+- Extending grouping and aggregation support beyond simple lists.
+- Emitting helper functions for `min` and other aggregations used in JOB.
+
