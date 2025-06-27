@@ -71,9 +71,64 @@ func EnsureCPP() (string, error) {
 	return "", fmt.Errorf("C++ compiler not found")
 }
 
+// EnsureClangFormat checks for clang-format and attempts to install it if missing.
+func EnsureClangFormat() error {
+	if _, err := exec.LookPath("clang-format"); err == nil {
+		return nil
+	}
+	switch runtime.GOOS {
+	case "linux":
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			fmt.Println("\U0001F527 Installing clang-format...")
+			cmd := exec.Command("apt-get", "update")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				return err
+			}
+			cmd = exec.Command("apt-get", "install", "-y", "clang-format")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	case "darwin":
+		if _, err := exec.LookPath("brew"); err == nil {
+			fmt.Println("\U0001F37A Installing clang-format via Homebrew...")
+			cmd := exec.Command("brew", "install", "clang-format")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			fmt.Println("\U0001F527 Installing clang-format via Chocolatey...")
+			cmd := exec.Command("choco", "install", "-y", "llvm")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			fmt.Println("\U0001F527 Installing clang-format via Scoop...")
+			cmd := exec.Command("scoop", "install", "llvm")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	}
+	if _, err := exec.LookPath("clang-format"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("clang-format not found")
+}
+
 // FormatCPP runs clang-format on the given source code if available.
 // If clang-format is not found or fails, the input is returned unchanged.
 func FormatCPP(src []byte) []byte {
+	if err := EnsureClangFormat(); err != nil {
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
+	}
 	path, err := exec.LookPath("clang-format")
 	if err != nil {
 		return src
