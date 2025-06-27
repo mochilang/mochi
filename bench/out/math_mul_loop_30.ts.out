@@ -2,7 +2,6 @@
 
 function mul(n: number): number {
   let result: number = 1;
-  (globalThis as any).result = result;
   for (let i: number = 1; i < n; i++) {
     result = result * i;
   }
@@ -11,20 +10,15 @@ function mul(n: number): number {
 
 function main(): void {
   let n: number = 30;
-  (globalThis as any).n = n;
   let repeat: number = 1000;
-  (globalThis as any).repeat = repeat;
   let last: number = 0;
-  (globalThis as any).last = last;
   let start: number = performance.now() * 1000000;
-  (globalThis as any).start = start;
   for (let i: number = 0; i < repeat; i++) {
     last = mul(n);
   }
   let duration: number = Math.trunc(
     (performance.now() * 1000000 - start) / 1000,
   );
-  (globalThis as any).duration = duration;
   console.log(
     _json({
       duration_us: duration,

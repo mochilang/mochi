@@ -9,20 +9,15 @@ function fact_rec(n: number): number {
 
 function main(): void {
   let n: number = 20;
-  (globalThis as any).n = n;
   let repeat: number = 1000;
-  (globalThis as any).repeat = repeat;
   let last: number = 0;
-  (globalThis as any).last = last;
   let start: number = performance.now() * 1000000;
-  (globalThis as any).start = start;
   for (let i: number = 0; i < repeat; i++) {
     last = fact_rec(n);
   }
   let duration: number = Math.trunc(
     (performance.now() * 1000000 - start) / 1000,
   );
-  (globalThis as any).duration = duration;
   console.log(
     _json({
       duration_us: duration,

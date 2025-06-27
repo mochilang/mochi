@@ -2,25 +2,17 @@
 
 function searchMatrix(matrix: Array<Array<number>>, target: number): boolean {
   let m: number = matrix.length;
-  (globalThis as any).m = m;
   if ((m == 0)) {
     return false;
   }
   let n: number = matrix[0].length;
-  (globalThis as any).n = n;
   let left: number = 0;
-  (globalThis as any).left = left;
   let right: number = (m * n) - 1;
-  (globalThis as any).right = right;
   while ((left <= right)) {
     let mid: number = left + Math.trunc((right - left) / 2);
-    (globalThis as any).mid = mid;
     let row: number = Math.trunc(mid / n);
-    (globalThis as any).row = row;
     let col: number = mid % n;
-    (globalThis as any).col = col;
     let value: number = matrix[row][col];
-    (globalThis as any).value = value;
     if ((value == target)) {
       return true;
     } else if ((value < target)) {

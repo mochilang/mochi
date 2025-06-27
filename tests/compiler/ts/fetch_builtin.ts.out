@@ -4,12 +4,10 @@ type Msg = {
   message: string;
 };
 
+let data: any;
+
 async function main(): Promise<void> {
-  let data: Msg = await _fetch(
-    "file://tests/compiler/ts/fetch_builtin.json",
-    undefined,
-  );
-  (globalThis as any).data = data;
+  data = await _fetch("file://tests/compiler/ts/fetch_builtin.json", undefined);
   console.log(data.message);
 }
 async function _fetch(url: string, opts: any): Promise<any> {

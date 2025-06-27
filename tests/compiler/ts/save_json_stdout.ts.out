@@ -5,12 +5,10 @@ type Person = {
   age: number;
 };
 
+let people: any;
+
 function main(): void {
-  let people: Array<Person> = _load(
-    null,
-    _toAnyMap({ "format": "json" }),
-  ) as Array<Person>;
-  (globalThis as any).people = people;
+  people = _load(null, _toAnyMap({ "format": "json" })) as Array<Person>;
   _save(people, null, _toAnyMap({ "format": "json" }));
 }
 import { readAllSync } from "https://deno.land/std@0.221.0/io/read_all.ts";

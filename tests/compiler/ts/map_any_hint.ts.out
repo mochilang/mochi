@@ -17,9 +17,10 @@ function _Node(
   };
 }
 
+let tree: any;
+
 function main(): void {
-  let tree: Record<string, any> = _Node(Leaf(), 1, Leaf());
-  (globalThis as any).tree = tree;
+  tree = _Node(Leaf(), 1, Leaf());
   console.log(tree["left"]["__name"]);
 }
 main();

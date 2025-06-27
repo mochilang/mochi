@@ -5,12 +5,13 @@ type Person = {
   age: number;
 };
 
+let names: any;
+
 function main(): void {
-  let names: Array<string> = _load(
+  names = _load(
     null,
     _toAnyMap({ ..._toAnyMap({ "format": "jsonl" }), filter: { age: 40 } }),
   ).map((p) => p.name);
-  (globalThis as any).names = names;
   console.log(_count(names));
 }
 function _count(v: any): number {

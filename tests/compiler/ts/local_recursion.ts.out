@@ -19,7 +19,6 @@ function fromList(nums: Array<number>): Tree {
       return { __name: "Leaf" };
     }
     let mid: number = Math.trunc((lo + hi) / 2);
-    (globalThis as any).mid = mid;
     return {
       __name: "Node",
       left: helper(lo, mid),

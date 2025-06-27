@@ -9,15 +9,11 @@ function fib(n: number): number {
 
 function main(): void {
   let n: number = 10;
-  (globalThis as any).n = n;
   let start: number = performance.now() * 1000000;
-  (globalThis as any).start = start;
   let result: number = fib(n);
-  (globalThis as any).result = result;
   let duration: number = Math.trunc(
     (performance.now() * 1000000 - start) / 1000,
   );
-  (globalThis as any).duration = duration;
   console.log(
     _json({
       duration_us: duration,

@@ -2,12 +2,9 @@
 
 function fib(n: number): number {
   let a: number = 0;
-  (globalThis as any).a = a;
   let b: number = 1;
-  (globalThis as any).b = b;
   for (let i: number = 0; i < n; i++) {
     let tmp: number = a + b;
-    (globalThis as any).tmp = tmp;
     a = b;
     b = tmp;
   }
@@ -16,20 +13,15 @@ function fib(n: number): number {
 
 function main(): void {
   let n: number = 30;
-  (globalThis as any).n = n;
   let repeat: number = 1000;
-  (globalThis as any).repeat = repeat;
   let last: number = 0;
-  (globalThis as any).last = last;
   let start: number = performance.now() * 1000000;
-  (globalThis as any).start = start;
   for (let i: number = 0; i < repeat; i++) {
     last = fib(n);
   }
   let duration: number = Math.trunc(
     (performance.now() * 1000000 - start) / 1000,
   );
-  (globalThis as any).duration = duration;
   console.log(
     _json({
       duration_us: duration,

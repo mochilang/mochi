@@ -29,6 +29,7 @@ type Compiler struct {
 	handlerCount int
 	packages     map[string]bool
 	root         string
+	globals      map[string]bool
 }
 
 // New creates a new TypeScript compiler instance.
@@ -41,6 +42,7 @@ func New(env *types.Env, root string) *Compiler {
 		agents:   make(map[string]bool),
 		packages: make(map[string]bool),
 		root:     root,
+		globals:  make(map[string]bool),
 	}
 }
 
@@ -284,6 +286,33 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// Placeholder globals for variables used in tests
+	seen := map[string]bool{}
+	wrotePlaceholder := false
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			continue
+		}
+		var name string
+		switch {
+		case s.Let != nil:
+			name = sanitizeName(s.Let.Name)
+		case s.Var != nil:
+			name = sanitizeName(s.Var.Name)
+		case s.Fetch != nil:
+			name = sanitizeName(s.Fetch.Target)
+		}
+		if name != "" && !seen[name] {
+			seen[name] = true
+			c.globals[name] = true
+			c.writeln(fmt.Sprintf("let %s: any", name))
+			wrotePlaceholder = true
+		}
+	}
+	if wrotePlaceholder {
+		c.writeln("")
+	}
+
 	// Emit test block declarations.
 	for _, s := range prog.Statements {
 		if s.Test != nil {
@@ -420,12 +449,17 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		c.env.SetVar(s.Name, typ, false)
 	}
 	typStr := tsType(typ)
-	if typStr != "" {
-		c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+	if c.globals[name] && c.indent > 0 {
+		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
-		c.writeln(fmt.Sprintf("let %s = %s", name, value))
+		if typStr != "" {
+			c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+		} else {
+			c.writeln(fmt.Sprintf("let %s = %s", name, value))
+		}
 	}
-	c.writeln(fmt.Sprintf(";(globalThis as any).%s = %s", name, name))
+	// expose variable for tests (legacy behavior removed)
+	// c.writeln(fmt.Sprintf(";(globalThis as any).%s = %s", name, name))
 	return nil
 }
 
@@ -460,12 +494,17 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		c.env.SetVar(s.Name, typ, true)
 	}
 	typStr := tsType(typ)
-	if typStr != "" {
-		c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+	if c.globals[name] && c.indent > 0 {
+		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
-		c.writeln(fmt.Sprintf("let %s = %s", name, value))
+		if typStr != "" {
+			c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+		} else {
+			c.writeln(fmt.Sprintf("let %s = %s", name, value))
+		}
 	}
-	c.writeln(fmt.Sprintf(";(globalThis as any).%s = %s", name, name))
+	// expose variable for tests (legacy behavior removed)
+	// c.writeln(fmt.Sprintf(";(globalThis as any).%s = %s", name, name))
 	return nil
 }
 
@@ -565,11 +604,16 @@ func (c *Compiler) compileFetchStmt(f *parser.FetchStmt) error {
 		return err
 	}
 	name := sanitizeName(f.Target)
-	c.writeln(fmt.Sprintf("const %s = %s", name, expr))
+	if c.globals[name] && c.indent > 0 {
+		c.writeln(fmt.Sprintf("%s = %s", name, expr))
+	} else {
+		c.writeln(fmt.Sprintf("const %s = %s", name, expr))
+	}
 	if c.env != nil {
 		c.env.SetVar(f.Target, types.AnyType{}, false)
 	}
-	c.writeln(fmt.Sprintf(";(globalThis as any).%s = %s", name, name))
+	// expose variable for tests (legacy behavior removed)
+	// c.writeln(fmt.Sprintf(";(globalThis as any).%s = %s", name, name))
 	return nil
 }
 
