@@ -1,6 +1,8 @@
 # Scala Backend Tasks
 
 Scala code generation now supports running the `tpc-h/q1.mochi` benchmark and JOB queries.
+`tpc-h/q2.mochi` compiles but the generated Scala fails to run due to missing
+runtime helpers and variable scoping issues.
 
 Completed work:
 
@@ -15,5 +17,6 @@ Completed work:
 
 Remaining work:
 
+- Fix runtime helpers (`_compare`, aggregates) and scope handling so TPCH queries beyond `q1` run.
 - Scala output for JOB queries beyond `q2` fails to compile due to map field access using dot notation.
 - Implement map/struct field access so JOB queries `q3`-`q10` run successfully.
