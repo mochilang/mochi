@@ -1,0 +1,74 @@
+let aka_name = [
+  { person_id: 1, name: "A. N. G." },
+  { person_id: 2, name: "J. D." }
+]
+
+let char_name = [
+  { id: 10, name: "Angel" },
+  { id: 20, name: "Devil" }
+]
+
+let cast_info = [
+  { person_id: 1, person_role_id: 10, movie_id: 100, role_id: 1000, note: "(voice)" },
+  { person_id: 2, person_role_id: 20, movie_id: 200, role_id: 1000, note: "(voice)" }
+]
+
+let company_name = [
+  { id: 100, country_code: "[us]" },
+  { id: 200, country_code: "[gb]" }
+]
+
+let movie_companies = [
+  { movie_id: 100, company_id: 100, note: "ACME Studios (USA)" },
+  { movie_id: 200, company_id: 200, note: "Maple Films" }
+]
+
+let name = [
+  { id: 1, name: "Angela Smith", gender: "f" },
+  { id: 2, name: "John Doe", gender: "m" }
+]
+
+let role_type = [
+  { id: 1000, role: "actress" },
+  { id: 2000, role: "actor" }
+]
+
+let title = [
+  { id: 100, title: "Famous Film", production_year: 2010 },
+  { id: 200, title: "Old Movie", production_year: 1999 }
+]
+
+let matches =
+  from an in aka_name
+  join n in name on an.person_id == n.id
+  join ci in cast_info on ci.person_id == n.id
+  join chn in char_name on chn.id == ci.person_role_id
+  join t in title on t.id == ci.movie_id
+  join mc in movie_companies on mc.movie_id == t.id
+  join cn in company_name on cn.id == mc.company_id
+  join rt in role_type on rt.id == ci.role_id
+  where (ci.note in ["(voice)", "(voice: Japanese version)", "(voice) (uncredited)", "(voice: English version)"]) &&
+        cn.country_code == "[us]" &&
+        mc.note != nil &&
+        (mc.note.contains("(USA)") || mc.note.contains("(worldwide)")) &&
+        n.gender == "f" &&
+        n.name.contains("Ang") &&
+        rt.role == "actress" &&
+        t.production_year >= 2005 && t.production_year <= 2015
+  select { alt: an.name, character: chn.name, movie: t.title }
+
+let result = [
+  {
+    alternative_name: min(from x in matches select x.alt),
+    character_name: min(from x in matches select x.character),
+    movie: min(from x in matches select x.movie)
+  }
+]
+
+json(result)
+
+test "Q9 selects minimal alternative name, character and movie" {
+  expect result == [
+    { alternative_name: "A. N. G.", character_name: "Angel", movie: "Famous Film" }
+  ]
+}
