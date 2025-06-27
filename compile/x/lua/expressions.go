@@ -192,7 +192,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = v
 			}
-			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+			if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
+				c.helpers["contains"] = true
+				base := strings.TrimSuffix(expr, ".contains")
+				expr = fmt.Sprintf("__contains(%s, %s)", base, args[0])
+			} else {
+				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+			}
 		} else if op.Cast != nil {
 			if op.Cast.Type.Simple != nil && c.env != nil {
 				if st, ok := c.resolveTypeRef(op.Cast.Type).(types.StructType); ok {
@@ -342,6 +348,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "sum":
 		c.helpers["sum"] = true
 		return fmt.Sprintf("__sum(%s)", argStr), nil
+	case "min":
+		c.helpers["min"] = true
+		return fmt.Sprintf("__min(%s)", argStr), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")

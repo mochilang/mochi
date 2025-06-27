@@ -162,6 +162,33 @@ const (
 		"    return sum\n" +
 		"end\n"
 
+	helperMin = "function __min(v)\n" +
+		"    local items\n" +
+		"    if type(v) == 'table' and v.items ~= nil then\n" +
+		"        items = v.items\n" +
+		"    elseif type(v) == 'table' then\n" +
+		"        items = v\n" +
+		"    else\n" +
+		"        error('min() expects list or group')\n" +
+		"    end\n" +
+		"    if #items == 0 then return 0 end\n" +
+		"    local m = items[1]\n" +
+		"    if type(m) == 'string' then\n" +
+		"        for i=2,#items do\n" +
+		"            local it = items[i]\n" +
+		"            if type(it) == 'string' and it < m then m = it end\n" +
+		"        end\n" +
+		"        return m\n" +
+		"    else\n" +
+		"        m = tonumber(m)\n" +
+		"        for i=2,#items do\n" +
+		"            local n = tonumber(items[i])\n" +
+		"            if n < m then m = n end\n" +
+		"        end\n" +
+		"        return m\n" +
+		"    end\n" +
+		"end\n"
+
 	helperAppend = "function __append(lst, v)\n" +
 		"    local out = {}\n" +
 		"    if lst then for i = 1, #lst do out[#out+1] = lst[i] end end\n" +
@@ -680,6 +707,7 @@ var helperMap = map[string]string{
 	"count":       helperCount,
 	"avg":         helperAvg,
 	"sum":         helperSum,
+	"min":         helperMin,
 	"append":      helperAppend,
 	"reduce":      helperReduce,
 	"json":        helperJson,
