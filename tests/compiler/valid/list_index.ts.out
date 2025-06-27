@@ -4,9 +4,9 @@ function main(): void {
   let xs: Array<number> = [
     10,
     20,
-    30
-  ]
-  ;(globalThis as any).xs = xs
-  console.log(xs[1])
+    30,
+  ];
+  (globalThis as any).xs = xs;
+  console.log(xs[1]);
 }
-main()
+main();

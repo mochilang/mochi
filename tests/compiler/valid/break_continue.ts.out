@@ -10,17 +10,17 @@ function main(): void {
     6,
     7,
     8,
-    9
-  ]
-  ;(globalThis as any).numbers = numbers
+    9,
+  ];
+  (globalThis as any).numbers = numbers;
   for (const n of numbers) {
     if (((n % 2) == 0)) {
-      continue
+      continue;
     }
     if ((n > 7)) {
-      break
+      break;
     }
-    console.log("odd number:", n)
+    console.log("odd number:", n);
   }
 }
-main()
+main();

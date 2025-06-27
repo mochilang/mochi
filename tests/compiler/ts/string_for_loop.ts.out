@@ -2,7 +2,7 @@
 
 function main(): void {
   for (const ch of "cat") {
-    console.log(ch)
+    console.log(ch);
   }
 }
-main()
+main();

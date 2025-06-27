@@ -2,36 +2,47 @@
 
 type Msg = {
   message: string;
-}
+};
 
 async function main(): Promise<void> {
-  let data: Msg = await _fetch("file://tests/compiler/ts/fetch_builtin.json", undefined)
-  ;(globalThis as any).data = data
-  console.log(data.message)
+  let data: Msg = await _fetch(
+    "file://tests/compiler/ts/fetch_builtin.json",
+    undefined,
+  );
+  (globalThis as any).data = data;
+  console.log(data.message);
 }
 async function _fetch(url: string, opts: any): Promise<any> {
-  if (url.startsWith('file://')) {
+  if (url.startsWith("file://")) {
     let path = url.slice(7);
-    if (!path.startsWith('/')) {
+    if (!path.startsWith("/")) {
       try {
         const t = Deno.readTextFileSync(path);
-        try { return JSON.parse(t); } catch { return t; }
+        try {
+          return JSON.parse(t);
+        } catch {
+          return t;
+        }
       } catch {
-        path = Deno.cwd() + '/../..' + '/' + path;
+        path = Deno.cwd() + "/../.." + "/" + path;
       }
     }
     const text = Deno.readTextFileSync(path);
-    try { return JSON.parse(text); } catch { return text; }
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
   }
-  const init: RequestInit = { method: opts?.method ?? 'GET' };
-  if (opts?.headers) { init.headers = _toAnyMap(opts.headers); }
-  if (opts && 'body' in opts) { init.body = JSON.stringify(opts.body); }
+  const init: RequestInit = { method: opts?.method ?? "GET" };
+  if (opts?.headers) init.headers = _toAnyMap(opts.headers);
+  if (opts && "body" in opts) init.body = JSON.stringify(opts.body);
   if (opts?.query) {
     const qs = new URLSearchParams();
     for (const [k, v] of Object.entries(_toAnyMap(opts.query))) {
       qs.set(k, String(v));
     }
-    const sep = url.includes('?') ? '&' : '?';
+    const sep = url.includes("?") ? "&" : "?";
     url = url + sep + qs.toString();
   }
   let ctrl: AbortController | undefined;
@@ -44,7 +55,11 @@ async function _fetch(url: string, opts: any): Promise<any> {
   const resp = await fetch(url, init);
   if (id) clearTimeout(id);
   const text = await resp.text();
-  try { return JSON.parse(text); } catch { return text; }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
 }
 
 const _pending: Promise<any>[] = [];
@@ -52,5 +67,5 @@ async function _waitAll(): Promise<void> {
   await Promise.all(_pending);
 }
 
-await main()
-await _waitAll()
+await main();
+await _waitAll();

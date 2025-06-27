@@ -61,3 +61,15 @@ func ensureDeno() error {
 	}
 	return fmt.Errorf("failed to install deno")
 }
+
+// EnsureFormatter verifies that either Deno or npx Prettier is available so
+// generated TypeScript can be formatted. It is safe to call from tests.
+func EnsureFormatter() error {
+	if err := ensureDeno(); err == nil {
+		return nil
+	}
+	if _, err := exec.LookPath("npx"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("deno or npx not found")
+}

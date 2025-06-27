@@ -3,17 +3,23 @@
 type Person = {
   name: string;
   age: number;
-}
+};
 
 function main(): void {
-  let people: Array<Person> = _load(null, _toAnyMap({"format": "json"})) as Array<Person>
-  ;(globalThis as any).people = people
-  _save(people, null, _toAnyMap({"format": "json"}))
+  let people: Array<Person> = _load(
+    null,
+    _toAnyMap({ "format": "json" }),
+  ) as Array<Person>;
+  (globalThis as any).people = people;
+  _save(people, null, _toAnyMap({ "format": "json" }));
 }
 import { readAllSync } from "https://deno.land/std@0.221.0/io/read_all.ts";
-import { parse as _yamlParse, stringify as _yamlStringify } from "https://deno.land/std@0.221.0/yaml/mod.ts";
+import {
+  parse as _yamlParse,
+  stringify as _yamlStringify,
+} from "https://deno.land/std@0.221.0/yaml/mod.ts";
 function _readInput(path: string | null): string {
-  if (!path || path === '-') {
+  if (!path || path === "-") {
     const data = readAllSync(Deno.stdin);
     return new TextDecoder().decode(data);
   }
@@ -21,7 +27,7 @@ function _readInput(path: string | null): string {
 }
 function _writeOutput(path: string | null, text: string): void {
   const data = new TextEncoder().encode(text);
-  if (!path || path === '-') {
+  if (!path || path === "-") {
     Deno.stdout.writeSync(data);
   } else {
     Deno.writeFileSync(path, data);
@@ -32,40 +38,48 @@ function _parseCSV(text: string, header: boolean, delim: string): any[] {
   if (lines.length === 0) return [];
   let headers: string[] = [];
   let start = 0;
-  if (header) { headers = lines[0].split(delim); start = 1; } else { headers = lines[0].split(delim).map((_,i)=>`c${i}`); }
+  if (header) {
+    headers = lines[0].split(delim);
+    start = 1;
+  } else headers = lines[0].split(delim).map((_, i) => `c${i}`);
   const out: any[] = [];
-  for (let i=start; i<lines.length; i++) {
+  for (let i = start; i < lines.length; i++) {
     if (!lines[i]) continue;
     const parts = lines[i].split(delim);
     const m: Record<string, any> = {};
-    for (let j=0; j<headers.length; j++) {
-      const val = parts[j] ?? '';
-      if (/^-?\d+$/.test(val)) m[headers[j]] = parseInt(val,10);
-      else if (/^-?\d*\.\d+(e[+-]?\d+)?$/i.test(val)) m[headers[j]] = parseFloat(val);
-      else m[headers[j]] = val;
+    for (let j = 0; j < headers.length; j++) {
+      const val = parts[j] ?? "";
+      if (/^-?\d+$/.test(val)) m[headers[j]] = parseInt(val, 10);
+      else if (/^-?\d*\.\d+(e[+-]?\d+)?$/i.test(val)) {
+        m[headers[j]] = parseFloat(val);
+      } else m[headers[j]] = val;
     }
     out.push(m);
   }
   return out;
 }
 function _load(path: string | null, opts: any): any[] {
-  const format = opts?.format ?? 'csv';
+  const format = opts?.format ?? "csv";
   const header = opts?.header ?? true;
-  let delim = (opts?.delimiter ?? ',')[0];
+  let delim = (opts?.delimiter ?? ",")[0];
   const text = _readInput(path);
   let items: any[];
   switch (format) {
-    case 'jsonl':
-      items = text.trim().split(/\r?\n/).filter(l=>l).map(l=>JSON.parse(l));
+    case "jsonl":
+      items = text.trim().split(/\r?\n/).filter((l) => l).map((l) =>
+        JSON.parse(l)
+      );
       break;
-    case 'json':
-      const d = JSON.parse(text); items = Array.isArray(d)?d:[d];
+    case "json":
+      const d = JSON.parse(text);
+      items = Array.isArray(d) ? d : [d];
       break;
-    case 'yaml':
-      const y = _yamlParse(text); items = Array.isArray(y)?y:[y];
+    case "yaml":
+      const y = _yamlParse(text);
+      items = Array.isArray(y) ? y : [y];
       break;
-    case 'tsv':
-      delim = '	';
+    case "tsv":
+      delim = "	";
       items = _parseCSV(text, header, delim);
       break;
     default:
@@ -73,7 +87,7 @@ function _load(path: string | null, opts: any): any[] {
   }
   if (opts?.filter) {
     const f = _toAnyMap(opts.filter);
-    items = items.filter(r => {
+    items = items.filter((r) => {
       for (const [k, v] of Object.entries(f)) {
         if (r[k] !== v) return false;
       }
@@ -82,37 +96,55 @@ function _load(path: string | null, opts: any): any[] {
   }
   if (opts?.page !== undefined && opts?.pageSize !== undefined) {
     const start = opts.page * opts.pageSize;
-    items = start < items.length ? items.slice(start, start + opts.pageSize) : [];
+    items = start < items.length
+      ? items.slice(start, start + opts.pageSize)
+      : [];
   } else {
-    if (opts?.skip !== undefined) { const n = opts.skip; items = n < items.length ? items.slice(n) : []; }
-    if (opts?.take !== undefined) { const n = opts.take; if (n < items.length) items = items.slice(0, n); }
+    if (opts?.skip !== undefined) {
+      const n = opts.skip;
+      items = n < items.length ? items.slice(n) : [];
+    }
+    if (opts?.take !== undefined) {
+      const n = opts.take;
+      if (n < items.length) items = items.slice(0, n);
+    }
   }
   return items;
 }
 function _save(rows: any[], path: string | null, opts: any): void {
-  const format = opts?.format ?? 'csv';
+  const format = opts?.format ?? "csv";
   const header = opts?.header ?? false;
-  let delim = (opts?.delimiter ?? ',')[0];
+  let delim = (opts?.delimiter ?? ",")[0];
   switch (format) {
-    case 'jsonl':
-      _writeOutput(path, rows.map(r=>JSON.stringify(r)).join('\n') + '\n');
+    case "jsonl":
+      _writeOutput(path, rows.map((r) => JSON.stringify(r)).join("\n") + "\n");
       break;
-    case 'json':
-      _writeOutput(path, rows.length===1 ? JSON.stringify(rows[0]) : JSON.stringify(rows));
+    case "json":
+      _writeOutput(
+        path,
+        rows.length === 1 ? JSON.stringify(rows[0]) : JSON.stringify(rows),
+      );
       break;
-    case 'yaml':
-      _writeOutput(path, rows.length===1 ? _yamlStringify(rows[0]) : _yamlStringify(rows));
+    case "yaml":
+      _writeOutput(
+        path,
+        rows.length === 1 ? _yamlStringify(rows[0]) : _yamlStringify(rows),
+      );
       break;
-    case 'tsv':
-      delim = '	';
+    case "tsv":
+      delim = "	";
     default:
       const headers = rows.length > 0 ? Object.keys(rows[0]).sort() : [];
       const lines: string[] = [];
       if (header) lines.push(headers.join(delim));
       for (const row of rows) {
-        lines.push(headers.map(h => row[h] !== undefined ? String(row[h]) : '').join(delim));
+        lines.push(
+          headers.map((h) => row[h] !== undefined ? String(row[h]) : "").join(
+            delim,
+          ),
+        );
       }
-      _writeOutput(path, lines.join('\n') + '\n');
+      _writeOutput(path, lines.join("\n") + "\n");
   }
 }
 
@@ -120,4 +152,4 @@ function _toAnyMap(m: any): Record<string, any> {
   return m as Record<string, any>;
 }
 
-main()
+main();
