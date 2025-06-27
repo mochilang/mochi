@@ -1087,7 +1087,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var buf strings.Builder
 	indent := "    "
-	buf.WriteString("[|\n")
+	buf.WriteString("\n    [|\n")
 	buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Var), src))
 	ind := indent + "    "
 	for i, f := range q.Froms {
@@ -1108,16 +1108,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if q.Sort != nil {
 		buf.WriteString(fmt.Sprintf("%syield (%s, %s)\n", ind, sortExpr, sel))
-		buf.WriteString("|] |> Array.sortBy fst |> Array.map snd")
+		buf.WriteString("    |]\n")
+		buf.WriteString("    |> Array.sortBy fst\n")
+		buf.WriteString("    |> Array.map snd")
 	} else {
 		buf.WriteString(fmt.Sprintf("%syield %s\n", ind, sel))
-		buf.WriteString("|]")
+		buf.WriteString("    |]")
 	}
 	if skipExpr != "" {
-		buf.WriteString(fmt.Sprintf(" |> Array.skip %s", skipExpr))
+		if q.Sort != nil {
+			buf.WriteString(fmt.Sprintf("\n    |> Array.skip %s", skipExpr))
+		} else {
+			buf.WriteString(fmt.Sprintf("\n|> Array.skip %s", skipExpr))
+		}
 	}
 	if takeExpr != "" {
-		buf.WriteString(fmt.Sprintf(" |> Array.take %s", takeExpr))
+		if q.Sort != nil || skipExpr != "" {
+			buf.WriteString(fmt.Sprintf("\n    |> Array.take %s", takeExpr))
+		} else {
+			buf.WriteString(fmt.Sprintf("\n|> Array.take %s", takeExpr))
+		}
 	}
 	return buf.String(), nil
 }
