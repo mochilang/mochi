@@ -1,0 +1,7 @@
+open System
+
+let _genEmbed (text: string) (model: string) (params: Map<string,obj> option) : double[] =
+  text |> Seq.map double |> Seq.toArray
+
+let vec = _genEmbed "hi" "" None
+ignore (printfn "%A" (vec.Length))

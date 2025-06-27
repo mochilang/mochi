@@ -1,0 +1,8 @@
+open System
+
+let _genText (prompt: string) (model: string) (params: Map<string,obj> option) : string =
+  // TODO: integrate with an LLM
+  prompt
+
+let poem = _genText "echo hello" "" None
+ignore (printfn "%A" (poem))

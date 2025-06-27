@@ -1,0 +1,38 @@
+open System
+
+exception Return_helper of Tree
+
+type Tree =
+    | Leaf
+    | Node of left: Tree * value: int * right: Tree
+
+exception Return_fromList of Tree
+let rec fromList (nums: int[]) : Tree =
+    try
+        let mutable nums = nums
+        let rec helper (lo: int) (hi: int) : Tree =
+            try
+                let mutable lo = lo
+                let mutable hi = hi
+                if (lo >= hi) then
+                    raise (Return_helper (Leaf))
+                let mid = (((lo + hi)) / 2)
+                raise (Return_helper (Node(helper lo mid, nums.[mid], helper ((mid + 1)) hi)))
+                failwith "unreachable"
+            with Return_helper v -> v
+        raise (Return_fromList (helper (0) (nums.Length)))
+        failwith "unreachable"
+    with Return_fromList v -> v
+
+exception Return_inorder of int[]
+let rec inorder (t: Tree) : int[] =
+    try
+        let mutable t = t
+        raise (Return_inorder ((match t with | Leaf -> [||] | Node(l, v, r) -> Array.append Array.append inorder l [|v|] inorder r)))
+        failwith "unreachable"
+    with Return_inorder v -> v
+
+type Tree =
+    | Leaf
+    | Node of left: Tree * value: int * right: Tree
+ignore (printfn "%A" (inorder (fromList ([|(-10); (-3); 0; 5; 9|]))))

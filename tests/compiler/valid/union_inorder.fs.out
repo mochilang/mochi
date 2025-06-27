@@ -1,0 +1,25 @@
+open System
+
+let _cast<'T> (v: obj) : 'T =
+  match v with
+  | :? 'T as t -> t
+  | _ ->
+      let json = System.Text.Json.JsonSerializer.Serialize(v)
+      System.Text.Json.JsonSerializer.Deserialize<'T>(json)
+
+type Tree =
+    | Leaf
+    | Node of left: Tree * value: int * right: Tree
+
+exception Return_inorder of int[]
+let rec inorder (t: Tree) : int[] =
+    try
+        let mutable t = t
+        raise (Return_inorder ((match t with | Leaf -> _cast<int[]>([||]) | Node(l, v, r) -> Array.append Array.append inorder l [|v|] inorder r)))
+        failwith "unreachable"
+    with Return_inorder v -> v
+
+type Tree =
+    | Leaf
+    | Node of left: Tree * value: int * right: Tree
+ignore (printfn "%A" (inorder (Node(Leaf, 1, Node(Leaf, 2, Leaf)))))

@@ -1,0 +1,17 @@
+open System
+
+type Foo =
+    | Empty
+    | Node of child: Foo
+
+exception Return_listit of Foo[]
+let rec listit  : Foo[] =
+    try
+        raise (Return_listit ([|Empty|]))
+        failwith "unreachable"
+    with Return_listit v -> v
+
+type Foo =
+    | Empty
+    | Node of child: Foo
+ignore (printfn "%A" (listit .Length))

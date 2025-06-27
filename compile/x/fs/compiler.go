@@ -186,7 +186,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out = append(out, '\n')
 	}
 	out = append(out, c.buf.Bytes()...)
-	return out, nil
+	return FormatFS(out), nil
 }
 
 func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
