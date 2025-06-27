@@ -1354,6 +1354,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if len(lst.List) == 0 {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
+			} else if lst.List[0].Tag == interpreter.TagStr {
+				minStr := lst.List[0].Str
+				for _, v := range lst.List[1:] {
+					if v.Tag == interpreter.TagStr && v.Str < minStr {
+						minStr = v.Str
+					}
+				}
+				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: minStr}
 			} else {
 				minVal := toFloat(lst.List[0])
 				isFloat := lst.List[0].Tag == interpreter.TagFloat
@@ -1384,6 +1392,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if len(lst.List) == 0 {
 				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
+			} else if lst.List[0].Tag == interpreter.TagStr {
+				maxStr := lst.List[0].Str
+				for _, v := range lst.List[1:] {
+					if v.Tag == interpreter.TagStr && v.Str > maxStr {
+						maxStr = v.Str
+					}
+				}
+				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: maxStr}
 			} else {
 				maxVal := toFloat(lst.List[0])
 				isFloat := lst.List[0].Tag == interpreter.TagFloat
