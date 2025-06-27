@@ -275,6 +275,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				target := strings.TrimSuffix(res, ".values")
 				res = fmt.Sprintf("Map.values(%s)", target)
 				typ = types.ListType{Elem: types.AnyType{}}
+			} else if strings.HasSuffix(res, ".contains") && len(args) == 1 {
+				target := strings.TrimSuffix(res, ".contains")
+				res = fmt.Sprintf("String.contains?(%s, %s)", target, argStr)
+				typ = types.BoolType{}
 			} else {
 				switch res {
 				case "print":
@@ -418,6 +422,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "sum":
 			c.use("_sum")
 			return fmt.Sprintf("_sum(%s)", argStr), nil
+		case "min":
+			c.use("_min")
+			return fmt.Sprintf("_min(%s)", argStr), nil
+		case "max":
+			c.use("_max")
+			return fmt.Sprintf("_max(%s)", argStr), nil
 		case "avg":
 			c.use("_avg")
 			return fmt.Sprintf("_avg(%s)", argStr), nil
@@ -427,7 +437,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.use("_input")
 			return "_input()", nil
 		case "json":
-			return fmt.Sprintf("IO.puts(Jason.encode!(%s))", argStr), nil
+			c.use("_json")
+			return fmt.Sprintf("IO.puts(_json(%s))", argStr), nil
 		case "keys":
 			return fmt.Sprintf("Map.keys(%s)", argStr), nil
 		case "values":

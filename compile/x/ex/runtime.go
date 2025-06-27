@@ -3,9 +3,33 @@ package excode
 const (
 	helperInput = "defp _input() do\n  String.trim(IO.gets(\"\"))\nend\n"
 
+	helperJason = `defmodule Jason do
+  def encode!(v), do: _encode(v)
+  defp esc(s), do: String.replace(s, "\"", "\\\"")
+  defp _encode(v) when is_binary(v), do: "\"" <> esc(v) <> "\""
+  defp _encode(v) when is_map(v), do: "{" <> Enum.map_join(v, ",", fn {k, v} -> _encode(to_string(k)) <> ":" <> _encode(v) end) <> "}"
+  defp _encode(v) when is_list(v), do: "[" <> Enum.map_join(v, ",", &_encode/1) <> "]"
+  defp _encode(v), do: to_string(v)
+end
+`
+
+	helperJSON = `defp _json(v) do
+  cond do
+    is_list(v) -> "[" <> Enum.map_join(v, ",", &_json/1) <> "]"
+    is_map(v) -> "{" <> Enum.map_join(v, ",", fn {k,v} -> _json(to_string(k)) <> ":" <> _json(v) end) <> "}"
+    is_binary(v) -> "\"" <> String.replace(v, "\"", "\\\"") <> "\""
+    true -> to_string(v)
+  end
+end
+`
+
 	helperCount = "defp _count(v) do\n  cond do\n    is_list(v) -> length(v)\n    is_map(v) and Map.has_key?(v, :Items) -> length(v[:Items])\n    true -> raise \"count() expects list or group\"\n  end\nend\n"
 
 	helperSum = "defp _sum(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]\n    is_list(v) -> v\n    true -> raise \"sum() expects list or group\"\n  end\n  Enum.sum(list)\nend\n"
+
+	helperMin = "defp _min(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]\n    is_list(v) -> v\n    true -> raise \"min() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    Enum.min(list)\n  end\nend\n"
+
+	helperMax = "defp _max(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]\n    is_list(v) -> v\n    true -> raise \"max() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    Enum.max(list)\n  end\nend\n"
 
 	helperAvg = "defp _avg(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]\n    is_list(v) -> v\n    true -> raise \"avg() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    Enum.sum(list) / Enum.count(list)\n  end\nend\n"
 
@@ -116,6 +140,8 @@ var helperMap = map[string]string{
 	"_input":        helperInput,
 	"_count":        helperCount,
 	"_sum":          helperSum,
+	"_min":          helperMin,
+	"_max":          helperMax,
 	"_avg":          helperAvg,
 	"_group":        helperGroup,
 	"_group_by":     helperGroupBy,
@@ -137,4 +163,6 @@ var helperMap = map[string]string{
 	"_structify":    helperStructify,
 	"_iter":         helperIter,
 	"_query":        helperQuery,
+	"jason":         helperJason,
+	"_json":         helperJSON,
 }
