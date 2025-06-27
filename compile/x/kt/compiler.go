@@ -1113,6 +1113,7 @@ func (c *Compiler) compileAdvancedQueryExpr(q *parser.QueryExpr, src string) (st
 	}
 	buf.WriteString("        }")
 	c.use("_query")
+	c.use("_arrConcat")
 	if q.Group != nil {
 		c.use("_group_by")
 		c.use("_Group")
@@ -1584,8 +1585,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if len(p.Selector.Tail) == 0 {
 			return expr, nil
 		}
-		for _, f := range p.Selector.Tail {
-			expr += "." + sanitizeName(f)
+		for i, f := range p.Selector.Tail {
+			if i == len(p.Selector.Tail)-1 && len(p.Selector.Tail) > 1 {
+				expr += "." + sanitizeName(f)
+			} else {
+				expr += fmt.Sprintf("[%q]", sanitizeName(f))
+			}
 		}
 		return expr, nil
 	case p.Struct != nil:
@@ -1650,6 +1655,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "sum" && len(args) == 1 {
 			c.use("_sum")
 			return fmt.Sprintf("_sum(%s)", args[0]), nil
+		}
+		if name == "min" && len(args) == 1 {
+			c.use("_min")
+			return fmt.Sprintf("_min(%s)", args[0]), nil
+		}
+		if name == "max" && len(args) == 1 {
+			c.use("_max")
+			return fmt.Sprintf("_max(%s)", args[0]), nil
 		}
 		if name == "reduce" && len(args) == 3 {
 			var buf bytes.Buffer

@@ -267,6 +267,10 @@ inline fun <reified T> _cast(v: Any?): T {
 
 	helperConcat = `fun <T> _concat(a: List<T>, b: List<T>): List<T> = a + b`
 
+	helperArrConcat = `fun _arrConcat(a: Array<Any?>, b: Array<Any?>): Array<Any?> {
+    return a + b
+}`
+
 	helperUnionAll = `fun <T> _unionAll(a: List<T>, b: List<T>): List<T> = a + b`
 
 	helperUnion = `fun <T> _union(a: List<T>, b: List<T>): List<T> {
@@ -343,6 +347,50 @@ inline fun <reified T> _cast(v: Any?): T {
     return sum
 }`
 
+	helperMin = `fun _min(v: Any?): Any? {
+    var list: List<Any?>? = null
+    when (v) {
+        is List<*> -> list = v as List<Any?>
+        is Map<*, *> -> {
+            val items = when {
+                v["items"] is List<*> -> v["items"] as List<*>
+                v["Items"] is List<*> -> v["Items"] as List<*>
+                else -> null
+            }
+            if (items != null) list = items as List<Any?>
+        }
+        is _Group -> list = v.Items
+    }
+    if (list == null || list.isEmpty()) return 0
+    var m = list[0]
+    for (n in list!!) {
+        if ((n as Comparable<Any?>) < (m as Comparable<Any?>)) m = n
+    }
+    return m
+}`
+
+	helperMax = `fun _max(v: Any?): Any? {
+    var list: List<Any?>? = null
+    when (v) {
+        is List<*> -> list = v as List<Any?>
+        is Map<*, *> -> {
+            val items = when {
+                v["items"] is List<*> -> v["items"] as List<*>
+                v["Items"] is List<*> -> v["Items"] as List<*>
+                else -> null
+            }
+            if (items != null) list = items as List<Any?>
+        }
+        is _Group -> list = v.Items
+    }
+    if (list == null || list.isEmpty()) return 0
+    var m = list[0]
+    for (n in list!!) {
+        if ((n as Comparable<Any?>) > (m as Comparable<Any?>)) m = n
+    }
+    return m
+}`
+
 	helperGroup = `class _Group(var key: Any?) {
     val Items = mutableListOf<Any?>()
     val size: Int
@@ -399,19 +447,19 @@ fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?
                 for ((ri, right) in j.items.withIndex()) {
                     var keep = true
                     if (j.on != null) {
-                        keep = j.on.invoke(left + arrayOf(right))
+                    keep = j.on.invoke(_arrConcat(left, arrayOf(right)))
                     }
                     if (!keep) continue
                     m = true
                     matched[ri] = true
-                    joined.add(left + arrayOf(right))
+                    joined.add(_arrConcat(left, arrayOf(right)))
                 }
-                if (!m) joined.add(left + arrayOf<Any?>(null))
+                if (!m) joined.add(_arrConcat(left, arrayOf<Any?>(null)))
             }
             for ((ri, right) in j.items.withIndex()) {
                 if (!matched[ri]) {
-                    val undef = Array(items.firstOrNull()?.size ?: 0) { null }
-                    joined.add(undef + arrayOf(right))
+                    val undef = Array<Any?>(items.firstOrNull()?.size ?: 0) { null }
+                    joined.add(_arrConcat(undef, arrayOf(right)))
                 }
             }
         } else if (j.right) {
@@ -420,15 +468,15 @@ fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?
                 for (left in items) {
                     var keep = true
                     if (j.on != null) {
-                        keep = j.on.invoke(left + arrayOf(right))
+                    keep = j.on.invoke(_arrConcat(left, arrayOf(right)))
                     }
                     if (!keep) continue
                     m = true
-                    joined.add(left + arrayOf(right))
+                    joined.add(_arrConcat(left, arrayOf(right)))
                 }
                 if (!m) {
-                    val undef = Array(items.firstOrNull()?.size ?: 0) { null }
-                    joined.add(undef + arrayOf(right))
+                    val undef = Array<Any?>(items.firstOrNull()?.size ?: 0) { null }
+                    joined.add(_arrConcat(undef, arrayOf(right)))
                 }
             }
         } else {
@@ -437,13 +485,13 @@ fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?
                 for (right in j.items) {
                     var keep = true
                     if (j.on != null) {
-                        keep = j.on.invoke(left + arrayOf(right))
+                    keep = j.on.invoke(_arrConcat(left, arrayOf(right)))
                     }
                     if (!keep) continue
                     m = true
-                    joined.add(left + arrayOf(right))
+                    joined.add(_arrConcat(left, arrayOf(right)))
                 }
-                if (j.left && !m) joined.add(left + arrayOf<Any?>(null))
+                if (j.left && !m) joined.add(_arrConcat(left, arrayOf<Any?>(null)))
             }
         }
         items = joined
@@ -456,7 +504,7 @@ fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?
     }
     if (opts.sortKey != null) {
         val pairs = items.map { it to opts.sortKey.invoke(it) }.toMutableList()
-        pairs.sortWith { a, b ->
+        pairs.sortWith(java.util.Comparator { a, b ->
             val av = a.second
             val bv = b.second
             when (av) {
@@ -473,7 +521,7 @@ fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?
                 is String -> av.compareTo(bv.toString())
                 else -> av.toString().compareTo(bv.toString())
             }
-        }
+        })
         items = pairs.map { it.first }.toMutableList()
     }
     if (opts.skip >= 0) {
@@ -520,6 +568,7 @@ var helperMap = map[string]string{
 	"_fetch":       helperFetch,
 	"_json":        helperJson,
 	"_concat":      helperConcat,
+	"_arrConcat":   helperArrConcat,
 	"_extern":      helperExtern,
 	"_unionAll":    helperUnionAll,
 	"_union":       helperUnion,
@@ -527,6 +576,8 @@ var helperMap = map[string]string{
 	"_intersect":   helperIntersect,
 	"_avg":         helperAvg,
 	"_sum":         helperSum,
+	"_min":         helperMin,
+	"_max":         helperMax,
 	"_Group":       helperGroup,
 	"_group_by":    helperGroupBy,
 	"_query":       helperQuery,
