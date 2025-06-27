@@ -145,6 +145,9 @@ func EnsureDotnet() error {
 
 This script attempts platform‑specific installation via Homebrew or `apt-get` before falling back to the official installer.
 
+`tools.go` also exposes `EnsureFormatter` which guarantees that a C# formatter
+(either `dotnet format` or `csharpier`) is available for use by the compiler.
+
 ## Notes
 
 The C# backend focuses on fundamental features: functions, control flow, structs, unions and query expressions. Recent updates added support for package declarations, set operations on lists, helper functions for printing JSON or getting the current timestamp, and basic stream handling with `on`/`emit` blocks. Advanced Mochi capabilities such as long‑lived agents and extern objects are not yet implemented in this generator.

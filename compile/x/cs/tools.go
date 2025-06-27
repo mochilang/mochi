@@ -92,12 +92,36 @@ func ensureDotnet() error {
 	return fmt.Errorf("failed to install dotnet")
 }
 
+// EnsureFormatter makes sure either the dotnet CLI or the csharpier tool
+// is available for formatting generated code. It tries to install dotnet
+// if missing and falls back to checking for csharpier on the PATH.
+func EnsureFormatter() error { return ensureFormatter() }
+
+func ensureFormatter() error {
+	if err := ensureDotnet(); err == nil {
+		return nil
+	}
+	if _, err := exec.LookPath("csharpier"); err == nil {
+		return nil
+	}
+	if dotnet, err := exec.LookPath("dotnet"); err == nil {
+		cmd := exec.Command(dotnet, "tool", "install", "-g", "csharpier")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		_ = cmd.Run()
+		if _, err := exec.LookPath("csharpier"); err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("no C# formatter available")
+}
+
 // FormatCS attempts to format the given C# source using the `dotnet format`
 // command if available. If the formatter is unavailable or fails, the input is
 // returned with tabs expanded to four spaces.
 func FormatCS(src []byte) []byte {
-	dotnet, err := exec.LookPath("dotnet")
-	if err == nil {
+	_ = ensureFormatter()
+	if dotnet, err := exec.LookPath("dotnet"); err == nil {
 		dir, err := os.MkdirTemp("", "mochi_cs_fmt")
 		if err == nil {
 			defer os.RemoveAll(dir)
