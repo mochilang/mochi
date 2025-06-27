@@ -1,0 +1,76 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+contains(Container, Item, Res) :-
+    is_dict(Container), !, (get_dict(Item, Container, _) -> Res = true ; Res = false).
+contains(List, Item, Res) :-
+    string(List), !, string_chars(List, Chars), (member(Item, Chars) -> Res = true ; Res = false).
+contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).
+
+
+min(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), min_list(Items, R).
+min(V, R) :-
+    is_list(V), !, min_list(V, R).
+min(_, _) :- throw(error('min expects list or group')).
+
+
+expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
+
+
+:- use_module(library(http/json)).
+json(V) :- json_write_dict(current_output, V), nl.
+
+
+test_p_q10_finds_uncredited_voice_actor_in_russian_movie :-
+    dict_create(_V0, map, [uncredited_voiced_character-"Ivan", russian_movie-"Vodka Dreams"]),
+    expect(Result = [_V0])    ,
+    true.
+
+    main :-
+    dict_create(_V1, map, [id-1, name-"Ivan"]),
+    dict_create(_V2, map, [id-2, name-"Alex"]),
+    Char_name = [_V1, _V2],
+    dict_create(_V3, map, [movie_id-10, person_role_id-1, role_id-1, note-"Soldier (voice) (uncredited)"]),
+    dict_create(_V4, map, [movie_id-11, person_role_id-2, role_id-1, note-"(voice)"]),
+    Cast_info = [_V3, _V4],
+    dict_create(_V5, map, [id-1, country_code-"[ru]"]),
+    dict_create(_V6, map, [id-2, country_code-"[us]"]),
+    Company_name = [_V5, _V6],
+    dict_create(_V7, map, [id-1]),
+    dict_create(_V8, map, [id-2]),
+    Company_type = [_V7, _V8],
+    dict_create(_V9, map, [movie_id-10, company_id-1, company_type_id-1]),
+    dict_create(_V10, map, [movie_id-11, company_id-2, company_type_id-1]),
+    Movie_companies = [_V9, _V10],
+    dict_create(_V11, map, [id-1, role-"actor"]),
+    dict_create(_V12, map, [id-2, role-"director"]),
+    Role_type = [_V11, _V12],
+    dict_create(_V13, map, [id-10, title-"Vodka Dreams", production_year-2006]),
+    dict_create(_V14, map, [id-11, title-"Other Film", production_year-2004]),
+    Title = [_V13, _V14],
+    to_list(Char_name, _V25),
+    to_list(Cast_info, _V28),
+    to_list(Role_type, _V31),
+    to_list(Title, _V34),
+    to_list(Movie_companies, _V37),
+    to_list(Company_name, _V40),
+    to_list(Company_type, _V43),
+    findall(_V44, (member(Chn, _V25), member(Ci, _V28), get_dict(id, Chn, _V26), get_dict(person_role_id, Ci, _V27), _V26 = _V27, member(Rt, _V31), get_dict(id, Rt, _V29), get_dict(role_id, Ci, _V30), _V29 = _V30, member(T, _V34), get_dict(id, T, _V32), get_dict(movie_id, Ci, _V33), _V32 = _V33, member(Mc, _V37), get_dict(movie_id, Mc, _V35), get_dict(id, T, _V36), _V35 = _V36, member(Cn, _V40), get_dict(id, Cn, _V38), get_dict(company_id, Mc, _V39), _V38 = _V39, member(Ct, _V43), get_dict(id, Ct, _V41), get_dict(company_type_id, Mc, _V42), _V41 = _V42, get_dict(note, Ci, _V18), contains(_V18, "(voice)", _V19), get_dict(note, Ci, _V20), contains(_V20, "(uncredited)", _V21), get_dict(country_code, Cn, _V22), get_dict(role, Rt, _V23), get_dict(production_year, T, _V24), ((((_V19, _V21), _V22 = "[ru]"), _V23 = "actor"), _V24 > 2005), get_dict(name, Chn, _V15), get_dict(title, T, _V16), dict_create(_V17, map, [character-_V15, movie-_V16]), _V44 = _V17), _V45),
+    Matches = _V45,
+    to_list(Matches, _V47),
+    findall(_V48, (member(X, _V47), get_dict(character, X, _V46), _V48 = _V46), _V49),
+    min(_V49, _V50),
+    to_list(Matches, _V52),
+    findall(_V53, (member(X, _V52), get_dict(movie, X, _V51), _V53 = _V51), _V54),
+    min(_V54, _V55),
+    dict_create(_V56, map, [uncredited_voiced_character-_V50, russian_movie-_V55]),
+    Result = [_V56],
+    json(Result),
+    test_p_q10_finds_uncredited_voice_actor_in_russian_movie
+    .
+:- initialization(main, main).

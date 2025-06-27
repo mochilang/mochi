@@ -1,0 +1,83 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+contains(Container, Item, Res) :-
+    is_dict(Container), !, (get_dict(Item, Container, _) -> Res = true ; Res = false).
+contains(List, Item, Res) :-
+    string(List), !, string_chars(List, Chars), (member(Item, Chars) -> Res = true ; Res = false).
+contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).
+
+
+min(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), min_list(Items, R).
+min(V, R) :-
+    is_list(V), !, min_list(V, R).
+min(_, _) :- throw(error('min expects list or group')).
+
+
+expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
+
+
+:- use_module(library(http/json)).
+json(V) :- json_write_dict(current_output, V), nl.
+
+
+test_p_q9_selects_minimal_alternative_name__character_and_movie :-
+    dict_create(_V0, map, [alternative_name-"A. N. G.", character_name-"Angel", movie-"Famous Film"]),
+    expect(Result = [_V0])    ,
+    true.
+
+    main :-
+    dict_create(_V1, map, [person_id-1, name-"A. N. G."]),
+    dict_create(_V2, map, [person_id-2, name-"J. D."]),
+    Aka_name = [_V1, _V2],
+    dict_create(_V3, map, [id-10, name-"Angel"]),
+    dict_create(_V4, map, [id-20, name-"Devil"]),
+    Char_name = [_V3, _V4],
+    dict_create(_V5, map, [person_id-1, person_role_id-10, movie_id-100, role_id-1000, note-"(voice)"]),
+    dict_create(_V6, map, [person_id-2, person_role_id-20, movie_id-200, role_id-1000, note-"(voice)"]),
+    Cast_info = [_V5, _V6],
+    dict_create(_V7, map, [id-100, country_code-"[us]"]),
+    dict_create(_V8, map, [id-200, country_code-"[gb]"]),
+    Company_name = [_V7, _V8],
+    dict_create(_V9, map, [movie_id-100, company_id-100, note-"ACME Studios (USA)"]),
+    dict_create(_V10, map, [movie_id-200, company_id-200, note-"Maple Films"]),
+    Movie_companies = [_V9, _V10],
+    dict_create(_V11, map, [id-1, name-"Angela Smith", gender-"f"]),
+    dict_create(_V12, map, [id-2, name-"John Doe", gender-"m"]),
+    Name = [_V11, _V12],
+    dict_create(_V13, map, [id-1000, role-"actress"]),
+    dict_create(_V14, map, [id-2000, role-"actor"]),
+    Role_type = [_V13, _V14],
+    dict_create(_V15, map, [id-100, title-"Famous Film", production_year-2010]),
+    dict_create(_V16, map, [id-200, title-"Old Movie", production_year-1999]),
+    Title = [_V15, _V16],
+    to_list(Aka_name, _V34),
+    to_list(Name, _V37),
+    to_list(Cast_info, _V40),
+    to_list(Char_name, _V43),
+    to_list(Title, _V46),
+    to_list(Movie_companies, _V49),
+    to_list(Company_name, _V52),
+    to_list(Role_type, _V55),
+    findall(_V56, (member(An, _V34), member(N, _V37), get_dict(person_id, An, _V35), get_dict(id, N, _V36), _V35 = _V36, member(Ci, _V40), get_dict(person_id, Ci, _V38), get_dict(id, N, _V39), _V38 = _V39, member(Chn, _V43), get_dict(id, Chn, _V41), get_dict(person_role_id, Ci, _V42), _V41 = _V42, member(T, _V46), get_dict(id, T, _V44), get_dict(movie_id, Ci, _V45), _V44 = _V45, member(Mc, _V49), get_dict(movie_id, Mc, _V47), get_dict(id, T, _V48), _V47 = _V48, member(Cn, _V52), get_dict(id, Cn, _V50), get_dict(company_id, Mc, _V51), _V50 = _V51, member(Rt, _V55), get_dict(id, Rt, _V53), get_dict(role_id, Ci, _V54), _V53 = _V54, get_dict(note, Ci, _V21), contains(["(voice)", "(voice: Japanese version)", "(voice) (uncredited)", "(voice: English version)"], _V21, _V22), get_dict(country_code, Cn, _V23), get_dict(note, Mc, _V24), contains(_V24, "(USA)", _V25), get_dict(note, Mc, _V26), contains(_V26, "(worldwide)", _V27), get_dict(gender, N, _V28), get_dict(name, N, _V29), contains(_V29, "Ang", _V30), get_dict(role, Rt, _V31), get_dict(production_year, T, _V32), get_dict(production_year, T, _V33), (((((((_V22, _V23 = "[us]"), (_V25 ; _V27)), _V28 = "f"), _V30), _V31 = "actress"), _V32 >= 2005), _V33 =< 2015), get_dict(name, An, _V17), get_dict(name, Chn, _V18), get_dict(title, T, _V19), dict_create(_V20, map, [alt-_V17, character-_V18, movie-_V19]), _V56 = _V20), _V57),
+    Matches = _V57,
+    to_list(Matches, _V59),
+    findall(_V60, (member(X, _V59), get_dict(alt, X, _V58), _V60 = _V58), _V61),
+    min(_V61, _V62),
+    to_list(Matches, _V64),
+    findall(_V65, (member(X, _V64), get_dict(character, X, _V63), _V65 = _V63), _V66),
+    min(_V66, _V67),
+    to_list(Matches, _V69),
+    findall(_V70, (member(X, _V69), get_dict(movie, X, _V68), _V70 = _V68), _V71),
+    min(_V71, _V72),
+    dict_create(_V73, map, [alternative_name-_V62, character_name-_V67, movie-_V72]),
+    Result = [_V73],
+    json(Result),
+    test_p_q9_selects_minimal_alternative_name__character_and_movie
+    .
+:- initialization(main, main).
