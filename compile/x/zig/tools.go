@@ -74,16 +74,27 @@ func EnsureZig() (string, error) {
 
 // Format runs `zig fmt` on the provided source code. If the Zig compiler
 // isn't available, the input is returned unchanged.
-func Format(src []byte) ([]byte, error) {
+func Format(src []byte) []byte {
 	zigc, err := EnsureZig()
 	if err != nil {
-		return src, nil
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
 	}
 	cmd := exec.Command(zigc, "fmt", "--stdin")
 	cmd.Stdin = bytes.NewReader(src)
-	out, err := cmd.Output()
-	if err != nil {
-		return src, err
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		res := out.Bytes()
+		if len(res) == 0 || res[len(res)-1] != '\n' {
+			res = append(res, '\n')
+		}
+		return res
 	}
-	return out, nil
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
