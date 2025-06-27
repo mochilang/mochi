@@ -55,7 +55,7 @@ let matches =
   join kt in kind_type on kt.id == t.kind_id
   where cct1.kind == "cast" &&
         cct2.kind.contains("complete") &&
-        !chn.name.contains("Sherlock") &&
+        (!chn.name.contains("Sherlock")) &&
         (chn.name.contains("Tony Stark") || chn.name.contains("Iron Man")) &&
         k.keyword in [
           "superhero", "sequel", "second-part", "marvel-comics",

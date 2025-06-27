@@ -43,7 +43,7 @@ let matches =
   join cn in company_name on cn.id == mc.company_id
   where cn.country_code == "[us]" &&
         k.keyword == "character-name-in-title" &&
-        n.name LIKE "B%" &&
+        n.name.starts_with("B") &&
         ci.movie_id == mk.movie_id &&
         ci.movie_id == mc.movie_id &&
         mc.movie_id == mk.movie_id

@@ -2438,6 +2438,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			v := Value{Tag: interpreter.TagBool, Bool: bool(*p.Lit.Bool)}
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
+		case p.Lit.Null:
+			dst := fc.newReg()
+			v := Value{Tag: interpreter.TagNull}
+			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
+			return dst
 		}
 	}
 
@@ -4304,6 +4309,9 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 		if p.Lit.Str != nil {
 			return Value{Tag: interpreter.TagStr, Str: *p.Lit.Str}, true
 		}
+		if p.Lit.Null {
+			return Value{Tag: interpreter.TagNull}, true
+		}
 	}
 	if p.List != nil {
 		return constList(p.List)
@@ -4324,6 +4332,8 @@ func literalToValue(l *parser.Literal) (Value, bool) {
 		return Value{Tag: interpreter.TagStr, Str: *l.Str}, true
 	case l.Bool != nil:
 		return Value{Tag: interpreter.TagBool, Bool: bool(*l.Bool)}, true
+	case l.Null:
+		return Value{Tag: interpreter.TagNull}, true
 	default:
 		return Value{}, false
 	}

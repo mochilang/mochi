@@ -1,0 +1,262 @@
+func main (regs=154)
+  // let cast_info = [
+  Const        r0, [{"movie_id": 1, "person_id": 1}, {"movie_id": 2, "person_id": 2}]
+  Move         r1, r0
+  // let company_name = [
+  Const        r2, [{"country_code": "[us]", "id": 1}, {"country_code": "[ca]", "id": 2}]
+  Move         r3, r2
+  // let keyword = [
+  Const        r4, [{"id": 10, "keyword": "character-name-in-title"}, {"id": 20, "keyword": "other"}]
+  Move         r5, r4
+  // let movie_companies = [
+  Const        r6, [{"company_id": 1, "movie_id": 1}, {"company_id": 2, "movie_id": 2}]
+  Move         r7, r6
+  // let movie_keyword = [
+  Const        r8, [{"keyword_id": 10, "movie_id": 1}, {"keyword_id": 20, "movie_id": 2}]
+  Move         r9, r8
+  // let name = [
+  Const        r10, [{"id": 1, "name": "Bob Smith"}, {"id": 2, "name": "Alice Jones"}]
+  Move         r11, r10
+  // let title = [
+  Const        r12, [{"id": 1, "title": "Bob's Journey"}, {"id": 2, "title": "Foreign Film"}]
+  Move         r13, r12
+  // from n in name
+  Const        r14, []
+  IterPrep     r15, r11
+  Len          r16, r15
+  Const        r17, 0
+L19:
+  Less         r18, r17, r16
+  JumpIfFalse  r18, L0
+  Index        r19, r15, r17
+  Move         r20, r19
+  // join ci in cast_info on ci.person_id == n.id
+  IterPrep     r21, r1
+  Len          r22, r21
+  Const        r23, 0
+L18:
+  Less         r24, r23, r22
+  JumpIfFalse  r24, L1
+  Index        r25, r21, r23
+  Move         r26, r25
+  Const        r27, "person_id"
+  Index        r28, r26, r27
+  Const        r29, "id"
+  Index        r30, r20, r29
+  Equal        r31, r28, r30
+  JumpIfFalse  r31, L2
+  // join t in title on t.id == ci.movie_id
+  IterPrep     r32, r13
+  Len          r33, r32
+  Const        r34, 0
+L17:
+  Less         r35, r34, r33
+  JumpIfFalse  r35, L2
+  Index        r36, r32, r34
+  Move         r37, r36
+  Const        r38, "id"
+  Index        r39, r37, r38
+  Const        r40, "movie_id"
+  Index        r41, r26, r40
+  Equal        r42, r39, r41
+  JumpIfFalse  r42, L3
+  // join mk in movie_keyword on mk.movie_id == t.id
+  IterPrep     r43, r9
+  Len          r44, r43
+  Const        r45, 0
+L16:
+  Less         r46, r45, r44
+  JumpIfFalse  r46, L3
+  Index        r47, r43, r45
+  Move         r48, r47
+  Const        r49, "movie_id"
+  Index        r50, r48, r49
+  Const        r51, "id"
+  Index        r52, r37, r51
+  Equal        r53, r50, r52
+  JumpIfFalse  r53, L4
+  // join k in keyword on k.id == mk.keyword_id
+  IterPrep     r54, r5
+  Len          r55, r54
+  Const        r56, 0
+L15:
+  Less         r57, r56, r55
+  JumpIfFalse  r57, L4
+  Index        r58, r54, r56
+  Move         r59, r58
+  Const        r60, "id"
+  Index        r61, r59, r60
+  Const        r62, "keyword_id"
+  Index        r63, r48, r62
+  Equal        r64, r61, r63
+  JumpIfFalse  r64, L5
+  // join mc in movie_companies on mc.movie_id == t.id
+  IterPrep     r65, r7
+  Len          r66, r65
+  Const        r67, 0
+L14:
+  Less         r68, r67, r66
+  JumpIfFalse  r68, L5
+  Index        r69, r65, r67
+  Move         r70, r69
+  Const        r71, "movie_id"
+  Index        r72, r70, r71
+  Const        r73, "id"
+  Index        r74, r37, r73
+  Equal        r75, r72, r74
+  JumpIfFalse  r75, L6
+  // join cn in company_name on cn.id == mc.company_id
+  IterPrep     r76, r3
+  Len          r77, r76
+  Const        r78, 0
+L13:
+  Less         r79, r78, r77
+  JumpIfFalse  r79, L6
+  Index        r80, r76, r78
+  Move         r81, r80
+  Const        r82, "id"
+  Index        r83, r81, r82
+  Const        r84, "company_id"
+  Index        r85, r70, r84
+  Equal        r86, r83, r85
+  JumpIfFalse  r86, L7
+  // where cn.country_code == "[us]" &&
+  Const        r87, "country_code"
+  Index        r88, r81, r87
+  Const        r89, "[us]"
+  Equal        r90, r88, r89
+  // k.keyword == "character-name-in-title" &&
+  Const        r91, "keyword"
+  Index        r92, r59, r91
+  Const        r93, "character-name-in-title"
+  Equal        r94, r92, r93
+  // ci.movie_id == mk.movie_id &&
+  Const        r95, "movie_id"
+  Index        r96, r26, r95
+  Const        r97, "movie_id"
+  Index        r98, r48, r97
+  Equal        r99, r96, r98
+  // ci.movie_id == mc.movie_id &&
+  Const        r100, "movie_id"
+  Index        r101, r26, r100
+  Const        r102, "movie_id"
+  Index        r103, r70, r102
+  Equal        r104, r101, r103
+  // mc.movie_id == mk.movie_id
+  Const        r105, "movie_id"
+  Index        r106, r70, r105
+  Const        r107, "movie_id"
+  Index        r108, r48, r107
+  Equal        r109, r106, r108
+  // where cn.country_code == "[us]" &&
+  Move         r110, r90
+  JumpIfFalse  r110, L8
+  Move         r110, r94
+L8:
+  // k.keyword == "character-name-in-title" &&
+  Move         r111, r110
+  JumpIfFalse  r111, L9
+  Const        r112, "name"
+  Index        r113, r20, r112
+  // n.name.starts_with("B") &&
+  Const        r114, "B"
+  Const        r115, 0
+  Len          r116, r114
+  Slice        r117, r113, r115, r116
+  Equal        r118, r117, r114
+  // k.keyword == "character-name-in-title" &&
+  Move         r111, r118
+L9:
+  // n.name.starts_with("B") &&
+  Move         r119, r111
+  JumpIfFalse  r119, L10
+  Move         r119, r99
+L10:
+  // ci.movie_id == mk.movie_id &&
+  Move         r120, r119
+  JumpIfFalse  r120, L11
+  Move         r120, r104
+L11:
+  // ci.movie_id == mc.movie_id &&
+  Move         r121, r120
+  JumpIfFalse  r121, L12
+  Move         r121, r109
+L12:
+  // where cn.country_code == "[us]" &&
+  JumpIfFalse  r121, L7
+  // select n.name
+  Const        r122, "name"
+  Index        r123, r20, r122
+  // from n in name
+  Append       r124, r14, r123
+  Move         r14, r124
+L7:
+  // join cn in company_name on cn.id == mc.company_id
+  Const        r125, 1
+  Add          r126, r78, r125
+  Move         r78, r126
+  Jump         L13
+L6:
+  // join mc in movie_companies on mc.movie_id == t.id
+  Const        r127, 1
+  Add          r128, r67, r127
+  Move         r67, r128
+  Jump         L14
+L5:
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r129, 1
+  Add          r130, r56, r129
+  Move         r56, r130
+  Jump         L15
+L4:
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r131, 1
+  Add          r132, r45, r131
+  Move         r45, r132
+  Jump         L16
+L3:
+  // join t in title on t.id == ci.movie_id
+  Const        r133, 1
+  Add          r134, r34, r133
+  Move         r34, r134
+  Jump         L17
+L2:
+  // join ci in cast_info on ci.person_id == n.id
+  Const        r135, 1
+  Add          r136, r23, r135
+  Move         r23, r136
+  Jump         L18
+L1:
+  // from n in name
+  Const        r137, 1
+  Add          r138, r17, r137
+  Move         r17, r138
+  Jump         L19
+L0:
+  // let matches =
+  Move         r139, r14
+  // member_in_charnamed_american_movie: min(matches),
+  Const        r140, "member_in_charnamed_american_movie"
+  Min          r141, r139
+  // a1: min(matches)
+  Const        r142, "a1"
+  Min          r143, r139
+  // member_in_charnamed_american_movie: min(matches),
+  Move         r144, r140
+  Move         r145, r141
+  // a1: min(matches)
+  Move         r146, r142
+  Move         r147, r143
+  // {
+  MakeMap      r148, 2, r144
+  Move         r149, r148
+  // let result = [
+  MakeList     r150, 1, r149
+  Move         r151, r150
+  // json(result)
+  JSON         r151
+  // expect result == [
+  Const        r152, [{"a1": "Bob Smith", "member_in_charnamed_american_movie": "Bob Smith"}]
+  Equal        r153, r151, r152
+  Expect       r153
+  Return       r0
