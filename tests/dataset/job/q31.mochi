@@ -1,0 +1,118 @@
+let cast_info = [
+  { movie_id: 1, person_id: 1, note: "(writer)" },
+  { movie_id: 2, person_id: 2, note: "(story)" },
+  { movie_id: 3, person_id: 3, note: "(writer)" }
+]
+
+let company_name = [
+  { id: 1, name: "Lionsgate Pictures" },
+  { id: 2, name: "Other Studio" }
+]
+
+let info_type = [
+  { id: 10, info: "genres" },
+  { id: 20, info: "votes" }
+]
+
+let keyword = [
+  { id: 100, keyword: "murder" },
+  { id: 200, keyword: "comedy" }
+]
+
+let movie_companies = [
+  { movie_id: 1, company_id: 1 },
+  { movie_id: 2, company_id: 1 },
+  { movie_id: 3, company_id: 2 }
+]
+
+let movie_info = [
+  { movie_id: 1, info_type_id: 10, info: "Horror" },
+  { movie_id: 2, info_type_id: 10, info: "Thriller" },
+  { movie_id: 3, info_type_id: 10, info: "Comedy" }
+]
+
+let movie_info_idx = [
+  { movie_id: 1, info_type_id: 20, info: 1000 },
+  { movie_id: 2, info_type_id: 20, info: 800 },
+  { movie_id: 3, info_type_id: 20, info: 500 }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 100 },
+  { movie_id: 2, keyword_id: 100 },
+  { movie_id: 3, keyword_id: 200 }
+]
+
+let name = [
+  { id: 1, name: "Arthur", gender: "m" },
+  { id: 2, name: "Bob", gender: "m" },
+  { id: 3, name: "Carla", gender: "f" }
+]
+
+let title = [
+  { id: 1, title: "Alpha Horror" },
+  { id: 2, title: "Beta Blood" },
+  { id: 3, title: "Gamma Comedy" }
+]
+
+let matches =
+  from ci in cast_info
+  join n in name on n.id == ci.person_id
+  join t in title on t.id == ci.movie_id
+  join mi in movie_info on mi.movie_id == t.id
+  join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join mc in movie_companies on mc.movie_id == t.id
+  join cn in company_name on cn.id == mc.company_id
+  join it1 in info_type on it1.id == mi.info_type_id
+  join it2 in info_type on it2.id == mi_idx.info_type_id
+  where ci.note in [
+          "(writer)",
+          "(head writer)",
+          "(written by)",
+          "(story)",
+          "(story editor)"
+        ] &&
+        cn.name.starts_with("Lionsgate") &&
+        it1.info == "genres" &&
+        it2.info == "votes" &&
+        k.keyword in [
+          "murder",
+          "violence",
+          "blood",
+          "gore",
+          "death",
+          "female-nudity",
+          "hospital"
+        ] &&
+        mi.info in ["Horror", "Thriller"] &&
+        n.gender == "m"
+  select {
+    movie_budget: mi.info,
+    movie_votes: mi_idx.info,
+    writer: n.name,
+    violent_liongate_movie: t.title
+  }
+
+let result = [
+  {
+    movie_budget: min(from r in matches select r.movie_budget),
+    movie_votes: min(from r in matches select r.movie_votes),
+    writer: min(from r in matches select r.writer),
+    violent_liongate_movie: min(from r in matches select r.violent_liongate_movie)
+  }
+]
+
+json(result)
+
+test "Q31 finds minimal budget, votes, writer and title" {
+  expect result == [
+    {
+      movie_budget: "Horror",
+      movie_votes: 800,
+      writer: "Arthur",
+      violent_liongate_movie: "Alpha Horror"
+    }
+  ]
+}
