@@ -95,10 +95,12 @@ const llmHelpers = `(define (_genText prompt model params)
   (apply ctor (map (lambda (f) (hash-ref data f)) fields)))`
 
 const jsonHelpers = `(define (to-jsexpr v)
-  (if (hash? v)
-      (for/hash ([(k val) (in-hash v)])
-        (values (if (string? k) (string->symbol k) k) val))
-      v))`
+  (cond [(hash? v)
+         (for/hash ([(k val) (in-hash v)])
+           (values (if (string? k) (string->symbol k) k) (to-jsexpr val)))]
+        [(list? v)
+         (map to-jsexpr v)]
+        [else v]))`
 
 // Compiler translates Mochi AST into Racket source code.
 type Compiler struct {
@@ -234,6 +236,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("  (let ([n (count x)])")
 	c.writeln("    (if (= n 0) 0")
 	c.writeln("        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))")
+
+	// minimum across numbers or strings
+	c.writeln("(define (min-list xs)")
+	c.writeln("  (cond [(null? xs) 0]")
+	c.writeln("        [(for/and ([v xs]) (number? v)) (apply min xs)]")
+	c.writeln("        [(for/and ([v xs]) (string? v)) (for/fold ([m (car xs)]) ([v (cdr xs)]) (if (string<? v m) v m))]")
+	c.writeln("        [else (error \"unsupported min operands\")]))")
 
 	// generic addition supporting numbers, strings and lists
 	c.writeln("(define (_add a b)")
@@ -834,7 +843,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			case "!=":
 				expr = fmt.Sprintf("(not (equal? %s %s))", l, r)
 			case "<", "<=", ">", ">=":
-				expr = fmt.Sprintf("(%s %s %s)", op, l, r)
+				cmp := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op]
+				expr = fmt.Sprintf("(let ([la (and (string? %s) (string->number %s))] [lb (and (string? %s) (string->number %s))]) (if (and la lb) (%s la lb) (%s (format \"~a\" %s) (format \"~a\" %s))))", l, l, r, r, op, cmp, l, r)
 			case "&&":
 				expr = fmt.Sprintf("(and %s %s)", l, r)
 			case "||":
@@ -887,6 +897,22 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	// Special case for `x.contains(y)` on lists, strings or maps.
+	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil &&
+		len(p.Target.Selector.Tail) > 0 && p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" {
+		recvSel := &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Target.Selector.Root, Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1]}}
+		recv, err := c.compilePrimary(recvSel)
+		if err != nil {
+			return "", err
+		}
+		arg, err := c.compileExpr(p.Ops[0].Call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		expr := fmt.Sprintf("(cond [(hash? %s) (hash-has-key? %s %s)] [(string? %s) (not (false? (string-contains? %s (format \"~a\" %s))))] [else (not (false? (member %s %s)))])", recv, recv, arg, recv, recv, arg, arg, recv)
+		return expr, nil
+	}
+
 	val, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -956,6 +982,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if id, ok := bareIdent(it.Key); ok {
+				k = strconv.Quote(sanitizeName(id))
+			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
@@ -1005,6 +1034,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		name = "count"
 	case "avg":
 		name = "avg"
+	case "min":
+		name = "min-list"
 	case "input":
 		name = "read-line"
 	case "now":
