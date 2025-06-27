@@ -269,9 +269,10 @@ public class Main {
                     case '\': sb.append('\'); break;
                     case '/': sb.append('/'); break;
                     case 'b': sb.append(''); break;
+                    case 'f': sb.append(''); break;
+                    case 'n': sb.append('
 '); break;
-}
-'); break;
+                    case 'r': sb.append(''); break;
                     case 't': sb.append('    '); break;
                     case 'u': sb.append((char)Integer.parseInt(s.substring(i[0], i[0]+4), 16)); i[0]+=4; break;
                     default: sb.append(e); break;
@@ -320,7 +321,4 @@ public class Main {
         }
         return m;
     }
-}
-		return m;
-	}
 }

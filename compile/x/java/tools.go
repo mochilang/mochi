@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 )
 
@@ -64,11 +65,50 @@ func EnsureJavac() error {
 	return fmt.Errorf("javac not found")
 }
 
+// EnsureGoogleJavaFormat installs the google-java-format command if needed and
+// returns the path to the executable.
+func EnsureGoogleJavaFormat() (string, error) {
+	if p, err := exec.LookPath("google-java-format"); err == nil {
+		return p, nil
+	}
+
+	version := "1.21.0"
+	dir := filepath.Join(os.TempDir(), "google-java-format-"+version)
+	jar := filepath.Join(dir, "google-java-format.jar")
+	if _, err := os.Stat(jar); os.IsNotExist(err) {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return "", err
+		}
+		url := fmt.Sprintf("https://github.com/google/google-java-format/releases/download/v%s/google-java-format-%s-all-deps.jar", version, version)
+		cmd := exec.Command("curl", "-fsSL", "-o", jar, url)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return "", err
+		}
+	}
+
+	bin := filepath.Join(dir, "google-java-format")
+	if runtime.GOOS == "windows" {
+		bin += ".bat"
+	}
+	if _, err := os.Stat(bin); os.IsNotExist(err) {
+		script := fmt.Sprintf("#!/bin/sh\nexec java -jar %s \"$@\"\n", jar)
+		if runtime.GOOS == "windows" {
+			script = fmt.Sprintf("@echo off\r\njava -jar %s %%*\r\n", jar)
+		}
+		if err := os.WriteFile(bin, []byte(script), 0755); err != nil {
+			return "", err
+		}
+	}
+	return bin, nil
+}
+
 // FormatJava formats the given Java source using the `google-java-format`
 // command if available. If the formatter is unavailable or fails, tabs are
 // expanded to four spaces and a trailing newline is ensured.
 func FormatJava(src []byte) []byte {
-	path, err := exec.LookPath("google-java-format")
+	path, err := EnsureGoogleJavaFormat()
 	if err == nil {
 		cmd := exec.Command(path, "-")
 		cmd.Stdin = bytes.NewReader(src)
