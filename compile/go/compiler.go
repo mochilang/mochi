@@ -1634,6 +1634,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 	}
 
+	if sel := p.Target.Selector; sel != nil && len(sel.Tail) > 0 && len(p.Ops) == 1 && p.Ops[0].Call != nil && sel.Tail[len(sel.Tail)-1] == "contains" {
+		recvSel := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}}
+		recv, err := c.compilePrimary(recvSel)
+		if err != nil {
+			return "", err
+		}
+		arg, err := c.compileExpr(p.Ops[0].Call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		if _, ok := c.inferPrimaryType(recvSel).(types.StringType); ok {
+			c.imports["strings"] = true
+			return fmt.Sprintf("strings.Contains(%s, %s)", recv, arg), nil
+		}
+	}
+
 	val, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
