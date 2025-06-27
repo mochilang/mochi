@@ -5,16 +5,16 @@ PROGRAM-ID. MAIN.
 DATA DIVISION.
 WORKING-STORAGE SECTION.
 01 COMPANY_TYPE OCCURS 2 TIMES PIC 9.
-01 INFO_TYPE OCCURS 2 TIMES PIC 9.
-01 TITLE OCCURS 2 TIMES PIC 9.
-01 MOVIE_COMPANIES OCCURS 2 TIMES PIC 9.
-01 MOVIE_INFO_IDX OCCURS 2 TIMES PIC 9.
+01 INFO_TYPE OCCURS 1 TIMES PIC 9.
+01 TITLE OCCURS 3 TIMES PIC 9.
+01 MOVIE_COMPANIES OCCURS 3 TIMES PIC 9.
+01 MOVIE_INFO OCCURS 3 TIMES PIC 9.
 01 CT PIC 9.
 01 MC PIC 9.
-01 T PIC 9.
 01 MI PIC 9.
 01 IT PIC 9.
-01 FILTERED OCCURS 32 TIMES PIC 9.
+01 T PIC 9.
+01 CANDIDATE_TITLES OCCURS 54 TIMES PIC 9.
 01 TMP0 PIC 9.
 01 TMP1 PIC 9.
 01 IDX PIC 9.
@@ -22,42 +22,44 @@ WORKING-STORAGE SECTION.
 01 IDX3 PIC 9.
 01 IDX4 PIC 9.
 01 IDX5 PIC 9.
-01 RESULT PIC 9.
+01 RESULT OCCURS 1 TIMES PIC 9.
 
 PROCEDURE DIVISION.
     MOVE 0 TO COMPANY_TYPE(1)
     MOVE 0 TO COMPANY_TYPE(2)
     MOVE 0 TO INFO_TYPE(1)
-    MOVE 0 TO INFO_TYPE(2)
     MOVE 0 TO TITLE(1)
     MOVE 0 TO TITLE(2)
+    MOVE 0 TO TITLE(3)
     MOVE 0 TO MOVIE_COMPANIES(1)
     MOVE 0 TO MOVIE_COMPANIES(2)
-    MOVE 0 TO MOVIE_INFO_IDX(1)
-    MOVE 0 TO MOVIE_INFO_IDX(2)
+    MOVE 0 TO MOVIE_COMPANIES(3)
+    MOVE 0 TO MOVIE_INFO(1)
+    MOVE 0 TO MOVIE_INFO(2)
+    MOVE 0 TO MOVIE_INFO(3)
     MOVE 0 TO TMP0
     MOVE 0 TO TMP1
     MOVE 0 TO IDX
     PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= 2
     MOVE COMPANY_TYPE(IDX + 1) TO CT
         MOVE 0 TO IDX2
-        PERFORM VARYING IDX2 FROM 0 BY 1 UNTIL IDX2 >= 2
+        PERFORM VARYING IDX2 FROM 0 BY 1 UNTIL IDX2 >= 3
         MOVE MOVIE_COMPANIES(IDX2 + 1) TO MC
             MOVE 0 TO IDX3
-            PERFORM VARYING IDX3 FROM 0 BY 1 UNTIL IDX3 >= 2
-            MOVE TITLE(IDX3 + 1) TO T
+            PERFORM VARYING IDX3 FROM 0 BY 1 UNTIL IDX3 >= 3
+            MOVE MOVIE_INFO(IDX3 + 1) TO MI
                 MOVE 0 TO IDX4
-                PERFORM VARYING IDX4 FROM 0 BY 1 UNTIL IDX4 >= 2
-                MOVE MOVIE_INFO_IDX(IDX4 + 1) TO MI
+                PERFORM VARYING IDX4 FROM 0 BY 1 UNTIL IDX4 >= 1
+                MOVE INFO_TYPE(IDX4 + 1) TO IT
                     MOVE 0 TO IDX5
-                    PERFORM VARYING IDX5 FROM 0 BY 1 UNTIL IDX5 >= 2
-                    MOVE INFO_TYPE(IDX5 + 1) TO IT
-                    IF CT_KIND = "production companies" * IT_INFO = "top 250 rank" * (1 - (0)) * (FUNCTION MIN(1,0 + 0)) * IT_ID = MI_INFO_TYPE_ID * CT_ID = MC_COMPANY_TYPE_ID * T_ID = MC_MOVIE_ID * MI_MOVIE_ID = T_ID
+                    PERFORM VARYING IDX5 FROM 0 BY 1 UNTIL IDX5 >= 3
+                    MOVE TITLE(IDX5 + 1) TO T
+                    IF CT_KIND = "production companies" * "(theatrical)" in MC_NOTE * "(France)" in MC_NOTE * T_PRODUCTION_YEAR > 2005 * (MI_INFO in 0) * MC_COMPANY_TYPE_ID = CT_CT_ID * MI_MOVIE_ID = MC_MOVIE_ID * IT_IT_ID = MI_INFO_TYPE_ID * T_T_ID = MC_MOVIE_ID
                         ADD 1 TO TMP1
                         IF TMP1 > 0
                             IF 0 = 0 OR TMP0 < 0
                                 ADD 1 TO TMP0
-                                COMPUTE FILTERED(TMP0) = 0
+                                COMPUTE CANDIDATE_TITLES(TMP0) = T_TITLE
                             END-IF
                         END-IF
                     END-IF
@@ -66,11 +68,11 @@ PROCEDURE DIVISION.
             END-PERFORM
         END-PERFORM
     END-PERFORM
-    COMPUTE RESULT = 0
-DISPLAY "-- TEST Q1 returns min note, title and year for top ranked co-production --"
+    MOVE 0 TO RESULT(1)
+DISPLAY "-- TEST Q5 finds the lexicographically first qualifying title --"
 IF NOT (RESULT = 0)
     DISPLAY "expect failed"
     STOP RUN
 END-IF
-DISPLAY "-- END Q1 returns min note, title and year for top ranked co-production --"
+DISPLAY "-- END Q5 finds the lexicographically first qualifying title --"
     STOP RUN.

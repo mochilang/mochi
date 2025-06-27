@@ -119,18 +119,20 @@ func EnsureCobfmt() error {
 // `cobfmt` tool is tried first. If no formatter is found or formatting
 // fails, the input is returned unchanged with a trailing newline ensured.
 func FormatCOBOL(src []byte) []byte {
-	if err := EnsureCobfmt(); err == nil {
-		path, _ := exec.LookPath("cobfmt")
-		cmd := exec.Command(path)
-		cmd.Stdin = bytes.NewReader(src)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		if err := cmd.Run(); err == nil {
-			res := out.Bytes()
-			if len(res) == 0 || res[len(res)-1] != '\n' {
-				res = append(res, '\n')
+	if os.Getenv("MOCHI_SKIP_COBFMT") != "1" {
+		if err := EnsureCobfmt(); err == nil {
+			path, _ := exec.LookPath("cobfmt")
+			cmd := exec.Command(path)
+			cmd.Stdin = bytes.NewReader(src)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			if err := cmd.Run(); err == nil {
+				res := out.Bytes()
+				if len(res) == 0 || res[len(res)-1] != '\n' {
+					res = append(res, '\n')
+				}
+				return res
 			}
-			return res
 		}
 	}
 	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))

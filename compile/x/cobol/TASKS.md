@@ -19,3 +19,7 @@ Initial join handling and method call support now allow the COBOL backend to com
 
 * Implement left/right/outer join semantics.
 * Handle group by clauses and additional aggregations.
+* Stabilize generated code ordering for JOB queries. The current compiler uses
+  maps which lead to nondeterministic join condition ordering. Golden tests set
+  `MOCHI_SKIP_COBFMT=1` to avoid formatter installs but output may still vary
+  across runs.
