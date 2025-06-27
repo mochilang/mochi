@@ -19,12 +19,6 @@
 (defn _json [v]
   (println (_to_json v)))
 
-(defn _in [item col]
-  (cond
-    (and (string? col) (string? item)) (clojure.string/includes? col item)
-    (map? col) (contains? col item)
-    (sequential? col) (some #(= item %) col)
-    :else false))
 (declare cast_info keyword movie_keyword name title result)
 
 (defn test_Q6_finds_marvel_movie_with_Robert_Downey []
@@ -36,7 +30,7 @@
   (def movie_keyword [{:movie_id 1 :keyword_id 100} {:movie_id 2 :keyword_id 200}])
   (def name [{:id 101 :name "Downey Robert Jr."} {:id 102 :name "Chris Evans"}])
   (def title [{:id 1 :title "Iron Man 3" :production_year 2013} {:id 2 :title "Old Movie" :production_year 2000}])
-  (def result (vec (->> (for [ci cast_info mk movie_keyword :when (= (:movie_id ci) (:movie_id mk)) k keyword :when (= (:keyword_id mk) (:id k)) n name :when (= (:person_id ci) (:id n)) t title :when (= (:movie_id ci) (:id t)) :when (and (and (and (= (:keyword k) "marvel-cinematic-universe") (_in "Downey" (:name n))) (_in "Robert" (:name n))) (> (:production_year t) 2010))] {:movie_keyword (:keyword k) :actor_name (:name n) :marvel_movie (:title t)}))))
+  (def result (vec (->> (for [ci cast_info mk movie_keyword :when (= (:movie_id ci) (:movie_id mk)) k keyword :when (= (:keyword_id mk) (:id k)) n name :when (= (:person_id ci) (:id n)) t title :when (= (:movie_id ci) (:id t)) :when (and (and (and (= (:keyword k) "marvel-cinematic-universe") (clojure.string/includes? (:name n) "Downey")) (clojure.string/includes? (:name n) "Robert")) (> (:production_year t) 2010))] {:movie_keyword (:keyword k) :actor_name (:name n) :marvel_movie (:title t)}))))
   (_json result)
   (test_Q6_finds_marvel_movie_with_Robert_Downey))
 

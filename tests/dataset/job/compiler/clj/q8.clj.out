@@ -28,12 +28,6 @@
 (defn _json [v]
   (println (_to_json v)))
 
-(defn _in [item col]
-  (cond
-    (and (string? col) (string? item)) (clojure.string/includes? col item)
-    (map? col) (contains? col item)
-    (sequential? col) (some #(= item %) col)
-    :else false))
 (declare aka_name cast_info company_name movie_companies name role_type title eligible result)
 
 (defn test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing []
@@ -47,7 +41,7 @@
   (def name [{:id 1 :name "Yoko Ono"} {:id 2 :name "Yuichi"}])
   (def role_type [{:id 1000 :role "actress"}])
   (def title [{:id 10 :title "Dubbed Film"}])
-  (def eligible (vec (->> (for [an1 aka_name n1 name :when (= (:id n1) (:person_id an1)) ci cast_info :when (= (:person_id ci) (:person_id an1)) t title :when (= (:id t) (:movie_id ci)) mc movie_companies :when (= (:movie_id mc) (:movie_id ci)) cn company_name :when (= (:id cn) (:company_id mc)) rt role_type :when (= (:id rt) (:role_id ci)) :when (and (and (and (and (and (and (= (:note ci) "(voice: English version)") (= (:country_code cn) "[jp]")) (_in "(Japan)" (:note mc))) (not (_in "(USA)" (:note mc)))) (_in "Yo" (:name n1))) (not (_in "Yu" (:name n1)))) (= (:role rt) "actress"))] {:pseudonym (:name an1) :movie_title (:title t)}))))
+  (def eligible (vec (->> (for [an1 aka_name n1 name :when (= (:id n1) (:person_id an1)) ci cast_info :when (= (:person_id ci) (:person_id an1)) t title :when (= (:id t) (:movie_id ci)) mc movie_companies :when (= (:movie_id mc) (:movie_id ci)) cn company_name :when (= (:id cn) (:company_id mc)) rt role_type :when (= (:id rt) (:role_id ci)) :when (and (and (and (and (and (and (= (:note ci) "(voice: English version)") (= (:country_code cn) "[jp]")) (clojure.string/includes? (:note mc) "(Japan)")) (not (clojure.string/includes? (:note mc) "(USA)"))) (clojure.string/includes? (:name n1) "Yo")) (not (clojure.string/includes? (:name n1) "Yu"))) (= (:role rt) "actress"))] {:pseudonym (:name an1) :movie_title (:title t)}))))
   (def result [{:actress_pseudonym (_min (vec (->> (for [x eligible] (:pseudonym x))))) :japanese_movie_dubbed (_min (vec (->> (for [x eligible] (:movie_title x)))))}])
   (_json result)
   (test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing))
