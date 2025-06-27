@@ -1,5 +1,23 @@
 open System
 
+let person_id = "person_id"
+let name = "name"
+let id = "id"
+let person_role_id = "person_role_id"
+let movie_id = "movie_id"
+let role_id = "role_id"
+let note = "note"
+let country_code = "country_code"
+let company_id = "company_id"
+let gender = "gender"
+let role = "role"
+let title = "title"
+let production_year = "production_year"
+let alt = "alt"
+let character = "character"
+let movie = "movie"
+let alternative_name = "alternative_name"
+let character_name = "character_name"
 let rec _to_json (v: obj) : string =
   match v with
   | null -> "null"

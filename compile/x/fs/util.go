@@ -273,6 +273,37 @@ func contains(list []string, s string) bool {
 	return false
 }
 
+// identOfExpr returns the identifier name if e is a simple selector
+// expression like `foo` with no operations. The returned name is the
+// source identifier, not sanitized. If the expression is not a simple
+// identifier, ok is false.
+func identOfExpr(e *parser.Expr) (string, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil {
+		return "", false
+	}
+	if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+		return sel.Root, true
+	}
+	return "", false
+}
+
+func (c *Compiler) ensureFieldConst(name string) {
+	if c.fields[name] {
+		return
+	}
+	c.fields[name] = true
+	line := fmt.Sprintf("let %s = \"%s\"", sanitizeName(name), name)
+	c.preamble.WriteString(line + "\n")
+}
+
 func (c *Compiler) use(name string) {
 	switch name {
 	case "_json", "_to_json":

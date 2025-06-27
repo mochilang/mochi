@@ -1,5 +1,42 @@
 open System
 
+let person_id = "person_id"
+let name = "name"
+let movie_id = "movie_id"
+let note = "note"
+let role_id = "role_id"
+let id = "id"
+let country_code = "country_code"
+let company_id = "company_id"
+let role = "role"
+let title = "title"
+let pseudonym = "pseudonym"
+let movie_title = "movie_title"
+let actress_pseudonym = "actress_pseudonym"
+let japanese_movie_dubbed = "japanese_movie_dubbed"
+let rec _to_json (v: obj) : string =
+  match v with
+  | null -> "null"
+  | :? string as s ->
+      "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
+  | :? bool
+  | :? int | :? int64
+  | :? double -> string v
+  | :? System.Collections.Generic.IDictionary<string,obj> as m ->
+      m
+      |> Seq.map (fun (KeyValue(k,v)) ->
+          "\"" + k.Replace("\"", "\\\"") + "\":" + _to_json v)
+      |> String.concat ","
+      |> fun s -> "{" + s + "}"
+  | :? System.Collections.IEnumerable as e ->
+      e
+      |> Seq.cast<obj>
+      |> Seq.map _to_json
+      |> String.concat ","
+      |> fun s -> "[" + s + "]"
+  | _ -> "\"" + v.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
+let _json (v: obj) : unit =
+  printfn "%s" (_to_json v)
 let _run_test (name: string) (f: unit -> unit) : bool =
   printf "%s ... " name
   try
@@ -51,7 +88,7 @@ let result = [|Map.ofList [(actress_pseudonym, _min [|
     for x in eligible do
         yield x.movie_title
 |])]|]
-ignore (printfn "%A" (result))
+ignore (_json result)
 let test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing() =
     if not ((result = [|Map.ofList [(actress_pseudonym, "Y. S."); (japanese_movie_dubbed, "Dubbed Film")]|])) then failwith "expect failed"
 
