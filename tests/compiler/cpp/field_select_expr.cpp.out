@@ -2,15 +2,13 @@
 using namespace std;
 
 struct Point {
-	int x;
-	int y;
+  int x;
+  int y;
 };
 
-Point make(){
-	return Point{1, 2};
-}
+Point make() { return Point{1, 2}; }
 
 int main() {
-	std::cout << (make().x) << std::endl;
-	return 0;
+  std::cout << (make().x) << std::endl;
+  return 0;
 }

@@ -1,42 +1,51 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template<typename Src, typename KeyFunc> auto _group_by(const Src& src, KeyFunc keyfn) {
-	using ElemT = typename std::decay<decltype(*std::begin(src))>::type;
-	using KeyT = decltype(keyfn(*std::begin(src)));
-	struct _Group { KeyT Key; vector<ElemT> Items; };
-	unordered_map<KeyT, _Group> groups;
-	vector<KeyT> order;
-	for (const auto& it : src) {
-		KeyT k = keyfn(it);
-		if (!groups.count(k)) { groups[k] = _Group{k, {}}; order.push_back(k); }
-		groups[k].Items.push_back(it);
-	}
-	vector<_Group> res;
-	for (const auto& k : order) res.push_back(groups[k]);
-	return res;
+template <typename Src, typename KeyFunc>
+auto _group_by(const Src &src, KeyFunc keyfn) {
+  using ElemT = typename std::decay<decltype(*std::begin(src))>::type;
+  using KeyT = decltype(keyfn(*std::begin(src)));
+  struct _Group {
+    KeyT Key;
+    vector<ElemT> Items;
+  };
+  unordered_map<KeyT, _Group> groups;
+  vector<KeyT> order;
+  for (const auto &it : src) {
+    KeyT k = keyfn(it);
+    if (!groups.count(k)) {
+      groups[k] = _Group{k, {}};
+      order.push_back(k);
+    }
+    groups[k].Items.push_back(it);
+  }
+  vector<_Group> res;
+  for (const auto &k : order)
+    res.push_back(groups[k]);
+  return res;
 }
 
-template<typename T> auto _count(const T& v) -> decltype(v.size(), int{}) {
-	return (int)v.size();
+template <typename T> auto _count(const T &v) -> decltype(v.size(), int{}) {
+  return (int)v.size();
 }
-template<typename T> auto _count(const T& v) -> decltype(v.Items, int{}) {
-	return (int)v.Items.size();
+template <typename T> auto _count(const T &v) -> decltype(v.Items, int{}) {
+  return (int)v.Items.size();
 }
 
 int main() {
-	auto xs = vector<int>{1, 1, 2};
-	auto groups = ([&]() -> vector<unordered_map<string, int>> {
-	auto _src = xs;
-	auto _groups = _group_by(_src, [&](auto& x){ return x; });
-	vector<unordered_map<string, int>> _res;
-	for (auto& g : _groups) {
-		_res.push_back(unordered_map<string, auto>{{string("k"), g.key}, {string("c"), _count(g)}});
-	}
-	return _res;
-})();
-	for (const unordered_map<string, any>& g : groups) {
-		std::cout << (g["k"]) << " " << (g["c"]) << std::endl;
-	}
-	return 0;
+  auto xs = vector<int>{1, 1, 2};
+  auto groups = ([&]() -> vector<unordered_map<string, int>> {
+    auto _src = xs;
+    auto _groups = _group_by(_src, [&](auto &x) { return x; });
+    vector<unordered_map<string, int>> _res;
+    for (auto &g : _groups) {
+      _res.push_back(unordered_map<string, auto>{{string("k"), g.key},
+                                                 {string("c"), _count(g)}});
+    }
+    return _res;
+  })();
+  for (const unordered_map<string, any> &g : groups) {
+    std::cout << (g["k"]) << " " << (g["c"]) << std::endl;
+  }
+  return 0;
 }

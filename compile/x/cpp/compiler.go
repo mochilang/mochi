@@ -133,7 +133,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if !bytes.HasSuffix(c.buf.Bytes(), []byte("\n")) {
 		c.writeln("")
 	}
-	return c.buf.Bytes(), nil
+	out := c.buf.Bytes()
+	return FormatCPP(out), nil
 }
 
 func (c *Compiler) cppType(t *parser.TypeRef) string {

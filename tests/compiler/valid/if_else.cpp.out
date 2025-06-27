@@ -2,11 +2,11 @@
 using namespace std;
 
 int main() {
-	auto x = 5;
-	if (x > 3) {
-		std::cout << (string("big")) << std::endl;
-	} else {
-		std::cout << (string("small")) << std::endl;
-	}
-	return 0;
+  auto x = 5;
+  if (x > 3) {
+    std::cout << (string("big")) << std::endl;
+  } else {
+    std::cout << (string("small")) << std::endl;
+  }
+  return 0;
 }

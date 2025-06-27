@@ -2,11 +2,14 @@
 using namespace std;
 
 int main() {
-	std::cout << (string("ok")) << std::endl;
-	auto test_addition_works = [&]() {
-		auto x = 1 + 2;
-		if (!(x == 3)) { std::cerr << "expect failed\n"; exit(1); }
-	};
-	test_addition_works();
-	return 0;
+  std::cout << (string("ok")) << std::endl;
+  auto test_addition_works = [&]() {
+    auto x = 1 + 2;
+    if (!(x == 3)) {
+      std::cerr << "expect failed\n";
+      exit(1);
+    }
+  };
+  test_addition_works();
+  return 0;
 }

@@ -2,7 +2,7 @@
 using namespace std;
 
 int main() {
-	auto value = (1 + 2) * 3;
-	std::cout << (value) << std::endl;
-	return 0;
+  auto value = (1 + 2) * 3;
+  std::cout << (value) << std::endl;
+  return 0;
 }

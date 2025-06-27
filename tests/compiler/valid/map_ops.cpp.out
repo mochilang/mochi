@@ -2,13 +2,12 @@
 using namespace std;
 
 int main() {
-	unordered_map<int, int> m = unordered_map<int, int>{};
-	m[1] = 10;
-	m[2] = 20;
-	if ((m.count(1) != 0)) {
-		std::cout << (m[1]) << std::endl;
-	}
-	std::cout << (m[2]) << std::endl;
-	return 0;
+  unordered_map<int, int> m = unordered_map<int, int>{};
+  m[1] = 10;
+  m[2] = 20;
+  if ((m.count(1) != 0)) {
+    std::cout << (m[1]) << std::endl;
+  }
+  std::cout << (m[2]) << std::endl;
+  return 0;
 }
-
