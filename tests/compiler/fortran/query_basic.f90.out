@@ -1,36 +1,36 @@
 program main
-  implicit none
-  integer(kind=8), allocatable :: xs(:)
-  integer(kind=8) :: ys
-  integer(kind=8) :: v
-  integer(kind=8) :: i_v
-  allocate(xs(0))
-  xs = (/1_8, 10_8, 20_8, 5_8/)
-  ys = lambda_0(xs)
-  do i_v = 0, size(ys) - 1
-    v = ys(modulo(i_v, size(ys)) + 1)
-    print *, v
-  end do
+   implicit none
+   integer(kind=8), allocatable :: xs(:)
+   integer(kind=8) :: ys
+   integer(kind=8) :: v
+   integer(kind=8) :: i_v
+   allocate(xs(0))
+   xs = (/1_8, 10_8, 20_8, 5_8/)
+   ys = lambda_0(xs)
+   do i_v = 0, size(ys) - 1
+      v = ys(modulo(i_v, size(ys)) + 1)
+      print *, v
+   end do
 contains
-  function lambda_0(vsrc) result(res)
-    implicit none
-    integer(kind=8), intent(in) :: vsrc(:)
-    integer(kind=8), allocatable :: res(:)
-    integer(kind=8), allocatable :: tmp(:)
-    integer(kind=8) :: x
-    integer(kind=8) :: n
-    integer(kind=8) :: i
-    allocate(tmp(size(vsrc)))
-    n = 0
-    do i = 1, size(vsrc)
-      x = vsrc(i)
-      if ((x > 9_8)) then
-        n = n + 1
-        tmp(n) = (x + 1_8)
-      end if
-    end do
-    allocate(res(n))
-    res = tmp(:n)
-  end function lambda_0
-  
+   function lambda_0(vsrc) result(res)
+      implicit none
+      integer(kind=8), intent(in) :: vsrc(:)
+      integer(kind=8), allocatable :: res(:)
+      integer(kind=8), allocatable :: tmp(:)
+      integer(kind=8) :: x
+      integer(kind=8) :: n
+      integer(kind=8) :: i
+      allocate(tmp(size(vsrc)))
+      n = 0
+      do i = 1, size(vsrc)
+         x = vsrc(i)
+         if ((x > 9_8)) then
+            n = n + 1
+            tmp(n) = (x + 1_8)
+         end if
+      end do
+      allocate(res(n))
+      res = tmp(:n)
+   end function lambda_0
+
 end program main

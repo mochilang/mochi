@@ -304,7 +304,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 	}
 	c.writeln("end program main")
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	if formatted, err := formatCode(code); err == nil {
+		code = formatted
+	}
+	return code, nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {

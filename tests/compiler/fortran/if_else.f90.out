@@ -1,23 +1,23 @@
 program main
-  implicit none
-  print *, foo((-2_8))
-  print *, foo(0_8)
-  print *, foo(3_8)
+   implicit none
+   print *, foo((-2_8))
+   print *, foo(0_8)
+   print *, foo(3_8)
 contains
-  function foo(n) result(res)
-    implicit none
-    integer(kind=8) :: res
-    integer(kind=8), intent(in) :: n
-    if ((n < 0_8)) then
-      res = (-1_8)
-      return
-    else if ((n == 0_8)) then
-      res = 0_8
-      return
-    else
-      res = 1_8
-      return
-    end if
-  end function foo
-  
+   function foo(n) result(res)
+      implicit none
+      integer(kind=8) :: res
+      integer(kind=8), intent(in) :: n
+      if ((n < 0_8)) then
+         res = (-1_8)
+         return
+      else if ((n == 0_8)) then
+         res = 0_8
+         return
+      else
+         res = 1_8
+         return
+      end if
+   end function foo
+
 end program main

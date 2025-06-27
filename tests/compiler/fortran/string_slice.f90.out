@@ -1,6 +1,6 @@
 program main
-  implicit none
-  character(:), allocatable :: text
-  text = 'hello'
-  print *, text(modulo(1_8, len(text)) + 1:modulo(4_8, len(text)))
+   implicit none
+   character(:), allocatable :: text
+   text = 'hello'
+   print *, text(modulo(1_8, len(text)) + 1:modulo(4_8, len(text)))
 end program main
