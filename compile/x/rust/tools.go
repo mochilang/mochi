@@ -1,6 +1,7 @@
 package rscode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -64,4 +65,31 @@ func ensureRust() error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+// FormatRust runs rustfmt on the given source code if available.
+// If rustfmt is not found or fails, the input is returned unchanged.
+func FormatRust(src []byte) []byte {
+	path, err := exec.LookPath("rustfmt")
+	if err != nil {
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
+	}
+	cmd := exec.Command(path, "--emit", "stdout")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		res := out.Bytes()
+		if len(res) == 0 || res[len(res)-1] != '\n' {
+			res = append(res, '\n')
+		}
+		return res
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
