@@ -7,16 +7,16 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		long[] numbers = new long[] { 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L };
-		foreach (var n in numbers) {
-			if (((n % 2L) == 0L)) {
-				continue;
-			}
-			if ((n > 7L)) {
-				break;
-			}
-			Console.WriteLine(string.Join(" ", new [] { Convert.ToString("odd number:"), Convert.ToString(n) }));
-		}
-	}
+    public static void Main() {
+        long[] numbers = new long[] { 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L };
+        foreach (var n in numbers) {
+            if (((n % 2L) == 0L)) {
+                continue;
+            }
+            if ((n > 7L)) {
+                break;
+            }
+            Console.WriteLine(string.Join(" ", new [] { Convert.ToString("odd number:"), Convert.ToString(n) }));
+        }
+    }
 }

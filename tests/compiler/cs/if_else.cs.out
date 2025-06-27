@@ -7,12 +7,12 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		long x = 5L;
-		if ((x > 3L)) {
-			Console.WriteLine("big");
-		} else {
-			Console.WriteLine("small");
-		}
-	}
+    public static void Main() {
+        long x = 5L;
+        if ((x > 3L)) {
+            Console.WriteLine("big");
+        } else {
+            Console.WriteLine("small");
+        }
+    }
 }

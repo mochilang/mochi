@@ -7,7 +7,7 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Console.WriteLine(new long[] { 1L, 2L, 3L }.Length);
-	}
+    public static void Main() {
+        Console.WriteLine(new long[] { 1L, 2L, 3L }.Length);
+    }
 }

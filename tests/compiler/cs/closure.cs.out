@@ -7,14 +7,14 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	static Func<long, long> makeAdder(long n) {
-		return new Func<long, long>(delegate(long x) {
-	return (x + n);
+    static Func<long, long> makeAdder(long n) {
+        return new Func<long, long>(delegate(long x) {
+    return (x + n);
 });
-	}
-	
-	public static void Main() {
-		Func<long, long> add10 = makeAdder(10L);
-		Console.WriteLine(add10(7L));
-	}
+    }
+    
+    public static void Main() {
+        Func<long, long> add10 = makeAdder(10L);
+        Console.WriteLine(add10(7L));
+    }
 }

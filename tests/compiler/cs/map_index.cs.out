@@ -7,16 +7,16 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Dictionary<string, long> scores = new Dictionary<string, long> { { "Alice", 10L }, { "Bob", 15L } };
-		Console.WriteLine(_indexList(scores, "Bob"));
-	}
-	static dynamic _indexList(dynamic l, long i) {
-		var list = l as System.Collections.IList;
-		if (list == null) throw new Exception("index() expects list");
-		if (i < 0) i += list.Count;
-		if (i < 0 || i >= list.Count) throw new Exception("index out of range");
-		return list[(int)i];
-	}
-	
+    public static void Main() {
+        Dictionary<string, long> scores = new Dictionary<string, long> { { "Alice", 10L }, { "Bob", 15L } };
+        Console.WriteLine(_indexList(scores, "Bob"));
+    }
+    static dynamic _indexList(dynamic l, long i) {
+        var list = l as System.Collections.IList;
+        if (list == null) throw new Exception("index() expects list");
+        if (i < 0) i += list.Count;
+        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
+        return list[(int)i];
+    }
+    
 }

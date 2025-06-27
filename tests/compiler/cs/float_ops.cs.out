@@ -7,8 +7,8 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Console.WriteLine((1.200000 + 3.400000));
-		Console.WriteLine((5.000000 / 2.000000));
-	}
+    public static void Main() {
+        Console.WriteLine((1.200000 + 3.400000));
+        Console.WriteLine((5.000000 / 2.000000));
+    }
 }

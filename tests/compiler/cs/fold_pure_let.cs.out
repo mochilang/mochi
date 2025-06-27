@@ -7,13 +7,22 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	static long sum(long n) {
-		return ((n * ((n + 1L))) / 2L);
-	}
-	
-	public static void Main() {
-		long n = 10L;
-		Console.WriteLine(sum(n));
-		Console.WriteLine(n);
-	}
+    static long sum(long n) {
+        return ((n * ((n + 1L))) / 2L);
+    }
+    
+    public static void Main() {
+        long n = 10L;
+        Console.WriteLine(_sum(n));
+        Console.WriteLine(n);
+    }
+    static double _sum(dynamic v) {
+        if (v == null) return 0.0;
+        double _sum = 0;
+        foreach (var it in v) {
+            _sum += Convert.ToDouble(it);
+        }
+        return _sum;
+    }
+    
 }

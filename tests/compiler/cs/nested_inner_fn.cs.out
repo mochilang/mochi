@@ -7,14 +7,14 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	static long outer(long a) {
-		long inner(long b) {
-			return (a + b);
-		}
-		return inner(10L);
-	}
-	
-	public static void Main() {
-		Console.WriteLine(outer(5L));
-	}
+    static long outer(long a) {
+        long inner(long b) {
+            return (a + b);
+        }
+        return inner(10L);
+    }
+    
+    public static void Main() {
+        Console.WriteLine(outer(5L));
+    }
 }

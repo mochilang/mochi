@@ -7,9 +7,9 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		foreach (var n in new long[] { 1L, 2L, 3L }) {
-			Console.WriteLine(n);
-		}
-	}
+    public static void Main() {
+        foreach (var n in new long[] { 1L, 2L, 3L }) {
+            Console.WriteLine(n);
+        }
+    }
 }

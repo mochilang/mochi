@@ -7,16 +7,16 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	static long fib(long n) {
-		if ((n <= 1L)) {
-			return n;
-		}
-		return (fib((n - 1L)) + fib((n - 2L)));
-	}
-	
-	public static void Main() {
-		Console.WriteLine(fib(0L));
-		Console.WriteLine(fib(1L));
-		Console.WriteLine(fib(6L));
-	}
+    static long fib(long n) {
+        if ((n <= 1L)) {
+            return n;
+        }
+        return (fib((n - 1L)) + fib((n - 2L)));
+    }
+    
+    public static void Main() {
+        Console.WriteLine(fib(0L));
+        Console.WriteLine(fib(1L));
+        Console.WriteLine(fib(6L));
+    }
 }

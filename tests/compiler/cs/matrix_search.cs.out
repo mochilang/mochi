@@ -7,40 +7,40 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	static bool searchMatrix(long[][] matrix, long target) {
-		long m = matrix.Length;
-		if ((m == 0L)) {
-			return false;
-		}
-		long n = _indexList(matrix, 0L).Length;
-		long left = 0L;
-		var right = ((m * n) - 1L);
-		while ((left <= right)) {
-			var mid = (left + (((right - left)) / 2L));
-			var row = (mid / n);
-			var col = (mid % n);
-			var value = _indexList(_indexList(matrix, row), col);
-			if ((value == target)) {
-				return true;
-			} else if ((value < target)) {
-				left = (mid + 1L);
-			} else {
-				right = (mid - 1L);
-			}
-		}
-		return false;
-	}
-	
-	public static void Main() {
-		Console.WriteLine(searchMatrix(new long[][] { new long[] { 1L, 3L, 5L, 7L }, new long[] { 10L, 11L, 16L, 20L }, new long[] { 23L, 30L, 34L, 60L } }, 3L));
-		Console.WriteLine(searchMatrix(new long[][] { new long[] { 1L, 3L, 5L, 7L }, new long[] { 10L, 11L, 16L, 20L }, new long[] { 23L, 30L, 34L, 60L } }, 13L));
-	}
-	static dynamic _indexList(dynamic l, long i) {
-		var list = l as System.Collections.IList;
-		if (list == null) throw new Exception("index() expects list");
-		if (i < 0) i += list.Count;
-		if (i < 0 || i >= list.Count) throw new Exception("index out of range");
-		return list[(int)i];
-	}
-	
+    static bool searchMatrix(long[][] matrix, long target) {
+        long m = matrix.Length;
+        if ((m == 0L)) {
+            return false;
+        }
+        long n = _indexList(matrix, 0L).Length;
+        long left = 0L;
+        var right = ((m * n) - 1L);
+        while ((left <= right)) {
+            var mid = (left + (((right - left)) / 2L));
+            var row = (mid / n);
+            var col = (mid % n);
+            var value = _indexList(_indexList(matrix, row), col);
+            if ((value == target)) {
+                return true;
+            } else if ((value < target)) {
+                left = (mid + 1L);
+            } else {
+                right = (mid - 1L);
+            }
+        }
+        return false;
+    }
+    
+    public static void Main() {
+        Console.WriteLine(searchMatrix(new long[][] { new long[] { 1L, 3L, 5L, 7L }, new long[] { 10L, 11L, 16L, 20L }, new long[] { 23L, 30L, 34L, 60L } }, 3L));
+        Console.WriteLine(searchMatrix(new long[][] { new long[] { 1L, 3L, 5L, 7L }, new long[] { 10L, 11L, 16L, 20L }, new long[] { 23L, 30L, 34L, 60L } }, 13L));
+    }
+    static dynamic _indexList(dynamic l, long i) {
+        var list = l as System.Collections.IList;
+        if (list == null) throw new Exception("index() expects list");
+        if (i < 0) i += list.Count;
+        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
+        return list[(int)i];
+    }
+    
 }

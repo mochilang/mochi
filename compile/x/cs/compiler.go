@@ -198,7 +198,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	return code, nil
+	return FormatCS(code), nil
 }
 
 func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {

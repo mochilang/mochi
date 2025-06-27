@@ -8,22 +8,22 @@ using System.Web;
 using System.Linq;
 
 public class Program {
-	public static void Main() {
-		var customers = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { id, 1L }, { city, "NY" } }, new Dictionary<string, dynamic> { { id, 2L }, { city, "LA" } } };
-		Dictionary<string, long>[] orders = new Dictionary<string, long>[] { new Dictionary<string, long> { { id, 100L }, { customerId, 1L }, { total, 50L } }, new Dictionary<string, long> { { id, 101L }, { customerId, 2L }, { total, 200L } }, new Dictionary<string, long> { { id, 102L }, { customerId, 1L }, { total, 300L } } };
-		var result = new Func<List<Dictionary<string, dynamic>>>(() => {
-	var _res = new List<Dictionary<string, dynamic>>();
-	foreach (var c in customers) {
-		if (!((c.city == "NY"))) continue;
-		foreach (var o in orders) {
-			if (!((o.total > 100L))) continue;
-			_res.Add(new Dictionary<string, dynamic> { { city, c.city }, { id, o.id } });
-		}
-	}
-	return _res;
+    public static void Main() {
+        var customers = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "id", 1L }, { "city", "NY" } }, new Dictionary<string, dynamic> { { "id", 2L }, { "city", "LA" } } };
+        Dictionary<string, long>[] orders = new Dictionary<string, long>[] { new Dictionary<string, long> { { "id", 100L }, { "customerId", 1L }, { "total", 50L } }, new Dictionary<string, long> { { "id", 101L }, { "customerId", 2L }, { "total", 200L } }, new Dictionary<string, long> { { "id", 102L }, { "customerId", 1L }, { "total", 300L } } };
+        var result = new Func<List<Dictionary<string, dynamic>>>(() => {
+    var _res = new List<Dictionary<string, dynamic>>();
+    foreach (var c in customers) {
+        if (!((c.city == "NY"))) continue;
+        foreach (var o in orders) {
+            if (!((o.total > 100L))) continue;
+            _res.Add(new Dictionary<string, dynamic> { { "city", c.city }, { "id", o.id } });
+        }
+    }
+    return _res;
 })();
-		foreach (var r in result) {
-			Console.WriteLine(string.Join(" ", new [] { Convert.ToString(r.city), Convert.ToString(r.id) }));
-		}
-	}
+        foreach (var r in result) {
+            Console.WriteLine(string.Join(" ", new [] { Convert.ToString(r.city), Convert.ToString(r.id) }));
+        }
+    }
 }

@@ -7,9 +7,9 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Console.WriteLine((true && false));
-		Console.WriteLine((true || false));
-		Console.WriteLine((!false));
-	}
+    public static void Main() {
+        Console.WriteLine((true && false));
+        Console.WriteLine((true || false));
+        Console.WriteLine((!false));
+    }
 }

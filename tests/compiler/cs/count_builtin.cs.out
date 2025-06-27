@@ -7,17 +7,17 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Console.WriteLine(_count(new long[] { 1L, 2L, 3L }));
-	}
-	static int _count(dynamic v) {
-		if (v is string) {
-			return ((string)v).Length;
-		}
-		if (v is System.Collections.ICollection c) {
-			return c.Count;
-		}
-		throw new Exception("count() expects list or string");
-	}
-	
+    public static void Main() {
+        Console.WriteLine(_count(new long[] { 1L, 2L, 3L }));
+    }
+    static int _count(dynamic v) {
+        if (v is string) {
+            return ((string)v).Length;
+        }
+        if (v is System.Collections.ICollection c) {
+            return c.Count;
+        }
+        throw new Exception("count() expects list or string");
+    }
+    
 }

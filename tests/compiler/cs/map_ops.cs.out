@@ -7,37 +7,37 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Dictionary<long, long> m = new Dictionary<dynamic, dynamic> {  };
-		m[1L] = 10L;
-		m[2L] = 20L;
-		if (_in(1L, m)) {
-			Console.WriteLine(_indexList(m, 1L));
-		}
-		Console.WriteLine(_indexList(m, 2L));
-	}
-	static bool _in(dynamic item, dynamic col) {
-		if (col is string s && item is string sub) {
-			return s.Contains(sub);
-		}
-		if (col is System.Collections.IDictionary d) {
-			return d.Contains(item);
-		}
-		if (col is System.Collections.IEnumerable e) {
-			foreach (var it in e) {
-				if (Equals(it, item)) return true;
-			}
-			return false;
-		}
-		return false;
-	}
-	
-	static dynamic _indexList(dynamic l, long i) {
-		var list = l as System.Collections.IList;
-		if (list == null) throw new Exception("index() expects list");
-		if (i < 0) i += list.Count;
-		if (i < 0 || i >= list.Count) throw new Exception("index out of range");
-		return list[(int)i];
-	}
-	
+    public static void Main() {
+        Dictionary<long, long> m = new Dictionary<dynamic, dynamic> {  };
+        m[1L] = 10L;
+        m[2L] = 20L;
+        if (_in(1L, m)) {
+            Console.WriteLine(_indexList(m, 1L));
+        }
+        Console.WriteLine(_indexList(m, 2L));
+    }
+    static dynamic _indexList(dynamic l, long i) {
+        var list = l as System.Collections.IList;
+        if (list == null) throw new Exception("index() expects list");
+        if (i < 0) i += list.Count;
+        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
+        return list[(int)i];
+    }
+    
+    static bool _in(dynamic item, dynamic col) {
+        if (col is string s && item is string sub) {
+            return s.Contains(sub);
+        }
+        if (col is System.Collections.IDictionary d) {
+            return d.Contains(item);
+        }
+        if (col is System.Collections.IEnumerable e) {
+            foreach (var it in e) {
+                if (Equals(it, item)) return true;
+            }
+            return false;
+        }
+        return false;
+    }
+    
 }

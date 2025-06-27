@@ -7,74 +7,88 @@ using System.Text;
 using System.Web;
 using System.Linq;
 
-public class Program {
-	static void test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
-		expect((result == new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { returnflag, "N" }, { linestatus, "O" }, { sum_qty, 53L }, { sum_base_price, 3000L }, { sum_disc_price, (950.000000 + 1800.000000) }, { sum_charge, (((950.000000 * 1.070000)) + ((1800.000000 * 1.050000))) }, { avg_qty, 26.500000 }, { avg_price, 1500L }, { avg_disc, 0.075000 }, { count_order, 2L } } }));
-	}
-	
-	public static void Main() {
-		var lineitem = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { l_quantity, 17L }, { l_extendedprice, 1000.000000 }, { l_discount, 0.050000 }, { l_tax, 0.070000 }, { l_returnflag, "N" }, { l_linestatus, "O" }, { l_shipdate, "1998-08-01" } }, new Dictionary<string, dynamic> { { l_quantity, 36L }, { l_extendedprice, 2000.000000 }, { l_discount, 0.100000 }, { l_tax, 0.050000 }, { l_returnflag, "N" }, { l_linestatus, "O" }, { l_shipdate, "1998-09-01" } }, new Dictionary<string, dynamic> { { l_quantity, 25L }, { l_extendedprice, 1500.000000 }, { l_discount, 0.000000 }, { l_tax, 0.080000 }, { l_returnflag, "R" }, { l_linestatus, "F" }, { l_shipdate, "1998-09-03" } } };
-		var result = _group_by(lineitem, row => new Dictionary<string, dynamic> { { returnflag, row.l_returnflag }, { linestatus, row.l_linestatus } }).Select(g => new Dictionary<string, dynamic> { { returnflag, g.key.returnflag }, { linestatus, g.key.linestatus }, { sum_qty, _sum(new List<dynamic>(g.Select(x => x.l_quantity))) }, { sum_base_price, _sum(new List<dynamic>(g.Select(x => x.l_extendedprice))) }, { sum_disc_price, _sum(new List<dynamic>(g.Select(x => (x.l_extendedprice * ((1L - x.l_discount)))))) }, { sum_charge, _sum(new List<dynamic>(g.Select(x => ((x.l_extendedprice * ((1L - x.l_discount))) * ((1L + x.l_tax)))))) }, { avg_qty, _avg(new List<dynamic>(g.Select(x => x.l_quantity))) }, { avg_price, _avg(new List<dynamic>(g.Select(x => x.l_extendedprice))) }, { avg_disc, _avg(new List<dynamic>(g.Select(x => x.l_discount))) }, { count_order, _count(g) } }).ToList();
-		Console.WriteLine(JsonSerializer.Serialize(result));
-		test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus();
-	}
-	static void expect(bool cond) {
-		if (!cond) throw new Exception("expect failed");
-	}
-	
-	static double _sum(dynamic v) {
-		if (v == null) return 0.0;
-		double _sum = 0;
-		foreach (var it in v) {
-			_sum += Convert.ToDouble(it);
-		}
-		return _sum;
-	}
-	
-	static double _avg(dynamic v) {
-		if (v == null) return 0.0;
-		int _n = 0;
-		double _sum = 0;
-		foreach (var it in v) {
-			_sum += Convert.ToDouble(it);
-			_n++;
-		}
-		return _n == 0 ? 0.0 : _sum / _n;
-	}
-	
-	static int _count(dynamic v) {
-		if (v is string) {
-			return ((string)v).Length;
-		}
-		if (v is System.Collections.ICollection c) {
-			return c.Count;
-		}
-		throw new Exception("count() expects list or string");
-	}
-	
-	static List<_Group> _group_by(IEnumerable<dynamic> src, Func<dynamic, dynamic> keyfn) {
-		var groups = new Dictionary<string, _Group>();
-		var order = new List<string>();
-		foreach (var it in src) {
-			var key = keyfn(it);
-			var ks = Convert.ToString(key);
-			if (!groups.TryGetValue(ks, out var g)) {
-				g = new _Group(key);
-				groups[ks] = g;
-				order.Add(ks);
-			}
-			g.Items.Add(it);
-		}
-		var res = new List<_Group>();
-		foreach (var k in order) res.Add(groups[k]);
-		return res;
-	}
-	
-	public class _Group {
-		public dynamic key;
-		public List<dynamic> Items = new List<dynamic>();
-		public _Group(dynamic k) { key = k; }
-	}
-	
-}
+public class Program
+{
+    static void test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
+    {
+        expect((result == new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "returnflag", "N" }, { "linestatus", "O" }, { "sum_qty", 53L }, { "sum_base_price", 3000L }, { "sum_disc_price", (950.000000 + 1800.000000) }, { "sum_charge", (((950.000000 * 1.070000)) + ((1800.000000 * 1.050000))) }, { "avg_qty", 26.500000 }, { "avg_price", 1500L }, { "avg_disc", 0.075000 }, { "count_order", 2L } } }));
+    }
 
+    public static void Main()
+    {
+        var lineitem = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "l_quantity", 17L }, { "l_extendedprice", 1000.000000 }, { "l_discount", 0.050000 }, { "l_tax", 0.070000 }, { "l_returnflag", "N" }, { "l_linestatus", "O" }, { "l_shipdate", "1998-08-01" } }, new Dictionary<string, dynamic> { { "l_quantity", 36L }, { "l_extendedprice", 2000.000000 }, { "l_discount", 0.100000 }, { "l_tax", 0.050000 }, { "l_returnflag", "N" }, { "l_linestatus", "O" }, { "l_shipdate", "1998-09-01" } }, new Dictionary<string, dynamic> { { "l_quantity", 25L }, { "l_extendedprice", 1500.000000 }, { "l_discount", 0.000000 }, { "l_tax", 0.080000 }, { "l_returnflag", "R" }, { "l_linestatus", "F" }, { "l_shipdate", "1998-09-03" } } };
+        var result = _group_by(lineitem, row => new Dictionary<string, dynamic> { { "returnflag", row.l_returnflag }, { "linestatus", row.l_linestatus } }).Select(g => new Dictionary<string, dynamic> { { "returnflag", g.key.returnflag }, { "linestatus", g.key.linestatus }, { "sum_qty", _sum(new List<dynamic>(g.Select(x => x.l_quantity))) }, { "sum_base_price", _sum(new List<dynamic>(g.Select(x => x.l_extendedprice))) }, { "sum_disc_price", _sum(new List<dynamic>(g.Select(x => (x.l_extendedprice * ((1L - x.l_discount)))))) }, { "sum_charge", _sum(new List<dynamic>(g.Select(x => ((x.l_extendedprice * ((1L - x.l_discount))) * ((1L + x.l_tax)))))) }, { "avg_qty", _avg(new List<dynamic>(g.Select(x => x.l_quantity))) }, { "avg_price", _avg(new List<dynamic>(g.Select(x => x.l_extendedprice))) }, { "avg_disc", _avg(new List<dynamic>(g.Select(x => x.l_discount))) }, { "count_order", _count(g) } }).ToList();
+        Console.WriteLine(JsonSerializer.Serialize(result));
+        test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus();
+    }
+    static double _sum(dynamic v)
+    {
+        if (v == null) return 0.0;
+        double _sum = 0;
+        foreach (var it in v)
+        {
+            _sum += Convert.ToDouble(it);
+        }
+        return _sum;
+    }
+
+    static double _avg(dynamic v)
+    {
+        if (v == null) return 0.0;
+        int _n = 0;
+        double _sum = 0;
+        foreach (var it in v)
+        {
+            _sum += Convert.ToDouble(it);
+            _n++;
+        }
+        return _n == 0 ? 0.0 : _sum / _n;
+    }
+
+    static int _count(dynamic v)
+    {
+        if (v is string)
+        {
+            return ((string)v).Length;
+        }
+        if (v is System.Collections.ICollection c)
+        {
+            return c.Count;
+        }
+        throw new Exception("count() expects list or string");
+    }
+
+    static List<_Group> _group_by(IEnumerable<dynamic> src, Func<dynamic, dynamic> keyfn)
+    {
+        var groups = new Dictionary<string, _Group>();
+        var order = new List<string>();
+        foreach (var it in src)
+        {
+            var key = keyfn(it);
+            var ks = Convert.ToString(key);
+            if (!groups.TryGetValue(ks, out var g))
+            {
+                g = new _Group(key);
+                groups[ks] = g;
+                order.Add(ks);
+            }
+            g.Items.Add(it);
+        }
+        var res = new List<_Group>();
+        foreach (var k in order) res.Add(groups[k]);
+        return res;
+    }
+
+    public class _Group
+    {
+        public dynamic key;
+        public List<dynamic> Items = new List<dynamic>();
+        public _Group(dynamic k) { key = k; }
+    }
+
+    static void expect(bool cond)
+    {
+        if (!cond) throw new Exception("expect failed");
+    }
+
+}

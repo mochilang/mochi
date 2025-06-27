@@ -7,9 +7,9 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		foreach (var ch in "cat") {
-			Console.WriteLine(ch);
-		}
-	}
+    public static void Main() {
+        foreach (var ch in "cat") {
+            Console.WriteLine(ch);
+        }
+    }
 }

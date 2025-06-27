@@ -7,11 +7,11 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Console.WriteLine((1L + 2L));
-		Console.WriteLine((5L - 3L));
-		Console.WriteLine((4L * 2L));
-		Console.WriteLine((8L / 2L));
-		Console.WriteLine((7L % 3L));
-	}
+    public static void Main() {
+        Console.WriteLine((1L + 2L));
+        Console.WriteLine((5L - 3L));
+        Console.WriteLine((4L * 2L));
+        Console.WriteLine((8L / 2L));
+        Console.WriteLine((7L % 3L));
+    }
 }

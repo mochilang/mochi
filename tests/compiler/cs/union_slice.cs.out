@@ -8,19 +8,19 @@ using System.Web;
 
 public interface Foo { void isFoo(); }
 public struct Empty : Foo {
-	public void isFoo() {}
+    public void isFoo() {}
 }
 public struct Node : Foo {
-	public Foo child;
-	public void isFoo() {}
+    public Foo child;
+    public void isFoo() {}
 }
 
 public class Program {
-	static Foo[] listit() {
-		return new Empty[] { new Empty {  } };
-	}
-	
-	public static void Main() {
-		Console.WriteLine(listit().Length);
-	}
+    static Foo[] listit() {
+        return new Empty[] { new Empty {  } };
+    }
+    
+    public static void Main() {
+        Console.WriteLine(listit().Length);
+    }
 }
