@@ -1,122 +1,66 @@
 object Main {
-    def test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus(): Unit = {
-        expect((result == scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("returnflag" -> "N", "linestatus" -> "O", "sum_qty" -> 53, "sum_base_price" -> 3000, "sum_disc_price" -> (950 + 1800), "sum_charge" -> (((950 * 1.07)) + ((1800 * 1.05))), "avg_qty" -> 26.5, "avg_price" -> 1500, "avg_disc" -> 0.07500000000000001, "count_order" -> 2))))
+    def test_Q2_finds_earliest_title_for_German_companies_with_character_keyword(): Unit = {
+        expect((result == "Der Film"))
     }
     
     def main(args: Array[String]): Unit = {
-        val lineitem: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("l_quantity" -> 17, "l_extendedprice" -> 1000, "l_discount" -> 0.05, "l_tax" -> 0.07, "l_returnflag" -> "N", "l_linestatus" -> "O", "l_shipdate" -> "1998-08-01"), scala.collection.mutable.Map("l_quantity" -> 36, "l_extendedprice" -> 2000, "l_discount" -> 0.1, "l_tax" -> 0.05, "l_returnflag" -> "N", "l_linestatus" -> "O", "l_shipdate" -> "1998-09-01"), scala.collection.mutable.Map("l_quantity" -> 25, "l_extendedprice" -> 1500, "l_discount" -> 0, "l_tax" -> 0.08, "l_returnflag" -> "R", "l_linestatus" -> "F", "l_shipdate" -> "1998-09-03"))
-        val result: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = _group_by((() => {
-    val src = lineitem
+        val company_name: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("id" -> 1, "country_code" -> "[de]"), scala.collection.mutable.Map("id" -> 2, "country_code" -> "[us]"))
+        val keyword: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("id" -> 1, "keyword" -> "character-name-in-title"), scala.collection.mutable.Map("id" -> 2, "keyword" -> "other"))
+        val movie_companies: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Int]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("movie_id" -> 100, "company_id" -> 1), scala.collection.mutable.Map("movie_id" -> 200, "company_id" -> 2))
+        val movie_keyword: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Int]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("movie_id" -> 100, "keyword_id" -> 1), scala.collection.mutable.Map("movie_id" -> 200, "keyword_id" -> 2))
+        val title: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.Map[String, Any]] = scala.collection.mutable.ArrayBuffer(scala.collection.mutable.Map("id" -> 100, "title" -> "Der Film"), scala.collection.mutable.Map("id" -> 200, "title" -> "Other Movie"))
+        val titles: scala.collection.mutable.ArrayBuffer[Any] = (() => {
+    val src = company_name
     val res = _query(src, Seq(
+        Map("items" -> movie_companies, "on" -> ((args: Seq[Any]) => {
+    val cn = args(0)
+    val mc = args(1)
+    (mc.company_id == cn.id)
+})),
+        Map("items" -> title, "on" -> ((args: Seq[Any]) => {
+    val cn = args(0)
+    val mc = args(1)
+    val t = args(2)
+    (mc.movie_id == t.id)
+})),
+        Map("items" -> movie_keyword, "on" -> ((args: Seq[Any]) => {
+    val cn = args(0)
+    val mc = args(1)
+    val t = args(2)
+    val mk = args(3)
+    (mk.movie_id == t.id)
+})),
+        Map("items" -> keyword, "on" -> ((args: Seq[Any]) => {
+    val cn = args(0)
+    val mc = args(1)
+    val t = args(2)
+    val mk = args(3)
+    val k = args(4)
+    (mk.keyword_id == k.id)
+}))
     ), Map("select" -> ((args: Seq[Any]) => {
-    val row = args(0)
-    row
+    val cn = args(0)
+    val mc = args(1)
+    val t = args(2)
+    val mk = args(3)
+    val k = args(4)
+    t.title
 }), "where" -> ((args: Seq[Any]) => {
-    val row = args(0)
-    (row.l_shipdate <= "1998-09-02")
+    val cn = args(0)
+    val mc = args(1)
+    val t = args(2)
+    val mk = args(3)
+    val k = args(4)
+    (((cn.country_code == "[de]") && (k.keyword == "character-name-in-title")) && (mc.movie_id == mk.movie_id))
 })))
     res
-})(), (row: Any) => scala.collection.mutable.Map("returnflag" -> row.l_returnflag, "linestatus" -> row.l_linestatus)).map(g => scala.collection.mutable.Map("returnflag" -> g.key.returnflag, "linestatus" -> g.key.linestatus, "sum_qty" -> sum((() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    x.l_quantity
-})))
-    res
-})()), "sum_base_price" -> sum((() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    x.l_extendedprice
-})))
-    res
-})()), "sum_disc_price" -> sum((() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    (x.l_extendedprice * ((1 - x.l_discount)))
-})))
-    res
-})()), "sum_charge" -> sum((() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    ((x.l_extendedprice * ((1 - x.l_discount))) * ((1 + x.l_tax)))
-})))
-    res
-})()), "avg_qty" -> ((() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    x.l_quantity
-})))
-    res
-})().sum / (() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    x.l_quantity
-})))
-    res
-})().size), "avg_price" -> ((() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    x.l_extendedprice
-})))
-    res
-})().sum / (() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    x.l_extendedprice
-})))
-    res
-})().size), "avg_disc" -> ((() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    x.l_discount
-})))
-    res
-})().sum / (() => {
-    val src = g
-    val res = _query(src, Seq(
-    ), Map("select" -> ((args: Seq[Any]) => {
-    val x = args(0)
-    x.l_discount
-})))
-    res
-})().size), "count_order" -> g.size)).toSeq
+})()
+        val result = min(titles)
         _json(result)
-        test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
+        test_Q2_finds_earliest_title_for_German_companies_with_character_keyword()
     }
-    class _Group(var key: Any) {
-            val Items = scala.collection.mutable.ArrayBuffer[Any]()
-    }
-    
     def expect(cond: Boolean): Unit = {
             if (!cond) throw new RuntimeException("expect failed")
-    }
-    
-    def _group_by(src: Seq[Any], keyfn: Any => Any): Seq[_Group] = {
-            val groups = scala.collection.mutable.LinkedHashMap[String,_Group]()
-            for (it <- src) {
-                    val key = keyfn(it)
-                    val ks = key.toString
-                    val g = groups.getOrElseUpdate(ks, new _Group(key))
-                    g.Items.append(it)
-            }
-            groups.values.toSeq
     }
     
     def _json(v: Any): Unit = println(_to_json(v))

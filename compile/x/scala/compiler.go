@@ -173,9 +173,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
+	c.emitRuntime()
 	c.indent--
 	c.writeln("}")
-	c.emitRuntime()
 	return FormatScala(c.buf.Bytes()), nil
 }
 
