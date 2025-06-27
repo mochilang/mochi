@@ -722,6 +722,10 @@ func typeString(t types.Type) string {
 		return "string"
 	case types.BoolType:
 		return "boolean"
+	case types.AnyType:
+		return "Variant"
+	case *types.TypeVar:
+		return "Variant"
 	case types.ListType:
 		lt := tt
 		return fmt.Sprintf("specialize TArray<%s>", typeString(lt.Elem))
@@ -1333,16 +1337,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return fmt.Sprintf("specialize TArray<%s>([%s])", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
-		// infer key/value types from first element if available
+		// use Variant maps as dataset rows may contain mixed types
 		keyType := "string"
-		valType := "integer"
+		valType := "Variant"
 		if len(p.Map.Items) > 0 {
 			if c.env != nil {
 				// no direct info; use defaults
 			}
 		}
-		pairs := make([]string, len(p.Map.Items))
-		for i, it := range p.Map.Items {
+		tmp := c.newTypedVar(fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType))
+		c.writeln(fmt.Sprintf("%s := specialize TFPGMap<%s, %s>.Create;", tmp, keyType, valType))
+		for _, it := range p.Map.Items {
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
@@ -1354,12 +1359,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			pairs[i] = fmt.Sprintf("m.AddOrSetData(%s, %s);", k, v)
-		}
-		tmp := c.newTypedVar(fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType))
-		c.writeln(fmt.Sprintf("%s := specialize TFPGMap<%s, %s>.Create;", tmp, keyType, valType))
-		for _, p := range pairs {
-			c.writeln(strings.ReplaceAll(p, "m", tmp))
+			c.writeln(fmt.Sprintf("%s.AddOrSetData(%s, %s);", tmp, k, v))
 		}
 		return tmp, nil
 	case p.Query != nil:
