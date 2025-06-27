@@ -10,14 +10,13 @@ expand runtime error handling.
 
 ## JOB dataset
 
-Initial support for the JOB benchmark was added. The compiler can translate
-`tests/dataset/job/q1.mochi` and `q2.mochi` and the generated source is stored
-under `tests/dataset/job/compiler/pas`. However the resulting Pascal code does
-not yet compile with `fpc` due to incomplete join handling and unstable
-temporary variables.
+The JOB benchmark programs up to `q10.mochi` now compile and the generated
+Pascal sources are stored under `tests/dataset/job/compiler/pas`. Runtime
+execution still depends on the Free Pascal Compiler being available at test
+time. If `fpc` is missing the golden test skips execution.
 
 Remaining tasks:
 
-* Fix join code generation so JOB queries build successfully.
-* Stabilise temporary variable names to avoid missing identifiers.
-* Enable running the JOB Q1 and Q2 programs as part of the golden tests.
+* Verify all JOB queries beyond `q10` compile and run once `fpc` is
+  available.
+* Improve error handling during dataset joins.
