@@ -1,14 +1,14 @@
 function __index(obj, i)
-    if type(obj) == 'string' then
+    if type(obj) == "string" then
         return __indexString(obj, i)
-    elseif type(obj) == 'table' then
+    elseif type(obj) == "table" then
         if obj[1] ~= nil or #obj > 0 then
-            return obj[(i)+1]
+            return obj[(i) + 1]
         else
             return obj[i]
         end
     else
-        error('cannot index')
+        error("cannot index")
     end
 end
 function __indexString(s, i)
@@ -18,16 +18,20 @@ function __indexString(s, i)
     else
         i = i + 1
     end
-    if i < 1 or i > len then error('index out of range') end
+    if i < 1 or i > len then
+        error("index out of range")
+    end
     return string.sub(s, i, i)
 end
 function __print(...)
     local args = {...}
     for i, a in ipairs(args) do
-        if i > 1 then io.write(' ') end
+        if i > 1 then
+            io.write(" ")
+        end
         io.write(tostring(a))
     end
-    io.write('\n')
+    io.write("\n")
 end
-local text = "hello"
+text = "hello"
 __print(__index(text, -1))

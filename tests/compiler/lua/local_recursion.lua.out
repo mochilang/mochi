@@ -1,32 +1,36 @@
 function __add(a, b)
-    if type(a) == 'table' and type(b) == 'table' then
+    if type(a) == "table" and type(b) == "table" then
         local out = {}
-        for i = 1, #a do out[#out+1] = a[i] end
-        for i = 1, #b do out[#out+1] = b[i] end
+        for i = 1, #a do
+            out[#out + 1] = a[i]
+        end
+        for i = 1, #b do
+            out[#out + 1] = b[i]
+        end
         return out
-    elseif type(a) == 'string' or type(b) == 'string' then
+    elseif type(a) == "string" or type(b) == "string" then
         return tostring(a) .. tostring(b)
     else
         return a + b
     end
 end
 function __div(a, b)
-    if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+    if math.type and math.type(a) == "integer" and math.type(b) == "integer" then
         return a // b
     end
     return a / b
 end
 function __index(obj, i)
-    if type(obj) == 'string' then
+    if type(obj) == "string" then
         return __indexString(obj, i)
-    elseif type(obj) == 'table' then
+    elseif type(obj) == "table" then
         if obj[1] ~= nil or #obj > 0 then
-            return obj[(i)+1]
+            return obj[(i) + 1]
         else
             return obj[i]
         end
     else
-        error('cannot index')
+        error("cannot index")
     end
 end
 function __indexString(s, i)
@@ -36,35 +40,45 @@ function __indexString(s, i)
     else
         i = i + 1
     end
-    if i < 1 or i > len then error('index out of range') end
+    if i < 1 or i > len then
+        error("index out of range")
+    end
     return string.sub(s, i, i)
 end
 function __print(...)
     local args = {...}
     for i, a in ipairs(args) do
-        if i > 1 then io.write(' ') end
+        if i > 1 then
+            io.write(" ")
+        end
         io.write(tostring(a))
     end
-    io.write('\n')
+    io.write("\n")
 end
 function fromList(nums)
-	local function helper(lo, hi)
-		if (lo >= hi) then
-			return {__name="Leaf"}
-		end
-		local mid = __div((__add(lo, hi)), 2)
-		return {__name="Node", left=helper(lo, mid), value=__index(nums, mid), right=helper(__add(mid, 1), hi)}
-	end
-	return helper(0, #nums)
+    local function helper(lo, hi)
+        if (lo >= hi) then
+            return {__name = "Leaf"}
+        end
+        local mid = __div((__add(lo, hi)), 2)
+        return {__name = "Node", left = helper(lo, mid), value = __index(nums, mid), right = helper(__add(mid, 1), hi)}
+    end
+    return helper(0, #nums)
 end
 
 function inorder(t)
-	return (function()
-	local _t0 = t
-	if _t0.__name == "Leaf" then return {} end
-	if _t0.__name == "Node" then return (function(l, v, r) return __add(__add(inorder(l), {v}), inorder(r)) end)(_t0.left, _t0.value, _t0.right) end
-	return nil
-end)()
+    return (function()
+        local _t0 = t
+        if _t0.__name == "Leaf" then
+            return {}
+        end
+        if _t0.__name == "Node" then
+            return (function(l, v, r)
+                return __add(__add(inorder(l), {v}), inorder(r))
+            end)(_t0.left, _t0.value, _t0.right)
+        end
+        return nil
+    end)()
 end
 
 __print(inorder(fromList({-10, -3, 0, 5, 9})))
