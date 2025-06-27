@@ -335,7 +335,7 @@ public class Main {
 						if (!keep) continue;
 						m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
 					}
-					if (j.left && !m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
+}
 				}
 			items = joined;
 		}

@@ -105,53 +105,6 @@ public class Main {
 		System.out.println(_toJson(v));
 	}
 	
-	static String _toJson(Object v) {
-		if (v == null) return "null";
-		if (v instanceof String) {
-			String s = (String) v;
-			return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
-		}
-		if (v instanceof Number || v instanceof Boolean) return v.toString();
-		if (v.getClass().isArray()) {
-			int n = java.lang.reflect.Array.getLength(v);
-			StringBuilder sb = new StringBuilder();
-			sb.append('[');
-			for (int i=0;i<n;i++) {
-				if (i>0) sb.append(',');
-				sb.append(_toJson(java.lang.reflect.Array.get(v,i)));
-			}
-			sb.append(']');
-			return sb.toString();
-		}
-		if (v instanceof java.util.List<?>) {
-			java.util.List<?> l=(java.util.List<?>)v;
-			StringBuilder sb=new StringBuilder();
-			sb.append('[');
-			for (int i=0;i<l.size();i++) {
-				if(i>0) sb.append(',');
-				sb.append(_toJson(l.get(i)));
-			}
-			sb.append(']');
-			return sb.toString();
-		}
-		if (v instanceof java.util.Map<?,?>) {
-			java.util.Map<?,?> m=(java.util.Map<?,?>)v;
-			StringBuilder sb=new StringBuilder();
-			sb.append('{');
-			boolean first=true;
-			for (var e : m.entrySet()) {
-				if(!first) sb.append(',');
-				first=false;
-				sb.append(_toJson(String.valueOf(e.getKey())));
-				sb.append(':');
-				sb.append(_toJson(e.getValue()));
-			}
-			sb.append('}');
-			return sb.toString();
-		}
-		return _toJson(v.toString());
-	}
-	
 	static java.util.List<Object> _toList(Object v) {
 		if (v instanceof java.util.List<?>) return new java.util.ArrayList<>((java.util.List<?>)v);
 		int n = java.lang.reflect.Array.getLength(v);

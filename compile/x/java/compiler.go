@@ -3,6 +3,8 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"os"
+	"os/exec"
 	"strings"
 
 	"mochi/parser"
@@ -104,7 +106,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.indent--
 	c.writeln("}")
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	return formatJava(code), nil
+}
+
+func formatJava(src []byte) []byte {
+	cmd := exec.Command("google-java-format", "-")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		return out.Bytes()
+	}
+	if jar := os.Getenv("GOOGLE_JAVA_FORMAT_JAR"); jar != "" {
+		cmd = exec.Command("java", "-jar", jar, "-")
+		cmd.Stdin = bytes.NewReader(src)
+		out.Reset()
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			return out.Bytes()
+		}
+	}
+	return src
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
