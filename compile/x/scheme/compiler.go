@@ -189,6 +189,7 @@ type Compiler struct {
 	needSlice      bool
 	needGroup      bool
 	needJSON       bool
+	needStringLib  bool
 	loops          []loopCtx
 	mainStmts      []*parser.Statement
 	tests          []testInfo
@@ -249,7 +250,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, mainStmts: nil, tests: []testInfo{}}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, needStringLib: false, mainStmts: nil, tests: []testInfo{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -274,6 +275,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needListOps = false
 	c.needSlice = false
 	c.needJSON = false
+	c.needStringLib = false
 	c.mainStmts = nil
 	c.tests = nil
 	// Declarations and tests
@@ -345,6 +347,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if c.needDataset {
 			pre.WriteString(datasetHelpers)
 			pre.WriteByte('\n')
+		}
+		if c.needStringLib {
+			pre.WriteString("(import (chibi string))\n")
 		}
 		if c.needListOps {
 			pre.WriteString(listOpHelpers)
@@ -448,7 +453,7 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
 			}
 			for _, fname := range names {
 				c.needMapHelpers = true
-				c.writeln(fmt.Sprintf("(define %s (map-get Self '%s))", sanitizeName(fname), sanitizeName(fname)))
+				c.writeln(fmt.Sprintf("(define %s (map-get Self \"%s\"))", sanitizeName(fname), sanitizeName(fname)))
 			}
 		}
 	}
@@ -730,9 +735,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		case "%":
 			expr = fmt.Sprintf("(modulo %s %s)", expr, right)
 		case "==":
-			expr = fmt.Sprintf("(= %s %s)", expr, right)
+			expr = fmt.Sprintf("(equal? %s %s)", expr, right)
 		case "!=":
-			expr = fmt.Sprintf("(not (= %s %s))", expr, right)
+			expr = fmt.Sprintf("(not (equal? %s %s))", expr, right)
 		case "&&":
 			expr = fmt.Sprintf("(and %s %s)", expr, right)
 		case "||":
@@ -867,6 +872,21 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						}
 					}
 				}
+				if method == "contains" && len(args) == 1 {
+					c.needStringLib = true
+					base := *p.Target
+					if base.Selector != nil && len(base.Selector.Tail) > 0 {
+						dup := make([]string, len(base.Selector.Tail)-1)
+						copy(dup, base.Selector.Tail[:len(base.Selector.Tail)-1])
+						base.Selector = &parser.SelectorExpr{Root: base.Selector.Root, Tail: dup}
+					}
+					recvExpr, err := c.compilePrimary(&base)
+					if err != nil {
+						return "", err
+					}
+					expr = fmt.Sprintf("(if (string-contains %s %s) #t #f)", recvExpr, args[0])
+					continue
+				}
 			}
 			expr = fmt.Sprintf("(%s %s)", expr, strings.Join(args, " "))
 			continue
@@ -894,7 +914,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 								vals := make([]string, len(names))
 								c.needMapHelpers = true
 								for i, f := range names {
-									vals[i] = fmt.Sprintf("(map-get _tmp '%s)", sanitizeName(f))
+									vals[i] = fmt.Sprintf("(map-get _tmp \"%s\")", sanitizeName(f))
 								}
 								expr = fmt.Sprintf("(let ((_tmp %s)) (new-%s %s))", expr, sanitizeName(st.Name), strings.Join(vals, " "))
 							}
@@ -914,7 +934,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 								}
 								vals := make([]string, len(names))
 								for i, f := range names {
-									vals[i] = fmt.Sprintf("(map-get _it '%s)", sanitizeName(f))
+									vals[i] = fmt.Sprintf("(map-get _it \"%s\")", sanitizeName(f))
 								}
 								body := fmt.Sprintf("(new-%s %s)", sanitizeName(st.Name), strings.Join(vals, " "))
 								c.needMapHelpers = true
@@ -1015,7 +1035,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		expr := sanitizeName(p.Selector.Root)
 		for _, s := range p.Selector.Tail {
 			c.needMapHelpers = true
-			expr = fmt.Sprintf("(map-get %s '%s)", expr, sanitizeName(s))
+			expr = fmt.Sprintf("(map-get %s \"%s\")", expr, sanitizeName(s))
 		}
 		return expr, nil
 	case p.Group != nil:
