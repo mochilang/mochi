@@ -30,8 +30,8 @@ public class Program
                 foreach (var mc in movie_companies)
                 {
                     if (!((ct.id == mc.company_type_id))) continue;
-                    if (!(((!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)"))))) continue;
-                    if (!(((mc.note.contains("(co-production)") || mc.note.contains("(presents)"))))) continue;
+                    if (!(((!Convert.ToString(mc.note).Contains("(as Metro-Goldwyn-Mayer Pictures)"))))) continue;
+                    if (!(((Convert.ToString(mc.note).Contains("(co-production)") || Convert.ToString(mc.note).Contains("(presents)"))))) continue;
                     foreach (var t in title)
                     {
                         if (!((t.id == mc.movie_id))) continue;
@@ -50,10 +50,26 @@ public class Program
             }
             return _res;
         })();
-        var result = new Dictionary<string, dynamic> { { "production_note", min(new List<dynamic>(filtered.Select(r => r.note))) }, { "movie_title", min(new List<dynamic>(filtered.Select(r => r.title))) }, { "movie_year", min(new List<dynamic>(filtered.Select(r => r.year))) } };
+        var result = new Dictionary<string, dynamic> { { "production_note", _min(new List<dynamic>(filtered.Select(r => r.note))) }, { "movie_title", _min(new List<dynamic>(filtered.Select(r => r.title))) }, { "movie_year", _min(new List<dynamic>(filtered.Select(r => r.year))) } };
         Console.WriteLine(JsonSerializer.Serialize(new Dictionary<string, dynamic>[] { result }));
         test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production();
     }
+    static dynamic _min(dynamic v)
+    {
+        if (v == null) return 0;
+        System.Collections.IEnumerable list = v is _Group g ? g.Items : v as System.Collections.IEnumerable;
+        if (list == null) return 0;
+        var it = list.GetEnumerator();
+        if (!it.MoveNext()) return 0;
+        dynamic m = it.Current;
+        var cmp = System.Collections.Generic.Comparer<dynamic>.Default;
+        while (it.MoveNext())
+        {
+            dynamic x = it.Current; if (cmp.Compare(x, m) < 0) m = x;
+        }
+        return m;
+    }
+
     static void expect(bool cond)
     {
         if (!cond) throw new Exception("expect failed");
