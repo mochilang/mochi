@@ -51,6 +51,7 @@ const (
 	OpLess
 	OpLessEq
 	OpIn
+	OpLike
 	OpJump
 	OpJumpIfFalse
 	OpLen
@@ -148,6 +149,8 @@ func (op Op) String() string {
 		return "LessEq"
 	case OpIn:
 		return "In"
+	case OpLike:
+		return "Like"
 	case OpJump:
 		return "Jump"
 	case OpJumpIfFalse:
@@ -768,6 +771,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(fmt.Errorf("invalid 'in' operand"), trace, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: found}
+		case OpLike:
+			v := fr.regs[ins.B]
+			pat := fr.regs[ins.C]
+			if v.Tag != interpreter.TagStr || pat.Tag != interpreter.TagStr {
+				return Value{}, m.newError(fmt.Errorf("invalid like operand"), trace, ins.Line)
+			}
+			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: likeMatch(v.Str, pat.Str)}
 		case OpJump:
 			fr.ip = ins.A
 		case OpJumpIfFalse:
@@ -2061,7 +2071,7 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 		{"*", "/", "%"},
 		{"+", "-"},
 		{"<", "<=", ">", ">="},
-		{"==", "!=", "in"},
+		{"==", "!=", "in", "like"},
 		{"&&"},
 		{"||"},
 		{"union", "union_all", "except", "intersect"},
@@ -2242,6 +2252,10 @@ func (fc *funcCompiler) emitBinaryOp(pos lexer.Position, op string, all bool, le
 	case "in":
 		dst := fc.newReg()
 		fc.emit(pos, Instr{Op: OpIn, A: dst, B: left, C: right})
+		return dst
+	case "like":
+		dst := fc.newReg()
+		fc.emit(pos, Instr{Op: OpLike, A: dst, B: left, C: right})
 		return dst
 	case "union", "union_all":
 		dst := fc.newReg()
@@ -4692,6 +4706,22 @@ func valueLess(a, b Value) bool {
 		}
 	}
 	return fmt.Sprint(valueToAny(a)) < fmt.Sprint(valueToAny(b))
+}
+
+func likeMatch(s, pattern string) bool {
+	if pattern == "%" {
+		return true
+	}
+	if strings.HasPrefix(pattern, "%") && strings.HasSuffix(pattern, "%") {
+		return strings.Contains(s, pattern[1:len(pattern)-1])
+	}
+	if strings.HasPrefix(pattern, "%") {
+		return strings.HasSuffix(s, pattern[1:])
+	}
+	if strings.HasSuffix(pattern, "%") {
+		return strings.HasPrefix(s, pattern[:len(pattern)-1])
+	}
+	return s == pattern
 }
 
 // resolveTypeRef converts a parsed type reference into a concrete type using env.
