@@ -316,7 +316,7 @@ type BinaryExpr struct {
 type BinaryOp struct {
 	Pos   lexer.Position
 	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | 'union' | 'except' | 'intersect')"`
-	All   bool         `parser:"[ 'all' ]"`
+       All   bool         `parser:"[ @'all' ]"`
 	Right *PostfixExpr `parser:"@@"`
 }
 

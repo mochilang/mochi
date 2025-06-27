@@ -23,7 +23,7 @@ func TestCCompiler_TwoSum(t *testing.T) {
 	if err != nil {
 		t.Skipf("C compiler not installed: %v", err)
 	}
-	src := filepath.Join("..", "..", "examples", "leetcode", "1", "two-sum.mochi")
+       src := filepath.Join("..", "..", "..", "examples", "leetcode", "1", "two-sum.mochi")
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
@@ -37,7 +37,7 @@ func TestCCompiler_TwoSum(t *testing.T) {
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
-	goldenPath := filepath.Join("..", "..", "tests", "compiler", "valid", "two_sum.c.out")
+       goldenPath := filepath.Join("..", "..", "..", "tests", "compiler", "valid", "two_sum.c.out")
 	golden, err := os.ReadFile(goldenPath)
 	if err != nil {
 		t.Fatalf("read golden: %v", err)
