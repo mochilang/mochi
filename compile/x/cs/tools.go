@@ -120,6 +120,13 @@ func ensureFormatter() error {
 // command if available. If the formatter is unavailable or fails, the input is
 // returned with tabs expanded to four spaces.
 func FormatCS(src []byte) []byte {
+	if os.Getenv("MOCHI_SKIP_FORMATCS") != "" {
+		src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
+	}
 	_ = ensureFormatter()
 	if dotnet, err := exec.LookPath("dotnet"); err == nil {
 		dir, err := os.MkdirTemp("", "mochi_cs_fmt")

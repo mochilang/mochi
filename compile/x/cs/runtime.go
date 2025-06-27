@@ -48,6 +48,42 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("return _sum;")
 				c.indent--
 				c.writeln("}")
+			case "_min":
+				c.writeln("static dynamic _min(dynamic v) {")
+				c.indent++
+				c.writeln("if (v == null) return 0;")
+				c.writeln("System.Collections.IEnumerable list = v is _Group g ? g.Items : v as System.Collections.IEnumerable;")
+				c.writeln("if (list == null) return 0;")
+				c.writeln("var it = list.GetEnumerator();")
+				c.writeln("if (!it.MoveNext()) return 0;")
+				c.writeln("dynamic m = it.Current;")
+				c.writeln("var cmp = System.Collections.Generic.Comparer<dynamic>.Default;")
+				c.writeln("while (it.MoveNext()) {")
+				c.indent++
+				c.writeln("dynamic x = it.Current; if (cmp.Compare(x, m) < 0) m = x;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return m;")
+				c.indent--
+				c.writeln("}")
+			case "_max":
+				c.writeln("static dynamic _max(dynamic v) {")
+				c.indent++
+				c.writeln("if (v == null) return 0;")
+				c.writeln("System.Collections.IEnumerable list = v is _Group g ? g.Items : v as System.Collections.IEnumerable;")
+				c.writeln("if (list == null) return 0;")
+				c.writeln("var it = list.GetEnumerator();")
+				c.writeln("if (!it.MoveNext()) return 0;")
+				c.writeln("dynamic m = it.Current;")
+				c.writeln("var cmp = System.Collections.Generic.Comparer<dynamic>.Default;")
+				c.writeln("while (it.MoveNext()) {")
+				c.indent++
+				c.writeln("dynamic x = it.Current; if (cmp.Compare(x, m) > 0) m = x;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return m;")
+				c.indent--
+				c.writeln("}")
 			case "_in":
 				c.writeln("static bool _in(dynamic item, dynamic col) {")
 				c.indent++
