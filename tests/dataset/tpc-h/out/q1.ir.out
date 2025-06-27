@@ -307,18 +307,10 @@ L4:
   Const        r199, 3000
   // sum_disc_price: 950.0 + 1800.0,               // 2750.0
   Const        r200, "sum_disc_price"
-  Const        r201, 950
-  Const        r202, 1800
-  AddFloat     r203, r201, r202
+  Const        r203, 2750
   // sum_charge: (950.0 * 1.07) + (1800.0 * 1.05), // 1016.5 + 1890 = 2906.5
   Const        r204, "sum_charge"
-  Const        r205, 950
-  Const        r206, 1.07
-  MulFloat     r207, r205, r206
-  Const        r208, 1800
-  Const        r209, 1.05
-  MulFloat     r210, r208, r209
-  AddFloat     r211, r207, r210
+  Const        r211, 2906.5
   // avg_qty: 26.5,
   Const        r212, "avg_qty"
   Const        r213, 26.5
@@ -369,3 +361,4 @@ L4:
   Equal        r243, r191, r242
   Expect       r243
   Return       r0
+
