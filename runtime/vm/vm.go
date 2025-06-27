@@ -15,15 +15,15 @@ import (
 
 	"github.com/alecthomas/participle/v2/lexer"
 
-	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/data"
 	mhttp "mochi/runtime/http"
 	"mochi/types"
 )
 
-// Value reuses the interpreter runtime representation.
-type Value = interpreter.Value
+// Value represents a runtime value handled by the VM.
+// The definition lives in value.go and mirrors the interpreter's Value without
+// requiring that package.
 
 // regTag tracks the known type of a register during compilation.
 type regTag uint8
@@ -568,7 +568,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 	fn := &m.prog.Funcs[fnIndex]
 	if len(args) < fn.NumParams {
 		cl := &closure{fn: fnIndex, args: append([]Value(nil), args...)}
-		return Value{Tag: interpreter.TagFunc, Func: cl}, nil
+		return Value{Tag: ValueFunc, Func: cl}, nil
 	}
 	if len(args) > fn.NumParams {
 		return Value{}, m.newError(fmt.Errorf("too many args"), trace, fn.Line)
@@ -597,76 +597,76 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpAdd:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: b.Str + c.Str}
-			} else if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) + toFloat(c)}
+			if b.Tag == ValueStr && c.Tag == ValueStr {
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: b.Str + c.Str}
+			} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int + c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int + c.Int}
 			}
 		case OpAddInt:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int + c.Int}
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int + c.Int}
 		case OpAddFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) + toFloat(c)}
+			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}
 		case OpSub:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) - toFloat(c)}
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int - c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int - c.Int}
 			}
 		case OpSubInt:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int - c.Int}
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int - c.Int}
 		case OpSubFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) - toFloat(c)}
+			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
 		case OpNeg:
 			b := fr.regs[ins.B]
-			if b.Tag == interpreter.TagFloat {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: -toFloat(b)}
+			if b.Tag == ValueFloat {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: -b.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b.Int}
 			}
 		case OpNegInt:
 			b := fr.regs[ins.B]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: -b.Int}
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b.Int}
 		case OpNegFloat:
 			b := fr.regs[ins.B]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: -toFloat(b)}
+			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
 		case OpMul:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) * toFloat(c)}
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int * c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int * c.Int}
 			}
 		case OpMulInt:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int * c.Int}
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int * c.Int}
 		case OpMulFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) * toFloat(c)}
+			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}
 		case OpDiv:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if (c.Tag == interpreter.TagInt && c.Int == 0) || (c.Tag == interpreter.TagFloat && c.Float == 0) {
+			if (c.Tag == ValueInt && c.Int == 0) || (c.Tag == ValueFloat && c.Float == 0) {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) / toFloat(c)}
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) / toFloat(c)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int / c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int / c.Int}
 			}
 		case OpDivInt:
 			b := fr.regs[ins.B]
@@ -674,24 +674,24 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if c.Int == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int / c.Int}
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int / c.Int}
 		case OpDivFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: toFloat(b) / toFloat(c)}
+			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) / toFloat(c)}
 		case OpMod:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if (c.Tag == interpreter.TagInt && c.Int == 0) || (c.Tag == interpreter.TagFloat && c.Float == 0) {
+			if (c.Tag == ValueInt && c.Int == 0) || (c.Tag == ValueFloat && c.Float == 0) {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: math.Mod(toFloat(b), toFloat(c))}
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}
 			} else {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int % c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int % c.Int}
 			}
 		case OpModInt:
 			b := fr.regs[ins.B]
@@ -699,67 +699,67 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if c.Int == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: b.Int % c.Int}
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int % c.Int}
 		case OpModFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: math.Mod(toFloat(b), toFloat(c))}
+			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}
 		case OpEqual:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
 		case OpNotEqual:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: !valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: !valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
 		case OpEqualInt:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int == fr.regs[ins.C].Int}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: fr.regs[ins.B].Int == fr.regs[ins.C].Int}
 		case OpEqualFloat:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) == toFloat(fr.regs[ins.C])}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) == toFloat(fr.regs[ins.C])}
 		case OpLess:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			var res bool
-			if b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr {
+			if b.Tag == ValueStr && c.Tag == ValueStr {
 				res = b.Str < c.Str
 			} else {
 				res = toFloat(b) < toFloat(c)
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: res}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: res}
 		case OpLessEq:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			var res bool
-			if b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr {
+			if b.Tag == ValueStr && c.Tag == ValueStr {
 				res = b.Str <= c.Str
 			} else {
 				res = toFloat(b) <= toFloat(c)
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: res}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: res}
 		case OpLessInt:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int < fr.regs[ins.C].Int}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: fr.regs[ins.B].Int < fr.regs[ins.C].Int}
 		case OpLessFloat:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) < toFloat(fr.regs[ins.C])}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) < toFloat(fr.regs[ins.C])}
 		case OpLessEqInt:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: fr.regs[ins.B].Int <= fr.regs[ins.C].Int}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: fr.regs[ins.B].Int <= fr.regs[ins.C].Int}
 		case OpLessEqFloat:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
 		case OpIn:
 			item := fr.regs[ins.B]
 			container := fr.regs[ins.C]
 			found := false
 			switch container.Tag {
-			case interpreter.TagList:
+			case ValueList:
 				for _, v := range container.List {
 					if valuesEqual(v, item) {
 						found = true
 						break
 					}
 				}
-			case interpreter.TagMap:
+			case ValueMap:
 				key := fmt.Sprint(valueToAny(item))
 				_, found = container.Map[key]
-			case interpreter.TagStr:
-				if item.Tag == interpreter.TagStr {
+			case ValueStr:
+				if item.Tag == ValueStr {
 					found = strings.Contains(container.Str, item.Str)
 				} else {
 					return Value{}, m.newError(fmt.Errorf("invalid substring type"), trace, ins.Line)
@@ -767,7 +767,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid 'in' operand"), trace, ins.Line)
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: found}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: found}
 		case OpJump:
 			fr.ip = ins.A
 		case OpJumpIfFalse:
@@ -781,48 +781,48 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpLen:
 			v := fr.regs[ins.B]
 			switch v.Tag {
-			case interpreter.TagList:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.List)}
-			case interpreter.TagStr:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len([]rune(v.Str))}
-			case interpreter.TagMap:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(v.Map)}
+			case ValueList:
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(v.List)}
+			case ValueStr:
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len([]rune(v.Str))}
+			case ValueMap:
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(v.Map)}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid len operand"), trace, ins.Line)
 			}
 		case OpIndex:
 			src := fr.regs[ins.B]
 			idxVal := fr.regs[ins.C]
-			if src.Tag == interpreter.TagNull {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+			if src.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
 				break
 			}
 			switch src.Tag {
-			case interpreter.TagList:
+			case ValueList:
 				idx := idxVal.Int
 				if idx < 0 {
 					idx += len(src.List)
 				}
 				if idx < 0 || idx >= len(src.List) {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+					fr.regs[ins.A] = Value{Tag: ValueNull}
 					break
 				}
 				fr.regs[ins.A] = src.List[idx]
-			case interpreter.TagMap:
+			case ValueMap:
 				var key string
 				switch idxVal.Tag {
-				case interpreter.TagStr:
+				case ValueStr:
 					key = idxVal.Str
-				case interpreter.TagInt:
+				case ValueInt:
 					key = fmt.Sprintf("%d", idxVal.Int)
 				default:
-					fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+					fr.regs[ins.A] = Value{Tag: ValueNull}
 					break
 				}
 				fr.regs[ins.A] = src.Map[key]
-			case interpreter.TagStr:
-				if idxVal.Tag != interpreter.TagInt {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+			case ValueStr:
+				if idxVal.Tag != ValueInt {
+					fr.regs[ins.A] = Value{Tag: ValueNull}
 					break
 				}
 				runes := []rune(src.Str)
@@ -831,23 +831,23 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					idx += len(runes)
 				}
 				if idx < 0 || idx >= len(runes) {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+					fr.regs[ins.A] = Value{Tag: ValueNull}
 					break
 				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: string(runes[idx])}
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(runes[idx])}
 			default:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+				fr.regs[ins.A] = Value{Tag: ValueNull}
 			}
 		case OpSlice:
 			src := fr.regs[ins.B]
 			startVal := fr.regs[ins.C]
 			endVal := fr.regs[ins.D]
 			switch src.Tag {
-			case interpreter.TagList:
+			case ValueList:
 				n := len(src.List)
 				start := 0
-				if startVal.Tag != interpreter.TagNull {
-					if startVal.Tag != interpreter.TagInt {
+				if startVal.Tag != ValueNull {
+					if startVal.Tag != ValueInt {
 						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
 					}
 					start = startVal.Int
@@ -856,8 +856,8 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					}
 				}
 				end := n
-				if endVal.Tag != interpreter.TagNull {
-					if endVal.Tag != interpreter.TagInt {
+				if endVal.Tag != ValueNull {
+					if endVal.Tag != ValueInt {
 						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
 					}
 					end = endVal.Int
@@ -870,13 +870,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 				out := make([]Value, end-start)
 				copy(out, src.List[start:end])
-				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
-			case interpreter.TagStr:
+				fr.regs[ins.A] = Value{Tag: ValueList, List: out}
+			case ValueStr:
 				runes := []rune(src.Str)
 				n := len(runes)
 				start := 0
-				if startVal.Tag != interpreter.TagNull {
-					if startVal.Tag != interpreter.TagInt {
+				if startVal.Tag != ValueNull {
+					if startVal.Tag != ValueInt {
 						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
 					}
 					start = startVal.Int
@@ -885,8 +885,8 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					}
 				}
 				end := n
-				if endVal.Tag != interpreter.TagNull {
-					if endVal.Tag != interpreter.TagInt {
+				if endVal.Tag != ValueNull {
+					if endVal.Tag != ValueInt {
 						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
 					}
 					end = endVal.Int
@@ -897,7 +897,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				if start < 0 || end > n || start > end {
 					return Value{}, m.newError(fmt.Errorf("invalid slice range"), trace, ins.Line)
 				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: string(runes[start:end])}
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(runes[start:end])}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
 			}
@@ -906,7 +906,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			idxVal := fr.regs[ins.B]
 			val := fr.regs[ins.C]
 			switch dst.Tag {
-			case interpreter.TagList:
+			case ValueList:
 				idx := idxVal.Int
 				if idx < 0 {
 					idx += len(dst.List)
@@ -915,12 +915,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					return Value{}, m.newError(fmt.Errorf("index out of range"), trace, ins.Line)
 				}
 				dst.List[idx] = val
-			case interpreter.TagMap:
+			case ValueMap:
 				var key string
 				switch idxVal.Tag {
-				case interpreter.TagStr:
+				case ValueStr:
 					key = idxVal.Str
-				case interpreter.TagInt:
+				case ValueInt:
 					key = fmt.Sprintf("%d", idxVal.Int)
 				default:
 					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
@@ -937,7 +937,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			start := ins.C
 			list := make([]Value, n)
 			copy(list, fr.regs[start:start+n])
-			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: list}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: list}
 		case OpMakeMap:
 			n := ins.B
 			start := ins.C
@@ -947,16 +947,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				val := fr.regs[start+i*2+1]
 				var k string
 				switch key.Tag {
-				case interpreter.TagStr:
+				case ValueStr:
 					k = key.Str
-				case interpreter.TagInt:
+				case ValueInt:
 					k = fmt.Sprintf("%d", key.Int)
 				default:
 					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
 				}
 				mp[k] = val
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagMap, Map: mp}
+			fr.regs[ins.A] = Value{Tag: ValueMap, Map: mp}
 		case OpPrint:
 			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]))
 		case OpPrint2:
@@ -968,29 +968,29 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(time.Now().UnixNano())}
+			fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
 		case OpJSON:
 			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
 			fmt.Fprintln(m.writer, string(b))
 		case OpAppend:
 			lst := fr.regs[ins.B]
-			if lst.Tag != interpreter.TagList {
+			if lst.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
 			}
 			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
-			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: newList}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
-			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
 			}
 			out := append(append([]Value(nil), a.List...), b.List...)
-			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpUnion:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
-			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
 			}
 			res := append([]Value{}, a.List...)
@@ -1006,11 +1006,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					res = append(res, rv)
 				}
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: res}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: res}
 		case OpExcept:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
-			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("except expects lists"), trace, ins.Line)
 			}
 			diff := []Value{}
@@ -1026,11 +1026,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					diff = append(diff, lv)
 				}
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: diff}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: diff}
 		case OpIntersect:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
-			if a.Tag != interpreter.TagList || b.Tag != interpreter.TagList {
+			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("intersect expects lists"), trace, ins.Line)
 			}
 			inter := []Value{}
@@ -1055,10 +1055,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					}
 				}
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: inter}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: inter}
 		case OpSort:
 			src := fr.regs[ins.B]
-			if src.Tag != interpreter.TagList {
+			if src.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("sort expects list"), trace, ins.Line)
 			}
 			pairs := append([]Value(nil), src.List...)
@@ -1070,33 +1070,33 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				if len(p.List) > 1 {
 					out[i] = p.List[1]
 				} else {
-					out[i] = Value{Tag: interpreter.TagNull}
+					out[i] = Value{Tag: ValueNull}
 				}
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpExpect:
 			val := fr.regs[ins.A]
-			if val.Tag != interpreter.TagBool || !val.Bool {
+			if val.Tag != ValueBool || !val.Bool {
 				return Value{}, m.newError(fmt.Errorf("expect condition failed"), trace, ins.Line)
 			}
 		case OpStr:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
 		case OpInput:
 			line, err := m.reader.ReadString('\n')
 			if err != nil && err != io.EOF {
 				return Value{}, err
 			}
 			line = strings.TrimRight(line, "\r\n")
-			fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: line}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: line}
 		case OpIterPrep:
 			src := fr.regs[ins.B]
 			switch src.Tag {
-			case interpreter.TagNull:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: nil}
-			case interpreter.TagList:
+			case ValueNull:
+				fr.regs[ins.A] = Value{Tag: ValueList, List: nil}
+			case ValueList:
 				fr.regs[ins.A] = src
-			case interpreter.TagMap:
-				if flag, ok := src.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+			case ValueMap:
+				if flag, ok := src.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					items := src.Map["items"]
 					fr.regs[ins.A] = items
 					break
@@ -1108,16 +1108,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				sort.Strings(ks)
 				keys := make([]Value, len(ks))
 				for i, k := range ks {
-					keys[i] = Value{Tag: interpreter.TagStr, Str: k}
+					keys[i] = Value{Tag: ValueStr, Str: k}
 				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: keys}
-			case interpreter.TagStr:
+				fr.regs[ins.A] = Value{Tag: ValueList, List: keys}
+			case ValueStr:
 				r := []rune(src.Str)
 				lst := make([]Value, len(r))
 				for i, ch := range r {
-					lst[i] = Value{Tag: interpreter.TagStr, Str: string(ch)}
+					lst[i] = Value{Tag: ValueStr, Str: string(ch)}
 				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: lst}
+				fr.regs[ins.A] = Value{Tag: ValueList, List: lst}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid iterator"), trace, ins.Line)
 			}
@@ -1189,7 +1189,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					out[i] = anyToValue(row)
 				}
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: out}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpSave:
 			srcVal := fr.regs[ins.B]
 			path := fr.regs[ins.C].Str
@@ -1246,10 +1246,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if err != nil {
 				return Value{}, m.newError(err, trace, ins.Line)
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagNull}
+			fr.regs[ins.A] = Value{Tag: ValueNull}
 		case OpEval:
 			srcVal := fr.regs[ins.B]
-			if srcVal.Tag != interpreter.TagStr {
+			if srcVal.Tag != ValueStr {
 				return Value{}, m.newError(fmt.Errorf("eval expects string"), trace, ins.Line)
 			}
 			prog, err := parser.ParseString(srcVal.Str)
@@ -1272,7 +1272,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = resVal
 		case OpFetch:
 			urlVal := fr.regs[ins.B]
-			if urlVal.Tag != interpreter.TagStr {
+			if urlVal.Tag != ValueStr {
 				return Value{}, m.newError(fmt.Errorf("fetch URL must be string"), trace, ins.Line)
 			}
 			opts := valueToAny(fr.regs[ins.C])
@@ -1284,14 +1284,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = anyToValue(res)
 		case OpCount:
 			lst := fr.regs[ins.B]
-			if lst.Tag == interpreter.TagList {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(lst.List)}
+			if lst.Tag == ValueList {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(lst.List)}
 				break
 			}
-			if lst.Tag == interpreter.TagMap {
-				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+			if lst.Tag == ValueMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					items := lst.Map["items"]
-					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: len(items.List)}
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(items.List)}
 					break
 				}
 			}
@@ -1299,74 +1299,74 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpExists:
 			lst := fr.regs[ins.B]
 			switch lst.Tag {
-			case interpreter.TagList:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: len(lst.List) > 0}
-			case interpreter.TagMap:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: len(lst.Map) > 0}
-			case interpreter.TagStr:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: len(lst.Str) > 0}
+			case ValueList:
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: len(lst.List) > 0}
+			case ValueMap:
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: len(lst.Map) > 0}
+			case ValueStr:
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: len(lst.Str) > 0}
 			default:
-				fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: false}
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
 			}
 		case OpAvg:
 			lst := fr.regs[ins.B]
-			if lst.Tag == interpreter.TagMap {
-				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+			if lst.Tag == ValueMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					lst = lst.Map["items"]
 				}
 			}
-			if lst.Tag != interpreter.TagList {
+			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("avg expects list")
 			}
 			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
 			} else {
 				var sum float64
 				for _, v := range lst.List {
 					sum += toFloat(v)
 				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum / float64(len(lst.List))}
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: sum / float64(len(lst.List))}
 			}
 		case OpSum:
 			lst := fr.regs[ins.B]
-			if lst.Tag == interpreter.TagMap {
-				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+			if lst.Tag == ValueMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					lst = lst.Map["items"]
 				}
 			}
-			if lst.Tag != interpreter.TagList {
+			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("sum expects list")
 			}
 			var sum float64
 			for _, v := range lst.List {
 				sum += toFloat(v)
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: sum}
+			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: sum}
 		case OpMin:
 			lst := fr.regs[ins.B]
-			if lst.Tag == interpreter.TagMap {
-				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+			if lst.Tag == ValueMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					lst = lst.Map["items"]
 				}
 			}
-			if lst.Tag != interpreter.TagList {
+			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("min expects list")
 			}
 			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
-			} else if lst.List[0].Tag == interpreter.TagStr {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+			} else if lst.List[0].Tag == ValueStr {
 				minStr := lst.List[0].Str
 				for _, v := range lst.List[1:] {
-					if v.Tag == interpreter.TagStr && v.Str < minStr {
+					if v.Tag == ValueStr && v.Str < minStr {
 						minStr = v.Str
 					}
 				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: minStr}
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: minStr}
 			} else {
 				minVal := toFloat(lst.List[0])
-				isFloat := lst.List[0].Tag == interpreter.TagFloat
+				isFloat := lst.List[0].Tag == ValueFloat
 				for _, v := range lst.List[1:] {
-					if v.Tag == interpreter.TagFloat {
+					if v.Tag == ValueFloat {
 						isFloat = true
 					}
 					f := toFloat(v)
@@ -1375,36 +1375,36 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					}
 				}
 				if isFloat {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: minVal}
+					fr.regs[ins.A] = Value{Tag: ValueFloat, Float: minVal}
 				} else {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(minVal)}
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(minVal)}
 				}
 			}
 		case OpMax:
 			lst := fr.regs[ins.B]
-			if lst.Tag == interpreter.TagMap {
-				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == interpreter.TagBool && flag.Bool {
+			if lst.Tag == ValueMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					lst = lst.Map["items"]
 				}
 			}
-			if lst.Tag != interpreter.TagList {
+			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("max expects list")
 			}
 			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: 0}
-			} else if lst.List[0].Tag == interpreter.TagStr {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+			} else if lst.List[0].Tag == ValueStr {
 				maxStr := lst.List[0].Str
 				for _, v := range lst.List[1:] {
-					if v.Tag == interpreter.TagStr && v.Str > maxStr {
+					if v.Tag == ValueStr && v.Str > maxStr {
 						maxStr = v.Str
 					}
 				}
-				fr.regs[ins.A] = Value{Tag: interpreter.TagStr, Str: maxStr}
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: maxStr}
 			} else {
 				maxVal := toFloat(lst.List[0])
-				isFloat := lst.List[0].Tag == interpreter.TagFloat
+				isFloat := lst.List[0].Tag == ValueFloat
 				for _, v := range lst.List[1:] {
-					if v.Tag == interpreter.TagFloat {
+					if v.Tag == ValueFloat {
 						isFloat = true
 					}
 					f := toFloat(v)
@@ -1413,14 +1413,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					}
 				}
 				if isFloat {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagFloat, Float: maxVal}
+					fr.regs[ins.A] = Value{Tag: ValueFloat, Float: maxVal}
 				} else {
-					fr.regs[ins.A] = Value{Tag: interpreter.TagInt, Int: int(maxVal)}
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(maxVal)}
 				}
 			}
 		case OpValues:
 			m := fr.regs[ins.B]
-			if m.Tag != interpreter.TagMap {
+			if m.Tag != ValueMap {
 				return Value{}, fmt.Errorf("values expects map")
 			}
 			keys := make([]string, 0, len(m.Map))
@@ -1432,7 +1432,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			for i, k := range keys {
 				vals[i] = m.Map[k]
 			}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagList, List: vals}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: vals}
 		case OpCast:
 			val := valueToAny(fr.regs[ins.B])
 			typ := m.prog.Types[ins.C]
@@ -1445,7 +1445,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			caps := make([]Value, ins.C)
 			copy(caps, fr.regs[ins.D:ins.D+ins.C])
 			cl := &closure{fn: ins.B, args: caps}
-			fr.regs[ins.A] = Value{Tag: interpreter.TagFunc, Func: cl}
+			fr.regs[ins.A] = Value{Tag: ValueFunc, Func: cl}
 		case OpCall2:
 			a := fr.regs[ins.C]
 			b := fr.regs[ins.D]
@@ -1510,7 +1510,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				if next.Op == OpReturn && next.A == ins.A {
 					var fnIdx int
 					var all []Value
-					if fnVal.Tag == interpreter.TagFunc {
+					if fnVal.Tag == ValueFunc {
 						cl := fnVal.Func.(*closure)
 						fnIdx = cl.fn
 						all = append(append([]Value{}, cl.args...), args...)
@@ -1529,7 +1529,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					}
 				}
 			}
-			if fnVal.Tag == interpreter.TagFunc {
+			if fnVal.Tag == ValueFunc {
 				cl := fnVal.Func.(*closure)
 				all := append(append([]Value{}, cl.args...), args...)
 				res, err := m.call(cl.fn, all, append(trace, StackFrame{Func: m.prog.funcName(cl.fn), Line: ins.Line}))
@@ -1556,7 +1556,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fr.regs[ins.A] = res
 		case OpNot:
-			fr.regs[ins.A] = Value{Tag: interpreter.TagBool, Bool: !fr.regs[ins.B].Truthy()}
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: !fr.regs[ins.B].Truthy()}
 		case OpReturn:
 			ret := fr.regs[ins.A]
 			stack = stack[:len(stack)-1]
@@ -2303,7 +2303,7 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 					regs := make([]int, total)
 					for i, field := range st.Order {
 						key := fc.newReg()
-						fc.emit(p.Target.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: interpreter.TagStr, Str: field}})
+						fc.emit(p.Target.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: ValueStr, Str: field}})
 						val := fc.newReg()
 						fc.emit(p.Target.Pos, Instr{Op: OpIndex, A: val, B: objReg, C: key})
 						regs[i] = val
@@ -2345,7 +2345,7 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 		recv := fc.compilePrimary(recvSel)
 		arg := fc.compileExpr(p.Ops[0].Call.Args[0])
 		zero := fc.newReg()
-		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: ValueInt, Int: 0}})
 		plen := fc.newReg()
 		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLen, A: plen, B: arg})
 		rlen := fc.newReg()
@@ -2364,7 +2364,7 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpJump})
 		elseIdx := len(fc.fn.Code)
 		fc.fn.Code[skip].B = elseIdx
-		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagBool, Bool: false}})
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: ValueBool, Bool: false}})
 		fc.fn.Code[jmpEnd].A = len(fc.fn.Code)
 		return dst
 	}
@@ -2378,14 +2378,14 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 					s := fc.compileExpr(op.Index.Start)
 					fc.emit(op.Index.Start.Pos, Instr{Op: OpMove, A: start, B: s})
 				} else {
-					fc.emit(op.Index.Pos, Instr{Op: OpConst, A: start, Val: Value{Tag: interpreter.TagNull}})
+					fc.emit(op.Index.Pos, Instr{Op: OpConst, A: start, Val: Value{Tag: ValueNull}})
 				}
 				end := fc.newReg()
 				if op.Index.End != nil {
 					e := fc.compileExpr(op.Index.End)
 					fc.emit(op.Index.End.Pos, Instr{Op: OpMove, A: end, B: e})
 				} else {
-					fc.emit(op.Index.Pos, Instr{Op: OpConst, A: end, Val: Value{Tag: interpreter.TagNull}})
+					fc.emit(op.Index.Pos, Instr{Op: OpConst, A: end, Val: Value{Tag: ValueNull}})
 				}
 				dst := fc.newReg()
 				fc.emit(op.Index.Pos, Instr{Op: OpSlice, A: dst, B: r, C: start, D: end})
@@ -2434,27 +2434,27 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		switch {
 		case p.Lit.Int != nil:
 			dst := fc.newReg()
-			v := Value{Tag: interpreter.TagInt, Int: *p.Lit.Int}
+			v := Value{Tag: ValueInt, Int: *p.Lit.Int}
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
 		case p.Lit.Float != nil:
 			dst := fc.newReg()
-			v := Value{Tag: interpreter.TagFloat, Float: *p.Lit.Float}
+			v := Value{Tag: ValueFloat, Float: *p.Lit.Float}
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
 		case p.Lit.Str != nil:
 			dst := fc.newReg()
-			v := Value{Tag: interpreter.TagStr, Str: *p.Lit.Str}
+			v := Value{Tag: ValueStr, Str: *p.Lit.Str}
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
 		case p.Lit.Bool != nil:
 			dst := fc.newReg()
-			v := Value{Tag: interpreter.TagBool, Bool: bool(*p.Lit.Bool)}
+			v := Value{Tag: ValueBool, Bool: bool(*p.Lit.Bool)}
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
 		case p.Lit.Null:
 			dst := fc.newReg()
-			v := Value{Tag: interpreter.TagNull}
+			v := Value{Tag: ValueNull}
 			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
 			return dst
 		}
@@ -2487,14 +2487,14 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		regs := make([]int, len(p.Struct.Fields)*2+2)
 
 		nameKey := fc.newReg()
-		fc.emit(p.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: interpreter.TagStr, Str: "__name"}})
+		fc.emit(p.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: ValueStr, Str: "__name"}})
 		nameVal := fc.newReg()
-		fc.emit(p.Pos, Instr{Op: OpConst, A: nameVal, Val: Value{Tag: interpreter.TagStr, Str: p.Struct.Name}})
+		fc.emit(p.Pos, Instr{Op: OpConst, A: nameVal, Val: Value{Tag: ValueStr, Str: p.Struct.Name}})
 		regs[0] = nameKey
 		regs[1] = nameVal
 		for i, f := range p.Struct.Fields {
 			kreg := fc.newReg()
-			fc.emit(f.Pos, Instr{Op: OpConst, A: kreg, Val: Value{Tag: interpreter.TagStr, Str: f.Name}})
+			fc.emit(f.Pos, Instr{Op: OpConst, A: kreg, Val: Value{Tag: ValueStr, Str: f.Name}})
 			vreg := fc.newReg()
 			fc.emit(f.Pos, Instr{Op: OpMove, A: vreg, B: vals[i]})
 			regs[i*2+2] = kreg
@@ -2520,7 +2520,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		for i, it := range p.Map.Items {
 			if name, ok := identName(it.Key); ok {
 				reg := fc.newReg()
-				fc.emit(it.Pos, Instr{Op: OpConst, A: reg, Val: Value{Tag: interpreter.TagStr, Str: name}})
+				fc.emit(it.Pos, Instr{Op: OpConst, A: reg, Val: Value{Tag: ValueStr, Str: name}})
 				tmp[i].k = reg
 			} else {
 				tmp[i].k = fc.compileExpr(it.Key)
@@ -2555,13 +2555,13 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		if p.Load.Path != nil {
 			path = *p.Load.Path
 		}
-		fc.emit(p.Pos, Instr{Op: OpConst, A: pathReg, Val: Value{Tag: interpreter.TagStr, Str: path}})
+		fc.emit(p.Pos, Instr{Op: OpConst, A: pathReg, Val: Value{Tag: ValueStr, Str: path}})
 		optsReg := fc.newReg()
 		if p.Load.With != nil {
 			r := fc.compileExpr(p.Load.With)
 			fc.emit(p.Pos, Instr{Op: OpMove, A: optsReg, B: r})
 		} else {
-			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: interpreter.TagNull}})
+			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: ValueNull}})
 		}
 		dst := fc.newReg()
 		typeIdx := -1
@@ -2580,13 +2580,13 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		if p.Save.Path != nil {
 			path = *p.Save.Path
 		}
-		fc.emit(p.Pos, Instr{Op: OpConst, A: pathReg, Val: Value{Tag: interpreter.TagStr, Str: path}})
+		fc.emit(p.Pos, Instr{Op: OpConst, A: pathReg, Val: Value{Tag: ValueStr, Str: path}})
 		optsReg := fc.newReg()
 		if p.Save.With != nil {
 			r := fc.compileExpr(p.Save.With)
 			fc.emit(p.Pos, Instr{Op: OpMove, A: optsReg, B: r})
 		} else {
-			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: interpreter.TagNull}})
+			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: ValueNull}})
 		}
 		dst := fc.newReg()
 		fc.emit(p.Pos, Instr{Op: OpSave, A: dst, B: src, C: pathReg, D: optsReg})
@@ -2600,7 +2600,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			r := fc.compileExpr(p.Fetch.With)
 			fc.emit(p.Pos, Instr{Op: OpMove, A: optsReg, B: r})
 		} else {
-			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: interpreter.TagNull}})
+			fc.emit(p.Pos, Instr{Op: OpConst, A: optsReg, Val: Value{Tag: ValueNull}})
 		}
 		dst := fc.newReg()
 		fc.emit(p.Pos, Instr{Op: OpFetch, A: dst, B: url, C: optsReg})
@@ -2636,9 +2636,9 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			if len(p.Selector.Tail) == 0 {
 				if st, ok := fc.comp.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
 					key := fc.newReg()
-					fc.emit(p.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: interpreter.TagStr, Str: "__name"}})
+					fc.emit(p.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: ValueStr, Str: "__name"}})
 					val := fc.newReg()
-					fc.emit(p.Pos, Instr{Op: OpConst, A: val, Val: Value{Tag: interpreter.TagStr, Str: st.Name}})
+					fc.emit(p.Pos, Instr{Op: OpConst, A: val, Val: Value{Tag: ValueStr, Str: st.Name}})
 					dst := fc.newReg()
 					fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: 1, C: key})
 					return dst
@@ -2652,7 +2652,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		cur := r
 		for _, field := range p.Selector.Tail {
 			key := fc.newReg()
-			fc.emit(p.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: interpreter.TagStr, Str: field}})
+			fc.emit(p.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: ValueStr, Str: field}})
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpIndex, A: dst, B: cur, C: key})
 			cur = dst
@@ -2839,7 +2839,7 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 			fc.fn.Code[idx].A = contTarget
 		}
 		one := fc.newReg()
-		fc.emit(f.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(f.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp := fc.newReg()
 		fc.emit(f.Pos, Instr{Op: OpAdd, A: tmp, B: idx, C: one})
 		fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: tmp})
@@ -2857,7 +2857,7 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 		length := fc.newReg()
 		fc.emit(f.Pos, Instr{Op: OpLen, A: length, B: list})
 		idx := fc.newReg()
-		fc.emit(f.Pos, Instr{Op: OpConst, A: idx, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		fc.emit(f.Pos, Instr{Op: OpConst, A: idx, Val: Value{Tag: ValueInt, Int: 0}})
 		loopStart := len(fc.fn.Code)
 		cond := fc.newReg()
 		fc.emit(f.Pos, Instr{Op: OpLess, A: cond, B: idx, C: length})
@@ -2886,7 +2886,7 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 			fc.fn.Code[idx].A = contTarget
 		}
 		one := fc.newReg()
-		fc.emit(f.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(f.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp := fc.newReg()
 		fc.emit(f.Pos, Instr{Op: OpAdd, A: tmp, B: idx, C: one})
 		fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: tmp})
@@ -2919,7 +2919,7 @@ func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
 	}
 
 	dst := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: ValueList, List: []Value{}}})
 	if q.Group != nil {
 		if len(q.Froms) == 0 && len(q.Joins) == 0 {
 			fc.compileGroupQuery(q, dst)
@@ -2945,14 +2945,14 @@ func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
 	if q.Skip != nil {
 		start := fc.compileExpr(q.Skip)
 		nul := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: nul, Val: Value{Tag: interpreter.TagNull}})
+		fc.emit(q.Pos, Instr{Op: OpConst, A: nul, Val: Value{Tag: ValueNull}})
 		out := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpSlice, A: out, B: dst, C: start, D: nul})
 		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: out})
 	}
 	if q.Take != nil {
 		zero := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		fc.emit(q.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: ValueInt, Int: 0}})
 		end := fc.compileExpr(q.Take)
 		out := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpSlice, A: out, B: dst, C: zero, D: end})
@@ -2984,7 +2984,7 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 	lenReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpLen, A: lenReg, B: listReg})
 	idxReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: ValueInt, Int: 0}})
 	loopStart := len(fc.fn.Code)
 	condReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lenReg})
@@ -3007,7 +3007,7 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 	}
 
 	one := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 	tmp := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
 	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
@@ -3061,7 +3061,7 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 	rlen := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 	ri := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
 	rstart := len(fc.fn.Code)
 	rcond := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
@@ -3078,21 +3078,21 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 
 	if joinType == "left" || joinType == "outer" {
 		matched := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: false}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
 		if join.On != nil {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 			fc.compileJoins(q, dst, idx+1)
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 			fc.compileJoins(q, dst, idx+1)
 		}
 
 		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
@@ -3105,7 +3105,7 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 		skipAdd := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
 		nilreg := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: interpreter.TagNull}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
 		fc.compileJoins(q, dst, idx+1)
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
@@ -3121,7 +3121,7 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 		}
 
 		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
@@ -3178,7 +3178,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 
 	// inner join results
 	li := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
 	lstart := len(fc.fn.Code)
 	lcond := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpLess, A: lcond, B: li, C: llen})
@@ -3194,7 +3194,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem})
 
 	ri := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
 	rstart := len(fc.fn.Code)
 	rcond := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
@@ -3236,7 +3236,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	}
 
 	one := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 	tmp := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
 	fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
@@ -3245,7 +3245,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	fc.fn.Code[rjmp].B = rend
 
 	one2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one2, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: one2, Val: Value{Tag: ValueInt, Int: 1}})
 	tmp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp2, B: li, C: one2})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmp2})
@@ -3256,7 +3256,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	// left unmatched rows
 	if joinType == "left" || joinType == "outer" {
 		li2 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: li2, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		fc.emit(q.Pos, Instr{Op: OpConst, A: li2, Val: Value{Tag: ValueInt, Int: 0}})
 		lstart2 := len(fc.fn.Code)
 		lcond2 := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpLess, A: lcond2, B: li2, C: llen})
@@ -3267,9 +3267,9 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem2})
 
 		matched := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: false}})
+		fc.emit(q.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
 		ri2 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: ri2, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: ri2, Val: Value{Tag: ValueInt, Int: 0}})
 		rstart2 := len(fc.fn.Code)
 		rcond2 := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpLess, A: rcond2, B: ri2, C: rlen})
@@ -3282,13 +3282,13 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 		}
 		one3 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one3, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: one3, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp3 := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp3, B: ri2, C: one3})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: ri2, B: tmp3})
@@ -3301,7 +3301,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		skipAdd := len(fc.fn.Code)
 		fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: check})
 		nilreg := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: interpreter.TagNull}})
+		fc.emit(q.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 		fc.emit(q.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
 		if q.Where != nil {
 			w := fc.compileExpr(q.Where)
@@ -3315,7 +3315,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 
 		one4 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: one4, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(q.Pos, Instr{Op: OpConst, A: one4, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp4 := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp4, B: li2, C: one4})
 		fc.emit(q.Pos, Instr{Op: OpMove, A: li2, B: tmp4})
@@ -3326,7 +3326,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 
 	if joinType == "right" || joinType == "outer" {
 		ri3 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: ri3, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: ri3, Val: Value{Tag: ValueInt, Int: 0}})
 		rstart3 := len(fc.fn.Code)
 		rcond3 := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpLess, A: rcond3, B: ri3, C: rlen})
@@ -3337,9 +3337,9 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem3})
 
 		matched := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: false}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
 		li3 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: li3, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		fc.emit(q.Pos, Instr{Op: OpConst, A: li3, Val: Value{Tag: ValueInt, Int: 0}})
 		lstart3 := len(fc.fn.Code)
 		lcond3 := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpLess, A: lcond3, B: li3, C: llen})
@@ -3352,13 +3352,13 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 		}
 		one5 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: one5, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(q.Pos, Instr{Op: OpConst, A: one5, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp5 := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp5, B: li3, C: one5})
 		fc.emit(q.Pos, Instr{Op: OpMove, A: li3, B: tmp5})
@@ -3371,7 +3371,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		skipAdd := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
 		nilreg := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: interpreter.TagNull}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: lvar, B: nilreg})
 		if q.Where != nil {
 			w := fc.compileExpr(q.Where)
@@ -3385,7 +3385,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 
 		one6 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one6, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: one6, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp6 := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp6, B: ri3, C: one6})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: ri3, B: tmp6})
@@ -3442,7 +3442,7 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	}
 
 	ri := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
 	rstart := len(fc.fn.Code)
 	rcond := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
@@ -3454,10 +3454,10 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
 
 	matched := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: false}})
+	fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
 
 	li := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
 	lstart := len(fc.fn.Code)
 	lcond := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpLess, A: lcond, B: li, C: llen})
@@ -3472,7 +3472,7 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 		cond := fc.compileExpr(join.On)
 		skip := len(fc.fn.Code)
 		fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 		if q.Where != nil {
 			w := fc.compileExpr(q.Where)
 			wskip := len(fc.fn.Code)
@@ -3484,7 +3484,7 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 		}
 		fc.fn.Code[skip].B = len(fc.fn.Code)
 	} else {
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 		if q.Where != nil {
 			w := fc.compileExpr(q.Where)
 			wskip := len(fc.fn.Code)
@@ -3497,7 +3497,7 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	}
 
 	oneL := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: oneL, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: oneL, Val: Value{Tag: ValueInt, Int: 1}})
 	tmpL := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmpL, B: li, C: oneL})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmpL})
@@ -3510,7 +3510,7 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	skipAdd := len(fc.fn.Code)
 	fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
 	nilreg := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: interpreter.TagNull}})
+	fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 	fc.emit(join.Pos, Instr{Op: OpMove, A: lvar, B: nilreg})
 	if q.Where != nil {
 		w := fc.compileExpr(q.Where)
@@ -3524,7 +3524,7 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 
 	oneR := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: oneR, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(join.Pos, Instr{Op: OpConst, A: oneR, Val: Value{Tag: ValueInt, Int: 1}})
 	tmpR := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpAdd, A: tmpR, B: ri, C: oneR})
 	fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmpR})
@@ -3541,12 +3541,12 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	lenReg := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpLen, A: lenReg, B: listReg})
 	idxReg := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: ValueInt, Int: 0}})
 
 	groupsMap := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: groupsMap, B: 0})
 	groupsList := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: groupsList, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: groupsList, Val: Value{Tag: ValueList, List: []Value{}}})
 
 	loopStart := len(fc.fn.Code)
 	condReg := fc.newReg()
@@ -3574,7 +3574,7 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	}
 
 	one := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 	tmp := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
@@ -3584,7 +3584,7 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 
 	// iterate groups and produce final results
 	gi := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: gi, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: gi, Val: Value{Tag: ValueInt, Int: 0}})
 	glen := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpLen, A: glen, B: groupsList})
 	loop2 := len(fc.fn.Code)
@@ -3628,7 +3628,7 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	}
 
 	one2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one2, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: one2, Val: Value{Tag: ValueInt, Int: 1}})
 	tmp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp2, B: gi, C: one2})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gi, B: tmp2})
@@ -3660,7 +3660,7 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 		pairs := make([]int, len(exprs)*2)
 		for i, name := range fieldNames {
 			k := fc.newReg()
-			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: interpreter.TagStr, Str: name}})
+			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: ValueStr, Str: name}})
 			pairs[i*2] = k
 			pairs[i*2+1] = regs[i]
 		}
@@ -3676,24 +3676,24 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	fc.emit(q.Group.Pos, Instr{Op: OpJumpIfTrue, A: exists})
 
 	items := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: items, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: items, Val: Value{Tag: ValueList, List: []Value{}}})
 	k1 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: k1, Val: Value{Tag: interpreter.TagStr, Str: "__group__"}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: k1, Val: Value{Tag: ValueStr, Str: "__group__"}})
 	v1 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: v1, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: v1, Val: Value{Tag: ValueBool, Bool: true}})
 	k2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: k2, Val: Value{Tag: interpreter.TagStr, Str: "key"}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: k2, Val: Value{Tag: ValueStr, Str: "key"}})
 	v2 := fc.newReg()
 	fc.emit(q.Group.Pos, Instr{Op: OpMove, A: v2, B: key})
 	k3 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: k3, Val: Value{Tag: interpreter.TagStr, Str: "items"}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: k3, Val: Value{Tag: ValueStr, Str: "items"}})
 	v3 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
 	pairsGrp := []int{k1, v1, k2, v2, k3, v3}
 	if len(fieldNames) > 0 {
 		for i, name := range fieldNames {
 			k := fc.newReg()
-			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: interpreter.TagStr, Str: name}})
+			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: ValueStr, Str: name}})
 			pairsGrp = append(pairsGrp, k, regs[i])
 		}
 	}
@@ -3709,7 +3709,7 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	fc.fn.Code[jump].B = end
 
 	itemsKey := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: itemsKey, Val: Value{Tag: interpreter.TagStr, Str: "items"}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: itemsKey, Val: Value{Tag: ValueStr, Str: "items"}})
 	grp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIndex, A: grp2, B: gmap, C: keyStr})
 	cur := fc.newReg()
@@ -3726,13 +3726,13 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	groupsMap := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: groupsMap, B: 0})
 	groupsList := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: groupsList, Val: Value{Tag: interpreter.TagList, List: []Value{}}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: groupsList, Val: Value{Tag: ValueList, List: []Value{}}})
 
 	fc.compileGroupFromAny(q, groupsMap, groupsList, 0)
 
 	// iterate groups and produce final results
 	gi := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: gi, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: gi, Val: Value{Tag: ValueInt, Int: 0}})
 	glen := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpLen, A: glen, B: groupsList})
 	loop := len(fc.fn.Code)
@@ -3776,7 +3776,7 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	}
 
 	one := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 	tmp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp2, B: gi, C: one})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gi, B: tmp2})
@@ -3806,7 +3806,7 @@ func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist int
 	lenReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpLen, A: lenReg, B: listReg})
 	idxReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: ValueInt, Int: 0}})
 	loopStart := len(fc.fn.Code)
 	condReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lenReg})
@@ -3833,7 +3833,7 @@ func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist int
 	}
 
 	one := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 	tmp := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
 	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
@@ -3877,7 +3877,7 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 	rlen := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 	ri := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
 	rstart := len(fc.fn.Code)
 	rcond := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
@@ -3894,21 +3894,21 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 
 	if joinType == "left" || joinType == "outer" {
 		matched := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: false}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
 		if join.On != nil {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: interpreter.TagBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
 		}
 
 		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
@@ -3921,7 +3921,7 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 		skipAdd := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
 		nilreg := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: interpreter.TagNull}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
 		fc.compileGroupJoinAny(q, gmap, glist, idx+1)
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
@@ -3937,7 +3937,7 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 		}
 
 		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 		tmp := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
@@ -3962,7 +3962,7 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 	pairs := make([]int, len(names)*2)
 	for i, n := range names {
 		k := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: interpreter.TagStr, Str: n}})
+		fc.emit(q.Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: ValueStr, Str: n}})
 		v := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMove, A: v, B: regs[i]})
 		pairs[i*2] = k
@@ -3996,7 +3996,7 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 	lengthReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpLen, A: lengthReg, B: listReg})
 	idxReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: ValueInt, Int: 0}})
 	loopStart := len(fc.fn.Code)
 	condReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lengthReg})
@@ -4062,7 +4062,7 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 	}
 
 	one := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: interpreter.TagInt, Int: 1}})
+	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 	tmp := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
 	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
@@ -4155,7 +4155,7 @@ func (fc *funcCompiler) compileIfExpr(e *parser.IfExpr) int {
 		elseReg := fc.compileExpr(e.Else)
 		fc.emit(e.Pos, Instr{Op: OpMove, A: dst, B: elseReg})
 	} else {
-		fc.emit(lexer.Position{}, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagNull}})
+		fc.emit(lexer.Position{}, Instr{Op: OpConst, A: dst, Val: Value{Tag: ValueNull}})
 	}
 
 	if endJump != -1 {
@@ -4176,19 +4176,19 @@ func (fc *funcCompiler) compileMatch(m *parser.MatchExpr) int {
 			cond = fc.newReg()
 			if call, ok := callPattern(c.Pattern); ok {
 				nameKey := fc.newReg()
-				fc.emit(c.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: interpreter.TagStr, Str: "__name"}})
+				fc.emit(c.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: ValueStr, Str: "__name"}})
 				nameVal := fc.newReg()
 				fc.emit(c.Pos, Instr{Op: OpIndex, A: nameVal, B: target, C: nameKey})
 				want := fc.newReg()
-				fc.emit(c.Pos, Instr{Op: OpConst, A: want, Val: Value{Tag: interpreter.TagStr, Str: call.Func}})
+				fc.emit(c.Pos, Instr{Op: OpConst, A: want, Val: Value{Tag: ValueStr, Str: call.Func}})
 				fc.emit(c.Pos, Instr{Op: OpEqual, A: cond, B: nameVal, C: want})
 			} else if ident, ok := identName(c.Pattern); ok {
 				nameKey := fc.newReg()
-				fc.emit(c.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: interpreter.TagStr, Str: "__name"}})
+				fc.emit(c.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: ValueStr, Str: "__name"}})
 				nameVal := fc.newReg()
 				fc.emit(c.Pos, Instr{Op: OpIndex, A: nameVal, B: target, C: nameKey})
 				want := fc.newReg()
-				fc.emit(c.Pos, Instr{Op: OpConst, A: want, Val: Value{Tag: interpreter.TagStr, Str: ident}})
+				fc.emit(c.Pos, Instr{Op: OpConst, A: want, Val: Value{Tag: ValueStr, Str: ident}})
 				fc.emit(c.Pos, Instr{Op: OpEqual, A: cond, B: nameVal, C: want})
 			} else {
 				pv := fc.compileExpr(c.Pattern)
@@ -4203,7 +4203,7 @@ func (fc *funcCompiler) compileMatch(m *parser.MatchExpr) int {
 				for idx, arg := range call.Args {
 					if name, ok := identName(arg); ok {
 						key := fc.newReg()
-						fc.emit(c.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: interpreter.TagStr, Str: st.Order[idx]}})
+						fc.emit(c.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: ValueStr, Str: st.Order[idx]}})
 						val := fc.newReg()
 						fc.emit(c.Pos, Instr{Op: OpIndex, A: val, B: target, C: key})
 						fc.vars[name] = val
@@ -4221,7 +4221,7 @@ func (fc *funcCompiler) compileMatch(m *parser.MatchExpr) int {
 			fc.fn.Code[jmp].B = len(fc.fn.Code)
 		}
 	}
-	fc.emit(lexer.Position{}, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagNull}})
+	fc.emit(lexer.Position{}, Instr{Op: OpConst, A: dst, Val: Value{Tag: ValueNull}})
 	end := len(fc.fn.Code)
 	for _, j := range endJumps {
 		fc.fn.Code[j].A = end
@@ -4238,7 +4238,7 @@ func constList(l *parser.ListLiteral) (Value, bool) {
 		}
 		vals[i] = v
 	}
-	return Value{Tag: interpreter.TagList, List: vals}, true
+	return Value{Tag: ValueList, List: vals}, true
 }
 
 func constMap(m *parser.MapLiteral) (Value, bool) {
@@ -4253,9 +4253,9 @@ func constMap(m *parser.MapLiteral) (Value, bool) {
 				return Value{}, false
 			}
 			switch k.Tag {
-			case interpreter.TagStr:
+			case ValueStr:
 				key = k.Str
-			case interpreter.TagInt:
+			case ValueInt:
 				key = fmt.Sprintf("%d", k.Int)
 			default:
 				return Value{}, false
@@ -4267,7 +4267,7 @@ func constMap(m *parser.MapLiteral) (Value, bool) {
 		}
 		vals[key] = v
 	}
-	return Value{Tag: interpreter.TagMap, Map: vals}, true
+	return Value{Tag: ValueMap, Map: vals}, true
 }
 
 func constExpr(e *parser.Expr) (Value, bool) {
@@ -4286,10 +4286,10 @@ func constUnary(u *parser.Unary) (Value, bool) {
 		v, ok := constPostfix(u.Value)
 		if ok {
 			switch v.Tag {
-			case interpreter.TagInt:
+			case ValueInt:
 				v.Int = -v.Int
 				return v, true
-			case interpreter.TagFloat:
+			case ValueFloat:
 				v.Float = -v.Float
 				return v, true
 			}
@@ -4312,19 +4312,19 @@ func constPostfix(p *parser.PostfixExpr) (Value, bool) {
 func constPrimary(p *parser.Primary) (Value, bool) {
 	if p.Lit != nil {
 		if p.Lit.Int != nil {
-			return Value{Tag: interpreter.TagInt, Int: *p.Lit.Int}, true
+			return Value{Tag: ValueInt, Int: *p.Lit.Int}, true
 		}
 		if p.Lit.Float != nil {
-			return Value{Tag: interpreter.TagFloat, Float: *p.Lit.Float}, true
+			return Value{Tag: ValueFloat, Float: *p.Lit.Float}, true
 		}
 		if p.Lit.Bool != nil {
-			return Value{Tag: interpreter.TagBool, Bool: bool(*p.Lit.Bool)}, true
+			return Value{Tag: ValueBool, Bool: bool(*p.Lit.Bool)}, true
 		}
 		if p.Lit.Str != nil {
-			return Value{Tag: interpreter.TagStr, Str: *p.Lit.Str}, true
+			return Value{Tag: ValueStr, Str: *p.Lit.Str}, true
 		}
 		if p.Lit.Null {
-			return Value{Tag: interpreter.TagNull}, true
+			return Value{Tag: ValueNull}, true
 		}
 	}
 	if p.List != nil {
@@ -4339,15 +4339,15 @@ func constPrimary(p *parser.Primary) (Value, bool) {
 func literalToValue(l *parser.Literal) (Value, bool) {
 	switch {
 	case l.Int != nil:
-		return Value{Tag: interpreter.TagInt, Int: *l.Int}, true
+		return Value{Tag: ValueInt, Int: *l.Int}, true
 	case l.Float != nil:
-		return Value{Tag: interpreter.TagFloat, Float: *l.Float}, true
+		return Value{Tag: ValueFloat, Float: *l.Float}, true
 	case l.Str != nil:
-		return Value{Tag: interpreter.TagStr, Str: *l.Str}, true
+		return Value{Tag: ValueStr, Str: *l.Str}, true
 	case l.Bool != nil:
-		return Value{Tag: interpreter.TagBool, Bool: bool(*l.Bool)}, true
+		return Value{Tag: ValueBool, Bool: bool(*l.Bool)}, true
 	case l.Null:
-		return Value{Tag: interpreter.TagNull}, true
+		return Value{Tag: ValueNull}, true
 	default:
 		return Value{}, false
 	}
@@ -4455,11 +4455,11 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		}
 		return Value{}, false
 	}
-	lit, ok := interpreter.EvalPureCall(&parser.CallExpr{Func: call.Func, Args: args}, fc.comp.env)
-	if !ok {
-		return Value{}, false
-	}
-	return literalToValue(lit)
+	// Constant folding of function calls requires the interpreter package,
+	// which is not available in this standalone VM build.
+	// Return false so the call is compiled normally.
+	_ = args
+	return Value{}, false
 }
 
 func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {
@@ -4474,21 +4474,21 @@ func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {
 
 func valueToAny(v Value) any {
 	switch v.Tag {
-	case interpreter.TagInt:
+	case ValueInt:
 		return v.Int
-	case interpreter.TagFloat:
+	case ValueFloat:
 		return v.Float
-	case interpreter.TagBool:
+	case ValueBool:
 		return v.Bool
-	case interpreter.TagStr:
+	case ValueStr:
 		return v.Str
-	case interpreter.TagList:
+	case ValueList:
 		out := make([]any, len(v.List))
 		for i, x := range v.List {
 			out[i] = valueToAny(x)
 		}
 		return out
-	case interpreter.TagMap:
+	case ValueMap:
 		m := make(map[string]any, len(v.Map))
 		for k, x := range v.Map {
 			m[k] = valueToAny(x)
@@ -4502,41 +4502,41 @@ func valueToAny(v Value) any {
 func anyToValue(v any) Value {
 	switch val := v.(type) {
 	case nil:
-		return Value{Tag: interpreter.TagNull}
+		return Value{Tag: ValueNull}
 	case int:
-		return Value{Tag: interpreter.TagInt, Int: val}
+		return Value{Tag: ValueInt, Int: val}
 	case int64:
-		return Value{Tag: interpreter.TagInt, Int: int(val)}
+		return Value{Tag: ValueInt, Int: int(val)}
 	case float64:
-		return Value{Tag: interpreter.TagFloat, Float: val}
+		return Value{Tag: ValueFloat, Float: val}
 	case string:
-		return Value{Tag: interpreter.TagStr, Str: val}
+		return Value{Tag: ValueStr, Str: val}
 	case bool:
-		return Value{Tag: interpreter.TagBool, Bool: val}
+		return Value{Tag: ValueBool, Bool: val}
 	case []any:
 		list := make([]Value, len(val))
 		for i, x := range val {
 			list[i] = anyToValue(x)
 		}
-		return Value{Tag: interpreter.TagList, List: list}
+		return Value{Tag: ValueList, List: list}
 	case map[string]any:
 		m := make(map[string]Value, len(val))
 		for k, x := range val {
 			m[k] = anyToValue(x)
 		}
-		return Value{Tag: interpreter.TagMap, Map: m}
+		return Value{Tag: ValueMap, Map: m}
 	case map[int]any:
 		m := make(map[string]Value, len(val))
 		for k, x := range val {
 			m[fmt.Sprintf("%d", k)] = anyToValue(x)
 		}
-		return Value{Tag: interpreter.TagMap, Map: m}
+		return Value{Tag: ValueMap, Map: m}
 	case map[any]any:
 		m := make(map[string]Value, len(val))
 		for k, x := range val {
 			m[fmt.Sprint(k)] = anyToValue(x)
 		}
-		return Value{Tag: interpreter.TagMap, Map: m}
+		return Value{Tag: ValueMap, Map: m}
 	default:
 		rv := reflect.ValueOf(v)
 		switch rv.Kind() {
@@ -4545,35 +4545,35 @@ func anyToValue(v any) Value {
 			for i := 0; i < rv.Len(); i++ {
 				list[i] = anyToValue(rv.Index(i).Interface())
 			}
-			return Value{Tag: interpreter.TagList, List: list}
+			return Value{Tag: ValueList, List: list}
 		case reflect.Map:
 			m := make(map[string]Value, rv.Len())
 			for _, key := range rv.MapKeys() {
 				m[fmt.Sprint(key.Interface())] = anyToValue(rv.MapIndex(key).Interface())
 			}
-			return Value{Tag: interpreter.TagMap, Map: m}
+			return Value{Tag: ValueMap, Map: m}
 		}
-		return Value{Tag: interpreter.TagNull}
+		return Value{Tag: ValueNull}
 	}
 }
 
 func valueToString(v Value) string {
 	switch v.Tag {
-	case interpreter.TagInt:
+	case ValueInt:
 		return fmt.Sprintf("%d", v.Int)
-	case interpreter.TagFloat:
+	case ValueFloat:
 		return fmt.Sprintf("%g", v.Float)
-	case interpreter.TagBool:
+	case ValueBool:
 		return fmt.Sprintf("%v", v.Bool)
-	case interpreter.TagStr:
+	case ValueStr:
 		return fmt.Sprintf("%q", v.Str)
-	case interpreter.TagList:
+	case ValueList:
 		parts := make([]string, len(v.List))
 		for i, x := range v.List {
 			parts[i] = valueToString(x)
 		}
 		return "[" + strings.Join(parts, ", ") + "]"
-	case interpreter.TagMap:
+	case ValueMap:
 		keys := make([]string, 0, len(v.Map))
 		for k := range v.Map {
 			keys = append(keys, k)
@@ -4602,7 +4602,7 @@ func formatRegs(start, n int) string {
 }
 
 func toFloat(v Value) float64 {
-	if v.Tag == interpreter.TagFloat {
+	if v.Tag == ValueFloat {
 		return v.Float
 	}
 	return float64(v.Int)
@@ -4610,11 +4610,11 @@ func toFloat(v Value) float64 {
 
 func valTag(v Value) regTag {
 	switch v.Tag {
-	case interpreter.TagInt:
+	case ValueInt:
 		return tagInt
-	case interpreter.TagFloat:
+	case ValueFloat:
 		return tagFloat
-	case interpreter.TagBool:
+	case ValueBool:
 		return tagBool
 	default:
 		return tagUnknown
@@ -4622,20 +4622,20 @@ func valTag(v Value) regTag {
 }
 
 func valuesEqual(a, b Value) bool {
-	if a.Tag == interpreter.TagFloat || b.Tag == interpreter.TagFloat {
+	if a.Tag == ValueFloat || b.Tag == ValueFloat {
 		return toFloat(a) == toFloat(b)
 	}
 	if a.Tag != b.Tag {
 		return false
 	}
 	switch a.Tag {
-	case interpreter.TagInt:
+	case ValueInt:
 		return a.Int == b.Int
-	case interpreter.TagBool:
+	case ValueBool:
 		return a.Bool == b.Bool
-	case interpreter.TagStr:
+	case ValueStr:
 		return a.Str == b.Str
-	case interpreter.TagList:
+	case ValueList:
 		if len(a.List) != len(b.List) {
 			return false
 		}
@@ -4645,7 +4645,7 @@ func valuesEqual(a, b Value) bool {
 			}
 		}
 		return true
-	case interpreter.TagMap:
+	case ValueMap:
 		if len(a.Map) != len(b.Map) {
 			return false
 		}
@@ -4663,26 +4663,26 @@ func valuesEqual(a, b Value) bool {
 
 func valueLess(a, b Value) bool {
 	switch a.Tag {
-	case interpreter.TagInt:
+	case ValueInt:
 		switch b.Tag {
-		case interpreter.TagInt:
+		case ValueInt:
 			return a.Int < b.Int
-		case interpreter.TagFloat:
+		case ValueFloat:
 			return float64(a.Int) < b.Float
 		}
-	case interpreter.TagFloat:
+	case ValueFloat:
 		switch b.Tag {
-		case interpreter.TagInt:
+		case ValueInt:
 			return a.Float < float64(b.Int)
-		case interpreter.TagFloat:
+		case ValueFloat:
 			return a.Float < b.Float
 		}
-	case interpreter.TagStr:
-		if b.Tag == interpreter.TagStr {
+	case ValueStr:
+		if b.Tag == ValueStr {
 			return a.Str < b.Str
 		}
-	case interpreter.TagList:
-		if b.Tag == interpreter.TagList {
+	case ValueList:
+		if b.Tag == ValueList {
 			n := len(a.List)
 			if len(b.List) < n {
 				n = len(b.List)
@@ -4697,8 +4697,8 @@ func valueLess(a, b Value) bool {
 			}
 			return len(a.List) < len(b.List)
 		}
-	case interpreter.TagMap:
-		if b.Tag == interpreter.TagMap {
+	case ValueMap:
+		if b.Tag == ValueMap {
 			keysA := make([]string, 0, len(a.Map))
 			for k := range a.Map {
 				keysA = append(keysA, k)

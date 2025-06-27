@@ -1,10 +1,6 @@
 package vm
 
-import (
-	"math"
-
-	"mochi/interpreter"
-)
+import "math"
 
 // Automatically generated liveness analysis and optimization
 
@@ -363,7 +359,7 @@ func constFold(fn *Function) bool {
 			consts[ins.A] = cinfo{}
 		case OpJumpIfFalse, OpJumpIfTrue:
 			cond := consts[ins.A]
-			if cond.known && cond.val.Tag == interpreter.TagBool {
+			if cond.known && cond.val.Tag == ValueBool {
 				take := (ins.Op == OpJumpIfFalse && !cond.val.Bool) ||
 					(ins.Op == OpJumpIfTrue && cond.val.Bool)
 				if take {
@@ -423,19 +419,19 @@ func pruneRedundantJumps(fn *Function) bool {
 func evalUnaryConst(op Op, v Value) (Value, bool) {
 	switch op {
 	case OpNeg, OpNegInt:
-		if v.Tag == interpreter.TagFloat {
-			return Value{Tag: interpreter.TagFloat, Float: -toFloat(v)}, true
+		if v.Tag == ValueFloat {
+			return Value{Tag: ValueFloat, Float: -toFloat(v)}, true
 		}
-		if v.Tag == interpreter.TagInt {
-			return Value{Tag: interpreter.TagInt, Int: -v.Int}, true
+		if v.Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: -v.Int}, true
 		}
 	case OpNegFloat:
-		if v.Tag == interpreter.TagFloat || v.Tag == interpreter.TagInt {
-			return Value{Tag: interpreter.TagFloat, Float: -toFloat(v)}, true
+		if v.Tag == ValueFloat || v.Tag == ValueInt {
+			return Value{Tag: ValueFloat, Float: -toFloat(v)}, true
 		}
 	case OpNot:
-		if v.Tag == interpreter.TagBool {
-			return Value{Tag: interpreter.TagBool, Bool: !v.Bool}, true
+		if v.Tag == ValueBool {
+			return Value{Tag: ValueBool, Bool: !v.Bool}, true
 		}
 	}
 	return Value{}, false
@@ -444,113 +440,113 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 	switch op {
 	case OpAddInt:
-		if b.Tag == interpreter.TagInt && c.Tag == interpreter.TagInt {
-			return Value{Tag: interpreter.TagInt, Int: b.Int + c.Int}, true
+		if b.Tag == ValueInt && c.Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: b.Int + c.Int}, true
 		}
 	case OpSubInt:
-		if b.Tag == interpreter.TagInt && c.Tag == interpreter.TagInt {
-			return Value{Tag: interpreter.TagInt, Int: b.Int - c.Int}, true
+		if b.Tag == ValueInt && c.Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: b.Int - c.Int}, true
 		}
 	case OpMulInt:
-		if b.Tag == interpreter.TagInt && c.Tag == interpreter.TagInt {
-			return Value{Tag: interpreter.TagInt, Int: b.Int * c.Int}, true
+		if b.Tag == ValueInt && c.Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: b.Int * c.Int}, true
 		}
 	case OpDivInt:
-		if b.Tag == interpreter.TagInt && c.Tag == interpreter.TagInt && c.Int != 0 {
-			return Value{Tag: interpreter.TagInt, Int: b.Int / c.Int}, true
+		if b.Tag == ValueInt && c.Tag == ValueInt && c.Int != 0 {
+			return Value{Tag: ValueInt, Int: b.Int / c.Int}, true
 		}
 	case OpModInt:
-		if b.Tag == interpreter.TagInt && c.Tag == interpreter.TagInt && c.Int != 0 {
-			return Value{Tag: interpreter.TagInt, Int: b.Int % c.Int}, true
+		if b.Tag == ValueInt && c.Tag == ValueInt && c.Int != 0 {
+			return Value{Tag: ValueInt, Int: b.Int % c.Int}, true
 		}
 	case OpAddFloat:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			return Value{Tag: interpreter.TagFloat, Float: toFloat(b) + toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			return Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}, true
 		}
 	case OpSubFloat:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			return Value{Tag: interpreter.TagFloat, Float: toFloat(b) - toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			return Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}, true
 		}
 	case OpMulFloat:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			return Value{Tag: interpreter.TagFloat, Float: toFloat(b) * toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			return Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}, true
 		}
 	case OpDivFloat:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) && toFloat(c) != 0 {
-			return Value{Tag: interpreter.TagFloat, Float: toFloat(b) / toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) && toFloat(c) != 0 {
+			return Value{Tag: ValueFloat, Float: toFloat(b) / toFloat(c)}, true
 		}
 	case OpModFloat:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) && toFloat(c) != 0 {
-			return Value{Tag: interpreter.TagFloat, Float: math.Mod(toFloat(b), toFloat(c))}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) && toFloat(c) != 0 {
+			return Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}, true
 		}
 	case OpAdd:
-		if b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr {
-			return Value{Tag: interpreter.TagStr, Str: b.Str + c.Str}, true
+		if b.Tag == ValueStr && c.Tag == ValueStr {
+			return Value{Tag: ValueStr, Str: b.Str + c.Str}, true
 		}
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				return Value{Tag: interpreter.TagFloat, Float: toFloat(b) + toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				return Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}, true
 			}
-			return Value{Tag: interpreter.TagInt, Int: b.Int + c.Int}, true
+			return Value{Tag: ValueInt, Int: b.Int + c.Int}, true
 		}
 	case OpSub:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				return Value{Tag: interpreter.TagFloat, Float: toFloat(b) - toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				return Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}, true
 			}
-			return Value{Tag: interpreter.TagInt, Int: b.Int - c.Int}, true
+			return Value{Tag: ValueInt, Int: b.Int - c.Int}, true
 		}
 	case OpMul:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				return Value{Tag: interpreter.TagFloat, Float: toFloat(b) * toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				return Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}, true
 			}
-			return Value{Tag: interpreter.TagInt, Int: b.Int * c.Int}, true
+			return Value{Tag: ValueInt, Int: b.Int * c.Int}, true
 		}
 	case OpDiv:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) && toFloat(c) != 0 {
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				return Value{Tag: interpreter.TagFloat, Float: toFloat(b) / toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) && toFloat(c) != 0 {
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				return Value{Tag: ValueFloat, Float: toFloat(b) / toFloat(c)}, true
 			}
-			return Value{Tag: interpreter.TagInt, Int: b.Int / c.Int}, true
+			return Value{Tag: ValueInt, Int: b.Int / c.Int}, true
 		}
 	case OpMod:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) && toFloat(c) != 0 {
-			if b.Tag == interpreter.TagFloat || c.Tag == interpreter.TagFloat {
-				return Value{Tag: interpreter.TagFloat, Float: math.Mod(toFloat(b), toFloat(c))}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) && toFloat(c) != 0 {
+			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+				return Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}, true
 			}
-			return Value{Tag: interpreter.TagInt, Int: b.Int % c.Int}, true
+			return Value{Tag: ValueInt, Int: b.Int % c.Int}, true
 		}
 	case OpEqualInt:
-		if b.Tag == interpreter.TagInt && c.Tag == interpreter.TagInt {
-			return Value{Tag: interpreter.TagBool, Bool: b.Int == c.Int}, true
+		if b.Tag == ValueInt && c.Tag == ValueInt {
+			return Value{Tag: ValueBool, Bool: b.Int == c.Int}, true
 		}
 	case OpEqualFloat:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			return Value{Tag: interpreter.TagBool, Bool: toFloat(b) == toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			return Value{Tag: ValueBool, Bool: toFloat(b) == toFloat(c)}, true
 		}
 	case OpEqual:
 		if b.Tag == c.Tag {
 			switch b.Tag {
-			case interpreter.TagInt:
-				return Value{Tag: interpreter.TagBool, Bool: b.Int == c.Int}, true
-			case interpreter.TagFloat:
-				return Value{Tag: interpreter.TagBool, Bool: b.Float == c.Float}, true
-			case interpreter.TagStr:
-				return Value{Tag: interpreter.TagBool, Bool: b.Str == c.Str}, true
-			case interpreter.TagBool:
-				return Value{Tag: interpreter.TagBool, Bool: b.Bool == c.Bool}, true
+			case ValueInt:
+				return Value{Tag: ValueBool, Bool: b.Int == c.Int}, true
+			case ValueFloat:
+				return Value{Tag: ValueBool, Bool: b.Float == c.Float}, true
+			case ValueStr:
+				return Value{Tag: ValueBool, Bool: b.Str == c.Str}, true
+			case ValueBool:
+				return Value{Tag: ValueBool, Bool: b.Bool == c.Bool}, true
 			}
 		}
 	case OpNotEqual:
@@ -559,38 +555,38 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 			return v, true
 		}
 	case OpLessInt:
-		if b.Tag == interpreter.TagInt && c.Tag == interpreter.TagInt {
-			return Value{Tag: interpreter.TagBool, Bool: b.Int < c.Int}, true
+		if b.Tag == ValueInt && c.Tag == ValueInt {
+			return Value{Tag: ValueBool, Bool: b.Int < c.Int}, true
 		}
 	case OpLessEqInt:
-		if b.Tag == interpreter.TagInt && c.Tag == interpreter.TagInt {
-			return Value{Tag: interpreter.TagBool, Bool: b.Int <= c.Int}, true
+		if b.Tag == ValueInt && c.Tag == ValueInt {
+			return Value{Tag: ValueBool, Bool: b.Int <= c.Int}, true
 		}
 	case OpLessFloat:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			return Value{Tag: interpreter.TagBool, Bool: toFloat(b) < toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			return Value{Tag: ValueBool, Bool: toFloat(b) < toFloat(c)}, true
 		}
 	case OpLessEqFloat:
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			return Value{Tag: interpreter.TagBool, Bool: toFloat(b) <= toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			return Value{Tag: ValueBool, Bool: toFloat(b) <= toFloat(c)}, true
 		}
 	case OpLess:
-		if b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr {
-			return Value{Tag: interpreter.TagBool, Bool: b.Str < c.Str}, true
+		if b.Tag == ValueStr && c.Tag == ValueStr {
+			return Value{Tag: ValueBool, Bool: b.Str < c.Str}, true
 		}
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			return Value{Tag: interpreter.TagBool, Bool: toFloat(b) < toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			return Value{Tag: ValueBool, Bool: toFloat(b) < toFloat(c)}, true
 		}
 	case OpLessEq:
-		if b.Tag == interpreter.TagStr && c.Tag == interpreter.TagStr {
-			return Value{Tag: interpreter.TagBool, Bool: b.Str <= c.Str}, true
+		if b.Tag == ValueStr && c.Tag == ValueStr {
+			return Value{Tag: ValueBool, Bool: b.Str <= c.Str}, true
 		}
-		if (b.Tag == interpreter.TagFloat || b.Tag == interpreter.TagInt) &&
-			(c.Tag == interpreter.TagFloat || c.Tag == interpreter.TagInt) {
-			return Value{Tag: interpreter.TagBool, Bool: toFloat(b) <= toFloat(c)}, true
+		if (b.Tag == ValueFloat || b.Tag == ValueInt) &&
+			(c.Tag == ValueFloat || c.Tag == ValueInt) {
+			return Value{Tag: ValueBool, Bool: toFloat(b) <= toFloat(c)}, true
 		}
 	}
 	return Value{}, false
