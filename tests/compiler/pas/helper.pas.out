@@ -1,9 +1,8 @@
 program helper;
 {$mode objfpc}
-
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-type 
+type
   generic TArray<T> = array of T;
 
 function double(x: integer): integer;

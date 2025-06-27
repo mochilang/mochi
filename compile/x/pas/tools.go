@@ -89,6 +89,11 @@ func FormatPas(src []byte) []byte {
 	path, err := exec.LookPath("ptop")
 	if err != nil {
 		src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
+		lines := bytes.Split(src, []byte("\n"))
+		for i, ln := range lines {
+			lines[i] = bytes.TrimRight(ln, " \t")
+		}
+		src = bytes.Join(lines, []byte("\n"))
 		if len(src) > 0 && src[len(src)-1] != '\n' {
 			src = append(src, '\n')
 		}
@@ -137,6 +142,11 @@ func FormatPas(src []byte) []byte {
 		return src
 	}
 	out = bytes.TrimLeft(out, "\n")
+	lines := bytes.Split(out, []byte("\n"))
+	for i, ln := range lines {
+		lines[i] = bytes.TrimRight(ln, " \t")
+	}
+	out = bytes.Join(lines, []byte("\n"))
 	if len(out) > 0 && out[len(out)-1] != '\n' {
 		out = append(out, '\n')
 	}

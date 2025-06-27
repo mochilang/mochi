@@ -1,39 +1,36 @@
 program main;
 {$mode objfpc}
-
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-type 
+type
   generic TArray<T> = array of T;
 
 function twoSum(nums: specialize TArray<integer>; target: integer): specialize TArray<integer>;
-
-var 
+var
   i: integer;
   j: integer;
   n: integer;
 begin
   n := Length(nums);
   for i := 0 to n - 1 do
+  begin
+    for j := i + 1 to n - 1 do
     begin
-      for j := i + 1 to n - 1 do
-        begin
-          if (specialize _indexList<integer>(nums, i) + specialize _indexList<integer>(nums, j) =
-             target) then
-            begin
-              result := specialize TArray<integer>([i, j]);
-              exit;
-            end;
-        end;
+      if (specialize _indexList<integer>(nums, i) + specialize _indexList<integer>(nums, j) = target) then
+      begin
+        result := specialize TArray<integer>([i, j]);
+        exit;
+      end;
     end;
+  end;
   result := specialize TArray<integer>([-1, -1]);
   exit;
 end;
 
-var 
+var
   _result: specialize TArray<integer>;
 
-  generic function _indexList<T>(arr: specialize TArray<T>; i: integer): T;
+generic function _indexList<T>(arr: specialize TArray<T>; i: integer): T;
 begin
   if i < 0 then i := Length(arr) + i;
   if (i < 0) or (i >= Length(arr)) then

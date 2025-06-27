@@ -1,14 +1,12 @@
 program main;
 {$mode objfpc}
-
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-type 
+type
   generic TArray<T> = array of T;
 
 procedure test_addition_works;
-
-var 
+var
   x: integer;
 begin
   x := 1 + 2;

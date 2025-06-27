@@ -1,12 +1,11 @@
 program main;
 {$mode objfpc}
-
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-type 
+type
   generic TArray<T> = array of T;
 
-var 
+var
   text: string;
 
 function _indexString(s: string; i: integer): string;

@@ -1,15 +1,14 @@
 program main;
 {$mode objfpc}
-
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-type 
+type
   generic TArray<T> = array of T;
 
-var 
+var
   a: specialize TArray<integer>;
 
-  generic function _indexList<T>(arr: specialize TArray<T>; i: integer): T;
+generic function _indexList<T>(arr: specialize TArray<T>; i: integer): T;
 begin
   if i < 0 then i := Length(arr) + i;
   if (i < 0) or (i >= Length(arr)) then
