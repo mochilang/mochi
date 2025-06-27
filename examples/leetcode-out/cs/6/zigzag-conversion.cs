@@ -2,51 +2,67 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Web;
 
 public class Program {
-	static string convert(string s, long numRows) {
-		if (((numRows <= 1L) || (numRows >= s.Length))) {
-			return s;
-		}
-		string[] rows = new string[] { };
-		long i = 0L;
-		while ((i < numRows)) {
-			rows = rows.Concat(new [] { "" }).ToArray();
-			i = (i + 1L);
-		}
-		long curr = 0L;
-		long step = 1L;
-		foreach (var ch in s) {
-			rows[curr] = (rows[curr] + ch);
-			if ((curr == 0L)) {
-				step = 1L;
-			} else if ((curr == (numRows - 1L))) {
-				step = (-1L);
-			}
-			curr = (curr + step);
-		}
-		string result = "";
-		foreach (var row in rows) {
-			result = (result + row);
-		}
-		return result;
-	}
-	
-	static void test_example_1() {
-		if (!((convert("PAYPALISHIRING", 3L) == "PAHNAPLSIIGYIR"))) throw new Exception("expect failed");
-	}
-	
-	static void test_example_2() {
-		if (!((convert("PAYPALISHIRING", 4L) == "PINALSIGYAHRPI"))) throw new Exception("expect failed");
-	}
-	
-	static void test_single_row() {
-		if (!((convert("A", 1L) == "A"))) throw new Exception("expect failed");
-	}
-	
-	public static void Main() {
-		test_example_1();
-		test_example_2();
-		test_single_row();
-	}
+    static string convert(string s, long numRows) {
+        if (((numRows <= 1L) || (numRows >= s.Length))) {
+            return s;
+        }
+        string[] rows = new string[] { };
+        long i = 0L;
+        while ((i < numRows)) {
+            rows = rows.Concat(new string[] { "" }).ToArray();
+            i = (i + 1L);
+        }
+        long curr = 0L;
+        long step = 1L;
+        foreach (var ch in s) {
+            rows[curr] = (_indexList(rows, curr) + ch);
+            if ((curr == 0L)) {
+                step = 1L;
+            } else if ((curr == (numRows - 1L))) {
+                step = (-1L);
+            }
+            curr = (curr + step);
+        }
+        string result = "";
+        foreach (var row in rows) {
+            result = (result + row);
+        }
+        return result;
+    }
+    
+    static void test_example_1() {
+        expect((convert("PAYPALISHIRING", 3L) == "PAHNAPLSIIGYIR"));
+    }
+    
+    static void test_example_2() {
+        expect((convert("PAYPALISHIRING", 4L) == "PINALSIGYAHRPI"));
+    }
+    
+    static void test_single_row() {
+        expect((convert("A", 1L) == "A"));
+    }
+    
+    public static void Main() {
+        test_example_1();
+        test_example_2();
+        test_single_row();
+    }
+    static dynamic _indexList(dynamic l, long i) {
+        var list = l as System.Collections.IList;
+        if (list == null) throw new Exception("index() expects list");
+        if (i < 0) i += list.Count;
+        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
+        return list[(int)i];
+    }
+    
+    static void expect(bool cond) {
+        if (!cond) throw new Exception("expect failed");
+    }
+    
 }

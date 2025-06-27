@@ -2,91 +2,115 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Web;
 
 public class Program {
-	static bool isMatch(string s, string p) {
-		long m = s.Length;
-		long n = p.Length;
-		bool[][] dp = new bool[][] { };
-		long i = 0L;
-		while ((i <= m)) {
-			bool[] row = new bool[] { };
-			long j = 0L;
-			while ((j <= n)) {
-				row = row.Concat(new [] { false }).ToArray();
-				j = (j + 1L);
-			}
-			dp = dp.Concat(new [] { row }).ToArray();
-			i = (i + 1L);
-		}
-		dp[m][n] = true;
-		var i2 = m;
-		while ((i2 >= 0L)) {
-			var j2 = (n - 1L);
-			while ((j2 >= 0L)) {
-				bool first = false;
-				if ((i2 < m)) {
-					if ((((_indexString(p, j2) == _indexString(s, i2))) || ((_indexString(p, j2) == ".")))) {
-						first = true;
-					}
-				}
-				bool star = false;
-				if (((j2 + 1L) < n)) {
-					if ((_indexString(p, (j2 + 1L)) == "*")) {
-						star = true;
-					}
-				}
-				if (star) {
-					if ((dp[i2][(j2 + 2L)] || ((first && dp[(i2 + 1L)][j2])))) {
-						dp[i2][j2] = true;
-					} else {
-						dp[i2][j2] = false;
-					}
-				} else {
-					if ((first && dp[(i2 + 1L)][(j2 + 1L)])) {
-						dp[i2][j2] = true;
-					} else {
-						dp[i2][j2] = false;
-					}
-				}
-				j2 = (j2 - 1L);
-			}
-			i2 = (i2 - 1L);
-		}
-		return dp[0L][0L];
-	}
-	
-	static void test_example_1() {
-		if (!((isMatch("aa", "a") == false))) throw new Exception("expect failed");
-	}
-	
-	static void test_example_2() {
-		if (!((isMatch("aa", "a*") == true))) throw new Exception("expect failed");
-	}
-	
-	static void test_example_3() {
-		if (!((isMatch("ab", ".*") == true))) throw new Exception("expect failed");
-	}
-	
-	static void test_example_4() {
-		if (!((isMatch("aab", "c*a*b") == true))) throw new Exception("expect failed");
-	}
-	
-	static void test_example_5() {
-		if (!((isMatch("mississippi", "mis*is*p*.") == false))) throw new Exception("expect failed");
-	}
-	
-	public static void Main() {
-		test_example_1();
-		test_example_2();
-		test_example_3();
-		test_example_4();
-		test_example_5();
-	}
-	static string _indexString(string s, long i) {
-		if (i < 0) i += s.Length;
-		if (i < 0 || i >= s.Length) throw new Exception("index out of range");
-		return s[(int)i].ToString();
-	}
-	
+    static bool isMatch(string s, string p) {
+        long m = s.Length;
+        long n = p.Length;
+        bool[][] dp = new bool[][] { };
+        long i = 0L;
+        while ((i <= m)) {
+            bool[] row = new bool[] { };
+            long j = 0L;
+            while ((j <= n)) {
+                row = row.Concat(new bool[] { false }).ToArray();
+                j = (j + 1L);
+            }
+            dp = dp.Concat(new dynamic[] { row }).ToArray();
+            i = (i + 1L);
+        }
+        dp[m][n] = true;
+        var i2 = m;
+        while ((i2 >= 0L)) {
+            var j2 = (n - 1L);
+            while ((j2 >= 0L)) {
+                bool first = false;
+                if ((i2 < m)) {
+                    if ((((_indexString(p, j2) == _indexString(s, i2))) || ((_indexString(p, j2) == ".")))) {
+                        first = true;
+                    }
+                }
+                bool star = false;
+                if (((j2 + 1L) < n)) {
+                    if ((_indexString(p, (j2 + 1L)) == "*")) {
+                        star = true;
+                    }
+                }
+                if (star) {
+                    bool ok = false;
+                    if (_indexList(_indexList(dp, i2), (j2 + 2L))) {
+                        ok = true;
+                    } else {
+                        if (first) {
+                            if (_indexList(_indexList(dp, (i2 + 1L)), j2)) {
+                                ok = true;
+                            }
+                        }
+                    }
+                    dp[i2][j2] = ok;
+                } else {
+                    bool ok = false;
+                    if (first) {
+                        if (_indexList(_indexList(dp, (i2 + 1L)), (j2 + 1L))) {
+                            ok = true;
+                        }
+                    }
+                    dp[i2][j2] = ok;
+                }
+                j2 = (j2 - 1L);
+            }
+            i2 = (i2 - 1L);
+        }
+        return _indexList(_indexList(dp, 0L), 0L);
+    }
+    
+    static void test_example_1() {
+        expect((isMatch("aa", "a") == false));
+    }
+    
+    static void test_example_2() {
+        expect((isMatch("aa", "a*") == true));
+    }
+    
+    static void test_example_3() {
+        expect((isMatch("ab", ".*") == true));
+    }
+    
+    static void test_example_4() {
+        expect((isMatch("aab", "c*a*b") == true));
+    }
+    
+    static void test_example_5() {
+        expect((isMatch("mississippi", "mis*is*p*.") == false));
+    }
+    
+    public static void Main() {
+        test_example_1();
+        test_example_2();
+        test_example_3();
+        test_example_4();
+        test_example_5();
+    }
+    static string _indexString(string s, long i) {
+        if (i < 0) i += s.Length;
+        if (i < 0 || i >= s.Length) throw new Exception("index out of range");
+        return s[(int)i].ToString();
+    }
+    
+    static dynamic _indexList(dynamic l, long i) {
+        var list = l as System.Collections.IList;
+        if (list == null) throw new Exception("index() expects list");
+        if (i < 0) i += list.Count;
+        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
+        return list[(int)i];
+    }
+    
+    static void expect(bool cond) {
+        if (!cond) throw new Exception("expect failed");
+    }
+    
 }

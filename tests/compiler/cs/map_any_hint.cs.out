@@ -20,14 +20,6 @@ public class Program {
         var tree = Node(Leaf(), 1L, Leaf());
         Console.WriteLine(_indexList((_cast<Dictionary<string, dynamic>>(_indexList(tree, "left"))), "__name"));
     }
-    static dynamic _indexList(dynamic l, long i) {
-        var list = l as System.Collections.IList;
-        if (list == null) throw new Exception("index() expects list");
-        if (i < 0) i += list.Count;
-        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
-        return list[(int)i];
-    }
-    
     static T _cast<T>(dynamic v) {
         if (v is T tv) return tv;
         if (typeof(T) == typeof(int)) {
@@ -63,6 +55,14 @@ public class Program {
         }
         var json = JsonSerializer.Serialize(v);
         return JsonSerializer.Deserialize<T>(json);
+    }
+    
+    static dynamic _indexList(dynamic l, long i) {
+        var list = l as System.Collections.IList;
+        if (list == null) throw new Exception("index() expects list");
+        if (i < 0) i += list.Count;
+        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
+        return list[(int)i];
     }
     
 }

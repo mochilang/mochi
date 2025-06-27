@@ -2,83 +2,110 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Web;
 using System.Text.Json;
 
 public class Program {
-	static double findMedianSortedArrays(long[] nums1, long[] nums2) {
-		long[] merged = new long[] { };
-		long i = 0L;
-		long j = 0L;
-		while (((i < nums1.Length) || (j < nums2.Length))) {
-			if ((j >= nums2.Length)) {
-				merged = merged.Concat(new [] { nums1[i] }).ToArray();
-				i = (i + 1L);
-			} else if ((i >= nums1.Length)) {
-				merged = merged.Concat(new [] { nums2[j] }).ToArray();
-				j = (j + 1L);
-			} else if ((nums1[i] <= nums2[j])) {
-				merged = merged.Concat(new [] { nums1[i] }).ToArray();
-				i = (i + 1L);
-			} else {
-				merged = merged.Concat(new [] { nums2[j] }).ToArray();
-				j = (j + 1L);
-			}
-		}
-		long total = merged.Length;
-		if (((total % 2L) == 1L)) {
-			return _cast<double>(merged[(total / 2L)]);
-		}
-		var mid1 = merged[((total / 2L) - 1L)];
-		var mid2 = merged[(total / 2L)];
-		return (_cast<double>(((mid1 + mid2))) / 2.000000);
-	}
-	
-	static void test_example_1() {
-		if (!((findMedianSortedArrays(new [] { 1L, 3L }, new [] { 2L }) == 2.000000))) throw new Exception("expect failed");
-	}
-	
-	static void test_example_2() {
-		if (!((findMedianSortedArrays(new [] { 1L, 2L }, new [] { 3L, 4L }) == 2.500000))) throw new Exception("expect failed");
-	}
-	
-	static void test_empty_first() {
-		if (!((findMedianSortedArrays(_cast<long[]>(new dynamic[] { }), new [] { 1L }) == 1.000000))) throw new Exception("expect failed");
-	}
-	
-	static void test_empty_second() {
-		if (!((findMedianSortedArrays(new [] { 2L }, _cast<long[]>(new dynamic[] { })) == 2.000000))) throw new Exception("expect failed");
-	}
-	
-	public static void Main() {
-		test_example_1();
-		test_example_2();
-		test_empty_first();
-		test_empty_second();
-	}
-	static T _cast<T>(dynamic v) {
-		if (v is T tv) return tv;
-		if (typeof(T) == typeof(int)) {
-			if (v is int) return (T)v;
-			if (v is double) return (T)(object)(int)(double)v;
-			if (v is float) return (T)(object)(int)(float)v;
-		}
-		if (typeof(T) == typeof(double)) {
-			if (v is int) return (T)(object)(double)(int)v;
-			if (v is double) return (T)v;
-			if (v is float) return (T)(object)(double)(float)v;
-		}
-		if (typeof(T) == typeof(float)) {
-			if (v is int) return (T)(object)(float)(int)v;
-			if (v is double) return (T)(object)(float)(double)v;
-			if (v is float) return (T)v;
-		}
-		if (v is System.Collections.Generic.IDictionary<object, object> dm) {
-			var m = new Dictionary<string, object>();
-			foreach (var kv in dm) m[Convert.ToString(kv.Key)] = kv.Value;
-			v = m;
-		}
-		var json = JsonSerializer.Serialize(v);
-		return JsonSerializer.Deserialize<T>(json);
-	}
-	
+    static double findMedianSortedArrays(long[] nums1, long[] nums2) {
+        long[] merged = new long[] { };
+        long i = 0L;
+        long j = 0L;
+        while (((i < nums1.Length) || (j < nums2.Length))) {
+            if ((j >= nums2.Length)) {
+                merged = merged.Concat(new dynamic[] { _indexList(nums1, i) }).ToArray();
+                i = (i + 1L);
+            } else if ((i >= nums1.Length)) {
+                merged = merged.Concat(new dynamic[] { _indexList(nums2, j) }).ToArray();
+                j = (j + 1L);
+            } else if ((_indexList(nums1, i) <= _indexList(nums2, j))) {
+                merged = merged.Concat(new dynamic[] { _indexList(nums1, i) }).ToArray();
+                i = (i + 1L);
+            } else {
+                merged = merged.Concat(new dynamic[] { _indexList(nums2, j) }).ToArray();
+                j = (j + 1L);
+            }
+        }
+        long total = merged.Length;
+        if (((total % 2L) == 1L)) {
+            return _cast<double>(_indexList(merged, (total / 2L)));
+        }
+        var mid1 = _indexList(merged, ((total / 2L) - 1L));
+        var mid2 = _indexList(merged, (total / 2L));
+        return (_cast<double>(((mid1 + mid2))) / 2.000000);
+    }
+    
+    static void test_example_1() {
+        expect((findMedianSortedArrays(new long[] { 1L, 3L }, new long[] { 2L }) == 2.000000));
+    }
+    
+    static void test_example_2() {
+        expect((findMedianSortedArrays(new long[] { 1L, 2L }, new long[] { 3L, 4L }) == 2.500000));
+    }
+    
+    static void test_empty_first() {
+        expect((findMedianSortedArrays(_cast<long[]>(new dynamic[] { }), new long[] { 1L }) == 1.000000));
+    }
+    
+    static void test_empty_second() {
+        expect((findMedianSortedArrays(new long[] { 2L }, _cast<long[]>(new dynamic[] { })) == 2.000000));
+    }
+    
+    public static void Main() {
+        test_example_1();
+        test_example_2();
+        test_empty_first();
+        test_empty_second();
+    }
+    static dynamic _indexList(dynamic l, long i) {
+        var list = l as System.Collections.IList;
+        if (list == null) throw new Exception("index() expects list");
+        if (i < 0) i += list.Count;
+        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
+        return list[(int)i];
+    }
+    
+    static T _cast<T>(dynamic v) {
+        if (v is T tv) return tv;
+        if (typeof(T) == typeof(int)) {
+            if (v is int) return (T)v;
+            if (v is double) return (T)(object)(int)(double)v;
+            if (v is float) return (T)(object)(int)(float)v;
+        }
+        if (typeof(T) == typeof(double)) {
+            if (v is int) return (T)(object)(double)(int)v;
+            if (v is double) return (T)v;
+            if (v is float) return (T)(object)(double)(float)v;
+        }
+        if (typeof(T) == typeof(float)) {
+            if (v is int) return (T)(object)(float)(int)v;
+            if (v is double) return (T)(object)(float)(double)v;
+            if (v is float) return (T)v;
+        }
+        if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(Dictionary<,>) && v is System.Collections.IDictionary d) {
+            var args = typeof(T).GetGenericArguments();
+            var res = (System.Collections.IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(args));
+            var mCast = typeof(Program).GetMethod("_cast");
+            foreach (System.Collections.DictionaryEntry kv in d) {
+                var k = mCast.MakeGenericMethod(args[0]).Invoke(null, new object[]{kv.Key});
+                var val = mCast.MakeGenericMethod(args[1]).Invoke(null, new object[]{kv.Value});
+                res.Add(k, val);
+            }
+            return (T)res;
+        }
+        if (v is System.Collections.Generic.IDictionary<object, object> dm) {
+            var m = new Dictionary<string, object>();
+            foreach (var kv in dm) m[Convert.ToString(kv.Key)] = kv.Value;
+            v = m;
+        }
+        var json = JsonSerializer.Serialize(v);
+        return JsonSerializer.Deserialize<T>(json);
+    }
+    
+    static void expect(bool cond) {
+        if (!cond) throw new Exception("expect failed");
+    }
+    
 }
