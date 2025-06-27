@@ -69,8 +69,9 @@ func (c *Compiler) writeIndent() {
 
 // writeln writes a line with indentation and a trailing newline.
 func (c *Compiler) writeln(s string) {
+	line := strings.TrimRight(s, " \t")
 	c.writeIndent()
-	c.buf.WriteString(s)
+	c.buf.WriteString(line)
 	c.buf.WriteByte('\n')
 }
 
