@@ -1,6 +1,6 @@
 # PHP Backend Tasks for TPCH Q1
 
-The PHP backend now supports dataset queries used by `tpc-h/q1.mochi` and `job/q1.mochi`.
+The PHP backend now supports dataset queries used by `tpc-h/q1.mochi` and `job/q1.mochi` through `job/q10.mochi`.
 
 - Implemented `sum` helper alongside `avg` and `count` using PHP arrays.
 - Added support for `group by` with an optional `where` clause.
@@ -14,4 +14,4 @@ The PHP backend now supports dataset queries used by `tpc-h/q1.mochi` and `job/q
 
 ## Remaining work
 
-- Extend support to additional JOB queries beyond `q1`.
+- Extend support to remaining JOB queries beyond `q10`.

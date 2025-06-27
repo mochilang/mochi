@@ -787,8 +787,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) == 0 {
 			return "", fmt.Errorf("print expects at least 1 arg")
 		}
-		joined := strings.Join(args, " . \" \" . ")
-		return fmt.Sprintf("echo %s, PHP_EOL", joined), nil
+		joined := strings.Join(args, ", ")
+		c.use("_print")
+		return fmt.Sprintf("_print(%s)", joined), nil
 	case "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("len expects 1 arg")
