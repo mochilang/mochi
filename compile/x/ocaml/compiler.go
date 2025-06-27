@@ -180,17 +180,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func formatOCaml(src []byte) []byte {
-	if _, err := exec.LookPath("ocamlformat"); err != nil {
-		return src
+	if _, err := exec.LookPath("ocamlformat"); err == nil {
+		cmd := exec.Command("ocamlformat", "--enable-outside-detected-project", "--name", "mochi.ml", "-")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			return bytes.TrimSpace(out.Bytes())
+		}
 	}
-	cmd := exec.Command("ocamlformat", "--enable-outside-detected-project", "--name", "mochi.ml", "-")
-	cmd.Stdin = bytes.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err != nil {
-		return src
+	if _, err := exec.LookPath("ocp-indent"); err == nil {
+		cmd := exec.Command("ocp-indent")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			return bytes.TrimSpace(out.Bytes())
+		}
 	}
-	return bytes.TrimSpace(out.Bytes())
+	return src
 }
 
 func (c *Compiler) ensureSetNth() {
