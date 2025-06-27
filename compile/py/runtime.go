@@ -47,15 +47,7 @@ var helperMin = "def _min(v):\n" +
 	"        raise Exception('min() expects list or group')\n" +
 	"    if not v:\n" +
 	"        return 0\n" +
-	"    m = float(v[0])\n" +
-	"    is_float = isinstance(v[0], float)\n" +
-	"    for it in v[1:]:\n" +
-	"        if isinstance(it, float):\n" +
-	"            is_float = True\n" +
-	"        f = float(it)\n" +
-	"        if f < m:\n" +
-	"            m = f\n" +
-	"    return m if is_float else int(m)\n"
+	"    return min(v)\n"
 
 var helperMax = "def _max(v):\n" +
 	"    if hasattr(v, 'Items'):\n" +
@@ -64,15 +56,7 @@ var helperMax = "def _max(v):\n" +
 	"        raise Exception('max() expects list or group')\n" +
 	"    if not v:\n" +
 	"        return 0\n" +
-	"    m = float(v[0])\n" +
-	"    is_float = isinstance(v[0], float)\n" +
-	"    for it in v[1:]:\n" +
-	"        if isinstance(it, float):\n" +
-	"            is_float = True\n" +
-	"        f = float(it)\n" +
-	"        if f > m:\n" +
-	"            m = f\n" +
-	"    return m if is_float else int(m)\n"
+	"    return max(v)\n"
 
 var helperGroupClass = "class _Group:\n" +
 	"    def __init__(self, key):\n" +
