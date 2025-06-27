@@ -150,7 +150,7 @@ L10:
   Jump         L11
 L7:
   // order by s.s_name
-  Sort         88,46,0,0
+  Sort         r88, r46
   // from s in supplier
   Move         r46, r88
   // let result =

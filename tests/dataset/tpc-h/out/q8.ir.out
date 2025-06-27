@@ -364,26 +364,15 @@ L24:
   Jump         L26
 L19:
   // sort by year.key
-  Sort         237,22,0,0
+  Sort         r237, r22
   // from l in lineitem
   Move         r22, r237
   // let result =
   Move         r238, r22
   // print(result)
   Print        r238
-  // let numerator = 1000.0 * 0.9      // 900
-  Const        r239, 1000
-  Const        r240, 0.9
-  MulFloat     r241, r239, r240
-  Move         r242, r241
-  // let denominator = numerator + (500.0 * 0.95) // 900 + 475 = 1375
-  Const        r243, 500
-  Const        r244, 0.95
-  MulFloat     r245, r243, r244
-  AddFloat     r246, r242, r245
-  Move         r247, r246
   // let share = numerator / denominator         // ≈ 0.6545
-  DivFloat     r248, r242, r247
+  Const        r248, 0.6545454545454545
   Move         r249, r248
   // { o_year: "1995", mkt_share: share }
   Const        r250, "o_year"

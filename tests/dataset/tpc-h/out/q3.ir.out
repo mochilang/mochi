@@ -310,10 +310,6 @@ L20:
   Move         r196, r195
   // g.key.o_orderdate
   Const        r197, "key"
-  Index        r198, r126, r197
-  Const        r199, "o_orderdate"
-  Index        r200, r198, r199
-  Move         r201, r200
   // sort by [
   MakeList     r202, 2, r196
   Move         r203, r202
@@ -328,7 +324,7 @@ L20:
   Jump         L22
 L17:
   // sort by [
-  Sort         209,64,0,0
+  Sort         r209, r64
   // from o in valid_orders
   Move         r64, r209
   // let order_line_join =
@@ -340,11 +336,7 @@ L17:
   Const        r212, 100
   // revenue: 1000.0 * 0.95 + 500.0,
   Const        r213, "revenue"
-  Const        r214, 1000
-  Const        r215, 0.95
-  MulFloat     r216, r214, r215
-  Const        r217, 500
-  AddFloat     r218, r216, r217
+  Const        r218, 1450
   // o_orderdate: "1995-03-14",
   Const        r219, "o_orderdate"
   Const        r220, "1995-03-14"

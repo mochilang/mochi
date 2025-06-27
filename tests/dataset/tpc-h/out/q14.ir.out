@@ -50,6 +50,29 @@ L4:
   Move         r32, r31
 L3:
   JumpIfFalse  r32, L2
+  // is_promo: "PROMO" in p.p_type,
+  Const        r33, "is_promo"
+  Const        r34, "PROMO"
+  Const        r35, "p_type"
+  Index        r36, r20, r35
+  In           r37, r34, r36
+  // revenue: l.l_extendedprice * (1 - l.l_discount)
+  Const        r38, "revenue"
+  Const        r39, "l_extendedprice"
+  Index        r40, r16, r39
+  Const        r41, 1
+  Const        r42, "l_discount"
+  Index        r43, r16, r42
+  Sub          r44, r41, r43
+  Mul          r45, r40, r44
+  // is_promo: "PROMO" in p.p_type,
+  Move         r46, r33
+  Move         r47, r37
+  // revenue: l.l_extendedprice * (1 - l.l_discount)
+  Move         r48, r38
+  Move         r49, r45
+  // select {
+  MakeMap      r50, 2, r46
   // from l in lineitem
   Append       r51, r8, r50
   Move         r8, r51
@@ -81,6 +104,8 @@ L8:
   Const        r64, "is_promo"
   Index        r65, r63, r64
   JumpIfFalse  r65, L7
+  Const        r66, "revenue"
+  Index        r67, r63, r66
   Append       r68, r57, r67
   Move         r57, r68
 L7:
@@ -99,6 +124,12 @@ L6:
 L10:
   Less         r77, r76, r75
   JumpIfFalse  r77, L9
+  Index        r78, r74, r76
+  Move         r63, r78
+  Const        r79, "revenue"
+  Index        r80, r63, r79
+  Append       r81, r73, r80
+  Move         r73, r81
   Const        r82, 1
   Add          r83, r76, r82
   Move         r76, r83
@@ -120,4 +151,3 @@ L9:
   EqualFloat   r102, r89, r101
   Expect       r102
   Return       r0
-
