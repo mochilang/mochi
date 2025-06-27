@@ -2,12 +2,15 @@
 
 function countBits(n: number): Array<number> {
   let result: Array<number> = [];
+  (globalThis as any).result = result;
   let i: number = 0;
-  while (i <= n) {
-    if (i == 0) {
+  (globalThis as any).i = i;
+  while ((i <= n)) {
+    if ((i == 0)) {
       result = result.concat([0]);
     } else {
       let bits: number = result[Math.trunc(i / 2)] + (i % 2);
+      (globalThis as any).bits = bits;
       result = result.concat([bits]);
     }
     i = i + 1;
@@ -15,42 +18,59 @@ function countBits(n: number): Array<number> {
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(countBits(2), [0, 1, 1])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(countBits(2), [
+      0,
+      1,
+      1,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(countBits(5), [0, 1, 1, 2, 1, 2])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(countBits(5), [
+      0,
+      1,
+      1,
+      2,
+      1,
+      2,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function zero(): void {
-  if (!_equal(countBits(0), [0])) {
-    throw new Error("expect failed");
-  }
+function test_zero(): void {
+  if (!(_equal(countBits(0), [0]))) throw new Error("expect failed");
 }
 
-function larger(): void {
-  if (!_equal(countBits(8), [0, 1, 1, 2, 1, 2, 2, 3, 1])) {
-    throw new Error("expect failed");
-  }
+function test_larger(): void {
+  if (
+    !(_equal(countBits(8), [
+      0,
+      1,
+      1,
+      2,
+      1,
+      2,
+      2,
+      3,
+      1,
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  zero();
-  larger();
+  test_example_1();
+  test_example_2();
+  test_zero();
+  test_larger();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -58,8 +78,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

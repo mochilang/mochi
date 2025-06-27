@@ -2,36 +2,46 @@
 
 function countComponents(n: number, edges: Array<Array<number>>): number {
   let graph: Array<Array<number>> = [];
+  (globalThis as any).graph = graph;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     graph = graph.concat([[]]);
     i = i + 1;
   }
   for (const e of edges) {
     let u: number = e[0];
+    (globalThis as any).u = u;
     let v: number = e[1];
+    (globalThis as any).v = v;
     graph[u] = graph[u].concat([v]);
     graph[v] = graph[v].concat([u]);
   }
   let visited: Array<boolean> = [];
+  (globalThis as any).visited = visited;
   i = 0;
-  while (i < n) {
+  while ((i < n)) {
     visited = visited.concat([false]);
     i = i + 1;
   }
   let components: number = 0;
+  (globalThis as any).components = components;
   let start: number = 0;
-  while (start < n) {
-    if (!visited[start]) {
+  (globalThis as any).start = start;
+  while ((start < n)) {
+    if ((!visited[start])) {
       components = components + 1;
       let queue: Array<number> = [start];
+      (globalThis as any).queue = queue;
       visited[start] = true;
       let idx: number = 0;
-      while (idx < queue.length) {
+      (globalThis as any).idx = idx;
+      while ((idx < queue.length)) {
         let cur: number = queue[idx];
+        (globalThis as any).cur = cur;
         idx = idx + 1;
         for (const nei of graph[cur]) {
-          if (!visited[nei]) {
+          if ((!visited[nei])) {
             visited[nei] = true;
             queue = queue.concat([nei]);
           }
@@ -43,65 +53,76 @@ function countComponents(n: number, edges: Array<Array<number>>): number {
   return components;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !(
-      countComponents(5, [
-        [0, 1],
-        [1, 2],
-        [3, 4],
-      ]) == 2
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(countComponents(5, [
+      [
+        0,
+        1,
+      ],
+      [
+        1,
+        2,
+      ],
+      [
+        3,
+        4,
+      ],
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !(
-      countComponents(5, [
-        [0, 1],
-        [1, 2],
-        [2, 3],
-        [3, 4],
-      ]) == 1
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(countComponents(5, [
+      [
+        0,
+        1,
+      ],
+      [
+        1,
+        2,
+      ],
+      [
+        2,
+        3,
+      ],
+      [
+        3,
+        4,
+      ],
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function single_node(): void {
-  if (!(countComponents(1, []) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_node(): void {
+  if (!(countComponents(1, []) == 1)) throw new Error("expect failed");
 }
 
-function two_disjoint_edges(): void {
+function test_two_disjoint_edges(): void {
   if (
-    !(
-      countComponents(4, [
-        [0, 1],
-        [2, 3],
-      ]) == 2
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(countComponents(4, [
+      [
+        0,
+        1,
+      ],
+      [
+        2,
+        3,
+      ],
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function no_edges(): void {
-  if (!(countComponents(4, []) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_no_edges(): void {
+  if (!(countComponents(4, []) == 4)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_node();
-  two_disjoint_edges();
-  no_edges();
+  test_example_1();
+  test_example_2();
+  test_single_node();
+  test_two_disjoint_edges();
+  test_no_edges();
 }
 main();

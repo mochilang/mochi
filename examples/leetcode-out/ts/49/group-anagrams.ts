@@ -2,15 +2,19 @@
 
 function groupAnagrams(strs: Array<string>): Array<Array<string>> {
   let index: Record<string, number> = {};
+  (globalThis as any).index = index;
   let groups: Array<Array<string>> = [];
+  (globalThis as any).groups = groups;
   for (const word of strs) {
     let letters: Array<string> = [];
+    (globalThis as any).letters = letters;
     let i: number = 0;
-    while (i < word.length) {
-      letters = letters.concat([word[i]]);
+    (globalThis as any).i = i;
+    while ((i < word.length)) {
+      letters = letters.concat([_indexString(word, i)]);
       i = i + 1;
     }
-    let chars: Array<any> = (() => {
+    let chars: Array<string> = (() => {
       const _src = letters;
       let _items = [];
       for (const ch of _src) {
@@ -24,9 +28,12 @@ function groupAnagrams(strs: Array<string>): Array<Array<string>> {
         const ak = a.key;
         const bk = b.key;
         if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-        if (typeof ak === "string" && typeof bk === "string")
-          return ak < bk ? -1 : ak > bk ? 1 : 0;
-        return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+        if (typeof ak === "string" && typeof bk === "string") {
+          return ak < bk
+            ? -1
+            : (ak > bk ? 1 : 0);
+        }
+        return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
       });
       _items = _pairs.map((p) => p.item);
       const _res = [];
@@ -35,12 +42,15 @@ function groupAnagrams(strs: Array<string>): Array<Array<string>> {
       }
       return _res;
     })();
+    (globalThis as any).chars = chars;
     let key: string = "";
+    (globalThis as any).key = key;
     for (const ch of chars) {
       key = key + ch;
     }
     if (Object.prototype.hasOwnProperty.call(index, String(key))) {
       let idx: number = index[key];
+      (globalThis as any).idx = idx;
       groups[idx] = groups[idx].concat([word]);
     } else {
       groups = groups.concat([[word]]);
@@ -50,7 +60,7 @@ function groupAnagrams(strs: Array<string>): Array<Array<string>> {
   return groups;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let res: Array<Array<string>> = groupAnagrams([
     "eat",
     "tea",
@@ -59,6 +69,7 @@ function example_1(): void {
     "nat",
     "bat",
   ]);
+  (globalThis as any).res = res;
   let normalize: any = function (g: Array<string>): Array<string> {
     return (() => {
       const _src = g;
@@ -74,9 +85,12 @@ function example_1(): void {
         const ak = a.key;
         const bk = b.key;
         if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-        if (typeof ak === "string" && typeof bk === "string")
-          return ak < bk ? -1 : ak > bk ? 1 : 0;
-        return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+        if (typeof ak === "string" && typeof bk === "string") {
+          return ak < bk
+            ? -1
+            : (ak > bk ? 1 : 0);
+        }
+        return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
       });
       _items = _pairs.map((p) => p.item);
       const _res = [];
@@ -86,15 +100,10 @@ function example_1(): void {
       return _res;
     })();
   };
-  let sorted: Array<any> = (() => {
-    const _src = res;
-    const _res = [];
-    for (const g of _src) {
-      _res.push(normalize(g));
-    }
-    return _res;
-  })();
-  let final: Array<any> = (() => {
+  (globalThis as any).normalize = normalize;
+  let sorted: Array<Array<string>> = res.map((g) => normalize(g));
+  (globalThis as any).sorted = sorted;
+  let final: Array<Array<string>> = (() => {
     const _src = sorted;
     let _items = [];
     for (const g of _src) {
@@ -102,15 +111,18 @@ function example_1(): void {
     }
     let _pairs = _items.map((it) => {
       const g = it;
-      return { item: it, key: (g as any)[0] };
+      return { item: it, key: g[0] };
     });
     _pairs.sort((a, b) => {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -119,20 +131,23 @@ function example_1(): void {
     }
     return _res;
   })();
+  (globalThis as any).final = final;
   let expected: Array<Array<string>> = [
-    ["ate", "eat", "tea"],
+    [
+      "ate",
+      "eat",
+      "tea",
+    ],
     ["bat"],
-    ["nat", "tan"],
+    [
+      "nat",
+      "tan",
+    ],
   ];
-  let expSorted: Array<any> = (() => {
-    const _src = expected;
-    const _res = [];
-    for (const g of _src) {
-      _res.push(normalize(g));
-    }
-    return _res;
-  })();
-  let expFinal: Array<any> = (() => {
+  (globalThis as any).expected = expected;
+  let expSorted: Array<Array<string>> = expected.map((g) => normalize(g));
+  (globalThis as any).expSorted = expSorted;
+  let expFinal: Array<Array<string>> = (() => {
     const _src = expSorted;
     let _items = [];
     for (const g of _src) {
@@ -140,15 +155,18 @@ function example_1(): void {
     }
     let _pairs = _items.map((it) => {
       const g = it;
-      return { item: it, key: (g as any)[0] };
+      return { item: it, key: g[0] };
     });
     _pairs.sort((a, b) => {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -157,34 +175,29 @@ function example_1(): void {
     }
     return _res;
   })();
-  if (!_equal(final, expFinal)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).expFinal = expFinal;
+  if (!(_equal(final, expFinal))) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(groupAnagrams([""]), [[""]])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(_equal(groupAnagrams([""]), [[""]]))) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(groupAnagrams(["a"]), [["a"]])) {
+function test_example_3(): void {
+  if (!(_equal(groupAnagrams(["a"]), [["a"]]))) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -192,12 +205,20 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
 }
 
 main();

@@ -2,11 +2,15 @@
 
 function partition(head: Array<number>, x: number): Array<number> {
   let less: Array<number> = [];
+  (globalThis as any).less = less;
   let greater: Array<number> = [];
+  (globalThis as any).greater = greater;
   let idx: number = 0;
-  while (idx < head.length) {
+  (globalThis as any).idx = idx;
+  while ((idx < head.length)) {
     let val: number = head[idx];
-    if (val < x) {
+    (globalThis as any).val = val;
+    if ((val < x)) {
       less = less.concat([val]);
     } else {
       greater = greater.concat([val]);
@@ -14,43 +18,80 @@ function partition(head: Array<number>, x: number): Array<number> {
     idx = idx + 1;
   }
   let j: number = 0;
-  while (j < greater.length) {
+  (globalThis as any).j = j;
+  while ((j < greater.length)) {
     let val: number = greater[j];
+    (globalThis as any).val = val;
     less = less.concat([val]);
     j = j + 1;
   }
   return less;
 }
 
-function example_1(): void {
-  if (!_equal(partition([1, 4, 3, 2, 5, 2], 3), [1, 2, 2, 4, 3, 5])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      partition([
+        1,
+        4,
+        3,
+        2,
+        5,
+        2,
+      ], 3),
+      [
+        1,
+        2,
+        2,
+        4,
+        3,
+        5,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(partition([2, 1], 2), [1, 2])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      partition([
+        2,
+        1,
+      ], 2),
+      [
+        1,
+        2,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function all_less(): void {
-  if (!_equal(partition([1, 1, 1], 5), [1, 1, 1])) {
-    throw new Error("expect failed");
-  }
+function test_all_less(): void {
+  if (
+    !(_equal(
+      partition([
+        1,
+        1,
+        1,
+      ], 5),
+      [
+        1,
+        1,
+        1,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  all_less();
+  test_example_1();
+  test_example_2();
+  test_all_less();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -58,8 +99,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

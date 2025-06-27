@@ -2,15 +2,21 @@
 
 function maxCoins(nums: Array<number>): number {
   let arr: Array<number> = [1];
+  (globalThis as any).arr = arr;
   arr = arr.concat(nums);
   arr = arr.concat([1]);
   let n: number = arr.length;
+  (globalThis as any).n = n;
   let dp: Array<Array<number>> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       row = row.concat([0]);
       j = j + 1;
     }
@@ -18,15 +24,20 @@ function maxCoins(nums: Array<number>): number {
     i = i + 1;
   }
   let length: number = 2;
-  while (length < n) {
+  (globalThis as any).length = length;
+  while ((length < n)) {
     let left: number = 0;
-    while (left + length < n) {
+    (globalThis as any).left = left;
+    while (((left + length) < n)) {
       let right: number = left + length;
+      (globalThis as any).right = right;
       let k: number = left + 1;
-      while (k < right) {
+      (globalThis as any).k = k;
+      while ((k < right)) {
         let coins: number =
-          arr[left] * arr[k] * arr[right] + dp[left][k] + dp[k][right];
-        if (coins > dp[left][right]) {
+          (((arr[left] * arr[k]) * arr[right]) + dp[left][k]) + dp[k][right];
+        (globalThis as any).coins = coins;
+        if ((coins > dp[left][right])) {
           dp[left][right] = coins;
         }
         k = k + 1;
@@ -38,20 +49,28 @@ function maxCoins(nums: Array<number>): number {
   return dp[0][n - 1];
 }
 
-function example_1(): void {
-  if (!(maxCoins([3, 1, 5, 8]) == 167)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(maxCoins([
+      3,
+      1,
+      5,
+      8,
+    ]) == 167)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(maxCoins([1, 5]) == 10)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(maxCoins([
+      1,
+      5,
+    ]) == 10)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
 main();

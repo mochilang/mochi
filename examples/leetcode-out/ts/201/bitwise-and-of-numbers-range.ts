@@ -2,55 +2,49 @@
 
 function rangeBitwiseAnd(left: number, right: number): number {
   let l: number = left;
+  (globalThis as any).l = l;
   let r: number = right;
+  (globalThis as any).r = r;
   let shift: number = 0;
-  while (l < r) {
+  (globalThis as any).shift = shift;
+  while ((l < r)) {
     l = Math.trunc(l / 2);
     r = Math.trunc(r / 2);
     shift = shift + 1;
   }
   let factor: number = 1;
+  (globalThis as any).factor = factor;
   for (let _: number = 0; _ < shift; _++) {
     factor = factor * 2;
   }
-  return l * factor;
+  return (l * factor);
 }
 
-function example_1(): void {
-  if (!(rangeBitwiseAnd(5, 7) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(rangeBitwiseAnd(5, 7) == 4)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(rangeBitwiseAnd(0, 0) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(rangeBitwiseAnd(0, 0) == 0)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(rangeBitwiseAnd(1, 2147483647) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(rangeBitwiseAnd(1, 2147483647) == 0)) throw new Error("expect failed");
 }
 
-function single_number(): void {
-  if (!(rangeBitwiseAnd(13, 13) == 13)) {
-    throw new Error("expect failed");
-  }
+function test_single_number(): void {
+  if (!(rangeBitwiseAnd(13, 13) == 13)) throw new Error("expect failed");
 }
 
-function power_of_two(): void {
-  if (!(rangeBitwiseAnd(8, 15) == 8)) {
-    throw new Error("expect failed");
-  }
+function test_power_of_two(): void {
+  if (!(rangeBitwiseAnd(8, 15) == 8)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  single_number();
-  power_of_two();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_single_number();
+  test_power_of_two();
 }
 main();

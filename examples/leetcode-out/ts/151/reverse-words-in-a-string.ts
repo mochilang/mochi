@@ -2,25 +2,30 @@
 
 function reverseWords(s: string): string {
   let i: number = s.length - 1;
+  (globalThis as any).i = i;
   let words: Array<string> = [];
-  while (i >= 0) {
-    while (i >= 0 && s[i] == " ") {
+  (globalThis as any).words = words;
+  while ((i >= 0)) {
+    while (((i >= 0) && (_indexString(s, i) == " "))) {
       i = i - 1;
     }
-    if (i < 0) {
+    if ((i < 0)) {
       break;
     }
     let j: number = i;
-    while (j >= 0 && s[j] != " ") {
+    (globalThis as any).j = j;
+    while (((j >= 0) && (_indexString(s, j) != " "))) {
       j = j - 1;
     }
-    words = words.concat([s.slice(j + 1, i + 1)]);
+    words = words.concat([_sliceString(s, j + 1, i + 1)]);
     i = j;
   }
   let result: string = "";
+  (globalThis as any).result = result;
   let k: number = 0;
-  while (k < words.length) {
-    if (k > 0) {
+  (globalThis as any).k = k;
+  while ((k < words.length)) {
+    if ((k > 0)) {
       result = result + " ";
     }
     result = result + words[k];
@@ -29,41 +34,57 @@ function reverseWords(s: string): string {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(reverseWords("the sky is blue") == "blue is sky the")) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(reverseWords("  hello world  ") == "world hello")) {
     throw new Error("expect failed");
   }
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(reverseWords("a good   example") == "example good a")) {
     throw new Error("expect failed");
   }
 }
 
-function single_word(): void {
-  if (!(reverseWords("hello") == "hello")) {
-    throw new Error("expect failed");
-  }
+function test_single_word(): void {
+  if (!(reverseWords("hello") == "hello")) throw new Error("expect failed");
 }
 
-function only_spaces(): void {
-  if (!(reverseWords("    ") == "")) {
-    throw new Error("expect failed");
-  }
+function test_only_spaces(): void {
+  if (!(reverseWords("    ") == "")) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  single_word();
-  only_spaces();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_single_word();
+  test_only_spaces();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

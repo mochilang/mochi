@@ -13,34 +13,42 @@ function calculate(s: string): number {
     "8": 8,
     "9": 9,
   };
+  (globalThis as any).digits = digits;
   let stack: Array<number> = [];
+  (globalThis as any).stack = stack;
   let current: number = 0;
+  (globalThis as any).current = current;
   let op: string = "+";
+  (globalThis as any).op = op;
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = s.length;
-  while (i <= n) {
+  (globalThis as any).n = n;
+  while ((i <= n)) {
     let ch: string = " ";
-    if (i < n) {
-      ch = s[i];
+    (globalThis as any).ch = ch;
+    if ((i < n)) {
+      ch = _indexString(s, i);
     }
     if (Object.prototype.hasOwnProperty.call(digits, String(ch))) {
-      current = current * 10 + digits[ch];
+      current = (current * 10) + digits[ch];
     }
     if (
-      (!Object.prototype.hasOwnProperty.call(digits, String(ch)) &&
-        ch != " ") ||
-      i == n
+      (((!(Object.prototype.hasOwnProperty.call(digits, String(ch)))) &&
+        (ch != " ")) || (i == n))
     ) {
-      if (op == "+") {
+      if ((op == "+")) {
         stack = stack.concat([current]);
-      } else if (op == "-") {
+      } else if ((op == "-")) {
         stack = stack.concat([-current]);
-      } else if (op == "*") {
+      } else if ((op == "*")) {
         let last: number = stack[stack.length - 1];
+        (globalThis as any).last = last;
         stack = stack.slice(0, stack.length - 1);
         stack = stack.concat([last * current]);
       } else {
         let last: number = stack[stack.length - 1];
+        (globalThis as any).last = last;
         stack = stack.slice(0, stack.length - 1);
         stack = stack.concat([Math.trunc(last / current)]);
       }
@@ -50,47 +58,45 @@ function calculate(s: string): number {
     i = i + 1;
   }
   let result: number = 0;
+  (globalThis as any).result = result;
   for (const num of stack) {
     result = result + num;
   }
   return result;
 }
 
-function example_1(): void {
-  if (!(calculate("3+2*2") == 7)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(calculate("3+2*2") == 7)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(calculate(" 3/2 ") == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(calculate(" 3/2 ") == 1)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(calculate(" 3+5 / 2 ") == 5)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(calculate(" 3+5 / 2 ") == 5)) throw new Error("expect failed");
 }
 
-function mix_operations(): void {
-  if (!(calculate("14-3/2") == 13)) {
-    throw new Error("expect failed");
-  }
+function test_mix_operations(): void {
+  if (!(calculate("14-3/2") == 13)) throw new Error("expect failed");
 }
 
-function single_number(): void {
-  if (!(calculate("0") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_single_number(): void {
+  if (!(calculate("0") == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  mix_operations();
-  single_number();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_mix_operations();
+  test_single_number();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

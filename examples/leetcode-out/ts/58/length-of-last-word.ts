@@ -2,45 +2,50 @@
 
 function lengthOfLastWord(s: string): number {
   let i: number = s.length - 1;
-  while (i >= 0 && s[i] == " ") {
+  (globalThis as any).i = i;
+  while (((i >= 0) && (_indexString(s, i) == " "))) {
     i = i - 1;
   }
   let length: number = 0;
-  while (i >= 0 && s[i] != " ") {
+  (globalThis as any).length = length;
+  while (((i >= 0) && (_indexString(s, i) != " "))) {
     length = length + 1;
     i = i - 1;
   }
   return length;
 }
 
-function example_1(): void {
-  if (!(lengthOfLastWord("Hello World") == 5)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(lengthOfLastWord("Hello World") == 5)) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(lengthOfLastWord("   fly me   to   the moon  ") == 4)) {
     throw new Error("expect failed");
   }
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(lengthOfLastWord("luffy is still joyboy") == 6)) {
     throw new Error("expect failed");
   }
 }
 
-function only_spaces(): void {
-  if (!(lengthOfLastWord("   ") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_only_spaces(): void {
+  if (!(lengthOfLastWord("   ") == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  only_spaces();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_only_spaces();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

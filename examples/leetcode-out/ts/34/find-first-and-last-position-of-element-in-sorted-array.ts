@@ -2,85 +2,131 @@
 
 function searchRange(nums: Array<number>, target: number): Array<number> {
   let n: number = nums.length;
+  (globalThis as any).n = n;
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = n - 1;
+  (globalThis as any).right = right;
   let start: number = -1;
+  (globalThis as any).start = start;
   let end: number = -1;
+  (globalThis as any).end = end;
   left = 0;
   right = n - 1;
-  while (left <= right) {
+  while ((left <= right)) {
     let mid: number = Math.trunc((left + right) / 2);
-    if (nums[mid] == target) {
+    (globalThis as any).mid = mid;
+    if ((nums[mid] == target)) {
       start = mid;
       right = mid - 1;
-    } else if (nums[mid] < target) {
+    } else if ((nums[mid] < target)) {
       left = mid + 1;
     } else {
       right = mid - 1;
     }
   }
-  if (start == -1) {
-    return [-1, -1];
+  if ((start == (-1))) {
+    return [
+      -1,
+      -1,
+    ];
   }
   left = start;
   right = n - 1;
-  while (left <= right) {
+  while ((left <= right)) {
     let mid: number = Math.trunc((left + right) / 2);
-    if (nums[mid] == target) {
+    (globalThis as any).mid = mid;
+    if ((nums[mid] == target)) {
       end = mid;
       left = mid + 1;
-    } else if (nums[mid] < target) {
+    } else if ((nums[mid] < target)) {
       left = mid + 1;
     } else {
       right = mid - 1;
     }
   }
-  return [start, end];
+  return [
+    start,
+    end,
+  ];
 }
 
-function example_1(): void {
-  if (!_equal(searchRange([5, 7, 7, 8, 8, 10], 8), [3, 4])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      searchRange([
+        5,
+        7,
+        7,
+        8,
+        8,
+        10,
+      ], 8),
+      [
+        3,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(searchRange([5, 7, 7, 8, 8, 10], 6), [-1, -1])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      searchRange([
+        5,
+        7,
+        7,
+        8,
+        8,
+        10,
+      ], 6),
+      [
+        -1,
+        -1,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(searchRange([], 0), [-1, -1])) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(_equal(searchRange([], 0), [
+      -1,
+      -1,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function single_element_match(): void {
-  if (!_equal(searchRange([1], 1), [0, 0])) {
-    throw new Error("expect failed");
-  }
+function test_single_element_match(): void {
+  if (
+    !(_equal(searchRange([1], 1), [
+      0,
+      0,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function single_element_missing(): void {
-  if (!_equal(searchRange([1], 0), [-1, -1])) {
-    throw new Error("expect failed");
-  }
+function test_single_element_missing(): void {
+  if (
+    !(_equal(searchRange([1], 0), [
+      -1,
+      -1,
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  single_element_match();
-  single_element_missing();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_single_element_match();
+  test_single_element_missing();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -88,8 +134,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

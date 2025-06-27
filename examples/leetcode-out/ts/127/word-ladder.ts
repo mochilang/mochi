@@ -6,37 +6,42 @@ function ladderLength(
   wordList: Array<string>,
 ): number {
   let dict: Record<string, boolean> = {};
+  (globalThis as any).dict = dict;
   for (const w of wordList) {
     dict[w] = true;
   }
-  if (!Object.prototype.hasOwnProperty.call(dict, String(endWord))) {
+  if ((!(Object.prototype.hasOwnProperty.call(dict, String(endWord))))) {
     return 0;
   }
   let queue: Array<string> = [beginWord];
-  let visited: Record<string, boolean> = { beginWord: true };
+  (globalThis as any).queue = queue;
+  let visited: Record<string, boolean> = { "beginWord": true };
+  (globalThis as any).visited = visited;
   let level: number = 1;
+  (globalThis as any).level = level;
   let letters: string = "abcdefghijklmnopqrstuvwxyz";
-  while (queue.length > 0) {
+  (globalThis as any).letters = letters;
+  while ((queue.length > 0)) {
     let next: Array<string> = [];
+    (globalThis as any).next = next;
     for (const word of queue) {
-      if (word == endWord) {
+      if ((word == endWord)) {
         return level;
       }
       for (let i: number = 0; i < word.length; i++) {
         for (let j: number = 0; j < letters.length; j++) {
-          let ch: string = letters[j];
-          if (ch != word[i]) {
-            let candidate: string =
-              word.slice(0, i) + ch + word.slice(i + 1, word.length);
+          let ch: string = _indexString(letters, j);
+          (globalThis as any).ch = ch;
+          if ((ch != _indexString(word, i))) {
+            let candidate: string = _sliceString(word, 0, i) + ch +
+              _sliceString(word, i + 1, word.length);
+            (globalThis as any).candidate = candidate;
             if (
-              Object.prototype.hasOwnProperty.call(dict, String(candidate)) &&
-              _equal(
-                Object.prototype.hasOwnProperty.call(
+              (Object.prototype.hasOwnProperty.call(dict, String(candidate)) &&
+                ((Object.prototype.hasOwnProperty.call(
                   visited,
                   String(candidate),
-                ),
-                false,
-              )
+                )) == false))
             ) {
               visited[candidate] = true;
               next = next.concat([candidate]);
@@ -51,46 +56,53 @@ function ladderLength(
   return 0;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !(
-      ladderLength("hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"]) ==
-      5
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(ladderLength("hit", "cog", [
+      "hot",
+      "dot",
+      "dog",
+      "lot",
+      "log",
+      "cog",
+    ]) == 5)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(ladderLength("hit", "cog", ["hot", "dot", "dog", "lot", "log"]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(ladderLength("hit", "cog", [
+      "hot",
+      "dot",
+      "dog",
+      "lot",
+      "log",
+    ]) == 0)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
-function _equal(a: any, b: any): boolean {
-  if (Array.isArray(a) && Array.isArray(b)) {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
-    return true;
-  }
-  if (a && b && typeof a === "object" && typeof b === "object") {
-    const ak = Object.keys(a);
-    const bk = Object.keys(b);
-    if (ak.length !== bk.length) return false;
-    for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
-        return false;
-    }
-    return true;
-  }
-  return a === b;
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
 }
 
 main();

@@ -7,10 +7,13 @@ function merge(
   n: number,
 ): Array<number> {
   let i: number = m - 1;
+  (globalThis as any).i = i;
   let j: number = n - 1;
-  let k: number = m + n - 1;
-  while (j >= 0) {
-    if (i >= 0 && nums1[i] > nums2[j]) {
+  (globalThis as any).j = j;
+  let k: number = (m + n) - 1;
+  (globalThis as any).k = k;
+  while ((j >= 0)) {
+    if (((i >= 0) && (nums1[i] > nums2[j]))) {
       nums1[k] = nums1[i];
       i = i - 1;
     } else {
@@ -22,35 +25,55 @@ function merge(
   return nums1;
 }
 
-function example_1(): void {
-  if (!_equal(merge([1, 2, 3, 0, 0, 0], 3, [2, 5, 6], 3), [1, 2, 2, 3, 5, 6])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      merge(
+        [
+          1,
+          2,
+          3,
+          0,
+          0,
+          0,
+        ],
+        3,
+        [
+          2,
+          5,
+          6,
+        ],
+        3,
+      ),
+      [
+        1,
+        2,
+        2,
+        3,
+        5,
+        6,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(merge([1], 1, [], 0), [1])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(_equal(merge([1], 1, [], 0), [1]))) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(merge([0], 0, [1], 1), [1])) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(_equal(merge([0], 0, [1], 1), [1]))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -58,8 +81,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

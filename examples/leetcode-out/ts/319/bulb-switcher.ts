@@ -2,42 +2,36 @@
 
 function bulbSwitch(n: number): number {
   let count: number = 0;
+  (globalThis as any).count = count;
   let i: number = 1;
-  while (i * i <= n) {
+  (globalThis as any).i = i;
+  while (((i * i) <= n)) {
     count = count + 1;
     i = i + 1;
   }
   return count;
 }
 
-function example_1(): void {
-  if (!(bulbSwitch(3) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(bulbSwitch(3) == 1)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(bulbSwitch(0) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(bulbSwitch(0) == 0)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(bulbSwitch(1) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(bulbSwitch(1) == 1)) throw new Error("expect failed");
 }
 
-function larger_n(): void {
-  if (!(bulbSwitch(9999) == 99)) {
-    throw new Error("expect failed");
-  }
+function test_larger_n(): void {
+  if (!(bulbSwitch(9999) == 99)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  larger_n();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_larger_n();
 }
 main();

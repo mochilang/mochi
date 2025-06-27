@@ -2,37 +2,44 @@
 
 function uniquePathsWithObstacles(grid: Array<Array<number>>): number {
   let m: number = grid.length;
-  if (m == 0) {
+  (globalThis as any).m = m;
+  if ((m == 0)) {
     return 0;
   }
   let n: number = grid[0].length;
+  (globalThis as any).n = n;
   let dp: Array<Array<number>> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i < m) {
+  (globalThis as any).i = i;
+  while ((i < m)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       row = row.concat([0]);
       j = j + 1;
     }
     dp = dp.concat([row]);
     i = i + 1;
   }
-  if (grid[0][0] == 1) {
+  if ((grid[0][0] == 1)) {
     return 0;
   }
   dp[0][0] = 1;
   i = 0;
-  while (i < m) {
+  while ((i < m)) {
     let j: number = 0;
-    while (j < n) {
-      if (grid[i][j] == 1) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
+      if ((grid[i][j] == 1)) {
         dp[i][j] = 0;
       } else {
-        if (i > 0) {
+        if ((i > 0)) {
           dp[i][j] = dp[i][j] + dp[i - 1][j];
         }
-        if (j > 0) {
+        if ((j > 0)) {
           dp[i][j] = dp[i][j] + dp[i][j - 1];
         }
       }
@@ -43,49 +50,55 @@ function uniquePathsWithObstacles(grid: Array<Array<number>>): number {
   return dp[m - 1][n - 1];
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !(
-      uniquePathsWithObstacles([
-        [0, 0, 0],
-        [0, 1, 0],
-        [0, 0, 0],
-      ]) == 2
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(uniquePathsWithObstacles([
+      [
+        0,
+        0,
+        0,
+      ],
+      [
+        0,
+        1,
+        0,
+      ],
+      [
+        0,
+        0,
+        0,
+      ],
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !(
-      uniquePathsWithObstacles([
-        [0, 1],
-        [0, 0],
-      ]) == 1
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(uniquePathsWithObstacles([
+      [
+        0,
+        1,
+      ],
+      [
+        0,
+        0,
+      ],
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function obstacle_at_start(): void {
-  if (!(uniquePathsWithObstacles([[1]]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_obstacle_at_start(): void {
+  if (!(uniquePathsWithObstacles([[1]]) == 0)) throw new Error("expect failed");
 }
 
-function single_open_cell(): void {
-  if (!(uniquePathsWithObstacles([[0]]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_open_cell(): void {
+  if (!(uniquePathsWithObstacles([[0]]) == 1)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  obstacle_at_start();
-  single_open_cell();
+  test_example_1();
+  test_example_2();
+  test_obstacle_at_start();
+  test_single_open_cell();
 }
 main();

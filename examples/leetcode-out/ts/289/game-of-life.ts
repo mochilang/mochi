@@ -2,26 +2,37 @@
 
 function gameOfLife(board: Array<Array<number>>): Array<Array<number>> {
   let m: number = board.length;
-  if (m == 0) {
+  (globalThis as any).m = m;
+  if ((m == 0)) {
     return board;
   }
   let n: number = board[0].length;
+  (globalThis as any).n = n;
   let result: Array<Array<number>> = [];
+  (globalThis as any).result = result;
   let i: number = 0;
-  while (i < m) {
+  (globalThis as any).i = i;
+  while ((i < m)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       let live: number = 0;
+      (globalThis as any).live = live;
       let di: number = -1;
-      while (di <= 1) {
+      (globalThis as any).di = di;
+      while ((di <= 1)) {
         let dj: number = -1;
-        while (dj <= 1) {
-          if (!(di == 0 && dj == 0)) {
+        (globalThis as any).dj = dj;
+        while ((dj <= 1)) {
+          if ((!((di == 0) && (dj == 0)))) {
             let ni: number = i + di;
+            (globalThis as any).ni = ni;
             let nj: number = j + dj;
-            if (ni >= 0 && ni < m && nj >= 0 && nj < n) {
-              if (board[ni][nj] == 1) {
+            (globalThis as any).nj = nj;
+            if (((((ni >= 0) && (ni < m)) && (nj >= 0)) && (nj < n))) {
+              if ((board[ni][nj] == 1)) {
                 live = live + 1;
               }
             }
@@ -31,15 +42,17 @@ function gameOfLife(board: Array<Array<number>>): Array<Array<number>> {
         di = di + 1;
       }
       let cell: number = board[i][j];
+      (globalThis as any).cell = cell;
       let next: number = cell;
-      if (cell == 1) {
-        if (live < 2 || live > 3) {
+      (globalThis as any).next = next;
+      if ((cell == 1)) {
+        if (((live < 2) || (live > 3))) {
           next = 0;
         } else {
           next = 1;
         }
       } else {
-        if (live == 3) {
+        if ((live == 3)) {
           next = 1;
         } else {
           next = 0;
@@ -54,66 +67,104 @@ function gameOfLife(board: Array<Array<number>>): Array<Array<number>> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let board: Array<Array<number>> = [
-    [0, 1, 0],
-    [0, 0, 1],
-    [1, 1, 1],
-    [0, 0, 0],
+    [
+      0,
+      1,
+      0,
+    ],
+    [
+      0,
+      0,
+      1,
+    ],
+    [
+      1,
+      1,
+      1,
+    ],
+    [
+      0,
+      0,
+      0,
+    ],
   ];
+  (globalThis as any).board = board;
   if (
-    !_equal(gameOfLife(board), [
-      [0, 0, 0],
-      [1, 0, 1],
-      [0, 1, 1],
-      [0, 1, 0],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(gameOfLife(board), [
+      [
+        0,
+        0,
+        0,
+      ],
+      [
+        1,
+        0,
+        1,
+      ],
+      [
+        0,
+        1,
+        1,
+      ],
+      [
+        0,
+        1,
+        0,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let board: Array<Array<number>> = [
-    [1, 1],
-    [1, 0],
+    [
+      1,
+      1,
+    ],
+    [
+      1,
+      0,
+    ],
   ];
+  (globalThis as any).board = board;
   if (
-    !_equal(gameOfLife(board), [
-      [1, 1],
-      [1, 1],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(gameOfLife(board), [
+      [
+        1,
+        1,
+      ],
+      [
+        1,
+        1,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function empty_board(): void {
+function test_empty_board(): void {
   let board: Array<Array<number>> = [];
-  if (!_equal(gameOfLife(board), [])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).board = board;
+  if (!(_equal(gameOfLife(board), []))) throw new Error("expect failed");
 }
 
-function single_dead_cell(): void {
+function test_single_dead_cell(): void {
   let board: Array<Array<number>> = [[0]];
-  if (!_equal(gameOfLife(board), [[0]])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).board = board;
+  if (!(_equal(gameOfLife(board), [[0]]))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty_board();
-  single_dead_cell();
+  test_example_1();
+  test_example_2();
+  test_empty_board();
+  test_single_dead_cell();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -121,8 +172,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

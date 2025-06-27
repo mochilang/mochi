@@ -2,13 +2,19 @@
 
 function minDistance(word1: string, word2: string): number {
   let m: number = word1.length;
+  (globalThis as any).m = m;
   let n: number = word2.length;
+  (globalThis as any).n = n;
   let dp: Array<Array<number>> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i <= m) {
+  (globalThis as any).i = i;
+  while ((i <= m)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j <= n) {
+    (globalThis as any).j = j;
+    while ((j <= n)) {
       row = row.concat([0]);
       j = j + 1;
     }
@@ -16,30 +22,35 @@ function minDistance(word1: string, word2: string): number {
     i = i + 1;
   }
   i = 0;
-  while (i <= m) {
+  while ((i <= m)) {
     dp[i][0] = i;
     i = i + 1;
   }
   let j: number = 0;
-  while (j <= n) {
+  (globalThis as any).j = j;
+  while ((j <= n)) {
     dp[0][j] = j;
     j = j + 1;
   }
   i = 1;
-  while (i <= m) {
+  while ((i <= m)) {
     j = 1;
-    while (j <= n) {
-      if (word1[i - 1] == word2[j - 1]) {
+    while ((j <= n)) {
+      if ((_indexString(word1, i - 1) == _indexString(word2, j - 1))) {
         dp[i][j] = dp[i - 1][j - 1];
       } else {
         let insert: number = dp[i][j - 1] + 1;
+        (globalThis as any).insert = insert;
         let _delete: number = dp[i - 1][j] + 1;
+        (globalThis as any)._delete = _delete;
         let replace: number = dp[i - 1][j - 1] + 1;
+        (globalThis as any).replace = replace;
         let best: number = insert;
-        if (_delete < best) {
+        (globalThis as any).best = best;
+        if ((_delete < best)) {
           best = _delete;
         }
-        if (replace < best) {
+        if ((replace < best)) {
           best = replace;
         }
         dp[i][j] = best;
@@ -51,41 +62,40 @@ function minDistance(word1: string, word2: string): number {
   return dp[m][n];
 }
 
-function example_1(): void {
-  if (!(minDistance("horse", "ros") == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(minDistance("horse", "ros") == 3)) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(minDistance("intention", "execution") == 5)) {
     throw new Error("expect failed");
   }
 }
 
-function identical_strings(): void {
-  if (!(minDistance("abc", "abc") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_identical_strings(): void {
+  if (!(minDistance("abc", "abc") == 0)) throw new Error("expect failed");
 }
 
-function empty_second(): void {
-  if (!(minDistance("abc", "") == 3)) {
-    throw new Error("expect failed");
-  }
+function test_empty_second(): void {
+  if (!(minDistance("abc", "") == 3)) throw new Error("expect failed");
 }
 
-function empty_first(): void {
-  if (!(minDistance("", "abc") == 3)) {
-    throw new Error("expect failed");
-  }
+function test_empty_first(): void {
+  if (!(minDistance("", "abc") == 3)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  identical_strings();
-  empty_second();
-  empty_first();
+  test_example_1();
+  test_example_2();
+  test_identical_strings();
+  test_empty_second();
+  test_empty_first();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

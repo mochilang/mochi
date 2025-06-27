@@ -2,9 +2,12 @@
 
 function findTheDifference(s: string, t: string): string {
   let counts: Record<string, number> = {};
+  (globalThis as any).counts = counts;
   let i: number = 0;
-  while (i < s.length) {
-    let ch: string = s[i];
+  (globalThis as any).i = i;
+  while ((i < s.length)) {
+    let ch: string = _indexString(s, i);
+    (globalThis as any).ch = ch;
     if (Object.prototype.hasOwnProperty.call(counts, String(ch))) {
       counts[ch] = counts[ch] + 1;
     } else {
@@ -13,8 +16,9 @@ function findTheDifference(s: string, t: string): string {
     i = i + 1;
   }
   i = 0;
-  while (i < t.length) {
-    let ch: string = t[i];
+  while ((i < t.length)) {
+    let ch: string = _indexString(t, i);
+    (globalThis as any).ch = ch;
     if (Object.prototype.hasOwnProperty.call(counts, String(ch))) {
       counts[ch] = counts[ch] - 1;
     } else {
@@ -23,41 +27,46 @@ function findTheDifference(s: string, t: string): string {
     i = i + 1;
   }
   for (const key of Object.keys(counts)) {
-    if (counts[key] != 0) {
+    if ((counts[key] != 0)) {
       return key;
     }
   }
   return "";
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(findTheDifference("abcd", "abcde") == "e")) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
-  if (!(findTheDifference("", "y") == "y")) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(findTheDifference("", "y") == "y")) throw new Error("expect failed");
 }
 
-function extra_repeated(): void {
+function test_extra_repeated(): void {
   if (!(findTheDifference("aabb", "aabbb") == "b")) {
     throw new Error("expect failed");
   }
 }
 
-function extra_at_beginning(): void {
+function test_extra_at_beginning(): void {
   if (!(findTheDifference("ae", "aea") == "a")) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  extra_repeated();
-  extra_at_beginning();
+  test_example_1();
+  test_example_2();
+  test_extra_repeated();
+  test_extra_at_beginning();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

@@ -2,21 +2,27 @@
 
 function countAndSay(n: number): string {
   let term: string = "1";
+  (globalThis as any).term = term;
   let i: number = 1;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let next: string = "";
+    (globalThis as any).next = next;
     let j: number = 0;
-    while (j < term.length) {
+    (globalThis as any).j = j;
+    while ((j < term.length)) {
       let k: number = j;
-      while (k < term.length) {
-        if (term[k] == term[j]) {
+      (globalThis as any).k = k;
+      while ((k < term.length)) {
+        if ((_indexString(term, k) == _indexString(term, j))) {
           k = k + 1;
         } else {
           break;
         }
       }
       let count: number = k - j;
-      next = next + String(count) + term[j];
+      (globalThis as any).count = count;
+      next = next + String(count) + _indexString(term, j);
       j = k;
     }
     term = next;
@@ -25,27 +31,28 @@ function countAndSay(n: number): string {
   return term;
 }
 
-function n___1(): void {
-  if (!(countAndSay(1) == "1")) {
-    throw new Error("expect failed");
-  }
+function test_n___1(): void {
+  if (!(countAndSay(1) == "1")) throw new Error("expect failed");
 }
 
-function n___4(): void {
-  if (!(countAndSay(4) == "1211")) {
-    throw new Error("expect failed");
-  }
+function test_n___4(): void {
+  if (!(countAndSay(4) == "1211")) throw new Error("expect failed");
 }
 
-function n___5(): void {
-  if (!(countAndSay(5) == "111221")) {
-    throw new Error("expect failed");
-  }
+function test_n___5(): void {
+  if (!(countAndSay(5) == "111221")) throw new Error("expect failed");
 }
 
 function main(): void {
-  n___1();
-  n___4();
-  n___5();
+  test_n___1();
+  test_n___4();
+  test_n___5();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

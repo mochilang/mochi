@@ -2,12 +2,17 @@
 
 function robLinear(nums: Array<number>, start: number, end: number): number {
   let prev1: number = 0;
+  (globalThis as any).prev1 = prev1;
   let prev2: number = 0;
+  (globalThis as any).prev2 = prev2;
   let i: number = start;
-  while (i <= end) {
+  (globalThis as any).i = i;
+  while ((i <= end)) {
     let pick: number = nums[i] + prev2;
+    (globalThis as any).pick = pick;
     let curr: number = pick;
-    if (prev1 > curr) {
+    (globalThis as any).curr = curr;
+    if ((prev1 > curr)) {
       curr = prev1;
     }
     prev2 = prev1;
@@ -19,55 +24,67 @@ function robLinear(nums: Array<number>, start: number, end: number): number {
 
 function rob(nums: Array<number>): number {
   let n: number = nums.length;
-  if (n == 0) {
+  (globalThis as any).n = n;
+  if ((n == 0)) {
     return 0;
   }
-  if (n == 1) {
+  if ((n == 1)) {
     return nums[0];
   }
   let option1: number = robLinear(nums, 0, n - 2);
+  (globalThis as any).option1 = option1;
   let option2: number = robLinear(nums, 1, n - 1);
-  if (option1 > option2) {
+  (globalThis as any).option2 = option2;
+  if ((option1 > option2)) {
     return option1;
   }
   return option2;
 }
 
-function example_1(): void {
-  if (!(rob([2, 3, 2]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(rob([
+      2,
+      3,
+      2,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(rob([1, 2, 3, 1]) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(rob([
+      1,
+      2,
+      3,
+      1,
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(rob([1, 2, 3]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(rob([
+      1,
+      2,
+      3,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function single(): void {
-  if (!(rob([5]) == 5)) {
-    throw new Error("expect failed");
-  }
+function test_single(): void {
+  if (!(rob([5]) == 5)) throw new Error("expect failed");
 }
 
-function empty(): void {
-  if (!(rob([]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(rob([]) == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  single();
-  empty();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_single();
+  test_empty();
 }
 main();

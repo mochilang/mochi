@@ -6,12 +6,18 @@ function kSmallestPairs(
   k: number,
 ): Array<Array<number>> {
   let pairs: Array<Array<number>> = [];
+  (globalThis as any).pairs = pairs;
   for (const a of nums1) {
     for (const b of nums2) {
-      pairs = pairs.concat([[a, b]]);
+      pairs = pairs.concat([
+        [
+          a,
+          b,
+        ],
+      ]);
     }
   }
-  let sorted: Array<any> = (() => {
+  let sorted: Array<Array<number>> = (() => {
     const _src = pairs;
     let _items = [];
     for (const p of _src) {
@@ -19,15 +25,18 @@ function kSmallestPairs(
     }
     let _pairs = _items.map((it) => {
       const p = it;
-      return { item: it, key: p[0] + p[1] };
+      return { item: it, key: (p[0] + p[1]) };
     });
     _pairs.sort((a, b) => {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -36,57 +45,103 @@ function kSmallestPairs(
     }
     return _res;
   })();
-  if (k < sorted.length) {
+  (globalThis as any).sorted = sorted;
+  if ((k < sorted.length)) {
     return sorted.slice(0, k);
   }
   return sorted;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(kSmallestPairs([1, 7, 11], [2, 4, 6], 3), [
-      [1, 2],
-      [1, 4],
-      [1, 6],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(
+      kSmallestPairs([
+        1,
+        7,
+        11,
+      ], [
+        2,
+        4,
+        6,
+      ], 3),
+      [
+        [
+          1,
+          2,
+        ],
+        [
+          1,
+          4,
+        ],
+        [
+          1,
+          6,
+        ],
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !_equal(kSmallestPairs([1, 1, 2], [1, 2, 3], 2), [
-      [1, 1],
-      [1, 1],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(
+      kSmallestPairs([
+        1,
+        1,
+        2,
+      ], [
+        1,
+        2,
+        3,
+      ], 2),
+      [
+        [
+          1,
+          1,
+        ],
+        [
+          1,
+          1,
+        ],
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (
-    !_equal(kSmallestPairs([1, 2], [3], 3), [
-      [1, 3],
-      [2, 3],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(
+      kSmallestPairs(
+        [
+          1,
+          2,
+        ],
+        [3],
+        3,
+      ),
+      [
+        [
+          1,
+          3,
+        ],
+        [
+          2,
+          3,
+        ],
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -94,8 +149,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

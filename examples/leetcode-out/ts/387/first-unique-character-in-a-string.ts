@@ -2,9 +2,12 @@
 
 function firstUniqChar(s: string): number {
   let counts: Record<string, number> = {};
+  (globalThis as any).counts = counts;
   let i: number = 0;
-  while (i < s.length) {
-    let ch: string = s[i];
+  (globalThis as any).i = i;
+  while ((i < s.length)) {
+    let ch: string = _indexString(s, i);
+    (globalThis as any).ch = ch;
     if (Object.prototype.hasOwnProperty.call(counts, String(ch))) {
       counts[ch] = counts[ch] + 1;
     } else {
@@ -13,51 +16,49 @@ function firstUniqChar(s: string): number {
     i = i + 1;
   }
   i = 0;
-  while (i < s.length) {
-    let ch: string = s[i];
-    if (counts[ch] == 1) {
+  while ((i < s.length)) {
+    let ch: string = _indexString(s, i);
+    (globalThis as any).ch = ch;
+    if ((counts[ch] == 1)) {
       return i;
     }
     i = i + 1;
   }
-  return -1;
+  return (-1);
 }
 
-function example_1(): void {
-  if (!(firstUniqChar("leetcode") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(firstUniqChar("leetcode") == 0)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(firstUniqChar("loveleetcode") == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(firstUniqChar("loveleetcode") == 2)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(firstUniqChar("aabb") == -1)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(firstUniqChar("aabb") == (-1))) throw new Error("expect failed");
 }
 
-function empty_string(): void {
-  if (!(firstUniqChar("") == -1)) {
-    throw new Error("expect failed");
-  }
+function test_empty_string(): void {
+  if (!(firstUniqChar("") == (-1))) throw new Error("expect failed");
 }
 
-function single_char(): void {
-  if (!(firstUniqChar("z") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_single_char(): void {
+  if (!(firstUniqChar("z") == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  empty_string();
-  single_char();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_empty_string();
+  test_single_char();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

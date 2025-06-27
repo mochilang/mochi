@@ -2,32 +2,39 @@
 
 function totalNQueens(n: number): number {
   let cols: Array<boolean> = [];
+  (globalThis as any).cols = cols;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     cols = cols.concat([false]);
     i = i + 1;
   }
   let diag1: Array<boolean> = [];
+  (globalThis as any).diag1 = diag1;
   i = 0;
-  while (i < 2 * n) {
+  while ((i < (2 * n))) {
     diag1 = diag1.concat([false]);
     i = i + 1;
   }
   let diag2: Array<boolean> = [];
+  (globalThis as any).diag2 = diag2;
   i = 0;
-  while (i < 2 * n) {
+  while ((i < (2 * n))) {
     diag2 = diag2.concat([false]);
     i = i + 1;
   }
   let count: number = 0;
+  (globalThis as any).count = count;
   function backtrack(row: number): void {
-    if (row == n) {
+    if ((row == n)) {
       count = count + 1;
     } else {
       for (let col: number = 0; col < n; col++) {
-        let d1: number = row - col + n;
+        let d1: number = (row - col) + n;
+        (globalThis as any).d1 = d1;
         let d2: number = row + col;
-        if (cols[col] || diag1[d1] || diag2[d2]) {
+        (globalThis as any).d2 = d2;
+        if (((cols[col] || diag1[d1]) || diag2[d2])) {
           continue;
         }
         cols[col] = true;
@@ -44,27 +51,21 @@ function totalNQueens(n: number): number {
   return count;
 }
 
-function example_1(): void {
-  if (!(totalNQueens(1) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(totalNQueens(1) == 1)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(totalNQueens(4) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(totalNQueens(4) == 2)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(totalNQueens(5) == 10)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(totalNQueens(5) == 10)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 main();

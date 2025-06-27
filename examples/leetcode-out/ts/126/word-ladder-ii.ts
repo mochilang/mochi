@@ -6,44 +6,56 @@ function findLadders(
   wordList: Array<string>,
 ): Array<Array<string>> {
   let dict: Record<string, boolean> = {};
+  (globalThis as any).dict = dict;
   for (const w of wordList) {
     dict[w] = true;
   }
-  if (!Object.prototype.hasOwnProperty.call(dict, String(endWord))) {
+  if ((!(Object.prototype.hasOwnProperty.call(dict, String(endWord))))) {
     return [];
   }
   let letters: string = "abcdefghijklmnopqrstuvwxyz";
+  (globalThis as any).letters = letters;
   let queue: Array<string> = [beginWord];
-  let visited: Record<string, number> = { beginWord: 0 };
+  (globalThis as any).queue = queue;
+  let visited: Record<string, number> = { "beginWord": 0 };
+  (globalThis as any).visited = visited;
   let parents: Record<string, Array<string>> = {};
+  (globalThis as any).parents = parents;
   let step: number = 0;
+  (globalThis as any).step = step;
   let found: boolean = false;
-  while (queue.length > 0) {
+  (globalThis as any).found = found;
+  while ((queue.length > 0)) {
     if (found) {
       break;
     }
     step = step + 1;
     let next: Array<string> = [];
+    (globalThis as any).next = next;
     for (const word of queue) {
       let i: number = 0;
-      while (i < word.length) {
+      (globalThis as any).i = i;
+      while ((i < word.length)) {
         let j: number = 0;
-        while (j < letters.length) {
-          let ch: string = letters[j];
-          if (ch != word[i]) {
-            let candidate: string =
-              word.slice(0, i) + ch + word.slice(i + 1, word.length);
+        (globalThis as any).j = j;
+        while ((j < letters.length)) {
+          let ch: string = _indexString(letters, j);
+          (globalThis as any).ch = ch;
+          if ((ch != _indexString(word, i))) {
+            let candidate: string = _sliceString(word, 0, i) + ch +
+              _sliceString(word, i + 1, word.length);
+            (globalThis as any).candidate = candidate;
             if (Object.prototype.hasOwnProperty.call(dict, String(candidate))) {
               if (
-                !Object.prototype.hasOwnProperty.call(
+                (!(Object.prototype.hasOwnProperty.call(
                   visited,
                   String(candidate),
-                )
+                )))
               ) {
                 visited[candidate] = step;
                 next = next.concat([candidate]);
               }
-              if (visited[candidate] == step) {
+              if ((visited[candidate] == step)) {
                 if (
                   Object.prototype.hasOwnProperty.call(
                     parents,
@@ -55,7 +67,7 @@ function findLadders(
                   parents[candidate] = [word];
                 }
               }
-              if (candidate == endWord) {
+              if ((candidate == endWord)) {
                 found = true;
               }
             }
@@ -67,24 +79,28 @@ function findLadders(
     }
     queue = next;
   }
-  if (!found) {
+  if ((!found)) {
     return [];
   }
   let results: Array<Array<string>> = [];
+  (globalThis as any).results = results;
   function rev(lst: Array<string>): Array<string> {
     let out: Array<string> = [];
+    (globalThis as any).out = out;
     let i: number = lst.length - 1;
-    while (i >= 0) {
+    (globalThis as any).i = i;
+    while ((i >= 0)) {
       out = out.concat([lst[i]]);
       i = i - 1;
     }
     return out;
   }
   function backtrack(word: string, path: Array<string>): void {
-    if (word == beginWord) {
+    if ((word == beginWord)) {
       results = results.concat([rev(path.concat([word]))]);
     } else {
       let ps: Array<string> = parents[word];
+      (globalThis as any).ps = ps;
       for (const p of ps) {
         backtrack(p, path.concat([word]));
       }
@@ -94,7 +110,7 @@ function findLadders(
   return results;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let res: Array<Array<string>> = findLadders("hit", "cog", [
     "hot",
     "dot",
@@ -103,7 +119,8 @@ function example_1(): void {
     "log",
     "cog",
   ]);
-  let sorted: Array<any> = (() => {
+  (globalThis as any).res = res;
+  let sorted: Array<Array<string>> = (() => {
     const _src = res;
     let _items = [];
     for (const r of _src) {
@@ -117,9 +134,12 @@ function example_1(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -128,11 +148,25 @@ function example_1(): void {
     }
     return _res;
   })();
+  (globalThis as any).sorted = sorted;
   let expected: Array<Array<string>> = [
-    ["hit", "hot", "dot", "dog", "cog"],
-    ["hit", "hot", "lot", "log", "cog"],
+    [
+      "hit",
+      "hot",
+      "dot",
+      "dog",
+      "cog",
+    ],
+    [
+      "hit",
+      "hot",
+      "lot",
+      "log",
+      "cog",
+    ],
   ];
-  let expSorted: Array<any> = (() => {
+  (globalThis as any).expected = expected;
+  let expSorted: Array<Array<string>> = (() => {
     const _src = expected;
     let _items = [];
     for (const r of _src) {
@@ -146,9 +180,12 @@ function example_1(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -157,29 +194,33 @@ function example_1(): void {
     }
     return _res;
   })();
-  if (!_equal(sorted, expSorted)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).expSorted = expSorted;
+  if (!(_equal(sorted, expSorted))) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !_equal(findLadders("hit", "cog", ["hot", "dot", "dog", "lot", "log"]), [])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(
+      findLadders("hit", "cog", [
+        "hot",
+        "dot",
+        "dog",
+        "lot",
+        "log",
+      ]),
+      [],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -187,12 +228,33 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
 }
 
 main();

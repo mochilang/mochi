@@ -2,19 +2,23 @@
 
 function abbrev(word: string): string {
   let n: number = word.length;
-  if (n <= 2) {
+  (globalThis as any).n = n;
+  if ((n <= 2)) {
     return word;
   }
-  return word[0] + String(n - 2) + word[n - 1];
+  return _indexString(word, 0) + String(n - 2) + _indexString(word, n - 1);
 }
 
 function buildAbbrs(
   dict: Array<string>,
 ): Record<string, Record<string, boolean>> {
   let table: Record<string, Record<string, boolean>> = {};
+  (globalThis as any).table = table;
   for (const w of dict) {
     let a: string = abbrev(w);
+    (globalThis as any).a = a;
     let set: Record<string, boolean> = {};
+    (globalThis as any).set = set;
     if (Object.prototype.hasOwnProperty.call(table, String(a))) {
       set = table[a];
     }
@@ -29,76 +33,83 @@ function isUnique(
   table: Record<string, Record<string, boolean>>,
 ): boolean {
   let a: string = abbrev(word);
-  if (!Object.prototype.hasOwnProperty.call(table, String(a))) {
+  (globalThis as any).a = a;
+  if ((!(Object.prototype.hasOwnProperty.call(table, String(a))))) {
     return true;
   }
   let words: Record<string, boolean> = table[a];
+  (globalThis as any).words = words;
   let count: number = 0;
+  (globalThis as any).count = count;
   let exists: boolean = false;
+  (globalThis as any).exists = exists;
   for (const k of Object.keys(words)) {
     count = count + 1;
-    if (k == word) {
+    if ((k == word)) {
       exists = true;
     }
   }
-  if (count == 1 && exists) {
+  if (((count == 1) && exists)) {
     return true;
   }
   return false;
 }
 
-function unique_1(): void {
+function test_unique_1(): void {
   let sample: Record<string, Record<string, boolean>> = buildAbbrs([
     "deer",
     "door",
     "cake",
     "card",
   ]);
-  if (!(isUnique("dear", sample) == false)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).sample = sample;
+  if (!(isUnique("dear", sample) == false)) throw new Error("expect failed");
 }
 
-function unique_2(): void {
+function test_unique_2(): void {
   let sample: Record<string, Record<string, boolean>> = buildAbbrs([
     "deer",
     "door",
     "cake",
     "card",
   ]);
-  if (!(isUnique("cart", sample) == true)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).sample = sample;
+  if (!(isUnique("cart", sample) == true)) throw new Error("expect failed");
 }
 
-function unique_3(): void {
+function test_unique_3(): void {
   let sample: Record<string, Record<string, boolean>> = buildAbbrs([
     "deer",
     "door",
     "cake",
     "card",
   ]);
-  if (!(isUnique("cane", sample) == false)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).sample = sample;
+  if (!(isUnique("cane", sample) == false)) throw new Error("expect failed");
 }
 
-function unique_4(): void {
+function test_unique_4(): void {
   let sample: Record<string, Record<string, boolean>> = buildAbbrs([
     "deer",
     "door",
     "cake",
     "card",
   ]);
-  if (!(isUnique("make", sample) == true)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).sample = sample;
+  if (!(isUnique("make", sample) == true)) throw new Error("expect failed");
 }
 
 function main(): void {
-  unique_1();
-  unique_2();
-  unique_3();
-  unique_4();
+  test_unique_1();
+  test_unique_2();
+  test_unique_3();
+  test_unique_4();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

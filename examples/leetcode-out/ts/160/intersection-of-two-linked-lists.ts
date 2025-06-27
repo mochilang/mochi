@@ -6,14 +6,16 @@ function getIntersectionNode(
   headB: number,
 ): number {
   let a: number = headA;
+  (globalThis as any).a = a;
   let b: number = headB;
-  while (a != b) {
-    if (a == -1) {
+  (globalThis as any).b = b;
+  while ((a != b)) {
+    if ((a == (-1))) {
       a = headB;
     } else {
       a = next[a];
     }
-    if (b == -1) {
+    if ((b == (-1))) {
       b = headA;
     } else {
       b = next[b];
@@ -22,46 +24,75 @@ function getIntersectionNode(
   return a;
 }
 
-function example_1(): void {
-  let next: Array<number> = [1, 2, 3, 4, -1, 6, 7, 2];
-  if (!(getIntersectionNode(next, 0, 5) == 2)) {
+function test_example_1(): void {
+  let next: Array<number> = [
+    1,
+    2,
+    3,
+    4,
+    -1,
+    6,
+    7,
+    2,
+  ];
+  (globalThis as any).next = next;
+  if (!(getIntersectionNode(next, 0, 5) == 2)) throw new Error("expect failed");
+}
+
+function test_example_2(): void {
+  let next: Array<number> = [
+    1,
+    2,
+    3,
+    4,
+    -1,
+    3,
+  ];
+  (globalThis as any).next = next;
+  if (!(getIntersectionNode(next, 0, 5) == 3)) throw new Error("expect failed");
+}
+
+function test_example_3(): void {
+  let next: Array<number> = [
+    1,
+    2,
+    -1,
+    4,
+    -1,
+  ];
+  (globalThis as any).next = next;
+  if (!(getIntersectionNode(next, 0, 3) == (-1))) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
-  let next: Array<number> = [1, 2, 3, 4, -1, 3];
-  if (!(getIntersectionNode(next, 0, 5) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_same_head(): void {
+  let next: Array<number> = [
+    1,
+    2,
+    3,
+    -1,
+  ];
+  (globalThis as any).next = next;
+  if (!(getIntersectionNode(next, 0, 0) == 0)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  let next: Array<number> = [1, 2, -1, 4, -1];
-  if (!(getIntersectionNode(next, 0, 3) == -1)) {
-    throw new Error("expect failed");
-  }
-}
-
-function same_head(): void {
-  let next: Array<number> = [1, 2, 3, -1];
-  if (!(getIntersectionNode(next, 0, 0) == 0)) {
-    throw new Error("expect failed");
-  }
-}
-
-function one_empty(): void {
-  let next: Array<number> = [1, -1];
-  if (!(getIntersectionNode(next, 0, -1) == -1)) {
+function test_one_empty(): void {
+  let next: Array<number> = [
+    1,
+    -1,
+  ];
+  (globalThis as any).next = next;
+  if (!(getIntersectionNode(next, 0, -1) == (-1))) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  same_head();
-  one_empty();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_same_head();
+  test_one_empty();
 }
 main();

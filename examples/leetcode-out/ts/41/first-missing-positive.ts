@@ -2,41 +2,58 @@
 
 function firstMissingPositive(nums: Array<number>): number {
   let seen: Record<number, boolean> = {};
+  (globalThis as any).seen = seen;
   for (const n of nums) {
-    if (n > 0) {
+    if ((n > 0)) {
       seen[n] = true;
     }
   }
   let i: number = 1;
+  (globalThis as any).i = i;
   while (true) {
-    if (!Object.prototype.hasOwnProperty.call(seen, String(i))) {
+    if ((!(Object.prototype.hasOwnProperty.call(seen, String(i))))) {
       return i;
     }
     i = i + 1;
   }
 }
 
-function example_1(): void {
-  if (!(firstMissingPositive([1, 2, 0]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(firstMissingPositive([
+      1,
+      2,
+      0,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(firstMissingPositive([3, 4, -1, 1]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(firstMissingPositive([
+      3,
+      4,
+      -1,
+      1,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(firstMissingPositive([7, 8, 9, 11, 12]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(firstMissingPositive([
+      7,
+      8,
+      9,
+      11,
+      12,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 main();

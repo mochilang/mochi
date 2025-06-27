@@ -2,21 +2,27 @@
 
 function findRepeatedDnaSequences(s: string): Array<string> {
   let n: number = s.length;
-  if (n < 10) {
+  (globalThis as any).n = n;
+  if ((n < 10)) {
     return [];
   }
   let seen: Record<string, number> = {};
+  (globalThis as any).seen = seen;
   let result: Array<string> = [];
+  (globalThis as any).result = result;
   let i: number = 0;
-  while (i + 10 <= n) {
-    let sub: string = s.slice(i, i + 10);
+  (globalThis as any).i = i;
+  while (((i + 10) <= n)) {
+    let sub: string = _sliceString(s, i, i + 10);
+    (globalThis as any).sub = sub;
     let count: number = 0;
+    (globalThis as any).count = count;
     if (Object.prototype.hasOwnProperty.call(seen, String(sub))) {
       count = seen[sub];
     }
     count = count + 1;
     seen[sub] = count;
-    if (count == 2) {
+    if ((count == 2)) {
       result = result.concat([sub]);
     }
     i = i + 1;
@@ -24,47 +30,43 @@ function findRepeatedDnaSequences(s: string): Array<string> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(findRepeatedDnaSequences("AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"), [
+    !(_equal(findRepeatedDnaSequences("AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"), [
       "AAAAACCCCC",
       "CCCCCAAAAA",
-    ])
-  ) {
+    ]))
+  ) throw new Error("expect failed");
+}
+
+function test_example_2(): void {
+  if (!(_equal(findRepeatedDnaSequences("AAAAAAAAAAAAA"), ["AAAAAAAAAA"]))) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
-  if (!_equal(findRepeatedDnaSequences("AAAAAAAAAAAAA"), ["AAAAAAAAAA"])) {
+function test_no_repeats(): void {
+  if (!(_equal(findRepeatedDnaSequences("ACGTACGTAC"), []))) {
     throw new Error("expect failed");
   }
 }
 
-function no_repeats(): void {
-  if (!_equal(findRepeatedDnaSequences("ACGTACGTAC"), [])) {
-    throw new Error("expect failed");
-  }
-}
-
-function short_string(): void {
-  if (!_equal(findRepeatedDnaSequences("AAAAA"), [])) {
+function test_short_string(): void {
+  if (!(_equal(findRepeatedDnaSequences("AAAAA"), []))) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  no_repeats();
-  short_string();
+  test_example_1();
+  test_example_2();
+  test_no_repeats();
+  test_short_string();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -72,12 +74,26 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
 }
 
 main();

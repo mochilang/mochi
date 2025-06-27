@@ -5,14 +5,17 @@ function intersection(
   nums2: Array<number>,
 ): Array<number> {
   let set1: Record<number, boolean> = {};
+  (globalThis as any).set1 = set1;
   for (const n of nums1) {
     set1[n] = true;
   }
   let seen: Record<number, boolean> = {};
+  (globalThis as any).seen = seen;
   let result: Array<number> = [];
+  (globalThis as any).result = result;
   for (const n of nums2) {
     if (Object.prototype.hasOwnProperty.call(set1, String(n))) {
-      if (!Object.prototype.hasOwnProperty.call(seen, String(n))) {
+      if ((!(Object.prototype.hasOwnProperty.call(seen, String(n))))) {
         result = result.concat([n]);
         seen[n] = true;
       }
@@ -21,9 +24,18 @@ function intersection(
   return result;
 }
 
-function example_1(): void {
-  let out: Array<number> = intersection([1, 2, 2, 1], [2, 2]);
-  let sorted: Array<any> = (() => {
+function test_example_1(): void {
+  let out: Array<number> = intersection([
+    1,
+    2,
+    2,
+    1,
+  ], [
+    2,
+    2,
+  ]);
+  (globalThis as any).out = out;
+  let sorted: Array<number> = (() => {
     const _src = out;
     let _items = [];
     for (const x of _src) {
@@ -37,9 +49,12 @@ function example_1(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -48,14 +63,24 @@ function example_1(): void {
     }
     return _res;
   })();
-  if (!_equal(sorted, [2])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).sorted = sorted;
+  if (!(_equal(sorted, [2]))) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  let out: Array<number> = intersection([4, 9, 5], [9, 4, 9, 8, 4]);
-  let sorted: Array<any> = (() => {
+function test_example_2(): void {
+  let out: Array<number> = intersection([
+    4,
+    9,
+    5,
+  ], [
+    9,
+    4,
+    9,
+    8,
+    4,
+  ]);
+  (globalThis as any).out = out;
+  let sorted: Array<number> = (() => {
     const _src = out;
     let _items = [];
     for (const x of _src) {
@@ -69,9 +94,12 @@ function example_2(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -80,35 +108,50 @@ function example_2(): void {
     }
     return _res;
   })();
-  if (!_equal(sorted, [4, 9])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).sorted = sorted;
+  if (
+    !(_equal(sorted, [
+      4,
+      9,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function empty_first(): void {
-  if (!_equal(intersection([], [1, 2]), [])) {
-    throw new Error("expect failed");
-  }
+function test_empty_first(): void {
+  if (
+    !(_equal(
+      intersection([], [
+        1,
+        2,
+      ]),
+      [],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function empty_second(): void {
-  if (!_equal(intersection([1, 2, 3], []), [])) {
-    throw new Error("expect failed");
-  }
+function test_empty_second(): void {
+  if (
+    !(_equal(
+      intersection([
+        1,
+        2,
+        3,
+      ], []),
+      [],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty_first();
-  empty_second();
+  test_example_1();
+  test_example_2();
+  test_empty_first();
+  test_empty_second();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -116,8 +159,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

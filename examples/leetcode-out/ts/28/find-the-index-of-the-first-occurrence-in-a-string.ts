@@ -2,56 +2,58 @@
 
 function strStr(haystack: string, needle: string): number {
   let n: number = haystack.length;
+  (globalThis as any).n = n;
   let m: number = needle.length;
-  if (m == 0) {
+  (globalThis as any).m = m;
+  if ((m == 0)) {
     return 0;
   }
-  if (m > n) {
-    return -1;
+  if ((m > n)) {
+    return (-1);
   }
-  for (let i: number = 0; i < n - m + 1; i++) {
+  for (let i: number = 0; i < ((n - m) + 1); i++) {
     let j: number = 0;
-    while (j < m) {
-      if (haystack[i + j] != needle[j]) {
+    (globalThis as any).j = j;
+    while ((j < m)) {
+      if ((_indexString(haystack, i + j) != _indexString(needle, j))) {
         break;
       }
       j = j + 1;
     }
-    if (j == m) {
+    if ((j == m)) {
       return i;
     }
   }
-  return -1;
+  return (-1);
 }
 
-function example_1(): void {
-  if (!(strStr("sadbutsad", "sad") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(strStr("sadbutsad", "sad") == 0)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(strStr("leetcode", "leeto") == -1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(strStr("leetcode", "leeto") == (-1))) throw new Error("expect failed");
 }
 
-function empty_needle(): void {
-  if (!(strStr("abc", "") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_empty_needle(): void {
+  if (!(strStr("abc", "") == 0)) throw new Error("expect failed");
 }
 
-function needle_at_end(): void {
-  if (!(strStr("hello", "lo") == 3)) {
-    throw new Error("expect failed");
-  }
+function test_needle_at_end(): void {
+  if (!(strStr("hello", "lo") == 3)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty_needle();
-  needle_at_end();
+  test_example_1();
+  test_example_2();
+  test_empty_needle();
+  test_needle_at_end();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

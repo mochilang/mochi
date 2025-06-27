@@ -2,30 +2,38 @@
 
 function isValid(s: string): boolean {
   let count: number = 0;
+  (globalThis as any).count = count;
   let i: number = 0;
-  while (i < s.length) {
-    let c: string = s[i];
-    if (c == "(") {
+  (globalThis as any).i = i;
+  while ((i < s.length)) {
+    let c: string = _indexString(s, i);
+    (globalThis as any).c = c;
+    if ((c == "(")) {
       count = count + 1;
-    } else if (c == ")") {
-      if (count == 0) {
+    } else if ((c == ")")) {
+      if ((count == 0)) {
         return false;
       }
       count = count - 1;
     }
     i = i + 1;
   }
-  return count == 0;
+  return (count == 0);
 }
 
 function removeInvalidParentheses(s: string): Array<string> {
   let result: Array<string> = [];
+  (globalThis as any).result = result;
   let visited: Record<string, boolean> = {};
+  (globalThis as any).visited = visited;
   let queue: Array<string> = [s];
+  (globalThis as any).queue = queue;
   visited[s] = true;
   let found: boolean = false;
-  while (queue.length > 0) {
+  (globalThis as any).found = found;
+  while ((queue.length > 0)) {
     let cur: string = queue[0];
+    (globalThis as any).cur = cur;
     queue = queue.slice(1, queue.length);
     if (isValid(cur)) {
       result = result.concat([cur]);
@@ -35,69 +43,77 @@ function removeInvalidParentheses(s: string): Array<string> {
       continue;
     }
     let i: number = 0;
-    while (i < cur.length) {
-      let ch: string = cur[i];
-      if (ch != "(" && ch != ")") {
+    (globalThis as any).i = i;
+    while ((i < cur.length)) {
+      let ch: string = _indexString(cur, i);
+      (globalThis as any).ch = ch;
+      if (((ch != "(") && (ch != ")"))) {
         i = i + 1;
         continue;
       }
-      let next: string = cur.slice(0, i) + cur.slice(i + 1, cur.length);
-      if (!Object.prototype.hasOwnProperty.call(visited, String(next))) {
+      let next: string = _sliceString(cur, 0, i) +
+        _sliceString(cur, i + 1, cur.length);
+      (globalThis as any).next = next;
+      if ((!(Object.prototype.hasOwnProperty.call(visited, String(next))))) {
         queue = queue.concat([next]);
         visited[next] = true;
       }
       i = i + 1;
     }
   }
-  if (result.length == 0) {
+  if ((result.length == 0)) {
     return [""];
   }
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(removeInvalidParentheses("()())()"), ["(())()", "()()()"])) {
+function test_example_1(): void {
+  if (
+    !(_equal(removeInvalidParentheses("()())()"), [
+      "(())()",
+      "()()()",
+    ]))
+  ) throw new Error("expect failed");
+}
+
+function test_example_2(): void {
+  if (
+    !(_equal(removeInvalidParentheses("(a)())()"), [
+      "(a())()",
+      "(a)()()",
+    ]))
+  ) throw new Error("expect failed");
+}
+
+function test_example_3(): void {
+  if (!(_equal(removeInvalidParentheses(")("), [""]))) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
-  if (!_equal(removeInvalidParentheses("(a)())()"), ["(a())()", "(a)()()"])) {
+function test_already_valid(): void {
+  if (!(_equal(removeInvalidParentheses("(a)(b)"), ["(a)(b)"]))) {
     throw new Error("expect failed");
   }
 }
 
-function example_3(): void {
-  if (!_equal(removeInvalidParentheses(")("), [""])) {
-    throw new Error("expect failed");
-  }
-}
-
-function already_valid(): void {
-  if (!_equal(removeInvalidParentheses("(a)(b)"), ["(a)(b)"])) {
-    throw new Error("expect failed");
-  }
-}
-
-function empty(): void {
-  if (!_equal(removeInvalidParentheses(""), [""])) {
+function test_empty(): void {
+  if (!(_equal(removeInvalidParentheses(""), [""]))) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  already_valid();
-  empty();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_already_valid();
+  test_empty();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -105,12 +121,33 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
 }
 
 main();

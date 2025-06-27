@@ -2,6 +2,7 @@
 
 function restoreIpAddresses(s: string): Array<string> {
   let result: Array<string> = [];
+  (globalThis as any).result = result;
   let digits: Record<string, number> = {
     "0": 0,
     "1": 1,
@@ -14,26 +15,29 @@ function restoreIpAddresses(s: string): Array<string> {
     "8": 8,
     "9": 9,
   };
+  (globalThis as any).digits = digits;
   function backtrack(start: number, part: number, current: string): number {
-    if (part == 4) {
-      if (start == s.length) {
-        result = result.concat([current.slice(1, current.length)]);
+    if ((part == 4)) {
+      if ((start == s.length)) {
+        result = result.concat([_sliceString(current, 1, current.length)]);
       }
       return 0;
     }
     for (let l: number = 1; l < 4; l++) {
-      if (start + l > s.length) {
+      if (((start + l) > s.length)) {
         break;
       }
-      let segment: string = s.slice(start, start + l);
-      if (segment.length > 1 && segment[0] == "0") {
+      let segment: string = _sliceString(s, start, start + l);
+      (globalThis as any).segment = segment;
+      if (((segment.length > 1) && (_indexString(segment, 0) == "0"))) {
         continue;
       }
       let val: number = 0;
+      (globalThis as any).val = val;
       for (const ch of segment) {
-        val = val * 10 + digits[ch];
+        val = (val * 10) + digits[ch];
       }
-      if (val > 255) {
+      if ((val > 255)) {
         continue;
       }
       backtrack(start + l, part + 1, current + "." + segment);
@@ -44,48 +48,42 @@ function restoreIpAddresses(s: string): Array<string> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(restoreIpAddresses("25525511135"), [
+    !(_equal(restoreIpAddresses("25525511135"), [
       "255.255.11.135",
       "255.255.111.35",
-    ])
-  ) {
+    ]))
+  ) throw new Error("expect failed");
+}
+
+function test_all_zeros(): void {
+  if (!(_equal(restoreIpAddresses("0000"), ["0.0.0.0"]))) {
     throw new Error("expect failed");
   }
 }
 
-function all_zeros(): void {
-  if (!_equal(restoreIpAddresses("0000"), ["0.0.0.0"])) {
-    throw new Error("expect failed");
-  }
-}
-
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !_equal(restoreIpAddresses("101023"), [
+    !(_equal(restoreIpAddresses("101023"), [
       "1.0.10.23",
       "1.0.102.3",
       "10.1.0.23",
       "10.10.2.3",
       "101.0.2.3",
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  all_zeros();
-  example_2();
+  test_example_1();
+  test_all_zeros();
+  test_example_2();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -93,12 +91,33 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
 }
 
 main();

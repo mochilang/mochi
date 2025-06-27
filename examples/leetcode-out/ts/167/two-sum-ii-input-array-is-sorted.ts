@@ -2,12 +2,18 @@
 
 function twoSum(numbers: Array<number>, target: number): Array<number> {
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = numbers.length - 1;
-  while (left < right) {
+  (globalThis as any).right = right;
+  while ((left < right)) {
     let sum: number = numbers[left] + numbers[right];
-    if (sum == target) {
-      return [left + 1, right + 1];
-    } else if (sum < target) {
+    (globalThis as any).sum = sum;
+    if ((sum == target)) {
+      return [
+        left + 1,
+        right + 1,
+      ];
+    } else if ((sum < target)) {
       left = left + 1;
     } else {
       right = right - 1;
@@ -16,35 +22,63 @@ function twoSum(numbers: Array<number>, target: number): Array<number> {
   return [];
 }
 
-function example_1(): void {
-  if (!_equal(twoSum([2, 7, 11, 15], 9), [1, 2])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      twoSum([
+        2,
+        7,
+        11,
+        15,
+      ], 9),
+      [
+        1,
+        2,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(twoSum([2, 3, 4], 6), [1, 3])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      twoSum([
+        2,
+        3,
+        4,
+      ], 6),
+      [
+        1,
+        3,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(twoSum([-1, 0], -1), [1, 2])) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(_equal(
+      twoSum([
+        -1,
+        0,
+      ], -1),
+      [
+        1,
+        2,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -52,8 +86,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

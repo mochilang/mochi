@@ -2,51 +2,62 @@
 
 function maxKilledEnemies(grid: Array<Array<string>>): number {
   let m: number = grid.length;
-  if (m == 0) {
+  (globalThis as any).m = m;
+  if ((m == 0)) {
     return 0;
   }
   let n: number = grid[0].length;
+  (globalThis as any).n = n;
   let result: number = 0;
+  (globalThis as any).result = result;
   let colHits: Array<number> = [];
+  (globalThis as any).colHits = colHits;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     colHits = colHits.concat([0]);
     i = i + 1;
   }
   let rowHits: number = 0;
+  (globalThis as any).rowHits = rowHits;
   let r: number = 0;
-  while (r < m) {
+  (globalThis as any).r = r;
+  while ((r < m)) {
     let c: number = 0;
-    while (c < n) {
-      if (c == 0 || grid[r][c - 1] == "W") {
+    (globalThis as any).c = c;
+    while ((c < n)) {
+      if (((c == 0) || (grid[r][c - 1] == "W"))) {
         rowHits = 0;
         let k: number = c;
-        while (k < n) {
-          if (grid[r][k] == "W") {
+        (globalThis as any).k = k;
+        while ((k < n)) {
+          if ((grid[r][k] == "W")) {
             break;
           }
-          if (grid[r][k] == "E") {
+          if ((grid[r][k] == "E")) {
             rowHits = rowHits + 1;
           }
           k = k + 1;
         }
       }
-      if (r == 0 || grid[r - 1][c] == "W") {
+      if (((r == 0) || (grid[r - 1][c] == "W"))) {
         colHits[c] = 0;
         let k: number = r;
-        while (k < m) {
-          if (grid[k][c] == "W") {
+        (globalThis as any).k = k;
+        while ((k < m)) {
+          if ((grid[k][c] == "W")) {
             break;
           }
-          if (grid[k][c] == "E") {
+          if ((grid[k][c] == "E")) {
             colHits[c] = colHits[c] + 1;
           }
           k = k + 1;
         }
       }
-      if (grid[r][c] == "0") {
+      if ((grid[r][c] == "0")) {
         let total: number = rowHits + colHits[c];
-        if (total > result) {
+        (globalThis as any).total = total;
+        if ((total > result)) {
           result = total;
         }
       }
@@ -57,39 +68,53 @@ function maxKilledEnemies(grid: Array<Array<string>>): number {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let grid: Array<Array<string>> = [
-    ["0", "E", "0", "0"],
-    ["E", "0", "W", "E"],
-    ["0", "E", "0", "0"],
+    [
+      "0",
+      "E",
+      "0",
+      "0",
+    ],
+    [
+      "E",
+      "0",
+      "W",
+      "E",
+    ],
+    [
+      "0",
+      "E",
+      "0",
+      "0",
+    ],
   ];
-  if (!(maxKilledEnemies(grid) == 3)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).grid = grid;
+  if (!(maxKilledEnemies(grid) == 3)) throw new Error("expect failed");
 }
 
-function empty_grid(): void {
-  if (!(maxKilledEnemies([]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_empty_grid(): void {
+  if (!(maxKilledEnemies([]) == 0)) throw new Error("expect failed");
 }
 
-function all_walls(): void {
+function test_all_walls(): void {
   if (
-    !(
-      maxKilledEnemies([
-        ["W", "W"],
-        ["W", "W"],
-      ]) == 0
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(maxKilledEnemies([
+      [
+        "W",
+        "W",
+      ],
+      [
+        "W",
+        "W",
+      ],
+    ]) == 0)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  empty_grid();
-  all_walls();
+  test_example_1();
+  test_empty_grid();
+  test_all_walls();
 }
 main();

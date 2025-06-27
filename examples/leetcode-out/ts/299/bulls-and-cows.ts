@@ -2,13 +2,19 @@
 
 function getHint(secret: string, guess: string): string {
   let bulls: number = 0;
+  (globalThis as any).bulls = bulls;
   let countSecret: Record<string, number> = {};
+  (globalThis as any).countSecret = countSecret;
   let countGuess: Record<string, number> = {};
+  (globalThis as any).countGuess = countGuess;
   let i: number = 0;
-  while (i < secret.length) {
-    let s: string = secret[i];
-    let g: string = guess[i];
-    if (s == g) {
+  (globalThis as any).i = i;
+  while ((i < secret.length)) {
+    let s: string = _indexString(secret, i);
+    (globalThis as any).s = s;
+    let g: string = _indexString(guess, i);
+    (globalThis as any).g = g;
+    if ((s == g)) {
       bulls = bulls + 1;
     } else {
       if (Object.prototype.hasOwnProperty.call(countSecret, String(s))) {
@@ -25,11 +31,14 @@ function getHint(secret: string, guess: string): string {
     i = i + 1;
   }
   let cows: number = 0;
+  (globalThis as any).cows = cows;
   for (const ch of Object.keys(countSecret)) {
     if (Object.prototype.hasOwnProperty.call(countGuess, String(ch))) {
       let a: number = countSecret[ch];
+      (globalThis as any).a = a;
       let b: number = countGuess[ch];
-      if (a < b) {
+      (globalThis as any).b = b;
+      if ((a < b)) {
         cows = cows + a;
       } else {
         cows = cows + b;
@@ -39,41 +48,38 @@ function getHint(secret: string, guess: string): string {
   return String(bulls) + "A" + String(cows) + "B";
 }
 
-function example_1(): void {
-  if (!(getHint("1807", "7810") == "1A3B")) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(getHint("1807", "7810") == "1A3B")) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(getHint("1123", "0111") == "1A1B")) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(getHint("1123", "0111") == "1A1B")) throw new Error("expect failed");
 }
 
-function all_bulls(): void {
-  if (!(getHint("1234", "1234") == "4A0B")) {
-    throw new Error("expect failed");
-  }
+function test_all_bulls(): void {
+  if (!(getHint("1234", "1234") == "4A0B")) throw new Error("expect failed");
 }
 
-function all_cows(): void {
-  if (!(getHint("1122", "2211") == "0A4B")) {
-    throw new Error("expect failed");
-  }
+function test_all_cows(): void {
+  if (!(getHint("1122", "2211") == "0A4B")) throw new Error("expect failed");
 }
 
-function no_matches(): void {
-  if (!(getHint("1234", "5678") == "0A0B")) {
-    throw new Error("expect failed");
-  }
+function test_no_matches(): void {
+  if (!(getHint("1234", "5678") == "0A0B")) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  all_bulls();
-  all_cows();
-  no_matches();
+  test_example_1();
+  test_example_2();
+  test_all_bulls();
+  test_all_cows();
+  test_no_matches();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

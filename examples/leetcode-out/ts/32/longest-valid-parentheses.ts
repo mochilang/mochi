@@ -2,26 +2,33 @@
 
 function longestValidParentheses(s: string): number {
   let n: number = s.length;
+  (globalThis as any).n = n;
   let stack: Array<number> = [];
+  (globalThis as any).stack = stack;
   let best: number = 0;
+  (globalThis as any).best = best;
   let last: number = -1;
+  (globalThis as any).last = last;
   for (let i: number = 0; i < n; i++) {
-    let c: string = s[i];
-    if (c == "(") {
+    let c: string = _indexString(s, i);
+    (globalThis as any).c = c;
+    if ((c == "(")) {
       stack = stack.concat([i]);
     } else {
-      if (stack.length == 0) {
+      if ((stack.length == 0)) {
         last = i;
       } else {
         stack = stack.slice(0, stack.length - 1);
-        if (stack.length == 0) {
+        if ((stack.length == 0)) {
           let length: number = i - last;
-          if (length > best) {
+          (globalThis as any).length = length;
+          if ((length > best)) {
             best = length;
           }
         } else {
           let length: number = i - stack[stack.length - 1];
-          if (length > best) {
+          (globalThis as any).length = length;
+          if ((length > best)) {
             best = length;
           }
         }
@@ -31,41 +38,40 @@ function longestValidParentheses(s: string): number {
   return best;
 }
 
-function example_1(): void {
-  if (!(longestValidParentheses("(()") == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(longestValidParentheses("(()") == 2)) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(longestValidParentheses(")()())") == 4)) {
     throw new Error("expect failed");
   }
 }
 
-function example_3(): void {
-  if (!(longestValidParentheses("") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(longestValidParentheses("") == 0)) throw new Error("expect failed");
 }
 
-function all_open(): void {
-  if (!(longestValidParentheses("(((") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_all_open(): void {
+  if (!(longestValidParentheses("(((") == 0)) throw new Error("expect failed");
 }
 
-function balanced(): void {
-  if (!(longestValidParentheses("()()") == 4)) {
-    throw new Error("expect failed");
-  }
+function test_balanced(): void {
+  if (!(longestValidParentheses("()()") == 4)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  all_open();
-  balanced();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_all_open();
+  test_balanced();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

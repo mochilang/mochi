@@ -2,31 +2,33 @@
 
 function reverseBits(n: number): number {
   let result: number = 0;
+  (globalThis as any).result = result;
   let x: number = n;
+  (globalThis as any).x = x;
   let count: number = 0;
-  while (count < 32) {
+  (globalThis as any).count = count;
+  while ((count < 32)) {
     let bit: number = x % 2;
-    result = result * 2 + bit;
+    (globalThis as any).bit = bit;
+    result = (result * 2) + bit;
     x = Math.trunc(x / 2);
     count = count + 1;
   }
   return result;
 }
 
-function example_1(): void {
-  if (!(reverseBits(43261596) == 964176192)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(reverseBits(43261596) == 964176192)) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(reverseBits(4294967293) == 3221225471)) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
 main();

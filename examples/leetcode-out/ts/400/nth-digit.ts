@@ -2,18 +2,25 @@
 
 function findNthDigit(n: number): number {
   let remaining: number = n;
+  (globalThis as any).remaining = remaining;
   let digits: number = 1;
+  (globalThis as any).digits = digits;
   let count: number = 9;
+  (globalThis as any).count = count;
   let start: number = 1;
-  while (remaining > digits * count) {
-    remaining = remaining - digits * count;
+  (globalThis as any).start = start;
+  while ((remaining > (digits * count))) {
+    remaining = remaining - (digits * count);
     digits = digits + 1;
     count = count * 10;
     start = start * 10;
   }
   let num: number = start + Math.trunc((remaining - 1) / digits);
+  (globalThis as any).num = num;
   let index: number = (remaining - 1) % digits;
+  (globalThis as any).index = index;
   let s: string = String(num);
+  (globalThis as any).s = s;
   let values: Record<string, number> = {
     "0": 0,
     "1": 1,
@@ -26,59 +33,54 @@ function findNthDigit(n: number): number {
     "8": 8,
     "9": 9,
   };
-  let ch: string = s[index];
+  (globalThis as any).values = values;
+  let ch: string = _indexString(s, index);
+  (globalThis as any).ch = ch;
   return values[ch];
 }
 
-function example_1(): void {
-  if (!(findNthDigit(3) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(findNthDigit(3) == 3)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(findNthDigit(11) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(findNthDigit(11) == 0)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(findNthDigit(12) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(findNthDigit(12) == 1)) throw new Error("expect failed");
 }
 
-function end_of_two_digits(): void {
-  if (!(findNthDigit(189) == 9)) {
-    throw new Error("expect failed");
-  }
+function test_end_of_two_digits(): void {
+  if (!(findNthDigit(189) == 9)) throw new Error("expect failed");
 }
 
-function start_of_three_digits(): void {
-  if (!(findNthDigit(190) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_start_of_three_digits(): void {
+  if (!(findNthDigit(190) == 1)) throw new Error("expect failed");
 }
 
-function middle_of_three_digits(): void {
-  if (!(findNthDigit(191) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_middle_of_three_digits(): void {
+  if (!(findNthDigit(191) == 0)) throw new Error("expect failed");
 }
 
-function third_of_three_digits(): void {
-  if (!(findNthDigit(192) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_third_of_three_digits(): void {
+  if (!(findNthDigit(192) == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  end_of_two_digits();
-  start_of_three_digits();
-  middle_of_three_digits();
-  third_of_three_digits();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_end_of_two_digits();
+  test_start_of_three_digits();
+  test_middle_of_three_digits();
+  test_third_of_three_digits();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

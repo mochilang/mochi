@@ -5,110 +5,146 @@ function findOrder(
   prerequisites: Array<Array<number>>,
 ): Array<number> {
   let graph: Record<number, Array<number>> = {};
+  (globalThis as any).graph = graph;
   let indegree: Record<number, number> = {};
+  (globalThis as any).indegree = indegree;
   let i: number = 0;
-  while (i < numCourses) {
+  (globalThis as any).i = i;
+  while ((i < numCourses)) {
     graph[i] = [];
     indegree[i] = 0;
     i = i + 1;
   }
   for (const pair of prerequisites) {
     let dest: number = pair[0];
+    (globalThis as any).dest = dest;
     let src: number = pair[1];
+    (globalThis as any).src = src;
     graph[src] = graph[src].concat([dest]);
     indegree[dest] = indegree[dest] + 1;
   }
   let queue: Array<number> = [];
+  (globalThis as any).queue = queue;
   let j: number = 0;
-  while (j < numCourses) {
-    if (indegree[j] == 0) {
+  (globalThis as any).j = j;
+  while ((j < numCourses)) {
+    if ((indegree[j] == 0)) {
       queue = queue.concat([j]);
     }
     j = j + 1;
   }
   let order: Array<number> = [];
-  while (queue.length > 0) {
+  (globalThis as any).order = order;
+  while ((queue.length > 0)) {
     let next: Array<number> = [];
+    (globalThis as any).next = next;
     for (const course of queue) {
       order = order.concat([course]);
       for (const neighbor of graph[course]) {
         indegree[neighbor] = indegree[neighbor] - 1;
-        if (indegree[neighbor] == 0) {
+        if ((indegree[neighbor] == 0)) {
           next = next.concat([neighbor]);
         }
       }
     }
     queue = next;
   }
-  if (order.length == numCourses) {
+  if ((order.length == numCourses)) {
     return order;
   }
   return [];
 }
 
-function example_1(): void {
-  if (!_equal(findOrder(2, [[1, 0]]), [0, 1])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      findOrder(2, [
+        [
+          1,
+          0,
+        ],
+      ]),
+      [
+        0,
+        1,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let order: Array<number> = findOrder(4, [
-    [1, 0],
-    [2, 0],
-    [3, 1],
-    [3, 2],
+    [
+      1,
+      0,
+    ],
+    [
+      2,
+      0,
+    ],
+    [
+      3,
+      1,
+    ],
+    [
+      3,
+      2,
+    ],
   ]);
+  (globalThis as any).order = order;
   let valid: boolean = true;
-  if (order.length == 4) {
+  (globalThis as any).valid = valid;
+  if ((order.length == 4)) {
     let idx: Record<number, number> = {};
+    (globalThis as any).idx = idx;
     let k: number = 0;
-    while (k < order.length) {
+    (globalThis as any).k = k;
+    while ((k < order.length)) {
       idx[order[k]] = k;
       k = k + 1;
     }
-    if (idx[0] > idx[1] && idx[0] > idx[2]) {
+    if (((idx[0] > idx[1]) && (idx[0] > idx[2]))) {
       valid = false;
     }
-    if (idx[1] > idx[3]) {
+    if ((idx[1] > idx[3])) {
       valid = false;
     }
-    if (idx[2] > idx[3]) {
+    if ((idx[2] > idx[3])) {
       valid = false;
     }
   } else {
     valid = false;
   }
-  if (!(valid == true)) {
-    throw new Error("expect failed");
-  }
+  if (!(valid == true)) throw new Error("expect failed");
 }
 
-function cycle(): void {
+function test_cycle(): void {
   if (
-    !_equal(
+    !(_equal(
       findOrder(2, [
-        [0, 1],
-        [1, 0],
+        [
+          0,
+          1,
+        ],
+        [
+          1,
+          0,
+        ],
       ]),
       [],
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  cycle();
+  test_example_1();
+  test_example_2();
+  test_cycle();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -116,8 +152,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

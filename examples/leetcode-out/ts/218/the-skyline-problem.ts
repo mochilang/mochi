@@ -2,11 +2,22 @@
 
 function getSkyline(buildings: Array<Array<number>>): Array<Array<number>> {
   let edges: Array<Array<number>> = [];
+  (globalThis as any).edges = edges;
   for (const b of buildings) {
-    edges = edges.concat([[b[0], -b[2]]]);
-    edges = edges.concat([[b[1], b[2]]]);
+    edges = edges.concat([
+      [
+        b[0],
+        -b[2],
+      ],
+    ]);
+    edges = edges.concat([
+      [
+        b[1],
+        b[2],
+      ],
+    ]);
   }
-  let byH: Array<any> = (() => {
+  let byH: Array<Array<number>> = (() => {
     const _src = edges;
     let _items = [];
     for (const e of _src) {
@@ -20,9 +31,12 @@ function getSkyline(buildings: Array<Array<number>>): Array<Array<number>> {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -31,7 +45,8 @@ function getSkyline(buildings: Array<Array<number>>): Array<Array<number>> {
     }
     return _res;
   })();
-  let sorted: Array<any> = (() => {
+  (globalThis as any).byH = byH;
+  let sorted: Array<Array<number>> = (() => {
     const _src = byH;
     let _items = [];
     for (const e of _src) {
@@ -39,15 +54,18 @@ function getSkyline(buildings: Array<Array<number>>): Array<Array<number>> {
     }
     let _pairs = _items.map((it) => {
       const e = it;
-      return { item: it, key: (e as any)[0] };
+      return { item: it, key: e[0] };
     });
     _pairs.sort((a, b) => {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -56,126 +74,220 @@ function getSkyline(buildings: Array<Array<number>>): Array<Array<number>> {
     }
     return _res;
   })();
+  (globalThis as any).sorted = sorted;
   let heights: Array<number> = [0];
+  (globalThis as any).heights = heights;
   let prev: number = 0;
+  (globalThis as any).prev = prev;
   let result: Array<Array<number>> = [];
+  (globalThis as any).result = result;
   for (const edge of sorted) {
-    let x: any = (edge as any)[0];
-    let h: any = (edge as any)[1];
-    if (h < 0) {
+    let x: number = edge[0];
+    (globalThis as any).x = x;
+    let h: number = edge[1];
+    (globalThis as any).h = h;
+    if ((h < 0)) {
       heights = heights.concat([-h]);
     } else {
       let idx: number = -1;
+      (globalThis as any).idx = idx;
       for (let i: number = 0; i < heights.length; i++) {
-        if (_equal(heights[i], h)) {
+        if ((heights[i] == h)) {
           idx = i;
           break;
         }
       }
-      if (idx >= 0) {
-        heights = heights
-          .slice(0, idx)
-          .concat(heights.slice(idx + 1, heights.length));
+      if ((idx >= 0)) {
+        heights = heights.slice(0, idx).concat(
+          heights.slice(idx + 1, heights.length),
+        );
       }
     }
     let curr: number = 0;
+    (globalThis as any).curr = curr;
     for (const ht of heights) {
-      if (ht > curr) {
+      if ((ht > curr)) {
         curr = ht;
       }
     }
-    if (curr != prev) {
-      result = result.concat([[x, curr]]);
+    if ((curr != prev)) {
+      result = result.concat([
+        [
+          x,
+          curr,
+        ],
+      ]);
       prev = curr;
     }
   }
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(
+    !(_equal(
       getSkyline([
-        [2, 9, 10],
-        [3, 7, 15],
-        [5, 12, 12],
-        [15, 20, 10],
-        [19, 24, 8],
+        [
+          2,
+          9,
+          10,
+        ],
+        [
+          3,
+          7,
+          15,
+        ],
+        [
+          5,
+          12,
+          12,
+        ],
+        [
+          15,
+          20,
+          10,
+        ],
+        [
+          19,
+          24,
+          8,
+        ],
       ]),
       [
-        [2, 10],
-        [3, 15],
-        [7, 12],
-        [12, 0],
-        [15, 10],
-        [20, 8],
-        [24, 0],
+        [
+          2,
+          10,
+        ],
+        [
+          3,
+          15,
+        ],
+        [
+          7,
+          12,
+        ],
+        [
+          12,
+          0,
+        ],
+        [
+          15,
+          10,
+        ],
+        [
+          20,
+          8,
+        ],
+        [
+          24,
+          0,
+        ],
       ],
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !_equal(
+    !(_equal(
       getSkyline([
-        [0, 2, 3],
-        [2, 5, 3],
+        [
+          0,
+          2,
+          3,
+        ],
+        [
+          2,
+          5,
+          3,
+        ],
       ]),
       [
-        [0, 3],
-        [5, 0],
+        [
+          0,
+          3,
+        ],
+        [
+          5,
+          0,
+        ],
       ],
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    ))
+  ) throw new Error("expect failed");
 }
 
-function single_building(): void {
+function test_single_building(): void {
   if (
-    !_equal(getSkyline([[1, 5, 4]]), [
-      [1, 4],
-      [5, 0],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
-}
-
-function overlap(): void {
-  if (
-    !_equal(
+    !(_equal(
       getSkyline([
-        [1, 3, 3],
-        [1, 4, 2],
-        [3, 4, 1],
+        [
+          1,
+          5,
+          4,
+        ],
       ]),
       [
-        [1, 3],
-        [3, 2],
-        [4, 0],
+        [
+          1,
+          4,
+        ],
+        [
+          5,
+          0,
+        ],
       ],
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    ))
+  ) throw new Error("expect failed");
+}
+
+function test_overlap(): void {
+  if (
+    !(_equal(
+      getSkyline([
+        [
+          1,
+          3,
+          3,
+        ],
+        [
+          1,
+          4,
+          2,
+        ],
+        [
+          3,
+          4,
+          1,
+        ],
+      ]),
+      [
+        [
+          1,
+          3,
+        ],
+        [
+          3,
+          2,
+        ],
+        [
+          4,
+          0,
+        ],
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_building();
-  overlap();
+  test_example_1();
+  test_example_2();
+  test_single_building();
+  test_overlap();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -183,8 +295,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

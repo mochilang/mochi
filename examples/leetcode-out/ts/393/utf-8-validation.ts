@@ -2,28 +2,34 @@
 
 function validUtf8(data: Array<number>): boolean {
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = data.length;
-  while (i < n) {
+  (globalThis as any).n = n;
+  while ((i < n)) {
     let b: number = data[i];
+    (globalThis as any).b = b;
     let count: number = 0;
-    if (b < 128) {
+    (globalThis as any).count = count;
+    if ((b < 128)) {
       count = 1;
-    } else if (b >= 192 && b < 224) {
+    } else if (((b >= 192) && (b < 224))) {
       count = 2;
-    } else if (b >= 224 && b < 240) {
+    } else if (((b >= 224) && (b < 240))) {
       count = 3;
-    } else if (b >= 240 && b < 248) {
+    } else if (((b >= 240) && (b < 248))) {
       count = 4;
     } else {
       return false;
     }
-    if (i + count > n) {
+    if (((i + count) > n)) {
       return false;
     }
     let j: number = 1;
-    while (j < count) {
+    (globalThis as any).j = j;
+    while ((j < count)) {
       let c: number = data[i + j];
-      if (c < 128 || c >= 192) {
+      (globalThis as any).c = c;
+      if (((c < 128) || (c >= 192))) {
         return false;
       }
       j = j + 1;
@@ -33,41 +39,43 @@ function validUtf8(data: Array<number>): boolean {
   return true;
 }
 
-function example_1(): void {
-  if (!(validUtf8([197, 130, 1]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(validUtf8([
+      197,
+      130,
+      1,
+    ]) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(validUtf8([235, 140, 4]) == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(validUtf8([
+      235,
+      140,
+      4,
+    ]) == false)
+  ) throw new Error("expect failed");
 }
 
-function single_byte(): void {
-  if (!(validUtf8([0]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_single_byte(): void {
+  if (!(validUtf8([0]) == true)) throw new Error("expect failed");
 }
 
-function invalid_length(): void {
-  if (!(validUtf8([237]) == false)) {
-    throw new Error("expect failed");
-  }
+function test_invalid_length(): void {
+  if (!(validUtf8([237]) == false)) throw new Error("expect failed");
 }
 
-function starts_with_continuation(): void {
-  if (!(validUtf8([145]) == false)) {
-    throw new Error("expect failed");
-  }
+function test_starts_with_continuation(): void {
+  if (!(validUtf8([145]) == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_byte();
-  invalid_length();
-  starts_with_continuation();
+  test_example_1();
+  test_example_2();
+  test_single_byte();
+  test_invalid_length();
+  test_starts_with_continuation();
 }
 main();

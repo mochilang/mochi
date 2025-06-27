@@ -2,18 +2,23 @@
 
 function summaryRanges(nums: Array<number>): Array<string> {
   let result: Array<string> = [];
-  if (nums.length == 0) {
+  (globalThis as any).result = result;
+  if ((nums.length == 0)) {
     return result;
   }
   let start: number = nums[0];
+  (globalThis as any).start = start;
   let prev: number = nums[0];
+  (globalThis as any).prev = prev;
   let i: number = 1;
-  while (i < nums.length) {
+  (globalThis as any).i = i;
+  while ((i < nums.length)) {
     let n: number = nums[i];
-    if (n == prev + 1) {
+    (globalThis as any).n = n;
+    if ((n == (prev + 1))) {
       prev = n;
     } else {
-      if (start == prev) {
+      if ((start == prev)) {
         result = result.concat([String(start)]);
       } else {
         result = result.concat([String(start) + "->" + String(prev)]);
@@ -23,7 +28,7 @@ function summaryRanges(nums: Array<number>): Array<string> {
     }
     i = i + 1;
   }
-  if (start == prev) {
+  if ((start == prev)) {
     result = result.concat([String(start)]);
   } else {
     result = result.concat([String(start) + "->" + String(prev)]);
@@ -31,44 +36,66 @@ function summaryRanges(nums: Array<number>): Array<string> {
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(summaryRanges([0, 1, 2, 4, 5, 7]), ["0->2", "4->5", "7"])) {
-    throw new Error("expect failed");
-  }
-}
-
-function example_2(): void {
+function test_example_1(): void {
   if (
-    !_equal(summaryRanges([0, 2, 3, 4, 6, 8, 9]), ["0", "2->4", "6", "8->9"])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(
+      summaryRanges([
+        0,
+        1,
+        2,
+        4,
+        5,
+        7,
+      ]),
+      [
+        "0->2",
+        "4->5",
+        "7",
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!_equal(summaryRanges([5]), ["5"])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      summaryRanges([
+        0,
+        2,
+        3,
+        4,
+        6,
+        8,
+        9,
+      ]),
+      [
+        "0",
+        "2->4",
+        "6",
+        "8->9",
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function empty(): void {
-  if (!_equal(summaryRanges([]), [])) {
-    throw new Error("expect failed");
-  }
+function test_single_element(): void {
+  if (!(_equal(summaryRanges([5]), ["5"]))) throw new Error("expect failed");
+}
+
+function test_empty(): void {
+  if (!(_equal(summaryRanges([]), []))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_element();
-  empty();
+  test_example_1();
+  test_example_2();
+  test_single_element();
+  test_empty();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -76,8 +103,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

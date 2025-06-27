@@ -13,6 +13,7 @@ function convertBelow1000(n: number): string {
     "Eight",
     "Nine",
   ];
+  (globalThis as any).ones = ones;
   let teens: Array<string> = [
     "Ten",
     "Eleven",
@@ -25,6 +26,7 @@ function convertBelow1000(n: number): string {
     "Eighteen",
     "Nineteen",
   ];
+  (globalThis as any).teens = teens;
   let tens: Array<string> = [
     "",
     "",
@@ -37,45 +39,62 @@ function convertBelow1000(n: number): string {
     "Eighty",
     "Ninety",
   ];
+  (globalThis as any).tens = tens;
   let words: string = "";
+  (globalThis as any).words = words;
   let num: number = n;
-  if (num >= 100) {
+  (globalThis as any).num = num;
+  if ((num >= 100)) {
     let hundred: number = Math.trunc(num / 100);
+    (globalThis as any).hundred = hundred;
     words = words + ones[hundred] + " Hundred";
     num = num % 100;
-    if (num > 0) {
+    if ((num > 0)) {
       words = words + " ";
     }
   }
-  if (num >= 20) {
+  if ((num >= 20)) {
     let t: number = Math.trunc(num / 10);
+    (globalThis as any).t = t;
     words = words + tens[t];
     num = num % 10;
-    if (num > 0) {
+    if ((num > 0)) {
       words = words + " " + ones[num];
     }
-  } else if (num >= 10) {
+  } else if ((num >= 10)) {
     words = words + teens[num - 10];
-  } else if (num > 0) {
+  } else if ((num > 0)) {
     words = words + ones[num];
   }
   return words;
 }
 
 function numberToWords(num: number): string {
-  if (num == 0) {
+  if ((num == 0)) {
     return "Zero";
   }
-  let groups: Array<string> = ["", "Thousand", "Million", "Billion"];
+  let groups: Array<string> = [
+    "",
+    "Thousand",
+    "Million",
+    "Billion",
+  ];
+  (globalThis as any).groups = groups;
   let parts: Array<string> = [];
+  (globalThis as any).parts = parts;
   let n: number = num;
+  (globalThis as any).n = n;
   let i: number = 0;
-  while (n > 0) {
+  (globalThis as any).i = i;
+  while ((n > 0)) {
     let chunk: number = n % 1000;
-    if (chunk > 0) {
+    (globalThis as any).chunk = chunk;
+    if ((chunk > 0)) {
       let chunkWords: string = convertBelow1000(chunk);
+      (globalThis as any).chunkWords = chunkWords;
       let part: string = chunkWords;
-      if (groups[i] != "") {
+      (globalThis as any).part = part;
+      if ((groups[i] != "")) {
         part = part + " " + groups[i];
       }
       parts = [part].concat(parts);
@@ -84,10 +103,12 @@ function numberToWords(num: number): string {
     i = i + 1;
   }
   let result: string = "";
+  (globalThis as any).result = result;
   let j: number = 0;
-  while (j < parts.length) {
+  (globalThis as any).j = j;
+  while ((j < parts.length)) {
     result = result + parts[j];
-    if (j < parts.length - 1) {
+    if ((j < (parts.length - 1))) {
       result = result + " ";
     }
     j = j + 1;
@@ -95,46 +116,40 @@ function numberToWords(num: number): string {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(numberToWords(123) == "One Hundred Twenty Three")) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(numberToWords(12345) == "Twelve Thousand Three Hundred Forty Five")) {
     throw new Error("expect failed");
   }
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (
-    !(
-      numberToWords(1234567) ==
-      "One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven"
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(numberToWords(1234567) ==
+      "One Million Two Hundred Thirty Four Thousand Five Hundred Sixty Seven")
+  ) throw new Error("expect failed");
 }
 
-function zero(): void {
-  if (!(numberToWords(0) == "Zero")) {
-    throw new Error("expect failed");
-  }
+function test_zero(): void {
+  if (!(numberToWords(0) == "Zero")) throw new Error("expect failed");
 }
 
-function million_and_tens(): void {
+function test_million_and_tens(): void {
   if (!(numberToWords(1000010) == "One Million Ten")) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  zero();
-  million_and_tens();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_zero();
+  test_million_and_tens();
 }
 main();

@@ -1,6 +1,7 @@
 package tscode
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
@@ -2403,30 +2404,40 @@ func fieldFromPostfix(p *parser.PostfixExpr, varName string) (string, bool) {
 }
 
 func formatTS(src []byte) []byte {
-	// Prefer Deno's built-in formatter as it matches the runtime
-	if err := ensureDeno(); err == nil {
-		cmd := exec.Command("deno", "fmt", "-q", "--ext", "ts", "-")
-		cmd.Stdin = bytes.NewReader(src)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		if err := cmd.Run(); err == nil {
-			return out.Bytes()
+	// Prefer official formatters when available
+	if err := EnsureFormatter(); err == nil {
+		if path, err := exec.LookPath("deno"); err == nil {
+			cmd := exec.Command(path, "fmt", "-q", "--ext", "ts", "-")
+			cmd.Stdin = bytes.NewReader(src)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			if err := cmd.Run(); err == nil {
+				return out.Bytes()
+			}
+		}
+		if path, err := exec.LookPath("npx"); err == nil {
+			cmd := exec.Command(path, "--yes", "prettier", "--parser", "typescript")
+			cmd.Stdin = bytes.NewReader(src)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			if err := cmd.Run(); err == nil {
+				return out.Bytes()
+			}
 		}
 	}
 
-	// Fallback to Prettier via npx if available
-	if _, err := exec.LookPath("npx"); err == nil {
-		cmd := exec.Command("npx", "--yes", "prettier", "--parser", "typescript")
-		cmd.Stdin = bytes.NewReader(src)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		if err := cmd.Run(); err == nil {
-			return out.Bytes()
-		}
+	// Fallback: replace tabs and trim whitespace to keep code readable
+	s := strings.ReplaceAll(string(src), "\t", "  ")
+	var buf bytes.Buffer
+	scanner := bufio.NewScanner(strings.NewReader(s))
+	for scanner.Scan() {
+		line := strings.TrimRight(scanner.Text(), " \t")
+		buf.WriteString(line)
+		buf.WriteByte('\n')
 	}
-
-	if len(src) > 0 && src[len(src)-1] != '\n' {
-		src = append(src, '\n')
+	res := buf.Bytes()
+	if len(res) == 0 || res[len(res)-1] != '\n' {
+		res = append(res, '\n')
 	}
-	return src
+	return res
 }

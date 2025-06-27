@@ -2,16 +2,22 @@
 
 function minPathSum(grid: Array<Array<number>>): number {
   let rows: number = grid.length;
-  if (rows == 0) {
+  (globalThis as any).rows = rows;
+  if ((rows == 0)) {
     return 0;
   }
   let cols: number = grid[0].length;
+  (globalThis as any).cols = cols;
   let dp: Array<Array<number>> = [];
+  (globalThis as any).dp = dp;
   let r: number = 0;
-  while (r < rows) {
+  (globalThis as any).r = r;
+  while ((r < rows)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let c: number = 0;
-    while (c < cols) {
+    (globalThis as any).c = c;
+    while ((c < cols)) {
       row = row.concat([0]);
       c = c + 1;
     }
@@ -20,18 +26,22 @@ function minPathSum(grid: Array<Array<number>>): number {
   }
   dp[0][0] = grid[0][0];
   let c: number = 1;
-  while (c < cols) {
+  (globalThis as any).c = c;
+  while ((c < cols)) {
     dp[0][c] = dp[0][c - 1] + grid[0][c];
     c = c + 1;
   }
   r = 1;
-  while (r < rows) {
+  while ((r < rows)) {
     dp[r][0] = dp[r - 1][0] + grid[r][0];
     let c: number = 1;
-    while (c < cols) {
+    (globalThis as any).c = c;
+    while ((c < cols)) {
       let top: number = dp[r - 1][c];
+      (globalThis as any).top = top;
       let left: number = dp[r][c - 1];
-      if (top < left) {
+      (globalThis as any).left = left;
+      if ((top < left)) {
         dp[r][c] = top + grid[r][c];
       } else {
         dp[r][c] = left + grid[r][c];
@@ -43,42 +53,52 @@ function minPathSum(grid: Array<Array<number>>): number {
   return dp[rows - 1][cols - 1];
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !(
-      minPathSum([
-        [1, 3, 1],
-        [1, 5, 1],
-        [4, 2, 1],
-      ]) == 7
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(minPathSum([
+      [
+        1,
+        3,
+        1,
+      ],
+      [
+        1,
+        5,
+        1,
+      ],
+      [
+        4,
+        2,
+        1,
+      ],
+    ]) == 7)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !(
-      minPathSum([
-        [1, 2, 3],
-        [4, 5, 6],
-      ]) == 12
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(minPathSum([
+      [
+        1,
+        2,
+        3,
+      ],
+      [
+        4,
+        5,
+        6,
+      ],
+    ]) == 12)
+  ) throw new Error("expect failed");
 }
 
-function single_cell(): void {
-  if (!(minPathSum([[1]]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_cell(): void {
+  if (!(minPathSum([[1]]) == 1)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_cell();
+  test_example_1();
+  test_example_2();
+  test_single_cell();
 }
 main();

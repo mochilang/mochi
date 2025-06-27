@@ -2,10 +2,13 @@
 
 function isPalindromeList(values: Array<number>): boolean {
   let n: number = values.length;
+  (globalThis as any).n = n;
   let i: number = 0;
+  (globalThis as any).i = i;
   let j: number = n - 1;
-  while (i < j) {
-    if (values[i] != values[j]) {
+  (globalThis as any).j = j;
+  while ((i < j)) {
+    if ((values[i] != values[j])) {
       return false;
     }
     i = i + 1;
@@ -14,34 +17,38 @@ function isPalindromeList(values: Array<number>): boolean {
   return true;
 }
 
-function example_1(): void {
-  if (!(isPalindromeList([1, 2, 2, 1]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(isPalindromeList([
+      1,
+      2,
+      2,
+      1,
+    ]) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(isPalindromeList([1, 2]) == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(isPalindromeList([
+      1,
+      2,
+    ]) == false)
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!(isPalindromeList([7]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_single_element(): void {
+  if (!(isPalindromeList([7]) == true)) throw new Error("expect failed");
 }
 
-function empty_list(): void {
-  if (!(isPalindromeList([]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_empty_list(): void {
+  if (!(isPalindromeList([]) == true)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_element();
-  empty_list();
+  test_example_1();
+  test_example_2();
+  test_single_element();
+  test_empty_list();
 }
 main();

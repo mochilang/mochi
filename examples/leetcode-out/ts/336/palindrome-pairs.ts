@@ -2,9 +2,11 @@
 
 function isPalindrome(s: string): boolean {
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = s.length - 1;
-  while (left < right) {
-    if (s[left] != s[right]) {
+  (globalThis as any).right = right;
+  while ((left < right)) {
+    if ((_indexString(s, left) != _indexString(s, right))) {
       return false;
     }
     left = left + 1;
@@ -15,15 +17,25 @@ function isPalindrome(s: string): boolean {
 
 function palindromePairs(words: Array<string>): Array<Array<number>> {
   let result: Array<Array<number>> = [];
+  (globalThis as any).result = result;
   let n: number = words.length;
+  (globalThis as any).n = n;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let j: number = 0;
-    while (j < n) {
-      if (i != j) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
+      if ((i != j)) {
         let combined: string = words[i] + words[j];
+        (globalThis as any).combined = combined;
         if (isPalindrome(combined)) {
-          result = result.concat([[i, j]]);
+          result = result.concat([
+            [
+              i,
+              j,
+            ],
+          ]);
         }
       }
       j = j + 1;
@@ -33,55 +45,87 @@ function palindromePairs(words: Array<string>): Array<Array<number>> {
   return result;
 }
 
-function example_1(): void {
-  let words: Array<string> = ["abcd", "dcba", "lls", "s", "sssll"];
+function test_example_1(): void {
+  let words: Array<string> = [
+    "abcd",
+    "dcba",
+    "lls",
+    "s",
+    "sssll",
+  ];
+  (globalThis as any).words = words;
   if (
-    !_equal(palindromePairs(words), [
-      [0, 1],
-      [1, 0],
-      [2, 4],
-      [3, 2],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(palindromePairs(words), [
+      [
+        0,
+        1,
+      ],
+      [
+        1,
+        0,
+      ],
+      [
+        2,
+        4,
+      ],
+      [
+        3,
+        2,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  let words: Array<string> = ["bat", "tab", "cat"];
+function test_example_2(): void {
+  let words: Array<string> = [
+    "bat",
+    "tab",
+    "cat",
+  ];
+  (globalThis as any).words = words;
   if (
-    !_equal(palindromePairs(words), [
-      [0, 1],
-      [1, 0],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(palindromePairs(words), [
+      [
+        0,
+        1,
+      ],
+      [
+        1,
+        0,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  let words: Array<string> = ["a", ""];
+function test_example_3(): void {
+  let words: Array<string> = [
+    "a",
+    "",
+  ];
+  (globalThis as any).words = words;
   if (
-    !_equal(palindromePairs(words), [
-      [0, 1],
-      [1, 0],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(palindromePairs(words), [
+      [
+        0,
+        1,
+      ],
+      [
+        1,
+        0,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -89,12 +133,20 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
 }
 
 main();

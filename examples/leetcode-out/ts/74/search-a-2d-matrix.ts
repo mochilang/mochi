@@ -2,20 +2,28 @@
 
 function searchMatrix(matrix: Array<Array<number>>, target: number): boolean {
   let m: number = matrix.length;
-  if (m == 0) {
+  (globalThis as any).m = m;
+  if ((m == 0)) {
     return false;
   }
   let n: number = matrix[0].length;
+  (globalThis as any).n = n;
   let left: number = 0;
-  let right: number = m * n - 1;
-  while (left <= right) {
+  (globalThis as any).left = left;
+  let right: number = (m * n) - 1;
+  (globalThis as any).right = right;
+  while ((left <= right)) {
     let mid: number = left + Math.trunc((right - left) / 2);
+    (globalThis as any).mid = mid;
     let row: number = Math.trunc(mid / n);
+    (globalThis as any).row = row;
     let col: number = mid % n;
+    (globalThis as any).col = col;
     let value: number = matrix[row][col];
-    if (value == target) {
+    (globalThis as any).value = value;
+    if ((value == target)) {
       return true;
-    } else if (value < target) {
+    } else if ((value < target)) {
       left = mid + 1;
     } else {
       right = mid - 1;
@@ -24,56 +32,77 @@ function searchMatrix(matrix: Array<Array<number>>, target: number): boolean {
   return false;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !(
-      searchMatrix(
-        [
-          [1, 3, 5, 7],
-          [10, 11, 16, 20],
-          [23, 30, 34, 60],
-        ],
+    !(searchMatrix([
+      [
+        1,
         3,
-      ) == true
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+        5,
+        7,
+      ],
+      [
+        10,
+        11,
+        16,
+        20,
+      ],
+      [
+        23,
+        30,
+        34,
+        60,
+      ],
+    ], 3) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !(
-      searchMatrix(
-        [
-          [1, 3, 5, 7],
-          [10, 11, 16, 20],
-          [23, 30, 34, 60],
-        ],
-        13,
-      ) == false
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(searchMatrix([
+      [
+        1,
+        3,
+        5,
+        7,
+      ],
+      [
+        10,
+        11,
+        16,
+        20,
+      ],
+      [
+        23,
+        30,
+        34,
+        60,
+      ],
+    ], 13) == false)
+  ) throw new Error("expect failed");
 }
 
-function single_row(): void {
-  if (!(searchMatrix([[1, 2, 3, 4]], 3) == true)) {
-    throw new Error("expect failed");
-  }
+function test_single_row(): void {
+  if (
+    !(searchMatrix([
+      [
+        1,
+        2,
+        3,
+        4,
+      ],
+    ], 3) == true)
+  ) throw new Error("expect failed");
 }
 
-function not_found(): void {
-  if (!(searchMatrix([[5]], 1) == false)) {
-    throw new Error("expect failed");
-  }
+function test_not_found(): void {
+  if (!(searchMatrix([[5]], 1) == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_row();
-  not_found();
+  test_example_1();
+  test_example_2();
+  test_single_row();
+  test_not_found();
 }
 main();

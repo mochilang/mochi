@@ -2,53 +2,58 @@
 
 function isSubsequence(s: string, t: string): boolean {
   let n: number = s.length;
+  (globalThis as any).n = n;
   let m: number = t.length;
+  (globalThis as any).m = m;
   let i: number = 0;
+  (globalThis as any).i = i;
   let j: number = 0;
-  while (i < n && j < m) {
-    if (s[i] == t[j]) {
+  (globalThis as any).j = j;
+  while (((i < n) && (j < m))) {
+    if ((_indexString(s, i) == _indexString(t, j))) {
       i = i + 1;
     }
     j = j + 1;
   }
-  return i == n;
+  return (i == n);
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(isSubsequence("abc", "ahbgdc") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(isSubsequence("axc", "ahbgdc") == false)) {
     throw new Error("expect failed");
   }
 }
 
-function empty_s(): void {
-  if (!(isSubsequence("", "ahbgdc") == true)) {
-    throw new Error("expect failed");
-  }
+function test_empty_s(): void {
+  if (!(isSubsequence("", "ahbgdc") == true)) throw new Error("expect failed");
 }
 
-function empty_t(): void {
-  if (!(isSubsequence("a", "") == false)) {
-    throw new Error("expect failed");
-  }
+function test_empty_t(): void {
+  if (!(isSubsequence("a", "") == false)) throw new Error("expect failed");
 }
 
-function both_empty(): void {
-  if (!(isSubsequence("", "") == true)) {
-    throw new Error("expect failed");
-  }
+function test_both_empty(): void {
+  if (!(isSubsequence("", "") == true)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty_s();
-  empty_t();
-  both_empty();
+  test_example_1();
+  test_example_2();
+  test_empty_s();
+  test_empty_t();
+  test_both_empty();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

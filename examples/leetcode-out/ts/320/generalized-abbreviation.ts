@@ -2,20 +2,23 @@
 
 function generateAbbreviations(word: string): Array<string> {
   let result: Array<string> = [];
+  (globalThis as any).result = result;
   function backtrack(pos: number, cur: string, count: number): void {
-    if (pos == word.length) {
+    if ((pos == word.length)) {
       let tmp: string = cur;
-      if (count > 0) {
+      (globalThis as any).tmp = tmp;
+      if ((count > 0)) {
         tmp = tmp + String(count);
       }
       result = result.concat([tmp]);
     } else {
       backtrack(pos + 1, cur, count + 1);
       let next: string = cur;
-      if (count > 0) {
+      (globalThis as any).next = next;
+      if ((count > 0)) {
         next = next + String(count);
       }
-      next = next + word[pos];
+      next = next + _indexString(word, pos);
       backtrack(pos + 1, next, 0);
     }
   }
@@ -23,9 +26,9 @@ function generateAbbreviations(word: string): Array<string> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(generateAbbreviations("word"), [
+    !(_equal(generateAbbreviations("word"), [
       "4",
       "3d",
       "2r1",
@@ -42,28 +45,24 @@ function example_1(): void {
       "wo1d",
       "wor1",
       "word",
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function empty_string(): void {
-  if (!_equal(generateAbbreviations(""), [""])) {
+function test_empty_string(): void {
+  if (!(_equal(generateAbbreviations(""), [""]))) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  empty_string();
+  test_example_1();
+  test_empty_string();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -71,12 +70,20 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
 }
 
 main();

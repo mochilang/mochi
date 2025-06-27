@@ -2,9 +2,11 @@
 
 function hammingWeight(n: number): number {
   let count: number = 0;
+  (globalThis as any).count = count;
   let num: number = n;
-  while (num > 0) {
-    if (num % 2 == 1) {
+  (globalThis as any).num = num;
+  while ((num > 0)) {
+    if (((num % 2) == 1)) {
       count = count + 1;
     }
     num = Math.trunc(num / 2);
@@ -12,41 +14,31 @@ function hammingWeight(n: number): number {
   return count;
 }
 
-function example_1(): void {
-  if (!(hammingWeight(11) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(hammingWeight(11) == 3)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(hammingWeight(128) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(hammingWeight(128) == 1)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(hammingWeight(4294967293) == 31)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(hammingWeight(4294967293) == 31)) throw new Error("expect failed");
 }
 
-function zero(): void {
-  if (!(hammingWeight(0) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_zero(): void {
+  if (!(hammingWeight(0) == 0)) throw new Error("expect failed");
 }
 
-function all_ones(): void {
-  if (!(hammingWeight(4294967295) == 32)) {
-    throw new Error("expect failed");
-  }
+function test_all_ones(): void {
+  if (!(hammingWeight(4294967295) == 32)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  zero();
-  all_ones();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_zero();
+  test_all_ones();
 }
 main();

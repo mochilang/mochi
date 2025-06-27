@@ -2,37 +2,62 @@
 
 function generatePalindromes(s: string): Array<string> {
   let letters: Array<string> = [];
+  (globalThis as any).letters = letters;
   let i: number = 0;
-  while (i < s.length) {
-    letters = letters.concat([s[i]]);
+  (globalThis as any).i = i;
+  while ((i < s.length)) {
+    letters = letters.concat([_indexString(s, i)]);
     i = i + 1;
   }
-  let counts: Array<Record<any, any>> = (() => {
+  let counts: Array<Record<string, any>> = (() => {
     const _src = letters;
-    const _res = [];
+    const _map = new Map<string, any>();
+    const _order: string[] = [];
+    let _items = [];
     for (const ch of _src) {
-      _res.push({ ch: g.key, cnt: _count(g) });
+      const _key = ch;
+      const _ks = String(_key);
+      let _g = _map.get(_ks);
+      if (!_g) {
+        _g = { key: _key, items: [] };
+        _map.set(_ks, _g);
+        _order.push(_ks);
+      }
+      _g.items.push(ch);
+    }
+    let _groups = _order.map((k) => _map.get(k)!);
+    const _res = [];
+    for (const g of _groups) {
+      _res.push({
+        "ch": g.key,
+        "cnt": _count(g),
+      });
     }
     return _res;
   })();
+  (globalThis as any).counts = counts;
   let odd: number = 0;
+  (globalThis as any).odd = odd;
   let center: string = "";
+  (globalThis as any).center = center;
   let half: Array<string> = [];
+  (globalThis as any).half = half;
   for (const item of counts) {
     if (_equal(item.cnt % 2, 1)) {
       odd = odd + 1;
       center = item.ch;
     }
     let j: number = 0;
-    while (j < item.cnt / 2) {
+    (globalThis as any).j = j;
+    while ((j < Math.trunc(item.cnt / 2))) {
       half = half.concat([item.ch]);
       j = j + 1;
     }
   }
-  if (odd > 1) {
+  if ((odd > 1)) {
     return [];
   }
-  let arr: Array<any> = (() => {
+  let arr: Array<string> = (() => {
     const _src = half;
     let _items = [];
     for (const x of _src) {
@@ -46,9 +71,12 @@ function generatePalindromes(s: string): Array<string> {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -57,33 +85,43 @@ function generatePalindromes(s: string): Array<string> {
     }
     return _res;
   })();
+  (globalThis as any).arr = arr;
   let n: number = arr.length;
+  (globalThis as any).n = n;
   let result: Array<string> = [];
+  (globalThis as any).result = result;
   let used: Record<number, boolean> = {};
+  (globalThis as any).used = used;
   function backtrack(path: Array<string>): void {
-    if (path.length == n) {
+    if ((path.length == n)) {
       let left: string = "";
+      (globalThis as any).left = left;
       let k: number = 0;
-      while (k < n) {
+      (globalThis as any).k = k;
+      while ((k < n)) {
         left = left + path[k];
         k = k + 1;
       }
       let right: string = "";
+      (globalThis as any).right = right;
       k = n - 1;
-      while (k >= 0) {
+      while ((k >= 0)) {
         right = right + path[k];
         k = k - 1;
       }
       let pal: string = left;
-      if (odd == 1) {
+      (globalThis as any).pal = pal;
+      if ((odd == 1)) {
         pal = pal + center;
       }
       pal = pal + right;
       result = result.concat([pal]);
     } else {
       let i: number = 0;
-      while (i < n) {
+      (globalThis as any).i = i;
+      while ((i < n)) {
         let curUsed: boolean = false;
+        (globalThis as any).curUsed = curUsed;
         if (Object.prototype.hasOwnProperty.call(used, String(i))) {
           curUsed = used[i];
         }
@@ -91,12 +129,13 @@ function generatePalindromes(s: string): Array<string> {
           i = i + 1;
           continue;
         }
-        if (i > 0 && _equal(arr[i], arr[i - 1])) {
+        if (((i > 0) && (arr[i] == arr[i - 1]))) {
           let prevUsed: boolean = false;
+          (globalThis as any).prevUsed = prevUsed;
           if (Object.prototype.hasOwnProperty.call(used, String(i - 1))) {
             prevUsed = used[i - 1];
           }
-          if (!prevUsed) {
+          if ((!prevUsed)) {
             i = i + 1;
             continue;
           }
@@ -112,9 +151,10 @@ function generatePalindromes(s: string): Array<string> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let ans: Array<string> = generatePalindromes("aabb");
-  let sorted: Array<any> = (() => {
+  (globalThis as any).ans = ans;
+  let sorted: Array<string> = (() => {
     const _src = ans;
     let _items = [];
     for (const x of _src) {
@@ -128,9 +168,12 @@ function example_1(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -139,35 +182,38 @@ function example_1(): void {
     }
     return _res;
   })();
-  if (!_equal(sorted, ["abba", "baab"])) {
+  (globalThis as any).sorted = sorted;
+  if (
+    !(_equal(sorted, [
+      "abba",
+      "baab",
+    ]))
+  ) throw new Error("expect failed");
+}
+
+function test_example_2(): void {
+  if (!(_equal(generatePalindromes("abc"), []))) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
-  if (!_equal(generatePalindromes("abc"), [])) {
+function test_single_char(): void {
+  if (!(_equal(generatePalindromes("a"), ["a"]))) {
     throw new Error("expect failed");
   }
 }
 
-function single_char(): void {
-  if (!_equal(generatePalindromes("a"), ["a"])) {
-    throw new Error("expect failed");
-  }
-}
-
-function triple(): void {
+function test_triple(): void {
   let res: Array<string> = generatePalindromes("aaa");
-  if (!_equal(res, ["aaa"])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).res = res;
+  if (!(_equal(res, ["aaa"]))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_char();
-  triple();
+  test_example_1();
+  test_example_2();
+  test_single_char();
+  test_triple();
 }
 function _count(v: any): number {
   if (Array.isArray(v)) return v.length;
@@ -181,9 +227,7 @@ function _count(v: any): number {
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -191,12 +235,20 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
 }
 
 main();

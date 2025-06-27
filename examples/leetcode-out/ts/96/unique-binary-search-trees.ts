@@ -2,20 +2,23 @@
 
 function numTrees(n: number): number {
   let dp: Array<number> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i <= n) {
+  (globalThis as any).i = i;
+  while ((i <= n)) {
     dp = dp.concat([0]);
     i = i + 1;
   }
   dp[0] = 1;
-  if (n >= 1) {
+  if ((n >= 1)) {
     dp[1] = 1;
   }
   i = 2;
-  while (i <= n) {
+  while ((i <= n)) {
     let j: number = 1;
-    while (j <= i) {
-      dp[i] = dp[i] + dp[j - 1] * dp[i - j];
+    (globalThis as any).j = j;
+    while ((j <= i)) {
+      dp[i] = dp[i] + (dp[j - 1] * dp[i - j]);
       j = j + 1;
     }
     i = i + 1;
@@ -23,34 +26,26 @@ function numTrees(n: number): number {
   return dp[n];
 }
 
-function example_1(): void {
-  if (!(numTrees(3) == 5)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(numTrees(3) == 5)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(numTrees(1) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(numTrees(1) == 1)) throw new Error("expect failed");
 }
 
-function n___2(): void {
-  if (!(numTrees(2) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_n___2(): void {
+  if (!(numTrees(2) == 2)) throw new Error("expect failed");
 }
 
-function n___5(): void {
-  if (!(numTrees(5) == 42)) {
-    throw new Error("expect failed");
-  }
+function test_n___5(): void {
+  if (!(numTrees(5) == 42)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  n___2();
-  n___5();
+  test_example_1();
+  test_example_2();
+  test_n___2();
+  test_n___5();
 }
 main();

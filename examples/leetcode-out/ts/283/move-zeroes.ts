@@ -2,66 +2,118 @@
 
 function moveZeroes(nums: Array<number>): Array<number> {
   let result: Array<number> = nums;
+  (globalThis as any).result = result;
   let n: number = nums.length;
+  (globalThis as any).n = n;
   let insert: number = 0;
+  (globalThis as any).insert = insert;
   let i: number = 0;
-  while (i < n) {
-    if (nums[i] != 0) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
+    if ((nums[i] != 0)) {
       result[insert] = nums[i];
       insert = insert + 1;
     }
     i = i + 1;
   }
-  while (insert < n) {
+  while ((insert < n)) {
     result[insert] = 0;
     insert = insert + 1;
   }
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(moveZeroes([0, 1, 0, 3, 12]), [1, 3, 12, 0, 0])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      moveZeroes([
+        0,
+        1,
+        0,
+        3,
+        12,
+      ]),
+      [
+        1,
+        3,
+        12,
+        0,
+        0,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(moveZeroes([0]), [0])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(_equal(moveZeroes([0]), [0]))) throw new Error("expect failed");
 }
 
-function all_zeros(): void {
-  if (!_equal(moveZeroes([0, 0, 0]), [0, 0, 0])) {
-    throw new Error("expect failed");
-  }
+function test_all_zeros(): void {
+  if (
+    !(_equal(
+      moveZeroes([
+        0,
+        0,
+        0,
+      ]),
+      [
+        0,
+        0,
+        0,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function no_zeros(): void {
-  if (!_equal(moveZeroes([1, 2, 3]), [1, 2, 3])) {
-    throw new Error("expect failed");
-  }
+function test_no_zeros(): void {
+  if (
+    !(_equal(
+      moveZeroes([
+        1,
+        2,
+        3,
+      ]),
+      [
+        1,
+        2,
+        3,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function mixed(): void {
-  if (!_equal(moveZeroes([4, 0, 5, 0, 6]), [4, 5, 6, 0, 0])) {
-    throw new Error("expect failed");
-  }
+function test_mixed(): void {
+  if (
+    !(_equal(
+      moveZeroes([
+        4,
+        0,
+        5,
+        0,
+        6,
+      ]),
+      [
+        4,
+        5,
+        6,
+        0,
+        0,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  all_zeros();
-  no_zeros();
-  mixed();
+  test_example_1();
+  test_example_2();
+  test_all_zeros();
+  test_no_zeros();
+  test_mixed();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -69,8 +121,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

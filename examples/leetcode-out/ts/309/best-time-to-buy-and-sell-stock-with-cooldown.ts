@@ -2,58 +2,75 @@
 
 function maxProfit(prices: Array<number>): number {
   let n: number = prices.length;
-  if (n == 0) {
+  (globalThis as any).n = n;
+  if ((n == 0)) {
     return 0;
   }
   let hold: number = -prices[0];
+  (globalThis as any).hold = hold;
   let sold: number = 0;
+  (globalThis as any).sold = sold;
   let rest: number = 0;
+  (globalThis as any).rest = rest;
   let i: number = 1;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let prevHold: number = hold;
+    (globalThis as any).prevHold = prevHold;
     let prevSold: number = sold;
+    (globalThis as any).prevSold = prevSold;
     let prevRest: number = rest;
+    (globalThis as any).prevRest = prevRest;
     let buy: number = prevRest - prices[i];
-    if (buy > prevHold) {
+    (globalThis as any).buy = buy;
+    if ((buy > prevHold)) {
       hold = buy;
     } else {
       hold = prevHold;
     }
     sold = prevHold + prices[i];
-    if (prevSold > prevRest) {
+    if ((prevSold > prevRest)) {
       rest = prevSold;
     } else {
       rest = prevRest;
     }
     i = i + 1;
   }
-  if (sold > rest) {
+  if ((sold > rest)) {
     return sold;
   }
   return rest;
 }
 
-function example_1(): void {
-  if (!(maxProfit([1, 2, 3, 0, 2]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(maxProfit([
+      1,
+      2,
+      3,
+      0,
+      2,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function cooldown(): void {
-  if (!(maxProfit([2, 1, 4]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_cooldown(): void {
+  if (
+    !(maxProfit([
+      2,
+      1,
+      4,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function single_day(): void {
-  if (!(maxProfit([5]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_single_day(): void {
+  if (!(maxProfit([5]) == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  cooldown();
-  single_day();
+  test_example_1();
+  test_cooldown();
+  test_single_day();
 }
 main();

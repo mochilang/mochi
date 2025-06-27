@@ -2,11 +2,13 @@
 
 function increasingTriplet(nums: Array<number>): boolean {
   let first: number = 2147483647;
+  (globalThis as any).first = first;
   let second: number = 2147483647;
+  (globalThis as any).second = second;
   for (const n of nums) {
-    if (n <= first) {
+    if ((n <= first)) {
       first = n;
-    } else if (n <= second) {
+    } else if ((n <= second)) {
       second = n;
     } else {
       return true;
@@ -15,34 +17,59 @@ function increasingTriplet(nums: Array<number>): boolean {
   return false;
 }
 
-function example_1(): void {
-  if (!(increasingTriplet([1, 2, 3, 4, 5]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(increasingTriplet([
+      1,
+      2,
+      3,
+      4,
+      5,
+    ]) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(increasingTriplet([5, 4, 3, 2, 1]) == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(increasingTriplet([
+      5,
+      4,
+      3,
+      2,
+      1,
+    ]) == false)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(increasingTriplet([2, 1, 5, 0, 4, 6]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(increasingTriplet([
+      2,
+      1,
+      5,
+      0,
+      4,
+      6,
+    ]) == true)
+  ) throw new Error("expect failed");
 }
 
-function duplicate_numbers(): void {
-  if (!(increasingTriplet([2, 2, 2, 2, 2]) == false)) {
-    throw new Error("expect failed");
-  }
+function test_duplicate_numbers(): void {
+  if (
+    !(increasingTriplet([
+      2,
+      2,
+      2,
+      2,
+      2,
+    ]) == false)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  duplicate_numbers();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_duplicate_numbers();
 }
 main();

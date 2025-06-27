@@ -2,31 +2,43 @@
 
 function maxPoints(points: Array<Array<number>>): number {
   let n: number = points.length;
-  if (n <= 2) {
+  (globalThis as any).n = n;
+  if ((n <= 2)) {
     return n;
   }
   let answer: number = 0;
+  (globalThis as any).answer = answer;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let slopes: Record<string, number> = {};
+    (globalThis as any).slopes = slopes;
     let duplicates: number = 1;
+    (globalThis as any).duplicates = duplicates;
     let j: number = i + 1;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       let dx: number = points[j][0] - points[i][0];
+      (globalThis as any).dx = dx;
       let dy: number = points[j][1] - points[i][1];
-      if (dx == 0 && dy == 0) {
+      (globalThis as any).dy = dy;
+      if (((dx == 0) && (dy == 0))) {
         duplicates = duplicates + 1;
       } else {
         let g: number = gcd(dx, dy);
+        (globalThis as any).g = g;
         let sx: number = Math.trunc(dx / g);
+        (globalThis as any).sx = sx;
         let sy: number = Math.trunc(dy / g);
-        if (sx == 0) {
+        (globalThis as any).sy = sy;
+        if ((sx == 0)) {
           sy = 1;
-        } else if (sx < 0) {
+        } else if ((sx < 0)) {
           sx = -sx;
           sy = -sy;
         }
         let key: string = String(sx) + "/" + String(sy);
+        (globalThis as any).key = key;
         if (Object.prototype.hasOwnProperty.call(slopes, String(key))) {
           slopes[key] = slopes[key] + 1;
         } else {
@@ -36,13 +48,15 @@ function maxPoints(points: Array<Array<number>>): number {
       j = j + 1;
     }
     let localMax: number = 0;
+    (globalThis as any).localMax = localMax;
     for (const key of Object.keys(slopes)) {
       let count: number = slopes[key];
-      if (count > localMax) {
+      (globalThis as any).count = count;
+      if ((count > localMax)) {
         localMax = count;
       }
     }
-    if (localMax + duplicates > answer) {
+    if (((localMax + duplicates) > answer)) {
       answer = localMax + duplicates;
     }
     i = i + 1;
@@ -51,63 +65,90 @@ function maxPoints(points: Array<Array<number>>): number {
 }
 
 function abs(x: number): number {
-  if (x < 0) {
-    return -x;
+  if ((x < 0)) {
+    return (-x);
   }
   return x;
 }
 
 function gcd(a: number, b: number): number {
   let x: number = abs(a);
+  (globalThis as any).x = x;
   let y: number = abs(b);
-  while (y != 0) {
+  (globalThis as any).y = y;
+  while ((y != 0)) {
     let temp: number = x % y;
+    (globalThis as any).temp = temp;
     x = y;
     y = temp;
   }
   return x;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !(
-      maxPoints([
-        [1, 1],
-        [2, 2],
-        [3, 3],
-      ]) == 3
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(maxPoints([
+      [
+        1,
+        1,
+      ],
+      [
+        2,
+        2,
+      ],
+      [
+        3,
+        3,
+      ],
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !(
-      maxPoints([
-        [1, 1],
-        [3, 2],
-        [5, 3],
-        [4, 1],
-        [2, 3],
-        [1, 4],
-      ]) == 4
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(maxPoints([
+      [
+        1,
+        1,
+      ],
+      [
+        3,
+        2,
+      ],
+      [
+        5,
+        3,
+      ],
+      [
+        4,
+        1,
+      ],
+      [
+        2,
+        3,
+      ],
+      [
+        1,
+        4,
+      ],
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
-function single_point(): void {
-  if (!(maxPoints([[0, 0]]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_point(): void {
+  if (
+    !(maxPoints([
+      [
+        0,
+        0,
+      ],
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_point();
+  test_example_1();
+  test_example_2();
+  test_single_point();
 }
 main();

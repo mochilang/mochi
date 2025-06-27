@@ -2,16 +2,19 @@
 
 function wiggleSort(nums: Array<number>): Array<number> {
   let i: number = 1;
-  while (i < nums.length) {
-    if (i % 2 == 1) {
-      if (nums[i] < nums[i - 1]) {
+  (globalThis as any).i = i;
+  while ((i < nums.length)) {
+    if (((i % 2) == 1)) {
+      if ((nums[i] < nums[i - 1])) {
         let temp: number = nums[i];
+        (globalThis as any).temp = temp;
         nums[i] = nums[i - 1];
         nums[i - 1] = temp;
       }
     } else {
-      if (nums[i] > nums[i - 1]) {
+      if ((nums[i] > nums[i - 1])) {
         let temp: number = nums[i];
+        (globalThis as any).temp = temp;
         nums[i] = nums[i - 1];
         nums[i - 1] = temp;
       }
@@ -21,42 +24,96 @@ function wiggleSort(nums: Array<number>): Array<number> {
   return nums;
 }
 
-function example_1(): void {
-  if (!_equal(wiggleSort([3, 5, 2, 1, 6, 4]), [3, 5, 1, 6, 2, 4])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      wiggleSort([
+        3,
+        5,
+        2,
+        1,
+        6,
+        4,
+      ]),
+      [
+        3,
+        5,
+        1,
+        6,
+        2,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(wiggleSort([6, 6, 5, 6, 3, 8]), [6, 6, 5, 6, 3, 8])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      wiggleSort([
+        6,
+        6,
+        5,
+        6,
+        3,
+        8,
+      ]),
+      [
+        6,
+        6,
+        5,
+        6,
+        3,
+        8,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function already_wiggle(): void {
-  if (!_equal(wiggleSort([1, 3, 2, 4]), [1, 3, 2, 4])) {
-    throw new Error("expect failed");
-  }
+function test_already_wiggle(): void {
+  if (
+    !(_equal(
+      wiggleSort([
+        1,
+        3,
+        2,
+        4,
+      ]),
+      [
+        1,
+        3,
+        2,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function two_elements(): void {
-  if (!_equal(wiggleSort([2, 1]), [1, 2])) {
-    throw new Error("expect failed");
-  }
+function test_two_elements(): void {
+  if (
+    !(_equal(
+      wiggleSort([
+        2,
+        1,
+      ]),
+      [
+        1,
+        2,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  already_wiggle();
-  two_elements();
+  test_example_1();
+  test_example_2();
+  test_already_wiggle();
+  test_two_elements();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -64,8 +121,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

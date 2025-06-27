@@ -2,38 +2,44 @@
 
 function simplifyPath(path: string): string {
   let stack: Array<string> = [];
+  (globalThis as any).stack = stack;
   let part: string = "";
+  (globalThis as any).part = part;
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = path.length;
-  while (i <= n) {
-    if (i == n) {
-      if (part == "..") {
-        if (stack.length > 0) {
+  (globalThis as any).n = n;
+  while ((i <= n)) {
+    if ((i == n)) {
+      if ((part == "..")) {
+        if ((stack.length > 0)) {
           stack = stack.slice(0, stack.length - 1);
         }
-      } else if (part != "" && part != ".") {
+      } else if (((part != "") && (part != "."))) {
         stack = stack.concat([part]);
       }
       part = "";
-    } else if (path[i] == "/") {
-      if (part == "..") {
-        if (stack.length > 0) {
+    } else if ((_indexString(path, i) == "/")) {
+      if ((part == "..")) {
+        if ((stack.length > 0)) {
           stack = stack.slice(0, stack.length - 1);
         }
-      } else if (part != "" && part != ".") {
+      } else if (((part != "") && (part != "."))) {
         stack = stack.concat([part]);
       }
       part = "";
     } else {
-      part = part + path[i];
+      part = part + _indexString(path, i);
     }
     i = i + 1;
   }
   let result: string = "/";
+  (globalThis as any).result = result;
   let j: number = 0;
-  while (j < stack.length) {
+  (globalThis as any).j = j;
+  while ((j < stack.length)) {
     result = result + stack[j];
-    if (j < stack.length - 1) {
+    if ((j < (stack.length - 1))) {
       result = result + "/";
     }
     j = j + 1;
@@ -41,48 +47,51 @@ function simplifyPath(path: string): string {
   return result;
 }
 
-function example_1(): void {
-  if (!(simplifyPath("/home/") == "/home")) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(simplifyPath("/home/") == "/home")) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(simplifyPath("/../") == "/")) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(simplifyPath("/../") == "/")) throw new Error("expect failed");
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(simplifyPath("/home//foo/") == "/home/foo")) {
     throw new Error("expect failed");
   }
 }
 
-function complex(): void {
+function test_complex(): void {
   if (!(simplifyPath("/a/./b/../../c/") == "/c")) {
     throw new Error("expect failed");
   }
 }
 
-function dots(): void {
+function test_dots(): void {
   if (!(simplifyPath("/a/../../b/../c//.//") == "/c")) {
     throw new Error("expect failed");
   }
 }
 
-function long(): void {
+function test_long(): void {
   if (!(simplifyPath("/a//b////c/d//././/..") == "/a/b/c")) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  complex();
-  dots();
-  long();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_complex();
+  test_dots();
+  test_long();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

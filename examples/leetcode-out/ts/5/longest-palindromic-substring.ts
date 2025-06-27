@@ -2,70 +2,93 @@
 
 function expand(s: string, left: number, right: number): number {
   let l: number = left;
+  (globalThis as any).l = l;
   let r: number = right;
+  (globalThis as any).r = r;
   let n: number = s.length;
-  while (l >= 0 && r < n) {
-    if (s[l] != s[r]) {
+  (globalThis as any).n = n;
+  while (((l >= 0) && (r < n))) {
+    if ((_indexString(s, l) != _indexString(s, r))) {
       break;
     }
     l = l - 1;
     r = r + 1;
   }
-  return r - l - 1;
+  return ((r - l) - 1);
 }
 
 function longestPalindrome(s: string): string {
-  if (s.length <= 1) {
+  if ((s.length <= 1)) {
     return s;
   }
   let start: number = 0;
+  (globalThis as any).start = start;
   let end: number = 0;
+  (globalThis as any).end = end;
   let n: number = s.length;
+  (globalThis as any).n = n;
   for (let i: number = 0; i < n; i++) {
     let len1: number = expand(s, i, i);
+    (globalThis as any).len1 = len1;
     let len2: number = expand(s, i, i + 1);
+    (globalThis as any).len2 = len2;
     let l: number = len1;
-    if (len2 > len1) {
+    (globalThis as any).l = l;
+    if ((len2 > len1)) {
       l = len2;
     }
-    if (l > end - start) {
-      start = i - Math.trunc((l - 1) / 2);
-      end = i + Math.trunc(l / 2);
+    if ((l > (end - start))) {
+      start = i - (Math.trunc((l - 1) / 2));
+      end = i + (Math.trunc(l / 2));
     }
   }
-  return s.slice(start, end + 1);
+  return _sliceString(s, start, end + 1);
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let ans: string = longestPalindrome("babad");
-  if (!(ans == "bab" || ans == "aba")) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).ans = ans;
+  if (!((ans == "bab") || (ans == "aba"))) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(longestPalindrome("cbbd") == "bb")) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(longestPalindrome("cbbd") == "bb")) throw new Error("expect failed");
 }
 
-function single_char(): void {
-  if (!(longestPalindrome("a") == "a")) {
-    throw new Error("expect failed");
-  }
+function test_single_char(): void {
+  if (!(longestPalindrome("a") == "a")) throw new Error("expect failed");
 }
 
-function two_chars(): void {
+function test_two_chars(): void {
   let ans: string = longestPalindrome("ac");
-  if (!(ans == "a" || ans == "c")) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).ans = ans;
+  if (!((ans == "a") || (ans == "c"))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_char();
-  two_chars();
+  test_example_1();
+  test_example_2();
+  test_single_char();
+  test_two_chars();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

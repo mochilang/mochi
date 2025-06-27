@@ -8,15 +8,20 @@ function isStrobogrammatic(num: string): boolean {
     "8": "8",
     "9": "6",
   };
+  (globalThis as any).pairs = pairs;
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = num.length - 1;
-  while (left <= right) {
-    let a: string = num[left];
-    let b: string = num[right];
-    if (!Object.prototype.hasOwnProperty.call(pairs, String(a))) {
+  (globalThis as any).right = right;
+  while ((left <= right)) {
+    let a: string = _indexString(num, left);
+    (globalThis as any).a = a;
+    let b: string = _indexString(num, right);
+    (globalThis as any).b = b;
+    if ((!(Object.prototype.hasOwnProperty.call(pairs, String(a))))) {
       return false;
     }
-    if (pairs[a] != b) {
+    if ((pairs[a] != b)) {
       return false;
     }
     left = left + 1;
@@ -25,27 +30,28 @@ function isStrobogrammatic(num: string): boolean {
   return true;
 }
 
-function example_1(): void {
-  if (!(isStrobogrammatic("69") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(isStrobogrammatic("69") == true)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(isStrobogrammatic("88") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(isStrobogrammatic("88") == true)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(isStrobogrammatic("962") == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(isStrobogrammatic("962") == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

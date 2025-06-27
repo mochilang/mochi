@@ -2,20 +2,27 @@
 
 function largestRectangleArea(heights: Array<number>): number {
   let n: number = heights.length;
+  (globalThis as any).n = n;
   let stack: Array<number> = [];
+  (globalThis as any).stack = stack;
   let maxArea: number = 0;
+  (globalThis as any).maxArea = maxArea;
   let i: number = 0;
-  while (i < n) {
-    while (stack.length > 0) {
-      if (heights[i] < heights[stack[stack.length - 1]]) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
+    while ((stack.length > 0)) {
+      if ((heights[i] < heights[stack[stack.length - 1]])) {
         let h: number = heights[stack[stack.length - 1]];
+        (globalThis as any).h = h;
         stack = stack.slice(0, stack.length - 1);
         let width: number = i;
-        if (stack.length > 0) {
-          width = i - stack[stack.length - 1] - 1;
+        (globalThis as any).width = width;
+        if ((stack.length > 0)) {
+          width = (i - stack[stack.length - 1]) - 1;
         }
         let area: number = h * width;
-        if (area > maxArea) {
+        (globalThis as any).area = area;
+        if ((area > maxArea)) {
           maxArea = area;
         }
       } else {
@@ -25,49 +32,64 @@ function largestRectangleArea(heights: Array<number>): number {
     stack = stack.concat([i]);
     i = i + 1;
   }
-  while (stack.length > 0) {
+  while ((stack.length > 0)) {
     let h: number = heights[stack[stack.length - 1]];
+    (globalThis as any).h = h;
     stack = stack.slice(0, stack.length - 1);
     let width: number = n;
-    if (stack.length > 0) {
-      width = n - stack[stack.length - 1] - 1;
+    (globalThis as any).width = width;
+    if ((stack.length > 0)) {
+      width = (n - stack[stack.length - 1]) - 1;
     }
     let area: number = h * width;
-    if (area > maxArea) {
+    (globalThis as any).area = area;
+    if ((area > maxArea)) {
       maxArea = area;
     }
   }
   return maxArea;
 }
 
-function example_1(): void {
-  if (!(largestRectangleArea([2, 1, 5, 6, 2, 3]) == 10)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(largestRectangleArea([
+      2,
+      1,
+      5,
+      6,
+      2,
+      3,
+    ]) == 10)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(largestRectangleArea([2, 4]) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(largestRectangleArea([
+      2,
+      4,
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
-function single_bar(): void {
-  if (!(largestRectangleArea([1]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_bar(): void {
+  if (!(largestRectangleArea([1]) == 1)) throw new Error("expect failed");
 }
 
-function valley(): void {
-  if (!(largestRectangleArea([2, 1, 2]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_valley(): void {
+  if (
+    !(largestRectangleArea([
+      2,
+      1,
+      2,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_bar();
-  valley();
+  test_example_1();
+  test_example_2();
+  test_single_bar();
+  test_valley();
 }
 main();

@@ -2,23 +2,29 @@
 
 function romanToInt(s: string): number {
   let values: Record<string, number> = {
-    I: 1,
-    V: 5,
-    X: 10,
-    L: 50,
-    C: 100,
-    D: 500,
-    M: 1000,
+    "I": 1,
+    "V": 5,
+    "X": 10,
+    "L": 50,
+    "C": 100,
+    "D": 500,
+    "M": 1000,
   };
+  (globalThis as any).values = values;
   let total: number = 0;
+  (globalThis as any).total = total;
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = s.length;
-  while (i < n) {
-    let curr: number = values[s[i]];
-    if (i + 1 < n) {
-      let next: number = values[s[i + 1]];
-      if (curr < next) {
-        total = total + next - curr;
+  (globalThis as any).n = n;
+  while ((i < n)) {
+    let curr: number = values[_indexString(s, i)];
+    (globalThis as any).curr = curr;
+    if (((i + 1) < n)) {
+      let next: number = values[_indexString(s, i + 1)];
+      (globalThis as any).next = next;
+      if ((curr < next)) {
+        total = (total + next) - curr;
         i = i + 2;
         continue;
       }
@@ -29,47 +35,40 @@ function romanToInt(s: string): number {
   return total;
 }
 
-function example_1(): void {
-  if (!(romanToInt("III") == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(romanToInt("III") == 3)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(romanToInt("LVIII") == 58)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(romanToInt("LVIII") == 58)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(romanToInt("MCMXCIV") == 1994)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(romanToInt("MCMXCIV") == 1994)) throw new Error("expect failed");
 }
 
-function subtractive(): void {
-  if (!(romanToInt("IV") == 4)) {
-    throw new Error("expect failed");
-  }
-  if (!(romanToInt("IX") == 9)) {
-    throw new Error("expect failed");
-  }
+function test_subtractive(): void {
+  if (!(romanToInt("IV") == 4)) throw new Error("expect failed");
+  if (!(romanToInt("IX") == 9)) throw new Error("expect failed");
 }
 
-function tens(): void {
-  if (!(romanToInt("XL") == 40)) {
-    throw new Error("expect failed");
-  }
-  if (!(romanToInt("XC") == 90)) {
-    throw new Error("expect failed");
-  }
+function test_tens(): void {
+  if (!(romanToInt("XL") == 40)) throw new Error("expect failed");
+  if (!(romanToInt("XC") == 90)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  subtractive();
-  tens();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_subtractive();
+  test_tens();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

@@ -2,42 +2,36 @@
 
 function trailingZeroes(n: number): number {
   let count: number = 0;
+  (globalThis as any).count = count;
   let divisor: number = 5;
-  while (divisor <= n) {
-    count = count + Math.trunc(n / divisor);
+  (globalThis as any).divisor = divisor;
+  while ((divisor <= n)) {
+    count = count + (Math.trunc(n / divisor));
     divisor = divisor * 5;
   }
   return count;
 }
 
-function example_1(): void {
-  if (!(trailingZeroes(3) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(trailingZeroes(3) == 0)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(trailingZeroes(5) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(trailingZeroes(5) == 1)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(trailingZeroes(0) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(trailingZeroes(0) == 0)) throw new Error("expect failed");
 }
 
-function large_value(): void {
-  if (!(trailingZeroes(30) == 7)) {
-    throw new Error("expect failed");
-  }
+function test_large_value(): void {
+  if (!(trailingZeroes(30) == 7)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  large_value();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_large_value();
 }
 main();

@@ -2,21 +2,27 @@
 
 function minCut(s: string): number {
   let n: number = s.length;
-  if (n <= 1) {
+  (globalThis as any).n = n;
+  if ((n <= 1)) {
     return 0;
   }
   let dp: Array<number> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     dp = dp.concat([i]);
     i = i + 1;
   }
   let isPal: Array<Array<boolean>> = [];
+  (globalThis as any).isPal = isPal;
   i = 0;
-  while (i < n) {
+  while ((i < n)) {
     let row: Array<boolean> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       row = row.concat([false]);
       j = j + 1;
     }
@@ -24,21 +30,23 @@ function minCut(s: string): number {
     i = i + 1;
   }
   i = 0;
-  while (i < n) {
+  while ((i < n)) {
     let j: number = 0;
-    while (j <= i) {
-      if (s[j] == s[i]) {
-        if (i - j <= 1) {
+    (globalThis as any).j = j;
+    while ((j <= i)) {
+      if ((_indexString(s, j) == _indexString(s, i))) {
+        if (((i - j) <= 1)) {
           isPal[j][i] = true;
         } else if (isPal[j + 1][i - 1]) {
           isPal[j][i] = true;
         }
         if (isPal[j][i]) {
-          if (j == 0) {
+          if ((j == 0)) {
             dp[i] = 0;
           } else {
             let candidate: number = dp[j - 1] + 1;
-            if (candidate < dp[i]) {
+            (globalThis as any).candidate = candidate;
+            if ((candidate < dp[i])) {
               dp[i] = candidate;
             }
           }
@@ -51,34 +59,33 @@ function minCut(s: string): number {
   return dp[n - 1];
 }
 
-function example_1(): void {
-  if (!(minCut("aab") == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(minCut("aab") == 1)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(minCut("a") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(minCut("a") == 0)) throw new Error("expect failed");
 }
 
-function already_palindrome(): void {
-  if (!(minCut("aba") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_already_palindrome(): void {
+  if (!(minCut("aba") == 0)) throw new Error("expect failed");
 }
 
-function all_same(): void {
-  if (!(minCut("aaaa") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_all_same(): void {
+  if (!(minCut("aaaa") == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  already_palindrome();
-  all_same();
+  test_example_1();
+  test_example_2();
+  test_already_palindrome();
+  test_all_same();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

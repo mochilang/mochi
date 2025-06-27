@@ -2,41 +2,51 @@
 
 function wordPatternMatch(pattern: string, s: string): boolean {
   let m: number = pattern.length;
+  (globalThis as any).m = m;
   let n: number = s.length;
+  (globalThis as any).n = n;
   function dfs(
     pi: number,
     si: number,
     mapping: Record<string, string>,
     used: Record<string, boolean>,
   ): boolean {
-    if (pi == m && si == n) {
+    if (((pi == m) && (si == n))) {
       return true;
     }
-    if (pi == m || si == n) {
+    if (((pi == m) || (si == n))) {
       return false;
     }
-    let ch: string = pattern.slice(pi, pi + 1);
+    let ch: string = _sliceString(pattern, pi, pi + 1);
+    (globalThis as any).ch = ch;
     if (Object.prototype.hasOwnProperty.call(mapping, String(ch))) {
       let word: string = mapping[ch];
+      (globalThis as any).word = word;
       let l: number = word.length;
-      if (si + l > n) {
+      (globalThis as any).l = l;
+      if (((si + l) > n)) {
         return false;
       }
-      if (s.slice(si, si + l) != word) {
+      if ((_sliceString(s, si, si + l) != word)) {
         return false;
       }
       return dfs(pi + 1, si + l, mapping, used);
     }
     let end: number = si + 1;
-    while (end <= n) {
-      let word: string = s.slice(si, end);
+    (globalThis as any).end = end;
+    while ((end <= n)) {
+      let word: string = _sliceString(s, si, end);
+      (globalThis as any).word = word;
       let already: boolean = false;
+      (globalThis as any).already = already;
       if (Object.prototype.hasOwnProperty.call(used, String(word))) {
         already = used[word];
       }
-      if (!already) {
+      if ((!already)) {
         let nextMap: Record<string, string> = mapping;
+        (globalThis as any).nextMap = nextMap;
         let nextUsed: Record<string, boolean> = used;
+        (globalThis as any).nextUsed = nextUsed;
         nextMap[ch] = word;
         nextUsed[word] = true;
         if (dfs(pi + 1, end, nextMap, nextUsed)) {
@@ -50,27 +60,40 @@ function wordPatternMatch(pattern: string, s: string): boolean {
   return dfs(0, 0, {}, {});
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(wordPatternMatch("abab", "redblueredblue") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(wordPatternMatch("aaaa", "asdasdasdasd") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(wordPatternMatch("aabb", "xyzabcxzyabc") == false)) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

@@ -2,46 +2,69 @@
 
 function canCompleteCircuit(gas: Array<number>, cost: Array<number>): number {
   let n: number = gas.length;
+  (globalThis as any).n = n;
   let total: number = 0;
+  (globalThis as any).total = total;
   let tank: number = 0;
+  (globalThis as any).tank = tank;
   let start: number = 0;
+  (globalThis as any).start = start;
   let i: number = 0;
-  while (i < n) {
-    total = total + gas[i] - cost[i];
-    tank = tank + gas[i] - cost[i];
-    if (tank < 0) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
+    total = (total + gas[i]) - cost[i];
+    tank = (tank + gas[i]) - cost[i];
+    if ((tank < 0)) {
       start = i + 1;
       tank = 0;
     }
     i = i + 1;
   }
-  if (total >= 0) {
+  if ((total >= 0)) {
     return start;
   }
-  return -1;
+  return (-1);
 }
 
-function example_1(): void {
-  if (!(canCompleteCircuit([1, 2, 3, 4, 5], [3, 4, 5, 1, 2]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(canCompleteCircuit([
+      1,
+      2,
+      3,
+      4,
+      5,
+    ], [
+      3,
+      4,
+      5,
+      1,
+      2,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(canCompleteCircuit([2, 3, 4], [3, 4, 3]) == -1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(canCompleteCircuit([
+      2,
+      3,
+      4,
+    ], [
+      3,
+      4,
+      3,
+    ]) == (-1))
+  ) throw new Error("expect failed");
 }
 
-function single_station(): void {
-  if (!(canCompleteCircuit([5], [4]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_single_station(): void {
+  if (!(canCompleteCircuit([5], [4]) == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_station();
+  test_example_1();
+  test_example_2();
+  test_single_station();
 }
 main();

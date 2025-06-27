@@ -13,29 +13,41 @@ function decodeString(s: string): string {
     "8": 8,
     "9": 9,
   };
+  (globalThis as any).digits = digits;
   let counts: Array<number> = [];
+  (globalThis as any).counts = counts;
   let strs: Array<string> = [];
+  (globalThis as any).strs = strs;
   let curr: string = "";
+  (globalThis as any).curr = curr;
   let num: number = 0;
+  (globalThis as any).num = num;
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = s.length;
-  while (i < n) {
-    let c: string = s[i];
-    if (c >= "0" && c <= "9") {
-      num = num * 10 + digits[c];
-    } else if (c == "[") {
+  (globalThis as any).n = n;
+  while ((i < n)) {
+    let c: string = _indexString(s, i);
+    (globalThis as any).c = c;
+    if (((c >= "0") && (c <= "9"))) {
+      num = (num * 10) + digits[c];
+    } else if ((c == "[")) {
       counts = counts.concat([num]);
       strs = strs.concat([curr]);
       curr = "";
       num = 0;
-    } else if (c == "]") {
+    } else if ((c == "]")) {
       let repeat: number = counts[counts.length - 1];
+      (globalThis as any).repeat = repeat;
       counts = counts.slice(0, counts.length - 1);
       let prev: string = strs[strs.length - 1];
+      (globalThis as any).prev = prev;
       strs = strs.slice(0, strs.length - 1);
       let repeated: string = "";
+      (globalThis as any).repeated = repeated;
       let j: number = 0;
-      while (j < repeat) {
+      (globalThis as any).j = j;
+      while ((j < repeat)) {
         repeated = repeated + curr;
         j = j + 1;
       }
@@ -48,41 +60,48 @@ function decodeString(s: string): string {
   return curr;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(decodeString("3[a]2[bc]") == "aaabcbc")) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(decodeString("3[a2[c]]") == "accaccacc")) {
     throw new Error("expect failed");
   }
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(decodeString("2[abc]3[cd]ef") == "abcabccdcdcdef")) {
     throw new Error("expect failed");
   }
 }
 
-function plain_text_with_brackets(): void {
+function test_plain_text_with_brackets(): void {
   if (!(decodeString("abc3[cd]xyz") == "abccdcdcdxyz")) {
     throw new Error("expect failed");
   }
 }
 
-function multi_digit_number(): void {
+function test_multi_digit_number(): void {
   if (!(decodeString("10[a]") == "aaaaaaaaaa")) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  plain_text_with_brackets();
-  multi_digit_number();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_plain_text_with_brackets();
+  test_multi_digit_number();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

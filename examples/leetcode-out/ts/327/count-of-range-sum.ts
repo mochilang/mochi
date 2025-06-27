@@ -6,21 +6,28 @@ function countRangeSum(
   upper: number,
 ): number {
   let n: number = nums.length;
+  (globalThis as any).n = n;
   let prefix: Array<number> = [0];
+  (globalThis as any).prefix = prefix;
   let i: number = 0;
+  (globalThis as any).i = i;
   let running: number = 0;
-  while (i < n) {
+  (globalThis as any).running = running;
+  while ((i < n)) {
     running = running + nums[i];
     prefix = prefix.concat([running]);
     i = i + 1;
   }
   let count: number = 0;
+  (globalThis as any).count = count;
   i = 0;
-  while (i < prefix.length) {
+  while ((i < prefix.length)) {
     let j: number = i + 1;
-    while (j < prefix.length) {
+    (globalThis as any).j = j;
+    while ((j < prefix.length)) {
       let sum: number = prefix[j] - prefix[i];
-      if (sum >= lower && sum <= upper) {
+      (globalThis as any).sum = sum;
+      if (((sum >= lower) && (sum <= upper))) {
         count = count + 1;
       }
       j = j + 1;
@@ -30,34 +37,36 @@ function countRangeSum(
   return count;
 }
 
-function example_1(): void {
-  if (!(countRangeSum([-2, 5, -1], -2, 2) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(countRangeSum(
+      [
+        -2,
+        5,
+        -1,
+      ],
+      -2,
+      2,
+    ) == 3)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(countRangeSum([0], 0, 0) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(countRangeSum([0], 0, 0) == 1)) throw new Error("expect failed");
 }
 
-function empty(): void {
-  if (!(countRangeSum([], 0, 0) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(countRangeSum([], 0, 0) == 0)) throw new Error("expect failed");
 }
 
-function single_outside(): void {
-  if (!(countRangeSum([3], -1, 1) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_single_outside(): void {
+  if (!(countRangeSum([3], -1, 1) == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty();
-  single_outside();
+  test_example_1();
+  test_example_2();
+  test_empty();
+  test_single_outside();
 }
 main();

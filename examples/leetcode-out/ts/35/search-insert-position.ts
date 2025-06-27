@@ -2,11 +2,15 @@
 
 function searchInsert(nums: Array<number>, target: number): number {
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = nums.length;
-  while (left < right) {
+  (globalThis as any).right = right;
+  while ((left < right)) {
     let mid: number = Math.trunc((left + right) / 2);
+    (globalThis as any).mid = mid;
     let value: number = nums[mid];
-    if (value < target) {
+    (globalThis as any).value = value;
+    if ((value < target)) {
       left = mid + 1;
     } else {
       right = mid;
@@ -15,48 +19,64 @@ function searchInsert(nums: Array<number>, target: number): number {
   return left;
 }
 
-function example_1(): void {
-  if (!(searchInsert([1, 3, 5, 6], 5) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(searchInsert([
+      1,
+      3,
+      5,
+      6,
+    ], 5) == 2)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(searchInsert([1, 3, 5, 6], 2) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(searchInsert([
+      1,
+      3,
+      5,
+      6,
+    ], 2) == 1)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(searchInsert([1, 3, 5, 6], 7) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(searchInsert([
+      1,
+      3,
+      5,
+      6,
+    ], 7) == 4)
+  ) throw new Error("expect failed");
 }
 
-function example_4(): void {
-  if (!(searchInsert([1, 3, 5, 6], 0) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_4(): void {
+  if (
+    !(searchInsert([
+      1,
+      3,
+      5,
+      6,
+    ], 0) == 0)
+  ) throw new Error("expect failed");
 }
 
-function single_element_greater(): void {
-  if (!(searchInsert([2], 1) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_single_element_greater(): void {
+  if (!(searchInsert([2], 1) == 0)) throw new Error("expect failed");
 }
 
-function single_element_smaller(): void {
-  if (!(searchInsert([2], 3) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_element_smaller(): void {
+  if (!(searchInsert([2], 3) == 1)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  example_4();
-  single_element_greater();
-  single_element_smaller();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_example_4();
+  test_single_element_greater();
+  test_single_element_smaller();
 }
 main();

@@ -2,48 +2,43 @@
 
 function guessNumber(n: number, pick: number): number {
   let low: number = 1;
+  (globalThis as any).low = low;
   let high: number = n;
-  while (low <= high) {
+  (globalThis as any).high = high;
+  while ((low <= high)) {
     let mid: number = Math.trunc((low + high) / 2);
-    if (mid == pick) {
+    (globalThis as any).mid = mid;
+    if ((mid == pick)) {
       return mid;
-    } else if (mid > pick) {
+    } else if ((mid > pick)) {
       high = mid - 1;
     } else {
       low = mid + 1;
     }
   }
-  return -1;
+  return (-1);
 }
 
-function example_1(): void {
-  if (!(guessNumber(10, 6) == 6)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(guessNumber(10, 6) == 6)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(guessNumber(1, 1) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(guessNumber(1, 1) == 1)) throw new Error("expect failed");
 }
 
-function first_number(): void {
-  if (!(guessNumber(5, 1) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_first_number(): void {
+  if (!(guessNumber(5, 1) == 1)) throw new Error("expect failed");
 }
 
-function last_number(): void {
-  if (!(guessNumber(5, 5) == 5)) {
-    throw new Error("expect failed");
-  }
+function test_last_number(): void {
+  if (!(guessNumber(5, 5) == 5)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  first_number();
-  last_number();
+  test_example_1();
+  test_example_2();
+  test_first_number();
+  test_last_number();
 }
 main();

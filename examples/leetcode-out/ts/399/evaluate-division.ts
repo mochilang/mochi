@@ -6,61 +6,103 @@ function calcEquation(
   queries: Array<Array<string>>,
 ): Array<number> {
   let graph: Record<string, Array<Array<any>>> = {};
+  (globalThis as any).graph = graph;
   let i: number = 0;
-  while (i < eqs.length) {
+  (globalThis as any).i = i;
+  while ((i < eqs.length)) {
     let a: string = eqs[i][0];
+    (globalThis as any).a = a;
     let b: string = eqs[i][1];
+    (globalThis as any).b = b;
     let v: number = vals[i];
+    (globalThis as any).v = v;
     let listA: Array<Array<any>> = [];
+    (globalThis as any).listA = listA;
     if (Object.prototype.hasOwnProperty.call(graph, String(a))) {
       listA = graph[a];
     }
-    listA = listA.concat([[b, v]]);
+    listA = listA.concat([
+      [
+        b,
+        v,
+      ],
+    ]);
     graph[a] = listA;
     let listB: Array<Array<any>> = [];
+    (globalThis as any).listB = listB;
     if (Object.prototype.hasOwnProperty.call(graph, String(b))) {
       listB = graph[b];
     }
-    listB = listB.concat([[a, 1 / v]]);
+    listB = listB.concat([
+      [
+        a,
+        1 / v,
+      ],
+    ]);
     graph[b] = listB;
     i = i + 1;
   }
   let results: Array<number> = [];
+  (globalThis as any).results = results;
   for (const q of queries) {
     let start: string = q[0];
+    (globalThis as any).start = start;
     let end: string = q[1];
+    (globalThis as any).end = end;
     if (
-      !Object.prototype.hasOwnProperty.call(graph, String(start)) ||
-      !Object.prototype.hasOwnProperty.call(graph, String(end))
+      ((!(Object.prototype.hasOwnProperty.call(graph, String(start)))) ||
+        (!(Object.prototype.hasOwnProperty.call(graph, String(end)))))
     ) {
       results = results.concat([-1]);
       continue;
     }
-    let visited: Record<string, boolean> = { start: true };
-    let queue: Array<Array<any>> = [[start, 1]];
+    let visited: Record<string, boolean> = { "start": true };
+    (globalThis as any).visited = visited;
+    let queue: Array<Array<any>> = [
+      [
+        start,
+        1,
+      ],
+    ];
+    (globalThis as any).queue = queue;
     let idx: number = 0;
+    (globalThis as any).idx = idx;
     let found: boolean = false;
+    (globalThis as any).found = found;
     let ans: number = -1;
-    while (idx < queue.length) {
+    (globalThis as any).ans = ans;
+    while ((idx < queue.length)) {
       let pair: Array<any> = queue[idx];
+      (globalThis as any).pair = pair;
       let node: any = pair[0];
+      (globalThis as any).node = node;
       let val: number = pair[1];
+      (globalThis as any).val = val;
       if (_equal(node, end)) {
         ans = val;
         found = true;
         break;
       }
       let neighbors: Array<Array<any>> = graph[node];
+      (globalThis as any).neighbors = neighbors;
       for (const nb of neighbors) {
         let nxt: any = nb[0];
+        (globalThis as any).nxt = nxt;
         let ratio: number = nb[1];
+        (globalThis as any).ratio = ratio;
         let seen: boolean = false;
+        (globalThis as any).seen = seen;
         if (Object.prototype.hasOwnProperty.call(visited, String(nxt))) {
           seen = visited[nxt];
         }
-        if (!seen) {
+        if ((!seen)) {
           visited[nxt] = true;
-          queue = queue.concat([[nxt, val * ratio]]);
+          queue = queue.concat([
+            [
+              nxt,
+              val * ratio,
+            ],
+          ]);
         }
       }
       idx = idx + 1;
@@ -74,49 +116,101 @@ function calcEquation(
   return results;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let eq: Array<Array<string>> = [
-    ["a", "b"],
-    ["b", "c"],
+    [
+      "a",
+      "b",
+    ],
+    [
+      "b",
+      "c",
+    ],
   ];
-  let val: Array<number> = [2, 3];
+  (globalThis as any).eq = eq;
+  let val: Array<number> = [
+    2,
+    3,
+  ];
+  (globalThis as any).val = val;
   let queries: Array<Array<string>> = [
-    ["a", "c"],
-    ["b", "a"],
-    ["a", "e"],
-    ["a", "a"],
-    ["x", "x"],
+    [
+      "a",
+      "c",
+    ],
+    [
+      "b",
+      "a",
+    ],
+    [
+      "a",
+      "e",
+    ],
+    [
+      "a",
+      "a",
+    ],
+    [
+      "x",
+      "x",
+    ],
   ];
-  if (!_equal(calcEquation(eq, val, queries), [6, 0.5, -1, 1, -1])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).queries = queries;
+  if (
+    !(_equal(calcEquation(eq, val, queries), [
+      6,
+      0.5,
+      -1,
+      1,
+      -1,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function disconnected(): void {
+function test_disconnected(): void {
   let eq: Array<Array<string>> = [
-    ["a", "b"],
-    ["c", "d"],
+    [
+      "a",
+      "b",
+    ],
+    [
+      "c",
+      "d",
+    ],
   ];
-  let val: Array<number> = [1.5, 2.5];
+  (globalThis as any).eq = eq;
+  let val: Array<number> = [
+    1.5,
+    2.5,
+  ];
+  (globalThis as any).val = val;
   let queries: Array<Array<string>> = [
-    ["a", "d"],
-    ["c", "a"],
+    [
+      "a",
+      "d",
+    ],
+    [
+      "c",
+      "a",
+    ],
   ];
-  if (!_equal(calcEquation(eq, val, queries), [-1, -1])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).queries = queries;
+  if (
+    !(_equal(calcEquation(eq, val, queries), [
+      -1,
+      -1,
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  disconnected();
+  test_example_1();
+  test_disconnected();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -124,8 +218,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

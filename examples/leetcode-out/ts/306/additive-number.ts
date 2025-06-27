@@ -13,24 +13,33 @@ function addStrings(a: string, b: string): string {
     "8": 8,
     "9": 9,
   };
+  (globalThis as any).digits = digits;
   let i: number = a.length;
+  (globalThis as any).i = i;
   let j: number = b.length;
+  (globalThis as any).j = j;
   let carry: number = 0;
+  (globalThis as any).carry = carry;
   let out: string = "";
-  while (i > 0 || j > 0 || carry > 0) {
+  (globalThis as any).out = out;
+  while ((((i > 0) || (j > 0)) || (carry > 0))) {
     let x: number = 0;
-    if (i > 0) {
+    (globalThis as any).x = x;
+    if ((i > 0)) {
       i = i - 1;
-      x = digits[a[i]];
+      x = digits[_indexString(a, i)];
     }
     let y: number = 0;
-    if (j > 0) {
+    (globalThis as any).y = y;
+    if ((j > 0)) {
       j = j - 1;
-      y = digits[b[j]];
+      y = digits[_indexString(b, j)];
     }
-    let sum: number = x + y + carry;
+    let sum: number = (x + y) + carry;
+    (globalThis as any).sum = sum;
     carry = Math.trunc(sum / 10);
     let digit: number = sum % 10;
+    (globalThis as any).digit = digit;
     out = String(digit) + out;
   }
   return out;
@@ -38,33 +47,41 @@ function addStrings(a: string, b: string): string {
 
 function isAdditiveNumber(num: string): boolean {
   let n: number = num.length;
+  (globalThis as any).n = n;
   let i: number = 1;
-  while (i <= n - 2) {
-    if (num[0] == "0" && i > 1) {
+  (globalThis as any).i = i;
+  while ((i <= (n - 2))) {
+    if (((_indexString(num, 0) == "0") && (i > 1))) {
       break;
     }
     let j: number = i + 1;
-    while (j <= n - 1) {
-      if (num[i] == "0" && j - i > 1) {
+    (globalThis as any).j = j;
+    while ((j <= (n - 1))) {
+      if (((_indexString(num, i) == "0") && ((j - i) > 1))) {
         break;
       }
-      let first: string = num.slice(0, i);
-      let second: string = num.slice(i, j);
+      let first: string = _sliceString(num, 0, i);
+      (globalThis as any).first = first;
+      let second: string = _sliceString(num, i, j);
+      (globalThis as any).second = second;
       let k: number = j;
-      while (k < n) {
+      (globalThis as any).k = k;
+      while ((k < n)) {
         let third: string = addStrings(first, second);
+        (globalThis as any).third = third;
         let lenThird: number = third.length;
-        if (k + lenThird > n) {
+        (globalThis as any).lenThird = lenThird;
+        if (((k + lenThird) > n)) {
           break;
         }
-        if (num.slice(k, k + lenThird) != third) {
+        if ((_sliceString(num, k, k + lenThird) != third)) {
           break;
         }
         first = second;
         second = third;
         k = k + lenThird;
       }
-      if (k == n) {
+      if ((k == n)) {
         return true;
       }
       j = j + 1;
@@ -74,41 +91,53 @@ function isAdditiveNumber(num: string): boolean {
   return false;
 }
 
-function example_1(): void {
-  if (!(isAdditiveNumber("112358") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(isAdditiveNumber("112358") == true)) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(isAdditiveNumber("199100199") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function leading_zero(): void {
-  if (!(isAdditiveNumber("1023") == false)) {
-    throw new Error("expect failed");
-  }
+function test_leading_zero(): void {
+  if (!(isAdditiveNumber("1023") == false)) throw new Error("expect failed");
 }
 
-function all_zeros(): void {
-  if (!(isAdditiveNumber("000") == true)) {
-    throw new Error("expect failed");
-  }
+function test_all_zeros(): void {
+  if (!(isAdditiveNumber("000") == true)) throw new Error("expect failed");
 }
 
-function short_sequence(): void {
-  if (!(isAdditiveNumber("101") == true)) {
-    throw new Error("expect failed");
-  }
+function test_short_sequence(): void {
+  if (!(isAdditiveNumber("101") == true)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  leading_zero();
-  all_zeros();
-  short_sequence();
+  test_example_1();
+  test_example_2();
+  test_leading_zero();
+  test_all_zeros();
+  test_short_sequence();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

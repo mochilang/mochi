@@ -2,23 +2,30 @@
 
 function maxRotateFunction(nums: Array<number>): number {
   let n: number = nums.length;
-  if (n == 0) {
+  (globalThis as any).n = n;
+  if ((n == 0)) {
     return 0;
   }
   let total: number = 0;
+  (globalThis as any).total = total;
   let f: number = 0;
+  (globalThis as any).f = f;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let val: number = nums[i];
+    (globalThis as any).val = val;
     total = total + val;
-    f = f + i * val;
+    f = f + (i * val);
     i = i + 1;
   }
   let best: number = f;
+  (globalThis as any).best = best;
   let k: number = 1;
-  while (k < n) {
-    f = f + total - n * nums[n - k];
-    if (f > best) {
+  (globalThis as any).k = k;
+  while ((k < n)) {
+    f = (f + total) - (n * nums[n - k]);
+    if ((f > best)) {
       best = f;
     }
     k = k + 1;
@@ -26,27 +33,35 @@ function maxRotateFunction(nums: Array<number>): number {
   return best;
 }
 
-function example(): void {
-  if (!(maxRotateFunction([4, 3, 2, 6]) == 26)) {
-    throw new Error("expect failed");
-  }
+function test_example(): void {
+  if (
+    !(maxRotateFunction([
+      4,
+      3,
+      2,
+      6,
+    ]) == 26)
+  ) throw new Error("expect failed");
 }
 
-function single(): void {
-  if (!(maxRotateFunction([100]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_single(): void {
+  if (!(maxRotateFunction([100]) == 0)) throw new Error("expect failed");
 }
 
-function negatives(): void {
-  if (!(maxRotateFunction([-1, -2, -3, -4]) == -12)) {
-    throw new Error("expect failed");
-  }
+function test_negatives(): void {
+  if (
+    !(maxRotateFunction([
+      -1,
+      -2,
+      -3,
+      -4,
+    ]) == (-12))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example();
-  single();
-  negatives();
+  test_example();
+  test_single();
+  test_negatives();
 }
 main();

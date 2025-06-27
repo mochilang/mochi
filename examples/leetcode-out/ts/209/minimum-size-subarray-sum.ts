@@ -2,56 +2,93 @@
 
 function minSubArrayLen(target: number, nums: Array<number>): number {
   let n: number = nums.length;
+  (globalThis as any).n = n;
   let left: number = 0;
+  (globalThis as any).left = left;
   let sum: number = 0;
+  (globalThis as any).sum = sum;
   let best: number = n + 1;
+  (globalThis as any).best = best;
   let right: number = 0;
-  while (right < n) {
+  (globalThis as any).right = right;
+  while ((right < n)) {
     sum = sum + nums[right];
     right = right + 1;
-    while (sum >= target) {
+    while ((sum >= target)) {
       let length: number = right - left;
-      if (length < best) {
+      (globalThis as any).length = length;
+      if ((length < best)) {
         best = length;
       }
       sum = sum - nums[left];
       left = left + 1;
     }
   }
-  if (best == n + 1) {
+  if ((best == (n + 1))) {
     return 0;
   }
   return best;
 }
 
-function example_1(): void {
-  if (!(minSubArrayLen(7, [2, 3, 1, 2, 4, 3]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(minSubArrayLen(7, [
+      2,
+      3,
+      1,
+      2,
+      4,
+      3,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(minSubArrayLen(4, [1, 4, 4]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(minSubArrayLen(4, [
+      1,
+      4,
+      4,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(minSubArrayLen(11, [1, 1, 1, 1, 1, 1, 1, 1]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(minSubArrayLen(11, [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+    ]) == 0)
+  ) throw new Error("expect failed");
 }
 
-function entire_array(): void {
-  if (!(minSubArrayLen(15, [5, 1, 3, 5, 10, 7, 4, 9, 2, 8]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_entire_array(): void {
+  if (
+    !(minSubArrayLen(15, [
+      5,
+      1,
+      3,
+      5,
+      10,
+      7,
+      4,
+      9,
+      2,
+      8,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  entire_array();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_entire_array();
 }
 main();

@@ -2,16 +2,22 @@
 
 function longestIncreasingPath(matrix: Array<Array<number>>): number {
   let m: number = matrix.length;
-  if (m == 0) {
+  (globalThis as any).m = m;
+  if ((m == 0)) {
     return 0;
   }
   let n: number = matrix[0].length;
+  (globalThis as any).n = n;
   let memo: Array<Array<number>> = [];
+  (globalThis as any).memo = memo;
   let i: number = 0;
-  while (i < m) {
+  (globalThis as any).i = i;
+  while ((i < m)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       row = row.concat([0]);
       j = j + 1;
     }
@@ -20,39 +26,46 @@ function longestIncreasingPath(matrix: Array<Array<number>>): number {
   }
   function dfs(x: number, y: number): number {
     let cached: number = memo[x][y];
-    if (cached != 0) {
+    (globalThis as any).cached = cached;
+    if ((cached != 0)) {
       return cached;
     }
     let val: number = matrix[x][y];
+    (globalThis as any).val = val;
     let best: number = 1;
-    if (x > 0) {
-      if (matrix[x - 1][y] > val) {
+    (globalThis as any).best = best;
+    if ((x > 0)) {
+      if ((matrix[x - 1][y] > val)) {
         let candidate: number = 1 + dfs(x - 1, y);
-        if (candidate > best) {
+        (globalThis as any).candidate = candidate;
+        if ((candidate > best)) {
           best = candidate;
         }
       }
     }
-    if (x + 1 < m) {
-      if (matrix[x + 1][y] > val) {
+    if (((x + 1) < m)) {
+      if ((matrix[x + 1][y] > val)) {
         let candidate: number = 1 + dfs(x + 1, y);
-        if (candidate > best) {
+        (globalThis as any).candidate = candidate;
+        if ((candidate > best)) {
           best = candidate;
         }
       }
     }
-    if (y > 0) {
-      if (matrix[x][y - 1] > val) {
+    if ((y > 0)) {
+      if ((matrix[x][y - 1] > val)) {
         let candidate: number = 1 + dfs(x, y - 1);
-        if (candidate > best) {
+        (globalThis as any).candidate = candidate;
+        if ((candidate > best)) {
           best = candidate;
         }
       }
     }
-    if (y + 1 < n) {
-      if (matrix[x][y + 1] > val) {
+    if (((y + 1) < n)) {
+      if ((matrix[x][y + 1] > val)) {
         let candidate: number = 1 + dfs(x, y + 1);
-        if (candidate > best) {
+        (globalThis as any).candidate = candidate;
+        if ((candidate > best)) {
           best = candidate;
         }
       }
@@ -61,12 +74,15 @@ function longestIncreasingPath(matrix: Array<Array<number>>): number {
     return best;
   }
   let result: number = 0;
+  (globalThis as any).result = result;
   i = 0;
-  while (i < m) {
+  while ((i < m)) {
     let j: number = 0;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       let length: number = dfs(i, j);
-      if (length > result) {
+      (globalThis as any).length = length;
+      if ((length > result)) {
         result = length;
       }
       j = j + 1;
@@ -76,44 +92,62 @@ function longestIncreasingPath(matrix: Array<Array<number>>): number {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let matrix: Array<Array<number>> = [
-    [9, 9, 4],
-    [6, 6, 8],
-    [2, 1, 1],
+    [
+      9,
+      9,
+      4,
+    ],
+    [
+      6,
+      6,
+      8,
+    ],
+    [
+      2,
+      1,
+      1,
+    ],
   ];
-  if (!(longestIncreasingPath(matrix) == 4)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).matrix = matrix;
+  if (!(longestIncreasingPath(matrix) == 4)) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let matrix: Array<Array<number>> = [
-    [3, 4, 5],
-    [3, 2, 6],
-    [2, 2, 1],
+    [
+      3,
+      4,
+      5,
+    ],
+    [
+      3,
+      2,
+      6,
+    ],
+    [
+      2,
+      2,
+      1,
+    ],
   ];
-  if (!(longestIncreasingPath(matrix) == 4)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).matrix = matrix;
+  if (!(longestIncreasingPath(matrix) == 4)) throw new Error("expect failed");
 }
 
-function single_cell(): void {
-  if (!(longestIncreasingPath([[1]]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_cell(): void {
+  if (!(longestIncreasingPath([[1]]) == 1)) throw new Error("expect failed");
 }
 
-function empty(): void {
-  if (!(longestIncreasingPath([]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(longestIncreasingPath([]) == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_cell();
-  empty();
+  test_example_1();
+  test_example_2();
+  test_single_cell();
+  test_empty();
 }
 main();

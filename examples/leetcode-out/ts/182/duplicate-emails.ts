@@ -2,24 +2,28 @@
 
 function findDuplicateEmails(emails: Array<string>): Array<string> {
   let counts: Record<string, number> = {};
+  (globalThis as any).counts = counts;
   for (const e of emails) {
     let c: number = 0;
+    (globalThis as any).c = c;
     if (Object.prototype.hasOwnProperty.call(counts, String(e))) {
       c = counts[e];
     }
     counts[e] = c + 1;
   }
   let result: Array<string> = [];
+  (globalThis as any).result = result;
   for (const e of emails) {
-    if (counts[e] > 1) {
+    if ((counts[e] > 1)) {
       let exists: boolean = false;
+      (globalThis as any).exists = exists;
       for (const r of result) {
-        if (r == e) {
+        if ((r == e)) {
           exists = true;
           break;
         }
       }
-      if (!exists) {
+      if ((!exists)) {
         result = result.concat([e]);
       }
     }
@@ -27,14 +31,19 @@ function findDuplicateEmails(emails: Array<string>): Array<string> {
   return result;
 }
 
-function example_duplicates(): void {
-  let emails: Array<string> = ["a@x.com", "b@y.com", "a@x.com"];
-  if (!_equal(findDuplicateEmails(emails), ["a@x.com"])) {
+function test_example_duplicates(): void {
+  let emails: Array<string> = [
+    "a@x.com",
+    "b@y.com",
+    "a@x.com",
+  ];
+  (globalThis as any).emails = emails;
+  if (!(_equal(findDuplicateEmails(emails), ["a@x.com"]))) {
     throw new Error("expect failed");
   }
 }
 
-function multiple_duplicates(): void {
+function test_multiple_duplicates(): void {
   let emails: Array<string> = [
     "a@x.com",
     "b@y.com",
@@ -43,35 +52,41 @@ function multiple_duplicates(): void {
     "c@z.com",
     "a@x.com",
   ];
-  if (!_equal(findDuplicateEmails(emails), ["a@x.com", "b@y.com"])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).emails = emails;
+  if (
+    !(_equal(findDuplicateEmails(emails), [
+      "a@x.com",
+      "b@y.com",
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function no_duplicates(): void {
-  if (!_equal(findDuplicateEmails(["a@x.com", "b@y.com"]), [])) {
-    throw new Error("expect failed");
-  }
+function test_no_duplicates(): void {
+  if (
+    !(_equal(
+      findDuplicateEmails([
+        "a@x.com",
+        "b@y.com",
+      ]),
+      [],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function empty_list(): void {
-  if (!_equal(findDuplicateEmails([]), [])) {
-    throw new Error("expect failed");
-  }
+function test_empty_list(): void {
+  if (!(_equal(findDuplicateEmails([]), []))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_duplicates();
-  multiple_duplicates();
-  no_duplicates();
-  empty_list();
+  test_example_duplicates();
+  test_multiple_duplicates();
+  test_no_duplicates();
+  test_empty_list();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -79,8 +94,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

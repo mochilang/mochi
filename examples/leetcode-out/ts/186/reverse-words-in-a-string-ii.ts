@@ -2,14 +2,16 @@
 
 function toList(s: string): Array<string> {
   let out: Array<string> = [];
+  (globalThis as any).out = out;
   for (let i: number = 0; i < s.length; i++) {
-    out = out.concat([s[i]]);
+    out = out.concat([_indexString(s, i)]);
   }
   return out;
 }
 
 function fromList(arr: Array<string>): string {
   let out: string = "";
+  (globalThis as any).out = out;
   for (const ch of arr) {
     out = out + ch;
   }
@@ -18,34 +20,47 @@ function fromList(arr: Array<string>): string {
 
 function reverseWords(chars: Array<string>): Array<string> {
   let arr: Array<string> = chars;
+  (globalThis as any).arr = arr;
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = arr.length - 1;
-  while (left < right) {
+  (globalThis as any).right = right;
+  while ((left < right)) {
     let temp: string = arr[left];
+    (globalThis as any).temp = temp;
     arr[left] = arr[right];
     arr[right] = temp;
     left = left + 1;
     right = right - 1;
   }
   let start: number = 0;
+  (globalThis as any).start = start;
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = arr.length;
-  while (i <= n) {
-    if (i == n) {
+  (globalThis as any).n = n;
+  while ((i <= n)) {
+    if ((i == n)) {
       let l: number = start;
+      (globalThis as any).l = l;
       let r: number = i - 1;
-      while (l < r) {
+      (globalThis as any).r = r;
+      while ((l < r)) {
         let t: string = arr[l];
+        (globalThis as any).t = t;
         arr[l] = arr[r];
         arr[r] = t;
         l = l + 1;
         r = r - 1;
       }
-    } else if (arr[i] == " ") {
+    } else if ((arr[i] == " ")) {
       let l: number = start;
+      (globalThis as any).l = l;
       let r: number = i - 1;
-      while (l < r) {
+      (globalThis as any).r = r;
+      while ((l < r)) {
         let t: string = arr[l];
+        (globalThis as any).t = t;
         arr[l] = arr[r];
         arr[r] = t;
         l = l + 1;
@@ -58,42 +73,51 @@ function reverseWords(chars: Array<string>): Array<string> {
   return arr;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let input: Array<string> = toList("the sky is blue");
+  (globalThis as any).input = input;
   let result: Array<string> = reverseWords(input);
+  (globalThis as any).result = result;
   if (!(fromList(result) == "blue is sky the")) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let input: Array<string> = toList("hello world");
+  (globalThis as any).input = input;
   let result: Array<string> = reverseWords(input);
-  if (!(fromList(result) == "world hello")) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).result = result;
+  if (!(fromList(result) == "world hello")) throw new Error("expect failed");
 }
 
-function single_word(): void {
+function test_single_word(): void {
   let input: Array<string> = toList("hello");
+  (globalThis as any).input = input;
   let result: Array<string> = reverseWords(input);
-  if (!(fromList(result) == "hello")) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).result = result;
+  if (!(fromList(result) == "hello")) throw new Error("expect failed");
 }
 
-function trailing_space(): void {
+function test_trailing_space(): void {
   let input: Array<string> = toList("a b ");
+  (globalThis as any).input = input;
   let result: Array<string> = reverseWords(input);
-  if (!(fromList(result) == " b a")) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).result = result;
+  if (!(fromList(result) == " b a")) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_word();
-  trailing_space();
+  test_example_1();
+  test_example_2();
+  test_single_word();
+  test_trailing_space();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

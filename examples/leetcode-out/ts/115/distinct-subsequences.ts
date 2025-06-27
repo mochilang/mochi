@@ -2,13 +2,19 @@
 
 function numDistinct(s: string, t: string): number {
   let m: number = s.length;
+  (globalThis as any).m = m;
   let n: number = t.length;
+  (globalThis as any).n = n;
   let dp: Array<Array<number>> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i <= m) {
+  (globalThis as any).i = i;
+  while ((i <= m)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j <= n) {
+    (globalThis as any).j = j;
+    while ((j <= n)) {
       row = row.concat([0]);
       j = j + 1;
     }
@@ -16,16 +22,17 @@ function numDistinct(s: string, t: string): number {
     i = i + 1;
   }
   i = 0;
-  while (i <= m) {
+  while ((i <= m)) {
     dp[i][0] = 1;
     i = i + 1;
   }
   i = 1;
-  while (i <= m) {
+  while ((i <= m)) {
     let j: number = 1;
-    while (j <= n) {
+    (globalThis as any).j = j;
+    while ((j <= n)) {
       dp[i][j] = dp[i - 1][j];
-      if (s[i - 1] == t[j - 1]) {
+      if ((_indexString(s, i - 1) == _indexString(t, j - 1))) {
         dp[i][j] = dp[i][j] + dp[i - 1][j - 1];
       }
       j = j + 1;
@@ -35,34 +42,35 @@ function numDistinct(s: string, t: string): number {
   return dp[m][n];
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(numDistinct("rabbbit", "rabbit") == 3)) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
-  if (!(numDistinct("babgbag", "bag") == 5)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(numDistinct("babgbag", "bag") == 5)) throw new Error("expect failed");
 }
 
-function empty_target(): void {
-  if (!(numDistinct("abc", "") == 1)) {
-    throw new Error("expect failed");
-  }
+function test_empty_target(): void {
+  if (!(numDistinct("abc", "") == 1)) throw new Error("expect failed");
 }
 
-function no_subsequence(): void {
-  if (!(numDistinct("abc", "abcd") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_no_subsequence(): void {
+  if (!(numDistinct("abc", "abcd") == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty_target();
-  no_subsequence();
+  test_example_1();
+  test_example_2();
+  test_empty_target();
+  test_no_subsequence();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

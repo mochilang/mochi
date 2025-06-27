@@ -2,81 +2,113 @@
 
 function isMatch(s: string, p: string): boolean {
   let m: number = s.length;
+  (globalThis as any).m = m;
   let n: number = p.length;
-  let memo: Record<number, boolean> = {};
-  function dfs(i: number, j: number): boolean {
-    let key: number = i * (n + 1) + j;
-    if (Object.prototype.hasOwnProperty.call(memo, String(key))) {
-      return memo[key];
+  (globalThis as any).n = n;
+  let dp: Array<Array<boolean>> = [];
+  (globalThis as any).dp = dp;
+  let i: number = 0;
+  (globalThis as any).i = i;
+  while ((i <= m)) {
+    let row: Array<boolean> = [];
+    (globalThis as any).row = row;
+    let j: number = 0;
+    (globalThis as any).j = j;
+    while ((j <= n)) {
+      row = row.concat([false]);
+      j = j + 1;
     }
-    if (j == n) {
-      return i == m;
-    }
-    let first: boolean = false;
-    if (i < m) {
-      if (p[j] == s[i] || p[j] == ".") {
-        first = true;
-      }
-    }
-    let ans: boolean = false;
-    if (j + 1 < n) {
-      if (p[j + 1] == "*") {
-        if (dfs(i, j + 2)) {
-          ans = true;
-        } else if (first && dfs(i + 1, j)) {
-          ans = true;
+    dp = dp.concat([row]);
+    i = i + 1;
+  }
+  dp[m][n] = true;
+  let i2: number = m;
+  (globalThis as any).i2 = i2;
+  while ((i2 >= 0)) {
+    let j2: number = n - 1;
+    (globalThis as any).j2 = j2;
+    while ((j2 >= 0)) {
+      let first: boolean = false;
+      (globalThis as any).first = first;
+      if ((i2 < m)) {
+        if (
+          ((_indexString(p, j2) == _indexString(s, i2)) ||
+            (_indexString(p, j2) == "."))
+        ) {
+          first = true;
         }
+      }
+      let star: boolean = false;
+      (globalThis as any).star = star;
+      if (((j2 + 1) < n)) {
+        if ((_indexString(p, j2 + 1) == "*")) {
+          star = true;
+        }
+      }
+      if (star) {
+        let ok: boolean = false;
+        (globalThis as any).ok = ok;
+        if (dp[i2][j2 + 2]) {
+          ok = true;
+        } else {
+          if (first) {
+            if (dp[i2 + 1][j2]) {
+              ok = true;
+            }
+          }
+        }
+        dp[i2][j2] = ok;
       } else {
-        if (first && dfs(i + 1, j + 1)) {
-          ans = true;
+        let ok: boolean = false;
+        (globalThis as any).ok = ok;
+        if (first) {
+          if (dp[i2 + 1][j2 + 1]) {
+            ok = true;
+          }
         }
+        dp[i2][j2] = ok;
       }
-    } else {
-      if (first && dfs(i + 1, j + 1)) {
-        ans = true;
-      }
+      j2 = j2 - 1;
     }
-    memo[key] = ans;
-    return ans;
+    i2 = i2 - 1;
   }
-  return dfs(0, 0);
+  return dp[0][0];
 }
 
-function example_1(): void {
-  if (!(isMatch("aa", "a") == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(isMatch("aa", "a") == false)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(isMatch("aa", "a*") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(isMatch("aa", "a*") == true)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(isMatch("ab", ".*") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(isMatch("ab", ".*") == true)) throw new Error("expect failed");
 }
 
-function example_4(): void {
-  if (!(isMatch("aab", "c*a*b") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_4(): void {
+  if (!(isMatch("aab", "c*a*b") == true)) throw new Error("expect failed");
 }
 
-function example_5(): void {
+function test_example_5(): void {
   if (!(isMatch("mississippi", "mis*is*p*.") == false)) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  example_4();
-  example_5();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_example_4();
+  test_example_5();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

@@ -2,9 +2,11 @@
 
 function isPalindrome(s: string): boolean {
   let i: number = 0;
+  (globalThis as any).i = i;
   let j: number = s.length - 1;
-  while (i < j) {
-    if (s[i] != s[j]) {
+  (globalThis as any).j = j;
+  while ((i < j)) {
+    if ((_indexString(s, i) != _indexString(s, j))) {
       return false;
     }
     i = i + 1;
@@ -15,14 +17,19 @@ function isPalindrome(s: string): boolean {
 
 function shortestPalindrome(s: string): string {
   let n: number = s.length;
+  (globalThis as any).n = n;
   let i: number = n;
-  while (i > 0) {
-    if (isPalindrome(s.slice(0, i))) {
-      let suffix: string = s.slice(i, n);
+  (globalThis as any).i = i;
+  while ((i > 0)) {
+    if (isPalindrome(_sliceString(s, 0, i))) {
+      let suffix: string = _sliceString(s, i, n);
+      (globalThis as any).suffix = suffix;
       let rev: string = "";
+      (globalThis as any).rev = rev;
       let k: number = suffix.length - 1;
-      while (k >= 0) {
-        rev = rev + suffix[k];
+      (globalThis as any).k = k;
+      while ((k >= 0)) {
+        rev = rev + _indexString(suffix, k);
         k = k - 1;
       }
       return rev + s;
@@ -32,41 +39,55 @@ function shortestPalindrome(s: string): string {
   return s;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(shortestPalindrome("aacecaaa") == "aaacecaaa")) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(shortestPalindrome("abcd") == "dcbabcd")) {
     throw new Error("expect failed");
   }
 }
 
-function empty(): void {
-  if (!(shortestPalindrome("") == "")) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(shortestPalindrome("") == "")) throw new Error("expect failed");
 }
 
-function already_palindrome(): void {
-  if (!(shortestPalindrome("aba") == "aba")) {
-    throw new Error("expect failed");
-  }
+function test_already_palindrome(): void {
+  if (!(shortestPalindrome("aba") == "aba")) throw new Error("expect failed");
 }
 
-function single_char(): void {
-  if (!(shortestPalindrome("a") == "a")) {
-    throw new Error("expect failed");
-  }
+function test_single_char(): void {
+  if (!(shortestPalindrome("a") == "a")) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty();
-  already_palindrome();
-  single_char();
+  test_example_1();
+  test_example_2();
+  test_empty();
+  test_already_palindrome();
+  test_single_char();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

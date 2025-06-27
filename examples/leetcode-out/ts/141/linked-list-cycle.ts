@@ -2,60 +2,69 @@
 
 function hasCycle(values: Array<number>, pos: number): boolean {
   let n: number = values.length;
+  (globalThis as any).n = n;
   function nextIndex(i: number): number {
-    if (i == n - 1) {
-      if (pos >= 0) {
+    if ((i == (n - 1))) {
+      if ((pos >= 0)) {
         return pos;
       } else {
         return n;
       }
     } else {
-      return i + 1;
+      return (i + 1);
     }
   }
-  if (n == 0 || pos < 0) {
+  if (((n == 0) || (pos < 0))) {
     return false;
   }
   let slow: number = 0;
+  (globalThis as any).slow = slow;
   let fast: number = 0;
+  (globalThis as any).fast = fast;
   while (true) {
     slow = nextIndex(slow);
     fast = nextIndex(fast);
-    if (fast >= n) {
+    if ((fast >= n)) {
       return false;
     }
     fast = nextIndex(fast);
-    if (slow >= n || fast >= n) {
+    if (((slow >= n) || (fast >= n))) {
       return false;
     }
-    if (slow == fast) {
+    if ((slow == fast)) {
       return true;
     }
   }
   return false;
 }
 
-function example_1(): void {
-  if (!(hasCycle([3, 2, 0, -4], 1) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(hasCycle([
+      3,
+      2,
+      0,
+      -4,
+    ], 1) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(hasCycle([1, 2], 0) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(hasCycle([
+      1,
+      2,
+    ], 0) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(hasCycle([1], -1) == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(hasCycle([1], -1) == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 main();

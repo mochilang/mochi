@@ -2,39 +2,47 @@
 
 function spiralOrder(matrix: Array<Array<number>>): Array<number> {
   let rows: number = matrix.length;
-  if (rows == 0) {
+  (globalThis as any).rows = rows;
+  if ((rows == 0)) {
     return [];
   }
   let cols: number = matrix[0].length;
+  (globalThis as any).cols = cols;
   let top: number = 0;
+  (globalThis as any).top = top;
   let bottom: number = rows - 1;
+  (globalThis as any).bottom = bottom;
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = cols - 1;
+  (globalThis as any).right = right;
   let result: Array<number> = [];
-  while (top <= bottom && left <= right) {
+  (globalThis as any).result = result;
+  while (((top <= bottom) && (left <= right))) {
     let j: number = left;
-    while (j <= right) {
+    (globalThis as any).j = j;
+    while ((j <= right)) {
       result = result.concat([matrix[top][j]]);
       j = j + 1;
     }
     top = top + 1;
     j = top;
-    while (j <= bottom) {
+    while ((j <= bottom)) {
       result = result.concat([matrix[j][right]]);
       j = j + 1;
     }
     right = right - 1;
-    if (top <= bottom) {
+    if ((top <= bottom)) {
       j = right;
-      while (j >= left) {
+      while ((j >= left)) {
         result = result.concat([matrix[bottom][j]]);
         j = j - 1;
       }
       bottom = bottom - 1;
     }
-    if (left <= right) {
+    if ((left <= right)) {
       j = bottom;
-      while (j >= top) {
+      while ((j >= top)) {
         result = result.concat([matrix[j][left]]);
         j = j - 1;
       }
@@ -44,61 +52,129 @@ function spiralOrder(matrix: Array<Array<number>>): Array<number> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let m: Array<Array<number>> = [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9],
+    [
+      1,
+      2,
+      3,
+    ],
+    [
+      4,
+      5,
+      6,
+    ],
+    [
+      7,
+      8,
+      9,
+    ],
   ];
-  if (!_equal(spiralOrder(m), [1, 2, 3, 6, 9, 8, 7, 4, 5])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).m = m;
+  if (
+    !(_equal(spiralOrder(m), [
+      1,
+      2,
+      3,
+      6,
+      9,
+      8,
+      7,
+      4,
+      5,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let m: Array<Array<number>> = [
-    [1, 2, 3, 4],
-    [5, 6, 7, 8],
-    [9, 10, 11, 12],
+    [
+      1,
+      2,
+      3,
+      4,
+    ],
+    [
+      5,
+      6,
+      7,
+      8,
+    ],
+    [
+      9,
+      10,
+      11,
+      12,
+    ],
   ];
-  if (!_equal(spiralOrder(m), [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).m = m;
+  if (
+    !(_equal(spiralOrder(m), [
+      1,
+      2,
+      3,
+      4,
+      8,
+      12,
+      11,
+      10,
+      9,
+      5,
+      6,
+      7,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function single_row(): void {
-  let m: Array<Array<number>> = [[1, 2, 3]];
-  if (!_equal(spiralOrder(m), [1, 2, 3])) {
-    throw new Error("expect failed");
-  }
+function test_single_row(): void {
+  let m: Array<Array<number>> = [
+    [
+      1,
+      2,
+      3,
+    ],
+  ];
+  (globalThis as any).m = m;
+  if (
+    !(_equal(spiralOrder(m), [
+      1,
+      2,
+      3,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function single_column(): void {
-  let m: Array<Array<number>> = [[1], [2], [3]];
-  if (!_equal(spiralOrder(m), [1, 2, 3])) {
-    throw new Error("expect failed");
-  }
+function test_single_column(): void {
+  let m: Array<Array<number>> = [
+    [1],
+    [2],
+    [3],
+  ];
+  (globalThis as any).m = m;
+  if (
+    !(_equal(spiralOrder(m), [
+      1,
+      2,
+      3,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function empty(): void {
-  if (!_equal(spiralOrder([]), [])) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(_equal(spiralOrder([]), []))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_row();
-  single_column();
-  empty();
+  test_example_1();
+  test_example_2();
+  test_single_row();
+  test_single_column();
+  test_empty();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -106,8 +182,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
