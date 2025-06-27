@@ -1,6 +1,7 @@
 package excode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -73,4 +74,22 @@ func EnsureElixir() error {
 		return nil
 	}
 	return fmt.Errorf("elixir not installed and no supported installer found")
+}
+
+// Format runs Elixir's Code formatter on the provided source code. If the
+// `elixir` binary is not available, the code is returned unchanged. Formatting
+// errors are returned.
+func Format(code []byte) ([]byte, error) {
+	if _, err := exec.LookPath("elixir"); err != nil {
+		return code, nil
+	}
+	cmd := exec.Command("elixir", "-e", "IO.read(:stdio, :eof) |> Code.format_string!() |> Enum.join(\"\") |> IO.write()")
+	cmd.Stdin = bytes.NewReader(code)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("format error: %w\n%s", err, out.Bytes())
+	}
+	return out.Bytes(), nil
 }

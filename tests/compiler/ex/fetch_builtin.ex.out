@@ -19,7 +19,7 @@ defmodule Main do
   end), else: nil
   http_opts = if timeout, do: [timeout: timeout], else: []
   {{_,_,_}, _, resp} = :httpc.request(String.to_atom(String.upcase(method)), {String.to_charlist(full), headers, 'application/json', String.to_charlist(body)}, [], http_opts) |> elem(1)
-  Jason.decode!(resp)
+  Jason.decode!(resp, keys: :atoms)
 end
 
 	end

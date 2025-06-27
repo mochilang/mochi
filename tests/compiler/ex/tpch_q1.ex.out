@@ -9,7 +9,7 @@ defmodule Main do
 	_groups = _group_by(_rows, fn row -> %{returnflag: row.l_returnflag, linestatus: row.l_linestatus} end)
 	_groups = Enum.map(_groups, fn g -> %{g | Items: Enum.map(g.Items, fn [row] -> row end)} end)
 	items = _groups
-	Enum.map(items, fn g -> %{returnflag: g.key.returnflag, linestatus: g.key.linestatus, sum_qty: sum.(for x <- g, do: x.l_quantity), sum_base_price: sum.(for x <- g, do: x.l_extendedprice), sum_disc_price: sum.(for x <- g, do: (x.l_extendedprice * (1 - x.l_discount))), sum_charge: sum.(for x <- g, do: ((x.l_extendedprice * (1 - x.l_discount)) * (1 + x.l_tax))), avg_qty: _avg(for x <- g, do: x.l_quantity), avg_price: _avg(for x <- g, do: x.l_extendedprice), avg_disc: _avg(for x <- g, do: x.l_discount), count_order: _count(g)} end)
+	Enum.map(items, fn g -> %{returnflag: g.key.returnflag, linestatus: g.key.linestatus, sum_qty: _sum(for x <- g, do: x.l_quantity), sum_base_price: _sum(for x <- g, do: x.l_extendedprice), sum_disc_price: _sum(for x <- g, do: (x.l_extendedprice * (1 - x.l_discount))), sum_charge: _sum(for x <- g, do: ((x.l_extendedprice * (1 - x.l_discount)) * (1 + x.l_tax))), avg_qty: _avg(for x <- g, do: x.l_quantity), avg_price: _avg(for x <- g, do: x.l_extendedprice), avg_disc: _avg(for x <- g, do: x.l_discount), count_order: _count(g)} end)
 end)()
 		IO.puts(Jason.encode!(result))
 	end
@@ -115,6 +115,15 @@ end
   items = if Map.has_key?(opts, :skip), do: (n = opts[:skip]; if n < length(items), do: Enum.drop(items, n), else: []), else: items
   items = if Map.has_key?(opts, :take), do: (n = opts[:take]; if n < length(items), do: Enum.take(items, n), else: items), else: items
   Enum.map(items, fn r -> apply(opts[:select], r) end)
+end
+
+	defp _sum(v) do
+  list = cond do
+    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]
+    is_list(v) -> v
+    true -> raise "sum() expects list or group"
+  end
+  Enum.sum(list)
 end
 
 	end
