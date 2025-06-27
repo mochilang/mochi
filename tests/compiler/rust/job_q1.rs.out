@@ -1,0 +1,107 @@
+#[derive(Clone, Debug, Default)]
+struct CompanyType {
+    id: i64,
+    kind: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct InfoType {
+    id: i64,
+    info: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Title {
+    id: i64,
+    title: String,
+    production_year: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct MovieCompany {
+    movie_id: i64,
+    company_type_id: i64,
+    note: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct MovieInfoIdx {
+    movie_id: i64,
+    info_type_id: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Result {
+    note: String,
+    title: String,
+    year: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Summary {
+    production_note: String,
+    movie_title: String,
+    movie_year: i64,
+}
+
+fn main() {
+    let mut company_type = vec![CompanyType { id: 1, kind: "production companies".to_string() }, CompanyType { id: 2, kind: "distributors".to_string() }];
+    let mut info_type = vec![InfoType { id: 10, info: "top 250 rank".to_string() }, InfoType { id: 20, info: "bottom 10 rank".to_string() }];
+    let mut title = vec![Title { id: 100, title: "Good Movie".to_string(), production_year: 1995 }, Title { id: 200, title: "Bad Movie".to_string(), production_year: 2000 }];
+    let mut movie_companies = vec![MovieCompany { movie_id: 100, company_type_id: 1, note: "ACME (co-production)".to_string() }, MovieCompany { movie_id: 200, company_type_id: 1, note: "MGM (as Metro-Goldwyn-Mayer Pictures)".to_string() }];
+    let mut movie_info_idx = vec![MovieInfoIdx { movie_id: 100, info_type_id: 10 }, MovieInfoIdx { movie_id: 200, info_type_id: 20 }];
+    let mut filtered = {
+    let mut _res = Vec::new();
+    for ct in company_type.clone() {
+        for mc in movie_companies.clone() {
+            if !(ct.id == mc.company_type_id) { continue; }
+            for t in title.clone() {
+                if !(t.id == mc.movie_id) { continue; }
+                for mi in movie_info_idx.clone() {
+                    if !(mi.movie_id == t.id) { continue; }
+                    for it in info_type.clone() {
+                        if !(it.id == mi.info_type_id) { continue; }
+                        if ct.id == mc.company_type_id && t.id == mc.movie_id && mi.movie_id == t.id && it.id == mi.info_type_id && ct.kind == "production companies" && it.info == "top 250 rank" && (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) && (mc.note.contains("(co-production)") || mc.note.contains("(presents)")) {
+                            _res.push(Result { note: mc.note, title: t.title, year: t.production_year });
+                        }
+                    }
+                }
+            }
+        }
+    }
+    _res
+};
+    let mut notes = {
+    let mut _res = Vec::new();
+    for r in filtered {
+        _res.push(r.note);
+    }
+    _res
+};
+    let mut titles = {
+    let mut _res = Vec::new();
+    for r in filtered {
+        _res.push(r.title);
+    }
+    _res
+};
+    let mut years = {
+    let mut _res = Vec::new();
+    for r in filtered {
+        _res.push(r.year);
+    }
+    _res
+};
+    let mut result = Summary { production_note: _min(&notes), movie_title: _min(&titles), movie_year: _min(&years) };
+    json(vec![result]);
+}
+
+fn _min<T: PartialOrd + Clone + Default>(v: &[T]) -> T {
+    if v.is_empty() { return T::default(); }
+    let mut m = v[0].clone();
+    for it in &v[1..] { if *it < m { m = it.clone(); } }
+    m
+}
+fn json<T: std::fmt::Debug>(v: T) {
+    println!("{:?}", v);
+}

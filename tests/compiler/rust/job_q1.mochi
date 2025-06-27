@@ -1,0 +1,56 @@
+type CompanyType { id: int, kind: string }
+type InfoType { id: int, info: string }
+type Title { id: int, title: string, production_year: int }
+type MovieCompany { movie_id: int, company_type_id: int, note: string }
+type MovieInfoIdx { movie_id: int, info_type_id: int }
+type Result { note: string, title: string, year: int }
+type Summary { production_note: string, movie_title: string, movie_year: int }
+
+let company_type = [
+  CompanyType { id: 1, kind: "production companies" },
+  CompanyType { id: 2, kind: "distributors" }
+]
+
+let info_type = [
+  InfoType { id: 10, info: "top 250 rank" },
+  InfoType { id: 20, info: "bottom 10 rank" }
+]
+
+let title = [
+  Title { id: 100, title: "Good Movie", production_year: 1995 },
+  Title { id: 200, title: "Bad Movie", production_year: 2000 }
+]
+
+let movie_companies = [
+  MovieCompany { movie_id: 100, company_type_id: 1, note: "ACME (co-production)" },
+  MovieCompany { movie_id: 200, company_type_id: 1, note: "MGM (as Metro-Goldwyn-Mayer Pictures)" }
+]
+
+let movie_info_idx = [
+  MovieInfoIdx { movie_id: 100, info_type_id: 10 },
+  MovieInfoIdx { movie_id: 200, info_type_id: 20 }
+]
+
+let filtered =
+  from ct in company_type
+  join mc in movie_companies on ct.id == mc.company_type_id
+  join t in title on t.id == mc.movie_id
+  join mi in movie_info_idx on mi.movie_id == t.id
+  join it in info_type on it.id == mi.info_type_id
+  where ct.kind == "production companies" &&
+        it.info == "top 250 rank" &&
+        (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
+        (mc.note.contains("(co-production)") || mc.note.contains("(presents)"))
+  select Result { note: mc.note, title: t.title, year: t.production_year }
+
+let notes = from r in filtered select r.note
+let titles = from r in filtered select r.title
+let years = from r in filtered select r.year
+
+let result = Summary {
+  production_note: min(notes),
+  movie_title: min(titles),
+  movie_year: min(years)
+}
+
+json([result])

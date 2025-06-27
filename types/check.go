@@ -2257,12 +2257,12 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		}
 		switch a := args[0].(type) {
 		case ListType:
-			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
+			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) || isString(a.Elem) {
 				return nil
 			}
 			return fmt.Errorf("%s() expects numeric list", name)
 		case GroupType:
-			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
+			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) || isString(a.Elem) {
 				return nil
 			}
 			return fmt.Errorf("%s() expects numeric list", name)

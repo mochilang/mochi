@@ -46,6 +46,24 @@ const (
 		"    sum\n" +
 		"}\n"
 
+	helperJSON = "fn json<T: std::fmt::Debug>(v: T) {\n" +
+		"    println!(\"{:?}\", v);\n" +
+		"}\n"
+
+	helperMin = "fn _min<T: PartialOrd + Clone + Default>(v: &[T]) -> T {\n" +
+		"    if v.is_empty() { return T::default(); }\n" +
+		"    let mut m = v[0].clone();\n" +
+		"    for it in &v[1..] { if *it < m { m = it.clone(); } }\n" +
+		"    m\n" +
+		"}\n"
+
+	helperMax = "fn _max<T: PartialOrd + Clone + Default>(v: &[T]) -> T {\n" +
+		"    if v.is_empty() { return T::default(); }\n" +
+		"    let mut m = v[0].clone();\n" +
+		"    for it in &v[1..] { if *it > m { m = it.clone(); } }\n" +
+		"    m\n" +
+		"}\n"
+
 	helperInMap = "fn _in_map<K: std::cmp::Eq + std::hash::Hash, V>(m: &std::collections::HashMap<K, V>, k: &K) -> bool {\n" +
 		"    m.contains_key(k)\n" +
 		"}\n"
@@ -155,6 +173,9 @@ var helperMap = map[string]string{
 	"_count":        helperCount,
 	"_avg":          helperAvg,
 	"_sum":          helperSum,
+	"_min":          helperMin,
+	"_max":          helperMax,
+	"json":          helperJSON,
 	"_in_map":       helperInMap,
 	"_in_string":    helperInString,
 	"_input":        helperInput,

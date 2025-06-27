@@ -753,6 +753,29 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 			return fmt.Sprintf("_sum(%s)", src), nil
 		}
+	case "min":
+		if len(args) == 1 {
+			c.use("_min")
+			src := fmt.Sprintf("&%s", args[0])
+			if _, ok := c.inferExprType(call.Args[0]).(types.GroupType); ok {
+				src = fmt.Sprintf("&%s.items", args[0])
+			}
+			return fmt.Sprintf("_min(%s)", src), nil
+		}
+	case "max":
+		if len(args) == 1 {
+			c.use("_max")
+			src := fmt.Sprintf("&%s", args[0])
+			if _, ok := c.inferExprType(call.Args[0]).(types.GroupType); ok {
+				src = fmt.Sprintf("&%s.items", args[0])
+			}
+			return fmt.Sprintf("_max(%s)", src), nil
+		}
+	case "json":
+		if len(args) == 1 {
+			c.use("json")
+			return fmt.Sprintf("json(%s)", args[0]), nil
+		}
 	case "input":
 		if len(args) == 0 {
 			return "{ use std::io::Read; let mut s = String::new(); std::io::stdin().read_line(&mut s).unwrap(); s.trim().to_string() }", nil
