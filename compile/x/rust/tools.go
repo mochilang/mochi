@@ -84,13 +84,19 @@ func ensureRust() error {
 	return cmd.Run()
 }
 
+func Ensure() error {
+	if err := EnsureRust(); err != nil {
+		return err
+	}
+	return EnsureRustfmt()
+}
+
 // FormatRust runs rustfmt on the given source code if available. If rustfmt is
 // missing or fails the formatting step, tabs are expanded to four spaces and a
 // trailing newline is ensured so that the generated code remains readable.
 func FormatRust(src []byte) []byte {
-	path, err := exec.LookPath("rustfmt")
-	if err == nil {
-		cmd := exec.Command(path, "--emit", "stdout")
+	if path, err := exec.LookPath("rustfmt"); err == nil {
+		cmd := exec.Command(path, "--edition", "2021", "--emit", "stdout")
 		cmd.Stdin = bytes.NewReader(src)
 		var out bytes.Buffer
 		cmd.Stdout = &out
