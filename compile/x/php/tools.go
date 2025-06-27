@@ -65,3 +65,57 @@ func EnsurePHP() error {
 	}
 	return fmt.Errorf("php not installed")
 }
+
+// EnsurePHPCBF ensures the phpcbf command is available, attempting installation if missing.
+func EnsurePHPCBF() error {
+	if _, err := exec.LookPath("phpcbf"); err == nil {
+		return nil
+	}
+	if err := EnsurePHP(); err != nil {
+		return err
+	}
+	switch runtime.GOOS {
+	case "linux":
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			cmd := exec.Command("apt-get", "update")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				return err
+			}
+			cmd = exec.Command("apt-get", "install", "-y", "php-codesniffer")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+		if _, err := exec.LookPath("apk"); err == nil {
+			cmd := exec.Command("apk", "add", "--no-cache", "php-codesniffer")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	case "darwin":
+		if _, err := exec.LookPath("brew"); err == nil {
+			cmd := exec.Command("brew", "install", "php-code-sniffer")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "phpcodesniffer")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "phpcodesniffer")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	}
+	if _, err := exec.LookPath("phpcbf"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("phpcbf not installed")
+}

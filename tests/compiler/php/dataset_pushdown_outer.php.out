@@ -1,19 +1,16 @@
 <?php
-
 $xs = [1, 2, 3, 4];
 $ys = [10, 20, 30];
-$res = (function () use ($xs, $ys) {
-    $res = [];
-    foreach ((is_string($xs) ? str_split($xs) : $xs) as $x) {
-        if (!(($x > 2))) {
-            continue;
-        }
-        foreach ((is_string($ys) ? str_split($ys) : $ys) as $y) {
-            $res[] = ((is_array($x) && is_array($y)) ? array_merge($x, $y) : ((is_string($x) || is_string($y)) ? ($x . $y) : ($x + $y)));
-        }
-    }
-    return $res;
+$res = (function() use ($xs, $ys) {
+	$res = [];
+	foreach ((is_string($xs) ? str_split($xs) : $xs) as $x) {
+		if (!(($x > 2))) { continue; }
+		foreach ((is_string($ys) ? str_split($ys) : $ys) as $y) {
+			$res[] = ((is_array($x) && is_array($y)) ? array_merge($x, $y) : ((is_string($x) || is_string($y)) ? ($x . $y) : ($x + $y)));
+		}
+	}
+	return $res;
 })();
 foreach ((is_string($res) ? str_split($res) : $res) as $v) {
-    echo $v, PHP_EOL;
+	echo $v, PHP_EOL;
 }

@@ -1,12 +1,9 @@
 <?php
-
-class Todo
-{
-    public $title;
-    public function __construct($fields = [])
-    {
-        $this->title = $fields['title'] ?? null;
-    }
+class Todo {
+	public $title;
+	public function __construct($fields = []) {
+		$this->title = $fields['title'] ?? null;
+	}
 }
 
 $todo = new Todo((array)["title" => "hi"]);

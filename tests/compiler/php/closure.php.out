@@ -1,10 +1,8 @@
 <?php
-
-function mochi_makeAdder($n)
-{
-    return function ($x) use ($n) {
-        return ((is_array($x) && is_array($n)) ? array_merge($x, $n) : ((is_string($x) || is_string($n)) ? ($x . $n) : ($x + $n)));
-    };
+function mochi_makeAdder($n) {
+	return function ($x) use ($n) {
+	return ((is_array($x) && is_array($n)) ? array_merge($x, $n) : ((is_string($x) || is_string($n)) ? ($x . $n) : ($x + $n)));
+};
 }
 
 $add10 = mochi_makeAdder(10);
