@@ -24,6 +24,8 @@ type Compiler struct {
 	needInput     bool
 	needAvg       bool
 	needSum       bool
+	needMin       bool
+	needMax       bool
 	needForeach   bool
 	needWhile     bool
 	needExpect    bool
@@ -1088,6 +1090,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "sum":
 				c.needSum = true
 				res = fmt.Sprintf("mochi_sum(%s)", argStr)
+			case "min":
+				c.needMin = true
+				res = fmt.Sprintf("mochi_min(%s)", argStr)
+			case "max":
+				c.needMax = true
+				res = fmt.Sprintf("mochi_max(%s)", argStr)
 			case "input":
 				c.needInput = true
 				res = "mochi_input()"
@@ -1278,6 +1286,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "sum":
 			c.needSum = true
 			return fmt.Sprintf("mochi_sum(%s)", argStr), nil
+		case "min":
+			c.needMin = true
+			return fmt.Sprintf("mochi_min(%s)", argStr), nil
+		case "max":
+			c.needMax = true
+			return fmt.Sprintf("mochi_max(%s)", argStr), nil
 		case "input":
 			c.needInput = true
 			return "mochi_input()", nil
