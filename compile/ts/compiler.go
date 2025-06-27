@@ -1237,23 +1237,43 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		if op.Index == nil {
 			if op.Call != nil {
 				// check for method call on a selector expression
-				if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
-					method := sel.Tail[0]
-					rootExpr := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root}}
+				if sel := p.Target.Selector; sel != nil && len(sel.Tail) >= 1 {
+					method := sel.Tail[len(sel.Tail)-1]
+					rootSel := &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}
+					rootExpr := &parser.Primary{Selector: rootSel}
+					rootStr, err := c.compilePrimary(rootExpr)
+					if err != nil {
+						return "", err
+					}
 					rootTyp := c.inferPrimaryType(rootExpr)
-					root := sanitizeName(sel.Root)
 					switch method {
 					case "keys":
 						if len(op.Call.Args) == 0 {
 							if mt, ok := rootTyp.(types.MapType); ok {
 								if isInt(mt.Key) || isInt64(mt.Key) || isFloat(mt.Key) {
-									expr = fmt.Sprintf("Object.keys(%s).map(k => Number(k))", root)
+									expr = fmt.Sprintf("Object.keys(%s).map(k => Number(k))", rootStr)
 								} else {
-									expr = fmt.Sprintf("Object.keys(%s)", root)
+									expr = fmt.Sprintf("Object.keys(%s)", rootStr)
 								}
 								typ = types.ListType{Elem: types.AnyType{}}
 								continue
 							}
+						}
+					case "contains":
+						if len(op.Call.Args) == 1 {
+							arg, err := c.compileExpr(op.Call.Args[0])
+							if err != nil {
+								return "", err
+							}
+							if _, ok := rootTyp.(types.ListType); ok {
+								expr = fmt.Sprintf("%s.includes(%s)", rootStr, arg)
+							} else if _, ok := rootTyp.(types.StringType); ok {
+								expr = fmt.Sprintf("%s.includes(%s)", rootStr, arg)
+							} else {
+								expr = fmt.Sprintf("%s.includes(%s)", rootStr, arg)
+							}
+							typ = types.BoolType{}
+							continue
 						}
 					}
 				}

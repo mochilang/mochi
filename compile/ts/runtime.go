@@ -84,7 +84,7 @@ const (
 		"  return JSON.stringify(_sort(v));\n" +
 		"}\n"
 
-	helperMin = "function _min(v: any): number {\n" +
+	helperMin = "function _min(v: any): any {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
 		"  else if (v && typeof v === 'object') {\n" +
@@ -92,9 +92,14 @@ const (
 		"    else if (Array.isArray((v as any).Items)) list = (v as any).Items;\n" +
 		"  }\n" +
 		"  if (!list || list.length === 0) return 0;\n" +
-		"  let m = Number(list[0]);\n" +
-		"  for (const n of list) { const num = Number(n); if (num < m) m = num; }\n" +
-		"  return m;\n" +
+		"  let m = list[0];\n" +
+		"  if (typeof m === 'string') {\n" +
+		"    for (const s of list) if (typeof s === 'string' && s < m) m = s;\n" +
+		"    return m;\n" +
+		"  }\n" +
+		"  let mv = Number(m);\n" +
+		"  for (const n of list) { const num = Number(n); if (num < mv) mv = num; }\n" +
+		"  return mv;\n" +
 		"}\n"
 
 	helperMax = "function _max(v: any): number {\n" +
