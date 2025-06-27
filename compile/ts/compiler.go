@@ -1321,7 +1321,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "{" + strings.Join(parts, ", ") + "}", nil
 		}
 		inner := indentBlock(strings.Join(parts, ",\n"), c.indent+1)
-		return "{\n" + inner + strings.Repeat("\t", c.indent) + "}", nil
+		return "{\n" + inner + strings.Repeat(indentStr, c.indent) + "}", nil
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	default:
@@ -1486,7 +1486,7 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 		return "[" + strings.Join(elems, ", ") + "]", nil
 	}
 	inner := indentBlock(strings.Join(elems, ",\n"), c.indent+1)
-	return "[\n" + inner + strings.Repeat("\t", c.indent) + "]", nil
+	return "[\n" + inner + strings.Repeat(indentStr, c.indent) + "]", nil
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
@@ -1517,7 +1517,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		return "{" + strings.Join(items, ", ") + "}", nil
 	}
 	inner := indentBlock(strings.Join(items, ",\n"), c.indent+1)
-	return "{\n" + inner + strings.Repeat("\t", c.indent) + "}", nil
+	return "{\n" + inner + strings.Repeat(indentStr, c.indent) + "}", nil
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
@@ -1848,16 +1848,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 		}
-		indent := "\t\t"
+		indent := indentStr + indentStr
 		for i := range q.Froms {
 			fvar := sanitizeName(q.Froms[i].Var)
 			b.WriteString(indent + "for (const " + fvar + " of " + fromSrcs[i] + ") {\n")
-			indent += "\t"
+			indent += indentStr
 		}
 		for i := range q.Joins {
 			jvar := sanitizeName(q.Joins[i].Var)
 			b.WriteString(indent + "for (const " + jvar + " of " + joinSrcs[i] + ") {\n")
-			indent += "\t"
+			indent += indentStr
 			b.WriteString(indent + "if (!(" + joinOns[i] + ")) { continue }\n")
 		}
 		if q.Where != nil {
@@ -1880,14 +1880,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(indent + "_items.push(" + sanitizeName(q.Var) + ");\n")
 		}
 		for i := len(q.Joins) - 1; i >= 0; i-- {
-			indent = indent[:len(indent)-1]
+			indent = indent[:len(indent)-len(indentStr)]
 			b.WriteString(indent + "}\n")
 		}
 		for i := len(q.Froms) - 1; i >= 0; i-- {
-			indent = indent[:len(indent)-1]
+			indent = indent[:len(indent)-len(indentStr)]
 			b.WriteString(indent + "}\n")
 		}
-		b.WriteString("\t}\n")
+		b.WriteString(indentStr + "}\n")
 
 		if group {
 			b.WriteString("\tlet _groups = _order.map(k => _map.get(k)!);\n")
