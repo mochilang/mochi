@@ -1,4 +1,4 @@
-//go:build cosmo
+//go:build cosmo && libcosmo
 
 package ccode_test
 
@@ -26,7 +26,7 @@ func compileRun(t *testing.T, code []byte, stdin []byte) ([]byte, error) {
 	}
 	bin := filepath.Join(dir, "prog")
 	if err := cosmo.CompileToFile(string(code), bin); err != nil {
-		return nil, fmt.Errorf("cosmocc: %w", err)
+		return nil, fmt.Errorf("cosmo: %w", err)
 	}
 	cmd := exec.Command(bin)
 	if stdin != nil {
@@ -40,9 +40,6 @@ func compileRun(t *testing.T, code []byte, stdin []byte) ([]byte, error) {
 }
 
 func TestCosmoSubsetPrograms(t *testing.T) {
-	if err := cosmo.EnsureCosmo(); err != nil {
-		t.Skipf("cosmocc not available: %v", err)
-	}
 	golden.Run(t, "tests/compiler/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {

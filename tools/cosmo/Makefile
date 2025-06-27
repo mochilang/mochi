@@ -4,7 +4,7 @@ ensure:
 go run ./tools.go
 
 run:
-go run -tags cosmo ./main.go
+go run -tags "cosmo libcosmo" ./main.go
 
 test:
-go test -tags cosmo
+go test -tags "cosmo libcosmo"
