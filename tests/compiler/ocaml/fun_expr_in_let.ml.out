@@ -1,2 +1,3 @@
 let square = fun x -> x * x;;
-print_endline (string_of_int (square 6));;
+
+print_endline (string_of_int (square 6))
