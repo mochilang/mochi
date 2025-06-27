@@ -16,3 +16,12 @@ Some generated programs still rely on `auto` in template parameters which
 prevents successful compilation with `g++`. Remaining work includes
 emitting concrete types for map and vector values so that all JOB queries
 build and run without errors.
+
+## Outstanding
+
+- `tpch_q2.mochi` does not compile to runnable C++ yet. Nested field
+  access in query joins emits dot notation on `unordered_map` values and
+  the generated grouping map uses a map key type that is itself another
+  `unordered_map`. The compiler needs to track element types for `from`
+  and `join` variables inside queries so that map fields are emitted with
+  `[]` indexing and grouping keys use concrete structs.

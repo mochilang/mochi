@@ -271,6 +271,35 @@ func getEmptyMapLiteral(e *parser.Expr) *parser.MapLiteral {
 	return nil
 }
 
+func getMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	post := u.Value
+	if post == nil || post.Target == nil {
+		return nil
+	}
+	return post.Target.Map
+}
+
+func inferElemType(e *parser.Expr, env *types.Env, lookup CppVarLookup) string {
+	t := InferCppExprType(e, env, lookup)
+	if strings.HasPrefix(t, "vector<") {
+		return strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
+	}
+	if strings.HasPrefix(t, "unordered_map<") {
+		inside := strings.TrimSuffix(strings.TrimPrefix(t, "unordered_map<"), ">")
+		if parts := strings.SplitN(inside, ",", 2); len(parts) == 2 {
+			return strings.TrimSpace(parts[1])
+		}
+	}
+	return ""
+}
+
 func getStructLiteral(e *parser.Expr) *parser.StructLiteral {
 	if e == nil || e.Binary == nil {
 		return nil

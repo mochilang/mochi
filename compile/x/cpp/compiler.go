@@ -274,6 +274,44 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	}
 }
 
+func (c *Compiler) compileKeyStruct(name string, fields []string, types []string) {
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("struct %s {", name))
+	c.indent++
+	for i, fn := range fields {
+		c.writeln(fmt.Sprintf("%s %s;", types[i], fn))
+	}
+	c.indent--
+	c.writeln("};")
+	eq := make([]string, len(fields))
+	for i, fn := range fields {
+		eq[i] = fmt.Sprintf("a.%s == b.%s", fn, fn)
+	}
+	c.writeln(fmt.Sprintf("inline bool operator==(const %s& a, const %s& b) { return %s; }", name, name, strings.Join(eq, " && ")))
+	c.helpers["hashCombine"] = true
+	c.writeln("namespace std {")
+	c.indent++
+	c.writeln(fmt.Sprintf("template<> struct hash<%s> {", name))
+	c.indent++
+	c.writeln(fmt.Sprintf("size_t operator()(const %s& k) const noexcept {", name))
+	c.indent++
+	c.writeln("size_t h = 0;")
+	for _, fn := range fields {
+		c.writeln(fmt.Sprintf("_hash_combine(h, k.%s);", fn))
+	}
+	c.writeln("return h;")
+	c.indent--
+	c.writeln("}")
+	c.indent--
+	c.writeln("};")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+}
+
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		names := make([]string, len(t.Variants))
@@ -706,7 +744,13 @@ func (c *Compiler) compileUnary(u *parser.Unary) string {
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 	expr := c.compilePrimary(p.Target)
-	for _, op := range p.Ops {
+	for i, op := range p.Ops {
+		// infer the type of the expression prior to this op so we can
+		// decide how to emit field access or indexing
+		tmpExpr := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
+		unary := &parser.Unary{Value: tmpExpr}
+		exprType := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
+		typ := InferCppExprType(exprType, c.env, c.getVar)
 		if op.Index != nil {
 			// Handle simple index or slice
 			if op.Index.Colon == nil {
@@ -790,7 +834,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 			}
 			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 		} else if op.Field != nil {
-			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
+			if strings.HasPrefix(typ, "unordered_map<") {
+				expr = fmt.Sprintf("%s[\"%s\"]", expr, op.Field.Name)
+			} else {
+				expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
+			}
 		} else if op.Cast != nil {
 			typ := c.cppType(op.Cast.Type)
 			if st, ok := c.resolveTypeRef(op.Cast.Type).(types.StructType); ok {
@@ -1143,10 +1191,57 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	c.pushScope()
+	defer c.popScope()
+	if t := inferElemType(q.Source, c.env, c.getVar); t != "" {
+		c.setVar(q.Var, t)
+	} else {
+		c.setVar(q.Var, "any")
+	}
+	for _, f := range q.Froms {
+		if t := inferElemType(f.Src, c.env, c.getVar); t != "" {
+			c.setVar(f.Var, t)
+		} else {
+			c.setVar(f.Var, "any")
+		}
+	}
+	for _, j := range q.Joins {
+		if t := inferElemType(j.Src, c.env, c.getVar); t != "" {
+			c.setVar(j.Var, t)
+		} else {
+			c.setVar(j.Var, "any")
+		}
+	}
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		c.helpers["groupBy"] = true
 		src := c.compileExpr(q.Source)
-		key := c.compileExpr(q.Group.Exprs[0])
+		keyExpr := q.Group.Exprs[0]
+		key := c.compileExpr(keyExpr)
+		keyType := InferCppExprType(keyExpr, c.env, c.getVar)
+		if strings.HasPrefix(keyType, "unordered_map<") {
+			if ml := getMapLiteral(keyExpr); ml != nil {
+				fields := make([]string, len(ml.Items))
+				ftypes := make([]string, len(ml.Items))
+				vals := make([]string, len(ml.Items))
+				for i, it := range ml.Items {
+					name := fmt.Sprintf("f%d", i)
+					if n, ok := selectorName(it.Key); ok {
+						name = sanitizeName(n)
+					}
+					fields[i] = name
+					t := InferCppExprType(it.Value, c.env, c.getVar)
+					if t == "" {
+						t = "any"
+					}
+					ftypes[i] = t
+					vals[i] = c.compileExpr(it.Value)
+				}
+				structName := fmt.Sprintf("GroupKey%d", len(c.structs))
+				c.compileKeyStruct(structName, fields, ftypes)
+				keyType = structName
+				key = fmt.Sprintf("%s{%s}", structName, strings.Join(vals, ", "))
+			}
+		}
 		sel := c.compileExpr(q.Select)
 		resType := InferCppExprType(q.Select, c.env, c.getVar)
 		if resType == "" || resType == "auto" {
@@ -1167,7 +1262,36 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	if q.Group != nil {
 		src := c.compileExpr(q.Source)
-		key := c.compileExpr(q.Group.Exprs[0])
+		keyExpr := q.Group.Exprs[0]
+		key := c.compileExpr(keyExpr)
+		keyType := InferCppExprType(keyExpr, c.env, c.getVar)
+		if strings.HasPrefix(keyType, "unordered_map<") {
+			if ml := getMapLiteral(keyExpr); ml != nil {
+				fields := make([]string, len(ml.Items))
+				ftypes := make([]string, len(ml.Items))
+				vals := make([]string, len(ml.Items))
+				for i, it := range ml.Items {
+					name := fmt.Sprintf("f%d", i)
+					if n, ok := selectorName(it.Key); ok {
+						name = sanitizeName(n)
+					}
+					fields[i] = name
+					t := InferCppExprType(it.Value, c.env, c.getVar)
+					if t == "" {
+						t = "any"
+					}
+					ftypes[i] = t
+					vals[i] = c.compileExpr(it.Value)
+				}
+				structName := fmt.Sprintf("GroupKey%d", len(c.structs))
+				c.compileKeyStruct(structName, fields, ftypes)
+				keyType = structName
+				key = fmt.Sprintf("%s{%s}", structName, strings.Join(vals, ", "))
+			}
+		}
+		if keyType == "" || keyType == "auto" {
+			keyType = "any"
+		}
 		sel := c.compileExpr(q.Select)
 		resType := InferCppExprType(q.Select, c.env, c.getVar)
 		if resType == "" || resType == "auto" {
@@ -1181,10 +1305,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if elemType == "auto" {
 			elemType = "any"
 		}
-		keyType := InferCppExprType(q.Group.Exprs[0], c.env, c.getVar)
-		if keyType == "" || keyType == "auto" {
-			keyType = "any"
-		}
+		c.setVar(q.Group.Name, "Group*")
 		var sortExpr, sortType string
 		if q.Sort != nil {
 			sortExpr = c.compileExpr(q.Sort)
