@@ -10,3 +10,12 @@ The current COBOL backend cannot compile the TPC-H Q1 example. The following wor
 6. **Runtime helpers** – create small COBOL routines for JSON printing and numeric conversions if needed.
 
 These tasks will bring the COBOL backend closer to running `tests/dataset/tpc-h/q1.mochi` and similar benchmarks.
+
+## JOB Dataset Support
+
+Initial join handling and method call support now allow the COBOL backend to compile the `job` dataset queries `q1.mochi` and `q2.mochi`. Golden tests covering these queries live under `tests/dataset/job/compiler/cobol`.
+
+### Remaining work
+
+* Implement left/right/outer join semantics.
+* Handle group by clauses and additional aggregations.

@@ -309,7 +309,22 @@ func (c *Compiler) compileFunExpr(n *ast.Node) string {
 }
 
 func (c *Compiler) compileCallExpr(n *ast.Node) string {
-	name := cobolName(n.Value.(string))
+	var name string
+	if s, ok := n.Value.(string); ok {
+		name = s
+	} else if sel, ok := n.Value.(*ast.Node); ok && sel.Kind == "selector" {
+		if str, ok := sel.Value.(string); ok {
+			name = str
+			if len(sel.Children) > 0 {
+				n.Children = append([]*ast.Node{sel.Children[0]}, n.Children...)
+			}
+		} else {
+			return "0"
+		}
+	} else {
+		return "0"
+	}
+	name = cobolName(name)
 	if fn, ok := c.varFuncs[name]; ok {
 		name = fn
 	}
@@ -707,6 +722,7 @@ func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 	// Extract components from the AST node.
 	var srcNode, whereNode, selNode, skipNode, takeNode *ast.Node
 	var fromNodes []*ast.Node
+	conds := map[*ast.Node]*ast.Node{}
 	for _, ch := range n.Children {
 		switch ch.Kind {
 		case "source":
@@ -716,6 +732,13 @@ func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 		case "from":
 			if len(ch.Children) > 0 {
 				fromNodes = append(fromNodes, ch)
+			}
+		case "join", "left_join", "right_join", "outer_join":
+			if len(ch.Children) > 0 {
+				fromNodes = append(fromNodes, ch)
+				if len(ch.Children) > 1 && ch.Children[1].Kind == "on" && len(ch.Children[1].Children) > 0 {
+					conds[ch] = ch.Children[1].Children[0]
+				}
 			}
 		case "where":
 			if len(ch.Children) > 0 {
@@ -733,6 +756,16 @@ func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 			if len(ch.Children) > 0 {
 				selNode = ch.Children[0]
 			}
+		}
+	}
+	for _, cond := range conds {
+		if cond == nil {
+			continue
+		}
+		if whereNode == nil {
+			whereNode = cond
+		} else {
+			whereNode = &ast.Node{Kind: "binary", Value: "&&", Children: []*ast.Node{whereNode, cond}}
 		}
 	}
 	if srcNode == nil || selNode == nil {
@@ -774,6 +807,7 @@ func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 		length  int
 		varName string
 		pic     string
+		cond    *ast.Node
 	}
 	infos := []fromInfo{}
 	maxLen := length
@@ -797,7 +831,7 @@ func (c *Compiler) compileQueryExprInto(n *ast.Node, outName string) string {
 			}
 		}
 		c.declare(fmt.Sprintf("01 %s %s", vname, apic))
-		infos = append(infos, fromInfo{arr: arr, length: ln, varName: vname, pic: apic})
+		infos = append(infos, fromInfo{arr: arr, length: ln, varName: vname, pic: apic, cond: conds[fn]})
 		if ln > 0 {
 			maxLen *= ln
 		}
