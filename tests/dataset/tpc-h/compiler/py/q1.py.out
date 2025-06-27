@@ -6,29 +6,110 @@ import json
 lineitem = None
 result = None
 
+
 def test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus():
-	assert (result == [{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": (950 + 1800), "sum_charge": (((950 * 1.07)) + ((1800 * 1.05))), "avg_qty": 26.5, "avg_price": 1500, "avg_disc": 0.07500000000000001, "count_order": 2}])
+    assert result == [
+        {
+            "returnflag": "N",
+            "linestatus": "O",
+            "sum_qty": 53,
+            "sum_base_price": 3000,
+            "sum_disc_price": (950 + 1800),
+            "sum_charge": (((950 * 1.07)) + ((1800 * 1.05))),
+            "avg_qty": 26.5,
+            "avg_price": 1500,
+            "avg_disc": 0.07500000000000001,
+            "count_order": 2,
+        }
+    ]
+
 
 def main():
-	global lineitem
-	lineitem = [{"l_quantity": 17, "l_extendedprice": 1000, "l_discount": 0.05, "l_tax": 0.07, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-08-01"}, {"l_quantity": 36, "l_extendedprice": 2000, "l_discount": 0.1, "l_tax": 0.05, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-09-01"}, {"l_quantity": 25, "l_extendedprice": 1500, "l_discount": 0, "l_tax": 0.08, "l_returnflag": "R", "l_linestatus": "F", "l_shipdate": "1998-09-03"}]
-	def _q0():
-		_src = lineitem
-		_rows = _query(_src, [], { 'select': lambda row: (row), 'where': lambda row: ((row["l_shipdate"] <= "1998-09-02")) })
-		_groups = _group_by(_rows, lambda row: ({"returnflag": row["l_returnflag"], "linestatus": row["l_linestatus"]}))
-		items = _groups
-		return [ {"returnflag": g.key.returnflag, "linestatus": g.key.linestatus, "sum_qty": sum([ x["l_quantity"] for x in g ]), "sum_base_price": sum([ x["l_extendedprice"] for x in g ]), "sum_disc_price": sum([ (x["l_extendedprice"] * ((1 - x["l_discount"]))) for x in g ]), "sum_charge": sum([ ((x["l_extendedprice"] * ((1 - x["l_discount"]))) * ((1 + x["l_tax"]))) for x in g ]), "avg_qty": _avg([ x["l_quantity"] for x in g ]), "avg_price": _avg([ x["l_extendedprice"] for x in g ]), "avg_disc": _avg([ x["l_discount"] for x in g ]), "count_order": _count(g)} for g in items ]
-	
-	global result
-	result = _q0()
-	print(json.dumps(result, default=lambda o: vars(o)))
-	test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
+    global lineitem
+    lineitem = [
+        {
+            "l_quantity": 17,
+            "l_extendedprice": 1000,
+            "l_discount": 0.05,
+            "l_tax": 0.07,
+            "l_returnflag": "N",
+            "l_linestatus": "O",
+            "l_shipdate": "1998-08-01",
+        },
+        {
+            "l_quantity": 36,
+            "l_extendedprice": 2000,
+            "l_discount": 0.1,
+            "l_tax": 0.05,
+            "l_returnflag": "N",
+            "l_linestatus": "O",
+            "l_shipdate": "1998-09-01",
+        },
+        {
+            "l_quantity": 25,
+            "l_extendedprice": 1500,
+            "l_discount": 0,
+            "l_tax": 0.08,
+            "l_returnflag": "R",
+            "l_linestatus": "F",
+            "l_shipdate": "1998-09-03",
+        },
+    ]
+
+    def _q0():
+        _src = lineitem
+        _rows = _query(
+            _src,
+            [],
+            {
+                "select": lambda row: (row),
+                "where": lambda row: ((row["l_shipdate"] <= "1998-09-02")),
+            },
+        )
+        _groups = _group_by(
+            _rows,
+            lambda row: (
+                {"returnflag": row["l_returnflag"], "linestatus": row["l_linestatus"]}
+            ),
+        )
+        items = _groups
+        return [
+            {
+                "returnflag": g.key.returnflag,
+                "linestatus": g.key.linestatus,
+                "sum_qty": sum([x["l_quantity"] for x in g]),
+                "sum_base_price": sum([x["l_extendedprice"] for x in g]),
+                "sum_disc_price": sum(
+                    [(x["l_extendedprice"] * ((1 - x["l_discount"]))) for x in g]
+                ),
+                "sum_charge": sum(
+                    [
+                        (
+                            (x["l_extendedprice"] * ((1 - x["l_discount"])))
+                            * ((1 + x["l_tax"]))
+                        )
+                        for x in g
+                    ]
+                ),
+                "avg_qty": _avg([x["l_quantity"] for x in g]),
+                "avg_price": _avg([x["l_extendedprice"] for x in g]),
+                "avg_disc": _avg([x["l_discount"] for x in g]),
+                "count_order": _count(g),
+            }
+            for g in items
+        ]
+
+    global result
+    result = _q0()
+    print(json.dumps(result, default=lambda o: vars(o)))
+    test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
+
 
 def _avg(v):
-    if hasattr(v, 'Items'):
+    if hasattr(v, "Items"):
         v = v.Items
     if not isinstance(v, list):
-        raise Exception('avg() expects list or group')
+        raise Exception("avg() expects list or group")
     if not v:
         return 0
     s = 0.0
@@ -36,20 +117,27 @@ def _avg(v):
         if isinstance(it, (int, float)):
             s += float(it)
         else:
-            raise Exception('avg() expects numbers')
+            raise Exception("avg() expects numbers")
     return s / len(v)
+
+
 def _count(v):
     if isinstance(v, list):
         return len(v)
-    if hasattr(v, 'Items'):
+    if hasattr(v, "Items"):
         return len(v.Items)
-    raise Exception('count() expects list or group')
+    raise Exception("count() expects list or group")
+
+
 class _Group:
     def __init__(self, key):
         self.key = key
         self.Items = []
+
     def __iter__(self):
         return iter(self.Items)
+
+
 def _group_by(src, keyfn):
     groups = {}
     order = []
@@ -60,6 +148,7 @@ def _group_by(src, keyfn):
             key = keyfn(it)
         if isinstance(key, dict):
             import types
+
             key = types.SimpleNamespace(**key)
         ks = str(key)
         g = groups.get(ks)
@@ -68,72 +157,79 @@ def _group_by(src, keyfn):
             groups[ks] = g
             order.append(ks)
         g.Items.append(it)
-    return [ groups[k] for k in order ]
+    return [groups[k] for k in order]
+
+
 def _query(src, joins, opts):
     items = [[v] for v in src]
     for j in joins:
         joined = []
-        if j.get('right') and j.get('left'):
-            matched = [False] * len(j['items'])
+        if j.get("right") and j.get("left"):
+            matched = [False] * len(j["items"])
             for left in items:
                 m = False
-                for ri, right in enumerate(j['items']):
+                for ri, right in enumerate(j["items"]):
                     keep = True
-                    if j.get('on'):
-                        keep = j['on'](*left, right)
+                    if j.get("on"):
+                        keep = j["on"](*left, right)
                     if not keep:
                         continue
-                    m = True; matched[ri] = True
+                    m = True
+                    matched[ri] = True
                     joined.append(left + [right])
                 if not m:
                     joined.append(left + [None])
-            for ri, right in enumerate(j['items']):
+            for ri, right in enumerate(j["items"]):
                 if not matched[ri]:
                     undef = [None] * (len(items[0]) if items else 0)
                     joined.append(undef + [right])
-        elif j.get('right'):
-            for right in j['items']:
+        elif j.get("right"):
+            for right in j["items"]:
                 m = False
                 for left in items:
                     keep = True
-                    if j.get('on'):
-                        keep = j['on'](*left, right)
+                    if j.get("on"):
+                        keep = j["on"](*left, right)
                     if not keep:
                         continue
-                    m = True; joined.append(left + [right])
+                    m = True
+                    joined.append(left + [right])
                 if not m:
                     undef = [None] * (len(items[0]) if items else 0)
                     joined.append(undef + [right])
         else:
             for left in items:
                 m = False
-                for right in j['items']:
+                for right in j["items"]:
                     keep = True
-                    if j.get('on'):
-                        keep = j['on'](*left, right)
+                    if j.get("on"):
+                        keep = j["on"](*left, right)
                     if not keep:
                         continue
-                    m = True; joined.append(left + [right])
-                if j.get('left') and not m:
+                    m = True
+                    joined.append(left + [right])
+                if j.get("left") and not m:
                     joined.append(left + [None])
         items = joined
-    if opts.get('where'):
-        items = [r for r in items if opts['where'](*r)]
-    if opts.get('sortKey'):
-        items.sort(key=lambda it: opts['sortKey'](*it))
-    if 'skip' in opts:
-        n = opts['skip']
+    if opts.get("where"):
+        items = [r for r in items if opts["where"](*r)]
+    if opts.get("sortKey"):
+        items.sort(key=lambda it: opts["sortKey"](*it))
+    if "skip" in opts:
+        n = opts["skip"]
         if n < 0:
             n = 0
         items = items[n:] if n < len(items) else []
-    if 'take' in opts:
-        n = opts['take']
+    if "take" in opts:
+        n = opts["take"]
         if n < 0:
             n = 0
         items = items[:n] if n < len(items) else items
     res = []
     for r in items:
-        res.append(opts['select'](*r))
+        res.append(opts["select"](*r))
     return res
+
+
 if __name__ == "__main__":
-	main()
+    main()

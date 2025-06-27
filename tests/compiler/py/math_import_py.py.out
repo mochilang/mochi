@@ -6,12 +6,14 @@ import math
 r = 3
 area = None
 
+
 def main():
-	global r
-	r = 3
-	global area
-	area = (math.pi * math.pow(r, 2))
-	print("Area:", area)
+    global r
+    r = 3
+    global area
+    area = math.pi * math.pow(r, 2)
+    print("Area:", area)
+
 
 if __name__ == "__main__":
-	main()
+    main()
