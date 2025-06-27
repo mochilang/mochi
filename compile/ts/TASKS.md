@@ -2,5 +2,7 @@
 
 The TypeScript backend now compiles the JOB dataset queries `q1` through `q10`. Compiled code and runtime output are checked in under `tests/dataset/job/compiler/ts`.
 
-Query `q5` fails its embedded test when run via Deno. The result `[{"typical_european_movie":0}]` differs from the expected `[{"typical_european_movie":"A Film"}]`. Investigation is required to fix `_min` handling of strings or query evaluation.
+All JOB queries from `q1` through `q10` now compile and execute correctly. The
+`in` operator was extended to handle unknown operand types via a `_contains`
+helper, fixing `q5` which previously produced `0` instead of "A Film".
 
