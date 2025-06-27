@@ -1,0 +1,80 @@
+let company_name = [
+  { id: 1, country_code: "[de]" },
+  { id: 2, country_code: "[us]" }
+]
+
+let company_type = [
+  { id: 1, kind: "production companies" },
+  { id: 2, kind: "distributors" }
+]
+
+let info_type = [
+  { id: 1, info: "rating" },
+  { id: 2, info: "release dates" }
+]
+
+let kind_type = [
+  { id: 1, kind: "movie" },
+  { id: 2, kind: "video" }
+]
+
+let title = [
+  { id: 10, kind_id: 1, title: "Alpha" },
+  { id: 20, kind_id: 1, title: "Beta" },
+  { id: 30, kind_id: 2, title: "Gamma" } // different kind
+]
+
+let movie_companies = [
+  { movie_id: 10, company_id: 1, company_type_id: 1 },
+  { movie_id: 20, company_id: 1, company_type_id: 1 },
+  { movie_id: 30, company_id: 2, company_type_id: 1 } // not German
+]
+
+let movie_info = [
+  { movie_id: 10, info_type_id: 2, info: "1997-05-10" },
+  { movie_id: 20, info_type_id: 2, info: "1998-03-20" },
+  { movie_id: 30, info_type_id: 2, info: "1999-07-30" }
+]
+
+let movie_info_idx = [
+  { movie_id: 10, info_type_id: 1, info: "6.0" },
+  { movie_id: 20, info_type_id: 1, info: "7.5" },
+  { movie_id: 30, info_type_id: 1, info: "5.5" }
+]
+
+let candidates =
+  from cn in company_name
+  join mc in movie_companies on mc.company_id == cn.id
+  join ct in company_type on ct.id == mc.company_type_id
+  join t in title on t.id == mc.movie_id
+  join kt in kind_type on kt.id == t.kind_id
+  join mi in movie_info on mi.movie_id == t.id
+  join it2 in info_type on it2.id == mi.info_type_id
+  join miidx in movie_info_idx on miidx.movie_id == t.id
+  join it in info_type on it.id == miidx.info_type_id
+  where cn.country_code == "[de]" &&
+        ct.kind == "production companies" &&
+        it.info == "rating" &&
+        it2.info == "release dates" &&
+        kt.kind == "movie"
+  select {
+    release_date: mi.info,
+    rating: miidx.info,
+    german_movie: t.title
+  }
+
+let result = {
+  release_date: (from x in candidates sort by x.release_date select x.release_date)[0],
+  rating: (from x in candidates sort by x.rating select x.rating)[0],
+  german_movie: (from x in candidates sort by x.german_movie select x.german_movie)[0]
+}
+
+json(result)
+
+test "Q13 finds earliest German movie info" {
+  expect result == {
+    release_date: "1997-05-10",
+    rating: "6.0",
+    german_movie: "Alpha"
+  }
+}
