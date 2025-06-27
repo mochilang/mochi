@@ -12,10 +12,19 @@ main(_) ->
     Movie_companies = [#{movie_id => 100, company_type_id => 1, note => "ACME (co-production)"}, #{movie_id => 200, company_type_id => 1, note => "MGM (as Metro-Goldwyn-Mayer Pictures)"}],
     Movie_info_idx = [#{movie_id => 100, info_type_id => 10}, #{movie_id => 200, info_type_id => 20}],
     Filtered = [#{note => maps:get(note, Mc), title => maps:get(title, T), year => maps:get(production_year, T)} || Ct <- Company_type, Mc <- Movie_companies, T <- Title, Mi <- Movie_info_idx, It <- Info_type, (maps:get(id, Ct) == maps:get(company_type_id, Mc)), (maps:get(id, T) == maps:get(movie_id, Mc)), (maps:get(movie_id, Mi) == maps:get(id, T)), (maps:get(id, It) == maps:get(info_type_id, Mi)), ((((maps:get(kind, Ct) == "production companies") and (maps:get(info, It) == "top 250 rank")) and not lists:member("(as Metro-Goldwyn-Mayer Pictures)", maps:get(note, Mc))) and (lists:member("(co-production)", maps:get(note, Mc)) or lists:member("(presents)", maps:get(note, Mc))))],
-    Result = #{production_note => min([maps:get(note, R) || R <- Filtered]), movie_title => min([maps:get(title, R) || R <- Filtered]), movie_year => min([maps:get(year, R) || R <- Filtered])},
+    Result = #{production_note => mochi_min([maps:get(note, R) || R <- Filtered]), movie_title => mochi_min([maps:get(title, R) || R <- Filtered]), movie_year => mochi_min([maps:get(year, R) || R <- Filtered])},
     mochi_json([Result])
 ,
     mochi_run_test("Q1 returns min note, title and year for top ranked co-production", fun test_q1_returns_min_note__title_and_year_for_top_ranked_co_production/0).
+
+mochi_min([]) -> 0;
+mochi_min(M) when is_map(M) ->
+    case maps:find('Items', M) of
+        {ok, Items} -> mochi_min(Items);
+        error -> erlang:error(badarg)
+    end;
+mochi_min(L) when is_list(L) -> lists:min(L);
+mochi_min(_) -> erlang:error(badarg).
 
 
 mochi_escape_json([]) -> [];

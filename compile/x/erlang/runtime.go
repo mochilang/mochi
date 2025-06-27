@@ -87,6 +87,38 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("")
 	}
 
+	if c.needMin {
+		c.writeln("mochi_min([]) -> 0;")
+		c.writeln("mochi_min(M) when is_map(M) ->")
+		c.indent++
+		c.writeln("case maps:find('Items', M) of")
+		c.indent++
+		c.writeln("{ok, Items} -> mochi_min(Items);")
+		c.writeln("error -> erlang:error(badarg)")
+		c.indent--
+		c.writeln("end;")
+		c.indent--
+		c.writeln("mochi_min(L) when is_list(L) -> lists:min(L);")
+		c.writeln("mochi_min(_) -> erlang:error(badarg).")
+		c.writeln("")
+	}
+
+	if c.needMax {
+		c.writeln("mochi_max([]) -> 0;")
+		c.writeln("mochi_max(M) when is_map(M) ->")
+		c.indent++
+		c.writeln("case maps:find('Items', M) of")
+		c.indent++
+		c.writeln("{ok, Items} -> mochi_max(Items);")
+		c.writeln("error -> erlang:error(badarg)")
+		c.indent--
+		c.writeln("end;")
+		c.indent--
+		c.writeln("mochi_max(L) when is_list(L) -> lists:max(L);")
+		c.writeln("mochi_max(_) -> erlang:error(badarg).")
+		c.writeln("")
+	}
+
 	if c.needForeach {
 		c.writeln("mochi_foreach(F, L) ->")
 		c.indent++
