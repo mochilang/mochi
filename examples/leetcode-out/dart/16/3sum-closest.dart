@@ -1,5 +1,7 @@
-int threeSumClosest(nums, int target) {
-	dynamic sorted = (() {
+import 'dart:io';
+
+int threeSumClosest(List<int> nums, int target) {
+	List<int> sorted = (() {
 	var _res = [];
 	for (var n in nums) {
 		_res.add(n);
@@ -15,30 +17,30 @@ int threeSumClosest(nums, int target) {
 	_res = items;
 	return _res;
 })();
-	dynamic n = sorted.length;
-	dynamic best = ((sorted[0] + sorted[1]) + sorted[2]);
+	int n = sorted.length;
+	int best = ((sorted[0] + sorted[1]) + sorted[2]);
 	for (var i = 0; i < n; i++) {
 		dynamic left = (i + 1);
-		dynamic right = (n - 1);
+		int right = (n - 1);
 		while ((left < right)) {
 			dynamic sum = ((sorted[i] + sorted[left]) + sorted[right]);
 			if ((sum == target)) {
 				return target;
 			}
-			dynamic diff = 0;
+			int diff = 0;
 			if ((sum > target)) {
 				diff = ((sum - target)).toInt();
 			} else {
 				diff = ((target - sum)).toInt();
 			}
-			dynamic bestDiff = 0;
+			int bestDiff = 0;
 			if ((best > target)) {
 				bestDiff = ((best - target)).toInt();
 			} else {
 				bestDiff = ((target - best)).toInt();
 			}
 			if ((diff < bestDiff)) {
-				best = sum;
+				best = (sum).toInt();
 			}
 			if ((sum < target)) {
 				left = (left + 1);
@@ -50,6 +52,47 @@ int threeSumClosest(nums, int target) {
 	return best;
 }
 
-void main() {
+void test_example_1() {
+	if (!((threeSumClosest([-1, 2, 1, -4], 1) == 2))) { throw Exception('expect failed'); }
 }
+
+void test_example_2() {
+	if (!((threeSumClosest([0, 0, 0], 1) == 0))) { throw Exception('expect failed'); }
+}
+
+void test_additional() {
+	if (!((threeSumClosest([1, 1, 1, 0], -100) == 2))) { throw Exception('expect failed'); }
+}
+
+void main() {
+	int failures = 0;
+	if (!_runTest("example 1", test_example_1)) failures++;
+	if (!_runTest("example 2", test_example_2)) failures++;
+	if (!_runTest("additional", test_additional)) failures++;
+	if (failures > 0) {
+		print("\n[FAIL] $failures test(s) failed.");
+	}
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
 

@@ -1,6 +1,7 @@
 package dartcode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -82,4 +83,32 @@ func ensureDart() error {
 		}
 	}
 	return fmt.Errorf("failed to install dart")
+}
+
+// FormatDart runs `dart format` on the given source code if the dart binary is
+// available. If formatting fails or dart is not installed, the input is
+// returned unchanged. A trailing newline is ensured in the returned slice.
+func FormatDart(src []byte) []byte {
+	path, err := exec.LookPath("dart")
+	if err != nil {
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
+	}
+	cmd := exec.Command(path, "format", "--output", "show", "-")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		res := out.Bytes()
+		if len(res) == 0 || res[len(res)-1] != '\n' {
+			res = append(res, '\n')
+		}
+		return res
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
