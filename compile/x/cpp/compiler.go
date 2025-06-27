@@ -1002,12 +1002,23 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 		v := c.compileExpr(it.Value)
 		items[i] = fmt.Sprintf("{%s, %s}", k, v)
 	}
+	castVals := false
 	if len(valTypes) == 1 {
 		for t := range valTypes {
 			valType = t
 		}
+		if valType == "auto" {
+			valType = "any"
+			castVals = true
+		}
 	} else {
 		valType = "any"
+		castVals = true
+	}
+	if valType == "" {
+		valType = "any"
+	}
+	if castVals {
 		for i, it := range m.Items {
 			k := c.compileExpr(it.Key)
 			if name, ok := selectorName(it.Key); ok {
@@ -1016,9 +1027,6 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 			v := c.compileExpr(it.Value)
 			items[i] = fmt.Sprintf("{%s, any(%s)}", k, v)
 		}
-	}
-	if valType == "" {
-		valType = "any"
 	}
 	return fmt.Sprintf("unordered_map<%s, %s>{%s}", keyType, valType, strings.Join(items, ", "))
 }
@@ -1141,8 +1149,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		key := c.compileExpr(q.Group.Exprs[0])
 		sel := c.compileExpr(q.Select)
 		resType := InferCppExprType(q.Select, c.env, c.getVar)
-		if resType == "" {
-			resType = "auto"
+		if resType == "" || resType == "auto" {
+			resType = "any"
+			sel = fmt.Sprintf("any(%s)", sel)
 		}
 		var buf bytes.Buffer
 		buf.WriteString("([&]() -> vector<" + resType + "> {\n")
@@ -1161,16 +1170,20 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		key := c.compileExpr(q.Group.Exprs[0])
 		sel := c.compileExpr(q.Select)
 		resType := InferCppExprType(q.Select, c.env, c.getVar)
-		if resType == "" {
-			resType = "auto"
+		if resType == "" || resType == "auto" {
+			resType = "any"
+			sel = fmt.Sprintf("any(%s)", sel)
 		}
 		elemType := "auto"
 		if t := InferCppExprType(q.Source, c.env, c.getVar); strings.HasPrefix(t, "vector<") {
 			elemType = strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
 		}
+		if elemType == "auto" {
+			elemType = "any"
+		}
 		keyType := InferCppExprType(q.Group.Exprs[0], c.env, c.getVar)
-		if keyType == "" {
-			keyType = "auto"
+		if keyType == "" || keyType == "auto" {
+			keyType = "any"
 		}
 		var sortExpr, sortType string
 		if q.Sort != nil {
@@ -1336,8 +1349,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	sel := c.compileExpr(q.Select)
 	resType := InferCppExprType(q.Select, c.env, c.getVar)
-	if resType == "" {
-		resType = "auto"
+	if resType == "" || resType == "auto" {
+		resType = "any"
+		sel = fmt.Sprintf("any(%s)", sel)
 	}
 	var sortExpr string
 	if q.Sort != nil {
