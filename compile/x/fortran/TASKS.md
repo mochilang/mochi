@@ -7,3 +7,4 @@ The Fortran backend only handles simple array loops. Grouping and dynamic lists 
 - Provide `sum`, `avg` and `count` helpers written in Fortran.
 - Create a routine that prints JSON-like output for the test harness.
 - Add `q1.mochi` to `tests/compiler/fortran` once implemented.
+- Implement join clauses for JOB queries and additional string helpers.
