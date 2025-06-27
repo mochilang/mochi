@@ -1,0 +1,94 @@
+let aka_name = [
+  { person_id: 1, name: "A. Stone" },
+  { person_id: 2, name: "J. Doe" }
+]
+
+let char_name = [
+  { id: 1, name: "Protagonist" },
+  { id: 2, name: "Extra" }
+]
+
+let cast_info = [
+  { movie_id: 1, person_role_id: 1, person_id: 1, role_id: 1, note: "(voice)" },
+  { movie_id: 2, person_role_id: 2, person_id: 2, role_id: 2, note: "Cameo" }
+]
+
+let company_name = [
+  { id: 10, country_code: "[us]" },
+  { id: 20, country_code: "[gb]" }
+]
+
+let info_type = [
+  { id: 100, info: "release dates" }
+]
+
+let movie_companies = [
+  { movie_id: 1, company_id: 10, note: "Studio (USA)" },
+  { movie_id: 2, company_id: 20, note: "Other (worldwide)" }
+]
+
+let movie_info = [
+  { movie_id: 1, info_type_id: 100, info: "USA: June 2006" },
+  { movie_id: 2, info_type_id: 100, info: "UK: 1999" }
+]
+
+let name = [
+  { id: 1, name: "Angela Stone", gender: "f" },
+  { id: 2, name: "Bob Angstrom", gender: "m" }
+]
+
+let role_type = [
+  { id: 1, role: "actress" },
+  { id: 2, role: "actor" }
+]
+
+let title = [
+  { id: 1, title: "Voiced Movie", production_year: 2006 },
+  { id: 2, title: "Other Movie", production_year: 2010 }
+]
+
+let matches =
+  from an in aka_name
+  join n in name on n.id == an.person_id
+  join ci in cast_info on ci.person_id == an.person_id
+  join chn in char_name on chn.id == ci.person_role_id
+  join rt in role_type on rt.id == ci.role_id
+  join t in title on t.id == ci.movie_id
+  join mc in movie_companies on mc.movie_id == t.id
+  join cn in company_name on cn.id == mc.company_id
+  join mi in movie_info on mi.movie_id == t.id
+  join it in info_type on it.id == mi.info_type_id
+  where ci.note in [
+          "(voice)",
+          "(voice: Japanese version)",
+          "(voice) (uncredited)",
+          "(voice: English version)"
+        ] &&
+        cn.country_code == "[us]" &&
+        it.info == "release dates" &&
+        mc.note != null &&
+        (mc.note.contains("(USA)") || mc.note.contains("(worldwide)")) &&
+        mi.info != null &&
+        ((mi.info.contains("Japan:") && mi.info.contains("200")) ||
+         (mi.info.contains("USA:") && mi.info.contains("200"))) &&
+        n.gender == "f" &&
+        n.name.contains("Ang") &&
+        rt.role == "actress" &&
+        t.production_year >= 2005 &&
+        t.production_year <= 2009
+  select { actress: n.name, movie: t.title }
+
+let result = [
+  {
+    voicing_actress: min(from r in matches select r.actress),
+    voiced_movie: min(from r in matches select r.movie)
+  }
+]
+
+json(result)
+
+test "Q19 finds female voice actress in US/Japan release between 2005 and 2009" {
+  expect result == [
+    { voicing_actress: "Angela Stone", voiced_movie: "Voiced Movie" }
+  ]
+}
