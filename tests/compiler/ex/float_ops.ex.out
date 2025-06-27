@@ -3,11 +3,10 @@ defmodule Main do
   def main do
     x = 1.5
     y = 2.5
-    IO.puts(x + y)
-    IO.puts(y - x)
-    IO.puts(x * y)
-    IO.puts(y / x)
+    IO.puts((x + y))
+    IO.puts((y - x))
+    IO.puts((x * y))
+    IO.puts((y / x))
   end
-end
-
+  end
 Main.main()

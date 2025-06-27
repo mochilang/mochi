@@ -4,6 +4,5 @@ defmodule Main do
     xs = [10, 20, 30]
     IO.puts(Enum.at(xs, 1))
   end
-end
-
+  end
 Main.main()
