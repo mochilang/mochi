@@ -1,0 +1,74 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+min(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), min_list(Items, R).
+min(V, R) :-
+    is_list(V), !, min_list(V, R).
+min(_, _) :- throw(error('min expects list or group')).
+
+
+expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
+
+
+:- use_module(library(http/json)).
+json(V) :- json_write_dict(current_output, V), nl.
+
+
+test_p_q2_returns_only_supplier_with_min_cost_in_europe_for_brass_part :-
+    dict_create(_V0, map, [s_acctbal-1000, s_name-"BestSupplier", n_name-"FRANCE", p_partkey-1000, p_mfgr-"M1", s_address-"123 Rue", s_phone-"123", s_comment-"Fast and reliable", ps_supplycost-10]),
+    expect(Result = [_V0])    ,
+    true.
+
+    main :-
+    dict_create(_V1, map, [r_regionkey-1, r_name-"EUROPE"]),
+    dict_create(_V2, map, [r_regionkey-2, r_name-"ASIA"]),
+    Region = [_V1, _V2],
+    dict_create(_V3, map, [n_nationkey-10, n_regionkey-1, n_name-"FRANCE"]),
+    dict_create(_V4, map, [n_nationkey-20, n_regionkey-2, n_name-"CHINA"]),
+    Nation = [_V3, _V4],
+    dict_create(_V5, map, [s_suppkey-100, s_name-"BestSupplier", s_address-"123 Rue", s_nationkey-10, s_phone-"123", s_acctbal-1000, s_comment-"Fast and reliable"]),
+    dict_create(_V6, map, [s_suppkey-200, s_name-"AltSupplier", s_address-"456 Way", s_nationkey-20, s_phone-"456", s_acctbal-500, s_comment-"Slow"]),
+    Supplier = [_V5, _V6],
+    dict_create(_V7, map, [p_partkey-1000, p_type-"LARGE BRASS", p_size-15, p_mfgr-"M1"]),
+    dict_create(_V8, map, [p_partkey-2000, p_type-"SMALL COPPER", p_size-15, p_mfgr-"M2"]),
+    Part = [_V7, _V8],
+    dict_create(_V9, map, [ps_partkey-1000, ps_suppkey-100, ps_supplycost-10]),
+    dict_create(_V10, map, [ps_partkey-1000, ps_suppkey-200, ps_supplycost-15]),
+    Partsupp = [_V9, _V10],
+    to_list(Region, _V12),
+    findall(R, (member(R, _V12), get_dict(r_name, R, _V13), _V13 = "EUROPE"), _V14),
+    to_list(Nation, _V17),
+    findall(_V18, (member(R, _V14), member(N, _V17), get_dict(n_regionkey, N, _V15), get_dict(r_regionkey, R, _V16), _V15 = _V16, _V18 = N), _V19),
+    Europe_nations = _V19,
+    to_list(Supplier, _V21),
+    to_list(Europe_nations, _V24),
+    findall(_V25, (member(S, _V21), member(N, _V24), get_dict(s_nationkey, S, _V22), get_dict(n_nationkey, N, _V23), _V22 = _V23, dict_create(_V20, map, [s-S, n-N]), _V25 = _V20), _V26),
+    Europe_suppliers = _V26,
+    to_list(Part, _V29),
+    findall(P, (member(P, _V29), get_dict(p_size, P, _V30), get_dict(p_type, P, _V31), (_V30 = 15, _V31 = "LARGE BRASS")), _V32),
+    findall(_V33, (member(P, _V32), _V33 = P), _V34),
+    Target_parts = _V34,
+    to_list(Partsupp, _V51),
+    to_list(Target_parts, _V54),
+    to_list(Europe_suppliers, _V58),
+    findall(_V59, (member(Ps, _V51), member(P, _V54), get_dict(ps_partkey, Ps, _V52), get_dict(p_partkey, P, _V53), _V52 = _V53, member(S, _V58), get_dict(ps_suppkey, Ps, _V55), get_dict(s, S, _V56), get_dict(s_suppkey, _V56, _V57), _V55 = _V57, get_dict(s, S, _V35), get_dict(s_acctbal, _V35, _V36), get_dict(s, S, _V37), get_dict(s_name, _V37, _V38), get_dict(n, S, _V39), get_dict(n_name, _V39, _V40), get_dict(p_partkey, P, _V41), get_dict(p_mfgr, P, _V42), get_dict(s, S, _V43), get_dict(s_address, _V43, _V44), get_dict(s, S, _V45), get_dict(s_phone, _V45, _V46), get_dict(s, S, _V47), get_dict(s_comment, _V47, _V48), get_dict(ps_supplycost, Ps, _V49), dict_create(_V50, map, [s_acctbal-_V36, s_name-_V38, n_name-_V40, p_partkey-_V41, p_mfgr-_V42, s_address-_V44, s_phone-_V46, s_comment-_V48, ps_supplycost-_V49]), _V59 = _V50), _V60),
+    Target_partsupp = _V60,
+    to_list(Target_partsupp, _V62),
+    findall(_V63, (member(X, _V62), get_dict(ps_supplycost, X, _V61), _V63 = _V61), _V64),
+    Costs = _V64,
+    min(Costs, _V65),
+    Min_cost = _V65,
+    to_list(Target_partsupp, _V69),
+    findall(_V71-_V70, (member(X, _V69), get_dict(ps_supplycost, X, _V66), _V66 = Min_cost, get_dict(s_acctbal, X, _V67), _V68 is -(_V67), _V71 = _V68, _V70 = X), _V72),
+    keysort(_V72, _V73),
+    findall(V, member(_-V, _V73), _V74),
+    Result = _V74,
+    json(Result),
+    test_p_q2_returns_only_supplier_with_min_cost_in_europe_for_brass_part
+    .
+:- initialization(main, main).
