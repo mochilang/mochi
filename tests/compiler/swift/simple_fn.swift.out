@@ -1,12 +1,12 @@
 import Foundation
 
 func id(_ x: Int) -> Int {
-	let x = x
-	
-	return x
+  let x = x
+
+  return x
 }
 
 func main() {
-	print(id(123))
+  print(id(123))
 }
 main()

@@ -1,19 +1,19 @@
 import Foundation
 
 func inc(_ x: Int) -> Int {
-	var x = x
-	
-	x = x + 1
-	return x
+  var x = x
+
+  x = x + 1
+  return x
 }
 
 func main() {
-	let add1 = { (y: Int) -> Int in
-		let y = y
-		
-		return y + 1
-}
-	print(inc(5))
-	print(add1(6))
+  let add1 = { (y: Int) -> Int in
+    let y = y
+
+    return y + 1
+  }
+  print(inc(5))
+  print(add1(6))
 }
 main()

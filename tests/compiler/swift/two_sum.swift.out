@@ -1,31 +1,31 @@
 import Foundation
 
 func _index<T>(_ arr: [T], _ i: Int) -> T {
-    var idx = i
-    let n = arr.count
-    if idx < 0 { idx += n }
-    if idx < 0 || idx >= n { fatalError("index out of range") }
-    return arr[idx]
+  var idx = i
+  let n = arr.count
+  if idx < 0 { idx += n }
+  if idx < 0 || idx >= n { fatalError("index out of range") }
+  return arr[idx]
 }
 
 func twoSum(_ nums: [Int], _ target: Int) -> [Int] {
-	let nums = nums
-	let target = target
-	
-	let n = nums.count
-	for i in 0..<n {
-		for j in i + 1..<n {
-			if _index(nums, i) + _index(nums, j) == target {
-				return [i, j]
-			}
-		}
-	}
-	return [-1, -1]
+  let nums = nums
+  let target = target
+
+  let n = nums.count
+  for i in 0..<n {
+    for j in i + 1..<n {
+      if _index(nums, i) + _index(nums, j) == target {
+        return [i, j]
+      }
+    }
+  }
+  return [-1, -1]
 }
 
 func main() {
-	let result: [Int] = twoSum([2, 7, 11, 15], 9)
-	print(_index(result, 0))
-	print(_index(result, 1))
+  let result: [Int] = twoSum([2, 7, 11, 15], 9)
+  print(_index(result, 0))
+  print(_index(result, 1))
 }
 main()

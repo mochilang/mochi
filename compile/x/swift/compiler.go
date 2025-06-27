@@ -95,7 +95,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.emitRuntime()
 
 	c.buf.Write(bodyBytes)
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	return Format(code), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {

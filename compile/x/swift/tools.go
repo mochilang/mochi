@@ -1,6 +1,7 @@
 package swiftcode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -55,4 +56,22 @@ func EnsureSwift() error {
 		}
 	}
 	return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
+}
+
+// Format attempts to pretty-print Swift code using the official
+// `swift-format` tool. If the tool isn't installed or formatting
+// fails, the input is returned unchanged.
+func Format(code []byte) []byte {
+	fmtPath, err := exec.LookPath("swift-format")
+	if err != nil {
+		return code
+	}
+	cmd := exec.Command(fmtPath, "format", "-")
+	cmd.Stdin = bytes.NewReader(code)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return code
+	}
+	return out.Bytes()
 }

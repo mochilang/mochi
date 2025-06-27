@@ -1,17 +1,17 @@
 import Foundation
 
 func makeAdder(_ n: Int) -> (Int) -> Int {
-	let n = n
-	
-	return { (x: Int) -> Int in
-		let x = x
-		
-		return x + n
-}
+  let n = n
+
+  return { (x: Int) -> Int in
+    let x = x
+
+    return x + n
+  }
 }
 
 func main() {
-	let add10 = makeAdder(10)
-	print(add10(7))
+  let add10 = makeAdder(10)
+  print(add10(7))
 }
 main()
