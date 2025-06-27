@@ -1242,7 +1242,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = v
 			}
-			if builtin, ok, err := c.compileBuiltinCall(expr, args, op.Call.Args); ok {
+			if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
+				expr = strings.TrimSuffix(expr, ".contains")
+				expr = fmt.Sprintf("(%s.include?(%s))", expr, args[0])
+			} else if builtin, ok, err := c.compileBuiltinCall(expr, args, op.Call.Args); ok {
 				if err != nil {
 					return "", err
 				}
@@ -1613,6 +1616,18 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		}
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", args[0]), true, nil
+	case "min":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("min expects 1 arg")
+		}
+		c.use("_min")
+		return fmt.Sprintf("_min(%s)", args[0]), true, nil
+	case "max":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("max expects 1 arg")
+		}
+		c.use("_max")
+		return fmt.Sprintf("_max(%s)", args[0]), true, nil
 	case "json":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("json expects 1 arg")
