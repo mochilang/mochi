@@ -93,6 +93,20 @@ func inferCppPostfixType(env *types.Env, lookup CppVarLookup, p *parser.PostfixE
 					} else {
 						typ = "auto"
 					}
+				} else if strings.HasPrefix(typ, "unordered_map<") {
+					inside := strings.TrimSuffix(strings.TrimPrefix(typ, "unordered_map<"), ">")
+					if parts := strings.SplitN(inside, ",", 2); len(parts) == 2 {
+						typ = strings.TrimSpace(parts[1])
+					} else {
+						typ = "any"
+					}
+				}
+			} else if strings.HasPrefix(typ, "unordered_map<") {
+				inside := strings.TrimSuffix(strings.TrimPrefix(typ, "unordered_map<"), ">")
+				if parts := strings.SplitN(inside, ",", 2); len(parts) == 2 {
+					typ = strings.TrimSpace(parts[1])
+				} else {
+					typ = "any"
 				}
 			}
 		}
@@ -126,14 +140,31 @@ func inferCppPrimaryType(env *types.Env, lookup CppVarLookup, p *parser.Primary)
 		return "vector<int>"
 	case p.Map != nil:
 		keyType := "string"
-		valType := "int"
-		if len(p.Map.Items) > 0 {
-			if t := InferCppExprType(p.Map.Items[0].Key, env, lookup); t != "" {
-				keyType = t
+		valType := ""
+		var val string
+		for i, it := range p.Map.Items {
+			if i == 0 {
+				if t := InferCppExprType(it.Key, env, lookup); t != "" {
+					keyType = t
+				}
+				val = InferCppExprType(it.Value, env, lookup)
+			} else {
+				if t := InferCppExprType(it.Value, env, lookup); t != val {
+					val = "any"
+				}
 			}
-			if t := InferCppExprType(p.Map.Items[0].Value, env, lookup); t != "" {
-				valType = t
+		}
+		if val == "" {
+			valType = "any"
+		} else {
+			if val == "any" {
+				valType = "any"
+			} else {
+				valType = val
 			}
+		}
+		if valType == "" {
+			valType = "any"
 		}
 		return "unordered_map<" + keyType + ", " + valType + ">"
 	case p.Selector != nil:
