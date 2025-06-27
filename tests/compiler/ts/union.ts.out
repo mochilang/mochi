@@ -21,9 +21,7 @@ function depth(t: Tree): number {
       return ((l, r) =>
         (() => {
           let dl: number = depth(l);
-          (globalThis as any).dl = dl;
           let dr: number = depth(r);
-          (globalThis as any).dr = dr;
           return (() => {
             const _t = dl > dr;
             if (_equal(_t, true)) return (dl + 1);

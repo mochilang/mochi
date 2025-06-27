@@ -2,11 +2,12 @@
 
 import * as path from "https://deno.land/std@0.224.0/path/mod.ts";
 
+let base: string;
+let p: string;
+
 function main(): void {
-  let p: string = path.join("foo", "bar", "baz.txt");
-  (globalThis as any).p = p;
-  let base: string = path.basename(p);
-  (globalThis as any).base = base;
+  p = path.join("foo", "bar", "baz.txt");
+  base = path.basename(p);
   console.log("Joined path:", p);
   console.log("Basename:", base);
 }

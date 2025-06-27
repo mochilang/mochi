@@ -5,8 +5,11 @@ type Product = {
   price: number;
 };
 
+let expensive: Array<Product>;
+let products: Array<Product>;
+
 function main(): void {
-  let products: Array<Product> = [
+  products = [
     {
       name: "Laptop",
       price: 1500,
@@ -36,8 +39,7 @@ function main(): void {
       price: 200,
     },
   ];
-  (globalThis as any).products = products;
-  let expensive: Array<Product> = (() => {
+  expensive = (() => {
     const _src = products;
     let _items = [];
     for (const p of _src) {
@@ -73,7 +75,6 @@ function main(): void {
     }
     return _res;
   })();
-  (globalThis as any).expensive = expensive;
   console.log("--- Top products (excluding most expensive) ---");
   for (const item of expensive) {
     console.log(item.name, "costs $", item.price);
