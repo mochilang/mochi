@@ -1,6 +1,10 @@
 package vm
 
-import "math"
+import (
+	"fmt"
+	"math"
+	"sort"
+)
 
 // Automatically generated liveness analysis and optimization
 
@@ -322,7 +326,8 @@ func constFold(fn *Function) bool {
 			} else {
 				consts[ins.A] = cinfo{}
 			}
-		case OpNeg, OpNegInt, OpNegFloat, OpNot:
+		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpLen,
+			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues:
 			b := consts[ins.B]
 			if b.known {
 				if val, ok := evalUnaryConst(ins.Op, b.val); ok {
@@ -341,11 +346,29 @@ func constFold(fn *Function) bool {
 			OpAddInt, OpSubInt, OpMulInt, OpDivInt, OpModInt,
 			OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
 			OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
-			OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat:
+			OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
+			OpIndex:
 			b := consts[ins.B]
 			c := consts[ins.C]
 			if b.known && c.known {
 				if val, ok := evalBinaryConst(ins.Op, b.val, c.val); ok {
+					fn.Code[pc] = Instr{Op: OpConst, A: ins.A, Val: val, Line: ins.Line}
+					if defCount[ins.A] == 1 {
+						consts[ins.A] = cinfo{true, val}
+					} else {
+						consts[ins.A] = cinfo{}
+					}
+					changed = true
+					continue
+				}
+			}
+			consts[ins.A] = cinfo{}
+		case OpSlice:
+			src := consts[ins.B]
+			start := consts[ins.C]
+			end := consts[ins.D]
+			if src.known && start.known && end.known {
+				if val, ok := evalSliceConst(src.val, start.val, end.val); ok {
 					fn.Code[pc] = Instr{Op: OpConst, A: ins.A, Val: val, Line: ins.Line}
 					if defCount[ins.A] == 1 {
 						consts[ins.A] = cinfo{true, val}
@@ -432,6 +455,131 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 	case OpNot:
 		if v.Tag == ValueBool {
 			return Value{Tag: ValueBool, Bool: !v.Bool}, true
+		}
+	case OpStr:
+		return Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(v))}, true
+	case OpLen:
+		switch v.Tag {
+		case ValueList:
+			return Value{Tag: ValueInt, Int: len(v.List)}, true
+		case ValueStr:
+			return Value{Tag: ValueInt, Int: len([]rune(v.Str))}, true
+		case ValueMap:
+			return Value{Tag: ValueInt, Int: len(v.Map)}, true
+		}
+	case OpCount:
+		if lst, ok := toList(v); ok {
+			return Value{Tag: ValueInt, Int: len(lst)}, true
+		}
+		if v.Tag == ValueMap {
+			return Value{Tag: ValueInt, Int: len(v.Map)}, true
+		}
+		if v.Tag == ValueStr {
+			return Value{Tag: ValueInt, Int: len([]rune(v.Str))}, true
+		}
+	case OpExists:
+		if lst, ok := toList(v); ok {
+			return Value{Tag: ValueBool, Bool: len(lst) > 0}, true
+		}
+		switch v.Tag {
+		case ValueList:
+			return Value{Tag: ValueBool, Bool: len(v.List) > 0}, true
+		case ValueMap:
+			return Value{Tag: ValueBool, Bool: len(v.Map) > 0}, true
+		case ValueStr:
+			return Value{Tag: ValueBool, Bool: len(v.Str) > 0}, true
+		}
+	case OpAvg:
+		if lst, ok := toList(v); ok {
+			if len(lst) == 0 {
+				return Value{Tag: ValueInt, Int: 0}, true
+			}
+			var sum float64
+			for _, it := range lst {
+				sum += toFloat(it)
+			}
+			return Value{Tag: ValueFloat, Float: sum / float64(len(lst))}, true
+		}
+	case OpSum:
+		if lst, ok := toList(v); ok {
+			var sum float64
+			for _, it := range lst {
+				sum += toFloat(it)
+			}
+			return Value{Tag: ValueFloat, Float: sum}, true
+		}
+	case OpMin:
+		if lst, ok := toList(v); ok {
+			if len(lst) == 0 {
+				return Value{Tag: ValueInt, Int: 0}, true
+			}
+			if lst[0].Tag == ValueStr {
+				minStr := lst[0].Str
+				for _, it := range lst[1:] {
+					if it.Tag == ValueStr && it.Str < minStr {
+						minStr = it.Str
+					}
+				}
+				return Value{Tag: ValueStr, Str: minStr}, true
+			}
+			minVal := toFloat(lst[0])
+			isFloat := lst[0].Tag == ValueFloat
+			for _, it := range lst[1:] {
+				if it.Tag == ValueFloat {
+					isFloat = true
+				}
+				f := toFloat(it)
+				if f < minVal {
+					minVal = f
+				}
+			}
+			if isFloat {
+				return Value{Tag: ValueFloat, Float: minVal}, true
+			}
+			return Value{Tag: ValueInt, Int: int(minVal)}, true
+		}
+	case OpMax:
+		if lst, ok := toList(v); ok {
+			if len(lst) == 0 {
+				return Value{Tag: ValueInt, Int: 0}, true
+			}
+			if lst[0].Tag == ValueStr {
+				maxStr := lst[0].Str
+				for _, it := range lst[1:] {
+					if it.Tag == ValueStr && it.Str > maxStr {
+						maxStr = it.Str
+					}
+				}
+				return Value{Tag: ValueStr, Str: maxStr}, true
+			}
+			maxVal := toFloat(lst[0])
+			isFloat := lst[0].Tag == ValueFloat
+			for _, it := range lst[1:] {
+				if it.Tag == ValueFloat {
+					isFloat = true
+				}
+				f := toFloat(it)
+				if f > maxVal {
+					maxVal = f
+				}
+			}
+			if isFloat {
+				return Value{Tag: ValueFloat, Float: maxVal}, true
+			}
+			return Value{Tag: ValueInt, Int: int(maxVal)}, true
+		}
+	case OpValues:
+		if v.Tag == ValueMap {
+			keys := make([]string, 0, len(v.Map))
+			for k := range v.Map {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			vals := make([]Value, len(keys))
+			for i, k := range keys {
+				vals[i] = v.Map[k]
+			}
+			return Value{Tag: ValueList, List: vals}, true
 		}
 	}
 	return Value{}, false
@@ -588,6 +736,130 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 			(c.Tag == ValueFloat || c.Tag == ValueInt) {
 			return Value{Tag: ValueBool, Bool: toFloat(b) <= toFloat(c)}, true
 		}
+	case OpIndex:
+		return evalIndexConst(b, c)
+	}
+	return Value{}, false
+}
+
+func toList(v Value) ([]Value, bool) {
+	switch v.Tag {
+	case ValueList:
+		return v.List, true
+	case ValueMap:
+		if flag, ok := v.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+			items := v.Map["items"]
+			if items.Tag == ValueList {
+				return items.List, true
+			}
+		}
+	}
+	return nil, false
+}
+
+func evalIndexConst(container, idx Value) (Value, bool) {
+	switch container.Tag {
+	case ValueList:
+		if idx.Tag != ValueInt {
+			return Value{}, false
+		}
+		n := len(container.List)
+		i := idx.Int
+		if i < 0 {
+			i += n
+		}
+		if i < 0 || i >= n {
+			return Value{Tag: ValueNull}, true
+		}
+		return container.List[i], true
+	case ValueMap:
+		var key string
+		switch idx.Tag {
+		case ValueStr:
+			key = idx.Str
+		case ValueInt:
+			key = fmt.Sprintf("%d", idx.Int)
+		default:
+			return Value{Tag: ValueNull}, true
+		}
+		if v, ok := container.Map[key]; ok {
+			return v, true
+		}
+		return Value{Tag: ValueNull}, true
+	case ValueStr:
+		if idx.Tag != ValueInt {
+			return Value{}, false
+		}
+		runes := []rune(container.Str)
+		i := idx.Int
+		if i < 0 {
+			i += len(runes)
+		}
+		if i < 0 || i >= len(runes) {
+			return Value{Tag: ValueNull}, true
+		}
+		return Value{Tag: ValueStr, Str: string(runes[i])}, true
+	}
+	return Value{}, false
+}
+
+func evalSliceConst(src, startVal, endVal Value) (Value, bool) {
+	switch src.Tag {
+	case ValueList:
+		n := len(src.List)
+		start := 0
+		if startVal.Tag != ValueNull {
+			if startVal.Tag != ValueInt {
+				return Value{}, false
+			}
+			start = startVal.Int
+			if start < 0 {
+				start += n
+			}
+		}
+		end := n
+		if endVal.Tag != ValueNull {
+			if endVal.Tag != ValueInt {
+				return Value{}, false
+			}
+			end = endVal.Int
+			if end < 0 {
+				end += n
+			}
+		}
+		if start < 0 || end > n || start > end {
+			return Value{}, false
+		}
+		out := make([]Value, end-start)
+		copy(out, src.List[start:end])
+		return Value{Tag: ValueList, List: out}, true
+	case ValueStr:
+		runes := []rune(src.Str)
+		n := len(runes)
+		start := 0
+		if startVal.Tag != ValueNull {
+			if startVal.Tag != ValueInt {
+				return Value{}, false
+			}
+			start = startVal.Int
+			if start < 0 {
+				start += n
+			}
+		}
+		end := n
+		if endVal.Tag != ValueNull {
+			if endVal.Tag != ValueInt {
+				return Value{}, false
+			}
+			end = endVal.Int
+			if end < 0 {
+				end += n
+			}
+		}
+		if start < 0 || end > n || start > end {
+			return Value{}, false
+		}
+		return Value{Tag: ValueStr, Str: string(runes[start:end])}, true
 	}
 	return Value{}, false
 }
