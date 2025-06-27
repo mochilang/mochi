@@ -1,0 +1,43 @@
+let company_name = [
+  { id: 1, country_code: "[de]" },
+  { id: 2, country_code: "[us]" }
+]
+
+let keyword = [
+  { id: 1, keyword: "character-name-in-title" },
+  { id: 2, keyword: "other" }
+]
+
+let movie_companies = [
+  { movie_id: 100, company_id: 1 },
+  { movie_id: 200, company_id: 2 }
+]
+
+let movie_keyword = [
+  { movie_id: 100, keyword_id: 1 },
+  { movie_id: 200, keyword_id: 2 }
+]
+
+let title = [
+  { id: 100, title: "Der Film" },
+  { id: 200, title: "Other Movie" }
+]
+
+let titles =
+  from cn in company_name
+  join mc in movie_companies on mc.company_id == cn.id
+  join t in title on mc.movie_id == t.id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on mk.keyword_id == k.id
+  where cn.country_code == "[de]" &&
+        k.keyword == "character-name-in-title" &&
+        mc.movie_id == mk.movie_id
+  select t.title
+
+let result = min(titles)
+
+json(result)
+
+test "Q2 finds earliest title for German companies with character keyword" {
+  expect result == "Der Film"
+}
