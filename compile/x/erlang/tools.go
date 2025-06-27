@@ -1,6 +1,7 @@
 package erlcode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -70,4 +71,28 @@ func ensureErlang() error {
 		return nil
 	}
 	return fmt.Errorf("erlang not installed")
+}
+
+// Format attempts to pretty-print Erlang code using the official
+// `erlfmt` tool when available. If formatting fails or the tool isn't
+// installed, the input is returned unchanged with a trailing newline.
+func Format(src []byte) []byte {
+	path, err := exec.LookPath("erlfmt")
+	if err == nil {
+		cmd := exec.Command(path, "-")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res
+		}
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
