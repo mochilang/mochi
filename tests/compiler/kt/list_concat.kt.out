@@ -1,5 +1,5 @@
 fun main() {
-        println(_concat(listOf(1, 2), listOf(3, 4)))
+    println(_concat(listOf(1, 2), listOf(3, 4)))
 }
 
 fun <T> _concat(a: List<T>, b: List<T>): List<T> = a + b

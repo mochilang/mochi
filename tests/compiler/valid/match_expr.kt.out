@@ -1,6 +1,6 @@
 fun main() {
-        val x = 2
-        val label = run {
+    val x = 2
+    val label = run {
                 val _t = x
                 when {
                         _t == 1 -> "one"
@@ -9,6 +9,7 @@ fun main() {
                         else -> "unknown"
                 }
         }
-        println(label)
+    println(label)
 }
+
 

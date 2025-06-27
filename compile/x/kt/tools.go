@@ -119,6 +119,7 @@ func FormatKotlin(src []byte) []byte {
 			}
 		}
 	}
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}

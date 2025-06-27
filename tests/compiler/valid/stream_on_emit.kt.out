@@ -1,13 +1,13 @@
 fun main() {
-        data class Sensor(val id: String, val temperature: Double)
-        
-        var _SensorStream = _Stream<Sensor>("Sensor")
-        fun _handler_0(ev: Sensor) {
-                val s = ev
-                println(s.id, s.temperature)
-        }
-        _SensorStream.register(::_handler_0)
-        _SensorStream.append(Sensor(id = "sensor-1", temperature = 22.5))
+    data class Sensor(val id: String, val temperature: Double)
+    
+    var _SensorStream = _Stream<Sensor>("Sensor")
+    fun _handler_0(ev: Sensor) {
+        val s = ev
+        println(s.id, s.temperature)
+    }
+    _SensorStream.register(::_handler_0)
+    _SensorStream.append(Sensor(id = "sensor-1", temperature = 22.5))
 }
 
 class _Stream<T>(val name: String) {

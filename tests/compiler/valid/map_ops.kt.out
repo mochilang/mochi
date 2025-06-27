@@ -1,19 +1,19 @@
 fun main() {
-        var m: MutableMap<Int, Int> = mutableMapOf<Any, Any>()
-        run {
-                val _tmp = m.toMutableMap()
-                _tmp[1] = 10
-                m = _tmp
-        }
-        run {
-                val _tmp = m.toMutableMap()
-                _tmp[2] = 20
-                m = _tmp
-        }
-        if (m.contains(1)) {
-                println(m[1])
-        }
-        println(m[2])
+    var m: MutableMap<Int, Int> = mutableMapOf<Any, Any>()
+    run {
+        val _tmp = m.toMutableMap()
+        _tmp[1] = 10
+        m = _tmp
+    }
+    run {
+        val _tmp = m.toMutableMap()
+        _tmp[2] = 20
+        m = _tmp
+    }
+    if (m.contains(1)) {
+        println(m[1])
+    }
+    println(m[2])
 }
 
 

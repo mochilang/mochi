@@ -3,7 +3,7 @@ data class Leaf() : Tree
 data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
 
 fun depth(t: Tree) : Int {
-        return run {
+    return run {
                 val _t = t
                 when {
                         _t is Leaf -> 0
@@ -17,5 +17,5 @@ fun depth(t: Tree) : Int {
 }
 
 fun main() {
-        println(depth(Node(left = Leaf(), value = 0, right = Leaf())))
+    println(depth(Node(left = Leaf(), value = 0, right = Leaf())))
 }

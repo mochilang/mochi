@@ -1,7 +1,7 @@
 data class Person(val name: String, val age: Int)
 
 fun main() {
-        val people = run {
+    val people = run {
         val _rows = _load(null, mutableMapOf("format" to "jsonl"))
         val _out = mutableListOf<Person>()
         for (r in _rows) {
@@ -9,7 +9,7 @@ fun main() {
         }
         _out
 }
-        println(people.size)
+    println(people.size)
 }
 
 import kotlin.reflect.full.primaryConstructor

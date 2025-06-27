@@ -1,11 +1,11 @@
 fun main() {
-        var nums = listOf(1, 2)
-        run {
-                val _tmp = nums.toMutableList()
-                _tmp[1] = 3
-                nums = _tmp
-        }
-        println(nums[1])
+    var nums = listOf(1, 2)
+    run {
+        val _tmp = nums.toMutableList()
+        _tmp[1] = 3
+        nums = _tmp
+    }
+    println(nums[1])
 }
 
 

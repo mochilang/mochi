@@ -1,11 +1,11 @@
 fun main() {
-        var scores = mutableMapOf("a" to 1)
-        run {
-                val _tmp = scores.toMutableMap()
-                _tmp["b"] = 2
-                scores = _tmp
-        }
-        println(scores["b"])
+    var scores = mutableMapOf("a" to 1)
+    run {
+        val _tmp = scores.toMutableMap()
+        _tmp["b"] = 2
+        scores = _tmp
+    }
+    println(scores["b"])
 }
 
 
