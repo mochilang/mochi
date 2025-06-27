@@ -1,0 +1,68 @@
+let info_type = [
+  { id: 1, info: "budget" },
+  { id: 2, info: "votes" },
+  { id: 3, info: "rating" }
+]
+
+let name = [
+  { id: 1, name: "Big Tim", gender: "m" },
+  { id: 2, name: "Slim Tim", gender: "m" },
+  { id: 3, name: "Alice", gender: "f" }
+]
+
+let title = [
+  { id: 10, title: "Alpha" },
+  { id: 20, title: "Beta" },
+  { id: 30, title: "Gamma" }
+]
+
+let cast_info = [
+  { movie_id: 10, person_id: 1, note: "(producer)" },
+  { movie_id: 20, person_id: 2, note: "(executive producer)" },
+  { movie_id: 30, person_id: 3, note: "(producer)" }
+]
+
+let movie_info = [
+  { movie_id: 10, info_type_id: 1, info: 90 },
+  { movie_id: 20, info_type_id: 1, info: 120 },
+  { movie_id: 30, info_type_id: 1, info: 110 }
+]
+
+let movie_info_idx = [
+  { movie_id: 10, info_type_id: 2, info: 500 },
+  { movie_id: 20, info_type_id: 2, info: 400 },
+  { movie_id: 30, info_type_id: 2, info: 800 }
+]
+
+let rows =
+  from ci in cast_info
+  join n in name on n.id == ci.person_id
+  join t in title on t.id == ci.movie_id
+  join mi in movie_info on mi.movie_id == t.id
+  join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  join it1 in info_type on it1.id == mi.info_type_id
+  join it2 in info_type on it2.id == mi_idx.info_type_id
+  where (
+    ci.note in ["(producer)", "(executive producer)"] &&
+    it1.info == "budget" &&
+    it2.info == "votes" &&
+    n.gender == "m" &&
+    n.name.contains("Tim") &&
+    t.id == ci.movie_id &&
+    ci.movie_id == mi.movie_id &&
+    ci.movie_id == mi_idx.movie_id &&
+    mi.movie_id == mi_idx.movie_id
+  )
+  select { budget: mi.info, votes: mi_idx.info, title: t.title }
+
+let result = {
+  movie_budget: min(from r in rows select r.budget),
+  movie_votes: min(from r in rows select r.votes),
+  movie_title: min(from r in rows select r.title)
+}
+
+json(result)
+
+test "Q18 finds minimal budget, votes and title for Tim productions" {
+  expect result == { movie_budget: 90, movie_votes: 400, movie_title: "Alpha" }
+}
