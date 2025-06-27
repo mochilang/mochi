@@ -50,3 +50,12 @@ are present and emits `return 0`. Supporting these queries requires:
   when encountering joins and grouping. Once join support is implemented the
   tests should compile and run the generated C, comparing against the
   `tests/dataset/job` golden outputs.
+
+## Remaining work for TPCH q1-q2
+
+Golden tests now exercise both `q1.mochi` and `q2.mochi` but the generated C
+source fails to compile due to missing grouping and join support. Extending
+`compileQueryExpr` with general grouping logic and join handling is required so
+that these programs build and produce the expected output stored under
+`tests/dataset/tpc-h/out`. Once implemented the `tpch_golden_test.go` tests
+should compile and run successfully.
