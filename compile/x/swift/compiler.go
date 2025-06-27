@@ -63,11 +63,26 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
+	// global variable declarations
+	for _, s := range prog.Statements {
+		if s.Fun != nil || s.Test != nil {
+			continue
+		}
+		if s.Let != nil || s.Var != nil {
+			if err := c.compileStmt(s); err != nil {
+				return nil, err
+			}
+		}
+	}
 	// main body
 	c.writeln("func main() {")
 	c.indent++
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil {
+			continue
+		}
+		if s.Let != nil || s.Var != nil {
+			// already emitted as global
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -758,19 +773,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			// Treat bare identifiers without a bound variable as string keys.
+			// Treat bare identifiers as string keys.
 			if id, ok := identName(item.Key); ok {
-				_, defined := c.locals[id]
-				if !defined && c.env != nil {
-					if _, err := c.env.GetVar(id); err == nil {
-						defined = true
-					}
-				}
-				if !defined {
-					k = strconv.Quote(id)
-				} else if !c.isStringExpr(item.Key) {
-					k = fmt.Sprintf("String(describing: %s)", k)
-				}
+				k = strconv.Quote(id)
 			} else if !c.isStringExpr(item.Key) {
 				k = fmt.Sprintf("String(describing: %s)", k)
 			}
@@ -859,6 +864,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			c.use("_sum")
 			return fmt.Sprintf("_sum(%s.map { Double($0) })", args[0]), nil
+		case "min":
+			if len(args) != 1 {
+				return "", fmt.Errorf("min expects 1 arg")
+			}
+			c.use("_min")
+			c.use("_Group")
+			return fmt.Sprintf("_min(%s)", args[0]), nil
 		case "now":
 			if len(args) != 0 {
 				return "", fmt.Errorf("now expects 0 args")
