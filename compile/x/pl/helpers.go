@@ -49,10 +49,17 @@ func sanitizeVar(name string) string {
 
 func sanitizeAtom(name string) string {
 	name = strings.ReplaceAll(name, "-", "_")
-	if len(name) > 0 {
-		if name[0] < 'a' || name[0] > 'z' {
-			name = "p_" + name
+	clean := make([]rune, len(name))
+	for i, r := range name {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' {
+			clean[i] = r
+		} else {
+			clean[i] = '_'
 		}
+	}
+	name = string(clean)
+	if len(name) > 0 && (name[0] < 'a' || name[0] > 'z') {
+		name = "p_" + name
 	}
 	return strings.ToLower(name)
 }

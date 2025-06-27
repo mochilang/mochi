@@ -58,6 +58,12 @@ const helperSum = "sum(V, R) :-\n" +
 	"    is_list(V), !, sum_list(V, R).\n" +
 	"sum(_, _) :- throw(error('sum expects list or group')).\n\n"
 
+const helperMin = "min(V, R) :-\n" +
+	"    is_dict(V), !, get_dict('Items', V, Items), min_list(Items, R).\n" +
+	"min(V, R) :-\n" +
+	"    is_list(V), !, min_list(V, R).\n" +
+	"min(_, _) :- throw(error('min expects list or group')).\n\n"
+
 const helperJSON = ":- use_module(library(http/json)).\n" +
 	"json(V) :- json_write_dict(current_output, V), nl.\n\n"
 

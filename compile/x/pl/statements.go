@@ -650,8 +650,9 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	}
 	c.writeln(fmt.Sprintf("%s :-", name))
 	c.indent++
-	c.buf.Write(body)
 	if len(body) > 0 {
+		body = bytes.TrimSuffix(body, []byte("\n"))
+		c.buf.Write(body)
 		c.writeln(",")
 	}
 	c.writeln("true.")

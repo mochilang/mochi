@@ -176,6 +176,12 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["min"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperMin, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 	if c.helpers["expect"] {
 		for _, line := range strings.Split(strings.TrimSuffix(helperExpect, "\n"), "\n") {
 			c.writeln(line)
