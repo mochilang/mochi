@@ -1,15 +1,34 @@
 public class Main {
-	public static void main(String[] args) {
-		java.util.Map<Integer, Boolean> set = new java.util.HashMap<>();
-		for (var n : new int[]{1, 2, 3}) {
-			set.put(n, true);
-		}
-		int i = 1;
-		int count = 0;
-		while (set.containsKey(i)) {
-			i = (i + 1);
-			count = (count + 1);
-		}
-		System.out.println(count);
-	}
+    public static void main(String[] args) {
+        java.util.Map<Integer, Boolean> set = new java.util.HashMap<>();
+        for (var n : new int[]{1, 2, 3}) {
+            set.put(n, true);
+        }
+        int i = 1;
+        int count = 0;
+        while (_in(i, set)) {
+            i = (i + 1);
+            count = (count + 1);
+        }
+        System.out.println(count);
+    }
+    
+    static boolean _in(Object item, Object col) {
+        if (col instanceof String s && item instanceof String sub) return s.contains(sub);
+        if (col instanceof java.util.Map<?,?> m) return m.containsKey(item);
+        if (col != null && col.getClass().isArray()) {
+            int n = java.lang.reflect.Array.getLength(col);
+            for (int i = 0; i < n; i++) {
+                if (java.util.Objects.equals(java.lang.reflect.Array.get(col, i), item)) return true;
+            }
+            return false;
+        }
+        if (col instanceof Iterable<?> it) {
+            for (Object v : it) {
+                if (java.util.Objects.equals(v, item)) return true;
+            }
+            return false;
+        }
+        return false;
+    }
 }

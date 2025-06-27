@@ -1,6 +1,7 @@
 package javacode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -61,4 +62,25 @@ func EnsureJavac() error {
 		return nil
 	}
 	return fmt.Errorf("javac not found")
+}
+
+// FormatJava formats the given Java source using the `google-java-format`
+// command if available. If the formatter is unavailable or fails, tabs are
+// expanded to four spaces and a trailing newline is ensured.
+func FormatJava(src []byte) []byte {
+	path, err := exec.LookPath("google-java-format")
+	if err == nil {
+		cmd := exec.Command(path, "-")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			src = out.Bytes()
+		}
+	}
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
