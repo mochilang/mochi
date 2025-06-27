@@ -1,11 +1,13 @@
 package cppcode
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 )
 
 // EnsureCPP verifies that a C++ compiler is installed. If missing, it attempts
@@ -123,29 +125,51 @@ func EnsureClangFormat() error {
 // FormatCPP runs clang-format on the given source code if available.
 // If clang-format is not found or fails, the input is returned unchanged.
 func FormatCPP(src []byte) []byte {
-	if err := EnsureClangFormat(); err != nil {
-		if len(src) > 0 && src[len(src)-1] != '\n' {
-			src = append(src, '\n')
+	if err := EnsureClangFormat(); err == nil {
+		if path, err := exec.LookPath("clang-format"); err == nil {
+			cmd := exec.Command(path, "-style=LLVM")
+			cmd.Stdin = bytes.NewReader(src)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			if err := cmd.Run(); err == nil {
+				res := out.Bytes()
+				if len(res) == 0 || res[len(res)-1] != '\n' {
+					res = append(res, '\n')
+				}
+				return res
+			}
 		}
-		return src
 	}
-	path, err := exec.LookPath("clang-format")
-	if err != nil {
-		return src
-	}
-	cmd := exec.Command(path, "-style=LLVM")
-	cmd.Stdin = bytes.NewReader(src)
+	return simpleFormatCPP(src)
+}
+
+// simpleFormatCPP indents braces with two spaces when clang-format is unavailable.
+func simpleFormatCPP(src []byte) []byte {
 	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err == nil {
-		res := out.Bytes()
-		if len(res) == 0 || res[len(res)-1] != '\n' {
-			res = append(res, '\n')
+	indent := 0
+	scanner := bufio.NewScanner(bytes.NewReader(src))
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if strings.HasPrefix(line, "#") {
+			out.WriteString(line)
+			out.WriteByte('\n')
+			continue
 		}
-		return res
+		if strings.HasPrefix(line, "}") && indent > 0 {
+			indent--
+		}
+		for i := 0; i < indent; i++ {
+			out.WriteString("  ")
+		}
+		out.WriteString(line)
+		out.WriteByte('\n')
+		if strings.HasSuffix(line, "{") {
+			indent++
+		}
 	}
-	if len(src) > 0 && src[len(src)-1] != '\n' {
-		src = append(src, '\n')
+	res := out.Bytes()
+	if len(res) == 0 || res[len(res)-1] != '\n' {
+		res = append(res, '\n')
 	}
-	return src
+	return res
 }
