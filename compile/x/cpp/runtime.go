@@ -3,10 +3,15 @@ package cppcode
 // Runtime helper data for the C++ backend.
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "min", "unionAll", "union", "except", "intersect", "json", "cast", "fetch", "input", "load", "save"}
+var helperOrder = []string{"hashCombine", "indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "min", "unionAll", "union", "except", "intersect", "json", "cast", "fetch", "input", "load", "save"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
+	"hashCombine": {
+		"template<typename T> inline void _hash_combine(size_t& seed, const T& v) {",
+		"\tseed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);",
+		"}",
+	},
 	"indexString": {
 		"string _indexString(const string& s, int i) {",
 		"\tint n = s.size();",
