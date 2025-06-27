@@ -98,6 +98,30 @@ const (
 		"    for (var n in list) s += (n as num).toDouble();\n" +
 		"    return s;\n" +
 		"}\n"
+	helperMin = "dynamic _min(dynamic v) {\n" +
+		"    List<dynamic>? list;\n" +
+		"    if (v is List) list = v;\n" +
+		"    else if (v is Map && v['items'] is List) list = (v['items'] as List);\n" +
+		"    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);\n" +
+		"    else if (v is _Group) list = v.Items;\n" +
+		"    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }\n" +
+		"    if (list == null || list.isEmpty) return 0;\n" +
+		"    var m = list[0];\n" +
+		"    for (var n in list) { if ((n as Comparable).compareTo(m) < 0) m = n; }\n" +
+		"    return m;\n" +
+		"}\n"
+	helperMax = "dynamic _max(dynamic v) {\n" +
+		"    List<dynamic>? list;\n" +
+		"    if (v is List) list = v;\n" +
+		"    else if (v is Map && v['items'] is List) list = (v['items'] as List);\n" +
+		"    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);\n" +
+		"    else if (v is _Group) list = v.Items;\n" +
+		"    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }\n" +
+		"    if (list == null || list.isEmpty) return 0;\n" +
+		"    var m = list[0];\n" +
+		"    for (var n in list) { if ((n as Comparable).compareTo(m) > 0) m = n; }\n" +
+		"    return m;\n" +
+		"}\n"
 	helperStream = "class _Stream<T> {\n" +
 		"    String name;\n" +
 		"    List<void Function(T)> handlers = [];\n" +
@@ -404,6 +428,8 @@ var helperMap = map[string]string{
 	"_count":          helperCount,
 	"_avg":            helperAvg,
 	"_sum":            helperSum,
+	"_min":            helperMin,
+	"_max":            helperMax,
 	"_genText":        helperGenText,
 	"_genEmbed":       helperGenEmbed,
 	"_genStruct":      helperGenStruct,

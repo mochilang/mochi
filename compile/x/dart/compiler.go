@@ -985,6 +985,24 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", arg), nil
 	}
+	// handle min()
+	if name == "min" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		c.use("_min")
+		return fmt.Sprintf("_min(%s)", arg), nil
+	}
+	// handle max()
+	if name == "max" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		c.use("_max")
+		return fmt.Sprintf("_max(%s)", arg), nil
+	}
 	// handle input()
 	if name == "input" && len(call.Args) == 0 {
 		c.imports["dart:io"] = true
