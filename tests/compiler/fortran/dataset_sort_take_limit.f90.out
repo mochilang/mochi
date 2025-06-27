@@ -8,9 +8,9 @@ program main
   integer(kind=8) :: expensive
   integer(kind=8) :: item
   integer(kind=8) :: i_item
-  allocate (products(0))
+  allocate(products(0))
   products = (/Product(name='Laptop', price=1500_8), Product(name='Smartphone', price=900_8), Product(name='Tablet', price=600_8), Product(name='Monitor', price=300_8), Product(name='Keyboard', price=100_8), Product(name='Mouse', price=50_8), Product(name='Headphones', price=200_8)/)
-  expensive = lambda_0(products) (1_8 + 1:1_8 + 3_8)
+  expensive = lambda_0(products)(1_8 + 1:1_8 + 3_8)
   print *, '--- Top products (excluding most expensive) ---'
   do i_item = 0, size(expensive) - 1
     item = expensive(modulo(i_item, size(expensive)) + 1)
@@ -31,8 +31,8 @@ contains
     integer(kind=8) :: sort_key
     integer(kind=8) :: swap_key
     integer(kind=8) :: swap_item
-    allocate (tmp(size(vsrc)))
-    allocate (tmpKey(size(vsrc)))
+    allocate(tmp(size(vsrc)))
+    allocate(tmpKey(size(vsrc)))
     n = 0
     do i = 1, size(vsrc)
       p = vsrc(i)
@@ -57,7 +57,7 @@ contains
         tmp(min_idx) = swap_item
       end if
     end do
-    allocate (res(n))
+    allocate(res(n))
     res = tmp(:n)
   end function lambda_0
 

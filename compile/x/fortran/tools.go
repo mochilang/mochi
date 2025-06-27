@@ -135,3 +135,13 @@ func EnsureFormatter() (string, error) {
 	}
 	return "", fmt.Errorf("no Fortran formatter found")
 }
+
+// Ensure verifies that gfortran and a formatting tool are available.
+// It can be called by external tools to set up the environment.
+func Ensure() error {
+	if _, err := EnsureFortran(); err != nil {
+		return err
+	}
+	_, err := EnsureFormatter()
+	return err
+}

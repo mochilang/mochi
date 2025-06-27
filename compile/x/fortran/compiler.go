@@ -305,9 +305,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln("end program main")
 	code := c.buf.Bytes()
-	if formatted, err := formatCode(code); err == nil {
-		code = formatted
-	}
+	code = Format(code)
 	return code, nil
 }
 
