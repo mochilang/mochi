@@ -11,3 +11,7 @@ still fail their embedded tests. Generation results:
 Golden outputs have been updated for the queries that compile. Further
 work is required to make the failing programs pass their tests and to
 determine why `q7` is skipped during compilation.
+
+TPC-H progress:
+
+- `q1` and `q2` now compile and execute successfully with the Go backend.
