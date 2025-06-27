@@ -1,0 +1,164 @@
+let aka_name = [
+  { person_id: 1 },
+  { person_id: 2 }
+]
+
+let complete_cast = [
+  { movie_id: 1, subject_id: 1, status_id: 2 },
+  { movie_id: 2, subject_id: 1, status_id: 2 }
+]
+
+let comp_cast_type = [
+  { id: 1, kind: "cast" },
+  { id: 2, kind: "complete+verified" },
+  { id: 3, kind: "other" }
+]
+
+let char_name = [
+  { id: 1, name: "Queen" },
+  { id: 2, name: "Princess" }
+]
+
+let cast_info = [
+  { movie_id: 1, person_id: 1, role_id: 1, person_role_id: 1, note: "(voice)" },
+  { movie_id: 2, person_id: 2, role_id: 1, person_role_id: 2, note: "(voice)" }
+]
+
+let company_name = [
+  { id: 1, country_code: "[us]" },
+  { id: 2, country_code: "[uk]" }
+]
+
+let info_type = [
+  { id: 1, info: "release dates" },
+  { id: 2, info: "trivia" },
+  { id: 3, info: "other" }
+]
+
+let keyword = [
+  { id: 1, keyword: "computer-animation" },
+  { id: 2, keyword: "action" }
+]
+
+let movie_companies = [
+  { movie_id: 1, company_id: 1 },
+  { movie_id: 2, company_id: 2 }
+]
+
+let movie_info = [
+  { movie_id: 1, info_type_id: 1, info: "USA:2004" },
+  { movie_id: 2, info_type_id: 1, info: "USA:1995" }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 },
+  { movie_id: 2, keyword_id: 2 }
+]
+
+let name = [
+  { id: 1, name: "Angela Aniston", gender: "f" },
+  { id: 2, name: "Bob Brown", gender: "m" }
+]
+
+let person_info = [
+  { person_id: 1, info_type_id: 2 },
+  { person_id: 2, info_type_id: 2 }
+]
+
+let role_type = [
+  { id: 1, role: "actress" },
+  { id: 2, role: "actor" }
+]
+
+let title = [
+  { id: 1, title: "Shrek 2", production_year: 2004 },
+  { id: 2, title: "Old Film", production_year: 1999 }
+]
+
+let matches =
+  from an in aka_name
+  from cc in complete_cast
+  from cct1 in comp_cast_type
+  from cct2 in comp_cast_type
+  from chn in char_name
+  from ci in cast_info
+  from cn in company_name
+  from it in info_type
+  from it3 in info_type
+  from k in keyword
+  from mc in movie_companies
+  from mi in movie_info
+  from mk in movie_keyword
+  from n in name
+  from pi in person_info
+  from rt in role_type
+  from t in title
+  where (
+    cct1.kind == "cast" &&
+    cct2.kind == "complete+verified" &&
+    chn.name == "Queen" &&
+    (ci.note == "(voice)" ||
+     ci.note == "(voice) (uncredited)" ||
+     ci.note == "(voice: English version)") &&
+    cn.country_code == "[us]" &&
+    it.info == "release dates" &&
+    it3.info == "trivia" &&
+    k.keyword == "computer-animation" &&
+    (mi.info.starts_with("Japan:200") || mi.info.starts_with("USA:200")) &&
+    n.gender == "f" &&
+    n.name.contains("An") &&
+    rt.role == "actress" &&
+    t.title == "Shrek 2" &&
+    t.production_year >= 2000 &&
+    t.production_year <= 2010 &&
+    t.id == mi.movie_id &&
+    t.id == mc.movie_id &&
+    t.id == ci.movie_id &&
+    t.id == mk.movie_id &&
+    t.id == cc.movie_id &&
+    mc.movie_id == ci.movie_id &&
+    mc.movie_id == mi.movie_id &&
+    mc.movie_id == mk.movie_id &&
+    mc.movie_id == cc.movie_id &&
+    mi.movie_id == ci.movie_id &&
+    mi.movie_id == mk.movie_id &&
+    mi.movie_id == cc.movie_id &&
+    ci.movie_id == mk.movie_id &&
+    ci.movie_id == cc.movie_id &&
+    mk.movie_id == cc.movie_id &&
+    cn.id == mc.company_id &&
+    it.id == mi.info_type_id &&
+    n.id == ci.person_id &&
+    rt.id == ci.role_id &&
+    n.id == an.person_id &&
+    ci.person_id == an.person_id &&
+    chn.id == ci.person_role_id &&
+    n.id == pi.person_id &&
+    ci.person_id == pi.person_id &&
+    it3.id == pi.info_type_id &&
+    k.id == mk.keyword_id &&
+    cct1.id == cc.subject_id &&
+    cct2.id == cc.status_id
+  )
+  select {
+    voiced_char: chn.name,
+    voicing_actress: n.name,
+    voiced_animation: t.title
+  }
+
+let result = [
+  {
+    voiced_char: min(from x in matches select x.voiced_char),
+    voicing_actress: min(from x in matches select x.voicing_actress),
+    voiced_animation: min(from x in matches select x.voiced_animation)
+  }
+]
+
+json(result)
+
+test "Q29 finds the actress voicing the Queen in Shrek 2" {
+  expect result == [
+    { voiced_char: "Queen", voicing_actress: "Angela Aniston", voiced_animation: "Shrek 2" }
+  ]
+}
+
