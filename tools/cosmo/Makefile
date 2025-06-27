@@ -6,11 +6,11 @@ ensure:
 	go run ./tools.go
 
 run:
-	go run -tags "cosmo libcosmo" ./main.go
+       go run -tags "cosmo" ./main.go
 
 test:
-	go test -tags "cosmo libcosmo"
+       go test -tags "cosmo"
 
 build: ensure
-	mkdir -p $(dir $(BIN))
-	go build -tags "cosmo libcosmo" -o $(BIN) ../../cmd/mochi-cosmo
+       mkdir -p $(dir $(BIN))
+       go build -tags "cosmo" -o $(BIN) ../../cmd/mochi-cosmo
