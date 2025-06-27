@@ -1,0 +1,52 @@
+let keyword = [
+  { id: 1, keyword: "10,000-mile-club" },
+  { id: 2, keyword: "character-name-in-title" }
+]
+
+let link_type = [
+  { id: 1, link: "sequel" },
+  { id: 2, link: "remake" }
+]
+
+let movie_keyword = [
+  { movie_id: 100, keyword_id: 1 },
+  { movie_id: 200, keyword_id: 2 }
+]
+
+let movie_link = [
+  { movie_id: 100, linked_movie_id: 300, link_type_id: 1 },
+  { movie_id: 200, linked_movie_id: 400, link_type_id: 2 }
+]
+
+let title = [
+  { id: 100, title: "Movie A" },
+  { id: 200, title: "Movie B" },
+  { id: 300, title: "Movie C" },
+  { id: 400, title: "Movie D" }
+]
+
+let joined =
+  from k in keyword
+  join mk in movie_keyword on mk.keyword_id == k.id
+  join t1 in title on t1.id == mk.movie_id
+  join ml in movie_link on ml.movie_id == t1.id
+  join t2 in title on t2.id == ml.linked_movie_id
+  join lt in link_type on lt.id == ml.link_type_id
+  where k.keyword == "10,000-mile-club"
+  select { link_type: lt.link, first_movie: t1.title, second_movie: t2.title }
+
+let result = {
+  link_type: min(from r in joined select r.link_type),
+  first_movie: min(from r in joined select r.first_movie),
+  second_movie: min(from r in joined select r.second_movie)
+}
+
+json([result])
+
+test "Q32 finds movie link for 10,000-mile-club" {
+  expect result == {
+    link_type: "sequel",
+    first_movie: "Movie A",
+    second_movie: "Movie C"
+  }
+}
