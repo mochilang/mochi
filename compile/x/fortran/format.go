@@ -3,16 +3,24 @@ package ftncode
 import (
 	"bytes"
 	"os/exec"
+	"strings"
 )
 
-// formatCode runs `findent` on the generated Fortran source to improve
-// readability. If findent is not available or fails, the input is returned
-// unchanged along with the error.
+// formatCode formats the generated Fortran source using `fprettify` or
+// `findent`. If neither tool is available or formatting fails, the input is
+// returned unchanged with the encountered error.
 func formatCode(src []byte) ([]byte, error) {
-	if _, err := exec.LookPath("findent"); err != nil {
+	tool, err := EnsureFormatter()
+	if err != nil {
 		return src, err
 	}
-	cmd := exec.Command("findent")
+	args := []string{}
+	if strings.Contains(tool, "fprettify") {
+		args = []string{"--indent", "2"}
+	} else if strings.Contains(tool, "findent") {
+		args = []string{"-i2"}
+	}
+	cmd := exec.Command(tool, args...)
 	cmd.Stdin = bytes.NewReader(src)
 	var out bytes.Buffer
 	cmd.Stdout = &out

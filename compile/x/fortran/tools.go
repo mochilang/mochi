@@ -66,3 +66,72 @@ func EnsureFortran() (string, error) {
 	}
 	return "", fmt.Errorf("gfortran not found")
 }
+
+// EnsureFormatter verifies that a Fortran formatting tool is installed.
+// It prefers fprettify but falls back to findent. If the tools are not found,
+// it attempts a best-effort installation using the system package manager.
+func EnsureFormatter() (string, error) {
+	if path, err := exec.LookPath("fprettify"); err == nil {
+		return path, nil
+	}
+	if path, err := exec.LookPath("findent"); err == nil {
+		return path, nil
+	}
+	switch runtime.GOOS {
+	case "linux":
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			cmd := exec.Command("apt-get", "update")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			cmd = exec.Command("apt-get", "install", "-y", "findent")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+		if _, err := exec.LookPath("pip"); err == nil {
+			cmd := exec.Command("pip", "install", "fprettify")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	case "darwin":
+		if _, err := exec.LookPath("brew"); err == nil {
+			cmd := exec.Command("brew", "install", "findent")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+		if _, err := exec.LookPath("pip3"); err == nil {
+			cmd := exec.Command("pip3", "install", "fprettify")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "findent")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "findent")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+		if _, err := exec.LookPath("pip"); err == nil {
+			cmd := exec.Command("pip", "install", "fprettify")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	}
+	if path, err := exec.LookPath("fprettify"); err == nil {
+		return path, nil
+	}
+	if path, err := exec.LookPath("findent"); err == nil {
+		return path, nil
+	}
+	return "", fmt.Errorf("no Fortran formatter found")
+}

@@ -1,5 +1,5 @@
 program main
-   implicit none
-   print *, index('catch', 'cat') > 0
-   print *, index('catch', 'dog') > 0
+  implicit none
+  print *, index('catch', 'cat') > 0
+  print *, index('catch', 'dog') > 0
 end program main

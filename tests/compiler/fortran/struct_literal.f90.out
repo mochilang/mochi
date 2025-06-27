@@ -1,10 +1,10 @@
 program main
-   implicit none
-   type :: Point
-      integer(kind=8) :: x
-      integer(kind=8) :: y
-   end type Point
-   type(Point) :: p
-   p = Point(x=1_8, y=2_8)
-   print *, p%x
+  implicit none
+  type :: Point
+    integer(kind=8) :: x
+    integer(kind=8) :: y
+  end type Point
+  type(Point) :: p
+  p = Point(x=1_8, y=2_8)
+  print *, p%x
 end program main

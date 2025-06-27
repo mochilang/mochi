@@ -1,18 +1,18 @@
 program main
-   implicit none
-   type :: Point
-      integer(kind=8) :: x
-      integer(kind=8) :: y
-   end type Point
-   type :: Line
-      type(Point) :: start
-      type(Point) :: end
-   end type Line
-   type(Line) :: line
-   type(Point) :: p1
-   type(Point) :: p2
-   p1 = Point(x=0_8, y=0_8)
-   p2 = Point(x=1_8, y=1_8)
-   line = Line(start=p1, end=p2)
-   print *, line%start%x
+  implicit none
+  type :: Point
+    integer(kind=8) :: x
+    integer(kind=8) :: y
+  end type Point
+  type :: Line
+    type(Point) :: start
+    type(Point) :: end
+  end type Line
+  type(Line) :: line
+  type(Point) :: p1
+  type(Point) :: p2
+  p1 = Point(x=0_8, y=0_8)
+  p2 = Point(x=1_8, y=1_8)
+  line = Line(start=p1, end=p2)
+  print *, line%start%x
 end program main

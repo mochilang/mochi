@@ -1,25 +1,25 @@
 program main
-   implicit none
-   type :: Msg
-      character(:), allocatable :: message
-   end type Msg
-   character(:), allocatable :: v__
-   v__ = mochi_fetch('file://tests/compiler/fortran/fetch_builtin.json')
+  implicit none
+  type :: Msg
+    character(:), allocatable :: message
+  end type Msg
+  character(:), allocatable :: v__
+  v__ = mochi_fetch('file://tests/compiler/fortran/fetch_builtin.json')
 contains
 
-   function mochi_fetch(url) result(r)
-      implicit none
-      character(len=*), intent(in) :: url
-      character(len=:), allocatable :: r
-      character(len=1024) :: cmd
-      integer :: u, n
-      cmd = 'curl -s -o mochi_fetch.tmp ' // trim(url)
-      call execute_command_line(cmd)
-      open(newunit=u, file='mochi_fetch.tmp', access='stream', form='unformatted', action='read')
-      inquire(u, size=n)
-      allocate(character(len=n) :: r)
-      read(u) r
-      close(u)
-      call execute_command_line('rm -f mochi_fetch.tmp')
-   end function mochi_fetch
+  function mochi_fetch(url) result(r)
+    implicit none
+    character(len=*), intent(in) :: url
+    character(len=:), allocatable :: r
+    character(len=1024) :: cmd
+    integer :: u, n
+    cmd = 'curl -s -o mochi_fetch.tmp '//trim(url)
+    call execute_command_line(cmd)
+    open (newunit=u, file='mochi_fetch.tmp', access='stream', form='unformatted', action='read')
+    inquire (u, size=n)
+    allocate (character(len=n) :: r)
+    read (u) r
+    close (u)
+    call execute_command_line('rm -f mochi_fetch.tmp')
+  end function mochi_fetch
 end program main
