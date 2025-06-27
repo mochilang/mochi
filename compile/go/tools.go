@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
+	"golang.org/x/tools/imports"
 )
 
 // EnsureMochi builds the Mochi command and returns its path. It is used by
@@ -87,31 +89,47 @@ func EnsureGo() error {
 	return fmt.Errorf("go not found")
 }
 
-// FormatGo formats the provided Go source. It prefers the external tools
-// `goimports` or `gofmt` if installed and falls back to go/format.
+// FormatGo formats the provided Go source. It first uses the standard library
+// formatter and then, if available, attempts to run `goimports` or `gofmt` for
+// additional cleanup. The input is returned with a trailing newline.
 func FormatGo(src []byte) []byte {
-	tool, err := exec.LookPath("goimports")
-	if err != nil {
-		tool, err = exec.LookPath("gofmt")
+	if out, err := format.Source(src); err == nil {
+		src = out
 	}
-	if err == nil {
-		cmd := exec.Command(tool)
+	if path, err := exec.LookPath("goimports"); err == nil {
+		cmd := exec.Command(path)
 		cmd.Stdin = bytes.NewReader(src)
 		var out bytes.Buffer
 		cmd.Stdout = &out
 		if err := cmd.Run(); err == nil {
-			res := out.Bytes()
-			if len(res) == 0 || res[len(res)-1] != '\n' {
-				res = append(res, '\n')
-			}
-			return res
+			src = out.Bytes()
 		}
-	}
-	if out, err := format.Source(src); err == nil {
+	} else if out, err := imports.Process("", src, nil); err == nil {
 		src = out
+	} else if path, err := exec.LookPath("gofmt"); err == nil {
+		cmd := exec.Command(path)
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			src = out.Bytes()
+		}
 	}
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
 	return src
+}
+
+// EnsureFormatter verifies that either `gofmt` or `goimports` is available so
+// generated Go code can be nicely formatted. It does not fail if neither tool is
+// present but returns an error for informational purposes.
+func EnsureFormatter() error {
+	if _, err := exec.LookPath("gofmt"); err == nil {
+		return nil
+	}
+	if _, err := exec.LookPath("goimports"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("gofmt or goimports not found")
 }
