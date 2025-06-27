@@ -98,11 +98,47 @@ func EnsureKotlin() error {
 	return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 }
 
+// EnsureKotlinFormat checks for either ktfmt or ktlint, attempting a best-effort
+// installation using common package managers when missing.
+func EnsureKotlinFormat() error {
+	if _, err := exec.LookPath("ktfmt"); err == nil {
+		return nil
+	}
+	if _, err := exec.LookPath("ktlint"); err == nil {
+		return nil
+	}
+	switch runtime.GOOS {
+	case "darwin":
+		if _, err := exec.LookPath("brew"); err == nil {
+			_ = exec.Command("brew", "install", "ktlint").Run()
+		}
+	case "linux":
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			_ = exec.Command("apt-get", "update").Run()
+			_ = exec.Command("apt-get", "install", "-y", "ktlint").Run()
+		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			_ = exec.Command("choco", "install", "-y", "ktlint").Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			_ = exec.Command("scoop", "install", "ktlint").Run()
+		}
+	}
+	if _, err := exec.LookPath("ktfmt"); err == nil {
+		return nil
+	}
+	if _, err := exec.LookPath("ktlint"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("ktfmt or ktlint not found")
+}
+
 // FormatKotlin runs a formatter on the given source code if available. The
 // function first looks for `ktfmt` and then `ktlint`, streaming the input
 // through the tool. If neither tool is installed or formatting fails, the
 // original input is returned. A trailing newline is always ensured.
 func FormatKotlin(src []byte) []byte {
+	_ = EnsureKotlinFormat()
 	tools := [][]string{{"ktfmt"}, {"ktlint", "-F", "-"}}
 	for _, args := range tools {
 		if path, err := exec.LookPath(args[0]); err == nil {
@@ -120,8 +156,32 @@ func FormatKotlin(src []byte) []byte {
 		}
 	}
 	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
-	if len(src) > 0 && src[len(src)-1] != '\n' {
-		src = append(src, '\n')
+	lines := bytes.Split(src, []byte{'\n'})
+	var buf bytes.Buffer
+	indent := 0
+	for _, line := range lines {
+		trimmed := bytes.TrimSpace(line)
+		if len(trimmed) == 0 {
+			buf.WriteByte('\n')
+			continue
+		}
+		if trimmed[0] == '}' {
+			if indent > 0 {
+				indent--
+			}
+		}
+		for i := 0; i < indent; i++ {
+			buf.WriteString("    ")
+		}
+		buf.Write(trimmed)
+		buf.WriteByte('\n')
+		if trimmed[len(trimmed)-1] == '{' {
+			indent++
+		}
 	}
-	return src
+	res := buf.Bytes()
+	if len(res) == 0 || res[len(res)-1] != '\n' {
+		res = append(res, '\n')
+	}
+	return res
 }
