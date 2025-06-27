@@ -1,4 +1,7 @@
-(ns main)
+(ns main
+  (:require
+    [clojure.data.json :as json]
+  ))
 
 (defn _fetch [url opts]
   (let [method (get opts :method "GET")

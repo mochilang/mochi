@@ -1,4 +1,7 @@
-(ns main)
+(ns main
+  (:require
+    [clojure.data.json :as json]
+  ))
 
 (defn _gen_struct [ctor prompt model params]
   (let [m (clojure.data.json/read-str prompt :key-fn keyword)
