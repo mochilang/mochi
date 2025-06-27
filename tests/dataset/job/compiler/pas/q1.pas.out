@@ -1,0 +1,141 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+procedure test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production;
+
+var
+  _tmp0: specialize TFPGMap<string, integer>;
+begin
+  _tmp0 := specialize TFPGMap<string, integer>.Create;
+  _tmp0.AddOrSetData('production_note', 'ACME (co-production)');
+  _tmp0.AddOrSetData('_tmp0ovie_title', 'Good Movie');
+  _tmp0.AddOrSetData('_tmp0ovie_year', 1995);
+  if not ((_result = _tmp0)) then raise Exception.Create('expect failed');
+end;
+
+var
+  _tmp1: specialize TFPGMap<string, integer>;
+  _tmp10: specialize TFPGMap<string, integer>;
+  _tmp11: specialize TFPGMap<string, integer>;
+  _tmp12: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp13: specialize TArray<integer>;
+  _tmp14: specialize TArray<integer>;
+  _tmp15: specialize TArray<integer>;
+  _tmp16: specialize TFPGMap<string, integer>;
+  _tmp2: specialize TFPGMap<string, integer>;
+  _tmp3: specialize TFPGMap<string, integer>;
+  _tmp4: specialize TFPGMap<string, integer>;
+  _tmp5: specialize TFPGMap<string, integer>;
+  _tmp6: specialize TFPGMap<string, integer>;
+  _tmp7: specialize TFPGMap<string, integer>;
+  _tmp8: specialize TFPGMap<string, integer>;
+  _tmp9: specialize TFPGMap<string, integer>;
+  company_type: specialize TArray<specialize TFPGMap<string, integer>>;
+  ct: specialize TFPGMap<string, integer>;
+  filtered: specialize TArray<specialize TFPGMap<string, integer>>;
+  info_type: specialize TArray<specialize TFPGMap<string, integer>>;
+  movie_companies: specialize TArray<specialize TFPGMap<string, integer>>;
+  movie_info_idx: specialize TArray<specialize TFPGMap<string, integer>>;
+  r: specialize TFPGMap<string, integer>;
+  _result: specialize TFPGMap<string, integer>;
+  title: specialize TArray<specialize TFPGMap<string, integer>>;
+
+begin
+  _tmp1 := specialize TFPGMap<string, integer>.Create;
+  _tmp1.AddOrSetData('id', 1);
+  _tmp1.AddOrSetData('kind', 'production co_tmp1panies');
+  _tmp2 := specialize TFPGMap<string, integer>.Create;
+  _tmp2.AddOrSetData('id', 2);
+  _tmp2.AddOrSetData('kind', 'distributors');
+  company_type := specialize TArray<specialize TFPGMap<string, integer>>([_tmp1, _tmp2]);
+  _tmp3 := specialize TFPGMap<string, integer>.Create;
+  _tmp3.AddOrSetData('id', 10);
+  _tmp3.AddOrSetData('info', 'top 250 rank');
+  _tmp4 := specialize TFPGMap<string, integer>.Create;
+  _tmp4.AddOrSetData('id', 20);
+  _tmp4.AddOrSetData('info', 'botto_tmp4 10 rank');
+  info_type := specialize TArray<specialize TFPGMap<string, integer>>([_tmp3, _tmp4]);
+  _tmp5 := specialize TFPGMap<string, integer>.Create;
+  _tmp5.AddOrSetData('id', 100);
+  _tmp5.AddOrSetData('title', 'Good Movie');
+  _tmp5.AddOrSetData('production_year', 1995);
+  _tmp6 := specialize TFPGMap<string, integer>.Create;
+  _tmp6.AddOrSetData('id', 200);
+  _tmp6.AddOrSetData('title', 'Bad Movie');
+  _tmp6.AddOrSetData('production_year', 2000);
+  title := specialize TArray<specialize TFPGMap<string, integer>>([_tmp5, _tmp6]);
+  _tmp7 := specialize TFPGMap<string, integer>.Create;
+  _tmp7.AddOrSetData('_tmp7ovie_id', 100);
+  _tmp7.AddOrSetData('co_tmp7pany_type_id', 1);
+  _tmp7.AddOrSetData('note', 'ACME (co-production)');
+  _tmp8 := specialize TFPGMap<string, integer>.Create;
+  _tmp8.AddOrSetData('_tmp8ovie_id', 200);
+  _tmp8.AddOrSetData('co_tmp8pany_type_id', 1);
+  _tmp8.AddOrSetData('note', 'MGM (as Metro-Goldwyn-Mayer Pictures)');
+  movie_companies := specialize TArray<specialize TFPGMap<string, integer>>([_tmp7, _tmp8]);
+  _tmp9 := specialize TFPGMap<string, integer>.Create;
+  _tmp9.AddOrSetData('_tmp9ovie_id', 100);
+  _tmp9.AddOrSetData('info_type_id', 10);
+  _tmp10 := specialize TFPGMap<string, integer>.Create;
+  _tmp10.AddOrSetData('_tmp10ovie_id', 200);
+  _tmp10.AddOrSetData('info_type_id', 20);
+  movie_info_idx := specialize TArray<specialize TFPGMap<string, integer>>([_tmp9, _tmp10]);
+  _tmp11 := specialize TFPGMap<string, integer>.Create;
+  _tmp11.AddOrSetData('note', _tmp11c.note);
+  _tmp11.AddOrSetData('title', t.title);
+  _tmp11.AddOrSetData('year', t.production_year);
+  SetLength(_tmp12, 0);
+  for ct in company_type do
+    begin
+      for mc in movie_companies do
+        begin
+          if not ((ct.id = mc.company_type_id)) then continue;
+          for t in title do
+            begin
+              if not ((t.id = mc.movie_id)) then continue;
+              for mi in movie_info_idx do
+                begin
+                  if not ((mi.movie_id = t.id)) then continue;
+                  for it in info_type do
+                    begin
+                      if not ((it.id = mi.info_type_id)) then continue;
+                      if not (((((ct.kind = 'production companies') and (it.info = 'top 250 rank'))
+                         and not mc.note.contains('(as Metro-Goldwyn-Mayer Pictures)')) and (mc.note
+                         .contains('(co-production)') or mc.note.contains('(presents)')))) then
+                        continue;
+                      _tmp12 := Concat(_tmp12, [_tmp11]);
+                    end;
+                end;
+            end;
+        end;
+    end;
+  filtered := _tmp12;
+  SetLength(_tmp13, 0);
+  for r in filtered do
+    begin
+      _tmp13 := Concat(_tmp13, [r.note]);
+    end;
+  SetLength(_tmp14, 0);
+  for r in filtered do
+    begin
+      _tmp14 := Concat(_tmp14, [r.title]);
+    end;
+  SetLength(_tmp15, 0);
+  for r in filtered do
+    begin
+      _tmp15 := Concat(_tmp15, [r.year]);
+    end;
+  _tmp16 := specialize TFPGMap<string, integer>.Create;
+  _tmp16.AddOrSetData('production_note', _tmp16in(_t_tmp16p13));
+  _tmp16.AddOrSetData('_tmp16ovie_title', _tmp16in(_t_tmp16p14));
+  _tmp16.AddOrSetData('_tmp16ovie_year', _tmp16in(_t_tmp16p15));
+  _result := _tmp16;
+  json(specialize TArray<specialize TFPGMap<string, integer>>([_result]));
+  test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production;
+end.
+
