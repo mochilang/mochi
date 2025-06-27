@@ -2,7 +2,7 @@ data class Person(val name: String) {
     fun greet() : String {
         return ("hi " + name)
     }
-    
+
 }
 
 fun main() {

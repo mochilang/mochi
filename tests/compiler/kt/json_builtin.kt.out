@@ -9,9 +9,9 @@ fun _json(v: Any?) {
         is Int, is Double, is Boolean -> x.toString()
         is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
         is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e ->
-            "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
-        }
-        else -> \"""${x.toString().replace("\"", "\\\"")}\"""
+        "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
     }
-        println(encode(v))
+    else -> \"""${x.toString().replace("\"", "\\\"")}\"""
+}
+println(encode(v))
 }

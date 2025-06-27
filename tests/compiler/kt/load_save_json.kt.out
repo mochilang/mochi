@@ -5,16 +5,16 @@ fun main() {
         val _rows = _load(null, mutableMapOf("format" to "json"))
         val _out = mutableListOf<Person>()
         for (r in _rows) {
-                _out.add(_cast<Person>(r))
+            _out.add(_cast<Person>(r))
         }
         _out
-}
+    }
     val adults = run {
-                var res = people
-                res = res.filter { p -> (p.age >= 18) }
-                res = res.map { p -> p }
-                res
-        }
+        var res = people
+        res = res.filter { p -> (p.age >= 18) }
+        res = res.map { p -> p }
+        res
+    }
     _save(adults, null, mutableMapOf("format" to "json"))
 }
 
@@ -31,21 +31,21 @@ inline fun <reified T> _cast(v: Any?): T {
                 val ctor = T::class.primaryConstructor
                 if (ctor != null) {
                     val args = ctor.parameters.associateWith { p ->
-                        val value = v[p.name]
-                        when (p.type.classifier) {
-                            Int::class -> when (value) { is Number -> value.toInt(); is String -> value.toInt(); else -> 0 }
-                            Double::class -> when (value) { is Number -> value.toDouble(); is String -> value.toDouble(); else -> 0.0 }
-                            Boolean::class -> when (value) { is Boolean -> value; is String -> value == "true"; else -> false }
-                            String::class -> value?.toString()
-                            else -> value
-                        }
+                    val value = v[p.name]
+                    when (p.type.classifier) {
+                        Int::class -> when (value) { is Number -> value.toInt(); is String -> value.toInt(); else -> 0 }
+                        Double::class -> when (value) { is Number -> value.toDouble(); is String -> value.toDouble(); else -> 0.0 }
+                        Boolean::class -> when (value) { is Boolean -> value; is String -> value == "true"; else -> false }
+                        String::class -> value?.toString()
+                        else -> value
                     }
-                    return ctor.callBy(args)
                 }
+                return ctor.callBy(args)
             }
-            v as T
         }
+        v as T
     }
+}
 }
 fun _load(path: String?, opts: Map<String, Any>?): List<Map<String, Any>> {
     var format = opts?.get("format") as? String ?: "csv"

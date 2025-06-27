@@ -3,17 +3,17 @@ fun main() {
     val letters = listOf("A", "B")
     val bools = listOf(true, false)
     val combos = run {
-                val _src = nums
-                val _res = mutableListOf<MutableMap<String, Any>>()
-                for (n in _src) {
-                        for (l in letters) {
-                                for (b in bools) {
-                                        _res.add(mutableMapOf("n" to n, "l" to l, "b" to b))
-                                }
-                        }
+        val _src = nums
+        val _res = mutableListOf<MutableMap<String, Any>>()
+        for (n in _src) {
+            for (l in letters) {
+                for (b in bools) {
+                    _res.add(mutableMapOf("n" to n, "l" to l, "b" to b))
                 }
-                _res
+            }
         }
+        _res
+    }
     println("--- Cross Join of three lists ---")
     for (c in combos) {
         println(c.n, c.l, c.b)

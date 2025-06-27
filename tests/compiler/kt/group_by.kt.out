@@ -9,7 +9,7 @@ fun main() {
 class _Group(var key: Any?) {
     val Items = mutableListOf<Any?>()
     val size: Int
-        get() = Items.size
+    get() = Items.size
 }
 fun _group_by(src: List<Any?>, keyfn: (Any?) -> Any?): List<_Group> {
     val groups = mutableMapOf<String, _Group>()
@@ -29,5 +29,5 @@ fun _group_by(src: List<Any?>, keyfn: (Any?) -> Any?): List<_Group> {
             g.Items.add(it)
         }
     }
-        return order.map { groups[it]!! }
+    return order.map { groups[it]!! }
 }

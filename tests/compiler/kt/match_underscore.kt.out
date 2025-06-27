@@ -4,15 +4,15 @@ data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
 
 fun value_of_root(t: Tree) : Int {
     return run {
-                val _t = t
-                when {
-                        _t is Node -> {
-                                val v = _t.value
-                                v
-                        }
-                        else -> 0
-                }
+        val _t = t
+        when {
+            _t is Node -> {
+                val v = _t.value
+                v
+            }
+            else -> 0
         }
+    }
 }
 
 fun main() {
