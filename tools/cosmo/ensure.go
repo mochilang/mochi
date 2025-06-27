@@ -9,23 +9,29 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
-// EnsureCosmo verifies that the static Cosmopolitan library is installed.
-// The library is expected at $COSMO_LIB or tools/cosmo/cosmo/libcosmo.a.
+// EnsureCosmo installs the Cosmopolitan toolchain if needed. It returns nil if
+// the library and compiler binary are already present.
+// The files are placed under $COSMO_DIR or tools/cosmo/cosmo.
 
 func EnsureCosmo() error {
-	path := os.Getenv("COSMO_LIB")
-	if path == "" {
-		path = filepath.Join("tools", "cosmo", "cosmo", "libcosmo.a")
+	dir := os.Getenv("COSMO_DIR")
+	if dir == "" {
+		dir = filepath.Join("tools", "cosmo", "cosmo")
 	}
-	if _, err := os.Stat(path); err == nil {
-		return nil
+	libPath := filepath.Join(dir, "libcosmo.a")
+	binPath := filepath.Join(dir, "bin", "cosmocc")
+	if _, err := os.Stat(libPath); err == nil {
+		if _, err := os.Stat(binPath); err == nil {
+			return nil
+		}
 	}
 
 	fmt.Println("\U0001F680 Installing Cosmopolitan...")
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
 
@@ -51,25 +57,49 @@ func EnsureCosmo() error {
 	if err != nil {
 		return err
 	}
+	arch := runtime.GOARCH
+	if arch == "amd64" {
+		arch = "x86_64"
+	}
+	var haveLib, haveBin bool
 	for _, f := range zr.File {
+		dest := filepath.Join(dir, f.Name)
+		if f.FileInfo().IsDir() {
+			if err := os.MkdirAll(dest, f.Mode()); err != nil {
+				return err
+			}
+			continue
+		}
+		if err := os.MkdirAll(filepath.Dir(dest), 0o755); err != nil {
+			return err
+		}
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+		out, err := os.OpenFile(dest, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, f.Mode())
+		if err != nil {
+			rc.Close()
+			return err
+		}
+		if _, err := io.Copy(out, rc); err != nil {
+			out.Close()
+			rc.Close()
+			return err
+		}
+		out.Close()
+		rc.Close()
 		if strings.HasSuffix(f.Name, "libcosmo.a") {
-			rc, err := f.Open()
-			if err != nil {
-				return err
-			}
-			defer rc.Close()
-			out, err := os.Create(path)
-			if err != nil {
-				return err
-			}
-			defer out.Close()
-			if _, err := io.Copy(out, rc); err != nil {
-				return err
-			}
-			return nil
+			haveLib = true
+		}
+		if f.Name == "bin/cosmocc" {
+			haveBin = true
 		}
 	}
-	return fmt.Errorf("libcosmo.a not found in archive")
+	if !haveLib || !haveBin {
+		return fmt.Errorf("required files missing in archive")
+	}
+	return nil
 }
 
 type release struct {

@@ -1,4 +1,4 @@
-//go:build cosmo && libcosmo
+//go:build cosmo
 
 package cosmo
 
