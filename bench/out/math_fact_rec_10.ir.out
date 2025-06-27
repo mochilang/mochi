@@ -66,4 +66,3 @@ L0:
   Mul          r8, r0, r7
   Return       r8
   Return       r0
-

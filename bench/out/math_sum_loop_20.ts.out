@@ -2,35 +2,31 @@
 
 function sum_loop(n: number): number {
   let total: number = 0;
-  (globalThis as any).total = total;
   for (let i: number = 1; i < n; i++) {
     total = total + i;
   }
   return total;
 }
 
+let duration: number;
+let last: number;
+let n: number;
+let repeat: number;
+let start: number;
+
 function main(): void {
-  let n: number = 20;
-  (globalThis as any).n = n;
-  let repeat: number = 1000;
-  (globalThis as any).repeat = repeat;
-  let last: number = 0;
-  (globalThis as any).last = last;
-  let start: number = performance.now() * 1000000;
-  (globalThis as any).start = start;
+  n = 20;
+  repeat = 1000;
+  last = 0;
+  start = performance.now() * 1000000;
   for (let i: number = 0; i < repeat; i++) {
     last = sum_loop(n);
   }
-  let duration: number = Math.trunc(
-    (performance.now() * 1000000 - start) / 1000,
-  );
-  (globalThis as any).duration = duration;
-  console.log(
-    _json({
-      duration_us: duration,
-      output: last,
-    }),
-  );
+  duration = Math.trunc((performance.now() * 1000000 - start) / 1000);
+  console.log(_json({
+    "duration_us": duration,
+    "output": last,
+  }));
 }
 function _json(v: any): string {
   function _sort(x: any): any {
