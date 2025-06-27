@@ -8,6 +8,7 @@ Mochi is:
 * Declarative and functional, with clean, expressive syntax
 * Fast and portable: zero-dependency single binary
 * Testable by design with built-in `test` and `expect` blocks
+* Optimized bytecode via constant folding and liveness-based dead code elimination
 
 Simple enough to explore in minutes. Powerful enough to build something real.
 
