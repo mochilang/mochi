@@ -1,6 +1,6 @@
 import Foundation
 
 func main() {
-	print("value: " + String(7))
+  print("value: " + String(7))
 }
 main()

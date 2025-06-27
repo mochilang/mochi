@@ -1,6 +1,6 @@
 import Foundation
 
 func main() {
-	print("foo".uppercased())
+  print("foo".uppercased())
 }
 main()

@@ -1,8 +1,8 @@
 import Foundation
 
 func main() {
-	var x = 1
-	x = 2
-	print(x)
+  var x = 1
+  x = 2
+  print(x)
 }
 main()
