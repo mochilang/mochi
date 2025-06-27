@@ -56,20 +56,33 @@ func EnsureScheme() (string, error) {
 
 // FormatScheme replaces tabs with two spaces and ensures a trailing newline.
 // If the chibi-scheme binary is available a best-effort pretty printing is attempted.
+// EnsureFormatter verifies that a Scheme formatter is available.
+// Currently this just ensures chibi-scheme is installed so its
+// built-in pretty printer can be used.
+func EnsureFormatter() error {
+	if _, err := EnsureScheme(); err == nil {
+		return nil
+	}
+	return fmt.Errorf("chibi-scheme not found")
+}
+
+// FormatScheme replaces tabs with two spaces and ensures a trailing newline.
+// It attempts to pretty print the code using chibi-scheme when available.
 func FormatScheme(src []byte) []byte {
-	path, err := exec.LookPath("chibi-scheme")
-	if err == nil {
-		cmd := exec.Command(path, "-q", "-e",
-			`(import (chibi show pretty))
-                        (let loop ((x (read)))
-                          (unless (eof-object? x)
-                            (pretty-print x)
-                            (loop (read))))`)
-		cmd.Stdin = bytes.NewReader(src)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		if e := cmd.Run(); e == nil && out.Len() > 0 {
-			src = out.Bytes()
+	if err := EnsureFormatter(); err == nil {
+		if path, err := exec.LookPath("chibi-scheme"); err == nil {
+			cmd := exec.Command(path, "-q", "-e",
+				`(import (chibi show pretty))
+                                (let loop ((x (read)))
+                                  (unless (eof-object? x)
+                                    (pretty-print x)
+                                    (loop (read))))`)
+			cmd.Stdin = bytes.NewReader(src)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			if e := cmd.Run(); e == nil && out.Len() > 0 {
+				src = out.Bytes()
+			}
 		}
 	}
 	src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
