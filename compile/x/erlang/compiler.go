@@ -901,7 +901,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				expr = fmt.Sprintf("(%s or %s)", l.expr, r.expr)
 				typ = types.BoolType{}
 			case "in":
-				expr = fmt.Sprintf("maps:is_key(%s, %s)", l.expr, r.expr)
+				switch r.typ.(type) {
+				case types.MapType:
+					expr = fmt.Sprintf("maps:is_key(%s, %s)", l.expr, r.expr)
+				case types.ListType:
+					expr = fmt.Sprintf("lists:member(%s, %s)", l.expr, r.expr)
+				case types.StringType:
+					expr = fmt.Sprintf("(string:str(%s, %s) =/= 0)", r.expr, l.expr)
+				default:
+					expr = fmt.Sprintf("lists:member(%s, %s)", l.expr, r.expr)
+				}
 				typ = types.BoolType{}
 			case "union_all":
 				expr = fmt.Sprintf("lists:append(%s, %s)", l.expr, r.expr)
@@ -952,12 +961,21 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
-	res, err := c.compilePrimary(p.Target)
+	target := p.Target
+	if len(p.Ops) > 0 && p.Ops[0].Call != nil && target.Selector != nil {
+		tail := target.Selector.Tail
+		if len(tail) > 0 && tail[len(tail)-1] == "contains" {
+			sel := &parser.SelectorExpr{Root: target.Selector.Root, Tail: tail[:len(tail)-1]}
+			target = &parser.Primary{Selector: sel}
+		}
+	}
+
+	res, err := c.compilePrimary(target)
 	if err != nil {
 		return "", err
 	}
 
-	typ := c.primaryType(p.Target)
+	typ := c.primaryType(target)
 
 	for _, op := range p.Ops {
 		if op.Index != nil {
@@ -1023,9 +1041,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			argStr := strings.Join(args, ", ")
 			// method call like obj.foo()
-			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 {
 				root := p.Target.Selector.Root
-				method := p.Target.Selector.Tail[0]
+				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
+				if method == "contains" && len(args) == 1 {
+					switch typ.(type) {
+					case types.MapType:
+						res = fmt.Sprintf("maps:is_key(%s, %s)", args[0], res)
+					case types.ListType:
+						res = fmt.Sprintf("lists:member(%s, %s)", args[0], res)
+					case types.StringType:
+						res = fmt.Sprintf("(string:str(%s, %s) =/= 0)", res, args[0])
+					default:
+						res = fmt.Sprintf("lists:member(%s, %s)", args[0], res)
+					}
+					typ = types.BoolType{}
+					continue
+				}
 				if t, err := c.env.GetVar(root); err == nil {
 					if st, ok := t.(types.StructType); ok {
 						if m, ok := st.Methods[method]; ok {
