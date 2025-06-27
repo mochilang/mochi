@@ -13,22 +13,25 @@ import (
 
 // Compiler translates a Mochi AST into OCaml source code (very limited subset).
 type Compiler struct {
-	pre     bytes.Buffer
-	buf     bytes.Buffer
-	indent  int
-	env     *types.Env
-	tmp     int
-	vars    map[string]bool
-	mapVars map[string]bool
-	structs map[string]bool
-	setNth  bool
-	slice   bool
-	input   bool
-	dataset bool
-	fetch   bool
-	loopTmp int
-	loops   []loopCtx
-	funTmp  int
+	pre          bytes.Buffer
+	buf          bytes.Buffer
+	indent       int
+	env          *types.Env
+	tmp          int
+	vars         map[string]bool
+	mapVars      map[string]bool
+	structs      map[string]bool
+	setNth       bool
+	slice        bool
+	input        bool
+	dataset      bool
+	fetch        bool
+	strContains  bool
+	listContains bool
+	minFn        bool
+	loopTmp      int
+	loops        []loopCtx
+	funTmp       int
 }
 
 type loopCtx struct {
@@ -272,6 +275,46 @@ func (c *Compiler) ensureDataset() {
 	b.WriteString("  Yojson.Basic.to_channel oc (`List rows);\n")
 	b.WriteString("  output_char oc '\\n';\n")
 	b.WriteString("  if oc != stdout then close_out oc;;\n\n")
+}
+
+func (c *Compiler) ensureStrContains() {
+	if c.strContains {
+		return
+	}
+	c.strContains = true
+	b := &c.pre
+	b.WriteString("let _str_contains s sub =\n")
+	b.WriteString("  let len_s = String.length s in\n")
+	b.WriteString("  let len_sub = String.length sub in\n")
+	b.WriteString("  let rec aux i =\n")
+	b.WriteString("    if i + len_sub > len_s then false\n")
+	b.WriteString("    else if String.sub s i len_sub = sub then true\n")
+	b.WriteString("    else aux (i + 1) in\n")
+	b.WriteString("  aux 0;;\n\n")
+}
+
+func (c *Compiler) ensureListContains() {
+	if c.listContains {
+		return
+	}
+	c.listContains = true
+	b := &c.pre
+	b.WriteString("let rec _list_contains item lst =\n")
+	b.WriteString("  match lst with\n")
+	b.WriteString("  | [] -> false\n")
+	b.WriteString("  | x::xs -> if x = item then true else _list_contains item xs;;\n\n")
+}
+
+func (c *Compiler) ensureMin() {
+	if c.minFn {
+		return
+	}
+	c.minFn = true
+	b := &c.pre
+	b.WriteString("let _min lst =\n")
+	b.WriteString("  match lst with\n")
+	b.WriteString("  | [] -> 0\n")
+	b.WriteString("  | x::xs -> List.fold_left (fun m v -> if compare v m < 0 then v else m) x xs;;\n\n")
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -790,6 +833,31 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		typ := c.resolveTypeRef(p.Ops[0].Cast.Type)
 		return c.compileFetchExprTyped(f, typ)
 	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 &&
+		p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" &&
+		len(p.Ops) == 1 && p.Ops[0].Call != nil {
+		recvSel := &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Target.Selector.Root,
+			Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1]}}
+		recv, err := c.compilePrimary(recvSel)
+		if err != nil {
+			return "", err
+		}
+		arg, err := c.compileExpr(p.Ops[0].Call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		if types.IsStringPrimary(recvSel, c.env) {
+			c.ensureStrContains()
+			return fmt.Sprintf("(_str_contains %s %s)", recv, arg), nil
+		}
+		if types.IsListPrimary(recvSel, c.env) {
+			c.ensureListContains()
+			return fmt.Sprintf("(_list_contains %s %s)", arg, recv), nil
+		}
+		if types.IsMapPrimary(recvSel, c.env) {
+			return fmt.Sprintf("(Hashtbl.mem %s %s)", recv, arg), nil
+		}
+	}
 	expr, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -1092,6 +1160,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 0 {
 			c.ensureInput()
 			return "_input ()", nil
+		}
+	case "min":
+		if len(args) == 1 {
+			c.ensureMin()
+			return fmt.Sprintf("(_min %s)", args[0]), nil
 		}
 	}
 	name := sanitizeName(call.Func)

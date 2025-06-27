@@ -1,0 +1,52 @@
+let company_type = [
+  { id: 1, kind: "production companies" },
+  { id: 2, kind: "distributors" }
+]
+
+let info_type = [
+  { id: 10, info: "top 250 rank" },
+  { id: 20, info: "bottom 10 rank" }
+]
+
+let title = [
+  { id: 100, title: "Good Movie", production_year: 1995 },
+  { id: 200, title: "Bad Movie", production_year: 2000 }
+]
+
+let movie_companies = [
+  { movie_id: 100, company_type_id: 1, note: "ACME (co-production)" },
+  { movie_id: 200, company_type_id: 1, note: "MGM (as Metro-Goldwyn-Mayer Pictures)" }
+]
+
+let movie_info_idx = [
+  { movie_id: 100, info_type_id: 10 },
+  { movie_id: 200, info_type_id: 20 }
+]
+
+let filtered =
+  from ct in company_type
+  join mc in movie_companies on ct.id == mc.company_type_id
+  join t in title on t.id == mc.movie_id
+  join mi in movie_info_idx on mi.movie_id == t.id
+  join it in info_type on it.id == mi.info_type_id
+  where ct.kind == "production companies" &&
+        it.info == "top 250 rank" &&
+        (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
+        (mc.note.contains("(co-production)") || mc.note.contains("(presents)"))
+  select { note: mc.note, title: t.title, year: t.production_year }
+
+let result = {
+  production_note: min(from r in filtered select r.note),
+  movie_title: min(from r in filtered select r.title),
+  movie_year: min(from r in filtered select r.year)
+}
+
+json([result])
+
+test "Q1 returns min note, title and year for top ranked co-production" {
+  expect result == {
+    production_note: "ACME (co-production)",
+    movie_title: "Good Movie",
+    movie_year: 1995
+  }
+}
