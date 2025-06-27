@@ -182,10 +182,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	header.WriteString("\n")
+	header.WriteString(runtime)
 	if c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
 		header.WriteString(loadRuntime)
-	} else {
-		header.WriteString(runtime)
 	}
 	if c.usesExpect {
 		header.WriteString(expectHelper)
