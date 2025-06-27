@@ -1,6 +1,7 @@
 package luacode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -157,4 +158,41 @@ func EnsureStylua() error {
 		return nil
 	}
 	return fmt.Errorf("stylua not found")
+}
+
+// FormatLua runs stylua or luafmt on the given source code if available.
+// Tabs are expanded to four spaces and a trailing newline ensured when
+// no formatter is found or formatting fails.
+func FormatLua(src []byte) []byte {
+	if path, err := exec.LookPath("stylua"); err == nil {
+		cmd := exec.Command(path, "-")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res
+		}
+	}
+	if path, err := exec.LookPath("luafmt"); err == nil {
+		cmd := exec.Command(path, "--stdin", "--indent-count", "4")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res
+		}
+	}
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }

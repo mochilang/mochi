@@ -20,21 +20,21 @@ function __print(...)
 end
 c = 0
 for _ = 0, (2)-1 do
-	c = __add(c, 1)
-	::__continue0::
+    c = __add(c, 1)
+    ::__continue0::
 end
 for _ in ipairs({1, 2}) do
-	c = __add(c, 1)
-	::__continue1::
+    c = __add(c, 1)
+    ::__continue1::
 end
 local _s0 = "ab"
 for _i0 = 1, #_s0 do
-	c = __add(c, 1)
-	::__continue2::
+    c = __add(c, 1)
+    ::__continue2::
 end
 m = {["x"]=1, ["y"]=2}
 for _ in pairs(m) do
-	c = __add(c, 1)
-	::__continue3::
+    c = __add(c, 1)
+    ::__continue3::
 end
 __print(c)

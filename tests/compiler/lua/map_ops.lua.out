@@ -33,6 +33,6 @@ m = {}
 m[1] = 10
 m[2] = 20
 if (m[1] ~= nil) then
-	__print(__index(m, 1))
+    __print(__index(m, 1))
 end
 __print(__index(m, 2))

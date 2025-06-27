@@ -64,9 +64,9 @@ end
 Item = {}
 Item.__index = Item
 function Item.new(o)
-	o = o or {}
-	setmetatable(o, Item)
-	return o
+    o = o or {}
+    setmetatable(o, Item)
+    return o
 end
 
 items = __load(nil, {["format"]="yaml"})

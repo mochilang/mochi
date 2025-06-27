@@ -9,13 +9,13 @@ end
 Person = {}
 Person.__index = Person
 function Person.new(o)
-	o = o or {}
-	setmetatable(o, Person)
-	return o
+    o = o or {}
+    setmetatable(o, Person)
+    return o
 end
 
 function Person:greet()
-	return ("hi " .. self.name)
+    return ("hi " .. self.name)
 end
 
 p = Person.new({name="Ada"})

@@ -7,6 +7,6 @@ function __print(...)
     io.write('\n')
 end
 for i = 1, (4)-1 do
-	__print(i)
-	::__continue0::
+    __print(i)
+    ::__continue0::
 end

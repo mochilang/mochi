@@ -7,10 +7,10 @@ function __print(...)
     io.write('\n')
 end
 function factorial(n)
-	if (n <= 1) then
-		return 1
-	end
-	return (n * factorial((n - 1)))
+    if (n <= 1) then
+        return 1
+    end
+    return (n * factorial((n - 1)))
 end
 
 __print(factorial(0))

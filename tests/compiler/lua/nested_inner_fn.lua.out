@@ -19,10 +19,10 @@ function __print(...)
     io.write('\n')
 end
 function outer(a)
-	local function inner(b)
-		return __add(a, b)
-	end
-	return inner(10)
+    local function inner(b)
+        return __add(a, b)
+    end
+    return inner(10)
 end
 
 __print(outer(5))

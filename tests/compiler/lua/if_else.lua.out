@@ -8,7 +8,7 @@ function __print(...)
 end
 x = 5
 if (x > 3) then
-	__print("big")
+    __print("big")
 else
-	__print("small")
+    __print("small")
 end

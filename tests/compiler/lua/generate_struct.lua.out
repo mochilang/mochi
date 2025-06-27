@@ -17,9 +17,9 @@ end
 Info = {}
 Info.__index = Info
 function Info.new(o)
-	o = o or {}
-	setmetatable(o, Info)
-	return o
+    o = o or {}
+    setmetatable(o, Info)
+    return o
 end
 
 info = __gen_struct("{\"msg\": \"hello\"}", nil, nil)

@@ -61,28 +61,28 @@ function __print(...)
     io.write('\n')
 end
 function searchMatrix(matrix, target)
-	local m = #matrix
-	if __eq(m, 0) then
-		return false
-	end
-	local n = #__index(matrix, 0)
-	local left = 0
-	local right = ((m * n) - 1)
-	while (left <= right) do
-		local mid = __add(left, __div(((right - left)), 2))
-		local row = __div(mid, n)
-		local col = (mid % n)
-		local value = __index(__index(matrix, row), col)
-		if __eq(value, target) then
-			return true
-		elseif (value < target) then
-			left = __add(mid, 1)
-		else
-			right = (mid - 1)
-		end
-		::__continue0::
-	end
-	return false
+    local m = #matrix
+    if __eq(m, 0) then
+        return false
+    end
+    local n = #__index(matrix, 0)
+    local left = 0
+    local right = ((m * n) - 1)
+    while (left <= right) do
+        local mid = __add(left, __div(((right - left)), 2))
+        local row = __div(mid, n)
+        local col = (mid % n)
+        local value = __index(__index(matrix, row), col)
+        if __eq(value, target) then
+            return true
+        elseif (value < target) then
+            left = __add(mid, 1)
+        else
+            right = (mid - 1)
+        end
+        ::__continue0::
+    end
+    return false
 end
 
 __print(searchMatrix({{1, 3, 5, 7}, {10, 11, 16, 20}, {23, 30, 34, 60}}, 3))
