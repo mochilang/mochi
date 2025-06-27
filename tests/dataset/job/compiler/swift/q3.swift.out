@@ -83,11 +83,11 @@ let candidate_titles =
     var _res: [Any] = []
     for k in keyword {
       for mk in movie_keyword {
-        if !(mk.keyword_id == k.id) { continue }
+        if !(mk["keyword_id"]! == k["id"]!) { continue }
         for mi in movie_info {
-          if !(mi.movie_id == mk.movie_id) { continue }
+          if !(mi["movie_id"]! == mk["movie_id"]!) { continue }
           for t in title {
-            if !(t.id == mi.movie_id) { continue }
+            if !(t["id"]! == mi["movie_id"]!) { continue }
             if allowed_infos.contains(k["keyword"]!["contains"]!("sequel") && mi["info"]!)
               && t["production_year"]! > 2005 && mk["movie_id"]! == mi["movie_id"]!
             {

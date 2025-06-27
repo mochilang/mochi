@@ -79,16 +79,16 @@ let movie_info_idx = [
 ]
 let rows =
   ({
-    var _res: [[Any: Any]] = []
+    var _res: [[String: Any]] = []
     for it in info_type {
       for mi in movie_info_idx {
-        if !(it.id == mi.info_type_id) { continue }
+        if !(it["id"]! == mi["info_type_id"]!) { continue }
         for t in title {
-          if !(t.id == mi.movie_id) { continue }
+          if !(t["id"]! == mi["movie_id"]!) { continue }
           for mk in movie_keyword {
-            if !(mk.movie_id == t.id) { continue }
+            if !(mk["movie_id"]! == t["id"]!) { continue }
             for k in keyword {
-              if !(k.id == mk.keyword_id) { continue }
+              if !(k["id"]! == mk["keyword_id"]!) { continue }
               if !(it["info"]! == "rating" && k["keyword"]!["contains"]!("sequel")
                 && mi["info"]! > "5.0" && t["production_year"]! > 2005
                 && mk["movie_id"]! == mi["movie_id"]!)

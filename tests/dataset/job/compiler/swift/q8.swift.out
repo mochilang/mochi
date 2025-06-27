@@ -10,6 +10,14 @@ class _Group {
   init(_ k: Any) { self.key = k }
 }
 
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
 func _min(_ v: Any) -> Any {
   var list: [Any]? = nil
   if let g = v as? _Group {
@@ -67,17 +75,17 @@ let eligible =
     var _res: [[String: Any]] = []
     for an1 in aka_name {
       for n1 in name {
-        if !(n1.id == an1.person_id) { continue }
+        if !(n1["id"]! == an1["person_id"]!) { continue }
         for ci in cast_info {
-          if !(ci.person_id == an1.person_id) { continue }
+          if !(ci["person_id"]! == an1["person_id"]!) { continue }
           for t in title {
-            if !(t.id == ci.movie_id) { continue }
+            if !(t["id"]! == ci["movie_id"]!) { continue }
             for mc in movie_companies {
-              if !(mc.movie_id == ci.movie_id) { continue }
+              if !(mc["movie_id"]! == ci["movie_id"]!) { continue }
               for cn in company_name {
-                if !(cn.id == mc.company_id) { continue }
+                if !(cn["id"]! == mc["company_id"]!) { continue }
                 for rt in role_type {
-                  if !(rt.id == ci.role_id) { continue }
+                  if !(rt["id"]! == ci["role_id"]!) { continue }
                   if !(ci["note"]! == "(voice: English version)" && cn["country_code"]! == "[jp]"
                     && mc["note"]!["contains"]!("(Japan)") && (!mc["note"]!["contains"]!("(USA)"))
                     && n1["name"]!["contains"]!("Yo") && (!n1["name"]!["contains"]!("Yu"))
@@ -119,7 +127,7 @@ let result = [
   ]
 ]
 func main() {
-  print(result)
+  _json(result)
   test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing()
 }
 main()

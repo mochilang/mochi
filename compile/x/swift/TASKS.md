@@ -18,3 +18,10 @@ Further improvements will expand coverage of dataset queries.
 - Running the generated Swift with `swiftc` still fails due to dictionary based
   record handling; future work should emit proper struct types so the programs
   compile.
+
+Recent attempt expanded type inference so map literals with identifier keys
+default to `String` and query compilation now tracks loop variable types. The
+generated code builds successfully, but Swift compilation of JOB queries fails
+when comparing `Any` values (e.g. `ct["id"]! == mc["company_type_id"]!`).
+Additional static typing or casts are required before the JOB programs can run
+with `swiftc`.

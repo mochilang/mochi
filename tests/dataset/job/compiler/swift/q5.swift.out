@@ -83,13 +83,13 @@ let candidate_titles =
     var _res: [Any] = []
     for ct in company_type {
       for mc in movie_companies {
-        if !(mc.company_type_id == ct.ct_id) { continue }
+        if !(mc["company_type_id"]! == ct["ct_id"]!) { continue }
         for mi in movie_info {
-          if !(mi.movie_id == mc.movie_id) { continue }
+          if !(mi["movie_id"]! == mc["movie_id"]!) { continue }
           for it in info_type {
-            if !(it.it_id == mi.info_type_id) { continue }
+            if !(it["it_id"]! == mi["info_type_id"]!) { continue }
             for t in title {
-              if !(t.t_id == mc.movie_id) { continue }
+              if !(t["t_id"]! == mc["movie_id"]!) { continue }
               if !(mc["note"]!.contains(
                 mc["note"]!.contains(ct["kind"]! == "production companies" && "(theatrical)")
                   && "(France)") && t["production_year"]! > 2005
