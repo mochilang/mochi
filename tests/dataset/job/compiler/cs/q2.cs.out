@@ -51,13 +51,29 @@ public class Program
             }
             return _res;
         })();
-        var result = min(titles);
+        var result = _min(titles);
         Console.WriteLine(JsonSerializer.Serialize(result));
         test_Q2_finds_earliest_title_for_German_companies_with_character_keyword();
     }
     static void expect(bool cond)
     {
         if (!cond) throw new Exception("expect failed");
+    }
+
+    static dynamic _min(dynamic v)
+    {
+        if (v == null) return 0;
+        System.Collections.IEnumerable list = v is _Group g ? g.Items : v as System.Collections.IEnumerable;
+        if (list == null) return 0;
+        var it = list.GetEnumerator();
+        if (!it.MoveNext()) return 0;
+        dynamic m = it.Current;
+        var cmp = System.Collections.Generic.Comparer<dynamic>.Default;
+        while (it.MoveNext())
+        {
+            dynamic x = it.Current; if (cmp.Compare(x, m) < 0) m = x;
+        }
+        return m;
     }
 
 }
