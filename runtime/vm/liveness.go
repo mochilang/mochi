@@ -102,6 +102,9 @@ func useDef(ins Instr, n int) (use, def []bool) {
 		OpCast, OpIterPrep, OpNow, OpAppend:
 		addDef(ins.A)
 		addUse(ins.B)
+		if ins.Op == OpAppend {
+			addUse(ins.C)
+		}
 	case OpIndex:
 		addDef(ins.A)
 		addUse(ins.B)

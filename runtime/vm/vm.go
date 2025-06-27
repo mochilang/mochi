@@ -1053,11 +1053,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			pairs := append([]Value(nil), src.List...)
 			sort.SliceStable(pairs, func(i, j int) bool {
-				return valueLess(pairs[i].List[0], pairs[j].List[0])
+				var ai, aj Value
+				if pairs[i].Tag == interpreter.TagList && len(pairs[i].List) > 0 {
+					ai = pairs[i].List[0]
+				}
+				if pairs[j].Tag == interpreter.TagList && len(pairs[j].List) > 0 {
+					aj = pairs[j].List[0]
+				}
+				return valueLess(ai, aj)
 			})
 			out := make([]Value, len(pairs))
 			for i, p := range pairs {
-				if len(p.List) > 1 {
+				if p.Tag == interpreter.TagList && len(p.List) > 1 {
 					out[i] = p.List[1]
 				} else {
 					out[i] = Value{Tag: interpreter.TagNull}
