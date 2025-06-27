@@ -33,6 +33,7 @@ type Compiler struct {
 	needFetch       bool
 	needPaginate    bool
 	needSum         bool
+	needMin         bool
 	needGroupBy     bool
 	needGroup       bool
 	needCast        bool
@@ -71,6 +72,7 @@ func (c *Compiler) reset() {
 	c.needFetch = false
 	c.needPaginate = false
 	c.needSum = false
+	c.needMin = false
 	c.needGroupBy = false
 	c.needGroup = false
 }
@@ -112,7 +114,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.needContinue || c.needUnionAll || c.needUnion || c.needExcept ||
 		c.needIntersect || c.needIndexStr || c.needSliceStr ||
 		c.needContainsStr || c.needDataset || c.needFetch || c.needPaginate ||
-		c.needSum || c.needGroupBy || c.needGroup {
+		c.needSum || c.needMin || c.needGroupBy || c.needGroup {
 		c.emitHelpers()
 	}
 	c.writelnNoIndent("!!")
@@ -694,7 +696,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	for _, op := range p.Ops {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		if op.Index != nil {
 			if op.Index.Colon != nil {
 				start0 := "0"
@@ -743,6 +746,34 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			t := typeName(op.Cast.Type)
 			c.needCast = true
 			expr = fmt.Sprintf("(Main _cast: '%s' value: %s)", t, expr)
+		} else if op.Field != nil {
+			// method call like .contains(arg)
+			if op.Field.Name == "contains" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				argExpr, err := c.compileExpr(p.Ops[i+1].Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				c.needContainsStr = true
+				expr = fmt.Sprintf("(Main __contains_string: %s sub: %s)", expr, argExpr)
+				i++
+				continue
+			}
+			expr = fmt.Sprintf("%s at: '%s'", expr, op.Field.Name)
+		} else if op.Call != nil {
+			// direct call on value
+			params := make([]string, len(op.Call.Args))
+			for j, a := range op.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				params[j] = v
+			}
+			if len(params) == 0 {
+				expr = fmt.Sprintf("(%s value)", expr)
+			} else {
+				expr = fmt.Sprintf("(%s value: %s)", expr, strings.Join(params, " value: "))
+			}
 		}
 	}
 	return expr, nil
@@ -854,6 +885,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needSum = true
 		return fmt.Sprintf("(Main __sum: %s)", args[0]), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		c.needMin = true
+		return fmt.Sprintf("(Main __min: %s)", args[0]), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
@@ -1040,9 +1077,6 @@ func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error)
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Joins) > 0 {
-		return "", fmt.Errorf("advanced query clauses not supported")
-	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -1107,6 +1141,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		fromSrcs[i] = fs
 		child.SetVar(f.Var, types.AnyType{}, true)
 	}
+	joinSrcs := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return "", err
+		}
+		joinSrcs[i] = js
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -1120,6 +1163,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+	}
+	joinConds := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		jc, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinConds[i] = jc
 	}
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
@@ -1144,22 +1196,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = orig
 
+	fullCond := cond
+	for _, jc := range joinConds {
+		if jc == "" {
+			continue
+		}
+		if fullCond == "" {
+			fullCond = jc
+		} else {
+			fullCond = fmt.Sprintf("(%s and: [%s])", fullCond, jc)
+		}
+	}
+
 	var b strings.Builder
 	b.WriteString("((| res |\n")
 	b.WriteString("res := OrderedCollection new.\n")
 
 	loopSrc := src
-	if cond != "" && len(fromSrcs) == 0 {
+	if fullCond != "" && len(fromSrcs) == 0 {
 		push := true
 		for _, f := range q.Froms {
-			if strings.Contains(cond, sanitizeName(f.Var)) {
+			if strings.Contains(fullCond, sanitizeName(f.Var)) {
 				push = false
 				break
 			}
 		}
 		if push {
-			loopSrc = fmt.Sprintf("(%s) select: [:%s | %s]", src, sanitizeName(q.Var), cond)
-			cond = ""
+			loopSrc = fmt.Sprintf("(%s) select: [:%s | %s]", src, sanitizeName(q.Var), fullCond)
+			fullCond = ""
 		}
 	}
 
@@ -1169,8 +1233,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + fmt.Sprintf("(%s) do: [:%s |\n", fs, sanitizeName(q.Froms[i].Var)))
 		indent += "\t"
 	}
-	if cond != "" {
-		b.WriteString(indent + fmt.Sprintf("(%s) ifTrue: [\n", cond))
+	for i, js := range joinSrcs {
+		b.WriteString(indent + fmt.Sprintf("(%s) do: [:%s |\n", js, sanitizeName(q.Joins[i].Var)))
+		indent += "\t"
+	}
+	if fullCond != "" {
+		b.WriteString(indent + fmt.Sprintf("(%s) ifTrue: [\n", fullCond))
 		indent += "\t"
 	}
 	if sortExpr != "" {
@@ -1178,7 +1246,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	} else {
 		b.WriteString(indent + fmt.Sprintf("res add: %s.\n", sel))
 	}
-	if cond != "" {
+	if fullCond != "" {
+		indent = indent[:len(indent)-1]
+		b.WriteString(indent + "]\n")
+	}
+	for range joinSrcs {
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "]\n")
 	}
@@ -1512,6 +1584,17 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("s := 0.")
 		c.writeln("v do: [:it | s := s + it].")
 		c.writeln("^ s")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needMin {
+		c.writeln("__min: v")
+		c.indent++
+		c.writeln("(v respondsTo: #do:) ifFalse: [ ^ self error: 'min() expects collection' ]")
+		c.writeln("| m |")
+		c.writeln("m := nil.")
+		c.writeln("v do: [:it | m isNil ifTrue: [ m := it ] ifFalse: [ (it < m) ifTrue: [ m := it ] ] ].")
+		c.writeln("^ m")
 		c.indent--
 		c.writelnNoIndent("!")
 	}
