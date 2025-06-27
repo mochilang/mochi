@@ -1,0 +1,102 @@
+let aka_title = [
+  { movie_id: 1 },
+  { movie_id: 2 }
+]
+
+let company_name = [
+  { id: 1, country_code: "[us]" },
+  { id: 2, country_code: "[gb]" }
+]
+
+let company_type = [
+  { id: 10 },
+  { id: 20 }
+]
+
+let info_type = [
+  { id: 5, info: "release dates" },
+  { id: 6, info: "other" }
+]
+
+let keyword = [
+  { id: 100 },
+  { id: 200 }
+]
+
+let movie_companies = [
+  {
+    movie_id: 1,
+    company_id: 1,
+    company_type_id: 10,
+    note: "release (2005) (worldwide)"
+  },
+  {
+    movie_id: 2,
+    company_id: 2,
+    company_type_id: 20,
+    note: "release (1999) (worldwide)"
+  }
+]
+
+let movie_info = [
+  {
+    movie_id: 1,
+    info_type_id: 5,
+    note: "internet",
+    info: "USA: March 2005"
+  },
+  {
+    movie_id: 2,
+    info_type_id: 5,
+    note: "theater",
+    info: "USA: May 1999"
+  }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 100 },
+  { movie_id: 2, keyword_id: 200 }
+]
+
+let title = [
+  { id: 1, title: "Example Movie", production_year: 2005 },
+  { id: 2, title: "Old Movie", production_year: 1999 }
+]
+
+let rows =
+  from t in title
+  join at in aka_title on at.movie_id == t.id
+  join mi in movie_info on mi.movie_id == t.id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join mc in movie_companies on mc.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join it1 in info_type on it1.id == mi.info_type_id
+  join cn in company_name on cn.id == mc.company_id
+  join ct in company_type on ct.id == mc.company_type_id
+  where cn.country_code == "[us]" &&
+        it1.info == "release dates" &&
+        mc.note.contains("200") &&
+        mc.note.contains("worldwide") &&
+        mi.note.contains("internet") &&
+        mi.info.contains("USA:") &&
+        mi.info.contains("200") &&
+        t.production_year > 2000
+  select { release_date: mi.info, internet_movie: t.title }
+
+let result = [
+  {
+    release_date: min(from r in rows select r.release_date),
+    internet_movie: min(from r in rows select r.internet_movie)
+  }
+]
+
+json(result)
+
+test "Q15 finds the earliest US internet movie release after 2000" {
+  expect result == [
+    {
+      release_date: "USA: March 2005",
+      internet_movie: "Example Movie"
+    }
+  ]
+}
