@@ -3,6 +3,7 @@
 package zigcode_test
 
 import (
+	"fmt"
 	"testing"
 
 	"mochi/compile/x/testutil"
@@ -15,7 +16,10 @@ func TestZigCompiler_TPCH(t *testing.T) {
 	if _, err := zigcode.EnsureZig(); err != nil {
 		t.Skipf("zig not installed: %v", err)
 	}
-	testutil.CompileTPCH(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return zigcode.New(env).Compile(prog)
-	})
+	for i := 1; i <= 2; i++ {
+		q := fmt.Sprintf("q%d", i)
+		testutil.CompileTPCH(t, q, func(env *types.Env, prog *parser.Program) ([]byte, error) {
+			return zigcode.New(env).Compile(prog)
+		})
+	}
 }

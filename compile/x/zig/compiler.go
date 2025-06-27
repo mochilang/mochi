@@ -632,7 +632,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		groupElem := strings.TrimPrefix(zigTypeOf(elemType), "[]const ")
 		resElem := strings.TrimPrefix(resType, "[]const ")
-		groupType := "struct { key: " + keyType + "; Items: std.ArrayList(" + groupElem + ") }"
+		groupType := "struct { key: " + keyType + ", Items: std.ArrayList(" + groupElem + ") }"
 		tmp := c.newTmp()
 		idxMap := c.newTmp()
 		var b strings.Builder
@@ -810,7 +810,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	elem := strings.TrimPrefix(resType, "[]const ")
 	if sortExpr != "" {
 		keyType := zigTypeOf(c.inferExprType(q.Sort))
-		pairType := "struct { item: " + elem + "; key: " + keyType + " }"
+		pairType := "struct { item: " + elem + ", key: " + keyType + " }"
 		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + pairType + ").init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
 		if cond != "" {
@@ -1243,11 +1243,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		name := sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
 			name += "." + strings.Join(p.Selector.Tail, ".")
-		} else if asReturn && c.env != nil {
-			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
-				if m, _ := c.env.IsMutable(p.Selector.Root); m {
-					if _, ok := t.(types.ListType); ok {
-						name += ".items"
+		} else if c.env != nil {
+			if _, err := c.env.GetVar(p.Selector.Root); err != nil {
+				return fmt.Sprintf("\"%s\"", p.Selector.Root), nil
+			}
+			if asReturn {
+				if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+					if m, _ := c.env.IsMutable(p.Selector.Root); m {
+						if _, ok := t.(types.ListType); ok {
+							name += ".items"
+						}
 					}
 				}
 			}
