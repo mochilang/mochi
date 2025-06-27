@@ -57,7 +57,7 @@ const (
               :else (throw (ex-info "min() expects list or group" {})))]
     (if (empty? lst)
       0
-      (reduce (fn [a b] (if (neg? (compare a b)) a b)) lst)))
+      (reduce (fn [a b] (if (neg? (compare a b)) a b)) lst))))
 `
 
 	helperMax = `(defn _max [v]

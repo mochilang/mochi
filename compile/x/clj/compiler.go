@@ -36,6 +36,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.imports = map[string]string{}
 	c.helpers = make(map[string]bool)
 
+	declNames := []string{}
+	for _, s := range prog.Statements {
+		if s.Let != nil {
+			declNames = append(declNames, sanitizeName(s.Let.Name))
+		}
+		if s.Var != nil {
+			declNames = append(declNames, sanitizeName(s.Var.Name))
+		}
+	}
+	if len(declNames) > 0 {
+		c.writeln("(declare " + strings.Join(declNames, " ") + ")")
+		c.writeln("")
+	}
+
 	for _, s := range prog.Statements {
 		switch {
 		case s.Fun != nil:
@@ -855,27 +869,45 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			name := expr
-			// method call like obj.foo()
-			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
-				root := p.Target.Selector.Root
-				method := p.Target.Selector.Tail[0]
-				if st, err := c.env.GetVar(root); err == nil {
-					if stt, ok := st.(types.StructType); ok {
-						if m, ok := stt.Methods[method]; ok {
-							callArgs := append([]string{sanitizeName(root)}, args...)
-							expr = fmt.Sprintf("(%s_%s %s)", sanitizeName(stt.Name), sanitizeName(method), strings.Join(callArgs, " "))
-							t = m.Type.Return
-							continue
+			// method call like obj.foo() or obj.bar.baz()
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) >= 1 {
+				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
+				sel := &parser.SelectorExpr{Root: p.Target.Selector.Root, Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1]}
+				prefixPrimary := &parser.Primary{Selector: sel}
+				prefixExpr, err := c.compilePrimary(prefixPrimary)
+				if err != nil {
+					return "", err
+				}
+				prefixType := c.primaryType(prefixPrimary)
+				if method == "contains" && len(args) == 1 {
+					if _, ok := prefixType.(types.StringType); ok {
+						expr = fmt.Sprintf("(clojure.string/includes? %s %s)", prefixExpr, args[0])
+					} else {
+						c.use("_in")
+						expr = fmt.Sprintf("(_in %s %s)", args[0], prefixExpr)
+					}
+					t = types.BoolType{}
+					continue
+				}
+				if len(p.Target.Selector.Tail) == 1 {
+					root := p.Target.Selector.Root
+					if st, err := c.env.GetVar(root); err == nil {
+						if stt, ok := st.(types.StructType); ok {
+							if m, ok := stt.Methods[method]; ok {
+								callArgs := append([]string{sanitizeName(root)}, args...)
+								expr = fmt.Sprintf("(%s_%s %s)", sanitizeName(stt.Name), sanitizeName(method), strings.Join(callArgs, " "))
+								t = m.Type.Return
+								continue
+							}
 						}
 					}
-				}
-				// built-in collection helpers
-				switch method {
-				case "keys":
-					if len(args) == 0 {
-						expr = fmt.Sprintf("(vec (keys %s))", sanitizeName(root))
-						t = types.ListType{Elem: types.AnyType{}}
-						continue
+					switch method {
+					case "keys":
+						if len(args) == 0 {
+							expr = fmt.Sprintf("(vec (keys %s))", sanitizeName(root))
+							t = types.ListType{Elem: types.AnyType{}}
+							continue
+						}
 					}
 				}
 			}

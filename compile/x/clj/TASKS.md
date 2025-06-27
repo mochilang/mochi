@@ -1,15 +1,14 @@
 # Clojure Backend Tasks
 
-The current backend can parse simple programs but JOB dataset queries still fail to compile. 
-To support the JOB benchmark we need several improvements:
+The backend now supports membership helpers and formatted code, allowing `q1.mochi`
+to compile and run successfully. Golden tests have been added for the first ten
+queries under `tests/dataset/job/compiler/clj`.
 
-- Implement string and list membership helpers. `x.contains(y)` should translate to
-  `clojure.string/includes?` for strings and use the `_in` helper for lists and maps.
-- Validate generated code to ensure balanced parentheses; running cljfmt currently
-  reports "EOF while reading" for q1.
-- Extend the JOB golden tests to compile and execute `q1.mochi` through `q10.mochi`.
-  Generated sources should live under `tests/dataset/job/compiler/clj`.
-- Emit correct JSON output so the tests can compare results.
+Remaining work:
 
-Once these features are complete the Clojure backend should be able to run the
-first ten JOB queries.
+- Queries `q4.mochi` and `q7.mochi` fail at runtime with `ClassCastException`.
+  Investigate incorrect numeric handling in generated code.
+- Ensure all generated sources pass `cljfmt` without warnings.
+
+Finishing these items should let the Clojure backend run the first ten JOB
+queries without errors.
