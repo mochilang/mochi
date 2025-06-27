@@ -15,7 +15,9 @@ func TestRacketCompiler_TPCH(t *testing.T) {
 	if err := rktcode.EnsureRacket(); err != nil {
 		t.Skipf("racket not installed: %v", err)
 	}
-	testutil.CompileTPCH(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return rktcode.New(env).Compile(prog)
-	})
+	for _, q := range []string{"q1", "q2"} {
+		testutil.CompileTPCH(t, q, func(env *types.Env, prog *parser.Program) ([]byte, error) {
+			return rktcode.New(env).Compile(prog)
+		})
+	}
 }
