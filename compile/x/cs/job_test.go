@@ -3,6 +3,7 @@
 package cscode_test
 
 import (
+	"fmt"
 	parser "mochi/parser"
 	"mochi/types"
 	"testing"
@@ -15,10 +16,10 @@ func TestCSCompiler_JOB(t *testing.T) {
 	if err := cscode.EnsureDotnet(); err != nil {
 		t.Skipf("dotnet not installed: %v", err)
 	}
-	testutil.CompileJOB(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return cscode.New(env).Compile(prog)
-	})
-	testutil.CompileJOB(t, "q2", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return cscode.New(env).Compile(prog)
-	})
+	for i := 1; i <= 10; i++ {
+		query := fmt.Sprintf("q%d", i)
+		testutil.CompileJOB(t, query, func(env *types.Env, prog *parser.Program) ([]byte, error) {
+			return cscode.New(env).Compile(prog)
+		})
+	}
 }
