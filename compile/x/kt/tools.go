@@ -1,6 +1,7 @@
 package ktcode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -95,4 +96,31 @@ func EnsureKotlin() error {
 		}
 	}
 	return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
+}
+
+// FormatKotlin runs a formatter on the given source code if available. The
+// function first looks for `ktfmt` and then `ktlint`, streaming the input
+// through the tool. If neither tool is installed or formatting fails, the
+// original input is returned. A trailing newline is always ensured.
+func FormatKotlin(src []byte) []byte {
+	tools := [][]string{{"ktfmt"}, {"ktlint", "-F", "-"}}
+	for _, args := range tools {
+		if path, err := exec.LookPath(args[0]); err == nil {
+			cmd := exec.Command(path, args[1:]...)
+			cmd.Stdin = bytes.NewReader(src)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			if err := cmd.Run(); err == nil {
+				res := out.Bytes()
+				if len(res) == 0 || res[len(res)-1] != '\n' {
+					res = append(res, '\n')
+				}
+				return res
+			}
+		}
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
