@@ -3,12 +3,12 @@ package cosmo
 import (
 	"archive/zip"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 )
 
@@ -29,11 +29,11 @@ func EnsureCosmo() error {
 		return err
 	}
 
-	arch := runtime.GOARCH
-	if arch == "amd64" {
-		arch = "x86_64"
+	rel, err := latestRelease()
+	if err != nil {
+		return err
 	}
-	url := fmt.Sprintf("https://github.com/jart/cosmopolitan/releases/latest/download/cosmocc-%s.zip", arch)
+	url := fmt.Sprintf("https://github.com/jart/cosmopolitan/releases/download/%s/cosmocc-%s.zip", rel.TagName, rel.TagName)
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -70,4 +70,27 @@ func EnsureCosmo() error {
 		}
 	}
 	return fmt.Errorf("libcosmo.a not found in archive")
+}
+
+type release struct {
+	TagName string `json:"tag_name"`
+}
+
+func latestRelease() (*release, error) {
+	resp, err := http.Get("https://api.github.com/repos/jart/cosmopolitan/releases/latest")
+	if err != nil {
+		return nil, fmt.Errorf("fetch release: %w", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("fetch release: %s", resp.Status)
+	}
+	var r release
+	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+		return nil, err
+	}
+	if r.TagName == "" {
+		return nil, fmt.Errorf("invalid release response")
+	}
+	return &r, nil
 }

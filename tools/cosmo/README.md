@@ -6,9 +6,10 @@ portable binaries without needing an external compiler.
 
 ## Installing the library
 
-`libcosmo.a` is required at build time. Place it in `tools/cosmo/cosmo` or set `COSMO_LIB` to its path.
-The helper `EnsureCosmo` checks this location and will attempt to download the
-Cosmopolitan toolchain if the library is missing.
+`libcosmo.a` is required at build time. Place it in `tools/cosmo/cosmo` or set
+`COSMO_LIB` to its path. The helper `EnsureCosmo` checks this location and will
+download the latest [Cosmopolitan](https://github.com/jart/cosmopolitan)
+`cosmocc` archive from GitHub if the library is missing.
 
 ```go
 // EnsureCosmo verifies that the static library is available at build time.
