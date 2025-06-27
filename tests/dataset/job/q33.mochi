@@ -1,0 +1,96 @@
+let company_name = [
+  { id: 1, name: "US Studio", country_code: "[us]" },
+  { id: 2, name: "GB Studio", country_code: "[gb]" }
+]
+
+let info_type = [
+  { id: 1, info: "rating" },
+  { id: 2, info: "other" }
+]
+
+let kind_type = [
+  { id: 1, kind: "tv series" },
+  { id: 2, kind: "movie" }
+]
+
+let link_type = [
+  { id: 1, link: "follows" },
+  { id: 2, link: "remake of" }
+]
+
+let movie_companies = [
+  { movie_id: 10, company_id: 1 },
+  { movie_id: 20, company_id: 2 }
+]
+
+let movie_info_idx = [
+  { movie_id: 10, info_type_id: 1, info: "7.0" },
+  { movie_id: 20, info_type_id: 1, info: "2.5" }
+]
+
+let movie_link = [
+  { movie_id: 10, linked_movie_id: 20, link_type_id: 1 }
+]
+
+let title = [
+  { id: 10, title: "Series A", kind_id: 1, production_year: 2004 },
+  { id: 20, title: "Series B", kind_id: 1, production_year: 2006 }
+]
+
+let rows =
+  from cn1 in company_name
+  join mc1 in movie_companies on cn1.id == mc1.company_id
+  join t1 in title on t1.id == mc1.movie_id
+  join mi_idx1 in movie_info_idx on mi_idx1.movie_id == t1.id
+  join it1 in info_type on it1.id == mi_idx1.info_type_id
+  join kt1 in kind_type on kt1.id == t1.kind_id
+  join ml in movie_link on ml.movie_id == t1.id
+  join t2 in title on t2.id == ml.linked_movie_id
+  join mi_idx2 in movie_info_idx on mi_idx2.movie_id == t2.id
+  join it2 in info_type on it2.id == mi_idx2.info_type_id
+  join kt2 in kind_type on kt2.id == t2.kind_id
+  join mc2 in movie_companies on mc2.movie_id == t2.id
+  join cn2 in company_name on cn2.id == mc2.company_id
+  join lt in link_type on lt.id == ml.link_type_id
+  where cn1.country_code == "[us]" &&
+        it1.info == "rating" &&
+        it2.info == "rating" &&
+        kt1.kind == "tv series" &&
+        kt2.kind == "tv series" &&
+        (lt.link == "sequel" || lt.link == "follows" || lt.link == "followed by") &&
+        mi_idx2.info < "3.0" &&
+        t2.production_year >= 2005 && t2.production_year <= 2008
+  select {
+    first_company: cn1.name,
+    second_company: cn2.name,
+    first_rating: mi_idx1.info,
+    second_rating: mi_idx2.info,
+    first_movie: t1.title,
+    second_movie: t2.title
+  }
+
+let result = [
+  {
+    first_company: min(from r in rows select r.first_company),
+    second_company: min(from r in rows select r.second_company),
+    first_rating: min(from r in rows select r.first_rating),
+    second_rating: min(from r in rows select r.second_rating),
+    first_movie: min(from r in rows select r.first_movie),
+    second_movie: min(from r in rows select r.second_movie)
+  }
+]
+
+json(result)
+
+test "Q33 finds linked TV series with low-rated sequel" {
+  expect result == [
+    {
+      first_company: "US Studio",
+      second_company: "GB Studio",
+      first_rating: "7.0",
+      second_rating: "2.5",
+      first_movie: "Series A",
+      second_movie: "Series B"
+    }
+  ]
+}
