@@ -22,6 +22,14 @@ Once installed you can run the example with:
 make run
 ```
 
+Build the `mochi-cosmo` command with:
+
+```bash
+make build
+```
+
+which outputs `bin/mochi-cosmo` in the repository root.
+
 and execute the tests with:
 
 ```bash
@@ -32,3 +40,12 @@ make test
 
 The command `mochi-cosmo` works like `mochi-tcc`: it compiles a `.mochi` program to
 C and then links it with Cosmopolitan to produce a native executable.
+
+For example:
+
+```bash
+make build
+./bin/mochi-cosmo ../../examples/v0.1/hello.mochi hello
+./hello
+# prints "Hello, world"
+```
