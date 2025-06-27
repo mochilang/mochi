@@ -2348,10 +2348,24 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: interpreter.TagInt, Int: 0}})
 		plen := fc.newReg()
 		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLen, A: plen, B: arg})
+		rlen := fc.newReg()
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLen, A: rlen, B: recv})
+		cond := fc.newReg()
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLessEq, A: cond, B: plen, C: rlen})
+		dst := fc.newReg()
+		skip := len(fc.fn.Code)
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpJumpIfFalse, A: cond})
 		prefix := fc.newReg()
 		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpSlice, A: prefix, B: recv, C: zero, D: plen})
-		dst := fc.newReg()
-		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpEqual, A: dst, B: prefix, C: arg})
+		eq := fc.newReg()
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpEqual, A: eq, B: prefix, C: arg})
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpMove, A: dst, B: eq})
+		jmpEnd := len(fc.fn.Code)
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpJump})
+		elseIdx := len(fc.fn.Code)
+		fc.fn.Code[skip].B = elseIdx
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: interpreter.TagBool, Bool: false}})
+		fc.fn.Code[jmpEnd].A = len(fc.fn.Code)
 		return dst
 	}
 
