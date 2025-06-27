@@ -121,6 +121,14 @@ const helperSaveJSON = "function _save_json($rows, $path) {\n" +
 	"    if ($path === '' || $path === '-') { fwrite(STDOUT, $out . PHP_EOL); } else { file_put_contents($path, $out); }\n" +
 	"}\n"
 
+const helperPrint = "function _print(...$args) {\n" +
+	"    $parts = [];\n" +
+	"    foreach ($args as $a) {\n" +
+	"        if (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }\n" +
+	"    }\n" +
+	"    echo implode(' ', $parts), PHP_EOL;\n" +
+	"}\n"
+
 const helperFetch = "function _fetch($url, $opts = null) {\n" +
 	"    $args = ['-s'];\n" +
 	"    $method = $opts['method'] ?? 'GET';\n" +
@@ -149,4 +157,5 @@ var helperMap = map[string]string{
 	"_fetch":     helperFetch,
 	"_load_json": helperLoadJSON,
 	"_save_json": helperSaveJSON,
+	"_print":     helperPrint,
 }
