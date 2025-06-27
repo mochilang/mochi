@@ -38,11 +38,11 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperToMapList = "defp _to_map_list(v) do\n  cond do\n    is_list(v) and Enum.all?(v, &is_map/1) -> v\n    true -> raise \"save source must be list of maps\"\n  end\nend\n"
 
-	helperLoad = "defp _load(path, opts \\ nil) do\n  format = if opts, do: Map.get(opts, \"format\", \"csv\"), else: \"csv\"\n  header = if opts && Map.has_key?(opts, \"header\"), do: opts[\"header\"], else: true\n  delim = if opts && Map.has_key?(opts, \"delimiter\"), do: String.first(to_string(opts[\"delimiter\"] || \",\")), else: \",\"\n  text = case path do\n    nil -> IO.read(:stdio, :eof)\n    \"\" -> IO.read(:stdio, :eof)\n    \"-\" -> IO.read(:stdio, :eof)\n    _ -> File.read!(path)\n  end\n  case format do\n    \"jsonl\" -> String.trim(text) |> String.split(~r/\\r?\\n/, trim: true) |> Enum.map(&Jason.decode!/1)\n    \"json\" -> case Jason.decode!(text) do\n                list when is_list(list) -> list\n                obj -> [obj]\n              end\n    \"tsv\" -> _parse_csv(text, header, \"\t\")\n    _ -> _parse_csv(text, header, delim)\n  end\nend\n"
+	helperLoad = "defp _load(path, opts \\\\ nil) do\n  format = if opts, do: Map.get(opts, \"format\", \"csv\"), else: \"csv\"\n  header = if opts && Map.has_key?(opts, \"header\"), do: opts[\"header\"], else: true\n  delim = if opts && Map.has_key?(opts, \"delimiter\"), do: String.first(to_string(opts[\"delimiter\"] || \",\")), else: \",\"\n  text = case path do\n    nil -> IO.read(:stdio, :eof)\n    \"\" -> IO.read(:stdio, :eof)\n    \"-\" -> IO.read(:stdio, :eof)\n    _ -> File.read!(path)\n  end\n  case format do\n    \"jsonl\" -> String.trim(text) |> String.split(~r/\\r?\\n/, trim: true) |> Enum.map(&Jason.decode!/1)\n    \"json\" -> case Jason.decode!(text) do\n                list when is_list(list) -> list\n                obj -> [obj]\n              end\n    \"tsv\" -> _parse_csv(text, header, \"\t\")\n    _ -> _parse_csv(text, header, delim)\n  end\nend\n"
 
-	helperSave = "defp _save(data, path, opts \\ nil) do\n  rows = _to_map_list(data)\n  format = if opts, do: Map.get(opts, \"format\", \"csv\"), else: \"csv\"\n  header = if opts && Map.has_key?(opts, \"header\"), do: opts[\"header\"], else: false\n  delim = if opts && Map.has_key?(opts, \"delimiter\"), do: String.first(to_string(opts[\"delimiter\"] || \",\")), else: \",\"\n  out = case format do\n    \"json\" -> Jason.encode!(rows)\n    \"jsonl\" -> Enum.map(rows, &Jason.encode!/1) |> Enum.join(\"\\n\") <> \"\\n\"\n    \"tsv\" -> _to_csv(rows, header, \"\t\")\n    _ -> _to_csv(rows, header, delim)\n  end\n  case path do\n    nil -> IO.write(:stdio, out)\n    \"\" -> IO.write(:stdio, out)\n    \"-\" -> IO.write(:stdio, out)\n    _ -> File.write!(path, out)\n  end\nend\n"
+	helperSave = "defp _save(data, path, opts \\\\ nil) do\n  rows = _to_map_list(data)\n  format = if opts, do: Map.get(opts, \"format\", \"csv\"), else: \"csv\"\n  header = if opts && Map.has_key?(opts, \"header\"), do: opts[\"header\"], else: false\n  delim = if opts && Map.has_key?(opts, \"delimiter\"), do: String.first(to_string(opts[\"delimiter\"] || \",\")), else: \",\"\n  out = case format do\n    \"json\" -> Jason.encode!(rows)\n    \"jsonl\" -> Enum.map(rows, &Jason.encode!/1) |> Enum.join(\"\\n\") <> \"\\n\"\n    \"tsv\" -> _to_csv(rows, header, \"\t\")\n    _ -> _to_csv(rows, header, delim)\n  end\n  case path do\n    nil -> IO.write(:stdio, out)\n    \"\" -> IO.write(:stdio, out)\n    \"-\" -> IO.write(:stdio, out)\n    _ -> File.write!(path, out)\n  end\nend\n"
 
-	helperFetch = "defp _fetch(url, opts \\ nil) do\n  :inets.start()\n  :ssl.start()\n  method = if opts, do: Map.get(opts, \"method\", \"GET\"), else: \"GET\"\n  headers = if opts && Map.has_key?(opts, \"headers\"), do: Enum.map(opts[\"headers\"], fn {k,v} -> {String.to_charlist(k), String.to_charlist(to_string(v))} end), else: []\n  body = if opts && Map.has_key?(opts, \"body\"), do: Jason.encode!(opts[\"body\"]), else: \"\"\n  query = if opts && Map.has_key?(opts, \"query\"), do: URI.encode_query(opts[\"query\"]), else: nil\n  full = if query, do: url <> \"?\" <> query, else: url\n  timeout = if opts && Map.has_key?(opts, \"timeout\"), do: (t = opts[\"timeout\"]; cond do\n    is_integer(t) -> trunc(t * 1000)\n    is_float(t) -> trunc(t * 1000)\n    true -> nil\n  end), else: nil\n  http_opts = if timeout, do: [timeout: timeout], else: []\n  {{_,_,_}, _, resp} = :httpc.request(String.to_atom(String.upcase(method)), {String.to_charlist(full), headers, 'application/json', String.to_charlist(body)}, [], http_opts) |> elem(1)\n  Jason.decode!(resp, keys: :atoms)\nend\n"
+	helperFetch = "defp _fetch(url, opts \\\\ nil) do\n  :inets.start()\n  :ssl.start()\n  method = if opts, do: Map.get(opts, \"method\", \"GET\"), else: \"GET\"\n  headers = if opts && Map.has_key?(opts, \"headers\"), do: Enum.map(opts[\"headers\"], fn {k,v} -> {String.to_charlist(k), String.to_charlist(to_string(v))} end), else: []\n  body = if opts && Map.has_key?(opts, \"body\"), do: Jason.encode!(opts[\"body\"]), else: \"\"\n  query = if opts && Map.has_key?(opts, \"query\"), do: URI.encode_query(opts[\"query\"]), else: nil\n  full = if query, do: url <> \"?\" <> query, else: url\n  timeout = if opts && Map.has_key?(opts, \"timeout\"), do: (t = opts[\"timeout\"]; cond do\n    is_integer(t) -> trunc(t * 1000)\n    is_float(t) -> trunc(t * 1000)\n    true -> nil\n  end), else: nil\n  http_opts = if timeout, do: [timeout: timeout], else: []\n  {{_,_,_}, _, resp} = :httpc.request(String.to_atom(String.upcase(method)), {String.to_charlist(full), headers, 'application/json', String.to_charlist(body)}, [], http_opts) |> elem(1)\n  Jason.decode!(resp, keys: :atoms)\nend\n"
 
 	helperGenText = "defp _gen_text(prompt, _model, _params) do\n  prompt\nend\n"
 
@@ -66,7 +66,7 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperStructify = "defp _structify(mod, v) do\n  cond do\n    is_map(v) ->\n      m = Enum.reduce(v, %{}, fn {k,val}, acc -> Map.put(acc, String.to_atom(to_string(k)), _structify(nil, val)) end)\n      if mod, do: struct(mod, m), else: m\n    is_list(v) -> Enum.map(v, &_structify(nil, &1))\n    true -> v\n  end\nend\n"
 
-	helperQuery = "defp _query(src, joins, opts \\ %{}) do\n" +
+	helperQuery = "defp _query(src, joins, opts \\\\ %{}) do\n" +
 		"  where = Map.get(opts, :where)\n" +
 		"  items = Enum.map(src, fn v -> [v] end)\n" +
 		"  items = if where, do: Enum.filter(items, fn r -> where.(r) end), else: items\n" +
@@ -91,7 +91,7 @@ defp _json(v), do: IO.puts(_to_json(v))
 		"          if Enum.at(matched, ri) do\n" +
 		"            acc\n" +
 		"          else\n" +
-		"            undef = List.duplicate(nil, if items == [], do: 0, else: length(hd(items)))\n" +
+		"            undef = List.duplicate(nil, (if items == [], do: 0, else: length(hd(items))))\n" +
 		"            acc ++ [undef ++ [right]]\n" +
 		"          end\n" +
 		"        end)\n" +
@@ -102,7 +102,7 @@ defp _json(v), do: IO.puts(_to_json(v))
 		"            if keep, do: {acc ++ [left ++ [right]], true}, else: {acc, m}\n" +
 		"          end)\n" +
 		"          if !m do\n" +
-		"            undef = List.duplicate(nil, if items == [], do: 0, else: length(hd(items)))\n" +
+		"            undef = List.duplicate(nil, (if items == [], do: 0, else: length(hd(items))))\n" +
 		"            acc2 ++ [undef ++ [right]]\n" +
 		"          else\n" +
 		"            acc2\n" +

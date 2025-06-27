@@ -637,7 +637,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString("\titems = Enum.take(items, " + takeExpr + ")\n")
 		}
 		b.WriteString(fmt.Sprintf("\tEnum.map(items, fn %s -> %s end)\n", sanitizeName(q.Group.Name), val))
-		b.WriteString("end)()")
+		b.WriteString("end).()")
 		c.use("_query")
 		c.use("_group_by")
 		c.use("_group")
@@ -740,7 +740,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(", take: " + takeExpr)
 		}
 		b.WriteString(" })\n")
-		b.WriteString("end)()")
+		b.WriteString("end).()")
 		c.use("_query")
 		return b.String(), nil
 	} else if len(q.Froms) > 0 || len(q.Joins) > 0 {
@@ -927,7 +927,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if !hasDefault {
 		b.WriteString("\t\ttrue -> nil\n")
 	}
-	b.WriteString("\tend\nend)()")
+	b.WriteString("\tend\nend).()")
 	return b.String(), nil
 }
 
