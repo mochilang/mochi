@@ -86,7 +86,7 @@ func indentBlock(s string, depth int) string {
 	if s == "" {
 		return s
 	}
-	prefix := strings.Repeat("\t", depth)
+	prefix := strings.Repeat("    ", depth)
 	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
 	for i, line := range lines {
 		lines[i] = prefix + line
@@ -119,6 +119,15 @@ func (c *Compiler) newVar() string {
 	name := fmt.Sprintf("_tmp%d", c.tempVarCount)
 	c.tempVarCount++
 	return name
+}
+
+func formatJava(src []byte) []byte {
+	lines := strings.Split(string(src), "\n")
+	for i, line := range lines {
+		line = strings.ReplaceAll(line, "\t", "    ")
+		lines[i] = strings.TrimRight(line, " \t")
+	}
+	return []byte(strings.Join(lines, "\n"))
 }
 
 func zeroValue(typ string) string {

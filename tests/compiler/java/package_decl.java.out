@@ -1,7 +1,11 @@
+// package sample
+// print(42)
+//
+
 package sample;
 
 public class Main {
-	public static void main(String[] args) {
-		System.out.println(42);
-	}
+    public static void main(String[] args) {
+        System.out.println(42);
+    }
 }

@@ -1,9 +1,16 @@
+// var c = 0
+// for ch in "ab" {
+//   c = c + 1
+// }
+// print(c)
+//
+
 public class Main {
-	public static void main(String[] args) {
-		int c = 0;
-		for (var ch : "ab".toCharArray()) {
-			c = (c + 1);
-		}
-		System.out.println(c);
-	}
+    public static void main(String[] args) {
+        int c = 0;
+        for (var ch : "ab".toCharArray()) {
+            c = (c + 1);
+        }
+        System.out.println(c);
+    }
 }

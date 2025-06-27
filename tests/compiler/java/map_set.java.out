@@ -1,7 +1,12 @@
+// var scores = {"a": 1}
+// scores["b"] = 2
+// print(scores["b"])
+//
+
 public class Main {
-	public static void main(String[] args) {
-		java.util.Map<String, Integer> scores = new java.util.HashMap<>(java.util.Map.of("a", 1));
-		scores.put("b", 2);
-		System.out.println(scores.get("b"));
-	}
+    public static void main(String[] args) {
+        java.util.Map<String, Integer> scores = new java.util.HashMap<>(java.util.Map.of("a", 1));
+        scores.put("b", 2);
+        System.out.println(scores.get("b"));
+    }
 }

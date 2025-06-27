@@ -3,6 +3,7 @@ package javacode
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strings"
 
 	"mochi/parser"
@@ -21,22 +22,34 @@ type Compiler struct {
 	structs      map[string]bool
 	returnType   types.Type
 	tempVarCount int
+
+	includeSource bool
 }
 
 // New creates a new Java compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:          env,
-		helpers:      make(map[string]bool),
-		structs:      make(map[string]bool),
-		tests:        []*parser.TestBlock{},
-		earlyStmts:   []*parser.Statement{},
-		tempVarCount: 0,
+		env:           env,
+		helpers:       make(map[string]bool),
+		structs:       make(map[string]bool),
+		tests:         []*parser.TestBlock{},
+		earlyStmts:    []*parser.Statement{},
+		tempVarCount:  0,
+		includeSource: true,
 	}
 }
 
 // Compile generates Java code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if c.includeSource && prog.Pos.Filename != "" {
+		if data, err := os.ReadFile(prog.Pos.Filename); err == nil {
+			srcLines := strings.Split(string(data), "\n")
+			for _, line := range srcLines {
+				c.writeln("// " + line)
+			}
+			c.writeln("")
+		}
+	}
 	if prog.Package != "" {
 		c.writeln("package " + sanitizeName(prog.Package) + ";")
 		c.writeln("")
@@ -104,7 +117,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.indent--
 	c.writeln("}")
-	return c.buf.Bytes(), nil
+	return formatJava(c.buf.Bytes()), nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
