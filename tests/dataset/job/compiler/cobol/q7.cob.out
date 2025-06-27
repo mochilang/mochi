@@ -1,0 +1,103 @@
+>>SOURCE FORMAT FREE
+IDENTIFICATION DIVISION.
+PROGRAM-ID. MAIN.
+
+DATA DIVISION.
+WORKING-STORAGE SECTION.
+01 AKA_NAME OCCURS 2 TIMES PIC 9.
+01 CAST_INFO OCCURS 2 TIMES PIC 9.
+01 INFO_TYPE OCCURS 2 TIMES PIC 9.
+01 LINK_TYPE OCCURS 2 TIMES PIC 9.
+01 MOVIE_LINK OCCURS 2 TIMES PIC 9.
+01 NAME OCCURS 2 TIMES PIC 9.
+01 PERSON_INFO OCCURS 2 TIMES PIC 9.
+01 TITLE OCCURS 2 TIMES PIC 9.
+01 AN PIC 9.
+01 N PIC 9.
+01 PI PIC 9.
+01 IT PIC 9.
+01 CI PIC 9.
+01 T PIC 9.
+01 ML PIC 9.
+01 LT PIC 9.
+01 ROWS OCCURS 256 TIMES PIC 9.
+01 TMP0 PIC 9.
+01 TMP1 PIC 9.
+01 IDX PIC 9.
+01 IDX2 PIC 9.
+01 IDX3 PIC 9.
+01 IDX4 PIC 9.
+01 IDX5 PIC 9.
+01 IDX6 PIC 9.
+01 IDX7 PIC 9.
+01 IDX8 PIC 9.
+01 RESULT OCCURS 1 TIMES PIC 9.
+
+PROCEDURE DIVISION.
+    MOVE 0 TO AKA_NAME(1)
+    MOVE 0 TO AKA_NAME(2)
+    MOVE 0 TO CAST_INFO(1)
+    MOVE 0 TO CAST_INFO(2)
+    MOVE 0 TO INFO_TYPE(1)
+    MOVE 0 TO INFO_TYPE(2)
+    MOVE 0 TO LINK_TYPE(1)
+    MOVE 0 TO LINK_TYPE(2)
+    MOVE 0 TO MOVIE_LINK(1)
+    MOVE 0 TO MOVIE_LINK(2)
+    MOVE 0 TO NAME(1)
+    MOVE 0 TO NAME(2)
+    MOVE 0 TO PERSON_INFO(1)
+    MOVE 0 TO PERSON_INFO(2)
+    MOVE 0 TO TITLE(1)
+    MOVE 0 TO TITLE(2)
+    MOVE 0 TO TMP0
+    MOVE 0 TO TMP1
+    MOVE 0 TO IDX
+    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= 2
+    MOVE AKA_NAME(IDX + 1) TO AN
+        MOVE 0 TO IDX2
+        PERFORM VARYING IDX2 FROM 0 BY 1 UNTIL IDX2 >= 2
+        MOVE NAME(IDX2 + 1) TO N
+            MOVE 0 TO IDX3
+            PERFORM VARYING IDX3 FROM 0 BY 1 UNTIL IDX3 >= 2
+            MOVE PERSON_INFO(IDX3 + 1) TO PI
+                MOVE 0 TO IDX4
+                PERFORM VARYING IDX4 FROM 0 BY 1 UNTIL IDX4 >= 2
+                MOVE INFO_TYPE(IDX4 + 1) TO IT
+                    MOVE 0 TO IDX5
+                    PERFORM VARYING IDX5 FROM 0 BY 1 UNTIL IDX5 >= 2
+                    MOVE CAST_INFO(IDX5 + 1) TO CI
+                        MOVE 0 TO IDX6
+                        PERFORM VARYING IDX6 FROM 0 BY 1 UNTIL IDX6 >= 2
+                        MOVE TITLE(IDX6 + 1) TO T
+                            MOVE 0 TO IDX7
+                            PERFORM VARYING IDX7 FROM 0 BY 1 UNTIL IDX7 >= 2
+                            MOVE MOVIE_LINK(IDX7 + 1) TO ML
+                                MOVE 0 TO IDX8
+                                PERFORM VARYING IDX8 FROM 0 BY 1 UNTIL IDX8 >= 2
+                                MOVE LINK_TYPE(IDX8 + 1) TO LT
+                                IF (0 * IT_INFO = "mini biography" * LT_LINK = "features" * N_NAME_PCODE_CF >= "A" * N_NAME_PCODE_CF <= "F" * (FUNCTION MIN(1,N_GENDER = "m" + (N_GENDER = "f" * 0))) * PI_NOTE = "Volker Boehm" * T_PRODUCTION_YEAR >= 1980 * T_PRODUCTION_YEAR <= 1995 * PI_PERSON_ID = AN_PERSON_ID * PI_PERSON_ID = CI_PERSON_ID * AN_PERSON_ID = CI_PERSON_ID * CI_MOVIE_ID = ML_LINKED_MOVIE_ID) * T_ID = CI_MOVIE_ID * ML_LINKED_MOVIE_ID = T_ID * LT_ID = ML_LINK_TYPE_ID * N_ID = AN_PERSON_ID * PI_PERSON_ID = AN_PERSON_ID * IT_ID = PI_INFO_TYPE_ID * CI_PERSON_ID = N_ID
+                                    ADD 1 TO TMP1
+                                    IF TMP1 > 0
+                                        IF 0 = 0 OR TMP0 < 0
+                                            ADD 1 TO TMP0
+                                            COMPUTE ROWS(TMP0) = 0
+                                        END-IF
+                                    END-IF
+                                END-IF
+                                END-PERFORM
+                            END-PERFORM
+                        END-PERFORM
+                    END-PERFORM
+                END-PERFORM
+            END-PERFORM
+        END-PERFORM
+    END-PERFORM
+    MOVE 0 TO RESULT(1)
+DISPLAY "-- TEST Q7 finds movie features biography for person --"
+IF NOT (RESULT = 0)
+    DISPLAY "expect failed"
+    STOP RUN
+END-IF
+DISPLAY "-- END Q7 finds movie features biography for person --"
+    STOP RUN.
