@@ -5,7 +5,6 @@
   (println (- 5 3))
   (println (* 4 2))
   (println (quot 8 2))
-  (println (mod 7 3))
-)
+  (println (mod 7 3)))
 
 (-main)

@@ -6,7 +6,6 @@
   (println (> (compare "b" "a") 0))
   (println (>= (compare "b" "b") 0))
   (println (= "abc" "abc"))
-  (println (not= "foo" "bar"))
-)
+  (println (not= "foo" "bar")))
 
 (-main)

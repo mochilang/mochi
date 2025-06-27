@@ -12,7 +12,6 @@
   (println (_union a b))
   (println (_except a b))
   (println (_intersect a b))
-  (println (_union [1 2] [2 3]))
-)
+  (println (_union [1 2] [2 3])))
 
 (-main)

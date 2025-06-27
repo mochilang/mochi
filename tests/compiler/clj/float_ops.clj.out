@@ -2,7 +2,6 @@
 
 (defn -main []
   (println (+ 1.2 3.4))
-  (println (/ 5.0 2.0))
-)
+  (println (/ 5.0 2.0)))
 
 (-main)

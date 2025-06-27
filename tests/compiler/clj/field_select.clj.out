@@ -7,13 +7,10 @@
       (nth xs idx))))
 
 (defn Person [name age]
-  {:__name "Person" :name name :age age}
-)
-
+  {:__name "Person" :name name :age age})
 
 (defn -main []
   (def people [{:__name "Person" :name "Alice" :age 30} {:__name "Person" :name "Bob" :age 25}])
-  (println (:name (_indexList people 1)))
-)
+  (println (:name (_indexList people 1))))
 
 (-main)

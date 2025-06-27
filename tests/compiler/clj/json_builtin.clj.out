@@ -13,14 +13,13 @@
     (boolean? v) (str v)
     (sequential? v) (str "[" (clojure.string/join "," (map _to_json v)) "]")
     (map? v) (str "{" (clojure.string/join "," (map (fn [[k val]]
-                                        (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
+                                                      (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
     :else (str "\"" (_escape_json (str v)) "\"")))
 
 (defn _json [v]
   (println (_to_json v)))
 
 (defn -main []
-  (_json {"a" 1})
-)
+  (_json {"a" 1}))
 
 (-main)
