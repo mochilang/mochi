@@ -9,3 +9,4 @@ Completed work:
 - Results are serialised to JSON via a minimal runtime helper.
 - Added golden test `TestScalaCompiler_TPCHQ1` checking generated code and runtime output.
 - Generated code lives under `tests/dataset/tpc-h/compiler/scala/q1.scala.out`.
+- Added golden test `TestScalaCompiler_JOBQ1` covering the JOB dataset query.
