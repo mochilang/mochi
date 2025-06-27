@@ -148,10 +148,10 @@ int main() {
                       string("(as Metro-Goldwyn-Mayer Pictures)"))) &&
                   (mc.note.contains(string("(co-production)")) ||
                    mc.note.contains(string("(presents)")))) {
-                _res.push_back(unordered_map<string, auto>{
-                    {string("note"), mc.note},
-                    {string("title"), t.title},
-                    {string("year"), t.production_year}});
+                _res.push_back(unordered_map<string, any>{
+                    {string("note"), any(mc.note)},
+                    {string("title"), any(t.title)},
+                    {string("year"), any(t.production_year)}});
               }
             }
           }
@@ -160,28 +160,28 @@ int main() {
     }
     return _res;
   })();
-  unordered_map<string, any> result = unordered_map<string, auto>{
-      {string("production_note"), _min(([&]() -> vector<auto> {
-         vector<auto> _res;
+  unordered_map<string, any> result = unordered_map<string, any>{
+      {string("production_note"), any(_min(([&]() -> vector<any> {
+         vector<any> _res;
          for (auto &r : filtered) {
-           _res.push_back(r.note);
+           _res.push_back(any(r.note));
          }
          return _res;
-       })())},
-      {string("movie_title"), _min(([&]() -> vector<auto> {
-         vector<auto> _res;
+       })()))},
+      {string("movie_title"), any(_min(([&]() -> vector<any> {
+         vector<any> _res;
          for (auto &r : filtered) {
-           _res.push_back(r.title);
+           _res.push_back(any(r.title));
          }
          return _res;
-       })())},
-      {string("movie_year"), _min(([&]() -> vector<auto> {
-         vector<auto> _res;
+       })()))},
+      {string("movie_year"), any(_min(([&]() -> vector<any> {
+         vector<any> _res;
          for (auto &r : filtered) {
-           _res.push_back(r.year);
+           _res.push_back(any(r.year));
          }
          return _res;
-       })())}};
+       })()))}};
   _json(vector<unordered_map<string, any>>{result});
   auto test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production =
       [&]() {

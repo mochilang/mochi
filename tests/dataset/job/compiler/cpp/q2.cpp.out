@@ -121,8 +121,8 @@ int main() {
       unordered_map<string, any>{
           {string("id"), any(200)},
           {string("title"), any(string("Other Movie"))}}};
-  auto titles = ([&]() -> vector<auto> {
-    vector<auto> _res;
+  auto titles = ([&]() -> vector<any> {
+    vector<any> _res;
     for (auto &cn : company_name) {
       for (auto &mc : movie_companies) {
         if (!(mc.company_id == cn.id))
@@ -139,7 +139,7 @@ int main() {
               if (cn.country_code == string("[de]") &&
                   k.keyword == string("character-name-in-title") &&
                   mc.movie_id == mk.movie_id) {
-                _res.push_back(t.title);
+                _res.push_back(any(t.title));
               }
             }
           }

@@ -7,4 +7,12 @@ access and results are serialised to JSON.
 
 Golden tests under `tests/compiler/cpp` exercise `tpch_q1.mochi`.
 
-Further work will broaden coverage of the remaining TPCH queries.
+The JOB dataset queries `q1` through `q10` now have golden tests that
+exercise the C++ backend. The generated code is compared against the
+`tests/dataset/job/compiler/cpp` directory and each program is compiled
+and executed. Runtime output is validated for the first ten queries.
+
+Some generated programs still rely on `auto` in template parameters which
+prevents successful compilation with `g++`. Remaining work includes
+emitting concrete types for map and vector values so that all JOB queries
+build and run without errors.
