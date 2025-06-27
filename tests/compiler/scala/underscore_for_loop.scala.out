@@ -1,22 +1,22 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		var c: Int = 0
-		var i1 = 0
-		while (i1 < 2) {
-			val _ = i1
-			i1 = i1 + 1
-			c = (c + 1)
-		}
-		val it2 = scala.collection.mutable.ArrayBuffer(1, 2).iterator
-		while (it2.hasNext) {
-			val _ = it2.next()
-			c = (c + 1)
-		}
-		val it3 = "ab".iterator
-		while (it3.hasNext) {
-			val _ = it3.next().toString
-			c = (c + 1)
-		}
-		println(c)
-	}
+    def main(args: Array[String]): Unit = {
+        var c: Int = 0
+        var i1 = 0
+        while (i1 < 2) {
+            val _ = i1
+            i1 = i1 + 1
+            c = (c + 1)
+        }
+        val it2 = scala.collection.mutable.ArrayBuffer(1, 2).iterator
+        while (it2.hasNext) {
+            val _ = it2.next()
+            c = (c + 1)
+        }
+        val it3 = "ab".iterator
+        while (it3.hasNext) {
+            val _ = it3.next().toString
+            c = (c + 1)
+        }
+        println(c)
+    }
 }

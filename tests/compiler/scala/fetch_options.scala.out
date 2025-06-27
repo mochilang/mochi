@@ -1,8 +1,8 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		val resp = _fetch("https://example.com", scala.collection.mutable.Map("method" -> "POST", "headers" -> scala.collection.mutable.Map("Content-Type" -> "application/json"), "query" -> scala.collection.mutable.Map("q" -> "test"), "body" -> scala.collection.mutable.Map("x" -> 1), "timeout" -> 5))
-		println(resp)
-	}
+    def main(args: Array[String]): Unit = {
+        val resp = _fetch("https://example.com", scala.collection.mutable.Map("method" -> "POST", "headers" -> scala.collection.mutable.Map("Content-Type" -> "application/json"), "query" -> scala.collection.mutable.Map("q" -> "test"), "body" -> scala.collection.mutable.Map("x" -> 1), "timeout" -> 5))
+        println(resp)
+    }
 }
 def _fetch(url: String, opts: Map[String, Any]): Any = {
         import java.net.{HttpURLConnection, URL, URLEncoder}
@@ -52,4 +52,3 @@ def _fetch(url: String, opts: Map[String, Any]): Any = {
                 scala.util.parsing.json.JSON.parseFull(data).getOrElse(data)
         } finally src.close()
 }
-

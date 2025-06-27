@@ -1,10 +1,10 @@
 case class Msg(message: String)
 
 object Main {
-	def main(args: Array[String]): Unit = {
-		val data = _fetch("file://tests/compiler/scala/fetch_builtin.json", Map[String, Any]())
-		println(data.message)
-	}
+    def main(args: Array[String]): Unit = {
+        val data = _fetch("file://tests/compiler/scala/fetch_builtin.json", Map[String, Any]())
+        println(data.message)
+    }
 }
 def _fetch(url: String, opts: Map[String, Any]): Any = {
         import java.net.{HttpURLConnection, URL, URLEncoder}
@@ -54,4 +54,3 @@ def _fetch(url: String, opts: Map[String, Any]): Any = {
                 scala.util.parsing.json.JSON.parseFull(data).getOrElse(data)
         } finally src.close()
 }
-

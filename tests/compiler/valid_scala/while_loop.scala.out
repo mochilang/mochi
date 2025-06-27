@@ -1,9 +1,9 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		var i: Int = 0
-		while ((i < 3)) {
-			println(i)
-			i = (i + 1)
-		}
-	}
+    def main(args: Array[String]): Unit = {
+        var i: Int = 0
+        while ((i < 3)) {
+            println(i)
+            i = (i + 1)
+        }
+    }
 }

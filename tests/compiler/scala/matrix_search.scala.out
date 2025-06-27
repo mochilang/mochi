@@ -1,32 +1,32 @@
 object Main {
-	def searchMatrix(matrix: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[Int]], target: Int): Boolean = {
-		val m: Int = matrix.length
-		if ((m == 0)) {
-			return false
-		}
-		val n: Int = _indexList(matrix, 0).length
-		var left: Int = 0
-		var right: Int = ((m * n) - 1)
-		while ((left <= right)) {
-			val mid: Int = (left + (((right - left)) / 2))
-			val row: Int = (mid / n)
-			val col: Int = (mid % n)
-			val value: Int = _indexList(_indexList(matrix, row), col)
-			if ((value == target)) {
-				return true
-			} else 			if ((value < target)) {
-				left = (mid + 1)
-			} else {
-				right = (mid - 1)
-			}
-		}
-		return false
-	}
-	
-	def main(args: Array[String]): Unit = {
-		println(searchMatrix(scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(1, 3, 5, 7), scala.collection.mutable.ArrayBuffer(10, 11, 16, 20), scala.collection.mutable.ArrayBuffer(23, 30, 34, 60)), 3))
-		println(searchMatrix(scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(1, 3, 5, 7), scala.collection.mutable.ArrayBuffer(10, 11, 16, 20), scala.collection.mutable.ArrayBuffer(23, 30, 34, 60)), 13))
-	}
+    def searchMatrix(matrix: scala.collection.mutable.ArrayBuffer[scala.collection.mutable.ArrayBuffer[Int]], target: Int): Boolean = {
+        val m: Int = matrix.length
+        if ((m == 0)) {
+            return false
+        }
+        val n: Int = _indexList(matrix, 0).length
+        var left: Int = 0
+        var right: Int = ((m * n) - 1)
+        while ((left <= right)) {
+            val mid: Int = (left + (((right - left)) / 2))
+            val row: Int = (mid / n)
+            val col: Int = (mid % n)
+            val value: Int = _indexList(_indexList(matrix, row), col)
+            if ((value == target)) {
+                return true
+            } else             if ((value < target)) {
+                left = (mid + 1)
+            } else {
+                right = (mid - 1)
+            }
+        }
+        return false
+    }
+    
+    def main(args: Array[String]): Unit = {
+        println(searchMatrix(scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(1, 3, 5, 7), scala.collection.mutable.ArrayBuffer(10, 11, 16, 20), scala.collection.mutable.ArrayBuffer(23, 30, 34, 60)), 3))
+        println(searchMatrix(scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(1, 3, 5, 7), scala.collection.mutable.ArrayBuffer(10, 11, 16, 20), scala.collection.mutable.ArrayBuffer(23, 30, 34, 60)), 13))
+    }
 }
 def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {
         var idx = i

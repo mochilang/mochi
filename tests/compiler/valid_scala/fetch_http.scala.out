@@ -1,10 +1,10 @@
 case class Todo(userId: Int, id: Int, title: String, completed: Boolean)
 
 object Main {
-	def main(args: Array[String]): Unit = {
-		val t = _fetch("https://jsonplaceholder.typicode.com/todos/1", Map[String, Any]())
-		println(t.title)
-	}
+    def main(args: Array[String]): Unit = {
+        val t = _fetch("https://jsonplaceholder.typicode.com/todos/1", Map[String, Any]())
+        println(t.title)
+    }
 }
 def _fetch(url: String, opts: Map[String, Any]): Any = {
         import java.net.{HttpURLConnection, URL, URLEncoder}
@@ -54,4 +54,3 @@ def _fetch(url: String, opts: Map[String, Any]): Any = {
                 scala.util.parsing.json.JSON.parseFull(data).getOrElse(data)
         } finally src.close()
 }
-

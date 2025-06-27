@@ -1,11 +1,11 @@
 object Main {
-	def sumN(n: Int): Int = {
-		return ((n * ((n + 1))) / 2)
-	}
-	
-	def main(args: Array[String]): Unit = {
-		val n: Int = 10
-		println(sumN(n))
-		println(n)
-	}
+    def sumN(n: Int): Int = {
+        return ((n * ((n + 1))) / 2)
+    }
+    
+    def main(args: Array[String]): Unit = {
+        val n: Int = 10
+        println(sumN(n))
+        println(n)
+    }
 }
