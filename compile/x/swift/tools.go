@@ -1,11 +1,13 @@
 package swiftcode
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 )
 
 // EnsureSwift verifies that the Swift toolchain is installed. If missing,
@@ -64,6 +66,8 @@ func EnsureSwiftFormat() error {
 	if _, err := exec.LookPath("swift-format"); err == nil {
 		return nil
 	}
+	// best-effort install: ensure swift is present first
+	_ = EnsureSwift()
 	switch runtime.GOOS {
 	case "darwin":
 		if _, err := exec.LookPath("brew"); err == nil {
@@ -122,7 +126,16 @@ func Format(code []byte) []byte {
 			return res
 		}
 	}
-	res := bytes.ReplaceAll(code, []byte("\t"), []byte("  "))
+	// fallback: convert tabs to spaces and trim trailing whitespace
+	s := strings.ReplaceAll(string(code), "\t", "  ")
+	var buf bytes.Buffer
+	scanner := bufio.NewScanner(strings.NewReader(s))
+	for scanner.Scan() {
+		line := strings.TrimRight(scanner.Text(), " \t")
+		buf.WriteString(line)
+		buf.WriteByte('\n')
+	}
+	res := buf.Bytes()
 	if len(res) == 0 || res[len(res)-1] != '\n' {
 		res = append(res, '\n')
 	}
