@@ -116,3 +116,19 @@ func buildSmalltalkFromSource() error {
 	}
 	return nil
 }
+
+// EnsureFormatter checks for the gst-format command, attempting to
+// install it via EnsureSmalltalk if missing. It returns an error if the
+// formatter remains unavailable.
+func EnsureFormatter() error {
+	if _, err := exec.LookPath("gst-format"); err == nil {
+		return nil
+	}
+	if err := EnsureSmalltalk(); err != nil {
+		return err
+	}
+	if _, err := exec.LookPath("gst-format"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("gst-format not found")
+}
