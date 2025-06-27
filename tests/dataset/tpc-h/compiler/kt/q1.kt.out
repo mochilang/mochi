@@ -1,10 +1,10 @@
 fun test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
-        check((result == listOf(mutableMapOf("returnflag" to "N", "linestatus" to "O", "sum_qty" to 53, "sum_base_price" to 3000, "sum_disc_price" to (950 + 1800), "sum_charge" to (((950 * 1.07)) + ((1800 * 1.05))), "avg_qty" to 26.5, "avg_price" to 1500, "avg_disc" to 0.07500000000000001, "count_order" to 2))))
+    check((result == listOf(mutableMapOf("returnflag" to "N", "linestatus" to "O", "sum_qty" to 53, "sum_base_price" to 3000, "sum_disc_price" to (950 + 1800), "sum_charge" to (((950 * 1.07)) + ((1800 * 1.05))), "avg_qty" to 26.5, "avg_price" to 1500, "avg_disc" to 0.07500000000000001, "count_order" to 2))))
 }
 
 fun main() {
-        val lineitem = listOf(mutableMapOf("l_quantity" to 17, "l_extendedprice" to 1000, "l_discount" to 0.05, "l_tax" to 0.07, "l_returnflag" to "N", "l_linestatus" to "O", "l_shipdate" to "1998-08-01"), mutableMapOf("l_quantity" to 36, "l_extendedprice" to 2000, "l_discount" to 0.1, "l_tax" to 0.05, "l_returnflag" to "N", "l_linestatus" to "O", "l_shipdate" to "1998-09-01"), mutableMapOf("l_quantity" to 25, "l_extendedprice" to 1500, "l_discount" to 0, "l_tax" to 0.08, "l_returnflag" to "R", "l_linestatus" to "F", "l_shipdate" to "1998-09-03"))
-        val result = run {
+    val lineitem = listOf(mutableMapOf("l_quantity" to 17, "l_extendedprice" to 1000, "l_discount" to 0.05, "l_tax" to 0.07, "l_returnflag" to "N", "l_linestatus" to "O", "l_shipdate" to "1998-08-01"), mutableMapOf("l_quantity" to 36, "l_extendedprice" to 2000, "l_discount" to 0.1, "l_tax" to 0.05, "l_returnflag" to "N", "l_linestatus" to "O", "l_shipdate" to "1998-09-01"), mutableMapOf("l_quantity" to 25, "l_extendedprice" to 1500, "l_discount" to 0, "l_tax" to 0.08, "l_returnflag" to "R", "l_linestatus" to "F", "l_shipdate" to "1998-09-03"))
+    val result = run {
                 val _src = lineitem
                 val _rows = _query(_src, listOf(
                 ), _QueryOpts(selectFn = { args ->
@@ -80,8 +80,8 @@ mutableMapOf("returnflag" to g.key.returnflag, "linestatus" to g.key.linestatus,
                 }
                 _res
         }
-        _json(result)
-        test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
+    _json(result)
+    test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
 }
 
 class _Group(var key: Any?) {

@@ -3,9 +3,9 @@ data class Empty() : Foo
 data class Node(val child: Foo) : Foo
 
 fun listit() : List<Foo> {
-        return listOf(Empty())
+    return listOf(Empty())
 }
 
 fun main() {
-        println(listit().size)
+    println(listit().size)
 }

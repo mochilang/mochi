@@ -3,7 +3,7 @@ data class Leaf() : Tree
 data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
 
 fun inorder(t: Tree) : List<Int> {
-        return run {
+    return run {
                 val _t = t
                 when {
                         _t is Leaf -> (listOf()) as List<Int>
@@ -18,7 +18,7 @@ fun inorder(t: Tree) : List<Int> {
 }
 
 fun main() {
-        println(inorder(Node(left = Leaf(), value = 1, right = Node(left = Leaf(), value = 2, right = Leaf()))))
+    println(inorder(Node(left = Leaf(), value = 1, right = Node(left = Leaf(), value = 2, right = Leaf()))))
 }
 
 fun <T> _concat(a: List<T>, b: List<T>): List<T> = a + b

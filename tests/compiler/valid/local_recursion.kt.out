@@ -3,18 +3,18 @@ data class Leaf() : Tree
 data class Node(val left: Tree, val value: Int, val right: Tree) : Tree
 
 fun fromList(nums: List<Int>) : Tree {
-        fun helper(lo: Int, hi: Int) : Tree {
-                if ((lo >= hi)) {
-                        return Leaf()
-                }
-                val mid = (((lo + hi)) / 2)
-                return Node(left = helper(lo, mid), value = nums[mid], right = helper((mid + 1), hi))
+    fun helper(lo: Int, hi: Int) : Tree {
+        if ((lo >= hi)) {
+            return Leaf()
         }
-        return helper(0, nums.size)
+        val mid = (((lo + hi)) / 2)
+        return Node(left = helper(lo, mid), value = nums[mid], right = helper((mid + 1), hi))
+    }
+    return helper(0, nums.size)
 }
 
 fun inorder(t: Tree) : List<Int> {
-        return run {
+    return run {
                 val _t = t
                 when {
                         _t is Leaf -> listOf()
@@ -29,7 +29,7 @@ fun inorder(t: Tree) : List<Int> {
 }
 
 fun main() {
-        println(inorder(fromList(listOf(-10, -3, 0, 5, 9))))
+    println(inorder(fromList(listOf(-10, -3, 0, 5, 9))))
 }
 
 fun <T> _concat(a: List<T>, b: List<T>): List<T> = a + b

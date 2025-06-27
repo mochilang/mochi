@@ -1,7 +1,7 @@
 data class Person(val name: String, val age: Int, val email: String)
 
 fun main() {
-        val people = run {
+    val people = run {
         val _rows = _load(null, mutableMapOf("format" to "json"))
         val _out = mutableListOf<Person>()
         for (r in _rows) {
@@ -9,13 +9,13 @@ fun main() {
         }
         _out
 }
-        val adults = run {
+    val adults = run {
                 var res = people
                 res = res.filter { p -> (p.age >= 18) }
                 res = res.map { p -> p }
                 res
         }
-        _save(adults, null, mutableMapOf("format" to "json"))
+    _save(adults, null, mutableMapOf("format" to "json"))
 }
 
 import kotlin.reflect.full.primaryConstructor

@@ -1,5 +1,5 @@
 fun main() {
-        _json(mutableMapOf("a" to 1))
+    _json(mutableMapOf("a" to 1))
 }
 
 fun _json(v: Any?) {

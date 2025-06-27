@@ -1,6 +1,6 @@
 fun main() {
-        val poem = _genText("echo hello", null, null)
-        println(poem)
+    val poem = _genText("echo hello", null, null)
+    println(poem)
 }
 
 fun _genText(prompt: String, model: String?, params: Map<String, Any>?): String {
