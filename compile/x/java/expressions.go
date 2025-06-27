@@ -411,8 +411,37 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
-		for _, f := range p.Selector.Tail {
-			expr += "." + sanitizeName(f)
+		var typ types.Type
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
+		}
+		for i, f := range p.Selector.Tail {
+			isLast := i == len(p.Selector.Tail)-1
+			switch tt := typ.(type) {
+			case types.MapType:
+				if isLast && len(p.Selector.Tail) > 1 {
+					expr += "." + sanitizeName(f)
+				} else {
+					expr += fmt.Sprintf(".get(\"%s\")", f)
+					typ = tt.Value
+				}
+			case types.StructType:
+				expr += "." + sanitizeName(f)
+				if ft, ok := tt.Fields[f]; ok {
+					typ = ft
+				} else {
+					typ = nil
+				}
+			default:
+				if isLast && len(p.Selector.Tail) > 1 {
+					expr += "." + sanitizeName(f)
+				} else {
+					expr += fmt.Sprintf(".get(\"%s\")", f)
+				}
+				typ = nil
+			}
 		}
 		return expr, nil
 	case p.Call != nil:

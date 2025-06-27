@@ -6,6 +6,13 @@ added for `dataset/job` queries `q1` and `q2`, however the emitted Java fails to
 build because map field access is not handled correctly. Remaining tasks focus
 on improving dataset support and performance.
 
+## Pending JOB query support
+
+Attempts to compile `dataset/job` queries `q1` through `q10` still produce
+invalid Java. The generated source has mismatched braces and incorrect method
+calls for map values. Further compiler work is needed before these queries can
+be executed as part of the test suite.
+
 1. **Expand numeric helpers** – current implementations of `sum`, `avg` and
    `count` work for lists, arrays and groups. Support for additional numeric
    types could be added.

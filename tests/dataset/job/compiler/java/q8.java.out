@@ -1,57 +1,56 @@
 public class Main {
-    static void test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production() {
-        expect((result == new java.util.HashMap<>(java.util.Map.of("production_note", "ACME (co-production)", "movie_title", "Good Movie", "movie_year", 1995))));
+    static void test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("actress_pseudonym", "Y. S.", "japanese_movie_dubbed", "Dubbed Film"))}));
     }
     
-    static Object[] company_type = new Object[]{new java.util.HashMap<>(java.util.Map.of("id", 1, "kind", "production companies")), new java.util.HashMap<>(java.util.Map.of("id", 2, "kind", "distributors"))};
+    static Object[] aka_name = new Object[]{new java.util.HashMap<>(java.util.Map.of("person_id", 1, "name", "Y. S."))};
     
-    static Object[] info_type = new Object[]{new java.util.HashMap<>(java.util.Map.of("id", 10, "info", "top 250 rank")), new java.util.HashMap<>(java.util.Map.of("id", 20, "info", "bottom 10 rank"))};
+    static Object[] cast_info = new Object[]{new java.util.HashMap<>(java.util.Map.of("person_id", 1, "movie_id", 10, "note", "(voice: English version)", "role_id", 1000))};
     
-    static Object[] title = new Object[]{new java.util.HashMap<>(java.util.Map.of("id", 100, "title", "Good Movie", "production_year", 1995)), new java.util.HashMap<>(java.util.Map.of("id", 200, "title", "Bad Movie", "production_year", 2000))};
+    static Object[] company_name = new Object[]{new java.util.HashMap<>(java.util.Map.of("id", 50, "country_code", "[jp]"))};
     
-    static Object[] movie_companies = new Object[]{new java.util.HashMap<>(java.util.Map.of("movie_id", 100, "company_type_id", 1, "note", "ACME (co-production)")), new java.util.HashMap<>(java.util.Map.of("movie_id", 200, "company_type_id", 1, "note", "MGM (as Metro-Goldwyn-Mayer Pictures)"))};
+    static Object[] movie_companies = new Object[]{new java.util.HashMap<>(java.util.Map.of("movie_id", 10, "company_id", 50, "note", "Studio (Japan)"))};
     
-    static Object[] movie_info_idx = new Object[]{new java.util.HashMap<>(java.util.Map.of("movie_id", 100, "info_type_id", 10)), new java.util.HashMap<>(java.util.Map.of("movie_id", 200, "info_type_id", 20))};
+    static Object[] name = new Object[]{new java.util.HashMap<>(java.util.Map.of("id", 1, "name", "Yoko Ono")), new java.util.HashMap<>(java.util.Map.of("id", 2, "name", "Yuichi"))};
     
-    static Object[] filtered = (new java.util.function.Supplier<java.util.List<Object>>() {
+    static Object[] role_type = new Object[]{new java.util.HashMap<>(java.util.Map.of("id", 1000, "role", "actress"))};
+    
+    static Object[] title = new Object[]{new java.util.HashMap<>(java.util.Map.of("id", 10, "title", "Dubbed Film"))};
+    
+    static Object[] eligible = (new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(company_type);
+        java.util.List<Object> _src = _toList(aka_name);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(movie_companies), (Object[] a) -> { Object ct = a[0]; Object mc = a[1]; return (ct.get("id") == mc.get("company_type_id")); }, false, false),
-            new _JoinSpec(_toList(title), (Object[] a) -> { Object ct = a[0]; Object mc = a[1]; Object t = a[2]; return (t.get("id") == mc.get("movie_id")); }, false, false),
-            new _JoinSpec(_toList(movie_info_idx), (Object[] a) -> { Object ct = a[0]; Object mc = a[1]; Object t = a[2]; Object mi = a[3]; return (mi.get("movie_id") == t.get("id")); }, false, false),
-            new _JoinSpec(_toList(info_type), (Object[] a) -> { Object ct = a[0]; Object mc = a[1]; Object t = a[2]; Object mi = a[3]; Object it = a[4]; return (it.get("id") == mi.get("info_type_id")); }, false, false)
+            new _JoinSpec(_toList(name), (Object[] a) -> { Object an1 = a[0]; Object n1 = a[1]; return (n1.get("id") == an1.get("person_id")); }, false, false),
+            new _JoinSpec(_toList(cast_info), (Object[] a) -> { Object an1 = a[0]; Object n1 = a[1]; Object ci = a[2]; return (ci.get("person_id") == an1.get("person_id")); }, false, false),
+            new _JoinSpec(_toList(title), (Object[] a) -> { Object an1 = a[0]; Object n1 = a[1]; Object ci = a[2]; Object t = a[3]; return (t.get("id") == ci.get("movie_id")); }, false, false),
+            new _JoinSpec(_toList(movie_companies), (Object[] a) -> { Object an1 = a[0]; Object n1 = a[1]; Object ci = a[2]; Object t = a[3]; Object mc = a[4]; return (mc.get("movie_id") == ci.get("movie_id")); }, false, false),
+            new _JoinSpec(_toList(company_name), (Object[] a) -> { Object an1 = a[0]; Object n1 = a[1]; Object ci = a[2]; Object t = a[3]; Object mc = a[4]; Object cn = a[5]; return (cn.get("id") == mc.get("company_id")); }, false, false),
+            new _JoinSpec(_toList(role_type), (Object[] a) -> { Object an1 = a[0]; Object n1 = a[1]; Object ci = a[2]; Object t = a[3]; Object mc = a[4]; Object cn = a[5]; Object rt = a[6]; return (rt.get("id") == ci.get("role_id")); }, false, false)
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object ct = a[0]; Object mc = a[1]; Object t = a[2]; Object mi = a[3]; Object it = a[4]; return new java.util.HashMap<>(java.util.Map.of("note", mc.get("note"), "title", t.get("title"), "year", t.get("production_year"))); }, (Object[] a) -> { Object ct = a[0]; Object mc = a[1]; Object t = a[2]; Object mi = a[3]; Object it = a[4]; return ((((ct.get("kind") == "production companies") && (it.get("info") == "top 250 rank")) && (!mc.get("note").contains("(as Metro-Goldwyn-Mayer Pictures)"))) && (mc.get("note").contains("(co-production)") || mc.get("note").contains("(presents)"))); }, null, -1, -1));
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object an1 = a[0]; Object n1 = a[1]; Object ci = a[2]; Object t = a[3]; Object mc = a[4]; Object cn = a[5]; Object rt = a[6]; return new java.util.HashMap<>(java.util.Map.of("pseudonym", an1.get("name"), "movie_title", t.get("title"))); }, (Object[] a) -> { Object an1 = a[0]; Object n1 = a[1]; Object ci = a[2]; Object t = a[3]; Object mc = a[4]; Object cn = a[5]; Object rt = a[6]; return (((((((ci.get("note") == "(voice: English version)") && (cn.get("country_code") == "[jp]")) && mc.get("note").contains("(Japan)")) && (!mc.get("note").contains("(USA)"))) && n1.get("name").contains("Yo")) && (!n1.get("name").contains("Yu"))) && (rt.get("role") == "actress")); }, null, -1, -1));
     }
 }).get();
     
-    static java.util.Map<String, Object> result = new java.util.HashMap<>(java.util.Map.of("production_note", min.apply((new java.util.function.Supplier<java.util.List<Object>>() {
+    static Object[] result = new Object[]{new java.util.HashMap<>(java.util.Map.of("actress_pseudonym", min.apply((new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(filtered);
+        java.util.List<Object> _src = _toList(eligible);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object r = a[0]; return r.get("note"); }, null, null, -1, -1));
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("pseudonym"); }, null, null, -1, -1));
     }
-}).get()), "movie_title", min.apply((new java.util.function.Supplier<java.util.List<Object>>() {
+}).get()), "japanese_movie_dubbed", min.apply((new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(filtered);
+        java.util.List<Object> _src = _toList(eligible);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object r = a[0]; return r.get("title"); }, null, null, -1, -1));
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("movie_title"); }, null, null, -1, -1));
     }
-}).get()), "movie_year", min.apply((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(filtered);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object r = a[0]; return r.get("year"); }, null, null, -1, -1));
-    }
-}).get())));
+}).get())))};
     
     public static void main(String[] args) {
-        test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production();
-        _json(new Object[]{result});
+        test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing();
+        _json(result);
     }
     
     static void expect(boolean cond) {
