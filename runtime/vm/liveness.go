@@ -93,7 +93,7 @@ func useDef(ins Instr, n int) (use, def []bool) {
 		OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
 		OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
-		OpIn, OpUnionAll, OpUnion, OpExcept, OpIntersect:
+		OpIn, OpLike, OpUnionAll, OpUnion, OpExcept, OpIntersect:
 		addDef(ins.A)
 		addUse(ins.B)
 		addUse(ins.C)
@@ -204,7 +204,7 @@ func defRegs(ins Instr) []int {
 		OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
 		OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
-		OpIn, OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpExists,
+		OpIn, OpLike, OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpExists,
 		OpLen, OpIndex, OpSlice, OpMakeList, OpMakeMap,
 		OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues,
 		OpCast, OpIterPrep, OpNow, OpAppend, OpUnionAll, OpUnion,

@@ -1215,6 +1215,11 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 			}
 			return BoolType{}, nil
 		}
+	case "like":
+		if !(unify(left, StringType{}, nil) && unify(right, StringType{}, nil)) {
+			return nil, errOperatorMismatch(pos, op, left, right)
+		}
+		return BoolType{}, nil
 	case "&&", "||":
 		if !(unify(left, BoolType{}, nil) && unify(right, BoolType{}, nil)) {
 			return nil, errOperatorMismatch(pos, op, left, right)
