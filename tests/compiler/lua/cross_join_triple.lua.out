@@ -1,20 +1,22 @@
 function __print(...)
-    local args = {...}
-    for i, a in ipairs(args) do
-        if i > 1 then io.write(' ') end
-        io.write(tostring(a))
-    end
-    io.write('\n')
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then
+			io.write(" ")
+		end
+		io.write(tostring(a))
+	end
+	io.write("\n")
 end
-local nums = {1, 2}
-local letters = {"A", "B"}
-local bools = {true, false}
-local combos = (function()
+nums = {1, 2}
+letters = {"A", "B"}
+bools = {true, false}
+combos = (function()
 	local _res = {}
 	for _, n in ipairs(nums) do
 		for _, l in ipairs(letters) do
 			for _, b in ipairs(bools) do
-				table.insert(_res, {[n]=n, [l]=l, [b]=b})
+				_res[#_res + 1] = {["n"] = n, ["l"] = l, ["b"] = b}
 			end
 		end
 	end

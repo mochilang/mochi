@@ -1,17 +1,23 @@
 function __print(...)
-    local args = {...}
-    for i, a in ipairs(args) do
-        if i > 1 then io.write(' ') end
-        io.write(tostring(a))
-    end
-    io.write('\n')
+	local args = {...}
+	for i, a in ipairs(args) do
+		if i > 1 then
+			io.write(" ")
+		end
+		io.write(tostring(a))
+	end
+	io.write("\n")
 end
 function value_of_root(t)
 	return (function()
-	local _t0 = t
-	if _t0.__name == "Node" then return (function(v) return v end)(_t0.value) end
-	return 0
-end)()
+		local _t0 = t
+		if _t0.__name == "Node" then
+			return (function(v)
+				return v
+			end)(_t0.value)
+		end
+		return 0
+	end)()
 end
 
-__print(value_of_root({__name="Node", left={__name="Leaf"}, value=5, right={__name="Leaf"}}))
+__print(value_of_root({__name = "Node", left = {__name = "Leaf"}, value = 5, right = {__name = "Leaf"}}))

@@ -1,83 +1,127 @@
 function __load(path, opts)
-    local fmt = 'json'
-    if opts and opts['format'] then fmt = opts['format'] end
-    local f
-    if not path or path == '' or path == '-' then
-        f = io.stdin
-    else
-        local err; f, err = io.open(path, 'r'); if not f then error(err) end
-    end
-    local data = f:read('*a')
-    if f ~= io.stdin then f:close() end
-    local res
-    if fmt == 'json' then
-        local ok, json = pcall(require, 'json')
-        if not ok then error('json library not found') end
-        res = json.decode(data)
-    elseif fmt == 'yaml' then
-        local ok, yaml = pcall(require, 'yaml')
-        if not ok then ok, yaml = pcall(require, 'lyaml') end
-        if not ok then error('yaml library not found') end
-        res = yaml.load(data)
-    elseif fmt == 'jsonl' then
-        local ok, json = pcall(require, 'json')
-        if not ok then error('json library not found') end
-        res = {}
-        for line in string.gmatch(data, '[^\n]+') do
-            if line ~= '' then table.insert(res, json.decode(line)) end
-        end
-    elseif fmt == 'csv' then
-        res = {}
-        for line in string.gmatch(data, '[^\n]+') do
-            local row = {}
-            for field in string.gmatch(line, '[^,]+') do table.insert(row, field) end
-            table.insert(res, row)
-        end
-    else
-        error('unsupported format: '..fmt)
-    end
-    if type(res) ~= 'table' then return {} end
-    if res[1] then return res end
-    return {res}
+	local fmt = "json"
+	if opts and opts["format"] then
+		fmt = opts["format"]
+	end
+	local f
+	if not path or path == "" or path == "-" then
+		f = io.stdin
+	else
+		local err
+		f, err = io.open(path, "r")
+		if not f then
+			error(err)
+		end
+	end
+	local data = f:read("*a")
+	if f ~= io.stdin then
+		f:close()
+	end
+	local res
+	if fmt == "json" then
+		local ok, json = pcall(require, "json")
+		if not ok then
+			error("json library not found")
+		end
+		res = json.decode(data)
+	elseif fmt == "yaml" then
+		local ok, yaml = pcall(require, "yaml")
+		if not ok then
+			ok, yaml = pcall(require, "lyaml")
+		end
+		if not ok then
+			error("yaml library not found")
+		end
+		res = yaml.load(data)
+	elseif fmt == "jsonl" then
+		local ok, json = pcall(require, "json")
+		if not ok then
+			error("json library not found")
+		end
+		res = {}
+		for line in string.gmatch(data, "[^\n]+") do
+			if line ~= "" then
+				table.insert(res, json.decode(line))
+			end
+		end
+	elseif fmt == "csv" then
+		res = {}
+		for line in string.gmatch(data, "[^\n]+") do
+			local row = {}
+			for field in string.gmatch(line, "[^,]+") do
+				table.insert(row, field)
+			end
+			table.insert(res, row)
+		end
+	else
+		error("unsupported format: " .. fmt)
+	end
+	if type(res) ~= "table" then
+		return {}
+	end
+	if res[1] then
+		return res
+	end
+	return {res}
 end
 function __save(rows, path, opts)
-    local fmt = 'json'
-    if opts and opts['format'] then fmt = opts['format'] end
-    local data
-    if fmt == 'json' then
-        local ok, json = pcall(require, 'json')
-        if not ok then error('json library not found') end
-        data = json.encode(rows)
-    elseif fmt == 'yaml' then
-        local ok, yaml = pcall(require, 'yaml')
-        if not ok then ok, yaml = pcall(require, 'lyaml') end
-        if not ok then error('yaml library not found') end
-        if yaml.dump then data = yaml.dump(rows) else data = yaml.encode(rows) end
-    elseif fmt == 'jsonl' then
-        local ok, json = pcall(require, 'json')
-        if not ok then error('json library not found') end
-        local lines = {}
-        for _, row in ipairs(rows) do
-            table.insert(lines, json.encode(row))
-        end
-        data = table.concat(lines, '\n')
-    elseif fmt == 'csv' then
-        local lines = {}
-        for _, row in ipairs(rows) do
-            table.insert(lines, table.concat(row, ','))
-        end
-        data = table.concat(lines, '\n')
-    else
-        error('unsupported format: '..fmt)
-    end
-    local f
-    if not path or path == '' or path == '-' then
-        f = io.stdout
-    else
-        local err; f, err = io.open(path, 'w'); if not f then error(err) end
-    end
-    f:write(data)
-    if f ~= io.stdout then f:close() end
+	local fmt = "json"
+	if opts and opts["format"] then
+		fmt = opts["format"]
+	end
+	local data
+	if fmt == "json" then
+		local ok, json = pcall(require, "json")
+		if not ok then
+			error("json library not found")
+		end
+		data = json.encode(rows)
+	elseif fmt == "yaml" then
+		local ok, yaml = pcall(require, "yaml")
+		if not ok then
+			ok, yaml = pcall(require, "lyaml")
+		end
+		if not ok then
+			error("yaml library not found")
+		end
+		if yaml.dump then
+			data = yaml.dump(rows)
+		else
+			data = yaml.encode(rows)
+		end
+	elseif fmt == "jsonl" then
+		local ok, json = pcall(require, "json")
+		if not ok then
+			error("json library not found")
+		end
+		local lines = {}
+		for _, row in ipairs(rows) do
+			table.insert(lines, json.encode(row))
+		end
+		data = table.concat(lines, "\n")
+	elseif fmt == "csv" then
+		local lines = {}
+		for _, row in ipairs(rows) do
+			table.insert(lines, table.concat(row, ","))
+		end
+		data = table.concat(lines, "\n")
+	else
+		error("unsupported format: " .. fmt)
+	end
+	local f
+	if not path or path == "" or path == "-" then
+		f = io.stdout
+	else
+		local err
+		f, err = io.open(path, "w")
+		if not f then
+			error(err)
+		end
+	end
+	f:write(data)
+	if f ~= io.stdout then
+		f:close()
+	end
 end
 Person = {}
 Person.__index = Person
@@ -87,5 +131,5 @@ function Person.new(o)
 	return o
 end
 
-people = __load(nil, {["format"]="json"})
-__save(people, nil, {["format"]="json"})
+people = __load(nil, {["format"] = "json"})
+__save(people, nil, {["format"] = "json"})

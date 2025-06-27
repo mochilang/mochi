@@ -107,6 +107,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		return nil, err
 	}
 
+	if formatted, err := formatLuaCode(code); err == nil {
+		code = formatted
+	}
+
 	return code, nil
 }
 
@@ -138,4 +142,18 @@ func checkLuaSyntax(code []byte) error {
 		return fmt.Errorf("luac error: %v\n%s", err, out)
 	}
 	return nil
+}
+
+func formatLuaCode(code []byte) ([]byte, error) {
+	if _, err := exec.LookPath("luafmt"); err != nil {
+		return code, nil
+	}
+	cmd := exec.Command("luafmt", "--stdin", "--use-tabs")
+	cmd.Stdin = bytes.NewReader(code)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return code, fmt.Errorf("luafmt error: %v", err)
+	}
+	return out.Bytes(), nil
 }
