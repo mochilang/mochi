@@ -43,6 +43,39 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsMinInt {
+		c.writeln("fn _min_int(v: []const i32) i32 {")
+		c.indent++
+		c.writeln("if (v.len == 0) return 0;")
+		c.writeln("var m: i32 = v[0];")
+		c.writeln("for (v[1..]) |it| { if (it < m) m = it; }")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsMinFloat {
+		c.writeln("fn _min_float(v: []const f64) f64 {")
+		c.indent++
+		c.writeln("if (v.len == 0) return 0.0;")
+		c.writeln("var m: f64 = v[0];")
+		c.writeln("for (v[1..]) |it| { if (it < m) m = it; }")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
+	if c.needsMinString {
+		c.writeln("fn _min_string(v: []const []const u8) []const u8 {")
+		c.indent++
+		c.writeln("if (v.len == 0) return \"\";")
+		c.writeln("var m: []const u8 = v[0];")
+		c.writeln("for (v[1..]) |it| { if (std.mem.lessThan(u8, it, m)) m = it; }")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsInListInt {
 		c.writeln("fn _contains_list_int(v: []const i32, item: i32) bool {")
 		c.indent++
