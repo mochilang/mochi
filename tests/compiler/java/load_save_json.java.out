@@ -190,6 +190,7 @@ public class Main {
                     case '\': sb.append('\'); break;
                     case '/': sb.append('/'); break;
                     case 'b': sb.append(''); break;
+'); break;
                     case 'f': sb.append(''); break;
                     case 'n': sb.append('
                     case 'r': sb.append(''); break;
@@ -334,10 +335,7 @@ public class Main {
                         if (!keep) continue;
                         m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
                     }
-                    if (j.left && !m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
-                }
-            items = joined;
-        }
+}
         if (opts.where != null) {
             java.util.List<java.util.List<Object>> filtered = new java.util.ArrayList<>();
             for (java.util.List<Object> r : items) if (opts.where.apply(r.toArray(new Object[0]))) filtered.add(r);

@@ -1,56 +1,67 @@
 public class Main {
-    static class Todo {
-        String title;
-        
-        Todo(String title) {
-            this.title = title;
-        }
-        
-        Todo() {}
+  static class Todo {
+    String title;
+
+    Todo(String title) {
+      this.title = title;
     }
-    
-    public static void main(String[] args) {
-        Todo todo = _cast(Todo.class, new java.util.HashMap<>(java.util.Map.of("title", "hi")));
-        System.out.println(todo.title);
+
+    Todo() {}
+  }
+
+  public static void main(String[] args) {
+    Todo todo = _cast(Todo.class, new java.util.HashMap<>(java.util.Map.of("title", "hi")));
+    System.out.println(todo.title);
+  }
+
+  static <T> T _cast(Class<T> cls, Object v) {
+    if (cls.isInstance(v)) return cls.cast(v);
+    if (cls == Integer.class) {
+      if (v instanceof Number n) return cls.cast(n.intValue());
+      if (v instanceof String s) return cls.cast(Integer.parseInt(s));
+      return cls.cast(0);
     }
-    
-    static <T> T _cast(Class<T> cls, Object v) {
-        if (cls.isInstance(v)) return cls.cast(v);
-        if (cls == Integer.class) {
-            if (v instanceof Number n) return cls.cast(n.intValue());
-            if (v instanceof String s) return cls.cast(Integer.parseInt(s));
-            return cls.cast(0);
-        }
-        if (cls == Double.class) {
-            if (v instanceof Number n) return cls.cast(n.doubleValue());
-            if (v instanceof String s) return cls.cast(Double.parseDouble(s));
-            return cls.cast(0.0);
-        }
-        if (cls == Boolean.class) {
-            if (v instanceof Boolean b) return cls.cast(b);
-            if (v instanceof String s) return cls.cast(Boolean.parseBoolean(s));
-            return cls.cast(false);
-        }
-        if (v instanceof java.util.Map<?,?> m) {
-            try {
-                T out = cls.getDeclaredConstructor().newInstance();
-                for (java.lang.reflect.Field f : cls.getDeclaredFields()) {
-                    Object val = m.get(f.getName());
-                    if (val != null) {
-                        f.setAccessible(true);
-                        Class<?> ft = f.getType();
-                        if (ft == int.class) {
-                            if (val instanceof Number n) f.setInt(out, n.intValue()); else if (val instanceof String s) f.setInt(out, Integer.parseInt(s));
-                        } else if (ft == double.class) {
-                            if (val instanceof Number n) f.setDouble(out, n.doubleValue()); else if (val instanceof String s) f.setDouble(out, Double.parseDouble(s));
-                        } else if (ft == boolean.class) {
-                            if (val instanceof Boolean b) f.setBoolean(out, b); else if (val instanceof String s) f.setBoolean(out, Boolean.parseBoolean(s));
-                        } else { f.set(out, val); }
-                    }
-                }
-                return out;
-            } catch (Exception e) { throw new RuntimeException(e); }
-        }
-        try { return cls.getDeclaredConstructor().newInstance(); } catch (Exception e) { throw new RuntimeException(e); }
+    if (cls == Double.class) {
+      if (v instanceof Number n) return cls.cast(n.doubleValue());
+      if (v instanceof String s) return cls.cast(Double.parseDouble(s));
+      return cls.cast(0.0);
     }
+    if (cls == Boolean.class) {
+      if (v instanceof Boolean b) return cls.cast(b);
+      if (v instanceof String s) return cls.cast(Boolean.parseBoolean(s));
+      return cls.cast(false);
+    }
+    if (v instanceof java.util.Map<?, ?> m) {
+      try {
+        T out = cls.getDeclaredConstructor().newInstance();
+        for (java.lang.reflect.Field f : cls.getDeclaredFields()) {
+          Object val = m.get(f.getName());
+          if (val != null) {
+            f.setAccessible(true);
+            Class<?> ft = f.getType();
+            if (ft == int.class) {
+              if (val instanceof Number n) f.setInt(out, n.intValue());
+              else if (val instanceof String s) f.setInt(out, Integer.parseInt(s));
+            } else if (ft == double.class) {
+              if (val instanceof Number n) f.setDouble(out, n.doubleValue());
+              else if (val instanceof String s) f.setDouble(out, Double.parseDouble(s));
+            } else if (ft == boolean.class) {
+              if (val instanceof Boolean b) f.setBoolean(out, b);
+              else if (val instanceof String s) f.setBoolean(out, Boolean.parseBoolean(s));
+            } else {
+              f.set(out, val);
+            }
+          }
+        }
+        return out;
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+    }
+    try {
+      return cls.getDeclaredConstructor().newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

@@ -1,18 +1,18 @@
 public class Main {
-    static class Person {
-        String name;
-        int age;
-        
-        Person(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-        
-        Person() {}
+  static class Person {
+    String name;
+    int age;
+
+    Person(String name, int age) {
+      this.name = name;
+      this.age = age;
     }
-    
-    public static void main(String[] args) {
-        Person p = new Person("Alice", 30);
-        System.out.println(p.name);
-    }
+
+    Person() {}
+  }
+
+  public static void main(String[] args) {
+    Person p = new Person("Alice", 30);
+    System.out.println(p.name);
+  }
 }
