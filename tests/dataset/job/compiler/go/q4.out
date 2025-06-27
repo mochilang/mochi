@@ -1,0 +1,4 @@
+[{"rating":"6.2","movie_title":"Alpha Movie"}]
+   test Q4 returns minimum rating and title for sequels ... fail expect failed (2.0µs)
+
+[FAIL] 1 test(s) failed.
