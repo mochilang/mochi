@@ -86,25 +86,25 @@ expect :: Bool -> IO ()
 expect True = pure ()
 expect False = error "expect failed"
 
-company_type = [Map.fromList [("id", VInt (1)), ("kind", VString ("production companies"))], Map.fromList [("id", VInt (2)), ("kind", VString ("distributors"))]]
+company_type = [Map.fromList [("ct_id", VInt (1)), ("kind", VString ("production companies"))], Map.fromList [("ct_id", VInt (2)), ("kind", VString ("other"))]]
 
-info_type = [Map.fromList [("id", VInt (10)), ("info", VString ("top 250 rank"))], Map.fromList [("id", VInt (20)), ("info", VString ("bottom 10 rank"))]]
+info_type = [Map.fromList [("it_id", VInt (10)), ("info", VString ("languages"))]]
 
-title = [Map.fromList [("id", VInt (100)), ("title", VString ("Good Movie")), ("production_year", VInt (1995))], Map.fromList [("id", VInt (200)), ("title", VString ("Bad Movie")), ("production_year", VInt (2000))]]
+title = [Map.fromList [("t_id", VInt (100)), ("title", VString ("B Movie")), ("production_year", VInt (2010))], Map.fromList [("t_id", VInt (200)), ("title", VString ("A Film")), ("production_year", VInt (2012))], Map.fromList [("t_id", VInt (300)), ("title", VString ("Old Movie")), ("production_year", VInt (2000))]]
 
-movie_companies = [Map.fromList [("movie_id", VInt (100)), ("company_type_id", VInt (1)), ("note", VString ("ACME (co-production)"))], Map.fromList [("movie_id", VInt (200)), ("company_type_id", VInt (1)), ("note", VString ("MGM (as Metro-Goldwyn-Mayer Pictures)"))]]
+movie_companies = [Map.fromList [("movie_id", VInt (100)), ("company_type_id", VInt (1)), ("note", VString ("ACME (France) (theatrical)"))], Map.fromList [("movie_id", VInt (200)), ("company_type_id", VInt (1)), ("note", VString ("ACME (France) (theatrical)"))], Map.fromList [("movie_id", VInt (300)), ("company_type_id", VInt (1)), ("note", VString ("ACME (France) (theatrical)"))]]
 
-movie_info_idx = [Map.fromList [("movie_id", 100), ("info_type_id", 10)], Map.fromList [("movie_id", 200), ("info_type_id", 20)]]
+movie_info = [Map.fromList [("movie_id", VInt (100)), ("info", VString ("German")), ("info_type_id", VInt (10))], Map.fromList [("movie_id", VInt (200)), ("info", VString ("Swedish")), ("info_type_id", VInt (10))], Map.fromList [("movie_id", VInt (300)), ("info", VString ("German")), ("info_type_id", VInt (10))]]
 
-filtered = [Map.fromList [("note", VString (fromMaybe (error "missing") (Map.lookup "note" mc))), ("title", VString (fromMaybe (error "missing") (Map.lookup "title" t))), ("year", VString (fromMaybe (error "missing") (Map.lookup "production_year" t)))] | ct <- company_type, mc <- movie_companies, t <- title, mi <- movie_info_idx, it <- info_type, (fromMaybe (error "missing") (Map.lookup "id" (ct)) == fromMaybe (error "missing") (Map.lookup "company_type_id" (mc))), (fromMaybe (error "missing") (Map.lookup "id" (t)) == fromMaybe (error "missing") (Map.lookup "movie_id" (mc))), (fromMaybe (error "missing") (Map.lookup "movie_id" (mi)) == fromMaybe (error "missing") (Map.lookup "id" (t))), (fromMaybe (error "missing") (Map.lookup "id" (it)) == fromMaybe (error "missing") (Map.lookup "info_type_id" (mi))), (((((fromMaybe (error "missing") (Map.lookup "kind" ct) == "production companies") && fromMaybe (error "missing") (Map.lookup "info" it)) == "top 250 rank") && (not fromMaybe (error "missing") (Map.lookup "contains" (fromMaybe (error "missing") (Map.lookup "note" mc))) "(as Metro-Goldwyn-Mayer Pictures)")) && ((fromMaybe (error "missing") (Map.lookup "contains" (fromMaybe (error "missing") (Map.lookup "note" mc))) "(co-production)" || fromMaybe (error "missing") (Map.lookup "contains" (fromMaybe (error "missing") (Map.lookup "note" mc))) "(presents)")))]
+candidate_titles = [fromMaybe (error "missing") (Map.lookup "title" t) | ct <- company_type, mc <- movie_companies, mi <- movie_info, it <- info_type, t <- title, (fromMaybe (error "missing") (Map.lookup "company_type_id" (mc)) == fromMaybe (error "missing") (Map.lookup "ct_id" (ct))), (fromMaybe (error "missing") (Map.lookup "movie_id" (mi)) == fromMaybe (error "missing") (Map.lookup "movie_id" (mc))), (fromMaybe (error "missing") (Map.lookup "it_id" (it)) == fromMaybe (error "missing") (Map.lookup "info_type_id" (mi))), (fromMaybe (error "missing") (Map.lookup "t_id" (t)) == fromMaybe (error "missing") (Map.lookup "movie_id" (mc))), (((elem (elem ((fromMaybe (error "missing") (Map.lookup "kind" ct) == "production companies") && "(theatrical)") fromMaybe (error "missing") (Map.lookup "note" mc) && "(France)") fromMaybe (error "missing") (Map.lookup "note" mc) && fromMaybe (error "missing") (Map.lookup "production_year" t)) > 2005) && (elem fromMaybe (error "missing") (Map.lookup "info" mi) ["Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"]))]
 
-result = Map.fromList [("production_note", VString (min [fromMaybe (error "missing") (Map.lookup "note" r) | r <- filtered])), ("movie_title", VString (min [fromMaybe (error "missing") (Map.lookup "title" r) | r <- filtered])), ("movie_year", VString (min [fromMaybe (error "missing") (Map.lookup "year" r) | r <- filtered]))]
+result = [Map.fromList [("typical_european_movie", VString (min candidate_titles))]]
 
-test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production :: IO ()
-test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production = do
-  expect ((result == Map.fromList [("production_note", VString ("ACME (co-production)")), ("movie_title", VString ("Good Movie")), ("movie_year", VInt (1995))]))
+test_Q5_finds_the_lexicographically_first_qualifying_title :: IO ()
+test_Q5_finds_the_lexicographically_first_qualifying_title = do
+  expect ((result == [Map.fromList [("typical_european_movie", "A Film")]]))
 
 main :: IO ()
 main = do
-  _json [result]
-  test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production
+  _json result
+  test_Q5_finds_the_lexicographically_first_qualifying_title
