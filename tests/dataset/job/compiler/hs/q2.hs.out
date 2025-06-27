@@ -86,25 +86,25 @@ expect :: Bool -> IO ()
 expect True = pure ()
 expect False = error "expect failed"
 
-company_type = [Map.fromList [("id", VInt (1)), ("kind", VString ("production companies"))], Map.fromList [("id", VInt (2)), ("kind", VString ("distributors"))]]
+company_name = [Map.fromList [("id", VInt (1)), ("country_code", VString ("[de]"))], Map.fromList [("id", VInt (2)), ("country_code", VString ("[us]"))]]
 
-info_type = [Map.fromList [("id", VInt (10)), ("info", VString ("top 250 rank"))], Map.fromList [("id", VInt (20)), ("info", VString ("bottom 10 rank"))]]
+keyword = [Map.fromList [("id", VInt (1)), ("keyword", VString ("character-name-in-title"))], Map.fromList [("id", VInt (2)), ("keyword", VString ("other"))]]
 
-title = [Map.fromList [("id", VInt (100)), ("title", VString ("Good Movie")), ("production_year", VInt (1995))], Map.fromList [("id", VInt (200)), ("title", VString ("Bad Movie")), ("production_year", VInt (2000))]]
+movie_companies = [Map.fromList [("movie_id", 100), ("company_id", 1)], Map.fromList [("movie_id", 200), ("company_id", 2)]]
 
-movie_companies = [Map.fromList [("movie_id", VInt (100)), ("company_type_id", VInt (1)), ("note", VString ("ACME (co-production)"))], Map.fromList [("movie_id", VInt (200)), ("company_type_id", VInt (1)), ("note", VString ("MGM (as Metro-Goldwyn-Mayer Pictures)"))]]
+movie_keyword = [Map.fromList [("movie_id", 100), ("keyword_id", 1)], Map.fromList [("movie_id", 200), ("keyword_id", 2)]]
 
-movie_info_idx = [Map.fromList [("movie_id", 100), ("info_type_id", 10)], Map.fromList [("movie_id", 200), ("info_type_id", 20)]]
+title = [Map.fromList [("id", VInt (100)), ("title", VString ("Der Film"))], Map.fromList [("id", VInt (200)), ("title", VString ("Other Movie"))]]
 
-filtered = [Map.fromList [("note", VString (fromMaybe (error "missing") (Map.lookup "note" mc))), ("title", VString (fromMaybe (error "missing") (Map.lookup "title" t))), ("year", VString (fromMaybe (error "missing") (Map.lookup "production_year" t)))] | ct <- company_type, mc <- movie_companies, t <- title, mi <- movie_info_idx, it <- info_type, (fromMaybe (error "missing") (Map.lookup "id" (ct)) == fromMaybe (error "missing") (Map.lookup "company_type_id" (mc))), (fromMaybe (error "missing") (Map.lookup "id" (t)) == fromMaybe (error "missing") (Map.lookup "movie_id" (mc))), (fromMaybe (error "missing") (Map.lookup "movie_id" (mi)) == fromMaybe (error "missing") (Map.lookup "id" (t))), (fromMaybe (error "missing") (Map.lookup "id" (it)) == fromMaybe (error "missing") (Map.lookup "info_type_id" (mi))), (((((fromMaybe (error "missing") (Map.lookup "kind" ct) == "production companies") && fromMaybe (error "missing") (Map.lookup "info" it)) == "top 250 rank") && (not fromMaybe (error "missing") (Map.lookup "contains" (fromMaybe (error "missing") (Map.lookup "note" mc))) "(as Metro-Goldwyn-Mayer Pictures)")) && ((fromMaybe (error "missing") (Map.lookup "contains" (fromMaybe (error "missing") (Map.lookup "note" mc))) "(co-production)" || fromMaybe (error "missing") (Map.lookup "contains" (fromMaybe (error "missing") (Map.lookup "note" mc))) "(presents)")))]
+titles = [fromMaybe (error "missing") (Map.lookup "title" t) | cn <- company_name, mc <- movie_companies, t <- title, mk <- movie_keyword, k <- keyword, (fromMaybe (error "missing") (Map.lookup "company_id" (mc)) == fromMaybe (error "missing") (Map.lookup "id" (cn))), (fromMaybe (error "missing") (Map.lookup "movie_id" (mc)) == fromMaybe (error "missing") (Map.lookup "id" (t))), (fromMaybe (error "missing") (Map.lookup "movie_id" (mk)) == fromMaybe (error "missing") (Map.lookup "id" (t))), (fromMaybe (error "missing") (Map.lookup "keyword_id" (mk)) == fromMaybe (error "missing") (Map.lookup "id" (k))), (((((fromMaybe (error "missing") (Map.lookup "country_code" cn) == "[de]") && fromMaybe (error "missing") (Map.lookup "keyword" k)) == "character-name-in-title") && fromMaybe (error "missing") (Map.lookup "movie_id" mc)) == fromMaybe (error "missing") (Map.lookup "movie_id" mk))]
 
-result = Map.fromList [("production_note", VString (min [fromMaybe (error "missing") (Map.lookup "note" r) | r <- filtered])), ("movie_title", VString (min [fromMaybe (error "missing") (Map.lookup "title" r) | r <- filtered])), ("movie_year", VString (min [fromMaybe (error "missing") (Map.lookup "year" r) | r <- filtered]))]
+result = min titles
 
-test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production :: IO ()
-test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production = do
-  expect ((result == Map.fromList [("production_note", VString ("ACME (co-production)")), ("movie_title", VString ("Good Movie")), ("movie_year", VInt (1995))]))
+test_Q2_finds_earliest_title_for_German_companies_with_character_keyword :: IO ()
+test_Q2_finds_earliest_title_for_German_companies_with_character_keyword = do
+  expect ((result == "Der Film"))
 
 main :: IO ()
 main = do
-  _json [result]
-  test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production
+  _json result
+  test_Q2_finds_earliest_title_for_German_companies_with_character_keyword

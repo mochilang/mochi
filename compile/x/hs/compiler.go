@@ -171,7 +171,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if len(c.structs) > 0 {
 		header.WriteString("import GHC.Generics (Generic)\n")
 	}
-	if c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
 		header.WriteString("import qualified Data.Aeson.KeyMap as KeyMap\n")
 		header.WriteString("import qualified Data.Aeson.Key as Key\n")
 		header.WriteString("import qualified Data.Vector as V\n")
@@ -182,7 +182,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	header.WriteString("import qualified Data.ByteString.Lazy.Char8 as BSL\n")
 	header.WriteString("\n")
-	if c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesLoad || c.usesSave || c.usesFetch || c.usesMap {
 		header.WriteString(loadRuntime)
 	} else {
 		header.WriteString(runtime)
@@ -198,13 +198,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	header.WriteString("\n\n")
 
-        code := append(header.Bytes(), c.buf.Bytes()...)
-        // Ensure the generated file ends with a trailing newline so tools like
-        // runhaskell do not complain about the last line.
-        if len(code) == 0 || code[len(code)-1] != '\n' {
-                code = append(code, '\n')
-        }
-        return FormatHS(code), nil
+	code := append(header.Bytes(), c.buf.Bytes()...)
+	// Ensure the generated file ends with a trailing newline so tools like
+	// runhaskell do not complain about the last line.
+	if len(code) == 0 || code[len(code)-1] != '\n' {
+		code = append(code, '\n')
+	}
+	return FormatHS(code), nil
 }
 
 func (c *Compiler) compileMainStmt(s *parser.Statement) error {
