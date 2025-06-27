@@ -433,12 +433,27 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	// Special case: x.contains(y)
+	if sel := p.Target.Selector; sel != nil && len(sel.Tail) > 0 && sel.Tail[len(sel.Tail)-1] == "contains" && len(p.Ops) == 1 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 1 {
+		base := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}}
+		targetExpr, err := c.compilePrimary(base)
+		if err != nil {
+			return "", err
+		}
+		argExpr, err := c.compileExpr(p.Ops[0].Call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s in %s)", argExpr, targetExpr), nil
+	}
+
 	expr, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
 	}
 	typ := c.inferPrimaryType(p.Target)
-	for _, op := range p.Ops {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		if op.Call != nil {
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -696,14 +711,22 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("_avg(%s)", argStr), nil
 	case "min":
 		if len(args) == 1 {
-			c.use("_min")
-			return fmt.Sprintf("_min(%s)", args[0]), nil
+			argT := c.inferExprType(call.Args[0])
+			if isNumericListOrGroup(argT) {
+				c.use("_min")
+				return fmt.Sprintf("_min(%s)", args[0]), nil
+			}
+			return fmt.Sprintf("min(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("min(%s)", argStr), nil
 	case "max":
 		if len(args) == 1 {
-			c.use("_max")
-			return fmt.Sprintf("_max(%s)", args[0]), nil
+			argT := c.inferExprType(call.Args[0])
+			if isNumericListOrGroup(argT) {
+				c.use("_max")
+				return fmt.Sprintf("_max(%s)", args[0]), nil
+			}
+			return fmt.Sprintf("max(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("max(%s)", argStr), nil
 	case "eval":

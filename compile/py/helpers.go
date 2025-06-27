@@ -145,6 +145,26 @@ func isFloat(t types.Type) bool {
 	return ok
 }
 
+func isNumber(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType:
+		return true
+	default:
+		return false
+	}
+}
+
+func isNumericListOrGroup(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.ListType:
+		return isNumber(tt.Elem)
+	case types.GroupType:
+		return isNumber(tt.Elem)
+	default:
+		return false
+	}
+}
+
 func isBool(t types.Type) bool {
 	_, ok := t.(types.BoolType)
 	return ok
