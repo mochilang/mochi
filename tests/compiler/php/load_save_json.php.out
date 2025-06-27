@@ -1,11 +1,11 @@
 <?php
 class Person {
-	public $name;
-	public $age;
-	public function __construct($fields = []) {
-		$this->name = $fields['name'] ?? null;
-		$this->age = $fields['age'] ?? null;
-	}
+    public $name;
+    public $age;
+    public function __construct($fields = []) {
+        $this->name = $fields['name'] ?? null;
+        $this->age = $fields['age'] ?? null;
+    }
 }
 
 $people = _load_json("");

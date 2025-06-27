@@ -1,15 +1,15 @@
 <?php
 class Todo {
-	public $userId;
-	public $id;
-	public $title;
-	public $completed;
-	public function __construct($fields = []) {
-		$this->userId = $fields['userId'] ?? null;
-		$this->id = $fields['id'] ?? null;
-		$this->title = $fields['title'] ?? null;
-		$this->completed = $fields['completed'] ?? null;
-	}
+    public $userId;
+    public $id;
+    public $title;
+    public $completed;
+    public function __construct($fields = []) {
+        $this->userId = $fields['userId'] ?? null;
+        $this->id = $fields['id'] ?? null;
+        $this->title = $fields['title'] ?? null;
+        $this->completed = $fields['completed'] ?? null;
+    }
 }
 
 $todo = new Todo((array)(_fetch("https://jsonplaceholder.typicode.com/todos/1", null)));
