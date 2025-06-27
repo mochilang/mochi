@@ -196,6 +196,10 @@ const (
   Seq.sum xs
 let inline avg (xs: seq< ^T >) : ^T =
   Seq.average xs
+let inline _min (xs: seq< ^T >) : ^T when ^T : comparison =
+  Seq.min xs
+let inline _max (xs: seq< ^T >) : ^T when ^T : comparison =
+  Seq.max xs
 let count (xs: seq<'T>) : int =
   Seq.length xs`
 
@@ -225,8 +229,7 @@ let count (xs: seq<'T>) : int =
   | :? string as s ->
       "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
   | :? bool
-  | :? int
-  | :? int64
+  | :? int | :? int64
   | :? double -> string v
   | :? System.Collections.Generic.IDictionary<string,obj> as m ->
       m
@@ -241,8 +244,7 @@ let count (xs: seq<'T>) : int =
       |> String.concat ","
       |> fun s -> "[" + s + "]"
   | _ -> "\"" + v.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
-
-        let _json (v: obj) : unit =
+let _json (v: obj) : unit =
   printfn "%s" (_to_json v)`
 
 	helperExtern = `let externObjects = System.Collections.Generic.Dictionary<string,obj>()

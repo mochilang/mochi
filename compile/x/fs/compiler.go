@@ -153,15 +153,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 			continue
 		}
+	}
+	for _, s := range prog.Statements {
 		if s.Test != nil {
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
 			c.writeln("")
+			continue
 		}
-	}
-	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil {
+		if s.Fun != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -1029,19 +1030,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		indent := "    "
 		rows.WriteString("[|\n")
 		rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Var), src))
+		ind := indent + "    "
 		for i, f := range q.Froms {
-			rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(f.Var), fromSrc[i]))
+			rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(f.Var), fromSrc[i]))
+			ind += "    "
 		}
 		for i := range joinSrc {
-			rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Joins[i].Var), joinSrc[i]))
+			rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(q.Joins[i].Var), joinSrc[i]))
+			ind += "    "
 			if joinOns[i] != "" {
-				rows.WriteString(fmt.Sprintf("%sif %s then\n", indent, joinOns[i]))
+				rows.WriteString(fmt.Sprintf("%sif %s then\n", ind, joinOns[i]))
+				ind += "    "
 			}
 		}
 		if whereExpr != "" {
-			rows.WriteString(fmt.Sprintf("%sif %s then\n", indent, whereExpr))
+			rows.WriteString(fmt.Sprintf("%sif %s then\n", ind, whereExpr))
+			ind += "    "
 		}
-		rows.WriteString(fmt.Sprintf("%syield %s\n", indent, tuple))
+		rows.WriteString(fmt.Sprintf("%syield %s\n", ind, tuple))
 		rows.WriteString("|]")
 		groupRows := rows.String()
 
@@ -1082,23 +1088,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	indent := "    "
 	buf.WriteString("[|\n")
 	buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Var), src))
+	ind := indent + "    "
 	for i, f := range q.Froms {
-		buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(f.Var), fromSrc[i]))
+		buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(f.Var), fromSrc[i]))
+		ind += "    "
 	}
 	for i := range joinSrc {
-		buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Joins[i].Var), joinSrc[i]))
+		buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(q.Joins[i].Var), joinSrc[i]))
+		ind += "    "
 		if joinOns[i] != "" {
-			buf.WriteString(fmt.Sprintf("%sif %s then\n", indent, joinOns[i]))
+			buf.WriteString(fmt.Sprintf("%sif %s then\n", ind, joinOns[i]))
+			ind += "    "
 		}
 	}
 	if whereExpr != "" {
-		buf.WriteString(fmt.Sprintf("%sif %s then\n", indent, whereExpr))
+		buf.WriteString(fmt.Sprintf("%sif %s then\n", ind, whereExpr))
+		ind += "    "
 	}
 	if q.Sort != nil {
-		buf.WriteString(fmt.Sprintf("%syield (%s, %s)\n", indent, sortExpr, sel))
+		buf.WriteString(fmt.Sprintf("%syield (%s, %s)\n", ind, sortExpr, sel))
 		buf.WriteString("|] |> Array.sortBy fst |> Array.map snd")
 	} else {
-		buf.WriteString(fmt.Sprintf("%syield %s\n", indent, sel))
+		buf.WriteString(fmt.Sprintf("%syield %s\n", ind, sel))
 		buf.WriteString("|]")
 	}
 	if skipExpr != "" {
@@ -1535,6 +1546,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_seq_helpers")
 		return fmt.Sprintf("avg %s", args[0]), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		c.use("_seq_helpers")
+		return fmt.Sprintf("_min %s", args[0]), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		c.use("_seq_helpers")
+		return fmt.Sprintf("_max %s", args[0]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")
