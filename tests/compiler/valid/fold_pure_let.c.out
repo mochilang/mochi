@@ -1,20 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
-int sumN(int n){
-	return ((n * ((n + 1))) / 2);
-}
+int sumN(int n) { return ((n * ((n + 1))) / 2); }
 
 int main() {
-	int n = 10;
-	printf("%d\n", sumN(n));
-	printf("%d\n", n);
-	return 0;
+  int n = 10;
+  printf("%d\n", sumN(n));
+  printf("%d\n", n);
+  return 0;
 }

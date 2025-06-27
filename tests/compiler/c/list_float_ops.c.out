@@ -1,61 +1,80 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
-typedef struct { int len; double *data; } list_float;
+typedef struct {
+  int len;
+  double *data;
+} list_float;
 static list_float list_float_create(int len) {
-    list_float l;
-    l.len = len;
-    l.data = (double*)malloc(sizeof(double)*len);
-    return l;
+  list_float l;
+  l.len = len;
+  l.data = (double *)malloc(sizeof(double) * len);
+  return l;
 }
 static list_float union_list_float(list_float a, list_float b) {
-    list_float r = list_float_create(a.len + b.len);
-    int idx = 0;
-    for (int i = 0; i < a.len; i++) {
-        int found = 0;
-        for (int j = 0; j < idx; j++) if (r.data[j] == a.data[i]) { found = 1; break; }
-        if (!found) r.data[idx++] = a.data[i];
-    }
-    for (int i = 0; i < b.len; i++) {
-        int found = 0;
-        for (int j = 0; j < idx; j++) if (r.data[j] == b.data[i]) { found = 1; break; }
-        if (!found) r.data[idx++] = b.data[i];
-    }
-    r.len = idx;
-    return r;
+  list_float r = list_float_create(a.len + b.len);
+  int idx = 0;
+  for (int i = 0; i < a.len; i++) {
+    int found = 0;
+    for (int j = 0; j < idx; j++)
+      if (r.data[j] == a.data[i]) {
+        found = 1;
+        break;
+      }
+    if (!found)
+      r.data[idx++] = a.data[i];
+  }
+  for (int i = 0; i < b.len; i++) {
+    int found = 0;
+    for (int j = 0; j < idx; j++)
+      if (r.data[j] == b.data[i]) {
+        found = 1;
+        break;
+      }
+    if (!found)
+      r.data[idx++] = b.data[i];
+  }
+  r.len = idx;
+  return r;
 }
 static int contains_list_float(list_float v, double item) {
-    for (int i = 0; i < v.len; i++) if (v.data[i] == item) return 1;
-    return 0;
+  for (int i = 0; i < v.len; i++)
+    if (v.data[i] == item)
+      return 1;
+  return 0;
 }
 static void _print_list_float(list_float v) {
-    printf("[");
-    for (int i = 0; i < v.len; i++) {
-        if (i > 0) printf(" ");
-        printf("%g", v.data[i]);
-    }
-    printf("]");
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(" ");
+    printf("%g", v.data[i]);
+  }
+  printf("]");
 }
 int main() {
-	list_float _t1 = list_float_create(2);
-	_t1.data[0] = 1.5;
-	_t1.data[1] = 2.5;
-	list_float _t2 = list_float_create(2);
-	_t2.data[0] = 2.5;
-	_t2.data[1] = 3.0;
-	list_float _t3 = union_list_float(_t1, _t2);
-	_print_list_float(_t3);
-	printf("\n");
-	list_float _t4 = list_float_create(2);
-	_t4.data[0] = 1.0;
-	_t4.data[1] = 1.5;
-	printf("%d\n", contains_list_float(_t4, 1.5));
-	return 0;
+  list_float _t1 = list_float_create(2);
+  _t1.data[0] = 1.5;
+  _t1.data[1] = 2.5;
+  list_float _t2 = list_float_create(2);
+  _t2.data[0] = 2.5;
+  _t2.data[1] = 3.0;
+  list_float _t3 = union_list_float(_t1, _t2);
+  _print_list_float(_t3);
+  printf("\n");
+  list_float _t4 = list_float_create(2);
+  _t4.data[0] = 1.0;
+  _t4.data[1] = 1.5;
+  printf("%d\n", contains_list_float(_t4, 1.5));
+  return 0;
 }

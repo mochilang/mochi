@@ -3,6 +3,7 @@ package ccode
 import (
 	"bytes"
 	"fmt"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -93,6 +94,16 @@ func (c *Compiler) writeIndent() {
 func (c *Compiler) newTemp() string {
 	c.tmp++
 	return fmt.Sprintf("_t%d", c.tmp)
+}
+
+func formatC(src []byte) []byte {
+	cmd := exec.Command("clang-format", "-style=LLVM")
+	cmd.Stdin = bytes.NewReader(src)
+	out, err := cmd.Output()
+	if err != nil {
+		return src
+	}
+	return out
 }
 
 func (c *Compiler) need(key string) {
@@ -312,7 +323,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 	c.buf.WriteString(body)
-	return c.buf.Bytes(), nil
+	return formatC(c.buf.Bytes()), nil
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {

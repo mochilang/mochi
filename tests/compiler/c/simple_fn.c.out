@@ -1,18 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct { int len; int *data; } list_int;
+typedef struct {
+  int len;
+  int *data;
+} list_int;
 static list_int list_int_create(int len) {
-    list_int l;
-    l.len = len;
-    l.data = (int*)malloc(sizeof(int)*len);
-    return l;
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
 }
-int id(int x){
-	return x;
-}
+int id(int x) { return x; }
 
 int main() {
-	printf("%d\n", id(123));
-	return 0;
+  printf("%d\n", id(123));
+  return 0;
 }
