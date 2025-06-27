@@ -1,0 +1,60 @@
+let aka_name = [
+  { person_id: 1, name: "Y. S." }
+]
+
+let cast_info = [
+  { person_id: 1, movie_id: 10, note: "(voice: English version)", role_id: 1000 }
+]
+
+let company_name = [
+  { id: 50, country_code: "[jp]" }
+]
+
+let movie_companies = [
+  { movie_id: 10, company_id: 50, note: "Studio (Japan)" }
+]
+
+let name = [
+  { id: 1, name: "Yoko Ono" },
+  { id: 2, name: "Yuichi" } // filtered out
+]
+
+let role_type = [
+  { id: 1000, role: "actress" }
+]
+
+let title = [
+  { id: 10, title: "Dubbed Film" }
+]
+
+let eligible =
+  from an1 in aka_name
+  join n1 in name on n1.id == an1.person_id
+  join ci in cast_info on ci.person_id == an1.person_id
+  join t in title on t.id == ci.movie_id
+  join mc in movie_companies on mc.movie_id == ci.movie_id
+  join cn in company_name on cn.id == mc.company_id
+  join rt in role_type on rt.id == ci.role_id
+  where ci.note == "(voice: English version)" &&
+        cn.country_code == "[jp]" &&
+        mc.note.contains("(Japan)") &&
+        !(mc.note.contains("(USA)")) &&
+        n1.name.contains("Yo") &&
+        !(n1.name.contains("Yu")) &&
+        rt.role == "actress"
+  select { pseudonym: an1.name, movie_title: t.title }
+
+let result = [
+  {
+    actress_pseudonym: min(from x in eligible select x.pseudonym),
+    japanese_movie_dubbed: min(from x in eligible select x.movie_title)
+  }
+]
+
+print(result)
+
+test "Q8 returns the pseudonym and movie title for Japanese dubbing" {
+  expect result == [
+    { actress_pseudonym: "Y. S.", japanese_movie_dubbed: "Dubbed Film" }
+  ]
+}
