@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"mochi/parser"
+	"mochi/types"
 )
 
 func analyzeVarUsage(stmts []*parser.Statement) map[any]bool {
@@ -95,14 +96,24 @@ func (c *Compiler) compileTestBlocks(prog *parser.Program) error {
 
 func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	hasTests := hasTest(prog)
-	// Emit global variables for statements that appear before any test block.
+	// Emit declarations for variables referenced by later test blocks and
+	// initialise them inside main. Initialising complex expressions at the
+	// package level can produce invalid Go code (e.g. loops outside of
+	// functions).
+	initAssigns := []*parser.AssignStmt{}
 	for i, s := range prog.Statements {
 		if s.Let == nil && s.Var == nil {
 			continue
 		}
 		if hasLaterTest(prog, i) {
-			if err := c.compileStmt(s); err != nil {
+			if err := c.compileGlobalVarDecl(s); err != nil {
 				return err
+			}
+			if s.Let != nil && s.Let.Value != nil {
+				initAssigns = append(initAssigns, &parser.AssignStmt{Name: s.Let.Name, Value: s.Let.Value})
+			}
+			if s.Var != nil && s.Var.Value != nil {
+				initAssigns = append(initAssigns, &parser.AssignStmt{Name: s.Var.Name, Value: s.Var.Value})
 			}
 		}
 	}
@@ -121,6 +132,11 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 		sort.Strings(names)
 		for _, name := range names {
 			c.writeln(fmt.Sprintf("if _, ok := extern.Get(%q); !ok { panic(\"extern object not registered: %s\") }", name, name))
+		}
+	}
+	for _, a := range initAssigns {
+		if err := c.compileAssign(a); err != nil {
+			return err
 		}
 	}
 	body := []*parser.Statement{}
@@ -185,6 +201,62 @@ func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	}
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+// compileGlobalVarDecl emits a package-level variable declaration without
+// initialisation. The actual value will be assigned inside main.
+func (c *Compiler) compileGlobalVarDecl(s *parser.Statement) error {
+	switch {
+	case s.Let != nil:
+		name := sanitizeName(s.Let.Name)
+		var t types.Type = types.AnyType{}
+		if c.env != nil {
+			if s.Let.Type != nil {
+				t = c.resolveTypeRef(s.Let.Type)
+			} else if s.Let.Value != nil {
+				t = c.inferExprType(s.Let.Value)
+				if ll := s.Let.Value.Binary.Left.Value.Target.List; ll != nil {
+					if st, ok := c.inferStructFromList(ll, s.Let.Name); ok {
+						t = types.ListType{Elem: st}
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					}
+				}
+			} else if old, err := c.env.GetVar(s.Let.Name); err == nil {
+				t = old
+			}
+			c.env.SetVar(s.Let.Name, t, false)
+		}
+		c.writeln(fmt.Sprintf("var %s %s", name, goType(t)))
+		if !c.varUsed(s.Let) {
+			c.writeln(fmt.Sprintf("_ = %s", name))
+		}
+	case s.Var != nil:
+		name := sanitizeName(s.Var.Name)
+		var t types.Type = types.AnyType{}
+		if c.env != nil {
+			if s.Var.Type != nil {
+				t = c.resolveTypeRef(s.Var.Type)
+			} else if s.Var.Value != nil {
+				t = c.inferExprTypeHint(s.Var.Value, t)
+				if ll := s.Var.Value.Binary.Left.Value.Target.List; ll != nil {
+					if st, ok := c.inferStructFromList(ll, s.Var.Name); ok {
+						t = types.ListType{Elem: st}
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					}
+				}
+			} else if old, err := c.env.GetVar(s.Var.Name); err == nil {
+				t = old
+			}
+			c.env.SetVar(s.Var.Name, t, true)
+		}
+		c.writeln(fmt.Sprintf("var %s %s", name, goType(t)))
+		if !c.varUsed(s.Var) {
+			c.writeln(fmt.Sprintf("_ = %s", name))
+		}
+	}
 	return nil
 }
 

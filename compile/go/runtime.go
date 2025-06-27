@@ -353,6 +353,13 @@ const (
 		"    return out\n" +
 		"}\n"
 
+	helperContains = "func _contains[T comparable](s []T, v T) bool {\n" +
+		"    for _, x := range s {\n" +
+		"        if x == v { return true }\n" +
+		"    }\n" +
+		"    return false\n" +
+		"}\n"
+
 	helperCast = "func _cast[T any](v any) T {\n" +
 		"    if tv, ok := v.(T); ok { return tv }\n" +
 		"    var out T\n" +
@@ -620,6 +627,7 @@ var helperMap = map[string]string{
 	"_toAnyMap":      helperToAnyMap,
 	"_toAnySlice":    helperToAnySlice,
 	"_convSlice":     helperConvSlice,
+	"_contains":      helperContains,
 	"_cast":          helperCast,
 	"_convertMapAny": helperConvertMapAny,
 	"_equal":         helperEqual,

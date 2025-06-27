@@ -1,12 +1,13 @@
 # Go Compiler JOB Queries
 
-Some JOB dataset programs do not compile or run correctly.
-The generator script attempted to compile `q1` to `q10` but the
-following queries failed:
+The JOB dataset queries now build using the Go backend, but several
+still fail their embedded tests. Generation results:
 
-- `q3` and `q9` produce Go code with global statements and fail to build.
-- `q5` fails to run due to invalid generated Go syntax.
-- `q7` fails during compilation: boolean `&&` on `bool` and `any` unsupported.
+- `q1`, `q2` and `q6` compile and pass tests.
+- `q3`, `q4`, `q5`, `q8`, `q9` and `q10` compile, but the generated
+  programs report failed expectations.
+- `q7` does not emit a Go file when built.
 
-Remaining queries (`q2`, `q4`, `q6`, `q8`, `q10`) compiled and ran successfully.
-Further work is needed to fix code generation for the failing queries.
+Golden outputs have been updated for the queries that compile. Further
+work is required to make the failing programs pass their tests and to
+determine why `q7` is skipped during compilation.
