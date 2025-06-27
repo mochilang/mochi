@@ -13,22 +13,24 @@ import (
 
 // Compiler translates a Mochi AST into OCaml source code (very limited subset).
 type Compiler struct {
-	pre     bytes.Buffer
-	buf     bytes.Buffer
-	indent  int
-	env     *types.Env
-	tmp     int
-	vars    map[string]bool
-	mapVars map[string]bool
-	structs map[string]bool
-	setNth  bool
-	slice   bool
-	input   bool
-	dataset bool
-	fetch   bool
-	loopTmp int
-	loops   []loopCtx
-	funTmp  int
+	pre       bytes.Buffer
+	buf       bytes.Buffer
+	indent    int
+	env       *types.Env
+	tmp       int
+	vars      map[string]bool
+	mapVars   map[string]bool
+	structs   map[string]bool
+	setNth    bool
+	slice     bool
+	input     bool
+	dataset   bool
+	fetch     bool
+	loopTmp   int
+	loops     []loopCtx
+	funTmp    int
+	groupVars map[string]bool
+	groupType bool
 }
 
 type loopCtx struct {
@@ -85,11 +87,12 @@ func programHasLoopCtrl(stmts []*parser.Statement) bool {
 // New creates a new OCaml compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:     env,
-		vars:    map[string]bool{},
-		mapVars: map[string]bool{},
-		structs: map[string]bool{},
-		loops:   []loopCtx{},
+		env:       env,
+		vars:      map[string]bool{},
+		mapVars:   map[string]bool{},
+		structs:   map[string]bool{},
+		loops:     []loopCtx{},
+		groupVars: map[string]bool{},
 	}
 }
 
@@ -272,6 +275,15 @@ func (c *Compiler) ensureDataset() {
 	b.WriteString("  Yojson.Basic.to_channel oc (`List rows);\n")
 	b.WriteString("  output_char oc '\\n';\n")
 	b.WriteString("  if oc != stdout then close_out oc;;\n\n")
+}
+
+func (c *Compiler) ensureGroupType() {
+	if c.groupType {
+		return
+	}
+	c.groupType = true
+	b := &c.pre
+	b.WriteString("type ('k,'v) _group = { key: 'k; items: 'v list };;\n\n")
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -921,6 +933,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return b.String(), nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		if c.groupVars[name] && len(p.Selector.Tail) == 0 {
+			return name + ".items", nil
+		}
 		if c.vars[name] {
 			name = "!" + name
 		}
@@ -1093,6 +1108,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			c.ensureInput()
 			return "_input ()", nil
 		}
+	case "count":
+		if len(args) == 1 {
+			if id, ok := simpleIdent(call.Args[0]); ok {
+				n := sanitizeName(id)
+				if c.groupVars[n] {
+					return fmt.Sprintf("List.length %s.items", n), nil
+				}
+			}
+			return fmt.Sprintf("List.length %s", args[0]), nil
+		}
 	}
 	name := sanitizeName(call.Func)
 	if c.vars[name] {
@@ -1203,6 +1228,9 @@ func (c *Compiler) compileFetchExprTyped(f *parser.FetchExpr, typ types.Type) (s
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if q.Group != nil && len(q.Joins) == 0 && len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		return c.compileGroupedQuery(q)
+	}
 	if len(q.Joins) > 0 || q.Group != nil {
 		return "", fmt.Errorf("unsupported query expression")
 	}
@@ -1353,6 +1381,63 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("  let res = _slice res 0 %s in\n", takeStr))
 	}
 	b.WriteString("  res)")
+	return b.String(), nil
+}
+
+func (c *Compiler) compileGroupedQuery(q *parser.QueryExpr) (string, error) {
+	orig := c.env
+	child := types.NewEnv(orig)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	c.env = child
+	var condStr string
+	var err error
+	if q.Where != nil {
+		condStr, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	genv := types.NewEnv(child)
+	genv.SetVar(q.Group.Name, types.AnyType{}, true)
+	c.env = genv
+	if c.groupVars == nil {
+		c.groupVars = map[string]bool{}
+	}
+	c.groupVars[sanitizeName(q.Group.Name)] = true
+	valExpr, err := c.compileExpr(q.Select)
+	delete(c.groupVars, sanitizeName(q.Group.Name))
+	c.env = orig
+	if err != nil {
+		return "", err
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	c.ensureGroupType()
+	var b strings.Builder
+	b.WriteString("(let tbl = Hashtbl.create 16 in\n")
+	b.WriteString(fmt.Sprintf(" List.iter (fun %s ->\n", sanitizeName(q.Var)))
+	if condStr != "" {
+		b.WriteString(fmt.Sprintf("  if %s then (\n", condStr))
+	}
+	b.WriteString(fmt.Sprintf("    let key = %s in\n", keyExpr))
+	b.WriteString("    let bucket = match Hashtbl.find_opt tbl key with\n")
+	b.WriteString("      | Some b -> b\n      | None -> let r = ref [] in Hashtbl.add tbl key r; r in\n")
+	b.WriteString(fmt.Sprintf("    bucket := %s :: !bucket;\n", sanitizeName(q.Var)))
+	if condStr != "" {
+		b.WriteString("  ) else ();\n")
+	}
+	b.WriteString(fmt.Sprintf(") %s);\n", src))
+	b.WriteString("let res = ref [] in\n")
+	b.WriteString(fmt.Sprintf("Hashtbl.iter (fun key bucket ->\n  let %s = { key = key; items = List.rev !bucket } in\n  res := %s :: !res\n) tbl;\n", sanitizeName(q.Group.Name), valExpr))
+	b.WriteString("List.rev !res)")
 	return b.String(), nil
 }
 
