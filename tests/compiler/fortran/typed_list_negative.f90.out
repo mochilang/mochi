@@ -1,17 +1,17 @@
 program main
-   implicit none
-   integer(kind=8), allocatable :: xs(:)
-   allocate(xs(0))
-   xs = (/((-1_8)), 0_8, 1_8/)
-   call test_values()
+  implicit none
+  integer(kind=8), allocatable :: xs(:)
+  allocate (xs(0))
+  xs = (/((-1_8)), 0_8, 1_8/)
+  call test_values()
 contains
-   subroutine test_values()
-      implicit none
-      if (.not. (all(xs == (/((-1_8)), 0_8, 1_8/)))) then
-         print *, 'expect failed'
-         stop 1
-      end if
-      print *, 'done'
-   end subroutine test_values
+  subroutine test_values()
+    implicit none
+    if (.not. (all(xs == (/((-1_8)), 0_8, 1_8/)))) then
+      print *, 'expect failed'
+      stop 1
+    end if
+    print *, 'done'
+  end subroutine test_values
 
 end program main
