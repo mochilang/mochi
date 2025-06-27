@@ -1,0 +1,4 @@
+[{"alternative_name":"A. N. G.","character_name":"Angel","movie":"Famous Film"}]
+   test Q9 selects minimal alternative name, character and movie ... fail expect failed (4.0µs)
+
+[FAIL] 1 test(s) failed.

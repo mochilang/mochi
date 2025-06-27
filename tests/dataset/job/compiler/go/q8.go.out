@@ -49,10 +49,7 @@ type Aka_nameItem struct {
 	Name      string `json:"name"`
 }
 
-var aka_name []Aka_nameItem = []Aka_nameItem{Aka_nameItem{
-	Person_id: 1,
-	Name:      "Y. S.",
-}}
+var aka_name []Aka_nameItem
 
 type Cast_infoItem struct {
 	Person_id int    `json:"person_id"`
@@ -61,22 +58,14 @@ type Cast_infoItem struct {
 	Role_id   int    `json:"role_id"`
 }
 
-var cast_info []Cast_infoItem = []Cast_infoItem{Cast_infoItem{
-	Person_id: 1,
-	Movie_id:  10,
-	Note:      "(voice: English version)",
-	Role_id:   1000,
-}}
+var cast_info []Cast_infoItem
 
 type Company_nameItem struct {
 	Id           int    `json:"id"`
 	Country_code string `json:"country_code"`
 }
 
-var company_name []Company_nameItem = []Company_nameItem{Company_nameItem{
-	Id:           50,
-	Country_code: "[jp]",
-}}
+var company_name []Company_nameItem
 
 type Movie_companiesItem struct {
 	Movie_id   int    `json:"movie_id"`
@@ -84,74 +73,104 @@ type Movie_companiesItem struct {
 	Note       string `json:"note"`
 }
 
-var movie_companies []Movie_companiesItem = []Movie_companiesItem{Movie_companiesItem{
-	Movie_id:   10,
-	Company_id: 50,
-	Note:       "Studio (Japan)",
-}}
+var movie_companies []Movie_companiesItem
 
 type NameItem struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-var name []NameItem = []NameItem{NameItem{
-	Id:   1,
-	Name: "Yoko Ono",
-}, NameItem{
-	Id:   2,
-	Name: "Yuichi",
-}}
+var name []NameItem
 
 type Role_typeItem struct {
 	Id   int    `json:"id"`
 	Role string `json:"role"`
 }
 
-var role_type []Role_typeItem = []Role_typeItem{Role_typeItem{
-	Id:   1000,
-	Role: "actress",
-}}
+var role_type []Role_typeItem
 
 type TitleItem struct {
 	Id    int    `json:"id"`
 	Title string `json:"title"`
 }
 
-var title []TitleItem = []TitleItem{TitleItem{
-	Id:    10,
-	Title: "Dubbed Film",
-}}
-var eligible []map[string]string = func() []map[string]string {
-	_res := []map[string]string{}
-	for _, an1 := range aka_name {
-		for _, n1 := range name {
-			if !(n1.Id == an1.Person_id) {
-				continue
-			}
-			for _, ci := range cast_info {
-				if !(ci.Person_id == an1.Person_id) {
+var title []TitleItem
+var eligible []map[string]string
+
+type ResultItem struct {
+	Actress_pseudonym     any `json:"actress_pseudonym"`
+	Japanese_movie_dubbed any `json:"japanese_movie_dubbed"`
+}
+
+var result []ResultItem
+
+func main() {
+	failures := 0
+	aka_name = _cast[[]Aka_nameItem]([]Aka_nameItem{Aka_nameItem{
+		Person_id: 1,
+		Name:      "Y. S.",
+	}})
+	cast_info = _cast[[]Cast_infoItem]([]Cast_infoItem{Cast_infoItem{
+		Person_id: 1,
+		Movie_id:  10,
+		Note:      "(voice: English version)",
+		Role_id:   1000,
+	}})
+	company_name = _cast[[]Company_nameItem]([]Company_nameItem{Company_nameItem{
+		Id:           50,
+		Country_code: "[jp]",
+	}})
+	movie_companies = _cast[[]Movie_companiesItem]([]Movie_companiesItem{Movie_companiesItem{
+		Movie_id:   10,
+		Company_id: 50,
+		Note:       "Studio (Japan)",
+	}})
+	name = _cast[[]NameItem]([]NameItem{NameItem{
+		Id:   1,
+		Name: "Yoko Ono",
+	}, NameItem{
+		Id:   2,
+		Name: "Yuichi",
+	}})
+	role_type = _cast[[]Role_typeItem]([]Role_typeItem{Role_typeItem{
+		Id:   1000,
+		Role: "actress",
+	}})
+	title = _cast[[]TitleItem]([]TitleItem{TitleItem{
+		Id:    10,
+		Title: "Dubbed Film",
+	}})
+	eligible = func() []map[string]string {
+		_res := []map[string]string{}
+		for _, an1 := range aka_name {
+			for _, n1 := range name {
+				if !(n1.Id == an1.Person_id) {
 					continue
 				}
-				for _, t := range title {
-					if !(t.Id == ci.Movie_id) {
+				for _, ci := range cast_info {
+					if !(ci.Person_id == an1.Person_id) {
 						continue
 					}
-					for _, mc := range movie_companies {
-						if !(mc.Movie_id == ci.Movie_id) {
+					for _, t := range title {
+						if !(t.Id == ci.Movie_id) {
 							continue
 						}
-						for _, cn := range company_name {
-							if !(cn.Id == mc.Company_id) {
+						for _, mc := range movie_companies {
+							if !(mc.Movie_id == ci.Movie_id) {
 								continue
 							}
-							for _, rt := range role_type {
-								if !(rt.Id == ci.Role_id) {
+							for _, cn := range company_name {
+								if !(cn.Id == mc.Company_id) {
 									continue
 								}
-								if ((((((ci.Note == "(voice: English version)") && (cn.Country_code == "[jp]")) && strings.Contains(mc.Note, "(Japan)")) && (!strings.Contains(mc.Note, "(USA)"))) && strings.Contains(n1.Name, "Yo")) && (!strings.Contains(n1.Name, "Yu"))) && (rt.Role == "actress") {
+								for _, rt := range role_type {
+									if !(rt.Id == ci.Role_id) {
+										continue
+									}
 									if ((((((ci.Note == "(voice: English version)") && (cn.Country_code == "[jp]")) && strings.Contains(mc.Note, "(Japan)")) && (!strings.Contains(mc.Note, "(USA)"))) && strings.Contains(n1.Name, "Yo")) && (!strings.Contains(n1.Name, "Yu"))) && (rt.Role == "actress") {
-										_res = append(_res, map[string]string{"pseudonym": an1.Name, "movie_title": t.Title})
+										if ((((((ci.Note == "(voice: English version)") && (cn.Country_code == "[jp]")) && strings.Contains(mc.Note, "(Japan)")) && (!strings.Contains(mc.Note, "(USA)"))) && strings.Contains(n1.Name, "Yo")) && (!strings.Contains(n1.Name, "Yu"))) && (rt.Role == "actress") {
+											_res = append(_res, map[string]string{"pseudonym": an1.Name, "movie_title": t.Title})
+										}
 									}
 								}
 							}
@@ -160,34 +179,24 @@ var eligible []map[string]string = func() []map[string]string {
 				}
 			}
 		}
-	}
-	return _res
-}()
-
-type ResultItem struct {
-	Actress_pseudonym     any `json:"actress_pseudonym"`
-	Japanese_movie_dubbed any `json:"japanese_movie_dubbed"`
-}
-
-var result []ResultItem = []ResultItem{ResultItem{
-	Actress_pseudonym: _min(func() []string {
-		_res := []string{}
-		for _, x := range eligible {
-			_res = append(_res, x["pseudonym"])
-		}
 		return _res
-	}()),
-	Japanese_movie_dubbed: _min(func() []string {
-		_res := []string{}
-		for _, x := range eligible {
-			_res = append(_res, x["movie_title"])
-		}
-		return _res
-	}()),
-}}
-
-func main() {
-	failures := 0
+	}()
+	result = _cast[[]ResultItem]([]ResultItem{ResultItem{
+		Actress_pseudonym: _min(func() []string {
+			_res := []string{}
+			for _, x := range eligible {
+				_res = append(_res, x["pseudonym"])
+			}
+			return _res
+		}()),
+		Japanese_movie_dubbed: _min(func() []string {
+			_res := []string{}
+			for _, x := range eligible {
+				_res = append(_res, x["movie_title"])
+			}
+			return _res
+		}()),
+	}})
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
 		printTestStart("Q8 returns the pseudonym and movie title for Japanese dubbing")
@@ -211,6 +220,66 @@ func main() {
 	if failures > 0 {
 		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
 	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
 }
 
 func _equal(a, b any) bool {

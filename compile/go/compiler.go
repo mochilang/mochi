@@ -1511,19 +1511,16 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			expr = okVar
 			next = types.BoolType{}
 		case types.ListType:
-			itemVar := c.newVar()
-			listVar := c.newVar()
-			c.writeln(fmt.Sprintf("%s := %s", itemVar, left))
-			c.writeln(fmt.Sprintf("%s := %s", listVar, right))
-			resultVar := c.newVar()
-			c.writeln(fmt.Sprintf("%s := false", resultVar))
-			iterVar := c.newVar()
-			c.writeln(fmt.Sprintf("for _, %s := range %s {", iterVar, listVar))
-			c.indent++
-			c.writeln(fmt.Sprintf("if %s == %s { %s = true; break }", iterVar, itemVar, resultVar))
-			c.indent--
-			c.writeln("}")
-			expr = resultVar
+			lt := rightType.(types.ListType)
+			elemGo := goType(lt.Elem)
+			itemExpr := left
+			if !equalTypes(leftType, lt.Elem) || isAny(leftType) {
+				c.use("_cast")
+				c.imports["encoding/json"] = true
+				itemExpr = fmt.Sprintf("_cast[%s](%s)", elemGo, left)
+			}
+			c.use("_contains")
+			expr = fmt.Sprintf("_contains[%s](%s, %s)", elemGo, right, itemExpr)
 			next = types.BoolType{}
 		case types.StringType:
 			c.imports["strings"] = true

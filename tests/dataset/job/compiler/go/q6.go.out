@@ -52,52 +52,28 @@ type Cast_infoItem struct {
 	Person_id int `json:"person_id"`
 }
 
-var cast_info []Cast_infoItem = []Cast_infoItem{Cast_infoItem{
-	Movie_id:  1,
-	Person_id: 101,
-}, Cast_infoItem{
-	Movie_id:  2,
-	Person_id: 102,
-}}
+var cast_info []Cast_infoItem
 
 type KeywordItem struct {
 	Id      int    `json:"id"`
 	Keyword string `json:"keyword"`
 }
 
-var keyword []KeywordItem = []KeywordItem{KeywordItem{
-	Id:      100,
-	Keyword: "marvel-cinematic-universe",
-}, KeywordItem{
-	Id:      200,
-	Keyword: "other",
-}}
+var keyword []KeywordItem
 
 type Movie_keywordItem struct {
 	Movie_id   int `json:"movie_id"`
 	Keyword_id int `json:"keyword_id"`
 }
 
-var movie_keyword []Movie_keywordItem = []Movie_keywordItem{Movie_keywordItem{
-	Movie_id:   1,
-	Keyword_id: 100,
-}, Movie_keywordItem{
-	Movie_id:   2,
-	Keyword_id: 200,
-}}
+var movie_keyword []Movie_keywordItem
 
 type NameItem struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-var name []NameItem = []NameItem{NameItem{
-	Id:   101,
-	Name: "Downey Robert Jr.",
-}, NameItem{
-	Id:   102,
-	Name: "Chris Evans",
-}}
+var name []NameItem
 
 type TitleItem struct {
 	Id              int    `json:"id"`
@@ -105,53 +81,83 @@ type TitleItem struct {
 	Production_year int    `json:"production_year"`
 }
 
-var title []TitleItem = []TitleItem{TitleItem{
-	Id:              1,
-	Title:           "Iron Man 3",
-	Production_year: 2013,
-}, TitleItem{
-	Id:              2,
-	Title:           "Old Movie",
-	Production_year: 2000,
-}}
-var result []map[string]string = func() []map[string]string {
-	_res := []map[string]string{}
-	for _, ci := range cast_info {
-		for _, mk := range movie_keyword {
-			if !(ci.Movie_id == mk.Movie_id) {
-				continue
-			}
-			for _, k := range keyword {
-				if !(mk.Keyword_id == k.Id) {
+var title []TitleItem
+var result []map[string]string
+
+func main() {
+	failures := 0
+	cast_info = _cast[[]Cast_infoItem]([]Cast_infoItem{Cast_infoItem{
+		Movie_id:  1,
+		Person_id: 101,
+	}, Cast_infoItem{
+		Movie_id:  2,
+		Person_id: 102,
+	}})
+	keyword = _cast[[]KeywordItem]([]KeywordItem{KeywordItem{
+		Id:      100,
+		Keyword: "marvel-cinematic-universe",
+	}, KeywordItem{
+		Id:      200,
+		Keyword: "other",
+	}})
+	movie_keyword = _cast[[]Movie_keywordItem]([]Movie_keywordItem{Movie_keywordItem{
+		Movie_id:   1,
+		Keyword_id: 100,
+	}, Movie_keywordItem{
+		Movie_id:   2,
+		Keyword_id: 200,
+	}})
+	name = _cast[[]NameItem]([]NameItem{NameItem{
+		Id:   101,
+		Name: "Downey Robert Jr.",
+	}, NameItem{
+		Id:   102,
+		Name: "Chris Evans",
+	}})
+	title = _cast[[]TitleItem]([]TitleItem{TitleItem{
+		Id:              1,
+		Title:           "Iron Man 3",
+		Production_year: 2013,
+	}, TitleItem{
+		Id:              2,
+		Title:           "Old Movie",
+		Production_year: 2000,
+	}})
+	result = func() []map[string]string {
+		_res := []map[string]string{}
+		for _, ci := range cast_info {
+			for _, mk := range movie_keyword {
+				if !(ci.Movie_id == mk.Movie_id) {
 					continue
 				}
-				for _, n := range name {
-					if !(ci.Person_id == n.Id) {
+				for _, k := range keyword {
+					if !(mk.Keyword_id == k.Id) {
 						continue
 					}
-					for _, t := range title {
-						if !(ci.Movie_id == t.Id) {
+					for _, n := range name {
+						if !(ci.Person_id == n.Id) {
 							continue
 						}
-						if (((k.Keyword == "marvel-cinematic-universe") && strings.Contains(n.Name, "Downey")) && strings.Contains(n.Name, "Robert")) && (t.Production_year > 2010) {
+						for _, t := range title {
+							if !(ci.Movie_id == t.Id) {
+								continue
+							}
 							if (((k.Keyword == "marvel-cinematic-universe") && strings.Contains(n.Name, "Downey")) && strings.Contains(n.Name, "Robert")) && (t.Production_year > 2010) {
-								_res = append(_res, map[string]string{
-									"movie_keyword": k.Keyword,
-									"actor_name":    n.Name,
-									"marvel_movie":  t.Title,
-								})
+								if (((k.Keyword == "marvel-cinematic-universe") && strings.Contains(n.Name, "Downey")) && strings.Contains(n.Name, "Robert")) && (t.Production_year > 2010) {
+									_res = append(_res, map[string]string{
+										"movie_keyword": k.Keyword,
+										"actor_name":    n.Name,
+										"marvel_movie":  t.Title,
+									})
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-	}
-	return _res
-}()
-
-func main() {
-	failures := 0
+		return _res
+	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
 		printTestStart("Q6 finds marvel movie with Robert Downey")
@@ -175,6 +181,66 @@ func main() {
 	if failures > 0 {
 		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
 	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
 }
 
 func _equal(a, b any) bool {

@@ -53,26 +53,14 @@ type Company_typeItem struct {
 	Kind string `json:"kind"`
 }
 
-var company_type []Company_typeItem = []Company_typeItem{Company_typeItem{
-	Id:   1,
-	Kind: "production companies",
-}, Company_typeItem{
-	Id:   2,
-	Kind: "distributors",
-}}
+var company_type []Company_typeItem
 
 type Info_typeItem struct {
 	Id   int    `json:"id"`
 	Info string `json:"info"`
 }
 
-var info_type []Info_typeItem = []Info_typeItem{Info_typeItem{
-	Id:   10,
-	Info: "top 250 rank",
-}, Info_typeItem{
-	Id:   20,
-	Info: "bottom 10 rank",
-}}
+var info_type []Info_typeItem
 
 type TitleItem struct {
 	Id              int    `json:"id"`
@@ -80,15 +68,7 @@ type TitleItem struct {
 	Production_year int    `json:"production_year"`
 }
 
-var title []TitleItem = []TitleItem{TitleItem{
-	Id:              100,
-	Title:           "Good Movie",
-	Production_year: 1995,
-}, TitleItem{
-	Id:              200,
-	Title:           "Bad Movie",
-	Production_year: 2000,
-}}
+var title []TitleItem
 
 type Movie_companiesItem struct {
 	Movie_id        int    `json:"movie_id"`
@@ -96,89 +76,116 @@ type Movie_companiesItem struct {
 	Note            string `json:"note"`
 }
 
-var movie_companies []Movie_companiesItem = []Movie_companiesItem{Movie_companiesItem{
-	Movie_id:        100,
-	Company_type_id: 1,
-	Note:            "ACME (co-production)",
-}, Movie_companiesItem{
-	Movie_id:        200,
-	Company_type_id: 1,
-	Note:            "MGM (as Metro-Goldwyn-Mayer Pictures)",
-}}
+var movie_companies []Movie_companiesItem
 
 type Movie_info_idxItem struct {
 	Movie_id     int `json:"movie_id"`
 	Info_type_id int `json:"info_type_id"`
 }
 
-var movie_info_idx []Movie_info_idxItem = []Movie_info_idxItem{Movie_info_idxItem{
-	Movie_id:     100,
-	Info_type_id: 10,
-}, Movie_info_idxItem{
-	Movie_id:     200,
-	Info_type_id: 20,
-}}
-var filtered []map[string]any = func() []map[string]any {
-	_res := []map[string]any{}
-	for _, ct := range company_type {
-		for _, mc := range movie_companies {
-			if !(ct.Id == mc.Company_type_id) {
-				continue
-			}
-			for _, t := range title {
-				if !(t.Id == mc.Movie_id) {
+var movie_info_idx []Movie_info_idxItem
+var filtered []map[string]any
+var result map[string]any
+
+func main() {
+	failures := 0
+	company_type = _cast[[]Company_typeItem]([]Company_typeItem{Company_typeItem{
+		Id:   1,
+		Kind: "production companies",
+	}, Company_typeItem{
+		Id:   2,
+		Kind: "distributors",
+	}})
+	info_type = _cast[[]Info_typeItem]([]Info_typeItem{Info_typeItem{
+		Id:   10,
+		Info: "top 250 rank",
+	}, Info_typeItem{
+		Id:   20,
+		Info: "bottom 10 rank",
+	}})
+	title = _cast[[]TitleItem]([]TitleItem{TitleItem{
+		Id:              100,
+		Title:           "Good Movie",
+		Production_year: 1995,
+	}, TitleItem{
+		Id:              200,
+		Title:           "Bad Movie",
+		Production_year: 2000,
+	}})
+	movie_companies = _cast[[]Movie_companiesItem]([]Movie_companiesItem{Movie_companiesItem{
+		Movie_id:        100,
+		Company_type_id: 1,
+		Note:            "ACME (co-production)",
+	}, Movie_companiesItem{
+		Movie_id:        200,
+		Company_type_id: 1,
+		Note:            "MGM (as Metro-Goldwyn-Mayer Pictures)",
+	}})
+	movie_info_idx = _cast[[]Movie_info_idxItem]([]Movie_info_idxItem{Movie_info_idxItem{
+		Movie_id:     100,
+		Info_type_id: 10,
+	}, Movie_info_idxItem{
+		Movie_id:     200,
+		Info_type_id: 20,
+	}})
+	filtered = func() []map[string]any {
+		_res := []map[string]any{}
+		for _, ct := range company_type {
+			for _, mc := range movie_companies {
+				if !(ct.Id == mc.Company_type_id) {
 					continue
 				}
-				for _, mi := range movie_info_idx {
-					if !(mi.Movie_id == t.Id) {
+				for _, t := range title {
+					if !(t.Id == mc.Movie_id) {
 						continue
 					}
-					for _, it := range info_type {
-						if !(it.Id == mi.Info_type_id) {
+					for _, mi := range movie_info_idx {
+						if !(mi.Movie_id == t.Id) {
 							continue
 						}
-						if (((ct.Kind == "production companies") && (it.Info == "top 250 rank")) && (!strings.Contains(mc.Note, "(as Metro-Goldwyn-Mayer Pictures)"))) && (strings.Contains(mc.Note, "(co-production)") || strings.Contains(mc.Note, "(presents)")) {
+						for _, it := range info_type {
+							if !(it.Id == mi.Info_type_id) {
+								continue
+							}
 							if (((ct.Kind == "production companies") && (it.Info == "top 250 rank")) && (!strings.Contains(mc.Note, "(as Metro-Goldwyn-Mayer Pictures)"))) && (strings.Contains(mc.Note, "(co-production)") || strings.Contains(mc.Note, "(presents)")) {
-								_res = append(_res, map[string]any{
-									"note":  mc.Note,
-									"title": t.Title,
-									"year":  t.Production_year,
-								})
+								if (((ct.Kind == "production companies") && (it.Info == "top 250 rank")) && (!strings.Contains(mc.Note, "(as Metro-Goldwyn-Mayer Pictures)"))) && (strings.Contains(mc.Note, "(co-production)") || strings.Contains(mc.Note, "(presents)")) {
+									_res = append(_res, map[string]any{
+										"note":  mc.Note,
+										"title": t.Title,
+										"year":  t.Production_year,
+									})
+								}
 							}
 						}
 					}
 				}
 			}
 		}
+		return _res
+	}()
+	result = map[string]any{
+		"production_note": _min(func() []any {
+			_res := []any{}
+			for _, r := range filtered {
+				_res = append(_res, r["note"])
+			}
+			return _res
+		}()),
+		"movie_title": _min(func() []any {
+			_res := []any{}
+			for _, r := range filtered {
+				_res = append(_res, r["title"])
+			}
+			return _res
+		}()),
+		"movie_year": _min(func() []any {
+			_res := []any{}
+			for _, r := range filtered {
+				_res = append(_res, r["year"])
+			}
+			return _res
+		}()),
 	}
-	return _res
-}()
-var result map[string]any = map[string]any{
-	"production_note": _min(func() []any {
-		_res := []any{}
-		for _, r := range filtered {
-			_res = append(_res, r["note"])
-		}
-		return _res
-	}()),
-	"movie_title": _min(func() []any {
-		_res := []any{}
-		for _, r := range filtered {
-			_res = append(_res, r["title"])
-		}
-		return _res
-	}()),
-	"movie_year": _min(func() []any {
-		_res := []any{}
-		for _, r := range filtered {
-			_res = append(_res, r["year"])
-		}
-		return _res
-	}()),
-}
-
-func main() {
-	failures := 0
 	func() { b, _ := json.Marshal([]map[string]any{result}); fmt.Println(string(b)) }()
 	{
 		printTestStart("Q1 returns min note, title and year for top ranked co-production")
@@ -202,6 +209,66 @@ func main() {
 	if failures > 0 {
 		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
 	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
 }
 
 func _equal(a, b any) bool {
