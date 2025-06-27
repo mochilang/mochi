@@ -10,7 +10,12 @@ Implemented features:
 
 ## TODO
 
-- The JOB benchmark queries `q1` through `q10` now have golden VM outputs.
-- Kotlin code generation for these programs still fails to compile.
-- Implement the missing features and add matching golden files under
-  `tests/dataset/job/compiler/kt`.
+- Golden tests now exist for the JOB queries `q1` through `q10` but only `q1`
+  compiles successfully.
+- Code generation for the remaining JOB programs fails due to missing support
+  for typed `Map` indexing and query argument casts. The resulting Kotlin source
+  does not compile.
+- Extend the compiler to infer proper map types when unpacking query arguments
+  and update the generated code so that Kotlin's `[]` operator works.
+- Once compilation succeeds, record the generated output under
+  `tests/dataset/job/compiler/kt` and update the runtime expectations.
