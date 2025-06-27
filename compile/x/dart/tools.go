@@ -90,25 +90,26 @@ func ensureDart() error {
 // returned unchanged. A trailing newline is ensured in the returned slice.
 func FormatDart(src []byte) []byte {
 	path, err := exec.LookPath("dart")
-	if err != nil {
-		if len(src) > 0 && src[len(src)-1] != '\n' {
-			src = append(src, '\n')
+	if err == nil {
+		cmd := exec.Command(path, "format", "--output", "show", "-")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res
 		}
-		return src
 	}
-	cmd := exec.Command(path, "format", "--output", "show", "-")
-	cmd.Stdin = bytes.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err == nil {
-		res := out.Bytes()
-		if len(res) == 0 || res[len(res)-1] != '\n' {
-			res = append(res, '\n')
-		}
-		return res
-	}
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
 	return src
 }
+
+// Ensure provides a generic entry point for verifying required tools.
+// It simply calls EnsureDart so other packages can depend on dartcode.Ensure.
+func Ensure() error { return EnsureDart() }

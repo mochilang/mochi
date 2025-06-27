@@ -1,10 +1,10 @@
-int sum(int n) {
-	return ((n * ((n + 1))) ~/ 2);
+int sumN(int n) {
+  return ((n * ((n + 1))) ~/ 2);
 }
 
 void main() {
-	int n = 10;
-	print(sum(n));
-	print(n);
+  int n = 10;
+  print(sumN(n));
+  print(n);
 }
 

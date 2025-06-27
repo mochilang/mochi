@@ -1,17 +1,17 @@
 abstract class Foo {}
 class Empty extends Foo {
-	Empty();
+  Empty();
 }
 class Node extends Foo {
-	Foo child;
-	Node({required this.child});
+  Foo child;
+  Node({required this.child});
 }
 
 List<Foo> listit() {
-	return [Empty()];
+  return [Empty()];
 }
 
 void main() {
-	print(listit().length);
+  print(listit().length);
 }
 

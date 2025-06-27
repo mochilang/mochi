@@ -1,17 +1,17 @@
 import 'dart:io';
 
 void test_addition_works() {
-        int x = (1 + 2);
-        if (!((x == 3))) { throw Exception('expect failed'); }
+  int x = (1 + 2);
+  if (!((x == 3))) { throw Exception('expect failed'); }
 }
 
 void main() {
-        int failures = 0;
-        print("ok");
-        if (!_runTest("addition works", test_addition_works)) failures++;
-        if (failures > 0) {
-                print("\n[FAIL] $failures test(s) failed.");
-        }
+  int failures = 0;
+  print("ok");
+  if (!_runTest("addition works", test_addition_works)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
 }
 
 String _formatDuration(Duration d) {
@@ -19,6 +19,7 @@ String _formatDuration(Duration d) {
     if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
     return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
 }
+
 bool _runTest(String name, void Function() f) {
     stdout.write('   test $name ...');
     var start = DateTime.now();
@@ -33,4 +34,5 @@ bool _runTest(String name, void Function() f) {
         return false;
     }
 }
+
 

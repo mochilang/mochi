@@ -1,6 +1,6 @@
 void main() {
-	String text = "hello";
-	print(_indexString(text, 1));
+  String text = "hello";
+  print(_indexString(text, 1));
 }
 
 String _indexString(String s, int i) {
