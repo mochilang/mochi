@@ -1237,8 +1237,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		if op.Index == nil {
 			if op.Call != nil {
 				// check for method call on a selector expression
-				if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
-					method := sel.Tail[0]
+				if sel := p.Target.Selector; sel != nil && len(sel.Tail) >= 1 {
+					method := sel.Tail[len(sel.Tail)-1]
+					recvSel := &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}
+					recvExpr := &parser.Primary{Selector: recvSel}
+					recvTyp := c.inferPrimaryType(recvExpr)
+					recvCode, err2 := c.compilePrimary(recvExpr)
+					if err2 != nil {
+						return "", err2
+					}
 					rootExpr := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root}}
 					rootTyp := c.inferPrimaryType(rootExpr)
 					root := sanitizeName(sel.Root)
@@ -1255,6 +1262,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 								continue
 							}
 						}
+					case "contains":
+						if len(op.Call.Args) == 1 {
+							arg, err := c.compileExpr(op.Call.Args[0])
+							if err != nil {
+								return "", err
+							}
+							if _, ok := recvTyp.(types.StringType); ok {
+								expr = fmt.Sprintf("%s.includes(%s)", recvCode, arg)
+								typ = types.BoolType{}
+								continue
+							}
+						}
 					}
 				}
 				args := make([]string, len(op.Call.Args))
@@ -1265,8 +1284,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					args[i] = v
 				}
-				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
-				typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
+				if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
+					recv := strings.TrimSuffix(expr, ".contains")
+					expr = fmt.Sprintf("%s.includes(%s)", recv, args[0])
+					typ = types.BoolType{}
+				} else {
+					expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+					typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
+				}
 			}
 			continue
 		}
