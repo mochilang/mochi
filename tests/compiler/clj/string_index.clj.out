@@ -9,7 +9,6 @@
 
 (defn -main []
   (def text "hello")
-  (println (_indexString text 1))
-)
+  (println (_indexString text 1)))
 
 (-main)

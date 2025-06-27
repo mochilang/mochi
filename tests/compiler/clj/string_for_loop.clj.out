@@ -5,23 +5,16 @@
     (when _tmp0
       (let [ch (clojure.core/first _tmp0)]
         (let [r (try
-          (println ch)
-          :next
-        (catch clojure.lang.ExceptionInfo e
+                  (println ch)
+                  :next
+                  (catch clojure.lang.ExceptionInfo e
+                    (cond
+                      (= (.getMessage e) "continue") :next
+                      (= (.getMessage e) "break") :break
+                      :else (throw e))))]
+
           (cond
-            (= (.getMessage e) "continue") :next
-            (= (.getMessage e) "break") :break
-            :else (throw e))
-          )
-        )]
-      (cond
-        (= r :break) nil
-        :else (recur (next _tmp0))
-      )
-    )
-  )
-)
-)
-)
+            (= r :break) nil
+            :else (recur (next _tmp0))))))))
 
 (-main)

@@ -1,7 +1,6 @@
 (ns main)
 
 (defn -main []
-  (println (subs "hello" 1 4))
-)
+  (println (subs "hello" 1 4)))
 
 (-main)

@@ -8,12 +8,10 @@
 
 (defn test_values []
   (assert (= (_indexList xs 0) 1) "expect failed")
-  (println "done")
-)
+  (println "done"))
 
 (defn -main []
   (def xs [1 2 3])
-  (test_values)
-)
+  (test_values))
 
 (-main)

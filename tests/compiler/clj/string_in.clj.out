@@ -8,7 +8,6 @@
     :else false))
 (defn -main []
   (println (_in "cat" "catch"))
-  (println (_in "dog" "catch"))
-)
+  (println (_in "dog" "catch")))
 
 (-main)

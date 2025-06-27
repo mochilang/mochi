@@ -1,6 +1,7 @@
 package cljcode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -70,9 +71,32 @@ func EnsureClojure() error {
 	return fmt.Errorf("clojure not installed")
 }
 
-// EnsureCljfmt verifies that the cljfmt formatting tool is installed. It simply
-// checks that the `cljfmt` binary is present in the PATH.
+// EnsureCljfmt verifies that the cljfmt formatting tool is installed. It tries
+// to install the latest release if the binary is missing and returns the path to
+// the executable.
 func EnsureCljfmt() (string, error) {
+	if path, err := exec.LookPath("cljfmt"); err == nil {
+		return path, nil
+	}
+	switch runtime.GOOS {
+	case "linux", "darwin":
+		cmd := exec.Command("bash", "-c", "curl -fsSL https://raw.githubusercontent.com/weavejester/cljfmt/HEAD/install.sh | bash")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		_ = cmd.Run()
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			cmd := exec.Command("choco", "install", "-y", "cljfmt")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			cmd := exec.Command("scoop", "install", "cljfmt")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	}
 	if path, err := exec.LookPath("cljfmt"); err == nil {
 		return path, nil
 	}
@@ -83,30 +107,27 @@ func EnsureCljfmt() (string, error) {
 // the input is returned unchanged.
 func Format(src []byte) ([]byte, error) {
 	cljfmt, err := EnsureCljfmt()
-	if err != nil {
-		return src, nil
+	if err == nil {
+		f, ferr := os.CreateTemp("", "mochi-*.clj")
+		if ferr == nil {
+			name := f.Name()
+			if _, ferr = f.Write(src); ferr == nil {
+				f.Close()
+				cmd := exec.Command(cljfmt, "fix", name)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				if cmd.Run() == nil {
+					if formatted, rerr := os.ReadFile(name); rerr == nil {
+						src = formatted
+					}
+				}
+			}
+			os.Remove(name)
+		}
 	}
-	f, err := os.CreateTemp("", "mochi-*.clj")
-	if err != nil {
-		return src, err
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
 	}
-	name := f.Name()
-	if _, err := f.Write(src); err != nil {
-		f.Close()
-		os.Remove(name)
-		return src, err
-	}
-	f.Close()
-	defer os.Remove(name)
-	cmd := exec.Command(cljfmt, "fix", name)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return src, err
-	}
-	formatted, err := os.ReadFile(name)
-	if err != nil {
-		return src, err
-	}
-	return formatted, nil
+	return src, nil
 }

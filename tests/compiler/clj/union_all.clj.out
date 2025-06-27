@@ -3,7 +3,6 @@
 (defn _union_all [a b]
   (vec (concat a b)))
 (defn -main []
-  (println (_union_all [1 2] [2 3]))
-)
+  (println (_union_all [1 2] [2 3])))
 
 (-main)
