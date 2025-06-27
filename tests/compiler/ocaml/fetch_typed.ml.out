@@ -1,6 +1,6 @@
 let rec _read_all ic =
   try let line = input_line ic in
-      line ^ "\n" ^ _read_all ic
+    line ^ "\n" ^ _read_all ic
   with End_of_file -> "";;
 
 let _read_input path =
@@ -38,30 +38,30 @@ let _fetch url opts =
       match opts with
       | None -> "GET"
       | Some tbl ->
-          (try Yojson.Basic.Util.to_string (Hashtbl.find tbl "method") with Not_found -> "GET") in
+        (try Yojson.Basic.Util.to_string (Hashtbl.find tbl "method") with Not_found -> "GET") in
     let url_ref = ref url in
     let args = ref ["curl"; "-s"; "-X"; method_] in
     (match opts with
-    | Some tbl ->
-        (try
+     | Some tbl ->
+       (try
           let headers = Yojson.Basic.Util.to_assoc (Hashtbl.find tbl "headers") in
           List.iter (fun (k,v) -> args := !args @ ["-H"; k ^ ": " ^ Yojson.Basic.to_string v]) headers
         with Not_found -> ());
-        (try
+       (try
           let q = Yojson.Basic.Util.to_assoc (Hashtbl.find tbl "query") in
           let qs = String.concat "&" (List.map (fun (k,v) -> k ^ "=" ^ Yojson.Basic.to_string v) q) in
           let sep = if String.contains !url_ref '?' then '&' else '?' in
           url_ref := !url_ref ^ (String.make 1 sep) ^ qs
         with Not_found -> ());
-        (try
+       (try
           let body = Hashtbl.find tbl "body" in
           args := !args @ ["-d"; Yojson.Basic.to_string body]
         with Not_found -> ());
-        (try
+       (try
           let t = Hashtbl.find tbl "timeout" in
           args := !args @ ["--max-time"; Yojson.Basic.to_string t]
         with Not_found -> ());
-    | None -> ());
+     | None -> ());
     args := !args @ [!url_ref];
     let ic = Unix.open_process_in (String.concat " " !args) in
     let txt = _read_all ic in
