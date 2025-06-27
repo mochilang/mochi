@@ -1,14 +1,15 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl;
 
-type
-	generic TArray<T> = array of T;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-var
-	_record: integer;
+type 
+  generic TArray<T> = array of T;
+
+var 
+  _record: integer;
 
 begin
-	_record := 1;
-	writeln(_record);
+  _record := 1;
+  writeln(_record);
 end.

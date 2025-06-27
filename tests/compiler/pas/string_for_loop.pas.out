@@ -1,18 +1,19 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl, fphttpclient, Classes;
 
-type
-	generic TArray<T> = array of T;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-var
-	ch: char;
+type 
+  generic TArray<T> = array of T;
+
+var 
+  _tmp0: integer;
+  ch: char;
 
 begin
-	var _tmp0: integer;
-	for _tmp0 := 1 to Length('cat') do
-	begin
-		ch := 'cat'[_tmp0];
-		writeln(ch);
-	end;
+  for _tmp0 := 1 to Length('cat') do
+    begin
+      ch := 'cat'[_tmp0];
+      writeln(ch);
+    end;
 end.

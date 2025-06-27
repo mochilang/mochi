@@ -164,7 +164,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("end.")
-	return c.buf.Bytes(), nil
+	out := c.buf.Bytes()
+	return FormatPas(out), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
