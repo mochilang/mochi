@@ -89,7 +89,7 @@ let matches =
     it2.info == "rating" &&
     (k.keyword in allowed_keywords) &&
     (kt.kind in ["movie", "episode"]) &&
-    !mc.note.contains("(USA)") &&
+    mc.note.contains("(USA)") == false &&
     mc.note.contains("(200") &&
     (mi.info in allowed_countries) &&
     mi_idx.info < 8.5 &&

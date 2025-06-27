@@ -71,7 +71,7 @@ let rows =
   join it2 in info_type on it2.id == mi_idx.info_type_id
   where cct1.kind == "cast" &&
         cct2.kind.contains("complete") &&
-        chn.name != nil &&
+        chn.name != null &&
         (chn.name.contains("man") || chn.name.contains("Man")) &&
         it2.info == "rating" &&
         (k.keyword in allowed_keywords) &&
