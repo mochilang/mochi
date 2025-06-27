@@ -12,10 +12,13 @@ Completed tasks:
 - [x] Add a golden test in `tests/compiler/rust` once the query compiles successfully.
 - [x] Support iterating over group values and updated builtins to use `_count`, `_avg` and `_sum` helpers.
 - [x] Added TPCH q1 generated code under `tests/dataset/tpc-h/compiler/rust`.
+- [x] Initial JOB dataset tests added for `q1` and `q2` under
+  `tests/dataset/job/compiler/rust`.
 
 ## Remaining work
 
-- [ ] Generate valid Rust for JOB dataset queries. Field access on map values
-  currently emits invalid syntax like `m.field.contains`.
-- [ ] Enable runtime tests for `job/q1.mochi` and `job/q2.mochi` once the
-  generated code compiles successfully.
+- [ ] Generate valid Rust for all JOB queries. Field access on map values
+  currently emits invalid syntax like `m.field.contains` and functions like
+  `min` are missing from the runtime.
+- [ ] Extend code generation so that `q1` through `q10` compile and execute
+  successfully. Runtime tests are skipped until these issues are resolved.
