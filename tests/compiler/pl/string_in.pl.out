@@ -6,12 +6,12 @@ contains(List, Item, Res) :-
 contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).
 
 
-	main :-
-	contains("catch", "cat", _V0),
-	write(_V0),
-	nl,
-	contains("catch", "dog", _V1),
-	write(_V1),
-	nl
-	.
+    main :-
+    contains("catch", "cat", _V0),
+    write(_V0),
+    nl,
+    contains("catch", "dog", _V1),
+    write(_V1),
+    nl
+    .
 :- initialization(main, main).

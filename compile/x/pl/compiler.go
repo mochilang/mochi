@@ -109,7 +109,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.buf.Write(bodyBytes)
 
-	return c.buf.Bytes(), nil
+	src := c.buf.Bytes()
+	return FormatPL(src), nil
 }
 
 func (c *Compiler) newVar() string {
@@ -241,16 +242,16 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
-       if c.helpers["save_data"] {
-               for _, line := range strings.Split(strings.TrimSuffix(helperSave, "\n"), "\n") {
-                       c.writeln(line)
-               }
-               c.writeln("")
-       }
-       if c.helpers["fetch_data"] {
-               for _, line := range strings.Split(strings.TrimSuffix(helperFetch, "\n"), "\n") {
-                       c.writeln(line)
-               }
-               c.writeln("")
-       }
+	if c.helpers["save_data"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperSave, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
+	if c.helpers["fetch_data"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperFetch, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 }

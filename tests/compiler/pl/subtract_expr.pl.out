@@ -1,7 +1,7 @@
 :- style_check(-singleton).
-	main :-
-	_V0 is 5 - 2,
-	write(_V0),
-	nl
-	.
+    main :-
+    _V0 is 5 - 2,
+    write(_V0),
+    nl
+    .
 :- initialization(main, main).

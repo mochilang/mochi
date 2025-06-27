@@ -5,22 +5,22 @@ to_list(Str, L) :-
 to_list(L, L).
 
 
-		main :-
-	to_list("cat", _V0),
-	catch(
-		(
-			member(Ch, _V0),
-			catch(
-				(
-					write(Ch),
-					nl,
-					true
-				), continue, true),
-				fail
-				;
-				true
-			)
-			, break, true),
-			true
-		.
+        main :-
+    to_list("cat", _V0),
+    catch(
+        (
+            member(Ch, _V0),
+            catch(
+                (
+                    write(Ch),
+                    nl,
+                    true
+                ), continue, true),
+                fail
+                ;
+                true
+            )
+            , break, true),
+            true
+        .
 :- initialization(main, main).

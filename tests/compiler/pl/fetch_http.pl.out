@@ -14,11 +14,11 @@ fetch_data(URL, _Opts, Data) :-
 
 
 
-	main :-
-	fetch_data("https://jsonplaceholder.typicode.com/todos/1", _{}, _V0),
-	Todo = _V0,
-	get_dict(title, Todo, _V1),
-	write(_V1),
-	nl
-	.
+    main :-
+    fetch_data("https://jsonplaceholder.typicode.com/todos/1", _{}, _V0),
+    Todo = _V0,
+    get_dict(title, Todo, _V1),
+    write(_V1),
+    nl
+    .
 :- initialization(main, main).

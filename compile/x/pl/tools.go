@@ -1,6 +1,7 @@
 package plcode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -67,4 +68,29 @@ func EnsureSWIPL() error {
 		return nil
 	}
 	return fmt.Errorf("swipl not found")
+}
+
+// FormatPL attempts to tidy Prolog source code using SWI-Prolog's
+// `prolog_tidy` library. If SWI-Prolog is unavailable or formatting
+// fails, the input is returned unchanged with a trailing newline.
+func FormatPL(src []byte) []byte {
+	if err := EnsureSWIPL(); err == nil {
+		if path, err := exec.LookPath("swipl"); err == nil {
+			cmd := exec.Command(path, "-q", "-t", "halt", "-g", "use_module(library(prolog_tidy)),prolog_tidy:tidy_stream(user_input,user_output)")
+			cmd.Stdin = bytes.NewReader(src)
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			if err := cmd.Run(); err == nil {
+				res := out.Bytes()
+				if len(res) == 0 || res[len(res)-1] != '\n' {
+					res = append(res, '\n')
+				}
+				return res
+			}
+		}
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }

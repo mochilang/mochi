@@ -4,14 +4,14 @@ parent("Alice", "Bob").
 parent("Bob", "Carol").
 
 grandparent(X, Z) :-
-	parent(X, Y),
-	parent(Y, Z).
+    parent(X, Y),
+    parent(Y, Z).
 
-	main :-
-	findall(_{x:X, z:Z}, grandparent(X, Z), _V0),
-	G = _V0,
-	length(G, _V1),
-	write(_V1),
-	nl
-	.
+    main :-
+    findall(_{x:X, z:Z}, grandparent(X, Z), _V0),
+    G = _V0,
+    length(G, _V1),
+    write(_V1),
+    nl
+    .
 :- initialization(main, main).

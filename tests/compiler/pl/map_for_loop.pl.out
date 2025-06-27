@@ -4,24 +4,24 @@ map_keys(Dict, Keys) :-
     findall(K, member(K-_, Pairs), Keys).
 
 
-		main :-
-	dict_create(_V0, map, ['a'-1, 'b'-2]),
-	M = _V0,
-	map_keys(M, _V1),
-	catch(
-		(
-			member(K, _V1),
-			catch(
-				(
-					write(K),
-					nl,
-					true
-				), continue, true),
-				fail
-				;
-				true
-			)
-			, break, true),
-			true
-		.
+        main :-
+    dict_create(_V0, map, ['a'-1, 'b'-2]),
+    M = _V0,
+    map_keys(M, _V1),
+    catch(
+        (
+            member(K, _V1),
+            catch(
+                (
+                    write(K),
+                    nl,
+                    true
+                ), continue, true),
+                fail
+                ;
+                true
+            )
+            , break, true),
+            true
+        .
 :- initialization(main, main).

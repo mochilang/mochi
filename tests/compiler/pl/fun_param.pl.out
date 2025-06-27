@@ -1,15 +1,15 @@
 :- style_check(-singleton).
-		apply(F, X, Res) :-
-		call(F, X, _V0),
-		Res = _V0.
+        apply(F, X, Res) :-
+        call(F, X, _V0),
+        Res = _V0.
 
-		square(X, Res) :-
-		_V1 is X * X,
-		Res = _V1.
+        square(X, Res) :-
+        _V1 is X * X,
+        Res = _V1.
 
-	main :-
-	apply(square, 6, _V2),
-	write(_V2),
-	nl
-	.
+    main :-
+    apply(square, 6, _V2),
+    write(_V2),
+    nl
+    .
 :- initialization(main, main).
