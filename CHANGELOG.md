@@ -1,4 +1,26 @@
 # 📦 CHANGELOG.md
+## [0.10.5] – 2025-06-27T20:39:39+07:00
+
+### Added
+
+* Join Order Benchmark dataset queries and golden tests across languages
+* `starts_with`, `like`, `min` and `max` builtins in the VM
+* JOB query examples 16–33
+* Map key inference and contains improvements
+
+### Changed
+
+* VM constant folding re-enabled with interpreter removed
+* Null ordering handled during comparisons
+
+### Fixed
+
+* C++ map literal inference
+* Zig operator precedence
+* `starts_with` edge cases
+* JOB C++ compilation issues
+
+
 ## [0.10.4] – 2025-06-27T14:33:48+07:00
 
 ### Added
