@@ -19,4 +19,3 @@ let mutable failures = 0
 if not (_run_test "addition works" test_addition_works) then failures <- failures + 1
 if failures > 0 then
     printfn "\n[FAIL] %d test(s) failed." failures
-

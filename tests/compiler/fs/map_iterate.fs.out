@@ -5,5 +5,5 @@ m <- Map.add 1 true m
 m <- Map.add 2 true m
 let mutable sum = 0
 for k in Map.keys m do
-    sum <- sum + k
+    sum <- (sum + k)
 ignore (printfn "%A" (sum))

@@ -1026,21 +1026,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			tuple = "(" + tuple + ")"
 		}
 		var rows strings.Builder
-		rows.WriteString("[|")
-		rows.WriteString(fmt.Sprintf(" for %s in %s do ", sanitizeName(q.Var), src))
+		indent := "    "
+		rows.WriteString("[|\n")
+		rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Var), src))
 		for i, f := range q.Froms {
-			rows.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(f.Var), fromSrc[i]))
+			rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(f.Var), fromSrc[i]))
 		}
 		for i := range joinSrc {
-			rows.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(q.Joins[i].Var), joinSrc[i]))
+			rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Joins[i].Var), joinSrc[i]))
 			if joinOns[i] != "" {
-				rows.WriteString(fmt.Sprintf("if %s then ", joinOns[i]))
+				rows.WriteString(fmt.Sprintf("%sif %s then\n", indent, joinOns[i]))
 			}
 		}
 		if whereExpr != "" {
-			rows.WriteString(fmt.Sprintf("if %s then ", whereExpr))
+			rows.WriteString(fmt.Sprintf("%sif %s then\n", indent, whereExpr))
 		}
-		rows.WriteString(fmt.Sprintf("yield %s |]", tuple))
+		rows.WriteString(fmt.Sprintf("%syield %s\n", indent, tuple))
+		rows.WriteString("|]")
 		groupRows := rows.String()
 
 		genv := types.NewEnv(child)
@@ -1077,25 +1079,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	var buf strings.Builder
-	buf.WriteString("[|")
-	buf.WriteString(fmt.Sprintf(" for %s in %s do ", sanitizeName(q.Var), src))
+	indent := "    "
+	buf.WriteString("[|\n")
+	buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Var), src))
 	for i, f := range q.Froms {
-		buf.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(f.Var), fromSrc[i]))
+		buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(f.Var), fromSrc[i]))
 	}
 	for i := range joinSrc {
-		buf.WriteString(fmt.Sprintf("for %s in %s do ", sanitizeName(q.Joins[i].Var), joinSrc[i]))
+		buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Joins[i].Var), joinSrc[i]))
 		if joinOns[i] != "" {
-			buf.WriteString(fmt.Sprintf("if %s then ", joinOns[i]))
+			buf.WriteString(fmt.Sprintf("%sif %s then\n", indent, joinOns[i]))
 		}
 	}
 	if whereExpr != "" {
-		buf.WriteString(fmt.Sprintf("if %s then ", whereExpr))
+		buf.WriteString(fmt.Sprintf("%sif %s then\n", indent, whereExpr))
 	}
 	if q.Sort != nil {
-		buf.WriteString(fmt.Sprintf("yield (%s, %s) |]", sortExpr, sel))
-		buf.WriteString(" |> Array.sortBy fst |> Array.map snd")
+		buf.WriteString(fmt.Sprintf("%syield (%s, %s)\n", indent, sortExpr, sel))
+		buf.WriteString("|] |> Array.sortBy fst |> Array.map snd")
 	} else {
-		buf.WriteString(fmt.Sprintf("yield %s |]", sel))
+		buf.WriteString(fmt.Sprintf("%syield %s\n", indent, sel))
+		buf.WriteString("|]")
 	}
 	if skipExpr != "" {
 		buf.WriteString(fmt.Sprintf(" |> Array.skip %s", skipExpr))
