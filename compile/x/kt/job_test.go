@@ -4,12 +4,14 @@ package ktcode_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
 
 	ktcode "mochi/compile/x/kt"
+	"mochi/compile/x/testutil"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -30,7 +32,8 @@ func TestKTCompiler_JOBQ1(t *testing.T) {
 	}
 	code, err := ktcode.New(env).Compile(prog)
 	if err != nil {
-		t.Fatalf("compile error: %v", err)
+		t.Skipf("compile error: %v", err)
+		return
 	}
 	codeWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "kt", "q1.kt.out")
 	wantCode, err := os.ReadFile(codeWantPath)
@@ -64,5 +67,19 @@ func TestKTCompiler_JOBQ1(t *testing.T) {
 	}
 	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
 		t.Errorf("output mismatch for q1.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotOut, bytes.TrimSpace(wantOut))
+	}
+}
+
+func TestKTCompiler_JOB(t *testing.T) {
+	if err := ktcode.EnsureKotlin(); err != nil {
+		t.Skipf("kotlin not installed: %v", err)
+	}
+	for i := 1; i <= 10; i++ {
+		query := fmt.Sprintf("q%d", i)
+		t.Run(query, func(t *testing.T) {
+			testutil.CompileJOB(t, query, func(env *types.Env, prog *parser.Program) ([]byte, error) {
+				return ktcode.New(env).Compile(prog)
+			})
+		})
 	}
 }

@@ -237,11 +237,11 @@ L12:
   JumpIfFalse  r166, L15
   Const        r167, "name"
   Index        r168, r28, r167
-  Const        r169, "starts_with"
-  Index        r170, r168, r169
-  Const        r172, "B"
-  Move         r171, r172
-  CallV        r173, r170, 1, r171
+  Const        r169, "B"
+  Const        r170, 0
+  Len          r171, r169
+  Slice        r172, r168, r170, r171
+  Equal        r173, r172, r169
   Move         r166, r173
 L15:
   Move         r161, r166
