@@ -3,6 +3,7 @@
 package cscode_test
 
 import (
+	"fmt"
 	"testing"
 
 	cscode "mochi/compile/x/cs"
@@ -15,7 +16,10 @@ func TestCSCompiler_TPCH(t *testing.T) {
 	if err := cscode.EnsureDotnet(); err != nil {
 		t.Skipf("dotnet not installed: %v", err)
 	}
-	testutil.CompileTPCH(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return cscode.New(env).Compile(prog)
-	})
+	for i := 1; i <= 2; i++ {
+		q := fmt.Sprintf("q%d", i)
+		testutil.CompileTPCH(t, q, func(env *types.Env, prog *parser.Program) ([]byte, error) {
+			return cscode.New(env).Compile(prog)
+		})
+	}
 }
