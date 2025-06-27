@@ -1,0 +1,144 @@
+{-# LANGUAGE DeriveGeneric #-}
+
+module Main where
+
+import qualified Data.Aeson as Aeson
+import qualified Data.ByteString.Lazy.Char8 as BSL
+import Data.List (intercalate, isPrefixOf)
+import qualified Data.List as List
+import qualified Data.Map as Map
+import Data.Maybe (fromMaybe)
+import Data.Time.Clock.POSIX (getPOSIXTime)
+
+forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
+forLoop start end f = go start
+  where
+    go i
+      | i < end =
+          case f i of
+            Just v -> Just v
+            Nothing -> go (i + 1)
+      | otherwise = Nothing
+
+whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
+whileLoop cond body = go ()
+  where
+    go _
+      | cond () =
+          case body () of
+            Just v -> Just v
+            Nothing -> go ()
+      | otherwise = Nothing
+
+avg :: (Real a) => [a] -> Double
+avg xs
+  | null xs = 0
+  | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
+
+data MGroup k a = MGroup {key :: k, items :: [a]} deriving (Show)
+
+_group_by :: (Ord k) => [a] -> (a -> k) -> [MGroup k a]
+_group_by src keyfn =
+  let go [] m order = (m, order)
+      go (x : xs) m order =
+        let k = keyfn x
+         in case Map.lookup k m of
+              Just is -> go xs (Map.insert k (is ++ [x]) m) order
+              Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+      (m, order) = go src Map.empty []
+   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+
+_indexString :: String -> Int -> String
+_indexString s i =
+  let idx = if i < 0 then i + length s else i
+   in if idx < 0 || idx >= length s
+        then error "index out of range"
+        else [s !! idx]
+
+_input :: IO String
+_input = getLine
+
+_now :: IO Int
+_now = fmap round getPOSIXTime
+
+_json :: (Aeson.ToJSON a) => a -> IO ()
+_json v = BSL.putStrLn (Aeson.encode v)
+
+_readInput :: Maybe String -> IO String
+_readInput Nothing = getContents
+_readInput (Just p)
+  | null p || p == "-" = getContents
+  | otherwise = readFile p
+
+_writeOutput :: Maybe String -> String -> IO ()
+_writeOutput mp text = case mp of
+  Nothing -> putStr text
+  Just p
+    | null p || p == "-" -> putStr text
+    | otherwise -> writeFile p text
+
+_split :: Char -> String -> [String]
+_split _ "" = [""]
+_split d s =
+  let (h, t) = break (== d) s
+   in h : case t of
+        [] -> []
+        (_ : rest) -> _split d rest
+
+_parseCSV :: String -> Bool -> Char -> [Map.Map String String]
+_parseCSV text header delim =
+  let ls = filter (not . null) (lines text)
+   in if null ls
+        then []
+        else
+          let heads =
+                if header
+                  then _split delim (head ls)
+                  else ["c" ++ show i | i <- [0 .. length (_split delim (head ls)) - 1]]
+              start = if header then 1 else 0
+              row line =
+                let parts = _split delim line
+                 in Map.fromList
+                      [ (heads !! j, if j < length parts then parts !! j else "")
+                        | j <- [0 .. length heads - 1]
+                      ]
+           in map row (drop start ls)
+
+_load :: Maybe String -> Maybe (Map.Map String String) -> IO [Map.Map String String]
+_load path _ = do
+  txt <- _readInput path
+  pure (_parseCSV txt True ',')
+
+_save :: [Map.Map String String] -> Maybe String -> Maybe (Map.Map String String) -> IO ()
+_save rows path _ =
+  let headers = if null rows then [] else Map.keys (head rows)
+      toLine m = intercalate "," [Map.findWithDefault "" h m | h <- headers]
+      text = unlines (if null headers then [] else intercalate "," headers : map toLine rows)
+   in _writeOutput path text
+
+expect :: Bool -> IO ()
+expect True = pure ()
+expect False = error "expect failed"
+
+company_type = [Map.fromList [("id", VInt (1)), ("kind", VString ("production companies"))], Map.fromList [("id", VInt (2)), ("kind", VString ("distributors"))]]
+
+info_type = [Map.fromList [("id", VInt (10)), ("info", VString ("top 250 rank"))], Map.fromList [("id", VInt (20)), ("info", VString ("bottom 10 rank"))]]
+
+title = [Map.fromList [("id", VInt (100)), ("title", VString ("Good Movie")), ("production_year", VInt (1995))], Map.fromList [("id", VInt (200)), ("title", VString ("Bad Movie")), ("production_year", VInt (2000))]]
+
+movie_companies = [Map.fromList [("movie_id", VInt (100)), ("company_type_id", VInt (1)), ("note", VString ("ACME (co-production)"))], Map.fromList [("movie_id", VInt (200)), ("company_type_id", VInt (1)), ("note", VString ("MGM (as Metro-Goldwyn-Mayer Pictures)"))]]
+
+movie_info_idx = [Map.fromList [("movie_id", 100), ("info_type_id", 10)], Map.fromList [("movie_id", 200), ("info_type_id", 20)]]
+
+filtered = [Map.fromList [("note", VString (fromMaybe (error "missing") (Map.lookup "note" mc))), ("title", VString (fromMaybe (error "missing") (Map.lookup "title" t))), ("year", VString (fromMaybe (error "missing") (Map.lookup "production_year" t)))] | ct <- company_type, mc <- movie_companies, t <- title, mi <- movie_info_idx, it <- info_type, (fromMaybe (error "missing") (Map.lookup "id" (ct)) == fromMaybe (error "missing") (Map.lookup "company_type_id" (mc))), (fromMaybe (error "missing") (Map.lookup "id" (t)) == fromMaybe (error "missing") (Map.lookup "movie_id" (mc))), (fromMaybe (error "missing") (Map.lookup "movie_id" (mi)) == fromMaybe (error "missing") (Map.lookup "id" (t))), (fromMaybe (error "missing") (Map.lookup "id" (it)) == fromMaybe (error "missing") (Map.lookup "info_type_id" (mi))), (((((fromMaybe (error "missing") (Map.lookup "kind" ct) == "production companies") && fromMaybe (error "missing") (Map.lookup "info" it)) == "top 250 rank") && (not fromMaybe (error "missing") (Map.lookup "contains" (fromMaybe (error "missing") (Map.lookup "note" mc))) "(as Metro-Goldwyn-Mayer Pictures)")) && ((fromMaybe (error "missing") (Map.lookup "contains" (fromMaybe (error "missing") (Map.lookup "note" mc))) "(co-production)" || fromMaybe (error "missing") (Map.lookup "contains" (fromMaybe (error "missing") (Map.lookup "note" mc))) "(presents)")))]
+
+result = Map.fromList [("production_note", VString (min [fromMaybe (error "missing") (Map.lookup "note" r) | r <- filtered])), ("movie_title", VString (min [fromMaybe (error "missing") (Map.lookup "title" r) | r <- filtered])), ("movie_year", VString (min [fromMaybe (error "missing") (Map.lookup "year" r) | r <- filtered]))]
+
+test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production :: IO ()
+test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production = do
+  expect ((result == Map.fromList [("production_note", VString ("ACME (co-production)")), ("movie_title", VString ("Good Movie")), ("movie_year", VInt (1995))]))
+
+main :: IO ()
+main = do
+  _json [result]
+  test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production
