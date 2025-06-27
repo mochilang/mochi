@@ -198,13 +198,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	header.WriteString("\n\n")
 
-	code := append(header.Bytes(), c.buf.Bytes()...)
-	// Ensure the generated file ends with a trailing newline so tools like
-	// runhaskell do not complain about the last line.
-	if len(code) == 0 || code[len(code)-1] != '\n' {
-		code = append(code, '\n')
-	}
-	return code, nil
+        code := append(header.Bytes(), c.buf.Bytes()...)
+        // Ensure the generated file ends with a trailing newline so tools like
+        // runhaskell do not complain about the last line.
+        if len(code) == 0 || code[len(code)-1] != '\n' {
+                code = append(code, '\n')
+        }
+        return FormatHS(code), nil
 }
 
 func (c *Compiler) compileMainStmt(s *parser.Statement) error {

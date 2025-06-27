@@ -1,11 +1,13 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Main where
 
 import Data.Maybe (fromMaybe)
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import qualified Data.Map as Map
-import Data.List (intercalate)
+import Data.List (intercalate, isPrefixOf)
 import qualified Data.List as List
 import qualified Data.Aeson as Aeson
+import GHC.Generics (Generic)
 import qualified Data.Aeson.KeyMap as KeyMap
 import qualified Data.Aeson.Key as Key
 import qualified Data.Vector as V
@@ -85,7 +87,8 @@ _save rows path opts =
 data Person = Person {
     name :: String,
     age :: Int
-} deriving (Show)
+} deriving (Show, Generic)
+instance Aeson.FromJSON Person
 
 
 people = _load Nothing Just (Map.fromList [("format", "json")])

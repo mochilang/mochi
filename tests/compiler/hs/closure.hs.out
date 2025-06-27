@@ -1,9 +1,10 @@
+{-# LANGUAGE DeriveGeneric #-}
 module Main where
 
 import Data.Maybe (fromMaybe)
 import Data.Time.Clock.POSIX (getPOSIXTime)
 import qualified Data.Map as Map
-import Data.List (intercalate)
+import Data.List (intercalate, isPrefixOf)
 import qualified Data.List as List
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy.Char8 as BSL
@@ -110,7 +111,8 @@ _save rows path _ =
 makeAdder :: Int -> (Int -> Int)
 makeAdder n = (\x -> (x + n))
 
+add10 = makeAdder 10
+
 main :: IO ()
 main = do
-    let add10 = makeAdder 10
     print (add10 7)
