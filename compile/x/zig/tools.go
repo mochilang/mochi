@@ -1,12 +1,14 @@
 package zigcode
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 // EnsureZig verifies that the Zig compiler is installed.
@@ -72,29 +74,45 @@ func EnsureZig() (string, error) {
 	return bin, nil
 }
 
+// EnsureFormatter ensures the zig formatter is available. It attempts to
+// install Zig if the binary cannot be found.
+func EnsureFormatter() error {
+	if _, err := exec.LookPath("zig"); err == nil {
+		return nil
+	}
+	_, err := EnsureZig()
+	return err
+}
+
 // Format runs `zig fmt` on the provided source code. If the Zig compiler
 // isn't available, the input is returned unchanged.
 func Format(src []byte) []byte {
-	zigc, err := EnsureZig()
-	if err != nil {
-		if len(src) > 0 && src[len(src)-1] != '\n' {
-			src = append(src, '\n')
+	if err := EnsureFormatter(); err == nil {
+		path, _ := exec.LookPath("zig")
+		cmd := exec.Command(path, "fmt", "--stdin")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res
 		}
-		return src
 	}
-	cmd := exec.Command(zigc, "fmt", "--stdin")
-	cmd.Stdin = bytes.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err == nil {
-		res := out.Bytes()
-		if len(res) == 0 || res[len(res)-1] != '\n' {
-			res = append(res, '\n')
-		}
-		return res
+	// fallback: convert tabs to spaces and trim trailing whitespace
+	s := strings.ReplaceAll(string(src), "\t", "    ")
+	var buf bytes.Buffer
+	scanner := bufio.NewScanner(strings.NewReader(s))
+	for scanner.Scan() {
+		line := strings.TrimRight(scanner.Text(), " \t")
+		buf.WriteString(line)
+		buf.WriteByte('\n')
 	}
-	if len(src) > 0 && src[len(src)-1] != '\n' {
-		src = append(src, '\n')
+	res := buf.Bytes()
+	if len(res) == 0 || res[len(res)-1] != '\n' {
+		res = append(res, '\n')
 	}
-	return src
+	return res
 }
