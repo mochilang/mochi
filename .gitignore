@@ -294,3 +294,5 @@ tools/playground/wasm_exec.js
 **/*.egg-info/
 **/__pycache__/
 *.class
+tools/tcc/tcc/
+tools/tcc/tools/

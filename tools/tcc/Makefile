@@ -1,13 +1,16 @@
-TCC_DIR := tcc
+TCC_DIR := tools/tcc/tools/tcc/tcc
 LIB := $(TCC_DIR)/libtcc.a
+BIN := mochi-tcc
 
-.PHONY: libtcc run test clean ensure
+.PHONY: libtcc run test clean ensure mochi-tcc
 
 ensure:
 	go run ./tools.go
 
-libtcc: ensure
-	cd $(TCC_DIR) && ./configure --disable-static --enable-static && make libtcc.a
+$(LIB): ensure
+	cd $(TCC_DIR) && ./configure --enable-static && make libtcc.a
+
+libtcc: $(LIB)
 
 run: $(LIB)
 	go run -tags 'tcc libtcc' ./main.go
@@ -15,5 +18,9 @@ run: $(LIB)
 test: $(LIB)
 	go test -tags 'tcc libtcc'
 
+mochi-tcc: $(LIB)
+	go build -tags 'tcc libtcc' -o $(BIN) ../../cmd/mochi-tcc
+	@echo "Built $(BIN)"
+
 clean:
-	rm -f $(LIB)
+	rm -f $(LIB) $(BIN)
