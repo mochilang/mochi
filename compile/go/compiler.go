@@ -1553,6 +1553,57 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	// Built-in "contains" method on strings, lists and maps
+	if sel := p.Target.Selector; sel != nil && len(sel.Tail) > 0 && len(p.Ops) == 1 && p.Ops[0].Call != nil {
+		last := sel.Tail[len(sel.Tail)-1]
+		if last == "contains" && len(p.Ops[0].Call.Args) == 1 {
+			recvSel := &parser.Primary{Selector: &parser.SelectorExpr{Root: sel.Root, Tail: sel.Tail[:len(sel.Tail)-1]}}
+			recv, err := c.compilePrimary(recvSel)
+			if err != nil {
+				return "", err
+			}
+			recvT := c.inferPrimaryType(recvSel)
+			arg, err := c.compileExpr(p.Ops[0].Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			argT := c.inferExprType(p.Ops[0].Call.Args[0])
+			switch rt := recvT.(type) {
+			case types.StringType:
+				c.imports["strings"] = true
+				return fmt.Sprintf("strings.Contains(%s, %s)", recv, arg), nil
+			case types.ListType:
+				itemVar := c.newVar()
+				listVar := c.newVar()
+				resultVar := c.newVar()
+				iterVar := c.newVar()
+				c.writeln(fmt.Sprintf("%s := %s", itemVar, arg))
+				c.writeln(fmt.Sprintf("%s := %s", listVar, recv))
+				c.writeln(fmt.Sprintf("%s := false", resultVar))
+				c.writeln(fmt.Sprintf("for _, %s := range %s {", iterVar, listVar))
+				c.indent++
+				c.writeln(fmt.Sprintf("if %s == %s { %s = true; break }", iterVar, itemVar, resultVar))
+				c.indent--
+				c.writeln("}")
+				return resultVar, nil
+			case types.MapType:
+				keyTemp := c.newVar()
+				mapTemp := c.newVar()
+				c.writeln(fmt.Sprintf("%s := %s", keyTemp, arg))
+				c.writeln(fmt.Sprintf("%s := %s", mapTemp, recv))
+				keyExpr := keyTemp
+				if !equalTypes(argT, rt.Key) || isAny(argT) {
+					c.use("_cast")
+					c.imports["encoding/json"] = true
+					keyExpr = fmt.Sprintf("_cast[%s](%s)", goType(rt.Key), keyTemp)
+				}
+				okVar := c.newVar()
+				c.writeln(fmt.Sprintf("_, %s := %s[%s]", okVar, mapTemp, keyExpr))
+				return okVar, nil
+			}
+		}
+	}
+
 	// Special handling for FFI selectors
 	if sel := p.Target.Selector; sel != nil {
 		if mod, ok := c.pyModules[sel.Root]; ok {

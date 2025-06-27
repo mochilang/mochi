@@ -159,10 +159,16 @@ func inferPostfixType(env *Env, p *parser.PostfixExpr) Type {
 				t = AnyType{}
 			}
 		} else if op.Call != nil {
-			if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
-				switch sel.Tail[0] {
+			if sel := p.Target.Selector; sel != nil && len(sel.Tail) >= 1 {
+				last := sel.Tail[len(sel.Tail)-1]
+				switch last {
 				case "keys":
-					t = ListType{Elem: AnyType{}}
+					if len(sel.Tail) == 1 {
+						t = ListType{Elem: AnyType{}}
+						continue
+					}
+				case "contains":
+					t = BoolType{}
 					continue
 				}
 			}

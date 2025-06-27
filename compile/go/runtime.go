@@ -127,24 +127,38 @@ const (
 		"        m := s[0]\n" +
 		"        for _, n := range s[1:] { if n < m { m = n } }\n" +
 		"        return m\n" +
+		"    case []string:\n" +
+		"        if len(s) == 0 { return \"\" }\n" +
+		"        m := s[0]\n" +
+		"        for _, str := range s[1:] { if str < m { m = str } }\n" +
+		"        return m\n" +
 		"    case []any:\n" +
 		"        if len(s) == 0 { return 0 }\n" +
-		"        var m float64\n" +
-		"        var isFloat bool\n" +
-		"        switch n := s[0].(type) {\n" +
-		"        case int: m = float64(n)\n" +
-		"        case int64: m = float64(n)\n" +
-		"        case float64: m = n; isFloat = true\n" +
-		"        default: panic(\"min() expects numbers\") }\n" +
-		"        for _, it := range s[1:] {\n" +
-		"            switch v := it.(type) {\n" +
-		"            case int: if float64(v) < m { m = float64(v) }\n" +
-		"            case int64: if float64(v) < m { m = float64(v) }\n" +
-		"            case float64: if v < m { m = v }; isFloat = true\n" +
-		"            default: panic(\"min() expects numbers\") }\n" +
+		"        switch first := s[0].(type) {\n" +
+		"        case string:\n" +
+		"            m := first\n" +
+		"            for _, it := range s[1:] { if v, ok := it.(string); ok && v < m { m = v } }\n" +
+		"            return m\n" +
+		"        case int, int64, float64:\n" +
+		"            var m float64\n" +
+		"            var isFloat bool\n" +
+		"            switch n := first.(type) {\n" +
+		"            case int: m = float64(n)\n" +
+		"            case int64: m = float64(n)\n" +
+		"            case float64: m = n; isFloat = true\n" +
+		"            }\n" +
+		"            for _, it := range s[1:] {\n" +
+		"                switch v := it.(type) {\n" +
+		"                case int: if float64(v) < m { m = float64(v) }\n" +
+		"                case int64: if float64(v) < m { m = float64(v) }\n" +
+		"                case float64: if v < m { m = v }; isFloat = true\n" +
+		"                }\n" +
+		"            }\n" +
+		"            if isFloat { return m }\n" +
+		"            return int(m)\n" +
+		"        default:\n" +
+		"            panic(\"min() expects numbers or strings\")\n" +
 		"        }\n" +
-		"        if isFloat { return m }\n" +
-		"        return int(m)\n" +
 		"    default:\n" +
 		"        rv := reflect.ValueOf(v)\n" +
 		"        if rv.Kind() == reflect.Slice {\n" +
