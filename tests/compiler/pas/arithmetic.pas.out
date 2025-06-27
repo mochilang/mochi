@@ -1,14 +1,15 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl;
 
-type
-	generic TArray<T> = array of T;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type 
+  generic TArray<T> = array of T;
 
 begin
-	writeln(1 + 2);
-	writeln(5 - 3);
-	writeln(4 * 2);
-	writeln(8 div 2);
-	writeln(7 mod 3);
+  writeln(1 + 2);
+  writeln(5 - 3);
+  writeln(4 * 2);
+  writeln(8 div 2);
+  writeln(7 mod 3);
 end.

@@ -1,12 +1,13 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl;
 
-type
-	generic TArray<T> = array of T;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type 
+  generic TArray<T> = array of T;
 
 begin
-	writeln((True and False));
-	writeln((True or False));
-	writeln(not False);
+  writeln((True and False));
+  writeln((True or False));
+  writeln(not False);
 end.

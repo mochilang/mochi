@@ -1,21 +1,23 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl;
 
-type
-	generic TArray<T> = array of T;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type 
+  generic TArray<T> = array of T;
+
 type Point = record
-	x: integer;
-	y: integer;
+  x: integer;
+  y: integer;
 end;
 
-var
-	p: Point;
+var 
+  _tmp0: Point;
+  p: Point;
 
 begin
-	var _tmp0: Point;
-	_tmp0.x := 1;
-	_tmp0.y := 2;
-	p := _tmp0;
-	writeln(p.x);
+  _tmp0.x := 1;
+  _tmp0.y := 2;
+  p := _tmp0;
+  writeln(p.x);
 end.
