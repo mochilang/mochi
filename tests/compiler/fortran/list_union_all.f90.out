@@ -1,29 +1,4 @@
 program main
-  implicit none
-  print *, union_int((/1_8, 2_8/), (/2_8, 3_8/))
-contains
-
-  function union_int(a, b) result(r)
-    implicit none
-    integer(kind=8), intent(in) :: a(:)
-    integer(kind=8), intent(in) :: b(:)
-    integer(kind=8), allocatable :: r(:)
-    integer(kind=8), allocatable :: tmp(:)
-    integer(kind=8) :: i
-    integer(kind=8) :: n
-    allocate(tmp(size(a)+size(b)))
-    n = 0
-    do i = 1, size(a)
-      n = n + 1
-      tmp(n) = a(i)
-    end do
-    do i = 1, size(b)
-      if (.not. any(tmp(:n) == b(i))) then
-        n = n + 1
-        tmp(n) = b(i)
-      end if
-    end do
-    allocate(r(n))
-    r = tmp(:n)
-  end function union_int
+   implicit none
+   print *, (/ (/1_8, 2_8/), (/2_8, 3_8/) /)
 end program main

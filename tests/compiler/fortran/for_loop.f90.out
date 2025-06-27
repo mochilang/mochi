@@ -1,7 +1,7 @@
 program main
-  implicit none
-  integer(kind=8) :: i
-  do i = 1_8, 4_8 - 1
-    print *, i
-  end do
+   implicit none
+   integer(kind=8) :: i
+   do i = 1_8, 4_8 - 1
+      print *, i
+   end do
 end program main
