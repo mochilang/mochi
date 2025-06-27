@@ -1,0 +1,74 @@
+let comp_cast_type = [
+  { id: 1, kind: "cast" },
+  { id: 2, kind: "complete cast" }
+]
+
+let char_name = [
+  { id: 1, name: "Tony Stark" },
+  { id: 2, name: "Sherlock Holmes" }
+]
+
+let complete_cast = [
+  { movie_id: 1, subject_id: 1, status_id: 2 },
+  { movie_id: 2, subject_id: 1, status_id: 2 }
+]
+
+let name = [
+  { id: 1, name: "Robert Downey Jr." },
+  { id: 2, name: "Another Actor" }
+]
+
+let cast_info = [
+  { movie_id: 1, person_role_id: 1, person_id: 1 },
+  { movie_id: 2, person_role_id: 2, person_id: 2 }
+]
+
+let keyword = [
+  { id: 10, keyword: "superhero" },
+  { id: 20, keyword: "romance" }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 10 },
+  { movie_id: 2, keyword_id: 20 }
+]
+
+let kind_type = [
+  { id: 1, kind: "movie" }
+]
+
+let title = [
+  { id: 1, kind_id: 1, production_year: 2008, title: "Iron Man" },
+  { id: 2, kind_id: 1, production_year: 1940, title: "Old Hero" }
+]
+
+let matches =
+  from cc in complete_cast
+  join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  join cct2 in comp_cast_type on cct2.id == cc.status_id
+  join ci in cast_info on ci.movie_id == cc.movie_id
+  join chn in char_name on chn.id == ci.person_role_id
+  join n in name on n.id == ci.person_id
+  join mk in movie_keyword on mk.movie_id == cc.movie_id
+  join k in keyword on k.id == mk.keyword_id
+  join t in title on t.id == cc.movie_id
+  join kt in kind_type on kt.id == t.kind_id
+  where cct1.kind == "cast" &&
+        cct2.kind.contains("complete") &&
+        !chn.name.contains("Sherlock") &&
+        (chn.name.contains("Tony Stark") || chn.name.contains("Iron Man")) &&
+        k.keyword in [
+          "superhero", "sequel", "second-part", "marvel-comics",
+          "based-on-comic", "tv-special", "fight", "violence"
+        ] &&
+        kt.kind == "movie" &&
+        t.production_year > 1950
+  select t.title
+
+let result = [ { complete_downey_ironman_movie: min(matches) } ]
+
+json(result)
+
+test "Q20 finds complete cast Iron Man movie" {
+  expect result == [ { complete_downey_ironman_movie: "Iron Man" } ]
+}
