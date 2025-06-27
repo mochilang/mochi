@@ -1,0 +1,83 @@
+let company_name = [
+  { id: 1, name: "Best Film Co", country_code: "[us]" },
+  { id: 2, name: "Warner Studios", country_code: "[de]" },
+  { id: 3, name: "Polish Films", country_code: "[pl]" } // excluded
+]
+
+let company_type = [
+  { id: 1, kind: "production companies" },
+  { id: 2, kind: "distributors" }
+]
+
+let keyword = [
+  { id: 1, keyword: "sequel" },
+  { id: 2, keyword: "thriller" }
+]
+
+let link_type = [
+  { id: 1, link: "follow-up" },
+  { id: 2, link: "follows from" },
+  { id: 3, link: "remake" } // ignored
+]
+
+let movie_companies = [
+  { movie_id: 10, company_id: 1, company_type_id: 1, note: null },
+  { movie_id: 20, company_id: 2, company_type_id: 1, note: null },
+  { movie_id: 30, company_id: 3, company_type_id: 1, note: null }
+]
+
+let movie_keyword = [
+  { movie_id: 10, keyword_id: 1 },
+  { movie_id: 20, keyword_id: 1 },
+  { movie_id: 20, keyword_id: 2 },
+  { movie_id: 30, keyword_id: 1 }
+]
+
+let movie_link = [
+  { movie_id: 10, link_type_id: 1 },
+  { movie_id: 20, link_type_id: 2 },
+  { movie_id: 30, link_type_id: 3 }
+]
+
+let title = [
+  { id: 10, production_year: 1960, title: "Alpha" },
+  { id: 20, production_year: 1970, title: "Beta" },
+  { id: 30, production_year: 1985, title: "Polish Movie" }
+]
+
+let matches =
+  from cn in company_name
+  join mc in movie_companies on mc.company_id == cn.id
+  join ct in company_type on ct.id == mc.company_type_id
+  join t in title on t.id == mc.movie_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join ml in movie_link on ml.movie_id == t.id
+  join lt in link_type on lt.id == ml.link_type_id
+  where cn.country_code != "[pl]" &&
+        (cn.name.contains("Film") || cn.name.contains("Warner")) &&
+        ct.kind == "production companies" &&
+        k.keyword == "sequel" &&
+        lt.link.contains("follow") &&
+        mc.note == null &&
+        t.production_year >= 1950 && t.production_year <= 2000 &&
+        ml.movie_id == mk.movie_id &&
+        ml.movie_id == mc.movie_id &&
+        mk.movie_id == mc.movie_id
+  select { company: cn.name, link: lt.link, title: t.title }
+
+let result = [
+  {
+    from_company: min(from x in matches select x.company),
+    movie_link_type: min(from x in matches select x.link),
+    non_polish_sequel_movie: min(from x in matches select x.title)
+  }
+]
+
+json(result)
+
+test "Q11 returns min company, link type and title" {
+  expect result == [
+    { from_company: "Best Film Co", movie_link_type: "follow-up", non_polish_sequel_movie: "Alpha" }
+  ]
+}
