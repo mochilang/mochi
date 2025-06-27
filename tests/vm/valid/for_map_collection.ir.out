@@ -14,8 +14,7 @@ L1:
   // print(k)
   Print        r7
   // for k in m {
-  Const        r8, 1
-  Add          r9, r4, r8
+  Const        r9, 1
   Move         r4, r9
   Jump         L1
 L0:

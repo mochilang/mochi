@@ -21,24 +21,10 @@ L2:
   Const        r14, 18
   LessEq       r15, r14, r13
   JumpIfFalse  r15, L1
-  // select { name: p.name, email: p.email }
-  Const        r16, "name"
-  Const        r17, "name"
-  Index        r18, r11, r17
-  Const        r19, "email"
-  Const        r20, "email"
-  Index        r21, r11, r20
-  Move         r22, r16
-  Move         r23, r18
-  Move         r24, r19
-  Move         r25, r21
-  MakeMap      r26, 2, r22
   // let adults = from p in people
   Append       r27, r5, r26
   Move         r5, r27
-L1:
-  Const        r28, 1
-  Add          r29, r8, r28
+  Const        r29, 1
   Move         r8, r29
   Jump         L2
 L0:
@@ -59,9 +45,6 @@ L4:
   Index        r40, r36, r39
   Print2       r38, r40
   // for a in adults {
-  Const        r41, 1
-  Add          r42, r33, r41
-  Move         r33, r42
   Jump         L4
 L3:
   Return       r0

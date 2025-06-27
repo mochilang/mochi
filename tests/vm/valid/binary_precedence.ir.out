@@ -1,31 +1,15 @@
 func main (regs=20)
   // print(1 + 2 * 3)
   Const        r0, 1
-  Const        r1, 2
-  Const        r2, 3
-  MulInt       r3, r1, r2
-  AddInt       r4, r0, r3
+  Const        r4, 7
   Print        r4
   // print((1 + 2) * 3)
-  Const        r5, 1
-  Const        r6, 2
-  AddInt       r7, r5, r6
-  Const        r8, 3
-  MulInt       r9, r7, r8
+  Const        r9, 9
   Print        r9
   // print(2 * 3 + 1)
-  Const        r10, 2
-  Const        r11, 3
-  MulInt       r12, r10, r11
-  Const        r13, 1
-  AddInt       r14, r12, r13
+  Const        r14, 7
   Print        r14
   // print(2 * (3 + 1))
-  Const        r15, 2
-  Const        r16, 3
-  Const        r17, 1
-  AddInt       r18, r16, r17
-  MulInt       r19, r15, r18
+  Const        r19, 8
   Print        r19
   Return       r0
-

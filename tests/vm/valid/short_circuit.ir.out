@@ -2,7 +2,7 @@ func main (regs=14)
   // print(false && boom(1, 2))
   Const        r0, false
   Move         r1, r0
-  JumpIfFalse  r1, L0
+  Jump         L0
   Const        r4, 1
   Move         r2, r4
   Const        r5, 2
@@ -14,7 +14,7 @@ L0:
   // print(true || boom(1, 2))
   Const        r7, true
   Move         r8, r7
-  JumpIfTrue   r8, L1
+  Jump         L1
   Const        r11, 1
   Move         r9, r11
   Const        r12, 2
