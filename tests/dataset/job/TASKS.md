@@ -16,7 +16,7 @@ For every query add two files:
 - [ ] Add q6.mochi and q6.md
 - [ ] Add q7.mochi and q7.md
 - [ ] Add q8.mochi and q8.md
-- [ ] Add q9.mochi and q9.md
+ - [x] Add q9.mochi and q9.md
 - [ ] Add q10.mochi and q10.md
 - [ ] Add q11.mochi and q11.md
 - [ ] Add q12.mochi and q12.md
