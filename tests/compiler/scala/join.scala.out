@@ -9,19 +9,19 @@ object Main {
         val customers: scala.collection.mutable.ArrayBuffer[Any] = scala.collection.mutable.ArrayBuffer(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"))
         val orders: scala.collection.mutable.ArrayBuffer[Any] = scala.collection.mutable.ArrayBuffer(Order(id = 100, customerId = 1, total = 250), Order(id = 101, customerId = 2, total = 125), Order(id = 102, customerId = 1, total = 300), Order(id = 103, customerId = 4, total = 80))
         val result: scala.collection.mutable.ArrayBuffer[Any] = (() => {
-	val src = orders
-	val res = _query(src, Seq(
-		Map("items" -> customers, "on" -> (args: Seq[Any]) => {
-	val o = args(0)
-	val c = args(1)
-	(o.customerId == c.id)
+    val src = orders
+    val res = _query(src, Seq(
+        Map("items" -> customers, "on" -> (args: Seq[Any]) => {
+    val o = args(0)
+    val c = args(1)
+    (o.customerId == c.id)
 })
-	), Map("select" -> (args: Seq[Any]) => {
-	val o = args(0)
-	val c = args(1)
-	PairInfo(orderId = o.id, customerName = c.name, total = o.total)
+    ), Map("select" -> (args: Seq[Any]) => {
+    val o = args(0)
+    val c = args(1)
+    PairInfo(orderId = o.id, customerName = c.name, total = o.total)
 }))
-	res
+    res
 })()
         println("--- Orders with customer info ---")
         val it1 = result.iterator

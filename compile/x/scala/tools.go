@@ -61,26 +61,22 @@ func EnsureScala() error {
 // FormatScala runs scalafmt on the given source code if available.
 // If scalafmt is not found or fails, the input is returned unchanged.
 func FormatScala(src []byte) []byte {
-	path, err := exec.LookPath("scalafmt")
-	if err != nil {
-		if len(src) > 0 && src[len(src)-1] != '\n' {
-			src = append(src, '\n')
+	if path, err := exec.LookPath("scalafmt"); err == nil {
+		cmd := exec.Command(path, "--stdin")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if cmd.Run() == nil {
+			src = out.Bytes()
 		}
-		return src
 	}
-	cmd := exec.Command(path, "--stdin")
-	cmd.Stdin = bytes.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err == nil {
-		res := out.Bytes()
-		if len(res) == 0 || res[len(res)-1] != '\n' {
-			res = append(res, '\n')
-		}
-		return res
-	}
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
 	return src
 }
+
+// Ensure provides a simple entry point for other packages to verify the Scala
+// toolchain is available.
+func Ensure() error { return EnsureScala() }

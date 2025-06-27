@@ -5,8 +5,8 @@ case class Node(left: Any, value: Int, right: Any) extends Tree
 object Main {
     def isLeaf(t: Any): Boolean = {
         return (t match {
-	case Leaf => true
-	case _ => false
+    case Leaf => true
+    case _ => false
 })
     }
     
