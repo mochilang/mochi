@@ -11,3 +11,6 @@ query suites.
 - Extend the runtime with heterogeneous map helpers so JOB queries `q2`–`q10`
   compile and run. Currently the generated code fails to type check because
   `VInt`/`VString` constructors are missing.
+- TPCH queries `q1` and `q2` compile but the generated Haskell does not type
+  check. `_writeOutput` and JSON helpers need to be incorporated into the
+  runtime so these programs execute correctly.

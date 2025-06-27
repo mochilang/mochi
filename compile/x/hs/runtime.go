@@ -86,17 +86,6 @@ _parseCSV text header delim =
                              | j <- [0 .. length heads - 1] ]
        in map row (drop start ls)
 
-_load :: Maybe String -> Maybe (Map.Map String String) -> IO [Map.Map String String]
-_load path _ = do
-  txt <- _readInput path
-  pure (_parseCSV txt True ',')
-
-_save :: [Map.Map String String] -> Maybe String -> Maybe (Map.Map String String) -> IO ()
-_save rows path _ =
-  let headers = if null rows then [] else Map.keys (head rows)
-      toLine m = intercalate "," [Map.findWithDefault "" h m | h <- headers]
-      text = unlines (if null headers then [] else intercalate "," headers : map toLine rows)
-  in _writeOutput path text
 `
 
 const expectHelper = `

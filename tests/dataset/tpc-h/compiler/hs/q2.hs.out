@@ -180,15 +180,35 @@ expect :: Bool -> IO ()
 expect True = pure ()
 expect False = error "expect failed"
 
-lineitem = [Map.fromList [("l_quantity", VInt (17)), ("l_extendedprice", VDouble (1000.0)), ("l_discount", VDouble (0.05)), ("l_tax", VDouble (0.07)), ("l_returnflag", VString ("N")), ("l_linestatus", VString ("O")), ("l_shipdate", VString ("1998-08-01"))], Map.fromList [("l_quantity", VInt (36)), ("l_extendedprice", VDouble (2000.0)), ("l_discount", VDouble (0.1)), ("l_tax", VDouble (0.05)), ("l_returnflag", VString ("N")), ("l_linestatus", VString ("O")), ("l_shipdate", VString ("1998-09-01"))], Map.fromList [("l_quantity", VInt (25)), ("l_extendedprice", VDouble (1500.0)), ("l_discount", VDouble (0.0)), ("l_tax", VDouble (0.08)), ("l_returnflag", VString ("R")), ("l_linestatus", VString ("F")), ("l_shipdate", VString ("1998-09-03"))]]
+region = [Map.fromList [("r_regionkey", VInt (1)), ("r_name", VString ("EUROPE"))], Map.fromList [("r_regionkey", VInt (2)), ("r_name", VString ("ASIA"))]]
 
-result = [Map.fromList [("returnflag", VString (fromMaybe (error "missing") (Map.lookup "returnflag" (key (g))))), ("linestatus", VString (fromMaybe (error "missing") (Map.lookup "linestatus" (key (g))))), ("sum_qty", VDouble (sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g])), ("sum_base_price", VDouble (sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g])), ("sum_disc_price", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - fromMaybe (error "missing") (Map.lookup "l_discount" (x))))) | x <- g])), ("sum_charge", VDouble (sum [((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - fromMaybe (error "missing") (Map.lookup "l_discount" (x))))) * ((1 + fromMaybe (error "missing") (Map.lookup "l_tax" (x))))) | x <- g])), ("avg_qty", VDouble (avg [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g])), ("avg_price", VDouble (avg [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g])), ("avg_disc", VDouble (avg [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g])), ("count_order", VInt (length (items g)))] | g <- _group_by [(row) | row <- lineitem, (fromMaybe (error "missing") (Map.lookup "l_shipdate" row) <= "1998-09-02")] (\(row) -> Map.fromList [("returnflag", VString (fromMaybe (error "missing") (Map.lookup "l_returnflag" row))), ("linestatus", VString (fromMaybe (error "missing") (Map.lookup "l_linestatus" row)))]), let g = g]
+nation = [Map.fromList [("n_nationkey", VInt (10)), ("n_regionkey", VInt (1)), ("n_name", VString ("FRANCE"))], Map.fromList [("n_nationkey", VInt (20)), ("n_regionkey", VInt (2)), ("n_name", VString ("CHINA"))]]
 
-test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus :: IO ()
-test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus = do
-  expect ((result == [Map.fromList [("returnflag", VString ("N")), ("linestatus", VString ("O")), ("sum_qty", VInt (53)), ("sum_base_price", VInt (3000)), ("sum_disc_price", VDouble ((950.0 + 1800.0))), ("sum_charge", VDouble ((((950.0 * 1.07)) + ((1800.0 * 1.05))))), ("avg_qty", VDouble (26.5)), ("avg_price", VInt (1500)), ("avg_disc", VDouble (0.07500000000000001)), ("count_order", VInt (2))]]))
+supplier = [Map.fromList [("s_suppkey", VInt (100)), ("s_name", VString ("BestSupplier")), ("s_address", VString ("123 Rue")), ("s_nationkey", VInt (10)), ("s_phone", VString ("123")), ("s_acctbal", VDouble (1000.0)), ("s_comment", VString ("Fast and reliable"))], Map.fromList [("s_suppkey", VInt (200)), ("s_name", VString ("AltSupplier")), ("s_address", VString ("456 Way")), ("s_nationkey", VInt (20)), ("s_phone", VString ("456")), ("s_acctbal", VDouble (500.0)), ("s_comment", VString ("Slow"))]]
+
+part = [Map.fromList [("p_partkey", VInt (1000)), ("p_type", VString ("LARGE BRASS")), ("p_size", VInt (15)), ("p_mfgr", VString ("M1"))], Map.fromList [("p_partkey", VInt (2000)), ("p_type", VString ("SMALL COPPER")), ("p_size", VInt (15)), ("p_mfgr", VString ("M2"))]]
+
+partsupp = [Map.fromList [("ps_partkey", VInt (1000)), ("ps_suppkey", VInt (100)), ("ps_supplycost", VDouble (10.0))], Map.fromList [("ps_partkey", VInt (1000)), ("ps_suppkey", VInt (200)), ("ps_supplycost", VDouble (15.0))]]
+
+europe_nations = [n | r <- region, n <- nation, (fromMaybe (error "missing") (Map.lookup "n_regionkey" (n)) == fromMaybe (error "missing") (Map.lookup "r_regionkey" (r))), (fromMaybe (error "missing") (Map.lookup "r_name" r) == "EUROPE")]
+
+europe_suppliers = [Map.fromList [("s", s), ("n", n)] | s <- supplier, n <- europe_nations, (fromMaybe (error "missing") (Map.lookup "s_nationkey" (s)) == fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)))]
+
+target_parts = [p | p <- filter (\p -> (((fromMaybe (error "missing") (Map.lookup "p_size" p) == 15) && fromMaybe (error "missing") (Map.lookup "p_type" p)) == "LARGE BRASS")) part]
+
+target_partsupp = [Map.fromList [("s_acctbal", VString (fromMaybe (error "missing") (Map.lookup "s_acctbal" fromMaybe (error "missing") (Map.lookup "s" s)))), ("s_name", VString (fromMaybe (error "missing") (Map.lookup "s_name" fromMaybe (error "missing") (Map.lookup "s" s)))), ("n_name", VString (fromMaybe (error "missing") (Map.lookup "n_name" fromMaybe (error "missing") (Map.lookup "n" s)))), ("p_partkey", VString (fromMaybe (error "missing") (Map.lookup "p_partkey" p))), ("p_mfgr", VString (fromMaybe (error "missing") (Map.lookup "p_mfgr" p))), ("s_address", VString (fromMaybe (error "missing") (Map.lookup "s_address" fromMaybe (error "missing") (Map.lookup "s" s)))), ("s_phone", VString (fromMaybe (error "missing") (Map.lookup "s_phone" fromMaybe (error "missing") (Map.lookup "s" s)))), ("s_comment", VString (fromMaybe (error "missing") (Map.lookup "s_comment" fromMaybe (error "missing") (Map.lookup "s" s)))), ("ps_supplycost", VString (fromMaybe (error "missing") (Map.lookup "ps_supplycost" ps)))] | ps <- partsupp, p <- target_parts, s <- europe_suppliers, (fromMaybe (error "missing") (Map.lookup "ps_partkey" (ps)) == fromMaybe (error "missing") (Map.lookup "p_partkey" (p))), (fromMaybe (error "missing") (Map.lookup "ps_suppkey" (ps)) == fromMaybe (error "missing") (Map.lookup "s_suppkey" (fromMaybe (error "missing") (Map.lookup "s" (s)))))]
+
+costs = [fromMaybe (error "missing") (Map.lookup "ps_supplycost" x) | x <- target_partsupp]
+
+min_cost = min costs
+
+result = map snd (List.sortOn fst [((-fromMaybe (error "missing") (Map.lookup "s_acctbal" (x))), x) | x <- target_partsupp, (fromMaybe (error "missing") (Map.lookup "ps_supplycost" x) == min_cost)])
+
+test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part :: IO ()
+test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part = do
+  expect ((result == [Map.fromList [("s_acctbal", VDouble (1000.0)), ("s_name", VString ("BestSupplier")), ("n_name", VString ("FRANCE")), ("p_partkey", VInt (1000)), ("p_mfgr", VString ("M1")), ("s_address", VString ("123 Rue")), ("s_phone", VString ("123")), ("s_comment", VString ("Fast and reliable")), ("ps_supplycost", VDouble (10.0))]]))
 
 main :: IO ()
 main = do
   _json result
-  test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus
+  test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part
