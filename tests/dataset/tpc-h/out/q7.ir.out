@@ -159,20 +159,6 @@ L11:
 L10:
   // where (
   JumpIfFalse  r97, L6
-  // from l in lineitem
-  Const        r105, "l"
-  Move         r106, r26
-  Const        r107, "o"
-  Move         r108, r32
-  Const        r109, "c"
-  Move         r110, r43
-  Const        r111, "s"
-  Move         r112, r54
-  Const        r113, "n1"
-  Move         r114, r65
-  Const        r115, "n2"
-  Move         r116, r76
-  MakeMap      r117, 6, r105
   // supp_nation: n1.n_name,
   Const        r118, "supp_nation"
   Const        r119, "n_name"
@@ -266,26 +252,7 @@ L22:
   JumpIfFalse  r166, L19
   Index        r167, r20, r164
   Move         r168, r167
-  // supp_nation: g.key.supp_nation,
-  Const        r169, "supp_nation"
-  Const        r170, "key"
-  Index        r171, r168, r170
-  Const        r172, "supp_nation"
-  Index        r173, r171, r172
-  // cust_nation: g.key.cust_nation,
-  Const        r174, "cust_nation"
-  Const        r175, "key"
-  Index        r176, r168, r175
-  Const        r177, "cust_nation"
-  Index        r178, r176, r177
-  // l_year: g.key.l_year,
-  Const        r179, "l_year"
-  Const        r180, "key"
-  Index        r181, r168, r180
-  Const        r182, "l_year"
-  Index        r183, r181, r182
   // revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
-  Const        r184, "revenue"
   Const        r185, []
   IterPrep     r186, r168
   Len          r187, r186
@@ -293,19 +260,6 @@ L22:
 L21:
   Less         r189, r188, r187
   JumpIfFalse  r189, L20
-  Index        r190, r186, r188
-  Move         r191, r190
-  Const        r192, "l"
-  Index        r193, r191, r192
-  Const        r194, "l_extendedprice"
-  Index        r195, r193, r194
-  Const        r196, 1
-  Const        r197, "l"
-  Index        r198, r191, r197
-  Const        r199, "l_discount"
-  Index        r200, r198, r199
-  Sub          r201, r196, r200
-  Mul          r202, r195, r201
   Append       r203, r185, r202
   Move         r185, r203
   Const        r204, 1
@@ -313,30 +267,7 @@ L21:
   Move         r188, r205
   Jump         L21
 L20:
-  Sum          r206, r185
-  // supp_nation: g.key.supp_nation,
-  Move         r207, r169
-  Move         r208, r173
-  // cust_nation: g.key.cust_nation,
-  Move         r209, r174
-  Move         r210, r178
-  // l_year: g.key.l_year,
-  Move         r211, r179
-  Move         r212, r183
-  // revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
-  Move         r213, r184
-  Move         r214, r206
-  // select {
-  MakeMap      r215, 4, r207
-  // sort by [supp_nation, cust_nation, l_year]
-  Move         r217, r216
-  Move         r219, r218
-  Move         r221, r220
-  MakeList     r222, 3, r217
-  Move         r223, r222
   // from l in lineitem
-  Move         r224, r215
-  MakeList     r225, 2, r223
   Append       r226, r18, r225
   Move         r18, r226
   Const        r227, 1
@@ -357,3 +288,4 @@ L19:
   Equal        r232, r230, r231
   Expect       r232
   Return       r0
+
