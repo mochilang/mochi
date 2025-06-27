@@ -1,4 +1,4 @@
-func main (regs=369)
+func main (regs=375)
   // let aka_name = [
   Const        r0, [{"person_id": 1}]
   Move         r1, r0
@@ -40,7 +40,7 @@ func main (regs=369)
   IterPrep     r25, r1
   Len          r26, r25
   Const        r27, 0
-L54:
+L58:
   Less         r28, r27, r26
   JumpIfFalse  r28, L0
   Index        r29, r25, r27
@@ -49,7 +49,7 @@ L54:
   IterPrep     r31, r3
   Len          r32, r31
   Const        r33, 0
-L53:
+L57:
   Less         r34, r33, r32
   JumpIfFalse  r34, L1
   Index        r35, r31, r33
@@ -58,7 +58,7 @@ L53:
   IterPrep     r37, r5
   Len          r38, r37
   Const        r39, 0
-L52:
+L56:
   Less         r40, r39, r38
   JumpIfFalse  r40, L2
   Index        r41, r37, r39
@@ -67,7 +67,7 @@ L52:
   IterPrep     r43, r7
   Len          r44, r43
   Const        r45, 0
-L51:
+L55:
   Less         r46, r45, r44
   JumpIfFalse  r46, L3
   Index        r47, r43, r45
@@ -76,7 +76,7 @@ L51:
   IterPrep     r49, r9
   Len          r50, r49
   Const        r51, 0
-L50:
+L54:
   Less         r52, r51, r50
   JumpIfFalse  r52, L4
   Index        r53, r49, r51
@@ -85,7 +85,7 @@ L50:
   IterPrep     r55, r11
   Len          r56, r55
   Const        r57, 0
-L49:
+L53:
   Less         r58, r57, r56
   JumpIfFalse  r58, L5
   Index        r59, r55, r57
@@ -94,7 +94,7 @@ L49:
   IterPrep     r61, r13
   Len          r62, r61
   Const        r63, 0
-L48:
+L52:
   Less         r64, r63, r62
   JumpIfFalse  r64, L6
   Index        r65, r61, r63
@@ -103,7 +103,7 @@ L48:
   IterPrep     r67, r15
   Len          r68, r67
   Const        r69, 0
-L47:
+L51:
   Less         r70, r69, r68
   JumpIfFalse  r70, L7
   Index        r71, r67, r69
@@ -112,7 +112,7 @@ L47:
   IterPrep     r73, r17
   Len          r74, r73
   Const        r75, 0
-L46:
+L50:
   Less         r76, r75, r74
   JumpIfFalse  r76, L8
   Index        r77, r73, r75
@@ -121,7 +121,7 @@ L46:
   IterPrep     r79, r19
   Len          r80, r79
   Const        r81, 0
-L45:
+L49:
   Less         r82, r81, r80
   JumpIfFalse  r82, L9
   Index        r83, r79, r81
@@ -130,7 +130,7 @@ L45:
   IterPrep     r85, r21
   Len          r86, r85
   Const        r87, 0
-L44:
+L48:
   Less         r88, r87, r86
   JumpIfFalse  r88, L10
   Index        r89, r85, r87
@@ -139,7 +139,7 @@ L44:
   IterPrep     r91, r23
   Len          r92, r91
   Const        r93, 0
-L43:
+L47:
   Less         r94, r93, r92
   JumpIfFalse  r94, L11
   Index        r95, r91, r93
@@ -321,342 +321,358 @@ L15:
   // (mi.info.starts_with("Japan:") && mi.info.contains("201") ||
   Const        r226, "Japan:"
   Const        r227, 0
-  Len          r228, r226
-  Slice        r229, r225, r227, r228
-  Equal        r230, r229, r226
-  Move         r231, r230
-  JumpIfFalse  r231, L17
-  Const        r232, "info"
-  Index        r233, r72, r232
-  Const        r234, "201"
-  In           r235, r234, r233
-  Move         r231, r235
+  Const        r228, 6
+  Len          r229, r225
+  LessEq       r230, r228, r229
+  JumpIfFalse  r230, L17
+  Slice        r232, r225, r227, r228
+  Equal        r233, r232, r226
+  Move         r231, r233
+  Jump         L18
 L17:
-  Const        r236, "info"
-  Index        r237, r72, r236
-  // mi.info.starts_with("USA:") && mi.info.contains("201")) &&
-  Const        r238, "USA:"
-  Const        r239, 0
-  Len          r240, r238
-  Slice        r241, r237, r239, r240
-  Equal        r242, r241, r238
-  Move         r243, r242
-  JumpIfFalse  r243, L18
-  Const        r244, "info"
-  Index        r245, r72, r244
-  Const        r246, "201"
-  In           r247, r246, r245
-  Move         r243, r247
+  Const        r231, false
 L18:
-  // (mi.info.starts_with("Japan:") && mi.info.contains("201") ||
-  Move         r248, r231
-  JumpIfTrue   r248, L19
-  Move         r248, r243
+  Move         r234, r231
+  JumpIfFalse  r234, L19
+  Const        r235, "info"
+  Index        r236, r72, r235
+  Const        r237, "201"
+  In           r238, r237, r236
+  Move         r234, r238
 L19:
+  Const        r239, "info"
+  Index        r240, r72, r239
+  // mi.info.starts_with("USA:") && mi.info.contains("201")) &&
+  Const        r241, "USA:"
+  Const        r242, 0
+  Const        r243, 4
+  Len          r244, r240
+  LessEq       r245, r243, r244
+  JumpIfFalse  r245, L20
+  Slice        r247, r240, r242, r243
+  Equal        r248, r247, r241
+  Move         r246, r248
+  Jump         L21
+L20:
+  Const        r246, false
+L21:
+  Move         r249, r246
+  JumpIfFalse  r249, L22
+  Const        r250, "info"
+  Index        r251, r72, r250
+  Const        r252, "201"
+  In           r253, r252, r251
+  Move         r249, r253
+L22:
+  // (mi.info.starts_with("Japan:") && mi.info.contains("201") ||
+  Move         r254, r234
+  JumpIfTrue   r254, L23
+  Move         r254, r249
+L23:
   // mi.info != null &&
-  Move         r223, r248
+  Move         r223, r254
 L16:
   // mi.info.starts_with("USA:") && mi.info.contains("201")) &&
-  Move         r249, r223
-  JumpIfFalse  r249, L20
-  Move         r249, r124
-L20:
-  // n.gender == "f" &&
-  Move         r250, r249
-  JumpIfFalse  r250, L21
-  Const        r251, "name"
-  Index        r252, r84, r251
-  // n.name.contains("An") &&
-  Const        r253, "An"
-  In           r254, r253, r252
-  // n.gender == "f" &&
-  Move         r250, r254
-L21:
-  // n.name.contains("An") &&
-  Move         r255, r250
-  JumpIfFalse  r255, L22
-  Move         r255, r128
-L22:
-  // rt.role == "actress" &&
-  Move         r256, r255
-  JumpIfFalse  r256, L23
-  Move         r256, r102
-L23:
-  // t.production_year > 2010 &&
-  Move         r257, r256
-  JumpIfFalse  r257, L24
-  Move         r257, r133
+  Move         r255, r223
+  JumpIfFalse  r255, L24
+  Move         r255, r124
 L24:
-  // t.id == mi.movie_id &&
-  Move         r258, r257
-  JumpIfFalse  r258, L25
-  Move         r258, r138
+  // n.gender == "f" &&
+  Move         r256, r255
+  JumpIfFalse  r256, L25
+  Const        r257, "name"
+  Index        r258, r84, r257
+  // n.name.contains("An") &&
+  Const        r259, "An"
+  In           r260, r259, r258
+  // n.gender == "f" &&
+  Move         r256, r260
 L25:
-  // t.id == mc.movie_id &&
-  Move         r259, r258
-  JumpIfFalse  r259, L26
-  Move         r259, r143
+  // n.name.contains("An") &&
+  Move         r261, r256
+  JumpIfFalse  r261, L26
+  Move         r261, r128
 L26:
-  // t.id == ci.movie_id &&
-  Move         r260, r259
-  JumpIfFalse  r260, L27
-  Move         r260, r148
-L27:
-  // t.id == mk.movie_id &&
-  Move         r261, r260
-  JumpIfFalse  r261, L28
-  Move         r261, r153
-L28:
-  // mc.movie_id == ci.movie_id &&
+  // rt.role == "actress" &&
   Move         r262, r261
-  JumpIfFalse  r262, L29
-  Move         r262, r158
-L29:
-  // mc.movie_id == mi.movie_id &&
+  JumpIfFalse  r262, L27
+  Move         r262, r102
+L27:
+  // t.production_year > 2010 &&
   Move         r263, r262
-  JumpIfFalse  r263, L30
-  Move         r263, r163
-L30:
-  // mc.movie_id == mk.movie_id &&
+  JumpIfFalse  r263, L28
+  Move         r263, r133
+L28:
+  // t.id == mi.movie_id &&
   Move         r264, r263
-  JumpIfFalse  r264, L31
-  Move         r264, r168
-L31:
-  // mi.movie_id == ci.movie_id &&
+  JumpIfFalse  r264, L29
+  Move         r264, r138
+L29:
+  // t.id == mc.movie_id &&
   Move         r265, r264
-  JumpIfFalse  r265, L32
-  Move         r265, r173
-L32:
-  // mi.movie_id == mk.movie_id &&
+  JumpIfFalse  r265, L30
+  Move         r265, r143
+L30:
+  // t.id == ci.movie_id &&
   Move         r266, r265
-  JumpIfFalse  r266, L33
-  Move         r266, r178
-L33:
-  // ci.movie_id == mk.movie_id &&
+  JumpIfFalse  r266, L31
+  Move         r266, r148
+L31:
+  // t.id == mk.movie_id &&
   Move         r267, r266
-  JumpIfFalse  r267, L34
-  Move         r267, r183
-L34:
-  // cn.id == mc.company_id &&
+  JumpIfFalse  r267, L32
+  Move         r267, r153
+L32:
+  // mc.movie_id == ci.movie_id &&
   Move         r268, r267
-  JumpIfFalse  r268, L35
-  Move         r268, r188
-L35:
-  // it.id == mi.info_type_id &&
+  JumpIfFalse  r268, L33
+  Move         r268, r158
+L33:
+  // mc.movie_id == mi.movie_id &&
   Move         r269, r268
-  JumpIfFalse  r269, L36
-  Move         r269, r193
-L36:
-  // n.id == ci.person_id &&
+  JumpIfFalse  r269, L34
+  Move         r269, r163
+L34:
+  // mc.movie_id == mk.movie_id &&
   Move         r270, r269
-  JumpIfFalse  r270, L37
-  Move         r270, r198
-L37:
-  // rt.id == ci.role_id &&
+  JumpIfFalse  r270, L35
+  Move         r270, r168
+L35:
+  // mi.movie_id == ci.movie_id &&
   Move         r271, r270
-  JumpIfFalse  r271, L38
-  Move         r271, r203
-L38:
-  // n.id == an.person_id &&
+  JumpIfFalse  r271, L36
+  Move         r271, r173
+L36:
+  // mi.movie_id == mk.movie_id &&
   Move         r272, r271
-  JumpIfFalse  r272, L39
-  Move         r272, r208
-L39:
-  // ci.person_id == an.person_id &&
+  JumpIfFalse  r272, L37
+  Move         r272, r178
+L37:
+  // ci.movie_id == mk.movie_id &&
   Move         r273, r272
-  JumpIfFalse  r273, L40
-  Move         r273, r213
-L40:
-  // chn.id == ci.person_role_id &&
+  JumpIfFalse  r273, L38
+  Move         r273, r183
+L38:
+  // cn.id == mc.company_id &&
   Move         r274, r273
-  JumpIfFalse  r274, L41
-  Move         r274, r218
+  JumpIfFalse  r274, L39
+  Move         r274, r188
+L39:
+  // it.id == mi.info_type_id &&
+  Move         r275, r274
+  JumpIfFalse  r275, L40
+  Move         r275, r193
+L40:
+  // n.id == ci.person_id &&
+  Move         r276, r275
+  JumpIfFalse  r276, L41
+  Move         r276, r198
 L41:
-  // where (
-  JumpIfFalse  r274, L42
-  // voiced_char_name: chn.name,
-  Const        r275, "voiced_char_name"
-  Const        r276, "name"
-  Index        r277, r36, r276
-  // voicing_actress_name: n.name,
-  Const        r278, "voicing_actress_name"
-  Const        r279, "name"
-  Index        r280, r84, r279
-  // voiced_action_movie_jap_eng: t.title
-  Const        r281, "voiced_action_movie_jap_eng"
-  Const        r282, "title"
-  Index        r283, r96, r282
-  // voiced_char_name: chn.name,
-  Move         r284, r275
-  Move         r285, r277
-  // voicing_actress_name: n.name,
-  Move         r286, r278
-  Move         r287, r280
-  // voiced_action_movie_jap_eng: t.title
-  Move         r288, r281
-  Move         r289, r283
-  // select {
-  MakeMap      r290, 3, r284
-  // from an in aka_name
-  Append       r291, r24, r290
-  Move         r24, r291
+  // rt.id == ci.role_id &&
+  Move         r277, r276
+  JumpIfFalse  r277, L42
+  Move         r277, r203
 L42:
+  // n.id == an.person_id &&
+  Move         r278, r277
+  JumpIfFalse  r278, L43
+  Move         r278, r208
+L43:
+  // ci.person_id == an.person_id &&
+  Move         r279, r278
+  JumpIfFalse  r279, L44
+  Move         r279, r213
+L44:
+  // chn.id == ci.person_role_id &&
+  Move         r280, r279
+  JumpIfFalse  r280, L45
+  Move         r280, r218
+L45:
+  // where (
+  JumpIfFalse  r280, L46
+  // voiced_char_name: chn.name,
+  Const        r281, "voiced_char_name"
+  Const        r282, "name"
+  Index        r283, r36, r282
+  // voicing_actress_name: n.name,
+  Const        r284, "voicing_actress_name"
+  Const        r285, "name"
+  Index        r286, r84, r285
+  // voiced_action_movie_jap_eng: t.title
+  Const        r287, "voiced_action_movie_jap_eng"
+  Const        r288, "title"
+  Index        r289, r96, r288
+  // voiced_char_name: chn.name,
+  Move         r290, r281
+  Move         r291, r283
+  // voicing_actress_name: n.name,
+  Move         r292, r284
+  Move         r293, r286
+  // voiced_action_movie_jap_eng: t.title
+  Move         r294, r287
+  Move         r295, r289
+  // select {
+  MakeMap      r296, 3, r290
+  // from an in aka_name
+  Append       r297, r24, r296
+  Move         r24, r297
+L46:
   // from t in title
-  Const        r292, 1
-  Add          r293, r93, r292
-  Move         r93, r293
-  Jump         L43
+  Const        r298, 1
+  Add          r299, r93, r298
+  Move         r93, r299
+  Jump         L47
 L11:
   // from rt in role_type
-  Const        r294, 1
-  Add          r295, r87, r294
-  Move         r87, r295
-  Jump         L44
+  Const        r300, 1
+  Add          r301, r87, r300
+  Move         r87, r301
+  Jump         L48
 L10:
   // from n in name
-  Const        r296, 1
-  Add          r297, r81, r296
-  Move         r81, r297
-  Jump         L45
+  Const        r302, 1
+  Add          r303, r81, r302
+  Move         r81, r303
+  Jump         L49
 L9:
   // from mk in movie_keyword
-  Const        r298, 1
-  Add          r299, r75, r298
-  Move         r75, r299
-  Jump         L46
+  Const        r304, 1
+  Add          r305, r75, r304
+  Move         r75, r305
+  Jump         L50
 L8:
   // from mi in movie_info
-  Const        r300, 1
-  Add          r301, r69, r300
-  Move         r69, r301
-  Jump         L47
+  Const        r306, 1
+  Add          r307, r69, r306
+  Move         r69, r307
+  Jump         L51
 L7:
   // from mc in movie_companies
-  Const        r302, 1
-  Add          r303, r63, r302
-  Move         r63, r303
-  Jump         L48
+  Const        r308, 1
+  Add          r309, r63, r308
+  Move         r63, r309
+  Jump         L52
 L6:
   // from k in keyword
-  Const        r304, 1
-  Add          r305, r57, r304
-  Move         r57, r305
-  Jump         L49
+  Const        r310, 1
+  Add          r311, r57, r310
+  Move         r57, r311
+  Jump         L53
 L5:
   // from it in info_type
-  Const        r306, 1
-  Add          r307, r51, r306
-  Move         r51, r307
-  Jump         L50
+  Const        r312, 1
+  Add          r313, r51, r312
+  Move         r51, r313
+  Jump         L54
 L4:
   // from cn in company_name
-  Const        r308, 1
-  Add          r309, r45, r308
-  Move         r45, r309
-  Jump         L51
+  Const        r314, 1
+  Add          r315, r45, r314
+  Move         r45, r315
+  Jump         L55
 L3:
   // from ci in cast_info
-  Const        r310, 1
-  Add          r311, r39, r310
-  Move         r39, r311
-  Jump         L52
+  Const        r316, 1
+  Add          r317, r39, r316
+  Move         r39, r317
+  Jump         L56
 L2:
   // from chn in char_name
-  Const        r312, 1
-  Add          r313, r33, r312
-  Move         r33, r313
-  Jump         L53
+  Const        r318, 1
+  Add          r319, r33, r318
+  Move         r33, r319
+  Jump         L57
 L1:
   // from an in aka_name
-  Const        r314, 1
-  Add          r315, r27, r314
-  Move         r27, r315
-  Jump         L54
+  Const        r320, 1
+  Add          r321, r27, r320
+  Move         r27, r321
+  Jump         L58
 L0:
   // let matches =
-  Move         r316, r24
+  Move         r322, r24
   // voiced_char_name: min(from x in matches select x.voiced_char_name),
-  Const        r317, "voiced_char_name"
-  Const        r318, []
-  IterPrep     r319, r316
-  Len          r320, r319
-  Const        r321, 0
-L56:
-  Less         r322, r321, r320
-  JumpIfFalse  r322, L55
-  Index        r323, r319, r321
-  Move         r324, r323
-  Const        r325, "voiced_char_name"
-  Index        r326, r324, r325
-  Append       r327, r318, r326
-  Move         r318, r327
-  Const        r328, 1
-  Add          r329, r321, r328
-  Move         r321, r329
-  Jump         L56
-L55:
-  Min          r330, r318
-  // voicing_actress_name: min(from x in matches select x.voicing_actress_name),
-  Const        r331, "voicing_actress_name"
-  Const        r332, []
-  IterPrep     r333, r316
-  Len          r334, r333
-  Const        r335, 0
-L58:
-  Less         r336, r335, r334
-  JumpIfFalse  r336, L57
-  Index        r337, r333, r335
-  Move         r324, r337
-  Const        r338, "voicing_actress_name"
-  Index        r339, r324, r338
-  Append       r340, r332, r339
-  Move         r332, r340
-  Const        r341, 1
-  Add          r342, r335, r341
-  Move         r335, r342
-  Jump         L58
-L57:
-  Min          r343, r332
-  // voiced_action_movie_jap_eng: min(from x in matches select x.voiced_action_movie_jap_eng)
-  Const        r344, "voiced_action_movie_jap_eng"
-  Const        r345, []
-  IterPrep     r346, r316
-  Len          r347, r346
-  Const        r348, 0
+  Const        r323, "voiced_char_name"
+  Const        r324, []
+  IterPrep     r325, r322
+  Len          r326, r325
+  Const        r327, 0
 L60:
-  Less         r349, r348, r347
-  JumpIfFalse  r349, L59
-  Index        r350, r346, r348
-  Move         r324, r350
-  Const        r351, "voiced_action_movie_jap_eng"
-  Index        r352, r324, r351
-  Append       r353, r345, r352
-  Move         r345, r353
-  Const        r354, 1
-  Add          r355, r348, r354
-  Move         r348, r355
+  Less         r328, r327, r326
+  JumpIfFalse  r328, L59
+  Index        r329, r325, r327
+  Move         r330, r329
+  Const        r331, "voiced_char_name"
+  Index        r332, r330, r331
+  Append       r333, r324, r332
+  Move         r324, r333
+  Const        r334, 1
+  Add          r335, r327, r334
+  Move         r327, r335
   Jump         L60
 L59:
-  Min          r356, r345
-  // voiced_char_name: min(from x in matches select x.voiced_char_name),
-  Move         r357, r317
-  Move         r358, r330
+  Min          r336, r324
   // voicing_actress_name: min(from x in matches select x.voicing_actress_name),
-  Move         r359, r331
-  Move         r360, r343
+  Const        r337, "voicing_actress_name"
+  Const        r338, []
+  IterPrep     r339, r322
+  Len          r340, r339
+  Const        r341, 0
+L62:
+  Less         r342, r341, r340
+  JumpIfFalse  r342, L61
+  Index        r343, r339, r341
+  Move         r330, r343
+  Const        r344, "voicing_actress_name"
+  Index        r345, r330, r344
+  Append       r346, r338, r345
+  Move         r338, r346
+  Const        r347, 1
+  Add          r348, r341, r347
+  Move         r341, r348
+  Jump         L62
+L61:
+  Min          r349, r338
   // voiced_action_movie_jap_eng: min(from x in matches select x.voiced_action_movie_jap_eng)
-  Move         r361, r344
-  Move         r362, r356
+  Const        r350, "voiced_action_movie_jap_eng"
+  Const        r351, []
+  IterPrep     r352, r322
+  Len          r353, r352
+  Const        r354, 0
+L64:
+  Less         r355, r354, r353
+  JumpIfFalse  r355, L63
+  Index        r356, r352, r354
+  Move         r330, r356
+  Const        r357, "voiced_action_movie_jap_eng"
+  Index        r358, r330, r357
+  Append       r359, r351, r358
+  Move         r351, r359
+  Const        r360, 1
+  Add          r361, r354, r360
+  Move         r354, r361
+  Jump         L64
+L63:
+  Min          r362, r351
+  // voiced_char_name: min(from x in matches select x.voiced_char_name),
+  Move         r363, r323
+  Move         r364, r336
+  // voicing_actress_name: min(from x in matches select x.voicing_actress_name),
+  Move         r365, r337
+  Move         r366, r349
+  // voiced_action_movie_jap_eng: min(from x in matches select x.voiced_action_movie_jap_eng)
+  Move         r367, r350
+  Move         r368, r362
   // {
-  MakeMap      r363, 3, r357
-  Move         r364, r363
+  MakeMap      r369, 3, r363
+  Move         r370, r369
   // let result = [
-  MakeList     r365, 1, r364
-  Move         r366, r365
+  MakeList     r371, 1, r370
+  Move         r372, r371
   // json(result)
-  JSON         r366
+  JSON         r372
   // expect result == [
-  Const        r367, [{"voiced_action_movie_jap_eng": "Heroic Adventure", "voiced_char_name": "Hero Character", "voicing_actress_name": "Ann Actress"}]
-  Equal        r368, r366, r367
-  Expect       r368
+  Const        r373, [{"voiced_action_movie_jap_eng": "Heroic Adventure", "voiced_char_name": "Hero Character", "voicing_actress_name": "Ann Actress"}]
+  Equal        r374, r372, r373
+  Expect       r374
   Return       r0

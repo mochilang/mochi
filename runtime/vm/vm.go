@@ -4622,6 +4622,9 @@ func valTag(v Value) regTag {
 }
 
 func valuesEqual(a, b Value) bool {
+	if a.Tag == ValueNull || b.Tag == ValueNull {
+		return a.Tag == ValueNull && b.Tag == ValueNull
+	}
 	if a.Tag == ValueFloat || b.Tag == ValueFloat {
 		return toFloat(a) == toFloat(b)
 	}
