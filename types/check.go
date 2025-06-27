@@ -1381,6 +1381,8 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			return StringType{}, nil
 		case p.Lit.Bool != nil:
 			return BoolType{}, nil
+		case p.Lit.Null:
+			return AnyType{}, nil
 		}
 
 	case p.Selector != nil:

@@ -1,0 +1,305 @@
+func main (regs=185)
+  // let aka_name = [
+  Const        r0, [{"name": "Alpha", "person_id": 1}, {"name": "Beta", "person_id": 2}]
+  Move         r1, r0
+  // let cast_info = [
+  Const        r2, [{"movie_id": 101, "person_id": 1}, {"movie_id": 102, "person_id": 2}]
+  Move         r3, r2
+  // let company_name = [
+  Const        r4, [{"country_code": "[us]", "id": 1}, {"country_code": "[de]", "id": 2}]
+  Move         r5, r4
+  // let keyword = [
+  Const        r6, [{"id": 1, "keyword": "character-name-in-title"}, {"id": 2, "keyword": "other"}]
+  Move         r7, r6
+  // let movie_companies = [
+  Const        r8, [{"company_id": 1, "movie_id": 101}, {"company_id": 2, "movie_id": 102}]
+  Move         r9, r8
+  // let movie_keyword = [
+  Const        r10, [{"keyword_id": 1, "movie_id": 101}, {"keyword_id": 2, "movie_id": 102}]
+  Move         r11, r10
+  // let name = [
+  Const        r12, [{"id": 1}, {"id": 2}]
+  Move         r13, r12
+  // let title = [
+  Const        r14, [{"episode_nr": 60, "id": 101, "title": "Hero Bob"}, {"episode_nr": 40, "id": 102, "title": "Other Show"}]
+  Move         r15, r14
+  // from an in aka_name
+  Const        r16, []
+  IterPrep     r17, r1
+  Len          r18, r17
+  Const        r19, 0
+L19:
+  Less         r20, r19, r18
+  JumpIfFalse  r20, L0
+  Index        r21, r17, r19
+  Move         r22, r21
+  // join n in name on n.id == an.person_id
+  IterPrep     r23, r13
+  Len          r24, r23
+  Const        r25, 0
+L18:
+  Less         r26, r25, r24
+  JumpIfFalse  r26, L1
+  Index        r27, r23, r25
+  Move         r28, r27
+  Const        r29, "id"
+  Index        r30, r28, r29
+  Const        r31, "person_id"
+  Index        r32, r22, r31
+  Equal        r33, r30, r32
+  JumpIfFalse  r33, L2
+  // join ci in cast_info on ci.person_id == n.id
+  IterPrep     r34, r3
+  Len          r35, r34
+  Const        r36, 0
+L17:
+  Less         r37, r36, r35
+  JumpIfFalse  r37, L2
+  Index        r38, r34, r36
+  Move         r39, r38
+  Const        r40, "person_id"
+  Index        r41, r39, r40
+  Const        r42, "id"
+  Index        r43, r28, r42
+  Equal        r44, r41, r43
+  JumpIfFalse  r44, L3
+  // join t in title on t.id == ci.movie_id
+  IterPrep     r45, r15
+  Len          r46, r45
+  Const        r47, 0
+L16:
+  Less         r48, r47, r46
+  JumpIfFalse  r48, L3
+  Index        r49, r45, r47
+  Move         r50, r49
+  Const        r51, "id"
+  Index        r52, r50, r51
+  Const        r53, "movie_id"
+  Index        r54, r39, r53
+  Equal        r55, r52, r54
+  JumpIfFalse  r55, L4
+  // join mk in movie_keyword on mk.movie_id == t.id
+  IterPrep     r56, r11
+  Len          r57, r56
+  Const        r58, 0
+L15:
+  Less         r59, r58, r57
+  JumpIfFalse  r59, L4
+  Index        r60, r56, r58
+  Move         r61, r60
+  Const        r62, "movie_id"
+  Index        r63, r61, r62
+  Const        r64, "id"
+  Index        r65, r50, r64
+  Equal        r66, r63, r65
+  JumpIfFalse  r66, L5
+  // join k in keyword on k.id == mk.keyword_id
+  IterPrep     r67, r7
+  Len          r68, r67
+  Const        r69, 0
+L14:
+  Less         r70, r69, r68
+  JumpIfFalse  r70, L5
+  Index        r71, r67, r69
+  Move         r72, r71
+  Const        r73, "id"
+  Index        r74, r72, r73
+  Const        r75, "keyword_id"
+  Index        r76, r61, r75
+  Equal        r77, r74, r76
+  JumpIfFalse  r77, L6
+  // join mc in movie_companies on mc.movie_id == t.id
+  IterPrep     r78, r9
+  Len          r79, r78
+  Const        r80, 0
+L13:
+  Less         r81, r80, r79
+  JumpIfFalse  r81, L6
+  Index        r82, r78, r80
+  Move         r83, r82
+  Const        r84, "movie_id"
+  Index        r85, r83, r84
+  Const        r86, "id"
+  Index        r87, r50, r86
+  Equal        r88, r85, r87
+  JumpIfFalse  r88, L7
+  // join cn in company_name on cn.id == mc.company_id
+  IterPrep     r89, r5
+  Len          r90, r89
+  Const        r91, 0
+L12:
+  Less         r92, r91, r90
+  JumpIfFalse  r92, L7
+  Index        r93, r89, r91
+  Move         r94, r93
+  Const        r95, "id"
+  Index        r96, r94, r95
+  Const        r97, "company_id"
+  Index        r98, r83, r97
+  Equal        r99, r96, r98
+  JumpIfFalse  r99, L8
+  // where cn.country_code == "[us]" &&
+  Const        r100, "country_code"
+  Index        r101, r94, r100
+  // t.episode_nr >= 50 &&
+  Const        r102, "episode_nr"
+  Index        r103, r50, r102
+  Const        r104, 50
+  LessEq       r105, r104, r103
+  // t.episode_nr < 100
+  Const        r106, "episode_nr"
+  Index        r107, r50, r106
+  Const        r108, 100
+  Less         r109, r107, r108
+  // where cn.country_code == "[us]" &&
+  Const        r110, "[us]"
+  Equal        r111, r101, r110
+  // k.keyword == "character-name-in-title" &&
+  Const        r112, "keyword"
+  Index        r113, r72, r112
+  Const        r114, "character-name-in-title"
+  Equal        r115, r113, r114
+  // where cn.country_code == "[us]" &&
+  Move         r116, r111
+  JumpIfFalse  r116, L9
+  Move         r116, r115
+L9:
+  // k.keyword == "character-name-in-title" &&
+  Move         r117, r116
+  JumpIfFalse  r117, L10
+  Move         r117, r105
+L10:
+  // t.episode_nr >= 50 &&
+  Move         r118, r117
+  JumpIfFalse  r118, L11
+  Move         r118, r109
+L11:
+  // where cn.country_code == "[us]" &&
+  JumpIfFalse  r118, L8
+  // select { pseudonym: an.name, series: t.title }
+  Const        r119, "pseudonym"
+  Const        r120, "name"
+  Index        r121, r22, r120
+  Const        r122, "series"
+  Const        r123, "title"
+  Index        r124, r50, r123
+  Move         r125, r119
+  Move         r126, r121
+  Move         r127, r122
+  Move         r128, r124
+  MakeMap      r129, 2, r125
+  // from an in aka_name
+  Append       r130, r16, r129
+  Move         r16, r130
+L8:
+  // join cn in company_name on cn.id == mc.company_id
+  Const        r131, 1
+  Add          r132, r91, r131
+  Move         r91, r132
+  Jump         L12
+L7:
+  // join mc in movie_companies on mc.movie_id == t.id
+  Const        r133, 1
+  Add          r134, r80, r133
+  Move         r80, r134
+  Jump         L13
+L6:
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r135, 1
+  Add          r136, r69, r135
+  Move         r69, r136
+  Jump         L14
+L5:
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r137, 1
+  Add          r138, r58, r137
+  Move         r58, r138
+  Jump         L15
+L4:
+  // join t in title on t.id == ci.movie_id
+  Const        r139, 1
+  Add          r140, r47, r139
+  Move         r47, r140
+  Jump         L16
+L3:
+  // join ci in cast_info on ci.person_id == n.id
+  Const        r141, 1
+  Add          r142, r36, r141
+  Move         r36, r142
+  Jump         L17
+L2:
+  // join n in name on n.id == an.person_id
+  Const        r143, 1
+  Add          r144, r25, r143
+  Move         r25, r144
+  Jump         L18
+L1:
+  // from an in aka_name
+  Const        r145, 1
+  Add          r146, r19, r145
+  Move         r19, r146
+  Jump         L19
+L0:
+  // let rows =
+  Move         r147, r16
+  // cool_actor_pseudonym: min(from r in rows select r.pseudonym),
+  Const        r148, "cool_actor_pseudonym"
+  Const        r149, []
+  IterPrep     r150, r147
+  Len          r151, r150
+  Const        r152, 0
+L21:
+  Less         r153, r152, r151
+  JumpIfFalse  r153, L20
+  Index        r154, r150, r152
+  Move         r155, r154
+  Const        r156, "pseudonym"
+  Index        r157, r155, r156
+  Append       r158, r149, r157
+  Move         r149, r158
+  Const        r159, 1
+  Add          r160, r152, r159
+  Move         r152, r160
+  Jump         L21
+L20:
+  Min          r161, r149
+  // series_named_after_char: min(from r in rows select r.series)
+  Const        r162, "series_named_after_char"
+  Const        r163, []
+  IterPrep     r164, r147
+  Len          r165, r164
+  Const        r166, 0
+L23:
+  Less         r167, r166, r165
+  JumpIfFalse  r167, L22
+  Index        r168, r164, r166
+  Move         r155, r168
+  Const        r169, "series"
+  Index        r170, r155, r169
+  Append       r171, r163, r170
+  Move         r163, r171
+  Const        r172, 1
+  Add          r173, r166, r172
+  Move         r166, r173
+  Jump         L23
+L22:
+  Min          r174, r163
+  // cool_actor_pseudonym: min(from r in rows select r.pseudonym),
+  Move         r175, r148
+  Move         r176, r161
+  // series_named_after_char: min(from r in rows select r.series)
+  Move         r177, r162
+  Move         r178, r174
+  // {
+  MakeMap      r179, 2, r175
+  Move         r180, r179
+  // let result = [
+  MakeList     r181, 1, r180
+  Move         r182, r181
+  // json(result)
+  JSON         r182
+  // expect result == [
+  Const        r183, [{"cool_actor_pseudonym": "Alpha", "series_named_after_char": "Hero Bob"}]
+  Equal        r184, r182, r183
+  Expect       r184
+  Return       r0
