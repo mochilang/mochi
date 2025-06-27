@@ -54,3 +54,23 @@ func CompileTPCH(
 		t.Skipf("TPCH %s unsupported: %v", query, err)
 	}
 }
+
+// CompileJOB parses and type checks the given JOB query and runs the provided
+// compile function. The query should be specified without the file extension.
+// Compilation errors cause the test to be skipped.
+func CompileJOB(t *testing.T, query string, compileFn func(env *types.Env, prog *parser.Program) ([]byte, error)) {
+	t.Helper()
+	root := FindRepoRoot(t)
+	src := filepath.Join(root, "tests", "dataset", "job", query+".mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	if _, err := compileFn(env, prog); err != nil {
+		t.Skipf("JOB %s unsupported: %v", query, err)
+	}
+}

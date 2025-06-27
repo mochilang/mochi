@@ -63,6 +63,7 @@ const datasetHelpers = `(define (_fetch url opts)
       (set! order (append order (list ks))))
     (set-_Group-Items! g (append (_Group-Items g) (list it))))
   (for/list ([ks order]) (hash-ref groups ks)))
+
 `
 
 const setOpsHelpers = `(define (union-all a b) (append (list->list a) (list->list b)))
@@ -247,6 +248,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("  (cond [(and (integer? a) (integer? b)) (quotient a b)]")
 	c.writeln("        [else (/ a b)]))")
 	c.writeln("")
+	c.writeln("(define (_min v)")
+	c.writeln("  (define lst (if (hash? v) (hash-values v) v))")
+	c.writeln("  (unless (list? lst) (error \"min expects list or group\"))")
+	c.writeln("  (if (null? lst) 0")
+	c.writeln("      (foldl (lambda (a b)")
+	c.writeln("               (cond [(and (number? a) (number? b)) (if (< b a) b a)]")
+	c.writeln("                     [(and (string? a) (string? b)) (if (string<? b a) b a)]")
+	c.writeln("                     [else a]))")
+	c.writeln("             (car lst) (cdr lst))))")
+	c.writeln("(define (_max v)")
+	c.writeln("  (define lst (if (hash? v) (hash-values v) v))")
+	c.writeln("  (unless (list? lst) (error \"max expects list or group\"))")
+	c.writeln("  (if (null? lst) 0")
+	c.writeln("      (foldl (lambda (a b)")
+	c.writeln("               (cond [(and (number? a) (number? b)) (if (> b a) b a)]")
+	c.writeln("                     [(and (string? a) (string? b)) (if (string>? b a) b a)]")
+	c.writeln("                     [else a]))")
+	c.writeln("             (car lst) (cdr lst))))")
+	c.writeln("")
 	c.writeln("(define (expect cond) (unless cond (error \"expect failed\")))")
 	c.writeln(";dataset-placeholder")
 	c.writeln(";setops-placeholder")
@@ -300,7 +320,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		imports = append(imports, "racket/match")
 	}
 	if c.needsDataset {
-		imports = append(imports, "racket/string", "json")
+		imports = append(imports, "racket/string", "racket/system", "json")
 	} else if c.needsLLM {
 		imports = append(imports, "json")
 	}
@@ -887,6 +907,29 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	// Special case for the `contains` method which maps to the `in`
+	// operator at the VM level. When the final selector is `contains`
+	// and a single argument call follows, generate the same code as the
+	// binary `in` expression.
+	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil &&
+		len(p.Target.Selector.Tail) > 0 &&
+		p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" {
+		recvSel := &parser.SelectorExpr{Root: p.Target.Selector.Root,
+			Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1]}
+		recv, err := c.compileSelector(recvSel)
+		if err != nil {
+			return "", err
+		}
+		arg, err := c.compileExpr(p.Ops[0].Call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		// same expansion as the `in` operator
+		val := fmt.Sprintf("(cond [(hash? %s) (hash-has-key? %s %s)] [(string? %s) (not (false? (string-contains? %s (format \"~a\" %s))))] [else (not (false? (member %s %s)))])",
+			recv, recv, arg, recv, recv, arg, arg, recv)
+		return val, nil
+	}
+
 	val, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -952,6 +995,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		pairs := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
+			// When the map key is a bare identifier like
+			// `{ foo: 1 }` convert it into a quoted symbol so the
+			// resulting Racket hash uses symbol keys.
+			if id, ok := simpleIdent(it.Key); ok {
+				k := "'" + sanitizeName(id)
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				pairs[i] = fmt.Sprintf("%s %s", k, v)
+				continue
+			}
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
@@ -1005,6 +1060,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		name = "count"
 	case "avg":
 		name = "avg"
+	case "min":
+		if len(call.Args) == 1 {
+			name = "_min"
+		}
+	case "max":
+		if len(call.Args) == 1 {
+			name = "_max"
+		}
 	case "input":
 		name = "read-line"
 	case "now":
@@ -1202,7 +1265,7 @@ func (c *Compiler) compileStructExpr(s *parser.StructLiteral) (string, error) {
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (string, error) {
 	base := sanitizeName(sel.Root)
 	for _, field := range sel.Tail {
-		base = fmt.Sprintf("(hash-ref %s %q)", base, sanitizeName(field))
+		base = fmt.Sprintf("(hash-ref %s '%s)", base, sanitizeName(field))
 	}
 	return base, nil
 }
@@ -1510,4 +1573,24 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 		elseExpr = "(void)"
 	}
 	return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
+}
+
+// simpleIdent reports whether the expression represents a bare identifier.
+// It returns the identifier name when true.
+func simpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return "", false
+	}
+	if len(u.Value.Ops) > 0 || u.Value.Target == nil || u.Value.Target.Selector == nil {
+		return "", false
+	}
+	sel := u.Value.Target.Selector
+	if len(sel.Tail) > 0 {
+		return "", false
+	}
+	return sel.Root, true
 }
