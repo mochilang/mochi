@@ -1,10 +1,10 @@
 case class Person(name: String, age: Int)
 
 object Main {
-	def main(args: Array[String]): Unit = {
-		val people: scala.collection.mutable.ArrayBuffer[Any] = _load("", scala.collection.mutable.Map("format" -> "json")).map(_.asInstanceOf[Any])
-		_save(people, "", scala.collection.mutable.Map("format" -> "json"))
-	}
+    def main(args: Array[String]): Unit = {
+        val people: scala.collection.mutable.ArrayBuffer[Any] = _load("", scala.collection.mutable.Map("format" -> "json")).map(_.asInstanceOf[Any])
+        _save(people, "", scala.collection.mutable.Map("format" -> "json"))
+    }
 }
 def _load(path: String, opts: Map[String, Any]): Seq[Any] = {
         val fmt = opts.getOrElse("format", "json").asInstanceOf[String]

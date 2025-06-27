@@ -1,10 +1,10 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		val a: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(1, 2, 3)
-		val b: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(3, 4)
-		println((a ++ b).distinct)
-		println(a.filterNot(b.contains))
-		println(a.filter(b.contains).distinct)
-		println((scala.collection.mutable.ArrayBuffer(1, 2) ++ scala.collection.mutable.ArrayBuffer(2, 3)).distinct)
-	}
+    def main(args: Array[String]): Unit = {
+        val a: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(1, 2, 3)
+        val b: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(3, 4)
+        println((a ++ b).distinct)
+        println(a.filterNot(b.contains))
+        println(a.filter(b.contains).distinct)
+        println((scala.collection.mutable.ArrayBuffer(1, 2) ++ scala.collection.mutable.ArrayBuffer(2, 3)).distinct)
+    }
 }

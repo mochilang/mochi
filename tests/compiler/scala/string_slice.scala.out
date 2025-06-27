@@ -1,7 +1,7 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		println(_sliceString("hello", 1, 4))
-	}
+    def main(args: Array[String]): Unit = {
+        println(_sliceString("hello", 1, 4))
+    }
 }
 def _sliceString(s: String, i: Int, j: Int): String = {
         var start = i

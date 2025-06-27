@@ -1,10 +1,10 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		val x: Int = 5
-		if ((x > 3)) {
-			println("big")
-		} else {
-			println("small")
-		}
-	}
+    def main(args: Array[String]): Unit = {
+        val x: Int = 5
+        if ((x > 3)) {
+            println("big")
+        } else {
+            println("small")
+        }
+    }
 }

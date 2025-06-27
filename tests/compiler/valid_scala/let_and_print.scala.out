@@ -1,7 +1,7 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		val a: Int = 10
-		val b: Int = 20
-		println((a + b))
-	}
+    def main(args: Array[String]): Unit = {
+        val a: Int = 10
+        val b: Int = 20
+        println((a + b))
+    }
 }

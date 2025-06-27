@@ -1,7 +1,7 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		println(_to_json(scala.collection.mutable.Map("a" -> 1)))
-	}
+    def main(args: Array[String]): Unit = {
+        println(_to_json(scala.collection.mutable.Map("a" -> 1)))
+    }
 }
 def _to_json(v: Any): String = v match {
         case null => "null"

@@ -1,8 +1,8 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		val xs: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(10, 20, 30)
-		println(_indexList(xs, 1))
-	}
+    def main(args: Array[String]): Unit = {
+        val xs: scala.collection.mutable.ArrayBuffer[Int] = scala.collection.mutable.ArrayBuffer(10, 20, 30)
+        println(_indexList(xs, 1))
+    }
 }
 def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {
         var idx = i

@@ -1,7 +1,7 @@
 object Main {
-	def main(args: Array[String]): Unit = {
-		_json(scala.collection.mutable.Map("a" -> 1))
-	}
+    def main(args: Array[String]): Unit = {
+        _json(scala.collection.mutable.Map("a" -> 1))
+    }
 }
 def _json(v: Any): Unit = println(_to_json(v))
 
