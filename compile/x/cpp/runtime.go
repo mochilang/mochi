@@ -3,7 +3,7 @@ package cppcode
 // Runtime helper data for the C++ backend.
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "unionAll", "union", "except", "intersect", "json", "cast", "fetch", "input", "load", "save"}
+var helperOrder = []string{"indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "min", "unionAll", "union", "except", "intersect", "json", "cast", "fetch", "input", "load", "save"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -109,6 +109,17 @@ var helperCode = map[string][]string{
 		"}",
 		"template<typename T> auto _avg(const T& v) -> decltype(v.Items, double{}) {",
 		"\treturn _avg(v.Items);",
+		"}",
+	},
+	"min": {
+		"template<typename T> auto _min(const T& v) -> decltype(*std::begin(v)) {",
+		"\tif (v.size() == 0) return {};",
+		"\tauto it = std::begin(v); auto m = *it; ++it;",
+		"\tfor (; it != std::end(v); ++it) if (*it < m) m = *it;",
+		"\treturn m;",
+		"}",
+		"template<typename T> auto _min(const T& v) -> decltype(v.Items, typename decltype(v.Items)::value_type{}) {",
+		"\treturn _min(v.Items);",
 		"}",
 	},
 	"unionAll": {
