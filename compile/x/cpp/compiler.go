@@ -764,15 +764,26 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				args[i] = c.compileExpr(a)
 			}
 			// method call like obj.foo()
-			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
+			if p.Target.Selector != nil {
 				root := p.Target.Selector.Root
-				method := p.Target.Selector.Tail[0]
-				if t, err := c.env.GetVar(root); err == nil {
-					if st, ok := t.(types.StructType); ok {
-						if _, ok := st.Methods[method]; ok {
-							callArgs := append([]string{root}, args...)
-							expr = fmt.Sprintf("%s_%s(%s)", st.Name, method, strings.Join(callArgs, ", "))
-							continue
+				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
+				recvSel := &parser.Primary{Selector: &parser.SelectorExpr{Root: root, Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1]}}
+				if method == "contains" && len(args) == 1 {
+					recv := c.compilePostfix(&parser.PostfixExpr{Target: recvSel})
+					recvExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: recvSel}}}}
+					if InferCppExprType(recvExpr, c.env, c.getVar) == "string" {
+						expr = fmt.Sprintf("(%s.find(%s) != string::npos)", recv, args[0])
+						continue
+					}
+				}
+				if len(p.Target.Selector.Tail) == 1 {
+					if t, err := c.env.GetVar(root); err == nil {
+						if st, ok := t.(types.StructType); ok {
+							if _, ok := st.Methods[method]; ok {
+								callArgs := append([]string{root}, args...)
+								expr = fmt.Sprintf("%s_%s(%s)", st.Name, method, strings.Join(callArgs, ", "))
+								continue
+							}
 						}
 					}
 				}
@@ -902,6 +913,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		case "avg":
 			c.helpers["avg"] = true
 			return fmt.Sprintf("_avg(%s)", args[0])
+		case "min":
+			c.helpers["min"] = true
+			return fmt.Sprintf("_min(%s)", args[0])
 		case "json":
 			c.helpers["json"] = true
 			return fmt.Sprintf("_json(%s)", args[0])
