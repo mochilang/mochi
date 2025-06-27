@@ -77,3 +77,7 @@ func EnsureFormatter() error {
 // Ensure provides a simple entry point for other packages to verify
 // the TypeScript toolchain is available.
 func Ensure() error { return EnsureFormatter() }
+
+// Format runs the TypeScript formatter on the provided source. It falls back to
+// a basic cleanup if no official formatter is available.
+func Format(src []byte) []byte { return formatTS(src) }

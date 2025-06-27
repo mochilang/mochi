@@ -1,7 +1,6 @@
 package tscode
 
 import (
-	"bufio"
 	"bytes"
 	"fmt"
 	"os"
@@ -2426,18 +2425,27 @@ func formatTS(src []byte) []byte {
 		}
 	}
 
-	// Fallback: replace tabs and trim whitespace to keep code readable
+	// Fallback: basic cleanup for readability
 	s := strings.ReplaceAll(string(src), "\t", "  ")
-	var buf bytes.Buffer
-	scanner := bufio.NewScanner(strings.NewReader(s))
-	for scanner.Scan() {
-		line := strings.TrimRight(scanner.Text(), " \t")
-		buf.WriteString(line)
-		buf.WriteByte('\n')
+	lines := strings.Split(s, "\n")
+	var outLines []string
+	lastBlank := false
+	for _, line := range lines {
+		line = strings.TrimRight(line, " \t")
+		blank := len(strings.TrimSpace(line)) == 0
+		if blank {
+			if lastBlank {
+				continue
+			}
+			lastBlank = true
+		} else {
+			lastBlank = false
+		}
+		outLines = append(outLines, line)
 	}
-	res := buf.Bytes()
-	if len(res) == 0 || res[len(res)-1] != '\n' {
-		res = append(res, '\n')
+	res := strings.Join(outLines, "\n")
+	if !strings.HasSuffix(res, "\n") {
+		res += "\n"
 	}
-	return res
+	return []byte(res)
 }
