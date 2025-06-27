@@ -828,7 +828,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args[i] = v
 			}
 			argStr := strings.Join(args, ", ")
-			if expr == "print" {
+			if strings.HasSuffix(expr, ".contains") {
+				base := strings.TrimSuffix(expr, ".contains")
+				if len(args) != 1 {
+					return "", fmt.Errorf("contains expects 1 arg")
+				}
+				expr = fmt.Sprintf("Convert.ToString(%s).Contains(%s)", base, args[0])
+			} else if expr == "print" {
 				expr = fmt.Sprintf("Console.WriteLine(%s)", argStr)
 			} else if expr == "len" {
 				if len(args) != 1 {
@@ -1985,6 +1991,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", argStr), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min() expects 1 arg")
+		}
+		c.use("_min")
+		return fmt.Sprintf("_min(%s)", argStr), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max() expects 1 arg")
+		}
+		c.use("_max")
+		return fmt.Sprintf("_max(%s)", argStr), nil
 	case "str":
 		if len(args) != 1 {
 			return "", fmt.Errorf("str() expects 1 arg")
