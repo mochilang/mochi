@@ -1,22 +1,22 @@
 <?php
 class Product {
-	public $name;
-	public $price;
-	public function __construct($fields = []) {
-		$this->name = $fields['name'] ?? null;
-		$this->price = $fields['price'] ?? null;
-	}
+    public $name;
+    public $price;
+    public function __construct($fields = []) {
+        $this->name = $fields['name'] ?? null;
+        $this->price = $fields['price'] ?? null;
+    }
 }
 
 $products = [new Product(['name' => "Laptop", 'price' => 1500]), new Product(['name' => "Smartphone", 'price' => 900]), new Product(['name' => "Tablet", 'price' => 600]), new Product(['name' => "Monitor", 'price' => 300]), new Product(['name' => "Keyboard", 'price' => 100]), new Product(['name' => "Mouse", 'price' => 50]), new Product(['name' => "Headphones", 'price' => 200])];
 $expensive = (function() use ($products) {
-	$_src = $products;
-	return _query($_src, [
-	], [ 'select' => function($p) use ($products) { return $p; }, 'sortKey' => function($p) use ($products) { return (-$p->price); }, 'skip' => 1, 'take' => 3 ]);
+    $_src = $products;
+    return _query($_src, [
+    ], [ 'select' => function($p) use ($products) { return $p; }, 'sortKey' => function($p) use ($products) { return (-$p->price); }, 'skip' => 1, 'take' => 3 ]);
 })();
 echo "--- Top products (excluding most expensive) ---", PHP_EOL;
 foreach ((is_string($expensive) ? str_split($expensive) : $expensive) as $item) {
-	echo $item->name . " " . "costs $" . " " . $item->price, PHP_EOL;
+    echo $item->name . " " . "costs $" . " " . $item->price, PHP_EOL;
 }
 
 function _query($src, $joins, $opts) {

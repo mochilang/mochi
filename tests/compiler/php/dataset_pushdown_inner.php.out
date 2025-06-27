@@ -2,15 +2,15 @@
 $xs = [1, 2, 3];
 $ys = [10, 20, 30];
 $res = (function() use ($xs, $ys) {
-	$res = [];
-	foreach ((is_string($xs) ? str_split($xs) : $xs) as $x) {
-		foreach ((is_string($ys) ? str_split($ys) : $ys) as $y) {
-			if (!(($y > 15))) { continue; }
-			$res[] = ((is_array($x) && is_array($y)) ? array_merge($x, $y) : ((is_string($x) || is_string($y)) ? ($x . $y) : ($x + $y)));
-		}
-	}
-	return $res;
+    $res = [];
+    foreach ((is_string($xs) ? str_split($xs) : $xs) as $x) {
+        foreach ((is_string($ys) ? str_split($ys) : $ys) as $y) {
+            if (!(($y > 15))) { continue; }
+            $res[] = ((is_array($x) && is_array($y)) ? array_merge($x, $y) : ((is_string($x) || is_string($y)) ? ($x . $y) : ($x + $y)));
+        }
+    }
+    return $res;
 })();
 foreach ((is_string($res) ? str_split($res) : $res) as $v) {
-	echo $v, PHP_EOL;
+    echo $v, PHP_EOL;
 }

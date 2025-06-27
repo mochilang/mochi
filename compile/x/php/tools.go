@@ -119,3 +119,9 @@ func EnsurePHPCBF() error {
 	}
 	return fmt.Errorf("phpcbf not installed")
 }
+
+// EnsureFormatter verifies that phpcbf is installed so generated PHP code can be
+// formatted. It simply delegates to EnsurePHPCBF for convenience.
+func EnsureFormatter() error {
+	return EnsurePHPCBF()
+}

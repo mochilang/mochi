@@ -1,7 +1,7 @@
 <?php
 function mochi_prepend($level, &$result) {
-	$result = ((is_array([$level]) && is_array($result)) ? array_merge([$level], $result) : ((is_string([$level]) || is_string($result)) ? ([$level] . $result) : ([$level] + $result)));
-	return $result;
+    $result = ((is_array([$level]) && is_array($result)) ? array_merge([$level], $result) : ((is_string([$level]) || is_string($result)) ? ([$level] . $result) : ([$level] + $result)));
+    return $result;
 }
 
 echo mochi_prepend([1, 2], [[3], [4]]), PHP_EOL;
