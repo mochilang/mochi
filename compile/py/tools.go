@@ -1,6 +1,7 @@
 package pycode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -140,4 +141,50 @@ func EnsureCython() error {
 		return nil
 	}
 	return fmt.Errorf("cython3 not found")
+}
+
+// EnsureBlack installs the Black formatter if missing. Useful for codegen tests.
+func EnsureBlack() error {
+	if _, err := exec.LookPath("black"); err == nil {
+		return nil
+	}
+	// attempt installation via pip
+	installers := []string{"pip3", "pip"}
+	for _, bin := range installers {
+		if _, err := exec.LookPath(bin); err == nil {
+			fmt.Println("\U0001F40D Installing Black via", bin, "...")
+			cmd := exec.Command(bin, "install", "--user", "black")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			break
+		}
+	}
+	if _, err := exec.LookPath("black"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("black not found")
+}
+
+// FormatPy formats Python source using Black if available.
+// If Black is not installed, the input is returned unchanged.
+func FormatPy(src []byte) []byte {
+	tool, err := exec.LookPath("black")
+	if err == nil {
+		cmd := exec.Command(tool, "-q", "-")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) > 0 && res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res
+		}
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strconv"
@@ -288,18 +287,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	code := c.buf.Bytes()
-	return formatPy(code), nil
-}
-
-func formatPy(src []byte) []byte {
-	cmd := exec.Command("black", "-q", "-")
-	cmd.Stdin = bytes.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err == nil {
-		return out.Bytes()
-	}
-	return src
+	return FormatPy(code), nil
 }
 
 // --- Expressions ---
