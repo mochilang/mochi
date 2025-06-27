@@ -3,6 +3,7 @@ package rktcode
 import (
 	"bytes"
 	"fmt"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -345,7 +346,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	} else {
 		code = bytes.Replace(code, []byte(";json-placeholder\n"), nil, 1)
 	}
-	return code, nil
+	return formatRkt(code), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -1510,4 +1511,15 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 		elseExpr = "(void)"
 	}
 	return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
+}
+
+func formatRkt(src []byte) []byte {
+	cmd := exec.Command("raco", "fmt")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		return out.Bytes()
+	}
+	return src
 }
