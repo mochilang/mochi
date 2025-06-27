@@ -1,0 +1,53 @@
+let cast_info = [
+  { movie_id: 1, person_id: 101 },
+  { movie_id: 2, person_id: 102 }
+]
+
+let keyword = [
+  { id: 100, keyword: "marvel-cinematic-universe" },
+  { id: 200, keyword: "other" }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 100 },
+  { movie_id: 2, keyword_id: 200 }
+]
+
+let name = [
+  { id: 101, name: "Downey Robert Jr." },
+  { id: 102, name: "Chris Evans" }
+]
+
+let title = [
+  { id: 1, title: "Iron Man 3", production_year: 2013 },
+  { id: 2, title: "Old Movie", production_year: 2000 }
+]
+
+let result =
+  from ci in cast_info
+  join mk in movie_keyword on ci.movie_id == mk.movie_id
+  join k in keyword on mk.keyword_id == k.id
+  join n in name on ci.person_id == n.id
+  join t in title on ci.movie_id == t.id
+  where
+    k.keyword == "marvel-cinematic-universe" &&
+    n.name.contains("Downey") &&
+    n.name.contains("Robert") &&
+    t.production_year > 2010
+  select {
+    movie_keyword: k.keyword,
+    actor_name: n.name,
+    marvel_movie: t.title
+  }
+
+json(result)
+
+test "Q6 finds marvel movie with Robert Downey" {
+  expect result == [
+    {
+      movie_keyword: "marvel-cinematic-universe",
+      actor_name: "Downey Robert Jr.",
+      marvel_movie: "Iron Man 3"
+    }
+  ]
+}
