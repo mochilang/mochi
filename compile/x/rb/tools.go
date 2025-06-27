@@ -1,7 +1,9 @@
 package rbcode
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -83,4 +85,32 @@ func EnsureRubocop() error {
 		return nil
 	}
 	return fmt.Errorf("rubocop not installed")
+}
+
+// FormatRB runs RuboCop in auto-correct mode on the provided Ruby source code
+// if available. When RuboCop is unavailable or formatting fails, the input is
+// returned unchanged with a trailing newline ensured.
+func FormatRB(src []byte) []byte {
+	if err := EnsureRubocop(); err != nil {
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
+	}
+	cmd := exec.Command("rubocop", "-A", "--stdin", "stdin.rb", "--stderr")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = io.Discard
+	if err := cmd.Run(); err == nil && out.Len() > 0 {
+		res := out.Bytes()
+		if len(res) == 0 || res[len(res)-1] != '\n' {
+			res = append(res, '\n')
+		}
+		return res
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }

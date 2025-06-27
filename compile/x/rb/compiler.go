@@ -3,9 +3,7 @@ package rbcode
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"math"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -79,7 +77,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.buf.Write(body)
 	src := c.buf.Bytes()
-	return formatRB(src), nil
+	return FormatRB(src), nil
 }
 
 // --- Statements ---
@@ -1746,19 +1744,4 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	}
 	c.writeln(fmt.Sprintf("raise \"expect failed\" unless %s", expr))
 	return nil
-}
-
-func formatRB(src []byte) []byte {
-	if err := EnsureRubocop(); err != nil {
-		return src
-	}
-	cmd := exec.Command("rubocop", "-A", "--stdin", "stdin.rb", "--stderr")
-	cmd.Stdin = bytes.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = io.Discard
-	if err := cmd.Run(); err == nil && out.Len() > 0 {
-		return out.Bytes()
-	}
-	return src
 }
