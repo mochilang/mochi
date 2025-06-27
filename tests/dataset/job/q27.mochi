@@ -1,0 +1,113 @@
+let comp_cast_type = [
+  { id: 1, kind: "cast" },
+  { id: 2, kind: "crew" },
+  { id: 3, kind: "complete" }
+]
+
+let complete_cast = [
+  { movie_id: 1, subject_id: 1, status_id: 3 },
+  { movie_id: 2, subject_id: 2, status_id: 3 }
+]
+
+let company_name = [
+  { id: 1, name: "Best Film", country_code: "[se]" },
+  { id: 2, name: "Polish Film", country_code: "[pl]" }
+]
+
+let company_type = [
+  { id: 1, kind: "production companies" },
+  { id: 2, kind: "other" }
+]
+
+let keyword = [
+  { id: 1, keyword: "sequel" },
+  { id: 2, keyword: "remake" }
+]
+
+let link_type = [
+  { id: 1, link: "follows" },
+  { id: 2, link: "related" }
+]
+
+let movie_companies = [
+  { movie_id: 1, company_id: 1, company_type_id: 1, note: null },
+  { movie_id: 2, company_id: 2, company_type_id: 1, note: "extra" }
+]
+
+let movie_info = [
+  { movie_id: 1, info: "Sweden" },
+  { movie_id: 2, info: "USA" }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 },
+  { movie_id: 2, keyword_id: 2 }
+]
+
+let movie_link = [
+  { movie_id: 1, link_type_id: 1 },
+  { movie_id: 2, link_type_id: 2 }
+]
+
+let title = [
+  { id: 1, production_year: 1980, title: "Western Sequel" },
+  { id: 2, production_year: 1999, title: "Another Movie" }
+]
+
+let matches =
+  from cc in complete_cast
+  join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  join cct2 in comp_cast_type on cct2.id == cc.status_id
+  join t in title on t.id == cc.movie_id
+  join ml in movie_link on ml.movie_id == t.id
+  join lt in link_type on lt.id == ml.link_type_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join mc in movie_companies on mc.movie_id == t.id
+  join ct in company_type on ct.id == mc.company_type_id
+  join cn in company_name on cn.id == mc.company_id
+  join mi in movie_info on mi.movie_id == t.id
+  where (
+    (cct1.kind == "cast" || cct1.kind == "crew") &&
+    cct2.kind == "complete" &&
+    cn.country_code != "[pl]" &&
+    (cn.name.contains("Film") || cn.name.contains("Warner")) &&
+    ct.kind == "production companies" &&
+    k.keyword == "sequel" &&
+    lt.link.contains("follow") &&
+    mc.note == null &&
+    (mi.info == "Sweden" || mi.info == "Germany" ||
+     mi.info == "Swedish" || mi.info == "German") &&
+    t.production_year >= 1950 && t.production_year <= 2000 &&
+    ml.movie_id == mk.movie_id &&
+    ml.movie_id == mc.movie_id &&
+    mk.movie_id == mc.movie_id &&
+    ml.movie_id == mi.movie_id &&
+    mk.movie_id == mi.movie_id &&
+    mc.movie_id == mi.movie_id &&
+    ml.movie_id == cc.movie_id &&
+    mk.movie_id == cc.movie_id &&
+    mc.movie_id == cc.movie_id &&
+    mi.movie_id == cc.movie_id
+  )
+  select {
+    company: cn.name,
+    link: lt.link,
+    title: t.title
+  }
+
+let result = {
+  producing_company: min(from x in matches select x.company),
+  link_type: min(from x in matches select x.link),
+  complete_western_sequel: min(from x in matches select x.title)
+}
+
+json(result)
+
+test "Q27 selects minimal company, link and title" {
+  expect result == {
+    producing_company: "Best Film",
+    link_type: "follows",
+    complete_western_sequel: "Western Sequel"
+  }
+}
