@@ -1,0 +1,8 @@
+ERROR in _sort on line 61 of file tests/dataset/tpc-h/compiler/scheme/q2.scm.out: undefined variable: sort
+  called from <anonymous> on line 137 of file tests/dataset/tpc-h/compiler/scheme/q2.scm.out
+  called from <anonymous> on line 137 of file tests/dataset/tpc-h/compiler/scheme/q2.scm.out
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting sort ...
+sort is exported by:
+  (srfi 95)
