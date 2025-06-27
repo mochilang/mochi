@@ -1124,6 +1124,41 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		c.helpers["groupBy"] = true
 		src := c.compileExpr(q.Source)
+		// determine variable element types
+		varTypes := []string{InferCppExprType(q.Source, c.env, c.getVar)}
+		for _, f := range q.Froms {
+			varTypes = append(varTypes, InferCppExprType(f.Src, c.env, c.getVar))
+		}
+		joinTypes := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			joinTypes[i] = InferCppExprType(j.Src, c.env, c.getVar)
+		}
+		// register variable types for inference
+		vt := varTypes[0]
+		if strings.HasPrefix(vt, "vector<") {
+			vt = strings.TrimSuffix(strings.TrimPrefix(vt, "vector<"), ">")
+		} else {
+			vt = "auto"
+		}
+		c.setVar(q.Var, vt)
+		for i, f := range q.Froms {
+			vt = varTypes[i+1]
+			if strings.HasPrefix(vt, "vector<") {
+				vt = strings.TrimSuffix(strings.TrimPrefix(vt, "vector<"), ">")
+			} else {
+				vt = "auto"
+			}
+			c.setVar(f.Var, vt)
+		}
+		for i, j := range q.Joins {
+			jt := joinTypes[i]
+			if strings.HasPrefix(jt, "vector<") {
+				jt = strings.TrimSuffix(strings.TrimPrefix(jt, "vector<"), ">")
+			} else {
+				jt = "auto"
+			}
+			c.setVar(j.Var, jt)
+		}
 		key := c.compileExpr(q.Group.Exprs[0])
 		sel := c.compileExpr(q.Select)
 		resType := InferCppExprType(q.Select, c.env, c.getVar)
@@ -1297,6 +1332,39 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		joinVars[i] = j.Var
 		joinSrcs[i] = c.compileExpr(j.Src)
 		joinConds[i] = c.compileExpr(j.On)
+	}
+	varTypes := []string{InferCppExprType(q.Source, c.env, c.getVar)}
+	for _, f := range q.Froms {
+		varTypes = append(varTypes, InferCppExprType(f.Src, c.env, c.getVar))
+	}
+	joinTypes := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		joinTypes[i] = InferCppExprType(j.Src, c.env, c.getVar)
+	}
+	vt := varTypes[0]
+	if strings.HasPrefix(vt, "vector<") {
+		vt = strings.TrimSuffix(strings.TrimPrefix(vt, "vector<"), ">")
+	} else {
+		vt = "auto"
+	}
+	c.setVar(q.Var, vt)
+	for i, f := range q.Froms {
+		vt = varTypes[i+1]
+		if strings.HasPrefix(vt, "vector<") {
+			vt = strings.TrimSuffix(strings.TrimPrefix(vt, "vector<"), ">")
+		} else {
+			vt = "auto"
+		}
+		c.setVar(f.Var, vt)
+	}
+	for i, j := range q.Joins {
+		jt := joinTypes[i]
+		if strings.HasPrefix(jt, "vector<") {
+			jt = strings.TrimSuffix(strings.TrimPrefix(jt, "vector<"), ">")
+		} else {
+			jt = "auto"
+		}
+		c.setVar(j.Var, jt)
 	}
 	var cond string
 	var pushIdx int
