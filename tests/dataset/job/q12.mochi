@@ -1,0 +1,66 @@
+let company_name = [
+  { id: 1, name: "Best Pictures", country_code: "[us]" },
+  { id: 2, name: "Foreign Films", country_code: "[uk]" }
+]
+
+let company_type = [
+  { id: 10, kind: "production companies" },
+  { id: 20, kind: "distributors" }
+]
+
+let info_type = [
+  { id: 100, info: "genres" },
+  { id: 200, info: "rating" }
+]
+
+let movie_companies = [
+  { movie_id: 1000, company_id: 1, company_type_id: 10 },
+  { movie_id: 2000, company_id: 2, company_type_id: 10 }
+]
+
+let movie_info = [
+  { movie_id: 1000, info_type_id: 100, info: "Drama" },
+  { movie_id: 2000, info_type_id: 100, info: "Horror" }
+]
+
+let movie_info_idx = [
+  { movie_id: 1000, info_type_id: 200, info: 8.3 },
+  { movie_id: 2000, info_type_id: 200, info: 7.5 }
+]
+
+let title = [
+  { id: 1000, production_year: 2006, title: "Great Drama" },
+  { id: 2000, production_year: 2007, title: "Low Rated" }
+]
+
+let result =
+  from cn in company_name
+  join mc in movie_companies on mc.company_id == cn.id
+  join ct in company_type on ct.id == mc.company_type_id
+  join t in title on t.id == mc.movie_id
+  join mi in movie_info on mi.movie_id == t.id
+  join it1 in info_type on it1.id == mi.info_type_id
+  join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  join it2 in info_type on it2.id == mi_idx.info_type_id
+  where
+    cn.country_code == "[us]" &&
+    ct.kind == "production companies" &&
+    it1.info == "genres" &&
+    it2.info == "rating" &&
+    (mi.info == "Drama" || mi.info == "Horror") &&
+    mi_idx.info > 8.0 &&
+    t.production_year >= 2005 &&
+    t.production_year <= 2008
+  select {
+    movie_company: cn.name,
+    rating: mi_idx.info,
+    drama_horror_movie: t.title
+  }
+
+json(result)
+
+test "Q12 finds high-rated US drama or horror with company" {
+  expect result == [
+    { movie_company: "Best Pictures", rating: 8.3, drama_horror_movie: "Great Drama" }
+  ]
+}
