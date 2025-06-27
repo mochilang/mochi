@@ -28,26 +28,26 @@ fn _slice_list(comptime T: type, v: []const T, start: i32, end: i32, step: i32) 
 fn isValid(s: []const u8) bool {
     var stack = std.ArrayList(u8).init(std.heap.page_allocator);
     const n: i32 = (s).len;
-    for (@as(i32, @intCast(0))..n) |i| {
+    for (@as(i32,@intCast(0)) .. n) |i| {
         const c: i32 = s[i];
         if (std.mem.eql(u8, c, "(")) {
-            try stack.append(@as(i32, @intCast(")")));
-        } else if (std.mem.eql(u8, c, "[")) {
-            try stack.append(@as(i32, @intCast("]")));
-        } else if (std.mem.eql(u8, c, "{")) {
-            try stack.append(@as(i32, @intCast("}")));
+            try stack.append(@as(i32,@intCast(")")));
+        } else         if (std.mem.eql(u8, c, "[")) {
+            try stack.append(@as(i32,@intCast("]")));
+        } else         if (std.mem.eql(u8, c, "{")) {
+            try stack.append(@as(i32,@intCast("}")));
         } else {
-            if (((stack).len == @as(i32, @intCast(0)))) {
+            if (((stack).len == @as(i32,@intCast(0)))) {
                 return false;
             }
-            const top: []const u8 = stack[((stack).len - @as(i32, @intCast(1)))];
+            const top: []const u8 = stack[((stack).len - @as(i32,@intCast(1)))];
             if (!std.mem.eql(u8, top, c)) {
                 return false;
             }
-            stack = _slice_list([]const u8, stack, @as(i32, @intCast(0)), ((stack).len - @as(i32, @intCast(1))), 1);
+            stack = _slice_list([]const u8, stack, @as(i32,@intCast(0)), ((stack).len - @as(i32,@intCast(1))), 1);
         }
     }
-    return ((stack).len == @as(i32, @intCast(0)));
+    return ((stack).len == @as(i32,@intCast(0)));
 }
 
 fn test_example_1() void {

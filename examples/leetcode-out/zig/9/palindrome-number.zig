@@ -5,13 +5,13 @@ fn expect(cond: bool) void {
 }
 
 fn isPalindrome(x: i32) bool {
-    if ((x < @as(i32, @intCast(0)))) {
+    if ((x < @as(i32,@intCast(0)))) {
         return false;
     }
     const s: []const u8 = std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{x}) catch unreachable;
     const n: i32 = (s).len;
-    for (@as(i32, @intCast(0))..(n / @as(i32, @intCast(2)))) |i| {
-        if ((s[i] != s[((n - @as(i32, @intCast(1))) - i)])) {
+    for (@as(i32,@intCast(0)) .. (n / @as(i32,@intCast(2)))) |i| {
+        if ((s[i] != s[((n - @as(i32,@intCast(1))) - i)])) {
             return false;
         }
     }
@@ -19,19 +19,19 @@ fn isPalindrome(x: i32) bool {
 }
 
 fn test_example_1() void {
-    expect((isPalindrome(@as(i32, @intCast(121))) == true));
+    expect((isPalindrome(@as(i32,@intCast(121))) == true));
 }
 
 fn test_example_2() void {
-    expect((isPalindrome(-@as(i32, @intCast(121))) == false));
+    expect((isPalindrome(-@as(i32,@intCast(121))) == false));
 }
 
 fn test_example_3() void {
-    expect((isPalindrome(@as(i32, @intCast(10))) == false));
+    expect((isPalindrome(@as(i32,@intCast(10))) == false));
 }
 
 fn test_zero() void {
-    expect((isPalindrome(@as(i32, @intCast(0))) == true));
+    expect((isPalindrome(@as(i32,@intCast(0))) == true));
 }
 
 pub fn main() void {
