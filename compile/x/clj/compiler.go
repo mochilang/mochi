@@ -726,7 +726,12 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	case "==", "!=":
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.BoolType{}
 	case "<", "<=", ">", ">=":
-		if isString(leftType) && isString(rightType) {
+		// Compare strings using (compare) if either static types or
+		// heuristics indicate string values. Map fields are typed as
+		// `any`, so fall back to checking the expression text.
+		if (isString(leftType) && isString(rightType)) ||
+			((isAny(leftType) || isString(leftType)) && (isAny(rightType) || isString(rightType)) &&
+				c.isStringExpr(left) && c.isStringExpr(right)) {
 			cmp := fmt.Sprintf("(compare %s %s)", left, right)
 			switch op {
 			case "<":
@@ -828,17 +833,23 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 		if op.Field != nil {
 			fname := op.Field.Name
-			// Handle method call like x.contains(y)
-			if fname == "contains" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+			// Handle method call like x.contains(y) or x.starts_with(y)
+			if (fname == "contains" || fname == "starts_with") && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
 				argExpr, err := c.compileExpr(p.Ops[i+1].Call.Args[0])
 				if err != nil {
 					return "", err
 				}
 				if _, ok := t.(types.StringType); ok {
-					expr = fmt.Sprintf("(clojure.string/includes? %s %s)", expr, argExpr)
-				} else {
+					if fname == "contains" {
+						expr = fmt.Sprintf("(clojure.string/includes? %s %s)", expr, argExpr)
+					} else {
+						expr = fmt.Sprintf("(clojure.string/starts-with? %s %s)", expr, argExpr)
+					}
+				} else if fname == "contains" {
 					c.use("_in")
 					expr = fmt.Sprintf("(_in %s %s)", argExpr, expr)
+				} else {
+					return "", fmt.Errorf("starts_with not supported on %s", t.String())
 				}
 				t = types.BoolType{}
 				i++
@@ -879,12 +890,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				prefixType := c.primaryType(prefixPrimary)
-				if method == "contains" && len(args) == 1 {
-					if _, ok := prefixType.(types.StringType); ok {
-						expr = fmt.Sprintf("(clojure.string/includes? %s %s)", prefixExpr, args[0])
-					} else {
+				if (method == "contains" || method == "starts_with") && len(args) == 1 {
+					if _, ok := prefixType.(types.StringType); ok || c.isStringExpr(prefixExpr) {
+						if method == "contains" {
+							expr = fmt.Sprintf("(clojure.string/includes? %s %s)", prefixExpr, args[0])
+						} else {
+							expr = fmt.Sprintf("(clojure.string/starts-with? %s %s)", prefixExpr, args[0])
+						}
+					} else if method == "contains" {
 						c.use("_in")
 						expr = fmt.Sprintf("(_in %s %s)", args[0], prefixExpr)
+					} else {
+						return "", fmt.Errorf("starts_with not supported on %s", prefixType.String())
 					}
 					t = types.BoolType{}
 					continue
@@ -1775,6 +1792,9 @@ func (c *Compiler) isStringExpr(expr string) bool {
 				}
 			}
 		}
+	}
+	if strings.HasPrefix(expr, "(:") {
+		return true
 	}
 	if strings.HasPrefix(expr, "(subs ") {
 		v := strings.Fields(expr[6:])
