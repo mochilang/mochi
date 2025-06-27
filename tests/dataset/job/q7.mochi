@@ -1,0 +1,81 @@
+let aka_name = [
+  { person_id: 1, name: "Anna Mae" },
+  { person_id: 2, name: "Chris" } // no 'a'
+]
+
+let cast_info = [
+  { person_id: 1, movie_id: 10 },
+  { person_id: 2, movie_id: 20 }
+]
+
+let info_type = [
+  { id: 1, info: "mini biography" },
+  { id: 2, info: "trivia" }
+]
+
+let link_type = [
+  { id: 1, link: "features" },
+  { id: 2, link: "references" }
+]
+
+let movie_link = [
+  { linked_movie_id: 10, link_type_id: 1 },
+  { linked_movie_id: 20, link_type_id: 2 }
+]
+
+let name = [
+  { id: 1, name: "Alan Brown", name_pcode_cf: "B", gender: "m" },
+  { id: 2, name: "Zoe", name_pcode_cf: "Z", gender: "f" } // outside range
+]
+
+let person_info = [
+  { person_id: 1, info_type_id: 1, note: "Volker Boehm" },
+  { person_id: 2, info_type_id: 1, note: "Other" }
+]
+
+let title = [
+  { id: 10, title: "Feature Film", production_year: 1990 },
+  { id: 20, title: "Late Film", production_year: 2000 } // year too late
+]
+
+let rows =
+  from an in aka_name
+  join n in name on n.id == an.person_id
+  join pi in person_info on pi.person_id == an.person_id
+  join it in info_type on it.id == pi.info_type_id
+  join ci in cast_info on ci.person_id == n.id
+  join t in title on t.id == ci.movie_id
+  join ml in movie_link on ml.linked_movie_id == t.id
+  join lt in link_type on lt.id == ml.link_type_id
+  where (
+    an.name LIKE "%a%" &&
+    it.info == "mini biography" &&
+    lt.link == "features" &&
+    n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
+    (n.gender == "m" || (n.gender == "f" && n.name LIKE "B%")) &&
+    pi.note == "Volker Boehm" &&
+    t.production_year >= 1980 && t.production_year <= 1995 &&
+    pi.person_id == an.person_id &&
+    pi.person_id == ci.person_id &&
+    an.person_id == ci.person_id &&
+    ci.movie_id == ml.linked_movie_id
+  )
+  select { person_name: n.name, movie_title: t.title }
+
+let result = [
+  {
+    of_person: min(from r in rows select r.person_name),
+    biography_movie: min(from r in rows select r.movie_title)
+  }
+]
+
+json(result)
+
+test "Q7 finds movie features biography for person" {
+  expect result == [
+    {
+      of_person: "Alan Brown",
+      biography_movie: "Feature Film"
+    }
+  ]
+}
