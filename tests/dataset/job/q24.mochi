@@ -1,0 +1,117 @@
+let aka_name = [
+  { person_id: 1 }
+]
+
+let char_name = [
+  { id: 1, name: "Hero Character" }
+]
+
+let cast_info = [
+  { movie_id: 1, person_id: 1, person_role_id: 1, role_id: 1, note: "(voice)" }
+]
+
+let company_name = [
+  { id: 1, country_code: "[us]" }
+]
+
+let info_type = [
+  { id: 1, info: "release dates" }
+]
+
+let keyword = [
+  { id: 1, keyword: "hero" }
+]
+
+let movie_companies = [
+  { movie_id: 1, company_id: 1 }
+]
+
+let movie_info = [
+  { movie_id: 1, info_type_id: 1, info: "Japan: Feb 2015" }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 }
+]
+
+let name = [
+  { id: 1, name: "Ann Actress", gender: "f" }
+]
+
+let role_type = [
+  { id: 1, role: "actress" }
+]
+
+let title = [
+  { id: 1, title: "Heroic Adventure", production_year: 2015 }
+]
+
+let matches =
+  from an in aka_name
+  from chn in char_name
+  from ci in cast_info
+  from cn in company_name
+  from it in info_type
+  from k in keyword
+  from mc in movie_companies
+  from mi in movie_info
+  from mk in movie_keyword
+  from n in name
+  from rt in role_type
+  from t in title
+  where (
+    ci.note in ["(voice)", "(voice: Japanese version)", "(voice) (uncredited)", "(voice: English version)"] &&
+    cn.country_code == "[us]" &&
+    it.info == "release dates" &&
+    k.keyword in ["hero", "martial-arts", "hand-to-hand-combat"] &&
+    mi.info != null &&
+    (mi.info.starts_with("Japan:") && mi.info.contains("201") ||
+     mi.info.starts_with("USA:") && mi.info.contains("201")) &&
+    n.gender == "f" &&
+    n.name.contains("An") &&
+    rt.role == "actress" &&
+    t.production_year > 2010 &&
+    t.id == mi.movie_id &&
+    t.id == mc.movie_id &&
+    t.id == ci.movie_id &&
+    t.id == mk.movie_id &&
+    mc.movie_id == ci.movie_id &&
+    mc.movie_id == mi.movie_id &&
+    mc.movie_id == mk.movie_id &&
+    mi.movie_id == ci.movie_id &&
+    mi.movie_id == mk.movie_id &&
+    ci.movie_id == mk.movie_id &&
+    cn.id == mc.company_id &&
+    it.id == mi.info_type_id &&
+    n.id == ci.person_id &&
+    rt.id == ci.role_id &&
+    n.id == an.person_id &&
+    ci.person_id == an.person_id &&
+    chn.id == ci.person_role_id &&
+    k.id == mk.keyword_id
+  )
+  select {
+    voiced_char_name: chn.name,
+    voicing_actress_name: n.name,
+    voiced_action_movie_jap_eng: t.title
+  }
+
+let result = [
+  {
+    voiced_char_name: min(from x in matches select x.voiced_char_name),
+    voicing_actress_name: min(from x in matches select x.voicing_actress_name),
+    voiced_action_movie_jap_eng: min(from x in matches select x.voiced_action_movie_jap_eng)
+  }
+]
+
+json(result)
+
+test "Q24 finds voiced action movie with actress named An" {
+  expect result == [
+    {
+      voiced_char_name: "Hero Character",
+      voicing_actress_name: "Ann Actress",
+      voiced_action_movie_jap_eng: "Heroic Adventure"
+    }
+  ]
+}
