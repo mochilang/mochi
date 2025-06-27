@@ -371,6 +371,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.helpers["cast"] = true
 				expr = fmt.Sprintf("_cast<%s>(%s)", st.Name, expr)
 			}
+		} else if t := InferCppExprType(s.Let.Value, c.env, c.getVar); t != "" {
+			typ = t
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Let.Name))
@@ -415,6 +417,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				c.helpers["cast"] = true
 				expr = fmt.Sprintf("_cast<%s>(%s)", st.Name, expr)
 			}
+		} else if t := InferCppExprType(s.Var.Value, c.env, c.getVar); t != "" {
+			typ = t
 		}
 		if expr == "" {
 			c.writeln(fmt.Sprintf("%s %s;", typ, s.Var.Name))
