@@ -76,20 +76,46 @@ func EnsureElixir() error {
 	return fmt.Errorf("elixir not installed and no supported installer found")
 }
 
+// Ensure provides a generic entry point for verifying required tools.
+// It simply calls EnsureElixir so other packages can depend on excode.Ensure.
+func Ensure() error { return EnsureElixir() }
+
 // Format runs Elixir's Code formatter on the provided source code. If the
 // `elixir` binary is not available, the code is returned unchanged. Formatting
 // errors are returned.
 func Format(code []byte) ([]byte, error) {
-	if _, err := exec.LookPath("elixir"); err != nil {
-		return code, nil
+	if path, err := exec.LookPath("mix"); err == nil {
+		cmd := exec.Command(path, "format", "-")
+		cmd.Stdin = bytes.NewReader(code)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res, nil
+		}
 	}
-	cmd := exec.Command("elixir", "-e", "IO.read(:stdio, :eof) |> Code.format_string!() |> Enum.join(\"\") |> IO.write()")
-	cmd.Stdin = bytes.NewReader(code)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
-	if err := cmd.Run(); err != nil {
+	if path, err := exec.LookPath("elixir"); err == nil {
+		cmd := exec.Command(path, "-e", "IO.read(:stdio, :eof) |> Code.format_string!() |> Enum.join(\"\") |> IO.write()")
+		cmd.Stdin = bytes.NewReader(code)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res, nil
+		}
 		return nil, fmt.Errorf("format error: %w\n%s", err, out.Bytes())
 	}
-	return out.Bytes(), nil
+	code = bytes.ReplaceAll(code, []byte("\t"), []byte("  "))
+	if len(code) > 0 && code[len(code)-1] != '\n' {
+		code = append(code, '\n')
+	}
+	return code, nil
 }

@@ -5,6 +5,5 @@ defmodule Main do
       IO.puts(ch)
     end
   end
-end
-
+  end
 Main.main()
