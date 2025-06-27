@@ -1,4 +1,4 @@
-func main (regs=28)
+func main (regs=31)
   // let data = [
   Const        r0, [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
   Move         r1, r0
@@ -10,18 +10,29 @@ func main (regs=28)
 L1:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Append       r23, r2, r22
-  Move         r2, r23
-  Const        r25, 1
-  Move         r5, r25
-  Jump         L1
-L0:
+  Index        r7, r3, r5
   // sort by { a: x.a, b: x.b }
-  Sort         26,2,0,0
+  Const        r9, "a"
+  Const        r10, "a"
+  Index        r11, r7, r10
+  Const        r12, "b"
+  Const        r13, "b"
+  Index        r14, r7, r13
+  Move         r15, r9
+  Move         r16, r11
+  Move         r17, r12
+  Move         r18, r14
+  MakeMap      r19, 2, r15
+  Move         r20, r19
   // from x in data
-  Move         r2, r26
-  // let sorted =
-  Move         r27, r2
+  Move         r21, r7
+  MakeList     r22, 2, r20
+  Append       r23, r2, r22
+  Const        r24, 1
+  Add          r25, r5, r24
+  Jump         L1
+  // sort by { a: x.a, b: x.b }
+  Sort         r26, r23
   // print(sorted)
-  Print        r27
+  Print        r26
   Return       r0

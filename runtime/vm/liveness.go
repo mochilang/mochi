@@ -229,6 +229,7 @@ func Optimize(fn *Function) {
 			break
 		}
 	}
+	coalesceRegisters(fn)
 }
 
 // removeDead eliminates instructions that only define dead registers.

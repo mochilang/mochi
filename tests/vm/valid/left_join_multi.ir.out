@@ -1,100 +1,125 @@
-func main (regs=93)
+func main (regs=113)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
   Move         r1, r0
   // let orders = [
   Const        r2, [{"customerId": 1, "id": 100}, {"customerId": 2, "id": 101}]
-  Move         r3, r2
   // let items = [
   Const        r4, [{"orderId": 100, "sku": "a"}]
-  Move         r5, r4
   // let result = from o in orders
   Const        r6, []
-  IterPrep     r7, r3
+  IterPrep     r7, r2
   Len          r8, r7
   Const        r9, 0
-L4:
   Less         r10, r9, r8
   JumpIfFalse  r10, L0
+L7:
   Index        r11, r7, r9
-  Move         r12, r11
   // join from c in customers on o.customerId == c.id
   IterPrep     r13, r1
   Len          r14, r13
   Const        r15, 0
-L3:
   Less         r16, r15, r14
   JumpIfFalse  r16, L1
   Index        r17, r13, r15
-  Move         r18, r17
+L6:
   Const        r19, "customerId"
-  Index        r20, r12, r19
+  Index        r20, r11, r19
   Const        r21, "id"
-  Index        r22, r18, r21
+  Index        r22, r17, r21
   Equal        r23, r20, r22
-  JumpIfFalse  r23, L1
+  JumpIfFalse  r23, L2
   // left join i in items on o.id == i.orderId
-  IterPrep     r24, r5
+  IterPrep     r24, r4
   Len          r25, r24
   Const        r26, 0
-L2:
   Less         r27, r26, r25
-  JumpIfFalse  r27, L1
+  JumpIfFalse  r27, L3
   Index        r28, r24, r26
-  Move         r29, r28
   Const        r31, "id"
-  Index        r32, r12, r31
+L5:
+  Index        r32, r11, r31
   Const        r33, "orderId"
-  Index        r34, r29, r33
+  Index        r34, r28, r33
   Equal        r35, r32, r34
-  JumpIfFalse  r35, L1
+  JumpIfFalse  r35, L4
+  // select { orderId: o.id, name: c.name, item: i }
+  Const        r36, "orderId"
+  Const        r37, "id"
+  Index        r38, r11, r37
+  Const        r39, "name"
+  Const        r40, "name"
+  Index        r41, r17, r40
+  Const        r42, "item"
+  Move         r43, r36
+  Move         r44, r38
+  Move         r45, r39
+  Move         r46, r41
+  Move         r47, r42
+  Move         r48, r28
+  MakeMap      r49, 3, r43
   // let result = from o in orders
   Append       r50, r6, r49
-  Move         r6, r50
   // left join i in items on o.id == i.orderId
-  Const        r52, 1
-  Move         r26, r52
-  Jump         L2
-  Jump         L1
+  Const        r51, 1
+  Add          r52, r26, r51
+  Jump         L5
+  JumpIfTrue   r30, L2
+  Const        r54, nil
+  // select { orderId: o.id, name: c.name, item: i }
+  Const        r55, "orderId"
+L4:
+  Const        r56, "id"
+  Index        r57, r11, r56
+  Const        r58, "name"
+  Const        r59, "name"
+L3:
+  Index        r60, r17, r59
+  Const        r61, "item"
+  Move         r62, r55
+  Move         r63, r57
+  Move         r64, r58
+  Move         r65, r60
+  Move         r66, r61
+  Move         r67, r54
+  MakeMap      r68, 3, r62
   // let result = from o in orders
-  Append       r69, r6, r68
-  Move         r6, r69
+  Append       r69, r50, r68
   // join from c in customers on o.customerId == c.id
-  Const        r71, 1
-  Move         r15, r71
-  Jump         L3
+  Const        r70, 1
+  Add          r71, r15, r70
+  Jump         L6
   // let result = from o in orders
-  Const        r73, 1
-  Move         r9, r73
-  Jump         L4
-L0:
-  Move         r74, r6
+  Const        r72, 1
+  Add          r73, r9, r72
+  Jump         L7
   // print("--- Left Join Multi ---")
   Const        r75, "--- Left Join Multi ---"
   Print        r75
   // for r in result {
-  IterPrep     r76, r74
+  IterPrep     r76, r69
   Len          r77, r76
+L2:
   Const        r78, 0
-L6:
   Less         r79, r78, r77
-  JumpIfFalse  r79, L5
+  JumpIfFalse  r79, L8
   Index        r80, r76, r78
-  Move         r81, r80
+L1:
   // print(r.orderId, r.name, r.item)
   Const        r85, "orderId"
-  Index        r86, r81, r85
+  Index        r86, r80, r85
   Move         r82, r86
   Const        r87, "name"
-  Index        r88, r81, r87
+L0:
+  Index        r88, r80, r87
   Move         r83, r88
   Const        r89, "item"
-  Index        r90, r81, r89
+  Index        r90, r80, r89
   Move         r84, r90
   PrintN       r82, 3, r82
+L9:
   // for r in result {
-  Const        r92, 1
-  Move         r78, r92
-  Jump         L6
-L5:
+  Const        r91, 1
+  Add          r92, r78, r91
+  Jump         L9
   Return       r0

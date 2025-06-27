@@ -17,7 +17,7 @@ func main (regs=13)
   // print(len([1,2] union all [2,3]))
   Const        r9, [1, 2]
   Const        r10, [2, 3]
-  Union        r11, r9, r10
+  UnionAll     r11, r9, r10
   Len          r12, r11
   Print        r12
   Return       r0

@@ -1,4 +1,4 @@
-func main (regs=21)
+func main (regs=24)
   // let items = [
   Const        r0, [{"n": 1, "v": "a"}, {"n": 1, "v": "b"}, {"n": 2, "v": "c"}]
   Move         r1, r0
@@ -10,15 +10,19 @@ func main (regs=21)
 L1:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Const        r9, "v"
+  Index        r10, r7, r9
+  Const        r11, "n"
+  Index        r12, r7, r11
+  Move         r13, r12
+  Move         r14, r10
+  MakeList     r15, 2, r13
   Append       r16, r2, r15
-  Move         r2, r16
-  Const        r18, 1
-  Move         r5, r18
+  Const        r17, 1
+  Add          r18, r5, r17
   Jump         L1
-L0:
-  Sort         19,2,0,0
-  Move         r2, r19
-  Move         r20, r2
+  Sort         r19, r16
   // print(result)
-  Print        r20
+  Print        r19
   Return       r0

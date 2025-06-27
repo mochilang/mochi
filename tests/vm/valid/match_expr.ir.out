@@ -1,29 +1,23 @@
-func main (regs=14)
+func main (regs=21)
   // let x = 2
   Const        r0, 2
   // 1 => "one"
   Jump         L0
   Const        r5, "one"
-  Move         r2, r5
   Jump         L1
   // 2 => "two"
   Const        r8, "two"
-  Move         r2, r8
+L0:
   Jump         L1
   // 3 => "three"
   Jump         L2
   Const        r11, "three"
-  Move         r2, r11
   Jump         L1
-L2:
   // _ => "unknown"
   Const        r12, "unknown"
-  Move         r2, r12
   Jump         L1
   Const        r2, nil
-L1:
-  // let label = match x {
-  Move         r13, r2
+L2:
   // print(label)
-  Print        r13
+  Print        r2
   Return       r0
