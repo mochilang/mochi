@@ -176,7 +176,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.writeln("}")
 	c.emitRuntime()
-	return c.buf.Bytes(), nil
+	return FormatScala(c.buf.Bytes()), nil
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
