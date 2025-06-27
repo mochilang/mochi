@@ -59,18 +59,42 @@ func EnsureRacket() error {
 	return fmt.Errorf("racket not found")
 }
 
-// FormatRacket runs "raco fmt" on the given source code when available.
-// If the formatter is missing or fails, the input is returned unchanged.
-func FormatRacket(src []byte) []byte {
-	if _, err := exec.LookPath("raco"); err != nil {
-		return src
+// EnsureRacketFmt checks that the raco formatter is available.
+// It falls back to EnsureRacket which installs the full toolchain
+// using common package managers when possible.
+func EnsureRacketFmt() error {
+	if _, err := exec.LookPath("raco"); err == nil {
+		return nil
 	}
-	cmd := exec.Command("raco", "fmt", "--stdin")
-	cmd.Stdin = bytes.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err == nil {
-		return out.Bytes()
+	if err := EnsureRacket(); err != nil {
+		return err
+	}
+	if _, err := exec.LookPath("raco"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("raco not found")
+}
+
+// FormatRacket runs "raco fmt" on the given source code when available.
+// If the formatter is missing or fails, tabs are replaced with two spaces
+// and a trailing newline is ensured.
+func FormatRacket(src []byte) []byte {
+	if err := EnsureRacketFmt(); err == nil {
+		cmd := exec.Command("raco", "fmt", "--stdin")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res
+		}
+	}
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
 	}
 	return src
 }
