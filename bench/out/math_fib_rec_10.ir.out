@@ -50,4 +50,3 @@ L0:
   Add          r11, r6, r10
   Return       r11
   Return       r0
-
