@@ -1,0 +1,53 @@
+let info_type = [
+  { id: 1, info: "rating" },
+  { id: 2, info: "other" }
+]
+
+let keyword = [
+  { id: 1, keyword: "great sequel" },
+  { id: 2, keyword: "prequel" }
+]
+
+let title = [
+  { id: 10, title: "Alpha Movie", production_year: 2006 },
+  { id: 20, title: "Beta Film", production_year: 2007 },
+  { id: 30, title: "Old Film", production_year: 2004 } // filtered by year
+]
+
+let movie_keyword = [
+  { movie_id: 10, keyword_id: 1 },
+  { movie_id: 20, keyword_id: 1 },
+  { movie_id: 30, keyword_id: 1 }
+]
+
+let movie_info_idx = [
+  { movie_id: 10, info_type_id: 1, info: "6.2" },
+  { movie_id: 20, info_type_id: 1, info: "7.8" },
+  { movie_id: 30, info_type_id: 1, info: "4.5" } // rating too low
+]
+
+let rows =
+  from it in info_type
+  join mi in movie_info_idx on it.id == mi.info_type_id
+  join t in title on t.id == mi.movie_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  where it.info == "rating" &&
+        k.keyword.contains("sequel") &&
+        mi.info > "5.0" &&
+        t.production_year > 2005 &&
+        mk.movie_id == mi.movie_id
+  select { rating: mi.info, title: t.title }
+
+let result = [
+  {
+    rating: min(from r in rows select r.rating),
+    movie_title: min(from r in rows select r.title)
+  }
+]
+
+json(result)
+
+test "Q4 returns minimum rating and title for sequels" {
+  expect result == [ { rating: "6.2", movie_title: "Alpha Movie" } ]
+}
