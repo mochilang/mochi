@@ -100,8 +100,8 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 type testInfo struct {
-	name  string
 	label string
+	body  []*parser.Statement
 }
 
 func copyMap[K comparable, V any](m map[K]V) map[K]V {
@@ -283,10 +283,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Fun != nil {
 			exports = append(exports, fmt.Sprintf("%s/%d", atomName(s.Fun.Name), len(s.Fun.Params)))
 		}
-		if s.Test != nil {
-			name := "test_" + sanitizeName(s.Test.Name)
-			exports = append(exports, fmt.Sprintf("%s/0", atomName(name)))
-		}
 	}
 	c.writeln("-export([" + strings.Join(exports, ", ") + "]).")
 	c.writeln("")
@@ -327,7 +323,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		for i, t := range c.tests {
 			c.writeIndent()
-			c.buf.WriteString(fmt.Sprintf("mochi_run_test(\"%s\", fun %s/0)", t.label, atomName(t.name)))
+			c.buf.WriteString(fmt.Sprintf("mochi_run_test(\"%s\", fun() ->\n", t.label))
+			c.indent++
+			if err := c.compileBlock(t.body, false, nil); err != nil {
+				return nil, err
+			}
+			c.indent--
+			c.writeIndent()
+			c.buf.WriteString("end")
+			c.buf.WriteByte(')')
 			if i == len(c.tests)-1 {
 				c.buf.WriteString(".\n")
 			} else {
@@ -445,15 +449,8 @@ func (c *Compiler) compileMethod(structName string, fun *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
-	name := "test_" + sanitizeName(t.Name)
-	c.tests = append(c.tests, testInfo{name: name, label: t.Name})
+	c.tests = append(c.tests, testInfo{label: t.Name, body: t.Body})
 	c.needTest = true
-	c.writeln(fmt.Sprintf("%s() ->", name))
-	c.indent++
-	if err := c.compileBlock(t.Body, true, nil); err != nil {
-		return err
-	}
-	c.indent--
 	return nil
 }
 
