@@ -17,12 +17,12 @@ public class Main {
     public java.util.List<Object> get() {
         java.util.List<Object> _src = _toList(company_name);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(movie_companies), (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; return (mc.company_id == cn.id); }, false, false),
-            new _JoinSpec(_toList(title), (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; return (mc.movie_id == t.id); }, false, false),
-            new _JoinSpec(_toList(movie_keyword), (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; Object mk = a[3]; return (mk.movie_id == t.id); }, false, false),
-            new _JoinSpec(_toList(keyword), (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; Object mk = a[3]; Object k = a[4]; return (mk.keyword_id == k.id); }, false, false)
+            new _JoinSpec(_toList(movie_companies), (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; return (mc.get("company_id") == cn.get("id")); }, false, false),
+            new _JoinSpec(_toList(title), (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; return (mc.get("movie_id") == t.get("id")); }, false, false),
+            new _JoinSpec(_toList(movie_keyword), (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; Object mk = a[3]; return (mk.get("movie_id") == t.get("id")); }, false, false),
+            new _JoinSpec(_toList(keyword), (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; Object mk = a[3]; Object k = a[4]; return (mk.get("keyword_id") == k.get("id")); }, false, false)
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; Object mk = a[3]; Object k = a[4]; return t.title; }, (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; Object mk = a[3]; Object k = a[4]; return (((cn.country_code == "[de]") && (k.keyword == "character-name-in-title")) && (mc.movie_id == mk.movie_id)); }, null, -1, -1));
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; Object mk = a[3]; Object k = a[4]; return t.get("title"); }, (Object[] a) -> { Object cn = a[0]; Object mc = a[1]; Object t = a[2]; Object mk = a[3]; Object k = a[4]; return (((cn.get("country_code") == "[de]") && (k.get("keyword") == "character-name-in-title")) && (mc.get("movie_id") == mk.get("movie_id"))); }, null, -1, -1));
     }
 }).get();
     
