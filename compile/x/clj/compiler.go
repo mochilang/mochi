@@ -874,6 +874,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "sum":
 				c.use("_sum")
 				expr = fmt.Sprintf("(_sum %s)", args[0])
+			case "min":
+				c.use("_min")
+				expr = fmt.Sprintf("(_min %s)", args[0])
+			case "max":
+				c.use("_max")
+				expr = fmt.Sprintf("(_max %s)", args[0])
 			case "input":
 				c.use("_input")
 				expr = "(_input)"
@@ -1044,6 +1050,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 1 {
 				c.use("_sum")
 				return "(_sum " + args[0] + ")", nil
+			}
+		case "min":
+			if len(args) == 1 {
+				c.use("_min")
+				return "(_min " + args[0] + ")", nil
+			}
+		case "max":
+			if len(args) == 1 {
+				c.use("_max")
+				return "(_max " + args[0] + ")", nil
 			}
 		case "input":
 			if len(args) == 0 {

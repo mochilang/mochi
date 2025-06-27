@@ -50,6 +50,26 @@ const (
     (reduce + 0 lst))
 `
 
+	helperMin = `(defn _min [v]
+  (let [lst (cond
+              (and (map? v) (contains? v :Items)) (:Items v)
+              (sequential? v) v
+              :else (throw (ex-info "min() expects list or group" {})))]
+    (if (empty? lst)
+      0
+      (reduce (fn [a b] (if (neg? (compare a b)) a b)) lst)))
+`
+
+	helperMax = `(defn _max [v]
+  (let [lst (cond
+              (and (map? v) (contains? v :Items)) (:Items v)
+              (sequential? v) v
+              :else (throw (ex-info "max() expects list or group" {})))]
+    (if (empty? lst)
+      0
+      (reduce (fn [a b] (if (pos? (compare a b)) a b)) lst)))
+`
+
 	helperGroup = `(defrecord _Group [key Items])
 `
 
@@ -194,20 +214,20 @@ const (
 	helperGenEmbed = `(defn _gen_embed [text model params]
   (mapv double (map int text)))`
 
-        helperGenStruct = `(defn _gen_struct [ctor prompt model params]
+	helperGenStruct = `(defn _gen_struct [ctor prompt model params]
   (let [m (clojure.data.json/read-str prompt :key-fn keyword)
         fields (first (:arglists (meta ctor)))
         args (map #(get m %) fields)]
     (apply ctor args)))`
 
-        helperCastStruct = `(defn _cast_struct [ctor m]
+	helperCastStruct = `(defn _cast_struct [ctor m]
   (let [fields (first (:arglists (meta ctor)))]
     (apply ctor (map #(get m %) fields))))`
 
-        helperCastStructList = `(defn _cast_struct_list [ctor xs]
+	helperCastStructList = `(defn _cast_struct_list [ctor xs]
   (mapv #(_cast_struct ctor %) xs))`
 
-        helperFetch = `(defn _fetch [url opts]
+	helperFetch = `(defn _fetch [url opts]
   (let [method (get opts :method "GET")
         q      (get opts :query nil)
         url     (if q
@@ -296,32 +316,34 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_indexString": helperIndexString,
-	"_indexList":   helperIndexList,
-	"_input":       helperInput,
-	"_count":       helperCount,
-	"_avg":         helperAvg,
-	"_sum":         helperSum,
-	"_Group":       helperGroup,
-	"_group_by":    helperGroupBy,
-	"_parse_csv":   helperParseCSV,
-	"_load":        helperLoad,
-	"_save":        helperSave,
-	"_escape_json": helperEscapeJSON,
-	"_to_json":     helperToJSON,
-	"_json":        helperJSON,
-	"_in":          helperIn,
-	"_union_all":   helperUnionAll,
-	"_union":       helperUnion,
-	"_except":      helperExcept,
-	"_intersect":   helperIntersect,
-	"_gen_text":    helperGenText,
-	"_gen_embed":   helperGenEmbed,
-        "_gen_struct":  helperGenStruct,
-        "_cast_struct": helperCastStruct,
-        "_cast_struct_list": helperCastStructList,
-        "_fetch":       helperFetch,
-        "_query":       helperQuery,
+	"_indexString":      helperIndexString,
+	"_indexList":        helperIndexList,
+	"_input":            helperInput,
+	"_count":            helperCount,
+	"_avg":              helperAvg,
+	"_sum":              helperSum,
+	"_min":              helperMin,
+	"_max":              helperMax,
+	"_Group":            helperGroup,
+	"_group_by":         helperGroupBy,
+	"_parse_csv":        helperParseCSV,
+	"_load":             helperLoad,
+	"_save":             helperSave,
+	"_escape_json":      helperEscapeJSON,
+	"_to_json":          helperToJSON,
+	"_json":             helperJSON,
+	"_in":               helperIn,
+	"_union_all":        helperUnionAll,
+	"_union":            helperUnion,
+	"_except":           helperExcept,
+	"_intersect":        helperIntersect,
+	"_gen_text":         helperGenText,
+	"_gen_embed":        helperGenEmbed,
+	"_gen_struct":       helperGenStruct,
+	"_cast_struct":      helperCastStruct,
+	"_cast_struct_list": helperCastStructList,
+	"_fetch":            helperFetch,
+	"_query":            helperQuery,
 }
 
 var helperOrder = []string{
@@ -331,6 +353,8 @@ var helperOrder = []string{
 	"_count",
 	"_avg",
 	"_sum",
+	"_min",
+	"_max",
 	"_Group",
 	"_group_by",
 	"_parse_csv",
@@ -345,12 +369,12 @@ var helperOrder = []string{
 	"_except",
 	"_intersect",
 	"_gen_text",
-        "_gen_embed",
-        "_gen_struct",
-        "_cast_struct",
-        "_cast_struct_list",
-        "_fetch",
-        "_query",
+	"_gen_embed",
+	"_gen_struct",
+	"_cast_struct",
+	"_cast_struct_list",
+	"_fetch",
+	"_query",
 }
 
 // helperDeps lists transitive helper dependencies.
