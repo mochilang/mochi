@@ -4665,6 +4665,12 @@ func valuesEqual(a, b Value) bool {
 }
 
 func valueLess(a, b Value) bool {
+	if a.Tag == ValueNull || b.Tag == ValueNull {
+		if a.Tag == ValueNull && b.Tag != ValueNull {
+			return true
+		}
+		return false
+	}
 	switch a.Tag {
 	case ValueInt:
 		switch b.Tag {
