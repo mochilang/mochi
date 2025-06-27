@@ -1,3 +1,4 @@
 <?php
+
 $map = ["a" => 1];
 echo $map["a"], PHP_EOL;

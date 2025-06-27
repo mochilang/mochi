@@ -1,2 +1,3 @@
 <?php
+
 echo (is_array([1, 2, 3]) ? count([1, 2, 3]) : strlen([1, 2, 3])), PHP_EOL;

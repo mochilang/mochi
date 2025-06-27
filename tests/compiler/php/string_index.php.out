@@ -1,3 +1,4 @@
 <?php
+
 $text = "hello";
 echo $text[1], PHP_EOL;

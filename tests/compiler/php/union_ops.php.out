@@ -1,7 +1,8 @@
 <?php
+
 $a = [1, 2, 3];
 $b = [3, 4];
 echo (is_array(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) ? count(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) : strlen(array_values(array_unique(array_merge($a, $b), SORT_REGULAR)))), PHP_EOL;
-echo (is_array(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) ? count(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) : strlen(array_values(array_unique(array_merge($a, $b), SORT_REGULAR)))), PHP_EOL;
+echo (is_array(array_merge($a, $b)) ? count(array_merge($a, $b)) : strlen(array_merge($a, $b))), PHP_EOL;
 echo (is_array(array_values(array_diff($a, $b))) ? count(array_values(array_diff($a, $b))) : strlen(array_values(array_diff($a, $b)))), PHP_EOL;
 echo (is_array(array_values(array_intersect($a, $b))) ? count(array_values(array_intersect($a, $b))) : strlen(array_values(array_intersect($a, $b)))), PHP_EOL;

@@ -1,10 +1,13 @@
 <?php
-function mochi_Leaf() {
-	return ["__name" => "Leaf"];
+
+function mochi_Leaf()
+{
+    return ["__name" => "Leaf"];
 }
 
-function mochi_Node($left, $value, $right) {
-	return ["__name" => "Node", "left" => $left, "value" => $value, "right" => $right];
+function mochi_Node($left, $value, $right)
+{
+    return ["__name" => "Node", "left" => $left, "value" => $value, "right" => $right];
 }
 
 $tree = mochi_Node(mochi_Leaf(), 1, mochi_Leaf());

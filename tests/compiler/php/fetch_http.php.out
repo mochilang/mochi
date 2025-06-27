@@ -1,34 +1,48 @@
 <?php
-class Todo {
-	public $userId;
-	public $id;
-	public $title;
-	public $completed;
-	public function __construct($fields = []) {
-		$this->userId = $fields['userId'] ?? null;
-		$this->id = $fields['id'] ?? null;
-		$this->title = $fields['title'] ?? null;
-		$this->completed = $fields['completed'] ?? null;
-	}
+
+class Todo
+{
+    public $userId;
+    public $id;
+    public $title;
+    public $completed;
+    public function __construct($fields = [])
+    {
+        $this->userId = $fields['userId'] ?? null;
+        $this->id = $fields['id'] ?? null;
+        $this->title = $fields['title'] ?? null;
+        $this->completed = $fields['completed'] ?? null;
+    }
 }
 
 $todo = new Todo((array)(_fetch("https://jsonplaceholder.typicode.com/todos/1", null)));
 echo $todo->title, PHP_EOL;
 
-function _fetch($url, $opts = null) {
+function _fetch($url, $opts = null)
+{
     $args = ['-s'];
     $method = $opts['method'] ?? 'GET';
-    $args[] = '-X'; $args[] = $method;
+    $args[] = '-X';
+    $args[] = $method;
     if (isset($opts['headers'])) {
-        foreach ($opts['headers'] as $k => $v) { $args[] = '-H'; $args[] = $k . ': ' . strval($v); }
+        foreach ($opts['headers'] as $k => $v) {
+            $args[] = '-H';
+            $args[] = $k . ': ' . strval($v);
+        }
     }
     if (isset($opts['query'])) {
         $qs = http_build_query($opts['query']);
         $sep = strpos($url, '?') !== false ? '&' : '?';
         $url .= $sep . $qs;
     }
-    if ($opts !== null && array_key_exists('body', $opts)) { $args[] = '-d'; $args[] = json_encode($opts['body']); }
-    if (isset($opts['timeout'])) { $args[] = '--max-time'; $args[] = strval($opts['timeout']); }
+    if ($opts !== null && array_key_exists('body', $opts)) {
+        $args[] = '-d';
+        $args[] = json_encode($opts['body']);
+    }
+    if (isset($opts['timeout'])) {
+        $args[] = '--max-time';
+        $args[] = strval($opts['timeout']);
+    }
     $args[] = $url;
     $escaped = array_map('escapeshellarg', $args);
     $cmd = 'curl ' . implode(' ', $escaped);

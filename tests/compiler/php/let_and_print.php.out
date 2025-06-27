@@ -1,4 +1,5 @@
 <?php
+
 $a = 10;
 $b = 20;
 echo ((is_array($a) && is_array($b)) ? array_merge($a, $b) : ((is_string($a) || is_string($b)) ? ($a . $b) : ($a + $b))), PHP_EOL;
