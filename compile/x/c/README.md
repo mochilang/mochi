@@ -6,7 +6,7 @@ The C backend generates portable ANSI C source code from Mochi programs. It is p
 
 - `compiler.go` – main code generator walking the AST
 - `compiler_test.go` – golden tests that compile and run generated code
-- `tools.go` – helper to locate or install a system C compiler
+- `tools.go` – helpers for the system C compiler and clang-format
 
 ## Runtime helpers
 
@@ -53,6 +53,7 @@ cc main.c -o main
 ```
 
 `tools.go` provides `EnsureCC` to locate `cc`, `gcc` or `clang` and attempt installation on Linux or macOS if missing. Set the `CC` environment variable to override the compiler used.【F:compile/c/tools.go†L10-L56】
+`FormatC` prettifies generated code using `clang-format` when available. `EnsureClangFormat` can install the formatter if missing.【F:compile/x/c/tools.go†L78-L132】
 
 ## Tests
 
