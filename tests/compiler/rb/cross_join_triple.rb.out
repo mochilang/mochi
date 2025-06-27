@@ -18,4 +18,3 @@ puts(["--- Cross Join of three lists ---"].join(" "))
 for c in combos
 	puts([c.n, c.l, c.b].join(" "))
 end
-

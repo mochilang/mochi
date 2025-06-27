@@ -1,3 +1,5 @@
-puts(["ok"].join(" "))
+# frozen_string_literal: true
+
+puts(['ok'].join(' '))
 x = (1 + 2)
-raise "expect failed" unless (x == 3)
+raise 'expect failed' unless x == 3

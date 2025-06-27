@@ -1,3 +1,5 @@
-scores = {"a" => 1}
-scores["b"] = 2
-puts([scores["b"]].join(" "))
+# frozen_string_literal: true
+
+scores = { 'a' => 1 }
+scores['b'] = 2
+puts([scores['b']].join(' '))

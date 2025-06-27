@@ -1,3 +1,5 @@
-for i in 1...4
-	puts([i].join(" "))
+# frozen_string_literal: true
+
+(1...4).each do |i|
+  puts([i].join(' '))
 end

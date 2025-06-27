@@ -8,7 +8,7 @@ def _fetch(url, opts=nil)
   if uri.scheme.nil? || uri.scheme == '' || uri.scheme == 'file'
     path = uri.scheme == 'file' ? uri.path : url
     data = File.read(path)
-    return JSON.parse(data)
+    return _structify(JSON.parse(data))
   end
   method = 'GET'
   headers = {}
@@ -31,11 +31,21 @@ def _fetch(url, opts=nil)
   req.body = body if body
   Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https', read_timeout: timeout) do |http|
     resp = http.request(req)
-    return JSON.parse(resp.body)
+    return _structify(JSON.parse(resp.body))
+  end
+end
+def _structify(v)
+  case v
+  when Hash
+    OpenStruct.new(v.transform_keys(&:to_sym).transform_values { |vv| _structify(vv) })
+  when Array
+    v.map { |vv| _structify(vv) }
+  else
+    v
   end
 end
 
 Msg = Struct.new(:message, keyword_init: true)
 
-data = Msg.new(**((_fetch("tests/compiler/rb/fetch_options.json", (OpenStruct.new(method: "GET", headers: {"X-Test" => "1"}, query: {"q" => "1"}, timeout: 1.0)).to_h.transform_keys(&:to_s))).to_h.transform_keys(&:to_sym)))
+data = Msg.new(**((_structify(_fetch("tests/compiler/rb/fetch_options.json", (OpenStruct.new(method: "GET", headers: {"X-Test" => "1"}, query: {"q" => "1"}, timeout: 1.0)).to_h.transform_keys(&:to_s)))).to_h.transform_keys(&:to_sym)))
 puts([data.message].join(" "))

@@ -63,3 +63,24 @@ func EnsureRuby() error {
 	}
 	return fmt.Errorf("ruby not installed")
 }
+
+// EnsureRubocop installs the rubocop gem if it is not already available.
+func EnsureRubocop() error {
+	if _, err := exec.LookPath("rubocop"); err == nil {
+		return nil
+	}
+	if err := EnsureRuby(); err != nil {
+		return err
+	}
+	if _, err := exec.LookPath("gem"); err == nil {
+		fmt.Println("\U0001F48E Installing RuboCop gem...")
+		cmd := exec.Command("gem", "install", "--no-document", "rubocop")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		_ = cmd.Run()
+	}
+	if _, err := exec.LookPath("rubocop"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("rubocop not installed")
+}
