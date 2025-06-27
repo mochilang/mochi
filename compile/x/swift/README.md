@@ -196,6 +196,9 @@ func EnsureSwift() error {
 ```
 【F:compile/swift/tools.go†L10-L45】
 
+`Format` prettifies generated Swift code using `swift-format` when available. `EnsureSwiftFormat` can install the formatter if missing.
+【F:compile/x/swift/tools.go†L61-L130】
+
 ## Building
 
 Generate Swift code from a Mochi program with:
