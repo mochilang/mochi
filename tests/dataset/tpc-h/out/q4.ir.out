@@ -90,7 +90,7 @@ L7:
   Jump         L8
 L5:
   // where exists(
-  Exists       53,32,0,0
+  Exists       r53, r32
   JumpIfFalse  r53, L9
   // from o in date_filtered_orders
   Append       r54, r26, r14
@@ -183,7 +183,7 @@ L15:
   Jump         L15
 L14:
   // order by g.key
-  Sort         108,58,0,0
+  Sort         r108, r58
   // from o in late_orders
   Move         r58, r108
   // let result =
