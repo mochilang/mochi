@@ -1,14 +1,10 @@
 function __add(a, b)
-    if type(a) == "table" and type(b) == "table" then
+    if type(a) == 'table' and type(b) == 'table' then
         local out = {}
-        for i = 1, #a do
-            out[#out + 1] = a[i]
-        end
-        for i = 1, #b do
-            out[#out + 1] = b[i]
-        end
+        for i = 1, #a do out[#out+1] = a[i] end
+        for i = 1, #b do out[#out+1] = b[i] end
         return out
-    elseif type(a) == "string" or type(b) == "string" then
+    elseif type(a) == 'string' or type(b) == 'string' then
         return tostring(a) .. tostring(b)
     else
         return a + b
@@ -17,12 +13,10 @@ end
 function __print(...)
     local args = {...}
     for i, a in ipairs(args) do
-        if i > 1 then
-            io.write(" ")
-        end
+        if i > 1 then io.write(' ') end
         io.write(tostring(a))
     end
-    io.write("\n")
+    io.write('\n')
 end
 function __reduce(src, fn, acc)
     for _, it in ipairs(src) do
@@ -31,12 +25,7 @@ function __reduce(src, fn, acc)
     return acc
 end
 nums = {1, 2, 3, 4}
-sum =
-    __reduce(
-    nums,
-    function(acc, x)
-        return __add(acc, x)
-    end,
-    0
-)
+sum = __reduce(nums, function(acc, x)
+		return __add(acc, x)
+end, 0)
 __print(sum)

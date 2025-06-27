@@ -1,19 +1,17 @@
 function __print(...)
     local args = {...}
     for i, a in ipairs(args) do
-        if i > 1 then
-            io.write(" ")
-        end
+        if i > 1 then io.write(' ') end
         io.write(tostring(a))
     end
-    io.write("\n")
+    io.write('\n')
 end
 function Leaf()
-    return {["__name"] = "Leaf"}
+	return {["__name"]="Leaf"}
 end
 
 function Node(left, value, right)
-    return {["__name"] = "Node", ["left"] = left, ["value"] = value, ["right"] = right}
+	return {["__name"]="Node", ["left"]=left, ["value"]=value, ["right"]=right}
 end
 
 tree = Node(Leaf(), 1, Leaf())

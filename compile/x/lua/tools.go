@@ -108,3 +108,53 @@ func ensureLuaJSON() error {
 	}
 	return fmt.Errorf("lua json library not found")
 }
+
+// EnsureStylua verifies that the stylua formatter is installed. If missing,
+// it attempts a best-effort installation across common platforms.
+func EnsureStylua() error {
+	if _, err := exec.LookPath("stylua"); err == nil {
+		return nil
+	}
+	switch runtime.GOOS {
+	case "linux":
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			fmt.Println("🔧 Installing stylua...")
+			cmd := exec.Command("apt-get", "update")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				return err
+			}
+			cmd = exec.Command("apt-get", "install", "-y", "stylua")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	case "darwin":
+		if _, err := exec.LookPath("brew"); err == nil {
+			fmt.Println("🍺 Installing stylua via Homebrew...")
+			cmd := exec.Command("brew", "install", "stylua")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	case "windows":
+		if _, err := exec.LookPath("choco"); err == nil {
+			fmt.Println("🔧 Installing stylua via Chocolatey...")
+			cmd := exec.Command("choco", "install", "-y", "stylua")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		} else if _, err := exec.LookPath("scoop"); err == nil {
+			fmt.Println("🔧 Installing stylua via Scoop...")
+			cmd := exec.Command("scoop", "install", "stylua")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+		}
+	}
+	if _, err := exec.LookPath("stylua"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("stylua not found")
+}
