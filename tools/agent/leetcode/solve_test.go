@@ -36,8 +36,10 @@ func (solveConn) Embed(ctx context.Context, req llm.EmbedRequest) (*llm.EmbedRes
 }
 
 func TestSolve(t *testing.T) {
-	// llm.Default, _ = llm.Open("solvefake", "", llm.Options{})
-	code, err := Solve(3, 1)
+	// Use the fake provider so the test doesn't require network access.
+	llm.Default, _ = llm.Open("solvefake", "", llm.Options{})
+	// Allow one refinement iteration so the fake provider can fix the code.
+	code, err := Solve(3, 2)
 	if err != nil {
 		t.Fatalf("Solve error: %v", err)
 	}
