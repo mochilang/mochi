@@ -476,6 +476,9 @@ func (c *Compiler) compileCallExpr(n *ast.Node) string {
 		c.writeln("    END-IF")
 		return res
 	}
+	if name == "MIN" && len(n.Children) == 1 {
+		return c.compileMinCall(n.Children[0])
+	}
 	if !ok {
 		return "0"
 	}
@@ -609,6 +612,82 @@ func (c *Compiler) compileAddTwoNumbersCall(result string, call *ast.Node) {
 	c.writeln(fmt.Sprintf("MOVE DIGITV TO %s(RLEN)", resName))
 	c.indent--
 	c.writeln("END-PERFORM")
+}
+
+// compileMinCall emits code to compute the minimum value of a list.
+func (c *Compiler) compileMinCall(list *ast.Node) string {
+	name, length, pic, elems, ok := c.listInfo(list)
+	if !ok {
+		c.writeln("    *> unsupported min")
+		tmp := c.newTemp()
+		c.declare("01 " + tmp + " PIC 9.")
+		c.writeln("MOVE 0 TO " + tmp)
+		return tmp
+	}
+
+	arr := name
+	if arr == "" {
+		arr = c.newTemp()
+		if pic == "" {
+			pic = "PIC 9."
+		}
+		c.declare(fmt.Sprintf("01 %s OCCURS %d TIMES %s", arr, length, pic))
+		for i, ch := range elems {
+			c.writeln(fmt.Sprintf("    MOVE %s TO %s(%d)", c.expr(ch), arr, i+1))
+		}
+		c.listLens[arr] = length
+	}
+
+	res := c.newTemp()
+	if pic == "" {
+		pic = "PIC 9."
+	}
+	c.declare(fmt.Sprintf("01 %s %s", res, pic))
+
+	if dyn, ok := c.dynamicLens[arr]; ok {
+		c.writeln(fmt.Sprintf("IF %s = 0", dyn))
+		c.indent++
+		c.writeln(fmt.Sprintf("MOVE 0 TO %s", res))
+		c.indent--
+		c.writeln("ELSE")
+		c.indent++
+		c.writeln(fmt.Sprintf("MOVE %s(1) TO %s", arr, res))
+		c.declare("01 IDX PIC 9.")
+		c.writeln("MOVE 1 TO IDX")
+		c.writeln(fmt.Sprintf("PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX >= %s", dyn))
+		c.indent++
+		c.writeln(fmt.Sprintf("IF %s(IDX + 1) < %s", arr, res))
+		c.indent++
+		c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", arr, res))
+		c.indent--
+		c.writeln("END-IF")
+		c.indent--
+		c.writeln("END-PERFORM")
+		c.indent--
+		c.writeln("END-IF")
+		return res
+	}
+
+	if length == 0 {
+		c.writeln(fmt.Sprintf("MOVE 0 TO %s", res))
+		return res
+	}
+
+	c.writeln(fmt.Sprintf("MOVE %s(1) TO %s", arr, res))
+	if length > 1 {
+		c.declare("01 IDX PIC 9.")
+		c.writeln("MOVE 1 TO IDX")
+		c.writeln(fmt.Sprintf("PERFORM VARYING IDX FROM 1 BY 1 UNTIL IDX >= %d", length))
+		c.indent++
+		c.writeln(fmt.Sprintf("IF %s(IDX + 1) < %s", arr, res))
+		c.indent++
+		c.writeln(fmt.Sprintf("MOVE %s(IDX + 1) TO %s", arr, res))
+		c.indent--
+		c.writeln("END-IF")
+		c.indent--
+		c.writeln("END-PERFORM")
+	}
+	return res
 }
 
 // compileReduceCall expands a call to reduce(list, add, init) using a simple loop.
