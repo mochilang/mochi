@@ -1,0 +1,110 @@
+let comp_cast_type = [
+  { id: 1, kind: "cast" },
+  { id: 2, kind: "complete+verified" },
+  { id: 3, kind: "crew" }
+]
+
+let complete_cast = [
+  { movie_id: 1, subject_id: 1, status_id: 2 },
+  { movie_id: 2, subject_id: 3, status_id: 2 }
+]
+
+let cast_info = [
+  { movie_id: 1, person_id: 10, note: "(writer)" },
+  { movie_id: 2, person_id: 11, note: "(actor)" }
+]
+
+let info_type = [
+  { id: 1, info: "genres" },
+  { id: 2, info: "votes" }
+]
+
+let keyword = [
+  { id: 1, keyword: "murder" },
+  { id: 2, keyword: "comedy" }
+]
+
+let movie_info = [
+  { movie_id: 1, info_type_id: 1, info: "Horror" },
+  { movie_id: 2, info_type_id: 1, info: "Comedy" }
+]
+
+let movie_info_idx = [
+  { movie_id: 1, info_type_id: 2, info: 2000 },
+  { movie_id: 2, info_type_id: 2, info: 150 }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 },
+  { movie_id: 2, keyword_id: 2 }
+]
+
+let name = [
+  { id: 10, name: "John Writer", gender: "m" },
+  { id: 11, name: "Jane Actor", gender: "f" }
+]
+
+let title = [
+  { id: 1, title: "Violent Horror", production_year: 2005 },
+  { id: 2, title: "Old Comedy", production_year: 1995 }
+]
+
+let violent_keywords = [
+  "murder", "violence", "blood", "gore",
+  "death", "female-nudity", "hospital"
+]
+
+let writer_notes = [
+  "(writer)", "(head writer)", "(written by)", "(story)", "(story editor)"
+]
+
+let matches =
+  from cc in complete_cast
+  join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  join cct2 in comp_cast_type on cct2.id == cc.status_id
+  join ci in cast_info on ci.movie_id == cc.movie_id
+  join mi in movie_info on mi.movie_id == cc.movie_id
+  join mi_idx in movie_info_idx on mi_idx.movie_id == cc.movie_id
+  join mk in movie_keyword on mk.movie_id == cc.movie_id
+  join it1 in info_type on it1.id == mi.info_type_id
+  join it2 in info_type on it2.id == mi_idx.info_type_id
+  join k in keyword on k.id == mk.keyword_id
+  join n in name on n.id == ci.person_id
+  join t in title on t.id == cc.movie_id
+  where (cct1.kind in ["cast", "crew"]) &&
+        cct2.kind == "complete+verified" &&
+        (ci.note in writer_notes) &&
+        it1.info == "genres" &&
+        it2.info == "votes" &&
+        (k.keyword in violent_keywords) &&
+        (mi.info in ["Horror", "Thriller"]) &&
+        n.gender == "m" &&
+        t.production_year > 2000
+  select {
+    budget: mi.info,
+    votes: mi_idx.info,
+    writer: n.name,
+    movie: t.title
+  }
+
+let result = [
+  {
+    movie_budget: min(from x in matches select x.budget),
+    movie_votes: min(from x in matches select x.votes),
+    writer: min(from x in matches select x.writer),
+    complete_violent_movie: min(from x in matches select x.movie)
+  }
+]
+
+json(result)
+
+test "Q30 finds violent horror/thriller movies with male writer" {
+  expect result == [
+    {
+      movie_budget: "Horror",
+      movie_votes: 2000,
+      writer: "John Writer",
+      complete_violent_movie: "Violent Horror"
+    }
+  ]
+}
