@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
 def prepend(level, result)
   ([level] + result)
 end
 
-puts([prepend([1, 2], [[3], [4]])].join(' '))
+puts([prepend([1, 2], [[3], [4]])].join(" "))

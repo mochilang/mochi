@@ -1,4 +1,4 @@
-require 'ostruct'
+require "ostruct"
 
 class MGroup
   include Enumerable
@@ -7,36 +7,39 @@ class MGroup
     @key = k
     @Items = []
   end
+
   def length
     @Items.length
   end
+
   def each(&block)
     @Items.each(&block)
   end
 end
+
 def _group_by(src, keyfn)
-grouped = src.group_by do |it|
-  if it.is_a?(Array)
-    keyfn.call(*it)
-  else
-    keyfn.call(it)
+  grouped = src.group_by do |it|
+    if it.is_a?(Array)
+      keyfn.call(*it)
+    else
+      keyfn.call(it)
+    end
   end
-end
-grouped.map do |k, items|
-g = MGroup.new(k)
-items.each do |it|
-  if it.is_a?(Array) && it.length == 1
-    g.Items << it[0]
-  else
-    g.Items << it
+  grouped.map do |k, items|
+    g = MGroup.new(k)
+    items.each do |it|
+      g.Items << if it.is_a?(Array) && it.length == 1
+        it[0]
+      else
+        it
+      end
+    end
+    g
   end
-end
-g
-end
 end
 
 xs = [1, 1, 2]
-groups = _group_by(xs, ->(x){ x }).map { |g| OpenStruct.new(k: g.key, c: (g).length) }
+groups = _group_by(xs, ->(x) { x }).map { |g| OpenStruct.new(k: g.key, c: g.length) }
 for g in groups
-	puts([g.k, g.c].join(" "))
+  puts([g.k, g.c].join(" "))
 end
