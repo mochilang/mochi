@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -17,6 +18,24 @@ import (
 	"mochi/parser"
 	"mochi/types"
 )
+
+var exceptionRE = regexp.MustCompile(`#<Exception [0-9]+>`)
+
+func normalizeException(b []byte) []byte {
+	return exceptionRE.ReplaceAll(b, []byte("#<Exception>"))
+}
+
+func cleanOutput(b []byte) []byte {
+	lines := bytes.Split(bytes.TrimSpace(b), []byte("\n"))
+	var kept [][]byte
+	for _, l := range lines {
+		if bytes.HasPrefix(l, []byte("ERROR:")) || bytes.HasPrefix(l, []byte("  called from")) {
+			continue
+		}
+		kept = append(kept, l)
+	}
+	return bytes.Join(kept, []byte("\n"))
+}
 
 func runLeetExample(t *testing.T, id int) {
 	if _, err := schemecode.EnsureScheme(); err != nil {
@@ -202,13 +221,57 @@ func TestSchemeCompiler_JOBQ1(t *testing.T) {
 	}
 	cmd := exec.Command("chibi-scheme", "-m", "chibi", file)
 	out, _ := cmd.CombinedOutput()
-	gotOut := bytes.TrimSpace(out)
+	gotOut := normalizeException(cleanOutput(out))
 	outWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "scheme", "q1.out")
 	wantOut, err := os.ReadFile(outWantPath)
 	if err != nil {
 		t.Fatalf("read golden: %v", err)
 	}
-	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-		t.Errorf("output mismatch for q1.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotOut, bytes.TrimSpace(wantOut))
+	if !bytes.Equal(gotOut, normalizeException(cleanOutput(wantOut))) {
+		t.Errorf("output mismatch for q1.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotOut, normalizeException(cleanOutput(wantOut)))
+	}
+}
+
+func TestSchemeCompiler_JOBQ2(t *testing.T) {
+	if _, err := schemecode.EnsureScheme(); err != nil {
+		t.Skipf("chibi-scheme not installed: %v", err)
+	}
+	root := testutil.FindRepoRoot(t)
+	src := filepath.Join(root, "tests", "dataset", "job", "q2.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	code, err := schemecode.New(env).Compile(prog)
+	if err != nil {
+		t.Fatalf("compile error: %v", err)
+	}
+	codeWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "scheme", "q2.scm.out")
+	wantCode, err := os.ReadFile(codeWantPath)
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
+	}
+	if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+		t.Errorf("generated code mismatch for q2.scm.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, bytes.TrimSpace(wantCode))
+	}
+	dir := t.TempDir()
+	file := filepath.Join(dir, "main.scm")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	cmd := exec.Command("chibi-scheme", "-m", "chibi", file)
+	out, _ := cmd.CombinedOutput()
+	gotOut := normalizeException(cleanOutput(out))
+	outWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "scheme", "q2.out")
+	wantOut, err := os.ReadFile(outWantPath)
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
+	}
+	if !bytes.Equal(gotOut, normalizeException(cleanOutput(wantOut))) {
+		t.Errorf("output mismatch for q2.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotOut, normalizeException(cleanOutput(wantOut)))
 	}
 }

@@ -2,7 +2,8 @@
 
 The Scheme backend now targets chibi-scheme and is capable of running the
 `tpc-h/q1.mochi` benchmark. Initial support for the JOB dataset was
-experimented with by compiling `job/q1.mochi`.
+experimented with by compiling `job/q1.mochi`. Compilation and execution for
+`job/q2.mochi` has now been added with accompanying golden tests.
 
 - Rows are represented as association lists and grouped using helper
   procedures.
