@@ -80,7 +80,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, fn := range c.funcDecls {
 		c.buf.WriteString(fn)
 	}
-	return c.buf.Bytes(), nil
+	out := c.buf.Bytes()
+	return FormatCOBOL(out), nil
 }
 
 func (c *Compiler) compileNode(n *ast.Node) {
