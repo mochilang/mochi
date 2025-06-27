@@ -44,3 +44,9 @@ are present and emits `return 0`. Supporting these queries requires:
   and invalid struct initialization. Once join and grouping logic are implemented,
   ensure the output builds successfully and compare against the existing `.out`
   results.
+
+- Add golden tests under `compile/x/c/job_golden_test.go` covering `q1.mochi`
+  through `q10.mochi`. These currently skip because the compiler returns `0`
+  when encountering joins and grouping. Once join support is implemented the
+  tests should compile and run the generated C, comparing against the
+  `tests/dataset/job` golden outputs.
