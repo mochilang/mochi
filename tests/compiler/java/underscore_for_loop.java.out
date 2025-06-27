@@ -1,19 +1,19 @@
 public class Main {
-	public static void main(String[] args) {
-		int c = 0;
-		for (int __ = 0; __ < 2; __++) {
-			c = (c + 1);
-		}
-		for (var __ : new int[]{1, 2}) {
-			c = (c + 1);
-		}
-		for (var __ : "ab".toCharArray()) {
-			c = (c + 1);
-		}
-		java.util.Map<String, Integer> m = new java.util.HashMap<>(java.util.Map.of("x", 1, "y", 2));
-		for (var __ : m.keySet()) {
-			c = (c + 1);
-		}
-		System.out.println(c);
-	}
+    public static void main(String[] args) {
+        int c = 0;
+        for (int __ = 0; __ < 2; __++) {
+            c = (c + 1);
+        }
+        for (var __ : new int[]{1, 2}) {
+            c = (c + 1);
+        }
+        for (var __ : "ab".toCharArray()) {
+            c = (c + 1);
+        }
+        java.util.Map<String, Integer> m = new java.util.HashMap<>(java.util.Map.of("x", 1, "y", 2));
+        for (var __ : m.keySet()) {
+            c = (c + 1);
+        }
+        System.out.println(c);
+    }
 }

@@ -104,7 +104,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.indent--
 	c.writeln("}")
-	return c.buf.Bytes(), nil
+	return FormatJava(c.buf.Bytes()), nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
