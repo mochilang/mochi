@@ -13,20 +13,20 @@ intersect([H|T], B, Acc, R) :- memberchk(H, B), \+ memberchk(H, Acc), !, interse
 intersect([_|T], B, Acc, R) :- intersect(T, B, Acc, R).
 
 
-	main :-
-	A = [1, 2, 3],
-	B = [3, 4],
-	union(A, B, _V0),
-	write(_V0),
-	nl,
-	except(A, B, _V1),
-	write(_V1),
-	nl,
-	intersect(A, B, _V2),
-	write(_V2),
-	nl,
-	union([1, 2], [2, 3], _V3),
-	write(_V3),
-	nl
-	.
+    main :-
+    A = [1, 2, 3],
+    B = [3, 4],
+    union(A, B, _V0),
+    write(_V0),
+    nl,
+    except(A, B, _V1),
+    write(_V1),
+    nl,
+    intersect(A, B, _V2),
+    write(_V2),
+    nl,
+    union([1, 2], [2, 3], _V3),
+    write(_V3),
+    nl
+    .
 :- initialization(main, main).

@@ -26,11 +26,11 @@ save_data(Rows, Path, Opts) :-
 
 
 
-	main :-
-	dict_create(_V0, map, [format-"jsonl"]),
-	load_data("tests/interpreter/valid/people.jsonl", _V0, _V1),
-	People = _V1,
-	dict_create(_V2, map, [format-"json"]),
-	save_data(People, "-", _V2)
-	.
+    main :-
+    dict_create(_V0, map, [format-"jsonl"]),
+    load_data("tests/interpreter/valid/people.jsonl", _V0, _V1),
+    People = _V1,
+    dict_create(_V2, map, [format-"json"]),
+    save_data(People, "-", _V2)
+    .
 :- initialization(main, main).

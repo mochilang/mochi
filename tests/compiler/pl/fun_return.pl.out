@@ -1,16 +1,16 @@
 :- style_check(-singleton).
-		p__lambda0(X, Res) :-
-		_V0 is X * X,
-		Res = _V0.
+        p__lambda0(X, Res) :-
+        _V0 is X * X,
+        Res = _V0.
 
-		makesquare(Res) :-
-		Res = p__lambda0.
+        makesquare(Res) :-
+        Res = p__lambda0.
 
-	main :-
-	makesquare(_V1),
-	Sq = _V1,
-	call(Sq, 4, _V2),
-	write(_V2),
-	nl
-	.
+    main :-
+    makesquare(_V1),
+    Sq = _V1,
+    call(Sq, 4, _V2),
+    write(_V2),
+    nl
+    .
 :- initialization(main, main).

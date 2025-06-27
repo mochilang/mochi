@@ -6,30 +6,30 @@ to_list(L, L).
 
 
 
-		main :-
-	dict_create(_V0, p_person, [name-"Alice", age-30]),
-	dict_create(_V1, p_person, [name-"Bob", age-15]),
-	dict_create(_V2, p_person, [name-"Charlie", age-65]),
-	People = [_V0, _V1, _V2],
-	to_list(People, _V5),
-	findall(P, (member(P, _V5), get_dict(age, P, _V6), _V6 >= 18), _V7),
-	findall(_V8, (member(P, _V7), get_dict(name, P, _V3), _V8 = _V3), _V9),
-	Names = _V9,
-	to_list(Names, _V10),
-	catch(
-		(
-			member(N, _V10),
-			catch(
-				(
-					write(N),
-					nl,
-					true
-				), continue, true),
-				fail
-				;
-				true
-			)
-			, break, true),
-			true
-		.
+        main :-
+    dict_create(_V0, p_person, [name-"Alice", age-30]),
+    dict_create(_V1, p_person, [name-"Bob", age-15]),
+    dict_create(_V2, p_person, [name-"Charlie", age-65]),
+    People = [_V0, _V1, _V2],
+    to_list(People, _V5),
+    findall(P, (member(P, _V5), get_dict(age, P, _V6), _V6 >= 18), _V7),
+    findall(_V8, (member(P, _V7), get_dict(name, P, _V3), _V8 = _V3), _V9),
+    Names = _V9,
+    to_list(Names, _V10),
+    catch(
+        (
+            member(N, _V10),
+            catch(
+                (
+                    write(N),
+                    nl,
+                    true
+                ), continue, true),
+                fail
+                ;
+                true
+            )
+            , break, true),
+            true
+        .
 :- initialization(main, main).

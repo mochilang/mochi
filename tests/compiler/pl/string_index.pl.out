@@ -6,10 +6,10 @@ get_item(Container, Index, Val) :-
 get_item(List, Index, Val) :- nth0(Index, List, Val).
 
 
-	main :-
-	Text = "hello",
-	get_item(Text, 1, _V0),
-	write(_V0),
-	nl
-	.
+    main :-
+    Text = "hello",
+    get_item(Text, 1, _V0),
+    write(_V0),
+    nl
+    .
 :- initialization(main, main).
