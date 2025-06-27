@@ -81,6 +81,15 @@ func EnsureErlang() error { return ensureErlang() }
 ```
 【F:compile/erlang/tools.go†L10-L13】
 
+`EnsureFormatter` checks for the `erlfmt` formatter and attempts a best-effort
+installation when tests are run:
+
+```go
+// EnsureFormatter verifies that the `erlfmt` tool is installed.
+func EnsureFormatter() error { return ensureErlfmt() }
+```
+【F:compile/erlang/tools.go†L78-L135】
+
 ## Unsupported Features
 
 - The Erlang backend still implements only part of Mochi. Missing features include:
