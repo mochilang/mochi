@@ -1,4 +1,14 @@
 # 📦 CHANGELOG.md
+## [0.10.4] – 2025-06-27
+
+### Added
+
+* Bytecode optimizer now performs constant folding and dead code elimination using liveness analysis
+
+### Changed
+
+* All compiled functions are optimized automatically
+
 ## [0.10.3] – 2025-06-26T18:37:31+07:00
 
 ### Added
