@@ -600,6 +600,24 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	// Special case: "contains" method on strings or lists.
+	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil &&
+		len(p.Target.Selector.Tail) > 0 && p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" {
+		recvSel := &parser.SelectorExpr{Root: p.Target.Selector.Root, Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1]}
+		recvExpr, err := c.compilePrimary(&parser.Primary{Selector: recvSel})
+		if err != nil {
+			return "", err
+		}
+		if len(p.Ops[0].Call.Args) != 1 {
+			return "", fmt.Errorf("contains expects 1 arg")
+		}
+		arg, err := c.compileExpr(p.Ops[0].Call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		expr = fmt.Sprintf("(is_array(%[1]s) ? (array_key_exists(%[2]s, %[1]s) || in_array(%[2]s, %[1]s, true)) : (is_string(%[1]s) ? strpos(%[1]s, strval(%[2]s)) !== false : false))", recvExpr, arg)
+		return expr, nil
+	}
 	for _, op := range p.Ops {
 		if op.Index != nil {
 			idx := op.Index
@@ -683,12 +701,32 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.Selector != nil:
+		// Determine if the selector root refers to a map. If so emit
+		// array indexing syntax instead of object fields.
 		name := "$" + sanitizeName(p.Selector.Root)
 		if c.methodFields != nil && c.methodFields[p.Selector.Root] {
 			name = "$this->" + sanitizeName(p.Selector.Root)
 		}
+		// If we can't determine the type assume maps for dataset rows.
+		isMap := true
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				switch t.(type) {
+				case types.MapType:
+					isMap = true
+				case types.StructType:
+					isMap = false
+				}
+			}
+		}
 		if len(p.Selector.Tail) > 0 {
-			name += "->" + strings.Join(p.Selector.Tail, "->")
+			if isMap {
+				for _, f := range p.Selector.Tail {
+					name += fmt.Sprintf("['%s']", f)
+				}
+			} else {
+				name += "->" + strings.Join(p.Selector.Tail, "->")
+			}
 		}
 		return name, nil
 	case p.Struct != nil:
