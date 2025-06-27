@@ -100,5 +100,5 @@
     )
     _res))
 (for ([g (if (hash? groups) (hash-keys groups) groups)])
-	(displayln (format "~a ~a" (hash-ref g "k") (hash-ref g "c")))
+  (displayln (format "~a ~a" (hash-ref g "k") (hash-ref g "c")))
 )
