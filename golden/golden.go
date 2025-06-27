@@ -95,7 +95,7 @@ func Run(t *testing.T, dir, srcExt, goldenExt string, fn Runner) {
 				log()
 				t.Fatalf("failed to read golden: %v", err)
 			}
-			want = bytes.TrimSpace(want)
+			want = normalizeOutput(rootDir, want)
 			model.Output = string(got)
 
 			if !bytes.Equal(got, want) {
