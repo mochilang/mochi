@@ -1,3 +1,11 @@
+(ns main)
+
+(defn _indexList [xs i]
+  (let [idx (if (neg? i) (+ i (count xs)) i)]
+    (if (or (< idx 0) (>= idx (count xs)))
+      (throw (ex-info "index out of range" {}))
+      (nth xs idx))))
+
 (defn addTwoNumbers [l1 l2]
   (try
     (def i 0)
@@ -9,12 +17,12 @@
         (let [r (try
           (def x 0)
           (when (< i (count l1))
-            (def x (nth l1 i))
+            (def x (_indexList l1 i))
             (def i (+ i 1))
           )
           (def y 0)
           (when (< j (count l2))
-            (def y (nth l2 j))
+            (def y (_indexList l2 j))
             (def j (+ j 1))
           )
           (def sum (+ (+ x y) carry))
@@ -45,17 +53,21 @@
 )
 
 (defn test_example_1 []
-(assert (= (addTwoNumbers [2 4 3] [5 6 4]) [7 0 8]))
+(assert (= (addTwoNumbers [2 4 3] [5 6 4]) [7 0 8]) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (addTwoNumbers [0] [0]) [0]))
+(assert (= (addTwoNumbers [0] [0]) [0]) "expect failed")
 )
 
 (defn test_example_3 []
-(assert (= (addTwoNumbers [9 9 9 9 9 9 9] [9 9 9 9]) [8 9 9 9 0 0 0 1]))
+(assert (= (addTwoNumbers [9 9 9 9 9 9 9] [9 9 9 9]) [8 9 9 9 0 0 0 1]) "expect failed")
 )
 
+(defn -main []
 (test_example_1)
 (test_example_2)
 (test_example_3)
+)
+
+(-main)

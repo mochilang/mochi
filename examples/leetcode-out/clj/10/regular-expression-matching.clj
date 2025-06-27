@@ -1,3 +1,18 @@
+(ns main)
+
+(defn _indexString [s i]
+  (let [r (vec (seq s))
+        i (if (neg? i) (+ i (count r)) i)]
+    (if (or (< i 0) (>= i (count r)))
+      (throw (ex-info "index out of range" {}))
+      (str (nth r i)))))
+
+(defn _indexList [xs i]
+  (let [idx (if (neg? i) (+ i (count xs)) i)]
+    (if (or (< idx 0) (>= idx (count xs)))
+      (throw (ex-info "index out of range" {}))
+      (nth xs idx))))
+
 (defn isMatch [s p]
   (try
     (def m (count s))
@@ -57,39 +72,43 @@
       (let [r (try
         (def first false)
         (when (< i2 m)
-          (when (or (= (nth p j2) (nth s i2)) (= (nth p j2) "."))
+          (when (or (= (_indexString p j2) (_indexString s i2)) (= (_indexString p j2) "."))
             (def first true)
           )
         )
         (def star false)
         (when (< (+ j2 1) n)
-          (when (= (nth p (+ j2 1)) "*")
+          (when (= (_indexString p (+ j2 1)) "*")
             (def star true)
           )
         )
         (if star
           (do
-            (if (or (nth (nth dp i2) (+ j2 2)) (and first (nth (nth dp (+ i2 1)) j2)))
+            (def ok false)
+            (if (_indexList (_indexList dp i2) (+ j2 2))
               (do
-                (def dp (assoc-in dp [i2 j2] true))
+                (def ok true)
               )
             
             (do
-              (def dp (assoc-in dp [i2 j2] false))
+              (when first
+                (when (_indexList (_indexList dp (+ i2 1)) j2)
+                  (def ok true)
+                )
+              )
             )
             )
+            (def dp (assoc-in dp [i2 j2] ok))
           )
         
         (do
-          (if (and first (nth (nth dp (+ i2 1)) (+ j2 1)))
-            (do
-              (def dp (assoc-in dp [i2 j2] true))
+          (def ok false)
+          (when first
+            (when (_indexList (_indexList dp (+ i2 1)) (+ j2 1))
+              (def ok true)
             )
-          
-          (do
-            (def dp (assoc-in dp [i2 j2] false))
           )
-          )
+          (def dp (assoc-in dp [i2 j2] ok))
         )
         )
         (def j2 (- j2 1))
@@ -124,7 +143,7 @@
 )
 )
 )
-(throw (ex-info "return" {:value (nth (nth dp 0) 0)}))
+(throw (ex-info "return" {:value (_indexList (_indexList dp 0) 0)}))
 (catch clojure.lang.ExceptionInfo e
 (if (= (.getMessage e) "return")
 (:value (ex-data e))
@@ -133,27 +152,31 @@
 )
 
 (defn test_example_1 []
-(assert (= (isMatch "aa" "a") false))
+(assert (= (isMatch "aa" "a") false) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (isMatch "aa" "a*") true))
+(assert (= (isMatch "aa" "a*") true) "expect failed")
 )
 
 (defn test_example_3 []
-(assert (= (isMatch "ab" ".*") true))
+(assert (= (isMatch "ab" ".*") true) "expect failed")
 )
 
 (defn test_example_4 []
-(assert (= (isMatch "aab" "c*a*b") true))
+(assert (= (isMatch "aab" "c*a*b") true) "expect failed")
 )
 
 (defn test_example_5 []
-(assert (= (isMatch "mississippi" "mis*is*p*.") false))
+(assert (= (isMatch "mississippi" "mis*is*p*.") false) "expect failed")
 )
 
+(defn -main []
 (test_example_1)
 (test_example_2)
 (test_example_3)
 (test_example_4)
 (test_example_5)
+)
+
+(-main)

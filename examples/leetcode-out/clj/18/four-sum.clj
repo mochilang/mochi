@@ -8,7 +8,7 @@
 
 (defn fourSum [nums target]
   (try
-    (def sorted (vec (map (fn [n] n) (sort-by (fn [n] n) nums))))
+    (def sorted (vec (->> (for [n nums] n) (sort-by (fn [n] n)))))
     (def n (count sorted))
     (def result [])
     (loop [i 0]
@@ -138,11 +138,11 @@
 )
 
 (defn test_example_1 []
-(assert (= (fourSum [1 0 (- 1) 0 (- 2) 2] 0) [[(- 2) (- 1) 1 2] [(- 2) 0 0 2] [(- 1) 0 0 1]]))
+(assert (= (fourSum [1 0 (- 1) 0 (- 2) 2] 0) [[(- 2) (- 1) 1 2] [(- 2) 0 0 2] [(- 1) 0 0 1]]) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (fourSum [2 2 2 2 2] 8) [[2 2 2 2]]))
+(assert (= (fourSum [2 2 2 2 2] 8) [[2 2 2 2]]) "expect failed")
 )
 
 (defn -main []

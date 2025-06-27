@@ -51,25 +51,25 @@
 )
 
 (defn test_example_1 []
-(assert (= (romanToInt "III") 3))
+(assert (= (romanToInt "III") 3) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (romanToInt "LVIII") 58))
+(assert (= (romanToInt "LVIII") 58) "expect failed")
 )
 
 (defn test_example_3 []
-(assert (= (romanToInt "MCMXCIV") 1994))
+(assert (= (romanToInt "MCMXCIV") 1994) "expect failed")
 )
 
 (defn test_subtractive []
-(assert (= (romanToInt "IV") 4))
-(assert (= (romanToInt "IX") 9))
+(assert (= (romanToInt "IV") 4) "expect failed")
+(assert (= (romanToInt "IX") 9) "expect failed")
 )
 
 (defn test_tens []
-(assert (= (romanToInt "XL") 40))
-(assert (= (romanToInt "XC") 90))
+(assert (= (romanToInt "XL") 40) "expect failed")
+(assert (= (romanToInt "XC") 90) "expect failed")
 )
 
 (defn -main []

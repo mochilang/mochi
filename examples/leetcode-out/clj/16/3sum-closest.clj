@@ -8,7 +8,7 @@
 
 (defn threeSumClosest [nums target]
   (try
-    (def sorted (vec (map (fn [n] n) (sort-by (fn [n] n) nums))))
+    (def sorted (vec (->> (for [n nums] n) (sort-by (fn [n] n)))))
     (def n (count sorted))
     (def best (+ (+ (_indexList sorted 0) (_indexList sorted 1)) (_indexList sorted 2)))
     (loop [i 0]
@@ -94,15 +94,15 @@
 )
 
 (defn test_example_1 []
-(assert (= (threeSumClosest [(- 1) 2 1 (- 4)] 1) 2))
+(assert (= (threeSumClosest [(- 1) 2 1 (- 4)] 1) 2) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (threeSumClosest [0 0 0] 1) 0))
+(assert (= (threeSumClosest [0 0 0] 1) 0) "expect failed")
 )
 
 (defn test_additional []
-(assert (= (threeSumClosest [1 1 1 0] (- 100)) 2))
+(assert (= (threeSumClosest [1 1 1 0] (- 100)) 2) "expect failed")
 )
 
 (defn -main []

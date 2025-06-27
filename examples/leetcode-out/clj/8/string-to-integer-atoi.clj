@@ -1,3 +1,12 @@
+(ns main)
+
+(defn _indexString [s i]
+  (let [r (vec (seq s))
+        i (if (neg? i) (+ i (count r)) i)]
+    (if (or (< i 0) (>= i (count r)))
+      (throw (ex-info "index out of range" {}))
+      (str (nth r i)))))
+
 (defn digit [ch]
   (try
     (when (= ch "0")
@@ -43,7 +52,7 @@
     (def i 0)
     (def n (count s))
     (loop []
-      (when (and (< i n) (= (nth s i) (nth " " 0)))
+      (when (and (< i n) (= (_indexString s i) (_indexString " " 0)))
         (let [r (try
           (def i (+ i 1))
           :next
@@ -62,8 +71,8 @@
   )
 )
 (def sign 1)
-(when (and (< i n) (or (= (nth s i) (nth "+" 0)) (= (nth s i) (nth "-" 0))))
-  (when (= (nth s i) (nth "-" 0))
+(when (and (< i n) (or (= (_indexString s i) (_indexString "+" 0)) (= (_indexString s i) (_indexString "-" 0))))
+  (when (= (_indexString s i) (_indexString "-" 0))
     (def sign (- 1))
   )
   (def i (+ i 1))
@@ -110,27 +119,31 @@
 )
 
 (defn test_example_1 []
-(assert (= (myAtoi "42") 42))
+(assert (= (myAtoi "42") 42) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (myAtoi "   -42") (- 42)))
+(assert (= (myAtoi "   -42") (- 42)) "expect failed")
 )
 
 (defn test_example_3 []
-(assert (= (myAtoi "4193 with words") 4193))
+(assert (= (myAtoi "4193 with words") 4193) "expect failed")
 )
 
 (defn test_example_4 []
-(assert (= (myAtoi "words and 987") 0))
+(assert (= (myAtoi "words and 987") 0) "expect failed")
 )
 
 (defn test_example_5 []
-(assert (= (myAtoi "-91283472332") (- 2147483648)))
+(assert (= (myAtoi "-91283472332") (- 2147483648)) "expect failed")
 )
 
+(defn -main []
 (test_example_1)
 (test_example_2)
 (test_example_3)
 (test_example_4)
 (test_example_5)
+)
+
+(-main)

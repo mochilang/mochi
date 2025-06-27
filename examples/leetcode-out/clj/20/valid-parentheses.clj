@@ -73,35 +73,35 @@
 )
 
 (defn test_example_1 []
-(assert (= (isValid "()") true))
+(assert (= (isValid "()") true) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (isValid "()[]{}") true))
+(assert (= (isValid "()[]{}") true) "expect failed")
 )
 
 (defn test_example_3 []
-(assert (= (isValid "(]") false))
+(assert (= (isValid "(]") false) "expect failed")
 )
 
 (defn test_example_4 []
-(assert (= (isValid "([)]") false))
+(assert (= (isValid "([)]") false) "expect failed")
 )
 
 (defn test_example_5 []
-(assert (= (isValid "{[]}") true))
+(assert (= (isValid "{[]}") true) "expect failed")
 )
 
 (defn test_empty_string []
-(assert (= (isValid "") true))
+(assert (= (isValid "") true) "expect failed")
 )
 
 (defn test_single_closing []
-(assert (= (isValid "]") false))
+(assert (= (isValid "]") false) "expect failed")
 )
 
 (defn test_unmatched_open []
-(assert (= (isValid "((") false))
+(assert (= (isValid "((") false) "expect failed")
 )
 
 (defn -main []

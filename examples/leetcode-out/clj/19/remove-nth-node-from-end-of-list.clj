@@ -42,23 +42,23 @@
 )
 
 (defn test_example_1 []
-(assert (= (removeNthFromEnd [1 2 3 4 5] 2) [1 2 3 5]))
+(assert (= (removeNthFromEnd [1 2 3 4 5] 2) [1 2 3 5]) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (removeNthFromEnd [1] 1) []))
+(assert (= (removeNthFromEnd [1] 1) []) "expect failed")
 )
 
 (defn test_example_3 []
-(assert (= (removeNthFromEnd [1 2] 1) [1]))
+(assert (= (removeNthFromEnd [1 2] 1) [1]) "expect failed")
 )
 
 (defn test_remove_first []
-(assert (= (removeNthFromEnd [7 8 9] 3) [8 9]))
+(assert (= (removeNthFromEnd [7 8 9] 3) [8 9]) "expect failed")
 )
 
 (defn test_remove_last []
-(assert (= (removeNthFromEnd [7 8 9] 1) [7 8]))
+(assert (= (removeNthFromEnd [7 8 9] 1) [7 8]) "expect failed")
 )
 
 (defn -main []

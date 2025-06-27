@@ -60,20 +60,20 @@
 )
 
 (defn test_example_1 []
-(assert (= (intToRoman 3) "III"))
+(assert (= (intToRoman 3) "III") "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (intToRoman 58) "LVIII"))
+(assert (= (intToRoman 58) "LVIII") "expect failed")
 )
 
 (defn test_example_3 []
-(assert (= (intToRoman 1994) "MCMXCIV"))
+(assert (= (intToRoman 1994) "MCMXCIV") "expect failed")
 )
 
 (defn test_small_numbers []
-(assert (= (intToRoman 4) "IV"))
-(assert (= (intToRoman 9) "IX"))
+(assert (= (intToRoman 4) "IV") "expect failed")
+(assert (= (intToRoman 9) "IX") "expect failed")
 )
 
 (defn -main []

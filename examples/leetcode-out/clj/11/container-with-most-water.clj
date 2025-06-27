@@ -62,19 +62,19 @@
 )
 
 (defn test_example_1 []
-(assert (= (maxArea [1 8 6 2 5 4 8 3 7]) 49))
+(assert (= (maxArea [1 8 6 2 5 4 8 3 7]) 49) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (maxArea [1 1]) 1))
+(assert (= (maxArea [1 1]) 1) "expect failed")
 )
 
 (defn test_decreasing_heights []
-(assert (= (maxArea [4 3 2 1 4]) 16))
+(assert (= (maxArea [4 3 2 1 4]) 16) "expect failed")
 )
 
 (defn test_short_array []
-(assert (= (maxArea [1 2 1]) 2))
+(assert (= (maxArea [1 2 1]) 2) "expect failed")
 )
 
 (defn -main []

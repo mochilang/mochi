@@ -1,3 +1,11 @@
+(ns main)
+
+(defn _indexList [xs i]
+  (let [idx (if (neg? i) (+ i (count xs)) i)]
+    (if (or (< idx 0) (>= idx (count xs)))
+      (throw (ex-info "index out of range" {}))
+      (nth xs idx))))
+
 (defn convert [s numRows]
   (try
     (when (or (<= numRows 1) (>= numRows (count s)))
@@ -29,9 +37,9 @@
 (def step 1)
 (loop [_tmp0 (seq s)]
   (when _tmp0
-    (let [ch (first _tmp0)]
+    (let [ch (clojure.core/first _tmp0)]
       (let [r (try
-        (def rows (assoc rows curr (str (nth rows curr) ch)))
+        (def rows (assoc rows curr (str (_indexList rows curr) ch)))
         (if (= curr 0)
           (do
             (def step 1)
@@ -61,7 +69,7 @@
 (def result "")
 (loop [_tmp1 (seq rows)]
 (when _tmp1
-(let [row (first _tmp1)]
+(let [row (clojure.core/first _tmp1)]
   (let [r (try
     (def result (str result row))
     :next
@@ -89,17 +97,21 @@
 )
 
 (defn test_example_1 []
-(assert (= (convert "PAYPALISHIRING" 3) "PAHNAPLSIIGYIR"))
+(assert (= (convert "PAYPALISHIRING" 3) "PAHNAPLSIIGYIR") "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (convert "PAYPALISHIRING" 4) "PINALSIGYAHRPI"))
+(assert (= (convert "PAYPALISHIRING" 4) "PINALSIGYAHRPI") "expect failed")
 )
 
 (defn test_single_row []
-(assert (= (convert "A" 1) "A"))
+(assert (= (convert "A" 1) "A") "expect failed")
 )
 
+(defn -main []
 (test_example_1)
 (test_example_2)
 (test_single_row)
+)
+
+(-main)

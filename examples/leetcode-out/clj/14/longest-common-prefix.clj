@@ -74,19 +74,19 @@
 )
 
 (defn test_example_1 []
-(assert (= (longestCommonPrefix ["flower" "flow" "flight"]) "fl"))
+(assert (= (longestCommonPrefix ["flower" "flow" "flight"]) "fl") "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (longestCommonPrefix ["dog" "racecar" "car"]) ""))
+(assert (= (longestCommonPrefix ["dog" "racecar" "car"]) "") "expect failed")
 )
 
 (defn test_single_string []
-(assert (= (longestCommonPrefix ["single"]) "single"))
+(assert (= (longestCommonPrefix ["single"]) "single") "expect failed")
 )
 
 (defn test_no_common_prefix []
-(assert (= (longestCommonPrefix ["a" "b" "c"]) ""))
+(assert (= (longestCommonPrefix ["a" "b" "c"]) "") "expect failed")
 )
 
 (defn -main []

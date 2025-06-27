@@ -1,3 +1,12 @@
+(ns main)
+
+(defn _indexString [s i]
+  (let [r (vec (seq s))
+        i (if (neg? i) (+ i (count r)) i)]
+    (if (or (< i 0) (>= i (count r)))
+      (throw (ex-info "index out of range" {}))
+      (str (nth r i)))))
+
 (defn expand [s left right]
   (try
     (def l left)
@@ -6,7 +15,7 @@
     (loop []
       (when (and (>= l 0) (< r n))
         (let [r (try
-          (when (not= (nth s l) (nth s r))
+          (when (not= (_indexString s l) (_indexString s r))
             (throw (ex-info "break" {}))
           )
           (def l (- l 1))
@@ -80,23 +89,27 @@
 
 (defn test_example_1 []
 (def ans (longestPalindrome "babad"))
-(assert (or (= ans "bab") (= ans "aba")))
+(assert (or (= ans "bab") (= ans "aba")) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (longestPalindrome "cbbd") "bb"))
+(assert (= (longestPalindrome "cbbd") "bb") "expect failed")
 )
 
 (defn test_single_char []
-(assert (= (longestPalindrome "a") "a"))
+(assert (= (longestPalindrome "a") "a") "expect failed")
 )
 
 (defn test_two_chars []
 (def ans (longestPalindrome "ac"))
-(assert (or (= ans "a") (= ans "c")))
+(assert (or (= ans "a") (= ans "c")) "expect failed")
 )
 
+(defn -main []
 (test_example_1)
 (test_example_2)
 (test_single_char)
 (test_two_chars)
+)
+
+(-main)

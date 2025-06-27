@@ -1,3 +1,11 @@
+(ns main)
+
+(defn _indexList [xs i]
+  (let [idx (if (neg? i) (+ i (count xs)) i)]
+    (if (or (< idx 0) (>= idx (count xs)))
+      (throw (ex-info "index out of range" {}))
+      (nth xs idx))))
+
 (defn twoSum [nums target]
   (try
     (def n (count nums))
@@ -7,7 +15,7 @@
           (loop [j (+ i 1)]
             (when (< j n)
               (let [r (try
-                (when (= (+ (nth nums i) (nth nums j)) target)
+                (when (= (+ (_indexList nums i) (_indexList nums j)) target)
                   (throw (ex-info "return" {:value [i j]}))
                 )
                 :next
@@ -48,6 +56,10 @@
 )
 )
 
+(defn -main []
 (def result (twoSum [2 7 11 15] 9))
-(println (nth result 0))
-(println (nth result 1))
+(println (_indexList result 0))
+(println (_indexList result 1))
+)
+
+(-main)

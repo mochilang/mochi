@@ -8,7 +8,7 @@
 
 (defn threeSum [nums]
   (try
-    (def sorted (vec (map (fn [x] x) (sort-by (fn [x] x) nums))))
+    (def sorted (vec (->> (for [x nums] x) (sort-by (fn [x] x)))))
     (def n (count sorted))
     (def res [])
     (def i 0)
@@ -120,15 +120,15 @@
 )
 
 (defn test_example_1 []
-(assert (= (threeSum [(- 1) 0 1 2 (- 1) (- 4)]) [[(- 1) (- 1) 2] [(- 1) 0 1]]))
+(assert (= (threeSum [(- 1) 0 1 2 (- 1) (- 4)]) [[(- 1) (- 1) 2] [(- 1) 0 1]]) "expect failed")
 )
 
 (defn test_example_2 []
-(assert (= (threeSum [0 1 1]) []))
+(assert (= (threeSum [0 1 1]) []) "expect failed")
 )
 
 (defn test_example_3 []
-(assert (= (threeSum [0 0 0]) [[0 0 0]]))
+(assert (= (threeSum [0 0 0]) [[0 0 0]]) "expect failed")
 )
 
 (defn -main []
