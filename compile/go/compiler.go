@@ -1540,10 +1540,19 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	t := c.inferUnaryType(u)
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
-		if op == "-" || op == "!" {
-			val = fmt.Sprintf("%s%s", op, val)
+		switch op {
+		case "-":
+			if isAny(t) {
+				c.imports["encoding/json"] = true
+				c.use("_cast")
+				val = fmt.Sprintf("_cast[float64](%s)", val)
+			}
+			val = fmt.Sprintf("-%s", val)
+		case "!":
+			val = fmt.Sprintf("!%s", val)
 		}
 	}
 	return val, nil

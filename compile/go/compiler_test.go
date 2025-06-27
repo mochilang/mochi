@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -226,6 +227,59 @@ func TestGoCompiler_TPCHQ1(t *testing.T) {
 	}
 }
 
+func TestGoCompiler_TPCHQueries(t *testing.T) {
+	root := findRepoRoot(t)
+	for i := 1; i <= 2; i++ {
+		base := fmt.Sprintf("q%d", i)
+		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", base+".go.out")
+		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", base+".out")
+		if _, err := os.Stat(codeWant); err != nil {
+			continue
+		}
+		t.Run(base, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := gocode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			wantCode, err := os.ReadFile(codeWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+				t.Errorf("generated code mismatch for %s.go.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, bytes.TrimSpace(wantCode))
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.go")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("go", "run", file)
+			cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("go run error: %v\n%s", err, out)
+			}
+			gotOut := bytes.TrimSpace(out)
+			wantOut, err := os.ReadFile(outWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(normalizeOutput(root, gotOut), normalizeOutput(root, bytes.TrimSpace(wantOut))) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, gotOut, bytes.TrimSpace(wantOut))
+			}
+		})
+	}
+}
+
 func TestGoCompiler_JOBQ1(t *testing.T) {
 	root := findRepoRoot(t)
 	src := filepath.Join(root, "tests", "dataset", "job", "q1.mochi")
@@ -343,4 +397,19 @@ func findRepoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found (not in Go module)")
 	return ""
+}
+
+func normalizeOutput(root string, b []byte) []byte {
+	out := string(b)
+	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+	out = durRE.ReplaceAllString(out, "(X)")
+	out = strings.TrimSpace(out)
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return []byte(out)
 }
