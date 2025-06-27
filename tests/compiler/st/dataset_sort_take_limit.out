@@ -1,4 +1,6 @@
---- Top products (excluding most expensive) ---
-Smartphone costs $ 900
-Tablet costs $ 600
-Monitor costs $ 300
+/tmp/TestSTCompiler_SubsetPrograms543031356/004/main.st:11: parse error, expected identifier or binary operator or keyword
+Object: Array error: did not understand #with:with:with:with:with:with:with:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array class(Object)>>doesNotUnderstand: #with:with:with:with:with:with:with: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/TestSTCompiler_SubsetPrograms543031356/004/main.st:19)
+/tmp/TestSTCompiler_SubsetPrograms543031356/004/main.st:21: expected expression

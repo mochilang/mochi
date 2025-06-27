@@ -1,1 +1,4 @@
-{"a":1}
+Object: Array new: 1 "<0x7f6680817ce0>" error: did not understand #toJSON
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array(Object)>>doesNotUnderstand: #toJSON (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/TestSTCompiler_SubsetPrograms543031356/016/main.st:4)

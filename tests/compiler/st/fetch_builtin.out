@@ -1,1 +1,2 @@
-hello
+/tmp/TestSTCompiler_SubsetPrograms543031356/006/main.st:10: parse error, expected identifier or binary operator or keyword
+/tmp/TestSTCompiler_SubsetPrograms543031356/006/main.st:34: expected expression

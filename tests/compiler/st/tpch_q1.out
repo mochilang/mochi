@@ -1,1 +1,23 @@
-[{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": 2750.0, "sum_charge": 2906.5, "avg_qty": 26.5, "avg_price": 1500.0, "avg_disc": 0.07500000000000001, "count_order": 2}]
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:5: undefined variable result referenced
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:8: parse error, expected '!'
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:10: expected expression
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:11: expected expression
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:17: expected expression
+Object: nil error: did not understand #items
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #items (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:18)
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:19: expected expression
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:22: expected expression
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:26: expected expression
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:29: expected expression
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:32: expected expression
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:39: parse error, expected identifier or binary operator or keyword
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:43: parse error, expected identifier or binary operator or keyword
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:51: parse error, expected identifier or binary operator or keyword
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:58: parse error, expected identifier or binary operator or keyword
+Object: Array error: did not understand #with:from:with:from:with:from:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+Array class(Object)>>doesNotUnderstand: #with:from:with:from:with:from: (SysExcept.st:1448)
+UndefinedObject>>executeStatements (/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:71)
+/tmp/TestSTCompiler_SubsetPrograms543031356/033/main.st:73: expected expression
