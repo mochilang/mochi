@@ -119,7 +119,7 @@ func (c *Compiler) binaryOp(left operand, op string, right operand) (operand, er
 		if left.isStr && right.isStr {
 			res.val = fmt.Sprintf("%s == %s", left.expr.val, right.expr.val)
 		} else {
-			res.val = fmt.Sprintf("%s =:= %s", left.expr.val, right.expr.val)
+			res.val = fmt.Sprintf("%s = %s", left.expr.val, right.expr.val)
 		}
 		return operand{expr: res}, nil
 	case "!=":
@@ -249,11 +249,45 @@ func (c *Compiler) compileUnary(u *parser.Unary) (exprRes, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (exprRes, error) {
-	res, err := c.compilePrimary(p.Target)
-	if err != nil {
-		return exprRes{}, err
+	var res exprRes
+	target := p.Target
+	ops := p.Ops
+	// Detect method call: selector followed by call
+	if len(ops) > 0 && ops[0].Call != nil && target.Selector != nil && len(target.Selector.Tail) > 0 {
+		method := target.Selector.Tail[len(target.Selector.Tail)-1]
+		rootSel := *target.Selector
+		rootSel.Tail = rootSel.Tail[:len(rootSel.Tail)-1]
+		rootExpr := &parser.Primary{Selector: &rootSel}
+		rootRes, err := c.compilePrimary(rootExpr)
+		if err != nil {
+			return exprRes{}, err
+		}
+		args := make([]string, len(ops[0].Call.Args)+1)
+		code := append([]string{}, rootRes.code...)
+		args[0] = rootRes.val
+		for i, a := range ops[0].Call.Args {
+			ar, err := c.compileExpr(a)
+			if err != nil {
+				return exprRes{}, err
+			}
+			code = append(code, ar.code...)
+			args[i+1] = ar.val
+		}
+		tmp := c.newVar()
+		if method == "contains" {
+			c.use("contains")
+		}
+		code = append(code, fmt.Sprintf("%s(%s, %s),", sanitizeAtom(method), strings.Join(args, ", "), tmp))
+		res = exprRes{code: code, val: tmp}
+		ops = ops[1:]
+	} else {
+		var err error
+		res, err = c.compilePrimary(target)
+		if err != nil {
+			return exprRes{}, err
+		}
 	}
-	for _, op := range p.Ops {
+	for _, op := range ops {
 		if op.Index != nil {
 			if op.Index.Colon != nil {
 				start, err := c.compileExpr(op.Index.Start)
@@ -398,11 +432,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (exprRes, error) {
 		return c.compileLogicQuery(p.LogicQuery)
 	case p.Load != nil:
 		return c.compileLoadExpr(p.Load)
-        case p.Save != nil:
-                return c.compileSaveExpr(p.Save)
-       case p.Fetch != nil:
-               return c.compileFetchExpr(p.Fetch)
-        }
+	case p.Save != nil:
+		return c.compileSaveExpr(p.Save)
+	case p.Fetch != nil:
+		return c.compileFetchExpr(p.Fetch)
+	}
 	return exprRes{}, fmt.Errorf("unsupported expression")
 }
 
@@ -454,6 +488,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 		tmp := c.newVar()
 		c.use("avg")
 		code := append(arg.code, fmt.Sprintf("avg(%s, %s),", arg.val, tmp))
+		return exprRes{code: code, val: tmp}, nil
+	case "min":
+		if len(call.Args) != 1 {
+			return exprRes{}, fmt.Errorf("min expects 1 arg")
+		}
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return exprRes{}, err
+		}
+		tmp := c.newVar()
+		c.use("min")
+		code := append(arg.code, fmt.Sprintf("min(%s, %s),", arg.val, tmp))
 		return exprRes{code: code, val: tmp}, nil
 	case "keys":
 		if len(call.Args) != 1 {
@@ -969,30 +1015,30 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (exprRes, error) {
 		code = append(code, o.code...)
 		opts = o.val
 	}
-       c.use("save_data")
-       code = append(code, fmt.Sprintf("save_data(%s, %s, %s),", src.val, path, opts))
-       return exprRes{code: code, val: ""}, nil
+	c.use("save_data")
+	code = append(code, fmt.Sprintf("save_data(%s, %s, %s),", src.val, path, opts))
+	return exprRes{code: code, val: ""}, nil
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (exprRes, error) {
-       url, err := c.compileExpr(f.URL)
-       if err != nil {
-               return exprRes{}, err
-       }
-       opts := "_{}"
-       code := append([]string{}, url.code...)
-       if f.With != nil {
-               o, err := c.compileExpr(f.With)
-               if err != nil {
-                       return exprRes{}, err
-               }
-               code = append(code, o.code...)
-               opts = o.val
-       }
-       tmp := c.newVar()
-       c.use("fetch_data")
-       code = append(code, fmt.Sprintf("fetch_data(%s, %s, %s),", url.val, opts, tmp))
-       return exprRes{code: code, val: tmp}, nil
+	url, err := c.compileExpr(f.URL)
+	if err != nil {
+		return exprRes{}, err
+	}
+	opts := "_{}"
+	code := append([]string{}, url.code...)
+	if f.With != nil {
+		o, err := c.compileExpr(f.With)
+		if err != nil {
+			return exprRes{}, err
+		}
+		code = append(code, o.code...)
+		opts = o.val
+	}
+	tmp := c.newVar()
+	c.use("fetch_data")
+	code = append(code, fmt.Sprintf("fetch_data(%s, %s, %s),", url.val, opts, tmp))
+	return exprRes{code: code, val: tmp}, nil
 }
 
 func (c *Compiler) logicPredicate(p *parser.LogicPredicate) (string, []string, error) {
