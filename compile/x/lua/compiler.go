@@ -148,17 +148,34 @@ func checkLuaSyntax(code []byte) error {
 }
 
 func formatLua(code []byte) ([]byte, error) {
-	if _, err := exec.LookPath("luafmt"); err != nil {
-		return code, nil
-	}
-	cmd := exec.Command("luafmt", "--stdin", "--indent-count", "4")
-	cmd.Stdin = bytes.NewReader(code)
-	out, err := cmd.Output()
-	if err != nil {
-		if ee, ok := err.(*exec.ExitError); ok {
-			return nil, fmt.Errorf("luafmt error: %s", string(ee.Stderr))
+	// Prefer stylua if available as it produces idiomatic formatting.
+	if _, err := exec.LookPath("stylua"); err == nil {
+		cmd := exec.Command("stylua", "-")
+		cmd.Stdin = bytes.NewReader(code)
+		out, err := cmd.Output()
+		if err != nil {
+			if ee, ok := err.(*exec.ExitError); ok {
+				return nil, fmt.Errorf("stylua error: %s", string(ee.Stderr))
+			}
+			return nil, err
 		}
-		return nil, err
+		return out, nil
 	}
-	return out, nil
+
+	// Fall back to luafmt if stylua is not installed.
+	if _, err := exec.LookPath("luafmt"); err == nil {
+		cmd := exec.Command("luafmt", "--stdin", "--indent-count", "4")
+		cmd.Stdin = bytes.NewReader(code)
+		out, err := cmd.Output()
+		if err != nil {
+			if ee, ok := err.(*exec.ExitError); ok {
+				return nil, fmt.Errorf("luafmt error: %s", string(ee.Stderr))
+			}
+			return nil, err
+		}
+		return out, nil
+	}
+
+	// If no formatter is available just return the raw source.
+	return code, nil
 }

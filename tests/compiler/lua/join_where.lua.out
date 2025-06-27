@@ -1,59 +1,31 @@
 function __eq(a, b)
-    if type(a) ~= type(b) then
-        return false
-    end
-    if type(a) == "number" then
-        return math.abs(a - b) < 1e-9
-    end
-    if type(a) ~= "table" then
-        return a == b
-    end
+    if type(a) ~= type(b) then return false end
+    if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
+    if type(a) ~= 'table' then return a == b end
     if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
-        if #a ~= #b then
-            return false
-        end
-        for i = 1, #a do
-            if not __eq(a[i], b[i]) then
-                return false
-            end
-        end
+        if #a ~= #b then return false end
+        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
         return true
     end
-    for k, v in pairs(a) do
-        if not __eq(v, b[k]) then
-            return false
-        end
-    end
-    for k, _ in pairs(b) do
-        if a[k] == nil then
-            return false
-        end
-    end
+    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
+    for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
 function __print(...)
     local args = {...}
     for i, a in ipairs(args) do
-        if i > 1 then
-            io.write(" ")
-        end
+        if i > 1 then io.write(' ') end
         io.write(tostring(a))
     end
-    io.write("\n")
+    io.write('\n')
 end
 function __query(src, joins, opts)
     local whereFn = opts.where
     local items = {}
     if #joins == 0 and whereFn then
-        for _, v in ipairs(src) do
-            if whereFn(v) then
-                items[#items + 1] = {v}
-            end
-        end
+        for _, v in ipairs(src) do if whereFn(v) then items[#items+1] = {v} end end
     else
-        for _, v in ipairs(src) do
-            items[#items + 1] = {v}
-        end
+        for _, v in ipairs(src) do items[#items+1] = {v} end
     end
     for ji, j in ipairs(joins) do
         local joined = {}
@@ -66,42 +38,37 @@ function __query(src, joins, opts)
                     local keep = true
                     if j.on then
                         local args = {table.unpack(left)}
-                        args[#args + 1] = right
+                        args[#args+1] = right
                         keep = j.on(table.unpack(args))
                     end
                     if keep then
-                        m = true
-                        matched[ri] = true
+                        m = true; matched[ri] = true
                         local row = {table.unpack(left)}
-                        row[#row + 1] = right
+                        row[#row+1] = right
                         if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                         else
-                            joined[#joined + 1] = row
+                            joined[#joined+1] = row
                         end
                     end
                 end
                 if not m then
                     local row = {table.unpack(left)}
-                    row[#row + 1] = nil
+                    row[#row+1] = nil
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
-                        joined[#joined + 1] = row
+                        joined[#joined+1] = row
                     end
                 end
             end
             for ri, right in ipairs(jitems) do
                 if not matched[ri] then
                     local undef = {}
-                    if #items > 0 then
-                        for _ = 1, #items[1] do
-                            undef[#undef + 1] = nil
-                        end
-                    end
+                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
                     local row = {table.unpack(undef)}
-                    row[#row + 1] = right
+                    row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
-                        joined[#joined + 1] = row
+                        joined[#joined+1] = row
                     end
                 end
             end
@@ -112,31 +79,27 @@ function __query(src, joins, opts)
                     local keep = true
                     if j.on then
                         local args = {table.unpack(left)}
-                        args[#args + 1] = right
+                        args[#args+1] = right
                         keep = j.on(table.unpack(args))
                     end
                     if keep then
                         m = true
                         local row = {table.unpack(left)}
-                        row[#row + 1] = right
+                        row[#row+1] = right
                         if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                         else
-                            joined[#joined + 1] = row
+                            joined[#joined+1] = row
                         end
                     end
                 end
                 if not m then
                     local undef = {}
-                    if #items > 0 then
-                        for _ = 1, #items[1] do
-                            undef[#undef + 1] = nil
-                        end
-                    end
+                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
                     local row = {table.unpack(undef)}
-                    row[#row + 1] = right
+                    row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
-                        joined[#joined + 1] = row
+                        joined[#joined+1] = row
                     end
                 end
             end
@@ -147,25 +110,25 @@ function __query(src, joins, opts)
                     local keep = true
                     if j.on then
                         local args = {table.unpack(left)}
-                        args[#args + 1] = right
+                        args[#args+1] = right
                         keep = j.on(table.unpack(args))
                     end
                     if keep then
                         m = true
                         local row = {table.unpack(left)}
-                        row[#row + 1] = right
+                        row[#row+1] = right
                         if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                         else
-                            joined[#joined + 1] = row
+                            joined[#joined+1] = row
                         end
                     end
                 end
                 if j.left and not m then
                     local row = {table.unpack(left)}
-                    row[#row + 1] = nil
+                    row[#row+1] = nil
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
-                        joined[#joined + 1] = row
+                        joined[#joined+1] = row
                     end
                 end
             end
@@ -174,33 +137,20 @@ function __query(src, joins, opts)
     end
     if opts.sortKey then
         local pairs = {}
-        for _, it in ipairs(items) do
-            pairs[#pairs + 1] = {item = it, key = opts.sortKey(table.unpack(it))}
-        end
-        table.sort(
-            pairs,
-            function(a, b)
-                local ak, bk = a.key, b.key
-                if type(ak) == "number" and type(bk) == "number" then
-                    return ak < bk
-                end
-                if type(ak) == "string" and type(bk) == "string" then
-                    return ak < bk
-                end
-                return tostring(ak) < tostring(bk)
-            end
-        )
+        for _, it in ipairs(items) do pairs[#pairs+1] = {item=it, key=opts.sortKey(table.unpack(it))} end
+        table.sort(pairs, function(a,b)
+            local ak, bk = a.key, b.key
+            if type(ak)=='number' and type(bk)=='number' then return ak < bk end
+            if type(ak)=='string' and type(bk)=='string' then return ak < bk end
+            return tostring(ak) < tostring(bk)
+        end)
         items = {}
-        for i, p in ipairs(pairs) do
-            items[i] = p.item
-        end
+        for i,p in ipairs(pairs) do items[i] = p.item end
     end
     if opts.skip ~= nil then
         local n = opts.skip
         if n < #items then
-            for i = 1, n do
-                table.remove(items, 1)
-            end
+            for i=1,n do table.remove(items,1) end
         else
             items = {}
         end
@@ -208,67 +158,47 @@ function __query(src, joins, opts)
     if opts.take ~= nil then
         local n = opts.take
         if n < #items then
-            for i = #items, n + 1, -1 do
-                table.remove(items)
-            end
+            for i=#items, n+1, -1 do table.remove(items) end
         end
     end
     local res = {}
-    for _, r in ipairs(items) do
-        res[#res + 1] = opts.selectFn(table.unpack(r))
-    end
+    for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r)) end
     return res
 end
 Customer = {}
 Customer.__index = Customer
 function Customer.new(o)
-    o = o or {}
-    setmetatable(o, Customer)
-    return o
+	o = o or {}
+	setmetatable(o, Customer)
+	return o
 end
 
 Order = {}
 Order.__index = Order
 function Order.new(o)
-    o = o or {}
-    setmetatable(o, Order)
-    return o
+	o = o or {}
+	setmetatable(o, Order)
+	return o
 end
 
 PairInfo = {}
 PairInfo.__index = PairInfo
 function PairInfo.new(o)
-    o = o or {}
-    setmetatable(o, PairInfo)
-    return o
+	o = o or {}
+	setmetatable(o, PairInfo)
+	return o
 end
 
-customers = {{id = 1, name = "Alice"}, {id = 2, name = "Bob"}, {id = 3, name = "Charlie"}}
-orders = {
-    {id = 100, customerId = 1, total = 250},
-    {id = 101, customerId = 2, total = 125},
-    {id = 102, customerId = 1, total = 300},
-    {id = 103, customerId = 4, total = 80}
-}
-result =
-    (function()
-    local _src = orders
-    return __query(
-        _src,
-        {
-            {items = customers, on = function(o, c)
-                    return __eq(o.customerId, c.id)
-                end}
-        },
-        {selectFn = function(o, c)
-                return {orderId = o.id, customerName = c.name, total = o.total}
-            end, where = function(o, c)
-                return (__eq(c.name, "Alice"))
-            end}
-    )
+customers = {{id=1, name="Alice"}, {id=2, name="Bob"}, {id=3, name="Charlie"}}
+orders = {{id=100, customerId=1, total=250}, {id=101, customerId=2, total=125}, {id=102, customerId=1, total=300}, {id=103, customerId=4, total=80}}
+result = (function()
+	local _src = orders
+	return __query(_src, {
+		{ items = customers, on = function(o, c) return __eq(o.customerId, c.id) end }
+	}, { selectFn = function(o, c) return {orderId=o.id, customerName=c.name, total=o.total} end, where = function(o, c) return (__eq(c.name, "Alice")) end })
 end)()
 __print("--- Orders with customer info ---")
 for _, entry in ipairs(result) do
-    __print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
-    ::__continue0::
+	__print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
+	::__continue0::
 end
