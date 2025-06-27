@@ -64,11 +64,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln(">>SOURCE FORMAT FREE")
 	c.writeln("IDENTIFICATION DIVISION.")
 	c.writeln("PROGRAM-ID. MAIN.")
+	c.writeln("")
 	c.writeln("DATA DIVISION.")
 	c.writeln("WORKING-STORAGE SECTION.")
 	for _, d := range c.decls {
 		c.writeln(d)
 	}
+	c.writeln("")
 	c.writeln("PROCEDURE DIVISION.")
 	c.buf.Write(bodyBytes)
 	c.writeln("    STOP RUN.")
