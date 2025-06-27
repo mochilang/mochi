@@ -2338,6 +2338,23 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 		return dst
 	}
 
+	// "starts_with" method on strings
+	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil &&
+		len(p.Target.Selector.Tail) > 0 && p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "starts_with" {
+		recvSel := &parser.Primary{Selector: &parser.SelectorExpr{Root: p.Target.Selector.Root, Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1]}}
+		recv := fc.compilePrimary(recvSel)
+		arg := fc.compileExpr(p.Ops[0].Call.Args[0])
+		zero := fc.newReg()
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: interpreter.TagInt, Int: 0}})
+		plen := fc.newReg()
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLen, A: plen, B: arg})
+		prefix := fc.newReg()
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpSlice, A: prefix, B: recv, C: zero, D: plen})
+		dst := fc.newReg()
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpEqual, A: dst, B: prefix, C: arg})
+		return dst
+	}
+
 	r := fc.compilePrimary(p.Target)
 	for _, op := range p.Ops {
 		if op.Index != nil {

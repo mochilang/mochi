@@ -38,9 +38,9 @@ let eligible =
   where ci.note == "(voice: English version)" &&
         cn.country_code == "[jp]" &&
         mc.note.contains("(Japan)") &&
-        !(mc.note.contains("(USA)")) &&
+        (!mc.note.contains("(USA)")) &&
         n1.name.contains("Yo") &&
-        !(n1.name.contains("Yu")) &&
+        (!n1.name.contains("Yu")) &&
         rt.role == "actress"
   select { pseudonym: an1.name, movie_title: t.title }
 

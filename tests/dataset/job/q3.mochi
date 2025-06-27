@@ -29,12 +29,13 @@ let allowed_infos = [
 
 let candidate_titles =
   from k in keyword
-  where k.keyword.contains("sequel")
   join mk in movie_keyword on mk.keyword_id == k.id
   join mi in movie_info on mi.movie_id == mk.movie_id
-  where mi.info in allowed_infos
   join t in title on t.id == mi.movie_id
-  where t.production_year > 2005
+  where k.keyword.contains("sequel") &&
+        mi.info in allowed_infos &&
+        t.production_year > 2005 &&
+        mk.movie_id == mi.movie_id
   select t.title
 
 let result = [{ movie_title: min(candidate_titles) }]

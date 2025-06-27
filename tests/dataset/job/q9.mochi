@@ -49,7 +49,6 @@ let matches =
   join rt in role_type on rt.id == ci.role_id
   where (ci.note in ["(voice)", "(voice: Japanese version)", "(voice) (uncredited)", "(voice: English version)"]) &&
         cn.country_code == "[us]" &&
-        mc.note != nil &&
         (mc.note.contains("(USA)") || mc.note.contains("(worldwide)")) &&
         n.gender == "f" &&
         n.name.contains("Ang") &&
