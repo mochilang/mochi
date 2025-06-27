@@ -8,7 +8,7 @@ For every query add two files:
 - `qN.md` documenting the SQL text and describing the expected result
 
 ## Tasks
-- [ ] Add q1.mochi and q1.md
+- [x] Add q1.mochi and q1.md
 - [ ] Add q2.mochi and q2.md
 - [ ] Add q3.mochi and q3.md
 - [ ] Add q4.mochi and q4.md
