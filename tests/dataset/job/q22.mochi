@@ -1,0 +1,106 @@
+let company_name = [
+  { id: 1, name: "Euro Films", country_code: "[de]" },
+  { id: 2, name: "US Films", country_code: "[us]" }
+]
+
+let company_type = [
+  { id: 1, kind: "production" }
+]
+
+let info_type = [
+  { id: 10, info: "countries" },
+  { id: 20, info: "rating" }
+]
+
+let keyword = [
+  { id: 1, keyword: "murder" },
+  { id: 2, keyword: "comedy" }
+]
+
+let kind_type = [
+  { id: 100, kind: "movie" },
+  { id: 200, kind: "episode" }
+]
+
+let movie_companies = [
+  { movie_id: 10, company_id: 1, company_type_id: 1, note: "release (2009) (worldwide)" },
+  { movie_id: 20, company_id: 2, company_type_id: 1, note: "release (2007) (USA)" }
+]
+
+let movie_info = [
+  { movie_id: 10, info_type_id: 10, info: "Germany" },
+  { movie_id: 20, info_type_id: 10, info: "USA" }
+]
+
+let movie_info_idx = [
+  { movie_id: 10, info_type_id: 20, info: 6.5 },
+  { movie_id: 20, info_type_id: 20, info: 7.8 }
+]
+
+let movie_keyword = [
+  { movie_id: 10, keyword_id: 1 },
+  { movie_id: 20, keyword_id: 2 }
+]
+
+let title = [
+  { id: 10, kind_id: 100, production_year: 2009, title: "Violent Western" },
+  { id: 20, kind_id: 100, production_year: 2007, title: "Old Western" }
+]
+
+let rows =
+  from cn in company_name
+  join mc in movie_companies on cn.id == mc.company_id
+  join ct in company_type on ct.id == mc.company_type_id
+  join t in title on t.id == mc.movie_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join mi in movie_info on mi.movie_id == t.id
+  join it1 in info_type on it1.id == mi.info_type_id
+  join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  join it2 in info_type on it2.id == mi_idx.info_type_id
+  join kt in kind_type on kt.id == t.kind_id
+  where (
+    cn.country_code != "[us]" &&
+    it1.info == "countries" &&
+    it2.info == "rating" &&
+    (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+    (kt.kind == "movie" || kt.kind == "episode") &&
+    !(mc.note.contains("(USA)")) &&
+    mc.note.contains("(200") &&
+    (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+    mi_idx.info < 7.0 &&
+    t.production_year > 2008 &&
+    kt.id == t.kind_id &&
+    t.id == mi.movie_id &&
+    t.id == mk.movie_id &&
+    t.id == mi_idx.movie_id &&
+    t.id == mc.movie_id &&
+    mk.movie_id == mi.movie_id &&
+    mk.movie_id == mi_idx.movie_id &&
+    mk.movie_id == mc.movie_id &&
+    mi.movie_id == mi_idx.movie_id &&
+    mi.movie_id == mc.movie_id &&
+    mc.movie_id == mi_idx.movie_id &&
+    k.id == mk.keyword_id &&
+    it1.id == mi.info_type_id &&
+    it2.id == mi_idx.info_type_id &&
+    ct.id == mc.company_type_id &&
+    cn.id == mc.company_id
+  )
+  select { company: cn.name, rating: mi_idx.info, title: t.title }
+
+let result = [
+  {
+    movie_company: min(from r in rows select r.company),
+    rating: min(from r in rows select r.rating),
+    western_violent_movie: min(from r in rows select r.title)
+  }
+]
+
+json(result)
+
+test "Q22 finds western violent movie with low rating" {
+  expect result == [
+    { movie_company: "Euro Films", rating: 6.5, western_violent_movie: "Violent Western" }
+  ]
+}
