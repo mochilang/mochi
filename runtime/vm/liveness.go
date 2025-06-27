@@ -97,11 +97,14 @@ func useDef(ins Instr, n int) (use, def []bool) {
 		addDef(ins.A)
 		addUse(ins.B)
 		addUse(ins.C)
-	case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpExists,
-		OpLen, OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues,
-		OpCast, OpIterPrep, OpNow, OpAppend:
-		addDef(ins.A)
-		addUse(ins.B)
+       case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpExists,
+               OpLen, OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues,
+               OpCast, OpIterPrep, OpNow, OpAppend:
+               addDef(ins.A)
+               addUse(ins.B)
+               if ins.Op == OpAppend {
+                       addUse(ins.C)
+               }
 	case OpIndex:
 		addDef(ins.A)
 		addUse(ins.B)

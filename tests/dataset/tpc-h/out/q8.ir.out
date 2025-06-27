@@ -371,19 +371,8 @@ L19:
   Move         r238, r22
   // print(result)
   Print        r238
-  // let numerator = 1000.0 * 0.9      // 900
-  Const        r239, 1000
-  Const        r240, 0.9
-  MulFloat     r241, r239, r240
-  Move         r242, r241
-  // let denominator = numerator + (500.0 * 0.95) // 900 + 475 = 1375
-  Const        r243, 500
-  Const        r244, 0.95
-  MulFloat     r245, r243, r244
-  AddFloat     r246, r242, r245
-  Move         r247, r246
   // let share = numerator / denominator         // ≈ 0.6545
-  DivFloat     r248, r242, r247
+  Const        r248, 0.6545454545454545
   Move         r249, r248
   // { o_year: "1995", mkt_share: share }
   Const        r250, "o_year"
@@ -400,3 +389,4 @@ L19:
   Equal        r260, r238, r259
   Expect       r260
   Return       r0
+
