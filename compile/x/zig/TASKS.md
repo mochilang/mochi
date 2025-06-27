@@ -10,3 +10,7 @@ Remaining work
 ---------------
 
 - Add join and sorting support for query expressions.
+- JOB dataset queries q1-q10 compile but the generated Zig code fails to build
+  due to incorrect boolean expression parsing. The parser flattens chained
+  comparisons like `a == b && c == d`, producing invalid Zig code. Update the
+  parser to preserve operator precedence so these queries can run successfully.
