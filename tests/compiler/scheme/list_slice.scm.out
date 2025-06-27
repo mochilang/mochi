@@ -7,7 +7,7 @@
     (when (< start 0) (set! start 0))
     (when (> end n) (set! end n))
     (when (< end start) (set! end start))
-    (if (string? obj)
+        (if (string? obj)
         (substring obj start end)
         (let loop ((idx 0) (xs obj) (out '()))
           (if (or (null? xs) (>= idx end))

@@ -1,12 +1,12 @@
 (define (map-get m k)
     (let ((p (assoc k m)))
-        (if p (cdr p) '())))
+        (if p (cdr p) '()))
 )
 (define (map-set m k v)
     (let ((p (assoc k m)))
         (if p
             (begin (set-cdr! p v) m)
-            (cons (cons k v) m))))
+            (cons (cons k v) m)))
 )
 (define (_fetch url opts)
   (let* ((method (if (and opts (assq 'method opts)) (cdr (assq 'method opts)) "GET"))
@@ -56,6 +56,18 @@
            (write-string (json->string rows) out)))
     (when (not (eq? out (current-output-port)))
       (close-output-port out)))
+
+(define (_sort pairs)
+  (sort pairs
+        (lambda (a b)
+          (let ((ka (cdr a)) (kb (cdr b)))
+            (cond ((and (number? ka) (number? kb)) (< ka kb))
+                  ((and (string? ka) (string? kb)) (string<? ka kb))
+                  (else (string<? (format "~a" ka) (format "~a" kb))))))))
+
+(define (new-Msg message)
+  (list (cons 'message message))
+)
 
 (define data (_fetch "file://tests/compiler/scheme/fetch_builtin.json" '()))
 (begin (display (map-get data 'message)) (newline))

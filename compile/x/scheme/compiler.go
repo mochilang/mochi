@@ -372,6 +372,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		pre.Write(code)
 		code = pre.Bytes()
 	}
+	code = FormatScheme(code)
 	return code, nil
 }
 

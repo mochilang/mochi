@@ -1,6 +1,7 @@
 package schemecode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -51,4 +52,29 @@ func EnsureScheme() (string, error) {
 		return path, nil
 	}
 	return "", fmt.Errorf("chibi-scheme not found")
+}
+
+// FormatScheme replaces tabs with two spaces and ensures a trailing newline.
+// If the chibi-scheme binary is available a best-effort pretty printing is attempted.
+func FormatScheme(src []byte) []byte {
+	path, err := exec.LookPath("chibi-scheme")
+	if err == nil {
+		cmd := exec.Command(path, "-q", "-e",
+			`(import (chibi show pretty))
+                        (let loop ((x (read)))
+                          (unless (eof-object? x)
+                            (pretty-print x)
+                            (loop (read))))`)
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if e := cmd.Run(); e == nil && out.Len() > 0 {
+			src = out.Bytes()
+		}
+	}
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }

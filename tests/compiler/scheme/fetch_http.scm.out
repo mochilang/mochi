@@ -66,7 +66,7 @@
                   (else (string<? (format "~a" ka) (format "~a" kb))))))))
 
 (define (new-Todo userId id title completed)
-	(list (cons 'userId userId) (cons 'id id) (cons 'title title) (cons 'completed completed))
+  (list (cons 'userId userId) (cons 'id id) (cons 'title title) (cons 'completed completed))
 )
 
 (define todo (let ((_tmp (_fetch "https://jsonplaceholder.typicode.com/todos/1" '()))) (new-Todo (map-get _tmp 'userId) (map-get _tmp 'id) (map-get _tmp 'title) (map-get _tmp 'completed))))
