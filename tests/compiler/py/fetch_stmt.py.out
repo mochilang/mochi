@@ -20,8 +20,8 @@ todo = None
 
 def main():
     global todo
-    todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", None)
-    print((todo["id"] > 0))
+    todo = Todo(**(_fetch("https://jsonplaceholder.typicode.com/todos/1", None)))
+    print(str((todo.id > 0)).lower())
 
 
 def _fetch(url, opts):
