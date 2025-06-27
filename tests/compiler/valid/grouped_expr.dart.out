@@ -1,5 +1,5 @@
 void main() {
-	int value = (((1 + 2)) * 3);
-	print(value);
+  int value = (((1 + 2)) * 3);
+  print(value);
 }
 

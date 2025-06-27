@@ -1,5 +1,5 @@
 void main() {
-	List<int> xs = [10, 20, 30];
-	print(xs[1]);
+  List<int> xs = [10, 20, 30];
+  print(xs[1]);
 }
 
