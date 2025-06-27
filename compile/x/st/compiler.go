@@ -37,6 +37,7 @@ type Compiler struct {
 	needGroupBy     bool
 	needGroup       bool
 	needCast        bool
+	globalVars      []string
 }
 
 // New creates a new Smalltalk compiler instance.
@@ -75,11 +76,13 @@ func (c *Compiler) reset() {
 	c.needMin = false
 	c.needGroupBy = false
 	c.needGroup = false
+	c.globalVars = nil
 }
 
 // Compile generates Smalltalk code for prog.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.reset()
+	c.globalVars = collectGlobalVars(prog.Statements)
 
 	orig := c.buf
 
@@ -105,6 +108,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	// assemble
 	c.buf = orig
+	for _, g := range c.globalVars {
+		c.writeln(fmt.Sprintf("Smalltalk at: #%s put: nil.", sanitizeName(g)))
+	}
+	if len(c.globalVars) > 0 {
+		c.writeln("")
+	}
 	c.writeln("Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!")
 	c.writeln("")
 	c.buf.Write(typeCode)
@@ -307,6 +316,39 @@ func collectVars(stmts []*parser.Statement) []string {
 	}
 	sort.Strings(vars)
 	return vars
+}
+
+func collectGlobalVars(stmts []*parser.Statement) []string {
+	set := map[string]bool{}
+	for _, s := range stmts {
+		switch {
+		case s.Let != nil:
+			set[s.Let.Name] = true
+		case s.Var != nil:
+			set[s.Var.Name] = true
+		}
+	}
+	vars := make([]string, 0, len(set))
+	for v := range set {
+		vars = append(vars, v)
+	}
+	sort.Strings(vars)
+	return vars
+}
+
+// simpleIdent checks if e is a bare identifier expression and returns its name.
+func simpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return "", false
+	}
+	if sel := u.Value.Target; sel != nil && sel.Selector != nil && len(sel.Selector.Tail) == 0 {
+		return sel.Selector.Root, true
+	}
+	return "", false
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -1026,9 +1068,15 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	}
 	pairs := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		k, err := c.compileExpr(it.Key)
-		if err != nil {
-			return "", err
+		var k string
+		if id, ok := simpleIdent(it.Key); ok {
+			k = fmt.Sprintf("'%s'", id)
+		} else {
+			var err error
+			k, err = c.compileExpr(it.Key)
+			if err != nil {
+				return "", err
+			}
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {

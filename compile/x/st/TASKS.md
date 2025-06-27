@@ -8,9 +8,9 @@ golden tests cover `tpch_q1` and simple `group_by` queries.
 
 ## Pending JOB Queries
 
-The compiler still fails to execute JOB queries q1-q10 under GNU Smalltalk.
-Generated code raises "undefined variable" errors when run with `gst`.
-Future work should fix code generation for global result values and
-verify runtime output matches the VM implementation. Golden files for
-q1-q10 have been generated but tests remain skipped until execution
-succeeds.
+Initial work towards running the JOB dataset defined global variables
+before class creation and quoted map keys. The programs now compile,
+but `gst` still reports parse errors around query expressions. Further
+debugging of the generated Smalltalk syntax is required before the
+queries execute successfully. Golden files for `q1`–`q10` exist and a
+new `JOB_Golden` test validates the emitted code.
