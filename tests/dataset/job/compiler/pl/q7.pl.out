@@ -1,0 +1,80 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+contains(Container, Item, Res) :-
+    is_dict(Container), !, (get_dict(Item, Container, _) -> Res = true ; Res = false).
+contains(List, Item, Res) :-
+    string(List), !, string_chars(List, Chars), (member(Item, Chars) -> Res = true ; Res = false).
+contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).
+
+
+min(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), min_list(Items, R).
+min(V, R) :-
+    is_list(V), !, min_list(V, R).
+min(_, _) :- throw(error('min expects list or group')).
+
+
+expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
+
+
+:- use_module(library(http/json)).
+json(V) :- json_write_dict(current_output, V), nl.
+
+
+test_p_q7_finds_movie_features_biography_for_person :-
+    dict_create(_V0, map, [of_person-"Alan Brown", biography_movie-"Feature Film"]),
+    expect(Result = [_V0])    ,
+    true.
+
+    main :-
+    dict_create(_V1, map, [person_id-1, name-"Anna Mae"]),
+    dict_create(_V2, map, [person_id-2, name-"Chris"]),
+    Aka_name = [_V1, _V2],
+    dict_create(_V3, map, [person_id-1, movie_id-10]),
+    dict_create(_V4, map, [person_id-2, movie_id-20]),
+    Cast_info = [_V3, _V4],
+    dict_create(_V5, map, [id-1, info-"mini biography"]),
+    dict_create(_V6, map, [id-2, info-"trivia"]),
+    Info_type = [_V5, _V6],
+    dict_create(_V7, map, [id-1, link-"features"]),
+    dict_create(_V8, map, [id-2, link-"references"]),
+    Link_type = [_V7, _V8],
+    dict_create(_V9, map, [linked_movie_id-10, link_type_id-1]),
+    dict_create(_V10, map, [linked_movie_id-20, link_type_id-2]),
+    Movie_link = [_V9, _V10],
+    dict_create(_V11, map, [id-1, name-"Alan Brown", name_pcode_cf-"B", gender-"m"]),
+    dict_create(_V12, map, [id-2, name-"Zoe", name_pcode_cf-"Z", gender-"f"]),
+    Name = [_V11, _V12],
+    dict_create(_V13, map, [person_id-1, info_type_id-1, note-"Volker Boehm"]),
+    dict_create(_V14, map, [person_id-2, info_type_id-1, note-"Other"]),
+    Person_info = [_V13, _V14],
+    dict_create(_V15, map, [id-10, title-"Feature Film", production_year-1990]),
+    dict_create(_V16, map, [id-20, title-"Late Film", production_year-2000]),
+    Title = [_V15, _V16],
+    to_list(Aka_name, _V41),
+    to_list(Name, _V44),
+    to_list(Person_info, _V47),
+    to_list(Info_type, _V50),
+    to_list(Cast_info, _V53),
+    to_list(Title, _V56),
+    to_list(Movie_link, _V59),
+    to_list(Link_type, _V62),
+    findall(_V63, (member(An, _V41), member(N, _V44), get_dict(id, N, _V42), get_dict(person_id, An, _V43), _V42 = _V43, member(Pi, _V47), get_dict(person_id, Pi, _V45), get_dict(person_id, An, _V46), _V45 = _V46, member(It, _V50), get_dict(id, It, _V48), get_dict(info_type_id, Pi, _V49), _V48 = _V49, member(Ci, _V53), get_dict(person_id, Ci, _V51), get_dict(id, N, _V52), _V51 = _V52, member(T, _V56), get_dict(id, T, _V54), get_dict(movie_id, Ci, _V55), _V54 = _V55, member(Ml, _V59), get_dict(linked_movie_id, Ml, _V57), get_dict(id, T, _V58), _V57 = _V58, member(Lt, _V62), get_dict(id, Lt, _V60), get_dict(link_type_id, Ml, _V61), _V60 = _V61, get_dict(name, An, _V20), contains(_V20, "a", _V21), get_dict(info, It, _V22), get_dict(link, Lt, _V23), get_dict(name_pcode_cf, N, _V24), get_dict(name_pcode_cf, N, _V25), get_dict(gender, N, _V26), get_dict(gender, N, _V27), get_dict(name, N, _V28), starts_with(_V28, "B", _V29), get_dict(note, Pi, _V30), get_dict(production_year, T, _V31), get_dict(production_year, T, _V32), get_dict(person_id, Pi, _V33), get_dict(person_id, An, _V34), get_dict(person_id, Pi, _V35), get_dict(person_id, Ci, _V36), get_dict(person_id, An, _V37), get_dict(person_id, Ci, _V38), get_dict(movie_id, Ci, _V39), get_dict(linked_movie_id, Ml, _V40), ((((((((((((_V21, _V22 = "mini biography"), _V23 = "features"), _V24 >= "A"), _V25 =< "F"), (_V26 = "m" ; (_V27 = "f", _V29))), _V30 = "Volker Boehm"), _V31 >= 1980), _V32 =< 1995), _V33 = _V34), _V35 = _V36), _V37 = _V38), _V39 = _V40), get_dict(name, N, _V17), get_dict(title, T, _V18), dict_create(_V19, map, [person_name-_V17, movie_title-_V18]), _V63 = _V19), _V64),
+    Rows = _V64,
+    to_list(Rows, _V66),
+    findall(_V67, (member(R, _V66), get_dict(person_name, R, _V65), _V67 = _V65), _V68),
+    min(_V68, _V69),
+    to_list(Rows, _V71),
+    findall(_V72, (member(R, _V71), get_dict(movie_title, R, _V70), _V72 = _V70), _V73),
+    min(_V73, _V74),
+    dict_create(_V75, map, [of_person-_V69, biography_movie-_V74]),
+    Result = [_V75],
+    json(Result),
+    test_p_q7_finds_movie_features_biography_for_person
+    .
+:- initialization(main, main).

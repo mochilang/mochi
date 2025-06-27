@@ -9,3 +9,11 @@ and aggregation. The backend now provides:
   `tests/dataset/tpc-h/compiler/pl`.
 
 Additional optimisations may be explored but the example now compiles and runs.
+
+## JOB Queries Q1-Q10
+
+Initial support was added for compiling JOB queries q1 through q10.  The
+compiler generates Prolog source successfully, however running the programs
+revealed missing runtime predicates and language features.  Examples include
+`starts_with/3` and other string helpers used by several queries.  Future work
+should implement these helpers and ensure all queries execute correctly.
