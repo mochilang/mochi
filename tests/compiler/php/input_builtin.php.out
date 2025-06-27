@@ -1,5 +1,4 @@
 <?php
-
 echo "Enter first input:", PHP_EOL;
 $input1 = trim(fgets(STDIN));
 echo "Enter second input:", PHP_EOL;

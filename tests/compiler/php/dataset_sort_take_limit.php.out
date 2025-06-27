@@ -1,33 +1,25 @@
 <?php
-
-class Product
-{
-    public $name;
-    public $price;
-    public function __construct($fields = [])
-    {
-        $this->name = $fields['name'] ?? null;
-        $this->price = $fields['price'] ?? null;
-    }
+class Product {
+	public $name;
+	public $price;
+	public function __construct($fields = []) {
+		$this->name = $fields['name'] ?? null;
+		$this->price = $fields['price'] ?? null;
+	}
 }
 
 $products = [new Product(['name' => "Laptop", 'price' => 1500]), new Product(['name' => "Smartphone", 'price' => 900]), new Product(['name' => "Tablet", 'price' => 600]), new Product(['name' => "Monitor", 'price' => 300]), new Product(['name' => "Keyboard", 'price' => 100]), new Product(['name' => "Mouse", 'price' => 50]), new Product(['name' => "Headphones", 'price' => 200])];
-$expensive = (function () use ($products) {
-    $_src = $products;
-    return _query($_src, [
-    ], [ 'select' => function ($p) use ($products) {
-        return $p;
-    }, 'sortKey' => function ($p) use ($products) {
-        return (-$p->price);
-    }, 'skip' => 1, 'take' => 3 ]);
+$expensive = (function() use ($products) {
+	$_src = $products;
+	return _query($_src, [
+	], [ 'select' => function($p) use ($products) { return $p; }, 'sortKey' => function($p) use ($products) { return (-$p->price); }, 'skip' => 1, 'take' => 3 ]);
 })();
 echo "--- Top products (excluding most expensive) ---", PHP_EOL;
 foreach ((is_string($expensive) ? str_split($expensive) : $expensive) as $item) {
-    echo $item->name . " " . "costs $" . " " . $item->price, PHP_EOL;
+	echo $item->name . " " . "costs $" . " " . $item->price, PHP_EOL;
 }
 
-function _query($src, $joins, $opts)
-{
+function _query($src, $joins, $opts) {
     $items = array_map(fn($v) => [$v], $src);
     foreach ($joins as $j) {
         $joined = [];
@@ -37,20 +29,12 @@ function _query($src, $joins, $opts)
                 $m = false;
                 foreach ($j['items'] as $ri => $right) {
                     $keep = true;
-                    if (isset($j['on'])) {
-                        $args = array_merge($left, [$right]);
-                        $keep = $j['on'](...$args);
-                    }
-                    if (!$keep) {
-                        continue;
-                    }
-                    $m = true;
-                    $matched[$ri] = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $matched[$ri] = true;
                     $joined[] = array_merge($left, [$right]);
                 }
-                if (!$m) {
-                    $joined[] = array_merge($left, [null]);
-                }
+                if (!$m) { $joined[] = array_merge($left, [null]); }
             }
             foreach ($j['items'] as $ri => $right) {
                 if (!$matched[$ri]) {
@@ -63,15 +47,9 @@ function _query($src, $joins, $opts)
                 $m = false;
                 foreach ($items as $left) {
                     $keep = true;
-                    if (isset($j['on'])) {
-                        $args = array_merge($left, [$right]);
-                        $keep = $j['on'](...$args);
-                    }
-                    if (!$keep) {
-                        continue;
-                    }
-                    $m = true;
-                    $joined[] = array_merge($left, [$right]);
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
                 }
                 if (!$m) {
                     $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
@@ -83,46 +61,27 @@ function _query($src, $joins, $opts)
                 $m = false;
                 foreach ($j['items'] as $right) {
                     $keep = true;
-                    if (isset($j['on'])) {
-                        $args = array_merge($left, [$right]);
-                        $keep = $j['on'](...$args);
-                    }
-                    if (!$keep) {
-                        continue;
-                    }
-                    $m = true;
-                    $joined[] = array_merge($left, [$right]);
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
                 }
-                if (!empty($j['left']) && !$m) {
-                    $joined[] = array_merge($left, [null]);
-                }
+                if (!empty($j['left']) && !$m) { $joined[] = array_merge($left, [null]); }
             }
         }
         $items = $joined;
     }
     if (isset($opts['where'])) {
         $filtered = [];
-        foreach ($items as $r) {
-            if ($opts['where'](...$r)) {
-                $filtered[] = $r;
-            }
-        }
+        foreach ($items as $r) { if ($opts['where'](...$r)) $filtered[] = $r; }
         $items = $filtered;
     }
     if (isset($opts['sortKey'])) {
         $pairs = [];
-        foreach ($items as $it) {
-            $pairs[] = ['item' => $it, 'key' => $opts['sortKey'](...$it)];
-        }
-        usort($pairs, function ($a, $b) {
-            $ak = $a['key'];
-            $bk = $b['key'];
-            if (is_int($ak) && is_int($bk)) {
-                return $ak <=> $bk;
-            }
-            if (is_string($ak) && is_string($bk)) {
-                return $ak <=> $bk;
-            }
+        foreach ($items as $it) { $pairs[] = ['item' => $it, 'key' => $opts['sortKey'](...$it)]; }
+        usort($pairs, function($a, $b) {
+            $ak = $a['key']; $bk = $b['key'];
+            if (is_int($ak) && is_int($bk)) return $ak <=> $bk;
+            if (is_string($ak) && is_string($bk)) return $ak <=> $bk;
             return strcmp(strval($ak), strval($bk));
         });
         $items = array_map(fn($p) => $p['item'], $pairs);
@@ -133,13 +92,9 @@ function _query($src, $joins, $opts)
     }
     if (array_key_exists('take', $opts)) {
         $n = $opts['take'];
-        if ($n < count($items)) {
-            $items = array_slice($items, 0, $n);
-        }
+        if ($n < count($items)) $items = array_slice($items, 0, $n);
     }
     $res = [];
-    foreach ($items as $r) {
-        $res[] = $opts['select'](...$r);
-    }
+    foreach ($items as $r) { $res[] = $opts['select'](...$r); }
     return $res;
 }

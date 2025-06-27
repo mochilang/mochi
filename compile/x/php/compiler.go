@@ -3,6 +3,7 @@ package phpcode
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os/exec"
 	"sort"
 	"strconv"
@@ -1540,14 +1541,26 @@ func exprVarSet(e *parser.Expr) map[string]bool {
 }
 
 func formatPHP(src []byte) []byte {
+	if err := EnsurePHPCBF(); err != nil {
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
+	}
 	cmd := exec.Command("phpcbf", "-q", "--standard=PSR12", "-")
 	cmd.Stdin = bytes.NewReader(src)
-	out, err := cmd.Output()
-	if err == nil {
-		return out
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = io.Discard
+	if err := cmd.Run(); err == nil {
+		res := out.Bytes()
+		if len(res) == 0 || res[len(res)-1] != '\n' {
+			res = append(res, '\n')
+		}
+		return res
 	}
-	if len(out) > 0 {
-		return out
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
 	}
 	return src
 }

@@ -1,5 +1,4 @@
 <?php
-
 $a = [1, 2, 3];
 $b = [3, 4];
 echo (is_array(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) ? count(array_values(array_unique(array_merge($a, $b), SORT_REGULAR))) : strlen(array_values(array_unique(array_merge($a, $b), SORT_REGULAR)))), PHP_EOL;

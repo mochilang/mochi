@@ -1,40 +1,29 @@
 <?php
-
 $items = [["qty" => 3, "flag" => "A"], ["qty" => 5, "flag" => "A"], ["qty" => 1, "flag" => "B"]];
-$res = (function () use ($items) {
-    $_src = (is_string($items) ? str_split($items) : $items);
-    $_src = array_values(array_filter($_src, function ($it) use ($items) {
-        return (($it->qty > 2));
-    }));
-    $_groups = _group_by($_src, function ($it) use ($items) {
-        return $it->flag;
-    });
-    $res = [];
-    foreach ($_groups as $g) {
-        $res[] = ["flag" => $g->key, "total" => array_sum((function () use ($g) {
-            $res = [];
-            foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-                $res[] = $x->qty;
-            }
-            return $res;
-        })())];
-    }
-    return $res;
+$res = (function() use ($items) {
+	$_src = (is_string($items) ? str_split($items) : $items);
+	$_src = array_values(array_filter($_src, function($it) use ($items) { return (($it->qty > 2)); }));
+	$_groups = _group_by($_src, function($it) use ($items) { return $it->flag; });
+	$res = [];
+	foreach ($_groups as $g) {
+		$res[] = ["flag" => $g->key, "total" => array_sum((function() use ($g) {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		$res[] = $x->qty;
+	}
+	return $res;
+})())];
+	}
+	return $res;
 })();
 echo json_encode($res), PHP_EOL;
 
-class _Group
-{
+class _Group {
     public $key;
     public $Items;
-    function __construct($key)
-    {
-        $this->key = $key;
-        $this->Items = [];
-    }
+    function __construct($key) { $this->key = $key; $this->Items = []; }
 }
-function _group_by($src, $keyfn)
-{
+function _group_by($src, $keyfn) {
     $groups = [];
     $order = [];
     foreach ($src as $it) {
@@ -47,8 +36,6 @@ function _group_by($src, $keyfn)
         $groups[$ks]->Items[] = $it;
     }
     $res = [];
-    foreach ($order as $ks) {
-        $res[] = $groups[$ks];
-    }
+    foreach ($order as $ks) { $res[] = $groups[$ks]; }
     return $res;
 }
