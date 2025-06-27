@@ -1,0 +1,90 @@
+let complete_cast = [
+  { movie_id: 1, status_id: 1 },
+  { movie_id: 2, status_id: 2 }
+]
+
+let comp_cast_type = [
+  { id: 1, kind: "complete+verified" },
+  { id: 2, kind: "partial" }
+]
+
+let company_name = [
+  { id: 1, country_code: "[us]" },
+  { id: 2, country_code: "[gb]" }
+]
+
+let company_type = [
+  { id: 1 },
+  { id: 2 }
+]
+
+let info_type = [
+  { id: 1, info: "release dates" },
+  { id: 2, info: "other" }
+]
+
+let keyword = [
+  { id: 1, keyword: "internet" },
+  { id: 2, keyword: "other" }
+]
+
+let kind_type = [
+  { id: 1, kind: "movie" },
+  { id: 2, kind: "series" }
+]
+
+let movie_companies = [
+  { movie_id: 1, company_id: 1, company_type_id: 1 },
+  { movie_id: 2, company_id: 2, company_type_id: 2 }
+]
+
+let movie_info = [
+  { movie_id: 1, info_type_id: 1, note: "internet release", info: "USA: May 2005" },
+  { movie_id: 2, info_type_id: 1, note: "theater", info: "USA: April 1998" }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 },
+  { movie_id: 2, keyword_id: 2 }
+]
+
+let title = [
+  { id: 1, kind_id: 1, production_year: 2005, title: "Web Movie" },
+  { id: 2, kind_id: 1, production_year: 1998, title: "Old Movie" }
+]
+
+let matches =
+  from cc in complete_cast
+  join cct1 in comp_cast_type on cct1.id == cc.status_id
+  join t in title on t.id == cc.movie_id
+  join kt in kind_type on kt.id == t.kind_id
+  join mi in movie_info on mi.movie_id == t.id
+  join it1 in info_type on it1.id == mi.info_type_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join mc in movie_companies on mc.movie_id == t.id
+  join cn in company_name on cn.id == mc.company_id
+  join ct in company_type on ct.id == mc.company_type_id
+  where cct1.kind == "complete+verified" &&
+        cn.country_code == "[us]" &&
+        it1.info == "release dates" &&
+        kt.kind == "movie" &&
+        mi.note.contains("internet") &&
+        (mi.info.contains("USA:") && (mi.info.contains("199") || mi.info.contains("200"))) &&
+        t.production_year > 2000
+  select { movie_kind: kt.kind, complete_us_internet_movie: t.title }
+
+let result = [
+  {
+    movie_kind: min(from r in matches select r.movie_kind),
+    complete_us_internet_movie: min(from r in matches select r.complete_us_internet_movie)
+  }
+]
+
+json(result)
+
+test "Q23 finds US internet movie with verified cast" {
+  expect result == [
+    { movie_kind: "movie", complete_us_internet_movie: "Web Movie" }
+  ]
+}
