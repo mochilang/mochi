@@ -1,6 +1,6 @@
 # Rust Backend
 
-The Rust backend compiles Mochi programs to plain Rust source code. It is a minimal and experimental implementation used for validating the language and running solutions anywhere `rustc` is available.
+The Rust backend compiles Mochi programs to plain Rust source code. It is a minimal and experimental implementation used for validating the language and running solutions anywhere `rustc` is available. Generated code is formatted with `rustfmt` when the tool is present so the output is easy to read.
 
 ## Supported features
 

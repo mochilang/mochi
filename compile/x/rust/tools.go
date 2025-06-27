@@ -14,6 +14,23 @@ func EnsureRust() error {
 	return ensureRust()
 }
 
+// EnsureRustfmt verifies that the rustfmt tool is installed and attempts to
+// install it via rustup if missing. It is safe to call from tests.
+func EnsureRustfmt() error {
+	if _, err := exec.LookPath("rustfmt"); err == nil {
+		return nil
+	}
+	if rustup, err := exec.LookPath("rustup"); err == nil {
+		cmd := exec.Command(rustup, "component", "add", "rustfmt")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("rustfmt not found")
+}
+
 func ensureRust() error {
 	if _, err := exec.LookPath("rustc"); err == nil {
 		return nil
@@ -67,27 +84,21 @@ func ensureRust() error {
 	return cmd.Run()
 }
 
-// FormatRust runs rustfmt on the given source code if available.
-// If rustfmt is not found or fails, the input is returned unchanged.
+// FormatRust runs rustfmt on the given source code if available. If rustfmt is
+// missing or fails the formatting step, tabs are expanded to four spaces and a
+// trailing newline is ensured so that the generated code remains readable.
 func FormatRust(src []byte) []byte {
 	path, err := exec.LookPath("rustfmt")
-	if err != nil {
-		if len(src) > 0 && src[len(src)-1] != '\n' {
-			src = append(src, '\n')
+	if err == nil {
+		cmd := exec.Command(path, "--emit", "stdout")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			src = out.Bytes()
 		}
-		return src
 	}
-	cmd := exec.Command(path, "--emit", "stdout")
-	cmd.Stdin = bytes.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err == nil {
-		res := out.Bytes()
-		if len(res) == 0 || res[len(res)-1] != '\n' {
-			res = append(res, '\n')
-		}
-		return res
-	}
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}

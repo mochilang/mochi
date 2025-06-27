@@ -21,6 +21,7 @@ func TestRustCompiler_SubsetPrograms(t *testing.T) {
 	if err := rscode.EnsureRust(); err != nil {
 		t.Skipf("rust not installed: %v", err)
 	}
+	_ = rscode.EnsureRustfmt()
 	golden.Run(t, "tests/compiler/rust", ".mochi", ".out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -252,6 +253,10 @@ func findRoot(t *testing.T) string {
 }
 
 func TestRustCompiler_GoldenOutput(t *testing.T) {
+	if err := rscode.EnsureRust(); err != nil {
+		t.Skipf("rust not installed: %v", err)
+	}
+	_ = rscode.EnsureRustfmt()
 	golden.Run(t, "tests/compiler/rust", ".mochi", ".rs.out", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
