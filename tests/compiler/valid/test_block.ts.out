@@ -2,7 +2,6 @@
 
 function test_addition_works(): void {
   let x: number = 1 + 2;
-  (globalThis as any).x = x;
   if (!(x == 3)) throw new Error("expect failed");
 }
 

@@ -4,9 +4,10 @@ function sumN(n: number): number {
   return Math.trunc((n * (n + 1)) / 2);
 }
 
+let n: number;
+
 function main(): void {
-  let n: number = 10;
-  (globalThis as any).n = n;
+  n = 10;
   console.log(sumN(n));
   console.log(n);
 }

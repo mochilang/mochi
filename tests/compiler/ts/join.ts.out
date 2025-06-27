@@ -17,8 +17,12 @@ type PairInfo = {
   total: number;
 };
 
+let customers: Array<Customer>;
+let orders: Array<Order>;
+let result: Array<PairInfo>;
+
 function main(): void {
-  let customers: Array<Customer> = [
+  customers = [
     {
       id: 1,
       name: "Alice",
@@ -32,8 +36,7 @@ function main(): void {
       name: "Charlie",
     },
   ];
-  (globalThis as any).customers = customers;
-  let orders: Array<Order> = [
+  orders = [
     {
       id: 100,
       customerId: 1,
@@ -55,8 +58,7 @@ function main(): void {
       total: 80,
     },
   ];
-  (globalThis as any).orders = orders;
-  let result: Array<PairInfo> = (() => {
+  result = (() => {
     const _src = orders;
     return _query(_src, [
       { items: customers, on: (o, c) => (o.customerId == c.id) },
@@ -68,7 +70,6 @@ function main(): void {
       }),
     });
   })();
-  (globalThis as any).result = result;
   console.log("--- Orders with customer info ---");
   for (const entry of result) {
     console.log(

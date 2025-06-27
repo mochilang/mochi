@@ -6,9 +6,10 @@ function makeAdder(n: number): any {
   };
 }
 
+let add10: any;
+
 function main(): void {
-  let add10: any = makeAdder(10);
-  (globalThis as any).add10 = add10;
+  add10 = makeAdder(10);
   console.log(add10(7));
 }
 main();

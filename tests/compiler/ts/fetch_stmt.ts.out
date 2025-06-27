@@ -7,12 +7,13 @@ type Todo = {
   completed: boolean;
 };
 
+let todo;
+
 async function main(): Promise<void> {
-  const todo = await _fetch(
+  todo = await _fetch(
     "https://jsonplaceholder.typicode.com/todos/1",
     undefined,
   );
-  (globalThis as any).todo = todo;
   console.log(todo.id > 0);
 }
 async function _fetch(url: string, opts: any): Promise<any> {

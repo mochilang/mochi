@@ -11,8 +11,12 @@ type Purchase = {
   total: number;
 };
 
+let people: Array<Person>;
+let purchases: Array<Purchase>;
+let result: Array<Record<string, any>>;
+
 function main(): void {
-  let people: Array<Person> = [
+  people = [
     {
       id: 1,
       name: "Alice",
@@ -26,8 +30,7 @@ function main(): void {
       name: "Charlie",
     },
   ];
-  (globalThis as any).people = people;
-  let purchases: Array<Purchase> = [
+  purchases = [
     {
       id: 1,
       personId: 1,
@@ -54,8 +57,7 @@ function main(): void {
       total: 250,
     },
   ];
-  (globalThis as any).purchases = purchases;
-  let result: Array<Record<string, any>> = (() => {
+  result = (() => {
     const _src = people;
     return _query(_src, [
       { items: purchases, on: (p, o) => (p.id == o.personId) },
@@ -70,7 +72,6 @@ function main(): void {
       take: 2,
     });
   })();
-  (globalThis as any).result = result;
   for (const r of result) {
     console.log(r.person, r.spent);
   }

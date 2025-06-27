@@ -16,11 +16,12 @@ const mathutils = (() => {
   };
 })();
 
+let sq: any;
+let sum: any;
+
 function main(): void {
-  let sum: any = mathutils.add(3, 5);
-  (globalThis as any).sum = sum;
-  let sq: any = mathutils.square(4);
-  (globalThis as any).sq = sq;
+  sum = mathutils.add(3, 5);
+  sq = mathutils.square(4);
   console.log("3 + 5 =", sum);
   console.log("4 squared =", sq);
 }
