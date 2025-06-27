@@ -650,11 +650,36 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return name, nil
 		}
-		parts := []string{sanitizeName(p.Selector.Root)}
-		for _, t := range p.Selector.Tail {
-			parts = append(parts, sanitizeName(t))
+		expr := sanitizeName(p.Selector.Root)
+		var typ types.Type = types.AnyType{}
+		if c.env != nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				typ = t
+			}
 		}
-		return strings.Join(parts, "."), nil
+		for _, tname := range p.Selector.Tail {
+			if _, ok := typ.(types.MapType); ok || typ == (types.AnyType{}) {
+				c.use("_map_get")
+				expr = fmt.Sprintf("_map_get(&%s, &\"%s\".to_string())", expr, tname)
+				if mt, ok := typ.(types.MapType); ok {
+					typ = mt.Value
+				} else {
+					typ = types.AnyType{}
+				}
+			} else {
+				expr = fmt.Sprintf("%s.%s", expr, sanitizeName(tname))
+				if st, ok := typ.(types.StructType); ok {
+					if ft, ok2 := st.Fields[tname]; ok2 {
+						typ = ft
+					} else {
+						typ = types.AnyType{}
+					}
+				} else {
+					typ = types.AnyType{}
+				}
+			}
+		}
+		return expr, nil
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
