@@ -233,7 +233,6 @@ func removeDead(fn *Function, analysis *LiveInfo) bool {
 	pcMap := make([]int, len(fn.Code))
 	newCode := make([]Instr, 0, len(fn.Code))
 	for pc, ins := range fn.Code {
-		pcMap[pc] = len(newCode)
 		canRemove := false
 		if isPure(ins.Op) {
 			defs := defRegs(ins)
@@ -253,11 +252,21 @@ func removeDead(fn *Function, analysis *LiveInfo) bool {
 			}
 		}
 		if !canRemove {
+			pcMap[pc] = len(newCode)
 			newCode = append(newCode, ins)
 		}
 	}
 	if !removed {
 		return false
+	}
+	// map removed PCs to the next valid instruction
+	next := len(newCode)
+	for i := len(pcMap) - 1; i >= 0; i-- {
+		if pcMap[i] == -1 {
+			pcMap[i] = next
+		} else {
+			next = pcMap[i]
+		}
 	}
 	// fix jumps
 	for i := range newCode {
@@ -286,14 +295,30 @@ func constFold(fn *Function) bool {
 	}
 	changed := false
 	consts := make([]cinfo, fn.NumRegs)
+	defCount := make([]int, fn.NumRegs)
+	for _, ins := range fn.Code {
+		for _, r := range defRegs(ins) {
+			if r >= 0 && r < len(defCount) {
+				defCount[r]++
+			}
+		}
+	}
 	for pc := 0; pc < len(fn.Code); pc++ {
 		ins := fn.Code[pc]
 		switch ins.Op {
 		case OpConst:
-			consts[ins.A] = cinfo{true, ins.Val}
+			if defCount[ins.A] == 1 {
+				consts[ins.A] = cinfo{true, ins.Val}
+			} else {
+				consts[ins.A] = cinfo{}
+			}
 		case OpMove:
 			if v := consts[ins.B]; v.known {
-				consts[ins.A] = v
+				if defCount[ins.A] == 1 {
+					consts[ins.A] = v
+				} else {
+					consts[ins.A] = cinfo{}
+				}
 			} else {
 				consts[ins.A] = cinfo{}
 			}
@@ -302,7 +327,11 @@ func constFold(fn *Function) bool {
 			if b.known {
 				if val, ok := evalUnaryConst(ins.Op, b.val); ok {
 					fn.Code[pc] = Instr{Op: OpConst, A: ins.A, Val: val, Line: ins.Line}
-					consts[ins.A] = cinfo{true, val}
+					if defCount[ins.A] == 1 {
+						consts[ins.A] = cinfo{true, val}
+					} else {
+						consts[ins.A] = cinfo{}
+					}
 					changed = true
 					continue
 				}
@@ -318,7 +347,11 @@ func constFold(fn *Function) bool {
 			if b.known && c.known {
 				if val, ok := evalBinaryConst(ins.Op, b.val, c.val); ok {
 					fn.Code[pc] = Instr{Op: OpConst, A: ins.A, Val: val, Line: ins.Line}
-					consts[ins.A] = cinfo{true, val}
+					if defCount[ins.A] == 1 {
+						consts[ins.A] = cinfo{true, val}
+					} else {
+						consts[ins.A] = cinfo{}
+					}
 					changed = true
 					continue
 				}

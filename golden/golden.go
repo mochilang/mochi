@@ -144,5 +144,9 @@ func normalizeOutput(root string, b []byte) []byte {
 	// slightly between runs and would cause flakey golden tests.
 	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
 	out = durRE.ReplaceAllString(out, "(X)")
-	return []byte(strings.TrimSpace(out))
+	out = strings.TrimSpace(out)
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return []byte(out)
 }
