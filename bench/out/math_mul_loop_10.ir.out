@@ -63,9 +63,6 @@ L1:
   MulInt       r6, r2, r4
   Move         r2, r6
   // for i in 1..n {
-  Const        r7, 1
-  Add          r8, r4, r7
-  Move         r4, r8
   Jump         L1
 L0:
   // return result

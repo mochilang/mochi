@@ -5,22 +5,34 @@ import json
 import time
 import typing
 
+
 def fib(n: int) -> int:
-	if (n <= 1):
-		return n
-	return (fib((n - 1)) + fib((n - 2)))
+    if n <= 1:
+        return n
+    return fib((n - 1)) + fib((n - 2))
+
 
 n = 30
 start = time.time_ns()
-result = fib(n)
-duration = int(((time.time_ns() - start)) / 1000)
+result = None
+duration = None
+
 
 def main():
-	n = 30
-	start = time.time_ns()
-	result = fib(n)
-	duration = int(((time.time_ns() - start)) / 1000)
-	print(json.dumps({"duration_us": duration, "output": result}))
+    global n
+    n = 30
+    global start
+    start = time.time_ns()
+    global result
+    result = fib(n)
+    global duration
+    duration = int(((time.time_ns() - start)) / 1000)
+    print(
+        json.dumps(
+            {"duration_us": duration, "output": result}, default=lambda o: vars(o)
+        )
+    )
+
 
 if __name__ == "__main__":
-	main()
+    main()

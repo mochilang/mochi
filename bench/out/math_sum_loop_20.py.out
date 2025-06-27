@@ -5,27 +5,38 @@ import json
 import time
 import typing
 
+
 def sum_loop(n: int) -> int:
-	total = 0
-	for i in range(1, n):
-		total = (total + i)
-	return total
+    total = 0
+    for i in range(1, n):
+        total = total + i
+    return total
+
 
 n = 20
 repeat = 1000
 last = 0
 start = time.time_ns()
-duration = int(((time.time_ns() - start)) / 1000)
+duration = None
+
 
 def main():
-	n = 20
-	repeat = 1000
-	last = 0
-	start = time.time_ns()
-	for i in range(0, repeat):
-		last = sum_loop(n)
-	duration = int(((time.time_ns() - start)) / 1000)
-	print(json.dumps({"duration_us": duration, "output": last}))
+    global n
+    n = 20
+    global repeat
+    repeat = 1000
+    global last
+    last = 0
+    global start
+    start = time.time_ns()
+    for i in range(0, repeat):
+        last = sum_loop(n)
+    global duration
+    duration = int(((time.time_ns() - start)) / 1000)
+    print(
+        json.dumps({"duration_us": duration, "output": last}, default=lambda o: vars(o))
+    )
+
 
 if __name__ == "__main__":
-	main()
+    main()

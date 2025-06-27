@@ -5,26 +5,37 @@ import json
 import time
 import typing
 
+
 def fact_rec(n: int) -> int:
-	if (n == 0):
-		return 1
-	return (n * fact_rec((n - 1)))
+    if n == 0:
+        return 1
+    return n * fact_rec((n - 1))
+
 
 n = 10
 repeat = 1000
 last = 0
 start = time.time_ns()
-duration = int(((time.time_ns() - start)) / 1000)
+duration = None
+
 
 def main():
-	n = 10
-	repeat = 1000
-	last = 0
-	start = time.time_ns()
-	for i in range(0, repeat):
-		last = fact_rec(n)
-	duration = int(((time.time_ns() - start)) / 1000)
-	print(json.dumps({"duration_us": duration, "output": last}))
+    global n
+    n = 10
+    global repeat
+    repeat = 1000
+    global last
+    last = 0
+    global start
+    start = time.time_ns()
+    for i in range(0, repeat):
+        last = fact_rec(n)
+    global duration
+    duration = int(((time.time_ns() - start)) / 1000)
+    print(
+        json.dumps({"duration_us": duration, "output": last}, default=lambda o: vars(o))
+    )
+
 
 if __name__ == "__main__":
-	main()
+    main()

@@ -70,9 +70,6 @@ L1:
   // b = tmp
   Move         r4, r9
   // for i in 0..n {
-  Const        r10, 1
-  Add          r11, r6, r10
-  Move         r6, r11
   Jump         L1
 L0:
   // return a
