@@ -47,7 +47,7 @@ func main() {
 	}
 
 	if err := cosmo.CompileToFile(string(code), out); err != nil {
-		fmt.Fprintln(os.Stderr, "cosmocc:", err)
+		fmt.Fprintln(os.Stderr, "cosmo:", err)
 		os.Exit(1)
 	}
 }

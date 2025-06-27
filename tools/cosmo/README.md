@@ -1,21 +1,16 @@
 # Cosmopolitan Libc Integration
 
 This package demonstrates how to use [Cosmopolitan Libc](https://justine.lol/cosmopolitan/) from Go.
-It mirrors the TinyCC example under `tools/tcc` but relies on the `cosmocc` compiler to produce
-portable binaries.
+It mirrors the TinyCC example under `tools/tcc` but links against the `cosmocc` static library to produce
+portable binaries without needing an external compiler.
 
-## Installing cosmocc
+## Installing the library
 
-`cosmocc` is a standalone cross compiler distributed as a prebuilt archive.
-The helper `EnsureCosmo` will download the latest release for Linux,
-Windows and macOS automatically when needed.
-Alternatively you can download it manually from
-[the official website](https://justine.lol/cosmopolitan/download.html)
-and place the `cosmocc` binary somewhere in your `PATH`.
+`libcosmo.a` is required at build time. Place it in `tools/cosmo/cosmo` or set `COSMO_LIB` to its path.
+The helper `EnsureCosmo` checks this location and reports an error when missing.
 
 ```go
-// EnsureCosmo verifies that the cosmocc compiler is installed.
-// It downloads the official archive and extracts the binary when missing.
+// EnsureCosmo verifies that the static library is available at build time.
 func EnsureCosmo() error { /* ... */ }
 ```
 
@@ -34,4 +29,4 @@ make test
 ## `mochi-cosmo`
 
 The command `mochi-cosmo` works like `mochi-tcc`: it compiles a `.mochi` program to
-C and then uses `cosmocc` to build a native executable.
+C and then links it with Cosmopolitan to produce a native executable.
