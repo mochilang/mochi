@@ -1,6 +1,6 @@
-# Scala Backend Tasks for TPCH Q1
+# Scala Backend Tasks
 
-Scala code generation now supports running the `tpc-h/q1.mochi` benchmark.
+Scala code generation now supports running the `tpc-h/q1.mochi` benchmark and JOB queries.
 
 Completed work:
 
@@ -10,3 +10,4 @@ Completed work:
 - Added golden test `TestScalaCompiler_TPCHQ1` checking generated code and runtime output.
 - Generated code lives under `tests/dataset/tpc-h/compiler/scala/q1.scala.out`.
 - Added golden test `TestScalaCompiler_JOBQ1` covering the JOB dataset query.
+- Added golden test `TestScalaCompiler_JOBQ2` covering the JOB dataset query.

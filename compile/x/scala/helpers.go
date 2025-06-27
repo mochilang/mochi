@@ -268,11 +268,11 @@ func isAny(t types.Type) bool {
 
 func seqLambda(params []string, body string) string {
 	var b strings.Builder
-	b.WriteString("(args: Seq[Any]) => {\n")
+	b.WriteString("((args: Seq[Any]) => {\n")
 	for i, p := range params {
 		b.WriteString("\tval " + p + " = args(" + fmt.Sprint(i) + ")\n")
 	}
 	b.WriteString(indentBlock(body, 1))
-	b.WriteString("}")
+	b.WriteString("})")
 	return b.String()
 }
