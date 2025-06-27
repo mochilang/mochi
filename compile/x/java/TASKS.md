@@ -1,8 +1,10 @@
 # Java Backend Tasks for TPCH Q1
 
-The Java backend now runs `tests/dataset/tpc-h/q1.mochi` and the generated code
-is checked in `tests/dataset/tpc-h/compiler/java`. Remaining tasks focus on
-improving performance and coverage.
+The Java backend compiles `tests/dataset/tpc-h/q1.mochi` and the generated code
+is checked in `tests/dataset/tpc-h/compiler/java`. Initial golden files were
+added for `dataset/job` queries `q1` and `q2`, however the emitted Java fails to
+build because map field access is not handled correctly. Remaining tasks focus
+on improving dataset support and performance.
 
 1. **Expand numeric helpers** – current implementations of `sum`, `avg` and
    `count` work for lists, arrays and groups. Support for additional numeric
