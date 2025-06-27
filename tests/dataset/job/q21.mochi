@@ -1,0 +1,86 @@
+let company_name = [
+  { id: 1, name: "ACME Film Works", country_code: "[us]" },
+  { id: 2, name: "Polish Warner", country_code: "[pl]" }
+]
+
+let company_type = [
+  { id: 1, kind: "production companies" },
+  { id: 2, kind: "other" }
+]
+
+let keyword = [
+  { id: 1, keyword: "sequel" },
+  { id: 2, keyword: "drama" }
+]
+
+let link_type = [
+  { id: 1, link: "is follow up" },
+  { id: 2, link: "references" }
+]
+
+let title = [
+  { id: 10, title: "Western Return", production_year: 1975 },
+  { id: 20, title: "Other Movie", production_year: 2015 }
+]
+
+let movie_companies = [
+  { movie_id: 10, company_id: 1, company_type_id: 1, note: null },
+  { movie_id: 20, company_id: 2, company_type_id: 1, note: null }
+]
+
+let movie_info = [
+  { movie_id: 10, info: "Sweden" },
+  { movie_id: 20, info: "USA" }
+]
+
+let movie_keyword = [
+  { movie_id: 10, keyword_id: 1 },
+  { movie_id: 20, keyword_id: 2 }
+]
+
+let movie_link = [
+  { movie_id: 10, link_type_id: 1 },
+  { movie_id: 20, link_type_id: 2 }
+]
+
+let allowed_countries = ["Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"]
+
+let rows =
+  from cn in company_name
+  join mc in movie_companies on mc.company_id == cn.id
+  join ct in company_type on ct.id == mc.company_type_id
+  join t in title on t.id == mc.movie_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join ml in movie_link on ml.movie_id == t.id
+  join lt in link_type on lt.id == ml.link_type_id
+  join mi in movie_info on mi.movie_id == t.id
+  where cn.country_code != "[pl]" &&
+        (cn.name.contains("Film") || cn.name.contains("Warner")) &&
+        ct.kind == "production companies" &&
+        k.keyword == "sequel" &&
+        lt.link.contains("follow") &&
+        mc.note == null &&
+        (mi.info in allowed_countries) &&
+        t.production_year >= 1950 && t.production_year <= 2000
+  select {
+    company_name: cn.name,
+    link_type: lt.link,
+    western_follow_up: t.title
+  }
+
+let result = [
+  {
+    company_name: min(from r in rows select r.company_name),
+    link_type: min(from r in rows select r.link_type),
+    western_follow_up: min(from r in rows select r.western_follow_up)
+  }
+]
+
+json(result)
+
+test "Q21 finds western follow-up sequels" {
+  expect result == [
+    { company_name: "ACME Film Works", link_type: "is follow up", western_follow_up: "Western Return" }
+  ]
+}
