@@ -1,7 +1,6 @@
 (ns main)
 
 (defn -main []
-  (println (str 123))
-)
+  (println (str 123)))
 
 (-main)

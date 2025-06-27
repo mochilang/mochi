@@ -8,7 +8,6 @@
     :else false))
 (defn -main []
   (println (_in 2 [1 2 3]))
-  (println (_in "b" ["a" "b"]))
-)
+  (println (_in "b" ["a" "b"])))
 
 (-main)

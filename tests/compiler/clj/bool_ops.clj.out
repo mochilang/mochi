@@ -3,7 +3,6 @@
 (defn -main []
   (println (and true false))
   (println (or true false))
-  (println (not false))
-)
+  (println (not false)))
 
 (-main)
