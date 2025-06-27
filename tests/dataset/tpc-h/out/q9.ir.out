@@ -148,6 +148,20 @@ L8:
 L9:
   // where substring(p.p_name, 0, len(prefix)) == prefix &&
   JumpIfFalse  r101, L7
+  // from l in lineitem
+  Const        r102, "l"
+  Move         r103, r26
+  Const        r104, "p"
+  Move         r105, r32
+  Const        r106, "s"
+  Move         r107, r43
+  Const        r108, "ps"
+  Move         r109, r54
+  Const        r110, "o"
+  Move         r111, r71
+  Const        r112, "n"
+  Move         r113, r82
+  MakeMap      r114, 6, r102
   // nation: n.n_name,
   Const        r115, "nation"
   Const        r116, "n_name"
@@ -235,6 +249,21 @@ L20:
   JumpIfFalse  r159, L17
   Index        r160, r20, r157
   Move         r161, r160
+  // nation: g.key.nation,
+  Const        r162, "nation"
+  Const        r163, "key"
+  Index        r164, r161, r163
+  Const        r165, "nation"
+  Index        r166, r164, r165
+  // o_year: str(g.key.o_year),
+  Const        r167, "o_year"
+  Const        r168, "key"
+  Index        r169, r161, r168
+  Const        r170, "o_year"
+  Index        r171, r169, r170
+  Str          r172, r171
+  // profit:
+  Const        r173, "profit"
   // from x in g
   Const        r174, []
   IterPrep     r175, r161
@@ -243,6 +272,33 @@ L20:
 L19:
   Less         r178, r177, r176
   JumpIfFalse  r178, L18
+  Index        r179, r175, r177
+  Move         r180, r179
+  // select (x.l.l_extendedprice * (1 - x.l.l_discount)) -
+  Const        r181, "l"
+  Index        r182, r180, r181
+  Const        r183, "l_extendedprice"
+  Index        r184, r182, r183
+  Const        r185, 1
+  Const        r186, "l"
+  Index        r187, r180, r186
+  Const        r188, "l_discount"
+  Index        r189, r187, r188
+  Sub          r190, r185, r189
+  Mul          r191, r184, r190
+  // (x.ps.ps_supplycost * x.l.l_quantity)
+  Const        r192, "ps"
+  Index        r193, r180, r192
+  Const        r194, "ps_supplycost"
+  Index        r195, r193, r194
+  Const        r196, "l"
+  Index        r197, r180, r196
+  Const        r198, "l_quantity"
+  Index        r199, r197, r198
+  Mul          r200, r195, r199
+  // select (x.l.l_extendedprice * (1 - x.l.l_discount)) -
+  Sub          r201, r191, r200
+  // from x in g
   Append       r202, r174, r201
   Move         r174, r202
   Const        r203, 1
@@ -250,7 +306,31 @@ L19:
   Move         r177, r204
   Jump         L19
 L18:
+  // sum(
+  Sum          r205, r174
+  // nation: g.key.nation,
+  Move         r206, r162
+  Move         r207, r166
+  // o_year: str(g.key.o_year),
+  Move         r208, r167
+  Move         r209, r172
+  // profit:
+  Move         r210, r173
+  Move         r211, r205
+  // select {
+  MakeMap      r212, 3, r206
+  // sort by [ g.key.nation, -g.key.o_year ]
+  Const        r213, "key"
+  Index        r214, r161, r213
+  Const        r215, "nation"
+  Index        r216, r214, r215
+  Move         r217, r216
+  Const        r218, "key"
+  MakeList     r224, 2, r217
+  Move         r225, r224
   // from l in lineitem
+  Move         r226, r212
+  MakeList     r227, 2, r225
   Append       r228, r18, r227
   Move         r18, r228
   Const        r229, 1
@@ -292,4 +372,3 @@ L17:
   Equal        r257, r232, r256
   Expect       r257
   Return       r0
-

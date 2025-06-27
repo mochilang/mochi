@@ -143,7 +143,7 @@ L11:
   Jump         L12
 L8:
   // n.n_name == "SAUDI ARABIA" && (!exists(
-  Exists       93,66,0,0
+  Exists       r93, r66
   Not          r94, r93
   Move         r65, r94
 L7:
@@ -237,8 +237,6 @@ L19:
   NegInt       r145, r144
   Move         r146, r145
   Const        r147, "key"
-  Index        r148, r133, r147
-  Move         r149, r148
   MakeList     r150, 2, r146
   Move         r151, r150
   // from s in supplier
@@ -252,7 +250,7 @@ L19:
   Jump         L19
 L18:
   // sort by [ -count(g), g.key ]
-  Sort         157,8,0,0
+  Sort         r157, r8
   // from s in supplier
   Move         r8, r157
   // let result =
@@ -264,4 +262,3 @@ L18:
   Equal        r160, r158, r159
   Expect       r160
   Return       r0
-

@@ -127,9 +127,7 @@ L0:
   // print(result)
   Print        r68
   // let expected = 100.0 / 7.0
-  Const        r69, 100
-  Const        r70, 7
-  DivFloat     r71, r69, r70
+  Const        r71, 14.285714285714286
   Move         r72, r71
   // expect result == expected
   EqualFloat   r73, r68, r72

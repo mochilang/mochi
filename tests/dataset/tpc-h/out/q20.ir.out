@@ -319,7 +319,7 @@ L19:
   Jump         L23
 L18:
   // order by s.s_name
-  Sort         203,157,0,0
+  Sort         r203, r157
   // from s in supplier
   Move         r157, r203
   // let result =

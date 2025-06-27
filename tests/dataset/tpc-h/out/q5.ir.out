@@ -334,7 +334,7 @@ L24:
   Jump         L26
 L21:
   // sort by -sum(from x in g select x.revenue)
-  Sort         206,133,0,0
+  Sort         r206, r133
   // from r in local_customer_supplier_orders
   Move         r133, r206
   // let result =
