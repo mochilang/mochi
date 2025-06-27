@@ -1,0 +1,57 @@
+let company_name = [
+  { id: 1, name: "US Films", country_code: "[us]" },
+  { id: 2, name: "Euro Films", country_code: "[de]" }
+]
+
+let company_type = [
+  { id: 1, kind: "production companies" }
+]
+
+let info_type = [
+  { id: 1, info: "rating" }
+]
+
+let title = [
+  { id: 10, title: "Great Movie", production_year: 2012 },
+  { id: 20, title: "German Film", production_year: 2015 },
+  { id: 30, title: "Old Movie", production_year: 2009 }
+]
+
+let movie_companies = [
+  { movie_id: 10, company_id: 1, company_type_id: 1 },
+  { movie_id: 20, company_id: 2, company_type_id: 1 },
+  { movie_id: 30, company_id: 1, company_type_id: 1 }
+]
+
+let movie_info_idx = [
+  { movie_id: 10, info_type_id: 1, info: 8.9 },
+  { movie_id: 20, info_type_id: 1, info: 7.0 },
+  { movie_id: 30, info_type_id: 1, info: 9.5 }
+]
+
+let us_high_rating =
+  from cn in company_name
+  join mc in movie_companies on cn.id == mc.company_id
+  join ct in company_type on ct.id == mc.company_type_id
+  join t in title on t.id == mc.movie_id
+  join mi in movie_info_idx on mi.movie_id == t.id
+  join it in info_type on it.id == mi.info_type_id
+  where cn.country_code == "[us]" &&
+        ct.kind == "production companies" &&
+        it.info == "rating" &&
+        mi.info > 8.0 &&
+        t.production_year > 2010
+  select { rating: mi.info, movie: t.title }
+
+let result = [
+  {
+    rating: max(from r in us_high_rating select r.rating),
+    us_movie: min(from r in us_high_rating select r.movie)
+  }
+]
+
+json(result)
+
+test "Qww finds top US movie after 2010" {
+  expect result == [ { rating: 8.9, us_movie: "Great Movie" } ]
+}
