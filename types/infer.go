@@ -206,21 +206,35 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 				if len(p.Selector.Tail) == 0 {
 					return t
 				}
-				if st, ok := t.(StructType); ok {
-					cur := st
-					for idx, field := range p.Selector.Tail {
-						ft, ok := cur.Fields[field]
+				cur := t
+				for i, field := range p.Selector.Tail {
+					last := i == len(p.Selector.Tail)-1
+					switch tt := cur.(type) {
+					case StructType:
+						ft, ok := tt.Fields[field]
 						if !ok {
 							return AnyType{}
 						}
-						if idx == len(p.Selector.Tail)-1 {
-							return ft
+						cur = ft
+					case MapType:
+						cur = tt.Value
+					case ListType:
+						if field == "contains" {
+							cur = FuncType{Params: []Type{tt.Elem}, Return: BoolType{}}
+						} else {
+							cur = tt.Elem
 						}
-						if next, ok := ft.(StructType); ok {
-							cur = next
+					case StringType:
+						if field == "contains" {
+							cur = FuncType{Params: []Type{StringType{}}, Return: BoolType{}}
 						} else {
 							return AnyType{}
 						}
+					default:
+						return AnyType{}
+					}
+					if last {
+						return cur
 					}
 				}
 				if ut, ok := t.(UnionType); ok {
