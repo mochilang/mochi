@@ -795,7 +795,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			elems[i] = v
+			if strings.ContainsAny(v, " \t\n") {
+				elems[i] = "(" + v + ")"
+			} else {
+				elems[i] = v
+			}
 		}
 		return "Array with: " + strings.Join(elems, " with: "), nil
 	case p.Map != nil:

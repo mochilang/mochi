@@ -21,7 +21,7 @@ movie_companies := Array with: Dictionary from: {movie_id -> 100. company_type_i
 movie_info_idx := Array with: Dictionary from: {movie_id -> 100. info_type_id -> 10} with: Dictionary from: {movie_id -> 200. info_type_id -> 20}.
 filtered := ((| res |
 res := OrderedCollection new.
-((company_type) select: [:ct | (((((((((ct at: 'kind' = 'production companies') and: [it at: 'info']) = 'top 250 rank') and: [((mc at: 'note' at: 'contains') not)]) and: [((mc at: 'note' at: 'contains' or: [mc at: 'note' at: 'contains']))]) and: [(ct at: 'id' = mc at: 'company_type_id')]) and: [(t at: 'id' = mc at: 'movie_id')]) and: [(mi at: 'movie_id' = t at: 'id')]) and: [(it at: 'id' = mi at: 'info_type_id')])]) do: [:ct |
+((company_type) select: [:ct | (((((((((ct at: 'kind' = 'production companies') and: [it at: 'info']) = 'top 250 rank') and: [(((mc at: 'note' at: 'contains' value: '(as Metro-Goldwyn-Mayer Pictures)')) not)]) and: [(((mc at: 'note' at: 'contains' value: '(co-production)') or: [(mc at: 'note' at: 'contains' value: '(presents)')]))]) and: [(ct at: 'id' = mc at: 'company_type_id')]) and: [(t at: 'id' = mc at: 'movie_id')]) and: [(mi at: 'movie_id' = t at: 'id')]) and: [(it at: 'id' = mi at: 'info_type_id')])]) do: [:ct |
     (movie_companies) do: [:mc |
         (title) do: [:t |
             (movie_info_idx) do: [:mi |
