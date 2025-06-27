@@ -35,7 +35,7 @@ func CompileAndRun(code string) (string, error) {
 	if err := cmd.Run(); err != nil {
 		return "", err
 	}
-	out, err := exec.Command(exe).Output()
+	out, err := exec.Command("sh", exe).Output()
 	if err != nil {
 		return "", err
 	}
