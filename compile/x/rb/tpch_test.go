@@ -15,7 +15,12 @@ func TestRBCompiler_TPCH(t *testing.T) {
 	if err := rbcode.EnsureRuby(); err != nil {
 		t.Skipf("ruby not installed: %v", err)
 	}
-	testutil.CompileTPCH(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return rbcode.New(env).Compile(prog)
-	})
+	for _, q := range []string{"q1", "q2"} {
+		q := q
+		t.Run(q, func(t *testing.T) {
+			testutil.CompileTPCH(t, q, func(env *types.Env, prog *parser.Program) ([]byte, error) {
+				return rbcode.New(env).Compile(prog)
+			})
+		})
+	}
 }
