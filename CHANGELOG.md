@@ -1,13 +1,22 @@
 # 📦 CHANGELOG.md
-## [0.10.4] – 2025-06-27
+## [0.10.4] – 2025-06-27T14:33:48+07:00
 
 ### Added
 
 * Bytecode optimizer now performs constant folding and dead code elimination using liveness analysis
+* Formatter integration across all language backends
+* JOB dataset task list for benchmarking
 
 ### Changed
 
+* Improved VM disassembly and toolchain updates
 * All compiled functions are optimized automatically
+
+### Fixed
+
+* `union_all` parsing bug
+* Append liveness issue
+* Normalized golden outputs
 
 ## [0.10.3] – 2025-06-26T18:37:31+07:00
 
