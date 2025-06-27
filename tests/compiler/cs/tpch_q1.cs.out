@@ -18,6 +18,17 @@ public class Program {
         Console.WriteLine(JsonSerializer.Serialize(result));
         test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus();
     }
+    static double _avg(dynamic v) {
+        if (v == null) return 0.0;
+        int _n = 0;
+        double _sum = 0;
+        foreach (var it in v) {
+            _sum += Convert.ToDouble(it);
+            _n++;
+        }
+        return _n == 0 ? 0.0 : _sum / _n;
+    }
+    
     static int _count(dynamic v) {
         if (v is string) {
             return ((string)v).Length;
@@ -63,17 +74,6 @@ public class Program {
             _sum += Convert.ToDouble(it);
         }
         return _sum;
-    }
-    
-    static double _avg(dynamic v) {
-        if (v == null) return 0.0;
-        int _n = 0;
-        double _sum = 0;
-        foreach (var it in v) {
-            _sum += Convert.ToDouble(it);
-            _n++;
-        }
-        return _n == 0 ? 0.0 : _sum / _n;
     }
     
 }

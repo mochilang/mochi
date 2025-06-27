@@ -16,14 +16,6 @@ public class Program {
         }
         Console.WriteLine(_indexList(m, 2L));
     }
-    static dynamic _indexList(dynamic l, long i) {
-        var list = l as System.Collections.IList;
-        if (list == null) throw new Exception("index() expects list");
-        if (i < 0) i += list.Count;
-        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
-        return list[(int)i];
-    }
-    
     static bool _in(dynamic item, dynamic col) {
         if (col is string s && item is string sub) {
             return s.Contains(sub);
@@ -38,6 +30,14 @@ public class Program {
             return false;
         }
         return false;
+    }
+    
+    static dynamic _indexList(dynamic l, long i) {
+        var list = l as System.Collections.IList;
+        if (list == null) throw new Exception("index() expects list");
+        if (i < 0) i += list.Count;
+        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
+        return list[(int)i];
     }
     
 }

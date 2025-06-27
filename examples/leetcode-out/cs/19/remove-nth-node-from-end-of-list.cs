@@ -8,46 +8,45 @@ using System.Text;
 using System.Web;
 
 public class Program {
-    static long[] addTwoNumbers(long[] l1, long[] l2) {
+    static long[] removeNthFromEnd(long[] nums, long n) {
+        var idx = (nums.Length - n);
+        var result = new dynamic[] { };
         long i = 0L;
-        long j = 0L;
-        long carry = 0L;
-        long[] result = new long[] { };
-        while ((((i < l1.Length) || (j < l2.Length)) || (carry > 0L))) {
-            long x = 0L;
-            if ((i < l1.Length)) {
-                x = _indexList(l1, i);
-                i = (i + 1L);
+        while ((i < nums.Length)) {
+            if ((i != idx)) {
+                result = result.Concat(new dynamic[] { _indexList(nums, i) }).ToArray();
             }
-            long y = 0L;
-            if ((j < l2.Length)) {
-                y = _indexList(l2, j);
-                j = (j + 1L);
-            }
-            var sum = ((x + y) + carry);
-            var digit = (sum % 10L);
-            carry = (sum / 10L);
-            result = result.Concat(new dynamic[] { digit }).ToArray();
+            i = (i + 1L);
         }
         return result;
     }
     
     static void test_example_1() {
-        expect(_equal(addTwoNumbers(new long[] { 2L, 4L, 3L }, new long[] { 5L, 6L, 4L }), new long[] { 7L, 0L, 8L }));
+        expect(_equal(removeNthFromEnd(new long[] { 1L, 2L, 3L, 4L, 5L }, 2L), new long[] { 1L, 2L, 3L, 5L }));
     }
     
     static void test_example_2() {
-        expect(_equal(addTwoNumbers(new long[] { 0L }, new long[] { 0L }), new long[] { 0L }));
+        expect(_equal(removeNthFromEnd(new long[] { 1L }, 1L), new dynamic[] { }));
     }
     
     static void test_example_3() {
-        expect(_equal(addTwoNumbers(new long[] { 9L, 9L, 9L, 9L, 9L, 9L, 9L }, new long[] { 9L, 9L, 9L, 9L }), new long[] { 8L, 9L, 9L, 9L, 0L, 0L, 0L, 1L }));
+        expect(_equal(removeNthFromEnd(new long[] { 1L, 2L }, 1L), new long[] { 1L }));
+    }
+    
+    static void test_remove_first() {
+        expect(_equal(removeNthFromEnd(new long[] { 7L, 8L, 9L }, 3L), new long[] { 8L, 9L }));
+    }
+    
+    static void test_remove_last() {
+        expect(_equal(removeNthFromEnd(new long[] { 7L, 8L, 9L }, 1L), new long[] { 7L, 8L }));
     }
     
     public static void Main() {
         test_example_1();
         test_example_2();
         test_example_3();
+        test_remove_first();
+        test_remove_last();
     }
     static dynamic _indexList(dynamic l, long i) {
         var list = l as System.Collections.IList;

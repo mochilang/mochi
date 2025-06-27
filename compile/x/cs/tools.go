@@ -107,11 +107,20 @@ func FormatCS(src []byte) []byte {
 			if err := os.WriteFile(file, src, 0644); err == nil {
 				cmd := exec.Command(dotnet, "format", "fmt.csproj", "--no-restore", "--verbosity", "quiet")
 				cmd.Dir = dir
-				_ = cmd.Run()
-				if out, err := os.ReadFile(file); err == nil {
-					src = out
+				if err := cmd.Run(); err == nil {
+					if out, err := os.ReadFile(file); err == nil {
+						src = out
+					}
 				}
 			}
+		}
+	} else if path, err := exec.LookPath("csharpier"); err == nil {
+		cmd := exec.Command(path, "--write-stdout")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			src = out.Bytes()
 		}
 	}
 	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
