@@ -1,0 +1,89 @@
+let info_type = [
+  { id: 1, info: "countries" },
+  { id: 2, info: "rating" }
+]
+
+let keyword = [
+  { id: 1, keyword: "murder" },
+  { id: 2, keyword: "blood" },
+  { id: 3, keyword: "romance" }
+]
+
+let kind_type = [
+  { id: 1, kind: "movie" }
+]
+
+let title = [
+  { id: 1, kind_id: 1, production_year: 2012, title: "A Dark Movie" },
+  { id: 2, kind_id: 1, production_year: 2013, title: "Brutal Blood" },
+  { id: 3, kind_id: 1, production_year: 2008, title: "Old Film" }
+]
+
+let movie_info = [
+  { movie_id: 1, info_type_id: 1, info: "Sweden" },
+  { movie_id: 2, info_type_id: 1, info: "USA" },
+  { movie_id: 3, info_type_id: 1, info: "USA" }
+]
+
+let movie_info_idx = [
+  { movie_id: 1, info_type_id: 2, info: 7.0 },
+  { movie_id: 2, info_type_id: 2, info: 7.5 },
+  { movie_id: 3, info_type_id: 2, info: 9.1 }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 }, // murder
+  { movie_id: 2, keyword_id: 2 }, // blood
+  { movie_id: 3, keyword_id: 3 }  // romance (ignored)
+]
+
+let allowed_keywords = ["murder", "murder-in-title", "blood", "violence"]
+let allowed_countries = [
+  "Sweden", "Norway", "Germany", "Denmark",
+  "Swedish", "Denish", "Norwegian", "German",
+  "USA", "American"
+]
+
+let matches =
+  from it1 in info_type
+  from it2 in info_type
+  from k in keyword
+  from kt in kind_type
+  from mi in movie_info
+  from mi_idx in movie_info_idx
+  from mk in movie_keyword
+  from t in title
+  where (
+    it1.info == "countries" &&
+    it2.info == "rating" &&
+    (k.keyword in allowed_keywords) &&
+    kt.kind == "movie" &&
+    (mi.info in allowed_countries) &&
+    mi_idx.info < 8.5 &&
+    t.production_year > 2010 &&
+    kt.id == t.kind_id &&
+    t.id == mi.movie_id &&
+    t.id == mk.movie_id &&
+    t.id == mi_idx.movie_id &&
+    mk.movie_id == mi.movie_id &&
+    mk.movie_id == mi_idx.movie_id &&
+    mi.movie_id == mi_idx.movie_id &&
+    k.id == mk.keyword_id &&
+    it1.id == mi.info_type_id &&
+    it2.id == mi_idx.info_type_id
+  )
+  select {
+    rating: mi_idx.info,
+    title: t.title
+  }
+
+let result = {
+  rating: min(from x in matches select x.rating),
+  northern_dark_movie: min(from x in matches select x.title)
+}
+
+json(result)
+
+test "Q14 selects minimal rating and title for dark movies" {
+  expect result == { rating: 7.0, northern_dark_movie: "A Dark Movie" }
+}
