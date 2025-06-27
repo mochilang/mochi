@@ -1,4 +1,4 @@
-func main (regs=247)
+func main (regs=250)
   // let aka_name = [
   Const        r0, [{"name": "Anna Mae", "person_id": 1}, {"name": "Chris", "person_id": 2}]
   Move         r1, r0
@@ -28,7 +28,7 @@ func main (regs=247)
   IterPrep     r17, r1
   Len          r18, r17
   Const        r19, 0
-L30:
+L32:
   Less         r20, r19, r18
   JumpIfFalse  r20, L0
   Index        r21, r17, r19
@@ -37,7 +37,7 @@ L30:
   IterPrep     r23, r11
   Len          r24, r23
   Const        r25, 0
-L29:
+L31:
   Less         r26, r25, r24
   JumpIfFalse  r26, L1
   Index        r27, r23, r25
@@ -52,7 +52,7 @@ L29:
   IterPrep     r34, r13
   Len          r35, r34
   Const        r36, 0
-L28:
+L30:
   Less         r37, r36, r35
   JumpIfFalse  r37, L2
   Index        r38, r34, r36
@@ -67,7 +67,7 @@ L28:
   IterPrep     r45, r5
   Len          r46, r45
   Const        r47, 0
-L27:
+L29:
   Less         r48, r47, r46
   JumpIfFalse  r48, L3
   Index        r49, r45, r47
@@ -82,7 +82,7 @@ L27:
   IterPrep     r56, r3
   Len          r57, r56
   Const        r58, 0
-L26:
+L28:
   Less         r59, r58, r57
   JumpIfFalse  r59, L4
   Index        r60, r56, r58
@@ -97,7 +97,7 @@ L26:
   IterPrep     r67, r15
   Len          r68, r67
   Const        r69, 0
-L25:
+L27:
   Less         r70, r69, r68
   JumpIfFalse  r70, L5
   Index        r71, r67, r69
@@ -112,7 +112,7 @@ L25:
   IterPrep     r78, r9
   Len          r79, r78
   Const        r80, 0
-L24:
+L26:
   Less         r81, r80, r79
   JumpIfFalse  r81, L6
   Index        r82, r78, r80
@@ -127,7 +127,7 @@ L24:
   IterPrep     r89, r7
   Len          r90, r89
   Const        r91, 0
-L23:
+L25:
   Less         r92, r91, r90
   JumpIfFalse  r92, L7
   Index        r93, r89, r91
@@ -239,10 +239,18 @@ L12:
   Index        r168, r28, r167
   Const        r169, "B"
   Const        r170, 0
-  Len          r171, r169
-  Slice        r172, r168, r170, r171
-  Equal        r173, r172, r169
-  Move         r166, r173
+  Const        r171, 1
+  Len          r172, r168
+  LessEq       r173, r171, r172
+  JumpIfFalse  r173, L16
+  Slice        r175, r168, r170, r171
+  Equal        r176, r175, r169
+  Move         r174, r176
+  Jump         L17
+L16:
+  Const        r174, false
+L17:
+  Move         r166, r174
 L15:
   Move         r161, r166
 L14:
@@ -250,165 +258,165 @@ L14:
   Move         r156, r161
 L13:
   // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Move         r174, r156
-  JumpIfFalse  r174, L16
-  Move         r174, r131
-L16:
-  // pi.note == "Volker Boehm" &&
-  Move         r175, r174
-  JumpIfFalse  r175, L17
-  Move         r175, r115
-L17:
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Move         r176, r175
-  JumpIfFalse  r176, L18
-  Move         r176, r119
+  Move         r177, r156
+  JumpIfFalse  r177, L18
+  Move         r177, r131
 L18:
-  Move         r177, r176
-  JumpIfFalse  r177, L19
-  Move         r177, r136
-L19:
-  // pi.person_id == an.person_id &&
+  // pi.note == "Volker Boehm" &&
   Move         r178, r177
-  JumpIfFalse  r178, L20
-  Move         r178, r141
-L20:
-  // pi.person_id == ci.person_id &&
+  JumpIfFalse  r178, L19
+  Move         r178, r115
+L19:
+  // t.production_year >= 1980 && t.production_year <= 1995 &&
   Move         r179, r178
-  JumpIfFalse  r179, L21
-  Move         r179, r146
-L21:
-  // an.person_id == ci.person_id &&
+  JumpIfFalse  r179, L20
+  Move         r179, r119
+L20:
   Move         r180, r179
-  JumpIfFalse  r180, L22
-  Move         r180, r151
+  JumpIfFalse  r180, L21
+  Move         r180, r136
+L21:
+  // pi.person_id == an.person_id &&
+  Move         r181, r180
+  JumpIfFalse  r181, L22
+  Move         r181, r141
 L22:
+  // pi.person_id == ci.person_id &&
+  Move         r182, r181
+  JumpIfFalse  r182, L23
+  Move         r182, r146
+L23:
+  // an.person_id == ci.person_id &&
+  Move         r183, r182
+  JumpIfFalse  r183, L24
+  Move         r183, r151
+L24:
   // where (
-  JumpIfFalse  r180, L8
+  JumpIfFalse  r183, L8
   // select { person_name: n.name, movie_title: t.title }
-  Const        r181, "person_name"
-  Const        r182, "name"
-  Index        r183, r28, r182
-  Const        r184, "movie_title"
-  Const        r185, "title"
-  Index        r186, r72, r185
-  Move         r187, r181
-  Move         r188, r183
-  Move         r189, r184
-  Move         r190, r186
-  MakeMap      r191, 2, r187
+  Const        r184, "person_name"
+  Const        r185, "name"
+  Index        r186, r28, r185
+  Const        r187, "movie_title"
+  Const        r188, "title"
+  Index        r189, r72, r188
+  Move         r190, r184
+  Move         r191, r186
+  Move         r192, r187
+  Move         r193, r189
+  MakeMap      r194, 2, r190
   // from an in aka_name
-  Append       r192, r16, r191
-  Move         r16, r192
+  Append       r195, r16, r194
+  Move         r16, r195
 L8:
   // join lt in link_type on lt.id == ml.link_type_id
-  Const        r193, 1
-  Add          r194, r91, r193
-  Move         r91, r194
-  Jump         L23
+  Const        r196, 1
+  Add          r197, r91, r196
+  Move         r91, r197
+  Jump         L25
 L7:
   // join ml in movie_link on ml.linked_movie_id == t.id
-  Const        r195, 1
-  Add          r196, r80, r195
-  Move         r80, r196
-  Jump         L24
+  Const        r198, 1
+  Add          r199, r80, r198
+  Move         r80, r199
+  Jump         L26
 L6:
   // join t in title on t.id == ci.movie_id
-  Const        r197, 1
-  Add          r198, r69, r197
-  Move         r69, r198
-  Jump         L25
+  Const        r200, 1
+  Add          r201, r69, r200
+  Move         r69, r201
+  Jump         L27
 L5:
   // join ci in cast_info on ci.person_id == n.id
-  Const        r199, 1
-  Add          r200, r58, r199
-  Move         r58, r200
-  Jump         L26
+  Const        r202, 1
+  Add          r203, r58, r202
+  Move         r58, r203
+  Jump         L28
 L4:
   // join it in info_type on it.id == pi.info_type_id
-  Const        r201, 1
-  Add          r202, r47, r201
-  Move         r47, r202
-  Jump         L27
+  Const        r204, 1
+  Add          r205, r47, r204
+  Move         r47, r205
+  Jump         L29
 L3:
   // join pi in person_info on pi.person_id == an.person_id
-  Const        r203, 1
-  Add          r204, r36, r203
-  Move         r36, r204
-  Jump         L28
+  Const        r206, 1
+  Add          r207, r36, r206
+  Move         r36, r207
+  Jump         L30
 L2:
   // join n in name on n.id == an.person_id
-  Const        r205, 1
-  Add          r206, r25, r205
-  Move         r25, r206
-  Jump         L29
+  Const        r208, 1
+  Add          r209, r25, r208
+  Move         r25, r209
+  Jump         L31
 L1:
   // from an in aka_name
-  Const        r207, 1
-  Add          r208, r19, r207
-  Move         r19, r208
-  Jump         L30
+  Const        r210, 1
+  Add          r211, r19, r210
+  Move         r19, r211
+  Jump         L32
 L0:
   // let rows =
-  Move         r209, r16
+  Move         r212, r16
   // of_person: min(from r in rows select r.person_name),
-  Const        r210, "of_person"
-  Const        r211, []
-  IterPrep     r212, r209
-  Len          r213, r212
-  Const        r214, 0
-L32:
-  Less         r215, r214, r213
-  JumpIfFalse  r215, L31
-  Index        r216, r212, r214
-  Move         r217, r216
-  Const        r218, "person_name"
-  Index        r219, r217, r218
-  Append       r220, r211, r219
-  Move         r211, r220
-  Const        r221, 1
-  Add          r222, r214, r221
-  Move         r214, r222
-  Jump         L32
-L31:
-  Min          r223, r211
-  // biography_movie: min(from r in rows select r.movie_title)
-  Const        r224, "biography_movie"
-  Const        r225, []
-  IterPrep     r226, r209
-  Len          r227, r226
-  Const        r228, 0
+  Const        r213, "of_person"
+  Const        r214, []
+  IterPrep     r215, r212
+  Len          r216, r215
+  Const        r217, 0
 L34:
-  Less         r229, r228, r227
-  JumpIfFalse  r229, L33
-  Index        r230, r226, r228
-  Move         r217, r230
-  Const        r231, "movie_title"
-  Index        r232, r217, r231
-  Append       r233, r225, r232
-  Move         r225, r233
-  Const        r234, 1
-  Add          r235, r228, r234
-  Move         r228, r235
+  Less         r218, r217, r216
+  JumpIfFalse  r218, L33
+  Index        r219, r215, r217
+  Move         r220, r219
+  Const        r221, "person_name"
+  Index        r222, r220, r221
+  Append       r223, r214, r222
+  Move         r214, r223
+  Const        r224, 1
+  Add          r225, r217, r224
+  Move         r217, r225
   Jump         L34
 L33:
-  Min          r236, r225
-  // of_person: min(from r in rows select r.person_name),
-  Move         r237, r210
-  Move         r238, r223
+  Min          r226, r214
   // biography_movie: min(from r in rows select r.movie_title)
-  Move         r239, r224
-  Move         r240, r236
+  Const        r227, "biography_movie"
+  Const        r228, []
+  IterPrep     r229, r212
+  Len          r230, r229
+  Const        r231, 0
+L36:
+  Less         r232, r231, r230
+  JumpIfFalse  r232, L35
+  Index        r233, r229, r231
+  Move         r220, r233
+  Const        r234, "movie_title"
+  Index        r235, r220, r234
+  Append       r236, r228, r235
+  Move         r228, r236
+  Const        r237, 1
+  Add          r238, r231, r237
+  Move         r231, r238
+  Jump         L36
+L35:
+  Min          r239, r228
+  // of_person: min(from r in rows select r.person_name),
+  Move         r240, r213
+  Move         r241, r226
+  // biography_movie: min(from r in rows select r.movie_title)
+  Move         r242, r227
+  Move         r243, r239
   // {
-  MakeMap      r241, 2, r237
-  Move         r242, r241
+  MakeMap      r244, 2, r240
+  Move         r245, r244
   // let result = [
-  MakeList     r243, 1, r242
-  Move         r244, r243
+  MakeList     r246, 1, r245
+  Move         r247, r246
   // json(result)
-  JSON         r244
+  JSON         r247
   // expect result == [
-  Const        r245, [{"biography_movie": "Feature Film", "of_person": "Alan Brown"}]
-  Equal        r246, r244, r245
-  Expect       r246
+  Const        r248, [{"biography_movie": "Feature Film", "of_person": "Alan Brown"}]
+  Equal        r249, r247, r248
+  Expect       r249
   Return       r0
