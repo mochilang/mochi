@@ -51,7 +51,7 @@ let result = [
   }
 ]
 
-print(result)
+json(result)
 
 test "Q8 returns the pseudonym and movie title for Japanese dubbing" {
   expect result == [

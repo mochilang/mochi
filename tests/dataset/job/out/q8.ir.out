@@ -307,8 +307,8 @@ L23:
   // let result = [
   MakeList     r183, 1, r182
   Move         r184, r183
-  // print(result)
-  Print        r184
+  // json(result)
+  JSON         r184
   // expect result == [
   Const        r185, [{"actress_pseudonym": "Y. S.", "japanese_movie_dubbed": "Dubbed Film"}]
   Equal        r186, r184, r185
