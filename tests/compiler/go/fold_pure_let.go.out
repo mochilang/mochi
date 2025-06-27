@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"mochi/runtime/data"
 )
 
 func sum(n int) int {
