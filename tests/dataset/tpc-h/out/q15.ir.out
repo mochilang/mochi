@@ -161,7 +161,7 @@ L12:
   Jump         L15
 L11:
   // sort by s.s_suppkey
-  Sort         150,93,0,0
+  Sort         r150, r93
   // let result = from s in supplier
   Move         r93, r150
   Move         r151, r93

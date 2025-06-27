@@ -160,7 +160,7 @@ L11:
   Jump         L11
 L10:
   // sort by -g.key
-  Sort         99,47,0,0
+  Sort         r99, r47
   // from x in per_customer
   Move         r47, r99
   // let grouped =

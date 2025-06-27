@@ -233,7 +233,7 @@ L15:
   Jump         L19
 L10:
   // sort by g.key
-  Sort         141,4,0,0
+  Sort         r141, r4
   // from l in lineitem
   Move         r4, r141
   // let result =

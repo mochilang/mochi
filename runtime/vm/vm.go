@@ -433,6 +433,9 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpExists:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpCast:
+				typ := p.Types[ins.C]
+				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), typ)
 			case OpAvg, OpSum, OpMin, OpMax:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpExpect:

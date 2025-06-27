@@ -106,7 +106,7 @@ L8:
   Jump         L9
 L7:
   // c.c_acctbal > avg_balance && (!exists(
-  Exists       63,48,0,0
+  Exists       r63, r48
   Not          r64, r63
   Move         r47, r64
 L6:
@@ -287,7 +287,7 @@ L22:
   Jump         L22
 L21:
   // sort by r.cntrycode
-  Sort         173,158,0,0
+  Sort         r173, r158
   // from r in tmp
   Move         r158, r173
   // let result =
@@ -299,4 +299,3 @@ L21:
   Equal        r176, r174, r175
   Expect       r176
   Return       r0
-

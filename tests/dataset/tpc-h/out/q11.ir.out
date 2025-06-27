@@ -250,7 +250,7 @@ L17:
   Jump         L18
 L16:
   // sort by -x.value
-  Sort         155,137,0,0
+  Sort         r155, r137
   // from x in grouped
   Move         r137, r155
   // let result =
