@@ -1,0 +1,64 @@
+let char_name = [
+  { id: 1, name: "Ivan" },
+  { id: 2, name: "Alex" }
+]
+
+let cast_info = [
+  { movie_id: 10, person_role_id: 1, role_id: 1, note: "Soldier (voice) (uncredited)" },
+  { movie_id: 11, person_role_id: 2, role_id: 1, note: "(voice)" }
+]
+
+let company_name = [
+  { id: 1, country_code: "[ru]" },
+  { id: 2, country_code: "[us]" }
+]
+
+let company_type = [
+  { id: 1 },
+  { id: 2 }
+]
+
+let movie_companies = [
+  { movie_id: 10, company_id: 1, company_type_id: 1 },
+  { movie_id: 11, company_id: 2, company_type_id: 1 }
+]
+
+let role_type = [
+  { id: 1, role: "actor" },
+  { id: 2, role: "director" }
+]
+
+let title = [
+  { id: 10, title: "Vodka Dreams", production_year: 2006 },
+  { id: 11, title: "Other Film", production_year: 2004 }
+]
+
+let matches =
+  from chn in char_name
+  join ci in cast_info on chn.id == ci.person_role_id
+  join rt in role_type on rt.id == ci.role_id
+  join t in title on t.id == ci.movie_id
+  join mc in movie_companies on mc.movie_id == t.id
+  join cn in company_name on cn.id == mc.company_id
+  join ct in company_type on ct.id == mc.company_type_id
+  where ci.note.contains("(voice)") &&
+        ci.note.contains("(uncredited)") &&
+        cn.country_code == "[ru]" &&
+        rt.role == "actor" &&
+        t.production_year > 2005
+  select { character: chn.name, movie: t.title }
+
+let result = [
+  {
+    uncredited_voiced_character: min(from x in matches select x.character),
+    russian_movie: min(from x in matches select x.movie)
+  }
+]
+
+json(result)
+
+test "Q10 finds uncredited voice actor in Russian movie" {
+  expect result == [
+    { uncredited_voiced_character: "Ivan", russian_movie: "Vodka Dreams" }
+  ]
+}
