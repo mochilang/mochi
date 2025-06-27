@@ -1,1 +1,3 @@
-puts([("hello " + "world")].join(" "))
+# frozen_string_literal: true
+
+puts(['hello world'].join(' '))

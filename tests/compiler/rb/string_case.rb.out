@@ -1,2 +1,4 @@
-puts([("hello").to_s.upcase].join(" "))
-puts([("WORLD").to_s.downcase].join(" "))
+# frozen_string_literal: true
+
+puts(['hello'.to_s.upcase].join(' '))
+puts(['WORLD'.to_s.downcase].join(' '))

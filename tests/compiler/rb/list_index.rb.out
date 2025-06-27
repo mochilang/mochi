@@ -1,2 +1,4 @@
+# frozen_string_literal: true
+
 xs = [10, 20, 30]
-puts([xs[1]].join(" "))
+puts([xs[1]].join(' '))

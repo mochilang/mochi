@@ -1,1 +1,3 @@
-puts([9.261000000000001].join(" "))
+# frozen_string_literal: true
+
+puts([9.261000000000001].join(' '))

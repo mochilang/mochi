@@ -1,3 +1,5 @@
-for ch in "cat".chars
-	puts([ch].join(" "))
+# frozen_string_literal: true
+
+'cat'.chars.each do |ch|
+  puts([ch].join(' '))
 end

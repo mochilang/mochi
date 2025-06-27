@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 c = 0
-for _ in 0...2
-	c = (c + 1)
+(0...2).each do |_|
+  c = (c + 1)
 end
-for _ in [1, 2]
-	c = (c + 1)
+[1, 2].each do |_|
+  c = (c + 1)
 end
-for _ in "ab".chars
-	c = (c + 1)
+'ab'.chars.each do |_|
+  c = (c + 1)
 end
-m = {"x" => 1, "y" => 2}
-for _ in m.keys
-	c = (c + 1)
+m = { 'x' => 1, 'y' => 2 }
+m.each_key do |_|
+  c = (c + 1)
 end
-puts([c].join(" "))
+puts([c].join(' '))

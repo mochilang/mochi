@@ -1,1 +1,3 @@
-puts([(123).to_s].join(" "))
+# frozen_string_literal: true
+
+puts([123.to_s].join(' '))
