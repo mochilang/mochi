@@ -1,0 +1,6 @@
+ERROR on line 76 of file tests/dataset/tpc-h/compiler/scheme/q1.scm.out: invalid type, expected Number: "1998-08-01"
+  called from for1 on line 75 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 74 of file tests/dataset/tpc-h/compiler/scheme/q1.scm.out
+  called from <anonymous> on line 74 of file tests/dataset/tpc-h/compiler/scheme/q1.scm.out
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm

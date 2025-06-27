@@ -30,7 +30,7 @@ const datasetHelpers = `(define (_fetch url opts)
     (let* ((p (open-input-pipe (string-join args " ")))
            (txt (port->string p)))
       (close-input-port p)
-      (string->json txt)))
+      (string->json txt))))
 
 (define (_load path opts)
   (let* ((fmt (if (and opts (assq 'format opts)) (cdr (assq 'format opts)) "json"))
@@ -46,7 +46,7 @@ const datasetHelpers = `(define (_fetch url opts)
                         (string-split text #\newline))))
           (else
            (let ((d (string->json text)))
-             (if (list? d) d (list d))))))
+             (if (list? d) d (list d)))))))
 
 (define (_save rows path opts)
   (let* ((fmt (if (and opts (assq 'format opts)) (cdr (assq 'format opts)) "json"))
@@ -58,7 +58,7 @@ const datasetHelpers = `(define (_fetch url opts)
           (else
            (write-string (json->string rows) out)))
     (when (not (eq? out (current-output-port)))
-      (close-output-port out)))
+      (close-output-port out))))
 
 (define (_sort pairs)
   (sort pairs
@@ -152,7 +152,7 @@ const groupHelpers = `(define (_count v)
                         (set! groups (append groups (list (cons ks (list (cons 'key key) (cons 'Items (list it)))))))
                         (set! order (append order (list ks))))))
               src)
-    (map (lambda (k) (cdr (assoc k groups))) order)))`
+    (map (lambda (k) (cdr (assoc k groups))) order))))`
 
 const jsonHelper = `(define (_json v)
   (write v)
