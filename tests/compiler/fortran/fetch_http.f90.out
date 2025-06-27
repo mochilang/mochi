@@ -1,23 +1,23 @@
 program main
-  implicit none
-  character(:), allocatable :: body
-  body = mochi_fetch('https://jsonplaceholder.typicode.com/todos/1')
-  print *, (len(body) > 0_8)
+   implicit none
+   character(:), allocatable :: body
+   body = mochi_fetch('https://jsonplaceholder.typicode.com/todos/1')
+   print *, (len(body) > 0_8)
 contains
 
-  function mochi_fetch(url) result(r)
-    implicit none
-    character(len=*), intent(in) :: url
-    character(len=:), allocatable :: r
-    character(len=1024) :: cmd
-    integer :: u, n
-    cmd = 'curl -s -o mochi_fetch.tmp ' // trim(url)
-    call execute_command_line(cmd)
-    open(newunit=u, file='mochi_fetch.tmp', access='stream', form='unformatted', action='read')
-    inquire(u, size=n)
-    allocate(character(len=n) :: r)
-    read(u) r
-    close(u)
-    call execute_command_line('rm -f mochi_fetch.tmp')
-  end function mochi_fetch
+   function mochi_fetch(url) result(r)
+      implicit none
+      character(len=*), intent(in) :: url
+      character(len=:), allocatable :: r
+      character(len=1024) :: cmd
+      integer :: u, n
+      cmd = 'curl -s -o mochi_fetch.tmp '//trim(url)
+      call execute_command_line(cmd)
+      open (newunit=u, file='mochi_fetch.tmp', access='stream', form='unformatted', action='read')
+      inquire (u, size=n)
+      allocate (character(len=n) :: r)
+      read (u) r
+      close (u)
+      call execute_command_line('rm -f mochi_fetch.tmp')
+   end function mochi_fetch
 end program main

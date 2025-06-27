@@ -304,6 +304,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 	}
 	c.writeln("end program main")
+	formatted, err := formatFortran(c.buf.Bytes())
+	if err == nil {
+		return formatted, nil
+	}
 	return c.buf.Bytes(), nil
 }
 

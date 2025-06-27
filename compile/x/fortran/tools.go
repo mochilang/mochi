@@ -66,3 +66,27 @@ func EnsureFortran() (string, error) {
 	}
 	return "", fmt.Errorf("gfortran not found")
 }
+
+// EnsureFprettify verifies that the fprettify formatter is installed.
+// If missing, it attempts a best-effort installation via pip.
+func EnsureFprettify() (string, error) {
+	if path, err := exec.LookPath("fprettify"); err == nil {
+		return path, nil
+	}
+	// Attempt installation with pip if available.
+	if p, err := exec.LookPath("pip3"); err == nil {
+		cmd := exec.Command(p, "install", "--user", "fprettify")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		_ = cmd.Run()
+	} else if p, err := exec.LookPath("pip"); err == nil {
+		cmd := exec.Command(p, "install", "--user", "fprettify")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		_ = cmd.Run()
+	}
+	if path, err := exec.LookPath("fprettify"); err == nil {
+		return path, nil
+	}
+	return "", fmt.Errorf("fprettify not found")
+}

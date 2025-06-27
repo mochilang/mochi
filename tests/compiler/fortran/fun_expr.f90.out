@@ -1,14 +1,14 @@
 program main
-  implicit none
-  print *, (lambda_0)(2_8, 3_8)
+   implicit none
+   print *, (lambda_0) (2_8, 3_8)
 contains
-  function lambda_0(a, b) result(res)
-    implicit none
-    integer(kind=8) :: res
-    integer(kind=8), intent(in) :: a
-    integer(kind=8), intent(in) :: b
-    res = (a + b)
-    return
-  end function lambda_0
-  
+   function lambda_0(a, b) result(res)
+      implicit none
+      integer(kind=8) :: res
+      integer(kind=8), intent(in) :: a
+      integer(kind=8), intent(in) :: b
+      res = (a + b)
+      return
+   end function lambda_0
+
 end program main
