@@ -104,16 +104,6 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 			default:
 				t = AnyType{}
 			}
-		case "like":
-			if _, ok := t.(StringType); ok {
-				if _, ok := rt.(StringType); ok {
-					t = BoolType{}
-				} else {
-					t = AnyType{}
-				}
-			} else {
-				t = AnyType{}
-			}
 		case "union", "union_all", "except", "intersect":
 			if llist, ok := t.(ListType); ok {
 				if rlist, ok := rt.(ListType); ok {
