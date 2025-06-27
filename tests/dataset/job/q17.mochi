@@ -1,0 +1,65 @@
+let cast_info = [
+  { movie_id: 1, person_id: 1 },
+  { movie_id: 2, person_id: 2 }
+]
+
+let company_name = [
+  { id: 1, country_code: "[us]" },
+  { id: 2, country_code: "[ca]" }
+]
+
+let keyword = [
+  { id: 10, keyword: "character-name-in-title" },
+  { id: 20, keyword: "other" }
+]
+
+let movie_companies = [
+  { movie_id: 1, company_id: 1 },
+  { movie_id: 2, company_id: 2 }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 10 },
+  { movie_id: 2, keyword_id: 20 }
+]
+
+let name = [
+  { id: 1, name: "Bob Smith" },
+  { id: 2, name: "Alice Jones" }
+]
+
+let title = [
+  { id: 1, title: "Bob's Journey" },
+  { id: 2, title: "Foreign Film" }
+]
+
+let matches =
+  from n in name
+  join ci in cast_info on ci.person_id == n.id
+  join t in title on t.id == ci.movie_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join mc in movie_companies on mc.movie_id == t.id
+  join cn in company_name on cn.id == mc.company_id
+  where cn.country_code == "[us]" &&
+        k.keyword == "character-name-in-title" &&
+        n.name LIKE "B%" &&
+        ci.movie_id == mk.movie_id &&
+        ci.movie_id == mc.movie_id &&
+        mc.movie_id == mk.movie_id
+  select n.name
+
+let result = [
+  {
+    member_in_charnamed_american_movie: min(matches),
+    a1: min(matches)
+  }
+]
+
+json(result)
+
+test "Q17 finds US character-name movie with actor starting with B" {
+  expect result == [
+    { member_in_charnamed_american_movie: "Bob Smith", a1: "Bob Smith" }
+  ]
+}
