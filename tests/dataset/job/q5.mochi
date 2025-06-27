@@ -1,0 +1,50 @@
+let company_type = [
+  { ct_id: 1, kind: "production companies" },
+  { ct_id: 2, kind: "other" } // unused
+]
+
+let info_type = [
+  { it_id: 10, info: "languages" }
+]
+
+let title = [
+  { t_id: 100, title: "B Movie", production_year: 2010 },
+  { t_id: 200, title: "A Film", production_year: 2012 },
+  { t_id: 300, title: "Old Movie", production_year: 2000 } // excluded by year
+]
+
+let movie_companies = [
+  { movie_id: 100, company_type_id: 1, note: "ACME (France) (theatrical)" },
+  { movie_id: 200, company_type_id: 1, note: "ACME (France) (theatrical)" },
+  { movie_id: 300, company_type_id: 1, note: "ACME (France) (theatrical)" }
+]
+
+let movie_info = [
+  { movie_id: 100, info: "German", info_type_id: 10 },
+  { movie_id: 200, info: "Swedish", info_type_id: 10 },
+  { movie_id: 300, info: "German", info_type_id: 10 }
+]
+
+let candidate_titles =
+  from ct in company_type
+  join mc in movie_companies on mc.company_type_id == ct.ct_id
+  join mi in movie_info on mi.movie_id == mc.movie_id
+  join it in info_type on it.it_id == mi.info_type_id
+  join t in title on t.t_id == mc.movie_id
+  where ct.kind == "production companies" &&
+        "(theatrical)" in mc.note &&
+        "(France)" in mc.note &&
+        t.production_year > 2005 &&
+        (mi.info in [
+          "Sweden", "Norway", "Germany", "Denmark",
+          "Swedish", "Denish", "Norwegian", "German"
+        ])
+  select t.title
+
+let result = [ { typical_european_movie: min(candidate_titles) } ]
+
+json(result)
+
+test "Q5 finds the lexicographically first qualifying title" {
+  expect result == [ { typical_european_movie: "A Film" } ]
+}
