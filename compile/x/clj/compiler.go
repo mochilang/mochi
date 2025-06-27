@@ -770,7 +770,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	t := c.primaryType(p.Target)
-	for _, op := range p.Ops {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		if op.Index != nil {
 			start, err := c.compileExpr(op.Index.Start)
 			if err != nil {
@@ -812,9 +813,27 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			continue
 		}
 		if op.Field != nil {
-			expr = fmt.Sprintf("(:%s %s)", sanitizeName(op.Field.Name), expr)
+			fname := op.Field.Name
+			// Handle method call like x.contains(y)
+			if fname == "contains" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				argExpr, err := c.compileExpr(p.Ops[i+1].Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				if _, ok := t.(types.StringType); ok {
+					expr = fmt.Sprintf("(clojure.string/includes? %s %s)", expr, argExpr)
+				} else {
+					c.use("_in")
+					expr = fmt.Sprintf("(_in %s %s)", argExpr, expr)
+				}
+				t = types.BoolType{}
+				i++
+				continue
+			}
+
+			expr = fmt.Sprintf("(:%s %s)", sanitizeName(fname), expr)
 			if st, ok := t.(types.StructType); ok {
-				if ft, ok := st.Fields[op.Field.Name]; ok {
+				if ft, ok := st.Fields[fname]; ok {
 					t = ft
 				} else {
 					t = types.AnyType{}
