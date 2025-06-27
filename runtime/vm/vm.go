@@ -300,6 +300,16 @@ type Program struct {
 	Source []string `json:"source,omitempty"`
 }
 
+// TraceStep holds information about a single executed instruction when tracing
+// a program. Regs contains a copy of the register state after the instruction
+// completes.
+type TraceStep struct {
+	Func  string
+	PC    int
+	Instr Instr
+	Regs  []Value
+}
+
 type closure struct {
 	fn   int
 	args []Value
@@ -459,6 +469,11 @@ type VM struct {
 	prog   *Program
 	writer io.Writer
 	reader *bufio.Reader
+	// traceSteps collects executed instructions when tracing is enabled.
+	traceSteps *[]TraceStep
+	// traceDepth controls how deep into the call stack tracing records.
+	// A depth of 1 traces only the top-level function (step over calls).
+	traceDepth int
 }
 
 // StackFrame represents a single call frame in a Mochi stack trace.
@@ -548,6 +563,18 @@ func (m *VM) RunResult() (Value, error) {
 	return m.call(0, nil, []StackFrame{{Func: m.prog.funcName(0), Line: 0}})
 }
 
+// Trace executes the program returning a slice of TraceSteps describing each
+// instruction executed in the top level function. Nested function calls are
+// stepped over.
+func Trace(p *Program) ([]TraceStep, error) {
+	var steps []TraceStep
+	m := New(p, io.Discard)
+	m.traceSteps = &steps
+	m.traceDepth = 1
+	_, err := m.call(0, nil, []StackFrame{{Func: p.funcName(0), Line: 0}})
+	return steps, err
+}
+
 type frame struct {
 	fn   *Function
 	regs []Value
@@ -563,6 +590,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 	if len(args) > fn.NumParams {
 		return Value{}, m.newError(fmt.Errorf("too many args"), trace, fn.Line)
 	}
+	depth := len(trace)
 	f := &frame{fn: fn, regs: make([]Value, fn.NumRegs)}
 	for i := 0; i < len(args) && i < len(f.regs); i++ {
 		f.regs[i] = args[i]
@@ -577,7 +605,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			continue
 		}
-		ins := fr.fn.Code[fr.ip]
+		pc := fr.ip
+		ins := fr.fn.Code[pc]
+		if m.traceSteps != nil && depth <= m.traceDepth {
+			regsCopy := make([]Value, len(fr.regs))
+			copy(regsCopy, fr.regs)
+			*m.traceSteps = append(*m.traceSteps, TraceStep{Func: fr.fn.Name, PC: pc, Instr: ins, Regs: regsCopy})
+		}
 		fr.ip++
 		switch ins.Op {
 		case OpConst:
