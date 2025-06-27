@@ -1,0 +1,5 @@
+program main
+  implicit none
+  print *, merge(0_8, minval((/3_8, 1_8, 2_8/)), size((/3_8, 1_8, 2_8/)) == 0)
+  print *, merge(0.0, minval((/1.5, 2.5/)), size((/1.5, 2.5/)) == 0)
+end program main

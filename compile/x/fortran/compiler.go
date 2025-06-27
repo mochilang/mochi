@@ -33,6 +33,7 @@ type Compiler struct {
 	needsIntersectString bool
 	needsStrInt          bool
 	needsStrFloat        bool
+	needsMinString       bool
 	needsNow             bool
 	needsFetch           bool
 	needsLoadJSON        bool
@@ -51,6 +52,7 @@ func New() *Compiler {
 		funReturnList:   map[string]bool{},
 		funReturnFloat:  map[string]bool{},
 		lambdas:         []string{},
+		needsMinString:  false,
 		needsNow:        false,
 		needsFetch:      false,
 		loadJSONTypes:   map[string]bool{},
@@ -72,6 +74,7 @@ func (c *Compiler) resetFeatures() {
 	c.needsIntersectString = false
 	c.needsStrInt = false
 	c.needsStrFloat = false
+	c.needsMinString = false
 	c.needsNow = false
 	c.needsFetch = false
 	c.needsLoadJSON = false
@@ -1481,6 +1484,22 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 			return "", fmt.Errorf("append expects 2 args")
 		}
 		return fmt.Sprintf("(/ %s, %s /)", args[0], args[1]), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		if types.IsListExprVars(call.Args[0], sanitizeName, c.listVars, c.funReturnList) {
+			v := args[0]
+			if types.IsStringExprVars(call.Args[0], sanitizeName, c.stringVars, c.funReturnStr) {
+				c.needsMinString = true
+				return fmt.Sprintf("min_string(%s)", v), nil
+			}
+			if types.IsFloatExprVars(call.Args[0], sanitizeName, c.floatVars, c.funReturnFloat) {
+				return fmt.Sprintf("merge(0.0, minval(%[1]s), size(%[1]s) == 0)", v), nil
+			}
+			return fmt.Sprintf("merge(0_8, minval(%[1]s), size(%[1]s) == 0)", v), nil
+		}
+		return args[0], nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects 0 args")
@@ -2121,6 +2140,31 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = trim(buf)")
 		c.indent--
 		c.writeln("end function str_float")
+	}
+	if c.needsMinString {
+		c.blank()
+		c.writeln("function min_string(v) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=*), intent(in) :: v(:)")
+		c.writeln("character(len=len(v(1))) :: r")
+		c.writeln("integer(kind=8) :: i")
+		c.writeln("if (size(v) == 0) then")
+		c.indent++
+		c.writeln("r = ''")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("r = v(1)")
+		c.writeln("do i = 2, size(v)")
+		c.indent++
+		c.writeln("if (v(i) < r) r = v(i)")
+		c.indent--
+		c.writeln("end do")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end function min_string")
 	}
 	if c.needsNow {
 		c.blank()
