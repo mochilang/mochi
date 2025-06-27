@@ -192,6 +192,32 @@ end`
   s
 end`
 
+	helperMin = `def _min(v)
+  list = nil
+  if v.respond_to?(:Items)
+    list = v.Items
+  elsif v.is_a?(Array)
+    list = v
+  elsif v.respond_to?(:to_a)
+    list = v.to_a
+  end
+  return 0 if !list || list.empty?
+  list.min
+end`
+
+	helperMax = `def _max(v)
+  list = nil
+  if v.respond_to?(:Items)
+    list = v.Items
+  elsif v.is_a?(Array)
+    list = v
+  elsif v.respond_to?(:to_a)
+    list = v.to_a
+  end
+  return 0 if !list || list.empty?
+  list.max
+end`
+
 	helperEval = `def _eval(code)
   eval(code)
 end`
@@ -382,6 +408,8 @@ var helperMap = map[string]string{
 	"_genEmbed":    helperGenEmbed,
 	"_genStruct":   helperGenStruct,
 	"_json":        helperJSON,
+	"_min":         helperMin,
+	"_max":         helperMax,
 	"_sum":         helperSum,
 	"_eval":        helperEval,
 	"_group":       helperGroup,
