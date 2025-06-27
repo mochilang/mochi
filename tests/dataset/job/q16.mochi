@@ -1,0 +1,69 @@
+let aka_name = [
+  { person_id: 1, name: "Alpha" },
+  { person_id: 2, name: "Beta" }
+]
+
+let cast_info = [
+  { person_id: 1, movie_id: 101 },
+  { person_id: 2, movie_id: 102 }
+]
+
+let company_name = [
+  { id: 1, country_code: "[us]" },
+  { id: 2, country_code: "[de]" }
+]
+
+let keyword = [
+  { id: 1, keyword: "character-name-in-title" },
+  { id: 2, keyword: "other" }
+]
+
+let movie_companies = [
+  { movie_id: 101, company_id: 1 },
+  { movie_id: 102, company_id: 2 }
+]
+
+let movie_keyword = [
+  { movie_id: 101, keyword_id: 1 },
+  { movie_id: 102, keyword_id: 2 }
+]
+
+let name = [
+  { id: 1 },
+  { id: 2 }
+]
+
+let title = [
+  { id: 101, title: "Hero Bob", episode_nr: 60 },
+  { id: 102, title: "Other Show", episode_nr: 40 }
+]
+
+let rows =
+  from an in aka_name
+  join n in name on n.id == an.person_id
+  join ci in cast_info on ci.person_id == n.id
+  join t in title on t.id == ci.movie_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join mc in movie_companies on mc.movie_id == t.id
+  join cn in company_name on cn.id == mc.company_id
+  where cn.country_code == "[us]" &&
+        k.keyword == "character-name-in-title" &&
+        t.episode_nr >= 50 &&
+        t.episode_nr < 100
+  select { pseudonym: an.name, series: t.title }
+
+let result = [
+  {
+    cool_actor_pseudonym: min(from r in rows select r.pseudonym),
+    series_named_after_char: min(from r in rows select r.series)
+  }
+]
+
+json(result)
+
+test "Q16 finds series named after a character between episodes 50 and 99" {
+  expect result == [
+    { cool_actor_pseudonym: "Alpha", series_named_after_char: "Hero Bob" }
+  ]
+}
