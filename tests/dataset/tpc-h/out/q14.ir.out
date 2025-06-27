@@ -144,20 +144,8 @@ L9:
   Move         r89, r88
   // json(result)
   JSON         r89
-  // let promo = 1000.0 * 0.9       // = 900
-  Const        r90, 1000
-  Const        r91, 0.9
-  MulFloat     r92, r90, r91
-  Move         r93, r92
-  // let total = 900 + 800.0        // = 1700
-  Const        r94, 900
-  Const        r95, 800
-  AddFloat     r96, r94, r95
-  Move         r97, r96
   // let expected = 100.0 * promo / total  // ≈ 52.94
-  Const        r98, 100
-  MulFloat     r99, r98, r93
-  DivFloat     r100, r99, r97
+  Const        r100, 52.94117647058823
   Move         r101, r100
   // expect result == expected
   EqualFloat   r102, r89, r101

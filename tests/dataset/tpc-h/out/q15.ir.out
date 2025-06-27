@@ -237,18 +237,14 @@ L12:
   Jump         L15
 L11:
   // sort by s.s_suppkey
-  Sort         150,93,0,0
+  Sort         r150, r93
   // let result = from s in supplier
   Move         r93, r150
   Move         r151, r93
   // json(result)
   JSON         r151
   // let rev = 1000.0 * 0.9 + 500.0
-  Const        r152, 1000
-  Const        r153, 0.9
-  MulFloat     r154, r152, r153
-  Const        r155, 500
-  AddFloat     r156, r154, r155
+  Const        r156, 1400
   Move         r157, r156
   // s_suppkey: 100,
   Const        r158, "s_suppkey"

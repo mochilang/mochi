@@ -351,7 +351,7 @@ L15:
   Jump         L17
 L10:
   // order by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
-  Sort         243,10,0,0
+  Sort         r243, r10
   // from c in customer
   Move         r10, r243
   // let result =

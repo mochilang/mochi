@@ -355,7 +355,7 @@ L15:
   Jump         L17
 L12:
   // sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
-  Sort         242,12,0,0
+  Sort         r242, r12
   // from c in customer
   Move         r12, r242
   // let result =
@@ -368,9 +368,7 @@ L12:
   Const        r248, "Alice"
   // revenue: 1000.0 * 0.9, // 900.0
   Const        r249, "revenue"
-  Const        r250, 1000
-  Const        r251, 0.9
-  MulFloat     r252, r250, r251
+  Const        r252, 900
   // c_acctbal: 100.0,
   Const        r253, "c_acctbal"
   Const        r254, 100
