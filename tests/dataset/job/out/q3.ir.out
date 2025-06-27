@@ -1,0 +1,157 @@
+func main (regs=91)
+  // let keyword = [
+  Const        r0, [{"id": 1, "keyword": "amazing sequel"}, {"id": 2, "keyword": "prequel"}]
+  Move         r1, r0
+  // let movie_info = [
+  Const        r2, [{"info": "Germany", "movie_id": 10}, {"info": "Sweden", "movie_id": 30}, {"info": "France", "movie_id": 20}]
+  Move         r3, r2
+  // let movie_keyword = [
+  Const        r4, [{"keyword_id": 1, "movie_id": 10}, {"keyword_id": 1, "movie_id": 30}, {"keyword_id": 1, "movie_id": 20}, {"keyword_id": 2, "movie_id": 10}]
+  Move         r5, r4
+  // let title = [
+  Const        r6, [{"id": 10, "production_year": 2006, "title": "Alpha"}, {"id": 30, "production_year": 2008, "title": "Beta"}, {"id": 20, "production_year": 2009, "title": "Gamma"}]
+  Move         r7, r6
+  // let allowed_infos = [
+  Const        r8, ["Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"]
+  Move         r9, r8
+  // from k in keyword
+  Const        r10, []
+  IterPrep     r11, r1
+  Len          r12, r11
+  Const        r13, 0
+L11:
+  Less         r14, r13, r12
+  JumpIfFalse  r14, L0
+  Index        r15, r11, r13
+  Move         r16, r15
+  // join mk in movie_keyword on mk.keyword_id == k.id
+  IterPrep     r17, r5
+  Len          r18, r17
+  Const        r19, 0
+L10:
+  Less         r20, r19, r18
+  JumpIfFalse  r20, L1
+  Index        r21, r17, r19
+  Move         r22, r21
+  Const        r23, "keyword_id"
+  Index        r24, r22, r23
+  Const        r25, "id"
+  Index        r26, r16, r25
+  Equal        r27, r24, r26
+  JumpIfFalse  r27, L2
+  // join mi in movie_info on mi.movie_id == mk.movie_id
+  IterPrep     r28, r3
+  Len          r29, r28
+  Const        r30, 0
+L9:
+  Less         r31, r30, r29
+  JumpIfFalse  r31, L2
+  Index        r32, r28, r30
+  Move         r33, r32
+  Const        r34, "movie_id"
+  Index        r35, r33, r34
+  Const        r36, "movie_id"
+  Index        r37, r22, r36
+  Equal        r38, r35, r37
+  JumpIfFalse  r38, L3
+  // join t in title on t.id == mi.movie_id
+  IterPrep     r39, r7
+  Len          r40, r39
+  Const        r41, 0
+L8:
+  Less         r42, r41, r40
+  JumpIfFalse  r42, L3
+  Index        r43, r39, r41
+  Move         r44, r43
+  Const        r45, "id"
+  Index        r46, r44, r45
+  Const        r47, "movie_id"
+  Index        r48, r33, r47
+  Equal        r49, r46, r48
+  JumpIfFalse  r49, L4
+  Const        r50, "keyword"
+  Index        r51, r16, r50
+  // where k.keyword.contains("sequel") &&
+  Const        r52, "sequel"
+  In           r53, r52, r51
+  // t.production_year > 2005 &&
+  Const        r54, "production_year"
+  Index        r55, r44, r54
+  Const        r56, 2005
+  Less         r57, r56, r55
+  // mi.info in allowed_infos &&
+  Const        r58, "info"
+  Index        r59, r33, r58
+  In           r60, r59, r9
+  // mk.movie_id == mi.movie_id
+  Const        r61, "movie_id"
+  Index        r62, r22, r61
+  Const        r63, "movie_id"
+  Index        r64, r33, r63
+  Equal        r65, r62, r64
+  // where k.keyword.contains("sequel") &&
+  Move         r66, r53
+  JumpIfFalse  r66, L5
+  Move         r66, r60
+L5:
+  // mi.info in allowed_infos &&
+  Move         r67, r66
+  JumpIfFalse  r67, L6
+  Move         r67, r57
+L6:
+  // t.production_year > 2005 &&
+  Move         r68, r67
+  JumpIfFalse  r68, L7
+  Move         r68, r65
+L7:
+  // where k.keyword.contains("sequel") &&
+  JumpIfFalse  r68, L4
+  // select t.title
+  Const        r69, "title"
+  Index        r70, r44, r69
+  // from k in keyword
+  Append       r71, r10, r70
+  Move         r10, r71
+L4:
+  // join t in title on t.id == mi.movie_id
+  Const        r72, 1
+  Add          r73, r41, r72
+  Move         r41, r73
+  Jump         L8
+L3:
+  // join mi in movie_info on mi.movie_id == mk.movie_id
+  Const        r74, 1
+  Add          r75, r30, r74
+  Move         r30, r75
+  Jump         L9
+L2:
+  // join mk in movie_keyword on mk.keyword_id == k.id
+  Const        r76, 1
+  Add          r77, r19, r76
+  Move         r19, r77
+  Jump         L10
+L1:
+  // from k in keyword
+  Const        r78, 1
+  Add          r79, r13, r78
+  Move         r13, r79
+  Jump         L11
+L0:
+  // let candidate_titles =
+  Move         r80, r10
+  // let result = [{ movie_title: min(candidate_titles) }]
+  Const        r81, "movie_title"
+  Min          r82, r80
+  Move         r83, r81
+  Move         r84, r82
+  MakeMap      r85, 1, r83
+  Move         r86, r85
+  MakeList     r87, 1, r86
+  Move         r88, r87
+  // json(result)
+  JSON         r88
+  // expect result == [ { movie_title: "Alpha" } ]
+  Const        r89, [{"movie_title": "Alpha"}]
+  Equal        r90, r88, r89
+  Expect       r90
+  Return       r0

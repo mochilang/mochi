@@ -48,11 +48,11 @@ let rows =
   join ml in movie_link on ml.linked_movie_id == t.id
   join lt in link_type on lt.id == ml.link_type_id
   where (
-    an.name LIKE "%a%" &&
+    an.name.contains("a") &&
     it.info == "mini biography" &&
     lt.link == "features" &&
     n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-    (n.gender == "m" || (n.gender == "f" && n.name LIKE "B%")) &&
+    (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
     pi.note == "Volker Boehm" &&
     t.production_year >= 1980 && t.production_year <= 1995 &&
     pi.person_id == an.person_id &&
