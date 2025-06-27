@@ -1,6 +1,7 @@
 package scalacode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -55,4 +56,31 @@ func EnsureScala() error {
 		}
 	}
 	return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
+}
+
+// FormatScala runs scalafmt on the given source code if available.
+// If scalafmt is not found or fails, the input is returned unchanged.
+func FormatScala(src []byte) []byte {
+	path, err := exec.LookPath("scalafmt")
+	if err != nil {
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
+	}
+	cmd := exec.Command(path, "--stdin")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		res := out.Bytes()
+		if len(res) == 0 || res[len(res)-1] != '\n' {
+			res = append(res, '\n')
+		}
+		return res
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
