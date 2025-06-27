@@ -7,17 +7,17 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	static void test_addition_works() {
-		long x = (1L + 2L);
-		expect((x == 3L));
-	}
-	
-	public static void Main() {
-		Console.WriteLine("ok");
-		test_addition_works();
-	}
-	static void expect(bool cond) {
-		if (!cond) throw new Exception("expect failed");
-	}
-	
+    static void test_addition_works() {
+        long x = (1L + 2L);
+        expect((x == 3L));
+    }
+    
+    public static void Main() {
+        Console.WriteLine("ok");
+        test_addition_works();
+    }
+    static void expect(bool cond) {
+        if (!cond) throw new Exception("expect failed");
+    }
+    
 }

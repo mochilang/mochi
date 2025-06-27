@@ -7,16 +7,16 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	static long factorial(long n) {
-		if ((n <= 1L)) {
-			return 1L;
-		}
-		return (n * factorial((n - 1L)));
-	}
-	
-	public static void Main() {
-		Console.WriteLine(factorial(0L));
-		Console.WriteLine(factorial(1L));
-		Console.WriteLine(factorial(5L));
-	}
+    static long factorial(long n) {
+        if ((n <= 1L)) {
+            return 1L;
+        }
+        return (n * factorial((n - 1L)));
+    }
+    
+    public static void Main() {
+        Console.WriteLine(factorial(0L));
+        Console.WriteLine(factorial(1L));
+        Console.WriteLine(factorial(5L));
+    }
 }

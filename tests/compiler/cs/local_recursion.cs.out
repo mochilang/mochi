@@ -9,50 +9,50 @@ using System.Web;
 
 public interface Tree { void isTree(); }
 public struct Leaf : Tree {
-	public void isTree() {}
+    public void isTree() {}
 }
 public struct Node : Tree {
-	public Tree left;
-	public long value;
-	public Tree right;
-	public void isTree() {}
+    public Tree left;
+    public long value;
+    public Tree right;
+    public void isTree() {}
 }
 
 public class Program {
-	static Tree fromList(long[] nums) {
-		Tree helper(long lo, long hi) {
-			if ((lo >= hi)) {
-				return new Leaf {  };
-			}
-			var mid = (((lo + hi)) / 2L);
-			return new Node { left = helper(lo, mid), value = _indexList(nums, mid), right = helper((mid + 1L), hi) };
-		}
-		return helper(0L, nums.Length);
-	}
-	
-	static long[] inorder(Tree t) {
-		return new Func<dynamic>(() => {
-		var _t = t;
-		if (_t is Leaf) return new dynamic[] { };
-		if (_t is Node _tmp0) {
-			var l = _tmp0.left;
-			var v = _tmp0.value;
-			var r = _tmp0.right;
-			return inorder(l).Concat(new dynamic[] { v }).ToArray().Concat(inorder(r)).ToArray();
-		}
-		return null;
-	})();
-	}
-	
-	public static void Main() {
-		Console.WriteLine(inorder(fromList(new long[] { (-10L), (-3L), 0L, 5L, 9L })));
-	}
-	static dynamic _indexList(dynamic l, long i) {
-		var list = l as System.Collections.IList;
-		if (list == null) throw new Exception("index() expects list");
-		if (i < 0) i += list.Count;
-		if (i < 0 || i >= list.Count) throw new Exception("index out of range");
-		return list[(int)i];
-	}
-	
+    static Tree fromList(long[] nums) {
+        Tree helper(long lo, long hi) {
+            if ((lo >= hi)) {
+                return new Leaf {  };
+            }
+            var mid = (((lo + hi)) / 2L);
+            return new Node { left = helper(lo, mid), value = _indexList(nums, mid), right = helper((mid + 1L), hi) };
+        }
+        return helper(0L, nums.Length);
+    }
+    
+    static long[] inorder(Tree t) {
+        return new Func<dynamic[]>(() => {
+        var _t = t;
+        if (_t is Leaf) return new dynamic[] { };
+        if (_t is Node _tmp0) {
+            var l = _tmp0.left;
+            var v = _tmp0.value;
+            var r = _tmp0.right;
+            return inorder(l).Concat(new dynamic[] { v }).ToArray().Concat(inorder(r)).ToArray();
+        }
+        return default;
+    })();
+    }
+    
+    public static void Main() {
+        Console.WriteLine(inorder(fromList(new long[] { (-10L), (-3L), 0L, 5L, 9L })));
+    }
+    static dynamic _indexList(dynamic l, long i) {
+        var list = l as System.Collections.IList;
+        if (list == null) throw new Exception("index() expects list");
+        if (i < 0) i += list.Count;
+        if (i < 0 || i >= list.Count) throw new Exception("index out of range");
+        return list[(int)i];
+    }
+    
 }

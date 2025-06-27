@@ -8,26 +8,26 @@ using System.Web;
 
 public interface Tree { void isTree(); }
 public struct Leaf : Tree {
-	public void isTree() {}
+    public void isTree() {}
 }
 public struct Node : Tree {
-	public Tree left;
-	public long value;
-	public Tree right;
-	public void isTree() {}
+    public Tree left;
+    public long value;
+    public Tree right;
+    public void isTree() {}
 }
 
 public class Program {
-	static bool isLeaf(Tree t) {
-		return new Func<bool>(() => {
-		var _t = t;
-		if (_t is Leaf) return true;
-		return false;
-	})();
-	}
-	
-	public static void Main() {
-		Console.WriteLine(isLeaf(new Leaf {  }));
-		Console.WriteLine(isLeaf(new Node { left = new Leaf {  }, value = 1L, right = new Leaf {  } }));
-	}
+    static bool isLeaf(Tree t) {
+        return new Func<bool>(() => {
+        var _t = t;
+        if (_t is Leaf) return true;
+        return false;
+    })();
+    }
+    
+    public static void Main() {
+        Console.WriteLine(isLeaf(new Leaf {  }));
+        Console.WriteLine(isLeaf(new Node { left = new Leaf {  }, value = 1L, right = new Leaf {  } }));
+    }
 }

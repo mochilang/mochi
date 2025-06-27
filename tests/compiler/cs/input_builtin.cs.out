@@ -7,11 +7,11 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Console.WriteLine("Enter first input:");
-		string input1 = Console.ReadLine();
-		Console.WriteLine("Enter second input:");
-		string input2 = Console.ReadLine();
-		Console.WriteLine(string.Join(" ", new [] { Convert.ToString("You entered:"), Convert.ToString(input1), Convert.ToString(","), Convert.ToString(input2) }));
-	}
+    public static void Main() {
+        Console.WriteLine("Enter first input:");
+        string input1 = Console.ReadLine();
+        Console.WriteLine("Enter second input:");
+        string input2 = Console.ReadLine();
+        Console.WriteLine(string.Join(" ", new [] { Convert.ToString("You entered:"), Convert.ToString(input1), Convert.ToString(","), Convert.ToString(input2) }));
+    }
 }

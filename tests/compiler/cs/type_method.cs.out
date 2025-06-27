@@ -7,15 +7,15 @@ using System.Text;
 using System.Web;
 
 public struct Person {
-	public string name;
-	public string greet() {
-		return ("hi " + name);
-	}
+    public string name;
+    public string greet() {
+        return ("hi " + name);
+    }
 }
 
 public class Program {
-	public static void Main() {
-		Person p = new Person { name = "Ada" };
-		Console.WriteLine(p.greet());
-	}
+    public static void Main() {
+        Person p = new Person { name = "Ada" };
+        Console.WriteLine(p.greet());
+    }
 }

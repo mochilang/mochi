@@ -7,9 +7,9 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		double r = 3.000000;
-		double area = (math.pi * math.pow(r, 2.000000));
-		Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Area:"), Convert.ToString(area) }));
-	}
+    public static void Main() {
+        double r = 3.000000;
+        double area = (math.pi * math.pow(r, 2.000000));
+        Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Area:"), Convert.ToString(area) }));
+    }
 }

@@ -7,8 +7,8 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		long value = (((1L + 2L)) * 3L);
-		Console.WriteLine(value);
-	}
+    public static void Main() {
+        long value = (((1L + 2L)) * 3L);
+        Console.WriteLine(value);
+    }
 }

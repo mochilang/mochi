@@ -8,39 +8,39 @@ using System.Web;
 using System.Linq;
 
 public struct Customer {
-	public long id;
-	public string name;
+    public long id;
+    public string name;
 }
 
 public struct Order {
-	public long id;
-	public long customerId;
-	public long total;
+    public long id;
+    public long customerId;
+    public long total;
 }
 
 public struct PairInfo {
-	public long orderId;
-	public long orderCustomerId;
-	public string pairedCustomerName;
-	public long orderTotal;
+    public long orderId;
+    public long orderCustomerId;
+    public string pairedCustomerName;
+    public long orderTotal;
 }
 
 public class Program {
-	public static void Main() {
-		Customer[] customers = new Customer[] { new Customer { id = 1L, name = "Alice" }, new Customer { id = 2L, name = "Bob" }, new Customer { id = 3L, name = "Charlie" } };
-		Order[] orders = new Order[] { new Order { id = 100L, customerId = 1L, total = 250L }, new Order { id = 101L, customerId = 2L, total = 125L }, new Order { id = 102L, customerId = 1L, total = 300L } };
-		PairInfo[] result = new Func<List<PairInfo>>(() => {
-	var _res = new List<PairInfo>();
-	foreach (var o in orders) {
-		foreach (var c in customers) {
-			_res.Add(new PairInfo { orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total });
-		}
-	}
-	return _res;
+    public static void Main() {
+        Customer[] customers = new Customer[] { new Customer { id = 1L, name = "Alice" }, new Customer { id = 2L, name = "Bob" }, new Customer { id = 3L, name = "Charlie" } };
+        Order[] orders = new Order[] { new Order { id = 100L, customerId = 1L, total = 250L }, new Order { id = 101L, customerId = 2L, total = 125L }, new Order { id = 102L, customerId = 1L, total = 300L } };
+        PairInfo[] result = new Func<List<PairInfo>>(() => {
+    var _res = new List<PairInfo>();
+    foreach (var o in orders) {
+        foreach (var c in customers) {
+            _res.Add(new PairInfo { orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total });
+        }
+    }
+    return _res;
 })();
-		Console.WriteLine("--- Cross Join: All order-customer pairs ---");
-		foreach (var entry in result) {
-			Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Order"), Convert.ToString(entry.orderId), Convert.ToString("(customerId:"), Convert.ToString(entry.orderCustomerId), Convert.ToString(", total: $"), Convert.ToString(entry.orderTotal), Convert.ToString(") paired with"), Convert.ToString(entry.pairedCustomerName) }));
-		}
-	}
+        Console.WriteLine("--- Cross Join: All order-customer pairs ---");
+        foreach (var entry in result) {
+            Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Order"), Convert.ToString(entry.orderId), Convert.ToString("(customerId:"), Convert.ToString(entry.orderCustomerId), Convert.ToString(", total: $"), Convert.ToString(entry.orderTotal), Convert.ToString(") paired with"), Convert.ToString(entry.pairedCustomerName) }));
+        }
+    }
 }

@@ -8,28 +8,28 @@ using System.Web;
 
 public interface Tree { void isTree(); }
 public struct Leaf : Tree {
-	public void isTree() {}
+    public void isTree() {}
 }
 public struct Node : Tree {
-	public Tree left;
-	public long value;
-	public Tree right;
-	public void isTree() {}
+    public Tree left;
+    public long value;
+    public Tree right;
+    public void isTree() {}
 }
 
 public class Program {
-	static long value_of_root(Tree t) {
-		return new Func<dynamic>(() => {
-		var _t = t;
-		if (_t is Node _tmp0) {
-			var v = _tmp0.value;
-			return v;
-		}
-		return 0L;
-	})();
-	}
-	
-	public static void Main() {
-		Console.WriteLine(value_of_root(new Node { left = new Leaf {  }, value = 5L, right = new Leaf {  } }));
-	}
+    static long value_of_root(Tree t) {
+        return new Func<dynamic>(() => {
+        var _t = t;
+        if (_t is Node _tmp0) {
+            var v = _tmp0.value;
+            return v;
+        }
+        return 0L;
+    })();
+    }
+    
+    public static void Main() {
+        Console.WriteLine(value_of_root(new Node { left = new Leaf {  }, value = 5L, right = new Leaf {  } }));
+    }
 }

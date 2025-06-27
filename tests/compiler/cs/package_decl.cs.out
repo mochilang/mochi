@@ -7,9 +7,9 @@ using System.Text;
 using System.Web;
 
 namespace sample {
-	public class Program {
-		public static void Main() {
-			Console.WriteLine(42L);
-		}
-	}
+    public class Program {
+        public static void Main() {
+            Console.WriteLine(42L);
+        }
+    }
 }

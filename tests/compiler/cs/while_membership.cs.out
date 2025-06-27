@@ -7,33 +7,33 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Dictionary<long, bool> set = new Dictionary<dynamic, dynamic> {  };
-		foreach (var n in new long[] { 1L, 2L, 3L }) {
-			set[n] = true;
-		}
-		long i = 1L;
-		long count = 0L;
-		while (_in(i, set)) {
-			i = (i + 1L);
-			count = (count + 1L);
-		}
-		Console.WriteLine(count);
-	}
-	static bool _in(dynamic item, dynamic col) {
-		if (col is string s && item is string sub) {
-			return s.Contains(sub);
-		}
-		if (col is System.Collections.IDictionary d) {
-			return d.Contains(item);
-		}
-		if (col is System.Collections.IEnumerable e) {
-			foreach (var it in e) {
-				if (Equals(it, item)) return true;
-			}
-			return false;
-		}
-		return false;
-	}
-	
+    public static void Main() {
+        Dictionary<long, bool> set = new Dictionary<dynamic, dynamic> {  };
+        foreach (var n in new long[] { 1L, 2L, 3L }) {
+            set[n] = true;
+        }
+        long i = 1L;
+        long count = 0L;
+        while (_in(i, set)) {
+            i = (i + 1L);
+            count = (count + 1L);
+        }
+        Console.WriteLine(count);
+    }
+    static bool _in(dynamic item, dynamic col) {
+        if (col is string s && item is string sub) {
+            return s.Contains(sub);
+        }
+        if (col is System.Collections.IDictionary d) {
+            return d.Contains(item);
+        }
+        if (col is System.Collections.IEnumerable e) {
+            foreach (var it in e) {
+                if (Equals(it, item)) return true;
+            }
+            return false;
+        }
+        return false;
+    }
+    
 }

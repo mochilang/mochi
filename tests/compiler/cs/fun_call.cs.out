@@ -7,11 +7,11 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	static long add(long a, long b) {
-		return (a + b);
-	}
-	
-	public static void Main() {
-		Console.WriteLine(add(2L, 3L));
-	}
+    static long add(long a, long b) {
+        return (a + b);
+    }
+    
+    public static void Main() {
+        Console.WriteLine(add(2L, 3L));
+    }
 }

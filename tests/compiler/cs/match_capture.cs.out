@@ -8,30 +8,30 @@ using System.Web;
 
 public interface Tree { void isTree(); }
 public struct Leaf : Tree {
-	public void isTree() {}
+    public void isTree() {}
 }
 public struct Node : Tree {
-	public Tree left;
-	public long value;
-	public Tree right;
-	public void isTree() {}
+    public Tree left;
+    public long value;
+    public Tree right;
+    public void isTree() {}
 }
 
 public class Program {
-	static long depth(Tree t) {
-		return new Func<long>(() => {
-		var _t = t;
-		if (_t is Leaf) return 0L;
-		if (_t is Node _tmp0) {
-			var l = _tmp0.left;
-			var r = _tmp0.right;
-			return ((depth(l) + depth(r)) + 1L);
-		}
-		return default;
-	})();
-	}
-	
-	public static void Main() {
-		Console.WriteLine(depth(new Node { left = new Leaf {  }, value = 0L, right = new Leaf {  } }));
-	}
+    static long depth(Tree t) {
+        return new Func<long>(() => {
+        var _t = t;
+        if (_t is Leaf) return 0L;
+        if (_t is Node _tmp0) {
+            var l = _tmp0.left;
+            var r = _tmp0.right;
+            return ((depth(l) + depth(r)) + 1L);
+        }
+        return default;
+    })();
+    }
+    
+    public static void Main() {
+        Console.WriteLine(depth(new Node { left = new Leaf {  }, value = 0L, right = new Leaf {  } }));
+    }
 }

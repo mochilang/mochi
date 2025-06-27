@@ -7,9 +7,9 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		long a = 10L;
-		long b = 20L;
-		Console.WriteLine((a + b));
-	}
+    public static void Main() {
+        long a = 10L;
+        long b = 20L;
+        Console.WriteLine((a + b));
+    }
 }

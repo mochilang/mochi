@@ -7,17 +7,17 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		long c = 0L;
-		for (var _tmp0 = 0L; _tmp0 < 2L; _tmp0++) {
-			c = (c + 1L);
-		}
-		foreach (var _tmp1 in new long[] { 1L, 2L }) {
-			c = (c + 1L);
-		}
-		foreach (var _tmp2 in "ab") {
-			c = (c + 1L);
-		}
-		Console.WriteLine(c);
-	}
+    public static void Main() {
+        long c = 0L;
+        for (var _tmp0 = 0L; _tmp0 < 2L; _tmp0++) {
+            c = (c + 1L);
+        }
+        foreach (var _tmp1 in new long[] { 1L, 2L }) {
+            c = (c + 1L);
+        }
+        foreach (var _tmp2 in "ab") {
+            c = (c + 1L);
+        }
+        Console.WriteLine(c);
+    }
 }

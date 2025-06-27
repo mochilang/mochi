@@ -8,16 +8,16 @@ using System.Web;
 using System.Linq;
 
 public struct Person {
-	public string name;
-	public long age;
+    public string name;
+    public long age;
 }
 
 public class Program {
-	public static void Main() {
-		Person[] people = new Person[] { new Person { name = "Alice", age = 30L }, new Person { name = "Bob", age = 15L }, new Person { name = "Charlie", age = 65L } };
-		string[] names = new List<dynamic>(people.Where(p => (p.age >= 18L)).Select(p => p.name));
-		foreach (var n in names) {
-			Console.WriteLine(n);
-		}
-	}
+    public static void Main() {
+        Person[] people = new Person[] { new Person { name = "Alice", age = 30L }, new Person { name = "Bob", age = 15L }, new Person { name = "Charlie", age = 65L } };
+        string[] names = new List<dynamic>(people.Select(p => p.name));
+        foreach (var n in names) {
+            Console.WriteLine(n);
+        }
+    }
 }

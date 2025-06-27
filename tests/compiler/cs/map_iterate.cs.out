@@ -7,14 +7,14 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Dictionary<long, bool> m = new Dictionary<dynamic, dynamic> {  };
-		m[1L] = true;
-		m[2L] = true;
-		long sum = 0L;
-		foreach (var k in m.Keys) {
-			sum = (sum + k);
-		}
-		Console.WriteLine(sum);
-	}
+    public static void Main() {
+        Dictionary<long, bool> m = new Dictionary<dynamic, dynamic> {  };
+        m[1L] = true;
+        m[2L] = true;
+        long sum = 0L;
+        foreach (var k in m.Keys) {
+            sum = (sum + k);
+        }
+        Console.WriteLine(sum);
+    }
 }

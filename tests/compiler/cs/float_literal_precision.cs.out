@@ -7,7 +7,7 @@ using System.Text;
 using System.Web;
 
 public class Program {
-	public static void Main() {
-		Console.WriteLine(9.261000);
-	}
+    public static void Main() {
+        Console.WriteLine(9.261000);
+    }
 }

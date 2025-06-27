@@ -1,6 +1,7 @@
 package cscode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -89,4 +90,33 @@ func ensureDotnet() error {
 		}
 	}
 	return fmt.Errorf("failed to install dotnet")
+}
+
+// FormatCS attempts to format the given C# source using the `dotnet format`
+// command if available. If the formatter is unavailable or fails, the input is
+// returned with tabs expanded to four spaces.
+func FormatCS(src []byte) []byte {
+	dotnet, err := exec.LookPath("dotnet")
+	if err == nil {
+		dir, err := os.MkdirTemp("", "mochi_cs_fmt")
+		if err == nil {
+			defer os.RemoveAll(dir)
+			proj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>`
+			_ = os.WriteFile(filepath.Join(dir, "fmt.csproj"), []byte(proj), 0644)
+			file := filepath.Join(dir, "Program.cs")
+			if err := os.WriteFile(file, src, 0644); err == nil {
+				cmd := exec.Command(dotnet, "format", "fmt.csproj", "--no-restore", "--verbosity", "quiet")
+				cmd.Dir = dir
+				_ = cmd.Run()
+				if out, err := os.ReadFile(file); err == nil {
+					src = out
+				}
+			}
+		}
+	}
+	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
