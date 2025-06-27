@@ -267,6 +267,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			argStr := strings.Join(args, ", ")
+			if strings.HasSuffix(res, ".contains") && len(args) == 1 {
+				target := strings.TrimSuffix(res, ".contains")
+				res = fmt.Sprintf("String.contains?(%s, %s)", target, argStr)
+				continue
+			}
 			if strings.HasSuffix(res, ".keys") && len(args) == 0 {
 				target := strings.TrimSuffix(res, ".keys")
 				res = fmt.Sprintf("Map.keys(%s)", target)
@@ -291,6 +296,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case "avg":
 					c.use("_avg")
 					res = fmt.Sprintf("_avg(%s)", argStr)
+				case "min":
+					c.use("_min")
+					res = fmt.Sprintf("_min(%s)", argStr)
 				case "str":
 					res = fmt.Sprintf("to_string(%s)", argStr)
 				case "input":
@@ -404,6 +412,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args = append(args, v)
 		}
 		argStr := strings.Join(args, ", ")
+		if strings.HasSuffix(p.Call.Func, ".contains") && len(args) == 1 {
+			base := strings.TrimSuffix(p.Call.Func, ".contains")
+			return fmt.Sprintf("String.contains?(%s, %s)", base, argStr), nil
+		}
 		switch p.Call.Func {
 		case "print":
 			if len(args) == 1 {
@@ -421,13 +433,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "avg":
 			c.use("_avg")
 			return fmt.Sprintf("_avg(%s)", argStr), nil
+		case "min":
+			c.use("_min")
+			return fmt.Sprintf("_min(%s)", argStr), nil
 		case "str":
 			return fmt.Sprintf("to_string(%s)", argStr), nil
 		case "input":
 			c.use("_input")
 			return "_input()", nil
 		case "json":
-			return fmt.Sprintf("IO.puts(Jason.encode!(%s))", argStr), nil
+			c.use("_json")
+			return fmt.Sprintf("_json(%s)", argStr), nil
 		case "keys":
 			return fmt.Sprintf("Map.keys(%s)", argStr), nil
 		case "values":

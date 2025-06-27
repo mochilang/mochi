@@ -9,6 +9,25 @@ const (
 
 	helperAvg = "defp _avg(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]\n    is_list(v) -> v\n    true -> raise \"avg() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    Enum.sum(list) / Enum.count(list)\n  end\nend\n"
 
+	helperJson = `defp _escape_json(<<>>), do: ""
+defp _escape_json(<<"\\", rest::binary>>), do: "\\\\" <> _escape_json(rest)
+defp _escape_json(<<"\"", rest::binary>>), do: "\\\"" <> _escape_json(rest)
+defp _escape_json(<<c::binary-size(1), rest::binary>>), do: c <> _escape_json(rest)
+defp _to_json(v) when is_binary(v), do: "\"" <> _escape_json(v) <> "\""
+defp _to_json(v) when is_number(v), do: to_string(v)
+defp _to_json(v) when is_boolean(v), do: if v, do: "true", else: "false"
+defp _to_json(v) when is_list(v), do: "[" <> Enum.map_join(v, ",", &_to_json/1) <> "]"
+defp _to_json(v) when is_map(v) do
+  keys = Map.keys(v) |> Enum.map(&to_string/1) |> Enum.sort()
+  inner = Enum.map_join(keys, ",", fn k -> _to_json(k) <> ":" <> _to_json(Map.get(v, String.to_atom(k), Map.get(v, k))) end)
+  "{" <> inner <> "}"
+end
+defp _to_json(_), do: "null"
+defp _json(v), do: IO.puts(_to_json(v))
+`
+
+	helperMin = "defp _min(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :Items) -> v[:Items]\n    is_list(v) -> v\n    true -> raise \"min() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    hd = hd(list)\n    Enum.reduce(tl(list), hd, fn it, acc ->\n      cond do\n        is_binary(acc) and is_binary(it) -> if it < acc, do: it, else: acc\n        true -> if Kernel.<(it, acc), do: it, else: acc\n      end\n    end)\n  end\nend\n"
+
 	helperGroup = "defmodule _Group do\n  defstruct key: nil, Items: []\nend\n"
 
 	helperGroupBy = "defp _group_by(src, keyfn) do\n  {groups, order} = Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->\n    key = keyfn.(it)\n    ks = to_string(key)\n    {groups, order} = if Map.has_key?(groups, ks) do\n      {groups, order}\n    else\n      {Map.put(groups, ks, %_Group{key: key}), order ++ [ks]}\n    end\n    groups = Map.update!(groups, ks, fn g -> %{g | Items: g.Items ++ [it]} end)\n    {groups, order}\n  end)\n  Enum.map(order, fn k -> groups[k] end)\nend\n"
@@ -117,6 +136,8 @@ var helperMap = map[string]string{
 	"_count":        helperCount,
 	"_sum":          helperSum,
 	"_avg":          helperAvg,
+	"_min":          helperMin,
+	"_json":         helperJson,
 	"_group":        helperGroup,
 	"_group_by":     helperGroupBy,
 	"_parse_csv":    helperParseCSV,
