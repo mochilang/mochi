@@ -1,29 +1,25 @@
 program main;
 {$mode objfpc}
-
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-type 
+type
   generic TArray<T> = array of T;
-
 type Customer = record
   id: integer;
   name: string;
 end;
-
 type Order = record
   id: integer;
   customerId: integer;
   total: integer;
 end;
-
 type PairInfo = record
   orderId: integer;
   customerName: string;
   total: integer;
 end;
 
-var 
+var
   _tmp0: Customer;
   _tmp1: Customer;
   _tmp2: Customer;
@@ -65,17 +61,17 @@ begin
   _tmp7.total := o.total;
   SetLength(_tmp8, 0);
   for o in orders do
+  begin
+    for c in customers do
     begin
-      for c in customers do
-        begin
-          if not ((o.customerId = c.id)) then continue;
-          _tmp8 := Concat(_tmp8, [_tmp7]);
-        end;
+      if not ((o.customerId = c.id)) then continue;
+      _tmp8 := Concat(_tmp8, [_tmp7]);
     end;
+  end;
   _result := _tmp8;
   writeln('--- Orders with customer info ---');
   for entry in _result do
-    begin
-      writeln('Order', entry.orderId, 'by', entry.customerName, '- $', entry.total);
-    end;
+  begin
+    writeln('Order', entry.orderId, 'by', entry.customerName, '- $', entry.total);
+  end;
 end.

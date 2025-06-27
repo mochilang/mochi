@@ -1,13 +1,11 @@
 program main;
 {$mode objfpc}
-
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-type 
+type
   generic TArray<T> = array of T;
 
-  generic function _sliceList<T>(arr: specialize TArray<T>; i, j: integer): specialize TArray<T>;
-
+generic function _sliceList<T>(arr: specialize TArray<T>; i, j: integer): specialize TArray<T>;
 var start_, end_, n: integer;
 begin
   start_ := i;

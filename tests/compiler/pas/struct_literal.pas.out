@@ -1,17 +1,15 @@
 program main;
 {$mode objfpc}
-
 uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 
-type 
+type
   generic TArray<T> = array of T;
-
 type Point = record
   x: integer;
   y: integer;
 end;
 
-var 
+var
   _tmp0: Point;
   p: Point;
 
