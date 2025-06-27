@@ -126,7 +126,7 @@ func applyTags(tags []RegTag, ins Instr) {
 		tags[ins.A] = TagUnknown
 	case OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
-		OpIn, OpLike, OpNot:
+		OpIn, OpNot:
 		tags[ins.A] = TagBool
 	case OpLen, OpNow:
 		tags[ins.A] = TagInt
