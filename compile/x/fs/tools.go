@@ -1,6 +1,7 @@
 package fscode
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -87,4 +88,75 @@ func ensureDotnet() error {
 		}
 	}
 	return fmt.Errorf("failed to install dotnet")
+}
+
+// EnsureFantomas verifies that the Fantomas formatter is installed.
+// It attempts a best-effort installation via "dotnet tool install" if missing.
+// This function is safe to call from tests.
+func EnsureFantomas() error { return ensureFantomas() }
+
+func ensureFantomas() error {
+	if _, err := exec.LookPath("fantomas"); err == nil {
+		return nil
+	}
+	if _, err := exec.LookPath("dotnet"); err != nil {
+		if err := ensureDotnet(); err != nil {
+			return err
+		}
+	}
+	if err := exec.Command("dotnet", "fantomas", "--version").Run(); err == nil {
+		return nil
+	}
+	fmt.Println("🔧 Installing Fantomas formatter via dotnet tool...")
+	cmd := exec.Command("dotnet", "tool", "install", "-g", "fantomas")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		cmd = exec.Command("dotnet", "tool", "update", "-g", "fantomas")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		_ = cmd.Run()
+	}
+	if err := exec.Command("dotnet", "fantomas", "--version").Run(); err == nil {
+		return nil
+	}
+	if _, err := exec.LookPath("fantomas"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("fantomas not installed")
+}
+
+// FormatFS runs the Fantomas formatter on the given source code if available.
+// If Fantomas is not found or fails, the input is returned unchanged.
+func FormatFS(src []byte) []byte {
+	if path, err := exec.LookPath("fantomas"); err == nil {
+		cmd := exec.Command(path, "--stdin")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res
+		}
+	}
+	if path, err := exec.LookPath("dotnet"); err == nil {
+		cmd := exec.Command(path, "fantomas", "--stdin")
+		cmd.Stdin = bytes.NewReader(src)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		if err := cmd.Run(); err == nil {
+			res := out.Bytes()
+			if len(res) == 0 || res[len(res)-1] != '\n' {
+				res = append(res, '\n')
+			}
+			return res
+		}
+	}
+	if len(src) > 0 && src[len(src)-1] != '\n' {
+		src = append(src, '\n')
+	}
+	return src
 }
