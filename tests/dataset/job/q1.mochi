@@ -31,7 +31,7 @@ let filtered =
   join it in info_type on it.id == mi.info_type_id
   where ct.kind == "production companies" &&
         it.info == "top 250 rank" &&
-        !mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)") &&
+        (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
         (mc.note.contains("(co-production)") || mc.note.contains("(presents)"))
   select { note: mc.note, title: t.title, year: t.production_year }
 
