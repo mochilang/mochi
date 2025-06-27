@@ -93,7 +93,8 @@ const helperGroupBy = "function _group_by($src, $keyfn) {\n" +
 	"    $order = [];\n" +
 	"    foreach ($src as $it) {\n" +
 	"        $key = $keyfn($it);\n" +
-	"        $ks = strval($key);\n" +
+	"        if (is_array($key)) { $key = (object)$key; }\n" +
+	"        $ks = is_object($key) ? json_encode($key) : strval($key);\n" +
 	"        if (!isset($groups[$ks])) {\n" +
 	"            $groups[$ks] = new _Group($key);\n" +
 	"            $order[] = $ks;\n" +

@@ -714,8 +714,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				switch t.(type) {
 				case types.MapType:
 					isMap = true
-				case types.StructType:
+				case types.StructType, types.GroupType:
 					isMap = false
+					if _, ok := t.(types.GroupType); ok && len(p.Selector.Tail) == 0 {
+						name += "->Items"
+					}
 				}
 			}
 		}
@@ -928,7 +931,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
