@@ -1,26 +1,27 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template<typename T> string _fmtVec(const vector<T>& v) {
-	stringstream ss;
-	ss << '[';
-	for (size_t i = 0; i < v.size(); i++) {
-		if (i > 0) ss << ' ';
-		ss << v[i];
-	}
-	ss << ']';
-	return ss.str();
+template <typename T> string _fmtVec(const vector<T> &v) {
+  stringstream ss;
+  ss << '[';
+  for (size_t i = 0; i < v.size(); i++) {
+    if (i > 0)
+      ss << ' ';
+    ss << v[i];
+  }
+  ss << ']';
+  return ss.str();
 }
 
-template<typename T> vector<T> _union(const vector<T>& a, const vector<T>& b) {
-	vector<T> res = a;
-	for (const auto& it : b) {
-		if (find(res.begin(), res.end(), it) == res.end()) res.push_back(it);
-	}
-	return res;
+template <typename T>
+vector<T> _union_all(const vector<T> &a, const vector<T> &b) {
+  vector<T> res = a;
+  res.insert(res.end(), b.begin(), b.end());
+  return res;
 }
 
 int main() {
-	std::cout << (_fmtVec(_union(vector<int>{1, 2}, vector<int>{2, 3}))) << std::endl;
-	return 0;
+  std::cout << (_fmtVec(_union_all(vector<int>{1, 2}, vector<int>{2, 3})))
+            << std::endl;
+  return 0;
 }

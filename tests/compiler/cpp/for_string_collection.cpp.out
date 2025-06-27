@@ -2,8 +2,8 @@
 using namespace std;
 
 int main() {
-	for (char ch : string("hi")) {
-		std::cout << (ch) << std::endl;
-	}
-	return 0;
+  for (char ch : string("hi")) {
+    std::cout << (ch) << std::endl;
+  }
+  return 0;
 }

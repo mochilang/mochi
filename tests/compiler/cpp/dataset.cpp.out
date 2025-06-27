@@ -2,23 +2,25 @@
 using namespace std;
 
 struct Person {
-	string name;
-	int age;
+  string name;
+  int age;
 };
 
 int main() {
-	auto people = vector<Person>{Person{string("Alice"), 30}, Person{string("Bob"), 15}, Person{string("Charlie"), 65}};
-	auto names = ([&]() -> vector<auto> {
-	vector<auto> _res;
-	for (auto& p : people) {
-		if (p.age >= 18) {
-			_res.push_back(p.name);
-		}
-	}
-	return _res;
-})();
-	for (const string& n : names) {
-		std::cout << (n) << std::endl;
-	}
-	return 0;
+  auto people =
+      vector<Person>{Person{string("Alice"), 30}, Person{string("Bob"), 15},
+                     Person{string("Charlie"), 65}};
+  auto names = ([&]() -> vector<auto> {
+    vector<auto> _res;
+    for (auto &p : people) {
+      if (p.age >= 18) {
+        _res.push_back(p.name);
+      }
+    }
+    return _res;
+  })();
+  for (const string &n : names) {
+    std::cout << (n) << std::endl;
+  }
+  return 0;
 }

@@ -1,13 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int sumN(int n){
-	return n * (n + 1) / 2;
-}
+int sumN(int n) { return n * (n + 1) / 2; }
 
 int main() {
-	auto n = 10;
-	std::cout << (sumN(n)) << std::endl;
-	std::cout << (n) << std::endl;
-	return 0;
+  auto n = 10;
+  std::cout << (sumN(n)) << std::endl;
+  std::cout << (n) << std::endl;
+  return 0;
 }
