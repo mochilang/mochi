@@ -1,4 +1,2 @@
-# frozen_string_literal: true
-
 x = 2
-puts([x].join(' '))
+puts([x].join(" "))

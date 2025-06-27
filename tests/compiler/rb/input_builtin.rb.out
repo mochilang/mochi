@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
-puts(['Enter first input:'].join(' '))
-input1 = $stdin.gets.to_s.strip
-puts(['Enter second input:'].join(' '))
-input2 = $stdin.gets.to_s.strip
-puts(['You entered:', input1, ',', input2].join(' '))
+puts(["Enter first input:"].join(" "))
+input1 = STDIN.gets.to_s.strip
+puts(["Enter second input:"].join(" "))
+input2 = STDIN.gets.to_s.strip
+puts(["You entered:", input1, ",", input2].join(" "))

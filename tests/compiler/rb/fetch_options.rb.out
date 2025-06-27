@@ -1,39 +1,40 @@
-require 'ostruct'
+require "ostruct"
 
-def _fetch(url, opts=nil)
-  require 'net/http'
-  require 'json'
-  require 'uri'
+def _fetch(url, opts = nil)
+  require "net/http"
+  require "json"
+  require "uri"
   uri = URI(url)
-  if uri.scheme.nil? || uri.scheme == '' || uri.scheme == 'file'
-    path = uri.scheme == 'file' ? uri.path : url
+  if uri.scheme.nil? || uri.scheme == "" || uri.scheme == "file"
+    path = (uri.scheme == "file") ? uri.path : url
     data = File.read(path)
     return _structify(JSON.parse(data))
   end
-  method = 'GET'
+  method = "GET"
   headers = {}
   body = nil
   timeout = nil
   if opts
-    method = opts['method'] || method
-    if q = opts['query']
+    method = opts["method"] || method
+    if q = opts["query"]
       q = URI.encode_www_form(q.to_h)
-      uri.query = [uri.query, q].compact.join('&')
+      uri.query = [uri.query, q].compact.join("&")
     end
-    body = JSON.generate(opts['body']) if opts['body']
-    if opts['headers']
-      opts['headers'].to_h.each { |k,v| headers[k] = v.to_s }
+    body = JSON.generate(opts["body"]) if opts["body"]
+    if opts["headers"]
+      opts["headers"].to_h.each { |k, v| headers[k] = v.to_s }
     end
-    timeout = opts['timeout']
+    timeout = opts["timeout"]
   end
   req = Net::HTTP.const_get(method.capitalize).new(uri)
-  headers.each { |k,v| req[k] = v }
+  headers.each { |k, v| req[k] = v }
   req.body = body if body
-  Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https', read_timeout: timeout) do |http|
+  Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", read_timeout: timeout) do |http|
     resp = http.request(req)
     return _structify(JSON.parse(resp.body))
   end
 end
+
 def _structify(v)
   case v
   when Hash
@@ -47,5 +48,5 @@ end
 
 Msg = Struct.new(:message, keyword_init: true)
 
-data = Msg.new(**((_structify(_fetch("tests/compiler/rb/fetch_options.json", (OpenStruct.new(method: "GET", headers: {"X-Test" => "1"}, query: {"q" => "1"}, timeout: 1.0)).to_h.transform_keys(&:to_s)))).to_h.transform_keys(&:to_sym)))
+data = Msg.new(**_structify(_fetch("tests/compiler/rb/fetch_options.json", OpenStruct.new(method: "GET", headers: {"X-Test" => "1"}, query: {"q" => "1"}, timeout: 1.0).to_h.transform_keys(&:to_s))).to_h.transform_keys(&:to_sym))
 puts([data.message].join(" "))

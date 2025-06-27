@@ -1,4 +1,2 @@
-# frozen_string_literal: true
-
-map = { 'a' => 1 }
-puts([map['a']].join(' '))
+map = {"a" => 1}
+puts([map["a"]].join(" "))

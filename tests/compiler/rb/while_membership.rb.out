@@ -1,7 +1,5 @@
-# frozen_string_literal: true
-
 set = {}
-[1, 2, 3].each do |n|
+for n in [1, 2, 3]
   set[n] = true
 end
 i = 1
@@ -10,4 +8,4 @@ while set.key?(i)
   i = (i + 1)
   count = (count + 1)
 end
-puts([count].join(' '))
+puts([count].join(" "))

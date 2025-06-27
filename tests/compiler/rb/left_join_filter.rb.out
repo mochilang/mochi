@@ -1,5 +1,5 @@
 def _query(src, joins, opts)
-  where_fn = opts['where']
+  where_fn = opts["where"]
   items = []
   if joins.empty?
     src.each do |v|
@@ -11,10 +11,10 @@ def _query(src, joins, opts)
     items = src.map { |v| [v] }
     joins.each_with_index do |j, idx|
       joined = []
-      jitems = j['items']
-      on = j['on']
-      left = j['left']
-      right = j['right']
+      jitems = j["items"]
+      on = j["on"]
+      left = j["left"]
+      right = j["right"]
       last = idx == joins.length - 1
       if right && left
         matched = Array.new(jitems.length, false)
@@ -99,21 +99,21 @@ def _query(src, joins, opts)
       items = joined
     end
   end
-  if opts['sortKey']
-    items = items.map { |it| [it, opts['sortKey'].call(*it)] }
+  if opts["sortKey"]
+    items = items.map { |it| [it, opts["sortKey"].call(*it)] }
     items.sort_by! { |p| p[1] }
     items.map!(&:first)
   end
-  if opts.key?('skip')
-    n = opts['skip']
-    items = n < items.length ? items[n..-1] : []
+  if opts.key?("skip")
+    n = opts["skip"]
+    items = (n < items.length) ? items[n..-1] : []
   end
-  if opts.key?('take')
-    n = opts['take']
-    items = n < items.length ? items[0...n] : items
+  if opts.key?("take")
+    n = opts["take"]
+    items = (n < items.length) ? items[0...n] : items
   end
   res = []
-  items.each { |r| res << opts['select'].call(*r) }
+  items.each { |r| res << opts["select"].call(*r) }
   res
 end
 
@@ -126,12 +126,12 @@ Info = Struct.new(:orderId, :customerName, :total, keyword_init: true)
 customers = [Customer.new(id: 1, name: "Alice"), Customer.new(id: 2, name: "Bob"), Customer.new(id: 3, name: "Charlie")]
 orders = [Order.new(id: 100, customerId: 1, total: 250), Order.new(id: 101, customerId: 2, total: 125), Order.new(id: 102, customerId: 1, total: 300), Order.new(id: 103, customerId: 4, total: 80)]
 result = (begin
-	src = orders
-	_rows = _query(src, [
-		{ 'items' => customers, 'on' => ->(o, c){ (o.customerId == c.id) }, 'left' => true }
-	], { 'select' => ->(o, c){ Info.new(orderId: o.id, customerName: c.name, total: o.total) }, 'where' => ->(o, c){ (o.total > 200) } })
-	_rows
+  src = orders
+  _rows = _query(src, [
+    {"items" => customers, "on" => ->(o, c) { (o.customerId == c.id) }, "left" => true}
+  ], {"select" => ->(o, c) { Info.new(orderId: o.id, customerName: c.name, total: o.total) }, "where" => ->(o, c) { (o.total > 200) }})
+  _rows
 end)
 for r in result
-	puts([r.orderId, r.customerName, r.total].join(" "))
+  puts([r.orderId, r.customerName, r.total].join(" "))
 end

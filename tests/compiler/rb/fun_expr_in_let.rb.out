@@ -1,4 +1,2 @@
-# frozen_string_literal: true
-
 square = ->(x) { (x * x) }
-puts([square.call(6)].join(' '))
+puts([square.call(6)].join(" "))

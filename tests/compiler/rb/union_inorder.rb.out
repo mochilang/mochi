@@ -1,22 +1,21 @@
 module Tree; end
+
 class Leaf
-	include Tree
+  include Tree
 end
 Node = Struct.new(:left, :value, :right, keyword_init: true) do
-	include Tree
+  include Tree
 end
 
 def inorder(t)
-	return (begin
-	_t0 = t
-	if _t0.is_a?(Leaf)
-		[]
-	elsif _t0.is_a?(Node)
-		(->(l, v, r){ ((inorder(l) + [v]) + inorder(r)) }).call(_t0.left, _t0.value, _t0.right)
-	else
-		nil
-	end
-end)
+  (begin
+    _t0 = t
+    if _t0.is_a?(Leaf)
+      []
+    elsif _t0.is_a?(Node)
+      ->(l, v, r) { ((inorder(l) + [v]) + inorder(r)) }.call(_t0.left, _t0.value, _t0.right)
+    end
+  end)
 end
 
-puts([inorder(Node.new(left: Leaf.new(), value: 1, right: Node.new(left: Leaf.new(), value: 2, right: Leaf.new())))].join(" "))
+puts([inorder(Node.new(left: Leaf.new, value: 1, right: Node.new(left: Leaf.new, value: 2, right: Leaf.new)))].join(" "))
