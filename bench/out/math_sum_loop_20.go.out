@@ -22,7 +22,9 @@ func main() {
 	for i := 0; i < repeat; i++ {
 		last = sum_loop(n)
 	}
-	var duration int64 = (int64(((int64(time.Now().UnixNano()) - int64(start)))) / int64(1000))
-	func(){b,_:=json.Marshal(map[string]int64{"duration_us": duration, "output": int64(last)});fmt.Println(string(b))}()
+	var duration int64 = (int64((int64(time.Now().UnixNano()) - int64(start))) / int64(1000))
+	func() {
+		b, _ := json.Marshal(map[string]int64{"duration_us": duration, "output": int64(last)})
+		fmt.Println(string(b))
+	}()
 }
-

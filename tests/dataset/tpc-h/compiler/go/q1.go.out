@@ -40,7 +40,18 @@ func printTestFail(err error, d time.Duration) {
 }
 
 func test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
-	expect(_equal(result, []map[string]any{map[string]any{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": (950.0 + 1800.0), "sum_charge": ((950.0 * 1.07) + (1800.0 * 1.05)), "avg_qty": 26.5, "avg_price": 1500, "avg_disc": 0.07500000000000001, "count_order": 2}}))
+	expect(_equal(result, []map[string]any{map[string]any{
+		"returnflag":     "N",
+		"linestatus":     "O",
+		"sum_qty":        53,
+		"sum_base_price": 3000,
+		"sum_disc_price": (950.0 + 1800.0),
+		"sum_charge":     ((950.0 * 1.07) + (1800.0 * 1.05)),
+		"avg_qty":        26.5,
+		"avg_price":      1500,
+		"avg_disc":       0.07500000000000001,
+		"count_order":    2,
+	}}))
 }
 
 type LineitemItem struct {
@@ -53,7 +64,31 @@ type LineitemItem struct {
 	L_shipdate      string  `json:"l_shipdate"`
 }
 
-var lineitem []LineitemItem = []LineitemItem{LineitemItem{L_quantity: 17, L_extendedprice: 1000.0, L_discount: 0.05, L_tax: 0.07, L_returnflag: "N", L_linestatus: "O", L_shipdate: "1998-08-01"}, LineitemItem{L_quantity: 36, L_extendedprice: 2000.0, L_discount: 0.1, L_tax: 0.05, L_returnflag: "N", L_linestatus: "O", L_shipdate: "1998-09-01"}, LineitemItem{L_quantity: 25, L_extendedprice: 1500.0, L_discount: 0.0, L_tax: 0.08, L_returnflag: "R", L_linestatus: "F", L_shipdate: "1998-09-03"}}
+var lineitem []LineitemItem = []LineitemItem{LineitemItem{
+	L_quantity:      17,
+	L_extendedprice: 1000.0,
+	L_discount:      0.05,
+	L_tax:           0.07,
+	L_returnflag:    "N",
+	L_linestatus:    "O",
+	L_shipdate:      "1998-08-01",
+}, LineitemItem{
+	L_quantity:      36,
+	L_extendedprice: 2000.0,
+	L_discount:      0.1,
+	L_tax:           0.05,
+	L_returnflag:    "N",
+	L_linestatus:    "O",
+	L_shipdate:      "1998-09-01",
+}, LineitemItem{
+	L_quantity:      25,
+	L_extendedprice: 1500.0,
+	L_discount:      0.0,
+	L_tax:           0.08,
+	L_returnflag:    "R",
+	L_linestatus:    "F",
+	L_shipdate:      "1998-09-03",
+}}
 var result []map[string]any = func() []map[string]any {
 	groups := map[string]*data.Group{}
 	order := []string{}
@@ -76,49 +111,60 @@ var result []map[string]any = func() []map[string]any {
 	}
 	_res := []map[string]any{}
 	for _, g := range items {
-		_res = append(_res, map[string]any{"returnflag": _cast[map[string]any](g.Key)["returnflag"], "linestatus": _cast[map[string]any](g.Key)["linestatus"], "sum_qty": _sum(func() []any {
-			_res := []any{}
-			for _, x := range g.Items {
-				_res = append(_res, _cast[map[string]any](x)["l_quantity"])
-			}
-			return _res
-		}()), "sum_base_price": _sum(func() []any {
-			_res := []any{}
-			for _, x := range g.Items {
-				_res = append(_res, _cast[map[string]any](x)["l_extendedprice"])
-			}
-			return _res
-		}()), "sum_disc_price": _sum(func() []any {
-			_res := []any{}
-			for _, x := range g.Items {
-				_res = append(_res, (_cast[float64](_cast[map[string]any](x)["l_extendedprice"]) * _cast[float64]((_cast[float64](1) - _cast[float64](_cast[map[string]any](x)["l_discount"])))))
-			}
-			return _res
-		}()), "sum_charge": _sum(func() []any {
-			_res := []any{}
-			for _, x := range g.Items {
-				_res = append(_res, (_cast[float64]((_cast[float64](_cast[map[string]any](x)["l_extendedprice"]) * _cast[float64]((_cast[float64](1) - _cast[float64](_cast[map[string]any](x)["l_discount"]))))) * _cast[float64]((float64(1) + _cast[float64](_cast[map[string]any](x)["l_tax"])))))
-			}
-			return _res
-		}()), "avg_qty": _avg(func() []any {
-			_res := []any{}
-			for _, x := range g.Items {
-				_res = append(_res, _cast[map[string]any](x)["l_quantity"])
-			}
-			return _res
-		}()), "avg_price": _avg(func() []any {
-			_res := []any{}
-			for _, x := range g.Items {
-				_res = append(_res, _cast[map[string]any](x)["l_extendedprice"])
-			}
-			return _res
-		}()), "avg_disc": _avg(func() []any {
-			_res := []any{}
-			for _, x := range g.Items {
-				_res = append(_res, _cast[map[string]any](x)["l_discount"])
-			}
-			return _res
-		}()), "count_order": _count(g)})
+		_res = append(_res, map[string]any{
+			"returnflag": _cast[map[string]any](g.Key)["returnflag"],
+			"linestatus": _cast[map[string]any](g.Key)["linestatus"],
+			"sum_qty": _sum(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, _cast[map[string]any](x)["l_quantity"])
+				}
+				return _res
+			}()),
+			"sum_base_price": _sum(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, _cast[map[string]any](x)["l_extendedprice"])
+				}
+				return _res
+			}()),
+			"sum_disc_price": _sum(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, (_cast[float64](_cast[map[string]any](x)["l_extendedprice"]) * _cast[float64]((_cast[float64](1) - _cast[float64](_cast[map[string]any](x)["l_discount"])))))
+				}
+				return _res
+			}()),
+			"sum_charge": _sum(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, (_cast[float64]((_cast[float64](_cast[map[string]any](x)["l_extendedprice"]) * _cast[float64]((_cast[float64](1) - _cast[float64](_cast[map[string]any](x)["l_discount"]))))) * _cast[float64]((float64(1) + _cast[float64](_cast[map[string]any](x)["l_tax"])))))
+				}
+				return _res
+			}()),
+			"avg_qty": _avg(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, _cast[map[string]any](x)["l_quantity"])
+				}
+				return _res
+			}()),
+			"avg_price": _avg(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, _cast[map[string]any](x)["l_extendedprice"])
+				}
+				return _res
+			}()),
+			"avg_disc": _avg(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, _cast[map[string]any](x)["l_discount"])
+				}
+				return _res
+			}()),
+			"count_order": _count(g),
+		})
 	}
 	return _res
 }()

@@ -5,35 +5,47 @@ import json
 import time
 import typing
 
+
 def is_prime(n: int) -> bool:
-	if (n < 2):
-		return False
-	for i in range(2, ((n - 1))):
-		if ((n % i) == 0):
-			return False
-	return True
+    if n < 2:
+        return False
+    for i in range(2, ((n - 1))):
+        if (n % i) == 0:
+            return False
+    return True
+
 
 n = 30
 repeat = 100
 last = 0
 start = time.time_ns()
 end = time.time_ns()
-duration = int(((end - start)) / 1000)
+duration = None
+
 
 def main():
-	n = 30
-	repeat = 100
-	last = 0
-	start = time.time_ns()
-	for r in range(0, repeat):
-		count = 0
-		for i in range(2, n):
-			if is_prime(i):
-				count = (count + 1)
-		last = count
-	end = time.time_ns()
-	duration = int(((end - start)) / 1000)
-	print(json.dumps({"duration_us": duration, "output": last}))
+    global n
+    n = 30
+    global repeat
+    repeat = 100
+    global last
+    last = 0
+    global start
+    start = time.time_ns()
+    for r in range(0, repeat):
+        count = 0
+        for i in range(2, n):
+            if is_prime(i):
+                count = count + 1
+        last = count
+    global end
+    end = time.time_ns()
+    global duration
+    duration = int(((end - start)) / 1000)
+    print(
+        json.dumps({"duration_us": duration, "output": last}, default=lambda o: vars(o))
+    )
+
 
 if __name__ == "__main__":
-	main()
+    main()
