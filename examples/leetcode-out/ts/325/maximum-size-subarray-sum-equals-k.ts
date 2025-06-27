@@ -2,21 +2,28 @@
 
 function maxSubArrayLen(nums: Array<number>, k: number): number {
   let prefix: number = 0;
+  (globalThis as any).prefix = prefix;
   let firstIndex: Record<number, number> = {};
+  (globalThis as any).firstIndex = firstIndex;
   firstIndex[0] = -1;
   let best: number = 0;
+  (globalThis as any).best = best;
   let i: number = 0;
-  while (i < nums.length) {
+  (globalThis as any).i = i;
+  while ((i < nums.length)) {
     prefix = prefix + nums[i];
     let target: number = prefix - k;
+    (globalThis as any).target = target;
     if (Object.prototype.hasOwnProperty.call(firstIndex, String(target))) {
       let start: number = firstIndex[target];
+      (globalThis as any).start = start;
       let length: number = i - start;
-      if (length > best) {
+      (globalThis as any).length = length;
+      if ((length > best)) {
         best = length;
       }
     }
-    if (!Object.prototype.hasOwnProperty.call(firstIndex, String(prefix))) {
+    if ((!(Object.prototype.hasOwnProperty.call(firstIndex, String(prefix))))) {
       firstIndex[prefix] = i;
     }
     i = i + 1;
@@ -24,41 +31,58 @@ function maxSubArrayLen(nums: Array<number>, k: number): number {
   return best;
 }
 
-function example_1(): void {
-  if (!(maxSubArrayLen([1, -1, 5, -2, 3], 3) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(maxSubArrayLen([
+      1,
+      -1,
+      5,
+      -2,
+      3,
+    ], 3) == 4)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(maxSubArrayLen([-2, -1, 2, 1], 1) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(maxSubArrayLen([
+      -2,
+      -1,
+      2,
+      1,
+    ], 1) == 2)
+  ) throw new Error("expect failed");
 }
 
-function no_subarray(): void {
-  if (!(maxSubArrayLen([1, 2, 3], 7) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_no_subarray(): void {
+  if (
+    !(maxSubArrayLen([
+      1,
+      2,
+      3,
+    ], 7) == 0)
+  ) throw new Error("expect failed");
 }
 
-function entire_array(): void {
-  if (!(maxSubArrayLen([1, 2, 3], 6) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_entire_array(): void {
+  if (
+    !(maxSubArrayLen([
+      1,
+      2,
+      3,
+    ], 6) == 3)
+  ) throw new Error("expect failed");
 }
 
-function single_negative(): void {
-  if (!(maxSubArrayLen([-1], -1) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_negative(): void {
+  if (!(maxSubArrayLen([-1], -1) == 1)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  no_subarray();
-  entire_array();
-  single_negative();
+  test_example_1();
+  test_example_2();
+  test_no_subarray();
+  test_entire_array();
+  test_single_negative();
 }
 main();

@@ -2,9 +2,12 @@
 
 function canPermutePalindrome(s: string): boolean {
   let counts: Record<string, number> = {};
+  (globalThis as any).counts = counts;
   let i: number = 0;
-  while (i < s.length) {
-    let ch: string = s[i];
+  (globalThis as any).i = i;
+  while ((i < s.length)) {
+    let ch: string = _indexString(s, i);
+    (globalThis as any).ch = ch;
     if (Object.prototype.hasOwnProperty.call(counts, String(ch))) {
       counts[ch] = counts[ch] + 1;
     } else {
@@ -13,10 +16,11 @@ function canPermutePalindrome(s: string): boolean {
     i = i + 1;
   }
   let oddCount: number = 0;
+  (globalThis as any).oddCount = oddCount;
   for (const key of Object.keys(counts)) {
-    if (counts[key] % 2 == 1) {
+    if (((counts[key] % 2) == 1)) {
       oddCount = oddCount + 1;
-      if (oddCount > 1) {
+      if ((oddCount > 1)) {
         return false;
       }
     }
@@ -24,48 +28,47 @@ function canPermutePalindrome(s: string): boolean {
   return true;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(canPermutePalindrome("code") == false)) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
-  if (!(canPermutePalindrome("aab") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(canPermutePalindrome("aab") == true)) throw new Error("expect failed");
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(canPermutePalindrome("carerac") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function empty_string(): void {
-  if (!(canPermutePalindrome("") == true)) {
-    throw new Error("expect failed");
-  }
+function test_empty_string(): void {
+  if (!(canPermutePalindrome("") == true)) throw new Error("expect failed");
 }
 
-function single_char(): void {
-  if (!(canPermutePalindrome("a") == true)) {
-    throw new Error("expect failed");
-  }
+function test_single_char(): void {
+  if (!(canPermutePalindrome("a") == true)) throw new Error("expect failed");
 }
 
-function two_odds(): void {
-  if (!(canPermutePalindrome("abc") == false)) {
-    throw new Error("expect failed");
-  }
+function test_two_odds(): void {
+  if (!(canPermutePalindrome("abc") == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  empty_string();
-  single_char();
-  two_odds();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_empty_string();
+  test_single_char();
+  test_two_odds();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

@@ -2,16 +2,22 @@
 
 function findStrobogrammatic(n: number): Array<string> {
   function build(len: number, total: number): Array<string> {
-    if (len == 0) {
+    if ((len == 0)) {
       return [""];
     }
-    if (len == 1) {
-      return ["0", "1", "8"];
+    if ((len == 1)) {
+      return [
+        "0",
+        "1",
+        "8",
+      ];
     }
     let mids: Array<string> = build(len - 2, total);
+    (globalThis as any).mids = mids;
     let result: Array<string> = [];
+    (globalThis as any).result = result;
     for (const s of mids) {
-      if (len != total) {
+      if ((len != total)) {
         result = result.concat(["0" + s + "0"]);
       }
       result = result.concat(["1" + s + "1"]);
@@ -24,21 +30,30 @@ function findStrobogrammatic(n: number): Array<string> {
   return build(n, n);
 }
 
-function n___1(): void {
-  if (!_equal(findStrobogrammatic(1), ["0", "1", "8"])) {
-    throw new Error("expect failed");
-  }
-}
-
-function n___2(): void {
-  if (!_equal(findStrobogrammatic(2), ["11", "69", "88", "96"])) {
-    throw new Error("expect failed");
-  }
-}
-
-function n___3(): void {
+function test_n___1(): void {
   if (
-    !_equal(findStrobogrammatic(3), [
+    !(_equal(findStrobogrammatic(1), [
+      "0",
+      "1",
+      "8",
+    ]))
+  ) throw new Error("expect failed");
+}
+
+function test_n___2(): void {
+  if (
+    !(_equal(findStrobogrammatic(2), [
+      "11",
+      "69",
+      "88",
+      "96",
+    ]))
+  ) throw new Error("expect failed");
+}
+
+function test_n___3(): void {
+  if (
+    !(_equal(findStrobogrammatic(3), [
       "101",
       "609",
       "808",
@@ -51,23 +66,19 @@ function n___3(): void {
       "689",
       "888",
       "986",
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  n___1();
-  n___2();
-  n___3();
+  test_n___1();
+  test_n___2();
+  test_n___3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -75,8 +86,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

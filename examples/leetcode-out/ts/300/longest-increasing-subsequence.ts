@@ -2,22 +2,28 @@
 
 function lengthOfLIS(nums: Array<number>): number {
   let n: number = nums.length;
-  if (n == 0) {
+  (globalThis as any).n = n;
+  if ((n == 0)) {
     return 0;
   }
   let dp: Array<number> = [];
+  (globalThis as any).dp = dp;
   let fill: number = 0;
-  while (fill < n) {
+  (globalThis as any).fill = fill;
+  while ((fill < n)) {
     dp = dp.concat([1]);
     fill = fill + 1;
   }
   let i: number = 1;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let j: number = 0;
-    while (j < i) {
-      if (nums[i] > nums[j]) {
+    (globalThis as any).j = j;
+    while ((j < i)) {
+      if ((nums[i] > nums[j])) {
         let candidate: number = dp[j] + 1;
-        if (candidate > dp[i]) {
+        (globalThis as any).candidate = candidate;
+        if ((candidate > dp[i])) {
           dp[i] = candidate;
         }
       }
@@ -26,9 +32,11 @@ function lengthOfLIS(nums: Array<number>): number {
     i = i + 1;
   }
   let result: number = dp[0];
+  (globalThis as any).result = result;
   let k: number = 1;
-  while (k < n) {
-    if (dp[k] > result) {
+  (globalThis as any).k = k;
+  while ((k < n)) {
+    if ((dp[k] > result)) {
       result = dp[k];
     }
     k = k + 1;
@@ -36,41 +44,61 @@ function lengthOfLIS(nums: Array<number>): number {
   return result;
 }
 
-function example_1(): void {
-  if (!(lengthOfLIS([10, 9, 2, 5, 3, 7, 101, 18]) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(lengthOfLIS([
+      10,
+      9,
+      2,
+      5,
+      3,
+      7,
+      101,
+      18,
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(lengthOfLIS([0, 1, 0, 3, 2, 3]) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(lengthOfLIS([
+      0,
+      1,
+      0,
+      3,
+      2,
+      3,
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(lengthOfLIS([7, 7, 7, 7, 7, 7, 7]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(lengthOfLIS([
+      7,
+      7,
+      7,
+      7,
+      7,
+      7,
+      7,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function empty(): void {
-  if (!(lengthOfLIS([]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(lengthOfLIS([]) == 0)) throw new Error("expect failed");
 }
 
-function single(): void {
-  if (!(lengthOfLIS([5]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single(): void {
+  if (!(lengthOfLIS([5]) == 1)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  empty();
-  single();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_empty();
+  test_single();
 }
 main();

@@ -73,3 +73,7 @@ func EnsureFormatter() error {
 	}
 	return fmt.Errorf("deno or npx not found")
 }
+
+// Ensure provides a simple entry point for other packages to verify
+// the TypeScript toolchain is available.
+func Ensure() error { return EnsureFormatter() }

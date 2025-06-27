@@ -2,31 +2,42 @@
 
 function minCostII(costs: Array<Array<number>>): number {
   let n: number = costs.length;
-  if (n == 0) {
+  (globalThis as any).n = n;
+  if ((n == 0)) {
     return 0;
   }
   let k: number = costs[0].length;
+  (globalThis as any).k = k;
   let prevMin: number = 0;
+  (globalThis as any).prevMin = prevMin;
   let prevSecond: number = 0;
+  (globalThis as any).prevSecond = prevSecond;
   let prevColor: number = -1;
+  (globalThis as any).prevColor = prevColor;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let currMin: number = 2147483647;
+    (globalThis as any).currMin = currMin;
     let currSecond: number = 2147483647;
+    (globalThis as any).currSecond = currSecond;
     let currColor: number = -1;
+    (globalThis as any).currColor = currColor;
     let j: number = 0;
-    while (j < k) {
+    (globalThis as any).j = j;
+    while ((j < k)) {
       let cost: number = costs[i][j];
-      if (j == prevColor) {
+      (globalThis as any).cost = cost;
+      if ((j == prevColor)) {
         cost = cost + prevSecond;
       } else {
         cost = cost + prevMin;
       }
-      if (cost < currMin) {
+      if ((cost < currMin)) {
         currSecond = currMin;
         currMin = cost;
         currColor = j;
-      } else if (cost < currSecond) {
+      } else if ((cost < currSecond)) {
         currSecond = cost;
       }
       j = j + 1;
@@ -39,41 +50,53 @@ function minCostII(costs: Array<Array<number>>): number {
   return prevMin;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !(
-      minCostII([
-        [1, 5, 3],
-        [2, 9, 4],
-      ]) == 5
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(minCostII([
+      [
+        1,
+        5,
+        3,
+      ],
+      [
+        2,
+        9,
+        4,
+      ],
+    ]) == 5)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !(
-      minCostII([
-        [1, 3],
-        [2, 4],
-      ]) == 5
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(minCostII([
+      [
+        1,
+        3,
+      ],
+      [
+        2,
+        4,
+      ],
+    ]) == 5)
+  ) throw new Error("expect failed");
 }
 
-function single_house(): void {
-  if (!(minCostII([[8, 6, 5]]) == 5)) {
-    throw new Error("expect failed");
-  }
+function test_single_house(): void {
+  if (
+    !(minCostII([
+      [
+        8,
+        6,
+        5,
+      ],
+    ]) == 5)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_house();
+  test_example_1();
+  test_example_2();
+  test_single_house();
 }
 main();

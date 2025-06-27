@@ -2,22 +2,28 @@
 
 function nextPermutation(nums: Array<number>): Array<number> {
   let i: number = nums.length - 2;
-  while (i >= 0 && nums[i] >= nums[i + 1]) {
+  (globalThis as any).i = i;
+  while (((i >= 0) && (nums[i] >= nums[i + 1]))) {
     i = i - 1;
   }
-  if (i >= 0) {
+  if ((i >= 0)) {
     let j: number = nums.length - 1;
-    while (nums[j] <= nums[i]) {
+    (globalThis as any).j = j;
+    while ((nums[j] <= nums[i])) {
       j = j - 1;
     }
     let temp: number = nums[i];
+    (globalThis as any).temp = temp;
     nums[i] = nums[j];
     nums[j] = temp;
   }
   let start: number = i + 1;
+  (globalThis as any).start = start;
   let end: number = nums.length - 1;
-  while (start < end) {
+  (globalThis as any).end = end;
+  while ((start < end)) {
     let temp: number = nums[start];
+    (globalThis as any).temp = temp;
     nums[start] = nums[end];
     nums[end] = temp;
     start = start + 1;
@@ -26,42 +32,71 @@ function nextPermutation(nums: Array<number>): Array<number> {
   return nums;
 }
 
-function example_1(): void {
-  if (!_equal(nextPermutation([1, 2, 3]), [1, 3, 2])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      nextPermutation([
+        1,
+        2,
+        3,
+      ]),
+      [
+        1,
+        3,
+        2,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(nextPermutation([3, 2, 1]), [1, 2, 3])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      nextPermutation([
+        3,
+        2,
+        1,
+      ]),
+      [
+        1,
+        2,
+        3,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(nextPermutation([1, 1, 5]), [1, 5, 1])) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(_equal(
+      nextPermutation([
+        1,
+        1,
+        5,
+      ]),
+      [
+        1,
+        5,
+        1,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!_equal(nextPermutation([1]), [1])) {
-    throw new Error("expect failed");
-  }
+function test_single_element(): void {
+  if (!(_equal(nextPermutation([1]), [1]))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  single_element();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_single_element();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -69,8 +104,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

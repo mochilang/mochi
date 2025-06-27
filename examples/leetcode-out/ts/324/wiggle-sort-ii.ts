@@ -2,10 +2,11 @@
 
 function wiggleSort(nums: Array<number>): Array<number> {
   let n: number = nums.length;
-  if (n <= 1) {
+  (globalThis as any).n = n;
+  if ((n <= 1)) {
     return nums;
   }
-  let sorted: Array<any> = (() => {
+  let sorted: Array<number> = (() => {
     const _src = nums;
     let _items = [];
     for (const x of _src) {
@@ -19,9 +20,12 @@ function wiggleSort(nums: Array<number>): Array<number> {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -30,15 +34,19 @@ function wiggleSort(nums: Array<number>): Array<number> {
     }
     return _res;
   })();
+  (globalThis as any).sorted = sorted;
   let left: number = Math.trunc((n + 1) / 2) - 1;
+  (globalThis as any).left = left;
   let right: number = n - 1;
+  (globalThis as any).right = right;
   let result: Array<number> = [];
-  while (result.length < n) {
-    if (left >= 0) {
+  (globalThis as any).result = result;
+  while ((result.length < n)) {
+    if ((left >= 0)) {
       result = result.concat([sorted[left]]);
       left = left - 1;
     }
-    if (result.length < n && right >= Math.trunc((n + 1) / 2)) {
+    if (((result.length < n) && (right >= Math.trunc((n + 1) / 2)))) {
       result = result.concat([sorted[right]]);
       right = right - 1;
     }
@@ -46,42 +54,85 @@ function wiggleSort(nums: Array<number>): Array<number> {
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(wiggleSort([1, 5, 1, 1, 6, 4]), [1, 6, 1, 5, 1, 4])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      wiggleSort([
+        1,
+        5,
+        1,
+        1,
+        6,
+        4,
+      ]),
+      [
+        1,
+        6,
+        1,
+        5,
+        1,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(wiggleSort([1, 3, 2, 2, 3, 1]), [2, 3, 1, 3, 1, 2])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      wiggleSort([
+        1,
+        3,
+        2,
+        2,
+        3,
+        1,
+      ]),
+      [
+        2,
+        3,
+        1,
+        3,
+        1,
+        2,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!_equal(wiggleSort([1]), [1])) {
-    throw new Error("expect failed");
-  }
+function test_single_element(): void {
+  if (!(_equal(wiggleSort([1]), [1]))) throw new Error("expect failed");
 }
 
-function already_wiggle(): void {
-  if (!_equal(wiggleSort([2, 5, 1, 6]), [2, 6, 1, 5])) {
-    throw new Error("expect failed");
-  }
+function test_already_wiggle(): void {
+  if (
+    !(_equal(
+      wiggleSort([
+        2,
+        5,
+        1,
+        6,
+      ]),
+      [
+        2,
+        6,
+        1,
+        5,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_element();
-  already_wiggle();
+  test_example_1();
+  test_example_2();
+  test_single_element();
+  test_already_wiggle();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -89,8 +140,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

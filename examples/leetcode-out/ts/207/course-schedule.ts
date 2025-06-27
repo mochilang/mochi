@@ -5,90 +5,115 @@ function canFinish(
   prerequisites: Array<Array<number>>,
 ): boolean {
   let graph: Array<Array<number>> = [];
+  (globalThis as any).graph = graph;
   let indegree: Array<number> = [];
+  (globalThis as any).indegree = indegree;
   for (let _: number = 0; _ < numCourses; _++) {
     graph = graph.concat([[]]);
     indegree = indegree.concat([0]);
   }
   for (const pair of prerequisites) {
     let a: number = pair[0];
+    (globalThis as any).a = a;
     let b: number = pair[1];
+    (globalThis as any).b = b;
     graph[b] = graph[b].concat([a]);
     indegree[a] = indegree[a] + 1;
   }
   let queue: Array<number> = [];
+  (globalThis as any).queue = queue;
   for (let i: number = 0; i < numCourses; i++) {
-    if (indegree[i] == 0) {
+    if ((indegree[i] == 0)) {
       queue = queue.concat([i]);
     }
   }
   let visited: number = 0;
+  (globalThis as any).visited = visited;
   let idx: number = 0;
-  while (idx < queue.length) {
+  (globalThis as any).idx = idx;
+  while ((idx < queue.length)) {
     let course: number = queue[idx];
+    (globalThis as any).course = course;
     idx = idx + 1;
     visited = visited + 1;
     for (const next of graph[course]) {
       indegree[next] = indegree[next] - 1;
-      if (indegree[next] == 0) {
+      if ((indegree[next] == 0)) {
         queue = queue.concat([next]);
       }
     }
   }
-  return visited == numCourses;
+  return (visited == numCourses);
 }
 
-function simple_acyclic(): void {
-  if (!(canFinish(2, [[1, 0]]) == true)) {
-    throw new Error("expect failed");
-  }
-}
-
-function simple_cycle(): void {
+function test_simple_acyclic(): void {
   if (
-    !(
-      canFinish(2, [
-        [1, 0],
-        [0, 1],
-      ]) == false
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(canFinish(2, [
+      [
+        1,
+        0,
+      ],
+    ]) == true)
+  ) throw new Error("expect failed");
 }
 
-function long_chain(): void {
+function test_simple_cycle(): void {
   if (
-    !(
-      canFinish(4, [
-        [1, 0],
-        [2, 1],
-        [3, 2],
-      ]) == true
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(canFinish(2, [
+      [
+        1,
+        0,
+      ],
+      [
+        0,
+        1,
+      ],
+    ]) == false)
+  ) throw new Error("expect failed");
 }
 
-function cycle_with_more_courses(): void {
+function test_long_chain(): void {
   if (
-    !(
-      canFinish(3, [
-        [0, 1],
-        [1, 2],
-        [2, 0],
-      ]) == false
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(canFinish(4, [
+      [
+        1,
+        0,
+      ],
+      [
+        2,
+        1,
+      ],
+      [
+        3,
+        2,
+      ],
+    ]) == true)
+  ) throw new Error("expect failed");
+}
+
+function test_cycle_with_more_courses(): void {
+  if (
+    !(canFinish(3, [
+      [
+        0,
+        1,
+      ],
+      [
+        1,
+        2,
+      ],
+      [
+        2,
+        0,
+      ],
+    ]) == false)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  simple_acyclic();
-  simple_cycle();
-  long_chain();
-  cycle_with_more_courses();
+  test_simple_acyclic();
+  test_simple_cycle();
+  test_long_chain();
+  test_cycle_with_more_courses();
 }
 main();

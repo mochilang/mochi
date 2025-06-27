@@ -2,16 +2,21 @@
 
 function canWin(s: string): boolean {
   let memo: Record<string, boolean> = {};
+  (globalThis as any).memo = memo;
   function helper(cur: string): boolean {
     if (Object.prototype.hasOwnProperty.call(memo, String(cur))) {
       return memo[cur];
     }
     let i: number = 0;
-    while (i + 1 < cur.length) {
-      if (cur[i] == "+" && cur[i + 1] == "+") {
-        let next: string =
-          cur.slice(0, i) + "--" + cur.slice(i + 2, cur.length);
-        if (!helper(next)) {
+    (globalThis as any).i = i;
+    while (((i + 1) < cur.length)) {
+      if (
+        ((_indexString(cur, i) == "+") && (_indexString(cur, i + 1) == "+"))
+      ) {
+        let next: string = _sliceString(cur, 0, i) + "--" +
+          _sliceString(cur, i + 2, cur.length);
+        (globalThis as any).next = next;
+        if ((!helper(next))) {
           memo[cur] = true;
           return true;
         }
@@ -24,34 +29,46 @@ function canWin(s: string): boolean {
   return helper(s);
 }
 
-function example_1(): void {
-  if (!(canWin("++++") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(canWin("++++") == true)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(canWin("+") == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(canWin("+") == false)) throw new Error("expect failed");
 }
 
-function five_plus(): void {
-  if (!(canWin("+++++") == false)) {
-    throw new Error("expect failed");
-  }
+function test_five_plus(): void {
+  if (!(canWin("+++++") == false)) throw new Error("expect failed");
 }
 
-function mixed(): void {
-  if (!(canWin("+-++") == true)) {
-    throw new Error("expect failed");
-  }
+function test_mixed(): void {
+  if (!(canWin("+-++") == true)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  five_plus();
-  mixed();
+  test_example_1();
+  test_example_2();
+  test_five_plus();
+  test_mixed();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

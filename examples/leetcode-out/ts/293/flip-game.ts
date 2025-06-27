@@ -2,11 +2,16 @@
 
 function generatePossibleNextMoves(s: string): Array<string> {
   let result: Array<string> = [];
+  (globalThis as any).result = result;
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = s.length;
-  while (i + 1 < n) {
-    if (s[i] == "+" && s[i + 1] == "+") {
-      let next: string = s.slice(0, i) + "--" + s.slice(i + 2, n);
+  (globalThis as any).n = n;
+  while (((i + 1) < n)) {
+    if (((_indexString(s, i) == "+") && (_indexString(s, i + 1) == "+"))) {
+      let next: string = _sliceString(s, 0, i) + "--" +
+        _sliceString(s, i + 2, n);
+      (globalThis as any).next = next;
       result = result.concat([next]);
     }
     i = i + 1;
@@ -14,35 +19,40 @@ function generatePossibleNextMoves(s: string): Array<string> {
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(generatePossibleNextMoves("++++"), ["--++", "+--+", "++--"])) {
+function test_example_1(): void {
+  if (
+    !(_equal(generatePossibleNextMoves("++++"), [
+      "--++",
+      "+--+",
+      "++--",
+    ]))
+  ) throw new Error("expect failed");
+}
+
+function test_no_moves(): void {
+  if (!(_equal(generatePossibleNextMoves("+-"), []))) {
     throw new Error("expect failed");
   }
 }
 
-function no_moves(): void {
-  if (!_equal(generatePossibleNextMoves("+-"), [])) {
-    throw new Error("expect failed");
-  }
-}
-
-function three_plus(): void {
-  if (!_equal(generatePossibleNextMoves("+++"), ["--+", "+--"])) {
-    throw new Error("expect failed");
-  }
+function test_three_plus(): void {
+  if (
+    !(_equal(generatePossibleNextMoves("+++"), [
+      "--+",
+      "+--",
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  no_moves();
-  three_plus();
+  test_example_1();
+  test_no_moves();
+  test_three_plus();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -50,12 +60,33 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
 }
 
 main();

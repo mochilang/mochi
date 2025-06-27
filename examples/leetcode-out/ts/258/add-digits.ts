@@ -2,9 +2,11 @@
 
 function addDigits(num: number): number {
   let n: number = num;
-  while (n >= 10) {
+  (globalThis as any).n = n;
+  while ((n >= 10)) {
     let sum: number = 0;
-    while (n > 0) {
+    (globalThis as any).sum = sum;
+    while ((n > 0)) {
       sum = sum + (n % 10);
       n = Math.trunc(n / 10);
     }
@@ -13,41 +15,31 @@ function addDigits(num: number): number {
   return n;
 }
 
-function example_1(): void {
-  if (!(addDigits(38) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(addDigits(38) == 2)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(addDigits(0) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(addDigits(0) == 0)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(addDigits(99) == 9)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(addDigits(99) == 9)) throw new Error("expect failed");
 }
 
-function single_digit(): void {
-  if (!(addDigits(7) == 7)) {
-    throw new Error("expect failed");
-  }
+function test_single_digit(): void {
+  if (!(addDigits(7) == 7)) throw new Error("expect failed");
 }
 
-function large_number(): void {
-  if (!(addDigits(123456) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_large_number(): void {
+  if (!(addDigits(123456) == 3)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  single_digit();
-  large_number();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_single_digit();
+  test_large_number();
 }
 main();

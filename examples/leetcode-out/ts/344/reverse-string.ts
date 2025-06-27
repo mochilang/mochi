@@ -2,14 +2,16 @@
 
 function toList(s: string): Array<string> {
   let out: Array<string> = [];
+  (globalThis as any).out = out;
   for (let i: number = 0; i < s.length; i++) {
-    out = out.concat([s[i]]);
+    out = out.concat([_indexString(s, i)]);
   }
   return out;
 }
 
 function fromList(arr: Array<string>): string {
   let out: string = "";
+  (globalThis as any).out = out;
   for (const ch of arr) {
     out = out + ch;
   }
@@ -18,10 +20,14 @@ function fromList(arr: Array<string>): string {
 
 function reverseString(chars: Array<string>): Array<string> {
   let arr: Array<string> = chars;
+  (globalThis as any).arr = arr;
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = arr.length - 1;
-  while (left < right) {
+  (globalThis as any).right = right;
+  while ((left < right)) {
     let temp: string = arr[left];
+    (globalThis as any).temp = temp;
     arr[left] = arr[right];
     arr[right] = temp;
     left = left + 1;
@@ -30,33 +36,40 @@ function reverseString(chars: Array<string>): Array<string> {
   return arr;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let input: Array<string> = toList("hello");
+  (globalThis as any).input = input;
   let result: Array<string> = reverseString(input);
-  if (!(fromList(result) == "olleh")) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).result = result;
+  if (!(fromList(result) == "olleh")) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let input: Array<string> = toList("Hannah");
+  (globalThis as any).input = input;
   let result: Array<string> = reverseString(input);
-  if (!(fromList(result) == "hannaH")) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).result = result;
+  if (!(fromList(result) == "hannaH")) throw new Error("expect failed");
 }
 
-function empty(): void {
+function test_empty(): void {
   let input: Array<string> = [];
+  (globalThis as any).input = input;
   let result: Array<string> = reverseString(input);
-  if (!(result.length == 0)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).result = result;
+  if (!(result.length == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty();
+  test_example_1();
+  test_example_2();
+  test_empty();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

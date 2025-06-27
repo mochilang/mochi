@@ -2,12 +2,16 @@
 
 function splitWords(s: string): Array<string> {
   let i: number = 0;
+  (globalThis as any).i = i;
   let words: Array<string> = [];
+  (globalThis as any).words = words;
   let current: string = "";
-  while (i < s.length) {
-    let c: string = s[i];
-    if (c == " ") {
-      if (current.length > 0) {
+  (globalThis as any).current = current;
+  while ((i < s.length)) {
+    let c: string = _indexString(s, i);
+    (globalThis as any).c = c;
+    if ((c == " ")) {
+      if ((current.length > 0)) {
         words = words.concat([current]);
         current = "";
       }
@@ -16,7 +20,7 @@ function splitWords(s: string): Array<string> {
     }
     i = i + 1;
   }
-  if (current.length > 0) {
+  if ((current.length > 0)) {
     words = words.concat([current]);
   }
   return words;
@@ -24,24 +28,30 @@ function splitWords(s: string): Array<string> {
 
 function wordPattern(pattern: string, s: string): boolean {
   let words: Array<string> = splitWords(s);
-  if (words.length != pattern.length) {
+  (globalThis as any).words = words;
+  if ((words.length != pattern.length)) {
     return false;
   }
   let p2w: Record<string, string> = {};
+  (globalThis as any).p2w = p2w;
   let w2p: Record<string, string> = {};
+  (globalThis as any).w2p = w2p;
   let i: number = 0;
-  while (i < pattern.length) {
-    let pch: string = pattern[i];
+  (globalThis as any).i = i;
+  while ((i < pattern.length)) {
+    let pch: string = _indexString(pattern, i);
+    (globalThis as any).pch = pch;
     let word: string = words[i];
+    (globalThis as any).word = word;
     if (Object.prototype.hasOwnProperty.call(p2w, String(pch))) {
-      if (p2w[pch] != word) {
+      if ((p2w[pch] != word)) {
         return false;
       }
     } else {
       p2w[pch] = word;
     }
     if (Object.prototype.hasOwnProperty.call(w2p, String(word))) {
-      if (w2p[word] != pch) {
+      if ((w2p[word] != pch)) {
         return false;
       }
     } else {
@@ -52,48 +62,51 @@ function wordPattern(pattern: string, s: string): boolean {
   return true;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(wordPattern("abba", "dog cat cat dog") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(wordPattern("abba", "dog cat cat fish") == false)) {
     throw new Error("expect failed");
   }
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(wordPattern("aaaa", "dog cat cat dog") == false)) {
     throw new Error("expect failed");
   }
 }
 
-function example_4(): void {
+function test_example_4(): void {
   if (!(wordPattern("abba", "dog dog dog dog") == false)) {
     throw new Error("expect failed");
   }
 }
 
-function single_word(): void {
-  if (!(wordPattern("a", "dog") == true)) {
-    throw new Error("expect failed");
-  }
+function test_single_word(): void {
+  if (!(wordPattern("a", "dog") == true)) throw new Error("expect failed");
 }
 
-function mismatch_lengths(): void {
-  if (!(wordPattern("ab", "one") == false)) {
-    throw new Error("expect failed");
-  }
+function test_mismatch_lengths(): void {
+  if (!(wordPattern("ab", "one") == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  example_4();
-  single_word();
-  mismatch_lengths();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_example_4();
+  test_single_word();
+  test_mismatch_lengths();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

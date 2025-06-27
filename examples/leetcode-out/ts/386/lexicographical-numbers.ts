@@ -2,18 +2,21 @@
 
 function lexicalOrder(n: number): Array<number> {
   let result: Array<number> = [];
+  (globalThis as any).result = result;
   let curr: number = 1;
+  (globalThis as any).curr = curr;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     result = result.concat([curr]);
-    if (curr * 10 <= n) {
+    if (((curr * 10) <= n)) {
       curr = curr * 10;
     } else {
-      if (curr >= n) {
+      if ((curr >= n)) {
         curr = Math.trunc(curr / 10);
       }
       curr = curr + 1;
-      while (curr % 10 == 0) {
+      while (((curr % 10) == 0)) {
         curr = Math.trunc(curr / 10);
       }
     }
@@ -22,49 +25,57 @@ function lexicalOrder(n: number): Array<number> {
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(lexicalOrder(13), [1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(lexicalOrder(13), [
+      1,
+      10,
+      11,
+      12,
+      13,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(lexicalOrder(2), [1, 2])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(lexicalOrder(2), [
+      1,
+      2,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(lexicalOrder(1), [1])) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(_equal(lexicalOrder(1), [1]))) throw new Error("expect failed");
 }
 
-function hundred(): void {
+function test_hundred(): void {
   let out: Array<number> = lexicalOrder(20);
-  if (!(out.length == 20)) {
-    throw new Error("expect failed");
-  }
-  if (!(out[0] == 1)) {
-    throw new Error("expect failed");
-  }
-  if (!(out[out.length - 1] == 9)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).out = out;
+  if (!(out.length == 20)) throw new Error("expect failed");
+  if (!(out[0] == 1)) throw new Error("expect failed");
+  if (!(out[out.length - 1] == 9)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  hundred();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_hundred();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -72,8 +83,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

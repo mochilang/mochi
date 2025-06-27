@@ -2,12 +2,14 @@
 
 function combine(n: number, k: number): Array<Array<number>> {
   let result: Array<Array<number>> = [];
+  (globalThis as any).result = result;
   function backtrack(start: number, path: Array<number>): void {
-    if (path.length == k) {
+    if ((path.length == k)) {
       result = result.concat([path]);
     } else {
       let i: number = start;
-      while (i <= n) {
+      (globalThis as any).i = i;
+      while ((i <= n)) {
         backtrack(i + 1, path.concat([i]));
         i = i + 1;
       }
@@ -17,44 +19,62 @@ function combine(n: number, k: number): Array<Array<number>> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(combine(4, 2), [
-      [1, 2],
-      [1, 3],
-      [1, 4],
-      [2, 3],
-      [2, 4],
-      [3, 4],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(combine(4, 2), [
+      [
+        1,
+        2,
+      ],
+      [
+        1,
+        3,
+      ],
+      [
+        1,
+        4,
+      ],
+      [
+        2,
+        3,
+      ],
+      [
+        2,
+        4,
+      ],
+      [
+        3,
+        4,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(combine(1, 1), [[1]])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(_equal(combine(1, 1), [[1]]))) throw new Error("expect failed");
 }
 
-function n___3__k___3(): void {
-  if (!_equal(combine(3, 3), [[1, 2, 3]])) {
-    throw new Error("expect failed");
-  }
+function test_n___3__k___3(): void {
+  if (
+    !(_equal(combine(3, 3), [
+      [
+        1,
+        2,
+        3,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  n___3__k___3();
+  test_example_1();
+  test_example_2();
+  test_n___3__k___3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -62,8 +82,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

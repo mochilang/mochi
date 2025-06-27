@@ -2,38 +2,43 @@
 
 function reverseVowels(s: string): string {
   let vowels: Record<string, boolean> = {
-    a: true,
-    e: true,
-    i: true,
-    o: true,
-    u: true,
-    A: true,
-    E: true,
-    I: true,
-    O: true,
-    U: true,
+    "a": true,
+    "e": true,
+    "i": true,
+    "o": true,
+    "u": true,
+    "A": true,
+    "E": true,
+    "I": true,
+    "O": true,
+    "U": true,
   };
+  (globalThis as any).vowels = vowels;
   let chars: Array<string> = [];
+  (globalThis as any).chars = chars;
   for (const ch of s) {
     chars = chars.concat([ch]);
   }
   let i: number = 0;
+  (globalThis as any).i = i;
   let j: number = chars.length - 1;
-  while (i < j) {
-    while (i < j) {
+  (globalThis as any).j = j;
+  while ((i < j)) {
+    while ((i < j)) {
       if (Object.prototype.hasOwnProperty.call(vowels, String(chars[i]))) {
         break;
       }
       i = i + 1;
     }
-    while (i < j) {
+    while ((i < j)) {
       if (Object.prototype.hasOwnProperty.call(vowels, String(chars[j]))) {
         break;
       }
       j = j - 1;
     }
-    if (i < j) {
+    if ((i < j)) {
       let tmp: string = chars[i];
+      (globalThis as any).tmp = tmp;
       chars[i] = chars[j];
       chars[j] = tmp;
       i = i + 1;
@@ -41,40 +46,35 @@ function reverseVowels(s: string): string {
     }
   }
   let result: string = "";
+  (globalThis as any).result = result;
   for (const ch of chars) {
     result = result + ch;
   }
   return result;
 }
 
-function example_1(): void {
-  if (!(reverseVowels("hello") == "holle")) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(reverseVowels("hello") == "holle")) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(reverseVowels("leetcode") == "leotcede")) {
     throw new Error("expect failed");
   }
 }
 
-function mixed_case(): void {
-  if (!(reverseVowels("aA") == "Aa")) {
-    throw new Error("expect failed");
-  }
+function test_mixed_case(): void {
+  if (!(reverseVowels("aA") == "Aa")) throw new Error("expect failed");
 }
 
-function empty_string(): void {
-  if (!(reverseVowels("") == "")) {
-    throw new Error("expect failed");
-  }
+function test_empty_string(): void {
+  if (!(reverseVowels("") == "")) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  mixed_case();
-  empty_string();
+  test_example_1();
+  test_example_2();
+  test_mixed_case();
+  test_empty_string();
 }
 main();

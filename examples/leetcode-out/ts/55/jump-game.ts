@@ -2,46 +2,62 @@
 
 function canJump(nums: Array<number>): boolean {
   let n: number = nums.length;
+  (globalThis as any).n = n;
   let farthest: number = 0;
+  (globalThis as any).farthest = farthest;
   for (let i: number = 0; i < n; i++) {
-    if (i > farthest) {
+    if ((i > farthest)) {
       return false;
     }
-    if (i + nums[i] > farthest) {
+    if (((i + nums[i]) > farthest)) {
       farthest = i + nums[i];
     }
   }
   return true;
 }
 
-function example_1(): void {
-  if (!(canJump([2, 3, 1, 1, 4]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(canJump([
+      2,
+      3,
+      1,
+      1,
+      4,
+    ]) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(canJump([3, 2, 1, 0, 4]) == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(canJump([
+      3,
+      2,
+      1,
+      0,
+      4,
+    ]) == false)
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!(canJump([0]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_single_element(): void {
+  if (!(canJump([0]) == true)) throw new Error("expect failed");
 }
 
-function with_zeros(): void {
-  if (!(canJump([2, 0, 0]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_with_zeros(): void {
+  if (
+    !(canJump([
+      2,
+      0,
+      0,
+    ]) == true)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_element();
-  with_zeros();
+  test_example_1();
+  test_example_2();
+  test_single_element();
+  test_with_zeros();
 }
 main();

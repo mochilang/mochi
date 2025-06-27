@@ -2,13 +2,19 @@
 
 function hIndex(citations: Array<number>): number {
   let n: number = citations.length;
+  (globalThis as any).n = n;
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = n - 1;
+  (globalThis as any).right = right;
   let result: number = 0;
-  while (left <= right) {
+  (globalThis as any).result = result;
+  while ((left <= right)) {
     let mid: number = left + Math.trunc((right - left) / 2);
+    (globalThis as any).mid = mid;
     let h: number = n - mid;
-    if (citations[mid] >= h) {
+    (globalThis as any).h = h;
+    if ((citations[mid] >= h)) {
       result = h;
       right = mid - 1;
     } else {
@@ -18,27 +24,42 @@ function hIndex(citations: Array<number>): number {
   return result;
 }
 
-function example_1(): void {
-  if (!(hIndex([0, 1, 3, 5, 6]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(hIndex([
+      0,
+      1,
+      3,
+      5,
+      6,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function all_zeros(): void {
-  if (!(hIndex([0, 0, 0]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_all_zeros(): void {
+  if (
+    !(hIndex([
+      0,
+      0,
+      0,
+    ]) == 0)
+  ) throw new Error("expect failed");
 }
 
-function mixed(): void {
-  if (!(hIndex([0, 0, 4, 4]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_mixed(): void {
+  if (
+    !(hIndex([
+      0,
+      0,
+      4,
+      4,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  all_zeros();
-  mixed();
+  test_example_1();
+  test_all_zeros();
+  test_mixed();
 }
 main();

@@ -2,6 +2,7 @@
 
 function parseInt(s: string): number {
   let result: number = 0;
+  (globalThis as any).result = result;
   let digits: Record<string, number> = {
     "0": 0,
     "1": 1,
@@ -14,10 +15,13 @@ function parseInt(s: string): number {
     "8": 8,
     "9": 9,
   };
+  (globalThis as any).digits = digits;
   let i: number = 0;
-  while (i < s.length) {
-    let ch: string = s[i];
-    result = result * 10 + digits[ch];
+  (globalThis as any).i = i;
+  while ((i < s.length)) {
+    let ch: string = _indexString(s, i);
+    (globalThis as any).ch = ch;
+    result = (result * 10) + digits[ch];
     i = i + 1;
   }
   return result;
@@ -25,75 +29,98 @@ function parseInt(s: string): number {
 
 function parseVersion(v: string): Array<number> {
   let parts: Array<number> = [];
+  (globalThis as any).parts = parts;
   let start: number = 0;
+  (globalThis as any).start = start;
   let i: number = 0;
-  while (i < v.length) {
-    if (v[i] == ".") {
-      let segment: string = v.slice(start, i);
+  (globalThis as any).i = i;
+  while ((i < v.length)) {
+    if ((_indexString(v, i) == ".")) {
+      let segment: string = _sliceString(v, start, i);
+      (globalThis as any).segment = segment;
       parts = parts.concat([parseInt(segment)]);
       start = i + 1;
     }
     i = i + 1;
   }
-  let segment: string = v.slice(start, v.length);
+  let segment: string = _sliceString(v, start, v.length);
+  (globalThis as any).segment = segment;
   parts = parts.concat([parseInt(segment)]);
   return parts;
 }
 
 function compareVersion(v1: string, v2: string): number {
   let a1: Array<number> = parseVersion(v1);
+  (globalThis as any).a1 = a1;
   let a2: Array<number> = parseVersion(v2);
+  (globalThis as any).a2 = a2;
   let i: number = 0;
+  (globalThis as any).i = i;
   let j: number = 0;
-  while (i < a1.length || j < a2.length) {
+  (globalThis as any).j = j;
+  while (((i < a1.length) || (j < a2.length))) {
     let n1: number = 0;
-    if (i < a1.length) {
+    (globalThis as any).n1 = n1;
+    if ((i < a1.length)) {
       n1 = a1[i];
       i = i + 1;
     }
     let n2: number = 0;
-    if (j < a2.length) {
+    (globalThis as any).n2 = n2;
+    if ((j < a2.length)) {
       n2 = a2[j];
       j = j + 1;
     }
-    if (n1 > n2) {
+    if ((n1 > n2)) {
       return 1;
     }
-    if (n1 < n2) {
-      return -1;
+    if ((n1 < n2)) {
+      return (-1);
     }
   }
   return 0;
 }
 
-function example_1(): void {
-  if (!(compareVersion("1.01", "1.001") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(compareVersion("1.01", "1.001") == 0)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(compareVersion("1.0", "1.0.0") == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(compareVersion("1.0", "1.0.0") == 0)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(compareVersion("0.1", "1.1") == -1)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(compareVersion("0.1", "1.1") == (-1))) throw new Error("expect failed");
 }
 
-function example_4(): void {
-  if (!(compareVersion("1.0.1", "1") == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_4(): void {
+  if (!(compareVersion("1.0.1", "1") == 1)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  example_4();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_example_4();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

@@ -2,52 +2,49 @@
 
 function isHappy(n: number): boolean {
   let seen: Record<number, boolean> = {};
+  (globalThis as any).seen = seen;
   let current: number = n;
-  while (current != 1) {
+  (globalThis as any).current = current;
+  while ((current != 1)) {
     if (Object.prototype.hasOwnProperty.call(seen, String(current))) {
       break;
     }
     seen[current] = true;
     let sum: number = 0;
+    (globalThis as any).sum = sum;
     let x: number = current;
-    while (x > 0) {
+    (globalThis as any).x = x;
+    while ((x > 0)) {
       let digit: number = x % 10;
-      sum = sum + digit * digit;
+      (globalThis as any).digit = digit;
+      sum = sum + (digit * digit);
       x = Math.trunc(x / 10);
     }
     current = sum;
   }
-  return current == 1;
+  return (current == 1);
 }
 
-function example_1(): void {
-  if (!(isHappy(19) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(isHappy(19) == true)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(isHappy(2) == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(isHappy(2) == false)) throw new Error("expect failed");
 }
 
-function one_is_happy(): void {
-  if (!(isHappy(1) == true)) {
-    throw new Error("expect failed");
-  }
+function test_one_is_happy(): void {
+  if (!(isHappy(1) == true)) throw new Error("expect failed");
 }
 
-function not_happy(): void {
-  if (!(isHappy(3) == false)) {
-    throw new Error("expect failed");
-  }
+function test_not_happy(): void {
+  if (!(isHappy(3) == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  one_is_happy();
-  not_happy();
+  test_example_1();
+  test_example_2();
+  test_one_is_happy();
+  test_not_happy();
 }
 main();

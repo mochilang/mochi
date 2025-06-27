@@ -2,13 +2,18 @@
 
 function pickMax(nums: Array<number>, k: number): Array<number> {
   let drop: number = nums.length - k;
+  (globalThis as any).drop = drop;
   let stack: Array<number> = [];
+  (globalThis as any).stack = stack;
   let i: number = 0;
+  (globalThis as any).i = i;
   let toDrop: number = drop;
-  while (i < nums.length) {
+  (globalThis as any).toDrop = toDrop;
+  while ((i < nums.length)) {
     let num: number = nums[i];
-    while (toDrop > 0 && stack.length > 0) {
-      if (stack[stack.length - 1] < num) {
+    (globalThis as any).num = num;
+    while (((toDrop > 0) && (stack.length > 0))) {
+      if ((stack[stack.length - 1] < num)) {
         stack = stack.slice(0, stack.length - 1);
         toDrop = toDrop - 1;
       } else {
@@ -28,18 +33,20 @@ function greaterSeq(
   j: number,
 ): boolean {
   let x: number = i;
+  (globalThis as any).x = x;
   let y: number = j;
-  while (x < a.length && y < b.length) {
-    if (a[x] > b[y]) {
+  (globalThis as any).y = y;
+  while (((x < a.length) && (y < b.length))) {
+    if ((a[x] > b[y])) {
       return true;
     }
-    if (a[x] < b[y]) {
+    if ((a[x] < b[y])) {
       return false;
     }
     x = x + 1;
     y = y + 1;
   }
-  return x != a.length;
+  return (x != a.length);
 }
 
 function maxNumber(
@@ -48,19 +55,27 @@ function maxNumber(
   k: number,
 ): Array<number> {
   let best: Array<number> = [];
+  (globalThis as any).best = best;
   let i: number = 0;
-  while (i <= k) {
-    if (i <= nums1.length && k - i <= nums2.length) {
+  (globalThis as any).i = i;
+  while ((i <= k)) {
+    if (((i <= nums1.length) && ((k - i) <= nums2.length))) {
       let part1: Array<number> = pickMax(nums1, i);
+      (globalThis as any).part1 = part1;
       let part2: Array<number> = pickMax(nums2, k - i);
+      (globalThis as any).part2 = part2;
       let merged: Array<number> = [];
+      (globalThis as any).merged = merged;
       let a: number = 0;
+      (globalThis as any).a = a;
       let b: number = 0;
-      while (a < part1.length || b < part2.length) {
+      (globalThis as any).b = b;
+      while (((a < part1.length) || (b < part2.length))) {
         let use1: boolean = false;
-        if (b == part2.length) {
+        (globalThis as any).use1 = use1;
+        if ((b == part2.length)) {
           use1 = true;
-        } else if (a == part1.length) {
+        } else if ((a == part1.length)) {
           use1 = false;
         } else {
           if (greaterSeq(part1, a, part2, b)) {
@@ -75,7 +90,7 @@ function maxNumber(
           b = b + 1;
         }
       }
-      if (best.length == 0 || greaterSeq(merged, 0, best, 0)) {
+      if (((best.length == 0) || greaterSeq(merged, 0, best, 0))) {
         best = merged;
       }
     }
@@ -84,44 +99,104 @@ function maxNumber(
   return best;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(maxNumber([3, 4, 6, 5], [9, 1, 2, 5, 8, 3], 5), [9, 8, 6, 5, 3])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(
+      maxNumber([
+        3,
+        4,
+        6,
+        5,
+      ], [
+        9,
+        1,
+        2,
+        5,
+        8,
+        3,
+      ], 5),
+      [
+        9,
+        8,
+        6,
+        5,
+        3,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(maxNumber([6, 7], [6, 0, 4], 5), [6, 7, 6, 0, 4])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      maxNumber([
+        6,
+        7,
+      ], [
+        6,
+        0,
+        4,
+      ], 5),
+      [
+        6,
+        7,
+        6,
+        0,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(maxNumber([3, 9], [8, 9], 3), [9, 8, 9])) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(_equal(
+      maxNumber([
+        3,
+        9,
+      ], [
+        8,
+        9,
+      ], 3),
+      [
+        9,
+        8,
+        9,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function all_from_one(): void {
-  if (!_equal(maxNumber([5, 9, 1], [], 2), [9, 1])) {
-    throw new Error("expect failed");
-  }
+function test_all_from_one(): void {
+  if (
+    !(_equal(
+      maxNumber(
+        [
+          5,
+          9,
+          1,
+        ],
+        [],
+        2,
+      ),
+      [
+        9,
+        1,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  all_from_one();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_all_from_one();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -129,8 +204,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

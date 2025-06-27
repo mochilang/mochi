@@ -2,11 +2,15 @@
 
 function findPeakElement(nums: Array<number>): number {
   let n: number = nums.length;
+  (globalThis as any).n = n;
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = n - 1;
-  while (left < right) {
+  (globalThis as any).right = right;
+  while ((left < right)) {
     let mid: number = Math.trunc((left + right) / 2);
-    if (nums[mid] > nums[mid + 1]) {
+    (globalThis as any).mid = mid;
+    if ((nums[mid] > nums[mid + 1])) {
       right = mid;
     } else {
       left = mid + 1;
@@ -15,21 +19,33 @@ function findPeakElement(nums: Array<number>): number {
   return left;
 }
 
-function example_1(): void {
-  if (!(findPeakElement([1, 2, 3, 1]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(findPeakElement([
+      1,
+      2,
+      3,
+      1,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  let idx: number = findPeakElement([1, 2, 1, 3, 5, 6, 4]);
-  if (!(idx == 1 || idx == 5)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  let idx: number = findPeakElement([
+    1,
+    2,
+    1,
+    3,
+    5,
+    6,
+    4,
+  ]);
+  (globalThis as any).idx = idx;
+  if (!((idx == 1) || (idx == 5))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
 main();

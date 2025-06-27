@@ -2,56 +2,70 @@
 
 function readFrom(src: string, n: number): string {
   let pos: number = 0;
+  (globalThis as any).pos = pos;
   function read4(buf: Array<string>): number {
     let count: number = 0;
+    (globalThis as any).count = count;
     let i: number = 0;
-    while (i < 4 && pos < src.length) {
-      buf[i] = src[pos];
+    (globalThis as any).i = i;
+    while (((i < 4) && (pos < src.length))) {
+      buf[i] = _indexString(src, pos);
       i = i + 1;
       pos = pos + 1;
       count = count + 1;
     }
     return count;
   }
-  let buf4: Array<string> = ["", "", "", ""];
+  let buf4: Array<string> = [
+    "",
+    "",
+    "",
+    "",
+  ];
+  (globalThis as any).buf4 = buf4;
   let result: string = "";
+  (globalThis as any).result = result;
   let total: number = 0;
-  while (total < n) {
+  (globalThis as any).total = total;
+  while ((total < n)) {
     let count: number = read4(buf4);
+    (globalThis as any).count = count;
     let i: number = 0;
-    while (i < count && total < n) {
+    (globalThis as any).i = i;
+    while (((i < count) && (total < n))) {
       result = result + buf4[i];
       total = total + 1;
       i = i + 1;
     }
-    if (count < 4) {
+    if ((count < 4)) {
       break;
     }
   }
   return result;
 }
 
-function read_less_than_file(): void {
-  if (!(readFrom("leetcode", 5) == "leetc")) {
-    throw new Error("expect failed");
-  }
+function test_read_less_than_file(): void {
+  if (!(readFrom("leetcode", 5) == "leetc")) throw new Error("expect failed");
 }
 
-function read_exact(): void {
-  if (!(readFrom("mochi", 5) == "mochi")) {
-    throw new Error("expect failed");
-  }
+function test_read_exact(): void {
+  if (!(readFrom("mochi", 5) == "mochi")) throw new Error("expect failed");
 }
 
-function read_beyond_end(): void {
-  if (!(readFrom("hi", 5) == "hi")) {
-    throw new Error("expect failed");
-  }
+function test_read_beyond_end(): void {
+  if (!(readFrom("hi", 5) == "hi")) throw new Error("expect failed");
 }
 
 function main(): void {
-  read_less_than_file();
-  read_exact();
-  read_beyond_end();
+  test_read_less_than_file();
+  test_read_exact();
+  test_read_beyond_end();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

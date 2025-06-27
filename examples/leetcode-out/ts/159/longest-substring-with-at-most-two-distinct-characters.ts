@@ -2,14 +2,20 @@
 
 function lengthOfLongestSubstringTwoDistinct(s: string): number {
   let left: number = 0;
+  (globalThis as any).left = left;
   let best: number = 0;
+  (globalThis as any).best = best;
   let counts: Record<string, number> = {};
+  (globalThis as any).counts = counts;
   let distinct: number = 0;
+  (globalThis as any).distinct = distinct;
   let right: number = 0;
-  while (right < s.length) {
-    let ch: string = s[right];
+  (globalThis as any).right = right;
+  while ((right < s.length)) {
+    let ch: string = _indexString(s, right);
+    (globalThis as any).ch = ch;
     if (Object.prototype.hasOwnProperty.call(counts, String(ch))) {
-      if (counts[ch] == 0) {
+      if ((counts[ch] == 0)) {
         distinct = distinct + 1;
       }
       counts[ch] = counts[ch] + 1;
@@ -17,16 +23,18 @@ function lengthOfLongestSubstringTwoDistinct(s: string): number {
       counts[ch] = 1;
       distinct = distinct + 1;
     }
-    while (distinct > 2) {
-      let leftCh: string = s[left];
+    while ((distinct > 2)) {
+      let leftCh: string = _indexString(s, left);
+      (globalThis as any).leftCh = leftCh;
       counts[leftCh] = counts[leftCh] - 1;
-      if (counts[leftCh] == 0) {
+      if ((counts[leftCh] == 0)) {
         distinct = distinct - 1;
       }
       left = left + 1;
     }
-    let length: number = right - left + 1;
-    if (length > best) {
+    let length: number = (right - left) + 1;
+    (globalThis as any).length = length;
+    if ((length > best)) {
       best = length;
     }
     right = right + 1;
@@ -34,41 +42,48 @@ function lengthOfLongestSubstringTwoDistinct(s: string): number {
   return best;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(lengthOfLongestSubstringTwoDistinct("eceba") == 3)) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(lengthOfLongestSubstringTwoDistinct("ccaabbb") == 5)) {
     throw new Error("expect failed");
   }
 }
 
-function empty_string(): void {
+function test_empty_string(): void {
   if (!(lengthOfLongestSubstringTwoDistinct("") == 0)) {
     throw new Error("expect failed");
   }
 }
 
-function single_char(): void {
+function test_single_char(): void {
   if (!(lengthOfLongestSubstringTwoDistinct("aaaa") == 4)) {
     throw new Error("expect failed");
   }
 }
 
-function three_distinct(): void {
+function test_three_distinct(): void {
   if (!(lengthOfLongestSubstringTwoDistinct("abcabc") == 2)) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty_string();
-  single_char();
-  three_distinct();
+  test_example_1();
+  test_example_2();
+  test_empty_string();
+  test_single_char();
+  test_three_distinct();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

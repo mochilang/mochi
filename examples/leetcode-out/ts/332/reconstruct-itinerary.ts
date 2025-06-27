@@ -2,10 +2,14 @@
 
 function findItinerary(tickets: Array<Array<string>>): Array<string> {
   let graph: Record<string, Array<string>> = {};
+  (globalThis as any).graph = graph;
   for (const t of tickets) {
     let from: string = t[0];
+    (globalThis as any).from = from;
     let to: string = t[1];
+    (globalThis as any).to = to;
     let list: Array<string> = [];
+    (globalThis as any).list = list;
     if (Object.prototype.hasOwnProperty.call(graph, String(from))) {
       list = graph[from];
     }
@@ -27,9 +31,12 @@ function findItinerary(tickets: Array<Array<string>>): Array<string> {
         const ak = a.key;
         const bk = b.key;
         if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-        if (typeof ak === "string" && typeof bk === "string")
-          return ak < bk ? -1 : ak > bk ? 1 : 0;
-        return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+        if (typeof ak === "string" && typeof bk === "string") {
+          return ak < bk
+            ? -1
+            : (ak > bk ? 1 : 0);
+        }
+        return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
       });
       _items = _pairs.map((p) => p.item);
       const _res = [];
@@ -40,10 +47,12 @@ function findItinerary(tickets: Array<Array<string>>): Array<string> {
     })();
   }
   let route: Array<string> = [];
+  (globalThis as any).route = route;
   function visit(airport: string): void {
     if (Object.prototype.hasOwnProperty.call(graph, String(airport))) {
-      while (graph[airport].length > 0) {
+      while ((graph[airport].length > 0)) {
         let next: string = graph[airport][0];
+        (globalThis as any).next = next;
         graph[airport] = graph[airport].slice(1, graph[airport].length);
         visit(next);
       }
@@ -54,43 +63,81 @@ function findItinerary(tickets: Array<Array<string>>): Array<string> {
   return route;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let tickets: Array<Array<string>> = [
-    ["MUC", "LHR"],
-    ["JFK", "MUC"],
-    ["SFO", "SJC"],
-    ["LHR", "SFO"],
+    [
+      "MUC",
+      "LHR",
+    ],
+    [
+      "JFK",
+      "MUC",
+    ],
+    [
+      "SFO",
+      "SJC",
+    ],
+    [
+      "LHR",
+      "SFO",
+    ],
   ];
-  if (!_equal(findItinerary(tickets), ["JFK", "MUC", "LHR", "SFO", "SJC"])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).tickets = tickets;
+  if (
+    !(_equal(findItinerary(tickets), [
+      "JFK",
+      "MUC",
+      "LHR",
+      "SFO",
+      "SJC",
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let tickets: Array<Array<string>> = [
-    ["JFK", "SFO"],
-    ["JFK", "ATL"],
-    ["SFO", "ATL"],
-    ["ATL", "JFK"],
-    ["ATL", "SFO"],
+    [
+      "JFK",
+      "SFO",
+    ],
+    [
+      "JFK",
+      "ATL",
+    ],
+    [
+      "SFO",
+      "ATL",
+    ],
+    [
+      "ATL",
+      "JFK",
+    ],
+    [
+      "ATL",
+      "SFO",
+    ],
   ];
+  (globalThis as any).tickets = tickets;
   if (
-    !_equal(findItinerary(tickets), ["JFK", "ATL", "JFK", "SFO", "ATL", "SFO"])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(findItinerary(tickets), [
+      "JFK",
+      "ATL",
+      "JFK",
+      "SFO",
+      "ATL",
+      "SFO",
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -98,8 +145,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

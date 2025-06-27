@@ -2,61 +2,82 @@
 
 function isOneEditDistance(s: string, t: string): boolean {
   let m: number = s.length;
+  (globalThis as any).m = m;
   let n: number = t.length;
-  if (m > n) {
+  (globalThis as any).n = n;
+  if ((m > n)) {
     return isOneEditDistance(t, s);
   }
-  if (n - m > 1) {
+  if (((n - m) > 1)) {
     return false;
   }
   let i: number = 0;
-  while (i < m) {
-    if (s[i] != t[i]) {
-      if (m == n) {
-        return s.slice(i + 1, m) == t.slice(i + 1, n);
+  (globalThis as any).i = i;
+  while ((i < m)) {
+    if ((_indexString(s, i) != _indexString(t, i))) {
+      if ((m == n)) {
+        return (_sliceString(s, i + 1, m) == _sliceString(t, i + 1, n));
       }
-      return s.slice(i, m) == t.slice(i + 1, n);
+      return (_sliceString(s, i, m) == _sliceString(t, i + 1, n));
     }
     i = i + 1;
   }
-  return n - m == 1;
+  return ((n - m) == 1);
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(isOneEditDistance("ab", "acb") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(isOneEditDistance("cab", "ad") == false)) {
     throw new Error("expect failed");
   }
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(isOneEditDistance("1203", "1213") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function identical(): void {
-  if (!(isOneEditDistance("a", "a") == false)) {
-    throw new Error("expect failed");
-  }
+function test_identical(): void {
+  if (!(isOneEditDistance("a", "a") == false)) throw new Error("expect failed");
 }
 
-function insert_at_end(): void {
+function test_insert_at_end(): void {
   if (!(isOneEditDistance("abc", "abcc") == true)) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  identical();
-  insert_at_end();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_identical();
+  test_insert_at_end();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

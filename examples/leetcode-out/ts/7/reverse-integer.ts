@@ -2,52 +2,48 @@
 
 function reverse(x: number): number {
   let sign: number = 1;
+  (globalThis as any).sign = sign;
   let n: number = x;
-  if (n < 0) {
+  (globalThis as any).n = n;
+  if ((n < 0)) {
     sign = -1;
     n = -n;
   }
   let rev: number = 0;
-  while (n != 0) {
+  (globalThis as any).rev = rev;
+  while ((n != 0)) {
     let digit: number = n % 10;
-    rev = rev * 10 + digit;
+    (globalThis as any).digit = digit;
+    rev = (rev * 10) + digit;
     n = Math.trunc(n / 10);
   }
   rev = rev * sign;
-  if (rev < -2147483647 - 1 || rev > 2147483647) {
+  if (((rev < ((-2147483647) - 1)) || (rev > 2147483647))) {
     return 0;
   }
   return rev;
 }
 
-function example_1(): void {
-  if (!(reverse(123) == 321)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(reverse(123) == 321)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(reverse(-123) == -321)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(reverse(-123) == (-321))) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(reverse(120) == 21)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(reverse(120) == 21)) throw new Error("expect failed");
 }
 
-function overflow(): void {
-  if (!(reverse(1534236469) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_overflow(): void {
+  if (!(reverse(1534236469) == 0)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  overflow();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_overflow();
 }
 main();

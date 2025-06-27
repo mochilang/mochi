@@ -2,22 +2,27 @@
 
 function majorityElement(nums: Array<number>): Array<number> {
   let n: number = nums.length;
-  if (n == 0) {
+  (globalThis as any).n = n;
+  if ((n == 0)) {
     return [];
   }
   let candidate1: number = 0;
+  (globalThis as any).candidate1 = candidate1;
   let candidate2: number = 0;
+  (globalThis as any).candidate2 = candidate2;
   let count1: number = 0;
+  (globalThis as any).count1 = count1;
   let count2: number = 0;
+  (globalThis as any).count2 = count2;
   for (const num of nums) {
-    if (num == candidate1) {
+    if ((num == candidate1)) {
       count1 = count1 + 1;
-    } else if (num == candidate2) {
+    } else if ((num == candidate2)) {
       count2 = count2 + 1;
-    } else if (count1 == 0) {
+    } else if ((count1 == 0)) {
       candidate1 = num;
       count1 = 1;
-    } else if (count2 == 0) {
+    } else if ((count2 == 0)) {
       candidate2 = num;
       count2 = 1;
     } else {
@@ -26,56 +31,71 @@ function majorityElement(nums: Array<number>): Array<number> {
     }
   }
   let res: Array<number> = [];
+  (globalThis as any).res = res;
   let c1: number = 0;
+  (globalThis as any).c1 = c1;
   let c2: number = 0;
+  (globalThis as any).c2 = c2;
   for (const num of nums) {
-    if (num == candidate1) {
+    if ((num == candidate1)) {
       c1 = c1 + 1;
     }
-    if (num == candidate2) {
+    if ((num == candidate2)) {
       c2 = c2 + 1;
     }
   }
-  if (c1 > Math.trunc(n / 3)) {
+  if ((c1 > Math.trunc(n / 3))) {
     res = res.concat([candidate1]);
   }
-  if (candidate2 != candidate1) {
-    if (c2 > Math.trunc(n / 3)) {
+  if ((candidate2 != candidate1)) {
+    if ((c2 > Math.trunc(n / 3))) {
       res = res.concat([candidate2]);
     }
   }
   return res;
 }
 
-function example_1(): void {
-  if (!_equal(majorityElement([3, 2, 3]), [3])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      majorityElement([
+        3,
+        2,
+        3,
+      ]),
+      [3],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(majorityElement([1]), [1])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(_equal(majorityElement([1]), [1]))) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(majorityElement([1, 2]), [1, 2])) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(_equal(
+      majorityElement([
+        1,
+        2,
+      ]),
+      [
+        1,
+        2,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -83,8 +103,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

@@ -2,12 +2,16 @@
 
 function partition(s: string): Array<Array<string>> {
   let n: number = s.length;
+  (globalThis as any).n = n;
   let result: Array<Array<string>> = [];
+  (globalThis as any).result = result;
   function isPal(left: number, right: number): boolean {
     let l: number = left;
+    (globalThis as any).l = l;
     let r: number = right;
-    while (l < r) {
-      if (s[l] != s[r]) {
+    (globalThis as any).r = r;
+    while ((l < r)) {
+      if ((_indexString(s, l) != _indexString(s, r))) {
         return false;
       }
       l = l + 1;
@@ -16,13 +20,14 @@ function partition(s: string): Array<Array<string>> {
     return true;
   }
   function dfs(start: number, path: Array<string>): void {
-    if (start == n) {
+    if ((start == n)) {
       result = result.concat([path]);
     } else {
       let end: number = start;
-      while (end < n) {
+      (globalThis as any).end = end;
+      while ((end < n)) {
         if (isPal(start, end)) {
-          dfs(end + 1, path.concat([s.slice(start, end + 1)]));
+          dfs(end + 1, path.concat([_sliceString(s, start, end + 1)]));
         }
         end = end + 1;
       }
@@ -32,40 +37,47 @@ function partition(s: string): Array<Array<string>> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(partition("aab"), [
-      ["a", "a", "b"],
-      ["aa", "b"],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(partition("aab"), [
+      [
+        "a",
+        "a",
+        "b",
+      ],
+      [
+        "aa",
+        "b",
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(partition("a"), [["a"]])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(_equal(partition("a"), [["a"]]))) throw new Error("expect failed");
 }
 
-function no_palindrome(): void {
-  if (!_equal(partition("abc"), [["a", "b", "c"]])) {
-    throw new Error("expect failed");
-  }
+function test_no_palindrome(): void {
+  if (
+    !(_equal(partition("abc"), [
+      [
+        "a",
+        "b",
+        "c",
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  no_palindrome();
+  test_example_1();
+  test_example_2();
+  test_no_palindrome();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -73,12 +85,33 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
 }
 
 main();

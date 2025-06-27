@@ -2,58 +2,53 @@
 
 function countDigitOne(n: number): number {
   let count: number = 0;
+  (globalThis as any).count = count;
   let i: number = 1;
-  while (i <= n) {
+  (globalThis as any).i = i;
+  while ((i <= n)) {
     let high: number = Math.trunc(n / (i * 10));
-    let current: number = Math.trunc(n / i) % 10;
+    (globalThis as any).high = high;
+    let current: number = (Math.trunc(n / i)) % 10;
+    (globalThis as any).current = current;
     let low: number = n % i;
-    if (current == 0) {
-      count = count + high * i;
-    } else if (current == 1) {
-      count = count + high * i + (low + 1);
+    (globalThis as any).low = low;
+    if ((current == 0)) {
+      count = count + (high * i);
+    } else if ((current == 1)) {
+      count = (count + (high * i)) + (low + 1);
     } else {
-      count = count + (high + 1) * i;
+      count = count + ((high + 1) * i);
     }
     i = i * 10;
   }
   return count;
 }
 
-function example_1(): void {
-  if (!(countDigitOne(13) == 6)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(countDigitOne(13) == 6)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(countDigitOne(0) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(countDigitOne(0) == 0)) throw new Error("expect failed");
 }
 
-function single_digit(): void {
-  if (!(countDigitOne(1) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_digit(): void {
+  if (!(countDigitOne(1) == 1)) throw new Error("expect failed");
 }
 
-function two_digits(): void {
-  if (!(countDigitOne(20) == 12)) {
-    throw new Error("expect failed");
-  }
+function test_two_digits(): void {
+  if (!(countDigitOne(20) == 12)) throw new Error("expect failed");
 }
 
-function hundreds(): void {
-  if (!(countDigitOne(111) == 36)) {
-    throw new Error("expect failed");
-  }
+function test_hundreds(): void {
+  if (!(countDigitOne(111) == 36)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_digit();
-  two_digits();
-  hundreds();
+  test_example_1();
+  test_example_2();
+  test_single_digit();
+  test_two_digits();
+  test_hundreds();
 }
 main();

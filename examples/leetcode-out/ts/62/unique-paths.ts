@@ -2,15 +2,19 @@
 
 function uniquePaths(m: number, n: number): number {
   let dp: Array<number> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     dp = dp.concat([1]);
     i = i + 1;
   }
   let row: number = 1;
-  while (row < m) {
+  (globalThis as any).row = row;
+  while ((row < m)) {
     let col: number = 1;
-    while (col < n) {
+    (globalThis as any).col = col;
+    while ((col < n)) {
       dp[col] = dp[col] + dp[col - 1];
       col = col + 1;
     }
@@ -19,34 +23,26 @@ function uniquePaths(m: number, n: number): number {
   return dp[n - 1];
 }
 
-function example_1(): void {
-  if (!(uniquePaths(3, 7) == 28)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(uniquePaths(3, 7) == 28)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(uniquePaths(3, 2) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(uniquePaths(3, 2) == 3)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(uniquePaths(7, 3) == 28)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(uniquePaths(7, 3) == 28)) throw new Error("expect failed");
 }
 
-function example_4(): void {
-  if (!(uniquePaths(3, 3) == 6)) {
-    throw new Error("expect failed");
-  }
+function test_example_4(): void {
+  if (!(uniquePaths(3, 3) == 6)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  example_4();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_example_4();
 }
 main();

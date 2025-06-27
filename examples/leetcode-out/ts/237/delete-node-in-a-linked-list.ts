@@ -2,50 +2,96 @@
 
 function deleteNode(values: Array<number>, index: number): Array<number> {
   let arr: Array<number> = values;
+  (globalThis as any).arr = arr;
   let i: number = index;
-  while (i < arr.length - 1) {
+  (globalThis as any).i = i;
+  while ((i < (arr.length - 1))) {
     arr[i] = arr[i + 1];
     i = i + 1;
   }
   return arr.slice(0, arr.length - 1);
 }
 
-function example_1(): void {
-  if (!_equal(deleteNode([4, 5, 1, 9], 1), [4, 1, 9])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      deleteNode([
+        4,
+        5,
+        1,
+        9,
+      ], 1),
+      [
+        4,
+        1,
+        9,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(deleteNode([4, 5, 1, 9], 2), [4, 5, 9])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      deleteNode([
+        4,
+        5,
+        1,
+        9,
+      ], 2),
+      [
+        4,
+        5,
+        9,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function delete_first(): void {
-  if (!_equal(deleteNode([1, 2, 3], 0), [2, 3])) {
-    throw new Error("expect failed");
-  }
+function test_delete_first(): void {
+  if (
+    !(_equal(
+      deleteNode([
+        1,
+        2,
+        3,
+      ], 0),
+      [
+        2,
+        3,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function delete_middle(): void {
-  if (!_equal(deleteNode([1, 2, 3, 4], 2), [1, 2, 4])) {
-    throw new Error("expect failed");
-  }
+function test_delete_middle(): void {
+  if (
+    !(_equal(
+      deleteNode([
+        1,
+        2,
+        3,
+        4,
+      ], 2),
+      [
+        1,
+        2,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  delete_first();
-  delete_middle();
+  test_example_1();
+  test_example_2();
+  test_delete_first();
+  test_delete_middle();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -53,8 +99,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

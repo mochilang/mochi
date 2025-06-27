@@ -2,12 +2,15 @@
 
 function findMin(nums: Array<number>): number {
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = nums.length - 1;
-  while (left < right) {
+  (globalThis as any).right = right;
+  while ((left < right)) {
     let mid: number = left + Math.trunc((right - left) / 2);
-    if (nums[mid] > nums[right]) {
+    (globalThis as any).mid = mid;
+    if ((nums[mid] > nums[right])) {
       left = mid + 1;
-    } else if (nums[mid] < nums[right]) {
+    } else if ((nums[mid] < nums[right])) {
       right = mid;
     } else {
       right = right - 1;
@@ -16,34 +19,56 @@ function findMin(nums: Array<number>): number {
   return nums[left];
 }
 
-function example_1(): void {
-  if (!(findMin([1, 3, 5]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(findMin([
+      1,
+      3,
+      5,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(findMin([2, 2, 2, 0, 1]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(findMin([
+      2,
+      2,
+      2,
+      0,
+      1,
+    ]) == 0)
+  ) throw new Error("expect failed");
 }
 
-function already_sorted(): void {
-  if (!(findMin([1, 2, 3, 4]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_already_sorted(): void {
+  if (
+    !(findMin([
+      1,
+      2,
+      3,
+      4,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function rotated_with_duplicates(): void {
-  if (!(findMin([3, 4, 5, 1, 2, 2]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_rotated_with_duplicates(): void {
+  if (
+    !(findMin([
+      3,
+      4,
+      5,
+      1,
+      2,
+      2,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  already_sorted();
-  rotated_with_duplicates();
+  test_example_1();
+  test_example_2();
+  test_already_sorted();
+  test_rotated_with_duplicates();
 }
 main();

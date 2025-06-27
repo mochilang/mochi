@@ -2,28 +2,37 @@
 
 function nthSuperUglyNumber(n: number, primes: Array<number>): number {
   let k: number = primes.length;
+  (globalThis as any).k = k;
   let indices: Array<number> = [];
+  (globalThis as any).indices = indices;
   let t: number = 0;
-  while (t < k) {
+  (globalThis as any).t = t;
+  while ((t < k)) {
     indices = indices.concat([0]);
     t = t + 1;
   }
   let uglies: Array<number> = [1];
+  (globalThis as any).uglies = uglies;
   let count: number = 1;
-  while (count < n) {
+  (globalThis as any).count = count;
+  while ((count < n)) {
     let next: number = 1000000000;
+    (globalThis as any).next = next;
     let i: number = 0;
-    while (i < k) {
+    (globalThis as any).i = i;
+    while ((i < k)) {
       let candidate: number = primes[i] * uglies[indices[i]];
-      if (candidate < next) {
+      (globalThis as any).candidate = candidate;
+      if ((candidate < next)) {
         next = candidate;
       }
       i = i + 1;
     }
     uglies = uglies.concat([next]);
     let j: number = 0;
-    while (j < k) {
-      if (primes[j] * uglies[indices[j]] == next) {
+    (globalThis as any).j = j;
+    while ((j < k)) {
+      if (((primes[j] * uglies[indices[j]]) == next)) {
         indices[j] = indices[j] + 1;
       }
       j = j + 1;
@@ -33,27 +42,40 @@ function nthSuperUglyNumber(n: number, primes: Array<number>): number {
   return uglies[n - 1];
 }
 
-function example_1(): void {
-  if (!(nthSuperUglyNumber(12, [2, 7, 13, 19]) == 32)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(nthSuperUglyNumber(12, [
+      2,
+      7,
+      13,
+      19,
+    ]) == 32)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(nthSuperUglyNumber(1, [2, 3, 5]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(nthSuperUglyNumber(1, [
+      2,
+      3,
+      5,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function small_primes(): void {
-  if (!(nthSuperUglyNumber(3, [2, 3, 5]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_small_primes(): void {
+  if (
+    !(nthSuperUglyNumber(3, [
+      2,
+      3,
+      5,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  small_primes();
+  test_example_1();
+  test_example_2();
+  test_small_primes();
 }
 main();

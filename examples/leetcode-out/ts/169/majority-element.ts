@@ -2,13 +2,15 @@
 
 function majorityElement(nums: Array<number>): number {
   let count: number = 0;
+  (globalThis as any).count = count;
   let candidate: number = 0;
+  (globalThis as any).candidate = candidate;
   for (const n of nums) {
-    if (count == 0) {
+    if ((count == 0)) {
       candidate = n;
       count = 1;
     } else {
-      if (n == candidate) {
+      if ((n == candidate)) {
         count = count + 1;
       } else {
         count = count - 1;
@@ -18,34 +20,50 @@ function majorityElement(nums: Array<number>): number {
   return candidate;
 }
 
-function example_1(): void {
-  if (!(majorityElement([3, 2, 3]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(majorityElement([
+      3,
+      2,
+      3,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(majorityElement([2, 2, 1, 1, 1, 2, 2]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(majorityElement([
+      2,
+      2,
+      1,
+      1,
+      1,
+      2,
+      2,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!(majorityElement([1]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_element(): void {
+  if (!(majorityElement([1]) == 1)) throw new Error("expect failed");
 }
 
-function large_majority(): void {
-  if (!(majorityElement([1, 1, 1, 2, 2]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_large_majority(): void {
+  if (
+    !(majorityElement([
+      1,
+      1,
+      1,
+      2,
+      2,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_element();
-  large_majority();
+  test_example_1();
+  test_example_2();
+  test_single_element();
+  test_large_majority();
 }
 main();

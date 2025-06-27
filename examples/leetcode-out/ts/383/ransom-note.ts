@@ -2,9 +2,12 @@
 
 function canConstruct(ransomNote: string, magazine: string): boolean {
   let counts: Record<string, number> = {};
+  (globalThis as any).counts = counts;
   let i: number = 0;
-  while (i < magazine.length) {
-    let ch: string = magazine[i];
+  (globalThis as any).i = i;
+  while ((i < magazine.length)) {
+    let ch: string = _indexString(magazine, i);
+    (globalThis as any).ch = ch;
     if (Object.prototype.hasOwnProperty.call(counts, String(ch))) {
       counts[ch] = counts[ch] + 1;
     } else {
@@ -13,11 +16,12 @@ function canConstruct(ransomNote: string, magazine: string): boolean {
     i = i + 1;
   }
   i = 0;
-  while (i < ransomNote.length) {
-    let ch: string = ransomNote[i];
+  while ((i < ransomNote.length)) {
+    let ch: string = _indexString(ransomNote, i);
+    (globalThis as any).ch = ch;
     if (Object.prototype.hasOwnProperty.call(counts, String(ch))) {
       counts[ch] = counts[ch] - 1;
-      if (counts[ch] < 0) {
+      if ((counts[ch] < 0)) {
         return false;
       }
     } else {
@@ -28,41 +32,38 @@ function canConstruct(ransomNote: string, magazine: string): boolean {
   return true;
 }
 
-function example_1(): void {
-  if (!(canConstruct("a", "b") == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(canConstruct("a", "b") == false)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(canConstruct("aa", "ab") == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(canConstruct("aa", "ab") == false)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(canConstruct("aa", "aab") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(canConstruct("aa", "aab") == true)) throw new Error("expect failed");
 }
 
-function empty_ransom(): void {
-  if (!(canConstruct("", "abc") == true)) {
-    throw new Error("expect failed");
-  }
+function test_empty_ransom(): void {
+  if (!(canConstruct("", "abc") == true)) throw new Error("expect failed");
 }
 
-function not_enough_letters(): void {
-  if (!(canConstruct("abc", "ab") == false)) {
-    throw new Error("expect failed");
-  }
+function test_not_enough_letters(): void {
+  if (!(canConstruct("abc", "ab") == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  empty_ransom();
-  not_enough_letters();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_empty_ransom();
+  test_not_enough_letters();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

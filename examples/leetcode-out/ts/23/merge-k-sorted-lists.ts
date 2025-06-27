@@ -2,23 +2,33 @@
 
 function mergeKLists(lists: Array<Array<number>>): Array<number> {
   let k: number = lists.length;
+  (globalThis as any).k = k;
   let indices: Array<number> = [];
+  (globalThis as any).indices = indices;
   let i: number = 0;
-  while (i < k) {
+  (globalThis as any).i = i;
+  while ((i < k)) {
     indices = indices.concat([0]);
     i = i + 1;
   }
   let result: Array<number> = [];
+  (globalThis as any).result = result;
   while (true) {
     let best: number = 0;
+    (globalThis as any).best = best;
     let bestList: number = -1;
+    (globalThis as any).bestList = bestList;
     let found: boolean = false;
+    (globalThis as any).found = found;
     let j: number = 0;
-    while (j < k) {
+    (globalThis as any).j = j;
+    while ((j < k)) {
       let idx: number = indices[j];
-      if (idx < lists[j].length) {
+      (globalThis as any).idx = idx;
+      if ((idx < lists[j].length)) {
         let val: number = lists[j][idx];
-        if (!found || val < best) {
+        (globalThis as any).val = val;
+        if (((!found) || (val < best))) {
           best = val;
           bestList = j;
           found = true;
@@ -26,7 +36,7 @@ function mergeKLists(lists: Array<Array<number>>): Array<number> {
       }
       j = j + 1;
     }
-    if (!found) {
+    if ((!found)) {
       break;
     }
     result = result.concat([best]);
@@ -35,44 +45,56 @@ function mergeKLists(lists: Array<Array<number>>): Array<number> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(
+    !(_equal(
       mergeKLists([
-        [1, 4, 5],
-        [1, 3, 4],
-        [2, 6],
+        [
+          1,
+          4,
+          5,
+        ],
+        [
+          1,
+          3,
+          4,
+        ],
+        [
+          2,
+          6,
+        ],
       ]),
-      [1, 1, 2, 3, 4, 4, 5, 6],
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+      [
+        1,
+        1,
+        2,
+        3,
+        4,
+        4,
+        5,
+        6,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(mergeKLists([]), [])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(_equal(mergeKLists([]), []))) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(mergeKLists([[]]), [])) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(_equal(mergeKLists([[]]), []))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -80,8 +102,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

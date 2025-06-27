@@ -4,7 +4,7 @@ function combinationSum2(
   candidates: Array<number>,
   target: number,
 ): Array<Array<number>> {
-  let arr: Array<any> = (() => {
+  let arr: Array<number> = (() => {
     const _src = candidates;
     let _items = [];
     for (const c of _src) {
@@ -18,9 +18,12 @@ function combinationSum2(
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -29,19 +32,24 @@ function combinationSum2(
     }
     return _res;
   })();
+  (globalThis as any).arr = arr;
   let n: number = arr.length;
+  (globalThis as any).n = n;
   let result: Array<Array<number>> = [];
+  (globalThis as any).result = result;
   function backtrack(remain: number, start: number, path: Array<number>): void {
-    if (remain == 0) {
+    if ((remain == 0)) {
       result = result.concat([path]);
     } else {
       let i: number = start;
-      while (i < n) {
-        let current: any = arr[i];
-        if (current > remain) {
+      (globalThis as any).i = i;
+      while ((i < n)) {
+        let current: number = arr[i];
+        (globalThis as any).current = current;
+        if ((current > remain)) {
           break;
         }
-        if (i > start && _equal(arr[i], arr[i - 1])) {
+        if (((i > start) && (arr[i] == arr[i - 1]))) {
           i = i + 1;
           continue;
         }
@@ -54,35 +62,72 @@ function combinationSum2(
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(combinationSum2([10, 1, 2, 7, 6, 1, 5], 8), [
-      [1, 1, 6],
-      [1, 2, 5],
-      [1, 7],
-      [2, 6],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(
+      combinationSum2([
+        10,
+        1,
+        2,
+        7,
+        6,
+        1,
+        5,
+      ], 8),
+      [
+        [
+          1,
+          1,
+          6,
+        ],
+        [
+          1,
+          2,
+          5,
+        ],
+        [
+          1,
+          7,
+        ],
+        [
+          2,
+          6,
+        ],
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(combinationSum2([2, 5, 2, 1, 2], 5), [[1, 2, 2], [5]])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      combinationSum2([
+        2,
+        5,
+        2,
+        1,
+        2,
+      ], 5),
+      [
+        [
+          1,
+          2,
+          2,
+        ],
+        [5],
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -90,8 +135,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

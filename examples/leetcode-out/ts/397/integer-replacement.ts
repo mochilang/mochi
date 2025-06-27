@@ -2,16 +2,19 @@
 
 function integerReplacement(n: number): number {
   let steps: number = 0;
+  (globalThis as any).steps = steps;
   let x: number = n;
-  while (x != 1) {
-    if (x % 2 == 0) {
+  (globalThis as any).x = x;
+  while ((x != 1)) {
+    if (((x % 2) == 0)) {
       x = Math.trunc(x / 2);
     } else {
-      if (x == 3) {
+      if ((x == 3)) {
         x = 2;
       } else {
         let mod4: number = x % 4;
-        if (mod4 == 1) {
+        (globalThis as any).mod4 = mod4;
+        if ((mod4 == 1)) {
           x = x - 1;
         } else {
           x = x + 1;
@@ -23,41 +26,31 @@ function integerReplacement(n: number): number {
   return steps;
 }
 
-function example_1(): void {
-  if (!(integerReplacement(8) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(integerReplacement(8) == 3)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(integerReplacement(7) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(integerReplacement(7) == 4)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(integerReplacement(4) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(integerReplacement(4) == 2)) throw new Error("expect failed");
 }
 
-function one(): void {
-  if (!(integerReplacement(1) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_one(): void {
+  if (!(integerReplacement(1) == 0)) throw new Error("expect failed");
 }
 
-function three(): void {
-  if (!(integerReplacement(3) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_three(): void {
+  if (!(integerReplacement(3) == 2)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  one();
-  three();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_one();
+  test_three();
 }
 main();

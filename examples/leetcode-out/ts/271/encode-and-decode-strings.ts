@@ -2,7 +2,9 @@
 
 function parseInt(s: string): number {
   let result: number = 0;
+  (globalThis as any).result = result;
   let i: number = 0;
+  (globalThis as any).i = i;
   let digits: Record<string, number> = {
     "0": 0,
     "1": 1,
@@ -15,8 +17,9 @@ function parseInt(s: string): number {
     "8": 8,
     "9": 9,
   };
-  while (i < s.length) {
-    result = result * 10 + digits[s[i]];
+  (globalThis as any).digits = digits;
+  while ((i < s.length)) {
+    result = (result * 10) + digits[_indexString(s, i)];
     i = i + 1;
   }
   return result;
@@ -24,9 +27,12 @@ function parseInt(s: string): number {
 
 function encode(strs: Array<string>): string {
   let result: string = "";
+  (globalThis as any).result = result;
   let i: number = 0;
-  while (i < strs.length) {
+  (globalThis as any).i = i;
+  while ((i < strs.length)) {
     let s: string = strs[i];
+    (globalThis as any).s = s;
     result = result + String(s.length) + "#" + s;
     i = i + 1;
   }
@@ -35,45 +41,52 @@ function encode(strs: Array<string>): string {
 
 function decode(s: string): Array<string> {
   let result: Array<string> = [];
+  (globalThis as any).result = result;
   let i: number = 0;
-  while (i < s.length) {
+  (globalThis as any).i = i;
+  while ((i < s.length)) {
     let j: number = i;
-    while (s[j] != "#") {
+    (globalThis as any).j = j;
+    while ((_indexString(s, j) != "#")) {
       j = j + 1;
     }
-    let lenStr: string = s.slice(i, j);
+    let lenStr: string = _sliceString(s, i, j);
+    (globalThis as any).lenStr = lenStr;
     let n: number = parseInt(lenStr);
-    let word: string = s.slice(j + 1, j + 1 + n);
+    (globalThis as any).n = n;
+    let word: string = _sliceString(s, j + 1, (j + 1) + n);
+    (globalThis as any).word = word;
     result = result.concat([word]);
-    i = j + 1 + n;
+    i = (j + 1) + n;
   }
   return result;
 }
 
-function round_trip(): void {
-  let strs: Array<string> = ["lint", "code", "love", "you"];
-  if (!_equal(decode(encode(strs)), strs)) {
-    throw new Error("expect failed");
-  }
+function test_round_trip(): void {
+  let strs: Array<string> = [
+    "lint",
+    "code",
+    "love",
+    "you",
+  ];
+  (globalThis as any).strs = strs;
+  if (!(_equal(decode(encode(strs)), strs))) throw new Error("expect failed");
 }
 
-function empty_list(): void {
+function test_empty_list(): void {
   let strs: Array<string> = [];
-  if (!_equal(decode(encode(strs)), strs)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).strs = strs;
+  if (!(_equal(decode(encode(strs)), strs))) throw new Error("expect failed");
 }
 
 function main(): void {
-  round_trip();
-  empty_list();
+  test_round_trip();
+  test_empty_list();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -81,12 +94,33 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
 }
 
 main();

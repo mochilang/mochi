@@ -2,13 +2,16 @@
 
 function removeDuplicates(nums: Array<number>): number {
   let n: number = nums.length;
-  if (n <= 2) {
+  (globalThis as any).n = n;
+  if ((n <= 2)) {
     return n;
   }
   let write: number = 2;
+  (globalThis as any).write = write;
   let read: number = 2;
-  while (read < n) {
-    if (nums[read] != nums[write - 2]) {
+  (globalThis as any).read = read;
+  while ((read < n)) {
+    if ((nums[read] != nums[write - 2])) {
       nums[write] = nums[read];
       write = write + 1;
     }
@@ -17,38 +20,67 @@ function removeDuplicates(nums: Array<number>): number {
   return write;
 }
 
-function example_1(): void {
-  let nums: Array<number> = [1, 1, 1, 2, 2, 3];
+function test_example_1(): void {
+  let nums: Array<number> = [
+    1,
+    1,
+    1,
+    2,
+    2,
+    3,
+  ];
+  (globalThis as any).nums = nums;
   let k: number = removeDuplicates(nums);
-  if (!(k == 5)) {
-    throw new Error("expect failed");
-  }
-  if (!_equal(nums.slice(0, k), [1, 1, 2, 2, 3])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).k = k;
+  if (!(k == 5)) throw new Error("expect failed");
+  if (
+    !(_equal(nums.slice(0, k), [
+      1,
+      1,
+      2,
+      2,
+      3,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  let nums: Array<number> = [0, 0, 1, 1, 1, 1, 2, 3, 3];
+function test_example_2(): void {
+  let nums: Array<number> = [
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    2,
+    3,
+    3,
+  ];
+  (globalThis as any).nums = nums;
   let k: number = removeDuplicates(nums);
-  if (!(k == 7)) {
-    throw new Error("expect failed");
-  }
-  if (!_equal(nums.slice(0, k), [0, 0, 1, 1, 2, 3, 3])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).k = k;
+  if (!(k == 7)) throw new Error("expect failed");
+  if (
+    !(_equal(nums.slice(0, k), [
+      0,
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -56,8 +88,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

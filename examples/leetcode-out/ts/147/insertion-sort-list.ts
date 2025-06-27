@@ -2,11 +2,15 @@
 
 function insertionSortList(nums: Array<number>): Array<number> {
   let arr: Array<number> = nums;
+  (globalThis as any).arr = arr;
   let i: number = 1;
-  while (i < arr.length) {
+  (globalThis as any).i = i;
+  while ((i < arr.length)) {
     let key: number = arr[i];
+    (globalThis as any).key = key;
     let j: number = i - 1;
-    while (j >= 0 && arr[j] > key) {
+    (globalThis as any).j = j;
+    while (((j >= 0) && (arr[j] > key))) {
       arr[j + 1] = arr[j];
       j = j - 1;
     }
@@ -16,49 +20,84 @@ function insertionSortList(nums: Array<number>): Array<number> {
   return arr;
 }
 
-function example_1(): void {
-  if (!_equal(insertionSortList([4, 2, 1, 3]), [1, 2, 3, 4])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      insertionSortList([
+        4,
+        2,
+        1,
+        3,
+      ]),
+      [
+        1,
+        2,
+        3,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(insertionSortList([-1, 5, 3, 4, 0]), [-1, 0, 3, 4, 5])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      insertionSortList([
+        -1,
+        5,
+        3,
+        4,
+        0,
+      ]),
+      [
+        -1,
+        0,
+        3,
+        4,
+        5,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function already_sorted(): void {
-  if (!_equal(insertionSortList([1, 2, 3, 4]), [1, 2, 3, 4])) {
-    throw new Error("expect failed");
-  }
+function test_already_sorted(): void {
+  if (
+    !(_equal(
+      insertionSortList([
+        1,
+        2,
+        3,
+        4,
+      ]),
+      [
+        1,
+        2,
+        3,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!_equal(insertionSortList([1]), [1])) {
-    throw new Error("expect failed");
-  }
+function test_single_element(): void {
+  if (!(_equal(insertionSortList([1]), [1]))) throw new Error("expect failed");
 }
 
-function empty(): void {
-  if (!_equal(insertionSortList([]), [])) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(_equal(insertionSortList([]), []))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  already_sorted();
-  single_element();
-  empty();
+  test_example_1();
+  test_example_2();
+  test_already_sorted();
+  test_single_element();
+  test_empty();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -66,8 +105,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

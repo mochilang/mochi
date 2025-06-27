@@ -2,13 +2,16 @@
 
 function findConsecutive(nums: Array<number>): Array<number> {
   let n: number = nums.length;
+  (globalThis as any).n = n;
   let result: Array<number> = [];
+  (globalThis as any).result = result;
   let i: number = 0;
-  while (i + 2 < n) {
-    if (nums[i] == nums[i + 1] && nums[i + 1] == nums[i + 2]) {
-      if (result.length == 0) {
+  (globalThis as any).i = i;
+  while (((i + 2) < n)) {
+    if (((nums[i] == nums[i + 1]) && (nums[i + 1] == nums[i + 2]))) {
+      if ((result.length == 0)) {
         result = result.concat([nums[i]]);
-      } else if (result[result.length - 1] != nums[i]) {
+      } else if ((result[result.length - 1] != nums[i])) {
         result = result.concat([nums[i]]);
       }
     }
@@ -17,27 +20,49 @@ function findConsecutive(nums: Array<number>): Array<number> {
   return result;
 }
 
-function example(): void {
-  if (!(String(findConsecutive([1, 1, 1, 2, 2, 2, 3])) == String([1, 2]))) {
-    throw new Error("expect failed");
-  }
+function test_example(): void {
+  if (
+    !(String(findConsecutive([
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      3,
+    ])) == String([
+      1,
+      2,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function no_triples(): void {
-  if (!(String(findConsecutive([1, 2, 3, 4])) == String([]))) {
-    throw new Error("expect failed");
-  }
+function test_no_triples(): void {
+  if (
+    !(String(findConsecutive([
+      1,
+      2,
+      3,
+      4,
+    ])) == String([]))
+  ) throw new Error("expect failed");
 }
 
-function long_sequence(): void {
-  if (!(String(findConsecutive([4, 4, 4, 4, 4])) == String([4]))) {
-    throw new Error("expect failed");
-  }
+function test_long_sequence(): void {
+  if (
+    !(String(findConsecutive([
+      4,
+      4,
+      4,
+      4,
+      4,
+    ])) == String([4]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example();
-  no_triples();
-  long_sequence();
+  test_example();
+  test_no_triples();
+  test_long_sequence();
 }
 main();

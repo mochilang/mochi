@@ -2,24 +2,31 @@
 
 function removeDuplicateLetters(s: string): string {
   let last: Record<string, number> = {};
+  (globalThis as any).last = last;
   let i: number = 0;
-  while (i < s.length) {
-    last[s[i]] = i;
+  (globalThis as any).i = i;
+  while ((i < s.length)) {
+    last[_indexString(s, i)] = i;
     i = i + 1;
   }
   let stack: Array<string> = [];
+  (globalThis as any).stack = stack;
   let seen: Record<string, boolean> = {};
+  (globalThis as any).seen = seen;
   i = 0;
-  while (i < s.length) {
-    let c: string = s[i];
+  while ((i < s.length)) {
+    let c: string = _indexString(s, i);
+    (globalThis as any).c = c;
     let present: boolean = false;
+    (globalThis as any).present = present;
     if (Object.prototype.hasOwnProperty.call(seen, String(c))) {
       present = seen[c];
     }
-    if (!present) {
-      while (stack.length > 0) {
+    if ((!present)) {
+      while ((stack.length > 0)) {
         let top: string = stack[stack.length - 1];
-        if (top > c && last[top] > i) {
+        (globalThis as any).top = top;
+        if (((top > c) && (last[top] > i))) {
           stack = stack.slice(0, stack.length - 1);
           seen[top] = false;
         } else {
@@ -32,47 +39,55 @@ function removeDuplicateLetters(s: string): string {
     i = i + 1;
   }
   let result: string = "";
+  (globalThis as any).result = result;
   for (const ch of stack) {
     result = result + ch;
   }
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(removeDuplicateLetters("bcabc") == "abc")) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(removeDuplicateLetters("cbacdcbc") == "acdb")) {
     throw new Error("expect failed");
   }
 }
 
-function repeated_letters(): void {
+function test_repeated_letters(): void {
   if (!(removeDuplicateLetters("aaaa") == "a")) {
     throw new Error("expect failed");
   }
 }
 
-function leetcode(): void {
+function test_leetcode(): void {
   if (!(removeDuplicateLetters("leetcode") == "letcod")) {
     throw new Error("expect failed");
   }
 }
 
-function mixed_order(): void {
+function test_mixed_order(): void {
   if (!(removeDuplicateLetters("ecbacba") == "eacb")) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  repeated_letters();
-  leetcode();
-  mixed_order();
+  test_example_1();
+  test_example_2();
+  test_repeated_letters();
+  test_leetcode();
+  test_mixed_order();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

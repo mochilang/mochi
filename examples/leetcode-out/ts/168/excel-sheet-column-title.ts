@@ -2,38 +2,49 @@
 
 function convertToTitle(columnNumber: number): string {
   let letters: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  (globalThis as any).letters = letters;
   let n: number = columnNumber;
+  (globalThis as any).n = n;
   let result: string = "";
-  while (n > 0) {
+  (globalThis as any).result = result;
+  while ((n > 0)) {
     n = n - 1;
     let idx: number = n % 26;
-    result = letters.slice(idx, idx + 1) + result;
+    (globalThis as any).idx = idx;
+    result = _sliceString(letters, idx, idx + 1) + result;
     n = Math.trunc(n / 26);
   }
   return result;
 }
 
-function example_1(): void {
-  if (!(convertToTitle(1) == "A")) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(convertToTitle(1) == "A")) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(convertToTitle(28) == "AB")) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(convertToTitle(28) == "AB")) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(convertToTitle(701) == "ZY")) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(convertToTitle(701) == "ZY")) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

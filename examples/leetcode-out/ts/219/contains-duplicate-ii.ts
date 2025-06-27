@@ -2,12 +2,16 @@
 
 function containsNearbyDuplicate(nums: Array<number>, k: number): boolean {
   let index: Record<number, number> = {};
+  (globalThis as any).index = index;
   let i: number = 0;
-  while (i < nums.length) {
+  (globalThis as any).i = i;
+  while ((i < nums.length)) {
     let num: number = nums[i];
+    (globalThis as any).num = num;
     if (Object.prototype.hasOwnProperty.call(index, String(num))) {
       let j: number = index[num];
-      if (i - j <= k) {
+      (globalThis as any).j = j;
+      if (((i - j) <= k)) {
         return true;
       }
     }
@@ -17,48 +21,79 @@ function containsNearbyDuplicate(nums: Array<number>, k: number): boolean {
   return false;
 }
 
-function example_1(): void {
-  if (!(containsNearbyDuplicate([1, 2, 3, 1], 3) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(containsNearbyDuplicate([
+      1,
+      2,
+      3,
+      1,
+    ], 3) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(containsNearbyDuplicate([1, 0, 1, 1], 1) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(containsNearbyDuplicate([
+      1,
+      0,
+      1,
+      1,
+    ], 1) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(containsNearbyDuplicate([1, 2, 3, 1, 2, 3], 2) == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(containsNearbyDuplicate([
+      1,
+      2,
+      3,
+      1,
+      2,
+      3,
+    ], 2) == false)
+  ) throw new Error("expect failed");
 }
 
-function no_duplicates(): void {
-  if (!(containsNearbyDuplicate([1, 2, 3, 4, 5], 3) == false)) {
-    throw new Error("expect failed");
-  }
+function test_no_duplicates(): void {
+  if (
+    !(containsNearbyDuplicate([
+      1,
+      2,
+      3,
+      4,
+      5,
+    ], 3) == false)
+  ) throw new Error("expect failed");
 }
 
-function duplicate_at_distance_k(): void {
-  if (!(containsNearbyDuplicate([1, 2, 3, 1], 2) == false)) {
-    throw new Error("expect failed");
-  }
+function test_duplicate_at_distance_k(): void {
+  if (
+    !(containsNearbyDuplicate([
+      1,
+      2,
+      3,
+      1,
+    ], 2) == false)
+  ) throw new Error("expect failed");
 }
 
-function duplicate_with_k_zero(): void {
-  if (!(containsNearbyDuplicate([1, 1], 0) == false)) {
-    throw new Error("expect failed");
-  }
+function test_duplicate_with_k_zero(): void {
+  if (
+    !(containsNearbyDuplicate([
+      1,
+      1,
+    ], 0) == false)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  no_duplicates();
-  duplicate_at_distance_k();
-  duplicate_with_k_zero();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_no_duplicates();
+  test_duplicate_at_distance_k();
+  test_duplicate_with_k_zero();
 }
 main();

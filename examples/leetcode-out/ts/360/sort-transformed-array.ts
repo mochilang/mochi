@@ -7,23 +7,31 @@ function sortTransformedArray(
   c: number,
 ): Array<number> {
   let n: number = nums.length;
+  (globalThis as any).n = n;
   let result: Array<number> = [];
+  (globalThis as any).result = result;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     result = result.concat([0]);
     i = i + 1;
   }
   function transform(x: number): number {
-    return a * x * x + b * x + c;
+    return ((((a * x) * x) + (b * x)) + c);
   }
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = n - 1;
-  if (a >= 0) {
+  (globalThis as any).right = right;
+  if ((a >= 0)) {
     let idx: number = n - 1;
-    while (left <= right) {
+    (globalThis as any).idx = idx;
+    while ((left <= right)) {
       let lv: number = transform(nums[left]);
+      (globalThis as any).lv = lv;
       let rv: number = transform(nums[right]);
-      if (lv > rv) {
+      (globalThis as any).rv = rv;
+      if ((lv > rv)) {
         result[idx] = lv;
         left = left + 1;
       } else {
@@ -34,10 +42,13 @@ function sortTransformedArray(
     }
   } else {
     let idx: number = 0;
-    while (left <= right) {
+    (globalThis as any).idx = idx;
+    while ((left <= right)) {
       let lv: number = transform(nums[left]);
+      (globalThis as any).lv = lv;
       let rv: number = transform(nums[right]);
-      if (lv < rv) {
+      (globalThis as any).rv = rv;
+      if ((lv < rv)) {
         result[idx] = lv;
         left = left + 1;
       } else {
@@ -50,44 +61,94 @@ function sortTransformedArray(
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(sortTransformedArray([-4, -2, 2, 4], 1, 3, 5), [3, 9, 15, 33])) {
-    throw new Error("expect failed");
-  }
-}
-
-function example_2(): void {
+function test_example_1(): void {
   if (
-    !_equal(sortTransformedArray([-4, -2, 2, 4], -1, 3, 5), [-23, -5, 1, 7])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(
+      sortTransformedArray(
+        [
+          -4,
+          -2,
+          2,
+          4,
+        ],
+        1,
+        3,
+        5,
+      ),
+      [
+        3,
+        9,
+        15,
+        33,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function a_zero(): void {
-  if (!_equal(sortTransformedArray([0, 1, 2, 3], 0, 2, 1), [1, 3, 5, 7])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      sortTransformedArray(
+        [
+          -4,
+          -2,
+          2,
+          4,
+        ],
+        -1,
+        3,
+        5,
+      ),
+      [
+        -23,
+        -5,
+        1,
+        7,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!_equal(sortTransformedArray([2], 2, -3, 1), [3])) {
+function test_a_zero(): void {
+  if (
+    !(_equal(
+      sortTransformedArray(
+        [
+          0,
+          1,
+          2,
+          3,
+        ],
+        0,
+        2,
+        1,
+      ),
+      [
+        1,
+        3,
+        5,
+        7,
+      ],
+    ))
+  ) throw new Error("expect failed");
+}
+
+function test_single_element(): void {
+  if (!(_equal(sortTransformedArray([2], 2, -3, 1), [3]))) {
     throw new Error("expect failed");
   }
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  a_zero();
-  single_element();
+  test_example_1();
+  test_example_2();
+  test_a_zero();
+  test_single_element();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -95,8 +156,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

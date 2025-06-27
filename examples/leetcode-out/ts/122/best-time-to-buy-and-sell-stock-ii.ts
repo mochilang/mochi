@@ -2,11 +2,15 @@
 
 function maxProfit(prices: Array<number>): number {
   let n: number = prices.length;
+  (globalThis as any).n = n;
   let profit: number = 0;
+  (globalThis as any).profit = profit;
   let i: number = 1;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let diff: number = prices[i] - prices[i - 1];
-    if (diff > 0) {
+    (globalThis as any).diff = diff;
+    if ((diff > 0)) {
       profit = profit + diff;
     }
     i = i + 1;
@@ -14,27 +18,46 @@ function maxProfit(prices: Array<number>): number {
   return profit;
 }
 
-function example_1(): void {
-  if (!(maxProfit([7, 1, 5, 3, 6, 4]) == 7)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(maxProfit([
+      7,
+      1,
+      5,
+      3,
+      6,
+      4,
+    ]) == 7)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(maxProfit([1, 2, 3, 4, 5]) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(maxProfit([
+      1,
+      2,
+      3,
+      4,
+      5,
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(maxProfit([7, 6, 4, 3, 1]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(maxProfit([
+      7,
+      6,
+      4,
+      3,
+      1,
+    ]) == 0)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 main();

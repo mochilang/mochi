@@ -2,10 +2,11 @@
 
 function maxEnvelopes(envelopes: Array<Array<number>>): number {
   let n: number = envelopes.length;
-  if (n == 0) {
+  (globalThis as any).n = n;
+  if ((n == 0)) {
     return 0;
   }
-  let byH: Array<any> = (() => {
+  let byH: Array<Array<number>> = (() => {
     const _src = envelopes;
     let _items = [];
     for (const e of _src) {
@@ -13,15 +14,18 @@ function maxEnvelopes(envelopes: Array<Array<number>>): number {
     }
     let _pairs = _items.map((it) => {
       const e = it;
-      return { item: it, key: -e[1] };
+      return { item: it, key: (-e[1]) };
     });
     _pairs.sort((a, b) => {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -30,7 +34,8 @@ function maxEnvelopes(envelopes: Array<Array<number>>): number {
     }
     return _res;
   })();
-  let sorted: Array<any> = (() => {
+  (globalThis as any).byH = byH;
+  let sorted: Array<Array<number>> = (() => {
     const _src = byH;
     let _items = [];
     for (const e of _src) {
@@ -38,15 +43,18 @@ function maxEnvelopes(envelopes: Array<Array<number>>): number {
     }
     let _pairs = _items.map((it) => {
       const e = it;
-      return { item: it, key: (e as any)[0] };
+      return { item: it, key: e[0] };
     });
     _pairs.sort((a, b) => {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -55,28 +63,37 @@ function maxEnvelopes(envelopes: Array<Array<number>>): number {
     }
     return _res;
   })();
+  (globalThis as any).sorted = sorted;
   let tails: Array<number> = [];
+  (globalThis as any).tails = tails;
   let fill: number = 0;
-  while (fill < n) {
+  (globalThis as any).fill = fill;
+  while ((fill < n)) {
     tails = tails.concat([0]);
     fill = fill + 1;
   }
   let size: number = 0;
+  (globalThis as any).size = size;
   let i: number = 0;
-  while (i < n) {
-    let height: any = (sorted[i] as any)[1];
+  (globalThis as any).i = i;
+  while ((i < n)) {
+    let height: number = sorted[i][1];
+    (globalThis as any).height = height;
     let lo: number = 0;
+    (globalThis as any).lo = lo;
     let hi: number = size;
-    while (lo < hi) {
+    (globalThis as any).hi = hi;
+    while ((lo < hi)) {
       let mid: number = Math.trunc((lo + hi) / 2);
-      if (tails[mid] < height) {
+      (globalThis as any).mid = mid;
+      if ((tails[mid] < height)) {
         lo = mid + 1;
       } else {
         hi = mid;
       }
     }
     tails[lo] = height;
-    if (lo == size) {
+    if ((lo == size)) {
       size = size + 1;
     }
     i = i + 1;
@@ -84,60 +101,79 @@ function maxEnvelopes(envelopes: Array<Array<number>>): number {
   return size;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !(
-      maxEnvelopes([
-        [5, 4],
-        [6, 4],
-        [6, 7],
-        [2, 3],
-      ]) == 3
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(maxEnvelopes([
+      [
+        5,
+        4,
+      ],
+      [
+        6,
+        4,
+      ],
+      [
+        6,
+        7,
+      ],
+      [
+        2,
+        3,
+      ],
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !(
-      maxEnvelopes([
-        [1, 1],
-        [1, 1],
-        [1, 1],
-      ]) == 1
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(maxEnvelopes([
+      [
+        1,
+        1,
+      ],
+      [
+        1,
+        1,
+      ],
+      [
+        1,
+        1,
+      ],
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function empty(): void {
-  if (!(maxEnvelopes([]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(maxEnvelopes([]) == 0)) throw new Error("expect failed");
 }
 
-function increasing(): void {
+function test_increasing(): void {
   if (
-    !(
-      maxEnvelopes([
-        [1, 1],
-        [2, 2],
-        [3, 3],
-        [4, 4],
-      ]) == 4
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    !(maxEnvelopes([
+      [
+        1,
+        1,
+      ],
+      [
+        2,
+        2,
+      ],
+      [
+        3,
+        3,
+      ],
+      [
+        4,
+        4,
+      ],
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty();
-  increasing();
+  test_example_1();
+  test_example_2();
+  test_empty();
+  test_increasing();
 }
 main();

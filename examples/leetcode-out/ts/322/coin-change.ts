@@ -2,20 +2,25 @@
 
 function coinChange(coins: Array<number>, amount: number): number {
   let dp: Array<number> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i <= amount) {
+  (globalThis as any).i = i;
+  while ((i <= amount)) {
     dp = dp.concat([amount + 1]);
     i = i + 1;
   }
   dp[0] = 0;
   i = 1;
-  while (i <= amount) {
+  while ((i <= amount)) {
     let j: number = 0;
-    while (j < coins.length) {
+    (globalThis as any).j = j;
+    while ((j < coins.length)) {
       let c: number = coins[j];
-      if (i - c >= 0) {
+      (globalThis as any).c = c;
+      if (((i - c) >= 0)) {
         let candidate: number = dp[i - c] + 1;
-        if (candidate < dp[i]) {
+        (globalThis as any).candidate = candidate;
+        if ((candidate < dp[i])) {
           dp[i] = candidate;
         }
       }
@@ -23,47 +28,49 @@ function coinChange(coins: Array<number>, amount: number): number {
     }
     i = i + 1;
   }
-  if (dp[amount] > amount) {
-    return -1;
+  if ((dp[amount] > amount)) {
+    return (-1);
   }
   return dp[amount];
 }
 
-function example_1(): void {
-  if (!(coinChange([1, 2, 5], 11) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(coinChange([
+      1,
+      2,
+      5,
+    ], 11) == 3)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(coinChange([2], 3) == -1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(coinChange([2], 3) == (-1))) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(coinChange([1], 0) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(coinChange([1], 0) == 0)) throw new Error("expect failed");
 }
 
-function single_coin(): void {
-  if (!(coinChange([2], 4) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_single_coin(): void {
+  if (!(coinChange([2], 4) == 2)) throw new Error("expect failed");
 }
 
-function mixed_coins(): void {
-  if (!(coinChange([1, 2, 5], 7) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_mixed_coins(): void {
+  if (
+    !(coinChange([
+      1,
+      2,
+      5,
+    ], 7) == 2)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  single_coin();
-  mixed_coins();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_single_coin();
+  test_mixed_coins();
 }
 main();

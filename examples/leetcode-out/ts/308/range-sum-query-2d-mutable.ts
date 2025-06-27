@@ -2,16 +2,22 @@
 
 function buildPrefix(matrix: Array<Array<number>>): Array<Array<number>> {
   let rows: number = matrix.length;
+  (globalThis as any).rows = rows;
   let cols: number = 0;
-  if (rows > 0) {
+  (globalThis as any).cols = cols;
+  if ((rows > 0)) {
     cols = matrix[0].length;
   }
   let prefix: Array<Array<number>> = [];
+  (globalThis as any).prefix = prefix;
   let i: number = 0;
-  while (i <= rows) {
+  (globalThis as any).i = i;
+  while ((i <= rows)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j <= cols) {
+    (globalThis as any).j = j;
+    while ((j <= cols)) {
       row = row.concat([0]);
       j = j + 1;
     }
@@ -19,13 +25,12 @@ function buildPrefix(matrix: Array<Array<number>>): Array<Array<number>> {
     i = i + 1;
   }
   i = 1;
-  while (i <= rows) {
+  while ((i <= rows)) {
     let j: number = 1;
-    while (j <= cols) {
+    (globalThis as any).j = j;
+    while ((j <= cols)) {
       prefix[i][j] =
-        matrix[i - 1][j - 1] +
-        prefix[i - 1][j] +
-        prefix[i][j - 1] -
+        ((matrix[i - 1][j - 1] + prefix[i - 1][j]) + prefix[i][j - 1]) -
         prefix[i - 1][j - 1];
       j = j + 1;
     }
@@ -36,11 +41,18 @@ function buildPrefix(matrix: Array<Array<number>>): Array<Array<number>> {
 
 function NumMatrix(matrix: Array<Array<number>>): Record<string, any> {
   let rows: number = matrix.length;
+  (globalThis as any).rows = rows;
   let cols: number = 0;
-  if (rows > 0) {
+  (globalThis as any).cols = cols;
+  if ((rows > 0)) {
     cols = matrix[0].length;
   }
-  return { rows: rows, cols: cols, data: matrix, prefix: buildPrefix(matrix) };
+  return {
+    "rows": rows,
+    "cols": cols,
+    "data": matrix,
+    "prefix": buildPrefix(matrix),
+  };
 }
 
 function numMatrixUpdate(
@@ -50,15 +62,21 @@ function numMatrixUpdate(
   val: number,
 ): void {
   let data: Array<Array<number>> = nm["data"];
+  (globalThis as any).data = data;
   let current: number = data[row][col];
+  (globalThis as any).current = current;
   let diff: number = val - current;
+  (globalThis as any).diff = diff;
   data[row][col] = val;
   nm["data"] = data;
   let prefix: Array<Array<number>> = nm["prefix"];
+  (globalThis as any).prefix = prefix;
   let i: number = row + 1;
-  while (i <= nm["rows"]) {
+  (globalThis as any).i = i;
+  while ((i <= nm["rows"])) {
     let j: number = col + 1;
-    while (j <= nm["cols"]) {
+    (globalThis as any).j = j;
+    while ((j <= nm["cols"])) {
       prefix[i][j] = prefix[i][j] + diff;
       j = j + 1;
     }
@@ -75,21 +93,57 @@ function numMatrixSumRegion(
   col2: number,
 ): number {
   let p: Array<Array<number>> = nm["prefix"];
+  (globalThis as any).p = p;
   let a: number = p[row2 + 1][col2 + 1];
+  (globalThis as any).a = a;
   let b: number = p[row1][col2 + 1];
+  (globalThis as any).b = b;
   let c: number = p[row2 + 1][col1];
+  (globalThis as any).c = c;
   let d: number = p[row1][col1];
-  return a - b - c + d;
+  (globalThis as any).d = d;
+  return (((a - b) - c) + d);
 }
 
-function example(): void {
+function test_example(): void {
   let nm: Record<string, any> = NumMatrix([
-    [3, 0, 1, 4, 2],
-    [5, 6, 3, 2, 1],
-    [1, 2, 0, 1, 5],
-    [4, 1, 0, 1, 7],
-    [1, 0, 3, 0, 5],
+    [
+      3,
+      0,
+      1,
+      4,
+      2,
+    ],
+    [
+      5,
+      6,
+      3,
+      2,
+      1,
+    ],
+    [
+      1,
+      2,
+      0,
+      1,
+      5,
+    ],
+    [
+      4,
+      1,
+      0,
+      1,
+      7,
+    ],
+    [
+      1,
+      0,
+      3,
+      0,
+      5,
+    ],
   ]);
+  (globalThis as any).nm = nm;
   if (!(numMatrixSumRegion(nm, 2, 1, 4, 3) == 8)) {
     throw new Error("expect failed");
   }
@@ -99,8 +153,9 @@ function example(): void {
   }
 }
 
-function single_element(): void {
+function test_single_element(): void {
   let nm: Record<string, any> = NumMatrix([[1]]);
+  (globalThis as any).nm = nm;
   if (!(numMatrixSumRegion(nm, 0, 0, 0, 0) == 1)) {
     throw new Error("expect failed");
   }
@@ -111,7 +166,7 @@ function single_element(): void {
 }
 
 function main(): void {
-  example();
-  single_element();
+  test_example();
+  test_single_element();
 }
 main();

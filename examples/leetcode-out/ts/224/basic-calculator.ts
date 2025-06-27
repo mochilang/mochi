@@ -13,87 +13,96 @@ function digitValue(c: string): number {
     "8": 8,
     "9": 9,
   };
+  (globalThis as any).digits = digits;
   return digits[c];
 }
 
 function isDigit(c: string): boolean {
-  return c >= "0" && c <= "9";
+  return ((c >= "0") && (c <= "9"));
 }
 
 function calculate(s: string): number {
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = s.length;
+  (globalThis as any).n = n;
   let result: number = 0;
+  (globalThis as any).result = result;
   let sign: number = 1;
+  (globalThis as any).sign = sign;
   let num: number = 0;
+  (globalThis as any).num = num;
   let stack: Array<number> = [];
-  while (i < n) {
-    let c: string = s[i];
+  (globalThis as any).stack = stack;
+  while ((i < n)) {
+    let c: string = _indexString(s, i);
+    (globalThis as any).c = c;
     if (isDigit(c)) {
-      num = num * 10 + digitValue(c);
-    } else if (c == "+") {
-      result = result + sign * num;
+      num = (num * 10) + digitValue(c);
+    } else if ((c == "+")) {
+      result = result + (sign * num);
       num = 0;
       sign = 1;
-    } else if (c == "-") {
-      result = result + sign * num;
+    } else if ((c == "-")) {
+      result = result + (sign * num);
       num = 0;
       sign = -1;
-    } else if (c == "(") {
+    } else if ((c == "(")) {
       stack = stack.concat([result]);
       stack = stack.concat([sign]);
       result = 0;
       sign = 1;
-    } else if (c == ")") {
-      result = result + sign * num;
+    } else if ((c == ")")) {
+      result = result + (sign * num);
       num = 0;
       let prevSign: number = stack[stack.length - 1];
+      (globalThis as any).prevSign = prevSign;
       stack = stack.slice(0, stack.length - 1);
       let prevResult: number = stack[stack.length - 1];
+      (globalThis as any).prevResult = prevResult;
       stack = stack.slice(0, stack.length - 1);
-      result = prevResult + prevSign * result;
+      result = prevResult + (prevSign * result);
     }
     i = i + 1;
   }
-  result = result + sign * num;
+  result = result + (sign * num);
   return result;
 }
 
-function example_1(): void {
-  if (!(calculate("1 + 1") == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(calculate("1 + 1") == 2)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(calculate(" 2-1 + 2 ") == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(calculate(" 2-1 + 2 ") == 3)) throw new Error("expect failed");
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(calculate("(1+(4+5+2)-3)+(6+8)") == 23)) {
     throw new Error("expect failed");
   }
 }
 
-function nested(): void {
-  if (!(calculate("((2+3)-(1-2))") == 6)) {
-    throw new Error("expect failed");
-  }
+function test_nested(): void {
+  if (!(calculate("((2+3)-(1-2))") == 6)) throw new Error("expect failed");
 }
 
-function single_number(): void {
-  if (!(calculate("42") == 42)) {
-    throw new Error("expect failed");
-  }
+function test_single_number(): void {
+  if (!(calculate("42") == 42)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  nested();
-  single_number();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_nested();
+  test_single_number();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

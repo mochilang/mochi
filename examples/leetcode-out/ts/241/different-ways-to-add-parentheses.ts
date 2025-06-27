@@ -2,7 +2,9 @@
 
 function parseInt(s: string): number {
   let result: number = 0;
+  (globalThis as any).result = result;
   let i: number = 0;
+  (globalThis as any).i = i;
   let digits: Record<string, number> = {
     "0": 0,
     "1": 1,
@@ -15,8 +17,9 @@ function parseInt(s: string): number {
     "8": 8,
     "9": 9,
   };
-  while (i < s.length) {
-    result = result * 10 + digits[s[i]];
+  (globalThis as any).digits = digits;
+  while ((i < s.length)) {
+    result = (result * 10) + digits[_indexString(s, i)];
     i = i + 1;
   }
   return result;
@@ -24,20 +27,28 @@ function parseInt(s: string): number {
 
 function diffWaysToCompute(expr: string): Array<number> {
   let results: Array<number> = [];
+  (globalThis as any).results = results;
   let i: number = 0;
-  while (i < expr.length) {
-    let ch: string = expr[i];
-    if (ch == "+" || ch == "-" || ch == "*") {
-      let leftPart: string = expr.slice(0, i);
-      let rightPart: string = expr.slice(i + 1, expr.length);
+  (globalThis as any).i = i;
+  while ((i < expr.length)) {
+    let ch: string = _indexString(expr, i);
+    (globalThis as any).ch = ch;
+    if ((((ch == "+") || (ch == "-")) || (ch == "*"))) {
+      let leftPart: string = _sliceString(expr, 0, i);
+      (globalThis as any).leftPart = leftPart;
+      let rightPart: string = _sliceString(expr, i + 1, expr.length);
+      (globalThis as any).rightPart = rightPart;
       let leftVals: Array<number> = diffWaysToCompute(leftPart);
+      (globalThis as any).leftVals = leftVals;
       let rightVals: Array<number> = diffWaysToCompute(rightPart);
+      (globalThis as any).rightVals = rightVals;
       for (const a of leftVals) {
         for (const b of rightVals) {
           let val: number = 0;
-          if (ch == "+") {
+          (globalThis as any).val = val;
+          if ((ch == "+")) {
             val = a + b;
-          } else if (ch == "-") {
+          } else if ((ch == "-")) {
             val = a - b;
           } else {
             val = a * b;
@@ -48,15 +59,16 @@ function diffWaysToCompute(expr: string): Array<number> {
     }
     i = i + 1;
   }
-  if (results.length == 0) {
+  if ((results.length == 0)) {
     results = [parseInt(expr)];
   }
   return results;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let res: Array<number> = diffWaysToCompute("2-1-1");
-  let sorted: Array<any> = (() => {
+  (globalThis as any).res = res;
+  let sorted: Array<number> = (() => {
     const _src = res;
     let _items = [];
     for (const x of _src) {
@@ -70,9 +82,12 @@ function example_1(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -81,15 +96,19 @@ function example_1(): void {
     }
     return _res;
   })();
-  let expected: Array<number> = [0, 2];
-  if (!_equal(sorted, expected)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).sorted = sorted;
+  let expected: Array<number> = [
+    0,
+    2,
+  ];
+  (globalThis as any).expected = expected;
+  if (!(_equal(sorted, expected))) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let res: Array<number> = diffWaysToCompute("2*3-4*5");
-  let sorted: Array<any> = (() => {
+  (globalThis as any).res = res;
+  let sorted: Array<number> = (() => {
     const _src = res;
     let _items = [];
     for (const x of _src) {
@@ -103,9 +122,12 @@ function example_2(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -114,8 +136,16 @@ function example_2(): void {
     }
     return _res;
   })();
-  let expected: Array<number> = [-34, -14, -10, -10, 10];
-  let expSorted: Array<any> = (() => {
+  (globalThis as any).sorted = sorted;
+  let expected: Array<number> = [
+    -34,
+    -14,
+    -10,
+    -10,
+    10,
+  ];
+  (globalThis as any).expected = expected;
+  let expSorted: Array<number> = (() => {
     const _src = expected;
     let _items = [];
     for (const x of _src) {
@@ -129,9 +159,12 @@ function example_2(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -140,28 +173,23 @@ function example_2(): void {
     }
     return _res;
   })();
-  if (!_equal(sorted, expSorted)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).expSorted = expSorted;
+  if (!(_equal(sorted, expSorted))) throw new Error("expect failed");
 }
 
-function single_number(): void {
-  if (!_equal(diffWaysToCompute("3"), [3])) {
-    throw new Error("expect failed");
-  }
+function test_single_number(): void {
+  if (!(_equal(diffWaysToCompute("3"), [3]))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_number();
+  test_example_1();
+  test_example_2();
+  test_single_number();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -169,12 +197,33 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
   return a === b;
+}
+
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
 }
 
 main();

@@ -2,11 +2,15 @@
 
 function rotate(matrix: Array<Array<number>>): Array<Array<number>> {
   let n: number = matrix.length;
+  (globalThis as any).n = n;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let j: number = i;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       let temp: number = matrix[i][j];
+      (globalThis as any).temp = temp;
       matrix[i][j] = matrix[j][i];
       matrix[j][i] = temp;
       j = j + 1;
@@ -14,11 +18,14 @@ function rotate(matrix: Array<Array<number>>): Array<Array<number>> {
     i = i + 1;
   }
   i = 0;
-  while (i < n) {
+  while ((i < n)) {
     let left: number = 0;
+    (globalThis as any).left = left;
     let right: number = n - 1;
-    while (left < right) {
+    (globalThis as any).right = right;
+    while ((left < right)) {
       let tmp: number = matrix[i][left];
+      (globalThis as any).tmp = tmp;
       matrix[i][left] = matrix[i][right];
       matrix[i][right] = tmp;
       left = left + 1;
@@ -29,63 +36,122 @@ function rotate(matrix: Array<Array<number>>): Array<Array<number>> {
   return matrix;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let m: Array<Array<number>> = [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9],
+    [
+      1,
+      2,
+      3,
+    ],
+    [
+      4,
+      5,
+      6,
+    ],
+    [
+      7,
+      8,
+      9,
+    ],
   ];
+  (globalThis as any).m = m;
   rotate(m);
   if (
-    !_equal(m, [
-      [7, 4, 1],
-      [8, 5, 2],
-      [9, 6, 3],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(m, [
+      [
+        7,
+        4,
+        1,
+      ],
+      [
+        8,
+        5,
+        2,
+      ],
+      [
+        9,
+        6,
+        3,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let m: Array<Array<number>> = [
-    [5, 1, 9, 11],
-    [2, 4, 8, 10],
-    [13, 3, 6, 7],
-    [15, 14, 12, 16],
+    [
+      5,
+      1,
+      9,
+      11,
+    ],
+    [
+      2,
+      4,
+      8,
+      10,
+    ],
+    [
+      13,
+      3,
+      6,
+      7,
+    ],
+    [
+      15,
+      14,
+      12,
+      16,
+    ],
   ];
+  (globalThis as any).m = m;
   rotate(m);
   if (
-    !_equal(m, [
-      [15, 13, 2, 5],
-      [14, 3, 4, 1],
-      [12, 6, 8, 9],
-      [16, 7, 10, 11],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(m, [
+      [
+        15,
+        13,
+        2,
+        5,
+      ],
+      [
+        14,
+        3,
+        4,
+        1,
+      ],
+      [
+        12,
+        6,
+        8,
+        9,
+      ],
+      [
+        16,
+        7,
+        10,
+        11,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
+function test_single_element(): void {
   let m: Array<Array<number>> = [[1]];
+  (globalThis as any).m = m;
   rotate(m);
-  if (!_equal(m, [[1]])) {
-    throw new Error("expect failed");
-  }
+  if (!(_equal(m, [[1]]))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_element();
+  test_example_1();
+  test_example_2();
+  test_single_element();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -93,8 +159,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

@@ -2,12 +2,16 @@
 
 function fullJustify(words: Array<string>, maxWidth: number): Array<string> {
   let result: Array<string> = [];
+  (globalThis as any).result = result;
   let i: number = 0;
-  while (i < words.length) {
+  (globalThis as any).i = i;
+  while ((i < words.length)) {
     let j: number = i;
+    (globalThis as any).j = j;
     let lineLen: number = 0;
-    while (j < words.length) {
-      if (lineLen + words[j].length + (j - i) <= maxWidth) {
+    (globalThis as any).lineLen = lineLen;
+    while ((j < words.length)) {
+      if ((((lineLen + words[j].length) + (j - i)) <= maxWidth)) {
         lineLen = lineLen + words[j].length;
         j = j + 1;
       } else {
@@ -15,34 +19,43 @@ function fullJustify(words: Array<string>, maxWidth: number): Array<string> {
       }
     }
     let line: string = "";
+    (globalThis as any).line = line;
     let numWords: number = j - i;
-    if (j == words.length || numWords == 1) {
+    (globalThis as any).numWords = numWords;
+    if (((j == words.length) || (numWords == 1))) {
       let k: number = i;
-      while (k < j) {
+      (globalThis as any).k = k;
+      while ((k < j)) {
         line = line + words[k];
-        if (k < j - 1) {
+        if ((k < (j - 1))) {
           line = line + " ";
         }
         k = k + 1;
       }
-      while (line.length < maxWidth) {
+      while ((line.length < maxWidth)) {
         line = line + " ";
       }
     } else {
       let totalSpaces: number = maxWidth - lineLen;
+      (globalThis as any).totalSpaces = totalSpaces;
       let gaps: number = numWords - 1;
+      (globalThis as any).gaps = gaps;
       let spaceEach: number = Math.trunc(totalSpaces / gaps);
+      (globalThis as any).spaceEach = spaceEach;
       let extra: number = totalSpaces % gaps;
+      (globalThis as any).extra = extra;
       let k: number = i;
-      while (k < j) {
+      (globalThis as any).k = k;
+      while ((k < j)) {
         line = line + words[k];
-        if (k < j - 1) {
+        if ((k < (j - 1))) {
           let s: number = 0;
-          while (s < spaceEach) {
+          (globalThis as any).s = s;
+          while ((s < spaceEach)) {
             line = line + " ";
             s = s + 1;
           }
-          if (extra > 0) {
+          if ((extra > 0)) {
             line = line + " ";
             extra = extra - 1;
           }
@@ -56,7 +69,7 @@ function fullJustify(words: Array<string>, maxWidth: number): Array<string> {
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let words: Array<string> = [
     "This",
     "is",
@@ -66,18 +79,17 @@ function example_1(): void {
     "text",
     "justification.",
   ];
+  (globalThis as any).words = words;
   if (
-    !_equal(fullJustify(words, 16), [
+    !(_equal(fullJustify(words, 16), [
       "This    is    an",
       "example  of text",
       "justification.  ",
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let words: Array<string> = [
     "What",
     "must",
@@ -86,18 +98,17 @@ function example_2(): void {
     "shall",
     "be",
   ];
+  (globalThis as any).words = words;
   if (
-    !_equal(fullJustify(words, 16), [
+    !(_equal(fullJustify(words, 16), [
       "What   must   be",
       "acknowledgment  ",
       "shall be        ",
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
+function test_example_3(): void {
   let words: Array<string> = [
     "Science",
     "is",
@@ -118,31 +129,28 @@ function example_3(): void {
     "we",
     "do",
   ];
+  (globalThis as any).words = words;
   if (
-    !_equal(fullJustify(words, 20), [
+    !(_equal(fullJustify(words, 20), [
       "Science  is  what we",
       "understand      well",
       "enough to explain to",
       "a  computer.  Art is",
       "everything  else  we",
       "do                  ",
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -150,8 +158,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

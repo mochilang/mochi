@@ -2,20 +2,25 @@
 
 function trap(height: Array<number>): number {
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = height.length - 1;
+  (globalThis as any).right = right;
   let left_max: number = 0;
+  (globalThis as any).left_max = left_max;
   let right_max: number = 0;
+  (globalThis as any).right_max = right_max;
   let water: number = 0;
-  while (left < right) {
-    if (height[left] < height[right]) {
-      if (height[left] >= left_max) {
+  (globalThis as any).water = water;
+  while ((left < right)) {
+    if ((height[left] < height[right])) {
+      if ((height[left] >= left_max)) {
         left_max = height[left];
       } else {
         water = water + (left_max - height[left]);
       }
       left = left + 1;
     } else {
-      if (height[right] >= right_max) {
+      if ((height[right] >= right_max)) {
         right_max = height[right];
       } else {
         water = water + (right_max - height[right]);
@@ -26,20 +31,40 @@ function trap(height: Array<number>): number {
   return water;
 }
 
-function example_1(): void {
-  if (!(trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]) == 6)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(trap([
+      0,
+      1,
+      0,
+      2,
+      1,
+      0,
+      1,
+      3,
+      2,
+      1,
+      2,
+      1,
+    ]) == 6)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(trap([4, 2, 0, 3, 2, 5]) == 9)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(trap([
+      4,
+      2,
+      0,
+      3,
+      2,
+      5,
+    ]) == 9)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
 main();

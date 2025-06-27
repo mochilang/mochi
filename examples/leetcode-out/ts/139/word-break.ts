@@ -2,23 +2,30 @@
 
 function wordBreak(s: string, wordDict: Array<string>): boolean {
   let dict: Record<string, boolean> = {};
+  (globalThis as any).dict = dict;
   for (const w of wordDict) {
     dict[w] = true;
   }
   let n: number = s.length;
+  (globalThis as any).n = n;
   let dp: Array<boolean> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i <= n) {
+  (globalThis as any).i = i;
+  while ((i <= n)) {
     dp = dp.concat([false]);
     i = i + 1;
   }
   dp[0] = true;
   let idx: number = 1;
-  while (idx <= n) {
+  (globalThis as any).idx = idx;
+  while ((idx <= n)) {
     let j: number = 0;
-    while (j < idx) {
+    (globalThis as any).j = j;
+    while ((j < idx)) {
       if (dp[j]) {
-        let part: string = s.slice(j, idx);
+        let part: string = _sliceString(s, j, idx);
+        (globalThis as any).part = part;
         if (Object.prototype.hasOwnProperty.call(dict, String(part))) {
           dp[idx] = true;
           break;
@@ -31,29 +38,52 @@ function wordBreak(s: string, wordDict: Array<string>): boolean {
   return dp[n];
 }
 
-function example_1(): void {
-  if (!(wordBreak("leetcode", ["leet", "code"]) == true)) {
-    throw new Error("expect failed");
-  }
-}
-
-function example_2(): void {
-  if (!(wordBreak("applepenapple", ["apple", "pen"]) == true)) {
-    throw new Error("expect failed");
-  }
-}
-
-function example_3(): void {
+function test_example_1(): void {
   if (
-    !(wordBreak("catsandog", ["cats", "dog", "sand", "and", "cat"]) == false)
-  ) {
-    throw new Error("expect failed");
-  }
+    !(wordBreak("leetcode", [
+      "leet",
+      "code",
+    ]) == true)
+  ) throw new Error("expect failed");
+}
+
+function test_example_2(): void {
+  if (
+    !(wordBreak("applepenapple", [
+      "apple",
+      "pen",
+    ]) == true)
+  ) throw new Error("expect failed");
+}
+
+function test_example_3(): void {
+  if (
+    !(wordBreak("catsandog", [
+      "cats",
+      "dog",
+      "sand",
+      "and",
+      "cat",
+    ]) == false)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
+function _sliceString(s: string, i: number, j: number): string {
+  let start = i;
+  let end = j;
+  const runes = Array.from(s);
+  const n = runes.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (end > n) end = n;
+  if (end < start) end = start;
+  return runes.slice(start, end).join("");
+}
+
 main();

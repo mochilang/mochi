@@ -2,11 +2,15 @@
 
 function generateMatrix(n: number): Array<Array<number>> {
   let matrix: Array<Array<number>> = [];
+  (globalThis as any).matrix = matrix;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       row = row.concat([0]);
       j = j + 1;
     }
@@ -14,33 +18,40 @@ function generateMatrix(n: number): Array<Array<number>> {
     i = i + 1;
   }
   let left: number = 0;
+  (globalThis as any).left = left;
   let right: number = n - 1;
+  (globalThis as any).right = right;
   let top: number = 0;
+  (globalThis as any).top = top;
   let bottom: number = n - 1;
+  (globalThis as any).bottom = bottom;
   let num: number = 1;
-  while (left <= right && top <= bottom) {
-    for (let j: number = left; j < right + 1; j++) {
+  (globalThis as any).num = num;
+  while (((left <= right) && (top <= bottom))) {
+    for (let j: number = left; j < (right + 1); j++) {
       matrix[top][j] = num;
       num = num + 1;
     }
     top = top + 1;
-    for (let i: number = top; i < bottom + 1; i++) {
+    for (let i: number = top; i < (bottom + 1); i++) {
       matrix[i][right] = num;
       num = num + 1;
     }
     right = right - 1;
-    if (top <= bottom) {
+    if ((top <= bottom)) {
       let j: number = right;
-      while (j >= left) {
+      (globalThis as any).j = j;
+      while ((j >= left)) {
         matrix[bottom][j] = num;
         num = num + 1;
         j = j - 1;
       }
       bottom = bottom - 1;
     }
-    if (left <= right) {
+    if ((left <= right)) {
       let i: number = bottom;
-      while (i >= top) {
+      (globalThis as any).i = i;
+      while ((i >= top)) {
         matrix[i][left] = num;
         num = num + 1;
         i = i - 1;
@@ -51,48 +62,72 @@ function generateMatrix(n: number): Array<Array<number>> {
   return matrix;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(generateMatrix(3), [
-      [1, 2, 3],
-      [8, 9, 4],
-      [7, 6, 5],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(generateMatrix(3), [
+      [
+        1,
+        2,
+        3,
+      ],
+      [
+        8,
+        9,
+        4,
+      ],
+      [
+        7,
+        6,
+        5,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(generateMatrix(1), [[1]])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(_equal(generateMatrix(1), [[1]]))) throw new Error("expect failed");
 }
 
-function n___4(): void {
+function test_n___4(): void {
   if (
-    !_equal(generateMatrix(4), [
-      [1, 2, 3, 4],
-      [12, 13, 14, 5],
-      [11, 16, 15, 6],
-      [10, 9, 8, 7],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(generateMatrix(4), [
+      [
+        1,
+        2,
+        3,
+        4,
+      ],
+      [
+        12,
+        13,
+        14,
+        5,
+      ],
+      [
+        11,
+        16,
+        15,
+        6,
+      ],
+      [
+        10,
+        9,
+        8,
+        7,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  n___4();
+  test_example_1();
+  test_example_2();
+  test_n___4();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -100,8 +135,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

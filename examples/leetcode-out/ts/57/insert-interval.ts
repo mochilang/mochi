@@ -5,103 +5,176 @@ function insert(
   newInterval: Array<number>,
 ): Array<Array<number>> {
   let result: Array<Array<number>> = [];
+  (globalThis as any).result = result;
   let inserted: boolean = false;
+  (globalThis as any).inserted = inserted;
   let start: number = newInterval[0];
+  (globalThis as any).start = start;
   let end: number = newInterval[1];
+  (globalThis as any).end = end;
   for (const interval of intervals) {
     let currStart: number = interval[0];
+    (globalThis as any).currStart = currStart;
     let currEnd: number = interval[1];
-    if (currEnd < start) {
+    (globalThis as any).currEnd = currEnd;
+    if ((currEnd < start)) {
       result = result.concat([interval]);
-    } else if (currStart > end) {
-      if (!inserted) {
-        result = result.concat([[start, end]]);
+    } else if ((currStart > end)) {
+      if ((!inserted)) {
+        result = result.concat([
+          [
+            start,
+            end,
+          ],
+        ]);
         inserted = true;
       }
       result = result.concat([interval]);
     } else {
-      if (currStart < start) {
+      if ((currStart < start)) {
         start = currStart;
       }
-      if (currEnd > end) {
+      if ((currEnd > end)) {
         end = currEnd;
       }
     }
   }
-  if (!inserted) {
-    result = result.concat([[start, end]]);
+  if ((!inserted)) {
+    result = result.concat([
+      [
+        start,
+        end,
+      ],
+    ]);
   }
   return result;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (
-    !_equal(
-      insert(
+    !(_equal(
+      insert([
         [
-          [1, 3],
-          [6, 9],
+          1,
+          3,
         ],
-        [2, 5],
-      ),
+        [
+          6,
+          9,
+        ],
+      ], [
+        2,
+        5,
+      ]),
       [
-        [1, 5],
-        [6, 9],
+        [
+          1,
+          5,
+        ],
+        [
+          6,
+          9,
+        ],
       ],
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (
-    !_equal(
-      insert(
+    !(_equal(
+      insert([
         [
-          [1, 2],
-          [3, 5],
-          [6, 7],
-          [8, 10],
-          [12, 16],
+          1,
+          2,
         ],
-        [4, 8],
-      ),
+        [
+          3,
+          5,
+        ],
+        [
+          6,
+          7,
+        ],
+        [
+          8,
+          10,
+        ],
+        [
+          12,
+          16,
+        ],
+      ], [
+        4,
+        8,
+      ]),
       [
-        [1, 2],
-        [3, 10],
-        [12, 16],
+        [
+          1,
+          2,
+        ],
+        [
+          3,
+          10,
+        ],
+        [
+          12,
+          16,
+        ],
       ],
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    ))
+  ) throw new Error("expect failed");
 }
 
-function empty_list(): void {
-  if (!_equal(insert([], [5, 7]), [[5, 7]])) {
-    throw new Error("expect failed");
-  }
+function test_empty_list(): void {
+  if (
+    !(_equal(
+      insert([], [
+        5,
+        7,
+      ]),
+      [
+        [
+          5,
+          7,
+        ],
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function contained_interval(): void {
-  if (!_equal(insert([[1, 5]], [2, 3]), [[1, 5]])) {
-    throw new Error("expect failed");
-  }
+function test_contained_interval(): void {
+  if (
+    !(_equal(
+      insert([
+        [
+          1,
+          5,
+        ],
+      ], [
+        2,
+        3,
+      ]),
+      [
+        [
+          1,
+          5,
+        ],
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty_list();
-  contained_interval();
+  test_example_1();
+  test_example_2();
+  test_empty_list();
+  test_contained_interval();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -109,8 +182,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

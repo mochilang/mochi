@@ -2,11 +2,15 @@
 
 function splitComma(s: string): Array<string> {
   let parts: Array<string> = [];
+  (globalThis as any).parts = parts;
   let current: string = "";
+  (globalThis as any).current = current;
   let i: number = 0;
-  while (i < s.length) {
-    let c: string = s[i];
-    if (c == ",") {
+  (globalThis as any).i = i;
+  while ((i < s.length)) {
+    let c: string = _indexString(s, i);
+    (globalThis as any).c = c;
+    if ((c == ",")) {
       parts = parts.concat([current]);
       current = "";
     } else {
@@ -20,49 +24,55 @@ function splitComma(s: string): Array<string> {
 
 function isValidSerialization(preorder: string): boolean {
   let nodes: Array<string> = splitComma(preorder);
+  (globalThis as any).nodes = nodes;
   let slots: number = 1;
+  (globalThis as any).slots = slots;
   let i: number = 0;
-  while (i < nodes.length) {
+  (globalThis as any).i = i;
+  while ((i < nodes.length)) {
     slots = slots - 1;
-    if (slots < 0) {
+    if ((slots < 0)) {
       return false;
     }
-    if (nodes[i] != "#") {
+    if ((nodes[i] != "#")) {
       slots = slots + 2;
     }
     i = i + 1;
   }
-  return slots == 0;
+  return (slots == 0);
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(isValidSerialization("9,3,4,#,#,1,#,#,2,#,6,#,#") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
-  if (!(isValidSerialization("1,#") == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(isValidSerialization("1,#") == false)) throw new Error("expect failed");
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(isValidSerialization("9,#,#,1") == false)) {
     throw new Error("expect failed");
   }
 }
 
-function empty_tree(): void {
-  if (!(isValidSerialization("#") == true)) {
-    throw new Error("expect failed");
-  }
+function test_empty_tree(): void {
+  if (!(isValidSerialization("#") == true)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  empty_tree();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_empty_tree();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

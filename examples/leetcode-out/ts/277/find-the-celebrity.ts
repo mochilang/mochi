@@ -2,25 +2,29 @@
 
 function findCelebrity(mat: Array<Array<boolean>>): number {
   let n: number = mat.length;
+  (globalThis as any).n = n;
   function knows(a: number, b: number): boolean {
     return mat[a][b];
   }
   let candidate: number = 0;
+  (globalThis as any).candidate = candidate;
   let i: number = 1;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     if (knows(candidate, i)) {
       candidate = i;
     }
     i = i + 1;
   }
   let j: number = 0;
-  while (j < n) {
-    if (j != candidate) {
+  (globalThis as any).j = j;
+  while ((j < n)) {
+    if ((j != candidate)) {
       if (knows(candidate, j)) {
-        return -1;
+        return (-1);
       }
-      if (!knows(j, candidate)) {
-        return -1;
+      if ((!knows(j, candidate))) {
+        return (-1);
       }
     }
     j = j + 1;
@@ -28,40 +32,61 @@ function findCelebrity(mat: Array<Array<boolean>>): number {
   return candidate;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let mat: Array<Array<boolean>> = [
-    [false, true],
-    [false, false],
+    [
+      false,
+      true,
+    ],
+    [
+      false,
+      false,
+    ],
   ];
-  if (!(findCelebrity(mat) == 1)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).mat = mat;
+  if (!(findCelebrity(mat) == 1)) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let mat: Array<Array<boolean>> = [
-    [false, true, false],
-    [false, false, false],
-    [true, true, false],
+    [
+      false,
+      true,
+      false,
+    ],
+    [
+      false,
+      false,
+      false,
+    ],
+    [
+      true,
+      true,
+      false,
+    ],
   ];
-  if (!(findCelebrity(mat) == 1)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).mat = mat;
+  if (!(findCelebrity(mat) == 1)) throw new Error("expect failed");
 }
 
-function no_celebrity(): void {
+function test_no_celebrity(): void {
   let mat: Array<Array<boolean>> = [
-    [false, true],
-    [true, false],
+    [
+      false,
+      true,
+    ],
+    [
+      true,
+      false,
+    ],
   ];
-  if (!(findCelebrity(mat) == -1)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).mat = mat;
+  if (!(findCelebrity(mat) == (-1))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  no_celebrity();
+  test_example_1();
+  test_example_2();
+  test_no_celebrity();
 }
 main();

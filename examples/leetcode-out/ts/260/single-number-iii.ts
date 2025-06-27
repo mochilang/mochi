@@ -2,6 +2,7 @@
 
 function singleNumber(nums: Array<number>): Array<number> {
   let counts: Record<number, number> = {};
+  (globalThis as any).counts = counts;
   for (const n of nums) {
     if (Object.prototype.hasOwnProperty.call(counts, String(n))) {
       counts[n] = counts[n] + 1;
@@ -10,10 +11,11 @@ function singleNumber(nums: Array<number>): Array<number> {
     }
   }
   let result: Array<number> = [];
+  (globalThis as any).result = result;
   for (const n of nums) {
-    if (counts[n] == 1) {
+    if ((counts[n] == 1)) {
       result = result.concat([n]);
-      if (result.length == 2) {
+      if ((result.length == 2)) {
         break;
       }
     }
@@ -21,9 +23,16 @@ function singleNumber(nums: Array<number>): Array<number> {
   return result;
 }
 
-function example_1(): void {
-  let out: Array<any> = (() => {
-    const _src = singleNumber([1, 2, 1, 3, 2, 5]);
+function test_example_1(): void {
+  let out: Array<number> = (() => {
+    const _src = singleNumber([
+      1,
+      2,
+      1,
+      3,
+      2,
+      5,
+    ]);
     let _items = [];
     for (const x of _src) {
       _items.push(x);
@@ -36,9 +45,12 @@ function example_1(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -47,14 +59,21 @@ function example_1(): void {
     }
     return _res;
   })();
-  if (!_equal(out, [3, 5])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).out = out;
+  if (
+    !(_equal(out, [
+      3,
+      5,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function negatives(): void {
-  let out: Array<any> = (() => {
-    const _src = singleNumber([-1, 0]);
+function test_negatives(): void {
+  let out: Array<number> = (() => {
+    const _src = singleNumber([
+      -1,
+      0,
+    ]);
     let _items = [];
     for (const x of _src) {
       _items.push(x);
@@ -67,9 +86,12 @@ function negatives(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -78,14 +100,21 @@ function negatives(): void {
     }
     return _res;
   })();
-  if (!_equal(out, [-1, 0])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).out = out;
+  if (
+    !(_equal(out, [
+      -1,
+      0,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function simple(): void {
-  let out: Array<any> = (() => {
-    const _src = singleNumber([0, 1]);
+function test_simple(): void {
+  let out: Array<number> = (() => {
+    const _src = singleNumber([
+      0,
+      1,
+    ]);
     let _items = [];
     for (const x of _src) {
       _items.push(x);
@@ -98,9 +127,12 @@ function simple(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -109,14 +141,25 @@ function simple(): void {
     }
     return _res;
   })();
-  if (!_equal(out, [0, 1])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).out = out;
+  if (
+    !(_equal(out, [
+      0,
+      1,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function mixed_order(): void {
-  let out: Array<any> = (() => {
-    const _src = singleNumber([1, 2, 3, 2, 4, 1]);
+function test_mixed_order(): void {
+  let out: Array<number> = (() => {
+    const _src = singleNumber([
+      1,
+      2,
+      3,
+      2,
+      4,
+      1,
+    ]);
     let _items = [];
     for (const x of _src) {
       _items.push(x);
@@ -129,9 +172,12 @@ function mixed_order(): void {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -140,23 +186,25 @@ function mixed_order(): void {
     }
     return _res;
   })();
-  if (!_equal(out, [3, 4])) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).out = out;
+  if (
+    !(_equal(out, [
+      3,
+      4,
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  negatives();
-  simple();
-  mixed_order();
+  test_example_1();
+  test_negatives();
+  test_simple();
+  test_mixed_order();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -164,8 +212,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

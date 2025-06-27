@@ -2,41 +2,52 @@
 
 function isNumber(s: string): boolean {
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = s.length;
-  while (i < n) {
-    if (s[i] == " ") {
+  (globalThis as any).n = n;
+  while ((i < n)) {
+    if ((_indexString(s, i) == " ")) {
       i = i + 1;
     } else {
       break;
     }
   }
-  if (i < n && (s[i] == "+" || s[i] == "-")) {
+  if (
+    ((i < n) && ((_indexString(s, i) == "+") || (_indexString(s, i) == "-")))
+  ) {
     i = i + 1;
   }
   let num: boolean = false;
+  (globalThis as any).num = num;
   let dot: boolean = false;
+  (globalThis as any).dot = dot;
   let exp: boolean = false;
+  (globalThis as any).exp = exp;
   let numAfterExp: boolean = true;
-  while (i < n) {
-    let c: string = s[i];
-    if (c == " ") {
+  (globalThis as any).numAfterExp = numAfterExp;
+  while ((i < n)) {
+    let c: string = _indexString(s, i);
+    (globalThis as any).c = c;
+    if ((c == " ")) {
       break;
     }
-    if (c == "+" || c == "-") {
+    if (((c == "+") || (c == "-"))) {
       return false;
-    } else if (c == ".") {
-      if (dot || exp) {
+    } else if ((c == ".")) {
+      if ((dot || exp)) {
         return false;
       }
       dot = true;
-    } else if (c == "e" || c == "E") {
-      if (exp || !num) {
+    } else if (((c == "e") || (c == "E"))) {
+      if ((exp || (!num))) {
         return false;
       }
       exp = true;
       numAfterExp = false;
-      if (i + 1 < n) {
-        if (s[i + 1] == "+" || s[i + 1] == "-") {
+      if (((i + 1) < n)) {
+        if (
+          ((_indexString(s, i + 1) == "+") || (_indexString(s, i + 1) == "-"))
+        ) {
           i = i + 1;
         }
       }
@@ -53,7 +64,8 @@ function isNumber(s: string): boolean {
         "8": true,
         "9": true,
       };
-      if (!Object.prototype.hasOwnProperty.call(digits, String(c))) {
+      (globalThis as any).digits = digits;
+      if ((!(Object.prototype.hasOwnProperty.call(digits, String(c))))) {
         return false;
       }
       num = true;
@@ -63,58 +75,53 @@ function isNumber(s: string): boolean {
     }
     i = i + 1;
   }
-  while (i < n) {
-    if (s[i] == " ") {
+  while ((i < n)) {
+    if ((_indexString(s, i) == " ")) {
       i = i + 1;
     } else {
       break;
     }
   }
-  return num && (!exp || numAfterExp) && i == n;
+  return ((num && ((!exp) || numAfterExp)) && (i == n));
 }
 
-function valid_simple(): void {
-  if (!(isNumber("0") == true)) {
-    throw new Error("expect failed");
-  }
+function test_valid_simple(): void {
+  if (!(isNumber("0") == true)) throw new Error("expect failed");
 }
 
-function invalid_single_e(): void {
-  if (!(isNumber("e") == false)) {
-    throw new Error("expect failed");
-  }
+function test_invalid_single_e(): void {
+  if (!(isNumber("e") == false)) throw new Error("expect failed");
 }
 
-function valid_exponent(): void {
-  if (!(isNumber("2e10") == true)) {
-    throw new Error("expect failed");
-  }
+function test_valid_exponent(): void {
+  if (!(isNumber("2e10") == true)) throw new Error("expect failed");
 }
 
-function invalid_mixed(): void {
-  if (!(isNumber("99e2.5") == false)) {
-    throw new Error("expect failed");
-  }
+function test_invalid_mixed(): void {
+  if (!(isNumber("99e2.5") == false)) throw new Error("expect failed");
 }
 
-function spaces_around(): void {
-  if (!(isNumber(" 0.1 ") == true)) {
-    throw new Error("expect failed");
-  }
+function test_spaces_around(): void {
+  if (!(isNumber(" 0.1 ") == true)) throw new Error("expect failed");
 }
 
-function invalid_sign(): void {
-  if (!(isNumber("--6") == false)) {
-    throw new Error("expect failed");
-  }
+function test_invalid_sign(): void {
+  if (!(isNumber("--6") == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  valid_simple();
-  invalid_single_e();
-  valid_exponent();
-  invalid_mixed();
-  spaces_around();
-  invalid_sign();
+  test_valid_simple();
+  test_invalid_single_e();
+  test_valid_exponent();
+  test_invalid_mixed();
+  test_spaces_around();
+  test_invalid_sign();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

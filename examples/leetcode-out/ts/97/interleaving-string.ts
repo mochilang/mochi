@@ -2,16 +2,22 @@
 
 function isInterleave(s1: string, s2: string, s3: string): boolean {
   let m: number = s1.length;
+  (globalThis as any).m = m;
   let n: number = s2.length;
-  if (m + n != s3.length) {
+  (globalThis as any).n = n;
+  if (((m + n) != s3.length)) {
     return false;
   }
   let dp: Array<Array<boolean>> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i <= m) {
+  (globalThis as any).i = i;
+  while ((i <= m)) {
     let row: Array<boolean> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j <= n) {
+    (globalThis as any).j = j;
+    while ((j <= n)) {
       row = row.concat([false]);
       j = j + 1;
     }
@@ -20,16 +26,23 @@ function isInterleave(s1: string, s2: string, s3: string): boolean {
   }
   dp[0][0] = true;
   i = 0;
-  while (i <= m) {
+  while ((i <= m)) {
     let j: number = 0;
-    while (j <= n) {
-      if (i > 0) {
-        if (dp[i - 1][j] && s1[i - 1] == s3[i + j - 1]) {
+    (globalThis as any).j = j;
+    while ((j <= n)) {
+      if ((i > 0)) {
+        if (
+          (dp[i - 1][j] &&
+            (_indexString(s1, i - 1) == _indexString(s3, (i + j) - 1)))
+        ) {
           dp[i][j] = true;
         }
       }
-      if (j > 0) {
-        if (dp[i][j - 1] && s2[j - 1] == s3[i + j - 1]) {
+      if ((j > 0)) {
+        if (
+          (dp[i][j - 1] &&
+            (_indexString(s2, j - 1) == _indexString(s3, (i + j) - 1)))
+        ) {
           dp[i][j] = true;
         }
       }
@@ -40,27 +53,32 @@ function isInterleave(s1: string, s2: string, s3: string): boolean {
   return dp[m][n];
 }
 
-function example_1(): void {
+function test_example_1(): void {
   if (!(isInterleave("aabcc", "dbbca", "aadbbcbcac") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function example_2(): void {
+function test_example_2(): void {
   if (!(isInterleave("aabcc", "dbbca", "aadbbbaccc") == false)) {
     throw new Error("expect failed");
   }
 }
 
-function empty(): void {
-  if (!(isInterleave("", "", "") == true)) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(isInterleave("", "", "") == true)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty();
+  test_example_1();
+  test_example_2();
+  test_empty();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

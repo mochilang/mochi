@@ -2,10 +2,11 @@
 
 function min3(a: number, b: number, c: number): number {
   let m: number = a;
-  if (b < m) {
+  (globalThis as any).m = m;
+  if ((b < m)) {
     m = b;
   }
-  if (c < m) {
+  if ((c < m)) {
     m = c;
   }
   return m;
@@ -13,23 +14,32 @@ function min3(a: number, b: number, c: number): number {
 
 function nthUglyNumber(n: number): number {
   let i2: number = 0;
+  (globalThis as any).i2 = i2;
   let i3: number = 0;
+  (globalThis as any).i3 = i3;
   let i5: number = 0;
+  (globalThis as any).i5 = i5;
   let uglies: Array<number> = [1];
+  (globalThis as any).uglies = uglies;
   let count: number = 1;
-  while (count < n) {
+  (globalThis as any).count = count;
+  while ((count < n)) {
     let next2: number = uglies[i2] * 2;
+    (globalThis as any).next2 = next2;
     let next3: number = uglies[i3] * 3;
+    (globalThis as any).next3 = next3;
     let next5: number = uglies[i5] * 5;
+    (globalThis as any).next5 = next5;
     let nextUgly: number = min3(next2, next3, next5);
+    (globalThis as any).nextUgly = nextUgly;
     uglies = uglies.concat([nextUgly]);
-    if (nextUgly == next2) {
+    if ((nextUgly == next2)) {
       i2 = i2 + 1;
     }
-    if (nextUgly == next3) {
+    if ((nextUgly == next3)) {
       i3 = i3 + 1;
     }
-    if (nextUgly == next5) {
+    if ((nextUgly == next5)) {
       i5 = i5 + 1;
     }
     count = count + 1;
@@ -37,34 +47,26 @@ function nthUglyNumber(n: number): number {
   return uglies[n - 1];
 }
 
-function example_1(): void {
-  if (!(nthUglyNumber(10) == 12)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(nthUglyNumber(10) == 12)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(nthUglyNumber(1) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(nthUglyNumber(1) == 1)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(nthUglyNumber(3) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(nthUglyNumber(3) == 3)) throw new Error("expect failed");
 }
 
-function larger_n(): void {
-  if (!(nthUglyNumber(15) == 24)) {
-    throw new Error("expect failed");
-  }
+function test_larger_n(): void {
+  if (!(nthUglyNumber(15) == 24)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  larger_n();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_larger_n();
 }
 main();

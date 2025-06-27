@@ -2,45 +2,86 @@
 
 function rotate(nums: Array<number>, k: number): Array<number> {
   let n: number = nums.length;
-  if (n == 0) {
+  (globalThis as any).n = n;
+  if ((n == 0)) {
     return nums;
   }
   let r: number = k % n;
-  if (r == 0) {
+  (globalThis as any).r = r;
+  if ((r == 0)) {
     return nums;
   }
   return nums.slice(n - r, nums.length).concat(nums.slice(0, n - r));
 }
 
-function example_1(): void {
-  if (!_equal(rotate([1, 2, 3, 4, 5, 6, 7], 3), [5, 6, 7, 1, 2, 3, 4])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      rotate([
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+      ], 3),
+      [
+        5,
+        6,
+        7,
+        1,
+        2,
+        3,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(rotate([-1, -100, 3, 99], 2), [3, 99, -1, -100])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      rotate([
+        -1,
+        -100,
+        3,
+        99,
+      ], 2),
+      [
+        3,
+        99,
+        -1,
+        -100,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function k_greater_than_length(): void {
-  if (!_equal(rotate([1, 2], 5), [2, 1])) {
-    throw new Error("expect failed");
-  }
+function test_k_greater_than_length(): void {
+  if (
+    !(_equal(
+      rotate([
+        1,
+        2,
+      ], 5),
+      [
+        2,
+        1,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  k_greater_than_length();
+  test_example_1();
+  test_example_2();
+  test_k_greater_than_length();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -48,8 +89,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

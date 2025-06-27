@@ -2,22 +2,28 @@
 
 function rob(nums: Array<number>): number {
   let n: number = nums.length;
-  if (n == 0) {
+  (globalThis as any).n = n;
+  if ((n == 0)) {
     return 0;
   }
-  if (n == 1) {
+  if ((n == 1)) {
     return nums[0];
   }
   let prev2: number = nums[0];
+  (globalThis as any).prev2 = prev2;
   let prev1: number = nums[0];
-  if (nums[1] > prev1) {
+  (globalThis as any).prev1 = prev1;
+  if ((nums[1] > prev1)) {
     prev1 = nums[1];
   }
   let i: number = 2;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     let take: number = prev2 + nums[i];
+    (globalThis as any).take = take;
     let best: number = prev1;
-    if (take > best) {
+    (globalThis as any).best = best;
+    if ((take > best)) {
       best = take;
     }
     prev2 = prev1;
@@ -27,41 +33,51 @@ function rob(nums: Array<number>): number {
   return prev1;
 }
 
-function example_1(): void {
-  if (!(rob([1, 2, 3, 1]) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(rob([
+      1,
+      2,
+      3,
+      1,
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(rob([2, 7, 9, 3, 1]) == 12)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(rob([
+      2,
+      7,
+      9,
+      3,
+      1,
+    ]) == 12)
+  ) throw new Error("expect failed");
 }
 
-function empty(): void {
-  if (!(rob([]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_empty(): void {
+  if (!(rob([]) == 0)) throw new Error("expect failed");
 }
 
-function single_house(): void {
-  if (!(rob([5]) == 5)) {
-    throw new Error("expect failed");
-  }
+function test_single_house(): void {
+  if (!(rob([5]) == 5)) throw new Error("expect failed");
 }
 
-function two_houses(): void {
-  if (!(rob([2, 1]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_two_houses(): void {
+  if (
+    !(rob([
+      2,
+      1,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  empty();
-  single_house();
-  two_houses();
+  test_example_1();
+  test_example_2();
+  test_empty();
+  test_single_house();
+  test_two_houses();
 }
 main();

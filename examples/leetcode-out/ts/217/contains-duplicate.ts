@@ -2,6 +2,7 @@
 
 function containsDuplicate(nums: Array<number>): boolean {
   let seen: Record<number, boolean> = {};
+  (globalThis as any).seen = seen;
   for (const n of nums) {
     if (Object.prototype.hasOwnProperty.call(seen, String(n))) {
       return true;
@@ -11,27 +12,48 @@ function containsDuplicate(nums: Array<number>): boolean {
   return false;
 }
 
-function example_1(): void {
-  if (!(containsDuplicate([1, 2, 3, 1]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(containsDuplicate([
+      1,
+      2,
+      3,
+      1,
+    ]) == true)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(containsDuplicate([1, 2, 3, 4]) == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(containsDuplicate([
+      1,
+      2,
+      3,
+      4,
+    ]) == false)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(containsDuplicate([1, 1, 1, 3, 3, 4, 3, 2, 4, 2]) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(containsDuplicate([
+      1,
+      1,
+      1,
+      3,
+      3,
+      4,
+      3,
+      2,
+      4,
+      2,
+    ]) == true)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 main();

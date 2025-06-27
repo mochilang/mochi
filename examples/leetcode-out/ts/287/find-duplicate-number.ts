@@ -2,51 +2,81 @@
 
 function findDuplicate(nums: Array<number>): number {
   let slow: number = nums[0];
+  (globalThis as any).slow = slow;
   let fast: number = nums[0];
+  (globalThis as any).fast = fast;
   while (true) {
     slow = nums[slow];
     fast = nums[nums[fast]];
-    if (slow == fast) {
+    if ((slow == fast)) {
       break;
     }
   }
   let ptr1: number = nums[0];
+  (globalThis as any).ptr1 = ptr1;
   let ptr2: number = slow;
-  while (ptr1 != ptr2) {
+  (globalThis as any).ptr2 = ptr2;
+  while ((ptr1 != ptr2)) {
     ptr1 = nums[ptr1];
     ptr2 = nums[ptr2];
   }
   return ptr1;
 }
 
-function example_1(): void {
-  if (!(findDuplicate([1, 3, 4, 2, 2]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(findDuplicate([
+      1,
+      3,
+      4,
+      2,
+      2,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(findDuplicate([3, 1, 3, 4, 2]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(findDuplicate([
+      3,
+      1,
+      3,
+      4,
+      2,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function duplicate_at_end(): void {
-  if (!(findDuplicate([1, 4, 6, 2, 6, 3, 5]) == 6)) {
-    throw new Error("expect failed");
-  }
+function test_duplicate_at_end(): void {
+  if (
+    !(findDuplicate([
+      1,
+      4,
+      6,
+      2,
+      6,
+      3,
+      5,
+    ]) == 6)
+  ) throw new Error("expect failed");
 }
 
-function many_duplicates(): void {
-  if (!(findDuplicate([2, 2, 2, 2, 2]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_many_duplicates(): void {
+  if (
+    !(findDuplicate([
+      2,
+      2,
+      2,
+      2,
+      2,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  duplicate_at_end();
-  many_duplicates();
+  test_example_1();
+  test_example_2();
+  test_duplicate_at_end();
+  test_many_duplicates();
 }
 main();

@@ -2,6 +2,7 @@
 
 function singleNumber(nums: Array<number>): number {
   let counts: Record<number, number> = {};
+  (globalThis as any).counts = counts;
   for (const n of nums) {
     if (Object.prototype.hasOwnProperty.call(counts, String(n))) {
       counts[n] = counts[n] + 1;
@@ -10,41 +11,55 @@ function singleNumber(nums: Array<number>): number {
     }
   }
   for (const n of nums) {
-    if (counts[n] == 1) {
+    if ((counts[n] == 1)) {
       return n;
     }
   }
   return 0;
 }
 
-function example_1(): void {
-  if (!(singleNumber([2, 2, 1]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(singleNumber([
+      2,
+      2,
+      1,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(singleNumber([4, 1, 2, 1, 2]) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(singleNumber([
+      4,
+      1,
+      2,
+      1,
+      2,
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(singleNumber([1]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(singleNumber([1]) == 1)) throw new Error("expect failed");
 }
 
-function with_negatives(): void {
-  if (!(singleNumber([4, -1, 2, -1, 2]) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_with_negatives(): void {
+  if (
+    !(singleNumber([
+      4,
+      -1,
+      2,
+      -1,
+      2,
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  with_negatives();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_with_negatives();
 }
 main();

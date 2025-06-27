@@ -2,17 +2,23 @@
 
 function isIsomorphic(s: string, t: string): boolean {
   let m: number = s.length;
-  if (m != t.length) {
+  (globalThis as any).m = m;
+  if ((m != t.length)) {
     return false;
   }
   let mapST: Record<string, string> = {};
+  (globalThis as any).mapST = mapST;
   let mapTS: Record<string, string> = {};
+  (globalThis as any).mapTS = mapTS;
   let i: number = 0;
-  while (i < m) {
-    let c1: string = s[i];
-    let c2: string = t[i];
+  (globalThis as any).i = i;
+  while ((i < m)) {
+    let c1: string = _indexString(s, i);
+    (globalThis as any).c1 = c1;
+    let c2: string = _indexString(t, i);
+    (globalThis as any).c2 = c2;
     if (Object.prototype.hasOwnProperty.call(mapST, String(c1))) {
-      if (mapST[c1] != c2) {
+      if ((mapST[c1] != c2)) {
         return false;
       }
     } else {
@@ -27,41 +33,40 @@ function isIsomorphic(s: string, t: string): boolean {
   return true;
 }
 
-function example_1(): void {
-  if (!(isIsomorphic("egg", "add") == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(isIsomorphic("egg", "add") == true)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(isIsomorphic("foo", "bar") == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(isIsomorphic("foo", "bar") == false)) throw new Error("expect failed");
 }
 
-function example_3(): void {
+function test_example_3(): void {
   if (!(isIsomorphic("paper", "title") == true)) {
     throw new Error("expect failed");
   }
 }
 
-function single_letter(): void {
-  if (!(isIsomorphic("a", "b") == true)) {
-    throw new Error("expect failed");
-  }
+function test_single_letter(): void {
+  if (!(isIsomorphic("a", "b") == true)) throw new Error("expect failed");
 }
 
-function mismatch_length(): void {
-  if (!(isIsomorphic("ab", "a") == false)) {
-    throw new Error("expect failed");
-  }
+function test_mismatch_length(): void {
+  if (!(isIsomorphic("ab", "a") == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  single_letter();
-  mismatch_length();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_single_letter();
+  test_mismatch_length();
 }
+function _indexString(s: string, i: number): string {
+  const runes = Array.from(s);
+  if (i < 0) i += runes.length;
+  if (i < 0 || i >= runes.length) throw new Error("index out of range");
+  return runes[i];
+}
+
 main();

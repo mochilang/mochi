@@ -2,10 +2,11 @@
 
 function maximumGap(nums: Array<number>): number {
   let n: number = nums.length;
-  if (n < 2) {
+  (globalThis as any).n = n;
+  if ((n < 2)) {
     return 0;
   }
-  let sorted: Array<any> = (() => {
+  let sorted: Array<number> = (() => {
     const _src = nums;
     let _items = [];
     for (const x of _src) {
@@ -19,9 +20,12 @@ function maximumGap(nums: Array<number>): number {
       const ak = a.key;
       const bk = b.key;
       if (typeof ak === "number" && typeof bk === "number") return ak - bk;
-      if (typeof ak === "string" && typeof bk === "string")
-        return ak < bk ? -1 : ak > bk ? 1 : 0;
-      return String(ak) < String(bk) ? -1 : String(ak) > String(bk) ? 1 : 0;
+      if (typeof ak === "string" && typeof bk === "string") {
+        return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0);
+      }
+      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);
     });
     _items = _pairs.map((p) => p.item);
     const _res = [];
@@ -30,44 +34,60 @@ function maximumGap(nums: Array<number>): number {
     }
     return _res;
   })();
+  (globalThis as any).sorted = sorted;
   let maxGap: number = 0;
+  (globalThis as any).maxGap = maxGap;
   for (let i: number = 1; i < n; i++) {
-    let gap: any = sorted[i] - sorted[i - 1];
-    if (gap > maxGap) {
+    let gap: number = sorted[i] - sorted[i - 1];
+    (globalThis as any).gap = gap;
+    if ((gap > maxGap)) {
       maxGap = gap;
     }
   }
   return maxGap;
 }
 
-function example_1(): void {
-  if (!(maximumGap([3, 6, 9, 1]) == 3)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(maximumGap([
+      3,
+      6,
+      9,
+      1,
+    ]) == 3)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(maximumGap([10]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(maximumGap([10]) == 0)) throw new Error("expect failed");
 }
 
-function sorted_input(): void {
-  if (!(maximumGap([1, 2, 3, 4]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_sorted_input(): void {
+  if (
+    !(maximumGap([
+      1,
+      2,
+      3,
+      4,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
-function duplicates(): void {
-  if (!(maximumGap([1, 1, 1, 1]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_duplicates(): void {
+  if (
+    !(maximumGap([
+      1,
+      1,
+      1,
+      1,
+    ]) == 0)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  sorted_input();
-  duplicates();
+  test_example_1();
+  test_example_2();
+  test_sorted_input();
+  test_duplicates();
 }
 main();

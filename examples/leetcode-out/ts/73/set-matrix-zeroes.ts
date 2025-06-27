@@ -2,27 +2,35 @@
 
 function setZeroes(matrix: Array<Array<number>>): Array<Array<number>> {
   let rows: number = matrix.length;
-  if (rows == 0) {
+  (globalThis as any).rows = rows;
+  if ((rows == 0)) {
     return matrix;
   }
   let cols: number = matrix[0].length;
+  (globalThis as any).cols = cols;
   let zeroRows: Array<boolean> = [];
+  (globalThis as any).zeroRows = zeroRows;
   let zeroCols: Array<boolean> = [];
+  (globalThis as any).zeroCols = zeroCols;
   let r: number = 0;
-  while (r < rows) {
+  (globalThis as any).r = r;
+  while ((r < rows)) {
     zeroRows = zeroRows.concat([false]);
     r = r + 1;
   }
   let c: number = 0;
-  while (c < cols) {
+  (globalThis as any).c = c;
+  while ((c < cols)) {
     zeroCols = zeroCols.concat([false]);
     c = c + 1;
   }
   let i: number = 0;
-  while (i < rows) {
+  (globalThis as any).i = i;
+  while ((i < rows)) {
     let j: number = 0;
-    while (j < cols) {
-      if (matrix[i][j] == 0) {
+    (globalThis as any).j = j;
+    while ((j < cols)) {
+      if ((matrix[i][j] == 0)) {
         zeroRows[i] = true;
         zeroCols[j] = true;
       }
@@ -31,10 +39,11 @@ function setZeroes(matrix: Array<Array<number>>): Array<Array<number>> {
     i = i + 1;
   }
   i = 0;
-  while (i < rows) {
+  while ((i < rows)) {
     let j: number = 0;
-    while (j < cols) {
-      if (zeroRows[i] || zeroCols[j]) {
+    (globalThis as any).j = j;
+    while ((j < cols)) {
+      if ((zeroRows[i] || zeroCols[j])) {
         matrix[i][j] = 0;
       }
       j = j + 1;
@@ -44,52 +53,102 @@ function setZeroes(matrix: Array<Array<number>>): Array<Array<number>> {
   return matrix;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let m: Array<Array<number>> = [
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 1, 1],
+    [
+      1,
+      1,
+      1,
+    ],
+    [
+      1,
+      0,
+      1,
+    ],
+    [
+      1,
+      1,
+      1,
+    ],
   ];
+  (globalThis as any).m = m;
   setZeroes(m);
   if (
-    !_equal(m, [
-      [1, 0, 1],
-      [0, 0, 0],
-      [1, 0, 1],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(m, [
+      [
+        1,
+        0,
+        1,
+      ],
+      [
+        0,
+        0,
+        0,
+      ],
+      [
+        1,
+        0,
+        1,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let m: Array<Array<number>> = [
-    [0, 1, 2, 0],
-    [3, 4, 5, 2],
-    [1, 3, 1, 5],
+    [
+      0,
+      1,
+      2,
+      0,
+    ],
+    [
+      3,
+      4,
+      5,
+      2,
+    ],
+    [
+      1,
+      3,
+      1,
+      5,
+    ],
   ];
+  (globalThis as any).m = m;
   setZeroes(m);
   if (
-    !_equal(m, [
-      [0, 0, 0, 0],
-      [0, 4, 5, 0],
-      [0, 3, 1, 0],
-    ])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(m, [
+      [
+        0,
+        0,
+        0,
+        0,
+      ],
+      [
+        0,
+        4,
+        5,
+        0,
+      ],
+      [
+        0,
+        3,
+        1,
+        0,
+      ],
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
+  test_example_1();
+  test_example_2();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -97,8 +156,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

@@ -2,9 +2,12 @@
 
 function firstBadVersion(n: number, isBadVersion: any): number {
   let low: number = 1;
+  (globalThis as any).low = low;
   let high: number = n;
-  while (low < high) {
+  (globalThis as any).high = high;
+  while ((low < high)) {
     let mid: number = Math.trunc((low + high) / 2);
+    (globalThis as any).mid = mid;
     if (isBadVersion(mid)) {
       high = mid;
     } else {
@@ -14,39 +17,39 @@ function firstBadVersion(n: number, isBadVersion: any): number {
   return low;
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let first: number = 4;
+  (globalThis as any).first = first;
   let bad: any = function (v: number): boolean {
-    return v >= first;
+    return (v >= first);
   };
-  if (!(firstBadVersion(5, bad) == 4)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).bad = bad;
+  if (!(firstBadVersion(5, bad) == 4)) throw new Error("expect failed");
 }
 
-function example_2(): void {
+function test_example_2(): void {
   let first: number = 1;
+  (globalThis as any).first = first;
   let bad: any = function (v: number): boolean {
-    return v >= first;
+    return (v >= first);
   };
-  if (!(firstBadVersion(1, bad) == 1)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).bad = bad;
+  if (!(firstBadVersion(1, bad) == 1)) throw new Error("expect failed");
 }
 
-function larger_n(): void {
+function test_larger_n(): void {
   let first: number = 123;
+  (globalThis as any).first = first;
   let bad: any = function (v: number): boolean {
-    return v >= first;
+    return (v >= first);
   };
-  if (!(firstBadVersion(200, bad) == 123)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).bad = bad;
+  if (!(firstBadVersion(200, bad) == 123)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  larger_n();
+  test_example_1();
+  test_example_2();
+  test_larger_n();
 }
 main();

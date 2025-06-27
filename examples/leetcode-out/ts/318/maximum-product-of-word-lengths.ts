@@ -2,6 +2,7 @@
 
 function buildSet(word: string): Record<string, boolean> {
   let m: Record<string, boolean> = {};
+  (globalThis as any).m = m;
   for (const ch of word) {
     m[ch] = true;
   }
@@ -22,20 +23,26 @@ function shareLetters(
 
 function maxProduct(words: Array<string>): number {
   let n: number = words.length;
+  (globalThis as any).n = n;
   let sets: Array<Record<string, boolean>> = [];
+  (globalThis as any).sets = sets;
   let i: number = 0;
-  while (i < n) {
+  (globalThis as any).i = i;
+  while ((i < n)) {
     sets = sets.concat([buildSet(words[i])]);
     i = i + 1;
   }
   let best: number = 0;
+  (globalThis as any).best = best;
   i = 0;
-  while (i < n) {
+  while ((i < n)) {
     let j: number = i + 1;
-    while (j < n) {
-      if (!shareLetters(sets[i], sets[j])) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
+      if ((!shareLetters(sets[i], sets[j]))) {
         let prod: number = words[i].length * words[j].length;
-        if (prod > best) {
+        (globalThis as any).prod = prod;
+        if ((prod > best)) {
           best = prod;
         }
       }
@@ -46,27 +53,47 @@ function maxProduct(words: Array<string>): number {
   return best;
 }
 
-function example_1(): void {
-  if (!(maxProduct(["abcw", "baz", "foo", "bar", "xtfn", "abcdef"]) == 16)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(maxProduct([
+      "abcw",
+      "baz",
+      "foo",
+      "bar",
+      "xtfn",
+      "abcdef",
+    ]) == 16)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(maxProduct(["a", "ab", "abc", "d", "cd", "bcd", "abcd"]) == 4)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(maxProduct([
+      "a",
+      "ab",
+      "abc",
+      "d",
+      "cd",
+      "bcd",
+      "abcd",
+    ]) == 4)
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(maxProduct(["a", "aa", "aaa", "aaaa"]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(maxProduct([
+      "a",
+      "aa",
+      "aaa",
+      "aaaa",
+    ]) == 0)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 main();

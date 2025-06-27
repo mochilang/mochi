@@ -2,15 +2,18 @@
 
 function gcd(a: number, b: number): number {
   let x: number = a;
-  if (x < 0) {
+  (globalThis as any).x = x;
+  if ((x < 0)) {
     x = -x;
   }
   let y: number = b;
-  if (y < 0) {
+  (globalThis as any).y = y;
+  if ((y < 0)) {
     y = -y;
   }
-  while (y != 0) {
+  while ((y != 0)) {
     let temp: number = x % y;
+    (globalThis as any).temp = temp;
     x = y;
     y = temp;
   }
@@ -22,58 +25,48 @@ function canMeasureWater(
   jug2Capacity: number,
   targetCapacity: number,
 ): boolean {
-  if (targetCapacity == 0) {
+  if ((targetCapacity == 0)) {
     return true;
   }
-  if (jug1Capacity + jug2Capacity < targetCapacity) {
+  if (((jug1Capacity + jug2Capacity) < targetCapacity)) {
     return false;
   }
   if (
-    jug1Capacity == targetCapacity ||
-    jug2Capacity == targetCapacity ||
-    jug1Capacity + jug2Capacity == targetCapacity
+    (((jug1Capacity == targetCapacity) || (jug2Capacity == targetCapacity)) ||
+      ((jug1Capacity + jug2Capacity) == targetCapacity))
   ) {
     return true;
   }
   let g: number = gcd(jug1Capacity, jug2Capacity);
-  return targetCapacity % g == 0;
+  (globalThis as any).g = g;
+  return ((targetCapacity % g) == 0);
 }
 
-function example_1(): void {
-  if (!(canMeasureWater(3, 5, 4) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(canMeasureWater(3, 5, 4) == true)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(canMeasureWater(2, 6, 5) == false)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(canMeasureWater(2, 6, 5) == false)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(canMeasureWater(1, 2, 3) == true)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(canMeasureWater(1, 2, 3) == true)) throw new Error("expect failed");
 }
 
-function zero_target(): void {
-  if (!(canMeasureWater(1, 2, 0) == true)) {
-    throw new Error("expect failed");
-  }
+function test_zero_target(): void {
+  if (!(canMeasureWater(1, 2, 0) == true)) throw new Error("expect failed");
 }
 
-function unreachable(): void {
-  if (!(canMeasureWater(1, 1, 12) == false)) {
-    throw new Error("expect failed");
-  }
+function test_unreachable(): void {
+  if (!(canMeasureWater(1, 1, 12) == false)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  zero_target();
-  unreachable();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_zero_target();
+  test_unreachable();
 }
 main();

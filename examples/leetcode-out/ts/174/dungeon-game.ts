@@ -2,16 +2,22 @@
 
 function calculateMinimumHP(dungeon: Array<Array<number>>): number {
   let m: number = dungeon.length;
-  if (m == 0) {
+  (globalThis as any).m = m;
+  if ((m == 0)) {
     return 1;
   }
   let n: number = dungeon[0].length;
+  (globalThis as any).n = n;
   let dp: Array<Array<number>> = [];
+  (globalThis as any).dp = dp;
   let i: number = 0;
-  while (i < m) {
+  (globalThis as any).i = i;
+  while ((i < m)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       row = row.concat([0]);
       j = j + 1;
     }
@@ -19,38 +25,42 @@ function calculateMinimumHP(dungeon: Array<Array<number>>): number {
     i = i + 1;
   }
   let need: number = 1 - dungeon[m - 1][n - 1];
-  if (need <= 0) {
+  (globalThis as any).need = need;
+  if ((need <= 0)) {
     need = 1;
   }
   dp[m - 1][n - 1] = need;
   let col: number = n - 2;
-  while (col >= 0) {
+  (globalThis as any).col = col;
+  while ((col >= 0)) {
     need = dp[m - 1][col + 1] - dungeon[m - 1][col];
-    if (need <= 0) {
+    if ((need <= 0)) {
       need = 1;
     }
     dp[m - 1][col] = need;
     col = col - 1;
   }
   let rowi: number = m - 2;
-  while (rowi >= 0) {
+  (globalThis as any).rowi = rowi;
+  while ((rowi >= 0)) {
     need = dp[rowi + 1][n - 1] - dungeon[rowi][n - 1];
-    if (need <= 0) {
+    if ((need <= 0)) {
       need = 1;
     }
     dp[rowi][n - 1] = need;
     rowi = rowi - 1;
   }
   i = m - 2;
-  while (i >= 0) {
+  while ((i >= 0)) {
     col = n - 2;
-    while (col >= 0) {
+    while ((col >= 0)) {
       let best: number = dp[i + 1][col];
-      if (dp[i][col + 1] < best) {
+      (globalThis as any).best = best;
+      if ((dp[i][col + 1] < best)) {
         best = dp[i][col + 1];
       }
       need = best - dungeon[i][col];
-      if (need <= 0) {
+      if ((need <= 0)) {
         need = 1;
       }
       dp[i][col] = need;
@@ -61,43 +71,57 @@ function calculateMinimumHP(dungeon: Array<Array<number>>): number {
   return dp[0][0];
 }
 
-function example_1(): void {
+function test_example_1(): void {
   let board: Array<Array<number>> = [
-    [-2, -3, 3],
-    [-5, -10, 1],
-    [10, 30, -5],
+    [
+      -2,
+      -3,
+      3,
+    ],
+    [
+      -5,
+      -10,
+      1,
+    ],
+    [
+      10,
+      30,
+      -5,
+    ],
   ];
-  if (!(calculateMinimumHP(board) == 7)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).board = board;
+  if (!(calculateMinimumHP(board) == 7)) throw new Error("expect failed");
 }
 
-function single_cell_positive(): void {
-  if (!(calculateMinimumHP([[5]]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_single_cell_positive(): void {
+  if (!(calculateMinimumHP([[5]]) == 1)) throw new Error("expect failed");
 }
 
-function single_cell_negative(): void {
-  if (!(calculateMinimumHP([[-5]]) == 6)) {
-    throw new Error("expect failed");
-  }
+function test_single_cell_negative(): void {
+  if (!(calculateMinimumHP([[-5]]) == 6)) throw new Error("expect failed");
 }
 
-function two_by_two(): void {
+function test_two_by_two(): void {
   let board: Array<Array<number>> = [
-    [1, -2, 3],
-    [2, -2, -2],
+    [
+      1,
+      -2,
+      3,
+    ],
+    [
+      2,
+      -2,
+      -2,
+    ],
   ];
-  if (!(calculateMinimumHP(board) == 2)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).board = board;
+  if (!(calculateMinimumHP(board) == 2)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  single_cell_positive();
-  single_cell_negative();
-  two_by_two();
+  test_example_1();
+  test_single_cell_positive();
+  test_single_cell_negative();
+  test_two_by_two();
 }
 main();

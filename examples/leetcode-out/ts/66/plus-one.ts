@@ -2,63 +2,102 @@
 
 function plusOne(digits: Array<number>): Array<number> {
   let carry: number = 1;
+  (globalThis as any).carry = carry;
   let i: number = digits.length - 1;
+  (globalThis as any).i = i;
   let result: Array<number> = digits;
-  while (i >= 0 && carry > 0) {
+  (globalThis as any).result = result;
+  while (((i >= 0) && (carry > 0))) {
     let sum: number = result[i] + carry;
+    (globalThis as any).sum = sum;
     result[i] = sum % 10;
     carry = Math.trunc(sum / 10);
     i = i - 1;
   }
-  if (carry > 0) {
+  if ((carry > 0)) {
     return [carry].concat(result);
   }
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(plusOne([1, 2, 3]), [1, 2, 4])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      plusOne([
+        1,
+        2,
+        3,
+      ]),
+      [
+        1,
+        2,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(plusOne([4, 3, 2, 1]), [4, 3, 2, 2])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      plusOne([
+        4,
+        3,
+        2,
+        1,
+      ]),
+      [
+        4,
+        3,
+        2,
+        2,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!_equal(plusOne([9]), [1, 0])) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (
+    !(_equal(plusOne([9]), [
+      1,
+      0,
+    ]))
+  ) throw new Error("expect failed");
 }
 
-function carry_through_all_digits(): void {
-  if (!_equal(plusOne([9, 9, 9]), [1, 0, 0, 0])) {
-    throw new Error("expect failed");
-  }
+function test_carry_through_all_digits(): void {
+  if (
+    !(_equal(
+      plusOne([
+        9,
+        9,
+        9,
+      ]),
+      [
+        1,
+        0,
+        0,
+        0,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function zero(): void {
-  if (!_equal(plusOne([0]), [1])) {
-    throw new Error("expect failed");
-  }
+function test_zero(): void {
+  if (!(_equal(plusOne([0]), [1]))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  carry_through_all_digits();
-  zero();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_carry_through_all_digits();
+  test_zero();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -66,8 +105,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

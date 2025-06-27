@@ -2,10 +2,13 @@
 
 function mergeTwoLists(l1: Array<number>, l2: Array<number>): Array<number> {
   let i: number = 0;
+  (globalThis as any).i = i;
   let j: number = 0;
+  (globalThis as any).j = j;
   let result: Array<any> = [];
-  while (i < l1.length && j < l2.length) {
-    if (l1[i] <= l2[j]) {
+  (globalThis as any).result = result;
+  while (((i < l1.length) && (j < l2.length))) {
+    if ((l1[i] <= l2[j])) {
       result = result.concat([l1[i]]);
       i = i + 1;
     } else {
@@ -13,62 +16,105 @@ function mergeTwoLists(l1: Array<number>, l2: Array<number>): Array<number> {
       j = j + 1;
     }
   }
-  while (i < l1.length) {
+  while ((i < l1.length)) {
     result = result.concat([l1[i]]);
     i = i + 1;
   }
-  while (j < l2.length) {
+  while ((j < l2.length)) {
     result = result.concat([l2[j]]);
     j = j + 1;
   }
   return result;
 }
 
-function example_1(): void {
-  if (!_equal(mergeTwoLists([1, 2, 4], [1, 3, 4]), [1, 1, 2, 3, 4, 4])) {
-    throw new Error("expect failed");
-  }
-}
-
-function example_2(): void {
-  if (!_equal(mergeTwoLists([], []), [])) {
-    throw new Error("expect failed");
-  }
-}
-
-function example_3(): void {
-  if (!_equal(mergeTwoLists([], [0]), [0])) {
-    throw new Error("expect failed");
-  }
-}
-
-function different_lengths(): void {
+function test_example_1(): void {
   if (
-    !_equal(mergeTwoLists([1, 5, 7], [2, 3, 4, 6, 8]), [1, 2, 3, 4, 5, 6, 7, 8])
-  ) {
-    throw new Error("expect failed");
-  }
+    !(_equal(
+      mergeTwoLists([
+        1,
+        2,
+        4,
+      ], [
+        1,
+        3,
+        4,
+      ]),
+      [
+        1,
+        1,
+        2,
+        3,
+        4,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function one_list_empty(): void {
-  if (!_equal(mergeTwoLists([1, 2, 3], []), [1, 2, 3])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(_equal(mergeTwoLists([], []), []))) throw new Error("expect failed");
+}
+
+function test_example_3(): void {
+  if (!(_equal(mergeTwoLists([], [0]), [0]))) throw new Error("expect failed");
+}
+
+function test_different_lengths(): void {
+  if (
+    !(_equal(
+      mergeTwoLists([
+        1,
+        5,
+        7,
+      ], [
+        2,
+        3,
+        4,
+        6,
+        8,
+      ]),
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+      ],
+    ))
+  ) throw new Error("expect failed");
+}
+
+function test_one_list_empty(): void {
+  if (
+    !(_equal(
+      mergeTwoLists([
+        1,
+        2,
+        3,
+      ], []),
+      [
+        1,
+        2,
+        3,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
-  different_lengths();
-  one_list_empty();
+  test_example_1();
+  test_example_2();
+  test_example_3();
+  test_different_lengths();
+  test_one_list_empty();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -76,8 +122,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

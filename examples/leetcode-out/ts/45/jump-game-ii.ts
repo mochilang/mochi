@@ -2,17 +2,21 @@
 
 function jump(nums: Array<number>): number {
   let n: number = nums.length;
+  (globalThis as any).n = n;
   let jumps: number = 0;
+  (globalThis as any).jumps = jumps;
   let end: number = 0;
+  (globalThis as any).end = end;
   let farthest: number = 0;
+  (globalThis as any).farthest = farthest;
   for (let i: number = 0; i < n; i++) {
-    if (i > farthest) {
-      return -1;
+    if ((i > farthest)) {
+      return (-1);
     }
-    if (i + nums[i] > farthest) {
+    if (((i + nums[i]) > farthest)) {
       farthest = i + nums[i];
     }
-    if (i == end && i != n - 1) {
+    if (((i == end) && (i != (n - 1)))) {
       jumps = jumps + 1;
       end = farthest;
     }
@@ -20,34 +24,47 @@ function jump(nums: Array<number>): number {
   return jumps;
 }
 
-function example_1(): void {
-  if (!(jump([2, 3, 1, 1, 4]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(jump([
+      2,
+      3,
+      1,
+      1,
+      4,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(jump([2, 3, 0, 1, 4]) == 2)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(jump([
+      2,
+      3,
+      0,
+      1,
+      4,
+    ]) == 2)
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!(jump([0]) == 0)) {
-    throw new Error("expect failed");
-  }
+function test_single_element(): void {
+  if (!(jump([0]) == 0)) throw new Error("expect failed");
 }
 
-function two_elements(): void {
-  if (!(jump([1, 2]) == 1)) {
-    throw new Error("expect failed");
-  }
+function test_two_elements(): void {
+  if (
+    !(jump([
+      1,
+      2,
+    ]) == 1)
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_element();
-  two_elements();
+  test_example_1();
+  test_example_2();
+  test_single_element();
+  test_two_elements();
 }
 main();

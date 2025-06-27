@@ -2,11 +2,15 @@
 
 function numberOfPatterns(m: number, n: number): number {
   let jump: Array<Array<number>> = [];
+  (globalThis as any).jump = jump;
   let i: number = 0;
-  while (i < 10) {
+  (globalThis as any).i = i;
+  while ((i < 10)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j < 10) {
+    (globalThis as any).j = j;
+    while ((j < 10)) {
       row = row.concat([0]);
       j = j + 1;
     }
@@ -30,21 +34,24 @@ function numberOfPatterns(m: number, n: number): number {
   jump[2][8] = 5;
   jump[8][2] = 5;
   let visited: Array<boolean> = [];
+  (globalThis as any).visited = visited;
   i = 0;
-  while (i < 10) {
+  while ((i < 10)) {
     visited = visited.concat([false]);
     i = i + 1;
   }
   function dfs(num: number, remain: number): number {
-    if (remain == 0) {
+    if ((remain == 0)) {
       return 1;
     }
     visited[num] = true;
     let count: number = 0;
+    (globalThis as any).count = count;
     for (let next: number = 1; next < 10; next++) {
-      if (!visited[next]) {
+      if ((!visited[next])) {
         let mid: number = jump[num][next];
-        if (mid == 0 || visited[mid]) {
+        (globalThis as any).mid = mid;
+        if (((mid == 0) || visited[mid])) {
           count = count + dfs(next, remain - 1);
         }
       }
@@ -53,8 +60,10 @@ function numberOfPatterns(m: number, n: number): number {
     return count;
   }
   let total: number = 0;
+  (globalThis as any).total = total;
   let len: number = m;
-  while (len <= n) {
+  (globalThis as any).len = len;
+  while ((len <= n)) {
     for (let start: number = 1; start < 10; start++) {
       total = total + dfs(start, len - 1);
     }
@@ -63,27 +72,21 @@ function numberOfPatterns(m: number, n: number): number {
   return total;
 }
 
-function example_1(): void {
-  if (!(numberOfPatterns(1, 1) == 9)) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (!(numberOfPatterns(1, 1) == 9)) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!(numberOfPatterns(1, 2) == 65)) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (!(numberOfPatterns(1, 2) == 65)) throw new Error("expect failed");
 }
 
-function example_3(): void {
-  if (!(numberOfPatterns(2, 2) == 56)) {
-    throw new Error("expect failed");
-  }
+function test_example_3(): void {
+  if (!(numberOfPatterns(2, 2) == 56)) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  example_3();
+  test_example_1();
+  test_example_2();
+  test_example_3();
 }
 main();

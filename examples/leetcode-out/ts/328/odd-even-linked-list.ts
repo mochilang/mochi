@@ -2,11 +2,15 @@
 
 function oddEvenList(nums: Array<number>): Array<number> {
   let odd: Array<number> = [];
+  (globalThis as any).odd = odd;
   let even: Array<number> = [];
+  (globalThis as any).even = even;
   let i: number = 0;
+  (globalThis as any).i = i;
   let n: number = nums.length;
-  while (i < n) {
-    if (i % 2 == 0) {
+  (globalThis as any).n = n;
+  while ((i < n)) {
+    if (((i % 2) == 0)) {
       odd = odd.concat([nums[i]]);
     } else {
       even = even.concat([nums[i]]);
@@ -16,42 +20,70 @@ function oddEvenList(nums: Array<number>): Array<number> {
   return odd.concat(even);
 }
 
-function example_1(): void {
-  if (!_equal(oddEvenList([1, 2, 3, 4, 5]), [1, 3, 5, 2, 4])) {
-    throw new Error("expect failed");
-  }
+function test_example_1(): void {
+  if (
+    !(_equal(
+      oddEvenList([
+        1,
+        2,
+        3,
+        4,
+        5,
+      ]),
+      [
+        1,
+        3,
+        5,
+        2,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function example_2(): void {
-  if (!_equal(oddEvenList([2, 1, 3, 5, 6, 4, 7]), [2, 3, 6, 7, 1, 5, 4])) {
-    throw new Error("expect failed");
-  }
+function test_example_2(): void {
+  if (
+    !(_equal(
+      oddEvenList([
+        2,
+        1,
+        3,
+        5,
+        6,
+        4,
+        7,
+      ]),
+      [
+        2,
+        3,
+        6,
+        7,
+        1,
+        5,
+        4,
+      ],
+    ))
+  ) throw new Error("expect failed");
 }
 
-function single_element(): void {
-  if (!_equal(oddEvenList([1]), [1])) {
-    throw new Error("expect failed");
-  }
+function test_single_element(): void {
+  if (!(_equal(oddEvenList([1]), [1]))) throw new Error("expect failed");
 }
 
-function empty_list(): void {
-  if (!_equal(oddEvenList([]), [])) {
-    throw new Error("expect failed");
-  }
+function test_empty_list(): void {
+  if (!(_equal(oddEvenList([]), []))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example_1();
-  example_2();
-  single_element();
-  empty_list();
+  test_example_1();
+  test_example_2();
+  test_single_element();
+  test_empty_list();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -59,8 +91,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

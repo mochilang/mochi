@@ -5,17 +5,24 @@ function multiply(
   B: Array<Array<number>>,
 ): Array<Array<number>> {
   let m: number = A.length;
-  if (m == 0) {
+  (globalThis as any).m = m;
+  if ((m == 0)) {
     return [];
   }
   let k: number = A[0].length;
+  (globalThis as any).k = k;
   let n: number = B[0].length;
+  (globalThis as any).n = n;
   let result: Array<Array<number>> = [];
+  (globalThis as any).result = result;
   let i: number = 0;
-  while (i < m) {
+  (globalThis as any).i = i;
+  while ((i < m)) {
     let row: Array<number> = [];
+    (globalThis as any).row = row;
     let j: number = 0;
-    while (j < n) {
+    (globalThis as any).j = j;
+    while ((j < n)) {
       row = row.concat([0]);
       j = j + 1;
     }
@@ -23,16 +30,20 @@ function multiply(
     i = i + 1;
   }
   i = 0;
-  while (i < m) {
+  while ((i < m)) {
     let j: number = 0;
-    while (j < k) {
+    (globalThis as any).j = j;
+    while ((j < k)) {
       let a: number = A[i][j];
-      if (a != 0) {
+      (globalThis as any).a = a;
+      if ((a != 0)) {
         let col: number = 0;
-        while (col < n) {
+        (globalThis as any).col = col;
+        while ((col < n)) {
           let b: number = B[j][col];
-          if (b != 0) {
-            result[i][col] = result[i][col] + a * b;
+          (globalThis as any).b = b;
+          if ((b != 0)) {
+            result[i][col] = result[i][col] + (a * b);
           }
           col = col + 1;
         }
@@ -44,77 +55,111 @@ function multiply(
   return result;
 }
 
-function example(): void {
+function test_example(): void {
   if (
-    !_equal(
-      multiply(
+    !(_equal(
+      multiply([
         [
-          [1, 0, 0],
-          [-1, 0, 3],
+          1,
+          0,
+          0,
         ],
         [
-          [7, 0, 0],
-          [0, 0, 0],
-          [0, 0, 1],
+          -1,
+          0,
+          3,
         ],
-      ),
+      ], [
+        [
+          7,
+          0,
+          0,
+        ],
+        [
+          0,
+          0,
+          0,
+        ],
+        [
+          0,
+          0,
+          1,
+        ],
+      ]),
       [
-        [7, 0, 0],
-        [-7, 0, 3],
+        [
+          7,
+          0,
+          0,
+        ],
+        [
+          -7,
+          0,
+          3,
+        ],
       ],
-    )
-  ) {
+    ))
+  ) throw new Error("expect failed");
+}
+
+function test_single(): void {
+  if (!(_equal(multiply([[2]], [[3]]), [[6]]))) {
     throw new Error("expect failed");
   }
 }
 
-function single(): void {
-  if (!_equal(multiply([[2]], [[3]]), [[6]])) {
+function test_zero(): void {
+  if (!(_equal(multiply([[0]], [[1]]), [[0]]))) {
     throw new Error("expect failed");
   }
 }
 
-function zero(): void {
-  if (!_equal(multiply([[0]], [[1]]), [[0]])) {
-    throw new Error("expect failed");
-  }
-}
-
-function _x2(): void {
+function test__x2(): void {
   if (
-    !_equal(
-      multiply(
+    !(_equal(
+      multiply([
         [
-          [1, 2],
-          [3, 4],
+          1,
+          2,
         ],
         [
-          [5, 6],
-          [7, 8],
+          3,
+          4,
         ],
-      ),
+      ], [
+        [
+          5,
+          6,
+        ],
+        [
+          7,
+          8,
+        ],
+      ]),
       [
-        [19, 22],
-        [43, 50],
+        [
+          19,
+          22,
+        ],
+        [
+          43,
+          50,
+        ],
       ],
-    )
-  ) {
-    throw new Error("expect failed");
-  }
+    ))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  example();
-  single();
-  zero();
-  _x2();
+  test_example();
+  test_single();
+  test_zero();
+  test__x2();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -122,8 +167,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }

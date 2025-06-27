@@ -2,109 +2,201 @@
 
 function wallsAndGates(rooms: Array<Array<number>>): Array<Array<number>> {
   let rows: number = rooms.length;
-  if (rows == 0) {
+  (globalThis as any).rows = rows;
+  if ((rows == 0)) {
     return rooms;
   }
   let cols: number = rooms[0].length;
+  (globalThis as any).cols = cols;
   let queue: Array<Array<number>> = [];
+  (globalThis as any).queue = queue;
   for (let r: number = 0; r < rows; r++) {
     for (let c: number = 0; c < cols; c++) {
-      if (rooms[r][c] == 0) {
-        queue = queue.concat([[r, c]]);
+      if ((rooms[r][c] == 0)) {
+        queue = queue.concat([
+          [
+            r,
+            c,
+          ],
+        ]);
       }
     }
   }
   let idx: number = 0;
-  while (idx < queue.length) {
+  (globalThis as any).idx = idx;
+  while ((idx < queue.length)) {
     let pos: Array<number> = queue[idx];
+    (globalThis as any).pos = pos;
     idx = idx + 1;
     let r: number = pos[0];
+    (globalThis as any).r = r;
     let c: number = pos[1];
+    (globalThis as any).c = c;
     let dist: number = rooms[r][c];
-    if (r > 0) {
-      if (rooms[r - 1][c] == 2147483647) {
+    (globalThis as any).dist = dist;
+    if ((r > 0)) {
+      if ((rooms[r - 1][c] == 2147483647)) {
         rooms[r - 1][c] = dist + 1;
-        queue = queue.concat([[r - 1, c]]);
+        queue = queue.concat([
+          [
+            r - 1,
+            c,
+          ],
+        ]);
       }
     }
-    if (r + 1 < rows) {
-      if (rooms[r + 1][c] == 2147483647) {
+    if (((r + 1) < rows)) {
+      if ((rooms[r + 1][c] == 2147483647)) {
         rooms[r + 1][c] = dist + 1;
-        queue = queue.concat([[r + 1, c]]);
+        queue = queue.concat([
+          [
+            r + 1,
+            c,
+          ],
+        ]);
       }
     }
-    if (c > 0) {
-      if (rooms[r][c - 1] == 2147483647) {
+    if ((c > 0)) {
+      if ((rooms[r][c - 1] == 2147483647)) {
         rooms[r][c - 1] = dist + 1;
-        queue = queue.concat([[r, c - 1]]);
+        queue = queue.concat([
+          [
+            r,
+            c - 1,
+          ],
+        ]);
       }
     }
-    if (c + 1 < cols) {
-      if (rooms[r][c + 1] == 2147483647) {
+    if (((c + 1) < cols)) {
+      if ((rooms[r][c + 1] == 2147483647)) {
         rooms[r][c + 1] = dist + 1;
-        queue = queue.concat([[r, c + 1]]);
+        queue = queue.concat([
+          [
+            r,
+            c + 1,
+          ],
+        ]);
       }
     }
   }
   return rooms;
 }
 
-function example(): void {
+function test_example(): void {
   let INF: number = 2147483647;
+  (globalThis as any).INF = INF;
   let rooms: Array<Array<number>> = [
-    [INF, -1, 0, INF],
-    [INF, INF, INF, -1],
-    [INF, -1, INF, -1],
-    [0, -1, INF, INF],
+    [
+      INF,
+      -1,
+      0,
+      INF,
+    ],
+    [
+      INF,
+      INF,
+      INF,
+      -1,
+    ],
+    [
+      INF,
+      -1,
+      INF,
+      -1,
+    ],
+    [
+      0,
+      -1,
+      INF,
+      INF,
+    ],
   ];
+  (globalThis as any).rooms = rooms;
   let expected: Array<Array<number>> = [
-    [3, -1, 0, 1],
-    [2, 2, 1, -1],
-    [1, -1, 2, -1],
-    [0, -1, 3, 4],
+    [
+      3,
+      -1,
+      0,
+      1,
+    ],
+    [
+      2,
+      2,
+      1,
+      -1,
+    ],
+    [
+      1,
+      -1,
+      2,
+      -1,
+    ],
+    [
+      0,
+      -1,
+      3,
+      4,
+    ],
   ];
-  if (!_equal(wallsAndGates(rooms), expected)) {
+  (globalThis as any).expected = expected;
+  if (!(_equal(wallsAndGates(rooms), expected))) {
     throw new Error("expect failed");
   }
 }
 
-function all_walls(): void {
+function test_all_walls(): void {
   let rooms: Array<Array<number>> = [
-    [-1, -1],
-    [-1, -1],
+    [
+      -1,
+      -1,
+    ],
+    [
+      -1,
+      -1,
+    ],
   ];
-  if (!_equal(wallsAndGates(rooms), rooms)) {
+  (globalThis as any).rooms = rooms;
+  if (!(_equal(wallsAndGates(rooms), rooms))) throw new Error("expect failed");
+}
+
+function test_single_gate(): void {
+  let rooms: Array<Array<number>> = [
+    [
+      2147483647,
+      0,
+      2147483647,
+    ],
+  ];
+  (globalThis as any).rooms = rooms;
+  let expected: Array<Array<number>> = [
+    [
+      1,
+      0,
+      1,
+    ],
+  ];
+  (globalThis as any).expected = expected;
+  if (!(_equal(wallsAndGates(rooms), expected))) {
     throw new Error("expect failed");
   }
 }
 
-function single_gate(): void {
-  let rooms: Array<Array<number>> = [[2147483647, 0, 2147483647]];
-  let expected: Array<Array<number>> = [[1, 0, 1]];
-  if (!_equal(wallsAndGates(rooms), expected)) {
-    throw new Error("expect failed");
-  }
-}
-
-function empty(): void {
+function test_empty(): void {
   let rooms: Array<Array<number>> = [];
-  if (!_equal(wallsAndGates(rooms), rooms)) {
-    throw new Error("expect failed");
-  }
+  (globalThis as any).rooms = rooms;
+  if (!(_equal(wallsAndGates(rooms), rooms))) throw new Error("expect failed");
 }
 
 function main(): void {
-  example();
-  all_walls();
-  single_gate();
-  empty();
+  test_example();
+  test_all_walls();
+  test_single_gate();
+  test_empty();
 }
 function _equal(a: any, b: any): boolean {
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!_equal(a[i], b[i])) return false;
-    }
+    for (let i = 0; i < a.length; i++) if (!_equal(a[i], b[i])) return false;
     return true;
   }
   if (a && b && typeof a === "object" && typeof b === "object") {
@@ -112,8 +204,9 @@ function _equal(a: any, b: any): boolean {
     const bk = Object.keys(b);
     if (ak.length !== bk.length) return false;
     for (const k of ak) {
-      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k]))
+      if (!bk.includes(k) || !_equal((a as any)[k], (b as any)[k])) {
         return false;
+      }
     }
     return true;
   }
