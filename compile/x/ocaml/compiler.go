@@ -3,6 +3,7 @@ package mlcode
 import (
 	"bytes"
 	"fmt"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -175,7 +176,21 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	var out bytes.Buffer
 	out.Write(c.pre.Bytes())
 	out.Write(c.buf.Bytes())
-	return out.Bytes(), nil
+	return formatOCaml(out.Bytes()), nil
+}
+
+func formatOCaml(src []byte) []byte {
+	if _, err := exec.LookPath("ocamlformat"); err != nil {
+		return src
+	}
+	cmd := exec.Command("ocamlformat", "--enable-outside-detected-project", "--name", "mochi.ml", "-")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return src
+	}
+	return bytes.TrimSpace(out.Bytes())
 }
 
 func (c *Compiler) ensureSetNth() {
