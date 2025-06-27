@@ -138,7 +138,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("end")
 	c.indent--
 	c.writeln("Main.main()")
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	if formatted, err := Format(code); err == nil {
+		code = formatted
+	}
+	return code, nil
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
