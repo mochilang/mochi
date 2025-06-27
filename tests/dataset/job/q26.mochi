@@ -1,0 +1,108 @@
+let complete_cast = [
+  { movie_id: 1, subject_id: 1, status_id: 2 },
+  { movie_id: 2, subject_id: 1, status_id: 2 } // not high rating
+]
+
+let comp_cast_type = [
+  { id: 1, kind: "cast" },
+  { id: 2, kind: "complete" }
+]
+
+let char_name = [
+  { id: 1, name: "Spider-Man" },
+  { id: 2, name: "Villain" }
+]
+
+let cast_info = [
+  { movie_id: 1, person_role_id: 1, person_id: 1 },
+  { movie_id: 2, person_role_id: 2, person_id: 2 }
+]
+
+let info_type = [
+  { id: 1, info: "rating" }
+]
+
+let keyword = [
+  { id: 1, keyword: "superhero" },
+  { id: 2, keyword: "comedy" }
+]
+
+let kind_type = [
+  { id: 1, kind: "movie" }
+]
+
+let movie_info_idx = [
+  { movie_id: 1, info_type_id: 1, info: 8.5 },
+  { movie_id: 2, info_type_id: 1, info: 6.5 }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 },
+  { movie_id: 2, keyword_id: 2 }
+]
+
+let name = [
+  { id: 1, name: "Actor One" },
+  { id: 2, name: "Actor Two" }
+]
+
+let title = [
+  { id: 1, kind_id: 1, production_year: 2005, title: "Hero Movie" },
+  { id: 2, kind_id: 1, production_year: 1999, title: "Old Film" }
+]
+
+let allowed_keywords = [
+  "superhero", "marvel-comics", "based-on-comic", "tv-special",
+  "fight", "violence", "magnet", "web", "claw", "laser"
+]
+
+let rows =
+  from cc in complete_cast
+  join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  join cct2 in comp_cast_type on cct2.id == cc.status_id
+  join ci in cast_info on ci.movie_id == cc.movie_id
+  join chn in char_name on chn.id == ci.person_role_id
+  join n in name on n.id == ci.person_id
+  join t in title on t.id == ci.movie_id
+  join kt in kind_type on kt.id == t.kind_id
+  join mk in movie_keyword on mk.movie_id == t.id
+  join k in keyword on k.id == mk.keyword_id
+  join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  join it2 in info_type on it2.id == mi_idx.info_type_id
+  where cct1.kind == "cast" &&
+        cct2.kind.contains("complete") &&
+        chn.name != nil &&
+        (chn.name.contains("man") || chn.name.contains("Man")) &&
+        it2.info == "rating" &&
+        (k.keyword in allowed_keywords) &&
+        kt.kind == "movie" &&
+        mi_idx.info > 7.0 &&
+        t.production_year > 2000
+  select {
+    character: chn.name,
+    rating: mi_idx.info,
+    actor: n.name,
+    movie: t.title
+  }
+
+let result = [
+  {
+    character_name: min(from r in rows select r.character),
+    rating: min(from r in rows select r.rating),
+    playing_actor: min(from r in rows select r.actor),
+    complete_hero_movie: min(from r in rows select r.movie)
+  }
+]
+
+json(result)
+
+test "Q26 finds hero movies with rating above 7" {
+  expect result == [
+    {
+      character_name: "Spider-Man",
+      rating: 8.5,
+      playing_actor: "Actor One",
+      complete_hero_movie: "Hero Movie"
+    }
+  ]
+}
