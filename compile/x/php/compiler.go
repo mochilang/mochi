@@ -3,6 +3,7 @@ package phpcode
 import (
 	"bytes"
 	"fmt"
+	"os/exec"
 	"sort"
 	"strconv"
 	"strings"
@@ -107,7 +108,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 		c.emitRuntime()
 	}
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	return formatPHP(code), nil
 }
 
 // --- Statements ---
@@ -1535,4 +1537,17 @@ func exprVarSet(e *parser.Expr) map[string]bool {
 		res[v] = true
 	}
 	return res
+}
+
+func formatPHP(src []byte) []byte {
+	cmd := exec.Command("phpcbf", "-q", "--standard=PSR12", "-")
+	cmd.Stdin = bytes.NewReader(src)
+	out, err := cmd.Output()
+	if err == nil {
+		return out
+	}
+	if len(out) > 0 {
+		return out
+	}
+	return src
 }

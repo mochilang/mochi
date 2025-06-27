@@ -1,4 +1,5 @@
 <?php
+
 foreach ((is_string("hi") ? str_split("hi") : "hi") as $ch) {
-	echo $ch, PHP_EOL;
+    echo $ch, PHP_EOL;
 }

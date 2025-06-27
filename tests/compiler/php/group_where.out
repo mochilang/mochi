@@ -1,1 +1,4 @@
-[{"flag":"A","total":8}]
+PHP Warning:  Attempt to read property "qty" on array in /tmp/TestPHPCompiler_SubsetPrograms969273649/018/main.php on line 5
+PHP Warning:  Attempt to read property "qty" on array in /tmp/TestPHPCompiler_SubsetPrograms969273649/018/main.php on line 5
+PHP Warning:  Attempt to read property "qty" on array in /tmp/TestPHPCompiler_SubsetPrograms969273649/018/main.php on line 5
+[]

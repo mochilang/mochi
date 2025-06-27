@@ -1,19 +1,33 @@
 <?php
+
 $xs = [1, 1, 2];
-$groups = (function() use ($xs) {
-	$_src = (is_string($xs) ? str_split($xs) : $xs);
-	$_groups = _group_by($_src, function($x) use ($xs) { return $x; });
-	$res = [];
-	foreach ($_groups as $g) {
-		$res[] = ["k" => $g->key, "c" => (is_array($g) ? count($g) : strlen($g))];
-	}
-	return $res;
+$groups = (function () use ($xs) {
+    $_src = (is_string($xs) ? str_split($xs) : $xs);
+    $_groups = _group_by($_src, function ($x) use ($xs) {
+        return $x;
+    });
+    $res = [];
+    foreach ($_groups as $g) {
+        $res[] = ["k" => $g->key, "c" => (is_array($g) ? count($g) : strlen($g))];
+    }
+    return $res;
 })();
 foreach ((is_string($groups) ? str_split($groups) : $groups) as $g) {
-	echo $g->k . " " . $g->c, PHP_EOL;
+    echo $g->k . " " . $g->c, PHP_EOL;
 }
 
-function _group_by($src, $keyfn) {
+class _Group
+{
+    public $key;
+    public $Items;
+    function __construct($key)
+    {
+        $this->key = $key;
+        $this->Items = [];
+    }
+}
+function _group_by($src, $keyfn)
+{
     $groups = [];
     $order = [];
     foreach ($src as $it) {
@@ -26,6 +40,8 @@ function _group_by($src, $keyfn) {
         $groups[$ks]->Items[] = $it;
     }
     $res = [];
-    foreach ($order as $ks) { $res[] = $groups[$ks]; }
+    foreach ($order as $ks) {
+        $res[] = $groups[$ks];
+    }
     return $res;
 }
