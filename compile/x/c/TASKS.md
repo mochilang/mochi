@@ -40,3 +40,7 @@ are present and emits `return 0`. Supporting these queries requires:
 - Extending grouping and aggregation support beyond simple lists.
 - Emitting helper functions for `min` and other aggregations used in JOB.
 
+- Generated C for JOB queries currently fails to compile, with undefined identifiers
+  and invalid struct initialization. Once join and grouping logic are implemented,
+  ensure the output builds successfully and compare against the existing `.out`
+  results.
