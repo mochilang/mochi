@@ -138,5 +138,5 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 	c.emitRuntime()
-	return c.buf.Bytes(), nil
+	return FormatRust(c.buf.Bytes()), nil
 }
