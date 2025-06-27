@@ -733,10 +733,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		for i, js := range joinSrcs {
 			b.WriteString(" for (" + js + ") |" + sanitizeName(q.Joins[i].Var) + "| {")
-			b.WriteString(" if !(" + joinOns[i] + ") continue;")
+			b.WriteString(" if (!(" + joinOns[i] + ")) continue;")
 		}
 		if cond != "" {
-			b.WriteString(" if !(" + cond + ") continue;")
+			b.WriteString(" if (!(" + cond + ")) continue;")
 		}
 		b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
 		for i := 0; i < len(q.Joins); i++ {
@@ -969,86 +969,166 @@ func (c *Compiler) compileExpr(e *parser.Expr, asReturn bool) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, error) {
-	left, err := c.compileUnary(b.Left, asReturn)
+	type operand struct {
+		expr      string
+		unary     *parser.Unary
+		postfix   *parser.PostfixExpr
+		isStr     bool
+		isList    bool
+		isMap     bool
+		isStrList bool
+	}
+
+	newUnary := func(u *parser.Unary) (operand, error) {
+		s, err := c.compileUnary(u, asReturn)
+		if err != nil {
+			return operand{}, err
+		}
+		return operand{
+			expr:      s,
+			unary:     u,
+			isStr:     c.isStringUnary(u),
+			isList:    c.isListUnary(u),
+			isMap:     c.isMapUnary(u),
+			isStrList: c.isStringListUnary(u),
+		}, nil
+	}
+
+	newPostfix := func(p *parser.PostfixExpr) (operand, error) {
+		s, err := c.compilePostfix(p, asReturn)
+		if err != nil {
+			return operand{}, err
+		}
+		return operand{
+			expr:      s,
+			postfix:   p,
+			isStr:     c.isStringPostfix(p),
+			isList:    c.isListPostfix(p),
+			isMap:     c.isMapPostfix(p),
+			isStrList: c.isStringListPostfix(p),
+		}, nil
+	}
+
+	left, err := newUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	expr := left
-	leftIsStr := c.isStringUnary(b.Left)
-	leftIsList := c.isListUnary(b.Left)
-	for _, op := range b.Right {
-		right, err := c.compilePostfix(op.Right, asReturn)
+	operands := []operand{left}
+	ops := make([]*parser.BinaryOp, len(b.Right))
+	for i, op := range b.Right {
+		o, err := newPostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		opStr := op.Op
-		rightIsStr := c.isStringPostfix(op.Right)
-		rightIsList := c.isListPostfix(op.Right)
-		if opStr == "+" {
-			if leftIsStr || rightIsStr {
-				c.needsConcatString = true
-				expr = fmt.Sprintf("_concat_string(%s, %s)", expr, right)
-				leftIsStr = true
-				leftIsList = false
-				continue
-			}
-			if leftIsList && rightIsList {
-				elem := c.listElemTypeUnary(b.Left)
-				c.needsConcatList = true
-				expr = fmt.Sprintf("_concat_list(%s, %s, %s)", elem, expr, right)
-				leftIsList = true
-				leftIsStr = false
-				continue
+		operands = append(operands, o)
+		ops[i] = op
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
 			}
 		}
-		if (opStr == "==" || opStr == "!=") && (leftIsStr || rightIsStr) {
-			cmp := fmt.Sprintf("std.mem.eql(u8, %s, %s)", expr, right)
-			if opStr == "!=" {
+		return false
+	}
+
+	combine := func(opName string, all bool, left, right operand) (operand, error) {
+		expr := left.expr
+		isStr := false
+		isList := false
+
+		if opName == "+" {
+			if left.isStr || right.isStr {
+				c.needsConcatString = true
+				expr = fmt.Sprintf("_concat_string(%s, %s)", left.expr, right.expr)
+				isStr = true
+				return operand{expr: expr, isStr: true}, nil
+			}
+		}
+		if (opName == "==" || opName == "!=") && (left.isStr || right.isStr) {
+			cmp := fmt.Sprintf("std.mem.eql(u8, %s, %s)", left.expr, right.expr)
+			if opName == "!=" {
 				cmp = "!" + cmp
 			}
-			expr = cmp
-			leftIsStr = false
-			continue
+			return operand{expr: cmp}, nil
 		}
-		if opStr == "in" {
-			if c.isMapPostfix(op.Right) {
-				expr = fmt.Sprintf("%s.contains(%s)", right, expr)
-			} else if c.isStringListPostfix(op.Right) {
+		if opName == "in" {
+			if right.isMap {
+				expr = fmt.Sprintf("%s.contains(%s)", right.expr, left.expr)
+			} else if right.isStrList {
 				c.needsInListString = true
-				expr = fmt.Sprintf("_contains_list_string(%s, %s)", right, expr)
+				expr = fmt.Sprintf("_contains_list_string(%s, %s)", right.expr, left.expr)
 			} else {
 				c.needsInListInt = true
-				expr = fmt.Sprintf("_contains_list_int(%s, %s)", right, expr)
+				expr = fmt.Sprintf("_contains_list_int(%s, %s)", right.expr, left.expr)
 			}
-			leftIsStr = false
-			continue
+			return operand{expr: expr}, nil
 		}
-		if opStr == "union" && op.All {
-			opStr = "union_all"
+		if opName == "union" && all {
+			opName = "union_all"
 		}
-		if opStr == "union" || opStr == "union_all" || opStr == "except" || opStr == "intersect" {
-			elem := c.listElemTypeUnary(b.Left)
+		if opName == "union" || opName == "union_all" || opName == "except" || opName == "intersect" {
+			elem := c.listElemTypeUnary(left.unary)
 			c.needsSetOps = true
-			expr = fmt.Sprintf("_%s(%s, %s, %s)", opStr, elem, expr, right)
-			leftIsStr = false
-			leftIsList = true
-			continue
+			expr = fmt.Sprintf("_%s(%s, %s, %s)", opName, elem, left.expr, right.expr)
+			isList = true
+			return operand{expr: expr, isList: true}, nil
 		}
-		switch opStr {
+		switch opName {
 		case "&&":
-			opStr = "and"
+			opName = "and"
 		case "||":
-			opStr = "or"
+			opName = "or"
 		}
-		if opStr == "%" {
-			expr = fmt.Sprintf("@mod(%s, %s)", expr, right)
+		if opName == "%" {
+			expr = fmt.Sprintf("@mod(%s, %s)", left.expr, right.expr)
 		} else {
-			expr = fmt.Sprintf("(%s %s %s)", expr, opStr, right)
+			expr = fmt.Sprintf("(%s %s %s)", left.expr, opName, right.expr)
 		}
-		leftIsStr = false
-		leftIsList = false
+		return operand{expr: expr, isStr: isStr, isList: isList}, nil
 	}
-	return expr, nil
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			opName := ops[i].Op
+			if opName == "union" && ops[i].All {
+				opName = "union_all"
+			}
+			if contains(level, opName) {
+				res, err := combine(opName, ops[i].All, operands[i], operands[i+1])
+				if err != nil {
+					return "", err
+				}
+				operands[i] = operand{
+					expr:    res.expr,
+					unary:   nil,
+					postfix: nil,
+					isStr:   res.isStr,
+					isList:  res.isList,
+				}
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+
+	if len(operands) == 0 {
+		return "", nil
+	}
+	return operands[0].expr, nil
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary, asReturn bool) (string, error) {
@@ -1882,6 +1962,13 @@ func (c *Compiler) isStringListPostfix(p *parser.PostfixExpr) bool {
 		return false
 	}
 	return c.isStringListPrimary(p.Target)
+}
+
+func (c *Compiler) isStringListUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	return c.isStringListPostfix(u.Value)
 }
 
 func (c *Compiler) isStringListPrimary(p *parser.Primary) bool {

@@ -10,7 +10,8 @@ Remaining work
 ---------------
 
 - Add join and sorting support for query expressions.
-- JOB dataset queries q1-q10 compile but the generated Zig code fails to build
-  due to incorrect boolean expression parsing. The parser flattens chained
-  comparisons like `a == b && c == d`, producing invalid Zig code. Update the
-  parser to preserve operator precedence so these queries can run successfully.
+- JOB dataset queries `q1`-`q10` still fail to build. The boolean precedence issue
+  has been partially addressed but the generated Zig programs do not compile due
+  to missing variable declarations inside query loops. Investigate the query code
+  generation and ensure all temporary identifiers are declared before use so the
+  tests in `job_run_test.go` succeed.
