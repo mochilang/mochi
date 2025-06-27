@@ -317,6 +317,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	code := c.buf.Bytes()
 	if c.needListSet || c.needStringSet || c.needMapHelpers || c.needDataset || c.needListOps || c.needSlice || c.needGroup || c.needJSON || len(c.tests) > 0 {
 		var pre bytes.Buffer
+		// Always import the Scheme base library so helpers using
+		// `when`, `for-each` and other standard procedures work.
+		pre.WriteString("(import (scheme base))\n")
 		if c.needListSet {
 			pre.WriteString("(define (list-set lst idx val)\n")
 			pre.WriteString("    (let loop ((i idx) (l lst))\n")

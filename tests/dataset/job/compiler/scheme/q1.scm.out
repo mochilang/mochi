@@ -1,3 +1,4 @@
+(import (scheme base))
 (define (map-get m k)
     (let ((p (assoc k m)))
         (if p (cdr p) '()))

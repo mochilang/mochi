@@ -10,3 +10,12 @@ experimented with by compiling `job/q1.mochi`.
 - A minimal `json` builtin prints values for test output.
 - Golden tests under `tests/compiler/scheme` verify the generated code and
   execution result for `tpch_q1.mochi`.
+
+## Remaining JOB Tasks
+
+The test suite now attempts to compile and run JOB queries `q1` through `q10`.
+Compilation succeeds but many programs fail at runtime due to type
+conversion issues in the generated Scheme.  Golden outputs for these
+queries have been captured for reference but the tests currently fail.
+Resolving the runtime errors and stabilising the output remains future
+work.
