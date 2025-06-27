@@ -7,10 +7,10 @@ function __print(...)
     io.write('\n')
 end
 function value_of_root(t)
-	return (function()
-	local _t0 = t
-	if _t0.__name == "Node" then return (function(v) return v end)(_t0.value) end
-	return 0
+    return (function()
+    local _t0 = t
+    if _t0.__name == "Node" then return (function(v) return v end)(_t0.value) end
+    return 0
 end)()
 end
 

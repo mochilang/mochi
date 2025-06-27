@@ -48,9 +48,9 @@ end
 Msg = {}
 Msg.__index = Msg
 function Msg.new(o)
-	o = o or {}
-	setmetatable(o, Msg)
-	return o
+    o = o or {}
+    setmetatable(o, Msg)
+    return o
 end
 
 data = __fetch("file://tests/compiler/lua/fetch_builtin.json", nil)

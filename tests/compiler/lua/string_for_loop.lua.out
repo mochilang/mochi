@@ -8,7 +8,7 @@ function __print(...)
 end
 local _s0 = "cat"
 for _i0 = 1, #_s0 do
-	local ch = string.sub(_s0, _i0, _i0)
-	__print(ch)
-	::__continue0::
+    local ch = string.sub(_s0, _i0, _i0)
+    __print(ch)
+    ::__continue0::
 end

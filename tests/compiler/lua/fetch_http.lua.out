@@ -48,9 +48,9 @@ end
 Todo = {}
 Todo.__index = Todo
 function Todo.new(o)
-	o = o or {}
-	setmetatable(o, Todo)
-	return o
+    o = o or {}
+    setmetatable(o, Todo)
+    return o
 end
 
 todo = Todo.new((__fetch("https://jsonplaceholder.typicode.com/todos/1", nil)))

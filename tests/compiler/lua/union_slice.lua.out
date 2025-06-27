@@ -7,7 +7,7 @@ function __print(...)
     io.write('\n')
 end
 function listit()
-	return {{__name="Empty"}}
+    return {{__name="Empty"}}
 end
 
 __print(#listit())

@@ -55,14 +55,14 @@ function __print(...)
 end
 xs = {1, 1, 2}
 groups = (function()
-	local _groups = __group_by(xs, function(x) return x end)
-	local _res = {}
-	for _, g in ipairs(_groups) do
-		_res[#_res+1] = {["k"]=g.key, ["c"]=__count(g)}
-	end
-	return _res
+    local _groups = __group_by(xs, function(x) return x end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["k"]=g.key, ["c"]=__count(g)}
+    end
+    return _res
 end)()
 for _, g in ipairs(groups) do
-	__print(g.k, g.c)
-	::__continue0::
+    __print(g.k, g.c)
+    ::__continue0::
 end

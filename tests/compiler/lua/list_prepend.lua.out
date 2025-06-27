@@ -19,8 +19,8 @@ function __print(...)
     io.write('\n')
 end
 function prepend(level, result)
-	result = __add({level}, result)
-	return result
+    result = __add({level}, result)
+    return result
 end
 
 __print(prepend({1, 2}, {{3}, {4}}))

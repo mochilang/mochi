@@ -20,7 +20,7 @@ function __print(...)
 end
 i = 0
 while (i < 3) do
-	__print(i)
-	i = __add(i, 1)
-	::__continue0::
+    __print(i)
+    i = __add(i, 1)
+    ::__continue0::
 end

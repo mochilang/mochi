@@ -7,7 +7,7 @@ function __print(...)
     io.write('\n')
 end
 function id(x)
-	return x
+    return x
 end
 
 __print(id(123))

@@ -19,10 +19,10 @@ function __print(...)
     io.write('\n')
 end
 function fib(n)
-	if (n <= 1) then
-		return n
-	end
-	return __add(fib((n - 1)), fib((n - 2)))
+    if (n <= 1) then
+        return n
+    end
+    return __add(fib((n - 1)), fib((n - 2)))
 end
 
 __print(fib(0))

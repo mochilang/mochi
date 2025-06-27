@@ -21,12 +21,12 @@ function __print(...)
 end
 numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 for _, n in ipairs(numbers) do
-	if __eq((n % 2), 0) then
-		goto __continue0
-	end
-	if (n > 7) then
-		break
-	end
-	__print("odd number:", n)
-	::__continue0::
+    if __eq((n % 2), 0) then
+        goto __continue0
+    end
+    if (n > 7) then
+        break
+    end
+    __print("odd number:", n)
+    ::__continue0::
 end

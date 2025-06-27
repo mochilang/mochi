@@ -7,14 +7,14 @@ function __print(...)
     io.write('\n')
 end
 local function _import_helper()
-	local _pkg = {}
-	local function double(x)
-		return (x * 2)
-	end
-	_pkg.double = double
-	
-	_pkg.__name = "helper"
-	return _pkg
+    local _pkg = {}
+    local function double(x)
+        return (x * 2)
+    end
+    _pkg.double = double
+    
+    _pkg.__name = "helper"
+    return _pkg
 end
 local helper = _import_helper()
 

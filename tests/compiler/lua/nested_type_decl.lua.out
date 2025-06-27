@@ -9,9 +9,9 @@ end
 Person = {}
 Person.__index = Person
 function Person.new(o)
-	o = o or {}
-	setmetatable(o, Person)
-	return o
+    o = o or {}
+    setmetatable(o, Person)
+    return o
 end
 
 __print("ok")

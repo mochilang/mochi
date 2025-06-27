@@ -26,6 +26,6 @@ function __reduce(src, fn, acc)
 end
 nums = {1, 2, 3, 4}
 sum = __reduce(nums, function(acc, x)
-		return __add(acc, x)
+        return __add(acc, x)
 end, 0)
 __print(sum)

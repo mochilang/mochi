@@ -45,7 +45,7 @@ function __slice(obj, i, j)
     end
 end
 function remove(nums, i)
-	return __add(__slice(nums, 0, i), __slice(nums, __add(i, 1), #nums))
+    return __add(__slice(nums, 0, i), __slice(nums, __add(i, 1), #nums))
 end
 
 __print(remove({1, 2, 3, 4}, 1))

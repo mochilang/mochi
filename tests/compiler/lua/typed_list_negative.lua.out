@@ -67,14 +67,14 @@ function __run_tests(tests)
     end
 end
 function test_values()
-	if not (__eq(__index(xs, 0), (-1))) then error('expect failed') end
-	if not (__eq(__index(xs, 1), 0)) then error('expect failed') end
-	if not (__eq(__index(xs, 2), 1)) then error('expect failed') end
-	__print("done")
+    if not (__eq(__index(xs, 0), (-1))) then error('expect failed') end
+    if not (__eq(__index(xs, 1), 0)) then error('expect failed') end
+    if not (__eq(__index(xs, 2), 1)) then error('expect failed') end
+    __print("done")
 end
 
 xs = {(-1), 0, 1}
 local __tests = {
-	{name="values", fn=test_values},
+    {name="values", fn=test_values},
 }
 __run_tests(__tests)

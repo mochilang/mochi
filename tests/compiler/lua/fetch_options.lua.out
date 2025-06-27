@@ -48,9 +48,9 @@ end
 Msg = {}
 Msg.__index = Msg
 function Msg.new(o)
-	o = o or {}
-	setmetatable(o, Msg)
-	return o
+    o = o or {}
+    setmetatable(o, Msg)
+    return o
 end
 
 data = __fetch("https://example.com", {["method"]="POST", ["headers"]={["Accept"]="application/json"}, ["query"]={["q"]="1"}, ["body"]={["text"]="hi"}, ["timeout"]=10.0})

@@ -102,13 +102,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.emitHelpers()
 	c.buf.Write(bodyBytes)
 
-	code := c.buf.Bytes()
-
-	if formatted, err := formatLua(code); err == nil {
-		code = formatted
-	} else {
-		return nil, err
-	}
+	code := FormatLua(c.buf.Bytes())
 
 	if err := checkLuaSyntax(code); err != nil {
 		return nil, err
@@ -145,37 +139,4 @@ func checkLuaSyntax(code []byte) error {
 		return fmt.Errorf("luac error: %v\n%s", err, out)
 	}
 	return nil
-}
-
-func formatLua(code []byte) ([]byte, error) {
-	// Prefer stylua if available as it produces idiomatic formatting.
-	if _, err := exec.LookPath("stylua"); err == nil {
-		cmd := exec.Command("stylua", "-")
-		cmd.Stdin = bytes.NewReader(code)
-		out, err := cmd.Output()
-		if err != nil {
-			if ee, ok := err.(*exec.ExitError); ok {
-				return nil, fmt.Errorf("stylua error: %s", string(ee.Stderr))
-			}
-			return nil, err
-		}
-		return out, nil
-	}
-
-	// Fall back to luafmt if stylua is not installed.
-	if _, err := exec.LookPath("luafmt"); err == nil {
-		cmd := exec.Command("luafmt", "--stdin", "--indent-count", "4")
-		cmd.Stdin = bytes.NewReader(code)
-		out, err := cmd.Output()
-		if err != nil {
-			if ee, ok := err.(*exec.ExitError); ok {
-				return nil, fmt.Errorf("luafmt error: %s", string(ee.Stderr))
-			}
-			return nil, err
-		}
-		return out, nil
-	}
-
-	// If no formatter is available just return the raw source.
-	return code, nil
 }
