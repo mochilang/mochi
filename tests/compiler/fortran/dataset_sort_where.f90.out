@@ -8,7 +8,7 @@ program main
   integer(kind=8) :: cheap
   integer(kind=8) :: c
   integer(kind=8) :: i_c
-  allocate (items(0))
+  allocate(items(0))
   items = (/Item(name='A', price=100_8), Item(name='B', price=50_8), Item(name='C', price=200_8), Item(name='D', price=80_8)/)
   cheap = lambda_0(items)
   do i_c = 0, size(cheap) - 1
@@ -30,8 +30,8 @@ contains
     integer(kind=8) :: sort_key
     integer(kind=8) :: swap_key
     integer(kind=8) :: swap_item
-    allocate (tmp(size(vsrc)))
-    allocate (tmpKey(size(vsrc)))
+    allocate(tmp(size(vsrc)))
+    allocate(tmpKey(size(vsrc)))
     n = 0
     do i = 1, size(vsrc)
       it = vsrc(i)
@@ -58,7 +58,7 @@ contains
         tmp(min_idx) = swap_item
       end if
     end do
-    allocate (res(n))
+    allocate(res(n))
     res = tmp(:n)
   end function lambda_0
 

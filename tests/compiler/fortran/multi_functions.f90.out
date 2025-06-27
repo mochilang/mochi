@@ -27,7 +27,7 @@ contains
     integer(kind=8) :: res
     integer(kind=8), intent(in) :: x
     integer(kind=8), intent(in) :: y
-    res = (x*y)
+    res = (x * y)
     return
   end function mul
 

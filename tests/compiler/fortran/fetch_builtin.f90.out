@@ -13,13 +13,13 @@ contains
     character(len=:), allocatable :: r
     character(len=1024) :: cmd
     integer :: u, n
-    cmd = 'curl -s -o mochi_fetch.tmp '//trim(url)
+    cmd = 'curl -s -o mochi_fetch.tmp ' // trim(url)
     call execute_command_line(cmd)
-    open (newunit=u, file='mochi_fetch.tmp', access='stream', form='unformatted', action='read')
-    inquire (u, size=n)
-    allocate (character(len=n) :: r)
-    read (u) r
-    close (u)
+    open(newunit=u, file='mochi_fetch.tmp', access='stream', form='unformatted', action='read')
+    inquire(u, size=n)
+    allocate(character(len=n) :: r)
+    read(u) r
+    close(u)
     call execute_command_line('rm -f mochi_fetch.tmp')
   end function mochi_fetch
 end program main

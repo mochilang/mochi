@@ -5,7 +5,7 @@ program main
     integer(kind=8) :: age
   end type Person
   type(Person), allocatable :: people(:)
-  allocate (people(0))
+  allocate(people(0))
   people = load_json_Person('')
   call save_json_Person(people, '')
 end program main

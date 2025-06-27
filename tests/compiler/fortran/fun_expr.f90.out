@@ -1,6 +1,6 @@
 program main
   implicit none
-  print *, (lambda_0) (2_8, 3_8)
+  print *, (lambda_0)(2_8, 3_8)
 contains
   function lambda_0(a, b) result(res)
     implicit none
