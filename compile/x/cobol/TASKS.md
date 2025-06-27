@@ -1,6 +1,8 @@
 # COBOL Backend TODO
 
-The current COBOL backend cannot compile the TPC-H Q1 example. The following work is required to support it:
+The current COBOL backend still fails to compile the TPC-H queries. Golden tests
+now cover `q1` and `q2` but both are skipped because the generated COBOL does not
+build. The following work is required to support these queries:
 
 1. **Group by support** – add code generation for `group by` clauses. Queries should accumulate items by key and expose a `Group` structure similar to the Go runtime.
 2. **Aggregations** – implement built-in helpers for `sum`, `avg` and `count` that operate over lists and groups.
