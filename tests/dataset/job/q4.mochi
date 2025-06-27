@@ -1,0 +1,51 @@
+let info_type = [
+  { id: 1, info: "rating" },
+  { id: 2, info: "release" }
+]
+
+let keyword = [
+  { id: 1, keyword: "action sequel" },
+  { id: 2, keyword: "comedy" }
+]
+
+let title = [
+  { id: 1, title: "Action Movie 2", production_year: 2006 },
+  { id: 2, title: "Old Romance", production_year: 2004 }
+]
+
+let movie_info_idx = [
+  { movie_id: 1, info_type_id: 1, info: 6.3 },
+  { movie_id: 2, info_type_id: 1, info: 4.5 }
+]
+
+let movie_keyword = [
+  { movie_id: 1, keyword_id: 1 },
+  { movie_id: 2, keyword_id: 2 }
+]
+
+let filtered =
+  from it in info_type
+  join mi_idx in movie_info_idx on it.id == mi_idx.info_type_id
+  join t in title on t.id == mi_idx.movie_id
+  join mk in movie_keyword on mk.movie_id == mi_idx.movie_id
+  join k in keyword on k.id == mk.keyword_id
+  where
+    it.info == "rating" &&
+    k.keyword.contains("sequel") &&
+    mi_idx.info > 5.0 &&
+    t.production_year > 2005
+  select {
+    rating: mi_idx.info,
+    movie_title: t.title
+  }
+
+let result = {
+  rating: min(from r in filtered select r.rating),
+  movie_title: min(from r in filtered select r.movie_title)
+}
+
+json(result)
+
+test "Q4 finds min rating and title for sequels after 2005" {
+  expect result == { rating: 6.3, movie_title: "Action Movie 2" }
+}
