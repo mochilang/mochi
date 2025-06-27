@@ -452,7 +452,10 @@ func (p *Program) Disassemble(src string) string {
 		}
 		b.WriteByte('\n')
 	}
-	return b.String()
+	out := b.String()
+	out = strings.TrimRight(out, "\n")
+	out += "\n"
+	return out
 }
 
 type VM struct {
