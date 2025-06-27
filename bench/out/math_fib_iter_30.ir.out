@@ -2,47 +2,27 @@ func main (regs=27)
   // let n = 30
   Const        r0, 30
   Move         r1, r0
-  // let repeat = 1000
-  Const        r2, 1000
-  Move         r3, r2
-  // var last = 0
-  Const        r4, 0
-  Move         r5, r4
-  // let start = now()
-  Now          r6
-  Move         r7, r6
-  // for i in 0..repeat {
-  Const        r8, 0
-  Move         r9, r8
-L1:
-  Less         r10, r9, r3
-  JumpIfFalse  r10, L0
+L0:
   // last = fib(n)
   Move         r11, r1
   Call         r12, fib, r11
-  Move         r5, r12
   // for i in 0..repeat {
-  Const        r13, 1
-  Add          r14, r9, r13
-  Move         r9, r14
-  Jump         L1
-L0:
+  Jump         L0
   // let duration = (now() - start) / 1000
   Now          r15
-  SubInt       r16, r15, r7
+  SubInt       r16, r15, r6
   Const        r17, 1000
   DivInt       r18, r16, r17
-  Move         r19, r18
   // "duration_us": duration,
   Const        r20, "duration_us"
   // "output": last,
   Const        r21, "output"
   // "duration_us": duration,
   Move         r22, r20
-  Move         r23, r19
+  Move         r23, r18
   // "output": last,
   Move         r24, r21
-  Move         r25, r5
+  Move         r25, r12
   // json({
   MakeMap      r26, 2, r22
   JSON         r26
@@ -50,28 +30,15 @@ L0:
 
   // fun fib(n: int): int {
 func fib (regs=12)
-  // var a = 0
-  Const        r1, 0
-  Move         r2, r1
   // var b = 1
   Const        r3, 1
-  Move         r4, r3
   // for i in 0..n {
   Const        r5, 0
-  Move         r6, r5
-L1:
-  Less         r7, r6, r0
+  Less         r7, r5, r0
   JumpIfFalse  r7, L0
-  // let tmp = a + b
-  AddInt       r8, r2, r4
-  Move         r9, r8
-  // a = b
-  Move         r2, r4
-  // b = tmp
-  Move         r4, r9
-  // for i in 0..n {
+L1:
   Jump         L1
 L0:
   // return a
-  Return       r2
+  Return       r3
   Return       r0

@@ -4,27 +4,24 @@ func main (regs=19)
   Move         r1, r0
   // let start = now()
   Now          r2
-  Move         r3, r2
   // let result = fib(n)
   Move         r4, r1
   Call         r5, fib, r4
-  Move         r6, r5
   // let duration = (now() - start) / 1000
   Now          r7
-  SubInt       r8, r7, r3
+  SubInt       r8, r7, r2
   Const        r9, 1000
   DivInt       r10, r8, r9
-  Move         r11, r10
   // "duration_us": duration,
   Const        r12, "duration_us"
   // "output": result,
   Const        r13, "output"
   // "duration_us": duration,
   Move         r14, r12
-  Move         r15, r11
+  Move         r15, r10
   // "output": result,
   Move         r16, r13
-  Move         r17, r6
+  Move         r17, r5
   // json({
   MakeMap      r18, 2, r14
   JSON         r18
