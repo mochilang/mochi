@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
 	"sort"
@@ -325,7 +326,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("main()")
 	}
 	c.writeln("")
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	return formatTS(code), nil
 }
 
 // --- Statement Compilation ---
@@ -2398,4 +2400,15 @@ func fieldFromPostfix(p *parser.PostfixExpr, varName string) (string, bool) {
 		return p.Target.Selector.Tail[0], true
 	}
 	return "", false
+}
+
+func formatTS(src []byte) []byte {
+	cmd := exec.Command("npx", "--yes", "prettier", "--parser", "typescript")
+	cmd.Stdin = bytes.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err == nil {
+		return out.Bytes()
+	}
+	return src
 }
