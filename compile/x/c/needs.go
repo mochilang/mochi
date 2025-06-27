@@ -55,4 +55,6 @@ const (
 	needListPairString       = "list_pair_string"
 	needGroupByPairString    = "group_by_pair_string"
 	needStringHeader         = "string_h"
+	needMinInt               = "min_int"
+	needMinString            = "min_string"
 )

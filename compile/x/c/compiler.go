@@ -1136,6 +1136,99 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			}
 		}
 	}
+	// handle queries with basic inner joins (no grouping, sorting or limits)
+	if len(q.Joins) > 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && len(q.Froms) == 0 {
+		src := c.compileExpr(q.Source)
+		srcT := c.exprType(q.Source)
+		lt, ok := srcT.(types.ListType)
+		if !ok {
+			return "0"
+		}
+		retT := c.exprType(q.Select)
+		retList := types.ListType{Elem: retT}
+		listC := cTypeFromType(retList)
+		if listC == "" {
+			listC = "list_int"
+		}
+		if listC == "list_string" {
+			c.need(needListString)
+		} else if listC == "list_float" {
+			c.need(needListFloat)
+		} else if listC == "list_list_int" {
+			c.need(needListListInt)
+		}
+
+		capExpr := fmt.Sprintf("%s.len", src)
+		for _, j := range q.Joins {
+			js := c.compileExpr(j.Src)
+			capExpr = fmt.Sprintf("%s * %s.len", capExpr, js)
+		}
+
+		res := c.newTemp()
+		idx := c.newTemp()
+		c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, capExpr))
+		c.writeln(fmt.Sprintf("int %s = 0;", idx))
+
+		oldEnv := c.env
+		if c.env != nil {
+			c.env = types.NewEnv(c.env)
+			c.env.SetVar(q.Var, lt.Elem, true)
+			for _, j := range q.Joins {
+				if jt, ok := c.exprType(j.Src).(types.ListType); ok {
+					c.env.SetVar(j.Var, jt.Elem, true)
+				}
+			}
+		}
+
+		iters := []string{}
+		srcNames := []string{src}
+		elemCs := []string{cTypeFromType(lt.Elem)}
+		vars := []string{sanitizeName(q.Var)}
+		for _, j := range q.Joins {
+			js := c.compileExpr(j.Src)
+			jt, _ := c.exprType(j.Src).(types.ListType)
+			srcNames = append(srcNames, js)
+			elemCs = append(elemCs, cTypeFromType(jt.Elem))
+			vars = append(vars, sanitizeName(j.Var))
+		}
+
+		for i, s := range srcNames {
+			iter := c.newTemp()
+			iters = append(iters, iter)
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, s, iter))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemCs[i], vars[i], s, iter))
+			if i > 0 {
+				cond := c.compileExpr(q.Joins[i-1].On)
+				c.writeln(fmt.Sprintf("if (!(%s)) continue;", cond))
+			}
+		}
+
+		if q.Where != nil {
+			cond := c.compileExpr(q.Where)
+			c.writeln(fmt.Sprintf("if (!(%s)) {", cond))
+			c.indent++
+			c.writeln("continue;")
+			c.indent--
+			c.writeln("}")
+		}
+
+		val := c.compileExpr(q.Select)
+		c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+		c.writeln(fmt.Sprintf("%s++;", idx))
+
+		for range srcNames {
+			c.indent--
+			c.writeln("}")
+		}
+
+		c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+		if c.env != nil {
+			c.env = oldEnv
+		}
+		return res
+	}
+
 	// only handle simple queries without joins or grouping
 	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
 		return "0"
@@ -1902,6 +1995,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			c.need(needAvg)
 			return fmt.Sprintf("_avg(%s)", arg)
+		} else if p.Call.Func == "min" {
+			arg := c.compileExpr(p.Call.Args[0])
+			if isListStringExpr(p.Call.Args[0], c.env) {
+				c.need(needMinString)
+				return fmt.Sprintf("_min_string(%s)", arg)
+			}
+			if _, ok := c.exprType(p.Call.Args[0]).(types.GroupType); ok {
+				arg = fmt.Sprintf("%s.items", arg)
+			}
+			c.need(needMinInt)
+			return fmt.Sprintf("_min_int(%s)", arg)
 		} else if p.Call.Func == "str" {
 			arg := c.compileExpr(p.Call.Args[0])
 			name := c.newTemp()
