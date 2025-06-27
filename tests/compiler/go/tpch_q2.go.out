@@ -1,0 +1,479 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"sort"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"s_acctbal":     1000.0,
+		"s_name":        "BestSupplier",
+		"n_name":        "FRANCE",
+		"p_partkey":     1000,
+		"p_mfgr":        "M1",
+		"s_address":     "123 Rue",
+		"s_phone":       "123",
+		"s_comment":     "Fast and reliable",
+		"ps_supplycost": 10.0,
+	}}))
+}
+
+type RegionItem struct {
+	R_regionkey int    `json:"r_regionkey"`
+	R_name      string `json:"r_name"`
+}
+
+var region []RegionItem = []RegionItem{RegionItem{
+	R_regionkey: 1,
+	R_name:      "EUROPE",
+}, RegionItem{
+	R_regionkey: 2,
+	R_name:      "ASIA",
+}}
+
+type NationItem struct {
+	N_nationkey int    `json:"n_nationkey"`
+	N_regionkey int    `json:"n_regionkey"`
+	N_name      string `json:"n_name"`
+}
+
+var nation []NationItem = []NationItem{NationItem{
+	N_nationkey: 10,
+	N_regionkey: 1,
+	N_name:      "FRANCE",
+}, NationItem{
+	N_nationkey: 20,
+	N_regionkey: 2,
+	N_name:      "CHINA",
+}}
+
+type SupplierItem struct {
+	S_suppkey   int     `json:"s_suppkey"`
+	S_name      string  `json:"s_name"`
+	S_address   string  `json:"s_address"`
+	S_nationkey int     `json:"s_nationkey"`
+	S_phone     string  `json:"s_phone"`
+	S_acctbal   float64 `json:"s_acctbal"`
+	S_comment   string  `json:"s_comment"`
+}
+
+var supplier []SupplierItem = []SupplierItem{SupplierItem{
+	S_suppkey:   100,
+	S_name:      "BestSupplier",
+	S_address:   "123 Rue",
+	S_nationkey: 10,
+	S_phone:     "123",
+	S_acctbal:   1000.0,
+	S_comment:   "Fast and reliable",
+}, SupplierItem{
+	S_suppkey:   200,
+	S_name:      "AltSupplier",
+	S_address:   "456 Way",
+	S_nationkey: 20,
+	S_phone:     "456",
+	S_acctbal:   500.0,
+	S_comment:   "Slow",
+}}
+
+type PartItem struct {
+	P_partkey int    `json:"p_partkey"`
+	P_type    string `json:"p_type"`
+	P_size    int    `json:"p_size"`
+	P_mfgr    string `json:"p_mfgr"`
+}
+
+var part []PartItem = []PartItem{PartItem{
+	P_partkey: 1000,
+	P_type:    "LARGE BRASS",
+	P_size:    15,
+	P_mfgr:    "M1",
+}, PartItem{
+	P_partkey: 2000,
+	P_type:    "SMALL COPPER",
+	P_size:    15,
+	P_mfgr:    "M2",
+}}
+
+type PartsuppItem struct {
+	Ps_partkey    int     `json:"ps_partkey"`
+	Ps_suppkey    int     `json:"ps_suppkey"`
+	Ps_supplycost float64 `json:"ps_supplycost"`
+}
+
+var partsupp []PartsuppItem = []PartsuppItem{PartsuppItem{
+	Ps_partkey:    1000,
+	Ps_suppkey:    100,
+	Ps_supplycost: 10.0,
+}, PartsuppItem{
+	Ps_partkey:    1000,
+	Ps_suppkey:    200,
+	Ps_supplycost: 15.0,
+}}
+var europe_nations []NationItem = func() []NationItem {
+	_res := []NationItem{}
+	for _, r := range region {
+		if r.R_name == "EUROPE" {
+			for _, n := range nation {
+				if !(n.N_regionkey == r.R_regionkey) {
+					continue
+				}
+				_res = append(_res, n)
+			}
+		}
+	}
+	return _res
+}()
+var europe_suppliers []map[string]any = func() []map[string]any {
+	_res := []map[string]any{}
+	for _, s := range supplier {
+		for _, n := range europe_nations {
+			if !(s.S_nationkey == n.N_nationkey) {
+				continue
+			}
+			_res = append(_res, map[string]any{"s": s, "n": n})
+		}
+	}
+	return _res
+}()
+var target_parts []PartItem = func() []PartItem {
+	_res := []PartItem{}
+	for _, p := range part {
+		if (p.P_size == 15) && (p.P_type == "LARGE BRASS") {
+			if (p.P_size == 15) && (p.P_type == "LARGE BRASS") {
+				_res = append(_res, p)
+			}
+		}
+	}
+	return _res
+}()
+var target_partsupp []map[string]any = func() []map[string]any {
+	_res := []map[string]any{}
+	for _, ps := range partsupp {
+		for _, p := range target_parts {
+			if !(ps.Ps_partkey == p.P_partkey) {
+				continue
+			}
+			for _, s := range europe_suppliers {
+				if !(_equal(ps.Ps_suppkey, _cast[map[string]any](s["s"])["s_suppkey"])) {
+					continue
+				}
+				_res = append(_res, map[string]any{
+					"s_acctbal":     _cast[map[string]any](s["s"])["s_acctbal"],
+					"s_name":        _cast[map[string]any](s["s"])["s_name"],
+					"n_name":        _cast[map[string]any](s["n"])["n_name"],
+					"p_partkey":     p.P_partkey,
+					"p_mfgr":        p.P_mfgr,
+					"s_address":     _cast[map[string]any](s["s"])["s_address"],
+					"s_phone":       _cast[map[string]any](s["s"])["s_phone"],
+					"s_comment":     _cast[map[string]any](s["s"])["s_comment"],
+					"ps_supplycost": ps.Ps_supplycost,
+				})
+			}
+		}
+	}
+	return _res
+}()
+var costs []any = func() []any {
+	_res := []any{}
+	for _, x := range target_partsupp {
+		_res = append(_res, x["ps_supplycost"])
+	}
+	return _res
+}()
+var min_cost any = _min(costs)
+var result []map[string]any = func() []map[string]any {
+	items := []map[string]any{}
+	for _, x := range target_partsupp {
+		if _equal(x["ps_supplycost"], min_cost) {
+			if _equal(x["ps_supplycost"], min_cost) {
+				items = append(items, x)
+			}
+		}
+	}
+	type pair struct {
+		item map[string]any
+		key  any
+	}
+	pairs := make([]pair, len(items))
+	for idx, it := range items {
+		x := it
+		pairs[idx] = pair{item: it, key: -x["s_acctbal"]}
+	}
+	sort.Slice(pairs, func(i, j int) bool {
+		a, b := pairs[i].key, pairs[j].key
+		switch av := a.(type) {
+		case int:
+			switch bv := b.(type) {
+			case int:
+				return av < bv
+			case float64:
+				return float64(av) < bv
+			}
+		case float64:
+			switch bv := b.(type) {
+			case int:
+				return av < float64(bv)
+			case float64:
+				return av < bv
+			}
+		case string:
+			bs, _ := b.(string)
+			return av < bs
+		}
+		return fmt.Sprint(a) < fmt.Sprint(b)
+	})
+	for idx, p := range pairs {
+		items[idx] = p.item
+	}
+	_res := []map[string]any{}
+	for _, x := range items {
+		_res = append(_res, x)
+	}
+	return _res
+}()
+
+func main() {
+	failures := 0
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("Q2 returns only supplier with min cost in Europe for brass part")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func _min(v any) any {
+	if g, ok := v.(*data.Group); ok {
+		v = g.Items
+	}
+	switch s := v.(type) {
+	case []int:
+		if len(s) == 0 {
+			return 0
+		}
+		m := s[0]
+		for _, n := range s[1:] {
+			if n < m {
+				m = n
+			}
+		}
+		return m
+	case []float64:
+		if len(s) == 0 {
+			return 0.0
+		}
+		m := s[0]
+		for _, n := range s[1:] {
+			if n < m {
+				m = n
+			}
+		}
+		return m
+	case []any:
+		if len(s) == 0 {
+			return 0
+		}
+		var m float64
+		var isFloat bool
+		switch n := s[0].(type) {
+		case int:
+			m = float64(n)
+		case int64:
+			m = float64(n)
+		case float64:
+			m = n
+			isFloat = true
+		default:
+			panic("min() expects numbers")
+		}
+		for _, it := range s[1:] {
+			switch v := it.(type) {
+			case int:
+				if float64(v) < m {
+					m = float64(v)
+				}
+			case int64:
+				if float64(v) < m {
+					m = float64(v)
+				}
+			case float64:
+				if v < m {
+					m = v
+				}
+				isFloat = true
+			default:
+				panic("min() expects numbers")
+			}
+		}
+		if isFloat {
+			return m
+		}
+		return int(m)
+	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Slice {
+			if rv.Len() == 0 {
+				return 0
+			}
+			m := rv.Index(0).Interface()
+			switch m.(type) {
+			case int, int64, float64:
+				items := make([]any, rv.Len())
+				for i := 0; i < rv.Len(); i++ {
+					items[i] = rv.Index(i).Interface()
+				}
+				return _min(items)
+			}
+		}
+		panic("min() expects list or group")
+	}
+}

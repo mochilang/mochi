@@ -10,7 +10,12 @@ func Leaf() map[string]any {
 }
 
 func Node(left map[string]any, value int, right map[string]any) map[string]any {
-	return map[string]any{"__name": "Node", "left": left, "value": value, "right": right}
+	return map[string]any{
+		"__name": "Node",
+		"left":   left,
+		"value":  value,
+		"right":  right,
+	}
 }
 
 func main() {
@@ -19,55 +24,61 @@ func main() {
 }
 
 func _cast[T any](v any) T {
-    if tv, ok := v.(T); ok { return tv }
-    var out T
-    switch any(out).(type) {
-    case int:
-        switch vv := v.(type) {
-        case int:
-            return any(vv).(T)
-        case float64:
-            return any(int(vv)).(T)
-        case float32:
-            return any(int(vv)).(T)
-        }
-    case float64:
-        switch vv := v.(type) {
-        case int:
-            return any(float64(vv)).(T)
-        case float64:
-            return any(vv).(T)
-        case float32:
-            return any(float64(vv)).(T)
-        }
-    case float32:
-        switch vv := v.(type) {
-        case int:
-            return any(float32(vv)).(T)
-        case float64:
-            return any(float32(vv)).(T)
-        case float32:
-            return any(vv).(T)
-        }
-    }
-    if m, ok := v.(map[any]any); ok {
-        v = _convertMapAny(m)
-    }
-    data, err := json.Marshal(v)
-    if err != nil { panic(err) }
-    if err := json.Unmarshal(data, &out); err != nil { panic(err) }
-    return out
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
 }
 
 func _convertMapAny(m map[any]any) map[string]any {
-    out := make(map[string]any, len(m))
-    for k, v := range m {
-        key := fmt.Sprint(k)
-        if sub, ok := v.(map[any]any); ok {
-            out[key] = _convertMapAny(sub)
-        } else {
-            out[key] = v
-        }
-    }
-    return out
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
 }

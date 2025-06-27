@@ -13,7 +13,7 @@ func main() {
 }
 
 func _input() string {
-    var s string
-    fmt.Scanln(&s)
-    return s
+	var s string
+	fmt.Scanln(&s)
+	return s
 }

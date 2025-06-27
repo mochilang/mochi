@@ -11,16 +11,20 @@ func main() {
 	var bools []bool = []bool{true, false}
 	_ = bools
 	var combos []map[string]any = func() []map[string]any {
-	_res := []map[string]any{}
-	for _, n := range nums {
-		for _, l := range letters {
-			for _, b := range bools {
-				_res = append(_res, map[string]any{"n": n, "l": l, "b": b})
+		_res := []map[string]any{}
+		for _, n := range nums {
+			for _, l := range letters {
+				for _, b := range bools {
+					_res = append(_res, map[string]any{
+						"n": n,
+						"l": l,
+						"b": b,
+					})
+				}
 			}
 		}
-	}
-	return _res
-}()
+		return _res
+	}()
 	fmt.Println("--- Cross Join of three lists ---")
 	for _, c := range combos {
 		fmt.Println(c["n"], c["l"], c["b"])

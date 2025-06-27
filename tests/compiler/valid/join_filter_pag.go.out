@@ -1,0 +1,102 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type Person struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type Purchase struct {
+	Id       int `json:"id"`
+	PersonId int `json:"personId"`
+	Total    int `json:"total"`
+}
+
+func main() {
+	var people []Person = []Person{Person{Id: 1, Name: "Alice"}, Person{Id: 2, Name: "Bob"}, Person{Id: 3, Name: "Charlie"}}
+	var purchases []Purchase = []Purchase{
+		Purchase{Id: 1, PersonId: 1, Total: 200},
+		Purchase{Id: 2, PersonId: 1, Total: 50},
+		Purchase{Id: 3, PersonId: 2, Total: 150},
+		Purchase{Id: 4, PersonId: 3, Total: 100},
+		Purchase{Id: 5, PersonId: 2, Total: 250},
+	}
+	_ = purchases
+	var result []map[string]any = func() []map[string]any {
+		items := []Person{}
+		for _, p := range people {
+			for _, o := range purchases {
+				if !(p.Id == o.PersonId) {
+					continue
+				}
+				if o.Total > 100 {
+					if o.Total > 100 {
+						items = append(items, p)
+					}
+				}
+			}
+		}
+		type pair struct {
+			item Person
+			key  any
+		}
+		pairs := make([]pair, len(items))
+		for idx, it := range items {
+			p := it
+			pairs[idx] = pair{item: it, key: -o.Total}
+		}
+		sort.Slice(pairs, func(i, j int) bool {
+			a, b := pairs[i].key, pairs[j].key
+			switch av := a.(type) {
+			case int:
+				switch bv := b.(type) {
+				case int:
+					return av < bv
+				case float64:
+					return float64(av) < bv
+				}
+			case float64:
+				switch bv := b.(type) {
+				case int:
+					return av < float64(bv)
+				case float64:
+					return av < bv
+				}
+			case string:
+				bs, _ := b.(string)
+				return av < bs
+			}
+			return fmt.Sprint(a) < fmt.Sprint(b)
+		})
+		for idx, p := range pairs {
+			items[idx] = p.item
+		}
+		items = _paginate[Person](items, 1, 2)
+		_res := []map[string]any{}
+		for _, p := range items {
+			_res = append(_res, map[string]any{"person": p.Name, "spent": o.Total})
+		}
+		return _res
+	}()
+	for _, r := range result {
+		fmt.Println(r["person"], r["spent"])
+	}
+}
+
+func _paginate[T any](src []T, skip, take int) []T {
+	if skip > 0 {
+		if skip < len(src) {
+			src = src[skip:]
+		} else {
+			return []T{}
+		}
+	}
+	if take >= 0 && take < len(src) {
+		src = src[:take]
+	}
+	return src
+}
