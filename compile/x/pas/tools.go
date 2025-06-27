@@ -67,11 +67,28 @@ func EnsureFPC() (string, error) {
 	return "", fmt.Errorf("fpc not installed")
 }
 
+// EnsurePtop verifies that the ptop formatter is available. If not found,
+// it attempts to install the Free Pascal tools which include ptop. Tests can
+// call this helper to ensure formatting works.
+func EnsurePtop() error {
+	if _, err := exec.LookPath("ptop"); err == nil {
+		return nil
+	}
+	if _, err := EnsureFPC(); err != nil {
+		return err
+	}
+	if _, err := exec.LookPath("ptop"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("ptop not installed")
+}
+
 // FormatPas runs ptop to pretty-print Pascal code if available.
 // Keywords keep their original casing and indentation is set to two spaces.
 func FormatPas(src []byte) []byte {
 	path, err := exec.LookPath("ptop")
 	if err != nil {
+		src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
 		if len(src) > 0 && src[len(src)-1] != '\n' {
 			src = append(src, '\n')
 		}
