@@ -115,6 +115,15 @@ const (
 		"  return m;\n" +
 		"}\n"
 
+	helperContains = "function _contains(c: any, v: any): boolean {\n" +
+		"  if (Array.isArray(c)) return c.includes(v);\n" +
+		"  if (typeof c === 'string') return c.includes(String(v));\n" +
+		"  if (c && typeof c === 'object') {\n" +
+		"    return Object.prototype.hasOwnProperty.call(c, String(v));\n" +
+		"  }\n" +
+		"  return false;\n" +
+		"}\n"
+
 	helperInput = "function _input(): string {\n" +
 		"  const v = prompt('');\n" +
 		"  return v === null ? '' : v;\n" +
@@ -463,6 +472,7 @@ var helperMap = map[string]string{
 	"_sum":         helperSum,
 	"_min":         helperMin,
 	"_max":         helperMax,
+	"_contains":    helperContains,
 	"_input":       helperInput,
 	"_iter":        helperIter,
 	"_gen_text":    helperGenText,

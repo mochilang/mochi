@@ -1205,7 +1205,8 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		case types.ListType, types.StringType:
 			return fmt.Sprintf("%s.includes(%s)", right, left), types.BoolType{}, nil
 		default:
-			return "false", types.BoolType{}, nil
+			c.use("_contains")
+			return fmt.Sprintf("_contains(%s, %s)", right, left), types.BoolType{}, nil
 		}
 	case "union", "union_all", "except", "intersect":
 		c.use("_" + op)
