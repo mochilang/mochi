@@ -1,13 +1,14 @@
 module Foo; end
+
 class Empty
-	include Foo
+  include Foo
 end
 Node = Struct.new(:child, keyword_init: true) do
-	include Foo
+  include Foo
 end
 
-def listit()
-	return [Empty.new()]
+def listit
+  [Empty.new]
 end
 
-puts([(listit()).length].join(" "))
+puts([listit.length].join(" "))

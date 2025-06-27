@@ -1,5 +1,5 @@
 def id(x)
-	return x
+  x
 end
 
 puts([id(123)].join(" "))

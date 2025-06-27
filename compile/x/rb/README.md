@@ -135,14 +135,20 @@ ruby palindrome.rb
 
 Like the previous example this program just evaluates the test cases.
 
-`tools.go` provides `EnsureRuby` which attempts to install Ruby on Linux or macOS if it is missing:
+`tools.go` provides helpers to ensure required tools are present. `EnsureRuby` installs Ruby on Linux or macOS when missing. `EnsureFormatter` checks for the `standardrb` or `rubocop` gems so generated code can be prettified:
 
 ```go
 // EnsureRuby verifies that the ruby binary is installed. If missing, it
 // attempts a best-effort installation using apt-get on Linux or Homebrew on
 // macOS.
 ```
-【F:compile/rb/tools.go†L10-L46】
+【F:compile/x/rb/tools.go†L12-L66】
+
+```go
+// EnsureFormatter checks for either standardrb or rubocop so generated code can
+// be formatted.
+```
+【F:compile/x/rb/tools.go†L90-L118】
 
 ## Tests
 

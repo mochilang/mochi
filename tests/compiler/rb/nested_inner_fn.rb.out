@@ -1,8 +1,8 @@
 def outer(a)
-	inner = ->(b){
-		return (a + b)
-	}
-	return inner.call(10)
+  inner = ->(b) {
+    (a + b)
+  }
+  inner.call(10)
 end
 
 puts([outer(5)].join(" "))
