@@ -174,7 +174,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Write(bodyBytes)
 	c.emitRuntime()
 	c.buf.WriteByte('\n')
-	return c.buf.Bytes(), nil
+	out := c.buf.Bytes()
+	return FormatDart(out), nil
 }
 
 func (c *Compiler) compileTypeDecls(stmts []*parser.Statement) error {
