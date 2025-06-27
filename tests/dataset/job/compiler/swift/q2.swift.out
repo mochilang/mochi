@@ -75,13 +75,13 @@ let titles =
     var _res: [Any] = []
     for cn in company_name {
       for mc in movie_companies {
-        if !(mc.company_id == cn.id) { continue }
+        if !(mc["company_id"]! == cn["id"]!) { continue }
         for t in title {
-          if !(mc.movie_id == t.id) { continue }
+          if !(mc["movie_id"]! == t["id"]!) { continue }
           for mk in movie_keyword {
-            if !(mk.movie_id == t.id) { continue }
+            if !(mk["movie_id"]! == t["id"]!) { continue }
             for k in keyword {
-              if !(mk.keyword_id == k.id) { continue }
+              if !(mk["keyword_id"]! == k["id"]!) { continue }
               if !(cn["country_code"]! == "[de]" && k["keyword"]! == "character-name-in-title"
                 && mc["movie_id"]! == mk["movie_id"]!)
               {

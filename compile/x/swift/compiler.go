@@ -1114,10 +1114,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		elem = lt.Elem
 	}
 	child.SetVar(q.Var, elem, true)
+	c.env = child
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 		ft := c.inferExprType(f.Src)
@@ -1133,6 +1135,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 		jt := c.inferExprType(j.Src)
@@ -1141,14 +1144,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			je = lt.Elem
 		}
 		child.SetVar(j.Var, je, true)
-		joinSrcs[i] = js
 		on, err := c.compileExpr(j.On)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
+		joinSrcs[i] = js
 		joinOns[i] = on
 	}
-	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
 		c.env = orig

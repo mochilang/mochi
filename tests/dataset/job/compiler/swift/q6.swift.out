@@ -38,16 +38,16 @@ let title = [
 ]
 let result =
   ({
-    var _res: [[Any: Any]] = []
+    var _res: [[String: Any]] = []
     for ci in cast_info {
       for mk in movie_keyword {
-        if !(ci.movie_id == mk.movie_id) { continue }
+        if !(ci["movie_id"]! == mk["movie_id"]!) { continue }
         for k in keyword {
-          if !(mk.keyword_id == k.id) { continue }
+          if !(mk["keyword_id"]! == k["id"]!) { continue }
           for n in name {
-            if !(ci.person_id == n.id) { continue }
+            if !(ci["person_id"]! == n["id"]!) { continue }
             for t in title {
-              if !(ci.movie_id == t.id) { continue }
+              if !(ci["movie_id"]! == t["id"]!) { continue }
               if !(k["keyword"]! == "marvel-cinematic-universe" && n["name"]!["contains"]!("Downey")
                 && n["name"]!["contains"]!("Robert") && t["production_year"]! > 2010)
               {

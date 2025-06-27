@@ -86,19 +86,19 @@ let matches =
     var _res: [[String: Any]] = []
     for an in aka_name {
       for n in name {
-        if !(an.person_id == n.id) { continue }
+        if !(an["person_id"]! == n["id"]!) { continue }
         for ci in cast_info {
-          if !(ci.person_id == n.id) { continue }
+          if !(ci["person_id"]! == n["id"]!) { continue }
           for chn in char_name {
-            if !(chn.id == ci.person_role_id) { continue }
+            if !(chn["id"]! == ci["person_role_id"]!) { continue }
             for t in title {
-              if !(t.id == ci.movie_id) { continue }
+              if !(t["id"]! == ci["movie_id"]!) { continue }
               for mc in movie_companies {
-                if !(mc.movie_id == t.id) { continue }
+                if !(mc["movie_id"]! == t["id"]!) { continue }
                 for cn in company_name {
-                  if !(cn.id == mc.company_id) { continue }
+                  if !(cn["id"]! == mc["company_id"]!) { continue }
                   for rt in role_type {
-                    if !(rt.id == ci.role_id) { continue }
+                    if !(rt["id"]! == ci["role_id"]!) { continue }
                     if !(([
                       "(voice)", "(voice: Japanese version)", "(voice) (uncredited)",
                       "(voice: English version)",

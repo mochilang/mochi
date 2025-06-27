@@ -87,19 +87,19 @@ let rows =
     var _res: [[String: Any]] = []
     for an in aka_name {
       for n in name {
-        if !(n.id == an.person_id) { continue }
+        if !(n["id"]! == an["person_id"]!) { continue }
         for pi in person_info {
-          if !(pi.person_id == an.person_id) { continue }
+          if !(pi["person_id"]! == an["person_id"]!) { continue }
           for it in info_type {
-            if !(it.id == pi.info_type_id) { continue }
+            if !(it["id"]! == pi["info_type_id"]!) { continue }
             for ci in cast_info {
-              if !(ci.person_id == n.id) { continue }
+              if !(ci["person_id"]! == n["id"]!) { continue }
               for t in title {
-                if !(t.id == ci.movie_id) { continue }
+                if !(t["id"]! == ci["movie_id"]!) { continue }
                 for ml in movie_link {
-                  if !(ml.linked_movie_id == t.id) { continue }
+                  if !(ml["linked_movie_id"]! == t["id"]!) { continue }
                   for lt in link_type {
-                    if !(lt.id == ml.link_type_id) { continue }
+                    if !(lt["id"]! == ml["link_type_id"]!) { continue }
                     if !((an["name"]!["contains"]!("a") && it["info"]! == "mini biography"
                       && lt["link"]! == "features" && n["name_pcode_cf"]! >= "A"
                       && n["name_pcode_cf"]! <= "F"

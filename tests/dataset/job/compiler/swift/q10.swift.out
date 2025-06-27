@@ -82,15 +82,15 @@ let matches =
     var _res: [[String: Any]] = []
     for chn in char_name {
       for ci in cast_info {
-        if !(chn.id == ci.person_role_id) { continue }
+        if !(chn["id"]! == ci["person_role_id"]!) { continue }
         for rt in role_type {
-          if !(rt.id == ci.role_id) { continue }
+          if !(rt["id"]! == ci["role_id"]!) { continue }
           for t in title {
-            if !(t.id == ci.movie_id) { continue }
+            if !(t["id"]! == ci["movie_id"]!) { continue }
             for mc in movie_companies {
-              if !(mc.movie_id == t.id) { continue }
+              if !(mc["movie_id"]! == t["id"]!) { continue }
               for cn in company_name {
-                if !(cn.id == mc.company_id) { continue }
+                if !(cn["id"]! == mc["company_id"]!) { continue }
                 if !(ci["note"]!["contains"]!("(voice)") && ci["note"]!["contains"]!("(uncredited)")
                   && cn["country_code"]! == "[ru]" && rt["role"]! == "actor"
                   && t["production_year"]! > 2005)
@@ -98,7 +98,7 @@ let matches =
                   continue
                 }
                 for ct in company_type {
-                  if !(ct.id == mc.company_type_id) { continue }
+                  if !(ct["id"]! == mc["company_type_id"]!) { continue }
                   _res.append(["character": chn["name"]!, "movie": t["title"]!])
                 }
               }

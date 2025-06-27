@@ -79,16 +79,16 @@ let movie_info_idx: [[String: Int]] = [
 ]
 let filtered =
   ({
-    var _res: [[Any: Any]] = []
+    var _res: [[String: Any]] = []
     for ct in company_type {
       for mc in movie_companies {
-        if !(ct.id == mc.company_type_id) { continue }
+        if !(ct["id"]! == mc["company_type_id"]!) { continue }
         for t in title {
-          if !(t.id == mc.movie_id) { continue }
+          if !(t["id"]! == mc["movie_id"]!) { continue }
           for mi in movie_info_idx {
-            if !(mi.movie_id == t.id) { continue }
+            if !(mi["movie_id"]! == t["id"]!) { continue }
             for it in info_type {
-              if !(it.id == mi.info_type_id) { continue }
+              if !(it["id"]! == mi["info_type_id"]!) { continue }
               if !(ct["kind"]! == "production companies" && it["info"]! == "top 250 rank"
                 && (!mc["note"]!["contains"]!("(as Metro-Goldwyn-Mayer Pictures)"))
                 && (mc["note"]!["contains"]!("(co-production)")
