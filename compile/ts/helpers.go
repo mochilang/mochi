@@ -30,9 +30,11 @@ func (c *Compiler) writeln(s string) {
 	c.buf.WriteByte('\n')
 }
 
+const indentStr = "  "
+
 func (c *Compiler) writeIndent() {
 	for i := 0; i < c.indent; i++ {
-		c.buf.WriteByte('\t')
+		c.buf.WriteString(indentStr)
 	}
 }
 
@@ -40,7 +42,7 @@ func indentBlock(s string, depth int) string {
 	if s == "" {
 		return s
 	}
-	prefix := strings.Repeat("\t", depth)
+	prefix := strings.Repeat(indentStr, depth)
 	lines := strings.Split(strings.TrimRight(s, "\n"), "\n")
 	for i, line := range lines {
 		lines[i] = prefix + line
