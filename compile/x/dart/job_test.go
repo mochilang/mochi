@@ -19,7 +19,7 @@ func TestDartCompiler_JOB(t *testing.T) {
 		t.Skipf("dart not installed: %v", err)
 	}
 	root := findRoot(t)
-	for _, q := range []string{"q1", "q2"} {
+	for _, q := range []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"} {
 		src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")
 		prog, err := parser.Parse(src)
 		if err != nil {

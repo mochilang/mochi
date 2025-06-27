@@ -1,0 +1,129 @@
+import 'dart:convert';
+import 'dart:io';
+
+void test_Q10_finds_uncredited_voice_actor_in_Russian_movie() {
+  if (!(_equal(result, [{"uncredited_voiced_character": "Ivan", "russian_movie": "Vodka Dreams"}]))) { throw Exception('expect failed'); }
+}
+
+void main() {
+  int failures = 0;
+  List<Map<String, dynamic>> char_name = [{"id": 1, "name": "Ivan"}, {"id": 2, "name": "Alex"}];
+  List<Map<String, dynamic>> cast_info = [{"movie_id": 10, "person_role_id": 1, "role_id": 1, "note": "Soldier (voice) (uncredited)"}, {"movie_id": 11, "person_role_id": 2, "role_id": 1, "note": "(voice)"}];
+  List<Map<String, dynamic>> company_name = [{"id": 1, "country_code": "[ru]"}, {"id": 2, "country_code": "[us]"}];
+  List<Map<String, int>> company_type = [{"id": 1}, {"id": 2}];
+  List<Map<String, int>> movie_companies = [{"movie_id": 10, "company_id": 1, "company_type_id": 1}, {"movie_id": 11, "company_id": 2, "company_type_id": 1}];
+  List<Map<String, dynamic>> role_type = [{"id": 1, "role": "actor"}, {"id": 2, "role": "director"}];
+  List<Map<String, dynamic>> title = [{"id": 10, "title": "Vodka Dreams", "production_year": 2006}, {"id": 11, "title": "Other Film", "production_year": 2004}];
+  List<Map<String, dynamic>> matches = (() {
+  var _res = [];
+  for (var chn in char_name) {
+    for (var ci in cast_info) {
+      if (!(_equal(chn.id, ci.person_role_id))) {
+        continue;
+      }
+      for (var rt in role_type) {
+        if (!(_equal(rt.id, ci.role_id))) {
+          continue;
+        }
+        for (var t in title) {
+          if (!(_equal(t.id, ci.movie_id))) {
+            continue;
+          }
+          for (var mc in movie_companies) {
+            if (!(_equal(mc.movie_id, t.id))) {
+              continue;
+            }
+            for (var cn in company_name) {
+              if (!(_equal(cn.id, mc.company_id))) {
+                continue;
+              }
+              for (var ct in company_type) {
+                if (!(_equal(ct.id, mc.company_type_id))) {
+                  continue;
+                }
+                if (!(((((ci.note.contains("(voice)") && ci.note.contains("(uncredited)")) && _equal(cn.country_code, "[ru]")) && _equal(rt.role, "actor")) && (t.production_year > 2005)))) {
+                  continue;
+                }
+                _res.add({"character": chn.name, "movie": t.title});
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return _res;
+})();
+  List<Map<String, dynamic>> result = [{"uncredited_voiced_character": _min((() {
+  var _res = [];
+  for (var x in matches) {
+    _res.add(x.character);
+  }
+  return _res;
+})()), "russian_movie": _min((() {
+  var _res = [];
+  for (var x in matches) {
+    _res.add(x.movie);
+  }
+  return _res;
+})())}];
+  _json(result);
+  if (!_runTest("Q10 finds uncredited voice actor in Russian movie", test_Q10_finds_uncredited_voice_actor_in_Russian_movie)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+dynamic _min(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var m = list[0];
+    for (var n in list) { if ((n as Comparable).compareTo(m) < 0) m = n; }
+    return m;
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
+

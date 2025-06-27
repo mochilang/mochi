@@ -1,0 +1,100 @@
+import 'dart:io';
+import 'dart:convert';
+
+void test_Q3_returns_lexicographically_smallest_sequel_title() {
+  if (!(_equal(result, [{"movie_title": "Alpha"}]))) { throw Exception('expect failed'); }
+}
+
+void main() {
+  int failures = 0;
+  List<Map<String, dynamic>> keyword = [{"id": 1, "keyword": "amazing sequel"}, {"id": 2, "keyword": "prequel"}];
+  List<Map<String, dynamic>> movie_info = [{"movie_id": 10, "info": "Germany"}, {"movie_id": 30, "info": "Sweden"}, {"movie_id": 20, "info": "France"}];
+  List<Map<String, int>> movie_keyword = [{"movie_id": 10, "keyword_id": 1}, {"movie_id": 30, "keyword_id": 1}, {"movie_id": 20, "keyword_id": 1}, {"movie_id": 10, "keyword_id": 2}];
+  List<Map<String, dynamic>> title = [{"id": 10, "title": "Alpha", "production_year": 2006}, {"id": 30, "title": "Beta", "production_year": 2008}, {"id": 20, "title": "Gamma", "production_year": 2009}];
+  List<String> allowed_infos = ["Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"];
+  List candidate_titles = (() {
+  var _res = [];
+  for (var k in keyword) {
+    for (var mk in movie_keyword) {
+      if (!(_equal(mk.keyword_id, k.id))) {
+        continue;
+      }
+      for (var mi in movie_info) {
+        if (!(_equal(mi.movie_id, mk.movie_id))) {
+          continue;
+        }
+        for (var t in title) {
+          if (!(_equal(t.id, mi.movie_id))) {
+            continue;
+          }
+          if (!((((k.keyword.contains("sequel") && (allowed_infos.contains(mi.info))) && (t.production_year > 2005)) && _equal(mk.movie_id, mi.movie_id)))) {
+            continue;
+          }
+          _res.add(t.title);
+        }
+      }
+    }
+  }
+  return _res;
+})();
+  List<Map<String, dynamic>> result = [{"movie_title": _min(candidate_titles)}];
+  _json(result);
+  if (!_runTest("Q3 returns lexicographically smallest sequel title", test_Q3_returns_lexicographically_smallest_sequel_title)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+dynamic _min(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var m = list[0];
+    for (var n in list) { if ((n as Comparable).compareTo(m) < 0) m = n; }
+    return m;
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
+
