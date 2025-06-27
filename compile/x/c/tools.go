@@ -125,6 +125,12 @@ func EnsureClangFormat() error {
 // FormatC runs clang-format on the given source code if available. If the
 // formatter is missing or fails, the input is returned unchanged.
 func FormatC(src []byte) []byte {
+	if err := EnsureClangFormat(); err != nil {
+		if len(src) > 0 && src[len(src)-1] != '\n' {
+			src = append(src, '\n')
+		}
+		return src
+	}
 	path, err := exec.LookPath("clang-format")
 	if err != nil {
 		if len(src) > 0 && src[len(src)-1] != '\n' {
