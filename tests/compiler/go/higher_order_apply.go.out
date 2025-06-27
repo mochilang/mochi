@@ -16,5 +16,5 @@ func main() {
 	fmt.Println(apply(inc, 5))
 	fmt.Println(apply(func(y int) int {
 		return (y * 2)
-}, 7))
+	}, 7))
 }

@@ -6,20 +6,22 @@ import (
 
 type Person struct {
 	Name string `json:"name"`
-	Age int `json:"age"`
+	Age  int    `json:"age"`
 }
 
 func main() {
 	var people []Person = []Person{Person{Name: "Alice", Age: 30}, Person{Name: "Bob", Age: 15}, Person{Name: "Charlie", Age: 65}}
 	var names []string = func() []string {
-	_res := []string{}
-	for _, p := range people {
-		if (p.Age >= 18) {
-			_res = append(_res, p.Name)
+		_res := []string{}
+		for _, p := range people {
+			if p.Age >= 18 {
+				if p.Age >= 18 {
+					_res = append(_res, p.Name)
+				}
+			}
 		}
-	}
-	return _res
-}()
+		return _res
+	}()
 	for _, n := range names {
 		fmt.Println(n)
 	}

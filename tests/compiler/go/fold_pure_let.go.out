@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"mochi/runtime/data"
 )
 
 func sum(n int) int {
-	return ((n * ((n + 1))) / 2)
+	return ((n * (n + 1)) / 2)
 }
 
 func main() {

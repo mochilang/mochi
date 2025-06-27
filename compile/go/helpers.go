@@ -44,7 +44,7 @@ func joinItems(items []string, indent, threshold int) string {
 	if len(items) <= threshold {
 		return strings.Join(items, ", ")
 	}
-	inner := strings.Join(items, ",\n")
+	inner := strings.Join(items, ",\n") + ","
 	return "\n" + indentBlock(inner, indent+1) + strings.Repeat("\t", indent)
 }
 
