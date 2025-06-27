@@ -22,6 +22,9 @@ type Compiler struct {
 	needsAvgFloat     bool
 	needsSumInt       bool
 	needsSumFloat     bool
+	needsMinInt       bool
+	needsMinFloat     bool
+	needsMinString    bool
 	needsInListInt    bool
 	needsInListString bool
 	needsSetOps       bool
@@ -654,7 +657,99 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if len(q.Froms) > 0 || len(q.Joins) > 0 {
-		return "", fmt.Errorf("unsupported query features")
+		if q.Sort != nil || q.Skip != nil || q.Take != nil || q.Group != nil {
+			return "", fmt.Errorf("unsupported query features")
+		}
+
+		src, err := c.compileExpr(q.Source, false)
+		if err != nil {
+			return "", err
+		}
+
+		var elemType types.Type = types.AnyType{}
+		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+			elemType = lt.Elem
+		}
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, elemType, true)
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src, false)
+			if err != nil {
+				return "", err
+			}
+			fromSrcs[i] = fs
+			var fe types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+				fe = lt.Elem
+			}
+			child.SetVar(f.Var, fe, true)
+		}
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src, false)
+			if err != nil {
+				return "", err
+			}
+			joinSrcs[i] = js
+			on, err := c.compileExpr(j.On, false)
+			if err != nil {
+				return "", err
+			}
+			joinOns[i] = on
+			var je types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
+				je = lt.Elem
+			}
+			child.SetVar(j.Var, je, true)
+		}
+
+		orig := c.env
+		c.env = child
+		sel, err := c.compileExpr(q.Select, false)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		var cond string
+		if q.Where != nil {
+			cond, err = c.compileExpr(q.Where, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		resType := zigTypeOf(c.inferExprType(q.Select))
+		c.env = orig
+
+		tmp := c.newTmp()
+		var b strings.Builder
+		elem := strings.TrimPrefix(resType, "[]const ")
+		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
+		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
+		for i, fs := range fromSrcs {
+			b.WriteString(" for (" + fs + ") |" + sanitizeName(q.Froms[i].Var) + "| {")
+		}
+		for i, js := range joinSrcs {
+			b.WriteString(" for (" + js + ") |" + sanitizeName(q.Joins[i].Var) + "| {")
+			b.WriteString(" if !(" + joinOns[i] + ") continue;")
+		}
+		if cond != "" {
+			b.WriteString(" if !(" + cond + ") continue;")
+		}
+		b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+		for i := 0; i < len(q.Joins); i++ {
+			b.WriteString(" }")
+		}
+		for i := 0; i < len(q.Froms); i++ {
+			b.WriteString(" }")
+		}
+		b.WriteString(" }")
+		resVar := c.newTmp()
+		b.WriteString(" var " + resVar + " = " + tmp + ".toOwnedSlice() catch unreachable;")
+		b.WriteString(" break :blk " + resVar + "; }")
+		return b.String(), nil
 	}
 
 	src, err := c.compileExpr(q.Source, false)
@@ -1188,6 +1283,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needsSumInt = true
 		return fmt.Sprintf("_sum_int(%s)", arg), nil
+	}
+	if name == "min" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		if at, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+			switch at.Elem.(type) {
+			case types.FloatType:
+				c.needsMinFloat = true
+				return fmt.Sprintf("_min_float(%s)", arg), nil
+			case types.StringType:
+				c.needsMinString = true
+				return fmt.Sprintf("_min_string(%s)", arg), nil
+			default:
+				c.needsMinInt = true
+				return fmt.Sprintf("_min_int(%s)", arg), nil
+			}
+		}
 	}
 	if name == "reduce" && len(call.Args) == 3 {
 		listArg, err := c.compileExpr(call.Args[0], false)
