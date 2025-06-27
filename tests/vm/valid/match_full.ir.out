@@ -1,31 +1,21 @@
 func main (regs=44)
   // let x = 2
   Const        r0, 2
-  Move         r1, r0
   // 1 => "one"
-  Const        r4, 1
-  Equal        r3, r1, r4
-  JumpIfFalse  r3, L0
+  Jump         L0
   Const        r5, "one"
   Move         r2, r5
   Jump         L1
-L0:
   // 2 => "two"
-  Const        r7, 2
-  Equal        r6, r1, r7
-  JumpIfFalse  r6, L2
   Const        r8, "two"
   Move         r2, r8
   Jump         L1
-L2:
   // 3 => "three"
-  Const        r10, 3
-  Equal        r9, r1, r10
-  JumpIfFalse  r9, L3
+  Jump         L2
   Const        r11, "three"
   Move         r2, r11
   Jump         L1
-L3:
+L2:
   // _ => "unknown"
   Const        r12, "unknown"
   Move         r2, r12
@@ -36,64 +26,42 @@ L1:
   Move         r13, r2
   // print(label)
   Print        r13
-  // let day = "sun"
-  Const        r14, "sun"
-  Move         r15, r14
   // "mon" => "tired"
-  Const        r18, "mon"
-  Equal        r17, r15, r18
-  JumpIfFalse  r17, L4
+  Jump         L0
   Const        r19, "tired"
   Move         r16, r19
-  Jump         L5
-L4:
+  Jump         L3
   // "fri" => "excited"
-  Const        r21, "fri"
-  Equal        r20, r15, r21
-  JumpIfFalse  r20, L6
+  Jump         L0
   Const        r22, "excited"
   Move         r16, r22
-  Jump         L5
-L6:
+  Jump         L3
   // "sun" => "relaxed"
-  Const        r24, "sun"
-  Equal        r23, r15, r24
-  JumpIfFalse  r23, L7
   Const        r25, "relaxed"
   Move         r16, r25
-  Jump         L5
-L7:
+  Jump         L3
   // _     => "normal"
   Const        r26, "normal"
   Move         r16, r26
-  Jump         L5
+  Jump         L3
   Const        r16, nil
-L5:
+L3:
   // let mood = match day {
   Move         r27, r16
   // print(mood)
   Print        r27
-  // let ok = true
-  Const        r28, true
-  Move         r29, r28
   // true => "confirmed"
-  Const        r32, true
-  Equal        r31, r29, r32
-  JumpIfFalse  r31, L8
   Const        r33, "confirmed"
   Move         r30, r33
-  Jump         L9
-L8:
+  Jump         L4
   // false => "denied"
-  Const        r35, false
-  Equal        r34, r29, r35
-  JumpIfFalse  r34, L10
+  Jump         L5
   Const        r36, "denied"
   Move         r30, r36
-  Jump         L9
-L10:
+  Jump         L4
+L5:
   Const        r30, nil
-L9:
+L4:
   // let status = match ok {
   Move         r37, r30
   // print(status)

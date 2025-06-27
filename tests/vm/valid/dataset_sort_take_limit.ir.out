@@ -10,20 +10,9 @@ func main (regs=43)
 L1:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
-  // sort by -p.price
-  Const        r9, "price"
-  Index        r10, r8, r9
-  Neg          r11, r10
-  Move         r12, r11
-  // let expensive = from p in products
-  Move         r13, r8
-  MakeList     r14, 2, r12
   Append       r15, r2, r14
   Move         r2, r15
-  Const        r16, 1
-  Add          r17, r5, r16
+  Const        r17, 1
   Move         r5, r17
   Jump         L1
 L0:
@@ -67,9 +56,6 @@ L3:
   Move         r35, r40
   PrintN       r33, 3, r33
   // for item in expensive {
-  Const        r41, 1
-  Add          r42, r29, r41
-  Move         r29, r42
   Jump         L3
 L2:
   Return       r0

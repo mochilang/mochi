@@ -13,7 +13,7 @@ func main (regs=71)
   IterPrep     r7, r3
   Len          r8, r7
   Const        r9, 0
-L6:
+L4:
   Less         r10, r9, r8
   JumpIfFalse  r10, L0
   Index        r11, r7, r9
@@ -22,7 +22,7 @@ L6:
   IterPrep     r13, r1
   Len          r14, r13
   Const        r15, 0
-L5:
+L3:
   Less         r16, r15, r14
   JumpIfFalse  r16, L1
   Index        r17, r13, r15
@@ -32,14 +32,14 @@ L5:
   Const        r21, "id"
   Index        r22, r18, r21
   Equal        r23, r20, r22
-  JumpIfFalse  r23, L2
+  JumpIfFalse  r23, L1
   // join from i in items on o.id == i.orderId
   IterPrep     r24, r5
   Len          r25, r24
   Const        r26, 0
-L4:
+L2:
   Less         r27, r26, r25
-  JumpIfFalse  r27, L2
+  JumpIfFalse  r27, L1
   Index        r28, r24, r26
   Move         r29, r28
   Const        r30, "id"
@@ -47,40 +47,22 @@ L4:
   Const        r32, "orderId"
   Index        r33, r29, r32
   Equal        r34, r31, r33
-  JumpIfFalse  r34, L3
-  // select { name: c.name, sku: i.sku }
-  Const        r35, "name"
-  Const        r36, "name"
-  Index        r37, r18, r36
-  Const        r38, "sku"
-  Const        r39, "sku"
-  Index        r40, r29, r39
-  Move         r41, r35
-  Move         r42, r37
-  Move         r43, r38
-  Move         r44, r40
-  MakeMap      r45, 2, r41
+  JumpIfFalse  r34, L1
   // let result = from o in orders
   Append       r46, r6, r45
   Move         r6, r46
-L3:
   // join from i in items on o.id == i.orderId
-  Const        r47, 1
-  Add          r48, r26, r47
+  Const        r48, 1
   Move         r26, r48
-  Jump         L4
-L2:
+  Jump         L2
   // join from c in customers on o.customerId == c.id
-  Const        r49, 1
-  Add          r50, r15, r49
+  Const        r50, 1
   Move         r15, r50
-  Jump         L5
-L1:
+  Jump         L3
   // let result = from o in orders
-  Const        r51, 1
-  Add          r52, r9, r51
+  Const        r52, 1
   Move         r9, r52
-  Jump         L6
+  Jump         L4
 L0:
   Move         r53, r6
   // print("--- Multi Join ---")
@@ -90,9 +72,9 @@ L0:
   IterPrep     r55, r53
   Len          r56, r55
   Const        r57, 0
-L8:
+L6:
   Less         r58, r57, r56
-  JumpIfFalse  r58, L7
+  JumpIfFalse  r58, L5
   Index        r59, r55, r57
   Move         r60, r59
   // print(r.name, "bought item", r.sku)
@@ -106,9 +88,6 @@ L8:
   Move         r63, r68
   PrintN       r61, 3, r61
   // for r in result {
-  Const        r69, 1
-  Add          r70, r57, r69
-  Move         r57, r70
-  Jump         L8
-L7:
+  Jump         L6
+L5:
   Return       r0

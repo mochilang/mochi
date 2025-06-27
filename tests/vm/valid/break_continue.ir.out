@@ -30,10 +30,8 @@ L3:
   // print("odd number:", n)
   Const        r14, "odd number:"
   Print2       r14, r7
-L2:
   // for n in numbers {
-  Const        r15, 1
-  Add          r16, r4, r15
+  Const        r16, 1
   Move         r4, r16
   Jump         L4
 L0:

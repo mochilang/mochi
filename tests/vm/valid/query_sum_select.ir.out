@@ -17,9 +17,7 @@ L2:
   JumpIfFalse  r10, L1
   Append       r11, r2, r8
   Move         r2, r11
-L1:
-  Const        r12, 1
-  Add          r13, r5, r12
+  Const        r13, 1
   Move         r5, r13
   Jump         L2
 L0:
@@ -28,4 +26,3 @@ L0:
   // print(result)
   Print        r15
   Return       r0
-

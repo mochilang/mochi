@@ -40,8 +40,7 @@ L1:
   Index        r26, r25, r24
   Append       r27, r26, r9
   SetIndex     r25, r24, r27
-  Const        r28, 1
-  Add          r29, r5, r28
+  Const        r29, 1
   Move         r5, r29
   Jump         L2
 L0:
@@ -57,22 +56,10 @@ L4:
   Const        r36, 4
   LessEqInt    r37, r36, r35
   JumpIfFalse  r37, L3
-  // select { city: g.key, num: count(g) }
-  Const        r38, "city"
-  Const        r39, "key"
-  Index        r40, r34, r39
-  Const        r41, "num"
-  Count        r42, r34
-  Move         r43, r38
-  Move         r44, r40
-  Move         r45, r41
-  Move         r46, r42
-  MakeMap      r47, 2, r43
   // from p in people
   Append       r48, r2, r47
   Move         r2, r48
-  Const        r49, 1
-  Add          r50, r30, r49
+  Const        r50, 1
   Move         r30, r50
   Jump         L4
 L3:
@@ -81,4 +68,3 @@ L3:
   // json(big)
   JSON         r51
   Return       r0
-
