@@ -3,22 +3,14 @@ func main (regs=21)
   Const        r0, [{"n": 1, "v": "a"}, {"n": 1, "v": "b"}, {"n": 2, "v": "c"}]
   Move         r1, r0
   // let result = from i in items sort by i.n select i.v
-  Const        r2, []
   IterPrep     r3, r1
   Len          r4, r3
   Const        r5, 0
 L1:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Append       r16, r2, r15
-  Move         r2, r16
-  Const        r18, 1
-  Move         r5, r18
   Jump         L1
-L0:
-  Sort         19,2,0,0
-  Move         r2, r19
-  Move         r20, r2
+  Sort         r19, r16
   // print(result)
-  Print        r20
+  Print        r19
   Return       r0

@@ -5,6 +5,5 @@ func main (regs=6)
   // save people to "-" with { format: "jsonl" }
   Const        r2, "-"
   Const        r4, {"format": "jsonl"}
-  Move         r3, r4
-  Save         5,1,2,3
+  Save         5,1,2,4
   Return       r0

@@ -3,7 +3,6 @@ func main (regs=78)
   Const        r0, [{"cat": "a", "val": 3}, {"cat": "a", "val": 1}, {"cat": "b", "val": 5}, {"cat": "b", "val": 2}]
   Move         r1, r0
   // from i in items
-  Const        r2, []
   IterPrep     r3, r1
   Len          r4, r3
   Const        r5, 0
@@ -33,60 +32,42 @@ L2:
   MakeMap      r22, 3, r16
   SetIndex     r6, r13, r22
   Append       r23, r7, r22
-  Move         r7, r23
-L1:
   Const        r24, "items"
+L1:
   Index        r25, r6, r13
   Index        r26, r25, r24
   Append       r27, r26, r9
   SetIndex     r25, r24, r27
-  Const        r29, 1
-  Move         r5, r29
   Jump         L2
-L0:
   Const        r30, 0
-  Len          r31, r7
-L7:
+  Len          r31, r23
+L0:
   Less         r32, r30, r31
   JumpIfFalse  r32, L3
-  Index        r33, r7, r30
-  Move         r34, r33
+L8:
+  Index        r33, r23, r30
   // total: sum(from x in g select x.val)
-  Const        r39, []
-  IterPrep     r40, r34
+  IterPrep     r40, r33
   Len          r41, r40
   Const        r42, 0
-L5:
   Less         r43, r42, r41
   JumpIfFalse  r43, L4
-  Append       r48, r39, r47
-  Move         r39, r48
-  Const        r50, 1
-  Move         r42, r50
+L5:
   Jump         L5
+L4:
   // sort by -sum(from x in g select x.val)
-  IterPrep     r58, r34
+  IterPrep     r58, r33
   Len          r59, r58
   Const        r60, 0
-L6:
   Less         r61, r60, r59
-  JumpIfFalse  r61, L4
-  Const        r67, 1
-  Move         r60, r67
-  Jump         L6
-  // from i in items
-  Append       r73, r2, r72
-  Move         r2, r73
-  Const        r75, 1
-  Move         r30, r75
+  JumpIfFalse  r61, L6
+L7:
   Jump         L7
-L3:
-  // sort by -sum(from x in g select x.val)
-  Sort         76,2,0,0
   // from i in items
-  Move         r2, r76
-  // let grouped =
-  Move         r77, r2
+  Jump         L8
+L6:
+  // sort by -sum(from x in g select x.val)
+  Sort         r76, r2
   // print(grouped)
-  Print        r77
+  Print        r76
   Return       r0

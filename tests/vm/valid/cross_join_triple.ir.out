@@ -4,73 +4,56 @@ func main (regs=61)
   Move         r1, r0
   // let letters = ["A", "B"]
   Const        r2, ["A", "B"]
-  Move         r3, r2
   // let bools = [true, false]
   Const        r4, [true, false]
-  Move         r5, r4
   // let combos = from n in nums
-  Const        r6, []
   IterPrep     r7, r1
   Len          r8, r7
   Const        r9, 0
-L4:
   Less         r10, r9, r8
   JumpIfFalse  r10, L0
+L5:
   // from l in letters
-  IterPrep     r13, r3
+  IterPrep     r13, r2
   Len          r14, r13
   Const        r15, 0
-L3:
   Less         r16, r15, r14
   JumpIfFalse  r16, L1
+L4:
   // from b in bools
-  IterPrep     r19, r5
+  IterPrep     r19, r4
   Len          r20, r19
   Const        r21, 0
-L2:
   Less         r22, r21, r20
-  JumpIfFalse  r22, L1
-  // let combos = from n in nums
-  Append       r35, r6, r34
-  Move         r6, r35
-  // from b in bools
-  Const        r37, 1
-  Move         r21, r37
-  Jump         L2
-  // from l in letters
+  JumpIfFalse  r22, L2
+L3:
   Jump         L3
-  // let combos = from n in nums
-  Const        r41, 1
-  Move         r9, r41
+  // from l in letters
   Jump         L4
-L0:
-  Move         r42, r6
+L2:
+  // let combos = from n in nums
+  Jump         L5
   // print("--- Cross Join of three lists ---")
   Const        r43, "--- Cross Join of three lists ---"
   Print        r43
   // for c in combos {
-  IterPrep     r44, r42
+  IterPrep     r44, r35
+L1:
   Len          r45, r44
   Const        r46, 0
-L6:
   Less         r47, r46, r45
-  JumpIfFalse  r47, L5
+  JumpIfFalse  r47, L6
+L0:
   Index        r48, r44, r46
-  Move         r49, r48
   // print(c.n, c.l, c.b)
   Const        r53, "n"
-  Index        r54, r49, r53
+  Index        r54, r48, r53
   Move         r50, r54
   Const        r55, "l"
-  Index        r56, r49, r55
+  Index        r56, r48, r55
+L7:
   Move         r51, r56
-  Const        r57, "b"
-  Index        r58, r49, r57
-  Move         r52, r58
-  PrintN       r50, 3, r50
+  PrintN       r50, 2, r50
   // for c in combos {
-  Const        r60, 1
-  Move         r46, r60
-  Jump         L6
-L5:
+  Jump         L7
   Return       r0

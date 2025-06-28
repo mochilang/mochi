@@ -119,3 +119,73 @@ func VisualizeUsage(fn *Function) string {
 	}
 	return b.String()
 }
+
+// replaceReg rewrites all register references to old with new in ins.
+func replaceReg(ins *Instr, old, new int) {
+	if ins.A == old {
+		ins.A = new
+	}
+	if ins.B == old {
+		ins.B = new
+	}
+	if ins.C == old {
+		ins.C = new
+	}
+	if ins.D == old {
+		ins.D = new
+	}
+}
+
+// regUsedInRange reports if r is referenced as part of a contiguous
+// register range like those used by MakeList or Call instructions.
+func regUsedInRange(ins Instr, r int) bool {
+	switch ins.Op {
+	case OpMakeList, OpPrintN:
+		return r >= ins.C && r < ins.C+ins.B
+	case OpMakeMap:
+		return r >= ins.C && r < ins.C+ins.B*2
+	case OpCall:
+		return r >= ins.D && r < ins.D+ins.C
+	case OpCallV, OpMakeClosure:
+		if r >= ins.D && r < ins.D+ins.C {
+			return true
+		}
+	}
+	return false
+}
+
+// coalesceMoves attempts to merge registers involved in simple move
+// operations when their lifetimes do not overlap. It returns true if any
+// instructions were modified.
+func coalesceMoves(fn *Function, info *LiveInfo) bool {
+	lt := RegLifetime(fn)
+	changed := false
+	for pc := 0; pc < len(fn.Code); pc++ {
+		ins := fn.Code[pc]
+		if ins.Op != OpMove || ins.A == ins.B {
+			continue
+		}
+		dst, src := ins.A, ins.B
+		if info.In[pc][dst] || info.Out[pc][src] {
+			continue
+		}
+		end := lt[dst].End
+		safe := true
+		for i := pc + 1; i <= end && i < len(fn.Code); i++ {
+			if regUsedInRange(fn.Code[i], dst) {
+				safe = false
+				break
+			}
+		}
+		if !safe {
+			continue
+		}
+		for i := pc + 1; i < len(fn.Code); i++ {
+			replaceReg(&fn.Code[i], dst, src)
+		}
+		fn.Code = append(fn.Code[:pc], fn.Code[pc+1:]...)
+		changed = true
+		pc--
+	}
+	return changed
+}

@@ -10,30 +10,26 @@ L4:
   Less         r5, r4, r3
   JumpIfFalse  r5, L0
   Index        r6, r2, r4
-  Move         r7, r6
   // if n % 2 == 0 {
   Const        r8, 2
-  Mod          r9, r7, r8
+  Mod          r9, r6, r8
   Const        r10, 0
   Equal        r11, r9, r10
   JumpIfFalse  r11, L1
   // continue
   Jump         L2
-L1:
   // if n > 7 {
   Const        r12, 7
-  Less         r13, r12, r7
+L1:
+  Less         r13, r12, r6
   JumpIfFalse  r13, L3
   // break
   Jump         L0
-L3:
   // print("odd number:", n)
   Const        r14, "odd number:"
-  Print2       r14, r7
+L3:
+  Print2       r14, r6
 L2:
   // for n in numbers {
-  Const        r16, 1
-  Move         r4, r16
   Jump         L4
-L0:
   Return       r0

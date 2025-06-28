@@ -2,6 +2,7 @@ func main (regs=6)
   // for i in 1..4 {
   Const        r0, 1
   Move         r2, r0
+L0:
   // print(i)
   Print        r2
   // for i in 1..4 {

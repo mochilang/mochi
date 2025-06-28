@@ -224,8 +224,12 @@ func Optimize(fn *Function) {
 		changed := constFold(fn)
 		pruneRedundantJumps(fn)
 		analysis := Liveness(fn)
+		coalesced := coalesceMoves(fn, analysis)
+		if coalesced {
+			analysis = Liveness(fn)
+		}
 		removed := removeDead(fn, analysis)
-		if !removed && !changed {
+		if !removed && !changed && !coalesced {
 			break
 		}
 	}

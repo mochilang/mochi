@@ -10,12 +10,8 @@ L1:
   Less         r5, r4, r3
   JumpIfFalse  r5, L0
   Index        r6, r2, r4
-  Move         r7, r6
   // print(k)
-  Print        r7
+  Print        r6
   // for k in m {
-  Const        r9, 1
-  Move         r4, r9
   Jump         L1
-L0:
   Return       r0

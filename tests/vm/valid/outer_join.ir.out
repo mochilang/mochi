@@ -4,160 +4,133 @@ func main (regs=148)
   Move         r1, r0
   // let orders = [
   Const        r2, [{"customerId": 1, "id": 100, "total": 250}, {"customerId": 2, "id": 101, "total": 125}, {"customerId": 1, "id": 102, "total": 300}, {"customerId": 5, "id": 103, "total": 80}]
-  Move         r3, r2
   // let result = from o in orders
-  Const        r4, []
-  IterPrep     r5, r3
+  IterPrep     r5, r2
   Len          r6, r5
   // outer join c in customers on o.customerId == c.id
   IterPrep     r7, r1
   Len          r8, r7
   // let result = from o in orders
   Const        r9, 0
-L3:
   Less         r10, r9, r6
+L4:
   JumpIfFalse  r10, L0
   Index        r11, r5, r9
-  Move         r12, r11
   // outer join c in customers on o.customerId == c.id
   Const        r13, 0
-L2:
   Less         r14, r13, r8
   JumpIfFalse  r14, L1
+L3:
   Index        r15, r7, r13
-  Move         r16, r15
   Const        r17, "customerId"
-  Index        r18, r12, r17
+  Index        r18, r11, r17
   Const        r19, "id"
-  Index        r20, r16, r19
+  Index        r20, r15, r19
   Equal        r21, r18, r20
-  JumpIfFalse  r21, L1
-  // let result = from o in orders
-  Append       r29, r4, r28
-  Move         r4, r29
-  // outer join c in customers on o.customerId == c.id
-  Const        r31, 1
-  Move         r13, r31
-  Jump         L2
-  // let result = from o in orders
-  Const        r33, 1
-  Move         r9, r33
+  JumpIfFalse  r21, L2
   Jump         L3
-L0:
+  // let result = from o in orders
+  Jump         L4
+L2:
   Const        r34, 0
-L6:
   Less         r35, r34, r6
-  JumpIfFalse  r35, L4
+  JumpIfFalse  r35, L5
+L1:
   Index        r36, r5, r34
-  Move         r12, r36
   // outer join c in customers on o.customerId == c.id
   Const        r38, 0
-L5:
   Less         r39, r38, r8
-  JumpIfFalse  r39, L1
+  JumpIfFalse  r39, L6
+L0:
   Index        r40, r7, r38
-  Move         r16, r40
+L9:
   Const        r41, "customerId"
-  Index        r42, r12, r41
+  Index        r42, r36, r41
   Const        r43, "id"
-  Index        r44, r16, r43
+  Index        r44, r40, r43
   Equal        r45, r42, r44
-  JumpIfFalse  r45, L1
-  Const        r47, 1
-  Move         r38, r47
-  Jump         L5
+L7:
+  JumpIfFalse  r45, L6
+  Jump         L7
   // let result = from o in orders
-  Jump         L1
-  Append       r57, r4, r56
-  Move         r4, r57
-  Jump         L6
-L4:
+  JumpIfTrue   r37, L8
+  Jump         L9
+L6:
   // outer join c in customers on o.customerId == c.id
   Const        r60, 0
-L9:
   Less         r61, r60, r8
-  JumpIfFalse  r61, L7
+  JumpIfFalse  r61, L10
   Index        r62, r7, r60
-  Move         r16, r62
   // let result = from o in orders
   Const        r64, 0
-L8:
   Less         r65, r64, r6
-  JumpIfFalse  r65, L1
+  JumpIfFalse  r65, L11
   Index        r66, r5, r64
-  Move         r12, r66
   // outer join c in customers on o.customerId == c.id
   Const        r67, "customerId"
-  Index        r68, r12, r67
+  Index        r68, r66, r67
   Const        r69, "id"
-  Index        r70, r16, r69
+L8:
+  Index        r70, r62, r69
   Equal        r71, r68, r70
-  JumpIfFalse  r71, L1
-  // let result = from o in orders
-  Const        r73, 1
-  Move         r64, r73
-  Jump         L8
-  // outer join c in customers on o.customerId == c.id
-  Jump         L1
-  // let result = from o in orders
-  Append       r83, r4, r82
-  Move         r4, r83
-  // outer join c in customers on o.customerId == c.id
-  Jump         L9
-L7:
-  // let result = from o in orders
-  Move         r86, r4
+  JumpIfFalse  r71, L12
+  JumpIfTrue   r63, L13
+L5:
+  Jump         L14
+L12:
   // print("--- Outer Join using syntax ---")
   Const        r87, "--- Outer Join using syntax ---"
   Print        r87
   // for row in result {
-  IterPrep     r88, r86
+  IterPrep     r88, r83
   Len          r89, r88
+L11:
   Const        r90, 0
-L14:
   Less         r91, r90, r89
-  JumpIfFalse  r91, L10
+  JumpIfFalse  r91, L15
   Index        r92, r88, r90
-  Move         r93, r92
   // if row.order {
   Const        r94, "order"
-  Index        r95, r93, r94
-  JumpIfFalse  r95, L11
+  Index        r95, r92, r94
+  JumpIfFalse  r95, L16
   // if row.customer {
   Const        r96, "customer"
-  Index        r97, r93, r96
-  JumpIfFalse  r97, L12
+  Index        r97, r92, r96
+  JumpIfFalse  r97, L17
   // print("Order", row.order.id, "by", row.customer.name, "- $", row.order.total)
   Const        r104, "Order"
+L14:
   Move         r98, r104
   Const        r105, "order"
-  Index        r106, r93, r105
+L13:
+  Index        r106, r92, r105
   Const        r107, "id"
   Index        r108, r106, r107
   Move         r99, r108
+L10:
   Const        r109, "by"
   Move         r100, r109
   Const        r110, "customer"
-  Index        r111, r93, r110
+  Index        r111, r92, r110
   Const        r112, "name"
   Index        r113, r111, r112
+L19:
   Move         r101, r113
   Const        r114, "- $"
   Move         r102, r114
   Const        r115, "order"
-  Index        r116, r93, r115
+  Index        r116, r92, r115
   Const        r117, "total"
   Index        r118, r116, r117
   Move         r103, r118
   PrintN       r98, 6, r98
   // if row.customer {
-  Jump         L13
-L12:
+  Jump         L16
   // print("Order", row.order.id, "by", "Unknown", "- $", row.order.total)
   Const        r125, "Order"
   Move         r119, r125
   Const        r126, "order"
-  Index        r127, r93, r126
+  Index        r127, r92, r126
   Const        r128, "id"
   Index        r129, r127, r128
   Move         r120, r129
@@ -168,29 +141,23 @@ L12:
   Const        r132, "- $"
   Move         r123, r132
   Const        r133, "order"
-  Index        r134, r93, r133
+  Index        r134, r92, r133
   Const        r135, "total"
   Index        r136, r134, r135
   Move         r124, r136
   PrintN       r119, 6, r119
-L13:
   // if row.order {
-  Jump         L1
-L11:
+  Jump         L18
   // print("Customer", row.customer.name, "has no orders")
   Const        r140, "Customer"
   Move         r137, r140
   Const        r141, "customer"
-  Index        r142, r93, r141
+L17:
+  Index        r142, r92, r141
   Const        r143, "name"
   Index        r144, r142, r143
   Move         r138, r144
-  Const        r145, "has no orders"
-  Move         r139, r145
-  PrintN       r137, 3, r137
+  PrintN       r137, 2, r137
   // for row in result {
-  Const        r147, 1
-  Move         r90, r147
-  Jump         L14
-L10:
+  Jump         L19
   Return       r0

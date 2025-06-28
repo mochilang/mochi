@@ -3,25 +3,15 @@ func main (regs=28)
   Const        r0, [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
   Move         r1, r0
   // from x in data
-  Const        r2, []
   IterPrep     r3, r1
   Len          r4, r3
   Const        r5, 0
 L1:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Append       r23, r2, r22
-  Move         r2, r23
-  Const        r25, 1
-  Move         r5, r25
   Jump         L1
-L0:
   // sort by { a: x.a, b: x.b }
-  Sort         26,2,0,0
-  // from x in data
-  Move         r2, r26
-  // let sorted =
-  Move         r27, r2
+  Sort         r26, r23
   // print(sorted)
-  Print        r27
+  Print        r26
   Return       r0
