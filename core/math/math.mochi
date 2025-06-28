@@ -1,0 +1,69 @@
+// Partial reimplementation of Go's math package functions in pure Mochi.
+// Go math package functions: Abs, Acos, Acosh, Asin, Asinh, Atan, Atan2, Atanh, Cbrt, Ceil, Copysign, Cos, Cosh, Dim, Erf, Erfc, Erfcinv, Erfinv, Exp, Exp2, Expm1, FMA, Float32bits, Float32frombits, Float64bits, Float64frombits, Floor, Frexp, Gamma, Hypot, Ilogb, Inf, IsInf, IsNaN, J0, J1, Jn, Ldexp, Lgamma, Log, Log10, Log1p, Log2, Logb, Max, Min, Mod, Modf, NaN, Nextafter, Nextafter32, Pow, Pow10, Remainder, Round, RoundToEven, Signbit, Sin, Sincos, Sinh, Sqrt, Tan, Tanh, Trunc, Y0, Y1, Yn.
+package math
+
+// Basic mathematical constants
+export let Pi: float = 3.141592653589793
+export let E: float = 2.718281828459045
+
+// abs returns the absolute value of x
+export fun abs(x: float): float {
+  if x < 0 { return -x }
+  return x
+}
+
+// sqrt returns the square root of x using Newton's method
+export fun sqrt(x: float): float {
+  if x < 0 { panic("sqrt of negative") }
+  if x == 0 { return 0.0 }
+  var z = x
+  var prev = 0.0
+  while abs(z - prev) > 1e-10 {
+    prev = z
+    z = (z + x / z) / 2.0
+  }
+  return z
+}
+
+// exp returns e**x using a series expansion
+export fun exp(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 20 {
+    term = term * x / i
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+// log returns the natural logarithm of x using Newton iteration
+export fun log(x: float): float {
+  if x <= 0 { panic("log domain") }
+  var y = 0.0
+  var prev = -1.0
+  while abs(y - prev) > 1e-10 {
+    prev = y
+    y = y - (exp(y) - x) / exp(y)
+  }
+  return y
+}
+
+// pow computes x raised to the power y using exp and log
+export fun pow(x: float, y: float): float {
+  return exp(y * log(x))
+}
+
+// sin returns an approximation of the sine of x (in radians)
+export fun sin(x: float): float {
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    term = -term * x * x / ((2 * i) * (2 * i + 1))
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
