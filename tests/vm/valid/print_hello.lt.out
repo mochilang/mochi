@@ -1,0 +1,3 @@
+Function main (regs=1)
+pc    012
+r0   |-| 3

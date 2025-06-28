@@ -1,0 +1,20 @@
+Function main (regs=3)
+pc    01234
+r0    |--| 4
+r1   ||    2
+r2     ||  2
+
+Function outer (regs=6)
+pc    0123456
+r0   |     | 2
+r1   ||      2
+r2    |--|   2
+r3      ||   2
+r4     ||    2
+r5       ||  2
+
+Function inner (regs=3)
+pc    012
+r0   | | 2
+r1   |   1
+r2   ||  2

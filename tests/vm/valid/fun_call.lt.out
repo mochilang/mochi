@@ -1,0 +1,13 @@
+Function main (regs=5)
+pc    0123456
+r0    |----| 4
+r1      ||   2
+r2   ||      2
+r3     ||    2
+r4       ||  2
+
+Function add (regs=3)
+pc    012
+r0   | | 2
+r1   |   1
+r2   ||  2
