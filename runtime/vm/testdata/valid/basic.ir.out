@@ -1,0 +1,8 @@
+func main (regs=4)
+  // let a = 1 + 2
+  Const        r0, 1
+  Const        r2, 3
+  Move         r3, r2
+  // print(a)
+  Print        r3
+  Return       r0

@@ -1,0 +1,26 @@
+func main (regs=12)
+  // var sum = 0
+  Const        r0, 0
+  Move         r1, r0
+  // for x in [1,2,3] {
+  Const        r2, [1, 2, 3]
+  IterPrep     r3, r2
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  Less         r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // sum = sum + x
+  Add          r9, r1, r8
+  Move         r1, r9
+  // for x in [1,2,3] {
+  Const        r10, 1
+  Add          r11, r5, r10
+  Move         r5, r11
+  Jump         L1
+L0:
+  // print(sum)
+  Print        r1
+  Return       r0
