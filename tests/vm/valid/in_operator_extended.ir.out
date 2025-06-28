@@ -19,7 +19,9 @@ L2:
   JumpIfFalse  r12, L1
   Append       r13, r2, r8
   Move         r2, r13
-  Const        r15, 1
+L1:
+  Const        r14, 1
+  Add          r15, r5, r14
   Move         r5, r15
   Jump         L2
 L0:
@@ -33,8 +35,7 @@ L0:
   In           r20, r19, r16
   Print        r20
   // let m = {a: 1}
-  Const        r21, {"a": 1}
-  Move         r22, r21
+  Const        r22, {"a": 1}
   // print("a" in m)
   Const        r23, "a"
   In           r24, r23, r22
@@ -44,8 +45,7 @@ L0:
   In           r26, r25, r22
   Print        r26
   // let s = "hello"
-  Const        r27, "hello"
-  Move         r28, r27
+  Const        r28, "hello"
   // print("ell" in s)
   Const        r29, "ell"
   In           r30, r29, r28

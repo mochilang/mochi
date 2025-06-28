@@ -3,27 +3,19 @@ func main (regs=14)
   Const        r0, 2
   // 1 => "one"
   Jump         L0
-  Const        r5, "one"
-  Move         r2, r5
   Jump         L1
+L0:
   // 2 => "two"
-  Const        r8, "two"
-  Move         r2, r8
   Jump         L1
   // 3 => "three"
   Jump         L2
-  Const        r11, "three"
-  Move         r2, r11
   Jump         L1
 L2:
   // _ => "unknown"
-  Const        r12, "unknown"
-  Move         r2, r12
   Jump         L1
-  Const        r2, nil
-L1:
   // let label = match x {
-  Move         r13, r2
+  Const        r13, nil
+L1:
   // print(label)
   Print        r13
   Return       r0
