@@ -3,8 +3,7 @@ func main (regs=47)
   Const        r0, [1, 2, 3]
   Move         r1, r0
   // let letters = ["A", "B"]
-  Const        r2, ["A", "B"]
-  Move         r3, r2
+  Const        r3, ["A", "B"]
   // let pairs = from n in nums
   Const        r4, []
   IterPrep     r5, r1
@@ -28,16 +27,26 @@ L3:
 L2:
   Less         r18, r17, r16
   JumpIfFalse  r18, L1
+  Index        r19, r15, r17
+  Move         r20, r19
+  // select { n: n, l: l }
+  Const        r21, "n"
+  Const        r22, "l"
+  Move         r23, r21
+  Move         r24, r10
+  Move         r25, r22
+  Move         r26, r20
+  MakeMap      r27, 2, r23
   // let pairs = from n in nums
   Append       r28, r4, r27
   Move         r4, r28
   // from l in letters
-  Const        r30, 1
+  Const        r29, 1
+  Add          r30, r17, r29
   Move         r17, r30
   Jump         L2
+L1:
   // let pairs = from n in nums
-  Const        r32, 1
-  Move         r7, r32
   Jump         L3
 L0:
   Move         r33, r4
@@ -60,6 +69,9 @@ L5:
   Index        r44, r40, r43
   Print2       r42, r44
   // for p in pairs {
+  Const        r45, 1
+  Add          r46, r37, r45
+  Move         r37, r46
   Jump         L5
 L4:
   Return       r0
