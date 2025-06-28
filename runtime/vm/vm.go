@@ -466,9 +466,10 @@ func (p *Program) Disassemble(src string) string {
 }
 
 type VM struct {
-	prog   *Program
-	writer io.Writer
-	reader *bufio.Reader
+	prog    *Program
+	writer  io.Writer
+	reader  *bufio.Reader
+	profile *Profile
 }
 
 // StackFrame represents a single call frame in a Mochi stack trace.
@@ -542,6 +543,19 @@ func NewWithIO(prog *Program, r io.Reader, w io.Writer) *VM {
 	return &VM{prog: prog, writer: w, reader: br}
 }
 
+// NewWithProfile creates a VM that records execution counts in profile.
+// If r is nil, os.Stdin is used for input.
+func NewWithProfile(prog *Program, r io.Reader, w io.Writer, profile *Profile) *VM {
+	if r == nil {
+		r = os.Stdin
+	}
+	br, ok := r.(*bufio.Reader)
+	if !ok {
+		br = bufio.NewReader(r)
+	}
+	return &VM{prog: prog, writer: w, reader: br, profile: profile}
+}
+
 func (m *VM) Run() error {
 	_, err := m.call(0, nil, []StackFrame{{Func: m.prog.funcName(0), Line: 0}})
 	if err != nil {
@@ -560,6 +574,7 @@ func (m *VM) RunResult() (Value, error) {
 
 type frame struct {
 	fn   *Function
+	idx  int
 	regs []Value
 	ip   int
 }
@@ -573,7 +588,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 	if len(args) > fn.NumParams {
 		return Value{}, m.newError(fmt.Errorf("too many args"), trace, fn.Line)
 	}
-	f := &frame{fn: fn, regs: make([]Value, fn.NumRegs)}
+	f := &frame{fn: fn, idx: fnIndex, regs: make([]Value, fn.NumRegs)}
 	for i := 0; i < len(args) && i < len(f.regs); i++ {
 		f.regs[i] = args[i]
 	}
@@ -587,7 +602,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			continue
 		}
-		ins := fr.fn.Code[fr.ip]
+		pc := fr.ip
+		ins := fr.fn.Code[pc]
+		if m.profile != nil && pc < len(m.profile.Funcs[fr.idx]) {
+			m.profile.Funcs[fr.idx][pc]++
+		}
 		fr.ip++
 		switch ins.Op {
 		case OpConst:
@@ -1631,6 +1650,17 @@ func Compile(p *parser.Program, env *types.Env) (*Program, error) {
 	return CompileWithSource(p, env, src)
 }
 
+// CompileWithProfile compiles a program using profiling information.
+func CompileWithProfile(p *parser.Program, env *types.Env, prof *Profile) (*Program, error) {
+	var src string
+	if p.Pos.Filename != "" {
+		if data, err := os.ReadFile(p.Pos.Filename); err == nil {
+			src = string(data)
+		}
+	}
+	return CompileWithSourceProfile(p, env, src, prof)
+}
+
 // CompileWithSource compiles an AST along with its source code for richer errors.
 func CompileWithSource(p *parser.Program, env *types.Env, src string) (*Program, error) {
 	prog, err := compileProgram(p, env)
@@ -1641,6 +1671,20 @@ func CompileWithSource(p *parser.Program, env *types.Env, src string) (*Program,
 	if src != "" {
 		prog.Source = strings.Split(src, "\n")
 	}
+	return prog, nil
+}
+
+// CompileWithSourceProfile compiles and optimizes a program with profiling data.
+func CompileWithSourceProfile(p *parser.Program, env *types.Env, src string, prof *Profile) (*Program, error) {
+	prog, err := compileProgram(p, env)
+	if err != nil {
+		return nil, err
+	}
+	prog.File = p.Pos.Filename
+	if src != "" {
+		prog.Source = strings.Split(src, "\n")
+	}
+	OptimizeProgramWithProfile(prog, prof)
 	return prog, nil
 }
 
