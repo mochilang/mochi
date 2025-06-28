@@ -177,3 +177,50 @@ func whereEvalLevel(q *parser.QueryExpr) int {
 	}
 	return level
 }
+
+// exprUsesOnlyAlias reports whether expression e references only the given alias.
+func exprUsesOnlyAlias(e *parser.Expr, alias string) bool {
+	vars := map[string]struct{}{}
+	exprVars(e, vars)
+	if len(vars) != 1 {
+		return false
+	}
+	_, ok := vars[alias]
+	return ok
+}
+
+func unaryToExpr(u *parser.Unary) *parser.Expr {
+	if u == nil {
+		return nil
+	}
+	return &parser.Expr{Pos: u.Pos, Binary: &parser.BinaryExpr{Left: u}}
+}
+
+func postfixToExpr(p *parser.PostfixExpr, pos lexer.Position) *parser.Expr {
+	if p == nil {
+		return nil
+	}
+	return &parser.Expr{Pos: pos, Binary: &parser.BinaryExpr{Left: &parser.Unary{Pos: pos, Value: p}}}
+}
+
+// eqJoinKeys checks if ON clause represents equality between expressions
+// that exclusively reference leftAlias and rightAlias. It returns the
+// left and right expressions when recognized.
+func eqJoinKeys(on *parser.Expr, leftAlias, rightAlias string) (*parser.Expr, *parser.Expr, bool) {
+	if on == nil || on.Binary == nil || len(on.Binary.Right) != 1 {
+		return nil, nil, false
+	}
+	bop := on.Binary.Right[0]
+	if bop.Op != "==" {
+		return nil, nil, false
+	}
+	leftExpr := unaryToExpr(on.Binary.Left)
+	rightExpr := postfixToExpr(bop.Right, bop.Pos)
+	if exprUsesOnlyAlias(leftExpr, leftAlias) && exprUsesOnlyAlias(rightExpr, rightAlias) {
+		return leftExpr, rightExpr, true
+	}
+	if exprUsesOnlyAlias(leftExpr, rightAlias) && exprUsesOnlyAlias(rightExpr, leftAlias) {
+		return rightExpr, leftExpr, true
+	}
+	return nil, nil, false
+}
