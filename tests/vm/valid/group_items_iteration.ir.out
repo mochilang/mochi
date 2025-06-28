@@ -36,7 +36,8 @@ L1:
   Index        r26, r25, r24
   Append       r27, r26, r9
   SetIndex     r25, r24, r27
-  Const        r29, 1
+  Const        r28, 1
+  Move         r29, r28
   Move         r5, r29
   Jump         L2
 L0:
@@ -45,9 +46,12 @@ L0:
 L4:
   Less         r32, r30, r31
   JumpIfFalse  r32, L3
+  Index        r33, r7, r30
+  Move         r34, r33
   Append       r35, r2, r34
   Move         r2, r35
-  Const        r37, 1
+  Const        r36, 1
+  Move         r37, r36
   Move         r30, r37
   Jump         L4
 L3:
@@ -81,17 +85,29 @@ L7:
   // total = total + x.val
   Const        r56, "val"
   Index        r57, r55, r56
-  Add          r58, r47, r57
+  Move         r58, r57
   Move         r47, r58
   // for x in g.items {
-  Const        r60, 1
+  Const        r59, 1
+  Move         r60, r59
   Move         r52, r60
   Jump         L7
+L6:
   // tmp = append(tmp, {tag: g.key, total: total})
+  Const        r61, "tag"
+  Const        r62, "key"
+  Index        r63, r34, r62
+  Const        r64, "total"
+  Move         r65, r61
+  Move         r66, r63
+  Move         r67, r64
+  Move         r68, r47
+  MakeMap      r69, 2, r65
   Append       r70, r40, r69
   Move         r40, r70
   // for g in groups {
-  Const        r72, 1
+  Const        r71, 1
+  Move         r72, r71
   Move         r43, r72
   Jump         L8
 L5:
@@ -103,13 +119,21 @@ L5:
 L10:
   Less         r77, r76, r75
   JumpIfFalse  r77, L9
+  Index        r78, r74, r76
+  Move         r79, r78
+  Const        r80, "tag"
+  Index        r81, r79, r80
+  Move         r82, r81
+  Move         r83, r79
+  MakeList     r84, 2, r82
   Append       r85, r73, r84
   Move         r73, r85
-  Const        r87, 1
+  Const        r86, 1
+  Move         r87, r86
   Move         r76, r87
   Jump         L10
 L9:
-  Sort         88,73,0,0
+  Sort         r88, r73
   Move         r73, r88
   Move         r89, r73
   // print(result)

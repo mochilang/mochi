@@ -6,6 +6,7 @@ func main (regs=14)
   Const        r5, "one"
   Move         r2, r5
   Jump         L1
+L0:
   // 2 => "two"
   Const        r8, "two"
   Move         r2, r8

@@ -14,14 +14,14 @@ func main (regs=68)
   Len          r8, r7
   // let result = from o in orders
   Const        r9, 0
-L3:
+L4:
   Less         r10, r9, r6
   JumpIfFalse  r10, L0
   Index        r11, r5, r9
   Move         r12, r11
   // join from c in customers on o.customerId == c.id
   Const        r13, 0
-L2:
+L3:
   Less         r14, r13, r8
   JumpIfFalse  r14, L1
   Index        r15, r7, r13
@@ -31,18 +31,39 @@ L2:
   Const        r19, "id"
   Index        r20, r16, r19
   Equal        r21, r18, r20
-  JumpIfFalse  r21, L1
+  JumpIfFalse  r21, L2
+  // select { orderId: o.id, customerName: c.name, total: o.total }
+  Const        r22, "orderId"
+  Const        r23, "id"
+  Index        r24, r12, r23
+  Const        r25, "customerName"
+  Const        r26, "name"
+  Index        r27, r16, r26
+  Const        r28, "total"
+  Const        r29, "total"
+  Index        r30, r12, r29
+  Move         r31, r22
+  Move         r32, r24
+  Move         r33, r25
+  Move         r34, r27
+  Move         r35, r28
+  Move         r36, r30
+  MakeMap      r37, 3, r31
   // let result = from o in orders
   Append       r38, r4, r37
   Move         r4, r38
+L2:
   // join from c in customers on o.customerId == c.id
-  Const        r40, 1
+  Const        r39, 1
+  Move         r40, r39
   Move         r13, r40
-  Jump         L2
-  // let result = from o in orders
-  Const        r42, 1
-  Move         r9, r42
   Jump         L3
+L1:
+  // let result = from o in orders
+  Const        r41, 1
+  Move         r42, r41
+  Move         r9, r42
+  Jump         L4
 L0:
   Move         r43, r4
   // print("--- Orders with customer info ---")
@@ -52,9 +73,9 @@ L0:
   IterPrep     r45, r43
   Len          r46, r45
   Const        r47, 0
-L5:
+L6:
   Less         r48, r47, r46
-  JumpIfFalse  r48, L4
+  JumpIfFalse  r48, L5
   Index        r49, r45, r47
   Move         r50, r49
   // print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
@@ -75,8 +96,9 @@ L5:
   Move         r56, r65
   PrintN       r51, 6, r51
   // for entry in result {
-  Const        r67, 1
+  Const        r66, 1
+  Move         r67, r66
   Move         r47, r67
-  Jump         L5
-L4:
+  Jump         L6
+L5:
   Return       r0

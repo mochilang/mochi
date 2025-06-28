@@ -2,8 +2,18 @@ func main (regs=6)
   // var i = 0
   Const        r0, 0
   Move         r1, r0
+L1:
+  // while i < 3 {
+  Const        r2, 3
+  LessInt      r3, r1, r2
+  JumpIfFalse  r3, L0
   // print(i)
   Print        r1
+  // i = i + 1
+  Const        r4, 1
+  Move         r5, r4
+  Move         r1, r5
   // while i < 3 {
-  Jump         L0
+  Jump         L1
+L0:
   Return       r0
