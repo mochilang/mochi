@@ -1,0 +1,329 @@
+// Partial reimplementation of Go's math package functions in pure Mochi.
+// Go math package functions: Abs, Acos, Acosh, Asin, Asinh, Atan, Atan2, Atanh, Cbrt, Ceil, Copysign, Cos, Cosh, Dim, Erf, Erfc, Erfcinv, Erfinv, Exp, Exp2, Expm1, FMA, Float32bits, Float32frombits, Float64bits, Float64frombits, Floor, Frexp, Gamma, Hypot, Ilogb, Inf, IsInf, IsNaN, J0, J1, Jn, Ldexp, Lgamma, Log, Log10, Log1p, Log2, Logb, Max, Min, Mod, Modf, NaN, Nextafter, Nextafter32, Pow, Pow10, Remainder, Round, RoundToEven, Signbit, Sin, Sincos, Sinh, Sqrt, Tan, Tanh, Trunc, Y0, Y1, Yn.
+package math
+
+// Basic mathematical constants
+export let Pi: float = 3.141592653589793
+export let E: float = 2.718281828459045
+
+// abs returns the absolute value of x
+export fun abs(x: float): float {
+  if x < 0 { return -x }
+  return x
+}
+
+// sqrt returns the square root of x using Newton's method
+export fun sqrt(x: float): float {
+  if x < 0 { panic("sqrt of negative") }
+  if x == 0 { return 0.0 }
+  var z = x
+  var prev = 0.0
+  while abs(z - prev) > 1e-10 {
+    prev = z
+    z = (z + x / z) / 2.0
+  }
+  return z
+}
+
+// exp returns e**x using a series expansion
+export fun exp(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 20 {
+    term = term * x / i
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+// log returns the natural logarithm of x using Newton iteration
+export fun log(x: float): float {
+  if x <= 0 { panic("log domain") }
+  var y = 0.0
+  var prev = -1.0
+  while abs(y - prev) > 1e-10 {
+    prev = y
+    y = y - (exp(y) - x) / exp(y)
+  }
+  return y
+}
+
+// pow computes x raised to the power y using exp and log
+export fun pow(x: float, y: float): float {
+  return exp(y * log(x))
+}
+
+// sin returns an approximation of the sine of x (in radians)
+export fun sin(x: float): float {
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    term = -term * x * x / ((2 * i) * (2 * i + 1))
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+// cos returns the cosine of x (in radians)
+export fun cos(x: float): float {
+  return sin(Pi / 2.0 - x)
+}
+
+// tan returns the tangent of x (in radians)
+export fun tan(x: float): float {
+  return sin(x) / cos(x)
+}
+
+// floor returns the greatest integer value less than or equal to x
+export fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x {
+    i = i - 1
+  }
+  return i as float
+}
+
+// ceil returns the least integer value greater than or equal to x
+export fun ceil(x: float): float {
+  var i = x as int
+  if (i as float) < x {
+    i = i + 1
+  }
+  return i as float
+}
+
+// trunc returns the integer part of x
+export fun trunc(x: float): float {
+  return (x as int) as float
+}
+
+// round returns the nearest integer, rounding half away from zero
+export fun round(x: float): float {
+  if x >= 0.0 { return floor(x + 0.5) }
+  return ceil(x - 0.5)
+}
+
+// max returns the larger of x or y
+export fun max(x: float, y: float): float {
+  if x > y { return x }
+  return y
+}
+
+// min returns the smaller of x or y
+export fun min(x: float, y: float): float {
+  if x < y { return x }
+  return y
+}
+
+// signbit reports whether x is negative
+export fun signbit(x: float): bool {
+  return x < 0.0
+}
+
+// mod returns the floating-point remainder of x/y
+export fun mod(x: float, y: float): float {
+  return x - y * floor(x / y)
+}
+
+// hypot returns sqrt(x*x + y*y)
+export fun hypot(x: float, y: float): float {
+  return sqrt(x * x + y * y)
+}
+
+// copysign returns x with the sign of y
+export fun copysign(x: float, y: float): float {
+  if signbit(y) { return -abs(x) }
+  return abs(x)
+}
+
+// sinh returns the hyperbolic sine of x
+export fun sinh(x: float): float {
+  return (exp(x) - exp(-x)) / 2.0
+}
+
+// cosh returns the hyperbolic cosine of x
+export fun cosh(x: float): float {
+  return (exp(x) + exp(-x)) / 2.0
+}
+
+// tanh returns the hyperbolic tangent of x
+export fun tanh(x: float): float {
+  return sinh(x) / cosh(x)
+}
+
+// asin returns the arcsine of x using Newton iteration
+export fun asin(x: float): float {
+  var y = x
+  var prev = 100.0
+  while abs(y - prev) > 1e-10 {
+    prev = y
+    y = y - (sin(y) - x) / cos(y)
+  }
+  return y
+}
+
+// acos returns the arccosine of x
+export fun acos(x: float): float {
+  return Pi / 2.0 - asin(x)
+}
+
+// atan returns the arctangent of x
+export fun atan(x: float): float {
+  return asin(x / sqrt(x * x + 1.0))
+}
+
+// atan2 returns the arctangent of y/x considering the quadrant
+export fun atan2(y: float, x: float): float {
+  if x > 0 { return atan(y / x) }
+  if x < 0 && y >= 0 { return atan(y / x) + Pi }
+  if x < 0 && y < 0 { return atan(y / x) - Pi }
+  if x == 0 && y > 0 { return Pi / 2.0 }
+  if x == 0 && y < 0 { return -Pi / 2.0 }
+  return 0.0
+}
+
+// asinh returns the inverse hyperbolic sine of x
+export fun asinh(x: float): float {
+  return log(x + sqrt(x * x + 1.0))
+}
+
+// acosh returns the inverse hyperbolic cosine of x
+export fun acosh(x: float): float {
+  return log(x + sqrt(x * x - 1.0))
+}
+
+// atanh returns the inverse hyperbolic tangent of x
+export fun atanh(x: float): float {
+  return 0.5 * log((1.0 + x) / (1.0 - x))
+}
+
+// exp2 returns 2**x
+export fun exp2(x: float): float {
+  return pow(2.0, x)
+}
+
+// expm1 returns e**x - 1
+export fun expm1(x: float): float {
+  return exp(x) - 1.0
+}
+
+// cbrt returns the cube root of x using Newton iteration
+export fun cbrt(x: float): float {
+  var z = x
+  var prev = 0.0
+  while abs(z - prev) > 1e-10 {
+    prev = z
+    z = (2.0 * z + x / (z * z)) / 3.0
+  }
+  return z
+}
+
+// dim returns max(x-y, 0)
+export fun dim(x: float, y: float): float {
+  if x > y { return x - y }
+  return 0.0
+}
+
+// log10 returns the decimal logarithm of x
+export fun log10(x: float): float {
+  return log(x) / log(10.0)
+}
+
+// log2 returns the binary logarithm of x
+export fun log2(x: float): float {
+  return log(x) / log(2.0)
+}
+
+// log1p returns log(1 + x)
+export fun log1p(x: float): float {
+  return log(1.0 + x)
+}
+
+// logb returns log2(|x|)
+export fun logb(x: float): float {
+  return log2(abs(x))
+}
+
+// pow10 returns 10**n
+export fun pow10(n: int): float {
+  return pow(10.0, n as float)
+}
+
+// remainder returns the IEEE remainder of x/y
+export fun remainder(x: float, y: float): float {
+  return x - y * round(x / y)
+}
+
+// roundToEven rounds x to the nearest integer, halves to even
+export fun roundToEven(x: float): float {
+  var f = floor(x)
+  var r = x - f
+  if r > 0.5 { return f + 1.0 }
+  if r < 0.5 { return f }
+  if mod(f, 2.0) == 0.0 { return f }
+  return f + 1.0
+}
+
+// fma returns x*y + z
+export fun fma(x: float, y: float, z: float): float {
+  return x * y + z
+}
+
+// modf splits x into fractional and integer parts
+export fun modf(x: float): map<string, float> {
+  let i = trunc(x)
+  return { frac: x - i, int: i }
+}
+
+// sincos returns sin(x) and cos(x)
+export fun sincos(x: float): map<string, float> {
+  return { sin: sin(x), cos: cos(x) }
+}
+
+// ---------- Inline tests ----------
+
+test "trig functions" {
+  expect abs(sin(Pi / 2.0) - 1.0) < 1e-6
+  expect abs(cos(0.0) - 1.0) < 1e-6
+  expect abs(tan(Pi / 4.0) - 1.0) < 1e-6
+}
+
+test "rounding" {
+  expect floor(1.8) == 1.0
+  expect ceil(1.2) == 2.0
+  expect round(1.6) == 2.0
+  expect trunc(-1.8) == -1.0
+}
+
+test "misc math" {
+  expect max(2.0, 3.0) == 3.0
+  expect min(2.0, -1.0) == -1.0
+  expect signbit(-0.1)
+  expect mod(5.5, 2.0) == 1.5
+  expect abs(hypot(3.0, 4.0) - 5.0) < 1e-6
+}
+
+test "extra math" {
+  expect abs(exp2(3.0) - 8.0) < 1e-6
+  expect abs(expm1(1.0) - (E - 1.0)) < 1e-6
+  expect abs(cbrt(27.0) - 3.0) < 1e-6
+  expect dim(5.0, 3.0) == 2.0
+  let p = modf(2.7)
+  expect p.int == 2.0
+  expect abs(p.frac - 0.7) < 1e-6
+  let sc = sincos(Pi / 3.0)
+  expect abs(sc.sin - sin(Pi / 3.0)) < 1e-6
+  expect abs(sc.cos - cos(Pi / 3.0)) < 1e-6
+  expect abs(log10(100.0) - 2.0) < 1e-6
+  expect abs(log2(8.0) - 3.0) < 1e-6
+  expect abs(log1p(0.5) - log(1.5)) < 1e-6
+  expect abs(pow10(3) - 1000.0) < 1e-6
+  expect abs(remainder(5.3, 2.0) - (5.3 - 2.0 * round(5.3 / 2.0))) < 1e-6
+  expect roundToEven(2.5) == 2.0
+  expect roundToEven(3.5) == 4.0
+  expect fma(2.0, 3.0, 4.0) == 10.0
+}
