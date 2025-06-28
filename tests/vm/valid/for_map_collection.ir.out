@@ -1,7 +1,7 @@
 func main (regs=10)
   // var m = {"a": 1, "b": 2}
   Const        r0, {"a": 1, "b": 2}
-  Move         r1, r0
+  Const        r1, {"a": 1, "b": 2}
   // for k in m {
   IterPrep     r2, r1
   Len          r3, r2
@@ -14,8 +14,7 @@ L1:
   // print(k)
   Print        r7
   // for k in m {
-  Const        r9, 1
-  Move         r4, r9
+  Const        r4, 1
   Jump         L1
 L0:
   Return       r0

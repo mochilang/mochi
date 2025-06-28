@@ -1,7 +1,7 @@
 func main (regs=52)
   // let people = [
   Const        r0, [{"city": "Paris", "name": "Alice"}, {"city": "Hanoi", "name": "Bob"}, {"city": "Paris", "name": "Charlie"}, {"city": "Hanoi", "name": "Diana"}, {"city": "Paris", "name": "Eve"}, {"city": "Hanoi", "name": "Frank"}, {"city": "Paris", "name": "George"}]
-  Move         r1, r0
+  Const        r1, [{"city": "Paris", "name": "Alice"}, {"city": "Hanoi", "name": "Bob"}, {"city": "Paris", "name": "Charlie"}, {"city": "Hanoi", "name": "Diana"}, {"city": "Paris", "name": "Eve"}, {"city": "Hanoi", "name": "Frank"}, {"city": "Paris", "name": "George"}]
   // from p in people
   Const        r2, []
   IterPrep     r3, r1
@@ -21,7 +21,6 @@ L2:
   In           r14, r13, r6
   JumpIfTrue   r14, L1
   // from p in people
-  Const        r15, []
   Const        r16, "__group__"
   Const        r17, true
   Const        r18, "key"
@@ -29,7 +28,7 @@ L2:
   Move         r19, r12
   // from p in people
   Const        r20, "items"
-  Move         r21, r15
+  Const        r21, []
   MakeMap      r22, 3, r16
   SetIndex     r6, r13, r22
   Append       r23, r7, r22
@@ -40,8 +39,7 @@ L1:
   Index        r26, r25, r24
   Append       r27, r26, r9
   SetIndex     r25, r24, r27
-  Const        r29, 1
-  Move         r5, r29
+  Const        r5, 1
   Jump         L2
 L0:
   Const        r30, 0
@@ -56,11 +54,19 @@ L4:
   Const        r36, 4
   LessEqInt    r37, r36, r35
   JumpIfFalse  r37, L3
+  // select { city: g.key, num: count(g) }
+  Const        r39, "key"
+  Index        r40, r34, r39
+  Count        r42, r34
+  Const        r43, "city"
+  Move         r44, r40
+  Const        r45, "num"
+  Move         r46, r42
+  MakeMap      r47, 2, r43
   // from p in people
   Append       r48, r2, r47
   Move         r2, r48
-  Const        r50, 1
-  Move         r30, r50
+  Const        r30, 1
   Jump         L4
 L3:
   // let big =
