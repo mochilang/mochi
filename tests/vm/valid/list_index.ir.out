@@ -1,9 +1,7 @@
-func main (regs=4)
+func main (regs=3)
   // let xs = [10, 20, 30]
   Const        r0, [10, 20, 30]
-  Move         r1, r0
   // print(xs[1])
-  Const        r2, 1
-  Index        r3, r1, r2
-  Print        r3
+  Const        r2, 20
+  Print        r2
   Return       r0

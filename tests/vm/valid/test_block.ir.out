@@ -1,10 +1,10 @@
-func main (regs=7)
+func main (regs=6)
   // let x = 1 + 2
   Const        r0, 1
   // expect x == 3
-  Const        r5, true
-  Expect       r5
+  Const        r4, true
+  Expect       r4
   // print("ok")
-  Const        r6, "ok"
-  Print        r6
+  Const        r5, "ok"
+  Print        r5
   Return       r0
