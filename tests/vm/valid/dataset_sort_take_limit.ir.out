@@ -10,28 +10,31 @@ func main (regs=43)
 L1:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Append       r15, r2, r14
-  Move         r2, r15
-  Const        r17, 1
-  Move         r5, r17
+  Index        r8, r3, r5
+  // sort by -p.price
+  Const        r9, "price"
+  Index        r10, r8, r9
+  Neg          r12, r10
+  // let expensive = from p in products
+  Move         r13, r8
+  MakeList     r14, 2, r12
+  Append       r2, r2, r14
+  Const        r16, 1
+  Add          r5, r5, r16
   Jump         L1
 L0:
   // sort by -p.price
-  Sort         18,2,0,0
-  // let expensive = from p in products
-  Move         r2, r18
+  Sort         r2, r2
   // skip 1
   Const        r19, 1
   // let expensive = from p in products
   Const        r20, nil
-  Slice        r21, r2, r19, r20
-  Move         r2, r21
+  Slice        r2, r2, r19, r20
   Const        r22, 0
   // take 3
   Const        r23, 3
   // let expensive = from p in products
-  Slice        r24, r2, r22, r23
-  Move         r2, r24
+  Slice        r2, r2, r22, r23
   Move         r25, r2
   // print("--- Top products (excluding most expensive) ---")
   Const        r26, "--- Top products (excluding most expensive) ---"
@@ -43,19 +46,17 @@ L0:
 L3:
   Less         r30, r29, r28
   JumpIfFalse  r30, L2
-  Index        r31, r27, r29
-  Move         r32, r31
+  Index        r32, r27, r29
   // print(item.name, "costs $", item.price)
   Const        r36, "name"
-  Index        r37, r32, r36
-  Move         r33, r37
-  Const        r38, "costs $"
-  Move         r34, r38
+  Index        r33, r32, r36
+  Const        r34, "costs $"
   Const        r39, "price"
-  Index        r40, r32, r39
-  Move         r35, r40
+  Index        r35, r32, r39
   PrintN       r33, 3, r33
   // for item in expensive {
+  Const        r41, 1
+  Add          r29, r29, r41
   Jump         L3
 L2:
   Return       r0
