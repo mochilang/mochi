@@ -977,8 +977,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
 			}
-			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
-			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
+			if ins.A == ins.B {
+				lst.List = append(lst.List, fr.regs[ins.C])
+				fr.regs[ins.A] = lst
+			} else {
+				newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
+				fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
+			}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
@@ -3028,13 +3033,9 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 				pair := fc.newReg()
 				fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
-				tmp := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
-				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: pair})
 			} else {
-				tmp := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: val})
 			}
 		}
 		if q.Where != nil {
@@ -3166,13 +3167,9 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 			fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 			pair := fc.newReg()
 			fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: pair})
 		} else {
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: val})
 		}
 	}
 
@@ -3420,13 +3417,9 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 			fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 			pair := fc.newReg()
 			fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: pair})
 		} else {
-			tmp := fc.newReg()
-			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: val})
 		}
 	}
 
@@ -3618,13 +3611,9 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 		pair := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
-		tmpOut := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmpOut, B: dst, C: pair})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmpOut})
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: pair})
 	} else {
-		tmpOut := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmpOut, B: dst, C: val})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmpOut})
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: val})
 	}
 
 	one2 := fc.newReg()
@@ -3701,9 +3690,7 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	startGrp := pairsGrp[0]
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: grp, B: len(pairsGrp) / 2, C: startGrp})
 	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: gmap, B: keyStr, C: grp})
-	tmp := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: glist, C: grp})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: glist, B: tmp})
+	fc.emit(q.Pos, Instr{Op: OpAppend, A: glist, B: glist, C: grp})
 
 	end := len(fc.fn.Code)
 	fc.fn.Code[jump].B = end
@@ -3715,7 +3702,8 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	cur := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIndex, A: cur, B: grp2, C: itemsKey})
 	newList := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAppend, A: newList, B: cur, C: elemReg})
+	fc.emit(q.Pos, Instr{Op: OpAppend, A: cur, B: cur, C: elemReg})
+	fc.emit(q.Pos, Instr{Op: OpMove, A: newList, B: cur})
 	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: itemsKey, C: newList})
 }
 
@@ -3766,13 +3754,9 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 		fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 		pair := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
-		tmp := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: pair})
 	} else {
-		tmp := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: val})
 	}
 
 	one := fc.newReg()
@@ -4036,13 +4020,9 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 				pair := fc.newReg()
 				fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
-				tmp := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
-				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: pair})
 			} else {
-				tmp := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: dst, B: dst, C: val})
 			}
 		}
 		if q.Where != nil && level == whereLevel {
