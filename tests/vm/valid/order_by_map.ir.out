@@ -3,25 +3,25 @@ func main (regs=22)
   Const        r0, [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
   // from x in data
   Const        r1, []
-  IterPrep     r2, r0
-  Len          r3, r2
-  Const        r4, 0
-L1:
-  Less         r5, r4, r3
-  JumpIfFalse  r5, L0
-  Index        r7, r2, r4
   // sort by { a: x.a, b: x.b }
-  Const        r8, "a"
-  Index        r9, r7, r8
-  Const        r10, "b"
-  Index        r11, r7, r10
-  MakeMap      r15, 2, r8
+  Const        r2, "a"
+  Const        r3, "b"
   // from x in data
-  Move         r16, r7
-  MakeList     r17, 2, r15
-  Append       r1, r1, r17
-  Const        r19, 1
-  Add          r4, r4, r19
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r8, r6, r5
+  JumpIfFalse  r8, L0
+  Index        r10, r4, r6
+  // sort by { a: x.a, b: x.b }
+  MakeMap      r16, 2, r2
+  // from x in data
+  Move         r17, r10
+  MakeList     r18, 2, r16
+  Append       r1, r1, r18
+  Const        r20, 1
+  AddInt       r6, r6, r20
   Jump         L1
 L0:
   // sort by { a: x.a, b: x.b }

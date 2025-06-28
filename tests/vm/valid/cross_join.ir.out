@@ -1,77 +1,76 @@
-func main (regs=62)
+func main (regs=60)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}, {"id": 3, "name": "Charlie"}]
   // let orders = [
   Const        r1, [{"customerId": 1, "id": 100, "total": 250}, {"customerId": 2, "id": 101, "total": 125}, {"customerId": 1, "id": 102, "total": 300}]
   // let result = from o in orders
   Const        r2, []
-  IterPrep     r3, r1
-  Len          r4, r3
-  Const        r5, 0
-L3:
-  Less         r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r8, r3, r5
-  // from c in customers
-  IterPrep     r9, r0
-  Len          r10, r9
-  Const        r11, 0
-L2:
-  Less         r12, r11, r10
-  JumpIfFalse  r12, L1
   // orderId: o.id,
-  Const        r15, "orderId"
-  Const        r16, "id"
-  Index        r17, r8, r16
+  Const        r3, "orderId"
+  Const        r4, "id"
   // orderCustomerId: o.customerId,
-  Const        r18, "orderCustomerId"
-  Const        r19, "customerId"
-  Index        r20, r8, r19
+  Const        r5, "orderCustomerId"
+  Const        r6, "customerId"
   // pairedCustomerName: c.name,
-  Const        r21, "pairedCustomerName"
-  Const        r22, "name"
+  Const        r7, "pairedCustomerName"
+  Const        r8, "name"
   // orderTotal: o.total
-  Const        r24, "orderTotal"
-  // select {
-  MakeMap      r31, 4, r15
+  Const        r9, "orderTotal"
+  Const        r10, "total"
   // let result = from o in orders
-  Append       r2, r2, r31
+  IterPrep     r11, r1
+  Len          r12, r11
+  Const        r14, 0
+  Move         r13, r14
+L3:
+  LessInt      r15, r13, r12
+  JumpIfFalse  r15, L0
   // from c in customers
-  Const        r33, 1
-  Add          r11, r11, r33
+  IterPrep     r18, r0
+  Len          r19, r18
+L2:
+  LessInt      r21, r14, r19
+  JumpIfFalse  r21, L1
+  // select {
+  MakeMap      r32, 4, r3
+  // let result = from o in orders
+  Append       r2, r2, r32
+  // from c in customers
+  Const        r34, 1
   Jump         L2
 L1:
   // let result = from o in orders
-  Const        r35, 1
-  Add          r5, r5, r35
+  AddInt       r13, r13, r34
   Jump         L3
 L0:
   // print("--- Cross Join: All order-customer pairs ---")
-  Const        r37, "--- Cross Join: All order-customer pairs ---"
-  Print        r37
+  Const        r35, "--- Cross Join: All order-customer pairs ---"
+  Print        r35
   // for entry in result {
-  IterPrep     r38, r2
-  Len          r39, r38
-  Const        r40, 0
+  IterPrep     r36, r2
+  Len          r37, r36
+  Const        r38, 0
 L5:
-  Less         r41, r40, r39
-  JumpIfFalse  r41, L4
-  Index        r43, r38, r40
+  Less         r39, r38, r37
+  JumpIfFalse  r39, L4
+  Index        r41, r36, r38
   // print("Order", entry.orderId,
-  Const        r44, "Order"
-  Index        r45, r43, r15
+  Const        r42, "Order"
+  Index        r43, r41, r3
   // "(customerId:", entry.orderCustomerId,
-  Const        r46, "(customerId:"
-  Index        r47, r43, r18
+  Const        r44, "(customerId:"
+  Index        r45, r41, r5
   // ", total: $", entry.orderTotal,
-  Const        r48, ", total: $"
-  Index        r49, r43, r24
+  Const        r46, ", total: $"
+  Index        r47, r41, r9
   // ") paired with", entry.pairedCustomerName)
-  Const        r50, ") paired with"
-  Index        r51, r43, r21
+  Const        r48, ") paired with"
+  Index        r49, r41, r7
   // print("Order", entry.orderId,
-  PrintN       r44, 8, r44
+  PrintN       r42, 8, r42
   // for entry in result {
+  Const        r58, 1
+  Add          r38, r38, r58
   Jump         L5
 L4:
   Return       r0

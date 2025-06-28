@@ -5,27 +5,28 @@ func main (regs=35)
   Load         3,0,1,0
   // let adults = from p in people
   Const        r4, []
-  IterPrep     r5, r3
-  Len          r6, r5
-  Const        r7, 0
-L2:
-  Less         r8, r7, r6
-  JumpIfFalse  r8, L0
-  Index        r10, r5, r7
   // where p.age >= 18
-  Const        r11, "age"
-  Index        r12, r10, r11
-  Const        r13, 18
-  LessEq       r14, r13, r12
-  JumpIfFalse  r14, L1
+  Const        r5, "age"
   // select { name: p.name, email: p.email }
-  Const        r15, "name"
-  Index        r16, r10, r15
-  Const        r17, "email"
-  Index        r18, r10, r17
-  MakeMap      r21, 2, r15
+  Const        r6, "name"
+  Const        r7, "email"
   // let adults = from p in people
-  Append       r4, r4, r21
+  IterPrep     r8, r3
+  Len          r9, r8
+  Const        r10, 0
+L2:
+  LessInt      r12, r10, r9
+  JumpIfFalse  r12, L0
+  Index        r14, r8, r10
+  // where p.age >= 18
+  Index        r15, r14, r5
+  Const        r16, 18
+  LessEq       r17, r16, r15
+  JumpIfFalse  r17, L1
+  // select { name: p.name, email: p.email }
+  MakeMap      r22, 2, r6
+  // let adults = from p in people
+  Append       r4, r4, r22
 L1:
   Jump         L2
 L0:
@@ -38,8 +39,8 @@ L4:
   JumpIfFalse  r28, L3
   Index        r30, r25, r27
   // print(a.name, a.email)
-  Index        r31, r30, r15
-  Index        r32, r30, r17
+  Index        r31, r30, r6
+  Index        r32, r30, r7
   Print2       r31, r32
   // for a in adults {
   Const        r33, 1

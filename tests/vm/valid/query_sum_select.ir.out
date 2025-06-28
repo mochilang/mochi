@@ -1,4 +1,4 @@
-func main (regs=14)
+func main (regs=13)
   // let nums = [1,2,3]
   Const        r0, [1, 2, 3]
   // let result = from n in nums where n > 1 select sum(n)
@@ -7,19 +7,18 @@ func main (regs=14)
   Len          r3, r2
   Const        r4, 0
 L2:
-  Less         r5, r4, r3
-  JumpIfFalse  r5, L0
-  Index        r7, r2, r4
-  Const        r8, 1
-  Less         r9, r8, r7
-  JumpIfFalse  r9, L1
-  Append       r1, r1, r7
+  LessInt      r6, r4, r3
+  JumpIfFalse  r6, L0
+  Index        r8, r2, r4
+  Const        r9, 1
+  Less         r10, r9, r8
+  JumpIfFalse  r10, L1
+  Append       r1, r1, r8
 L1:
-  Const        r11, 1
-  Add          r4, r4, r11
+  AddInt       r4, r4, r9
   Jump         L2
 L0:
-  Sum          r13, r1
+  Sum          r12, r1
   // print(result)
-  Print        r13
+  Print        r12
   Return       r0

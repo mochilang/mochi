@@ -1,4 +1,4 @@
-func main (regs=72)
+func main (regs=68)
   // let items = [
   Const        r0, [{"cat": "a", "flag": true, "val": 10}, {"cat": "a", "flag": false, "val": 5}, {"cat": "b", "flag": true, "val": 20}]
   // from i in items
@@ -59,42 +59,40 @@ L9:
   Const        r37, []
   IterPrep     r38, r35
   Len          r39, r38
-  Const        r40, 0
+  Move         r40, r31
 L6:
-  Less         r41, r40, r39
+  LessInt      r41, r40, r39
   JumpIfFalse  r41, L4
   Index        r43, r38, r40
   Index        r44, r43, r5
   JumpIfFalse  r44, L5
 L5:
   Append       r37, r37, r31
-  Const        r48, 1
-  Add          r40, r40, r48
+  AddInt       r40, r40, r29
   Jump         L6
 L4:
   // sum(from x in g select x.val)
-  Const        r51, []
-  IterPrep     r52, r35
-  Len          r53, r52
-  Const        r54, 0
+  Const        r49, []
+  IterPrep     r50, r35
+  Len          r51, r50
+  Move         r52, r31
 L8:
-  Less         r55, r54, r53
-  JumpIfFalse  r55, L7
-  Index        r43, r52, r54
-  Index        r57, r43, r6
-  Append       r51, r51, r57
-  Const        r59, 1
-  Add          r54, r54, r59
+  LessInt      r53, r52, r51
+  JumpIfFalse  r53, L7
+  Index        r43, r50, r52
+  Index        r55, r43, r6
+  Append       r49, r49, r55
+  AddInt       r52, r52, r29
   Jump         L8
 L7:
   // select {
-  MakeMap      r65, 2, r2
+  MakeMap      r61, 2, r2
   // sort by g.key
-  Index        r67, r35, r3
+  Index        r63, r35, r3
   // from i in items
-  Move         r68, r65
-  MakeList     r69, 2, r67
-  Append       r1, r1, r69
+  Move         r64, r61
+  MakeList     r65, 2, r63
+  Append       r1, r1, r65
   AddInt       r30, r30, r29
   Jump         L9
 L3:

@@ -1,4 +1,4 @@
-func main (regs=100)
+func main (regs=98)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}, {"id": 3, "name": "Charlie"}]
   // let orders = [
@@ -93,7 +93,8 @@ L5:
   AddInt       r11, r11, r45
   Jump         L7
 L0:
-  Const        r62, 0
+  Const        r63, 0
+  Move         r62, r63
   Len          r64, r8
 L12:
   LessInt      r65, r62, r64
@@ -103,45 +104,44 @@ L12:
   Const        r69, []
   IterPrep     r70, r67
   Len          r71, r70
-  Const        r72, 0
+  Move         r72, r63
 L11:
-  Less         r73, r72, r71
+  LessInt      r73, r72, r71
   JumpIfFalse  r73, L9
   Index        r75, r70, r72
   Index        r76, r75, r6
   JumpIfFalse  r76, L10
   Append       r69, r69, r75
 L10:
-  Const        r78, 1
-  Add          r72, r72, r78
+  AddInt       r72, r72, r45
   Jump         L11
 L9:
   // select {
-  MakeMap      r83, 2, r3
+  MakeMap      r81, 2, r3
   // let stats = from c in customers
-  Append       r2, r2, r83
+  Append       r2, r2, r81
   AddInt       r62, r62, r45
   Jump         L12
 L8:
   // print("--- Group Left Join ---")
-  Const        r85, "--- Group Left Join ---"
-  Print        r85
+  Const        r83, "--- Group Left Join ---"
+  Print        r83
   // for s in stats {
-  IterPrep     r86, r2
-  Len          r87, r86
-  Const        r88, 0
+  IterPrep     r84, r2
+  Len          r85, r84
+  Const        r86, 0
 L14:
-  Less         r89, r88, r87
-  JumpIfFalse  r89, L13
-  Index        r91, r86, r88
+  Less         r87, r86, r85
+  JumpIfFalse  r87, L13
+  Index        r89, r84, r86
   // print(s.name, "orders:", s.count)
-  Index        r92, r91, r3
-  Const        r93, "orders:"
-  Index        r94, r91, r5
-  PrintN       r92, 3, r92
+  Index        r90, r89, r3
+  Const        r91, "orders:"
+  Index        r92, r89, r5
+  PrintN       r90, 3, r90
   // for s in stats {
-  Const        r98, 1
-  Add          r88, r88, r98
+  Const        r96, 1
+  Add          r86, r86, r96
   Jump         L14
 L13:
   Return       r0

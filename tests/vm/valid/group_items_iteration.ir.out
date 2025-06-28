@@ -1,4 +1,4 @@
-func main (regs=77)
+func main (regs=75)
   // let data = [
   Const        r0, [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}]
   // let groups = from d in data group by d.tag into g select g
@@ -89,17 +89,16 @@ L5:
   Const        r62, []
   IterPrep     r63, r35
   Len          r64, r63
-  Const        r65, 0
+  Move         r65, r28
 L10:
-  Less         r66, r65, r64
+  LessInt      r66, r65, r64
   JumpIfFalse  r66, L9
   Index        r68, r63, r65
   Index        r70, r68, r2
   Move         r71, r68
   MakeList     r72, 2, r70
   Append       r62, r62, r72
-  Const        r74, 1
-  Add          r65, r65, r74
+  AddInt       r65, r65, r26
   Jump         L10
 L9:
   Sort         r62, r62

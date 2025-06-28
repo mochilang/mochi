@@ -1,4 +1,4 @@
-func main (regs=175)
+func main (regs=171)
   // let nation = [
   Const        r0, [{"n_name": "BRAZIL", "n_nationkey": 1}]
   // let customer = [
@@ -159,7 +159,8 @@ L1:
   AddInt       r25, r25, r106
   Jump         L11
 L0:
-  Const        r107, 0
+  Const        r108, 0
+  Move         r107, r108
   Len          r109, r22
 L17:
   LessInt      r110, r107, r109
@@ -169,9 +170,9 @@ L17:
   Const        r117, []
   IterPrep     r118, r112
   Len          r119, r118
-  Const        r120, 0
+  Move         r120, r108
 L14:
-  Less         r121, r120, r119
+  LessInt      r121, r120, r119
   JumpIfFalse  r121, L13
   Index        r123, r118, r120
   Index        r124, r123, r18
@@ -181,36 +182,36 @@ L14:
   Sub          r128, r106, r127
   Mul          r129, r125, r128
   Append       r117, r117, r129
+  AddInt       r120, r120, r106
   Jump         L14
 L13:
   // select {
-  MakeMap      r152, 8, r7
+  MakeMap      r150, 8, r7
   // sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
-  Const        r153, []
-  IterPrep     r154, r112
-  Len          r155, r154
-  Const        r156, 0
+  Const        r151, []
+  IterPrep     r152, r112
+  Len          r153, r152
+  Move         r154, r108
 L16:
-  Less         r157, r156, r155
-  JumpIfFalse  r157, L15
-  Index        r123, r154, r156
+  LessInt      r155, r154, r153
+  JumpIfFalse  r155, L15
+  Index        r123, r152, r154
+  Index        r157, r123, r18
+  Index        r158, r157, r19
   Index        r159, r123, r18
-  Index        r160, r159, r19
-  Index        r161, r123, r18
-  Index        r162, r161, r20
-  Sub          r163, r106, r162
-  Mul          r164, r160, r163
-  Append       r153, r153, r164
-  Const        r166, 1
-  Add          r156, r156, r166
+  Index        r160, r159, r20
+  Sub          r161, r106, r160
+  Mul          r162, r158, r161
+  Append       r151, r151, r162
+  AddInt       r154, r154, r106
   Jump         L16
 L15:
-  Sum          r168, r153
-  Neg          r170, r168
+  Sum          r164, r151
+  Neg          r166, r164
   // from c in customer
-  Move         r171, r152
-  MakeList     r172, 2, r170
-  Append       r6, r6, r172
+  Move         r167, r150
+  MakeList     r168, 2, r166
+  Append       r6, r6, r168
   AddInt       r107, r107, r106
   Jump         L17
 L12:

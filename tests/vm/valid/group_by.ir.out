@@ -1,4 +1,4 @@
-func main (regs=74)
+func main (regs=72)
   // let people = [
   Const        r0, [{"age": 30, "city": "Paris", "name": "Alice"}, {"age": 15, "city": "Hanoi", "name": "Bob"}, {"age": 65, "city": "Paris", "name": "Charlie"}, {"age": 45, "city": "Hanoi", "name": "Diana"}, {"age": 70, "city": "Paris", "name": "Eve"}, {"age": 22, "city": "Hanoi", "name": "Frank"}]
   // let stats = from person in people
@@ -48,7 +48,8 @@ L1:
   AddInt       r9, r9, r29
   Jump         L2
 L0:
-  Const        r30, 0
+  Const        r31, 0
+  Move         r30, r31
   Len          r32, r11
 L6:
   LessInt      r33, r30, r32
@@ -58,45 +59,44 @@ L6:
   Const        r38, []
   IterPrep     r39, r35
   Len          r40, r39
-  Const        r41, 0
+  Move         r41, r31
 L5:
-  Less         r42, r41, r40
+  LessInt      r42, r41, r40
   JumpIfFalse  r42, L4
   Index        r44, r39, r41
   Index        r45, r44, r6
   Append       r38, r38, r45
-  Const        r47, 1
-  Add          r41, r41, r47
+  AddInt       r41, r41, r29
   Jump         L5
 L4:
   // select {
-  MakeMap      r53, 3, r2
+  MakeMap      r51, 3, r2
   // let stats = from person in people
-  Append       r1, r1, r53
+  Append       r1, r1, r51
   AddInt       r30, r30, r29
   Jump         L6
 L3:
   // print("--- People grouped by city ---")
-  Const        r55, "--- People grouped by city ---"
-  Print        r55
+  Const        r53, "--- People grouped by city ---"
+  Print        r53
   // for s in stats {
-  IterPrep     r56, r1
-  Len          r57, r56
-  Const        r58, 0
+  IterPrep     r54, r1
+  Len          r55, r54
+  Const        r56, 0
 L8:
-  Less         r59, r58, r57
-  JumpIfFalse  r59, L7
-  Index        r61, r56, r58
+  Less         r57, r56, r55
+  JumpIfFalse  r57, L7
+  Index        r59, r54, r56
   // print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
-  Index        r62, r61, r2
-  Const        r63, ": count ="
-  Index        r64, r61, r4
-  Const        r65, ", avg_age ="
-  Index        r66, r61, r5
-  PrintN       r62, 5, r62
+  Index        r60, r59, r2
+  Const        r61, ": count ="
+  Index        r62, r59, r4
+  Const        r63, ", avg_age ="
+  Index        r64, r59, r5
+  PrintN       r60, 5, r60
   // for s in stats {
-  Const        r72, 1
-  Add          r58, r58, r72
+  Const        r70, 1
+  Add          r56, r56, r70
   Jump         L8
 L7:
   Return       r0

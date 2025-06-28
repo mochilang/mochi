@@ -1,4 +1,4 @@
-func main (regs=68)
+func main (regs=67)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
   // let orders = [
@@ -7,50 +7,49 @@ func main (regs=68)
   Const        r2, [{"orderId": 100, "sku": "a"}]
   // let result = from o in orders
   Const        r3, []
-  IterPrep     r4, r1
-  Len          r5, r4
-  Const        r7, 0
-  Move         r6, r7
-L7:
-  LessInt      r8, r6, r5
-  JumpIfFalse  r8, L0
-  Index        r10, r4, r6
-  // join from c in customers on o.customerId == c.id
-  IterPrep     r11, r0
-  Len          r12, r11
-  Const        r13, "customerId"
-  Const        r14, "id"
   // select { orderId: o.id, name: c.name, item: i }
-  Const        r15, "orderId"
-  Const        r16, "name"
-  Const        r17, "item"
+  Const        r4, "orderId"
+  Const        r5, "id"
+  Const        r6, "name"
+  Const        r7, "item"
+  // let result = from o in orders
+  IterPrep     r8, r1
+  Len          r9, r8
+  Const        r11, 0
+  Move         r10, r11
+L7:
+  LessInt      r12, r10, r9
+  JumpIfFalse  r12, L0
+  Index        r14, r8, r10
   // join from c in customers on o.customerId == c.id
-  Move         r18, r7
+  IterPrep     r15, r0
+  Len          r16, r15
+  Const        r17, "customerId"
+  Move         r18, r11
 L6:
-  LessInt      r19, r18, r12
+  LessInt      r19, r18, r16
   JumpIfFalse  r19, L1
-  Index        r20, r11, r18
-  Move         r21, r20
-  Index        r22, r10, r13
-  Index        r23, r21, r14
+  Index        r21, r15, r18
+  Index        r22, r14, r17
+  Index        r23, r21, r5
   Equal        r24, r22, r23
   JumpIfFalse  r24, L2
   // left join i in items on o.id == i.orderId
   IterPrep     r25, r2
   Len          r26, r25
-  Move         r27, r7
+  Move         r27, r11
 L5:
   LessInt      r28, r27, r26
   JumpIfFalse  r28, L3
   Index        r30, r25, r27
   Const        r31, false
-  Index        r32, r10, r14
-  Index        r33, r30, r15
+  Index        r32, r14, r5
+  Index        r33, r30, r4
   Equal        r34, r32, r33
   JumpIfFalse  r34, L4
   Const        r31, true
   // select { orderId: o.id, name: c.name, item: i }
-  MakeMap      r40, 3, r15
+  MakeMap      r40, 3, r4
   // let result = from o in orders
   Append       r3, r3, r40
 L4:
@@ -62,7 +61,7 @@ L3:
   Move         r43, r31
   JumpIfTrue   r43, L2
   // select { orderId: o.id, name: c.name, item: i }
-  MakeMap      r50, 3, r15
+  MakeMap      r50, 3, r4
   // let result = from o in orders
   Append       r3, r3, r50
 L2:
@@ -71,28 +70,28 @@ L2:
   Jump         L6
 L1:
   // let result = from o in orders
-  Add          r6, r6, r42
+  AddInt       r10, r10, r42
   Jump         L7
 L0:
   // print("--- Left Join Multi ---")
-  Const        r53, "--- Left Join Multi ---"
-  Print        r53
+  Const        r52, "--- Left Join Multi ---"
+  Print        r52
   // for r in result {
-  IterPrep     r54, r3
-  Len          r55, r54
-  Const        r56, 0
+  IterPrep     r53, r3
+  Len          r54, r53
+  Const        r55, 0
 L9:
-  Less         r57, r56, r55
-  JumpIfFalse  r57, L8
-  Index        r59, r54, r56
+  Less         r56, r55, r54
+  JumpIfFalse  r56, L8
+  Index        r58, r53, r55
   // print(r.orderId, r.name, r.item)
-  Index        r60, r59, r15
-  Index        r61, r59, r16
-  Index        r62, r59, r17
-  PrintN       r60, 3, r60
+  Index        r59, r58, r4
+  Index        r60, r58, r6
+  Index        r61, r58, r7
+  PrintN       r59, 3, r59
   // for r in result {
-  Const        r66, 1
-  Add          r56, r56, r66
+  Const        r65, 1
+  Add          r55, r55, r65
   Jump         L9
 L8:
   Return       r0

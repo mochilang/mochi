@@ -3,35 +3,33 @@ func main (regs=45)
   Const        r0, [{"age": 30, "name": "Alice"}, {"age": 15, "name": "Bob"}, {"age": 65, "name": "Charlie"}, {"age": 45, "name": "Diana"}]
   // let adults = from person in people
   Const        r1, []
-  IterPrep     r2, r0
-  Len          r3, r2
-  Const        r4, 0
-L2:
-  Less         r5, r4, r3
-  JumpIfFalse  r5, L0
-  Index        r7, r2, r4
   // where person.age >= 18
-  Const        r8, "age"
-  Index        r9, r7, r8
-  Const        r10, 18
-  LessEq       r11, r10, r9
-  JumpIfFalse  r11, L1
+  Const        r2, "age"
   // name: person.name,
-  Const        r12, "name"
-  Index        r13, r7, r12
-  // age: person.age,
-  Index        r14, r7, r8
+  Const        r3, "name"
   // is_senior: person.age >= 60
-  Const        r15, "is_senior"
-  Index        r16, r7, r8
-  Const        r17, 60
-  // select {
-  MakeMap      r22, 3, r12
+  Const        r4, "is_senior"
   // let adults = from person in people
-  Append       r1, r1, r22
+  IterPrep     r5, r0
+  Len          r6, r5
+  Const        r8, 0
+  Move         r7, r8
+L2:
+  LessInt      r9, r7, r6
+  JumpIfFalse  r9, L0
+  Index        r11, r5, r7
+  // where person.age >= 18
+  Index        r12, r11, r2
+  Const        r13, 18
+  LessEq       r14, r13, r12
+  JumpIfFalse  r14, L1
+  // select {
+  MakeMap      r23, 3, r3
+  // let adults = from person in people
+  Append       r1, r1, r23
 L1:
-  Const        r24, 1
-  Add          r4, r4, r24
+  Const        r25, 1
+  AddInt       r7, r7, r25
   Jump         L2
 L0:
   // print("--- Adults ---")
@@ -44,13 +42,13 @@ L0:
 L6:
   Less         r30, r29, r28
   JumpIfFalse  r30, L3
-  Index        r7, r27, r29
+  Index        r11, r27, r29
   // print(person.name, "is", person.age,
-  Index        r32, r7, r12
+  Index        r32, r11, r3
   Const        r33, "is"
-  Index        r34, r7, r8
+  Index        r34, r11, r2
   // if person.is_senior { " (senior)" } else { "" })
-  Index        r39, r7, r15
+  Index        r39, r11, r4
   JumpIfFalse  r39, L4
   Jump         L5
 L4:
@@ -59,6 +57,8 @@ L5:
   // print(person.name, "is", person.age,
   PrintN       r32, 4, r32
   // for person in adults {
+  Const        r43, 1
+  Add          r29, r29, r43
   Jump         L6
 L3:
   Return       r0

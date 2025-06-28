@@ -1,4 +1,4 @@
-func main (regs=14)
+func main (regs=13)
   // let data = [1,2]
   Const        r0, [1, 2]
   // from x in data
@@ -7,22 +7,21 @@ func main (regs=14)
   Len          r3, r2
   Const        r4, 0
 L2:
-  Less         r5, r4, r3
-  JumpIfFalse  r5, L0
-  Index        r7, r2, r4
+  LessInt      r6, r4, r3
+  JumpIfFalse  r6, L0
+  Index        r8, r2, r4
   // where x == 1
-  Const        r8, 1
-  Equal        r9, r7, r8
-  JumpIfFalse  r9, L1
+  Const        r9, 1
+  Equal        r10, r8, r9
+  JumpIfFalse  r10, L1
   // from x in data
-  Append       r1, r1, r7
+  Append       r1, r1, r8
 L1:
-  Const        r11, 1
-  Add          r4, r4, r11
+  AddInt       r4, r4, r9
   Jump         L2
 L0:
   // let flag = exists(
-  Exists       r13, r1
+  Exists       r12, r1
   // print(flag)
-  Print        r13
+  Print        r12
   Return       r0

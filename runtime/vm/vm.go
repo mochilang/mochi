@@ -2982,6 +2982,9 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 	if level == 0 {
 		name = q.Var
 		src = q.Source
+		fc.preloadFieldConsts(q.Where)
+		fc.preloadFieldConsts(q.Select)
+		fc.preloadFieldConsts(q.Sort)
 	} else {
 		from := q.Froms[level-1]
 		name = from.Var
@@ -3018,9 +3021,7 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 	}
 
 	one := fc.constReg(src.Pos, Value{Tag: ValueInt, Int: 1})
-	tmp := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
-	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+	fc.emit(src.Pos, Instr{Op: OpAddInt, A: idxReg, B: idxReg, C: one})
 	fc.emit(src.Pos, Instr{Op: OpJump, A: loopStart})
 	end := len(fc.fn.Code)
 	fc.fn.Code[jmp].B = end
@@ -3969,16 +3970,23 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 		src = from.Src
 	}
 
+	if level == 0 {
+		fc.preloadFieldConsts(q.Where)
+		fc.preloadFieldConsts(q.Select)
+		fc.preloadFieldConsts(q.Sort)
+	}
+
 	srcReg := fc.compileExpr(src)
 	listReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpIterPrep, A: listReg, B: srcReg})
 	lengthReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpLen, A: lengthReg, B: listReg})
 	idxReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: ValueInt, Int: 0}})
+	zero := fc.constReg(src.Pos, Value{Tag: ValueInt, Int: 0})
+	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: zero})
 	loopStart := len(fc.fn.Code)
 	condReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lengthReg})
+	fc.emit(src.Pos, Instr{Op: OpLessInt, A: condReg, B: idxReg, C: lengthReg})
 	jmp := len(fc.fn.Code)
 	fc.emit(src.Pos, Instr{Op: OpJumpIfFalse, A: condReg})
 
@@ -4040,11 +4048,8 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 		fc.fn.Code[skip].B = len(fc.fn.Code)
 	}
 
-	one := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
-	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+	one := fc.constReg(src.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(src.Pos, Instr{Op: OpAddInt, A: idxReg, B: idxReg, C: one})
 	fc.emit(src.Pos, Instr{Op: OpJump, A: loopStart})
 	end := len(fc.fn.Code)
 	fc.fn.Code[jmp].B = end
