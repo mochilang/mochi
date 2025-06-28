@@ -1,0 +1,90 @@
+package stack
+
+type Stack {
+  items: list<any>
+}
+
+export fun new(): Stack {
+  return Stack{ items: [] }
+}
+
+export fun len(s: Stack): int { return count(s.items) }
+
+export fun empty(s: Stack): bool { return count(s.items) == 0 }
+
+export fun push(s: Stack, v: any): Stack {
+  return Stack{ items: s.items + [v] }
+}
+
+fun _removeLast(xs: list<any>): list<any> {
+  var out: list<any> = []
+  var i = 0
+  while i < count(xs) - 1 {
+    out = out + [xs[i]]
+    i = i + 1
+  }
+  return out
+}
+
+export fun pop(s: Stack): (Stack, any, bool) {
+  if count(s.items) == 0 { return (s, null, false) }
+  let idx = count(s.items) - 1
+  let val = s.items[idx]
+  let rest = _removeLast(s.items)
+  return (Stack{ items: rest }, val, true)
+}
+
+export fun peek(s: Stack): (any, bool) {
+  if count(s.items) == 0 { return (null, false) }
+  let idx = count(s.items) - 1
+  return (s.items[idx], true)
+}
+
+// simple tests
+
+test "stack push/pop" {
+  var s = new()
+  expect len(s) == 0
+  s = push(s, 1)
+  s = push(s, 2)
+  expect len(s) == 2
+  let (v, ok) = peek(s)
+  expect ok && v == 2
+  let tmp: Stack
+  let val: any
+  let ok2: bool
+  (tmp, val, ok2) = pop(s)
+  s = tmp
+  expect ok2 && val == 2 && len(s) == 1
+  (s, val, ok2) = pop(s)
+  expect ok2 && val == 1 && len(s) == 0
+  (s, val, ok2) = pop(s)
+  expect !ok2 && val == null && len(s) == 0
+}
+
+// additional tests
+
+test "stack empty helper" {
+  let s = new()
+  expect empty(s)
+  let s2 = push(s, "x")
+  expect !empty(s2)
+  expect empty(s) // ensure immutability
+  let (s2, _, _) = pop(s2)
+  expect empty(s2)
+}
+
+test "peek on empty" {
+  let s = new()
+  let (v, ok) = peek(s)
+  expect !ok && v == null
+}
+
+test "push returns new stack" {
+  let s1 = new()
+  let s2 = push(s1, 42)
+  expect len(s1) == 0
+  expect len(s2) == 1
+  let (val, ok) = peek(s2)
+  expect ok && val == 42
+}
