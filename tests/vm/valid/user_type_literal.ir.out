@@ -22,10 +22,9 @@ func main (regs=22)
   Move         r15, r9
   // let book = Book {
   MakeMap      r16, 3, r10
-  Move         r17, r16
   // print(book.author.name)
   Const        r18, "author"
-  Index        r19, r17, r18
+  Index        r19, r16, r18
   Const        r20, "name"
   Index        r21, r19, r20
   Print        r21

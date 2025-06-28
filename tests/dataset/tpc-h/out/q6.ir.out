@@ -1,4 +1,4 @@
-func main (regs=51)
+func main (regs=55)
   // let lineitem = [
   Const        r0, [{"l_discount": 0.06, "l_extendedprice": 1000, "l_quantity": 10, "l_shipdate": "1994-02-15"}, {"l_discount": 0.07, "l_extendedprice": 500, "l_quantity": 23, "l_shipdate": "1994-03-10"}, {"l_discount": 0.04, "l_extendedprice": 400, "l_quantity": 15, "l_shipdate": "1994-04-10"}, {"l_discount": 0.06, "l_extendedprice": 200, "l_quantity": 5, "l_shipdate": "1995-01-01"}]
   Move         r1, r0
@@ -11,80 +11,61 @@ L6:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
   Index        r7, r3, r5
-  Move         r8, r7
   // (l.l_shipdate >= "1994-01-01") &&
   Const        r9, "l_shipdate"
-  Index        r10, r8, r9
+  Index        r10, r7, r9
   Const        r11, "1994-01-01"
   LessEq       r12, r11, r10
-  Move         r13, r12
-  JumpIfFalse  r13, L1
+  JumpIfFalse  r12, L1
   // (l.l_shipdate < "1995-01-01") &&
   Const        r14, "l_shipdate"
-  Index        r15, r8, r14
+  Index        r15, r7, r14
   Const        r16, "1995-01-01"
   Less         r17, r15, r16
-  // (l.l_shipdate >= "1994-01-01") &&
-  Move         r13, r17
-L1:
-  // (l.l_shipdate < "1995-01-01") &&
-  Move         r18, r13
-  JumpIfFalse  r18, L2
+  JumpIfFalse  r17, L2
   // (l.l_discount >= 0.05) &&
   Const        r19, "l_discount"
-  Index        r20, r8, r19
+  Index        r20, r7, r19
+L1:
   Const        r21, 0.05
   LessEqFloat  r22, r21, r20
-  // (l.l_shipdate < "1995-01-01") &&
-  Move         r18, r22
-L2:
-  // (l.l_discount >= 0.05) &&
-  Move         r23, r18
-  JumpIfFalse  r23, L3
+  JumpIfFalse  r22, L3
   // (l.l_discount <= 0.07) &&
   Const        r24, "l_discount"
-  Index        r25, r8, r24
+  Index        r25, r7, r24
   Const        r26, 0.07
   LessEqFloat  r27, r25, r26
+L2:
   // (l.l_discount >= 0.05) &&
   Move         r23, r27
-L3:
   // (l.l_discount <= 0.07) &&
-  Move         r28, r23
-  JumpIfFalse  r28, L4
+  JumpIfFalse  r23, L4
   // (l.l_quantity < 24)
   Const        r29, "l_quantity"
-  Index        r30, r8, r29
+  Index        r30, r7, r29
   Const        r31, 24
   Less         r32, r30, r31
-  // (l.l_discount <= 0.07) &&
-  Move         r28, r32
-L4:
   // (l.l_shipdate >= "1994-01-01") &&
-  JumpIfFalse  r28, L5
+  JumpIfFalse  r32, L5
+L3:
   // select sum(l.l_extendedprice * l.l_discount)
   Const        r33, "l_extendedprice"
-  Index        r34, r8, r33
+  Index        r34, r7, r33
   Const        r35, "l_discount"
-  Index        r36, r8, r35
+  Index        r36, r7, r35
   Mul          r37, r34, r36
   // let result = from l in lineitem
   Append       r38, r2, r37
-  Move         r2, r38
-L5:
   Const        r39, 1
+L4:
   Add          r40, r5, r39
-  Move         r5, r40
   Jump         L6
-L0:
   // select sum(l.l_extendedprice * l.l_discount)
-  Sum          r41, r2
-  // let result = from l in lineitem
-  Move         r42, r41
+  Sum          r41, r38
   // json(result)
   JSON         r42
   // expect result == ((1000.0 * 0.06) + (500.0 * 0.07)) // 60 + 35 = 95
   Const        r49, 95
-  EqualFloat   r50, r42, r49
+  EqualFloat   r50, r41, r49
   Expect       r50
   Return       r0

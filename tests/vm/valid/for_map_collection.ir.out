@@ -1,4 +1,4 @@
-func main (regs=10)
+func main (regs=15)
   // var m = {"a": 1, "b": 2}
   Const        r0, {"a": 1, "b": 2}
   Move         r1, r0
@@ -10,12 +10,10 @@ L1:
   Less         r5, r4, r3
   JumpIfFalse  r5, L0
   Index        r6, r2, r4
-  Move         r7, r6
   // print(k)
-  Print        r7
+  Print        r6
   // for k in m {
-  Const        r9, 1
-  Move         r4, r9
+  Const        r8, 1
+  Add          r9, r4, r8
   Jump         L1
-L0:
   Return       r0
