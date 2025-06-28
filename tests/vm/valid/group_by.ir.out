@@ -40,7 +40,8 @@ L1:
   Index        r26, r25, r24
   Append       r27, r26, r9
   SetIndex     r25, r24, r27
-  Const        r29, 1
+  Const        r28, 1
+  Add          r29, r5, r28
   Move         r5, r29
   Jump         L2
 L0:
@@ -51,7 +52,15 @@ L6:
   JumpIfFalse  r32, L3
   Index        r33, r7, r30
   Move         r34, r33
+  // city: g.key,
+  Const        r35, "city"
+  Const        r36, "key"
+  Index        r37, r34, r36
+  // count: count(g),
+  Const        r38, "count"
+  Count        r39, r34
   // avg_age: avg(from p in g select p.age)
+  Const        r40, "avg_age"
   Const        r41, []
   IterPrep     r42, r34
   Len          r43, r42
@@ -59,15 +68,34 @@ L6:
 L5:
   Less         r45, r44, r43
   JumpIfFalse  r45, L4
+  Index        r46, r42, r44
+  Move         r47, r46
+  Const        r48, "age"
+  Index        r49, r47, r48
   Append       r50, r41, r49
   Move         r41, r50
-  Const        r52, 1
+  Const        r51, 1
+  Add          r52, r44, r51
   Move         r44, r52
   Jump         L5
+L4:
+  Avg          r53, r41
+  // city: g.key,
+  Move         r54, r35
+  Move         r55, r37
+  // count: count(g),
+  Move         r56, r38
+  Move         r57, r39
+  // avg_age: avg(from p in g select p.age)
+  Move         r58, r40
+  Move         r59, r53
+  // select {
+  MakeMap      r60, 3, r54
   // let stats = from person in people
   Append       r61, r2, r60
   Move         r2, r61
-  Const        r63, 1
+  Const        r62, 1
+  Add          r63, r30, r62
   Move         r30, r63
   Jump         L6
 L3:
@@ -88,19 +116,18 @@ L8:
   Const        r77, "city"
   Index        r78, r71, r77
   Move         r72, r78
-  Const        r79, ": count ="
-  Move         r73, r79
+  Const        r73, ": count ="
   Const        r80, "count"
   Index        r81, r71, r80
   Move         r74, r81
-  Const        r82, ", avg_age ="
-  Move         r75, r82
+  Const        r75, ", avg_age ="
   Const        r83, "avg_age"
   Index        r84, r71, r83
   Move         r76, r84
   PrintN       r72, 5, r72
   // for s in stats {
-  Const        r86, 1
+  Const        r85, 1
+  Add          r86, r68, r85
   Move         r68, r86
   Jump         L8
 L7:
