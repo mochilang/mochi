@@ -15,6 +15,7 @@ import (
 
 	"github.com/alecthomas/participle/v2/lexer"
 
+	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/data"
 	mhttp "mochi/runtime/http"
@@ -1582,13 +1583,14 @@ type compiler struct {
 }
 
 type funcCompiler struct {
-	fn     Function
-	idx    int
-	comp   *compiler
-	vars   map[string]int
-	scopes []map[string]int
-	loops  []*loopContext
-	tags   map[int]regTag
+	fn         Function
+	idx        int
+	comp       *compiler
+	vars       map[string]int
+	scopes     []map[string]int
+	loops      []*loopContext
+	tags       map[int]regTag
+	constCache map[string]int
 }
 
 func (fc *funcCompiler) pushScope() {
@@ -1677,7 +1679,7 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(fn.Params)
@@ -1701,7 +1703,7 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 }
 
 func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(st.Order) + len(fn.Params)
@@ -1755,7 +1757,7 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
 	for i, name := range captures {
@@ -1797,7 +1799,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 	prev, exists := c.fnIndex[name]
 	c.fnIndex[name] = idx
 
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Name = name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
@@ -1839,7 +1841,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 }
 
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
 	fc.fn.NumParams = 0
@@ -1912,14 +1914,44 @@ func (fc *funcCompiler) newReg() int {
 	return r
 }
 
+func constKey(v Value) (string, bool) {
+	switch v.Tag {
+	case ValueInt:
+		return fmt.Sprintf("i%v", v.Int), true
+	case ValueFloat:
+		return fmt.Sprintf("f%v", v.Float), true
+	case ValueBool:
+		if v.Bool {
+			return "bt", true
+		}
+		return "bf", true
+	case ValueStr:
+		return "s" + v.Str, true
+	default:
+		return "", false
+	}
+}
+
+func (fc *funcCompiler) constReg(pos lexer.Position, v Value) int {
+	if k, ok := constKey(v); ok {
+		if r, ok2 := fc.constCache[k]; ok2 {
+			return r
+		}
+		r := fc.newReg()
+		fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
+		fc.constCache[k] = r
+		return r
+	}
+	r := fc.newReg()
+	fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
+	return r
+}
+
 func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		r := fc.compileExpr(s.Let.Value)
-		reg := fc.newReg()
-		fc.vars[s.Let.Name] = reg
-		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
-		fc.tags[reg] = fc.tags[r]
+		fc.vars[s.Let.Name] = r
 		if v, ok := fc.evalConstExpr(s.Let.Value); ok {
 			fc.comp.env.SetValue(s.Let.Name, valueToAny(v), false)
 		}
@@ -2433,30 +2465,20 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	if p.Lit != nil {
 		switch {
 		case p.Lit.Int != nil:
-			dst := fc.newReg()
 			v := Value{Tag: ValueInt, Int: *p.Lit.Int}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		case p.Lit.Float != nil:
-			dst := fc.newReg()
 			v := Value{Tag: ValueFloat, Float: *p.Lit.Float}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		case p.Lit.Str != nil:
-			dst := fc.newReg()
 			v := Value{Tag: ValueStr, Str: *p.Lit.Str}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		case p.Lit.Bool != nil:
-			dst := fc.newReg()
 			v := Value{Tag: ValueBool, Bool: bool(*p.Lit.Bool)}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		case p.Lit.Null:
-			dst := fc.newReg()
 			v := Value{Tag: ValueNull}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		}
 	}
 
@@ -2486,15 +2508,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 
 		regs := make([]int, len(p.Struct.Fields)*2+2)
 
-		nameKey := fc.newReg()
-		fc.emit(p.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: ValueStr, Str: "__name"}})
-		nameVal := fc.newReg()
-		fc.emit(p.Pos, Instr{Op: OpConst, A: nameVal, Val: Value{Tag: ValueStr, Str: p.Struct.Name}})
+		nameKey := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "__name"})
+		nameVal := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: p.Struct.Name})
 		regs[0] = nameKey
 		regs[1] = nameVal
 		for i, f := range p.Struct.Fields {
-			kreg := fc.newReg()
-			fc.emit(f.Pos, Instr{Op: OpConst, A: kreg, Val: Value{Tag: ValueStr, Str: f.Name}})
+			kreg := fc.constReg(f.Pos, Value{Tag: ValueStr, Str: f.Name})
 			vreg := fc.newReg()
 			fc.emit(f.Pos, Instr{Op: OpMove, A: vreg, B: vals[i]})
 			regs[i*2+2] = kreg
@@ -2512,16 +2531,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 
 	if p.Map != nil {
 		if v, ok := constMap(p.Map); ok {
-			dst := fc.newReg()
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		}
 		tmp := make([]struct{ k, v int }, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			if name, ok := identName(it.Key); ok {
-				reg := fc.newReg()
-				fc.emit(it.Pos, Instr{Op: OpConst, A: reg, Val: Value{Tag: ValueStr, Str: name}})
-				tmp[i].k = reg
+				tmp[i].k = fc.constReg(it.Pos, Value{Tag: ValueStr, Str: name})
 			} else {
 				tmp[i].k = fc.compileExpr(it.Key)
 			}
@@ -2529,11 +2544,9 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		}
 		regs := make([]int, len(p.Map.Items)*2)
 		for i, it := range p.Map.Items {
-			kreg := fc.newReg()
-			fc.emit(it.Pos, Instr{Op: OpMove, A: kreg, B: tmp[i].k})
+			regs[i*2] = tmp[i].k
 			vreg := fc.newReg()
 			fc.emit(it.Pos, Instr{Op: OpMove, A: vreg, B: tmp[i].v})
-			regs[i*2] = kreg
 			regs[i*2+1] = vreg
 		}
 		dst := fc.newReg()
@@ -2635,10 +2648,8 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		if !ok {
 			if len(p.Selector.Tail) == 0 {
 				if st, ok := fc.comp.env.GetStruct(p.Selector.Root); ok && len(st.Order) == 0 {
-					key := fc.newReg()
-					fc.emit(p.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: ValueStr, Str: "__name"}})
-					val := fc.newReg()
-					fc.emit(p.Pos, Instr{Op: OpConst, A: val, Val: Value{Tag: ValueStr, Str: st.Name}})
+					key := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "__name"})
+					fc.constReg(p.Pos, Value{Tag: ValueStr, Str: st.Name})
 					dst := fc.newReg()
 					fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: 1, C: key})
 					return dst
@@ -2651,8 +2662,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		}
 		cur := r
 		for _, field := range p.Selector.Tail {
-			key := fc.newReg()
-			fc.emit(p.Pos, Instr{Op: OpConst, A: key, Val: Value{Tag: ValueStr, Str: field}})
+			key := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: field})
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpIndex, A: dst, B: cur, C: key})
 			cur = dst
@@ -2984,7 +2994,8 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 	lenReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpLen, A: lenReg, B: listReg})
 	idxReg := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: idxReg, Val: Value{Tag: ValueInt, Int: 0}})
+	zero := fc.constReg(src.Pos, Value{Tag: ValueInt, Int: 0})
+	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: zero})
 	loopStart := len(fc.fn.Code)
 	condReg := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpLess, A: condReg, B: idxReg, C: lenReg})
@@ -3006,8 +3017,7 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 		fc.compileJoins(q, dst, 0)
 	}
 
-	one := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
+	one := fc.constReg(src.Pos, Value{Tag: ValueInt, Int: 1})
 	tmp := fc.newReg()
 	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
 	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
@@ -3061,7 +3071,8 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 	rlen := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 	ri := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
+	zero := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 0})
+	fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: zero})
 	rstart := len(fc.fn.Code)
 	rcond := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
@@ -3091,11 +3102,8 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 			fc.compileJoins(q, dst, idx+1)
 		}
 
-		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+		one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(join.Pos, Instr{Op: OpAdd, A: ri, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		end := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = end
@@ -3104,8 +3112,7 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 		fc.emit(join.Pos, Instr{Op: OpMove, A: check, B: matched})
 		skipAdd := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
-		nilreg := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
+		nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
 		fc.compileJoins(q, dst, idx+1)
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
@@ -3120,11 +3127,8 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 			fc.compileJoins(q, dst, idx+1)
 		}
 
-		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+		one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(join.Pos, Instr{Op: OpAdd, A: ri, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		end := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = end
@@ -3235,20 +3239,14 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		}
 	}
 
-	one := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
-	fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+	one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(join.Pos, Instr{Op: OpAdd, A: ri, B: ri, C: one})
 	fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 	rend := len(fc.fn.Code)
 	fc.fn.Code[rjmp].B = rend
 
-	one2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one2, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp2, B: li, C: one2})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmp2})
+	one2 := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(q.Pos, Instr{Op: OpAdd, A: li, B: li, C: one2})
 	fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 	lend := len(fc.fn.Code)
 	fc.fn.Code[ljmp].B = lend
@@ -3287,11 +3285,8 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		} else {
 			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 		}
-		one3 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one3, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp3 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp3, B: ri2, C: one3})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri2, B: tmp3})
+		one3 := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(join.Pos, Instr{Op: OpAdd, A: ri2, B: ri2, C: one3})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart2})
 		rend2 := len(fc.fn.Code)
 		fc.fn.Code[rjmp2].B = rend2
@@ -3314,11 +3309,8 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		}
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 
-		one4 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: one4, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp4 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp4, B: li2, C: one4})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: li2, B: tmp4})
+		one4 := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(q.Pos, Instr{Op: OpAdd, A: li2, B: li2, C: one4})
 		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart2})
 		lend2 := len(fc.fn.Code)
 		fc.fn.Code[ljmp2].B = lend2
@@ -3357,11 +3349,8 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		} else {
 			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
 		}
-		one5 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: one5, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp5 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp5, B: li3, C: one5})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: li3, B: tmp5})
+		one5 := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(q.Pos, Instr{Op: OpAdd, A: li3, B: li3, C: one5})
 		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart3})
 		lend3 := len(fc.fn.Code)
 		fc.fn.Code[ljmp3].B = lend3
@@ -3384,11 +3373,8 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		}
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 
-		one6 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one6, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp6 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp6, B: ri3, C: one6})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri3, B: tmp6})
+		one6 := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(join.Pos, Instr{Op: OpAdd, A: ri3, B: ri3, C: one6})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart3})
 		rend3 := len(fc.fn.Code)
 		fc.fn.Code[rjmp3].B = rend3
@@ -3496,11 +3482,8 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 		}
 	}
 
-	oneL := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: oneL, Val: Value{Tag: ValueInt, Int: 1}})
-	tmpL := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmpL, B: li, C: oneL})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmpL})
+	oneL := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(q.Pos, Instr{Op: OpAdd, A: li, B: li, C: oneL})
 	fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 	lend := len(fc.fn.Code)
 	fc.fn.Code[ljmp].B = lend
@@ -3523,11 +3506,8 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	}
 	fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 
-	oneR := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: oneR, Val: Value{Tag: ValueInt, Int: 1}})
-	tmpR := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpAdd, A: tmpR, B: ri, C: oneR})
-	fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmpR})
+	oneR := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(join.Pos, Instr{Op: OpAdd, A: ri, B: ri, C: oneR})
 	fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 	end := len(fc.fn.Code)
 	fc.fn.Code[rjmp].B = end
@@ -3573,8 +3553,7 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 		fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList)
 	}
 
-	one := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
+	one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
 	tmp := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
@@ -3584,7 +3563,8 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 
 	// iterate groups and produce final results
 	gi := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: gi, Val: Value{Tag: ValueInt, Int: 0}})
+	zero := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
+	fc.emit(q.Pos, Instr{Op: OpMove, A: gi, B: zero})
 	glen := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpLen, A: glen, B: groupsList})
 	loop2 := len(fc.fn.Code)
@@ -3627,8 +3607,7 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmpOut})
 	}
 
-	one2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one2, Val: Value{Tag: ValueInt, Int: 1}})
+	one2 := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
 	tmp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp2, B: gi, C: one2})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gi, B: tmp2})
@@ -3659,8 +3638,7 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 		}
 		pairs := make([]int, len(exprs)*2)
 		for i, name := range fieldNames {
-			k := fc.newReg()
-			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: ValueStr, Str: name}})
+			k := fc.constReg(exprs[i].Pos, Value{Tag: ValueStr, Str: name})
 			pairs[i*2] = k
 			pairs[i*2+1] = regs[i]
 		}
@@ -3675,25 +3653,19 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	jump := len(fc.fn.Code)
 	fc.emit(q.Group.Pos, Instr{Op: OpJumpIfTrue, A: exists})
 
-	items := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: items, Val: Value{Tag: ValueList, List: []Value{}}})
-	k1 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: k1, Val: Value{Tag: ValueStr, Str: "__group__"}})
-	v1 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: v1, Val: Value{Tag: ValueBool, Bool: true}})
-	k2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: k2, Val: Value{Tag: ValueStr, Str: "key"}})
+	items := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+	k1 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "__group__"})
+	v1 := fc.constReg(q.Pos, Value{Tag: ValueBool, Bool: true})
+	k2 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "key"})
 	v2 := fc.newReg()
 	fc.emit(q.Group.Pos, Instr{Op: OpMove, A: v2, B: key})
-	k3 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: k3, Val: Value{Tag: ValueStr, Str: "items"}})
+	k3 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
 	v3 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
 	pairsGrp := []int{k1, v1, k2, v2, k3, v3}
 	if len(fieldNames) > 0 {
 		for i, name := range fieldNames {
-			k := fc.newReg()
-			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: ValueStr, Str: name}})
+			k := fc.constReg(exprs[i].Pos, Value{Tag: ValueStr, Str: name})
 			pairsGrp = append(pairsGrp, k, regs[i])
 		}
 	}
@@ -3708,8 +3680,7 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	end := len(fc.fn.Code)
 	fc.fn.Code[jump].B = end
 
-	itemsKey := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: itemsKey, Val: Value{Tag: ValueStr, Str: "items"}})
+	itemsKey := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
 	grp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIndex, A: grp2, B: gmap, C: keyStr})
 	cur := fc.newReg()
@@ -3732,7 +3703,8 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 
 	// iterate groups and produce final results
 	gi := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: gi, Val: Value{Tag: ValueInt, Int: 0}})
+	zero := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
+	fc.emit(q.Pos, Instr{Op: OpMove, A: gi, B: zero})
 	glen := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpLen, A: glen, B: groupsList})
 	loop := len(fc.fn.Code)
@@ -3775,8 +3747,7 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
 	}
 
-	one := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
+	one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
 	tmp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp2, B: gi, C: one})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: gi, B: tmp2})
@@ -3961,8 +3932,7 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 
 	pairs := make([]int, len(names)*2)
 	for i, n := range names {
-		k := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: ValueStr, Str: n}})
+		k := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: n})
 		v := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMove, A: v, B: regs[i]})
 		pairs[i*2] = k
@@ -4455,10 +4425,10 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		}
 		return Value{}, false
 	}
-	// Constant folding of function calls requires the interpreter package,
-	// which is not available in this standalone VM build.
-	// Return false so the call is compiled normally.
-	_ = args
+
+	if lit, ok := interpreter.EvalPureCall(&parser.CallExpr{Func: call.Func, Args: args}, fc.comp.env); ok {
+		return literalToValue(lit)
+	}
 	return Value{}, false
 }
 

@@ -1,4 +1,4 @@
-func main (regs=32)
+func main (regs=21)
   // left: Leaf,
   Const        r0, "__name"
   Const        r1, "Leaf"
@@ -6,48 +6,18 @@ func main (regs=32)
   // value: 1,
   Const        r3, 1
   // left: Leaf,
-  Const        r4, "__name"
-  Const        r5, "Leaf"
-  MakeMap      r6, 1, r4
+  MakeMap      r4, 1, r0
   // value: 2,
-  Const        r7, 2
+  Const        r5, 2
   // right: Leaf
-  Const        r8, "__name"
-  Const        r9, "Leaf"
-  MakeMap      r10, 1, r8
+  MakeMap      r6, 1, r0
   // right: Node {
-  Const        r11, "__name"
-  Const        r12, "Node"
-  // left: Leaf,
-  Const        r13, "left"
-  Move         r14, r6
-  // value: 2,
-  Const        r15, "value"
-  Move         r16, r7
-  // right: Leaf
-  Const        r17, "right"
-  Move         r18, r10
-  // right: Node {
-  MakeMap      r19, 4, r11
+  Const        r7, "Node"
   // let t = Node {
-  Const        r20, "__name"
-  Const        r21, "Node"
-  // left: Leaf,
-  Const        r22, "left"
-  Move         r23, r2
-  // value: 1,
-  Const        r24, "value"
-  Move         r25, r3
-  // right: Node {
-  Const        r26, "right"
-  Move         r27, r19
-  // let t = Node {
-  MakeMap      r28, 4, r20
-  Move         r29, r28
+  MakeMap      r19, 4, r0
   // print(sum_tree(t))
-  Move         r30, r29
-  Call         r31, sum_tree, r30
-  Print        r31
+  Call         r20, sum_tree, r19
+  Print        r20
   Return       r0
 
   // fun sum_tree(t: Tree): int {
@@ -58,8 +28,7 @@ func sum_tree (regs=23)
   Const        r5, "Leaf"
   Equal        r2, r4, r5
   JumpIfFalse  r2, L0
-  Const        r6, 0
-  Move         r1, r6
+  Const        r1, 0
   Jump         L1
 L0:
   // Node(left, value, right) => sum_tree(left) + value + sum_tree(right)
@@ -74,13 +43,10 @@ L0:
   Index        r14, r0, r13
   Const        r15, "right"
   Index        r16, r0, r15
-  Move         r17, r12
-  Call         r18, sum_tree, r17
+  Call         r18, sum_tree, r12
   Add          r19, r18, r14
-  Move         r20, r16
-  Call         r21, sum_tree, r20
-  Add          r22, r19, r21
-  Move         r1, r22
+  Call         r21, sum_tree, r16
+  Add          r1, r19, r21
   Jump         L1
 L2:
   Const        r1, nil

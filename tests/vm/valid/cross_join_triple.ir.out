@@ -1,76 +1,79 @@
-func main (regs=61)
+func main (regs=51)
   // let nums = [1, 2]
   Const        r0, [1, 2]
-  Move         r1, r0
   // let letters = ["A", "B"]
-  Const        r2, ["A", "B"]
-  Move         r3, r2
+  Const        r1, ["A", "B"]
   // let bools = [true, false]
-  Const        r4, [true, false]
-  Move         r5, r4
+  Const        r2, [true, false]
   // let combos = from n in nums
-  Const        r6, []
-  IterPrep     r7, r1
-  Len          r8, r7
-  Const        r9, 0
-L4:
-  Less         r10, r9, r8
-  JumpIfFalse  r10, L0
-  // from l in letters
-  IterPrep     r13, r3
-  Len          r14, r13
-  Const        r15, 0
-L3:
-  Less         r16, r15, r14
-  JumpIfFalse  r16, L1
-  // from b in bools
-  IterPrep     r19, r5
-  Len          r20, r19
-  Const        r21, 0
-L2:
-  Less         r22, r21, r20
-  JumpIfFalse  r22, L1
-  // let combos = from n in nums
-  Append       r35, r6, r34
-  Move         r6, r35
-  // from b in bools
-  Const        r37, 1
-  Move         r21, r37
-  Jump         L2
-  // from l in letters
-  Jump         L3
-  // let combos = from n in nums
-  Const        r41, 1
-  Move         r9, r41
-  Jump         L4
-L0:
-  Move         r42, r6
-  // print("--- Cross Join of three lists ---")
-  Const        r43, "--- Cross Join of three lists ---"
-  Print        r43
-  // for c in combos {
-  IterPrep     r44, r42
-  Len          r45, r44
-  Const        r46, 0
-L6:
-  Less         r47, r46, r45
-  JumpIfFalse  r47, L5
-  Index        r48, r44, r46
-  Move         r49, r48
-  // print(c.n, c.l, c.b)
-  Const        r53, "n"
-  Index        r54, r49, r53
-  Move         r50, r54
-  Const        r55, "l"
-  Index        r56, r49, r55
-  Move         r51, r56
-  Const        r57, "b"
-  Index        r58, r49, r57
-  Move         r52, r58
-  PrintN       r50, 3, r50
-  // for c in combos {
-  Const        r60, 1
-  Move         r46, r60
-  Jump         L6
+  Const        r3, []
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
 L5:
+  Less         r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r9, r4, r6
+  // from l in letters
+  IterPrep     r10, r1
+  Len          r11, r10
+  Const        r12, 0
+L4:
+  Less         r13, r12, r11
+  JumpIfFalse  r13, L1
+  Index        r15, r10, r12
+  // from b in bools
+  IterPrep     r16, r2
+  Len          r17, r16
+  Const        r18, 0
+L3:
+  Less         r19, r18, r17
+  JumpIfFalse  r19, L2
+  Index        r21, r16, r18
+  // select {n: n, l: l, b: b}
+  Const        r22, "n"
+  Const        r23, "l"
+  Const        r24, "b"
+  Move         r25, r9
+  Move         r26, r15
+  Move         r27, r21
+  MakeMap      r28, 3, r22
+  // let combos = from n in nums
+  Append       r3, r3, r28
+  // from b in bools
+  Const        r30, 1
+  Add          r18, r18, r30
+  Jump         L3
+L2:
+  // from l in letters
+  Const        r32, 1
+  Add          r12, r12, r32
+  Jump         L4
+L1:
+  // let combos = from n in nums
+  Const        r34, 1
+  Add          r6, r6, r34
+  Jump         L5
+L0:
+  // print("--- Cross Join of three lists ---")
+  Const        r36, "--- Cross Join of three lists ---"
+  Print        r36
+  // for c in combos {
+  IterPrep     r37, r3
+  Len          r38, r37
+  Const        r39, 0
+L7:
+  Less         r40, r39, r38
+  JumpIfFalse  r40, L6
+  Index        r42, r37, r39
+  // print(c.n, c.l, c.b)
+  Index        r43, r42, r22
+  Index        r44, r42, r23
+  Index        r45, r42, r24
+  PrintN       r43, 3, r43
+  // for c in combos {
+  Const        r49, 1
+  Add          r39, r39, r49
+  Jump         L7
+L6:
   Return       r0
