@@ -12,6 +12,8 @@ boot‑strap its own tooling.
   integer expressions and variable statements.
 - **Type checker** – `types/check.mochi` performs basic static checks over the
   same toy AST.
+- **Version utilities** – `version/version.mochi` parses and compares Mochi
+  toolchain version strings.
 
 These modules are intentionally tiny and support only a subset of Mochi.
 

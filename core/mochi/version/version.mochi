@@ -1,0 +1,134 @@
+package version
+
+// Package version provides operations on Mochi toolchain version strings such as
+// "mochi1.21" or "mochi1.22rc2".
+
+// Mver represents a parsed Mochi version without the leading "mochi" prefix.
+type Mver {
+  major: string
+  minor: string
+  patch: string
+  kind: string
+  pre: string
+}
+
+fun _cmpInt(x: string, y: string): int {
+  if x == y { return 0 }
+  if len(x) < len(y) { return -1 }
+  if len(x) > len(y) { return 1 }
+  if x < y { return -1 }
+  return 1
+}
+
+fun _parse(x: string): Mver {
+  var i = 0
+  while i < len(x) && x[i] >= '0' && x[i] <= '9' { i = i + 1 }
+  if i == 0 || (x[0] == '0' && i != 1) { return Mver{} }
+  let major = x[0:i]
+  x = x[i:len(x)]
+  if len(x) == 0 {
+    return Mver{ major: major, minor: "0", patch: "0", kind: "", pre: "" }
+  }
+  if x[0] != '.' { return Mver{} }
+  x = x[1:len(x)]
+  i = 0
+  while i < len(x) && x[i] >= '0' && x[i] <= '9' { i = i + 1 }
+  if i == 0 || (x[0] == '0' && i != 1) { return Mver{} }
+  let minor = x[0:i]
+  x = x[i:len(x)]
+  if len(x) == 0 {
+    var patch = ""
+    if _cmpInt(minor, "21") < 0 { patch = "0" }
+    return Mver{ major: major, minor: minor, patch: patch, kind: "", pre: "" }
+  }
+  if x[0] == '.' {
+    x = x[1:len(x)]
+    i = 0
+    while i < len(x) && x[i] >= '0' && x[i] <= '9' { i = i + 1 }
+    if i == 0 || (x[0] == '0' && i != 1) || i != len(x) { return Mver{} }
+    let patch = x[0:i]
+    return Mver{ major: major, minor: minor, patch: patch, kind: "", pre: "" }
+  }
+  i = 0
+  while i < len(x) && (x[i] < '0' || '9' < x[i]) {
+    if x[i] < 'a' || x[i] > 'z' { return Mver{} }
+    i = i + 1
+  }
+  if i == 0 { return Mver{} }
+  let kind = x[0:i]
+  x = x[i:len(x)]
+  if len(x) == 0 {
+    return Mver{ major: major, minor: minor, patch: "", kind: kind, pre: "" }
+  }
+  i = 0
+  while i < len(x) && x[i] >= '0' && x[i] <= '9' { i = i + 1 }
+  if i == 0 || (x[0] == '0' && i != 1) || i != len(x) { return Mver{} }
+  let pre = x[0:i]
+  return Mver{ major: major, minor: minor, patch: "", kind: kind, pre: pre }
+}
+
+fun _compare(x: string, y: string): int {
+  let vx = _parse(x)
+  let vy = _parse(y)
+  var c = _cmpInt(vx.major, vy.major)
+  if c != 0 { return c }
+  c = _cmpInt(vx.minor, vy.minor)
+  if c != 0 { return c }
+  c = _cmpInt(vx.patch, vy.patch)
+  if c != 0 { return c }
+  if vx.kind < vy.kind { return -1 }
+  if vx.kind > vy.kind { return 1 }
+  return _cmpInt(vx.pre, vy.pre)
+}
+
+fun _lang(x: string): string {
+  let v = _parse(x)
+  if v.minor == "" || (v.major == "1" && v.minor == "0") {
+    return v.major
+  }
+  return v.major + "." + v.minor
+}
+
+fun _isValid(x: string): bool {
+  let v = _parse(x)
+  return !(v.major == "" && v.minor == "" && v.patch == "" && v.kind == "" && v.pre == "")
+}
+
+fun _indexDash(s: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == '-' { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun _stripMochi(v: string): string {
+  var end = len(v)
+  let dash = _indexDash(v)
+  if dash >= 0 { end = dash }
+  if end < 5 { return "" }
+  if v[0:5] != "mochi" { return "" }
+  return v[5:end]
+}
+
+// Lang returns the language version for a Mochi toolchain version.
+export fun lang(v: string): string {
+  let inner = _stripMochi(v)
+  let l = _lang(inner)
+  if l == "" { return "" }
+  if len(v) >= 5 + len(l) && v[5:5+len(l)] == l {
+    return v[0:5+len(l)]
+  }
+  return "mochi" + l
+}
+
+// Compare returns -1, 0, or +1 depending on whether x < y, x == y, or x > y.
+export fun compare(x: string, y: string): int {
+  return _compare(_stripMochi(x), _stripMochi(y))
+}
+
+// IsValid reports whether the version string is valid.
+export fun isValid(v: string): bool {
+  return _isValid(_stripMochi(v))
+}
