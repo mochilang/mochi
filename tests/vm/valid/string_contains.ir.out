@@ -1,7 +1,7 @@
 func main (regs=6)
   // let s = "catch"
   Const        r0, "catch"
-  Move         r1, r0
+  Const        r1, "catch"
   // print(s.contains("cat"))
   Const        r2, "cat"
   In           r3, r2, r1

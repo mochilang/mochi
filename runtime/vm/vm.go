@@ -15,6 +15,7 @@ import (
 
 	"github.com/alecthomas/participle/v2/lexer"
 
+	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/data"
 	mhttp "mochi/runtime/http"
@@ -1582,13 +1583,16 @@ type compiler struct {
 }
 
 type funcCompiler struct {
-	fn     Function
-	idx    int
-	comp   *compiler
-	vars   map[string]int
-	scopes []map[string]int
-	loops  []*loopContext
-	tags   map[int]regTag
+	fn         Function
+	idx        int
+	comp       *compiler
+	vars       map[string]int
+	scopes     []map[string]int
+	loops      []*loopContext
+	tags       map[int]regTag
+	constInts  map[int]int
+	constStrs  map[string]int
+	constBools map[bool]int
 }
 
 func (fc *funcCompiler) pushScope() {
@@ -1677,7 +1681,7 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constInts: map[int]int{}, constStrs: map[string]int{}, constBools: map[bool]int{}}
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(fn.Params)
@@ -1701,7 +1705,7 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 }
 
 func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constInts: map[int]int{}, constStrs: map[string]int{}, constBools: map[bool]int{}}
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(st.Order) + len(fn.Params)
@@ -1755,7 +1759,7 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constInts: map[int]int{}, constStrs: map[string]int{}, constBools: map[bool]int{}}
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
 	for i, name := range captures {
@@ -1797,7 +1801,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 	prev, exists := c.fnIndex[name]
 	c.fnIndex[name] = idx
 
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constInts: map[int]int{}, constStrs: map[string]int{}, constBools: map[bool]int{}}
 	fc.fn.Name = name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
@@ -1839,7 +1843,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 }
 
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constInts: map[int]int{}, constStrs: map[string]int{}, constBools: map[bool]int{}}
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
 	fc.fn.NumParams = 0
@@ -1909,6 +1913,36 @@ func (fc *funcCompiler) newReg() int {
 	if fc.tags != nil {
 		fc.tags[r] = tagUnknown
 	}
+	return r
+}
+
+func (fc *funcCompiler) intConst(n int) int {
+	if r, ok := fc.constInts[n]; ok {
+		return r
+	}
+	r := fc.newReg()
+	fc.emit(lexer.Position{}, Instr{Op: OpConst, A: r, Val: Value{Tag: ValueInt, Int: n}})
+	fc.constInts[n] = r
+	return r
+}
+
+func (fc *funcCompiler) strConst(s string) int {
+	if r, ok := fc.constStrs[s]; ok {
+		return r
+	}
+	r := fc.newReg()
+	fc.emit(lexer.Position{}, Instr{Op: OpConst, A: r, Val: Value{Tag: ValueStr, Str: s}})
+	fc.constStrs[s] = r
+	return r
+}
+
+func (fc *funcCompiler) boolConst(b bool) int {
+	if r, ok := fc.constBools[b]; ok {
+		return r
+	}
+	r := fc.newReg()
+	fc.emit(lexer.Position{}, Instr{Op: OpConst, A: r, Val: Value{Tag: ValueBool, Bool: b}})
+	fc.constBools[b] = r
 	return r
 }
 
@@ -2838,11 +2872,8 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 		for _, idx := range loop.continueJumps {
 			fc.fn.Code[idx].A = contTarget
 		}
-		one := fc.newReg()
-		fc.emit(f.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp := fc.newReg()
-		fc.emit(f.Pos, Instr{Op: OpAdd, A: tmp, B: idx, C: one})
-		fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: tmp})
+		one := fc.intConst(1)
+		fc.emit(f.Pos, Instr{Op: OpAddInt, A: idx, B: idx, C: one})
 		fc.emit(f.Pos, Instr{Op: OpJump, A: loopStart})
 		endPC := len(fc.fn.Code)
 		fc.fn.Code[jmp].B = endPC
@@ -2885,11 +2916,8 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 		for _, idx := range loop.continueJumps {
 			fc.fn.Code[idx].A = contTarget
 		}
-		one := fc.newReg()
-		fc.emit(f.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp := fc.newReg()
-		fc.emit(f.Pos, Instr{Op: OpAdd, A: tmp, B: idx, C: one})
-		fc.emit(f.Pos, Instr{Op: OpMove, A: idx, B: tmp})
+		one := fc.intConst(1)
+		fc.emit(f.Pos, Instr{Op: OpAddInt, A: idx, B: idx, C: one})
 		fc.emit(f.Pos, Instr{Op: OpJump, A: loopStart})
 		endPC := len(fc.fn.Code)
 		fc.fn.Code[jmp].B = endPC
@@ -3006,11 +3034,8 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 		fc.compileJoins(q, dst, 0)
 	}
 
-	one := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
-	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+	one := fc.intConst(1)
+	fc.emit(src.Pos, Instr{Op: OpAddInt, A: idxReg, B: idxReg, C: one})
 	fc.emit(src.Pos, Instr{Op: OpJump, A: loopStart})
 	end := len(fc.fn.Code)
 	fc.fn.Code[jmp].B = end
@@ -3067,43 +3092,36 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 	fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
 	rjmp := len(fc.fn.Code)
 	fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
-	relem := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpIndex, A: relem, B: rlist, C: ri})
 	rvar, ok := fc.vars[join.Var]
 	if !ok {
 		rvar = fc.newReg()
 		fc.vars[join.Var] = rvar
 	}
-	fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
+	fc.emit(join.Pos, Instr{Op: OpIndex, A: rvar, B: rlist, C: ri})
 
 	if joinType == "left" || joinType == "outer" {
 		matched := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(false)})
 		if join.On != nil {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 			fc.compileJoins(q, dst, idx+1)
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 			fc.compileJoins(q, dst, idx+1)
 		}
 
-		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+		one := fc.intConst(1)
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		end := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = end
 
-		check := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpMove, A: check, B: matched})
 		skipAdd := len(fc.fn.Code)
-		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
+		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: matched})
 		nilreg := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
@@ -3120,11 +3138,8 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 			fc.compileJoins(q, dst, idx+1)
 		}
 
-		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+		one := fc.intConst(1)
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		end := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = end
@@ -3184,14 +3199,12 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	fc.emit(q.Pos, Instr{Op: OpLess, A: lcond, B: li, C: llen})
 	ljmp := len(fc.fn.Code)
 	fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: lcond})
-	lelem := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpIndex, A: lelem, B: llist, C: li})
 	lvar, ok := fc.vars[q.Var]
 	if !ok {
 		lvar = fc.newReg()
 		fc.vars[q.Var] = lvar
 	}
-	fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem})
+	fc.emit(q.Pos, Instr{Op: OpIndex, A: lvar, B: llist, C: li})
 
 	ri := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
@@ -3200,14 +3213,12 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
 	rjmp := len(fc.fn.Code)
 	fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
-	relem := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpIndex, A: relem, B: rlist, C: ri})
 	rvar, ok := fc.vars[join.Var]
 	if !ok {
 		rvar = fc.newReg()
 		fc.vars[join.Var] = rvar
 	}
-	fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
+	fc.emit(join.Pos, Instr{Op: OpIndex, A: rvar, B: rlist, C: ri})
 
 	if join.On != nil {
 		cond := fc.compileExpr(join.On)
@@ -3235,20 +3246,14 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		}
 	}
 
-	one := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
-	fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+	one := fc.intConst(1)
+	fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
 	fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 	rend := len(fc.fn.Code)
 	fc.fn.Code[rjmp].B = rend
 
-	one2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one2, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp2, B: li, C: one2})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmp2})
+	one2 := fc.intConst(1)
+	fc.emit(q.Pos, Instr{Op: OpAddInt, A: li, B: li, C: one2})
 	fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 	lend := len(fc.fn.Code)
 	fc.fn.Code[ljmp].B = lend
@@ -3262,12 +3267,10 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(q.Pos, Instr{Op: OpLess, A: lcond2, B: li2, C: llen})
 		ljmp2 := len(fc.fn.Code)
 		fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: lcond2})
-		lelem2 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpIndex, A: lelem2, B: llist, C: li2})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem2})
+		fc.emit(q.Pos, Instr{Op: OpIndex, A: lvar, B: llist, C: li2})
 
 		matched := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(false)})
 		ri2 := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpConst, A: ri2, Val: Value{Tag: ValueInt, Int: 0}})
 		rstart2 := len(fc.fn.Code)
@@ -3275,31 +3278,24 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(join.Pos, Instr{Op: OpLess, A: rcond2, B: ri2, C: rlen})
 		rjmp2 := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond2})
-		relem2 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpIndex, A: relem2, B: rlist, C: ri2})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem2})
+		fc.emit(join.Pos, Instr{Op: OpIndex, A: rvar, B: rlist, C: ri2})
 		if join.On != nil {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 		}
-		one3 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one3, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp3 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp3, B: ri2, C: one3})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri2, B: tmp3})
+		one3 := fc.intConst(1)
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri2, B: ri2, C: one3})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart2})
 		rend2 := len(fc.fn.Code)
 		fc.fn.Code[rjmp2].B = rend2
 
-		check := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpMove, A: check, B: matched})
 		skipAdd := len(fc.fn.Code)
-		fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: check})
+		fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: matched})
 		nilreg := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 		fc.emit(q.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
@@ -3314,11 +3310,8 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		}
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 
-		one4 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: one4, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp4 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp4, B: li2, C: one4})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: li2, B: tmp4})
+		one4 := fc.intConst(1)
+		fc.emit(q.Pos, Instr{Op: OpAddInt, A: li2, B: li2, C: one4})
 		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart2})
 		lend2 := len(fc.fn.Code)
 		fc.fn.Code[ljmp2].B = lend2
@@ -3332,12 +3325,10 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(join.Pos, Instr{Op: OpLess, A: rcond3, B: ri3, C: rlen})
 		rjmp3 := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond3})
-		relem3 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpIndex, A: relem3, B: rlist, C: ri3})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem3})
+		fc.emit(join.Pos, Instr{Op: OpIndex, A: rvar, B: rlist, C: ri3})
 
 		matched := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(false)})
 		li3 := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpConst, A: li3, Val: Value{Tag: ValueInt, Int: 0}})
 		lstart3 := len(fc.fn.Code)
@@ -3345,31 +3336,24 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(q.Pos, Instr{Op: OpLess, A: lcond3, B: li3, C: llen})
 		ljmp3 := len(fc.fn.Code)
 		fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: lcond3})
-		lelem3 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpIndex, A: lelem3, B: llist, C: li3})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem3})
+		fc.emit(q.Pos, Instr{Op: OpIndex, A: lvar, B: llist, C: li3})
 		if join.On != nil {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 		}
-		one5 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: one5, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp5 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp5, B: li3, C: one5})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: li3, B: tmp5})
+		one5 := fc.intConst(1)
+		fc.emit(q.Pos, Instr{Op: OpAddInt, A: li3, B: li3, C: one5})
 		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart3})
 		lend3 := len(fc.fn.Code)
 		fc.fn.Code[ljmp3].B = lend3
 
-		check := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpMove, A: check, B: matched})
 		skipAdd := len(fc.fn.Code)
-		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
+		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: matched})
 		nilreg := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: lvar, B: nilreg})
@@ -3384,11 +3368,8 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		}
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 
-		one6 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one6, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp6 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp6, B: ri3, C: one6})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri3, B: tmp6})
+		one6 := fc.intConst(1)
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri3, B: ri3, C: one6})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart3})
 		rend3 := len(fc.fn.Code)
 		fc.fn.Code[rjmp3].B = rend3
@@ -3449,12 +3430,10 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	rjmp := len(fc.fn.Code)
 	fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
 
-	relem := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpIndex, A: relem, B: rlist, C: ri})
-	fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
+	fc.emit(join.Pos, Instr{Op: OpIndex, A: rvar, B: rlist, C: ri})
 
 	matched := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
+	fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(false)})
 
 	li := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
@@ -3464,15 +3443,13 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	ljmp := len(fc.fn.Code)
 	fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: lcond})
 
-	lelem := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpIndex, A: lelem, B: llist, C: li})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem})
+	fc.emit(q.Pos, Instr{Op: OpIndex, A: lvar, B: llist, C: li})
 
 	if join.On != nil {
 		cond := fc.compileExpr(join.On)
 		skip := len(fc.fn.Code)
 		fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 		if q.Where != nil {
 			w := fc.compileExpr(q.Where)
 			wskip := len(fc.fn.Code)
@@ -3484,7 +3461,7 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 		}
 		fc.fn.Code[skip].B = len(fc.fn.Code)
 	} else {
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 		if q.Where != nil {
 			w := fc.compileExpr(q.Where)
 			wskip := len(fc.fn.Code)
@@ -3496,19 +3473,14 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 		}
 	}
 
-	oneL := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: oneL, Val: Value{Tag: ValueInt, Int: 1}})
-	tmpL := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmpL, B: li, C: oneL})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmpL})
+	oneL := fc.intConst(1)
+	fc.emit(q.Pos, Instr{Op: OpAddInt, A: li, B: li, C: oneL})
 	fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 	lend := len(fc.fn.Code)
 	fc.fn.Code[ljmp].B = lend
 
-	check := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpMove, A: check, B: matched})
 	skipAdd := len(fc.fn.Code)
-	fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
+	fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: matched})
 	nilreg := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 	fc.emit(join.Pos, Instr{Op: OpMove, A: lvar, B: nilreg})
@@ -3523,11 +3495,8 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	}
 	fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 
-	oneR := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: oneR, Val: Value{Tag: ValueInt, Int: 1}})
-	tmpR := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpAdd, A: tmpR, B: ri, C: oneR})
-	fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmpR})
+	oneR := fc.intConst(1)
+	fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: oneR})
 	fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 	end := len(fc.fn.Code)
 	fc.fn.Code[rjmp].B = end
@@ -3573,11 +3542,8 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 		fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList)
 	}
 
-	one := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+	one := fc.intConst(1)
+	fc.emit(q.Pos, Instr{Op: OpAddInt, A: idxReg, B: idxReg, C: one})
 	fc.emit(q.Pos, Instr{Op: OpJump, A: loopStart})
 	end := len(fc.fn.Code)
 	fc.fn.Code[jmp].B = end
@@ -3659,8 +3625,7 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 		}
 		pairs := make([]int, len(exprs)*2)
 		for i, name := range fieldNames {
-			k := fc.newReg()
-			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: ValueStr, Str: name}})
+			k := fc.strConst(name)
 			pairs[i*2] = k
 			pairs[i*2+1] = regs[i]
 		}
@@ -3677,23 +3642,18 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 
 	items := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpConst, A: items, Val: Value{Tag: ValueList, List: []Value{}}})
-	k1 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: k1, Val: Value{Tag: ValueStr, Str: "__group__"}})
-	v1 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: v1, Val: Value{Tag: ValueBool, Bool: true}})
-	k2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: k2, Val: Value{Tag: ValueStr, Str: "key"}})
+	k1 := fc.strConst("__group__")
+	v1 := fc.boolConst(true)
+	k2 := fc.strConst("key")
 	v2 := fc.newReg()
 	fc.emit(q.Group.Pos, Instr{Op: OpMove, A: v2, B: key})
-	k3 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: k3, Val: Value{Tag: ValueStr, Str: "items"}})
+	k3 := fc.strConst("items")
 	v3 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
 	pairsGrp := []int{k1, v1, k2, v2, k3, v3}
 	if len(fieldNames) > 0 {
 		for i, name := range fieldNames {
-			k := fc.newReg()
-			fc.emit(exprs[i].Pos, Instr{Op: OpConst, A: k, Val: Value{Tag: ValueStr, Str: name}})
+			k := fc.strConst(name)
 			pairsGrp = append(pairsGrp, k, regs[i])
 		}
 	}
@@ -3708,8 +3668,7 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	end := len(fc.fn.Code)
 	fc.fn.Code[jump].B = end
 
-	itemsKey := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: itemsKey, Val: Value{Tag: ValueStr, Str: "items"}})
+	itemsKey := fc.strConst("items")
 	grp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIndex, A: grp2, B: gmap, C: keyStr})
 	cur := fc.newReg()
@@ -3775,11 +3734,8 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
 	}
 
-	one := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAdd, A: tmp2, B: gi, C: one})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: gi, B: tmp2})
+	one := fc.intConst(1)
+	fc.emit(q.Pos, Instr{Op: OpAddInt, A: gi, B: gi, C: one})
 	fc.emit(q.Pos, Instr{Op: OpJump, A: loop})
 	end := len(fc.fn.Code)
 	fc.fn.Code[jmp].B = end
@@ -3832,11 +3788,8 @@ func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist int
 		fc.popScope()
 	}
 
-	one := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
-	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+	one := fc.intConst(1)
+	fc.emit(src.Pos, Instr{Op: OpAddInt, A: idxReg, B: idxReg, C: one})
 	fc.emit(src.Pos, Instr{Op: OpJump, A: loopStart})
 	end := len(fc.fn.Code)
 	fc.fn.Code[jmp].B = end
@@ -3883,43 +3836,36 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 	fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
 	rjmp := len(fc.fn.Code)
 	fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
-	relem := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpIndex, A: relem, B: rlist, C: ri})
 	rvar, ok := fc.vars[join.Var]
 	if !ok {
 		rvar = fc.newReg()
 		fc.vars[join.Var] = rvar
 	}
-	fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
+	fc.emit(join.Pos, Instr{Op: OpIndex, A: rvar, B: rlist, C: ri})
 
 	if joinType == "left" || joinType == "outer" {
 		matched := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: false}})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(false)})
 		if join.On != nil {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
+			fc.emit(join.Pos, Instr{Op: OpMove, A: matched, B: fc.boolConst(true)})
 			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
 		}
 
-		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+		one := fc.intConst(1)
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		end := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = end
 
-		check := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpMove, A: check, B: matched})
 		skipAdd := len(fc.fn.Code)
-		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
+		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: matched})
 		nilreg := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
@@ -3936,11 +3882,8 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
 		}
 
-		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmp := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmp, B: ri, C: one})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmp})
+		one := fc.intConst(1)
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		end := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = end
@@ -4061,11 +4004,8 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 		fc.fn.Code[skip].B = len(fc.fn.Code)
 	}
 
-	one := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-	tmp := fc.newReg()
-	fc.emit(src.Pos, Instr{Op: OpAdd, A: tmp, B: idxReg, C: one})
-	fc.emit(src.Pos, Instr{Op: OpMove, A: idxReg, B: tmp})
+	one := fc.intConst(1)
+	fc.emit(src.Pos, Instr{Op: OpAddInt, A: idxReg, B: idxReg, C: one})
 	fc.emit(src.Pos, Instr{Op: OpJump, A: loopStart})
 	end := len(fc.fn.Code)
 	fc.fn.Code[jmp].B = end
@@ -4455,11 +4395,15 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		}
 		return Value{}, false
 	}
-	// Constant folding of function calls requires the interpreter package,
-	// which is not available in this standalone VM build.
-	// Return false so the call is compiled normally.
-	_ = args
-	return Value{}, false
+	lit, ok := interpreter.EvalPureCall(&parser.CallExpr{Func: call.Func, Args: args}, fc.comp.env)
+	if !ok {
+		return Value{}, false
+	}
+	val, ok := literalToValue(lit)
+	if !ok {
+		return Value{}, false
+	}
+	return val, true
 }
 
 func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {

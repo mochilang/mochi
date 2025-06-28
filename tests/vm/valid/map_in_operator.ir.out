@@ -1,7 +1,7 @@
 func main (regs=6)
   // let m = {1: "a", 2: "b"}
   Const        r0, {"1": "a", "2": "b"}
-  Move         r1, r0
+  Const        r1, {"1": "a", "2": "b"}
   // print(1 in m)
   Const        r2, 1
   In           r3, r2, r1
