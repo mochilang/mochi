@@ -1,0 +1,100 @@
+package heap
+
+// Heap provides a simple binary heap implementation. Items are ordered
+// according to the provided comparison function `less`. The function should
+// return true if the first argument should sort before the second.
+
+type Heap {
+  items: list<any>
+  less: fun(a: any, b: any): bool
+}
+
+// newHeap creates an empty heap using the comparison function `less`.
+export fun newHeap(less: fun(a: any, b: any): bool): Heap {
+  return Heap{ items: [], less: less }
+}
+
+// len returns the number of items in the heap.
+export fun len(h: Heap): int {
+  return count(h.items)
+}
+
+fun _less(h: Heap, i: int, j: int): bool {
+  return h.less(h.items[i], h.items[j])
+}
+
+fun _swap(h: Heap, i: int, j: int) {
+  let tmp = h.items[i]
+  h.items[i] = h.items[j]
+  h.items[j] = tmp
+}
+
+fun _up(h: Heap, j: int) {
+  var i = j
+  while i > 0 {
+    var p = (i - 1) / 2
+    if !_less(h, i, p) { break }
+    _swap(h, i, p)
+    i = p
+  }
+}
+
+fun _down(h: Heap, i0: int, n: int) {
+  var i = i0
+  while true {
+    var j1 = 2 * i + 1
+    if j1 >= n { break }
+    var j = j1
+    var j2 = j1 + 1
+    if j2 < n && _less(h, j2, j1) { j = j2 }
+    if !_less(h, j, i) { break }
+    _swap(h, i, j)
+    i = j
+  }
+}
+
+// push inserts a value into the heap.
+export fun push(h: Heap, x: any) {
+  h.items = h.items + [x]
+  _up(h, count(h.items) - 1)
+}
+
+// peek returns the smallest item without removing it. It returns null if the heap is empty.
+export fun peek(h: Heap): any {
+  if count(h.items) == 0 { return null }
+  return h.items[0]
+}
+
+// pop removes and returns the smallest item from the heap. It returns null if the heap is empty.
+export fun pop(h: Heap): any {
+  let n = count(h.items)
+  if n == 0 { return null }
+  let out = h.items[0]
+  let last = h.items[n-1]
+  h.items = h.items[0:n-1]
+  if n > 1 {
+    h.items[0] = last
+    _down(h, 0, count(h.items))
+  }
+  return out
+}
+
+// fix re-establishes the heap ordering after the item at index i has changed value.
+export fun fix(h: Heap, i: int) {
+  _down(h, i, count(h.items))
+  _up(h, i)
+}
+
+// remove deletes and returns the item at index i.
+export fun remove(h: Heap, i: int): any {
+  let n = count(h.items)
+  if n == 0 { return null }
+  let out = h.items[i]
+  let last = h.items[n-1]
+  h.items = h.items[0:n-1]
+  if i < n-1 {
+    h.items[i] = last
+    fix(h, i)
+  }
+  return out
+}
