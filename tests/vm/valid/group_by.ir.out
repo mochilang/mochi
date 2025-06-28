@@ -1,7 +1,7 @@
 func main (regs=87)
   // let people = [
   Const        r0, [{"age": 30, "city": "Paris", "name": "Alice"}, {"age": 15, "city": "Hanoi", "name": "Bob"}, {"age": 65, "city": "Paris", "name": "Charlie"}, {"age": 45, "city": "Hanoi", "name": "Diana"}, {"age": 70, "city": "Paris", "name": "Eve"}, {"age": 22, "city": "Hanoi", "name": "Frank"}]
-  Move         r1, r0
+  Const        r1, [{"age": 30, "city": "Paris", "name": "Alice"}, {"age": 15, "city": "Hanoi", "name": "Bob"}, {"age": 65, "city": "Paris", "name": "Charlie"}, {"age": 45, "city": "Hanoi", "name": "Diana"}, {"age": 70, "city": "Paris", "name": "Eve"}, {"age": 22, "city": "Hanoi", "name": "Frank"}]
   // let stats = from person in people
   Const        r2, []
   IterPrep     r3, r1
@@ -21,7 +21,6 @@ L2:
   In           r14, r13, r6
   JumpIfTrue   r14, L1
   // let stats = from person in people
-  Const        r15, []
   Const        r16, "__group__"
   Const        r17, true
   Const        r18, "key"
@@ -29,7 +28,7 @@ L2:
   Move         r19, r12
   // let stats = from person in people
   Const        r20, "items"
-  Move         r21, r15
+  Const        r21, []
   MakeMap      r22, 3, r16
   SetIndex     r6, r13, r22
   Append       r23, r7, r22
@@ -40,8 +39,7 @@ L1:
   Index        r26, r25, r24
   Append       r27, r26, r9
   SetIndex     r25, r24, r27
-  Const        r29, 1
-  Move         r5, r29
+  Const        r5, 1
   Jump         L2
 L0:
   Const        r30, 0
@@ -51,6 +49,11 @@ L6:
   JumpIfFalse  r32, L3
   Index        r33, r7, r30
   Move         r34, r33
+  // city: g.key,
+  Const        r36, "key"
+  Index        r37, r34, r36
+  // count: count(g),
+  Count        r39, r34
   // avg_age: avg(from p in g select p.age)
   Const        r41, []
   IterPrep     r42, r34
@@ -59,16 +62,31 @@ L6:
 L5:
   Less         r45, r44, r43
   JumpIfFalse  r45, L4
+  Index        r46, r42, r44
+  Move         r47, r46
+  Const        r48, "age"
+  Index        r49, r47, r48
   Append       r50, r41, r49
   Move         r41, r50
-  Const        r52, 1
-  Move         r44, r52
+  Const        r44, 1
   Jump         L5
+L4:
+  Avg          r53, r41
+  // city: g.key,
+  Const        r54, "city"
+  Move         r55, r37
+  // count: count(g),
+  Const        r56, "count"
+  Move         r57, r39
+  // avg_age: avg(from p in g select p.age)
+  Const        r58, "avg_age"
+  Move         r59, r53
+  // select {
+  MakeMap      r60, 3, r54
   // let stats = from person in people
   Append       r61, r2, r60
   Move         r2, r61
-  Const        r63, 1
-  Move         r30, r63
+  Const        r30, 1
   Jump         L6
 L3:
   Move         r64, r2
@@ -88,20 +106,17 @@ L8:
   Const        r77, "city"
   Index        r78, r71, r77
   Move         r72, r78
-  Const        r79, ": count ="
-  Move         r73, r79
+  Const        r73, ": count ="
   Const        r80, "count"
   Index        r81, r71, r80
   Move         r74, r81
-  Const        r82, ", avg_age ="
-  Move         r75, r82
+  Const        r75, ", avg_age ="
   Const        r83, "avg_age"
   Index        r84, r71, r83
   Move         r76, r84
   PrintN       r72, 5, r72
   // for s in stats {
-  Const        r86, 1
-  Move         r68, r86
+  Const        r68, 1
   Jump         L8
 L7:
   Return       r0
