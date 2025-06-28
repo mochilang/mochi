@@ -3,8 +3,7 @@ func main (regs=16)
   Const        r0, 3
   Move         r1, r0
   // var y = 4
-  Const        r2, 4
-  Move         r3, r2
+  Const        r3, 4
   // var m = {"a": x, "b": y}
   Const        r4, "a"
   Const        r5, "b"

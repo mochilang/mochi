@@ -15,6 +15,7 @@ import (
 
 	"github.com/alecthomas/participle/v2/lexer"
 
+	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/data"
 	mhttp "mochi/runtime/http"
@@ -4455,10 +4456,10 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		}
 		return Value{}, false
 	}
-	// Constant folding of function calls requires the interpreter package,
-	// which is not available in this standalone VM build.
-	// Return false so the call is compiled normally.
-	_ = args
+
+	if lit, ok := interpreter.EvalPureCall(&parser.CallExpr{Func: call.Func, Args: args}, fc.comp.env); ok {
+		return literalToValue(lit)
+	}
 	return Value{}, false
 }
 
