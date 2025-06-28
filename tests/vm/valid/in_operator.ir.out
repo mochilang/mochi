@@ -1,14 +1,13 @@
-func main (regs=7)
+func main (regs=6)
   // let xs = [1, 2, 3]
   Const        r0, [1, 2, 3]
-  Move         r1, r0
   // print(2 in xs)
-  Const        r2, 2
-  In           r3, r2, r1
-  Print        r3
+  Const        r1, 2
+  In           r2, r1, r0
+  Print        r2
   // print(!(5 in xs))
-  Const        r4, 5
-  In           r5, r4, r1
-  Not          r6, r5
-  Print        r6
+  Const        r3, 5
+  In           r4, r3, r0
+  Not          r5, r4
+  Print        r5
   Return       r0

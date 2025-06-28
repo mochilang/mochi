@@ -1,12 +1,10 @@
-func main (regs=5)
+func main (regs=4)
   // let square = fun(x: int): int => x * x
   MakeClosure  r0, fn1, 0, r0
-  Move         r1, r0
   // print(square(6))  // 36
-  Const        r3, 6
-  Move         r2, r3
-  CallV        r4, r1, 1, r2
-  Print        r4
+  Const        r1, 6
+  CallV        r3, r0, 1, r1
+  Print        r3
   Return       r0
 
   // let square = fun(x: int): int => x * x
