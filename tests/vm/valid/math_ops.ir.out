@@ -1,12 +1,12 @@
-func main (regs=9)
+func main (regs=6)
   // print(6 * 7)
   Const        r0, 6
   Const        r2, 42
   Print        r2
   // print(7 / 2)
-  Const        r5, 3
-  Print        r5
+  Const        r4, 3
+  Print        r4
   // print(7 % 2)
-  Const        r8, 1
-  Print        r8
+  Const        r5, 1
+  Print        r5
   Return       r0

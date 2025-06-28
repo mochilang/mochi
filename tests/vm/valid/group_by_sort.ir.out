@@ -1,4 +1,4 @@
-func main (regs=78)
+func main (regs=76)
   // let items = [
   Const        r0, [{"cat": "a", "val": 3}, {"cat": "a", "val": 1}, {"cat": "b", "val": 5}, {"cat": "b", "val": 2}]
   Move         r1, r0
@@ -32,26 +32,29 @@ L2:
   Move         r21, r15
   MakeMap      r22, 3, r16
   SetIndex     r6, r13, r22
-  Append       r23, r7, r22
-  Move         r7, r23
+  Append       r7, r7, r22
 L1:
   Const        r24, "items"
   Index        r25, r6, r13
   Index        r26, r25, r24
   Append       r27, r26, r9
   SetIndex     r25, r24, r27
-  Const        r29, 1
-  Move         r5, r29
+  Const        r28, 1
+  Add          r5, r5, r28
   Jump         L2
 L0:
   Const        r30, 0
   Len          r31, r7
-L7:
+L8:
   Less         r32, r30, r31
   JumpIfFalse  r32, L3
-  Index        r33, r7, r30
-  Move         r34, r33
+  Index        r34, r7, r30
+  // cat: g.key,
+  Const        r35, "cat"
+  Const        r36, "key"
+  Index        r37, r34, r36
   // total: sum(from x in g select x.val)
+  Const        r38, "total"
   Const        r39, []
   IterPrep     r40, r34
   Len          r41, r40
@@ -59,34 +62,46 @@ L7:
 L5:
   Less         r43, r42, r41
   JumpIfFalse  r43, L4
-  Append       r48, r39, r47
-  Move         r39, r48
-  Const        r50, 1
-  Move         r42, r50
+  Index        r45, r40, r42
+  Const        r46, "val"
+  Index        r47, r45, r46
+  Append       r39, r39, r47
+  Const        r49, 1
+  Add          r42, r42, r49
   Jump         L5
+L4:
+  // select {
+  MakeMap      r54, 2, r35
   // sort by -sum(from x in g select x.val)
-  IterPrep     r58, r34
-  Len          r59, r58
-  Const        r60, 0
-L6:
-  Less         r61, r60, r59
-  JumpIfFalse  r61, L4
-  Const        r67, 1
-  Move         r60, r67
-  Jump         L6
-  // from i in items
-  Append       r73, r2, r72
-  Move         r2, r73
-  Const        r75, 1
-  Move         r30, r75
+  Const        r55, []
+  IterPrep     r56, r34
+  Len          r57, r56
+  Const        r58, 0
+L7:
+  Less         r59, r58, r57
+  JumpIfFalse  r59, L6
+  Index        r45, r56, r58
+  Const        r61, "val"
+  Index        r62, r45, r61
+  Append       r55, r55, r62
+  Const        r64, 1
+  Add          r58, r58, r64
   Jump         L7
+L6:
+  Sum          r66, r55
+  Neg          r68, r66
+  // from i in items
+  Move         r69, r54
+  MakeList     r70, 2, r68
+  Append       r2, r2, r70
+  Const        r72, 1
+  Add          r30, r30, r72
+  Jump         L8
 L3:
   // sort by -sum(from x in g select x.val)
-  Sort         76,2,0,0
-  // from i in items
-  Move         r2, r76
+  Sort         r2, r2
   // let grouped =
-  Move         r77, r2
+  Move         r75, r2
   // print(grouped)
-  Print        r77
+  Print        r75
   Return       r0

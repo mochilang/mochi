@@ -1,8 +1,7 @@
 func main (regs=5)
   // let todo = {"title": "hi"} as Todo
   Const        r0, {"title": "hi"}
-  Cast         1,0,0,0
-  Move         r2, r1
+  Cast         r2, r0, Todo
   // print(todo.title)
   Const        r3, "title"
   Index        r4, r2, r3

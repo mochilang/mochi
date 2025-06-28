@@ -1,10 +1,9 @@
-func main (regs=47)
+func main (regs=45)
   // let nums = [1, 2, 3]
   Const        r0, [1, 2, 3]
   Move         r1, r0
   // let letters = ["A", "B"]
-  Const        r2, ["A", "B"]
-  Move         r3, r2
+  Const        r3, ["A", "B"]
   // let pairs = from n in nums
   Const        r4, []
   IterPrep     r5, r1
@@ -13,8 +12,7 @@ func main (regs=47)
 L3:
   Less         r8, r7, r6
   JumpIfFalse  r8, L0
-  Index        r9, r5, r7
-  Move         r10, r9
+  Index        r10, r5, r7
   // where n % 2 == 0
   Const        r11, 2
   Mod          r12, r10, r11
@@ -28,38 +26,44 @@ L3:
 L2:
   Less         r18, r17, r16
   JumpIfFalse  r18, L1
+  Index        r20, r15, r17
+  // select { n: n, l: l }
+  Const        r21, "n"
+  Const        r22, "l"
+  Move         r23, r10
+  Move         r24, r20
+  MakeMap      r25, 2, r21
   // let pairs = from n in nums
-  Append       r28, r4, r27
-  Move         r4, r28
+  Append       r4, r4, r25
   // from l in letters
-  Const        r30, 1
-  Move         r17, r30
+  Const        r27, 1
+  Add          r17, r17, r27
   Jump         L2
+L1:
   // let pairs = from n in nums
-  Const        r32, 1
-  Move         r7, r32
   Jump         L3
 L0:
-  Move         r33, r4
+  Move         r31, r4
   // print("--- Even pairs ---")
-  Const        r34, "--- Even pairs ---"
-  Print        r34
+  Const        r32, "--- Even pairs ---"
+  Print        r32
   // for p in pairs {
-  IterPrep     r35, r33
-  Len          r36, r35
-  Const        r37, 0
+  IterPrep     r33, r31
+  Len          r34, r33
+  Const        r35, 0
 L5:
-  Less         r38, r37, r36
-  JumpIfFalse  r38, L4
-  Index        r39, r35, r37
-  Move         r40, r39
+  Less         r36, r35, r34
+  JumpIfFalse  r36, L4
+  Index        r38, r33, r35
   // print(p.n, p.l)
-  Const        r41, "n"
-  Index        r42, r40, r41
-  Const        r43, "l"
-  Index        r44, r40, r43
-  Print2       r42, r44
+  Const        r39, "n"
+  Index        r40, r38, r39
+  Const        r41, "l"
+  Index        r42, r38, r41
+  Print2       r40, r42
   // for p in pairs {
+  Const        r43, 1
+  Add          r35, r35, r43
   Jump         L5
 L4:
   Return       r0

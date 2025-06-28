@@ -1,93 +1,90 @@
-func main (regs=71)
+func main (regs=69)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
   Move         r1, r0
   // let orders = [
-  Const        r2, [{"customerId": 1, "id": 100}, {"customerId": 2, "id": 101}]
-  Move         r3, r2
+  Const        r3, [{"customerId": 1, "id": 100}, {"customerId": 2, "id": 101}]
   // let items = [
-  Const        r4, [{"orderId": 100, "sku": "a"}, {"orderId": 101, "sku": "b"}]
-  Move         r5, r4
+  Const        r5, [{"orderId": 100, "sku": "a"}, {"orderId": 101, "sku": "b"}]
   // let result = from o in orders
   Const        r6, []
   IterPrep     r7, r3
   Len          r8, r7
   Const        r9, 0
-L4:
+L6:
   Less         r10, r9, r8
   JumpIfFalse  r10, L0
-  Index        r11, r7, r9
-  Move         r12, r11
+  Index        r12, r7, r9
   // join from c in customers on o.customerId == c.id
   IterPrep     r13, r1
   Len          r14, r13
   Const        r15, 0
-L3:
+L5:
   Less         r16, r15, r14
   JumpIfFalse  r16, L1
-  Index        r17, r13, r15
-  Move         r18, r17
+  Index        r18, r13, r15
   Const        r19, "customerId"
   Index        r20, r12, r19
   Const        r21, "id"
   Index        r22, r18, r21
   Equal        r23, r20, r22
-  JumpIfFalse  r23, L1
+  JumpIfFalse  r23, L2
   // join from i in items on o.id == i.orderId
   IterPrep     r24, r5
   Len          r25, r24
   Const        r26, 0
-L2:
+L4:
   Less         r27, r26, r25
-  JumpIfFalse  r27, L1
-  Index        r28, r24, r26
-  Move         r29, r28
+  JumpIfFalse  r27, L2
+  Index        r29, r24, r26
   Const        r30, "id"
   Index        r31, r12, r30
   Const        r32, "orderId"
   Index        r33, r29, r32
   Equal        r34, r31, r33
-  JumpIfFalse  r34, L1
+  JumpIfFalse  r34, L3
+  // select { name: c.name, sku: i.sku }
+  Const        r35, "name"
+  Const        r36, "name"
+  Index        r37, r18, r36
+  Const        r38, "sku"
+  MakeMap      r43, 2, r35
   // let result = from o in orders
-  Append       r46, r6, r45
-  Move         r6, r46
+  Append       r6, r6, r43
+L3:
   // join from i in items on o.id == i.orderId
-  Const        r48, 1
-  Move         r26, r48
-  Jump         L2
-  // join from c in customers on o.customerId == c.id
-  Const        r50, 1
-  Move         r15, r50
-  Jump         L3
-  // let result = from o in orders
-  Const        r52, 1
-  Move         r9, r52
   Jump         L4
-L0:
-  Move         r53, r6
-  // print("--- Multi Join ---")
-  Const        r54, "--- Multi Join ---"
-  Print        r54
-  // for r in result {
-  IterPrep     r55, r53
-  Len          r56, r55
-  Const        r57, 0
-L6:
-  Less         r58, r57, r56
-  JumpIfFalse  r58, L5
-  Index        r59, r55, r57
-  Move         r60, r59
-  // print(r.name, "bought item", r.sku)
-  Const        r64, "name"
-  Index        r65, r60, r64
-  Move         r61, r65
-  Const        r66, "bought item"
-  Move         r62, r66
-  Const        r67, "sku"
-  Index        r68, r60, r67
-  Move         r63, r68
-  PrintN       r61, 3, r61
-  // for r in result {
+L2:
+  // join from c in customers on o.customerId == c.id
+  Const        r47, 1
+  Add          r15, r15, r47
+  Jump         L5
+L1:
+  // let result = from o in orders
+  Const        r49, 1
+  Add          r9, r9, r49
   Jump         L6
-L5:
+L0:
+  Move         r51, r6
+  // print("--- Multi Join ---")
+  Const        r52, "--- Multi Join ---"
+  Print        r52
+  // for r in result {
+  IterPrep     r53, r51
+  Len          r54, r53
+  Const        r55, 0
+L8:
+  Less         r56, r55, r54
+  JumpIfFalse  r56, L7
+  Index        r58, r53, r55
+  // print(r.name, "bought item", r.sku)
+  Const        r62, "name"
+  Index        r59, r58, r62
+  Const        r60, "bought item"
+  Const        r65, "sku"
+  Index        r61, r58, r65
+  PrintN       r59, 3, r59
+  // for r in result {
+  Jump         L8
+L7:
   Return       r0

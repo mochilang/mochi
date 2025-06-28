@@ -10,19 +10,17 @@ func main (regs=16)
 L2:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
+  Index        r8, r3, r5
   Const        r9, 1
   Less         r10, r9, r8
   JumpIfFalse  r10, L1
-  Append       r11, r2, r8
-  Move         r2, r11
-  Const        r13, 1
-  Move         r5, r13
+  Append       r2, r2, r8
+L1:
+  Const        r12, 1
+  Add          r5, r5, r12
   Jump         L2
 L0:
-  Sum          r14, r2
-  Move         r15, r14
+  Sum          r15, r2
   // print(result)
   Print        r15
   Return       r0
