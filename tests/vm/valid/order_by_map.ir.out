@@ -1,7 +1,7 @@
 func main (regs=28)
   // let data = [
   Const        r0, [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
-  Move         r1, r0
+  Const        r1, [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
   // from x in data
   Const        r2, []
   IterPrep     r3, r1
@@ -10,14 +10,29 @@ func main (regs=28)
 L1:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // sort by { a: x.a, b: x.b }
+  Const        r10, "a"
+  Index        r11, r8, r10
+  Const        r13, "b"
+  Index        r14, r8, r13
+  Const        r15, "a"
+  Move         r16, r11
+  Const        r17, "b"
+  Move         r18, r14
+  MakeMap      r19, 2, r15
+  Move         r20, r19
+  // from x in data
+  Move         r21, r8
+  MakeList     r22, 2, r20
   Append       r23, r2, r22
   Move         r2, r23
-  Const        r25, 1
-  Move         r5, r25
+  Const        r5, 1
   Jump         L1
 L0:
   // sort by { a: x.a, b: x.b }
-  Sort         26,2,0,0
+  Sort         r26, r2
   // from x in data
   Move         r2, r26
   // let sorted =

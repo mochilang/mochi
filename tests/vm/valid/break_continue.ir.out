@@ -1,7 +1,7 @@
 func main (regs=17)
   // let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   Const        r0, [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  Move         r1, r0
+  Const        r1, [1, 2, 3, 4, 5, 6, 7, 8, 9]
   // for n in numbers {
   IterPrep     r2, r1
   Len          r3, r2
@@ -32,8 +32,7 @@ L3:
   Print2       r14, r7
 L2:
   // for n in numbers {
-  Const        r16, 1
-  Move         r4, r16
+  Const        r4, 1
   Jump         L4
 L0:
   Return       r0
