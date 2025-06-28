@@ -1,15 +1,15 @@
-func main (regs=20)
+func main (regs=11)
   // print(1 + 2 * 3)
   Const        r0, 1
   Const        r4, 7
   Print        r4
   // print((1 + 2) * 3)
-  Const        r9, 9
-  Print        r9
+  Const        r6, 9
+  Print        r6
   // print(2 * 3 + 1)
-  Const        r14, 7
-  Print        r14
+  Const        r8, 7
+  Print        r8
   // print(2 * (3 + 1))
-  Const        r19, 8
-  Print        r19
+  Const        r10, 8
+  Print        r10
   Return       r0

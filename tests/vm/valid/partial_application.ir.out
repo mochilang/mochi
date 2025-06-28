@@ -1,14 +1,11 @@
-func main (regs=7)
+func main (regs=6)
   // let add5 = add(5)
-  Const        r1, 5
-  Move         r0, r1
+  Const        r0, 5
   Call         r2, add, r0
-  Move         r3, r2
   // print(add5(3))
-  Const        r5, 3
-  Move         r4, r5
-  CallV        r6, r3, 1, r4
-  Print        r6
+  Const        r3, 3
+  CallV        r5, r2, 1, r3
+  Print        r5
   Return       r0
 
   // fun add(a: int, b: int): int {
