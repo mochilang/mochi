@@ -1,7 +1,7 @@
 func main (regs=7)
   // let xs = [1, 2, 3]
   Const        r0, [1, 2, 3]
-  Move         r1, r0
+  Const        r1, [1, 2, 3]
   // print(2 in xs)
   Const        r2, 2
   In           r3, r2, r1

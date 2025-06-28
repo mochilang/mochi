@@ -2,21 +2,19 @@ func main (regs=22)
   // title: "Go",
   Const        r0, "Go"
   // author: Person { name: "Bob", age: 42 },
-  Const        r1, "Bob"
-  Const        r2, 42
   Const        r3, "__name"
   Const        r4, "Person"
   Const        r5, "name"
-  Move         r6, r1
+  Const        r6, "Bob"
   Const        r7, "age"
-  Move         r8, r2
+  Const        r8, 42
   MakeMap      r9, 3, r3
   // let book = Book {
   Const        r10, "__name"
   Const        r11, "Book"
   // title: "Go",
   Const        r12, "title"
-  Move         r13, r0
+  Const        r13, "Go"
   // author: Person { name: "Bob", age: 42 },
   Const        r14, "author"
   Move         r15, r9

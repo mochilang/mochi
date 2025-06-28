@@ -222,6 +222,7 @@ func defRegs(ins Instr) []int {
 func Optimize(fn *Function) {
 	for {
 		changed := constFold(fn)
+		changed = peephole(fn) || changed
 		pruneRedundantJumps(fn)
 		analysis := Liveness(fn)
 		removed := removeDead(fn, analysis)
@@ -437,6 +438,154 @@ func pruneRedundantJumps(fn *Function) bool {
 	}
 	fn.Code = newCode
 	return true
+}
+
+// peephole applies small instruction-level optimizations.
+// It returns true if any instruction was replaced or removed.
+func peephole(fn *Function) bool {
+	changed := false
+	newCode := make([]Instr, 0, len(fn.Code))
+	consts := map[int]Value{}
+
+	applyDefs := func(ins Instr) {
+		switch ins.Op {
+		case OpConst:
+			consts[ins.A] = ins.Val
+		case OpMove:
+			if v, ok := consts[ins.B]; ok {
+				consts[ins.A] = v
+			} else {
+				delete(consts, ins.A)
+			}
+		default:
+			for _, r := range defRegs(ins) {
+				delete(consts, r)
+			}
+		}
+	}
+
+	for _, ins := range fn.Code {
+		switch ins.Op {
+		case OpMove:
+			if v, ok := consts[ins.B]; ok {
+				ins.Op = OpConst
+				ins.Val = v
+				changed = true
+			} else if ins.A == ins.B {
+				changed = true
+				continue
+			}
+		case OpAddInt, OpAddFloat, OpAdd:
+			if v, ok := consts[ins.B]; ok && isZero(v) {
+				ins.Op = OpMove
+				ins.B = ins.C
+				changed = true
+			} else if v, ok := consts[ins.C]; ok && isZero(v) {
+				ins.Op = OpMove
+				changed = true
+			}
+		case OpSubInt, OpSubFloat, OpSub:
+			if v, ok := consts[ins.C]; ok && isZero(v) {
+				ins.Op = OpMove
+				changed = true
+			} else if v, ok := consts[ins.B]; ok && isZero(v) {
+				if ins.Op == OpSubInt {
+					ins.Op = OpNegInt
+				} else if ins.Op == OpSubFloat {
+					ins.Op = OpNegFloat
+				} else {
+					ins.Op = OpNeg
+				}
+				ins.B = ins.C
+				changed = true
+			}
+		case OpMulInt, OpMulFloat, OpMul:
+			if v, ok := consts[ins.B]; ok && isOne(v) {
+				ins.Op = OpMove
+				ins.B = ins.C
+				changed = true
+			} else if v, ok := consts[ins.C]; ok && isOne(v) {
+				ins.Op = OpMove
+				changed = true
+			} else if v, ok := consts[ins.B]; ok && isZero(v) {
+				ins.Op = OpConst
+				ins.Val = zeroValue(v)
+				changed = true
+			} else if v, ok := consts[ins.C]; ok && isZero(v) {
+				ins.Op = OpConst
+				ins.Val = zeroValue(v)
+				changed = true
+			}
+		case OpDivInt, OpDivFloat, OpDiv:
+			if v, ok := consts[ins.C]; ok && isOne(v) {
+				ins.Op = OpMove
+				changed = true
+			} else if v, ok := consts[ins.B]; ok && isZero(v) {
+				ins.Op = OpConst
+				ins.Val = zeroValue(v)
+				changed = true
+			}
+		case OpModInt:
+			if v, ok := consts[ins.B]; ok && isZero(v) {
+				ins.Op = OpConst
+				ins.Val = Value{Tag: ValueInt, Int: 0}
+				changed = true
+			} else if v, ok := consts[ins.C]; ok && isOne(v) {
+				ins.Op = OpConst
+				ins.Val = Value{Tag: ValueInt, Int: 0}
+				changed = true
+			}
+		case OpModFloat:
+			if v, ok := consts[ins.B]; ok && isZero(v) {
+				ins.Op = OpConst
+				ins.Val = Value{Tag: ValueFloat, Float: 0}
+				changed = true
+			} else if v, ok := consts[ins.C]; ok && isOne(v) {
+				ins.Op = OpConst
+				ins.Val = Value{Tag: ValueFloat, Float: 0}
+				changed = true
+			}
+		}
+
+		newCode = append(newCode, ins)
+		applyDefs(ins)
+	}
+
+	if changed {
+		fn.Code = newCode
+	}
+	return changed
+}
+
+func isZero(v Value) bool {
+	switch v.Tag {
+	case ValueInt:
+		return v.Int == 0
+	case ValueFloat:
+		return v.Float == 0
+	default:
+		return false
+	}
+}
+
+func isOne(v Value) bool {
+	switch v.Tag {
+	case ValueInt:
+		return v.Int == 1
+	case ValueFloat:
+		return v.Float == 1
+	default:
+		return false
+	}
+}
+
+func zeroValue(v Value) Value {
+	switch v.Tag {
+	case ValueFloat:
+		return Value{Tag: ValueFloat, Float: 0}
+	default:
+		return Value{Tag: ValueInt, Int: 0}
+	}
 }
 
 func evalUnaryConst(op Op, v Value) (Value, bool) {

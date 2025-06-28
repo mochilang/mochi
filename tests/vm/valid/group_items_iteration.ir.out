@@ -1,7 +1,7 @@
 func main (regs=90)
   // let data = [
   Const        r0, [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}]
-  Move         r1, r0
+  Const        r1, [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}]
   // let groups = from d in data group by d.tag into g select g
   Const        r2, []
   IterPrep     r3, r1
@@ -19,13 +19,12 @@ L2:
   Str          r13, r12
   In           r14, r13, r6
   JumpIfTrue   r14, L1
-  Const        r15, []
   Const        r16, "__group__"
   Const        r17, true
   Const        r18, "key"
   Move         r19, r12
   Const        r20, "items"
-  Move         r21, r15
+  Const        r21, []
   MakeMap      r22, 3, r16
   SetIndex     r6, r13, r22
   Append       r23, r7, r22
@@ -36,8 +35,7 @@ L1:
   Index        r26, r25, r24
   Append       r27, r26, r9
   SetIndex     r25, r24, r27
-  Const        r29, 1
-  Move         r5, r29
+  Const        r5, 1
   Jump         L2
 L0:
   Const        r30, 0
@@ -45,16 +43,16 @@ L0:
 L4:
   Less         r32, r30, r31
   JumpIfFalse  r32, L3
+  Index        r33, r7, r30
+  Move         r34, r33
   Append       r35, r2, r34
   Move         r2, r35
-  Const        r37, 1
-  Move         r30, r37
+  Const        r30, 1
   Jump         L4
 L3:
   Move         r38, r2
   // var tmp = []
-  Const        r39, []
-  Move         r40, r39
+  Const        r40, []
   // for g in groups {
   IterPrep     r41, r38
   Len          r42, r41
@@ -65,8 +63,7 @@ L8:
   Index        r45, r41, r43
   Move         r34, r45
   // var total = 0
-  Const        r46, 0
-  Move         r47, r46
+  Const        r47, 0
   // for x in g.items {
   Const        r48, "items"
   Index        r49, r34, r48
@@ -81,18 +78,24 @@ L7:
   // total = total + x.val
   Const        r56, "val"
   Index        r57, r55, r56
-  Add          r58, r47, r57
+  Move         r58, r57
   Move         r47, r58
   // for x in g.items {
-  Const        r60, 1
-  Move         r52, r60
+  Const        r52, 1
   Jump         L7
+L6:
   // tmp = append(tmp, {tag: g.key, total: total})
+  Const        r62, "key"
+  Index        r63, r34, r62
+  Const        r65, "tag"
+  Move         r66, r63
+  Const        r67, "total"
+  Move         r68, r47
+  MakeMap      r69, 2, r65
   Append       r70, r40, r69
   Move         r40, r70
   // for g in groups {
-  Const        r72, 1
-  Move         r43, r72
+  Const        r43, 1
   Jump         L8
 L5:
   // let result = from r in tmp sort by r.tag select r
@@ -103,13 +106,19 @@ L5:
 L10:
   Less         r77, r76, r75
   JumpIfFalse  r77, L9
+  Index        r78, r74, r76
+  Move         r79, r78
+  Const        r80, "tag"
+  Index        r81, r79, r80
+  Move         r82, r81
+  Move         r83, r79
+  MakeList     r84, 2, r82
   Append       r85, r73, r84
   Move         r73, r85
-  Const        r87, 1
-  Move         r76, r87
+  Const        r76, 1
   Jump         L10
 L9:
-  Sort         88,73,0,0
+  Sort         r88, r73
   Move         r73, r88
   Move         r89, r73
   // print(result)
