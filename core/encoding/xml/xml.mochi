@@ -1,0 +1,252 @@
+package xml
+
+// Marshal encodes an XML node structure into a string.
+// The node is represented as a map with fields:
+//  tag: string
+//  attrs: map<string,string>
+//  children: list<any> (strings or nodes)
+export fun marshal(node: map<string, any>): string {
+  return _encodeNode(node)
+}
+
+fun _escape(s: string): string {
+  var out = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch == '&' { out = out + "&amp;" }
+    else if ch == '<' { out = out + "&lt;" }
+    else if ch == '>' { out = out + "&gt;" }
+    else if ch == '"' { out = out + "&quot;" }
+    else if ch == '\'' { out = out + "&apos;" }
+    else { out = out + ch }
+    i = i + 1
+  }
+  return out
+}
+
+fun _encodeNode(node: map<string, any>): string {
+  let tag = node["tag"] as string
+  var attrs: map<string,string> = {}
+  if "attrs" in node { attrs = node["attrs"] as map<string,string> }
+  var children: list<any> = []
+  if "children" in node { children = node["children"] as list<any> }
+
+  var out = "<" + tag
+  let ks = keys(attrs)
+  for k in ks {
+    out = out + " " + k + "=\"" + _escape(str(attrs[k])) + "\""
+  }
+  if count(children) == 0 {
+    out = out + "/>"
+    return out
+  }
+  out = out + ">"
+  for c in children {
+    if c is string { out = out + _escape(c) }
+    else { out = out + _encodeNode(c as map<string, any>) }
+  }
+  out = out + "</" + tag + ">"
+  return out
+}
+
+export fun unmarshal(text: string): map<string, any> {
+  var idx = 0
+
+  fun skipSpaces() {
+    while idx < len(text) {
+      let ch = text[idx]
+      if ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t' { idx = idx + 1 } else { break }
+    }
+  }
+
+  fun parseName(): string {
+    var start = idx
+    while idx < len(text) {
+      let ch = text[idx]
+      if (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-' || ch == ':' {
+        idx = idx + 1
+      } else {
+        break
+      }
+    }
+    return text[start:idx]
+  }
+
+  fun parseAttrs(): map<string,string> {
+    var attrs: map<string,string> = {}
+    skipSpaces()
+    while idx < len(text) && text[idx] != '>' && !(text[idx] == '/' && idx + 1 < len(text) && text[idx+1] == '>') {
+      let name = parseName()
+      skipSpaces()
+      if idx < len(text) && text[idx] == '=' { idx = idx + 1 }
+      skipSpaces()
+      var quote = '"'
+      if idx < len(text) && (text[idx] == '"' || text[idx] == '\'') { quote = text[idx]; idx = idx + 1 }
+      var val = ""
+      while idx < len(text) && text[idx] != quote {
+        val = val + text[idx]
+        idx = idx + 1
+      }
+      if idx < len(text) && text[idx] == quote { idx = idx + 1 }
+      attrs[name] = _unescape(val)
+      skipSpaces()
+    }
+    return attrs
+  }
+
+  fun parseText(): string {
+    var start = idx
+    while idx < len(text) && text[idx] != '<' { idx = idx + 1 }
+    return _unescape(text[start:idx])
+  }
+
+  fun parseUntil(end: string) {
+    while idx + len(end) <= len(text) && text[idx:idx+len(end)] != end { idx = idx + 1 }
+    if idx + len(end) <= len(text) { idx = idx + len(end) }
+  }
+
+  fun parseComment() { idx = idx + 4; parseUntil("-->") }
+  fun parsePI() { idx = idx + 2; parseUntil("?>") }
+  fun parseDoctype() { idx = idx + 9; while idx < len(text) && text[idx] != '>' { idx = idx + 1 }; if idx < len(text) { idx = idx + 1 } }
+  fun parseCData(): string {
+    idx = idx + 9
+    var start = idx
+    while idx + 3 <= len(text) && text[idx:idx+3] != "]]>" { idx = idx + 1 }
+    let val = text[start:idx]
+    if idx + 3 <= len(text) { idx = idx + 3 }
+    return val
+  }
+
+  fun parseMisc() {
+    skipSpaces()
+    while idx < len(text) && text[idx] == '<' {
+      if idx + 4 <= len(text) && text[idx:idx+4] == "<!--" { parseComment(); skipSpaces() }
+      else if idx + 2 <= len(text) && text[idx:idx+2] == "<?" { parsePI(); skipSpaces() }
+      else if idx + 9 <= len(text) && text[idx:idx+9] == "<!DOCTYPE" { parseDoctype(); skipSpaces() }
+      else { break }
+    }
+  }
+
+  fun parseNode(): map<string, any> {
+    parseMisc()
+    skipSpaces()
+    if idx >= len(text) { return {"tag": "", "attrs": {}, "children": []} }
+    // expect '<'
+    if text[idx] != '<' { return {"tag": "", "attrs": {}, "children": [parseText()] } }
+    idx = idx + 1
+    let tag = parseName()
+    let attrs = parseAttrs()
+    if idx < len(text) && text[idx] == '/' && idx + 1 < len(text) && text[idx+1] == '>' {
+      idx = idx + 2
+      return {"tag": tag, "attrs": attrs, "children": []}
+    }
+    if idx < len(text) && text[idx] == '>' { idx = idx + 1 }
+    var children: list<any> = []
+    while true {
+      skipSpaces()
+      parseMisc()
+      if idx < len(text) && text[idx] == '<' {
+        if idx + 1 < len(text) && text[idx+1] == '/' {
+          idx = idx + 2
+          let endTag = parseName()
+          if idx < len(text) && text[idx] == '>' { idx = idx + 1 }
+          break
+        } else if idx + 9 <= len(text) && text[idx:idx+9] == "<![CDATA[" {
+          let cd = parseCData()
+          if len(cd) > 0 { children = children + [cd] }
+        } else {
+          let child = parseNode()
+          children = children + [child]
+        }
+      } else if idx < len(text) {
+        let txt = parseText()
+        if len(txt) > 0 { children = children + [txt] }
+      } else {
+        break
+      }
+    }
+    return {"tag": tag, "attrs": attrs, "children": children}
+  }
+
+  let node = parseNode()
+  return node
+}
+
+fun _unescape(s: string): string {
+  var out = ""
+  var i = 0
+  while i < len(s) {
+    if s[i] == '&' {
+      if i + 1 < len(s) && s[i+1] == '#' {
+        var j = i + 2
+        var base = 10
+        if j < len(s) && (s[j] == 'x' || s[j] == 'X') { base = 16; j = j + 1 }
+        var num = ""
+        while j < len(s) && s[j] != ';' { num = num + s[j]; j = j + 1 }
+        if j < len(s) && s[j] == ';' {
+          let code = _parseIntBase(num, base)
+          out = out + string(rune(code))
+          i = j + 1
+          continue
+        }
+      }
+      if i + 5 <= len(s) && s[i:i+5] == "&amp;" { out = out + '&'; i = i + 5; continue }
+      if i + 4 <= len(s) && s[i:i+4] == "&lt;" { out = out + '<'; i = i + 4; continue }
+      if i + 4 <= len(s) && s[i:i+4] == "&gt;" { out = out + '>'; i = i + 4; continue }
+      if i + 6 <= len(s) && s[i:i+6] == "&quot;" { out = out + '"'; i = i + 6; continue }
+      if i + 6 <= len(s) && s[i:i+6] == "&apos;" { out = out + '\''; i = i + 6; continue }
+    }
+    out = out + s[i]
+    i = i + 1
+  }
+  return out
+}
+
+fun _parseIntBase(str: string, base: int): int {
+  var n = 0
+  var i = 0
+  let digits = {
+    '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
+    'a': 10, 'b': 11, 'c': 12, 'd': 13, 'e': 14, 'f': 15,
+    'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15,
+  }
+  while i < len(str) {
+    n = n * base + digits[str[i]]
+    i = i + 1
+  }
+  return n
+}
+
+test "xml round trip" {
+  let node = {
+    "tag": "people",
+    "attrs": {},
+    "children": [
+      {"tag": "person", "attrs": {"age": "30"}, "children": [
+        {"tag": "name", "attrs": {}, "children": ["Alice"]},
+        {"tag": "email", "attrs": {}, "children": ["alice@example.com"]}
+      ]},
+      {"tag": "person", "attrs": {"age": "15"}, "children": [
+        {"tag": "name", "attrs": {}, "children": ["Bob"]},
+        {"tag": "email", "attrs": {}, "children": ["bob@example.com"]}
+      ]}
+    ]
+  }
+  let text = marshal(node)
+  let out = unmarshal(text)
+  expect out == node
+}
+
+test "xml extras" {
+  let text = "<?xml version=\"1.0\"?><!DOCTYPE note><!--comment--><note><data><![CDATA[<raw>]]></data><num>&#x41;</num></note>"
+  let out = unmarshal(text)
+  expect out == {
+    "tag": "note",
+    "attrs": {},
+    "children": [
+      {"tag": "data", "attrs": {}, "children": ["<raw>"]},
+      {"tag": "num", "attrs": {}, "children": ["A"]},
+    ]
+  }
+}
