@@ -3,77 +3,48 @@ func main (regs=44)
   Const        r0, 2
   // 1 => "one"
   Jump         L0
-  Const        r5, "one"
-  Move         r2, r5
   Jump         L1
+L0:
   // 2 => "two"
-  Const        r8, "two"
-  Move         r2, r8
   Jump         L1
   // 3 => "three"
   Jump         L2
-  Const        r11, "three"
-  Move         r2, r11
   Jump         L1
-L2:
-  // _ => "unknown"
-  Const        r12, "unknown"
-  Move         r2, r12
-  Jump         L1
-  Const        r2, nil
 L1:
   // let label = match x {
-  Move         r13, r2
+  Const        r13, nil
   // print(label)
   Print        r13
   // "mon" => "tired"
-  Jump         L0
-  Const        r19, "tired"
-  Move         r16, r19
   Jump         L3
-  // "fri" => "excited"
-  Jump         L0
-  Const        r22, "excited"
-  Move         r16, r22
-  Jump         L3
-  // "sun" => "relaxed"
-  Const        r25, "relaxed"
-  Move         r16, r25
-  Jump         L3
-  // _     => "normal"
-  Const        r26, "normal"
-  Move         r16, r26
-  Jump         L3
-  Const        r16, nil
+  Jump         L4
 L3:
+  // "fri" => "excited"
+  Jump         L5
+  Jump         L4
+L5:
+  // "sun" => "relaxed"
+  Jump         L4
+L4:
   // let mood = match day {
-  Move         r27, r16
+  Const        r27, nil
   // print(mood)
   Print        r27
   // true => "confirmed"
-  Const        r33, "confirmed"
-  Move         r30, r33
-  Jump         L4
+  Jump         L6
   // false => "denied"
-  Jump         L5
-  Const        r36, "denied"
-  Move         r30, r36
-  Jump         L4
-L5:
-  Const        r30, nil
-L4:
+  Jump         L6
+L6:
   // let status = match ok {
-  Move         r37, r30
+  Const        r37, nil
   // print(status)
   Print        r37
   // print(classify(0))
-  Const        r39, 0
-  Move         r38, r39
+  Const        r38, 0
   Call         r40, classify, r38
   Print        r40
   // print(classify(5))
-  Const        r42, 5
-  Move         r41, r42
+  Const        r41, 5
   Call         r43, classify, r41
   Print        r43
   Return       r0
@@ -84,21 +55,18 @@ func classify (regs=9)
   Const        r3, 0
   Equal        r2, r0, r3
   JumpIfFalse  r2, L0
-  Const        r4, "zero"
-  Move         r1, r4
+  Const        r1, "zero"
   Jump         L1
 L0:
   // 1 => "one"
   Const        r6, 1
   Equal        r5, r0, r6
   JumpIfFalse  r5, L2
-  Const        r7, "one"
-  Move         r1, r7
+  Const        r1, "one"
   Jump         L1
 L2:
   // _ => "many"
-  Const        r8, "many"
-  Move         r1, r8
+  Const        r1, "many"
   Jump         L1
   Const        r1, nil
 L1:

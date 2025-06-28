@@ -1,7 +1,7 @@
 func main (regs=16)
   // let nums = [1,2,3]
   Const        r0, [1, 2, 3]
-  Move         r1, r0
+  Const        r1, [1, 2, 3]
   // let result = from n in nums where n > 1 select sum(n)
   Const        r2, []
   IterPrep     r3, r1
@@ -17,8 +17,8 @@ L2:
   JumpIfFalse  r10, L1
   Append       r11, r2, r8
   Move         r2, r11
-  Const        r13, 1
-  Move         r5, r13
+L1:
+  Const        r5, 1
   Jump         L2
 L0:
   Sum          r14, r2

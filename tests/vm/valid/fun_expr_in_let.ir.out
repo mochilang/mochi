@@ -3,8 +3,7 @@ func main (regs=5)
   MakeClosure  r0, fn1, 0, r0
   Move         r1, r0
   // print(square(6))  // 36
-  Const        r3, 6
-  Move         r2, r3
+  Const        r2, 6
   CallV        r4, r1, 1, r2
   Print        r4
   Return       r0
