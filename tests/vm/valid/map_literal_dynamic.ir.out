@@ -1,23 +1,17 @@
-func main (regs=16)
+func main (regs=12)
   // var x = 3
   Const        r0, 3
   Move         r1, r0
   // var y = 4
-  Const        r2, 4
-  Move         r3, r2
+  Const        r3, 4
   // var m = {"a": x, "b": y}
   Const        r4, "a"
   Const        r5, "b"
-  Move         r6, r4
-  Move         r7, r1
-  Move         r8, r5
-  Move         r9, r3
-  MakeMap      r10, 2, r6
-  Move         r11, r10
+  Move         r6, r1
+  Move         r7, r3
+  MakeMap      r9, 2, r4
   // print(m["a"], m["b"])
-  Const        r12, "a"
-  Index        r13, r11, r12
-  Const        r14, "b"
-  Index        r15, r11, r14
-  Print2       r13, r15
+  Index        r10, r9, r4
+  Index        r11, r9, r5
+  Print2       r10, r11
   Return       r0
