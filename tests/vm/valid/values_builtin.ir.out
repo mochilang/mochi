@@ -1,8 +1,7 @@
-func main (regs=3)
+func main (regs=2)
   // let m = {"a":1, "b":2, "c":3}
   Const        r0, {"a": 1, "b": 2, "c": 3}
-  Move         r1, r0
   // print(values(m))
-  Values       2,1,0,0
-  Print        r2
+  Const        r1, [1, 2, 3]
+  Print        r1
   Return       r0

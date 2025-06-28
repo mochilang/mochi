@@ -1,146 +1,149 @@
-func main (regs=120)
+func main (regs=110)
   // let nations = [
   Const        r0, [{"id": 1, "name": "A"}, {"id": 2, "name": "B"}]
-  Move         r1, r0
   // let suppliers = [
-  Const        r2, [{"id": 1, "nation": 1}, {"id": 2, "nation": 2}]
-  Move         r3, r2
+  Const        r1, [{"id": 1, "nation": 1}, {"id": 2, "nation": 2}]
   // let partsupp = [
-  Const        r4, [{"cost": 10, "part": 100, "qty": 2, "supplier": 1}, {"cost": 20, "part": 100, "qty": 1, "supplier": 2}, {"cost": 5, "part": 200, "qty": 3, "supplier": 1}]
-  Move         r5, r4
+  Const        r2, [{"cost": 10, "part": 100, "qty": 2, "supplier": 1}, {"cost": 20, "part": 100, "qty": 1, "supplier": 2}, {"cost": 5, "part": 200, "qty": 3, "supplier": 1}]
   // from ps in partsupp
-  Const        r6, []
-  IterPrep     r7, r5
-  Len          r8, r7
-  Const        r9, 0
-L4:
-  Less         r10, r9, r8
-  JumpIfFalse  r10, L0
-  Index        r11, r7, r9
-  Move         r12, r11
-  // join s in suppliers on s.id == ps.supplier
-  IterPrep     r13, r3
-  Len          r14, r13
-  Const        r15, 0
-L3:
-  Less         r16, r15, r14
-  JumpIfFalse  r16, L1
-  Index        r17, r13, r15
-  Move         r18, r17
-  Const        r19, "id"
-  Index        r20, r18, r19
-  Const        r21, "supplier"
-  Index        r22, r12, r21
-  Equal        r23, r20, r22
-  JumpIfFalse  r23, L1
-  // join n in nations on n.id == s.nation
-  IterPrep     r24, r1
-  Len          r25, r24
-  Const        r26, 0
-L2:
-  Less         r27, r26, r25
-  JumpIfFalse  r27, L1
-  Index        r28, r24, r26
-  Move         r29, r28
-  Const        r30, "id"
-  Index        r31, r29, r30
-  Const        r32, "nation"
-  Index        r33, r18, r32
-  Equal        r34, r31, r33
-  JumpIfFalse  r34, L1
-  // where n.name == "A"
-  Const        r35, "name"
-  Index        r36, r29, r35
-  Const        r37, "A"
-  Equal        r38, r36, r37
-  JumpIfFalse  r38, L1
-  // from ps in partsupp
-  Append       r53, r6, r52
-  Move         r6, r53
-  // join n in nations on n.id == s.nation
-  Const        r55, 1
-  Move         r26, r55
-  Jump         L2
-  // join s in suppliers on s.id == ps.supplier
-  Const        r57, 1
-  Move         r15, r57
-  Jump         L3
-  // from ps in partsupp
-  Const        r59, 1
-  Move         r9, r59
-  Jump         L4
-L0:
-  // let filtered =
-  Move         r60, r6
-  // from x in filtered
-  Const        r61, []
-  IterPrep     r62, r60
-  Len          r63, r62
-  Const        r64, 0
-  MakeMap      r65, 0, r0
-  Const        r66, []
-L7:
-  Less         r67, r64, r63
-  JumpIfFalse  r67, L5
-  Index        r68, r62, r64
-  Move         r69, r68
-  // group by x.part into g
-  Const        r70, "part"
-  Index        r71, r69, r70
-  Str          r72, r71
-  In           r73, r72, r65
-  JumpIfTrue   r73, L6
-  // from x in filtered
-  Const        r74, []
-  Const        r75, "__group__"
-  Const        r76, true
-  Const        r77, "key"
-  // group by x.part into g
-  Move         r78, r71
-  // from x in filtered
-  Const        r79, "items"
-  Move         r80, r74
-  MakeMap      r81, 3, r75
-  SetIndex     r65, r72, r81
-  Append       r82, r66, r81
-  Move         r66, r82
+  Const        r3, []
+  IterPrep     r4, r2
+  Len          r5, r4
+  Const        r6, 0
 L6:
-  Const        r83, "items"
-  Index        r84, r65, r72
-  Index        r85, r84, r83
-  Append       r86, r85, r68
-  SetIndex     r84, r83, r86
-  Const        r88, 1
-  Move         r64, r88
-  Jump         L7
+  Less         r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r9, r4, r6
+  // join s in suppliers on s.id == ps.supplier
+  IterPrep     r10, r1
+  Len          r11, r10
+  Const        r12, 0
 L5:
-  Const        r89, 0
-  Len          r90, r66
-L10:
-  Less         r91, r89, r90
-  JumpIfFalse  r91, L8
-  Index        r92, r66, r89
-  Move         r93, r92
-  // total: sum(from r in g select r.value)
-  Const        r98, []
-  IterPrep     r99, r93
-  Len          r100, r99
-  Const        r101, 0
-L9:
-  Less         r102, r101, r100
-  JumpIfFalse  r102, L1
-  Append       r107, r98, r106
-  Move         r98, r107
-  Jump         L9
+  Less         r13, r12, r11
+  JumpIfFalse  r13, L1
+  Index        r15, r10, r12
+  Const        r16, "id"
+  Index        r17, r15, r16
+  Const        r18, "supplier"
+  Index        r19, r9, r18
+  Equal        r20, r17, r19
+  JumpIfFalse  r20, L2
+  // join n in nations on n.id == s.nation
+  IterPrep     r21, r0
+  Len          r22, r21
+  Const        r23, 0
+L4:
+  Less         r24, r23, r22
+  JumpIfFalse  r24, L2
+  Index        r26, r21, r23
+  Const        r27, "id"
+  Index        r28, r26, r27
+  Const        r29, "nation"
+  Index        r30, r15, r29
+  Equal        r31, r28, r30
+  JumpIfFalse  r31, L3
+  // where n.name == "A"
+  Const        r32, "name"
+  Index        r33, r26, r32
+  Const        r34, "A"
+  Equal        r35, r33, r34
+  JumpIfFalse  r35, L3
+  // part: ps.part,
+  Const        r36, "part"
+  Const        r37, "part"
+  Index        r38, r9, r37
+  // value: ps.cost * ps.qty
+  Const        r39, "value"
+  // select {
+  MakeMap      r47, 2, r36
+  // from ps in partsupp
+  Append       r3, r3, r47
+L3:
+  // join n in nations on n.id == s.nation
+  Const        r49, 1
+  Add          r23, r23, r49
+  Jump         L4
+L2:
+  // join s in suppliers on s.id == ps.supplier
+  Const        r51, 1
+  Add          r12, r12, r51
+  Jump         L5
+L1:
+  // from ps in partsupp
+  Const        r53, 1
+  Add          r6, r6, r53
+  Jump         L6
+L0:
   // from x in filtered
-  Append       r116, r61, r115
-  Move         r61, r116
-  Const        r118, 1
-  Move         r89, r118
-  Jump         L10
+  Const        r55, []
+  IterPrep     r56, r3
+  Len          r57, r56
+  Const        r58, 0
+  MakeMap      r59, 0, r0
+  Const        r60, []
+L9:
+  Less         r61, r58, r57
+  JumpIfFalse  r61, L7
+  Index        r62, r56, r58
+  Move         r63, r62
+  // group by x.part into g
+  Const        r64, "part"
+  Index        r65, r63, r64
+  Str          r66, r65
+  In           r67, r66, r59
+  JumpIfTrue   r67, L8
+  // from x in filtered
+  Const        r68, []
+  Const        r69, "__group__"
+  Const        r70, true
+  Const        r71, "key"
+  // group by x.part into g
+  Move         r72, r65
+  // from x in filtered
+  Const        r73, "items"
+  Move         r74, r68
+  MakeMap      r75, 3, r69
+  SetIndex     r59, r66, r75
 L8:
-  // let grouped =
-  Move         r119, r61
+  Const        r77, "items"
+  Index        r78, r59, r66
+  Index        r79, r78, r77
+  Append       r80, r79, r62
+  SetIndex     r78, r77, r80
+  Const        r81, 1
+  Add          r58, r58, r81
+  Jump         L9
+L7:
+  Const        r83, 0
+  Const        r84, 0
+L13:
+  Less         r85, r83, r84
+  JumpIfFalse  r85, L10
+  Index        r87, r60, r83
+  // total: sum(from r in g select r.value)
+  Const        r91, []
+  IterPrep     r92, r87
+  Len          r93, r92
+  Const        r94, 0
+L12:
+  Less         r95, r94, r93
+  JumpIfFalse  r95, L11
+  Index        r97, r92, r94
+  Const        r98, "value"
+  Index        r99, r97, r98
+  Append       r91, r91, r99
+  Const        r101, 1
+  Add          r94, r94, r101
+  Jump         L12
+L11:
+  // select {
+  MakeMap      r106, 2, r36
+  // from x in filtered
+  Append       r55, r55, r106
+  Const        r108, 1
+  Add          r83, r83, r108
+  Jump         L13
+L10:
   // print(grouped)
-  Print        r119
+  Print        r55
   Return       r0

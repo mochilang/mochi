@@ -1,15 +1,15 @@
-func main (regs=12)
+func main (regs=6)
   // print("a" < "b")
   Const        r0, "a"
   Const        r2, true
   Print        r2
   // print("a" <= "a")
+  Const        r3, true
+  Print        r3
+  // print("b" > "a")
+  Const        r4, true
+  Print        r4
+  // print("b" >= "b")
   Const        r5, true
   Print        r5
-  // print("b" > "a")
-  Const        r8, true
-  Print        r8
-  // print("b" >= "b")
-  Const        r11, true
-  Print        r11
   Return       r0
