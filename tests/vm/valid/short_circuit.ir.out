@@ -1,24 +1,19 @@
 func main (regs=14)
   // print(false && boom(1, 2))
   Const        r0, false
-  Move         r1, r0
-  Jump         L0
-  Const        r4, 1
-  Move         r2, r4
-  Const        r5, 2
-  Move         r3, r5
+  Const        r1, false
+  JumpIfFalse  r1, L0
+  Const        r2, 1
+  Const        r3, 2
   Call2        r6, boom, r2, r3
   Move         r1, r6
 L0:
   Print        r1
   // print(true || boom(1, 2))
-  Const        r7, true
-  Move         r8, r7
-  Jump         L1
-  Const        r11, 1
-  Move         r9, r11
-  Const        r12, 2
-  Move         r10, r12
+  Const        r8, true
+  JumpIfTrue   r8, L1
+  Const        r9, 1
+  Const        r10, 2
   Call2        r13, boom, r9, r10
   Move         r8, r13
 L1:
