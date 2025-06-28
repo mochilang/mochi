@@ -156,3 +156,13 @@ from the disassembler:
 | `Intersect` | Intersection of lists B and C | `Intersect r0, r1, r2` |
 | `Sort` | Sort pairs in list B by first element | `Sort r0, r1` |
 
+## Instruction-Level Optimizations
+
+Compiled functions are optimized using a small set of peephole rules. These
+rules simplify operations like adding zero, multiplying by one and removing
+redundant moves. Constant values are tracked across instructions so later
+operations see literal values even when they are moved between registers. Pure
+function calls with literal arguments are folded to constants when possible.
+The optimizer runs after code generation and before execution to trim
+unnecessary instructions.
+

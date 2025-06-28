@@ -7,7 +7,6 @@ func main (regs=6)
   Const        r3, 2
   SetIndex     r1, r2, r3
   // print(scores["bob"])
-  Const        r4, "bob"
-  Index        r5, r1, r4
+  Const        r5, nil
   Print        r5
   Return       r0

@@ -19,12 +19,14 @@ L2:
   // from x in data
   Append       r11, r2, r8
   Move         r2, r11
-  Const        r13, 1
+L1:
+  Const        r12, 1
+  Move         r13, r12
   Move         r5, r13
   Jump         L2
 L0:
   // let flag = exists(
-  Exists       14,2,0,0
+  Exists       r14, r2
   Move         r15, r14
   // print(flag)
   Print        r15

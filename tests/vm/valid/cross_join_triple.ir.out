@@ -13,36 +13,60 @@ func main (regs=61)
   IterPrep     r7, r1
   Len          r8, r7
   Const        r9, 0
-L4:
+L5:
   Less         r10, r9, r8
   JumpIfFalse  r10, L0
+  Index        r11, r7, r9
+  Move         r12, r11
   // from l in letters
   IterPrep     r13, r3
   Len          r14, r13
   Const        r15, 0
-L3:
+L4:
   Less         r16, r15, r14
   JumpIfFalse  r16, L1
+  Index        r17, r13, r15
+  Move         r18, r17
   // from b in bools
   IterPrep     r19, r5
   Len          r20, r19
   Const        r21, 0
-L2:
+L3:
   Less         r22, r21, r20
-  JumpIfFalse  r22, L1
+  JumpIfFalse  r22, L2
+  Index        r23, r19, r21
+  Move         r24, r23
+  // select {n: n, l: l, b: b}
+  Const        r25, "n"
+  Const        r26, "l"
+  Const        r27, "b"
+  Move         r28, r25
+  Move         r29, r12
+  Move         r30, r26
+  Move         r31, r18
+  Move         r32, r27
+  Move         r33, r24
+  MakeMap      r34, 3, r28
   // let combos = from n in nums
   Append       r35, r6, r34
   Move         r6, r35
   // from b in bools
-  Const        r37, 1
+  Const        r36, 1
+  Move         r37, r36
   Move         r21, r37
-  Jump         L2
-  // from l in letters
   Jump         L3
-  // let combos = from n in nums
-  Const        r41, 1
-  Move         r9, r41
+L2:
+  // from l in letters
+  Const        r38, 1
+  Move         r39, r38
+  Move         r15, r39
   Jump         L4
+L1:
+  // let combos = from n in nums
+  Const        r40, 1
+  Move         r41, r40
+  Move         r9, r41
+  Jump         L5
 L0:
   Move         r42, r6
   // print("--- Cross Join of three lists ---")
@@ -52,9 +76,9 @@ L0:
   IterPrep     r44, r42
   Len          r45, r44
   Const        r46, 0
-L6:
+L7:
   Less         r47, r46, r45
-  JumpIfFalse  r47, L5
+  JumpIfFalse  r47, L6
   Index        r48, r44, r46
   Move         r49, r48
   // print(c.n, c.l, c.b)
@@ -69,8 +93,9 @@ L6:
   Move         r52, r58
   PrintN       r50, 3, r50
   // for c in combos {
-  Const        r60, 1
+  Const        r59, 1
+  Move         r60, r59
   Move         r46, r60
-  Jump         L6
-L5:
+  Jump         L7
+L6:
   Return       r0

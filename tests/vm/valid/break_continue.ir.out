@@ -32,7 +32,8 @@ L3:
   Print2       r14, r7
 L2:
   // for n in numbers {
-  Const        r16, 1
+  Const        r15, 1
+  Move         r16, r15
   Move         r4, r16
   Jump         L4
 L0:
