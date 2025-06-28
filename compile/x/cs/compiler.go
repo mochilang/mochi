@@ -562,13 +562,39 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("foreach (var %s in %s) {", loopVar, src))
 	}
+
+	// Bind loop variable type for the body so that field projections work
+	var elemT types.Type = types.AnyType{}
+	switch tt := t.(type) {
+	case types.ListType:
+		elemT = tt.Elem
+	case types.GroupType:
+		elemT = tt.Elem
+	case types.MapType:
+		elemT = tt.Key
+	}
+	origEnv := c.env
+	origVars := c.varTypes
+	child := types.NewEnv(c.env)
+	child.SetVar(f.Name, elemT, true)
+	c.env = child
+	c.varTypes = make(map[string]string)
+	for k, v := range origVars {
+		c.varTypes[k] = v
+	}
+	c.varTypes[name] = csTypeOf(elemT)
+
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.env = origEnv
+			c.varTypes = origVars
 			return err
 		}
 	}
 	c.indent--
+	c.env = origEnv
+	c.varTypes = origVars
 	c.writeln("}")
 	return nil
 }
@@ -904,13 +930,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	resultType := csTypeOf(c.inferExprType(q.Select))
-	orig := c.env
+
+	// Determine the element type of the query source so that field
+	// projections on the query variable work correctly.
+	srcT := c.inferExprType(q.Source)
+	var elemT types.Type = types.AnyType{}
+	switch t := srcT.(type) {
+	case types.ListType:
+		elemT = t.Elem
+	case types.GroupType:
+		elemT = t.Elem
+	}
+
+	origEnv := c.env
 	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	child.SetVar(q.Var, elemT, true)
+	origVars := c.varTypes
+	c.varTypes = make(map[string]string)
+	for k, v := range origVars {
+		c.varTypes[k] = v
+	}
+	c.varTypes[sanitizeName(q.Var)] = csTypeOf(elemT)
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
-		c.env = orig
+		c.env = origEnv
+		c.varTypes = origVars
 		return "", err
 	}
 	var cond, sortExpr, skipExpr, takeExpr string
@@ -922,7 +967,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			aliases := exprAliases(pexpr)
 			exprStr, err := c.compileExpr(pexpr)
 			if err != nil {
-				c.env = orig
+				c.env = origEnv
+				c.varTypes = origVars
 				return "", err
 			}
 			if len(aliases) == 1 {
@@ -940,21 +986,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
 		if err != nil {
-			c.env = orig
+			c.env = origEnv
+			c.varTypes = origVars
 			return "", err
 		}
 	}
 	if q.Skip != nil {
 		skipExpr, err = c.compileExpr(q.Skip)
 		if err != nil {
-			c.env = orig
+			c.env = origEnv
+			c.varTypes = origVars
 			return "", err
 		}
 	}
 	if q.Take != nil {
 		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
-			c.env = orig
+			c.env = origEnv
+			c.varTypes = origVars
 			return "", err
 		}
 	}
@@ -963,7 +1012,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
-			c.env = orig
+			c.env = origEnv
+			c.varTypes = origVars
 			return "", err
 		}
 		genv := types.NewEnv(child)
@@ -971,32 +1021,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
-			c.env = orig
+			c.env = origEnv
+			c.varTypes = origVars
 			return "", err
 		}
 		var sortGroup string
 		if q.Sort != nil {
 			sortGroup, err = c.compileExpr(q.Sort)
 			if err != nil {
-				c.env = orig
+				c.env = origEnv
+				c.varTypes = origVars
 				return "", err
 			}
 		}
 		if q.Skip != nil {
 			skipExpr, err = c.compileExpr(q.Skip)
 			if err != nil {
-				c.env = orig
+				c.env = origEnv
+				c.varTypes = origVars
 				return "", err
 			}
 		}
 		if q.Take != nil {
 			takeExpr, err = c.compileExpr(q.Take)
 			if err != nil {
-				c.env = orig
+				c.env = origEnv
+				c.varTypes = origVars
 				return "", err
 			}
 		}
-		c.env = orig
+		c.env = origEnv
 
 		srcParts := []string{src}
 		if cond != "" {
@@ -1016,6 +1070,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		c.use("_group_by")
 		c.use("_group")
+		c.env = origEnv
+		c.varTypes = origVars
 		return fmt.Sprintf("%s.ToList()", expr), nil
 	}
 
@@ -1025,11 +1081,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		for i, f := range q.Froms {
 			fs, err := c.compileExpr(f.Src)
 			if err != nil {
-				c.env = orig
+				c.env = origEnv
+				c.varTypes = origVars
 				return "", err
 			}
 			fromSrcs[i] = fs
-			child.SetVar(f.Var, types.AnyType{}, true)
+			ft := c.inferExprType(f.Src)
+			var fe types.Type = types.AnyType{}
+			switch t := ft.(type) {
+			case types.ListType:
+				fe = t.Elem
+			case types.GroupType:
+				fe = t.Elem
+			}
+			child.SetVar(f.Var, fe, true)
+			c.varTypes[sanitizeName(f.Var)] = csTypeOf(fe)
 		}
 		joinSrcs := make([]string, len(q.Joins))
 		joinOns := make([]string, len(q.Joins))
@@ -1037,18 +1103,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		for i, j := range q.Joins {
 			js, err := c.compileExpr(j.Src)
 			if err != nil {
-				c.env = orig
+				c.env = origEnv
+				c.varTypes = origVars
 				return "", err
 			}
 			joinSrcs[i] = js
 			if j.Side != nil {
 				joinSides[i] = *j.Side
 			}
-			child.SetVar(j.Var, types.AnyType{}, true)
+			jt := c.inferExprType(j.Src)
+			var je types.Type = types.AnyType{}
+			switch t := jt.(type) {
+			case types.ListType:
+				je = t.Elem
+			case types.GroupType:
+				je = t.Elem
+			}
+			child.SetVar(j.Var, je, true)
+			c.varTypes[sanitizeName(j.Var)] = csTypeOf(je)
 			c.env = child
 			onExpr, err := c.compileExpr(j.On)
 			if err != nil {
-				c.env = orig
+				c.env = origEnv
+				c.varTypes = origVars
 				return "", err
 			}
 			joinOns[i] = onExpr
@@ -1056,10 +1133,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = child
 		sel, err = c.compileExpr(q.Select)
 		if err != nil {
-			c.env = orig
+			c.env = origEnv
+			c.varTypes = origVars
 			return "", err
 		}
-		c.env = orig
+		c.env = origEnv
 
 		var buf strings.Builder
 		buf.WriteString(fmt.Sprintf("new Func<List<%s>>(() => {\n", resultType))
@@ -1255,7 +1333,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return buf.String(), nil
 	}
 
-	c.env = orig
+	c.env = origEnv
+	c.varTypes = origVars
 
 	parts := []string{src}
 	if cond != "" {

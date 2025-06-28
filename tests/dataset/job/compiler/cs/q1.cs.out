@@ -26,23 +26,23 @@ public class Program
             var _res = new List<Dictionary<string, dynamic>>();
             foreach (var ct in company_type)
             {
-                if (!((ct.kind == "production companies"))) continue;
+                if (!((ct["kind"] == "production companies"))) continue;
                 foreach (var mc in movie_companies)
                 {
-                    if (!((ct.id == mc.company_type_id))) continue;
-                    if (!(((!Convert.ToString(mc.note).Contains("(as Metro-Goldwyn-Mayer Pictures)"))))) continue;
-                    if (!(((Convert.ToString(mc.note).Contains("(co-production)") || Convert.ToString(mc.note).Contains("(presents)"))))) continue;
+                    if (!((ct["id"] == mc["company_type_id"]))) continue;
+                    if (!(((!Convert.ToString(mc["note"]).Contains("(as Metro-Goldwyn-Mayer Pictures)"))))) continue;
+                    if (!(((Convert.ToString(mc["note"]).Contains("(co-production)") || Convert.ToString(mc["note"]).Contains("(presents)"))))) continue;
                     foreach (var t in title)
                     {
-                        if (!((t.id == mc.movie_id))) continue;
+                        if (!((t["id"] == mc["movie_id"]))) continue;
                         foreach (var mi in movie_info_idx)
                         {
-                            if (!((mi.movie_id == t.id))) continue;
+                            if (!((mi["movie_id"] == t["id"]))) continue;
                             foreach (var it in info_type)
                             {
-                                if (!((it.id == mi.info_type_id))) continue;
-                                if (!((it.info == "top 250 rank"))) continue;
-                                _res.Add(new Dictionary<string, dynamic> { { "note", mc.note }, { "title", t.title }, { "year", t.production_year } });
+                                if (!((it["id"] == mi["info_type_id"]))) continue;
+                                if (!((it["info"] == "top 250 rank"))) continue;
+                                _res.Add(new Dictionary<string, dynamic> { { "note", mc["note"] }, { "title", t["title"] }, { "year", t["production_year"] } });
                             }
                         }
                     }
@@ -54,6 +54,11 @@ public class Program
         Console.WriteLine(JsonSerializer.Serialize(new Dictionary<string, dynamic>[] { result }));
         test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production();
     }
+    static void expect(bool cond)
+    {
+        if (!cond) throw new Exception("expect failed");
+    }
+
     static dynamic _min(dynamic v)
     {
         if (v == null) return 0;
@@ -68,11 +73,6 @@ public class Program
             dynamic x = it.Current; if (cmp.Compare(x, m) < 0) m = x;
         }
         return m;
-    }
-
-    static void expect(bool cond)
-    {
-        if (!cond) throw new Exception("expect failed");
     }
 
 }
