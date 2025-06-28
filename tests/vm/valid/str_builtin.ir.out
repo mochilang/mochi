@@ -1,5 +1,6 @@
-func main (regs=1)
+func main (regs=2)
   // print(str(123))
-  Const        r0, "123"
-  Print        r0
+  Const        r0, 123
+  Const        r1, "123"
+  Print        r1
   Return       r0
