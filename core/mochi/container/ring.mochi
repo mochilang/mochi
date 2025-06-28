@@ -1,0 +1,139 @@
+package ring
+
+// _init sets up a single-element ring when next/prev are null
+fun _init(r: map<string, any>): map<string, any> {
+  if !("next" in r) || r["next"] == null {
+    r["next"] = r
+    r["prev"] = r
+  }
+  return r
+}
+
+/// Create a ring with n elements. Each element has null value.
+export fun new(n: int): map<string, any>? {
+  if n <= 0 { return null }
+  var r: map<string, any> = {"next": null, "prev": null, "value": null}
+  r["next"] = r
+  r["prev"] = r
+  var p = r
+  var i = 1
+  while i < n {
+    var node: map<string, any> = {"next": r, "prev": p, "value": null}
+    p["next"] = node
+    r["prev"] = node
+    p = node
+    i = i + 1
+  }
+  return r
+}
+
+/// Return the next ring element. r must not be null.
+export fun next(r: map<string, any>): map<string, any> {
+  _init(r)
+  return r["next"] as map<string, any>
+}
+
+/// Return the previous ring element. r must not be null.
+export fun prev(r: map<string, any>): map<string, any> {
+  _init(r)
+  return r["prev"] as map<string, any>
+}
+
+/// Move n steps forward (n>0) or backward (n<0) around the ring.
+export fun move(r: map<string, any>, n: int): map<string, any> {
+  _init(r)
+  var p = r
+  if n < 0 {
+    var i = n
+    while i < 0 {
+      p = p["prev"]
+      i = i + 1
+    }
+  } else if n > 0 {
+    var i = 0
+    while i < n {
+      p = p["next"]
+      i = i + 1
+    }
+  }
+  return p
+}
+
+/// Link ring r with ring s such that r.next becomes s. Returns old r.next.
+export fun link(r: map<string, any>, s: map<string, any>?): map<string, any> {
+  _init(r)
+  var n = next(r)
+  if s != null {
+    _init(s)
+    var p = prev(s)
+    r["next"] = s
+    s["prev"] = r
+    n["prev"] = p
+    p["next"] = n
+  }
+  return n
+}
+
+/// Remove n elements starting at r.next and return the removed ring.
+export fun unlink(r: map<string, any>, n: int): map<string, any>? {
+  if n <= 0 { return null }
+  return link(r, move(r, n + 1))
+}
+
+/// Compute the number of elements in the ring.
+export fun len(r: map<string, any>?): int {
+  if r == null { return 0 }
+  _init(r)
+  var n = 1
+  var p = next(r)
+  while p != r {
+    n = n + 1
+    p = p["next"]
+  }
+  return n
+}
+
+/// Apply function f to each element's value in forward order.
+export fun do(r: map<string, any>?, f: fun(any)) {
+  if r == null { return }
+  _init(r)
+  f(r["value"])
+  var p = next(r)
+  while p != r {
+    f(p["value"])
+    p = p["next"]
+  }
+}
+
+// ---------------------- Tests ----------------------
+
+test "ring new and len" {
+  let r = new(3)
+  expect len(r) == 3
+}
+
+test "ring link unlink" {
+  let a = new(2)
+  let b = new(1)
+  link(a, b)
+  expect len(a) == 3
+  let sub = unlink(a, 2)
+  expect len(a) == 1
+  expect len(sub) == 2
+}
+
+test "ring move and do" {
+  let r = new(3)
+  var p = r
+  var i = 1
+  while i <= 3 {
+    p["value"] = i
+    p = p["next"]
+    i = i + 1
+  }
+  var sum = 0
+  do(r, fun(v: any) { sum = sum + (v as int) })
+  expect sum == 6
+  expect move(r, -1)["value"] == 3
+  expect move(r, 2)["value"] == 3
+}
