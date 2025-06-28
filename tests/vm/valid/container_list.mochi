@@ -1,0 +1,13 @@
+import "../../core/mochi/container/list/list.mochi" as list
+
+var l = list.new()
+list.pushBack(l, 1)
+list.pushBack(l, 2)
+list.pushFront(l, 0)
+print(list.len(l))
+print(list.front(l).value)
+print(list.back(l).value)
+list.moveToFront(l, 2)
+print(list.front(l).value)
+list.remove(l, 1)
+print(list.len(l))

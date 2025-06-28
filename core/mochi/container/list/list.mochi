@@ -1,0 +1,103 @@
+package list
+
+type Element {
+  value: any
+}
+
+type List {
+  items: list<Element>
+}
+
+export fun new(): List {
+  return List { items: [] }
+}
+
+export fun List.len(l: List): int {
+  return len(l.items)
+}
+
+export fun List.front(l: List): Element? {
+  if len(l.items) == 0 { return null }
+  return l.items[0]
+}
+
+export fun List.back(l: List): Element? {
+  var n = len(l.items)
+  if n == 0 { return null }
+  return l.items[n - 1]
+}
+
+export fun List.pushFront(l: List, v: any): Element {
+  var e = Element { value: v }
+  l.items = [e] + l.items
+  return e
+}
+
+export fun List.pushBack(l: List, v: any): Element {
+  var e = Element { value: v }
+  l.items = l.items + [e]
+  return e
+}
+
+export fun List.insertBefore(l: List, v: any, index: int): Element? {
+  if index < 0 || index > len(l.items) { return null }
+  var e = Element { value: v }
+  l.items = l.items[:index] + [e] + l.items[index:]
+  return e
+}
+
+export fun List.insertAfter(l: List, v: any, index: int): Element? {
+  if index < 0 || index >= len(l.items) { return null }
+  var e = Element { value: v }
+  l.items = l.items[:index+1] + [e] + l.items[index+1:]
+  return e
+}
+
+export fun List.remove(l: List, index: int): any {
+  var e = l.items[index]
+  l.items = l.items[:index] + l.items[index+1:]
+  return e.value
+}
+
+export fun List.moveToFront(l: List, index: int) {
+  if index <= 0 || index >= len(l.items) { return }
+  var e = l.items[index]
+  l.items = l.items[:index] + l.items[index+1:]
+  l.items = [e] + l.items
+}
+
+export fun List.moveToBack(l: List, index: int) {
+  var n = len(l.items)
+  if index < 0 || index >= n-1 { return }
+  var e = l.items[index]
+  l.items = l.items[:index] + l.items[index+1:]
+  l.items = l.items + [e]
+}
+
+export fun List.moveBefore(l: List, index: int, mark: int) {
+  if index == mark || index < 0 || mark < 0 || index >= len(l.items) || mark >= len(l.items) { return }
+  var e = l.items[index]
+  l.items = l.items[:index] + l.items[index+1:]
+  var m = if index < mark { mark-1 } else { mark }
+  l.items = l.items[:m] + [e] + l.items[m:]
+}
+
+export fun List.moveAfter(l: List, index: int, mark: int) {
+  if index == mark || index < 0 || mark < 0 || index >= len(l.items) || mark >= len(l.items) { return }
+  var e = l.items[index]
+  l.items = l.items[:index] + l.items[index+1:]
+  var m = if index > mark { mark+1 } else { mark }
+  l.items = l.items[:m+1] + [e] + l.items[m+1:]
+}
+
+export fun List.pushBackList(l: List, other: List) {
+  l.items = l.items + other.items
+}
+
+export fun List.pushFrontList(l: List, other: List) {
+  l.items = other.items + l.items
+}
+
+export fun Element.value(e: Element): any {
+  return e.value
+}
