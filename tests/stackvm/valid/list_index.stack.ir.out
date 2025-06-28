@@ -1,0 +1,7 @@
+func main (vars=1)
+  PushConst    [10,20,30]
+  Store        0
+  PushConst    20
+  Call         print 1
+  Pop          
+  Return       0

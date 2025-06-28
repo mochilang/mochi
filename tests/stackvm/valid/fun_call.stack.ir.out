@@ -1,0 +1,14 @@
+func main (vars=0)
+  PushConst    2
+  PushConst    3
+  Call         add 2
+  Call         print 1
+  Pop          
+  Return       0
+
+func add (vars=2)
+  Load         0
+  Load         1
+  Add          
+  Return       1
+  Return       0

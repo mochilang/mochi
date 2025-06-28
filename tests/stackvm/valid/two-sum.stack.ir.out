@@ -1,0 +1,68 @@
+func main (vars=1)
+  PushConst    [2,7,11,15]
+  PushConst    9
+  Call         twoSum 2
+  Store        0
+  Load         0
+  PushConst    0
+  Index        
+  Call         print 1
+  Pop          
+  Load         0
+  PushConst    1
+  Index        
+  Call         print 1
+  Pop          
+  Return       0
+
+func twoSum (vars=5)
+  Load         0
+  Call         len 1
+  Store        2
+  PushConst    0
+  Store        3
+L4:
+  Load         3
+  Load         2
+  Less         
+  JumpIfFalse  L0
+  Load         3
+  PushConst    1
+  Add          
+  Store        4
+L3:
+  Load         4
+  Load         2
+  Less         
+  JumpIfFalse  L1
+  Load         0
+  Load         3
+  Index        
+  Load         0
+  Load         4
+  Index        
+  Add          
+  Load         1
+  Equal        
+  JumpIfFalse  L2
+  Load         3
+  Load         4
+  MakeList     2
+  Return       1
+  Jump         32
+L2:
+  Load         4
+  PushConst    1
+  Add          
+  Store        4
+  Jump         13
+L1:
+  Load         3
+  PushConst    1
+  Add          
+  Store        3
+  Jump         5
+L0:
+  PushConst    [-1,-1]
+  Return       1
+  Return       0
