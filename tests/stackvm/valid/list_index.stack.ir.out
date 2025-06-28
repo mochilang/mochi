@@ -1,0 +1,12 @@
+func main (vars=1)
+  PushConst    10
+  PushConst    20
+  PushConst    30
+  MakeList     3
+  Store        0
+  Load         0
+  PushConst    1
+  Index        
+  Call         print 1
+  Pop          
+  Return       0
