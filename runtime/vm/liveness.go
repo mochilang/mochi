@@ -192,6 +192,12 @@ func isPure(op Op) bool {
 		OpSetIndex, OpLoad, OpSave, OpEval, OpFetch,
 		OpCall, OpCall2, OpCallV, OpExpect:
 		return false
+	case OpDiv, OpDivInt, OpDivFloat, OpMod, OpModInt, OpModFloat,
+		OpIndex:
+		// These instructions may raise runtime errors (division by zero,
+		// index out of range) even when their results are unused. Keep
+		// them to preserve side effects.
+		return false
 	default:
 		return true
 	}

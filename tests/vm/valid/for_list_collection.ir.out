@@ -12,7 +12,8 @@ L1:
   // print(n)
   Print        r6
   // for n in [1,2,3] {
-  Const        r8, 1
+  Const        r7, 1
+  Add          r8, r3, r7
   Move         r3, r8
   Jump         L1
 L0:

@@ -1,7 +1,7 @@
 func main (regs=5)
   // let todo = {"title": "hi"} as Todo
   Const        r0, {"title": "hi"}
-  Cast         1,0,0,0
+  Cast         r1, r0, Todo
   Move         r2, r1
   // print(todo.title)
   Const        r3, "title"

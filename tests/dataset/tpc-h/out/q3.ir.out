@@ -310,6 +310,9 @@ L20:
   Move         r196, r195
   // g.key.o_orderdate
   Const        r197, "key"
+  Index        r198, r126, r197
+  Const        r199, "o_orderdate"
+  Index        r200, r198, r199
   // sort by [
   MakeList     r202, 2, r196
   Move         r203, r202

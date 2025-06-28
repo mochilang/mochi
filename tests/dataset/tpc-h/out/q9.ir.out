@@ -326,6 +326,9 @@ L18:
   Index        r216, r214, r215
   Move         r217, r216
   Const        r218, "key"
+  Index        r219, r161, r218
+  Const        r220, "o_year"
+  Index        r221, r219, r220
   MakeList     r224, 2, r217
   Move         r225, r224
   // from l in lineitem
