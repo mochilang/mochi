@@ -15,6 +15,7 @@ import (
 
 	"github.com/alecthomas/participle/v2/lexer"
 
+	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/runtime/data"
 	mhttp "mochi/runtime/http"
@@ -1582,13 +1583,14 @@ type compiler struct {
 }
 
 type funcCompiler struct {
-	fn     Function
-	idx    int
-	comp   *compiler
-	vars   map[string]int
-	scopes []map[string]int
-	loops  []*loopContext
-	tags   map[int]regTag
+	fn         Function
+	idx        int
+	comp       *compiler
+	vars       map[string]int
+	scopes     []map[string]int
+	loops      []*loopContext
+	tags       map[int]regTag
+	constCache map[string]int
 }
 
 func (fc *funcCompiler) pushScope() {
@@ -1677,7 +1679,7 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(fn.Params)
@@ -1701,7 +1703,7 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 }
 
 func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(st.Order) + len(fn.Params)
@@ -1755,7 +1757,7 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
 	for i, name := range captures {
@@ -1797,7 +1799,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 	prev, exists := c.fnIndex[name]
 	c.fnIndex[name] = idx
 
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Name = name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
@@ -1839,7 +1841,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 }
 
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
 	fc.fn.NumParams = 0
@@ -1912,14 +1914,44 @@ func (fc *funcCompiler) newReg() int {
 	return r
 }
 
+func constKey(v Value) (string, bool) {
+	switch v.Tag {
+	case ValueInt:
+		return fmt.Sprintf("i%v", v.Int), true
+	case ValueFloat:
+		return fmt.Sprintf("f%v", v.Float), true
+	case ValueBool:
+		if v.Bool {
+			return "bt", true
+		}
+		return "bf", true
+	case ValueStr:
+		return "s" + v.Str, true
+	default:
+		return "", false
+	}
+}
+
+func (fc *funcCompiler) constReg(pos lexer.Position, v Value) int {
+	if k, ok := constKey(v); ok {
+		if r, ok2 := fc.constCache[k]; ok2 {
+			return r
+		}
+		r := fc.newReg()
+		fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
+		fc.constCache[k] = r
+		return r
+	}
+	r := fc.newReg()
+	fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
+	return r
+}
+
 func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
 		r := fc.compileExpr(s.Let.Value)
-		reg := fc.newReg()
-		fc.vars[s.Let.Name] = reg
-		fc.emit(s.Let.Pos, Instr{Op: OpMove, A: reg, B: r})
-		fc.tags[reg] = fc.tags[r]
+		fc.vars[s.Let.Name] = r
 		if v, ok := fc.evalConstExpr(s.Let.Value); ok {
 			fc.comp.env.SetValue(s.Let.Name, valueToAny(v), false)
 		}
@@ -2433,30 +2465,20 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 	if p.Lit != nil {
 		switch {
 		case p.Lit.Int != nil:
-			dst := fc.newReg()
 			v := Value{Tag: ValueInt, Int: *p.Lit.Int}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		case p.Lit.Float != nil:
-			dst := fc.newReg()
 			v := Value{Tag: ValueFloat, Float: *p.Lit.Float}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		case p.Lit.Str != nil:
-			dst := fc.newReg()
 			v := Value{Tag: ValueStr, Str: *p.Lit.Str}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		case p.Lit.Bool != nil:
-			dst := fc.newReg()
 			v := Value{Tag: ValueBool, Bool: bool(*p.Lit.Bool)}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		case p.Lit.Null:
-			dst := fc.newReg()
 			v := Value{Tag: ValueNull}
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		}
 	}
 
@@ -2486,15 +2508,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 
 		regs := make([]int, len(p.Struct.Fields)*2+2)
 
-		nameKey := fc.newReg()
-		fc.emit(p.Pos, Instr{Op: OpConst, A: nameKey, Val: Value{Tag: ValueStr, Str: "__name"}})
-		nameVal := fc.newReg()
-		fc.emit(p.Pos, Instr{Op: OpConst, A: nameVal, Val: Value{Tag: ValueStr, Str: p.Struct.Name}})
+		nameKey := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "__name"})
+		nameVal := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: p.Struct.Name})
 		regs[0] = nameKey
 		regs[1] = nameVal
 		for i, f := range p.Struct.Fields {
-			kreg := fc.newReg()
-			fc.emit(f.Pos, Instr{Op: OpConst, A: kreg, Val: Value{Tag: ValueStr, Str: f.Name}})
+			kreg := fc.constReg(f.Pos, Value{Tag: ValueStr, Str: f.Name})
 			vreg := fc.newReg()
 			fc.emit(f.Pos, Instr{Op: OpMove, A: vreg, B: vals[i]})
 			regs[i*2+2] = kreg
@@ -2512,16 +2531,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 
 	if p.Map != nil {
 		if v, ok := constMap(p.Map); ok {
-			dst := fc.newReg()
-			fc.emit(p.Pos, Instr{Op: OpConst, A: dst, Val: v})
-			return dst
+			return fc.constReg(p.Pos, v)
 		}
 		tmp := make([]struct{ k, v int }, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			if name, ok := identName(it.Key); ok {
-				reg := fc.newReg()
-				fc.emit(it.Pos, Instr{Op: OpConst, A: reg, Val: Value{Tag: ValueStr, Str: name}})
-				tmp[i].k = reg
+				tmp[i].k = fc.constReg(it.Pos, Value{Tag: ValueStr, Str: name})
 			} else {
 				tmp[i].k = fc.compileExpr(it.Key)
 			}
@@ -2529,11 +2544,9 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		}
 		regs := make([]int, len(p.Map.Items)*2)
 		for i, it := range p.Map.Items {
-			kreg := fc.newReg()
-			fc.emit(it.Pos, Instr{Op: OpMove, A: kreg, B: tmp[i].k})
+			regs[i*2] = tmp[i].k
 			vreg := fc.newReg()
 			fc.emit(it.Pos, Instr{Op: OpMove, A: vreg, B: tmp[i].v})
-			regs[i*2] = kreg
 			regs[i*2+1] = vreg
 		}
 		dst := fc.newReg()
@@ -4455,10 +4468,10 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		}
 		return Value{}, false
 	}
-	// Constant folding of function calls requires the interpreter package,
-	// which is not available in this standalone VM build.
-	// Return false so the call is compiled normally.
-	_ = args
+
+	if lit, ok := interpreter.EvalPureCall(&parser.CallExpr{Func: call.Func, Args: args}, fc.comp.env); ok {
+		return literalToValue(lit)
+	}
 	return Value{}, false
 }
 
