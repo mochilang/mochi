@@ -1,0 +1,15 @@
+import "core/math" as cmath
+let r = 3.0
+let area = cmath.Pi() * cmath.pow(r, 2.0)
+let root = cmath.sqrt(49.0)
+let sin45 = cmath.sin(cmath.Pi() / 4.0)
+let loge = cmath.log(cmath.E())
+print(area)
+print(root)
+print(sin45)
+print(loge)
+let j1zero = cmath.J1(0.0)
+let isnan = cmath.IsNaN(cmath.NaN())
+print(j1zero)
+print(isnan)
+
