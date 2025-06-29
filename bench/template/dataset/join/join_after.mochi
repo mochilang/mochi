@@ -1,0 +1,19 @@
+var customers = []
+for i in 1..{{ .N }} {
+  customers = append(customers, { id: i, name: "C" + str(i) })
+}
+var orders = []
+for i in 1..{{ .N }} {
+  orders = append(orders, { id: i, customerId: i })
+}
+let repeat = 100
+var last = 0
+let start = now()
+for r in 0..repeat {
+  let result = from o in orders
+               join from c in customers on o.customerId == c.id
+               select o.id + c.id
+  last = count(result)
+}
+let duration = (now() - start) / 1000
+json({ "duration_us": duration, "output": last })
