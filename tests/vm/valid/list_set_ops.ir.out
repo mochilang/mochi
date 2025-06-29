@@ -1,4 +1,4 @@
-func main (regs=13)
+func main (regs=10)
   // print([1,2] union [2,3])
   Const        r0, [1, 2]
   Const        r1, [2, 3]
@@ -15,9 +15,6 @@ func main (regs=13)
   Intersect    r8, r6, r7
   Print        r8
   // print(len([1,2] union all [2,3]))
-  Const        r9, [1, 2]
-  Const        r10, [2, 3]
-  UnionAll     r11, r9, r10
-  Len          r12, r11
-  Print        r12
+  Const        r9, 3
+  Print        r9
   Return       r0

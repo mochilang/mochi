@@ -8,7 +8,8 @@ func main (regs=3)
   // fun outer(x: int): int {
 func outer (regs=6)
   // fun inner(y: int): int {
-  MakeClosure  r2, inner, 0, r0
+  Move         r1, r0
+  MakeClosure  r2, inner, 1, r1
   // return inner(5)
   Const        r3, 5
   CallV        r5, r2, 1, r3

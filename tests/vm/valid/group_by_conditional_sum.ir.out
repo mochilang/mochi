@@ -1,4 +1,4 @@
-func main (regs=68)
+func main (regs=70)
   // let items = [
   Const        r0, [{"cat": "a", "flag": true, "val": 10}, {"cat": "a", "flag": false, "val": 5}, {"cat": "b", "flag": true, "val": 20}]
   // from i in items
@@ -7,8 +7,6 @@ func main (regs=68)
   Const        r2, "cat"
   // cat: g.key,
   Const        r3, "key"
-  // share:
-  Const        r4, "share"
   // sum(from x in g select if x.flag { x.val } else { 0 }) /
   Const        r5, "flag"
   Const        r6, "val"
@@ -38,7 +36,6 @@ L2:
   Move         r23, r18
   MakeMap      r24, 3, r19
   SetIndex     r10, r16, r24
-  Append       r11, r11, r24
 L1:
   Index        r26, r10, r16
   Index        r27, r26, r22
@@ -50,49 +47,54 @@ L1:
 L0:
   Const        r31, 0
   Move         r30, r31
-  Len          r32, r11
+  Const        r32, 0
 L9:
   LessInt      r33, r30, r32
   JumpIfFalse  r33, L3
   Index        r35, r11, r30
+  // cat: g.key,
+  Const        r36, "cat"
+  Index        r37, r35, r3
+  // share:
+  Const        r38, "share"
   // sum(from x in g select if x.flag { x.val } else { 0 }) /
-  Const        r37, []
-  IterPrep     r38, r35
-  Len          r39, r38
-  Move         r40, r31
+  Const        r39, []
+  IterPrep     r40, r35
+  Len          r41, r40
+  Move         r42, r31
 L6:
-  LessInt      r41, r40, r39
-  JumpIfFalse  r41, L4
-  Index        r43, r38, r40
-  Index        r44, r43, r5
-  JumpIfFalse  r44, L5
+  LessInt      r43, r42, r41
+  JumpIfFalse  r43, L4
+  Index        r45, r40, r42
+  Index        r46, r45, r5
+  JumpIfFalse  r46, L5
 L5:
-  Append       r37, r37, r31
-  AddInt       r40, r40, r29
+  Append       r39, r39, r31
+  AddInt       r42, r42, r29
   Jump         L6
 L4:
   // sum(from x in g select x.val)
-  Const        r49, []
-  IterPrep     r50, r35
-  Len          r51, r50
-  Move         r52, r31
+  Const        r51, []
+  IterPrep     r52, r35
+  Len          r53, r52
+  Move         r54, r31
 L8:
-  LessInt      r53, r52, r51
-  JumpIfFalse  r53, L7
-  Index        r43, r50, r52
-  Index        r55, r43, r6
-  Append       r49, r49, r55
-  AddInt       r52, r52, r29
+  LessInt      r55, r54, r53
+  JumpIfFalse  r55, L7
+  Index        r45, r52, r54
+  Index        r57, r45, r6
+  Append       r51, r51, r57
+  AddInt       r54, r54, r29
   Jump         L8
 L7:
   // select {
-  MakeMap      r61, 2, r2
+  MakeMap      r63, 2, r36
   // sort by g.key
-  Index        r63, r35, r3
+  Index        r65, r35, r3
   // from i in items
-  Move         r64, r61
-  MakeList     r65, 2, r63
-  Append       r1, r1, r65
+  Move         r66, r63
+  MakeList     r67, 2, r65
+  Append       r1, r1, r67
   AddInt       r30, r30, r29
   Jump         L9
 L3:

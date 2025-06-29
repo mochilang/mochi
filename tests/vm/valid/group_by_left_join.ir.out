@@ -1,4 +1,4 @@
-func main (regs=98)
+func main (regs=100)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}, {"id": 3, "name": "Charlie"}]
   // let orders = [
@@ -27,7 +27,7 @@ L7:
   Len          r16, r15
   Const        r17, 0
 L4:
-  Less         r18, r17, r16
+  LessInt      r18, r17, r16
   JumpIfFalse  r18, L1
   Index        r20, r15, r17
   Const        r21, false
@@ -100,48 +100,52 @@ L12:
   LessInt      r65, r62, r64
   JumpIfFalse  r65, L8
   Index        r67, r8, r62
+  // name: g.key,
+  Const        r68, "name"
+  Index        r69, r67, r4
   // count: count(from r in g where r.o select r)
-  Const        r69, []
-  IterPrep     r70, r67
-  Len          r71, r70
-  Move         r72, r63
+  Const        r70, "count"
+  Const        r71, []
+  IterPrep     r72, r67
+  Len          r73, r72
+  Move         r74, r63
 L11:
-  LessInt      r73, r72, r71
-  JumpIfFalse  r73, L9
-  Index        r75, r70, r72
-  Index        r76, r75, r6
-  JumpIfFalse  r76, L10
-  Append       r69, r69, r75
+  LessInt      r75, r74, r73
+  JumpIfFalse  r75, L9
+  Index        r77, r72, r74
+  Index        r78, r77, r6
+  JumpIfFalse  r78, L10
+  Append       r71, r71, r77
 L10:
-  AddInt       r72, r72, r45
+  AddInt       r74, r74, r45
   Jump         L11
 L9:
   // select {
-  MakeMap      r81, 2, r3
+  MakeMap      r83, 2, r68
   // let stats = from c in customers
-  Append       r2, r2, r81
+  Append       r2, r2, r83
   AddInt       r62, r62, r45
   Jump         L12
 L8:
   // print("--- Group Left Join ---")
-  Const        r83, "--- Group Left Join ---"
-  Print        r83
+  Const        r85, "--- Group Left Join ---"
+  Print        r85
   // for s in stats {
-  IterPrep     r84, r2
-  Len          r85, r84
-  Const        r86, 0
+  IterPrep     r86, r2
+  Len          r87, r86
+  Const        r88, 0
 L14:
-  Less         r87, r86, r85
-  JumpIfFalse  r87, L13
-  Index        r89, r84, r86
+  Less         r89, r88, r87
+  JumpIfFalse  r89, L13
+  Index        r91, r86, r88
   // print(s.name, "orders:", s.count)
-  Index        r90, r89, r3
-  Const        r91, "orders:"
-  Index        r92, r89, r5
-  PrintN       r90, 3, r90
+  Index        r92, r91, r3
+  Const        r93, "orders:"
+  Index        r94, r91, r5
+  PrintN       r92, 3, r92
   // for s in stats {
-  Const        r96, 1
-  Add          r86, r86, r96
+  Const        r98, 1
+  Add          r88, r88, r98
   Jump         L14
 L13:
   Return       r0

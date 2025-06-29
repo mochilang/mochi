@@ -1,4 +1,4 @@
-func main (regs=67)
+func main (regs=73)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
   // let orders = [
@@ -49,49 +49,61 @@ L5:
   JumpIfFalse  r34, L4
   Const        r31, true
   // select { orderId: o.id, name: c.name, item: i }
-  MakeMap      r40, 3, r4
+  Const        r35, "orderId"
+  Index        r36, r14, r5
+  Const        r37, "name"
+  Index        r38, r21, r6
+  Const        r39, "item"
+  Move         r40, r36
+  MakeMap      r43, 3, r35
   // let result = from o in orders
-  Append       r3, r3, r40
+  Append       r3, r3, r43
 L4:
   // left join i in items on o.id == i.orderId
-  Const        r42, 1
-  Add          r27, r27, r42
+  Const        r45, 1
+  Add          r27, r27, r45
   Jump         L5
 L3:
-  Move         r43, r31
-  JumpIfTrue   r43, L2
+  Move         r46, r31
+  JumpIfTrue   r46, L2
   // select { orderId: o.id, name: c.name, item: i }
-  MakeMap      r50, 3, r4
+  Const        r48, "orderId"
+  Index        r49, r14, r5
+  Const        r50, "name"
+  Index        r51, r21, r6
+  Const        r52, "item"
+  Move         r53, r49
+  MakeMap      r56, 3, r48
   // let result = from o in orders
-  Append       r3, r3, r50
+  Append       r3, r3, r56
 L2:
   // join from c in customers on o.customerId == c.id
-  Add          r18, r18, r42
+  Add          r18, r18, r45
   Jump         L6
 L1:
   // let result = from o in orders
-  AddInt       r10, r10, r42
+  AddInt       r10, r10, r45
   Jump         L7
 L0:
   // print("--- Left Join Multi ---")
-  Const        r52, "--- Left Join Multi ---"
-  Print        r52
+  Const        r58, "--- Left Join Multi ---"
+  Print        r58
   // for r in result {
-  IterPrep     r53, r3
-  Len          r54, r53
-  Const        r55, 0
+  IterPrep     r59, r3
+  Len          r60, r59
+  Const        r61, 0
 L9:
-  Less         r56, r55, r54
-  JumpIfFalse  r56, L8
-  Index        r58, r53, r55
+  Less         r62, r61, r60
+  JumpIfFalse  r62, L8
+  Index        r64, r59, r61
   // print(r.orderId, r.name, r.item)
-  Index        r59, r58, r4
-  Index        r60, r58, r6
-  Index        r61, r58, r7
-  PrintN       r59, 3, r59
+  Index        r65, r64, r4
+  Index        r66, r64, r6
+  Index        r67, r64, r7
+  PrintN       r65, 3, r65
   // for r in result {
-  Const        r65, 1
-  Add          r55, r55, r65
+  Const        r71, 1
+  Add          r61, r61, r71
   Jump         L9
 L8:
   Return       r0

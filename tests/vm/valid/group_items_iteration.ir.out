@@ -1,4 +1,4 @@
-func main (regs=75)
+func main (regs=76)
   // let data = [
   Const        r0, [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}]
   // let groups = from d in data group by d.tag into g select g
@@ -78,30 +78,34 @@ L7:
   Jump         L7
 L6:
   // tmp = append(tmp, {tag: g.key, total: total})
-  MakeMap      r58, 2, r2
-  Append       r35, r35, r58
+  Const        r54, "tag"
+  Index        r55, r32, r17
+  Const        r56, "total"
+  Move         r57, r55
+  MakeMap      r59, 2, r54
+  Append       r35, r35, r59
   // for g in groups {
-  Const        r60, 1
-  Add          r38, r38, r60
+  Const        r61, 1
+  Add          r38, r38, r61
   Jump         L8
 L5:
   // let result = from r in tmp sort by r.tag select r
-  Const        r62, []
-  IterPrep     r63, r35
-  Len          r64, r63
-  Move         r65, r28
+  Const        r63, []
+  IterPrep     r64, r35
+  Len          r65, r64
+  Move         r66, r28
 L10:
-  LessInt      r66, r65, r64
-  JumpIfFalse  r66, L9
-  Index        r68, r63, r65
-  Index        r70, r68, r2
-  Move         r71, r68
-  MakeList     r72, 2, r70
-  Append       r62, r62, r72
-  AddInt       r65, r65, r26
+  LessInt      r67, r66, r65
+  JumpIfFalse  r67, L9
+  Index        r69, r64, r66
+  Index        r71, r69, r2
+  Move         r72, r69
+  MakeList     r73, 2, r71
+  Append       r63, r63, r73
+  AddInt       r66, r66, r26
   Jump         L10
 L9:
-  Sort         r62, r62
+  Sort         r63, r63
   // print(result)
-  Print        r62
+  Print        r63
   Return       r0
