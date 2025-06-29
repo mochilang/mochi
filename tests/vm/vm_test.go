@@ -64,6 +64,40 @@ func TestVM_IR(t *testing.T) {
 	})
 }
 
+func TestVM_RegionLifetime(t *testing.T) {
+	golden.Run(t, "tests/vm/valid", ".mochi", ".lt.out", func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("type error: %v", errs[0])
+		}
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("compile error: %w", err)
+		}
+		var buf bytes.Buffer
+		for idx, fn := range p.Funcs {
+			name := p.Funcs[idx].Name
+			if name == "" {
+				if idx == 0 {
+					name = "main"
+				} else {
+					name = fmt.Sprintf("fn%d", idx)
+				}
+			}
+			fmt.Fprintf(&buf, "Function %s (regs=%d)\n", name, fn.NumRegs)
+			buf.WriteString(vm.VisualizeRegionLifetime(&fn))
+			if idx < len(p.Funcs)-1 {
+				buf.WriteByte('\n')
+			}
+		}
+		return bytes.TrimSpace(buf.Bytes()), nil
+	})
+}
+
 func TestVM_Fetch(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

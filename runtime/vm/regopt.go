@@ -119,3 +119,74 @@ func VisualizeUsage(fn *Function) string {
 	}
 	return b.String()
 }
+
+// RegionLifetime computes disjoint live ranges for each register in fn.
+// Each register may have multiple live segments separated by gaps where the
+// register is dead. The returned slice has length fn.NumRegs with inner slices
+// ordered by appearance in the code.
+func RegionLifetime(fn *Function) [][]Lifetime {
+	info := Liveness(fn)
+	regions := make([][]Lifetime, fn.NumRegs)
+	active := make([]bool, fn.NumRegs)
+	start := make([]int, fn.NumRegs)
+	for r := range start {
+		start[r] = -1
+	}
+	for pc := 0; pc < len(fn.Code); pc++ {
+		_, def := useDef(fn.Code[pc], fn.NumRegs)
+		for r := 0; r < fn.NumRegs; r++ {
+			live := info.In[pc][r] || def[r]
+			if live && !active[r] {
+				active[r] = true
+				start[r] = pc
+			} else if !live && active[r] {
+				regions[r] = append(regions[r], Lifetime{Start: start[r], End: pc - 1})
+				active[r] = false
+			}
+			// ensure we mark registers defined at this pc with zero length
+			if live && def[r] && !info.Out[pc][r] {
+				regions[r] = append(regions[r], Lifetime{Start: pc, End: pc})
+				active[r] = false
+			}
+		}
+	}
+	for r := 0; r < fn.NumRegs; r++ {
+		if active[r] {
+			regions[r] = append(regions[r], Lifetime{Start: start[r], End: len(fn.Code) - 1})
+		}
+	}
+	return regions
+}
+
+// VisualizeRegionLifetime returns an ASCII chart of register region lifetimes.
+// Registers may have multiple live segments indicated by separate bars.
+func VisualizeRegionLifetime(fn *Function) string {
+	rl := RegionLifetime(fn)
+	usage := RegUsage(fn)
+	var b strings.Builder
+	fmt.Fprintf(&b, "pc    ")
+	for pc := 0; pc < len(fn.Code); pc++ {
+		fmt.Fprintf(&b, "%d", pc%10)
+	}
+	b.WriteByte('\n')
+	for r := 0; r < fn.NumRegs; r++ {
+		fmt.Fprintf(&b, "r%-3d ", r)
+		for pc := 0; pc < len(fn.Code); pc++ {
+			ch := ' '
+			for _, lt := range rl[r] {
+				if pc < lt.Start || pc > lt.End {
+					continue
+				}
+				if pc == lt.Start || pc == lt.End {
+					ch = '|'
+				} else {
+					ch = '-'
+				}
+				break
+			}
+			b.WriteByte(byte(ch))
+		}
+		fmt.Fprintf(&b, " %d\n", usage[r])
+	}
+	return b.String()
+}
