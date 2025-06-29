@@ -1,4 +1,17 @@
 # 📦 CHANGELOG.md
+## [0.10.6] – 2025-06-29T12:36:00+07:00
+
+### Added
+
+* Matrix multiplication and join benchmarks
+* Hash join and early exit optimizations
+* Updated JOB and TPC-H IR outputs
+* Documentation and VS Code LSP enhancements
+
+### Fixed
+
+* Map constant register allocation bug
+
 ## [0.10.5] – 2025-06-27T20:39:39+07:00
 
 ### Added
