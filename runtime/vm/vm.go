@@ -2531,8 +2531,14 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			regs[i*2+2] = kreg
 			regs[i*2+3] = vreg
 		}
+		seq := make([]int, len(regs))
+		for i, r := range regs {
+			nr := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpMove, A: nr, B: r})
+			seq[i] = nr
+		}
 		dst := fc.newReg()
-		start := regs[0]
+		start := seq[0]
 		fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: len(p.Struct.Fields) + 1, C: start})
 		return dst
 	}
@@ -2561,10 +2567,16 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			fc.emit(it.Pos, Instr{Op: OpMove, A: vreg, B: tmp[i].v})
 			regs[i*2+1] = vreg
 		}
+		seq := make([]int, len(regs))
+		for i, r := range regs {
+			nr := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpMove, A: nr, B: r})
+			seq[i] = nr
+		}
 		dst := fc.newReg()
 		start := 0
-		if len(regs) > 0 {
-			start = regs[0]
+		if len(seq) > 0 {
+			start = seq[0]
 		}
 		fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: len(p.Map.Items), C: start})
 		return dst
@@ -4177,8 +4189,14 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 			pairs[i*2] = k
 			pairs[i*2+1] = regs[i]
 		}
+		seq := make([]int, len(pairs))
+		for i, r := range pairs {
+			nr := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMove, A: nr, B: r})
+			seq[i] = nr
+		}
 		key = fc.newReg()
-		start := pairs[0]
+		start := seq[0]
 		fc.emit(q.Pos, Instr{Op: OpMakeMap, A: key, B: len(exprs), C: start})
 	}
 	keyStr := fc.newReg()
@@ -4206,9 +4224,16 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 			pairsGrp = append(pairsGrp, k, regs[i])
 		}
 	}
+	// Ensure map arguments occupy contiguous registers
+	seq := make([]int, len(pairsGrp))
+	for i, r := range pairsGrp {
+		nr := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMove, A: nr, B: r})
+		seq[i] = nr
+	}
 	grp := fc.newReg()
-	startGrp := pairsGrp[0]
-	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: grp, B: len(pairsGrp) / 2, C: startGrp})
+	startGrp := seq[0]
+	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: grp, B: len(seq) / 2, C: startGrp})
 	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: gmap, B: keyStr, C: grp})
 	tmp := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: glist, C: grp})
@@ -4480,10 +4505,16 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 		pairs[i*2] = k
 		pairs[i*2+1] = v
 	}
+	seq := make([]int, len(pairs))
+	for i, r := range pairs {
+		nr := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMove, A: nr, B: r})
+		seq[i] = nr
+	}
 	row := fc.newReg()
 	start := 0
-	if len(pairs) > 0 {
-		start = pairs[0]
+	if len(seq) > 0 {
+		start = seq[0]
 	}
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: row, B: len(names), C: start})
 	return row
