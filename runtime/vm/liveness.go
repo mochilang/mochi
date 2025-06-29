@@ -247,6 +247,9 @@ func Optimize(fn *Function) {
 			analysis = Liveness(fn)
 		}
 		pruneRedundantJumps(fn)
+		if foldJumpChains(fn) {
+			changed = true
+		}
 		analysis = Liveness(fn)
 		removed := removeDead(fn, analysis)
 		unreachable := removeUnreachable(fn)
@@ -689,6 +692,45 @@ func pruneRedundantJumps(fn *Function) bool {
 	}
 	fn.Code = newCode
 	return true
+}
+
+// foldJumpChains rewrites jumps that target other jumps to jump directly to the
+// final destination. Returns true if any jump was updated.
+func foldJumpChains(fn *Function) bool {
+	changed := false
+	follow := func(pc int) int {
+		seen := map[int]bool{}
+		for pc >= 0 && pc < len(fn.Code) {
+			if seen[pc] {
+				break
+			}
+			seen[pc] = true
+			ins := fn.Code[pc]
+			if ins.Op != OpJump || ins.A == pc {
+				break
+			}
+			pc = ins.A
+		}
+		return pc
+	}
+	for i := range fn.Code {
+		ins := &fn.Code[i]
+		switch ins.Op {
+		case OpJump:
+			dst := follow(ins.A)
+			if dst != ins.A {
+				ins.A = dst
+				changed = true
+			}
+		case OpJumpIfFalse, OpJumpIfTrue:
+			dst := follow(ins.B)
+			if dst != ins.B {
+				ins.B = dst
+				changed = true
+			}
+		}
+	}
+	return changed
 }
 
 func evalUnaryConst(op Op, v Value) (Value, bool) {
