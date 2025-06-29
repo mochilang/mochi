@@ -52,7 +52,7 @@ L1:
 L0:
   Move         r34, r25
   Const        r35, 0
-L9:
+L10:
   LessInt      r36, r34, r35
   JumpIfFalse  r36, L3
   Index        r38, r11, r34
@@ -66,31 +66,35 @@ L9:
   IterPrep     r43, r38
   Len          r44, r43
   Move         r45, r25
-L6:
+L7:
   LessInt      r46, r45, r44
   JumpIfFalse  r46, L4
   Index        r48, r43, r45
   Index        r49, r48, r5
   JumpIfFalse  r49, L5
-L5:
-  Append       r42, r42, r25
-  AddInt       r45, r45, r32
+  Index        r51, r48, r6
   Jump         L6
+L5:
+  Move         r51, r25
+L6:
+  Append       r42, r42, r51
+  AddInt       r45, r45, r32
+  Jump         L7
 L4:
   // sum(from x in g select x.val)
   Const        r54, []
   IterPrep     r55, r38
   Len          r56, r55
   Move         r57, r25
-L8:
+L9:
   LessInt      r58, r57, r56
-  JumpIfFalse  r58, L7
+  JumpIfFalse  r58, L8
   Index        r48, r55, r57
   Index        r60, r48, r6
   Append       r54, r54, r60
   AddInt       r57, r57, r32
-  Jump         L8
-L7:
+  Jump         L9
+L8:
   // select {
   MakeMap      r66, 2, r39
   // sort by g.key
@@ -100,7 +104,7 @@ L7:
   MakeList     r70, 2, r68
   Append       r1, r1, r70
   AddInt       r34, r34, r32
-  Jump         L9
+  Jump         L10
 L3:
   // sort by g.key
   Sort         r1, r1
