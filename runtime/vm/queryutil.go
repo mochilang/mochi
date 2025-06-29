@@ -177,3 +177,35 @@ func whereEvalLevel(q *parser.QueryExpr) int {
 	}
 	return level
 }
+
+// whereEvalStage returns the earliest loop index, across FROM and JOIN clauses,
+// where the query's WHERE predicate can be evaluated. Index 0 corresponds to
+// the source variable, followed by FROM clauses then JOIN clauses.
+func whereEvalStage(q *parser.QueryExpr) int {
+	if q.Where == nil {
+		return len(q.Froms) + len(q.Joins)
+	}
+	vars := map[string]struct{}{}
+	exprVars(q.Where, vars)
+	positions := map[string]int{q.Var: 0}
+	idx := 1
+	for _, f := range q.Froms {
+		positions[f.Var] = idx
+		idx++
+	}
+	for _, j := range q.Joins {
+		positions[j.Var] = idx
+		idx++
+	}
+	stage := 0
+	for v := range vars {
+		if i, ok := positions[v]; ok && i > stage {
+			stage = i
+		}
+	}
+	max := len(q.Froms) + len(q.Joins)
+	if stage > max {
+		stage = max
+	}
+	return stage
+}
