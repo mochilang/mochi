@@ -185,9 +185,8 @@ L13:
   Index        r11, r12, r8
   Index        r8, r11, r19
   PrintN       r17, 5, r17
-L14:
   // if row.order {
-  Jump         L15
+  Jump         L14
 L12:
   // print("Customer", row.customer.name, "has no orders")
   Const        r8, "Customer"
@@ -195,7 +194,7 @@ L12:
   Index        r12, r11, r20
   Const        r11, "has no orders"
   PrintN       r8, 3, r8
-L15:
+L14:
   // for row in result {
   Const        r11, 1
   Add          r13, r13, r11

@@ -247,6 +247,7 @@ func Optimize(fn *Function) {
 			analysis = Liveness(fn)
 		}
 		pruneRedundantJumps(fn)
+		collapseJumpChains(fn)
 		analysis = Liveness(fn)
 		removed := removeDead(fn, analysis)
 		unreachable := removeUnreachable(fn)
@@ -258,6 +259,47 @@ func Optimize(fn *Function) {
 		}
 	}
 	CompactRegisters(fn)
+}
+
+// collapseJumpChains resolves jumps that target other jumps to jump directly to
+// the final destination. Returns true if any instruction was changed.
+func collapseJumpChains(fn *Function) bool {
+	changed := false
+	resolve := func(target int) int {
+		seen := map[int]bool{}
+		for target >= 0 && target < len(fn.Code) {
+			if seen[target] {
+				break
+			}
+			seen[target] = true
+			ins := fn.Code[target]
+			if ins.Op == OpJump && ins.A != target {
+				target = ins.A
+				continue
+			}
+			break
+		}
+		return target
+	}
+
+	for i := range fn.Code {
+		ins := &fn.Code[i]
+		switch ins.Op {
+		case OpJump:
+			target := resolve(ins.A)
+			if target != ins.A {
+				ins.A = target
+				changed = true
+			}
+		case OpJumpIfFalse, OpJumpIfTrue:
+			target := resolve(ins.B)
+			if target != ins.B {
+				ins.B = target
+				changed = true
+			}
+		}
+	}
+	return changed
 }
 
 // removeDead eliminates instructions that only define dead registers.
