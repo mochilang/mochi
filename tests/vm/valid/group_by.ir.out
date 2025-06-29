@@ -1,134 +1,134 @@
-func main (regs=92)
+func main (regs=22)
   // let people = [
   Const        r0, [{"age": 30, "city": "Paris", "name": "Alice"}, {"age": 15, "city": "Hanoi", "name": "Bob"}, {"age": 65, "city": "Paris", "name": "Charlie"}, {"age": 45, "city": "Hanoi", "name": "Diana"}, {"age": 70, "city": "Paris", "name": "Eve"}, {"age": 22, "city": "Hanoi", "name": "Frank"}]
   // let stats = from person in people
   Const        r1, []
   // group by person.city into g
   Const        r2, "city"
+L8:
   // city: g.key,
   Const        r3, "key"
+L3:
   // count: count(g),
   Const        r4, "count"
   // avg_age: avg(from p in g select p.age)
   Const        r5, "avg_age"
   Const        r6, "age"
+L5:
   // let stats = from person in people
   IterPrep     r7, r0
   Len          r8, r7
+L6:
   Const        r9, 0
   MakeMap      r10, 0, r0
+L0:
   Const        r11, []
 L2:
   LessInt      r12, r9, r8
-  JumpIfFalse  r12, L0
-  Index        r13, r7, r9
-  // group by person.city into g
-  Index        r15, r13, r2
-  Str          r16, r15
-  In           r17, r16, r10
-  JumpIfTrue   r17, L1
-  // let stats = from person in people
-  Const        r18, []
-  Const        r19, "__group__"
-  Const        r20, true
-  Const        r21, "key"
-  // group by person.city into g
-  Move         r22, r15
-  // let stats = from person in people
-  Const        r23, "items"
-  Move         r24, r18
-  Const        r25, "count"
-  Const        r26, 0
-  Move         r27, r19
-  Move         r28, r20
-  Move         r29, r21
-  Move         r30, r22
-  Move         r31, r23
-  Move         r32, r24
-  Move         r33, r25
-  Move         r34, r26
-  MakeMap      r35, 4, r27
-  SetIndex     r10, r16, r35
-  Append       r11, r11, r35
 L1:
-  Const        r37, "items"
-  Index        r38, r10, r16
-  Index        r39, r38, r37
-  Append       r40, r39, r13
-  SetIndex     r38, r37, r40
-  Index        r41, r38, r4
-  Const        r42, 1
-  AddInt       r43, r41, r42
-  SetIndex     r38, r4, r43
-  AddInt       r9, r9, r42
+  JumpIfFalse  r12, L0
+  Index        r8, r7, r9
+  // group by person.city into g
+  Index        r7, r8, r2
+  Str          r13, r7
+  In           r14, r13, r10
+  JumpIfTrue   r14, L1
+  // let stats = from person in people
+  Const        r14, []
+  Const        r15, "__group__"
+  Const        r16, true
+  Const        r17, "key"
+  // group by person.city into g
+  Move         r18, r7
+  // let stats = from person in people
+  Const        r7, "items"
+  Move         r19, r14
+  Const        r14, "count"
+  Const        r20, 0
+  Move         r21, r15
+  Move         r15, r16
+  Move         r16, r17
+  Move         r17, r18
+  Move         r18, r7
+  Move         r7, r19
+  Move         r19, r14
+  Move         r14, r20
+  MakeMap      r20, 4, r21
+  SetIndex     r10, r13, r20
+  Append       r11, r11, r20
+  Const        r20, "items"
+  Index        r14, r10, r13
+  Index        r13, r14, r20
+  Append       r10, r13, r8
+  SetIndex     r14, r20, r10
+  Index        r10, r14, r4
+  Const        r13, 1
+  AddInt       r20, r10, r13
+  SetIndex     r14, r4, r20
+  AddInt       r9, r9, r13
   Jump         L2
-L0:
-  Const        r45, 0
-  Move         r44, r45
-  Len          r46, r11
-L6:
-  LessInt      r47, r44, r46
-  JumpIfFalse  r47, L3
-  Index        r49, r11, r44
+  Const        r20, 0
+  Move         r10, r20
+  Len          r14, r11
+  LessInt      r12, r10, r14
+  JumpIfFalse  r12, L3
+  Index        r12, r11, r10
   // city: g.key,
-  Const        r50, "city"
-  Index        r51, r49, r3
+  Const        r11, "city"
+  Index        r14, r12, r3
   // count: count(g),
-  Const        r52, "count"
-  Index        r53, r49, r4
+  Const        r3, "count"
+  Index        r9, r12, r4
   // avg_age: avg(from p in g select p.age)
-  Const        r54, "avg_age"
-  Const        r55, []
-  IterPrep     r56, r49
-  Len          r57, r56
-  Move         r58, r45
-L5:
-  LessInt      r59, r58, r57
-  JumpIfFalse  r59, L4
-  Index        r61, r56, r58
-  Index        r62, r61, r6
-  Append       r55, r55, r62
-  AddInt       r58, r58, r42
+  Const        r8, "avg_age"
+  Const        r19, []
+  IterPrep     r7, r12
+  Len          r12, r7
+  Move         r18, r20
+  LessInt      r20, r18, r12
+  JumpIfFalse  r20, L4
+  Index        r20, r7, r18
+  Index        r7, r20, r6
+  Append       r19, r19, r7
+  AddInt       r18, r18, r13
   Jump         L5
 L4:
-  Avg          r64, r55
+  Avg          r20, r19
   // city: g.key,
-  Move         r65, r50
-  Move         r66, r51
+  Move         r7, r11
+  Move         r19, r14
   // count: count(g),
-  Move         r67, r52
-  Move         r68, r53
+  Move         r14, r3
+  Move         r3, r9
   // avg_age: avg(from p in g select p.age)
-  Move         r69, r54
-  Move         r70, r64
+  Move         r11, r8
+  Move         r8, r20
   // select {
-  MakeMap      r71, 3, r65
+  MakeMap      r20, 3, r7
   // let stats = from person in people
-  Append       r1, r1, r71
-  AddInt       r44, r44, r42
+  Append       r1, r1, r20
+  AddInt       r10, r10, r13
   Jump         L6
-L3:
   // print("--- People grouped by city ---")
-  Const        r73, "--- People grouped by city ---"
-  Print        r73
+  Const        r20, "--- People grouped by city ---"
+  Print        r20
   // for s in stats {
-  IterPrep     r74, r1
-  Len          r75, r74
-  Const        r76, 0
-L8:
-  Less         r77, r76, r75
-  JumpIfFalse  r77, L7
-  Index        r79, r74, r76
+  IterPrep     r20, r1
+  Len          r1, r20
+  Const        r8, 0
+  Less         r11, r8, r1
+  JumpIfFalse  r11, L7
+  Index        r11, r20, r8
   // print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
-  Index        r80, r79, r2
-  Const        r81, ": count ="
-  Index        r82, r79, r4
-  Const        r83, ", avg_age ="
-  Index        r84, r79, r5
-  PrintN       r80, 5, r80
+  Index        r20, r11, r2
+  Const        r2, ": count ="
+  Index        r1, r11, r4
+  Const        r4, ", avg_age ="
+  Index        r3, r11, r5
+  PrintN       r20, 5, r20
   // for s in stats {
-  Const        r90, 1
-  Add          r76, r76, r90
+  Const        r3, 1
+  Add          r8, r8, r3
   Jump         L8
 L7:
   Return       r0

@@ -1,55 +1,55 @@
-func main (regs=9)
+func main (regs=4)
   // let result = twoSum([2,7,11,15], 9)
   Const        r0, [2, 7, 11, 15]
   Const        r1, 9
-  Call2        r4, twoSum, r0, r1
+  Call2        r2, twoSum, r0, r1
   // print(result[0])
-  Const        r5, 0
-  Index        r6, r4, r5
-  Print        r6
+  Const        r1, 0
+  Index        r3, r2, r1
+  Print        r3
   // print(result[1])
-  Const        r7, 1
-  Index        r8, r4, r7
-  Print        r8
+  Const        r3, 1
+  Index        r1, r2, r3
+  Print        r1
   Return       r0
 
   // fun twoSum(nums: list<int>, target: int): list<int> {
-func twoSum (regs=22)
+func twoSum (regs=9)
   // let n = len(nums)
   Len          r2, r0
-  // for i in 0..n {
-  Const        r4, 0
-L4:
-  Less         r5, r4, r2
-  JumpIfFalse  r5, L0
-  // for j in i+1..n {
-  Const        r6, 1
-  AddInt       r8, r4, r6
-L3:
-  Less         r9, r8, r2
-  JumpIfFalse  r9, L1
-  // if nums[i] + nums[j] == target {
-  Index        r10, r0, r4
-  Index        r11, r0, r8
-  Add          r12, r10, r11
-  Equal        r13, r12, r1
-  JumpIfFalse  r13, L2
-  // return [i, j]
-  Move         r14, r4
-  Move         r15, r8
-  MakeList     r16, 2, r14
-  Return       r16
 L2:
+  // for i in 0..n {
+  Const        r3, 0
+L4:
+  Less         r4, r3, r2
+  JumpIfFalse  r4, L0
+L3:
   // for j in i+1..n {
-  Const        r17, 1
-  Add          r8, r8, r17
+  Const        r4, 1
+  AddInt       r5, r3, r4
+  Less         r6, r5, r2
+  JumpIfFalse  r6, L1
+  // if nums[i] + nums[j] == target {
+  Index        r6, r0, r3
+  Index        r7, r0, r5
+  Add          r8, r6, r7
+  Equal        r7, r8, r1
+  JumpIfFalse  r7, L2
+  // return [i, j]
+  Move         r7, r3
+  Move         r8, r5
+  MakeList     r1, 2, r7
+  Return       r1
+  // for j in i+1..n {
+  Const        r1, 1
+  Add          r5, r5, r1
   Jump         L3
 L1:
   // for i in 0..n {
-  Const        r19, 1
-  Add          r4, r4, r19
+  Const        r1, 1
+  Add          r3, r3, r1
   Jump         L4
 L0:
   // return [-1, -1]
-  Const        r21, [-1, -1]
-  Return       r21
+  Const        r1, [-1, -1]
+  Return       r1

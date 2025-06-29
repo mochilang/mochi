@@ -1,9 +1,9 @@
-func main (regs=6)
+func main (regs=2)
   // print(-3)
   Const        r0, 3
   Const        r1, -3
   Print        r1
   // print(5 + (-2))
-  Const        r5, 3
-  Print        r5
+  Const        r1, 3
+  Print        r1
   Return       r0

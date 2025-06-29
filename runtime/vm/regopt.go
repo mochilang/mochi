@@ -2,6 +2,7 @@ package vm
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -118,4 +119,83 @@ func VisualizeUsage(fn *Function) string {
 		fmt.Fprintf(&b, " %d\n", usage[r])
 	}
 	return b.String()
+}
+
+// CompactRegisters remaps registers to reduce the overall count by reusing
+// registers whose lifetimes do not overlap. Parameters keep their original
+// numbers to avoid changing the calling convention.
+func CompactRegisters(fn *Function) {
+	lt := RegLifetime(fn)
+	type regInfo struct{ r, start, end int }
+	regs := make([]regInfo, 0, fn.NumRegs)
+	for r := 0; r < fn.NumRegs; r++ {
+		if lt[r].Start == -1 {
+			continue
+		}
+		regs = append(regs, regInfo{r: r, start: lt[r].Start, end: lt[r].End})
+	}
+	sort.Slice(regs, func(i, j int) bool { return regs[i].start < regs[j].start })
+
+	mapping := make([]int, fn.NumRegs)
+	for i := range mapping {
+		mapping[i] = -1
+	}
+
+	type activeReg struct{ old, end, new int }
+	var active []activeReg
+	var free []int
+	next := fn.NumParams
+
+	// Reserve parameter registers
+	for r := 0; r < fn.NumParams && r < len(mapping); r++ {
+		mapping[r] = r
+		active = append(active, activeReg{old: r, end: lt[r].End, new: r})
+		if next <= r {
+			next = r + 1
+		}
+	}
+
+	for _, reg := range regs {
+		if reg.r < fn.NumParams {
+			continue
+		}
+		// expire old regs
+		tmp := active[:0]
+		for _, a := range active {
+			if a.end < reg.start {
+				free = append(free, a.new)
+			} else {
+				tmp = append(tmp, a)
+			}
+		}
+		active = tmp
+
+		// allocate new register
+		var nr int
+		if len(free) > 0 {
+			nr = free[len(free)-1]
+			free = free[:len(free)-1]
+		} else {
+			nr = next
+			next++
+		}
+		mapping[reg.r] = nr
+		active = append(active, activeReg{old: reg.r, end: reg.end, new: nr})
+	}
+
+	remap := func(r int) int {
+		if r >= 0 && r < len(mapping) && mapping[r] >= 0 {
+			return mapping[r]
+		}
+		return r
+	}
+
+	for i := range fn.Code {
+		ins := &fn.Code[i]
+		ins.A = remap(ins.A)
+		ins.B = remap(ins.B)
+		ins.C = remap(ins.C)
+		ins.D = remap(ins.D)
+	}
+	fn.NumRegs = next
 }

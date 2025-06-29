@@ -1,4 +1,4 @@
-func main (regs=62)
+func main (regs=17)
   // let people = [
   Const        r0, [{"city": "Paris", "name": "Alice"}, {"city": "Hanoi", "name": "Bob"}, {"city": "Paris", "name": "Charlie"}, {"city": "Hanoi", "name": "Diana"}, {"city": "Paris", "name": "Eve"}, {"city": "Hanoi", "name": "Frank"}, {"city": "Paris", "name": "George"}]
   // from p in people
@@ -8,81 +8,80 @@ func main (regs=62)
   // select { city: g.key, num: count(g) }
   Const        r3, "key"
   // from p in people
-  IterPrep     r5, r0
-  Len          r6, r5
-  Const        r7, 0
-  MakeMap      r8, 0, r0
-  Const        r9, []
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+  MakeMap      r7, 0, r0
 L2:
-  LessInt      r10, r7, r6
-  JumpIfFalse  r10, L0
-  Index        r11, r5, r7
+  Const        r8, []
+  LessInt      r9, r6, r5
+  JumpIfFalse  r9, L0
+  Index        r9, r4, r6
   // group by p.city into g
-  Index        r13, r11, r2
-  Str          r14, r13
-  In           r15, r14, r8
-  JumpIfTrue   r15, L1
-  // from p in people
-  Const        r16, []
-  Const        r17, "__group__"
-  Const        r18, true
-  Const        r19, "key"
-  // group by p.city into g
-  Move         r20, r13
-  // from p in people
-  Const        r21, "items"
-  Move         r22, r16
-  Const        r23, "count"
-  Const        r24, 0
-  Move         r25, r17
-  Move         r26, r18
-  Move         r27, r19
-  Move         r28, r20
-  Move         r29, r21
-  Move         r30, r22
-  Move         r31, r23
-  Move         r32, r24
-  MakeMap      r33, 4, r25
-  SetIndex     r8, r14, r33
+  Index        r4, r9, r2
+  Str          r2, r4
+  In           r5, r2, r7
 L1:
-  Const        r35, "items"
-  Index        r36, r8, r14
-  Index        r37, r36, r35
-  Append       r38, r37, r11
-  SetIndex     r36, r35, r38
-  Const        r39, "count"
-  Index        r40, r36, r39
-  Const        r41, 1
-  AddInt       r42, r40, r41
-  SetIndex     r36, r39, r42
-  AddInt       r7, r7, r41
+  JumpIfTrue   r5, L1
+  // from p in people
+  Const        r5, []
+  Const        r10, "__group__"
+  Const        r11, true
+  Const        r12, "key"
+  // group by p.city into g
+  Move         r13, r4
+  // from p in people
+  Const        r4, "items"
+  Move         r14, r5
+  Const        r5, "count"
+  Const        r15, 0
+  Move         r16, r10
+  Move         r10, r11
+  Move         r11, r12
+  Move         r12, r13
+  Move         r13, r4
+  Move         r4, r14
+  Move         r14, r5
+  Move         r5, r15
+  MakeMap      r15, 4, r16
+  SetIndex     r7, r2, r15
+  Const        r15, "items"
+  Index        r5, r7, r2
+  Index        r2, r5, r15
+  Append       r7, r2, r9
+  SetIndex     r5, r15, r7
+  Const        r7, "count"
+  Index        r2, r5, r7
+  Const        r15, 1
+  AddInt       r9, r2, r15
+  SetIndex     r5, r7, r9
+  AddInt       r6, r6, r15
   Jump         L2
 L0:
-  Const        r43, 0
-  Const        r45, 0
-L4:
-  LessInt      r46, r43, r45
-  JumpIfFalse  r46, L3
-  Index        r48, r9, r43
+  Const        r9, 0
+  Const        r2, 0
+  LessInt      r5, r9, r2
+  JumpIfFalse  r5, L3
+  Index        r5, r8, r9
   // having count(g) >= 4
-  Index        r49, r48, r39
-  Const        r50, 4
-  LessEq       r51, r50, r49
-  JumpIfFalse  r51, L3
+  Index        r8, r5, r7
+  Const        r2, 4
+  LessEq       r6, r2, r8
+  JumpIfFalse  r6, L3
   // select { city: g.key, num: count(g) }
-  Const        r52, "city"
-  Index        r53, r48, r3
-  Const        r54, "num"
-  Index        r55, r48, r39
-  Move         r56, r52
-  Move         r57, r53
-  Move         r58, r54
-  Move         r59, r55
-  MakeMap      r60, 2, r56
+  Const        r6, "city"
+  Index        r2, r5, r3
+  Const        r3, "num"
+  Index        r14, r5, r7
+  Move         r5, r6
+  Move         r6, r2
+  Move         r2, r3
+  Move         r3, r14
+  MakeMap      r14, 2, r5
   // from p in people
-  Append       r1, r1, r60
-  AddInt       r43, r43, r41
-  Jump         L4
+  Append       r1, r1, r14
+  AddInt       r9, r9, r15
+  Jump         L2
 L3:
   // json(big)
   JSON         r1

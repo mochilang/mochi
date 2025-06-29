@@ -1,4 +1,4 @@
-func main (regs=6)
+func main (regs=3)
   // let xs = [1, 2, 3]
   Const        r0, [1, 2, 3]
   // print(2 in xs)
@@ -6,8 +6,8 @@ func main (regs=6)
   In           r2, r1, r0
   Print        r2
   // print(!(5 in xs))
-  Const        r3, 5
-  In           r4, r3, r0
-  Not          r5, r4
-  Print        r5
+  Const        r2, 5
+  In           r1, r2, r0
+  Not          r2, r1
+  Print        r2
   Return       r0

@@ -1,4 +1,4 @@
-func main (regs=5)
+func main (regs=3)
   // let s = "catch"
   Const        r0, "catch"
   // print(s.contains("cat"))
@@ -6,7 +6,7 @@ func main (regs=5)
   In           r2, r1, r0
   Print        r2
   // print(s.contains("dog"))
-  Const        r3, "dog"
-  In           r4, r3, r0
-  Print        r4
+  Const        r2, "dog"
+  In           r1, r2, r0
+  Print        r1
   Return       r0
