@@ -138,7 +138,8 @@ type TypeVariant struct {
 
 type TypeField struct {
 	Pos  lexer.Position
-	Name string   `parser:"@Ident ':'"`
+	Name string `parser:"@Ident ':'"`
+	Doc  string
 	Type *TypeRef `parser:"@@"`
 }
 
@@ -169,14 +170,16 @@ type FunType struct {
 
 type LetStmt struct {
 	Pos   lexer.Position
-	Name  string   `parser:"'let' @Ident"`
+	Name  string `parser:"'let' @Ident"`
+	Doc   string
 	Type  *TypeRef `parser:"[ ':' @@ ]"`
 	Value *Expr    `parser:"[ '=' @@ ]"`
 }
 
 type VarStmt struct {
 	Pos   lexer.Position
-	Name  string   `parser:"'var' @Ident"`
+	Name  string `parser:"'var' @Ident"`
+	Doc   string
 	Type  *TypeRef `parser:"[ ':' @@ ]"`
 	Value *Expr    `parser:"[ '=' @@ ]"`
 }
@@ -561,7 +564,8 @@ type ImportStmt struct {
 
 type StreamField struct {
 	Pos  lexer.Position
-	Name string   `parser:"@Ident ':'"`
+	Name string `parser:"@Ident ':'"`
+	Doc  string
 	Type *TypeRef `parser:"@@"`
 }
 

@@ -27,6 +27,16 @@ func TestParser_DocComments(t *testing.T) {
 			}
 			found = true
 		}
+		if stmt.Let != nil && stmt.Let.Name == "PI" && stmt.Let.Doc == "" {
+			t.Errorf("missing doc for PI")
+		}
+		if stmt.Type != nil && stmt.Type.Name == "Person" {
+			for _, m := range stmt.Type.Members {
+				if m.Field != nil && m.Field.Name == "name" && m.Field.Doc == "" {
+					t.Errorf("missing doc for field name")
+				}
+			}
+		}
 	}
 	if !found {
 		t.Fatalf("square function not found")
