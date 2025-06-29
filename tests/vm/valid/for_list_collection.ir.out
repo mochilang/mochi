@@ -1,4 +1,4 @@
-func main (regs=9)
+func main (regs=8)
   // for n in [1,2,3] {
   Const        r0, [1, 2, 3]
   IterPrep     r1, r0
@@ -11,9 +11,9 @@ L1:
   Move         r6, r5
   // print(n)
   Print        r6
+  Const        r7, 1
   // for n in [1,2,3] {
-  Const        r8, 1
-  Move         r3, r8
+  AddInt       r3, r3, r7
   Jump         L1
 L0:
   Return       r0
