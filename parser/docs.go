@@ -22,13 +22,13 @@ func extractLineDocs(src string) map[int]string {
 	i := 0
 	for i < len(lines) {
 		line := strings.TrimSpace(lines[i])
-		if strings.HasPrefix(line, "//") {
-			block := []string{strings.TrimSpace(strings.TrimPrefix(line, "//"))}
+		if strings.HasPrefix(line, "///") {
+			block := []string{strings.TrimSpace(strings.TrimPrefix(line, "///"))}
 			j := i + 1
 			for j < len(lines) {
 				t := strings.TrimSpace(lines[j])
-				if strings.HasPrefix(t, "//") {
-					block = append(block, strings.TrimSpace(strings.TrimPrefix(t, "//")))
+				if strings.HasPrefix(t, "///") {
+					block = append(block, strings.TrimSpace(strings.TrimPrefix(t, "///")))
 					j++
 				} else {
 					break
@@ -51,17 +51,42 @@ func attachStmtDocs(s *Statement, docs map[int]string) {
 		if doc, ok := docs[s.Fun.Pos.Line]; ok {
 			s.Fun.Doc = doc
 		}
-	case s.Agent != nil:
-		if doc, ok := docs[s.Agent.Pos.Line]; ok {
-			s.Agent.Doc = doc
+	case s.Let != nil:
+		if doc, ok := docs[s.Let.Pos.Line]; ok {
+			s.Let.Doc = doc
+		}
+	case s.Var != nil:
+		if doc, ok := docs[s.Var.Pos.Line]; ok {
+			s.Var.Doc = doc
 		}
 	case s.Type != nil:
 		if doc, ok := docs[s.Type.Pos.Line]; ok {
 			s.Type.Doc = doc
 		}
+		for _, m := range s.Type.Members {
+			if m.Field != nil {
+				if doc, ok := docs[m.Field.Pos.Line]; ok {
+					m.Field.Doc = doc
+				}
+			}
+			if m.Method != nil {
+				if doc, ok := docs[m.Method.Pos.Line]; ok {
+					m.Method.Doc = doc
+				}
+			}
+		}
+	case s.Agent != nil:
+		if doc, ok := docs[s.Agent.Pos.Line]; ok {
+			s.Agent.Doc = doc
+		}
 	case s.Stream != nil:
 		if doc, ok := docs[s.Stream.Pos.Line]; ok {
 			s.Stream.Doc = doc
+		}
+		for _, f := range s.Stream.Fields {
+			if doc, ok := docs[f.Pos.Line]; ok {
+				f.Doc = doc
+			}
 		}
 	}
 }

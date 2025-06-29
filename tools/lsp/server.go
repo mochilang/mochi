@@ -26,6 +26,8 @@ func NewServer() *Server {
 		TextDocumentHover:          s.hover,
 		TextDocumentCompletion:     s.completion,
 		TextDocumentDefinition:     s.definition,
+		TextDocumentReferences:     s.references,
+		WorkspaceSymbol:            s.workspaceSymbol,
 	}
 	s.srv = server.NewServer(&handler, Name, false)
 	return s
@@ -42,6 +44,8 @@ func (s *Server) initialize(ctx *glsp.Context, params *protocol.InitializeParams
 		OpenClose: &openClose,
 		Change:    &syncKind,
 	}
+	caps.ReferencesProvider = true
+	caps.WorkspaceSymbolProvider = true
 	version := "dev"
 	return protocol.InitializeResult{
 		Capabilities: caps,
@@ -125,4 +129,18 @@ func (s *Server) definition(ctx *glsp.Context, params *protocol.DefinitionParams
 		return locs[0], nil
 	}
 	return locs, nil
+}
+
+func (s *Server) references(ctx *glsp.Context, params *protocol.ReferenceParams) ([]protocol.Location, error) {
+	uri := string(params.TextDocument.URI)
+	src, ok := s.documents[uri]
+	if !ok {
+		return nil, nil
+	}
+	locs, _ := References(uri, src, int(params.Position.Line), int(params.Position.Character))
+	return locs, nil
+}
+
+func (s *Server) workspaceSymbol(ctx *glsp.Context, params *protocol.WorkspaceSymbolParams) ([]protocol.SymbolInformation, error) {
+	return WorkspaceSymbols(s.documents, params.Query), nil
 }

@@ -2,6 +2,7 @@ package lsp
 
 import (
 	"errors"
+	"regexp"
 	"strings"
 
 	"github.com/alecthomas/participle/v2/lexer"
@@ -16,7 +17,7 @@ import (
 func Analyze(uri string, src string) []protocol.Diagnostic {
 	var diags []protocol.Diagnostic
 
-	prog, err := parser.Parser.ParseString(uri, src)
+	prog, err := parser.ParseString(src)
 	if err != nil {
 		if d, ok := convertParseError(uri, err); ok {
 			diags = append(diags, toLSPDiagnostic(d))
@@ -73,6 +74,13 @@ func max(a, b int) int {
 func severityPtr(s protocol.DiagnosticSeverity) *protocol.DiagnosticSeverity { return &s }
 
 func strPtr(s string) *string { return &s }
+
+func optStr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
 
 func convertParseError(filename string, err error) (diagnostic.Diagnostic, bool) {
 	var posErr interface{ Position() lexer.Position }
@@ -165,11 +173,11 @@ func DocumentSymbols(uri string, src string) ([]protocol.DocumentSymbol, []proto
 		case stmt.Fun != nil:
 			syms = append(syms, funSymbol(stmt.Fun))
 		case stmt.Let != nil:
-			syms = append(syms, varSymbol(stmt.Let.Pos, stmt.Let.Name))
+			syms = append(syms, varSymbol(stmt.Let.Pos, stmt.Let.Name, stmt.Let.Doc))
 		case stmt.Var != nil:
-			syms = append(syms, varSymbol(stmt.Var.Pos, stmt.Var.Name))
+			syms = append(syms, varSymbol(stmt.Var.Pos, stmt.Var.Name, stmt.Var.Doc))
 		case stmt.Type != nil:
-			syms = append(syms, typeSymbol(stmt.Type.Pos, stmt.Type.Name))
+			syms = append(syms, typeSymbol(stmt.Type.Pos, stmt.Type.Name, stmt.Type.Doc))
 		}
 	}
 
@@ -181,28 +189,31 @@ func funSymbol(f *parser.FunStmt) protocol.DocumentSymbol {
 	kind := protocol.SymbolKindFunction
 	return protocol.DocumentSymbol{
 		Name:           f.Name,
+		Detail:         optStr(f.Doc),
 		Kind:           kind,
 		Range:          rng,
 		SelectionRange: rng,
 	}
 }
 
-func varSymbol(pos lexer.Position, name string) protocol.DocumentSymbol {
+func varSymbol(pos lexer.Position, name, doc string) protocol.DocumentSymbol {
 	rng := symbolRange(pos, len(name))
 	kind := protocol.SymbolKindVariable
 	return protocol.DocumentSymbol{
 		Name:           name,
+		Detail:         optStr(doc),
 		Kind:           kind,
 		Range:          rng,
 		SelectionRange: rng,
 	}
 }
 
-func typeSymbol(pos lexer.Position, name string) protocol.DocumentSymbol {
+func typeSymbol(pos lexer.Position, name string, doc string) protocol.DocumentSymbol {
 	rng := symbolRange(pos, len(name))
 	kind := protocol.SymbolKindStruct
 	return protocol.DocumentSymbol{
 		Name:           name,
+		Detail:         optStr(doc),
 		Kind:           kind,
 		Range:          rng,
 		SelectionRange: rng,
@@ -232,7 +243,12 @@ func Hover(uri, src string, line, character int) (protocol.Hover, []protocol.Dia
 	pos := protocol.Position{Line: uint32(line), Character: uint32(character)}
 	for _, s := range syms {
 		if contains(s.Range, pos) {
-			msg := s.Name
+			var msg string
+			if s.Detail != nil {
+				msg = *s.Detail
+			} else {
+				msg = s.Name
+			}
 			return protocol.Hover{
 				Contents: protocol.MarkupContent{Kind: protocol.MarkupKindPlainText, Value: msg},
 				Range:    &s.Range,
@@ -269,4 +285,51 @@ func Definition(uri, src string, line, character int) ([]protocol.Location, []pr
 		}
 	}
 	return nil, diags
+}
+
+// References returns locations of all occurrences of the symbol at the given position.
+func References(uri, src string, line, character int) ([]protocol.Location, []protocol.Diagnostic) {
+	syms, diags := DocumentSymbols(uri, src)
+	pos := protocol.Position{Line: uint32(line), Character: uint32(character)}
+	var name string
+	for _, s := range syms {
+		if contains(s.Range, pos) {
+			name = s.Name
+			break
+		}
+	}
+	if name == "" {
+		return nil, diags
+	}
+	word := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`)
+	var locs []protocol.Location
+	lines := strings.Split(src, "\n")
+	for i, line := range lines {
+		matches := word.FindAllStringIndex(line, -1)
+		for _, m := range matches {
+			start := protocol.Position{Line: uint32(i), Character: uint32(m[0])}
+			end := protocol.Position{Line: uint32(i), Character: uint32(m[1])}
+			locs = append(locs, protocol.Location{URI: protocol.DocumentUri(uri), Range: protocol.Range{Start: start, End: end}})
+		}
+	}
+	return locs, diags
+}
+
+// WorkspaceSymbols returns symbols from all documents matching the given query.
+func WorkspaceSymbols(docs map[string]string, query string) []protocol.SymbolInformation {
+	var infos []protocol.SymbolInformation
+	for uri, src := range docs {
+		syms, _ := DocumentSymbols(uri, src)
+		for _, s := range syms {
+			if query == "" || strings.Contains(s.Name, query) {
+				infos = append(infos, protocol.SymbolInformation{
+					Name:          s.Name,
+					Kind:          s.Kind,
+					Location:      protocol.Location{URI: protocol.DocumentUri(uri), Range: s.Range},
+					ContainerName: nil,
+				})
+			}
+		}
+	}
+	return infos
 }

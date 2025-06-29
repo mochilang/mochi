@@ -11,5 +11,7 @@ The command line entry point is `cmd/mochi-lsp`.  The binary communicates over s
 - Return hover text for identifiers
 - Offer keyword completion items
 - Jump to symbol definitions
+- Search symbols across open files via `workspaceSymbol`
+- Find references to a symbol via `references`
 
 Unit tests under this directory verify the analyser and server behaviour.

@@ -49,4 +49,25 @@ func TestServerHandlers(t *testing.T) {
 	if loc.URI != uri {
 		t.Fatalf("unexpected definition location %v", loc)
 	}
+
+	syms2, err := srv.workspaceSymbol(ctx, &protocol.WorkspaceSymbolParams{Query: "add"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(syms2) != 1 || syms2[0].Name != "add" {
+		t.Fatalf("unexpected workspace symbols: %v", syms2)
+	}
+
+	refs, err := srv.references(ctx, &protocol.ReferenceParams{
+		TextDocumentPositionParams: protocol.TextDocumentPositionParams{
+			TextDocument: protocol.TextDocumentIdentifier{URI: uri},
+			Position:     protocol.Position{Line: 0, Character: 1},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(refs) == 0 {
+		t.Fatalf("expected references")
+	}
 }
