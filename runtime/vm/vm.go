@@ -1592,6 +1592,12 @@ type funcCompiler struct {
 	constCache map[string]int
 }
 
+func (fc *funcCompiler) freshConst(pos lexer.Position, v Value) int {
+	r := fc.newReg()
+	fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
+	return r
+}
+
 func (fc *funcCompiler) pushScope() {
 	copyMap := make(map[string]int, len(fc.vars))
 	for k, v := range fc.vars {
@@ -2507,12 +2513,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 
 		regs := make([]int, len(p.Struct.Fields)*2+2)
 
-		nameKey := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "__name"})
-		nameVal := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: p.Struct.Name})
+		nameKey := fc.freshConst(p.Pos, Value{Tag: ValueStr, Str: "__name"})
+		nameVal := fc.freshConst(p.Pos, Value{Tag: ValueStr, Str: p.Struct.Name})
 		regs[0] = nameKey
 		regs[1] = nameVal
 		for i, f := range p.Struct.Fields {
-			kreg := fc.constReg(f.Pos, Value{Tag: ValueStr, Str: f.Name})
+			kreg := fc.freshConst(f.Pos, Value{Tag: ValueStr, Str: f.Name})
 			vreg := fc.newReg()
 			fc.emit(f.Pos, Instr{Op: OpMove, A: vreg, B: vals[i]})
 			regs[i*2+2] = kreg
@@ -2535,7 +2541,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		tmp := make([]struct{ k, v int }, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			if name, ok := identName(it.Key); ok {
-				tmp[i].k = fc.constReg(it.Pos, Value{Tag: ValueStr, Str: name})
+				tmp[i].k = fc.freshConst(it.Pos, Value{Tag: ValueStr, Str: name})
 			} else {
 				tmp[i].k = fc.compileExpr(it.Key)
 			}

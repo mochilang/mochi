@@ -355,13 +355,18 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 				continue
 			}
 			// propagate move into the next instruction when the temp register
-			// is not live afterwards
-			if next.A != ins.A && usesReg(next, ins.A) && !analysis.Out[pc+1][ins.A] {
-				replaceReg(&next, ins.A, ins.B)
-				fn.Code[pc+1] = next
-				changed = true
-				pcMap[pc] = -1
-				continue
+			// is not live afterwards. Avoid range-based ops where register order matters.
+			switch next.Op {
+			case OpMakeList, OpMakeMap, OpCall, OpCallV, OpMakeClosure, OpPrintN:
+				// skip propagation for these
+			default:
+				if next.A != ins.A && usesReg(next, ins.A) && !analysis.Out[pc+1][ins.A] {
+					replaceReg(&next, ins.A, ins.B)
+					fn.Code[pc+1] = next
+					changed = true
+					pcMap[pc] = -1
+					continue
+				}
 			}
 		} else if pc+1 < len(fn.Code) {
 			// eliminate x; Move rY,x -> x with destination rY when x defines a register
