@@ -3154,9 +3154,13 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		joinType = *join.Side
 	}
 
-	if joinType == "inner" {
+	if joinType == "inner" || joinType == "left" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			fc.compileHashJoin(q, dst, lk, rk)
+			if joinType == "inner" {
+				fc.compileHashJoin(q, dst, lk, rk)
+			} else {
+				fc.compileHashLeftJoin(q, dst, lk, rk)
+			}
 			return
 		}
 	}
@@ -3730,6 +3734,156 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 	}
 
 	fc.fn.Code[jumpEnd].B = len(fc.fn.Code)
+}
+
+// compileHashLeftJoin performs a left join using a hash map on the right side
+// when the ON clause is a simple equality. This avoids nested loops for common
+// left join patterns.
+func (fc *funcCompiler) compileHashLeftJoin(q *parser.QueryExpr, dst int, leftKey, rightKey *parser.Expr) {
+	join := q.Joins[0]
+
+	leftReg := fc.compileExpr(q.Source)
+	llist := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpIterPrep, A: llist, B: leftReg})
+	llen := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpLen, A: llen, B: llist})
+
+	rightReg := fc.compileExpr(join.Src)
+	rlist := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpIterPrep, A: rlist, B: rightReg})
+	rlen := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
+
+	// build hash table for the right side
+	rmap := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpMakeMap, A: rmap, B: 0})
+	ri := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
+	rstart := len(fc.fn.Code)
+	rcond := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpLessInt, A: rcond, B: ri, C: rlen})
+	rjmp := len(fc.fn.Code)
+	fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
+	relem := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpIndex, A: relem, B: rlist, C: ri})
+	key := fc.compileExpr(rightKey)
+	list := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpIndex, A: list, B: rmap, C: key})
+	nilreg := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
+	has := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpNotEqual, A: has, B: list, C: nilreg})
+	skip := len(fc.fn.Code)
+	fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: has})
+	newList := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpMakeList, A: newList, B: 0, C: 0})
+	fc.emit(join.Pos, Instr{Op: OpSetIndex, A: rmap, B: key, C: newList})
+	fc.fn.Code[skip].B = len(fc.fn.Code)
+	fc.emit(join.Pos, Instr{Op: OpIndex, A: list, B: rmap, C: key})
+	tmp := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpAppend, A: tmp, B: list, C: relem})
+	fc.emit(join.Pos, Instr{Op: OpSetIndex, A: rmap, B: key, C: tmp})
+	one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
+	fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
+	rend := len(fc.fn.Code)
+	fc.fn.Code[rjmp].B = rend
+
+	appendSelect := func() {
+		val := fc.compileExpr(q.Select)
+		if q.Sort != nil {
+			key := fc.compileExpr(q.Sort)
+			kreg := fc.newReg()
+			fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+			vreg := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+			pair := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		} else {
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		}
+	}
+
+	li := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
+	lstart := len(fc.fn.Code)
+	lcond := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpLessInt, A: lcond, B: li, C: llen})
+	ljmp := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: lcond})
+	lelem := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpIndex, A: lelem, B: llist, C: li})
+	lvar, ok := fc.vars[q.Var]
+	if !ok {
+		lvar = fc.newReg()
+		fc.vars[q.Var] = lvar
+	}
+	fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem})
+	lkey := fc.compileExpr(leftKey)
+	matches := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpIndex, A: matches, B: rmap, C: lkey})
+	nil2 := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpConst, A: nil2, Val: Value{Tag: ValueNull}})
+	has2 := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpNotEqual, A: has2, B: matches, C: nil2})
+	skipMatches := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: has2})
+	mlen := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpLen, A: mlen, B: matches})
+	mi := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpConst, A: mi, Val: Value{Tag: ValueInt, Int: 0}})
+	mstart := len(fc.fn.Code)
+	mcond := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpLessInt, A: mcond, B: mi, C: mlen})
+	mjmp := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: mcond})
+	melem := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpIndex, A: melem, B: matches, C: mi})
+	rvar, ok := fc.vars[join.Var]
+	if !ok {
+		rvar = fc.newReg()
+		fc.vars[join.Var] = rvar
+	}
+	fc.emit(q.Pos, Instr{Op: OpMove, A: rvar, B: melem})
+	if q.Where != nil {
+		w := fc.compileExpr(q.Where)
+		wskip := len(fc.fn.Code)
+		fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+		appendSelect()
+		fc.fn.Code[wskip].B = len(fc.fn.Code)
+	} else {
+		appendSelect()
+	}
+	oneM := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(q.Pos, Instr{Op: OpAddInt, A: mi, B: mi, C: oneM})
+	fc.emit(q.Pos, Instr{Op: OpJump, A: mstart})
+	mend := len(fc.fn.Code)
+	fc.fn.Code[mjmp].B = mend
+	jmpAfter := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJump})
+	fc.fn.Code[skipMatches].B = len(fc.fn.Code)
+	nilreg2 := fc.constReg(q.Pos, Value{Tag: ValueNull})
+	fc.emit(q.Pos, Instr{Op: OpMove, A: rvar, B: nilreg2})
+	if q.Where != nil {
+		w := fc.compileExpr(q.Where)
+		wskip := len(fc.fn.Code)
+		fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+		appendSelect()
+		fc.fn.Code[wskip].B = len(fc.fn.Code)
+	} else {
+		appendSelect()
+	}
+	fc.fn.Code[jmpAfter].B = len(fc.fn.Code)
+	oneL := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(q.Pos, Instr{Op: OpAddInt, A: li, B: li, C: oneL})
+	fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
+	lend := len(fc.fn.Code)
+	fc.fn.Code[ljmp].B = lend
 }
 
 func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
