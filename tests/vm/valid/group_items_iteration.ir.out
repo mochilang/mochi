@@ -1,4 +1,4 @@
-func main (regs=87)
+func main (regs=93)
   // let data = [
   Const        r0, [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}]
   // let groups = from d in data group by d.tag into g select g
@@ -38,86 +38,93 @@ L2:
   SetIndex     r6, r12, r31
   Append       r7, r7, r31
 L1:
-  Index        r33, r6, r12
-  Index        r34, r33, r19
-  Append       r35, r34, r9
-  SetIndex     r33, r19, r35
-  Index        r36, r33, r21
-  Const        r37, 1
-  AddInt       r38, r36, r37
-  SetIndex     r33, r21, r38
-  AddInt       r5, r5, r37
+  Const        r33, "items"
+  Index        r34, r6, r12
+  Index        r35, r34, r33
+  Append       r36, r35, r9
+  SetIndex     r34, r33, r36
+  Const        r37, "count"
+  Index        r38, r34, r37
+  Const        r39, 1
+  AddInt       r40, r38, r39
+  SetIndex     r34, r37, r40
+  AddInt       r5, r5, r39
   Jump         L2
 L0:
-  Move         r39, r22
-  Len          r40, r7
+  Const        r42, 0
+  Move         r41, r42
+  Len          r43, r7
 L4:
-  LessInt      r41, r39, r40
-  JumpIfFalse  r41, L3
-  Index        r43, r7, r39
-  Append       r1, r1, r43
-  AddInt       r39, r39, r37
+  LessInt      r44, r41, r43
+  JumpIfFalse  r44, L3
+  Index        r46, r7, r41
+  Append       r1, r1, r46
+  AddInt       r41, r41, r39
   Jump         L4
 L3:
   // var tmp = []
-  Const        r46, []
+  Const        r49, []
   // for g in groups {
-  IterPrep     r47, r1
-  Len          r48, r47
-  Const        r49, 0
+  IterPrep     r50, r1
+  Len          r51, r50
+  Const        r52, 0
 L8:
-  Less         r50, r49, r48
-  JumpIfFalse  r50, L5
-  Index        r43, r47, r49
+  Less         r53, r52, r51
+  JumpIfFalse  r53, L5
+  Index        r46, r50, r52
   // var total = 0
-  Move         r52, r22
+  Move         r55, r42
   // for x in g.items {
-  Index        r53, r43, r19
-  IterPrep     r54, r53
-  Len          r55, r54
-  Const        r56, 0
+  Index        r56, r46, r33
+  IterPrep     r57, r56
+  Len          r58, r57
+  Const        r59, 0
 L7:
-  Less         r57, r56, r55
-  JumpIfFalse  r57, L6
-  Index        r59, r54, r56
+  Less         r60, r59, r58
+  JumpIfFalse  r60, L6
+  Index        r62, r57, r59
   // total = total + x.val
-  Const        r60, "val"
-  Index        r61, r59, r60
-  Add          r52, r52, r61
+  Const        r63, "val"
+  Index        r64, r62, r63
+  Add          r55, r55, r64
   // for x in g.items {
-  Const        r63, 1
-  Add          r56, r56, r63
+  Const        r66, 1
+  Add          r59, r59, r66
   Jump         L7
 L6:
   // tmp = append(tmp, {tag: g.key, total: total})
-  Const        r65, "tag"
-  Index        r66, r43, r17
-  Const        r67, "total"
-  Move         r68, r66
-  MakeMap      r70, 2, r65
-  Append       r46, r46, r70
+  Const        r68, "tag"
+  Const        r69, "key"
+  Index        r70, r46, r69
+  Const        r71, "total"
+  Move         r72, r68
+  Move         r73, r70
+  Move         r74, r71
+  Move         r75, r55
+  MakeMap      r76, 2, r72
+  Append       r49, r49, r76
   // for g in groups {
-  Const        r72, 1
-  Add          r49, r49, r72
+  Const        r78, 1
+  Add          r52, r52, r78
   Jump         L8
 L5:
   // let result = from r in tmp sort by r.tag select r
-  Const        r74, []
-  IterPrep     r75, r46
-  Len          r76, r75
-  Move         r77, r22
+  Const        r80, []
+  IterPrep     r81, r49
+  Len          r82, r81
+  Move         r83, r42
 L10:
-  LessInt      r78, r77, r76
-  JumpIfFalse  r78, L9
-  Index        r80, r75, r77
-  Index        r82, r80, r2
-  Move         r83, r80
-  MakeList     r84, 2, r82
-  Append       r74, r74, r84
-  AddInt       r77, r77, r37
+  LessInt      r84, r83, r82
+  JumpIfFalse  r84, L9
+  Index        r86, r81, r83
+  Index        r88, r86, r2
+  Move         r89, r86
+  MakeList     r90, 2, r88
+  Append       r80, r80, r90
+  AddInt       r83, r83, r39
   Jump         L10
 L9:
-  Sort         r74, r74
+  Sort         r80, r80
   // print(result)
-  Print        r74
+  Print        r80
   Return       r0

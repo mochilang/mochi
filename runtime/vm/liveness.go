@@ -247,6 +247,7 @@ func Optimize(fn *Function) {
 			analysis = Liveness(fn)
 		}
 		pruneRedundantJumps(fn)
+		removeUnreachable(fn)
 		analysis = Liveness(fn)
 		removed := removeDead(fn, analysis)
 		if !removed && !changed {
@@ -310,6 +311,73 @@ func removeDead(fn *Function, analysis *LiveInfo) bool {
 			}
 		}
 	}
+	fn.Code = newCode
+	return true
+}
+
+// removeUnreachable eliminates instructions that cannot be reached from the
+// entry point. Jump targets are updated accordingly.
+func removeUnreachable(fn *Function) bool {
+	n := len(fn.Code)
+	if n == 0 {
+		return false
+	}
+
+	reachable := make([]bool, n)
+	work := []int{0}
+	for len(work) > 0 {
+		pc := work[len(work)-1]
+		work = work[:len(work)-1]
+		if pc < 0 || pc >= n || reachable[pc] {
+			continue
+		}
+		reachable[pc] = true
+		for _, succ := range successors(fn.Code[pc], pc, n) {
+			if succ >= 0 && succ < n {
+				work = append(work, succ)
+			}
+		}
+	}
+
+	removed := false
+	pcMap := make([]int, n)
+	newCode := make([]Instr, 0, n)
+	for pc, ins := range fn.Code {
+		if !reachable[pc] {
+			pcMap[pc] = -1
+			removed = true
+			continue
+		}
+		pcMap[pc] = len(newCode)
+		newCode = append(newCode, ins)
+	}
+	if !removed {
+		return false
+	}
+
+	next := len(newCode)
+	for i := len(pcMap) - 1; i >= 0; i-- {
+		if pcMap[i] == -1 {
+			pcMap[i] = next
+		} else {
+			next = pcMap[i]
+		}
+	}
+
+	for i := range newCode {
+		ins := &newCode[i]
+		switch ins.Op {
+		case OpJump:
+			if ins.A >= 0 && ins.A < len(pcMap) {
+				ins.A = pcMap[ins.A]
+			}
+		case OpJumpIfFalse, OpJumpIfTrue:
+			if ins.B >= 0 && ins.B < len(pcMap) {
+				ins.B = pcMap[ins.B]
+			}
+		}
+	}
+
 	fn.Code = newCode
 	return true
 }

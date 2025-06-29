@@ -13,4 +13,3 @@ func add (regs=3)
   // return a + b
   Add          r2, r0, r1
   Return       r2
-  Return       r0
