@@ -20,6 +20,10 @@ import (
 	"mochi/types"
 )
 
+// DisableOpt prevents the compiler from running any optimization passes when
+// set via the `MOCHI_VM_DISABLE_OPT` environment variable.
+var DisableOpt = os.Getenv("MOCHI_VM_DISABLE_OPT") == "1"
+
 // Value represents a runtime value handled by the VM.
 // The definition lives in value.go and mirrors the interpreter's Value without
 // requiring that package.
@@ -1676,9 +1680,11 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 		return nil, err
 	}
 	c.funcs[0] = main
-	// Run liveness-based optimization on all functions
-	for i := range c.funcs {
-		Optimize(&c.funcs[i])
+	// Run liveness-based optimization on all functions unless disabled.
+	if !DisableOpt {
+		for i := range c.funcs {
+			Optimize(&c.funcs[i])
+		}
 	}
 	return &Program{Funcs: c.funcs, Types: c.types}, nil
 }

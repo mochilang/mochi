@@ -1,1 +1,4 @@
-[{"c_count":2,"custdist":1},{"c_count":0,"custdist":2}]
+call graph: main
+stack trace:
+  main at /workspace/mochi/tests/dataset/tpc-h/q13.mochi:29
+    from x in per_customer
