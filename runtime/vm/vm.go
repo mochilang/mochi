@@ -5172,6 +5172,148 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			}
 			return Value{Tag: ValueStr, Str: string(r[lo:hi])}, true
 		}
+	case "count":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if lst, ok := toList(v); ok {
+			return Value{Tag: ValueInt, Int: len(lst)}, true
+		}
+		switch v.Tag {
+		case ValueMap:
+			return Value{Tag: ValueInt, Int: len(v.Map)}, true
+		case ValueStr:
+			return Value{Tag: ValueInt, Int: len([]rune(v.Str))}, true
+		}
+	case "exists":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if lst, ok := toList(v); ok {
+			return Value{Tag: ValueBool, Bool: len(lst) > 0}, true
+		}
+		switch v.Tag {
+		case ValueList:
+			return Value{Tag: ValueBool, Bool: len(v.List) > 0}, true
+		case ValueMap:
+			return Value{Tag: ValueBool, Bool: len(v.Map) > 0}, true
+		case ValueStr:
+			return Value{Tag: ValueBool, Bool: len(v.Str) > 0}, true
+		}
+	case "avg":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if lst, ok := toList(v); ok {
+			if len(lst) == 0 {
+				return Value{Tag: ValueInt, Int: 0}, true
+			}
+			var sum float64
+			for _, it := range lst {
+				sum += toFloat(it)
+			}
+			return Value{Tag: ValueFloat, Float: sum / float64(len(lst))}, true
+		}
+	case "sum":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if lst, ok := toList(v); ok {
+			var sum float64
+			for _, it := range lst {
+				sum += toFloat(it)
+			}
+			return Value{Tag: ValueFloat, Float: sum}, true
+		}
+	case "min":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if lst, ok := toList(v); ok {
+			if len(lst) == 0 {
+				return Value{Tag: ValueInt, Int: 0}, true
+			}
+			if lst[0].Tag == ValueStr {
+				minStr := lst[0].Str
+				for _, it := range lst[1:] {
+					if it.Tag == ValueStr && it.Str < minStr {
+						minStr = it.Str
+					}
+				}
+				return Value{Tag: ValueStr, Str: minStr}, true
+			}
+			minVal := toFloat(lst[0])
+			isFloat := lst[0].Tag == ValueFloat
+			for _, it := range lst[1:] {
+				if it.Tag == ValueFloat {
+					isFloat = true
+				}
+				f := toFloat(it)
+				if f < minVal {
+					minVal = f
+				}
+			}
+			if isFloat {
+				return Value{Tag: ValueFloat, Float: minVal}, true
+			}
+			return Value{Tag: ValueInt, Int: int(minVal)}, true
+		}
+	case "max":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if lst, ok := toList(v); ok {
+			if len(lst) == 0 {
+				return Value{Tag: ValueInt, Int: 0}, true
+			}
+			if lst[0].Tag == ValueStr {
+				maxStr := lst[0].Str
+				for _, it := range lst[1:] {
+					if it.Tag == ValueStr && it.Str > maxStr {
+						maxStr = it.Str
+					}
+				}
+				return Value{Tag: ValueStr, Str: maxStr}, true
+			}
+			maxVal := toFloat(lst[0])
+			isFloat := lst[0].Tag == ValueFloat
+			for _, it := range lst[1:] {
+				if it.Tag == ValueFloat {
+					isFloat = true
+				}
+				f := toFloat(it)
+				if f > maxVal {
+					maxVal = f
+				}
+			}
+			if isFloat {
+				return Value{Tag: ValueFloat, Float: maxVal}, true
+			}
+			return Value{Tag: ValueInt, Int: int(maxVal)}, true
+		}
+	case "values":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if v.Tag == ValueMap {
+			keys := make([]string, 0, len(v.Map))
+			for k := range v.Map {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			vals := make([]Value, len(keys))
+			for i, k := range keys {
+				vals[i] = v.Map[k]
+			}
+			return Value{Tag: ValueList, List: vals}, true
+		}
 	}
 	return Value{}, false
 }
