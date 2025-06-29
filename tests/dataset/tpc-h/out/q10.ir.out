@@ -1,418 +1,278 @@
-func main (regs=283)
+func main (regs=216)
   // let nation = [
   Const        r0, [{"n_name": "BRAZIL", "n_nationkey": 1}]
-  Move         r1, r0
   // let customer = [
-  Const        r2, [{"c_acctbal": 100, "c_address": "123 St", "c_comment": "Loyal", "c_custkey": 1, "c_name": "Alice", "c_nationkey": 1, "c_phone": "123-456"}]
-  Move         r3, r2
+  Const        r1, [{"c_acctbal": 100, "c_address": "123 St", "c_comment": "Loyal", "c_custkey": 1, "c_name": "Alice", "c_nationkey": 1, "c_phone": "123-456"}]
   // let orders = [
-  Const        r4, [{"o_custkey": 1, "o_orderdate": "1993-10-15", "o_orderkey": 1000}, {"o_custkey": 1, "o_orderdate": "1994-01-02", "o_orderkey": 2000}]
-  Move         r5, r4
+  Const        r2, [{"o_custkey": 1, "o_orderdate": "1993-10-15", "o_orderkey": 1000}, {"o_custkey": 1, "o_orderdate": "1994-01-02", "o_orderkey": 2000}]
   // let lineitem = [
-  Const        r6, [{"l_discount": 0.1, "l_extendedprice": 1000, "l_orderkey": 1000, "l_returnflag": "R"}, {"l_discount": 0, "l_extendedprice": 500, "l_orderkey": 2000, "l_returnflag": "N"}]
-  Move         r7, r6
+  Const        r3, [{"l_discount": 0.1, "l_extendedprice": 1000, "l_orderkey": 1000, "l_returnflag": "R"}, {"l_discount": 0, "l_extendedprice": 500, "l_orderkey": 2000, "l_returnflag": "N"}]
   // let start_date = "1993-10-01"
-  Const        r8, "1993-10-01"
-  Move         r9, r8
+  Const        r4, "1993-10-01"
   // let end_date = "1994-01-01"
-  Const        r10, "1994-01-01"
-  Move         r11, r10
+  Const        r5, "1994-01-01"
   // from c in customer
-  Const        r12, []
-  MakeMap      r13, 0, r0
-  Const        r14, []
-  IterPrep     r15, r3
-  Len          r16, r15
-  Const        r17, 0
-L11:
-  Less         r18, r17, r16
-  JumpIfFalse  r18, L0
-  Index        r19, r15, r17
-  Move         r20, r19
-  // join o in orders on o.o_custkey == c.c_custkey
-  IterPrep     r21, r5
-  Len          r22, r21
-  Const        r23, 0
-L10:
-  Less         r24, r23, r22
-  JumpIfFalse  r24, L1
-  Index        r25, r21, r23
-  Move         r26, r25
-  Const        r27, "o_custkey"
-  Index        r28, r26, r27
-  Const        r29, "c_custkey"
-  Index        r30, r20, r29
-  Equal        r31, r28, r30
-  JumpIfFalse  r31, L2
-  // join l in lineitem on l.l_orderkey == o.o_orderkey
-  IterPrep     r32, r7
-  Len          r33, r32
-  Const        r34, 0
-L9:
-  Less         r35, r34, r33
-  JumpIfFalse  r35, L2
-  Index        r36, r32, r34
-  Move         r37, r36
-  Const        r38, "l_orderkey"
-  Index        r39, r37, r38
-  Const        r40, "o_orderkey"
-  Index        r41, r26, r40
-  Equal        r42, r39, r41
-  JumpIfFalse  r42, L3
-  // join n in nation on n.n_nationkey == c.c_nationkey
-  IterPrep     r43, r1
-  Len          r44, r43
-  Const        r45, 0
-L8:
-  Less         r46, r45, r44
-  JumpIfFalse  r46, L3
-  Index        r47, r43, r45
-  Move         r48, r47
-  Const        r49, "n_nationkey"
-  Index        r50, r48, r49
-  Const        r51, "c_nationkey"
-  Index        r52, r20, r51
-  Equal        r53, r50, r52
-  JumpIfFalse  r53, L4
+  Const        r6, []
+  // c_custkey: c.c_custkey,
+  Const        r7, "c_custkey"
+  // c_name: c.c_name,
+  Const        r8, "c_name"
+  // c_acctbal: c.c_acctbal,
+  Const        r9, "c_acctbal"
+  // c_address: c.c_address,
+  Const        r10, "c_address"
+  // c_phone: c.c_phone,
+  Const        r11, "c_phone"
+  // c_comment: c.c_comment,
+  Const        r12, "c_comment"
+  // n_name: n.n_name
+  Const        r13, "n_name"
   // where o.o_orderdate >= start_date &&
-  Const        r54, "o_orderdate"
-  Index        r55, r26, r54
-  LessEq       r56, r9, r55
-  // o.o_orderdate < end_date &&
-  Const        r57, "o_orderdate"
-  Index        r58, r26, r57
-  Less         r59, r58, r11
+  Const        r14, "o_orderdate"
   // l.l_returnflag == "R"
-  Const        r60, "l_returnflag"
-  Index        r61, r37, r60
-  Const        r62, "R"
-  Equal        r63, r61, r62
+  Const        r15, "l_returnflag"
+  // c_custkey: g.key.c_custkey,
+  Const        r16, "key"
+  // revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount)),
+  Const        r18, "l"
+  Const        r19, "l_extendedprice"
+  Const        r20, "l_discount"
+  // from c in customer
+  MakeMap      r21, 0, r0
+  Const        r22, []
+  IterPrep     r23, r1
+  Len          r24, r23
+  Const        r25, 0
+L11:
+  LessInt      r26, r25, r24
+  JumpIfFalse  r26, L0
+  Index        r28, r23, r25
+  // join o in orders on o.o_custkey == c.c_custkey
+  IterPrep     r29, r2
+  Len          r30, r29
+  Const        r31, 0
+L10:
+  Less         r32, r31, r30
+  JumpIfFalse  r32, L1
+  Index        r34, r29, r31
+  Const        r35, "o_custkey"
+  Index        r36, r34, r35
+  Index        r37, r28, r7
+  Equal        r38, r36, r37
+  JumpIfFalse  r38, L2
+  // join l in lineitem on l.l_orderkey == o.o_orderkey
+  IterPrep     r39, r3
+  Len          r40, r39
+  Const        r41, 0
+L9:
+  Less         r42, r41, r40
+  JumpIfFalse  r42, L2
+  Index        r44, r39, r41
+  Const        r45, "l_orderkey"
+  Index        r46, r44, r45
+  Const        r47, "o_orderkey"
+  Index        r48, r34, r47
+  Equal        r49, r46, r48
+  JumpIfFalse  r49, L3
+  // join n in nation on n.n_nationkey == c.c_nationkey
+  IterPrep     r50, r0
+  Len          r51, r50
+  Const        r52, 0
+L8:
+  Less         r53, r52, r51
+  JumpIfFalse  r53, L3
+  Index        r55, r50, r52
+  Const        r56, "n_nationkey"
+  Index        r57, r55, r56
+  Const        r58, "c_nationkey"
+  Index        r59, r28, r58
+  Equal        r60, r57, r59
+  JumpIfFalse  r60, L4
   // where o.o_orderdate >= start_date &&
-  Move         r64, r56
-  JumpIfFalse  r64, L5
-  Move         r64, r59
+  Index        r61, r34, r14
+  LessEq       r62, r4, r61
+  // o.o_orderdate < end_date &&
+  Index        r63, r34, r14
+  Less         r64, r63, r5
+  // l.l_returnflag == "R"
+  Index        r65, r44, r15
+  Const        r66, "R"
+  Equal        r67, r65, r66
+  // where o.o_orderdate >= start_date &&
+  Move         r68, r62
+  JumpIfFalse  r68, L5
 L5:
   // o.o_orderdate < end_date &&
-  Move         r65, r64
-  JumpIfFalse  r65, L6
-  Move         r65, r63
+  Move         r69, r64
+  JumpIfFalse  r69, L6
+  Move         r69, r67
 L6:
   // where o.o_orderdate >= start_date &&
-  JumpIfFalse  r65, L4
+  JumpIfFalse  r69, L4
   // from c in customer
-  Const        r66, "c"
-  Move         r67, r20
-  Const        r68, "o"
-  Move         r69, r26
-  Const        r70, "l"
-  Move         r71, r37
-  Const        r72, "n"
-  Move         r73, r48
-  MakeMap      r74, 4, r66
+  Const        r70, "c"
+  Move         r71, r28
+  Const        r72, "o"
+  Move         r73, r34
+  Move         r74, r44
+  Const        r75, "n"
+  Move         r76, r55
+  MakeMap      r77, 4, r70
   // c_custkey: c.c_custkey,
-  Const        r75, "c_custkey"
-  Const        r76, "c_custkey"
-  Index        r77, r20, r76
+  Const        r78, "c_custkey"
+  Index        r79, r28, r7
   // c_name: c.c_name,
-  Const        r78, "c_name"
-  Const        r79, "c_name"
-  Index        r80, r20, r79
+  Const        r80, "c_name"
+  Index        r81, r28, r8
   // c_acctbal: c.c_acctbal,
-  Const        r81, "c_acctbal"
   Const        r82, "c_acctbal"
-  Index        r83, r20, r82
+  Index        r83, r28, r9
   // c_address: c.c_address,
   Const        r84, "c_address"
-  Const        r85, "c_address"
-  Index        r86, r20, r85
+  Index        r85, r28, r10
   // c_phone: c.c_phone,
-  Const        r87, "c_phone"
-  Const        r88, "c_phone"
-  Index        r89, r20, r88
+  Const        r86, "c_phone"
+  Index        r87, r28, r11
   // c_comment: c.c_comment,
-  Const        r90, "c_comment"
-  Const        r91, "c_comment"
-  Index        r92, r20, r91
+  Const        r88, "c_comment"
+  Index        r89, r28, r12
   // n_name: n.n_name
-  Const        r93, "n_name"
-  Const        r94, "n_name"
-  Index        r95, r48, r94
-  // c_custkey: c.c_custkey,
-  Move         r96, r75
-  Move         r97, r77
-  // c_name: c.c_name,
-  Move         r98, r78
-  Move         r99, r80
-  // c_acctbal: c.c_acctbal,
-  Move         r100, r81
-  Move         r101, r83
-  // c_address: c.c_address,
-  Move         r102, r84
-  Move         r103, r86
-  // c_phone: c.c_phone,
-  Move         r104, r87
-  Move         r105, r89
-  // c_comment: c.c_comment,
-  Move         r106, r90
-  Move         r107, r92
-  // n_name: n.n_name
-  Move         r108, r93
-  Move         r109, r95
+  Const        r90, "n_name"
+  Index        r91, r55, r13
   // group by {
-  MakeMap      r110, 7, r96
-  Str          r111, r110
-  In           r112, r111, r13
-  JumpIfTrue   r112, L7
+  MakeMap      r99, 7, r78
+  Str          r100, r99
+  In           r101, r100, r21
+  JumpIfTrue   r101, L7
   // from c in customer
-  Const        r113, []
-  Const        r114, "__group__"
-  Const        r115, true
-  Const        r116, "key"
+  Const        r102, []
+  Const        r103, "__group__"
+  Const        r104, true
   // group by {
-  Move         r117, r110
+  Move         r105, r99
   // from c in customer
-  Const        r118, "items"
-  Move         r119, r113
-  MakeMap      r120, 3, r114
-  SetIndex     r13, r111, r120
-  Append       r121, r14, r120
-  Move         r14, r121
+  Const        r106, "items"
+  Move         r107, r102
+  MakeMap      r108, 3, r103
+  SetIndex     r21, r100, r108
+  Append       r22, r22, r108
 L7:
-  Const        r122, "items"
-  Index        r123, r13, r111
-  Index        r124, r123, r122
-  Append       r125, r124, r74
-  SetIndex     r123, r122, r125
+  Index        r110, r21, r100
+  Index        r111, r110, r106
+  Append       r112, r111, r77
+  SetIndex     r110, r106, r112
 L4:
   // join n in nation on n.n_nationkey == c.c_nationkey
-  Const        r126, 1
-  Add          r127, r45, r126
-  Move         r45, r127
+  Const        r113, 1
+  AddInt       r52, r52, r113
   Jump         L8
 L3:
   // join l in lineitem on l.l_orderkey == o.o_orderkey
-  Const        r128, 1
-  Add          r129, r34, r128
-  Move         r34, r129
+  AddInt       r41, r41, r113
   Jump         L9
 L2:
   // join o in orders on o.o_custkey == c.c_custkey
-  Const        r130, 1
-  Add          r131, r23, r130
-  Move         r23, r131
   Jump         L10
 L1:
   // from c in customer
-  Const        r132, 1
-  Add          r133, r17, r132
-  Move         r17, r133
   Jump         L11
 L0:
-  Const        r134, 0
-  Len          r135, r14
+  Const        r115, 0
+  Move         r114, r115
+  Len          r116, r22
 L17:
-  Less         r136, r134, r135
-  JumpIfFalse  r136, L12
-  Index        r137, r14, r134
-  Move         r138, r137
+  LessInt      r117, r114, r116
+  JumpIfFalse  r117, L12
+  Index        r119, r22, r114
   // c_custkey: g.key.c_custkey,
-  Const        r139, "c_custkey"
-  Const        r140, "key"
-  Index        r141, r138, r140
-  Const        r142, "c_custkey"
-  Index        r143, r141, r142
+  Const        r120, "c_custkey"
+  Index        r121, r119, r16
+  Index        r122, r121, r7
   // c_name: g.key.c_name,
-  Const        r144, "c_name"
-  Const        r145, "key"
-  Index        r146, r138, r145
-  Const        r147, "c_name"
-  Index        r148, r146, r147
+  Const        r123, "c_name"
+  Index        r124, r119, r16
+  Index        r125, r124, r8
   // revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount)),
-  Const        r149, "revenue"
-  Const        r150, []
-  IterPrep     r151, r138
-  Len          r152, r151
-  Const        r153, 0
+  Const        r126, "revenue"
+  Const        r127, []
+  IterPrep     r128, r119
+  Len          r129, r128
+  Move         r130, r115
 L14:
-  Less         r154, r153, r152
-  JumpIfFalse  r154, L13
-  Index        r155, r151, r153
-  Move         r156, r155
-  Const        r157, "l"
-  Index        r158, r156, r157
-  Const        r159, "l_extendedprice"
-  Index        r160, r158, r159
-  Const        r161, 1
-  Const        r162, "l"
-  Index        r163, r156, r162
-  Const        r164, "l_discount"
-  Index        r165, r163, r164
-  Sub          r166, r161, r165
-  Mul          r167, r160, r166
-  Append       r168, r150, r167
-  Move         r150, r168
-  Const        r169, 1
-  Add          r170, r153, r169
-  Move         r153, r170
+  LessInt      r131, r130, r129
+  JumpIfFalse  r131, L13
+  Index        r132, r128, r130
+  Move         r133, r132
+  Index        r134, r133, r18
+  Index        r135, r134, r19
+  Index        r136, r133, r18
+  Index        r137, r136, r20
+  Sub          r138, r113, r137
+  Mul          r139, r135, r138
+  Append       r127, r127, r139
+  AddInt       r130, r130, r113
   Jump         L14
 L13:
-  Sum          r171, r150
-  // c_acctbal: g.key.c_acctbal,
-  Const        r172, "c_acctbal"
-  Const        r173, "key"
-  Index        r174, r138, r173
-  Const        r175, "c_acctbal"
-  Index        r176, r174, r175
-  // n_name: g.key.n_name,
-  Const        r177, "n_name"
-  Const        r178, "key"
-  Index        r179, r138, r178
-  Const        r180, "n_name"
-  Index        r181, r179, r180
-  // c_address: g.key.c_address,
-  Const        r182, "c_address"
-  Const        r183, "key"
-  Index        r184, r138, r183
-  Const        r185, "c_address"
-  Index        r186, r184, r185
-  // c_phone: g.key.c_phone,
-  Const        r187, "c_phone"
-  Const        r188, "key"
-  Index        r189, r138, r188
-  Const        r190, "c_phone"
-  Index        r191, r189, r190
-  // c_comment: g.key.c_comment
-  Const        r192, "c_comment"
-  Const        r193, "key"
-  Index        r194, r138, r193
-  Const        r195, "c_comment"
-  Index        r196, r194, r195
-  // c_custkey: g.key.c_custkey,
-  Move         r197, r139
-  Move         r198, r143
-  // c_name: g.key.c_name,
-  Move         r199, r144
-  Move         r200, r148
-  // revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount)),
-  Move         r201, r149
-  Move         r202, r171
-  // c_acctbal: g.key.c_acctbal,
-  Move         r203, r172
-  Move         r204, r176
-  // n_name: g.key.n_name,
-  Move         r205, r177
-  Move         r206, r181
-  // c_address: g.key.c_address,
-  Move         r207, r182
-  Move         r208, r186
-  // c_phone: g.key.c_phone,
-  Move         r209, r187
-  Move         r210, r191
-  // c_comment: g.key.c_comment
-  Move         r211, r192
-  Move         r212, r196
   // select {
-  MakeMap      r213, 8, r197
+  MakeMap      r165, 8, r120
   // sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
-  Const        r214, []
-  IterPrep     r215, r138
-  Len          r216, r215
-  Const        r217, 0
+  Const        r166, []
+  IterPrep     r167, r119
+  Len          r168, r167
+  Move         r169, r115
 L16:
-  Less         r218, r217, r216
-  JumpIfFalse  r218, L15
-  Index        r219, r215, r217
-  Move         r156, r219
-  Const        r220, "l"
-  Index        r221, r156, r220
-  Const        r222, "l_extendedprice"
-  Index        r223, r221, r222
-  Const        r224, 1
-  Const        r225, "l"
-  Index        r226, r156, r225
-  Const        r227, "l_discount"
-  Index        r228, r226, r227
-  Sub          r229, r224, r228
-  Mul          r230, r223, r229
-  Append       r231, r214, r230
-  Move         r214, r231
-  Const        r232, 1
-  Add          r233, r217, r232
-  Move         r217, r233
+  LessInt      r170, r169, r168
+  JumpIfFalse  r170, L15
+  Index        r133, r167, r169
+  Index        r172, r133, r18
+  Index        r173, r172, r19
+  Index        r174, r133, r18
+  Index        r175, r174, r20
+  Sub          r176, r113, r175
+  Mul          r177, r173, r176
+  Append       r166, r166, r177
+  AddInt       r169, r169, r113
   Jump         L16
 L15:
-  Sum          r234, r214
-  Neg          r235, r234
-  Move         r236, r235
+  Sum          r179, r166
+  Neg          r181, r179
   // from c in customer
-  Move         r237, r213
-  MakeList     r238, 2, r236
-  Append       r239, r12, r238
-  Move         r12, r239
-  Const        r240, 1
-  Add          r241, r134, r240
-  Move         r134, r241
+  Move         r182, r165
+  MakeList     r183, 2, r181
+  Append       r6, r6, r183
+  AddInt       r114, r114, r113
   Jump         L17
 L12:
   // sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
-  Sort         r242, r12
-  // from c in customer
-  Move         r12, r242
-  // let result =
-  Move         r243, r12
+  Sort         r6, r6
   // c_custkey: 1,
-  Const        r245, "c_custkey"
-  Const        r246, 1
+  Const        r187, "c_custkey"
   // c_name: "Alice",
-  Const        r247, "c_name"
-  Const        r248, "Alice"
+  Const        r188, "c_name"
+  Const        r189, "Alice"
   // revenue: 1000.0 * 0.9, // 900.0
-  Const        r249, "revenue"
-  Const        r252, 900
+  Const        r190, "revenue"
+  Const        r191, 1000
+  Const        r192, 0.9
+  Const        r193, 900
   // c_acctbal: 100.0,
-  Const        r253, "c_acctbal"
-  Const        r254, 100
+  Const        r194, "c_acctbal"
+  Const        r195, 100
   // n_name: "BRAZIL",
-  Const        r255, "n_name"
-  Const        r256, "BRAZIL"
+  Const        r196, "n_name"
+  Const        r197, "BRAZIL"
   // c_address: "123 St",
-  Const        r257, "c_address"
-  Const        r258, "123 St"
+  Const        r198, "c_address"
+  Const        r199, "123 St"
   // c_phone: "123-456",
-  Const        r259, "c_phone"
-  Const        r260, "123-456"
+  Const        r200, "c_phone"
+  Const        r201, "123-456"
   // c_comment: "Loyal"
-  Const        r261, "c_comment"
-  Const        r262, "Loyal"
-  // c_custkey: 1,
-  Move         r263, r245
-  Move         r264, r246
-  // c_name: "Alice",
-  Move         r265, r247
-  Move         r266, r248
-  // revenue: 1000.0 * 0.9, // 900.0
-  Move         r267, r249
-  Move         r268, r252
-  // c_acctbal: 100.0,
-  Move         r269, r253
-  Move         r270, r254
-  // n_name: "BRAZIL",
-  Move         r271, r255
-  Move         r272, r256
-  // c_address: "123 St",
-  Move         r273, r257
-  Move         r274, r258
-  // c_phone: "123-456",
-  Move         r275, r259
-  Move         r276, r260
-  // c_comment: "Loyal"
-  Move         r277, r261
-  Move         r278, r262
+  Const        r202, "c_comment"
   // {
-  MakeMap      r279, 8, r263
-  Move         r280, r279
+  MakeMap      r213, 8, r187
   // expect result == [
-  MakeList     r281, 1, r280
-  Equal        r282, r243, r281
-  Expect       r282
+  MakeList     r214, 1, r213
+  Equal        r215, r6, r214
+  Expect       r215
   Return       r0
