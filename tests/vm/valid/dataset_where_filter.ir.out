@@ -1,10 +1,13 @@
-func main (regs=51)
+func main (regs=15)
   // let people = [
   Const        r0, [{"age": 30, "name": "Alice"}, {"age": 15, "name": "Bob"}, {"age": 65, "name": "Charlie"}, {"age": 45, "name": "Diana"}]
+L0:
   // let adults = from person in people
   Const        r1, []
+L4:
   // where person.age >= 18
   Const        r2, "age"
+L5:
   // name: person.name,
   Const        r3, "name"
   // is_senior: person.age >= 60
@@ -13,71 +16,67 @@ func main (regs=51)
   IterPrep     r5, r0
   Len          r6, r5
   Const        r7, 0
-L2:
-  LessInt      r9, r7, r6
-  JumpIfFalse  r9, L0
-  Index        r11, r5, r7
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r8, r5, r7
   // where person.age >= 18
-  Index        r12, r11, r2
-  Const        r13, 18
-  LessEq       r14, r13, r12
-  JumpIfFalse  r14, L1
-  // name: person.name,
-  Const        r15, "name"
-  Index        r16, r11, r3
-  // age: person.age,
-  Const        r17, "age"
-  Index        r18, r11, r2
-  // is_senior: person.age >= 60
-  Const        r19, "is_senior"
-  Index        r20, r11, r2
-  Const        r21, 60
-  LessEq       r22, r21, r20
-  // name: person.name,
-  Move         r23, r15
-  Move         r24, r16
-  // age: person.age,
-  Move         r25, r17
-  Move         r26, r18
-  // is_senior: person.age >= 60
-  Move         r27, r19
-  Move         r28, r22
-  // select {
-  MakeMap      r29, 3, r23
-  // let adults = from person in people
-  Append       r1, r1, r29
+  Index        r5, r8, r2
+  Const        r6, 18
+  LessEq       r9, r6, r5
 L1:
-  Const        r31, 1
-  AddInt       r7, r7, r31
-  Jump         L2
-L0:
+  JumpIfFalse  r9, L1
+  // name: person.name,
+  Const        r9, "name"
+  Index        r6, r8, r3
+  // age: person.age,
+  Const        r5, "age"
+  Index        r10, r8, r2
+  // is_senior: person.age >= 60
+  Const        r11, "is_senior"
+  Index        r12, r8, r2
+  Const        r13, 60
+  LessEq       r14, r13, r12
+  // name: person.name,
+  Move         r13, r9
+  Move         r9, r6
+  // age: person.age,
+  Move         r6, r5
+  Move         r5, r10
+  // is_senior: person.age >= 60
+  Move         r10, r11
+  Move         r11, r14
+  // select {
+  MakeMap      r14, 3, r13
+  // let adults = from person in people
+  Append       r1, r1, r14
+  Const        r14, 1
+  AddInt       r7, r7, r14
+  Jump         L1
   // print("--- Adults ---")
-  Const        r32, "--- Adults ---"
-  Print        r32
+  Const        r14, "--- Adults ---"
+  Print        r14
   // for person in adults {
-  IterPrep     r33, r1
-  Len          r34, r33
-  Const        r35, 0
-L6:
-  Less         r36, r35, r34
-  JumpIfFalse  r36, L3
-  Index        r11, r33, r35
+  IterPrep     r14, r1
+  Len          r1, r14
+  Const        r7, 0
+  Less         r11, r7, r1
+  JumpIfFalse  r11, L2
+  Index        r8, r14, r7
   // print(person.name, "is", person.age,
-  Index        r38, r11, r3
-  Const        r39, "is"
-  Index        r40, r11, r2
+  Index        r11, r8, r3
+  Const        r3, "is"
+  Index        r1, r8, r2
   // if person.is_senior { " (senior)" } else { "" })
-  Index        r45, r11, r4
-  JumpIfFalse  r45, L4
-  Jump         L5
-L4:
-  Const        r41, ""
-L5:
-  // print(person.name, "is", person.age,
-  PrintN       r38, 4, r38
-  // for person in adults {
-  Const        r49, 1
-  Add          r35, r35, r49
-  Jump         L6
+  Index        r2, r8, r4
+  JumpIfFalse  r2, L3
+  Jump         L4
 L3:
+  Const        r8, ""
+  // print(person.name, "is", person.age,
+  PrintN       r11, 4, r11
+  // for person in adults {
+  Const        r2, 1
+  Add          r7, r7, r2
+  Jump         L5
+L2:
   Return       r0

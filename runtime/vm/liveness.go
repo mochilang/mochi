@@ -257,6 +257,7 @@ func Optimize(fn *Function) {
 			break
 		}
 	}
+	CompactRegisters(fn)
 }
 
 // removeDead eliminates instructions that only define dead registers.

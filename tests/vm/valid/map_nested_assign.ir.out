@@ -1,12 +1,12 @@
-func main (regs=8)
+func main (regs=4)
   // var data = {"outer": {"inner": 1}}
   Const        r0, {"outer": {"inner": 1}}
   // data["outer"]["inner"] = 2
-  Const        r3, {"inner": 1}
-  Const        r4, "inner"
-  Const        r5, 2
-  SetIndex     r3, r4, r5
+  Const        r1, {"inner": 1}
+  Const        r2, "inner"
+  Const        r3, 2
+  SetIndex     r1, r2, r3
   // print(data["outer"]["inner"])
-  Const        r7, 1
-  Print        r7
+  Const        r3, 1
+  Print        r3
   Return       r0

@@ -1,4 +1,4 @@
-func main (regs=39)
+func main (regs=7)
   // let products = [
   Const        r0, [{"name": "Laptop", "price": 1500}, {"name": "Smartphone", "price": 900}, {"name": "Tablet", "price": 600}, {"name": "Monitor", "price": 300}, {"name": "Keyboard", "price": 100}, {"name": "Mouse", "price": 50}, {"name": "Headphones", "price": 200}]
   // let expensive = from p in products
@@ -7,53 +7,53 @@ func main (regs=39)
   Const        r2, "price"
   // let expensive = from p in products
   IterPrep     r3, r0
+L3:
   Len          r4, r3
-  Const        r5, 0
 L1:
-  LessInt      r7, r5, r4
-  JumpIfFalse  r7, L0
-  Index        r9, r3, r5
+  Const        r5, 0
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r6, r3, r5
   // sort by -p.price
-  Index        r10, r9, r2
-  Neg          r12, r10
+  Index        r3, r6, r2
+  Neg          r4, r3
   // let expensive = from p in products
-  Move         r13, r9
-  MakeList     r14, 2, r12
-  Append       r1, r1, r14
-  Const        r16, 1
-  AddInt       r5, r5, r16
+  Move         r3, r6
+  MakeList     r6, 2, r4
+  Append       r1, r1, r6
+  Const        r6, 1
+  AddInt       r5, r5, r6
   Jump         L1
 L0:
   // sort by -p.price
   Sort         r1, r1
   // let expensive = from p in products
-  Const        r18, nil
-  Slice        r1, r1, r16, r18
-  Const        r20, 0
+  Const        r5, nil
+  Slice        r1, r1, r6, r5
+  Const        r5, 0
   // take 3
-  Const        r21, 3
+  Const        r6, 3
   // let expensive = from p in products
-  Slice        r1, r1, r20, r21
+  Slice        r1, r1, r5, r6
   // print("--- Top products (excluding most expensive) ---")
-  Const        r23, "--- Top products (excluding most expensive) ---"
-  Print        r23
+  Const        r6, "--- Top products (excluding most expensive) ---"
+  Print        r6
   // for item in expensive {
-  IterPrep     r24, r1
-  Len          r25, r24
-  Const        r26, 0
-L3:
-  Less         r27, r26, r25
-  JumpIfFalse  r27, L2
-  Index        r29, r24, r26
+  IterPrep     r6, r1
+  Len          r1, r6
+  Const        r5, 0
+  Less         r3, r5, r1
+  JumpIfFalse  r3, L2
+  Index        r3, r6, r5
   // print(item.name, "costs $", item.price)
-  Const        r33, "name"
-  Index        r30, r29, r33
-  Const        r31, "costs $"
-  Index        r32, r29, r2
-  PrintN       r30, 3, r30
+  Const        r6, "name"
+  Index        r1, r3, r6
+  Const        r6, "costs $"
+  Index        r4, r3, r2
+  PrintN       r1, 3, r1
   // for item in expensive {
-  Const        r37, 1
-  Add          r26, r26, r37
+  Const        r4, 1
+  Add          r5, r5, r4
   Jump         L3
 L2:
   Return       r0

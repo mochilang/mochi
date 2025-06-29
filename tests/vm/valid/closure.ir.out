@@ -1,19 +1,19 @@
-func main (regs=6)
+func main (regs=4)
   // let add10 = makeAdder(10)
   Const        r0, 10
-  Call         r2, makeAdder, r0
+  Call         r1, makeAdder, r0
   // print(add10(7))  // 17
-  Const        r3, 7
-  CallV        r5, r2, 1, r3
-  Print        r5
+  Const        r2, 7
+  CallV        r3, r1, 1, r2
+  Print        r3
   Return       r0
 
   // fun makeAdder(n: int): fun(int): int {
-func makeAdder (regs=3)
+func makeAdder (regs=2)
   // return fun(x: int): int => x + n
   Move         r1, r0
-  MakeClosure  r2, fn2, 1, r1
-  Return       r2
+  MakeClosure  r0, main, 1, r1
+  Return       r0
 
   // return fun(x: int): int => x + n
 func fn2 (regs=3)

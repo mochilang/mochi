@@ -1,13 +1,13 @@
-func main (regs=9)
+func main (regs=2)
   // let a = 10 - 3
   Const        r0, 10
-  Const        r2, 7
+  Const        r1, 7
   // print(a)
-  Print        r2
+  Print        r1
   // print(a == 7)
-  Const        r6, true
-  Print        r6
+  Const        r1, true
+  Print        r1
   // print(b < 5)
-  Const        r8, true
-  Print        r8
+  Const        r1, true
+  Print        r1
   Return       r0

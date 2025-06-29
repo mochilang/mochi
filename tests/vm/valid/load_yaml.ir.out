@@ -1,55 +1,55 @@
-func main (regs=39)
+func main (regs=10)
   // let people = load "../interpreter/valid/people.yaml" as Person with { format: "yaml" }
   Const        r0, "../interpreter/valid/people.yaml"
-  Const        r2, {"format": "yaml"}
-  Load         3,0,2,0
+  Const        r1, {"format": "yaml"}
+  Load         2,0,1,0
   // let adults = from p in people
-  Const        r4, []
+  Const        r1, []
   // where p.age >= 18
-  Const        r5, "age"
+  Const        r3, "age"
   // select { name: p.name, email: p.email }
-  Const        r6, "name"
-  Const        r7, "email"
-  // let adults = from p in people
-  IterPrep     r8, r3
-  Len          r9, r8
-  Const        r10, 0
+  Const        r4, "name"
+L4:
+  Const        r5, "email"
 L2:
-  LessInt      r12, r10, r9
-  JumpIfFalse  r12, L0
-  Index        r14, r8, r10
-  // where p.age >= 18
-  Index        r15, r14, r5
-  Const        r16, 18
-  LessEq       r17, r16, r15
-  JumpIfFalse  r17, L1
-  // select { name: p.name, email: p.email }
-  Const        r18, "name"
-  Index        r19, r14, r6
-  Const        r20, "email"
-  Index        r21, r14, r7
-  Move         r22, r18
-  Move         r23, r19
-  Move         r24, r20
-  Move         r25, r21
-  MakeMap      r26, 2, r22
   // let adults = from p in people
-  Append       r4, r4, r26
+  IterPrep     r6, r2
+  Len          r2, r6
+  Const        r7, 0
+  LessInt      r8, r7, r2
+  JumpIfFalse  r8, L0
+  Index        r8, r6, r7
+  // where p.age >= 18
+  Index        r6, r8, r3
+  Const        r3, 18
+  LessEq       r2, r3, r6
+  JumpIfFalse  r2, L1
+  // select { name: p.name, email: p.email }
+  Const        r2, "name"
+  Index        r3, r8, r4
+  Const        r6, "email"
+  Index        r9, r8, r5
+  Move         r8, r2
+  Move         r2, r3
+  Move         r3, r6
+  Move         r6, r9
+  MakeMap      r9, 1, r8
+  // let adults = from p in people
+  Append       r1, r1, r9
 L1:
   Jump         L2
 L0:
   // for a in adults {
-  IterPrep     r29, r4
-  Len          r30, r29
-  Const        r31, 0
-L4:
-  Less         r32, r31, r30
-  JumpIfFalse  r32, L3
-  Index        r34, r29, r31
+  IterPrep     r9, r1
+  Len          r1, r9
+  Const        r6, 0
+  Less         r3, r6, r1
+  JumpIfFalse  r3, L3
+  Index        r3, r9, r6
   // print(a.name, a.email)
-  Index        r35, r34, r6
-  Index        r36, r34, r7
-  Print2       r35, r36
+  Index        r9, r3, r4
+  Index        r4, r3, r5
+  Print2       r9, r4
   // for a in adults {
   Jump         L4
 L3:

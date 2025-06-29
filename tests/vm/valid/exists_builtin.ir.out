@@ -1,27 +1,26 @@
-func main (regs=13)
+func main (regs=6)
   // let data = [1,2]
   Const        r0, [1, 2]
   // from x in data
   Const        r1, []
   IterPrep     r2, r0
+L1:
   Len          r3, r2
   Const        r4, 0
-L2:
-  LessInt      r6, r4, r3
-  JumpIfFalse  r6, L0
-  Index        r8, r2, r4
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r5, r2, r4
   // where x == 1
-  Const        r9, 1
-  Equal        r10, r8, r9
-  JumpIfFalse  r10, L1
+  Const        r2, 1
+  Equal        r3, r5, r2
+  JumpIfFalse  r3, L1
   // from x in data
-  Append       r1, r1, r8
-L1:
-  AddInt       r4, r4, r9
-  Jump         L2
+  Append       r1, r1, r5
+  AddInt       r4, r4, r2
+  Jump         L1
 L0:
   // let flag = exists(
-  Exists       r12, r1
+  Exists       r3, r1
   // print(flag)
-  Print        r12
+  Print        r3
   Return       r0

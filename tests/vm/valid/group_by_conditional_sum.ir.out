@@ -1,4 +1,4 @@
-func main (regs=87)
+func main (regs=19)
   // let items = [
   Const        r0, [{"cat": "a", "flag": true, "val": 10}, {"cat": "a", "flag": false, "val": 5}, {"cat": "b", "flag": true, "val": 20}]
   // from i in items
@@ -8,121 +8,120 @@ func main (regs=87)
   // cat: g.key,
   Const        r3, "key"
   // sum(from x in g select if x.flag { x.val } else { 0 }) /
-  Const        r5, "flag"
-  Const        r6, "val"
+  Const        r4, "flag"
+  Const        r5, "val"
+L6:
   // from i in items
-  IterPrep     r7, r0
-  Len          r8, r7
-  Const        r9, 0
-  MakeMap      r10, 0, r0
-  Const        r11, []
+  IterPrep     r6, r0
+  Len          r7, r6
+L7:
+  Const        r8, 0
+L8:
+  MakeMap      r9, 0, r0
 L2:
-  LessInt      r12, r9, r8
-  JumpIfFalse  r12, L0
-  Index        r13, r7, r9
+  Const        r10, []
+L4:
+  LessInt      r11, r8, r7
+  JumpIfFalse  r11, L0
+  Index        r11, r6, r8
+L5:
   // group by i.cat into g
-  Index        r15, r13, r2
-  Str          r16, r15
-  In           r17, r16, r10
-  JumpIfTrue   r17, L1
-  // from i in items
-  Const        r18, []
-  Const        r19, "__group__"
-  Const        r20, true
-  Const        r21, "key"
-  // group by i.cat into g
-  Move         r22, r15
-  // from i in items
-  Const        r23, "items"
-  Move         r24, r18
-  Const        r25, "count"
-  Const        r26, 0
-  Move         r27, r19
-  Move         r28, r20
-  Move         r29, r21
-  Move         r30, r22
-  Move         r31, r23
-  Move         r32, r24
-  Move         r33, r25
-  Move         r34, r26
-  MakeMap      r35, 4, r27
-  SetIndex     r10, r16, r35
+  Index        r6, r11, r2
+  Str          r2, r6
+  In           r7, r2, r9
 L1:
-  Const        r37, "items"
-  Index        r38, r10, r16
-  Index        r39, r38, r37
-  Append       r40, r39, r13
-  SetIndex     r38, r37, r40
-  Const        r41, "count"
-  Index        r42, r38, r41
-  Const        r43, 1
-  AddInt       r44, r42, r43
-  SetIndex     r38, r41, r44
-  AddInt       r9, r9, r43
+  JumpIfTrue   r7, L1
+  // from i in items
+  Const        r7, []
+  Const        r12, "__group__"
+  Const        r13, true
+  Const        r14, "key"
+  // group by i.cat into g
+  Move         r15, r6
+  // from i in items
+  Const        r6, "items"
+  Move         r16, r7
+  Const        r7, "count"
+  Const        r17, 0
+  Move         r18, r12
+  Move         r12, r13
+  Move         r13, r14
+  Move         r14, r15
+  Move         r15, r6
+  Move         r6, r16
+  Move         r16, r7
+  Move         r7, r17
+  MakeMap      r17, 4, r18
+  SetIndex     r9, r2, r17
+  Const        r17, "items"
+  Index        r7, r9, r2
+  Index        r2, r7, r17
+  Append       r9, r2, r11
+  SetIndex     r7, r17, r9
+  Const        r9, "count"
+  Index        r2, r7, r9
+  Const        r17, 1
+  AddInt       r11, r2, r17
+  SetIndex     r7, r9, r11
+  AddInt       r8, r8, r17
   Jump         L2
 L0:
-  Const        r46, 0
-  Move         r45, r46
-  Const        r47, 0
-L9:
-  LessInt      r48, r45, r47
-  JumpIfFalse  r48, L3
-  Index        r50, r11, r45
+  Const        r11, 0
+  Move         r2, r11
+  Const        r9, 0
+  LessInt      r7, r2, r9
+  JumpIfFalse  r7, L3
+  Index        r7, r10, r2
   // cat: g.key,
-  Const        r51, "cat"
-  Index        r52, r50, r3
+  Const        r10, "cat"
+  Index        r9, r7, r3
   // share:
-  Const        r53, "share"
+  Const        r8, "share"
   // sum(from x in g select if x.flag { x.val } else { 0 }) /
-  Const        r54, []
-  IterPrep     r55, r50
-  Len          r56, r55
-  Move         r57, r46
-L6:
-  LessInt      r58, r57, r56
-  JumpIfFalse  r58, L4
-  Index        r60, r55, r57
-  Index        r61, r60, r5
-  JumpIfFalse  r61, L5
-L5:
-  Append       r54, r54, r46
-  AddInt       r57, r57, r43
+  Const        r16, []
+  IterPrep     r6, r7
+  Len          r15, r6
+  Move         r14, r11
+  LessInt      r13, r14, r15
+  JumpIfFalse  r13, L4
+  Index        r13, r6, r14
+  Index        r6, r13, r4
+  JumpIfFalse  r6, L5
+  Append       r16, r16, r11
+  AddInt       r14, r14, r17
   Jump         L6
-L4:
-  Sum          r65, r54
+  Sum          r6, r16
   // sum(from x in g select x.val)
-  Const        r66, []
-  IterPrep     r67, r50
-  Len          r68, r67
-  Move         r69, r46
-L8:
-  LessInt      r70, r69, r68
-  JumpIfFalse  r70, L7
-  Index        r60, r67, r69
-  Index        r72, r60, r6
-  Append       r66, r66, r72
-  AddInt       r69, r69, r43
-  Jump         L8
-L7:
-  Sum          r74, r66
+  Const        r16, []
+  IterPrep     r14, r7
+  Len          r4, r14
+  Move         r15, r11
+  LessInt      r11, r15, r4
+  JumpIfFalse  r11, L7
+  Index        r13, r14, r15
+  Index        r11, r13, r5
+  Append       r16, r16, r11
+  AddInt       r15, r15, r17
+  Jump         L4
+  Sum          r15, r16
   // sum(from x in g select if x.flag { x.val } else { 0 }) /
-  Div          r75, r65, r74
+  Div          r11, r6, r15
   // cat: g.key,
-  Move         r76, r51
-  Move         r77, r52
+  Move         r15, r10
+  Move         r10, r9
   // share:
-  Move         r78, r53
-  Move         r79, r75
+  Move         r16, r8
+  Move         r8, r11
   // select {
-  MakeMap      r80, 2, r76
+  MakeMap      r11, 2, r15
   // sort by g.key
-  Index        r82, r50, r3
+  Index        r8, r7, r3
   // from i in items
-  Move         r83, r80
-  MakeList     r84, 2, r82
-  Append       r1, r1, r84
-  AddInt       r45, r45, r43
-  Jump         L9
+  Move         r7, r11
+  MakeList     r11, 2, r8
+  Append       r1, r1, r11
+  AddInt       r2, r2, r17
+  Jump         L8
 L3:
   // sort by g.key
   Sort         r1, r1

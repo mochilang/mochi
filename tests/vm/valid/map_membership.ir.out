@@ -1,4 +1,4 @@
-func main (regs=5)
+func main (regs=3)
   // let m = {"a": 1, "b": 2}
   Const        r0, {"a": 1, "b": 2}
   // print("a" in m)
@@ -6,7 +6,7 @@ func main (regs=5)
   In           r2, r1, r0
   Print        r2
   // print("c" in m)
-  Const        r3, "c"
-  In           r4, r3, r0
-  Print        r4
+  Const        r2, "c"
+  In           r1, r2, r0
+  Print        r1
   Return       r0

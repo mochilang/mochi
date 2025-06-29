@@ -1,16 +1,16 @@
-func main (regs=10)
+func main (regs=5)
   // var m = {"a": 1, "b": 2}
   Const        r0, {"a": 1, "b": 2}
   // for k in m {
-  IterPrep     r2, r0
-  Len          r3, r2
-  Const        r4, 0
+  IterPrep     r1, r0
+  Len          r2, r1
 L1:
-  Less         r5, r4, r3
-  JumpIfFalse  r5, L0
-  Index        r7, r2, r4
+  Const        r3, 0
+  Less         r4, r3, r2
+  JumpIfFalse  r4, L0
+  Index        r4, r1, r3
   // print(k)
-  Print        r7
+  Print        r4
   // for k in m {
   Jump         L1
 L0:

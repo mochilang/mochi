@@ -1,15 +1,15 @@
-func main (regs=7)
+func main (regs=4)
   // print(sum3(1, 2, 3))  // 6
   Const        r0, 1
   Const        r1, 2
   Const        r2, 3
-  Call         r6, sum3, r0, r1, r2
-  Print        r6
+  Call         r3, sum3, r0, r1, r2
+  Print        r3
   Return       r0
 
   // fun sum3(a: int, b: int, c: int): int {
-func sum3 (regs=5)
+func sum3 (regs=4)
   // return a + b + c
   Add          r3, r0, r1
-  Add          r4, r3, r2
-  Return       r4
+  Add          r1, r3, r2
+  Return       r1
