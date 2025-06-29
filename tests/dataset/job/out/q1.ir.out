@@ -1,4 +1,4 @@
-func main (regs=128)
+func main (regs=131)
   // let company_type = [
   Const        r0, [{"id": 1, "kind": "production companies"}, {"id": 2, "kind": "distributors"}]
   // let info_type = [
@@ -17,7 +17,6 @@ func main (regs=128)
   Const        r7, "info"
   // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
   Const        r8, "note"
-  Const        r9, "contains"
   // select { note: mc.note, title: t.title, year: t.production_year }
   Const        r10, "title"
   Const        r11, "year"
@@ -117,81 +116,87 @@ L8:
   // where ct.kind == "production companies" &&
   JumpIfFalse  r72, L5
   // select { note: mc.note, title: t.title, year: t.production_year }
-  MakeMap      r86, 3, r8
+  Const        r80, "note"
+  Index        r81, r27, r8
+  Const        r82, "title"
+  Index        r83, r37, r10
+  Const        r84, "year"
+  Index        r85, r37, r12
+  MakeMap      r89, 3, r80
   // from ct in company_type
-  Append       r5, r5, r86
+  Append       r5, r5, r89
 L5:
   // join it in info_type on it.id == mi.info_type_id
-  Const        r88, 1
-  Add          r53, r53, r88
+  Const        r91, 1
+  Add          r53, r53, r91
   Jump         L9
 L4:
   // join mi in movie_info_idx on mi.movie_id == t.id
-  Add          r43, r43, r88
+  Add          r43, r43, r91
   Jump         L10
 L3:
   // join t in title on t.id == mc.movie_id
-  Add          r34, r34, r88
+  Add          r34, r34, r91
   Jump         L11
 L2:
   // join mc in movie_companies on ct.id == mc.company_type_id
-  Add          r24, r24, r88
   Jump         L12
 L1:
   // from ct in company_type
-  AddInt       r15, r15, r88
+  AddInt       r15, r15, r91
   Jump         L13
 L0:
   // production_note: min(from r in filtered select r.note),
-  Const        r89, "production_note"
-  Const        r90, []
-  IterPrep     r91, r5
-  Len          r92, r91
-  Move         r93, r16
+  Const        r92, "production_note"
+  Const        r93, []
+  IterPrep     r94, r5
+  Len          r95, r94
+  Move         r96, r16
 L15:
-  LessInt      r94, r93, r92
-  JumpIfFalse  r94, L14
-  Index        r96, r91, r93
-  Index        r97, r96, r8
-  Append       r90, r90, r97
-  AddInt       r93, r93, r88
+  LessInt      r97, r96, r95
+  JumpIfFalse  r97, L14
+  Index        r99, r94, r96
+  Index        r100, r99, r8
+  Append       r93, r93, r100
+  AddInt       r96, r96, r91
   Jump         L15
 L14:
   // movie_title: min(from r in filtered select r.title),
-  Const        r101, []
-  IterPrep     r102, r5
-  Len          r103, r102
-  Move         r104, r16
+  Const        r104, []
+  IterPrep     r105, r5
+  Len          r106, r105
+  Move         r107, r16
 L17:
-  LessInt      r105, r104, r103
-  JumpIfFalse  r105, L16
-  Index        r96, r102, r104
-  Index        r107, r96, r10
-  Append       r101, r101, r107
-  AddInt       r104, r104, r88
+  LessInt      r108, r107, r106
+  JumpIfFalse  r108, L16
+  Index        r99, r105, r107
+  Index        r110, r99, r10
+  Append       r104, r104, r110
+  AddInt       r107, r107, r91
   Jump         L17
 L16:
   // movie_year: min(from r in filtered select r.year)
-  Const        r111, []
-  IterPrep     r112, r5
-  Len          r113, r112
-  Move         r114, r16
+  Const        r114, []
+  IterPrep     r115, r5
+  Len          r116, r115
+  Move         r117, r16
 L19:
-  LessInt      r115, r114, r113
-  JumpIfFalse  r115, L18
-  Index        r96, r112, r114
-  Index        r117, r96, r11
-  Append       r111, r111, r117
-  AddInt       r114, r114, r88
+  LessInt      r118, r117, r116
+  JumpIfFalse  r118, L18
+  Index        r99, r115, r117
+  Index        r120, r99, r11
+  Append       r114, r114, r120
+  AddInt       r117, r117, r91
   Jump         L19
 L18:
   // let result = {
-  MakeMap      r123, 3, r89
+  MakeMap      r126, 3, r92
   // json([result])
-  MakeList     r125, 1, r123
-  JSON         r125
+  Move         r127, r126
+  MakeList     r128, 1, r127
+  JSON         r128
   // expect result == {
-  Const        r126, {"movie_title": "Good Movie", "movie_year": 1995, "production_note": "ACME (co-production)"}
-  Equal        r127, r123, r126
-  Expect       r127
+  Const        r129, {"movie_title": "Good Movie", "movie_year": 1995, "production_note": "ACME (co-production)"}
+  Equal        r130, r126, r129
+  Expect       r130
   Return       r0

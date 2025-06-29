@@ -1,4 +1,4 @@
-func main (regs=190)
+func main (regs=193)
   // let company_name = [
   Const        r0, [{"country_code": "[us]", "id": 1, "name": "Best Film Co"}, {"country_code": "[de]", "id": 2, "name": "Warner Studios"}, {"country_code": "[pl]", "id": 3, "name": "Polish Films"}]
   // let company_type = [
@@ -222,93 +222,99 @@ L18:
   // where cn.country_code != "[pl]" &&
   JumpIfFalse  r141, L8
   // select { company: cn.name, link: lt.link, title: t.title }
-  MakeMap      r148, 3, r18
+  Const        r142, "company"
+  Index        r143, r26, r10
+  Const        r144, "link"
+  Index        r145, r91, r14
+  Const        r146, "title"
+  Index        r147, r53, r19
+  MakeMap      r151, 3, r142
   // from cn in company_name
-  Append       r8, r8, r148
+  Append       r8, r8, r151
 L8:
   // join lt in link_type on lt.id == ml.link_type_id
-  Const        r150, 1
-  Add          r88, r88, r150
+  Const        r153, 1
+  Add          r88, r88, r153
   Jump         L19
 L7:
   // join ml in movie_link on ml.movie_id == t.id
-  Add          r78, r78, r150
+  Add          r78, r78, r153
   Jump         L20
 L6:
   // join k in keyword on k.id == mk.keyword_id
-  Add          r69, r69, r150
+  Add          r69, r69, r153
   Jump         L21
 L5:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r59, r59, r150
+  Add          r59, r59, r153
   Jump         L22
 L4:
   // join t in title on t.id == mc.movie_id
-  Add          r50, r50, r150
+  Add          r50, r50, r153
   Jump         L23
 L3:
   // join ct in company_type on ct.id == mc.company_type_id
-  Add          r41, r41, r150
+  Add          r41, r41, r153
   Jump         L24
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
   Jump         L25
 L1:
   // from cn in company_name
-  AddInt       r22, r22, r150
+  AddInt       r22, r22, r153
   Jump         L26
 L0:
   // from_company: min(from x in matches select x.company),
-  Const        r151, "from_company"
-  Const        r152, []
-  IterPrep     r153, r8
-  Len          r154, r153
-  Move         r155, r23
+  Const        r154, "from_company"
+  Const        r155, []
+  IterPrep     r156, r8
+  Len          r157, r156
+  Move         r158, r23
 L28:
-  LessInt      r156, r155, r154
-  JumpIfFalse  r156, L27
-  Index        r158, r153, r155
-  Index        r159, r158, r18
-  Append       r152, r152, r159
-  AddInt       r155, r155, r150
+  LessInt      r159, r158, r157
+  JumpIfFalse  r159, L27
+  Index        r161, r156, r158
+  Index        r162, r161, r18
+  Append       r155, r155, r162
+  AddInt       r158, r158, r153
   Jump         L28
 L27:
   // movie_link_type: min(from x in matches select x.link),
-  Const        r163, []
-  IterPrep     r164, r8
-  Len          r165, r164
-  Move         r166, r23
+  Const        r166, []
+  IterPrep     r167, r8
+  Len          r168, r167
+  Move         r169, r23
 L30:
-  LessInt      r167, r166, r165
-  JumpIfFalse  r167, L29
-  Index        r158, r164, r166
-  Index        r169, r158, r14
-  Append       r163, r163, r169
-  AddInt       r166, r166, r150
+  LessInt      r170, r169, r168
+  JumpIfFalse  r170, L29
+  Index        r161, r167, r169
+  Index        r172, r161, r14
+  Append       r166, r166, r172
+  AddInt       r169, r169, r153
   Jump         L30
 L29:
   // non_polish_sequel_movie: min(from x in matches select x.title)
-  Const        r173, []
-  IterPrep     r174, r8
-  Len          r175, r174
-  Move         r176, r23
+  Const        r176, []
+  IterPrep     r177, r8
+  Len          r178, r177
+  Move         r179, r23
 L32:
-  LessInt      r177, r176, r175
-  JumpIfFalse  r177, L31
-  Index        r158, r174, r176
-  Index        r179, r158, r19
-  Append       r173, r173, r179
-  AddInt       r176, r176, r150
+  LessInt      r180, r179, r178
+  JumpIfFalse  r180, L31
+  Index        r161, r177, r179
+  Index        r182, r161, r19
+  Append       r176, r176, r182
+  AddInt       r179, r179, r153
   Jump         L32
 L31:
   // {
-  MakeMap      r186, 3, r151
+  MakeMap      r189, 3, r154
   // let result = [
-  MakeList     r187, 1, r186
+  MakeList     r190, 1, r189
   // json(result)
-  JSON         r187
+  JSON         r190
   // expect result == [
-  Const        r188, [{"from_company": "Best Film Co", "movie_link_type": "follow-up", "non_polish_sequel_movie": "Alpha"}]
-  Equal        r189, r187, r188
-  Expect       r189
+  Const        r191, [{"from_company": "Best Film Co", "movie_link_type": "follow-up", "non_polish_sequel_movie": "Alpha"}]
+  Equal        r192, r190, r191
+  Expect       r192
   Return       r0

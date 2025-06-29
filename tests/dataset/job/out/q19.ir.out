@@ -1,4 +1,4 @@
-func main (regs=213)
+func main (regs=215)
   // let aka_name = [
   Const        r0, [{"name": "A. Stone", "person_id": 1}, {"name": "J. Doe", "person_id": 2}]
   // let char_name = [
@@ -272,87 +272,91 @@ L22:
   // where ci.note in [
   JumpIfFalse  r177, L10
   // select { actress: n.name, movie: t.title }
-  MakeMap      r182, 2, r19
+  Const        r178, "actress"
+  Index        r179, r36, r16
+  Const        r180, "movie"
+  Index        r181, r75, r21
+  MakeMap      r184, 2, r178
   // from an in aka_name
-  Append       r10, r10, r182
+  Append       r10, r10, r184
 L10:
   // join it in info_type on it.id == mi.info_type_id
-  Const        r184, 1
-  Add          r110, r110, r184
+  Const        r186, 1
+  Add          r110, r110, r186
   Jump         L23
 L9:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r100, r100, r184
+  Add          r100, r100, r186
   Jump         L24
 L8:
   // join cn in company_name on cn.id == mc.company_id
-  Add          r91, r91, r184
+  Add          r91, r91, r186
   Jump         L25
 L7:
   // join mc in movie_companies on mc.movie_id == t.id
-  Add          r81, r81, r184
+  Add          r81, r81, r186
   Jump         L26
 L6:
   // join t in title on t.id == ci.movie_id
-  Add          r72, r72, r184
+  Add          r72, r72, r186
   Jump         L27
 L5:
   // join rt in role_type on rt.id == ci.role_id
-  Add          r62, r62, r184
+  Add          r62, r62, r186
   Jump         L28
 L4:
   // join chn in char_name on chn.id == ci.person_role_id
-  Add          r52, r52, r184
+  Add          r52, r52, r186
   Jump         L29
 L3:
   // join ci in cast_info on ci.person_id == an.person_id
-  Add          r42, r42, r184
+  Add          r42, r42, r186
   Jump         L30
 L2:
   // join n in name on n.id == an.person_id
   Jump         L31
 L1:
   // from an in aka_name
-  AddInt       r24, r24, r184
+  AddInt       r24, r24, r186
   Jump         L32
 L0:
   // voicing_actress: min(from r in matches select r.actress),
-  Const        r185, "voicing_actress"
-  Const        r186, []
-  IterPrep     r187, r10
-  Len          r188, r187
-  Move         r189, r25
+  Const        r187, "voicing_actress"
+  Const        r188, []
+  IterPrep     r189, r10
+  Len          r190, r189
+  Move         r191, r25
 L34:
-  LessInt      r190, r189, r188
-  JumpIfFalse  r190, L33
-  Index        r192, r187, r189
-  Index        r193, r192, r19
-  Append       r186, r186, r193
-  AddInt       r189, r189, r184
+  LessInt      r192, r191, r190
+  JumpIfFalse  r192, L33
+  Index        r194, r189, r191
+  Index        r195, r194, r19
+  Append       r188, r188, r195
+  AddInt       r191, r191, r186
   Jump         L34
 L33:
   // voiced_movie: min(from r in matches select r.movie)
-  Const        r197, []
-  IterPrep     r198, r10
-  Len          r199, r198
-  Move         r200, r25
+  Const        r199, []
+  IterPrep     r200, r10
+  Len          r201, r200
+  Move         r202, r25
 L36:
-  LessInt      r201, r200, r199
-  JumpIfFalse  r201, L35
-  Index        r192, r198, r200
-  Index        r203, r192, r20
-  Append       r197, r197, r203
-  AddInt       r200, r200, r184
+  LessInt      r203, r202, r201
+  JumpIfFalse  r203, L35
+  Index        r194, r200, r202
+  Index        r205, r194, r20
+  Append       r199, r199, r205
+  AddInt       r202, r202, r186
   Jump         L36
 L35:
   // {
-  MakeMap      r209, 2, r185
+  MakeMap      r211, 2, r187
   // let result = [
-  MakeList     r210, 1, r209
+  MakeList     r212, 1, r211
   // json(result)
-  JSON         r210
+  JSON         r212
   // expect result == [
-  Const        r211, [{"voiced_movie": "Voiced Movie", "voicing_actress": "Angela Stone"}]
-  Equal        r212, r210, r211
-  Expect       r212
+  Const        r213, [{"voiced_movie": "Voiced Movie", "voicing_actress": "Angela Stone"}]
+  Equal        r214, r212, r213
+  Expect       r214
   Return       r0

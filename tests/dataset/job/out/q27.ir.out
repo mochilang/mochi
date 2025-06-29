@@ -1,4 +1,4 @@
-func main (regs=286)
+func main (regs=289)
   // let comp_cast_type = [
   Const        r0, [{"id": 1, "kind": "cast"}, {"id": 2, "kind": "crew"}, {"id": 3, "kind": "complete"}]
   // let complete_cast = [
@@ -385,108 +385,117 @@ L34:
 L35:
   // where (
   JumpIfFalse  r239, L12
+  // company: cn.name,
+  Const        r240, "company"
+  Index        r241, r124, r14
+  // link: lt.link,
+  Const        r242, "link"
+  Index        r243, r76, r17
+  // title: t.title
+  Const        r244, "title"
+  Index        r245, r57, r23
   // select {
-  MakeMap      r246, 3, r22
+  MakeMap      r249, 3, r240
   // from cc in complete_cast
-  Append       r11, r11, r246
+  Append       r11, r11, r249
 L12:
   // join mi in movie_info on mi.movie_id == t.id
-  Const        r248, 1
-  Add          r130, r130, r248
+  Const        r251, 1
+  Add          r130, r130, r251
   Jump         L36
 L11:
   // join cn in company_name on cn.id == mc.company_id
-  Add          r121, r121, r248
+  Add          r121, r121, r251
   Jump         L37
 L10:
   // join ct in company_type on ct.id == mc.company_type_id
-  Add          r111, r111, r248
+  Add          r111, r111, r251
   Jump         L38
 L9:
   // join mc in movie_companies on mc.movie_id == t.id
-  Add          r101, r101, r248
+  Add          r101, r101, r251
   Jump         L39
 L8:
   // join k in keyword on k.id == mk.keyword_id
-  Add          r92, r92, r248
+  Add          r92, r92, r251
   Jump         L40
 L7:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r82, r82, r248
+  Add          r82, r82, r251
   Jump         L41
 L6:
   // join lt in link_type on lt.id == ml.link_type_id
-  Add          r73, r73, r248
+  Add          r73, r73, r251
   Jump         L42
 L5:
   // join ml in movie_link on ml.movie_id == t.id
-  Add          r63, r63, r248
+  Add          r63, r63, r251
   Jump         L43
 L4:
   // join t in title on t.id == cc.movie_id
-  Add          r54, r54, r248
+  Add          r54, r54, r251
   Jump         L44
 L3:
   // join cct2 in comp_cast_type on cct2.id == cc.status_id
-  Add          r45, r45, r248
+  Add          r45, r45, r251
   Jump         L45
 L2:
   // join cct1 in comp_cast_type on cct1.id == cc.subject_id
   Jump         L46
 L1:
   // from cc in complete_cast
-  AddInt       r26, r26, r248
+  AddInt       r26, r26, r251
   Jump         L47
 L0:
   // producing_company: min(from x in matches select x.company),
-  Const        r249, "producing_company"
-  Const        r250, []
-  IterPrep     r251, r11
-  Len          r252, r251
-  Move         r253, r27
+  Const        r252, "producing_company"
+  Const        r253, []
+  IterPrep     r254, r11
+  Len          r255, r254
+  Move         r256, r27
 L49:
-  LessInt      r254, r253, r252
-  JumpIfFalse  r254, L48
-  Index        r256, r251, r253
-  Index        r257, r256, r22
-  Append       r250, r250, r257
-  AddInt       r253, r253, r248
+  LessInt      r257, r256, r255
+  JumpIfFalse  r257, L48
+  Index        r259, r254, r256
+  Index        r260, r259, r22
+  Append       r253, r253, r260
+  AddInt       r256, r256, r251
   Jump         L49
 L48:
   // link_type: min(from x in matches select x.link),
-  Const        r261, []
-  IterPrep     r262, r11
-  Len          r263, r262
-  Move         r264, r27
+  Const        r264, []
+  IterPrep     r265, r11
+  Len          r266, r265
+  Move         r267, r27
 L51:
-  LessInt      r265, r264, r263
-  JumpIfFalse  r265, L50
-  Index        r256, r262, r264
-  Index        r267, r256, r17
-  Append       r261, r261, r267
-  AddInt       r264, r264, r248
+  LessInt      r268, r267, r266
+  JumpIfFalse  r268, L50
+  Index        r259, r265, r267
+  Index        r270, r259, r17
+  Append       r264, r264, r270
+  AddInt       r267, r267, r251
   Jump         L51
 L50:
   // complete_western_sequel: min(from x in matches select x.title)
-  Const        r271, []
-  IterPrep     r272, r11
-  Len          r273, r272
-  Move         r274, r27
+  Const        r274, []
+  IterPrep     r275, r11
+  Len          r276, r275
+  Move         r277, r27
 L53:
-  LessInt      r275, r274, r273
-  JumpIfFalse  r275, L52
-  Index        r256, r272, r274
-  Index        r277, r256, r23
-  Append       r271, r271, r277
-  AddInt       r274, r274, r248
+  LessInt      r278, r277, r276
+  JumpIfFalse  r278, L52
+  Index        r259, r275, r277
+  Index        r280, r259, r23
+  Append       r274, r274, r280
+  AddInt       r277, r277, r251
   Jump         L53
 L52:
   // let result = {
-  MakeMap      r283, 3, r249
+  MakeMap      r286, 3, r252
   // json(result)
-  JSON         r283
+  JSON         r286
   // expect result == {
-  Const        r284, {"complete_western_sequel": "Western Sequel", "link_type": "follows", "producing_company": "Best Film"}
-  Equal        r285, r283, r284
-  Expect       r285
+  Const        r287, {"complete_western_sequel": "Western Sequel", "link_type": "follows", "producing_company": "Best Film"}
+  Equal        r288, r286, r287
+  Expect       r288
   Return       r0

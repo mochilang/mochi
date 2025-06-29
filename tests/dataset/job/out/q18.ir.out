@@ -1,4 +1,4 @@
-func main (regs=159)
+func main (regs=162)
   // let info_type = [
   Const        r0, [{"id": 1, "info": "budget"}, {"id": 2, "info": "votes"}, {"id": 3, "info": "rating"}]
   // let name = [
@@ -179,87 +179,93 @@ L15:
   // where (
   JumpIfFalse  r112, L7
   // select { budget: mi.info, votes: mi_idx.info, title: t.title }
-  MakeMap      r119, 3, r14
+  Const        r113, "budget"
+  Index        r114, r48, r8
+  Const        r115, "votes"
+  Index        r116, r57, r8
+  Const        r117, "title"
+  Index        r118, r39, r16
+  MakeMap      r122, 3, r113
   // from ci in cast_info
-  Append       r6, r6, r119
+  Append       r6, r6, r122
 L7:
   // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Const        r121, 1
-  Add          r73, r73, r121
+  Const        r124, 1
+  Add          r73, r73, r124
   Jump         L16
 L6:
   // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r64, r64, r121
+  Add          r64, r64, r124
   Jump         L17
 L5:
   // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Add          r54, r54, r121
+  Add          r54, r54, r124
   Jump         L18
 L4:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r45, r45, r121
+  Add          r45, r45, r124
   Jump         L19
 L3:
   // join t in title on t.id == ci.movie_id
-  Add          r36, r36, r121
+  Add          r36, r36, r124
   Jump         L20
 L2:
   // join n in name on n.id == ci.person_id
   Jump         L21
 L1:
   // from ci in cast_info
-  AddInt       r19, r19, r121
+  AddInt       r19, r19, r124
   Jump         L22
 L0:
   // movie_budget: min(from r in rows select r.budget),
-  Const        r122, "movie_budget"
-  Const        r123, []
-  IterPrep     r124, r6
-  Len          r125, r124
-  Move         r126, r20
+  Const        r125, "movie_budget"
+  Const        r126, []
+  IterPrep     r127, r6
+  Len          r128, r127
+  Move         r129, r20
 L24:
-  LessInt      r127, r126, r125
-  JumpIfFalse  r127, L23
-  Index        r129, r124, r126
-  Index        r130, r129, r14
-  Append       r123, r123, r130
-  AddInt       r126, r126, r121
+  LessInt      r130, r129, r128
+  JumpIfFalse  r130, L23
+  Index        r132, r127, r129
+  Index        r133, r132, r14
+  Append       r126, r126, r133
+  AddInt       r129, r129, r124
   Jump         L24
 L23:
   // movie_votes: min(from r in rows select r.votes),
-  Const        r134, []
-  IterPrep     r135, r6
-  Len          r136, r135
-  Move         r137, r20
+  Const        r137, []
+  IterPrep     r138, r6
+  Len          r139, r138
+  Move         r140, r20
 L26:
-  LessInt      r138, r137, r136
-  JumpIfFalse  r138, L25
-  Index        r129, r135, r137
-  Index        r140, r129, r15
-  Append       r134, r134, r140
-  AddInt       r137, r137, r121
+  LessInt      r141, r140, r139
+  JumpIfFalse  r141, L25
+  Index        r132, r138, r140
+  Index        r143, r132, r15
+  Append       r137, r137, r143
+  AddInt       r140, r140, r124
   Jump         L26
 L25:
   // movie_title: min(from r in rows select r.title)
-  Const        r144, []
-  IterPrep     r145, r6
-  Len          r146, r145
-  Move         r147, r20
+  Const        r147, []
+  IterPrep     r148, r6
+  Len          r149, r148
+  Move         r150, r20
 L28:
-  LessInt      r148, r147, r146
-  JumpIfFalse  r148, L27
-  Index        r129, r145, r147
-  Index        r150, r129, r16
-  Append       r144, r144, r150
-  AddInt       r147, r147, r121
+  LessInt      r151, r150, r149
+  JumpIfFalse  r151, L27
+  Index        r132, r148, r150
+  Index        r153, r132, r16
+  Append       r147, r147, r153
+  AddInt       r150, r150, r124
   Jump         L28
 L27:
   // let result = {
-  MakeMap      r156, 3, r122
+  MakeMap      r159, 3, r125
   // json(result)
-  JSON         r156
+  JSON         r159
   // expect result == { movie_budget: 90, movie_votes: 400, movie_title: "Alpha" }
-  Const        r157, {"movie_budget": 90, "movie_title": "Alpha", "movie_votes": 400}
-  Equal        r158, r156, r157
-  Expect       r158
+  Const        r160, {"movie_budget": 90, "movie_title": "Alpha", "movie_votes": 400}
+  Equal        r161, r159, r160
+  Expect       r161
   Return       r0

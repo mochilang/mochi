@@ -1,4 +1,4 @@
-func main (regs=117)
+func main (regs=123)
   // let keyword = [
   Const        r0, [{"id": 1, "keyword": "10,000-mile-club"}, {"id": 2, "keyword": "character-name-in-title"}]
   // let link_type = [
@@ -99,84 +99,92 @@ L7:
   Equal        r71, r69, r70
   JumpIfFalse  r71, L6
   // select { link_type: lt.link, first_movie: t1.title, second_movie: t2.title }
-  MakeMap      r78, 3, r7
+  Const        r72, "link_type"
+  Index        r73, r65, r8
+  Const        r74, "first_movie"
+  Index        r75, r36, r10
+  Const        r76, "second_movie"
+  Index        r77, r55, r10
+  MakeMap      r81, 3, r72
   // from k in keyword
-  Append       r5, r5, r78
+  Append       r5, r5, r81
 L6:
   // join lt in link_type on lt.id == ml.link_type_id
-  Const        r80, 1
-  Add          r62, r62, r80
+  Const        r83, 1
+  Add          r62, r62, r83
   Jump         L7
 L5:
   // join t2 in title on t2.id == ml.linked_movie_id
-  Add          r52, r52, r80
+  Add          r52, r52, r83
   Jump         L8
 L4:
   // join ml in movie_link on ml.movie_id == t1.id
-  Add          r42, r42, r80
+  Add          r42, r42, r83
   Jump         L9
 L3:
   // join t1 in title on t1.id == mk.movie_id
-  Add          r33, r33, r80
+  Add          r33, r33, r83
   Jump         L10
 L2:
   // join mk in movie_keyword on mk.keyword_id == k.id
-  Add          r23, r23, r80
+  Add          r23, r23, r83
   Jump         L11
 L1:
   // from k in keyword
-  AddInt       r14, r14, r80
+  AddInt       r14, r14, r83
   Jump         L12
 L0:
   // link_type: min(from r in joined select r.link_type),
-  Const        r81, []
-  IterPrep     r82, r5
-  Len          r83, r82
-  Move         r84, r15
+  Const        r84, "link_type"
+  Const        r85, []
+  IterPrep     r86, r5
+  Len          r87, r86
+  Move         r88, r15
 L14:
-  LessInt      r85, r84, r83
-  JumpIfFalse  r85, L13
-  Index        r87, r82, r84
-  Index        r88, r87, r7
-  Append       r81, r81, r88
-  AddInt       r84, r84, r80
+  LessInt      r89, r88, r87
+  JumpIfFalse  r89, L13
+  Index        r91, r86, r88
+  Index        r92, r91, r7
+  Append       r85, r85, r92
+  AddInt       r88, r88, r83
   Jump         L14
 L13:
   // first_movie: min(from r in joined select r.first_movie),
-  Const        r91, []
-  IterPrep     r92, r5
-  Len          r93, r92
-  Move         r94, r15
+  Const        r96, []
+  IterPrep     r97, r5
+  Len          r98, r97
+  Move         r99, r15
 L16:
-  LessInt      r95, r94, r93
-  JumpIfFalse  r95, L15
-  Index        r87, r92, r94
-  Index        r97, r87, r9
-  Append       r91, r91, r97
-  AddInt       r94, r94, r80
+  LessInt      r100, r99, r98
+  JumpIfFalse  r100, L15
+  Index        r91, r97, r99
+  Index        r102, r91, r9
+  Append       r96, r96, r102
+  AddInt       r99, r99, r83
   Jump         L16
 L15:
   // second_movie: min(from r in joined select r.second_movie)
-  Const        r100, []
-  IterPrep     r101, r5
-  Len          r102, r101
-  Move         r103, r15
+  Const        r106, []
+  IterPrep     r107, r5
+  Len          r108, r107
+  Move         r109, r15
 L18:
-  LessInt      r104, r103, r102
-  JumpIfFalse  r104, L17
-  Index        r87, r101, r103
-  Index        r106, r87, r11
-  Append       r100, r100, r106
-  AddInt       r103, r103, r80
+  LessInt      r110, r109, r108
+  JumpIfFalse  r110, L17
+  Index        r91, r107, r109
+  Index        r112, r91, r11
+  Append       r106, r106, r112
+  AddInt       r109, r109, r83
   Jump         L18
 L17:
   // let result = {
-  MakeMap      r112, 3, r7
+  MakeMap      r118, 3, r84
   // json([result])
-  MakeList     r114, 1, r112
-  JSON         r114
+  Move         r119, r118
+  MakeList     r120, 1, r119
+  JSON         r120
   // expect result == {
-  Const        r115, {"first_movie": "Movie A", "link_type": "sequel", "second_movie": "Movie C"}
-  Equal        r116, r112, r115
-  Expect       r116
+  Const        r121, {"first_movie": "Movie A", "link_type": "sequel", "second_movie": "Movie C"}
+  Equal        r122, r118, r121
+  Expect       r122
   Return       r0

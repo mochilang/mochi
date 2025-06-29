@@ -1,4 +1,4 @@
-func main (regs=87)
+func main (regs=90)
   // let cast_info = [
   Const        r0, [{"movie_id": 1, "person_id": 101}, {"movie_id": 2, "person_id": 102}]
   // let keyword = [
@@ -17,12 +17,7 @@ func main (regs=87)
   Const        r7, "name"
   // t.production_year > 2010
   Const        r9, "production_year"
-  // movie_keyword: k.keyword,
-  Const        r10, "movie_keyword"
-  // actor_name: n.name,
-  Const        r11, "actor_name"
   // marvel_movie: t.title
-  Const        r12, "marvel_movie"
   Const        r13, "title"
   // from ci in cast_info
   IterPrep     r14, r0
@@ -111,35 +106,44 @@ L7:
 L8:
   // k.keyword == "marvel-cinematic-universe" &&
   JumpIfFalse  r75, L5
+  // movie_keyword: k.keyword,
+  Const        r76, "movie_keyword"
+  Index        r77, r38, r6
+  // actor_name: n.name,
+  Const        r78, "actor_name"
+  Index        r79, r48, r7
+  // marvel_movie: t.title
+  Const        r80, "marvel_movie"
+  Index        r81, r57, r13
   // select {
-  MakeMap      r82, 3, r10
+  MakeMap      r85, 3, r76
   // from ci in cast_info
-  Append       r5, r5, r82
+  Append       r5, r5, r85
 L5:
   // join t in title on ci.movie_id == t.id
-  Const        r84, 1
-  Add          r54, r54, r84
+  Const        r87, 1
   Jump         L9
 L4:
   // join n in name on ci.person_id == n.id
-  Add          r45, r45, r84
+  Add          r45, r45, r87
   Jump         L10
 L3:
   // join k in keyword on mk.keyword_id == k.id
-  Add          r35, r35, r84
+  Add          r35, r35, r87
   Jump         L11
 L2:
   // join mk in movie_keyword on ci.movie_id == mk.movie_id
+  Add          r24, r24, r87
   Jump         L12
 L1:
   // from ci in cast_info
-  AddInt       r16, r16, r84
+  AddInt       r16, r16, r87
   Jump         L13
 L0:
   // json(result)
   JSON         r5
   // expect result == [
-  Const        r85, [{"actor_name": "Downey Robert Jr.", "marvel_movie": "Iron Man 3", "movie_keyword": "marvel-cinematic-universe"}]
-  Equal        r86, r5, r85
-  Expect       r86
+  Const        r88, [{"actor_name": "Downey Robert Jr.", "marvel_movie": "Iron Man 3", "movie_keyword": "marvel-cinematic-universe"}]
+  Equal        r89, r5, r88
+  Expect       r89
   Return       r0
