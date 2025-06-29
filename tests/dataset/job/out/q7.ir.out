@@ -1,4 +1,4 @@
-func main (regs=199)
+func main (regs=203)
   // let aka_name = [
   Const        r0, [{"name": "Anna Mae", "person_id": 1}, {"name": "Chris", "person_id": 2}]
   // let cast_info = [
@@ -252,78 +252,91 @@ L21:
   Index        r163, r37, r9
   Const        r164, "movie_title"
   Index        r165, r74, r23
-  MakeMap      r168, 2, r162
+  Move         r166, r162
+  Move         r167, r163
+  Move         r168, r164
+  Move         r169, r165
+  MakeMap      r170, 2, r166
   // from an in aka_name
-  Append       r8, r8, r168
+  Append       r8, r8, r170
 L8:
   // join lt in link_type on lt.id == ml.link_type_id
-  Const        r170, 1
-  Add          r90, r90, r170
+  Const        r172, 1
+  Add          r90, r90, r172
   Jump         L22
 L7:
   // join ml in movie_link on ml.linked_movie_id == t.id
-  Add          r80, r80, r170
+  Add          r80, r80, r172
   Jump         L23
 L6:
   // join t in title on t.id == ci.movie_id
-  Add          r71, r71, r170
+  Add          r71, r71, r172
   Jump         L24
 L5:
   // join ci in cast_info on ci.person_id == n.id
-  Add          r62, r62, r170
+  Add          r62, r62, r172
   Jump         L25
 L4:
   // join it in info_type on it.id == pi.info_type_id
-  Add          r53, r53, r170
+  Add          r53, r53, r172
   Jump         L26
 L3:
   // join pi in person_info on pi.person_id == an.person_id
   Jump         L27
 L2:
   // join n in name on n.id == an.person_id
-  Add          r34, r34, r170
+  Add          r34, r34, r172
   Jump         L28
 L1:
   // from an in aka_name
   Jump         L29
 L0:
   // of_person: min(from r in rows select r.person_name),
-  Const        r171, "of_person"
-  Const        r172, []
-  IterPrep     r173, r8
-  Len          r174, r173
-  Move         r175, r27
+  Const        r173, "of_person"
+  Const        r174, []
+  IterPrep     r175, r8
+  Len          r176, r175
+  Move         r177, r27
 L31:
-  LessInt      r176, r175, r174
-  JumpIfFalse  r176, L30
-  Index        r178, r173, r175
-  Index        r179, r178, r21
-  Append       r172, r172, r179
-  AddInt       r175, r175, r170
+  LessInt      r178, r177, r176
+  JumpIfFalse  r178, L30
+  Index        r180, r175, r177
+  Index        r181, r180, r21
+  Append       r174, r174, r181
+  AddInt       r177, r177, r172
   Jump         L31
 L30:
+  Min          r183, r174
   // biography_movie: min(from r in rows select r.movie_title)
-  Const        r183, []
-  IterPrep     r184, r8
-  Len          r185, r184
-  Move         r186, r27
+  Const        r184, "biography_movie"
+  Const        r185, []
+  IterPrep     r186, r8
+  Len          r187, r186
+  Move         r188, r27
 L33:
-  LessInt      r187, r186, r185
-  JumpIfFalse  r187, L32
-  Index        r178, r184, r186
-  Index        r189, r178, r22
-  Append       r183, r183, r189
-  AddInt       r186, r186, r170
+  LessInt      r189, r188, r187
+  JumpIfFalse  r189, L32
+  Index        r180, r186, r188
+  Index        r191, r180, r22
+  Append       r185, r185, r191
+  AddInt       r188, r188, r172
   Jump         L33
 L32:
+  Min          r193, r185
+  // of_person: min(from r in rows select r.person_name),
+  Move         r194, r173
+  Move         r195, r183
+  // biography_movie: min(from r in rows select r.movie_title)
+  Move         r196, r184
+  Move         r197, r193
   // {
-  MakeMap      r195, 2, r171
+  MakeMap      r199, 2, r194
   // let result = [
-  MakeList     r196, 1, r195
+  MakeList     r200, 1, r199
   // json(result)
-  JSON         r196
+  JSON         r200
   // expect result == [
-  Const        r197, [{"biography_movie": "Feature Film", "of_person": "Alan Brown"}]
-  Equal        r198, r196, r197
-  Expect       r198
+  Const        r201, [{"biography_movie": "Feature Film", "of_person": "Alan Brown"}]
+  Equal        r202, r200, r201
+  Expect       r202
   Return       r0

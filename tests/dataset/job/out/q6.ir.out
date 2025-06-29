@@ -1,4 +1,4 @@
-func main (regs=90)
+func main (regs=93)
   // let cast_info = [
   Const        r0, [{"movie_id": 1, "person_id": 101}, {"movie_id": 2, "person_id": 102}]
   // let keyword = [
@@ -115,35 +115,44 @@ L8:
   // marvel_movie: t.title
   Const        r80, "marvel_movie"
   Index        r81, r57, r13
+  // movie_keyword: k.keyword,
+  Move         r82, r76
+  Move         r83, r77
+  // actor_name: n.name,
+  Move         r84, r78
+  Move         r85, r79
+  // marvel_movie: t.title
+  Move         r86, r80
+  Move         r87, r81
   // select {
-  MakeMap      r85, 3, r76
+  MakeMap      r88, 3, r82
   // from ci in cast_info
-  Append       r5, r5, r85
+  Append       r5, r5, r88
 L5:
   // join t in title on ci.movie_id == t.id
-  Const        r87, 1
+  Const        r90, 1
   Jump         L9
 L4:
   // join n in name on ci.person_id == n.id
-  Add          r45, r45, r87
+  Add          r45, r45, r90
   Jump         L10
 L3:
   // join k in keyword on mk.keyword_id == k.id
-  Add          r35, r35, r87
+  Add          r35, r35, r90
   Jump         L11
 L2:
   // join mk in movie_keyword on ci.movie_id == mk.movie_id
-  Add          r24, r24, r87
+  Add          r24, r24, r90
   Jump         L12
 L1:
   // from ci in cast_info
-  AddInt       r16, r16, r87
+  AddInt       r16, r16, r90
   Jump         L13
 L0:
   // json(result)
   JSON         r5
   // expect result == [
-  Const        r88, [{"actor_name": "Downey Robert Jr.", "marvel_movie": "Iron Man 3", "movie_keyword": "marvel-cinematic-universe"}]
-  Equal        r89, r5, r88
-  Expect       r89
+  Const        r91, [{"actor_name": "Downey Robert Jr.", "marvel_movie": "Iron Man 3", "movie_keyword": "marvel-cinematic-universe"}]
+  Equal        r92, r5, r91
+  Expect       r92
   Return       r0

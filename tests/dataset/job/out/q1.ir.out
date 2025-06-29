@@ -1,4 +1,4 @@
-func main (regs=131)
+func main (regs=137)
   // let company_type = [
   Const        r0, [{"id": 1, "kind": "production companies"}, {"id": 2, "kind": "distributors"}]
   // let info_type = [
@@ -122,81 +122,101 @@ L8:
   Index        r83, r37, r10
   Const        r84, "year"
   Index        r85, r37, r12
-  MakeMap      r89, 3, r80
+  Move         r86, r80
+  Move         r87, r81
+  Move         r88, r82
+  Move         r89, r83
+  Move         r90, r84
+  Move         r91, r85
+  MakeMap      r92, 3, r86
   // from ct in company_type
-  Append       r5, r5, r89
+  Append       r5, r5, r92
 L5:
   // join it in info_type on it.id == mi.info_type_id
-  Const        r91, 1
-  Add          r53, r53, r91
+  Const        r94, 1
+  Add          r53, r53, r94
   Jump         L9
 L4:
   // join mi in movie_info_idx on mi.movie_id == t.id
-  Add          r43, r43, r91
+  Add          r43, r43, r94
   Jump         L10
 L3:
   // join t in title on t.id == mc.movie_id
-  Add          r34, r34, r91
+  Add          r34, r34, r94
   Jump         L11
 L2:
   // join mc in movie_companies on ct.id == mc.company_type_id
   Jump         L12
 L1:
   // from ct in company_type
-  AddInt       r15, r15, r91
+  AddInt       r15, r15, r94
   Jump         L13
 L0:
   // production_note: min(from r in filtered select r.note),
-  Const        r92, "production_note"
-  Const        r93, []
-  IterPrep     r94, r5
-  Len          r95, r94
-  Move         r96, r16
+  Const        r95, "production_note"
+  Const        r96, []
+  IterPrep     r97, r5
+  Len          r98, r97
+  Move         r99, r16
 L15:
-  LessInt      r97, r96, r95
-  JumpIfFalse  r97, L14
-  Index        r99, r94, r96
-  Index        r100, r99, r8
-  Append       r93, r93, r100
-  AddInt       r96, r96, r91
+  LessInt      r100, r99, r98
+  JumpIfFalse  r100, L14
+  Index        r102, r97, r99
+  Index        r103, r102, r8
+  Append       r96, r96, r103
+  AddInt       r99, r99, r94
   Jump         L15
 L14:
+  Min          r105, r96
   // movie_title: min(from r in filtered select r.title),
-  Const        r104, []
-  IterPrep     r105, r5
-  Len          r106, r105
-  Move         r107, r16
+  Const        r106, "movie_title"
+  Const        r107, []
+  IterPrep     r108, r5
+  Len          r109, r108
+  Move         r110, r16
 L17:
-  LessInt      r108, r107, r106
-  JumpIfFalse  r108, L16
-  Index        r99, r105, r107
-  Index        r110, r99, r10
-  Append       r104, r104, r110
-  AddInt       r107, r107, r91
+  LessInt      r111, r110, r109
+  JumpIfFalse  r111, L16
+  Index        r102, r108, r110
+  Index        r113, r102, r10
+  Append       r107, r107, r113
+  AddInt       r110, r110, r94
   Jump         L17
 L16:
+  Min          r115, r107
   // movie_year: min(from r in filtered select r.year)
-  Const        r114, []
-  IterPrep     r115, r5
-  Len          r116, r115
-  Move         r117, r16
+  Const        r116, "movie_year"
+  Const        r117, []
+  IterPrep     r118, r5
+  Len          r119, r118
+  Move         r120, r16
 L19:
-  LessInt      r118, r117, r116
-  JumpIfFalse  r118, L18
-  Index        r99, r115, r117
-  Index        r120, r99, r11
-  Append       r114, r114, r120
-  AddInt       r117, r117, r91
+  LessInt      r121, r120, r119
+  JumpIfFalse  r121, L18
+  Index        r102, r118, r120
+  Index        r123, r102, r11
+  Append       r117, r117, r123
+  AddInt       r120, r120, r94
   Jump         L19
 L18:
+  Min          r125, r117
+  // production_note: min(from r in filtered select r.note),
+  Move         r126, r95
+  Move         r127, r105
+  // movie_title: min(from r in filtered select r.title),
+  Move         r128, r106
+  Move         r129, r115
+  // movie_year: min(from r in filtered select r.year)
+  Move         r130, r116
+  Move         r131, r125
   // let result = {
-  MakeMap      r126, 3, r92
+  MakeMap      r132, 3, r126
   // json([result])
-  Move         r127, r126
-  MakeList     r128, 1, r127
-  JSON         r128
+  Move         r133, r132
+  MakeList     r134, 1, r133
+  JSON         r134
   // expect result == {
-  Const        r129, {"movie_title": "Good Movie", "movie_year": 1995, "production_note": "ACME (co-production)"}
-  Equal        r130, r126, r129
-  Expect       r130
+  Const        r135, {"movie_title": "Good Movie", "movie_year": 1995, "production_note": "ACME (co-production)"}
+  Equal        r136, r132, r135
+  Expect       r136
   Return       r0

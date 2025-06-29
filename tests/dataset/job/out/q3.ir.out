@@ -1,4 +1,4 @@
-func main (regs=73)
+func main (regs=74)
   // let keyword = [
   Const        r0, [{"id": 1, "keyword": "amazing sequel"}, {"id": 2, "keyword": "prequel"}]
   // let movie_info = [
@@ -122,12 +122,14 @@ L0:
   // let result = [{ movie_title: min(candidate_titles) }]
   Const        r65, "movie_title"
   Min          r66, r5
-  MakeMap      r69, 1, r65
-  MakeList     r70, 1, r69
+  Move         r67, r65
+  Move         r68, r66
+  MakeMap      r70, 1, r67
+  MakeList     r71, 1, r70
   // json(result)
-  JSON         r70
+  JSON         r71
   // expect result == [ { movie_title: "Alpha" } ]
-  Const        r71, [{"movie_title": "Alpha"}]
-  Equal        r72, r70, r71
-  Expect       r72
+  Const        r72, [{"movie_title": "Alpha"}]
+  Equal        r73, r71, r72
+  Expect       r73
   Return       r0

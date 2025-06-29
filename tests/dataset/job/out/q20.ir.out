@@ -1,4 +1,4 @@
-func main (regs=155)
+func main (regs=156)
   // let comp_cast_type = [
   Const        r0, [{"id": 1, "kind": "cast"}, {"id": 2, "kind": "complete cast"}]
   // let char_name = [
@@ -258,12 +258,14 @@ L0:
   // let result = [ { complete_downey_ironman_movie: min(matches) } ]
   Const        r147, "complete_downey_ironman_movie"
   Min          r148, r9
-  MakeMap      r151, 1, r147
-  MakeList     r152, 1, r151
+  Move         r149, r147
+  Move         r150, r148
+  MakeMap      r152, 1, r149
+  MakeList     r153, 1, r152
   // json(result)
-  JSON         r152
+  JSON         r153
   // expect result == [ { complete_downey_ironman_movie: "Iron Man" } ]
-  Const        r153, [{"complete_downey_ironman_movie": "Iron Man"}]
-  Equal        r154, r152, r153
-  Expect       r154
+  Const        r154, [{"complete_downey_ironman_movie": "Iron Man"}]
+  Equal        r155, r153, r154
+  Expect       r155
   Return       r0

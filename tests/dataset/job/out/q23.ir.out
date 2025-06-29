@@ -1,4 +1,4 @@
-func main (regs=198)
+func main (regs=202)
   // let complete_cast = [
   Const        r0, [{"movie_id": 1, "status_id": 1}, {"movie_id": 2, "status_id": 2}]
   // let comp_cast_type = [
@@ -240,91 +240,104 @@ L17:
   Index        r162, r55, r12
   Const        r163, "complete_us_internet_movie"
   Index        r164, r45, r20
-  MakeMap      r167, 2, r161
+  Move         r165, r161
+  Move         r166, r162
+  Move         r167, r163
+  Move         r168, r164
+  MakeMap      r169, 2, r165
   // from cc in complete_cast
-  Append       r11, r11, r167
+  Append       r11, r11, r169
 L11:
   // join ct in company_type on ct.id == mc.company_type_id
-  Const        r169, 1
-  Add          r119, r119, r169
+  Const        r171, 1
+  Add          r119, r119, r171
   Jump         L18
 L10:
   // join cn in company_name on cn.id == mc.company_id
-  Add          r109, r109, r169
+  Add          r109, r109, r171
   Jump         L19
 L9:
   // join mc in movie_companies on mc.movie_id == t.id
-  Add          r99, r99, r169
+  Add          r99, r99, r171
   Jump         L20
 L8:
   // join k in keyword on k.id == mk.keyword_id
-  Add          r90, r90, r169
+  Add          r90, r90, r171
   Jump         L21
 L7:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r80, r80, r169
+  Add          r80, r80, r171
   Jump         L22
 L6:
   // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r71, r71, r169
+  Add          r71, r71, r171
   Jump         L23
 L5:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r61, r61, r169
+  Add          r61, r61, r171
   Jump         L24
 L4:
   // join kt in kind_type on kt.id == t.kind_id
-  Add          r52, r52, r169
+  Add          r52, r52, r171
   Jump         L25
 L3:
   // join t in title on t.id == cc.movie_id
-  Add          r42, r42, r169
+  Add          r42, r42, r171
   Jump         L26
 L2:
   // join cct1 in comp_cast_type on cct1.id == cc.status_id
   Jump         L27
 L1:
   // from cc in complete_cast
-  AddInt       r23, r23, r169
+  AddInt       r23, r23, r171
   Jump         L28
 L0:
   // movie_kind: min(from r in matches select r.movie_kind),
-  Const        r170, "movie_kind"
-  Const        r171, []
-  IterPrep     r172, r11
-  Len          r173, r172
-  Move         r174, r24
+  Const        r172, "movie_kind"
+  Const        r173, []
+  IterPrep     r174, r11
+  Len          r175, r174
+  Move         r176, r24
 L30:
-  LessInt      r175, r174, r173
-  JumpIfFalse  r175, L29
-  Index        r177, r172, r174
-  Index        r178, r177, r18
-  Append       r171, r171, r178
-  AddInt       r174, r174, r169
+  LessInt      r177, r176, r175
+  JumpIfFalse  r177, L29
+  Index        r179, r174, r176
+  Index        r180, r179, r18
+  Append       r173, r173, r180
+  AddInt       r176, r176, r171
   Jump         L30
 L29:
+  Min          r182, r173
   // complete_us_internet_movie: min(from r in matches select r.complete_us_internet_movie)
-  Const        r182, []
-  IterPrep     r183, r11
-  Len          r184, r183
-  Move         r185, r24
+  Const        r183, "complete_us_internet_movie"
+  Const        r184, []
+  IterPrep     r185, r11
+  Len          r186, r185
+  Move         r187, r24
 L32:
-  LessInt      r186, r185, r184
-  JumpIfFalse  r186, L31
-  Index        r177, r183, r185
-  Index        r188, r177, r19
-  Append       r182, r182, r188
-  AddInt       r185, r185, r169
+  LessInt      r188, r187, r186
+  JumpIfFalse  r188, L31
+  Index        r179, r185, r187
+  Index        r190, r179, r19
+  Append       r184, r184, r190
+  AddInt       r187, r187, r171
   Jump         L32
 L31:
+  Min          r192, r184
+  // movie_kind: min(from r in matches select r.movie_kind),
+  Move         r193, r172
+  Move         r194, r182
+  // complete_us_internet_movie: min(from r in matches select r.complete_us_internet_movie)
+  Move         r195, r183
+  Move         r196, r192
   // {
-  MakeMap      r194, 2, r170
+  MakeMap      r198, 2, r193
   // let result = [
-  MakeList     r195, 1, r194
+  MakeList     r199, 1, r198
   // json(result)
-  JSON         r195
+  JSON         r199
   // expect result == [
-  Const        r196, [{"complete_us_internet_movie": "Web Movie", "movie_kind": "movie"}]
-  Equal        r197, r195, r196
-  Expect       r197
+  Const        r200, [{"complete_us_internet_movie": "Web Movie", "movie_kind": "movie"}]
+  Equal        r201, r199, r200
+  Expect       r201
   Return       r0
