@@ -1,50 +1,49 @@
-func main (regs=43)
+func main (regs=35)
   // let people = load "../interpreter/valid/people.yaml" as Person with { format: "yaml" }
   Const        r0, "../interpreter/valid/people.yaml"
-  Const        r2, {"format": "yaml"}
-  Move         r1, r2
+  Const        r1, {"format": "yaml"}
   Load         3,0,1,0
-  Move         r4, r3
   // let adults = from p in people
-  Const        r5, []
-  IterPrep     r6, r4
-  Len          r7, r6
-  Const        r8, 0
+  Const        r4, []
+  IterPrep     r5, r3
+  Len          r6, r5
+  Const        r7, 0
 L2:
-  Less         r9, r8, r7
-  JumpIfFalse  r9, L0
-  Index        r10, r6, r8
-  Move         r11, r10
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r10, r5, r7
   // where p.age >= 18
-  Const        r12, "age"
-  Index        r13, r11, r12
-  Const        r14, 18
-  LessEq       r15, r14, r13
-  JumpIfFalse  r15, L1
+  Const        r11, "age"
+  Index        r12, r10, r11
+  Const        r13, 18
+  LessEq       r14, r13, r12
+  JumpIfFalse  r14, L1
+  // select { name: p.name, email: p.email }
+  Const        r15, "name"
+  Index        r16, r10, r15
+  Const        r17, "email"
+  Index        r18, r10, r17
+  MakeMap      r21, 2, r15
   // let adults = from p in people
-  Append       r27, r5, r26
-  Move         r5, r27
-  Const        r29, 1
-  Move         r8, r29
+  Append       r4, r4, r21
+L1:
   Jump         L2
 L0:
-  Move         r30, r5
   // for a in adults {
-  IterPrep     r31, r30
-  Len          r32, r31
-  Const        r33, 0
+  IterPrep     r25, r4
+  Len          r26, r25
+  Const        r27, 0
 L4:
-  Less         r34, r33, r32
-  JumpIfFalse  r34, L3
-  Index        r35, r31, r33
-  Move         r36, r35
+  Less         r28, r27, r26
+  JumpIfFalse  r28, L3
+  Index        r30, r25, r27
   // print(a.name, a.email)
-  Const        r37, "name"
-  Index        r38, r36, r37
-  Const        r39, "email"
-  Index        r40, r36, r39
-  Print2       r38, r40
+  Index        r31, r30, r15
+  Index        r32, r30, r17
+  Print2       r31, r32
   // for a in adults {
+  Const        r33, 1
+  Add          r27, r27, r33
   Jump         L4
 L3:
   Return       r0

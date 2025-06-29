@@ -1,7 +1,6 @@
-func main (regs=2)
+func main (regs=1)
   // let m = {a: 1, b: 2}
   Const        r0, {"a": 1, "b": 2}
-  Move         r1, r0
   // json(m)
-  JSON         r1
+  JSON         r0
   Return       r0
