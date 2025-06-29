@@ -1,8 +1,9 @@
-func main (regs=19)
+func main (regs=7)
   // let n = 30
   Const        r0, 30
   // let repeat = 1000
   Const        r1, 1000
+L1:
   // var last = 0
   Const        r2, 0
   Move         r3, r2
@@ -10,47 +11,47 @@ func main (regs=19)
   Now          r4
   // for i in 0..repeat {
   Move         r5, r2
-L1:
-  Less         r6, r5, r1
-  JumpIfFalse  r6, L0
-  // last = fact_rec(n)
-  Move         r7, r0
-  Call         r3, fact_rec, r7
-  // for i in 0..repeat {
-  Const        r9, 1
-  Add          r5, r5, r9
-  Jump         L1
 L0:
+  Less         r2, r5, r1
+  JumpIfFalse  r2, L0
+  // last = fact_rec(n)
+  Move         r6, r0
+  Call         r3, fact_rec, r6
+  // for i in 0..repeat {
+  Const        r6, 1
+  Add          r5, r5, r6
+  Jump         L1
   // let duration = (now() - start) / 1000
-  Now          r11
-  SubInt       r12, r11, r4
-  DivInt       r13, r12, r1
+  Now          r6
+  SubInt       r2, r6, r4
+  DivInt       r6, r2, r1
   // "duration_us": duration,
-  Const        r14, "duration_us"
+  Const        r2, "duration_us"
   // "output": last,
-  Const        r15, "output"
+  Const        r1, "output"
   // "duration_us": duration,
-  Move         r16, r13
+  Move         r4, r2
+  Move         r2, r6
   // "output": last,
-  Move         r17, r3
+  Move         r6, r1
+  Move         r1, r3
   // json({
-  MakeMap      r18, 2, r14
-  JSON         r18
+  MakeMap      r3, 2, r4
+  JSON         r3
   Return       r0
 
   // fun fact_rec(n: int): int {
-func fact_rec (regs=8)
+func fact_rec (regs=3)
   // if n == 0 {
   Const        r1, 0
   Equal        r2, r0, r1
   JumpIfFalse  r2, L0
   // return 1
-  Const        r3, 1
-  Return       r3
+  Const        r2, 1
+  Return       r2
 L0:
   // return n * fact_rec(n - 1)
-  Sub          r4, r0, r3
-  Call         r6, fact_rec, r4
-  Mul          r7, r0, r6
-  Return       r7
-  Return       r0
+  Sub          r1, r0, r2
+  Call         r2, fact_rec, r1
+  Mul          r1, r0, r2
+  Return       r1

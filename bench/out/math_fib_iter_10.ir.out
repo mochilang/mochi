@@ -1,8 +1,9 @@
-func main (regs=19)
+func main (regs=7)
   // let n = 10
   Const        r0, 10
   // let repeat = 1000
   Const        r1, 1000
+L1:
   // var last = 0
   Const        r2, 0
   Move         r3, r2
@@ -10,53 +11,53 @@ func main (regs=19)
   Now          r4
   // for i in 0..repeat {
   Move         r5, r2
-L1:
-  Less         r6, r5, r1
-  JumpIfFalse  r6, L0
-  // last = fib(n)
-  Move         r7, r0
-  Call         r3, fib, r7
-  // for i in 0..repeat {
-  Const        r9, 1
-  Add          r5, r5, r9
-  Jump         L1
 L0:
+  Less         r2, r5, r1
+  JumpIfFalse  r2, L0
+  // last = fib(n)
+  Move         r6, r0
+  Call         r3, fib, r6
+  // for i in 0..repeat {
+  Const        r6, 1
+  Add          r5, r5, r6
+  Jump         L1
   // let duration = (now() - start) / 1000
-  Now          r11
-  SubInt       r12, r11, r4
-  DivInt       r13, r12, r1
+  Now          r6
+  SubInt       r2, r6, r4
+  DivInt       r6, r2, r1
   // "duration_us": duration,
-  Const        r14, "duration_us"
+  Const        r2, "duration_us"
   // "output": last,
-  Const        r15, "output"
+  Const        r1, "output"
   // "duration_us": duration,
-  Move         r16, r13
+  Move         r4, r2
+  Move         r2, r6
   // "output": last,
-  Move         r17, r3
+  Move         r6, r1
+  Move         r1, r3
   // json({
-  MakeMap      r18, 2, r14
-  JSON         r18
+  MakeMap      r3, 2, r4
+  JSON         r3
   Return       r0
 
   // fun fib(n: int): int {
-func fib (regs=10)
+func fib (regs=5)
   // var a = 0
   Const        r1, 0
   Move         r2, r1
   // var b = 1
-  Const        r4, 1
-  // for i in 0..n {
-  Move         r5, r1
+  Const        r3, 1
 L1:
-  Less         r6, r5, r0
-  JumpIfFalse  r6, L0
-  // a = b
-  Move         r2, r4
   // for i in 0..n {
-  Const        r8, 1
-  Add          r5, r5, r8
+  Move         r4, r1
+  Less         r1, r4, r0
+  JumpIfFalse  r1, L0
+  // a = b
+  Move         r2, r3
+  // for i in 0..n {
+  Const        r1, 1
+  Add          r4, r4, r1
   Jump         L1
 L0:
   // return a
   Return       r2
-  Return       r0

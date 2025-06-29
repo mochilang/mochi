@@ -1,8 +1,9 @@
-func main (regs=19)
+func main (regs=7)
   // let n = 30
   Const        r0, 30
   // let repeat = 1000
   Const        r1, 1000
+L1:
   // var last = 0
   Const        r2, 0
   Move         r3, r2
@@ -10,44 +11,45 @@ func main (regs=19)
   Now          r4
   // for i in 0..repeat {
   Move         r5, r2
-L1:
-  Less         r6, r5, r1
-  JumpIfFalse  r6, L0
-  // last = mul(n)
-  Move         r7, r0
-  Call         r3, mul, r7
-  // for i in 0..repeat {
-  Const        r9, 1
-  Add          r5, r5, r9
-  Jump         L1
 L0:
+  Less         r2, r5, r1
+  JumpIfFalse  r2, L0
+  // last = mul(n)
+  Move         r6, r0
+  Call         r3, mul, r6
+  // for i in 0..repeat {
+  Const        r6, 1
+  Add          r5, r5, r6
+  Jump         L1
   // let duration = (now() - start) / 1000
-  Now          r11
-  SubInt       r12, r11, r4
-  DivInt       r13, r12, r1
+  Now          r6
+  SubInt       r2, r6, r4
+  DivInt       r6, r2, r1
   // "duration_us": duration,
-  Const        r14, "duration_us"
+  Const        r2, "duration_us"
   // "output": last,
-  Const        r15, "output"
+  Const        r1, "output"
   // "duration_us": duration,
-  Move         r16, r13
+  Move         r4, r2
+  Move         r2, r6
   // "output": last,
-  Move         r17, r3
+  Move         r6, r1
+  Move         r1, r3
   // json({
-  MakeMap      r18, 2, r14
-  JSON         r18
+  MakeMap      r3, 2, r4
+  JSON         r3
   Return       r0
 
   // fun mul(n: int): int {
-func mul (regs=8)
+func mul (regs=4)
   // var result = 1
   Const        r1, 1
   Move         r2, r1
   // for i in 1..n {
   Move         r3, r1
 L1:
-  Less         r4, r3, r0
-  JumpIfFalse  r4, L0
+  Less         r1, r3, r0
+  JumpIfFalse  r1, L0
   // result = result * i
   MulInt       r2, r2, r3
   // for i in 1..n {
@@ -55,4 +57,3 @@ L1:
 L0:
   // return result
   Return       r2
-  Return       r0

@@ -1,4 +1,4 @@
-func main (regs=13)
+func main (regs=6)
   // let n = 20
   Const        r0, 20
   // let start = now()
@@ -7,25 +7,27 @@ func main (regs=13)
   Move         r2, r0
   Call         r3, fib, r2
   // let duration = (now() - start) / 1000
-  Now          r4
-  SubInt       r5, r4, r1
-  Const        r6, 1000
-  DivInt       r7, r5, r6
+  Now          r2
+  SubInt       r4, r2, r1
+  Const        r2, 1000
+  DivInt       r1, r4, r2
   // "duration_us": duration,
-  Const        r8, "duration_us"
+  Const        r2, "duration_us"
   // "output": result,
-  Const        r9, "output"
+  Const        r4, "output"
   // "duration_us": duration,
-  Move         r10, r7
+  Move         r5, r2
+  Move         r2, r1
   // "output": result,
-  Move         r11, r3
+  Move         r1, r4
+  Move         r4, r3
   // json({
-  MakeMap      r12, 2, r8
-  JSON         r12
+  MakeMap      r3, 2, r5
+  JSON         r3
   Return       r0
 
   // fun fib(n: int): int {
-func fib (regs=11)
+func fib (regs=4)
   // if n <= 1 { return n }
   Const        r1, 1
   LessEq       r2, r0, r1
@@ -33,11 +35,10 @@ func fib (regs=11)
   Return       r0
 L0:
   // return fib(n - 1) + fib(n - 2)
-  Sub          r3, r0, r1
-  Call         r5, fib, r3
-  Const        r7, 2
-  Sub          r6, r0, r7
-  Call         r9, fib, r6
-  Add          r10, r5, r9
-  Return       r10
-  Return       r0
+  Sub          r2, r0, r1
+  Call         r1, fib, r2
+  Const        r2, 2
+  Sub          r3, r0, r2
+  Call         r2, fib, r3
+  Add          r3, r1, r2
+  Return       r3
