@@ -1,4 +1,4 @@
-func main (regs=189)
+func main (regs=36)
   // let company_name = [
   Const        r0, [{"country_code": "[de]", "id": 1}, {"country_code": "[us]", "id": 2}]
   // let company_type = [
@@ -9,311 +9,305 @@ func main (regs=189)
   Const        r3, [{"id": 1, "kind": "movie"}, {"id": 2, "kind": "video"}]
   // let title = [
   Const        r4, [{"id": 10, "kind_id": 1, "title": "Alpha"}, {"id": 20, "kind_id": 1, "title": "Beta"}, {"id": 30, "kind_id": 2, "title": "Gamma"}]
+L16:
   // let movie_companies = [
   Const        r5, [{"company_id": 1, "company_type_id": 1, "movie_id": 10}, {"company_id": 1, "company_type_id": 1, "movie_id": 20}, {"company_id": 2, "company_type_id": 1, "movie_id": 30}]
+L15:
   // let movie_info = [
   Const        r6, [{"info": "1997-05-10", "info_type_id": 2, "movie_id": 10}, {"info": "1998-03-20", "info_type_id": 2, "movie_id": 20}, {"info": "1999-07-30", "info_type_id": 2, "movie_id": 30}]
+L5:
   // let movie_info_idx = [
   Const        r7, [{"info": "6.0", "info_type_id": 1, "movie_id": 10}, {"info": "7.5", "info_type_id": 1, "movie_id": 20}, {"info": "5.5", "info_type_id": 1, "movie_id": 30}]
   // from cn in company_name
   Const        r8, []
   // where cn.country_code == "[de]" &&
   Const        r9, "country_code"
+L10:
   // ct.kind == "production companies" &&
   Const        r10, "kind"
   // it.info == "rating" &&
   Const        r11, "info"
   // release_date: mi.info,
   Const        r12, "release_date"
+L1:
   // rating: miidx.info,
   Const        r13, "rating"
   // german_movie: t.title
   Const        r14, "german_movie"
+L9:
   Const        r15, "title"
   // from cn in company_name
   IterPrep     r16, r0
-  Len          r17, r16
-  Const        r19, 0
-  Move         r18, r19
-L22:
-  LessInt      r20, r18, r17
-  JumpIfFalse  r20, L0
-  Index        r22, r16, r18
-  // join mc in movie_companies on mc.company_id == cn.id
-  IterPrep     r23, r5
-  Len          r24, r23
-  Const        r25, "company_id"
-  Const        r26, "id"
-  Move         r27, r19
-L21:
-  LessInt      r28, r27, r24
-  JumpIfFalse  r28, L1
-  Index        r30, r23, r27
-  Index        r31, r30, r25
-  Index        r32, r22, r26
-  Equal        r33, r31, r32
-  JumpIfFalse  r33, L2
-  // join ct in company_type on ct.id == mc.company_type_id
-  IterPrep     r34, r1
-  Len          r35, r34
-  Const        r36, "company_type_id"
-  Move         r37, r19
-L20:
-  LessInt      r38, r37, r35
-  JumpIfFalse  r38, L2
-  Index        r40, r34, r37
-  Index        r41, r40, r26
-  Index        r42, r30, r36
-  Equal        r43, r41, r42
-  JumpIfFalse  r43, L3
-  // join t in title on t.id == mc.movie_id
-  IterPrep     r44, r4
-  Len          r45, r44
-  Const        r46, "movie_id"
-  Move         r47, r19
-L19:
-  LessInt      r48, r47, r45
-  JumpIfFalse  r48, L3
-  Index        r50, r44, r47
-  Index        r51, r50, r26
-  Index        r52, r30, r46
-  Equal        r53, r51, r52
-  JumpIfFalse  r53, L4
-  // join kt in kind_type on kt.id == t.kind_id
-  IterPrep     r54, r3
-  Len          r55, r54
-  Const        r56, "kind_id"
-  Move         r57, r19
-L18:
-  LessInt      r58, r57, r55
-  JumpIfFalse  r58, L4
-  Index        r60, r54, r57
-  Index        r61, r60, r26
-  Index        r62, r50, r56
-  Equal        r63, r61, r62
-  JumpIfFalse  r63, L5
-  // join mi in movie_info on mi.movie_id == t.id
-  IterPrep     r64, r6
-  Len          r65, r64
-  Move         r66, r19
-L17:
-  LessInt      r67, r66, r65
-  JumpIfFalse  r67, L5
-  Index        r69, r64, r66
-  Index        r70, r69, r46
-  Index        r71, r50, r26
-  Equal        r72, r70, r71
-  JumpIfFalse  r72, L6
-  // join it2 in info_type on it2.id == mi.info_type_id
-  IterPrep     r73, r2
-  Len          r74, r73
-  Const        r75, "info_type_id"
-  Move         r76, r19
-L16:
-  LessInt      r77, r76, r74
-  JumpIfFalse  r77, L6
-  Index        r79, r73, r76
-  Index        r80, r79, r26
-  Index        r81, r69, r75
-  Equal        r82, r80, r81
-  JumpIfFalse  r82, L7
-  // join miidx in movie_info_idx on miidx.movie_id == t.id
-  IterPrep     r83, r7
-  Len          r84, r83
-  Move         r85, r19
-L15:
-  LessInt      r86, r85, r84
-  JumpIfFalse  r86, L7
-  Index        r88, r83, r85
-  Index        r89, r88, r46
-  Index        r90, r50, r26
-  Equal        r91, r89, r90
-  JumpIfFalse  r91, L8
-  // join it in info_type on it.id == miidx.info_type_id
-  IterPrep     r92, r2
-  Len          r93, r92
-  Move         r94, r19
-L14:
-  LessInt      r95, r94, r93
-  JumpIfFalse  r95, L8
-  Index        r97, r92, r94
-  Index        r98, r97, r26
-  Index        r99, r88, r75
-  Equal        r100, r98, r99
-  JumpIfFalse  r100, L9
-  // where cn.country_code == "[de]" &&
-  Index        r101, r22, r9
-  Const        r102, "[de]"
-  Equal        r103, r101, r102
-  // ct.kind == "production companies" &&
-  Index        r104, r40, r10
-  Const        r105, "production companies"
-  Equal        r106, r104, r105
-  // it.info == "rating" &&
-  Index        r107, r97, r11
-  Equal        r108, r107, r13
-  // it2.info == "release dates" &&
-  Index        r109, r79, r11
-  Const        r110, "release dates"
-  Equal        r111, r109, r110
-  // kt.kind == "movie"
-  Index        r112, r60, r10
-  Const        r113, "movie"
-  Equal        r114, r112, r113
-  // where cn.country_code == "[de]" &&
-  Move         r115, r103
-  JumpIfFalse  r115, L10
-L10:
-  // ct.kind == "production companies" &&
-  Move         r116, r106
-  JumpIfFalse  r116, L11
-L11:
-  // it.info == "rating" &&
-  Move         r117, r108
-  JumpIfFalse  r117, L12
-L12:
-  // it2.info == "release dates" &&
-  Move         r118, r111
-  JumpIfFalse  r118, L13
-  Move         r118, r114
 L13:
-  // where cn.country_code == "[de]" &&
-  JumpIfFalse  r118, L9
-  // release_date: mi.info,
-  Const        r119, "release_date"
-  Index        r120, r69, r11
-  // rating: miidx.info,
-  Const        r121, "rating"
-  Index        r122, r88, r11
-  // german_movie: t.title
-  Const        r123, "german_movie"
-  Index        r124, r50, r15
-  // release_date: mi.info,
-  Move         r125, r119
-  Move         r126, r120
-  // rating: miidx.info,
-  Move         r127, r121
-  Move         r128, r122
-  // german_movie: t.title
-  Move         r129, r123
-  Move         r130, r124
-  // select {
-  MakeMap      r131, 3, r125
-  // from cn in company_name
-  Append       r8, r8, r131
-L9:
-  // join it in info_type on it.id == miidx.info_type_id
-  Const        r133, 1
-  Add          r94, r94, r133
-  Jump         L14
-L8:
-  // join miidx in movie_info_idx on miidx.movie_id == t.id
-  Add          r85, r85, r133
-  Jump         L15
-L7:
-  // join it2 in info_type on it2.id == mi.info_type_id
-  Add          r76, r76, r133
-  Jump         L16
+  Len          r17, r16
+  Const        r18, 0
+L0:
+  Move         r19, r18
 L6:
-  // join mi in movie_info on mi.movie_id == t.id
-  Add          r66, r66, r133
-  Jump         L17
-L5:
-  // join kt in kind_type on kt.id == t.kind_id
-  Add          r57, r57, r133
-  Jump         L18
-L4:
-  // join t in title on t.id == mc.movie_id
-  Add          r47, r47, r133
-  Jump         L19
-L3:
+  LessInt      r20, r19, r17
+  JumpIfFalse  r20, L0
+  Index        r17, r16, r19
+L18:
+  // join mc in movie_companies on mc.company_id == cn.id
+  IterPrep     r16, r5
+L7:
+  Len          r5, r16
+  Const        r21, "company_id"
+  Const        r22, "id"
+L17:
+  Move         r23, r18
+  LessInt      r24, r23, r5
+  JumpIfFalse  r24, L1
+L20:
+  Index        r5, r16, r23
+L11:
+  Index        r16, r5, r21
+  Index        r21, r17, r22
+  Equal        r25, r16, r21
+L14:
+  JumpIfFalse  r25, L2
   // join ct in company_type on ct.id == mc.company_type_id
-  Add          r37, r37, r133
-  Jump         L20
+  IterPrep     r25, r1
+  Len          r1, r25
+  Const        r21, "company_type_id"
+  Move         r16, r18
+  LessInt      r26, r16, r1
+  JumpIfFalse  r26, L2
+  Index        r26, r25, r16
+  Index        r25, r26, r22
+  Index        r1, r5, r21
+  Equal        r21, r25, r1
+  JumpIfFalse  r21, L1
+  // join t in title on t.id == mc.movie_id
+  IterPrep     r21, r4
+  Len          r4, r21
+  Const        r1, "movie_id"
+  Move         r25, r18
+  LessInt      r27, r25, r4
+  JumpIfFalse  r27, L1
+  Index        r27, r21, r25
+  Index        r21, r27, r22
+  Index        r4, r5, r1
+  Equal        r5, r21, r4
+  JumpIfFalse  r5, L3
+  // join kt in kind_type on kt.id == t.kind_id
+  IterPrep     r5, r3
+  Len          r3, r5
+  Const        r4, "kind_id"
+  Move         r21, r18
+  LessInt      r28, r21, r3
+  JumpIfFalse  r28, L3
+  Index        r28, r5, r21
+  Index        r5, r28, r22
+  Index        r3, r27, r4
+  Equal        r4, r5, r3
+  JumpIfFalse  r4, L4
+  // join mi in movie_info on mi.movie_id == t.id
+  IterPrep     r4, r6
+  Len          r6, r4
+  Move         r3, r18
+  LessInt      r29, r3, r6
+  JumpIfFalse  r29, L4
+  Index        r29, r4, r3
+  Index        r4, r29, r1
+  Index        r6, r27, r22
+  Equal        r30, r4, r6
+  JumpIfFalse  r30, L5
+  // join it2 in info_type on it2.id == mi.info_type_id
+  IterPrep     r30, r2
+  Len          r4, r30
+  Const        r31, "info_type_id"
+  Move         r32, r18
+  LessInt      r33, r32, r4
+  JumpIfFalse  r33, L5
+  Index        r33, r30, r32
+  Index        r30, r33, r22
+  Index        r4, r29, r31
+  Equal        r34, r30, r4
+  JumpIfFalse  r34, L6
+  // join miidx in movie_info_idx on miidx.movie_id == t.id
+  IterPrep     r4, r7
+  Len          r7, r4
+  Move         r30, r18
+  LessInt      r35, r30, r7
+  JumpIfFalse  r35, L6
+  Index        r35, r4, r30
+  Index        r4, r35, r1
+  Index        r1, r27, r22
+  Equal        r7, r4, r1
+  JumpIfFalse  r7, L7
+  // join it in info_type on it.id == miidx.info_type_id
+  IterPrep     r7, r2
+  Len          r2, r7
+  Move         r1, r18
+  LessInt      r4, r1, r2
+  JumpIfFalse  r4, L7
+  Index        r4, r7, r1
+  Index        r2, r4, r22
+  Index        r22, r35, r31
+  Equal        r31, r2, r22
+  JumpIfFalse  r31, L8
+  // where cn.country_code == "[de]" &&
+  Index        r31, r17, r9
+  Const        r17, "[de]"
+  Equal        r9, r31, r17
+  // ct.kind == "production companies" &&
+  Index        r31, r26, r10
+  Const        r26, "production companies"
+  Equal        r22, r31, r26
+  // it.info == "rating" &&
+  Index        r26, r4, r11
+  Equal        r4, r26, r13
+  // it2.info == "release dates" &&
+  Index        r26, r33, r11
+  Const        r33, "release dates"
+  Equal        r31, r26, r33
+  // kt.kind == "movie"
+  Index        r33, r28, r10
+  Const        r28, "movie"
+  Equal        r10, r33, r28
+  // where cn.country_code == "[de]" &&
+  Move         r28, r9
+  JumpIfFalse  r28, L9
+  // ct.kind == "production companies" &&
+  Move         r28, r22
+  JumpIfFalse  r28, L10
+  // it.info == "rating" &&
+  Move         r28, r4
+  JumpIfFalse  r28, L11
+  // it2.info == "release dates" &&
+  Move         r28, r31
+  JumpIfFalse  r28, L12
+  Move         r28, r10
+L12:
+  // where cn.country_code == "[de]" &&
+  JumpIfFalse  r28, L8
+  // release_date: mi.info,
+  Move         r28, r12
+  Index        r10, r29, r11
+  // rating: miidx.info,
+  Move         r29, r13
+  Index        r31, r35, r11
+  // german_movie: t.title
+  Move         r35, r14
+  Index        r11, r27, r15
+  // release_date: mi.info,
+  Move         r15, r28
+  Move         r28, r10
+  // rating: miidx.info,
+  Move         r10, r29
+  Move         r29, r31
+  // german_movie: t.title
+  Move         r31, r35
+  Move         r35, r11
+  // select {
+  MakeMap      r11, 3, r15
+  // from cn in company_name
+  Append       r8, r8, r11
+L8:
+  // join it in info_type on it.id == miidx.info_type_id
+  Const        r11, 1
+  Add          r1, r1, r11
+  Jump         L13
+  // join miidx in movie_info_idx on miidx.movie_id == t.id
+  Add          r30, r30, r11
+  Jump         L5
+  // join it2 in info_type on it2.id == mi.info_type_id
+  Add          r32, r32, r11
+  Jump         L14
+  // join mi in movie_info on mi.movie_id == t.id
+  Add          r3, r3, r11
+  Jump         L15
+L4:
+  // join kt in kind_type on kt.id == t.kind_id
+  Add          r21, r21, r11
+  Jump         L16
+L3:
+  // join t in title on t.id == mc.movie_id
+  Add          r25, r25, r11
+  Jump         L17
+  // join ct in company_type on ct.id == mc.company_type_id
+  Add          r16, r16, r11
+  Jump         L13
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
-  Add          r27, r27, r133
-  Jump         L21
-L1:
+  Add          r23, r23, r11
+  Jump         L7
   // from cn in company_name
-  AddInt       r18, r18, r133
+  AddInt       r19, r19, r11
+  Jump         L6
+  // release_date: (from x in candidates sort by x.release_date select x.release_date)[0],
+  Move         r17, r12
+  Const        r24, []
+  IterPrep     r23, r8
+  Len          r20, r23
+  Move         r19, r18
+  LessInt      r1, r19, r20
+  JumpIfFalse  r1, L13
+  Index        r1, r23, r19
+  Index        r23, r1, r12
+  Index        r20, r1, r12
+  Move         r12, r23
+  MakeList     r23, 2, r20
+  Append       r24, r24, r23
+  AddInt       r19, r19, r11
+  Jump         L18
+  Sort         r24, r24
+  Index        r23, r24, r18
+  // rating: (from x in candidates sort by x.rating select x.rating)[0],
+  Move         r24, r13
+  Const        r12, []
+  IterPrep     r20, r8
+  Len          r19, r20
+  Move         r7, r18
+  LessInt      r30, r7, r19
+  JumpIfFalse  r30, L19
+  Index        r1, r20, r7
+  Index        r30, r1, r13
+  Index        r19, r1, r13
+  Move         r13, r30
+  MakeList     r30, 2, r19
+  Append       r12, r12, r30
+  AddInt       r7, r7, r11
+  Jump         L20
+L19:
+  Sort         r12, r12
+  Index        r13, r12, r18
+  // german_movie: (from x in candidates sort by x.german_movie select x.german_movie)[0]
+  Move         r12, r14
+  Const        r19, []
+  IterPrep     r7, r8
+  Len          r8, r7
+  Move         r20, r18
+L22:
+  LessInt      r34, r20, r8
+  JumpIfFalse  r34, L21
+  Index        r1, r7, r20
+  Index        r34, r1, r14
+  Index        r8, r1, r14
+  Move         r1, r34
+  MakeList     r34, 2, r8
+  Append       r19, r19, r34
+  AddInt       r20, r20, r11
   Jump         L22
-L0:
+L21:
+  Sort         r19, r19
+  Index        r34, r19, r18
   // release_date: (from x in candidates sort by x.release_date select x.release_date)[0],
-  Const        r134, "release_date"
-  Const        r135, []
-  IterPrep     r136, r8
-  Len          r137, r136
-  Move         r138, r19
-L24:
-  LessInt      r139, r138, r137
-  JumpIfFalse  r139, L23
-  Index        r141, r136, r138
-  Index        r142, r141, r12
-  Index        r144, r141, r12
-  Move         r145, r142
-  MakeList     r146, 2, r144
-  Append       r135, r135, r146
-  AddInt       r138, r138, r133
-  Jump         L24
-L23:
-  Sort         r135, r135
-  Index        r149, r135, r19
+  Move         r19, r17
+  Move         r17, r23
   // rating: (from x in candidates sort by x.rating select x.rating)[0],
-  Const        r150, "rating"
-  Const        r151, []
-  IterPrep     r152, r8
-  Len          r153, r152
-  Move         r154, r19
-L26:
-  LessInt      r155, r154, r153
-  JumpIfFalse  r155, L25
-  Index        r141, r152, r154
-  Index        r157, r141, r13
-  Index        r159, r141, r13
-  Move         r160, r157
-  MakeList     r161, 2, r159
-  Append       r151, r151, r161
-  AddInt       r154, r154, r133
-  Jump         L26
-L25:
-  Sort         r151, r151
-  Index        r164, r151, r19
+  Move         r23, r24
+  Move         r24, r13
   // german_movie: (from x in candidates sort by x.german_movie select x.german_movie)[0]
-  Const        r165, "german_movie"
-  Const        r166, []
-  IterPrep     r167, r8
-  Len          r168, r167
-  Move         r169, r19
-L28:
-  LessInt      r170, r169, r168
-  JumpIfFalse  r170, L27
-  Index        r141, r167, r169
-  Index        r172, r141, r14
-  Index        r174, r141, r14
-  Move         r175, r172
-  MakeList     r176, 2, r174
-  Append       r166, r166, r176
-  AddInt       r169, r169, r133
-  Jump         L28
-L27:
-  Sort         r166, r166
-  Index        r179, r166, r19
-  // release_date: (from x in candidates sort by x.release_date select x.release_date)[0],
-  Move         r180, r134
-  Move         r181, r149
-  // rating: (from x in candidates sort by x.rating select x.rating)[0],
-  Move         r182, r150
-  Move         r183, r164
-  // german_movie: (from x in candidates sort by x.german_movie select x.german_movie)[0]
-  Move         r184, r165
-  Move         r185, r179
+  Move         r13, r12
+  Move         r12, r34
   // let result = {
-  MakeMap      r186, 3, r180
+  MakeMap      r34, 3, r19
   // json(result)
-  JSON         r186
+  JSON         r34
   // expect result == {
-  Const        r187, {"german_movie": "Alpha", "rating": "6.0", "release_date": "1997-05-10"}
-  Equal        r188, r186, r187
-  Expect       r188
+  Const        r12, {"german_movie": "Alpha", "rating": "6.0", "release_date": "1997-05-10"}
+  Equal        r30, r34, r12
+  Expect       r30
   Return       r0

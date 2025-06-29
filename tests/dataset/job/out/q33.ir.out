@@ -1,6 +1,7 @@
-func main (regs=299)
+func main (regs=54)
   // let company_name = [
   Const        r0, [{"country_code": "[us]", "id": 1, "name": "US Studio"}, {"country_code": "[gb]", "id": 2, "name": "GB Studio"}]
+L21:
   // let info_type = [
   Const        r1, [{"id": 1, "info": "rating"}, {"id": 2, "info": "other"}]
   // let kind_type = [
@@ -11,8 +12,10 @@ func main (regs=299)
   Const        r4, [{"company_id": 1, "movie_id": 10}, {"company_id": 2, "movie_id": 20}]
   // let movie_info_idx = [
   Const        r5, [{"info": "7.0", "info_type_id": 1, "movie_id": 10}, {"info": "2.5", "info_type_id": 1, "movie_id": 20}]
+L17:
   // let movie_link = [
   Const        r6, [{"link_type_id": 1, "linked_movie_id": 20, "movie_id": 10}]
+L6:
   // let title = [
   Const        r7, [{"id": 10, "kind_id": 1, "production_year": 2004, "title": "Series A"}, {"id": 20, "kind_id": 1, "production_year": 2006, "title": "Series B"}]
   // from cn1 in company_name
@@ -23,6 +26,7 @@ func main (regs=299)
   Const        r10, "info"
   // kt1.kind == "tv series" &&
   Const        r11, "kind"
+L16:
   // (lt.link == "sequel" || lt.link == "follows" || lt.link == "followed by") &&
   Const        r12, "link"
   // t2.production_year >= 2005 && t2.production_year <= 2008
@@ -30,12 +34,16 @@ func main (regs=299)
   // first_company: cn1.name,
   Const        r14, "first_company"
   Const        r15, "name"
+L9:
   // second_company: cn2.name,
   Const        r16, "second_company"
+L4:
   // first_rating: mi_idx1.info,
   Const        r17, "first_rating"
+L5:
   // second_rating: mi_idx2.info,
   Const        r18, "second_rating"
+L0:
   // first_movie: t1.title,
   Const        r19, "first_movie"
   Const        r20, "title"
@@ -43,475 +51,456 @@ func main (regs=299)
   Const        r21, "second_movie"
   // from cn1 in company_name
   IterPrep     r22, r0
-  Len          r23, r22
-  Const        r25, 0
-  Move         r24, r25
-L37:
-  LessInt      r26, r24, r23
-  JumpIfFalse  r26, L0
-  Index        r28, r22, r24
-  // join mc1 in movie_companies on cn1.id == mc1.company_id
-  IterPrep     r29, r4
-  Len          r30, r29
-  Const        r31, "id"
-  Const        r32, "company_id"
-  Move         r33, r25
-L36:
-  LessInt      r34, r33, r30
-  JumpIfFalse  r34, L1
-  Index        r36, r29, r33
-  Index        r37, r28, r31
-  Index        r38, r36, r32
-  Equal        r39, r37, r38
-  JumpIfFalse  r39, L2
-  // join t1 in title on t1.id == mc1.movie_id
-  IterPrep     r40, r7
-  Len          r41, r40
-  Const        r42, "movie_id"
-  Move         r43, r25
-L35:
-  LessInt      r44, r43, r41
-  JumpIfFalse  r44, L2
-  Index        r46, r40, r43
-  Index        r47, r46, r31
-  Index        r48, r36, r42
-  Equal        r49, r47, r48
-  JumpIfFalse  r49, L3
-  // join mi_idx1 in movie_info_idx on mi_idx1.movie_id == t1.id
-  IterPrep     r50, r5
-  Len          r51, r50
-  Move         r52, r25
-L34:
-  LessInt      r53, r52, r51
-  JumpIfFalse  r53, L3
-  Index        r55, r50, r52
-  Index        r56, r55, r42
-  Index        r57, r46, r31
-  Equal        r58, r56, r57
-  JumpIfFalse  r58, L4
-  // join it1 in info_type on it1.id == mi_idx1.info_type_id
-  IterPrep     r59, r1
-  Len          r60, r59
-  Const        r61, "info_type_id"
-  Move         r62, r25
-L33:
-  LessInt      r63, r62, r60
-  JumpIfFalse  r63, L4
-  Index        r65, r59, r62
-  Index        r66, r65, r31
-  Index        r67, r55, r61
-  Equal        r68, r66, r67
-  JumpIfFalse  r68, L5
-  // join kt1 in kind_type on kt1.id == t1.kind_id
-  IterPrep     r69, r2
-  Len          r70, r69
-  Const        r71, "kind_id"
-  Move         r72, r25
-L32:
-  LessInt      r73, r72, r70
-  JumpIfFalse  r73, L5
-  Index        r75, r69, r72
-  Index        r76, r75, r31
-  Index        r77, r46, r71
-  Equal        r78, r76, r77
-  JumpIfFalse  r78, L6
-  // join ml in movie_link on ml.movie_id == t1.id
-  IterPrep     r79, r6
-  Len          r80, r79
-  Move         r81, r25
-L31:
-  LessInt      r82, r81, r80
-  JumpIfFalse  r82, L6
-  Index        r84, r79, r81
-  Index        r85, r84, r42
-  Index        r86, r46, r31
-  Equal        r87, r85, r86
-  JumpIfFalse  r87, L7
-  // join t2 in title on t2.id == ml.linked_movie_id
-  IterPrep     r88, r7
-  Len          r89, r88
-  Const        r90, "linked_movie_id"
-  Move         r91, r25
-L30:
-  LessInt      r92, r91, r89
-  JumpIfFalse  r92, L7
-  Index        r94, r88, r91
-  Index        r95, r94, r31
-  Index        r96, r84, r90
-  Equal        r97, r95, r96
-  JumpIfFalse  r97, L8
-  // join mi_idx2 in movie_info_idx on mi_idx2.movie_id == t2.id
-  IterPrep     r98, r5
-  Len          r99, r98
-  Move         r100, r25
-L29:
-  LessInt      r101, r100, r99
-  JumpIfFalse  r101, L8
-  Index        r103, r98, r100
-  Index        r104, r103, r42
-  Index        r105, r94, r31
-  Equal        r106, r104, r105
-  JumpIfFalse  r106, L9
-  // join it2 in info_type on it2.id == mi_idx2.info_type_id
-  IterPrep     r107, r1
-  Len          r108, r107
-  Move         r109, r25
-L28:
-  LessInt      r110, r109, r108
-  JumpIfFalse  r110, L9
-  Index        r112, r107, r109
-  Index        r113, r112, r31
-  Index        r114, r103, r61
-  Equal        r115, r113, r114
-  JumpIfFalse  r115, L10
-  // join kt2 in kind_type on kt2.id == t2.kind_id
-  IterPrep     r116, r2
-  Len          r117, r116
-  Move         r118, r25
-L27:
-  LessInt      r119, r118, r117
-  JumpIfFalse  r119, L10
-  Index        r121, r116, r118
-  Index        r122, r121, r31
-  Index        r123, r94, r71
-  Equal        r124, r122, r123
-  JumpIfFalse  r124, L11
-  // join mc2 in movie_companies on mc2.movie_id == t2.id
-  IterPrep     r125, r4
-  Len          r126, r125
-  Move         r127, r25
-L26:
-  LessInt      r128, r127, r126
-  JumpIfFalse  r128, L11
-  Index        r130, r125, r127
-  Index        r131, r130, r42
-  Index        r132, r94, r31
-  Equal        r133, r131, r132
-  JumpIfFalse  r133, L12
-  // join cn2 in company_name on cn2.id == mc2.company_id
-  IterPrep     r134, r0
-  Len          r135, r134
-  Move         r136, r25
-L25:
-  LessInt      r137, r136, r135
-  JumpIfFalse  r137, L12
-  Index        r139, r134, r136
-  Index        r140, r139, r31
-  Index        r141, r130, r32
-  Equal        r142, r140, r141
-  JumpIfFalse  r142, L13
-  // join lt in link_type on lt.id == ml.link_type_id
-  IterPrep     r143, r3
-  Len          r144, r143
-  Const        r145, "link_type_id"
-  Move         r146, r25
-L24:
-  LessInt      r147, r146, r144
-  JumpIfFalse  r147, L13
-  Index        r149, r143, r146
-  Index        r150, r149, r31
-  Index        r151, r84, r145
-  Equal        r152, r150, r151
-  JumpIfFalse  r152, L14
-  // where cn1.country_code == "[us]" &&
-  Index        r153, r28, r9
-  // mi_idx2.info < "3.0" &&
-  Index        r154, r103, r10
-  Const        r155, "3.0"
-  Less         r156, r154, r155
-  // t2.production_year >= 2005 && t2.production_year <= 2008
-  Index        r157, r94, r13
-  Const        r158, 2005
-  LessEq       r159, r158, r157
-  Index        r160, r94, r13
-  Const        r161, 2008
-  LessEq       r162, r160, r161
-  // where cn1.country_code == "[us]" &&
-  Const        r163, "[us]"
-  Equal        r164, r153, r163
-  // it1.info == "rating" &&
-  Index        r165, r65, r10
-  Const        r166, "rating"
-  Equal        r167, r165, r166
-  // it2.info == "rating" &&
-  Index        r168, r112, r10
-  Equal        r169, r168, r166
-  // kt1.kind == "tv series" &&
-  Index        r170, r75, r11
-  Const        r171, "tv series"
-  Equal        r172, r170, r171
-  // kt2.kind == "tv series" &&
-  Index        r173, r121, r11
-  Equal        r174, r173, r171
-  // where cn1.country_code == "[us]" &&
-  Move         r175, r164
-  JumpIfFalse  r175, L15
-L15:
-  // it1.info == "rating" &&
-  Move         r176, r167
-  JumpIfFalse  r176, L16
-L16:
-  // it2.info == "rating" &&
-  Move         r177, r169
-  JumpIfFalse  r177, L17
-L17:
-  // kt1.kind == "tv series" &&
-  Move         r178, r172
-  JumpIfFalse  r178, L18
-L18:
-  // kt2.kind == "tv series" &&
-  Move         r179, r174
-  JumpIfFalse  r179, L19
-  // (lt.link == "sequel" || lt.link == "follows" || lt.link == "followed by") &&
-  Index        r180, r149, r12
-  Const        r181, "sequel"
-  Equal        r182, r180, r181
-  Index        r183, r149, r12
-  Const        r184, "follows"
-  Equal        r185, r183, r184
-  Index        r186, r149, r12
-  Const        r187, "followed by"
-  Equal        r188, r186, r187
-  Move         r189, r182
-  JumpIfTrue   r189, L20
-L20:
-  Move         r190, r185
-  JumpIfTrue   r190, L19
-L19:
-  Move         r191, r188
-  JumpIfFalse  r191, L21
-L21:
-  // mi_idx2.info < "3.0" &&
-  Move         r192, r156
-  JumpIfFalse  r192, L22
-L22:
-  // t2.production_year >= 2005 && t2.production_year <= 2008
-  Move         r193, r159
-  JumpIfFalse  r193, L23
-  Move         r193, r162
-L23:
-  // where cn1.country_code == "[us]" &&
-  JumpIfFalse  r193, L14
-  // first_company: cn1.name,
-  Const        r194, "first_company"
-  Index        r195, r28, r15
-  // second_company: cn2.name,
-  Const        r196, "second_company"
-  Index        r197, r139, r15
-  // first_rating: mi_idx1.info,
-  Const        r198, "first_rating"
-  Index        r199, r55, r10
-  // second_rating: mi_idx2.info,
-  Const        r200, "second_rating"
-  Index        r201, r103, r10
-  // first_movie: t1.title,
-  Const        r202, "first_movie"
-  Index        r203, r46, r20
-  // second_movie: t2.title
-  Const        r204, "second_movie"
-  Index        r205, r94, r20
-  // first_company: cn1.name,
-  Move         r206, r194
-  Move         r207, r195
-  // second_company: cn2.name,
-  Move         r208, r196
-  Move         r209, r197
-  // first_rating: mi_idx1.info,
-  Move         r210, r198
-  Move         r211, r199
-  // second_rating: mi_idx2.info,
-  Move         r212, r200
-  Move         r213, r201
-  // first_movie: t1.title,
-  Move         r214, r202
-  Move         r215, r203
-  // second_movie: t2.title
-  Move         r216, r204
-  Move         r217, r205
-  // select {
-  MakeMap      r218, 6, r206
-  // from cn1 in company_name
-  Append       r8, r8, r218
 L14:
-  // join lt in link_type on lt.id == ml.link_type_id
-  Const        r220, 1
-  Add          r146, r146, r220
-  Jump         L24
-L13:
-  // join cn2 in company_name on cn2.id == mc2.company_id
-  Add          r136, r136, r220
-  Jump         L25
+  Len          r23, r22
+  Const        r24, 0
+  Move         r25, r24
 L12:
-  // join mc2 in movie_companies on mc2.movie_id == t2.id
-  Add          r127, r127, r220
-  Jump         L26
-L11:
-  // join kt2 in kind_type on kt2.id == t2.kind_id
-  Add          r118, r118, r220
-  Jump         L27
-L10:
-  // join it2 in info_type on it2.id == mi_idx2.info_type_id
-  Add          r109, r109, r220
-  Jump         L28
-L9:
+  LessInt      r26, r25, r23
+L20:
+  JumpIfFalse  r26, L0
+  Index        r23, r22, r25
+L13:
+  // join mc1 in movie_companies on cn1.id == mc1.company_id
+  IterPrep     r22, r4
+L29:
+  Len          r27, r22
+L27:
+  Const        r28, "id"
+L24:
+  Const        r29, "company_id"
+  Move         r30, r24
+  LessInt      r31, r30, r27
+  JumpIfFalse  r31, L1
+L26:
+  Index        r27, r22, r30
+L25:
+  Index        r22, r23, r28
+  Index        r32, r27, r29
+L18:
+  Equal        r33, r22, r32
+  JumpIfFalse  r33, L2
+  // join t1 in title on t1.id == mc1.movie_id
+  IterPrep     r33, r7
+  Len          r32, r33
+  Const        r22, "movie_id"
+L22:
+  Move         r34, r24
+L19:
+  LessInt      r35, r34, r32
+L23:
+  JumpIfFalse  r35, L2
+  Index        r35, r33, r34
+  Index        r33, r35, r28
+L28:
+  Index        r32, r27, r22
+  Equal        r27, r33, r32
+L1:
+  JumpIfFalse  r27, L3
+  // join mi_idx1 in movie_info_idx on mi_idx1.movie_id == t1.id
+  IterPrep     r27, r5
+L15:
+  Len          r32, r27
+  Move         r33, r24
+  LessInt      r36, r33, r32
+  JumpIfFalse  r36, L3
+  Index        r36, r27, r33
+  Index        r27, r36, r22
+  Index        r32, r35, r28
+  Equal        r37, r27, r32
+  JumpIfFalse  r37, L4
+  // join it1 in info_type on it1.id == mi_idx1.info_type_id
+  IterPrep     r37, r1
+  Len          r32, r37
+  Const        r27, "info_type_id"
+  Move         r38, r24
+  LessInt      r39, r38, r32
+  JumpIfFalse  r39, L4
+  Index        r39, r37, r38
+  Index        r37, r39, r28
+  Index        r32, r36, r27
+  Equal        r40, r37, r32
+  JumpIfFalse  r40, L5
+  // join kt1 in kind_type on kt1.id == t1.kind_id
+  IterPrep     r40, r2
+  Len          r32, r40
+  Const        r41, "kind_id"
+  Move         r42, r24
+  LessInt      r43, r42, r32
+  JumpIfFalse  r43, L5
+  Index        r43, r40, r42
+  Index        r40, r43, r28
+  Index        r32, r35, r41
+  Equal        r44, r40, r32
+  JumpIfFalse  r44, L6
+  // join ml in movie_link on ml.movie_id == t1.id
+  IterPrep     r44, r6
+  Len          r6, r44
+  Move         r40, r24
+  LessInt      r45, r40, r6
+  JumpIfFalse  r45, L6
+  Index        r45, r44, r40
+  Index        r44, r45, r22
+  Index        r6, r35, r28
+  Equal        r46, r44, r6
+  JumpIfFalse  r46, L7
+  // join t2 in title on t2.id == ml.linked_movie_id
+  IterPrep     r6, r7
+  Len          r7, r6
+  Const        r44, "linked_movie_id"
+  Move         r47, r24
+  LessInt      r48, r47, r7
+  JumpIfFalse  r48, L7
+  Index        r48, r6, r47
+  Index        r6, r48, r28
+  Index        r7, r45, r44
+  Equal        r44, r6, r7
+  JumpIfFalse  r44, L8
   // join mi_idx2 in movie_info_idx on mi_idx2.movie_id == t2.id
-  Add          r100, r100, r220
-  Jump         L29
+  IterPrep     r44, r5
+  Len          r5, r44
+  Move         r7, r24
+  LessInt      r6, r7, r5
+  JumpIfFalse  r6, L8
+  Index        r6, r44, r7
+  Index        r5, r6, r22
+  Index        r49, r48, r28
+  Equal        r50, r5, r49
+  JumpIfFalse  r50, L1
+  // join it2 in info_type on it2.id == mi_idx2.info_type_id
+  IterPrep     r50, r1
+  Len          r1, r50
+  Move         r49, r24
+  LessInt      r5, r49, r1
+  JumpIfFalse  r5, L1
+  Index        r5, r50, r49
+  Index        r50, r5, r28
+  Index        r51, r6, r27
+  Equal        r27, r50, r51
+  JumpIfFalse  r27, L4
+  // join kt2 in kind_type on kt2.id == t2.kind_id
+  IterPrep     r27, r2
+  Len          r2, r27
+  Move         r51, r24
+  LessInt      r50, r51, r2
+  JumpIfFalse  r50, L4
+  Index        r50, r27, r51
+  Index        r27, r50, r28
+  Index        r2, r48, r41
+  Equal        r41, r27, r2
+  JumpIfFalse  r41, L9
+  // join mc2 in movie_companies on mc2.movie_id == t2.id
+  IterPrep     r41, r4
+  Len          r4, r41
+  Move         r2, r24
+  LessInt      r27, r2, r4
+  JumpIfFalse  r27, L9
+  Index        r4, r41, r2
+  Index        r41, r4, r22
+  Index        r22, r48, r28
+  Equal        r52, r41, r22
+  JumpIfFalse  r52, L10
+  // join cn2 in company_name on cn2.id == mc2.company_id
+  IterPrep     r52, r0
+  Len          r22, r52
+  Move         r41, r24
+  LessInt      r53, r41, r22
+  JumpIfFalse  r53, L10
+  Index        r53, r52, r41
+  Index        r52, r53, r28
+  Index        r22, r4, r29
+  Equal        r4, r52, r22
+  JumpIfFalse  r4, L11
+  // join lt in link_type on lt.id == ml.link_type_id
+  IterPrep     r4, r3
+  Len          r3, r4
+  Const        r22, "link_type_id"
+  Move         r52, r24
+  LessInt      r29, r52, r3
+  JumpIfFalse  r29, L11
+  Index        r29, r4, r52
+  Index        r4, r29, r28
+  Index        r28, r45, r22
+  Equal        r22, r4, r28
+  JumpIfFalse  r22, L12
+  // where cn1.country_code == "[us]" &&
+  Index        r22, r23, r9
+  // mi_idx2.info < "3.0" &&
+  Index        r9, r6, r10
+  Const        r28, "3.0"
+  Less         r4, r9, r28
+  // t2.production_year >= 2005 && t2.production_year <= 2008
+  Index        r28, r48, r13
+  Const        r9, 2005
+  LessEq       r45, r9, r28
+  Index        r9, r48, r13
+  Const        r13, 2008
+  LessEq       r28, r9, r13
+  // where cn1.country_code == "[us]" &&
+  Const        r13, "[us]"
+  Equal        r9, r22, r13
+  // it1.info == "rating" &&
+  Index        r13, r39, r10
+  Const        r39, "rating"
+  Equal        r22, r13, r39
+  // it2.info == "rating" &&
+  Index        r13, r5, r10
+  Equal        r5, r13, r39
+  // kt1.kind == "tv series" &&
+  Index        r13, r43, r11
+  Const        r43, "tv series"
+  Equal        r39, r13, r43
+  // kt2.kind == "tv series" &&
+  Index        r13, r50, r11
+  Equal        r50, r13, r43
+  // where cn1.country_code == "[us]" &&
+  Move         r13, r9
+  JumpIfFalse  r13, L13
+  // it1.info == "rating" &&
+  Move         r13, r22
+  JumpIfFalse  r13, L13
+  // it2.info == "rating" &&
+  Move         r13, r5
+  JumpIfFalse  r13, L13
+  // kt1.kind == "tv series" &&
+  Move         r13, r39
+  JumpIfFalse  r13, L14
+  // kt2.kind == "tv series" &&
+  Move         r13, r50
+  JumpIfFalse  r13, L15
+  // (lt.link == "sequel" || lt.link == "follows" || lt.link == "followed by") &&
+  Index        r13, r29, r12
+  Const        r50, "sequel"
+  Equal        r39, r13, r50
+  Index        r50, r29, r12
+  Const        r13, "follows"
+  Equal        r5, r50, r13
+  Index        r13, r29, r12
+  Const        r29, "followed by"
+  Equal        r12, r13, r29
+  Move         r29, r39
+  JumpIfTrue   r29, L14
+  Move         r29, r5
+  JumpIfTrue   r29, L15
+  Move         r29, r12
+  JumpIfFalse  r29, L16
+  // mi_idx2.info < "3.0" &&
+  Move         r29, r4
+  JumpIfFalse  r29, L17
+  // t2.production_year >= 2005 && t2.production_year <= 2008
+  Move         r29, r45
+  JumpIfFalse  r29, L18
+  Move         r29, r28
+  // where cn1.country_code == "[us]" &&
+  JumpIfFalse  r29, L12
+  // first_company: cn1.name,
+  Move         r29, r14
+  Index        r28, r23, r15
+  // second_company: cn2.name,
+  Move         r23, r16
+  Index        r4, r53, r15
+  // first_rating: mi_idx1.info,
+  Move         r53, r17
+  Index        r15, r36, r10
+  // second_rating: mi_idx2.info,
+  Move         r12, r18
+  Index        r5, r6, r10
+  // first_movie: t1.title,
+  Move         r6, r19
+  Index        r10, r35, r20
+  // second_movie: t2.title
+  Move         r35, r21
+  Index        r39, r48, r20
+  // first_company: cn1.name,
+  Move         r48, r29
+  Move         r29, r28
+  // second_company: cn2.name,
+  Move         r28, r23
+  Move         r23, r4
+  // first_rating: mi_idx1.info,
+  Move         r4, r53
+  Move         r53, r15
+  // second_rating: mi_idx2.info,
+  Move         r15, r12
+  Move         r12, r5
+  // first_movie: t1.title,
+  Move         r5, r6
+  Move         r6, r10
+  // second_movie: t2.title
+  Move         r10, r35
+  Move         r35, r39
+  // select {
+  MakeMap      r39, 6, r48
+  // from cn1 in company_name
+  Append       r8, r8, r39
+  // join lt in link_type on lt.id == ml.link_type_id
+  Const        r39, 1
+  Add          r52, r52, r39
+  Jump         L19
+L11:
+  // join cn2 in company_name on cn2.id == mc2.company_id
+  Add          r41, r41, r39
+  Jump         L19
+L10:
+  // join mc2 in movie_companies on mc2.movie_id == t2.id
+  Add          r2, r2, r39
+  Jump         L19
+  // join kt2 in kind_type on kt2.id == t2.kind_id
+  Add          r51, r51, r39
+  Jump         L20
+  // join it2 in info_type on it2.id == mi_idx2.info_type_id
+  Add          r49, r49, r39
+  Jump         L1
+  // join mi_idx2 in movie_info_idx on mi_idx2.movie_id == t2.id
+  Add          r7, r7, r39
+  Jump         L21
 L8:
   // join t2 in title on t2.id == ml.linked_movie_id
-  Add          r91, r91, r220
-  Jump         L30
+  Add          r47, r47, r39
+  Jump         L22
 L7:
   // join ml in movie_link on ml.movie_id == t1.id
-  Add          r81, r81, r220
-  Jump         L31
-L6:
+  Add          r40, r40, r39
+  Jump         L23
   // join kt1 in kind_type on kt1.id == t1.kind_id
-  Add          r72, r72, r220
-  Jump         L32
-L5:
+  Add          r42, r42, r39
+  Jump         L24
   // join it1 in info_type on it1.id == mi_idx1.info_type_id
-  Add          r62, r62, r220
-  Jump         L33
-L4:
+  Add          r38, r38, r39
+  Jump         L25
   // join mi_idx1 in movie_info_idx on mi_idx1.movie_id == t1.id
-  Add          r52, r52, r220
-  Jump         L34
+  Add          r33, r33, r39
+  Jump         L26
 L3:
   // join t1 in title on t1.id == mc1.movie_id
-  Add          r43, r43, r220
-  Jump         L35
+  Add          r34, r34, r39
+  Jump         L19
 L2:
   // join mc1 in movie_companies on cn1.id == mc1.company_id
-  Add          r33, r33, r220
-  Jump         L36
-L1:
+  Add          r30, r30, r39
+  Jump         L27
   // from cn1 in company_name
-  AddInt       r24, r24, r220
-  Jump         L37
-L0:
+  AddInt       r25, r25, r39
+  Jump         L12
   // first_company: min(from r in rows select r.first_company),
-  Const        r221, "first_company"
-  Const        r222, []
-  IterPrep     r223, r8
-  Len          r224, r223
-  Move         r225, r25
-L39:
-  LessInt      r226, r225, r224
-  JumpIfFalse  r226, L38
-  Index        r228, r223, r225
-  Index        r229, r228, r14
-  Append       r222, r222, r229
-  AddInt       r225, r225, r220
-  Jump         L39
+  Move         r45, r14
+  Const        r31, []
+  IterPrep     r30, r8
+  Len          r26, r30
+  Move         r25, r24
+  LessInt      r27, r25, r26
+  JumpIfFalse  r27, L28
+  Index        r27, r30, r25
+  Index        r30, r27, r14
+  Append       r31, r31, r30
+  AddInt       r25, r25, r39
+  Jump         L29
+  Min          r25, r31
+  // second_company: min(from r in rows select r.second_company),
+  Move         r31, r16
+  Const        r14, []
+  IterPrep     r26, r8
+  Len          r51, r26
+  Move         r49, r24
+  LessInt      r1, r49, r51
+  JumpIfFalse  r1, L30
+  Index        r27, r26, r49
+  Index        r1, r27, r16
+  Append       r14, r14, r1
+  AddInt       r49, r49, r39
+  Jump         L21
+L30:
+  Min          r49, r14
+  // first_rating: min(from r in rows select r.first_rating),
+  Move         r14, r17
+  Const        r16, []
+  IterPrep     r51, r8
+  Len          r26, r51
+  Move         r7, r24
+L32:
+  LessInt      r44, r7, r26
+  JumpIfFalse  r44, L31
+  Index        r27, r51, r7
+  Index        r44, r27, r17
+  Append       r16, r16, r44
+  AddInt       r7, r7, r39
+  Jump         L32
+L31:
+  Min          r44, r16
+  // second_rating: min(from r in rows select r.second_rating),
+  Move         r16, r18
+  Const        r7, []
+  IterPrep     r17, r8
+  Len          r26, r17
+  Move         r51, r24
+L34:
+  LessInt      r47, r51, r26
+  JumpIfFalse  r47, L33
+  Index        r27, r17, r51
+  Index        r47, r27, r18
+  Append       r7, r7, r47
+  AddInt       r51, r51, r39
+  Jump         L34
+L33:
+  Min          r47, r7
+  // first_movie: min(from r in rows select r.first_movie),
+  Move         r7, r19
+  Const        r51, []
+  IterPrep     r18, r8
+  Len          r26, r18
+  Move         r17, r24
+L36:
+  LessInt      r46, r17, r26
+  JumpIfFalse  r46, L35
+  Index        r27, r18, r17
+  Index        r46, r27, r19
+  Append       r51, r51, r46
+  AddInt       r17, r17, r39
+  Jump         L36
+L35:
+  Min          r46, r51
+  // second_movie: min(from r in rows select r.second_movie)
+  Move         r51, r21
+  Const        r17, []
+  IterPrep     r19, r8
+  Len          r8, r19
+  Move         r26, r24
 L38:
-  Min          r231, r222
-  // second_company: min(from r in rows select r.second_company),
-  Const        r232, "second_company"
-  Const        r233, []
-  IterPrep     r234, r8
-  Len          r235, r234
-  Move         r236, r25
-L41:
-  LessInt      r237, r236, r235
-  JumpIfFalse  r237, L40
-  Index        r228, r234, r236
-  Index        r239, r228, r16
-  Append       r233, r233, r239
-  AddInt       r236, r236, r220
-  Jump         L41
-L40:
-  Min          r241, r233
-  // first_rating: min(from r in rows select r.first_rating),
-  Const        r242, "first_rating"
-  Const        r243, []
-  IterPrep     r244, r8
-  Len          r245, r244
-  Move         r246, r25
-L43:
-  LessInt      r247, r246, r245
-  JumpIfFalse  r247, L42
-  Index        r228, r244, r246
-  Index        r249, r228, r17
-  Append       r243, r243, r249
-  AddInt       r246, r246, r220
-  Jump         L43
-L42:
-  Min          r251, r243
-  // second_rating: min(from r in rows select r.second_rating),
-  Const        r252, "second_rating"
-  Const        r253, []
-  IterPrep     r254, r8
-  Len          r255, r254
-  Move         r256, r25
-L45:
-  LessInt      r257, r256, r255
-  JumpIfFalse  r257, L44
-  Index        r228, r254, r256
-  Index        r259, r228, r18
-  Append       r253, r253, r259
-  AddInt       r256, r256, r220
-  Jump         L45
-L44:
-  Min          r261, r253
-  // first_movie: min(from r in rows select r.first_movie),
-  Const        r262, "first_movie"
-  Const        r263, []
-  IterPrep     r264, r8
-  Len          r265, r264
-  Move         r266, r25
-L47:
-  LessInt      r267, r266, r265
-  JumpIfFalse  r267, L46
-  Index        r228, r264, r266
-  Index        r269, r228, r19
-  Append       r263, r263, r269
-  AddInt       r266, r266, r220
-  Jump         L47
-L46:
-  Min          r271, r263
-  // second_movie: min(from r in rows select r.second_movie)
-  Const        r272, "second_movie"
-  Const        r273, []
-  IterPrep     r274, r8
-  Len          r275, r274
-  Move         r276, r25
-L49:
-  LessInt      r277, r276, r275
-  JumpIfFalse  r277, L48
-  Index        r228, r274, r276
-  Index        r279, r228, r21
-  Append       r273, r273, r279
-  AddInt       r276, r276, r220
-  Jump         L49
-L48:
-  Min          r281, r273
+  LessInt      r24, r26, r8
+  JumpIfFalse  r24, L37
+  Index        r27, r19, r26
+  Index        r30, r27, r21
+  Append       r17, r17, r30
+  AddInt       r26, r26, r39
+  Jump         L38
+L37:
+  Min          r24, r17
   // first_company: min(from r in rows select r.first_company),
-  Move         r282, r221
-  Move         r283, r231
+  Move         r17, r45
+  Move         r45, r25
   // second_company: min(from r in rows select r.second_company),
-  Move         r284, r232
-  Move         r285, r241
+  Move         r25, r31
+  Move         r31, r49
   // first_rating: min(from r in rows select r.first_rating),
-  Move         r286, r242
-  Move         r287, r251
+  Move         r49, r14
+  Move         r14, r44
   // second_rating: min(from r in rows select r.second_rating),
-  Move         r288, r252
-  Move         r289, r261
+  Move         r44, r16
+  Move         r16, r47
   // first_movie: min(from r in rows select r.first_movie),
-  Move         r290, r262
-  Move         r291, r271
+  Move         r47, r7
+  Move         r7, r46
   // second_movie: min(from r in rows select r.second_movie)
-  Move         r292, r272
-  Move         r293, r281
+  Move         r1, r51
+  Move         r51, r24
   // {
-  MakeMap      r295, 6, r282
+  MakeMap      r24, 6, r17
   // let result = [
-  MakeList     r296, 1, r295
+  MakeList     r51, 1, r24
   // json(result)
-  JSON         r296
+  JSON         r51
   // expect result == [
-  Const        r297, [{"first_company": "US Studio", "first_movie": "Series A", "first_rating": "7.0", "second_company": "GB Studio", "second_movie": "Series B", "second_rating": "2.5"}]
-  Equal        r298, r296, r297
-  Expect       r298
+  Const        r24, [{"first_company": "US Studio", "first_movie": "Series A", "first_rating": "7.0", "second_company": "GB Studio", "second_movie": "Series B", "second_rating": "2.5"}]
+  Equal        r7, r51, r24
+  Expect       r7
   Return       r0
