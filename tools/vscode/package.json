@@ -8,15 +8,24 @@
   "engines": {
     "vscode": "^1.80.0"
   },
-  "categories": ["Programming Languages"],
-  "activationEvents": ["onLanguage:mochi"],
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:mochi"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "languages": [
       {
         "id": "mochi",
-        "aliases": ["Mochi", "mochi"],
-        "extensions": [".mochi"],
+        "aliases": [
+          "Mochi",
+          "mochi"
+        ],
+        "extensions": [
+          ".mochi"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -37,6 +46,10 @@
     "@types/vscode": "^1.80.0",
     "tslib": "^2.5.0",
     "typescript": "^5.4.5",
-    "vsce": "^3.16.0"
+    "vsce": "^2.15.0",
+    "@types/node": "^20.11.19"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
   }
 }
