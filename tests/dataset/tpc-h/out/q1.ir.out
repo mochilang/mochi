@@ -1,4 +1,4 @@
-func main (regs=235)
+func main (regs=39)
   // let lineitem = [
   Const        r0, [{"l_discount": 0.05, "l_extendedprice": 1000, "l_linestatus": "O", "l_quantity": 17, "l_returnflag": "N", "l_shipdate": "1998-08-01", "l_tax": 0.07}, {"l_discount": 0.1, "l_extendedprice": 2000, "l_linestatus": "O", "l_quantity": 36, "l_returnflag": "N", "l_shipdate": "1998-09-01", "l_tax": 0.05}, {"l_discount": 0, "l_extendedprice": 1500, "l_linestatus": "F", "l_quantity": 25, "l_returnflag": "R", "l_shipdate": "1998-09-03", "l_tax": 0.08}]
   // from row in lineitem
@@ -11,329 +11,333 @@ func main (regs=235)
   Const        r5, "l_linestatus"
   // where row.l_shipdate <= "1998-09-02"
   Const        r6, "l_shipdate"
+L12:
   // returnflag: g.key.returnflag,
   Const        r7, "key"
   // sum_qty: sum(from x in g select x.l_quantity),
+  Const        r8, "sum_qty"
   Const        r9, "l_quantity"
   // sum_base_price: sum(from x in g select x.l_extendedprice),
+  Const        r10, "sum_base_price"
   Const        r11, "l_extendedprice"
   // sum_disc_price: sum(from x in g select x.l_extendedprice * (1 - x.l_discount)),
+  Const        r12, "sum_disc_price"
   Const        r13, "l_discount"
   // sum_charge: sum(from x in g select x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax)),
+  Const        r14, "sum_charge"
+L6:
   Const        r15, "l_tax"
+  // avg_qty: avg(from x in g select x.l_quantity),
+  Const        r16, "avg_qty"
+  // avg_price: avg(from x in g select x.l_extendedprice),
+  Const        r17, "avg_price"
+  // avg_disc: avg(from x in g select x.l_discount),
+  Const        r18, "avg_disc"
+  // count_order: count(g)
+  Const        r19, "count_order"
+L3:
   // from row in lineitem
   IterPrep     r20, r0
+L4:
   Len          r21, r20
   Const        r22, 0
-  MakeMap      r23, 0, r0
-  Const        r24, []
-L3:
-  LessInt      r25, r22, r21
-  JumpIfFalse  r25, L0
-  Index        r26, r20, r22
-  Move         r27, r26
-  // where row.l_shipdate <= "1998-09-02"
-  Index        r28, r27, r6
-  Const        r29, "1998-09-02"
-  LessEq       r30, r28, r29
-  JumpIfFalse  r30, L1
-  // returnflag: row.l_returnflag,
-  Const        r31, "returnflag"
-  Index        r32, r27, r3
-  // linestatus: row.l_linestatus
-  Const        r33, "linestatus"
-  Index        r34, r27, r5
-  // returnflag: row.l_returnflag,
-  Move         r35, r31
-  Move         r36, r32
-  // linestatus: row.l_linestatus
-  Move         r37, r33
-  Move         r38, r34
-  // group by {
-  MakeMap      r39, 2, r35
-  Str          r40, r39
-  In           r41, r40, r23
-  JumpIfTrue   r41, L2
-  // from row in lineitem
-  Const        r42, []
-  Const        r43, "__group__"
-  Const        r44, true
-  Const        r45, "key"
-  // group by {
-  Move         r46, r39
-  // from row in lineitem
-  Const        r47, "items"
-  Move         r48, r42
-  Const        r49, "count"
-  Const        r50, 0
-  Move         r51, r43
-  Move         r52, r44
-  Move         r53, r45
-  Move         r54, r46
-  Move         r55, r47
-  Move         r56, r48
-  Move         r57, r49
-  Move         r58, r50
-  MakeMap      r59, 4, r51
-  SetIndex     r23, r40, r59
-  Append       r24, r24, r59
-L2:
-  Const        r61, "items"
-  Index        r62, r23, r40
-  Index        r63, r62, r61
-  Append       r64, r63, r26
-  SetIndex     r62, r61, r64
-  Const        r65, "count"
-  Index        r66, r62, r65
-  Const        r67, 1
-  AddInt       r68, r66, r67
-  SetIndex     r62, r65, r68
-L1:
-  AddInt       r22, r22, r67
-  Jump         L3
-L0:
-  Const        r70, 0
-  Move         r69, r70
-  Len          r71, r24
-L19:
-  LessInt      r72, r69, r71
-  JumpIfFalse  r72, L4
-  Index        r74, r24, r69
-  // returnflag: g.key.returnflag,
-  Const        r75, "returnflag"
-  Index        r76, r74, r7
-  Index        r77, r76, r2
-  // linestatus: g.key.linestatus,
-  Const        r78, "linestatus"
-  Index        r79, r74, r7
-  Index        r80, r79, r4
-  // sum_qty: sum(from x in g select x.l_quantity),
-  Const        r81, "sum_qty"
-  Const        r82, []
-  IterPrep     r83, r74
-  Len          r84, r83
-  Move         r85, r70
-L6:
-  LessInt      r86, r85, r84
-  JumpIfFalse  r86, L5
-  Index        r88, r83, r85
-  Index        r89, r88, r9
-  Append       r82, r82, r89
-  AddInt       r85, r85, r67
-  Jump         L6
-L5:
-  Sum          r91, r82
-  // sum_base_price: sum(from x in g select x.l_extendedprice),
-  Const        r92, "sum_base_price"
-  Const        r93, []
-  IterPrep     r94, r74
-  Len          r95, r94
-  Move         r96, r70
-L8:
-  LessInt      r97, r96, r95
-  JumpIfFalse  r97, L7
-  Index        r88, r94, r96
-  Index        r99, r88, r11
-  Append       r93, r93, r99
-  AddInt       r96, r96, r67
-  Jump         L8
-L7:
-  Sum          r101, r93
-  // sum_disc_price: sum(from x in g select x.l_extendedprice * (1 - x.l_discount)),
-  Const        r102, "sum_disc_price"
-  Const        r103, []
-  IterPrep     r104, r74
-  Len          r105, r104
-  Move         r106, r70
-L10:
-  LessInt      r107, r106, r105
-  JumpIfFalse  r107, L9
-  Index        r88, r104, r106
-  Index        r109, r88, r11
-  Index        r110, r88, r13
-  Sub          r111, r67, r110
-  Mul          r112, r109, r111
-  Append       r103, r103, r112
-  AddInt       r106, r106, r67
-  Jump         L10
-L9:
-  Sum          r114, r103
-  // sum_charge: sum(from x in g select x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax)),
-  Const        r115, "sum_charge"
-  Const        r116, []
-  IterPrep     r117, r74
-  Len          r118, r117
-  Move         r119, r70
-L12:
-  LessInt      r120, r119, r118
-  JumpIfFalse  r120, L11
-  Index        r88, r117, r119
-  Index        r122, r88, r11
-  Index        r123, r88, r13
-  Sub          r124, r67, r123
-  Mul          r125, r122, r124
-  Index        r126, r88, r15
-  Add          r127, r67, r126
-  Mul          r128, r125, r127
-  Append       r116, r116, r128
-  AddInt       r119, r119, r67
-  Jump         L12
 L11:
-  Sum          r130, r116
-  // avg_qty: avg(from x in g select x.l_quantity),
-  Const        r131, "avg_qty"
-  Const        r132, []
-  IterPrep     r133, r74
-  Len          r134, r133
-  Move         r135, r70
-L14:
-  LessInt      r136, r135, r134
-  JumpIfFalse  r136, L13
-  Index        r88, r133, r135
-  Index        r138, r88, r9
-  Append       r132, r132, r138
-  AddInt       r135, r135, r67
-  Jump         L14
-L13:
-  Avg          r140, r132
-  // avg_price: avg(from x in g select x.l_extendedprice),
-  Const        r141, "avg_price"
-  Const        r142, []
-  IterPrep     r143, r74
-  Len          r144, r143
-  Move         r145, r70
-L16:
-  LessInt      r146, r145, r144
-  JumpIfFalse  r146, L15
-  Index        r88, r143, r145
-  Index        r148, r88, r11
-  Append       r142, r142, r148
-  AddInt       r145, r145, r67
-  Jump         L16
-L15:
-  Avg          r150, r142
-  // avg_disc: avg(from x in g select x.l_discount),
-  Const        r151, "avg_disc"
-  Const        r152, []
-  IterPrep     r153, r74
-  Len          r154, r153
-  Move         r155, r70
-L18:
-  LessInt      r156, r155, r154
-  JumpIfFalse  r156, L17
-  Index        r88, r153, r155
-  Index        r158, r88, r13
-  Append       r152, r152, r158
-  AddInt       r155, r155, r67
-  Jump         L18
-L17:
-  Avg          r160, r152
-  // count_order: count(g)
-  Const        r161, "count_order"
-  Index        r162, r74, r65
-  // returnflag: g.key.returnflag,
-  Move         r163, r75
-  Move         r164, r77
-  // linestatus: g.key.linestatus,
-  Move         r165, r78
-  Move         r166, r80
-  // sum_qty: sum(from x in g select x.l_quantity),
-  Move         r167, r81
-  Move         r168, r91
-  // sum_base_price: sum(from x in g select x.l_extendedprice),
-  Move         r169, r92
-  Move         r170, r101
-  // sum_disc_price: sum(from x in g select x.l_extendedprice * (1 - x.l_discount)),
-  Move         r171, r102
-  Move         r172, r114
-  // sum_charge: sum(from x in g select x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax)),
-  Move         r173, r115
-  Move         r174, r130
-  // avg_qty: avg(from x in g select x.l_quantity),
-  Move         r175, r131
-  Move         r176, r140
-  // avg_price: avg(from x in g select x.l_extendedprice),
-  Move         r177, r141
-  Move         r178, r150
-  // avg_disc: avg(from x in g select x.l_discount),
-  Move         r179, r151
-  Move         r180, r160
-  // count_order: count(g)
-  Move         r181, r161
-  Move         r182, r162
-  // select {
-  MakeMap      r183, 10, r163
+  MakeMap      r23, 0, r0
+L1:
+  LessInt      r24, r22, r21
+L0:
+  JumpIfFalse  r24, L0
+L5:
+  Index        r21, r20, r22
+L8:
+  Move         r20, r21
+  // where row.l_shipdate <= "1998-09-02"
+  Index        r25, r20, r6
+  Const        r6, "1998-09-02"
+  LessEq       r26, r25, r6
+  JumpIfFalse  r26, L1
+L2:
+  // returnflag: row.l_returnflag,
+  Move         r26, r2
+  Index        r6, r20, r3
+L9:
+  // linestatus: row.l_linestatus
+  Move         r3, r4
+  Index        r25, r20, r5
+  // returnflag: row.l_returnflag,
+  Move         r20, r26
+  Move         r26, r6
+L10:
+  // linestatus: row.l_linestatus
+  Move         r6, r3
+  Move         r3, r25
+  // group by {
+  MakeMap      r25, 2, r20
+  Str          r3, r25
+  In           r6, r3, r23
+  JumpIfTrue   r6, L2
   // from row in lineitem
-  Append       r1, r1, r183
-  AddInt       r69, r69, r67
-  Jump         L19
-L4:
+  Move         r6, r1
+  Const        r26, "__group__"
+  Const        r20, true
+  Move         r5, r7
+  // group by {
+  Move         r27, r25
+  // from row in lineitem
+  Const        r25, "items"
+  Move         r28, r6
+  Const        r6, "count"
+  Move         r29, r22
+  Move         r30, r26
+  Move         r26, r20
+  Move         r20, r5
+  Move         r5, r27
+  Move         r27, r25
+  Move         r31, r28
+  Move         r28, r6
+  Move         r32, r29
+  MakeMap      r29, 4, r30
+  SetIndex     r23, r3, r29
+  Move         r29, r25
+  Index        r25, r23, r3
+  Index        r3, r25, r29
+  Append       r32, r3, r21
+  SetIndex     r25, r29, r32
+  Move         r32, r6
+  Index        r6, r25, r32
+  Const        r3, 1
+  AddInt       r29, r6, r3
+  SetIndex     r25, r32, r29
+  AddInt       r22, r22, r3
+  Jump         L1
+  Values       29,23,0,0
+  Const        r23, 0
+  Move         r6, r23
+  Len          r25, r29
+  LessInt      r24, r6, r25
+  JumpIfFalse  r24, L0
+  Index        r24, r29, r6
+  // returnflag: g.key.returnflag,
+  Move         r29, r2
+  Index        r25, r24, r7
+  Index        r22, r25, r2
+  // linestatus: g.key.linestatus,
+  Move         r25, r4
+  Index        r2, r24, r7
+  Index        r7, r2, r4
+  // sum_qty: sum(from x in g select x.l_quantity),
+  Move         r2, r8
+  Move         r4, r1
+  IterPrep     r21, r24
+  Len          r28, r21
+  Move         r31, r23
+  LessInt      r27, r31, r28
+  JumpIfFalse  r27, L3
+  Index        r27, r21, r31
+  Index        r21, r27, r9
+  Append       r4, r4, r21
+  AddInt       r31, r31, r3
+  Jump         L4
+  Sum          r31, r4
+  // sum_base_price: sum(from x in g select x.l_extendedprice),
+  Move         r4, r10
+  Move         r28, r1
+  IterPrep     r21, r24
+  Len          r5, r21
+  Move         r20, r23
+  LessInt      r26, r20, r5
+  JumpIfFalse  r26, L5
+  Index        r27, r21, r20
+  Index        r26, r27, r11
+  Append       r28, r28, r26
+  AddInt       r20, r20, r3
+  Jump         L5
+  Sum          r20, r28
+  // sum_disc_price: sum(from x in g select x.l_extendedprice * (1 - x.l_discount)),
+  Move         r28, r12
+  Move         r5, r1
+  IterPrep     r21, r24
+  Len          r30, r21
+  Move         r33, r23
+  LessInt      r26, r33, r30
+  JumpIfFalse  r26, L6
+  Index        r27, r21, r33
+  Index        r30, r27, r11
+  Index        r21, r27, r13
+  Sub          r26, r3, r21
+  Mul          r21, r30, r26
+  Append       r5, r5, r21
+  AddInt       r33, r33, r3
+  Jump         L4
+  Sum          r26, r5
+  // sum_charge: sum(from x in g select x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax)),
+  Move         r5, r14
+  Move         r30, r1
+  IterPrep     r33, r24
+  Len          r34, r33
+  Move         r35, r23
+  LessInt      r21, r35, r34
+  JumpIfFalse  r21, L7
+  Index        r27, r33, r35
+  Index        r34, r27, r11
+  Index        r33, r27, r13
+  Sub          r21, r3, r33
+  Mul          r33, r34, r21
+  Index        r21, r27, r15
+  Add          r15, r3, r21
+  Mul          r21, r33, r15
+  Append       r30, r30, r21
+  AddInt       r35, r35, r3
+  Jump         L4
+L7:
+  Sum          r15, r30
+  // avg_qty: avg(from x in g select x.l_quantity),
+  Move         r30, r16
+  Move         r33, r1
+  IterPrep     r35, r24
+  Len          r34, r35
+  Move         r36, r23
+  LessInt      r21, r36, r34
+  JumpIfFalse  r21, L8
+  Index        r27, r35, r36
+  Index        r34, r27, r9
+  Append       r33, r33, r34
+  AddInt       r36, r36, r3
+  Jump         L9
+  Avg          r36, r33
+  // avg_price: avg(from x in g select x.l_extendedprice),
+  Move         r33, r17
+  Move         r9, r1
+  IterPrep     r35, r24
+  Len          r21, r35
+  Move         r37, r23
+  LessInt      r38, r37, r21
+  JumpIfFalse  r38, L6
+  Index        r27, r35, r37
+  Index        r38, r27, r11
+  Append       r9, r9, r38
+  AddInt       r37, r37, r3
+  Jump         L10
+  Avg          r37, r9
+  // avg_disc: avg(from x in g select x.l_discount),
+  Move         r9, r18
+  Move         r11, r1
+  IterPrep     r21, r24
+  Len          r35, r21
+  Move         r34, r23
+  LessInt      r23, r34, r35
+  JumpIfFalse  r23, L0
+  Index        r27, r21, r34
+  Index        r23, r27, r13
+  Append       r11, r11, r23
+  AddInt       r34, r34, r3
+  Jump         L11
+  Avg          r34, r11
+  // count_order: count(g)
+  Move         r11, r19
+  Index        r27, r24, r32
+  // returnflag: g.key.returnflag,
+  Move         r24, r29
+  Move         r32, r22
+  // linestatus: g.key.linestatus,
+  Move         r22, r25
+  Move         r13, r7
+  // sum_qty: sum(from x in g select x.l_quantity),
+  Move         r35, r2
+  Move         r38, r31
+  // sum_base_price: sum(from x in g select x.l_extendedprice),
+  Move         r31, r4
+  Move         r4, r20
+  // sum_disc_price: sum(from x in g select x.l_extendedprice * (1 - x.l_discount)),
+  Move         r20, r28
+  Move         r28, r26
+  // sum_charge: sum(from x in g select x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax)),
+  Move         r26, r5
+  Move         r5, r15
+  // avg_qty: avg(from x in g select x.l_quantity),
+  Move         r15, r30
+  Move         r30, r36
+  // avg_price: avg(from x in g select x.l_extendedprice),
+  Move         r36, r33
+  Move         r33, r37
+  // avg_disc: avg(from x in g select x.l_discount),
+  Move         r37, r9
+  Move         r9, r34
+  // count_order: count(g)
+  Move         r23, r11
+  Move         r11, r27
+  // select {
+  MakeMap      r27, 10, r24
+  // from row in lineitem
+  Append       r1, r1, r27
+  AddInt       r6, r6, r3
+  Jump         L12
   // json(result)
   JSON         r1
   // returnflag: "N",
-  Const        r185, "returnflag"
-  Const        r186, "N"
+  Move         r27, r29
+  Const        r29, "N"
   // linestatus: "O",
-  Const        r187, "linestatus"
-  Const        r188, "O"
+  Move         r11, r25
+  Const        r25, "O"
   // sum_qty: 53,
-  Const        r189, "sum_qty"
-  Const        r190, 53
+  Move         r9, r8
+  Const        r8, 53
   // sum_base_price: 3000,
-  Const        r191, "sum_base_price"
-  Const        r192, 3000
+  Move         r37, r10
+  Const        r10, 3000
   // sum_disc_price: 950.0 + 1800.0,               // 2750.0
-  Const        r193, "sum_disc_price"
-  Const        r196, 2750
+  Move         r33, r12
+  Const        r12, 2750
   // sum_charge: (950.0 * 1.07) + (1800.0 * 1.05), // 1016.5 + 1890 = 2906.5
-  Const        r197, "sum_charge"
-  Const        r202, 2906.5
+  Move         r36, r14
+  Const        r14, 2906.5
   // avg_qty: 26.5,
-  Const        r203, "avg_qty"
-  Const        r204, 26.5
+  Move         r30, r16
+  Const        r16, 26.5
   // avg_price: 1500,
-  Const        r205, "avg_price"
-  Const        r206, 1500
+  Move         r15, r17
+  Const        r17, 1500
   // avg_disc: 0.07500000000000001,
-  Const        r207, "avg_disc"
-  Const        r208, 0.07500000000000001
+  Move         r5, r18
+  Const        r18, 0.07500000000000001
   // count_order: 2
-  Const        r209, "count_order"
-  Const        r210, 2
+  Move         r26, r19
+  Const        r19, 2
   // returnflag: "N",
-  Move         r211, r185
-  Move         r212, r186
+  Move         r28, r27
+  Move         r27, r29
   // linestatus: "O",
-  Move         r213, r187
-  Move         r214, r188
+  Move         r29, r11
+  Move         r11, r25
   // sum_qty: 53,
-  Move         r215, r189
-  Move         r216, r190
+  Move         r25, r9
+  Move         r9, r8
   // sum_base_price: 3000,
-  Move         r217, r191
-  Move         r218, r192
+  Move         r8, r37
+  Move         r37, r10
   // sum_disc_price: 950.0 + 1800.0,               // 2750.0
-  Move         r219, r193
-  Move         r220, r196
+  Move         r10, r33
+  Move         r33, r12
   // sum_charge: (950.0 * 1.07) + (1800.0 * 1.05), // 1016.5 + 1890 = 2906.5
-  Move         r221, r197
-  Move         r222, r202
+  Move         r12, r36
+  Move         r36, r14
   // avg_qty: 26.5,
-  Move         r223, r203
-  Move         r224, r204
+  Move         r14, r30
+  Move         r30, r16
   // avg_price: 1500,
-  Move         r225, r205
-  Move         r226, r206
+  Move         r16, r15
+  Move         r15, r17
   // avg_disc: 0.07500000000000001,
-  Move         r227, r207
-  Move         r228, r208
+  Move         r17, r5
+  Move         r5, r18
   // count_order: 2
-  Move         r229, r209
-  Move         r230, r210
+  Move         r18, r26
+  Move         r26, r19
   // {
-  MakeMap      r232, 10, r211
+  MakeMap      r19, 10, r28
   // expect result == [
-  MakeList     r233, 1, r232
-  Equal        r234, r1, r233
-  Expect       r234
+  MakeList     r26, 1, r19
+  Equal        r19, r1, r26
+  Expect       r19
   Return       r0

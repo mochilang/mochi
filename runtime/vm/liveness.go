@@ -617,7 +617,8 @@ func constFold(fn *Function) bool {
 				consts[ins.A] = cinfo{}
 			}
 		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpLen,
-			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues:
+			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues,
+			OpSort:
 			b := consts[ins.B]
 			if b.known {
 				if val, ok := evalUnaryConst(ins.Op, b.val); ok {
@@ -637,6 +638,7 @@ func constFold(fn *Function) bool {
 			OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
 			OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
 			OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
+			OpAppend, OpUnionAll, OpUnion, OpExcept, OpIntersect,
 			OpIndex:
 			b := consts[ins.B]
 			c := consts[ins.C]
@@ -910,6 +912,22 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 			}
 			return Value{Tag: ValueList, List: vals}, true
 		}
+	case OpSort:
+		if v.Tag == ValueList {
+			pairs := append([]Value(nil), v.List...)
+			sort.SliceStable(pairs, func(i, j int) bool {
+				return valueLess(pairs[i].List[0], pairs[j].List[0])
+			})
+			out := make([]Value, len(pairs))
+			for i, p := range pairs {
+				if len(p.List) > 1 {
+					out[i] = p.List[1]
+				} else {
+					out[i] = Value{Tag: ValueNull}
+				}
+			}
+			return Value{Tag: ValueList, List: out}, true
+		}
 	}
 	return Value{}, false
 }
@@ -1003,6 +1021,69 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 				return Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}, true
 			}
 			return Value{Tag: ValueInt, Int: b.Int % c.Int}, true
+		}
+	case OpAppend:
+		if b.Tag == ValueList {
+			out := append(append([]Value(nil), b.List...), c)
+			return Value{Tag: ValueList, List: out}, true
+		}
+	case OpUnionAll:
+		if b.Tag == ValueList && c.Tag == ValueList {
+			out := append(append([]Value(nil), b.List...), c.List...)
+			return Value{Tag: ValueList, List: out}, true
+		}
+	case OpUnion:
+		if b.Tag == ValueList && c.Tag == ValueList {
+			seen := make(map[string]struct{}, len(b.List)+len(c.List))
+			out := make([]Value, 0, len(b.List)+len(c.List))
+			for _, v := range b.List {
+				k := valueToString(v)
+				if _, ok := seen[k]; !ok {
+					seen[k] = struct{}{}
+					out = append(out, v)
+				}
+			}
+			for _, v := range c.List {
+				k := valueToString(v)
+				if _, ok := seen[k]; !ok {
+					seen[k] = struct{}{}
+					out = append(out, v)
+				}
+			}
+			return Value{Tag: ValueList, List: out}, true
+		}
+	case OpExcept:
+		if b.Tag == ValueList && c.Tag == ValueList {
+			set := make(map[string]struct{}, len(c.List))
+			for _, v := range c.List {
+				set[valueToString(v)] = struct{}{}
+			}
+			diff := make([]Value, 0, len(b.List))
+			for _, v := range b.List {
+				if _, ok := set[valueToString(v)]; !ok {
+					diff = append(diff, v)
+				}
+			}
+			return Value{Tag: ValueList, List: diff}, true
+		}
+	case OpIntersect:
+		if b.Tag == ValueList && c.Tag == ValueList {
+			setA := make(map[string]struct{}, len(b.List))
+			for _, v := range b.List {
+				setA[valueToString(v)] = struct{}{}
+			}
+			inter := []Value{}
+			added := make(map[string]struct{}, len(c.List))
+			for _, v := range c.List {
+				k := valueToString(v)
+				if _, ok := setA[k]; ok {
+					if _, done := added[k]; !done {
+						added[k] = struct{}{}
+						inter = append(inter, v)
+					}
+				}
+			}
+			return Value{Tag: ValueList, List: inter}, true
 		}
 	case OpEqualInt:
 		if b.Tag == ValueInt && c.Tag == ValueInt {
