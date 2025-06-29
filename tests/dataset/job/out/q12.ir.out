@@ -1,4 +1,4 @@
-func main (regs=140)
+func main (regs=143)
   // let company_name = [
   Const        r0, [{"country_code": "[us]", "id": 1, "name": "Best Pictures"}, {"country_code": "[uk]", "id": 2, "name": "Foreign Films"}]
   // let company_type = [
@@ -203,37 +203,46 @@ L15:
   // drama_horror_movie: t.title
   Const        r130, "drama_horror_movie"
   Index        r131, r51, r16
+  // movie_company: cn.name,
+  Move         r132, r126
+  Move         r133, r127
+  // rating: mi_idx.info,
+  Move         r134, r128
+  Move         r135, r129
+  // drama_horror_movie: t.title
+  Move         r136, r130
+  Move         r137, r131
   // select {
-  MakeMap      r135, 3, r126
+  MakeMap      r138, 3, r132
   // from cn in company_name
-  Append       r7, r7, r135
+  Append       r7, r7, r138
 L8:
   // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Const        r137, 1
-  Add          r85, r85, r137
+  Const        r140, 1
+  Add          r85, r85, r140
   Jump         L16
 L7:
   // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Add          r76, r76, r137
+  Add          r76, r76, r140
   Jump         L17
 L6:
   // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r67, r67, r137
+  Add          r67, r67, r140
   Jump         L18
 L5:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r57, r57, r137
+  Add          r57, r57, r140
   Jump         L19
 L4:
   // join t in title on t.id == mc.movie_id
-  Add          r48, r48, r137
+  Add          r48, r48, r140
   Jump         L20
 L3:
   // join ct in company_type on ct.id == mc.company_type_id
   Jump         L21
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
-  Add          r28, r28, r137
+  Add          r28, r28, r140
   Jump         L22
 L1:
   // from cn in company_name
@@ -242,7 +251,7 @@ L0:
   // json(result)
   JSON         r7
   // expect result == [
-  Const        r138, [{"drama_horror_movie": "Great Drama", "movie_company": "Best Pictures", "rating": 8.3}]
-  Equal        r139, r7, r138
-  Expect       r139
+  Const        r141, [{"drama_horror_movie": "Great Drama", "movie_company": "Best Pictures", "rating": 8.3}]
+  Equal        r142, r7, r141
+  Expect       r142
   Return       r0

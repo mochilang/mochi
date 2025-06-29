@@ -1,4 +1,4 @@
-func main (regs=235)
+func main (regs=243)
   // let comp_cast_type = [
   Const        r0, [{"id": 1, "kind": "cast"}, {"id": 2, "kind": "complete+verified"}, {"id": 3, "kind": "crew"}]
   // let complete_cast = [
@@ -269,126 +269,156 @@ L20:
   // movie: t.title
   Const        r176, "movie"
   Index        r177, r134, r24
+  // budget: mi.info,
+  Move         r178, r170
+  Move         r179, r171
+  // votes: mi_idx.info,
+  Move         r180, r172
+  Move         r181, r173
+  // writer: n.name,
+  Move         r182, r174
+  Move         r183, r175
+  // movie: t.title
+  Move         r184, r176
+  Move         r185, r177
   // select {
-  MakeMap      r182, 4, r170
+  MakeMap      r186, 4, r178
   // from cc in complete_cast
-  Append       r12, r12, r182
+  Append       r12, r12, r186
 L12:
   // join t in title on t.id == cc.movie_id
-  Const        r184, 1
-  Add          r131, r131, r184
+  Const        r188, 1
+  Add          r131, r131, r188
   Jump         L21
 L11:
   // join n in name on n.id == ci.person_id
-  Add          r122, r122, r184
+  Add          r122, r122, r188
   Jump         L22
 L10:
   // join k in keyword on k.id == mk.keyword_id
-  Add          r112, r112, r184
+  Add          r112, r112, r188
   Jump         L23
 L9:
   // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Add          r102, r102, r184
+  Add          r102, r102, r188
   Jump         L24
 L8:
   // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r93, r93, r184
+  Add          r93, r93, r188
   Jump         L25
 L7:
   // join mk in movie_keyword on mk.movie_id == cc.movie_id
-  Add          r83, r83, r184
+  Add          r83, r83, r188
   Jump         L26
 L6:
   // join mi_idx in movie_info_idx on mi_idx.movie_id == cc.movie_id
-  Add          r74, r74, r184
+  Add          r74, r74, r188
   Jump         L27
 L5:
   // join mi in movie_info on mi.movie_id == cc.movie_id
-  Add          r65, r65, r184
+  Add          r65, r65, r188
   Jump         L28
 L4:
   // join ci in cast_info on ci.movie_id == cc.movie_id
-  Add          r56, r56, r184
+  Add          r56, r56, r188
   Jump         L29
 L3:
   // join cct2 in comp_cast_type on cct2.id == cc.status_id
-  Add          r46, r46, r184
+  Add          r46, r46, r188
   Jump         L30
 L2:
   // join cct1 in comp_cast_type on cct1.id == cc.subject_id
-  Add          r36, r36, r184
+  Add          r36, r36, r188
   Jump         L31
 L1:
   // from cc in complete_cast
-  AddInt       r27, r27, r184
+  AddInt       r27, r27, r188
   Jump         L32
 L0:
   // movie_budget: min(from x in matches select x.budget),
-  Const        r185, "movie_budget"
-  Const        r186, []
-  IterPrep     r187, r12
-  Len          r188, r187
-  Move         r189, r28
+  Const        r189, "movie_budget"
+  Const        r190, []
+  IterPrep     r191, r12
+  Len          r192, r191
+  Move         r193, r28
 L34:
-  LessInt      r190, r189, r188
-  JumpIfFalse  r190, L33
-  Index        r191, r187, r189
-  Move         r192, r191
-  Index        r193, r192, r19
-  Append       r186, r186, r193
-  AddInt       r189, r189, r184
+  LessInt      r194, r193, r192
+  JumpIfFalse  r194, L33
+  Index        r196, r191, r193
+  Index        r197, r196, r19
+  Append       r190, r190, r197
+  AddInt       r193, r193, r188
   Jump         L34
 L33:
+  Min          r199, r190
   // movie_votes: min(from x in matches select x.votes),
-  Const        r197, []
-  IterPrep     r198, r12
-  Len          r199, r198
-  Move         r200, r28
+  Const        r200, "movie_votes"
+  Const        r201, []
+  IterPrep     r202, r12
+  Len          r203, r202
+  Move         r204, r28
 L36:
-  LessInt      r201, r200, r199
-  JumpIfFalse  r201, L35
-  Index        r192, r198, r200
-  Index        r203, r192, r20
-  Append       r197, r197, r203
-  AddInt       r200, r200, r184
+  LessInt      r205, r204, r203
+  JumpIfFalse  r205, L35
+  Index        r196, r202, r204
+  Index        r207, r196, r20
+  Append       r201, r201, r207
+  AddInt       r204, r204, r188
   Jump         L36
 L35:
+  Min          r209, r201
   // writer: min(from x in matches select x.writer),
-  Const        r207, []
-  IterPrep     r208, r12
-  Len          r209, r208
-  Move         r210, r28
+  Const        r210, "writer"
+  Const        r211, []
+  IterPrep     r212, r12
+  Len          r213, r212
+  Move         r214, r28
 L38:
-  LessInt      r211, r210, r209
-  JumpIfFalse  r211, L37
-  Index        r192, r208, r210
-  Index        r213, r192, r21
-  Append       r207, r207, r213
-  AddInt       r210, r210, r184
+  LessInt      r215, r214, r213
+  JumpIfFalse  r215, L37
+  Index        r196, r212, r214
+  Index        r217, r196, r21
+  Append       r211, r211, r217
+  AddInt       r214, r214, r188
   Jump         L38
 L37:
+  Min          r219, r211
   // complete_violent_movie: min(from x in matches select x.movie)
-  Const        r217, []
-  IterPrep     r218, r12
-  Len          r219, r218
-  Move         r220, r28
+  Const        r220, "complete_violent_movie"
+  Const        r221, []
+  IterPrep     r222, r12
+  Len          r223, r222
+  Move         r224, r28
 L40:
-  LessInt      r221, r220, r219
-  JumpIfFalse  r221, L39
-  Index        r192, r218, r220
-  Index        r223, r192, r23
-  Append       r217, r217, r223
-  AddInt       r220, r220, r184
+  LessInt      r225, r224, r223
+  JumpIfFalse  r225, L39
+  Index        r196, r222, r224
+  Index        r227, r196, r23
+  Append       r221, r221, r227
+  AddInt       r224, r224, r188
   Jump         L40
 L39:
+  Min          r229, r221
+  // movie_budget: min(from x in matches select x.budget),
+  Move         r230, r189
+  Move         r231, r199
+  // movie_votes: min(from x in matches select x.votes),
+  Move         r232, r200
+  Move         r233, r209
+  // writer: min(from x in matches select x.writer),
+  Move         r234, r210
+  Move         r235, r219
+  // complete_violent_movie: min(from x in matches select x.movie)
+  Move         r236, r220
+  Move         r237, r229
   // {
-  MakeMap      r231, 4, r185
+  MakeMap      r239, 4, r230
   // let result = [
-  MakeList     r232, 1, r231
+  MakeList     r240, 1, r239
   // json(result)
-  JSON         r232
+  JSON         r240
   // expect result == [
-  Const        r233, [{"complete_violent_movie": "Violent Horror", "movie_budget": "Horror", "movie_votes": 2000, "writer": "John Writer"}]
-  Equal        r234, r232, r233
-  Expect       r234
+  Const        r241, [{"complete_violent_movie": "Violent Horror", "movie_budget": "Horror", "movie_votes": 2000, "writer": "John Writer"}]
+  Equal        r242, r240, r241
+  Expect       r242
   Return       r0

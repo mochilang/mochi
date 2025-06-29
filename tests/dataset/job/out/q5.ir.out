@@ -1,4 +1,4 @@
-func main (regs=90)
+func main (regs=91)
   // let company_type = [
   Const        r0, [{"ct_id": 1, "kind": "production companies"}, {"ct_id": 2, "kind": "other"}]
   // let info_type = [
@@ -152,12 +152,14 @@ L0:
   // let result = [ { typical_european_movie: min(candidate_titles) } ]
   Const        r82, "typical_european_movie"
   Min          r83, r5
-  MakeMap      r86, 1, r82
-  MakeList     r87, 1, r86
+  Move         r84, r82
+  Move         r85, r83
+  MakeMap      r87, 1, r84
+  MakeList     r88, 1, r87
   // json(result)
-  JSON         r87
+  JSON         r88
   // expect result == [ { typical_european_movie: "A Film" } ]
-  Const        r88, [{"typical_european_movie": "A Film"}]
-  Equal        r89, r87, r88
-  Expect       r89
+  Const        r89, [{"typical_european_movie": "A Film"}]
+  Equal        r90, r88, r89
+  Expect       r90
   Return       r0

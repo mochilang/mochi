@@ -1,4 +1,4 @@
-func main (regs=114)
+func main (regs=118)
   // let info_type = [
   Const        r0, [{"id": 1, "info": "rating"}, {"id": 2, "info": "other"}]
   // let keyword = [
@@ -124,67 +124,80 @@ L9:
   Index        r78, r27, r6
   Const        r79, "title"
   Index        r80, r36, r12
-  MakeMap      r83, 2, r77
+  Move         r81, r77
+  Move         r82, r78
+  Move         r83, r79
+  Move         r84, r80
+  MakeMap      r85, 2, r81
   // from it in info_type
-  Append       r5, r5, r83
+  Append       r5, r5, r85
 L5:
   // join k in keyword on k.id == mk.keyword_id
-  Const        r85, 1
-  Add          r52, r52, r85
+  Const        r87, 1
+  Add          r52, r52, r87
   Jump         L10
 L4:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r42, r42, r85
+  Add          r42, r42, r87
   Jump         L11
 L3:
   // join t in title on t.id == mi.movie_id
-  Add          r33, r33, r85
+  Add          r33, r33, r87
   Jump         L12
 L2:
   // join mi in movie_info_idx on it.id == mi.info_type_id
   Jump         L13
 L1:
   // from it in info_type
-  AddInt       r15, r15, r85
+  AddInt       r15, r15, r87
   Jump         L14
 L0:
   // rating: min(from r in rows select r.rating),
-  Const        r86, "rating"
-  Const        r87, []
-  IterPrep     r88, r5
-  Len          r89, r88
-  Move         r90, r16
+  Const        r88, "rating"
+  Const        r89, []
+  IterPrep     r90, r5
+  Len          r91, r90
+  Move         r92, r16
 L16:
-  LessInt      r91, r90, r89
-  JumpIfFalse  r91, L15
-  Index        r93, r88, r90
-  Index        r94, r93, r11
-  Append       r87, r87, r94
-  AddInt       r90, r90, r85
+  LessInt      r93, r92, r91
+  JumpIfFalse  r93, L15
+  Index        r95, r90, r92
+  Index        r96, r95, r11
+  Append       r89, r89, r96
+  AddInt       r92, r92, r87
   Jump         L16
 L15:
+  Min          r98, r89
   // movie_title: min(from r in rows select r.title)
-  Const        r98, []
-  IterPrep     r99, r5
-  Len          r100, r99
-  Move         r101, r16
+  Const        r99, "movie_title"
+  Const        r100, []
+  IterPrep     r101, r5
+  Len          r102, r101
+  Move         r103, r16
 L18:
-  LessInt      r102, r101, r100
-  JumpIfFalse  r102, L17
-  Index        r93, r99, r101
-  Index        r104, r93, r12
-  Append       r98, r98, r104
-  AddInt       r101, r101, r85
+  LessInt      r104, r103, r102
+  JumpIfFalse  r104, L17
+  Index        r95, r101, r103
+  Index        r106, r95, r12
+  Append       r100, r100, r106
+  AddInt       r103, r103, r87
   Jump         L18
 L17:
+  Min          r108, r100
+  // rating: min(from r in rows select r.rating),
+  Move         r109, r88
+  Move         r110, r98
+  // movie_title: min(from r in rows select r.title)
+  Move         r111, r99
+  Move         r112, r108
   // {
-  MakeMap      r110, 2, r86
+  MakeMap      r114, 2, r109
   // let result = [
-  MakeList     r111, 1, r110
+  MakeList     r115, 1, r114
   // json(result)
-  JSON         r111
+  JSON         r115
   // expect result == [ { rating: "6.2", movie_title: "Alpha Movie" } ]
-  Const        r112, [{"movie_title": "Alpha Movie", "rating": "6.2"}]
-  Equal        r113, r111, r112
-  Expect       r113
+  Const        r116, [{"movie_title": "Alpha Movie", "rating": "6.2"}]
+  Equal        r117, r115, r116
+  Expect       r117
   Return       r0

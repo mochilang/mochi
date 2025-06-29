@@ -1,4 +1,4 @@
-func main (regs=215)
+func main (regs=219)
   // let aka_name = [
   Const        r0, [{"name": "A. Stone", "person_id": 1}, {"name": "J. Doe", "person_id": 2}]
   // let char_name = [
@@ -276,87 +276,100 @@ L22:
   Index        r179, r36, r16
   Const        r180, "movie"
   Index        r181, r75, r21
-  MakeMap      r184, 2, r178
+  Move         r182, r178
+  Move         r183, r179
+  Move         r184, r180
+  Move         r185, r181
+  MakeMap      r186, 2, r182
   // from an in aka_name
-  Append       r10, r10, r184
+  Append       r10, r10, r186
 L10:
   // join it in info_type on it.id == mi.info_type_id
-  Const        r186, 1
-  Add          r110, r110, r186
+  Const        r188, 1
+  Add          r110, r110, r188
   Jump         L23
 L9:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r100, r100, r186
+  Add          r100, r100, r188
   Jump         L24
 L8:
   // join cn in company_name on cn.id == mc.company_id
-  Add          r91, r91, r186
+  Add          r91, r91, r188
   Jump         L25
 L7:
   // join mc in movie_companies on mc.movie_id == t.id
-  Add          r81, r81, r186
+  Add          r81, r81, r188
   Jump         L26
 L6:
   // join t in title on t.id == ci.movie_id
-  Add          r72, r72, r186
+  Add          r72, r72, r188
   Jump         L27
 L5:
   // join rt in role_type on rt.id == ci.role_id
-  Add          r62, r62, r186
+  Add          r62, r62, r188
   Jump         L28
 L4:
   // join chn in char_name on chn.id == ci.person_role_id
-  Add          r52, r52, r186
+  Add          r52, r52, r188
   Jump         L29
 L3:
   // join ci in cast_info on ci.person_id == an.person_id
-  Add          r42, r42, r186
+  Add          r42, r42, r188
   Jump         L30
 L2:
   // join n in name on n.id == an.person_id
   Jump         L31
 L1:
   // from an in aka_name
-  AddInt       r24, r24, r186
+  AddInt       r24, r24, r188
   Jump         L32
 L0:
   // voicing_actress: min(from r in matches select r.actress),
-  Const        r187, "voicing_actress"
-  Const        r188, []
-  IterPrep     r189, r10
-  Len          r190, r189
-  Move         r191, r25
+  Const        r189, "voicing_actress"
+  Const        r190, []
+  IterPrep     r191, r10
+  Len          r192, r191
+  Move         r193, r25
 L34:
-  LessInt      r192, r191, r190
-  JumpIfFalse  r192, L33
-  Index        r194, r189, r191
-  Index        r195, r194, r19
-  Append       r188, r188, r195
-  AddInt       r191, r191, r186
+  LessInt      r194, r193, r192
+  JumpIfFalse  r194, L33
+  Index        r196, r191, r193
+  Index        r197, r196, r19
+  Append       r190, r190, r197
+  AddInt       r193, r193, r188
   Jump         L34
 L33:
+  Min          r199, r190
   // voiced_movie: min(from r in matches select r.movie)
-  Const        r199, []
-  IterPrep     r200, r10
-  Len          r201, r200
-  Move         r202, r25
+  Const        r200, "voiced_movie"
+  Const        r201, []
+  IterPrep     r202, r10
+  Len          r203, r202
+  Move         r204, r25
 L36:
-  LessInt      r203, r202, r201
-  JumpIfFalse  r203, L35
-  Index        r194, r200, r202
-  Index        r205, r194, r20
-  Append       r199, r199, r205
-  AddInt       r202, r202, r186
+  LessInt      r205, r204, r203
+  JumpIfFalse  r205, L35
+  Index        r196, r202, r204
+  Index        r207, r196, r20
+  Append       r201, r201, r207
+  AddInt       r204, r204, r188
   Jump         L36
 L35:
+  Min          r209, r201
+  // voicing_actress: min(from r in matches select r.actress),
+  Move         r210, r189
+  Move         r211, r199
+  // voiced_movie: min(from r in matches select r.movie)
+  Move         r212, r200
+  Move         r213, r209
   // {
-  MakeMap      r211, 2, r187
+  MakeMap      r215, 2, r210
   // let result = [
-  MakeList     r212, 1, r211
+  MakeList     r216, 1, r215
   // json(result)
-  JSON         r212
+  JSON         r216
   // expect result == [
-  Const        r213, [{"voiced_movie": "Voiced Movie", "voicing_actress": "Angela Stone"}]
-  Equal        r214, r212, r213
-  Expect       r214
+  Const        r217, [{"voiced_movie": "Voiced Movie", "voicing_actress": "Angela Stone"}]
+  Equal        r218, r216, r217
+  Expect       r218
   Return       r0

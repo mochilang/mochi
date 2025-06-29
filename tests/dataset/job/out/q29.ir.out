@@ -1,4 +1,4 @@
-func main (regs=390)
+func main (regs=396)
   // let aka_name = [
   Const        r0, [{"person_id": 1}, {"person_id": 2}]
   // let complete_cast = [
@@ -593,130 +593,153 @@ L62:
   // voiced_animation: t.title
   Const        r343, "voiced_animation"
   Index        r344, r143, r26
+  // voiced_char: chn.name,
+  Move         r345, r339
+  Move         r346, r340
+  // voicing_actress: n.name,
+  Move         r347, r341
+  Move         r348, r342
+  // voiced_animation: t.title
+  Move         r349, r343
+  Move         r350, r344
   // select {
-  MakeMap      r348, 3, r339
+  MakeMap      r351, 3, r345
   // from an in aka_name
-  Append       r15, r15, r348
+  Append       r15, r15, r351
 L63:
   // from t in title
-  Const        r350, 1
-  AddInt       r140, r140, r350
+  Const        r353, 1
+  AddInt       r140, r140, r353
   Jump         L64
 L16:
   // from rt in role_type
-  AddInt       r134, r134, r350
+  AddInt       r134, r134, r353
   Jump         L65
 L15:
   // from pi in person_info
-  AddInt       r128, r128, r350
+  AddInt       r128, r128, r353
   Jump         L66
 L14:
   // from n in name
-  AddInt       r122, r122, r350
+  AddInt       r122, r122, r353
   Jump         L67
 L13:
   // from mk in movie_keyword
-  AddInt       r116, r116, r350
+  AddInt       r116, r116, r353
   Jump         L68
 L12:
   // from mi in movie_info
-  AddInt       r110, r110, r350
+  AddInt       r110, r110, r353
   Jump         L69
 L11:
   // from mc in movie_companies
-  AddInt       r104, r104, r350
+  AddInt       r104, r104, r353
   Jump         L70
 L10:
   // from k in keyword
-  AddInt       r98, r98, r350
+  AddInt       r98, r98, r353
   Jump         L71
 L9:
   // from it3 in info_type
-  AddInt       r92, r92, r350
+  AddInt       r92, r92, r353
   Jump         L72
 L8:
   // from it in info_type
-  AddInt       r86, r86, r350
+  AddInt       r86, r86, r353
   Jump         L73
 L7:
   // from cn in company_name
-  AddInt       r80, r80, r350
+  AddInt       r80, r80, r353
   Jump         L74
 L6:
   // from ci in cast_info
-  AddInt       r74, r74, r350
+  AddInt       r74, r74, r353
   Jump         L75
 L5:
   // from chn in char_name
-  AddInt       r68, r68, r350
+  AddInt       r68, r68, r353
   Jump         L76
 L4:
   // from cct2 in comp_cast_type
-  AddInt       r62, r62, r350
+  AddInt       r62, r62, r353
   Jump         L77
 L3:
   // from cct1 in comp_cast_type
-  AddInt       r56, r56, r350
+  AddInt       r56, r56, r353
   Jump         L78
 L2:
   // from cc in complete_cast
-  AddInt       r50, r50, r350
+  AddInt       r50, r50, r353
   Jump         L79
 L1:
   // from an in aka_name
   Jump         L80
 L0:
   // voiced_char: min(from x in matches select x.voiced_char),
-  Const        r351, "voiced_char"
-  Const        r352, []
-  IterPrep     r353, r15
-  Len          r354, r353
-  Move         r355, r44
+  Const        r354, "voiced_char"
+  Const        r355, []
+  IterPrep     r356, r15
+  Len          r357, r356
+  Move         r358, r44
 L82:
-  LessInt      r356, r355, r354
-  JumpIfFalse  r356, L81
-  Index        r358, r353, r355
-  Index        r359, r358, r38
-  Append       r352, r352, r359
-  AddInt       r355, r355, r350
+  LessInt      r359, r358, r357
+  JumpIfFalse  r359, L81
+  Index        r361, r356, r358
+  Index        r362, r361, r38
+  Append       r355, r355, r362
+  AddInt       r358, r358, r353
   Jump         L82
 L81:
+  Min          r364, r355
   // voicing_actress: min(from x in matches select x.voicing_actress),
-  Const        r363, []
-  IterPrep     r364, r15
-  Len          r365, r364
-  Move         r366, r44
+  Const        r365, "voicing_actress"
+  Const        r366, []
+  IterPrep     r367, r15
+  Len          r368, r367
+  Move         r369, r44
 L84:
-  LessInt      r367, r366, r365
-  JumpIfFalse  r367, L83
-  Index        r358, r364, r366
-  Index        r369, r358, r39
-  Append       r363, r363, r369
-  AddInt       r366, r366, r350
+  LessInt      r370, r369, r368
+  JumpIfFalse  r370, L83
+  Index        r361, r367, r369
+  Index        r372, r361, r39
+  Append       r366, r366, r372
+  AddInt       r369, r369, r353
   Jump         L84
 L83:
+  Min          r374, r366
   // voiced_animation: min(from x in matches select x.voiced_animation)
-  Const        r373, []
-  IterPrep     r374, r15
-  Len          r375, r374
-  Move         r376, r44
+  Const        r375, "voiced_animation"
+  Const        r376, []
+  IterPrep     r377, r15
+  Len          r378, r377
+  Move         r379, r44
 L86:
-  LessInt      r377, r376, r375
-  JumpIfFalse  r377, L85
-  Index        r358, r374, r376
-  Index        r379, r358, r40
-  Append       r373, r373, r379
-  AddInt       r376, r376, r350
+  LessInt      r380, r379, r378
+  JumpIfFalse  r380, L85
+  Index        r361, r377, r379
+  Index        r382, r361, r40
+  Append       r376, r376, r382
+  AddInt       r379, r379, r353
   Jump         L86
 L85:
+  Min          r384, r376
+  // voiced_char: min(from x in matches select x.voiced_char),
+  Move         r385, r354
+  Move         r386, r364
+  // voicing_actress: min(from x in matches select x.voicing_actress),
+  Move         r387, r365
+  Move         r388, r374
+  // voiced_animation: min(from x in matches select x.voiced_animation)
+  Move         r389, r375
+  Move         r390, r384
   // {
-  MakeMap      r386, 3, r351
+  MakeMap      r392, 3, r385
   // let result = [
-  MakeList     r387, 1, r386
+  MakeList     r393, 1, r392
   // json(result)
-  JSON         r387
+  JSON         r393
   // expect result == [
-  Const        r388, [{"voiced_animation": "Shrek 2", "voiced_char": "Queen", "voicing_actress": "Angela Aniston"}]
-  Equal        r389, r387, r388
-  Expect       r389
+  Const        r394, [{"voiced_animation": "Shrek 2", "voiced_char": "Queen", "voicing_actress": "Angela Aniston"}]
+  Equal        r395, r393, r394
+  Expect       r395
   Return       r0

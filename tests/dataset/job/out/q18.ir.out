@@ -1,4 +1,4 @@
-func main (regs=162)
+func main (regs=168)
   // let info_type = [
   Const        r0, [{"id": 1, "info": "budget"}, {"id": 2, "info": "votes"}, {"id": 3, "info": "rating"}]
   // let name = [
@@ -185,87 +185,107 @@ L15:
   Index        r116, r57, r8
   Const        r117, "title"
   Index        r118, r39, r16
-  MakeMap      r122, 3, r113
+  Move         r119, r113
+  Move         r120, r114
+  Move         r121, r115
+  Move         r122, r116
+  Move         r123, r117
+  Move         r124, r118
+  MakeMap      r125, 3, r119
   // from ci in cast_info
-  Append       r6, r6, r122
+  Append       r6, r6, r125
 L7:
   // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Const        r124, 1
-  Add          r73, r73, r124
+  Const        r127, 1
+  Add          r73, r73, r127
   Jump         L16
 L6:
   // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r64, r64, r124
+  Add          r64, r64, r127
   Jump         L17
 L5:
   // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Add          r54, r54, r124
+  Add          r54, r54, r127
   Jump         L18
 L4:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r45, r45, r124
+  Add          r45, r45, r127
   Jump         L19
 L3:
   // join t in title on t.id == ci.movie_id
-  Add          r36, r36, r124
+  Add          r36, r36, r127
   Jump         L20
 L2:
   // join n in name on n.id == ci.person_id
   Jump         L21
 L1:
   // from ci in cast_info
-  AddInt       r19, r19, r124
+  AddInt       r19, r19, r127
   Jump         L22
 L0:
   // movie_budget: min(from r in rows select r.budget),
-  Const        r125, "movie_budget"
-  Const        r126, []
-  IterPrep     r127, r6
-  Len          r128, r127
-  Move         r129, r20
+  Const        r128, "movie_budget"
+  Const        r129, []
+  IterPrep     r130, r6
+  Len          r131, r130
+  Move         r132, r20
 L24:
-  LessInt      r130, r129, r128
-  JumpIfFalse  r130, L23
-  Index        r132, r127, r129
-  Index        r133, r132, r14
-  Append       r126, r126, r133
-  AddInt       r129, r129, r124
+  LessInt      r133, r132, r131
+  JumpIfFalse  r133, L23
+  Index        r135, r130, r132
+  Index        r136, r135, r14
+  Append       r129, r129, r136
+  AddInt       r132, r132, r127
   Jump         L24
 L23:
+  Min          r138, r129
   // movie_votes: min(from r in rows select r.votes),
-  Const        r137, []
-  IterPrep     r138, r6
-  Len          r139, r138
-  Move         r140, r20
+  Const        r139, "movie_votes"
+  Const        r140, []
+  IterPrep     r141, r6
+  Len          r142, r141
+  Move         r143, r20
 L26:
-  LessInt      r141, r140, r139
-  JumpIfFalse  r141, L25
-  Index        r132, r138, r140
-  Index        r143, r132, r15
-  Append       r137, r137, r143
-  AddInt       r140, r140, r124
+  LessInt      r144, r143, r142
+  JumpIfFalse  r144, L25
+  Index        r135, r141, r143
+  Index        r146, r135, r15
+  Append       r140, r140, r146
+  AddInt       r143, r143, r127
   Jump         L26
 L25:
+  Min          r148, r140
   // movie_title: min(from r in rows select r.title)
-  Const        r147, []
-  IterPrep     r148, r6
-  Len          r149, r148
-  Move         r150, r20
+  Const        r149, "movie_title"
+  Const        r150, []
+  IterPrep     r151, r6
+  Len          r152, r151
+  Move         r153, r20
 L28:
-  LessInt      r151, r150, r149
-  JumpIfFalse  r151, L27
-  Index        r132, r148, r150
-  Index        r153, r132, r16
-  Append       r147, r147, r153
-  AddInt       r150, r150, r124
+  LessInt      r154, r153, r152
+  JumpIfFalse  r154, L27
+  Index        r135, r151, r153
+  Index        r156, r135, r16
+  Append       r150, r150, r156
+  AddInt       r153, r153, r127
   Jump         L28
 L27:
+  Min          r158, r150
+  // movie_budget: min(from r in rows select r.budget),
+  Move         r159, r128
+  Move         r160, r138
+  // movie_votes: min(from r in rows select r.votes),
+  Move         r161, r139
+  Move         r162, r148
+  // movie_title: min(from r in rows select r.title)
+  Move         r163, r149
+  Move         r164, r158
   // let result = {
-  MakeMap      r159, 3, r125
+  MakeMap      r165, 3, r159
   // json(result)
-  JSON         r159
+  JSON         r165
   // expect result == { movie_budget: 90, movie_votes: 400, movie_title: "Alpha" }
-  Const        r160, {"movie_budget": 90, "movie_title": "Alpha", "movie_votes": 400}
-  Equal        r161, r159, r160
-  Expect       r161
+  Const        r166, {"movie_budget": 90, "movie_title": "Alpha", "movie_votes": 400}
+  Equal        r167, r165, r166
+  Expect       r167
   Return       r0

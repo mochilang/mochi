@@ -1,4 +1,4 @@
-func main (regs=121)
+func main (regs=123)
   // let cast_info = [
   Const        r0, [{"movie_id": 1, "person_id": 1}, {"movie_id": 2, "person_id": 2}]
   // let company_name = [
@@ -193,14 +193,20 @@ L0:
   // a1: min(matches)
   Const        r112, "a1"
   Min          r113, r7
+  // member_in_charnamed_american_movie: min(matches),
+  Move         r114, r110
+  Move         r115, r111
+  // a1: min(matches)
+  Move         r116, r112
+  Move         r117, r113
   // {
-  MakeMap      r117, 2, r110
+  MakeMap      r119, 2, r114
   // let result = [
-  MakeList     r118, 1, r117
+  MakeList     r120, 1, r119
   // json(result)
-  JSON         r118
+  JSON         r120
   // expect result == [
-  Const        r119, [{"a1": "Bob Smith", "member_in_charnamed_american_movie": "Bob Smith"}]
-  Equal        r120, r118, r119
-  Expect       r120
+  Const        r121, [{"a1": "Bob Smith", "member_in_charnamed_american_movie": "Bob Smith"}]
+  Equal        r122, r120, r121
+  Expect       r122
   Return       r0

@@ -1,4 +1,4 @@
-func main (regs=123)
+func main (regs=129)
   // let keyword = [
   Const        r0, [{"id": 1, "keyword": "10,000-mile-club"}, {"id": 2, "keyword": "character-name-in-title"}]
   // let link_type = [
@@ -105,86 +105,106 @@ L7:
   Index        r75, r36, r10
   Const        r76, "second_movie"
   Index        r77, r55, r10
-  MakeMap      r81, 3, r72
+  Move         r78, r72
+  Move         r79, r73
+  Move         r80, r74
+  Move         r81, r75
+  Move         r82, r76
+  Move         r83, r77
+  MakeMap      r84, 3, r78
   // from k in keyword
-  Append       r5, r5, r81
+  Append       r5, r5, r84
 L6:
   // join lt in link_type on lt.id == ml.link_type_id
-  Const        r83, 1
-  Add          r62, r62, r83
+  Const        r86, 1
+  Add          r62, r62, r86
   Jump         L7
 L5:
   // join t2 in title on t2.id == ml.linked_movie_id
-  Add          r52, r52, r83
+  Add          r52, r52, r86
   Jump         L8
 L4:
   // join ml in movie_link on ml.movie_id == t1.id
-  Add          r42, r42, r83
+  Add          r42, r42, r86
   Jump         L9
 L3:
   // join t1 in title on t1.id == mk.movie_id
-  Add          r33, r33, r83
+  Add          r33, r33, r86
   Jump         L10
 L2:
   // join mk in movie_keyword on mk.keyword_id == k.id
-  Add          r23, r23, r83
+  Add          r23, r23, r86
   Jump         L11
 L1:
   // from k in keyword
-  AddInt       r14, r14, r83
+  AddInt       r14, r14, r86
   Jump         L12
 L0:
   // link_type: min(from r in joined select r.link_type),
-  Const        r84, "link_type"
-  Const        r85, []
-  IterPrep     r86, r5
-  Len          r87, r86
-  Move         r88, r15
+  Const        r87, "link_type"
+  Const        r88, []
+  IterPrep     r89, r5
+  Len          r90, r89
+  Move         r91, r15
 L14:
-  LessInt      r89, r88, r87
-  JumpIfFalse  r89, L13
-  Index        r91, r86, r88
-  Index        r92, r91, r7
-  Append       r85, r85, r92
-  AddInt       r88, r88, r83
+  LessInt      r92, r91, r90
+  JumpIfFalse  r92, L13
+  Index        r94, r89, r91
+  Index        r95, r94, r7
+  Append       r88, r88, r95
+  AddInt       r91, r91, r86
   Jump         L14
 L13:
+  Min          r97, r88
   // first_movie: min(from r in joined select r.first_movie),
-  Const        r96, []
-  IterPrep     r97, r5
-  Len          r98, r97
-  Move         r99, r15
+  Const        r98, "first_movie"
+  Const        r99, []
+  IterPrep     r100, r5
+  Len          r101, r100
+  Move         r102, r15
 L16:
-  LessInt      r100, r99, r98
-  JumpIfFalse  r100, L15
-  Index        r91, r97, r99
-  Index        r102, r91, r9
-  Append       r96, r96, r102
-  AddInt       r99, r99, r83
+  LessInt      r103, r102, r101
+  JumpIfFalse  r103, L15
+  Index        r94, r100, r102
+  Index        r105, r94, r9
+  Append       r99, r99, r105
+  AddInt       r102, r102, r86
   Jump         L16
 L15:
+  Min          r107, r99
   // second_movie: min(from r in joined select r.second_movie)
-  Const        r106, []
-  IterPrep     r107, r5
-  Len          r108, r107
-  Move         r109, r15
+  Const        r108, "second_movie"
+  Const        r109, []
+  IterPrep     r110, r5
+  Len          r111, r110
+  Move         r112, r15
 L18:
-  LessInt      r110, r109, r108
-  JumpIfFalse  r110, L17
-  Index        r91, r107, r109
-  Index        r112, r91, r11
-  Append       r106, r106, r112
-  AddInt       r109, r109, r83
+  LessInt      r113, r112, r111
+  JumpIfFalse  r113, L17
+  Index        r94, r110, r112
+  Index        r115, r94, r11
+  Append       r109, r109, r115
+  AddInt       r112, r112, r86
   Jump         L18
 L17:
+  Min          r117, r109
+  // link_type: min(from r in joined select r.link_type),
+  Move         r118, r87
+  Move         r119, r97
+  // first_movie: min(from r in joined select r.first_movie),
+  Move         r120, r98
+  Move         r121, r107
+  // second_movie: min(from r in joined select r.second_movie)
+  Move         r122, r108
+  Move         r123, r117
   // let result = {
-  MakeMap      r118, 3, r84
+  MakeMap      r124, 3, r118
   // json([result])
-  Move         r119, r118
-  MakeList     r120, 1, r119
-  JSON         r120
+  Move         r125, r124
+  MakeList     r126, 1, r125
+  JSON         r126
   // expect result == {
-  Const        r121, {"first_movie": "Movie A", "link_type": "sequel", "second_movie": "Movie C"}
-  Equal        r122, r118, r121
-  Expect       r122
+  Const        r127, {"first_movie": "Movie A", "link_type": "sequel", "second_movie": "Movie C"}
+  Equal        r128, r124, r127
+  Expect       r128
   Return       r0
