@@ -19,15 +19,17 @@ type Server struct {
 func NewServer() *Server {
 	s := &Server{documents: make(map[string]string)}
 	handler := protocol.Handler{
-		Initialize:                 s.initialize,
-		TextDocumentDidOpen:        s.didOpen,
-		TextDocumentDidChange:      s.didChange,
-		TextDocumentDocumentSymbol: s.documentSymbols,
-		TextDocumentHover:          s.hover,
-		TextDocumentCompletion:     s.completion,
-		TextDocumentDefinition:     s.definition,
-		TextDocumentReferences:     s.references,
-		WorkspaceSymbol:            s.workspaceSymbol,
+		Initialize:                    s.initialize,
+		TextDocumentDidOpen:           s.didOpen,
+		TextDocumentDidChange:         s.didChange,
+		TextDocumentDocumentSymbol:    s.documentSymbols,
+		TextDocumentHover:             s.hover,
+		TextDocumentCompletion:        s.completion,
+		TextDocumentDefinition:        s.definition,
+		TextDocumentReferences:        s.references,
+		TextDocumentDocumentHighlight: s.documentHighlight,
+		TextDocumentRename:            s.rename,
+		WorkspaceSymbol:               s.workspaceSymbol,
 	}
 	s.srv = server.NewServer(&handler, Name, false)
 	return s
@@ -46,6 +48,8 @@ func (s *Server) initialize(ctx *glsp.Context, params *protocol.InitializeParams
 	}
 	caps.ReferencesProvider = true
 	caps.WorkspaceSymbolProvider = true
+	caps.DocumentHighlightProvider = true
+	caps.RenameProvider = true
 	version := "dev"
 	return protocol.InitializeResult{
 		Capabilities: caps,
@@ -143,4 +147,19 @@ func (s *Server) references(ctx *glsp.Context, params *protocol.ReferenceParams)
 
 func (s *Server) workspaceSymbol(ctx *glsp.Context, params *protocol.WorkspaceSymbolParams) ([]protocol.SymbolInformation, error) {
 	return WorkspaceSymbols(s.documents, params.Query), nil
+}
+
+func (s *Server) documentHighlight(ctx *glsp.Context, params *protocol.DocumentHighlightParams) ([]protocol.DocumentHighlight, error) {
+	uri := string(params.TextDocument.URI)
+	src, ok := s.documents[uri]
+	if !ok {
+		return nil, nil
+	}
+	highlights, _ := DocumentHighlight(uri, src, int(params.Position.Line), int(params.Position.Character))
+	return highlights, nil
+}
+
+func (s *Server) rename(ctx *glsp.Context, params *protocol.RenameParams) (*protocol.WorkspaceEdit, error) {
+	edit, _ := Rename(s.documents, string(params.TextDocument.URI), int(params.Position.Line), int(params.Position.Character), params.NewName)
+	return &edit, nil
 }
