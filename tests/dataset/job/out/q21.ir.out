@@ -1,4 +1,4 @@
-func main (regs=192)
+func main (regs=198)
   // let company_name = [
   Const        r0, [{"country_code": "[us]", "id": 1, "name": "ACME Film Works"}, {"country_code": "[pl]", "id": 2, "name": "Polish Warner"}]
   // let company_type = [
@@ -224,97 +224,107 @@ L16:
 L17:
   // where cn.country_code != "[pl]" &&
   JumpIfFalse  r146, L9
+  // company_name: cn.name,
+  Const        r147, "company_name"
+  Index        r148, r30, r12
+  // link_type: lt.link,
+  Const        r149, "link_type"
+  Index        r150, r96, r16
+  // western_follow_up: t.title
+  Const        r151, "western_follow_up"
+  Index        r152, r58, r23
   // select {
-  MakeMap      r153, 3, r20
+  MakeMap      r156, 3, r147
   // from cn in company_name
-  Append       r10, r10, r153
+  Append       r10, r10, r156
 L9:
   // join mi in movie_info on mi.movie_id == t.id
-  Const        r155, 1
-  Add          r102, r102, r155
+  Const        r158, 1
+  Add          r102, r102, r158
   Jump         L18
 L8:
   // join lt in link_type on lt.id == ml.link_type_id
-  Add          r93, r93, r155
+  Add          r93, r93, r158
   Jump         L19
 L7:
   // join ml in movie_link on ml.movie_id == t.id
-  Add          r83, r83, r155
+  Add          r83, r83, r158
   Jump         L20
 L6:
   // join k in keyword on k.id == mk.keyword_id
-  Add          r74, r74, r155
+  Add          r74, r74, r158
   Jump         L21
 L5:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r64, r64, r155
+  Add          r64, r64, r158
   Jump         L22
 L4:
   // join t in title on t.id == mc.movie_id
-  Add          r55, r55, r155
+  Add          r55, r55, r158
   Jump         L23
 L3:
   // join ct in company_type on ct.id == mc.company_type_id
-  Add          r45, r45, r155
+  Add          r45, r45, r158
   Jump         L24
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
   Jump         L25
 L1:
   // from cn in company_name
-  AddInt       r26, r26, r155
+  AddInt       r26, r26, r158
   Jump         L26
 L0:
   // company_name: min(from r in rows select r.company_name),
-  Const        r156, []
-  IterPrep     r157, r10
-  Len          r158, r157
-  Move         r159, r27
+  Const        r159, "company_name"
+  Const        r160, []
+  IterPrep     r161, r10
+  Len          r162, r161
+  Move         r163, r27
 L28:
-  LessInt      r160, r159, r158
-  JumpIfFalse  r160, L27
-  Index        r162, r157, r159
-  Index        r163, r162, r20
-  Append       r156, r156, r163
-  AddInt       r159, r159, r155
+  LessInt      r164, r163, r162
+  JumpIfFalse  r164, L27
+  Index        r166, r161, r163
+  Index        r167, r166, r20
+  Append       r160, r160, r167
+  AddInt       r163, r163, r158
   Jump         L28
 L27:
   // link_type: min(from r in rows select r.link_type),
-  Const        r166, []
-  IterPrep     r167, r10
-  Len          r168, r167
-  Move         r169, r27
+  Const        r171, []
+  IterPrep     r172, r10
+  Len          r173, r172
+  Move         r174, r27
 L30:
-  LessInt      r170, r169, r168
-  JumpIfFalse  r170, L29
-  Index        r162, r167, r169
-  Index        r172, r162, r21
-  Append       r166, r166, r172
-  AddInt       r169, r169, r155
+  LessInt      r175, r174, r173
+  JumpIfFalse  r175, L29
+  Index        r166, r172, r174
+  Index        r177, r166, r21
+  Append       r171, r171, r177
+  AddInt       r174, r174, r158
   Jump         L30
 L29:
   // western_follow_up: min(from r in rows select r.western_follow_up)
-  Const        r175, []
-  IterPrep     r176, r10
-  Len          r177, r176
-  Move         r178, r27
+  Const        r181, []
+  IterPrep     r182, r10
+  Len          r183, r182
+  Move         r184, r27
 L32:
-  LessInt      r179, r178, r177
-  JumpIfFalse  r179, L31
-  Index        r162, r176, r178
-  Index        r181, r162, r22
-  Append       r175, r175, r181
-  AddInt       r178, r178, r155
+  LessInt      r185, r184, r183
+  JumpIfFalse  r185, L31
+  Index        r166, r182, r184
+  Index        r187, r166, r22
+  Append       r181, r181, r187
+  AddInt       r184, r184, r158
   Jump         L32
 L31:
   // {
-  MakeMap      r188, 3, r20
+  MakeMap      r194, 3, r159
   // let result = [
-  MakeList     r189, 1, r188
+  MakeList     r195, 1, r194
   // json(result)
-  JSON         r189
+  JSON         r195
   // expect result == [
-  Const        r190, [{"company_name": "ACME Film Works", "link_type": "is follow up", "western_follow_up": "Western Return"}]
-  Equal        r191, r189, r190
-  Expect       r191
+  Const        r196, [{"company_name": "ACME Film Works", "link_type": "is follow up", "western_follow_up": "Western Return"}]
+  Equal        r197, r195, r196
+  Expect       r197
   Return       r0

@@ -1,4 +1,4 @@
-func main (regs=166)
+func main (regs=170)
   // let aka_title = [
   Const        r0, [{"movie_id": 1}, {"movie_id": 2}]
   // let company_name = [
@@ -196,82 +196,87 @@ L16:
   // where cn.country_code == "[us]" &&
   JumpIfFalse  r132, L9
   // select { release_date: mi.info, internet_movie: t.title }
-  MakeMap      r137, 2, r15
+  Const        r133, "release_date"
+  Index        r134, r41, r11
+  Const        r135, "internet_movie"
+  Index        r136, r24, r17
+  MakeMap      r139, 2, r133
   // from t in title
-  Append       r9, r9, r137
+  Append       r9, r9, r139
 L9:
   // join ct in company_type on ct.id == mc.company_type_id
-  Const        r139, 1
-  Add          r96, r96, r139
+  Const        r141, 1
+  Add          r96, r96, r141
   Jump         L17
 L8:
   // join cn in company_name on cn.id == mc.company_id
-  Add          r86, r86, r139
+  Add          r86, r86, r141
   Jump         L18
 L7:
   // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r76, r76, r139
+  Add          r76, r76, r141
   Jump         L19
 L6:
   // join k in keyword on k.id == mk.keyword_id
-  Add          r66, r66, r139
+  Add          r66, r66, r141
   Jump         L20
 L5:
   // join mc in movie_companies on mc.movie_id == t.id
-  Add          r56, r56, r139
+  Add          r56, r56, r141
   Jump         L21
 L4:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r47, r47, r139
+  Add          r47, r47, r141
   Jump         L22
 L3:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r38, r38, r139
+  Add          r38, r38, r141
   Jump         L23
 L2:
   // join at in aka_title on at.movie_id == t.id
   Jump         L24
 L1:
   // from t in title
-  AddInt       r20, r20, r139
+  AddInt       r20, r20, r141
   Jump         L25
 L0:
   // release_date: min(from r in rows select r.release_date),
-  Const        r140, []
-  IterPrep     r141, r9
-  Len          r142, r141
-  Move         r143, r21
+  Const        r142, "release_date"
+  Const        r143, []
+  IterPrep     r144, r9
+  Len          r145, r144
+  Move         r146, r21
 L27:
-  LessInt      r144, r143, r142
-  JumpIfFalse  r144, L26
-  Index        r146, r141, r143
-  Index        r147, r146, r15
-  Append       r140, r140, r147
-  AddInt       r143, r143, r139
+  LessInt      r147, r146, r145
+  JumpIfFalse  r147, L26
+  Index        r149, r144, r146
+  Index        r150, r149, r15
+  Append       r143, r143, r150
+  AddInt       r146, r146, r141
   Jump         L27
 L26:
   // internet_movie: min(from r in rows select r.internet_movie)
-  Const        r150, []
-  IterPrep     r151, r9
-  Len          r152, r151
-  Move         r153, r21
+  Const        r154, []
+  IterPrep     r155, r9
+  Len          r156, r155
+  Move         r157, r21
 L29:
-  LessInt      r154, r153, r152
-  JumpIfFalse  r154, L28
-  Index        r146, r151, r153
-  Index        r156, r146, r16
-  Append       r150, r150, r156
-  AddInt       r153, r153, r139
+  LessInt      r158, r157, r156
+  JumpIfFalse  r158, L28
+  Index        r149, r155, r157
+  Index        r160, r149, r16
+  Append       r154, r154, r160
+  AddInt       r157, r157, r141
   Jump         L29
 L28:
   // {
-  MakeMap      r162, 2, r15
+  MakeMap      r166, 2, r142
   // let result = [
-  MakeList     r163, 1, r162
+  MakeList     r167, 1, r166
   // json(result)
-  JSON         r163
+  JSON         r167
   // expect result == [
-  Const        r164, [{"internet_movie": "Example Movie", "release_date": "USA: March 2005"}]
-  Equal        r165, r163, r164
-  Expect       r165
+  Const        r168, [{"internet_movie": "Example Movie", "release_date": "USA: March 2005"}]
+  Equal        r169, r167, r168
+  Expect       r169
   Return       r0

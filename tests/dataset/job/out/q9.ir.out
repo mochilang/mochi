@@ -1,4 +1,4 @@
-func main (regs=178)
+func main (regs=182)
   // let aka_name = [
   Const        r0, [{"name": "A. N. G.", "person_id": 1}, {"name": "J. D.", "person_id": 2}]
   // let char_name = [
@@ -197,93 +197,99 @@ L15:
   // where (ci.note in ["(voice)", "(voice: Japanese version)", "(voice) (uncredited)", "(voice: English version)"]) &&
   JumpIfFalse  r130, L8
   // select { alt: an.name, character: chn.name, movie: t.title }
-  MakeMap      r137, 3, r16
+  Const        r131, "alt"
+  Index        r132, r26, r13
+  Const        r133, "character"
+  Index        r134, r53, r13
+  Const        r135, "movie"
+  Index        r136, r63, r19
+  MakeMap      r140, 3, r131
   // from an in aka_name
-  Append       r8, r8, r137
+  Append       r8, r8, r140
 L8:
   // join rt in role_type on rt.id == ci.role_id
-  Const        r139, 1
-  Add          r89, r89, r139
+  Const        r142, 1
+  Add          r89, r89, r142
   Jump         L16
 L7:
   // join cn in company_name on cn.id == mc.company_id
-  Add          r79, r79, r139
+  Add          r79, r79, r142
   Jump         L17
 L6:
   // join mc in movie_companies on mc.movie_id == t.id
-  Add          r69, r69, r139
+  Add          r69, r69, r142
   Jump         L18
 L5:
   // join t in title on t.id == ci.movie_id
-  Add          r60, r60, r139
+  Add          r60, r60, r142
   Jump         L19
 L4:
   // join chn in char_name on chn.id == ci.person_role_id
-  Add          r50, r50, r139
+  Add          r50, r50, r142
   Jump         L20
 L3:
   // join ci in cast_info on ci.person_id == n.id
-  Add          r40, r40, r139
+  Add          r40, r40, r142
   Jump         L21
 L2:
   // join n in name on an.person_id == n.id
   Jump         L22
 L1:
   // from an in aka_name
-  AddInt       r22, r22, r139
+  AddInt       r22, r22, r142
   Jump         L23
 L0:
   // alternative_name: min(from x in matches select x.alt),
-  Const        r140, "alternative_name"
-  Const        r141, []
-  IterPrep     r142, r8
-  Len          r143, r142
-  Move         r144, r23
+  Const        r143, "alternative_name"
+  Const        r144, []
+  IterPrep     r145, r8
+  Len          r146, r145
+  Move         r147, r23
 L25:
-  LessInt      r145, r144, r143
-  JumpIfFalse  r145, L24
-  Index        r147, r142, r144
-  Index        r148, r147, r16
-  Append       r141, r141, r148
-  AddInt       r144, r144, r139
+  LessInt      r148, r147, r146
+  JumpIfFalse  r148, L24
+  Index        r150, r145, r147
+  Index        r151, r150, r16
+  Append       r144, r144, r151
+  AddInt       r147, r147, r142
   Jump         L25
 L24:
   // character_name: min(from x in matches select x.character),
-  Const        r152, []
-  IterPrep     r153, r8
-  Len          r154, r153
-  Move         r155, r23
+  Const        r155, []
+  IterPrep     r156, r8
+  Len          r157, r156
+  Move         r158, r23
 L27:
-  LessInt      r156, r155, r154
-  JumpIfFalse  r156, L26
-  Index        r147, r153, r155
-  Index        r158, r147, r17
-  Append       r152, r152, r158
-  AddInt       r155, r155, r139
+  LessInt      r159, r158, r157
+  JumpIfFalse  r159, L26
+  Index        r150, r156, r158
+  Index        r161, r150, r17
+  Append       r155, r155, r161
+  AddInt       r158, r158, r142
   Jump         L27
 L26:
   // movie: min(from x in matches select x.movie)
-  Const        r161, []
-  IterPrep     r162, r8
-  Len          r163, r162
-  Move         r164, r23
+  Const        r165, []
+  IterPrep     r166, r8
+  Len          r167, r166
+  Move         r168, r23
 L29:
-  LessInt      r165, r164, r163
-  JumpIfFalse  r165, L28
-  Index        r147, r162, r164
-  Index        r167, r147, r18
-  Append       r161, r161, r167
-  AddInt       r164, r164, r139
+  LessInt      r169, r168, r167
+  JumpIfFalse  r169, L28
+  Index        r150, r166, r168
+  Index        r171, r150, r18
+  Append       r165, r165, r171
+  AddInt       r168, r168, r142
   Jump         L29
 L28:
   // {
-  MakeMap      r174, 3, r140
+  MakeMap      r178, 3, r143
   // let result = [
-  MakeList     r175, 1, r174
+  MakeList     r179, 1, r178
   // json(result)
-  JSON         r175
+  JSON         r179
   // expect result == [
-  Const        r176, [{"alternative_name": "A. N. G.", "character_name": "Angel", "movie": "Famous Film"}]
-  Equal        r177, r175, r176
-  Expect       r177
+  Const        r180, [{"alternative_name": "A. N. G.", "character_name": "Angel", "movie": "Famous Film"}]
+  Equal        r181, r179, r180
+  Expect       r181
   Return       r0

@@ -1,4 +1,4 @@
-func main (regs=305)
+func main (regs=309)
   // let company_name = [
   Const        r0, [{"country_code": "[de]", "id": 1, "name": "Euro Films"}, {"country_code": "[us]", "id": 2, "name": "US Films"}]
   // let company_type = [
@@ -424,105 +424,111 @@ L40:
   // where (
   JumpIfFalse  r257, L11
   // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  MakeMap      r264, 3, r25
+  Const        r258, "company"
+  Index        r259, r35, r26
+  Const        r260, "rating"
+  Index        r261, r104, r12
+  Const        r262, "title"
+  Index        r263, r59, r28
+  MakeMap      r267, 3, r258
   // from cn in company_name
-  Append       r10, r10, r264
+  Append       r10, r10, r267
 L11:
   // join kt in kind_type on kt.id == t.kind_id
-  Const        r266, 1
-  Add          r119, r119, r266
+  Const        r269, 1
+  Add          r119, r119, r269
   Jump         L41
 L10:
   // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Add          r110, r110, r266
+  Add          r110, r110, r269
   Jump         L42
 L9:
   // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Add          r101, r101, r266
+  Add          r101, r101, r269
   Jump         L43
 L8:
   // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r92, r92, r266
+  Add          r92, r92, r269
   Jump         L44
 L7:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r83, r83, r266
+  Add          r83, r83, r269
   Jump         L45
 L6:
   // join k in keyword on k.id == mk.keyword_id
-  Add          r74, r74, r266
+  Add          r74, r74, r269
   Jump         L46
 L5:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r65, r65, r266
+  Add          r65, r65, r269
   Jump         L47
 L4:
   // join t in title on t.id == mc.movie_id
-  Add          r56, r56, r266
+  Add          r56, r56, r269
   Jump         L48
 L3:
   // join ct in company_type on ct.id == mc.company_type_id
-  Add          r47, r47, r266
+  Add          r47, r47, r269
   Jump         L49
 L2:
   // join mc in movie_companies on cn.id == mc.company_id
   Jump         L50
 L1:
   // from cn in company_name
-  AddInt       r31, r31, r266
+  AddInt       r31, r31, r269
   Jump         L51
 L0:
   // movie_company: min(from r in rows select r.company),
-  Const        r267, "movie_company"
-  Const        r268, []
-  IterPrep     r269, r10
-  Len          r270, r269
-  Move         r271, r32
+  Const        r270, "movie_company"
+  Const        r271, []
+  IterPrep     r272, r10
+  Len          r273, r272
+  Move         r274, r32
 L53:
-  LessInt      r272, r271, r270
-  JumpIfFalse  r272, L52
-  Index        r274, r269, r271
-  Index        r275, r274, r25
-  Append       r268, r268, r275
-  AddInt       r271, r271, r266
+  LessInt      r275, r274, r273
+  JumpIfFalse  r275, L52
+  Index        r277, r272, r274
+  Index        r278, r277, r25
+  Append       r271, r271, r278
+  AddInt       r274, r274, r269
   Jump         L53
 L52:
   // rating: min(from r in rows select r.rating),
-  Const        r278, []
-  IterPrep     r279, r10
-  Len          r280, r279
-  Move         r281, r32
+  Const        r282, []
+  IterPrep     r283, r10
+  Len          r284, r283
+  Move         r285, r32
 L55:
-  LessInt      r282, r281, r280
-  JumpIfFalse  r282, L54
-  Index        r274, r279, r281
-  Index        r284, r274, r27
-  Append       r278, r278, r284
-  AddInt       r281, r281, r266
+  LessInt      r286, r285, r284
+  JumpIfFalse  r286, L54
+  Index        r277, r283, r285
+  Index        r288, r277, r27
+  Append       r282, r282, r288
+  AddInt       r285, r285, r269
   Jump         L55
 L54:
   // western_violent_movie: min(from r in rows select r.title)
-  Const        r288, []
-  IterPrep     r289, r10
-  Len          r290, r289
-  Move         r291, r32
+  Const        r292, []
+  IterPrep     r293, r10
+  Len          r294, r293
+  Move         r295, r32
 L57:
-  LessInt      r292, r291, r290
-  JumpIfFalse  r292, L56
-  Index        r274, r289, r291
-  Index        r294, r274, r28
-  Append       r288, r288, r294
-  AddInt       r291, r291, r266
+  LessInt      r296, r295, r294
+  JumpIfFalse  r296, L56
+  Index        r277, r293, r295
+  Index        r298, r277, r28
+  Append       r292, r292, r298
+  AddInt       r295, r295, r269
   Jump         L57
 L56:
   // {
-  MakeMap      r301, 3, r267
+  MakeMap      r305, 3, r270
   // let result = [
-  MakeList     r302, 1, r301
+  MakeList     r306, 1, r305
   // json(result)
-  JSON         r302
+  JSON         r306
   // expect result == [
-  Const        r303, [{"movie_company": "Euro Films", "rating": 6.5, "western_violent_movie": "Violent Western"}]
-  Equal        r304, r302, r303
-  Expect       r304
+  Const        r307, [{"movie_company": "Euro Films", "rating": 6.5, "western_violent_movie": "Violent Western"}]
+  Equal        r308, r306, r307
+  Expect       r308
   Return       r0
