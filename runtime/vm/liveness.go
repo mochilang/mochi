@@ -435,6 +435,19 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 			}
 		}
 
+		// eliminate double negation: Not r1,r0 ; Not r2,r1 -> Move r2,r0
+		if ins.Op == OpNot && pc+1 < len(fn.Code) {
+			next := fn.Code[pc+1]
+			if next.Op == OpNot && next.B == ins.A && !analysis.Out[pc+1][ins.A] {
+				next.Op = OpMove
+				next.B = ins.B
+				fn.Code[pc+1] = next
+				changed = true
+				pcMap[pc] = -1
+				continue
+			}
+		}
+
 		// collapse chained moves: Move r1,r2 ; Move r3,r1 -> Move r3,r2
 		if ins.Op == OpMove && pc+1 < len(fn.Code) {
 			next := fn.Code[pc+1]

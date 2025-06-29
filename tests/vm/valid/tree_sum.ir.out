@@ -12,7 +12,7 @@ func main (regs=12)
   // right: Leaf
   MakeMap      r6, 1, r0
   // right: Node {
-  Const        r1, "__name"
+  Move         r1, r0
   Const        r7, "Node"
   // left: Leaf,
   Const        r8, "left"
@@ -26,22 +26,22 @@ func main (regs=12)
   // right: Node {
   MakeMap      r6, 4, r1
   // let t = Node {
-  Const        r11, "__name"
-  Const        r5, "Node"
+  Move         r11, r0
+  Move         r10, r7
   // left: Leaf,
-  Const        r10, "left"
-  Move         r4, r2
+  Move         r7, r8
+  Move         r8, r2
   // value: 1,
-  Const        r2, "value"
-  Move         r9, r3
+  Move         r2, r4
+  Move         r4, r3
   // right: Node {
-  Const        r3, "right"
-  Move         r8, r6
+  Move         r3, r5
+  Move         r5, r6
   // let t = Node {
   MakeMap      r6, 4, r11
   // print(sum_tree(t))
-  Call         r8, sum_tree, r6
-  Print        r8
+  Call         r5, sum_tree, r6
+  Print        r5
   Return       r0
 
   // fun sum_tree(t: Tree): int {
@@ -49,33 +49,32 @@ func sum_tree (regs=6)
   // Leaf => 0
   Const        r1, "__name"
   Index        r2, r0, r1
-  Const        r1, "Leaf"
-  Equal        r3, r2, r1
 L0:
-  JumpIfFalse  r3, L0
-  Const        r3, 0
+  Const        r3, "Leaf"
+  Equal        r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r4, 0
   Jump         L1
   // Node(left, value, right) => sum_tree(left) + value + sum_tree(right)
-  Const        r1, "__name"
-  Index        r2, r0, r1
+  Index        r3, r0, r1
   Const        r1, "Node"
-  Equal        r4, r2, r1
-  JumpIfFalse  r4, L2
-  Const        r4, "left"
-  Index        r1, r0, r4
-  Const        r4, "value"
-  Index        r2, r0, r4
-  Const        r4, "right"
-  Index        r5, r0, r4
-  Move         r4, r1
-  Call         r1, 3, r4, r5, r6
-  Add          r4, r1, r2
+  Equal        r2, r3, r1
+  JumpIfFalse  r2, L2
+  Const        r2, "left"
+  Index        r1, r0, r2
+  Const        r2, "value"
+  Index        r3, r0, r2
+  Const        r2, "right"
+  Index        r5, r0, r2
+  Move         r2, r1
+  Call         r1, 4, r2, r3, r4, r5
+  Add          r2, r1, r3
   Move         r1, r5
-  Call         r5, 3, r1, r2, r3
-  Add          r3, r4, r5
+  Call         r5, 4, r1, r2, r3, r4
+  Add          r4, r2, r5
   Jump         L1
 L2:
-  Const        r3, nil
+  Const        r4, nil
 L1:
   // return match t {
-  Return       r3
+  Return       r4

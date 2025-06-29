@@ -1,4 +1,4 @@
-func main (regs=2)
+func main (regs=3)
   // let a = 10 - 3
   Const        r0, 10
   Const        r1, 7
@@ -8,6 +8,6 @@ func main (regs=2)
   Const        r1, true
   Print        r1
   // print(b < 5)
-  Const        r1, true
-  Print        r1
+  Move         r2, r1
+  Print        r2
   Return       r0

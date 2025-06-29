@@ -1,4 +1,4 @@
-func main (regs=8)
+func main (regs=9)
   // title: "Go",
   Const        r0, "Go"
   // author: Person { name: "Bob", age: 42 },
@@ -12,20 +12,18 @@ func main (regs=8)
   Move         r7, r2
   MakeMap      r2, 3, r3
   // let book = Book {
-  Const        r7, "__name"
-  Const        r1, "Book"
+  Move         r7, r3
+  Const        r3, "Book"
   // title: "Go",
-  Const        r6, "title"
-  Move         r5, r0
+  Const        r1, "title"
+  Move         r6, r0
   // author: Person { name: "Bob", age: 42 },
   Const        r4, "author"
-  Move         r3, r2
+  Move         r8, r2
   // let book = Book {
   MakeMap      r2, 3, r7
   // print(book.author.name)
-  Const        r3, "author"
-  Index        r4, r2, r3
-  Const        r3, "name"
-  Index        r2, r4, r3
+  Index        r8, r2, r4
+  Index        r2, r8, r5
   Print        r2
   Return       r0

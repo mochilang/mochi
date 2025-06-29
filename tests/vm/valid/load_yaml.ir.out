@@ -1,4 +1,4 @@
-func main (regs=10)
+func main (regs=11)
   // let people = load "../interpreter/valid/people.yaml" as Person with { format: "yaml" }
   Const        r0, "../interpreter/valid/people.yaml"
   Const        r1, {"format": "yaml"}
@@ -9,47 +9,51 @@ func main (regs=10)
   Const        r3, "age"
   // select { name: p.name, email: p.email }
   Const        r4, "name"
-L3:
+L0:
   Const        r5, "email"
-L1:
+L2:
   // let adults = from p in people
   IterPrep     r6, r2
   Len          r2, r6
   Const        r7, 0
-  LessInt      r8, r7, r2
-  JumpIfFalse  r8, L0
-  Index        r8, r6, r7
+L1:
+  Move         r8, r7
+  LessInt      r9, r8, r2
+  JumpIfFalse  r9, L0
+  Index        r9, r6, r8
   // where p.age >= 18
-  Index        r6, r8, r3
+  Index        r6, r9, r3
   Const        r3, 18
   LessEq       r2, r3, r6
   JumpIfFalse  r2, L1
   // select { name: p.name, email: p.email }
-  Const        r2, "name"
-  Index        r3, r8, r4
-  Const        r6, "email"
-  Index        r9, r8, r5
-  Move         r8, r2
+  Move         r2, r4
+  Index        r3, r9, r4
+  Move         r6, r5
+  Index        r10, r9, r5
+  Move         r9, r2
   Move         r2, r3
   Move         r3, r6
-  Move         r6, r9
-  MakeMap      r9, 1, r8
+  Move         r6, r10
+  MakeMap      r10, 1, r9
   // let adults = from p in people
-  Append       r1, r1, r9
-  Jump         L1
-L0:
+  Append       r1, r1, r10
+  Const        r10, 1
+  AddInt       r8, r8, r10
+  Jump         L2
   // for a in adults {
-  IterPrep     r9, r1
-  Len          r1, r9
-  Const        r6, 0
-  Less         r3, r6, r1
-  JumpIfFalse  r3, L2
-  Index        r3, r9, r6
+  IterPrep     r8, r1
+  Len          r1, r8
+  Move         r6, r7
+  Less         r7, r6, r1
+  JumpIfFalse  r7, L3
+  Index        r7, r8, r6
   // print(a.name, a.email)
-  Index        r9, r3, r4
-  Index        r4, r3, r5
-  Print2       r9, r4
+  Index        r8, r7, r4
+  Index        r4, r7, r5
+  Print2       r8, r4
   // for a in adults {
-  Jump         L3
-L2:
+  Add          r6, r6, r10
+  Jump         L2
+L3:
   Return       r0

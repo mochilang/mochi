@@ -1,4 +1,4 @@
-func main (regs=22)
+func main (regs=23)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
   // let orders = [
@@ -10,21 +10,22 @@ func main (regs=22)
 L1:
   // select { orderId: o.id, name: c.name, item: i }
   Const        r4, "orderId"
-L2:
+L3:
   Const        r5, "id"
   Const        r6, "name"
   Const        r7, "item"
   // let result = from o in orders
   IterPrep     r8, r1
+L2:
   Len          r1, r8
   Const        r9, 0
-L5:
+L6:
   Move         r10, r9
   LessInt      r11, r10, r1
-L3:
+L4:
   JumpIfFalse  r11, L0
   Index        r1, r8, r10
-L4:
+L5:
   // join from c in customers on o.customerId == c.id
   IterPrep     r8, r0
   Len          r12, r8
@@ -41,78 +42,77 @@ L4:
   IterPrep     r16, r2
   Len          r2, r16
   Move         r13, r9
-  LessInt      r9, r13, r2
-  JumpIfFalse  r9, L2
-  Index        r9, r16, r13
+  LessInt      r8, r13, r2
+  JumpIfFalse  r8, L3
+  Index        r8, r16, r13
   Const        r16, false
   Index        r2, r1, r5
-  Index        r8, r9, r4
-  Equal        r17, r2, r8
-  JumpIfFalse  r17, L3
+  Index        r17, r8, r4
+  Equal        r18, r2, r17
+  JumpIfFalse  r18, L4
   Const        r16, true
   // select { orderId: o.id, name: c.name, item: i }
-  Const        r17, "orderId"
-  Index        r8, r1, r5
-  Const        r2, "name"
-  Index        r18, r12, r6
-  Const        r19, "item"
-  Move         r20, r17
-  Move         r17, r8
-  Move         r8, r2
-  Move         r2, r18
-  Move         r18, r19
-  Move         r19, r9
-  MakeMap      r21, 3, r20
+  Move         r18, r4
+  Index        r17, r1, r5
+  Move         r2, r6
+  Index        r19, r12, r6
+  Move         r20, r7
+  Move         r21, r18
+  Move         r18, r17
+  Move         r17, r2
+  Move         r2, r19
+  Move         r19, r20
+  Move         r20, r8
+  MakeMap      r22, 3, r21
   // let result = from o in orders
-  Append       r3, r3, r21
+  Append       r3, r3, r22
   // left join i in items on o.id == i.orderId
-  Const        r21, 1
-  Add          r13, r13, r21
-  Jump         L3
+  Const        r22, 1
+  Add          r13, r13, r22
+  Jump         L4
   Move         r13, r16
   JumpIfTrue   r13, L2
-  Const        r9, nil
+  Const        r8, nil
   // select { orderId: o.id, name: c.name, item: i }
-  Const        r13, "orderId"
+  Move         r13, r4
   Index        r16, r1, r5
-  Const        r1, "name"
+  Move         r1, r6
   Index        r5, r12, r6
-  Const        r12, "item"
-  Move         r19, r13
+  Move         r12, r7
+  Move         r20, r13
   Move         r13, r16
   Move         r16, r1
   Move         r1, r5
   Move         r5, r12
-  Move         r12, r9
-  MakeMap      r9, 3, r19
+  Move         r12, r8
+  MakeMap      r8, 3, r20
   // let result = from o in orders
-  Append       r3, r3, r9
+  Append       r3, r3, r8
   // join from c in customers on o.customerId == c.id
-  Add          r14, r14, r21
-  Jump         L4
-  // let result = from o in orders
-  AddInt       r10, r10, r21
+  Add          r14, r14, r22
   Jump         L5
+  // let result = from o in orders
+  AddInt       r10, r10, r22
+  Jump         L6
 L0:
   // print("--- Left Join Multi ---")
-  Const        r9, "--- Left Join Multi ---"
-  Print        r9
+  Const        r8, "--- Left Join Multi ---"
+  Print        r8
   // for r in result {
-  IterPrep     r9, r3
-  Len          r3, r9
-  Const        r12, 0
-L7:
-  Less         r5, r12, r3
-  JumpIfFalse  r5, L6
-  Index        r5, r9, r12
+  IterPrep     r8, r3
+  Len          r3, r8
+  Move         r12, r9
+L8:
+  Less         r9, r12, r3
+  JumpIfFalse  r9, L7
+  Index        r9, r8, r12
   // print(r.orderId, r.name, r.item)
-  Index        r9, r5, r4
-  Index        r4, r5, r6
-  Index        r6, r5, r7
-  PrintN       r9, 3, r9
+  Index        r8, r9, r4
+  Index        r4, r9, r6
+  Index        r6, r9, r7
+  PrintN       r8, 3, r8
   // for r in result {
-  Const        r6, 1
-  Add          r12, r12, r6
-  Jump         L7
-L6:
+  Add          r12, r12, r22
+  Jump         L8
+L7:
   Return       r0
