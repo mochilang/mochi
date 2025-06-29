@@ -1,8 +1,9 @@
-func main (regs=74)
+func main (regs=20)
   // let keyword = [
   Const        r0, [{"id": 1, "keyword": "amazing sequel"}, {"id": 2, "keyword": "prequel"}]
   // let movie_info = [
   Const        r1, [{"info": "Germany", "movie_id": 10}, {"info": "Sweden", "movie_id": 30}, {"info": "France", "movie_id": 20}]
+L4:
   // let movie_keyword = [
   Const        r2, [{"keyword_id": 1, "movie_id": 10}, {"keyword_id": 1, "movie_id": 30}, {"keyword_id": 1, "movie_id": 20}, {"keyword_id": 2, "movie_id": 10}]
   // let title = [
@@ -14,122 +15,114 @@ func main (regs=74)
   // where k.keyword.contains("sequel") &&
   Const        r6, "keyword"
   // mi.info in allowed_infos &&
-  Const        r8, "info"
+  Const        r7, "info"
   // t.production_year > 2005 &&
-  Const        r9, "production_year"
+  Const        r8, "production_year"
   // mk.movie_id == mi.movie_id
-  Const        r10, "movie_id"
+  Const        r9, "movie_id"
   // select t.title
-  Const        r11, "title"
+  Const        r10, "title"
   // from k in keyword
-  IterPrep     r12, r0
-  Len          r13, r12
-  Const        r15, 0
-  Move         r14, r15
-L11:
-  LessInt      r16, r14, r13
-  JumpIfFalse  r16, L0
-  Index        r18, r12, r14
+  IterPrep     r11, r0
+  Len          r12, r11
+L6:
+  Const        r13, 0
+  Move         r14, r13
+  LessInt      r15, r14, r12
+  JumpIfFalse  r15, L0
+L2:
+  Index        r15, r11, r14
   // join mk in movie_keyword on mk.keyword_id == k.id
-  IterPrep     r19, r2
-  Len          r20, r19
-  Const        r21, "keyword_id"
-  Const        r22, "id"
-  Move         r23, r15
-L10:
-  LessInt      r24, r23, r20
-  JumpIfFalse  r24, L1
-  Index        r26, r19, r23
-  Index        r27, r26, r21
-  Index        r28, r18, r22
-  Equal        r29, r27, r28
-  JumpIfFalse  r29, L2
+  IterPrep     r11, r2
+  Len          r2, r11
+  Const        r12, "keyword_id"
+  Const        r16, "id"
+  Move         r17, r13
+  LessInt      r18, r17, r2
+  JumpIfFalse  r18, L1
+  Index        r18, r11, r17
+  Index        r17, r18, r12
+  Index        r12, r15, r16
+  Equal        r11, r17, r12
+  JumpIfFalse  r11, L2
   // join mi in movie_info on mi.movie_id == mk.movie_id
-  IterPrep     r30, r1
-  Len          r31, r30
-  Move         r32, r15
-L9:
-  LessInt      r33, r32, r31
-  JumpIfFalse  r33, L2
-  Index        r35, r30, r32
-  Index        r36, r35, r10
-  Index        r37, r26, r10
-  Equal        r38, r36, r37
-  JumpIfFalse  r38, L3
+  IterPrep     r11, r1
+  Len          r1, r11
+  Move         r12, r13
+  LessInt      r17, r12, r1
+  JumpIfFalse  r17, L2
+  Index        r1, r11, r12
+  Index        r11, r1, r9
+  Index        r2, r18, r9
+  Equal        r19, r11, r2
+  JumpIfFalse  r19, L3
   // join t in title on t.id == mi.movie_id
-  IterPrep     r39, r3
-  Len          r40, r39
-  Move         r41, r15
-L8:
-  LessInt      r42, r41, r40
-  JumpIfFalse  r42, L3
-  Index        r44, r39, r41
-  Index        r45, r44, r22
-  Index        r46, r35, r10
-  Equal        r47, r45, r46
-  JumpIfFalse  r47, L4
-  Index        r48, r18, r6
+  IterPrep     r19, r3
+  Len          r3, r19
+  Move         r2, r13
+  LessInt      r11, r2, r3
+  JumpIfFalse  r11, L3
+  Index        r11, r19, r2
+  Index        r19, r11, r16
+  Index        r16, r1, r9
+  Equal        r3, r19, r16
+  JumpIfFalse  r3, L4
+  Index        r3, r15, r6
   // where k.keyword.contains("sequel") &&
-  Const        r49, "sequel"
-  In           r50, r49, r48
+  Const        r15, "sequel"
+  In           r6, r15, r3
   // t.production_year > 2005 &&
-  Index        r51, r44, r9
-  Const        r52, 2005
-  Less         r53, r52, r51
+  Index        r15, r11, r8
+  Const        r8, 2005
+  Less         r3, r8, r15
   // mi.info in allowed_infos &&
-  Index        r54, r35, r8
-  In           r55, r54, r4
+  Index        r8, r1, r7
+  In           r7, r8, r4
   // mk.movie_id == mi.movie_id
-  Index        r56, r26, r10
-  Index        r57, r35, r10
-  Equal        r58, r56, r57
+  Index        r8, r18, r9
+  Index        r18, r1, r9
+  Equal        r1, r8, r18
   // where k.keyword.contains("sequel") &&
-  Move         r59, r50
-  JumpIfFalse  r59, L5
+  Move         r18, r6
+  JumpIfFalse  r18, L5
 L5:
   // mi.info in allowed_infos &&
-  Move         r60, r55
-  JumpIfFalse  r60, L6
-L6:
+  Move         r18, r7
+  JumpIfFalse  r18, L4
   // t.production_year > 2005 &&
-  Move         r61, r53
-  JumpIfFalse  r61, L7
-  Move         r61, r58
-L7:
+  Move         r18, r3
+  JumpIfFalse  r18, L4
+  Move         r18, r1
   // where k.keyword.contains("sequel") &&
-  JumpIfFalse  r61, L4
+  JumpIfFalse  r18, L4
   // select t.title
-  Index        r62, r44, r11
+  Index        r18, r11, r10
   // from k in keyword
-  Append       r5, r5, r62
-L4:
+  Append       r5, r5, r18
   // join t in title on t.id == mi.movie_id
-  Const        r64, 1
-  Add          r41, r41, r64
-  Jump         L8
+  Const        r18, 1
+  Add          r2, r2, r18
+  Jump         L4
 L3:
   // join mi in movie_info on mi.movie_id == mk.movie_id
-  Add          r32, r32, r64
-  Jump         L9
-L2:
-  // join mk in movie_keyword on mk.keyword_id == k.id
-  Jump         L10
+  Add          r12, r12, r18
+  Jump         L2
 L1:
   // from k in keyword
-  AddInt       r14, r14, r64
-  Jump         L11
+  AddInt       r14, r14, r18
+  Jump         L6
 L0:
   // let result = [{ movie_title: min(candidate_titles) }]
-  Const        r65, "movie_title"
-  Min          r66, r5
-  Move         r67, r65
-  Move         r68, r66
-  MakeMap      r70, 1, r67
-  MakeList     r71, 1, r70
+  Const        r2, "movie_title"
+  Min          r18, r5
+  Move         r5, r2
+  Move         r2, r18
+  MakeMap      r18, 1, r5
+  MakeList     r2, 1, r18
   // json(result)
-  JSON         r71
+  JSON         r2
   // expect result == [ { movie_title: "Alpha" } ]
-  Const        r72, [{"movie_title": "Alpha"}]
-  Equal        r73, r71, r72
-  Expect       r73
+  Const        r18, [{"movie_title": "Alpha"}]
+  Equal        r5, r2, r18
+  Expect       r5
   Return       r0
