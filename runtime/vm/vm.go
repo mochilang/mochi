@@ -2387,7 +2387,7 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 		rlen := fc.newReg()
 		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLen, A: rlen, B: recv})
 		cond := fc.newReg()
-		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLessEq, A: cond, B: plen, C: rlen})
+		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLessEqInt, A: cond, B: plen, C: rlen})
 		dst := fc.newReg()
 		skip := len(fc.fn.Code)
 		fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpJumpIfFalse, A: cond})
@@ -3442,7 +3442,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 	fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: emptyRight})
 
 	cond := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpLessEq, A: cond, B: rlen, C: llen})
+	fc.emit(q.Pos, Instr{Op: OpLessEqInt, A: cond, B: rlen, C: llen})
 	jmpLeft := len(fc.fn.Code)
 	fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: cond})
 
@@ -3532,6 +3532,12 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 			fc.vars[q.Var] = lvar
 		}
 		fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem})
+		var wskipLeft int
+		if whereLeft {
+			w := fc.compileExpr(q.Where)
+			wskipLeft = len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+		}
 		lkey := fc.compileExpr(leftKey)
 		matches := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpIndex, A: matches, B: rmap, C: lkey})
@@ -3573,6 +3579,9 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 		lend := len(fc.fn.Code)
 		fc.fn.Code[ljmp].B = lend
+		if whereLeft {
+			fc.fn.Code[wskipLeft].B = lend
+		}
 	}
 
 	jumpEnd := len(fc.fn.Code)
@@ -3667,6 +3676,12 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 			fc.vars[join.Var] = rvar
 		}
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
+		var wskipRight int
+		if whereRight {
+			w := fc.compileExpr(q.Where)
+			wskipRight = len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+		}
 		rkey := fc.compileExpr(rightKey)
 		matches := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpIndex, A: matches, B: lmap, C: rkey})
@@ -3708,6 +3723,9 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		rend := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = rend
+		if whereRight {
+			fc.fn.Code[wskipRight].B = rend
+		}
 	}
 
 	fc.fn.Code[jumpEnd].B = len(fc.fn.Code)
