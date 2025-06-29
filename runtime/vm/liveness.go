@@ -445,6 +445,13 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 				pcMap[pc] = -1
 				continue
 			}
+			if next.Op == OpReturn && next.A == ins.A && !analysis.Out[pc+1][ins.A] {
+				next.A = ins.B
+				fn.Code[pc+1] = next
+				changed = true
+				pcMap[pc] = -1
+				continue
+			}
 			// propagate move into the next instruction when the temp register
 			// is not live afterwards. Avoid range-based ops where register order matters.
 			switch next.Op {
