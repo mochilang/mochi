@@ -3505,7 +3505,11 @@ func (fc *funcCompiler) compileHashJoinSide(q *parser.QueryExpr, dst int, leftKe
 	join := q.Joins[0]
 	if hashRight {
 		rmap := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpMakeMap, A: rmap, B: 0})
+		cap := 0
+		if n, ok := fc.constListLen(join.Src); ok {
+			cap = n
+		}
+		fc.emit(join.Pos, Instr{Op: OpMakeMap, A: rmap, B: cap})
 
 		ri := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
@@ -3631,7 +3635,11 @@ func (fc *funcCompiler) compileHashJoinSide(q *parser.QueryExpr, dst int, leftKe
 		fc.fn.Code[ljmp].B = lend
 	} else {
 		lmap := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpMakeMap, A: lmap, B: 0})
+		cap := 0
+		if n, ok := fc.constListLen(q.Source); ok {
+			cap = n
+		}
+		fc.emit(q.Pos, Instr{Op: OpMakeMap, A: lmap, B: cap})
 
 		li := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
@@ -3779,7 +3787,11 @@ func (fc *funcCompiler) compileHashLeftJoin(q *parser.QueryExpr, dst int, leftKe
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 
 	rmap := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpMakeMap, A: rmap, B: 0})
+	rcap := 0
+	if n, ok := fc.constListLen(join.Src); ok {
+		rcap = n
+	}
+	fc.emit(join.Pos, Instr{Op: OpMakeMap, A: rmap, B: rcap})
 
 	ri := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
@@ -3941,7 +3953,11 @@ func (fc *funcCompiler) compileHashRightJoin(q *parser.QueryExpr, dst int, leftK
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 
 	lmap := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: lmap, B: 0})
+	lcap := 0
+	if n, ok := fc.constListLen(q.Source); ok {
+		lcap = n
+	}
+	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: lmap, B: lcap})
 
 	li := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
@@ -4234,7 +4250,11 @@ func (fc *funcCompiler) compileHashOuterJoin(q *parser.QueryExpr, dst int, leftK
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 
 	rmap := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpMakeMap, A: rmap, B: 0})
+	rcap := 0
+	if n, ok := fc.constListLen(join.Src); ok {
+		rcap = n
+	}
+	fc.emit(join.Pos, Instr{Op: OpMakeMap, A: rmap, B: rcap})
 
 	ri := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
@@ -4283,7 +4303,11 @@ func (fc *funcCompiler) compileHashOuterJoin(q *parser.QueryExpr, dst int, leftK
 	fc.fn.Code[rjmp].B = rend
 
 	matched := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpMakeMap, A: matched, B: 0})
+	mcap := 0
+	if n, ok := fc.constListLen(join.Src); ok {
+		mcap = n
+	}
+	fc.emit(join.Pos, Instr{Op: OpMakeMap, A: matched, B: mcap})
 	trueReg := fc.constReg(join.Pos, Value{Tag: ValueBool, Bool: true})
 
 	appendSelect := func() {
