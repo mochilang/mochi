@@ -815,8 +815,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				case ValueInt:
 					key = fmt.Sprintf("%d", idxVal.Int)
 				default:
-					fr.regs[ins.A] = Value{Tag: ValueNull}
-					break
+					key = valueToString(idxVal)
 				}
 				fr.regs[ins.A] = src.Map[key]
 			case ValueStr:
@@ -922,7 +921,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				case ValueInt:
 					key = fmt.Sprintf("%d", idxVal.Int)
 				default:
-					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
+					key = valueToString(idxVal)
 				}
 				if dst.Map == nil {
 					dst.Map = map[string]Value{}
@@ -951,7 +950,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				case ValueInt:
 					k = fmt.Sprintf("%d", key.Int)
 				default:
-					return Value{}, m.newError(fmt.Errorf("invalid map key"), trace, ins.Line)
+					k = valueToString(key)
 				}
 				mp[k] = val
 			}
