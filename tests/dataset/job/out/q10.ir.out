@@ -1,4 +1,4 @@
-func main (regs=138)
+func main (regs=140)
   // let char_name = [
   Const        r0, [{"id": 1, "name": "Ivan"}, {"id": 2, "name": "Alex"}]
   // let cast_info = [
@@ -153,75 +153,79 @@ L11:
   // where ci.note.contains("(voice)") &&
   JumpIfFalse  r102, L7
   // select { character: chn.name, movie: t.title }
-  MakeMap      r107, 2, r13
+  Const        r103, "character"
+  Index        r104, r23, r14
+  Const        r105, "movie"
+  Index        r106, r51, r16
+  MakeMap      r109, 2, r103
   // from chn in char_name
-  Append       r7, r7, r107
+  Append       r7, r7, r109
 L7:
   // join ct in company_type on ct.id == mc.company_type_id
-  Const        r109, 1
-  Add          r77, r77, r109
+  Const        r111, 1
+  Add          r77, r77, r111
   Jump         L12
 L6:
   // join cn in company_name on cn.id == mc.company_id
-  Add          r67, r67, r109
+  Add          r67, r67, r111
   Jump         L13
 L5:
   // join mc in movie_companies on mc.movie_id == t.id
-  Add          r57, r57, r109
+  Add          r57, r57, r111
   Jump         L14
 L4:
   // join t in title on t.id == ci.movie_id
-  Add          r48, r48, r109
+  Add          r48, r48, r111
   Jump         L15
 L3:
   // join rt in role_type on rt.id == ci.role_id
-  Add          r38, r38, r109
+  Add          r38, r38, r111
   Jump         L16
 L2:
   // join ci in cast_info on chn.id == ci.person_role_id
   Jump         L17
 L1:
   // from chn in char_name
-  AddInt       r19, r19, r109
+  AddInt       r19, r19, r111
   Jump         L18
 L0:
   // uncredited_voiced_character: min(from x in matches select x.character),
-  Const        r110, "uncredited_voiced_character"
-  Const        r111, []
-  IterPrep     r112, r7
-  Len          r113, r112
-  Move         r114, r20
+  Const        r112, "uncredited_voiced_character"
+  Const        r113, []
+  IterPrep     r114, r7
+  Len          r115, r114
+  Move         r116, r20
 L20:
-  LessInt      r115, r114, r113
-  JumpIfFalse  r115, L19
-  Index        r117, r112, r114
-  Index        r118, r117, r13
-  Append       r111, r111, r118
-  AddInt       r114, r114, r109
+  LessInt      r117, r116, r115
+  JumpIfFalse  r117, L19
+  Index        r119, r114, r116
+  Index        r120, r119, r13
+  Append       r113, r113, r120
+  AddInt       r116, r116, r111
   Jump         L20
 L19:
   // russian_movie: min(from x in matches select x.movie)
-  Const        r122, []
-  IterPrep     r123, r7
-  Len          r124, r123
-  Move         r125, r20
+  Const        r124, []
+  IterPrep     r125, r7
+  Len          r126, r125
+  Move         r127, r20
 L22:
-  LessInt      r126, r125, r124
-  JumpIfFalse  r126, L21
-  Index        r117, r123, r125
-  Index        r128, r117, r15
-  Append       r122, r122, r128
-  AddInt       r125, r125, r109
+  LessInt      r128, r127, r126
+  JumpIfFalse  r128, L21
+  Index        r119, r125, r127
+  Index        r130, r119, r15
+  Append       r124, r124, r130
+  AddInt       r127, r127, r111
   Jump         L22
 L21:
   // {
-  MakeMap      r134, 2, r110
+  MakeMap      r136, 2, r112
   // let result = [
-  MakeList     r135, 1, r134
+  MakeList     r137, 1, r136
   // json(result)
-  JSON         r135
+  JSON         r137
   // expect result == [
-  Const        r136, [{"russian_movie": "Vodka Dreams", "uncredited_voiced_character": "Ivan"}]
-  Equal        r137, r135, r136
-  Expect       r137
+  Const        r138, [{"russian_movie": "Vodka Dreams", "uncredited_voiced_character": "Ivan"}]
+  Equal        r139, r137, r138
+  Expect       r139
   Return       r0

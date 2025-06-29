@@ -1,4 +1,4 @@
-func main (regs=217)
+func main (regs=221)
   // let cast_info = [
   Const        r0, [{"movie_id": 1, "note": "(writer)", "person_id": 1}, {"movie_id": 2, "note": "(writer)", "person_id": 2}]
   // let info_type = [
@@ -274,114 +274,126 @@ L26:
 L27:
   // where (
   JumpIfFalse  r155, L28
+  // budget: mi.info,
+  Const        r156, "budget"
+  Index        r157, r55, r12
+  // votes: mi_idx.info,
+  Const        r158, "votes"
+  Index        r159, r61, r12
+  // writer: n.name,
+  Const        r160, "writer"
+  Index        r161, r73, r23
+  // title: t.title
+  Const        r162, "title"
+  Index        r163, r79, r24
   // select {
-  MakeMap      r164, 4, r20
+  MakeMap      r168, 4, r156
   // from ci in cast_info
-  Append       r10, r10, r164
+  Append       r10, r10, r168
 L28:
   // from t in title
-  Const        r166, 1
-  AddInt       r76, r76, r166
+  Const        r170, 1
+  AddInt       r76, r76, r170
   Jump         L29
 L8:
   // from n in name
-  AddInt       r70, r70, r166
+  AddInt       r70, r70, r170
   Jump         L30
 L7:
   // from mk in movie_keyword
-  AddInt       r64, r64, r166
+  AddInt       r64, r64, r170
   Jump         L31
 L6:
   // from mi_idx in movie_info_idx
-  AddInt       r58, r58, r166
+  AddInt       r58, r58, r170
   Jump         L32
 L5:
   // from mi in movie_info
-  AddInt       r52, r52, r166
+  AddInt       r52, r52, r170
   Jump         L33
 L4:
   // from k in keyword
-  AddInt       r46, r46, r166
+  AddInt       r46, r46, r170
   Jump         L34
 L3:
   // from it2 in info_type
-  AddInt       r40, r40, r166
+  AddInt       r40, r40, r170
   Jump         L35
 L2:
   // from it1 in info_type
-  AddInt       r34, r34, r166
+  AddInt       r34, r34, r170
   Jump         L36
 L1:
   // from ci in cast_info
-  AddInt       r27, r27, r166
+  AddInt       r27, r27, r170
   Jump         L37
 L0:
   // movie_budget: min(from x in matches select x.budget),
-  Const        r167, "movie_budget"
-  Const        r168, []
-  IterPrep     r169, r10
-  Len          r170, r169
-  Move         r171, r28
+  Const        r171, "movie_budget"
+  Const        r172, []
+  IterPrep     r173, r10
+  Len          r174, r173
+  Move         r175, r28
 L39:
-  LessInt      r172, r171, r170
-  JumpIfFalse  r172, L38
-  Index        r173, r169, r171
-  Move         r174, r173
-  Index        r175, r174, r20
-  Append       r168, r168, r175
-  AddInt       r171, r171, r166
+  LessInt      r176, r175, r174
+  JumpIfFalse  r176, L38
+  Index        r177, r173, r175
+  Move         r178, r177
+  Index        r179, r178, r20
+  Append       r172, r172, r179
+  AddInt       r175, r175, r170
   Jump         L39
 L38:
   // movie_votes: min(from x in matches select x.votes),
-  Const        r179, []
-  IterPrep     r180, r10
-  Len          r181, r180
-  Move         r182, r28
+  Const        r183, []
+  IterPrep     r184, r10
+  Len          r185, r184
+  Move         r186, r28
 L41:
-  LessInt      r183, r182, r181
-  JumpIfFalse  r183, L40
-  Index        r174, r180, r182
-  Index        r185, r174, r21
-  Append       r179, r179, r185
-  AddInt       r182, r182, r166
+  LessInt      r187, r186, r185
+  JumpIfFalse  r187, L40
+  Index        r178, r184, r186
+  Index        r189, r178, r21
+  Append       r183, r183, r189
+  AddInt       r186, r186, r170
   Jump         L41
 L40:
   // male_writer: min(from x in matches select x.writer),
-  Const        r189, []
-  IterPrep     r190, r10
-  Len          r191, r190
-  Move         r192, r28
+  Const        r193, []
+  IterPrep     r194, r10
+  Len          r195, r194
+  Move         r196, r28
 L43:
-  LessInt      r193, r192, r191
-  JumpIfFalse  r193, L42
-  Index        r174, r190, r192
-  Index        r195, r174, r22
-  Append       r189, r189, r195
-  AddInt       r192, r192, r166
+  LessInt      r197, r196, r195
+  JumpIfFalse  r197, L42
+  Index        r178, r194, r196
+  Index        r199, r178, r22
+  Append       r193, r193, r199
+  AddInt       r196, r196, r170
   Jump         L43
 L42:
   // violent_movie_title: min(from x in matches select x.title)
-  Const        r199, []
-  IterPrep     r200, r10
-  Len          r201, r200
-  Move         r202, r28
+  Const        r203, []
+  IterPrep     r204, r10
+  Len          r205, r204
+  Move         r206, r28
 L45:
-  LessInt      r203, r202, r201
-  JumpIfFalse  r203, L44
-  Index        r174, r200, r202
-  Index        r205, r174, r24
-  Append       r199, r199, r205
-  AddInt       r202, r202, r166
+  LessInt      r207, r206, r205
+  JumpIfFalse  r207, L44
+  Index        r178, r204, r206
+  Index        r209, r178, r24
+  Append       r203, r203, r209
+  AddInt       r206, r206, r170
   Jump         L45
 L44:
   // {
-  MakeMap      r213, 4, r167
+  MakeMap      r217, 4, r171
   // let result = [
-  MakeList     r214, 1, r213
+  MakeList     r218, 1, r217
   // json(result)
-  JSON         r214
+  JSON         r218
   // expect result == [
-  Const        r215, [{"male_writer": "Mike", "movie_budget": "Horror", "movie_votes": 100, "violent_movie_title": "Scary Movie"}]
-  Equal        r216, r214, r215
-  Expect       r216
+  Const        r219, [{"male_writer": "Mike", "movie_budget": "Horror", "movie_votes": 100, "violent_movie_title": "Scary Movie"}]
+  Equal        r220, r218, r219
+  Expect       r220
   Return       r0

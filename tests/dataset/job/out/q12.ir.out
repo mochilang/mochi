@@ -1,4 +1,4 @@
-func main (regs=137)
+func main (regs=140)
   // let company_name = [
   Const        r0, [{"country_code": "[us]", "id": 1, "name": "Best Pictures"}, {"country_code": "[uk]", "id": 2, "name": "Foreign Films"}]
   // let company_type = [
@@ -24,12 +24,10 @@ func main (regs=137)
   // t.production_year >= 2005 &&
   Const        r11, "production_year"
   // movie_company: cn.name,
-  Const        r12, "movie_company"
   Const        r13, "name"
   // rating: mi_idx.info,
   Const        r14, "rating"
   // drama_horror_movie: t.title
-  Const        r15, "drama_horror_movie"
   Const        r16, "title"
   // from cn in company_name
   IterPrep     r17, r0
@@ -196,48 +194,55 @@ L14:
 L15:
   // cn.country_code == "[us]" &&
   JumpIfFalse  r125, L8
+  // movie_company: cn.name,
+  Const        r126, "movie_company"
+  Index        r127, r23, r13
+  // rating: mi_idx.info,
+  Const        r128, "rating"
+  Index        r129, r79, r10
+  // drama_horror_movie: t.title
+  Const        r130, "drama_horror_movie"
+  Index        r131, r51, r16
   // select {
-  MakeMap      r132, 3, r12
+  MakeMap      r135, 3, r126
   // from cn in company_name
-  Append       r7, r7, r132
+  Append       r7, r7, r135
 L8:
   // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Const        r134, 1
-  Add          r85, r85, r134
+  Const        r137, 1
+  Add          r85, r85, r137
   Jump         L16
 L7:
   // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Add          r76, r76, r134
+  Add          r76, r76, r137
   Jump         L17
 L6:
   // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r67, r67, r134
+  Add          r67, r67, r137
   Jump         L18
 L5:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r57, r57, r134
+  Add          r57, r57, r137
   Jump         L19
 L4:
   // join t in title on t.id == mc.movie_id
-  Add          r48, r48, r134
+  Add          r48, r48, r137
   Jump         L20
 L3:
   // join ct in company_type on ct.id == mc.company_type_id
-  Add          r38, r38, r134
   Jump         L21
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
-  Add          r28, r28, r134
+  Add          r28, r28, r137
   Jump         L22
 L1:
   // from cn in company_name
-  AddInt       r19, r19, r134
   Jump         L23
 L0:
   // json(result)
   JSON         r7
   // expect result == [
-  Const        r135, [{"drama_horror_movie": "Great Drama", "movie_company": "Best Pictures", "rating": 8.3}]
-  Equal        r136, r7, r135
-  Expect       r136
+  Const        r138, [{"drama_horror_movie": "Great Drama", "movie_company": "Best Pictures", "rating": 8.3}]
+  Equal        r139, r7, r138
+  Expect       r139
   Return       r0

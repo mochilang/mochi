@@ -1,4 +1,4 @@
-func main (regs=141)
+func main (regs=143)
   // let aka_name = [
   Const        r0, [{"name": "Alpha", "person_id": 1}, {"name": "Beta", "person_id": 2}]
   // let cast_info = [
@@ -159,80 +159,84 @@ L11:
   // where cn.country_code == "[us]" &&
   JumpIfFalse  r105, L8
   // select { pseudonym: an.name, series: t.title }
-  MakeMap      r110, 2, r12
+  Const        r106, "pseudonym"
+  Index        r107, r22, r13
+  Const        r108, "series"
+  Index        r109, r49, r15
+  MakeMap      r112, 2, r106
   // from an in aka_name
-  Append       r8, r8, r110
+  Append       r8, r8, r112
 L8:
   // join cn in company_name on cn.id == mc.company_id
-  Const        r112, 1
-  Add          r84, r84, r112
+  Const        r114, 1
+  Add          r84, r84, r114
   Jump         L12
 L7:
   // join mc in movie_companies on mc.movie_id == t.id
-  Add          r74, r74, r112
+  Add          r74, r74, r114
   Jump         L13
 L6:
   // join k in keyword on k.id == mk.keyword_id
-  Add          r65, r65, r112
+  Add          r65, r65, r114
   Jump         L14
 L5:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r55, r55, r112
+  Add          r55, r55, r114
   Jump         L15
 L4:
   // join t in title on t.id == ci.movie_id
-  Add          r46, r46, r112
+  Add          r46, r46, r114
   Jump         L16
 L3:
   // join ci in cast_info on ci.person_id == n.id
-  Add          r36, r36, r112
+  Add          r36, r36, r114
   Jump         L17
 L2:
   // join n in name on n.id == an.person_id
-  Add          r27, r27, r112
+  Add          r27, r27, r114
   Jump         L18
 L1:
   // from an in aka_name
-  AddInt       r18, r18, r112
+  AddInt       r18, r18, r114
   Jump         L19
 L0:
   // cool_actor_pseudonym: min(from r in rows select r.pseudonym),
-  Const        r113, "cool_actor_pseudonym"
-  Const        r114, []
-  IterPrep     r115, r8
-  Len          r116, r115
-  Move         r117, r19
+  Const        r115, "cool_actor_pseudonym"
+  Const        r116, []
+  IterPrep     r117, r8
+  Len          r118, r117
+  Move         r119, r19
 L21:
-  LessInt      r118, r117, r116
-  JumpIfFalse  r118, L20
-  Index        r120, r115, r117
-  Index        r121, r120, r12
-  Append       r114, r114, r121
-  AddInt       r117, r117, r112
+  LessInt      r120, r119, r118
+  JumpIfFalse  r120, L20
+  Index        r122, r117, r119
+  Index        r123, r122, r12
+  Append       r116, r116, r123
+  AddInt       r119, r119, r114
   Jump         L21
 L20:
   // series_named_after_char: min(from r in rows select r.series)
-  Const        r125, []
-  IterPrep     r126, r8
-  Len          r127, r126
-  Move         r128, r19
+  Const        r127, []
+  IterPrep     r128, r8
+  Len          r129, r128
+  Move         r130, r19
 L23:
-  LessInt      r129, r128, r127
-  JumpIfFalse  r129, L22
-  Index        r120, r126, r128
-  Index        r131, r120, r14
-  Append       r125, r125, r131
-  AddInt       r128, r128, r112
+  LessInt      r131, r130, r129
+  JumpIfFalse  r131, L22
+  Index        r122, r128, r130
+  Index        r133, r122, r14
+  Append       r127, r127, r133
+  AddInt       r130, r130, r114
   Jump         L23
 L22:
   // {
-  MakeMap      r137, 2, r113
+  MakeMap      r139, 2, r115
   // let result = [
-  MakeList     r138, 1, r137
+  MakeList     r140, 1, r139
   // json(result)
-  JSON         r138
+  JSON         r140
   // expect result == [
-  Const        r139, [{"cool_actor_pseudonym": "Alpha", "series_named_after_char": "Hero Bob"}]
-  Equal        r140, r138, r139
-  Expect       r140
+  Const        r141, [{"cool_actor_pseudonym": "Alpha", "series_named_after_char": "Hero Bob"}]
+  Equal        r142, r140, r141
+  Expect       r142
   Return       r0

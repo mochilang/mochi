@@ -1,4 +1,4 @@
-func main (regs=177)
+func main (regs=183)
   // let company_name = [
   Const        r0, [{"country_code": "[de]", "id": 1}, {"country_code": "[us]", "id": 2}]
   // let company_type = [
@@ -179,105 +179,116 @@ L12:
 L13:
   // where cn.country_code == "[de]" &&
   JumpIfFalse  r118, L9
+  // release_date: mi.info,
+  Const        r119, "release_date"
+  Index        r120, r69, r11
+  // rating: miidx.info,
+  Const        r121, "rating"
+  Index        r122, r88, r11
+  // german_movie: t.title
+  Const        r123, "german_movie"
+  Index        r124, r50, r15
   // select {
-  MakeMap      r125, 3, r12
+  MakeMap      r128, 3, r119
   // from cn in company_name
-  Append       r8, r8, r125
+  Append       r8, r8, r128
 L9:
   // join it in info_type on it.id == miidx.info_type_id
-  Const        r127, 1
-  Add          r94, r94, r127
+  Const        r130, 1
+  Add          r94, r94, r130
   Jump         L14
 L8:
   // join miidx in movie_info_idx on miidx.movie_id == t.id
-  Add          r85, r85, r127
+  Add          r85, r85, r130
   Jump         L15
 L7:
   // join it2 in info_type on it2.id == mi.info_type_id
-  Add          r76, r76, r127
+  Add          r76, r76, r130
   Jump         L16
 L6:
   // join mi in movie_info on mi.movie_id == t.id
-  Add          r66, r66, r127
+  Add          r66, r66, r130
   Jump         L17
 L5:
   // join kt in kind_type on kt.id == t.kind_id
-  Add          r57, r57, r127
+  Add          r57, r57, r130
   Jump         L18
 L4:
   // join t in title on t.id == mc.movie_id
-  Add          r47, r47, r127
+  Add          r47, r47, r130
   Jump         L19
 L3:
   // join ct in company_type on ct.id == mc.company_type_id
-  Add          r37, r37, r127
+  Add          r37, r37, r130
   Jump         L20
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
-  Add          r27, r27, r127
+  Add          r27, r27, r130
   Jump         L21
 L1:
   // from cn in company_name
-  AddInt       r18, r18, r127
+  AddInt       r18, r18, r130
   Jump         L22
 L0:
   // release_date: (from x in candidates sort by x.release_date select x.release_date)[0],
-  Const        r128, []
-  IterPrep     r129, r8
-  Len          r130, r129
-  Move         r131, r19
+  Const        r131, "release_date"
+  Const        r132, []
+  IterPrep     r133, r8
+  Len          r134, r133
+  Move         r135, r19
 L24:
-  LessInt      r132, r131, r130
-  JumpIfFalse  r132, L23
-  Index        r134, r129, r131
-  Index        r135, r134, r12
-  Index        r137, r134, r12
-  Move         r138, r135
-  MakeList     r139, 2, r137
-  Append       r128, r128, r139
-  AddInt       r131, r131, r127
+  LessInt      r136, r135, r134
+  JumpIfFalse  r136, L23
+  Index        r138, r133, r135
+  Index        r139, r138, r12
+  Index        r141, r138, r12
+  Move         r142, r139
+  MakeList     r143, 2, r141
+  Append       r132, r132, r143
+  AddInt       r135, r135, r130
   Jump         L24
 L23:
+  Sort         r132, r132
   // rating: (from x in candidates sort by x.rating select x.rating)[0],
-  Const        r143, []
-  IterPrep     r144, r8
-  Len          r145, r144
-  Move         r146, r19
+  Const        r148, []
+  IterPrep     r149, r8
+  Len          r150, r149
+  Move         r151, r19
 L26:
-  LessInt      r147, r146, r145
-  JumpIfFalse  r147, L25
-  Index        r134, r144, r146
-  Index        r149, r134, r13
-  Index        r151, r134, r13
-  Move         r152, r149
-  MakeList     r153, 2, r151
-  Append       r143, r143, r153
-  AddInt       r146, r146, r127
+  LessInt      r152, r151, r150
+  JumpIfFalse  r152, L25
+  Index        r138, r149, r151
+  Index        r154, r138, r13
+  Index        r156, r138, r13
+  Move         r157, r154
+  MakeList     r158, 2, r156
+  Append       r148, r148, r158
+  AddInt       r151, r151, r130
   Jump         L26
 L25:
   // german_movie: (from x in candidates sort by x.german_movie select x.german_movie)[0]
-  Const        r157, []
-  IterPrep     r158, r8
-  Len          r159, r158
-  Move         r160, r19
+  Const        r163, []
+  IterPrep     r164, r8
+  Len          r165, r164
+  Move         r166, r19
 L28:
-  LessInt      r161, r160, r159
-  JumpIfFalse  r161, L27
-  Index        r134, r158, r160
-  Index        r163, r134, r14
-  Index        r165, r134, r14
-  Move         r166, r163
-  MakeList     r167, 2, r165
-  Append       r157, r157, r167
-  AddInt       r160, r160, r127
+  LessInt      r167, r166, r165
+  JumpIfFalse  r167, L27
+  Index        r138, r164, r166
+  Index        r169, r138, r14
+  Index        r171, r138, r14
+  Move         r172, r169
+  MakeList     r173, 2, r171
+  Append       r163, r163, r173
+  AddInt       r166, r166, r130
   Jump         L28
 L27:
   // let result = {
-  MakeMap      r174, 3, r12
+  MakeMap      r180, 3, r131
   // json(result)
-  JSON         r174
+  JSON         r180
   // expect result == {
-  Const        r175, {"german_movie": "Alpha", "rating": "6.0", "release_date": "1997-05-10"}
-  Equal        r176, r174, r175
-  Expect       r176
+  Const        r181, {"german_movie": "Alpha", "rating": "6.0", "release_date": "1997-05-10"}
+  Equal        r182, r180, r181
+  Expect       r182
   Return       r0
