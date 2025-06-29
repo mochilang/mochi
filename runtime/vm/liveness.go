@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 )
 
 // Automatically generated liveness analysis and optimization
@@ -1030,6 +1031,8 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 			(c.Tag == ValueFloat || c.Tag == ValueInt) {
 			return Value{Tag: ValueBool, Bool: toFloat(b) <= toFloat(c)}, true
 		}
+	case OpIn:
+		return evalInConst(b, c)
 	case OpIndex:
 		return evalIndexConst(b, c)
 	}
@@ -1154,6 +1157,27 @@ func evalSliceConst(src, startVal, endVal Value) (Value, bool) {
 			return Value{}, false
 		}
 		return Value{Tag: ValueStr, Str: string(runes[start:end])}, true
+	}
+	return Value{}, false
+}
+
+func evalInConst(item, container Value) (Value, bool) {
+	switch container.Tag {
+	case ValueList:
+		for _, v := range container.List {
+			if valuesEqual(v, item) {
+				return Value{Tag: ValueBool, Bool: true}, true
+			}
+		}
+		return Value{Tag: ValueBool, Bool: false}, true
+	case ValueMap:
+		key := fmt.Sprint(valueToAny(item))
+		_, found := container.Map[key]
+		return Value{Tag: ValueBool, Bool: found}, true
+	case ValueStr:
+		if item.Tag == ValueStr {
+			return Value{Tag: ValueBool, Bool: strings.Contains(container.Str, item.Str)}, true
+		}
 	}
 	return Value{}, false
 }
