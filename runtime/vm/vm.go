@@ -4224,10 +4224,6 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 
 	groupsMap := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: groupsMap, B: 0})
-	groupsList := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: groupsList, Val: Value{Tag: ValueList, List: []Value{}}})
-	gidx := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: gidx, Val: Value{Tag: ValueInt, Int: 0}})
 
 	loopStart := len(fc.fn.Code)
 	condReg := fc.newReg()
@@ -4248,10 +4244,10 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 		cond := fc.compileExpr(q.Where)
 		skip := len(fc.fn.Code)
 		fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-		fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList, gidx)
+		fc.compileGroupAccum(q, elemReg, varReg, groupsMap)
 		fc.fn.Code[skip].B = len(fc.fn.Code)
 	} else {
-		fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList, gidx)
+		fc.compileGroupAccum(q, elemReg, varReg, groupsMap)
 	}
 
 	one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
@@ -4259,6 +4255,9 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	fc.emit(q.Pos, Instr{Op: OpJump, A: loopStart})
 	end := len(fc.fn.Code)
 	fc.fn.Code[jmp].B = end
+
+	groupsList := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpValues, A: groupsList, B: groupsMap})
 
 	// iterate groups and produce final results
 	gi := fc.newReg()
@@ -4316,7 +4315,7 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	}
 }
 
-func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, gmap, glist, gidx int) {
+func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, gmap int) {
 	exprs := q.Group.Exprs
 	regs := make([]int, len(exprs))
 	for i, e := range exprs {
@@ -4383,21 +4382,14 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	grp := fc.newReg()
 	startGrp := contig[0]
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: grp, B: len(contig) / 2, C: startGrp})
-	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: gmap, B: keyStr, C: gidx})
-	tmp := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: glist, C: grp})
-	fc.emit(q.Pos, Instr{Op: OpMove, A: glist, B: tmp})
-	inc := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
-	fc.emit(q.Pos, Instr{Op: OpAddInt, A: gidx, B: gidx, C: inc})
+	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: gmap, B: keyStr, C: grp})
 
 	end := len(fc.fn.Code)
 	fc.fn.Code[jump].B = end
 
 	itemsKey := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
-	idxReg := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpIndex, A: idxReg, B: gmap, C: keyStr})
 	grp2 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpIndex, A: grp2, B: glist, C: idxReg})
+	fc.emit(q.Pos, Instr{Op: OpIndex, A: grp2, B: gmap, C: keyStr})
 	cur := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIndex, A: cur, B: grp2, C: itemsKey})
 	newList := fc.newReg()
@@ -4428,12 +4420,11 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	defer func() { fc.groupVar = prevGroup }()
 	groupsMap := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: groupsMap, B: 0})
-	groupsList := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: groupsList, Val: Value{Tag: ValueList, List: []Value{}}})
-	gidx := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: gidx, Val: Value{Tag: ValueInt, Int: 0}})
 
-	fc.compileGroupFromAny(q, groupsMap, groupsList, gidx, 0)
+	fc.compileGroupFromAny(q, groupsMap, 0)
+
+	groupsList := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpValues, A: groupsList, B: groupsMap})
 
 	// iterate groups and produce final results
 	gi := fc.newReg()
@@ -4491,7 +4482,7 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	}
 }
 
-func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist, gidx int, level int) {
+func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap int, level int) {
 	var name string
 	var src *parser.Expr
 	if level == 0 {
@@ -4527,11 +4518,11 @@ func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist, gi
 
 	if level < len(q.Froms) {
 		fc.pushScope()
-		fc.compileGroupFromAny(q, gmap, glist, gidx, level+1)
+		fc.compileGroupFromAny(q, gmap, level+1)
 		fc.popScope()
 	} else {
 		fc.pushScope()
-		fc.compileGroupJoinAny(q, gmap, glist, gidx, 0)
+		fc.compileGroupJoinAny(q, gmap, 0)
 		fc.popScope()
 	}
 
@@ -4542,7 +4533,7 @@ func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist, gi
 	fc.fn.Code[jmp].B = end
 }
 
-func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist, gidx int, idx int) {
+func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap int, idx int) {
 	if idx >= len(q.Joins) {
 		doAccum := func() {
 			row := fc.buildRowMap(q)
@@ -4551,7 +4542,7 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist, gi
 				vreg = fc.newReg()
 				fc.vars[q.Var] = vreg
 			}
-			fc.compileGroupAccum(q, row, vreg, gmap, glist, gidx)
+			fc.compileGroupAccum(q, row, vreg, gmap)
 		}
 		if q.Where != nil {
 			cond := fc.compileExpr(q.Where)
@@ -4600,11 +4591,11 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist, gi
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
 			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
-			fc.compileGroupJoinAny(q, gmap, glist, gidx, idx+1)
+			fc.compileGroupJoinAny(q, gmap, idx+1)
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
 			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
-			fc.compileGroupJoinAny(q, gmap, glist, gidx, idx+1)
+			fc.compileGroupJoinAny(q, gmap, idx+1)
 		}
 
 		one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
@@ -4619,17 +4610,17 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist, gi
 		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
 		nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
-		fc.compileGroupJoinAny(q, gmap, glist, gidx, idx+1)
+		fc.compileGroupJoinAny(q, gmap, idx+1)
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 	} else {
 		if join.On != nil {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.compileGroupJoinAny(q, gmap, glist, gidx, idx+1)
+			fc.compileGroupJoinAny(q, gmap, idx+1)
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.compileGroupJoinAny(q, gmap, glist, gidx, idx+1)
+			fc.compileGroupJoinAny(q, gmap, idx+1)
 		}
 
 		one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
