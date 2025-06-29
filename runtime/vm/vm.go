@@ -3424,6 +3424,17 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 	rlen := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 
+	zero := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: ValueInt, Int: 0}})
+	emptyLeft := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpEqualInt, A: emptyLeft, B: llen, C: zero})
+	jmpEmptyLeft := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: emptyLeft})
+	emptyRight := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpEqualInt, A: emptyRight, B: rlen, C: zero})
+	jmpEmptyRight := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: emptyRight})
+
 	cond := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpLessEq, A: cond, B: rlen, C: llen})
 	jmpLeft := len(fc.fn.Code)
@@ -3572,6 +3583,8 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 	jumpEnd := len(fc.fn.Code)
 	fc.emit(q.Pos, Instr{Op: OpJump})
 	fc.fn.Code[jmpLeft].B = len(fc.fn.Code)
+	fc.fn.Code[jmpEmptyLeft].B = jumpEnd
+	fc.fn.Code[jmpEmptyRight].B = jumpEnd
 
 	// hash left side when it is smaller
 	{
