@@ -4,6 +4,7 @@ package vm_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -17,6 +18,11 @@ import (
 	"mochi/runtime/vm"
 	"mochi/types"
 )
+
+func shouldUpdate() bool {
+	f := flag.Lookup("update")
+	return f != nil && f.Value.String() == "true"
+}
 
 func TestVM_ValidPrograms(t *testing.T) {
 	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
@@ -135,11 +141,28 @@ func TestVM_TPCH(t *testing.T) {
 			got := strings.TrimSpace(out.String())
 			data, err := os.ReadFile(want)
 			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			wantStr := strings.TrimSpace(string(data))
-			if got != wantStr {
-				t.Errorf("%s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, wantStr)
+				if shouldUpdate() {
+					if writeErr := os.WriteFile(want, []byte(got+"\n"), 0644); writeErr == nil {
+						t.Logf("updated: %s", want)
+					} else {
+						t.Fatalf("write golden: %v", writeErr)
+					}
+				} else {
+					t.Fatalf("read golden: %v", err)
+				}
+			} else {
+				wantStr := strings.TrimSpace(string(data))
+				if got != wantStr {
+					if shouldUpdate() {
+						if writeErr := os.WriteFile(want, []byte(got+"\n"), 0644); writeErr == nil {
+							t.Logf("updated: %s", want)
+						} else {
+							t.Fatalf("write golden: %v", writeErr)
+						}
+					} else {
+						t.Errorf("%s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, wantStr)
+					}
+				}
 			}
 
 			srcData, err := os.ReadFile(src)
@@ -149,11 +172,28 @@ func TestVM_TPCH(t *testing.T) {
 			irGot := strings.TrimSpace(p.Disassemble(string(srcData)))
 			irData, err := os.ReadFile(irWant)
 			if err != nil {
-				t.Fatalf("read ir golden: %v", err)
-			}
-			irWantStr := strings.TrimSpace(string(irData))
-			if irGot != irWantStr {
-				t.Errorf("%s IR\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, irGot, irWantStr)
+				if shouldUpdate() {
+					if writeErr := os.WriteFile(irWant, []byte(irGot+"\n"), 0644); writeErr == nil {
+						t.Logf("updated: %s", irWant)
+					} else {
+						t.Fatalf("write ir golden: %v", writeErr)
+					}
+				} else {
+					t.Fatalf("read ir golden: %v", err)
+				}
+			} else {
+				irWantStr := strings.TrimSpace(string(irData))
+				if irGot != irWantStr {
+					if shouldUpdate() {
+						if writeErr := os.WriteFile(irWant, []byte(irGot+"\n"), 0644); writeErr == nil {
+							t.Logf("updated: %s", irWant)
+						} else {
+							t.Fatalf("write ir golden: %v", writeErr)
+						}
+					} else {
+						t.Errorf("%s IR\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, irGot, irWantStr)
+					}
+				}
 			}
 		})
 	}
@@ -203,11 +243,28 @@ func TestVM_JOB(t *testing.T) {
 			got := strings.TrimSpace(out.String())
 			data, err := os.ReadFile(want)
 			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			wantStr := strings.TrimSpace(string(data))
-			if got != wantStr {
-				t.Errorf("%s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, wantStr)
+				if shouldUpdate() {
+					if writeErr := os.WriteFile(want, []byte(got+"\n"), 0644); writeErr == nil {
+						t.Logf("updated: %s", want)
+					} else {
+						t.Fatalf("write golden: %v", writeErr)
+					}
+				} else {
+					t.Fatalf("read golden: %v", err)
+				}
+			} else {
+				wantStr := strings.TrimSpace(string(data))
+				if got != wantStr {
+					if shouldUpdate() {
+						if writeErr := os.WriteFile(want, []byte(got+"\n"), 0644); writeErr == nil {
+							t.Logf("updated: %s", want)
+						} else {
+							t.Fatalf("write golden: %v", writeErr)
+						}
+					} else {
+						t.Errorf("%s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, wantStr)
+					}
+				}
 			}
 
 			srcData, err := os.ReadFile(src)
@@ -217,11 +274,28 @@ func TestVM_JOB(t *testing.T) {
 			irGot := strings.TrimSpace(p.Disassemble(string(srcData)))
 			irData, err := os.ReadFile(irWant)
 			if err != nil {
-				t.Fatalf("read ir golden: %v", err)
-			}
-			irWantStr := strings.TrimSpace(string(irData))
-			if irGot != irWantStr {
-				t.Errorf("%s IR\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, irGot, irWantStr)
+				if shouldUpdate() {
+					if writeErr := os.WriteFile(irWant, []byte(irGot+"\n"), 0644); writeErr == nil {
+						t.Logf("updated: %s", irWant)
+					} else {
+						t.Fatalf("write ir golden: %v", writeErr)
+					}
+				} else {
+					t.Fatalf("read ir golden: %v", err)
+				}
+			} else {
+				irWantStr := strings.TrimSpace(string(irData))
+				if irGot != irWantStr {
+					if shouldUpdate() {
+						if writeErr := os.WriteFile(irWant, []byte(irGot+"\n"), 0644); writeErr == nil {
+							t.Logf("updated: %s", irWant)
+						} else {
+							t.Fatalf("write ir golden: %v", writeErr)
+						}
+					} else {
+						t.Errorf("%s IR\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, irGot, irWantStr)
+					}
+				}
 			}
 		})
 	}
