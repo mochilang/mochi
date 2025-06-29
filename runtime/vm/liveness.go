@@ -219,7 +219,30 @@ func defRegs(ins Instr) []int {
 }
 
 func usesReg(ins Instr, r int) bool {
-	return ins.A == r || ins.B == r || ins.C == r || ins.D == r
+	if ins.A == r || ins.B == r || ins.C == r || ins.D == r {
+		return true
+	}
+	switch ins.Op {
+	case OpMakeList:
+		for i := 0; i < ins.B; i++ {
+			if ins.C+i == r {
+				return true
+			}
+		}
+	case OpMakeMap:
+		for i := 0; i < ins.B*2; i++ {
+			if ins.C+i == r {
+				return true
+			}
+		}
+	case OpCall, OpCallV, OpMakeClosure, OpPrintN:
+		for i := 0; i < ins.C; i++ {
+			if ins.D+i == r {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func replaceReg(ins *Instr, old, new int) {
@@ -234,6 +257,32 @@ func replaceReg(ins *Instr, old, new int) {
 	}
 	if ins.D == old {
 		ins.D = new
+	}
+	switch ins.Op {
+	case OpMakeList:
+		for i := 0; i < ins.B; i++ {
+			if ins.C+i == old {
+				if i == 0 {
+					ins.C = new
+				}
+			}
+		}
+	case OpMakeMap:
+		for i := 0; i < ins.B*2; i++ {
+			if ins.C+i == old {
+				if i == 0 {
+					ins.C = new
+				}
+			}
+		}
+	case OpCall, OpCallV, OpMakeClosure, OpPrintN:
+		for i := 0; i < ins.C; i++ {
+			if ins.D+i == old {
+				if i == 0 {
+					ins.D = new
+				}
+			}
+		}
 	}
 }
 
