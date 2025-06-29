@@ -1,24 +1,8 @@
 func main (regs=11)
   // let x = 2
   Const        r0, 2
-  // 1 => "one"
-  Jump         L0
-  Const        r1, "one"
-  Jump         L1
-L0:
   // 2 => "two"
   Const        r1, "two"
-  Jump         L1
-  // 3 => "three"
-  Jump         L2
-  Const        r1, "three"
-  Jump         L1
-L2:
-  // _ => "unknown"
-  Const        r1, "unknown"
-  Jump         L1
-  Const        r1, nil
-L1:
   // print(label)
   Print        r1
   Return       r0

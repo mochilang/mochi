@@ -1,56 +1,14 @@
 func main (regs=35)
   // let x = 2
   Const        r0, 2
-  // 1 => "one"
-  Jump         L0
-  Const        r1, "one"
-  Jump         L1
-L0:
   // 2 => "two"
   Const        r1, "two"
-  Jump         L1
-  // 3 => "three"
-  Jump         L2
-  Const        r1, "three"
-  Jump         L1
-L2:
-  // _ => "unknown"
-  Const        r1, "unknown"
-  Jump         L1
-  Const        r1, nil
-L1:
   // print(label)
   Print        r1
-  // "mon" => "tired"
-  Jump         L3
-  Const        r12, "tired"
-  Jump         L4
-L3:
-  // "fri" => "excited"
-  Jump         L5
-  Const        r12, "excited"
-  Jump         L4
-L5:
   // "sun" => "relaxed"
   Const        r12, "relaxed"
-  Jump         L4
-  // _     => "normal"
-  Const        r12, "normal"
-  Jump         L4
-  Const        r12, nil
-L4:
   // print(mood)
   Print        r12
-  // true => "confirmed"
-  Const        r23, "confirmed"
-  Jump         L6
-  // false => "denied"
-  Jump         L7
-  Const        r23, "denied"
-  Jump         L6
-L7:
-  Const        r23, nil
-L6:
   // print(status)
   Print        r23
   // print(classify(0))
@@ -81,9 +39,6 @@ L0:
 L2:
   // _ => "many"
   Const        r1, "many"
-  Jump         L1
-  Const        r1, nil
 L1:
   // return match n {
   Return       r1
-  Return       r0
