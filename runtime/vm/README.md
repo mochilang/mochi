@@ -75,6 +75,15 @@ go test ./tests/vm -run .
 
 Use `-update` to refresh the expected output files when modifying the VM.
 
+## Join optimizations
+
+Several techniques are applied when compiling join queries:
+
+* A hash join is used when the `ON` clause is a simple equality. The smaller input list is hashed.
+* WHERE predicates that reference only one alias are pushed down to filter rows before building the hash table.
+* The compiler emits early exits when either side of the join is empty.
+* Field names referenced inside loops are preloaded as constants to avoid redundant loads.
+
 ## Instruction set
 
 Below is a brief overview of the bytecode instructions emitted by the compiler.
