@@ -224,3 +224,21 @@ func eqJoinKeys(on *parser.Expr, leftAlias, rightAlias string) (*parser.Expr, *p
 	}
 	return nil, nil, false
 }
+
+// whereAlias returns the alias referenced by the WHERE clause if exactly one
+// alias is present. The bool result is false when the predicate references
+// multiple aliases or none at all.
+func whereAlias(where *parser.Expr) (string, bool) {
+	if where == nil {
+		return "", false
+	}
+	vars := map[string]struct{}{}
+	exprVars(where, vars)
+	if len(vars) != 1 {
+		return "", false
+	}
+	for v := range vars {
+		return v, true
+	}
+	return "", false
+}
