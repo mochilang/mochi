@@ -42,6 +42,145 @@ func aggregateCall(e *parser.Expr) (Op, *parser.Expr, lexer.Position, bool) {
 	}
 }
 
+// groupAggInfo describes an aggregate like `sum(from x in g select e)` or
+// `min(from x in g select e)` discovered within a GROUP BY query.
+type groupAggInfo struct {
+	Call     *parser.CallExpr
+	FuncName string
+	VarName  string
+	Expr     *parser.Expr
+	Field    string
+}
+
+// matchGroupAgg checks if the call expression is an aggregate over a simple
+// subquery sourced from the group variable g.
+func matchGroupAgg(call *parser.CallExpr, g string) (string, *parser.Expr, bool) {
+	if len(call.Args) != 1 {
+		return "", nil, false
+	}
+	arg := call.Args[0]
+	if arg == nil || arg.Binary == nil || len(arg.Binary.Right) != 0 {
+		return "", nil, false
+	}
+	u := arg.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", nil, false
+	}
+	if len(u.Value.Ops) != 0 || u.Value.Target == nil || u.Value.Target.Query == nil {
+		return "", nil, false
+	}
+	q := u.Value.Target.Query
+	if name, ok := identName(q.Source); !ok || name != g {
+		return "", nil, false
+	}
+	if len(q.Froms) != 0 || len(q.Joins) != 0 || q.Where != nil || q.Group != nil ||
+		q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "", nil, false
+	}
+	return q.Var, q.Select, true
+}
+
+// collectGroupAggs walks expression e and records aggregate calls that operate
+// on the group variable g. Results are stored in aggs keyed by the CallExpr.
+func collectGroupAggs(e *parser.Expr, g string, aggs map[*parser.CallExpr]*groupAggInfo) {
+	if e == nil {
+		return
+	}
+	var walkExpr func(*parser.Expr)
+	var walkUnary func(*parser.Unary)
+	var walkPostfix func(*parser.PostfixExpr)
+	var walkPrimary func(*parser.Primary)
+
+	walkExpr = func(e *parser.Expr) {
+		if e == nil {
+			return
+		}
+		walkUnary(e.Binary.Left)
+		for _, op := range e.Binary.Right {
+			walkPostfix(op.Right)
+		}
+	}
+	walkUnary = func(u *parser.Unary) {
+		if u == nil {
+			return
+		}
+		walkPostfix(u.Value)
+	}
+	walkPostfix = func(pf *parser.PostfixExpr) {
+		if pf == nil {
+			return
+		}
+		walkPrimary(pf.Target)
+		for _, op := range pf.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					walkExpr(a)
+				}
+			}
+			if op.Index != nil {
+				walkExpr(op.Index.Start)
+				walkExpr(op.Index.End)
+				walkExpr(op.Index.Step)
+			}
+		}
+	}
+	walkPrimary = func(p *parser.Primary) {
+		if p == nil {
+			return
+		}
+		switch {
+		case p.Call != nil:
+			fn := p.Call.Func
+			if (fn == "sum" || fn == "avg" || fn == "min" || fn == "max") && g != "" {
+				if varName, expr, ok := matchGroupAgg(p.Call, g); ok {
+					aggs[p.Call] = &groupAggInfo{Call: p.Call, FuncName: fn, VarName: varName, Expr: expr}
+					return
+				}
+			}
+			for _, a := range p.Call.Args {
+				walkExpr(a)
+			}
+		case p.Selector != nil:
+			// no-op
+		case p.Query != nil:
+			walkExpr(p.Query.Source)
+			for _, f := range p.Query.Froms {
+				walkExpr(f.Src)
+			}
+			for _, j := range p.Query.Joins {
+				walkExpr(j.Src)
+				walkExpr(j.On)
+			}
+			walkExpr(p.Query.Where)
+			if p.Query.Group != nil {
+				for _, g := range p.Query.Group.Exprs {
+					walkExpr(g)
+				}
+			}
+			walkExpr(p.Query.Sort)
+			walkExpr(p.Query.Skip)
+			walkExpr(p.Query.Take)
+			walkExpr(p.Query.Select)
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				walkExpr(el)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				walkExpr(it.Key)
+				walkExpr(it.Value)
+			}
+		case p.FunExpr != nil:
+			walkExpr(p.FunExpr.ExprBody)
+		}
+		if p.Group != nil {
+			walkExpr(p.Group)
+		}
+	}
+
+	walkExpr(e)
+}
+
 // exprVars collects variable names referenced in expression e.
 func exprVars(e *parser.Expr, vars map[string]struct{}) {
 	if e == nil || e.Binary == nil {

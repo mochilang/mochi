@@ -1,4 +1,4 @@
-func main (regs=48)
+func main (regs=43)
   // let people = [
   Const        r0, [{"city": "Paris", "name": "Alice"}, {"city": "Hanoi", "name": "Bob"}, {"city": "Paris", "name": "Charlie"}, {"city": "Hanoi", "name": "Diana"}, {"city": "Paris", "name": "Eve"}, {"city": "Hanoi", "name": "Frank"}, {"city": "Paris", "name": "George"}]
   // from p in people
@@ -13,62 +13,58 @@ func main (regs=48)
   Const        r7, 0
   MakeMap      r8, 0, r0
   Const        r9, []
-L2:
+L3:
   LessInt      r10, r7, r6
   JumpIfFalse  r10, L0
-  Index        r11, r5, r7
+  Index        r12, r5, r7
   // group by p.city into g
-  Index        r13, r11, r2
+  Index        r13, r12, r2
   Str          r14, r13
   In           r15, r14, r8
   JumpIfTrue   r15, L1
   // from p in people
-  Const        r16, []
-  Const        r17, "__group__"
-  Const        r18, true
+  Const        r16, "__group__"
+  Const        r17, true
   // group by p.city into g
-  Move         r19, r13
+  Move         r18, r13
   // from p in people
-  Const        r20, "items"
-  Move         r21, r16
-  Const        r22, "count"
-  Const        r23, 0
-  MakeMap      r24, 4, r17
-  SetIndex     r8, r14, r24
+  Const        r19, "count"
+  Const        r20, 0
+  MakeMap      r21, 3, r16
+  SetIndex     r8, r14, r21
 L1:
-  Index        r26, r8, r14
-  Index        r27, r26, r20
-  Append       r28, r27, r11
-  SetIndex     r26, r20, r28
-  Index        r29, r26, r22
-  Const        r30, 1
-  AddInt       r31, r29, r30
-  SetIndex     r26, r22, r31
-  AddInt       r7, r7, r30
-  Jump         L2
+  Index        r23, r8, r14
+  Index        r24, r23, r19
+  Const        r25, 1
+  AddInt       r26, r24, r25
+  SetIndex     r23, r19, r26
+  JumpIfFalse  r15, L2
+L2:
+  AddInt       r7, r7, r25
+  Jump         L3
 L0:
-  Move         r32, r23
-  Const        r33, 0
-L4:
-  LessInt      r34, r32, r33
-  JumpIfFalse  r34, L3
-  Index        r36, r9, r32
+  Move         r27, r20
+  Const        r28, 0
+L5:
+  LessInt      r29, r27, r28
+  JumpIfFalse  r29, L4
+  Index        r31, r9, r27
   // having count(g) >= 4
-  Index        r37, r36, r22
-  Const        r38, 4
-  LessEq       r39, r38, r37
-  JumpIfFalse  r39, L3
+  Index        r32, r31, r19
+  Const        r33, 4
+  LessEq       r34, r33, r32
+  JumpIfFalse  r34, L4
   // select { city: g.key, num: count(g) }
-  Const        r40, "city"
-  Index        r41, r36, r3
-  Const        r42, "num"
-  Index        r43, r36, r22
-  MakeMap      r46, 2, r40
+  Const        r35, "city"
+  Index        r36, r31, r3
+  Const        r37, "num"
+  Index        r38, r31, r19
+  MakeMap      r41, 2, r35
   // from p in people
-  Append       r1, r1, r46
-  AddInt       r32, r32, r30
-  Jump         L4
-L3:
+  Append       r1, r1, r41
+  AddInt       r27, r27, r25
+  Jump         L5
+L4:
   // json(big)
   JSON         r1
   Return       r0
