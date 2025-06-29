@@ -1,925 +1,712 @@
-func main (regs=506)
+func main (regs=384)
   // let aka_name = [
   Const        r0, [{"person_id": 1}, {"person_id": 2}]
-  Move         r1, r0
   // let complete_cast = [
-  Const        r2, [{"movie_id": 1, "status_id": 2, "subject_id": 1}, {"movie_id": 2, "status_id": 2, "subject_id": 1}]
-  Move         r3, r2
+  Const        r1, [{"movie_id": 1, "status_id": 2, "subject_id": 1}, {"movie_id": 2, "status_id": 2, "subject_id": 1}]
   // let comp_cast_type = [
-  Const        r4, [{"id": 1, "kind": "cast"}, {"id": 2, "kind": "complete+verified"}, {"id": 3, "kind": "other"}]
-  Move         r5, r4
+  Const        r2, [{"id": 1, "kind": "cast"}, {"id": 2, "kind": "complete+verified"}, {"id": 3, "kind": "other"}]
   // let char_name = [
-  Const        r6, [{"id": 1, "name": "Queen"}, {"id": 2, "name": "Princess"}]
-  Move         r7, r6
+  Const        r3, [{"id": 1, "name": "Queen"}, {"id": 2, "name": "Princess"}]
   // let cast_info = [
-  Const        r8, [{"movie_id": 1, "note": "(voice)", "person_id": 1, "person_role_id": 1, "role_id": 1}, {"movie_id": 2, "note": "(voice)", "person_id": 2, "person_role_id": 2, "role_id": 1}]
-  Move         r9, r8
+  Const        r4, [{"movie_id": 1, "note": "(voice)", "person_id": 1, "person_role_id": 1, "role_id": 1}, {"movie_id": 2, "note": "(voice)", "person_id": 2, "person_role_id": 2, "role_id": 1}]
   // let company_name = [
-  Const        r10, [{"country_code": "[us]", "id": 1}, {"country_code": "[uk]", "id": 2}]
-  Move         r11, r10
+  Const        r5, [{"country_code": "[us]", "id": 1}, {"country_code": "[uk]", "id": 2}]
   // let info_type = [
-  Const        r12, [{"id": 1, "info": "release dates"}, {"id": 2, "info": "trivia"}, {"id": 3, "info": "other"}]
-  Move         r13, r12
+  Const        r6, [{"id": 1, "info": "release dates"}, {"id": 2, "info": "trivia"}, {"id": 3, "info": "other"}]
   // let keyword = [
-  Const        r14, [{"id": 1, "keyword": "computer-animation"}, {"id": 2, "keyword": "action"}]
-  Move         r15, r14
+  Const        r7, [{"id": 1, "keyword": "computer-animation"}, {"id": 2, "keyword": "action"}]
   // let movie_companies = [
-  Const        r16, [{"company_id": 1, "movie_id": 1}, {"company_id": 2, "movie_id": 2}]
-  Move         r17, r16
+  Const        r8, [{"company_id": 1, "movie_id": 1}, {"company_id": 2, "movie_id": 2}]
   // let movie_info = [
-  Const        r18, [{"info": "USA:2004", "info_type_id": 1, "movie_id": 1}, {"info": "USA:1995", "info_type_id": 1, "movie_id": 2}]
-  Move         r19, r18
+  Const        r9, [{"info": "USA:2004", "info_type_id": 1, "movie_id": 1}, {"info": "USA:1995", "info_type_id": 1, "movie_id": 2}]
   // let movie_keyword = [
-  Const        r20, [{"keyword_id": 1, "movie_id": 1}, {"keyword_id": 2, "movie_id": 2}]
-  Move         r21, r20
+  Const        r10, [{"keyword_id": 1, "movie_id": 1}, {"keyword_id": 2, "movie_id": 2}]
   // let name = [
-  Const        r22, [{"gender": "f", "id": 1, "name": "Angela Aniston"}, {"gender": "m", "id": 2, "name": "Bob Brown"}]
-  Move         r23, r22
+  Const        r11, [{"gender": "f", "id": 1, "name": "Angela Aniston"}, {"gender": "m", "id": 2, "name": "Bob Brown"}]
   // let person_info = [
-  Const        r24, [{"info_type_id": 2, "person_id": 1}, {"info_type_id": 2, "person_id": 2}]
-  Move         r25, r24
+  Const        r12, [{"info_type_id": 2, "person_id": 1}, {"info_type_id": 2, "person_id": 2}]
   // let role_type = [
-  Const        r26, [{"id": 1, "role": "actress"}, {"id": 2, "role": "actor"}]
-  Move         r27, r26
+  Const        r13, [{"id": 1, "role": "actress"}, {"id": 2, "role": "actor"}]
   // let title = [
-  Const        r28, [{"id": 1, "production_year": 2004, "title": "Shrek 2"}, {"id": 2, "production_year": 1999, "title": "Old Film"}]
-  Move         r29, r28
+  Const        r14, [{"id": 1, "production_year": 2004, "title": "Shrek 2"}, {"id": 2, "production_year": 1999, "title": "Old Film"}]
   // from an in aka_name
-  Const        r30, []
-  IterPrep     r31, r1
-  Len          r32, r31
-  Const        r33, 0
-L83:
-  Less         r34, r33, r32
-  JumpIfFalse  r34, L0
-  Index        r35, r31, r33
-  Move         r36, r35
-  // from cc in complete_cast
-  IterPrep     r37, r3
-  Len          r38, r37
-  Const        r39, 0
-L82:
-  Less         r40, r39, r38
-  JumpIfFalse  r40, L1
-  Index        r41, r37, r39
-  Move         r42, r41
-  // from cct1 in comp_cast_type
-  IterPrep     r43, r5
-  Len          r44, r43
-  Const        r45, 0
-L81:
-  Less         r46, r45, r44
-  JumpIfFalse  r46, L2
-  Index        r47, r43, r45
-  Move         r48, r47
-  // from cct2 in comp_cast_type
-  IterPrep     r49, r5
-  Len          r50, r49
-  Const        r51, 0
-L80:
-  Less         r52, r51, r50
-  JumpIfFalse  r52, L3
-  Index        r53, r49, r51
-  Move         r54, r53
-  // from chn in char_name
-  IterPrep     r55, r7
-  Len          r56, r55
-  Const        r57, 0
-L79:
-  Less         r58, r57, r56
-  JumpIfFalse  r58, L4
-  Index        r59, r55, r57
-  Move         r60, r59
-  // from ci in cast_info
-  IterPrep     r61, r9
-  Len          r62, r61
-  Const        r63, 0
-L78:
-  Less         r64, r63, r62
-  JumpIfFalse  r64, L5
-  Index        r65, r61, r63
-  Move         r66, r65
-  // from cn in company_name
-  IterPrep     r67, r11
-  Len          r68, r67
-  Const        r69, 0
-L77:
-  Less         r70, r69, r68
-  JumpIfFalse  r70, L6
-  Index        r71, r67, r69
-  Move         r72, r71
-  // from it in info_type
-  IterPrep     r73, r13
-  Len          r74, r73
-  Const        r75, 0
-L76:
-  Less         r76, r75, r74
-  JumpIfFalse  r76, L7
-  Index        r77, r73, r75
-  Move         r78, r77
-  // from it3 in info_type
-  IterPrep     r79, r13
-  Len          r80, r79
-  Const        r81, 0
-L75:
-  Less         r82, r81, r80
-  JumpIfFalse  r82, L8
-  Index        r83, r79, r81
-  Move         r84, r83
-  // from k in keyword
-  IterPrep     r85, r15
-  Len          r86, r85
-  Const        r87, 0
-L74:
-  Less         r88, r87, r86
-  JumpIfFalse  r88, L9
-  Index        r89, r85, r87
-  Move         r90, r89
-  // from mc in movie_companies
-  IterPrep     r91, r17
-  Len          r92, r91
-  Const        r93, 0
-L73:
-  Less         r94, r93, r92
-  JumpIfFalse  r94, L10
-  Index        r95, r91, r93
-  Move         r96, r95
-  // from mi in movie_info
-  IterPrep     r97, r19
-  Len          r98, r97
-  Const        r99, 0
-L72:
-  Less         r100, r99, r98
-  JumpIfFalse  r100, L11
-  Index        r101, r97, r99
-  Move         r102, r101
-  // from mk in movie_keyword
-  IterPrep     r103, r21
-  Len          r104, r103
-  Const        r105, 0
-L71:
-  Less         r106, r105, r104
-  JumpIfFalse  r106, L12
-  Index        r107, r103, r105
-  Move         r108, r107
-  // from n in name
-  IterPrep     r109, r23
-  Len          r110, r109
-  Const        r111, 0
-L70:
-  Less         r112, r111, r110
-  JumpIfFalse  r112, L13
-  Index        r113, r109, r111
-  Move         r114, r113
-  // from pi in person_info
-  IterPrep     r115, r25
-  Len          r116, r115
-  Const        r117, 0
-L69:
-  Less         r118, r117, r116
-  JumpIfFalse  r118, L14
-  Index        r119, r115, r117
-  Move         r120, r119
-  // from rt in role_type
-  IterPrep     r121, r27
-  Len          r122, r121
-  Const        r123, 0
-L68:
-  Less         r124, r123, r122
-  JumpIfFalse  r124, L15
-  Index        r125, r121, r123
-  Move         r126, r125
-  // from t in title
-  IterPrep     r127, r29
-  Len          r128, r127
-  Const        r129, 0
-L67:
-  Less         r130, r129, r128
-  JumpIfFalse  r130, L16
-  Index        r131, r127, r129
-  Move         r132, r131
+  Const        r15, []
   // cct1.kind == "cast" &&
-  Const        r133, "kind"
-  Index        r134, r48, r133
-  // t.production_year >= 2000 &&
-  Const        r135, "production_year"
-  Index        r136, r132, r135
-  Const        r137, 2000
-  LessEq       r138, r137, r136
-  // t.production_year <= 2010 &&
-  Const        r139, "production_year"
-  Index        r140, r132, r139
-  Const        r141, 2010
-  LessEq       r142, r140, r141
-  // cct1.kind == "cast" &&
-  Const        r143, "cast"
-  Equal        r144, r134, r143
-  // cct2.kind == "complete+verified" &&
-  Const        r145, "kind"
-  Index        r146, r54, r145
-  Const        r147, "complete+verified"
-  Equal        r148, r146, r147
+  Const        r16, "kind"
   // chn.name == "Queen" &&
-  Const        r149, "name"
-  Index        r150, r60, r149
-  Const        r151, "Queen"
-  Equal        r152, r150, r151
+  Const        r17, "name"
+  // (ci.note == "(voice)" ||
+  Const        r18, "note"
   // cn.country_code == "[us]" &&
-  Const        r153, "country_code"
-  Index        r154, r72, r153
-  Const        r155, "[us]"
-  Equal        r156, r154, r155
+  Const        r19, "country_code"
   // it.info == "release dates" &&
-  Const        r157, "info"
-  Index        r158, r78, r157
-  Const        r159, "release dates"
-  Equal        r160, r158, r159
-  // it3.info == "trivia" &&
-  Const        r161, "info"
-  Index        r162, r84, r161
-  Const        r163, "trivia"
-  Equal        r164, r162, r163
+  Const        r20, "info"
   // k.keyword == "computer-animation" &&
-  Const        r165, "keyword"
-  Index        r166, r90, r165
-  Const        r167, "computer-animation"
-  Equal        r168, r166, r167
+  Const        r21, "keyword"
   // n.gender == "f" &&
-  Const        r169, "gender"
-  Index        r170, r114, r169
-  Const        r171, "f"
-  Equal        r172, r170, r171
+  Const        r23, "gender"
   // rt.role == "actress" &&
-  Const        r173, "role"
-  Index        r174, r126, r173
+  Const        r25, "role"
+  // t.title == "Shrek 2" &&
+  Const        r26, "title"
+  // t.production_year >= 2000 &&
+  Const        r27, "production_year"
+  // t.id == mi.movie_id &&
+  Const        r28, "id"
+  Const        r29, "movie_id"
+  // cn.id == mc.company_id &&
+  Const        r30, "company_id"
+  // it.id == mi.info_type_id &&
+  Const        r31, "info_type_id"
+  // n.id == ci.person_id &&
+  Const        r32, "person_id"
+  // rt.id == ci.role_id &&
+  Const        r33, "role_id"
+  // chn.id == ci.person_role_id &&
+  Const        r34, "person_role_id"
+  // k.id == mk.keyword_id &&
+  Const        r35, "keyword_id"
+  // cct1.id == cc.subject_id &&
+  Const        r36, "subject_id"
+  // cct2.id == cc.status_id
+  Const        r37, "status_id"
+  // voiced_char: chn.name,
+  Const        r38, "voiced_char"
+  // voicing_actress: n.name,
+  Const        r39, "voicing_actress"
+  // voiced_animation: t.title
+  Const        r40, "voiced_animation"
+  // from an in aka_name
+  IterPrep     r41, r0
+  Len          r42, r41
+  Const        r44, 0
+  Move         r43, r44
+L80:
+  LessInt      r45, r43, r42
+  JumpIfFalse  r45, L0
+  Index        r47, r41, r43
+  // from cc in complete_cast
+  IterPrep     r48, r1
+  Len          r49, r48
+  Move         r50, r44
+L79:
+  LessInt      r51, r50, r49
+  JumpIfFalse  r51, L1
+  Index        r53, r48, r50
+  // from cct1 in comp_cast_type
+  IterPrep     r54, r2
+  Len          r55, r54
+  Move         r56, r44
+L78:
+  LessInt      r57, r56, r55
+  JumpIfFalse  r57, L2
+  Index        r59, r54, r56
+  // from cct2 in comp_cast_type
+  IterPrep     r60, r2
+  Len          r61, r60
+  Move         r62, r44
+L77:
+  LessInt      r63, r62, r61
+  JumpIfFalse  r63, L3
+  Index        r65, r60, r62
+  // from chn in char_name
+  IterPrep     r66, r3
+  Len          r67, r66
+  Move         r68, r44
+L76:
+  LessInt      r69, r68, r67
+  JumpIfFalse  r69, L4
+  Index        r71, r66, r68
+  // from ci in cast_info
+  IterPrep     r72, r4
+  Len          r73, r72
+  Move         r74, r44
+L75:
+  LessInt      r75, r74, r73
+  JumpIfFalse  r75, L5
+  Index        r77, r72, r74
+  // from cn in company_name
+  IterPrep     r78, r5
+  Len          r79, r78
+  Move         r80, r44
+L74:
+  LessInt      r81, r80, r79
+  JumpIfFalse  r81, L6
+  Index        r83, r78, r80
+  // from it in info_type
+  IterPrep     r84, r6
+  Len          r85, r84
+  Move         r86, r44
+L73:
+  LessInt      r87, r86, r85
+  JumpIfFalse  r87, L7
+  Index        r89, r84, r86
+  // from it3 in info_type
+  IterPrep     r90, r6
+  Len          r91, r90
+  Move         r92, r44
+L72:
+  LessInt      r93, r92, r91
+  JumpIfFalse  r93, L8
+  Index        r95, r90, r92
+  // from k in keyword
+  IterPrep     r96, r7
+  Len          r97, r96
+  Move         r98, r44
+L71:
+  LessInt      r99, r98, r97
+  JumpIfFalse  r99, L9
+  Index        r101, r96, r98
+  // from mc in movie_companies
+  IterPrep     r102, r8
+  Len          r103, r102
+  Move         r104, r44
+L70:
+  LessInt      r105, r104, r103
+  JumpIfFalse  r105, L10
+  Index        r107, r102, r104
+  // from mi in movie_info
+  IterPrep     r108, r9
+  Len          r109, r108
+  Move         r110, r44
+L69:
+  LessInt      r111, r110, r109
+  JumpIfFalse  r111, L11
+  Index        r113, r108, r110
+  // from mk in movie_keyword
+  IterPrep     r114, r10
+  Len          r115, r114
+  Move         r116, r44
+L68:
+  LessInt      r117, r116, r115
+  JumpIfFalse  r117, L12
+  Index        r119, r114, r116
+  // from n in name
+  IterPrep     r120, r11
+  Len          r121, r120
+  Move         r122, r44
+L67:
+  LessInt      r123, r122, r121
+  JumpIfFalse  r123, L13
+  Index        r125, r120, r122
+  // from pi in person_info
+  IterPrep     r126, r12
+  Len          r127, r126
+  Move         r128, r44
+L66:
+  LessInt      r129, r128, r127
+  JumpIfFalse  r129, L14
+  Index        r131, r126, r128
+  // from rt in role_type
+  IterPrep     r132, r13
+  Len          r133, r132
+  Move         r134, r44
+L65:
+  LessInt      r135, r134, r133
+  JumpIfFalse  r135, L15
+  Index        r137, r132, r134
+  // from t in title
+  IterPrep     r138, r14
+  Len          r139, r138
+  Move         r140, r44
+L64:
+  LessInt      r141, r140, r139
+  JumpIfFalse  r141, L16
+  Index        r143, r138, r140
+  // cct1.kind == "cast" &&
+  Index        r144, r59, r16
+  // t.production_year >= 2000 &&
+  Index        r145, r143, r27
+  Const        r146, 2000
+  LessEq       r147, r146, r145
+  // t.production_year <= 2010 &&
+  Index        r148, r143, r27
+  Const        r149, 2010
+  LessEq       r150, r148, r149
+  // cct1.kind == "cast" &&
+  Const        r151, "cast"
+  Equal        r152, r144, r151
+  // cct2.kind == "complete+verified" &&
+  Index        r153, r65, r16
+  Const        r154, "complete+verified"
+  Equal        r155, r153, r154
+  // chn.name == "Queen" &&
+  Index        r156, r71, r17
+  Const        r157, "Queen"
+  Equal        r158, r156, r157
+  // cn.country_code == "[us]" &&
+  Index        r159, r83, r19
+  Const        r160, "[us]"
+  Equal        r161, r159, r160
+  // it.info == "release dates" &&
+  Index        r162, r89, r20
+  Const        r163, "release dates"
+  Equal        r164, r162, r163
+  // it3.info == "trivia" &&
+  Index        r165, r95, r20
+  Const        r166, "trivia"
+  Equal        r167, r165, r166
+  // k.keyword == "computer-animation" &&
+  Index        r168, r101, r21
+  Const        r169, "computer-animation"
+  Equal        r170, r168, r169
+  // n.gender == "f" &&
+  Index        r171, r125, r23
+  Const        r172, "f"
+  Equal        r173, r171, r172
+  // rt.role == "actress" &&
+  Index        r174, r137, r25
   Const        r175, "actress"
   Equal        r176, r174, r175
   // t.title == "Shrek 2" &&
-  Const        r177, "title"
-  Index        r178, r132, r177
-  Const        r179, "Shrek 2"
-  Equal        r180, r178, r179
+  Index        r177, r143, r26
+  Const        r178, "Shrek 2"
+  Equal        r179, r177, r178
   // t.id == mi.movie_id &&
-  Const        r181, "id"
-  Index        r182, r132, r181
-  Const        r183, "movie_id"
-  Index        r184, r102, r183
-  Equal        r185, r182, r184
+  Index        r180, r143, r28
+  Index        r181, r113, r29
+  Equal        r182, r180, r181
   // t.id == mc.movie_id &&
-  Const        r186, "id"
-  Index        r187, r132, r186
-  Const        r188, "movie_id"
-  Index        r189, r96, r188
-  Equal        r190, r187, r189
+  Index        r183, r143, r28
+  Index        r184, r107, r29
+  Equal        r185, r183, r184
   // t.id == ci.movie_id &&
-  Const        r191, "id"
-  Index        r192, r132, r191
-  Const        r193, "movie_id"
-  Index        r194, r66, r193
-  Equal        r195, r192, r194
+  Index        r186, r143, r28
+  Index        r187, r77, r29
+  Equal        r188, r186, r187
   // t.id == mk.movie_id &&
-  Const        r196, "id"
-  Index        r197, r132, r196
-  Const        r198, "movie_id"
-  Index        r199, r108, r198
-  Equal        r200, r197, r199
+  Index        r189, r143, r28
+  Index        r190, r119, r29
+  Equal        r191, r189, r190
   // t.id == cc.movie_id &&
-  Const        r201, "id"
-  Index        r202, r132, r201
-  Const        r203, "movie_id"
-  Index        r204, r42, r203
-  Equal        r205, r202, r204
+  Index        r192, r143, r28
+  Index        r193, r53, r29
+  Equal        r194, r192, r193
   // mc.movie_id == ci.movie_id &&
-  Const        r206, "movie_id"
-  Index        r207, r96, r206
-  Const        r208, "movie_id"
-  Index        r209, r66, r208
-  Equal        r210, r207, r209
+  Index        r195, r107, r29
+  Index        r196, r77, r29
+  Equal        r197, r195, r196
   // mc.movie_id == mi.movie_id &&
-  Const        r211, "movie_id"
-  Index        r212, r96, r211
-  Const        r213, "movie_id"
-  Index        r214, r102, r213
-  Equal        r215, r212, r214
+  Index        r198, r107, r29
+  Index        r199, r113, r29
+  Equal        r200, r198, r199
   // mc.movie_id == mk.movie_id &&
-  Const        r216, "movie_id"
-  Index        r217, r96, r216
-  Const        r218, "movie_id"
-  Index        r219, r108, r218
-  Equal        r220, r217, r219
+  Index        r201, r107, r29
+  Index        r202, r119, r29
+  Equal        r203, r201, r202
   // mc.movie_id == cc.movie_id &&
-  Const        r221, "movie_id"
-  Index        r222, r96, r221
-  Const        r223, "movie_id"
-  Index        r224, r42, r223
-  Equal        r225, r222, r224
+  Index        r204, r107, r29
+  Index        r205, r53, r29
+  Equal        r206, r204, r205
   // mi.movie_id == ci.movie_id &&
-  Const        r226, "movie_id"
-  Index        r227, r102, r226
-  Const        r228, "movie_id"
-  Index        r229, r66, r228
-  Equal        r230, r227, r229
+  Index        r207, r113, r29
+  Index        r208, r77, r29
+  Equal        r209, r207, r208
   // mi.movie_id == mk.movie_id &&
-  Const        r231, "movie_id"
-  Index        r232, r102, r231
-  Const        r233, "movie_id"
-  Index        r234, r108, r233
-  Equal        r235, r232, r234
+  Index        r210, r113, r29
+  Index        r211, r119, r29
+  Equal        r212, r210, r211
   // mi.movie_id == cc.movie_id &&
-  Const        r236, "movie_id"
-  Index        r237, r102, r236
-  Const        r238, "movie_id"
-  Index        r239, r42, r238
-  Equal        r240, r237, r239
+  Index        r213, r113, r29
+  Index        r214, r53, r29
+  Equal        r215, r213, r214
   // ci.movie_id == mk.movie_id &&
-  Const        r241, "movie_id"
-  Index        r242, r66, r241
-  Const        r243, "movie_id"
-  Index        r244, r108, r243
-  Equal        r245, r242, r244
+  Index        r216, r77, r29
+  Index        r217, r119, r29
+  Equal        r218, r216, r217
   // ci.movie_id == cc.movie_id &&
-  Const        r246, "movie_id"
-  Index        r247, r66, r246
-  Const        r248, "movie_id"
-  Index        r249, r42, r248
-  Equal        r250, r247, r249
+  Index        r219, r77, r29
+  Index        r220, r53, r29
+  Equal        r221, r219, r220
   // mk.movie_id == cc.movie_id &&
-  Const        r251, "movie_id"
-  Index        r252, r108, r251
-  Const        r253, "movie_id"
-  Index        r254, r42, r253
-  Equal        r255, r252, r254
+  Index        r222, r119, r29
+  Index        r223, r53, r29
+  Equal        r224, r222, r223
   // cn.id == mc.company_id &&
-  Const        r256, "id"
-  Index        r257, r72, r256
-  Const        r258, "company_id"
-  Index        r259, r96, r258
-  Equal        r260, r257, r259
+  Index        r225, r83, r28
+  Index        r226, r107, r30
+  Equal        r227, r225, r226
   // it.id == mi.info_type_id &&
-  Const        r261, "id"
-  Index        r262, r78, r261
-  Const        r263, "info_type_id"
-  Index        r264, r102, r263
-  Equal        r265, r262, r264
+  Index        r228, r89, r28
+  Index        r229, r113, r31
+  Equal        r230, r228, r229
   // n.id == ci.person_id &&
-  Const        r266, "id"
-  Index        r267, r114, r266
-  Const        r268, "person_id"
-  Index        r269, r66, r268
-  Equal        r270, r267, r269
+  Index        r231, r125, r28
+  Index        r232, r77, r32
+  Equal        r233, r231, r232
   // rt.id == ci.role_id &&
-  Const        r271, "id"
-  Index        r272, r126, r271
-  Const        r273, "role_id"
-  Index        r274, r66, r273
-  Equal        r275, r272, r274
+  Index        r234, r137, r28
+  Index        r235, r77, r33
+  Equal        r236, r234, r235
   // n.id == an.person_id &&
-  Const        r276, "id"
-  Index        r277, r114, r276
-  Const        r278, "person_id"
-  Index        r279, r36, r278
-  Equal        r280, r277, r279
+  Index        r237, r125, r28
+  Index        r238, r47, r32
+  Equal        r239, r237, r238
   // ci.person_id == an.person_id &&
-  Const        r281, "person_id"
-  Index        r282, r66, r281
-  Const        r283, "person_id"
-  Index        r284, r36, r283
-  Equal        r285, r282, r284
+  Index        r240, r77, r32
+  Index        r241, r47, r32
+  Equal        r242, r240, r241
   // chn.id == ci.person_role_id &&
-  Const        r286, "id"
-  Index        r287, r60, r286
-  Const        r288, "person_role_id"
-  Index        r289, r66, r288
-  Equal        r290, r287, r289
+  Index        r243, r71, r28
+  Index        r244, r77, r34
+  Equal        r245, r243, r244
   // n.id == pi.person_id &&
-  Const        r291, "id"
-  Index        r292, r114, r291
-  Const        r293, "person_id"
-  Index        r294, r120, r293
-  Equal        r295, r292, r294
+  Index        r246, r125, r28
+  Index        r247, r131, r32
+  Equal        r248, r246, r247
   // ci.person_id == pi.person_id &&
-  Const        r296, "person_id"
-  Index        r297, r66, r296
-  Const        r298, "person_id"
-  Index        r299, r120, r298
-  Equal        r300, r297, r299
+  Index        r249, r77, r32
+  Index        r250, r131, r32
+  Equal        r251, r249, r250
   // it3.id == pi.info_type_id &&
-  Const        r301, "id"
-  Index        r302, r84, r301
-  Const        r303, "info_type_id"
-  Index        r304, r120, r303
-  Equal        r305, r302, r304
+  Index        r252, r95, r28
+  Index        r253, r131, r31
+  Equal        r254, r252, r253
   // k.id == mk.keyword_id &&
-  Const        r306, "id"
-  Index        r307, r90, r306
-  Const        r308, "keyword_id"
-  Index        r309, r108, r308
-  Equal        r310, r307, r309
+  Index        r255, r101, r28
+  Index        r256, r119, r35
+  Equal        r257, r255, r256
   // cct1.id == cc.subject_id &&
-  Const        r311, "id"
-  Index        r312, r48, r311
-  Const        r313, "subject_id"
-  Index        r314, r42, r313
-  Equal        r315, r312, r314
+  Index        r258, r59, r28
+  Index        r259, r53, r36
+  Equal        r260, r258, r259
   // cct2.id == cc.status_id
-  Const        r316, "id"
-  Index        r317, r54, r316
-  Const        r318, "status_id"
-  Index        r319, r42, r318
-  Equal        r320, r317, r319
+  Index        r261, r65, r28
+  Index        r262, r53, r37
+  Equal        r263, r261, r262
   // cct1.kind == "cast" &&
-  Move         r321, r144
-  JumpIfFalse  r321, L17
-  Move         r321, r148
+  Move         r264, r152
+  JumpIfFalse  r264, L17
 L17:
   // cct2.kind == "complete+verified" &&
-  Move         r322, r321
-  JumpIfFalse  r322, L18
-  Move         r322, r152
+  Move         r265, r155
+  JumpIfFalse  r265, L18
 L18:
   // chn.name == "Queen" &&
-  Move         r323, r322
-  JumpIfFalse  r323, L19
+  Move         r266, r158
+  JumpIfFalse  r266, L19
   // (ci.note == "(voice)" ||
-  Const        r324, "note"
-  Index        r325, r66, r324
-  Const        r326, "(voice)"
-  Equal        r327, r325, r326
+  Index        r267, r77, r18
+  Const        r268, "(voice)"
+  Equal        r269, r267, r268
   // ci.note == "(voice) (uncredited)" ||
-  Const        r328, "note"
-  Index        r329, r66, r328
-  Const        r330, "(voice) (uncredited)"
-  Equal        r331, r329, r330
+  Index        r270, r77, r18
+  Const        r271, "(voice) (uncredited)"
+  Equal        r272, r270, r271
   // ci.note == "(voice: English version)") &&
-  Const        r332, "note"
-  Index        r333, r66, r332
-  Const        r334, "(voice: English version)"
-  Equal        r335, r333, r334
+  Index        r273, r77, r18
+  Const        r274, "(voice: English version)"
+  Equal        r275, r273, r274
   // (ci.note == "(voice)" ||
-  Move         r336, r327
-  JumpIfTrue   r336, L20
-  Move         r336, r331
+  Move         r276, r269
+  JumpIfTrue   r276, L20
 L20:
   // ci.note == "(voice) (uncredited)" ||
-  Move         r337, r336
-  JumpIfTrue   r337, L21
-  Move         r337, r335
-L21:
-  // chn.name == "Queen" &&
-  Move         r323, r337
+  Move         r277, r272
+  JumpIfTrue   r277, L19
 L19:
   // ci.note == "(voice: English version)") &&
-  Move         r338, r323
-  JumpIfFalse  r338, L22
-  Move         r338, r156
-L22:
+  Move         r278, r275
+  JumpIfFalse  r278, L21
+L21:
   // cn.country_code == "[us]" &&
-  Move         r339, r338
-  JumpIfFalse  r339, L23
-  Move         r339, r160
-L23:
+  Move         r279, r161
+  JumpIfFalse  r279, L22
+L22:
   // it.info == "release dates" &&
-  Move         r340, r339
-  JumpIfFalse  r340, L24
-  Move         r340, r164
-L24:
+  Move         r280, r164
+  JumpIfFalse  r280, L23
+L23:
   // it3.info == "trivia" &&
-  Move         r341, r340
-  JumpIfFalse  r341, L25
-  Move         r341, r168
-L25:
+  Move         r281, r167
+  JumpIfFalse  r281, L24
+L24:
   // k.keyword == "computer-animation" &&
-  Move         r342, r341
-  JumpIfFalse  r342, L26
-  Const        r343, "info"
-  Index        r344, r102, r343
+  Move         r282, r170
+  JumpIfFalse  r282, L25
+  Index        r283, r113, r20
   // (mi.info.starts_with("Japan:200") || mi.info.starts_with("USA:200")) &&
-  Const        r345, "Japan:200"
-  Const        r346, 0
-  Const        r347, 9
-  Len          r348, r344
-  LessEq       r349, r347, r348
-  JumpIfFalse  r349, L27
-  Slice        r351, r344, r346, r347
-  Equal        r352, r351, r345
-  Move         r350, r352
-  Jump         L28
-L27:
-  Const        r350, false
-L28:
-  Move         r353, r350
-  JumpIfTrue   r353, L29
-  Const        r354, "info"
-  Index        r355, r102, r354
-  Const        r356, "USA:200"
-  Const        r357, 0
-  Const        r358, 7
-  Len          r359, r355
-  LessEq       r360, r358, r359
-  JumpIfFalse  r360, L30
-  Slice        r362, r355, r357, r358
-  Equal        r363, r362, r356
-  Move         r361, r363
-  Jump         L31
-L30:
-  Const        r361, false
-L31:
-  Move         r353, r361
-L29:
-  // k.keyword == "computer-animation" &&
-  Move         r342, r353
+  Const        r286, 9
+  Len          r287, r283
+  LessEq       r288, r286, r287
+  JumpIfFalse  r288, L26
+  Jump         L27
 L26:
-  // (mi.info.starts_with("Japan:200") || mi.info.starts_with("USA:200")) &&
-  Move         r364, r342
-  JumpIfFalse  r364, L32
-  Move         r364, r172
-L32:
+  Const        r292, false
+L27:
+  JumpIfTrue   r292, L25
+  Index        r293, r113, r20
+  Const        r296, 7
+  Len          r297, r293
+  LessEq       r298, r296, r297
+  JumpIfFalse  r298, L28
+  Jump         L25
+L28:
+  Const        r292, false
+L25:
+  Move         r302, r292
+  JumpIfFalse  r302, L29
+L29:
   // n.gender == "f" &&
-  Move         r365, r364
-  JumpIfFalse  r365, L33
-  Const        r366, "name"
-  Index        r367, r114, r366
+  Move         r303, r173
+  JumpIfFalse  r303, L30
+  Index        r304, r125, r17
   // n.name.contains("An") &&
-  Const        r368, "An"
-  In           r369, r368, r367
-  // n.gender == "f" &&
-  Move         r365, r369
-L33:
-  // n.name.contains("An") &&
-  Move         r370, r365
-  JumpIfFalse  r370, L34
-  Move         r370, r176
-L34:
+  Const        r305, "An"
+  In           r307, r305, r304
+L30:
+  JumpIfFalse  r307, L31
+L31:
   // rt.role == "actress" &&
-  Move         r371, r370
-  JumpIfFalse  r371, L35
-  Move         r371, r180
-L35:
+  Move         r308, r176
+  JumpIfFalse  r308, L32
+L32:
   // t.title == "Shrek 2" &&
-  Move         r372, r371
-  JumpIfFalse  r372, L36
-  Move         r372, r138
-L36:
+  Move         r309, r179
+  JumpIfFalse  r309, L33
+L33:
   // t.production_year >= 2000 &&
-  Move         r373, r372
-  JumpIfFalse  r373, L37
-  Move         r373, r142
-L37:
+  Move         r310, r147
+  JumpIfFalse  r310, L34
+L34:
   // t.production_year <= 2010 &&
-  Move         r374, r373
-  JumpIfFalse  r374, L38
-  Move         r374, r185
-L38:
+  Move         r311, r150
+  JumpIfFalse  r311, L35
+L35:
   // t.id == mi.movie_id &&
-  Move         r375, r374
-  JumpIfFalse  r375, L39
-  Move         r375, r190
-L39:
+  Move         r312, r182
+  JumpIfFalse  r312, L36
+L36:
   // t.id == mc.movie_id &&
-  Move         r376, r375
-  JumpIfFalse  r376, L40
-  Move         r376, r195
-L40:
+  Move         r313, r185
+  JumpIfFalse  r313, L37
+L37:
   // t.id == ci.movie_id &&
-  Move         r377, r376
-  JumpIfFalse  r377, L41
-  Move         r377, r200
-L41:
+  Move         r314, r188
+  JumpIfFalse  r314, L38
+L38:
   // t.id == mk.movie_id &&
-  Move         r378, r377
-  JumpIfFalse  r378, L42
-  Move         r378, r205
-L42:
+  Move         r315, r191
+  JumpIfFalse  r315, L39
+L39:
   // t.id == cc.movie_id &&
-  Move         r379, r378
-  JumpIfFalse  r379, L43
-  Move         r379, r210
-L43:
+  Move         r316, r194
+  JumpIfFalse  r316, L40
+L40:
   // mc.movie_id == ci.movie_id &&
-  Move         r380, r379
-  JumpIfFalse  r380, L44
-  Move         r380, r215
-L44:
+  Move         r317, r197
+  JumpIfFalse  r317, L41
+L41:
   // mc.movie_id == mi.movie_id &&
-  Move         r381, r380
-  JumpIfFalse  r381, L45
-  Move         r381, r220
-L45:
+  Move         r318, r200
+  JumpIfFalse  r318, L42
+L42:
   // mc.movie_id == mk.movie_id &&
-  Move         r382, r381
-  JumpIfFalse  r382, L46
-  Move         r382, r225
-L46:
+  Move         r319, r203
+  JumpIfFalse  r319, L43
+L43:
   // mc.movie_id == cc.movie_id &&
-  Move         r383, r382
-  JumpIfFalse  r383, L47
-  Move         r383, r230
-L47:
+  Move         r320, r206
+  JumpIfFalse  r320, L44
+L44:
   // mi.movie_id == ci.movie_id &&
-  Move         r384, r383
-  JumpIfFalse  r384, L48
-  Move         r384, r235
-L48:
+  Move         r321, r209
+  JumpIfFalse  r321, L45
+L45:
   // mi.movie_id == mk.movie_id &&
-  Move         r385, r384
-  JumpIfFalse  r385, L49
-  Move         r385, r240
-L49:
+  Move         r322, r212
+  JumpIfFalse  r322, L46
+L46:
   // mi.movie_id == cc.movie_id &&
-  Move         r386, r385
-  JumpIfFalse  r386, L50
-  Move         r386, r245
-L50:
+  Move         r323, r215
+  JumpIfFalse  r323, L47
+L47:
   // ci.movie_id == mk.movie_id &&
-  Move         r387, r386
-  JumpIfFalse  r387, L51
-  Move         r387, r250
-L51:
+  Move         r324, r218
+  JumpIfFalse  r324, L48
+L48:
   // ci.movie_id == cc.movie_id &&
-  Move         r388, r387
-  JumpIfFalse  r388, L52
-  Move         r388, r255
-L52:
+  Move         r325, r221
+  JumpIfFalse  r325, L49
+L49:
   // mk.movie_id == cc.movie_id &&
-  Move         r389, r388
-  JumpIfFalse  r389, L53
-  Move         r389, r260
-L53:
+  Move         r326, r224
+  JumpIfFalse  r326, L50
+L50:
   // cn.id == mc.company_id &&
-  Move         r390, r389
-  JumpIfFalse  r390, L54
-  Move         r390, r265
-L54:
+  Move         r327, r227
+  JumpIfFalse  r327, L51
+L51:
   // it.id == mi.info_type_id &&
-  Move         r391, r390
-  JumpIfFalse  r391, L55
-  Move         r391, r270
-L55:
+  Move         r328, r230
+  JumpIfFalse  r328, L52
+L52:
   // n.id == ci.person_id &&
-  Move         r392, r391
-  JumpIfFalse  r392, L56
-  Move         r392, r275
-L56:
+  Move         r329, r233
+  JumpIfFalse  r329, L53
+L53:
   // rt.id == ci.role_id &&
-  Move         r393, r392
-  JumpIfFalse  r393, L57
-  Move         r393, r280
-L57:
+  Move         r330, r236
+  JumpIfFalse  r330, L54
+L54:
   // n.id == an.person_id &&
-  Move         r394, r393
-  JumpIfFalse  r394, L58
-  Move         r394, r285
-L58:
+  Move         r331, r239
+  JumpIfFalse  r331, L55
+L55:
   // ci.person_id == an.person_id &&
-  Move         r395, r394
-  JumpIfFalse  r395, L59
-  Move         r395, r290
-L59:
+  Move         r332, r242
+  JumpIfFalse  r332, L56
+L56:
   // chn.id == ci.person_role_id &&
-  Move         r396, r395
-  JumpIfFalse  r396, L60
-  Move         r396, r295
-L60:
+  Move         r333, r245
+  JumpIfFalse  r333, L57
+L57:
   // n.id == pi.person_id &&
-  Move         r397, r396
-  JumpIfFalse  r397, L61
-  Move         r397, r300
-L61:
+  Move         r334, r248
+  JumpIfFalse  r334, L58
+L58:
   // ci.person_id == pi.person_id &&
-  Move         r398, r397
-  JumpIfFalse  r398, L62
-  Move         r398, r305
-L62:
+  Move         r335, r251
+  JumpIfFalse  r335, L59
+L59:
   // it3.id == pi.info_type_id &&
-  Move         r399, r398
-  JumpIfFalse  r399, L63
-  Move         r399, r310
-L63:
+  Move         r336, r254
+  JumpIfFalse  r336, L60
+L60:
   // k.id == mk.keyword_id &&
-  Move         r400, r399
-  JumpIfFalse  r400, L64
-  Move         r400, r315
-L64:
+  Move         r337, r257
+  JumpIfFalse  r337, L61
+L61:
   // cct1.id == cc.subject_id &&
-  Move         r401, r400
-  JumpIfFalse  r401, L65
-  Move         r401, r320
-L65:
+  Move         r338, r260
+  JumpIfFalse  r338, L62
+  Move         r338, r263
+L62:
   // where (
-  JumpIfFalse  r401, L66
-  // voiced_char: chn.name,
-  Const        r402, "voiced_char"
-  Const        r403, "name"
-  Index        r404, r60, r403
-  // voicing_actress: n.name,
-  Const        r405, "voicing_actress"
-  Const        r406, "name"
-  Index        r407, r114, r406
-  // voiced_animation: t.title
-  Const        r408, "voiced_animation"
-  Const        r409, "title"
-  Index        r410, r132, r409
-  // voiced_char: chn.name,
-  Move         r411, r402
-  Move         r412, r404
-  // voicing_actress: n.name,
-  Move         r413, r405
-  Move         r414, r407
-  // voiced_animation: t.title
-  Move         r415, r408
-  Move         r416, r410
+  JumpIfFalse  r338, L63
   // select {
-  MakeMap      r417, 3, r411
+  MakeMap      r345, 3, r38
   // from an in aka_name
-  Append       r418, r30, r417
-  Move         r30, r418
-L66:
+  Append       r15, r15, r345
+L63:
   // from t in title
-  Const        r419, 1
-  Add          r420, r129, r419
-  Move         r129, r420
-  Jump         L67
+  Const        r347, 1
+  AddInt       r140, r140, r347
+  Jump         L64
 L16:
   // from rt in role_type
-  Const        r421, 1
-  Add          r422, r123, r421
-  Move         r123, r422
-  Jump         L68
+  AddInt       r134, r134, r347
+  Jump         L65
 L15:
   // from pi in person_info
-  Const        r423, 1
-  Add          r424, r117, r423
-  Move         r117, r424
-  Jump         L69
+  AddInt       r128, r128, r347
+  Jump         L66
 L14:
   // from n in name
-  Const        r425, 1
-  Add          r426, r111, r425
-  Move         r111, r426
-  Jump         L70
+  AddInt       r122, r122, r347
+  Jump         L67
 L13:
   // from mk in movie_keyword
-  Const        r427, 1
-  Add          r428, r105, r427
-  Move         r105, r428
-  Jump         L71
+  AddInt       r116, r116, r347
+  Jump         L68
 L12:
   // from mi in movie_info
-  Const        r429, 1
-  Add          r430, r99, r429
-  Move         r99, r430
-  Jump         L72
+  AddInt       r110, r110, r347
+  Jump         L69
 L11:
   // from mc in movie_companies
-  Const        r431, 1
-  Add          r432, r93, r431
-  Move         r93, r432
-  Jump         L73
+  AddInt       r104, r104, r347
+  Jump         L70
 L10:
   // from k in keyword
-  Const        r433, 1
-  Add          r434, r87, r433
-  Move         r87, r434
-  Jump         L74
+  AddInt       r98, r98, r347
+  Jump         L71
 L9:
   // from it3 in info_type
-  Const        r435, 1
-  Add          r436, r81, r435
-  Move         r81, r436
-  Jump         L75
+  AddInt       r92, r92, r347
+  Jump         L72
 L8:
   // from it in info_type
-  Const        r437, 1
-  Add          r438, r75, r437
-  Move         r75, r438
-  Jump         L76
+  AddInt       r86, r86, r347
+  Jump         L73
 L7:
   // from cn in company_name
-  Const        r439, 1
-  Add          r440, r69, r439
-  Move         r69, r440
-  Jump         L77
+  AddInt       r80, r80, r347
+  Jump         L74
 L6:
   // from ci in cast_info
-  Const        r441, 1
-  Add          r442, r63, r441
-  Move         r63, r442
-  Jump         L78
+  AddInt       r74, r74, r347
+  Jump         L75
 L5:
   // from chn in char_name
-  Const        r443, 1
-  Add          r444, r57, r443
-  Move         r57, r444
-  Jump         L79
+  AddInt       r68, r68, r347
+  Jump         L76
 L4:
   // from cct2 in comp_cast_type
-  Const        r445, 1
-  Add          r446, r51, r445
-  Move         r51, r446
-  Jump         L80
+  AddInt       r62, r62, r347
+  Jump         L77
 L3:
   // from cct1 in comp_cast_type
-  Const        r447, 1
-  Add          r448, r45, r447
-  Move         r45, r448
-  Jump         L81
+  AddInt       r56, r56, r347
+  Jump         L78
 L2:
   // from cc in complete_cast
-  Const        r449, 1
-  Add          r450, r39, r449
-  Move         r39, r450
-  Jump         L82
+  AddInt       r50, r50, r347
+  Jump         L79
 L1:
   // from an in aka_name
-  Const        r451, 1
-  Add          r452, r33, r451
-  Move         r33, r452
-  Jump         L83
+  Jump         L80
 L0:
-  // let matches =
-  Move         r453, r30
   // voiced_char: min(from x in matches select x.voiced_char),
-  Const        r454, "voiced_char"
-  Const        r455, []
-  IterPrep     r456, r453
-  Len          r457, r456
-  Const        r458, 0
-L85:
-  Less         r459, r458, r457
-  JumpIfFalse  r459, L84
-  Index        r460, r456, r458
-  Move         r461, r460
-  Const        r462, "voiced_char"
-  Index        r463, r461, r462
-  Append       r464, r455, r463
-  Move         r455, r464
-  Const        r465, 1
-  Add          r466, r458, r465
-  Move         r458, r466
-  Jump         L85
+  Const        r348, []
+  IterPrep     r349, r15
+  Len          r350, r349
+  Move         r351, r44
+L82:
+  LessInt      r352, r351, r350
+  JumpIfFalse  r352, L81
+  Index        r354, r349, r351
+  Index        r355, r354, r38
+  Append       r348, r348, r355
+  AddInt       r351, r351, r347
+  Jump         L82
+L81:
+  // voicing_actress: min(from x in matches select x.voicing_actress),
+  Const        r358, []
+  IterPrep     r359, r15
+  Len          r360, r359
+  Move         r361, r44
 L84:
-  Min          r467, r455
-  // voicing_actress: min(from x in matches select x.voicing_actress),
-  Const        r468, "voicing_actress"
-  Const        r469, []
-  IterPrep     r470, r453
-  Len          r471, r470
-  Const        r472, 0
-L87:
-  Less         r473, r472, r471
-  JumpIfFalse  r473, L86
-  Index        r474, r470, r472
-  Move         r461, r474
-  Const        r475, "voicing_actress"
-  Index        r476, r461, r475
-  Append       r477, r469, r476
-  Move         r469, r477
-  Const        r478, 1
-  Add          r479, r472, r478
-  Move         r472, r479
-  Jump         L87
+  LessInt      r362, r361, r360
+  JumpIfFalse  r362, L83
+  Index        r354, r359, r361
+  Index        r364, r354, r39
+  Append       r358, r358, r364
+  AddInt       r361, r361, r347
+  Jump         L84
+L83:
+  // voiced_animation: min(from x in matches select x.voiced_animation)
+  Const        r367, []
+  IterPrep     r368, r15
+  Len          r369, r368
+  Move         r370, r44
 L86:
-  Min          r480, r469
-  // voiced_animation: min(from x in matches select x.voiced_animation)
-  Const        r481, "voiced_animation"
-  Const        r482, []
-  IterPrep     r483, r453
-  Len          r484, r483
-  Const        r485, 0
-L89:
-  Less         r486, r485, r484
-  JumpIfFalse  r486, L88
-  Index        r487, r483, r485
-  Move         r461, r487
-  Const        r488, "voiced_animation"
-  Index        r489, r461, r488
-  Append       r490, r482, r489
-  Move         r482, r490
-  Const        r491, 1
-  Add          r492, r485, r491
-  Move         r485, r492
-  Jump         L89
-L88:
-  Min          r493, r482
-  // voiced_char: min(from x in matches select x.voiced_char),
-  Move         r494, r454
-  Move         r495, r467
-  // voicing_actress: min(from x in matches select x.voicing_actress),
-  Move         r496, r468
-  Move         r497, r480
-  // voiced_animation: min(from x in matches select x.voiced_animation)
-  Move         r498, r481
-  Move         r499, r493
+  LessInt      r371, r370, r369
+  JumpIfFalse  r371, L85
+  Index        r354, r368, r370
+  Index        r373, r354, r40
+  Append       r367, r367, r373
+  AddInt       r370, r370, r347
+  Jump         L86
+L85:
   // {
-  MakeMap      r500, 3, r494
-  Move         r501, r500
+  MakeMap      r380, 3, r38
   // let result = [
-  MakeList     r502, 1, r501
-  Move         r503, r502
+  MakeList     r381, 1, r380
   // json(result)
-  JSON         r503
+  JSON         r381
   // expect result == [
-  Const        r504, [{"voiced_animation": "Shrek 2", "voiced_char": "Queen", "voicing_actress": "Angela Aniston"}]
-  Equal        r505, r503, r504
-  Expect       r505
+  Const        r382, [{"voiced_animation": "Shrek 2", "voiced_char": "Queen", "voicing_actress": "Angela Aniston"}]
+  Equal        r383, r381, r382
+  Expect       r383
   Return       r0
