@@ -83,7 +83,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "%s: read src: %v\n", src, err)
 			continue
 		}
-		ir := []byte(strings.TrimSpace(p.Disassemble(string(srcData))))
+		ir := []byte(strings.TrimRight(p.Disassemble(string(srcData)), " \n") + "\n")
 		if err := os.WriteFile(irPath, ir, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "%s: write ir: %v\n", src, err)
 		}
