@@ -295,7 +295,10 @@ func Optimize(fn *Function) {
 			break
 		}
 	}
-	CompactRegisters(fn)
+	// CompactRegisters can disrupt instructions like OpMakeMap or
+	// OpMakeList that rely on consecutive registers. Skip it to avoid
+	// invalid register references during execution.
+	// CompactRegisters(fn)
 }
 
 // removeDead eliminates instructions that only define dead registers.
