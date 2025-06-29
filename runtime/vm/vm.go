@@ -3411,6 +3411,10 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, rightKey *parser.Expr) {
 	join := q.Joins[0]
 
+	wa, ok := whereAlias(q.Where)
+	whereLeft := ok && wa == q.Var
+	whereRight := ok && wa == join.Var
+
 	leftReg := fc.compileExpr(q.Source)
 	llist := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIterPrep, A: llist, B: leftReg})
@@ -3448,6 +3452,12 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 			fc.vars[join.Var] = rvar
 		}
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
+		var wskip int
+		if whereRight {
+			w := fc.compileExpr(q.Where)
+			wskip = len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+		}
 		key := fc.compileExpr(rightKey)
 		list := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpIndex, A: list, B: rmap, C: key})
@@ -3465,6 +3475,9 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		tmp := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpAppend, A: tmp, B: list, C: relem})
 		fc.emit(join.Pos, Instr{Op: OpSetIndex, A: rmap, B: key, C: tmp})
+		if whereRight {
+			fc.fn.Code[wskip].B = len(fc.fn.Code)
+		}
 		one := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 		tmpi := fc.newReg()
@@ -3583,6 +3596,12 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 			fc.vars[q.Var] = lvar
 		}
 		fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem})
+		var wskip int
+		if whereLeft {
+			w := fc.compileExpr(q.Where)
+			wskip = len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+		}
 		key := fc.compileExpr(leftKey)
 		list := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpIndex, A: list, B: lmap, C: key})
@@ -3600,6 +3619,9 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		tmp := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: list, C: lelem})
 		fc.emit(q.Pos, Instr{Op: OpSetIndex, A: lmap, B: key, C: tmp})
+		if whereLeft {
+			fc.fn.Code[wskip].B = len(fc.fn.Code)
+		}
 		one := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
 		tmpi := fc.newReg()

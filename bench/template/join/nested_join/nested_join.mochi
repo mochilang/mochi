@@ -1,8 +1,8 @@
-let left = []
+var left = []
 for i in 0..{{ .N }} {
   left = append(left, { id: i, val: i })
 }
-let right = []
+var right = []
 for i in 0..{{ .N }} {
   right = append(right, { id: i, info: i * 2 })
 }
