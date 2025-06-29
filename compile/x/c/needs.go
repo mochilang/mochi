@@ -54,5 +54,7 @@ const (
 	needGroupByInt           = "group_by_int"
 	needListPairString       = "list_pair_string"
 	needGroupByPairString    = "group_by_pair_string"
+	needJSONMapString        = "json_map_string"
+	needJSONListMapString    = "json_list_map_string"
 	needStringHeader         = "string_h"
 )
