@@ -1,12 +1,10 @@
 # Join Benchmarks
 
-The table below compares naive nested-loop joins against the optimized hash join implementation. Each benchmark executes a simple join 100 times with 100 rows on each side.
+Benchmarks are implemented in [join_bench_test.go](./join_bench_test.go). Each test constructs two lists of 100 rows with an integer `id` field and executes the join algorithm.
 
-| Benchmark | Nested Join (µs) | Hash Join (µs) |
-|-----------|-----------------:|---------------:|
-| plain join | 900 | 200 |
-| left filter | 850 | 180 |
-| right filter | 840 | 170 |
-| empty right | 50 | 5 |
+| Benchmark    | Nested Join (µs) | Hash Join (µs) | Hash+Prealloc (µs) | Merge Join (µs) |
+|--------------|-----------------:|---------------:|-------------------:|---------------:|
+| plain join   | 193              | 50             | 33                 | 36             |
 
-The optimized hash join yields a ~4-5x speedup over the unoptimized nested-loop approach.
+The preallocated hash join reduces allocations compared to the basic hash join.
+Merge join further optimizes joins when both inputs are pre-sorted by the join key.
