@@ -1,14 +1,12 @@
-func main (regs=23)
+func main (regs=89)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
-L3:
   // let orders = [
   Const        r1, [{"customerId": 1, "id": 100}, {"customerId": 1, "id": 101}, {"customerId": 2, "id": 102}]
   // let stats = from o in orders
   Const        r2, []
   // group by c.name into g
   Const        r3, "name"
-L0:
   // name: g.key,
   Const        r4, "key"
   // count: count(g)
@@ -16,119 +14,122 @@ L0:
   // let stats = from o in orders
   MakeMap      r6, 0, r0
   IterPrep     r7, r1
-  Len          r1, r7
+  Len          r8, r7
+  Const        r9, 0
 L5:
-  Const        r8, 0
-  LessInt      r9, r8, r1
-  JumpIfFalse  r9, L0
-L4:
-  Index        r1, r7, r8
+  LessInt      r10, r9, r8
+  JumpIfFalse  r10, L0
+  Index        r12, r7, r9
   // join from c in customers on o.customerId == c.id
-  IterPrep     r7, r0
-  Len          r10, r7
-  Move         r11, r8
-  LessInt      r12, r11, r10
-  JumpIfFalse  r12, L1
-  Index        r10, r7, r11
-  Const        r7, "customerId"
-  Index        r13, r1, r7
-  Const        r7, "id"
-L1:
-  Index        r14, r10, r7
-  Equal        r7, r13, r14
-  JumpIfFalse  r7, L2
+  IterPrep     r13, r0
+  Len          r14, r13
+  Move         r15, r9
+L4:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L1
+  Index        r18, r13, r15
+  Const        r19, "customerId"
+  Index        r20, r12, r19
+  Const        r21, "id"
+  Index        r22, r18, r21
+  Equal        r23, r20, r22
+  JumpIfFalse  r23, L2
   // let stats = from o in orders
-  Const        r7, "o"
-  Move         r14, r1
-  Const        r1, "c"
-  Move         r13, r10
-  MakeMap      r15, 2, r7
+  Const        r24, "o"
+  Move         r25, r12
+  Const        r26, "c"
+  Move         r27, r18
+  MakeMap      r28, 2, r24
   // group by c.name into g
-  Index        r13, r10, r3
-  Str          r10, r13
-  In           r1, r10, r6
-  JumpIfTrue   r1, L3
+  Index        r29, r18, r3
+  Str          r30, r29
+  In           r31, r30, r6
+  JumpIfTrue   r31, L3
   // let stats = from o in orders
-  Move         r1, r2
-  Const        r14, "__group__"
-  Const        r7, true
-  Move         r16, r4
+  Move         r32, r2
+  Const        r33, "__group__"
+  Const        r34, true
+  Move         r35, r4
   // group by c.name into g
-  Move         r17, r13
+  Move         r36, r29
   // let stats = from o in orders
-  Const        r13, "items"
-  Move         r18, r1
-  Move         r1, r5
-  Move         r19, r8
-  Move         r20, r14
-  Move         r14, r7
-  Move         r7, r16
-  Move         r16, r17
-  Move         r17, r13
-  Move         r21, r18
-  Move         r18, r1
-  Move         r1, r19
-  MakeMap      r22, 4, r20
-  SetIndex     r6, r10, r22
-  Move         r22, r13
-  Index        r13, r6, r10
-  Index        r10, r13, r22
-  Append       r1, r10, r15
-  SetIndex     r13, r22, r1
-  Index        r1, r13, r5
-  Const        r10, 1
-  AddInt       r22, r1, r10
-  SetIndex     r13, r5, r22
+  Const        r37, "items"
+  Move         r38, r32
+  Move         r39, r5
+  Move         r40, r9
+  Move         r41, r33
+  Move         r42, r34
+  Move         r43, r35
+  Move         r44, r36
+  Move         r45, r37
+  Move         r46, r38
+  Move         r47, r39
+  Move         r48, r40
+  MakeMap      r49, 4, r41
+  SetIndex     r6, r30, r49
+L3:
+  Move         r50, r37
+  Index        r51, r6, r30
+  Index        r52, r51, r50
+  Append       r53, r52, r28
+  SetIndex     r51, r50, r53
+  Index        r54, r51, r5
+  Const        r55, 1
+  AddInt       r56, r54, r55
+  SetIndex     r51, r5, r56
 L2:
   // join from c in customers on o.customerId == c.id
-  AddInt       r11, r11, r10
+  AddInt       r15, r15, r55
   Jump         L4
+L1:
   // let stats = from o in orders
-  AddInt       r8, r8, r10
+  AddInt       r9, r9, r55
   Jump         L5
-  Values       22,6,0,0
-  Move         r6, r19
-  Len          r19, r22
-  LessInt      r1, r6, r19
-  JumpIfFalse  r1, L6
-  Index        r1, r22, r6
+L0:
+  Values       57,6,0,0
+  Move         r58, r40
+  Len          r60, r57
+L7:
+  LessInt      r61, r58, r60
+  JumpIfFalse  r61, L6
+  Index        r63, r57, r58
   // name: g.key,
-  Move         r22, r3
-  Index        r19, r1, r4
+  Move         r64, r3
+  Index        r65, r63, r4
   // count: count(g)
-  Move         r4, r5
-  Index        r13, r1, r5
+  Move         r66, r5
+  Index        r67, r63, r5
   // name: g.key,
-  Move         r1, r22
-  Move         r22, r19
+  Move         r68, r64
+  Move         r69, r65
   // count: count(g)
-  Move         r19, r4
-  Move         r4, r13
+  Move         r70, r66
+  Move         r71, r67
   // select {
-  MakeMap      r13, 2, r1
+  MakeMap      r72, 2, r68
   // let stats = from o in orders
-  Append       r2, r2, r13
-  AddInt       r6, r6, r10
-  Jump         L1
+  Append       r2, r2, r72
+  AddInt       r58, r58, r55
+  Jump         L7
 L6:
   // print("--- Orders per customer ---")
-  Const        r13, "--- Orders per customer ---"
-  Print        r13
+  Const        r74, "--- Orders per customer ---"
+  Print        r74
   // for s in stats {
-  IterPrep     r13, r2
-  Len          r2, r13
-  Const        r4, 0
-L8:
-  Less         r19, r4, r2
-  JumpIfFalse  r19, L7
-  Index        r19, r13, r4
+  IterPrep     r75, r2
+  Len          r76, r75
+  Const        r77, 0
+L9:
+  Less         r78, r77, r76
+  JumpIfFalse  r78, L8
+  Index        r80, r75, r77
   // print(s.name, "orders:", s.count)
-  Index        r13, r19, r3
-  Const        r3, "orders:"
-  Index        r2, r19, r5
-  PrintN       r13, 3, r13
+  Index        r81, r80, r3
+  Const        r82, "orders:"
+  Index        r83, r80, r5
+  PrintN       r81, 3, r81
   // for s in stats {
-  Add          r4, r4, r10
-  Jump         L8
-L7:
+  Add          r77, r77, r55
+  Jump         L9
+L8:
   Return       r0

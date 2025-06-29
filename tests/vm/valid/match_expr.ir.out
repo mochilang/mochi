@@ -1,4 +1,4 @@
-func main (regs=2)
+func main (regs=11)
   // let x = 2
   Const        r0, 2
   // 2 => "two"

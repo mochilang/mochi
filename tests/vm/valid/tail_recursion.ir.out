@@ -1,23 +1,23 @@
-func main (regs=3)
+func main (regs=5)
   // print(sum_rec(10, 0))
   Const        r0, 10
   Const        r1, 0
-  Call2        r2, sum_rec, r0, r1
-  Print        r2
+  Call2        r4, sum_rec, r0, r1
+  Print        r4
   Return       r0
 
   // fun sum_rec(n: int, acc: int): int {
-func sum_rec (regs=4)
+func sum_rec (regs=10)
   // if n == 0 {
   Const        r2, 0
   Equal        r3, r0, r2
-L0:
   JumpIfFalse  r3, L0
   // return acc
   Return       r1
+L0:
   // return sum_rec(n - 1, acc + n)
-  Const        r3, 1
-  Sub          r2, r0, r3
-  Add          r3, r1, r0
-  Call2        r1, sum_rec, r2, r3
-  Return       r1
+  Const        r6, 1
+  Sub          r4, r0, r6
+  Add          r5, r1, r0
+  Call2        r9, sum_rec, r4, r5
+  Return       r9

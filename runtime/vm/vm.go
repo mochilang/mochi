@@ -3205,6 +3205,15 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	rlen := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 
+	zero := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
+	emptyLeft := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpEqualInt, A: emptyLeft, B: llen, C: zero})
+	jmpEmptyLeft := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: emptyLeft})
+	emptyRight := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpEqualInt, A: emptyRight, B: rlen, C: zero})
+	jmpEmptyRight := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: emptyRight})
 	fc.preloadFieldConsts(join.On)
 	fc.preloadFieldConsts(q.Where)
 	fc.preloadFieldConsts(q.Select)
@@ -3428,6 +3437,9 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		rend3 := len(fc.fn.Code)
 		fc.fn.Code[rjmp3].B = rend3
 	}
+	end := len(fc.fn.Code)
+	fc.fn.Code[jmpEmptyLeft].B = end
+	fc.fn.Code[jmpEmptyRight].B = end
 }
 
 // compileHashJoin performs an inner join using a hash map when the ON clause

@@ -1,4 +1,4 @@
-func main (regs=19)
+func main (regs=92)
   // let data = [
   Const        r0, [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}]
   // let groups = from d in data group by d.tag into g select g
@@ -7,124 +7,121 @@ func main (regs=19)
   IterPrep     r3, r0
   Len          r4, r3
   Const        r5, 0
-L5:
   MakeMap      r6, 0, r0
-  Const        r7, []
-L3:
-  Const        r8, 0
 L2:
-  LessInt      r9, r5, r4
-  JumpIfFalse  r9, L0
+  LessInt      r7, r5, r4
+  JumpIfFalse  r7, L0
+  Index        r8, r3, r5
+  Index        r10, r8, r2
+  Str          r11, r10
+  In           r12, r11, r6
+  JumpIfTrue   r12, L1
+  Move         r13, r1
+  Const        r14, "__group__"
+  Const        r15, true
+  Const        r16, "key"
+  Move         r17, r10
+  Const        r18, "items"
+  Move         r19, r13
+  Const        r20, "count"
+  Move         r21, r5
+  Move         r22, r14
+  Move         r23, r15
+  Move         r24, r16
+  Move         r25, r17
+  Move         r26, r18
+  Move         r27, r19
+  Move         r28, r20
+  Move         r29, r21
+  MakeMap      r30, 4, r22
+  SetIndex     r6, r11, r30
 L1:
-  Index        r4, r3, r5
-  Index        r3, r4, r2
-  Str          r10, r3
-  In           r11, r10, r6
-  JumpIfTrue   r11, L1
-  Const        r11, []
-  Const        r12, "__group__"
-  Const        r13, true
-  Const        r14, "key"
-  Move         r15, r3
-  Const        r3, "items"
-  Move         r16, r11
-  Const        r11, "count"
-  Const        r17, 0
-  Move         r18, r12
-  Move         r12, r13
-  Move         r13, r14
-  Move         r14, r15
-  Move         r15, r3
-  Move         r3, r16
-  Move         r16, r11
-  Move         r11, r17
-  MakeMap      r17, 4, r18
-  SetIndex     r6, r10, r8
-  Append       r7, r7, r17
-  Const        r17, 1
-  AddInt       r8, r8, r17
-  Const        r8, "items"
-  Index        r11, r6, r10
-  Index        r10, r7, r11
-  Index        r11, r10, r8
-  Append       r6, r11, r4
-  SetIndex     r10, r8, r6
-  Const        r6, "count"
-  Index        r11, r10, r6
-  AddInt       r4, r11, r17
-  SetIndex     r10, r6, r4
-  AddInt       r5, r5, r17
+  Move         r31, r18
+  Index        r32, r6, r11
+  Index        r33, r32, r31
+  Append       r34, r33, r8
+  SetIndex     r32, r31, r34
+  Move         r35, r20
+  Index        r36, r32, r35
+  Const        r37, 1
+  AddInt       r38, r36, r37
+  SetIndex     r32, r35, r38
+  AddInt       r5, r5, r37
   Jump         L2
 L0:
-  Const        r4, 0
-  Move         r11, r4
-  Len          r6, r7
-  LessInt      r10, r11, r6
-  JumpIfFalse  r10, L3
-  Index        r10, r7, r11
-  Append       r1, r1, r10
-  AddInt       r11, r11, r17
-  Jump         L1
-  // var tmp = []
-  Const        r7, []
-  // for g in groups {
-  IterPrep     r6, r1
-  Len          r11, r6
-  Const        r1, 0
-  Less         r9, r1, r11
-  JumpIfFalse  r9, L4
-  Index        r10, r6, r1
-  // var total = 0
-  Move         r9, r4
-  // for x in g.items {
-  Index        r6, r10, r8
-  IterPrep     r8, r6
-  Len          r6, r8
-  Const        r11, 0
-  Less         r5, r11, r6
-  JumpIfFalse  r5, L2
-  Index        r5, r8, r11
-  // total = total + x.val
-  Const        r8, "val"
-  Index        r6, r5, r8
-  Add          r9, r9, r6
-  // for x in g.items {
-  Const        r6, 1
-  Add          r11, r11, r6
-  Jump         L5
-  // tmp = append(tmp, {tag: g.key, total: total})
-  Const        r11, "tag"
-  Const        r6, "key"
-  Index        r8, r10, r6
-  Const        r6, "total"
-  Move         r10, r11
-  Move         r11, r8
-  Move         r8, r6
-  Move         r6, r9
-  MakeMap      r9, 2, r10
-  Append       r7, r7, r9
-  // for g in groups {
-  Const        r9, 1
-  Add          r1, r1, r9
-  Jump         L2
+  Values       39,6,0,0
+  Const        r41, 0
+  Move         r40, r41
+  Len          r42, r39
 L4:
-  // let result = from r in tmp sort by r.tag select r
-  Const        r9, []
-  IterPrep     r1, r7
-  Len          r7, r1
-  Move         r6, r4
+  LessInt      r43, r40, r42
+  JumpIfFalse  r43, L3
+  Index        r45, r39, r40
+  Append       r1, r1, r45
+  AddInt       r40, r40, r37
+  Jump         L4
+L3:
+  // var tmp = []
+  Const        r47, []
+  Move         r48, r47
+  // for g in groups {
+  IterPrep     r49, r1
+  Len          r50, r49
+  Move         r51, r41
+L8:
+  Less         r52, r51, r50
+  JumpIfFalse  r52, L5
+  Index        r45, r49, r51
+  // var total = 0
+  Move         r54, r41
+  // for x in g.items {
+  Index        r55, r45, r31
+  IterPrep     r56, r55
+  Len          r57, r56
+  Move         r58, r41
 L7:
-  LessInt      r4, r6, r7
-  JumpIfFalse  r4, L6
-  Index        r4, r1, r6
-  Index        r1, r4, r2
-  Move         r2, r4
-  MakeList     r4, 2, r1
-  Append       r9, r9, r4
-  AddInt       r6, r6, r17
+  Less         r59, r58, r57
+  JumpIfFalse  r59, L6
+  Index        r61, r56, r58
+  // total = total + x.val
+  Const        r62, "val"
+  Index        r63, r61, r62
+  Add          r54, r54, r63
+  // for x in g.items {
+  Add          r58, r58, r37
   Jump         L7
 L6:
-  Sort         r9, r9
+  // tmp = append(tmp, {tag: g.key, total: total})
+  Move         r67, r2
+  Index        r69, r45, r16
+  Const        r70, "total"
+  Move         r71, r67
+  Move         r72, r69
+  Move         r73, r70
+  Move         r74, r54
+  MakeMap      r75, 2, r71
+  Append       r48, r48, r75
+  // for g in groups {
+  Add          r51, r51, r37
+  Jump         L8
+L5:
+  // let result = from r in tmp sort by r.tag select r
+  Move         r79, r47
+  IterPrep     r80, r48
+  Len          r81, r80
+  Move         r82, r41
+L10:
+  LessInt      r83, r82, r81
+  JumpIfFalse  r83, L9
+  Index        r85, r80, r82
+  Index        r87, r85, r2
+  Move         r88, r85
+  MakeList     r89, 2, r87
+  Append       r79, r79, r89
+  AddInt       r82, r82, r37
+  Jump         L10
+L9:
+  Sort         r79, r79
   // print(result)
-  Print        r9
+  Print        r79
   Return       r0
