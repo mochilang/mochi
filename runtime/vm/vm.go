@@ -3175,6 +3175,12 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 			fc.compileHashJoin(q, dst, lk, rk)
 			return
 		}
+		if ll, ok1 := fc.constListLen(q.Source); ok1 {
+			if rl, ok2 := fc.constListLen(join.Src); ok2 && rl < ll {
+				fc.compileJoinQueryRight(q, dst)
+				return
+			}
+		}
 	}
 
 	if joinType == "left" {
