@@ -4044,6 +4044,9 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 
 // compileGroupQuery handles simple queries with a single FROM clause and GROUP BY.
 func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
+	keepItems := groupNeedsItems(q)
+	keepCount := groupNeedsCount(q)
+	keepKey := groupNeedsKey(q)
 	for _, g := range q.Group.Exprs {
 		fc.preloadFieldConsts(g)
 	}
@@ -4086,10 +4089,10 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 		cond := fc.compileExpr(q.Where)
 		skip := len(fc.fn.Code)
 		fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-		fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList)
+		fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList, keepItems, keepCount, keepKey)
 		fc.fn.Code[skip].B = len(fc.fn.Code)
 	} else {
-		fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList)
+		fc.compileGroupAccum(q, elemReg, varReg, groupsMap, groupsList, keepItems, keepCount, keepKey)
 	}
 
 	one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
@@ -4154,7 +4157,7 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	}
 }
 
-func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, gmap, glist int) {
+func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, gmap, glist int, keepItems, keepCount, keepKey bool) {
 	exprs := q.Group.Exprs
 	regs := make([]int, len(exprs))
 	for i, e := range exprs {
@@ -4188,18 +4191,27 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	jump := len(fc.fn.Code)
 	fc.emit(q.Group.Pos, Instr{Op: OpJumpIfTrue, A: exists})
 
-	items := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
 	k1 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "__group__"})
 	v1 := fc.constReg(q.Pos, Value{Tag: ValueBool, Bool: true})
-	k2 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "key"})
-	v2 := fc.newReg()
-	fc.emit(q.Group.Pos, Instr{Op: OpMove, A: v2, B: key})
-	k3 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
-	v3 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
-	kcnt := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "count"})
-	vcnt := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
-	pairsGrp := []int{k1, v1, k2, v2, k3, v3, kcnt, vcnt}
+	pairsGrp := []int{k1, v1}
+	if keepKey {
+		k2 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "key"})
+		v2 := fc.newReg()
+		fc.emit(q.Group.Pos, Instr{Op: OpMove, A: v2, B: key})
+		pairsGrp = append(pairsGrp, k2, v2)
+	}
+	if keepCount {
+		kcnt := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "count"})
+		vcnt := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
+		pairsGrp = append(pairsGrp, kcnt, vcnt)
+	}
+	if keepItems {
+		items := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+		k3 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
+		v3 := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
+		pairsGrp = append(pairsGrp, k3, v3)
+	}
 	if len(fieldNames) > 0 {
 		for i, name := range fieldNames {
 			k := fc.constReg(exprs[i].Pos, Value{Tag: ValueStr, Str: name})
@@ -4217,27 +4229,34 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	end := len(fc.fn.Code)
 	fc.fn.Code[jump].B = end
 
-	itemsKey := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
 	grp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIndex, A: grp2, B: gmap, C: keyStr})
-	cur := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpIndex, A: cur, B: grp2, C: itemsKey})
-	newList := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAppend, A: newList, B: cur, C: elemReg})
-	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: itemsKey, C: newList})
-	countKey := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "count"})
-	curCnt := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpIndex, A: curCnt, B: grp2, C: countKey})
-	one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
-	newCnt := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAddInt, A: newCnt, B: curCnt, C: one})
-	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: countKey, C: newCnt})
+	if keepItems {
+		itemsKey := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
+		cur := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpIndex, A: cur, B: grp2, C: itemsKey})
+		newList := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: newList, B: cur, C: elemReg})
+		fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: itemsKey, C: newList})
+	}
+	if keepCount {
+		countKey := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "count"})
+		curCnt := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpIndex, A: curCnt, B: grp2, C: countKey})
+		one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+		newCnt := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpAddInt, A: newCnt, B: curCnt, C: one})
+		fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: countKey, C: newCnt})
+	}
 }
 
 // compileGroupQueryAny handles GROUP BY queries that may include additional FROM
 // clauses or JOINs. It builds row objects containing all bound variables which
 // are accumulated into groups.
 func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
+	keepItems := groupNeedsItems(q)
+	keepCount := groupNeedsCount(q)
+	keepKey := groupNeedsKey(q)
 	for _, g := range q.Group.Exprs {
 		fc.preloadFieldConsts(g)
 	}
@@ -4253,7 +4272,7 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	groupsList := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpConst, A: groupsList, Val: Value{Tag: ValueList, List: []Value{}}})
 
-	fc.compileGroupFromAny(q, groupsMap, groupsList, 0)
+	fc.compileGroupFromAny(q, groupsMap, groupsList, 0, keepItems, keepCount, keepKey)
 
 	// iterate groups and produce final results
 	gi := fc.newReg()
@@ -4311,7 +4330,7 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	}
 }
 
-func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist int, level int) {
+func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist int, level int, keepItems, keepCount, keepKey bool) {
 	var name string
 	var src *parser.Expr
 	if level == 0 {
@@ -4347,11 +4366,11 @@ func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist int
 
 	if level < len(q.Froms) {
 		fc.pushScope()
-		fc.compileGroupFromAny(q, gmap, glist, level+1)
+		fc.compileGroupFromAny(q, gmap, glist, level+1, keepItems, keepCount, keepKey)
 		fc.popScope()
 	} else {
 		fc.pushScope()
-		fc.compileGroupJoinAny(q, gmap, glist, 0)
+		fc.compileGroupJoinAny(q, gmap, glist, 0, keepItems, keepCount, keepKey)
 		fc.popScope()
 	}
 
@@ -4362,7 +4381,7 @@ func (fc *funcCompiler) compileGroupFromAny(q *parser.QueryExpr, gmap, glist int
 	fc.fn.Code[jmp].B = end
 }
 
-func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int, idx int) {
+func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int, idx int, keepItems, keepCount, keepKey bool) {
 	if idx >= len(q.Joins) {
 		doAccum := func() {
 			row := fc.buildRowMap(q)
@@ -4371,7 +4390,7 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 				vreg = fc.newReg()
 				fc.vars[q.Var] = vreg
 			}
-			fc.compileGroupAccum(q, row, vreg, gmap, glist)
+			fc.compileGroupAccum(q, row, vreg, gmap, glist, keepItems, keepCount, keepKey)
 		}
 		if q.Where != nil {
 			cond := fc.compileExpr(q.Where)
@@ -4420,11 +4439,11 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
 			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
-			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+			fc.compileGroupJoinAny(q, gmap, glist, idx+1, keepItems, keepCount, keepKey)
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
 			fc.emit(join.Pos, Instr{Op: OpConst, A: matched, Val: Value{Tag: ValueBool, Bool: true}})
-			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+			fc.compileGroupJoinAny(q, gmap, glist, idx+1, keepItems, keepCount, keepKey)
 		}
 
 		one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
@@ -4439,17 +4458,17 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
 		nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
-		fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+		fc.compileGroupJoinAny(q, gmap, glist, idx+1, keepItems, keepCount, keepKey)
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
 	} else {
 		if join.On != nil {
 			cond := fc.compileExpr(join.On)
 			skip := len(fc.fn.Code)
 			fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+			fc.compileGroupJoinAny(q, gmap, glist, idx+1, keepItems, keepCount, keepKey)
 			fc.fn.Code[skip].B = len(fc.fn.Code)
 		} else {
-			fc.compileGroupJoinAny(q, gmap, glist, idx+1)
+			fc.compileGroupJoinAny(q, gmap, glist, idx+1, keepItems, keepCount, keepKey)
 		}
 
 		one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
@@ -4952,6 +4971,377 @@ func extractFieldName(e *parser.Expr) string {
 		return sel.Tail[len(sel.Tail)-1]
 	}
 	return sel.Root
+}
+
+func exprUsesGroupItems(e *parser.Expr, g string) bool {
+	var found bool
+	var walkExpr func(*parser.Expr)
+	var walkUnary func(*parser.Unary)
+	var walkPostfix func(*parser.PostfixExpr)
+	var walkPrimary func(*parser.Primary)
+
+	walkExpr = func(e *parser.Expr) {
+		if e == nil || found {
+			return
+		}
+		walkUnary(e.Binary.Left)
+		for _, op := range e.Binary.Right {
+			walkPostfix(op.Right)
+		}
+	}
+
+	walkUnary = func(u *parser.Unary) {
+		if u == nil || found {
+			return
+		}
+		walkPostfix(u.Value)
+	}
+
+	walkPostfix = func(pf *parser.PostfixExpr) {
+		if pf == nil || found {
+			return
+		}
+		walkPrimary(pf.Target)
+		for _, op := range pf.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					walkExpr(a)
+				}
+			}
+			if op.Index != nil {
+				walkExpr(op.Index.Start)
+				walkExpr(op.Index.End)
+				walkExpr(op.Index.Step)
+			}
+			if op.Field != nil {
+				// no-op
+			}
+		}
+	}
+
+	walkPrimary = func(p *parser.Primary) {
+		if p == nil || found {
+			return
+		}
+		switch {
+		case p.Selector != nil:
+			if p.Selector.Root == g {
+				if len(p.Selector.Tail) == 0 {
+					found = true
+					return
+				}
+				if p.Selector.Tail[0] == "items" {
+					found = true
+					return
+				}
+				if p.Selector.Tail[0] == "key" && len(p.Selector.Tail) == 1 {
+					return
+				}
+				if p.Selector.Tail[0] == "count" && len(p.Selector.Tail) == 1 {
+					return
+				}
+				if len(p.Selector.Tail) > 1 {
+					found = true
+					return
+				}
+				// access to stored group field is fine
+				return
+			}
+		case p.Call != nil:
+			if p.Call.Func == "count" && len(p.Call.Args) == 1 {
+				if name, ok := identName(p.Call.Args[0]); ok && name == g {
+					return
+				}
+			}
+			for _, a := range p.Call.Args {
+				walkExpr(a)
+			}
+		case p.Query != nil:
+			if name, ok := identName(p.Query.Source); ok && name == g {
+				found = true
+				return
+			}
+			walkExpr(p.Query.Source)
+			for _, f := range p.Query.Froms {
+				walkExpr(f.Src)
+			}
+			for _, j := range p.Query.Joins {
+				walkExpr(j.Src)
+				walkExpr(j.On)
+			}
+			walkExpr(p.Query.Where)
+			if p.Query.Group != nil {
+				for _, g := range p.Query.Group.Exprs {
+					walkExpr(g)
+				}
+			}
+			walkExpr(p.Query.Sort)
+			walkExpr(p.Query.Skip)
+			walkExpr(p.Query.Take)
+			walkExpr(p.Query.Select)
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				walkExpr(el)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				walkExpr(it.Key)
+				walkExpr(it.Value)
+			}
+		case p.FunExpr != nil:
+			walkExpr(p.FunExpr.ExprBody)
+			if len(p.FunExpr.BlockBody) > 0 {
+				// statements may reference the group variable
+				found = true
+				return
+			}
+		}
+		if p.Group != nil {
+			walkExpr(p.Group)
+		}
+	}
+
+	walkExpr(e)
+	return found
+}
+
+func groupNeedsItems(q *parser.QueryExpr) bool {
+	if exprUsesGroupItems(q.Select, q.Group.Name) {
+		return true
+	}
+	if exprUsesGroupItems(q.Group.Having, q.Group.Name) {
+		return true
+	}
+	if exprUsesGroupItems(q.Sort, q.Group.Name) {
+		return true
+	}
+	return false
+}
+
+func exprUsesGroupCount(e *parser.Expr, g string) bool {
+	var found bool
+	var walkExpr func(*parser.Expr)
+	var walkUnary func(*parser.Unary)
+	var walkPostfix func(*parser.PostfixExpr)
+	var walkPrimary func(*parser.Primary)
+
+	walkExpr = func(e *parser.Expr) {
+		if e == nil || found {
+			return
+		}
+		walkUnary(e.Binary.Left)
+		for _, op := range e.Binary.Right {
+			walkPostfix(op.Right)
+		}
+	}
+
+	walkUnary = func(u *parser.Unary) {
+		if u == nil || found {
+			return
+		}
+		walkPostfix(u.Value)
+	}
+
+	walkPostfix = func(pf *parser.PostfixExpr) {
+		if pf == nil || found {
+			return
+		}
+		walkPrimary(pf.Target)
+		for _, op := range pf.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					walkExpr(a)
+				}
+			}
+			if op.Index != nil {
+				walkExpr(op.Index.Start)
+				walkExpr(op.Index.End)
+				walkExpr(op.Index.Step)
+			}
+		}
+	}
+
+	walkPrimary = func(p *parser.Primary) {
+		if p == nil || found {
+			return
+		}
+		switch {
+		case p.Selector != nil:
+			if p.Selector.Root == g && len(p.Selector.Tail) == 1 && p.Selector.Tail[0] == "count" {
+				found = true
+				return
+			}
+		case p.Call != nil:
+			if p.Call.Func == "count" && len(p.Call.Args) == 1 {
+				if name, ok := identName(p.Call.Args[0]); ok && name == g {
+					found = true
+					return
+				}
+			}
+			for _, a := range p.Call.Args {
+				walkExpr(a)
+			}
+		case p.Query != nil:
+			walkExpr(p.Query.Source)
+			for _, f := range p.Query.Froms {
+				walkExpr(f.Src)
+			}
+			for _, j := range p.Query.Joins {
+				walkExpr(j.Src)
+				walkExpr(j.On)
+			}
+			walkExpr(p.Query.Where)
+			if p.Query.Group != nil {
+				for _, g := range p.Query.Group.Exprs {
+					walkExpr(g)
+				}
+			}
+			walkExpr(p.Query.Sort)
+			walkExpr(p.Query.Skip)
+			walkExpr(p.Query.Take)
+			walkExpr(p.Query.Select)
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				walkExpr(el)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				walkExpr(it.Key)
+				walkExpr(it.Value)
+			}
+		case p.FunExpr != nil:
+			walkExpr(p.FunExpr.ExprBody)
+		}
+		if p.Group != nil {
+			walkExpr(p.Group)
+		}
+	}
+
+	walkExpr(e)
+	return found
+}
+
+func exprUsesGroupKey(e *parser.Expr, g string) bool {
+	var found bool
+	var walkExpr func(*parser.Expr)
+	var walkUnary func(*parser.Unary)
+	var walkPostfix func(*parser.PostfixExpr)
+	var walkPrimary func(*parser.Primary)
+
+	walkExpr = func(e *parser.Expr) {
+		if e == nil || found {
+			return
+		}
+		walkUnary(e.Binary.Left)
+		for _, op := range e.Binary.Right {
+			walkPostfix(op.Right)
+		}
+	}
+
+	walkUnary = func(u *parser.Unary) {
+		if u == nil || found {
+			return
+		}
+		walkPostfix(u.Value)
+	}
+
+	walkPostfix = func(pf *parser.PostfixExpr) {
+		if pf == nil || found {
+			return
+		}
+		walkPrimary(pf.Target)
+		for _, op := range pf.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					walkExpr(a)
+				}
+			}
+			if op.Index != nil {
+				walkExpr(op.Index.Start)
+				walkExpr(op.Index.End)
+				walkExpr(op.Index.Step)
+			}
+		}
+	}
+
+	walkPrimary = func(p *parser.Primary) {
+		if p == nil || found {
+			return
+		}
+		switch {
+		case p.Selector != nil:
+			if p.Selector.Root == g && len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "key" {
+				found = true
+				return
+			}
+		case p.Call != nil:
+			for _, a := range p.Call.Args {
+				walkExpr(a)
+			}
+		case p.Query != nil:
+			walkExpr(p.Query.Source)
+			for _, f := range p.Query.Froms {
+				walkExpr(f.Src)
+			}
+			for _, j := range p.Query.Joins {
+				walkExpr(j.Src)
+				walkExpr(j.On)
+			}
+			walkExpr(p.Query.Where)
+			if p.Query.Group != nil {
+				for _, g := range p.Query.Group.Exprs {
+					walkExpr(g)
+				}
+			}
+			walkExpr(p.Query.Sort)
+			walkExpr(p.Query.Skip)
+			walkExpr(p.Query.Take)
+			walkExpr(p.Query.Select)
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				walkExpr(el)
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				walkExpr(it.Key)
+				walkExpr(it.Value)
+			}
+		case p.FunExpr != nil:
+			walkExpr(p.FunExpr.ExprBody)
+		}
+		if p.Group != nil {
+			walkExpr(p.Group)
+		}
+	}
+
+	walkExpr(e)
+	return found
+}
+
+func groupNeedsCount(q *parser.QueryExpr) bool {
+	if exprUsesGroupCount(q.Select, q.Group.Name) {
+		return true
+	}
+	if exprUsesGroupCount(q.Group.Having, q.Group.Name) {
+		return true
+	}
+	if exprUsesGroupCount(q.Sort, q.Group.Name) {
+		return true
+	}
+	return false
+}
+
+func groupNeedsKey(q *parser.QueryExpr) bool {
+	if exprUsesGroupKey(q.Select, q.Group.Name) {
+		return true
+	}
+	if exprUsesGroupKey(q.Group.Having, q.Group.Name) {
+		return true
+	}
+	if exprUsesGroupKey(q.Sort, q.Group.Name) {
+		return true
+	}
+	return false
 }
 
 // preloadFieldConsts emits Const instructions for all selector field names
