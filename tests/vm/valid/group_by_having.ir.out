@@ -1,4 +1,4 @@
-func main (regs=21)
+func main (regs=63)
   // let people = [
   Const        r0, [{"city": "Paris", "name": "Alice"}, {"city": "Hanoi", "name": "Bob"}, {"city": "Paris", "name": "Charlie"}, {"city": "Hanoi", "name": "Diana"}, {"city": "Paris", "name": "Eve"}, {"city": "Hanoi", "name": "Frank"}, {"city": "Paris", "name": "George"}]
   // from p in people
@@ -8,81 +8,83 @@ func main (regs=21)
   // select { city: g.key, num: count(g) }
   Const        r3, "key"
   Const        r4, "num"
-L0:
   // from p in people
   IterPrep     r5, r0
   Len          r6, r5
   Const        r7, 0
   MakeMap      r8, 0, r0
+  Move         r9, r1
 L2:
-  LessInt      r9, r7, r6
+  LessInt      r11, r7, r6
+  JumpIfFalse  r11, L0
+  Index        r12, r5, r7
+  // group by p.city into g
+  Index        r14, r12, r2
+  Str          r15, r14
+  In           r16, r15, r8
+  JumpIfTrue   r16, L1
+  // from p in people
+  Move         r17, r1
+  Const        r18, "__group__"
+  Const        r19, true
+  Move         r20, r3
+  // group by p.city into g
+  Move         r21, r14
+  // from p in people
+  Const        r22, "items"
+  Move         r23, r17
+  Const        r24, "count"
+  Move         r25, r7
+  Move         r26, r18
+  Move         r27, r19
+  Move         r28, r20
+  Move         r29, r21
+  Move         r30, r22
+  Move         r31, r23
+  Move         r32, r24
+  Move         r33, r25
+  MakeMap      r34, 4, r26
+  SetIndex     r8, r15, r34
+  Append       r9, r9, r34
 L1:
-  JumpIfFalse  r9, L0
-  Index        r6, r5, r7
-  // group by p.city into g
-  Index        r5, r6, r2
-  Str          r10, r5
-  In           r11, r10, r8
-  JumpIfTrue   r11, L1
-  // from p in people
-  Move         r11, r1
-  Const        r12, "__group__"
-  Const        r13, true
-  Move         r14, r3
-  // group by p.city into g
-  Move         r15, r5
-  // from p in people
-  Const        r5, "items"
-  Move         r16, r11
-  Const        r11, "count"
-  Move         r17, r7
-  Move         r18, r12
-  Move         r12, r13
-  Move         r13, r14
-  Move         r14, r15
-  Move         r15, r5
-  Move         r19, r16
-  Move         r16, r11
-  Move         r20, r17
-  MakeMap      r17, 4, r18
-  SetIndex     r8, r10, r17
-  Move         r17, r5
-  Index        r5, r8, r10
-  Index        r10, r5, r17
-  Append       r20, r10, r6
-  SetIndex     r5, r17, r20
-  Move         r20, r11
-  Index        r11, r5, r20
-  Const        r10, 1
-  AddInt       r17, r11, r10
-  SetIndex     r5, r20, r17
-  AddInt       r7, r7, r10
+  Move         r36, r22
+  Index        r37, r8, r15
+  Index        r38, r37, r36
+  Append       r39, r38, r12
+  SetIndex     r37, r36, r39
+  Move         r40, r24
+  Index        r41, r37, r40
+  Const        r42, 1
+  AddInt       r43, r41, r42
+  SetIndex     r37, r40, r43
+  AddInt       r7, r7, r42
   Jump         L2
-  Values       17,8,0,0
-  Const        r8, 0
-  Len          r11, r17
-  LessInt      r5, r8, r11
-  JumpIfFalse  r5, L3
-  Index        r5, r17, r8
+L0:
+  Const        r44, 0
+  Len          r46, r9
+L4:
+  LessInt      r47, r44, r46
+  JumpIfFalse  r47, L3
+  Index        r49, r9, r44
   // having count(g) >= 4
-  Index        r17, r5, r20
-  Const        r11, 4
-  LessEq       r9, r11, r17
-  JumpIfFalse  r9, L3
+  Index        r50, r49, r40
+  Const        r51, 4
+  LessEq       r52, r51, r50
+  JumpIfFalse  r52, L3
   // select { city: g.key, num: count(g) }
-  Move         r11, r2
-  Index        r2, r5, r3
-  Move         r3, r4
-  Index        r4, r5, r20
-  Move         r5, r11
-  Move         r11, r2
-  Move         r2, r3
-  Move         r3, r4
-  MakeMap      r4, 2, r5
+  Move         r53, r2
+  Index        r54, r49, r3
+  Move         r55, r4
+  Index        r56, r49, r40
+  Move         r57, r53
+  Move         r58, r54
+  Move         r59, r55
+  Move         r60, r56
+  MakeMap      r61, 2, r57
   // from p in people
-  Append       r1, r1, r4
-  AddInt       r8, r8, r10
-  Jump         L2
+  Append       r1, r1, r61
+  AddInt       r44, r44, r42
+  Jump         L4
 L3:
   // json(big)
   JSON         r1
