@@ -1582,6 +1582,7 @@ type funcCompiler struct {
 	tags       map[int]regTag
 	constCache map[string]int
 	groupVar   string
+	needItems  bool
 }
 
 func (fc *funcCompiler) freshConst(pos lexer.Position, v Value) int {
@@ -4212,8 +4213,10 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	fc.preloadFieldConsts(q.Select)
 	fc.preloadFieldConsts(q.Sort)
 	prevGroup := fc.groupVar
+	prevItems := fc.needItems
 	fc.groupVar = q.Group.Name
-	defer func() { fc.groupVar = prevGroup }()
+	fc.needItems = groupNeedsItems(q)
+	defer func() { fc.groupVar = prevGroup; fc.needItems = prevItems }()
 	srcReg := fc.compileExpr(q.Source)
 	listReg := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIterPrep, A: listReg, B: srcReg})
@@ -4353,18 +4356,23 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	jump := len(fc.fn.Code)
 	fc.emit(q.Group.Pos, Instr{Op: OpJumpIfTrue, A: exists})
 
-	items := fc.freshConst(q.Pos, Value{Tag: ValueList, List: []Value{}})
 	k1 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "__group__"})
 	v1 := fc.freshConst(q.Pos, Value{Tag: ValueBool, Bool: true})
 	k2 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "key"})
 	v2 := fc.newReg()
 	fc.emit(q.Group.Pos, Instr{Op: OpMove, A: v2, B: key})
-	k3 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "items"})
-	v3 := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
 	kcnt := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "count"})
 	vcnt := fc.freshConst(q.Pos, Value{Tag: ValueInt, Int: 0})
-	pairsGrp := []int{k1, v1, k2, v2, k3, v3, kcnt, vcnt}
+	pairsGrp := []int{k1, v1, k2, v2, kcnt, vcnt}
+	var itemsKey int
+	if fc.needItems {
+		items := fc.freshConst(q.Pos, Value{Tag: ValueList, List: []Value{}})
+		k3 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "items"})
+		v3 := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
+		pairsGrp = append(pairsGrp, k3, v3)
+		itemsKey = k3
+	}
 	if len(fieldNames) > 0 {
 		for i, name := range fieldNames {
 			k := fc.freshConst(exprs[i].Pos, Value{Tag: ValueStr, Str: name})
@@ -4387,14 +4395,19 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	end := len(fc.fn.Code)
 	fc.fn.Code[jump].B = end
 
-	itemsKey := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
 	grp2 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIndex, A: grp2, B: gmap, C: keyStr})
-	cur := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpIndex, A: cur, B: grp2, C: itemsKey})
-	newList := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpAppend, A: newList, B: cur, C: elemReg})
-	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: itemsKey, C: newList})
+	if fc.needItems {
+		itemsKeyConst := itemsKey
+		if itemsKeyConst == 0 {
+			itemsKeyConst = fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
+		}
+		cur := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpIndex, A: cur, B: grp2, C: itemsKeyConst})
+		newList := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpAppend, A: newList, B: cur, C: elemReg})
+		fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: itemsKeyConst, C: newList})
+	}
 	countKey := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "count"})
 	curCnt := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIndex, A: curCnt, B: grp2, C: countKey})
@@ -4416,8 +4429,10 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	fc.preloadFieldConsts(q.Select)
 	fc.preloadFieldConsts(q.Sort)
 	prevGroup := fc.groupVar
+	prevItems := fc.needItems
 	fc.groupVar = q.Group.Name
-	defer func() { fc.groupVar = prevGroup }()
+	fc.needItems = groupNeedsItems(q)
+	defer func() { fc.groupVar = prevGroup; fc.needItems = prevItems }()
 	groupsMap := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: groupsMap, B: 0})
 
