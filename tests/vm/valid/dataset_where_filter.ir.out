@@ -18,10 +18,37 @@ L2:
   Const        r11, 18
   LessEq       r12, r11, r10
   JumpIfFalse  r12, L1
+  // name: person.name,
+  Const        r13, "name"
+  Const        r14, "name"
+  Index        r15, r8, r14
+  // age: person.age,
+  Const        r16, "age"
+  Const        r17, "age"
+  Index        r18, r8, r17
+  // is_senior: person.age >= 60
+  Const        r19, "is_senior"
+  Const        r20, "age"
+  Index        r21, r8, r20
+  Const        r22, 60
+  LessEq       r23, r22, r21
+  // name: person.name,
+  Move         r24, r13
+  Move         r25, r15
+  // age: person.age,
+  Move         r26, r16
+  Move         r27, r18
+  // is_senior: person.age >= 60
+  Move         r28, r19
+  Move         r29, r23
+  // select {
+  MakeMap      r30, 3, r24
   // let adults = from person in people
   Append       r31, r2, r30
   Move         r2, r31
-  Const        r33, 1
+L1:
+  Const        r32, 1
+  Add          r33, r5, r32
   Move         r5, r33
   Jump         L2
 L0:
@@ -62,7 +89,8 @@ L5:
   // print(person.name, "is", person.age,
   PrintN       r41, 4, r41
   // for person in adults {
-  Const        r56, 1
+  Const        r55, 1
+  Add          r56, r38, r55
   Move         r38, r56
   Jump         L6
 L3:

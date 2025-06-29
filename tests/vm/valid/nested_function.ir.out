@@ -16,11 +16,9 @@ func outer (regs=6)
   Move         r3, r4
   CallV        r5, r2, 1, r3
   Return       r5
-  Return       r0
 
   // fun inner(y: int): int {
 func inner (regs=3)
   // return x + y
   Add          r2, r0, r1
   Return       r2
-  Return       r0

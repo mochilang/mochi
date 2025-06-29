@@ -4,10 +4,4 @@ func main (regs=6)
   // print("big")
   Const        r4, "big"
   Print        r4
-  // if x > 3 {
-  Jump         L0
-  // print("small")
-  Const        r5, "small"
-  Print        r5
-L0:
   Return       r0

@@ -298,8 +298,6 @@ L21:
   // _ => 0
   Const        r197, 0
   Move         r183, r197
-  Jump         L22
-  Const        r183, nil
 L22:
   // sum(from x in year select match x.n.n_name == target_nation {
   Append       r198, r171, r183

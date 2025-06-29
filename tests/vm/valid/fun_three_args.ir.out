@@ -1,7 +1,13 @@
-func main (regs=1)
+func main (regs=7)
   // print(sum3(1, 2, 3))  // 6
-  Const        r0, 6
-  Print        r0
+  Const        r3, 1
+  Move         r0, r3
+  Const        r4, 2
+  Move         r1, r4
+  Const        r5, 3
+  Move         r2, r5
+  Call         r6, sum3, r0, r1, r2
+  Print        r6
   Return       r0
 
   // fun sum3(a: int, b: int, c: int): int {
@@ -10,4 +16,3 @@ func sum3 (regs=5)
   Add          r3, r0, r1
   Add          r4, r3, r2
   Return       r4
-  Return       r0
