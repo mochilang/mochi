@@ -1,7 +1,7 @@
-func main (regs=2)
+func main (regs=3)
   // let m = {"a": 1, "b": 2}
   Const        r0, {"a": 1, "b": 2}
   // print(m["b"])
-  Const        r1, 2
-  Print        r1
+  Const        r2, 2
+  Print        r2
   Return       r0

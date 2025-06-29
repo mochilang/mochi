@@ -1,12 +1,12 @@
-func main (regs=4)
+func main (regs=8)
   // var matrix = [[1,2],[3,4]]
   Const        r0, [[1, 2], [3, 4]]
   // matrix[1][0] = 5
-  Const        r1, [3, 4]
-  Const        r2, 0
-  Const        r3, 5
-  SetIndex     r1, r2, r3
+  Const        r3, [3, 4]
+  Const        r4, 0
+  Const        r5, 5
+  SetIndex     r3, r4, r5
   // print(matrix[1][0])
-  Const        r3, 3
-  Print        r3
+  Const        r7, 3
+  Print        r7
   Return       r0

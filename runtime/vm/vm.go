@@ -34,6 +34,12 @@ const (
 	tagBool
 )
 
+// smallJoinThreshold controls when the compiler falls back to a simple
+// nested loop join instead of emitting a hash join. When both join
+// sources are constant lists smaller than this size, nested loops tend
+// to be faster due to lower allocation overhead.
+const smallJoinThreshold = 8
+
 // Op defines a VM instruction opcode.
 type Op uint8
 
@@ -1953,6 +1959,22 @@ func (fc *funcCompiler) constListLen(e *parser.Expr) (int, bool) {
 	return 0, false
 }
 
+// smallConstJoin reports whether both expressions evaluate to constant lists
+// whose lengths are below the smallJoinThreshold. When this returns true the
+// compiler avoids generating a hash join and emits a simple nested loop join
+// instead.
+func (fc *funcCompiler) smallConstJoin(left, right *parser.Expr) bool {
+	ll, ok1 := fc.constListLen(left)
+	if !ok1 {
+		return false
+	}
+	rl, ok2 := fc.constListLen(right)
+	if !ok2 {
+		return false
+	}
+	return ll <= smallJoinThreshold && rl <= smallJoinThreshold
+}
+
 func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
@@ -3172,34 +3194,44 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 
 	if joinType == "inner" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			fc.compileHashJoin(q, dst, lk, rk)
-			return
+			if !fc.smallConstJoin(q.Source, join.Src) {
+				fc.compileHashJoin(q, dst, lk, rk)
+				return
+			}
 		}
 	}
 
 	if joinType == "left" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			fc.compileHashLeftJoin(q, dst, lk, rk)
-			return
+			if !fc.smallConstJoin(q.Source, join.Src) {
+				fc.compileHashLeftJoin(q, dst, lk, rk)
+				return
+			}
 		}
 	}
 
 	if joinType == "right" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			fc.compileHashRightJoin(q, dst, lk, rk)
+			if !fc.smallConstJoin(q.Source, join.Src) {
+				fc.compileHashRightJoin(q, dst, lk, rk)
+				return
+			}
 		} else {
 			fc.compileJoinQueryRight(q, dst)
+			return
 		}
-		return
 	}
 
 	if joinType == "outer" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			fc.compileHashOuterJoin(q, dst, lk, rk)
+			if !fc.smallConstJoin(q.Source, join.Src) {
+				fc.compileHashOuterJoin(q, dst, lk, rk)
+				return
+			}
 		} else {
 			fc.compileJoinQueryRight(q, dst)
+			return
 		}
-		return
 	}
 
 	leftReg := fc.compileExpr(q.Source)

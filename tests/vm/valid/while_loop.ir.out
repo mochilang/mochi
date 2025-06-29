@@ -1,4 +1,4 @@
-func main (regs=4)
+func main (regs=6)
   // var i = 0
   Const        r0, 0
   Move         r1, r0
@@ -10,8 +10,8 @@ L1:
   // print(i)
   Print        r1
   // i = i + 1
-  Const        r3, 1
-  AddInt       r1, r1, r3
+  Const        r4, 1
+  AddInt       r1, r1, r4
   // while i < 3 {
   Jump         L1
 L0:
