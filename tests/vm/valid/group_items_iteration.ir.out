@@ -1,4 +1,4 @@
-func main (regs=79)
+func main (regs=87)
   // let data = [
   Const        r0, [{"tag": "a", "val": 1}, {"tag": "a", "val": 2}, {"tag": "b", "val": 3}]
   // let groups = from d in data group by d.tag into g select g
@@ -26,90 +26,98 @@ L2:
   Move         r20, r14
   Const        r21, "count"
   Const        r22, 0
-  MakeMap      r23, 4, r15
-  SetIndex     r6, r12, r23
-  Append       r7, r7, r23
+  Move         r23, r15
+  Move         r24, r16
+  Move         r25, r17
+  Move         r26, r18
+  Move         r27, r19
+  Move         r28, r20
+  Move         r29, r21
+  Move         r30, r22
+  MakeMap      r31, 4, r23
+  SetIndex     r6, r12, r31
+  Append       r7, r7, r31
 L1:
-  Index        r25, r6, r12
-  Index        r26, r25, r19
-  Append       r27, r26, r9
-  SetIndex     r25, r19, r27
-  Index        r28, r25, r21
-  Const        r29, 1
-  AddInt       r30, r28, r29
-  SetIndex     r25, r21, r30
-  AddInt       r5, r5, r29
+  Index        r33, r6, r12
+  Index        r34, r33, r19
+  Append       r35, r34, r9
+  SetIndex     r33, r19, r35
+  Index        r36, r33, r21
+  Const        r37, 1
+  AddInt       r38, r36, r37
+  SetIndex     r33, r21, r38
+  AddInt       r5, r5, r37
   Jump         L2
 L0:
-  Move         r31, r22
-  Len          r32, r7
+  Move         r39, r22
+  Len          r40, r7
 L4:
-  LessInt      r33, r31, r32
-  JumpIfFalse  r33, L3
-  Index        r35, r7, r31
-  Append       r1, r1, r35
-  AddInt       r31, r31, r29
+  LessInt      r41, r39, r40
+  JumpIfFalse  r41, L3
+  Index        r43, r7, r39
+  Append       r1, r1, r43
+  AddInt       r39, r39, r37
   Jump         L4
 L3:
   // var tmp = []
-  Const        r38, []
+  Const        r46, []
   // for g in groups {
-  IterPrep     r39, r1
-  Len          r40, r39
-  Const        r41, 0
+  IterPrep     r47, r1
+  Len          r48, r47
+  Const        r49, 0
 L8:
-  Less         r42, r41, r40
-  JumpIfFalse  r42, L5
-  Index        r35, r39, r41
+  Less         r50, r49, r48
+  JumpIfFalse  r50, L5
+  Index        r43, r47, r49
   // var total = 0
-  Move         r44, r22
+  Move         r52, r22
   // for x in g.items {
-  Index        r45, r35, r19
-  IterPrep     r46, r45
-  Len          r47, r46
-  Const        r48, 0
+  Index        r53, r43, r19
+  IterPrep     r54, r53
+  Len          r55, r54
+  Const        r56, 0
 L7:
-  Less         r49, r48, r47
-  JumpIfFalse  r49, L6
-  Index        r51, r46, r48
+  Less         r57, r56, r55
+  JumpIfFalse  r57, L6
+  Index        r59, r54, r56
   // total = total + x.val
-  Const        r52, "val"
-  Index        r53, r51, r52
-  Add          r44, r44, r53
+  Const        r60, "val"
+  Index        r61, r59, r60
+  Add          r52, r52, r61
   // for x in g.items {
-  Const        r55, 1
-  Add          r48, r48, r55
+  Const        r63, 1
+  Add          r56, r56, r63
   Jump         L7
 L6:
   // tmp = append(tmp, {tag: g.key, total: total})
-  Const        r57, "tag"
-  Index        r58, r35, r17
-  Const        r59, "total"
-  Move         r60, r58
-  MakeMap      r62, 2, r57
-  Append       r38, r38, r62
+  Const        r65, "tag"
+  Index        r66, r43, r17
+  Const        r67, "total"
+  Move         r68, r66
+  MakeMap      r70, 2, r65
+  Append       r46, r46, r70
   // for g in groups {
-  Const        r64, 1
-  Add          r41, r41, r64
+  Const        r72, 1
+  Add          r49, r49, r72
   Jump         L8
 L5:
   // let result = from r in tmp sort by r.tag select r
-  Const        r66, []
-  IterPrep     r67, r38
-  Len          r68, r67
-  Move         r69, r22
+  Const        r74, []
+  IterPrep     r75, r46
+  Len          r76, r75
+  Move         r77, r22
 L10:
-  LessInt      r70, r69, r68
-  JumpIfFalse  r70, L9
-  Index        r72, r67, r69
-  Index        r74, r72, r2
-  Move         r75, r72
-  MakeList     r76, 2, r74
-  Append       r66, r66, r76
-  AddInt       r69, r69, r29
+  LessInt      r78, r77, r76
+  JumpIfFalse  r78, L9
+  Index        r80, r75, r77
+  Index        r82, r80, r2
+  Move         r83, r80
+  MakeList     r84, 2, r82
+  Append       r74, r74, r84
+  AddInt       r77, r77, r37
   Jump         L10
 L9:
-  Sort         r66, r66
+  Sort         r74, r74
   // print(result)
-  Print        r66
+  Print        r74
   Return       r0
