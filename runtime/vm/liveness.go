@@ -295,7 +295,9 @@ func Optimize(fn *Function) {
 			break
 		}
 	}
-	CompactRegisters(fn)
+	// Compacting registers can break instructions like OpMakeMap which
+	// rely on contiguous register ranges. Skip this step for now.
+	// CompactRegisters(fn)
 }
 
 // removeDead eliminates instructions that only define dead registers.

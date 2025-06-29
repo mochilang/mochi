@@ -4645,7 +4645,9 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 
 	pairs := make([]int, len(names)*2)
 	for i, n := range names {
-		k := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: n})
+		// Use fresh constants to ensure contiguous registers when
+		// building the key/value pairs for the row object.
+		k := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: n})
 		v := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMove, A: v, B: regs[i]})
 		pairs[i*2] = k
