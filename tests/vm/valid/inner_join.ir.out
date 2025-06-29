@@ -1,4 +1,4 @@
-func main (regs=105)
+func main (regs=111)
 L8:
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}, {"id": 3, "name": "Charlie"}]
@@ -71,9 +71,16 @@ L6:
   Index        r41, r15, r40
   Const        r42, "total"
   Const        r43, "total"
-  MakeMap      r48, 3, r37
+  Index        r44, r27, r43
+  Move         r45, r37
+  Move         r46, r38
+  Move         r47, r39
+  Move         r48, r41
+  Move         r49, r42
+  Move         r50, r44
+  MakeMap      r51, 3, r45
   // let result = from o in orders
-  Append       r2, r2, r48
+  Append       r2, r2, r51
   AddInt       r34, r34, r23
   Jump         L6
 L5:
@@ -82,86 +89,92 @@ L5:
 L0:
   Jump         L8
 L1:
-  MakeMap      r50, 0, r0
-  Const        r51, 0
+  MakeMap      r53, 0, r0
+  Const        r54, 0
 L11:
-  LessInt      r52, r51, r4
-  JumpIfFalse  r52, L9
-  Index        r53, r3, r51
+  LessInt      r55, r54, r4
+  JumpIfFalse  r55, L9
+  Index        r56, r3, r54
   // join from c in customers on o.customerId == c.id
-  Index        r54, r53, r28
+  Index        r57, r56, r28
   // let result = from o in orders
-  Index        r55, r50, r54
-  Const        r56, nil
-  NotEqual     r57, r55, r56
-  JumpIfTrue   r57, L10
-  MakeList     r58, 0, r0
-  SetIndex     r50, r54, r58
+  Index        r58, r53, r57
+  Const        r59, nil
+  NotEqual     r60, r58, r59
+  JumpIfTrue   r60, L10
+  MakeList     r61, 0, r0
+  SetIndex     r53, r57, r61
 L10:
-  Index        r55, r50, r54
-  Append       r59, r55, r53
-  SetIndex     r50, r54, r59
-  AddInt       r51, r51, r23
+  Index        r58, r53, r57
+  Append       r62, r58, r56
+  SetIndex     r53, r57, r62
+  AddInt       r54, r54, r23
   Jump         L11
 L9:
   // join from c in customers on o.customerId == c.id
-  Const        r60, 0
+  Const        r63, 0
 L15:
-  LessInt      r61, r60, r6
-  JumpIfFalse  r61, L12
-  Index        r15, r5, r60
-  Index        r63, r15, r16
-  Index        r64, r50, r63
-  Const        r65, nil
-  NotEqual     r66, r64, r65
-  JumpIfFalse  r66, L13
-  Len          r67, r64
-  Const        r68, 0
-L14:
-  LessInt      r69, r68, r67
+  LessInt      r64, r63, r6
+  JumpIfFalse  r64, L12
+  Index        r15, r5, r63
+  Index        r66, r15, r16
+  Index        r67, r53, r66
+  Const        r68, nil
+  NotEqual     r69, r67, r68
   JumpIfFalse  r69, L13
-  Index        r27, r64, r68
+  Len          r70, r67
+  Const        r71, 0
+L14:
+  LessInt      r72, r71, r70
+  JumpIfFalse  r72, L13
+  Index        r27, r67, r71
   // select { orderId: o.id, customerName: c.name, total: o.total }
-  Const        r71, "orderId"
-  Index        r72, r27, r16
-  Const        r73, "customerName"
-  Index        r74, r15, r40
-  Const        r75, "total"
-  Index        r76, r27, r43
-  MakeMap      r80, 3, r71
+  Const        r74, "orderId"
+  Index        r75, r27, r16
+  Const        r76, "customerName"
+  Index        r77, r15, r40
+  Const        r78, "total"
+  Index        r79, r27, r43
+  Move         r80, r74
+  Move         r81, r75
+  Move         r82, r76
+  Move         r83, r77
+  Move         r84, r78
+  Move         r85, r79
+  MakeMap      r86, 3, r80
   // let result = from o in orders
-  Append       r2, r2, r80
+  Append       r2, r2, r86
   // join from c in customers on o.customerId == c.id
-  AddInt       r68, r68, r23
+  AddInt       r71, r71, r23
   Jump         L14
 L13:
-  AddInt       r60, r60, r23
+  AddInt       r63, r63, r23
   Jump         L15
 L12:
   // print("--- Orders with customer info ---")
-  Const        r82, "--- Orders with customer info ---"
-  Print        r82
+  Const        r88, "--- Orders with customer info ---"
+  Print        r88
   // for entry in result {
-  IterPrep     r83, r2
-  Len          r84, r83
-  Const        r85, 0
+  IterPrep     r89, r2
+  Len          r90, r89
+  Const        r91, 0
 L17:
-  Less         r86, r85, r84
-  JumpIfFalse  r86, L16
-  Index        r88, r83, r85
+  Less         r92, r91, r90
+  JumpIfFalse  r92, L16
+  Index        r94, r89, r91
   // print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
-  Const        r89, "Order"
-  Const        r96, "orderId"
-  Index        r90, r88, r96
-  Const        r91, "by"
-  Const        r99, "customerName"
-  Index        r92, r88, r99
-  Const        r93, "- $"
-  Index        r94, r88, r43
-  PrintN       r89, 6, r89
+  Const        r95, "Order"
+  Const        r102, "orderId"
+  Index        r96, r94, r102
+  Const        r97, "by"
+  Const        r105, "customerName"
+  Index        r98, r94, r105
+  Const        r99, "- $"
+  Index        r100, r94, r43
+  PrintN       r95, 6, r95
   // for entry in result {
-  Const        r103, 1
-  Add          r85, r85, r103
+  Const        r109, 1
+  Add          r91, r91, r109
   Jump         L17
 L16:
   Return       r0

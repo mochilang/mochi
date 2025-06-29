@@ -1,4 +1,4 @@
-func main (regs=37)
+func main (regs=39)
   // let people = load "../interpreter/valid/people.yaml" as Person with { format: "yaml" }
   Const        r0, "../interpreter/valid/people.yaml"
   Const        r2, {"format": "yaml"}
@@ -28,27 +28,29 @@ L2:
   Index        r19, r14, r6
   Const        r20, "email"
   Index        r21, r14, r7
-  MakeMap      r24, 2, r18
+  Move         r22, r18
+  Move         r23, r19
+  Move         r24, r20
+  Move         r25, r21
+  MakeMap      r26, 2, r22
   // let adults = from p in people
-  Append       r4, r4, r24
+  Append       r4, r4, r26
 L1:
   Jump         L2
 L0:
   // for a in adults {
-  IterPrep     r27, r4
-  Len          r28, r27
-  Const        r29, 0
+  IterPrep     r29, r4
+  Len          r30, r29
+  Const        r31, 0
 L4:
-  Less         r30, r29, r28
-  JumpIfFalse  r30, L3
-  Index        r32, r27, r29
+  Less         r32, r31, r30
+  JumpIfFalse  r32, L3
+  Index        r34, r29, r31
   // print(a.name, a.email)
-  Index        r33, r32, r6
-  Index        r34, r32, r7
-  Print2       r33, r34
+  Index        r35, r34, r6
+  Index        r36, r34, r7
+  Print2       r35, r36
   // for a in adults {
-  Const        r35, 1
-  Add          r29, r29, r35
   Jump         L4
 L3:
   Return       r0

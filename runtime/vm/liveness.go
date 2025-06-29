@@ -249,7 +249,11 @@ func Optimize(fn *Function) {
 		pruneRedundantJumps(fn)
 		analysis = Liveness(fn)
 		removed := removeDead(fn, analysis)
-		if !removed && !changed {
+		unreachable := removeUnreachable(fn)
+		if unreachable {
+			changed = true
+		}
+		if !removed && !changed && !unreachable {
 			break
 		}
 	}
@@ -297,6 +301,54 @@ func removeDead(fn *Function, analysis *LiveInfo) bool {
 		}
 	}
 	// fix jumps
+	for i := range newCode {
+		ins := &newCode[i]
+		switch ins.Op {
+		case OpJump:
+			if ins.A >= 0 && ins.A < len(pcMap) {
+				ins.A = pcMap[ins.A]
+			}
+		case OpJumpIfFalse, OpJumpIfTrue:
+			if ins.B >= 0 && ins.B < len(pcMap) {
+				ins.B = pcMap[ins.B]
+			}
+		}
+	}
+	fn.Code = newCode
+	return true
+}
+
+// removeUnreachable deletes instructions that can never be executed based on
+// control flow analysis.
+func removeUnreachable(fn *Function) bool {
+	analysis := Infer(fn)
+	if analysis == nil || len(analysis.Dead) == 0 {
+		return false
+	}
+	removed := false
+	pcMap := make([]int, len(fn.Code))
+	newCode := make([]Instr, 0, len(fn.Code))
+	for pc, ins := range fn.Code {
+		if pc < len(analysis.Dead) && analysis.Dead[pc] {
+			pcMap[pc] = -1
+			removed = true
+			continue
+		}
+		pcMap[pc] = len(newCode)
+		newCode = append(newCode, ins)
+	}
+	if !removed {
+		return false
+	}
+	// map removed PCs to next valid instruction for jump patching
+	next := len(newCode)
+	for i := len(pcMap) - 1; i >= 0; i-- {
+		if pcMap[i] == -1 {
+			pcMap[i] = next
+		} else {
+			next = pcMap[i]
+		}
+	}
 	for i := range newCode {
 		ins := &newCode[i]
 		switch ins.Op {

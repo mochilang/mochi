@@ -13,4 +13,3 @@ func sum3 (regs=5)
   Add          r3, r0, r1
   Add          r4, r3, r2
   Return       r4
-  Return       r0
