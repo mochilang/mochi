@@ -1,4 +1,4 @@
-func main (regs=8)
+func main (regs=26)
   // let xs = [1, 2, 3]
   Const        r0, [1, 2, 3]
   // let ys = from x in xs where x % 2 == 1 select x
@@ -6,42 +6,44 @@ func main (regs=8)
   IterPrep     r2, r0
   Len          r3, r2
   Const        r4, 0
-  LessInt      r5, r4, r3
-  JumpIfFalse  r5, L0
+L2:
+  LessInt      r6, r4, r3
+  JumpIfFalse  r6, L0
+  Index        r8, r2, r4
+  Const        r9, 2
+  Mod          r10, r8, r9
+  Const        r11, 1
+  Equal        r12, r10, r11
+  JumpIfFalse  r12, L1
+  Append       r1, r1, r8
+L1:
+  AddInt       r4, r4, r11
+  Jump         L2
 L0:
-  Index        r5, r2, r4
-  Const        r2, 2
-  Mod          r3, r5, r2
-  Const        r6, 1
-  Equal        r7, r3, r6
-  JumpIfFalse  r7, L0
-  Append       r1, r1, r5
-  AddInt       r4, r4, r6
-  Jump         L0
   // print(1 in ys)
-  In           r7, r6, r1
-  Print        r7
+  In           r14, r11, r1
+  Print        r14
   // print(2 in ys)
-  In           r7, r2, r1
-  Print        r7
+  In           r15, r9, r1
+  Print        r15
   // let m = {a: 1}
-  Const        r7, {"a": 1}
+  Const        r16, {"a": 1}
   // print("a" in m)
-  Const        r2, "a"
-  In           r1, r2, r7
-  Print        r1
+  Const        r17, "a"
+  In           r18, r17, r16
+  Print        r18
   // print("b" in m)
-  Const        r1, "b"
-  In           r2, r1, r7
-  Print        r2
+  Const        r19, "b"
+  In           r20, r19, r16
+  Print        r20
   // let s = "hello"
-  Const        r2, "hello"
+  Const        r21, "hello"
   // print("ell" in s)
-  Const        r1, "ell"
-  In           r7, r1, r2
-  Print        r7
+  Const        r22, "ell"
+  In           r23, r22, r21
+  Print        r23
   // print("foo" in s)
-  Const        r7, "foo"
-  In           r1, r7, r2
-  Print        r1
+  Const        r24, "foo"
+  In           r25, r24, r21
+  Print        r25
   Return       r0

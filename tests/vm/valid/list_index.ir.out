@@ -1,7 +1,7 @@
-func main (regs=2)
+func main (regs=3)
   // let xs = [10, 20, 30]
   Const        r0, [10, 20, 30]
   // print(xs[1])
-  Const        r1, 20
-  Print        r1
+  Const        r2, 20
+  Print        r2
   Return       r0

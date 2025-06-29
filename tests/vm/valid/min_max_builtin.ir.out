@@ -1,10 +1,10 @@
-func main (regs=2)
+func main (regs=3)
   // let nums = [3,1,4]
   Const        r0, [3, 1, 4]
   // print(min(nums))
   Const        r1, 1
   Print        r1
   // print(max(nums))
-  Const        r1, 4
-  Print        r1
+  Const        r2, 4
+  Print        r2
   Return       r0
