@@ -4975,7 +4975,60 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{Tag: ValueStr, Str: string(r[lo:hi])}, true
 		}
 	}
+	if v, ok := fc.foldPureCall(call, args); ok {
+		return v, true
+	}
 	return Value{}, false
+}
+
+func (fc *funcCompiler) foldPureCall(call *parser.CallExpr, args []Value) (Value, bool) {
+	t, err := fc.comp.env.GetVar(call.Func)
+	if err != nil {
+		return Value{}, false
+	}
+	ft, ok := t.(types.FuncType)
+	if !ok || !ft.Pure {
+		return Value{}, false
+	}
+	fnIdx, ok := fc.comp.fnIndex[call.Func]
+	if !ok || fnIdx >= len(fc.comp.funcs) {
+		return Value{}, false
+	}
+	fn := fc.comp.funcs[fnIdx]
+
+	main := Function{NumRegs: len(args) + 1, Name: "main"}
+	for i, a := range args {
+		main.Code = append(main.Code, Instr{Op: OpConst, A: i, Val: a})
+	}
+	res := len(args)
+	main.Code = append(main.Code, Instr{Op: OpCall, A: res, B: 1, C: len(args), D: 0})
+	main.Code = append(main.Code, Instr{Op: OpReturn, A: res})
+
+	prog := &Program{Funcs: []Function{main, fn}}
+	vm := New(prog, io.Discard)
+	v, err := vm.RunResult()
+	if err != nil {
+		return Value{}, false
+	}
+	return v, true
+}
+
+func valueToLiteral(v Value) *parser.Literal {
+	switch v.Tag {
+	case ValueInt:
+		i := v.Int
+		return &parser.Literal{Int: &i}
+	case ValueFloat:
+		f := v.Float
+		return &parser.Literal{Float: &f}
+	case ValueStr:
+		s := v.Str
+		return &parser.Literal{Str: &s}
+	case ValueNull:
+		return &parser.Literal{Null: true}
+	default:
+		return nil
+	}
 }
 
 func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {
