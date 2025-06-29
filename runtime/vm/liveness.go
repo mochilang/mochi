@@ -190,7 +190,8 @@ func isPure(op Op) bool {
 	case OpJump, OpJumpIfFalse, OpJumpIfTrue, OpReturn,
 		OpPrint, OpPrint2, OpPrintN, OpJSON,
 		OpSetIndex, OpLoad, OpSave, OpEval, OpFetch,
-		OpCall, OpCall2, OpCallV, OpExpect:
+		OpCall, OpCall2, OpCallV, OpExpect,
+		OpDiv, OpDivInt, OpDivFloat, OpMod, OpModInt, OpModFloat:
 		return false
 	default:
 		return true
@@ -223,6 +224,7 @@ func Optimize(fn *Function) {
 	for {
 		changed := constFold(fn)
 		pruneRedundantJumps(fn)
+		removeUnreachable(fn)
 		analysis := Liveness(fn)
 		removed := removeDead(fn, analysis)
 		if !removed && !changed {
@@ -435,6 +437,75 @@ func pruneRedundantJumps(fn *Function) bool {
 			}
 		}
 	}
+	fn.Code = newCode
+	return true
+}
+
+// removeUnreachable eliminates instructions that are not reachable
+// from the entry point by following control flow edges.
+func removeUnreachable(fn *Function) bool {
+	n := len(fn.Code)
+	reachable := make([]bool, n)
+	work := []int{0}
+	for len(work) > 0 {
+		pc := work[len(work)-1]
+		work = work[:len(work)-1]
+		if pc < 0 || pc >= n || reachable[pc] {
+			continue
+		}
+		reachable[pc] = true
+		ins := fn.Code[pc]
+		switch ins.Op {
+		case OpJump:
+			work = append(work, ins.A)
+		case OpJumpIfFalse, OpJumpIfTrue:
+			work = append(work, pc+1, ins.B)
+		case OpReturn:
+			// no successor
+		default:
+			work = append(work, pc+1)
+		}
+	}
+
+	removed := false
+	pcMap := make([]int, n)
+	newCode := make([]Instr, 0, n)
+	for pc, ins := range fn.Code {
+		if reachable[pc] {
+			pcMap[pc] = len(newCode)
+			newCode = append(newCode, ins)
+		} else {
+			pcMap[pc] = -1
+			removed = true
+		}
+	}
+	if !removed {
+		return false
+	}
+
+	next := len(newCode)
+	for i := len(pcMap) - 1; i >= 0; i-- {
+		if pcMap[i] == -1 {
+			pcMap[i] = next
+		} else {
+			next = pcMap[i]
+		}
+	}
+
+	for i := range newCode {
+		ins := &newCode[i]
+		switch ins.Op {
+		case OpJump:
+			if ins.A >= 0 && ins.A < len(pcMap) {
+				ins.A = pcMap[ins.A]
+			}
+		case OpJumpIfFalse, OpJumpIfTrue:
+			if ins.B >= 0 && ins.B < len(pcMap) {
+				ins.B = pcMap[ins.B]
+			}
+		}
+	}
+
 	fn.Code = newCode
 	return true
 }

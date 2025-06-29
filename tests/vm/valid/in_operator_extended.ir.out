@@ -19,7 +19,9 @@ L2:
   JumpIfFalse  r12, L1
   Append       r13, r2, r8
   Move         r2, r13
-  Const        r15, 1
+L1:
+  Const        r14, 1
+  Add          r15, r5, r14
   Move         r5, r15
   Jump         L2
 L0:
