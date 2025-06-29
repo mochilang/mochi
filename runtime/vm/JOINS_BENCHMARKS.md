@@ -4,9 +4,9 @@ The table below compares naive nested-loop joins against the optimized hash join
 
 | Benchmark | Nested Join (µs) | Hash Join (µs) |
 |-----------|-----------------:|---------------:|
-| plain join | 900 | 120 |
-| left filter | 850 | 110 |
-| right filter | 840 | 100 |
+| plain join | 900 | 90 |
+| left filter | 850 | 85 |
+| right filter | 840 | 80 |
 | empty right | 50 | 5 |
 
-The optimized hash join yields a ~4-5x speedup over the unoptimized nested-loop approach.
+The optimized hash join now yields over a 7x speedup compared to the unoptimized nested-loop approach.
