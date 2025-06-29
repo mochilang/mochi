@@ -1,10 +1,9 @@
-func main (regs=6)
+func main (regs=5)
   // let people = [
   Const        r0, [{"age": 30, "name": "Alice"}, {"age": 25, "name": "Bob"}]
-  Move         r1, r0
+  Const        r1, [{"age": 30, "name": "Alice"}, {"age": 25, "name": "Bob"}]
   // save people to "-" with { format: "jsonl" }
   Const        r2, "-"
-  Const        r4, {"format": "jsonl"}
-  Move         r3, r4
-  Save         5,1,2,3
+  Const        r3, {"format": "jsonl"}
+  Save         4,1,2,3
   Return       r0
