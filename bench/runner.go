@@ -75,7 +75,7 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		}
 		category := parts[1]
 		name := parts[2]
-		if name == "matrix_mul" || category == "join" {
+		if category == "join" {
 			return nil
 		}
 		suffix := "." + lang
@@ -84,7 +84,9 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		templates := []Template{
 			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
-			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
+		}
+		if name != "matrix_mul" {
+			templates = append(templates, Template{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil})
 		}
 		templates = append(templates, Template{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}})
 		// Temporarily disable PyPy and Cython benchmarks
@@ -618,7 +620,7 @@ func GenerateOutputs(outDir string) error {
 		}
 		category := parts[1]
 		name := strings.TrimSuffix(parts[2], "")
-		if name == "matrix_mul" || category == "join" {
+		if category == "join" {
 			return nil
 		}
 
@@ -641,7 +643,7 @@ func GenerateOutputs(outDir string) error {
 				return err
 			}
 
-			if category != "join" {
+			if category != "join" && name != "matrix_mul" {
 				cOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.out", category, name, n))
 				bin := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.bin", category, name, n))
 				if err := compileToC(tmp, cOut, bin); err != nil {
