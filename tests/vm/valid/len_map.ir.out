@@ -1,6 +1,6 @@
 func main (regs=2)
   // print(len({"a":1, "b":2}))
   Const        r0, {"a": 1, "b": 2}
-  Len          r1, r0
+  Const        r1, 2
   Print        r1
   Return       r0

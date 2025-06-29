@@ -1,5 +1,6 @@
-func main (regs=1)
+func main (regs=4)
   // print(substring("mochi", 1, 4))
-  Const        r0, "och"
-  Print        r0
+  Const        r0, "mochi"
+  Const        r3, "och"
+  Print        r3
   Return       r0

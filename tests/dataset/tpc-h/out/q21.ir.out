@@ -237,6 +237,7 @@ L19:
   NegInt       r145, r144
   Move         r146, r145
   Const        r147, "key"
+  Index        r148, r133, r147
   MakeList     r150, 2, r146
   Move         r151, r150
   // from s in supplier

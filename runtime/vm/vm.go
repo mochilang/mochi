@@ -285,12 +285,23 @@ type Instr struct {
 	Line int   // source line for disassembly
 }
 
+// InstrProfile tracks runtime information for a single instruction.
+// It records how many times the instruction executed and whether the
+// operands were integers or floats. This data is used for profiling-guided
+// optimization.
+type InstrProfile struct {
+	Exec     int // total executions
+	IntOps   int // executions where operands were integers
+	FloatOps int // executions where operands involved floats
+}
+
 type Function struct {
 	Code      []Instr
 	NumRegs   int
 	NumParams int
 	Name      string
-	Line      int // source line of function definition
+	Line      int            // source line of function definition
+	Profile   []InstrProfile `json:"-"`
 }
 
 type Program struct {
@@ -531,6 +542,13 @@ func (m *VM) newError(err error, trace []StackFrame, line int) *VMError {
 }
 
 func New(prog *Program, w io.Writer) *VM {
+	if ProfileEnabled && prog != nil {
+		for i := range prog.Funcs {
+			if len(prog.Funcs[i].Profile) == 0 {
+				prog.Funcs[i].Profile = make([]InstrProfile, len(prog.Funcs[i].Code))
+			}
+		}
+	}
 	return &VM{prog: prog, writer: w, reader: bufio.NewReader(os.Stdin)}
 }
 
@@ -538,6 +556,13 @@ func NewWithIO(prog *Program, r io.Reader, w io.Writer) *VM {
 	br, ok := r.(*bufio.Reader)
 	if !ok {
 		br = bufio.NewReader(r)
+	}
+	if ProfileEnabled && prog != nil {
+		for i := range prog.Funcs {
+			if len(prog.Funcs[i].Profile) == 0 {
+				prog.Funcs[i].Profile = make([]InstrProfile, len(prog.Funcs[i].Code))
+			}
+		}
 	}
 	return &VM{prog: prog, writer: w, reader: br}
 }
@@ -587,8 +612,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			continue
 		}
-		ins := fr.fn.Code[fr.ip]
+		pc := fr.ip
+		ins := fr.fn.Code[pc]
 		fr.ip++
+		if ProfileEnabled && pc < len(fr.fn.Profile) {
+			fr.fn.Profile[pc].Exec++
+		}
 		switch ins.Op {
 		case OpConst:
 			fr.regs[ins.A] = ins.Val
@@ -597,6 +626,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpAdd:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if ProfileEnabled && pc < len(fr.fn.Profile) {
+				if b.Tag == ValueInt && c.Tag == ValueInt {
+					fr.fn.Profile[pc].IntOps++
+				} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+					fr.fn.Profile[pc].FloatOps++
+				}
+			}
 			if b.Tag == ValueStr && c.Tag == ValueStr {
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: b.Str + c.Str}
 			} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
@@ -615,6 +651,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpSub:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if ProfileEnabled && pc < len(fr.fn.Profile) {
+				if b.Tag == ValueInt && c.Tag == ValueInt {
+					fr.fn.Profile[pc].IntOps++
+				} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+					fr.fn.Profile[pc].FloatOps++
+				}
+			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
 			} else {
@@ -630,6 +673,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
 		case OpNeg:
 			b := fr.regs[ins.B]
+			if ProfileEnabled && pc < len(fr.fn.Profile) {
+				if b.Tag == ValueInt {
+					fr.fn.Profile[pc].IntOps++
+				} else if b.Tag == ValueFloat {
+					fr.fn.Profile[pc].FloatOps++
+				}
+			}
 			if b.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
 			} else {
@@ -644,6 +694,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpMul:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if ProfileEnabled && pc < len(fr.fn.Profile) {
+				if b.Tag == ValueInt && c.Tag == ValueInt {
+					fr.fn.Profile[pc].IntOps++
+				} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+					fr.fn.Profile[pc].FloatOps++
+				}
+			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}
 			} else {
@@ -660,6 +717,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpDiv:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if ProfileEnabled && pc < len(fr.fn.Profile) {
+				if b.Tag == ValueInt && c.Tag == ValueInt {
+					fr.fn.Profile[pc].IntOps++
+				} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+					fr.fn.Profile[pc].FloatOps++
+				}
+			}
 			if (c.Tag == ValueInt && c.Int == 0) || (c.Tag == ValueFloat && c.Float == 0) {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
@@ -685,6 +749,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpMod:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if ProfileEnabled && pc < len(fr.fn.Profile) {
+				if b.Tag == ValueInt && c.Tag == ValueInt {
+					fr.fn.Profile[pc].IntOps++
+				} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+					fr.fn.Profile[pc].FloatOps++
+				}
+			}
 			if (c.Tag == ValueInt && c.Int == 0) || (c.Tag == ValueFloat && c.Float == 0) {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
@@ -708,6 +779,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}
 		case OpEqual:
+			if ProfileEnabled && pc < len(fr.fn.Profile) {
+				b := fr.regs[ins.B]
+				c := fr.regs[ins.C]
+				if b.Tag == ValueInt && c.Tag == ValueInt {
+					fr.fn.Profile[pc].IntOps++
+				} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+					fr.fn.Profile[pc].FloatOps++
+				}
+			}
 			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
 		case OpNotEqual:
 			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: !valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
@@ -718,6 +798,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpLess:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if ProfileEnabled && pc < len(fr.fn.Profile) {
+				if b.Tag == ValueInt && c.Tag == ValueInt {
+					fr.fn.Profile[pc].IntOps++
+				} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+					fr.fn.Profile[pc].FloatOps++
+				}
+			}
 			var res bool
 			if b.Tag == ValueStr && c.Tag == ValueStr {
 				res = b.Str < c.Str
@@ -728,6 +815,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpLessEq:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if ProfileEnabled && pc < len(fr.fn.Profile) {
+				if b.Tag == ValueInt && c.Tag == ValueInt {
+					fr.fn.Profile[pc].IntOps++
+				} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
+					fr.fn.Profile[pc].FloatOps++
+				}
+			}
 			var res bool
 			if b.Tag == ValueStr && c.Tag == ValueStr {
 				res = b.Str <= c.Str

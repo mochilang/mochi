@@ -75,6 +75,16 @@ go test ./tests/vm -run .
 
 Use `-update` to refresh the expected output files when modifying the VM.
 
+## Profiling-Guided Optimizations
+
+The VM can collect execution profiles to specialize generic numeric
+instructions. Set `vm.ProfileEnabled = true` before running a program and
+call `vm.SaveProfile` afterwards to write a profile JSON file. Loading that
+profile with `vm.LoadProfile` and calling `vm.ApplyPGO` will convert
+operations like `Add` or `Div` to their `Int` or `Float` variants when the
+recorded types are consistent, improving performance when static inference
+falls short.
+
 ## Instruction set
 
 Below is a brief overview of the bytecode instructions emitted by the compiler.
