@@ -1,4 +1,4 @@
-func main (regs=138)
+func main (regs=24)
   // let customer = [
   Const        r0, [{"c_acctbal": 600, "c_custkey": 1, "c_phone": "13-123-4567"}, {"c_acctbal": 100, "c_custkey": 2, "c_phone": "31-456-7890"}, {"c_acctbal": 700, "c_custkey": 3, "c_phone": "30-000-0000"}]
   // let orders = [
@@ -10,222 +10,240 @@ func main (regs=138)
   // where c.c_acctbal > 0.0 && substring(c.c_phone, 0, 2) in valid_codes
   Const        r4, "c_acctbal"
   Const        r5, "c_phone"
+L7:
   // from c in customer
   IterPrep     r6, r0
   Len          r7, r6
-  Const        r9, 0
-  Move         r8, r9
-L3:
-  LessInt      r10, r8, r7
-  JumpIfFalse  r10, L0
-  Index        r12, r6, r8
-  // where c.c_acctbal > 0.0 && substring(c.c_phone, 0, 2) in valid_codes
-  Index        r13, r12, r4
-  Const        r14, 0
-  LessFloat    r15, r14, r13
-  Index        r16, r12, r5
-  Const        r17, 2
-  Slice        r18, r16, r9, r17
-  In           r19, r18, r2
-  Move         r20, r15
-  JumpIfFalse  r20, L1
-  Move         r20, r19
-L1:
-  JumpIfFalse  r20, L2
-  // select c.c_acctbal
-  Index        r21, r12, r4
-  // from c in customer
-  Append       r3, r3, r21
+  Const        r8, 0
 L2:
-  Const        r23, 1
-  AddInt       r8, r8, r23
-  Jump         L3
-L0:
-  // avg(
-  Avg          r24, r3
-  // from c in customer
-  Const        r25, []
-  // where o.o_custkey == c.c_custkey
-  Const        r26, "o_custkey"
-  Const        r27, "c_custkey"
-  // cntrycode: substring(c.c_phone, 0, 2),
-  Const        r28, "cntrycode"
-  // from c in customer
-  IterPrep     r29, r0
-  Len          r30, r29
-  Move         r31, r9
-L11:
-  LessInt      r32, r31, r30
-  JumpIfFalse  r32, L4
-  Index        r12, r29, r31
-  // substring(c.c_phone, 0, 2) in valid_codes &&
-  Index        r34, r12, r5
-  Slice        r35, r34, r9, r17
-  // c.c_acctbal > avg_balance && (!exists(
-  Index        r36, r12, r4
-  LessFloat    r37, r24, r36
-  // substring(c.c_phone, 0, 2) in valid_codes &&
-  In           r39, r35, r2
-  JumpIfFalse  r39, L5
-L5:
-  // c.c_acctbal > avg_balance && (!exists(
-  Move         r40, r37
-  JumpIfFalse  r40, L6
-  // from o in orders
-  Const        r41, []
-  IterPrep     r42, r1
-  Len          r43, r42
-  Move         r44, r9
-L9:
-  LessInt      r45, r44, r43
-  JumpIfFalse  r45, L7
-  Index        r47, r42, r44
-  // where o.o_custkey == c.c_custkey
-  Index        r48, r47, r26
-  Index        r49, r12, r27
-  Equal        r50, r48, r49
-  JumpIfFalse  r50, L8
-  // from o in orders
-  Append       r41, r41, r47
-L8:
-  AddInt       r44, r44, r23
-  Jump         L9
-L7:
-  // c.c_acctbal > avg_balance && (!exists(
-  Exists       r52, r41
-  Not          r40, r52
-L6:
-  // substring(c.c_phone, 0, 2) in valid_codes &&
-  JumpIfFalse  r40, L10
-  // cntrycode: substring(c.c_phone, 0, 2),
-  Const        r54, "cntrycode"
-  Index        r55, r12, r5
-  Slice        r56, r55, r9, r17
-  // c_acctbal: c.c_acctbal
-  Const        r57, "c_acctbal"
-  // select {
-  MakeMap      r61, 2, r54
-  // from c in customer
-  Append       r25, r25, r61
-L10:
-  AddInt       r31, r31, r23
-  Jump         L11
-L4:
-  // from c in eligible_customers
-  Const        r63, []
-  IterPrep     r64, r25
-  Len          r65, r64
-  Const        r66, 0
-  MakeMap      r67, 0, r0
-  Const        r68, []
-L14:
-  LessInt      r69, r66, r65
-  JumpIfFalse  r69, L12
-  Index        r70, r64, r66
-  // group by c.cntrycode into g
-  Index        r71, r70, r28
-  Str          r72, r71
-  In           r73, r72, r67
-  JumpIfTrue   r73, L13
-  // from c in eligible_customers
-  Const        r74, []
-  Const        r75, "__group__"
-  Const        r76, true
-  Const        r77, "key"
-  // group by c.cntrycode into g
-  Move         r78, r71
-  // from c in eligible_customers
-  Const        r79, "items"
-  Move         r80, r74
-  MakeMap      r81, 3, r75
-  SetIndex     r67, r72, r81
-  Append       r68, r68, r81
+  Move         r9, r8
+L3:
+  LessInt      r10, r9, r7
+  JumpIfFalse  r10, L0
+  Index        r7, r6, r9
 L13:
-  Index        r83, r67, r72
-  Index        r84, r83, r79
-  Append       r85, r84, r70
-  SetIndex     r83, r79, r85
-  AddInt       r66, r66, r23
-  Jump         L14
+  // where c.c_acctbal > 0.0 && substring(c.c_phone, 0, 2) in valid_codes
+  Index        r6, r7, r4
+L1:
+  Move         r11, r8
+L0:
+  LessFloat    r12, r11, r6
+L6:
+  Index        r6, r7, r5
+L8:
+  Const        r13, 2
+  Slice        r14, r6, r8, r13
+  In           r6, r14, r2
+  Move         r14, r12
+  JumpIfFalse  r14, L1
+  Move         r14, r6
 L12:
-  Move         r86, r9
-  Len          r87, r68
-L16:
-  LessInt      r88, r86, r87
-  JumpIfFalse  r88, L15
-  Index        r90, r68, r86
-  Append       r63, r63, r90
-  AddInt       r86, r86, r23
-  Jump         L16
-L15:
+  JumpIfFalse  r14, L2
+  // select c.c_acctbal
+  Index        r14, r7, r4
+  // from c in customer
+  Append       r3, r3, r14
+  Const        r14, 1
+  AddInt       r9, r9, r14
+  Jump         L3
+  // avg(
+  Avg          r10, r3
+  // from c in customer
+  Const        r3, []
+  // where o.o_custkey == c.c_custkey
+  Const        r9, "o_custkey"
+  Const        r6, "c_custkey"
+  // cntrycode: substring(c.c_phone, 0, 2),
+  Const        r12, "cntrycode"
+  // from c in customer
+  IterPrep     r15, r0
+  Len          r16, r15
+  Move         r17, r8
+  LessInt      r18, r17, r16
+  JumpIfFalse  r18, L2
+  Index        r7, r15, r17
+  // substring(c.c_phone, 0, 2) in valid_codes &&
+  Index        r18, r7, r5
+  Slice        r16, r18, r8, r13
+  // c.c_acctbal > avg_balance && (!exists(
+  Index        r18, r7, r4
+  LessFloat    r15, r10, r18
+  // substring(c.c_phone, 0, 2) in valid_codes &&
+  In           r18, r16, r2
+  JumpIfFalse  r18, L4
+L4:
+  // c.c_acctbal > avg_balance && (!exists(
+  Move         r18, r15
+  JumpIfFalse  r18, L5
+  // from o in orders
+  Move         r16, r3
+  IterPrep     r2, r1
+  Len          r1, r2
+  Move         r10, r8
+  LessInt      r19, r10, r1
+  JumpIfFalse  r19, L6
+  Index        r19, r2, r10
+  // where o.o_custkey == c.c_custkey
+  Index        r2, r19, r9
+  Index        r9, r7, r6
+  Equal        r6, r2, r9
+  JumpIfFalse  r6, L7
+  // from o in orders
+  Append       r16, r16, r19
+  AddInt       r10, r10, r14
+  Jump         L7
+  // c.c_acctbal > avg_balance && (!exists(
+  Exists       r6, r16
+  Not          r18, r6
+L5:
+  // substring(c.c_phone, 0, 2) in valid_codes &&
+  JumpIfFalse  r18, L8
+  // cntrycode: substring(c.c_phone, 0, 2),
+  Move         r6, r12
+  Index        r16, r7, r5
+  Slice        r5, r16, r8, r13
+  // c_acctbal: c.c_acctbal
+  Move         r16, r4
+  Index        r13, r7, r4
+  // cntrycode: substring(c.c_phone, 0, 2),
+  Move         r7, r6
+  Move         r6, r5
+  // c_acctbal: c.c_acctbal
+  Move         r5, r16
+  Move         r16, r13
+  // select {
+  MakeMap      r13, 2, r7
+  // from c in customer
+  Append       r3, r3, r13
+  AddInt       r17, r17, r14
+  Jump         L0
+  // from c in eligible_customers
+  Const        r13, []
+  IterPrep     r16, r3
+  Len          r3, r16
+  Move         r5, r8
+  MakeMap      r6, 0, r0
+  LessInt      r7, r5, r3
+  JumpIfFalse  r7, L9
+  Index        r7, r16, r5
+  // group by c.cntrycode into g
+  Index        r16, r7, r12
+  Str          r3, r16
+  In           r15, r3, r6
+  JumpIfTrue   r15, L0
+  // from c in eligible_customers
+  Move         r15, r13
+  Const        r17, "__group__"
+  Const        r18, true
+  Const        r9, "key"
+  // group by c.cntrycode into g
+  Move         r2, r16
+  // from c in eligible_customers
+  Const        r16, "items"
+  Move         r19, r15
+  Const        r15, "count"
+  Move         r10, r5
+  Move         r1, r17
+  Move         r17, r18
+  Move         r18, r9
+  Move         r20, r2
+  Move         r2, r16
+  Move         r21, r19
+  Move         r19, r15
+  Move         r22, r10
+  MakeMap      r23, 4, r1
+  SetIndex     r6, r3, r23
+  Move         r23, r16
+  Index        r16, r6, r3
+  Index        r3, r16, r23
+  Append       r22, r3, r7
+  SetIndex     r16, r23, r22
+  Move         r22, r15
+  Index        r15, r16, r22
+  AddInt       r3, r15, r14
+  SetIndex     r16, r22, r3
+  AddInt       r5, r5, r14
+  Jump         L3
+L9:
+  Values       3,6,0,0
+  Move         r6, r8
+  Len          r15, r3
+  LessInt      r22, r6, r15
+  JumpIfFalse  r22, L2
+  Index        r22, r3, r6
+  Append       r13, r13, r22
+  AddInt       r6, r6, r14
+  Jump         L7
   // var tmp = []
-  Const        r93, []
+  Const        r6, []
+  Move         r3, r6
   // for g in groups {
-  IterPrep     r94, r63
-  Len          r95, r94
-  Const        r96, 0
-L20:
-  Less         r97, r96, r95
-  JumpIfFalse  r97, L17
-  Index        r90, r94, r96
+  IterPrep     r15, r13
+  Len          r13, r15
+  Move         r16, r8
+  Less         r10, r16, r13
+  JumpIfFalse  r10, L10
+  Index        r22, r15, r16
   // var total = 0.0
-  Move         r99, r14
+  Move         r10, r11
   // for x in g.items {
-  Index        r100, r90, r79
-  IterPrep     r101, r100
-  Len          r102, r101
-  Const        r103, 0
-L19:
-  Less         r104, r103, r102
-  JumpIfFalse  r104, L18
-  Index        r106, r101, r103
+  Index        r11, r22, r23
+  IterPrep     r23, r11
+  Len          r11, r23
+  Move         r13, r16
+  Less         r15, r13, r11
+  JumpIfFalse  r15, L11
+  Index        r15, r23, r13
   // total = total + x.c_acctbal
-  Index        r107, r106, r4
-  AddFloat     r99, r99, r107
+  Index        r23, r15, r4
+  AddFloat     r10, r10, r23
   // for x in g.items {
-  Const        r109, 1
-  Add          r103, r103, r109
-  Jump         L19
-L18:
+  Add          r13, r13, r14
+  Jump         L12
+L11:
   // let row = { cntrycode: g.key, numcust: count(g), totacctbal: total }
-  Const        r111, "cntrycode"
-  Index        r112, r90, r77
-  Const        r113, "numcust"
-  Count        r114, r90
-  Const        r115, "totacctbal"
-  Move         r116, r112
-  MakeMap      r119, 3, r111
+  Move         r15, r12
+  Index        r13, r22, r9
+  Const        r9, "numcust"
+  Count        r4, r22
+  Const        r22, "totacctbal"
+  Move         r11, r15
+  Move         r15, r13
+  Move         r13, r9
+  Move         r9, r4
+  Move         r4, r22
+  Move         r22, r10
+  MakeMap      r10, 3, r11
   // tmp = append(tmp, row)
-  Append       r93, r93, r119
+  Append       r3, r3, r10
   // for g in groups {
-  Const        r121, 1
-  Add          r96, r96, r121
-  Jump         L20
-L17:
+  Add          r16, r16, r14
+  Jump         L13
+L10:
   // from r in tmp
-  Const        r123, []
-  IterPrep     r124, r93
-  Len          r125, r124
-  Move         r126, r9
-L22:
-  LessInt      r127, r126, r125
-  JumpIfFalse  r127, L21
-  Index        r129, r124, r126
+  Move         r23, r6
+  IterPrep     r10, r3
+  Len          r3, r10
+  Move         r22, r8
+L15:
+  LessInt      r8, r22, r3
+  JumpIfFalse  r8, L14
+  Index        r8, r10, r22
   // sort by r.cntrycode
-  Index        r131, r129, r28
+  Index        r10, r8, r12
   // from r in tmp
-  Move         r132, r129
-  MakeList     r133, 2, r131
-  Append       r123, r123, r133
-  AddInt       r126, r126, r23
-  Jump         L22
-L21:
+  Move         r12, r8
+  MakeList     r8, 2, r10
+  Append       r23, r23, r8
+  AddInt       r22, r22, r14
+  Jump         L15
+L14:
   // sort by r.cntrycode
-  Sort         r123, r123
+  Sort         r23, r23
   // print(result)
-  Print        r123
+  Print        r23
   // expect result == [
-  Const        r136, [{"cntrycode": "13", "numcust": 1, "totacctbal": 600}, {"cntrycode": "30", "numcust": 1, "totacctbal": 700}]
-  Equal        r137, r123, r136
-  Expect       r137
+  Const        r8, [{"cntrycode": "13", "numcust": 1, "totacctbal": 600}, {"cntrycode": "30", "numcust": 1, "totacctbal": 700}]
+  Equal        r12, r23, r8
+  Expect       r12
   Return       r0
