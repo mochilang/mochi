@@ -715,6 +715,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "avg":
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
+	case "sum":
+		if len(args) == 1 {
+			c.use("_sum")
+			return fmt.Sprintf("_sum(%s)", args[0]), nil
+		}
+		return fmt.Sprintf("sum(%s)", argStr), nil
 	case "min":
 		if len(args) == 1 {
 			c.use("_min")
