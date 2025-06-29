@@ -3156,14 +3156,14 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 
 	if joinType == "inner" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			fc.compileMergeJoin(q, dst, lk, rk)
+			fc.compileHashJoin(q, dst, lk, rk)
 			return
 		}
 	}
 
 	if joinType == "left" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			fc.compileIndexJoin(q, dst, lk, rk)
+			fc.compileHashLeftJoin(q, dst, lk, rk)
 			return
 		}
 	}
