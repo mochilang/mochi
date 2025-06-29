@@ -9,8 +9,7 @@ L1:
   // print(i)
   Print        r2
   // for i in 1..4 {
-  Const        r1, 1
-  Add          r2, r2, r1
+  Add          r2, r2, r0
   Jump         L1
 L0:
   Return       r0

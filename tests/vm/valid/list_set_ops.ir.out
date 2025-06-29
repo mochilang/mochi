@@ -10,11 +10,11 @@ func main (regs=4)
   Except       r3, r2, r1
   Print        r3
   // print([1,2,3] intersect [2,4])
-  Const        r3, [1, 2, 3]
-  Const        r1, [2, 4]
-  Intersect    r2, r3, r1
-  Print        r2
+  Move         r3, r2
+  Const        r2, [2, 4]
+  Intersect    r1, r3, r2
+  Print        r1
   // print(len([1,2] union all [2,3]))
-  Const        r2, 3
-  Print        r2
+  Const        r1, 3
+  Print        r1
   Return       r0

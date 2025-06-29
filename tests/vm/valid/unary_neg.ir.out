@@ -4,6 +4,6 @@ func main (regs=2)
   Const        r1, -3
   Print        r1
   // print(5 + (-2))
-  Const        r1, 3
+  Move         r1, r0
   Print        r1
   Return       r0
