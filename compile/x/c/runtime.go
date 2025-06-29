@@ -416,6 +416,22 @@ static void _json_list_list_int(list_list_int v) {
     printf("]");
 }
 `
+	helperJSONMapString = `static void _json_map_string(map_string m) {
+    printf("{");
+    for (int i = 0; i < m.len; i++) {
+        if (i > 0) printf(",");
+        _json_string(m.data[i].key);
+        printf(":");
+        if (_is_number(m.data[i].value)) printf("%s", m.data[i].value); else _json_string(m.data[i].value);
+    }
+    printf("}");
+}`
+	helperJSONListMapString = `static void _json_list_map_string(list_map_string v) {
+    if (v.len == 1) { _json_map_string(v.data[0]); return; }
+    printf("[");
+    for (int i = 0; i < v.len; i++) { if (i > 0) printf(","); _json_map_string(v.data[i]); }
+    printf("]");
+}`
 	helperLoadJSON = `static char* _read_all(const char* path) {
     FILE* f = (!path || path[0]=='\0' || strcmp(path,"-")==0) ? stdin : fopen(path, "r");
     if (!f) { fprintf(stderr, "cannot open %s\n", path); exit(1); }
@@ -605,6 +621,8 @@ var helperCode = map[string]string{
 	needStr:                  helperStr,
 	needNow:                  helperNow,
 	needJSON:                 helperJSON,
+	needJSONMapString:        helperJSONMapString,
+	needJSONListMapString:    helperJSONListMapString,
 	needLoadJSON:             helperLoadJSON,
 	needSaveJSON:             helperSaveJSON,
 	needFetch:                helperFetch,
@@ -661,6 +679,8 @@ var helperOrder = []string{
 	needStr,
 	needNow,
 	needJSON,
+	needJSONMapString,
+	needJSONListMapString,
 	needLoadJSON,
 	needSaveJSON,
 	needFetch,

@@ -135,6 +135,24 @@ func isMapIntBoolType(t types.Type) bool {
 	return false
 }
 
+func isMapStringType(t types.Type) bool {
+	if mt, ok := t.(types.MapType); ok {
+		if _, ok := mt.Key.(types.StringType); ok {
+			if _, ok2 := mt.Value.(types.StringType); ok2 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isListMapStringType(t types.Type) bool {
+	if lt, ok := t.(types.ListType); ok {
+		return isMapStringType(lt.Elem)
+	}
+	return false
+}
+
 func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 	if t == nil {
 		return types.IntType{}

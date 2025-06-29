@@ -2614,6 +2614,127 @@ func isMapIntBoolPrimary(p *parser.Primary, env *types.Env) bool {
 	return false
 }
 
+func isMapStringExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isMapStringUnary(e.Binary.Left, env)
+}
+
+func isMapStringUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isMapStringPostfix(u.Value, env)
+}
+
+func isMapStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) > 0 {
+		return false
+	}
+	return isMapStringPrimary(p.Target, env)
+}
+
+func isMapStringPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if isMapStringType(t) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isListMapStringExpr(e *parser.Expr, env *types.Env) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	return isListMapStringUnary(e.Binary.Left, env)
+}
+
+func isListMapStringUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	return isListMapStringPostfix(u.Value, env)
+}
+
+func isListMapStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if len(p.Ops) == 0 {
+		return isListMapStringPrimary(p.Target, env)
+	}
+	if p.Ops[0].Index != nil && p.Ops[0].Index.Colon != nil {
+		if isStringPrimary(p.Target, env) {
+			return false
+		}
+		return true
+	}
+	return false
+}
+
+func isListMapStringPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.List != nil {
+		if len(p.List.Elems) == 0 {
+			return true
+		}
+		el := p.List.Elems[0]
+		if el.Binary != nil && el.Binary.Left != nil && el.Binary.Left.Value != nil && el.Binary.Left.Value.Target != nil {
+			if el.Binary.Left.Value.Target.Map != nil {
+				return true
+			}
+			if sel := el.Binary.Left.Value.Target.Selector; sel != nil && env != nil {
+				if t, err := env.GetVar(sel.Root); err == nil {
+					if isMapStringType(t) {
+						return true
+					}
+					if lt, ok := t.(types.ListType); ok {
+						if isMapStringType(lt.Elem) {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	if p.Selector != nil && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if isMapStringType(lt.Elem) {
+					return true
+				}
+			}
+		}
+	}
+	if p.Call != nil && env != nil {
+		if t, err := env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if lt, ok2 := ft.Return.(types.ListType); ok2 {
+					if isMapStringType(lt.Elem) {
+						return true
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
 func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
 		return nil
@@ -2645,10 +2766,16 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 		c.writeln(fmt.Sprintf("_json_list_float(%s);", argExpr))
 	} else if isListStringExpr(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_list_string(%s);", argExpr))
+	} else if isListMapStringExpr(e, c.env) {
+		c.need(needJSONListMapString)
+		c.writeln(fmt.Sprintf("_json_list_map_string(%s);", argExpr))
 	} else if isFloatArg(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_float(%s);", argExpr))
 	} else if isStringArg(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_string(%s);", argExpr))
+	} else if isMapStringExpr(e, c.env) {
+		c.need(needJSONMapString)
+		c.writeln(fmt.Sprintf("_json_map_string(%s);", argExpr))
 	} else {
 		c.writeln(fmt.Sprintf("_json_int(%s);", argExpr))
 	}
