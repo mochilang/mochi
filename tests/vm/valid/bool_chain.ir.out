@@ -1,22 +1,24 @@
-func main (regs=2)
+func main (regs=3)
   // print((1 < 2) && (2 < 3) && (3 < 4))
   Const        r0, 1
-L2:
   Const        r1, true
-  JumpIfFalse  r1, L0
-  Const        r1, true
+  Move         r2, r1
+  JumpIfFalse  r2, L0
+  Move         r2, r1
 L0:
-  Print        r1
+  Print        r2
   // print((1 < 2) && (2 > 3) && boom())
-  Const        r1, false
+  Const        r2, false
+  Move         r1, r2
   JumpIfFalse  r1, L1
   Call         r1, boom, 
 L1:
   Print        r1
   // print((1 < 2) && (2 < 3) && (3 > 4) && boom())
-  Const        r1, false
+  Move         r1, r2
   JumpIfFalse  r1, L2
   Call         r1, boom, 
+L2:
   Print        r1
   Return       r0
 

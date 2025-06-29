@@ -15,9 +15,9 @@ L1:
   JumpIfFalse  r7, L0
   Index        r7, r4, r6
   // sort by { a: x.a, b: x.b }
-  Const        r4, "a"
+  Move         r4, r2
   Index        r5, r7, r2
-  Const        r2, "b"
+  Move         r2, r3
   Index        r8, r7, r3
   Move         r3, r4
   Move         r4, r5

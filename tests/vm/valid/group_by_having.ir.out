@@ -1,90 +1,93 @@
-func main (regs=18)
+func main (regs=24)
   // let people = [
   Const        r0, [{"city": "Paris", "name": "Alice"}, {"city": "Hanoi", "name": "Bob"}, {"city": "Paris", "name": "Charlie"}, {"city": "Hanoi", "name": "Diana"}, {"city": "Paris", "name": "Eve"}, {"city": "Hanoi", "name": "Frank"}, {"city": "Paris", "name": "George"}]
   // from p in people
   Const        r1, []
-L0:
   // group by p.city into g
   Const        r2, "city"
   // select { city: g.key, num: count(g) }
   Const        r3, "key"
-  // from p in people
-  IterPrep     r4, r0
-  Len          r5, r4
-  Const        r6, 0
-  MakeMap      r7, 0, r0
-  Const        r8, []
-L2:
-  Const        r9, 0
-  LessInt      r10, r6, r5
-  JumpIfFalse  r10, L0
-  Index        r10, r4, r6
-  // group by p.city into g
-  Index        r4, r10, r2
-  Str          r2, r4
+  Const        r4, "num"
 L1:
-  In           r5, r2, r7
-  JumpIfTrue   r5, L1
   // from p in people
-  Const        r5, []
-  Const        r11, "__group__"
-  Const        r12, true
-  Const        r13, "key"
+  IterPrep     r5, r0
+  Len          r6, r5
+  Const        r7, 0
+  MakeMap      r8, 0, r0
+  Move         r9, r1
+  Move         r10, r7
+L2:
+  LessInt      r11, r7, r6
+L4:
+  JumpIfFalse  r11, L0
+  Index        r6, r5, r7
   // group by p.city into g
-  Move         r14, r4
+  Index        r5, r6, r2
+  Str          r12, r5
+  In           r13, r12, r8
+  JumpIfTrue   r13, L1
   // from p in people
-  Const        r4, "items"
-  Move         r15, r5
-  Const        r5, "count"
-  Const        r16, 0
-  Move         r17, r11
-  Move         r11, r12
-  Move         r12, r13
-  Move         r13, r14
-  Move         r14, r4
-  Move         r4, r15
-  Move         r15, r5
-  Move         r5, r16
-  MakeMap      r16, 4, r17
-  SetIndex     r7, r2, r9
-  Append       r8, r8, r16
-  Const        r16, 1
+  Move         r13, r1
+L0:
+  Const        r14, "__group__"
+  Const        r15, true
+  Move         r16, r3
+  // group by p.city into g
+  Move         r17, r5
+  // from p in people
   Const        r5, "items"
-  Index        r15, r7, r2
-  Index        r2, r8, r15
-  Index        r15, r2, r5
-  Append       r7, r15, r10
-  SetIndex     r2, r5, r7
-  Const        r7, "count"
-  Index        r15, r2, r7
-  AddInt       r5, r15, r16
-  SetIndex     r2, r7, r5
-  AddInt       r6, r6, r16
+  Move         r18, r13
+  Const        r13, "count"
+  Move         r19, r7
+  Move         r20, r14
+  Move         r14, r15
+  Move         r15, r16
+  Move         r16, r17
+  Move         r17, r5
+  Move         r21, r18
+  Move         r18, r13
+  Move         r22, r19
+  MakeMap      r23, 4, r20
+  SetIndex     r8, r12, r10
+  Append       r9, r9, r23
+  Const        r23, 1
+  AddInt       r10, r10, r23
+  Move         r10, r5
+  Index        r5, r8, r12
+  Index        r12, r9, r5
+  Index        r5, r12, r10
+  Append       r8, r5, r6
+  SetIndex     r12, r10, r8
+  Move         r8, r13
+  Index        r13, r12, r8
+  AddInt       r5, r13, r23
+  SetIndex     r12, r8, r5
+  AddInt       r7, r7, r23
   Jump         L2
-  Const        r5, 0
-  Len          r15, r8
-  LessInt      r2, r5, r15
-  JumpIfFalse  r2, L3
-  Index        r2, r8, r5
+  Move         r5, r19
+  Len          r19, r9
+  LessInt      r13, r5, r19
+  JumpIfFalse  r13, L3
+  Index        r13, r9, r5
   // having count(g) >= 4
-  Index        r8, r2, r7
-  Const        r15, 4
-  LessEq       r9, r15, r8
-  JumpIfFalse  r9, L3
+  Index        r9, r13, r8
+  Const        r19, 4
+  LessEq       r12, r19, r9
+  JumpIfFalse  r12, L3
   // select { city: g.key, num: count(g) }
-  Const        r9, "city"
-  Index        r8, r2, r3
-  Const        r3, "num"
-  Index        r6, r2, r7
-  Move         r2, r9
-  Move         r9, r8
-  Move         r8, r3
-  Move         r3, r6
-  MakeMap      r6, 2, r2
+  Move         r12, r2
+  Index        r2, r13, r3
+  Move         r3, r4
+  Index        r4, r13, r8
+  Move         r13, r12
+  Move         r8, r2
+  Move         r2, r3
+  Move         r3, r4
+  MakeMap      r4, 2, r13
   // from p in people
-  Append       r1, r1, r6
-  AddInt       r5, r5, r16
-  Jump         L1
+  Append       r1, r1, r4
+  AddInt       r5, r5, r23
+  Jump         L4
 L3:
   // json(big)
   JSON         r1
