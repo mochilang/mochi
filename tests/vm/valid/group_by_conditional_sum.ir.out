@@ -1,4 +1,4 @@
-func main (regs=81)
+func main (regs=87)
   // let items = [
   Const        r0, [{"cat": "a", "flag": true, "val": 10}, {"cat": "a", "flag": false, "val": 5}, {"cat": "b", "flag": true, "val": 20}]
   // from i in items
@@ -29,85 +29,99 @@ L2:
   Const        r18, []
   Const        r19, "__group__"
   Const        r20, true
+  Const        r21, "key"
   // group by i.cat into g
-  Move         r21, r15
+  Move         r22, r15
   // from i in items
-  Const        r22, "items"
-  Move         r23, r18
-  Const        r24, "count"
-  Const        r25, 0
-  Move         r26, r19
-  Move         r27, r20
-  Move         r28, r3
+  Const        r23, "items"
+  Move         r24, r18
+  Const        r25, "count"
+  Const        r26, 0
+  Move         r27, r19
+  Move         r28, r20
   Move         r29, r21
   Move         r30, r22
   Move         r31, r23
   Move         r32, r24
   Move         r33, r25
-  MakeMap      r34, 4, r26
-  SetIndex     r10, r16, r34
+  Move         r34, r26
+  MakeMap      r35, 4, r27
+  SetIndex     r10, r16, r35
 L1:
-  Index        r36, r10, r16
-  Index        r37, r36, r22
-  Append       r38, r37, r13
-  SetIndex     r36, r22, r38
-  Index        r39, r36, r24
-  Const        r40, 1
-  AddInt       r41, r39, r40
-  SetIndex     r36, r24, r41
-  AddInt       r9, r9, r40
+  Const        r37, "items"
+  Index        r38, r10, r16
+  Index        r39, r38, r37
+  Append       r40, r39, r13
+  SetIndex     r38, r37, r40
+  Const        r41, "count"
+  Index        r42, r38, r41
+  Const        r43, 1
+  AddInt       r44, r42, r43
+  SetIndex     r38, r41, r44
+  AddInt       r9, r9, r43
   Jump         L2
 L0:
-  Move         r42, r25
-  Const        r43, 0
+  Const        r46, 0
+  Move         r45, r46
+  Const        r47, 0
 L9:
-  LessInt      r44, r42, r43
-  JumpIfFalse  r44, L3
-  Index        r46, r11, r42
+  LessInt      r48, r45, r47
+  JumpIfFalse  r48, L3
+  Index        r50, r11, r45
   // cat: g.key,
-  Const        r47, "cat"
-  Index        r48, r46, r3
+  Const        r51, "cat"
+  Index        r52, r50, r3
   // share:
-  Const        r49, "share"
+  Const        r53, "share"
   // sum(from x in g select if x.flag { x.val } else { 0 }) /
-  Const        r50, []
-  IterPrep     r51, r46
-  Len          r52, r51
-  Move         r53, r25
+  Const        r54, []
+  IterPrep     r55, r50
+  Len          r56, r55
+  Move         r57, r46
 L6:
-  LessInt      r54, r53, r52
-  JumpIfFalse  r54, L4
-  Index        r56, r51, r53
-  Index        r57, r56, r5
-  JumpIfFalse  r57, L5
+  LessInt      r58, r57, r56
+  JumpIfFalse  r58, L4
+  Index        r60, r55, r57
+  Index        r61, r60, r5
+  JumpIfFalse  r61, L5
 L5:
-  Append       r50, r50, r25
-  AddInt       r53, r53, r40
+  Append       r54, r54, r46
+  AddInt       r57, r57, r43
   Jump         L6
 L4:
+  Sum          r65, r54
   // sum(from x in g select x.val)
-  Const        r62, []
-  IterPrep     r63, r46
-  Len          r64, r63
-  Move         r65, r25
+  Const        r66, []
+  IterPrep     r67, r50
+  Len          r68, r67
+  Move         r69, r46
 L8:
-  LessInt      r66, r65, r64
-  JumpIfFalse  r66, L7
-  Index        r56, r63, r65
-  Index        r68, r56, r6
-  Append       r62, r62, r68
-  AddInt       r65, r65, r40
+  LessInt      r70, r69, r68
+  JumpIfFalse  r70, L7
+  Index        r60, r67, r69
+  Index        r72, r60, r6
+  Append       r66, r66, r72
+  AddInt       r69, r69, r43
   Jump         L8
 L7:
+  Sum          r74, r66
+  // sum(from x in g select if x.flag { x.val } else { 0 }) /
+  Div          r75, r65, r74
+  // cat: g.key,
+  Move         r76, r51
+  Move         r77, r52
+  // share:
+  Move         r78, r53
+  Move         r79, r75
   // select {
-  MakeMap      r74, 2, r47
+  MakeMap      r80, 2, r76
   // sort by g.key
-  Index        r76, r46, r3
+  Index        r82, r50, r3
   // from i in items
-  Move         r77, r74
-  MakeList     r78, 2, r76
-  Append       r1, r1, r78
-  AddInt       r42, r42, r40
+  Move         r83, r80
+  MakeList     r84, 2, r82
+  Append       r1, r1, r84
+  AddInt       r45, r45, r43
   Jump         L9
 L3:
   // sort by g.key
