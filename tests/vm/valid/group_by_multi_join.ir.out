@@ -1,4 +1,4 @@
-func main (regs=98)
+func main (regs=101)
   // let nations = [
   Const        r0, [{"id": 1, "name": "A"}, {"id": 2, "name": "B"}]
   // let suppliers = [
@@ -106,46 +106,51 @@ L9:
   // from x in filtered
   Const        r69, "items"
   Move         r70, r65
-  MakeMap      r71, 3, r66
-  SetIndex     r57, r63, r71
-  Append       r58, r58, r71
+  Const        r71, "count"
+  MakeMap      r72, 4, r66
+  SetIndex     r57, r63, r72
+  Append       r73, r58, r72
+  Move         r58, r73
 L8:
-  Index        r73, r57, r63
-  Index        r74, r73, r69
-  Append       r75, r74, r60
-  SetIndex     r73, r69, r75
+  Index        r74, r57, r63
+  Index        r75, r74, r69
+  Append       r76, r75, r60
+  SetIndex     r74, r69, r76
+  Index        r77, r74, r71
+  AddInt       r78, r77, r50
+  SetIndex     r74, r71, r78
   AddInt       r56, r56, r50
   Jump         L9
 L7:
-  Move         r76, r12
-  Len          r77, r58
+  Move         r79, r12
+  Len          r80, r58
 L13:
-  LessInt      r78, r76, r77
-  JumpIfFalse  r78, L10
-  Index        r80, r58, r76
+  LessInt      r81, r79, r80
+  JumpIfFalse  r81, L10
+  Index        r83, r58, r79
   // part: g.key,
-  Const        r81, "part"
-  Index        r82, r80, r52
+  Const        r84, "part"
+  Index        r85, r83, r52
   // total: sum(from r in g select r.value)
-  Const        r83, "total"
-  Const        r84, []
-  IterPrep     r85, r80
-  Len          r86, r85
-  Move         r87, r12
+  Const        r86, "total"
+  Const        r87, []
+  IterPrep     r88, r83
+  Len          r89, r88
+  Move         r90, r12
 L12:
-  LessInt      r88, r87, r86
-  JumpIfFalse  r88, L11
-  Index        r90, r85, r87
-  Index        r91, r90, r6
-  Append       r84, r84, r91
-  AddInt       r87, r87, r50
+  LessInt      r91, r90, r89
+  JumpIfFalse  r91, L11
+  Index        r93, r88, r90
+  Index        r94, r93, r6
+  Append       r87, r87, r94
+  AddInt       r90, r90, r50
   Jump         L12
 L11:
   // select {
-  MakeMap      r96, 2, r81
+  MakeMap      r99, 2, r84
   // from x in filtered
-  Append       r51, r51, r96
-  AddInt       r76, r76, r50
+  Append       r51, r51, r99
+  AddInt       r79, r79, r50
   Jump         L13
 L10:
   // print(grouped)
