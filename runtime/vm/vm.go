@@ -991,37 +991,37 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
 			}
-			res := append([]Value{}, a.List...)
-			for _, rv := range b.List {
-				found := false
-				for _, lv := range res {
-					if valuesEqual(lv, rv) {
-						found = true
-						break
-					}
-				}
-				if !found {
-					res = append(res, rv)
+			seen := make(map[string]struct{}, len(a.List)+len(b.List))
+			out := make([]Value, 0, len(a.List)+len(b.List))
+			for _, v := range a.List {
+				k := valueToString(v)
+				if _, ok := seen[k]; !ok {
+					seen[k] = struct{}{}
+					out = append(out, v)
 				}
 			}
-			fr.regs[ins.A] = Value{Tag: ValueList, List: res}
+			for _, v := range b.List {
+				k := valueToString(v)
+				if _, ok := seen[k]; !ok {
+					seen[k] = struct{}{}
+					out = append(out, v)
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpExcept:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("except expects lists"), trace, ins.Line)
 			}
-			diff := []Value{}
-			for _, lv := range a.List {
-				found := false
-				for _, rv := range b.List {
-					if valuesEqual(lv, rv) {
-						found = true
-						break
-					}
-				}
-				if !found {
-					diff = append(diff, lv)
+			set := make(map[string]struct{}, len(b.List))
+			for _, v := range b.List {
+				set[valueToString(v)] = struct{}{}
+			}
+			diff := make([]Value, 0, len(a.List))
+			for _, v := range a.List {
+				if _, ok := set[valueToString(v)]; !ok {
+					diff = append(diff, v)
 				}
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: diff}
@@ -1031,25 +1031,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("intersect expects lists"), trace, ins.Line)
 			}
+			setA := make(map[string]struct{}, len(a.List))
+			for _, v := range a.List {
+				setA[valueToString(v)] = struct{}{}
+			}
 			inter := []Value{}
-			for _, lv := range a.List {
-				match := false
-				for _, rv := range b.List {
-					if valuesEqual(lv, rv) {
-						match = true
-						break
-					}
-				}
-				if match {
-					exists := false
-					for _, iv := range inter {
-						if valuesEqual(iv, lv) {
-							exists = true
-							break
-						}
-					}
-					if !exists {
-						inter = append(inter, lv)
+			added := make(map[string]struct{}, len(b.List))
+			for _, v := range b.List {
+				k := valueToString(v)
+				if _, ok := setA[k]; ok {
+					if _, done := added[k]; !done {
+						added[k] = struct{}{}
+						inter = append(inter, v)
 					}
 				}
 			}
