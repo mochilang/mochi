@@ -25,4 +25,3 @@ func boom (regs=4)
   // return true
   Const        r3, true
   Return       r3
-  Return       r0
