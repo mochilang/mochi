@@ -51,6 +51,23 @@ func main() {
 		os.Exit(1)
 	}
 
+	if len(os.Args) > 1 {
+		var filtered []string
+		for _, f := range files {
+			base := strings.TrimSuffix(filepath.Base(f), ".mochi")
+			for _, arg := range os.Args[1:] {
+				if base == arg {
+					filtered = append(filtered, f)
+				}
+			}
+		}
+		if len(filtered) == 0 {
+			fmt.Fprintln(os.Stderr, "no matching queries")
+			os.Exit(1)
+		}
+		files = filtered
+	}
+
 	outDir := filepath.Join(dir, "out")
 	os.MkdirAll(outDir, 0755)
 
