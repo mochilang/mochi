@@ -2556,9 +2556,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		}
 		regs := make([]int, len(p.Map.Items)*2)
 		for i, it := range p.Map.Items {
-			regs[i*2] = tmp[i].k
+			kreg := fc.newReg()
+			fc.emit(it.Pos, Instr{Op: OpMove, A: kreg, B: tmp[i].k})
 			vreg := fc.newReg()
 			fc.emit(it.Pos, Instr{Op: OpMove, A: vreg, B: tmp[i].v})
+			regs[i*2] = kreg
 			regs[i*2+1] = vreg
 		}
 		dst := fc.newReg()
@@ -4188,22 +4190,24 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	jump := len(fc.fn.Code)
 	fc.emit(q.Group.Pos, Instr{Op: OpJumpIfTrue, A: exists})
 
-	items := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
-	k1 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "__group__"})
-	v1 := fc.constReg(q.Pos, Value{Tag: ValueBool, Bool: true})
-	k2 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "key"})
+	items := fc.freshConst(q.Pos, Value{Tag: ValueList, List: []Value{}})
+	k1 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "__group__"})
+	v1 := fc.freshConst(q.Pos, Value{Tag: ValueBool, Bool: true})
+	k2 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "key"})
 	v2 := fc.newReg()
 	fc.emit(q.Group.Pos, Instr{Op: OpMove, A: v2, B: key})
-	k3 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
+	k3 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "items"})
 	v3 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
-	kcnt := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "count"})
-	vcnt := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
+	kcnt := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "count"})
+	vcnt := fc.freshConst(q.Pos, Value{Tag: ValueInt, Int: 0})
 	pairsGrp := []int{k1, v1, k2, v2, k3, v3, kcnt, vcnt}
 	if len(fieldNames) > 0 {
 		for i, name := range fieldNames {
-			k := fc.constReg(exprs[i].Pos, Value{Tag: ValueStr, Str: name})
-			pairsGrp = append(pairsGrp, k, regs[i])
+			k := fc.freshConst(exprs[i].Pos, Value{Tag: ValueStr, Str: name})
+			v := fc.newReg()
+			fc.emit(exprs[i].Pos, Instr{Op: OpMove, A: v, B: regs[i]})
+			pairsGrp = append(pairsGrp, k, v)
 		}
 	}
 	grp := fc.newReg()
