@@ -53,4 +53,3 @@ L0:
   // return [-1, -1]
   Const        r21, [-1, -1]
   Return       r21
-  Return       r0
