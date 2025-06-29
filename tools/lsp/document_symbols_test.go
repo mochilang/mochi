@@ -14,4 +14,10 @@ func TestDocumentSymbols(t *testing.T) {
 	if syms[0].Name != "add" || syms[1].Name != "v" {
 		t.Fatalf("unexpected symbols: %v", syms)
 	}
+	if syms[0].Detail == nil || *syms[0].Detail != "fun(int, int): int [pure]" {
+		t.Fatalf("unexpected detail for add: %v", syms[0].Detail)
+	}
+	if syms[1].Detail == nil || *syms[1].Detail != "int" {
+		t.Fatalf("unexpected detail for v: %v", syms[1].Detail)
+	}
 }

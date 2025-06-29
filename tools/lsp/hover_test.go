@@ -1,6 +1,11 @@
 package lsp
 
-import "testing"
+import (
+	"strings"
+	"testing"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
+)
 
 func TestHover(t *testing.T) {
 	src := "fun add(x:int,y:int):int{ return x+y }"
@@ -8,7 +13,8 @@ func TestHover(t *testing.T) {
 	if len(diags) != 0 {
 		t.Fatalf("unexpected diagnostics: %v", diags)
 	}
-	if hover.Contents == nil {
-		t.Fatalf("expected hover text")
+	mc, ok := hover.Contents.(protocol.MarkupContent)
+	if !ok || !strings.Contains(mc.Value, "fun(int, int): int") {
+		t.Fatalf("unexpected hover: %#v", hover)
 	}
 }

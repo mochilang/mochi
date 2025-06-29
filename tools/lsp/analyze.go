@@ -15,38 +15,7 @@ import (
 
 // Analyze parses and type checks source and returns LSP diagnostics.
 func Analyze(uri string, src string) []protocol.Diagnostic {
-	var diags []protocol.Diagnostic
-
-	prog, err := parser.ParseString(src)
-	if err != nil {
-		if d, ok := convertParseError(uri, err); ok {
-			diags = append(diags, toLSPDiagnostic(d))
-		} else {
-			diags = append(diags, protocol.Diagnostic{
-				Range:    protocol.Range{},
-				Message:  err.Error(),
-				Severity: severityPtr(protocol.DiagnosticSeverityError),
-				Source:   strPtr("mochi"),
-			})
-		}
-		return diags
-	}
-
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		for _, e := range errs {
-			if d, ok := e.(diagnostic.Diagnostic); ok {
-				diags = append(diags, toLSPDiagnostic(d))
-			} else if e != nil {
-				diags = append(diags, protocol.Diagnostic{
-					Range:    protocol.Range{},
-					Message:  e.Error(),
-					Severity: severityPtr(protocol.DiagnosticSeverityError),
-					Source:   strPtr("mochi"),
-				})
-			}
-		}
-	}
+	_, _, diags := parseAndCheck(uri, src)
 	return diags
 }
 
@@ -132,11 +101,10 @@ func suggestFix(msg string) (string, string) {
 	}
 }
 
-// DocumentSymbols parses src and returns LSP document symbols for top-level declarations.
-func DocumentSymbols(uri string, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic) {
-	var syms []protocol.DocumentSymbol
+// parseAndCheck parses the source file and runs the type checker.
+// It returns the program, resulting environment and any diagnostics produced.
+func parseAndCheck(uri, src string) (*parser.Program, *types.Env, []protocol.Diagnostic) {
 	var diags []protocol.Diagnostic
-
 	prog, err := parser.Parser.ParseString(uri, src)
 	if err != nil {
 		if d, ok := convertParseError(uri, err); ok {
@@ -149,7 +117,7 @@ func DocumentSymbols(uri string, src string) ([]protocol.DocumentSymbol, []proto
 				Source:   strPtr("mochi"),
 			})
 		}
-		return syms, diags
+		return nil, nil, diags
 	}
 
 	env := types.NewEnv(nil)
@@ -167,15 +135,25 @@ func DocumentSymbols(uri string, src string) ([]protocol.DocumentSymbol, []proto
 			}
 		}
 	}
+	return prog, env, diags
+}
+
+// DocumentSymbols parses src and returns LSP document symbols for top-level declarations.
+func DocumentSymbols(uri string, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic) {
+	var syms []protocol.DocumentSymbol
+	prog, env, diags := parseAndCheck(uri, src)
+	if prog == nil {
+		return syms, diags
+	}
 
 	for _, stmt := range prog.Statements {
 		switch {
 		case stmt.Fun != nil:
-			syms = append(syms, funSymbol(stmt.Fun))
+			syms = append(syms, funSymbol(stmt.Fun, env))
 		case stmt.Let != nil:
-			syms = append(syms, varSymbol(stmt.Let.Pos, stmt.Let.Name, stmt.Let.Doc))
+			syms = append(syms, varSymbol(stmt.Let.Pos, stmt.Let.Name, stmt.Let.Doc, env))
 		case stmt.Var != nil:
-			syms = append(syms, varSymbol(stmt.Var.Pos, stmt.Var.Name, stmt.Var.Doc))
+			syms = append(syms, varSymbol(stmt.Var.Pos, stmt.Var.Name, stmt.Var.Doc, env))
 		case stmt.Type != nil:
 			syms = append(syms, typeSymbol(stmt.Type.Pos, stmt.Type.Name, stmt.Type.Doc))
 		}
@@ -184,24 +162,46 @@ func DocumentSymbols(uri string, src string) ([]protocol.DocumentSymbol, []proto
 	return syms, diags
 }
 
-func funSymbol(f *parser.FunStmt) protocol.DocumentSymbol {
+func funSymbol(f *parser.FunStmt, env *types.Env) protocol.DocumentSymbol {
 	rng := symbolRange(f.Pos, len(f.Name))
 	kind := protocol.SymbolKindFunction
+	detail := ""
+	if t, err := env.GetVar(f.Name); err == nil {
+		detail = t.String()
+	}
+	if f.Doc != "" {
+		if detail != "" {
+			detail += " — " + f.Doc
+		} else {
+			detail = f.Doc
+		}
+	}
 	return protocol.DocumentSymbol{
 		Name:           f.Name,
-		Detail:         optStr(f.Doc),
+		Detail:         optStr(detail),
 		Kind:           kind,
 		Range:          rng,
 		SelectionRange: rng,
 	}
 }
 
-func varSymbol(pos lexer.Position, name, doc string) protocol.DocumentSymbol {
+func varSymbol(pos lexer.Position, name, doc string, env *types.Env) protocol.DocumentSymbol {
 	rng := symbolRange(pos, len(name))
 	kind := protocol.SymbolKindVariable
+	detail := ""
+	if t, err := env.GetVar(name); err == nil {
+		detail = t.String()
+	}
+	if doc != "" {
+		if detail != "" {
+			detail += " — " + doc
+		} else {
+			detail = doc
+		}
+	}
 	return protocol.DocumentSymbol{
 		Name:           name,
-		Detail:         optStr(doc),
+		Detail:         optStr(detail),
 		Kind:           kind,
 		Range:          rng,
 		SelectionRange: rng,
@@ -239,20 +239,91 @@ func CompletionItems() []protocol.CompletionItem {
 
 // Hover returns simple hover information for symbols at the given position.
 func Hover(uri, src string, line, character int) (protocol.Hover, []protocol.Diagnostic) {
-	syms, diags := DocumentSymbols(uri, src)
+	prog, env, diags := parseAndCheck(uri, src)
+	if prog == nil {
+		return protocol.Hover{}, diags
+	}
 	pos := protocol.Position{Line: uint32(line), Character: uint32(character)}
-	for _, s := range syms {
-		if contains(s.Range, pos) {
-			var msg string
-			if s.Detail != nil {
-				msg = *s.Detail
-			} else {
-				msg = s.Name
+	for _, stmt := range prog.Statements {
+		switch {
+		case stmt.Fun != nil:
+			rng := symbolRange(stmt.Fun.Pos, len(stmt.Fun.Name))
+			if contains(rng, pos) {
+				msg := ""
+				if t, err := env.GetVar(stmt.Fun.Name); err == nil {
+					msg = t.String()
+				}
+				if stmt.Fun.Doc != "" {
+					if msg != "" {
+						msg += "\n\n" + stmt.Fun.Doc
+					} else {
+						msg = stmt.Fun.Doc
+					}
+				}
+				if msg == "" {
+					msg = stmt.Fun.Name
+				}
+				return protocol.Hover{
+					Contents: protocol.MarkupContent{Kind: protocol.MarkupKindPlainText, Value: msg},
+					Range:    &rng,
+				}, diags
 			}
-			return protocol.Hover{
-				Contents: protocol.MarkupContent{Kind: protocol.MarkupKindPlainText, Value: msg},
-				Range:    &s.Range,
-			}, diags
+		case stmt.Let != nil:
+			rng := symbolRange(stmt.Let.Pos, len(stmt.Let.Name))
+			if contains(rng, pos) {
+				msg := ""
+				if t, err := env.GetVar(stmt.Let.Name); err == nil {
+					msg = t.String()
+				}
+				if stmt.Let.Doc != "" {
+					if msg != "" {
+						msg += "\n\n" + stmt.Let.Doc
+					} else {
+						msg = stmt.Let.Doc
+					}
+				}
+				if msg == "" {
+					msg = stmt.Let.Name
+				}
+				return protocol.Hover{
+					Contents: protocol.MarkupContent{Kind: protocol.MarkupKindPlainText, Value: msg},
+					Range:    &rng,
+				}, diags
+			}
+		case stmt.Var != nil:
+			rng := symbolRange(stmt.Var.Pos, len(stmt.Var.Name))
+			if contains(rng, pos) {
+				msg := ""
+				if t, err := env.GetVar(stmt.Var.Name); err == nil {
+					msg = t.String()
+				}
+				if stmt.Var.Doc != "" {
+					if msg != "" {
+						msg += "\n\n" + stmt.Var.Doc
+					} else {
+						msg = stmt.Var.Doc
+					}
+				}
+				if msg == "" {
+					msg = stmt.Var.Name
+				}
+				return protocol.Hover{
+					Contents: protocol.MarkupContent{Kind: protocol.MarkupKindPlainText, Value: msg},
+					Range:    &rng,
+				}, diags
+			}
+		case stmt.Type != nil:
+			rng := symbolRange(stmt.Type.Pos, len(stmt.Type.Name))
+			if contains(rng, pos) {
+				msg := stmt.Type.Name
+				if stmt.Type.Doc != "" {
+					msg += "\n\n" + stmt.Type.Doc
+				}
+				return protocol.Hover{
+					Contents: protocol.MarkupContent{Kind: protocol.MarkupKindPlainText, Value: msg},
+					Range:    &rng,
+				}, diags
+			}
 		}
 	}
 	return protocol.Hover{}, diags
@@ -313,6 +384,54 @@ func References(uri, src string, line, character int) ([]protocol.Location, []pr
 		}
 	}
 	return locs, diags
+}
+
+// DocumentHighlight returns highlight ranges for all occurrences of the symbol at the given position.
+func DocumentHighlight(uri, src string, line, character int) ([]protocol.DocumentHighlight, []protocol.Diagnostic) {
+	locs, diags := References(uri, src, line, character)
+	var highlights []protocol.DocumentHighlight
+	for _, loc := range locs {
+		kind := protocol.DocumentHighlightKindText
+		highlights = append(highlights, protocol.DocumentHighlight{Range: loc.Range, Kind: &kind})
+	}
+	return highlights, diags
+}
+
+// Rename computes text edits to rename the symbol at the given position in all documents.
+func Rename(docs map[string]string, uri string, line, character int, newName string) (protocol.WorkspaceEdit, []protocol.Diagnostic) {
+	src, ok := docs[uri]
+	if !ok {
+		return protocol.WorkspaceEdit{}, nil
+	}
+	syms, diags := DocumentSymbols(uri, src)
+	pos := protocol.Position{Line: uint32(line), Character: uint32(character)}
+	var name string
+	for _, s := range syms {
+		if contains(s.Range, pos) {
+			name = s.Name
+			break
+		}
+	}
+	if name == "" {
+		return protocol.WorkspaceEdit{}, diags
+	}
+	word := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\b`)
+	changes := make(map[protocol.DocumentUri][]protocol.TextEdit)
+	for u, text := range docs {
+		lines := strings.Split(text, "\n")
+		for i, lineText := range lines {
+			matches := word.FindAllStringIndex(lineText, -1)
+			for _, m := range matches {
+				start := protocol.Position{Line: uint32(i), Character: uint32(m[0])}
+				end := protocol.Position{Line: uint32(i), Character: uint32(m[1])}
+				changes[protocol.DocumentUri(u)] = append(changes[protocol.DocumentUri(u)], protocol.TextEdit{
+					Range:   protocol.Range{Start: start, End: end},
+					NewText: newName,
+				})
+			}
+		}
+	}
+	return protocol.WorkspaceEdit{Changes: changes}, diags
 }
 
 // WorkspaceSymbols returns symbols from all documents matching the given query.
