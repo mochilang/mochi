@@ -3193,6 +3193,19 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	}
 
 	if joinType == "inner" {
+		if ll, ok := fc.constListLen(q.Source); ok && ll == 0 {
+			empty := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: empty})
+			return
+		}
+		if rl, ok := fc.constListLen(join.Src); ok && rl == 0 {
+			empty := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: empty})
+			return
+		}
+	}
+
+	if joinType == "inner" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
 			if !fc.smallConstJoin(q.Source, join.Src) {
 				fc.compileHashJoin(q, dst, lk, rk)
@@ -3480,6 +3493,17 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 	wa, ok := whereAlias(q.Where)
 	whereLeft := ok && wa == q.Var
 	whereRight := ok && wa == join.Var
+
+	if ll, ok := fc.constListLen(q.Source); ok && ll == 0 {
+		empty := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: empty})
+		return
+	}
+	if rl, ok := fc.constListLen(join.Src); ok && rl == 0 {
+		empty := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: empty})
+		return
+	}
 
 	leftReg := fc.compileExpr(q.Source)
 	llist := fc.newReg()
@@ -3795,6 +3819,63 @@ func (fc *funcCompiler) compileHashJoinSide(q *parser.QueryExpr, dst int, leftKe
 func (fc *funcCompiler) compileHashLeftJoin(q *parser.QueryExpr, dst int, leftKey, rightKey *parser.Expr) {
 	join := q.Joins[0]
 
+	if ll, ok := fc.constListLen(q.Source); ok && ll == 0 {
+		empty := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: empty})
+		return
+	}
+	if rl, ok := fc.constListLen(join.Src); ok && rl == 0 {
+		// When right side is empty, result is the left list with nil join values
+		leftReg := fc.compileExpr(q.Source)
+		llist := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpIterPrep, A: llist, B: leftReg})
+		llen := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpLen, A: llen, B: llist})
+		li := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
+		lstart := len(fc.fn.Code)
+		lcond := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpLessInt, A: lcond, B: li, C: llen})
+		ljmp := len(fc.fn.Code)
+		fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: lcond})
+		lelem := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpIndex, A: lelem, B: llist, C: li})
+		lvar, ok := fc.vars[q.Var]
+		if !ok {
+			lvar = fc.newReg()
+			fc.vars[q.Var] = lvar
+		}
+		fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem})
+		rvar, ok := fc.vars[join.Var]
+		if !ok {
+			rvar = fc.newReg()
+			fc.vars[join.Var] = rvar
+		}
+		nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
+		if q.Where != nil {
+			w := fc.compileExpr(q.Where)
+			wskip := len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+			val := fc.compileExpr(q.Select)
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			fc.fn.Code[wskip].B = len(fc.fn.Code)
+		} else {
+			val := fc.compileExpr(q.Select)
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		}
+		one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(q.Pos, Instr{Op: OpAddInt, A: li, B: li, C: one})
+		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
+		lend := len(fc.fn.Code)
+		fc.fn.Code[ljmp].B = lend
+		return
+	}
+
 	wa, ok := whereAlias(q.Where)
 	whereRight := ok && wa == join.Var
 
@@ -3956,6 +4037,64 @@ func (fc *funcCompiler) compileHashLeftJoin(q *parser.QueryExpr, dst int, leftKe
 // is a simple equality between left and right expressions.
 func (fc *funcCompiler) compileHashRightJoin(q *parser.QueryExpr, dst int, leftKey, rightKey *parser.Expr) {
 	join := q.Joins[0]
+
+	if ll, ok := fc.constListLen(q.Source); ok && ll == 0 {
+		// When left side is empty, result is the right list with nil join values
+		rightReg := fc.compileExpr(join.Src)
+		rlist := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpIterPrep, A: rlist, B: rightReg})
+		rlen := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
+		ri := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
+		rstart := len(fc.fn.Code)
+		rcond := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpLessInt, A: rcond, B: ri, C: rlen})
+		rjmp := len(fc.fn.Code)
+		fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
+		relem := fc.newReg()
+		fc.emit(join.Pos, Instr{Op: OpIndex, A: relem, B: rlist, C: ri})
+		rvar, ok := fc.vars[join.Var]
+		if !ok {
+			rvar = fc.newReg()
+			fc.vars[join.Var] = rvar
+		}
+		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
+		lvar, ok := fc.vars[q.Var]
+		if !ok {
+			lvar = fc.newReg()
+			fc.vars[q.Var] = lvar
+		}
+		nilreg := fc.constReg(q.Pos, Value{Tag: ValueNull})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: nilreg})
+		if q.Where != nil {
+			w := fc.compileExpr(q.Where)
+			wskip := len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+			val := fc.compileExpr(q.Select)
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+			fc.fn.Code[wskip].B = len(fc.fn.Code)
+		} else {
+			val := fc.compileExpr(q.Select)
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		}
+		one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
+		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
+		rend := len(fc.fn.Code)
+		fc.fn.Code[rjmp].B = rend
+		return
+	}
+
+	if rl, ok := fc.constListLen(join.Src); ok && rl == 0 {
+		empty := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: empty})
+		return
+	}
 
 	wa, ok := whereAlias(q.Where)
 	whereLeft := ok && wa == q.Var
@@ -4249,6 +4388,23 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 // is a simple equality between left and right expressions.
 func (fc *funcCompiler) compileHashOuterJoin(q *parser.QueryExpr, dst int, leftKey, rightKey *parser.Expr) {
 	join := q.Joins[0]
+
+	if ll, ok1 := fc.constListLen(q.Source); ok1 && ll == 0 {
+		if rl, ok2 := fc.constListLen(join.Src); ok2 && rl == 0 {
+			empty := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: empty})
+			return
+		}
+		// Left is empty but right is not: behave like right join with nil left side
+		fc.compileHashRightJoin(q, dst, leftKey, rightKey)
+		return
+	}
+
+	if rl, ok := fc.constListLen(join.Src); ok && rl == 0 {
+		// Right side is empty but left is not: behave like left join with nil right side
+		fc.compileHashLeftJoin(q, dst, leftKey, rightKey)
+		return
+	}
 
 	wa, ok := whereAlias(q.Where)
 	whereRight := ok && wa == join.Var
