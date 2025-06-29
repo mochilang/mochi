@@ -79,4 +79,3 @@ L2:
 L1:
   // return match t {
   Return       r1
-  Return       r0

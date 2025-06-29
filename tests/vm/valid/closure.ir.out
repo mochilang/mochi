@@ -14,7 +14,6 @@ func makeAdder (regs=3)
   Move         r1, r0
   MakeClosure  r2, fn2, 1, r1
   Return       r2
-  Return       r0
 
   // return fun(x: int): int => x + n
 func fn2 (regs=3)
