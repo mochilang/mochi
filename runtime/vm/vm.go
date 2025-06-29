@@ -4174,8 +4174,12 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 		pairs := make([]int, len(exprs)*2)
 		for i, name := range fieldNames {
 			k := fc.constReg(exprs[i].Pos, Value{Tag: ValueStr, Str: name})
-			pairs[i*2] = k
-			pairs[i*2+1] = regs[i]
+			kr := fc.newReg()
+			fc.emit(exprs[i].Pos, Instr{Op: OpMove, A: kr, B: k})
+			vr := fc.newReg()
+			fc.emit(exprs[i].Pos, Instr{Op: OpMove, A: vr, B: regs[i]})
+			pairs[i*2] = kr
+			pairs[i*2+1] = vr
 		}
 		key = fc.newReg()
 		start := pairs[0]
@@ -4206,9 +4210,15 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 			pairsGrp = append(pairsGrp, k, regs[i])
 		}
 	}
+	contig := make([]int, len(pairsGrp))
+	for i, r := range pairsGrp {
+		nr := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMove, A: nr, B: r})
+		contig[i] = nr
+	}
 	grp := fc.newReg()
-	startGrp := pairsGrp[0]
-	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: grp, B: len(pairsGrp) / 2, C: startGrp})
+	startGrp := contig[0]
+	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: grp, B: len(contig) / 2, C: startGrp})
 	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: gmap, B: keyStr, C: grp})
 	tmp := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: glist, C: grp})
