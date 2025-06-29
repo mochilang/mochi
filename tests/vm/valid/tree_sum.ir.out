@@ -43,9 +43,11 @@ L0:
   Index        r14, r0, r13
   Const        r15, "right"
   Index        r16, r0, r15
-  Call         r18, sum_tree, r12
+  Move         r17, r12
+  Call         r18, sum_tree, r17
   Add          r19, r18, r14
-  Call         r21, sum_tree, r16
+  Move         r20, r16
+  Call         r21, sum_tree, r20
   Add          r1, r19, r21
   Jump         L1
 L2:

@@ -1592,12 +1592,6 @@ type funcCompiler struct {
 	constCache map[string]int
 }
 
-func (fc *funcCompiler) freshConst(pos lexer.Position, v Value) int {
-	r := fc.newReg()
-	fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
-	return r
-}
-
 func (fc *funcCompiler) pushScope() {
 	copyMap := make(map[string]int, len(fc.vars))
 	for k, v := range fc.vars {
@@ -2513,12 +2507,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 
 		regs := make([]int, len(p.Struct.Fields)*2+2)
 
-		nameKey := fc.freshConst(p.Pos, Value{Tag: ValueStr, Str: "__name"})
-		nameVal := fc.freshConst(p.Pos, Value{Tag: ValueStr, Str: p.Struct.Name})
+		nameKey := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "__name"})
+		nameVal := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: p.Struct.Name})
 		regs[0] = nameKey
 		regs[1] = nameVal
 		for i, f := range p.Struct.Fields {
-			kreg := fc.freshConst(f.Pos, Value{Tag: ValueStr, Str: f.Name})
+			kreg := fc.constReg(f.Pos, Value{Tag: ValueStr, Str: f.Name})
 			vreg := fc.newReg()
 			fc.emit(f.Pos, Instr{Op: OpMove, A: vreg, B: vals[i]})
 			regs[i*2+2] = kreg
@@ -2541,7 +2535,7 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		tmp := make([]struct{ k, v int }, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			if name, ok := identName(it.Key); ok {
-				tmp[i].k = fc.freshConst(it.Pos, Value{Tag: ValueStr, Str: name})
+				tmp[i].k = fc.constReg(it.Pos, Value{Tag: ValueStr, Str: name})
 			} else {
 				tmp[i].k = fc.compileExpr(it.Key)
 			}
@@ -3489,11 +3483,8 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		if whereRight {
 			fc.fn.Code[wskip].B = len(fc.fn.Code)
 		}
-		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpi := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmpi, B: ri, C: one})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmpi})
+               one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+               fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		rend := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = rend
@@ -3563,22 +3554,16 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		} else {
 			appendSelect()
 		}
-		oneM := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: oneM, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpM := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmpM, B: mi, C: oneM})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: mi, B: tmpM})
-		fc.emit(q.Pos, Instr{Op: OpJump, A: mstart})
+               oneM := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+               fc.emit(q.Pos, Instr{Op: OpAddInt, A: mi, B: mi, C: oneM})
+               fc.emit(q.Pos, Instr{Op: OpJump, A: mstart})
 		mend := len(fc.fn.Code)
 		fc.fn.Code[mjmp].B = mend
 		fc.fn.Code[skipMatches].B = len(fc.fn.Code)
 
-		oneL := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: oneL, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpL := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmpL, B: li, C: oneL})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmpL})
-		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
+               oneL := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+               fc.emit(q.Pos, Instr{Op: OpAddInt, A: li, B: li, C: oneL})
+               fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 		lend := len(fc.fn.Code)
 		fc.fn.Code[ljmp].B = lend
 	}
@@ -3635,12 +3620,9 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		if whereLeft {
 			fc.fn.Code[wskip].B = len(fc.fn.Code)
 		}
-		one := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpi := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmpi, B: li, C: one})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmpi})
-		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
+               one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+               fc.emit(q.Pos, Instr{Op: OpAddInt, A: li, B: li, C: one})
+               fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 		lend := len(fc.fn.Code)
 		fc.fn.Code[ljmp].B = lend
 
@@ -3709,21 +3691,15 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		} else {
 			appendSelect()
 		}
-		oneM := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: oneM, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpM := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmpM, B: mi, C: oneM})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: mi, B: tmpM})
+               oneM := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+               fc.emit(join.Pos, Instr{Op: OpAddInt, A: mi, B: mi, C: oneM})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: mstart})
 		mend := len(fc.fn.Code)
 		fc.fn.Code[mjmp].B = mend
 		fc.fn.Code[skipMatches].B = len(fc.fn.Code)
 
-		oneR := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: oneR, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpR := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmpR, B: ri, C: oneR})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmpR})
+               oneR := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+               fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: oneR})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		rend := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = rend
