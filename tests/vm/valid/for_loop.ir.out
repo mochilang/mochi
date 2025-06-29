@@ -1,9 +1,16 @@
-func main (regs=6)
+func main (regs=5)
   // for i in 1..4 {
   Const        r0, 1
-  Move         r2, r0
+  Const        r1, 4
+  Const        r2, 1
+L1:
+  Less         r3, r2, r1
+  JumpIfFalse  r3, L0
   // print(i)
   Print        r2
+  Const        r4, 1
   // for i in 1..4 {
-  Jump         L0
+  AddInt       r2, r2, r4
+  Jump         L1
+L0:
   Return       r0

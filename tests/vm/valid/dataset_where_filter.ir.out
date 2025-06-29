@@ -1,7 +1,7 @@
-func main (regs=57)
+func main (regs=54)
   // let people = [
   Const        r0, [{"age": 30, "name": "Alice"}, {"age": 15, "name": "Bob"}, {"age": 65, "name": "Charlie"}, {"age": 45, "name": "Diana"}]
-  Move         r1, r0
+  Const        r1, [{"age": 30, "name": "Alice"}, {"age": 15, "name": "Bob"}, {"age": 65, "name": "Charlie"}, {"age": 45, "name": "Diana"}]
   // let adults = from person in people
   Const        r2, []
   IterPrep     r3, r1
@@ -18,52 +18,67 @@ L2:
   Const        r11, 18
   LessEq       r12, r11, r10
   JumpIfFalse  r12, L1
+  // name: person.name,
+  Const        r14, "name"
+  Index        r15, r8, r14
+  // age: person.age,
+  Const        r17, "age"
+  Index        r18, r8, r17
+  // is_senior: person.age >= 60
+  Const        r20, "age"
+  Index        r21, r8, r20
+  Const        r22, 60
+  LessEq       r23, r22, r21
+  // name: person.name,
+  Const        r24, "name"
+  Move         r25, r15
+  // age: person.age,
+  Const        r26, "age"
+  Move         r27, r18
+  // is_senior: person.age >= 60
+  Const        r28, "is_senior"
+  Move         r29, r23
+  // select {
+  MakeMap      r30, 3, r24
   // let adults = from person in people
   Append       r31, r2, r30
   Move         r2, r31
-  Const        r33, 1
-  Move         r5, r33
+L1:
+  Const        r32, 1
+  AddInt       r5, r5, r32
   Jump         L2
 L0:
-  Move         r34, r2
+  Move         r33, r2
   // print("--- Adults ---")
-  Const        r35, "--- Adults ---"
-  Print        r35
+  Const        r34, "--- Adults ---"
+  Print        r34
   // for person in adults {
-  IterPrep     r36, r34
-  Len          r37, r36
-  Const        r38, 0
-L6:
-  Less         r39, r38, r37
-  JumpIfFalse  r39, L3
-  Index        r40, r36, r38
-  Move         r8, r40
-  // print(person.name, "is", person.age,
-  Const        r45, "name"
-  Index        r46, r8, r45
-  Move         r41, r46
-  Const        r47, "is"
-  Move         r42, r47
-  Const        r48, "age"
-  Index        r49, r8, r48
-  Move         r43, r49
-  // if person.is_senior { " (senior)" } else { "" })
-  Const        r50, "is_senior"
-  Index        r51, r8, r50
-  JumpIfFalse  r51, L4
-  Const        r52, " (senior)"
-  Move         r53, r52
-  Jump         L5
-L4:
-  Const        r54, ""
-  Move         r53, r54
+  IterPrep     r35, r33
+  Len          r36, r35
+  Const        r37, 0
 L5:
-  Move         r44, r53
+  Less         r38, r37, r36
+  JumpIfFalse  r38, L3
+  Index        r39, r35, r37
+  Move         r8, r39
   // print(person.name, "is", person.age,
-  PrintN       r41, 4, r41
+  Const        r44, "name"
+  Index        r45, r8, r44
+  Move         r40, r45
+  Const        r41, "is"
+  Const        r47, "age"
+  Index        r48, r8, r47
+  Move         r42, r48
+  // if person.is_senior { " (senior)" } else { "" })
+  Const        r49, "is_senior"
+  Index        r50, r8, r49
+  JumpIfFalse  r50, L4
+L4:
+  Const        r43, ""
+  // print(person.name, "is", person.age,
+  PrintN       r40, 4, r40
   // for person in adults {
-  Const        r56, 1
-  Move         r38, r56
-  Jump         L6
+  AddInt       r37, r37, r32
+  Jump         L5
 L3:
   Return       r0
