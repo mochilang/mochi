@@ -1,4 +1,4 @@
-func main (regs=72)
+func main (regs=74)
   // let customers = [
   Const        r0, [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
   // let orders = [
@@ -26,7 +26,7 @@ L5:
   Len          r15, r14
   Const        r16, 0
 L4:
-  Less         r17, r16, r15
+  LessInt      r17, r16, r15
   JumpIfFalse  r17, L1
   Index        r19, r14, r16
   Const        r20, "customerId"
@@ -78,32 +78,39 @@ L0:
 L7:
   LessInt      r48, r45, r47
   JumpIfFalse  r48, L6
+  Index        r50, r7, r45
+  // name: g.key,
+  Const        r51, "name"
+  Index        r52, r50, r4
+  // count: count(g)
+  Const        r53, "count"
+  Count        r54, r50
   // select {
-  MakeMap      r55, 2, r3
+  MakeMap      r57, 2, r51
   // let stats = from o in orders
-  Append       r2, r2, r55
+  Append       r2, r2, r57
   AddInt       r45, r45, r44
   Jump         L7
 L6:
   // print("--- Orders per customer ---")
-  Const        r57, "--- Orders per customer ---"
-  Print        r57
+  Const        r59, "--- Orders per customer ---"
+  Print        r59
   // for s in stats {
-  IterPrep     r58, r2
-  Len          r59, r58
-  Const        r60, 0
+  IterPrep     r60, r2
+  Len          r61, r60
+  Const        r62, 0
 L9:
-  Less         r61, r60, r59
-  JumpIfFalse  r61, L8
-  Index        r63, r58, r60
+  Less         r63, r62, r61
+  JumpIfFalse  r63, L8
+  Index        r65, r60, r62
   // print(s.name, "orders:", s.count)
-  Index        r64, r63, r3
-  Const        r65, "orders:"
-  Index        r66, r63, r5
-  PrintN       r64, 3, r64
+  Index        r66, r65, r3
+  Const        r67, "orders:"
+  Index        r68, r65, r5
+  PrintN       r66, 3, r66
   // for s in stats {
-  Const        r70, 1
-  Add          r60, r60, r70
+  Const        r72, 1
+  Add          r62, r62, r72
   Jump         L9
 L8:
   Return       r0

@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/alecthomas/participle/v2/lexer"
-
 	"mochi/parser"
 	"mochi/runtime/data"
 	mhttp "mochi/runtime/http"
@@ -3319,8 +3318,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(q.Pos, Instr{Op: OpMove, A: check, B: matched})
 		skipAdd := len(fc.fn.Code)
 		fc.emit(q.Pos, Instr{Op: OpJumpIfTrue, A: check})
-		nilreg := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
+		nilreg := fc.constReg(q.Pos, Value{Tag: ValueNull})
 		fc.emit(q.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
 		if q.Where != nil {
 			w := fc.compileExpr(q.Where)
@@ -3383,8 +3381,7 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		fc.emit(join.Pos, Instr{Op: OpMove, A: check, B: matched})
 		skipAdd := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
-		nilreg := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
+		nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: lvar, B: nilreg})
 		if q.Where != nil {
 			w := fc.compileExpr(q.Where)
@@ -3427,8 +3424,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 	rlen := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 
-	zero := fc.newReg()
-	fc.emit(q.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: ValueInt, Int: 0}})
+	zero := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
 	emptyLeft := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpEqualInt, A: emptyLeft, B: llen, C: zero})
 	jmpEmptyLeft := len(fc.fn.Code)
@@ -3452,7 +3448,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
 		rstart := len(fc.fn.Code)
 		rcond := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
+		fc.emit(join.Pos, Instr{Op: OpLessInt, A: rcond, B: ri, C: rlen})
 		rjmp := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
 		relem := fc.newReg()
@@ -3472,8 +3468,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		key := fc.compileExpr(rightKey)
 		list := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpIndex, A: list, B: rmap, C: key})
-		nilreg := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
+		nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
 		has := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpNotEqual, A: has, B: list, C: nilreg})
 		skip := len(fc.fn.Code)
@@ -3489,11 +3484,8 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		if whereRight {
 			fc.fn.Code[wskip].B = len(fc.fn.Code)
 		}
-		one := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpi := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmpi, B: ri, C: one})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmpi})
+		one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		rend := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = rend
@@ -3522,7 +3514,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
 		lstart := len(fc.fn.Code)
 		lcond := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpLess, A: lcond, B: li, C: llen})
+		fc.emit(q.Pos, Instr{Op: OpLessInt, A: lcond, B: li, C: llen})
 		ljmp := len(fc.fn.Code)
 		fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: lcond})
 		lelem := fc.newReg()
@@ -3536,8 +3528,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		lkey := fc.compileExpr(leftKey)
 		matches := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpIndex, A: matches, B: rmap, C: lkey})
-		nil2 := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: nil2, Val: Value{Tag: ValueNull}})
+		nil2 := fc.constReg(q.Pos, Value{Tag: ValueNull})
 		has2 := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpNotEqual, A: has2, B: matches, C: nil2})
 		skipMatches := len(fc.fn.Code)
@@ -3548,7 +3539,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		fc.emit(q.Pos, Instr{Op: OpConst, A: mi, Val: Value{Tag: ValueInt, Int: 0}})
 		mstart := len(fc.fn.Code)
 		mcond := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpLess, A: mcond, B: mi, C: mlen})
+		fc.emit(q.Pos, Instr{Op: OpLessInt, A: mcond, B: mi, C: mlen})
 		mjmp := len(fc.fn.Code)
 		fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: mcond})
 		melem := fc.newReg()
@@ -3563,21 +3554,15 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		} else {
 			appendSelect()
 		}
-		oneM := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: oneM, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpM := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmpM, B: mi, C: oneM})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: mi, B: tmpM})
+		oneM := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(q.Pos, Instr{Op: OpAddInt, A: mi, B: mi, C: oneM})
 		fc.emit(q.Pos, Instr{Op: OpJump, A: mstart})
 		mend := len(fc.fn.Code)
 		fc.fn.Code[mjmp].B = mend
 		fc.fn.Code[skipMatches].B = len(fc.fn.Code)
 
-		oneL := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: oneL, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpL := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmpL, B: li, C: oneL})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmpL})
+		oneL := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(q.Pos, Instr{Op: OpAddInt, A: li, B: li, C: oneL})
 		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 		lend := len(fc.fn.Code)
 		fc.fn.Code[ljmp].B = lend
@@ -3598,7 +3583,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
 		lstart := len(fc.fn.Code)
 		lcond := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpLess, A: lcond, B: li, C: llen})
+		fc.emit(q.Pos, Instr{Op: OpLessInt, A: lcond, B: li, C: llen})
 		ljmp := len(fc.fn.Code)
 		fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: lcond})
 		lelem := fc.newReg()
@@ -3618,8 +3603,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		key := fc.compileExpr(leftKey)
 		list := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpIndex, A: list, B: lmap, C: key})
-		nilreg := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
+		nilreg := fc.constReg(q.Pos, Value{Tag: ValueNull})
 		has := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpNotEqual, A: has, B: list, C: nilreg})
 		skip := len(fc.fn.Code)
@@ -3635,11 +3619,8 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		if whereLeft {
 			fc.fn.Code[wskip].B = len(fc.fn.Code)
 		}
-		one := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpConst, A: one, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpi := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpAdd, A: tmpi, B: li, C: one})
-		fc.emit(q.Pos, Instr{Op: OpMove, A: li, B: tmpi})
+		one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(q.Pos, Instr{Op: OpAddInt, A: li, B: li, C: one})
 		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 		lend := len(fc.fn.Code)
 		fc.fn.Code[ljmp].B = lend
@@ -3668,7 +3649,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
 		rstart := len(fc.fn.Code)
 		rcond := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
+		fc.emit(join.Pos, Instr{Op: OpLessInt, A: rcond, B: ri, C: rlen})
 		rjmp := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
 		relem := fc.newReg()
@@ -3682,8 +3663,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		rkey := fc.compileExpr(rightKey)
 		matches := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpIndex, A: matches, B: lmap, C: rkey})
-		nil2 := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: nil2, Val: Value{Tag: ValueNull}})
+		nil2 := fc.constReg(join.Pos, Value{Tag: ValueNull})
 		has2 := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpNotEqual, A: has2, B: matches, C: nil2})
 		skipMatches := len(fc.fn.Code)
@@ -3694,7 +3674,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		fc.emit(join.Pos, Instr{Op: OpConst, A: mi, Val: Value{Tag: ValueInt, Int: 0}})
 		mstart := len(fc.fn.Code)
 		mcond := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpLess, A: mcond, B: mi, C: mlen})
+		fc.emit(join.Pos, Instr{Op: OpLessInt, A: mcond, B: mi, C: mlen})
 		mjmp := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: mcond})
 		melem := fc.newReg()
@@ -3709,21 +3689,15 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		} else {
 			appendSelect()
 		}
-		oneM := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: oneM, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpM := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmpM, B: mi, C: oneM})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: mi, B: tmpM})
+		oneM := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: mi, B: mi, C: oneM})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: mstart})
 		mend := len(fc.fn.Code)
 		fc.fn.Code[mjmp].B = mend
 		fc.fn.Code[skipMatches].B = len(fc.fn.Code)
 
-		oneR := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: oneR, Val: Value{Tag: ValueInt, Int: 1}})
-		tmpR := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpAdd, A: tmpR, B: ri, C: oneR})
-		fc.emit(join.Pos, Instr{Op: OpMove, A: ri, B: tmpR})
+		oneR := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+		fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: oneR})
 		fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 		rend := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = rend
@@ -3843,8 +3817,7 @@ func (fc *funcCompiler) compileJoinQueryRight(q *parser.QueryExpr, dst int) {
 	fc.emit(join.Pos, Instr{Op: OpMove, A: check, B: matched})
 	skipAdd := len(fc.fn.Code)
 	fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
-	nilreg := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
+	nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
 	fc.emit(join.Pos, Instr{Op: OpMove, A: lvar, B: nilreg})
 	if q.Where != nil {
 		w := fc.compileExpr(q.Where)
@@ -4207,7 +4180,7 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
 	rstart := len(fc.fn.Code)
 	rcond := fc.newReg()
-	fc.emit(join.Pos, Instr{Op: OpLess, A: rcond, B: ri, C: rlen})
+	fc.emit(join.Pos, Instr{Op: OpLessInt, A: rcond, B: ri, C: rlen})
 	rjmp := len(fc.fn.Code)
 	fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
 	relem := fc.newReg()
@@ -4244,8 +4217,7 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 		fc.emit(join.Pos, Instr{Op: OpMove, A: check, B: matched})
 		skipAdd := len(fc.fn.Code)
 		fc.emit(join.Pos, Instr{Op: OpJumpIfTrue, A: check})
-		nilreg := fc.newReg()
-		fc.emit(join.Pos, Instr{Op: OpConst, A: nilreg, Val: Value{Tag: ValueNull}})
+		nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
 		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
 		fc.compileGroupJoinAny(q, gmap, glist, idx+1)
 		fc.fn.Code[skipAdd].B = len(fc.fn.Code)
@@ -4979,11 +4951,281 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 }
 
 func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {
+	if e == nil {
+		return Value{}, false
+	}
 	if lit := extractLiteral(e); lit != nil {
 		return literalToValue(lit)
 	}
 	if call, ok := callPattern(e); ok {
-		return fc.foldCallValue(call)
+		if v, ok := fc.foldCallValue(call); ok {
+			return v, true
+		}
+	}
+	return fc.evalConstBinary(e.Binary)
+}
+
+func (fc *funcCompiler) evalConstBinary(b *parser.BinaryExpr) (Value, bool) {
+	left, ok := fc.evalConstUnary(b.Left)
+	if !ok {
+		return Value{}, false
+	}
+	for _, op := range b.Right {
+		right, ok := fc.evalConstPostfix(op.Right)
+		if !ok {
+			return Value{}, false
+		}
+		if v, ok := applyBinaryConst(op.Op, left, right); ok {
+			left = v
+		} else {
+			return Value{}, false
+		}
+	}
+	return left, true
+}
+
+func (fc *funcCompiler) evalConstUnary(u *parser.Unary) (Value, bool) {
+	v, ok := fc.evalConstPostfix(u.Value)
+	if !ok {
+		return Value{}, false
+	}
+	for i := len(u.Ops) - 1; i >= 0; i-- {
+		if nv, ok := applyUnaryConst(u.Ops[i], v); ok {
+			v = nv
+		} else {
+			return Value{}, false
+		}
+	}
+	return v, true
+}
+
+func (fc *funcCompiler) evalConstPostfix(p *parser.PostfixExpr) (Value, bool) {
+	v, ok := fc.evalConstPrimary(p.Target)
+	if !ok || len(p.Ops) != 0 {
+		return Value{}, false
+	}
+	return v, true
+}
+
+func (fc *funcCompiler) evalConstPrimary(p *parser.Primary) (Value, bool) {
+	switch {
+	case p.Lit != nil:
+		return literalToValue(p.Lit)
+	case p.Group != nil:
+		return fc.evalConstExpr(p.Group)
+	case p.List != nil:
+		vals := make([]Value, len(p.List.Elems))
+		for i, e := range p.List.Elems {
+			v, ok := fc.evalConstExpr(e)
+			if !ok {
+				return Value{}, false
+			}
+			vals[i] = v
+		}
+		return Value{Tag: ValueList, List: vals}, true
+	case p.Map != nil:
+		vals := make(map[string]Value, len(p.Map.Items))
+		for _, it := range p.Map.Items {
+			keyVal, ok := fc.evalConstExpr(it.Key)
+			if !ok {
+				return Value{}, false
+			}
+			var key string
+			switch keyVal.Tag {
+			case ValueStr:
+				key = keyVal.Str
+			case ValueInt:
+				key = fmt.Sprintf("%d", keyVal.Int)
+			default:
+				return Value{}, false
+			}
+			v, ok := fc.evalConstExpr(it.Value)
+			if !ok {
+				return Value{}, false
+			}
+			vals[key] = v
+		}
+		return Value{Tag: ValueMap, Map: vals}, true
+	case p.Call != nil:
+		return fc.foldCallValue(p.Call)
+	case p.Selector != nil:
+		if len(p.Selector.Tail) == 0 {
+			if val, err := fc.comp.env.GetValue(p.Selector.Root); err == nil {
+				return anyToValue(val), true
+			}
+		}
+		return Value{}, false
+	default:
+		return Value{}, false
+	}
+}
+
+func applyUnaryConst(op string, v Value) (Value, bool) {
+	switch op {
+	case "-":
+		switch v.Tag {
+		case ValueInt:
+			return Value{Tag: ValueInt, Int: -v.Int}, true
+		case ValueFloat:
+			return Value{Tag: ValueFloat, Float: -v.Float}, true
+		default:
+			return Value{}, false
+		}
+	case "!":
+		if v.Tag == ValueBool {
+			return Value{Tag: ValueBool, Bool: !v.Bool}, true
+		}
+		return Value{}, false
+	default:
+		return Value{}, false
+	}
+}
+
+func applyBinaryConst(op string, a, b Value) (Value, bool) {
+	switch op {
+	case "+":
+		if a.Tag == ValueStr && b.Tag == ValueStr {
+			return Value{Tag: ValueStr, Str: a.Str + b.Str}, true
+		}
+		if a.Tag == ValueFloat || b.Tag == ValueFloat {
+			return Value{Tag: ValueFloat, Float: toFloat(a) + toFloat(b)}, true
+		}
+		if a.Tag == ValueInt && b.Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: a.Int + b.Int}, true
+		}
+	case "-":
+		if a.Tag == ValueFloat || b.Tag == ValueFloat {
+			return Value{Tag: ValueFloat, Float: toFloat(a) - toFloat(b)}, true
+		}
+		if a.Tag == ValueInt && b.Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: a.Int - b.Int}, true
+		}
+	case "*":
+		if a.Tag == ValueFloat || b.Tag == ValueFloat {
+			return Value{Tag: ValueFloat, Float: toFloat(a) * toFloat(b)}, true
+		}
+		if a.Tag == ValueInt && b.Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: a.Int * b.Int}, true
+		}
+	case "/":
+		if (b.Tag == ValueInt && b.Int == 0) || (b.Tag == ValueFloat && b.Float == 0) {
+			return Value{}, false
+		}
+		if a.Tag == ValueFloat || b.Tag == ValueFloat {
+			return Value{Tag: ValueFloat, Float: toFloat(a) / toFloat(b)}, true
+		}
+		if a.Tag == ValueInt && b.Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: a.Int / b.Int}, true
+		}
+	case "%":
+		if (b.Tag == ValueInt && b.Int == 0) || (b.Tag == ValueFloat && b.Float == 0) {
+			return Value{}, false
+		}
+		if a.Tag == ValueFloat || b.Tag == ValueFloat {
+			return Value{Tag: ValueFloat, Float: math.Mod(toFloat(a), toFloat(b))}, true
+		}
+		if a.Tag == ValueInt && b.Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: a.Int % b.Int}, true
+		}
+	case "==":
+		return Value{Tag: ValueBool, Bool: valuesEqual(a, b)}, true
+	case "!=":
+		return Value{Tag: ValueBool, Bool: !valuesEqual(a, b)}, true
+	case "<":
+		return Value{Tag: ValueBool, Bool: valueLess(a, b)}, true
+	case "<=":
+		return Value{Tag: ValueBool, Bool: valueLess(a, b) || valuesEqual(a, b)}, true
+	case ">":
+		return Value{Tag: ValueBool, Bool: valueLess(b, a)}, true
+	case ">=":
+		return Value{Tag: ValueBool, Bool: valueLess(b, a) || valuesEqual(a, b)}, true
+	case "&&":
+		if a.Tag == ValueBool && b.Tag == ValueBool {
+			return Value{Tag: ValueBool, Bool: a.Bool && b.Bool}, true
+		}
+	case "||":
+		if a.Tag == ValueBool && b.Tag == ValueBool {
+			return Value{Tag: ValueBool, Bool: a.Bool || b.Bool}, true
+		}
+	case "in":
+		switch b.Tag {
+		case ValueList:
+			for _, item := range b.List {
+				if valuesEqual(item, a) {
+					return Value{Tag: ValueBool, Bool: true}, true
+				}
+			}
+			return Value{Tag: ValueBool, Bool: false}, true
+		case ValueMap:
+			key := fmt.Sprint(valueToAny(a))
+			_, ok := b.Map[key]
+			return Value{Tag: ValueBool, Bool: ok}, true
+		case ValueStr:
+			if a.Tag == ValueStr {
+				return Value{Tag: ValueBool, Bool: strings.Contains(b.Str, a.Str)}, true
+			}
+		}
+	case "union_all":
+		if a.Tag == ValueList && b.Tag == ValueList {
+			out := append(append([]Value{}, a.List...), b.List...)
+			return Value{Tag: ValueList, List: out}, true
+		}
+	case "union":
+		if a.Tag == ValueList && b.Tag == ValueList {
+			merged := append([]Value{}, a.List...)
+			for _, rv := range b.List {
+				exists := false
+				for _, lv := range merged {
+					if valuesEqual(lv, rv) {
+						exists = true
+						break
+					}
+				}
+				if !exists {
+					merged = append(merged, rv)
+				}
+			}
+			return Value{Tag: ValueList, List: merged}, true
+		}
+	case "except":
+		if a.Tag == ValueList && b.Tag == ValueList {
+			diff := []Value{}
+			for _, lv := range a.List {
+				found := false
+				for _, rv := range b.List {
+					if valuesEqual(lv, rv) {
+						found = true
+						break
+					}
+				}
+				if !found {
+					diff = append(diff, lv)
+				}
+			}
+			return Value{Tag: ValueList, List: diff}, true
+		}
+	case "intersect":
+		if a.Tag == ValueList && b.Tag == ValueList {
+			inter := []Value{}
+			for _, lv := range a.List {
+				for _, rv := range b.List {
+					if valuesEqual(lv, rv) {
+						exists := false
+						for _, iv := range inter {
+							if valuesEqual(iv, lv) {
+								exists = true
+								break
+							}
+						}
+						if !exists {
+							inter = append(inter, lv)
+						}
+						break
+					}
+				}
+			}
+			return Value{Tag: ValueList, List: inter}, true
+		}
 	}
 	return Value{}, false
 }

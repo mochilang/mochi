@@ -1,4 +1,4 @@
-func main (regs=37)
+func main (regs=39)
   // let nums = [1, 2, 3]
   Const        r0, [1, 2, 3]
   // let letters = ["A", "B"]
@@ -29,37 +29,42 @@ L3:
 L2:
   LessInt      r18, r17, r16
   JumpIfFalse  r18, L1
+  Index        r20, r15, r17
   // select { n: n, l: l }
-  MakeMap      r23, 2, r3
+  Const        r21, "n"
+  Const        r22, "l"
+  Move         r23, r11
+  Move         r24, r20
+  MakeMap      r25, 2, r21
   // let pairs = from n in nums
-  Append       r2, r2, r23
+  Append       r2, r2, r25
   // from l in letters
-  Const        r25, 1
-  AddInt       r17, r17, r25
+  Const        r27, 1
+  AddInt       r17, r17, r27
   Jump         L2
 L1:
   // let pairs = from n in nums
-  AddInt       r7, r7, r25
+  AddInt       r7, r7, r27
   Jump         L3
 L0:
   // print("--- Even pairs ---")
-  Const        r26, "--- Even pairs ---"
-  Print        r26
+  Const        r28, "--- Even pairs ---"
+  Print        r28
   // for p in pairs {
-  IterPrep     r27, r2
-  Len          r28, r27
-  Const        r29, 0
+  IterPrep     r29, r2
+  Len          r30, r29
+  Const        r31, 0
 L5:
-  Less         r30, r29, r28
-  JumpIfFalse  r30, L4
-  Index        r32, r27, r29
+  Less         r32, r31, r30
+  JumpIfFalse  r32, L4
+  Index        r34, r29, r31
   // print(p.n, p.l)
-  Index        r33, r32, r3
-  Index        r34, r32, r4
-  Print2       r33, r34
+  Index        r35, r34, r3
+  Index        r36, r34, r4
+  Print2       r35, r36
   // for p in pairs {
-  Const        r35, 1
-  Add          r29, r29, r35
+  Const        r37, 1
+  Add          r31, r31, r37
   Jump         L5
 L4:
   Return       r0

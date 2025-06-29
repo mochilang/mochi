@@ -11,7 +11,8 @@ func main (regs=6)
   // fun makeAdder(n: int): fun(int): int {
 func makeAdder (regs=3)
   // return fun(x: int): int => x + n
-  MakeClosure  r2, fn2, 0, r0
+  Move         r1, r0
+  MakeClosure  r2, fn2, 1, r1
   Return       r2
   Return       r0
 
