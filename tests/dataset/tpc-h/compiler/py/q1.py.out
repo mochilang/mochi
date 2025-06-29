@@ -77,12 +77,12 @@ def main():
             {
                 "returnflag": g.key.returnflag,
                 "linestatus": g.key.linestatus,
-                "sum_qty": sum([x["l_quantity"] for x in g]),
-                "sum_base_price": sum([x["l_extendedprice"] for x in g]),
-                "sum_disc_price": sum(
+                "sum_qty": _sum([x["l_quantity"] for x in g]),
+                "sum_base_price": _sum([x["l_extendedprice"] for x in g]),
+                "sum_disc_price": _sum(
                     [(x["l_extendedprice"] * ((1 - x["l_discount"]))) for x in g]
                 ),
-                "sum_charge": sum(
+                "sum_charge": _sum(
                     [
                         (
                             (x["l_extendedprice"] * ((1 - x["l_discount"])))
@@ -229,6 +229,14 @@ def _query(src, joins, opts):
     for r in items:
         res.append(opts["select"](*r))
     return res
+
+
+def _sum(v):
+    if hasattr(v, "Items"):
+        v = v.Items
+    if not isinstance(v, list):
+        raise Exception("sum() expects list or group")
+    return sum(v)
 
 
 if __name__ == "__main__":
