@@ -1,0 +1,34 @@
+func main (vars=7)
+  PushConst    [{id:1,kind:production companies},{id:2,kind:distributors}]
+  Store        0
+  PushConst    [{id:10,info:top 250 rank},{id:20,info:bottom 10 rank}]
+  Store        1
+  PushConst    [{id:100,production_year:1995,title:Good Movie},{id:200,production_year:2000,title:Bad Movie}]
+  Store        2
+  PushConst    [{company_type_id:1,movie_id:100,note:ACME (co-production)},{company_type_id:1,movie_id:200,note:MGM (as Metro-Goldwyn-Mayer Pictures)}]
+  Store        3
+  PushConst    [{info_type_id:10,movie_id:100},{info_type_id:20,movie_id:200}]
+  Store        4
+  PushConst    [{note:ACME (co-production),title:Good Movie,year:1995}]
+  Store        5
+  PushConst    production_note
+  PushConst    [ACME (co-production)]
+  Call         min 1
+  PushConst    movie_title
+  PushConst    [Good Movie]
+  Call         min 1
+  PushConst    movie_year
+  PushConst    [1995]
+  Call         min 1
+  MakeMap      3
+  Store        6
+  Load         6
+  MakeList     1
+  Call         json 1
+  Pop          
+  Load         6
+  PushConst    {movie_title:Good Movie,movie_year:1995,production_note:ACME (co-production)}
+  Equal        
+  Expect       
+  Return       0
+

@@ -1,0 +1,5 @@
+func main (vars=0)
+  PushConst    hello
+  Call         print 1
+  Pop          
+  Return       0

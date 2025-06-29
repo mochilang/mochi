@@ -1,0 +1,18 @@
+func main (vars=1)
+  PushConst    1
+  Store        0
+L1:
+  Load         0
+  PushConst    4
+  Less         
+  JumpIfFalse  L0
+  Load         0
+  Call         print 1
+  Pop          
+  Load         0
+  PushConst    1
+  Add          
+  Store        0
+  Jump         2
+L0:
+  Return       0
