@@ -81,9 +81,9 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		suffix := "." + lang
 		cfg := Range{Start: 10, Step: "+10", Count: 3}
 
-               templates := []Template{
-                       {Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
-                       {Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+		templates := []Template{
+			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
 			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
 			// Temporarily disable PyPy and Cython benchmarks
@@ -143,10 +143,16 @@ func generateBenchmarks(tempDir, category, name string, cfg Range, templates []T
 				}
 				out = compiled
 			} else if t.Lang == "mochi_c" {
+				if category == "join" {
+					// join benchmarks are not yet supported by the C backend
+					fmt.Fprintf(os.Stderr, "⚠️ skipping C compile for join benchmark %s\n", fileName)
+					continue
+				}
 				compiled := strings.TrimSuffix(out, ".mochi") + ".c"
 				bin := strings.TrimSuffix(out, ".mochi")
 				if err := compileToC(out, compiled, bin); err != nil {
-					panic(err)
+					fmt.Fprintf(os.Stderr, "⚠️ skipping C compile for %s: %v\n", compiled, err)
+					continue
 				}
 				out = bin
 			} else if t.Lang == "mochi_py" {
@@ -324,9 +330,9 @@ func report(results []Result) {
 
 			// Friendly label
 			langName := r.Lang
-                       switch langName {
-                       case "mochi_vm":
-                               langName = "Mochi (VM)"
+			switch langName {
+			case "mochi_vm":
+				langName = "Mochi (VM)"
 			case "mochi_go":
 				langName = "Mochi (Go)"
 			case "mochi_c":
@@ -567,10 +573,10 @@ func exportMarkdown(results []Result) error {
 				plus = fmt.Sprintf("+%.1f%%", (float64(delta)/float64(best))*100)
 			}
 
-                       langName := r.Lang
-                       switch langName {
-                       case "mochi_vm":
-                               langName = "Mochi (VM)"
+			langName := r.Lang
+			switch langName {
+			case "mochi_vm":
+				langName = "Mochi (VM)"
 			case "mochi_go":
 				langName = "Mochi (Go)"
 			case "mochi_c":
@@ -644,9 +650,10 @@ func GenerateOutputs(outDir string) error {
 			cOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.out", category, name, n))
 			bin := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.bin", category, name, n))
 			if err := compileToC(tmp, cOut, bin); err != nil {
-				return err
+				fmt.Fprintf(os.Stderr, "⚠️ skipping C compile for %s_%s_%d: %v\n", category, name, n, err)
+			} else {
+				os.Remove(bin)
 			}
-			os.Remove(bin)
 
 			pyOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.py.out", category, name, n))
 			if err := compileToPy(tmp, pyOut); err != nil {

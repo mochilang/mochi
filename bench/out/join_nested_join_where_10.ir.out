@@ -1,0 +1,238 @@
+func main (regs=132)
+L17:
+  // var left = []
+  Const        r0, []
+  Move         r1, r0
+  // for i in 0..10 {
+  Const        r2, 0
+  Const        r3, 10
+  Move         r4, r2
+L1:
+  Less         r5, r4, r3
+  JumpIfFalse  r5, L0
+  // left = append(left, { id: i, val: i })
+  Const        r6, "id"
+  Const        r7, "val"
+  Move         r8, r4
+  Move         r9, r4
+  MakeMap      r10, 2, r6
+  Append       r1, r1, r10
+  // for i in 0..10 {
+  Const        r12, 1
+  Add          r4, r4, r12
+  Jump         L1
+L0:
+  // var right = []
+  Const        r15, []
+  // for i in 0..10 {
+  Move         r4, r2
+L3:
+  Less         r16, r4, r3
+  JumpIfFalse  r16, L2
+  // right = append(right, { id: i, info: i * 2 })
+  Const        r17, "id"
+  Const        r18, "info"
+  Const        r19, 2
+  MulInt       r20, r4, r19
+  MakeMap      r23, 2, r17
+  Append       r15, r15, r23
+  // for i in 0..10 {
+  Const        r25, 1
+  Add          r4, r4, r25
+  Jump         L3
+L2:
+  // let repeat = 100
+  Const        r27, 100
+  // var last = 0
+  Move         r28, r2
+  // let start = now()
+  Now          r29
+  // for i in 0..repeat {
+  Move         r4, r2
+L27:
+  Less         r30, r4, r27
+  JumpIfFalse  r30, L4
+  // let res = from l in left
+  Const        r31, []
+  IterPrep     r32, r1
+  Len          r33, r32
+  // join r in right on l.id == r.id
+  IterPrep     r34, r15
+  Len          r35, r34
+  // let res = from l in left
+  Const        r36, 0
+  EqualInt     r37, r33, r36
+  JumpIfTrue   r37, L5
+  EqualInt     r38, r35, r36
+  JumpIfTrue   r38, L5
+  LessEq       r39, r35, r33
+  JumpIfFalse  r39, L6
+  // join r in right on l.id == r.id
+  MakeMap      r40, 0, r0
+  Const        r41, 0
+L11:
+  Less         r42, r41, r35
+  JumpIfFalse  r42, L7
+  Index        r43, r34, r41
+  Move         r44, r43
+  // where r.info % 2 == 0 && true
+  Const        r45, "info"
+  Index        r46, r44, r45
+  Mod          r47, r46, r19
+  Equal        r49, r47, r2
+  JumpIfFalse  r49, L8
+  Const        r50, true
+  Move         r49, r50
+L8:
+  JumpIfFalse  r49, L9
+  // join r in right on l.id == r.id
+  Const        r51, "id"
+  Index        r52, r44, r51
+  Index        r53, r40, r52
+  Const        r54, nil
+  NotEqual     r55, r53, r54
+  JumpIfTrue   r55, L10
+  MakeList     r56, 0, r0
+  SetIndex     r40, r52, r56
+L10:
+  Index        r53, r40, r52
+  Append       r57, r53, r43
+  SetIndex     r40, r52, r57
+L9:
+  Const        r58, 1
+  Add          r41, r41, r58
+  Jump         L11
+L7:
+  // let res = from l in left
+  Const        r60, 0
+L16:
+  Less         r61, r60, r33
+  JumpIfFalse  r61, L5
+  Index        r63, r32, r60
+  // join r in right on l.id == r.id
+  Index        r64, r63, r51
+  // let res = from l in left
+  Index        r65, r40, r64
+  Const        r66, nil
+  NotEqual     r67, r65, r66
+  JumpIfFalse  r67, L12
+  Len          r68, r65
+  Const        r69, 0
+L15:
+  Less         r70, r69, r68
+  JumpIfFalse  r70, L12
+  Index        r44, r65, r69
+  // where r.info % 2 == 0 && true
+  Index        r72, r44, r45
+  Mod          r73, r72, r19
+  Equal        r75, r73, r2
+  JumpIfFalse  r75, L13
+  Move         r75, r50
+L13:
+  JumpIfFalse  r75, L14
+  // select l.val + r.info
+  Const        r76, "val"
+  Index        r77, r63, r76
+  Index        r78, r44, r45
+  Add          r79, r77, r78
+  // let res = from l in left
+  Append       r31, r31, r79
+L14:
+  Const        r81, 1
+  Add          r69, r69, r81
+  Jump         L15
+L12:
+  Const        r83, 1
+  Add          r60, r60, r83
+  Jump         L16
+L5:
+  Jump         L17
+L6:
+  MakeMap      r85, 0, r0
+  Const        r86, 0
+L20:
+  Less         r87, r86, r33
+  JumpIfFalse  r87, L18
+  Index        r88, r32, r86
+  // join r in right on l.id == r.id
+  Index        r89, r88, r51
+  // let res = from l in left
+  Index        r90, r85, r89
+  Const        r91, nil
+  NotEqual     r92, r90, r91
+  JumpIfTrue   r92, L19
+  MakeList     r93, 0, r0
+  SetIndex     r85, r89, r93
+L19:
+  Index        r90, r85, r89
+  Append       r94, r90, r88
+  SetIndex     r85, r89, r94
+  Const        r95, 1
+  Add          r86, r86, r95
+  Jump         L20
+L18:
+  // join r in right on l.id == r.id
+  Const        r97, 0
+L26:
+  Less         r98, r97, r35
+  JumpIfFalse  r98, L21
+  Index        r44, r34, r97
+  Index        r100, r44, r51
+  Index        r101, r85, r100
+  Const        r102, nil
+  NotEqual     r103, r101, r102
+  JumpIfFalse  r103, L22
+  Len          r104, r101
+  Const        r105, 0
+L25:
+  Less         r106, r105, r104
+  JumpIfFalse  r106, L22
+  Index        r63, r101, r105
+  // where r.info % 2 == 0 && true
+  Index        r108, r44, r45
+  Mod          r109, r108, r19
+  Equal        r111, r109, r2
+  JumpIfFalse  r111, L23
+  Move         r111, r50
+L23:
+  JumpIfFalse  r111, L24
+  // select l.val + r.info
+  Index        r112, r63, r76
+  Index        r113, r44, r45
+  Add          r114, r112, r113
+  // let res = from l in left
+  Append       r31, r31, r114
+L24:
+  // join r in right on l.id == r.id
+  Const        r116, 1
+  Add          r105, r105, r116
+  Jump         L25
+L22:
+  Const        r118, 1
+  Add          r97, r97, r118
+  Jump         L26
+L21:
+  // last = len(res)
+  Len          r28, r31
+  // for i in 0..repeat {
+  Const        r121, 1
+  Add          r4, r4, r121
+  Jump         L27
+L4:
+  // let duration = (now() - start) / 1000
+  Now          r123
+  SubInt       r124, r123, r29
+  Const        r125, 1000
+  DivInt       r126, r124, r125
+  // "duration_us": duration,
+  Const        r127, "duration_us"
+  // "output": last,
+  Const        r128, "output"
+  // "duration_us": duration,
+  Move         r129, r126
+  // "output": last,
+  Move         r130, r28
+  // json({
+  MakeMap      r131, 2, r127
+  JSON         r131
+  Return       r0

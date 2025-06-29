@@ -1,0 +1,138 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"time"
+)
+
+func main() {
+	var left []any = []any{}
+	for i := 0; i < 30; i++ {
+		left = append(left, map[string]int{"id": i, "val": i})
+	}
+	var right []any = []any{}
+	for i := 0; i < 30; i++ {
+		right = append(right, map[string]int{"id": i, "info": (i * 2)})
+	}
+	var repeat int = 100
+	var last int = 0
+	var start int64 = time.Now().UnixNano()
+	for i := 0; i < repeat; i++ {
+		var res []any = func() []any {
+			_res := []any{}
+			for _, l := range left {
+				for _, r := range right {
+					if !(_equal(_cast[map[string]any](l)["id"], _cast[map[string]any](r)["id"]) && true) {
+						continue
+					}
+					_res = append(_res, (_cast[float64](_cast[map[string]any](l)["val"]) + _cast[float64](_cast[map[string]any](r)["info"])))
+				}
+			}
+			return _res
+		}()
+		last = len(res)
+	}
+	var duration int64 = (int64((int64(time.Now().UnixNano()) - int64(start))) / int64(1000))
+	func() {
+		b, _ := json.Marshal(map[string]int64{"duration_us": duration, "output": int64(last)})
+		fmt.Println(string(b))
+	}()
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}

@@ -1,0 +1,103 @@
+func main (regs=55)
+  // var left = []
+  Const        r0, []
+  Move         r1, r0
+  // for i in 0..30 {
+  Const        r2, 0
+  Const        r3, 30
+  Move         r4, r2
+L1:
+  Less         r5, r4, r3
+  JumpIfFalse  r5, L0
+  // left = append(left, { id: i, val: i })
+  Const        r6, "id"
+  Const        r7, "val"
+  Move         r8, r4
+  Move         r9, r4
+  MakeMap      r10, 2, r6
+  Append       r1, r1, r10
+  // for i in 0..30 {
+  Const        r12, 1
+  Add          r4, r4, r12
+  Jump         L1
+L0:
+  // var right = []
+  Const        r15, []
+  // let repeat = 100
+  Const        r16, 100
+  // var last = 0
+  Move         r17, r2
+  // let start = now()
+  Now          r18
+  // for i in 0..repeat {
+  Move         r4, r2
+L9:
+  Less         r19, r4, r16
+  JumpIfFalse  r19, L2
+  // let res = from l in left
+  Const        r20, []
+  IterPrep     r21, r1
+  Len          r22, r21
+  // join r in right on (l.id == r.id && true)
+  IterPrep     r23, r15
+  Len          r24, r23
+  Const        r25, "id"
+  // select l.val
+  Const        r26, "val"
+  // let res = from l in left
+  Const        r27, 0
+L8:
+  LessInt      r28, r27, r22
+  JumpIfFalse  r28, L3
+  Index        r30, r21, r27
+  // join r in right on (l.id == r.id && true)
+  Const        r31, 0
+L7:
+  LessInt      r32, r31, r24
+  JumpIfFalse  r32, L4
+  Index        r34, r23, r31
+  Index        r35, r30, r25
+  Index        r36, r34, r25
+  Equal        r38, r35, r36
+  JumpIfFalse  r38, L5
+  Const        r38, true
+L5:
+  JumpIfFalse  r38, L6
+  // select l.val
+  Index        r40, r30, r26
+  // let res = from l in left
+  Append       r20, r20, r40
+L6:
+  // join r in right on (l.id == r.id && true)
+  Const        r42, 1
+  AddInt       r31, r31, r42
+  Jump         L7
+L4:
+  // let res = from l in left
+  AddInt       r27, r27, r42
+  Jump         L8
+L3:
+  // last = len(res)
+  Len          r17, r20
+  // for i in 0..repeat {
+  Const        r44, 1
+  Add          r4, r4, r44
+  Jump         L9
+L2:
+  // let duration = (now() - start) / 1000
+  Now          r46
+  SubInt       r47, r46, r18
+  Const        r48, 1000
+  DivInt       r49, r47, r48
+  // "duration_us": duration,
+  Const        r50, "duration_us"
+  // "output": last,
+  Const        r51, "output"
+  // "duration_us": duration,
+  Move         r52, r49
+  // "output": last,
+  Move         r53, r17
+  // json({
+  MakeMap      r54, 2, r50
+  JSON         r54
+  Return       r0
