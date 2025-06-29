@@ -218,12 +218,36 @@ func defRegs(ins Instr) []int {
 	}
 }
 
+func usesReg(ins Instr, r int) bool {
+	return ins.A == r || ins.B == r || ins.C == r || ins.D == r
+}
+
+func replaceReg(ins *Instr, old, new int) {
+	if ins.A == old {
+		ins.A = new
+	}
+	if ins.B == old {
+		ins.B = new
+	}
+	if ins.C == old {
+		ins.C = new
+	}
+	if ins.D == old {
+		ins.D = new
+	}
+}
+
 // Optimize removes dead instructions with no side effects.
 func Optimize(fn *Function) {
 	for {
 		changed := constFold(fn)
-		pruneRedundantJumps(fn)
 		analysis := Liveness(fn)
+		if peephole(fn, analysis) {
+			changed = true
+			analysis = Liveness(fn)
+		}
+		pruneRedundantJumps(fn)
+		analysis = Liveness(fn)
 		removed := removeDead(fn, analysis)
 		if !removed && !changed {
 			break
@@ -273,6 +297,176 @@ func removeDead(fn *Function, analysis *LiveInfo) bool {
 		}
 	}
 	// fix jumps
+	for i := range newCode {
+		ins := &newCode[i]
+		switch ins.Op {
+		case OpJump:
+			if ins.A >= 0 && ins.A < len(pcMap) {
+				ins.A = pcMap[ins.A]
+			}
+		case OpJumpIfFalse, OpJumpIfTrue:
+			if ins.B >= 0 && ins.B < len(pcMap) {
+				ins.B = pcMap[ins.B]
+			}
+		}
+	}
+	fn.Code = newCode
+	return true
+}
+
+// peephole applies simple instruction-level optimizations like
+// eliminating identity moves and folding const+move pairs.
+func peephole(fn *Function, analysis *LiveInfo) bool {
+	changed := false
+	pcMap := make([]int, len(fn.Code))
+	newCode := make([]Instr, 0, len(fn.Code))
+
+	for pc := 0; pc < len(fn.Code); pc++ {
+		ins := fn.Code[pc]
+
+		// remove moves where src == dst
+		if ins.Op == OpMove && ins.A == ins.B {
+			changed = true
+			pcMap[pc] = -1
+			continue
+		}
+
+		// fold Const followed by Move when the source register is dead
+		if ins.Op == OpConst && pc+1 < len(fn.Code) {
+			next := fn.Code[pc+1]
+			if next.Op == OpMove && next.B == ins.A && !analysis.Out[pc+1][ins.A] {
+				newCode = append(newCode, Instr{Op: OpConst, A: next.A, Val: ins.Val, Line: next.Line})
+				pcMap[pc] = len(newCode) - 1
+				pcMap[pc+1] = -1
+				changed = true
+				pc++
+				continue
+			}
+		}
+
+		// collapse chained moves: Move r1,r2 ; Move r3,r1 -> Move r3,r2
+		if ins.Op == OpMove && pc+1 < len(fn.Code) {
+			next := fn.Code[pc+1]
+			if next.Op == OpMove && next.B == ins.A && !analysis.Out[pc+1][ins.A] {
+				next.B = ins.B
+				fn.Code[pc+1] = next
+				changed = true
+				pcMap[pc] = -1
+				continue
+			}
+			// propagate move into the next instruction when the temp register
+			// is not live afterwards
+			if next.A != ins.A && usesReg(next, ins.A) && !analysis.Out[pc+1][ins.A] {
+				replaceReg(&next, ins.A, ins.B)
+				fn.Code[pc+1] = next
+				changed = true
+				pcMap[pc] = -1
+				continue
+			}
+		} else if pc+1 < len(fn.Code) {
+			// eliminate x; Move rY,x -> x with destination rY when x defines a register
+			next := fn.Code[pc+1]
+			if next.Op == OpMove && next.B == ins.A && !analysis.Out[pc+1][ins.A] {
+				use, _ := useDef(ins, fn.NumRegs)
+				if !use[ins.A] {
+					ins.A = next.A
+					pcMap[pc] = len(newCode)
+					newCode = append(newCode, ins)
+					pcMap[pc+1] = -1
+					changed = true
+					pc++
+					continue
+				}
+			}
+		}
+
+		// simplify operations with identity constants immediately preceding
+		if pc > 0 {
+			prev := fn.Code[pc-1]
+			// helper returns true if prev defines the given reg and is dead after pc
+			isConst := func(reg int, val Value) bool {
+				if prev.Op != OpConst || prev.A != reg {
+					return false
+				}
+				if prev.Val.Tag != val.Tag {
+					return false
+				}
+				switch val.Tag {
+				case ValueInt:
+					if prev.Val.Int != val.Int {
+						return false
+					}
+				case ValueFloat:
+					if prev.Val.Float != val.Float {
+						return false
+					}
+				case ValueBool:
+					if prev.Val.Bool != val.Bool {
+						return false
+					}
+				case ValueStr:
+					if prev.Val.Str != val.Str {
+						return false
+					}
+				default:
+					return false
+				}
+				return !analysis.In[pc][reg] && !analysis.Out[pc][reg]
+			}
+			switch ins.Op {
+			case OpAddInt, OpAddFloat, OpAdd:
+				if isConst(ins.B, (Value{Tag: ValueInt, Int: 0})) {
+					ins = Instr{Op: OpMove, A: ins.A, B: ins.C, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				} else if isConst(ins.C, (Value{Tag: ValueInt, Int: 0})) {
+					ins = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				}
+			case OpSubInt, OpSubFloat, OpSub:
+				if isConst(ins.C, (Value{Tag: ValueInt, Int: 0})) {
+					ins = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				}
+			case OpMulInt, OpMulFloat, OpMul:
+				if isConst(ins.B, (Value{Tag: ValueInt, Int: 1})) {
+					ins = Instr{Op: OpMove, A: ins.A, B: ins.C, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				} else if isConst(ins.C, (Value{Tag: ValueInt, Int: 1})) {
+					ins = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				} else if isConst(ins.B, (Value{Tag: ValueInt, Int: 0})) || isConst(ins.C, (Value{Tag: ValueInt, Int: 0})) {
+					ins = Instr{Op: OpConst, A: ins.A, Val: Value{Tag: ValueInt, Int: 0}, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				}
+			case OpDivInt, OpDivFloat, OpDiv:
+				if isConst(ins.C, (Value{Tag: ValueInt, Int: 1})) {
+					ins = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				}
+			}
+		}
+
+		pcMap[pc] = len(newCode)
+		newCode = append(newCode, ins)
+	}
+	if !changed {
+		return false
+	}
+	next := len(newCode)
+	for i := len(pcMap) - 1; i >= 0; i-- {
+		if pcMap[i] == -1 {
+			pcMap[i] = next
+		} else {
+			next = pcMap[i]
+		}
+	}
 	for i := range newCode {
 		ins := &newCode[i]
 		switch ins.Op {

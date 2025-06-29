@@ -1,61 +1,59 @@
-func main (regs=43)
+func main (regs=40)
   // let products = [
   Const        r0, [{"name": "Laptop", "price": 1500}, {"name": "Smartphone", "price": 900}, {"name": "Tablet", "price": 600}, {"name": "Monitor", "price": 300}, {"name": "Keyboard", "price": 100}, {"name": "Mouse", "price": 50}, {"name": "Headphones", "price": 200}]
-  Move         r1, r0
   // let expensive = from p in products
-  Const        r2, []
-  IterPrep     r3, r1
-  Len          r4, r3
-  Const        r5, 0
+  Const        r1, []
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
 L1:
-  Less         r6, r5, r4
-  JumpIfFalse  r6, L0
-  Append       r15, r2, r14
-  Move         r2, r15
-  Const        r17, 1
-  Move         r5, r17
+  Less         r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r7, r2, r4
+  // sort by -p.price
+  Const        r8, "price"
+  Index        r9, r7, r8
+  Neg          r11, r9
+  // let expensive = from p in products
+  Move         r12, r7
+  MakeList     r13, 2, r11
+  Append       r1, r1, r13
+  Const        r15, 1
+  Add          r4, r4, r15
   Jump         L1
 L0:
   // sort by -p.price
-  Sort         18,2,0,0
-  // let expensive = from p in products
-  Move         r2, r18
+  Sort         r1, r1
   // skip 1
-  Const        r19, 1
+  Const        r18, 1
   // let expensive = from p in products
-  Const        r20, nil
-  Slice        r21, r2, r19, r20
-  Move         r2, r21
-  Const        r22, 0
+  Const        r19, nil
+  Slice        r1, r1, r18, r19
+  Const        r21, 0
   // take 3
-  Const        r23, 3
+  Const        r22, 3
   // let expensive = from p in products
-  Slice        r24, r2, r22, r23
-  Move         r2, r24
-  Move         r25, r2
+  Slice        r1, r1, r21, r22
   // print("--- Top products (excluding most expensive) ---")
-  Const        r26, "--- Top products (excluding most expensive) ---"
-  Print        r26
+  Const        r24, "--- Top products (excluding most expensive) ---"
+  Print        r24
   // for item in expensive {
-  IterPrep     r27, r25
-  Len          r28, r27
-  Const        r29, 0
+  IterPrep     r25, r1
+  Len          r26, r25
+  Const        r27, 0
 L3:
-  Less         r30, r29, r28
-  JumpIfFalse  r30, L2
-  Index        r31, r27, r29
-  Move         r32, r31
+  Less         r28, r27, r26
+  JumpIfFalse  r28, L2
+  Index        r30, r25, r27
   // print(item.name, "costs $", item.price)
-  Const        r36, "name"
-  Index        r37, r32, r36
-  Move         r33, r37
-  Const        r38, "costs $"
-  Move         r34, r38
-  Const        r39, "price"
-  Index        r40, r32, r39
-  Move         r35, r40
-  PrintN       r33, 3, r33
+  Const        r34, "name"
+  Index        r31, r30, r34
+  Const        r32, "costs $"
+  Index        r33, r30, r8
+  PrintN       r31, 3, r31
   // for item in expensive {
+  Const        r38, 1
+  Add          r27, r27, r38
   Jump         L3
 L2:
   Return       r0
