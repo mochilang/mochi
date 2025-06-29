@@ -1,4 +1,4 @@
-func main (regs=6)
+func main (regs=5)
   // var nums = [1, 2]
   Const        r0, [1, 2]
   Move         r1, r0
@@ -7,7 +7,6 @@ func main (regs=6)
   Const        r3, 3
   SetIndex     r1, r2, r3
   // print(nums[1])
-  Const        r4, 1
-  Index        r5, r1, r4
-  Print        r5
+  Const        r4, 2
+  Print        r4
   Return       r0

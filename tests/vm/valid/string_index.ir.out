@@ -1,9 +1,7 @@
-func main (regs=4)
+func main (regs=3)
   // let s = "mochi"
   Const        r0, "mochi"
-  Move         r1, r0
   // print(s[1])
-  Const        r2, 1
-  Index        r3, r1, r2
-  Print        r3
+  Const        r2, "o"
+  Print        r2
   Return       r0
