@@ -20,6 +20,10 @@ import (
 	"mochi/types"
 )
 
+// EnableOptimizations toggles bytecode optimization passes when compiling.
+// It defaults to false so tests can exercise unoptimized code.
+var EnableOptimizations = false
+
 // Value represents a runtime value handled by the VM.
 // The definition lives in value.go and mirrors the interpreter's Value without
 // requiring that package.
@@ -1676,9 +1680,11 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 		return nil, err
 	}
 	c.funcs[0] = main
-	// Run liveness-based optimization on all functions
-	for i := range c.funcs {
-		Optimize(&c.funcs[i])
+	// Optionally optimize bytecode across all functions
+	if EnableOptimizations {
+		for i := range c.funcs {
+			Optimize(&c.funcs[i])
+		}
 	}
 	return &Program{Funcs: c.funcs, Types: c.types}, nil
 }
