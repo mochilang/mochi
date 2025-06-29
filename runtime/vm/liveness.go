@@ -237,10 +237,45 @@ func replaceReg(ins *Instr, old, new int) {
 	}
 }
 
+// dedupConst replaces repeated Const instructions with moves from the first
+// register holding the constant value.
+func dedupConst(fn *Function) bool {
+	changed := false
+	constReg := map[string]int{}
+	key := func(v Value) string {
+		return valueToString(v)
+	}
+	for i := 0; i < len(fn.Code); i++ {
+		ins := &fn.Code[i]
+		defs := defRegs(*ins)
+		if ins.Op == OpConst {
+			k := key(ins.Val)
+			if r, ok := constReg[k]; ok {
+				*ins = Instr{Op: OpMove, A: ins.A, B: r, Line: ins.Line}
+				changed = true
+				constReg[k] = ins.A
+			} else {
+				constReg[k] = ins.A
+			}
+		}
+		for _, r := range defs {
+			for k, reg := range constReg {
+				if reg == r && !(ins.Op == OpConst && r == ins.A && k == key(ins.Val)) {
+					delete(constReg, k)
+				}
+			}
+		}
+	}
+	return changed
+}
+
 // Optimize removes dead instructions with no side effects.
 func Optimize(fn *Function) {
 	for {
 		changed := constFold(fn)
+		if dedupConst(fn) {
+			changed = true
+		}
 		analysis := Liveness(fn)
 		if peephole(fn, analysis) {
 			changed = true
