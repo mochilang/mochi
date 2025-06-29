@@ -3,162 +3,162 @@
 ## math.fact_rec.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 5 | best |
-| Mochi (Go) | 13 | +160.0% |
-| Mochi (VM) | 18 | +260.0% |
-| Python | 1014 | +20180.0% |
-| Typescript | 3194 | +63780.0% |
+| C | 3 | best |
+| Mochi (Go) | 9 | +200.0% |
+| Mochi (VM) | 11 | +266.7% |
+| Typescript | 501 | +16600.0% |
+| Python | 737 | +24466.7% |
 
 ## math.fact_rec.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 12 | best |
-| Mochi (VM) | 35 | +191.7% |
-| Mochi (Go) | 36 | +200.0% |
-| Typescript | 1295 | +10691.7% |
-| Python | 2260 | +18733.3% |
+| C | 6 | best |
+| Mochi (Go) | 17 | +183.3% |
+| Mochi (VM) | 22 | +266.7% |
+| Typescript | 594 | +9800.0% |
+| Python | 1297 | +21516.7% |
 
 ## math.fact_rec.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 13 | best |
-| Mochi (Go) | 57 | +338.5% |
-| Mochi (VM) | 102 | +684.6% |
-| Typescript | 1382 | +10530.8% |
-| Python | 3454 | +26469.2% |
+| C | 9 | best |
+| Mochi (Go) | 28 | +211.1% |
+| Mochi (VM) | 35 | +288.9% |
+| Typescript | 1029 | +11333.3% |
+| Python | 1971 | +21800.0% |
 
 ## math.fib_iter.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 5 | best |
-| Mochi (Go) | 10 | +100.0% |
-| Mochi (VM) | 12 | +140.0% |
-| Typescript | 459 | +9080.0% |
-| Python | 684 | +13580.0% |
+| C | 3 | best |
+| Mochi (VM) | 7 | +133.3% |
+| Mochi (Go) | 7 | +133.3% |
+| Typescript | 295 | +9733.3% |
+| Python | 410 | +13566.7% |
 
 ## math.fib_iter.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| Mochi (VM) | 18 | best |
-| Mochi (Go) | 18 | best |
-| C | 20 | +11.1% |
-| Typescript | 670 | +3622.2% |
-| Python | 1233 | +6750.0% |
+| C | 6 | best |
+| Mochi (Go) | 13 | +116.7% |
+| Mochi (VM) | 16 | +166.7% |
+| Typescript | 509 | +8383.3% |
+| Python | 753 | +12450.0% |
 
 ## math.fib_iter.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 15 | best |
-| Mochi (Go) | 26 | +73.3% |
-| Mochi (VM) | 32 | +113.3% |
-| Typescript | 790 | +5166.7% |
-| Python | 1607 | +10613.3% |
+| C | 9 | best |
+| Mochi (Go) | 18 | +100.0% |
+| Mochi (VM) | 23 | +155.6% |
+| Typescript | 490 | +5344.4% |
+| Python | 986 | +10855.6% |
 
 ## math.fib_rec.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
+| Mochi (VM) | 0 | best |
 | Mochi (Go) | 0 | best |
 | C | 0 | best |
-| Mochi (VM) | 1 | ++Inf% |
-| Python | 18 | ++Inf% |
-| Typescript | 56 | ++Inf% |
+| Python | 10 | ++Inf% |
+| Typescript | 24 | ++Inf% |
 
 ## math.fib_rec.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 30 | best |
-| Mochi (Go) | 49 | +63.3% |
-| Mochi (VM) | 56 | +86.7% |
-| Typescript | 1057 | +3423.3% |
-| Python | 1814 | +5946.7% |
+| C | 16 | best |
+| Mochi (VM) | 35 | +118.8% |
+| Mochi (Go) | 47 | +193.8% |
+| Typescript | 597 | +3631.2% |
+| Python | 1022 | +6287.5% |
 
 ## math.fib_rec.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 2870 | best |
-| Mochi (Go) | 6044 | +110.6% |
-| Mochi (VM) | 6185 | +115.5% |
-| Typescript | 17291 | +502.5% |
-| Python | 200296 | +6879.0% |
+| C | 1508 | best |
+| Mochi (Go) | 4437 | +194.2% |
+| Mochi (VM) | 4553 | +201.9% |
+| Typescript | 10415 | +590.6% |
+| Python | 125950 | +8252.1% |
 
 ## math.mul_loop.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
 | C | 4 | best |
-| Mochi (Go) | 11 | +175.0% |
-| Mochi (VM) | 59 | +1375.0% |
-| Typescript | 369 | +9125.0% |
-| Python | 663 | +16475.0% |
+| Mochi (Go) | 6 | +50.0% |
+| Mochi (VM) | 8 | +100.0% |
+| Typescript | 238 | +5850.0% |
+| Python | 375 | +9275.0% |
 
 ## math.mul_loop.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 7 | best |
-| Mochi (Go) | 17 | +142.9% |
-| Mochi (VM) | 25 | +257.1% |
-| Python | 1228 | +17442.9% |
-| Typescript | 9014 | +128671.4% |
+| C | 5 | best |
+| Mochi (VM) | 12 | +140.0% |
+| Mochi (Go) | 12 | +140.0% |
+| Typescript | 442 | +8740.0% |
+| Python | 823 | +16360.0% |
 
 ## math.mul_loop.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 14 | best |
-| Mochi (VM) | 25 | +78.6% |
-| Mochi (Go) | 25 | +78.6% |
-| Typescript | 1058 | +7457.1% |
-| Python | 1983 | +14064.3% |
+| C | 8 | best |
+| Mochi (Go) | 18 | +125.0% |
+| Mochi (VM) | 22 | +175.0% |
+| Typescript | 473 | +5812.5% |
+| Python | 1164 | +14450.0% |
 
 ## math.prime_count.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 3 | best |
-| Mochi (Go) | 13 | +333.3% |
-| Mochi (VM) | 34 | +1033.3% |
-| Typescript | 261 | +8600.0% |
-| Python | 350 | +11566.7% |
+| C | 1 | best |
+| Mochi (VM) | 3 | +200.0% |
+| Mochi (Go) | 3 | +200.0% |
+| Typescript | 192 | +19100.0% |
+| Python | 201 | +20000.0% |
 
 ## math.prime_count.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| C | 21 | best |
-| Mochi (Go) | 77 | +266.7% |
-| Mochi (VM) | 112 | +433.3% |
-| Typescript | 522 | +2385.7% |
-| Python | 958 | +4461.9% |
+| C | 8 | best |
+| Mochi (VM) | 19 | +137.5% |
+| Mochi (Go) | 19 | +137.5% |
+| Python | 550 | +6775.0% |
+| Typescript | 859 | +10637.5% |
 
 ## math.prime_count.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
-| Mochi (VM) | 145 | best |
-| Mochi (Go) | 145 | best |
-| C | 288 | +98.6% |
-| Typescript | 940 | +548.3% |
-| Python | 1776 | +1124.8% |
+| C | 17 | best |
+| Mochi (VM) | 45 | +164.7% |
+| Mochi (Go) | 67 | +294.1% |
+| Typescript | 413 | +2329.4% |
+| Python | 902 | +5205.9% |
 
 ## math.sum_loop.10
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
 | C | 0 | best |
+| Mochi (Go) | 6 | ++Inf% |
 | Mochi (VM) | 8 | ++Inf% |
-| Mochi (Go) | 9 | ++Inf% |
-| Python | 588 | ++Inf% |
-| Typescript | 610 | ++Inf% |
+| Typescript | 240 | ++Inf% |
+| Python | 334 | ++Inf% |
 
 ## math.sum_loop.20
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
 | C | 0 | best |
-| Mochi (VM) | 17 | ++Inf% |
-| Mochi (Go) | 30 | ++Inf% |
-| Typescript | 551 | ++Inf% |
-| Python | 647 | ++Inf% |
+| Mochi (Go) | 12 | ++Inf% |
+| Mochi (VM) | 15 | ++Inf% |
+| Typescript | 380 | ++Inf% |
+| Python | 538 | ++Inf% |
 
 ## math.sum_loop.30
 | Language | Time (µs) | +/- |
 | --- | ---: | --- |
 | C | 0 | best |
-| Mochi (VM) | 23 | ++Inf% |
-| Mochi (Go) | 44 | ++Inf% |
-| Typescript | 721 | ++Inf% |
-| Python | 1297 | ++Inf% |
+| Mochi (VM) | 18 | ++Inf% |
+| Mochi (Go) | 18 | ++Inf% |
+| Typescript | 417 | ++Inf% |
+| Python | 792 | ++Inf% |
 

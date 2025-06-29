@@ -75,22 +75,22 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 		}
 		category := parts[1]
 		name := parts[2]
-		if name == "matrix_mul" {
+		if name == "matrix_mul" || category == "join" {
 			return nil
 		}
 		suffix := "." + lang
 		cfg := Range{Start: 10, Step: "+10", Count: 3}
 
-               templates := []Template{
-                       {Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
-                       {Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+		templates := []Template{
+			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
+			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil},
-			{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}},
-			// Temporarily disable PyPy and Cython benchmarks
-			// {Lang: "mochi_pypy", Path: path, Suffix: suffix, Command: []string{"pypy3"}},
-			// {Lang: "mochi_cython", Path: path, Suffix: suffix, Command: nil},
-			{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}},
 		}
+		templates = append(templates, Template{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}})
+		// Temporarily disable PyPy and Cython benchmarks
+		// templates = append(templates, Template{Lang: "mochi_pypy", Path: path, Suffix: suffix, Command: []string{"pypy3"}})
+		// templates = append(templates, Template{Lang: "mochi_cython", Path: path, Suffix: suffix, Command: nil})
+		templates = append(templates, Template{Lang: "mochi_ts", Path: path, Suffix: suffix, Command: []string{"deno", "run", "--quiet"}})
 
 		benches = append(benches, generateBenchmarks(tempDir, category, name, cfg, templates)...)
 		return nil
@@ -324,9 +324,9 @@ func report(results []Result) {
 
 			// Friendly label
 			langName := r.Lang
-                       switch langName {
-                       case "mochi_vm":
-                               langName = "Mochi (VM)"
+			switch langName {
+			case "mochi_vm":
+				langName = "Mochi (VM)"
 			case "mochi_go":
 				langName = "Mochi (Go)"
 			case "mochi_c":
@@ -567,10 +567,10 @@ func exportMarkdown(results []Result) error {
 				plus = fmt.Sprintf("+%.1f%%", (float64(delta)/float64(best))*100)
 			}
 
-                       langName := r.Lang
-                       switch langName {
-                       case "mochi_vm":
-                               langName = "Mochi (VM)"
+			langName := r.Lang
+			switch langName {
+			case "mochi_vm":
+				langName = "Mochi (VM)"
 			case "mochi_go":
 				langName = "Mochi (Go)"
 			case "mochi_c":
@@ -618,7 +618,7 @@ func GenerateOutputs(outDir string) error {
 		}
 		category := parts[1]
 		name := strings.TrimSuffix(parts[2], "")
-		if name == "matrix_mul" {
+		if name == "matrix_mul" || category == "join" {
 			return nil
 		}
 
@@ -641,12 +641,14 @@ func GenerateOutputs(outDir string) error {
 				return err
 			}
 
-			cOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.out", category, name, n))
-			bin := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.bin", category, name, n))
-			if err := compileToC(tmp, cOut, bin); err != nil {
-				return err
+			if category != "join" {
+				cOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.out", category, name, n))
+				bin := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.bin", category, name, n))
+				if err := compileToC(tmp, cOut, bin); err != nil {
+					return err
+				}
+				os.Remove(bin)
 			}
-			os.Remove(bin)
 
 			pyOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.py.out", category, name, n))
 			if err := compileToPy(tmp, pyOut); err != nil {
