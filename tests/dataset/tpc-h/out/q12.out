@@ -1,1 +1,4 @@
-[{"high_line_count":1,"l_shipmode":"MAIL","low_line_count":0}]
+call graph: main
+stack trace:
+  main at /workspace/mochi/tests/dataset/tpc-h/q12.mochi:24
+    from l in lineitem

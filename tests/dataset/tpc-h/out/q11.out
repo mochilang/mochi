@@ -1,1 +1,4 @@
-[{"ps_partkey":1000,"value":2000},{"ps_partkey":2000,"value":50}]
+call graph: main
+stack trace:
+  main at /workspace/mochi/tests/dataset/tpc-h/q11.mochi:32
+    from x in filtered

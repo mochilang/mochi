@@ -1,0 +1,4 @@
+call graph: main
+stack trace:
+  main at /workspace/mochi/tests/dataset/tpc-h/q10.mochi:41
+    from c in customer
