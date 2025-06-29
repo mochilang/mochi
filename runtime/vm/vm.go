@@ -1952,6 +1952,13 @@ func (fc *funcCompiler) constReg(pos lexer.Position, v Value) int {
 	return r
 }
 
+func (fc *funcCompiler) constListLen(e *parser.Expr) (int, bool) {
+	if v, ok := fc.evalConstExpr(e); ok && v.Tag == ValueList {
+		return len(v.List), true
+	}
+	return 0, false
+}
+
 func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
@@ -3445,6 +3452,17 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 	rlen := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
 
+	if ll, ok1 := fc.constListLen(q.Source); ok1 {
+		if rl, ok2 := fc.constListLen(join.Src); ok2 {
+			if rl <= ll {
+				fc.compileHashJoinSide(q, dst, leftKey, rightKey, true, llist, llen, rlist, rlen, whereLeft, whereRight)
+			} else {
+				fc.compileHashJoinSide(q, dst, leftKey, rightKey, false, llist, llen, rlist, rlen, whereLeft, whereRight)
+			}
+			return
+		}
+	}
+
 	zero := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
 	emptyLeft := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpEqualInt, A: emptyLeft, B: llen, C: zero})
@@ -3461,7 +3479,22 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 	fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: cond})
 
 	// hash right side when it is smaller
-	{
+	fc.compileHashJoinSide(q, dst, leftKey, rightKey, true, llist, llen, rlist, rlen, whereLeft, whereRight)
+	jumpEnd := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJump})
+	fc.fn.Code[jmpLeft].B = len(fc.fn.Code)
+	fc.fn.Code[jmpEmptyLeft].B = jumpEnd
+	fc.fn.Code[jmpEmptyRight].B = jumpEnd
+
+	// hash left side when it is smaller
+	fc.compileHashJoinSide(q, dst, leftKey, rightKey, false, llist, llen, rlist, rlen, whereLeft, whereRight)
+
+	fc.fn.Code[jumpEnd].B = len(fc.fn.Code)
+}
+
+func (fc *funcCompiler) compileHashJoinSide(q *parser.QueryExpr, dst int, leftKey, rightKey *parser.Expr, hashRight bool, llist, llen, rlist, rlen int, whereLeft, whereRight bool) {
+	join := q.Joins[0]
+	if hashRight {
 		rmap := fc.newReg()
 		fc.emit(join.Pos, Instr{Op: OpMakeMap, A: rmap, B: 0})
 
@@ -3521,13 +3554,13 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 				pair := fc.newReg()
 				fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
-				tmp := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
-				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+				tmp2 := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp2, B: dst, C: pair})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp2})
 			} else {
-				tmp := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+				tmp2 := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp2, B: dst, C: val})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp2})
 			}
 		}
 
@@ -3587,16 +3620,7 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
 		lend := len(fc.fn.Code)
 		fc.fn.Code[ljmp].B = lend
-	}
-
-	jumpEnd := len(fc.fn.Code)
-	fc.emit(q.Pos, Instr{Op: OpJump})
-	fc.fn.Code[jmpLeft].B = len(fc.fn.Code)
-	fc.fn.Code[jmpEmptyLeft].B = jumpEnd
-	fc.fn.Code[jmpEmptyRight].B = jumpEnd
-
-	// hash left side when it is smaller
-	{
+	} else {
 		lmap := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMakeMap, A: lmap, B: 0})
 
@@ -3656,13 +3680,13 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
 				pair := fc.newReg()
 				fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
-				tmp := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
-				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+				tmp2 := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp2, B: dst, C: pair})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp2})
 			} else {
-				tmp := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
-				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+				tmp2 := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp2, B: dst, C: val})
+				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp2})
 			}
 		}
 
@@ -3723,8 +3747,6 @@ func (fc *funcCompiler) compileHashJoin(q *parser.QueryExpr, dst int, leftKey, r
 		rend := len(fc.fn.Code)
 		fc.fn.Code[rjmp].B = rend
 	}
-
-	fc.fn.Code[jumpEnd].B = len(fc.fn.Code)
 }
 
 // compileHashLeftJoin performs a left join using a hash map when the ON clause
