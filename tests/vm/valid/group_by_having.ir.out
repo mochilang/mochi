@@ -1,4 +1,4 @@
-func main (regs=45)
+func main (regs=48)
   // let people = [
   Const        r0, [{"city": "Paris", "name": "Alice"}, {"city": "Hanoi", "name": "Bob"}, {"city": "Paris", "name": "Charlie"}, {"city": "Hanoi", "name": "Diana"}, {"city": "Paris", "name": "Eve"}, {"city": "Hanoi", "name": "Frank"}, {"city": "Paris", "name": "George"}]
   // from p in people
@@ -31,37 +31,42 @@ L2:
   // from p in people
   Const        r20, "items"
   Move         r21, r16
-  MakeMap      r22, 3, r17
-  SetIndex     r8, r14, r22
+  Const        r22, "count"
+  Const        r23, 0
+  MakeMap      r24, 4, r17
+  SetIndex     r8, r14, r24
 L1:
-  Index        r24, r8, r14
-  Index        r25, r24, r20
-  Append       r26, r25, r11
-  SetIndex     r24, r20, r26
-  Const        r27, 1
-  AddInt       r7, r7, r27
+  Index        r26, r8, r14
+  Index        r27, r26, r20
+  Append       r28, r27, r11
+  SetIndex     r26, r20, r28
+  Index        r29, r26, r22
+  Const        r30, 1
+  AddInt       r31, r29, r30
+  SetIndex     r26, r22, r31
+  AddInt       r7, r7, r30
   Jump         L2
 L0:
-  Const        r28, 0
-  Const        r30, 0
+  Move         r32, r23
+  Const        r33, 0
 L4:
-  LessInt      r31, r28, r30
-  JumpIfFalse  r31, L3
-  Index        r33, r9, r28
+  LessInt      r34, r32, r33
+  JumpIfFalse  r34, L3
+  Index        r36, r9, r32
   // having count(g) >= 4
-  Count        r34, r33
-  Const        r35, 4
-  LessEqInt    r36, r35, r34
-  JumpIfFalse  r36, L3
+  Index        r37, r36, r22
+  Const        r38, 4
+  LessEq       r39, r38, r37
+  JumpIfFalse  r39, L3
   // select { city: g.key, num: count(g) }
-  Const        r37, "city"
-  Index        r38, r33, r3
-  Const        r39, "num"
-  Count        r40, r33
-  MakeMap      r43, 2, r37
+  Const        r40, "city"
+  Index        r41, r36, r3
+  Const        r42, "num"
+  Index        r43, r36, r22
+  MakeMap      r46, 2, r40
   // from p in people
-  Append       r1, r1, r43
-  AddInt       r28, r28, r27
+  Append       r1, r1, r46
+  AddInt       r32, r32, r30
   Jump         L4
 L3:
   // json(big)

@@ -1589,6 +1589,7 @@ type funcCompiler struct {
 	loops      []*loopContext
 	tags       map[int]regTag
 	constCache map[string]int
+	groupVar   string
 }
 
 func (fc *funcCompiler) freshConst(pos lexer.Position, v Value) int {
@@ -1683,7 +1684,7 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(fn.Params)
@@ -1707,7 +1708,7 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 }
 
 func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(st.Order) + len(fn.Params)
@@ -1761,7 +1762,7 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
 	for i, name := range captures {
@@ -1803,7 +1804,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 	prev, exists := c.fnIndex[name]
 	c.fnIndex[name] = idx
 
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
 	fc.fn.Name = name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
@@ -1845,7 +1846,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 }
 
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
 	fc.fn.NumParams = 0
@@ -2706,6 +2707,19 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			fc.emit(p.Pos, Instr{Op: OpInput, A: dst})
 			return dst
 		case "count":
+			if fc.groupVar != "" {
+				if name, ok := identName(p.Call.Args[0]); ok && name == fc.groupVar {
+					greg, ok := fc.vars[fc.groupVar]
+					if !ok {
+						greg = fc.newReg()
+						fc.vars[fc.groupVar] = greg
+					}
+					key := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "count"})
+					dst := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpIndex, A: dst, B: greg, C: key})
+					return dst
+				}
+			}
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpCount, A: dst, B: arg})
@@ -3846,6 +3860,9 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	fc.preloadFieldConsts(q.Group.Having)
 	fc.preloadFieldConsts(q.Select)
 	fc.preloadFieldConsts(q.Sort)
+	prevGroup := fc.groupVar
+	fc.groupVar = q.Group.Name
+	defer func() { fc.groupVar = prevGroup }()
 	srcReg := fc.compileExpr(q.Source)
 	listReg := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpIterPrep, A: listReg, B: srcReg})
@@ -3989,7 +4006,9 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	k3 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
 	v3 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
-	pairsGrp := []int{k1, v1, k2, v2, k3, v3}
+	kcnt := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "count"})
+	vcnt := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
+	pairsGrp := []int{k1, v1, k2, v2, k3, v3, kcnt, vcnt}
 	if len(fieldNames) > 0 {
 		for i, name := range fieldNames {
 			k := fc.constReg(exprs[i].Pos, Value{Tag: ValueStr, Str: name})
@@ -4015,6 +4034,13 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	newList := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpAppend, A: newList, B: cur, C: elemReg})
 	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: itemsKey, C: newList})
+	countKey := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "count"})
+	curCnt := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpIndex, A: curCnt, B: grp2, C: countKey})
+	one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+	newCnt := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpAddInt, A: newCnt, B: curCnt, C: one})
+	fc.emit(q.Pos, Instr{Op: OpSetIndex, A: grp2, B: countKey, C: newCnt})
 }
 
 // compileGroupQueryAny handles GROUP BY queries that may include additional FROM
@@ -4028,6 +4054,9 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	fc.preloadFieldConsts(q.Group.Having)
 	fc.preloadFieldConsts(q.Select)
 	fc.preloadFieldConsts(q.Sort)
+	prevGroup := fc.groupVar
+	fc.groupVar = q.Group.Name
+	defer func() { fc.groupVar = prevGroup }()
 	groupsMap := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: groupsMap, B: 0})
 	groupsList := fc.newReg()
