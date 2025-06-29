@@ -1,135 +1,240 @@
-func main (regs=74)
+func main (regs=131)
+L14:
   // let part = [
   Const        r0, [{"p_brand": "Brand#23", "p_container": "MED BOX", "p_partkey": 1}, {"p_brand": "Brand#77", "p_container": "LG JAR", "p_partkey": 2}]
-  Move         r1, r0
   // let lineitem = [
-  Const        r2, [{"l_extendedprice": 100, "l_partkey": 1, "l_quantity": 1}, {"l_extendedprice": 1000, "l_partkey": 1, "l_quantity": 10}, {"l_extendedprice": 2000, "l_partkey": 1, "l_quantity": 20}, {"l_extendedprice": 500, "l_partkey": 2, "l_quantity": 5}]
-  Move         r3, r2
+  Const        r1, [{"l_extendedprice": 100, "l_partkey": 1, "l_quantity": 1}, {"l_extendedprice": 1000, "l_partkey": 1, "l_quantity": 10}, {"l_extendedprice": 2000, "l_partkey": 1, "l_quantity": 20}, {"l_extendedprice": 500, "l_partkey": 2, "l_quantity": 5}]
   // let brand = "Brand#23"
-  Const        r4, "Brand#23"
-  Move         r5, r4
+  Const        r2, "Brand#23"
   // let container = "MED BOX"
-  Const        r6, "MED BOX"
-  Move         r7, r6
+  Const        r3, "MED BOX"
   // from l in lineitem
-  Const        r8, []
-  IterPrep     r9, r3
-  Len          r10, r9
+  Const        r4, []
+  IterPrep     r5, r1
+  Len          r6, r5
   // join p in part on p.p_partkey == l.l_partkey
-  IterPrep     r11, r1
-  Len          r12, r11
+  IterPrep     r7, r0
+  Len          r8, r7
   // from l in lineitem
-  Const        r13, 0
-L9:
-  Less         r14, r13, r10
-  JumpIfFalse  r14, L0
-  Index        r15, r9, r13
-  Move         r16, r15
+  Const        r9, 0
+  EqualInt     r10, r6, r9
+  JumpIfTrue   r10, L0
+  EqualInt     r11, r8, r9
+  JumpIfTrue   r11, L0
+  LessEq       r12, r8, r6
+  JumpIfFalse  r12, L1
   // join p in part on p.p_partkey == l.l_partkey
-  Const        r17, 0
-L8:
-  Less         r18, r17, r12
-  JumpIfFalse  r18, L1
-  Index        r19, r11, r17
-  Move         r20, r19
-  Const        r21, "p_partkey"
-  Index        r22, r20, r21
-  Const        r23, "l_partkey"
-  Index        r24, r16, r23
-  Equal        r25, r22, r24
-  JumpIfFalse  r25, L2
-  // (p.p_brand == brand) &&
-  Const        r26, "p_brand"
-  Index        r27, r20, r26
-  Equal        r28, r27, r5
-  Move         r29, r28
-  JumpIfFalse  r29, L3
-  // (p.p_container == container) &&
-  Const        r30, "p_container"
-  Index        r31, r20, r30
-  Equal        r32, r31, r7
-  // (p.p_brand == brand) &&
-  Move         r29, r32
-L3:
-  // (p.p_container == container) &&
-  Move         r33, r29
-  JumpIfFalse  r33, L4
-  // (l.l_quantity < (
-  Const        r34, "l_quantity"
-  Index        r35, r16, r34
-  // 0.2 * avg(
-  Const        r36, 0.2
-  // from x in lineitem
-  Const        r37, []
-  IterPrep     r38, r3
-  Len          r39, r38
-  Const        r40, 0
-L7:
-  Less         r41, r40, r39
-  JumpIfFalse  r41, L5
-  Index        r42, r38, r40
-  Move         r43, r42
-  // where x.l_partkey == p.p_partkey
-  Const        r44, "l_partkey"
-  Index        r45, r43, r44
-  Const        r46, "p_partkey"
-  Index        r47, r20, r46
-  Equal        r48, r45, r47
-  JumpIfFalse  r48, L6
-  // select x.l_quantity
-  Const        r49, "l_quantity"
-  Index        r50, r43, r49
-  // from x in lineitem
-  Append       r51, r37, r50
-  Move         r37, r51
-L6:
-  Const        r52, 1
-  Add          r53, r40, r52
-  Move         r40, r53
-  Jump         L7
-L5:
-  // 0.2 * avg(
-  Avg          r54, r37
-  MulFloat     r55, r36, r54
-  // (l.l_quantity < (
-  LessFloat    r56, r35, r55
-  // (p.p_container == container) &&
-  Move         r33, r56
+  MakeMap      r13, 0, r0
+  Const        r14, 0
 L4:
-  // where (
-  JumpIfFalse  r33, L2
-  // select l.l_extendedprice
-  Const        r57, "l_extendedprice"
-  Index        r58, r16, r57
-  // from l in lineitem
-  Append       r59, r8, r58
-  Move         r8, r59
+  Less         r15, r14, r8
+  JumpIfFalse  r15, L2
+  Index        r16, r7, r14
+  Move         r17, r16
+  Const        r18, "p_partkey"
+  Index        r19, r17, r18
+  Index        r20, r13, r19
+  Const        r21, nil
+  NotEqual     r22, r20, r21
+  JumpIfTrue   r22, L3
+  MakeList     r23, 0, r0
+  SetIndex     r13, r19, r23
+L3:
+  Index        r20, r13, r19
+  Append       r24, r20, r16
+  SetIndex     r13, r19, r24
+  Const        r25, 1
+  Add          r14, r14, r25
+  Jump         L4
 L2:
-  // join p in part on p.p_partkey == l.l_partkey
-  Const        r60, 1
-  Add          r61, r17, r60
-  Move         r17, r61
-  Jump         L8
-L1:
   // from l in lineitem
-  Const        r62, 1
-  Add          r63, r13, r62
-  Move         r13, r63
-  Jump         L9
+  Const        r27, 0
+L13:
+  Less         r28, r27, r6
+  JumpIfFalse  r28, L0
+  Index        r30, r5, r27
+  // join p in part on p.p_partkey == l.l_partkey
+  Const        r31, "l_partkey"
+  Index        r32, r30, r31
+  // from l in lineitem
+  Index        r33, r13, r32
+  Const        r34, nil
+  NotEqual     r35, r33, r34
+  JumpIfFalse  r35, L5
+  Len          r36, r33
+  Const        r37, 0
+L12:
+  Less         r38, r37, r36
+  JumpIfFalse  r38, L5
+  Index        r17, r33, r37
+  // (p.p_brand == brand) &&
+  Const        r40, "p_brand"
+  Index        r41, r17, r40
+  Equal        r43, r41, r2
+  JumpIfFalse  r43, L6
+  // (p.p_container == container) &&
+  Const        r44, "p_container"
+  Index        r45, r17, r44
+  Equal        r47, r45, r3
+L6:
+  JumpIfFalse  r47, L7
+  // (l.l_quantity < (
+  Const        r48, "l_quantity"
+  Index        r49, r30, r48
+  // 0.2 * avg(
+  Const        r50, 0.2
+  // from x in lineitem
+  Const        r51, []
+  IterPrep     r52, r1
+  Len          r53, r52
+  Const        r55, 0
+  Move         r54, r55
+L10:
+  LessInt      r56, r54, r53
+  JumpIfFalse  r56, L8
+  Index        r58, r52, r54
+  // where x.l_partkey == p.p_partkey
+  Index        r59, r58, r31
+  Index        r60, r17, r18
+  Equal        r61, r59, r60
+  JumpIfFalse  r61, L9
+  // select x.l_quantity
+  Index        r62, r58, r48
+  // from x in lineitem
+  Append       r51, r51, r62
+L9:
+  Const        r64, 1
+  AddInt       r54, r54, r64
+  Jump         L10
+L8:
+  // 0.2 * avg(
+  Avg          r65, r51
+  MulFloat     r66, r50, r65
+  // (l.l_quantity < (
+  LessFloat    r47, r49, r66
+L7:
+  // where (
+  JumpIfFalse  r47, L11
+  // select l.l_extendedprice
+  Const        r68, "l_extendedprice"
+  Index        r69, r30, r68
+  // from l in lineitem
+  Append       r4, r4, r69
+L11:
+  Const        r71, 1
+  Add          r37, r37, r71
+  Jump         L12
+L5:
+  Const        r73, 1
+  Add          r27, r27, r73
+  Jump         L13
 L0:
-  // let filtered =
-  Move         r64, r8
+  Jump         L14
+L1:
+  MakeMap      r75, 0, r0
+  Const        r76, 0
+L17:
+  Less         r77, r76, r6
+  JumpIfFalse  r77, L15
+  Index        r78, r5, r76
+  // join p in part on p.p_partkey == l.l_partkey
+  Index        r79, r78, r31
+  // from l in lineitem
+  Index        r80, r75, r79
+  Const        r81, nil
+  NotEqual     r82, r80, r81
+  JumpIfTrue   r82, L16
+  MakeList     r83, 0, r0
+  SetIndex     r75, r79, r83
+L16:
+  Index        r80, r75, r79
+  Append       r84, r80, r78
+  SetIndex     r75, r79, r84
+  Const        r85, 1
+  Add          r76, r76, r85
+  Jump         L17
+L15:
+  // join p in part on p.p_partkey == l.l_partkey
+  Const        r87, 0
+L27:
+  Less         r88, r87, r8
+  JumpIfFalse  r88, L18
+  Index        r17, r7, r87
+  Index        r90, r17, r18
+  Index        r91, r75, r90
+  Const        r92, nil
+  NotEqual     r93, r91, r92
+  JumpIfFalse  r93, L19
+  Len          r94, r91
+  Const        r95, 0
+L26:
+  Less         r96, r95, r94
+  JumpIfFalse  r96, L19
+  Index        r30, r91, r95
+  // (p.p_brand == brand) &&
+  Index        r98, r17, r40
+  Equal        r100, r98, r2
+  JumpIfFalse  r100, L20
+  // (p.p_container == container) &&
+  Index        r101, r17, r44
+  Equal        r103, r101, r3
+L20:
+  JumpIfFalse  r103, L21
+  // (l.l_quantity < (
+  Index        r104, r30, r48
+  // from x in lineitem
+  Const        r105, []
+  IterPrep     r106, r1
+  Len          r107, r106
+  Move         r108, r55
+L24:
+  LessInt      r109, r108, r107
+  JumpIfFalse  r109, L22
+  Index        r58, r106, r108
+  // where x.l_partkey == p.p_partkey
+  Index        r111, r58, r31
+  Index        r112, r17, r18
+  Equal        r113, r111, r112
+  JumpIfFalse  r113, L23
+  // select x.l_quantity
+  Index        r114, r58, r48
+  // from x in lineitem
+  Append       r105, r105, r114
+L23:
+  AddInt       r108, r108, r64
+  Jump         L24
+L22:
+  // 0.2 * avg(
+  Avg          r116, r105
+  MulFloat     r117, r50, r116
+  // (l.l_quantity < (
+  LessFloat    r103, r104, r117
+L21:
+  // where (
+  JumpIfFalse  r103, L25
+  // select l.l_extendedprice
+  Index        r119, r30, r68
+  // from l in lineitem
+  Append       r4, r4, r119
+L25:
+  // join p in part on p.p_partkey == l.l_partkey
+  Const        r121, 1
+  Add          r95, r95, r121
+  Jump         L26
+L19:
+  Const        r123, 1
+  Add          r87, r87, r123
+  Jump         L27
+L18:
   // let result = sum(filtered) / 7.0
-  Sum          r65, r64
-  Const        r66, 7
-  DivFloat     r67, r65, r66
-  Move         r68, r67
+  Sum          r125, r4
+  Const        r126, 7
+  DivFloat     r127, r125, r126
   // print(result)
-  Print        r68
+  Print        r127
   // let expected = 100.0 / 7.0
-  Const        r71, 14.285714285714286
-  Move         r72, r71
+  Const        r129, 14.285714285714286
   // expect result == expected
-  EqualFloat   r73, r68, r72
-  Expect       r73
+  EqualFloat   r130, r127, r129
+  Expect       r130
   Return       r0
