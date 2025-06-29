@@ -1,0 +1,23 @@
+let left = []
+for i in 0..{{ .N }} {
+  left = append(left, { id: i, val: i })
+}
+let right = []
+for i in 0..{{ .N }} {
+  right = append(right, { id: i, info: i * 2 })
+}
+let repeat = 100
+var last = 0
+let start = now()
+for i in 0..repeat {
+  let res = from l in left
+            join r in right on l.id == r.id
+            where l.val % 2 == 0
+            select l.val + r.info
+  last = len(res)
+}
+let duration = (now() - start) / 1000
+json({
+  "duration_us": duration,
+  "output": last,
+})
