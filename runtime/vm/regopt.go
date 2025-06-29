@@ -121,6 +121,18 @@ func VisualizeUsage(fn *Function) string {
 	return b.String()
 }
 
+// hasMakeMap reports whether fn contains any MakeMap instructions. Register
+// compaction needs to know this to avoid remapping the contiguous key/value
+// register ranges used by MakeMap.
+func hasMakeMap(fn *Function) bool {
+	for _, ins := range fn.Code {
+		if ins.Op == OpMakeMap {
+			return true
+		}
+	}
+	return false
+}
+
 // CompactRegisters remaps registers to reduce the overall count by reusing
 // registers whose lifetimes do not overlap. Parameters keep their original
 // numbers to avoid changing the calling convention.

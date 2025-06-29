@@ -296,8 +296,11 @@ func Optimize(fn *Function) {
 		}
 	}
 	// Register compaction can disturb MakeMap sequences that rely on
-	// contiguous key/value registers, so skip this step.
-	// CompactRegisters(fn)
+	// contiguous key/value registers, so only perform this step for
+	// functions that do not use MakeMap.
+	if !hasMakeMap(fn) {
+		CompactRegisters(fn)
+	}
 }
 
 // removeDead eliminates instructions that only define dead registers.
