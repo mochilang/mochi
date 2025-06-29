@@ -1,4 +1,4 @@
-func main (regs=189)
+func main (regs=178)
   // let nation = [
   Const        r0, [{"n_name": "BRAZIL", "n_nationkey": 1}]
   // let customer = [
@@ -13,30 +13,30 @@ func main (regs=189)
   Const        r5, "1994-01-01"
   // from c in customer
   Const        r6, []
+  // sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
+  Const        r7, "l"
+  Const        r8, "l_extendedprice"
+  Const        r9, "l_discount"
   // c_custkey: c.c_custkey,
-  Const        r7, "c_custkey"
+  Const        r10, "c_custkey"
   // c_name: c.c_name,
-  Const        r8, "c_name"
+  Const        r11, "c_name"
   // c_acctbal: c.c_acctbal,
-  Const        r9, "c_acctbal"
+  Const        r12, "c_acctbal"
   // c_address: c.c_address,
-  Const        r10, "c_address"
+  Const        r13, "c_address"
   // c_phone: c.c_phone,
-  Const        r11, "c_phone"
+  Const        r14, "c_phone"
   // c_comment: c.c_comment,
-  Const        r12, "c_comment"
+  Const        r15, "c_comment"
   // n_name: n.n_name
-  Const        r13, "n_name"
+  Const        r16, "n_name"
   // where o.o_orderdate >= start_date &&
-  Const        r14, "o_orderdate"
+  Const        r17, "o_orderdate"
   // l.l_returnflag == "R"
-  Const        r15, "l_returnflag"
+  Const        r18, "l_returnflag"
   // c_custkey: g.key.c_custkey,
-  Const        r16, "key"
-  // revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount)),
-  Const        r18, "l"
-  Const        r19, "l_extendedprice"
-  Const        r20, "l_discount"
+  Const        r19, "key"
   // from c in customer
   MakeMap      r21, 0, r0
   Const        r22, []
@@ -57,7 +57,7 @@ L10:
   Index        r34, r29, r31
   Const        r35, "o_custkey"
   Index        r36, r34, r35
-  Index        r37, r28, r7
+  Index        r37, r28, r10
   Equal        r38, r36, r37
   JumpIfFalse  r38, L2
   // join l in lineitem on l.l_orderkey == o.o_orderkey
@@ -89,13 +89,13 @@ L8:
   Equal        r60, r57, r59
   JumpIfFalse  r60, L4
   // where o.o_orderdate >= start_date &&
-  Index        r61, r34, r14
+  Index        r61, r34, r17
   LessEq       r62, r4, r61
   // o.o_orderdate < end_date &&
-  Index        r63, r34, r14
+  Index        r63, r34, r17
   Less         r64, r63, r5
   // l.l_returnflag == "R"
-  Index        r65, r44, r15
+  Index        r65, r44, r18
   Const        r66, "R"
   Equal        r67, r65, r66
   // where o.o_orderdate >= start_date &&
@@ -120,60 +120,80 @@ L6:
   MakeMap      r77, 4, r70
   // c_custkey: c.c_custkey,
   Const        r78, "c_custkey"
-  Index        r79, r28, r7
+  Index        r79, r28, r10
   // c_name: c.c_name,
   Const        r80, "c_name"
-  Index        r81, r28, r8
+  Index        r81, r28, r11
   // c_acctbal: c.c_acctbal,
   Const        r82, "c_acctbal"
-  Index        r83, r28, r9
+  Index        r83, r28, r12
   // c_address: c.c_address,
   Const        r84, "c_address"
-  Index        r85, r28, r10
+  Index        r85, r28, r13
   // c_phone: c.c_phone,
   Const        r86, "c_phone"
-  Index        r87, r28, r11
+  Index        r87, r28, r14
   // c_comment: c.c_comment,
   Const        r88, "c_comment"
-  Index        r89, r28, r12
+  Index        r89, r28, r15
   // n_name: n.n_name
   Const        r90, "n_name"
-  Index        r91, r55, r13
+  Index        r91, r55, r16
   // group by {
   MakeMap      r99, 7, r78
   Str          r100, r99
   In           r101, r100, r21
   JumpIfTrue   r101, L7
   // from c in customer
-  Const        r102, []
-  Const        r103, "__group__"
-  Const        r104, true
+  Const        r102, "__group__"
+  Const        r103, true
   // group by {
-  Move         r105, r99
+  Move         r104, r99
   // from c in customer
+  Const        r105, []
   Const        r106, "items"
-  Move         r107, r102
-  Const        r108, "count"
+  Move         r107, r105
+  Const        r108, "__agg1"
   Const        r109, 0
-  MakeMap      r110, 4, r103
-  SetIndex     r21, r100, r110
-  Append       r22, r22, r110
+  Const        r110, "__agg0"
+  MakeMap      r111, 5, r102
+  SetIndex     r21, r100, r111
+  Append       r22, r22, r111
 L7:
-  Index        r112, r21, r100
-  Index        r113, r112, r106
-  Append       r114, r113, r77
-  SetIndex     r112, r106, r114
-  Index        r115, r112, r108
-  Const        r116, 1
-  AddInt       r117, r115, r116
-  SetIndex     r112, r108, r117
+  Index        r113, r21, r100
+  Index        r114, r113, r106
+  Append       r115, r114, r77
+  SetIndex     r113, r106, r115
+  Index        r116, r113, r108
+  // revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount)),
+  Index        r117, r77, r7
+  Index        r118, r117, r8
+  Const        r119, 1
+  Index        r120, r77, r7
+  Index        r121, r120, r9
+  Sub          r122, r119, r121
+  Mul          r123, r118, r122
+  // from c in customer
+  Add          r124, r116, r123
+  SetIndex     r113, r108, r124
+  Index        r125, r113, r110
+  // sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
+  Index        r126, r77, r7
+  Index        r127, r126, r8
+  Index        r128, r77, r7
+  Index        r129, r128, r9
+  Sub          r130, r119, r129
+  Mul          r131, r127, r130
+  // from c in customer
+  Add          r132, r125, r131
+  SetIndex     r113, r110, r132
 L4:
   // join n in nation on n.n_nationkey == c.c_nationkey
-  AddInt       r52, r52, r116
+  AddInt       r52, r52, r119
   Jump         L8
 L3:
   // join l in lineitem on l.l_orderkey == o.o_orderkey
-  AddInt       r41, r41, r116
+  AddInt       r41, r41, r119
   Jump         L9
 L2:
   // join o in orders on o.o_custkey == c.c_custkey
@@ -182,70 +202,45 @@ L1:
   // from c in customer
   Jump         L11
 L0:
-  Move         r118, r109
-  Len          r119, r22
-L17:
-  LessInt      r120, r118, r119
-  JumpIfFalse  r120, L12
-  Index        r122, r22, r118
-  // c_custkey: g.key.c_custkey,
-  Const        r123, "c_custkey"
-  Index        r124, r122, r16
-  Index        r125, r124, r7
-  // c_name: g.key.c_name,
-  Const        r126, "c_name"
-  Index        r127, r122, r16
-  Index        r128, r127, r8
-  // revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount)),
-  Const        r129, "revenue"
-  Const        r130, []
-  IterPrep     r131, r122
-  Len          r132, r131
-  Move         r133, r109
-L14:
-  LessInt      r134, r133, r132
-  JumpIfFalse  r134, L13
-  Index        r135, r131, r133
-  Move         r136, r135
-  Index        r137, r136, r18
-  Index        r138, r137, r19
-  Index        r139, r136, r18
-  Index        r140, r139, r20
-  Sub          r141, r116, r140
-  Mul          r142, r138, r141
-  Append       r130, r130, r142
-  AddInt       r133, r133, r116
-  Jump         L14
+  Const        r133, 0
+  Len          r135, r22
 L13:
+  LessInt      r136, r133, r135
+  JumpIfFalse  r136, L12
+  Index        r138, r22, r133
+  // c_custkey: g.key.c_custkey,
+  Const        r139, "c_custkey"
+  Index        r140, r138, r19
+  Index        r141, r140, r10
+  // c_name: g.key.c_name,
+  Const        r142, "c_name"
+  Index        r143, r138, r19
+  Index        r144, r143, r11
+  // revenue: sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount)),
+  Const        r145, "revenue"
+  Index        r146, r138, r108
+  // c_acctbal: g.key.c_acctbal,
+  Const        r147, "c_acctbal"
+  Index        r148, r138, r19
+  Index        r149, r148, r12
+  // n_name: g.key.n_name,
+  Const        r150, "n_name"
+  Index        r151, r138, r19
+  Index        r152, r151, r16
+  // c_address: g.key.c_address,
+  Const        r153, "c_address"
+  Index        r154, r138, r19
   // select {
-  MakeMap      r168, 8, r123
+  MakeMap      r170, 8, r139
   // sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
-  Const        r169, []
-  IterPrep     r170, r122
-  Len          r171, r170
-  Move         r172, r109
-L16:
-  LessInt      r173, r172, r171
-  JumpIfFalse  r173, L15
-  Index        r136, r170, r172
-  Index        r175, r136, r18
-  Index        r176, r175, r19
-  Index        r177, r136, r18
-  Index        r178, r177, r20
-  Sub          r179, r116, r178
-  Mul          r180, r176, r179
-  Append       r169, r169, r180
-  AddInt       r172, r172, r116
-  Jump         L16
-L15:
-  Sum          r182, r169
-  Neg          r184, r182
+  Index        r171, r138, r110
+  Neg          r173, r171
   // from c in customer
-  Move         r185, r168
-  MakeList     r186, 2, r184
-  Append       r6, r6, r186
-  AddInt       r118, r118, r116
-  Jump         L17
+  Move         r174, r170
+  MakeList     r175, 2, r173
+  Append       r6, r6, r175
+  AddInt       r133, r133, r119
+  Jump         L13
 L12:
   // sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
   Sort         r6, r6
