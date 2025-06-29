@@ -1,19 +1,19 @@
-func main (regs=2)
+func main (regs=3)
   // print(outer(3))  // 8
   Const        r0, 3
-  Call         r1, outer, r0
-  Print        r1
+  Call         r2, outer, r0
+  Print        r2
   Return       r0
 
   // fun outer(x: int): int {
-func outer (regs=3)
+func outer (regs=6)
   // fun inner(y: int): int {
   Move         r1, r0
-  MakeClosure  r0, main, 1, r1
+  MakeClosure  r2, inner, 1, r1
   // return inner(5)
-  Const        r1, 5
-  CallV        r2, r0, 1, r1
-  Return       r2
+  Const        r3, 5
+  CallV        r5, r2, 1, r3
+  Return       r5
 
   // fun inner(y: int): int {
 func inner (regs=3)

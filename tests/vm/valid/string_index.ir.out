@@ -1,7 +1,7 @@
-func main (regs=2)
+func main (regs=3)
   // let s = "mochi"
   Const        r0, "mochi"
   // print(s[1])
-  Const        r1, "o"
-  Print        r1
+  Const        r2, "o"
+  Print        r2
   Return       r0

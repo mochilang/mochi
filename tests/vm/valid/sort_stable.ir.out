@@ -1,24 +1,24 @@
-func main (regs=8)
+func main (regs=19)
   // let items = [
   Const        r0, [{"n": 1, "v": "a"}, {"n": 1, "v": "b"}, {"n": 2, "v": "c"}]
   // let result = from i in items sort by i.n select i.v
   Const        r1, []
   Const        r2, "v"
   Const        r3, "n"
-L1:
   IterPrep     r4, r0
   Len          r5, r4
   Const        r6, 0
-  LessInt      r7, r6, r5
-  JumpIfFalse  r7, L0
-  Index        r7, r4, r6
-  Index        r4, r7, r2
-  Index        r2, r7, r3
-  Move         r7, r4
-  MakeList     r4, 2, r2
-  Append       r1, r1, r4
-  Const        r4, 1
-  AddInt       r6, r6, r4
+L1:
+  LessInt      r8, r6, r5
+  JumpIfFalse  r8, L0
+  Index        r10, r4, r6
+  Index        r11, r10, r2
+  Index        r13, r10, r3
+  Move         r14, r11
+  MakeList     r15, 2, r13
+  Append       r1, r1, r15
+  Const        r17, 1
+  AddInt       r6, r6, r17
   Jump         L1
 L0:
   Sort         r1, r1
