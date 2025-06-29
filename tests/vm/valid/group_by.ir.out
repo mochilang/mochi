@@ -28,24 +28,23 @@ L2:
   In           r17, r16, r10
   JumpIfTrue   r17, L1
   // let stats = from person in people
-  Const        r18, []
-  Const        r19, "__group__"
-  Const        r20, true
+  Const        r18, "__group__"
+  Const        r19, true
   // group by person.city into g
-  Move         r21, r15
+  Move         r20, r15
   // let stats = from person in people
-  Const        r22, "items"
-  Move         r23, r18
-  Const        r24, 0
-  MakeMap      r25, 4, r19
+  Const        r21, 0
+  Const        r22, []
+  Const        r23, "items"
+  Move         r24, r22
+  MakeMap      r25, 4, r18
   SetIndex     r10, r16, r25
-  Append       r26, r11, r25
-  Move         r11, r26
+  Append       r11, r11, r25
 L1:
   Index        r27, r10, r16
-  Index        r28, r27, r22
+  Index        r28, r27, r23
   Append       r29, r28, r13
-  SetIndex     r27, r22, r29
+  SetIndex     r27, r23, r29
   Index        r30, r27, r4
   Const        r31, 1
   AddInt       r32, r30, r31
@@ -53,7 +52,7 @@ L1:
   AddInt       r9, r9, r31
   Jump         L2
 L0:
-  Move         r33, r24
+  Move         r33, r21
   Len          r34, r11
 L6:
   LessInt      r35, r33, r34
@@ -70,7 +69,7 @@ L6:
   Const        r43, []
   IterPrep     r44, r37
   Len          r45, r44
-  Move         r46, r24
+  Move         r46, r21
 L5:
   LessInt      r47, r46, r45
   JumpIfFalse  r47, L4
