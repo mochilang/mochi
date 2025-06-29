@@ -1,0 +1,58 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
+
+func matmul(a [][]int, b [][]int) [][]int {
+	var n int = len(a)
+	var m int = len(b[0])
+	var p int = len(b)
+	var result [][]int = [][]int{}
+	for i := 0; i < n; i++ {
+		var row []int = []int{}
+		for j := 0; j < m; j++ {
+			var sum int = 0
+			for k := 0; k < p; k++ {
+				sum = (sum + (a[i][k] * b[k][j]))
+			}
+			row = append(append([]int{}, row...), []int{sum}...)
+		}
+		result = append(append([][]int{}, result...), [][]int{row}...)
+	}
+	return result
+}
+
+func main() {
+	var size int = 20
+	var repeat int = 10
+	var a [][]int = [][]int{}
+	for i := 0; i < size; i++ {
+		var row []int = []int{}
+		for j := 0; j < size; j++ {
+			row = append(append([]int{}, row...), []int{(i + j)}...)
+		}
+		a = append(append([][]int{}, a...), [][]int{row}...)
+	}
+	var b [][]int = [][]int{}
+	for i := 0; i < size; i++ {
+		var row []int = []int{}
+		for j := 0; j < size; j++ {
+			row = append(append([]int{}, row...), []int{(i * j)}...)
+		}
+		b = append(append([][]int{}, b...), [][]int{row}...)
+	}
+	var last [][]int = [][]int{}
+	var start int64 = time.Now().UnixNano()
+	for i := 0; i < repeat; i++ {
+		last = matmul(a, b)
+	}
+	var end int64 = time.Now().UnixNano()
+	var duration int64 = (int64((int64(end) - int64(start))) / int64(1000))
+	func() {
+		b, _ := json.Marshal(map[string]int64{"duration_us": duration, "output": int64(last[0][0])})
+		fmt.Println(string(b))
+	}()
+}
