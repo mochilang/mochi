@@ -972,6 +972,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fmt.Fprintln(m.writer, string(b))
 		case OpAppend:
 			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				lst = Value{Tag: ValueList, List: []Value{}}
+			}
 			if lst.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
 			}
