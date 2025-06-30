@@ -2839,6 +2839,13 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 				dst = tmp
 			}
 			return dst
+		case "first":
+			arg := fc.compileExpr(p.Call.Args[0])
+			zero := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: ValueInt, Int: 0}})
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpIndex, A: dst, B: arg, C: zero})
+			return dst
 		case "substring":
 			str := fc.compileExpr(p.Call.Args[0])
 			start := fc.compileExpr(p.Call.Args[1])

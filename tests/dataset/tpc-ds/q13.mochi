@@ -1,8 +1,8 @@
 let t = [{id: 1, val: 13}]
 let vals = from r in t select r.val
-let result = vals[0]
+let result = first(vals)
 json(result)
 
-test "TPCDS Q13 placeholder" {
+test "TPCDS Q13 first" {
   expect result == 13
 }

@@ -360,6 +360,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Pure:     true,
 		Variadic: true,
 	}, false)
+	env.SetVar("first", FuncType{
+		Params: []Type{ListType{Elem: AnyType{}}},
+		Return: AnyType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("push", FuncType{
 		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
 		Return: ListType{Elem: AnyType{}},
@@ -2169,6 +2174,7 @@ var builtinArity = map[string]int{
 	"reduce":    3,
 	"append":    2,
 	"push":      2,
+	"first":     1,
 	"substring": 3,
 }
 
@@ -2328,6 +2334,16 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 				if _, ok := a.(AnyType); !ok {
 					return errArgTypeMismatch(pos, i, IntType{}, a)
 				}
+			}
+		}
+		return nil
+	case "first":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		if _, ok := args[0].(ListType); !ok {
+			if _, ok := args[0].(AnyType); !ok {
+				return fmt.Errorf("first() expects list, got %v", args[0])
 			}
 		}
 		return nil
