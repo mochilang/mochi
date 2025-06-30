@@ -1,160 +1,271 @@
-func main (regs=93)
+func main (regs=21)
   // let cast_info = [
   Const        r0, [{"movie_id": 1, "person_id": 101}, {"movie_id": 2, "person_id": 102}]
+L10:
   // let keyword = [
   Const        r1, [{"id": 100, "keyword": "marvel-cinematic-universe"}, {"id": 200, "keyword": "other"}]
+L8:
   // let movie_keyword = [
   Const        r2, [{"keyword_id": 100, "movie_id": 1}, {"keyword_id": 200, "movie_id": 2}]
+L9:
   // let name = [
   Const        r3, [{"id": 101, "name": "Downey Robert Jr."}, {"id": 102, "name": "Chris Evans"}]
   // let title = [
   Const        r4, [{"id": 1, "production_year": 2013, "title": "Iron Man 3"}, {"id": 2, "production_year": 2000, "title": "Old Movie"}]
+L6:
   // from ci in cast_info
   Const        r5, []
   // k.keyword == "marvel-cinematic-universe" &&
   Const        r6, "keyword"
+L7:
   // n.name.contains("Downey") &&
   Const        r7, "name"
+L4:
+  Const        r8, "contains"
+  // n.name.contains("Robert") &&
+  Const        r9, "name"
+L12:
+  Const        r10, "contains"
+L11:
   // t.production_year > 2010
-  Const        r9, "production_year"
+  Const        r11, "production_year"
   // movie_keyword: k.keyword,
-  Const        r10, "movie_keyword"
+  Const        r12, "movie_keyword"
+L5:
+  Const        r6, "keyword"
+  // actor_name: n.name,
+  Const        r7, "actor_name"
+  Const        r8, "name"
+  // marvel_movie: t.title
+  Const        r9, "marvel_movie"
+  Const        r10, "title"
+  // from ci in cast_info
+  IterPrep     r11, r0
+  Len          r12, r11
+  Const        r6, 0
+  LessInt      r7, r6, r12
+  JumpIfFalse  r7, L0
+  Index        r8, r11, r6
+  // join mk in movie_keyword on ci.movie_id == mk.movie_id
+  IterPrep     r9, r2
+  Len          r10, r9
+  Const        r12, "movie_id"
+  Const        r7, "movie_id"
+  // k.keyword == "marvel-cinematic-universe" &&
+  Const        r11, "keyword"
+  // n.name.contains("Downey") &&
+  Const        r2, "name"
+  Const        r12, "contains"
+  // n.name.contains("Robert") &&
+  Const        r7, "name"
+  Const        r11, "contains"
+  // t.production_year > 2010
+  Const        r2, "production_year"
+  // movie_keyword: k.keyword,
+  Const        r12, "movie_keyword"
+  Const        r7, "keyword"
   // actor_name: n.name,
   Const        r11, "actor_name"
+  Const        r2, "name"
   // marvel_movie: t.title
   Const        r12, "marvel_movie"
-  Const        r13, "title"
-  // from ci in cast_info
-  IterPrep     r14, r0
-  Len          r15, r14
-  Const        r17, 0
-  Move         r16, r17
-L12:
-  LessInt      r18, r16, r15
-  JumpIfFalse  r18, L0
-  Index        r20, r14, r16
+  Const        r7, "title"
   // join mk in movie_keyword on ci.movie_id == mk.movie_id
-  IterPrep     r21, r2
-  Len          r22, r21
-  Const        r23, "movie_id"
-  Move         r24, r17
-L2:
-  LessInt      r25, r24, r22
-  JumpIfFalse  r25, L1
-  Index        r27, r21, r24
-  Index        r28, r20, r23
-  Index        r29, r27, r23
-  Equal        r30, r28, r29
-  JumpIfFalse  r30, L2
+  Const        r11, 0
+  LessInt      r2, r11, r10
+  JumpIfFalse  r2, L1
+  Index        r12, r9, r11
+  Const        r7, "movie_id"
+  Index        r10, r8, r7
+  Const        r2, "movie_id"
+  Index        r9, r12, r2
+  Equal        r7, r10, r9
+  JumpIfFalse  r7, L2
   // join k in keyword on mk.keyword_id == k.id
-  IterPrep     r31, r1
-  Len          r32, r31
-  Const        r33, "keyword_id"
-  Const        r34, "id"
-  Move         r35, r17
-L11:
-  LessInt      r36, r35, r32
-  JumpIfFalse  r36, L2
-  Index        r38, r31, r35
-  Index        r39, r27, r33
-  Index        r40, r38, r34
-  Equal        r41, r39, r40
-  JumpIfFalse  r41, L3
-  // join n in name on ci.person_id == n.id
-  IterPrep     r42, r3
-  Len          r43, r42
-  Const        r44, "person_id"
-  Move         r45, r17
-L10:
-  LessInt      r46, r45, r43
-  JumpIfFalse  r46, L3
-  Index        r48, r42, r45
-  Index        r49, r20, r44
-  Index        r50, r48, r34
-  Equal        r51, r49, r50
-  JumpIfFalse  r51, L4
-  // join t in title on ci.movie_id == t.id
-  IterPrep     r52, r4
-  Len          r53, r52
-  Move         r54, r17
-L9:
-  LessInt      r55, r54, r53
-  JumpIfFalse  r55, L4
-  Index        r57, r52, r54
-  Index        r58, r20, r23
-  Index        r59, r57, r34
-  Equal        r60, r58, r59
-  JumpIfFalse  r60, L5
+  IterPrep     r2, r1
+  Len          r10, r2
+  Const        r9, "keyword_id"
+  Const        r7, "id"
   // k.keyword == "marvel-cinematic-universe" &&
-  Index        r61, r38, r6
-  // t.production_year > 2010
-  Index        r62, r57, r9
-  Const        r63, 2010
-  Less         r64, r63, r62
-  // k.keyword == "marvel-cinematic-universe" &&
-  Const        r65, "marvel-cinematic-universe"
-  Equal        r67, r61, r65
-  JumpIfFalse  r67, L6
-  Index        r68, r48, r7
+  Const        r1, "keyword"
   // n.name.contains("Downey") &&
-  Const        r69, "Downey"
-  In           r71, r69, r68
-L6:
-  JumpIfFalse  r71, L7
-  Index        r72, r48, r7
+  Const        r9, "name"
+  Const        r7, "contains"
   // n.name.contains("Robert") &&
-  Const        r73, "Robert"
-  In           r75, r73, r72
-L7:
-  JumpIfFalse  r75, L8
-  Move         r75, r64
-L8:
-  // k.keyword == "marvel-cinematic-universe" &&
-  JumpIfFalse  r75, L5
+  Const        r1, "name"
+  Const        r9, "contains"
+  // t.production_year > 2010
+  Const        r7, "production_year"
   // movie_keyword: k.keyword,
-  Move         r76, r10
-  Index        r77, r38, r6
+  Const        r1, "movie_keyword"
+  Const        r9, "keyword"
   // actor_name: n.name,
-  Move         r78, r11
-  Index        r79, r48, r7
+  Const        r7, "actor_name"
+  Const        r1, "name"
   // marvel_movie: t.title
-  Move         r80, r12
-  Index        r81, r57, r13
-  // movie_keyword: k.keyword,
-  Move         r82, r76
-  Move         r83, r77
-  // actor_name: n.name,
-  Move         r84, r78
-  Move         r85, r79
-  // marvel_movie: t.title
-  Move         r86, r80
-  Move         r87, r81
-  // select {
-  MakeMap      r88, 3, r82
-  // from ci in cast_info
-  Append       r5, r5, r88
-L5:
-  // join t in title on ci.movie_id == t.id
-  Const        r90, 1
-  Add          r54, r54, r90
-  Jump         L9
-L4:
+  Const        r9, "marvel_movie"
+  Const        r7, "title"
+  // join k in keyword on mk.keyword_id == k.id
+  Const        r1, 0
+  LessInt      r9, r1, r10
+  JumpIfFalse  r9, L2
+  Index        r7, r2, r1
+  Const        r10, "keyword_id"
+  Index        r9, r12, r10
+  Const        r2, "id"
+  Index        r12, r7, r2
+  Equal        r10, r9, r12
+  JumpIfFalse  r10, L3
   // join n in name on ci.person_id == n.id
-  Add          r45, r45, r90
-  Jump         L10
+  IterPrep     r2, r3
+  Len          r9, r2
+  Const        r12, "person_id"
+  Const        r10, "id"
+  // k.keyword == "marvel-cinematic-universe" &&
+  Const        r3, "keyword"
+  // n.name.contains("Downey") &&
+  Const        r12, "name"
+  Const        r10, "contains"
+  // n.name.contains("Robert") &&
+  Const        r3, "name"
+  Const        r12, "contains"
+  // t.production_year > 2010
+  Const        r10, "production_year"
+  // movie_keyword: k.keyword,
+  Const        r3, "movie_keyword"
+  Const        r12, "keyword"
+  // actor_name: n.name,
+  Const        r10, "actor_name"
+  Const        r3, "name"
+  // marvel_movie: t.title
+  Const        r12, "marvel_movie"
+  Const        r10, "title"
+  // join n in name on ci.person_id == n.id
+  Const        r3, 0
+  LessInt      r12, r3, r9
+  JumpIfFalse  r12, L3
+  Index        r10, r2, r3
+  Const        r9, "person_id"
+  Index        r12, r8, r9
+  Const        r2, "id"
+  Index        r9, r10, r2
+  Equal        r2, r12, r9
+  JumpIfFalse  r2, L4
+  // join t in title on ci.movie_id == t.id
+  IterPrep     r12, r4
+  Len          r9, r12
+  Const        r2, "movie_id"
+  Const        r4, "id"
+  // k.keyword == "marvel-cinematic-universe" &&
+  Const        r2, "keyword"
+  // n.name.contains("Downey") &&
+  Const        r4, "name"
+  Const        r2, "contains"
+  // n.name.contains("Robert") &&
+  Const        r4, "name"
+  Const        r2, "contains"
+  // t.production_year > 2010
+  Const        r4, "production_year"
+  // movie_keyword: k.keyword,
+  Const        r2, "movie_keyword"
+  Const        r4, "keyword"
+  // actor_name: n.name,
+  Const        r2, "actor_name"
+  Const        r4, "name"
+  // marvel_movie: t.title
+  Const        r2, "marvel_movie"
+  Const        r4, "title"
+  // join t in title on ci.movie_id == t.id
+  Const        r2, 0
+  LessInt      r4, r2, r9
+  JumpIfFalse  r4, L4
+  Index        r9, r12, r2
+  Const        r4, "movie_id"
+  Index        r12, r8, r4
+  Const        r8, "id"
+  Index        r4, r9, r8
+  Equal        r8, r12, r4
+  JumpIfFalse  r8, L5
+  // k.keyword == "marvel-cinematic-universe" &&
+  Const        r12, "keyword"
+  Index        r4, r7, r12
+  // t.production_year > 2010
+  Const        r8, "production_year"
+  Index        r12, r9, r8
+  Const        r8, 2010
+  Less         r13, r8, r12
+  // k.keyword == "marvel-cinematic-universe" &&
+  Const        r12, "marvel-cinematic-universe"
+  Equal        r8, r4, r12
+  JumpIfFalse  r8, L6
+  Const        r4, "name"
+  Index        r12, r10, r4
+  // n.name.contains("Downey") &&
+  Const        r8, "Downey"
+  In           r4, r8, r12
+  JumpIfFalse  r4, L7
+  Const        r12, "name"
+  Index        r8, r10, r12
+  // n.name.contains("Robert") &&
+  Const        r4, "Robert"
+  In           r12, r4, r8
+  JumpIfFalse  r12, L5
+  Move         r12, r13
+  // k.keyword == "marvel-cinematic-universe" &&
+  JumpIfFalse  r12, L5
+  // movie_keyword: k.keyword,
+  Const        r13, "movie_keyword"
+  Const        r8, "keyword"
+  Index        r4, r7, r8
+  // actor_name: n.name,
+  Const        r12, "actor_name"
+  Const        r7, "name"
+  Index        r8, r10, r7
+  // marvel_movie: t.title
+  Const        r10, "marvel_movie"
+  Const        r7, "title"
+  Index        r14, r9, r7
+  // movie_keyword: k.keyword,
+  Move         r15, r13
+  Move         r16, r4
+  // actor_name: n.name,
+  Move         r17, r12
+  Move         r18, r8
+  // marvel_movie: t.title
+  Move         r19, r10
+  Move         r20, r14
+  // select {
+  MakeMap      r9, 3, r15
+  // from ci in cast_info
+  Append       r5, r5, r9
+  // join t in title on ci.movie_id == t.id
+  Const        r7, 1
+  Add          r2, r2, r7
+  Jump         L8
+  // join n in name on ci.person_id == n.id
+  Const        r13, 1
+  Add          r3, r3, r13
+  Jump         L9
 L3:
   // join k in keyword on mk.keyword_id == k.id
-  Add          r35, r35, r90
+  Const        r4, 1
+  Add          r1, r1, r4
+  Jump         L10
+L2:
+  // join mk in movie_keyword on ci.movie_id == mk.movie_id
+  Const        r12, 1
+  Add          r11, r11, r12
   Jump         L11
 L1:
   // from ci in cast_info
-  AddInt       r16, r16, r90
+  Const        r8, 1
+  AddInt       r6, r6, r8
   Jump         L12
 L0:
   // json(result)
   JSON         r5
   // expect result == [
-  Const        r91, [{"actor_name": "Downey Robert Jr.", "marvel_movie": "Iron Man 3", "movie_keyword": "marvel-cinematic-universe"}]
-  Equal        r92, r5, r91
-  Expect       r92
+  Const        r14, [{"actor_name": "Downey Robert Jr.", "marvel_movie": "Iron Man 3", "movie_keyword": "marvel-cinematic-universe"}]
+  Equal        r15, r5, r14
+  Expect       r15
   Return       r0
