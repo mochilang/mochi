@@ -2145,26 +2145,17 @@ func constKey(v Value) (string, bool) {
 		if len(v.List) == 0 {
 			return "[]", true
 		}
+		return "", false
 	case ValueMap:
 		if len(v.Map) == 0 {
 			return "{}", true
 		}
+		return "", false
 	case ValueNull:
 		return "n", true
-	case ValueList:
-		if len(v.List) == 0 {
-			return "[]", true
-		}
-		return "", false
-	case ValueMap:
-		if len(v.Map) == 0 {
-			return "{}", true
-		}
-		return "", false
 	default:
 		return "", false
 	}
-	return "", false
 }
 
 func (fc *funcCompiler) constReg(pos lexer.Position, v Value) int {
