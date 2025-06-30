@@ -354,6 +354,12 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	env.SetVar("concat", FuncType{
+		Params:   []Type{ListType{Elem: AnyType{}}},
+		Return:   ListType{Elem: AnyType{}},
+		Pure:     true,
+		Variadic: true,
+	}, false)
 	env.SetVar("push", FuncType{
 		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
 		Return: ListType{Elem: AnyType{}},
@@ -2286,6 +2292,15 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		if _, ok := args[0].(ListType); !ok {
 			if _, ok := args[0].(AnyType); !ok {
 				return fmt.Errorf("reduce() expects list, got %v", args[0])
+			}
+		}
+		return nil
+	case "concat":
+		for _, a := range args {
+			if _, ok := a.(ListType); !ok {
+				if _, ok := a.(AnyType); !ok {
+					return fmt.Errorf("concat() expects list, got %v", a)
+				}
 			}
 		}
 		return nil
