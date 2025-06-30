@@ -1,5 +1,4 @@
-func main (regs=195)
-L0:
+func main (regs=110)
   // let part = [
   Const        r0, [{"p_brand": "Brand#12", "p_container": "SM BOX", "p_partkey": 1, "p_size": 3}, {"p_brand": "Brand#23", "p_container": "MED BOX", "p_partkey": 2, "p_size": 5}, {"p_brand": "Brand#34", "p_container": "LG BOX", "p_partkey": 3, "p_size": 15}]
   // let lineitem = [
@@ -11,375 +10,164 @@ L0:
   // join p in part on p.p_partkey == l.l_partkey
   IterPrep     r5, r0
   Len          r6, r5
+  Const        r7, "p_partkey"
+  Const        r8, "l_partkey"
+  // (p.p_brand == "Brand#12") &&
+  Const        r9, "p_brand"
+  // (p.p_container in ["SM CASE", "SM BOX", "SM PACK", "SM PKG"]) &&
+  Const        r10, "p_container"
+  // (l.l_quantity >= 1 && l.l_quantity <= 11) &&
+  Const        r11, "l_quantity"
+  // (p.p_size >= 1 && p.p_size <= 5)
+  Const        r12, "p_size"
+  // ) && l.l_shipmode in ["AIR", "AIR REG"]
+  Const        r13, "l_shipmode"
+  // && l.l_shipinstruct == "DELIVER IN PERSON"
+  Const        r14, "l_shipinstruct"
+  // select sum(l.l_extendedprice * (1 - l.l_discount))
+  Const        r15, "l_extendedprice"
+  Const        r16, "l_discount"
   // from l in lineitem
-  Const        r7, 0
-  EqualInt     r8, r4, r7
-  JumpIfTrue   r8, L0
-  EqualInt     r9, r6, r7
-  JumpIfTrue   r9, L0
-  LessEq       r10, r6, r4
-  JumpIfFalse  r10, L1
-  // join p in part on p.p_partkey == l.l_partkey
-  MakeMap      r11, 0, r0
-  Const        r12, 0
+  Const        r17, 0
 L4:
-  LessInt      r13, r12, r6
-  JumpIfFalse  r13, L2
-  Index        r14, r5, r12
-  Move         r15, r14
-  Const        r16, "p_partkey"
-  Index        r17, r15, r16
-  Index        r18, r11, r17
-  Const        r19, nil
-  NotEqual     r20, r18, r19
-  JumpIfTrue   r20, L3
-  MakeList     r21, 0, r0
-  SetIndex     r11, r17, r21
+  LessInt      r18, r17, r4
+  JumpIfFalse  r18, L0
+  Index        r20, r3, r17
+  // join p in part on p.p_partkey == l.l_partkey
+  Const        r21, 0
 L3:
-  Index        r18, r11, r17
-  Append       r22, r18, r14
-  SetIndex     r11, r17, r22
-  Const        r23, 1
-  AddInt       r12, r12, r23
-  Jump         L4
-L2:
-  // from l in lineitem
-  Const        r24, 0
-L16:
-  LessInt      r25, r24, r4
-  JumpIfFalse  r25, L0
-  Index        r27, r3, r24
-  // join p in part on p.p_partkey == l.l_partkey
-  Const        r28, "l_partkey"
-  Index        r29, r27, r28
-  // from l in lineitem
-  Index        r30, r11, r29
-  NotEqual     r31, r30, r19
-  JumpIfFalse  r31, L5
-  Len          r32, r30
-  Const        r33, 0
-L15:
-  LessInt      r34, r33, r32
-  JumpIfFalse  r34, L5
-  Index        r15, r30, r33
+  LessInt      r22, r21, r6
+  JumpIfFalse  r22, L1
+  Index        r24, r5, r21
+  Index        r25, r24, r7
+  Index        r26, r20, r8
+  Equal        r27, r25, r26
+  JumpIfFalse  r27, L2
   // (p.p_brand == "Brand#12") &&
-  Const        r36, "p_brand"
-  Index        r37, r15, r36
-  Const        r38, "Brand#12"
-  Equal        r40, r37, r38
-  JumpIfFalse  r40, L6
+  Index        r28, r24, r9
+  Const        r29, "Brand#12"
+  Equal        r30, r28, r29
   // (p.p_container in ["SM CASE", "SM BOX", "SM PACK", "SM PKG"]) &&
-  Const        r41, "p_container"
-  Index        r42, r15, r41
-  Const        r43, ["SM CASE", "SM BOX", "SM PACK", "SM PKG"]
-  In           r40, r42, r43
-  JumpIfFalse  r40, L6
+  Index        r31, r24, r10
+  Const        r32, ["SM CASE", "SM BOX", "SM PACK", "SM PKG"]
+  In           r33, r31, r32
+  // (p.p_brand == "Brand#12") &&
+  BoolAnd      34,30,33,0
   // (l.l_quantity >= 1 && l.l_quantity <= 11) &&
-  Const        r45, "l_quantity"
-  Index        r46, r27, r45
-  LessEq       r47, r23, r46
-  Index        r48, r27, r45
-  Const        r49, 11
-  LessEq       r50, r48, r49
-  Move         r51, r47
-  JumpIfFalse  r51, L7
-L7:
+  Index        r35, r20, r11
+  Const        r36, 1
+  LessEq       r37, r36, r35
+  Index        r38, r20, r11
+  Const        r39, 11
+  LessEq       r40, r38, r39
+  BoolAnd      41,37,40,0
   // (p.p_container in ["SM CASE", "SM BOX", "SM PACK", "SM PKG"]) &&
-  Move         r40, r50
-  // (l.l_quantity >= 1 && l.l_quantity <= 11) &&
-  JumpIfFalse  r40, L6
+  BoolAnd      42,34,41,0
   // (p.p_size >= 1 && p.p_size <= 5)
-  Const        r52, "p_size"
-  Index        r53, r15, r52
-  LessEq       r54, r23, r53
-  Index        r55, r15, r52
-  Const        r56, 5
-  LessEq       r57, r55, r56
-  Move         r58, r54
-  JumpIfFalse  r58, L6
-L6:
-  // ) || (
-  Move         r59, r57
-  JumpIfTrue   r59, L8
+  Index        r43, r24, r12
+  LessEq       r44, r36, r43
+  Index        r45, r24, r12
+  Const        r46, 5
+  LessEq       r47, r45, r46
+  BoolAnd      48,44,47,0
+  // (l.l_quantity >= 1 && l.l_quantity <= 11) &&
+  BoolAnd      49,42,48,0
   // (p.p_brand == "Brand#23") &&
-  Index        r60, r15, r36
-  Const        r61, "Brand#23"
-  Equal        r63, r60, r61
-  JumpIfFalse  r63, L9
+  Index        r50, r24, r9
+  Const        r51, "Brand#23"
+  Equal        r52, r50, r51
   // (p.p_container in ["MED BAG", "MED BOX", "MED PKG", "MED PACK"]) &&
-  Index        r64, r15, r41
-  Const        r65, ["MED BAG", "MED BOX", "MED PKG", "MED PACK"]
-  In           r63, r64, r65
-  JumpIfFalse  r63, L9
+  Index        r53, r24, r10
+  Const        r54, ["MED BAG", "MED BOX", "MED PKG", "MED PACK"]
+  In           r55, r53, r54
+  // (p.p_brand == "Brand#23") &&
+  BoolAnd      56,52,55,0
   // (l.l_quantity >= 10 && l.l_quantity <= 20) &&
-  Index        r67, r27, r45
-  Const        r68, 10
-  LessEq       r69, r68, r67
-  Index        r70, r27, r45
-  Const        r71, 20
-  LessEq       r72, r70, r71
-  Move         r73, r69
-  JumpIfFalse  r73, L10
-L10:
+  Index        r57, r20, r11
+  Const        r58, 10
+  LessEq       r59, r58, r57
+  Index        r60, r20, r11
+  Const        r61, 20
+  LessEq       r62, r60, r61
+  BoolAnd      63,59,62,0
   // (p.p_container in ["MED BAG", "MED BOX", "MED PKG", "MED PACK"]) &&
-  Move         r63, r72
-  // (l.l_quantity >= 10 && l.l_quantity <= 20) &&
-  JumpIfFalse  r63, L9
+  BoolAnd      64,56,63,0
   // (p.p_size >= 1 && p.p_size <= 10)
-  Index        r74, r15, r52
-  LessEq       r75, r23, r74
-  Index        r76, r15, r52
-  LessEq       r77, r76, r68
-  Move         r78, r75
-  JumpIfFalse  r78, L9
-L9:
+  Index        r65, r24, r12
+  LessEq       r66, r36, r65
+  Index        r67, r24, r12
+  LessEq       r68, r67, r58
+  BoolAnd      69,66,68,0
+  // (l.l_quantity >= 10 && l.l_quantity <= 20) &&
+  BoolAnd      70,64,69,0
   // ) || (
-  Move         r59, r77
-  // ) || (
-  JumpIfTrue   r59, L8
+  BoolOr       71,49,70,0
   // (p.p_brand == "Brand#34") &&
-  Index        r79, r15, r36
-  Const        r80, "Brand#34"
-  Equal        r82, r79, r80
-  JumpIfFalse  r82, L11
+  Index        r72, r24, r9
+  Const        r73, "Brand#34"
+  Equal        r74, r72, r73
   // (p.p_container in ["LG CASE", "LG BOX", "LG PACK", "LG PKG"]) &&
-  Index        r83, r15, r41
-  Const        r84, ["LG CASE", "LG BOX", "LG PACK", "LG PKG"]
-  In           r82, r83, r84
-  JumpIfFalse  r82, L11
+  Index        r75, r24, r10
+  Const        r76, ["LG CASE", "LG BOX", "LG PACK", "LG PKG"]
+  In           r77, r75, r76
+  // (p.p_brand == "Brand#34") &&
+  BoolAnd      78,74,77,0
   // (l.l_quantity >= 20 && l.l_quantity <= 30) &&
-  Index        r86, r27, r45
-  LessEq       r87, r71, r86
-  Index        r88, r27, r45
-  Const        r89, 30
+  Index        r79, r20, r11
+  LessEq       r80, r61, r79
+  Index        r81, r20, r11
+  Const        r82, 30
+  LessEq       r83, r81, r82
+  BoolAnd      84,80,83,0
+  // (p.p_container in ["LG CASE", "LG BOX", "LG PACK", "LG PKG"]) &&
+  BoolAnd      85,78,84,0
+  // (p.p_size >= 1 && p.p_size <= 15)
+  Index        r86, r24, r12
+  LessEq       r87, r36, r86
+  Index        r88, r24, r12
+  Const        r89, 15
   LessEq       r90, r88, r89
-  Move         r91, r87
-  JumpIfFalse  r91, L12
-L12:
-  // (p.p_container in ["LG CASE", "LG BOX", "LG PACK", "LG PKG"]) &&
-  Move         r82, r90
+  BoolAnd      91,87,90,0
   // (l.l_quantity >= 20 && l.l_quantity <= 30) &&
-  JumpIfFalse  r82, L11
-  // (p.p_size >= 1 && p.p_size <= 15)
-  Index        r92, r15, r52
-  LessEq       r93, r23, r92
-  Index        r94, r15, r52
-  Const        r95, 15
-  LessEq       r96, r94, r95
-  Move         r97, r93
-  JumpIfFalse  r97, L11
-L11:
+  BoolAnd      92,85,91,0
   // ) || (
-  Move         r59, r96
-L8:
+  BoolOr       93,71,92,0
   // ) && l.l_shipmode in ["AIR", "AIR REG"]
-  Const        r98, "l_shipmode"
-  Index        r99, r27, r98
-  Const        r100, ["AIR", "AIR REG"]
-  In           r101, r99, r100
+  Index        r94, r20, r13
+  Const        r95, ["AIR", "AIR REG"]
+  In           r96, r94, r95
   // && l.l_shipinstruct == "DELIVER IN PERSON"
-  Const        r102, "l_shipinstruct"
-  Index        r103, r27, r102
-  Const        r104, "DELIVER IN PERSON"
-  Equal        r105, r103, r104
+  Index        r97, r20, r14
+  Const        r98, "DELIVER IN PERSON"
+  Equal        r99, r97, r98
   // ) && l.l_shipmode in ["AIR", "AIR REG"]
-  Move         r106, r59
-  JumpIfFalse  r106, L13
-  Move         r106, r101
+  BoolAnd      100,93,96,0
   // && l.l_shipinstruct == "DELIVER IN PERSON"
-  JumpIfFalse  r106, L13
-  Move         r106, r105
-L13:
+  BoolAnd      101,100,99,0
   // where (
-  JumpIfFalse  r106, L14
+  JumpIfFalse  r101, L2
   // select sum(l.l_extendedprice * (1 - l.l_discount))
-  Const        r107, "l_extendedprice"
-  Index        r108, r27, r107
-  Const        r109, "l_discount"
-  Index        r110, r27, r109
-  Sub          r111, r23, r110
-  Mul          r112, r108, r111
+  Index        r102, r20, r15
+  Index        r103, r20, r16
+  Sub          r104, r36, r103
+  Mul          r105, r102, r104
   // from l in lineitem
-  Append       r2, r2, r112
-L14:
-  AddInt       r33, r33, r23
-  Jump         L15
-L5:
-  AddInt       r24, r24, r23
-  Jump         L16
+  Append       r2, r2, r105
+L2:
+  // join p in part on p.p_partkey == l.l_partkey
+  AddInt       r21, r21, r36
+  Jump         L3
 L1:
-  MakeMap      r114, 0, r0
-  Const        r115, 0
-L19:
-  LessInt      r116, r115, r4
-  JumpIfFalse  r116, L17
-  Index        r117, r3, r115
-  // join p in part on p.p_partkey == l.l_partkey
-  Index        r118, r117, r28
   // from l in lineitem
-  Index        r119, r114, r118
-  NotEqual     r120, r119, r19
-  JumpIfTrue   r120, L18
-  MakeList     r121, 0, r0
-  SetIndex     r114, r118, r121
-L18:
-  Index        r119, r114, r118
-  Append       r122, r119, r117
-  SetIndex     r114, r118, r122
-  AddInt       r115, r115, r23
-  Jump         L19
-L17:
-  // join p in part on p.p_partkey == l.l_partkey
-  Const        r123, 0
-L32:
-  LessInt      r124, r123, r6
-  JumpIfFalse  r124, L20
-  Index        r15, r5, r123
-  Index        r126, r15, r16
-  Index        r127, r114, r126
-  NotEqual     r128, r127, r19
-  JumpIfFalse  r128, L21
-  Len          r129, r127
-  Const        r130, 0
-L31:
-  LessInt      r131, r130, r129
-  JumpIfFalse  r131, L21
-  Index        r27, r127, r130
-  // (p.p_brand == "Brand#12") &&
-  Index        r133, r15, r36
-  Equal        r135, r133, r38
-  JumpIfFalse  r135, L22
-  // (p.p_container in ["SM CASE", "SM BOX", "SM PACK", "SM PKG"]) &&
-  Index        r136, r15, r41
-  Const        r137, ["SM CASE", "SM BOX", "SM PACK", "SM PKG"]
-  In           r135, r136, r137
-  JumpIfFalse  r135, L22
-  // (l.l_quantity >= 1 && l.l_quantity <= 11) &&
-  Index        r139, r27, r45
-  LessEq       r140, r23, r139
-  Index        r141, r27, r45
-  LessEq       r142, r141, r49
-  Move         r143, r140
-  JumpIfFalse  r143, L23
-L23:
-  // (p.p_container in ["SM CASE", "SM BOX", "SM PACK", "SM PKG"]) &&
-  Move         r135, r142
-  // (l.l_quantity >= 1 && l.l_quantity <= 11) &&
-  JumpIfFalse  r135, L22
-  // (p.p_size >= 1 && p.p_size <= 5)
-  Index        r144, r15, r52
-  LessEq       r145, r23, r144
-  Index        r146, r15, r52
-  LessEq       r147, r146, r56
-  Move         r148, r145
-  JumpIfFalse  r148, L22
-L22:
-  // ) || (
-  Move         r149, r147
-  JumpIfTrue   r149, L24
-  // (p.p_brand == "Brand#23") &&
-  Index        r150, r15, r36
-  Equal        r152, r150, r61
-  JumpIfFalse  r152, L25
-  // (p.p_container in ["MED BAG", "MED BOX", "MED PKG", "MED PACK"]) &&
-  Index        r153, r15, r41
-  Const        r154, ["MED BAG", "MED BOX", "MED PKG", "MED PACK"]
-  In           r152, r153, r154
-  JumpIfFalse  r152, L25
-  // (l.l_quantity >= 10 && l.l_quantity <= 20) &&
-  Index        r156, r27, r45
-  LessEq       r157, r68, r156
-  Index        r158, r27, r45
-  LessEq       r159, r158, r71
-  Move         r160, r157
-  JumpIfFalse  r160, L26
-L26:
-  // (p.p_container in ["MED BAG", "MED BOX", "MED PKG", "MED PACK"]) &&
-  Move         r152, r159
-  // (l.l_quantity >= 10 && l.l_quantity <= 20) &&
-  JumpIfFalse  r152, L25
-  // (p.p_size >= 1 && p.p_size <= 10)
-  Index        r161, r15, r52
-  LessEq       r162, r23, r161
-  Index        r163, r15, r52
-  LessEq       r164, r163, r68
-  Move         r165, r162
-  JumpIfFalse  r165, L25
-L25:
-  // ) || (
-  Move         r149, r164
-  // ) || (
-  JumpIfTrue   r149, L24
-  // (p.p_brand == "Brand#34") &&
-  Index        r166, r15, r36
-  Equal        r168, r166, r80
-  JumpIfFalse  r168, L27
-  // (p.p_container in ["LG CASE", "LG BOX", "LG PACK", "LG PKG"]) &&
-  Index        r169, r15, r41
-  Const        r170, ["LG CASE", "LG BOX", "LG PACK", "LG PKG"]
-  In           r168, r169, r170
-  JumpIfFalse  r168, L27
-  // (l.l_quantity >= 20 && l.l_quantity <= 30) &&
-  Index        r172, r27, r45
-  LessEq       r173, r71, r172
-  Index        r174, r27, r45
-  LessEq       r175, r174, r89
-  Move         r176, r173
-  JumpIfFalse  r176, L28
-L28:
-  // (p.p_container in ["LG CASE", "LG BOX", "LG PACK", "LG PKG"]) &&
-  Move         r168, r175
-  // (l.l_quantity >= 20 && l.l_quantity <= 30) &&
-  JumpIfFalse  r168, L27
-  // (p.p_size >= 1 && p.p_size <= 15)
-  Index        r177, r15, r52
-  LessEq       r178, r23, r177
-  Index        r179, r15, r52
-  LessEq       r180, r179, r95
-  Move         r181, r178
-  JumpIfFalse  r181, L27
-L27:
-  // ) || (
-  Move         r149, r180
-L24:
-  // ) && l.l_shipmode in ["AIR", "AIR REG"]
-  Index        r182, r27, r98
-  Const        r183, ["AIR", "AIR REG"]
-  In           r184, r182, r183
-  // && l.l_shipinstruct == "DELIVER IN PERSON"
-  Index        r185, r27, r102
-  Equal        r186, r185, r104
-  // ) && l.l_shipmode in ["AIR", "AIR REG"]
-  Move         r187, r149
-  JumpIfFalse  r187, L29
-  Move         r187, r184
-  // && l.l_shipinstruct == "DELIVER IN PERSON"
-  JumpIfFalse  r187, L29
-  Move         r187, r186
-L29:
-  // where (
-  JumpIfFalse  r187, L30
+  AddInt       r17, r17, r36
+  Jump         L4
+L0:
   // select sum(l.l_extendedprice * (1 - l.l_discount))
-  Index        r188, r27, r107
-  Index        r189, r27, r109
-  Sub          r190, r23, r189
-  Mul          r191, r188, r190
-  // from l in lineitem
-  Append       r2, r2, r191
-L30:
-  // join p in part on p.p_partkey == l.l_partkey
-  AddInt       r130, r130, r23
-  Jump         L31
-L21:
-  AddInt       r123, r123, r23
-  Jump         L32
-L20:
-  // select sum(l.l_extendedprice * (1 - l.l_discount))
-  Sum          r193, r2
+  Sum          r107, r2
   // print(result)
-  Print        r193
+  Print        r107
   // expect result == 2800.0
-  Const        r194, 2800
-  EqualFloat   r195, r193, r194
-  Expect       r195
+  Const        r108, 2800
+  EqualFloat   r109, r107, r108
+  Expect       r109
   Return       r0

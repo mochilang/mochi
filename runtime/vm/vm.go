@@ -73,6 +73,8 @@ const (
 	OpReturn
 	OpNot
 	OpJumpIfTrue
+	OpBoolAnd
+	OpBoolOr
 	OpNow
 	OpJSON
 	OpAppend
@@ -193,6 +195,10 @@ func (op Op) String() string {
 		return "Not"
 	case OpJumpIfTrue:
 		return "JumpIfTrue"
+	case OpBoolAnd:
+		return "BoolAnd"
+	case OpBoolOr:
+		return "BoolOr"
 	case OpNow:
 		return "Now"
 	case OpJSON:
@@ -809,6 +815,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if fr.regs[ins.A].Truthy() {
 				fr.ip = ins.B
 			}
+		case OpBoolAnd:
+			b := fr.regs[ins.B].Truthy()
+			c := fr.regs[ins.C].Truthy()
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: b && c}
+		case OpBoolOr:
+			b := fr.regs[ins.B].Truthy()
+			c := fr.regs[ins.C].Truthy()
+			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: b || c}
 		case OpLen:
 			v := fr.regs[ins.B]
 			switch v.Tag {
@@ -2362,37 +2376,15 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 			}
 			if contains(level, opName) {
 				left := valueOf(&operands[i])
-				var dst int
-				if opName == "&&" || opName == "||" {
-					dst = left
-					jumps := []int{}
-					condOp := OpJumpIfFalse
-					if opName == "||" {
-						condOp = OpJumpIfTrue
-					}
-					j := i
-					for ; j < len(ops) && ops[j].Op == opName; j++ {
-						jmp := len(fc.fn.Code)
-						fc.emit(ops[j].Pos, Instr{Op: condOp, A: dst})
-						right := valueOf(&operands[j+1])
-						fc.emit(ops[j].Pos, Instr{Op: OpMove, A: dst, B: right})
-						jumps = append(jumps, jmp)
-					}
-					end := len(fc.fn.Code)
-					for _, jmp := range jumps {
-						fc.fn.Code[jmp].B = end
-					}
-					operands[i] = operand{reg: dst, done: true}
-					operands = append(operands[:i+1], operands[j+1:]...)
-					ops = append(ops[:i], ops[j:]...)
-					continue
-				} else {
-					right := valueOf(&operands[i+1])
-					dst = fc.emitBinaryOp(ops[i].Pos, opName, ops[i].All, left, right)
+				j := i
+				for ; j < len(ops) && ops[j].Op == opName; j++ {
+					right := valueOf(&operands[j+1])
+					left = fc.emitBinaryOp(ops[j].Pos, opName, ops[j].All, left, right)
 				}
-				operands[i] = operand{reg: dst, done: true}
-				operands = append(operands[:i+1], operands[i+2:]...)
-				ops = append(ops[:i], ops[i+1:]...)
+				operands[i] = operand{reg: left, done: true}
+				operands = append(operands[:i+1], operands[j+1:]...)
+				ops = append(ops[:i], ops[j:]...)
+				continue
 			} else {
 				i++
 			}
@@ -2406,19 +2398,11 @@ func (fc *funcCompiler) emitBinaryOp(pos lexer.Position, op string, all bool, le
 	switch op {
 	case "&&":
 		dst := fc.newReg()
-		fc.emit(pos, Instr{Op: OpMove, A: dst, B: left})
-		jmp := len(fc.fn.Code)
-		fc.emit(pos, Instr{Op: OpJumpIfFalse, A: dst})
-		fc.emit(pos, Instr{Op: OpMove, A: dst, B: right})
-		fc.fn.Code[jmp].B = len(fc.fn.Code)
+		fc.emit(pos, Instr{Op: OpBoolAnd, A: dst, B: left, C: right})
 		return dst
 	case "||":
 		dst := fc.newReg()
-		fc.emit(pos, Instr{Op: OpMove, A: dst, B: left})
-		jmp := len(fc.fn.Code)
-		fc.emit(pos, Instr{Op: OpJumpIfTrue, A: dst})
-		fc.emit(pos, Instr{Op: OpMove, A: dst, B: right})
-		fc.fn.Code[jmp].B = len(fc.fn.Code)
+		fc.emit(pos, Instr{Op: OpBoolOr, A: dst, B: left, C: right})
 		return dst
 	case "+":
 		dst := fc.newReg()
