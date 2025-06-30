@@ -1,0 +1,45 @@
+func main (regs=28)
+  // let web_sales = [
+  Const        r0, [{"amount": 34}]
+  // let store_sales = [
+  Const        r1, [{"amount": 35}]
+  // let result = sum(from w in web_sales select w.amount) + sum(from s in store_sales select s.amount)
+  Const        r2, []
+  Const        r3, "amount"
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r7, 0
+  Move         r6, r7
+L1:
+  LessInt      r8, r6, r5
+  JumpIfFalse  r8, L0
+  Index        r10, r4, r6
+  Index        r11, r10, r3
+  Append       r2, r2, r11
+  Const        r13, 1
+  AddInt       r6, r6, r13
+  Jump         L1
+L0:
+  Sum          r14, r2
+  Const        r15, []
+  IterPrep     r16, r1
+  Len          r17, r16
+  Move         r18, r7
+L3:
+  LessInt      r19, r18, r17
+  JumpIfFalse  r19, L2
+  Index        r21, r16, r18
+  Index        r22, r21, r3
+  Append       r15, r15, r22
+  AddInt       r18, r18, r13
+  Jump         L3
+L2:
+  Sum          r24, r15
+  Add          r25, r14, r24
+  // json(result)
+  JSON         r25
+  // expect result == 69
+  Const        r26, 69
+  Equal        r27, r25, r26
+  Expect       r27
+  Return       r0

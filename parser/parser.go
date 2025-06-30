@@ -30,7 +30,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Float", Pattern: `\d+\.\d+`},
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
-	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
+	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|\+\+|[-+*/%=<>!|{}\[\](),.:]`},
 	{Name: "Whitespace", Pattern: `[ \t\n\r]+`},
 })
 
@@ -318,7 +318,7 @@ type BinaryExpr struct {
 
 type BinaryOp struct {
 	Pos   lexer.Position
-	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | 'union' | 'except' | 'intersect')"`
+	Op    string       `parser:"@('==' | '!=' | '<' | '<=' | '>' | '>=' | '++' | '+' | '-' | '*' | '/' | '%' | 'in' | '&&' | '||' | 'union' | 'except' | 'intersect')"`
 	All   bool         `parser:"[ @'all' ]"`
 	Right *PostfixExpr `parser:"@@"`
 }

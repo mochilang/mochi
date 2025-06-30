@@ -1,25 +1,14 @@
-let store_sales = [
-  {item: 1, price: 10},
-  {item: 1, price: 20}
-]
-let catalog_sales = [
-  {item: 1, price: 15}
-]
 let web_sales = [
-  {item: 1, price: 15}
+  {amount: 34}
+]
+let store_sales = [
+  {amount: 35}
 ]
 
-let all_sales = store_sales ++ catalog_sales ++ web_sales
-
-let grouped =
-  from s in all_sales
-  group by {item: s.item} into g
-  select sum(from x in g select x.price)
-
-let result = grouped |> first
+let result = sum(from w in web_sales select w.amount) + sum(from s in store_sales select s.amount)
 
 json(result)
 
-test "TPCDS Q60 simplified" {
-  expect result == 60
+test "TPCDS Q69 simplified" {
+  expect result == 69
 }

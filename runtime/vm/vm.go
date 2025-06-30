@@ -2150,7 +2150,7 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
-		{"union", "union_all", "except", "intersect"},
+		{"union", "union_all", "except", "intersect", "++"},
 	}
 
 	contains := func(list []string, op string) bool {
@@ -2329,10 +2329,10 @@ func (fc *funcCompiler) emitBinaryOp(pos lexer.Position, op string, all bool, le
 		dst := fc.newReg()
 		fc.emit(pos, Instr{Op: OpIn, A: dst, B: left, C: right})
 		return dst
-	case "union", "union_all":
+	case "union", "union_all", "++":
 		dst := fc.newReg()
 		opCode := OpUnion
-		if op == "union_all" || all {
+		if op == "union_all" || op == "++" || all {
 			opCode = OpUnionAll
 		}
 		fc.emit(pos, Instr{Op: opCode, A: dst, B: left, C: right})
