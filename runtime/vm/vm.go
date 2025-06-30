@@ -125,9 +125,8 @@ const (
 	OpUnion
 	OpExcept
 	OpIntersect
-	OpSort
-	OpExpect
-	OpFirst
+       OpSort
+       OpExpect
 )
 
 func (op Op) String() string {
@@ -280,13 +279,11 @@ func (op Op) String() string {
 		return "Intersect"
 	case OpSort:
 		return "Sort"
-	case OpExpect:
-		return "Expect"
-	case OpFirst:
-		return "First"
-	default:
-		return "?"
-	}
+       case OpExpect:
+               return "Expect"
+       default:
+               return "?"
+       }
 }
 
 type Instr struct {
@@ -454,12 +451,10 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), typ)
 			case OpAvg, OpSum, OpMin, OpMax:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
-			case OpExpect:
-				fmt.Fprintf(&b, "%s", formatReg(ins.A))
-			case OpFirst:
-				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
-			case OpMakeClosure:
-				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), p.funcName(ins.B), ins.C, formatReg(ins.D))
+                       case OpExpect:
+                               fmt.Fprintf(&b, "%s", formatReg(ins.A))
+                       case OpMakeClosure:
+                               fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), p.funcName(ins.B), ins.C, formatReg(ins.D))
 			case OpCall2:
 				fmt.Fprintf(&b, "%s, %s, %s, %s", formatReg(ins.A), p.funcName(ins.B), formatReg(ins.C), formatReg(ins.D))
 			case OpCall:
@@ -1116,22 +1111,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			} else {
 				fr.regs[ins.A] = list.List[0]
 			}
-		case OpInput:
-			line, err := m.reader.ReadString('\n')
-			if err != nil && err != io.EOF {
-				return Value{}, err
-			}
-			line = strings.TrimRight(line, "\r\n")
-			fr.regs[ins.A] = Value{Tag: ValueStr, Str: line}
-		case OpFirst:
-			lst := fr.regs[ins.B]
-			if lst.Tag != ValueList || len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: ValueNull}
-			} else {
-				fr.regs[ins.A] = lst.List[0]
-			}
-		case OpIterPrep:
-			src := fr.regs[ins.B]
+               case OpInput:
+                       line, err := m.reader.ReadString('\n')
+                       if err != nil && err != io.EOF {
+                               return Value{}, err
+                       }
+                       line = strings.TrimRight(line, "\r\n")
+                       fr.regs[ins.A] = Value{Tag: ValueStr, Str: line}
+               case OpIterPrep:
+                       src := fr.regs[ins.B]
 			switch src.Tag {
 			case ValueNull:
 				fr.regs[ins.A] = Value{Tag: ValueList, List: nil}
