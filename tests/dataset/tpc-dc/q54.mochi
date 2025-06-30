@@ -1,24 +1,32 @@
 let catalog_sales = [
   {cs_bill_customer_sk:1, cs_sold_date_sk:1, cs_item_sk:1},
-  {cs_bill_customer_sk:3, cs_sold_date_sk:1, cs_item_sk:1}
+  {cs_bill_customer_sk:3, cs_sold_date_sk:1, cs_item_sk:1},
+  {cs_bill_customer_sk:4, cs_sold_date_sk:1, cs_item_sk:1}
 ]
-let web_sales = [{ws_bill_customer_sk:2, ws_sold_date_sk:1, ws_item_sk:1}]
+let web_sales = [
+  {ws_bill_customer_sk:2, ws_sold_date_sk:1, ws_item_sk:1}
+]
 let item = [{i_item_sk:1, i_category:"Cat", i_class:"Class"}]
 let date_dim = [{d_date_sk:1, d_moy:1, d_year:2000, d_month_seq:1}]
 let customer = [
   {c_customer_sk:1, c_current_addr_sk:1},
   {c_customer_sk:2, c_current_addr_sk:2},
-  {c_customer_sk:3, c_current_addr_sk:3}
+  {c_customer_sk:3, c_current_addr_sk:3},
+  {c_customer_sk:4, c_current_addr_sk:4}
 ]
 let store_sales = [
   {ss_customer_sk:1, ss_sold_date_sk:2, ss_ext_sales_price:120},
   {ss_customer_sk:2, ss_sold_date_sk:2, ss_ext_sales_price:160},
-  {ss_customer_sk:3, ss_sold_date_sk:2, ss_ext_sales_price:60}
+  {ss_customer_sk:3, ss_sold_date_sk:2, ss_ext_sales_price:60},
+  {ss_customer_sk:1, ss_sold_date_sk:2, ss_ext_sales_price:30},
+  {ss_customer_sk:3, ss_sold_date_sk:2, ss_ext_sales_price:40},
+  {ss_customer_sk:4, ss_sold_date_sk:2, ss_ext_sales_price:40}
 ]
 let customer_address=[
   {ca_address_sk:1, ca_county:"C", ca_state:"S"},
   {ca_address_sk:2, ca_county:"C", ca_state:"S"},
-  {ca_address_sk:3, ca_county:"C", ca_state:"S"}
+  {ca_address_sk:3, ca_county:"C", ca_state:"S"},
+  {ca_address_sk:4, ca_county:"C", ca_state:"S"}
 ]
 let store=[{s_store_sk:1, s_county:"C", s_state:"S"}]
 
@@ -51,8 +59,8 @@ json(result)
 
 test "TPCDC Q54 segments" {
   expect result == [
-    {segment:1, num_customers:1, segment_base:50},
+    {segment:0, num_customers:1, segment_base:0},
     {segment:2, num_customers:1, segment_base:100},
-    {segment:3, num_customers:1, segment_base:150}
+    {segment:3, num_customers:2, segment_base:150}
   ]
 }

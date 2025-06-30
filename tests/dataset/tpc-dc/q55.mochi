@@ -1,11 +1,13 @@
 let date_dim = [{d_date_sk:1, d_year:2000, d_moy:1}]
 let item = [
   {i_item_sk:1, i_brand_id:1, i_brand:"BrandA", i_manager_id:1},
-  {i_item_sk:2, i_brand_id:2, i_brand:"BrandB", i_manager_id:1}
+  {i_item_sk:2, i_brand_id:2, i_brand:"BrandB", i_manager_id:1},
+  {i_item_sk:3, i_brand_id:1, i_brand:"BrandA", i_manager_id:1}
 ]
 let store_sales = [
   {ss_item_sk:1, ss_sold_date_sk:1, ss_ext_sales_price:100},
-  {ss_item_sk:2, ss_sold_date_sk:1, ss_ext_sales_price:50}
+  {ss_item_sk:2, ss_sold_date_sk:1, ss_ext_sales_price:50},
+  {ss_item_sk:3, ss_sold_date_sk:1, ss_ext_sales_price:150}
 ]
 
 let result =
@@ -20,7 +22,7 @@ json(result)
 
 test "TPCDC Q55 brand manager" {
   expect result == [
-    {brand_id:1, brand:"BrandA", ext_price:100},
+    {brand_id:1, brand:"BrandA", ext_price:250},
     {brand_id:2, brand:"BrandB", ext_price:50}
   ]
 }

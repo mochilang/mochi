@@ -1,13 +1,15 @@
 let date_dim = [
   {date_sk: 1, year: 2000, month: 1},
   {date_sk: 2, year: 2000, month: 1},
-  {date_sk: 3, year: 2000, month: 1}
+  {date_sk: 3, year: 2000, month: 1},
+  {date_sk: 4, year: 2001, month: 1}
 ]
 
 let item = [
   {i_item_sk: 100, i_brand_id: 1, i_brand: "BrandA", i_manager_id: 1},
   {i_item_sk: 101, i_brand_id: 2, i_brand: "BrandB", i_manager_id: 1},
-  {i_item_sk: 102, i_brand_id: 3, i_brand: "BrandC", i_manager_id: 1}
+  {i_item_sk: 102, i_brand_id: 3, i_brand: "BrandC", i_manager_id: 1},
+  {i_item_sk: 103, i_brand_id: 1, i_brand: "BrandA", i_manager_id: 1}
 ]
 
 let store_sales = [
@@ -15,7 +17,9 @@ let store_sales = [
   {ss_item_sk: 100, ss_sold_date_sk: 2, ss_ext_sales_price: 50},
   {ss_item_sk: 101, ss_sold_date_sk: 1, ss_ext_sales_price: 50},
   {ss_item_sk: 101, ss_sold_date_sk: 2, ss_ext_sales_price: 25},
-  {ss_item_sk: 102, ss_sold_date_sk: 3, ss_ext_sales_price: 75}
+  {ss_item_sk: 102, ss_sold_date_sk: 3, ss_ext_sales_price: 75},
+  {ss_item_sk: 103, ss_sold_date_sk: 2, ss_ext_sales_price: 100},
+  {ss_item_sk: 101, ss_sold_date_sk: 4, ss_ext_sales_price: 60}
 ]
 
 let result =
@@ -31,7 +35,7 @@ json(result)
 
 test "TPCDC Q52 brand totals" {
   expect result == [
-    {d_year:2000, brand_id:1, brand:"BrandA", ext_price:150},
+    {d_year:2000, brand_id:1, brand:"BrandA", ext_price:250},
     {d_year:2000, brand_id:2, brand:"BrandB", ext_price:75},
     {d_year:2000, brand_id:3, brand:"BrandC", ext_price:75}
   ]

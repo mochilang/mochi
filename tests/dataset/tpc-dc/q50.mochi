@@ -1,18 +1,32 @@
 // Expanded dataset with one sale/return for each return bucket
 let store_sales = [
+  // Store A sales/returns
   {ticket: 1, item: 100, sold_date: 1,  customer: 1, store: 1},  // <30 days
   {ticket: 2, item: 101, sold_date: 10, customer: 2, store: 1}, // 31-60 days
   {ticket: 3, item: 102, sold_date: 30, customer: 1, store: 1}, // 61-90 days
   {ticket: 4, item: 103, sold_date: 40, customer: 2, store: 1}, // 91-120 days
-  {ticket: 5, item: 104, sold_date: 50, customer: 1, store: 1}  // >120 days
+  {ticket: 5, item: 104, sold_date: 50, customer: 1, store: 1}, // >120 days
+  // Store B additional sales
+  {ticket: 6, item: 105, sold_date: 5,  customer: 3, store: 2},  // <30 days
+  {ticket: 7, item: 106, sold_date: 10, customer: 4, store: 2}, // 31-60 days
+  {ticket: 8, item: 107, sold_date: 20, customer: 3, store: 2}, // 61-90 days
+  {ticket: 9, item: 108, sold_date: 30, customer: 4, store: 2}, // 91-120 days
+  {ticket: 10, item: 109, sold_date: 35, customer: 3, store: 2}  // >120 days
 ]
 
 let store_returns = [
+  // Returns for Store A
   {ticket: 1, item: 100, returned_date: 21,  customer: 1},  // diff 20
   {ticket: 2, item: 101, returned_date: 50,  customer: 2},  // diff 40
   {ticket: 3, item: 102, returned_date: 100, customer: 1},  // diff 70
   {ticket: 4, item: 103, returned_date: 140, customer: 2},  // diff 100
-  {ticket: 5, item: 104, returned_date: 180, customer: 1}   // diff 130
+  {ticket: 5, item: 104, returned_date: 180, customer: 1},  // diff 130
+  // Returns for Store B
+  {ticket: 6, item: 105, returned_date: 15,  customer: 3},  // diff 10
+  {ticket: 7, item: 106, returned_date: 50,  customer: 4},  // diff 40
+  {ticket: 8, item: 107, returned_date: 95,  customer: 3},  // diff 75
+  {ticket: 9, item: 108, returned_date: 130, customer: 4},  // diff 100
+  {ticket: 10, item: 109, returned_date: 200, customer: 3}   // diff 165
 ]
 
 let store = [
@@ -28,20 +42,37 @@ let store = [
     s_county: "County",
     s_state: "CA",
     s_zip: "12345"
+  },
+  {
+    store_sk: 2,
+    s_store_name: "Store B",
+    s_company_id: 2,
+    s_street_number: "2",
+    s_street_name: "Second",
+    s_street_type: "Rd",
+    s_suite_number: "B",
+    s_city: "Villagetown",
+    s_county: "County",
+    s_state: "CA",
+    s_zip: "54321"
   }
 ]
 
 let date_dim = [
   {date_sk: 1,   year: 2000, month: 1},
   {date_sk: 10,  year: 2000, month: 1},
+  {date_sk: 15,  year: 2000, month: 1},
   {date_sk: 21,  year: 2000, month: 1},
   {date_sk: 30,  year: 2000, month: 1},
+  {date_sk: 35,  year: 2000, month: 1},
   {date_sk: 40,  year: 2000, month: 1},
   {date_sk: 50,  year: 2000, month: 1},
   {date_sk: 100, year: 2000, month: 1},
+  {date_sk: 95,  year: 2000, month: 1},
   {date_sk: 130, year: 2000, month: 1},
   {date_sk: 140, year: 2000, month: 1},
-  {date_sk: 180, year: 2000, month: 1}
+  {date_sk: 180, year: 2000, month: 1},
+  {date_sk: 200, year: 2000, month: 1}
 ]
 
 let result =
@@ -84,21 +115,40 @@ let result =
 json(result)
 
 test "TPCDC Q50 return days by store" {
-  expect result == [{
-    s_store_name: "Store A",
-    s_company_id: 1,
-    s_street_number: "1",
-    s_street_name: "Main",
-    s_street_type: "St",
-    s_suite_number: "A",
-    s_city: "Townsville",
-    s_county: "County",
-    s_state: "CA",
-    s_zip: "12345",
-    "30 days": 1,
-    "31-60 days": 1,
-    "61-90 days": 1,
-    "91-120 days": 1,
-    ">120 days": 1
-  }]
+  expect result == [
+    {
+      s_store_name: "Store A",
+      s_company_id: 1,
+      s_street_number: "1",
+      s_street_name: "Main",
+      s_street_type: "St",
+      s_suite_number: "A",
+      s_city: "Townsville",
+      s_county: "County",
+      s_state: "CA",
+      s_zip: "12345",
+      "30 days": 1,
+      "31-60 days": 1,
+      "61-90 days": 1,
+      "91-120 days": 1,
+      ">120 days": 1
+    },
+    {
+      s_store_name: "Store B",
+      s_company_id: 2,
+      s_street_number: "2",
+      s_street_name: "Second",
+      s_street_type: "Rd",
+      s_suite_number: "B",
+      s_city: "Villagetown",
+      s_county: "County",
+      s_state: "CA",
+      s_zip: "54321",
+      "30 days": 1,
+      "31-60 days": 1,
+      "61-90 days": 1,
+      "91-120 days": 1,
+      ">120 days": 1
+    }
+  ]
 }

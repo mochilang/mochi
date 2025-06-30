@@ -11,7 +11,12 @@ let web_sales = [
   {item_sk: 1, sold_date: 2, price: 15},
   {item_sk: 1, sold_date: 3, price: 10},
   {item_sk: 1, sold_date: 4, price: 5},
-  {item_sk: 1, sold_date: 5, price: 20}
+  {item_sk: 1, sold_date: 5, price: 20},
+  {item_sk: 2, sold_date: 1, price: 5},
+  {item_sk: 2, sold_date: 2, price: 5},
+  {item_sk: 2, sold_date: 3, price: 5},
+  {item_sk: 2, sold_date: 4, price: 5},
+  {item_sk: 2, sold_date: 5, price: 5}
 ]
 
 let store_sales = [
@@ -19,44 +24,53 @@ let store_sales = [
   {item_sk: 1, sold_date: 2, price: 5},
   {item_sk: 1, sold_date: 3, price: 10},
   {item_sk: 1, sold_date: 4, price: 10},
-  {item_sk: 1, sold_date: 5, price: 15}
+  {item_sk: 1, sold_date: 5, price: 15},
+  {item_sk: 2, sold_date: 1, price: 2},
+  {item_sk: 2, sold_date: 2, price: 2},
+  {item_sk: 2, sold_date: 3, price: 1},
+  {item_sk: 2, sold_date: 4, price: 2},
+  {item_sk: 2, sold_date: 5, price: 3}
 ]
 
-// Aggregate sales by date
+// Aggregate sales by item and date
 let ws_daily =
   from ws in web_sales
   join d in date_dim on ws.sold_date == d.date_sk
-  group by {date: d.date_sk} into g
-  sort by g.key.date
-  select {date: g.key.date, sales: sum(from x in g select x.ws.price)}
+  group by {item: ws.item_sk, date: d.date_sk} into g
+  sort by {item: g.key.item, date: g.key.date}
+  select {item: g.key.item, date: g.key.date, sales: sum(from x in g select x.ws.price)}
 
 let ss_daily =
   from ss in store_sales
   join d in date_dim on ss.sold_date == d.date_sk
-  group by {date: d.date_sk} into g
-  sort by g.key.date
-  select {date: g.key.date, sales: sum(from x in g select x.ss.price)}
+  group by {item: ss.item_sk, date: d.date_sk} into g
+  sort by {item: g.key.item, date: g.key.date}
+  select {item: g.key.item, date: g.key.date, sales: sum(from x in g select x.ss.price)}
 
 // Compute cumulative sums
 var ws_running = []
-var ws_total = 0
+var current_item = nil
+var total = 0
 for r in ws_daily {
-  ws_total = ws_total + r.sales
-  ws_running = ws_running + [{date:r.date, total:ws_total}]
+  if current_item != r.item { current_item = r.item; total = 0 }
+  total = total + r.sales
+  ws_running = ws_running + [{item_sk:r.item, date:r.date, total:total}]
 }
 
 var ss_running = []
-var ss_total = 0
+var ss_cur = nil
+var ss_tot = 0
 for r in ss_daily {
-  ss_total = ss_total + r.sales
-  ss_running = ss_running + [{date:r.date, total:ss_total}]
+  if ss_cur != r.item { ss_cur = r.item; ss_tot = 0 }
+  ss_tot = ss_tot + r.sales
+  ss_running = ss_running + [{item_sk:r.item, date:r.date, total:ss_tot}]
 }
 
 var result = []
 for w in ws_running {
   var s_total = 0
-  for s in ss_running { if s.date == w.date { s_total = s.total } }
-  result = result + [{item_sk:1, d_date:w.date, web_sales:w.total, store_sales:s_total}]
+  for s in ss_running { if s.item_sk == w.item_sk && s.date == w.date { s_total = s.total } }
+  result = result + [{item_sk:w.item_sk, d_date:w.date, web_sales:w.total, store_sales:s_total}]
 }
 
 json(result)
@@ -67,6 +81,11 @@ test "TPCDC Q51 cumulative" {
     {item_sk:1, d_date:2, web_sales:25, store_sales:10},
     {item_sk:1, d_date:3, web_sales:35, store_sales:20},
     {item_sk:1, d_date:4, web_sales:40, store_sales:30},
-    {item_sk:1, d_date:5, web_sales:60, store_sales:45}
+    {item_sk:1, d_date:5, web_sales:60, store_sales:45},
+    {item_sk:2, d_date:1, web_sales:5, store_sales:2},
+    {item_sk:2, d_date:2, web_sales:10, store_sales:4},
+    {item_sk:2, d_date:3, web_sales:15, store_sales:5},
+    {item_sk:2, d_date:4, web_sales:20, store_sales:7},
+    {item_sk:2, d_date:5, web_sales:25, store_sales:10}
   ]
 }
