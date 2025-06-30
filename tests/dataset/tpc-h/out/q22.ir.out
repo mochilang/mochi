@@ -1,6 +1,6 @@
-func main (regs=156)
+func main (regs=154)
   // let customer = [
-  Const        r0, [{"c_acctbal": 600, "c_custkey": 1, "c_phone": "13-123-4567"}, {"c_acctbal": 100, "c_custkey": 2, "c_phone": "31-456-7890"}, {"c_acctbal": 700, "c_custkey": 3, "c_phone": "30-000-0000"}]
+  Const        r0, [{"c_acctbal": 600.0, "c_custkey": 1, "c_phone": "13-123-4567"}, {"c_acctbal": 100.0, "c_custkey": 2, "c_phone": "31-456-7890"}, {"c_acctbal": 700.0, "c_custkey": 3, "c_phone": "30-000-0000"}]
   // let orders = [
   Const        r1, [{"o_custkey": 2, "o_orderkey": 10}]
   // let valid_codes = ["13", "31", "23", "29", "30", "18", "17"]
@@ -22,7 +22,7 @@ L3:
   Move         r12, r11
   // where c.c_acctbal > 0.0 && substring(c.c_phone, 0, 2) in valid_codes
   Index        r13, r12, r4
-  Const        r14, 0
+  Const        r14, 0.0
   LessFloat    r15, r14, r13
   Index        r16, r12, r5
   Const        r17, 2
@@ -57,7 +57,7 @@ L0:
   IterPrep     r30, r0
   Len          r31, r30
   Move         r32, r9
-L11:
+L10:
   LessInt      r33, r32, r31
   JumpIfFalse  r33, L4
   Index        r34, r30, r32
@@ -74,7 +74,8 @@ L11:
   Move         r41, r40
   JumpIfFalse  r41, L5
   Move         r41, r38
-L5:
+  // c.c_acctbal > avg_balance && (!exists(
+  JumpIfFalse  r41, L5
   // from o in orders
   Const        r42, []
   IterPrep     r43, r1
@@ -100,183 +101,179 @@ L6:
   // c.c_acctbal > avg_balance && (!exists(
   Exists       r53, r42
   Not          r54, r53
-  Move         r55, r41
-  JumpIfFalse  r55, L9
-  Move         r55, r54
-L9:
+  Move         r41, r54
+L5:
   // substring(c.c_phone, 0, 2) in valid_codes &&
-  JumpIfFalse  r55, L10
+  JumpIfFalse  r41, L9
   // cntrycode: substring(c.c_phone, 0, 2),
-  Const        r56, "cntrycode"
-  Index        r57, r12, r5
-  Slice        r58, r57, r9, r17
+  Const        r55, "cntrycode"
+  Index        r56, r12, r5
+  Slice        r57, r56, r9, r17
   // c_acctbal: c.c_acctbal
-  Const        r59, "c_acctbal"
-  Index        r60, r12, r4
+  Const        r58, "c_acctbal"
+  Index        r59, r12, r4
   // cntrycode: substring(c.c_phone, 0, 2),
-  Move         r61, r56
+  Move         r60, r55
+  Move         r61, r57
+  // c_acctbal: c.c_acctbal
   Move         r62, r58
-  // c_acctbal: c.c_acctbal
   Move         r63, r59
-  Move         r64, r60
   // select {
-  MakeMap      r65, 2, r61
+  MakeMap      r64, 2, r60
   // from c in customer
-  Append       r66, r26, r65
-  Move         r26, r66
-L10:
+  Append       r65, r26, r64
+  Move         r26, r65
+L9:
   AddInt       r32, r32, r24
-  Jump         L11
+  Jump         L10
 L4:
   // from c in eligible_customers
-  Const        r67, []
-  IterPrep     r68, r26
-  Len          r69, r68
-  Const        r70, 0
-  MakeMap      r71, 0, r0
-  Const        r73, []
-  Move         r72, r73
-L14:
-  LessInt      r74, r70, r69
-  JumpIfFalse  r74, L12
-  Index        r75, r68, r70
-  Move         r12, r75
+  Const        r66, []
+  IterPrep     r67, r26
+  Len          r68, r67
+  Const        r69, 0
+  MakeMap      r70, 0, r0
+  Const        r72, []
+  Move         r71, r72
+L13:
+  LessInt      r73, r69, r68
+  JumpIfFalse  r73, L11
+  Index        r74, r67, r69
+  Move         r12, r74
   // group by c.cntrycode into g
-  Index        r76, r12, r29
-  Str          r77, r76
-  In           r78, r77, r71
-  JumpIfTrue   r78, L13
+  Index        r75, r12, r29
+  Str          r76, r75
+  In           r77, r76, r70
+  JumpIfTrue   r77, L12
   // from c in eligible_customers
-  Const        r79, []
-  Const        r80, "__group__"
-  Const        r81, true
-  Const        r82, "key"
+  Const        r78, "__group__"
+  Const        r79, true
+  Const        r80, "key"
   // group by c.cntrycode into g
-  Move         r83, r76
+  Move         r81, r75
   // from c in eligible_customers
-  Const        r84, "items"
-  Move         r85, r79
-  Const        r86, "count"
+  Const        r82, "items"
+  Move         r83, r72
+  Const        r84, "count"
+  Move         r85, r78
+  Move         r86, r79
   Move         r87, r80
   Move         r88, r81
   Move         r89, r82
   Move         r90, r83
   Move         r91, r84
-  Move         r92, r85
-  Move         r93, r86
-  Move         r94, r9
-  MakeMap      r95, 4, r87
-  SetIndex     r71, r77, r95
-  Append       r96, r72, r95
-  Move         r72, r96
-L13:
-  Index        r97, r71, r77
-  Index        r98, r97, r84
-  Append       r99, r98, r75
-  SetIndex     r97, r84, r99
-  Index        r100, r97, r86
-  AddInt       r101, r100, r24
-  SetIndex     r97, r86, r101
-  AddInt       r70, r70, r24
-  Jump         L14
+  Move         r92, r9
+  MakeMap      r93, 4, r85
+  SetIndex     r70, r76, r93
+  Append       r94, r71, r93
+  Move         r71, r94
 L12:
-  Move         r102, r9
-  Len          r103, r72
-L16:
-  LessInt      r104, r102, r103
-  JumpIfFalse  r104, L15
-  Index        r105, r72, r102
-  Move         r106, r105
-  Append       r107, r67, r106
-  Move         r67, r107
-  AddInt       r102, r102, r24
-  Jump         L16
+  Index        r95, r70, r76
+  Index        r96, r95, r82
+  Append       r97, r96, r74
+  SetIndex     r95, r82, r97
+  Index        r98, r95, r84
+  AddInt       r99, r98, r24
+  SetIndex     r95, r84, r99
+  AddInt       r69, r69, r24
+  Jump         L13
+L11:
+  Move         r100, r9
+  Len          r101, r71
 L15:
+  LessInt      r102, r100, r101
+  JumpIfFalse  r102, L14
+  Index        r103, r71, r100
+  Move         r104, r103
+  Append       r105, r66, r104
+  Move         r66, r105
+  AddInt       r100, r100, r24
+  Jump         L15
+L14:
   // var tmp = []
-  Move         r108, r79
+  Move         r106, r72
   // for g in groups {
-  IterPrep     r109, r67
-  Len          r110, r109
-  Const        r111, 0
-L20:
-  Less         r112, r111, r110
-  JumpIfFalse  r112, L17
-  Index        r113, r109, r111
-  Move         r106, r113
-  // var total = 0.0
-  Move         r114, r14
-  // for x in g.items {
-  Index        r115, r106, r84
-  IterPrep     r116, r115
-  Len          r117, r116
-  Const        r118, 0
+  IterPrep     r107, r66
+  Len          r108, r107
+  Const        r109, 0
 L19:
-  Less         r119, r118, r117
-  JumpIfFalse  r119, L18
-  Index        r120, r116, r118
-  Move         r121, r120
-  // total = total + x.c_acctbal
-  Index        r122, r121, r4
-  AddFloat     r123, r114, r122
-  Move         r114, r123
+  LessInt      r110, r109, r108
+  JumpIfFalse  r110, L16
+  Index        r111, r107, r109
+  Move         r104, r111
+  // var total = 0.0
+  Move         r112, r14
   // for x in g.items {
-  Const        r124, 1
-  Add          r125, r118, r124
-  Move         r118, r125
-  Jump         L19
+  Index        r113, r104, r82
+  IterPrep     r114, r113
+  Len          r115, r114
+  Const        r116, 0
 L18:
+  LessInt      r117, r116, r115
+  JumpIfFalse  r117, L17
+  Index        r118, r114, r116
+  Move         r119, r118
+  // total = total + x.c_acctbal
+  Index        r120, r119, r4
+  AddFloat     r121, r112, r120
+  Move         r112, r121
+  // for x in g.items {
+  Const        r122, 1
+  AddInt       r123, r116, r122
+  Move         r116, r123
+  Jump         L18
+L17:
   // let row = { cntrycode: g.key, numcust: count(g), totacctbal: total }
-  Const        r126, "cntrycode"
-  Index        r127, r106, r82
-  Const        r128, "numcust"
-  Count        r129, r106
-  Const        r130, "totacctbal"
+  Const        r124, "cntrycode"
+  Index        r125, r104, r80
+  Const        r126, "numcust"
+  Count        r127, r104
+  Const        r128, "totacctbal"
+  Move         r129, r124
+  Move         r130, r125
   Move         r131, r126
   Move         r132, r127
   Move         r133, r128
-  Move         r134, r129
-  Move         r135, r130
-  Move         r136, r114
-  MakeMap      r137, 3, r131
+  Move         r134, r112
+  MakeMap      r135, 3, r129
   // tmp = append(tmp, row)
-  Append       r138, r108, r137
-  Move         r108, r138
+  Append       r136, r106, r135
+  Move         r106, r136
   // for g in groups {
-  Const        r139, 1
-  Add          r140, r111, r139
-  Move         r111, r140
-  Jump         L20
-L17:
+  Const        r137, 1
+  AddInt       r138, r109, r137
+  Move         r109, r138
+  Jump         L19
+L16:
   // from r in tmp
-  Const        r141, []
-  IterPrep     r142, r108
-  Len          r143, r142
-  Move         r144, r9
-L22:
-  LessInt      r145, r144, r143
-  JumpIfFalse  r145, L21
-  Index        r146, r142, r144
-  Move         r147, r146
-  // sort by r.cntrycode
-  Index        r148, r147, r29
-  Move         r149, r148
-  // from r in tmp
-  Move         r150, r147
-  MakeList     r151, 2, r149
-  Append       r152, r141, r151
-  Move         r141, r152
-  AddInt       r144, r144, r24
-  Jump         L22
+  Const        r139, []
+  IterPrep     r140, r106
+  Len          r141, r140
+  Move         r142, r9
 L21:
+  LessInt      r143, r142, r141
+  JumpIfFalse  r143, L20
+  Index        r144, r140, r142
+  Move         r145, r144
   // sort by r.cntrycode
-  Sort         r153, r141
+  Index        r146, r145, r29
+  Move         r147, r146
   // from r in tmp
-  Move         r141, r153
+  Move         r148, r145
+  MakeList     r149, 2, r147
+  Append       r150, r139, r149
+  Move         r139, r150
+  AddInt       r142, r142, r24
+  Jump         L21
+L20:
+  // sort by r.cntrycode
+  Sort         r151, r139
+  // from r in tmp
+  Move         r139, r151
   // print(result)
-  Print        r141
+  Print        r139
   // expect result == [
-  Const        r154, [{"cntrycode": "13", "numcust": 1, "totacctbal": 600}, {"cntrycode": "30", "numcust": 1, "totacctbal": 700}]
-  Equal        r155, r141, r154
-  Expect       r155
+  Const        r152, [{"cntrycode": "13", "numcust": 1, "totacctbal": 600.0}, {"cntrycode": "30", "numcust": 1, "totacctbal": 700.0}]
+  Equal        r153, r139, r152
+  Expect       r153
   Return       r0
-
