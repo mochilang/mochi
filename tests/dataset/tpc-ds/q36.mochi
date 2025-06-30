@@ -24,13 +24,13 @@ let result =
   join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
   join i in item on ss.ss_item_sk == i.i_item_sk
   join s in store on ss.ss_store_sk == s.s_store_sk
-  where d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")
+  where d.d_year == 2000 && s.s_state in ["A", "B"]
   group by {category: i.i_category, class: i.i_class} into g
   sort by [g.key.category, g.key.class]
   select {
     i_category: g.key.category,
     i_class: g.key.class,
-    gross_margin: sum(from x in g select x.ss_net_profit) / sum(from x in g select x.ss_ext_sales_price)
+    gross_margin: sum(from x in g select x.ss.ss_net_profit) / sum(from x in g select x.ss.ss_ext_sales_price)
   }
   
 

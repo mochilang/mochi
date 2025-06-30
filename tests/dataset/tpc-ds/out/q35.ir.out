@@ -184,6 +184,48 @@ L16:
 L15:
   // from c in customer
   Const        r101, []
+  // group by {state: ca.ca_state, gender: cd.cd_gender, marital: cd.cd_marital_status, dep: cd.cd_dep_count, emp: cd.cd_dep_employed_count, col: cd.cd_dep_college_count} into g
+  Const        r102, "state"
+  Const        r103, "ca_state"
+  Const        r104, "gender"
+  Const        r105, "cd_gender"
+  Const        r106, "marital"
+  Const        r107, "cd_marital_status"
+  Const        r108, "dep"
+  Const        r109, "cd_dep_count"
+  Const        r110, "emp"
+  Const        r111, "cd_dep_employed_count"
+  Const        r112, "col"
+  Const        r113, "cd_dep_college_count"
+  // where c.c_customer_sk in purchased
+  Const        r114, "c_customer_sk"
+  // ca_state: g.key.state,
+  Const        r115, "ca_state"
+  Const        r116, "key"
+  Const        r117, "state"
+  // cd_gender: g.key.gender,
+  Const        r118, "cd_gender"
+  Const        r119, "key"
+  Const        r120, "gender"
+  // cd_marital_status: g.key.marital,
+  Const        r121, "cd_marital_status"
+  Const        r122, "key"
+  Const        r123, "marital"
+  // cd_dep_count: g.key.dep,
+  Const        r124, "cd_dep_count"
+  Const        r125, "key"
+  Const        r126, "dep"
+  // cd_dep_employed_count: g.key.emp,
+  Const        r127, "cd_dep_employed_count"
+  Const        r128, "key"
+  Const        r129, "emp"
+  // cd_dep_college_count: g.key.col,
+  Const        r130, "cd_dep_college_count"
+  Const        r131, "key"
+  Const        r132, "col"
+  // cnt: count(g)
+  Const        r133, "cnt"
+  // from c in customer
   MakeMap      r134, 0, r0
   Const        r135, []
   IterPrep     r137, r0

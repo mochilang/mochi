@@ -997,17 +997,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpJSON:
 			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
 			fmt.Fprintln(m.writer, string(b))
-               case OpAppend:
-                       lst := fr.regs[ins.B]
-                       if lst.Tag == ValueNull {
-                               fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{fr.regs[ins.C]}}
-                               break
-                       }
-                       if lst.Tag != ValueList {
-                               return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
-                       }
-                       newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
-                       fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
+		case OpAppend:
+			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{fr.regs[ins.C]}}
+				break
+			}
+			if lst.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
+			}
+			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
+			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
@@ -6095,22 +6095,7 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		}
 		return Value{Tag: ValueList, List: out}, true
 	case "values":
-		if len(args) != 1 {
-			return Value{}, false
-		}
-		v := args[0]
-		if v.Tag == ValueMap {
-			keys := make([]string, 0, len(v.Map))
-			for k := range v.Map {
-				keys = append(keys, k)
-			}
-			sort.Strings(keys)
-			vals := make([]Value, len(keys))
-			for i, k := range keys {
-				vals[i] = v.Map[k]
-			}
-			return Value{Tag: ValueList, List: vals}, true
-		}
+		return Value{}, false
 	}
 
 	// Fold calls to user-defined pure functions.

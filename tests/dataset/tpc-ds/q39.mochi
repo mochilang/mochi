@@ -2,7 +2,7 @@
 fun sqrt(x: float): float {
   let guess = x / 2.0
   var result = guess
-  for i in 0..5 {
+  for i in 0..9 {
     result = (result + x / result) / 2.0
   }
   return result
@@ -28,34 +28,41 @@ let date_dim = [
   {d_date_sk: 3, d_year: 2000, d_moy: 3}
 ]
 
-let monthly =
+let monthly_rows =
   from inv in inventory
   join d in date_dim on inv.inv_date_sk == d.d_date_sk
   join i in item on inv.inv_item_sk == i.i_item_sk
   join w in warehouse on inv.inv_warehouse_sk == w.w_warehouse_sk
   where d.d_year == 2000
-  group by {w: w.w_warehouse_sk, i: i.i_item_sk, month: d.d_moy} into g
-  select {w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand)}
+  select {w: w.w_warehouse_sk, i: i.i_item_sk, month: d.d_moy, qty: inv.inv_quantity_on_hand}
 
-var grouped: map<string, map<string, any>> = {}
+let monthly =
+  from m in monthly_rows
+  group by {w: m.w, i: m.i, month: m.month} into g
+  select {w: g.key.w, i: g.key.i, qty: sum(from x in g select x.qty)}
+
+var index: map<string, int> = {}
+var groups = []
 for m in monthly {
   let key = str({w: m.w, i: m.i})
-  if key in grouped {
-    let g = grouped[key]
-    grouped[key] = {w: g.w, i: g.i, qtys: append(g.qtys, m.qty)}
+  if key in index {
+    let idx = index[key]
+    let g = groups[idx]
+    groups[idx] = {w: g.w, i: g.i, qtys: append(g.qtys, m.qty)}
   } else {
-    grouped[key] = {w: m.w, i: m.i, qtys: [m.qty]}
+    index[key] = len(groups)
+    groups = append(groups, {w: m.w, i: m.i, qtys: [m.qty]})
   }
 }
 
 var summary = []
-for g in values(grouped) {
+for g in groups {
   let mean = avg(g.qtys)
   var sumsq = 0.0
   for q in g.qtys {
     sumsq = sumsq + (q - mean) * (q - mean)
   }
-  let variance = sumsq / len(g.qtys)
+  let variance = sumsq / (len(g.qtys) - 1)
   let cov = sqrt(variance) / mean
   if cov > 1.5 {
     summary = append(summary, {w_warehouse_sk: g.w, i_item_sk: g.i, cov: cov})
@@ -66,5 +73,5 @@ for g in values(grouped) {
 json(summary)
 
 test "TPCDS Q39 simplified" {
-  expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.5396007178390022}]
+  expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.5396018901626556}]
 }

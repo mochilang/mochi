@@ -27,7 +27,7 @@ let customer_total_return =
   select {
     ctr_customer_sk: g.key.cust,
     ctr_state: g.key.state,
-    ctr_total_return: sum(from x in g select x.wr_return_amt)
+    ctr_total_return: sum(from x in g select x.wr.wr_return_amt)
   }
 
 let avg_by_state =
