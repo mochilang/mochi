@@ -1,6 +1,9 @@
 func main (regs=10)
   // let store_sales = []
   Const        r0, []
+  // print(substr("zip", 0, -1))
+  Const        r5, "zi"
+  Print        r5
   // let result = []
   Const        r6, []
   // json(result)

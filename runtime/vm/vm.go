@@ -5898,18 +5898,25 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		s, start, end := args[0], args[1], args[2]
 		if s.Tag == ValueStr && start.Tag == ValueInt && end.Tag == ValueInt {
 			r := []rune(s.Str)
+			n := len(r)
 			lo, hi := start.Int, end.Int
+			if lo < 0 {
+				lo += n
+			}
+			if hi < 0 {
+				hi += n
+			}
 			if lo < 0 {
 				lo = 0
 			}
 			if hi < 0 {
 				hi = 0
 			}
-			if lo > len(r) {
-				lo = len(r)
+			if lo > n {
+				lo = n
 			}
-			if hi > len(r) {
-				hi = len(r)
+			if hi > n {
+				hi = n
 			}
 			if lo > hi {
 				lo, hi = hi, lo
@@ -5923,18 +5930,25 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		s, start, end := args[0], args[1], args[2]
 		if s.Tag == ValueStr && start.Tag == ValueInt && end.Tag == ValueInt {
 			r := []rune(s.Str)
+			n := len(r)
 			lo, hi := start.Int, end.Int
+			if lo < 0 {
+				lo += n
+			}
+			if hi < 0 {
+				hi += n
+			}
 			if lo < 0 {
 				lo = 0
 			}
 			if hi < 0 {
 				hi = 0
 			}
-			if lo > len(r) {
-				lo = len(r)
+			if lo > n {
+				lo = n
 			}
-			if hi > len(r) {
-				hi = len(r)
+			if hi > n {
+				hi = n
 			}
 			if lo > hi {
 				lo, hi = hi, lo
