@@ -1,5 +1,5 @@
 let t = [{id: 1, val: 13}]
-let vals = from r in t select r.val
+let vals = to_list(from r in t select r.val)
 let result = first(vals)
 json(result)
 

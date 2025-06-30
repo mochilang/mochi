@@ -1,7 +1,7 @@
-func main (regs=17)
+func main (regs=18)
   // let t = [{id: 1, val: 10}]
   Const        r0, [{"id": 1, "val": 10}]
-  // let vals = from r in t select r.val
+  // let vals = to_list(from r in t select r.val)
   Const        r1, []
   Const        r2, "val"
   IterPrep     r3, r0
@@ -18,12 +18,13 @@ L1:
   AddInt       r5, r5, r13
   Jump         L1
 L0:
+  ToList       r14, r1
   // let result = first(vals)
-  First        r14, r1
+  First        r15, r14
   // json(result)
-  JSON         r14
+  JSON         r15
   // expect result == 10
-  Const        r15, 10
-  Equal        r16, r14, r15
-  Expect       r16
+  Const        r16, 10
+  Equal        r17, r15, r16
+  Expect       r17
   Return       r0
