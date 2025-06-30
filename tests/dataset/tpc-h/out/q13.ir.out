@@ -1,4 +1,4 @@
-func main (regs=101)
+func main (regs=99)
   // let customer = [
   Const        r0, [{"c_custkey": 1}, {"c_custkey": 2}, {"c_custkey": 3}]
   // let orders = [
@@ -35,124 +35,124 @@ L4:
   // o.o_custkey == c.c_custkey &&
   Index        r22, r21, r4
   Index        r23, r13, r5
-  Equal        r25, r22, r23
-  JumpIfFalse  r25, L2
+  Equal        r24, r22, r23
+  JumpIfFalse  r24, L2
   // (!("special" in o.o_comment)) &&
-  Const        r26, "special"
-  Index        r27, r21, r6
-  In           r28, r26, r27
-  Not          r25, r28
-  JumpIfFalse  r25, L2
+  Const        r25, "special"
+  Index        r26, r21, r6
+  In           r27, r25, r26
+  Not          r24, r27
+  JumpIfFalse  r24, L2
   // (!("requests" in o.o_comment))
-  Const        r30, "requests"
-  Index        r31, r21, r6
-  In           r32, r30, r31
-  Not          r25, r32
+  Const        r29, "requests"
+  Index        r30, r21, r6
+  In           r31, r29, r30
+  Not          r24, r31
 L2:
   // where (
-  JumpIfFalse  r25, L3
+  JumpIfFalse  r24, L3
   // from o in orders
   Append       r15, r15, r21
 L3:
-  Const        r35, 1
-  AddInt       r18, r18, r35
+  Const        r34, 1
+  AddInt       r18, r18, r34
   Jump         L4
 L1:
   // c_count: count(
-  Count        r36, r15
-  Move         r37, r14
-  Move         r38, r36
+  Count        r35, r15
+  Move         r36, r14
+  Move         r37, r35
   // select {
-  MakeMap      r39, 1, r37
+  MakeMap      r38, 1, r36
   // from c in customer
-  Append       r2, r2, r39
-  AddInt       r9, r9, r35
+  Append       r2, r2, r38
+  AddInt       r9, r9, r34
   Jump         L5
 L0:
   // from x in per_customer
-  Const        r41, []
+  Const        r40, []
   // select { c_count: g.key, custdist: count(g) }
-  Const        r42, "key"
-  Const        r43, "custdist"
+  Const        r41, "key"
+  Const        r42, "custdist"
   // from x in per_customer
-  IterPrep     r44, r2
-  Len          r45, r44
-  Const        r46, 0
-  MakeMap      r47, 0, r0
+  IterPrep     r43, r2
+  Len          r44, r43
+  Const        r45, 0
+  MakeMap      r46, 0, r0
   Const        r48, []
+  Move         r47, r48
 L8:
-  LessInt      r50, r46, r45
-  JumpIfFalse  r50, L6
-  Index        r51, r44, r46
+  LessInt      r49, r45, r44
+  JumpIfFalse  r49, L6
+  Index        r50, r43, r45
   // group by x.c_count into g
-  Index        r53, r51, r3
-  Str          r54, r53
-  In           r55, r54, r47
-  JumpIfTrue   r55, L7
+  Index        r52, r50, r3
+  Str          r53, r52
+  In           r54, r53, r46
+  JumpIfTrue   r54, L7
   // from x in per_customer
-  Const        r56, []
-  Const        r57, "__group__"
-  Const        r58, true
+  Const        r55, "__group__"
+  Const        r56, true
   // group by x.c_count into g
-  Move         r59, r53
+  Move         r57, r52
   // from x in per_customer
-  Const        r60, "items"
-  Move         r61, r56
-  Const        r62, "count"
-  Move         r63, r57
-  Move         r64, r58
-  Move         r65, r42
+  Const        r58, "items"
+  Move         r59, r48
+  Const        r60, "count"
+  Move         r61, r55
+  Move         r62, r56
+  Move         r63, r41
+  Move         r64, r57
+  Move         r65, r58
   Move         r66, r59
   Move         r67, r60
-  Move         r68, r61
-  Move         r69, r62
-  Move         r70, r10
-  MakeMap      r71, 4, r63
-  SetIndex     r47, r54, r71
-  Append       r48, r48, r71
+  Move         r68, r10
+  MakeMap      r69, 4, r61
+  SetIndex     r46, r53, r69
+  Append       r47, r47, r69
 L7:
-  Index        r73, r47, r54
-  Index        r74, r73, r60
-  Append       r75, r74, r51
-  SetIndex     r73, r60, r75
-  Index        r76, r73, r62
-  AddInt       r77, r76, r35
-  SetIndex     r73, r62, r77
-  AddInt       r46, r46, r35
+  Index        r71, r46, r53
+  Index        r72, r71, r58
+  Append       r73, r72, r50
+  SetIndex     r71, r58, r73
+  Index        r74, r71, r60
+  AddInt       r75, r74, r34
+  SetIndex     r71, r60, r75
+  AddInt       r45, r45, r34
   Jump         L8
 L6:
-  Move         r78, r10
-  Len          r79, r48
+  Move         r76, r10
+  Len          r77, r47
 L10:
-  LessInt      r80, r78, r79
-  JumpIfFalse  r80, L9
-  Index        r82, r48, r78
+  LessInt      r78, r76, r77
+  JumpIfFalse  r78, L9
+  Index        r80, r47, r76
   // select { c_count: g.key, custdist: count(g) }
-  Const        r83, "c_count"
-  Index        r84, r82, r42
-  Const        r85, "custdist"
-  Index        r86, r82, r62
+  Const        r81, "c_count"
+  Index        r82, r80, r41
+  Const        r83, "custdist"
+  Index        r84, r80, r60
+  Move         r85, r81
+  Move         r86, r82
   Move         r87, r83
   Move         r88, r84
-  Move         r89, r85
-  Move         r90, r86
-  MakeMap      r91, 2, r87
+  MakeMap      r89, 2, r85
   // sort by -g.key
-  Index        r92, r82, r42
-  Neg          r94, r92
+  Index        r90, r80, r41
+  Neg          r92, r90
   // from x in per_customer
-  Move         r95, r91
-  MakeList     r96, 2, r94
-  Append       r41, r41, r96
-  AddInt       r78, r78, r35
+  Move         r93, r89
+  MakeList     r94, 2, r92
+  Append       r40, r40, r94
+  AddInt       r76, r76, r34
   Jump         L10
 L9:
   // sort by -g.key
-  Sort         r41, r41
+  Sort         r40, r40
   // json(grouped)
-  JSON         r41
+  JSON         r40
   // expect grouped == [
-  Const        r99, [{"c_count": 2, "custdist": 1}, {"c_count": 0, "custdist": 2}]
-  Equal        r100, r41, r99
-  Expect       r100
+  Const        r97, [{"c_count": 2, "custdist": 1}, {"c_count": 0, "custdist": 2}]
+  Equal        r98, r40, r97
+  Expect       r98
   Return       r0
