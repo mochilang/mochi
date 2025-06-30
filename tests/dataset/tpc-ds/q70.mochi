@@ -1,7 +1,40 @@
-let t = [{id: 1, val: 70}]
-let result = from r in t select r.val |> first
+let store = [
+  { s_store_sk: 1, s_state: "CA", s_county: "Orange" },
+  { s_store_sk: 2, s_state: "CA", s_county: "Orange" },
+  { s_store_sk: 3, s_state: "TX", s_county: "Travis" }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_month_seq: 1200 },
+  { d_date_sk: 2, d_month_seq: 1201 }
+]
+
+let store_sales = [
+  { ss_sold_date_sk: 1, ss_store_sk: 1, ss_net_profit: 10.0 },
+  { ss_sold_date_sk: 1, ss_store_sk: 2, ss_net_profit: 5.0 },
+  { ss_sold_date_sk: 2, ss_store_sk: 3, ss_net_profit: 20.0 }
+]
+
+let dms = 1200
+
+let result =
+  from ss in store_sales
+  join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
+  join s in store on s.s_store_sk == ss.ss_store_sk
+  where d.d_month_seq >= dms && d.d_month_seq <= dms + 11
+  group by { state: s.s_state, county: s.s_county } into g
+  sort by g.key.state, g.key.county
+  select {
+    s_state: g.key.state,
+    s_county: g.key.county,
+    total_sum: sum(from x in g select x.ss.ss_net_profit)
+  }
+
 json(result)
 
-test "TPCDS Q70 placeholder" {
-  expect result == 70
+test "TPCDS Q70 simplified" {
+  expect result == [
+    { s_state: "CA", s_county: "Orange", total_sum: 15.0 },
+    { s_state: "TX", s_county: "Travis", total_sum: 20.0 }
+  ]
 }
