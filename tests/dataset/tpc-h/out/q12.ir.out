@@ -75,62 +75,62 @@ L3:
   Const        r47, "l"
   Move         r48, r20
   Move         r49, r26
-  MakeMap      r50, 2, r47
+  Move         r50, r47
+  Move         r51, r48
+  Move         r52, r9
+  Move         r53, r49
+  MakeMap      r54, 2, r50
   // group by l.l_shipmode into g
-  Index        r51, r20, r3
-  Str          r52, r51
-  In           r53, r52, r12
-  JumpIfTrue   r53, L4
+  Index        r55, r20, r3
+  Str          r56, r55
+  In           r57, r56, r12
+  JumpIfTrue   r57, L4
   // from l in lineitem
-  Const        r54, []
-  Const        r55, "__group__"
-  Const        r56, true
-  Const        r57, "key"
+  Const        r58, []
+  Const        r59, "__group__"
+  Const        r60, true
   // group by l.l_shipmode into g
-  Move         r58, r51
+  Move         r61, r55
   // from l in lineitem
-  Const        r59, "items"
-  Move         r60, r54
-  Const        r61, "count"
-  Const        r62, 0
-  Move         r63, r55
-  Move         r64, r56
-  Move         r65, r57
-  Move         r66, r58
-  Move         r67, r59
-  Move         r68, r60
+  Const        r62, "items"
+  Move         r63, r58
+  Const        r64, "count"
+  Const        r65, 0
+  Move         r66, r59
+  Move         r67, r60
+  Move         r68, r7
   Move         r69, r61
   Move         r70, r62
-  MakeMap      r71, 4, r63
-  SetIndex     r12, r52, r71
-  Append       r13, r13, r71
+  Move         r71, r63
+  Move         r72, r64
+  Move         r73, r65
+  MakeMap      r74, 4, r66
+  SetIndex     r12, r56, r74
+  Append       r13, r13, r74
 L4:
-  Const        r73, "items"
-  Index        r74, r12, r52
-  Index        r75, r74, r73
-  Append       r76, r75, r50
-  SetIndex     r74, r73, r76
-  Const        r77, "count"
-  Index        r78, r74, r77
-  Const        r79, 1
-  AddInt       r80, r78, r79
-  SetIndex     r74, r77, r80
+  Index        r76, r12, r56
+  Index        r77, r76, r62
+  Append       r78, r77, r54
+  SetIndex     r76, r62, r78
+  Index        r79, r76, r64
+  Const        r80, 1
+  AddInt       r81, r79, r80
+  SetIndex     r76, r64, r81
 L2:
   // join o in orders on o.o_orderkey == l.l_orderkey
-  AddInt       r23, r23, r79
+  AddInt       r23, r23, r80
   Jump         L5
 L1:
   // from l in lineitem
-  AddInt       r17, r17, r79
+  AddInt       r17, r17, r80
   Jump         L6
 L0:
-  Const        r82, 0
-  Move         r81, r82
+  Move         r82, r65
   Len          r83, r13
 L12:
-  LessInt      r84, r81, r83
+  LessInt      r84, r82, r83
   JumpIfFalse  r84, L7
-  Index        r86, r13, r81
+  Index        r86, r13, r82
   // l_shipmode: g.key,
   Const        r87, "l_shipmode"
   Index        r88, r86, r7
@@ -139,7 +139,7 @@ L12:
   Const        r90, []
   IterPrep     r91, r86
   Len          r92, r91
-  Move         r93, r82
+  Move         r93, r65
 L9:
   LessInt      r94, r93, r92
   JumpIfFalse  r94, L8
@@ -148,9 +148,9 @@ L9:
   Index        r98, r97, r10
   Const        r99, ["1-URGENT", "2-HIGH"]
   In           r100, r98, r99
-  Select       101,100,79,82
+  Select       101,100,80,65
   Append       r90, r90, r101
-  AddInt       r93, r93, r79
+  AddInt       r93, r93, r80
   Jump         L9
 L8:
   Sum          r103, r90
@@ -159,7 +159,7 @@ L8:
   Const        r105, []
   IterPrep     r106, r86
   Len          r107, r106
-  Move         r108, r82
+  Move         r108, r65
 L11:
   LessInt      r109, r108, r107
   JumpIfFalse  r109, L10
@@ -169,9 +169,9 @@ L11:
   Const        r113, ["1-URGENT", "2-HIGH"]
   In           r114, r112, r113
   Not          r115, r114
-  Select       116,115,79,82
+  Select       116,115,80,65
   Append       r105, r105, r116
-  AddInt       r108, r108, r79
+  AddInt       r108, r108, r80
   Jump         L11
 L10:
   Sum          r118, r105
@@ -192,7 +192,7 @@ L10:
   Move         r128, r125
   MakeList     r129, 2, r127
   Append       r2, r2, r129
-  AddInt       r81, r81, r79
+  AddInt       r82, r82, r80
   Jump         L12
 L7:
   // sort by g.key
