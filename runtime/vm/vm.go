@@ -6078,6 +6078,15 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{}, false
 		}
 		return Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(args[0]))}, true
+	case "lower":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if v.Tag == ValueStr {
+			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true
+		}
+		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(v)))}, true
 	case "substring":
 		if len(args) != 3 {
 			return Value{}, false
