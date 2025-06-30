@@ -1,0 +1,50 @@
+func main (regs=35)
+  // let catalog_sales = [
+  Const        r0, [{"item": 1, "profit": 30}, {"item": 2, "profit": 38}]
+  // let store_sales = [
+  Const        r1, [{"item": 1, "profit": 30}]
+  // let result = sum(from c in catalog_sales select c.profit) - sum(from s in store_sales select s.profit) + 30
+  Const        r2, []
+  Const        r3, "profit"
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r8, r6, r5
+  JumpIfFalse  r8, L0
+  Index        r10, r4, r6
+  Const        r11, "profit"
+  Index        r12, r10, r11
+  Append       r2, r2, r12
+  Const        r14, 1
+  AddInt       r6, r6, r14
+  Jump         L1
+L0:
+  Sum          r15, r2
+  Const        r16, []
+  Const        r17, "profit"
+  IterPrep     r18, r1
+  Len          r19, r18
+  Const        r20, 0
+L3:
+  LessInt      r22, r20, r19
+  JumpIfFalse  r22, L2
+  Index        r24, r18, r20
+  Const        r25, "profit"
+  Index        r26, r24, r25
+  Append       r16, r16, r26
+  Const        r28, 1
+  AddInt       r20, r20, r28
+  Jump         L3
+L2:
+  Sum          r29, r16
+  Sub          r30, r15, r29
+  Const        r31, 30
+  Add          r32, r30, r31
+  // json(result)
+  JSON         r32
+  // expect result == 68
+  Const        r33, 68
+  Equal        r34, r32, r33
+  Expect       r34
+  Return       r0

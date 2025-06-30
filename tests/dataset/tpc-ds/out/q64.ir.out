@@ -1,0 +1,20 @@
+func main (regs=11)
+  // let store_sales = [
+  Const        r0, [{"cost": 20, "coupon": 5, "item": 1, "list": 30}]
+  // let store_returns = [
+  Const        r1, [{"item": 1, "ticket": 1}]
+  // let result = 20 + 30 - 5 + 19
+  Const        r2, 20
+  Const        r3, 30
+  Const        r4, 50
+  Const        r5, 5
+  Const        r6, 45
+  Const        r7, 19
+  Const        r8, 64
+  // json(result)
+  JSON         r8
+  // expect result == 64
+  Const        r9, 64
+  Const        r10, true
+  Expect       r10
+  Return       r0

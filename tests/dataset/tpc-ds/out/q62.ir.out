@@ -1,0 +1,16 @@
+func main (regs=8)
+  // let web_sales = [
+  Const        r0, [{"days": 10}, {"days": 40}, {"days": 70}, {"days": 100}, {"days": 130}]
+  // let result = count(web_sales) * 12 + 2
+  Const        r1, 5
+  Const        r2, 12
+  Const        r3, 60
+  Const        r4, 2
+  Const        r5, 62
+  // json(result)
+  JSON         r5
+  // expect result == 62
+  Const        r6, 62
+  Const        r7, true
+  Expect       r7
+  Return       r0

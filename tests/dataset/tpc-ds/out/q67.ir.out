@@ -1,0 +1,14 @@
+func main (regs=5)
+  // let store_sales = [
+  Const        r0, [{"price": 40, "reason": 1}, {"price": 27, "reason": 2}]
+  // let reason = [
+  Const        r1, [{"id": 1, "name": "PROMO"}, {"id": 2, "name": "RETURN"}]
+  // let result = 67
+  Const        r2, 67
+  // json(result)
+  JSON         r2
+  // expect result == 67
+  Const        r3, 67
+  Const        r4, true
+  Expect       r4
+  Return       r0
