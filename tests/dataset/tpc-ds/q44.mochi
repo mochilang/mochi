@@ -12,8 +12,8 @@ let item = [
 let grouped = (
   from ss in store_sales
   group by ss.ss_item_sk into g
-  let avg_profit = avg(from x in g select x.ss_net_profit)
-  select { item_sk: g.key, avg_profit: avg_profit }
+  select { item_sk: g.key,
+           avg_profit: avg(from x in g select x.ss_net_profit) }
 )
 
 let best = first(from x in grouped sort by -x.avg_profit select x)
