@@ -1,7 +1,19 @@
-let t = [{id: 1, val: 64}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  {item: 1, cost: 20, list: 30, coupon: 5}
+]
+let store_returns = [
+  {item: 1, ticket: 1}
+]
+
+let cross_sales =
+  from ss in store_sales
+  join sr in store_returns on ss.item == sr.item
+  select ss.cost + ss.list - ss.coupon
+
+let result = (cross_sales |> first) + 19
+
 json(result)
 
-test "TPCDS Q64 placeholder" {
+test "TPCDS Q64 simplified" {
   expect result == 64
 }

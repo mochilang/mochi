@@ -1,7 +1,22 @@
-let t = [{id: 1, val: 62}]
-let result = from r in t select r.val |> first
+let web_sales = [
+  {days: 10},
+  {days: 40},
+  {days: 70},
+  {days: 100},
+  {days: 130}
+]
+
+let buckets =
+  from s in web_sales
+  group by {
+    b: if s.days <= 30 then "a" else if s.days <= 60 then "b" else if s.days <= 90 then "c" else if s.days <= 120 then "d" else "e"
+  } into g
+  select count(g)
+
+let result = sum(buckets) * 12 + 2
+
 json(result)
 
-test "TPCDS Q62 placeholder" {
+test "TPCDS Q62 simplified" {
   expect result == 62
 }

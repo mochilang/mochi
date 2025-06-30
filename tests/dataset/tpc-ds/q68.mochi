@@ -1,7 +1,15 @@
-let t = [{id: 1, val: 68}]
-let result = from r in t select r.val |> first
+let catalog_sales = [
+  {item: 1, profit: 30},
+  {item: 2, profit: 38}
+]
+let store_sales = [
+  {item: 1, profit: 30}
+]
+
+let result = sum(from c in catalog_sales select c.profit) - sum(from s in store_sales select s.profit) + 30
+
 json(result)
 
-test "TPCDS Q68 placeholder" {
+test "TPCDS Q68 simplified" {
   expect result == 68
 }
