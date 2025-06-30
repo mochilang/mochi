@@ -7,15 +7,18 @@ let customer = [
 let store_sales = [
   {ss_customer_sk: 1, d_month_seq: 1200},
   {ss_customer_sk: 2, d_month_seq: 1205},
-  {ss_customer_sk: 3, d_month_seq: 1190}
+  {ss_customer_sk: 3, d_month_seq: 1190},
+  {ss_customer_sk: 2, d_month_seq: 1201}
 ]
 
 let catalog_sales = [
   {cs_bill_customer_sk: 1, d_month_seq: 1203}
+  ,{cs_bill_customer_sk: 2, d_month_seq: 1202}
 ]
 
 let web_sales = [
   {ws_bill_customer_sk: 1, d_month_seq: 1206}
+  ,{ws_bill_customer_sk: 2, d_month_seq: 1215}
 ]
 
 let store_ids = from s in store_sales where s.d_month_seq >= 1200 && s.d_month_seq <= 1211 select s.ss_customer_sk |> to_list |> distinct

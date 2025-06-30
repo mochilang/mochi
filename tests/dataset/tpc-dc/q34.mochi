@@ -24,7 +24,12 @@ let store_sales = [
   {ss_ticket_number: 2, ss_customer_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_hdemo_sk: 2},
   {ss_ticket_number: 2, ss_customer_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_hdemo_sk: 2},
   {ss_ticket_number: 2, ss_customer_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_hdemo_sk: 2},
-  {ss_ticket_number: 3, ss_customer_sk: 3, ss_sold_date_sk: 2, ss_store_sk: 2, ss_hdemo_sk: 2}
+  {ss_ticket_number: 3, ss_customer_sk: 3, ss_sold_date_sk: 2, ss_store_sk: 2, ss_hdemo_sk: 2},
+  {ss_ticket_number: 4, ss_customer_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_hdemo_sk: 2},
+  {ss_ticket_number: 4, ss_customer_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_hdemo_sk: 2},
+  {ss_ticket_number: 4, ss_customer_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_hdemo_sk: 2},
+  {ss_ticket_number: 4, ss_customer_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_hdemo_sk: 2},
+  {ss_ticket_number: 4, ss_customer_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_hdemo_sk: 2}
 ]
 
 let date_dim = [

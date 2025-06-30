@@ -1,13 +1,16 @@
 let store_sales = [
   {ss_item_sk: 1, ss_store_sk: 1, ss_sold_date_sk: 1, ss_ext_sales_price: 100.0, ss_net_profit: 20.0},
   {ss_item_sk: 2, ss_store_sk: 1, ss_sold_date_sk: 1, ss_ext_sales_price: 200.0, ss_net_profit: 50.0},
-  {ss_item_sk: 3, ss_store_sk: 2, ss_sold_date_sk: 1, ss_ext_sales_price: 150.0, ss_net_profit: 30.0}
+  {ss_item_sk: 3, ss_store_sk: 2, ss_sold_date_sk: 1, ss_ext_sales_price: 150.0, ss_net_profit: 30.0},
+  {ss_item_sk: 1, ss_store_sk: 1, ss_sold_date_sk: 1, ss_ext_sales_price: 50.0, ss_net_profit: 10.0},
+  {ss_item_sk: 4, ss_store_sk: 2, ss_sold_date_sk: 1, ss_ext_sales_price: 100.0, ss_net_profit: 25.0}
 ]
 
 let item = [
   {i_item_sk: 1, i_category: "Books", i_class: "C1"},
   {i_item_sk: 2, i_category: "Books", i_class: "C2"},
-  {i_item_sk: 3, i_category: "Electronics", i_class: "C3"}
+  {i_item_sk: 3, i_category: "Electronics", i_class: "C3"},
+  {i_item_sk: 4, i_category: "Electronics", i_class: "C4"}
 ]
 
 let store = [
@@ -41,6 +44,7 @@ test "TPCDC Q36 simplified" {
   expect result == [
     {i_category: "Books", i_class: "C1", gross_margin: 0.2},
     {i_category: "Books", i_class: "C2", gross_margin: 0.25},
-    {i_category: "Electronics", i_class: "C3", gross_margin: 0.2}
+    {i_category: "Electronics", i_class: "C3", gross_margin: 0.2},
+    {i_category: "Electronics", i_class: "C4", gross_margin: 0.25}
   ]
 }
