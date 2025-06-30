@@ -9,12 +9,31 @@ func main (regs=280)
   Const        r3, [{"d_date_sk": 1, "d_moy": 1, "d_year": 2000}, {"d_date_sk": 2, "d_moy": 2, "d_year": 2000}, {"d_date_sk": 3, "d_moy": 3, "d_year": 2000}]
   // from inv in inventory
   Const        r4, []
+  // group by {w: w.w_warehouse_sk, i: i.i_item_sk, month: d.d_moy} into g
+  Const        r5, "w"
+  Const        r6, "w_warehouse_sk"
+  Const        r7, "i"
+  Const        r8, "i_item_sk"
+  Const        r9, "month"
+  Const        r10, "d_moy"
+  // where d.d_year == 2000
+  Const        r11, "d_year"
+  // select {w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand)}
+  Const        r12, "w"
+  Const        r13, "key"
+  Const        r14, "w"
+  Const        r15, "i"
+  Const        r16, "key"
+  Const        r17, "i"
+  Const        r18, "qty"
+  Const        r19, "inv_quantity_on_hand"
+  // from inv in inventory
   MakeMap      r20, 0, r0
   Const        r21, []
   IterPrep     r23, r0
   Len          r24, r23
   Const        r25, 0
-L1:
+L9:
   LessInt      r26, r25, r24
   JumpIfFalse  r26, L0
   Index        r28, r23, r25
@@ -22,7 +41,7 @@ L1:
   IterPrep     r29, r3
   Len          r30, r29
   Const        r31, 0
-L2:
+L8:
   LessInt      r32, r31, r30
   JumpIfFalse  r32, L1
   Index        r34, r29, r31
@@ -140,13 +159,22 @@ L3:
   Const        r121, 1
   AddInt       r42, r42, r121
   Jump         L7
-L0:
+L2:
+  // join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  Const        r122, 1
+  AddInt       r31, r31, r122
+  Jump         L8
+L1:
   // from inv in inventory
+  Const        r123, 1
+  AddInt       r25, r25, r123
+  Jump         L9
+L0:
   Const        r124, 0
   Len          r126, r21
-L11:
+L13:
   LessInt      r127, r124, r126
-  JumpIfFalse  r127, L8
+  JumpIfFalse  r127, L10
   Index        r129, r21, r124
   // select {w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand)}
   Const        r130, "w"
@@ -161,20 +189,21 @@ L11:
   Index        r139, r137, r138
   Const        r140, "qty"
   Const        r141, []
+  Const        r142, "inv_quantity_on_hand"
   IterPrep     r143, r129
   Len          r144, r143
   Const        r145, 0
-L10:
+L12:
   LessInt      r147, r145, r144
-  JumpIfFalse  r147, L9
+  JumpIfFalse  r147, L11
   Index        r149, r143, r145
   Const        r150, "inv_quantity_on_hand"
   Index        r151, r149, r150
   Append       r141, r141, r151
   Const        r153, 1
   AddInt       r145, r145, r153
-  Jump         L10
-L9:
+  Jump         L12
+L11:
   Sum          r154, r141
   Move         r155, r130
   Move         r156, r134
@@ -185,17 +214,19 @@ L9:
   MakeMap      r161, 3, r155
   // from inv in inventory
   Append       r4, r4, r161
-  Jump         L11
-L8:
+  Const        r163, 1
+  AddInt       r124, r124, r163
+  Jump         L13
+L10:
   // var grouped: map<string, map<string, any>> = {}
-  Const        r165, {}
+  Const        r165, {"map[i:1 w:1]": {"i": 1, "qtys": [0, 0, 0], "w": 1}}
   // for m in monthly {
   IterPrep     r166, r4
   Len          r167, r166
   Const        r168, 0
-L15:
+L17:
   Less         r169, r168, r167
-  JumpIfFalse  r169, L12
+  JumpIfFalse  r169, L14
   Index        r171, r166, r168
   // let key = str({w: m.w, i: m.i})
   Const        r172, "w"
@@ -212,7 +243,7 @@ L15:
   Str          r183, r182
   // if key in grouped {
   In           r184, r183, r165
-  JumpIfFalse  r184, L13
+  JumpIfFalse  r184, L15
   // let g = grouped[key]
   Index        r185, r165, r183
   // grouped[key] = {w: g.w, i: g.i, qtys: append(g.qtys, m.qty)}
@@ -237,8 +268,8 @@ L15:
   MakeMap      r204, 3, r198
   SetIndex     r165, r183, r204
   // if key in grouped {
-  Jump         L14
-L13:
+  Jump         L16
+L15:
   // grouped[key] = {w: m.w, i: m.i, qtys: [m.qty]}
   Const        r205, "w"
   Const        r206, "w"
@@ -258,12 +289,12 @@ L13:
   Move         r221, r215
   MakeMap      r222, 3, r216
   SetIndex     r165, r183, r222
-L14:
+L16:
   // for m in monthly {
   Const        r223, 1
   Add          r168, r168, r223
-  Jump         L15
-L12:
+  Jump         L17
+L14:
   // var summary = []
   Const        r226, []
   // for g in values(grouped) {
@@ -271,9 +302,9 @@ L12:
   IterPrep     r228, r227
   Len          r229, r228
   Const        r230, 0
-L20:
+L22:
   Less         r231, r230, r229
-  JumpIfFalse  r231, L16
+  JumpIfFalse  r231, L18
   Index        r129, r228, r230
   // let mean = avg(g.qtys)
   Const        r233, "qtys"
@@ -287,9 +318,9 @@ L20:
   IterPrep     r240, r239
   Len          r241, r240
   Const        r242, 0
-L18:
+L20:
   Less         r243, r242, r241
-  JumpIfFalse  r243, L17
+  JumpIfFalse  r243, L19
   Index        r245, r240, r242
   // sumsq = sumsq + (q - mean) * (q - mean)
   SubFloat     r246, r245, r235
@@ -299,8 +330,8 @@ L18:
   // for q in g.qtys {
   Const        r250, 1
   Add          r242, r242, r250
-  Jump         L18
-L17:
+  Jump         L20
+L19:
   // let variance = sumsq / len(g.qtys)
   Const        r252, "qtys"
   Index        r253, r129, r252
@@ -312,13 +343,29 @@ L17:
   // if cov > 1.5 {
   Const        r259, 1.5
   LessFloat    r260, r259, r258
-  JumpIfFalse  r260, L19
-L19:
+  JumpIfFalse  r260, L21
+  // summary = append(summary, {w_warehouse_sk: g.w, i_item_sk: g.i, cov: cov})
+  Const        r261, "w_warehouse_sk"
+  Const        r262, "w"
+  Index        r263, r129, r262
+  Const        r264, "i_item_sk"
+  Const        r265, "i"
+  Index        r266, r129, r265
+  Const        r267, "cov"
+  Move         r268, r261
+  Move         r269, r263
+  Move         r270, r264
+  Move         r271, r266
+  Move         r272, r267
+  Move         r273, r258
+  MakeMap      r274, 3, r268
+  Append       r226, r226, r274
+L21:
   // for g in values(grouped) {
   Const        r276, 1
   Add          r230, r230, r276
-  Jump         L20
-L16:
+  Jump         L22
+L18:
   // json(summary)
   JSON         r226
   // expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.5396007178390022}]

@@ -9,12 +9,39 @@ func main (regs=205)
   Const        r3, [{"d_date_sk": 1, "d_year": 2000}]
   // from ss in store_sales
   Const        r4, []
+  // group by {category: i.i_category, class: i.i_class} into g
+  Const        r5, "category"
+  Const        r6, "i_category"
+  Const        r7, "class"
+  Const        r8, "i_class"
+  // where d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")
+  Const        r9, "d_year"
+  Const        r10, "s_state"
+  Const        r11, "s_state"
+  // i_category: g.key.category,
+  Const        r12, "i_category"
+  Const        r13, "key"
+  Const        r14, "category"
+  // i_class: g.key.class,
+  Const        r15, "i_class"
+  Const        r16, "key"
+  Const        r17, "class"
+  // gross_margin: sum(from x in g select x.ss_net_profit) / sum(from x in g select x.ss_ext_sales_price)
+  Const        r18, "gross_margin"
+  Const        r19, "ss_net_profit"
+  Const        r20, "ss_ext_sales_price"
+  // sort by [g.key.category, g.key.class]
+  Const        r21, "key"
+  Const        r22, "category"
+  Const        r23, "key"
+  Const        r24, "class"
+  // from ss in store_sales
   MakeMap      r25, 0, r0
   Const        r26, []
   IterPrep     r28, r0
   Len          r29, r28
   Const        r30, 0
-L1:
+L11:
   LessInt      r31, r30, r29
   JumpIfFalse  r31, L0
   Index        r33, r28, r30
@@ -22,7 +49,7 @@ L1:
   IterPrep     r34, r3
   Len          r35, r34
   Const        r36, 0
-L2:
+L10:
   LessInt      r37, r36, r35
   JumpIfFalse  r37, L1
   Index        r39, r34, r36
@@ -149,13 +176,22 @@ L3:
   Const        r131, 1
   AddInt       r47, r47, r131
   Jump         L9
-L0:
+L2:
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r132, 1
+  AddInt       r36, r36, r132
+  Jump         L10
+L1:
   // from ss in store_sales
+  Const        r133, 1
+  AddInt       r30, r30, r133
+  Jump         L11
+L0:
   Const        r134, 0
   Len          r136, r26
-L15:
+L17:
   LessInt      r137, r134, r136
-  JumpIfFalse  r137, L10
+  JumpIfFalse  r137, L12
   Index        r139, r26, r134
   // i_category: g.key.category,
   Const        r140, "i_category"
@@ -172,36 +208,38 @@ L15:
   // gross_margin: sum(from x in g select x.ss_net_profit) / sum(from x in g select x.ss_ext_sales_price)
   Const        r150, "gross_margin"
   Const        r151, []
+  Const        r152, "ss_net_profit"
   IterPrep     r153, r139
   Len          r154, r153
   Const        r155, 0
-L12:
+L14:
   LessInt      r157, r155, r154
-  JumpIfFalse  r157, L11
+  JumpIfFalse  r157, L13
   Index        r159, r153, r155
   Const        r160, "ss_net_profit"
   Index        r161, r159, r160
   Append       r151, r151, r161
   Const        r163, 1
   AddInt       r155, r155, r163
-  Jump         L12
-L11:
+  Jump         L14
+L13:
   Sum          r164, r151
   Const        r165, []
+  Const        r166, "ss_ext_sales_price"
   IterPrep     r167, r139
   Len          r168, r167
   Const        r169, 0
-L14:
+L16:
   LessInt      r171, r169, r168
-  JumpIfFalse  r171, L13
+  JumpIfFalse  r171, L15
   Index        r159, r167, r169
   Const        r173, "ss_ext_sales_price"
   Index        r174, r159, r173
   Append       r165, r165, r174
   Const        r176, 1
   AddInt       r169, r169, r176
-  Jump         L14
-L13:
+  Jump         L16
+L15:
   Sum          r177, r165
   Div          r178, r164, r177
   // i_category: g.key.category,
@@ -221,6 +259,9 @@ L13:
   Const        r188, "category"
   Index        r190, r187, r188
   Const        r191, "key"
+  Index        r192, r139, r191
+  Const        r193, "class"
+  Index        r195, r192, r193
   MakeList     r197, 2, r190
   // from ss in store_sales
   Move         r198, r185
@@ -228,8 +269,8 @@ L13:
   Append       r4, r4, r199
   Const        r201, 1
   AddInt       r134, r134, r201
-  Jump         L15
-L10:
+  Jump         L17
+L12:
   // sort by [g.key.category, g.key.class]
   Sort         r4, r4
   // json(result)

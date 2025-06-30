@@ -17,18 +17,42 @@ func main (regs=451)
   Const        r7, 2000
   // from ss in store_sales
   Const        r8, []
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r9, "i_category"
+  Const        r10, "d_year"
+  Const        r11, "d_moy"
+  Const        r12, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: ss.ss_ext_sales_price},
+  Const        r13, "manu"
+  Const        r14, "i_manufact_id"
+  Const        r15, "price"
+  Const        r16, "ss_ext_sales_price"
+  // from ss in store_sales
   IterPrep     r17, r3
   Len          r18, r17
   Const        r19, 0
-L8:
+L11:
   LessInt      r21, r19, r18
   JumpIfFalse  r21, L0
   Index        r23, r17, r19
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
   IterPrep     r24, r1
   Len          r25, r24
+  Const        r26, "ss_sold_date_sk"
+  Const        r27, "d_date_sk"
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r28, "i_category"
+  Const        r29, "d_year"
+  Const        r30, "d_moy"
+  Const        r31, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: ss.ss_ext_sales_price},
+  Const        r32, "manu"
+  Const        r33, "i_manufact_id"
+  Const        r34, "price"
+  Const        r35, "ss_ext_sales_price"
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
   Const        r36, 0
-L2:
+L10:
   LessInt      r38, r36, r25
   JumpIfFalse  r38, L1
   Index        r40, r24, r36
@@ -41,8 +65,21 @@ L2:
   // join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk
   IterPrep     r46, r2
   Len          r47, r46
+  Const        r48, "ss_addr_sk"
+  Const        r49, "ca_address_sk"
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r50, "i_category"
+  Const        r51, "d_year"
+  Const        r52, "d_moy"
+  Const        r53, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: ss.ss_ext_sales_price},
+  Const        r54, "manu"
+  Const        r55, "i_manufact_id"
+  Const        r56, "price"
+  Const        r57, "ss_ext_sales_price"
+  // join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk
   Const        r58, 0
-L3:
+L9:
   LessInt      r60, r58, r47
   JumpIfFalse  r60, L2
   Index        r62, r46, r58
@@ -55,8 +92,21 @@ L3:
   // join i in item on ss.ss_item_sk == i.i_item_sk
   IterPrep     r68, r0
   Len          r69, r68
+  Const        r70, "ss_item_sk"
+  Const        r71, "i_item_sk"
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r72, "i_category"
+  Const        r73, "d_year"
+  Const        r74, "d_moy"
+  Const        r75, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: ss.ss_ext_sales_price},
+  Const        r76, "manu"
+  Const        r77, "i_manufact_id"
+  Const        r78, "price"
+  Const        r79, "ss_ext_sales_price"
+  // join i in item on ss.ss_item_sk == i.i_item_sk
   Const        r80, 0
-L4:
+L8:
   LessInt      r82, r80, r69
   JumpIfFalse  r82, L3
   Index        r84, r68, r80
@@ -79,6 +129,7 @@ L4:
   Equal        r99, r98, r6
   Const        r100, "ca_gmt_offset"
   Index        r101, r62, r100
+  Const        r102, 5
   Const        r103, -5
   Equal        r104, r101, r103
   Move         r105, r93
@@ -106,65 +157,128 @@ L7:
   MakeMap      r118, 2, r114
   // from ss in store_sales
   Append       r8, r8, r118
+L4:
   // join i in item on ss.ss_item_sk == i.i_item_sk
-  Jump         L4
+  Const        r120, 1
+  Add          r80, r80, r120
+  Jump         L8
+L3:
+  // join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk
+  Const        r121, 1
+  Add          r58, r58, r121
+  Jump         L9
+L2:
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r122, 1
+  Add          r36, r36, r122
+  Jump         L10
 L1:
   // from ss in store_sales
   Const        r123, 1
   AddInt       r19, r19, r123
-  Jump         L8
+  Jump         L11
 L0:
   // from cs in catalog_sales
   Const        r124, []
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r125, "i_category"
+  Const        r126, "d_year"
+  Const        r127, "d_moy"
+  Const        r128, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: cs.cs_ext_sales_price},
+  Const        r129, "manu"
+  Const        r130, "i_manufact_id"
+  Const        r131, "price"
+  Const        r132, "cs_ext_sales_price"
+  // from cs in catalog_sales
   IterPrep     r133, r4
   Len          r134, r133
   Const        r135, 0
-L20:
+L23:
   LessInt      r137, r135, r134
-  JumpIfFalse  r137, L9
+  JumpIfFalse  r137, L12
   Index        r139, r133, r135
   // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
   IterPrep     r140, r1
   Len          r141, r140
+  Const        r142, "cs_sold_date_sk"
+  Const        r143, "d_date_sk"
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r144, "i_category"
+  Const        r145, "d_year"
+  Const        r146, "d_moy"
+  Const        r147, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: cs.cs_ext_sales_price},
+  Const        r148, "manu"
+  Const        r149, "i_manufact_id"
+  Const        r150, "price"
+  Const        r151, "cs_ext_sales_price"
+  // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
   Const        r152, 0
-L19:
+L22:
   LessInt      r154, r152, r141
-  JumpIfFalse  r154, L10
+  JumpIfFalse  r154, L13
   Index        r40, r140, r152
   Const        r156, "cs_sold_date_sk"
   Index        r157, r139, r156
   Const        r158, "d_date_sk"
   Index        r159, r40, r158
   Equal        r160, r157, r159
-  JumpIfFalse  r160, L11
+  JumpIfFalse  r160, L14
   // join ca in customer_address on cs.cs_bill_addr_sk == ca.ca_address_sk
   IterPrep     r161, r2
   Len          r162, r161
+  Const        r163, "cs_bill_addr_sk"
+  Const        r164, "ca_address_sk"
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r165, "i_category"
+  Const        r166, "d_year"
+  Const        r167, "d_moy"
+  Const        r168, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: cs.cs_ext_sales_price},
+  Const        r169, "manu"
+  Const        r170, "i_manufact_id"
+  Const        r171, "price"
+  Const        r172, "cs_ext_sales_price"
+  // join ca in customer_address on cs.cs_bill_addr_sk == ca.ca_address_sk
   Const        r173, 0
-L18:
+L21:
   LessInt      r175, r173, r162
-  JumpIfFalse  r175, L11
+  JumpIfFalse  r175, L14
   Index        r62, r161, r173
   Const        r177, "cs_bill_addr_sk"
   Index        r178, r139, r177
   Const        r179, "ca_address_sk"
   Index        r180, r62, r179
   Equal        r181, r178, r180
-  JumpIfFalse  r181, L12
+  JumpIfFalse  r181, L15
   // join i in item on cs.cs_item_sk == i.i_item_sk
   IterPrep     r182, r0
   Len          r183, r182
+  Const        r184, "cs_item_sk"
+  Const        r185, "i_item_sk"
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r186, "i_category"
+  Const        r187, "d_year"
+  Const        r188, "d_moy"
+  Const        r189, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: cs.cs_ext_sales_price},
+  Const        r190, "manu"
+  Const        r191, "i_manufact_id"
+  Const        r192, "price"
+  Const        r193, "cs_ext_sales_price"
+  // join i in item on cs.cs_item_sk == i.i_item_sk
   Const        r194, 0
-L17:
+L20:
   LessInt      r196, r194, r183
-  JumpIfFalse  r196, L12
+  JumpIfFalse  r196, L15
   Index        r84, r182, r194
   Const        r198, "cs_item_sk"
   Index        r199, r139, r198
   Const        r200, "i_item_sk"
   Index        r201, r84, r200
   Equal        r202, r199, r201
-  JumpIfFalse  r202, L13
+  JumpIfFalse  r202, L16
   // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
   Const        r203, "i_category"
   Index        r204, r84, r203
@@ -178,19 +292,20 @@ L17:
   Equal        r212, r211, r6
   Const        r213, "ca_gmt_offset"
   Index        r214, r62, r213
+  Const        r215, 5
   Const        r216, -5
   Equal        r217, r214, r216
   Move         r218, r206
-  JumpIfFalse  r218, L14
-L14:
+  JumpIfFalse  r218, L17
+L17:
   Move         r219, r209
-  JumpIfFalse  r219, L15
-L15:
+  JumpIfFalse  r219, L18
+L18:
   Move         r220, r212
-  JumpIfFalse  r220, L16
+  JumpIfFalse  r220, L19
   Move         r220, r217
-L16:
-  JumpIfFalse  r220, L13
+L19:
+  JumpIfFalse  r220, L16
   // select {manu: i.i_manufact_id, price: cs.cs_ext_sales_price},
   Const        r221, "manu"
   Const        r222, "i_manufact_id"
@@ -205,80 +320,130 @@ L16:
   MakeMap      r231, 2, r227
   // from cs in catalog_sales
   Append       r124, r124, r231
-L13:
+L16:
   // join i in item on cs.cs_item_sk == i.i_item_sk
   Const        r233, 1
   Add          r194, r194, r233
-  Jump         L17
-L12:
+  Jump         L20
+L15:
   // join ca in customer_address on cs.cs_bill_addr_sk == ca.ca_address_sk
   Const        r234, 1
   Add          r173, r173, r234
-  Jump         L18
-L11:
+  Jump         L21
+L14:
   // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
   Const        r235, 1
   Add          r152, r152, r235
-  Jump         L19
-L10:
+  Jump         L22
+L13:
   // from cs in catalog_sales
   Const        r236, 1
   AddInt       r135, r135, r236
-  Jump         L20
-L9:
+  Jump         L23
+L12:
   // let union_sales = concat(
   UnionAll     r237, r8, r124
   // from ws in web_sales
   Const        r238, []
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r239, "i_category"
+  Const        r240, "d_year"
+  Const        r241, "d_moy"
+  Const        r242, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: ws.ws_ext_sales_price}
+  Const        r243, "manu"
+  Const        r244, "i_manufact_id"
+  Const        r245, "price"
+  Const        r246, "ws_ext_sales_price"
+  // from ws in web_sales
   IterPrep     r247, r5
   Len          r248, r247
   Const        r249, 0
-L32:
+L35:
   LessInt      r251, r249, r248
-  JumpIfFalse  r251, L21
+  JumpIfFalse  r251, L24
   Index        r253, r247, r249
   // join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
   IterPrep     r254, r1
   Len          r255, r254
+  Const        r256, "ws_sold_date_sk"
+  Const        r257, "d_date_sk"
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r258, "i_category"
+  Const        r259, "d_year"
+  Const        r260, "d_moy"
+  Const        r261, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: ws.ws_ext_sales_price}
+  Const        r262, "manu"
+  Const        r263, "i_manufact_id"
+  Const        r264, "price"
+  Const        r265, "ws_ext_sales_price"
+  // join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
   Const        r266, 0
-L31:
+L34:
   LessInt      r268, r266, r255
-  JumpIfFalse  r268, L22
+  JumpIfFalse  r268, L25
   Index        r40, r254, r266
   Const        r270, "ws_sold_date_sk"
   Index        r271, r253, r270
   Const        r272, "d_date_sk"
   Index        r273, r40, r272
   Equal        r274, r271, r273
-  JumpIfFalse  r274, L23
+  JumpIfFalse  r274, L26
   // join ca in customer_address on ws.ws_bill_addr_sk == ca.ca_address_sk
   IterPrep     r275, r2
   Len          r276, r275
+  Const        r277, "ws_bill_addr_sk"
+  Const        r278, "ca_address_sk"
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r279, "i_category"
+  Const        r280, "d_year"
+  Const        r281, "d_moy"
+  Const        r282, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: ws.ws_ext_sales_price}
+  Const        r283, "manu"
+  Const        r284, "i_manufact_id"
+  Const        r285, "price"
+  Const        r286, "ws_ext_sales_price"
+  // join ca in customer_address on ws.ws_bill_addr_sk == ca.ca_address_sk
   Const        r287, 0
-L30:
+L33:
   LessInt      r289, r287, r276
-  JumpIfFalse  r289, L23
+  JumpIfFalse  r289, L26
   Index        r62, r275, r287
   Const        r291, "ws_bill_addr_sk"
   Index        r292, r253, r291
   Const        r293, "ca_address_sk"
   Index        r294, r62, r293
   Equal        r295, r292, r294
-  JumpIfFalse  r295, L24
+  JumpIfFalse  r295, L27
   // join i in item on ws.ws_item_sk == i.i_item_sk
   IterPrep     r296, r0
   Len          r297, r296
+  Const        r298, "ws_item_sk"
+  Const        r299, "i_item_sk"
+  // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
+  Const        r300, "i_category"
+  Const        r301, "d_year"
+  Const        r302, "d_moy"
+  Const        r303, "ca_gmt_offset"
+  // select {manu: i.i_manufact_id, price: ws.ws_ext_sales_price}
+  Const        r304, "manu"
+  Const        r305, "i_manufact_id"
+  Const        r306, "price"
+  Const        r307, "ws_ext_sales_price"
+  // join i in item on ws.ws_item_sk == i.i_item_sk
   Const        r308, 0
-L29:
+L32:
   LessInt      r310, r308, r297
-  JumpIfFalse  r310, L24
+  JumpIfFalse  r310, L27
   Index        r84, r296, r308
   Const        r312, "ws_item_sk"
   Index        r313, r253, r312
   Const        r314, "i_item_sk"
   Index        r315, r84, r314
   Equal        r316, r313, r315
-  JumpIfFalse  r316, L25
+  JumpIfFalse  r316, L28
   // where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
   Const        r317, "i_category"
   Index        r318, r84, r317
@@ -292,19 +457,20 @@ L29:
   Equal        r326, r325, r6
   Const        r327, "ca_gmt_offset"
   Index        r328, r62, r327
+  Const        r329, 5
   Const        r330, -5
   Equal        r331, r328, r330
   Move         r332, r320
-  JumpIfFalse  r332, L26
-L26:
+  JumpIfFalse  r332, L29
+L29:
   Move         r333, r323
-  JumpIfFalse  r333, L27
-L27:
+  JumpIfFalse  r333, L30
+L30:
   Move         r334, r326
-  JumpIfFalse  r334, L28
+  JumpIfFalse  r334, L31
   Move         r334, r331
-L28:
-  JumpIfFalse  r334, L25
+L31:
+  JumpIfFalse  r334, L28
   // select {manu: i.i_manufact_id, price: ws.ws_ext_sales_price}
   Const        r335, "manu"
   Const        r336, "i_manufact_id"
@@ -319,39 +485,49 @@ L28:
   MakeMap      r345, 2, r341
   // from ws in web_sales
   Append       r238, r238, r345
-L25:
+L28:
   // join i in item on ws.ws_item_sk == i.i_item_sk
   Const        r347, 1
   Add          r308, r308, r347
-  Jump         L29
-L24:
+  Jump         L32
+L27:
   // join ca in customer_address on ws.ws_bill_addr_sk == ca.ca_address_sk
   Const        r348, 1
   Add          r287, r287, r348
-  Jump         L30
-L23:
+  Jump         L33
+L26:
   // join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
   Const        r349, 1
   Add          r266, r266, r349
-  Jump         L31
-L22:
+  Jump         L34
+L25:
   // from ws in web_sales
   Const        r350, 1
   AddInt       r249, r249, r350
-  Jump         L32
-L21:
+  Jump         L35
+L24:
   // let union_sales = concat(
   UnionAll     r351, r237, r238
   // from s in union_sales
   Const        r352, []
+  // group by s.manu into g
+  Const        r353, "manu"
+  // select {i_manufact_id: g.key, total_sales: sum(from x in g select x.price)}
+  Const        r354, "i_manufact_id"
+  Const        r355, "key"
+  Const        r356, "total_sales"
+  Const        r357, "price"
+  // sort by -sum(from x in g select x.price)
+  Const        r358, "price"
+  // from s in union_sales
   IterPrep     r359, r351
   Len          r360, r359
   Const        r361, 0
   MakeMap      r362, 0, r0
   Const        r363, []
-L35:
+L38:
   LessInt      r365, r361, r360
-  JumpIfFalse  r365, L33
+  JumpIfFalse  r365, L36
   Index        r366, r359, r361
   Move         r367, r366
   // group by s.manu into g
@@ -359,7 +535,7 @@ L35:
   Index        r369, r367, r368
   Str          r370, r369
   In           r371, r370, r362
-  JumpIfTrue   r371, L34
+  JumpIfTrue   r371, L37
   // from s in union_sales
   Const        r372, []
   Const        r373, "__group__"
@@ -383,7 +559,7 @@ L35:
   MakeMap      r389, 4, r381
   SetIndex     r362, r370, r389
   Append       r363, r363, r389
-L34:
+L37:
   Const        r391, "items"
   Index        r392, r362, r370
   Index        r393, r392, r391
@@ -396,13 +572,13 @@ L34:
   SetIndex     r392, r395, r398
   Const        r399, 1
   AddInt       r361, r361, r399
-  Jump         L35
-L33:
+  Jump         L38
+L36:
   Const        r400, 0
   Len          r402, r363
-L41:
+L44:
   LessInt      r403, r400, r402
-  JumpIfFalse  r403, L36
+  JumpIfFalse  r403, L39
   Index        r405, r363, r400
   // select {i_manufact_id: g.key, total_sales: sum(from x in g select x.price)}
   Const        r406, "i_manufact_id"
@@ -410,20 +586,21 @@ L41:
   Index        r408, r405, r407
   Const        r409, "total_sales"
   Const        r410, []
+  Const        r411, "price"
   IterPrep     r412, r405
   Len          r413, r412
   Const        r414, 0
-L38:
+L41:
   LessInt      r416, r414, r413
-  JumpIfFalse  r416, L37
+  JumpIfFalse  r416, L40
   Index        r418, r412, r414
   Const        r419, "price"
   Index        r420, r418, r419
   Append       r410, r410, r420
   Const        r422, 1
   AddInt       r414, r414, r422
-  Jump         L38
-L37:
+  Jump         L41
+L40:
   Sum          r423, r410
   Move         r424, r406
   Move         r425, r408
@@ -432,20 +609,21 @@ L37:
   MakeMap      r428, 2, r424
   // sort by -sum(from x in g select x.price)
   Const        r429, []
+  Const        r430, "price"
   IterPrep     r431, r405
   Len          r432, r431
   Const        r433, 0
-L40:
+L43:
   LessInt      r435, r433, r432
-  JumpIfFalse  r435, L39
+  JumpIfFalse  r435, L42
   Index        r418, r431, r433
   Const        r437, "price"
   Index        r438, r418, r437
   Append       r429, r429, r438
   Const        r440, 1
   AddInt       r433, r433, r440
-  Jump         L40
-L39:
+  Jump         L43
+L42:
   Sum          r441, r429
   Neg          r443, r441
   // from s in union_sales
@@ -454,8 +632,8 @@ L39:
   Append       r352, r352, r445
   Const        r447, 1
   AddInt       r400, r400, r447
-  Jump         L41
-L36:
+  Jump         L44
+L39:
   // sort by -sum(from x in g select x.price)
   Sort         r352, r352
   // json(result)
