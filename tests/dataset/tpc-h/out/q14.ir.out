@@ -1,4 +1,4 @@
-func main (regs=162)
+func main (regs=134)
 L0:
   // let part = [
   Const        r0, [{"p_partkey": 1, "p_type": "PROMO LUXURY"}, {"p_partkey": 2, "p_type": "STANDARD BRASS"}]
@@ -58,211 +58,184 @@ L9:
   Index        r31, r29, r30
   // from l in lineitem
   Index        r32, r13, r31
-  Const        r33, nil
-  NotEqual     r34, r32, r33
-  JumpIfFalse  r34, L5
-  Len          r35, r32
-  Const        r36, 0
+  NotEqual     r33, r32, r21
+  JumpIfFalse  r33, L5
+  Len          r34, r32
+  Const        r35, 0
 L8:
-  LessInt      r37, r36, r35
-  JumpIfFalse  r37, L5
-  Index        r17, r32, r36
+  LessInt      r36, r35, r34
+  JumpIfFalse  r36, L5
+  Index        r17, r32, r35
   // where l.l_shipdate >= start_date && l.l_shipdate < end_date
-  Const        r39, "l_shipdate"
-  Index        r40, r29, r39
-  LessEq       r41, r2, r40
-  Const        r42, "l_shipdate"
-  Index        r43, r29, r42
-  Less         r44, r43, r3
-  Move         r45, r41
-  JumpIfFalse  r45, L6
-  Move         r45, r44
+  Const        r38, "l_shipdate"
+  Index        r39, r29, r38
+  LessEq       r40, r2, r39
+  Index        r41, r29, r38
+  Less         r42, r41, r3
+  Move         r43, r40
+  JumpIfFalse  r43, L6
+  Move         r43, r42
 L6:
-  JumpIfFalse  r45, L7
+  JumpIfFalse  r43, L7
   // is_promo: "PROMO" in p.p_type,
-  Const        r46, "is_promo"
-  Const        r47, "PROMO"
-  Const        r48, "p_type"
-  Index        r49, r17, r48
-  In           r50, r47, r49
+  Const        r44, "is_promo"
+  Const        r45, "PROMO"
+  Const        r46, "p_type"
+  Index        r47, r17, r46
+  In           r48, r45, r47
   // revenue: l.l_extendedprice * (1 - l.l_discount)
-  Const        r51, "revenue"
-  Const        r52, "l_extendedprice"
+  Const        r49, "revenue"
+  Const        r50, "l_extendedprice"
+  Index        r51, r29, r50
+  Const        r52, "l_discount"
   Index        r53, r29, r52
-  Const        r54, 1
-  Const        r55, "l_discount"
-  Index        r56, r29, r55
-  Sub          r57, r54, r56
-  Mul          r58, r53, r57
+  Sub          r54, r25, r53
+  Mul          r55, r51, r54
   // is_promo: "PROMO" in p.p_type,
-  Move         r59, r46
-  Move         r60, r50
+  Move         r56, r44
+  Move         r57, r48
   // revenue: l.l_extendedprice * (1 - l.l_discount)
-  Move         r61, r51
-  Move         r62, r58
+  Move         r58, r49
+  Move         r59, r55
   // select {
-  MakeMap      r63, 2, r59
+  MakeMap      r60, 2, r56
   // from l in lineitem
-  Append       r4, r4, r63
+  Append       r4, r4, r60
 L7:
-  Const        r65, 1
-  AddInt       r36, r36, r65
+  AddInt       r35, r35, r25
   Jump         L8
 L5:
-  Const        r66, 1
-  AddInt       r26, r26, r66
+  AddInt       r26, r26, r25
   Jump         L9
 L1:
-  MakeMap      r67, 0, r0
-  Const        r68, 0
+  MakeMap      r62, 0, r0
+  Const        r63, 0
 L12:
-  LessInt      r69, r68, r6
-  JumpIfFalse  r69, L10
-  Index        r70, r5, r68
-  Move         r29, r70
+  LessInt      r64, r63, r6
+  JumpIfFalse  r64, L10
+  Index        r65, r5, r63
   // join p in part on p.p_partkey == l.l_partkey
-  Const        r71, "l_partkey"
-  Index        r72, r29, r71
+  Index        r66, r65, r30
   // from l in lineitem
-  Index        r73, r67, r72
-  Const        r74, nil
-  NotEqual     r75, r73, r74
-  JumpIfTrue   r75, L11
-  MakeList     r76, 0, r0
-  SetIndex     r67, r72, r76
+  Index        r67, r62, r66
+  NotEqual     r68, r67, r21
+  JumpIfTrue   r68, L11
+  MakeList     r69, 0, r0
+  SetIndex     r62, r66, r69
 L11:
-  Index        r73, r67, r72
-  Append       r77, r73, r70
-  SetIndex     r67, r72, r77
-  Const        r78, 1
-  AddInt       r68, r68, r78
+  Index        r67, r62, r66
+  Append       r70, r67, r65
+  SetIndex     r62, r66, r70
+  AddInt       r63, r63, r25
   Jump         L12
 L10:
   // join p in part on p.p_partkey == l.l_partkey
-  Const        r79, 0
+  Const        r71, 0
 L18:
-  LessInt      r80, r79, r8
-  JumpIfFalse  r80, L13
-  Index        r17, r7, r79
-  Const        r82, "p_partkey"
-  Index        r83, r17, r82
-  Index        r84, r67, r83
-  Const        r85, nil
-  NotEqual     r86, r84, r85
-  JumpIfFalse  r86, L14
-  Len          r87, r84
-  Const        r88, 0
+  LessInt      r72, r71, r8
+  JumpIfFalse  r72, L13
+  Index        r17, r7, r71
+  Index        r74, r17, r18
+  Index        r75, r62, r74
+  NotEqual     r76, r75, r21
+  JumpIfFalse  r76, L14
+  Len          r77, r75
+  Const        r78, 0
 L17:
-  LessInt      r89, r88, r87
-  JumpIfFalse  r89, L14
-  Index        r29, r84, r88
+  LessInt      r79, r78, r77
+  JumpIfFalse  r79, L14
+  Index        r29, r75, r78
   // where l.l_shipdate >= start_date && l.l_shipdate < end_date
-  Const        r91, "l_shipdate"
-  Index        r92, r29, r91
-  LessEq       r93, r2, r92
-  Const        r94, "l_shipdate"
-  Index        r95, r29, r94
-  Less         r96, r95, r3
-  Move         r97, r93
-  JumpIfFalse  r97, L15
-  Move         r97, r96
+  Index        r81, r29, r38
+  LessEq       r82, r2, r81
+  Index        r83, r29, r38
+  Less         r84, r83, r3
+  Move         r85, r82
+  JumpIfFalse  r85, L15
+  Move         r85, r84
 L15:
-  JumpIfFalse  r97, L16
+  JumpIfFalse  r85, L16
   // is_promo: "PROMO" in p.p_type,
-  Const        r98, "is_promo"
-  Const        r99, "PROMO"
-  Const        r100, "p_type"
-  Index        r101, r17, r100
-  In           r102, r99, r101
+  Const        r86, "is_promo"
+  Index        r87, r17, r46
+  In           r88, r45, r87
   // revenue: l.l_extendedprice * (1 - l.l_discount)
-  Const        r103, "revenue"
-  Const        r104, "l_extendedprice"
-  Index        r105, r29, r104
-  Const        r106, 1
-  Const        r107, "l_discount"
-  Index        r108, r29, r107
-  Sub          r109, r106, r108
-  Mul          r110, r105, r109
+  Const        r89, "revenue"
+  Index        r90, r29, r50
+  Index        r91, r29, r52
+  Sub          r92, r25, r91
+  Mul          r93, r90, r92
   // is_promo: "PROMO" in p.p_type,
-  Move         r111, r98
-  Move         r112, r102
+  Move         r94, r86
+  Move         r95, r88
   // revenue: l.l_extendedprice * (1 - l.l_discount)
-  Move         r113, r103
-  Move         r114, r110
+  Move         r96, r89
+  Move         r97, r93
   // select {
-  MakeMap      r115, 2, r111
+  MakeMap      r98, 2, r94
   // from l in lineitem
-  Append       r4, r4, r115
+  Append       r4, r4, r98
 L16:
   // join p in part on p.p_partkey == l.l_partkey
-  Const        r117, 1
-  AddInt       r88, r88, r117
+  AddInt       r78, r78, r25
   Jump         L17
 L14:
-  Const        r118, 1
-  AddInt       r79, r79, r118
+  AddInt       r71, r71, r25
   Jump         L18
 L13:
   // let promo_sum = sum(from x in filtered where x.is_promo select x.revenue)
-  Const        r119, []
-  Const        r120, "is_promo"
-  Const        r121, "revenue"
-  IterPrep     r122, r4
-  Len          r123, r122
-  Const        r124, 0
+  Const        r100, []
+  Const        r101, "is_promo"
+  Const        r102, "revenue"
+  IterPrep     r103, r4
+  Len          r104, r103
+  Move         r105, r9
 L21:
-  LessInt      r126, r124, r123
-  JumpIfFalse  r126, L19
-  Index        r128, r122, r124
-  Const        r129, "is_promo"
-  Index        r130, r128, r129
-  JumpIfFalse  r130, L20
-  Const        r131, "revenue"
-  Index        r132, r128, r131
-  Append       r119, r119, r132
+  LessInt      r106, r105, r104
+  JumpIfFalse  r106, L19
+  Index        r108, r103, r105
+  Index        r109, r108, r101
+  JumpIfFalse  r109, L20
+  Index        r110, r108, r102
+  Append       r100, r100, r110
 L20:
-  Const        r134, 1
-  AddInt       r124, r124, r134
+  AddInt       r105, r105, r25
   Jump         L21
 L19:
-  Sum          r135, r119
+  Sum          r112, r100
   // let total_sum = sum(from x in filtered select x.revenue)
-  Const        r136, []
-  Const        r137, "revenue"
-  IterPrep     r138, r4
-  Len          r139, r138
-  Const        r140, 0
+  Const        r113, []
+  IterPrep     r114, r4
+  Len          r115, r114
+  Move         r116, r9
 L23:
-  LessInt      r142, r140, r139
-  JumpIfFalse  r142, L22
-  Index        r128, r138, r140
-  Const        r144, "revenue"
-  Index        r145, r128, r144
-  Append       r136, r136, r145
-  Const        r147, 1
-  AddInt       r140, r140, r147
+  LessInt      r117, r116, r115
+  JumpIfFalse  r117, L22
+  Index        r108, r114, r116
+  Index        r119, r108, r102
+  Append       r113, r113, r119
+  AddInt       r116, r116, r25
   Jump         L23
 L22:
-  Sum          r148, r136
+  Sum          r121, r113
   // let result = 100.0 * promo_sum / total_sum
-  Const        r149, 100
-  MulFloat     r150, r149, r135
-  DivFloat     r151, r150, r148
+  Const        r122, 100
+  MulFloat     r123, r122, r112
+  DivFloat     r124, r123, r121
   // json(result)
-  JSON         r151
+  JSON         r124
   // let promo = 1000.0 * 0.9       // = 900
-  Const        r152, 1000
-  Const        r153, 0.9
-  Const        r154, 900
+  Const        r125, 1000
+  Const        r126, 0.9
+  Const        r127, 900
   // let total = 900 + 800.0        // = 1700
-  Const        r155, 900
-  Const        r156, 800
-  Const        r157, 1700
+  Const        r128, 900
+  Const        r129, 800
+  Const        r130, 1700
   // let expected = 100.0 * promo / total  // ≈ 52.94
-  Const        r158, 100
-  Const        r159, 90000
-  Const        r160, 52.94117647058823
+  Const        r131, 90000
+  Const        r132, 52.94117647058823
   // expect result == expected
-  EqualFloat   r161, r151, r160
-  Expect       r161
+  EqualFloat   r133, r124, r132
+  Expect       r133
   Return       r0
