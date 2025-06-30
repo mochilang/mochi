@@ -487,8 +487,10 @@ func (p *Program) Disassemble(src string) string {
 		}
 		b.WriteByte('\n')
 	}
-	out := b.String()
-	return strings.TrimRight(out, "\n")
+	// Normalize trailing newline so the disassembly matches
+	// checked-in golden files for dataset queries.
+	out := strings.TrimRight(b.String(), "\n")
+	return out + "\n"
 }
 
 type VM struct {
