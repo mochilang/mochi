@@ -869,8 +869,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						end += n
 					}
 				}
-				if start < 0 || end > n || start > end {
-					return Value{}, m.newError(fmt.Errorf("invalid slice range"), trace, ins.Line)
+				if start < 0 {
+					start = 0
+				}
+				if end > n {
+					end = n
+				}
+				if start > end {
+					start = end
 				}
 				out := make([]Value, end-start)
 				copy(out, src.List[start:end])
@@ -898,8 +904,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						end += n
 					}
 				}
-				if start < 0 || end > n || start > end {
-					return Value{}, m.newError(fmt.Errorf("invalid slice range"), trace, ins.Line)
+				if start < 0 {
+					start = 0
+				}
+				if end > n {
+					end = n
+				}
+				if start > end {
+					start = end
 				}
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(runes[start:end])}
 			default:
