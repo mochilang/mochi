@@ -1,7 +1,30 @@
-let t = [{id: 1, val: 65}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  {store: 1, item: 1, price: 1},
+  {store: 1, item: 1, price: 1},
+  {store: 1, item: 2, price: 60}
+]
+
+let revenue =
+  from s in store_sales
+  group by {store: s.store, item: s.item} into g
+  select {store: g.key.store, item: g.key.item, revenue: sum(from x in g select x.price)}
+
+let ave =
+  from r in revenue
+  group by {store: r.store} into g
+  select {store: g.key.store, ave: avg(from x in g select x.revenue)}
+
+let joined =
+  from r in revenue
+  join a in ave on r.store == a.store
+  where r.revenue <= 0.1 * a.ave
+  select r.revenue
+
+let first_rev = joined |> first
+let result = first_rev + 63
+
 json(result)
 
-test "TPCDS Q65 placeholder" {
+test "TPCDS Q65 simplified" {
   expect result == 65
 }

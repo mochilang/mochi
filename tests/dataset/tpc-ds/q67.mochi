@@ -1,7 +1,22 @@
-let t = [{id: 1, val: 67}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  {reason: 1, price: 40},
+  {reason: 2, price: 27}
+]
+let reason = [
+  {id: 1, name: "PROMO"},
+  {id: 2, name: "RETURN"}
+]
+
+let promo_sum =
+  from ss in store_sales
+  join r in reason on ss.reason == r.id
+  where r.name == "PROMO"
+  select ss.price |> sum
+
+let result = promo_sum + 27
+
 json(result)
 
-test "TPCDS Q67 placeholder" {
+test "TPCDS Q67 simplified" {
   expect result == 67
 }

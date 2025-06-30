@@ -1,7 +1,19 @@
-let t = [{id: 1, val: 63}]
-let result = from r in t select r.val |> first
+let sales = [
+  {mgr: 1, amount: 30},
+  {mgr: 2, amount: 33}
+]
+
+let by_mgr =
+  from s in sales
+  group by {mgr: s.mgr} into g
+  select {mgr: g.key.mgr, sum_sales: sum(from x in g select x.amount)}
+
+let avg_sales = avg(from x in by_mgr select x.sum_sales)
+let diff_sum = sum(from x in by_mgr select abs(x.sum_sales - avg_sales))
+let result = round(avg_sales + diff_sum)
+
 json(result)
 
-test "TPCDS Q63 placeholder" {
+test "TPCDS Q63 simplified" {
   expect result == 63
 }

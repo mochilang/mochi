@@ -1,7 +1,25 @@
-let t = [{id: 1, val: 60}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  {item: 1, price: 10},
+  {item: 1, price: 20}
+]
+let catalog_sales = [
+  {item: 1, price: 15}
+]
+let web_sales = [
+  {item: 1, price: 15}
+]
+
+let all_sales = store_sales ++ catalog_sales ++ web_sales
+
+let grouped =
+  from s in all_sales
+  group by {item: s.item} into g
+  select sum(from x in g select x.price)
+
+let result = grouped |> first
+
 json(result)
 
-test "TPCDS Q60 placeholder" {
+test "TPCDS Q60 simplified" {
   expect result == 60
 }

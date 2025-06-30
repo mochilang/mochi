@@ -1,7 +1,15 @@
-let t = [{id: 1, val: 61}]
-let result = from r in t select r.val |> first
+let sales = [
+  {promo: true, price: 20},
+  {promo: true, price: 41},
+  {promo: false, price: 39}
+]
+
+let promotions = sum(from s in sales where s.promo select s.price)
+let total = sum(from s in sales select s.price)
+let result = promotions * 100 / total
+
 json(result)
 
-test "TPCDS Q61 placeholder" {
+test "TPCDS Q61 simplified" {
   expect result == 61
 }
