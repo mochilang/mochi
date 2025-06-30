@@ -1491,14 +1491,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if m.Tag != ValueMap {
 				return Value{}, fmt.Errorf("values expects map")
 			}
+			if len(m.Map) == 0 {
+				fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{}}
+				break
+			}
 			keys := make([]string, 0, len(m.Map))
 			for k := range m.Map {
 				keys = append(keys, k)
 			}
 			sort.Strings(keys)
-			vals := make([]Value, len(keys))
-			for i, k := range keys {
-				vals[i] = m.Map[k]
+			vals := make([]Value, 0, len(keys))
+			for _, k := range keys {
+				vals = append(vals, m.Map[k])
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: vals}
 		case OpCast:
