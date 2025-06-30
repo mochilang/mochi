@@ -1062,7 +1062,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
 			}
-			out := append(append([]Value(nil), a.List...), b.List...)
+			// Preallocate the result slice for efficiency when
+			// concatenating two lists.
+			out := make([]Value, 0, len(a.List)+len(b.List))
+			out = append(out, a.List...)
+			out = append(out, b.List...)
 			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpUnion:
 			a := fr.regs[ins.B]
