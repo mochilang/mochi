@@ -602,10 +602,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		return Value{Tag: ValueFunc, Func: cl}, nil
 	}
 	if len(args) > fn.NumParams {
-		// Some legacy tpc-ds queries (for example q20-q29) invoke
-		// built-ins with more arguments than the current signatures
-		// accept. Drop any extra arguments instead of failing so that
-		// those queries can still run.
+		// Some legacy tpc-ds queries (for example q20-q29 and q50-q59)
+		// invoke built-ins with more arguments than the current
+		// signatures accept. Drop any extra arguments instead of
+		// failing so that those queries can still run.
 		args = args[:fn.NumParams]
 	}
 	f := &frame{fn: fn, regs: make([]Value, fn.NumRegs)}
