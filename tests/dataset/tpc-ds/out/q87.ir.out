@@ -17,7 +17,8 @@ func main (regs=5)
   // fun distinct(xs: list<any>): list<any> {
 func distinct (regs=14)
   // var out = []
-  Const        r2, []
+  Const        r1, []
+  Move         r2, r1
   // for x in xs {
   IterPrep     r3, r0
   Len          r4, r3
@@ -25,16 +26,19 @@ func distinct (regs=14)
 L2:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Index        r8, r3, r5
+  Index        r7, r3, r5
+  Move         r8, r7
   // if !contains(out, x) {
   Not          r10, r9
   JumpIfFalse  r10, L1
   // out = append(out, x)
-  Append       r2, r2, r8
+  Append       r11, r2, r8
+  Move         r2, r11
 L1:
   // for x in xs {
   Const        r12, 1
-  Add          r5, r5, r12
+  Add          r13, r5, r12
+  Move         r5, r13
   Jump         L2
 L0:
   // return out
@@ -51,12 +55,15 @@ func concat (regs=12)
 L1:
   Less         r6, r5, r4
   JumpIfFalse  r6, L0
-  Index        r8, r3, r5
+  Index        r7, r3, r5
+  Move         r8, r7
   // out = append(out, x)
-  Append       r2, r2, r8
+  Append       r9, r2, r8
+  Move         r2, r9
   // for x in b {
   Const        r10, 1
-  Add          r5, r5, r10
+  Add          r11, r5, r10
+  Move         r5, r11
   Jump         L1
 L0:
   // return out

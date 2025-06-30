@@ -14,7 +14,8 @@ func main (regs=29)
 L4:
   Less         r7, r6, r5
   JumpIfFalse  r7, L0
-  Index        r9, r4, r6
+  Index        r8, r4, r6
+  Move         r9, r8
   // for s in store_sales {
   IterPrep     r10, r2
   Len          r11, r10
@@ -22,7 +23,8 @@ L4:
 L3:
   Less         r13, r12, r11
   JumpIfFalse  r13, L1
-  Index        r15, r10, r12
+  Index        r14, r10, r12
+  Move         r15, r14
   // if inv.item == s.item {
   Const        r16, "item"
   Index        r17, r9, r16
@@ -32,16 +34,19 @@ L3:
   // result = result + inv.qty
   Const        r20, "qty"
   Index        r21, r9, r20
-  Add          r3, r3, r21
+  Add          r22, r3, r21
+  Move         r3, r22
 L2:
   // for s in store_sales {
   Const        r23, 1
-  Add          r12, r12, r23
+  Add          r24, r12, r23
+  Move         r12, r24
   Jump         L3
 L1:
   // for inv in inventory {
   Const        r25, 1
-  Add          r6, r6, r25
+  Add          r26, r6, r25
+  Move         r6, r26
   Jump         L4
 L0:
   // json(result)

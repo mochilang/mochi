@@ -1,4 +1,4 @@
-func main (regs=24)
+func main (regs=25)
   // let web_sales = [
   Const        r0, [{"cat": "A", "class": "B", "net": 40}, {"cat": "A", "class": "B", "net": 46}, {"cat": "A", "class": "C", "net": 10}, {"cat": "B", "class": "B", "net": 20}]
   // sum(from ws in web_sales
@@ -11,11 +11,13 @@ func main (regs=24)
   // sum(from ws in web_sales
   IterPrep     r5, r0
   Len          r6, r5
-  Const        r7, 0
+  Const        r8, 0
+  Move         r7, r8
 L3:
   LessInt      r9, r7, r6
   JumpIfFalse  r9, L0
-  Index        r11, r5, r7
+  Index        r10, r5, r7
+  Move         r11, r10
   // where ws.cat == "A" && ws.class == "B"
   Index        r12, r11, r2
   Const        r13, "A"
@@ -23,24 +25,26 @@ L3:
   Index        r15, r11, r3
   Const        r16, "B"
   Equal        r17, r15, r16
-  JumpIfFalse  r14, L1
-  Move         r14, r17
+  Move         r18, r14
+  JumpIfFalse  r18, L1
+  Move         r18, r17
 L1:
-  JumpIfFalse  r14, L2
+  JumpIfFalse  r18, L2
   // select ws.net)
-  Index        r18, r11, r4
+  Index        r19, r11, r4
   // sum(from ws in web_sales
-  Append       r1, r1, r18
+  Append       r20, r1, r19
+  Move         r1, r20
 L2:
-  Const        r20, 1
-  AddInt       r7, r7, r20
+  Const        r21, 1
+  AddInt       r7, r7, r21
   Jump         L3
 L0:
-  Sum          r21, r1
+  Sum          r22, r1
   // json(result)
-  JSON         r21
+  JSON         r22
   // expect result == 86.0
-  Const        r22, 86
-  EqualFloat   r23, r21, r22
-  Expect       r23
+  Const        r23, 86
+  EqualFloat   r24, r22, r23
+  Expect       r24
   Return       r0
