@@ -38,7 +38,7 @@ const (
 // nested loop join instead of emitting a hash join. When both join
 // sources are constant lists smaller than this size, nested loops tend
 // to be faster due to lower allocation overhead.
-const smallJoinThreshold = 8
+const smallJoinThreshold = 0
 
 // Op defines a VM instruction opcode.
 type Op uint8

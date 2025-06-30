@@ -1,6 +1,8 @@
 package vm
 
 import (
+	"fmt"
+
 	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/parser"
 )
@@ -210,26 +212,76 @@ func postfixToExpr(p *parser.PostfixExpr, pos lexer.Position) *parser.Expr {
 	return &parser.Expr{Pos: pos, Binary: &parser.BinaryExpr{Left: &parser.Unary{Pos: pos, Value: p}}}
 }
 
+func constStringExpr(pos lexer.Position, s string) *parser.Expr {
+	return &parser.Expr{
+		Pos:    pos,
+		Binary: &parser.BinaryExpr{Left: &parser.Unary{Pos: pos, Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: &parser.Literal{Str: &s}}}}},
+	}
+}
+
 // eqJoinKeys checks if ON clause represents equality between expressions
 // that exclusively reference leftAlias and rightAlias. It returns the
 // left and right expressions when recognized.
 func eqJoinKeys(on *parser.Expr, leftAlias, rightAlias string) (*parser.Expr, *parser.Expr, bool) {
-	if on == nil || on.Binary == nil || len(on.Binary.Right) != 1 {
+	type pair struct{ left, right *parser.Expr }
+
+	var pairs []pair
+
+	var collect func(e *parser.Expr) bool
+	collect = func(e *parser.Expr) bool {
+		if e == nil || e.Binary == nil {
+			return false
+		}
+		if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "&&" {
+			left := &parser.Expr{Pos: e.Pos, Binary: &parser.BinaryExpr{Left: e.Binary.Left}}
+			if !collect(left) {
+				return false
+			}
+			rightExpr := postfixToExpr(e.Binary.Right[0].Right, e.Binary.Right[0].Pos)
+			return collect(rightExpr)
+		}
+		if len(e.Binary.Right) != 1 || e.Binary.Right[0].Op != "==" {
+			return false
+		}
+		l := unaryToExpr(e.Binary.Left)
+		r := postfixToExpr(e.Binary.Right[0].Right, e.Binary.Right[0].Pos)
+		if exprUsesOnlyAlias(l, leftAlias) && exprUsesOnlyAlias(r, rightAlias) {
+			pairs = append(pairs, pair{l, r})
+			return true
+		}
+		if exprUsesOnlyAlias(l, rightAlias) && exprUsesOnlyAlias(r, leftAlias) {
+			pairs = append(pairs, pair{r, l})
+			return true
+		}
+		return false
+	}
+
+	if !collect(on) || len(pairs) == 0 {
 		return nil, nil, false
 	}
-	bop := on.Binary.Right[0]
-	if bop.Op != "==" {
-		return nil, nil, false
+
+	if len(pairs) == 1 {
+		return pairs[0].left, pairs[0].right, true
 	}
-	leftExpr := unaryToExpr(on.Binary.Left)
-	rightExpr := postfixToExpr(bop.Right, bop.Pos)
-	if exprUsesOnlyAlias(leftExpr, leftAlias) && exprUsesOnlyAlias(rightExpr, rightAlias) {
-		return leftExpr, rightExpr, true
+
+	makeMap := func(ps []pair, pickLeft bool) *parser.Expr {
+		items := make([]*parser.MapEntry, len(ps))
+		for i, p := range ps {
+			keyStr := fmt.Sprintf("k%d", i)
+			keyExpr := constStringExpr(on.Pos, keyStr)
+			val := p.right
+			if pickLeft {
+				val = p.left
+			}
+			items[i] = &parser.MapEntry{Key: keyExpr, Value: val}
+		}
+		mapPrim := &parser.Primary{Map: &parser.MapLiteral{Items: items}}
+		return postfixToExpr(&parser.PostfixExpr{Target: mapPrim}, on.Pos)
 	}
-	if exprUsesOnlyAlias(leftExpr, rightAlias) && exprUsesOnlyAlias(rightExpr, leftAlias) {
-		return rightExpr, leftExpr, true
-	}
-	return nil, nil, false
+
+	leftMap := makeMap(pairs, true)
+	rightMap := makeMap(pairs, false)
+	return leftMap, rightMap, true
 }
 
 // whereAlias returns the alias referenced by the WHERE clause if exactly one

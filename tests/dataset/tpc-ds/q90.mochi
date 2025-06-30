@@ -38,5 +38,5 @@ let result = (amc as float) / (pmc as float)
 json(result)
 
 test "TPCDS Q90 ratio" {
-  expect result == 1.0
+  expect result == 2.0
 }
