@@ -74,6 +74,9 @@ cd mochi
 make install # install Deno for TypeScript tests
 make build
 make test
+
+# Build the optional `vmreport` tool without heavy CGO dependencies
+CGO_ENABLED=0 go build -o vmreport ./tools/vmreport
 ```
 
 This installs `mochi` into `~/bin` and runs the full test suite.
