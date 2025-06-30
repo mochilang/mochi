@@ -6,6 +6,7 @@ let x = [
   { w_warehouse_name: "Wh1", w_warehouse_sq_ft: 1000.0, w_city: "City1", w_county: "County1", w_state: "ST", w_country: "USA", ship_carriers: "DHL,BARIAN", year: 2002,
     jan_sales: 5.0, feb_sales: 15.0, mar_sales: 0.0, apr_sales: 0.0, may_sales: 0.0, jun_sales: 0.0, jul_sales: 0.0, aug_sales: 0.0, sep_sales: 0.0, oct_sales: 0.0, nov_sales: 0.0, dec_sales: 0.0,
     jan_net: 4.0, feb_net: 12.0, mar_net: 0.0, apr_net: 0.0, may_net: 0.0, jun_net: 0.0, jul_net: 0.0, aug_net: 0.0, sep_net: 0.0, oct_net: 0.0, nov_net: 0.0, dec_net: 0.0 }
+  { w_warehouse_name: "Wh2", w_warehouse_sq_ft: 800.0, w_city: "City2", w_county: "County2", w_state: "ST", w_country: "USA", ship_carriers: "DHL", year: 2003, jan_sales: 0.0, feb_sales: 0.0, mar_sales: 0.0, apr_sales: 0.0, may_sales: 0.0, jun_sales: 0.0, jul_sales: 0.0, aug_sales: 0.0, sep_sales: 0.0, oct_sales: 0.0, nov_sales: 0.0, dec_sales: 0.0, jan_net: 0.0, feb_net: 0.0, mar_net: 0.0, apr_net: 0.0, may_net: 0.0, jun_net: 0.0, jul_net: 0.0, aug_net: 0.0, sep_net: 0.0, oct_net: 0.0, nov_net: 0.0, dec_net: 0.0 }
 ]
 
 let result =

@@ -20,6 +20,7 @@ let date_dim = [
   { d_date_sk: 200, d_month_seq: 1200 },
   { d_date_sk: 25, d_month_seq: 1200 },
   { d_date_sk: 115, d_month_seq: 1200 }
+  ,{ d_date_sk: 300, d_month_seq: 1300 }
 ]
 
 let web_sales = [
@@ -30,6 +31,7 @@ let web_sales = [
   { ws_ship_date_sk: 200, ws_sold_date_sk: 40, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 },   // 160 days
   { ws_ship_date_sk: 25, ws_sold_date_sk: 5, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 },     // 20 days
   { ws_ship_date_sk: 115, ws_sold_date_sk: 40, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 }    // 75 days
+  ,{ ws_ship_date_sk: 300, ws_sold_date_sk: 25, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 }
 ]
 
 let result =

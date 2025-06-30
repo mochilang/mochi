@@ -15,8 +15,13 @@ let cross_sales = [
   { product_name: "P2", item_sk: 2, store_name: "Store1", store_zip: "10001",
     b_street_number: "10", b_streen_name: "Main", b_city: "CityA", b_zip: "Z1",
     c_street_number: "20", c_street_name: "Second", c_city: "CityB", c_zip: "Z2",
-    syear: 2000, cnt: 5, s1: 10, s2: 22, s3: 5 }
+    syear: 2000, cnt: 5, s1: 10, s2: 22, s3: 5 },
+  { product_name: "P3", item_sk: 3, store_name: "Store2", store_zip: "10002",
+    b_street_number: "30", b_streen_name: "Third", b_city: "CityC", b_zip: "Z3",
+    c_street_number: "40", c_street_name: "Fourth", c_city: "CityD", c_zip: "Z4",
+    syear: 2001, cnt: 7, s1: 14, s2: 28, s3: 7 }
 ]
+
 
 let result =
   from cs1 in cross_sales

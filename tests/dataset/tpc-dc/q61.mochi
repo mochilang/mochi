@@ -1,7 +1,8 @@
 // Minimal dataset for TPC-DC Q61
 let promotion = [
   { p_promo_sk: 1, p_channel_dmail: "Y", p_channel_email: "N", p_channel_tv: "N" },
-  { p_promo_sk: 2, p_channel_dmail: "N", p_channel_email: "N", p_channel_tv: "N" }
+  { p_promo_sk: 2, p_channel_dmail: "N", p_channel_email: "N", p_channel_tv: "N" },
+  { p_promo_sk: 3, p_channel_dmail: "N", p_channel_email: "Y", p_channel_tv: "N" }
 ]
 
 let store = [
@@ -22,14 +23,16 @@ let customer_address = [
 ]
 
 let item = [
-  { i_item_sk: 1, i_category: "Jewelry" }
+  { i_item_sk: 1, i_category: "Jewelry" },
+  { i_item_sk: 2, i_category: "Electronics" }
 ]
 
 let store_sales = [
   { ss_ext_sales_price: 100.0, ss_sold_date_sk: 1, ss_store_sk: 1, ss_promo_sk: 1, ss_customer_sk: 1, ss_item_sk: 1 },
   { ss_ext_sales_price: 200.0, ss_sold_date_sk: 1, ss_store_sk: 1, ss_promo_sk: 2, ss_customer_sk: 1, ss_item_sk: 1 },
   { ss_ext_sales_price: 150.0, ss_sold_date_sk: 1, ss_store_sk: 1, ss_promo_sk: 1, ss_customer_sk: 1, ss_item_sk: 1 },
-  { ss_ext_sales_price: 80.0, ss_sold_date_sk: 2, ss_store_sk: 1, ss_promo_sk: 1, ss_customer_sk: 1, ss_item_sk: 1 }
+  { ss_ext_sales_price: 80.0, ss_sold_date_sk: 2, ss_store_sk: 1, ss_promo_sk: 1, ss_customer_sk: 1, ss_item_sk: 1 },
+  { ss_ext_sales_price: 60.0, ss_sold_date_sk: 1, ss_store_sk: 1, ss_promo_sk: 3, ss_customer_sk: 1, ss_item_sk: 2 }
 ]
 
 let promotional_sales =

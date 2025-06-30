@@ -2,12 +2,16 @@
 let item = [
   { i_item_sk: 1, i_item_id: "I1", i_category: "Music" },
   { i_item_sk: 2, i_item_id: "I2", i_category: "Electronics" },
-  { i_item_sk: 3, i_item_id: "I3", i_category: "Music" }
+  { i_item_sk: 3, i_item_id: "I3", i_category: "Music" },
+  // item not in selected category
+  { i_item_sk: 4, i_item_id: "I4", i_category: "Shoes" }
 ]
 
 let date_dim = [
   { d_date_sk: 1, d_year: 1998, d_moy: 9 },
-  { d_date_sk: 2, d_year: 1998, d_moy: 10 }
+  { d_date_sk: 2, d_year: 1998, d_moy: 10 },
+  // date outside selected month
+  { d_date_sk: 3, d_year: 1999, d_moy: 9 }
 ]
 
 let customer_address = [
@@ -20,21 +24,26 @@ let store_sales = [
   { ss_item_sk: 1, ss_sold_date_sk: 2, ss_addr_sk: 10, ss_ext_sales_price: 100 },
   { ss_item_sk: 3, ss_sold_date_sk: 1, ss_addr_sk: 10, ss_ext_sales_price: 50 },
   { ss_item_sk: 2, ss_sold_date_sk: 1, ss_addr_sk: 10, ss_ext_sales_price: 80 },
-  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_addr_sk: 11, ss_ext_sales_price: 30 }
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_addr_sk: 11, ss_ext_sales_price: 30 },
+  // sold from address with different offset
+  { ss_item_sk: 4, ss_sold_date_sk: 1, ss_addr_sk: 11, ss_ext_sales_price: 60 }
 ]
 
 let catalog_sales = [
   { cs_item_sk: 1, cs_sold_date_sk: 1, cs_bill_addr_sk: 10, cs_ext_sales_price: 50 },
   { cs_item_sk: 3, cs_sold_date_sk: 1, cs_bill_addr_sk: 10, cs_ext_sales_price: 20 },
   { cs_item_sk: 1, cs_sold_date_sk: 2, cs_bill_addr_sk: 10, cs_ext_sales_price: 20 },
-  { cs_item_sk: 1, cs_sold_date_sk: 1, cs_bill_addr_sk: 11, cs_ext_sales_price: 10 }
+  { cs_item_sk: 1, cs_sold_date_sk: 1, cs_bill_addr_sk: 11, cs_ext_sales_price: 10 },
+  // catalog sale for non-matching year
+  { cs_item_sk: 4, cs_sold_date_sk: 3, cs_bill_addr_sk: 11, cs_ext_sales_price: 25 }
 ]
 
 let web_sales = [
   { ws_item_sk: 1, ws_sold_date_sk: 1, ws_bill_addr_sk: 10, ws_ext_sales_price: 30 },
   { ws_item_sk: 3, ws_sold_date_sk: 1, ws_bill_addr_sk: 10, ws_ext_sales_price: 40 },
   { ws_item_sk: 1, ws_sold_date_sk: 2, ws_bill_addr_sk: 10, ws_ext_sales_price: 15 },
-  { ws_item_sk: 2, ws_sold_date_sk: 1, ws_bill_addr_sk: 10, ws_ext_sales_price: 15 }
+  { ws_item_sk: 2, ws_sold_date_sk: 1, ws_bill_addr_sk: 10, ws_ext_sales_price: 15 },
+  { ws_item_sk: 4, ws_sold_date_sk: 3, ws_bill_addr_sk: 11, ws_ext_sales_price: 20 }
 ]
 
 let ss =
