@@ -20,7 +20,7 @@ let joined =
   where r.revenue <= 0.1 * a.ave
   select r.revenue
 
-let first_rev = joined |> first
+let first_rev = first(joined)
 let result = first_rev + 63
 
 json(result)

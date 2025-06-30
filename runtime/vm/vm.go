@@ -127,7 +127,6 @@ const (
 	OpIntersect
 	OpSort
 	OpExpect
-	OpFirst
 )
 
 func (op Op) String() string {
@@ -282,8 +281,6 @@ func (op Op) String() string {
 		return "Sort"
 	case OpExpect:
 		return "Expect"
-	case OpFirst:
-		return "First"
 	default:
 		return "?"
 	}
@@ -456,8 +453,6 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpExpect:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
-			case OpFirst:
-				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpMakeClosure:
 				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), p.funcName(ins.B), ins.C, formatReg(ins.D))
 			case OpCall2:
@@ -1123,13 +1118,6 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			line = strings.TrimRight(line, "\r\n")
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: line}
-		case OpFirst:
-			lst := fr.regs[ins.B]
-			if lst.Tag != ValueList || len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: ValueNull}
-			} else {
-				fr.regs[ins.A] = lst.List[0]
-			}
 		case OpIterPrep:
 			src := fr.regs[ins.B]
 			switch src.Tag {

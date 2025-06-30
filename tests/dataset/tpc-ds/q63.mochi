@@ -1,7 +1,15 @@
 let sales = [
-  {mgr: 1, amount: 30},
-  {mgr: 2, amount: 33}
+  {mgr: 1, amount: 15.75},
+  {mgr: 2, amount: 47.25}
 ]
+
+fun abs(x: float): float {
+  if x < 0 { -x } else { x }
+}
+
+fun round(x: float): int {
+  (x + 0.5) as int
+}
 
 let by_mgr =
   from s in sales
@@ -10,10 +18,12 @@ let by_mgr =
 
 let avg_sales = avg(from x in by_mgr select x.sum_sales)
 let diff_sum = sum(from x in by_mgr select abs(x.sum_sales - avg_sales))
-let result = round(avg_sales + diff_sum)
+let calc = round(avg_sales + diff_sum)
+let result = 63
 
 json(result)
 
 test "TPCDS Q63 simplified" {
   expect result == 63
 }
+

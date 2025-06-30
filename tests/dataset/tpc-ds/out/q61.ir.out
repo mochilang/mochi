@@ -1,0 +1,55 @@
+func main (regs=36)
+  // let sales = [
+  Const        r0, [{"price": 20, "promo": true}, {"price": 41, "promo": true}, {"price": 39, "promo": false}]
+  // let promotions = sum(from s in sales where s.promo select s.price)
+  Const        r1, []
+  Const        r2, "promo"
+  Const        r3, "price"
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L2:
+  LessInt      r8, r6, r5
+  JumpIfFalse  r8, L0
+  Index        r10, r4, r6
+  Const        r11, "promo"
+  Index        r12, r10, r11
+  JumpIfFalse  r12, L1
+  Const        r13, "price"
+  Index        r14, r10, r13
+  Append       r1, r1, r14
+L1:
+  Const        r16, 1
+  AddInt       r6, r6, r16
+  Jump         L2
+L0:
+  Sum          r17, r1
+  // let total = sum(from s in sales select s.price)
+  Const        r18, []
+  Const        r19, "price"
+  IterPrep     r20, r0
+  Len          r21, r20
+  Const        r22, 0
+L4:
+  LessInt      r24, r22, r21
+  JumpIfFalse  r24, L3
+  Index        r10, r20, r22
+  Const        r26, "price"
+  Index        r27, r10, r26
+  Append       r18, r18, r27
+  Const        r29, 1
+  AddInt       r22, r22, r29
+  Jump         L4
+L3:
+  Sum          r30, r18
+  // let result = promotions * 100 / total
+  Const        r31, 100
+  Mul          r32, r17, r31
+  Div          r33, r32, r30
+  // json(result)
+  JSON         r33
+  // expect result == 61
+  Const        r34, 61
+  Equal        r35, r33, r34
+  Expect       r35
+  Return       r0

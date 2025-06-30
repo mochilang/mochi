@@ -8,10 +8,12 @@ let reason = [
 ]
 
 let promo_sum =
-  from ss in store_sales
-  join r in reason on ss.reason == r.id
-  where r.name == "PROMO"
-  select ss.price |> sum
+  sum(
+    from ss in store_sales
+    join r in reason on ss.reason == r.id
+    where r.name == "PROMO"
+    select ss.price
+  )
 
 let result = promo_sum + 27
 
