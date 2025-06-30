@@ -19,7 +19,7 @@ L1:
   Jump         L1
 L0:
   // let result = first(reverse(vals))
-  Reverse      14,1,0,0
+  Reverse      r14, r1
   First        r15, r14
   // json(result)
   JSON         r15
