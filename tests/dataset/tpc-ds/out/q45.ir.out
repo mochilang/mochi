@@ -1,4 +1,4 @@
-func main (regs=173)
+func main (regs=159)
   // let web_sales = [
   Const        r0, [{"bill_customer_sk": 1, "item_sk": 1, "sales_price": 50, "sold_date_sk": 1}, {"bill_customer_sk": 2, "item_sk": 2, "sales_price": 30, "sold_date_sk": 1}]
   // let customer = [
@@ -22,238 +22,238 @@ func main (regs=173)
   // group by ca.ca_zip into g
   Const        r10, "ca_zip"
   // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
-  Const        r11, "ca_zip"
-  Const        r12, "i_item_id"
+  Const        r11, "i_item_id"
   // d.d_qoy == qoy && d.d_year == year
-  Const        r13, "d_qoy"
-  Const        r14, "d_year"
+  Const        r12, "d_qoy"
+  Const        r13, "d_year"
   // select { ca_zip: g.key, sum_ws_sales_price: sum(from x in g select x.ws.sales_price) }
-  Const        r15, "ca_zip"
-  Const        r16, "key"
-  Const        r17, "sum_ws_sales_price"
-  Const        r18, "ws"
-  Const        r19, "sales_price"
+  Const        r14, "key"
+  Const        r15, "sum_ws_sales_price"
+  Const        r16, "ws"
+  Const        r17, "sales_price"
   // from ws in web_sales
-  MakeMap      r20, 0, r0
-  Const        r21, []
-  IterPrep     r23, r0
-  Len          r24, r23
-  Const        r25, 0
-L13:
-  LessInt      r26, r25, r24
-  JumpIfFalse  r26, L0
-  Index        r28, r23, r25
+  MakeMap      r18, 0, r0
+  Const        r20, []
+  Move         r19, r20
+  IterPrep     r21, r0
+  Len          r22, r21
+  Const        r23, 0
+L14:
+  LessInt      r24, r23, r22
+  JumpIfFalse  r24, L0
+  Index        r25, r21, r23
+  Move         r26, r25
   // join c in customer on ws.bill_customer_sk == c.c_customer_sk
-  IterPrep     r29, r1
-  Len          r30, r29
-  Const        r31, 0
-L12:
-  LessInt      r32, r31, r30
-  JumpIfFalse  r32, L1
-  Index        r34, r29, r31
-  Const        r35, "bill_customer_sk"
-  Index        r36, r28, r35
-  Const        r37, "c_customer_sk"
-  Index        r38, r34, r37
-  Equal        r39, r36, r38
-  JumpIfFalse  r39, L2
+  IterPrep     r27, r1
+  Len          r28, r27
+  Const        r29, 0
+L13:
+  LessInt      r30, r29, r28
+  JumpIfFalse  r30, L1
+  Index        r31, r27, r29
+  Move         r32, r31
+  Const        r33, "bill_customer_sk"
+  Index        r34, r26, r33
+  Const        r35, "c_customer_sk"
+  Index        r36, r32, r35
+  Equal        r37, r34, r36
+  JumpIfFalse  r37, L2
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
-  IterPrep     r40, r2
-  Len          r41, r40
-  Const        r42, 0
-L11:
-  LessInt      r43, r42, r41
-  JumpIfFalse  r43, L2
-  Index        r45, r40, r42
-  Const        r46, "c_current_addr_sk"
-  Index        r47, r34, r46
-  Const        r48, "ca_address_sk"
-  Index        r49, r45, r48
-  Equal        r50, r47, r49
-  JumpIfFalse  r50, L3
+  IterPrep     r38, r2
+  Len          r39, r38
+  Const        r40, 0
+L12:
+  LessInt      r41, r40, r39
+  JumpIfFalse  r41, L2
+  Index        r42, r38, r40
+  Move         r43, r42
+  Const        r44, "c_current_addr_sk"
+  Index        r45, r32, r44
+  Const        r46, "ca_address_sk"
+  Index        r47, r43, r46
+  Equal        r48, r45, r47
+  JumpIfFalse  r48, L3
   // join i in item on ws.item_sk == i.i_item_sk
-  IterPrep     r51, r3
-  Len          r52, r51
-  Const        r53, 0
-L10:
-  LessInt      r54, r53, r52
-  JumpIfFalse  r54, L3
-  Index        r56, r51, r53
-  Const        r57, "item_sk"
-  Index        r58, r28, r57
-  Const        r59, "i_item_sk"
-  Index        r60, r56, r59
-  Equal        r61, r58, r60
-  JumpIfFalse  r61, L4
+  IterPrep     r49, r3
+  Len          r50, r49
+  Const        r51, 0
+L11:
+  LessInt      r52, r51, r50
+  JumpIfFalse  r52, L3
+  Index        r53, r49, r51
+  Move         r54, r53
+  Const        r55, "item_sk"
+  Index        r56, r26, r55
+  Const        r57, "i_item_sk"
+  Index        r58, r54, r57
+  Equal        r59, r56, r58
+  JumpIfFalse  r59, L4
   // join d in date_dim on ws.sold_date_sk == d.d_date_sk
-  IterPrep     r62, r4
-  Len          r63, r62
-  Const        r64, 0
-L9:
-  LessInt      r65, r64, r63
-  JumpIfFalse  r65, L4
-  Index        r67, r62, r64
-  Const        r68, "sold_date_sk"
-  Index        r69, r28, r68
-  Const        r70, "d_date_sk"
-  Index        r71, r67, r70
-  Equal        r72, r69, r71
-  JumpIfFalse  r72, L5
+  IterPrep     r60, r4
+  Len          r61, r60
+  Const        r62, 0
+L10:
+  LessInt      r63, r62, r61
+  JumpIfFalse  r63, L4
+  Index        r64, r60, r62
+  Move         r65, r64
+  Const        r66, "sold_date_sk"
+  Index        r67, r26, r66
+  Const        r68, "d_date_sk"
+  Index        r69, r65, r68
+  Equal        r70, r67, r69
+  JumpIfFalse  r70, L5
   // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
-  Const        r73, "ca_zip"
-  Index        r74, r45, r73
-  Const        r75, 0
-  Const        r76, 5
-  Slice        r77, r74, r75, r76
-  In           r78, r77, r5
-  Const        r79, "i_item_id"
-  Index        r80, r56, r79
-  In           r81, r80, r6
-  Move         r82, r78
-  JumpIfTrue   r82, L6
-  Move         r82, r81
+  Index        r71, r43, r10
+  Const        r72, 0
+  Const        r73, 5
+  Slice        r74, r71, r72, r73
+  Const        r75, ["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"]
+  In           r76, r74, r75
+  Index        r77, r54, r11
+  Const        r78, ["I2"]
+  In           r79, r77, r78
+  Move         r80, r76
+  JumpIfTrue   r80, L6
+  Move         r80, r79
 L6:
   // d.d_qoy == qoy && d.d_year == year
-  Const        r83, "d_qoy"
-  Index        r84, r67, r83
-  Equal        r85, r84, r7
-  Const        r86, "d_year"
-  Index        r87, r67, r86
-  Equal        r88, r87, r8
+  Index        r81, r65, r12
+  Equal        r82, r81, r7
+  Index        r83, r65, r13
+  Equal        r84, r83, r8
   // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
-  Move         r89, r82
-  JumpIfFalse  r89, L7
-  Move         r89, r85
-  // d.d_qoy == qoy && d.d_year == year
-  JumpIfFalse  r89, L7
-  Move         r89, r88
+  Move         r85, r80
+  JumpIfFalse  r85, L7
+  Move         r85, r82
 L7:
-  // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
-  JumpIfFalse  r89, L5
-  // from ws in web_sales
-  Const        r90, "ws"
-  Move         r91, r28
-  Const        r92, "c"
-  Move         r93, r34
-  Const        r94, "ca"
-  Move         r95, r45
-  Const        r96, "i"
-  Move         r97, r56
-  Const        r98, "d"
-  Move         r99, r67
-  MakeMap      r100, 5, r90
-  // group by ca.ca_zip into g
-  Const        r101, "ca_zip"
-  Index        r102, r45, r101
-  Str          r103, r102
-  In           r104, r103, r20
-  JumpIfTrue   r104, L8
-  // from ws in web_sales
-  Const        r105, []
-  Const        r106, "__group__"
-  Const        r107, true
-  Const        r108, "key"
-  // group by ca.ca_zip into g
-  Move         r109, r102
-  // from ws in web_sales
-  Const        r110, "items"
-  Move         r111, r105
-  Const        r112, "count"
-  Const        r113, 0
-  Move         r114, r106
-  Move         r115, r107
-  Move         r116, r108
-  Move         r117, r109
-  Move         r118, r110
-  Move         r119, r111
-  Move         r120, r112
-  Move         r121, r113
-  MakeMap      r122, 4, r114
-  SetIndex     r20, r103, r122
-  Append       r21, r21, r122
+  // d.d_qoy == qoy && d.d_year == year
+  Move         r86, r85
+  JumpIfFalse  r86, L8
+  Move         r86, r84
 L8:
-  Const        r124, "items"
-  Index        r125, r20, r103
-  Index        r126, r125, r124
-  Append       r127, r126, r100
-  SetIndex     r125, r124, r127
-  Const        r128, "count"
-  Index        r129, r125, r128
-  Const        r130, 1
-  AddInt       r131, r129, r130
-  SetIndex     r125, r128, r131
+  // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
+  JumpIfFalse  r86, L5
+  // from ws in web_sales
+  Move         r87, r26
+  Const        r88, "c"
+  Move         r89, r32
+  Const        r90, "ca"
+  Move         r91, r43
+  Const        r92, "i"
+  Move         r93, r54
+  Const        r94, "d"
+  Move         r95, r65
+  Move         r96, r16
+  Move         r97, r87
+  Move         r98, r88
+  Move         r99, r89
+  Move         r100, r90
+  Move         r101, r91
+  Move         r102, r92
+  Move         r103, r93
+  Move         r104, r94
+  Move         r105, r95
+  MakeMap      r106, 5, r96
+  // group by ca.ca_zip into g
+  Index        r107, r43, r10
+  Str          r108, r107
+  In           r109, r108, r18
+  JumpIfTrue   r109, L9
+  // from ws in web_sales
+  Const        r110, []
+  Const        r111, "__group__"
+  Const        r112, true
+  // group by ca.ca_zip into g
+  Move         r113, r107
+  // from ws in web_sales
+  Const        r114, "items"
+  Move         r115, r110
+  Const        r116, "count"
+  Move         r117, r111
+  Move         r118, r112
+  Move         r119, r14
+  Move         r120, r113
+  Move         r121, r114
+  Move         r122, r115
+  Move         r123, r116
+  Move         r124, r72
+  MakeMap      r125, 4, r117
+  SetIndex     r18, r108, r125
+  Append       r126, r19, r125
+  Move         r19, r126
+L9:
+  Index        r127, r18, r108
+  Index        r128, r127, r114
+  Append       r129, r128, r106
+  SetIndex     r127, r114, r129
+  Index        r130, r127, r116
+  AddInt       r131, r130, r7
+  SetIndex     r127, r116, r131
 L5:
   // join d in date_dim on ws.sold_date_sk == d.d_date_sk
-  Const        r132, 1
-  AddInt       r64, r64, r132
-  Jump         L9
+  AddInt       r62, r62, r7
+  Jump         L10
 L4:
   // join i in item on ws.item_sk == i.i_item_sk
-  Const        r133, 1
-  AddInt       r53, r53, r133
-  Jump         L10
+  AddInt       r51, r51, r7
+  Jump         L11
 L3:
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
-  Const        r134, 1
-  AddInt       r42, r42, r134
-  Jump         L11
+  AddInt       r40, r40, r7
+  Jump         L12
 L2:
   // join c in customer on ws.bill_customer_sk == c.c_customer_sk
-  Const        r135, 1
-  AddInt       r31, r31, r135
-  Jump         L12
+  AddInt       r29, r29, r7
+  Jump         L13
 L1:
   // from ws in web_sales
-  Const        r136, 1
-  AddInt       r25, r25, r136
-  Jump         L13
+  AddInt       r23, r23, r7
+  Jump         L14
 L0:
-  Const        r137, 0
-  Len          r139, r21
-L17:
-  LessInt      r140, r137, r139
-  JumpIfFalse  r140, L14
-  Index        r142, r21, r137
+  Move         r132, r72
+  Len          r133, r19
+L18:
+  LessInt      r134, r132, r133
+  JumpIfFalse  r134, L15
+  Index        r135, r19, r132
+  Move         r136, r135
   // select { ca_zip: g.key, sum_ws_sales_price: sum(from x in g select x.ws.sales_price) }
-  Const        r143, "ca_zip"
-  Const        r144, "key"
-  Index        r145, r142, r144
-  Const        r146, "sum_ws_sales_price"
-  Const        r147, []
-  Const        r148, "ws"
-  Const        r149, "sales_price"
-  IterPrep     r150, r142
-  Len          r151, r150
-  Const        r152, 0
-L16:
-  LessInt      r154, r152, r151
-  JumpIfFalse  r154, L15
-  Index        r156, r150, r152
-  Const        r157, "ws"
-  Index        r158, r156, r157
-  Const        r159, "sales_price"
-  Index        r160, r158, r159
-  Append       r147, r147, r160
-  Const        r162, 1
-  AddInt       r152, r152, r162
-  Jump         L16
-L15:
-  Sum          r163, r147
-  Move         r164, r143
-  Move         r165, r145
-  Move         r166, r146
-  Move         r167, r163
-  MakeMap      r168, 2, r164
-  // from ws in web_sales
-  Append       r9, r9, r168
-  Const        r170, 1
-  AddInt       r137, r137, r170
+  Const        r137, "ca_zip"
+  Index        r138, r136, r14
+  Const        r139, "sum_ws_sales_price"
+  Const        r140, []
+  IterPrep     r141, r136
+  Len          r142, r141
+  Move         r143, r72
+L17:
+  LessInt      r144, r143, r142
+  JumpIfFalse  r144, L16
+  Index        r145, r141, r143
+  Move         r146, r145
+  Index        r147, r146, r16
+  Index        r148, r147, r17
+  Append       r149, r140, r148
+  Move         r140, r149
+  AddInt       r143, r143, r7
   Jump         L17
-L14:
+L16:
+  Sum          r150, r140
+  Move         r151, r137
+  Move         r152, r138
+  Move         r153, r139
+  Move         r154, r150
+  MakeMap      r155, 2, r151
+  // from ws in web_sales
+  Append       r156, r9, r155
+  Move         r9, r156
+  AddInt       r132, r132, r7
+  Jump         L18
+L15:
   // json(records)
   JSON         r9
   // expect records == [ { ca_zip: "85669", sum_ws_sales_price: 50.0 }, { ca_zip: "99999", sum_ws_sales_price: 30.0 } ]
-  Const        r171, [{"ca_zip": "85669", "sum_ws_sales_price": 50}, {"ca_zip": "99999", "sum_ws_sales_price": 30}]
-  Equal        r172, r9, r171
-  Expect       r172
+  Const        r157, [{"ca_zip": "85669", "sum_ws_sales_price": 50}, {"ca_zip": "99999", "sum_ws_sales_price": 30}]
+  Equal        r158, r9, r157
+  Expect       r158
   Return       r0
