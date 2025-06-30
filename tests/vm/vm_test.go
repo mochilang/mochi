@@ -204,12 +204,19 @@ func TestVM_TPCH(t *testing.T) {
 
 func TestVM_TPCDS(t *testing.T) {
 	root := findRepoRoot(t)
-	queries := []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12", "q13", "q14", "q15", "q16", "q17", "q18", "q19", "q20", "q21", "q22", "q23", "q24", "q25", "q26", "q27", "q28", "q29", "q40", "q41", "q42", "q43", "q44", "q45", "q46", "q47", "q48", "q49", "q50", "q51", "q52", "q53", "q54", "q55", "q56", "q57", "q58", "q59"}
+	pattern := filepath.Join(root, "tests/dataset/tpc-ds", "q*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no tpc-ds source files: %s", pattern)
+	}
 	found := false
-	for _, q := range queries {
-		src := filepath.Join(root, "tests/dataset/tpc-ds", q+".mochi")
-		want := filepath.Join(root, "tests/dataset/tpc-ds/out", q+".out")
-		irWant := filepath.Join(root, "tests/dataset/tpc-ds/out", q+".ir.out")
+	for _, src := range files {
+		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		want := filepath.Join(root, "tests/dataset/tpc-ds/out", base+".out")
+		irWant := filepath.Join(root, "tests/dataset/tpc-ds/out", base+".ir.out")
 		if _, err := os.Stat(want); err != nil {
 			continue
 		}
