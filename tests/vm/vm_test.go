@@ -204,7 +204,7 @@ func TestVM_TPCH(t *testing.T) {
 
 func TestVM_TPCDS(t *testing.T) {
 	root := findRepoRoot(t)
-	queries := []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12", "q13", "q14", "q15", "q16", "q17", "q18", "q19", "q20", "q21", "q22", "q23", "q24", "q25", "q26", "q27", "q28", "q29"}
+	queries := []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12", "q13", "q14", "q15", "q16", "q17", "q18", "q19", "q20", "q21", "q22", "q23", "q24", "q25", "q26", "q27", "q28", "q29", "q40", "q41", "q42", "q43", "q44", "q45", "q46", "q47", "q48", "q49"}
 	found := false
 	for _, q := range queries {
 		src := filepath.Join(root, "tests/dataset/tpc-ds", q+".mochi")
