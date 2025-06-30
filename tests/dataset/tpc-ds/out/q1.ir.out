@@ -1,359 +1,273 @@
-func main (regs=239)
+func main (regs=171)
   // let store_returns = []
   Const        r0, []
-  // let date_dim = []
+  // from sr in store_returns
   Const        r1, []
-  // let store = []
-  Const        r2, []
-  // let customer = []
-  Const        r3, []
-  // from sr in store_returns
-  Const        r4, []
   // group by {customer_sk: sr.sr_customer_sk, store_sk: sr.sr_store_sk} into g
-  Const        r5, "customer_sk"
-  Const        r6, "sr_customer_sk"
-  Const        r7, "store_sk"
-  Const        r8, "sr_store_sk"
+  Const        r2, "customer_sk"
+  Const        r3, "sr_customer_sk"
+  Const        r4, "store_sk"
+  Const        r5, "sr_store_sk"
   // where d.d_year == 1998
-  Const        r9, "d_year"
+  Const        r6, "d_year"
   // ctr_customer_sk: g.key.customer_sk,
-  Const        r10, "ctr_customer_sk"
-  Const        r11, "key"
-  Const        r12, "customer_sk"
+  Const        r7, "ctr_customer_sk"
+  Const        r8, "key"
   // ctr_store_sk: g.key.store_sk,
-  Const        r13, "ctr_store_sk"
-  Const        r14, "key"
-  Const        r15, "store_sk"
+  Const        r9, "ctr_store_sk"
   // ctr_total_return: sum(from x in g select x.sr_return_amt)
-  Const        r16, "ctr_total_return"
-  Const        r17, "sr_return_amt"
+  Const        r10, "ctr_total_return"
+  Const        r11, "sr_return_amt"
   // from sr in store_returns
-  MakeMap      r18, 0, r0
-  Const        r19, []
+  MakeMap      r12, 0, r0
+  Const        r13, []
+  IterPrep     r15, r0
+  Len          r16, r15
+  Const        r17, 0
+L5:
+  LessInt      r18, r17, r16
+  JumpIfFalse  r18, L0
+  Index        r20, r15, r17
+  // join d in date_dim on sr.sr_returned_date_sk == d.d_date_sk
   IterPrep     r21, r0
   Len          r22, r21
   Const        r23, 0
-L5:
-  LessInt      r24, r23, r22
-  JumpIfFalse  r24, L0
-  Index        r26, r21, r23
-  // join d in date_dim on sr.sr_returned_date_sk == d.d_date_sk
-  IterPrep     r27, r1
-  Len          r28, r27
-  Const        r29, 0
 L4:
-  LessInt      r30, r29, r28
-  JumpIfFalse  r30, L1
-  Index        r32, r27, r29
-  Const        r33, "sr_returned_date_sk"
-  Index        r34, r26, r33
-  Const        r35, "d_date_sk"
-  Index        r36, r32, r35
-  Equal        r37, r34, r36
-  JumpIfFalse  r37, L2
+  LessInt      r24, r23, r22
+  JumpIfFalse  r24, L1
+  Index        r26, r21, r23
+  Const        r27, "sr_returned_date_sk"
+  Index        r28, r20, r27
+  Const        r29, "d_date_sk"
+  Index        r30, r26, r29
+  Equal        r31, r28, r30
+  JumpIfFalse  r31, L2
   // where d.d_year == 1998
-  Const        r38, "d_year"
-  Index        r39, r32, r38
-  Const        r40, 1998
-  Equal        r41, r39, r40
-  JumpIfFalse  r41, L2
+  Index        r32, r26, r6
+  Const        r33, 1998
+  Equal        r34, r32, r33
+  JumpIfFalse  r34, L2
   // from sr in store_returns
-  Const        r42, "sr"
-  Move         r43, r26
-  Const        r44, "d"
-  Move         r45, r32
-  MakeMap      r46, 2, r42
+  Const        r35, "sr"
+  Move         r36, r20
+  Const        r37, "d"
+  Move         r38, r26
+  MakeMap      r39, 2, r35
   // group by {customer_sk: sr.sr_customer_sk, store_sk: sr.sr_store_sk} into g
-  Const        r47, "customer_sk"
-  Const        r48, "sr_customer_sk"
-  Index        r49, r26, r48
-  Const        r50, "store_sk"
-  Const        r51, "sr_store_sk"
-  Index        r52, r26, r51
-  Move         r53, r47
-  Move         r54, r49
-  Move         r55, r50
-  Move         r56, r52
-  MakeMap      r57, 2, r53
-  Str          r58, r57
-  In           r59, r58, r18
-  JumpIfTrue   r59, L3
+  Const        r40, "customer_sk"
+  Index        r41, r20, r3
+  Const        r42, "store_sk"
+  Index        r43, r20, r5
+  Move         r44, r40
+  Move         r45, r41
+  Move         r46, r42
+  Move         r47, r43
+  MakeMap      r48, 2, r44
+  Str          r49, r48
+  In           r50, r49, r12
+  JumpIfTrue   r50, L3
   // from sr in store_returns
-  Const        r60, []
-  Const        r61, "__group__"
-  Const        r62, true
-  Const        r63, "key"
+  Const        r51, []
+  Const        r52, "__group__"
+  Const        r53, true
+  Const        r54, "key"
   // group by {customer_sk: sr.sr_customer_sk, store_sk: sr.sr_store_sk} into g
-  Move         r64, r57
+  Move         r55, r48
   // from sr in store_returns
-  Const        r65, "items"
-  Move         r66, r60
-  Const        r67, "count"
-  Const        r68, 0
-  Move         r69, r61
-  Move         r70, r62
-  Move         r71, r63
-  Move         r72, r64
-  Move         r73, r65
-  Move         r74, r66
-  Move         r75, r67
-  Move         r76, r68
-  MakeMap      r77, 4, r69
-  SetIndex     r18, r58, r77
-  Append       r19, r19, r77
+  Const        r56, "items"
+  Move         r57, r51
+  Const        r58, "count"
+  Const        r59, 0
+  Move         r60, r52
+  Move         r61, r53
+  Move         r62, r54
+  Move         r63, r55
+  Move         r64, r56
+  Move         r65, r57
+  Move         r66, r58
+  Move         r67, r59
+  MakeMap      r68, 4, r60
+  SetIndex     r12, r49, r68
+  Append       r13, r13, r68
 L3:
-  Const        r79, "items"
-  Index        r80, r18, r58
-  Index        r81, r80, r79
-  Append       r82, r81, r46
-  SetIndex     r80, r79, r82
-  Const        r83, "count"
-  Index        r84, r80, r83
-  Const        r85, 1
-  AddInt       r86, r84, r85
-  SetIndex     r80, r83, r86
+  Const        r70, "items"
+  Index        r71, r12, r49
+  Index        r72, r71, r70
+  Append       r73, r72, r39
+  SetIndex     r71, r70, r73
+  Const        r74, "count"
+  Index        r75, r71, r74
+  Const        r76, 1
+  AddInt       r77, r75, r76
+  SetIndex     r71, r74, r77
 L2:
   // join d in date_dim on sr.sr_returned_date_sk == d.d_date_sk
-  Const        r87, 1
-  AddInt       r29, r29, r87
+  AddInt       r23, r23, r76
   Jump         L4
 L1:
   // from sr in store_returns
-  Const        r88, 1
-  AddInt       r23, r23, r88
+  AddInt       r17, r17, r76
   Jump         L5
 L0:
-  Const        r89, 0
-  Len          r91, r19
+  Const        r79, 0
+  Move         r78, r79
+  Len          r80, r13
 L9:
-  LessInt      r92, r89, r91
-  JumpIfFalse  r92, L6
-  Index        r94, r19, r89
+  LessInt      r81, r78, r80
+  JumpIfFalse  r81, L6
+  Index        r83, r13, r78
   // ctr_customer_sk: g.key.customer_sk,
-  Const        r95, "ctr_customer_sk"
-  Const        r96, "key"
-  Index        r97, r94, r96
-  Const        r98, "customer_sk"
-  Index        r99, r97, r98
+  Const        r84, "ctr_customer_sk"
+  Index        r85, r83, r8
+  Index        r86, r85, r2
   // ctr_store_sk: g.key.store_sk,
-  Const        r100, "ctr_store_sk"
-  Const        r101, "key"
-  Index        r102, r94, r101
-  Const        r103, "store_sk"
-  Index        r104, r102, r103
+  Const        r87, "ctr_store_sk"
+  Index        r88, r83, r8
+  Index        r89, r88, r4
   // ctr_total_return: sum(from x in g select x.sr_return_amt)
-  Const        r105, "ctr_total_return"
-  Const        r106, []
-  Const        r107, "sr_return_amt"
-  IterPrep     r108, r94
-  Len          r109, r108
-  Const        r110, 0
+  Const        r90, "ctr_total_return"
+  Const        r91, []
+  IterPrep     r92, r83
+  Len          r93, r92
+  Move         r94, r79
 L8:
-  LessInt      r112, r110, r109
-  JumpIfFalse  r112, L7
-  Index        r114, r108, r110
-  Const        r115, "sr_return_amt"
-  Index        r116, r114, r115
-  Append       r106, r106, r116
-  Const        r118, 1
-  AddInt       r110, r110, r118
+  LessInt      r95, r94, r93
+  JumpIfFalse  r95, L7
+  Index        r97, r92, r94
+  Index        r98, r97, r11
+  Append       r91, r91, r98
+  AddInt       r94, r94, r76
   Jump         L8
 L7:
-  Sum          r119, r106
+  Sum          r100, r91
   // ctr_customer_sk: g.key.customer_sk,
-  Move         r120, r95
-  Move         r121, r99
+  Move         r101, r84
+  Move         r102, r86
   // ctr_store_sk: g.key.store_sk,
-  Move         r122, r100
-  Move         r123, r104
+  Move         r103, r87
+  Move         r104, r89
   // ctr_total_return: sum(from x in g select x.sr_return_amt)
-  Move         r124, r105
-  Move         r125, r119
+  Move         r105, r90
+  Move         r106, r100
   // select {
-  MakeMap      r126, 3, r120
+  MakeMap      r107, 3, r101
   // from sr in store_returns
-  Append       r4, r4, r126
-  Const        r128, 1
-  AddInt       r89, r89, r128
+  Append       r1, r1, r107
+  AddInt       r78, r78, r76
   Jump         L9
 L6:
   // from ctr1 in customer_total_return
-  Const        r129, []
-  // where ctr1.ctr_total_return > avg(
-  Const        r130, "ctr_total_return"
-  // where ctr1.ctr_store_sk == ctr2.ctr_store_sk
-  Const        r131, "ctr_store_sk"
-  Const        r132, "ctr_store_sk"
-  // select ctr2.ctr_total_return
-  Const        r133, "ctr_total_return"
+  Const        r109, []
   // s.s_state == "TN"
-  Const        r134, "s_state"
+  Const        r110, "s_state"
   // select {c_customer_id: c.c_customer_id}
-  Const        r135, "c_customer_id"
-  Const        r136, "c_customer_id"
-  // sort by c.c_customer_id
-  Const        r137, "c_customer_id"
+  Const        r111, "c_customer_id"
   // from ctr1 in customer_total_return
-  IterPrep     r138, r4
-  Len          r139, r138
-  Const        r140, 0
+  IterPrep     r112, r1
+  Len          r113, r112
+  Move         r114, r79
 L20:
-  LessInt      r142, r140, r139
-  JumpIfFalse  r142, L10
-  Index        r144, r138, r140
+  LessInt      r115, r114, r113
+  JumpIfFalse  r115, L10
+  Index        r117, r112, r114
   // join s in store on ctr1.ctr_store_sk == s.s_store_sk
-  IterPrep     r145, r2
-  Len          r146, r145
-  Const        r147, "ctr_store_sk"
-  Const        r148, "s_store_sk"
-  // where ctr1.ctr_total_return > avg(
-  Const        r149, "ctr_total_return"
-  // where ctr1.ctr_store_sk == ctr2.ctr_store_sk
-  Const        r150, "ctr_store_sk"
-  Const        r151, "ctr_store_sk"
-  // select ctr2.ctr_total_return
-  Const        r152, "ctr_total_return"
-  // s.s_state == "TN"
-  Const        r153, "s_state"
-  // select {c_customer_id: c.c_customer_id}
-  Const        r154, "c_customer_id"
-  Const        r155, "c_customer_id"
-  // sort by c.c_customer_id
-  Const        r156, "c_customer_id"
-  // join s in store on ctr1.ctr_store_sk == s.s_store_sk
-  Const        r157, 0
+  IterPrep     r118, r0
+  Len          r119, r118
+  Const        r120, "s_store_sk"
+  Move         r121, r79
 L19:
-  LessInt      r159, r157, r146
-  JumpIfFalse  r159, L11
-  Index        r161, r145, r157
-  Const        r162, "ctr_store_sk"
-  Index        r163, r144, r162
-  Const        r164, "s_store_sk"
-  Index        r165, r161, r164
-  Equal        r166, r163, r165
-  JumpIfFalse  r166, L12
+  LessInt      r122, r121, r119
+  JumpIfFalse  r122, L11
+  Index        r124, r118, r121
+  Index        r125, r117, r9
+  Index        r126, r124, r120
+  Equal        r127, r125, r126
+  JumpIfFalse  r127, L12
   // join c in customer on ctr1.ctr_customer_sk == c.c_customer_sk
-  IterPrep     r167, r3
-  Len          r168, r167
-  Const        r169, "ctr_customer_sk"
-  Const        r170, "c_customer_sk"
-  // where ctr1.ctr_total_return > avg(
-  Const        r171, "ctr_total_return"
-  // where ctr1.ctr_store_sk == ctr2.ctr_store_sk
-  Const        r172, "ctr_store_sk"
-  Const        r173, "ctr_store_sk"
-  // select ctr2.ctr_total_return
-  Const        r174, "ctr_total_return"
-  // s.s_state == "TN"
-  Const        r175, "s_state"
-  // select {c_customer_id: c.c_customer_id}
-  Const        r176, "c_customer_id"
-  Const        r177, "c_customer_id"
-  // sort by c.c_customer_id
-  Const        r178, "c_customer_id"
-  // join c in customer on ctr1.ctr_customer_sk == c.c_customer_sk
-  Const        r179, 0
+  IterPrep     r128, r0
+  Len          r129, r128
+  Const        r130, "c_customer_sk"
+  Move         r131, r79
 L18:
-  LessInt      r181, r179, r168
-  JumpIfFalse  r181, L12
-  Index        r183, r167, r179
-  Const        r184, "ctr_customer_sk"
-  Index        r185, r144, r184
-  Const        r186, "c_customer_sk"
-  Index        r187, r183, r186
-  Equal        r188, r185, r187
-  JumpIfFalse  r188, L13
+  LessInt      r132, r131, r129
+  JumpIfFalse  r132, L12
+  Index        r134, r128, r131
+  Index        r135, r117, r7
+  Index        r136, r134, r130
+  Equal        r137, r135, r136
+  JumpIfFalse  r137, L13
   // where ctr1.ctr_total_return > avg(
-  Const        r189, "ctr_total_return"
-  Index        r190, r144, r189
+  Index        r138, r117, r10
   // from ctr2 in customer_total_return
-  Const        r191, []
-  // where ctr1.ctr_store_sk == ctr2.ctr_store_sk
-  Const        r192, "ctr_store_sk"
-  Const        r193, "ctr_store_sk"
-  // select ctr2.ctr_total_return
-  Const        r194, "ctr_total_return"
-  // from ctr2 in customer_total_return
-  IterPrep     r195, r4
-  Len          r196, r195
-  Const        r197, 0
+  Const        r139, []
+  IterPrep     r140, r1
+  Len          r141, r140
+  Move         r142, r79
 L16:
-  LessInt      r199, r197, r196
-  JumpIfFalse  r199, L14
-  Index        r201, r195, r197
+  LessInt      r143, r142, r141
+  JumpIfFalse  r143, L14
+  Index        r145, r140, r142
   // where ctr1.ctr_store_sk == ctr2.ctr_store_sk
-  Const        r202, "ctr_store_sk"
-  Index        r203, r144, r202
-  Const        r204, "ctr_store_sk"
-  Index        r205, r201, r204
-  Equal        r206, r203, r205
-  JumpIfFalse  r206, L15
+  Index        r146, r117, r9
+  Index        r147, r145, r9
+  Equal        r148, r146, r147
+  JumpIfFalse  r148, L15
   // select ctr2.ctr_total_return
-  Const        r207, "ctr_total_return"
-  Index        r208, r201, r207
+  Index        r149, r145, r10
   // from ctr2 in customer_total_return
-  Append       r191, r191, r208
+  Append       r139, r139, r149
 L15:
-  Const        r210, 1
-  AddInt       r197, r197, r210
+  AddInt       r142, r142, r76
   Jump         L16
 L14:
   // where ctr1.ctr_total_return > avg(
-  Avg          r211, r191
+  Avg          r151, r139
   // ) * 1.2 &&
-  Const        r212, 1.2
-  MulFloat     r213, r211, r212
+  Const        r152, 1.2
+  MulFloat     r153, r151, r152
   // where ctr1.ctr_total_return > avg(
-  LessFloat    r214, r213, r190
+  LessFloat    r154, r153, r138
   // s.s_state == "TN"
-  Const        r215, "s_state"
-  Index        r216, r161, r215
-  Const        r217, "TN"
-  Equal        r218, r216, r217
+  Index        r155, r124, r110
+  Const        r156, "TN"
+  Equal        r157, r155, r156
   // ) * 1.2 &&
-  Move         r219, r214
-  JumpIfFalse  r219, L17
-  Move         r219, r218
+  JumpIfFalse  r154, L17
+  Move         r154, r157
 L17:
   // where ctr1.ctr_total_return > avg(
-  JumpIfFalse  r219, L13
+  JumpIfFalse  r154, L13
   // select {c_customer_id: c.c_customer_id}
-  Const        r220, "c_customer_id"
-  Const        r221, "c_customer_id"
-  Index        r222, r183, r221
-  Move         r223, r220
-  Move         r224, r222
-  MakeMap      r225, 1, r223
+  Const        r158, "c_customer_id"
+  Index        r159, r134, r111
+  Move         r160, r158
+  Move         r161, r159
+  MakeMap      r162, 1, r160
   // sort by c.c_customer_id
-  Const        r226, "c_customer_id"
-  Index        r228, r183, r226
+  Index        r164, r134, r111
   // from ctr1 in customer_total_return
-  Move         r229, r225
-  MakeList     r230, 2, r228
-  Append       r129, r129, r230
+  Move         r165, r162
+  MakeList     r166, 2, r164
+  Append       r109, r109, r166
 L13:
   // join c in customer on ctr1.ctr_customer_sk == c.c_customer_sk
-  Const        r232, 1
-  Add          r179, r179, r232
+  Add          r131, r131, r76
   Jump         L18
 L12:
   // join s in store on ctr1.ctr_store_sk == s.s_store_sk
-  Const        r233, 1
-  Add          r157, r157, r233
+  Add          r121, r121, r76
   Jump         L19
 L11:
   // from ctr1 in customer_total_return
-  Const        r234, 1
-  AddInt       r140, r140, r234
+  AddInt       r114, r114, r76
   Jump         L20
 L10:
   // sort by c.c_customer_id
-  Sort         r129, r129
+  Sort         r109, r109
   // json(result)
-  JSON         r129
+  JSON         r109
   // expect len(result) == 0
-  Len          r236, r129
-  Const        r237, 0
-  EqualInt     r238, r236, r237
-  Expect       r238
+  Len          r169, r109
+  EqualInt     r170, r169, r79
+  Expect       r170
   Return       r0
