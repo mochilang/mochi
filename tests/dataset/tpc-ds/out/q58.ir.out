@@ -1,4 +1,4 @@
-func main (regs=19)
+func main (regs=18)
   // let t = [{id: 1, val: 58}]
   Const        r0, [{"id": 1, "val": 58}]
   // let tmp = lower("ignore")
@@ -14,19 +14,18 @@ L1:
   LessInt      r9, r7, r6
   JumpIfFalse  r9, L0
   Index        r11, r5, r7
-  Const        r12, "val"
-  Index        r13, r11, r12
-  Append       r3, r3, r13
-  Const        r15, 1
-  AddInt       r7, r7, r15
+  Index        r12, r11, r4
+  Append       r3, r3, r12
+  Const        r14, 1
+  AddInt       r7, r7, r14
   Jump         L1
 L0:
   // let result = first(vals)
-  First        r16, r3
+  First        r15, r3
   // json(result)
-  JSON         r16
+  JSON         r15
   // expect result == 58
-  Const        r17, 58
-  Equal        r18, r16, r17
-  Expect       r18
+  Const        r16, 58
+  Equal        r17, r15, r16
+  Expect       r17
   Return       r0
