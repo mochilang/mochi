@@ -1,4 +1,4 @@
-func main (regs=106)
+func main (regs=105)
   // let orders = [
   Const        r0, [{"o_orderdate": "1993-07-01", "o_orderkey": 1, "o_orderpriority": "1-URGENT"}, {"o_orderdate": "1993-07-15", "o_orderkey": 2, "o_orderpriority": "2-HIGH"}, {"o_orderdate": "1993-08-01", "o_orderkey": 3, "o_orderpriority": "3-NORMAL"}]
   // let lineitem = [
@@ -120,78 +120,77 @@ L13:
   In           r61, r60, r54
   JumpIfTrue   r61, L12
   // from o in late_orders
-  Const        r62, []
-  Const        r63, "__group__"
-  Const        r64, true
+  Const        r62, "__group__"
+  Const        r63, true
   // group by o.o_orderpriority into g
-  Move         r65, r59
+  Move         r64, r59
   // from o in late_orders
-  Const        r66, "items"
-  Move         r67, r62
-  Const        r68, "count"
+  Const        r65, "items"
+  Move         r66, r56
+  Const        r67, "count"
+  Move         r68, r62
   Move         r69, r63
-  Move         r70, r64
-  Move         r71, r49
+  Move         r70, r49
+  Move         r71, r64
   Move         r72, r65
   Move         r73, r66
   Move         r74, r67
-  Move         r75, r68
-  Move         r76, r9
-  MakeMap      r77, 4, r69
-  SetIndex     r54, r60, r77
-  Append       r78, r55, r77
-  Move         r55, r78
+  Move         r75, r9
+  MakeMap      r76, 4, r68
+  SetIndex     r54, r60, r76
+  Append       r77, r55, r76
+  Move         r55, r77
 L12:
-  Index        r79, r54, r60
-  Index        r80, r79, r66
-  Append       r81, r80, r58
-  SetIndex     r79, r66, r81
-  Index        r82, r79, r68
-  AddInt       r83, r82, r19
-  SetIndex     r79, r68, r83
+  Index        r78, r54, r60
+  Index        r79, r78, r65
+  Append       r80, r79, r58
+  SetIndex     r78, r65, r80
+  Index        r81, r78, r67
+  AddInt       r82, r81, r19
+  SetIndex     r78, r67, r82
   AddInt       r53, r53, r19
   Jump         L13
 L11:
-  Move         r84, r9
-  Len          r85, r55
+  Move         r83, r9
+  Len          r84, r55
 L15:
-  LessInt      r86, r84, r85
-  JumpIfFalse  r86, L14
-  Index        r87, r55, r84
-  Move         r88, r87
+  LessInt      r85, r83, r84
+  JumpIfFalse  r85, L14
+  Index        r86, r55, r83
+  Move         r87, r86
   // o_orderpriority: g.key,
-  Const        r89, "o_orderpriority"
-  Index        r90, r88, r49
+  Const        r88, "o_orderpriority"
+  Index        r89, r87, r49
   // order_count: count(g)
-  Const        r91, "order_count"
-  Index        r92, r88, r68
+  Const        r90, "order_count"
+  Index        r91, r87, r67
   // o_orderpriority: g.key,
+  Move         r92, r88
   Move         r93, r89
-  Move         r94, r90
   // order_count: count(g)
+  Move         r94, r90
   Move         r95, r91
-  Move         r96, r92
   // select {
-  MakeMap      r97, 2, r93
+  MakeMap      r96, 2, r92
   // order by g.key
-  Index        r98, r88, r49
-  Move         r99, r98
+  Index        r97, r87, r49
+  Move         r98, r97
   // from o in late_orders
-  Move         r100, r97
-  MakeList     r101, 2, r99
-  Append       r102, r47, r101
-  Move         r47, r102
-  AddInt       r84, r84, r19
+  Move         r99, r96
+  MakeList     r100, 2, r98
+  Append       r101, r47, r100
+  Move         r47, r101
+  AddInt       r83, r83, r19
   Jump         L15
 L14:
   // order by g.key
-  Sort         r103, r47
+  Sort         r102, r47
   // from o in late_orders
-  Move         r47, r103
+  Move         r47, r102
   // json(result)
   JSON         r47
   // expect result == [
-  Const        r104, [{"o_orderpriority": "1-URGENT", "order_count": 1}, {"o_orderpriority": "2-HIGH", "order_count": 1}]
-  Equal        r105, r47, r104
-  Expect       r105
+  Const        r103, [{"o_orderpriority": "1-URGENT", "order_count": 1}, {"o_orderpriority": "2-HIGH", "order_count": 1}]
+  Equal        r104, r47, r103
+  Expect       r104
   Return       r0
