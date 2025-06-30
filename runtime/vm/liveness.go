@@ -281,6 +281,10 @@ func Optimize(fn *Function) {
 			changed = true
 			analysis = Liveness(fn)
 		}
+		if removeRedundantDefs(fn, analysis) {
+			changed = true
+			analysis = Liveness(fn)
+		}
 		pruneRedundantJumps(fn)
 		if foldJumpChains(fn) {
 			changed = true
@@ -777,6 +781,60 @@ func foldJumpChains(fn *Function) bool {
 		}
 	}
 	return changed
+}
+
+// removeRedundantDefs drops instructions that define a register which is
+// immediately overwritten without being live at the following instruction.
+func removeRedundantDefs(fn *Function, analysis *LiveInfo) bool {
+	changed := false
+	pcMap := make([]int, len(fn.Code))
+	newCode := make([]Instr, 0, len(fn.Code))
+	for pc := 0; pc < len(fn.Code); pc++ {
+		ins := fn.Code[pc]
+		defs := defRegs(ins)
+		if len(defs) == 1 && pc+1 < len(fn.Code) {
+			r := defs[0]
+			if r >= 0 && r < fn.NumRegs && !analysis.In[pc+1][r] {
+				next := fn.Code[pc+1]
+				for _, nr := range defRegs(next) {
+					if nr == r {
+						changed = true
+						pcMap[pc] = -1
+						goto nextIns
+					}
+				}
+			}
+		}
+		pcMap[pc] = len(newCode)
+		newCode = append(newCode, ins)
+	nextIns:
+	}
+	if !changed {
+		return false
+	}
+	next := len(newCode)
+	for i := len(pcMap) - 1; i >= 0; i-- {
+		if pcMap[i] == -1 {
+			pcMap[i] = next
+		} else {
+			next = pcMap[i]
+		}
+	}
+	for i := range newCode {
+		ins := &newCode[i]
+		switch ins.Op {
+		case OpJump:
+			if ins.A >= 0 && ins.A < len(pcMap) {
+				ins.A = pcMap[ins.A]
+			}
+		case OpJumpIfFalse, OpJumpIfTrue:
+			if ins.B >= 0 && ins.B < len(pcMap) {
+				ins.B = pcMap[ins.B]
+			}
+		}
+	}
+	fn.Code = newCode
+	return true
 }
 
 func evalUnaryConst(op Op, v Value) (Value, bool) {
