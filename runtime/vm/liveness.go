@@ -241,9 +241,9 @@ func replaceReg(ins *Instr, old, new int) {
 // register holding the constant value.
 func dedupConst(fn *Function) bool {
 	changed := false
-	constReg := map[string]int{}
-	key := func(v Value) string {
-		return valueToString(v)
+	constReg := map[uint64]int{}
+	key := func(v Value) uint64 {
+		return valueHash(v)
 	}
 	for i := 0; i < len(fn.Code); i++ {
 		ins := &fn.Code[i]
@@ -1043,17 +1043,17 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 		}
 	case OpUnion:
 		if b.Tag == ValueList && c.Tag == ValueList {
-			seen := make(map[string]struct{}, len(b.List)+len(c.List))
+			seen := make(map[uint64]struct{}, len(b.List)+len(c.List))
 			out := make([]Value, 0, len(b.List)+len(c.List))
 			for _, v := range b.List {
-				k := valueToString(v)
+				k := valueHash(v)
 				if _, ok := seen[k]; !ok {
 					seen[k] = struct{}{}
 					out = append(out, v)
 				}
 			}
 			for _, v := range c.List {
-				k := valueToString(v)
+				k := valueHash(v)
 				if _, ok := seen[k]; !ok {
 					seen[k] = struct{}{}
 					out = append(out, v)
@@ -1063,13 +1063,13 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 		}
 	case OpExcept:
 		if b.Tag == ValueList && c.Tag == ValueList {
-			set := make(map[string]struct{}, len(c.List))
+			set := make(map[uint64]struct{}, len(c.List))
 			for _, v := range c.List {
-				set[valueToString(v)] = struct{}{}
+				set[valueHash(v)] = struct{}{}
 			}
 			diff := make([]Value, 0, len(b.List))
 			for _, v := range b.List {
-				if _, ok := set[valueToString(v)]; !ok {
+				if _, ok := set[valueHash(v)]; !ok {
 					diff = append(diff, v)
 				}
 			}
@@ -1077,14 +1077,14 @@ func evalBinaryConst(op Op, b, c Value) (Value, bool) {
 		}
 	case OpIntersect:
 		if b.Tag == ValueList && c.Tag == ValueList {
-			setA := make(map[string]struct{}, len(b.List))
+			setA := make(map[uint64]struct{}, len(b.List))
 			for _, v := range b.List {
-				setA[valueToString(v)] = struct{}{}
+				setA[valueHash(v)] = struct{}{}
 			}
 			inter := []Value{}
-			added := make(map[string]struct{}, len(c.List))
+			added := make(map[uint64]struct{}, len(c.List))
 			for _, v := range c.List {
-				k := valueToString(v)
+				k := valueHash(v)
 				if _, ok := setA[k]; ok {
 					if _, done := added[k]; !done {
 						added[k] = struct{}{}
