@@ -142,6 +142,7 @@ const (
 	OpMin
 	OpMax
 	OpValues
+	OpCollect
 	OpCast
 	OpIterPrep
 	OpLoad
@@ -296,6 +297,8 @@ func (op Op) String() string {
 		return "Max"
 	case OpValues:
 		return "Values"
+	case OpCollect:
+		return "Collect"
 	case OpCast:
 		return "Cast"
 	case OpIterPrep:
@@ -3941,6 +3944,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpValues, A: dst, B: arg})
+			return dst
+		case "collect":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpCollect, A: dst, B: arg})
 			return dst
 		case "concat":
 			if len(p.Call.Args) == 0 {
