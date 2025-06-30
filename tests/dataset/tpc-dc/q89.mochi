@@ -1,0 +1,13 @@
+let store_sales = [
+  {price: 40.0},
+  {price: 30.0},
+  {price: 19.0}
+]
+
+let result = sum(from s in store_sales select s.price)
+
+json(result)
+
+test "TPCDC Q89 sample" {
+  expect result == 89.0
+}

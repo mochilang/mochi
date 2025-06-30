@@ -1,0 +1,22 @@
+let sr_items = [
+  {qty: 10},
+  {qty: 15}
+]
+let cr_items = [
+  {qty: 18},
+  {qty: 20}
+]
+let wr_items = [
+  {qty: 10},
+  {qty: 10}
+]
+
+let result = sum(from x in sr_items select x.qty) +
+             sum(from x in cr_items select x.qty) +
+             sum(from x in wr_items select x.qty)
+
+json(result)
+
+test "TPCDC Q83 sample" {
+  expect result == 83
+}

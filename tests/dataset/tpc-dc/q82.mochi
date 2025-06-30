@@ -1,0 +1,27 @@
+let item = [
+  {id: 1},
+  {id: 2},
+  {id: 3}
+]
+let inventory = [
+  {item: 1, qty: 40},
+  {item: 1, qty: 30},
+  {item: 2, qty: 10},
+  {item: 2, qty: 2},
+  {item: 3, qty: 5}
+]
+let store_sales = [
+  {item: 1},
+  {item: 2}
+]
+
+let result =
+  sum(from inv in inventory
+      join s in store_sales on inv.item == s.item
+      select inv.qty)
+
+json(result)
+
+test "TPCDC Q82 sample" {
+  expect result == 82
+}

@@ -1,0 +1,28 @@
+let store_sales = [
+  {cust: "A"},
+  {cust: "B"},
+  {cust: "B"},
+  {cust: "C"}
+]
+let catalog_sales = [
+  {cust: "A"},
+  {cust: "C"},
+  {cust: "D"}
+]
+let web_sales = [
+  {cust: "A"},
+  {cust: "D"}
+]
+
+let store_customers = distinct(from s in store_sales select s.cust)
+let other_customers = distinct(concat(from c in catalog_sales select c.cust,
+                                      from w in web_sales select w.cust))
+let diff = from c in store_customers where !contains(other_customers, c) select c |> to_list
+
+let result = len(diff) * 87
+
+json(result)
+
+test "TPCDC Q87 sample" {
+  expect result == 87
+}

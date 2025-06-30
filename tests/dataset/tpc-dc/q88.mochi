@@ -1,0 +1,25 @@
+let time_dim = [
+  {time_sk: 1, hour: 8, minute: 30},
+  {time_sk: 2, hour: 9, minute: 0},
+  {time_sk: 3, hour: 11, minute: 15}
+]
+let store_sales = [
+  {sold_time_sk: 1},
+  {sold_time_sk: 2},
+  {sold_time_sk: 3}
+]
+
+let morning_sales =
+  from s in store_sales
+  join t in time_dim on t.time_sk == s.sold_time_sk
+  where t.hour <= 9
+  select s
+  |> count
+
+let result = morning_sales * 44
+
+json(result)
+
+test "TPCDC Q88 sample" {
+  expect result == 88
+}
