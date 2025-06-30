@@ -1,4 +1,4 @@
-func main (regs=36)
+func main (regs=30)
   // let sales = [
   Const        r0, [{"price": 20, "promo": true}, {"price": 41, "promo": true}, {"price": 39, "promo": false}]
   // let promotions = sum(from s in sales where s.promo select s.price)
@@ -7,49 +7,45 @@ func main (regs=36)
   Const        r3, "price"
   IterPrep     r4, r0
   Len          r5, r4
-  Const        r6, 0
+  Const        r7, 0
+  Move         r6, r7
 L2:
   LessInt      r8, r6, r5
   JumpIfFalse  r8, L0
   Index        r10, r4, r6
-  Const        r11, "promo"
-  Index        r12, r10, r11
-  JumpIfFalse  r12, L1
-  Const        r13, "price"
-  Index        r14, r10, r13
-  Append       r1, r1, r14
+  Index        r11, r10, r2
+  JumpIfFalse  r11, L1
+  Index        r12, r10, r3
+  Append       r1, r1, r12
 L1:
-  Const        r16, 1
-  AddInt       r6, r6, r16
+  Const        r14, 1
+  AddInt       r6, r6, r14
   Jump         L2
 L0:
-  Sum          r17, r1
+  Sum          r15, r1
   // let total = sum(from s in sales select s.price)
-  Const        r18, []
-  Const        r19, "price"
-  IterPrep     r20, r0
-  Len          r21, r20
-  Const        r22, 0
+  Const        r16, []
+  IterPrep     r17, r0
+  Len          r18, r17
+  Move         r19, r7
 L4:
-  LessInt      r24, r22, r21
-  JumpIfFalse  r24, L3
-  Index        r10, r20, r22
-  Const        r26, "price"
-  Index        r27, r10, r26
-  Append       r18, r18, r27
-  Const        r29, 1
-  AddInt       r22, r22, r29
+  LessInt      r20, r19, r18
+  JumpIfFalse  r20, L3
+  Index        r10, r17, r19
+  Index        r22, r10, r3
+  Append       r16, r16, r22
+  AddInt       r19, r19, r14
   Jump         L4
 L3:
-  Sum          r30, r18
+  Sum          r24, r16
   // let result = promotions * 100 / total
-  Const        r31, 100
-  Mul          r32, r17, r31
-  Div          r33, r32, r30
+  Const        r25, 100
+  Mul          r26, r15, r25
+  Div          r27, r26, r24
   // json(result)
-  JSON         r33
+  JSON         r27
   // expect result == 61
-  Const        r34, 61
-  Equal        r35, r33, r34
-  Expect       r35
+  Const        r28, 61
+  Equal        r29, r27, r28
+  Expect       r29
   Return       r0

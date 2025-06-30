@@ -12,9 +12,9 @@ func main (regs=11)
   Const        r7, 19
   Const        r8, 64
   // json(result)
-  JSON         r8
-  // expect result == 64
   Const        r9, 64
+  JSON         r9
+  // expect result == 64
   Const        r10, true
   Expect       r10
   Return       r0
