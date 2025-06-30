@@ -1165,6 +1165,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: ValueList, List: inter}
 		case OpSort:
 			src := fr.regs[ins.B]
+			if src.Tag == ValueMap {
+				if flag, ok := src.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					src = src.Map["items"]
+				}
+			}
 			if src.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("sort expects list"), trace, ins.Line)
 			}
