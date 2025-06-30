@@ -1,0 +1,7 @@
+let t = [{id: 1, val: 63}]
+let result = from r in t select r.val |> first
+json(result)
+
+test "TPCDC Q63 placeholder" {
+  expect result == 63
+}
