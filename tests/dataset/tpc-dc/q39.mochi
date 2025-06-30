@@ -5,17 +5,17 @@ extern fun math.sqrt(x: float): float
 let inventory = [
   {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10},
   {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 10},
-  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 250}
-]
-
-let item = [
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 250},
   {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 50},
   {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 60},
   {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 55}
-  {i_item_sk: 1}
 ]
 
+let item = [
+  {i_item_sk: 1},
   {i_item_sk: 2}
+]
+
 let warehouse = [
   {w_warehouse_sk: 1, w_warehouse_name: "W1"}
 ]
