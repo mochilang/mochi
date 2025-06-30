@@ -4,6 +4,7 @@ let catalog_sales = [
 ]
 
 let catalog_returns = [
+  { order: 1, item_sk: 1, refunded: 0.0 },
   { order: 2, item_sk: 1, refunded: 150.0 }
 ]
 
@@ -24,7 +25,7 @@ let sales_date = "2020-01-15"
 
 let records =
   from cs in catalog_sales
-  left join cr in catalog_returns on cs.order == cr.order && cs.item_sk == cr.item_sk
+  join cr in catalog_returns on cs.order == cr.order && cs.item_sk == cr.item_sk
   join w in warehouse on cs.warehouse_sk == w.warehouse_sk
   join i in item on cs.item_sk == i.item_sk
   join d in date_dim on cs.date_sk == d.date_sk
@@ -33,7 +34,7 @@ let records =
     w_state: w.state,
     i_item_id: i.item_id,
     sold_date: d.date,
-    net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
+    net: cs.price - cr.refunded
   }
 
 let result =
