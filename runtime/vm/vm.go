@@ -6144,22 +6144,7 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		s, start, end := args[0], args[1], args[2]
 		if s.Tag == ValueStr && start.Tag == ValueInt && end.Tag == ValueInt {
 			r := []rune(s.Str)
-			lo, hi := start.Int, end.Int
-			if lo < 0 {
-				lo = 0
-			}
-			if hi < 0 {
-				hi = 0
-			}
-			if lo > len(r) {
-				lo = len(r)
-			}
-			if hi > len(r) {
-				hi = len(r)
-			}
-			if lo > hi {
-				lo, hi = hi, lo
-			}
+			lo, hi := clampSlice(len(r), start.Int, end.Int)
 			return Value{Tag: ValueStr, Str: string(r[lo:hi])}, true
 		}
 	case "substr":
@@ -6169,22 +6154,7 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		s, start, end := args[0], args[1], args[2]
 		if s.Tag == ValueStr && start.Tag == ValueInt && end.Tag == ValueInt {
 			r := []rune(s.Str)
-			lo, hi := start.Int, end.Int
-			if lo < 0 {
-				lo = 0
-			}
-			if hi < 0 {
-				hi = 0
-			}
-			if lo > len(r) {
-				lo = len(r)
-			}
-			if hi > len(r) {
-				hi = len(r)
-			}
-			if lo > hi {
-				lo, hi = hi, lo
-			}
+			lo, hi := clampSlice(len(r), start.Int, end.Int)
 			return Value{Tag: ValueStr, Str: string(r[lo:hi])}, true
 		}
 	case "count":
