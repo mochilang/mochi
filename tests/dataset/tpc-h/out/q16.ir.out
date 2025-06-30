@@ -1,4 +1,4 @@
-func main (regs=129)
+func main (regs=125)
 L0:
   // let supplier = [
   Const        r0, [{"s_address": "123 Hilltop", "s_comment": "Reliable and efficient", "s_name": "AlphaSupply", "s_suppkey": 100}, {"s_address": "456 Riverside", "s_comment": "Known for Customer Complaints", "s_name": "BetaSupply", "s_suppkey": 200}]
@@ -40,214 +40,211 @@ L6:
   Const        r23, 5
   Equal        r24, r22, r23
   // p.p_brand == "Brand#12" &&
-  Move         r25, r20
-  JumpIfFalse  r25, L3
-  Const        r26, "p_type"
-  Index        r27, r16, r26
+  JumpIfFalse  r20, L3
+  Const        r25, "p_type"
+  Index        r26, r16, r25
   // p.p_type.contains("SMALL") &&
-  Const        r28, "SMALL"
-  In           r25, r28, r27
-  JumpIfFalse  r25, L3
-  Move         r25, r24
+  Const        r27, "SMALL"
+  In           r20, r27, r26
+  JumpIfFalse  r20, L3
+  Move         r20, r24
 L3:
   // p.p_brand == "Brand#12" &&
-  JumpIfFalse  r25, L4
+  JumpIfFalse  r20, L4
   // join p in part on p.p_partkey == ps.ps_partkey
-  Const        r30, "p_partkey"
-  Index        r31, r16, r30
-  Index        r32, r12, r31
-  Const        r33, nil
-  NotEqual     r34, r32, r33
-  JumpIfTrue   r34, L5
-  MakeList     r35, 0, r0
-  SetIndex     r12, r31, r35
+  Const        r29, "p_partkey"
+  Index        r30, r16, r29
+  Index        r31, r12, r30
+  Const        r32, nil
+  NotEqual     r33, r31, r32
+  JumpIfTrue   r33, L5
+  MakeList     r34, 0, r0
+  SetIndex     r12, r30, r34
 L5:
-  Index        r32, r12, r31
-  Append       r36, r32, r15
-  SetIndex     r12, r31, r36
+  Index        r31, r12, r30
+  Append       r35, r31, r15
+  SetIndex     r12, r30, r35
 L4:
-  Const        r37, 1
-  AddInt       r13, r13, r37
+  Const        r36, 1
+  AddInt       r13, r13, r36
   Jump         L6
 L2:
   // from ps in partsupp
-  Const        r38, 0
+  Const        r37, 0
 L11:
-  LessInt      r39, r38, r5
-  JumpIfFalse  r39, L0
-  Index        r41, r4, r38
+  LessInt      r38, r37, r5
+  JumpIfFalse  r38, L0
+  Index        r40, r4, r37
   // join p in part on p.p_partkey == ps.ps_partkey
-  Const        r42, "ps_partkey"
-  Index        r43, r41, r42
+  Const        r41, "ps_partkey"
+  Index        r42, r40, r41
   // from ps in partsupp
-  Index        r44, r12, r43
-  NotEqual     r45, r44, r33
-  JumpIfFalse  r45, L7
-  Len          r46, r44
-  Const        r47, 0
+  Index        r43, r12, r42
+  NotEqual     r44, r43, r32
+  JumpIfFalse  r44, L7
+  Len          r45, r43
+  Const        r46, 0
 L10:
-  LessInt      r48, r47, r46
-  JumpIfFalse  r48, L7
-  Index        r16, r44, r47
+  LessInt      r47, r46, r45
+  JumpIfFalse  r47, L7
+  Index        r16, r43, r46
   // p.p_brand == "Brand#12" &&
-  Index        r50, r16, r17
-  Equal        r51, r50, r19
+  Index        r49, r16, r17
+  Equal        r50, r49, r19
   // p.p_size == 5
-  Index        r52, r16, r21
-  Equal        r53, r52, r23
+  Index        r51, r16, r21
+  Equal        r52, r51, r23
   // p.p_brand == "Brand#12" &&
-  Move         r54, r51
-  JumpIfFalse  r54, L8
-  Index        r55, r16, r26
+  JumpIfFalse  r50, L8
+  Index        r53, r16, r25
   // p.p_type.contains("SMALL") &&
-  In           r54, r28, r55
-  JumpIfFalse  r54, L8
-  Move         r54, r53
+  In           r50, r27, r53
+  JumpIfFalse  r50, L8
+  Move         r50, r52
 L8:
   // p.p_brand == "Brand#12" &&
-  JumpIfFalse  r54, L9
+  JumpIfFalse  r50, L9
   // select ps.ps_suppkey
-  Const        r57, "ps_suppkey"
-  Index        r58, r41, r57
+  Const        r55, "ps_suppkey"
+  Index        r56, r40, r55
   // from ps in partsupp
-  Append       r3, r3, r58
+  Append       r3, r3, r56
 L9:
-  AddInt       r47, r47, r37
+  AddInt       r46, r46, r36
   Jump         L10
 L7:
-  AddInt       r38, r38, r37
+  AddInt       r37, r37, r36
   Jump         L11
 L1:
-  MakeMap      r60, 0, r0
-  Const        r61, 0
+  MakeMap      r58, 0, r0
+  Const        r59, 0
 L14:
-  LessInt      r62, r61, r5
-  JumpIfFalse  r62, L12
-  Index        r63, r4, r61
+  LessInt      r60, r59, r5
+  JumpIfFalse  r60, L12
+  Index        r61, r4, r59
   // join p in part on p.p_partkey == ps.ps_partkey
-  Index        r64, r63, r42
+  Index        r62, r61, r41
   // from ps in partsupp
-  Index        r65, r60, r64
-  NotEqual     r66, r65, r33
-  JumpIfTrue   r66, L13
-  MakeList     r67, 0, r0
-  SetIndex     r60, r64, r67
+  Index        r63, r58, r62
+  NotEqual     r64, r63, r32
+  JumpIfTrue   r64, L13
+  MakeList     r65, 0, r0
+  SetIndex     r58, r62, r65
 L13:
-  Index        r65, r60, r64
-  Append       r68, r65, r63
-  SetIndex     r60, r64, r68
-  AddInt       r61, r61, r37
+  Index        r63, r58, r62
+  Append       r66, r63, r61
+  SetIndex     r58, r62, r66
+  AddInt       r59, r59, r36
   Jump         L14
 L12:
   // join p in part on p.p_partkey == ps.ps_partkey
-  Const        r69, 0
+  Const        r67, 0
 L20:
-  LessInt      r70, r69, r7
-  JumpIfFalse  r70, L15
-  Index        r16, r6, r69
-  Index        r72, r16, r30
-  Index        r73, r60, r72
-  NotEqual     r74, r73, r33
-  JumpIfFalse  r74, L16
-  Len          r75, r73
-  Const        r76, 0
+  LessInt      r68, r67, r7
+  JumpIfFalse  r68, L15
+  Index        r16, r6, r67
+  Index        r70, r16, r29
+  Index        r71, r58, r70
+  NotEqual     r72, r71, r32
+  JumpIfFalse  r72, L16
+  Len          r73, r71
+  Const        r74, 0
 L19:
-  LessInt      r77, r76, r75
-  JumpIfFalse  r77, L16
-  Index        r41, r73, r76
+  LessInt      r75, r74, r73
+  JumpIfFalse  r75, L16
+  Index        r40, r71, r74
   // p.p_brand == "Brand#12" &&
-  Index        r79, r16, r17
-  Equal        r80, r79, r19
+  Index        r77, r16, r17
+  Equal        r78, r77, r19
   // p.p_size == 5
-  Index        r81, r16, r21
-  Equal        r82, r81, r23
+  Index        r79, r16, r21
+  Equal        r80, r79, r23
   // p.p_brand == "Brand#12" &&
-  Move         r83, r80
-  JumpIfFalse  r83, L17
-  Index        r84, r16, r26
+  JumpIfFalse  r78, L17
+  Index        r81, r16, r25
   // p.p_type.contains("SMALL") &&
-  In           r83, r28, r84
-  JumpIfFalse  r83, L17
-  Move         r83, r82
+  In           r78, r27, r81
+  JumpIfFalse  r78, L17
+  Move         r78, r80
 L17:
   // p.p_brand == "Brand#12" &&
-  JumpIfFalse  r83, L18
+  JumpIfFalse  r78, L18
   // select ps.ps_suppkey
-  Index        r86, r41, r57
+  Index        r83, r40, r55
   // from ps in partsupp
-  Append       r3, r3, r86
+  Append       r3, r3, r83
 L18:
   // join p in part on p.p_partkey == ps.ps_partkey
-  AddInt       r76, r76, r37
+  AddInt       r74, r74, r36
   Jump         L19
 L16:
-  AddInt       r69, r69, r37
+  AddInt       r67, r67, r36
   Jump         L20
 L15:
   // from s in supplier
-  Const        r88, []
+  Const        r85, []
   // where !(s.s_suppkey in excluded_suppliers) && (!s.s_comment.contains("Customer")) && (!s.s_comment.contains("Complaints"))
-  Const        r89, "s_suppkey"
-  Const        r90, "s_comment"
-  Const        r91, "contains"
+  Const        r86, "s_suppkey"
+  Const        r87, "s_comment"
+  Const        r88, "contains"
   // s_name: s.s_name,
-  Const        r92, "s_name"
+  Const        r89, "s_name"
   // s_address: s.s_address
-  Const        r93, "s_address"
+  Const        r90, "s_address"
   // from s in supplier
-  IterPrep     r94, r0
-  Len          r95, r94
-  Move         r96, r8
+  IterPrep     r91, r0
+  Len          r92, r91
+  Move         r93, r8
 L24:
-  LessInt      r97, r96, r95
-  JumpIfFalse  r97, L21
-  Index        r99, r94, r96
+  LessInt      r94, r93, r92
+  JumpIfFalse  r94, L21
+  Index        r96, r91, r93
   // where !(s.s_suppkey in excluded_suppliers) && (!s.s_comment.contains("Customer")) && (!s.s_comment.contains("Complaints"))
-  Index        r100, r99, r89
-  In           r101, r100, r3
-  Not          r103, r101
-  JumpIfFalse  r103, L22
-  Index        r104, r99, r90
-  Const        r105, "Customer"
+  Index        r97, r96, r86
+  In           r98, r97, r3
+  Not          r99, r98
+  JumpIfFalse  r99, L22
+  Index        r100, r96, r87
+  Const        r101, "Customer"
+  In           r102, r101, r100
+  Not          r99, r102
+  JumpIfFalse  r99, L22
+  Index        r104, r96, r87
+  Const        r105, "Complaints"
   In           r106, r105, r104
-  Not          r103, r106
-  JumpIfFalse  r103, L22
-  Index        r108, r99, r90
-  Const        r109, "Complaints"
-  In           r110, r109, r108
-  Not          r103, r110
+  Not          r99, r106
 L22:
-  JumpIfFalse  r103, L23
+  JumpIfFalse  r99, L23
   // s_name: s.s_name,
-  Const        r112, "s_name"
-  Index        r113, r99, r92
+  Const        r108, "s_name"
+  Index        r109, r96, r89
   // s_address: s.s_address
-  Const        r114, "s_address"
-  Index        r115, r99, r93
+  Const        r110, "s_address"
+  Index        r111, r96, r90
   // s_name: s.s_name,
-  Move         r116, r112
-  Move         r117, r113
+  Move         r112, r108
+  Move         r113, r109
   // s_address: s.s_address
-  Move         r118, r114
-  Move         r119, r115
+  Move         r114, r110
+  Move         r115, r111
   // select {
-  MakeMap      r120, 2, r116
+  MakeMap      r116, 2, r112
   // order by s.s_name
-  Index        r122, r99, r92
+  Index        r118, r96, r89
   // from s in supplier
-  Move         r123, r120
-  MakeList     r124, 2, r122
-  Append       r88, r88, r124
+  Move         r119, r116
+  MakeList     r120, 2, r118
+  Append       r85, r85, r120
 L23:
-  AddInt       r96, r96, r37
+  AddInt       r93, r93, r36
   Jump         L24
 L21:
   // order by s.s_name
-  Sort         r88, r88
+  Sort         r85, r85
   // print(result)
-  Print        r88
+  Print        r85
   // expect result == []
-  Const        r127, []
-  Equal        r128, r88, r127
-  Expect       r128
+  Const        r123, []
+  Equal        r124, r85, r123
+  Expect       r124
   Return       r0
