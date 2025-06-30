@@ -1,4 +1,4 @@
-func main (regs=17)
+func main (regs=16)
   // let t = [{id: 1, val: 10}]
   Const        r0, [{"id": 1, "val": 10}]
   // let vals = from r in t select r.val
@@ -11,19 +11,18 @@ L1:
   LessInt      r7, r5, r4
   JumpIfFalse  r7, L0
   Index        r9, r3, r5
-  Const        r10, "val"
-  Index        r11, r9, r10
-  Append       r1, r1, r11
-  Const        r13, 1
-  AddInt       r5, r5, r13
+  Index        r10, r9, r2
+  Append       r1, r1, r10
+  Const        r12, 1
+  AddInt       r5, r5, r12
   Jump         L1
 L0:
   // let result = first(vals)
-  First        r14, r1
+  First        r13, r1
   // json(result)
-  JSON         r14
+  JSON         r13
   // expect result == 10
-  Const        r15, 10
-  Equal        r16, r14, r15
-  Expect       r16
+  Const        r14, 10
+  Equal        r15, r13, r14
+  Expect       r15
   Return       r0
