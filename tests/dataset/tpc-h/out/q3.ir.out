@@ -1,10 +1,10 @@
-func main (regs=207)
+func main (regs=206)
   // let customer = [
   Const        r0, [{"c_custkey": 1, "c_mktsegment": "BUILDING"}, {"c_custkey": 2, "c_mktsegment": "AUTOMOBILE"}]
   // let orders = [
   Const        r1, [{"o_custkey": 1, "o_orderdate": "1995-03-14", "o_orderkey": 100, "o_shippriority": 1}, {"o_custkey": 2, "o_orderdate": "1995-03-10", "o_orderkey": 200, "o_shippriority": 2}]
   // let lineitem = [
-  Const        r2, [{"l_discount": 0.05, "l_extendedprice": 1000, "l_orderkey": 100, "l_shipdate": "1995-03-16"}, {"l_discount": 0, "l_extendedprice": 500, "l_orderkey": 100, "l_shipdate": "1995-03-20"}, {"l_discount": 0.1, "l_extendedprice": 1000, "l_orderkey": 200, "l_shipdate": "1995-03-14"}]
+  Const        r2, [{"l_discount": 0.05, "l_extendedprice": 1000.0, "l_orderkey": 100, "l_shipdate": "1995-03-16"}, {"l_discount": 0.0, "l_extendedprice": 500.0, "l_orderkey": 100, "l_shipdate": "1995-03-20"}, {"l_discount": 0.1, "l_extendedprice": 1000.0, "l_orderkey": 200, "l_shipdate": "1995-03-14"}]
   // let cutoff = "1995-03-15"
   Const        r3, "1995-03-15"
   // let segment = "BUILDING"
@@ -176,35 +176,34 @@ L15:
   In           r97, r96, r59
   JumpIfTrue   r97, L14
   // from o in valid_orders
-  Const        r98, []
-  Const        r99, "__group__"
-  Const        r100, true
+  Const        r98, "__group__"
+  Const        r99, true
   // group by {
-  Move         r101, r95
+  Move         r100, r95
   // from o in valid_orders
-  Const        r102, "items"
-  Move         r103, r98
-  Const        r104, "count"
+  Const        r101, "items"
+  Move         r102, r61
+  Const        r103, "count"
+  Move         r104, r98
   Move         r105, r99
-  Move         r106, r100
-  Move         r107, r54
+  Move         r106, r54
+  Move         r107, r100
   Move         r108, r101
   Move         r109, r102
   Move         r110, r103
-  Move         r111, r104
-  Move         r112, r10
-  MakeMap      r113, 4, r105
-  SetIndex     r59, r96, r113
-  Append       r114, r60, r113
-  Move         r60, r114
+  Move         r111, r10
+  MakeMap      r112, 4, r104
+  SetIndex     r59, r96, r112
+  Append       r113, r60, r112
+  Move         r60, r113
 L14:
-  Index        r115, r59, r96
-  Index        r116, r115, r102
-  Append       r117, r116, r82
-  SetIndex     r115, r102, r117
-  Index        r118, r115, r104
-  AddInt       r119, r118, r17
-  SetIndex     r115, r104, r119
+  Index        r114, r59, r96
+  Index        r115, r114, r101
+  Append       r116, r115, r82
+  SetIndex     r114, r101, r116
+  Index        r117, r114, r103
+  AddInt       r118, r117, r17
+  SetIndex     r114, r103, r118
 L13:
   // join l in valid_lineitems on l.l_orderkey == o.o_orderkey
   AddInt       r69, r69, r17
@@ -214,139 +213,139 @@ L12:
   AddInt       r64, r64, r17
   Jump         L16
 L11:
-  Move         r120, r10
-  Len          r121, r60
+  Move         r119, r10
+  Len          r120, r60
 L22:
-  LessInt      r122, r120, r121
-  JumpIfFalse  r122, L17
-  Index        r123, r60, r120
-  Move         r124, r123
+  LessInt      r121, r119, r120
+  JumpIfFalse  r121, L17
+  Index        r122, r60, r119
+  Move         r123, r122
   // l_orderkey: g.key.o_orderkey,
-  Const        r125, "l_orderkey"
-  Index        r126, r124, r54
-  Index        r127, r126, r51
+  Const        r124, "l_orderkey"
+  Index        r125, r123, r54
+  Index        r126, r125, r51
   // revenue: sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
-  Const        r128, "revenue"
-  Const        r129, []
-  IterPrep     r130, r124
-  Len          r131, r130
-  Move         r132, r10
+  Const        r127, "revenue"
+  Const        r128, []
+  IterPrep     r129, r123
+  Len          r130, r129
+  Move         r131, r10
 L19:
-  LessInt      r133, r132, r131
-  JumpIfFalse  r133, L18
-  Index        r134, r130, r132
-  Move         r135, r134
-  Index        r136, r135, r56
-  Index        r137, r136, r57
-  Index        r138, r135, r56
-  Index        r139, r138, r58
-  Sub          r140, r17, r139
-  Mul          r141, r137, r140
-  Append       r142, r129, r141
-  Move         r129, r142
-  AddInt       r132, r132, r17
+  LessInt      r132, r131, r130
+  JumpIfFalse  r132, L18
+  Index        r133, r129, r131
+  Move         r134, r133
+  Index        r135, r134, r56
+  Index        r136, r135, r57
+  Index        r137, r134, r56
+  Index        r138, r137, r58
+  Sub          r139, r17, r138
+  Mul          r140, r136, r139
+  Append       r141, r128, r140
+  Move         r128, r141
+  AddInt       r131, r131, r17
   Jump         L19
 L18:
-  Sum          r143, r129
+  Sum          r142, r128
   // o_orderdate: g.key.o_orderdate,
-  Const        r144, "o_orderdate"
-  Index        r145, r124, r54
-  Index        r146, r145, r25
+  Const        r143, "o_orderdate"
+  Index        r144, r123, r54
+  Index        r145, r144, r25
   // o_shippriority: g.key.o_shippriority
-  Const        r147, "o_shippriority"
-  Index        r148, r124, r54
-  Index        r149, r148, r52
+  Const        r146, "o_shippriority"
+  Index        r147, r123, r54
+  Index        r148, r147, r52
   // l_orderkey: g.key.o_orderkey,
-  Move         r150, r125
-  Move         r151, r127
+  Move         r149, r124
+  Move         r150, r126
   // revenue: sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
-  Move         r152, r128
-  Move         r153, r143
+  Move         r151, r127
+  Move         r152, r142
   // o_orderdate: g.key.o_orderdate,
-  Move         r154, r144
-  Move         r155, r146
+  Move         r153, r143
+  Move         r154, r145
   // o_shippriority: g.key.o_shippriority
-  Move         r156, r147
-  Move         r157, r149
+  Move         r155, r146
+  Move         r156, r148
   // select {
-  MakeMap      r158, 4, r150
+  MakeMap      r157, 4, r149
   // -sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
-  Const        r159, []
-  IterPrep     r160, r124
-  Len          r161, r160
-  Move         r162, r10
+  Const        r158, []
+  IterPrep     r159, r123
+  Len          r160, r159
+  Move         r161, r10
 L21:
-  LessInt      r163, r162, r161
-  JumpIfFalse  r163, L20
-  Index        r164, r160, r162
-  Move         r135, r164
-  Index        r165, r135, r56
-  Index        r166, r165, r57
-  Index        r167, r135, r56
-  Index        r168, r167, r58
-  Sub          r169, r17, r168
-  Mul          r170, r166, r169
-  Append       r171, r159, r170
-  Move         r159, r171
-  AddInt       r162, r162, r17
+  LessInt      r162, r161, r160
+  JumpIfFalse  r162, L20
+  Index        r163, r159, r161
+  Move         r134, r163
+  Index        r164, r134, r56
+  Index        r165, r164, r57
+  Index        r166, r134, r56
+  Index        r167, r166, r58
+  Sub          r168, r17, r167
+  Mul          r169, r165, r168
+  Append       r170, r158, r169
+  Move         r158, r170
+  AddInt       r161, r161, r17
   Jump         L21
 L20:
-  Sum          r172, r159
-  Neg          r173, r172
-  Move         r174, r173
+  Sum          r171, r158
+  Neg          r172, r171
+  Move         r173, r172
   // g.key.o_orderdate
-  Index        r175, r124, r54
-  Index        r176, r175, r25
-  Move         r177, r176
+  Index        r174, r123, r54
+  Index        r175, r174, r25
+  Move         r176, r175
   // sort by [
-  MakeList     r178, 2, r174
-  Move         r179, r178
+  MakeList     r177, 2, r173
+  Move         r178, r177
   // from o in valid_orders
-  Move         r180, r158
-  MakeList     r181, 2, r179
-  Append       r182, r50, r181
-  Move         r50, r182
-  AddInt       r120, r120, r17
+  Move         r179, r157
+  MakeList     r180, 2, r178
+  Append       r181, r50, r180
+  Move         r50, r181
+  AddInt       r119, r119, r17
   Jump         L22
 L17:
   // sort by [
-  Sort         r183, r50
+  Sort         r182, r50
   // from o in valid_orders
-  Move         r50, r183
+  Move         r50, r182
   // json(order_line_join)
   JSON         r50
   // l_orderkey: 100,
-  Const        r184, "l_orderkey"
-  Const        r185, 100
+  Const        r183, "l_orderkey"
+  Const        r184, 100
   // revenue: 1000.0 * 0.95 + 500.0,
-  Const        r186, "revenue"
-  Const        r187, 1000
-  Const        r188, 0.95
-  Const        r189, 950
-  Const        r190, 500
-  Const        r191, 1450
+  Const        r185, "revenue"
+  Const        r186, 1000.0
+  Const        r187, 0.95
+  Const        r188, 950.0
+  Const        r189, 500.0
+  Const        r190, 1450.0
   // o_orderdate: "1995-03-14",
-  Const        r192, "o_orderdate"
-  Const        r193, "1995-03-14"
+  Const        r191, "o_orderdate"
+  Const        r192, "1995-03-14"
   // o_shippriority: 1
-  Const        r194, "o_shippriority"
+  Const        r193, "o_shippriority"
   // l_orderkey: 100,
+  Move         r194, r183
   Move         r195, r184
-  Move         r196, r185
   // revenue: 1000.0 * 0.95 + 500.0,
-  Move         r197, r186
-  Move         r198, r191
+  Move         r196, r185
+  Move         r197, r190
   // o_orderdate: "1995-03-14",
+  Move         r198, r191
   Move         r199, r192
-  Move         r200, r193
   // o_shippriority: 1
-  Move         r201, r194
-  Move         r202, r17
+  Move         r200, r193
+  Move         r201, r17
   // {
-  MakeMap      r203, 4, r195
-  Move         r204, r203
+  MakeMap      r202, 4, r194
+  Move         r203, r202
   // expect order_line_join == [
-  MakeList     r205, 1, r204
-  Equal        r206, r50, r205
-  Expect       r206
+  MakeList     r204, 1, r203
+  Equal        r205, r50, r204
+  Expect       r205
   Return       r0

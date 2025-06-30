@@ -6972,6 +6972,9 @@ func pairKey(v Value) Value {
 		if k, ok := v.Map["key"]; ok {
 			return k
 		}
+		if k, ok := v.Map["keys"]; ok {
+			return k
+		}
 	}
 	return Value{}
 }
