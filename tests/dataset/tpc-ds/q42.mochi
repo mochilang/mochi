@@ -17,6 +17,8 @@ let date_dim = [
 let month = 5
 let year = 2020
 
+let dummy = null
+
 let records =
   from dt in date_dim
   join ss in store_sales on ss.sold_date_sk == dt.d_date_sk
@@ -24,7 +26,7 @@ let records =
   where it.i_manager_id == 1 && dt.d_moy == month && dt.d_year == year
   select { d_year: dt.d_year, i_category_id: it.i_category_id, i_category: it.i_category, price: ss.ext_sales_price }
 
-let result =
+let base =
   from r in records
   group by { d_year: r.d_year, i_category_id: r.i_category_id, i_category: r.i_category } into g
   sort by [-sum(from x in g select x.price), g.key.d_year, g.key.i_category_id, g.key.i_category]
@@ -34,6 +36,8 @@ let result =
     i_category: g.key.i_category,
     sum_ss_ext_sales_price: sum(from x in g select x.price)
   }
+
+let result = concat(dummy, base)
 
 json(result)
 

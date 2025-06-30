@@ -1,4 +1,4 @@
-func main (regs=429)
+func main (regs=431)
   // let catalog_sales = [
   Const        r0, [{"date_sk": 1, "item_sk": 1, "order": 1, "price": 100, "warehouse_sk": 1}, {"date_sk": 2, "item_sk": 1, "order": 2, "price": 150, "warehouse_sk": 1}]
   // let catalog_returns = [
@@ -11,495 +11,496 @@ func main (regs=429)
   Const        r4, [{"date": "2020-01-10", "date_sk": 1}, {"date": "2020-01-20", "date_sk": 2}]
   // let sales_date = "2020-01-15"
   Const        r5, "2020-01-15"
+  // let dummy = null
+  Const        r6, nil
   // from cs in catalog_sales
-  Const        r6, []
+  Const        r7, []
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r7, "current_price"
   Const        r8, "current_price"
+  Const        r9, "current_price"
   // w_state: w.state,
-  Const        r9, "w_state"
-  Const        r10, "state"
+  Const        r10, "w_state"
+  Const        r11, "state"
   // i_item_id: i.item_id,
-  Const        r11, "i_item_id"
-  Const        r12, "item_id"
+  Const        r12, "i_item_id"
+  Const        r13, "item_id"
   // sold_date: d.date,
-  Const        r13, "sold_date"
-  Const        r14, "date"
+  Const        r14, "sold_date"
+  Const        r15, "date"
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r15, "net"
-  Const        r16, "price"
-  Const        r17, "refunded"
+  Const        r16, "net"
+  Const        r17, "price"
+  Const        r18, "refunded"
   // from cs in catalog_sales
-  IterPrep     r18, r0
-  Len          r19, r18
-  Const        r20, 0
+  IterPrep     r19, r0
+  Len          r20, r19
+  Const        r21, 0
 L24:
-  LessInt      r22, r20, r19
-  JumpIfFalse  r22, L0
-  Index        r24, r18, r20
+  LessInt      r23, r21, r20
+  JumpIfFalse  r23, L0
+  Index        r25, r19, r21
   // left join cr in catalog_returns on cs.order == cr.order && cs.item_sk == cr.item_sk
-  IterPrep     r25, r1
-  Len          r26, r25
-  Const        r27, "order"
+  IterPrep     r26, r1
+  Len          r27, r26
   Const        r28, "order"
-  Const        r29, "item_sk"
+  Const        r29, "order"
   Const        r30, "item_sk"
+  Const        r31, "item_sk"
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r31, "current_price"
   Const        r32, "current_price"
+  Const        r33, "current_price"
   // w_state: w.state,
-  Const        r33, "w_state"
-  Const        r34, "state"
+  Const        r34, "w_state"
+  Const        r35, "state"
   // i_item_id: i.item_id,
-  Const        r35, "i_item_id"
-  Const        r36, "item_id"
+  Const        r36, "i_item_id"
+  Const        r37, "item_id"
   // sold_date: d.date,
-  Const        r37, "sold_date"
-  Const        r38, "date"
+  Const        r38, "sold_date"
+  Const        r39, "date"
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r39, "net"
-  Const        r40, "price"
-  Const        r41, "refunded"
+  Const        r40, "net"
+  Const        r41, "price"
+  Const        r42, "refunded"
   // left join cr in catalog_returns on cs.order == cr.order && cs.item_sk == cr.item_sk
-  Const        r42, 0
+  Const        r43, 0
 L13:
-  LessInt      r44, r42, r26
-  JumpIfFalse  r44, L1
-  Index        r46, r25, r42
-  Const        r47, false
-  Const        r48, "order"
-  Index        r49, r24, r48
-  Const        r50, "order"
-  Index        r51, r46, r50
-  Equal        r52, r49, r51
-  Const        r53, "item_sk"
-  Index        r54, r24, r53
-  Const        r55, "item_sk"
-  Index        r56, r46, r55
-  Equal        r57, r54, r56
-  Move         r58, r52
-  JumpIfFalse  r58, L2
-  Move         r58, r57
+  LessInt      r45, r43, r27
+  JumpIfFalse  r45, L1
+  Index        r47, r26, r43
+  Const        r48, false
+  Const        r49, "order"
+  Index        r50, r25, r49
+  Const        r51, "order"
+  Index        r52, r47, r51
+  Equal        r53, r50, r52
+  Const        r54, "item_sk"
+  Index        r55, r25, r54
+  Const        r56, "item_sk"
+  Index        r57, r47, r56
+  Equal        r58, r55, r57
+  Move         r59, r53
+  JumpIfFalse  r59, L2
+  Move         r59, r58
 L2:
-  JumpIfFalse  r58, L3
-  Const        r47, true
+  JumpIfFalse  r59, L3
+  Const        r48, true
   // join w in warehouse on cs.warehouse_sk == w.warehouse_sk
-  IterPrep     r59, r3
-  Len          r60, r59
-  Const        r61, "warehouse_sk"
+  IterPrep     r60, r3
+  Len          r61, r60
   Const        r62, "warehouse_sk"
+  Const        r63, "warehouse_sk"
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r63, "current_price"
   Const        r64, "current_price"
+  Const        r65, "current_price"
   // w_state: w.state,
-  Const        r65, "w_state"
-  Const        r66, "state"
+  Const        r66, "w_state"
+  Const        r67, "state"
   // i_item_id: i.item_id,
-  Const        r67, "i_item_id"
-  Const        r68, "item_id"
+  Const        r68, "i_item_id"
+  Const        r69, "item_id"
   // sold_date: d.date,
-  Const        r69, "sold_date"
-  Const        r70, "date"
+  Const        r70, "sold_date"
+  Const        r71, "date"
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r71, "net"
-  Const        r72, "price"
-  Const        r73, "refunded"
+  Const        r72, "net"
+  Const        r73, "price"
+  Const        r74, "refunded"
   // join w in warehouse on cs.warehouse_sk == w.warehouse_sk
-  Const        r74, 0
+  Const        r75, 0
 L12:
-  LessInt      r76, r74, r60
-  JumpIfFalse  r76, L3
-  Index        r78, r59, r74
-  Const        r79, "warehouse_sk"
-  Index        r80, r24, r79
-  Const        r81, "warehouse_sk"
-  Index        r82, r78, r81
-  Equal        r83, r80, r82
-  JumpIfFalse  r83, L4
+  LessInt      r77, r75, r61
+  JumpIfFalse  r77, L3
+  Index        r79, r60, r75
+  Const        r80, "warehouse_sk"
+  Index        r81, r25, r80
+  Const        r82, "warehouse_sk"
+  Index        r83, r79, r82
+  Equal        r84, r81, r83
+  JumpIfFalse  r84, L4
   // join i in item on cs.item_sk == i.item_sk
-  IterPrep     r84, r2
-  Len          r85, r84
-  Const        r86, "item_sk"
+  IterPrep     r85, r2
+  Len          r86, r85
   Const        r87, "item_sk"
+  Const        r88, "item_sk"
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r88, "current_price"
   Const        r89, "current_price"
+  Const        r90, "current_price"
   // w_state: w.state,
-  Const        r90, "w_state"
-  Const        r91, "state"
+  Const        r91, "w_state"
+  Const        r92, "state"
   // i_item_id: i.item_id,
-  Const        r92, "i_item_id"
-  Const        r93, "item_id"
+  Const        r93, "i_item_id"
+  Const        r94, "item_id"
   // sold_date: d.date,
-  Const        r94, "sold_date"
-  Const        r95, "date"
+  Const        r95, "sold_date"
+  Const        r96, "date"
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r96, "net"
-  Const        r97, "price"
-  Const        r98, "refunded"
+  Const        r97, "net"
+  Const        r98, "price"
+  Const        r99, "refunded"
   // join i in item on cs.item_sk == i.item_sk
-  Const        r99, 0
+  Const        r100, 0
 L11:
-  LessInt      r101, r99, r85
-  JumpIfFalse  r101, L4
-  Index        r103, r84, r99
-  Const        r104, "item_sk"
-  Index        r105, r24, r104
-  Const        r106, "item_sk"
-  Index        r107, r103, r106
-  Equal        r108, r105, r107
-  JumpIfFalse  r108, L5
+  LessInt      r102, r100, r86
+  JumpIfFalse  r102, L4
+  Index        r104, r85, r100
+  Const        r105, "item_sk"
+  Index        r106, r25, r105
+  Const        r107, "item_sk"
+  Index        r108, r104, r107
+  Equal        r109, r106, r108
+  JumpIfFalse  r109, L5
   // join d in date_dim on cs.date_sk == d.date_sk
-  IterPrep     r109, r4
-  Len          r110, r109
-  Const        r111, "date_sk"
+  IterPrep     r110, r4
+  Len          r111, r110
   Const        r112, "date_sk"
+  Const        r113, "date_sk"
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r113, "current_price"
   Const        r114, "current_price"
+  Const        r115, "current_price"
   // w_state: w.state,
-  Const        r115, "w_state"
-  Const        r116, "state"
+  Const        r116, "w_state"
+  Const        r117, "state"
   // i_item_id: i.item_id,
-  Const        r117, "i_item_id"
-  Const        r118, "item_id"
+  Const        r118, "i_item_id"
+  Const        r119, "item_id"
   // sold_date: d.date,
-  Const        r119, "sold_date"
-  Const        r120, "date"
+  Const        r120, "sold_date"
+  Const        r121, "date"
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r121, "net"
-  Const        r122, "price"
-  Const        r123, "refunded"
+  Const        r122, "net"
+  Const        r123, "price"
+  Const        r124, "refunded"
   // join d in date_dim on cs.date_sk == d.date_sk
-  Const        r124, 0
+  Const        r125, 0
 L10:
-  LessInt      r126, r124, r110
-  JumpIfFalse  r126, L5
-  Index        r128, r109, r124
-  Const        r129, "date_sk"
-  Index        r130, r24, r129
-  Const        r131, "date_sk"
-  Index        r132, r128, r131
-  Equal        r133, r130, r132
-  JumpIfFalse  r133, L6
+  LessInt      r127, r125, r111
+  JumpIfFalse  r127, L5
+  Index        r129, r110, r125
+  Const        r130, "date_sk"
+  Index        r131, r25, r130
+  Const        r132, "date_sk"
+  Index        r133, r129, r132
+  Equal        r134, r131, r133
+  JumpIfFalse  r134, L6
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r134, "current_price"
-  Index        r135, r103, r134
-  Const        r136, 0.99
-  LessEqFloat  r137, r136, r135
-  Const        r138, "current_price"
-  Index        r139, r103, r138
-  Const        r140, 1.49
-  LessEqFloat  r141, r139, r140
-  Move         r142, r137
-  JumpIfFalse  r142, L7
-  Move         r142, r141
+  Const        r135, "current_price"
+  Index        r136, r104, r135
+  Const        r137, 0.99
+  LessEqFloat  r138, r137, r136
+  Const        r139, "current_price"
+  Index        r140, r104, r139
+  Const        r141, 1.49
+  LessEqFloat  r142, r140, r141
+  Move         r143, r138
+  JumpIfFalse  r143, L7
+  Move         r143, r142
 L7:
-  JumpIfFalse  r142, L6
+  JumpIfFalse  r143, L6
   // w_state: w.state,
-  Const        r143, "w_state"
-  Const        r144, "state"
-  Index        r145, r78, r144
+  Const        r144, "w_state"
+  Const        r145, "state"
+  Index        r146, r79, r145
   // i_item_id: i.item_id,
-  Const        r146, "i_item_id"
-  Const        r147, "item_id"
-  Index        r148, r103, r147
+  Const        r147, "i_item_id"
+  Const        r148, "item_id"
+  Index        r149, r104, r148
   // sold_date: d.date,
-  Const        r149, "sold_date"
-  Const        r150, "date"
-  Index        r151, r128, r150
+  Const        r150, "sold_date"
+  Const        r151, "date"
+  Index        r152, r129, r151
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r152, "net"
-  Const        r153, "price"
-  Index        r154, r24, r153
-  Const        r155, nil
-  Equal        r156, r46, r155
-  JumpIfFalse  r156, L8
-  Const        r158, 0
+  Const        r153, "net"
+  Const        r154, "price"
+  Index        r155, r25, r154
+  Const        r156, nil
+  Equal        r157, r47, r156
+  JumpIfFalse  r157, L8
+  Const        r159, 0
   Jump         L9
 L8:
-  Const        r159, "refunded"
-  Index        r158, r46, r159
+  Const        r160, "refunded"
+  Index        r159, r47, r160
 L9:
-  Sub          r161, r154, r158
+  Sub          r162, r155, r159
   // w_state: w.state,
-  Move         r162, r143
-  Move         r163, r145
-  // i_item_id: i.item_id,
+  Move         r163, r144
   Move         r164, r146
-  Move         r165, r148
-  // sold_date: d.date,
+  // i_item_id: i.item_id,
+  Move         r165, r147
   Move         r166, r149
-  Move         r167, r151
-  // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
+  // sold_date: d.date,
+  Move         r167, r150
   Move         r168, r152
-  Move         r169, r161
+  // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
+  Move         r169, r153
+  Move         r170, r162
   // select {
-  MakeMap      r170, 4, r162
+  MakeMap      r171, 4, r163
   // from cs in catalog_sales
-  Append       r6, r6, r170
+  Append       r7, r7, r171
 L6:
   // join d in date_dim on cs.date_sk == d.date_sk
-  Const        r172, 1
-  Add          r124, r124, r172
+  Const        r173, 1
+  Add          r125, r125, r173
   Jump         L10
 L5:
   // join i in item on cs.item_sk == i.item_sk
-  Const        r173, 1
-  Add          r99, r99, r173
+  Const        r174, 1
+  Add          r100, r100, r174
   Jump         L11
 L4:
   // join w in warehouse on cs.warehouse_sk == w.warehouse_sk
-  Const        r174, 1
-  Add          r74, r74, r174
+  Const        r175, 1
+  Add          r75, r75, r175
   Jump         L12
 L3:
   // left join cr in catalog_returns on cs.order == cr.order && cs.item_sk == cr.item_sk
-  Const        r175, 1
-  Add          r42, r42, r175
+  Const        r176, 1
+  Add          r43, r43, r176
   Jump         L13
 L1:
-  Move         r176, r47
-  JumpIfTrue   r176, L14
-  Const        r46, nil
+  Move         r177, r48
+  JumpIfTrue   r177, L14
+  Const        r47, nil
   // join w in warehouse on cs.warehouse_sk == w.warehouse_sk
-  IterPrep     r178, r3
-  Len          r179, r178
-  Const        r180, "warehouse_sk"
+  IterPrep     r179, r3
+  Len          r180, r179
   Const        r181, "warehouse_sk"
+  Const        r182, "warehouse_sk"
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r182, "current_price"
   Const        r183, "current_price"
+  Const        r184, "current_price"
   // w_state: w.state,
-  Const        r184, "w_state"
-  Const        r185, "state"
+  Const        r185, "w_state"
+  Const        r186, "state"
   // i_item_id: i.item_id,
-  Const        r186, "i_item_id"
-  Const        r187, "item_id"
+  Const        r187, "i_item_id"
+  Const        r188, "item_id"
   // sold_date: d.date,
-  Const        r188, "sold_date"
-  Const        r189, "date"
+  Const        r189, "sold_date"
+  Const        r190, "date"
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r190, "net"
-  Const        r191, "price"
-  Const        r192, "refunded"
+  Const        r191, "net"
+  Const        r192, "price"
+  Const        r193, "refunded"
   // join w in warehouse on cs.warehouse_sk == w.warehouse_sk
-  Const        r193, 0
+  Const        r194, 0
 L23:
-  LessInt      r195, r193, r179
-  JumpIfFalse  r195, L14
-  Index        r78, r178, r193
-  Const        r197, "warehouse_sk"
-  Index        r198, r24, r197
-  Const        r199, "warehouse_sk"
-  Index        r200, r78, r199
-  Equal        r201, r198, r200
-  JumpIfFalse  r201, L15
+  LessInt      r196, r194, r180
+  JumpIfFalse  r196, L14
+  Index        r79, r179, r194
+  Const        r198, "warehouse_sk"
+  Index        r199, r25, r198
+  Const        r200, "warehouse_sk"
+  Index        r201, r79, r200
+  Equal        r202, r199, r201
+  JumpIfFalse  r202, L15
   // join i in item on cs.item_sk == i.item_sk
-  IterPrep     r202, r2
-  Len          r203, r202
-  Const        r204, "item_sk"
+  IterPrep     r203, r2
+  Len          r204, r203
   Const        r205, "item_sk"
+  Const        r206, "item_sk"
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r206, "current_price"
   Const        r207, "current_price"
+  Const        r208, "current_price"
   // w_state: w.state,
-  Const        r208, "w_state"
-  Const        r209, "state"
+  Const        r209, "w_state"
+  Const        r210, "state"
   // i_item_id: i.item_id,
-  Const        r210, "i_item_id"
-  Const        r211, "item_id"
+  Const        r211, "i_item_id"
+  Const        r212, "item_id"
   // sold_date: d.date,
-  Const        r212, "sold_date"
-  Const        r213, "date"
+  Const        r213, "sold_date"
+  Const        r214, "date"
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r214, "net"
-  Const        r215, "price"
-  Const        r216, "refunded"
+  Const        r215, "net"
+  Const        r216, "price"
+  Const        r217, "refunded"
   // join i in item on cs.item_sk == i.item_sk
-  Const        r217, 0
+  Const        r218, 0
 L22:
-  LessInt      r219, r217, r203
-  JumpIfFalse  r219, L15
-  Index        r103, r202, r217
-  Const        r221, "item_sk"
-  Index        r222, r24, r221
-  Const        r223, "item_sk"
-  Index        r224, r103, r223
-  Equal        r225, r222, r224
-  JumpIfFalse  r225, L16
+  LessInt      r220, r218, r204
+  JumpIfFalse  r220, L15
+  Index        r104, r203, r218
+  Const        r222, "item_sk"
+  Index        r223, r25, r222
+  Const        r224, "item_sk"
+  Index        r225, r104, r224
+  Equal        r226, r223, r225
+  JumpIfFalse  r226, L16
   // join d in date_dim on cs.date_sk == d.date_sk
-  IterPrep     r226, r4
-  Len          r227, r226
-  Const        r228, "date_sk"
+  IterPrep     r227, r4
+  Len          r228, r227
   Const        r229, "date_sk"
+  Const        r230, "date_sk"
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r230, "current_price"
   Const        r231, "current_price"
+  Const        r232, "current_price"
   // w_state: w.state,
-  Const        r232, "w_state"
-  Const        r233, "state"
+  Const        r233, "w_state"
+  Const        r234, "state"
   // i_item_id: i.item_id,
-  Const        r234, "i_item_id"
-  Const        r235, "item_id"
+  Const        r235, "i_item_id"
+  Const        r236, "item_id"
   // sold_date: d.date,
-  Const        r236, "sold_date"
-  Const        r237, "date"
+  Const        r237, "sold_date"
+  Const        r238, "date"
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r238, "net"
-  Const        r239, "price"
-  Const        r240, "refunded"
+  Const        r239, "net"
+  Const        r240, "price"
+  Const        r241, "refunded"
   // join d in date_dim on cs.date_sk == d.date_sk
-  Const        r241, 0
+  Const        r242, 0
 L21:
-  LessInt      r243, r241, r227
-  JumpIfFalse  r243, L16
-  Index        r128, r226, r241
-  Const        r245, "date_sk"
-  Index        r246, r24, r245
-  Const        r247, "date_sk"
-  Index        r248, r128, r247
-  Equal        r249, r246, r248
-  JumpIfFalse  r249, L17
+  LessInt      r244, r242, r228
+  JumpIfFalse  r244, L16
+  Index        r129, r227, r242
+  Const        r246, "date_sk"
+  Index        r247, r25, r246
+  Const        r248, "date_sk"
+  Index        r249, r129, r248
+  Equal        r250, r247, r249
+  JumpIfFalse  r250, L17
   // where i.current_price >= 0.99 && i.current_price <= 1.49
-  Const        r250, "current_price"
-  Index        r251, r103, r250
-  Const        r252, 0.99
-  LessEqFloat  r253, r252, r251
-  Const        r254, "current_price"
-  Index        r255, r103, r254
-  Const        r256, 1.49
-  LessEqFloat  r257, r255, r256
-  Move         r258, r253
-  JumpIfFalse  r258, L18
-  Move         r258, r257
+  Const        r251, "current_price"
+  Index        r252, r104, r251
+  Const        r253, 0.99
+  LessEqFloat  r254, r253, r252
+  Const        r255, "current_price"
+  Index        r256, r104, r255
+  Const        r257, 1.49
+  LessEqFloat  r258, r256, r257
+  Move         r259, r254
+  JumpIfFalse  r259, L18
+  Move         r259, r258
 L18:
-  JumpIfFalse  r258, L17
+  JumpIfFalse  r259, L17
   // w_state: w.state,
-  Const        r259, "w_state"
-  Const        r260, "state"
-  Index        r261, r78, r260
+  Const        r260, "w_state"
+  Const        r261, "state"
+  Index        r262, r79, r261
   // i_item_id: i.item_id,
-  Const        r262, "i_item_id"
-  Const        r263, "item_id"
-  Index        r264, r103, r263
+  Const        r263, "i_item_id"
+  Const        r264, "item_id"
+  Index        r265, r104, r264
   // sold_date: d.date,
-  Const        r265, "sold_date"
-  Const        r266, "date"
-  Index        r267, r128, r266
+  Const        r266, "sold_date"
+  Const        r267, "date"
+  Index        r268, r129, r267
   // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
-  Const        r268, "net"
-  Const        r269, "price"
-  Index        r270, r24, r269
-  Const        r271, nil
-  Equal        r272, r46, r271
-  JumpIfFalse  r272, L19
-  Const        r274, 0
+  Const        r269, "net"
+  Const        r270, "price"
+  Index        r271, r25, r270
+  Const        r272, nil
+  Equal        r273, r47, r272
+  JumpIfFalse  r273, L19
+  Const        r275, 0
   Jump         L20
 L19:
-  Const        r275, "refunded"
-  Index        r274, r46, r275
+  Const        r276, "refunded"
+  Index        r275, r47, r276
 L20:
-  Sub          r277, r270, r274
+  Sub          r278, r271, r275
   // w_state: w.state,
-  Move         r278, r259
-  Move         r279, r261
-  // i_item_id: i.item_id,
+  Move         r279, r260
   Move         r280, r262
-  Move         r281, r264
-  // sold_date: d.date,
+  // i_item_id: i.item_id,
+  Move         r281, r263
   Move         r282, r265
-  Move         r283, r267
-  // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
+  // sold_date: d.date,
+  Move         r283, r266
   Move         r284, r268
-  Move         r285, r277
+  // net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
+  Move         r285, r269
+  Move         r286, r278
   // select {
-  MakeMap      r286, 4, r278
+  MakeMap      r287, 4, r279
   // from cs in catalog_sales
-  Append       r6, r6, r286
+  Append       r7, r7, r287
 L17:
   // join d in date_dim on cs.date_sk == d.date_sk
-  Const        r288, 1
-  Add          r241, r241, r288
+  Const        r289, 1
+  Add          r242, r242, r289
   Jump         L21
 L16:
   // join i in item on cs.item_sk == i.item_sk
-  Const        r289, 1
-  Add          r217, r217, r289
+  Const        r290, 1
+  Add          r218, r218, r290
   Jump         L22
 L15:
   // join w in warehouse on cs.warehouse_sk == w.warehouse_sk
-  Const        r290, 1
-  Add          r193, r193, r290
+  Const        r291, 1
+  Add          r194, r194, r291
   Jump         L23
 L14:
   // from cs in catalog_sales
-  Const        r291, 1
-  AddInt       r20, r20, r291
+  Const        r292, 1
+  AddInt       r21, r21, r292
   Jump         L24
 L0:
   // from r in records
-  Const        r292, []
+  Const        r293, []
   // group by { w_state: r.w_state, i_item_id: r.i_item_id } into g
-  Const        r293, "w_state"
   Const        r294, "w_state"
-  Const        r295, "i_item_id"
+  Const        r295, "w_state"
   Const        r296, "i_item_id"
+  Const        r297, "i_item_id"
   // w_state: g.key.w_state,
-  Const        r297, "w_state"
-  Const        r298, "key"
-  Const        r299, "w_state"
+  Const        r298, "w_state"
+  Const        r299, "key"
+  Const        r300, "w_state"
   // i_item_id: g.key.i_item_id,
-  Const        r300, "i_item_id"
-  Const        r301, "key"
-  Const        r302, "i_item_id"
+  Const        r301, "i_item_id"
+  Const        r302, "key"
+  Const        r303, "i_item_id"
   // sales_before: sum(from x in g select if x.sold_date < sales_date { x.net } else { 0.0 }),
-  Const        r303, "sales_before"
-  Const        r304, "sold_date"
-  Const        r305, "net"
+  Const        r304, "sales_before"
+  Const        r305, "sold_date"
+  Const        r306, "net"
   // sales_after: sum(from x in g select if x.sold_date >= sales_date { x.net } else { 0.0 })
-  Const        r306, "sales_after"
-  Const        r307, "sold_date"
-  Const        r308, "net"
+  Const        r307, "sales_after"
+  Const        r308, "sold_date"
+  Const        r309, "net"
   // from r in records
-  IterPrep     r309, r6
-  Len          r310, r309
-  Const        r311, 0
-  MakeMap      r312, 0, r0
-  Const        r313, []
+  IterPrep     r310, r7
+  Len          r311, r310
+  Const        r312, 0
+  MakeMap      r313, 0, r0
+  Const        r314, []
 L27:
-  LessInt      r315, r311, r310
-  JumpIfFalse  r315, L25
-  Index        r316, r309, r311
-  Move         r317, r316
+  LessInt      r316, r312, r311
+  JumpIfFalse  r316, L25
+  Index        r317, r310, r312
+  Move         r318, r317
   // group by { w_state: r.w_state, i_item_id: r.i_item_id } into g
-  Const        r318, "w_state"
   Const        r319, "w_state"
-  Index        r320, r317, r319
-  Const        r321, "i_item_id"
+  Const        r320, "w_state"
+  Index        r321, r318, r320
   Const        r322, "i_item_id"
-  Index        r323, r317, r322
-  Move         r324, r318
-  Move         r325, r320
+  Const        r323, "i_item_id"
+  Index        r324, r318, r323
+  Move         r325, r319
   Move         r326, r321
-  Move         r327, r323
-  MakeMap      r328, 2, r324
-  Str          r329, r328
-  In           r330, r329, r312
-  JumpIfTrue   r330, L26
+  Move         r327, r322
+  Move         r328, r324
+  MakeMap      r329, 2, r325
+  Str          r330, r329
+  In           r331, r330, r313
+  JumpIfTrue   r331, L26
   // from r in records
-  Const        r331, []
-  Const        r332, "__group__"
-  Const        r333, true
-  Const        r334, "key"
+  Const        r332, []
+  Const        r333, "__group__"
+  Const        r334, true
+  Const        r335, "key"
   // group by { w_state: r.w_state, i_item_id: r.i_item_id } into g
-  Move         r335, r328
+  Move         r336, r329
   // from r in records
-  Const        r336, "items"
-  Move         r337, r331
-  Const        r338, "count"
-  Const        r339, 0
-  Move         r340, r332
+  Const        r337, "items"
+  Move         r338, r332
+  Const        r339, "count"
+  Const        r340, 0
   Move         r341, r333
   Move         r342, r334
   Move         r343, r335
@@ -507,122 +508,125 @@ L27:
   Move         r345, r337
   Move         r346, r338
   Move         r347, r339
-  MakeMap      r348, 4, r340
-  SetIndex     r312, r329, r348
-  Append       r313, r313, r348
+  Move         r348, r340
+  MakeMap      r349, 4, r341
+  SetIndex     r313, r330, r349
+  Append       r314, r314, r349
 L26:
-  Const        r350, "items"
-  Index        r351, r312, r329
-  Index        r352, r351, r350
-  Append       r353, r352, r316
-  SetIndex     r351, r350, r353
-  Const        r354, "count"
-  Index        r355, r351, r354
-  Const        r356, 1
-  AddInt       r357, r355, r356
-  SetIndex     r351, r354, r357
-  Const        r358, 1
-  AddInt       r311, r311, r358
+  Const        r351, "items"
+  Index        r352, r313, r330
+  Index        r353, r352, r351
+  Append       r354, r353, r317
+  SetIndex     r352, r351, r354
+  Const        r355, "count"
+  Index        r356, r352, r355
+  Const        r357, 1
+  AddInt       r358, r356, r357
+  SetIndex     r352, r355, r358
+  Const        r359, 1
+  AddInt       r312, r312, r359
   Jump         L27
 L25:
-  Const        r359, 0
-  Len          r361, r313
+  Const        r360, 0
+  Len          r362, r314
 L37:
-  LessInt      r362, r359, r361
-  JumpIfFalse  r362, L28
-  Index        r364, r313, r359
+  LessInt      r363, r360, r362
+  JumpIfFalse  r363, L28
+  Index        r365, r314, r360
   // w_state: g.key.w_state,
-  Const        r365, "w_state"
-  Const        r366, "key"
-  Index        r367, r364, r366
-  Const        r368, "w_state"
-  Index        r369, r367, r368
+  Const        r366, "w_state"
+  Const        r367, "key"
+  Index        r368, r365, r367
+  Const        r369, "w_state"
+  Index        r370, r368, r369
   // i_item_id: g.key.i_item_id,
-  Const        r370, "i_item_id"
-  Const        r371, "key"
-  Index        r372, r364, r371
-  Const        r373, "i_item_id"
-  Index        r374, r372, r373
+  Const        r371, "i_item_id"
+  Const        r372, "key"
+  Index        r373, r365, r372
+  Const        r374, "i_item_id"
+  Index        r375, r373, r374
   // sales_before: sum(from x in g select if x.sold_date < sales_date { x.net } else { 0.0 }),
-  Const        r375, "sales_before"
-  Const        r376, []
-  Const        r377, "sold_date"
-  Const        r378, "net"
-  IterPrep     r379, r364
-  Len          r380, r379
-  Const        r381, 0
+  Const        r376, "sales_before"
+  Const        r377, []
+  Const        r378, "sold_date"
+  Const        r379, "net"
+  IterPrep     r380, r365
+  Len          r381, r380
+  Const        r382, 0
 L32:
-  LessInt      r383, r381, r380
-  JumpIfFalse  r383, L29
-  Index        r385, r379, r381
-  Const        r386, "sold_date"
-  Index        r387, r385, r386
-  Less         r388, r387, r5
-  JumpIfFalse  r388, L30
-  Const        r389, "net"
-  Index        r391, r385, r389
+  LessInt      r384, r382, r381
+  JumpIfFalse  r384, L29
+  Index        r386, r380, r382
+  Const        r387, "sold_date"
+  Index        r388, r386, r387
+  Less         r389, r388, r5
+  JumpIfFalse  r389, L30
+  Const        r390, "net"
+  Index        r392, r386, r390
   Jump         L31
 L30:
-  Const        r391, 0
+  Const        r392, 0
 L31:
-  Append       r376, r376, r391
-  Const        r394, 1
-  AddInt       r381, r381, r394
+  Append       r377, r377, r392
+  Const        r395, 1
+  AddInt       r382, r382, r395
   Jump         L32
 L29:
-  Sum          r395, r376
+  Sum          r396, r377
   // sales_after: sum(from x in g select if x.sold_date >= sales_date { x.net } else { 0.0 })
-  Const        r396, "sales_after"
-  Const        r397, []
-  Const        r398, "sold_date"
-  Const        r399, "net"
-  IterPrep     r400, r364
-  Len          r401, r400
-  Const        r402, 0
+  Const        r397, "sales_after"
+  Const        r398, []
+  Const        r399, "sold_date"
+  Const        r400, "net"
+  IterPrep     r401, r365
+  Len          r402, r401
+  Const        r403, 0
 L36:
-  LessInt      r404, r402, r401
-  JumpIfFalse  r404, L33
-  Index        r385, r400, r402
-  Const        r406, "sold_date"
-  Index        r407, r385, r406
-  LessEq       r408, r5, r407
-  JumpIfFalse  r408, L34
-  Const        r409, "net"
-  Index        r411, r385, r409
+  LessInt      r405, r403, r402
+  JumpIfFalse  r405, L33
+  Index        r386, r401, r403
+  Const        r407, "sold_date"
+  Index        r408, r386, r407
+  LessEq       r409, r5, r408
+  JumpIfFalse  r409, L34
+  Const        r410, "net"
+  Index        r412, r386, r410
   Jump         L35
 L34:
-  Const        r411, 0
+  Const        r412, 0
 L35:
-  Append       r397, r397, r411
-  Const        r414, 1
-  AddInt       r402, r402, r414
+  Append       r398, r398, r412
+  Const        r415, 1
+  AddInt       r403, r403, r415
   Jump         L36
 L33:
-  Sum          r415, r397
+  Sum          r416, r398
   // w_state: g.key.w_state,
-  Move         r416, r365
-  Move         r417, r369
-  // i_item_id: g.key.i_item_id,
+  Move         r417, r366
   Move         r418, r370
-  Move         r419, r374
-  // sales_before: sum(from x in g select if x.sold_date < sales_date { x.net } else { 0.0 }),
+  // i_item_id: g.key.i_item_id,
+  Move         r419, r371
   Move         r420, r375
-  Move         r421, r395
-  // sales_after: sum(from x in g select if x.sold_date >= sales_date { x.net } else { 0.0 })
+  // sales_before: sum(from x in g select if x.sold_date < sales_date { x.net } else { 0.0 }),
+  Move         r421, r376
   Move         r422, r396
-  Move         r423, r415
+  // sales_after: sum(from x in g select if x.sold_date >= sales_date { x.net } else { 0.0 })
+  Move         r423, r397
+  Move         r424, r416
   // select {
-  MakeMap      r424, 4, r416
+  MakeMap      r425, 4, r417
   // from r in records
-  Append       r292, r292, r424
-  Const        r426, 1
-  AddInt       r359, r359, r426
+  Append       r293, r293, r425
+  Const        r427, 1
+  AddInt       r360, r360, r427
   Jump         L37
 L28:
+  // let result = concat(dummy, base)
+  UnionAll     r428, r6, r293
   // json(result)
-  JSON         r292
+  JSON         r428
   // expect result == [
-  Const        r427, [{"i_item_id": "I1", "sales_after": 0, "sales_before": 100, "w_state": "CA"}]
-  Equal        r428, r292, r427
-  Expect       r428
+  Const        r429, [{"i_item_id": "I1", "sales_after": 0, "sales_before": 100, "w_state": "CA"}]
+  Equal        r430, r428, r429
+  Expect       r430
   Return       r0

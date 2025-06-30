@@ -1,106 +1,110 @@
-func main (regs=68)
+func main (regs=70)
   // let item = [
   Const        r0, [{"category": "Women", "color": "blue", "manufact": 1, "manufact_id": 100, "product_name": "Blue Shirt", "size": "M", "units": "pack"}, {"category": "Women", "color": "red", "manufact": 1, "manufact_id": 120, "product_name": "Red Dress", "size": "M", "units": "pack"}, {"category": "Men", "color": "black", "manufact": 2, "manufact_id": 200, "product_name": "Pants", "size": "L", "units": "pair"}]
   // let lower = 100
   Const        r1, 100
+  // let dummy = null
+  Const        r2, nil
   // from i1 in item
-  Const        r2, []
+  Const        r3, []
   // where i1.manufact_id >= lower && i1.manufact_id <= lower + 40 &&
-  Const        r3, "manufact_id"
   Const        r4, "manufact_id"
+  Const        r5, "manufact_id"
   // count(from i2 in item where i2.manufact == i1.manufact && i2.category == i1.category select i2) > 1
-  Const        r5, "manufact"
   Const        r6, "manufact"
-  Const        r7, "category"
+  Const        r7, "manufact"
   Const        r8, "category"
+  Const        r9, "category"
   // select i1.product_name
-  Const        r9, "product_name"
-  // order by i1.product_name
   Const        r10, "product_name"
+  // order by i1.product_name
+  Const        r11, "product_name"
   // from i1 in item
-  IterPrep     r11, r0
-  Len          r12, r11
-  Const        r13, 0
+  IterPrep     r12, r0
+  Len          r13, r12
+  Const        r14, 0
 L8:
-  LessInt      r15, r13, r12
-  JumpIfFalse  r15, L0
-  Index        r17, r11, r13
+  LessInt      r16, r14, r13
+  JumpIfFalse  r16, L0
+  Index        r18, r12, r14
   // where i1.manufact_id >= lower && i1.manufact_id <= lower + 40 &&
-  Const        r18, "manufact_id"
-  Index        r19, r17, r18
-  Const        r20, 40
-  Const        r21, 140
-  LessEq       r22, r1, r19
-  Const        r23, "manufact_id"
-  Index        r24, r17, r23
-  LessEq       r25, r24, r21
+  Const        r19, "manufact_id"
+  Index        r20, r18, r19
+  Const        r21, 40
+  Const        r22, 140
+  LessEq       r23, r1, r20
+  Const        r24, "manufact_id"
+  Index        r25, r18, r24
+  LessEq       r26, r25, r22
   // count(from i2 in item where i2.manufact == i1.manufact && i2.category == i1.category select i2) > 1
-  Const        r26, []
-  Const        r27, "manufact"
+  Const        r27, []
   Const        r28, "manufact"
-  Const        r29, "category"
+  Const        r29, "manufact"
   Const        r30, "category"
-  IterPrep     r31, r0
-  Len          r32, r31
-  Const        r33, 0
+  Const        r31, "category"
+  IterPrep     r32, r0
+  Len          r33, r32
+  Const        r34, 0
 L4:
-  LessInt      r35, r33, r32
-  JumpIfFalse  r35, L1
-  Index        r37, r31, r33
-  Const        r38, "manufact"
-  Index        r39, r37, r38
-  Const        r40, "manufact"
-  Index        r41, r17, r40
-  Equal        r42, r39, r41
-  Const        r43, "category"
-  Index        r44, r37, r43
-  Const        r45, "category"
-  Index        r46, r17, r45
-  Equal        r47, r44, r46
-  Move         r48, r42
-  JumpIfFalse  r48, L2
-  Move         r48, r47
+  LessInt      r36, r34, r33
+  JumpIfFalse  r36, L1
+  Index        r38, r32, r34
+  Const        r39, "manufact"
+  Index        r40, r38, r39
+  Const        r41, "manufact"
+  Index        r42, r18, r41
+  Equal        r43, r40, r42
+  Const        r44, "category"
+  Index        r45, r38, r44
+  Const        r46, "category"
+  Index        r47, r18, r46
+  Equal        r48, r45, r47
+  Move         r49, r43
+  JumpIfFalse  r49, L2
+  Move         r49, r48
 L2:
-  JumpIfFalse  r48, L3
-  Append       r26, r26, r37
+  JumpIfFalse  r49, L3
+  Append       r27, r27, r38
 L3:
-  Const        r50, 1
-  AddInt       r33, r33, r50
+  Const        r51, 1
+  AddInt       r34, r34, r51
   Jump         L4
 L1:
-  Count        r51, r26
-  Const        r52, 1
-  LessInt      r53, r52, r51
+  Count        r52, r27
+  Const        r53, 1
+  LessInt      r54, r53, r52
   // where i1.manufact_id >= lower && i1.manufact_id <= lower + 40 &&
-  Move         r54, r22
-  JumpIfFalse  r54, L5
+  Move         r55, r23
+  JumpIfFalse  r55, L5
 L5:
-  Move         r55, r25
-  JumpIfFalse  r55, L6
-  Move         r55, r53
+  Move         r56, r26
+  JumpIfFalse  r56, L6
+  Move         r56, r54
 L6:
-  JumpIfFalse  r55, L7
+  JumpIfFalse  r56, L7
   // select i1.product_name
-  Const        r56, "product_name"
-  Index        r57, r17, r56
+  Const        r57, "product_name"
+  Index        r58, r18, r57
   // order by i1.product_name
-  Const        r58, "product_name"
-  Index        r60, r17, r58
+  Const        r59, "product_name"
+  Index        r61, r18, r59
   // from i1 in item
-  Move         r61, r57
-  MakeList     r62, 2, r60
-  Append       r2, r2, r62
+  Move         r62, r58
+  MakeList     r63, 2, r61
+  Append       r3, r3, r63
 L7:
-  Const        r64, 1
-  AddInt       r13, r13, r64
+  Const        r65, 1
+  AddInt       r14, r14, r65
   Jump         L8
 L0:
   // order by i1.product_name
-  Sort         r2, r2
+  Sort         r3, r3
+  // let result = concat(dummy, base)
+  UnionAll     r67, r2, r3
   // json(result)
-  JSON         r2
+  JSON         r67
   // expect result == ["Blue Shirt", "Red Dress"]
-  Const        r66, ["Blue Shirt", "Red Dress"]
-  Equal        r67, r2, r66
-  Expect       r67
+  Const        r68, ["Blue Shirt", "Red Dress"]
+  Equal        r69, r67, r68
+  Expect       r69
   Return       r0
