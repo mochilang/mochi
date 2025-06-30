@@ -1,0 +1,596 @@
+func main (regs=412)
+L19:
+  // let store_sales = [
+  Const        r0, [{"ss_ext_sales_price": 50, "ss_item_sk": 1, "ss_sold_date_sk": 1}, {"ss_ext_sales_price": 100, "ss_item_sk": 2, "ss_sold_date_sk": 1}]
+  // let item = [
+  Const        r1, [{"i_category": "CatA", "i_class": "Class1", "i_current_price": 100, "i_item_desc": "desc1", "i_item_id": "I1", "i_item_sk": 1}, {"i_category": "CatB", "i_class": "Class1", "i_current_price": 200, "i_item_desc": "desc2", "i_item_id": "I2", "i_item_sk": 2}]
+  // let date_dim = [{d_date_sk: 1, d_date: "2000-02-01"}]
+  Const        r2, [{"d_date": "2000-02-01", "d_date_sk": 1}]
+  // from ss in store_sales
+  Const        r3, []
+  // group by {item_id: i.i_item_id, item_desc: i.i_item_desc, category: i.i_category, class: i.i_class, price: i.i_current_price} into g
+  Const        r4, "item_id"
+  Const        r5, "i_item_id"
+  Const        r6, "item_desc"
+  Const        r7, "i_item_desc"
+  Const        r8, "category"
+  Const        r9, "i_category"
+  Const        r10, "class"
+  Const        r11, "i_class"
+  Const        r12, "price"
+  Const        r13, "i_current_price"
+  // i_item_id: g.key.item_id,
+  Const        r14, "i_item_id"
+  Const        r15, "key"
+  Const        r16, "item_id"
+  // i_item_desc: g.key.item_desc,
+  Const        r17, "i_item_desc"
+  Const        r18, "key"
+  Const        r19, "item_desc"
+  // i_category: g.key.category,
+  Const        r20, "i_category"
+  Const        r21, "key"
+  Const        r22, "category"
+  // i_class: g.key.class,
+  Const        r23, "i_class"
+  Const        r24, "key"
+  Const        r25, "class"
+  // i_current_price: g.key.price,
+  Const        r26, "i_current_price"
+  Const        r27, "key"
+  Const        r28, "price"
+  // itemrevenue: sum(from x in g select x.ss_ext_sales_price)
+  Const        r29, "itemrevenue"
+  Const        r30, "ss_ext_sales_price"
+  // from ss in store_sales
+  MakeMap      r31, 0, r0
+  Const        r32, []
+  IterPrep     r34, r0
+  Len          r35, r34
+  Const        r36, 0
+L7:
+  LessInt      r37, r36, r35
+  JumpIfFalse  r37, L0
+  Index        r39, r34, r36
+  // join i in item on ss.ss_item_sk == i.i_item_sk
+  IterPrep     r40, r1
+  Len          r41, r40
+  Const        r42, 0
+L6:
+  LessInt      r43, r42, r41
+  JumpIfFalse  r43, L1
+  Index        r45, r40, r42
+  Const        r46, "ss_item_sk"
+  Index        r47, r39, r46
+  Const        r48, "i_item_sk"
+  Index        r49, r45, r48
+  Equal        r50, r47, r49
+  JumpIfFalse  r50, L2
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  IterPrep     r51, r2
+  Len          r52, r51
+  Const        r53, 0
+L5:
+  LessInt      r54, r53, r52
+  JumpIfFalse  r54, L2
+  Index        r56, r51, r53
+  Const        r57, "ss_sold_date_sk"
+  Index        r58, r39, r57
+  Const        r59, "d_date_sk"
+  Index        r60, r56, r59
+  Equal        r61, r58, r60
+  JumpIfFalse  r61, L3
+  // from ss in store_sales
+  Const        r62, "ss"
+  Move         r63, r39
+  Const        r64, "i"
+  Move         r65, r45
+  Const        r66, "d"
+  Move         r67, r56
+  MakeMap      r68, 3, r62
+  // group by {item_id: i.i_item_id, item_desc: i.i_item_desc, category: i.i_category, class: i.i_class, price: i.i_current_price} into g
+  Const        r69, "item_id"
+  Const        r70, "i_item_id"
+  Index        r71, r45, r70
+  Const        r72, "item_desc"
+  Const        r73, "i_item_desc"
+  Index        r74, r45, r73
+  Const        r75, "category"
+  Const        r76, "i_category"
+  Index        r77, r45, r76
+  Const        r78, "class"
+  Const        r79, "i_class"
+  Index        r80, r45, r79
+  Const        r81, "price"
+  Const        r82, "i_current_price"
+  Index        r83, r45, r82
+  Move         r84, r69
+  Move         r85, r71
+  Move         r86, r72
+  Move         r87, r74
+  Move         r88, r75
+  Move         r89, r77
+  Move         r90, r78
+  Move         r91, r80
+  Move         r92, r81
+  Move         r93, r83
+  MakeMap      r94, 5, r84
+  Str          r95, r94
+  In           r96, r95, r31
+  JumpIfTrue   r96, L4
+  // from ss in store_sales
+  Const        r97, []
+  Const        r98, "__group__"
+  Const        r99, true
+  Const        r100, "key"
+  // group by {item_id: i.i_item_id, item_desc: i.i_item_desc, category: i.i_category, class: i.i_class, price: i.i_current_price} into g
+  Move         r101, r94
+  // from ss in store_sales
+  Const        r102, "items"
+  Move         r103, r97
+  Const        r104, "count"
+  Const        r105, 0
+  Move         r106, r98
+  Move         r107, r99
+  Move         r108, r100
+  Move         r109, r101
+  Move         r110, r102
+  Move         r111, r103
+  Move         r112, r104
+  Move         r113, r105
+  MakeMap      r114, 4, r106
+  SetIndex     r31, r95, r114
+  Append       r32, r32, r114
+L4:
+  Const        r116, "items"
+  Index        r117, r31, r95
+  Index        r118, r117, r116
+  Append       r119, r118, r68
+  SetIndex     r117, r116, r119
+  Const        r120, "count"
+  Index        r121, r117, r120
+  Const        r122, 1
+  AddInt       r123, r121, r122
+  SetIndex     r117, r120, r123
+L3:
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r124, 1
+  AddInt       r53, r53, r124
+  Jump         L5
+L2:
+  // join i in item on ss.ss_item_sk == i.i_item_sk
+  Const        r125, 1
+  AddInt       r42, r42, r125
+  Jump         L6
+L1:
+  // from ss in store_sales
+  Const        r126, 1
+  AddInt       r36, r36, r126
+  Jump         L7
+L0:
+  Const        r127, 0
+  Len          r129, r32
+L11:
+  LessInt      r130, r127, r129
+  JumpIfFalse  r130, L8
+  Index        r132, r32, r127
+  // i_item_id: g.key.item_id,
+  Const        r133, "i_item_id"
+  Const        r134, "key"
+  Index        r135, r132, r134
+  Const        r136, "item_id"
+  Index        r137, r135, r136
+  // i_item_desc: g.key.item_desc,
+  Const        r138, "i_item_desc"
+  Const        r139, "key"
+  Index        r140, r132, r139
+  Const        r141, "item_desc"
+  Index        r142, r140, r141
+  // i_category: g.key.category,
+  Const        r143, "i_category"
+  Const        r144, "key"
+  Index        r145, r132, r144
+  Const        r146, "category"
+  Index        r147, r145, r146
+  // i_class: g.key.class,
+  Const        r148, "i_class"
+  Const        r149, "key"
+  Index        r150, r132, r149
+  Const        r151, "class"
+  Index        r152, r150, r151
+  // i_current_price: g.key.price,
+  Const        r153, "i_current_price"
+  Const        r154, "key"
+  Index        r155, r132, r154
+  Const        r156, "price"
+  Index        r157, r155, r156
+  // itemrevenue: sum(from x in g select x.ss_ext_sales_price)
+  Const        r158, "itemrevenue"
+  Const        r159, []
+  Const        r160, "ss_ext_sales_price"
+  IterPrep     r161, r132
+  Len          r162, r161
+  Const        r163, 0
+L10:
+  LessInt      r165, r163, r162
+  JumpIfFalse  r165, L9
+  Index        r167, r161, r163
+  Const        r168, "ss_ext_sales_price"
+  Index        r169, r167, r168
+  Append       r159, r159, r169
+  Const        r171, 1
+  AddInt       r163, r163, r171
+  Jump         L10
+L9:
+  Sum          r172, r159
+  // i_item_id: g.key.item_id,
+  Move         r173, r133
+  Move         r174, r137
+  // i_item_desc: g.key.item_desc,
+  Move         r175, r138
+  Move         r176, r142
+  // i_category: g.key.category,
+  Move         r177, r143
+  Move         r178, r147
+  // i_class: g.key.class,
+  Move         r179, r148
+  Move         r180, r152
+  // i_current_price: g.key.price,
+  Move         r181, r153
+  Move         r182, r157
+  // itemrevenue: sum(from x in g select x.ss_ext_sales_price)
+  Move         r183, r158
+  Move         r184, r172
+  // select {
+  MakeMap      r185, 6, r173
+  // from ss in store_sales
+  Append       r3, r3, r185
+  Const        r187, 1
+  AddInt       r127, r127, r187
+  Jump         L11
+L8:
+  // from g in grouped
+  Const        r188, []
+  // group by g.i_class into cg
+  Const        r189, "i_class"
+  // select {class: cg.key, total: sum(from x in cg select x.itemrevenue)}
+  Const        r190, "class"
+  Const        r191, "key"
+  Const        r192, "total"
+  Const        r193, "itemrevenue"
+  // from g in grouped
+  IterPrep     r194, r3
+  Len          r195, r194
+  Const        r196, 0
+  MakeMap      r197, 0, r0
+  Const        r198, []
+L14:
+  LessInt      r200, r196, r195
+  JumpIfFalse  r200, L12
+  Index        r201, r194, r196
+  Move         r132, r201
+  // group by g.i_class into cg
+  Const        r202, "i_class"
+  Index        r203, r132, r202
+  Str          r204, r203
+  In           r205, r204, r197
+  JumpIfTrue   r205, L13
+  // from g in grouped
+  Const        r206, []
+  Const        r207, "__group__"
+  Const        r208, true
+  Const        r209, "key"
+  // group by g.i_class into cg
+  Move         r210, r203
+  // from g in grouped
+  Const        r211, "items"
+  Move         r212, r206
+  Const        r213, "count"
+  Const        r214, 0
+  Move         r215, r207
+  Move         r216, r208
+  Move         r217, r209
+  Move         r218, r210
+  Move         r219, r211
+  Move         r220, r212
+  Move         r221, r213
+  Move         r222, r214
+  MakeMap      r223, 4, r215
+  SetIndex     r197, r204, r223
+  Append       r198, r198, r223
+L13:
+  Const        r225, "items"
+  Index        r226, r197, r204
+  Index        r227, r226, r225
+  Append       r228, r227, r201
+  SetIndex     r226, r225, r228
+  Const        r229, "count"
+  Index        r230, r226, r229
+  Const        r231, 1
+  AddInt       r232, r230, r231
+  SetIndex     r226, r229, r232
+  Const        r233, 1
+  AddInt       r196, r196, r233
+  Jump         L14
+L12:
+  Const        r234, 0
+  Len          r236, r198
+L18:
+  LessInt      r237, r234, r236
+  JumpIfFalse  r237, L15
+  Index        r239, r198, r234
+  // select {class: cg.key, total: sum(from x in cg select x.itemrevenue)}
+  Const        r240, "class"
+  Const        r241, "key"
+  Index        r242, r239, r241
+  Const        r243, "total"
+  Const        r244, []
+  Const        r245, "itemrevenue"
+  IterPrep     r246, r239
+  Len          r247, r246
+  Const        r248, 0
+L17:
+  LessInt      r250, r248, r247
+  JumpIfFalse  r250, L16
+  Index        r167, r246, r248
+  Const        r252, "itemrevenue"
+  Index        r253, r167, r252
+  Append       r244, r244, r253
+  Const        r255, 1
+  AddInt       r248, r248, r255
+  Jump         L17
+L16:
+  Sum          r256, r244
+  Move         r257, r240
+  Move         r258, r242
+  Move         r259, r243
+  Move         r260, r256
+  MakeMap      r261, 2, r257
+  // from g in grouped
+  Append       r188, r188, r261
+  Const        r263, 1
+  AddInt       r234, r234, r263
+  Jump         L18
+L15:
+  // from g in grouped
+  Const        r264, []
+  IterPrep     r265, r3
+  Len          r266, r265
+  // join t in totals on g.i_class == t.class
+  IterPrep     r267, r188
+  Len          r268, r267
+  // from g in grouped
+  Const        r269, 0
+  EqualInt     r270, r266, r269
+  JumpIfTrue   r270, L19
+  EqualInt     r271, r268, r269
+  JumpIfTrue   r271, L19
+  LessEq       r272, r268, r266
+  JumpIfFalse  r272, L20
+  // join t in totals on g.i_class == t.class
+  MakeMap      r273, 0, r0
+  Const        r274, 0
+L23:
+  LessInt      r275, r274, r268
+  JumpIfFalse  r275, L21
+  Index        r276, r267, r274
+  Move         r277, r276
+  Const        r278, "class"
+  Index        r279, r277, r278
+  Index        r280, r273, r279
+  Const        r281, nil
+  NotEqual     r282, r280, r281
+  JumpIfTrue   r282, L22
+  MakeList     r283, 0, r0
+  SetIndex     r273, r279, r283
+L22:
+  Index        r280, r273, r279
+  Append       r284, r280, r276
+  SetIndex     r273, r279, r284
+  Const        r285, 1
+  AddInt       r274, r274, r285
+  Jump         L23
+L21:
+  // from g in grouped
+  Const        r286, 0
+L26:
+  LessInt      r287, r286, r266
+  JumpIfFalse  r287, L19
+  Index        r132, r265, r286
+  // join t in totals on g.i_class == t.class
+  Const        r289, "i_class"
+  Index        r290, r132, r289
+  // from g in grouped
+  Index        r291, r273, r290
+  Const        r292, nil
+  NotEqual     r293, r291, r292
+  JumpIfFalse  r293, L24
+  Len          r294, r291
+  Const        r295, 0
+L25:
+  LessInt      r296, r295, r294
+  JumpIfFalse  r296, L24
+  Index        r277, r291, r295
+  // i_item_id: g.i_item_id,
+  Const        r298, "i_item_id"
+  Const        r299, "i_item_id"
+  Index        r300, r132, r299
+  // i_item_desc: g.i_item_desc,
+  Const        r301, "i_item_desc"
+  Const        r302, "i_item_desc"
+  Index        r303, r132, r302
+  // i_category: g.i_category,
+  Const        r304, "i_category"
+  Const        r305, "i_category"
+  Index        r306, r132, r305
+  // i_class: g.i_class,
+  Const        r307, "i_class"
+  Const        r308, "i_class"
+  Index        r309, r132, r308
+  // i_current_price: g.i_current_price,
+  Const        r310, "i_current_price"
+  Const        r311, "i_current_price"
+  Index        r312, r132, r311
+  // itemrevenue: g.itemrevenue,
+  Const        r313, "itemrevenue"
+  Const        r314, "itemrevenue"
+  Index        r315, r132, r314
+  // revenueratio: g.itemrevenue * 100 / t.total
+  Const        r316, "revenueratio"
+  Const        r317, "itemrevenue"
+  Index        r318, r132, r317
+  Const        r319, 100
+  Mul          r320, r318, r319
+  Const        r321, "total"
+  Index        r322, r277, r321
+  Div          r323, r320, r322
+  // i_item_id: g.i_item_id,
+  Move         r324, r298
+  Move         r325, r300
+  // i_item_desc: g.i_item_desc,
+  Move         r326, r301
+  Move         r327, r303
+  // i_category: g.i_category,
+  Move         r328, r304
+  Move         r329, r306
+  // i_class: g.i_class,
+  Move         r330, r307
+  Move         r331, r309
+  // i_current_price: g.i_current_price,
+  Move         r332, r310
+  Move         r333, r312
+  // itemrevenue: g.itemrevenue,
+  Move         r334, r313
+  Move         r335, r315
+  // revenueratio: g.itemrevenue * 100 / t.total
+  Move         r336, r316
+  Move         r337, r323
+  // select {
+  MakeMap      r338, 7, r324
+  // from g in grouped
+  Append       r264, r264, r338
+  Const        r340, 1
+  AddInt       r295, r295, r340
+  Jump         L25
+L24:
+  Const        r341, 1
+  AddInt       r286, r286, r341
+  Jump         L26
+L20:
+  MakeMap      r342, 0, r0
+  Const        r343, 0
+L29:
+  LessInt      r344, r343, r266
+  JumpIfFalse  r344, L27
+  Index        r345, r265, r343
+  Move         r132, r345
+  // join t in totals on g.i_class == t.class
+  Const        r346, "i_class"
+  Index        r347, r132, r346
+  // from g in grouped
+  Index        r348, r342, r347
+  Const        r349, nil
+  NotEqual     r350, r348, r349
+  JumpIfTrue   r350, L28
+  MakeList     r351, 0, r0
+  SetIndex     r342, r347, r351
+L28:
+  Index        r348, r342, r347
+  Append       r352, r348, r345
+  SetIndex     r342, r347, r352
+  Const        r353, 1
+  AddInt       r343, r343, r353
+  Jump         L29
+L27:
+  // join t in totals on g.i_class == t.class
+  Const        r354, 0
+L33:
+  LessInt      r355, r354, r268
+  JumpIfFalse  r355, L30
+  Index        r277, r267, r354
+  Const        r357, "class"
+  Index        r358, r277, r357
+  Index        r359, r342, r358
+  Const        r360, nil
+  NotEqual     r361, r359, r360
+  JumpIfFalse  r361, L31
+  Len          r362, r359
+  Const        r363, 0
+L32:
+  LessInt      r364, r363, r362
+  JumpIfFalse  r364, L31
+  Index        r132, r359, r363
+  // i_item_id: g.i_item_id,
+  Const        r366, "i_item_id"
+  Const        r367, "i_item_id"
+  Index        r368, r132, r367
+  // i_item_desc: g.i_item_desc,
+  Const        r369, "i_item_desc"
+  Const        r370, "i_item_desc"
+  Index        r371, r132, r370
+  // i_category: g.i_category,
+  Const        r372, "i_category"
+  Const        r373, "i_category"
+  Index        r374, r132, r373
+  // i_class: g.i_class,
+  Const        r375, "i_class"
+  Const        r376, "i_class"
+  Index        r377, r132, r376
+  // i_current_price: g.i_current_price,
+  Const        r378, "i_current_price"
+  Const        r379, "i_current_price"
+  Index        r380, r132, r379
+  // itemrevenue: g.itemrevenue,
+  Const        r381, "itemrevenue"
+  Const        r382, "itemrevenue"
+  Index        r383, r132, r382
+  // revenueratio: g.itemrevenue * 100 / t.total
+  Const        r384, "revenueratio"
+  Const        r385, "itemrevenue"
+  Index        r386, r132, r385
+  Const        r387, 100
+  Mul          r388, r386, r387
+  Const        r389, "total"
+  Index        r390, r277, r389
+  Div          r391, r388, r390
+  // i_item_id: g.i_item_id,
+  Move         r392, r366
+  Move         r393, r368
+  // i_item_desc: g.i_item_desc,
+  Move         r394, r369
+  Move         r395, r371
+  // i_category: g.i_category,
+  Move         r396, r372
+  Move         r397, r374
+  // i_class: g.i_class,
+  Move         r398, r375
+  Move         r399, r377
+  // i_current_price: g.i_current_price,
+  Move         r400, r378
+  Move         r401, r380
+  // itemrevenue: g.itemrevenue,
+  Move         r402, r381
+  Move         r403, r383
+  // revenueratio: g.itemrevenue * 100 / t.total
+  Move         r404, r384
+  Move         r405, r391
+  // select {
+  MakeMap      r406, 7, r392
+  // from g in grouped
+  Append       r264, r264, r406
+  // join t in totals on g.i_class == t.class
+  Const        r408, 1
+  AddInt       r363, r363, r408
+  Jump         L32
+L31:
+  Const        r409, 1
+  AddInt       r354, r354, r409
+  Jump         L33
+L30:
+  // json(result)
+  JSON         r264
+  // expect result == [
+  Const        r410, [{"i_category": "CatA", "i_class": "Class1", "i_current_price": 100, "i_item_desc": "desc1", "i_item_id": "I1", "itemrevenue": 50, "revenueratio": 33.333333333333336}, {"i_category": "CatB", "i_class": "Class1", "i_current_price": 200, "i_item_desc": "desc2", "i_item_id": "I2", "itemrevenue": 100, "revenueratio": 66.66666666666667}]
+  Equal        r411, r264, r410
+  Expect       r411
+  Return       r0

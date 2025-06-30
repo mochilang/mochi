@@ -1,0 +1,157 @@
+func main (regs=97)
+  // let store_sales = [
+  Const        r0, [{"ss_hdemo_sk": 1, "ss_sold_time_sk": 1, "ss_store_sk": 1}, {"ss_hdemo_sk": 1, "ss_sold_time_sk": 1, "ss_store_sk": 1}, {"ss_hdemo_sk": 1, "ss_sold_time_sk": 2, "ss_store_sk": 1}]
+  // let household_demographics = [{hd_demo_sk: 1, hd_dep_count: 3}]
+  Const        r1, [{"hd_demo_sk": 1, "hd_dep_count": 3}]
+  // let time_dim = [
+  Const        r2, [{"t_hour": 20, "t_minute": 35, "t_time_sk": 1}, {"t_hour": 20, "t_minute": 45, "t_time_sk": 2}]
+  // let store = [{s_store_sk: 1, s_store_name: "ese"}]
+  Const        r3, [{"s_store_name": "ese", "s_store_sk": 1}]
+  // count(from ss in store_sales
+  Const        r4, []
+  // where t.t_hour == 20 && t.t_minute >= 30 &&
+  Const        r5, "t_hour"
+  Const        r6, "t_minute"
+  // hd.hd_dep_count == 3 && s.s_store_name == "ese"
+  Const        r7, "hd_dep_count"
+  Const        r8, "s_store_name"
+  // count(from ss in store_sales
+  IterPrep     r9, r0
+  Len          r10, r9
+  Const        r11, 0
+L11:
+  LessInt      r13, r11, r10
+  JumpIfFalse  r13, L0
+  Index        r15, r9, r11
+  // join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk
+  IterPrep     r16, r1
+  Len          r17, r16
+  Const        r18, "ss_hdemo_sk"
+  Const        r19, "hd_demo_sk"
+  // where t.t_hour == 20 && t.t_minute >= 30 &&
+  Const        r20, "t_hour"
+  Const        r21, "t_minute"
+  // hd.hd_dep_count == 3 && s.s_store_name == "ese"
+  Const        r22, "hd_dep_count"
+  Const        r23, "s_store_name"
+  // join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk
+  Const        r24, 0
+L10:
+  LessInt      r26, r24, r17
+  JumpIfFalse  r26, L1
+  Index        r28, r16, r24
+  Const        r29, "ss_hdemo_sk"
+  Index        r30, r15, r29
+  Const        r31, "hd_demo_sk"
+  Index        r32, r28, r31
+  Equal        r33, r30, r32
+  JumpIfFalse  r33, L2
+  // join t in time_dim on ss.ss_sold_time_sk == t.t_time_sk
+  IterPrep     r34, r2
+  Len          r35, r34
+  Const        r36, "ss_sold_time_sk"
+  Const        r37, "t_time_sk"
+  // where t.t_hour == 20 && t.t_minute >= 30 &&
+  Const        r38, "t_hour"
+  Const        r39, "t_minute"
+  // hd.hd_dep_count == 3 && s.s_store_name == "ese"
+  Const        r40, "hd_dep_count"
+  Const        r41, "s_store_name"
+  // join t in time_dim on ss.ss_sold_time_sk == t.t_time_sk
+  Const        r42, 0
+L9:
+  LessInt      r44, r42, r35
+  JumpIfFalse  r44, L2
+  Index        r46, r34, r42
+  Const        r47, "ss_sold_time_sk"
+  Index        r48, r15, r47
+  Const        r49, "t_time_sk"
+  Index        r50, r46, r49
+  Equal        r51, r48, r50
+  JumpIfFalse  r51, L3
+  // join s in store on ss.ss_store_sk == s.s_store_sk
+  IterPrep     r52, r3
+  Len          r53, r52
+  Const        r54, "ss_store_sk"
+  Const        r55, "s_store_sk"
+  // where t.t_hour == 20 && t.t_minute >= 30 &&
+  Const        r56, "t_hour"
+  Const        r57, "t_minute"
+  // hd.hd_dep_count == 3 && s.s_store_name == "ese"
+  Const        r58, "hd_dep_count"
+  Const        r59, "s_store_name"
+  // join s in store on ss.ss_store_sk == s.s_store_sk
+  Const        r60, 0
+L8:
+  LessInt      r62, r60, r53
+  JumpIfFalse  r62, L3
+  Index        r64, r52, r60
+  Const        r65, "ss_store_sk"
+  Index        r66, r15, r65
+  Const        r67, "s_store_sk"
+  Index        r68, r64, r67
+  Equal        r69, r66, r68
+  JumpIfFalse  r69, L4
+  // where t.t_hour == 20 && t.t_minute >= 30 &&
+  Const        r70, "t_hour"
+  Index        r71, r46, r70
+  Const        r72, "t_minute"
+  Index        r73, r46, r72
+  Const        r74, 30
+  LessEq       r75, r74, r73
+  Const        r76, 20
+  Equal        r77, r71, r76
+  // hd.hd_dep_count == 3 && s.s_store_name == "ese"
+  Const        r78, "hd_dep_count"
+  Index        r79, r28, r78
+  Const        r80, 3
+  Equal        r81, r79, r80
+  Const        r82, "s_store_name"
+  Index        r83, r64, r82
+  Const        r84, "ese"
+  Equal        r85, r83, r84
+  // where t.t_hour == 20 && t.t_minute >= 30 &&
+  Move         r86, r77
+  JumpIfFalse  r86, L5
+L5:
+  Move         r87, r75
+  JumpIfFalse  r87, L6
+L6:
+  // hd.hd_dep_count == 3 && s.s_store_name == "ese"
+  Move         r88, r81
+  JumpIfFalse  r88, L7
+  Move         r88, r85
+L7:
+  // where t.t_hour == 20 && t.t_minute >= 30 &&
+  JumpIfFalse  r88, L4
+  // count(from ss in store_sales
+  Append       r4, r4, r15
+L4:
+  // join s in store on ss.ss_store_sk == s.s_store_sk
+  Const        r90, 1
+  Add          r60, r60, r90
+  Jump         L8
+L3:
+  // join t in time_dim on ss.ss_sold_time_sk == t.t_time_sk
+  Const        r91, 1
+  Add          r42, r42, r91
+  Jump         L9
+L2:
+  // join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk
+  Const        r92, 1
+  Add          r24, r24, r92
+  Jump         L10
+L1:
+  // count(from ss in store_sales
+  Const        r93, 1
+  AddInt       r11, r11, r93
+  Jump         L11
+L0:
+  Count        r94, r4
+  // json(result)
+  JSON         r94
+  // expect result == 3
+  Const        r95, 3
+  EqualInt     r96, r94, r95
+  Expect       r96
+  Return       r0

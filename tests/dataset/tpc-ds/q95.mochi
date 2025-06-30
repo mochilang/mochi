@@ -5,6 +5,16 @@ type DateDim { d_date_sk: int, d_date: string }
 type CustomerAddress { ca_address_sk: int, ca_state: string }
 type WebSite { web_site_sk: int, web_company_name: string }
 
+fun distinct(xs: list<any>): list<any> {
+  var out = []
+  for x in xs {
+    if !contains(out, x) {
+      out = append(out, x)
+    }
+  }
+  return out
+}
+
 let web_sales = [
   {ws_order_number: 1, ws_warehouse_sk: 1, ws_ship_date_sk: 1, ws_ship_addr_sk: 1, ws_web_site_sk: 1, ws_ext_ship_cost: 2.0, ws_net_profit: 5.0},
   {ws_order_number: 1, ws_warehouse_sk: 2, ws_ship_date_sk: 1, ws_ship_addr_sk: 1, ws_web_site_sk: 1, ws_ext_ship_cost: 0.0, ws_net_profit: 0.0}
@@ -32,7 +42,7 @@ let filtered =
   select ws
 
 let result = {
-  order_count: count(distinct from x in filtered select x.ws_order_number),
+  order_count: len(distinct(from x in filtered select x.ws_order_number)),
   total_shipping_cost: sum(from x in filtered select x.ws_ext_ship_cost),
   total_net_profit: sum(from x in filtered select x.ws_net_profit)
 }

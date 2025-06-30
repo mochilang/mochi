@@ -128,6 +128,7 @@ const (
 	OpExcept
 	OpIntersect
 	OpSort
+	OpDistinct
 	OpExpect
 )
 
@@ -285,6 +286,8 @@ func (op Op) String() string {
 		return "Intersect"
 	case OpSort:
 		return "Sort"
+	case OpDistinct:
+		return "Distinct"
 	case OpExpect:
 		return "Expect"
 	default:
@@ -1113,6 +1116,21 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					out[i] = p.List[1]
 				} else {
 					out[i] = Value{Tag: ValueNull}
+				}
+			}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
+		case OpDistinct:
+			src := fr.regs[ins.B]
+			if src.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("distinct expects list"), trace, ins.Line)
+			}
+			out := []Value{}
+			seen := map[string]struct{}{}
+			for _, v := range src.List {
+				k := valueToString(v)
+				if _, ok := seen[k]; !ok {
+					seen[k] = struct{}{}
+					out = append(out, v)
 				}
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
@@ -2948,6 +2966,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpReverse, A: dst, B: arg})
+			return dst
+		case "distinct":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpDistinct, A: dst, B: arg})
 			return dst
 		case "str":
 			arg := fc.compileExpr(p.Call.Args[0])

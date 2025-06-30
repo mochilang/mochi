@@ -32,12 +32,20 @@ let grouped =
 let totals =
   from g in grouped
   group by g.i_class into cg
-  select {class: cg.key, total: sum(from x in cg select x.itemrevenue)} |> collect
+  select {class: cg.key, total: sum(from x in cg select x.itemrevenue)}
 
 let result =
   from g in grouped
   join t in totals on g.i_class == t.class
-  select merge(g, {revenueratio: g.itemrevenue * 100 / t.total}) |> collect
+  select {
+    i_item_id: g.i_item_id,
+    i_item_desc: g.i_item_desc,
+    i_category: g.i_category,
+    i_class: g.i_class,
+    i_current_price: g.i_current_price,
+    itemrevenue: g.itemrevenue,
+    revenueratio: g.itemrevenue * 100 / t.total
+  }
 
 json(result)
 
