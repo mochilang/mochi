@@ -2562,6 +2562,9 @@ func (fc *funcCompiler) compileUnary(u *parser.Unary) int {
 }
 
 func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
+	if v, ok := fc.evalConstPostfix(p); ok {
+		return fc.constReg(p.Target.Pos, v)
+	}
 	// Special case for struct method calls like obj.method()
 	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
 		rootName := p.Target.Selector.Root
@@ -6373,8 +6376,21 @@ func (fc *funcCompiler) evalConstUnary(u *parser.Unary) (Value, bool) {
 
 func (fc *funcCompiler) evalConstPostfix(p *parser.PostfixExpr) (Value, bool) {
 	v, ok := fc.evalConstPrimary(p.Target)
-	if !ok || len(p.Ops) != 0 {
+	if !ok {
 		return Value{}, false
+	}
+	for _, op := range p.Ops {
+		switch {
+		case op.Cast != nil:
+			typ := resolveTypeRef(op.Cast.Type, fc.comp.env)
+			cv, err := castValue(typ, valueToAny(v))
+			if err != nil {
+				return Value{}, false
+			}
+			v = anyToValue(cv)
+		case op.Call != nil || op.Index != nil || op.Field != nil:
+			return Value{}, false
+		}
 	}
 	return v, true
 }
