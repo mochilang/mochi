@@ -3205,28 +3205,22 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 
 	if joinType == "inner" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			if !fc.smallConstJoin(q.Source, join.Src) {
-				fc.compileHashJoin(q, dst, lk, rk)
-				return
-			}
+			fc.compileHashJoin(q, dst, lk, rk)
+			return
 		}
 	}
 
 	if joinType == "left" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			if !fc.smallConstJoin(q.Source, join.Src) {
-				fc.compileHashLeftJoin(q, dst, lk, rk)
-				return
-			}
+			fc.compileHashLeftJoin(q, dst, lk, rk)
+			return
 		}
 	}
 
 	if joinType == "right" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			if !fc.smallConstJoin(q.Source, join.Src) {
-				fc.compileHashRightJoin(q, dst, lk, rk)
-				return
-			}
+			fc.compileHashRightJoin(q, dst, lk, rk)
+			return
 		} else {
 			fc.compileJoinQueryRight(q, dst)
 			return
@@ -3235,10 +3229,8 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 
 	if joinType == "outer" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			if !fc.smallConstJoin(q.Source, join.Src) {
-				fc.compileHashOuterJoin(q, dst, lk, rk)
-				return
-			}
+			fc.compileHashOuterJoin(q, dst, lk, rk)
+			return
 		} else {
 			fc.compileJoinQueryRight(q, dst)
 			return

@@ -242,3 +242,25 @@ func whereAlias(where *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+// aliasFieldPath extracts the field path from an expression of the form
+// `alias.foo.bar`. It returns the list of field names or false when the
+// expression is not a simple selector chain on the alias.
+func aliasFieldPath(e *parser.Expr, alias string) ([]string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return nil, false
+	}
+	sel := p.Target.Selector
+	if sel.Root != alias {
+		return nil, false
+	}
+	return sel.Tail, true
+}
