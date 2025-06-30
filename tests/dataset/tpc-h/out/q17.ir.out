@@ -1,8 +1,8 @@
-func main (regs=60)
+func main (regs=59)
   // let part = [
   Const        r0, [{"p_brand": "Brand#23", "p_container": "MED BOX", "p_partkey": 1}, {"p_brand": "Brand#77", "p_container": "LG JAR", "p_partkey": 2}]
   // let lineitem = [
-  Const        r1, [{"l_extendedprice": 100, "l_partkey": 1, "l_quantity": 1}, {"l_extendedprice": 1000, "l_partkey": 1, "l_quantity": 10}, {"l_extendedprice": 2000, "l_partkey": 1, "l_quantity": 20}, {"l_extendedprice": 500, "l_partkey": 2, "l_quantity": 5}]
+  Const        r1, [{"l_extendedprice": 100.0, "l_partkey": 1, "l_quantity": 1}, {"l_extendedprice": 1000.0, "l_partkey": 1, "l_quantity": 10}, {"l_extendedprice": 2000.0, "l_partkey": 1, "l_quantity": 20}, {"l_extendedprice": 500.0, "l_partkey": 2, "l_quantity": 5}]
   // let brand = "Brand#23"
   Const        r2, "Brand#23"
   // let container = "MED BOX"
@@ -26,14 +26,14 @@ func main (regs=60)
   Const        r14, "l_extendedprice"
   // from l in lineitem
   Const        r15, 0
-L9:
+L8:
   LessInt      r16, r15, r6
   JumpIfFalse  r16, L0
   Index        r17, r5, r15
   Move         r18, r17
   // join p in part on p.p_partkey == l.l_partkey
   Const        r19, 0
-L8:
+L7:
   LessInt      r20, r19, r8
   JumpIfFalse  r20, L1
   Index        r21, r7, r19
@@ -45,14 +45,15 @@ L8:
   // (p.p_brand == brand) &&
   Index        r26, r22, r11
   Equal        r27, r26, r2
+  Move         r28, r27
+  JumpIfFalse  r28, L3
   // (p.p_container == container) &&
-  Index        r28, r22, r12
-  Equal        r29, r28, r3
+  Index        r29, r22, r12
+  Equal        r30, r29, r3
   // (p.p_brand == brand) &&
-  Move         r30, r27
-  JumpIfFalse  r30, L3
-  Move         r30, r29
-L3:
+  Move         r28, r30
+  // (p.p_container == container) &&
+  JumpIfFalse  r28, L3
   // (l.l_quantity < (
   Index        r31, r18, r13
   // 0.2 * avg(
@@ -89,37 +90,35 @@ L4:
   // (l.l_quantity < (
   LessFloat    r49, r31, r48
   // (p.p_container == container) &&
-  Move         r50, r30
-  JumpIfFalse  r50, L7
-  Move         r50, r49
-L7:
+  Move         r28, r49
+L3:
   // where (
-  JumpIfFalse  r50, L2
+  JumpIfFalse  r28, L2
   // select l.l_extendedprice
-  Index        r51, r18, r14
+  Index        r50, r18, r14
   // from l in lineitem
-  Append       r52, r4, r51
-  Move         r4, r52
+  Append       r51, r4, r50
+  Move         r4, r51
 L2:
   // join p in part on p.p_partkey == l.l_partkey
   AddInt       r19, r19, r46
-  Jump         L8
+  Jump         L7
 L1:
   // from l in lineitem
   AddInt       r15, r15, r46
-  Jump         L9
+  Jump         L8
 L0:
   // let result = sum(filtered) / 7.0
-  Sum          r53, r4
-  Const        r54, 7
-  DivFloat     r55, r53, r54
+  Sum          r52, r4
+  Const        r53, 7.0
+  DivFloat     r54, r52, r53
   // print(result)
-  Print        r55
+  Print        r54
   // let expected = 100.0 / 7.0
-  Const        r56, 100
-  Const        r57, 14.285714285714286
+  Const        r55, 100.0
+  Const        r56, 14.285714285714286
   // expect result == expected
-  Const        r58, 14.285714285714286
-  EqualFloat   r59, r55, r58
-  Expect       r59
+  Const        r57, 14.285714285714286
+  EqualFloat   r58, r54, r57
+  Expect       r58
   Return       r0
