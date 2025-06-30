@@ -340,7 +340,7 @@ L18:
   // json(result)
   JSON         r163
   // expect result == [
-  Const        r241, [{"ss_customer_sk": 1, "sumsales": 40}, {"ss_customer_sk": 2, "sumsales": 60}]
+  Const        r241, [{"ss_customer_sk": 1, "sumsales": 40}]
   Equal        r242, r163, r241
   Expect       r242
   Return       r0

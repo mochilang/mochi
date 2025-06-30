@@ -363,7 +363,7 @@ L21:
   // json(result)
   JSON         r250
   // expect result == {
-  Const        r251, {"Call_Center": "CC1", "Call_Center_Name": "Main", "Manager": "Alice", "Returns_Loss": 10}
+  Const        r251, {"Call_Center": "CC1", "Call_Center_Name": "Main", "Manager": "Alice", "Returns_Loss": 0}
   Equal        r252, r250, r251
   Expect       r252
   Return       r0

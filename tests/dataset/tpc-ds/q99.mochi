@@ -21,7 +21,7 @@ let grouped =
   join w in warehouse on cs.cs_warehouse_sk == w.w_warehouse_sk
   join sm in ship_mode on cs.cs_ship_mode_sk == sm.sm_ship_mode_sk
   join cc in call_center on cs.cs_call_center_sk == cc.cc_call_center_sk
-  group by {warehouse: substr(w.w_warehouse_name,1,20), sm_type: sm.sm_type, cc_name: cc.cc_name} into g
+  group by {warehouse: substr(w.w_warehouse_name,0,20), sm_type: sm.sm_type, cc_name: cc.cc_name} into g
   select {
     warehouse: g.key.warehouse,
     sm_type: g.key.sm_type,

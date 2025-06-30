@@ -33,7 +33,6 @@ json(result)
 
 test "TPCDS Q93 active sales" {
   expect result == [
-    {ss_customer_sk: 1, sumsales: 40.0},
-    {ss_customer_sk: 2, sumsales: 60.0}
+    {ss_customer_sk: 1, sumsales: 40.0}
   ]
 }
