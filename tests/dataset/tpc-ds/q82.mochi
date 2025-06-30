@@ -1,14 +1,20 @@
+// Expanded sample data for TPC-DS Q82
 let item = [
   {id: 1},
-  {id: 2}
+  {id: 2},
+  {id: 3}
 ]
 let inventory = [
-  {item: 1, qty: 40},
-  {item: 1, qty: 42},
-  {item: 2, qty: 50}
+  {item: 1, qty: 20},
+  {item: 1, qty: 22},
+  {item: 1, qty: 5},
+  {item: 2, qty: 30},
+  {item: 2, qty: 5},
+  {item: 3, qty: 10}
 ]
 let store_sales = [
-  {item: 1}
+  {item: 1},
+  {item: 2}
 ]
 
 let result =
@@ -18,6 +24,6 @@ let result =
 
 json(result)
 
-test "TPCDS Q82 simplified" {
+test "TPCDS Q82 sample" {
   expect result == 82
 }

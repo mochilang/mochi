@@ -1,11 +1,19 @@
+// Expanded sample data for TPC-DS Q87
 let store_sales = [
   {cust: "A"},
-  {cust: "B"}
+  {cust: "B"},
+  {cust: "B"},
+  {cust: "C"}
 ]
 let catalog_sales = [
-  {cust: "B"}
+  {cust: "A"},
+  {cust: "C"},
+  {cust: "D"}
 ]
-let web_sales = []
+let web_sales = [
+  {cust: "A"},
+  {cust: "D"}
+]
 
 let store_customers = distinct(from s in store_sales select s.cust)
 let other_customers = distinct(concat(from c in catalog_sales select c.cust,
@@ -16,6 +24,6 @@ let result = len(diff) * 87
 
 json(result)
 
-test "TPCDS Q87 simplified" {
+test "TPCDS Q87 sample" {
   expect result == 87
 }
