@@ -529,6 +529,12 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 					changed = true
 					pcMap[pc-1] = -1
 				}
+			case OpNot:
+				if prev.Op == OpNot && prev.A == ins.B && !analysis.Out[pc][prev.A] {
+					ins = Instr{Op: OpMove, A: ins.A, B: prev.B, Line: ins.Line}
+					changed = true
+					pcMap[pc-1] = -1
+				}
 			case OpSubInt, OpSubFloat, OpSub:
 				if isConst(ins.C, (Value{Tag: ValueInt, Int: 0})) {
 					ins = Instr{Op: OpMove, A: ins.A, B: ins.B, Line: ins.Line}
