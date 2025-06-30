@@ -1,0 +1,32 @@
+// Simplified TPC-DC Q5
+let store_sales = [{ss_item_sk: 1, ss_net_paid: 100}]
+let store_returns = [{sr_item_sk: 1, sr_return_amt: 20}]
+let catalog_sales = [{cs_item_sk: 1, cs_net_paid: 80}]
+let catalog_returns = [{cr_item_sk: 1, cr_return_amount: 10}]
+let web_sales = [{ws_item_sk: 1, ws_net_paid: 70}]
+let web_returns = [{wr_item_sk: 1, wr_return_amt: 5}]
+let item = [{i_item_sk: 1, i_category: "Music"}]
+
+let sales =
+  from s in store_sales select {item_sk: s.ss_item_sk, paid: s.ss_net_paid}
+  union all from s in catalog_sales select {item_sk: s.cs_item_sk, paid: s.cs_net_paid}
+  union all from s in web_sales select {item_sk: s.ws_item_sk, paid: s.ws_net_paid}
+
+let returns =
+  from r in store_returns select {item_sk: r.sr_item_sk, amt: r.sr_return_amt}
+  union all from r in catalog_returns select {item_sk: r.cr_item_sk, amt: r.cr_return_amount}
+  union all from r in web_returns select {item_sk: r.wr_item_sk, amt: r.wr_return_amt}
+
+let result =
+  from s in sales
+  join i in item on s.item_sk == i.i_item_sk
+  group by {item_sk: i.i_item_sk, category: i.i_category} into g
+  let total_sales = sum(from x in g select x.paid)
+  let total_returns = sum(from r in returns where r.item_sk == g.key.item_sk select r.amt)
+  select {category: g.key.category, profit: total_sales - total_returns}
+
+json(result)
+
+test "TPCDC Q5 sample" {
+  expect result == [{category: "Music", profit: 215}]
+}

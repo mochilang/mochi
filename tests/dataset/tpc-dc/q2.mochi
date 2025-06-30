@@ -1,0 +1,46 @@
+// Simplified TPC-DC Q2
+let web_sales = [
+  {ws_sold_date_sk: 1, ws_ext_sales_price: 10},
+  {ws_sold_date_sk: 2, ws_ext_sales_price: 20}
+]
+let catalog_sales = [
+  {cs_sold_date_sk: 1, cs_ext_sales_price: 5}
+]
+let date_dim = [
+  {d_date_sk: 1, d_week_seq: 1, d_day_name: "Sunday", d_year: 1998},
+  {d_date_sk: 2, d_week_seq: 54, d_day_name: "Sunday", d_year: 1999}
+]
+
+let wscs =
+  from ws in web_sales
+  select {sold_date_sk: ws.ws_sold_date_sk, sales_price: ws.ws_ext_sales_price}
+  union all
+  from cs in catalog_sales
+  select {sold_date_sk: cs.cs_sold_date_sk, sales_price: cs.cs_ext_sales_price}
+
+let wswscs =
+  from w in wscs
+  join d in date_dim on w.sold_date_sk == d.d_date_sk
+  group by {week_seq: d.d_week_seq, year: d.d_year} into g
+  select {
+    d_week_seq: g.key.week_seq,
+    d_year: g.key.year,
+    sun_sales: sum(from x in g select x.sales_price)
+  }
+
+let year1998 = from w in wswscs where w.d_year == 1998 select w
+let year1999 = from w in wswscs where w.d_year == 1999 select w
+
+let result =
+  from y1 in year1998
+  join y2 in year1999 on y1.d_week_seq == y2.d_week_seq - 53
+  select {
+    d_week_seq1: y1.d_week_seq,
+    sun_ratio: round(y1.sun_sales / y2.sun_sales, 2)
+  }
+
+json(result)
+
+test "TPCDC Q2 sample" {
+  expect result == [{d_week_seq1: 1, sun_ratio: 0.75}]
+}

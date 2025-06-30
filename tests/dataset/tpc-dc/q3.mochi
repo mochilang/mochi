@@ -1,0 +1,34 @@
+// Simplified TPC-DC Q3
+let store_sales = [
+  {ss_sold_date_sk: 1, ss_ext_sales_price: 50, ss_item_sk: 1},
+  {ss_sold_date_sk: 2, ss_ext_sales_price: 100, ss_item_sk: 2}
+]
+let date_dim = [
+  {d_date_sk: 1, d_year: 2000},
+  {d_date_sk: 2, d_year: 2000}
+]
+let item = [
+  {i_item_sk: 1, i_brand_id: 1, i_brand: "Brand#1"},
+  {i_item_sk: 2, i_brand_id: 2, i_brand: "Brand#2"}
+]
+
+let result =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  where d.d_year == 2000
+  group by {brand_id: i.i_brand_id, brand: i.i_brand} into g
+  sort by sum(from x in g select x.ss_ext_sales_price) desc, g.key.brand_id
+  select {
+    i_brand: g.key.brand,
+    sum_sales: sum(from x in g select x.ss_ext_sales_price)
+  }
+
+json(result)
+
+test "TPCDC Q3 sample" {
+  expect result == [
+    {i_brand: "Brand#2", sum_sales: 100},
+    {i_brand: "Brand#1", sum_sales: 50}
+  ]
+}
