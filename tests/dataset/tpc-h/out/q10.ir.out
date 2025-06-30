@@ -1,4 +1,4 @@
-func main (regs=255)
+func main (regs=254)
   // let nation = [
   Const        r0, [{"n_name": "BRAZIL", "n_nationkey": 1}]
   // let customer = [
@@ -329,59 +329,61 @@ L14:
 L11:
   // sort by -sum(from x in g select x.l.l_extendedprice * (1 - x.l.l_discount))
   Sort         r6, r6
+  // print(result)
+  Print        r6
   // c_custkey: 1,
-  Const        r218, "c_custkey"
+  Const        r217, "c_custkey"
   // c_name: "Alice",
-  Const        r219, "c_name"
-  Const        r220, "Alice"
+  Const        r218, "c_name"
+  Const        r219, "Alice"
   // revenue: 1000.0 * 0.9, // 900.0
-  Const        r221, "revenue"
-  Const        r222, 1000
-  Const        r223, 0.9
-  Const        r224, 900
+  Const        r220, "revenue"
+  Const        r221, 1000
+  Const        r222, 0.9
+  Const        r223, 900
   // c_acctbal: 100.0,
-  Const        r225, "c_acctbal"
-  Const        r226, 100
+  Const        r224, "c_acctbal"
+  Const        r225, 100
   // n_name: "BRAZIL",
-  Const        r227, "n_name"
-  Const        r228, "BRAZIL"
+  Const        r226, "n_name"
+  Const        r227, "BRAZIL"
   // c_address: "123 St",
-  Const        r229, "c_address"
-  Const        r230, "123 St"
+  Const        r228, "c_address"
+  Const        r229, "123 St"
   // c_phone: "123-456",
-  Const        r231, "c_phone"
-  Const        r232, "123-456"
+  Const        r230, "c_phone"
+  Const        r231, "123-456"
   // c_comment: "Loyal"
-  Const        r233, "c_comment"
-  Const        r234, "Loyal"
+  Const        r232, "c_comment"
+  Const        r233, "Loyal"
   // c_custkey: 1,
-  Move         r235, r218
-  Move         r236, r135
+  Move         r234, r217
+  Move         r235, r135
   // c_name: "Alice",
+  Move         r236, r218
   Move         r237, r219
-  Move         r238, r220
   // revenue: 1000.0 * 0.9, // 900.0
-  Move         r239, r221
-  Move         r240, r224
+  Move         r238, r220
+  Move         r239, r223
   // c_acctbal: 100.0,
+  Move         r240, r224
   Move         r241, r225
-  Move         r242, r226
   // n_name: "BRAZIL",
+  Move         r242, r226
   Move         r243, r227
-  Move         r244, r228
   // c_address: "123 St",
+  Move         r244, r228
   Move         r245, r229
-  Move         r246, r230
   // c_phone: "123-456",
+  Move         r246, r230
   Move         r247, r231
-  Move         r248, r232
   // c_comment: "Loyal"
+  Move         r248, r232
   Move         r249, r233
-  Move         r250, r234
   // {
-  MakeMap      r252, 8, r235
+  MakeMap      r251, 8, r234
   // expect result == [
-  MakeList     r253, 1, r252
-  Equal        r254, r6, r253
-  Expect       r254
+  MakeList     r252, 1, r251
+  Equal        r253, r6, r252
+  Expect       r253
   Return       r0
