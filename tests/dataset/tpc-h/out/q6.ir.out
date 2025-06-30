@@ -62,7 +62,7 @@ L0:
   // json(result)
   JSON         r33
   // expect result == ((1000.0 * 0.06) + (500.0 * 0.07)) // 60 + 35 = 95
-  Const        r34, 95
+  Const        r34, 95.0
   EqualFloat   r35, r33, r34
   Expect       r35
   Return       r0
