@@ -1,0 +1,13 @@
+func main (regs=2)
+  // let k = 2
+  Const        r0, 2
+  // print(inc(3))
+  Const        r1, 5
+  Print        r1
+  Return       r0
+
+  // fun inc(x: int): int {
+func inc (regs=3)
+  // return x + k
+  Add          r2, r0, r1
+  Return       r2
