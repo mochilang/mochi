@@ -782,6 +782,7 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 		if v.Tag == ValueStr {
 			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true
 		}
+		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(v)))}, true
 	case OpFirst:
 		if lst, ok := toList(v); ok {
 			if len(lst) > 0 {
