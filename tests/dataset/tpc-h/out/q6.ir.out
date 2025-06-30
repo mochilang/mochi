@@ -1,70 +1,89 @@
-func main (regs=11)
+func main (regs=56)
   // let lineitem = [
   Const        r0, [{"l_discount": 0.06, "l_extendedprice": 1000, "l_quantity": 10, "l_shipdate": "1994-02-15"}, {"l_discount": 0.07, "l_extendedprice": 500, "l_quantity": 23, "l_shipdate": "1994-03-10"}, {"l_discount": 0.04, "l_extendedprice": 400, "l_quantity": 15, "l_shipdate": "1994-04-10"}, {"l_discount": 0.06, "l_extendedprice": 200, "l_quantity": 5, "l_shipdate": "1995-01-01"}]
   // let result = from l in lineitem
   Const        r1, []
   // (l.l_shipdate >= "1994-01-01") &&
   Const        r2, "l_shipdate"
-  // (l.l_discount >= 0.05) &&
-  Const        r3, "l_discount"
-  // (l.l_quantity < 24)
-  Const        r4, "l_quantity"
-  // select sum(l.l_extendedprice * l.l_discount)
-  Const        r5, "l_extendedprice"
-  // let result = from l in lineitem
-  IterPrep     r6, r0
-  Len          r7, r6
-  Const        r8, 0
-L5:
-  LessInt      r9, r8, r7
-  JumpIfFalse  r9, L0
-  Index        r9, r6, r8
-  // (l.l_shipdate >= "1994-01-01") &&
-  Index        r6, r9, r2
-  Const        r7, "1994-01-01"
-  LessEq       r10, r7, r6
-  JumpIfFalse  r10, L1
   // (l.l_shipdate < "1995-01-01") &&
-  Index        r10, r9, r2
-  Const        r2, "1995-01-01"
-  Less         r7, r10, r2
-L1:
-  JumpIfFalse  r7, L2
+  Const        r3, "l_shipdate"
   // (l.l_discount >= 0.05) &&
-  Index        r7, r9, r3
-  Const        r2, 0.05
-  LessEqFloat  r10, r2, r7
-L2:
-  JumpIfFalse  r10, L3
+  Const        r4, "l_discount"
   // (l.l_discount <= 0.07) &&
-  Index        r10, r9, r3
-  Const        r2, 0.07
-  LessEqFloat  r7, r10, r2
-L3:
-  JumpIfFalse  r7, L4
+  Const        r5, "l_discount"
   // (l.l_quantity < 24)
-  Index        r2, r9, r4
-  Const        r4, 24
-  Less         r7, r2, r4
+  Const        r6, "l_quantity"
+  // select sum(l.l_extendedprice * l.l_discount)
+  Const        r7, "l_extendedprice"
+  Const        r8, "l_discount"
+  // let result = from l in lineitem
+  IterPrep     r9, r0
+  Len          r10, r9
+  Const        r11, 0
+L6:
+  LessInt      r13, r11, r10
+  JumpIfFalse  r13, L0
+  Index        r15, r9, r11
+  // (l.l_shipdate >= "1994-01-01") &&
+  Const        r16, "l_shipdate"
+  Index        r17, r15, r16
+  Const        r18, "1994-01-01"
+  LessEq       r20, r18, r17
+  JumpIfFalse  r20, L1
+  // (l.l_shipdate < "1995-01-01") &&
+  Const        r21, "l_shipdate"
+  Index        r22, r15, r21
+  Const        r23, "1995-01-01"
+  Less         r25, r22, r23
+L1:
+  JumpIfFalse  r25, L2
+  // (l.l_discount >= 0.05) &&
+  Const        r26, "l_discount"
+  Index        r27, r15, r26
+  Const        r28, 0.05
+  LessEqFloat  r30, r28, r27
+L2:
+  JumpIfFalse  r30, L3
+  // (l.l_discount <= 0.07) &&
+  Const        r31, "l_discount"
+  Index        r32, r15, r31
+  Const        r33, 0.07
+  LessEqFloat  r35, r32, r33
+L3:
+  JumpIfFalse  r35, L4
+  // (l.l_quantity < 24)
+  Const        r36, "l_quantity"
+  Index        r37, r15, r36
+  Const        r38, 24
+  Less         r35, r37, r38
 L4:
   // (l.l_shipdate >= "1994-01-01") &&
-  JumpIfFalse  r7, L5
+  JumpIfFalse  r35, L5
   // select sum(l.l_extendedprice * l.l_discount)
-  Index        r4, r9, r5
-  Index        r5, r9, r3
-  Mul          r9, r4, r5
+  Const        r40, "l_extendedprice"
+  Index        r41, r15, r40
+  Const        r42, "l_discount"
+  Index        r43, r15, r42
+  Mul          r44, r41, r43
   // let result = from l in lineitem
-  Append       r1, r1, r9
-  Const        r9, 1
-  AddInt       r8, r8, r9
-  Jump         L5
+  Append       r1, r1, r44
+L5:
+  Const        r46, 1
+  AddInt       r11, r11, r46
+  Jump         L6
 L0:
   // select sum(l.l_extendedprice * l.l_discount)
-  Sum          r9, r1
+  Sum          r47, r1
   // json(result)
-  JSON         r9
+  JSON         r47
   // expect result == ((1000.0 * 0.06) + (500.0 * 0.07)) // 60 + 35 = 95
-  Const        r1, 95
-  EqualFloat   r8, r9, r1
-  Expect       r8
+  Const        r48, 1000
+  Const        r49, 0.06
+  Const        r50, 60
+  Const        r51, 500
+  Const        r52, 0.07
+  Const        r53, 35
+  Const        r54, 95
+  EqualFloat   r55, r47, r54
+  Expect       r55
   Return       r0
