@@ -1,7 +1,34 @@
-let t = [{id: 1, val: 37}]
-let result = from r in t select r.val |> first
+let item = [
+  {i_item_sk: 1, i_item_id: "I1", i_item_desc: "Item1", i_current_price: 30.0, i_manufact_id: 800},
+  {i_item_sk: 2, i_item_id: "I2", i_item_desc: "Item2", i_current_price: 60.0, i_manufact_id: 801}
+]
+
+let inventory = [
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 200},
+  {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 300}
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_date: "2000-01-15"}
+]
+
+let catalog_sales = [
+  {cs_item_sk: 1, cs_sold_date_sk: 1}
+]
+
+let result =
+  from i in item
+  join inv in inventory on i.i_item_sk == inv.inv_item_sk
+  join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  join cs in catalog_sales on cs.cs_item_sk == i.i_item_sk
+  where i.i_current_price >= 20 && i.i_current_price <= 50 && i.i_manufact_id >= 800 && i.i_manufact_id <= 803 && inv.inv_quantity_on_hand >= 100 && inv.inv_quantity_on_hand <= 500
+  group by {id: i.i_item_id, desc: i.i_item_desc, price: i.i_current_price} into g
+  sort by g.key.id
+  select {i_item_id: g.key.id, i_item_desc: g.key.desc, i_current_price: g.key.price}
+  |> to_list
+
 json(result)
 
-test "TPCDS Q37 placeholder" {
-  expect result == 37
+test "TPCDS Q37 simplified" {
+  expect result == [{i_item_id: "I1", i_item_desc: "Item1", i_current_price: 30.0}]
 }

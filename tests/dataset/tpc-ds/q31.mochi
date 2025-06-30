@@ -1,7 +1,50 @@
-let t = [{id: 1, val: 31}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  {ca_county: "A", d_qoy: 1, d_year: 2000, ss_ext_sales_price: 100.0},
+  {ca_county: "A", d_qoy: 2, d_year: 2000, ss_ext_sales_price: 120.0},
+  {ca_county: "A", d_qoy: 3, d_year: 2000, ss_ext_sales_price: 160.0},
+  {ca_county: "B", d_qoy: 1, d_year: 2000, ss_ext_sales_price: 80.0},
+  {ca_county: "B", d_qoy: 2, d_year: 2000, ss_ext_sales_price: 90.0},
+  {ca_county: "B", d_qoy: 3, d_year: 2000, ss_ext_sales_price: 100.0}
+]
+
+let web_sales = [
+  {ca_county: "A", d_qoy: 1, d_year: 2000, ws_ext_sales_price: 100.0},
+  {ca_county: "A", d_qoy: 2, d_year: 2000, ws_ext_sales_price: 150.0},
+  {ca_county: "A", d_qoy: 3, d_year: 2000, ws_ext_sales_price: 250.0},
+  {ca_county: "B", d_qoy: 1, d_year: 2000, ws_ext_sales_price: 80.0},
+  {ca_county: "B", d_qoy: 2, d_year: 2000, ws_ext_sales_price: 90.0},
+  {ca_county: "B", d_qoy: 3, d_year: 2000, ws_ext_sales_price: 95.0}
+]
+
+let counties = ["A", "B"]
+
+let result =
+  from county in counties
+  let ss1 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 1 select s.ss_ext_sales_price)
+  let ss2 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 2 select s.ss_ext_sales_price)
+  let ss3 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 3 select s.ss_ext_sales_price)
+  let ws1 = sum(from w in web_sales where w.ca_county == county && w.d_qoy == 1 select w.ws_ext_sales_price)
+  let ws2 = sum(from w in web_sales where w.ca_county == county && w.d_qoy == 2 select w.ws_ext_sales_price)
+  let ws3 = sum(from w in web_sales where w.ca_county == county && w.d_qoy == 3 select w.ws_ext_sales_price)
+  let web_g1 = ws2 / ws1
+  let store_g1 = ss2 / ss1
+  let web_g2 = ws3 / ws2
+  let store_g2 = ss3 / ss2
+  where web_g1 > store_g1 && web_g2 > store_g2
+  select {
+    ca_county: county,
+    d_year: 2000,
+    web_q1_q2_increase: web_g1,
+    store_q1_q2_increase: store_g1,
+    web_q2_q3_increase: web_g2,
+    store_q2_q3_increase: store_g2
+  }
+  |> to_list
+
 json(result)
 
-test "TPCDS Q31 placeholder" {
-  expect result == 31
+test "TPCDS Q31 simplified" {
+  expect result == [
+    {ca_county: "A", d_year: 2000, web_q1_q2_increase: 1.5, store_q1_q2_increase: 1.2, web_q2_q3_increase: 1.6666666666666667, store_q2_q3_increase: 1.3333333333333333}
+  ]
 }
