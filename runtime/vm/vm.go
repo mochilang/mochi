@@ -787,7 +787,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					}
 				}
 			case ValueMap:
-				key := fmt.Sprint(valueToAny(item))
+				key := valueToString(item)
 				_, found = container.Map[key]
 			case ValueStr:
 				if item.Tag == ValueStr {
@@ -1204,7 +1204,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = fr.regs[ins.D]
 			}
 		case OpStr:
-			fr.regs[ins.A] = Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: valueToString(fr.regs[ins.B])}
 		case OpUpper:
 			b := fr.regs[ins.B]
 			if b.Tag != ValueStr {
@@ -6077,7 +6077,7 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		if len(args) != 1 {
 			return Value{}, false
 		}
-		return Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(args[0]))}, true
+		return Value{Tag: ValueStr, Str: valueToString(args[0])}, true
 	case "substring":
 		if len(args) != 3 {
 			return Value{}, false

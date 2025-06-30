@@ -1,4 +1,4 @@
-func main (regs=59)
+func main (regs=60)
   // let catalog_sales = [
   Const        r0, [{"cs_ext_discount_amt": 5, "cs_item_sk": 1, "cs_sold_date_sk": 1}, {"cs_ext_discount_amt": 10, "cs_item_sk": 1, "cs_sold_date_sk": 2}, {"cs_ext_discount_amt": 20, "cs_item_sk": 1, "cs_sold_date_sk": 3}]
   // let item = [
@@ -20,7 +20,8 @@ func main (regs=59)
 L7:
   LessInt      r11, r9, r8
   JumpIfFalse  r11, L0
-  Index        r13, r7, r9
+  Index        r12, r7, r9
+  Move         r13, r12
   // join i in item on cs.cs_item_sk == i.i_item_sk
   IterPrep     r14, r1
   Len          r15, r14
@@ -30,7 +31,8 @@ L7:
 L6:
   LessInt      r19, r18, r15
   JumpIfFalse  r19, L1
-  Index        r21, r14, r18
+  Index        r20, r14, r18
+  Move         r21, r20
   Index        r22, r13, r16
   Index        r23, r21, r17
   Equal        r24, r22, r23
@@ -44,7 +46,8 @@ L6:
 L5:
   LessInt      r30, r29, r26
   JumpIfFalse  r30, L2
-  Index        r32, r25, r29
+  Index        r31, r25, r29
+  Move         r32, r31
   Index        r33, r13, r27
   Index        r34, r32, r28
   Equal        r35, r33, r34
@@ -56,14 +59,16 @@ L5:
   Index        r39, r32, r5
   Const        r40, 2000
   Equal        r41, r39, r40
-  JumpIfFalse  r38, L4
-  Move         r38, r41
+  Move         r42, r38
+  JumpIfFalse  r42, L4
+  Move         r42, r41
 L4:
-  JumpIfFalse  r38, L3
+  JumpIfFalse  r42, L3
   // select cs.cs_ext_discount_amt
-  Index        r42, r13, r6
+  Index        r43, r13, r6
   // from cs in catalog_sales
-  Append       r3, r3, r42
+  Append       r44, r3, r43
+  Move         r3, r44
 L3:
   // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
   Add          r29, r29, r37
@@ -78,30 +83,32 @@ L1:
   Jump         L7
 L0:
   // let avg_discount = avg(filtered)
-  Avg          r44, r3
+  Avg          r45, r3
   // let result = sum(from x in filtered where x > avg_discount * 1.3 select x)
-  Const        r45, []
-  IterPrep     r46, r3
-  Len          r47, r46
-  Move         r48, r10
+  Const        r46, []
+  IterPrep     r47, r3
+  Len          r48, r47
+  Move         r49, r10
 L10:
-  LessInt      r49, r48, r47
-  JumpIfFalse  r49, L8
-  Index        r51, r46, r48
-  Const        r52, 1.3
-  MulFloat     r53, r44, r52
-  LessFloat    r54, r53, r51
-  JumpIfFalse  r54, L9
-  Append       r45, r45, r51
+  LessInt      r50, r49, r48
+  JumpIfFalse  r50, L8
+  Index        r51, r47, r49
+  Move         r52, r51
+  Const        r53, 1.3
+  MulFloat     r54, r45, r53
+  LessFloat    r55, r54, r52
+  JumpIfFalse  r55, L9
+  Append       r56, r46, r52
+  Move         r46, r56
 L9:
-  AddInt       r48, r48, r37
+  AddInt       r49, r49, r37
   Jump         L10
 L8:
-  Sum          r56, r45
+  Sum          r57, r46
   // json(result)
-  JSON         r56
+  JSON         r57
   // expect result == 20.0
-  Const        r57, 20
-  EqualFloat   r58, r56, r57
-  Expect       r58
+  Const        r58, 20
+  EqualFloat   r59, r57, r58
+  Expect       r59
   Return       r0

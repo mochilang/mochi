@@ -1,4 +1,4 @@
-func main (regs=131)
+func main (regs=138)
   // let store_sales = [
   Const        r0, [{"ca_county": "A", "d_qoy": 1, "d_year": 2000, "ss_ext_sales_price": 100}, {"ca_county": "A", "d_qoy": 2, "d_year": 2000, "ss_ext_sales_price": 120}, {"ca_county": "A", "d_qoy": 3, "d_year": 2000, "ss_ext_sales_price": 160}, {"ca_county": "B", "d_qoy": 1, "d_year": 2000, "ss_ext_sales_price": 80}, {"ca_county": "B", "d_qoy": 2, "d_year": 2000, "ss_ext_sales_price": 90}, {"ca_county": "B", "d_qoy": 3, "d_year": 2000, "ss_ext_sales_price": 100}]
   // let web_sales = [
@@ -6,7 +6,8 @@ func main (regs=131)
   // let counties = ["A", "B"]
   Const        r2, ["A", "B"]
   // var result = []
-  Const        r4, []
+  Const        r3, []
+  Move         r4, r3
   // for county in counties {
   Const        r5, ["A", "B"]
   IterPrep     r6, r5
@@ -15,7 +16,8 @@ func main (regs=131)
 L27:
   Less         r9, r8, r7
   JumpIfFalse  r9, L0
-  Index        r11, r6, r8
+  Index        r10, r6, r8
+  Move         r11, r10
   // let ss1 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 1 select s.ss_ext_sales_price)
   Const        r12, []
   Const        r13, "ca_county"
@@ -28,205 +30,226 @@ L27:
 L4:
   LessInt      r20, r18, r17
   JumpIfFalse  r20, L1
-  Index        r22, r16, r18
+  Index        r21, r16, r18
+  Move         r22, r21
   Index        r23, r22, r13
   Equal        r24, r23, r11
   Index        r25, r22, r14
   Const        r26, 1
   Equal        r27, r25, r26
-  JumpIfFalse  r24, L2
-  Move         r24, r27
+  Move         r28, r24
+  JumpIfFalse  r28, L2
+  Move         r28, r27
 L2:
-  JumpIfFalse  r24, L3
-  Index        r28, r22, r15
-  Append       r12, r12, r28
+  JumpIfFalse  r28, L3
+  Index        r29, r22, r15
+  Append       r30, r12, r29
+  Move         r12, r30
 L3:
   AddInt       r18, r18, r26
   Jump         L4
 L1:
-  Sum          r30, r12
+  Sum          r31, r12
   // let ss2 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 2 select s.ss_ext_sales_price)
-  Const        r31, []
-  IterPrep     r32, r0
-  Len          r33, r32
-  Move         r34, r19
+  Const        r32, []
+  IterPrep     r33, r0
+  Len          r34, r33
+  Move         r35, r19
 L8:
-  LessInt      r35, r34, r33
-  JumpIfFalse  r35, L5
-  Index        r22, r32, r34
-  Index        r37, r22, r13
-  Equal        r38, r37, r11
-  Index        r39, r22, r14
-  Const        r40, 2
-  Equal        r41, r39, r40
-  JumpIfFalse  r38, L6
-  Move         r38, r41
+  LessInt      r36, r35, r34
+  JumpIfFalse  r36, L5
+  Index        r37, r33, r35
+  Move         r22, r37
+  Index        r38, r22, r13
+  Equal        r39, r38, r11
+  Index        r40, r22, r14
+  Const        r41, 2
+  Equal        r42, r40, r41
+  Move         r43, r39
+  JumpIfFalse  r43, L6
+  Move         r43, r42
 L6:
-  JumpIfFalse  r38, L7
-  Index        r42, r22, r15
-  Append       r31, r31, r42
+  JumpIfFalse  r43, L7
+  Index        r44, r22, r15
+  Append       r45, r32, r44
+  Move         r32, r45
 L7:
-  AddInt       r34, r34, r26
+  AddInt       r35, r35, r26
   Jump         L8
 L5:
-  Sum          r44, r31
+  Sum          r46, r32
   // let ss3 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 3 select s.ss_ext_sales_price)
-  Const        r45, []
-  IterPrep     r46, r0
-  Len          r47, r46
-  Move         r48, r19
+  Const        r47, []
+  IterPrep     r48, r0
+  Len          r49, r48
+  Move         r50, r19
 L12:
-  LessInt      r49, r48, r47
-  JumpIfFalse  r49, L9
-  Index        r22, r46, r48
-  Index        r51, r22, r13
-  Equal        r52, r51, r11
-  Index        r53, r22, r14
-  Const        r54, 3
-  Equal        r55, r53, r54
-  JumpIfFalse  r52, L10
-  Move         r52, r55
+  LessInt      r51, r50, r49
+  JumpIfFalse  r51, L9
+  Index        r52, r48, r50
+  Move         r22, r52
+  Index        r53, r22, r13
+  Equal        r54, r53, r11
+  Index        r55, r22, r14
+  Const        r56, 3
+  Equal        r57, r55, r56
+  Move         r58, r54
+  JumpIfFalse  r58, L10
+  Move         r58, r57
 L10:
-  JumpIfFalse  r52, L11
-  Index        r56, r22, r15
-  Append       r45, r45, r56
+  JumpIfFalse  r58, L11
+  Index        r59, r22, r15
+  Append       r60, r47, r59
+  Move         r47, r60
 L11:
-  AddInt       r48, r48, r26
+  AddInt       r50, r50, r26
   Jump         L12
 L9:
-  Sum          r58, r45
+  Sum          r61, r47
   // let ws1 = sum(from w in web_sales where w.ca_county == county && w.d_qoy == 1 select w.ws_ext_sales_price)
-  Const        r59, []
-  Const        r60, "ws_ext_sales_price"
-  IterPrep     r61, r1
-  Len          r62, r61
-  Move         r63, r19
+  Const        r62, []
+  Const        r63, "ws_ext_sales_price"
+  IterPrep     r64, r1
+  Len          r65, r64
+  Move         r66, r19
 L16:
-  LessInt      r64, r63, r62
-  JumpIfFalse  r64, L13
-  Index        r66, r61, r63
-  Index        r67, r66, r13
-  Equal        r68, r67, r11
-  Index        r69, r66, r14
-  Equal        r70, r69, r26
-  JumpIfFalse  r68, L14
-  Move         r68, r70
+  LessInt      r67, r66, r65
+  JumpIfFalse  r67, L13
+  Index        r68, r64, r66
+  Move         r69, r68
+  Index        r70, r69, r13
+  Equal        r71, r70, r11
+  Index        r72, r69, r14
+  Equal        r73, r72, r26
+  Move         r74, r71
+  JumpIfFalse  r74, L14
+  Move         r74, r73
 L14:
-  JumpIfFalse  r68, L15
-  Index        r71, r66, r60
-  Append       r59, r59, r71
+  JumpIfFalse  r74, L15
+  Index        r75, r69, r63
+  Append       r76, r62, r75
+  Move         r62, r76
 L15:
-  AddInt       r63, r63, r26
+  AddInt       r66, r66, r26
   Jump         L16
 L13:
-  Sum          r73, r59
+  Sum          r77, r62
   // let ws2 = sum(from w in web_sales where w.ca_county == county && w.d_qoy == 2 select w.ws_ext_sales_price)
-  Const        r74, []
-  IterPrep     r75, r1
-  Len          r76, r75
-  Move         r77, r19
+  Const        r78, []
+  IterPrep     r79, r1
+  Len          r80, r79
+  Move         r81, r19
 L20:
-  LessInt      r78, r77, r76
-  JumpIfFalse  r78, L17
-  Index        r66, r75, r77
-  Index        r80, r66, r13
-  Equal        r81, r80, r11
-  Index        r82, r66, r14
-  Equal        r83, r82, r40
-  JumpIfFalse  r81, L18
-  Move         r81, r83
+  LessInt      r82, r81, r80
+  JumpIfFalse  r82, L17
+  Index        r83, r79, r81
+  Move         r69, r83
+  Index        r84, r69, r13
+  Equal        r85, r84, r11
+  Index        r86, r69, r14
+  Equal        r87, r86, r41
+  Move         r88, r85
+  JumpIfFalse  r88, L18
+  Move         r88, r87
 L18:
-  JumpIfFalse  r81, L19
-  Index        r84, r66, r60
-  Append       r74, r74, r84
+  JumpIfFalse  r88, L19
+  Index        r89, r69, r63
+  Append       r90, r78, r89
+  Move         r78, r90
 L19:
-  AddInt       r77, r77, r26
+  AddInt       r81, r81, r26
   Jump         L20
 L17:
-  Sum          r86, r74
+  Sum          r91, r78
   // let ws3 = sum(from w in web_sales where w.ca_county == county && w.d_qoy == 3 select w.ws_ext_sales_price)
-  Const        r87, []
-  IterPrep     r88, r1
-  Len          r89, r88
-  Move         r90, r19
+  Const        r92, []
+  IterPrep     r93, r1
+  Len          r94, r93
+  Move         r95, r19
 L24:
-  LessInt      r91, r90, r89
-  JumpIfFalse  r91, L21
-  Index        r66, r88, r90
-  Index        r93, r66, r13
-  Equal        r94, r93, r11
-  Index        r95, r66, r14
-  Equal        r96, r95, r54
-  JumpIfFalse  r94, L22
-  Move         r94, r96
+  LessInt      r96, r95, r94
+  JumpIfFalse  r96, L21
+  Index        r97, r93, r95
+  Move         r69, r97
+  Index        r98, r69, r13
+  Equal        r99, r98, r11
+  Index        r100, r69, r14
+  Equal        r101, r100, r56
+  Move         r102, r99
+  JumpIfFalse  r102, L22
+  Move         r102, r101
 L22:
-  JumpIfFalse  r94, L23
-  Index        r97, r66, r60
-  Append       r87, r87, r97
+  JumpIfFalse  r102, L23
+  Index        r103, r69, r63
+  Append       r104, r92, r103
+  Move         r92, r104
 L23:
-  AddInt       r90, r90, r26
+  AddInt       r95, r95, r26
   Jump         L24
 L21:
-  Sum          r99, r87
+  Sum          r105, r92
   // let web_g1 = ws2 / ws1
-  Div          r100, r86, r73
+  Div          r106, r91, r77
   // let store_g1 = ss2 / ss1
-  Div          r101, r44, r30
+  Div          r107, r46, r31
   // let web_g2 = ws3 / ws2
-  Div          r102, r99, r86
+  Div          r108, r105, r91
   // let store_g2 = ss3 / ss2
-  Div          r103, r58, r44
+  Div          r109, r61, r46
   // if web_g1 > store_g1 && web_g2 > store_g2 {
-  Less         r104, r101, r100
-  Less         r105, r103, r102
-  JumpIfFalse  r104, L25
-  Move         r104, r105
+  Less         r110, r107, r106
+  Less         r111, r109, r108
+  Move         r112, r110
+  JumpIfFalse  r112, L25
+  Move         r112, r111
 L25:
-  JumpIfFalse  r104, L26
+  JumpIfFalse  r112, L26
   // ca_county: county,
-  Const        r106, "ca_county"
+  Const        r113, "ca_county"
   // d_year: 2000,
-  Const        r107, "d_year"
-  Const        r108, 2000
+  Const        r114, "d_year"
+  Const        r115, 2000
   // web_q1_q2_increase: web_g1,
-  Const        r109, "web_q1_q2_increase"
+  Const        r116, "web_q1_q2_increase"
   // store_q1_q2_increase: store_g1,
-  Const        r110, "store_q1_q2_increase"
+  Const        r117, "store_q1_q2_increase"
   // web_q2_q3_increase: web_g2,
-  Const        r111, "web_q2_q3_increase"
+  Const        r118, "web_q2_q3_increase"
   // store_q2_q3_increase: store_g2
-  Const        r112, "store_q2_q3_increase"
+  Const        r119, "store_q2_q3_increase"
   // ca_county: county,
-  Move         r113, r106
-  Move         r114, r11
+  Move         r120, r113
+  Move         r121, r11
   // d_year: 2000,
-  Move         r115, r107
-  Move         r116, r108
+  Move         r122, r114
+  Move         r123, r115
   // web_q1_q2_increase: web_g1,
-  Move         r117, r109
-  Move         r118, r100
+  Move         r124, r116
+  Move         r125, r106
   // store_q1_q2_increase: store_g1,
-  Move         r119, r110
-  Move         r120, r101
+  Move         r126, r117
+  Move         r127, r107
   // web_q2_q3_increase: web_g2,
-  Move         r121, r111
-  Move         r122, r102
+  Move         r128, r118
+  Move         r129, r108
   // store_q2_q3_increase: store_g2
-  Move         r123, r112
-  Move         r124, r103
+  Move         r130, r119
+  Move         r131, r109
   // result = append(result, {
-  MakeMap      r125, 6, r113
-  Append       r4, r4, r125
+  MakeMap      r132, 6, r120
+  Append       r133, r4, r132
+  Move         r4, r133
 L26:
   // for county in counties {
-  Const        r127, 1
-  Add          r8, r8, r127
+  Const        r134, 1
+  Add          r135, r8, r134
+  Move         r8, r135
   Jump         L27
 L0:
   // json(result)
   JSON         r4
   // expect result == [
-  Const        r129, [{"ca_county": "A", "d_year": 2000, "store_q1_q2_increase": 1.2, "store_q2_q3_increase": 1.3333333333333333, "web_q1_q2_increase": 1.5, "web_q2_q3_increase": 1.6666666666666667}]
-  Equal        r130, r4, r129
-  Expect       r130
+  Const        r136, [{"ca_county": "A", "d_year": 2000, "store_q1_q2_increase": 1.2, "store_q2_q3_increase": 1.3333333333333333, "web_q1_q2_increase": 1.5, "web_q2_q3_increase": 1.6666666666666667}]
+  Equal        r137, r4, r136
+  Expect       r137
   Return       r0
