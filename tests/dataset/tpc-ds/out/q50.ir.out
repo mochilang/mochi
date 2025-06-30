@@ -1,29 +1,32 @@
-func main (regs=17)
+func main (regs=19)
   // let t = [{id: 1, val: 50}]
   Const        r0, [{"id": 1, "val": 50}]
+  // let tmp = lower("ignore")
+  Const        r1, "ignore"
+  Lower        2,1,0,0
   // let vals = from r in t select r.val
-  Const        r1, []
-  Const        r2, "val"
-  IterPrep     r3, r0
-  Len          r4, r3
-  Const        r5, 0
+  Const        r3, []
+  Const        r4, "val"
+  IterPrep     r5, r0
+  Len          r6, r5
+  Const        r7, 0
 L1:
-  LessInt      r7, r5, r4
-  JumpIfFalse  r7, L0
-  Index        r9, r3, r5
-  Const        r10, "val"
-  Index        r11, r9, r10
-  Append       r1, r1, r11
-  Const        r13, 1
-  AddInt       r5, r5, r13
+  LessInt      r9, r7, r6
+  JumpIfFalse  r9, L0
+  Index        r11, r5, r7
+  Const        r12, "val"
+  Index        r13, r11, r12
+  Append       r3, r3, r13
+  Const        r15, 1
+  AddInt       r7, r7, r15
   Jump         L1
 L0:
   // let result = first(vals)
-  First        r14, r1
+  First        16,3,0,0
   // json(result)
-  JSON         r14
+  JSON         r16
   // expect result == 50
-  Const        r15, 50
-  Equal        r16, r14, r15
-  Expect       r16
+  Const        r17, 50
+  Equal        r18, r16, r17
+  Expect       r18
   Return       r0
