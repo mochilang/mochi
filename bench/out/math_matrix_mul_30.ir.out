@@ -3,20 +3,19 @@ func main (regs=24)
   Const        r0, 30
   // let repeat = 10
   Const        r1, 10
-L4:
   // var a: list<list<int>> = []
   Const        r2, []
   // for i in 0..size {
   Const        r3, 0
   Less         r4, r3, r0
   JumpIfFalse  r4, L0
-L6:
   // var row: list<int> = []
   Const        r5, []
   // for j in 0..size {
   Const        r6, 0
-L5:
+L6:
   Less         r7, r6, r0
+L4:
   JumpIfFalse  r7, L1
 L1:
   // row = row + [i + j]
@@ -32,8 +31,9 @@ L3:
   Jump         L2
   // a = a + [row]
   MakeList     r12, 1, r13
-L7:
+L5:
   Add          r2, r2, r12
+L7:
   // for i in 0..size {
   Const        r14, 1
   Add          r3, r3, r14
@@ -49,7 +49,7 @@ L7:
   // for j in 0..size {
   Const        r19, 0
   Less         r4, r19, r0
-  JumpIfFalse  r4, L3
+  JumpIfFalse  r4, L5
   // row = row + [i * j]
   MulInt       r7, r3, r19
   MakeList     r5, 1, r7
@@ -57,10 +57,10 @@ L7:
   // for j in 0..size {
   Const        r8, 1
   Add          r19, r19, r8
-  Jump         L5
+  Jump         L6
   // b = b + [row]
-  MakeList     r6, 1, r9
-  Add          r16, r16, r6
+  MakeList     r9, 1, r6
+  Add          r16, r16, r9
   // for i in 0..size {
   Const        r10, 1
   Add          r3, r3, r10
@@ -72,13 +72,13 @@ L7:
   // for i in 0..repeat {
   Const        r3, 0
   Less         r14, r3, r1
-  JumpIfFalse  r14, L6
+  JumpIfFalse  r14, L7
   // last = matmul(a, b)
   Call2        r12, matmul, r2, r16
   // for i in 0..repeat {
   Const        r15, 1
   Add          r3, r3, r15
-  Jump         L7
+  Jump         L5
   // let end = now()
   Now          r4
   // let duration = (end - start) / 1000
@@ -100,7 +100,7 @@ L7:
   Move         r22, r8
   Move         r23, r11
   // json({
-  MakeMap      r1, 13, r20
+  MakeMap      r1, 12, r20
   JSON         r1
   Return       r0
 
@@ -110,6 +110,7 @@ func matmul (regs=13)
   Len          r2, r0
   // let m = len(b[0])
   Const        r3, 0
+L1:
   Index        r4, r1, r3
 L0:
   Len          r5, r4
@@ -121,7 +122,6 @@ L2:
   // for i in 0..n {
   Const        r8, 0
   Less         r9, r8, r2
-L1:
   JumpIfFalse  r9, L0
 L4:
   // var row: list<int> = []

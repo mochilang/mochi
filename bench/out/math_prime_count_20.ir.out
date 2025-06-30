@@ -1,4 +1,5 @@
 func main (regs=12)
+L2:
   // let n = 20
   Const        r0, 20
 L1:
@@ -11,7 +12,6 @@ L3:
   Now          r3
   // for r in 0..repeat {
   Const        r4, 0
-L2:
   Less         r5, r4, r1
 L4:
   JumpIfFalse  r5, L0
@@ -54,7 +54,7 @@ L0:
   Move         r10, r3
   Move         r11, r2
   // json({
-  MakeMap      r5, 4, r8
+  MakeMap      r5, 1, r8
   JSON         r5
   Return       r0
 
