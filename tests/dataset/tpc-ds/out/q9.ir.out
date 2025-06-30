@@ -5,6 +5,10 @@ func main (regs=402)
   Const        r1, []
   // if count(from s in store_sales
   Const        r2, []
+  // where s.ss_quantity >= 1 && s.ss_quantity <= 20
+  Const        r3, "ss_quantity"
+  Const        r4, "ss_quantity"
+  // if count(from s in store_sales
   IterPrep     r5, r0
   Len          r6, r5
   Const        r7, 0
@@ -41,6 +45,12 @@ L0:
   JumpIfFalse  r25, L4
   // avg(from s in store_sales
   Const        r26, []
+  // where s.ss_quantity >= 1 && s.ss_quantity <= 20
+  Const        r27, "ss_quantity"
+  Const        r28, "ss_quantity"
+  // select s.ss_ext_discount_amt)
+  Const        r29, "ss_ext_discount_amt"
+  // avg(from s in store_sales
   IterPrep     r30, r0
   Len          r31, r30
   Const        r32, 0
@@ -78,6 +88,12 @@ L5:
 L4:
   // avg(from s in store_sales
   Const        r51, []
+  // where s.ss_quantity >= 1 && s.ss_quantity <= 20
+  Const        r52, "ss_quantity"
+  Const        r53, "ss_quantity"
+  // select s.ss_net_paid)
+  Const        r54, "ss_net_paid"
+  // avg(from s in store_sales
   IterPrep     r55, r0
   Len          r56, r55
   Const        r57, 0
@@ -113,6 +129,10 @@ L10:
 L9:
   // if count(from s in store_sales
   Const        r75, []
+  // where s.ss_quantity >= 21 && s.ss_quantity <= 40
+  Const        r76, "ss_quantity"
+  Const        r77, "ss_quantity"
+  // if count(from s in store_sales
   IterPrep     r78, r0
   Len          r79, r78
   Const        r80, 0
@@ -149,6 +169,12 @@ L14:
   JumpIfFalse  r97, L18
   // avg(from s in store_sales
   Const        r98, []
+  // where s.ss_quantity >= 21 && s.ss_quantity <= 40
+  Const        r99, "ss_quantity"
+  Const        r100, "ss_quantity"
+  // select s.ss_ext_discount_amt)
+  Const        r101, "ss_ext_discount_amt"
+  // avg(from s in store_sales
   IterPrep     r102, r0
   Len          r103, r102
   Const        r104, 0
@@ -186,6 +212,12 @@ L19:
 L18:
   // avg(from s in store_sales
   Const        r123, []
+  // where s.ss_quantity >= 21 && s.ss_quantity <= 40
+  Const        r124, "ss_quantity"
+  Const        r125, "ss_quantity"
+  // select s.ss_net_paid)
+  Const        r126, "ss_net_paid"
+  // avg(from s in store_sales
   IterPrep     r127, r0
   Len          r128, r127
   Const        r129, 0
@@ -221,6 +253,10 @@ L24:
 L23:
   // if count(from s in store_sales
   Const        r147, []
+  // where s.ss_quantity >= 41 && s.ss_quantity <= 60
+  Const        r148, "ss_quantity"
+  Const        r149, "ss_quantity"
+  // if count(from s in store_sales
   IterPrep     r150, r0
   Len          r151, r150
   Const        r152, 0
@@ -257,6 +293,12 @@ L28:
   JumpIfFalse  r169, L32
   // avg(from s in store_sales
   Const        r170, []
+  // where s.ss_quantity >= 41 && s.ss_quantity <= 60
+  Const        r171, "ss_quantity"
+  Const        r172, "ss_quantity"
+  // select s.ss_ext_discount_amt)
+  Const        r173, "ss_ext_discount_amt"
+  // avg(from s in store_sales
   IterPrep     r174, r0
   Len          r175, r174
   Const        r176, 0
@@ -294,6 +336,12 @@ L33:
 L32:
   // avg(from s in store_sales
   Const        r195, []
+  // where s.ss_quantity >= 41 && s.ss_quantity <= 60
+  Const        r196, "ss_quantity"
+  Const        r197, "ss_quantity"
+  // select s.ss_net_paid)
+  Const        r198, "ss_net_paid"
+  // avg(from s in store_sales
   IterPrep     r199, r0
   Len          r200, r199
   Const        r201, 0
@@ -329,6 +377,10 @@ L38:
 L37:
   // if count(from s in store_sales
   Const        r219, []
+  // where s.ss_quantity >= 61 && s.ss_quantity <= 80
+  Const        r220, "ss_quantity"
+  Const        r221, "ss_quantity"
+  // if count(from s in store_sales
   IterPrep     r222, r0
   Len          r223, r222
   Const        r224, 0
@@ -365,6 +417,12 @@ L42:
   JumpIfFalse  r241, L46
   // avg(from s in store_sales
   Const        r242, []
+  // where s.ss_quantity >= 61 && s.ss_quantity <= 80
+  Const        r243, "ss_quantity"
+  Const        r244, "ss_quantity"
+  // select s.ss_ext_discount_amt)
+  Const        r245, "ss_ext_discount_amt"
+  // avg(from s in store_sales
   IterPrep     r246, r0
   Len          r247, r246
   Const        r248, 0
@@ -402,6 +460,12 @@ L47:
 L46:
   // avg(from s in store_sales
   Const        r267, []
+  // where s.ss_quantity >= 61 && s.ss_quantity <= 80
+  Const        r268, "ss_quantity"
+  Const        r269, "ss_quantity"
+  // select s.ss_net_paid)
+  Const        r270, "ss_net_paid"
+  // avg(from s in store_sales
   IterPrep     r271, r0
   Len          r272, r271
   Const        r273, 0
@@ -437,6 +501,10 @@ L52:
 L51:
   // if count(from s in store_sales
   Const        r291, []
+  // where s.ss_quantity >= 81 && s.ss_quantity <= 100
+  Const        r292, "ss_quantity"
+  Const        r293, "ss_quantity"
+  // if count(from s in store_sales
   IterPrep     r294, r0
   Len          r295, r294
   Const        r296, 0
@@ -473,6 +541,12 @@ L56:
   JumpIfFalse  r313, L60
   // avg(from s in store_sales
   Const        r314, []
+  // where s.ss_quantity >= 81 && s.ss_quantity <= 100
+  Const        r315, "ss_quantity"
+  Const        r316, "ss_quantity"
+  // select s.ss_ext_discount_amt)
+  Const        r317, "ss_ext_discount_amt"
+  // avg(from s in store_sales
   IterPrep     r318, r0
   Len          r319, r318
   Const        r320, 0
@@ -510,6 +584,12 @@ L61:
 L60:
   // avg(from s in store_sales
   Const        r339, []
+  // where s.ss_quantity >= 81 && s.ss_quantity <= 100
+  Const        r340, "ss_quantity"
+  Const        r341, "ss_quantity"
+  // select s.ss_net_paid)
+  Const        r342, "ss_net_paid"
+  // avg(from s in store_sales
   IterPrep     r343, r0
   Len          r344, r343
   Const        r345, 0
@@ -545,6 +625,19 @@ L66:
 L65:
   // from r in reason
   Const        r363, []
+  // where r.r_reason_sk == 1
+  Const        r364, "r_reason_sk"
+  // bucket1: bucket1,
+  Const        r365, "bucket1"
+  // bucket2: bucket2,
+  Const        r366, "bucket2"
+  // bucket3: bucket3,
+  Const        r367, "bucket3"
+  // bucket4: bucket4,
+  Const        r368, "bucket4"
+  // bucket5: bucket5
+  Const        r369, "bucket5"
+  // from r in reason
   IterPrep     r370, r1
   Len          r371, r370
   Const        r372, 0
