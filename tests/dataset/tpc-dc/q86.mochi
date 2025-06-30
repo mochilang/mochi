@@ -1,0 +1,18 @@
+let web_sales = [
+  {cat: "A", class: "B", net: 40.0},
+  {cat: "A", class: "B", net: 46.0},
+  {cat: "A", class: "C", net: 10.0},
+  {cat: "B", class: "B", net: 20.0}
+]
+
+let result =
+  from ws in web_sales
+  group by {c: ws.cat, cls: ws.class} into g
+  select sum(from x in g select x.net)
+  |> first
+
+json(result)
+
+test "TPCDC Q86 sample" {
+  expect result == 86.0
+}

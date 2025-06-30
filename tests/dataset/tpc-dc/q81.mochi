@@ -1,0 +1,19 @@
+let catalog_returns = [
+  {cust: 1, state: "CA", amt: 40.0},
+  {cust: 2, state: "CA", amt: 50.0},
+  {cust: 3, state: "CA", amt: 81.0},
+  {cust: 4, state: "TX", amt: 30.0},
+  {cust: 5, state: "TX", amt: 20.0}
+]
+
+let avg_amt = avg(from r in catalog_returns where r.state == "CA" select r.amt)
+let result_list = to_list(from r in catalog_returns
+  where r.state == "CA" && r.amt > avg_amt * 1.2
+  select r.amt)
+let result = result_list[0]
+
+json(result)
+
+test "TPCDC Q81 sample" {
+  expect result == 81.0
+}

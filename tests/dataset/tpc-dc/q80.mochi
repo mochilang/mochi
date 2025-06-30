@@ -1,0 +1,24 @@
+let store_sales = [
+  {price: 20.0, ret: 5.0},
+  {price: 10.0, ret: 0.0},
+  {price: 5.0, ret: 0.0}
+]
+let catalog_sales = [
+  {price: 15.0, ret: 3.0},
+  {price: 8.0, ret: 0.0}
+]
+let web_sales = [
+  {price: 25.0, ret: 5.0},
+  {price: 15.0, ret: 5.0}
+]
+
+let total_profit =
+  sum(from s in store_sales select s.price - s.ret) +
+  sum(from c in catalog_sales select c.price - c.ret) +
+  sum(from w in web_sales select w.price - w.ret)
+
+json(total_profit)
+
+test "TPCDC Q80 sample" {
+  expect total_profit == 80.0
+}
