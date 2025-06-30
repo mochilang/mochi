@@ -1,0 +1,11 @@
+func main (regs=5)
+  // let store_sales = []
+  Const        r0, []
+  // let result = []
+  Move         r2, r0
+  // json(result)
+  JSON         r2
+  // expect result == []
+  Equal        r4, r2, r2
+  Expect       r4
+  Return       r0
