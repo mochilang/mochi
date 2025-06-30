@@ -1,7 +1,66 @@
-let t = [{id: 1, val: 25}]
-let result = from r in t select r.val |> first
+// Aggregate profits across store, returns and catalog channels
+
+type StoreSale { ss_sold_date_sk: int, ss_item_sk: int, ss_store_sk: int, ss_customer_sk: int, ss_net_profit: float, ss_ticket_number: int }
+type StoreReturn { sr_returned_date_sk: int, sr_item_sk: int, sr_customer_sk: int, sr_ticket_number: int, sr_net_loss: float }
+type CatalogSale { cs_sold_date_sk: int, cs_item_sk: int, cs_bill_customer_sk: int, cs_net_profit: float }
+type DateDim { d_date_sk: int, d_moy: int, d_year: int }
+type Store { s_store_sk: int, s_store_id: string, s_store_name: string }
+type Item { i_item_sk: int, i_item_id: string, i_item_desc: string }
+
+let store_sales = [
+  { ss_sold_date_sk: 1, ss_item_sk: 1, ss_store_sk: 1, ss_customer_sk: 1, ss_net_profit: 50.0, ss_ticket_number: 1 }
+]
+
+let store_returns = [
+  { sr_returned_date_sk: 2, sr_item_sk: 1, sr_customer_sk: 1, sr_ticket_number: 1, sr_net_loss: 10.0 }
+]
+
+let catalog_sales = [
+  { cs_sold_date_sk: 3, cs_item_sk: 1, cs_bill_customer_sk: 1, cs_net_profit: 30.0 }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_moy: 4, d_year: 2000 },
+  { d_date_sk: 2, d_moy: 5, d_year: 2000 },
+  { d_date_sk: 3, d_moy: 6, d_year: 2000 }
+]
+
+let store = [ { s_store_sk: 1, s_store_id: "S1", s_store_name: "Store1" } ]
+let item = [ { i_item_sk: 1, i_item_id: "ITEM1", i_item_desc: "Desc1" } ]
+
+let result =
+  from ss in store_sales
+  join sr in store_returns on ss.ss_ticket_number == sr.sr_ticket_number && ss.ss_item_sk == sr.sr_item_sk
+  join cs in catalog_sales on sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk
+  join d1 in date_dim on d1.d_date_sk == ss.ss_sold_date_sk
+  join d2 in date_dim on d2.d_date_sk == sr.sr_returned_date_sk
+  join d3 in date_dim on d3.d_date_sk == cs.cs_sold_date_sk
+  join s in store on s.s_store_sk == ss.ss_store_sk
+  join i in item on i.i_item_sk == ss.ss_item_sk
+  where d1.d_moy == 4 && d1.d_year == 2000 && d2.d_moy >= 4 && d2.d_moy <= 10 && d3.d_moy >= 4 && d3.d_moy <= 10
+  group by { item_id: i.i_item_id, item_desc: i.i_item_desc, s_store_id: s.s_store_id, s_store_name: s.s_store_name } into g
+  select {
+    i_item_id: g.key.item_id,
+    i_item_desc: g.key.item_desc,
+    s_store_id: g.key.s_store_id,
+    s_store_name: g.key.s_store_name,
+    store_sales_profit: sum(from x in g select x.ss_net_profit),
+    store_returns_loss: sum(from x in g select x.sr_net_loss),
+    catalog_sales_profit: sum(from x in g select x.cs_net_profit)
+  }
+
 json(result)
 
-test "TPCDS Q25 placeholder" {
-  expect result == 25
+test "TPCDS Q25 aggregated profit" {
+  expect result == [
+    {
+      i_item_id: "ITEM1",
+      i_item_desc: "Desc1",
+      s_store_id: "S1",
+      s_store_name: "Store1",
+      store_sales_profit: 50.0,
+      store_returns_loss: 10.0,
+      catalog_sales_profit: 30.0
+    }
+  ]
 }
