@@ -1,59 +1,60 @@
-func main (regs=23)
+func main (regs=21)
   // let n = 20
   Const        r0, 20
   // let repeat = 1000
   Const        r1, 1000
   // var last = 0
-  Const        r3, 0
+  Const        r2, 0
+  Move         r3, r2
   // let start = now()
   Now          r4
   // for i in 0..repeat {
-  Const        r6, 0
+  Move         r5, r2
 L1:
-  Less         r7, r6, r1
-  JumpIfFalse  r7, L0
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
   // last = mul(n)
-  Move         r8, r0
-  Call         r3, mul, r8
+  Move         r7, r0
+  Call         r3, mul, r7
   // for i in 0..repeat {
-  Const        r10, 1
-  Add          r6, r6, r10
+  Const        r9, 1
+  Add          r5, r5, r9
   Jump         L1
 L0:
   // let duration = (now() - start) / 1000
-  Now          r12
-  SubInt       r13, r12, r4
-  Const        r14, 1000
-  DivInt       r15, r13, r14
+  Now          r11
+  SubInt       r12, r11, r4
+  DivInt       r13, r12, r1
   // "duration_us": duration,
-  Const        r16, "duration_us"
+  Const        r14, "duration_us"
   // "output": last,
-  Const        r17, "output"
+  Const        r15, "output"
   // "duration_us": duration,
-  Move         r18, r16
-  Move         r19, r15
+  Move         r16, r14
+  Move         r17, r13
   // "output": last,
-  Move         r20, r17
-  Move         r21, r3
+  Move         r18, r15
+  Move         r19, r3
   // json({
-  MakeMap      r22, 2, r18
-  JSON         r22
+  MakeMap      r20, 2, r16
+  JSON         r20
   Return       r0
 
   // fun mul(n: int): int {
-func mul (regs=9)
+func mul (regs=8)
   // var result = 1
-  Const        r2, 1
+  Const        r1, 1
+  Move         r2, r1
   // for i in 1..n {
-  Const        r4, 1
+  Move         r3, r1
 L1:
-  Less         r5, r4, r0
-  JumpIfFalse  r5, L0
+  Less         r4, r3, r0
+  JumpIfFalse  r4, L0
   // result = result * i
-  MulInt       r2, r2, r4
+  MulInt       r2, r2, r3
   // for i in 1..n {
-  Const        r7, 1
-  Add          r4, r4, r7
+  Const        r6, 1
+  Add          r3, r3, r6
   Jump         L1
 L0:
   // return result

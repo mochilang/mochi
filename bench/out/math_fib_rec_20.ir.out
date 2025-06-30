@@ -27,7 +27,7 @@ func main (regs=15)
   Return       r0
 
   // fun fib(n: int): int {
-func fib (regs=12)
+func fib (regs=11)
   // if n <= 1 { return n }
   Const        r1, 1
   LessEq       r2, r0, r1
@@ -35,11 +35,10 @@ func fib (regs=12)
   Return       r0
 L0:
   // return fib(n - 1) + fib(n - 2)
-  Const        r4, 1
-  Sub          r3, r0, r4
-  Call         r6, fib, r3
-  Const        r8, 2
-  Sub          r7, r0, r8
-  Call         r10, fib, r7
-  Add          r11, r6, r10
-  Return       r11
+  Sub          r3, r0, r1
+  Call         r5, fib, r3
+  Const        r7, 2
+  Sub          r6, r0, r7
+  Call         r9, fib, r6
+  Add          r10, r5, r9
+  Return       r10
