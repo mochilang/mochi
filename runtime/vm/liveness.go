@@ -272,12 +272,11 @@ func Optimize(fn *Function) {
 			break
 		}
 	}
-	// CompactRegisters currently has issues with overlapping register
-	// lifetimes when nested loops are present. Disabling register
-	// compaction avoids incorrect reuse that can corrupt loop state.
-	// TODO: fix CompactRegisters and re-enable once the allocator
-	// handles lifetimes correctly.
-	// CompactRegisters(fn)
+	// Reduce register usage now that the allocator correctly handles
+	// overlapping lifetimes. This keeps register counts low which in
+	// turn allows complex queries such as the TPC-DS suite to compile
+	// and run under the VM.
+	CompactRegisters(fn)
 }
 
 // removeDead eliminates instructions that only define dead registers.
