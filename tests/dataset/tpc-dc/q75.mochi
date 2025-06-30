@@ -1,13 +1,81 @@
-let prev = [{sales: 30}, {sales: 20}]
-let curr = [{sales: 25}, {sales: 20}, {sales: 10}]
+let date_dim = [
+  { d_date_sk: 1, d_year: 2000 },
+  { d_date_sk: 2, d_year: 2001 }
+]
 
-let prev_total = sum(from x in prev select x.sales)
-let curr_total = sum(from x in curr select x.sales)
+let store_sales = [
+  { ss_item_sk: 1, ss_quantity: 50, ss_sales_price: 500.0, ss_sold_date_sk: 1 },
+  { ss_item_sk: 1, ss_quantity: 40, ss_sales_price: 400.0, ss_sold_date_sk: 2 },
+  { ss_item_sk: 2, ss_quantity: 60, ss_sales_price: 600.0, ss_sold_date_sk: 1 },
+  { ss_item_sk: 2, ss_quantity: 66, ss_sales_price: 660.0, ss_sold_date_sk: 2 }
+]
 
-let result = curr_total + prev_total - 30
+let web_sales = [
+  { ws_item_sk: 1, ws_quantity: 30, ws_sales_price: 300.0, ws_sold_date_sk: 1 },
+  { ws_item_sk: 1, ws_quantity: 25, ws_sales_price: 250.0, ws_sold_date_sk: 2 },
+  { ws_item_sk: 2, ws_quantity: 50, ws_sales_price: 500.0, ws_sold_date_sk: 1 },
+  { ws_item_sk: 2, ws_quantity: 55, ws_sales_price: 550.0, ws_sold_date_sk: 2 }
+]
+
+let catalog_sales = [
+  { cs_item_sk: 1, cs_quantity: 20, cs_sales_price: 200.0, cs_sold_date_sk: 1 },
+  { cs_item_sk: 1, cs_quantity: 15, cs_sales_price: 150.0, cs_sold_date_sk: 2 },
+  { cs_item_sk: 2, cs_quantity: 40, cs_sales_price: 400.0, cs_sold_date_sk: 1 },
+  { cs_item_sk: 2, cs_quantity: 40, cs_sales_price: 400.0, cs_sold_date_sk: 2 }
+]
+
+let item = [
+  { i_item_sk: 1, i_brand_id: 1, i_class_id: 2, i_category_id: 3, i_manufact_id: 4, i_category: "Electronics" },
+  { i_item_sk: 2, i_brand_id: 2, i_class_id: 3, i_category_id: 4, i_manufact_id: 5, i_category: "Electronics" }
+]
+
+let sales_detail =
+  concat(
+    from ss in store_sales join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk select { d_year: d.d_year, i_item_sk: ss.ss_item_sk, quantity: ss.ss_quantity, amount: ss.ss_sales_price },
+    from ws in web_sales join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk select { d_year: d.d_year, i_item_sk: ws.ws_item_sk, quantity: ws.ws_quantity, amount: ws.ws_sales_price },
+    from cs in catalog_sales join d in date_dim on d.d_date_sk == cs.cs_sold_date_sk select { d_year: d.d_year, i_item_sk: cs.cs_item_sk, quantity: cs.cs_quantity, amount: cs.cs_sales_price }
+  )
+
+let all_sales =
+  from sd in sales_detail
+  join i in item on i.i_item_sk == sd.i_item_sk
+  where i.i_category == "Electronics"
+  group by { year: sd.d_year, brand_id: i.i_brand_id, class_id: i.i_class_id, category_id: i.i_category_id, manuf_id: i.i_manufact_id } into g
+  select {
+    d_year: g.key.year,
+    i_brand_id: g.key.brand_id,
+    i_class_id: g.key.class_id,
+    i_category_id: g.key.category_id,
+    i_manufact_id: g.key.manuf_id,
+    sales_cnt: sum(from x in g select x.sd.quantity),
+    sales_amt: sum(from x in g select x.sd.amount)
+  }
+
+let prev_yr = from a in all_sales where a.d_year == 2000 && a.i_brand_id == 1 |> first
+let curr_yr = from a in all_sales where a.d_year == 2001 && a.i_brand_id == 1 |> first
+
+let result =
+  if (curr_yr.sales_cnt / prev_yr.sales_cnt) < 0.9 {
+    [{
+      prev_year: prev_yr.d_year,
+      year: curr_yr.d_year,
+      i_brand_id: curr_yr.i_brand_id,
+      i_class_id: curr_yr.i_class_id,
+      i_category_id: curr_yr.i_category_id,
+      i_manufact_id: curr_yr.i_manufact_id,
+      prev_yr_cnt: prev_yr.sales_cnt,
+      curr_yr_cnt: curr_yr.sales_cnt,
+      sales_cnt_diff: curr_yr.sales_cnt - prev_yr.sales_cnt,
+      sales_amt_diff: curr_yr.sales_amt - prev_yr.sales_amt
+    }]
+  } else {
+    []
+  }
 
 json(result)
 
-test "TPCDC Q75 simplified" {
-  expect result == 75
+test "TPCDC Q75 sales drop" {
+  expect result == [
+    { prev_year: 2000, year: 2001, i_brand_id: 1, i_class_id: 2, i_category_id: 3, i_manufact_id: 4, prev_yr_cnt: 100, curr_yr_cnt: 80, sales_cnt_diff: -20, sales_amt_diff: -200.0 }
+  ]
 }

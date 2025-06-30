@@ -1,24 +1,44 @@
+let store = [
+  { s_store_sk: 1, s_state: "CA", s_county: "Orange" },
+  { s_store_sk: 2, s_state: "CA", s_county: "Orange" },
+  { s_store_sk: 3, s_state: "TX", s_county: "Travis" },
+  { s_store_sk: 4, s_state: "TX", s_county: "Harris" }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_month_seq: 1200 },
+  { d_date_sk: 2, d_month_seq: 1201 },
+  { d_date_sk: 3, d_month_seq: 1202 }
+]
+
 let store_sales = [
-  {store: 1, profit: 25},
-  {store: 1, profit: 25},
-  {store: 2, profit: 20}
+  { ss_sold_date_sk: 1, ss_store_sk: 1, ss_net_profit: 10.0 },
+  { ss_sold_date_sk: 1, ss_store_sk: 2, ss_net_profit: 5.0 },
+  { ss_sold_date_sk: 2, ss_store_sk: 3, ss_net_profit: 20.0 },
+  { ss_sold_date_sk: 3, ss_store_sk: 4, ss_net_profit: 30.0 }
 ]
 
-let stores = [
-  {id: 1, state: "CA"},
-  {id: 2, state: "NY"}
-]
+let dms = 1200
 
-let sums =
+let result =
   from ss in store_sales
-  join s in stores on ss.store == s.id
-  group by s.state into g
-  select sum(from x in g select x.ss.profit)
-
-let result = sum(sums)
+  join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
+  join s in store on s.s_store_sk == ss.ss_store_sk
+  where d.d_month_seq >= dms && d.d_month_seq <= dms + 11
+  group by { state: s.s_state, county: s.s_county } into g
+  sort by g.key.state, g.key.county
+  select {
+    s_state: g.key.state,
+    s_county: g.key.county,
+    total_sum: sum(from x in g select x.ss.ss_net_profit)
+  }
 
 json(result)
 
-test "TPCDC Q70 simplified" {
-  expect result == 70
+test "TPCDC Q70 rollup" {
+  expect result == [
+    { s_state: "CA", s_county: "Orange", total_sum: 15.0 },
+    { s_state: "TX", s_county: "Harris", total_sum: 30.0 },
+    { s_state: "TX", s_county: "Travis", total_sum: 20.0 }
+  ]
 }
