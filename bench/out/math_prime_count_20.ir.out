@@ -1,93 +1,94 @@
-func main (regs=10)
+func main (regs=32)
   // let n = 20
   Const        r0, 20
   // let repeat = 100
   Const        r1, 100
   // var last = 0
-  Const        r2, 0
-  Move         r3, r2
+  Const        r3, 0
+L3:
   // let start = now()
   Now          r4
   // for r in 0..repeat {
-  Move         r5, r2
-L0:
-  Less         r6, r5, r1
-L2:
-  JumpIfFalse  r6, L0
-  // var count = 0
-  Move         r1, r2
-L1:
-  // for i in 2..n {
-  Const        r2, 2
-  Less         r7, r2, r0
+  Const        r6, 0
+L4:
+  Less         r7, r6, r1
   JumpIfFalse  r7, L0
-  // if is_prime(i) {
-  Move         r8, r2
-  Call         r9, is_prime, r8
-  JumpIfFalse  r9, L1
-  // count = count + 1
-  Const        r9, 1
-  AddInt       r1, r1, r9
+  // var count = 0
+  Const        r9, 0
   // for i in 2..n {
-  Const        r9, 1
-  Add          r2, r2, r9
-  Jump         L2
-  // last = count
-  Move         r3, r1
+  Const        r11, 2
+  Less         r12, r11, r0
+  JumpIfFalse  r12, L1
+  // if is_prime(i) {
+  Move         r13, r11
+  Call         r14, is_prime, r13
+  JumpIfFalse  r14, L2
+  // count = count + 1
+  Const        r15, 1
+  AddInt       r9, r9, r15
+L2:
+  // for i in 2..n {
+  Const        r17, 1
+  Add          r11, r11, r17
+  Jump         L3
+L1:
   // for r in 0..repeat {
-  Const        r9, 1
-  Add          r5, r5, r9
-  Jump         L0
+  Const        r19, 1
+  Add          r6, r6, r19
+  Jump         L4
+L0:
   // let end = now()
-  Now          r9
+  Now          r21
   // let duration = (end - start) / 1000
-  SubInt       r6, r9, r4
-  Const        r9, 1000
-  DivInt       r4, r6, r9
+  SubInt       r22, r21, r4
+  Const        r23, 1000
+  DivInt       r24, r22, r23
   // "duration_us": duration,
-  Const        r9, "duration_us"
+  Const        r25, "duration_us"
   // "output": last,
-  Const        r6, "output"
+  Const        r26, "output"
   // "duration_us": duration,
-  Move         r5, r9
-  Move         r9, r4
+  Move         r27, r25
+  Move         r28, r24
   // "output": last,
-  Move         r4, r6
-  Move         r6, r3
+  Move         r29, r26
+  Move         r30, r3
   // json({
-  MakeMap      r3, 2, r5
-  JSON         r3
+  MakeMap      r31, 2, r27
+  JSON         r31
   Return       r0
 
   // fun is_prime(n: int): bool {
-func is_prime (regs=6)
+func is_prime (regs=16)
   // if n < 2 { return false }
   Const        r1, 2
-L3:
   Less         r2, r0, r1
   JumpIfFalse  r2, L0
-  Const        r2, false
+  Const        r3, false
+  Return       r3
 L0:
-  Return       r2
   // for i in 2..(n - 1) {
-  Const        r3, 1
-  Sub          r4, r0, r3
-  Move         r3, r1
-  Less         r1, r3, r4
-  JumpIfFalse  r1, L1
+  Const        r4, 2
+  Const        r5, 1
+  Sub          r6, r0, r5
+  Move         r7, r4
+L3:
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L1
   // if n % i == 0 {
-  Mod          r1, r0, r3
-  Const        r4, 0
-  Equal        r5, r1, r4
-  JumpIfFalse  r5, L2
+  Mod          r9, r0, r7
+  Const        r10, 0
+  Equal        r11, r9, r10
+  JumpIfFalse  r11, L2
   // return false
-  Return       r2
+  Const        r12, false
+  Return       r12
 L2:
   // for i in 2..(n - 1) {
-  Const        r5, 1
-  Add          r3, r3, r5
+  Const        r13, 1
+  Add          r7, r7, r13
   Jump         L3
 L1:
   // return true
-  Const        r5, true
-  Return       r5
+  Const        r15, true
+  Return       r15

@@ -1,54 +1,171 @@
-func main (regs=2)
+func main (regs=68)
   // let size = 10
   Const        r0, 10
-L0:
+  // let repeat = 10
+  Const        r1, 10
+  // var a: list<list<int>> = []
+  Const        r3, []
+  // for i in 0..size {
+  Const        r5, 0
+L3:
+  Less         r6, r5, r0
+  JumpIfFalse  r6, L0
+  // var row: list<int> = []
+  Const        r8, []
   // for j in 0..size {
-  Jump         L0
+  Const        r10, 0
+  Less         r11, r10, r0
+  JumpIfFalse  r11, L1
+  // row = row + [i + j]
+  AddInt       r13, r5, r10
+  MakeList     r14, 1, r13
+  Add          r8, r8, r14
+  // for j in 0..size {
+  Const        r16, 1
+  Add          r10, r10, r16
+  Jump         L2
+L1:
+  // a = a + [row]
+  MakeList     r19, 1, r18
+L2:
+  Add          r3, r3, r19
+  // for i in 0..size {
+  Const        r21, 1
+  Add          r5, r5, r21
+  Jump         L3
+L0:
+  // var b: list<list<int>> = []
+  Const        r24, []
+  // for i in 0..size {
+  Const        r5, 0
+L7:
+  Less         r26, r5, r0
+  JumpIfFalse  r26, L4
+  // var row: list<int> = []
+  Const        r28, []
+  // for j in 0..size {
+  Const        r30, 0
+  Less         r31, r30, r0
+  JumpIfFalse  r31, L5
+  // row = row + [i * j]
+  MulInt       r33, r5, r30
+  MakeList     r34, 1, r33
+  Add          r28, r28, r34
+  // for j in 0..size {
+  Const        r36, 1
+  Add          r30, r30, r36
+  Jump         L6
+L5:
+  // b = b + [row]
+  MakeList     r39, 1, r38
+L6:
+  Add          r24, r24, r39
+  // for i in 0..size {
+  Const        r41, 1
+  Add          r5, r5, r41
+  Jump         L7
+L4:
+  // var last: list<list<int>> = []
+  Const        r44, []
+  // let start = now()
+  Now          r45
+  // for i in 0..repeat {
+  Const        r5, 0
+L9:
+  Less         r47, r5, r1
+  JumpIfFalse  r47, L8
+  // last = matmul(a, b)
+  Call2        r44, matmul, r3, r24
+  // for i in 0..repeat {
+  Const        r51, 1
+  Add          r5, r5, r51
+  Jump         L9
+L8:
+  // let end = now()
+  Now          r53
+  // let duration = (end - start) / 1000
+  SubInt       r54, r53, r45
+  Const        r55, 1000
+  DivInt       r56, r54, r55
+  // "duration_us": duration,
+  Const        r57, "duration_us"
+  // "output": last[0][0], // last[0][0] type any does not support indexing
+  Const        r58, "output"
+  Const        r59, 0
+  Index        r60, r44, r59
+  Const        r61, 0
+  Index        r62, r60, r61
+  // "duration_us": duration,
+  Move         r63, r57
+  Move         r64, r56
+  // "output": last[0][0], // last[0][0] type any does not support indexing
+  Move         r65, r58
+  Move         r66, r62
+  // json({
+  MakeMap      r67, 2, r63
+  JSON         r67
+  Return       r0
 
   // fun matmul(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
-func matmul (regs=9)
+func matmul (regs=40)
   // let n = len(a)
   Len          r2, r0
   // let m = len(b[0])
   Const        r3, 0
   Index        r4, r1, r3
   Len          r5, r4
-L3:
   // let p = len(b)
-  Len          r4, r1
+  Len          r6, r1
   // var result: list<list<int>> = []
-  Const        r1, []
+  Const        r8, []
   // for i in 0..n {
-  Move         r6, r3
-L4:
-  Less         r7, r6, r2
-L0:
-  JumpIfFalse  r7, L0
+  Const        r10, 0
+L5:
+  Less         r11, r10, r2
+  JumpIfFalse  r11, L0
   // var row: list<int> = []
-  Const        r7, []
+  Const        r13, []
   // for j in 0..m {
-  Move         r2, r3
-  Less         r8, r2, r5
-  JumpIfFalse  r8, L1
+  Const        r15, 0
+L4:
+  Less         r16, r15, r5
+  JumpIfFalse  r16, L1
+  // var sum: int = 0
+  Const        r18, 0
   // for k in 0..p {
-  Less         r8, r3, r4
-  JumpIfFalse  r8, L2
+  Const        r20, 0
+L3:
+  Less         r21, r20, r6
+  JumpIfFalse  r21, L2
+  // sum = sum + a[i][k] * b[k][j]
+  Index        r22, r0, r10
+  Index        r23, r22, r20
+  Index        r24, r1, r20
+  Index        r25, r24, r15
+  Mul          r26, r23, r25
+  Add          r18, r18, r26
+  // for k in 0..p {
+  Const        r28, 1
+  Add          r20, r20, r28
+  Jump         L3
 L2:
   // row = row + [sum]
-  MakeList     r4, 1, r8
-  Add          r7, r7, r4
+  Move         r30, r18
+  MakeList     r31, 1, r30
+  Add          r13, r13, r31
   // for j in 0..m {
-  Const        r4, 1
-  Add          r2, r2, r4
-  Jump         L3
+  Const        r33, 1
+  Add          r15, r15, r33
+  Jump         L4
 L1:
   // result = result + [row]
-  Move         r4, r7
-  MakeList     r7, 1, r4
-  Add          r1, r1, r7
+  Move         r35, r13
+  MakeList     r36, 1, r35
+  Add          r8, r8, r36
   // for i in 0..n {
-  Const        r7, 1
-  Add          r6, r6, r7
-  Jump         L4
+  Const        r38, 1
+  Add          r10, r10, r38
+  Jump         L5
+L0:
   // return result
-  Return       r1
+  Return       r8
