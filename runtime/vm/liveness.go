@@ -842,11 +842,22 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 		}
 	case OpSum:
 		if lst, ok := toList(v); ok {
-			var sum float64
+			allInt := true
+			var sumF float64
+			var sumI int
 			for _, it := range lst {
-				sum += toFloat(it)
+				if it.Tag == ValueInt {
+					sumI += it.Int
+				} else {
+					allInt = false
+					sumF += toFloat(it)
+				}
 			}
-			return Value{Tag: ValueFloat, Float: sum}, true
+			if allInt {
+				return Value{Tag: ValueInt, Int: sumI}, true
+			}
+			sumF += float64(sumI)
+			return Value{Tag: ValueFloat, Float: sumF}, true
 		}
 	case OpMin:
 		if lst, ok := toList(v); ok {
