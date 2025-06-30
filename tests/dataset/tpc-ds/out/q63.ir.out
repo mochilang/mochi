@@ -1,139 +1,122 @@
-func main (regs=102)
+func main (regs=82)
   // let sales = [
   Const        r0, [{"amount": 30, "mgr": 1}, {"amount": 33, "mgr": 2}]
   // from s in sales
   Const        r1, []
   // group by {mgr: s.mgr} into g
   Const        r2, "mgr"
-  Const        r3, "mgr"
   // select {mgr: g.key.mgr, sum_sales: sum(from x in g select x.amount)}
-  Const        r4, "mgr"
-  Const        r5, "key"
-  Const        r6, "mgr"
-  Const        r7, "sum_sales"
-  Const        r8, "amount"
+  Const        r3, "key"
+  Const        r4, "sum_sales"
+  Const        r5, "amount"
   // from s in sales
-  IterPrep     r9, r0
-  Len          r10, r9
-  Const        r11, 0
-  MakeMap      r12, 0, r0
-  Const        r13, []
+  IterPrep     r6, r0
+  Len          r7, r6
+  Const        r8, 0
+  MakeMap      r9, 0, r0
+  Const        r10, []
 L2:
-  LessInt      r15, r11, r10
-  JumpIfFalse  r15, L0
-  Index        r16, r9, r11
-  Move         r17, r16
+  LessInt      r12, r8, r7
+  JumpIfFalse  r12, L0
+  Index        r13, r6, r8
+  Move         r14, r13
   // group by {mgr: s.mgr} into g
-  Const        r18, "mgr"
-  Const        r19, "mgr"
-  Index        r20, r17, r19
-  Move         r21, r18
-  Move         r22, r20
-  MakeMap      r23, 1, r21
-  Str          r24, r23
-  In           r25, r24, r12
-  JumpIfTrue   r25, L1
+  Const        r15, "mgr"
+  Index        r16, r14, r2
+  Move         r17, r15
+  Move         r18, r16
+  MakeMap      r19, 1, r17
+  Str          r20, r19
+  In           r21, r20, r9
+  JumpIfTrue   r21, L1
   // from s in sales
-  Const        r26, []
-  Const        r27, "__group__"
-  Const        r28, true
-  Const        r29, "key"
+  Const        r22, []
+  Const        r23, "__group__"
+  Const        r24, true
   // group by {mgr: s.mgr} into g
+  Move         r25, r19
+  // from s in sales
+  Const        r26, "items"
+  Move         r27, r22
+  Const        r28, "count"
+  Const        r29, 0
   Move         r30, r23
-  // from s in sales
-  Const        r31, "items"
-  Move         r32, r26
-  Const        r33, "count"
-  Const        r34, 0
+  Move         r31, r24
+  Move         r32, r3
+  Move         r33, r25
+  Move         r34, r26
   Move         r35, r27
   Move         r36, r28
   Move         r37, r29
-  Move         r38, r30
-  Move         r39, r31
-  Move         r40, r32
-  Move         r41, r33
-  Move         r42, r34
-  MakeMap      r43, 4, r35
-  SetIndex     r12, r24, r43
-  Append       r13, r13, r43
+  MakeMap      r38, 4, r30
+  SetIndex     r9, r20, r38
+  Append       r10, r10, r38
 L1:
-  Const        r45, "items"
-  Index        r46, r12, r24
-  Index        r47, r46, r45
-  Append       r48, r47, r16
-  SetIndex     r46, r45, r48
-  Const        r49, "count"
-  Index        r50, r46, r49
-  Const        r51, 1
-  AddInt       r52, r50, r51
-  SetIndex     r46, r49, r52
-  Const        r53, 1
-  AddInt       r11, r11, r53
+  Index        r40, r9, r20
+  Index        r41, r40, r26
+  Append       r42, r41, r13
+  SetIndex     r40, r26, r42
+  Index        r43, r40, r28
+  Const        r44, 1
+  AddInt       r45, r43, r44
+  SetIndex     r40, r28, r45
+  AddInt       r8, r8, r44
   Jump         L2
 L0:
-  Const        r54, 0
-  Len          r56, r13
+  Move         r46, r29
+  Len          r47, r10
 L6:
-  LessInt      r57, r54, r56
-  JumpIfFalse  r57, L3
-  Index        r59, r13, r54
+  LessInt      r48, r46, r47
+  JumpIfFalse  r48, L3
+  Index        r50, r10, r46
   // select {mgr: g.key.mgr, sum_sales: sum(from x in g select x.amount)}
-  Const        r60, "mgr"
-  Const        r61, "key"
-  Index        r62, r59, r61
-  Const        r63, "mgr"
-  Index        r64, r62, r63
-  Const        r65, "sum_sales"
-  Const        r66, []
-  Const        r67, "amount"
-  IterPrep     r68, r59
-  Len          r69, r68
-  Const        r70, 0
+  Const        r51, "mgr"
+  Index        r52, r50, r3
+  Index        r53, r52, r2
+  Const        r54, "sum_sales"
+  Const        r55, []
+  IterPrep     r56, r50
+  Len          r57, r56
+  Move         r58, r29
 L5:
-  LessInt      r72, r70, r69
-  JumpIfFalse  r72, L4
-  Index        r74, r68, r70
-  Const        r75, "amount"
-  Index        r76, r74, r75
-  Append       r66, r66, r76
-  Const        r78, 1
-  AddInt       r70, r70, r78
+  LessInt      r59, r58, r57
+  JumpIfFalse  r59, L4
+  Index        r61, r56, r58
+  Index        r62, r61, r5
+  Append       r55, r55, r62
+  AddInt       r58, r58, r44
   Jump         L5
 L4:
-  Sum          r79, r66
-  Move         r80, r60
-  Move         r81, r64
-  Move         r82, r65
-  Move         r83, r79
-  MakeMap      r84, 2, r80
+  Sum          r64, r55
+  Move         r65, r51
+  Move         r66, r53
+  Move         r67, r54
+  Move         r68, r64
+  MakeMap      r69, 2, r65
   // from s in sales
-  Append       r1, r1, r84
-  Const        r86, 1
-  AddInt       r54, r54, r86
+  Append       r1, r1, r69
+  AddInt       r46, r46, r44
   Jump         L6
 L3:
   // let result = sum(from x in by_mgr select x.sum_sales)
-  Const        r87, []
-  Const        r88, "sum_sales"
-  IterPrep     r89, r1
-  Len          r90, r89
-  Const        r91, 0
+  Const        r71, []
+  IterPrep     r72, r1
+  Len          r73, r72
+  Move         r74, r29
 L8:
-  LessInt      r93, r91, r90
-  JumpIfFalse  r93, L7
-  Index        r74, r89, r91
-  Const        r95, "sum_sales"
-  Index        r96, r74, r95
-  Append       r87, r87, r96
-  Const        r98, 1
-  AddInt       r91, r91, r98
+  LessInt      r75, r74, r73
+  JumpIfFalse  r75, L7
+  Index        r61, r72, r74
+  Index        r77, r61, r4
+  Append       r71, r71, r77
+  AddInt       r74, r74, r44
   Jump         L8
 L7:
-  Sum          r99, r87
+  Sum          r79, r71
   // json(result)
-  JSON         r99
+  JSON         r79
   // expect result == 63
-  Const        r100, 63
-  Equal        r101, r99, r100
-  Expect       r101
+  Const        r80, 63
+  Equal        r81, r79, r80
+  Expect       r81
   Return       r0
