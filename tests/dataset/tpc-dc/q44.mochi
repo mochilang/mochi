@@ -4,12 +4,17 @@ let store_sales = [
   { ss_item_sk: 2, ss_store_sk: 1, ss_net_profit: -1.0 },
   { ss_item_sk: 3, ss_store_sk: 1, ss_net_profit: 8.0 },
   { ss_item_sk: 3, ss_store_sk: 1, ss_net_profit: 7.0 }
+  ,{ ss_item_sk: 4, ss_store_sk: 1, ss_net_profit: 6.0 }
+  ,{ ss_item_sk: 4, ss_store_sk: 1, ss_net_profit: 4.0 }
+  ,{ ss_item_sk: 5, ss_store_sk: 1, ss_net_profit: 2.0 }
 ]
 
 let item = [
   { i_item_sk: 1, i_product_name: "ItemA" },
   { i_item_sk: 2, i_product_name: "ItemB" },
   { i_item_sk: 3, i_product_name: "ItemC" }
+  ,{ i_item_sk: 4, i_product_name: "ItemD" }
+  ,{ i_item_sk: 5, i_product_name: "ItemE" }
 ]
 
 let grouped =

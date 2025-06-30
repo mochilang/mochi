@@ -3,7 +3,10 @@ let v2 = [
   { d_year: 2020, item: "B", avg_monthly_sales: 80.0, sum_sales: 70.0 },
   { d_year: 2019, item: "C", avg_monthly_sales: 50.0, sum_sales: 60.0 },
   { d_year: 2020, item: "D", avg_monthly_sales: 50.0, sum_sales: 45.0 },
-  { d_year: 2020, item: "E", avg_monthly_sales: 75.0, sum_sales: 70.0 }
+  { d_year: 2020, item: "E", avg_monthly_sales: 75.0, sum_sales: 70.0 },
+  { d_year: 2020, item: "F", avg_monthly_sales: 0.0, sum_sales: 0.0 },
+  { d_year: 2020, item: "G", avg_monthly_sales: 100.0, sum_sales: 105.0 },
+  { d_year: 2018, item: "H", avg_monthly_sales: 90.0, sum_sales: 110.0 }
 ]
 
 let year = 2020

@@ -2,29 +2,39 @@ let catalog_sales = [
   { order: 1, item_sk: 1, warehouse_sk: 1, date_sk: 1, price: 100.0 },
   { order: 2, item_sk: 1, warehouse_sk: 1, date_sk: 2, price: 150.0 },
   { order: 3, item_sk: 2, warehouse_sk: 2, date_sk: 3, price: 200.0 },
-  { order: 4, item_sk: 2, warehouse_sk: 1, date_sk: 4, price: 50.0 }
+  { order: 4, item_sk: 2, warehouse_sk: 1, date_sk: 4, price: 50.0 },
+  { order: 5, item_sk: 1, warehouse_sk: 1, date_sk: 1, price: 120.0 },
+  { order: 6, item_sk: 2, warehouse_sk: 1, date_sk: 3, price: 80.0 },
+  { order: 7, item_sk: 3, warehouse_sk: 1, date_sk: 2, price: 100.0 },
+  { order: 8, item_sk: 2, warehouse_sk: 2, date_sk: 2, price: 130.0 },
+  { order: 9, item_sk: 1, warehouse_sk: 3, date_sk: 5, price: 110.0 }
 ]
 
 let catalog_returns = [
   { order: 2, item_sk: 1, refunded: 150.0 },
-  { order: 3, item_sk: 2, refunded: 50.0 }
+  { order: 3, item_sk: 2, refunded: 50.0 },
+  { order: 8, item_sk: 2, refunded: 30.0 },
+  { order: 9, item_sk: 1, refunded: 0.0 }
 ]
 
 let item = [
   { item_sk: 1, item_id: "I1", current_price: 1.2 },
-  { item_sk: 2, item_id: "I2", current_price: 1.1 }
+  { item_sk: 2, item_id: "I2", current_price: 1.1 },
+  { item_sk: 3, item_id: "I3", current_price: 2.2 }
 ]
 
 let warehouse = [
   { warehouse_sk: 1, state: "CA" },
-  { warehouse_sk: 2, state: "NY" }
+  { warehouse_sk: 2, state: "NY" },
+  { warehouse_sk: 3, state: "TX" }
 ]
 
 let date_dim = [
   { date_sk: 1, date: "2020-01-10" },
   { date_sk: 2, date: "2020-01-20" },
   { date_sk: 3, date: "2020-01-25" },
-  { date_sk: 4, date: "2020-02-05" }
+  { date_sk: 4, date: "2020-02-05" },
+  { date_sk: 5, date: "2020-02-15" }
 ]
 
 let sales_date = "2020-01-15"
@@ -57,8 +67,9 @@ json(result)
 
 test "TPCDS Q40 simplified" {
   expect result == [
-    { w_state: "CA", i_item_id: "I1", sales_before: 100.0, sales_after: 0.0 },
-    { w_state: "CA", i_item_id: "I2", sales_before: 0.0, sales_after: 50.0 },
-    { w_state: "NY", i_item_id: "I2", sales_before: 0.0, sales_after: 150.0 }
+    { w_state: "CA", i_item_id: "I1", sales_before: 220.0, sales_after: 0.0 },
+    { w_state: "CA", i_item_id: "I2", sales_before: 0.0, sales_after: 130.0 },
+    { w_state: "NY", i_item_id: "I2", sales_before: 0.0, sales_after: 250.0 },
+    { w_state: "TX", i_item_id: "I1", sales_before: 0.0, sales_after: 110.0 }
   ]
 }

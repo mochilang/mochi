@@ -4,12 +4,15 @@ let store_sales = [
   { sold_date_sk: 2, item_sk: 1, ext_sales_price: 15.0 },
   { sold_date_sk: 1, item_sk: 1, ext_sales_price: 5.0 },
   { sold_date_sk: 1, item_sk: 2, ext_sales_price: 30.0 }
+  ,{ sold_date_sk: 2, item_sk: 3, ext_sales_price: 5.0 }
+  ,{ sold_date_sk: 2, item_sk: 1, ext_sales_price: 5.0 }
 ]
 
 let item = [
   { i_item_sk: 1, i_manager_id: 1, i_category_id: 100, i_category: "CatA" },
   { i_item_sk: 2, i_manager_id: 1, i_category_id: 100, i_category: "CatA" },
   { i_item_sk: 3, i_manager_id: 2, i_category_id: 200, i_category: "CatB" }
+  ,{ i_item_sk: 4, i_manager_id: 2, i_category_id: 300, i_category: "CatC" }
 ]
 
 let date_dim = [
