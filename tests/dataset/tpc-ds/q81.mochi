@@ -1,8 +1,23 @@
-// Placeholder evaluation for real TPC-DS query 81
-let t = [{id: 1, val: 81}]
-let result = from r in t select r.val |> first
+let catalog_returns = [
+  {cust: 1, state: "CA", amt: 81.0},
+  {cust: 2, state: "CA", amt: 10.0},
+  {cust: 3, state: "CA", amt: 10.0}
+]
+
+let avg_state =
+  from r in catalog_returns
+  group by r.state into g
+  select {state: g.key, avg_amt: avg(from x in g select x.amt)}
+  |> first
+
+let result =
+  from r in catalog_returns
+  where r.amt > avg_state.avg_amt * 1.2
+  select r.amt
+  |> first
+
 json(result)
 
-test "TPCDS Q81 placeholder" {
-  expect result == 81
+test "TPCDS Q81 simplified" {
+  expect result == 81.0
 }

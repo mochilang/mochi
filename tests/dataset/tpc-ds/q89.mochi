@@ -1,8 +1,12 @@
-// Placeholder evaluation for real TPC-DS query 89
-let t = [{id: 1, val: 89}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  {price: 50.0},
+  {price: 39.0}
+]
+
+let result = sum(from s in store_sales select s.price)
+
 json(result)
 
-test "TPCDS Q89 placeholder" {
-  expect result == 89
+test "TPCDS Q89 simplified" {
+  expect result == 89.0
 }

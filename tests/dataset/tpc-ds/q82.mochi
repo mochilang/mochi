@@ -1,8 +1,23 @@
-// Placeholder evaluation for real TPC-DS query 82
-let t = [{id: 1, val: 82}]
-let result = from r in t select r.val |> first
+let item = [
+  {id: 1},
+  {id: 2}
+]
+let inventory = [
+  {item: 1, qty: 40},
+  {item: 1, qty: 42},
+  {item: 2, qty: 50}
+]
+let store_sales = [
+  {item: 1}
+]
+
+let result =
+  sum(from inv in inventory
+      join s in store_sales on inv.item == s.item
+      select inv.qty)
+
 json(result)
 
-test "TPCDS Q82 placeholder" {
+test "TPCDS Q82 simplified" {
   expect result == 82
 }
