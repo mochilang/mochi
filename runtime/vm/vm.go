@@ -6312,8 +6312,11 @@ func (fc *funcCompiler) evalPureFunc(name string, args []Value) (Value, bool) {
 	if !ok {
 		return Value{}, false
 	}
-	if len(fn.Params) != len(args) || len(fn.Body) != 1 {
+	if len(args) < len(fn.Params) || len(fn.Body) != 1 {
 		return Value{}, false
+	}
+	if len(args) > len(fn.Params) {
+		args = args[:len(fn.Params)]
 	}
 	ret := fn.Body[0].Return
 	if ret == nil {
