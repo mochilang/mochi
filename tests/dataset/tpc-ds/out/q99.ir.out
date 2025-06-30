@@ -1,0 +1,235 @@
+func main (regs=163)
+  // let catalog_sales = [
+  Const        r0, [{"cs_call_center_sk": 1, "cs_ship_date_sk": 31, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 51, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 71, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 101, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 131, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}]
+  // let warehouse = [{w_warehouse_sk: 1, w_warehouse_name: "Warehouse1"}]
+  Const        r1, [{"w_warehouse_name": "Warehouse1", "w_warehouse_sk": 1}]
+  // let ship_mode = [{sm_ship_mode_sk: 1, sm_type: "EXP"}]
+  Const        r2, [{"sm_ship_mode_sk": 1, "sm_type": "EXP"}]
+  // let call_center = [{cc_call_center_sk: 1, cc_name: "CC1"}]
+  Const        r3, [{"cc_call_center_sk": 1, "cc_name": "CC1"}]
+  // let d30 = count(from cs in catalog_sales where cs.cs_ship_date_sk - cs.cs_sold_date_sk <= 30 select cs)
+  Const        r4, []
+  Const        r5, "cs_ship_date_sk"
+  Const        r6, "cs_sold_date_sk"
+  IterPrep     r7, r0
+  Len          r8, r7
+  Const        r9, 0
+L2:
+  LessInt      r11, r9, r8
+  JumpIfFalse  r11, L0
+  Index        r13, r7, r9
+  Const        r14, "cs_ship_date_sk"
+  Index        r15, r13, r14
+  Const        r16, "cs_sold_date_sk"
+  Index        r17, r13, r16
+  Sub          r18, r15, r17
+  Const        r19, 30
+  LessEq       r20, r18, r19
+  JumpIfFalse  r20, L1
+  Append       r4, r4, r13
+L1:
+  Const        r22, 1
+  AddInt       r9, r9, r22
+  Jump         L2
+L0:
+  Count        r23, r4
+  // let d60 = count(from cs in catalog_sales where cs.cs_ship_date_sk - cs.cs_sold_date_sk > 30 && cs.cs_ship_date_sk - cs.cs_sold_date_sk <= 60 select cs)
+  Const        r24, []
+  Const        r25, "cs_ship_date_sk"
+  Const        r26, "cs_sold_date_sk"
+  Const        r27, "cs_ship_date_sk"
+  Const        r28, "cs_sold_date_sk"
+  IterPrep     r29, r0
+  Len          r30, r29
+  Const        r31, 0
+L6:
+  LessInt      r33, r31, r30
+  JumpIfFalse  r33, L3
+  Index        r13, r29, r31
+  Const        r35, "cs_ship_date_sk"
+  Index        r36, r13, r35
+  Const        r37, "cs_sold_date_sk"
+  Index        r38, r13, r37
+  Sub          r39, r36, r38
+  Const        r40, "cs_ship_date_sk"
+  Index        r41, r13, r40
+  Const        r42, "cs_sold_date_sk"
+  Index        r43, r13, r42
+  Sub          r44, r41, r43
+  Const        r45, 30
+  Less         r46, r45, r39
+  Const        r47, 60
+  LessEq       r48, r44, r47
+  Move         r49, r46
+  JumpIfFalse  r49, L4
+  Move         r49, r48
+L4:
+  JumpIfFalse  r49, L5
+  Append       r24, r24, r13
+L5:
+  Const        r51, 1
+  AddInt       r31, r31, r51
+  Jump         L6
+L3:
+  Count        r52, r24
+  // let d90 = count(from cs in catalog_sales where cs.cs_ship_date_sk - cs.cs_sold_date_sk > 60 && cs.cs_ship_date_sk - cs.cs_sold_date_sk <= 90 select cs)
+  Const        r53, []
+  Const        r54, "cs_ship_date_sk"
+  Const        r55, "cs_sold_date_sk"
+  Const        r56, "cs_ship_date_sk"
+  Const        r57, "cs_sold_date_sk"
+  IterPrep     r58, r0
+  Len          r59, r58
+  Const        r60, 0
+L10:
+  LessInt      r62, r60, r59
+  JumpIfFalse  r62, L7
+  Index        r13, r58, r60
+  Const        r64, "cs_ship_date_sk"
+  Index        r65, r13, r64
+  Const        r66, "cs_sold_date_sk"
+  Index        r67, r13, r66
+  Sub          r68, r65, r67
+  Const        r69, "cs_ship_date_sk"
+  Index        r70, r13, r69
+  Const        r71, "cs_sold_date_sk"
+  Index        r72, r13, r71
+  Sub          r73, r70, r72
+  Const        r74, 60
+  Less         r75, r74, r68
+  Const        r76, 90
+  LessEq       r77, r73, r76
+  Move         r78, r75
+  JumpIfFalse  r78, L8
+  Move         r78, r77
+L8:
+  JumpIfFalse  r78, L9
+  Append       r53, r53, r13
+L9:
+  Const        r80, 1
+  AddInt       r60, r60, r80
+  Jump         L10
+L7:
+  Count        r81, r53
+  // let d120 = count(from cs in catalog_sales where cs.cs_ship_date_sk - cs.cs_sold_date_sk > 90 && cs.cs_ship_date_sk - cs.cs_sold_date_sk <= 120 select cs)
+  Const        r82, []
+  Const        r83, "cs_ship_date_sk"
+  Const        r84, "cs_sold_date_sk"
+  Const        r85, "cs_ship_date_sk"
+  Const        r86, "cs_sold_date_sk"
+  IterPrep     r87, r0
+  Len          r88, r87
+  Const        r89, 0
+L14:
+  LessInt      r91, r89, r88
+  JumpIfFalse  r91, L11
+  Index        r13, r87, r89
+  Const        r93, "cs_ship_date_sk"
+  Index        r94, r13, r93
+  Const        r95, "cs_sold_date_sk"
+  Index        r96, r13, r95
+  Sub          r97, r94, r96
+  Const        r98, "cs_ship_date_sk"
+  Index        r99, r13, r98
+  Const        r100, "cs_sold_date_sk"
+  Index        r101, r13, r100
+  Sub          r102, r99, r101
+  Const        r103, 90
+  Less         r104, r103, r97
+  Const        r105, 120
+  LessEq       r106, r102, r105
+  Move         r107, r104
+  JumpIfFalse  r107, L12
+  Move         r107, r106
+L12:
+  JumpIfFalse  r107, L13
+  Append       r82, r82, r13
+L13:
+  Const        r109, 1
+  AddInt       r89, r89, r109
+  Jump         L14
+L11:
+  Count        r110, r82
+  // let dmore = count(from cs in catalog_sales where cs.cs_ship_date_sk - cs.cs_sold_date_sk > 120 select cs)
+  Const        r111, []
+  Const        r112, "cs_ship_date_sk"
+  Const        r113, "cs_sold_date_sk"
+  IterPrep     r114, r0
+  Len          r115, r114
+  Const        r116, 0
+L17:
+  LessInt      r118, r116, r115
+  JumpIfFalse  r118, L15
+  Index        r13, r114, r116
+  Const        r120, "cs_ship_date_sk"
+  Index        r121, r13, r120
+  Const        r122, "cs_sold_date_sk"
+  Index        r123, r13, r122
+  Sub          r124, r121, r123
+  Const        r125, 120
+  Less         r126, r125, r124
+  JumpIfFalse  r126, L16
+  Append       r111, r111, r13
+L16:
+  Const        r128, 1
+  AddInt       r116, r116, r128
+  Jump         L17
+L15:
+  Count        r129, r111
+  // let wname = "Warehouse1"
+  Const        r130, "Warehouse1"
+  // let smtype = "EXP"
+  Const        r131, "EXP"
+  // let ccname = "CC1"
+  Const        r132, "CC1"
+  // warehouse: substr(str(wname),0,20),
+  Const        r133, "warehouse"
+  Const        r134, "Warehouse1"
+  // sm_type: smtype,
+  Const        r135, "sm_type"
+  // cc_name: ccname,
+  Const        r136, "cc_name"
+  // d30: d30,
+  Const        r137, "d30"
+  // d60: d60,
+  Const        r138, "d60"
+  // d90: d90,
+  Const        r139, "d90"
+  // d120: d120,
+  Const        r140, "d120"
+  // dmore: dmore
+  Const        r141, "dmore"
+  // warehouse: substr(str(wname),0,20),
+  Move         r142, r133
+  Move         r143, r134
+  // sm_type: smtype,
+  Move         r144, r135
+  Move         r145, r131
+  // cc_name: ccname,
+  Move         r146, r136
+  Move         r147, r132
+  // d30: d30,
+  Move         r148, r137
+  Move         r149, r23
+  // d60: d60,
+  Move         r150, r138
+  Move         r151, r52
+  // d90: d90,
+  Move         r152, r139
+  Move         r153, r81
+  // d120: d120,
+  Move         r154, r140
+  Move         r155, r110
+  // dmore: dmore
+  Move         r156, r141
+  Move         r157, r129
+  // let grouped = [{
+  MakeMap      r159, 8, r142
+  MakeList     r160, 1, r159
+  // json(grouped)
+  JSON         r160
+  // expect grouped == [{warehouse: "Warehouse1", sm_type: "EXP", cc_name: "CC1", d30: 1, d60: 1, d90: 1, d120: 1, dmore: 1}]
+  Const        r161, [{"cc_name": "CC1", "d120": 1, "d30": 1, "d60": 1, "d90": 1, "dmore": 1, "sm_type": "EXP", "warehouse": "Warehouse1"}]
+  Equal        r162, r160, r161
+  Expect       r162
+  Return       r0

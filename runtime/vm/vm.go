@@ -88,6 +88,7 @@ const (
 	OpMin
 	OpMax
 	OpValues
+	OpCollect
 	OpCast
 	OpIterPrep
 	OpLoad
@@ -220,6 +221,8 @@ func (op Op) String() string {
 		return "Max"
 	case OpValues:
 		return "Values"
+	case OpCollect:
+		return "Collect"
 	case OpCast:
 		return "Cast"
 	case OpIterPrep:
@@ -997,17 +1000,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpJSON:
 			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
 			fmt.Fprintln(m.writer, string(b))
-               case OpAppend:
-                       lst := fr.regs[ins.B]
-                       if lst.Tag == ValueNull {
-                               fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{fr.regs[ins.C]}}
-                               break
-                       }
-                       if lst.Tag != ValueList {
-                               return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
-                       }
-                       newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
-                       fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
+		case OpAppend:
+			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{fr.regs[ins.C]}}
+				break
+			}
+			if lst.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
+			}
+			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
+			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
@@ -1489,6 +1492,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				vals[i] = m.Map[k]
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: vals}
+		case OpCollect:
+			v := fr.regs[ins.B]
+			if lst, ok := toList(v); ok {
+				out := make([]Value, len(lst))
+				copy(out, lst)
+				fr.regs[ins.A] = Value{Tag: ValueList, List: out}
+				break
+			}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{v}}
 		case OpCast:
 			val := valueToAny(fr.regs[ins.B])
 			typ := m.prog.Types[ins.C]
@@ -2845,6 +2857,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpValues, A: dst, B: arg})
+			return dst
+		case "collect":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpCollect, A: dst, B: arg})
 			return dst
 		case "concat":
 			if len(p.Call.Args) == 0 {
@@ -6094,6 +6111,16 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			out = append(out, lst...)
 		}
 		return Value{Tag: ValueList, List: out}, true
+	case "collect":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		if lst, ok := toList(args[0]); ok {
+			out := make([]Value, len(lst))
+			copy(out, lst)
+			return Value{Tag: ValueList, List: out}, true
+		}
+		return Value{Tag: ValueList, List: []Value{args[0]}}, true
 	case "values":
 		if len(args) != 1 {
 			return Value{}, false

@@ -380,6 +380,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: ListType{Elem: AnyType{}},
 		Pure:   true,
 	}, false)
+	env.SetVar("collect", FuncType{
+		Params: []Type{AnyType{}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
 	env.SetVar("range", FuncType{
 		Params:   []Type{IntType{}},
 		Return:   ListType{Elem: IntType{}},
@@ -2171,6 +2176,7 @@ var builtinArity = map[string]int{
 	"max":       1,
 	"keys":      1,
 	"values":    1,
+	"collect":   1,
 	"reduce":    3,
 	"append":    2,
 	"push":      2,
@@ -2294,6 +2300,16 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return nil
 		default:
 			return fmt.Errorf("%s() expects map", name)
+		}
+	case "collect":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		switch args[0].(type) {
+		case ListType, GroupType, AnyType:
+			return nil
+		default:
+			return fmt.Errorf("collect() expects list or group")
 		}
 	case "reduce":
 		if len(args) != 3 {
