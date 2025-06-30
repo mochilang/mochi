@@ -2777,6 +2777,20 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpValues, A: dst, B: arg})
 			return dst
+		case "concat":
+			if len(p.Call.Args) == 0 {
+				dst := fc.newReg()
+				fc.emit(p.Pos, Instr{Op: OpMakeList, A: dst, B: 0, C: 0})
+				return dst
+			}
+			dst := fc.compileExpr(p.Call.Args[0])
+			for _, a := range p.Call.Args[1:] {
+				reg := fc.compileExpr(a)
+				tmp := fc.newReg()
+				fc.emit(p.Pos, Instr{Op: OpUnionAll, A: tmp, B: dst, C: reg})
+				dst = tmp
+			}
+			return dst
 		case "substring":
 			str := fc.compileExpr(p.Call.Args[0])
 			start := fc.compileExpr(p.Call.Args[1])
@@ -5954,6 +5968,16 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			}
 			return Value{Tag: ValueInt, Int: int(maxVal)}, true
 		}
+	case "concat":
+		out := []Value{}
+		for _, v := range args {
+			lst, ok := toList(v)
+			if !ok {
+				return Value{}, false
+			}
+			out = append(out, lst...)
+		}
+		return Value{Tag: ValueList, List: out}, true
 	case "values":
 		if len(args) != 1 {
 			return Value{}, false
