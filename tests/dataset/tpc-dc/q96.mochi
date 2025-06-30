@@ -1,0 +1,35 @@
+// Count store sales for a specific hour and household size
+type StoreSale { ss_sold_time_sk: int, ss_hdemo_sk: int, ss_store_sk: int }
+type HouseholdDemographics { hd_demo_sk: int, hd_dep_count: int }
+type TimeDim { t_time_sk: int, t_hour: int, t_minute: int }
+type Store { s_store_sk: int, s_store_name: string }
+
+let store_sales = [
+  {ss_sold_time_sk: 1, ss_hdemo_sk: 1, ss_store_sk: 1},
+  {ss_sold_time_sk: 1, ss_hdemo_sk: 1, ss_store_sk: 1},
+  {ss_sold_time_sk: 2, ss_hdemo_sk: 1, ss_store_sk: 1}
+  {ss_sold_time_sk: 3, ss_hdemo_sk: 2, ss_store_sk: 1},
+]
+
+let household_demographics = [{hd_demo_sk: 1, hd_dep_count: 3}, {hd_demo_sk: 2, hd_dep_count: 2}]
+let time_dim = [
+  {t_time_sk: 1, t_hour: 20, t_minute: 35},
+  {t_time_sk: 2, t_hour: 20, t_minute: 45},
+  {t_time_sk: 3, t_hour: 19, t_minute: 10}
+]
+let store = [{s_store_sk: 1, s_store_name: "ese"}]
+
+let result =
+  count(from ss in store_sales
+        join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk
+        join t in time_dim on ss.ss_sold_time_sk == t.t_time_sk
+        join s in store on ss.ss_store_sk == s.s_store_sk
+        where t.t_hour == 20 && t.t_minute >= 30 &&
+              hd.hd_dep_count == 3 && s.s_store_name == "ese"
+        select ss)
+
+json(result)
+
+test "TPCDC Q96 count" {
+  expect result == 3
+}
