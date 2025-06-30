@@ -1,0 +1,23 @@
+let item = [
+  { product_name: "Blue Shirt", manufact_id: 100, manufact: 1, category: "Women", color: "blue", units: "pack", size: "M" },
+  { product_name: "Red Dress", manufact_id: 120, manufact: 1, category: "Women", color: "red", units: "pack", size: "M" },
+  { product_name: "Pants", manufact_id: 200, manufact: 2, category: "Men", color: "black", units: "pair", size: "L" },
+  { product_name: "Green Shirt", manufact_id: 110, manufact: 1, category: "Women", color: "green", units: "pack", size: "L" },
+  { product_name: "Grey Pants", manufact_id: 115, manufact: 1, category: "Men", color: "grey", units: "pair", size: "L" },
+  { product_name: "Black Shorts", manufact_id: 125, manufact: 1, category: "Men", color: "black", units: "pair", size: "M" }
+]
+
+let lower = 100
+
+let result =
+  from i1 in item
+  where i1.manufact_id >= lower && i1.manufact_id <= lower + 40 &&
+        count(from i2 in item where i2.manufact == i1.manufact && i2.category == i1.category) > 1
+  order by i1.product_name
+  select i1.product_name
+
+json(result)
+
+test "TPCDS Q41 simplified" {
+  expect result == ["Black Shorts", "Blue Shirt", "Green Shirt", "Grey Pants", "Red Dress"]
+}

@@ -1,0 +1,43 @@
+let store_sales = [
+  { sold_date_sk: 1, item_sk: 1, ext_sales_price: 10.0 },
+  { sold_date_sk: 1, item_sk: 2, ext_sales_price: 20.0 },
+  { sold_date_sk: 2, item_sk: 1, ext_sales_price: 15.0 },
+  { sold_date_sk: 1, item_sk: 1, ext_sales_price: 5.0 },
+  { sold_date_sk: 1, item_sk: 2, ext_sales_price: 30.0 }
+]
+
+let item = [
+  { i_item_sk: 1, i_manager_id: 1, i_category_id: 100, i_category: "CatA" },
+  { i_item_sk: 2, i_manager_id: 1, i_category_id: 100, i_category: "CatA" },
+  { i_item_sk: 3, i_manager_id: 2, i_category_id: 200, i_category: "CatB" }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_year: 2020, d_moy: 5 },
+  { d_date_sk: 2, d_year: 2021, d_moy: 5 }
+]
+
+let month = 5
+let year = 2020
+
+let result =
+  from dt in date_dim
+  join ss in store_sales on ss.sold_date_sk == dt.d_date_sk
+  join it in item on ss.item_sk == it.i_item_sk
+  where it.i_manager_id == 1 && dt.d_moy == month && dt.d_year == year
+  group by { d_year: dt.d_year, i_category_id: it.i_category_id, i_category: it.i_category } into g
+  order by -sum(from x in g select x.ss.ext_sales_price), g.key.d_year, g.key.i_category_id, g.key.i_category
+  select {
+    d_year: g.key.d_year,
+    i_category_id: g.key.i_category_id,
+    i_category: g.key.i_category,
+    sum_ss_ext_sales_price: sum(from x in g select x.ss.ext_sales_price)
+  }
+
+json(result)
+
+test "TPCDS Q42 simplified" {
+  expect result == [
+    { d_year: 2020, i_category_id: 100, i_category: "CatA", sum_ss_ext_sales_price: 65.0 }
+  ]
+}
