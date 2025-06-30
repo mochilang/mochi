@@ -155,4 +155,5 @@ from the disassembler:
 | `Except` | Difference of lists B and C | `Except r0, r1, r2` |
 | `Intersect` | Intersection of lists B and C | `Intersect r0, r1, r2` |
 | `Sort` | Sort pairs in list B by first element | `Sort r0, r1` |
+| `First` | First element of list B | `First r0, r1` |
 

@@ -126,6 +126,7 @@ const (
 	OpIntersect
 	OpSort
 	OpExpect
+	OpFirst
 )
 
 func (op Op) String() string {
@@ -278,6 +279,8 @@ func (op Op) String() string {
 		return "Sort"
 	case OpExpect:
 		return "Expect"
+	case OpFirst:
+		return "First"
 	default:
 		return "?"
 	}
@@ -448,6 +451,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpExpect:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
+			case OpFirst:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpMakeClosure:
 				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), p.funcName(ins.B), ins.C, formatReg(ins.D))
 			case OpCall2:
@@ -1099,6 +1104,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(fmt.Errorf("upper expects string"), trace, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToUpper(b.Str)}
+		case OpFirst:
+			list := fr.regs[ins.B]
+			if list.Tag != ValueList || len(list.List) == 0 {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = list.List[0]
+			}
 		case OpInput:
 			line, err := m.reader.ReadString('\n')
 			if err != nil && err != io.EOF {
@@ -1922,7 +1934,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpUpper, OpInput:
+	case OpAppend, OpStr, OpUpper, OpInput, OpFirst:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
@@ -2836,10 +2848,8 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			return dst
 		case "first":
 			arg := fc.compileExpr(p.Call.Args[0])
-			zero := fc.newReg()
-			fc.emit(p.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: ValueInt, Int: 0}})
 			dst := fc.newReg()
-			fc.emit(p.Pos, Instr{Op: OpIndex, A: dst, B: arg, C: zero})
+			fc.emit(p.Pos, Instr{Op: OpFirst, A: dst, B: arg})
 			return dst
 		case "substring":
 			str := fc.compileExpr(p.Call.Args[0])
