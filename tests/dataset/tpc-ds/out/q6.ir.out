@@ -11,6 +11,12 @@ func main (regs=210)
   Const        r4, []
   // from d in date_dim
   Const        r5, []
+  // where d.d_year == 1999 && d.d_moy == 5
+  Const        r6, "d_year"
+  Const        r7, "d_moy"
+  // select d.d_month_seq
+  Const        r8, "d_month_seq"
+  // from d in date_dim
   IterPrep     r9, r3
   Len          r10, r9
   Const        r11, 0
@@ -46,6 +52,24 @@ L0:
   Max          r29, r5
   // from a in customer_address
   Const        r30, []
+  // group by a.ca_state into g
+  Const        r31, "ca_state"
+  // where d.d_month_seq == target_month_seq &&
+  Const        r32, "d_month_seq"
+  // i.i_current_price > 1.2 * avg(
+  Const        r33, "i_current_price"
+  // where j.i_category == i.i_category
+  Const        r34, "i_category"
+  Const        r35, "i_category"
+  // select j.i_current_price
+  Const        r36, "i_current_price"
+  // select { state: g.key, cnt: count(g) }
+  Const        r37, "state"
+  Const        r38, "key"
+  Const        r39, "cnt"
+  // sort by [count(g), g.key]
+  Const        r40, "key"
+  // from a in customer_address
   MakeMap      r41, 0, r0
   Const        r42, []
   IterPrep     r44, r0
@@ -118,6 +142,12 @@ L15:
   Const        r95, 1.2
   // from j in item
   Const        r96, []
+  // where j.i_category == i.i_category
+  Const        r97, "i_category"
+  Const        r98, "i_category"
+  // select j.i_current_price
+  Const        r99, "i_current_price"
+  // from j in item
   IterPrep     r100, r4
   Len          r101, r100
   Const        r102, 0
@@ -260,6 +290,7 @@ L21:
   Const        r191, "count"
   Index        r193, r175, r191
   Const        r194, "key"
+  Index        r196, r175, r194
   MakeList     r198, 2, r193
   // from a in customer_address
   Move         r199, r190
