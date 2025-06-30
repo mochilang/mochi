@@ -797,7 +797,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				if item.Tag == ValueStr {
 					found = strings.Contains(container.Str, item.Str)
 				} else {
-					return Value{}, m.newError(fmt.Errorf("invalid substring type"), trace, ins.Line)
+					found = strings.Contains(container.Str, fmt.Sprint(valueToAny(item)))
 				}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid 'in' operand"), trace, ins.Line)
