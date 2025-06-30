@@ -33,8 +33,18 @@ let result =
   sort by g.key
   select {
     l_shipmode: g.key,
-    high_line_count: sum(from x in g select if x.o.o_orderpriority in ["1-URGENT", "2-HIGH"] { 1 } else { 0 }),
-    low_line_count: sum(from x in g select if !(x.o.o_orderpriority in ["1-URGENT", "2-HIGH"]) { 1 } else { 0 })
+    high_line_count:
+      count(
+        from x in g
+        where x.o.o_orderpriority in ["1-URGENT", "2-HIGH"]
+        select x
+      ),
+    low_line_count:
+      count(
+        from x in g
+        where !(x.o.o_orderpriority in ["1-URGENT", "2-HIGH"])
+        select x
+      )
   }
 
 json(result)
