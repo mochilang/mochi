@@ -1,0 +1,29 @@
+func main (regs=17)
+  // let t = [{id: 1, val: 55}]
+  Const        r0, [{"id": 1, "val": 55}]
+  // let vals = from r in t select r.val
+  Const        r1, []
+  Const        r2, "val"
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r7, r5, r4
+  JumpIfFalse  r7, L0
+  Index        r9, r3, r5
+  Const        r10, "val"
+  Index        r11, r9, r10
+  Append       r1, r1, r11
+  Const        r13, 1
+  AddInt       r5, r5, r13
+  Jump         L1
+L0:
+  // let result = first(vals)
+  First        r14, r1
+  // json(result)
+  JSON         r14
+  // expect result == 55
+  Const        r15, 55
+  Equal        r16, r14, r15
+  Expect       r16
+  Return       r0

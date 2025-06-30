@@ -262,7 +262,7 @@ func Optimize(fn *Function) {
 			changed = true
 		}
 		analysis = Liveness(fn)
-		removed := removeDead(fn, analysis)
+		removed := false // disable dead code removal for now
 		unreachable := removeUnreachable(fn)
 		if unreachable {
 			changed = true
