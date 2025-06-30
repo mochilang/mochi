@@ -7,12 +7,23 @@ type DateDim { d_date_sk: int, d_date: string }
 
 let inventory = [
   { inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 30 },
-  { inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 40 }
+  { inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 40 },
+  { inv_item_sk: 2, inv_warehouse_sk: 2, inv_date_sk: 1, inv_quantity_on_hand: 20 },
+  { inv_item_sk: 2, inv_warehouse_sk: 2, inv_date_sk: 2, inv_quantity_on_hand: 20 }
 ]
 
-let warehouse = [ { w_warehouse_sk: 1, w_warehouse_name: "Main" } ]
-let item = [ { i_item_sk: 1, i_item_id: "ITEM1" } ]
-let date_dim = [ { d_date_sk: 1, d_date: "2000-03-01" }, { d_date_sk: 2, d_date: "2000-03-20" } ]
+let warehouse = [
+  { w_warehouse_sk: 1, w_warehouse_name: "Main" },
+  { w_warehouse_sk: 2, w_warehouse_name: "Backup" }
+]
+let item = [
+  { i_item_sk: 1, i_item_id: "ITEM1" },
+  { i_item_sk: 2, i_item_id: "ITEM2" }
+]
+let date_dim = [
+  { d_date_sk: 1, d_date: "2000-03-01" },
+  { d_date_sk: 2, d_date: "2000-03-20" }
+]
 
 let before =
   from inv in inventory
