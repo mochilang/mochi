@@ -7,9 +7,9 @@ type DateDim { d_date_sk: int, d_moy: int, d_year: int }
 type Store { s_store_sk: int, s_store_id: string, s_store_name: string }
 type Item { i_item_sk: int, i_item_id: string, i_item_desc: string }
 
-let store_sales = [ { ss_sold_date_sk: 1, ss_item_sk: 1, ss_store_sk: 1, ss_customer_sk: 1, ss_quantity: 10, ss_ticket_number: 1 }, { ss_sold_date_sk: 2, ss_item_sk: 2, ss_store_sk: 1, ss_customer_sk: 2, ss_quantity: 4, ss_ticket_number: 2 } ]
-let store_returns = [ { sr_returned_date_sk: 2, sr_item_sk: 1, sr_customer_sk: 1, sr_ticket_number: 1, sr_return_quantity: 2 }, { sr_returned_date_sk: 3, sr_item_sk: 2, sr_customer_sk: 2, sr_ticket_number: 2, sr_return_quantity: 1 } ]
-let catalog_sales = [ { cs_sold_date_sk: 3, cs_item_sk: 1, cs_bill_customer_sk: 1, cs_quantity: 5 }, { cs_sold_date_sk: 4, cs_item_sk: 2, cs_bill_customer_sk: 2, cs_quantity: 1 } ]
+let store_sales = [ { ss_sold_date_sk: 1, ss_item_sk: 1, ss_store_sk: 1, ss_customer_sk: 1, ss_quantity: 10, ss_ticket_number: 1 }, { ss_sold_date_sk: 2, ss_item_sk: 2, ss_store_sk: 1, ss_customer_sk: 2, ss_quantity: 4, ss_ticket_number: 2 }, { ss_sold_date_sk: 1, ss_item_sk: 1, ss_store_sk: 1, ss_customer_sk: 1, ss_quantity: 6, ss_ticket_number: 3 } ]
+let store_returns = [ { sr_returned_date_sk: 2, sr_item_sk: 1, sr_customer_sk: 1, sr_ticket_number: 1, sr_return_quantity: 2 }, { sr_returned_date_sk: 3, sr_item_sk: 2, sr_customer_sk: 2, sr_ticket_number: 2, sr_return_quantity: 1 }, { sr_returned_date_sk: 2, sr_item_sk: 1, sr_customer_sk: 1, sr_ticket_number: 3, sr_return_quantity: 1 } ]
+let catalog_sales = [ { cs_sold_date_sk: 3, cs_item_sk: 1, cs_bill_customer_sk: 1, cs_quantity: 5 }, { cs_sold_date_sk: 4, cs_item_sk: 2, cs_bill_customer_sk: 2, cs_quantity: 1 }, { cs_sold_date_sk: 3, cs_item_sk: 1, cs_bill_customer_sk: 1, cs_quantity: 3 } ]
 
 let date_dim = [
   { d_date_sk: 1, d_moy: 4, d_year: 1999 },
@@ -51,9 +51,9 @@ test "TPCDC Q29 quantity summary" {
       i_item_desc: "Desc1",
       s_store_id: "S1",
       s_store_name: "Store1",
-      store_sales_quantity: 10,
-      store_returns_quantity: 2,
-      catalog_sales_quantity: 5
+      store_sales_quantity: 16,
+      store_returns_quantity: 3,
+      catalog_sales_quantity: 8
     }
   ]
 }

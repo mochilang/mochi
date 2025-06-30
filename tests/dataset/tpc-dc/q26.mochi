@@ -18,7 +18,8 @@ type Promotion { p_promo_sk: int, p_channel_email: string, p_channel_event: stri
 
 let catalog_sales = [
   { cs_sold_date_sk: 1, cs_item_sk: 1, cs_bill_cdemo_sk: 1, cs_promo_sk: 1, cs_quantity: 10, cs_list_price: 100.0, cs_coupon_amt: 5.0, cs_sales_price: 95.0 },
-  { cs_sold_date_sk: 2, cs_item_sk: 2, cs_bill_cdemo_sk: 2, cs_promo_sk: 2, cs_quantity: 5, cs_list_price: 50.0, cs_coupon_amt: 0.0, cs_sales_price: 50.0 }
+  { cs_sold_date_sk: 2, cs_item_sk: 2, cs_bill_cdemo_sk: 2, cs_promo_sk: 2, cs_quantity: 5, cs_list_price: 50.0, cs_coupon_amt: 0.0, cs_sales_price: 50.0 },
+  { cs_sold_date_sk: 1, cs_item_sk: 1, cs_bill_cdemo_sk: 1, cs_promo_sk: 1, cs_quantity: 20, cs_list_price: 120.0, cs_coupon_amt: 10.0, cs_sales_price: 110.0 }
 ]
 
 let customer_demographics = [
@@ -27,7 +28,7 @@ let customer_demographics = [
 ]
 
 let date_dim = [ { d_date_sk: 1, d_year: 2000 }, { d_date_sk: 2, d_year: 1999 } ]
-let item = [ { i_item_sk: 1, i_item_id: "ITEM1" }, { i_item_sk: 2, i_item_id: "ITEM2" } ]
+let item = [ { i_item_sk: 1, i_item_id: "ITEM1" }, { i_item_sk: 2, i_item_id: "ITEM2" }, { i_item_sk: 3, i_item_id: "ITEM3" } ]
 let promotion = [ { p_promo_sk: 1, p_channel_email: "N", p_channel_event: "Y" }, { p_promo_sk: 2, p_channel_email: "Y", p_channel_event: "Y" } ]
 
 let result =
@@ -50,6 +51,6 @@ json(result)
 
 test "TPCDC Q26 demographic averages" {
   expect result == [
-    { i_item_id: "ITEM1", agg1: 10.0, agg2: 100.0, agg3: 5.0, agg4: 95.0 }
+    { i_item_id: "ITEM1", agg1: 15.0, agg2: 110.0, agg3: 7.5, agg4: 102.5 }
   ]
 }

@@ -15,6 +15,9 @@ let inventory = [
   // ITEM2 in Main warehouse - ratio too high
   { inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10 },
   { inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 40 }
+  // ITEM3 in Main warehouse qualifies with ratio 1.5
+  ,{ inv_item_sk: 3, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 60 }
+  ,{ inv_item_sk: 3, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 90 }
 ]
 
 let warehouse = [
@@ -23,7 +26,8 @@ let warehouse = [
 ]
 let item = [
   { i_item_sk: 1, i_item_id: "ITEM1" },
-  { i_item_sk: 2, i_item_id: "ITEM2" }
+  { i_item_sk: 2, i_item_id: "ITEM2" },
+  { i_item_sk: 3, i_item_id: "ITEM3" }
 ]
 let date_dim = [
   { d_date_sk: 1, d_date: "2000-03-01" },
@@ -59,6 +63,7 @@ json(result)
 
 test "TPCDC Q21 inventory ratio" {
   expect result == [
-    { w_warehouse_name: "Main", i_item_id: "ITEM1", inv_before: 30, inv_after: 40 }
+    { w_warehouse_name: "Main", i_item_id: "ITEM1", inv_before: 30, inv_after: 40 },
+    { w_warehouse_name: "Main", i_item_id: "ITEM3", inv_before: 60, inv_after: 90 }
   ]
 }
