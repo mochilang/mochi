@@ -1,0 +1,336 @@
+func main (regs=205)
+  // let web_sales = [
+  Const        r0, [{"ws_ship_hdemo_sk": 1, "ws_sold_time_sk": 1, "ws_web_page_sk": 10}, {"ws_ship_hdemo_sk": 1, "ws_sold_time_sk": 1, "ws_web_page_sk": 10}, {"ws_ship_hdemo_sk": 1, "ws_sold_time_sk": 2, "ws_web_page_sk": 10}]
+  // let household_demographics = [{hd_demo_sk: 1, hd_dep_count: 2}]
+  Const        r1, [{"hd_demo_sk": 1, "hd_dep_count": 2}]
+  // let time_dim = [
+  Const        r2, [{"t_hour": 7, "t_time_sk": 1}, {"t_hour": 14, "t_time_sk": 2}]
+  // let web_page = [{wp_web_page_sk: 10, wp_char_count: 5100}]
+  Const        r3, [{"wp_char_count": 5100, "wp_web_page_sk": 10}]
+  // count(from ws in web_sales
+  Const        r4, []
+  // where t.t_hour >= 7 && t.t_hour <= 8 &&
+  Const        r5, "t_hour"
+  Const        r6, "t_hour"
+  // hd.hd_dep_count == 2 &&
+  Const        r7, "hd_dep_count"
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r8, "wp_char_count"
+  Const        r9, "wp_char_count"
+  // count(from ws in web_sales
+  IterPrep     r10, r0
+  Len          r11, r10
+  Const        r12, 0
+L12:
+  LessInt      r14, r12, r11
+  JumpIfFalse  r14, L0
+  Index        r16, r10, r12
+  // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
+  IterPrep     r17, r1
+  Len          r18, r17
+  Const        r19, "ws_ship_hdemo_sk"
+  Const        r20, "hd_demo_sk"
+  // where t.t_hour >= 7 && t.t_hour <= 8 &&
+  Const        r21, "t_hour"
+  Const        r22, "t_hour"
+  // hd.hd_dep_count == 2 &&
+  Const        r23, "hd_dep_count"
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r24, "wp_char_count"
+  Const        r25, "wp_char_count"
+  // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
+  Const        r26, 0
+L11:
+  LessInt      r28, r26, r18
+  JumpIfFalse  r28, L1
+  Index        r30, r17, r26
+  Const        r31, "ws_ship_hdemo_sk"
+  Index        r32, r16, r31
+  Const        r33, "hd_demo_sk"
+  Index        r34, r30, r33
+  Equal        r35, r32, r34
+  JumpIfFalse  r35, L2
+  // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
+  IterPrep     r36, r2
+  Len          r37, r36
+  Const        r38, "ws_sold_time_sk"
+  Const        r39, "t_time_sk"
+  // where t.t_hour >= 7 && t.t_hour <= 8 &&
+  Const        r40, "t_hour"
+  Const        r41, "t_hour"
+  // hd.hd_dep_count == 2 &&
+  Const        r42, "hd_dep_count"
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r43, "wp_char_count"
+  Const        r44, "wp_char_count"
+  // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
+  Const        r45, 0
+L10:
+  LessInt      r47, r45, r37
+  JumpIfFalse  r47, L2
+  Index        r49, r36, r45
+  Const        r50, "ws_sold_time_sk"
+  Index        r51, r16, r50
+  Const        r52, "t_time_sk"
+  Index        r53, r49, r52
+  Equal        r54, r51, r53
+  JumpIfFalse  r54, L3
+  // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
+  IterPrep     r55, r3
+  Len          r56, r55
+  Const        r57, "ws_web_page_sk"
+  Const        r58, "wp_web_page_sk"
+  // where t.t_hour >= 7 && t.t_hour <= 8 &&
+  Const        r59, "t_hour"
+  Const        r60, "t_hour"
+  // hd.hd_dep_count == 2 &&
+  Const        r61, "hd_dep_count"
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r62, "wp_char_count"
+  Const        r63, "wp_char_count"
+  // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
+  Const        r64, 0
+L9:
+  LessInt      r66, r64, r56
+  JumpIfFalse  r66, L3
+  Index        r68, r55, r64
+  Const        r69, "ws_web_page_sk"
+  Index        r70, r16, r69
+  Const        r71, "wp_web_page_sk"
+  Index        r72, r68, r71
+  Equal        r73, r70, r72
+  JumpIfFalse  r73, L4
+  // where t.t_hour >= 7 && t.t_hour <= 8 &&
+  Const        r74, "t_hour"
+  Index        r75, r49, r74
+  Const        r76, 7
+  LessEq       r77, r76, r75
+  Const        r78, "t_hour"
+  Index        r79, r49, r78
+  Const        r80, 8
+  LessEq       r81, r79, r80
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r82, "wp_char_count"
+  Index        r83, r68, r82
+  Const        r84, 5000
+  LessEq       r85, r84, r83
+  Const        r86, "wp_char_count"
+  Index        r87, r68, r86
+  Const        r88, 5200
+  LessEq       r89, r87, r88
+  // hd.hd_dep_count == 2 &&
+  Const        r90, "hd_dep_count"
+  Index        r91, r30, r90
+  Const        r92, 2
+  Equal        r93, r91, r92
+  // where t.t_hour >= 7 && t.t_hour <= 8 &&
+  Move         r94, r77
+  JumpIfFalse  r94, L5
+L5:
+  Move         r95, r81
+  JumpIfFalse  r95, L6
+L6:
+  // hd.hd_dep_count == 2 &&
+  Move         r96, r93
+  JumpIfFalse  r96, L7
+L7:
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Move         r97, r85
+  JumpIfFalse  r97, L8
+  Move         r97, r89
+L8:
+  // where t.t_hour >= 7 && t.t_hour <= 8 &&
+  JumpIfFalse  r97, L4
+  // count(from ws in web_sales
+  Append       r4, r4, r16
+L4:
+  // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
+  Const        r99, 1
+  Add          r64, r64, r99
+  Jump         L9
+L3:
+  // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
+  Const        r100, 1
+  Add          r45, r45, r100
+  Jump         L10
+L2:
+  // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
+  Const        r101, 1
+  Add          r26, r26, r101
+  Jump         L11
+L1:
+  // count(from ws in web_sales
+  Const        r102, 1
+  AddInt       r12, r12, r102
+  Jump         L12
+L0:
+  Count        r103, r4
+  // count(from ws in web_sales
+  Const        r104, []
+  // where t.t_hour >= 14 && t.t_hour <= 15 &&
+  Const        r105, "t_hour"
+  Const        r106, "t_hour"
+  // hd.hd_dep_count == 2 &&
+  Const        r107, "hd_dep_count"
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r108, "wp_char_count"
+  Const        r109, "wp_char_count"
+  // count(from ws in web_sales
+  IterPrep     r110, r0
+  Len          r111, r110
+  Const        r112, 0
+L25:
+  LessInt      r114, r112, r111
+  JumpIfFalse  r114, L13
+  Index        r16, r110, r112
+  // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
+  IterPrep     r116, r1
+  Len          r117, r116
+  Const        r118, "ws_ship_hdemo_sk"
+  Const        r119, "hd_demo_sk"
+  // where t.t_hour >= 14 && t.t_hour <= 15 &&
+  Const        r120, "t_hour"
+  Const        r121, "t_hour"
+  // hd.hd_dep_count == 2 &&
+  Const        r122, "hd_dep_count"
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r123, "wp_char_count"
+  Const        r124, "wp_char_count"
+  // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
+  Const        r125, 0
+L24:
+  LessInt      r127, r125, r117
+  JumpIfFalse  r127, L14
+  Index        r30, r116, r125
+  Const        r129, "ws_ship_hdemo_sk"
+  Index        r130, r16, r129
+  Const        r131, "hd_demo_sk"
+  Index        r132, r30, r131
+  Equal        r133, r130, r132
+  JumpIfFalse  r133, L15
+  // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
+  IterPrep     r134, r2
+  Len          r135, r134
+  Const        r136, "ws_sold_time_sk"
+  Const        r137, "t_time_sk"
+  // where t.t_hour >= 14 && t.t_hour <= 15 &&
+  Const        r138, "t_hour"
+  Const        r139, "t_hour"
+  // hd.hd_dep_count == 2 &&
+  Const        r140, "hd_dep_count"
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r141, "wp_char_count"
+  Const        r142, "wp_char_count"
+  // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
+  Const        r143, 0
+L23:
+  LessInt      r145, r143, r135
+  JumpIfFalse  r145, L15
+  Index        r49, r134, r143
+  Const        r147, "ws_sold_time_sk"
+  Index        r148, r16, r147
+  Const        r149, "t_time_sk"
+  Index        r150, r49, r149
+  Equal        r151, r148, r150
+  JumpIfFalse  r151, L16
+  // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
+  IterPrep     r152, r3
+  Len          r153, r152
+  Const        r154, "ws_web_page_sk"
+  Const        r155, "wp_web_page_sk"
+  // where t.t_hour >= 14 && t.t_hour <= 15 &&
+  Const        r156, "t_hour"
+  Const        r157, "t_hour"
+  // hd.hd_dep_count == 2 &&
+  Const        r158, "hd_dep_count"
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r159, "wp_char_count"
+  Const        r160, "wp_char_count"
+  // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
+  Const        r161, 0
+L22:
+  LessInt      r163, r161, r153
+  JumpIfFalse  r163, L16
+  Index        r68, r152, r161
+  Const        r165, "ws_web_page_sk"
+  Index        r166, r16, r165
+  Const        r167, "wp_web_page_sk"
+  Index        r168, r68, r167
+  Equal        r169, r166, r168
+  JumpIfFalse  r169, L17
+  // where t.t_hour >= 14 && t.t_hour <= 15 &&
+  Const        r170, "t_hour"
+  Index        r171, r49, r170
+  Const        r172, 14
+  LessEq       r173, r172, r171
+  Const        r174, "t_hour"
+  Index        r175, r49, r174
+  Const        r176, 15
+  LessEq       r177, r175, r176
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Const        r178, "wp_char_count"
+  Index        r179, r68, r178
+  Const        r180, 5000
+  LessEq       r181, r180, r179
+  Const        r182, "wp_char_count"
+  Index        r183, r68, r182
+  Const        r184, 5200
+  LessEq       r185, r183, r184
+  // hd.hd_dep_count == 2 &&
+  Const        r186, "hd_dep_count"
+  Index        r187, r30, r186
+  Const        r188, 2
+  Equal        r189, r187, r188
+  // where t.t_hour >= 14 && t.t_hour <= 15 &&
+  Move         r190, r173
+  JumpIfFalse  r190, L18
+L18:
+  Move         r191, r177
+  JumpIfFalse  r191, L19
+L19:
+  // hd.hd_dep_count == 2 &&
+  Move         r192, r189
+  JumpIfFalse  r192, L20
+L20:
+  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  Move         r193, r181
+  JumpIfFalse  r193, L21
+  Move         r193, r185
+L21:
+  // where t.t_hour >= 14 && t.t_hour <= 15 &&
+  JumpIfFalse  r193, L17
+  // count(from ws in web_sales
+  Append       r104, r104, r16
+L17:
+  // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
+  Const        r195, 1
+  Add          r161, r161, r195
+  Jump         L22
+L16:
+  // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
+  Const        r196, 1
+  Add          r143, r143, r196
+  Jump         L23
+L15:
+  // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
+  Const        r197, 1
+  Add          r125, r125, r197
+  Jump         L24
+L14:
+  // count(from ws in web_sales
+  Const        r198, 1
+  AddInt       r112, r112, r198
+  Jump         L25
+L13:
+  Count        r199, r104
+  // let result = (amc as float) / (pmc as float)
+  Cast         r200, r103, float
+  Cast         r201, r199, float
+  Div          r202, r200, r201
+  // json(result)
+  JSON         r202
+  // expect result == 2.0
+  Const        r203, 2
+  EqualFloat   r204, r202, r203
+  Expect       r204
+  Return       r0

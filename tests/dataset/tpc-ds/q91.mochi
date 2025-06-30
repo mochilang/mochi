@@ -25,7 +25,7 @@ let customer_demographics = [{cd_demo_sk: 1, cd_marital_status: "M", cd_educatio
 let household_demographics = [{hd_demo_sk: 1, hd_buy_potential: "1001-5000"}]
 let customer_address = [{ca_address_sk: 1, ca_gmt_offset: -6}]
 
-let result =
+let result = first(
   from cc in call_center
   join cr in catalog_returns on cc.cc_call_center_sk == cr.cr_call_center_sk
   join d in date_dim on cr.cr_returned_date_sk == d.d_date_sk
@@ -35,14 +35,14 @@ let result =
   join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
   where d.d_year == 2001 && d.d_moy == 5 &&
         cd.cd_marital_status == "M" && cd.cd_education_status == "Unknown" &&
-        hd.hd_buy_potential == "1001-5000" && ca.ca_gmt_offset == -6
+        hd.hd_buy_potential == "1001-5000" && ca.ca_gmt_offset == (-6)
   group by {id: cc.cc_call_center_id, name: cc.cc_name, mgr: cc.cc_manager} into g
   select {
     Call_Center: g.key.id,
     Call_Center_Name: g.key.name,
     Manager: g.key.mgr,
     Returns_Loss: sum(from x in g select x.cr_net_loss)
-  } |> first
+  })
 
 json(result)
 

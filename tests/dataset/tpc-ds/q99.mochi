@@ -31,7 +31,7 @@ let grouped =
     d90: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 60 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 90 select x),
     d120: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 90 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 120 select x),
     dmore: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 120 select x)
-  } |> collect
+  }
 
 json(grouped)
 

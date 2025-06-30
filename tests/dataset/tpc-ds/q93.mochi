@@ -27,7 +27,7 @@ let t =
 let result =
   from x in t
   group by x.ss_customer_sk into g
-  select {ss_customer_sk: g.key, sumsales: sum(from y in g select y.act_sales)} |> collect
+  select {ss_customer_sk: g.key, sumsales: sum(from y in g select y.act_sales)}
 
 json(result)
 
