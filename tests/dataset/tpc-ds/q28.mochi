@@ -4,7 +4,8 @@ type StoreSale { ss_quantity: int, ss_list_price: float, ss_coupon_amt: float, s
 
 let store_sales = [
   { ss_quantity: 3, ss_list_price: 100.0, ss_coupon_amt: 50.0, ss_wholesale_cost: 30.0 },
-  { ss_quantity: 8, ss_list_price: 80.0, ss_coupon_amt: 10.0, ss_wholesale_cost: 20.0 }
+  { ss_quantity: 8, ss_list_price: 80.0, ss_coupon_amt: 10.0, ss_wholesale_cost: 20.0 },
+  { ss_quantity: 12, ss_list_price: 60.0, ss_coupon_amt: 5.0, ss_wholesale_cost: 15.0 }
 ]
 
 let bucket1 =

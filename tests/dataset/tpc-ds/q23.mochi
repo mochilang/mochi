@@ -1,8 +1,86 @@
-let t = [{id: 1, val: 23}]
-let vals = from r in t select r.val
-let result = vals[0]
+// Sales from best customers on frequently sold items
+
+// Schema definitions
+
+type StoreSale {
+  ss_item_sk: int
+  ss_sold_date_sk: int
+  ss_customer_sk: int
+  ss_quantity: int
+  ss_sales_price: float
+}
+
+type DateDim { d_date_sk: int, d_year: int, d_moy: int }
+
+type Item { i_item_sk: int }
+
+type CatalogSale { cs_sold_date_sk: int, cs_item_sk: int, cs_bill_customer_sk: int, cs_quantity: int, cs_list_price: float }
+
+type WebSale { ws_sold_date_sk: int, ws_item_sk: int, ws_bill_customer_sk: int, ws_quantity: int, ws_list_price: float }
+
+// Sample data
+let store_sales = [
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_customer_sk: 1, ss_quantity: 1, ss_sales_price: 10.0 },
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_customer_sk: 1, ss_quantity: 1, ss_sales_price: 10.0 },
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_customer_sk: 1, ss_quantity: 1, ss_sales_price: 10.0 },
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_customer_sk: 1, ss_quantity: 1, ss_sales_price: 10.0 },
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_customer_sk: 1, ss_quantity: 1, ss_sales_price: 10.0 },
+  { ss_item_sk: 2, ss_sold_date_sk: 1, ss_customer_sk: 2, ss_quantity: 1, ss_sales_price: 10.0 },
+  { ss_item_sk: 2, ss_sold_date_sk: 1, ss_customer_sk: 2, ss_quantity: 1, ss_sales_price: 10.0 },
+  { ss_item_sk: 2, ss_sold_date_sk: 1, ss_customer_sk: 2, ss_quantity: 1, ss_sales_price: 10.0 }
+]
+
+let date_dim = [ { d_date_sk: 1, d_year: 2000, d_moy: 1 } ]
+let item = [ { i_item_sk: 1 }, { i_item_sk: 2 } ]
+let catalog_sales = [
+  { cs_sold_date_sk: 1, cs_item_sk: 1, cs_bill_customer_sk: 1, cs_quantity: 2, cs_list_price: 10.0 },
+  { cs_sold_date_sk: 1, cs_item_sk: 2, cs_bill_customer_sk: 2, cs_quantity: 2, cs_list_price: 10.0 }
+]
+let web_sales = [
+  { ws_sold_date_sk: 1, ws_item_sk: 1, ws_bill_customer_sk: 1, ws_quantity: 3, ws_list_price: 10.0 },
+  { ws_sold_date_sk: 1, ws_item_sk: 2, ws_bill_customer_sk: 2, ws_quantity: 1, ws_list_price: 10.0 }
+]
+
+// Frequent store items
+let frequent_ss_items =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  where d.d_year == 2000
+  group by { item_sk: i.i_item_sk, date_sk: d.d_date_sk } into g
+  having count(g) > 4
+  select g.key.item_sk
+
+// Best store customers
+let customer_totals =
+  from ss in store_sales
+  group by ss.ss_customer_sk into g
+  select { cust: g.key, sales: sum(from x in g select x.ss_quantity * x.ss_sales_price) }
+
+let max_sales = max(from c in customer_totals select c.sales)
+
+let best_ss_customer =
+  from c in customer_totals
+  where c.sales > 0.95 * max_sales
+  select c.cust
+
+// Sales from catalog and web for those customers and items in Jan 2000
+let catalog =
+  from cs in catalog_sales
+  join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+  where d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk in best_ss_customer && cs.cs_item_sk in frequent_ss_items
+  select cs.cs_quantity * cs.cs_list_price
+
+let web =
+  from ws in web_sales
+  join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
+  where d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk in best_ss_customer && ws.ws_item_sk in frequent_ss_items
+  select ws.ws_quantity * ws.ws_list_price
+
+let result = sum(catalog) + sum(web)
+
 json(result)
 
-test "TPCDS Q23 placeholder" {
-  expect result == 23
+test "TPCDS Q23 cross-channel sales" {
+  expect result == 50.0
 }

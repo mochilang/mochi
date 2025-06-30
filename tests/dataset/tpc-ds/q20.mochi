@@ -20,7 +20,10 @@ type DateDim { d_date_sk: int, d_date: string }
 let catalog_sales = [
   { cs_item_sk: 1, cs_sold_date_sk: 1, cs_ext_sales_price: 100.0 },
   { cs_item_sk: 1, cs_sold_date_sk: 1, cs_ext_sales_price: 200.0 },
-  { cs_item_sk: 2, cs_sold_date_sk: 1, cs_ext_sales_price: 150.0 }
+  { cs_item_sk: 2, cs_sold_date_sk: 1, cs_ext_sales_price: 150.0 },
+  { cs_item_sk: 1, cs_sold_date_sk: 2, cs_ext_sales_price: 300.0 },
+  { cs_item_sk: 2, cs_sold_date_sk: 2, cs_ext_sales_price: 150.0 },
+  { cs_item_sk: 3, cs_sold_date_sk: 1, cs_ext_sales_price: 50.0 }
 ]
 
 let item = [
@@ -39,10 +42,21 @@ let item = [
     i_category: "A",
     i_class: "X",
     i_current_price: 20.0
+  },
+  {
+    i_item_sk: 3,
+    i_item_id: "ITEM3",
+    i_item_desc: "Item Three",
+    i_category: "D",
+    i_class: "Y",
+    i_current_price: 15.0
   }
 ]
 
-let date_dim = [ { d_date_sk: 1, d_date: "2000-02-10" } ]
+let date_dim = [
+  { d_date_sk: 1, d_date: "2000-02-10" },
+  { d_date_sk: 2, d_date: "2000-02-20" }
+]
 
 let filtered =
   from cs in catalog_sales
