@@ -1,0 +1,20 @@
+let store = [
+  {sales: 25, returns: 1},
+  {sales: 20, returns: 1}
+]
+let catalog = [
+  {sales: 15, returns: 1}
+]
+let web = [
+  {sales: 13, returns: 1}
+]
+
+let total_sales = sum(from x in store ++ catalog ++ web select x.sales)
+let total_returns = sum(from x in store ++ catalog ++ web select x.returns)
+let result = total_sales + total_returns
+
+json(result)
+
+test "TPCDC Q77 simplified" {
+  expect result == 77
+}

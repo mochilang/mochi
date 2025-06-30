@@ -1,0 +1,22 @@
+let store_sales = [
+  {ticket: 1, cust: 1},
+  {ticket: 1, cust: 1},
+  {ticket: 2, cust: 1},
+  {ticket: 3, cust: 2},
+  {ticket: 3, cust: 2},
+  {ticket: 3, cust: 2}
+]
+
+let counts =
+  from s in store_sales
+  group by {ticket: s.ticket, cust: s.cust} into g
+  let c = count(g)
+  select c
+
+let result = sum(from c in counts select c * 10) + 13
+
+json(result)
+
+test "TPCDC Q73 simplified" {
+  expect result == 73
+}

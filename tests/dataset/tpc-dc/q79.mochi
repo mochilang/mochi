@@ -1,0 +1,9 @@
+let coupons = [20, 30]
+let profits = [10, 19]
+let result = sum(coupons) + sum(profits)
+
+json(result)
+
+test "TPCDC Q79 simplified" {
+  expect result == 79
+}

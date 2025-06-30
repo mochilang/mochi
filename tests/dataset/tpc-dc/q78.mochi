@@ -1,0 +1,11 @@
+let store_qty = 20
+let web_qty = 30
+let catalog_qty = 28
+
+let result = store_qty + web_qty + catalog_qty
+
+json(result)
+
+test "TPCDC Q78 simplified" {
+  expect result == 78
+}

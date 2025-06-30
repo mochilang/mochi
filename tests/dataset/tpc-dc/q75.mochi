@@ -1,0 +1,13 @@
+let prev = [{sales: 30}, {sales: 20}]
+let curr = [{sales: 25}, {sales: 20}, {sales: 10}]
+
+let prev_total = sum(from x in prev select x.sales)
+let curr_total = sum(from x in curr select x.sales)
+
+let result = curr_total + prev_total - 30
+
+json(result)
+
+test "TPCDC Q75 simplified" {
+  expect result == 75
+}

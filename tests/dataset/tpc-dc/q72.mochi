@@ -1,0 +1,16 @@
+let sales = [
+  {promo: true, qty: 20},
+  {promo: false, qty: 15},
+  {promo: true, qty: 17},
+  {promo: false, qty: 20}
+]
+
+let no_promo_sum = sum(from s in sales where !s.promo select s.qty)
+let promo_sum = sum(from s in sales where s.promo select s.qty)
+let result = no_promo_sum + promo_sum
+
+json(result)
+
+test "TPCDC Q72 simplified" {
+  expect result == 72
+}

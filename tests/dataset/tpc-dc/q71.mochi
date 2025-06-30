@@ -1,0 +1,19 @@
+let web_sales = [
+  {price: 30},
+  {price: 11}
+]
+let catalog_sales = [
+  {price: 15}
+]
+let store_sales = [
+  {price: 15}
+]
+
+let all_sales = web_sales ++ catalog_sales ++ store_sales
+let result = sum(from s in all_sales select s.price)
+
+json(result)
+
+test "TPCDC Q71 simplified" {
+  expect result == 71
+}
