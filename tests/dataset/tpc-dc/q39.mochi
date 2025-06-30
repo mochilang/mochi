@@ -1,0 +1,54 @@
+import python "math" as math
+extern fun math.pow(x: float, y: float): float
+extern fun math.sqrt(x: float): float
+
+let inventory = [
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10},
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 10},
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 250}
+]
+
+let item = [
+  {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 50},
+  {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 60},
+  {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 55}
+  {i_item_sk: 1}
+]
+
+  {i_item_sk: 2}
+let warehouse = [
+  {w_warehouse_sk: 1, w_warehouse_name: "W1"}
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_year: 2000, d_moy: 1},
+  {d_date_sk: 2, d_year: 2000, d_moy: 2},
+  {d_date_sk: 3, d_year: 2000, d_moy: 3}
+]
+
+let monthly =
+  from inv in inventory
+  join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  join i in item on inv.inv_item_sk == i.i_item_sk
+  join w in warehouse on inv.inv_warehouse_sk == w.w_warehouse_sk
+  where d.d_year == 2000
+  group by {w: w.w_warehouse_sk, i: i.i_item_sk, month: d.d_moy} into g
+  select {w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand)}
+
+let summary =
+  from m in monthly
+  group by {w: m.w, i: m.i} into g
+  let qtys = to_list(from x in g select x.qty)
+  let mean = avg(qtys)
+  let variance = avg(from q in qtys select math.pow(q - mean, 2.0))
+  let stdev = math.sqrt(variance)
+  let cov = stdev / mean
+  where cov > 1.5
+  select {w_warehouse_sk: g.key.w, i_item_sk: g.key.i, cov: cov}
+  |> to_list
+
+json(summary)
+
+test "TPCDC Q39 simplified" {
+  expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.5396007178390022}]
+}
