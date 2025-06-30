@@ -1,7 +1,55 @@
-let t = [{id: 1, val: 40}]
-let result = from r in t select r.val |> first
+let catalog_sales = [
+  { order: 1, item_sk: 1, warehouse_sk: 1, date_sk: 1, price: 100.0 },
+  { order: 2, item_sk: 1, warehouse_sk: 1, date_sk: 2, price: 150.0 }
+]
+
+let catalog_returns = [
+  { order: 2, item_sk: 1, refunded: 150.0 }
+]
+
+let item = [
+  { item_sk: 1, item_id: "I1", current_price: 1.2 }
+]
+
+let warehouse = [
+  { warehouse_sk: 1, state: "CA" }
+]
+
+let date_dim = [
+  { date_sk: 1, date: "2020-01-10" },
+  { date_sk: 2, date: "2020-01-20" }
+]
+
+let sales_date = "2020-01-15"
+
+let records =
+  from cs in catalog_sales
+  left join cr in catalog_returns on cs.order == cr.order && cs.item_sk == cr.item_sk
+  join w in warehouse on cs.warehouse_sk == w.warehouse_sk
+  join i in item on cs.item_sk == i.item_sk
+  join d in date_dim on cs.date_sk == d.date_sk
+  where i.current_price >= 0.99 && i.current_price <= 1.49
+  select {
+    w_state: w.state,
+    i_item_id: i.item_id,
+    sold_date: d.date,
+    net: cs.price - (cr?refunded ?? 0.0)
+  }
+
+let result =
+  from r in records
+  group by { w_state: r.w_state, i_item_id: r.i_item_id } into g
+  select {
+    w_state: g.key.w_state,
+    i_item_id: g.key.i_item_id,
+    sales_before: sum(from x in g select x.sold_date < sales_date ? x.net : 0.0),
+    sales_after: sum(from x in g select x.sold_date >= sales_date ? x.net : 0.0)
+  }
+
 json(result)
 
-test "TPCDS Q40 placeholder" {
-  expect result == 40
+test "TPCDS Q40 simplified" {
+  expect result == [
+    { w_state: "CA", i_item_id: "I1", sales_before: 100.0, sales_after: 0.0 }
+  ]
 }
