@@ -1,15 +1,12 @@
-func main (regs=18)
+func main (regs=140)
   // let company_type = [
   Const        r0, [{"ct_id": 1, "kind": "production companies"}, {"ct_id": 2, "kind": "other"}]
   // let info_type = [
   Const        r1, [{"info": "languages", "it_id": 10}]
-L8:
   // let title = [
   Const        r2, [{"production_year": 2010, "t_id": 100, "title": "B Movie"}, {"production_year": 2012, "t_id": 200, "title": "A Film"}, {"production_year": 2000, "t_id": 300, "title": "Old Movie"}]
-L11:
   // let movie_companies = [
   Const        r3, [{"company_type_id": 1, "movie_id": 100, "note": "ACME (France) (theatrical)"}, {"company_type_id": 1, "movie_id": 200, "note": "ACME (France) (theatrical)"}, {"company_type_id": 1, "movie_id": 300, "note": "ACME (France) (theatrical)"}]
-L2:
   // let movie_info = [
   Const        r4, [{"info": "German", "info_type_id": 10, "movie_id": 100}, {"info": "Swedish", "info_type_id": 10, "movie_id": 200}, {"info": "German", "info_type_id": 10, "movie_id": 300}]
   // from ct in company_type
@@ -20,216 +17,222 @@ L2:
   Const        r7, "note"
   // "(France)" in mc.note &&
   Const        r8, "note"
-L7:
   // t.production_year > 2005 &&
   Const        r9, "production_year"
-L5:
   // (mi.info in [
   Const        r10, "info"
-L10:
   // select t.title
   Const        r11, "title"
-L9:
   // from ct in company_type
-  IterPrep     r6, r0
+  IterPrep     r12, r0
+  Len          r13, r12
+  Const        r14, 0
+L14:
+  LessInt      r16, r14, r13
+  JumpIfFalse  r16, L0
+  Index        r18, r12, r14
+  // join mc in movie_companies on mc.company_type_id == ct.ct_id
+  IterPrep     r19, r3
+  Len          r20, r19
+  Const        r21, "company_type_id"
+  Const        r22, "ct_id"
+  // where ct.kind == "production companies" &&
+  Const        r23, "kind"
+  // "(theatrical)" in mc.note &&
+  Const        r24, "note"
+  // "(France)" in mc.note &&
+  Const        r25, "note"
+  // t.production_year > 2005 &&
+  Const        r26, "production_year"
+  // (mi.info in [
+  Const        r27, "info"
+  // select t.title
+  Const        r28, "title"
+  // join mc in movie_companies on mc.company_type_id == ct.ct_id
+  Const        r29, 0
+L13:
+  LessInt      r31, r29, r20
+  JumpIfFalse  r31, L1
+  Index        r33, r19, r29
+  Const        r34, "company_type_id"
+  Index        r35, r33, r34
+  Const        r36, "ct_id"
+  Index        r37, r18, r36
+  Equal        r38, r35, r37
+  JumpIfFalse  r38, L2
+  // join mi in movie_info on mi.movie_id == mc.movie_id
+  IterPrep     r39, r4
+  Len          r40, r39
+  Const        r41, "movie_id"
+  Const        r42, "movie_id"
+  // where ct.kind == "production companies" &&
+  Const        r43, "kind"
+  // "(theatrical)" in mc.note &&
+  Const        r44, "note"
+  // "(France)" in mc.note &&
+  Const        r45, "note"
+  // t.production_year > 2005 &&
+  Const        r46, "production_year"
+  // (mi.info in [
+  Const        r47, "info"
+  // select t.title
+  Const        r48, "title"
+  // join mi in movie_info on mi.movie_id == mc.movie_id
+  Const        r49, 0
+L12:
+  LessInt      r51, r49, r40
+  JumpIfFalse  r51, L2
+  Index        r53, r39, r49
+  Const        r54, "movie_id"
+  Index        r55, r53, r54
+  Const        r56, "movie_id"
+  Index        r57, r33, r56
+  Equal        r58, r55, r57
+  JumpIfFalse  r58, L3
+  // join it in info_type on it.it_id == mi.info_type_id
+  IterPrep     r59, r1
+  Len          r60, r59
+  Const        r61, "it_id"
+  Const        r62, "info_type_id"
+  // where ct.kind == "production companies" &&
+  Const        r63, "kind"
+  // "(theatrical)" in mc.note &&
+  Const        r64, "note"
+  // "(France)" in mc.note &&
+  Const        r65, "note"
+  // t.production_year > 2005 &&
+  Const        r66, "production_year"
+  // (mi.info in [
+  Const        r67, "info"
+  // select t.title
+  Const        r68, "title"
+  // join it in info_type on it.it_id == mi.info_type_id
+  Const        r69, 0
+L11:
+  LessInt      r71, r69, r60
+  JumpIfFalse  r71, L3
+  Index        r73, r59, r69
+  Const        r74, "it_id"
+  Index        r75, r73, r74
+  Const        r76, "info_type_id"
+  Index        r77, r53, r76
+  Equal        r78, r75, r77
+  JumpIfFalse  r78, L4
+  // join t in title on t.t_id == mc.movie_id
+  IterPrep     r79, r2
+  Len          r80, r79
+  Const        r81, "t_id"
+  Const        r82, "movie_id"
+  // where ct.kind == "production companies" &&
+  Const        r83, "kind"
+  // "(theatrical)" in mc.note &&
+  Const        r84, "note"
+  // "(France)" in mc.note &&
+  Const        r85, "note"
+  // t.production_year > 2005 &&
+  Const        r86, "production_year"
+  // (mi.info in [
+  Const        r87, "info"
+  // select t.title
+  Const        r88, "title"
+  // join t in title on t.t_id == mc.movie_id
+  Const        r89, 0
+L10:
+  LessInt      r91, r89, r80
+  JumpIfFalse  r91, L4
+  Index        r93, r79, r89
+  Const        r94, "t_id"
+  Index        r95, r93, r94
+  Const        r96, "movie_id"
+  Index        r97, r33, r96
+  Equal        r98, r95, r97
+  JumpIfFalse  r98, L5
+  // where ct.kind == "production companies" &&
+  Const        r99, "kind"
+  Index        r100, r18, r99
+  // t.production_year > 2005 &&
+  Const        r101, "production_year"
+  Index        r102, r93, r101
+  Const        r103, 2005
+  Less         r104, r103, r102
+  // where ct.kind == "production companies" &&
+  Const        r105, "production companies"
+  Equal        r106, r100, r105
+  // "(theatrical)" in mc.note &&
+  Const        r107, "(theatrical)"
+  Const        r108, "note"
+  Index        r109, r33, r108
+  In           r110, r107, r109
+  // "(France)" in mc.note &&
+  Const        r111, "(France)"
+  Const        r112, "note"
+  Index        r113, r33, r112
+  In           r114, r111, r113
+  // where ct.kind == "production companies" &&
+  Move         r115, r106
+  JumpIfFalse  r115, L6
 L6:
-  Len          r7, r6
-  Const        r8, 0
-L3:
-  LessInt      r9, r8, r7
-L4:
-  JumpIfFalse  r9, L0
-  Index        r10, r6, r8
-  // join mc in movie_companies on mc.company_type_id == ct.ct_id
-  IterPrep     r11, r3
-  Len          r7, r11
-  Const        r9, "company_type_id"
-  Const        r6, "ct_id"
-  // where ct.kind == "production companies" &&
-  Const        r3, "kind"
   // "(theatrical)" in mc.note &&
-  Const        r9, "note"
+  Move         r116, r110
+  JumpIfFalse  r116, L7
+L7:
   // "(France)" in mc.note &&
-  Const        r6, "note"
+  Move         r117, r114
+  JumpIfFalse  r117, L8
+L8:
   // t.production_year > 2005 &&
-  Const        r3, "production_year"
+  Move         r118, r104
+  JumpIfFalse  r118, L9
   // (mi.info in [
-  Const        r9, "info"
+  Const        r119, "info"
+  Index        r120, r53, r119
+  Const        r121, ["Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"]
+  In           r118, r120, r121
+L9:
+  // where ct.kind == "production companies" &&
+  JumpIfFalse  r118, L5
   // select t.title
-  Const        r6, "title"
-  // join mc in movie_companies on mc.company_type_id == ct.ct_id
-  Const        r3, 0
-  LessInt      r9, r3, r7
-  JumpIfFalse  r9, L1
-  Index        r6, r11, r3
-  Const        r7, "company_type_id"
-  Index        r9, r6, r7
-  Const        r11, "ct_id"
-  Index        r7, r10, r11
-  Equal        r11, r9, r7
-  JumpIfFalse  r11, L2
-  // join mi in movie_info on mi.movie_id == mc.movie_id
-  IterPrep     r9, r4
-  Len          r7, r9
-  Const        r11, "movie_id"
-  Const        r4, "movie_id"
-  // where ct.kind == "production companies" &&
-  Const        r11, "kind"
-  // "(theatrical)" in mc.note &&
-  Const        r4, "note"
-  // "(France)" in mc.note &&
-  Const        r11, "note"
-  // t.production_year > 2005 &&
-  Const        r4, "production_year"
-  // (mi.info in [
-  Const        r11, "info"
-  // select t.title
-  Const        r4, "title"
-  // join mi in movie_info on mi.movie_id == mc.movie_id
-  Const        r11, 0
-  LessInt      r4, r11, r7
-  JumpIfFalse  r4, L2
-  Index        r7, r9, r11
-  Const        r4, "movie_id"
-  Index        r9, r7, r4
-  Const        r4, "movie_id"
-  Index        r12, r6, r4
-  Equal        r4, r9, r12
-  JumpIfFalse  r4, L3
-  // join it in info_type on it.it_id == mi.info_type_id
-  IterPrep     r9, r1
-  Len          r12, r9
-  Const        r4, "it_id"
-  Const        r1, "info_type_id"
-  // where ct.kind == "production companies" &&
-  Const        r4, "kind"
-  // "(theatrical)" in mc.note &&
-  Const        r1, "note"
-  // "(France)" in mc.note &&
-  Const        r4, "note"
-  // t.production_year > 2005 &&
-  Const        r1, "production_year"
-  // (mi.info in [
-  Const        r4, "info"
-  // select t.title
-  Const        r1, "title"
-  // join it in info_type on it.it_id == mi.info_type_id
-  Const        r4, 0
-  LessInt      r1, r4, r12
-  JumpIfFalse  r1, L3
-  Index        r12, r9, r4
-  Const        r1, "it_id"
-  Index        r9, r12, r1
-  Const        r12, "info_type_id"
-  Index        r1, r7, r12
-  Equal        r12, r9, r1
-  JumpIfFalse  r12, L4
-  // join t in title on t.t_id == mc.movie_id
-  IterPrep     r9, r2
-  Len          r1, r9
-  Const        r12, "t_id"
-  Const        r2, "movie_id"
-  // where ct.kind == "production companies" &&
-  Const        r12, "kind"
-  // "(theatrical)" in mc.note &&
-  Const        r2, "note"
-  // "(France)" in mc.note &&
-  Const        r12, "note"
-  // t.production_year > 2005 &&
-  Const        r2, "production_year"
-  // (mi.info in [
-  Const        r12, "info"
-  // select t.title
-  Const        r2, "title"
-  // join t in title on t.t_id == mc.movie_id
-  Const        r12, 0
-  LessInt      r2, r12, r1
-  JumpIfFalse  r2, L4
-  Index        r1, r9, r12
-  Const        r2, "t_id"
-  Index        r9, r1, r2
-  Const        r2, "movie_id"
-  Index        r13, r6, r2
-  Equal        r2, r9, r13
-  JumpIfFalse  r2, L5
-  // where ct.kind == "production companies" &&
-  Const        r9, "kind"
-  Index        r13, r10, r9
-  // t.production_year > 2005 &&
-  Const        r2, "production_year"
-  Index        r10, r1, r2
-  Const        r9, 2005
-  Less         r2, r9, r10
-  // where ct.kind == "production companies" &&
-  Const        r10, "production companies"
-  Equal        r9, r13, r10
-  // "(theatrical)" in mc.note &&
-  Const        r13, "(theatrical)"
-  Const        r10, "note"
-  Index        r14, r6, r10
-  In           r10, r13, r14
-  // "(France)" in mc.note &&
-  Const        r13, "(France)"
-  Const        r14, "note"
-  Index        r15, r6, r14
-  In           r6, r13, r15
-  // where ct.kind == "production companies" &&
-  Move         r14, r9
-  JumpIfFalse  r14, L6
-  // "(theatrical)" in mc.note &&
-  Move         r13, r10
-  JumpIfFalse  r13, L7
-  // "(France)" in mc.note &&
-  Move         r15, r6
-  JumpIfFalse  r15, L5
-  // t.production_year > 2005 &&
-  Move         r9, r2
-  JumpIfFalse  r9, L8
-  // (mi.info in [
-  Const        r14, "info"
-  Index        r10, r7, r14
-  Const        r13, ["Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"]
-  In           r9, r10, r13
-  // where ct.kind == "production companies" &&
-  JumpIfFalse  r9, L5
-  // select t.title
-  Const        r6, "title"
-  Index        r15, r1, r6
+  Const        r123, "title"
+  Index        r124, r93, r123
   // from ct in company_type
-  Append       r5, r5, r15
+  Append       r5, r5, r124
+L5:
   // join t in title on t.t_id == mc.movie_id
-  Const        r2, 1
-  Add          r12, r12, r2
-  Jump         L9
-  // join it in info_type on it.it_id == mi.info_type_id
-  Const        r7, 1
-  Add          r4, r4, r7
-  Jump         L2
-  // join mi in movie_info on mi.movie_id == mc.movie_id
-  Const        r14, 1
-  Add          r11, r11, r14
+  Const        r126, 1
+  Add          r89, r89, r126
   Jump         L10
-  // join mc in movie_companies on mc.company_type_id == ct.ct_id
-  Const        r9, 1
-  Add          r3, r3, r9
+L4:
+  // join it in info_type on it.it_id == mi.info_type_id
+  Const        r127, 1
+  Add          r69, r69, r127
   Jump         L11
+L3:
+  // join mi in movie_info on mi.movie_id == mc.movie_id
+  Const        r128, 1
+  Add          r49, r49, r128
+  Jump         L12
+L2:
+  // join mc in movie_companies on mc.company_type_id == ct.ct_id
+  Const        r129, 1
+  Add          r29, r29, r129
+  Jump         L13
 L1:
   // from ct in company_type
-  Const        r10, 1
-  AddInt       r8, r8, r10
-  Jump         L6
+  Const        r130, 1
+  AddInt       r14, r14, r130
+  Jump         L14
 L0:
   // let result = [ { typical_european_movie: min(candidate_titles) } ]
-  Const        r1, "typical_european_movie"
-  Min          r6, r5
-  Move         r16, r1
-  Move         r17, r6
-  MakeMap      r15, 1, r16
-  MakeList     r12, 1, r15
+  Const        r131, "typical_european_movie"
+  Min          r132, r5
+  Move         r133, r131
+  Move         r134, r132
+  MakeMap      r136, 1, r133
+  MakeList     r137, 1, r136
   // json(result)
-  JSON         r12
+  JSON         r137
   // expect result == [ { typical_european_movie: "A Film" } ]
-  Const        r2, [{"typical_european_movie": "A Film"}]
-  Equal        r4, r12, r2
-  Expect       r4
+  Const        r138, [{"typical_european_movie": "A Film"}]
+  Equal        r139, r137, r138
+  Expect       r139
   Return       r0
