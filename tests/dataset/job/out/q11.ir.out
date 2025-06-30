@@ -1,4 +1,4 @@
-func main (regs=447)
+func main (regs=190)
   // let company_name = [
   Const        r0, [{"country_code": "[us]", "id": 1, "name": "Best Film Co"}, {"country_code": "[de]", "id": 2, "name": "Warner Studios"}, {"country_code": "[pl]", "id": 3, "name": "Polish Films"}]
   // let company_type = [
@@ -22,644 +22,312 @@ func main (regs=447)
   // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
   Const        r10, "name"
   Const        r11, "contains"
-  Const        r12, "name"
-  Const        r13, "contains"
   // ct.kind == "production companies" &&
-  Const        r14, "kind"
+  Const        r12, "kind"
   // k.keyword == "sequel" &&
-  Const        r15, "keyword"
+  Const        r13, "keyword"
   // lt.link.contains("follow") &&
-  Const        r16, "link"
-  Const        r17, "contains"
+  Const        r14, "link"
   // mc.note == null &&
-  Const        r18, "note"
+  Const        r15, "note"
   // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Const        r19, "production_year"
-  Const        r20, "production_year"
+  Const        r16, "production_year"
   // ml.movie_id == mk.movie_id &&
-  Const        r21, "movie_id"
-  Const        r22, "movie_id"
-  // ml.movie_id == mc.movie_id &&
-  Const        r23, "movie_id"
-  Const        r24, "movie_id"
-  // mk.movie_id == mc.movie_id
-  Const        r25, "movie_id"
-  Const        r26, "movie_id"
+  Const        r17, "movie_id"
   // select { company: cn.name, link: lt.link, title: t.title }
-  Const        r27, "company"
-  Const        r28, "name"
-  Const        r29, "link"
-  Const        r30, "link"
-  Const        r31, "title"
-  Const        r32, "title"
+  Const        r18, "company"
+  Const        r19, "title"
   // from cn in company_name
-  IterPrep     r33, r0
-  Len          r34, r33
-  Const        r35, 0
-L26:
-  LessInt      r37, r35, r34
-  JumpIfFalse  r37, L0
-  Index        r39, r33, r35
-  // join mc in movie_companies on mc.company_id == cn.id
-  IterPrep     r40, r4
-  Len          r41, r40
-  Const        r42, "company_id"
-  Const        r43, "id"
-  // where cn.country_code != "[pl]" &&
-  Const        r44, "country_code"
-  // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
-  Const        r45, "name"
-  Const        r46, "contains"
-  Const        r47, "name"
-  Const        r48, "contains"
-  // ct.kind == "production companies" &&
-  Const        r49, "kind"
-  // k.keyword == "sequel" &&
-  Const        r50, "keyword"
-  // lt.link.contains("follow") &&
-  Const        r51, "link"
-  Const        r52, "contains"
-  // mc.note == null &&
-  Const        r53, "note"
-  // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Const        r54, "production_year"
-  Const        r55, "production_year"
-  // ml.movie_id == mk.movie_id &&
-  Const        r56, "movie_id"
-  Const        r57, "movie_id"
-  // ml.movie_id == mc.movie_id &&
-  Const        r58, "movie_id"
-  Const        r59, "movie_id"
-  // mk.movie_id == mc.movie_id
-  Const        r60, "movie_id"
-  Const        r61, "movie_id"
-  // select { company: cn.name, link: lt.link, title: t.title }
-  Const        r62, "company"
-  Const        r63, "name"
-  Const        r64, "link"
-  Const        r65, "link"
-  Const        r66, "title"
-  Const        r67, "title"
-  // join mc in movie_companies on mc.company_id == cn.id
-  Const        r68, 0
-L25:
-  LessInt      r70, r68, r41
-  JumpIfFalse  r70, L1
-  Index        r72, r40, r68
-  Const        r73, "company_id"
-  Index        r74, r72, r73
-  Const        r75, "id"
-  Index        r76, r39, r75
-  Equal        r77, r74, r76
-  JumpIfFalse  r77, L2
-  // join ct in company_type on ct.id == mc.company_type_id
-  IterPrep     r78, r1
-  Len          r79, r78
-  Const        r80, "id"
-  Const        r81, "company_type_id"
-  // where cn.country_code != "[pl]" &&
-  Const        r82, "country_code"
-  // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
-  Const        r83, "name"
-  Const        r84, "contains"
-  Const        r85, "name"
-  Const        r86, "contains"
-  // ct.kind == "production companies" &&
-  Const        r87, "kind"
-  // k.keyword == "sequel" &&
-  Const        r88, "keyword"
-  // lt.link.contains("follow") &&
-  Const        r89, "link"
-  Const        r90, "contains"
-  // mc.note == null &&
-  Const        r91, "note"
-  // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Const        r92, "production_year"
-  Const        r93, "production_year"
-  // ml.movie_id == mk.movie_id &&
-  Const        r94, "movie_id"
-  Const        r95, "movie_id"
-  // ml.movie_id == mc.movie_id &&
-  Const        r96, "movie_id"
-  Const        r97, "movie_id"
-  // mk.movie_id == mc.movie_id
-  Const        r98, "movie_id"
-  Const        r99, "movie_id"
-  // select { company: cn.name, link: lt.link, title: t.title }
-  Const        r100, "company"
-  Const        r101, "name"
-  Const        r102, "link"
-  Const        r103, "link"
-  Const        r104, "title"
-  Const        r105, "title"
-  // join ct in company_type on ct.id == mc.company_type_id
-  Const        r106, 0
-L24:
-  LessInt      r108, r106, r79
-  JumpIfFalse  r108, L2
-  Index        r110, r78, r106
-  Const        r111, "id"
-  Index        r112, r110, r111
-  Const        r113, "company_type_id"
-  Index        r114, r72, r113
-  Equal        r115, r112, r114
-  JumpIfFalse  r115, L3
-  // join t in title on t.id == mc.movie_id
-  IterPrep     r116, r7
-  Len          r117, r116
-  Const        r118, "id"
-  Const        r119, "movie_id"
-  // where cn.country_code != "[pl]" &&
-  Const        r120, "country_code"
-  // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
-  Const        r121, "name"
-  Const        r122, "contains"
-  Const        r123, "name"
-  Const        r124, "contains"
-  // ct.kind == "production companies" &&
-  Const        r125, "kind"
-  // k.keyword == "sequel" &&
-  Const        r126, "keyword"
-  // lt.link.contains("follow") &&
-  Const        r127, "link"
-  Const        r128, "contains"
-  // mc.note == null &&
-  Const        r129, "note"
-  // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Const        r130, "production_year"
-  Const        r131, "production_year"
-  // ml.movie_id == mk.movie_id &&
-  Const        r132, "movie_id"
-  Const        r133, "movie_id"
-  // ml.movie_id == mc.movie_id &&
-  Const        r134, "movie_id"
-  Const        r135, "movie_id"
-  // mk.movie_id == mc.movie_id
-  Const        r136, "movie_id"
-  Const        r137, "movie_id"
-  // select { company: cn.name, link: lt.link, title: t.title }
-  Const        r138, "company"
-  Const        r139, "name"
-  Const        r140, "link"
-  Const        r141, "link"
-  Const        r142, "title"
-  Const        r143, "title"
-  // join t in title on t.id == mc.movie_id
-  Const        r144, 0
-L23:
-  LessInt      r146, r144, r117
-  JumpIfFalse  r146, L3
-  Index        r148, r116, r144
-  Const        r149, "id"
-  Index        r150, r148, r149
-  Const        r151, "movie_id"
-  Index        r152, r72, r151
-  Equal        r153, r150, r152
-  JumpIfFalse  r153, L4
-  // join mk in movie_keyword on mk.movie_id == t.id
-  IterPrep     r154, r5
-  Len          r155, r154
-  Const        r156, "movie_id"
-  Const        r157, "id"
-  // where cn.country_code != "[pl]" &&
-  Const        r158, "country_code"
-  // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
-  Const        r159, "name"
-  Const        r160, "contains"
-  Const        r161, "name"
-  Const        r162, "contains"
-  // ct.kind == "production companies" &&
-  Const        r163, "kind"
-  // k.keyword == "sequel" &&
-  Const        r164, "keyword"
-  // lt.link.contains("follow") &&
-  Const        r165, "link"
-  Const        r166, "contains"
-  // mc.note == null &&
-  Const        r167, "note"
-  // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Const        r168, "production_year"
-  Const        r169, "production_year"
-  // ml.movie_id == mk.movie_id &&
-  Const        r170, "movie_id"
-  Const        r171, "movie_id"
-  // ml.movie_id == mc.movie_id &&
-  Const        r172, "movie_id"
-  Const        r173, "movie_id"
-  // mk.movie_id == mc.movie_id
-  Const        r174, "movie_id"
-  Const        r175, "movie_id"
-  // select { company: cn.name, link: lt.link, title: t.title }
-  Const        r176, "company"
-  Const        r177, "name"
-  Const        r178, "link"
-  Const        r179, "link"
-  Const        r180, "title"
-  Const        r181, "title"
-  // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r182, 0
-L22:
-  LessInt      r184, r182, r155
-  JumpIfFalse  r184, L4
-  Index        r186, r154, r182
-  Const        r187, "movie_id"
-  Index        r188, r186, r187
-  Const        r189, "id"
-  Index        r190, r148, r189
-  Equal        r191, r188, r190
-  JumpIfFalse  r191, L5
-  // join k in keyword on k.id == mk.keyword_id
-  IterPrep     r192, r2
-  Len          r193, r192
-  Const        r194, "id"
-  Const        r195, "keyword_id"
-  // where cn.country_code != "[pl]" &&
-  Const        r196, "country_code"
-  // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
-  Const        r197, "name"
-  Const        r198, "contains"
-  Const        r199, "name"
-  Const        r200, "contains"
-  // ct.kind == "production companies" &&
-  Const        r201, "kind"
-  // k.keyword == "sequel" &&
-  Const        r202, "keyword"
-  // lt.link.contains("follow") &&
-  Const        r203, "link"
-  Const        r204, "contains"
-  // mc.note == null &&
-  Const        r205, "note"
-  // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Const        r206, "production_year"
-  Const        r207, "production_year"
-  // ml.movie_id == mk.movie_id &&
-  Const        r208, "movie_id"
-  Const        r209, "movie_id"
-  // ml.movie_id == mc.movie_id &&
-  Const        r210, "movie_id"
-  Const        r211, "movie_id"
-  // mk.movie_id == mc.movie_id
-  Const        r212, "movie_id"
-  Const        r213, "movie_id"
-  // select { company: cn.name, link: lt.link, title: t.title }
-  Const        r214, "company"
-  Const        r215, "name"
-  Const        r216, "link"
-  Const        r217, "link"
-  Const        r218, "title"
-  Const        r219, "title"
-  // join k in keyword on k.id == mk.keyword_id
-  Const        r220, 0
-L21:
-  LessInt      r222, r220, r193
-  JumpIfFalse  r222, L5
-  Index        r224, r192, r220
-  Const        r225, "id"
-  Index        r226, r224, r225
-  Const        r227, "keyword_id"
-  Index        r228, r186, r227
-  Equal        r229, r226, r228
-  JumpIfFalse  r229, L6
-  // join ml in movie_link on ml.movie_id == t.id
-  IterPrep     r230, r6
-  Len          r231, r230
-  Const        r232, "movie_id"
-  Const        r233, "id"
-  // where cn.country_code != "[pl]" &&
-  Const        r234, "country_code"
-  // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
-  Const        r235, "name"
-  Const        r236, "contains"
-  Const        r237, "name"
-  Const        r238, "contains"
-  // ct.kind == "production companies" &&
-  Const        r239, "kind"
-  // k.keyword == "sequel" &&
-  Const        r240, "keyword"
-  // lt.link.contains("follow") &&
-  Const        r241, "link"
-  Const        r242, "contains"
-  // mc.note == null &&
-  Const        r243, "note"
-  // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Const        r244, "production_year"
-  Const        r245, "production_year"
-  // ml.movie_id == mk.movie_id &&
-  Const        r246, "movie_id"
-  Const        r247, "movie_id"
-  // ml.movie_id == mc.movie_id &&
-  Const        r248, "movie_id"
-  Const        r249, "movie_id"
-  // mk.movie_id == mc.movie_id
-  Const        r250, "movie_id"
-  Const        r251, "movie_id"
-  // select { company: cn.name, link: lt.link, title: t.title }
-  Const        r252, "company"
-  Const        r253, "name"
-  Const        r254, "link"
-  Const        r255, "link"
-  Const        r256, "title"
-  Const        r257, "title"
-  // join ml in movie_link on ml.movie_id == t.id
-  Const        r258, 0
-L20:
-  LessInt      r260, r258, r231
-  JumpIfFalse  r260, L6
-  Index        r262, r230, r258
-  Const        r263, "movie_id"
-  Index        r264, r262, r263
-  Const        r265, "id"
-  Index        r266, r148, r265
-  Equal        r267, r264, r266
-  JumpIfFalse  r267, L7
-  // join lt in link_type on lt.id == ml.link_type_id
-  IterPrep     r268, r3
-  Len          r269, r268
-  Const        r270, "id"
-  Const        r271, "link_type_id"
-  // where cn.country_code != "[pl]" &&
-  Const        r272, "country_code"
-  // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
-  Const        r273, "name"
-  Const        r274, "contains"
-  Const        r275, "name"
-  Const        r276, "contains"
-  // ct.kind == "production companies" &&
-  Const        r277, "kind"
-  // k.keyword == "sequel" &&
-  Const        r278, "keyword"
-  // lt.link.contains("follow") &&
-  Const        r279, "link"
-  Const        r280, "contains"
-  // mc.note == null &&
-  Const        r281, "note"
-  // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Const        r282, "production_year"
-  Const        r283, "production_year"
-  // ml.movie_id == mk.movie_id &&
-  Const        r284, "movie_id"
-  Const        r285, "movie_id"
-  // ml.movie_id == mc.movie_id &&
-  Const        r286, "movie_id"
-  Const        r287, "movie_id"
-  // mk.movie_id == mc.movie_id
-  Const        r288, "movie_id"
-  Const        r289, "movie_id"
-  // select { company: cn.name, link: lt.link, title: t.title }
-  Const        r290, "company"
-  Const        r291, "name"
-  Const        r292, "link"
-  Const        r293, "link"
-  Const        r294, "title"
-  Const        r295, "title"
-  // join lt in link_type on lt.id == ml.link_type_id
-  Const        r296, 0
-L19:
-  LessInt      r298, r296, r269
-  JumpIfFalse  r298, L7
-  Index        r300, r268, r296
-  Const        r301, "id"
-  Index        r302, r300, r301
-  Const        r303, "link_type_id"
-  Index        r304, r262, r303
-  Equal        r305, r302, r304
-  JumpIfFalse  r305, L8
-  // where cn.country_code != "[pl]" &&
-  Const        r306, "country_code"
-  Index        r307, r39, r306
-  // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Const        r308, "production_year"
-  Index        r309, r148, r308
-  Const        r310, 1950
-  LessEq       r311, r310, r309
-  Const        r312, "production_year"
-  Index        r313, r148, r312
-  Const        r314, 2000
-  LessEq       r315, r313, r314
-  // where cn.country_code != "[pl]" &&
-  Const        r316, "[pl]"
-  NotEqual     r317, r307, r316
-  // ct.kind == "production companies" &&
-  Const        r318, "kind"
-  Index        r319, r110, r318
-  Const        r320, "production companies"
-  Equal        r321, r319, r320
-  // k.keyword == "sequel" &&
-  Const        r322, "keyword"
-  Index        r323, r224, r322
-  Const        r324, "sequel"
-  Equal        r325, r323, r324
-  // mc.note == null &&
-  Const        r326, "note"
-  Index        r327, r72, r326
-  Const        r328, nil
-  Equal        r329, r327, r328
-  // ml.movie_id == mk.movie_id &&
-  Const        r330, "movie_id"
-  Index        r331, r262, r330
-  Const        r332, "movie_id"
-  Index        r333, r186, r332
-  Equal        r334, r331, r333
-  // ml.movie_id == mc.movie_id &&
-  Const        r335, "movie_id"
-  Index        r336, r262, r335
-  Const        r337, "movie_id"
-  Index        r338, r72, r337
-  Equal        r339, r336, r338
-  // mk.movie_id == mc.movie_id
-  Const        r340, "movie_id"
-  Index        r341, r186, r340
-  Const        r342, "movie_id"
-  Index        r343, r72, r342
-  Equal        r344, r341, r343
-  // where cn.country_code != "[pl]" &&
-  Move         r345, r317
-  JumpIfFalse  r345, L9
-  Const        r346, "name"
-  Index        r347, r39, r346
-  // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
-  Const        r348, "Film"
-  In           r350, r348, r347
-  JumpIfTrue   r350, L9
-  Const        r351, "name"
-  Index        r352, r39, r351
-  Const        r353, "Warner"
-  In           r350, r353, r352
-L9:
-  Move         r355, r350
-  JumpIfFalse  r355, L10
-L10:
-  // ct.kind == "production companies" &&
-  Move         r356, r321
-  JumpIfFalse  r356, L11
-L11:
-  // k.keyword == "sequel" &&
-  Move         r357, r325
-  JumpIfFalse  r357, L12
-  Const        r358, "link"
-  Index        r359, r300, r358
-  // lt.link.contains("follow") &&
-  Const        r360, "follow"
-  In           r362, r360, r359
-L12:
-  JumpIfFalse  r362, L13
-L13:
-  // mc.note == null &&
-  Move         r363, r329
-  JumpIfFalse  r363, L14
-L14:
-  // t.production_year >= 1950 && t.production_year <= 2000 &&
-  Move         r364, r311
-  JumpIfFalse  r364, L15
-L15:
-  Move         r365, r315
-  JumpIfFalse  r365, L16
-L16:
-  // ml.movie_id == mk.movie_id &&
-  Move         r366, r334
-  JumpIfFalse  r366, L17
-L17:
-  // ml.movie_id == mc.movie_id &&
-  Move         r367, r339
-  JumpIfFalse  r367, L18
-  Move         r367, r344
+  IterPrep     r20, r0
+  Len          r21, r20
+  Const        r23, 0
+  Move         r22, r23
 L18:
+  LessInt      r24, r22, r21
+  JumpIfFalse  r24, L0
+  Index        r26, r20, r22
+  // join mc in movie_companies on mc.company_id == cn.id
+  IterPrep     r27, r4
+  Len          r28, r27
+  Const        r29, "company_id"
+  Const        r30, "id"
+  Move         r31, r23
+L17:
+  LessInt      r32, r31, r28
+  JumpIfFalse  r32, L1
+  Index        r34, r27, r31
+  Index        r35, r34, r29
+  Index        r36, r26, r30
+  Equal        r37, r35, r36
+  JumpIfFalse  r37, L2
+  // join ct in company_type on ct.id == mc.company_type_id
+  IterPrep     r38, r1
+  Len          r39, r38
+  Const        r40, "company_type_id"
+  Move         r41, r23
+L16:
+  LessInt      r42, r41, r39
+  JumpIfFalse  r42, L2
+  Index        r44, r38, r41
+  Index        r45, r44, r30
+  Index        r46, r34, r40
+  Equal        r47, r45, r46
+  JumpIfFalse  r47, L3
+  // join t in title on t.id == mc.movie_id
+  IterPrep     r48, r7
+  Len          r49, r48
+  Move         r50, r23
+L15:
+  LessInt      r51, r50, r49
+  JumpIfFalse  r51, L3
+  Index        r53, r48, r50
+  Index        r54, r53, r30
+  Index        r55, r34, r17
+  Equal        r56, r54, r55
+  JumpIfFalse  r56, L4
+  // join mk in movie_keyword on mk.movie_id == t.id
+  IterPrep     r57, r5
+  Len          r58, r57
+  Move         r59, r23
+L14:
+  LessInt      r60, r59, r58
+  JumpIfFalse  r60, L4
+  Index        r62, r57, r59
+  Index        r63, r62, r17
+  Index        r64, r53, r30
+  Equal        r65, r63, r64
+  JumpIfFalse  r65, L5
+  // join k in keyword on k.id == mk.keyword_id
+  IterPrep     r66, r2
+  Len          r67, r66
+  Const        r68, "keyword_id"
+  Move         r69, r23
+L13:
+  LessInt      r70, r69, r67
+  JumpIfFalse  r70, L5
+  Index        r72, r66, r69
+  Index        r73, r72, r30
+  Index        r74, r62, r68
+  Equal        r75, r73, r74
+  JumpIfFalse  r75, L6
+  // join ml in movie_link on ml.movie_id == t.id
+  IterPrep     r76, r6
+  Len          r77, r76
+  Move         r78, r23
+L12:
+  LessInt      r79, r78, r77
+  JumpIfFalse  r79, L6
+  Index        r81, r76, r78
+  Index        r82, r81, r17
+  Index        r83, r53, r30
+  Equal        r84, r82, r83
+  JumpIfFalse  r84, L7
+  // join lt in link_type on lt.id == ml.link_type_id
+  IterPrep     r85, r3
+  Len          r86, r85
+  Const        r87, "link_type_id"
+  Move         r88, r23
+L11:
+  LessInt      r89, r88, r86
+  JumpIfFalse  r89, L7
+  Index        r91, r85, r88
+  Index        r92, r91, r30
+  Index        r93, r81, r87
+  Equal        r94, r92, r93
+  JumpIfFalse  r94, L8
   // where cn.country_code != "[pl]" &&
-  JumpIfFalse  r367, L8
+  Index        r95, r26, r9
+  // t.production_year >= 1950 && t.production_year <= 2000 &&
+  Index        r96, r53, r16
+  Const        r97, 1950
+  LessEq       r98, r97, r96
+  Index        r99, r53, r16
+  Const        r100, 2000
+  LessEq       r101, r99, r100
+  // where cn.country_code != "[pl]" &&
+  Const        r102, "[pl]"
+  NotEqual     r103, r95, r102
+  // ct.kind == "production companies" &&
+  Index        r104, r44, r12
+  Const        r105, "production companies"
+  Equal        r106, r104, r105
+  // k.keyword == "sequel" &&
+  Index        r107, r72, r13
+  Const        r108, "sequel"
+  Equal        r109, r107, r108
+  // mc.note == null &&
+  Index        r110, r34, r15
+  Const        r111, nil
+  Equal        r112, r110, r111
+  // ml.movie_id == mk.movie_id &&
+  Index        r113, r81, r17
+  Index        r114, r62, r17
+  Equal        r115, r113, r114
+  // ml.movie_id == mc.movie_id &&
+  Index        r116, r81, r17
+  Index        r117, r34, r17
+  Equal        r118, r116, r117
+  // mk.movie_id == mc.movie_id
+  Index        r119, r62, r17
+  Index        r120, r34, r17
+  Equal        r121, r119, r120
+  // where cn.country_code != "[pl]" &&
+  Move         r122, r103
+  JumpIfFalse  r122, L9
+  Index        r123, r26, r10
+  // (cn.name.contains("Film") || cn.name.contains("Warner")) &&
+  Const        r124, "Film"
+  In           r126, r124, r123
+  JumpIfTrue   r126, L10
+  Index        r127, r26, r10
+  Const        r128, "Warner"
+  In           r122, r128, r127
+L10:
+  JumpIfFalse  r122, L9
+  Move         r122, r106
+  // ct.kind == "production companies" &&
+  JumpIfFalse  r122, L9
+  Move         r122, r109
+  // k.keyword == "sequel" &&
+  JumpIfFalse  r122, L9
+  Index        r130, r91, r14
+  // lt.link.contains("follow") &&
+  Const        r131, "follow"
+  In           r122, r131, r130
+  JumpIfFalse  r122, L9
+  Move         r122, r112
+  // mc.note == null &&
+  JumpIfFalse  r122, L9
+  Move         r122, r98
+  // t.production_year >= 1950 && t.production_year <= 2000 &&
+  JumpIfFalse  r122, L9
+  Move         r122, r101
+  JumpIfFalse  r122, L9
+  Move         r122, r115
+  // ml.movie_id == mk.movie_id &&
+  JumpIfFalse  r122, L9
+  Move         r122, r118
+  // ml.movie_id == mc.movie_id &&
+  JumpIfFalse  r122, L9
+  Move         r122, r121
+L9:
+  // where cn.country_code != "[pl]" &&
+  JumpIfFalse  r122, L8
   // select { company: cn.name, link: lt.link, title: t.title }
-  Const        r368, "company"
-  Const        r369, "name"
-  Index        r370, r39, r369
-  Const        r371, "link"
-  Const        r372, "link"
-  Index        r373, r300, r372
-  Const        r374, "title"
-  Const        r375, "title"
-  Index        r376, r148, r375
-  Move         r377, r368
-  Move         r378, r370
-  Move         r379, r371
-  Move         r380, r373
-  Move         r381, r374
-  Move         r382, r376
-  MakeMap      r383, 3, r377
+  Const        r133, "company"
+  Index        r134, r26, r10
+  Const        r135, "link"
+  Index        r136, r91, r14
+  Const        r137, "title"
+  Index        r138, r53, r19
+  Move         r139, r133
+  Move         r140, r134
+  Move         r141, r135
+  Move         r142, r136
+  Move         r143, r137
+  Move         r144, r138
+  MakeMap      r145, 3, r139
   // from cn in company_name
-  Append       r8, r8, r383
+  Append       r8, r8, r145
 L8:
   // join lt in link_type on lt.id == ml.link_type_id
-  Const        r385, 1
-  Add          r296, r296, r385
-  Jump         L19
+  Const        r147, 1
+  Add          r88, r88, r147
+  Jump         L11
 L7:
   // join ml in movie_link on ml.movie_id == t.id
-  Const        r386, 1
-  Add          r258, r258, r386
-  Jump         L20
+  Add          r78, r78, r147
+  Jump         L12
 L6:
   // join k in keyword on k.id == mk.keyword_id
-  Const        r387, 1
-  Add          r220, r220, r387
-  Jump         L21
+  Add          r69, r69, r147
+  Jump         L13
 L5:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r388, 1
-  Add          r182, r182, r388
-  Jump         L22
+  Add          r59, r59, r147
+  Jump         L14
 L4:
   // join t in title on t.id == mc.movie_id
-  Const        r389, 1
-  Add          r144, r144, r389
-  Jump         L23
+  Add          r50, r50, r147
+  Jump         L15
 L3:
   // join ct in company_type on ct.id == mc.company_type_id
-  Const        r390, 1
-  Add          r106, r106, r390
-  Jump         L24
+  Add          r41, r41, r147
+  Jump         L16
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
-  Const        r391, 1
-  Add          r68, r68, r391
-  Jump         L25
+  Add          r31, r31, r147
+  Jump         L17
 L1:
   // from cn in company_name
-  Const        r392, 1
-  AddInt       r35, r35, r392
-  Jump         L26
+  AddInt       r22, r22, r147
+  Jump         L18
 L0:
   // from_company: min(from x in matches select x.company),
-  Const        r393, "from_company"
-  Const        r394, []
-  Const        r395, "company"
-  IterPrep     r396, r8
-  Len          r397, r396
-  Const        r398, 0
-L28:
-  LessInt      r400, r398, r397
-  JumpIfFalse  r400, L27
-  Index        r402, r396, r398
-  Const        r403, "company"
-  Index        r404, r402, r403
-  Append       r394, r394, r404
-  Const        r406, 1
-  AddInt       r398, r398, r406
-  Jump         L28
-L27:
-  Min          r407, r394
+  Const        r148, "from_company"
+  Const        r149, []
+  IterPrep     r150, r8
+  Len          r151, r150
+  Move         r152, r23
+L20:
+  LessInt      r153, r152, r151
+  JumpIfFalse  r153, L19
+  Index        r155, r150, r152
+  Index        r156, r155, r18
+  Append       r149, r149, r156
+  AddInt       r152, r152, r147
+  Jump         L20
+L19:
+  Min          r158, r149
   // movie_link_type: min(from x in matches select x.link),
-  Const        r408, "movie_link_type"
-  Const        r409, []
-  Const        r410, "link"
-  IterPrep     r411, r8
-  Len          r412, r411
-  Const        r413, 0
-L30:
-  LessInt      r415, r413, r412
-  JumpIfFalse  r415, L29
-  Index        r402, r411, r413
-  Const        r417, "link"
-  Index        r418, r402, r417
-  Append       r409, r409, r418
-  Const        r420, 1
-  AddInt       r413, r413, r420
-  Jump         L30
-L29:
-  Min          r421, r409
+  Const        r159, "movie_link_type"
+  Const        r160, []
+  IterPrep     r161, r8
+  Len          r162, r161
+  Move         r163, r23
+L22:
+  LessInt      r164, r163, r162
+  JumpIfFalse  r164, L21
+  Index        r155, r161, r163
+  Index        r166, r155, r14
+  Append       r160, r160, r166
+  AddInt       r163, r163, r147
+  Jump         L22
+L21:
+  Min          r168, r160
   // non_polish_sequel_movie: min(from x in matches select x.title)
-  Const        r422, "non_polish_sequel_movie"
-  Const        r423, []
-  Const        r424, "title"
-  IterPrep     r425, r8
-  Len          r426, r425
-  Const        r427, 0
-L32:
-  LessInt      r429, r427, r426
-  JumpIfFalse  r429, L31
-  Index        r402, r425, r427
-  Const        r431, "title"
-  Index        r432, r402, r431
-  Append       r423, r423, r432
-  Const        r434, 1
-  AddInt       r427, r427, r434
-  Jump         L32
-L31:
-  Min          r435, r423
+  Const        r169, "non_polish_sequel_movie"
+  Const        r170, []
+  IterPrep     r171, r8
+  Len          r172, r171
+  Move         r173, r23
+L24:
+  LessInt      r174, r173, r172
+  JumpIfFalse  r174, L23
+  Index        r155, r171, r173
+  Index        r176, r155, r19
+  Append       r170, r170, r176
+  AddInt       r173, r173, r147
+  Jump         L24
+L23:
+  Min          r178, r170
   // from_company: min(from x in matches select x.company),
-  Move         r436, r393
-  Move         r437, r407
+  Move         r179, r148
+  Move         r180, r158
   // movie_link_type: min(from x in matches select x.link),
-  Move         r438, r408
-  Move         r439, r421
+  Move         r181, r159
+  Move         r182, r168
   // non_polish_sequel_movie: min(from x in matches select x.title)
-  Move         r440, r422
-  Move         r441, r435
+  Move         r183, r169
+  Move         r184, r178
   // {
-  MakeMap      r443, 3, r436
+  MakeMap      r186, 3, r179
   // let result = [
-  MakeList     r444, 1, r443
+  MakeList     r187, 1, r186
   // json(result)
-  JSON         r444
+  JSON         r187
   // expect result == [
-  Const        r445, [{"from_company": "Best Film Co", "movie_link_type": "follow-up", "non_polish_sequel_movie": "Alpha"}]
-  Equal        r446, r444, r445
-  Expect       r446
+  Const        r188, [{"from_company": "Best Film Co", "movie_link_type": "follow-up", "non_polish_sequel_movie": "Alpha"}]
+  Equal        r189, r187, r188
+  Expect       r189
   Return       r0
