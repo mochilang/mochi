@@ -3499,10 +3499,13 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	}
 
 	if joinType == "inner" {
-		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
+		if _, _, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
 			if !fc.smallConstJoin(q.Source, join.Src) {
-				fc.compileHashJoin(q, dst, lk, rk)
-				return
+				// Temporarily fall back to the nested loop join
+				// implementation to avoid issues with the hash
+				// join path on complex queries like TPC-H.
+				// fc.compileHashJoin(q, dst, lk, rk)
+				// return
 			}
 		}
 	}
