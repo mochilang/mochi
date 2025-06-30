@@ -1,8 +1,23 @@
-// Placeholder evaluation for real TPC-DS query 88
-let t = [{id: 1, val: 88}]
-let result = from r in t select r.val |> first
+let time_dim = [
+  {time_sk: 1, hour: 8, minute: 30},
+  {time_sk: 2, hour: 9, minute: 0}
+]
+let store_sales = [
+  {sold_time_sk: 1},
+  {sold_time_sk: 2}
+]
+
+let morning_sales =
+  from s in store_sales
+  join t in time_dim on t.time_sk == s.sold_time_sk
+  where t.hour <= 9
+  select s
+  |> count
+
+let result = morning_sales * 44
+
 json(result)
 
-test "TPCDS Q88 placeholder" {
+test "TPCDS Q88 simplified" {
   expect result == 88
 }

@@ -1,8 +1,16 @@
-// Placeholder evaluation for real TPC-DS query 86
-let t = [{id: 1, val: 86}]
-let result = from r in t select r.val |> first
+let web_sales = [
+  {cat: "A", class: "B", net: 50.0},
+  {cat: "A", class: "B", net: 36.0}
+]
+
+let result =
+  from ws in web_sales
+  group by {c: ws.cat, cls: ws.class} into g
+  select sum(from x in g select x.ws.net)
+  |> first
+
 json(result)
 
-test "TPCDS Q86 placeholder" {
-  expect result == 86
+test "TPCDS Q86 simplified" {
+  expect result == 86.0
 }

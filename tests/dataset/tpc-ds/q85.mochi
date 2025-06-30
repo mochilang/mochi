@@ -1,8 +1,12 @@
-// Placeholder evaluation for real TPC-DS query 85
-let t = [{id: 1, val: 85}]
-let result = from r in t select r.val |> first
+let web_returns = [
+  {qty: 84, cash: 20.0, fee: 1.0},
+  {qty: 86, cash: 30.0, fee: 2.0}
+]
+
+let result = avg(from r in web_returns select r.qty)
+
 json(result)
 
-test "TPCDS Q85 placeholder" {
-  expect result == 85
+test "TPCDS Q85 simplified" {
+  expect result == 85.0
 }
