@@ -1,3 +1,4 @@
+// Placeholder evaluation for real TPC-DS query 81
 let t = [{id: 1, val: 81}]
 let result = from r in t select r.val |> first
 json(result)
