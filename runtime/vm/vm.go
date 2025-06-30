@@ -4975,7 +4975,7 @@ func (fc *funcCompiler) compileGroupQuery(q *parser.QueryExpr, dst int) {
 	groupsMap := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: groupsMap, B: 0})
 	groupsList := fc.newReg()
-	emptyList := fc.freshConst(q.Pos, Value{Tag: ValueList, List: []Value{}})
+	emptyList := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: groupsList, B: emptyList})
 
 	loopStart := len(fc.fn.Code)
@@ -5174,7 +5174,7 @@ func (fc *funcCompiler) compileGroupQueryAny(q *parser.QueryExpr, dst int) {
 	groupsMap := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: groupsMap, B: 0})
 	groupsList := fc.newReg()
-	emptyList := fc.freshConst(q.Pos, Value{Tag: ValueList, List: []Value{}})
+	emptyList := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
 	fc.emit(q.Pos, Instr{Op: OpMove, A: groupsList, B: emptyList})
 
 	fc.compileGroupFromAny(q, groupsMap, groupsList, 0)
