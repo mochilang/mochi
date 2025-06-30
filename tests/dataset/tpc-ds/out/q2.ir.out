@@ -1,4 +1,4 @@
-func main (regs=241)
+func main (regs=240)
   // let web_sales = []
   Const        r0, []
   // (from ws in web_sales
@@ -117,294 +117,293 @@ L2:
   Const        r65, "sat_sales"
   // from w in wscs
   MakeMap      r66, 0, r0
-  Const        r68, []
-  Move         r67, r68
-  IterPrep     r69, r54
-  Len          r70, r69
-  Const        r71, 0
+  Move         r67, r0
+  IterPrep     r68, r54
+  Len          r69, r68
+  Const        r70, 0
 L9:
-  LessInt      r72, r71, r70
-  JumpIfFalse  r72, L4
-  Index        r73, r69, r71
-  Move         r74, r73
+  LessInt      r71, r70, r69
+  JumpIfFalse  r71, L4
+  Index        r72, r68, r70
+  Move         r73, r72
   // join d in date_dim on w.sold_date_sk == d.d_date_sk
-  IterPrep     r75, r0
-  Len          r76, r75
-  Const        r77, 0
+  IterPrep     r74, r0
+  Len          r75, r74
+  Const        r76, 0
 L8:
-  LessInt      r78, r77, r76
-  JumpIfFalse  r78, L5
-  Index        r79, r75, r77
-  Move         r80, r79
-  Index        r81, r74, r2
-  Const        r82, "d_date_sk"
-  Index        r83, r80, r82
-  Equal        r84, r81, r83
-  JumpIfFalse  r84, L6
+  LessInt      r77, r76, r75
+  JumpIfFalse  r77, L5
+  Index        r78, r74, r76
+  Move         r79, r78
+  Index        r80, r73, r2
+  Const        r81, "d_date_sk"
+  Index        r82, r79, r81
+  Equal        r83, r80, r82
+  JumpIfFalse  r83, L6
   // from w in wscs
-  Const        r85, "w"
-  Move         r86, r74
-  Const        r87, "d"
-  Move         r88, r80
+  Const        r84, "w"
+  Move         r85, r73
+  Const        r86, "d"
+  Move         r87, r79
+  Move         r88, r84
   Move         r89, r85
   Move         r90, r86
   Move         r91, r87
-  Move         r92, r88
-  MakeMap      r93, 2, r89
+  MakeMap      r92, 2, r88
   // group by {week_seq: d.d_week_seq} into g
-  Const        r94, "week_seq"
-  Index        r95, r80, r57
+  Const        r93, "week_seq"
+  Index        r94, r79, r57
+  Move         r95, r93
   Move         r96, r94
-  Move         r97, r95
-  MakeMap      r98, 1, r96
-  Str          r99, r98
-  In           r100, r99, r66
-  JumpIfTrue   r100, L7
+  MakeMap      r97, 1, r95
+  Str          r98, r97
+  In           r99, r98, r66
+  JumpIfTrue   r99, L7
   // from w in wscs
-  Const        r101, "__group__"
-  Const        r102, true
+  Const        r100, "__group__"
+  Const        r101, true
   // group by {week_seq: d.d_week_seq} into g
-  Move         r103, r98
+  Move         r102, r97
   // from w in wscs
-  Const        r104, "items"
-  Move         r105, r0
-  Const        r106, "count"
+  Const        r103, "items"
+  Move         r104, r0
+  Const        r105, "count"
+  Move         r106, r100
   Move         r107, r101
-  Move         r108, r102
-  Move         r109, r58
+  Move         r108, r58
+  Move         r109, r102
   Move         r110, r103
   Move         r111, r104
   Move         r112, r105
-  Move         r113, r106
-  Move         r114, r11
-  MakeMap      r115, 4, r107
-  SetIndex     r66, r99, r115
-  Append       r116, r67, r115
-  Move         r67, r116
+  Move         r113, r11
+  MakeMap      r114, 4, r106
+  SetIndex     r66, r98, r114
+  Append       r115, r67, r114
+  Move         r67, r115
 L7:
-  Index        r117, r66, r99
-  Index        r118, r117, r104
-  Append       r119, r118, r93
-  SetIndex     r117, r104, r119
-  Index        r120, r117, r106
-  AddInt       r121, r120, r29
-  SetIndex     r117, r106, r121
+  Index        r116, r66, r98
+  Index        r117, r116, r103
+  Append       r118, r117, r92
+  SetIndex     r116, r103, r118
+  Index        r119, r116, r105
+  AddInt       r120, r119, r29
+  SetIndex     r116, r105, r120
 L6:
   // join d in date_dim on w.sold_date_sk == d.d_date_sk
-  AddInt       r77, r77, r29
+  AddInt       r76, r76, r29
   Jump         L8
 L5:
   // from w in wscs
-  AddInt       r71, r71, r29
+  AddInt       r70, r70, r29
   Jump         L9
 L4:
-  Move         r122, r11
-  Len          r123, r67
+  Move         r121, r11
+  Len          r122, r67
 L32:
-  LessInt      r124, r122, r123
-  JumpIfFalse  r124, L10
-  Index        r125, r67, r122
-  Move         r126, r125
+  LessInt      r123, r121, r122
+  JumpIfFalse  r123, L10
+  Index        r124, r67, r121
+  Move         r125, r124
   // d_week_seq: g.key.week_seq,
-  Const        r127, "d_week_seq"
-  Index        r128, r126, r58
-  Index        r129, r128, r56
+  Const        r126, "d_week_seq"
+  Index        r127, r125, r58
+  Index        r128, r127, r56
   // sun_sales: sum(from x in g where x.day == "Sunday" select x.sales_price),
-  Const        r130, "sun_sales"
-  Const        r131, []
-  IterPrep     r132, r126
-  Len          r133, r132
-  Move         r134, r11
+  Const        r129, "sun_sales"
+  Const        r130, []
+  IterPrep     r131, r125
+  Len          r132, r131
+  Move         r133, r11
 L13:
-  LessInt      r135, r134, r133
-  JumpIfFalse  r135, L11
-  Index        r136, r132, r134
-  Move         r137, r136
-  Index        r138, r137, r6
-  Const        r139, "Sunday"
-  Equal        r140, r138, r139
-  JumpIfFalse  r140, L12
-  Index        r141, r137, r4
-  Append       r142, r131, r141
-  Move         r131, r142
+  LessInt      r134, r133, r132
+  JumpIfFalse  r134, L11
+  Index        r135, r131, r133
+  Move         r136, r135
+  Index        r137, r136, r6
+  Const        r138, "Sunday"
+  Equal        r139, r137, r138
+  JumpIfFalse  r139, L12
+  Index        r140, r136, r4
+  Append       r141, r130, r140
+  Move         r130, r141
 L12:
-  AddInt       r134, r134, r29
+  AddInt       r133, r133, r29
   Jump         L13
 L11:
-  Sum          r143, r131
+  Sum          r142, r130
   // mon_sales: sum(from x in g where x.day == "Monday" select x.sales_price),
-  Const        r144, "mon_sales"
-  Const        r145, []
-  IterPrep     r146, r126
-  Len          r147, r146
-  Move         r148, r11
+  Const        r143, "mon_sales"
+  Const        r144, []
+  IterPrep     r145, r125
+  Len          r146, r145
+  Move         r147, r11
 L16:
-  LessInt      r149, r148, r147
-  JumpIfFalse  r149, L14
-  Index        r150, r146, r148
-  Move         r137, r150
-  Index        r151, r137, r6
-  Const        r152, "Monday"
-  Equal        r153, r151, r152
-  JumpIfFalse  r153, L15
-  Index        r154, r137, r4
-  Append       r155, r145, r154
-  Move         r145, r155
+  LessInt      r148, r147, r146
+  JumpIfFalse  r148, L14
+  Index        r149, r145, r147
+  Move         r136, r149
+  Index        r150, r136, r6
+  Const        r151, "Monday"
+  Equal        r152, r150, r151
+  JumpIfFalse  r152, L15
+  Index        r153, r136, r4
+  Append       r154, r144, r153
+  Move         r144, r154
 L15:
-  AddInt       r148, r148, r29
+  AddInt       r147, r147, r29
   Jump         L16
 L14:
-  Sum          r156, r145
+  Sum          r155, r144
   // tue_sales: sum(from x in g where x.day == "Tuesday" select x.sales_price),
-  Const        r157, "tue_sales"
-  Const        r158, []
-  IterPrep     r159, r126
-  Len          r160, r159
-  Move         r161, r11
+  Const        r156, "tue_sales"
+  Const        r157, []
+  IterPrep     r158, r125
+  Len          r159, r158
+  Move         r160, r11
 L19:
-  LessInt      r162, r161, r160
-  JumpIfFalse  r162, L17
-  Index        r163, r159, r161
-  Move         r137, r163
-  Index        r164, r137, r6
-  Const        r165, "Tuesday"
-  Equal        r166, r164, r165
-  JumpIfFalse  r166, L18
-  Index        r167, r137, r4
-  Append       r168, r158, r167
-  Move         r158, r168
+  LessInt      r161, r160, r159
+  JumpIfFalse  r161, L17
+  Index        r162, r158, r160
+  Move         r136, r162
+  Index        r163, r136, r6
+  Const        r164, "Tuesday"
+  Equal        r165, r163, r164
+  JumpIfFalse  r165, L18
+  Index        r166, r136, r4
+  Append       r167, r157, r166
+  Move         r157, r167
 L18:
-  AddInt       r161, r161, r29
+  AddInt       r160, r160, r29
   Jump         L19
 L17:
-  Sum          r169, r158
+  Sum          r168, r157
   // wed_sales: sum(from x in g where x.day == "Wednesday" select x.sales_price),
-  Const        r170, "wed_sales"
-  Const        r171, []
-  IterPrep     r172, r126
-  Len          r173, r172
-  Move         r174, r11
+  Const        r169, "wed_sales"
+  Const        r170, []
+  IterPrep     r171, r125
+  Len          r172, r171
+  Move         r173, r11
 L22:
-  LessInt      r175, r174, r173
-  JumpIfFalse  r175, L20
-  Index        r176, r172, r174
-  Move         r137, r176
-  Index        r177, r137, r6
-  Const        r178, "Wednesday"
-  Equal        r179, r177, r178
-  JumpIfFalse  r179, L21
-  Index        r180, r137, r4
-  Append       r181, r171, r180
-  Move         r171, r181
+  LessInt      r174, r173, r172
+  JumpIfFalse  r174, L20
+  Index        r175, r171, r173
+  Move         r136, r175
+  Index        r176, r136, r6
+  Const        r177, "Wednesday"
+  Equal        r178, r176, r177
+  JumpIfFalse  r178, L21
+  Index        r179, r136, r4
+  Append       r180, r170, r179
+  Move         r170, r180
 L21:
-  AddInt       r174, r174, r29
+  AddInt       r173, r173, r29
   Jump         L22
 L20:
-  Sum          r182, r171
+  Sum          r181, r170
   // thu_sales: sum(from x in g where x.day == "Thursday" select x.sales_price),
-  Const        r183, "thu_sales"
-  Const        r184, []
-  IterPrep     r185, r126
-  Len          r186, r185
-  Move         r187, r11
+  Const        r182, "thu_sales"
+  Const        r183, []
+  IterPrep     r184, r125
+  Len          r185, r184
+  Move         r186, r11
 L25:
-  LessInt      r188, r187, r186
-  JumpIfFalse  r188, L23
-  Index        r189, r185, r187
-  Move         r137, r189
-  Index        r190, r137, r6
-  Const        r191, "Thursday"
-  Equal        r192, r190, r191
-  JumpIfFalse  r192, L24
-  Index        r193, r137, r4
-  Append       r194, r184, r193
-  Move         r184, r194
+  LessInt      r187, r186, r185
+  JumpIfFalse  r187, L23
+  Index        r188, r184, r186
+  Move         r136, r188
+  Index        r189, r136, r6
+  Const        r190, "Thursday"
+  Equal        r191, r189, r190
+  JumpIfFalse  r191, L24
+  Index        r192, r136, r4
+  Append       r193, r183, r192
+  Move         r183, r193
 L24:
-  AddInt       r187, r187, r29
+  AddInt       r186, r186, r29
   Jump         L25
 L23:
-  Sum          r195, r184
+  Sum          r194, r183
   // fri_sales: sum(from x in g where x.day == "Friday" select x.sales_price),
-  Const        r196, "fri_sales"
-  Const        r197, []
-  IterPrep     r198, r126
-  Len          r199, r198
-  Move         r200, r11
+  Const        r195, "fri_sales"
+  Const        r196, []
+  IterPrep     r197, r125
+  Len          r198, r197
+  Move         r199, r11
 L28:
-  LessInt      r201, r200, r199
-  JumpIfFalse  r201, L26
-  Index        r202, r198, r200
-  Move         r137, r202
-  Index        r203, r137, r6
-  Const        r204, "Friday"
-  Equal        r205, r203, r204
-  JumpIfFalse  r205, L27
-  Index        r206, r137, r4
-  Append       r207, r197, r206
-  Move         r197, r207
+  LessInt      r200, r199, r198
+  JumpIfFalse  r200, L26
+  Index        r201, r197, r199
+  Move         r136, r201
+  Index        r202, r136, r6
+  Const        r203, "Friday"
+  Equal        r204, r202, r203
+  JumpIfFalse  r204, L27
+  Index        r205, r136, r4
+  Append       r206, r196, r205
+  Move         r196, r206
 L27:
-  AddInt       r200, r200, r29
+  AddInt       r199, r199, r29
   Jump         L28
 L26:
-  Sum          r208, r197
+  Sum          r207, r196
   // sat_sales: sum(from x in g where x.day == "Saturday" select x.sales_price)
-  Const        r209, "sat_sales"
-  Const        r210, []
-  IterPrep     r211, r126
-  Len          r212, r211
-  Move         r213, r11
+  Const        r208, "sat_sales"
+  Const        r209, []
+  IterPrep     r210, r125
+  Len          r211, r210
+  Move         r212, r11
 L31:
-  LessInt      r214, r213, r212
-  JumpIfFalse  r214, L29
-  Index        r215, r211, r213
-  Move         r137, r215
-  Index        r216, r137, r6
-  Const        r217, "Saturday"
-  Equal        r218, r216, r217
-  JumpIfFalse  r218, L30
-  Index        r219, r137, r4
-  Append       r220, r210, r219
-  Move         r210, r220
+  LessInt      r213, r212, r211
+  JumpIfFalse  r213, L29
+  Index        r214, r210, r212
+  Move         r136, r214
+  Index        r215, r136, r6
+  Const        r216, "Saturday"
+  Equal        r217, r215, r216
+  JumpIfFalse  r217, L30
+  Index        r218, r136, r4
+  Append       r219, r209, r218
+  Move         r209, r219
 L30:
-  AddInt       r213, r213, r29
+  AddInt       r212, r212, r29
   Jump         L31
 L29:
-  Sum          r221, r210
+  Sum          r220, r209
   // d_week_seq: g.key.week_seq,
-  Move         r222, r127
-  Move         r223, r129
+  Move         r221, r126
+  Move         r222, r128
   // sun_sales: sum(from x in g where x.day == "Sunday" select x.sales_price),
-  Move         r224, r130
-  Move         r225, r143
+  Move         r223, r129
+  Move         r224, r142
   // mon_sales: sum(from x in g where x.day == "Monday" select x.sales_price),
-  Move         r226, r144
-  Move         r227, r156
+  Move         r225, r143
+  Move         r226, r155
   // tue_sales: sum(from x in g where x.day == "Tuesday" select x.sales_price),
-  Move         r228, r157
-  Move         r229, r169
+  Move         r227, r156
+  Move         r228, r168
   // wed_sales: sum(from x in g where x.day == "Wednesday" select x.sales_price),
-  Move         r230, r170
-  Move         r231, r182
+  Move         r229, r169
+  Move         r230, r181
   // thu_sales: sum(from x in g where x.day == "Thursday" select x.sales_price),
-  Move         r232, r183
-  Move         r233, r195
+  Move         r231, r182
+  Move         r232, r194
   // fri_sales: sum(from x in g where x.day == "Friday" select x.sales_price),
-  Move         r234, r196
-  Move         r235, r208
+  Move         r233, r195
+  Move         r234, r207
   // sat_sales: sum(from x in g where x.day == "Saturday" select x.sales_price)
-  Move         r236, r209
-  Move         r237, r221
+  Move         r235, r208
+  Move         r236, r220
   // select {
-  MakeMap      r238, 8, r222
+  MakeMap      r237, 8, r221
   // from w in wscs
-  Append       r239, r55, r238
-  Move         r55, r239
-  AddInt       r122, r122, r29
+  Append       r238, r55, r237
+  Move         r55, r238
+  AddInt       r121, r121, r29
   Jump         L32
 L10:
   // json(result)
   JSON         r0
   // expect len(result) == 0
-  Const        r240, true
-  Expect       r240
+  Const        r239, true
+  Expect       r239
   Return       r0

@@ -1,4 +1,4 @@
-func main (regs=607)
+func main (regs=589)
   // let customer = []
   Const        r0, []
   // from c in customer
@@ -35,71 +35,71 @@ func main (regs=607)
   Const        r23, "sale_type"
   // from c in customer
   MakeMap      r24, 0, r0
-  Const        r26, []
-  Move         r25, r26
-  IterPrep     r27, r0
-  Len          r28, r27
-  Const        r29, 0
+  Move         r25, r0
+  IterPrep     r26, r0
+  Len          r27, r26
+  Const        r28, 0
 L7:
-  LessInt      r30, r29, r28
-  JumpIfFalse  r30, L0
-  Index        r31, r27, r29
-  Move         r32, r31
+  LessInt      r29, r28, r27
+  JumpIfFalse  r29, L0
+  Index        r30, r26, r28
+  Move         r31, r30
   // join s in store_sales on c.c_customer_sk == s.ss_customer_sk
-  IterPrep     r33, r0
-  Len          r34, r33
-  Const        r35, 0
+  IterPrep     r32, r0
+  Len          r33, r32
+  Const        r34, 0
 L6:
-  LessInt      r36, r35, r34
-  JumpIfFalse  r36, L1
-  Index        r37, r33, r35
-  Move         r38, r37
-  Const        r39, "c_customer_sk"
-  Index        r40, r32, r39
-  Const        r41, "ss_customer_sk"
-  Index        r42, r38, r41
-  Equal        r43, r40, r42
-  JumpIfFalse  r43, L2
+  LessInt      r35, r34, r33
+  JumpIfFalse  r35, L1
+  Index        r36, r32, r34
+  Move         r37, r36
+  Const        r38, "c_customer_sk"
+  Index        r39, r31, r38
+  Const        r40, "ss_customer_sk"
+  Index        r41, r37, r40
+  Equal        r42, r39, r41
+  JumpIfFalse  r42, L2
   // join d in date_dim on s.ss_sold_date_sk == d.d_date_sk
-  IterPrep     r44, r0
-  Len          r45, r44
-  Const        r46, 0
+  IterPrep     r43, r0
+  Len          r44, r43
+  Const        r45, 0
 L5:
-  LessInt      r47, r46, r45
-  JumpIfFalse  r47, L2
-  Index        r48, r44, r46
-  Move         r49, r48
-  Const        r50, "ss_sold_date_sk"
-  Index        r51, r38, r50
-  Const        r52, "d_date_sk"
-  Index        r53, r49, r52
-  Equal        r54, r51, r53
-  JumpIfFalse  r54, L3
+  LessInt      r46, r45, r44
+  JumpIfFalse  r46, L2
+  Index        r47, r43, r45
+  Move         r48, r47
+  Const        r49, "ss_sold_date_sk"
+  Index        r50, r37, r49
+  Const        r51, "d_date_sk"
+  Index        r52, r48, r51
+  Equal        r53, r50, r52
+  JumpIfFalse  r53, L3
   // from c in customer
-  Const        r55, "c"
-  Move         r56, r32
-  Const        r57, "s"
-  Move         r58, r38
-  Const        r59, "d"
-  Move         r60, r49
+  Const        r54, "c"
+  Move         r55, r31
+  Const        r56, "s"
+  Move         r57, r37
+  Const        r58, "d"
+  Move         r59, r48
+  Move         r60, r54
   Move         r61, r55
   Move         r62, r56
   Move         r63, r57
   Move         r64, r58
   Move         r65, r59
-  Move         r66, r60
-  MakeMap      r67, 3, r61
+  MakeMap      r66, 3, r60
   // group by {id: c.c_customer_id, first: c.c_first_name, last: c.c_last_name, login: c.c_login, year: d.d_year} into g
-  Const        r68, "id"
-  Index        r69, r32, r3
-  Const        r70, "first"
-  Index        r71, r32, r5
-  Const        r72, "last"
-  Index        r73, r32, r7
-  Const        r74, "login"
-  Index        r75, r32, r9
-  Const        r76, "year"
-  Index        r77, r49, r11
+  Const        r67, "id"
+  Index        r68, r31, r3
+  Const        r69, "first"
+  Index        r70, r31, r5
+  Const        r71, "last"
+  Index        r72, r31, r7
+  Const        r73, "login"
+  Index        r74, r31, r9
+  Const        r75, "year"
+  Index        r76, r48, r11
+  Move         r77, r67
   Move         r78, r68
   Move         r79, r69
   Move         r80, r70
@@ -109,209 +109,209 @@ L5:
   Move         r84, r74
   Move         r85, r75
   Move         r86, r76
-  Move         r87, r77
-  MakeMap      r88, 5, r78
-  Str          r89, r88
-  In           r90, r89, r24
-  JumpIfTrue   r90, L4
+  MakeMap      r87, 5, r77
+  Str          r88, r87
+  In           r89, r88, r24
+  JumpIfTrue   r89, L4
   // from c in customer
-  Const        r91, "__group__"
-  Const        r92, true
+  Const        r90, "__group__"
+  Const        r91, true
   // group by {id: c.c_customer_id, first: c.c_first_name, last: c.c_last_name, login: c.c_login, year: d.d_year} into g
-  Move         r93, r88
+  Move         r92, r87
   // from c in customer
-  Const        r94, "items"
-  Move         r95, r0
-  Const        r96, "count"
-  Const        r97, 0
+  Const        r93, "items"
+  Move         r94, r0
+  Const        r95, "count"
+  Const        r96, 0
+  Move         r97, r90
   Move         r98, r91
-  Move         r99, r92
-  Move         r100, r13
+  Move         r99, r13
+  Move         r100, r92
   Move         r101, r93
   Move         r102, r94
   Move         r103, r95
   Move         r104, r96
-  Move         r105, r97
-  MakeMap      r106, 4, r98
-  SetIndex     r24, r89, r106
-  Append       r107, r25, r106
-  Move         r25, r107
+  MakeMap      r105, 4, r97
+  SetIndex     r24, r88, r105
+  Append       r106, r25, r105
+  Move         r25, r106
 L4:
-  Index        r108, r24, r89
-  Index        r109, r108, r94
-  Append       r110, r109, r67
-  SetIndex     r108, r94, r110
-  Index        r111, r108, r96
-  Const        r112, 1
-  AddInt       r113, r111, r112
-  SetIndex     r108, r96, r113
+  Index        r107, r24, r88
+  Index        r108, r107, r93
+  Append       r109, r108, r66
+  SetIndex     r107, r93, r109
+  Index        r110, r107, r95
+  Const        r111, 1
+  AddInt       r112, r110, r111
+  SetIndex     r107, r95, r112
 L3:
   // join d in date_dim on s.ss_sold_date_sk == d.d_date_sk
-  AddInt       r46, r46, r112
+  AddInt       r45, r45, r111
   Jump         L5
 L2:
   // join s in store_sales on c.c_customer_sk == s.ss_customer_sk
-  AddInt       r35, r35, r112
+  AddInt       r34, r34, r111
   Jump         L6
 L1:
   // from c in customer
-  AddInt       r29, r29, r112
+  AddInt       r28, r28, r111
   Jump         L7
 L0:
-  Move         r114, r97
-  Len          r115, r25
+  Move         r113, r96
+  Len          r114, r25
 L11:
-  LessInt      r116, r114, r115
-  JumpIfFalse  r116, L8
-  Index        r117, r25, r114
-  Move         r118, r117
+  LessInt      r115, r113, r114
+  JumpIfFalse  r115, L8
+  Index        r116, r25, r113
+  Move         r117, r116
   // customer_id: g.key.id,
-  Const        r119, "customer_id"
-  Index        r120, r118, r13
-  Index        r121, r120, r2
+  Const        r118, "customer_id"
+  Index        r119, r117, r13
+  Index        r120, r119, r2
   // customer_first_name: g.key.first,
-  Const        r122, "customer_first_name"
-  Index        r123, r118, r13
-  Index        r124, r123, r4
+  Const        r121, "customer_first_name"
+  Index        r122, r117, r13
+  Index        r123, r122, r4
   // customer_last_name: g.key.last,
-  Const        r125, "customer_last_name"
-  Index        r126, r118, r13
-  Index        r127, r126, r6
+  Const        r124, "customer_last_name"
+  Index        r125, r117, r13
+  Index        r126, r125, r6
   // customer_login: g.key.login,
-  Const        r128, "customer_login"
-  Index        r129, r118, r13
-  Index        r130, r129, r8
+  Const        r127, "customer_login"
+  Index        r128, r117, r13
+  Index        r129, r128, r8
   // dyear: g.key.year,
-  Const        r131, "dyear"
-  Index        r132, r118, r13
-  Index        r133, r132, r10
+  Const        r130, "dyear"
+  Index        r131, r117, r13
+  Index        r132, r131, r10
   // year_total: sum(from x in g select ((x.ss_ext_list_price - x.ss_ext_wholesale_cost - x.ss_ext_discount_amt) + x.ss_ext_sales_price) / 2),
-  Const        r134, "year_total"
-  Const        r135, []
-  IterPrep     r136, r118
-  Len          r137, r136
-  Move         r138, r97
+  Const        r133, "year_total"
+  Const        r134, []
+  IterPrep     r135, r117
+  Len          r136, r135
+  Move         r137, r96
 L10:
-  LessInt      r139, r138, r137
-  JumpIfFalse  r139, L9
-  Index        r140, r136, r138
-  Move         r141, r140
-  Index        r142, r141, r19
-  Index        r143, r141, r20
-  Sub          r144, r142, r143
-  Index        r145, r141, r21
-  Sub          r146, r144, r145
-  Index        r147, r141, r22
-  Add          r148, r146, r147
-  Const        r149, 2
-  Div          r150, r148, r149
-  Append       r151, r135, r150
-  Move         r135, r151
-  AddInt       r138, r138, r112
+  LessInt      r138, r137, r136
+  JumpIfFalse  r138, L9
+  Index        r139, r135, r137
+  Move         r140, r139
+  Index        r141, r140, r19
+  Index        r142, r140, r20
+  Sub          r143, r141, r142
+  Index        r144, r140, r21
+  Sub          r145, r143, r144
+  Index        r146, r140, r22
+  Add          r147, r145, r146
+  Const        r148, 2
+  Div          r149, r147, r148
+  Append       r150, r134, r149
+  Move         r134, r150
+  AddInt       r137, r137, r111
   Jump         L10
 L9:
-  Sum          r152, r135
+  Sum          r151, r134
   // sale_type: "s",
-  Const        r153, "sale_type"
+  Const        r152, "sale_type"
   // customer_id: g.key.id,
-  Move         r154, r119
-  Move         r155, r121
+  Move         r153, r118
+  Move         r154, r120
   // customer_first_name: g.key.first,
-  Move         r156, r122
-  Move         r157, r124
+  Move         r155, r121
+  Move         r156, r123
   // customer_last_name: g.key.last,
-  Move         r158, r125
-  Move         r159, r127
+  Move         r157, r124
+  Move         r158, r126
   // customer_login: g.key.login,
-  Move         r160, r128
-  Move         r161, r130
+  Move         r159, r127
+  Move         r160, r129
   // dyear: g.key.year,
-  Move         r162, r131
-  Move         r163, r133
+  Move         r161, r130
+  Move         r162, r132
   // year_total: sum(from x in g select ((x.ss_ext_list_price - x.ss_ext_wholesale_cost - x.ss_ext_discount_amt) + x.ss_ext_sales_price) / 2),
-  Move         r164, r134
-  Move         r165, r152
+  Move         r163, r133
+  Move         r164, r151
   // sale_type: "s",
-  Move         r166, r153
-  Move         r167, r57
+  Move         r165, r152
+  Move         r166, r56
   // select {
-  MakeMap      r168, 7, r154
+  MakeMap      r167, 7, r153
   // from c in customer
-  Append       r169, r1, r168
-  Move         r1, r169
-  AddInt       r114, r114, r112
+  Append       r168, r1, r167
+  Move         r1, r168
+  AddInt       r113, r113, r111
   Jump         L11
 L8:
   // from c in customer
-  Const        r170, []
+  Const        r169, []
   // year_total: sum(from x in g select ((x.cs_ext_list_price - x.cs_ext_wholesale_cost - x.cs_ext_discount_amt) + x.cs_ext_sales_price) / 2),
-  Const        r171, "cs_ext_list_price"
-  Const        r172, "cs_ext_wholesale_cost"
-  Const        r173, "cs_ext_discount_amt"
-  Const        r174, "cs_ext_sales_price"
+  Const        r170, "cs_ext_list_price"
+  Const        r171, "cs_ext_wholesale_cost"
+  Const        r172, "cs_ext_discount_amt"
+  Const        r173, "cs_ext_sales_price"
   // from c in customer
-  MakeMap      r175, 0, r0
-  Const        r177, []
-  Move         r176, r177
-  IterPrep     r178, r0
-  Len          r179, r178
-  Const        r180, 0
+  MakeMap      r174, 0, r0
+  Move         r175, r0
+  IterPrep     r176, r0
+  Len          r177, r176
+  Const        r178, 0
 L19:
-  LessInt      r181, r180, r179
-  JumpIfFalse  r181, L12
-  Index        r182, r178, r180
-  Move         r32, r182
+  LessInt      r179, r178, r177
+  JumpIfFalse  r179, L12
+  Index        r180, r176, r178
+  Move         r31, r180
   // join cs in catalog_sales on c.c_customer_sk == cs.cs_bill_customer_sk
-  IterPrep     r183, r0
-  Len          r184, r183
-  Const        r185, 0
+  IterPrep     r181, r0
+  Len          r182, r181
+  Const        r183, 0
 L18:
-  LessInt      r186, r185, r184
-  JumpIfFalse  r186, L13
-  Index        r187, r183, r185
-  Move         r188, r187
-  Index        r189, r32, r39
-  Const        r190, "cs_bill_customer_sk"
-  Index        r191, r188, r190
-  Equal        r192, r189, r191
-  JumpIfFalse  r192, L14
+  LessInt      r184, r183, r182
+  JumpIfFalse  r184, L13
+  Index        r185, r181, r183
+  Move         r186, r185
+  Index        r187, r31, r38
+  Const        r188, "cs_bill_customer_sk"
+  Index        r189, r186, r188
+  Equal        r190, r187, r189
+  JumpIfFalse  r190, L14
   // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
-  IterPrep     r193, r0
-  Len          r194, r193
-  Const        r195, 0
+  IterPrep     r191, r0
+  Len          r192, r191
+  Const        r193, 0
 L17:
-  LessInt      r196, r195, r194
-  JumpIfFalse  r196, L14
-  Index        r197, r193, r195
-  Move         r198, r197
-  Const        r199, "cs_sold_date_sk"
-  Index        r200, r188, r199
-  Index        r201, r198, r52
-  Equal        r202, r200, r201
-  JumpIfFalse  r202, L15
+  LessInt      r194, r193, r192
+  JumpIfFalse  r194, L14
+  Index        r195, r191, r193
+  Move         r196, r195
+  Const        r197, "cs_sold_date_sk"
+  Index        r198, r186, r197
+  Index        r199, r196, r51
+  Equal        r200, r198, r199
+  JumpIfFalse  r200, L15
   // from c in customer
-  Move         r203, r32
-  Const        r204, "cs"
-  Move         r205, r188
-  Move         r206, r198
-  Move         r207, r55
+  Move         r201, r31
+  Const        r202, "cs"
+  Move         r203, r186
+  Move         r204, r196
+  Move         r205, r54
+  Move         r206, r201
+  Move         r207, r202
   Move         r208, r203
-  Move         r209, r204
-  Move         r210, r205
-  Move         r211, r59
-  Move         r212, r206
-  MakeMap      r213, 3, r207
+  Move         r209, r58
+  Move         r210, r204
+  MakeMap      r211, 3, r205
   // group by {id: c.c_customer_id, first: c.c_first_name, last: c.c_last_name, login: c.c_login, year: d.d_year} into g
-  Const        r214, "id"
-  Index        r215, r32, r3
-  Const        r216, "first"
-  Index        r217, r32, r5
-  Const        r218, "last"
-  Index        r219, r32, r7
-  Const        r220, "login"
-  Index        r221, r32, r9
-  Const        r222, "year"
-  Index        r223, r198, r11
+  Const        r212, "id"
+  Index        r213, r31, r3
+  Const        r214, "first"
+  Index        r215, r31, r5
+  Const        r216, "last"
+  Index        r217, r31, r7
+  Const        r218, "login"
+  Index        r219, r31, r9
+  Const        r220, "year"
+  Index        r221, r196, r11
+  Move         r222, r212
+  Move         r223, r213
   Move         r224, r214
   Move         r225, r215
   Move         r226, r216
@@ -320,203 +320,203 @@ L17:
   Move         r229, r219
   Move         r230, r220
   Move         r231, r221
-  Move         r232, r222
-  Move         r233, r223
-  MakeMap      r234, 5, r224
-  Str          r235, r234
-  In           r236, r235, r175
-  JumpIfTrue   r236, L16
-  Move         r237, r234
+  MakeMap      r232, 5, r222
+  Str          r233, r232
+  In           r234, r233, r174
+  JumpIfTrue   r234, L16
+  Move         r235, r232
   // from c in customer
-  Move         r238, r0
-  Move         r239, r91
-  Move         r240, r92
-  Move         r241, r13
-  Move         r242, r237
-  Move         r243, r94
-  Move         r244, r238
-  Move         r245, r96
-  Move         r246, r97
-  MakeMap      r247, 4, r239
-  SetIndex     r175, r235, r247
-  Append       r248, r176, r247
-  Move         r176, r248
+  Move         r236, r0
+  Move         r237, r90
+  Move         r238, r91
+  Move         r239, r13
+  Move         r240, r235
+  Move         r241, r93
+  Move         r242, r236
+  Move         r243, r95
+  Move         r244, r96
+  MakeMap      r245, 4, r237
+  SetIndex     r174, r233, r245
+  Append       r246, r175, r245
+  Move         r175, r246
 L16:
-  Index        r249, r175, r235
-  Index        r250, r249, r94
-  Append       r251, r250, r213
-  SetIndex     r249, r94, r251
-  Index        r252, r249, r96
-  AddInt       r253, r252, r112
-  SetIndex     r249, r96, r253
+  Index        r247, r174, r233
+  Index        r248, r247, r93
+  Append       r249, r248, r211
+  SetIndex     r247, r93, r249
+  Index        r250, r247, r95
+  AddInt       r251, r250, r111
+  SetIndex     r247, r95, r251
 L15:
   // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
-  AddInt       r195, r195, r112
+  AddInt       r193, r193, r111
   Jump         L17
 L14:
   // join cs in catalog_sales on c.c_customer_sk == cs.cs_bill_customer_sk
-  AddInt       r185, r185, r112
+  AddInt       r183, r183, r111
   Jump         L18
 L13:
   // from c in customer
-  AddInt       r180, r180, r112
+  AddInt       r178, r178, r111
   Jump         L19
 L12:
-  Move         r254, r97
-  Len          r255, r176
+  Move         r252, r96
+  Len          r253, r175
 L23:
-  LessInt      r256, r254, r255
-  JumpIfFalse  r256, L20
-  Index        r257, r176, r254
-  Move         r118, r257
+  LessInt      r254, r252, r253
+  JumpIfFalse  r254, L20
+  Index        r255, r175, r252
+  Move         r117, r255
   // customer_id: g.key.id,
-  Const        r258, "customer_id"
-  Index        r259, r118, r13
-  Index        r260, r259, r2
+  Const        r256, "customer_id"
+  Index        r257, r117, r13
+  Index        r258, r257, r2
   // customer_first_name: g.key.first,
-  Const        r261, "customer_first_name"
-  Index        r262, r118, r13
-  Index        r263, r262, r4
+  Const        r259, "customer_first_name"
+  Index        r260, r117, r13
+  Index        r261, r260, r4
   // customer_last_name: g.key.last,
-  Const        r264, "customer_last_name"
-  Index        r265, r118, r13
-  Index        r266, r265, r6
+  Const        r262, "customer_last_name"
+  Index        r263, r117, r13
+  Index        r264, r263, r6
   // customer_login: g.key.login,
-  Const        r267, "customer_login"
-  Index        r268, r118, r13
-  Index        r269, r268, r8
+  Const        r265, "customer_login"
+  Index        r266, r117, r13
+  Index        r267, r266, r8
   // dyear: g.key.year,
-  Const        r270, "dyear"
-  Index        r271, r118, r13
-  Index        r272, r271, r10
+  Const        r268, "dyear"
+  Index        r269, r117, r13
+  Index        r270, r269, r10
   // year_total: sum(from x in g select ((x.cs_ext_list_price - x.cs_ext_wholesale_cost - x.cs_ext_discount_amt) + x.cs_ext_sales_price) / 2),
-  Const        r273, "year_total"
-  Const        r274, []
-  IterPrep     r275, r118
-  Len          r276, r275
-  Move         r277, r97
+  Const        r271, "year_total"
+  Const        r272, []
+  IterPrep     r273, r117
+  Len          r274, r273
+  Move         r275, r96
 L22:
-  LessInt      r278, r277, r276
-  JumpIfFalse  r278, L21
-  Index        r279, r275, r277
-  Move         r141, r279
-  Index        r280, r141, r171
-  Index        r281, r141, r172
+  LessInt      r276, r275, r274
+  JumpIfFalse  r276, L21
+  Index        r277, r273, r275
+  Move         r140, r277
+  Index        r278, r140, r170
+  Index        r279, r140, r171
+  Sub          r280, r278, r279
+  Index        r281, r140, r172
   Sub          r282, r280, r281
-  Index        r283, r141, r173
-  Sub          r284, r282, r283
-  Index        r285, r141, r174
-  Add          r286, r284, r285
-  Div          r287, r286, r149
-  Append       r288, r274, r287
-  Move         r274, r288
-  AddInt       r277, r277, r112
+  Index        r283, r140, r173
+  Add          r284, r282, r283
+  Div          r285, r284, r148
+  Append       r286, r272, r285
+  Move         r272, r286
+  AddInt       r275, r275, r111
   Jump         L22
 L21:
-  Sum          r289, r274
+  Sum          r287, r272
   // sale_type: "c",
-  Const        r290, "sale_type"
+  Const        r288, "sale_type"
   // customer_id: g.key.id,
-  Move         r291, r258
-  Move         r292, r260
+  Move         r289, r256
+  Move         r290, r258
   // customer_first_name: g.key.first,
-  Move         r293, r261
-  Move         r294, r263
+  Move         r291, r259
+  Move         r292, r261
   // customer_last_name: g.key.last,
-  Move         r295, r264
-  Move         r296, r266
+  Move         r293, r262
+  Move         r294, r264
   // customer_login: g.key.login,
-  Move         r297, r267
-  Move         r298, r269
+  Move         r295, r265
+  Move         r296, r267
   // dyear: g.key.year,
-  Move         r299, r270
-  Move         r300, r272
+  Move         r297, r268
+  Move         r298, r270
   // year_total: sum(from x in g select ((x.cs_ext_list_price - x.cs_ext_wholesale_cost - x.cs_ext_discount_amt) + x.cs_ext_sales_price) / 2),
-  Move         r301, r273
-  Move         r302, r289
+  Move         r299, r271
+  Move         r300, r287
   // sale_type: "c",
-  Move         r303, r290
-  Move         r304, r55
+  Move         r301, r288
+  Move         r302, r54
   // select {
-  MakeMap      r305, 7, r291
+  MakeMap      r303, 7, r289
   // from c in customer
-  Append       r306, r170, r305
-  Move         r170, r306
-  AddInt       r254, r254, r112
+  Append       r304, r169, r303
+  Move         r169, r304
+  AddInt       r252, r252, r111
   Jump         L23
 L20:
   // ) union all (
-  UnionAll     r307, r1, r170
+  UnionAll     r305, r1, r169
   // from c in customer
-  Const        r308, []
+  Const        r306, []
   // year_total: sum(from x in g select ((x.ws_ext_list_price - x.ws_ext_wholesale_cost - x.ws_ext_discount_amt) + x.ws_ext_sales_price) / 2),
-  Const        r309, "ws_ext_list_price"
-  Const        r310, "ws_ext_wholesale_cost"
-  Const        r311, "ws_ext_discount_amt"
-  Const        r312, "ws_ext_sales_price"
+  Const        r307, "ws_ext_list_price"
+  Const        r308, "ws_ext_wholesale_cost"
+  Const        r309, "ws_ext_discount_amt"
+  Const        r310, "ws_ext_sales_price"
   // from c in customer
-  MakeMap      r313, 0, r0
-  Const        r315, []
-  Move         r314, r315
-  IterPrep     r316, r0
-  Len          r317, r316
-  Const        r318, 0
+  MakeMap      r311, 0, r0
+  Move         r312, r0
+  IterPrep     r313, r0
+  Len          r314, r313
+  Const        r315, 0
 L31:
-  LessInt      r319, r318, r317
-  JumpIfFalse  r319, L24
-  Index        r320, r316, r318
-  Move         r32, r320
+  LessInt      r316, r315, r314
+  JumpIfFalse  r316, L24
+  Index        r317, r313, r315
+  Move         r31, r317
   // join ws in web_sales on c.c_customer_sk == ws.ws_bill_customer_sk
-  IterPrep     r321, r0
-  Len          r322, r321
-  Const        r323, 0
+  IterPrep     r318, r0
+  Len          r319, r318
+  Const        r320, 0
 L30:
-  LessInt      r324, r323, r322
-  JumpIfFalse  r324, L25
-  Index        r325, r321, r323
-  Move         r326, r325
-  Index        r327, r32, r39
-  Const        r328, "ws_bill_customer_sk"
-  Index        r329, r326, r328
-  Equal        r330, r327, r329
-  JumpIfFalse  r330, L26
+  LessInt      r321, r320, r319
+  JumpIfFalse  r321, L25
+  Index        r322, r318, r320
+  Move         r323, r322
+  Index        r324, r31, r38
+  Const        r325, "ws_bill_customer_sk"
+  Index        r326, r323, r325
+  Equal        r327, r324, r326
+  JumpIfFalse  r327, L26
   // join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
-  IterPrep     r331, r0
-  Len          r332, r331
-  Const        r333, 0
+  IterPrep     r328, r0
+  Len          r329, r328
+  Const        r330, 0
 L29:
-  LessInt      r334, r333, r332
-  JumpIfFalse  r334, L26
-  Index        r335, r331, r333
-  Move         r336, r335
-  Const        r337, "ws_sold_date_sk"
-  Index        r338, r326, r337
-  Index        r339, r336, r52
-  Equal        r340, r338, r339
-  JumpIfFalse  r340, L27
+  LessInt      r331, r330, r329
+  JumpIfFalse  r331, L26
+  Index        r332, r328, r330
+  Move         r333, r332
+  Const        r334, "ws_sold_date_sk"
+  Index        r335, r323, r334
+  Index        r336, r333, r51
+  Equal        r337, r335, r336
+  JumpIfFalse  r337, L27
   // from c in customer
-  Move         r341, r32
-  Const        r342, "ws"
-  Move         r343, r326
-  Move         r344, r336
-  Move         r345, r55
-  Move         r346, r341
-  Move         r347, r342
-  Move         r348, r343
-  Move         r349, r59
-  Move         r350, r344
-  MakeMap      r351, 3, r345
+  Move         r338, r31
+  Const        r339, "ws"
+  Move         r340, r323
+  Move         r341, r333
+  Move         r342, r54
+  Move         r343, r338
+  Move         r344, r339
+  Move         r345, r340
+  Move         r346, r58
+  Move         r347, r341
+  MakeMap      r348, 3, r342
   // group by {id: c.c_customer_id, first: c.c_first_name, last: c.c_last_name, login: c.c_login, year: d.d_year} into g
-  Const        r352, "id"
-  Index        r353, r32, r3
-  Const        r354, "first"
-  Index        r355, r32, r5
-  Const        r356, "last"
-  Index        r357, r32, r7
-  Const        r358, "login"
-  Index        r359, r32, r9
-  Const        r360, "year"
-  Index        r361, r336, r11
+  Const        r349, "id"
+  Index        r350, r31, r3
+  Const        r351, "first"
+  Index        r352, r31, r5
+  Const        r353, "last"
+  Index        r354, r31, r7
+  Const        r355, "login"
+  Index        r356, r31, r9
+  Const        r357, "year"
+  Index        r358, r333, r11
+  Move         r359, r349
+  Move         r360, r350
+  Move         r361, r351
   Move         r362, r352
   Move         r363, r353
   Move         r364, r354
@@ -524,430 +524,397 @@ L29:
   Move         r366, r356
   Move         r367, r357
   Move         r368, r358
-  Move         r369, r359
-  Move         r370, r360
-  Move         r371, r361
-  MakeMap      r372, 5, r362
-  Str          r373, r372
-  In           r374, r373, r313
-  JumpIfTrue   r374, L28
-  Move         r375, r372
+  MakeMap      r369, 5, r359
+  Str          r370, r369
+  In           r371, r370, r311
+  JumpIfTrue   r371, L28
+  Move         r372, r369
   // from c in customer
-  Move         r376, r0
-  Move         r377, r91
-  Move         r378, r92
-  Move         r379, r13
-  Move         r380, r375
-  Move         r381, r94
-  Move         r382, r376
-  Move         r383, r96
-  Move         r384, r97
-  MakeMap      r385, 4, r377
-  SetIndex     r313, r373, r385
-  Append       r386, r314, r385
-  Move         r314, r386
+  Move         r373, r0
+  Move         r374, r90
+  Move         r375, r91
+  Move         r376, r13
+  Move         r377, r372
+  Move         r378, r93
+  Move         r379, r373
+  Move         r380, r95
+  Move         r381, r96
+  MakeMap      r382, 4, r374
+  SetIndex     r311, r370, r382
+  Append       r383, r312, r382
+  Move         r312, r383
 L28:
-  Index        r387, r313, r373
-  Index        r388, r387, r94
-  Append       r389, r388, r351
-  SetIndex     r387, r94, r389
-  Index        r390, r387, r96
-  AddInt       r391, r390, r112
-  SetIndex     r387, r96, r391
+  Index        r384, r311, r370
+  Index        r385, r384, r93
+  Append       r386, r385, r348
+  SetIndex     r384, r93, r386
+  Index        r387, r384, r95
+  AddInt       r388, r387, r111
+  SetIndex     r384, r95, r388
 L27:
   // join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
-  AddInt       r333, r333, r112
+  AddInt       r330, r330, r111
   Jump         L29
 L26:
   // join ws in web_sales on c.c_customer_sk == ws.ws_bill_customer_sk
-  AddInt       r323, r323, r112
+  AddInt       r320, r320, r111
   Jump         L30
 L25:
   // from c in customer
-  AddInt       r318, r318, r112
+  AddInt       r315, r315, r111
   Jump         L31
 L24:
-  Move         r392, r97
-  Len          r393, r314
+  Move         r389, r96
+  Len          r390, r312
 L35:
-  LessInt      r394, r392, r393
-  JumpIfFalse  r394, L32
-  Index        r395, r314, r392
-  Move         r118, r395
+  LessInt      r391, r389, r390
+  JumpIfFalse  r391, L32
+  Index        r392, r312, r389
+  Move         r117, r392
   // customer_id: g.key.id,
-  Const        r396, "customer_id"
-  Index        r397, r118, r13
-  Index        r398, r397, r2
+  Const        r393, "customer_id"
+  Index        r394, r117, r13
+  Index        r395, r394, r2
   // customer_first_name: g.key.first,
-  Const        r399, "customer_first_name"
-  Index        r400, r118, r13
-  Index        r401, r400, r4
+  Const        r396, "customer_first_name"
+  Index        r397, r117, r13
+  Index        r398, r397, r4
   // customer_last_name: g.key.last,
-  Const        r402, "customer_last_name"
-  Index        r403, r118, r13
-  Index        r404, r403, r6
+  Const        r399, "customer_last_name"
+  Index        r400, r117, r13
+  Index        r401, r400, r6
   // customer_login: g.key.login,
-  Const        r405, "customer_login"
-  Index        r406, r118, r13
-  Index        r407, r406, r8
+  Const        r402, "customer_login"
+  Index        r403, r117, r13
+  Index        r404, r403, r8
   // dyear: g.key.year,
-  Const        r408, "dyear"
-  Index        r409, r118, r13
-  Index        r410, r409, r10
+  Const        r405, "dyear"
+  Index        r406, r117, r13
+  Index        r407, r406, r10
   // year_total: sum(from x in g select ((x.ws_ext_list_price - x.ws_ext_wholesale_cost - x.ws_ext_discount_amt) + x.ws_ext_sales_price) / 2),
-  Const        r411, "year_total"
-  Const        r412, []
-  IterPrep     r413, r118
-  Len          r414, r413
-  Move         r415, r97
+  Const        r408, "year_total"
+  Const        r409, []
+  IterPrep     r410, r117
+  Len          r411, r410
+  Move         r412, r96
 L34:
-  LessInt      r416, r415, r414
-  JumpIfFalse  r416, L33
-  Index        r417, r413, r415
-  Move         r141, r417
-  Index        r418, r141, r309
-  Index        r419, r141, r310
-  Sub          r420, r418, r419
-  Index        r421, r141, r311
-  Sub          r422, r420, r421
-  Index        r423, r141, r312
-  Add          r424, r422, r423
-  Div          r425, r424, r149
-  Append       r426, r412, r425
-  Move         r412, r426
-  AddInt       r415, r415, r112
+  LessInt      r413, r412, r411
+  JumpIfFalse  r413, L33
+  Index        r414, r410, r412
+  Move         r140, r414
+  Index        r415, r140, r307
+  Index        r416, r140, r308
+  Sub          r417, r415, r416
+  Index        r418, r140, r309
+  Sub          r419, r417, r418
+  Index        r420, r140, r310
+  Add          r421, r419, r420
+  Div          r422, r421, r148
+  Append       r423, r409, r422
+  Move         r409, r423
+  AddInt       r412, r412, r111
   Jump         L34
 L33:
-  Sum          r427, r412
+  Sum          r424, r409
   // sale_type: "w",
-  Const        r428, "sale_type"
-  Const        r429, "w"
+  Const        r425, "sale_type"
+  Const        r426, "w"
   // customer_id: g.key.id,
-  Move         r430, r396
-  Move         r431, r398
+  Move         r427, r393
+  Move         r428, r395
   // customer_first_name: g.key.first,
-  Move         r432, r399
-  Move         r433, r401
+  Move         r429, r396
+  Move         r430, r398
   // customer_last_name: g.key.last,
-  Move         r434, r402
-  Move         r435, r404
+  Move         r431, r399
+  Move         r432, r401
   // customer_login: g.key.login,
-  Move         r436, r405
-  Move         r437, r407
+  Move         r433, r402
+  Move         r434, r404
   // dyear: g.key.year,
-  Move         r438, r408
-  Move         r439, r410
+  Move         r435, r405
+  Move         r436, r407
   // year_total: sum(from x in g select ((x.ws_ext_list_price - x.ws_ext_wholesale_cost - x.ws_ext_discount_amt) + x.ws_ext_sales_price) / 2),
-  Move         r440, r411
-  Move         r441, r427
+  Move         r437, r408
+  Move         r438, r424
   // sale_type: "w",
-  Move         r442, r428
-  Move         r443, r429
+  Move         r439, r425
+  Move         r440, r426
   // select {
-  MakeMap      r444, 7, r430
+  MakeMap      r441, 7, r427
   // from c in customer
-  Append       r445, r308, r444
-  Move         r308, r445
-  AddInt       r392, r392, r112
+  Append       r442, r306, r441
+  Move         r306, r442
+  AddInt       r389, r389, r111
   Jump         L35
 L32:
   // ) union all (
-  UnionAll     r446, r307, r308
+  UnionAll     r443, r305, r306
   // from s1 in year_total
-  Const        r447, []
-  IterPrep     r448, r446
-  Len          r449, r448
-  Move         r450, r97
-L64:
-  LessInt      r451, r450, r449
-  JumpIfFalse  r451, L36
-  Index        r452, r448, r450
-  Move         r453, r452
-  // join s2 in year_total on s2.customer_id == s1.customer_id
-  IterPrep     r454, r446
-  Len          r455, r454
-  Move         r456, r97
-L63:
-  LessInt      r457, r456, r455
-  JumpIfFalse  r457, L37
-  Index        r458, r454, r456
-  Move         r459, r458
-  Index        r460, r459, r12
-  Index        r461, r453, r12
-  Equal        r462, r460, r461
-  JumpIfFalse  r462, L38
-  // join c1 in year_total on c1.customer_id == s1.customer_id
-  IterPrep     r463, r446
-  Len          r464, r463
-  Move         r465, r97
-L62:
-  LessInt      r466, r465, r464
-  JumpIfFalse  r466, L38
-  Index        r467, r463, r465
-  Move         r468, r467
-  Index        r469, r468, r12
-  Index        r470, r453, r12
-  Equal        r471, r469, r470
-  JumpIfFalse  r471, L39
-  // join c2 in year_total on c2.customer_id == s1.customer_id
-  IterPrep     r472, r446
-  Len          r473, r472
-  Move         r474, r97
-L61:
-  LessInt      r475, r474, r473
-  JumpIfFalse  r475, L39
-  Index        r476, r472, r474
-  Move         r477, r476
-  Index        r478, r477, r12
-  Index        r479, r453, r12
-  Equal        r480, r478, r479
-  JumpIfFalse  r480, L40
-  // join w1 in year_total on w1.customer_id == s1.customer_id
-  IterPrep     r481, r446
-  Len          r482, r481
-  Move         r483, r97
-L60:
-  LessInt      r484, r483, r482
-  JumpIfFalse  r484, L40
-  Index        r485, r481, r483
-  Move         r486, r485
-  Index        r487, r486, r12
-  Index        r488, r453, r12
-  Equal        r489, r487, r488
-  JumpIfFalse  r489, L41
-  // join w2 in year_total on w2.customer_id == s1.customer_id
-  IterPrep     r490, r446
-  Len          r491, r490
-  Move         r492, r97
-L59:
-  LessInt      r493, r492, r491
-  JumpIfFalse  r493, L41
-  Index        r494, r490, r492
-  Move         r495, r494
-  Index        r496, r495, r12
-  Index        r497, r453, r12
-  Equal        r498, r496, r497
-  JumpIfFalse  r498, L42
-  // where s1.sale_type == "s" && c1.sale_type == "c" && w1.sale_type == "w" &&
-  Index        r499, r453, r23
-  // s1.year_total > 0 && c1.year_total > 0 && w1.year_total > 0 &&
-  Index        r500, r453, r18
-  Less         r501, r97, r500
-  Index        r502, r468, r18
-  Less         r503, r97, r502
-  Index        r504, r486, r18
-  Less         r505, r97, r504
-  // (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
-  Index        r506, r468, r18
-  Less         r507, r97, r506
-  Index        r508, r477, r18
-  Index        r509, r468, r18
-  Div          r510, r508, r509
-  Const        r511, nil
-  Select       512,507,510,511
-  // (if s1.year_total > 0 { s2.year_total / s1.year_total } else { null }) &&
-  Index        r513, r453, r18
-  Less         r514, r97, r513
-  Index        r515, r459, r18
-  Index        r516, r453, r18
-  Div          r517, r515, r516
-  Select       518,514,517,511
-  // (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
-  Less         r519, r518, r512
-  // (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
-  Index        r520, r468, r18
-  Less         r521, r97, r520
-  Index        r522, r477, r18
-  Index        r523, r468, r18
-  Div          r524, r522, r523
-  Select       525,521,524,511
-  // (if w1.year_total > 0 { w2.year_total / w1.year_total } else { null })
-  Index        r526, r486, r18
-  Less         r527, r97, r526
-  Index        r528, r495, r18
-  Index        r529, r486, r18
-  Div          r530, r528, r529
-  Select       531,527,530,511
-  // (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
-  Less         r532, r531, r525
-  // where s1.sale_type == "s" && c1.sale_type == "c" && w1.sale_type == "w" &&
-  Equal        r533, r499, r57
-  Index        r534, r468, r23
-  Equal        r535, r534, r55
-  Index        r536, r486, r23
-  Equal        r537, r536, r429
-  // s2.sale_type == "s" && c2.sale_type == "c" && w2.sale_type == "w" &&
-  Index        r538, r459, r23
-  Equal        r539, r538, r57
-  Index        r540, r477, r23
-  Equal        r541, r540, r55
-  Index        r542, r495, r23
-  Equal        r543, r542, r429
-  // s1.dyear == 2001 && s2.dyear == 2002 &&
-  Index        r544, r453, r17
-  Const        r545, 2001
-  Equal        r546, r544, r545
-  Index        r547, r459, r17
-  Const        r548, 2002
-  Equal        r549, r547, r548
-  // c1.dyear == 2001 && c2.dyear == 2002 &&
-  Index        r550, r468, r17
-  Equal        r551, r550, r545
-  Index        r552, r477, r17
-  Equal        r553, r552, r548
-  // w1.dyear == 2001 && w2.dyear == 2002 &&
-  Index        r554, r486, r17
-  Equal        r555, r554, r545
-  Index        r556, r495, r17
-  Equal        r557, r556, r548
-  // where s1.sale_type == "s" && c1.sale_type == "c" && w1.sale_type == "w" &&
-  Move         r558, r533
-  JumpIfFalse  r558, L43
-  Move         r558, r535
-L43:
-  Move         r559, r558
-  JumpIfFalse  r559, L44
-  Move         r559, r537
-L44:
-  Move         r560, r559
-  JumpIfFalse  r560, L45
-  Move         r560, r539
-L45:
-  // s2.sale_type == "s" && c2.sale_type == "c" && w2.sale_type == "w" &&
-  Move         r561, r560
-  JumpIfFalse  r561, L46
-  Move         r561, r541
-L46:
-  Move         r562, r561
-  JumpIfFalse  r562, L47
-  Move         r562, r543
-L47:
-  Move         r563, r562
-  JumpIfFalse  r563, L48
-  Move         r563, r546
-L48:
-  // s1.dyear == 2001 && s2.dyear == 2002 &&
-  Move         r564, r563
-  JumpIfFalse  r564, L49
-  Move         r564, r549
+  Const        r444, []
+  IterPrep     r445, r443
+  Len          r446, r445
+  Move         r447, r96
 L49:
-  Move         r565, r564
-  JumpIfFalse  r565, L50
-  Move         r565, r551
-L50:
-  // c1.dyear == 2001 && c2.dyear == 2002 &&
-  Move         r566, r565
-  JumpIfFalse  r566, L51
-  Move         r566, r553
-L51:
-  Move         r567, r566
-  JumpIfFalse  r567, L52
-  Move         r567, r555
-L52:
-  // w1.dyear == 2001 && w2.dyear == 2002 &&
-  Move         r568, r567
-  JumpIfFalse  r568, L53
-  Move         r568, r557
-L53:
-  Move         r569, r568
-  JumpIfFalse  r569, L54
-  Move         r569, r501
-L54:
-  // s1.year_total > 0 && c1.year_total > 0 && w1.year_total > 0 &&
-  Move         r570, r569
-  JumpIfFalse  r570, L55
-  Move         r570, r503
-L55:
-  Move         r571, r570
-  JumpIfFalse  r571, L56
-  Move         r571, r505
-L56:
-  Move         r572, r571
-  JumpIfFalse  r572, L57
-  Move         r572, r519
-L57:
-  // (if s1.year_total > 0 { s2.year_total / s1.year_total } else { null }) &&
-  Move         r573, r572
-  JumpIfFalse  r573, L58
-  Move         r573, r532
-L58:
+  LessInt      r448, r447, r446
+  JumpIfFalse  r448, L36
+  Index        r449, r445, r447
+  Move         r450, r449
+  // join s2 in year_total on s2.customer_id == s1.customer_id
+  IterPrep     r451, r443
+  Len          r452, r451
+  Move         r453, r96
+L48:
+  LessInt      r454, r453, r452
+  JumpIfFalse  r454, L37
+  Index        r455, r451, r453
+  Move         r456, r455
+  Index        r457, r456, r12
+  Index        r458, r450, r12
+  Equal        r459, r457, r458
+  JumpIfFalse  r459, L38
+  // join c1 in year_total on c1.customer_id == s1.customer_id
+  IterPrep     r460, r443
+  Len          r461, r460
+  Move         r462, r96
+L47:
+  LessInt      r463, r462, r461
+  JumpIfFalse  r463, L38
+  Index        r464, r460, r462
+  Move         r465, r464
+  Index        r466, r465, r12
+  Index        r467, r450, r12
+  Equal        r468, r466, r467
+  JumpIfFalse  r468, L39
+  // join c2 in year_total on c2.customer_id == s1.customer_id
+  IterPrep     r469, r443
+  Len          r470, r469
+  Move         r471, r96
+L46:
+  LessInt      r472, r471, r470
+  JumpIfFalse  r472, L39
+  Index        r473, r469, r471
+  Move         r474, r473
+  Index        r475, r474, r12
+  Index        r476, r450, r12
+  Equal        r477, r475, r476
+  JumpIfFalse  r477, L40
+  // join w1 in year_total on w1.customer_id == s1.customer_id
+  IterPrep     r478, r443
+  Len          r479, r478
+  Move         r480, r96
+L45:
+  LessInt      r481, r480, r479
+  JumpIfFalse  r481, L40
+  Index        r482, r478, r480
+  Move         r483, r482
+  Index        r484, r483, r12
+  Index        r485, r450, r12
+  Equal        r486, r484, r485
+  JumpIfFalse  r486, L41
+  // join w2 in year_total on w2.customer_id == s1.customer_id
+  IterPrep     r487, r443
+  Len          r488, r487
+  Move         r489, r96
+L44:
+  LessInt      r490, r489, r488
+  JumpIfFalse  r490, L41
+  Index        r491, r487, r489
+  Move         r492, r491
+  Index        r493, r492, r12
+  Index        r494, r450, r12
+  Equal        r495, r493, r494
+  JumpIfFalse  r495, L42
   // where s1.sale_type == "s" && c1.sale_type == "c" && w1.sale_type == "w" &&
-  JumpIfFalse  r573, L42
+  Index        r496, r450, r23
+  // s1.year_total > 0 && c1.year_total > 0 && w1.year_total > 0 &&
+  Index        r497, r450, r18
+  Less         r498, r96, r497
+  Index        r499, r465, r18
+  Less         r500, r96, r499
+  Index        r501, r483, r18
+  Less         r502, r96, r501
+  // (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
+  Index        r503, r465, r18
+  Less         r504, r96, r503
+  Index        r505, r474, r18
+  Index        r506, r465, r18
+  Div          r507, r505, r506
+  Const        r508, nil
+  Select       509,504,507,508
+  // (if s1.year_total > 0 { s2.year_total / s1.year_total } else { null }) &&
+  Index        r510, r450, r18
+  Less         r511, r96, r510
+  Index        r512, r456, r18
+  Index        r513, r450, r18
+  Div          r514, r512, r513
+  Select       515,511,514,508
+  // (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
+  Less         r516, r515, r509
+  // (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
+  Index        r517, r465, r18
+  Less         r518, r96, r517
+  Index        r519, r474, r18
+  Index        r520, r465, r18
+  Div          r521, r519, r520
+  Select       522,518,521,508
+  // (if w1.year_total > 0 { w2.year_total / w1.year_total } else { null })
+  Index        r523, r483, r18
+  Less         r524, r96, r523
+  Index        r525, r492, r18
+  Index        r526, r483, r18
+  Div          r527, r525, r526
+  Select       528,524,527,508
+  // (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
+  Less         r529, r528, r522
+  // where s1.sale_type == "s" && c1.sale_type == "c" && w1.sale_type == "w" &&
+  Equal        r530, r496, r56
+  Index        r531, r465, r23
+  Equal        r532, r531, r54
+  Index        r533, r483, r23
+  Equal        r534, r533, r426
+  // s2.sale_type == "s" && c2.sale_type == "c" && w2.sale_type == "w" &&
+  Index        r535, r456, r23
+  Equal        r536, r535, r56
+  Index        r537, r474, r23
+  Equal        r538, r537, r54
+  Index        r539, r492, r23
+  Equal        r540, r539, r426
+  // s1.dyear == 2001 && s2.dyear == 2002 &&
+  Index        r541, r450, r17
+  Const        r542, 2001
+  Equal        r543, r541, r542
+  Index        r544, r456, r17
+  Const        r545, 2002
+  Equal        r546, r544, r545
+  // c1.dyear == 2001 && c2.dyear == 2002 &&
+  Index        r547, r465, r17
+  Equal        r548, r547, r542
+  Index        r549, r474, r17
+  Equal        r550, r549, r545
+  // w1.dyear == 2001 && w2.dyear == 2002 &&
+  Index        r551, r483, r17
+  Equal        r552, r551, r542
+  Index        r553, r492, r17
+  Equal        r554, r553, r545
+  // where s1.sale_type == "s" && c1.sale_type == "c" && w1.sale_type == "w" &&
+  Move         r555, r530
+  JumpIfFalse  r555, L43
+  Move         r555, r532
+  JumpIfFalse  r555, L43
+  Move         r555, r534
+  JumpIfFalse  r555, L43
+  Move         r555, r536
+  // s2.sale_type == "s" && c2.sale_type == "c" && w2.sale_type == "w" &&
+  JumpIfFalse  r555, L43
+  Move         r555, r538
+  JumpIfFalse  r555, L43
+  Move         r555, r540
+  JumpIfFalse  r555, L43
+  Move         r555, r543
+  // s1.dyear == 2001 && s2.dyear == 2002 &&
+  JumpIfFalse  r555, L43
+  Move         r555, r546
+  JumpIfFalse  r555, L43
+  Move         r555, r548
+  // c1.dyear == 2001 && c2.dyear == 2002 &&
+  JumpIfFalse  r555, L43
+  Move         r555, r550
+  JumpIfFalse  r555, L43
+  Move         r555, r552
+  // w1.dyear == 2001 && w2.dyear == 2002 &&
+  JumpIfFalse  r555, L43
+  Move         r555, r554
+  JumpIfFalse  r555, L43
+  Move         r555, r498
+  // s1.year_total > 0 && c1.year_total > 0 && w1.year_total > 0 &&
+  JumpIfFalse  r555, L43
+  Move         r555, r500
+  JumpIfFalse  r555, L43
+  Move         r555, r502
+  JumpIfFalse  r555, L43
+  Move         r555, r516
+  // (if s1.year_total > 0 { s2.year_total / s1.year_total } else { null }) &&
+  JumpIfFalse  r555, L43
+  Move         r555, r529
+L43:
+  // where s1.sale_type == "s" && c1.sale_type == "c" && w1.sale_type == "w" &&
+  JumpIfFalse  r555, L42
   // customer_id: s2.customer_id,
-  Const        r574, "customer_id"
-  Index        r575, r459, r12
+  Const        r556, "customer_id"
+  Index        r557, r456, r12
   // customer_first_name: s2.customer_first_name,
-  Const        r576, "customer_first_name"
-  Index        r577, r459, r14
+  Const        r558, "customer_first_name"
+  Index        r559, r456, r14
   // customer_last_name: s2.customer_last_name,
-  Const        r578, "customer_last_name"
-  Index        r579, r459, r15
+  Const        r560, "customer_last_name"
+  Index        r561, r456, r15
   // customer_login: s2.customer_login,
-  Const        r580, "customer_login"
-  Index        r581, r459, r16
+  Const        r562, "customer_login"
+  Index        r563, r456, r16
   // customer_id: s2.customer_id,
-  Move         r582, r574
-  Move         r583, r575
+  Move         r564, r556
+  Move         r565, r557
   // customer_first_name: s2.customer_first_name,
-  Move         r584, r576
-  Move         r585, r577
+  Move         r566, r558
+  Move         r567, r559
   // customer_last_name: s2.customer_last_name,
-  Move         r586, r578
-  Move         r587, r579
+  Move         r568, r560
+  Move         r569, r561
   // customer_login: s2.customer_login,
-  Move         r588, r580
-  Move         r589, r581
+  Move         r570, r562
+  Move         r571, r563
   // select {
-  MakeMap      r590, 4, r582
+  MakeMap      r572, 4, r564
   // sort by [s2.customer_id, s2.customer_first_name, s2.customer_last_name, s2.customer_login]
-  Index        r591, r459, r12
-  Move         r592, r591
-  Index        r593, r459, r14
-  Move         r594, r593
-  Index        r595, r459, r15
-  Move         r596, r595
-  Index        r597, r459, r16
-  Move         r598, r597
-  MakeList     r599, 4, r592
-  Move         r600, r599
+  Index        r573, r456, r12
+  Move         r574, r573
+  Index        r575, r456, r14
+  Move         r576, r575
+  Index        r577, r456, r15
+  Move         r578, r577
+  Index        r579, r456, r16
+  Move         r580, r579
+  MakeList     r581, 4, r574
+  Move         r582, r581
   // from s1 in year_total
-  Move         r601, r590
-  MakeList     r602, 2, r600
-  Append       r603, r447, r602
-  Move         r447, r603
+  Move         r583, r572
+  MakeList     r584, 2, r582
+  Append       r585, r444, r584
+  Move         r444, r585
 L42:
   // join w2 in year_total on w2.customer_id == s1.customer_id
-  Add          r492, r492, r112
-  Jump         L59
+  Add          r489, r489, r111
+  Jump         L44
 L41:
   // join w1 in year_total on w1.customer_id == s1.customer_id
-  Add          r483, r483, r112
-  Jump         L60
+  Add          r480, r480, r111
+  Jump         L45
 L40:
   // join c2 in year_total on c2.customer_id == s1.customer_id
-  Add          r474, r474, r112
-  Jump         L61
+  Add          r471, r471, r111
+  Jump         L46
 L39:
   // join c1 in year_total on c1.customer_id == s1.customer_id
-  Add          r465, r465, r112
-  Jump         L62
+  Add          r462, r462, r111
+  Jump         L47
 L38:
   // join s2 in year_total on s2.customer_id == s1.customer_id
-  Add          r456, r456, r112
-  Jump         L63
+  Add          r453, r453, r111
+  Jump         L48
 L37:
   // from s1 in year_total
-  AddInt       r450, r450, r112
-  Jump         L64
+  AddInt       r447, r447, r111
+  Jump         L49
 L36:
   // sort by [s2.customer_id, s2.customer_first_name, s2.customer_last_name, s2.customer_login]
-  Sort         r604, r447
+  Sort         r586, r444
   // from s1 in year_total
-  Move         r447, r604
+  Move         r444, r586
   // json(result)
-  JSON         r447
+  JSON         r444
   // expect len(result) == 0
-  Len          r605, r447
-  EqualInt     r606, r605, r97
-  Expect       r606
+  Len          r587, r444
+  EqualInt     r588, r587, r96
+  Expect       r588
   Return       r0

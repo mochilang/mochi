@@ -1,4 +1,4 @@
-func main (regs=162)
+func main (regs=161)
   // let date_dim = []
   Const        r0, []
   // from dt in date_dim
@@ -20,231 +20,230 @@ func main (regs=162)
   Const        r12, "ss_ext_sales_price"
   // from dt in date_dim
   MakeMap      r13, 0, r0
-  Const        r15, []
-  Move         r14, r15
-  IterPrep     r16, r0
-  Len          r17, r16
-  Const        r18, 0
+  Move         r14, r0
+  IterPrep     r15, r0
+  Len          r16, r15
+  Const        r17, 0
 L8:
-  LessInt      r19, r18, r17
-  JumpIfFalse  r19, L0
-  Index        r20, r16, r18
-  Move         r21, r20
+  LessInt      r18, r17, r16
+  JumpIfFalse  r18, L0
+  Index        r19, r15, r17
+  Move         r20, r19
   // join ss in store_sales on dt.d_date_sk == ss.ss_sold_date_sk
-  IterPrep     r22, r0
-  Len          r23, r22
-  Const        r24, 0
+  IterPrep     r21, r0
+  Len          r22, r21
+  Const        r23, 0
 L7:
-  LessInt      r25, r24, r23
-  JumpIfFalse  r25, L1
-  Index        r26, r22, r24
-  Move         r27, r26
-  Const        r28, "d_date_sk"
-  Index        r29, r21, r28
-  Const        r30, "ss_sold_date_sk"
-  Index        r31, r27, r30
-  Equal        r32, r29, r31
-  JumpIfFalse  r32, L2
+  LessInt      r24, r23, r22
+  JumpIfFalse  r24, L1
+  Index        r25, r21, r23
+  Move         r26, r25
+  Const        r27, "d_date_sk"
+  Index        r28, r20, r27
+  Const        r29, "ss_sold_date_sk"
+  Index        r30, r26, r29
+  Equal        r31, r28, r30
+  JumpIfFalse  r31, L2
   // join i in item on ss.ss_item_sk == i.i_item_sk
-  IterPrep     r33, r0
-  Len          r34, r33
-  Const        r35, 0
+  IterPrep     r32, r0
+  Len          r33, r32
+  Const        r34, 0
 L6:
-  LessInt      r36, r35, r34
-  JumpIfFalse  r36, L2
-  Index        r37, r33, r35
-  Move         r38, r37
-  Const        r39, "ss_item_sk"
-  Index        r40, r27, r39
-  Const        r41, "i_item_sk"
-  Index        r42, r38, r41
-  Equal        r43, r40, r42
-  JumpIfFalse  r43, L3
+  LessInt      r35, r34, r33
+  JumpIfFalse  r35, L2
+  Index        r36, r32, r34
+  Move         r37, r36
+  Const        r38, "ss_item_sk"
+  Index        r39, r26, r38
+  Const        r40, "i_item_sk"
+  Index        r41, r37, r40
+  Equal        r42, r39, r41
+  JumpIfFalse  r42, L3
   // where i.i_manufact_id == 100 && dt.d_moy == 12
-  Index        r44, r38, r7
-  Const        r45, 100
-  Equal        r46, r44, r45
-  Index        r47, r21, r8
-  Const        r48, 12
-  Equal        r49, r47, r48
-  Move         r50, r46
-  JumpIfFalse  r50, L4
-  Move         r50, r49
+  Index        r43, r37, r7
+  Const        r44, 100
+  Equal        r45, r43, r44
+  Index        r46, r20, r8
+  Const        r47, 12
+  Equal        r48, r46, r47
+  Move         r49, r45
+  JumpIfFalse  r49, L4
+  Move         r49, r48
 L4:
-  JumpIfFalse  r50, L3
+  JumpIfFalse  r49, L3
   // from dt in date_dim
-  Const        r51, "dt"
-  Move         r52, r21
-  Move         r53, r27
-  Const        r54, "i"
-  Move         r55, r38
+  Const        r50, "dt"
+  Move         r51, r20
+  Move         r52, r26
+  Const        r53, "i"
+  Move         r54, r37
+  Move         r55, r50
   Move         r56, r51
-  Move         r57, r52
-  Move         r58, r11
+  Move         r57, r11
+  Move         r58, r52
   Move         r59, r53
   Move         r60, r54
-  Move         r61, r55
-  MakeMap      r62, 3, r56
+  MakeMap      r61, 3, r55
   // group by { d_year: dt.d_year, brand_id: i.i_brand_id, brand: i.i_brand } into g
-  Const        r63, "d_year"
-  Index        r64, r21, r2
-  Const        r65, "brand_id"
-  Index        r66, r38, r4
-  Const        r67, "brand"
-  Index        r68, r38, r6
+  Const        r62, "d_year"
+  Index        r63, r20, r2
+  Const        r64, "brand_id"
+  Index        r65, r37, r4
+  Const        r66, "brand"
+  Index        r67, r37, r6
+  Move         r68, r62
   Move         r69, r63
   Move         r70, r64
   Move         r71, r65
   Move         r72, r66
   Move         r73, r67
-  Move         r74, r68
-  MakeMap      r75, 3, r69
-  Str          r76, r75
-  In           r77, r76, r13
-  JumpIfTrue   r77, L5
+  MakeMap      r74, 3, r68
+  Str          r75, r74
+  In           r76, r75, r13
+  JumpIfTrue   r76, L5
   // from dt in date_dim
-  Const        r78, "__group__"
-  Const        r79, true
+  Const        r77, "__group__"
+  Const        r78, true
   // group by { d_year: dt.d_year, brand_id: i.i_brand_id, brand: i.i_brand } into g
-  Move         r80, r75
+  Move         r79, r74
   // from dt in date_dim
-  Const        r81, "items"
-  Move         r82, r0
-  Const        r83, "count"
-  Const        r84, 0
+  Const        r80, "items"
+  Move         r81, r0
+  Const        r82, "count"
+  Const        r83, 0
+  Move         r84, r77
   Move         r85, r78
-  Move         r86, r79
-  Move         r87, r9
+  Move         r86, r9
+  Move         r87, r79
   Move         r88, r80
   Move         r89, r81
   Move         r90, r82
   Move         r91, r83
-  Move         r92, r84
-  MakeMap      r93, 4, r85
-  SetIndex     r13, r76, r93
-  Append       r94, r14, r93
-  Move         r14, r94
+  MakeMap      r92, 4, r84
+  SetIndex     r13, r75, r92
+  Append       r93, r14, r92
+  Move         r14, r93
 L5:
-  Index        r95, r13, r76
-  Index        r96, r95, r81
-  Append       r97, r96, r62
-  SetIndex     r95, r81, r97
-  Index        r98, r95, r83
-  Const        r99, 1
-  AddInt       r100, r98, r99
-  SetIndex     r95, r83, r100
+  Index        r94, r13, r75
+  Index        r95, r94, r80
+  Append       r96, r95, r61
+  SetIndex     r94, r80, r96
+  Index        r97, r94, r82
+  Const        r98, 1
+  AddInt       r99, r97, r98
+  SetIndex     r94, r82, r99
 L3:
   // join i in item on ss.ss_item_sk == i.i_item_sk
-  AddInt       r35, r35, r99
+  AddInt       r34, r34, r98
   Jump         L6
 L2:
   // join ss in store_sales on dt.d_date_sk == ss.ss_sold_date_sk
-  AddInt       r24, r24, r99
+  AddInt       r23, r23, r98
   Jump         L7
 L1:
   // from dt in date_dim
-  AddInt       r18, r18, r99
+  AddInt       r17, r17, r98
   Jump         L8
 L0:
-  Move         r101, r84
-  Len          r102, r14
+  Move         r100, r83
+  Len          r101, r14
 L14:
-  LessInt      r103, r101, r102
-  JumpIfFalse  r103, L9
-  Index        r104, r14, r101
-  Move         r105, r104
+  LessInt      r102, r100, r101
+  JumpIfFalse  r102, L9
+  Index        r103, r14, r100
+  Move         r104, r103
   // d_year: g.key.d_year,
-  Const        r106, "d_year"
-  Index        r107, r105, r9
-  Index        r108, r107, r2
+  Const        r105, "d_year"
+  Index        r106, r104, r9
+  Index        r107, r106, r2
   // brand_id: g.key.brand_id,
-  Const        r109, "brand_id"
-  Index        r110, r105, r9
-  Index        r111, r110, r3
+  Const        r108, "brand_id"
+  Index        r109, r104, r9
+  Index        r110, r109, r3
   // brand: g.key.brand,
-  Const        r112, "brand"
-  Index        r113, r105, r9
-  Index        r114, r113, r5
+  Const        r111, "brand"
+  Index        r112, r104, r9
+  Index        r113, r112, r5
   // sum_agg: sum(from x in g select x.ss.ss_ext_sales_price)
-  Const        r115, "sum_agg"
-  Const        r116, []
-  IterPrep     r117, r105
-  Len          r118, r117
-  Move         r119, r84
+  Const        r114, "sum_agg"
+  Const        r115, []
+  IterPrep     r116, r104
+  Len          r117, r116
+  Move         r118, r83
 L11:
-  LessInt      r120, r119, r118
-  JumpIfFalse  r120, L10
-  Index        r121, r117, r119
-  Move         r122, r121
-  Index        r123, r122, r11
-  Index        r124, r123, r12
-  Append       r125, r116, r124
-  Move         r116, r125
-  AddInt       r119, r119, r99
+  LessInt      r119, r118, r117
+  JumpIfFalse  r119, L10
+  Index        r120, r116, r118
+  Move         r121, r120
+  Index        r122, r121, r11
+  Index        r123, r122, r12
+  Append       r124, r115, r123
+  Move         r115, r124
+  AddInt       r118, r118, r98
   Jump         L11
 L10:
-  Sum          r126, r116
+  Sum          r125, r115
   // d_year: g.key.d_year,
-  Move         r127, r106
-  Move         r128, r108
+  Move         r126, r105
+  Move         r127, r107
   // brand_id: g.key.brand_id,
-  Move         r129, r109
-  Move         r130, r111
+  Move         r128, r108
+  Move         r129, r110
   // brand: g.key.brand,
-  Move         r131, r112
-  Move         r132, r114
+  Move         r130, r111
+  Move         r131, r113
   // sum_agg: sum(from x in g select x.ss.ss_ext_sales_price)
-  Move         r133, r115
-  Move         r134, r126
+  Move         r132, r114
+  Move         r133, r125
   // select {
-  MakeMap      r135, 4, r127
+  MakeMap      r134, 4, r126
   // sort by [g.key.d_year,
-  Index        r136, r105, r9
-  Index        r137, r136, r2
-  Move         r138, r137
+  Index        r135, r104, r9
+  Index        r136, r135, r2
+  Move         r137, r136
   // -sum(from x in g select x.ss.ss_ext_sales_price),
-  Const        r139, []
-  IterPrep     r140, r105
-  Len          r141, r140
-  Move         r142, r84
+  Const        r138, []
+  IterPrep     r139, r104
+  Len          r140, r139
+  Move         r141, r83
 L13:
-  LessInt      r143, r142, r141
-  JumpIfFalse  r143, L12
-  Index        r144, r140, r142
-  Move         r122, r144
-  Index        r145, r122, r11
-  Index        r146, r145, r12
-  Append       r147, r139, r146
-  Move         r139, r147
-  AddInt       r142, r142, r99
+  LessInt      r142, r141, r140
+  JumpIfFalse  r142, L12
+  Index        r143, r139, r141
+  Move         r121, r143
+  Index        r144, r121, r11
+  Index        r145, r144, r12
+  Append       r146, r138, r145
+  Move         r138, r146
+  AddInt       r141, r141, r98
   Jump         L13
 L12:
-  Sum          r148, r139
-  Neg          r149, r148
-  Move         r150, r149
+  Sum          r147, r138
+  Neg          r148, r147
+  Move         r149, r148
   // g.key.brand_id]
-  Index        r151, r105, r9
-  Index        r152, r151, r3
-  Move         r153, r152
+  Index        r150, r104, r9
+  Index        r151, r150, r3
+  Move         r152, r151
   // sort by [g.key.d_year,
-  MakeList     r154, 3, r138
-  Move         r155, r154
+  MakeList     r153, 3, r137
+  Move         r154, r153
   // from dt in date_dim
-  Move         r156, r135
-  MakeList     r157, 2, r155
-  Append       r158, r1, r157
-  Move         r1, r158
-  AddInt       r101, r101, r99
+  Move         r155, r134
+  MakeList     r156, 2, r154
+  Append       r157, r1, r156
+  Move         r1, r157
+  AddInt       r100, r100, r98
   Jump         L14
 L9:
   // sort by [g.key.d_year,
-  Sort         r159, r1
+  Sort         r158, r1
   // from dt in date_dim
-  Move         r1, r159
+  Move         r1, r158
   // json(result)
   JSON         r1
   // expect len(result) == 0
-  Len          r160, r1
-  EqualInt     r161, r160, r84
-  Expect       r161
+  Len          r159, r1
+  EqualInt     r160, r159, r83
+  Expect       r160
   Return       r0
