@@ -58,8 +58,8 @@ let result =
     i_item_desc: g.key.item_desc,
     w_warehouse_name: g.key.warehouse,
     d_week_seq: g.key.week_seq,
-    no_promo: count(from x in g where x.cs.cs_promo_sk == null select x),
-    promo: count(from x in g where x.cs.cs_promo_sk != null select x),
+    no_promo: count(from x in g where x.cs_promo_sk == null select x),
+    promo: count(from x in g where x.cs_promo_sk != null select x),
     total_cnt: count(g)
   }
 

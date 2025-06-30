@@ -44,8 +44,8 @@ let all_sales =
     sales_amt: sum(from x in g select x.sd.amount)
   }
 
-let prev_yr = from a in all_sales where a.d_year == 2000 |> first
-let curr_yr = from a in all_sales where a.d_year == 2001 |> first
+let prev_yr = first(from a in all_sales where a.d_year == 2000 select a)
+let curr_yr = first(from a in all_sales where a.d_year == 2001 select a)
 
 let result =
   if (curr_yr.sales_cnt / prev_yr.sales_cnt) < 0.9 {
