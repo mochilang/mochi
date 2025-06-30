@@ -1,230 +1,292 @@
-func main (regs=24)
+func main (regs=195)
   // let nation = [
   Const        r0, [{"n_name": "GERMANY", "n_nationkey": 1}, {"n_name": "FRANCE", "n_nationkey": 2}]
   // let supplier = [
   Const        r1, [{"s_nationkey": 1, "s_suppkey": 100}, {"s_nationkey": 1, "s_suppkey": 200}, {"s_nationkey": 2, "s_suppkey": 300}]
   // let partsupp = [
   Const        r2, [{"ps_availqty": 100, "ps_partkey": 1000, "ps_suppkey": 100, "ps_supplycost": 10}, {"ps_availqty": 50, "ps_partkey": 1000, "ps_suppkey": 200, "ps_supplycost": 20}, {"ps_availqty": 10, "ps_partkey": 2000, "ps_suppkey": 100, "ps_supplycost": 5}, {"ps_availqty": 500, "ps_partkey": 3000, "ps_suppkey": 300, "ps_supplycost": 8}]
-L2:
   // let target_nation = "GERMANY"
   Const        r3, "GERMANY"
-L9:
   // from ps in partsupp
   Const        r4, []
   // where n.n_name == target_nation
   Const        r5, "n_name"
   // ps_partkey: ps.ps_partkey,
   Const        r6, "ps_partkey"
+  Const        r7, "ps_partkey"
   // value: ps.ps_supplycost * ps.ps_availqty
-  Const        r7, "value"
-  Const        r8, "ps_supplycost"
-L8:
-  Const        r9, "ps_availqty"
+  Const        r8, "value"
+  Const        r9, "ps_supplycost"
+  Const        r10, "ps_availqty"
   // from ps in partsupp
-  IterPrep     r10, r2
-  Len          r2, r10
+  IterPrep     r11, r2
+  Len          r12, r11
+  Const        r13, 0
 L6:
-  Const        r11, 0
-L5:
-  Move         r12, r11
-  LessInt      r13, r12, r2
-  JumpIfFalse  r13, L0
-L0:
-  Index        r2, r10, r12
-L4:
+  LessInt      r15, r13, r12
+  JumpIfFalse  r15, L0
+  Index        r17, r11, r13
   // join s in supplier on s.s_suppkey == ps.ps_suppkey
-  IterPrep     r10, r1
-L1:
-  Len          r1, r10
-L3:
-  Const        r14, "s_suppkey"
-  Const        r15, "ps_suppkey"
-  Move         r16, r11
-  LessInt      r17, r16, r1
-  JumpIfFalse  r17, L1
-  Index        r1, r10, r16
-  Index        r10, r1, r14
-  Index        r14, r2, r15
-  Equal        r15, r10, r14
-  JumpIfFalse  r15, L2
-  // join n in nation on n.n_nationkey == s.s_nationkey
-  IterPrep     r15, r0
-  Len          r14, r15
-  Const        r10, "n_nationkey"
-  Const        r18, "s_nationkey"
-  Move         r19, r11
-  LessInt      r20, r19, r14
-  JumpIfFalse  r20, L2
-  Index        r20, r15, r19
-  Index        r15, r20, r10
-  Index        r10, r1, r18
-  Equal        r18, r15, r10
-  JumpIfFalse  r18, L0
+  IterPrep     r18, r1
+  Len          r19, r18
+  Const        r20, "s_suppkey"
+  Const        r21, "ps_suppkey"
   // where n.n_name == target_nation
-  Index        r18, r20, r5
-  Equal        r20, r18, r3
-  JumpIfFalse  r20, L0
+  Const        r22, "n_name"
   // ps_partkey: ps.ps_partkey,
-  Move         r20, r6
-  Index        r18, r2, r6
+  Const        r23, "ps_partkey"
+  Const        r24, "ps_partkey"
   // value: ps.ps_supplycost * ps.ps_availqty
-  Move         r3, r7
-  Index        r5, r2, r8
-  Index        r8, r2, r9
-  Mul          r2, r5, r8
-  // ps_partkey: ps.ps_partkey,
-  Move         r8, r20
-  Move         r20, r18
-  // value: ps.ps_supplycost * ps.ps_availqty
-  Move         r18, r3
-  Move         r3, r2
-  // select {
-  MakeMap      r2, 2, r8
-  // from ps in partsupp
-  Append       r4, r4, r2
-  // join n in nation on n.n_nationkey == s.s_nationkey
-  Const        r2, 1
-  Add          r19, r19, r2
-  Jump         L3
+  Const        r25, "value"
+  Const        r26, "ps_supplycost"
+  Const        r27, "ps_availqty"
   // join s in supplier on s.s_suppkey == ps.ps_suppkey
-  Add          r16, r16, r2
-  Jump         L4
-  // from ps in partsupp
-  AddInt       r12, r12, r2
-  Jump         L5
-  // from x in filtered
-  Const        r19, []
-  // ps_partkey: g.key,
-  Const        r17, "key"
-  // from x in filtered
-  IterPrep     r16, r4
-  Len          r13, r16
-  Move         r12, r11
-  MakeMap      r3, 0, r0
-  LessInt      r18, r12, r13
-  JumpIfFalse  r18, L6
-  Index        r18, r16, r12
-  // group by x.ps_partkey into g
-  Index        r16, r18, r6
-  Str          r13, r16
-  In           r20, r13, r3
-  JumpIfTrue   r20, L7
-  // from x in filtered
-  Move         r20, r19
-  Const        r8, "__group__"
-  Const        r5, true
-  Move         r9, r17
-  // group by x.ps_partkey into g
-  Move         r10, r16
-  // from x in filtered
-  Const        r16, "items"
-  Move         r15, r20
-  Const        r20, "count"
-  Move         r1, r11
-  Move         r14, r8
-  Move         r8, r5
-  Move         r5, r9
-  Move         r21, r10
-  Move         r10, r16
-  Move         r22, r15
-  Move         r15, r20
-  Move         r23, r1
-  MakeMap      r1, 4, r14
-  SetIndex     r3, r13, r1
-L7:
-  Move         r1, r16
-  Index        r16, r3, r13
-  Index        r13, r16, r1
-  Append       r23, r13, r18
-  SetIndex     r16, r1, r23
-  Move         r23, r20
-  Index        r20, r16, r23
-  AddInt       r13, r20, r2
-  SetIndex     r16, r23, r13
-  AddInt       r12, r12, r2
-  Jump         L8
-  Values       13,3,0,0
-  Move         r3, r11
-  Len          r20, r13
-  LessInt      r23, r3, r20
-  JumpIfFalse  r23, L3
-  Index        r23, r13, r3
-  // ps_partkey: g.key,
-  Move         r13, r6
-  Index        r6, r23, r17
-  // value: sum(from r in g select r.value)
-  Move         r17, r7
-  Move         r20, r19
-  IterPrep     r16, r23
-  Len          r23, r16
-  Move         r9, r11
-  LessInt      r12, r9, r23
-  JumpIfFalse  r12, L9
-  Index        r12, r16, r9
-  Index        r16, r12, r7
-  Append       r20, r20, r16
-  AddInt       r9, r9, r2
-  Jump         L0
-  Sum          r12, r20
-  // ps_partkey: g.key,
-  Move         r20, r13
-  Move         r13, r6
-  // value: sum(from r in g select r.value)
-  Move         r6, r17
-  Move         r17, r12
+  Const        r28, 0
+L5:
+  LessInt      r30, r28, r19
+  JumpIfFalse  r30, L1
+  Index        r32, r18, r28
+  Const        r33, "s_suppkey"
+  Index        r34, r32, r33
+  Const        r35, "ps_suppkey"
+  Index        r36, r17, r35
+  Equal        r37, r34, r36
+  JumpIfFalse  r37, L2
+  // join n in nation on n.n_nationkey == s.s_nationkey
+  IterPrep     r38, r0
+  Len          r39, r38
+  Const        r40, "n_nationkey"
+  Const        r41, "s_nationkey"
+  // where n.n_name == target_nation
+  Const        r42, "n_name"
+  // ps_partkey: ps.ps_partkey,
+  Const        r43, "ps_partkey"
+  Const        r44, "ps_partkey"
+  // value: ps.ps_supplycost * ps.ps_availqty
+  Const        r45, "value"
+  Const        r46, "ps_supplycost"
+  Const        r47, "ps_availqty"
+  // join n in nation on n.n_nationkey == s.s_nationkey
+  Const        r48, 0
+L4:
+  LessInt      r50, r48, r39
+  JumpIfFalse  r50, L2
+  Index        r52, r38, r48
+  Const        r53, "n_nationkey"
+  Index        r54, r52, r53
+  Const        r55, "s_nationkey"
+  Index        r56, r32, r55
+  Equal        r57, r54, r56
+  JumpIfFalse  r57, L3
+  // where n.n_name == target_nation
+  Const        r58, "n_name"
+  Index        r59, r52, r58
+  Equal        r60, r59, r3
+  JumpIfFalse  r60, L3
+  // ps_partkey: ps.ps_partkey,
+  Const        r61, "ps_partkey"
+  Const        r62, "ps_partkey"
+  Index        r63, r17, r62
+  // value: ps.ps_supplycost * ps.ps_availqty
+  Const        r64, "value"
+  Const        r65, "ps_supplycost"
+  Index        r66, r17, r65
+  Const        r67, "ps_availqty"
+  Index        r68, r17, r67
+  Mul          r69, r66, r68
+  // ps_partkey: ps.ps_partkey,
+  Move         r70, r61
+  Move         r71, r63
+  // value: ps.ps_supplycost * ps.ps_availqty
+  Move         r72, r64
+  Move         r73, r69
   // select {
-  MakeMap      r9, 2, r20
-  // from x in filtered
-  Append       r19, r19, r9
-  AddInt       r3, r3, r2
-  Jump         L6
-  // sum(from x in filtered select x.value)
-  Const        r9, []
-  IterPrep     r17, r4
-  Len          r4, r17
-  Move         r16, r11
-  LessInt      r6, r16, r4
-  JumpIfFalse  r6, L10
-  Index        r6, r17, r16
-  Index        r17, r6, r7
-  Append       r9, r9, r17
-  AddInt       r16, r16, r2
+  MakeMap      r74, 2, r70
+  // from ps in partsupp
+  Append       r4, r4, r74
+L3:
+  // join n in nation on n.n_nationkey == s.s_nationkey
+  Const        r76, 1
+  Add          r48, r48, r76
   Jump         L4
-L10:
-  Sum          r16, r9
-  // let threshold = total * 0.0001
-  Const        r9, 0.0001
-  MulFloat     r4, r16, r9
-  // from x in grouped
-  Const        r9, []
-  IterPrep     r16, r19
-  Len          r19, r16
-  Move         r13, r11
+L2:
+  // join s in supplier on s.s_suppkey == ps.ps_suppkey
+  Const        r77, 1
+  Add          r28, r28, r77
+  Jump         L5
+L1:
+  // from ps in partsupp
+  Const        r78, 1
+  AddInt       r13, r13, r78
+  Jump         L6
+L0:
+  // from x in filtered
+  Const        r79, []
+  // group by x.ps_partkey into g
+  Const        r80, "ps_partkey"
+  // ps_partkey: g.key,
+  Const        r81, "ps_partkey"
+  Const        r82, "key"
+  // value: sum(from r in g select r.value)
+  Const        r83, "value"
+  Const        r84, "value"
+  // from x in filtered
+  IterPrep     r85, r4
+  Len          r86, r85
+  Const        r87, 0
+  MakeMap      r88, 0, r0
+  Const        r89, []
+L9:
+  LessInt      r91, r87, r86
+  JumpIfFalse  r91, L7
+  Index        r92, r85, r87
+  Move         r93, r92
+  // group by x.ps_partkey into g
+  Const        r94, "ps_partkey"
+  Index        r95, r93, r94
+  Str          r96, r95
+  In           r97, r96, r88
+  JumpIfTrue   r97, L8
+  // from x in filtered
+  Const        r98, []
+  Const        r99, "__group__"
+  Const        r100, true
+  Const        r101, "key"
+  // group by x.ps_partkey into g
+  Move         r102, r95
+  // from x in filtered
+  Const        r103, "items"
+  Move         r104, r98
+  Const        r105, "count"
+  Const        r106, 0
+  Move         r107, r99
+  Move         r108, r100
+  Move         r109, r101
+  Move         r110, r102
+  Move         r111, r103
+  Move         r112, r104
+  Move         r113, r105
+  Move         r114, r106
+  MakeMap      r115, 4, r107
+  SetIndex     r88, r96, r115
+  Append       r89, r89, r115
+L8:
+  Const        r117, "items"
+  Index        r118, r88, r96
+  Index        r119, r118, r117
+  Append       r120, r119, r92
+  SetIndex     r118, r117, r120
+  Const        r121, "count"
+  Index        r122, r118, r121
+  Const        r123, 1
+  AddInt       r124, r122, r123
+  SetIndex     r118, r121, r124
+  Const        r125, 1
+  AddInt       r87, r87, r125
+  Jump         L9
+L7:
+  Const        r126, 0
+  Len          r128, r89
 L13:
-  LessInt      r11, r13, r19
-  JumpIfFalse  r11, L11
-  Index        r6, r16, r13
-  // where x.value > threshold
-  Index        r11, r6, r7
-  LessFloat    r19, r4, r11
-  JumpIfFalse  r19, L12
-  // sort by -x.value
-  Index        r19, r6, r7
-  Neg          r7, r19
-  // from x in grouped
-  Move         r19, r6
-  MakeList     r17, 2, r7
-  Append       r9, r9, r17
+  LessInt      r129, r126, r128
+  JumpIfFalse  r129, L10
+  Index        r131, r89, r126
+  // ps_partkey: g.key,
+  Const        r132, "ps_partkey"
+  Const        r133, "key"
+  Index        r134, r131, r133
+  // value: sum(from r in g select r.value)
+  Const        r135, "value"
+  Const        r136, []
+  Const        r137, "value"
+  IterPrep     r138, r131
+  Len          r139, r138
+  Const        r140, 0
 L12:
-  AddInt       r13, r13, r2
-  Jump         L13
+  LessInt      r142, r140, r139
+  JumpIfFalse  r142, L11
+  Index        r144, r138, r140
+  Const        r145, "value"
+  Index        r146, r144, r145
+  Append       r136, r136, r146
+  Const        r148, 1
+  AddInt       r140, r140, r148
+  Jump         L12
 L11:
+  Sum          r149, r136
+  // ps_partkey: g.key,
+  Move         r150, r132
+  Move         r151, r134
+  // value: sum(from r in g select r.value)
+  Move         r152, r135
+  Move         r153, r149
+  // select {
+  MakeMap      r154, 2, r150
+  // from x in filtered
+  Append       r79, r79, r154
+  Const        r156, 1
+  AddInt       r126, r126, r156
+  Jump         L13
+L10:
+  // sum(from x in filtered select x.value)
+  Const        r157, []
+  Const        r158, "value"
+  IterPrep     r159, r4
+  Len          r160, r159
+  Const        r161, 0
+L15:
+  LessInt      r163, r161, r160
+  JumpIfFalse  r163, L14
+  Index        r93, r159, r161
+  Const        r165, "value"
+  Index        r166, r93, r165
+  Append       r157, r157, r166
+  Const        r168, 1
+  AddInt       r161, r161, r168
+  Jump         L15
+L14:
+  Sum          r169, r157
+  // let threshold = total * 0.0001
+  Const        r170, 0.0001
+  MulFloat     r171, r169, r170
+  // from x in grouped
+  Const        r172, []
+  // where x.value > threshold
+  Const        r173, "value"
   // sort by -x.value
-  Sort         r9, r9
+  Const        r174, "value"
+  // from x in grouped
+  IterPrep     r175, r79
+  Len          r176, r175
+  Const        r177, 0
+L18:
+  LessInt      r179, r177, r176
+  JumpIfFalse  r179, L16
+  Index        r93, r175, r177
+  // where x.value > threshold
+  Const        r181, "value"
+  Index        r182, r93, r181
+  LessFloat    r183, r171, r182
+  JumpIfFalse  r183, L17
+  // sort by -x.value
+  Const        r184, "value"
+  Index        r185, r93, r184
+  Neg          r187, r185
+  // from x in grouped
+  Move         r188, r93
+  MakeList     r189, 2, r187
+  Append       r172, r172, r189
+L17:
+  Const        r191, 1
+  AddInt       r177, r177, r191
+  Jump         L18
+L16:
+  // sort by -x.value
+  Sort         r172, r172
   // json(result)
-  JSON         r9
+  JSON         r172
   // expect result == [
-  Const        r19, [{"ps_partkey": 1000, "value": 2000}, {"ps_partkey": 2000, "value": 50}]
-  Equal        r7, r9, r19
-  Expect       r7
+  Const        r193, [{"ps_partkey": 1000, "value": 2000}, {"ps_partkey": 2000, "value": 50}]
+  Equal        r194, r172, r193
+  Expect       r194
   Return       r0
