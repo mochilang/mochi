@@ -1,4 +1,4 @@
-func main (regs=306)
+func main (regs=302)
   // let date_dim = [
   Const        r0, [{"d_date_sk": 1, "d_qoy": 1, "d_year": 1998}]
   // let item = [
@@ -29,7 +29,8 @@ func main (regs=306)
 L6:
   LessInt      r18, r16, r15
   JumpIfFalse  r18, L0
-  Index        r20, r14, r16
+  Index        r19, r14, r16
+  Move         r20, r19
   // join i in item on i.i_item_sk == ss.ss_item_sk
   IterPrep     r21, r1
   Len          r22, r21
@@ -39,7 +40,8 @@ L6:
 L5:
   LessInt      r26, r25, r22
   JumpIfFalse  r26, L1
-  Index        r28, r21, r25
+  Index        r27, r21, r25
+  Move         r28, r27
   Index        r29, r28, r23
   Index        r30, r20, r24
   Equal        r31, r29, r30
@@ -53,7 +55,8 @@ L5:
 L4:
   LessInt      r37, r36, r33
   JumpIfFalse  r37, L2
-  Index        r39, r32, r36
+  Index        r38, r32, r36
+  Move         r39, r38
   Index        r40, r39, r34
   Index        r41, r20, r35
   Equal        r42, r40, r41
@@ -90,7 +93,8 @@ L4:
   Move         r69, r57
   MakeMap      r70, 6, r58
   // from ss in store_sales
-  Append       r5, r5, r70
+  Append       r71, r5, r70
+  Move         r5, r71
 L3:
   // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
   Const        r72, 1
@@ -118,7 +122,8 @@ L0:
 L13:
   LessInt      r79, r78, r77
   JumpIfFalse  r79, L7
-  Index        r81, r76, r78
+  Index        r80, r76, r78
+  Move         r81, r80
   // join i in item on i.i_item_sk == ws.ws_item_sk
   IterPrep     r82, r1
   Len          r83, r82
@@ -127,7 +132,8 @@ L13:
 L12:
   LessInt      r86, r85, r83
   JumpIfFalse  r86, L8
-  Index        r28, r82, r85
+  Index        r87, r82, r85
+  Move         r28, r87
   Index        r88, r28, r23
   Index        r89, r81, r84
   Equal        r90, r88, r89
@@ -140,7 +146,8 @@ L12:
 L11:
   LessInt      r95, r94, r92
   JumpIfFalse  r95, L9
-  Index        r39, r91, r94
+  Index        r96, r91, r94
+  Move         r39, r96
   Index        r97, r39, r34
   Index        r98, r81, r93
   Equal        r99, r97, r98
@@ -176,7 +183,8 @@ L11:
   Move         r125, r113
   MakeMap      r126, 6, r114
   // from ws in web_sales
-  Append       r73, r73, r126
+  Append       r127, r73, r126
+  Move         r73, r127
 L10:
   // join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk
   Add          r94, r94, r72
@@ -203,7 +211,8 @@ L7:
 L20:
   LessInt      r134, r133, r132
   JumpIfFalse  r134, L14
-  Index        r136, r131, r133
+  Index        r135, r131, r133
+  Move         r136, r135
   // join i in item on i.i_item_sk == cs.cs_item_sk
   IterPrep     r137, r1
   Len          r138, r137
@@ -212,7 +221,8 @@ L20:
 L19:
   LessInt      r141, r140, r138
   JumpIfFalse  r141, L15
-  Index        r28, r137, r140
+  Index        r142, r137, r140
+  Move         r28, r142
   Index        r143, r28, r23
   Index        r144, r136, r139
   Equal        r145, r143, r144
@@ -225,7 +235,8 @@ L19:
 L18:
   LessInt      r150, r149, r147
   JumpIfFalse  r150, L16
-  Index        r39, r146, r149
+  Index        r151, r146, r149
+  Move         r39, r151
   Index        r152, r39, r34
   Index        r153, r136, r148
   Equal        r154, r152, r153
@@ -261,7 +272,8 @@ L18:
   Move         r180, r168
   MakeMap      r181, 6, r169
   // from cs in catalog_sales
-  Append       r128, r128, r181
+  Append       r182, r128, r181
+  Move         r128, r182
 L17:
   // join d in date_dim on d.d_date_sk == cs.cs_sold_date_sk
   Add          r149, r149, r72
@@ -292,7 +304,8 @@ L14:
   Len          r191, r190
   Const        r192, 0
   MakeMap      r193, 0, r0
-  Const        r194, []
+  Const        r195, []
+  Move         r194, r195
 L23:
   LessInt      r196, r192, r191
   JumpIfFalse  r196, L21
@@ -327,123 +340,127 @@ L23:
   Const        r222, []
   Const        r223, "__group__"
   Const        r224, true
-  Const        r225, "key"
   // group by { channel: r.channel, col_name: r.col_name, d_year: r.d_year, d_qoy: r.d_qoy, i_category: r.i_category } into g
-  Move         r226, r219
+  Move         r225, r219
   // from r in all_rows
-  Const        r227, "items"
-  Move         r228, r222
-  Const        r229, "count"
-  Const        r230, 0
-  Move         r231, r223
-  Move         r232, r224
-  Move         r233, r225
-  Move         r234, r226
-  Move         r235, r227
-  Move         r236, r228
-  Move         r237, r229
-  Move         r238, r230
-  MakeMap      r239, 4, r231
-  SetIndex     r193, r220, r239
-  Append       r194, r194, r239
+  Const        r226, "items"
+  Move         r227, r222
+  Const        r228, "count"
+  Move         r229, r223
+  Move         r230, r224
+  Move         r231, r186
+  Move         r232, r225
+  Move         r233, r226
+  Move         r234, r227
+  Move         r235, r228
+  Move         r236, r17
+  MakeMap      r237, 4, r229
+  SetIndex     r193, r220, r237
+  Append       r238, r194, r237
+  Move         r194, r238
 L22:
-  Const        r241, "items"
-  Index        r242, r193, r220
-  Index        r243, r242, r241
-  Append       r244, r243, r197
-  SetIndex     r242, r241, r244
-  Const        r245, "count"
-  Index        r246, r242, r245
-  AddInt       r247, r246, r72
-  SetIndex     r242, r245, r247
+  Index        r239, r193, r220
+  Index        r240, r239, r226
+  Append       r241, r240, r197
+  SetIndex     r239, r226, r241
+  Index        r242, r239, r228
+  AddInt       r243, r242, r72
+  SetIndex     r239, r228, r243
   AddInt       r192, r192, r72
   Jump         L23
 L21:
-  Move         r248, r17
-  Len          r249, r194
+  Move         r244, r17
+  Len          r245, r194
 L27:
-  LessInt      r250, r248, r249
-  JumpIfFalse  r250, L24
-  Index        r252, r194, r248
+  LessInt      r246, r244, r245
+  JumpIfFalse  r246, L24
+  Index        r247, r194, r244
+  Move         r248, r247
   // channel: g.key.channel,
-  Const        r253, "channel"
-  Index        r254, r252, r186
-  Index        r255, r254, r7
+  Const        r249, "channel"
+  Index        r250, r248, r186
+  Index        r251, r250, r7
   // col_name: g.key.col_name,
-  Const        r256, "col_name"
-  Index        r257, r252, r186
-  Index        r258, r257, r8
+  Const        r252, "col_name"
+  Index        r253, r248, r186
+  Index        r254, r253, r8
   // d_year: g.key.d_year,
-  Const        r259, "d_year"
-  Index        r260, r252, r186
-  Index        r261, r260, r9
+  Const        r255, "d_year"
+  Index        r256, r248, r186
+  Index        r257, r256, r9
   // d_qoy: g.key.d_qoy,
-  Const        r262, "d_qoy"
-  Index        r263, r252, r186
-  Index        r264, r263, r10
+  Const        r258, "d_qoy"
+  Index        r259, r248, r186
+  Index        r260, r259, r10
   // i_category: g.key.i_category,
-  Const        r265, "i_category"
-  Index        r266, r252, r186
-  Index        r267, r266, r11
+  Const        r261, "i_category"
+  Index        r262, r248, r186
+  Index        r263, r262, r11
   // sales_cnt: count(g),
-  Const        r268, "sales_cnt"
-  Index        r269, r252, r245
+  Const        r264, "sales_cnt"
+  Index        r265, r248, r228
   // sales_amt: sum(from x in g select x.r.ext_sales_price)
-  Const        r270, "sales_amt"
-  Const        r271, []
-  IterPrep     r272, r252
-  Len          r273, r272
-  Move         r274, r17
+  Const        r266, "sales_amt"
+  Const        r267, []
+  IterPrep     r268, r248
+  Len          r269, r268
+  Move         r270, r17
 L26:
-  LessInt      r275, r274, r273
-  JumpIfFalse  r275, L25
-  Index        r277, r272, r274
-  Index        r278, r277, r189
-  Index        r279, r278, r12
-  Append       r271, r271, r279
-  AddInt       r274, r274, r72
+  LessInt      r271, r270, r269
+  JumpIfFalse  r271, L25
+  Index        r272, r268, r270
+  Move         r273, r272
+  Index        r274, r273, r189
+  Index        r275, r274, r12
+  Append       r276, r267, r275
+  Move         r267, r276
+  AddInt       r270, r270, r72
   Jump         L26
 L25:
-  Sum          r281, r271
+  Sum          r277, r267
   // channel: g.key.channel,
-  Move         r282, r253
-  Move         r283, r255
+  Move         r278, r249
+  Move         r279, r251
   // col_name: g.key.col_name,
-  Move         r284, r256
-  Move         r285, r258
+  Move         r280, r252
+  Move         r281, r254
   // d_year: g.key.d_year,
-  Move         r286, r259
-  Move         r287, r261
+  Move         r282, r255
+  Move         r283, r257
   // d_qoy: g.key.d_qoy,
-  Move         r288, r262
-  Move         r289, r264
+  Move         r284, r258
+  Move         r285, r260
   // i_category: g.key.i_category,
-  Move         r290, r265
-  Move         r291, r267
+  Move         r286, r261
+  Move         r287, r263
   // sales_cnt: count(g),
-  Move         r292, r268
-  Move         r293, r269
+  Move         r288, r264
+  Move         r289, r265
   // sales_amt: sum(from x in g select x.r.ext_sales_price)
-  Move         r294, r270
-  Move         r295, r281
+  Move         r290, r266
+  Move         r291, r277
   // select {
-  MakeMap      r296, 7, r282
+  MakeMap      r292, 7, r278
   // sort by g.key.channel
-  Index        r297, r252, r186
-  Index        r299, r297, r7
+  Index        r293, r248, r186
+  Index        r294, r293, r7
+  Move         r295, r294
   // from r in all_rows
-  Move         r300, r296
-  MakeList     r301, 2, r299
-  Append       r185, r185, r301
-  AddInt       r248, r248, r72
+  Move         r296, r292
+  MakeList     r297, 2, r295
+  Append       r298, r185, r297
+  Move         r185, r298
+  AddInt       r244, r244, r72
   Jump         L27
 L24:
   // sort by g.key.channel
-  Sort         r185, r185
+  Sort         r299, r185
+  // from r in all_rows
+  Move         r185, r299
   // json(result)
   JSON         r185
   // expect result == [
-  Const        r304, [{"channel": "store", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatA", "sales_amt": 10, "sales_cnt": 1}, {"channel": "web", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatB", "sales_amt": 15, "sales_cnt": 1}, {"channel": "catalog", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatC", "sales_amt": 20, "sales_cnt": 1}]
-  Equal        r305, r185, r304
-  Expect       r305
+  Const        r300, [{"channel": "store", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatA", "sales_amt": 10, "sales_cnt": 1}, {"channel": "web", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatB", "sales_amt": 15, "sales_cnt": 1}, {"channel": "catalog", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatC", "sales_amt": 20, "sales_cnt": 1}]
+  Equal        r301, r185, r300
+  Expect       r301
   Return       r0
