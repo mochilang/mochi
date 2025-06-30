@@ -1,6 +1,6 @@
 func main (regs=16)
   // let store_sales = [
-  Const        r0, [{"price": 40}, {"price": 30}, {"price": 19}]
+  Const        r0, [{"price": 40.0}, {"price": 30.0}, {"price": 19.0}]
   // let result = sum(from s in store_sales select s.price)
   Const        r1, []
   Const        r2, "price"
@@ -24,7 +24,7 @@ L0:
   // json(result)
   JSON         r13
   // expect result == 89.0
-  Const        r14, 89
+  Const        r14, 89.0
   EqualFloat   r15, r13, r14
   Expect       r15
   Return       r0

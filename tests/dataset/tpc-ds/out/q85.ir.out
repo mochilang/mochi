@@ -1,6 +1,6 @@
 func main (regs=16)
   // let web_returns = [
-  Const        r0, [{"cash": 20, "fee": 1, "qty": 60}, {"cash": 30, "fee": 2, "qty": 100}, {"cash": 25, "fee": 3, "qty": 95}]
+  Const        r0, [{"cash": 20.0, "fee": 1.0, "qty": 60}, {"cash": 30.0, "fee": 2.0, "qty": 100}, {"cash": 25.0, "fee": 3.0, "qty": 95}]
   // let result = avg(from r in web_returns select r.qty)
   Const        r1, []
   Const        r2, "qty"
@@ -24,7 +24,7 @@ L0:
   // json(result)
   JSON         r13
   // expect result == 85.0
-  Const        r14, 85
+  Const        r14, 85.0
   EqualFloat   r15, r13, r14
   Expect       r15
   Return       r0

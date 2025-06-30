@@ -1,10 +1,10 @@
 func main (regs=47)
   // let store_sales = [
-  Const        r0, [{"price": 20, "ret": 5}, {"price": 10, "ret": 2}, {"price": 5, "ret": 0}]
+  Const        r0, [{"price": 20.0, "ret": 5.0}, {"price": 10.0, "ret": 2.0}, {"price": 5.0, "ret": 0.0}]
   // let catalog_sales = [
-  Const        r1, [{"price": 15, "ret": 3}, {"price": 8, "ret": 1}]
+  Const        r1, [{"price": 15.0, "ret": 3.0}, {"price": 8.0, "ret": 1.0}]
   // let web_sales = [
-  Const        r2, [{"price": 25, "ret": 5}, {"price": 15, "ret": 8}, {"price": 8, "ret": 2}]
+  Const        r2, [{"price": 25.0, "ret": 5.0}, {"price": 15.0, "ret": 8.0}, {"price": 8.0, "ret": 2.0}]
   // sum(from s in store_sales select s.price - s.ret) +
   Const        r3, []
   Const        r4, "price"
@@ -73,7 +73,7 @@ L4:
   // json(total_profit)
   JSON         r44
   // expect total_profit == 80.0
-  Const        r45, 80
+  Const        r45, 80.0
   EqualFloat   r46, r44, r45
   Expect       r46
   Return       r0
