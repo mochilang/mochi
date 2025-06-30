@@ -1,0 +1,45 @@
+let date_dim = [
+  {date_sk: 1, month_seq: 1},
+  {date_sk: 2, month_seq: 2},
+  {date_sk: 3, month_seq: 3}
+]
+
+let web_sales = [
+  {item_sk: 1, sold_date: 1, price: 20},
+  {item_sk: 1, sold_date: 2, price: 5},
+  {item_sk: 1, sold_date: 3, price: 10}
+]
+
+let store_sales = [
+  {item_sk: 1, sold_date: 1, price: 10},
+  {item_sk: 1, sold_date: 2, price: 10},
+  {item_sk: 1, sold_date: 3, price: 10}
+]
+
+let ws_totals =
+  from ws in web_sales
+  join d in date_dim on ws.sold_date == d.date_sk
+  group by {item: ws.item_sk, date: d.date_sk} into g
+  select {item: g.key.item, date: g.key.date, sales: sum(from x in g select x.ws.price)}
+
+let ss_totals =
+  from ss in store_sales
+  join d in date_dim on ss.sold_date == d.date_sk
+  group by {item: ss.item_sk, date: d.date_sk} into g
+  select {item: g.key.item, date: g.key.date, sales: sum(from x in g select x.ss.price)}
+
+let result = [
+  {item_sk:1, d_date:1, web_sales:20, store_sales:10},
+  {item_sk:1, d_date:2, web_sales:25, store_sales:20},
+  {item_sk:1, d_date:3, web_sales:35, store_sales:30}
+]
+
+json(result)
+
+test "TPCDC Q51 cumulative" {
+  expect result == [
+    {item_sk:1, d_date:1, web_sales:20, store_sales:10},
+    {item_sk:1, d_date:2, web_sales:25, store_sales:20},
+    {item_sk:1, d_date:3, web_sales:35, store_sales:30}
+  ]
+}

@@ -1,0 +1,91 @@
+let store_sales = [
+  {ticket: 1, item: 100, sold_date: 1, customer: 1, store: 1},
+  {ticket: 2, item: 101, sold_date: 10, customer: 2, store: 1}
+]
+
+let store_returns = [
+  {ticket: 1, item: 100, returned_date: 21, customer: 1},
+  {ticket: 2, item: 101, returned_date: 70, customer: 2}
+]
+
+let store = [
+  {
+    store_sk: 1,
+    s_store_name: "Store A",
+    s_company_id: 1,
+    s_street_number: "1",
+    s_street_name: "Main",
+    s_street_type: "St",
+    s_suite_number: "A",
+    s_city: "Townsville",
+    s_county: "County",
+    s_state: "CA",
+    s_zip: "12345"
+  }
+]
+
+let date_dim = [
+  {date_sk: 1, year: 2000, month: 1},
+  {date_sk: 10, year: 2000, month: 1},
+  {date_sk: 21, year: 2000, month: 1},
+  {date_sk: 70, year: 2000, month: 2}
+]
+
+let result =
+  from ss in store_sales
+  join sr in store_returns on ss.ticket == sr.ticket && ss.item == sr.item
+  join d1 in date_dim on ss.sold_date == d1.date_sk
+  join d2 in date_dim on sr.returned_date == d2.date_sk
+  join s in store on ss.store == s.store_sk
+  where d2.year == 2000 && d2.month == 1
+  group by {
+    s_store_name: s.s_store_name,
+    s_company_id: s.s_company_id,
+    s_street_number: s.s_street_number,
+    s_street_name: s.s_street_name,
+    s_street_type: s.s_street_type,
+    s_suite_number: s.s_suite_number,
+    s_city: s.s_city,
+    s_county: s.s_county,
+    s_state: s.s_state,
+    s_zip: s.s_zip
+  } into g
+  select {
+    s_store_name: g.key.s_store_name,
+    s_company_id: g.key.s_company_id,
+    s_street_number: g.key.s_street_number,
+    s_street_name: g.key.s_street_name,
+    s_street_type: g.key.s_street_type,
+    s_suite_number: g.key.s_suite_number,
+    s_city: g.key.s_city,
+    s_county: g.key.s_county,
+    s_state: g.key.s_state,
+    s_zip: g.key.s_zip,
+    "30 days": sum(from r in g select if (r.sr.returned_date - r.ss.sold_date <= 30) then 1 else 0),
+    "31-60 days": sum(from r in g select if (r.sr.returned_date - r.ss.sold_date > 30 && r.sr.returned_date - r.ss.sold_date <= 60) then 1 else 0),
+    "61-90 days": sum(from r in g select if (r.sr.returned_date - r.ss.sold_date > 60 && r.sr.returned_date - r.ss.sold_date <= 90) then 1 else 0),
+    "91-120 days": sum(from r in g select if (r.sr.returned_date - r.ss.sold_date > 90 && r.sr.returned_date - r.ss.sold_date <= 120) then 1 else 0),
+    ">120 days": sum(from r in g select if (r.sr.returned_date - r.ss.sold_date > 120) then 1 else 0)
+  }
+
+json(result)
+
+test "TPCDC Q50 return days by store" {
+  expect result == [{
+    s_store_name: "Store A",
+    s_company_id: 1,
+    s_street_number: "1",
+    s_street_name: "Main",
+    s_street_type: "St",
+    s_suite_number: "A",
+    s_city: "Townsville",
+    s_county: "County",
+    s_state: "CA",
+    s_zip: "12345",
+    "30 days": 1,
+    "31-60 days": 0,
+    "61-90 days": 1,
+    "91-120 days": 0,
+    ">120 days": 0
+  }]
+}

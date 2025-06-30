@@ -1,0 +1,31 @@
+let item=[{i_item_sk:1, i_category:"Cat", i_brand:"Brand"}]
+let call_center=[{cc_call_center_sk:1, cc_name:"CC"}]
+let date_dim=[{d_date_sk:1, d_year:2000, d_moy:1}]
+let catalog_sales=[{cs_item_sk:1, cs_sold_date_sk:1, cs_call_center_sk:1, cs_sales_price:100}]
+
+let v1=
+  from cs in catalog_sales
+  join i in item on cs.cs_item_sk == i.i_item_sk
+  join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+  join cc in call_center on cs.cs_call_center_sk == cc.cc_call_center_sk
+  group by {cat:i.i_category, brand:i.i_brand, cc:cc.cc_name, year:d.d_year, moy:d.d_moy} into g
+  select {
+    i_category:g.key.cat,
+    i_brand:g.key.brand,
+    cc_name:g.key.cc,
+    d_year:g.key.year,
+    d_moy:g.key.moy,
+    sum_sales: sum(from x in g select x.cs.cs_sales_price),
+    avg_monthly_sales: avg(from x in g select x.cs.cs_sales_price)
+  }
+
+let result =
+  from r in v1
+  where r.d_year == 2000 && r.avg_monthly_sales > 0 && abs(r.sum_sales - r.avg_monthly_sales)/r.avg_monthly_sales > 0.1
+  select {cc_name:r.cc_name, sum_sales:r.sum_sales, avg_monthly_sales:r.avg_monthly_sales}
+
+json(result)
+
+test "TPCDC Q57 call center" {
+  expect result == [{cc_name:"CC", sum_sales:100, avg_monthly_sales:50}]
+}

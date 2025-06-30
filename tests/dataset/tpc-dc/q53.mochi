@@ -1,0 +1,34 @@
+let item = [
+  {i_item_sk: 1, i_manufact_id: 1, i_category: "Books", i_class: "personal", i_brand: "scholaramalgamalg #14"}
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_qoy: 1, d_month_seq: 1},
+  {d_date_sk: 2, d_qoy: 1, d_month_seq: 2}
+]
+
+let store = [ {s_store_sk: 1} ]
+
+let store_sales = [
+  {ss_item_sk: 1, ss_sold_date_sk: 1, ss_store_sk:1, ss_sales_price: 100},
+  {ss_item_sk: 1, ss_sold_date_sk: 2, ss_store_sk:1, ss_sales_price: 200}
+]
+
+let tmp =
+  from ss in store_sales
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  group by {manu: i.i_manufact_id, qoy: d.d_qoy} into g
+  select {i_manufact_id: g.key.manu, sum_sales: sum(from x in g select x.ss.ss_sales_price), avg_quarterly_sales: avg(from x in g select x.ss.ss_sales_price)}
+
+let result =
+  from r in tmp
+  where (r.avg_quarterly_sales > 0) && abs(r.sum_sales - r.avg_quarterly_sales)/r.avg_quarterly_sales > 0.1
+  select r
+
+json(result)
+
+test "TPCDC Q53 quarterly" {
+  expect result == [{i_manufact_id:1, sum_sales:300, avg_quarterly_sales:150}]
+}
