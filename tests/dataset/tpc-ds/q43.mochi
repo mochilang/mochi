@@ -36,13 +36,13 @@ let result =
   select {
     s_store_name: g.key.name,
     s_store_id: g.key.id,
-    sun_sales: sum(from x in g select x.d_day_name == "Sunday" ? x.price : 0.0),
-    mon_sales: sum(from x in g select x.d_day_name == "Monday" ? x.price : 0.0),
-    tue_sales: sum(from x in g select x.d_day_name == "Tuesday" ? x.price : 0.0),
-    wed_sales: sum(from x in g select x.d_day_name == "Wednesday" ? x.price : 0.0),
-    thu_sales: sum(from x in g select x.d_day_name == "Thursday" ? x.price : 0.0),
-    fri_sales: sum(from x in g select x.d_day_name == "Friday" ? x.price : 0.0),
-    sat_sales: sum(from x in g select x.d_day_name == "Saturday" ? x.price : 0.0)
+    sun_sales: sum(from x in g select if x.d_day_name == "Sunday" { x.price } else { 0.0 }),
+    mon_sales: sum(from x in g select if x.d_day_name == "Monday" { x.price } else { 0.0 }),
+    tue_sales: sum(from x in g select if x.d_day_name == "Tuesday" { x.price } else { 0.0 }),
+    wed_sales: sum(from x in g select if x.d_day_name == "Wednesday" { x.price } else { 0.0 }),
+    thu_sales: sum(from x in g select if x.d_day_name == "Thursday" { x.price } else { 0.0 }),
+    fri_sales: sum(from x in g select if x.d_day_name == "Friday" { x.price } else { 0.0 }),
+    sat_sales: sum(from x in g select if x.d_day_name == "Saturday" { x.price } else { 0.0 })
   }
 
 json(result)

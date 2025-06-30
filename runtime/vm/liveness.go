@@ -97,7 +97,7 @@ func useDef(ins Instr, n int) (use, def []bool) {
 		addDef(ins.A)
 		addUse(ins.B)
 		addUse(ins.C)
-	case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpExists,
+	case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpFirst, OpExists,
 		OpLen, OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues,
 		OpCast, OpIterPrep, OpNow:
 		addDef(ins.A)
@@ -204,7 +204,7 @@ func defRegs(ins Instr) []int {
 		OpAddFloat, OpSubFloat, OpMulFloat, OpDivFloat, OpModFloat,
 		OpEqual, OpNotEqual, OpEqualInt, OpEqualFloat,
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
-		OpIn, OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpExists,
+		OpIn, OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpFirst, OpExists,
 		OpLen, OpIndex, OpSlice, OpMakeList, OpMakeMap,
 		OpCount, OpAvg, OpSum, OpMin, OpMax, OpValues,
 		OpCast, OpIterPrep, OpNow, OpAppend, OpUnionAll, OpUnion,
@@ -601,7 +601,7 @@ func constFold(fn *Function) bool {
 			} else {
 				consts[ins.A] = cinfo{}
 			}
-		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpLen,
+		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpFirst, OpLen,
 			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues,
 			OpSort:
 			b := consts[ins.B]
@@ -774,6 +774,13 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 		}
 	case OpStr:
 		return Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(v))}, true
+	case OpFirst:
+		if lst, ok := toList(v); ok {
+			if len(lst) > 0 {
+				return lst[0], true
+			}
+			return Value{Tag: ValueNull}, true
+		}
 	case OpLen:
 		switch v.Tag {
 		case ValueList:

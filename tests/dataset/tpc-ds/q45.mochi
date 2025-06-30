@@ -31,7 +31,7 @@ let records =
   join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
   join i in item on ws.item_sk == i.i_item_sk
   join d in date_dim on ws.sold_date_sk == d.d_date_sk
-  where (zip_list.contains(substr(ca.ca_zip, 0, 5)) || item_ids.contains(i.i_item_id)) &&
+  where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
         d.d_qoy == qoy && d.d_year == year
   group by ca.ca_zip into g
   select { ca_zip: g.key, sum_ws_sales_price: sum(from x in g select x.ws.sales_price) }

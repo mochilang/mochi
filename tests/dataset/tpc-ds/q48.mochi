@@ -35,9 +35,9 @@ let qty =
       (cd.cd_marital_status == "W" && cd.cd_education_status == "E3" && ss.sales_price >= 150.0 && ss.sales_price <= 200.0)
     ) &&
     (
-      (states1.contains(ca.ca_state) && ss.net_profit >= 0 && ss.net_profit <= 2000) ||
-      (states2.contains(ca.ca_state) && ss.net_profit >= 150 && ss.net_profit <= 3000) ||
-      (states3.contains(ca.ca_state) && ss.net_profit >= 50 && ss.net_profit <= 25000)
+      (ca.ca_state in states1 && ss.net_profit >= 0 && ss.net_profit <= 2000) ||
+      (ca.ca_state in states2 && ss.net_profit >= 150 && ss.net_profit <= 3000) ||
+      (ca.ca_state in states3 && ss.net_profit >= 50 && ss.net_profit <= 25000)
     )
   select ss.quantity
 
