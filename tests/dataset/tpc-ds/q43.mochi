@@ -1,7 +1,64 @@
-let t = [{id: 1, val: 43}]
-let result = from r in t select r.val |> first
+let date_dim = [
+  { date_sk: 1, d_day_name: "Sunday", d_year: 2020 },
+  { date_sk: 2, d_day_name: "Monday", d_year: 2020 },
+  { date_sk: 3, d_day_name: "Tuesday", d_year: 2020 },
+  { date_sk: 4, d_day_name: "Wednesday", d_year: 2020 },
+  { date_sk: 5, d_day_name: "Thursday", d_year: 2020 },
+  { date_sk: 6, d_day_name: "Friday", d_year: 2020 },
+  { date_sk: 7, d_day_name: "Saturday", d_year: 2020 }
+]
+
+let store = [ { store_sk: 1, store_id: "S1", store_name: "Main", gmt_offset: 0 } ]
+
+let store_sales = [
+  { sold_date_sk: 1, store_sk: 1, sales_price: 10.0 },
+  { sold_date_sk: 2, store_sk: 1, sales_price: 20.0 },
+  { sold_date_sk: 3, store_sk: 1, sales_price: 30.0 },
+  { sold_date_sk: 4, store_sk: 1, sales_price: 40.0 },
+  { sold_date_sk: 5, store_sk: 1, sales_price: 50.0 },
+  { sold_date_sk: 6, store_sk: 1, sales_price: 60.0 },
+  { sold_date_sk: 7, store_sk: 1, sales_price: 70.0 }
+]
+
+let year = 2020
+let gmt = 0
+
+let records =
+  from d in date_dim
+  join ss in store_sales on ss.sold_date_sk == d.date_sk
+  join s in store on ss.store_sk == s.store_sk
+  where s.gmt_offset == gmt && d.d_year == year
+  select { d_day_name: d.d_day_name, s_store_name: s.store_name, s_store_id: s.store_id, price: ss.sales_price }
+
+let result =
+  from r in records
+  group by { name: r.s_store_name, id: r.s_store_id } into g
+  select {
+    s_store_name: g.key.name,
+    s_store_id: g.key.id,
+    sun_sales: sum(from x in g select x.d_day_name == "Sunday" ? x.price : 0.0),
+    mon_sales: sum(from x in g select x.d_day_name == "Monday" ? x.price : 0.0),
+    tue_sales: sum(from x in g select x.d_day_name == "Tuesday" ? x.price : 0.0),
+    wed_sales: sum(from x in g select x.d_day_name == "Wednesday" ? x.price : 0.0),
+    thu_sales: sum(from x in g select x.d_day_name == "Thursday" ? x.price : 0.0),
+    fri_sales: sum(from x in g select x.d_day_name == "Friday" ? x.price : 0.0),
+    sat_sales: sum(from x in g select x.d_day_name == "Saturday" ? x.price : 0.0)
+  }
+
 json(result)
 
-test "TPCDS Q43 placeholder" {
-  expect result == 43
+test "TPCDS Q43 simplified" {
+  expect result == [
+    {
+      s_store_name: "Main",
+      s_store_id: "S1",
+      sun_sales: 10.0,
+      mon_sales: 20.0,
+      tue_sales: 30.0,
+      wed_sales: 40.0,
+      thu_sales: 50.0,
+      fri_sales: 60.0,
+      sat_sales: 70.0
+    }
+  ]
 }

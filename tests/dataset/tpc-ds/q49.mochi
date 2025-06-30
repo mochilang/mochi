@@ -1,7 +1,41 @@
-let t = [{id: 1, val: 49}]
-let result = from r in t select r.val |> first
+let web = [
+  { item: "A", return_ratio: 0.2, currency_ratio: 0.3, return_rank: 1, currency_rank: 1 },
+  { item: "B", return_ratio: 0.5, currency_ratio: 0.6, return_rank: 2, currency_rank: 2 }
+]
+
+let catalog = [
+  { item: "A", return_ratio: 0.3, currency_ratio: 0.4, return_rank: 1, currency_rank: 1 }
+]
+
+let store = [
+  { item: "A", return_ratio: 0.25, currency_ratio: 0.35, return_rank: 1, currency_rank: 1 }
+]
+
+let result =
+  (
+    from w in web
+    where w.return_rank <= 10 || w.currency_rank <= 10
+    select { channel: "web", item: w.item, return_ratio: w.return_ratio, return_rank: w.return_rank, currency_rank: w.currency_rank }
+  ) ++
+  (
+    from c in catalog
+    where c.return_rank <= 10 || c.currency_rank <= 10
+    select { channel: "catalog", item: c.item, return_ratio: c.return_ratio, return_rank: c.return_rank, currency_rank: c.currency_rank }
+  ) ++
+  (
+    from s in store
+    where s.return_rank <= 10 || s.currency_rank <= 10
+    select { channel: "store", item: s.item, return_ratio: s.return_ratio, return_rank: s.return_rank, currency_rank: s.currency_rank }
+  )
+  sort by [channel, return_rank, currency_rank, item]
+
 json(result)
 
-test "TPCDS Q49 placeholder" {
-  expect result == 49
+test "TPCDS Q49 simplified" {
+  expect result == [
+    { channel: "catalog", item: "A", return_ratio: 0.3, return_rank: 1, currency_rank: 1 },
+    { channel: "store", item: "A", return_ratio: 0.25, return_rank: 1, currency_rank: 1 },
+    { channel: "web", item: "A", return_ratio: 0.2, return_rank: 1, currency_rank: 1 },
+    { channel: "web", item: "B", return_ratio: 0.5, return_rank: 2, currency_rank: 2 }
+  ]
 }
