@@ -1,4 +1,4 @@
-func main (regs=176)
+func main (regs=173)
   // let orders = [
   Const        r0, [{"o_orderkey": 1, "o_orderpriority": "1-URGENT"}, {"o_orderkey": 2, "o_orderpriority": "3-MEDIUM"}]
   // let lineitem = [
@@ -38,7 +38,7 @@ func main (regs=176)
   IterPrep     r23, r1
   Len          r24, r23
   Const        r25, 0
-L9:
+L6:
   LessInt      r26, r25, r24
   JumpIfFalse  r26, L0
   Index        r28, r23, r25
@@ -46,7 +46,7 @@ L9:
   IterPrep     r29, r0
   Len          r30, r29
   Const        r31, 0
-L8:
+L5:
   LessInt      r32, r31, r30
   JumpIfFalse  r32, L1
   Index        r34, r29, r31
@@ -67,188 +67,185 @@ L8:
   Index        r46, r28, r45
   Const        r47, "l_receiptdate"
   Index        r48, r28, r47
-  Less         r50, r46, r48
-L3:
-  JumpIfFalse  r50, L4
+  Less         r44, r46, r48
+  JumpIfFalse  r44, L3
   // (l.l_shipdate < l.l_commitdate) &&
-  Const        r51, "l_shipdate"
-  Index        r52, r28, r51
-  Const        r53, "l_commitdate"
-  Index        r54, r28, r53
-  Less         r56, r52, r54
-L4:
-  JumpIfFalse  r56, L5
+  Const        r50, "l_shipdate"
+  Index        r51, r28, r50
+  Const        r52, "l_commitdate"
+  Index        r53, r28, r52
+  Less         r44, r51, r53
+  JumpIfFalse  r44, L3
   // (l.l_receiptdate >= "1994-01-01") &&
-  Const        r57, "l_receiptdate"
-  Index        r58, r28, r57
-  Const        r59, "1994-01-01"
-  LessEq       r61, r59, r58
-L5:
-  JumpIfFalse  r61, L6
+  Const        r55, "l_receiptdate"
+  Index        r56, r28, r55
+  Const        r57, "1994-01-01"
+  LessEq       r44, r57, r56
+  JumpIfFalse  r44, L3
   // (l.l_receiptdate < "1995-01-01")
-  Const        r62, "l_receiptdate"
-  Index        r63, r28, r62
-  Const        r64, "1995-01-01"
-  Less         r61, r63, r64
-L6:
+  Const        r59, "l_receiptdate"
+  Index        r60, r28, r59
+  Const        r61, "1995-01-01"
+  Less         r44, r60, r61
+L3:
   // (l.l_shipmode in ["MAIL", "SHIP"]) &&
-  JumpIfFalse  r61, L2
+  JumpIfFalse  r44, L2
   // from l in lineitem
-  Const        r66, "l"
-  Move         r67, r28
-  Const        r68, "o"
-  Move         r69, r34
-  MakeMap      r70, 2, r66
+  Const        r63, "l"
+  Move         r64, r28
+  Const        r65, "o"
+  Move         r66, r34
+  MakeMap      r67, 2, r63
   // group by l.l_shipmode into g
-  Const        r71, "l_shipmode"
-  Index        r72, r28, r71
-  Str          r73, r72
-  In           r74, r73, r20
-  JumpIfTrue   r74, L7
+  Const        r68, "l_shipmode"
+  Index        r69, r28, r68
+  Str          r70, r69
+  In           r71, r70, r20
+  JumpIfTrue   r71, L4
   // from l in lineitem
-  Const        r75, []
-  Const        r76, "__group__"
-  Const        r77, true
-  Const        r78, "key"
+  Const        r72, []
+  Const        r73, "__group__"
+  Const        r74, true
+  Const        r75, "key"
   // group by l.l_shipmode into g
-  Move         r79, r72
+  Move         r76, r69
   // from l in lineitem
-  Const        r80, "items"
-  Move         r81, r75
-  Const        r82, "count"
-  Const        r83, 0
+  Const        r77, "items"
+  Move         r78, r72
+  Const        r79, "count"
+  Const        r80, 0
+  Move         r81, r73
+  Move         r82, r74
+  Move         r83, r75
   Move         r84, r76
   Move         r85, r77
   Move         r86, r78
   Move         r87, r79
   Move         r88, r80
-  Move         r89, r81
-  Move         r90, r82
-  Move         r91, r83
-  MakeMap      r92, 4, r84
-  SetIndex     r20, r73, r92
-  Append       r21, r21, r92
-L7:
-  Const        r94, "items"
-  Index        r95, r20, r73
-  Index        r96, r95, r94
-  Append       r97, r96, r70
-  SetIndex     r95, r94, r97
-  Const        r98, "count"
-  Index        r99, r95, r98
-  Const        r100, 1
-  AddInt       r101, r99, r100
-  SetIndex     r95, r98, r101
+  MakeMap      r89, 4, r81
+  SetIndex     r20, r70, r89
+  Append       r21, r21, r89
+L4:
+  Const        r91, "items"
+  Index        r92, r20, r70
+  Index        r93, r92, r91
+  Append       r94, r93, r67
+  SetIndex     r92, r91, r94
+  Const        r95, "count"
+  Index        r96, r92, r95
+  Const        r97, 1
+  AddInt       r98, r96, r97
+  SetIndex     r92, r95, r98
 L2:
   // join o in orders on o.o_orderkey == l.l_orderkey
-  Const        r102, 1
-  AddInt       r31, r31, r102
-  Jump         L8
+  Const        r99, 1
+  AddInt       r31, r31, r99
+  Jump         L5
 L1:
   // from l in lineitem
-  Const        r103, 1
-  AddInt       r25, r25, r103
-  Jump         L9
+  Const        r100, 1
+  AddInt       r25, r25, r100
+  Jump         L6
 L0:
-  Const        r104, 0
-  Len          r106, r21
-L19:
-  LessInt      r107, r104, r106
-  JumpIfFalse  r107, L10
-  Index        r109, r21, r104
-  // l_shipmode: g.key,
-  Const        r110, "l_shipmode"
-  Const        r111, "key"
-  Index        r112, r109, r111
-  // high_line_count: sum(from x in g select if x.o.o_orderpriority in ["1-URGENT", "2-HIGH"] { 1 } else { 0 }),
-  Const        r113, "high_line_count"
-  Const        r114, []
-  Const        r115, "o"
-  Const        r116, "o_orderpriority"
-  IterPrep     r117, r109
-  Len          r118, r117
-  Const        r119, 0
-L14:
-  LessInt      r121, r119, r118
-  JumpIfFalse  r121, L11
-  Index        r123, r117, r119
-  Const        r124, "o"
-  Index        r125, r123, r124
-  Const        r126, "o_orderpriority"
-  Index        r127, r125, r126
-  Const        r128, ["1-URGENT", "2-HIGH"]
-  In           r129, r127, r128
-  JumpIfFalse  r129, L12
-  Const        r131, 1
-  Jump         L13
-L12:
-  Const        r131, 0
-L13:
-  Append       r114, r114, r131
-  Const        r134, 1
-  AddInt       r119, r119, r134
-  Jump         L14
-L11:
-  Sum          r135, r114
-  // low_line_count: sum(from x in g select if !(x.o.o_orderpriority in ["1-URGENT", "2-HIGH"]) { 1 } else { 0 })
-  Const        r136, "low_line_count"
-  Const        r137, []
-  Const        r138, "o"
-  Const        r139, "o_orderpriority"
-  IterPrep     r140, r109
-  Len          r141, r140
-  Const        r142, 0
-L18:
-  LessInt      r144, r142, r141
-  JumpIfFalse  r144, L15
-  Index        r123, r140, r142
-  Const        r146, "o"
-  Index        r147, r123, r146
-  Const        r148, "o_orderpriority"
-  Index        r149, r147, r148
-  Const        r150, ["1-URGENT", "2-HIGH"]
-  In           r151, r149, r150
-  Not          r152, r151
-  JumpIfFalse  r152, L16
-  Const        r154, 1
-  Jump         L17
+  Const        r101, 0
+  Len          r103, r21
 L16:
-  Const        r154, 0
-L17:
-  Append       r137, r137, r154
-  Const        r157, 1
-  AddInt       r142, r142, r157
-  Jump         L18
-L15:
-  Sum          r158, r137
+  LessInt      r104, r101, r103
+  JumpIfFalse  r104, L7
+  Index        r106, r21, r101
   // l_shipmode: g.key,
-  Move         r159, r110
-  Move         r160, r112
+  Const        r107, "l_shipmode"
+  Const        r108, "key"
+  Index        r109, r106, r108
   // high_line_count: sum(from x in g select if x.o.o_orderpriority in ["1-URGENT", "2-HIGH"] { 1 } else { 0 }),
-  Move         r161, r113
-  Move         r162, r135
-  // low_line_count: sum(from x in g select if !(x.o.o_orderpriority in ["1-URGENT", "2-HIGH"]) { 1 } else { 0 })
-  Move         r163, r136
-  Move         r164, r158
-  // select {
-  MakeMap      r165, 3, r159
-  // sort by g.key
-  Const        r166, "key"
-  Index        r168, r109, r166
-  // from l in lineitem
-  Move         r169, r165
-  MakeList     r170, 2, r168
-  Append       r2, r2, r170
-  Const        r172, 1
-  AddInt       r104, r104, r172
-  Jump         L19
+  Const        r110, "high_line_count"
+  Const        r111, []
+  Const        r112, "o"
+  Const        r113, "o_orderpriority"
+  IterPrep     r114, r106
+  Len          r115, r114
+  Const        r116, 0
+L11:
+  LessInt      r118, r116, r115
+  JumpIfFalse  r118, L8
+  Index        r120, r114, r116
+  Const        r121, "o"
+  Index        r122, r120, r121
+  Const        r123, "o_orderpriority"
+  Index        r124, r122, r123
+  Const        r125, ["1-URGENT", "2-HIGH"]
+  In           r126, r124, r125
+  JumpIfFalse  r126, L9
+  Const        r128, 1
+  Jump         L10
+L9:
+  Const        r128, 0
 L10:
+  Append       r111, r111, r128
+  Const        r131, 1
+  AddInt       r116, r116, r131
+  Jump         L11
+L8:
+  Sum          r132, r111
+  // low_line_count: sum(from x in g select if !(x.o.o_orderpriority in ["1-URGENT", "2-HIGH"]) { 1 } else { 0 })
+  Const        r133, "low_line_count"
+  Const        r134, []
+  Const        r135, "o"
+  Const        r136, "o_orderpriority"
+  IterPrep     r137, r106
+  Len          r138, r137
+  Const        r139, 0
+L15:
+  LessInt      r141, r139, r138
+  JumpIfFalse  r141, L12
+  Index        r120, r137, r139
+  Const        r143, "o"
+  Index        r144, r120, r143
+  Const        r145, "o_orderpriority"
+  Index        r146, r144, r145
+  Const        r147, ["1-URGENT", "2-HIGH"]
+  In           r148, r146, r147
+  Not          r149, r148
+  JumpIfFalse  r149, L13
+  Const        r151, 1
+  Jump         L14
+L13:
+  Const        r151, 0
+L14:
+  Append       r134, r134, r151
+  Const        r154, 1
+  AddInt       r139, r139, r154
+  Jump         L15
+L12:
+  Sum          r155, r134
+  // l_shipmode: g.key,
+  Move         r156, r107
+  Move         r157, r109
+  // high_line_count: sum(from x in g select if x.o.o_orderpriority in ["1-URGENT", "2-HIGH"] { 1 } else { 0 }),
+  Move         r158, r110
+  Move         r159, r132
+  // low_line_count: sum(from x in g select if !(x.o.o_orderpriority in ["1-URGENT", "2-HIGH"]) { 1 } else { 0 })
+  Move         r160, r133
+  Move         r161, r155
+  // select {
+  MakeMap      r162, 3, r156
+  // sort by g.key
+  Const        r163, "key"
+  Index        r165, r106, r163
+  // from l in lineitem
+  Move         r166, r162
+  MakeList     r167, 2, r165
+  Append       r2, r2, r167
+  Const        r169, 1
+  AddInt       r101, r101, r169
+  Jump         L16
+L7:
   // sort by g.key
   Sort         r2, r2
   // json(result)
   JSON         r2
   // expect result == [
-  Const        r174, [{"high_line_count": 1, "l_shipmode": "MAIL", "low_line_count": 0}]
-  Equal        r175, r2, r174
-  Expect       r175
+  Const        r171, [{"high_line_count": 1, "l_shipmode": "MAIL", "low_line_count": 0}]
+  Equal        r172, r2, r171
+  Expect       r172
   Return       r0

@@ -2341,22 +2341,30 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 			if contains(level, opName) {
 				left := valueOf(&operands[i])
 				var dst int
-				if opName == "&&" {
+				if opName == "&&" || opName == "||" {
 					dst = fc.newReg()
 					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: left})
-					jmp := len(fc.fn.Code)
-					fc.emit(ops[i].Pos, Instr{Op: OpJumpIfFalse, A: dst})
-					right := valueOf(&operands[i+1])
-					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: right})
-					fc.fn.Code[jmp].B = len(fc.fn.Code)
-				} else if opName == "||" {
-					dst = fc.newReg()
-					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: left})
-					jmp := len(fc.fn.Code)
-					fc.emit(ops[i].Pos, Instr{Op: OpJumpIfTrue, A: dst})
-					right := valueOf(&operands[i+1])
-					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: right})
-					fc.fn.Code[jmp].B = len(fc.fn.Code)
+					jumps := []int{}
+					condOp := OpJumpIfFalse
+					if opName == "||" {
+						condOp = OpJumpIfTrue
+					}
+					j := i
+					for ; j < len(ops) && ops[j].Op == opName; j++ {
+						jmp := len(fc.fn.Code)
+						fc.emit(ops[j].Pos, Instr{Op: condOp, A: dst})
+						right := valueOf(&operands[j+1])
+						fc.emit(ops[j].Pos, Instr{Op: OpMove, A: dst, B: right})
+						jumps = append(jumps, jmp)
+					}
+					end := len(fc.fn.Code)
+					for _, jmp := range jumps {
+						fc.fn.Code[jmp].B = end
+					}
+					operands[i] = operand{reg: dst, done: true}
+					operands = append(operands[:i+1], operands[j+1:]...)
+					ops = append(ops[:i], ops[j:]...)
+					continue
 				} else {
 					right := valueOf(&operands[i+1])
 					dst = fc.emitBinaryOp(ops[i].Pos, opName, ops[i].All, left, right)
