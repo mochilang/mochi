@@ -15,10 +15,12 @@ L1:
   JumpIfFalse  r6, L0
   // last = sum_loop(n)
   Move         r7, r0
-  Call         r3, sum_loop, r7
+  Call         r8, sum_loop, r7
+  Move         r3, r8
   // for i in 0..repeat {
   Const        r9, 1
-  Add          r5, r5, r9
+  Add          r10, r5, r9
+  Move         r5, r10
   Jump         L1
 L0:
   // let duration = (now() - start) / 1000
@@ -43,17 +45,21 @@ L0:
   // fun sum_loop(n: int): int {
 func sum_loop (regs=9)
   // var total = 0
-  Const        r2, 0
+  Const        r1, 0
+  Move         r2, r1
   // for i in 1..n {
-  Const        r4, 1
+  Const        r3, 1
+  Move         r4, r3
 L1:
   Less         r5, r4, r0
   JumpIfFalse  r5, L0
   // total = total + i
-  AddInt       r2, r2, r4
+  AddInt       r6, r2, r4
+  Move         r2, r6
   // for i in 1..n {
   Const        r7, 1
-  Add          r4, r4, r7
+  Add          r8, r4, r7
+  Move         r4, r8
   Jump         L1
 L0:
   // return total

@@ -35,10 +35,12 @@ func fib (regs=11)
   Return       r0
 L0:
   // return fib(n - 1) + fib(n - 2)
-  Sub          r3, r0, r1
+  Sub          r4, r0, r1
+  Move         r3, r4
   Call         r5, fib, r3
   Const        r7, 2
-  Sub          r6, r0, r7
+  Sub          r8, r0, r7
+  Move         r6, r8
   Call         r9, fib, r6
   Add          r10, r5, r9
   Return       r10

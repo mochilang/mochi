@@ -15,10 +15,12 @@ L1:
   JumpIfFalse  r6, L0
   // last = fib(n)
   Move         r7, r0
-  Call         r3, fib, r7
+  Call         r8, fib, r7
+  Move         r3, r8
   // for i in 0..repeat {
   Const        r9, 1
-  Add          r5, r5, r9
+  Add          r10, r5, r9
+  Move         r5, r10
   Jump         L1
 L0:
   // let duration = (now() - start) / 1000
@@ -46,7 +48,8 @@ func fib (regs=10)
   Const        r1, 0
   Move         r2, r1
   // var b = 1
-  Const        r4, 1
+  Const        r3, 1
+  Move         r4, r3
   // for i in 0..n {
   Move         r5, r1
 L1:
@@ -60,7 +63,8 @@ L1:
   Move         r4, r7
   // for i in 0..n {
   Const        r8, 1
-  Add          r5, r5, r8
+  Add          r9, r5, r8
+  Move         r5, r9
   Jump         L1
 L0:
   // return a
