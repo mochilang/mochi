@@ -4,6 +4,9 @@ let store = []
 let customer_address = []
 let customer = []
 
+// exercise substr builtin
+substr("zip", 0, 2)
+
 let result = []
 json(result)
 

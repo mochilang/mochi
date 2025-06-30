@@ -2784,6 +2784,13 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpSlice, A: dst, B: str, C: start, D: end})
 			return dst
+		case "substr":
+			str := fc.compileExpr(p.Call.Args[0])
+			start := fc.compileExpr(p.Call.Args[1])
+			end := fc.compileExpr(p.Call.Args[2])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpSlice, A: dst, B: str, C: start, D: end})
+			return dst
 		case "eval":
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
@@ -5805,6 +5812,31 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		}
 		return Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(args[0]))}, true
 	case "substring":
+		if len(args) != 3 {
+			return Value{}, false
+		}
+		s, start, end := args[0], args[1], args[2]
+		if s.Tag == ValueStr && start.Tag == ValueInt && end.Tag == ValueInt {
+			r := []rune(s.Str)
+			lo, hi := start.Int, end.Int
+			if lo < 0 {
+				lo = 0
+			}
+			if hi < 0 {
+				hi = 0
+			}
+			if lo > len(r) {
+				lo = len(r)
+			}
+			if hi > len(r) {
+				hi = len(r)
+			}
+			if lo > hi {
+				lo, hi = hi, lo
+			}
+			return Value{Tag: ValueStr, Str: string(r[lo:hi])}, true
+		}
+	case "substr":
 		if len(args) != 3 {
 			return Value{}, false
 		}
