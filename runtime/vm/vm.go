@@ -997,17 +997,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpJSON:
 			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
 			fmt.Fprintln(m.writer, string(b))
-               case OpAppend:
-                       lst := fr.regs[ins.B]
-                       if lst.Tag == ValueNull {
-                               fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{fr.regs[ins.C]}}
-                               break
-                       }
-                       if lst.Tag != ValueList {
-                               return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
-                       }
-                       newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
-                       fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
+		case OpAppend:
+			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{fr.regs[ins.C]}}
+				break
+			}
+			if lst.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
+			}
+			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
+			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
@@ -5220,29 +5220,52 @@ func (fc *funcCompiler) compileGroupJoinAny(q *parser.QueryExpr, gmap, glist int
 func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 	names := []string{q.Var}
 	regs := []int{fc.vars[q.Var]}
+	typs := []types.Type{}
+	if t, err := fc.comp.env.GetVar(q.Var); err == nil {
+		typs = append(typs, t)
+	} else {
+		typs = append(typs, nil)
+	}
 	for _, f := range q.Froms {
 		names = append(names, f.Var)
 		regs = append(regs, fc.vars[f.Var])
+		if t, err := fc.comp.env.GetVar(f.Var); err == nil {
+			typs = append(typs, t)
+		} else {
+			typs = append(typs, nil)
+		}
 	}
 	for _, j := range q.Joins {
 		names = append(names, j.Var)
 		regs = append(regs, fc.vars[j.Var])
+		if t, err := fc.comp.env.GetVar(j.Var); err == nil {
+			typs = append(typs, t)
+		} else {
+			typs = append(typs, nil)
+		}
 	}
 
-	pairs := make([]int, len(names)*2)
-	for i, n := range names {
-		k := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: n})
-		v := fc.newReg()
-		fc.emit(q.Pos, Instr{Op: OpMove, A: v, B: regs[i]})
-		pairs[i*2] = k
-		pairs[i*2+1] = v
-	}
 	row := fc.newReg()
-	start := 0
-	if len(pairs) > 0 {
-		start = pairs[0]
+	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: row, B: 0})
+
+	for i, n := range names {
+		typ := typs[i]
+		reg := regs[i]
+		if st, ok := typ.(types.StructType); ok {
+			for _, f := range st.Order {
+				key := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: f})
+				val := fc.newReg()
+				fc.emit(q.Pos, Instr{Op: OpIndex, A: val, B: reg, C: key})
+				fc.emit(q.Pos, Instr{Op: OpSetIndex, A: row, B: key, C: val})
+			}
+		} else {
+			key := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: n})
+			val := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMove, A: val, B: reg})
+			fc.emit(q.Pos, Instr{Op: OpSetIndex, A: row, B: key, C: val})
+		}
 	}
-	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: row, B: len(names), C: start})
+
 	return row
 }
 
