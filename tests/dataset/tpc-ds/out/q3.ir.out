@@ -1,0 +1,11 @@
+func main (regs=6)
+  // let date_dim = []
+  Const        r0, []
+  // let result = []
+  Move         r3, r0
+  // json(result)
+  JSON         r3
+  // expect result == []
+  Equal        r5, r3, r0
+  Expect       r5
+  Return       r0

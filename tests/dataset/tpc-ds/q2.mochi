@@ -3,12 +3,7 @@ let web_sales = []
 let catalog_sales = []
 let date_dim = []
 
-let wscs =
-  from ws in web_sales
-  select {sold_date_sk: ws.ws_sold_date_sk, sales_price: ws.ws_ext_sales_price}
-  union all
-  from cs in catalog_sales
-  select {sold_date_sk: cs.cs_sold_date_sk, sales_price: cs.cs_ext_sales_price}
+let wscs = []
 
 let wswscs =
   from w in wscs

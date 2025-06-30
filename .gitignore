@@ -233,6 +233,9 @@ out
 # Keep tpc-h golden files
 !tests/dataset/tpc-h/out
 !tests/dataset/tpc-h/out/*
+# Keep tpc-ds golden files
+!tests/dataset/tpc-ds/out
+!tests/dataset/tpc-ds/out/*
 # Keep job golden files
 !tests/dataset/job/out
 !tests/dataset/job/out/*

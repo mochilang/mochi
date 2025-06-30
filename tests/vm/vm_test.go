@@ -202,6 +202,101 @@ func TestVM_TPCH(t *testing.T) {
 	}
 }
 
+func TestVM_TPCDS(t *testing.T) {
+	root := findRepoRoot(t)
+	queries := []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"}
+	found := false
+	for _, q := range queries {
+		src := filepath.Join(root, "tests/dataset/tpc-ds", q+".mochi")
+		want := filepath.Join(root, "tests/dataset/tpc-ds/out", q+".out")
+		irWant := filepath.Join(root, "tests/dataset/tpc-ds/out", q+".ir.out")
+		if _, err := os.Stat(want); err != nil {
+			continue
+		}
+		found = true
+		name := filepath.Base(src)
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			var out bytes.Buffer
+			m := vm.New(p, &out)
+			if err := m.Run(); err != nil {
+				t.Fatalf("run error: %v", err)
+			}
+			got := strings.TrimSpace(out.String())
+			data, err := os.ReadFile(want)
+			if err != nil {
+				if shouldUpdate() {
+					if writeErr := os.WriteFile(want, []byte(got+"\n"), 0644); writeErr == nil {
+						t.Logf("updated: %s", want)
+					} else {
+						t.Fatalf("write golden: %v", writeErr)
+					}
+				} else {
+					t.Fatalf("read golden: %v", err)
+				}
+			} else {
+				wantStr := strings.TrimSpace(string(data))
+				if got != wantStr {
+					if shouldUpdate() {
+						if writeErr := os.WriteFile(want, []byte(got+"\n"), 0644); writeErr == nil {
+							t.Logf("updated: %s", want)
+						} else {
+							t.Fatalf("write golden: %v", writeErr)
+						}
+					} else {
+						t.Errorf("%s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, wantStr)
+					}
+				}
+			}
+
+			srcData, err := os.ReadFile(src)
+			if err != nil {
+				t.Fatalf("read src: %v", err)
+			}
+			irGot := strings.TrimSpace(p.Disassemble(string(srcData)))
+			irData, err := os.ReadFile(irWant)
+			if err != nil {
+				if shouldUpdate() {
+					if writeErr := os.WriteFile(irWant, []byte(irGot+"\n"), 0644); writeErr == nil {
+						t.Logf("updated: %s", irWant)
+					} else {
+						t.Fatalf("write ir golden: %v", writeErr)
+					}
+				} else {
+					t.Fatalf("read ir golden: %v", err)
+				}
+			} else {
+				irWantStr := strings.TrimSpace(string(irData))
+				if irGot != irWantStr {
+					if shouldUpdate() {
+						if writeErr := os.WriteFile(irWant, []byte(irGot+"\n"), 0644); writeErr == nil {
+							t.Logf("updated: %s", irWant)
+						} else {
+							t.Fatalf("write ir golden: %v", writeErr)
+						}
+					} else {
+						t.Errorf("%s IR\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, irGot, irWantStr)
+					}
+				}
+			}
+		})
+	}
+	if !found {
+		t.Fatal("no tpc-ds test files")
+	}
+}
+
 func TestVM_JOB(t *testing.T) {
 	root := findRepoRoot(t)
 	pattern := filepath.Join(root, "tests/dataset/job", "*.mochi")
