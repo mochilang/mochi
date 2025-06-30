@@ -825,6 +825,9 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 		}
 	case OpSum:
 		if lst, ok := toList(v); ok {
+			if len(lst) == 0 {
+				return Value{Tag: ValueInt, Int: 0}, true
+			}
 			allInt := true
 			var sumF float64
 			var sumI int
