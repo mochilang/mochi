@@ -1,0 +1,29 @@
+let store_totals = [
+  {customer_id: "C1", year: 2001, total: 100.0},
+  {customer_id: "C1", year: 2002, total: 40.0}
+]
+let catalog_totals = [
+  {customer_id: "C1", year: 2001, total: 80.0},
+  {customer_id: "C1", year: 2002, total: 60.0}
+]
+let web_totals = [
+  {customer_id: "C1", year: 2001, total: 60.0},
+  {customer_id: "C1", year: 2002, total: 20.0}
+]
+
+let result =
+  from s1 in store_totals
+  join s2 in store_totals on s1.customer_id == s2.customer_id && s2.year == 2002
+  where s1.year == 2001
+  join c1 in catalog_totals on s1.customer_id == c1.customer_id && c1.year == 2001
+  join c2 in catalog_totals on s1.customer_id == c2.customer_id && c2.year == 2002
+  join w1 in web_totals on s1.customer_id == w1.customer_id && w1.year == 2001
+  join w2 in web_totals on s1.customer_id == w2.customer_id && w2.year == 2002
+  where (c2.total / c1.total) > (s2.total / s1.total) && (c2.total / c1.total) > (w2.total / w1.total)
+  select {customer_id: s1.customer_id}
+
+json(result)
+
+test "TPCDC Q4 simplified" {
+  expect result == [{customer_id: "C1"}]
+}

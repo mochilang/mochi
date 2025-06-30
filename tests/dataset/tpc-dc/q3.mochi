@@ -1,0 +1,24 @@
+let date_dim = [{d_date_sk: 1, d_year: 2000, d_moy: 11}]
+let store_sales = [
+  {ss_sold_date_sk: 1, ss_item_sk: 1, ss_ext_sales_price: 100.0},
+  {ss_sold_date_sk: 1, ss_item_sk: 2, ss_ext_sales_price: 80.0}
+]
+let item = [
+  {i_item_sk: 1, i_brand_id: 10, i_brand: "B1", i_manufact_id: 128},
+  {i_item_sk: 2, i_brand_id: 20, i_brand: "B2", i_manufact_id: 129}
+]
+
+let result =
+  from dt in date_dim
+  join ss in store_sales on dt.d_date_sk == ss.ss_sold_date_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  where i.i_manufact_id == 128 && dt.d_moy == 11
+  group by {year: dt.d_year, brand_id: i.i_brand_id, brand: i.i_brand} into g
+  select {d_year: g.key.year, brand_id: g.key.brand_id, brand: g.key.brand, sum_agg: sum(from x in g select x.ss_ext_sales_price)}
+  sort by d_year, -sum_agg, brand_id
+
+json(result)
+
+test "TPCDC Q3 brand sales" {
+  expect result == [{d_year: 2000, brand_id: 10, brand: "B1", sum_agg: 100.0}]
+}
