@@ -1,4 +1,4 @@
-func main (regs=204)
+func main (regs=115)
   // let info_type = [
   Const        r0, [{"id": 1, "info": "rating"}, {"id": 2, "info": "other"}]
   // let keyword = [
@@ -16,298 +16,187 @@ func main (regs=204)
   // k.keyword.contains("sequel") &&
   Const        r7, "keyword"
   Const        r8, "contains"
-  // mi.info > "5.0" &&
-  Const        r9, "info"
   // t.production_year > 2005 &&
-  Const        r10, "production_year"
+  Const        r9, "production_year"
   // mk.movie_id == mi.movie_id
-  Const        r11, "movie_id"
-  Const        r12, "movie_id"
+  Const        r10, "movie_id"
   // select { rating: mi.info, title: t.title }
-  Const        r13, "rating"
-  Const        r14, "info"
-  Const        r15, "title"
-  Const        r16, "title"
+  Const        r11, "rating"
+  Const        r12, "title"
   // from it in info_type
-  IterPrep     r17, r0
-  Len          r18, r17
-  Const        r19, 0
-L14:
-  LessInt      r21, r19, r18
-  JumpIfFalse  r21, L0
-  Index        r23, r17, r19
-  // join mi in movie_info_idx on it.id == mi.info_type_id
-  IterPrep     r24, r4
-  Len          r25, r24
-  Const        r26, "id"
-  Const        r27, "info_type_id"
-  // where it.info == "rating" &&
-  Const        r28, "info"
-  // k.keyword.contains("sequel") &&
-  Const        r29, "keyword"
-  Const        r30, "contains"
-  // mi.info > "5.0" &&
-  Const        r31, "info"
-  // t.production_year > 2005 &&
-  Const        r32, "production_year"
-  // mk.movie_id == mi.movie_id
-  Const        r33, "movie_id"
-  Const        r34, "movie_id"
-  // select { rating: mi.info, title: t.title }
-  Const        r35, "rating"
-  Const        r36, "info"
-  Const        r37, "title"
-  Const        r38, "title"
-  // join mi in movie_info_idx on it.id == mi.info_type_id
-  Const        r39, 0
-L13:
-  LessInt      r41, r39, r25
-  JumpIfFalse  r41, L1
-  Index        r43, r24, r39
-  Const        r44, "id"
-  Index        r45, r23, r44
-  Const        r46, "info_type_id"
-  Index        r47, r43, r46
-  Equal        r48, r45, r47
-  JumpIfFalse  r48, L2
-  // join t in title on t.id == mi.movie_id
-  IterPrep     r49, r2
-  Len          r50, r49
-  Const        r51, "id"
-  Const        r52, "movie_id"
-  // where it.info == "rating" &&
-  Const        r53, "info"
-  // k.keyword.contains("sequel") &&
-  Const        r54, "keyword"
-  Const        r55, "contains"
-  // mi.info > "5.0" &&
-  Const        r56, "info"
-  // t.production_year > 2005 &&
-  Const        r57, "production_year"
-  // mk.movie_id == mi.movie_id
-  Const        r58, "movie_id"
-  Const        r59, "movie_id"
-  // select { rating: mi.info, title: t.title }
-  Const        r60, "rating"
-  Const        r61, "info"
-  Const        r62, "title"
-  Const        r63, "title"
-  // join t in title on t.id == mi.movie_id
-  Const        r64, 0
-L12:
-  LessInt      r66, r64, r50
-  JumpIfFalse  r66, L2
-  Index        r68, r49, r64
-  Const        r69, "id"
-  Index        r70, r68, r69
-  Const        r71, "movie_id"
-  Index        r72, r43, r71
-  Equal        r73, r70, r72
-  JumpIfFalse  r73, L3
-  // join mk in movie_keyword on mk.movie_id == t.id
-  IterPrep     r74, r3
-  Len          r75, r74
-  Const        r76, "movie_id"
-  Const        r77, "id"
-  // where it.info == "rating" &&
-  Const        r78, "info"
-  // k.keyword.contains("sequel") &&
-  Const        r79, "keyword"
-  Const        r80, "contains"
-  // mi.info > "5.0" &&
-  Const        r81, "info"
-  // t.production_year > 2005 &&
-  Const        r82, "production_year"
-  // mk.movie_id == mi.movie_id
-  Const        r83, "movie_id"
-  Const        r84, "movie_id"
-  // select { rating: mi.info, title: t.title }
-  Const        r85, "rating"
-  Const        r86, "info"
-  Const        r87, "title"
-  Const        r88, "title"
-  // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r89, 0
+  IterPrep     r13, r0
+  Len          r14, r13
+  Const        r16, 0
+  Move         r15, r16
 L11:
-  LessInt      r91, r89, r75
-  JumpIfFalse  r91, L3
-  Index        r93, r74, r89
-  Const        r94, "movie_id"
-  Index        r95, r93, r94
-  Const        r96, "id"
-  Index        r97, r68, r96
-  Equal        r98, r95, r97
-  JumpIfFalse  r98, L4
-  // join k in keyword on k.id == mk.keyword_id
-  IterPrep     r99, r1
-  Len          r100, r99
-  Const        r101, "id"
-  Const        r102, "keyword_id"
-  // where it.info == "rating" &&
-  Const        r103, "info"
-  // k.keyword.contains("sequel") &&
-  Const        r104, "keyword"
-  Const        r105, "contains"
-  // mi.info > "5.0" &&
-  Const        r106, "info"
-  // t.production_year > 2005 &&
-  Const        r107, "production_year"
-  // mk.movie_id == mi.movie_id
-  Const        r108, "movie_id"
-  Const        r109, "movie_id"
-  // select { rating: mi.info, title: t.title }
-  Const        r110, "rating"
-  Const        r111, "info"
-  Const        r112, "title"
-  Const        r113, "title"
-  // join k in keyword on k.id == mk.keyword_id
-  Const        r114, 0
+  LessInt      r17, r15, r14
+  JumpIfFalse  r17, L0
+  Index        r19, r13, r15
+  // join mi in movie_info_idx on it.id == mi.info_type_id
+  IterPrep     r20, r4
+  Len          r21, r20
+  Const        r22, "id"
+  Const        r23, "info_type_id"
+  Move         r24, r16
 L10:
-  LessInt      r116, r114, r100
-  JumpIfFalse  r116, L4
-  Index        r118, r99, r114
-  Const        r119, "id"
-  Index        r120, r118, r119
-  Const        r121, "keyword_id"
-  Index        r122, r93, r121
-  Equal        r123, r120, r122
-  JumpIfFalse  r123, L5
-  // where it.info == "rating" &&
-  Const        r124, "info"
-  Index        r125, r23, r124
-  // mi.info > "5.0" &&
-  Const        r126, "info"
-  Index        r127, r43, r126
-  Const        r128, "5.0"
-  Less         r129, r128, r127
-  // t.production_year > 2005 &&
-  Const        r130, "production_year"
-  Index        r131, r68, r130
-  Const        r132, 2005
-  Less         r133, r132, r131
-  // where it.info == "rating" &&
-  Const        r134, "rating"
-  Equal        r135, r125, r134
-  // mk.movie_id == mi.movie_id
-  Const        r136, "movie_id"
-  Index        r137, r93, r136
-  Const        r138, "movie_id"
-  Index        r139, r43, r138
-  Equal        r140, r137, r139
-  // where it.info == "rating" &&
-  Move         r141, r135
-  JumpIfFalse  r141, L6
-  Const        r142, "keyword"
-  Index        r143, r118, r142
-  // k.keyword.contains("sequel") &&
-  Const        r144, "sequel"
-  In           r146, r144, r143
-L6:
-  JumpIfFalse  r146, L7
-L7:
-  // mi.info > "5.0" &&
-  Move         r147, r129
-  JumpIfFalse  r147, L8
-L8:
-  // t.production_year > 2005 &&
-  Move         r148, r133
-  JumpIfFalse  r148, L9
-  Move         r148, r140
+  LessInt      r25, r24, r21
+  JumpIfFalse  r25, L1
+  Index        r27, r20, r24
+  Index        r28, r19, r22
+  Index        r29, r27, r23
+  Equal        r30, r28, r29
+  JumpIfFalse  r30, L2
+  // join t in title on t.id == mi.movie_id
+  IterPrep     r31, r2
+  Len          r32, r31
+  Move         r33, r16
 L9:
+  LessInt      r34, r33, r32
+  JumpIfFalse  r34, L2
+  Index        r36, r31, r33
+  Index        r37, r36, r22
+  Index        r38, r27, r10
+  Equal        r39, r37, r38
+  JumpIfFalse  r39, L3
+  // join mk in movie_keyword on mk.movie_id == t.id
+  IterPrep     r40, r3
+  Len          r41, r40
+  Move         r42, r16
+L8:
+  LessInt      r43, r42, r41
+  JumpIfFalse  r43, L3
+  Index        r45, r40, r42
+  Index        r46, r45, r10
+  Index        r47, r36, r22
+  Equal        r48, r46, r47
+  JumpIfFalse  r48, L4
+  // join k in keyword on k.id == mk.keyword_id
+  IterPrep     r49, r1
+  Len          r50, r49
+  Const        r51, "keyword_id"
+  Move         r52, r16
+L7:
+  LessInt      r53, r52, r50
+  JumpIfFalse  r53, L4
+  Index        r55, r49, r52
+  Index        r56, r55, r22
+  Index        r57, r45, r51
+  Equal        r58, r56, r57
+  JumpIfFalse  r58, L5
   // where it.info == "rating" &&
-  JumpIfFalse  r148, L5
+  Index        r59, r19, r6
+  // mi.info > "5.0" &&
+  Index        r60, r27, r6
+  Const        r61, "5.0"
+  Less         r62, r61, r60
+  // t.production_year > 2005 &&
+  Index        r63, r36, r9
+  Const        r64, 2005
+  Less         r65, r64, r63
+  // where it.info == "rating" &&
+  Equal        r66, r59, r11
+  // mk.movie_id == mi.movie_id
+  Index        r67, r45, r10
+  Index        r68, r27, r10
+  Equal        r69, r67, r68
+  // where it.info == "rating" &&
+  Move         r70, r66
+  JumpIfFalse  r70, L6
+  Index        r71, r55, r7
+  // k.keyword.contains("sequel") &&
+  Const        r72, "sequel"
+  In           r70, r72, r71
+  JumpIfFalse  r70, L6
+  Move         r70, r62
+  // mi.info > "5.0" &&
+  JumpIfFalse  r70, L6
+  Move         r70, r65
+  // t.production_year > 2005 &&
+  JumpIfFalse  r70, L6
+  Move         r70, r69
+L6:
+  // where it.info == "rating" &&
+  JumpIfFalse  r70, L5
   // select { rating: mi.info, title: t.title }
-  Const        r149, "rating"
-  Const        r150, "info"
-  Index        r151, r43, r150
-  Const        r152, "title"
-  Const        r153, "title"
-  Index        r154, r68, r153
-  Move         r155, r149
-  Move         r156, r151
-  Move         r157, r152
-  Move         r158, r154
-  MakeMap      r159, 2, r155
+  Const        r74, "rating"
+  Index        r75, r27, r6
+  Const        r76, "title"
+  Index        r77, r36, r12
+  Move         r78, r74
+  Move         r79, r75
+  Move         r80, r76
+  Move         r81, r77
+  MakeMap      r82, 2, r78
   // from it in info_type
-  Append       r5, r5, r159
+  Append       r5, r5, r82
 L5:
   // join k in keyword on k.id == mk.keyword_id
-  Const        r161, 1
-  Add          r114, r114, r161
-  Jump         L10
+  Const        r84, 1
+  Add          r52, r52, r84
+  Jump         L7
 L4:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r162, 1
-  Add          r89, r89, r162
-  Jump         L11
+  Add          r42, r42, r84
+  Jump         L8
 L3:
   // join t in title on t.id == mi.movie_id
-  Const        r163, 1
-  Add          r64, r64, r163
-  Jump         L12
+  Add          r33, r33, r84
+  Jump         L9
 L2:
   // join mi in movie_info_idx on it.id == mi.info_type_id
-  Const        r164, 1
-  Add          r39, r39, r164
-  Jump         L13
+  Add          r24, r24, r84
+  Jump         L10
 L1:
   // from it in info_type
-  Const        r165, 1
-  AddInt       r19, r19, r165
-  Jump         L14
+  AddInt       r15, r15, r84
+  Jump         L11
 L0:
   // rating: min(from r in rows select r.rating),
-  Const        r166, "rating"
-  Const        r167, []
-  Const        r168, "rating"
-  IterPrep     r169, r5
-  Len          r170, r169
-  Const        r171, 0
-L16:
-  LessInt      r173, r171, r170
-  JumpIfFalse  r173, L15
-  Index        r175, r169, r171
-  Const        r176, "rating"
-  Index        r177, r175, r176
-  Append       r167, r167, r177
-  Const        r179, 1
-  AddInt       r171, r171, r179
-  Jump         L16
+  Const        r85, "rating"
+  Const        r86, []
+  IterPrep     r87, r5
+  Len          r88, r87
+  Move         r89, r16
+L13:
+  LessInt      r90, r89, r88
+  JumpIfFalse  r90, L12
+  Index        r92, r87, r89
+  Index        r93, r92, r11
+  Append       r86, r86, r93
+  AddInt       r89, r89, r84
+  Jump         L13
+L12:
+  Min          r95, r86
+  // movie_title: min(from r in rows select r.title)
+  Const        r96, "movie_title"
+  Const        r97, []
+  IterPrep     r98, r5
+  Len          r99, r98
+  Move         r100, r16
 L15:
-  Min          r180, r167
-  // movie_title: min(from r in rows select r.title)
-  Const        r181, "movie_title"
-  Const        r182, []
-  Const        r183, "title"
-  IterPrep     r184, r5
-  Len          r185, r184
-  Const        r186, 0
-L18:
-  LessInt      r188, r186, r185
-  JumpIfFalse  r188, L17
-  Index        r175, r184, r186
-  Const        r190, "title"
-  Index        r191, r175, r190
-  Append       r182, r182, r191
-  Const        r193, 1
-  AddInt       r186, r186, r193
-  Jump         L18
-L17:
-  Min          r194, r182
+  LessInt      r101, r100, r99
+  JumpIfFalse  r101, L14
+  Index        r92, r98, r100
+  Index        r103, r92, r12
+  Append       r97, r97, r103
+  AddInt       r100, r100, r84
+  Jump         L15
+L14:
+  Min          r105, r97
   // rating: min(from r in rows select r.rating),
-  Move         r195, r166
-  Move         r196, r180
+  Move         r106, r85
+  Move         r107, r95
   // movie_title: min(from r in rows select r.title)
-  Move         r197, r181
-  Move         r198, r194
+  Move         r108, r96
+  Move         r109, r105
   // {
-  MakeMap      r200, 2, r195
+  MakeMap      r111, 2, r106
   // let result = [
-  MakeList     r201, 1, r200
+  MakeList     r112, 1, r111
   // json(result)
-  JSON         r201
+  JSON         r112
   // expect result == [ { rating: "6.2", movie_title: "Alpha Movie" } ]
-  Const        r202, [{"movie_title": "Alpha Movie", "rating": "6.2"}]
-  Equal        r203, r201, r202
-  Expect       r203
+  Const        r113, [{"movie_title": "Alpha Movie", "rating": "6.2"}]
+  Equal        r114, r112, r113
+  Expect       r114
   Return       r0

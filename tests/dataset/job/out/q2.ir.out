@@ -1,4 +1,4 @@
-func main (regs=120)
+func main (regs=72)
   // let company_name = [
   Const        r0, [{"country_code": "[de]", "id": 1}, {"country_code": "[us]", "id": 2}]
   // let keyword = [
@@ -17,185 +17,122 @@ func main (regs=120)
   Const        r7, "keyword"
   // mc.movie_id == mk.movie_id
   Const        r8, "movie_id"
-  Const        r9, "movie_id"
   // select t.title
-  Const        r10, "title"
+  Const        r9, "title"
   // from cn in company_name
-  IterPrep     r11, r0
-  Len          r12, r11
+  IterPrep     r10, r0
+  Len          r11, r10
   Const        r13, 0
-L12:
-  LessInt      r15, r13, r12
-  JumpIfFalse  r15, L0
-  Index        r17, r11, r13
-  // join mc in movie_companies on mc.company_id == cn.id
-  IterPrep     r18, r2
-  Len          r19, r18
-  Const        r20, "company_id"
-  Const        r21, "id"
-  // where cn.country_code == "[de]" &&
-  Const        r22, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r23, "keyword"
-  // mc.movie_id == mk.movie_id
-  Const        r24, "movie_id"
-  Const        r25, "movie_id"
-  // select t.title
-  Const        r26, "title"
-  // join mc in movie_companies on mc.company_id == cn.id
-  Const        r27, 0
+  Move         r12, r13
 L11:
-  LessInt      r29, r27, r19
-  JumpIfFalse  r29, L1
-  Index        r31, r18, r27
-  Const        r32, "company_id"
-  Index        r33, r31, r32
-  Const        r34, "id"
-  Index        r35, r17, r34
-  Equal        r36, r33, r35
-  JumpIfFalse  r36, L2
-  // join t in title on mc.movie_id == t.id
-  IterPrep     r37, r4
-  Len          r38, r37
-  Const        r39, "movie_id"
-  Const        r40, "id"
-  // where cn.country_code == "[de]" &&
-  Const        r41, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r42, "keyword"
-  // mc.movie_id == mk.movie_id
-  Const        r43, "movie_id"
-  Const        r44, "movie_id"
-  // select t.title
-  Const        r45, "title"
-  // join t in title on mc.movie_id == t.id
-  Const        r46, 0
+  LessInt      r14, r12, r11
+  JumpIfFalse  r14, L0
+  Index        r16, r10, r12
+  // join mc in movie_companies on mc.company_id == cn.id
+  IterPrep     r17, r2
+  Len          r18, r17
+  Const        r19, "company_id"
+  Const        r20, "id"
+  Move         r21, r13
 L10:
-  LessInt      r48, r46, r38
-  JumpIfFalse  r48, L2
-  Index        r50, r37, r46
-  Const        r51, "movie_id"
-  Index        r52, r31, r51
-  Const        r53, "id"
-  Index        r54, r50, r53
-  Equal        r55, r52, r54
-  JumpIfFalse  r55, L3
-  // join mk in movie_keyword on mk.movie_id == t.id
-  IterPrep     r56, r3
-  Len          r57, r56
-  Const        r58, "movie_id"
-  Const        r59, "id"
-  // where cn.country_code == "[de]" &&
-  Const        r60, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r61, "keyword"
-  // mc.movie_id == mk.movie_id
-  Const        r62, "movie_id"
-  Const        r63, "movie_id"
-  // select t.title
-  Const        r64, "title"
-  // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r65, 0
+  LessInt      r22, r21, r18
+  JumpIfFalse  r22, L1
+  Index        r24, r17, r21
+  Index        r25, r24, r19
+  Index        r26, r16, r20
+  Equal        r27, r25, r26
+  JumpIfFalse  r27, L2
+  // join t in title on mc.movie_id == t.id
+  IterPrep     r28, r4
+  Len          r29, r28
+  Move         r30, r13
 L9:
-  LessInt      r67, r65, r57
-  JumpIfFalse  r67, L3
-  Index        r69, r56, r65
-  Const        r70, "movie_id"
-  Index        r71, r69, r70
-  Const        r72, "id"
-  Index        r73, r50, r72
-  Equal        r74, r71, r73
-  JumpIfFalse  r74, L4
-  // join k in keyword on mk.keyword_id == k.id
-  IterPrep     r75, r1
-  Len          r76, r75
-  Const        r77, "keyword_id"
-  Const        r78, "id"
-  // where cn.country_code == "[de]" &&
-  Const        r79, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r80, "keyword"
-  // mc.movie_id == mk.movie_id
-  Const        r81, "movie_id"
-  Const        r82, "movie_id"
-  // select t.title
-  Const        r83, "title"
-  // join k in keyword on mk.keyword_id == k.id
-  Const        r84, 0
+  LessInt      r31, r30, r29
+  JumpIfFalse  r31, L2
+  Index        r33, r28, r30
+  Index        r34, r24, r8
+  Index        r35, r33, r20
+  Equal        r36, r34, r35
+  JumpIfFalse  r36, L3
+  // join mk in movie_keyword on mk.movie_id == t.id
+  IterPrep     r37, r3
+  Len          r38, r37
+  Move         r39, r13
 L8:
-  LessInt      r86, r84, r76
-  JumpIfFalse  r86, L4
-  Index        r88, r75, r84
-  Const        r89, "keyword_id"
-  Index        r90, r69, r89
-  Const        r91, "id"
-  Index        r92, r88, r91
-  Equal        r93, r90, r92
-  JumpIfFalse  r93, L5
-  // where cn.country_code == "[de]" &&
-  Const        r94, "country_code"
-  Index        r95, r17, r94
-  Const        r96, "[de]"
-  Equal        r97, r95, r96
-  // k.keyword == "character-name-in-title" &&
-  Const        r98, "keyword"
-  Index        r99, r88, r98
-  Const        r100, "character-name-in-title"
-  Equal        r101, r99, r100
-  // mc.movie_id == mk.movie_id
-  Const        r102, "movie_id"
-  Index        r103, r31, r102
-  Const        r104, "movie_id"
-  Index        r105, r69, r104
-  Equal        r106, r103, r105
-  // where cn.country_code == "[de]" &&
-  Move         r107, r97
-  JumpIfFalse  r107, L6
-L6:
-  // k.keyword == "character-name-in-title" &&
-  Move         r108, r101
-  JumpIfFalse  r108, L7
-  Move         r108, r106
+  LessInt      r40, r39, r38
+  JumpIfFalse  r40, L3
+  Index        r42, r37, r39
+  Index        r43, r42, r8
+  Index        r44, r33, r20
+  Equal        r45, r43, r44
+  JumpIfFalse  r45, L4
+  // join k in keyword on mk.keyword_id == k.id
+  IterPrep     r46, r1
+  Len          r47, r46
+  Const        r48, "keyword_id"
+  Move         r49, r13
 L7:
+  LessInt      r50, r49, r47
+  JumpIfFalse  r50, L4
+  Index        r52, r46, r49
+  Index        r53, r42, r48
+  Index        r54, r52, r20
+  Equal        r55, r53, r54
+  JumpIfFalse  r55, L5
   // where cn.country_code == "[de]" &&
-  JumpIfFalse  r108, L5
+  Index        r56, r16, r6
+  Const        r57, "[de]"
+  Equal        r58, r56, r57
+  // k.keyword == "character-name-in-title" &&
+  Index        r59, r52, r7
+  Const        r60, "character-name-in-title"
+  Equal        r61, r59, r60
+  // mc.movie_id == mk.movie_id
+  Index        r62, r24, r8
+  Index        r63, r42, r8
+  Equal        r64, r62, r63
+  // where cn.country_code == "[de]" &&
+  Move         r65, r58
+  JumpIfFalse  r65, L6
+  Move         r65, r61
+  // k.keyword == "character-name-in-title" &&
+  JumpIfFalse  r65, L6
+  Move         r65, r64
+L6:
+  // where cn.country_code == "[de]" &&
+  JumpIfFalse  r65, L5
   // select t.title
-  Const        r109, "title"
-  Index        r110, r50, r109
+  Index        r66, r33, r9
   // from cn in company_name
-  Append       r5, r5, r110
+  Append       r5, r5, r66
 L5:
   // join k in keyword on mk.keyword_id == k.id
-  Const        r112, 1
-  Add          r84, r84, r112
-  Jump         L8
+  Const        r68, 1
+  Add          r49, r49, r68
+  Jump         L7
 L4:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r113, 1
-  Add          r65, r65, r113
-  Jump         L9
+  Add          r39, r39, r68
+  Jump         L8
 L3:
   // join t in title on mc.movie_id == t.id
-  Const        r114, 1
-  Add          r46, r46, r114
-  Jump         L10
+  Add          r30, r30, r68
+  Jump         L9
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
-  Const        r115, 1
-  Add          r27, r27, r115
-  Jump         L11
+  Add          r21, r21, r68
+  Jump         L10
 L1:
   // from cn in company_name
-  Const        r116, 1
-  AddInt       r13, r13, r116
-  Jump         L12
+  AddInt       r12, r12, r68
+  Jump         L11
 L0:
   // let result = min(titles)
-  Min          r117, r5
+  Min          r69, r5
   // json(result)
-  JSON         r117
+  JSON         r69
   // expect result == "Der Film"
-  Const        r118, "Der Film"
-  Equal        r119, r117, r118
-  Expect       r119
+  Const        r70, "Der Film"
+  Equal        r71, r69, r70
+  Expect       r71
   Return       r0
