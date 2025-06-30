@@ -1,10 +1,10 @@
-func main (regs=143)
+func main (regs=142)
   // let store = [
   Const        r0, [{"s_county": "Orange", "s_state": "CA", "s_store_sk": 1}, {"s_county": "Orange", "s_state": "CA", "s_store_sk": 2}, {"s_county": "Travis", "s_state": "TX", "s_store_sk": 3}]
   // let date_dim = [
   Const        r1, [{"d_date_sk": 1, "d_month_seq": 1200}, {"d_date_sk": 2, "d_month_seq": 1201}]
   // let store_sales = [
-  Const        r2, [{"ss_net_profit": 10, "ss_sold_date_sk": 1, "ss_store_sk": 1}, {"ss_net_profit": 5, "ss_sold_date_sk": 1, "ss_store_sk": 2}, {"ss_net_profit": 20, "ss_sold_date_sk": 2, "ss_store_sk": 3}]
+  Const        r2, [{"ss_net_profit": 10.0, "ss_sold_date_sk": 1, "ss_store_sk": 1}, {"ss_net_profit": 5.0, "ss_sold_date_sk": 1, "ss_store_sk": 2}, {"ss_net_profit": 20.0, "ss_sold_date_sk": 2, "ss_store_sk": 3}]
   // let dms = 1200
   Const        r3, 1200
   // from ss in store_sales
@@ -103,120 +103,119 @@ L4:
   In           r74, r73, r14
   JumpIfTrue   r74, L5
   // from ss in store_sales
-  Const        r75, []
-  Const        r76, "__group__"
-  Const        r77, true
+  Const        r75, "__group__"
+  Const        r76, true
   // group by { state: s.s_state, county: s.s_county } into g
-  Move         r78, r72
+  Move         r77, r72
   // from ss in store_sales
-  Const        r79, "items"
-  Move         r80, r75
-  Const        r81, "count"
-  Const        r82, 0
+  Const        r78, "items"
+  Move         r79, r16
+  Const        r80, "count"
+  Const        r81, 0
+  Move         r82, r75
   Move         r83, r76
-  Move         r84, r77
-  Move         r85, r10
+  Move         r84, r10
+  Move         r85, r77
   Move         r86, r78
   Move         r87, r79
   Move         r88, r80
   Move         r89, r81
-  Move         r90, r82
-  MakeMap      r91, 4, r83
-  SetIndex     r14, r73, r91
-  Append       r92, r15, r91
-  Move         r15, r92
+  MakeMap      r90, 4, r82
+  SetIndex     r14, r73, r90
+  Append       r91, r15, r90
+  Move         r15, r91
 L5:
-  Index        r93, r14, r73
-  Index        r94, r93, r79
-  Append       r95, r94, r63
-  SetIndex     r93, r79, r95
-  Index        r96, r93, r81
-  Const        r97, 1
-  AddInt       r98, r96, r97
-  SetIndex     r93, r81, r98
+  Index        r92, r14, r73
+  Index        r93, r92, r78
+  Append       r94, r93, r63
+  SetIndex     r92, r78, r94
+  Index        r95, r92, r80
+  Const        r96, 1
+  AddInt       r97, r95, r96
+  SetIndex     r92, r80, r97
 L3:
   // join s in store on s.s_store_sk == ss.ss_store_sk
-  AddInt       r36, r36, r97
+  AddInt       r36, r36, r96
   Jump         L6
 L2:
   // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
-  AddInt       r25, r25, r97
+  AddInt       r25, r25, r96
   Jump         L7
 L1:
   // from ss in store_sales
-  AddInt       r19, r19, r97
+  AddInt       r19, r19, r96
   Jump         L8
 L0:
-  Move         r99, r82
-  Len          r100, r15
+  Move         r98, r81
+  Len          r99, r15
 L12:
-  LessInt      r101, r99, r100
-  JumpIfFalse  r101, L9
-  Index        r102, r15, r99
-  Move         r103, r102
+  LessInt      r100, r98, r99
+  JumpIfFalse  r100, L9
+  Index        r101, r15, r98
+  Move         r102, r101
   // s_state: g.key.state,
-  Const        r104, "s_state"
-  Index        r105, r103, r10
-  Index        r106, r105, r5
+  Const        r103, "s_state"
+  Index        r104, r102, r10
+  Index        r105, r104, r5
   // s_county: g.key.county,
-  Const        r107, "s_county"
-  Index        r108, r103, r10
-  Index        r109, r108, r7
+  Const        r106, "s_county"
+  Index        r107, r102, r10
+  Index        r108, r107, r7
   // total_sum: sum(from x in g select x.ss.ss_net_profit)
-  Const        r110, "total_sum"
-  Const        r111, []
-  IterPrep     r112, r103
-  Len          r113, r112
-  Move         r114, r82
+  Const        r109, "total_sum"
+  Const        r110, []
+  IterPrep     r111, r102
+  Len          r112, r111
+  Move         r113, r81
 L11:
-  LessInt      r115, r114, r113
-  JumpIfFalse  r115, L10
-  Index        r116, r112, r114
-  Move         r117, r116
-  Index        r118, r117, r12
-  Index        r119, r118, r13
-  Append       r120, r111, r119
-  Move         r111, r120
-  AddInt       r114, r114, r97
+  LessInt      r114, r113, r112
+  JumpIfFalse  r114, L10
+  Index        r115, r111, r113
+  Move         r116, r115
+  Index        r117, r116, r12
+  Index        r118, r117, r13
+  Append       r119, r110, r118
+  Move         r110, r119
+  AddInt       r113, r113, r96
   Jump         L11
 L10:
-  Sum          r121, r111
+  Sum          r120, r110
   // s_state: g.key.state,
-  Move         r122, r104
-  Move         r123, r106
+  Move         r121, r103
+  Move         r122, r105
   // s_county: g.key.county,
-  Move         r124, r107
-  Move         r125, r109
+  Move         r123, r106
+  Move         r124, r108
   // total_sum: sum(from x in g select x.ss.ss_net_profit)
-  Move         r126, r110
-  Move         r127, r121
+  Move         r125, r109
+  Move         r126, r120
   // select {
-  MakeMap      r128, 3, r122
+  MakeMap      r127, 3, r121
   // sort by [g.key.state, g.key.county]
-  Index        r129, r103, r10
-  Index        r130, r129, r5
-  Move         r131, r130
-  Index        r132, r103, r10
-  Index        r133, r132, r7
-  Move         r134, r133
-  MakeList     r135, 2, r131
-  Move         r136, r135
+  Index        r128, r102, r10
+  Index        r129, r128, r5
+  Move         r130, r129
+  Index        r131, r102, r10
+  Index        r132, r131, r7
+  Move         r133, r132
+  MakeList     r134, 2, r130
+  Move         r135, r134
   // from ss in store_sales
-  Move         r137, r128
-  MakeList     r138, 2, r136
-  Append       r139, r4, r138
-  Move         r4, r139
-  AddInt       r99, r99, r97
+  Move         r136, r127
+  MakeList     r137, 2, r135
+  Append       r138, r4, r137
+  Move         r4, r138
+  AddInt       r98, r98, r96
   Jump         L12
 L9:
   // sort by [g.key.state, g.key.county]
-  Sort         r140, r4
+  Sort         r139, r4
   // from ss in store_sales
-  Move         r4, r140
+  Move         r4, r139
   // json(result)
   JSON         r4
   // expect result == [
-  Const        r141, [{"s_county": "Orange", "s_state": "CA", "total_sum": 15}, {"s_county": "Travis", "s_state": "TX", "total_sum": 20}]
-  Equal        r142, r4, r141
-  Expect       r142
+  Const        r140, [{"s_county": "Orange", "s_state": "CA", "total_sum": 15.0}, {"s_county": "Travis", "s_state": "TX", "total_sum": 20.0}]
+  Equal        r141, r4, r140
+  Expect       r141
   Return       r0
