@@ -5437,10 +5437,16 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 		pairs[i*2] = k
 		pairs[i*2+1] = v
 	}
+	contig := make([]int, len(pairs))
+	for i, r := range pairs {
+		nr := fc.newReg()
+		fc.emit(q.Pos, Instr{Op: OpMove, A: nr, B: r})
+		contig[i] = nr
+	}
 	row := fc.newReg()
 	start := 0
-	if len(pairs) > 0 {
-		start = pairs[0]
+	if len(contig) > 0 {
+		start = contig[0]
 	}
 	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: row, B: len(names), C: start})
 	return row
