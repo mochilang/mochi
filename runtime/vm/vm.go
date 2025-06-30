@@ -6782,11 +6782,6 @@ func toFloat(v Value) float64 {
 			return f
 		}
 	}
-	if v.Tag == ValueStr {
-		if f, err := strconv.ParseFloat(v.Str, 64); err == nil {
-			return f
-		}
-	}
 	return float64(v.Int)
 }
 

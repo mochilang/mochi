@@ -1,4 +1,4 @@
-func main (regs=356)
+func main (regs=258)
   // let store_sales = [
   Const        r0, [{"ss_customer_sk": 1, "ss_item_sk": 1}, {"ss_customer_sk": 2, "ss_item_sk": 1}]
   // let catalog_sales = [
@@ -9,480 +9,364 @@ func main (regs=356)
   Const        r4, "ss_customer_sk"
   Const        r5, "item_sk"
   Const        r6, "ss_item_sk"
-  Const        r7, "customer_sk"
-  Const        r8, "key"
-  Const        r9, "customer_sk"
-  Const        r10, "item_sk"
-  Const        r11, "key"
-  Const        r12, "item_sk"
-  IterPrep     r13, r0
-  Len          r14, r13
-  Const        r15, 0
-  MakeMap      r16, 0, r0
-  Const        r17, []
+  Const        r7, "key"
+  IterPrep     r8, r0
+  Len          r9, r8
+  Const        r10, 0
+  MakeMap      r11, 0, r0
+  Const        r12, []
 L2:
-  LessInt      r19, r15, r14
-  JumpIfFalse  r19, L0
-  Index        r20, r13, r15
-  Move         r21, r20
-  Const        r22, "customer_sk"
-  Const        r23, "ss_customer_sk"
-  Index        r24, r21, r23
-  Const        r25, "item_sk"
-  Const        r26, "ss_item_sk"
-  Index        r27, r21, r26
-  Move         r28, r22
-  Move         r29, r24
-  Move         r30, r25
-  Move         r31, r27
-  MakeMap      r32, 2, r28
-  Str          r33, r32
-  In           r34, r33, r16
-  JumpIfTrue   r34, L1
-  Const        r35, []
-  Const        r36, "__group__"
-  Const        r37, true
-  Const        r38, "key"
-  Move         r39, r32
-  Const        r40, "items"
-  Move         r41, r35
-  Const        r42, "count"
-  Const        r43, 0
+  LessInt      r14, r10, r9
+  JumpIfFalse  r14, L0
+  Index        r15, r8, r10
+  Move         r16, r15
+  Const        r17, "customer_sk"
+  Index        r18, r16, r4
+  Const        r19, "item_sk"
+  Index        r20, r16, r6
+  Move         r21, r17
+  Move         r22, r18
+  Move         r23, r19
+  Move         r24, r20
+  MakeMap      r25, 2, r21
+  Str          r26, r25
+  In           r27, r26, r11
+  JumpIfTrue   r27, L1
+  Const        r28, []
+  Const        r29, "__group__"
+  Const        r30, true
+  Const        r31, "key"
+  Move         r32, r25
+  Const        r33, "items"
+  Move         r34, r28
+  Const        r35, "count"
+  Const        r36, 0
+  Move         r37, r29
+  Move         r38, r30
+  Move         r39, r31
+  Move         r40, r32
+  Move         r41, r33
+  Move         r42, r34
+  Move         r43, r35
   Move         r44, r36
-  Move         r45, r37
-  Move         r46, r38
-  Move         r47, r39
-  Move         r48, r40
-  Move         r49, r41
-  Move         r50, r42
-  Move         r51, r43
-  MakeMap      r52, 4, r44
-  SetIndex     r16, r33, r52
-  Append       r17, r17, r52
+  MakeMap      r45, 4, r37
+  SetIndex     r11, r26, r45
+  Append       r12, r12, r45
 L1:
-  Const        r54, "items"
-  Index        r55, r16, r33
-  Index        r56, r55, r54
-  Append       r57, r56, r20
-  SetIndex     r55, r54, r57
-  Const        r58, "count"
-  Index        r59, r55, r58
-  Const        r60, 1
-  AddInt       r61, r59, r60
-  SetIndex     r55, r58, r61
-  Const        r62, 1
-  AddInt       r15, r15, r62
+  Const        r47, "items"
+  Index        r48, r11, r26
+  Index        r49, r48, r47
+  Append       r50, r49, r15
+  SetIndex     r48, r47, r50
+  Const        r51, "count"
+  Index        r52, r48, r51
+  Const        r53, 1
+  AddInt       r54, r52, r53
+  SetIndex     r48, r51, r54
+  AddInt       r10, r10, r53
   Jump         L2
 L0:
-  Const        r63, 0
-  Len          r65, r17
+  Const        r56, 0
+  Move         r55, r56
+  Len          r57, r12
 L4:
-  LessInt      r66, r63, r65
-  JumpIfFalse  r66, L3
-  Index        r68, r17, r63
-  Const        r69, "customer_sk"
-  Const        r70, "key"
-  Index        r71, r68, r70
-  Const        r72, "customer_sk"
-  Index        r73, r71, r72
-  Const        r74, "item_sk"
-  Const        r75, "key"
-  Index        r76, r68, r75
-  Const        r77, "item_sk"
-  Index        r78, r76, r77
-  Move         r79, r69
-  Move         r80, r73
-  Move         r81, r74
-  Move         r82, r78
-  MakeMap      r83, 2, r79
-  Append       r2, r2, r83
-  Const        r85, 1
-  AddInt       r63, r63, r85
+  LessInt      r58, r55, r57
+  JumpIfFalse  r58, L3
+  Index        r60, r12, r55
+  Const        r61, "customer_sk"
+  Index        r62, r60, r7
+  Index        r63, r62, r3
+  Const        r64, "item_sk"
+  Index        r65, r60, r7
+  Index        r66, r65, r5
+  Move         r67, r61
+  Move         r68, r63
+  Move         r69, r64
+  Move         r70, r66
+  MakeMap      r71, 2, r67
+  Append       r2, r2, r71
+  AddInt       r55, r55, r53
   Jump         L4
 L3:
   // let csci = from cs in catalog_sales group by {customer_sk: cs.cs_bill_customer_sk, item_sk: cs.cs_item_sk} into g select {customer_sk: g.key.customer_sk, item_sk: g.key.item_sk}
-  Const        r86, []
-  Const        r87, "customer_sk"
-  Const        r88, "cs_bill_customer_sk"
-  Const        r89, "item_sk"
-  Const        r90, "cs_item_sk"
-  Const        r91, "customer_sk"
-  Const        r92, "key"
-  Const        r93, "customer_sk"
-  Const        r94, "item_sk"
-  Const        r95, "key"
-  Const        r96, "item_sk"
-  IterPrep     r97, r1
-  Len          r98, r97
-  Const        r99, 0
-  MakeMap      r100, 0, r0
-  Const        r101, []
+  Const        r73, []
+  Const        r74, "cs_bill_customer_sk"
+  Const        r75, "cs_item_sk"
+  IterPrep     r76, r1
+  Len          r77, r76
+  Const        r78, 0
+  MakeMap      r79, 0, r0
+  Const        r80, []
 L7:
-  LessInt      r103, r99, r98
-  JumpIfFalse  r103, L5
-  Index        r104, r97, r99
-  Move         r105, r104
-  Const        r106, "customer_sk"
-  Const        r107, "cs_bill_customer_sk"
-  Index        r108, r105, r107
-  Const        r109, "item_sk"
-  Const        r110, "cs_item_sk"
-  Index        r111, r105, r110
-  Move         r112, r106
-  Move         r113, r108
-  Move         r114, r109
-  Move         r115, r111
-  MakeMap      r116, 2, r112
-  Str          r117, r116
-  In           r118, r117, r100
-  JumpIfTrue   r118, L6
-  Const        r119, []
-  Const        r120, "__group__"
-  Const        r121, true
-  Const        r122, "key"
-  Move         r123, r116
-  Const        r124, "items"
-  Move         r125, r119
-  Const        r126, "count"
-  Const        r127, 0
-  Move         r128, r120
-  Move         r129, r121
-  Move         r130, r122
-  Move         r131, r123
-  Move         r132, r124
-  Move         r133, r125
-  Move         r134, r126
-  Move         r135, r127
-  MakeMap      r136, 4, r128
-  SetIndex     r100, r117, r136
-  Append       r101, r101, r136
+  LessInt      r82, r78, r77
+  JumpIfFalse  r82, L5
+  Index        r83, r76, r78
+  Move         r84, r83
+  Const        r85, "customer_sk"
+  Index        r86, r84, r74
+  Const        r87, "item_sk"
+  Index        r88, r84, r75
+  Move         r89, r85
+  Move         r90, r86
+  Move         r91, r87
+  Move         r92, r88
+  MakeMap      r93, 2, r89
+  Str          r94, r93
+  In           r95, r94, r79
+  JumpIfTrue   r95, L6
+  Const        r96, []
+  Const        r97, "__group__"
+  Const        r98, true
+  Const        r99, "key"
+  Move         r100, r93
+  Const        r101, "items"
+  Move         r102, r96
+  Const        r103, "count"
+  Const        r104, 0
+  Move         r105, r97
+  Move         r106, r98
+  Move         r107, r99
+  Move         r108, r100
+  Move         r109, r101
+  Move         r110, r102
+  Move         r111, r103
+  Move         r112, r104
+  MakeMap      r113, 4, r105
+  SetIndex     r79, r94, r113
+  Append       r80, r80, r113
 L6:
-  Const        r138, "items"
-  Index        r139, r100, r117
-  Index        r140, r139, r138
-  Append       r141, r140, r104
-  SetIndex     r139, r138, r141
-  Const        r142, "count"
-  Index        r143, r139, r142
-  Const        r144, 1
-  AddInt       r145, r143, r144
-  SetIndex     r139, r142, r145
-  Const        r146, 1
-  AddInt       r99, r99, r146
+  Index        r115, r79, r94
+  Index        r116, r115, r47
+  Append       r117, r116, r83
+  SetIndex     r115, r47, r117
+  Index        r118, r115, r51
+  AddInt       r119, r118, r53
+  SetIndex     r115, r51, r119
+  AddInt       r78, r78, r53
   Jump         L7
 L5:
-  Const        r147, 0
-  Len          r149, r101
+  Move         r120, r56
+  Len          r121, r80
 L9:
-  LessInt      r150, r147, r149
-  JumpIfFalse  r150, L8
-  Index        r68, r101, r147
-  Const        r152, "customer_sk"
-  Const        r153, "key"
-  Index        r154, r68, r153
-  Const        r155, "customer_sk"
-  Index        r156, r154, r155
-  Const        r157, "item_sk"
-  Const        r158, "key"
-  Index        r159, r68, r158
-  Const        r160, "item_sk"
-  Index        r161, r159, r160
-  Move         r162, r152
-  Move         r163, r156
-  Move         r164, r157
-  Move         r165, r161
-  MakeMap      r166, 2, r162
-  Append       r86, r86, r166
-  Const        r168, 1
-  AddInt       r147, r147, r168
+  LessInt      r122, r120, r121
+  JumpIfFalse  r122, L8
+  Index        r60, r80, r120
+  Const        r124, "customer_sk"
+  Index        r125, r60, r7
+  Index        r126, r125, r3
+  Const        r127, "item_sk"
+  Index        r128, r60, r7
+  Index        r129, r128, r5
+  Move         r130, r124
+  Move         r131, r126
+  Move         r132, r127
+  Move         r133, r129
+  MakeMap      r134, 2, r130
+  Append       r73, r73, r134
+  AddInt       r120, r120, r53
   Jump         L9
 L8:
   // from s in ssci outer join c in csci on s.customer_sk == c.customer_sk && s.item_sk == c.item_sk
-  Const        r169, []
-  IterPrep     r170, r2
-  Len          r171, r170
-  IterPrep     r172, r86
-  Len          r173, r172
-  Const        r176, 0
-L34:
-  LessInt      r177, r176, r173
-  JumpIfFalse  r177, L10
-  Index        r174, r172, r176
-  Const        r179, false
-  Const        r180, 0
-L23:
-  LessInt      r181, r180, r171
-  JumpIfFalse  r181, L11
-  Index        r175, r170, r180
-  Const        r183, "customer_sk"
-  Index        r184, r175, r183
-  Const        r185, "customer_sk"
-  Index        r186, r174, r185
-  Equal        r187, r184, r186
-  Const        r188, "item_sk"
-  Index        r189, r175, r188
-  Const        r190, "item_sk"
-  Index        r191, r174, r190
-  Equal        r192, r189, r191
-  Move         r193, r187
-  JumpIfFalse  r193, L12
-  Move         r193, r192
-L12:
-  JumpIfFalse  r193, L13
-  Const        r179, true
-  // store_only: if s.customer_sk != null && c.customer_sk == null {1} else {0},
-  Const        r194, "store_only"
-  Const        r195, "customer_sk"
-  Index        r196, r175, r195
-  Const        r197, nil
-  NotEqual     r198, r196, r197
-  Const        r199, "customer_sk"
-  Index        r200, r174, r199
-  Const        r201, nil
-  Equal        r202, r200, r201
-  Move         r203, r198
-  JumpIfFalse  r203, L14
-  Move         r203, r202
-L14:
-  JumpIfFalse  r203, L15
-  Const        r205, 1
-  Jump         L16
-L15:
-  Const        r205, 0
-L16:
-  // catalog_only: if s.customer_sk == null && c.customer_sk != null {1} else {0},
-  Const        r207, "catalog_only"
-  Const        r208, "customer_sk"
-  Index        r209, r175, r208
-  Const        r210, nil
-  Equal        r211, r209, r210
-  Const        r212, "customer_sk"
-  Index        r213, r174, r212
-  Const        r214, nil
-  NotEqual     r215, r213, r214
-  Move         r216, r211
-  JumpIfFalse  r216, L17
-  Move         r216, r215
-L17:
-  JumpIfFalse  r216, L18
-  Const        r218, 1
-  Jump         L19
-L18:
-  Const        r218, 0
-L19:
-  // both: if s.customer_sk != null && c.customer_sk != null {1} else {0}
-  Const        r220, "both"
-  Const        r221, "customer_sk"
-  Index        r222, r175, r221
-  Const        r223, nil
-  NotEqual     r224, r222, r223
-  Const        r225, "customer_sk"
-  Index        r226, r174, r225
-  Const        r227, nil
-  NotEqual     r228, r226, r227
-  Move         r229, r224
-  JumpIfFalse  r229, L20
-  Move         r229, r228
-L20:
-  JumpIfFalse  r229, L21
-  Const        r231, 1
-  Jump         L22
-L21:
-  Const        r231, 0
+  Const        r136, []
+  IterPrep     r137, r2
+  Len          r138, r137
+  IterPrep     r139, r73
+  Len          r140, r139
+  Const        r143, 0
 L22:
+  LessInt      r144, r143, r140
+  JumpIfFalse  r144, L10
+  Index        r141, r139, r143
+  Const        r146, false
+  Const        r147, 0
+L17:
+  LessInt      r148, r147, r138
+  JumpIfFalse  r148, L11
+  Index        r142, r137, r147
+  Index        r150, r142, r3
+  Index        r151, r141, r3
+  Equal        r152, r150, r151
+  Index        r153, r142, r5
+  Index        r154, r141, r5
+  Equal        r155, r153, r154
+  JumpIfFalse  r152, L12
+  Move         r152, r155
+L12:
+  JumpIfFalse  r152, L13
+  Const        r146, true
   // store_only: if s.customer_sk != null && c.customer_sk == null {1} else {0},
-  Move         r233, r194
-  Move         r234, r205
+  Const        r156, "store_only"
+  Index        r157, r142, r3
+  Const        r158, nil
+  NotEqual     r159, r157, r158
+  Index        r160, r141, r3
+  Equal        r161, r160, r158
+  JumpIfFalse  r159, L14
+L14:
+  Select       162,161,53,56
   // catalog_only: if s.customer_sk == null && c.customer_sk != null {1} else {0},
-  Move         r235, r207
-  Move         r236, r218
+  Const        r163, "catalog_only"
+  Index        r164, r142, r3
+  Equal        r165, r164, r158
+  Index        r166, r141, r3
+  NotEqual     r167, r166, r158
+  JumpIfFalse  r165, L15
+L15:
+  Select       168,167,53,56
   // both: if s.customer_sk != null && c.customer_sk != null {1} else {0}
-  Move         r237, r220
-  Move         r238, r231
+  Const        r169, "both"
+  Index        r170, r142, r3
+  NotEqual     r171, r170, r158
+  Index        r172, r141, r3
+  NotEqual     r173, r172, r158
+  JumpIfFalse  r171, L16
+L16:
+  Select       174,173,53,56
+  // store_only: if s.customer_sk != null && c.customer_sk == null {1} else {0},
+  Move         r175, r156
+  Move         r176, r162
+  // catalog_only: if s.customer_sk == null && c.customer_sk != null {1} else {0},
+  Move         r177, r163
+  Move         r178, r168
+  // both: if s.customer_sk != null && c.customer_sk != null {1} else {0}
+  Move         r179, r169
+  Move         r180, r174
   // select {
-  MakeMap      r239, 3, r233
+  MakeMap      r181, 3, r175
   // from s in ssci outer join c in csci on s.customer_sk == c.customer_sk && s.item_sk == c.item_sk
-  Append       r169, r169, r239
+  Append       r136, r136, r181
 L13:
-  Const        r241, 1
-  AddInt       r180, r180, r241
-  Jump         L23
+  AddInt       r147, r147, r53
+  Jump         L17
 L11:
-  Move         r242, r179
-  JumpIfTrue   r242, L24
-  Const        r175, nil
+  Move         r183, r146
+  JumpIfTrue   r183, L18
+  Move         r142, r158
   // store_only: if s.customer_sk != null && c.customer_sk == null {1} else {0},
-  Const        r244, "store_only"
-  Const        r245, "customer_sk"
-  Index        r246, r175, r245
-  Const        r247, nil
-  NotEqual     r248, r246, r247
-  Const        r249, "customer_sk"
-  Index        r250, r174, r249
-  Const        r251, nil
-  Equal        r252, r250, r251
-  Move         r253, r248
-  JumpIfFalse  r253, L25
-  Move         r253, r252
-L25:
-  JumpIfFalse  r253, L26
-  Const        r255, 1
-  Jump         L27
-L26:
-  Const        r255, 0
-L27:
+  Const        r184, "store_only"
+  Index        r185, r142, r3
+  NotEqual     r186, r185, r158
+  Index        r187, r141, r3
+  Equal        r188, r187, r158
+  JumpIfFalse  r186, L19
+L19:
+  Select       189,188,53,56
   // catalog_only: if s.customer_sk == null && c.customer_sk != null {1} else {0},
-  Const        r257, "catalog_only"
-  Const        r258, "customer_sk"
-  Index        r259, r175, r258
-  Const        r260, nil
-  Equal        r261, r259, r260
-  Const        r262, "customer_sk"
-  Index        r263, r174, r262
-  Const        r264, nil
-  NotEqual     r265, r263, r264
-  Move         r266, r261
-  JumpIfFalse  r266, L28
-  Move         r266, r265
-L28:
-  JumpIfFalse  r266, L29
-  Const        r268, 1
-  Jump         L30
-L29:
-  Const        r268, 0
-L30:
+  Const        r190, "catalog_only"
+  Index        r191, r142, r3
+  Equal        r192, r191, r158
+  Index        r193, r141, r3
+  NotEqual     r194, r193, r158
+  JumpIfFalse  r192, L20
+L20:
+  Select       195,194,53,56
   // both: if s.customer_sk != null && c.customer_sk != null {1} else {0}
-  Const        r270, "both"
-  Const        r271, "customer_sk"
-  Index        r272, r175, r271
-  Const        r273, nil
-  NotEqual     r274, r272, r273
-  Const        r275, "customer_sk"
-  Index        r276, r174, r275
-  Const        r277, nil
-  NotEqual     r278, r276, r277
-  Move         r279, r274
-  JumpIfFalse  r279, L31
-  Move         r279, r278
-L31:
-  JumpIfFalse  r279, L32
-  Const        r281, 1
-  Jump         L33
-L32:
-  Const        r281, 0
-L33:
+  Const        r196, "both"
+  Index        r197, r142, r3
+  NotEqual     r198, r197, r158
+  Index        r199, r141, r3
+  NotEqual     r200, r199, r158
+  JumpIfFalse  r198, L21
+L21:
+  Select       201,200,53,56
   // store_only: if s.customer_sk != null && c.customer_sk == null {1} else {0},
-  Move         r283, r244
-  Move         r284, r255
+  Move         r202, r184
+  Move         r203, r189
   // catalog_only: if s.customer_sk == null && c.customer_sk != null {1} else {0},
-  Move         r285, r257
-  Move         r286, r268
+  Move         r204, r190
+  Move         r205, r195
   // both: if s.customer_sk != null && c.customer_sk != null {1} else {0}
-  Move         r287, r270
-  Move         r288, r281
+  Move         r206, r196
+  Move         r207, r201
   // select {
-  MakeMap      r289, 3, r283
+  MakeMap      r208, 3, r202
   // from s in ssci outer join c in csci on s.customer_sk == c.customer_sk && s.item_sk == c.item_sk
-  Append       r169, r169, r289
-L24:
-  Const        r291, 1
-  AddInt       r176, r176, r291
-  Jump         L34
+  Append       r136, r136, r208
+L18:
+  AddInt       r143, r143, r53
+  Jump         L22
 L10:
   // store_only: sum(from x in joined select x.store_only),
-  Const        r292, "store_only"
-  Const        r293, []
-  Const        r294, "store_only"
-  IterPrep     r295, r169
-  Len          r296, r295
-  Const        r297, 0
-L36:
-  LessInt      r299, r297, r296
-  JumpIfFalse  r299, L35
-  Index        r301, r295, r297
-  Const        r302, "store_only"
-  Index        r303, r301, r302
-  Append       r293, r293, r303
-  Const        r305, 1
-  AddInt       r297, r297, r305
-  Jump         L36
-L35:
-  Sum          r306, r293
+  Const        r210, "store_only"
+  Const        r211, []
+  Const        r212, "store_only"
+  IterPrep     r213, r136
+  Len          r214, r213
+  Move         r215, r56
+L24:
+  LessInt      r216, r215, r214
+  JumpIfFalse  r216, L23
+  Index        r218, r213, r215
+  Index        r219, r218, r212
+  Append       r211, r211, r219
+  AddInt       r215, r215, r53
+  Jump         L24
+L23:
+  Sum          r221, r211
   // catalog_only: sum(from x in joined select x.catalog_only),
-  Const        r307, "catalog_only"
-  Const        r308, []
-  Const        r309, "catalog_only"
-  IterPrep     r310, r169
-  Len          r311, r310
-  Const        r312, 0
-L38:
-  LessInt      r314, r312, r311
-  JumpIfFalse  r314, L37
-  Index        r301, r310, r312
-  Const        r316, "catalog_only"
-  Index        r317, r301, r316
-  Append       r308, r308, r317
-  Const        r319, 1
-  AddInt       r312, r312, r319
-  Jump         L38
-L37:
-  Sum          r320, r308
+  Const        r222, "catalog_only"
+  Const        r223, []
+  Const        r224, "catalog_only"
+  IterPrep     r225, r136
+  Len          r226, r225
+  Move         r227, r56
+L26:
+  LessInt      r228, r227, r226
+  JumpIfFalse  r228, L25
+  Index        r218, r225, r227
+  Index        r230, r218, r224
+  Append       r223, r223, r230
+  AddInt       r227, r227, r53
+  Jump         L26
+L25:
+  Sum          r232, r223
   // store_and_catalog: sum(from x in joined select x.both)
-  Const        r321, "store_and_catalog"
-  Const        r322, []
-  Const        r323, "both"
-  IterPrep     r324, r169
-  Len          r325, r324
-  Const        r326, 0
-L40:
-  LessInt      r328, r326, r325
-  JumpIfFalse  r328, L39
-  Index        r301, r324, r326
-  Const        r330, "both"
-  Index        r331, r301, r330
-  Append       r322, r322, r331
-  Const        r333, 1
-  AddInt       r326, r326, r333
-  Jump         L40
-L39:
-  Sum          r334, r322
+  Const        r233, "store_and_catalog"
+  Const        r234, []
+  Const        r235, "both"
+  IterPrep     r236, r136
+  Len          r237, r236
+  Move         r238, r56
+L28:
+  LessInt      r239, r238, r237
+  JumpIfFalse  r239, L27
+  Index        r218, r236, r238
+  Index        r241, r218, r235
+  Append       r234, r234, r241
+  AddInt       r238, r238, r53
+  Jump         L28
+L27:
+  Sum          r243, r234
   // store_only: sum(from x in joined select x.store_only),
-  Move         r335, r292
-  Move         r336, r306
+  Move         r244, r210
+  Move         r245, r221
   // catalog_only: sum(from x in joined select x.catalog_only),
-  Move         r337, r307
-  Move         r338, r320
+  Move         r246, r222
+  Move         r247, r232
   // store_and_catalog: sum(from x in joined select x.both)
-  Move         r339, r321
-  Move         r340, r334
+  Move         r248, r233
+  Move         r249, r243
   // let result = {
-  MakeMap      r341, 3, r335
+  MakeMap      r250, 3, r244
   // json(result)
-  JSON         r341
+  JSON         r250
   // expect result.store_only == 1 &&
-  Const        r342, "store_only"
-  Index        r343, r341, r342
-  Const        r344, 1
-  Equal        r345, r343, r344
+  Index        r251, r250, r212
+  Equal        r252, r251, r53
   // result.catalog_only == 1 &&
-  Const        r346, "catalog_only"
-  Index        r347, r341, r346
-  Const        r348, 1
-  Equal        r349, r347, r348
+  Index        r253, r250, r224
+  Equal        r254, r253, r53
   // result.store_and_catalog == 1
-  Const        r350, "store_and_catalog"
-  Index        r351, r341, r350
-  Const        r352, 1
-  Equal        r353, r351, r352
+  Const        r255, "store_and_catalog"
+  Index        r256, r250, r255
+  Equal        r257, r256, r53
   // expect result.store_only == 1 &&
-  Move         r354, r345
-  JumpIfFalse  r354, L41
-L41:
+  JumpIfFalse  r252, L29
+  Move         r252, r254
   // result.catalog_only == 1 &&
-  Move         r355, r349
-  JumpIfFalse  r355, L42
-  Move         r355, r353
-L42:
+  JumpIfFalse  r252, L29
+  Move         r252, r257
+L29:
   // expect result.store_only == 1 &&
-  Expect       r355
+  Expect       r252
   Return       r0
