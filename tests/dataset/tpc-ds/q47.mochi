@@ -7,15 +7,19 @@ let v2 = [
 let year = 2020
 let orderby = "item"
 
+let dummy = null
+
 fun abs(x: float): float {
   if x >= 0.0 { x } else { -x }
 }
 
-let result =
+let base =
   from v in v2
   where v.d_year == year && v.avg_monthly_sales > 0 && abs(v.sum_sales - v.avg_monthly_sales) / v.avg_monthly_sales > 0.1
   sort by [v.sum_sales - v.avg_monthly_sales, v.item]
   select v
+
+let result = concat(dummy, base)
 
 json(result)
 

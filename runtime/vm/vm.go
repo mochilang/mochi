@@ -1030,7 +1030,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
+			if a.Tag == ValueNull {
+				a = Value{Tag: ValueList}
+			}
 			b := fr.regs[ins.C]
+			if b.Tag == ValueNull {
+				b = Value{Tag: ValueList}
+			}
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
 			}
@@ -1038,7 +1044,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpUnion:
 			a := fr.regs[ins.B]
+			if a.Tag == ValueNull {
+				a = Value{Tag: ValueList}
+			}
 			b := fr.regs[ins.C]
+			if b.Tag == ValueNull {
+				b = Value{Tag: ValueList}
+			}
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
 			}
@@ -1061,7 +1073,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpExcept:
 			a := fr.regs[ins.B]
+			if a.Tag == ValueNull {
+				a = Value{Tag: ValueList}
+			}
 			b := fr.regs[ins.C]
+			if b.Tag == ValueNull {
+				b = Value{Tag: ValueList}
+			}
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("except expects lists"), trace, ins.Line)
 			}
@@ -1078,7 +1096,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: ValueList, List: diff}
 		case OpIntersect:
 			a := fr.regs[ins.B]
+			if a.Tag == ValueNull {
+				a = Value{Tag: ValueList}
+			}
 			b := fr.regs[ins.C]
+			if b.Tag == ValueNull {
+				b = Value{Tag: ValueList}
+			}
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("intersect expects lists"), trace, ins.Line)
 			}

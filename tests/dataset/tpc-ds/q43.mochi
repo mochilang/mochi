@@ -23,6 +23,8 @@ let store_sales = [
 let year = 2020
 let gmt = 0
 
+let dummy = null
+
 let records =
   from d in date_dim
   join ss in store_sales on ss.sold_date_sk == d.date_sk
@@ -30,7 +32,7 @@ let records =
   where s.gmt_offset == gmt && d.d_year == year
   select { d_day_name: d.d_day_name, s_store_name: s.store_name, s_store_id: s.store_id, price: ss.sales_price }
 
-let result =
+let base =
   from r in records
   group by { name: r.s_store_name, id: r.s_store_id } into g
   select {
@@ -44,6 +46,8 @@ let result =
     fri_sales: sum(from x in g select if x.d_day_name == "Friday" { x.price } else { 0.0 }),
     sat_sales: sum(from x in g select if x.d_day_name == "Saturday" { x.price } else { 0.0 })
   }
+
+let result = concat(dummy, base)
 
 json(result)
 
