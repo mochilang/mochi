@@ -13,13 +13,16 @@ type Item {
 let inventory = [
   { inv_item_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10 },
   { inv_item_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 20 },
+  { inv_item_sk: 1, inv_date_sk: 4, inv_quantity_on_hand: 25 },
   // ITEM2 inventory outside month range
-  { inv_item_sk: 2, inv_date_sk: 3, inv_quantity_on_hand: 5 }
+  { inv_item_sk: 2, inv_date_sk: 3, inv_quantity_on_hand: 5 },
+  { inv_item_sk: 2, inv_date_sk: 1, inv_quantity_on_hand: 5 }
 ]
 
 let date_dim = [
   { d_date_sk: 1, d_month_seq: 0 },
   { d_date_sk: 2, d_month_seq: 1 },
+  { d_date_sk: 4, d_month_seq: 2 },
   { d_date_sk: 3, d_month_seq: 12 }
 ]
 
@@ -68,7 +71,14 @@ test "TPCDC Q22 average inventory" {
       i_brand: "Brand1",
       i_class: "Class1",
       i_category: "Cat1",
-      qoh: 15.0
+      qoh: 18.333333333333332
+    },
+    {
+      i_product_name: "Prod2",
+      i_brand: "Brand2",
+      i_class: "Class2",
+      i_category: "Cat2",
+      qoh: 5.0
     }
   ]
 }

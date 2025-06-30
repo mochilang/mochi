@@ -5,7 +5,9 @@ type StoreSale { ss_quantity: int, ss_list_price: float, ss_coupon_amt: float, s
 let store_sales = [
   { ss_quantity: 3, ss_list_price: 100.0, ss_coupon_amt: 50.0, ss_wholesale_cost: 30.0 },
   { ss_quantity: 8, ss_list_price: 80.0, ss_coupon_amt: 10.0, ss_wholesale_cost: 20.0 },
-  { ss_quantity: 15, ss_list_price: 70.0, ss_coupon_amt: 5.0, ss_wholesale_cost: 25.0 }
+  { ss_quantity: 15, ss_list_price: 70.0, ss_coupon_amt: 5.0, ss_wholesale_cost: 25.0 },
+  { ss_quantity: 4, ss_list_price: 90.0, ss_coupon_amt: 20.0, ss_wholesale_cost: 15.0 },
+  { ss_quantity: 9, ss_list_price: 85.0, ss_coupon_amt: 0.0, ss_wholesale_cost: 10.0 }
 ]
 
 let bucket1 =
@@ -33,11 +35,11 @@ json(result)
 
 test "TPCDC Q28 buckets" {
   expect result == {
-    B1_LP: 100.0,
-    B1_CNT: 1,
-    B1_CNTD: 1,
-    B2_LP: 80.0,
-    B2_CNT: 1,
-    B2_CNTD: 1
+    B1_LP: 95.0,
+    B1_CNT: 2,
+    B1_CNTD: 2,
+    B2_LP: 82.5,
+    B2_CNT: 2,
+    B2_CNTD: 2
   }
 }

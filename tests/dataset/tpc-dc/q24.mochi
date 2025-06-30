@@ -9,12 +9,14 @@ type CustomerAddress { ca_address_sk: int, ca_state: string, ca_country: string,
 
 let store_sales = [
   { ss_ticket_number: 1, ss_item_sk: 1, ss_customer_sk: 1, ss_store_sk: 1, ss_net_paid: 100.0 },
-  { ss_ticket_number: 2, ss_item_sk: 2, ss_customer_sk: 2, ss_store_sk: 1, ss_net_paid: 50.0 }
+  { ss_ticket_number: 2, ss_item_sk: 2, ss_customer_sk: 2, ss_store_sk: 1, ss_net_paid: 50.0 },
+  { ss_ticket_number: 3, ss_item_sk: 1, ss_customer_sk: 1, ss_store_sk: 1, ss_net_paid: 80.0 }
 ]
 
 let store_returns = [
   { sr_ticket_number: 1, sr_item_sk: 1 },
-  { sr_ticket_number: 2, sr_item_sk: 2 }
+  { sr_ticket_number: 2, sr_item_sk: 2 },
+  { sr_ticket_number: 3, sr_item_sk: 1 }
 ]
 
 let store = [ { s_store_sk: 1, s_store_name: "Store1", s_market_id: 5, s_state: "CA", s_zip: "12345" } ]
@@ -67,5 +69,5 @@ let result =
 json(result)
 
 test "TPCDC Q24 customer net paid" {
-  expect result == [ { c_last_name: "Smith", c_first_name: "Ann", s_store_name: "Store1", paid: 100.0 } ]
+  expect result == [ { c_last_name: "Smith", c_first_name: "Ann", s_store_name: "Store1", paid: 180.0 } ]
 }
