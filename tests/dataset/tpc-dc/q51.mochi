@@ -17,6 +17,11 @@ let web_sales = [
   {item_sk: 2, sold_date: 3, price: 5},
   {item_sk: 2, sold_date: 4, price: 5},
   {item_sk: 2, sold_date: 5, price: 5}
+  ,{item_sk: 3, sold_date: 1, price: 8}
+  ,{item_sk: 3, sold_date: 2, price: 12}
+  ,{item_sk: 3, sold_date: 3, price: 10}
+  ,{item_sk: 3, sold_date: 4, price: 6}
+  ,{item_sk: 3, sold_date: 5, price: 8}
 ]
 
 let store_sales = [
@@ -30,6 +35,11 @@ let store_sales = [
   {item_sk: 2, sold_date: 3, price: 1},
   {item_sk: 2, sold_date: 4, price: 2},
   {item_sk: 2, sold_date: 5, price: 3}
+  ,{item_sk: 3, sold_date: 1, price: 4}
+  ,{item_sk: 3, sold_date: 2, price: 3}
+  ,{item_sk: 3, sold_date: 3, price: 6}
+  ,{item_sk: 3, sold_date: 4, price: 2}
+  ,{item_sk: 3, sold_date: 5, price: 4}
 ]
 
 // Aggregate sales by item and date
@@ -86,6 +96,11 @@ test "TPCDC Q51 cumulative" {
     {item_sk:2, d_date:2, web_sales:10, store_sales:4},
     {item_sk:2, d_date:3, web_sales:15, store_sales:5},
     {item_sk:2, d_date:4, web_sales:20, store_sales:7},
-    {item_sk:2, d_date:5, web_sales:25, store_sales:10}
+    {item_sk:2, d_date:5, web_sales:25, store_sales:10},
+    {item_sk:3, d_date:1, web_sales:8, store_sales:4},
+    {item_sk:3, d_date:2, web_sales:20, store_sales:7},
+    {item_sk:3, d_date:3, web_sales:30, store_sales:13},
+    {item_sk:3, d_date:4, web_sales:36, store_sales:15},
+    {item_sk:3, d_date:5, web_sales:44, store_sales:19}
   ]
 }

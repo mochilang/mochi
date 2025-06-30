@@ -1,4 +1,4 @@
-let item=[{i_item_id:1}, {i_item_id:2}, {i_item_id:3}]
+let item=[{i_item_id:1}, {i_item_id:2}, {i_item_id:3}, {i_item_id:4}]
 let date_dim=[
   {d_date_sk:1, d_week_seq:1, d_date:"2023-01-01"},
   {d_date_sk:2, d_week_seq:1, d_date:"2023-01-02"}
@@ -6,17 +6,20 @@ let date_dim=[
 let store_sales=[
   {ss_item_sk:1, ss_sold_date_sk:1, ss_ext_sales_price:20},
   {ss_item_sk:2, ss_sold_date_sk:2, ss_ext_sales_price:30},
-  {ss_item_sk:3, ss_sold_date_sk:1, ss_ext_sales_price:40}
+  {ss_item_sk:3, ss_sold_date_sk:1, ss_ext_sales_price:40},
+  {ss_item_sk:4, ss_sold_date_sk:1, ss_ext_sales_price:30}
 ]
 let catalog_sales=[
   {cs_item_sk:1, cs_sold_date_sk:1, cs_ext_sales_price:20},
   {cs_item_sk:2, cs_sold_date_sk:2, cs_ext_sales_price:30},
-  {cs_item_sk:3, cs_sold_date_sk:1, cs_ext_sales_price:70}
+  {cs_item_sk:3, cs_sold_date_sk:1, cs_ext_sales_price:70},
+  {cs_item_sk:4, cs_sold_date_sk:1, cs_ext_sales_price:32}
 ]
 let web_sales=[
   {ws_item_sk:1, ws_sold_date_sk:1, ws_ext_sales_price:20},
   {ws_item_sk:2, ws_sold_date_sk:2, ws_ext_sales_price:32},
-  {ws_item_sk:3, ws_sold_date_sk:1, ws_ext_sales_price:20}
+  {ws_item_sk:3, ws_sold_date_sk:1, ws_ext_sales_price:20},
+  {ws_item_sk:4, ws_sold_date_sk:1, ws_ext_sales_price:31}
 ]
 
 let ss_items=
@@ -53,6 +56,7 @@ json(combined)
 test "TPCDC Q58 revenue parity" {
   expect combined == [
     {item_id:1, average:20},
-    {item_id:2, average:30.666666666666668}
+    {item_id:2, average:30.666666666666668},
+    {item_id:4, average:31}
   ]
 }

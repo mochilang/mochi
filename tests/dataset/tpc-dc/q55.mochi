@@ -8,6 +8,7 @@ let store_sales = [
   {ss_item_sk:1, ss_sold_date_sk:1, ss_ext_sales_price:100},
   {ss_item_sk:2, ss_sold_date_sk:1, ss_ext_sales_price:50},
   {ss_item_sk:3, ss_sold_date_sk:1, ss_ext_sales_price:150}
+  ,{ss_item_sk:2, ss_sold_date_sk:1, ss_ext_sales_price:70}
 ]
 
 let result =
@@ -23,6 +24,6 @@ json(result)
 test "TPCDC Q55 brand manager" {
   expect result == [
     {brand_id:1, brand:"BrandA", ext_price:250},
-    {brand_id:2, brand:"BrandB", ext_price:50}
+    {brand_id:2, brand:"BrandB", ext_price:120}
   ]
 }
