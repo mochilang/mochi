@@ -81,5 +81,5 @@ let result =
 json(result)
 
 test "TPCDS Q9 empty" {
-  expect result == []
+  expect len(result) == 0
 }

@@ -1603,15 +1603,14 @@ type compiler struct {
 }
 
 type funcCompiler struct {
-	fn         Function
-	idx        int
-	comp       *compiler
-	vars       map[string]int
-	scopes     []map[string]int
-	loops      []*loopContext
-	tags       map[int]regTag
-	constCache map[string]int
-	groupVar   string
+	fn       Function
+	idx      int
+	comp     *compiler
+	vars     map[string]int
+	scopes   []map[string]int
+	loops    []*loopContext
+	tags     map[int]regTag
+	groupVar string
 }
 
 func (fc *funcCompiler) freshConst(pos lexer.Position, v Value) int {
@@ -1706,7 +1705,7 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 }
 
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: ""}
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(fn.Params)
@@ -1730,7 +1729,7 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 }
 
 func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: ""}
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(st.Order) + len(fn.Params)
@@ -1784,7 +1783,7 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 }
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: ""}
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
 	for i, name := range captures {
@@ -1826,7 +1825,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 	prev, exists := c.fnIndex[name]
 	c.fnIndex[name] = idx
 
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: ""}
 	fc.fn.Name = name
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
@@ -1868,7 +1867,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 }
 
 func (c *compiler) compileMain(p *parser.Program) (Function, error) {
-	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, constCache: map[string]int{}, groupVar: ""}
+	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: ""}
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
 	fc.fn.NumParams = 0
@@ -1960,13 +1959,9 @@ func constKey(v Value) (string, bool) {
 }
 
 func (fc *funcCompiler) constReg(pos lexer.Position, v Value) int {
-	if k, ok := constKey(v); ok {
-		if r, ok2 := fc.constCache[k]; ok2 {
-			return r
-		}
+	if _, ok := constKey(v); ok {
 		r := fc.newReg()
 		fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
-		fc.constCache[k] = r
 		return r
 	}
 	r := fc.newReg()
