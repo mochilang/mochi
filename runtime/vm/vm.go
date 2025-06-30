@@ -1170,20 +1170,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			pairs := append([]Value(nil), src.List...)
 			sort.SliceStable(pairs, func(i, j int) bool {
-				a := pairs[i]
-				b := pairs[j]
-				if a.Tag != ValueList || b.Tag != ValueList || len(a.List) == 0 || len(b.List) == 0 {
-					return false
-				}
-				return valueLess(a.List[0], b.List[0])
+				return valueLess(pairKey(pairs[i]), pairKey(pairs[j]))
 			})
 			out := make([]Value, len(pairs))
 			for i, p := range pairs {
-				if p.Tag == ValueList && len(p.List) > 1 {
-					out[i] = p.List[1]
-				} else {
-					out[i] = Value{Tag: ValueNull}
-				}
+				out[i] = pairVal(p)
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpDistinct:
@@ -6810,6 +6801,32 @@ func valuesEqual(a, b Value) bool {
 	default:
 		return false
 	}
+}
+
+func pairKey(v Value) Value {
+	if v.Tag == ValueList {
+		if len(v.List) > 0 {
+			return v.List[0]
+		}
+	} else if v.Tag == ValueMap {
+		if k, ok := v.Map["key"]; ok {
+			return k
+		}
+	}
+	return Value{}
+}
+
+func pairVal(v Value) Value {
+	if v.Tag == ValueList {
+		if len(v.List) > 1 {
+			return v.List[1]
+		}
+	} else if v.Tag == ValueMap {
+		if val, ok := v.Map["value"]; ok {
+			return val
+		}
+	}
+	return Value{Tag: ValueNull}
 }
 
 func valueLess(a, b Value) bool {
