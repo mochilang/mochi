@@ -10,7 +10,8 @@ let date_dim = [
 
 let store = [
   { store_sk: 1, store_id: "S1", store_name: "Main", gmt_offset: 0 },
-  { store_sk: 2, store_id: "S2", store_name: "Branch", gmt_offset: 0 }
+  { store_sk: 2, store_id: "S2", store_name: "Branch", gmt_offset: 0 },
+  { store_sk: 3, store_id: "S3", store_name: "Remote", gmt_offset: 5 }
 ]
 
 let store_sales = [
@@ -23,7 +24,8 @@ let store_sales = [
   { sold_date_sk: 7, store_sk: 1, sales_price: 70.0 },
   { sold_date_sk: 1, store_sk: 2, sales_price: 15.0 },
   { sold_date_sk: 2, store_sk: 2, sales_price: 25.0 },
-  { sold_date_sk: 3, store_sk: 2, sales_price: 35.0 }
+  { sold_date_sk: 3, store_sk: 2, sales_price: 35.0 },
+  { sold_date_sk: 1, store_sk: 3, sales_price: 5.0 }
 ]
 
 let year = 2020

@@ -5,6 +5,8 @@ let item = [
   { product_name: "Green Shirt", manufact_id: 110, manufact: 1, category: "Women", color: "green", units: "pack", size: "L" },
   { product_name: "Grey Pants", manufact_id: 115, manufact: 1, category: "Men", color: "grey", units: "pair", size: "L" },
   { product_name: "Black Shorts", manufact_id: 125, manufact: 1, category: "Men", color: "black", units: "pair", size: "M" }
+  ,{ product_name: "Purple Scarf", manufact_id: 150, manufact: 1, category: "Women", color: "purple", units: "pack", size: "S" }
+  ,{ product_name: "White Hat", manufact_id: 130, manufact: 3, category: "Kids", color: "white", units: "each", size: "S" }
 ]
 
 let lower = 100

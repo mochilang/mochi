@@ -4,6 +4,8 @@ let store_sales = [
   { cdemo_sk: 3, addr_sk: 3, sold_date_sk: 1, sales_price: 170.0, net_profit: 10000.0, quantity: 20 },
   { cdemo_sk: 1, addr_sk: 2, sold_date_sk: 1, sales_price: 110.0, net_profit: 160.0, quantity: 7 },
   { cdemo_sk: 3, addr_sk: 3, sold_date_sk: 1, sales_price: 180.0, net_profit: 20000.0, quantity: 10 }
+  ,{ cdemo_sk: 2, addr_sk: 2, sold_date_sk: 2, sales_price: 80.0, net_profit: 1000.0, quantity: 3 }
+  ,{ cdemo_sk: 3, addr_sk: 3, sold_date_sk: 1, sales_price: 220.0, net_profit: 300.0, quantity: 5 }
 ]
 
 let store = [ { s_store_sk: 1 } ]
