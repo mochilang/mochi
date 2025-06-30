@@ -7,7 +7,10 @@ let store_sales = [
   {ca_county: "B", d_qoy: 3, d_year: 2000, ss_ext_sales_price: 100.0},
   {ca_county: "C", d_qoy: 1, d_year: 2000, ss_ext_sales_price: 50.0},
   {ca_county: "C", d_qoy: 2, d_year: 2000, ss_ext_sales_price: 55.0},
-  {ca_county: "C", d_qoy: 3, d_year: 2000, ss_ext_sales_price: 60.0}
+  {ca_county: "C", d_qoy: 3, d_year: 2000, ss_ext_sales_price: 60.0},
+  {ca_county: "D", d_qoy: 1, d_year: 2000, ss_ext_sales_price: 90.0},
+  {ca_county: "D", d_qoy: 2, d_year: 2000, ss_ext_sales_price: 80.0},
+  {ca_county: "D", d_qoy: 3, d_year: 2000, ss_ext_sales_price: 100.0}
 ]
 
 let web_sales = [
@@ -19,10 +22,13 @@ let web_sales = [
   {ca_county: "B", d_qoy: 3, d_year: 2000, ws_ext_sales_price: 95.0},
   {ca_county: "C", d_qoy: 1, d_year: 2000, ws_ext_sales_price: 60.0},
   {ca_county: "C", d_qoy: 2, d_year: 2000, ws_ext_sales_price: 70.0},
-  {ca_county: "C", d_qoy: 3, d_year: 2000, ws_ext_sales_price: 65.0}
+  {ca_county: "C", d_qoy: 3, d_year: 2000, ws_ext_sales_price: 65.0},
+  {ca_county: "D", d_qoy: 1, d_year: 2000, ws_ext_sales_price: 85.0},
+  {ca_county: "D", d_qoy: 2, d_year: 2000, ws_ext_sales_price: 90.0},
+  {ca_county: "D", d_qoy: 3, d_year: 2000, ws_ext_sales_price: 92.0}
 ]
 
-let counties = ["A", "B", "C"]
+let counties = ["A", "B", "C", "D"]
 
 let result =
   from county in counties

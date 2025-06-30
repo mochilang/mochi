@@ -6,9 +6,11 @@ let inventory = [
   {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10},
   {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 10},
   {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 250},
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 4, inv_quantity_on_hand: 5},
   {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 50},
   {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 60},
-  {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 55}
+  {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 55},
+  {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 4, inv_quantity_on_hand: 70}
 ]
 
 let item = [
@@ -23,7 +25,8 @@ let warehouse = [
 let date_dim = [
   {d_date_sk: 1, d_year: 2000, d_moy: 1},
   {d_date_sk: 2, d_year: 2000, d_moy: 2},
-  {d_date_sk: 3, d_year: 2000, d_moy: 3}
+  {d_date_sk: 3, d_year: 2000, d_moy: 3},
+  {d_date_sk: 4, d_year: 2000, d_moy: 4}
 ]
 
 let monthly =
@@ -50,5 +53,5 @@ let summary =
 json(summary)
 
 test "TPCDC Q39 simplified" {
-  expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.5396007178390022}]
+  expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.522394807667585}]
 }
