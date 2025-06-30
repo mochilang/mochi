@@ -17,16 +17,18 @@ type Item { i_item_sk: int, i_item_id: string }
 type Promotion { p_promo_sk: int, p_channel_email: string, p_channel_event: string }
 
 let catalog_sales = [
-  { cs_sold_date_sk: 1, cs_item_sk: 1, cs_bill_cdemo_sk: 1, cs_promo_sk: 1, cs_quantity: 10, cs_list_price: 100.0, cs_coupon_amt: 5.0, cs_sales_price: 95.0 }
+  { cs_sold_date_sk: 1, cs_item_sk: 1, cs_bill_cdemo_sk: 1, cs_promo_sk: 1, cs_quantity: 10, cs_list_price: 100.0, cs_coupon_amt: 5.0, cs_sales_price: 95.0 },
+  { cs_sold_date_sk: 2, cs_item_sk: 2, cs_bill_cdemo_sk: 2, cs_promo_sk: 2, cs_quantity: 5, cs_list_price: 50.0, cs_coupon_amt: 0.0, cs_sales_price: 50.0 }
 ]
 
 let customer_demographics = [
-  { cd_demo_sk: 1, cd_gender: "M", cd_marital_status: "S", cd_education_status: "College" }
+  { cd_demo_sk: 1, cd_gender: "M", cd_marital_status: "S", cd_education_status: "College" },
+  { cd_demo_sk: 2, cd_gender: "F", cd_marital_status: "M", cd_education_status: "High School" }
 ]
 
-let date_dim = [ { d_date_sk: 1, d_year: 2000 } ]
-let item = [ { i_item_sk: 1, i_item_id: "ITEM1" } ]
-let promotion = [ { p_promo_sk: 1, p_channel_email: "N", p_channel_event: "Y" } ]
+let date_dim = [ { d_date_sk: 1, d_year: 2000 }, { d_date_sk: 2, d_year: 1999 } ]
+let item = [ { i_item_sk: 1, i_item_id: "ITEM1" }, { i_item_sk: 2, i_item_id: "ITEM2" } ]
+let promotion = [ { p_promo_sk: 1, p_channel_email: "N", p_channel_event: "Y" }, { p_promo_sk: 2, p_channel_email: "Y", p_channel_event: "Y" } ]
 
 let result =
   from cs in catalog_sales

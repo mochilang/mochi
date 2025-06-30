@@ -12,10 +12,16 @@ type Item {
 
 let inventory = [
   { inv_item_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10 },
-  { inv_item_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 20 }
+  { inv_item_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 20 },
+  // ITEM2 inventory outside month range
+  { inv_item_sk: 2, inv_date_sk: 3, inv_quantity_on_hand: 5 }
 ]
 
-let date_dim = [ { d_date_sk: 1, d_month_seq: 0 }, { d_date_sk: 2, d_month_seq: 1 } ]
+let date_dim = [
+  { d_date_sk: 1, d_month_seq: 0 },
+  { d_date_sk: 2, d_month_seq: 1 },
+  { d_date_sk: 3, d_month_seq: 12 }
+]
 
 let item = [
   {
@@ -24,6 +30,13 @@ let item = [
     i_brand: "Brand1",
     i_class: "Class1",
     i_category: "Cat1"
+  },
+  {
+    i_item_sk: 2,
+    i_product_name: "Prod2",
+    i_brand: "Brand2",
+    i_class: "Class2",
+    i_category: "Cat2"
   }
 ]
 

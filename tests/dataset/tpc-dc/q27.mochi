@@ -7,13 +7,14 @@ type Store { s_store_sk: int, s_state: string }
 type Item { i_item_sk: int, i_item_id: string }
 
 let store_sales = [
-  { ss_item_sk: 1, ss_store_sk: 1, ss_cdemo_sk: 1, ss_sold_date_sk: 1, ss_quantity: 5, ss_list_price: 100.0, ss_coupon_amt: 10.0, ss_sales_price: 90.0 }
+  { ss_item_sk: 1, ss_store_sk: 1, ss_cdemo_sk: 1, ss_sold_date_sk: 1, ss_quantity: 5, ss_list_price: 100.0, ss_coupon_amt: 10.0, ss_sales_price: 90.0 },
+  { ss_item_sk: 2, ss_store_sk: 2, ss_cdemo_sk: 2, ss_sold_date_sk: 1, ss_quantity: 3, ss_list_price: 50.0, ss_coupon_amt: 5.0, ss_sales_price: 45.0 }
 ]
 
-let customer_demographics = [ { cd_demo_sk: 1, cd_gender: "F", cd_marital_status: "M", cd_education_status: "College" } ]
+let customer_demographics = [ { cd_demo_sk: 1, cd_gender: "F", cd_marital_status: "M", cd_education_status: "College" }, { cd_demo_sk: 2, cd_gender: "M", cd_marital_status: "S", cd_education_status: "High" } ]
 let date_dim = [ { d_date_sk: 1, d_year: 2000 } ]
-let store = [ { s_store_sk: 1, s_state: "CA" } ]
-let item = [ { i_item_sk: 1, i_item_id: "ITEM1" } ]
+let store = [ { s_store_sk: 1, s_state: "CA" }, { s_store_sk: 2, s_state: "NY" } ]
+let item = [ { i_item_sk: 1, i_item_id: "ITEM1" }, { i_item_sk: 2, i_item_id: "ITEM2" } ]
 
 let result =
   from ss in store_sales
