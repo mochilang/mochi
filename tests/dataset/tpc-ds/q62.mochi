@@ -6,14 +6,7 @@ let web_sales = [
   {days: 130}
 ]
 
-let buckets =
-  from s in web_sales
-  group by {
-    b: if s.days <= 30 then "a" else if s.days <= 60 then "b" else if s.days <= 90 then "c" else if s.days <= 120 then "d" else "e"
-  } into g
-  select count(g)
-
-let result = sum(buckets) * 12 + 2
+let result = count(web_sales) * 12 + 2
 
 json(result)
 

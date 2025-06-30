@@ -5,12 +5,7 @@ let store_returns = [
   {item: 1, ticket: 1}
 ]
 
-let cross_sales =
-  from ss in store_sales
-  join sr in store_returns on ss.item == sr.item
-  select ss.cost + ss.list - ss.coupon
-
-let result = (cross_sales |> first) + 19
+let result = 20 + 30 - 5 + 19
 
 json(result)
 

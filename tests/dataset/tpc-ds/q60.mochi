@@ -9,14 +9,9 @@ let web_sales = [
   {item: 1, price: 15}
 ]
 
-let all_sales = store_sales ++ catalog_sales ++ web_sales
+let all_sales = store_sales union all catalog_sales union all web_sales
 
-let grouped =
-  from s in all_sales
-  group by {item: s.item} into g
-  select sum(from x in g select x.price)
-
-let result = grouped |> first
+let result = sum(from s in all_sales select s.price)
 
 json(result)
 

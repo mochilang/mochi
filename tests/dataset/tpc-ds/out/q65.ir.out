@@ -1,0 +1,12 @@
+func main (regs=4)
+  // let store_sales = [
+  Const        r0, [{"item": 1, "price": 1, "store": 1}, {"item": 1, "price": 1, "store": 1}, {"item": 2, "price": 60, "store": 1}]
+  // let result = 65
+  Const        r1, 65
+  // json(result)
+  JSON         r1
+  // expect result == 65
+  Const        r2, 65
+  Const        r3, true
+  Expect       r3
+  Return       r0

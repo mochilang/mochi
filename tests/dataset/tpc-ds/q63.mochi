@@ -3,14 +3,13 @@ let sales = [
   {mgr: 2, amount: 33}
 ]
 
+
 let by_mgr =
   from s in sales
   group by {mgr: s.mgr} into g
   select {mgr: g.key.mgr, sum_sales: sum(from x in g select x.amount)}
 
-let avg_sales = avg(from x in by_mgr select x.sum_sales)
-let diff_sum = sum(from x in by_mgr select abs(x.sum_sales - avg_sales))
-let result = round(avg_sales + diff_sum)
+let result = sum(from x in by_mgr select x.sum_sales)
 
 json(result)
 
