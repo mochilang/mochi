@@ -1,4 +1,21 @@
 # 📦 CHANGELOG.md
+## [0.10.7] – 2025-06-30T11:05:48+07:00
+
+### Added
+
+* Hashed outer and right joins
+* Pure call folding for builtins
+* TPC-DS and TPC-DC queries with data for 1–99
+
+### Changed
+
+* Optimized group-by and join map allocation
+* Registers compacted with deduplicated constants
+
+### Fixed
+
+* Map register handling and len(null) cases
+
 ## [0.10.6] – 2025-06-29T12:36:00+07:00
 
 ### Added
