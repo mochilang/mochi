@@ -253,16 +253,18 @@ func Optimize(fn *Function) {
 		if dedupConst(fn) {
 			changed = true
 		}
-		analysis := Liveness(fn)
-		if peephole(fn, analysis) {
-			changed = true
-			analysis = Liveness(fn)
-		}
+		_ = Liveness(fn)
+		// Peephole optimizations are disabled due to correctness issues
+		// in complex control flow. Re-enable once fixed.
+		// if peephole(fn, analysis) {
+		//         changed = true
+		//         analysis = Liveness(fn)
+		// }
 		pruneRedundantJumps(fn)
 		if foldJumpChains(fn) {
 			changed = true
 		}
-		analysis = Liveness(fn)
+		_ = Liveness(fn)
 		removed := false // disable dead code removal for now
 		unreachable := removeUnreachable(fn)
 		if unreachable {
@@ -394,6 +396,21 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 	pcMap := make([]int, len(fn.Code))
 	newCode := make([]Instr, 0, len(fn.Code))
 
+	jumpTargets := map[int]bool{}
+	for pc, ins := range fn.Code {
+		switch ins.Op {
+		case OpJump:
+			if ins.A >= 0 && ins.A < len(fn.Code) {
+				jumpTargets[ins.A] = true
+			}
+		case OpJumpIfFalse, OpJumpIfTrue:
+			if ins.B >= 0 && ins.B < len(fn.Code) {
+				jumpTargets[ins.B] = true
+			}
+		}
+		_ = pc
+	}
+
 	for pc := 0; pc < len(fn.Code); pc++ {
 		ins := fn.Code[pc]
 
@@ -420,14 +437,14 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 		// collapse chained moves: Move r1,r2 ; Move r3,r1 -> Move r3,r2
 		if ins.Op == OpMove && pc+1 < len(fn.Code) {
 			next := fn.Code[pc+1]
-			if next.Op == OpMove && next.B == ins.A && !analysis.Out[pc+1][ins.A] {
+			if !jumpTargets[pc+1] && next.Op == OpMove && next.B == ins.A && !analysis.Out[pc+1][ins.A] {
 				next.B = ins.B
 				fn.Code[pc+1] = next
 				changed = true
 				pcMap[pc] = -1
 				continue
 			}
-			if next.Op == OpReturn && next.A == ins.A && !analysis.Out[pc+1][ins.A] {
+			if !jumpTargets[pc+1] && next.Op == OpReturn && next.A == ins.A && !analysis.Out[pc+1][ins.A] {
 				next.A = ins.B
 				fn.Code[pc+1] = next
 				changed = true
@@ -440,7 +457,7 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 			case OpMakeList, OpMakeMap, OpCall, OpCallV, OpMakeClosure, OpPrintN:
 				// skip propagation for these
 			default:
-				if next.A != ins.A && usesReg(next, ins.A) && !analysis.Out[pc+1][ins.A] {
+				if !jumpTargets[pc+1] && next.A != ins.A && usesReg(next, ins.A) && !analysis.Out[pc+1][ins.A] {
 					replaceReg(&next, ins.A, ins.B)
 					fn.Code[pc+1] = next
 					changed = true
@@ -451,7 +468,7 @@ func peephole(fn *Function, analysis *LiveInfo) bool {
 		} else if pc+1 < len(fn.Code) {
 			// eliminate x; Move rY,x -> x with destination rY when x defines a register
 			next := fn.Code[pc+1]
-			if next.Op == OpMove && next.B == ins.A && !analysis.Out[pc+1][ins.A] {
+			if !jumpTargets[pc+1] && next.Op == OpMove && next.B == ins.A && !analysis.Out[pc+1][ins.A] {
 				use, _ := useDef(ins, fn.NumRegs)
 				if !use[ins.A] {
 					ins.A = next.A
@@ -701,6 +718,14 @@ func pruneRedundantJumps(fn *Function) bool {
 	}
 	if !removed {
 		return false
+	}
+	next := len(newCode)
+	for i := len(pcMap) - 1; i >= 0; i-- {
+		if pcMap[i] == -1 {
+			pcMap[i] = next
+		} else {
+			next = pcMap[i]
+		}
 	}
 	for i := range newCode {
 		ins := &newCode[i]

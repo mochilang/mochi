@@ -1878,7 +1878,9 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 	c.funcs[0] = main
 	// Run liveness-based optimization on all functions
 	for i := range c.funcs {
-		Optimize(&c.funcs[i])
+		if os.Getenv("MOCHI_VM_NO_OPT") == "" {
+			Optimize(&c.funcs[i])
+		}
 	}
 	return &Program{Funcs: c.funcs, Types: c.types}, nil
 }
