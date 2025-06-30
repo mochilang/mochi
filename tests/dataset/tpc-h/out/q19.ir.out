@@ -1,8 +1,9 @@
+== tests/dataset/tpc-h/q19.mochi ==
 func main (regs=102)
   // let part = [
   Const        r0, [{"p_brand": "Brand#12", "p_container": "SM BOX", "p_partkey": 1, "p_size": 3}, {"p_brand": "Brand#23", "p_container": "MED BOX", "p_partkey": 2, "p_size": 5}, {"p_brand": "Brand#34", "p_container": "LG BOX", "p_partkey": 3, "p_size": 15}]
   // let lineitem = [
-  Const        r1, [{"l_discount": 0.1, "l_extendedprice": 1000, "l_partkey": 1, "l_quantity": 5, "l_shipinstruct": "DELIVER IN PERSON", "l_shipmode": "AIR"}, {"l_discount": 0.05, "l_extendedprice": 2000, "l_partkey": 2, "l_quantity": 15, "l_shipinstruct": "DELIVER IN PERSON", "l_shipmode": "AIR REG"}, {"l_discount": 0, "l_extendedprice": 1500, "l_partkey": 3, "l_quantity": 35, "l_shipinstruct": "DELIVER IN PERSON", "l_shipmode": "AIR"}]
+  Const        r1, [{"l_discount": 0.1, "l_extendedprice": 1000.0, "l_partkey": 1, "l_quantity": 5, "l_shipinstruct": "DELIVER IN PERSON", "l_shipmode": "AIR"}, {"l_discount": 0.05, "l_extendedprice": 2000.0, "l_partkey": 2, "l_quantity": 15, "l_shipinstruct": "DELIVER IN PERSON", "l_shipmode": "AIR REG"}, {"l_discount": 0.0, "l_extendedprice": 1500.0, "l_partkey": 3, "l_quantity": 35, "l_shipinstruct": "DELIVER IN PERSON", "l_shipmode": "AIR"}]
   // from l in lineitem
   Const        r2, []
   IterPrep     r3, r1
@@ -219,7 +220,7 @@ L0:
   // print(result)
   Print        r99
   // expect result == 2800.0
-  Const        r100, 2800
+  Const        r100, 2800.0
   EqualFloat   r101, r99, r100
   Expect       r101
   Return       r0
