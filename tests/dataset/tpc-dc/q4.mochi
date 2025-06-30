@@ -1,14 +1,20 @@
 let store_totals = [
   {customer_id: "C1", year: 2001, total: 100.0},
-  {customer_id: "C1", year: 2002, total: 40.0}
+  {customer_id: "C1", year: 2002, total: 40.0},
+  {customer_id: "C2", year: 2001, total: 80.0},
+  {customer_id: "C2", year: 2002, total: 90.0}
 ]
 let catalog_totals = [
   {customer_id: "C1", year: 2001, total: 80.0},
-  {customer_id: "C1", year: 2002, total: 60.0}
+  {customer_id: "C1", year: 2002, total: 60.0},
+  {customer_id: "C2", year: 2001, total: 50.0},
+  {customer_id: "C2", year: 2002, total: 80.0}
 ]
 let web_totals = [
   {customer_id: "C1", year: 2001, total: 60.0},
-  {customer_id: "C1", year: 2002, total: 20.0}
+  {customer_id: "C1", year: 2002, total: 20.0},
+  {customer_id: "C2", year: 2001, total: 40.0},
+  {customer_id: "C2", year: 2002, total: 30.0}
 ]
 
 let result =
@@ -25,5 +31,8 @@ let result =
 json(result)
 
 test "TPCDC Q4 simplified" {
-  expect result == [{customer_id: "C1"}]
+  expect result == [
+    {customer_id: "C1"},
+    {customer_id: "C2"}
+  ]
 }

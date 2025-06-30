@@ -1,12 +1,19 @@
 let store_returns = [
   {sr_customer_sk: 1, sr_store_sk: 1, sr_return_amt: 20.0, sr_returned_date_sk: 1},
-  {sr_customer_sk: 2, sr_store_sk: 1, sr_return_amt: 5.0, sr_returned_date_sk: 1}
+  {sr_customer_sk: 2, sr_store_sk: 1, sr_return_amt: 5.0, sr_returned_date_sk: 1},
+  {sr_customer_sk: 3, sr_store_sk: 1, sr_return_amt: 18.0, sr_returned_date_sk: 1},
+  {sr_customer_sk: 4, sr_store_sk: 2, sr_return_amt: 10.0, sr_returned_date_sk: 1}
 ]
 let date_dim = [{d_date_sk: 1, d_year: 2000}]
-let store = [{s_store_sk: 1, s_state: "TN"}]
+let store = [
+  {s_store_sk: 1, s_state: "TN"},
+  {s_store_sk: 2, s_state: "TN"}
+]
 let customer = [
   {c_customer_sk: 1, c_customer_id: "C1"},
-  {c_customer_sk: 2, c_customer_id: "C2"}
+  {c_customer_sk: 2, c_customer_id: "C2"},
+  {c_customer_sk: 3, c_customer_id: "C3"},
+  {c_customer_sk: 4, c_customer_id: "C4"}
 ]
 
 let customer_total_return =
@@ -32,5 +39,8 @@ let result =
 json(result)
 
 test "TPCDC Q1 sample" {
-  expect result == [{c_customer_id: "C1"}]
+  expect result == [
+    {c_customer_id: "C1"},
+    {c_customer_id: "C3"}
+  ]
 }
