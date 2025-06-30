@@ -2,7 +2,22 @@ let date_dim = []
 let store_sales = []
 let item = []
 
-let result = []
+let result =
+  from dt in date_dim
+  join ss in store_sales on dt.d_date_sk == ss.ss_sold_date_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  where i.i_manufact_id == 100 && dt.d_moy == 12
+  group by { d_year: dt.d_year, brand_id: i.i_brand_id, brand: i.i_brand } into g
+  sort by [g.key.d_year,
+           -sum(from x in g select x.ss.ss_ext_sales_price),
+           g.key.brand_id]
+  select {
+    d_year: g.key.d_year,
+    brand_id: g.key.brand_id,
+    brand: g.key.brand,
+    sum_agg: sum(from x in g select x.ss.ss_ext_sales_price)
+  }
+
 json(result)
 
 test "TPCDS Q3 empty" {
