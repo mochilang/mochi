@@ -5523,6 +5523,17 @@ func literalToValue(l *parser.Literal) (Value, bool) {
 	}
 }
 
+func valueToExpr(v Value) *parser.Expr {
+	anyVal := valueToAny(v)
+	if lit := types.AnyToLiteral(anyVal); lit != nil {
+		return &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: lit}}}}}
+	}
+	if v.Tag == ValueNull {
+		return &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: &parser.Literal{Null: true}}}}}}
+	}
+	return nil
+}
+
 func extractLiteral(e *parser.Expr) *parser.Literal {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return nil
@@ -5963,7 +5974,40 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{Tag: ValueList, List: vals}, true
 		}
 	}
+
+	// Fold calls to user-defined pure functions.
+	if t, err := fc.comp.env.GetVar(call.Func); err == nil {
+		if ft, ok := t.(types.FuncType); ok && ft.Pure {
+			if val, ok2 := fc.evalPureFunc(call.Func, args); ok2 {
+				return val, true
+			}
+		}
+	}
 	return Value{}, false
+}
+
+// evalPureFunc evaluates a pure function defined in the current program using
+// the VM's constant evaluator. Only very simple functions with a single return
+// statement are supported. All arguments must already be constant values.
+func (fc *funcCompiler) evalPureFunc(name string, args []Value) (Value, bool) {
+	fn, ok := fc.comp.env.GetFunc(name)
+	if !ok {
+		return Value{}, false
+	}
+	if len(fn.Params) != len(args) || len(fn.Body) != 1 {
+		return Value{}, false
+	}
+	ret := fn.Body[0].Return
+	if ret == nil {
+		return Value{}, false
+	}
+	env := fc.comp.env.Copy()
+	for i, p := range fn.Params {
+		env.SetValue(p.Name, valueToAny(args[i]), false)
+	}
+	tmpComp := &compiler{prog: fc.comp.prog, env: env}
+	tmpFC := &funcCompiler{comp: tmpComp}
+	return tmpFC.evalConstExpr(ret.Value)
 }
 
 func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {

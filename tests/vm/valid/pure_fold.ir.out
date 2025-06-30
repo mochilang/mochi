@@ -1,0 +1,12 @@
+func main (regs=1)
+  // print(triple(1 + 2))
+  Const        r0, 9
+  Print        r0
+  Return       r0
+
+  // fun triple(x: int): int {
+func triple (regs=3)
+  // return x * 3
+  Const        r1, 3
+  Mul          r2, r0, r1
+  Return       r2
