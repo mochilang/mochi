@@ -6732,7 +6732,11 @@ func valueToString(v Value) string {
 		case ValueInt:
 			return fmt.Sprintf("%d", val.Int)
 		case ValueFloat:
-			return fmt.Sprintf("%g", val.Float)
+			s := strconv.FormatFloat(val.Float, 'f', -1, 64)
+			if !strings.Contains(s, ".") {
+				s += ".0"
+			}
+			return s
 		case ValueBool:
 			return fmt.Sprintf("%v", val.Bool)
 		case ValueStr:
