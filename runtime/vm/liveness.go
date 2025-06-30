@@ -1174,6 +1174,8 @@ func toList(v Value) ([]Value, bool) {
 				return items.List, true
 			}
 		}
+	case ValueNull:
+		return []Value{}, true
 	}
 	return nil, false
 }
