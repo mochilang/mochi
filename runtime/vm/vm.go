@@ -3192,6 +3192,30 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		joinType = *join.Side
 	}
 
+	if rl, ok := fc.constListLen(join.Src); ok && rl == 0 {
+		switch joinType {
+		case "inner", "right":
+			empty := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: empty})
+			return
+		case "left", "outer":
+			fc.compileEmptyRightOuterJoin(q, dst)
+			return
+		}
+	}
+
+	if ll, ok := fc.constListLen(q.Source); ok && ll == 0 {
+		switch joinType {
+		case "inner", "left":
+			empty := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: empty})
+			return
+		case "right", "outer":
+			fc.compileEmptyLeftOuterJoin(q, dst)
+			return
+		}
+	}
+
 	if joinType == "inner" {
 		if rl, ok := fc.constListLen(join.Src); ok && rl == 1 {
 			fc.compileSingleRowRightJoin(q, dst)
@@ -4896,6 +4920,152 @@ func (fc *funcCompiler) compileSingleRowLeftOuterJoin(q *parser.QueryExpr, dst i
 		}
 	}
 
+	one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
+	fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
+	rend := len(fc.fn.Code)
+	fc.fn.Code[rjmp].B = rend
+}
+
+// compileEmptyRightOuterJoin handles left or outer joins when the right side is empty.
+func (fc *funcCompiler) compileEmptyRightOuterJoin(q *parser.QueryExpr, dst int) {
+	join := q.Joins[0]
+
+	fc.preloadFieldConsts(q.Where)
+	fc.preloadFieldConsts(q.Select)
+	fc.preloadFieldConsts(q.Sort)
+
+	leftReg := fc.compileExpr(q.Source)
+	llist := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpIterPrep, A: llist, B: leftReg})
+	llen := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpLen, A: llen, B: llist})
+
+	rvar, ok := fc.vars[join.Var]
+	if !ok {
+		rvar = fc.newReg()
+		fc.vars[join.Var] = rvar
+	}
+	nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
+
+	appendSelect := func() {
+		val := fc.compileExpr(q.Select)
+		if q.Sort != nil {
+			key := fc.compileExpr(q.Sort)
+			kreg := fc.newReg()
+			fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+			vreg := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+			pair := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		} else {
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		}
+	}
+
+	li := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpConst, A: li, Val: Value{Tag: ValueInt, Int: 0}})
+	lstart := len(fc.fn.Code)
+	lcond := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpLessInt, A: lcond, B: li, C: llen})
+	ljmp := len(fc.fn.Code)
+	fc.emit(q.Pos, Instr{Op: OpJumpIfFalse, A: lcond})
+	lelem := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpIndex, A: lelem, B: llist, C: li})
+	lvar, ok := fc.vars[q.Var]
+	if !ok {
+		lvar = fc.newReg()
+		fc.vars[q.Var] = lvar
+	}
+	fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lelem})
+	fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
+	if q.Where != nil {
+		w := fc.compileExpr(q.Where)
+		wskip := len(fc.fn.Code)
+		fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+		appendSelect()
+		fc.fn.Code[wskip].B = len(fc.fn.Code)
+	} else {
+		appendSelect()
+	}
+	one := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 1})
+	fc.emit(q.Pos, Instr{Op: OpAddInt, A: li, B: li, C: one})
+	fc.emit(q.Pos, Instr{Op: OpJump, A: lstart})
+	lend := len(fc.fn.Code)
+	fc.fn.Code[ljmp].B = lend
+}
+
+// compileEmptyLeftOuterJoin handles right or outer joins when the left side is empty.
+func (fc *funcCompiler) compileEmptyLeftOuterJoin(q *parser.QueryExpr, dst int) {
+	join := q.Joins[0]
+
+	fc.preloadFieldConsts(q.Where)
+	fc.preloadFieldConsts(q.Select)
+	fc.preloadFieldConsts(q.Sort)
+
+	rightReg := fc.compileExpr(join.Src)
+	rlist := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpIterPrep, A: rlist, B: rightReg})
+	rlen := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpLen, A: rlen, B: rlist})
+
+	lvar, ok := fc.vars[q.Var]
+	if !ok {
+		lvar = fc.newReg()
+		fc.vars[q.Var] = lvar
+	}
+	nilreg := fc.constReg(q.Pos, Value{Tag: ValueNull})
+	rvar, ok := fc.vars[join.Var]
+	if !ok {
+		rvar = fc.newReg()
+		fc.vars[join.Var] = rvar
+	}
+
+	appendSelect := func() {
+		val := fc.compileExpr(q.Select)
+		if q.Sort != nil {
+			key := fc.compileExpr(q.Sort)
+			kreg := fc.newReg()
+			fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+			vreg := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+			pair := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		} else {
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		}
+	}
+
+	ri := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpConst, A: ri, Val: Value{Tag: ValueInt, Int: 0}})
+	rstart := len(fc.fn.Code)
+	rcond := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpLessInt, A: rcond, B: ri, C: rlen})
+	rjmp := len(fc.fn.Code)
+	fc.emit(join.Pos, Instr{Op: OpJumpIfFalse, A: rcond})
+	relem := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpIndex, A: relem, B: rlist, C: ri})
+	fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: relem})
+	fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: nilreg})
+	if q.Where != nil {
+		w := fc.compileExpr(q.Where)
+		wskip := len(fc.fn.Code)
+		fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+		appendSelect()
+		fc.fn.Code[wskip].B = len(fc.fn.Code)
+	} else {
+		appendSelect()
+	}
 	one := fc.constReg(join.Pos, Value{Tag: ValueInt, Int: 1})
 	fc.emit(join.Pos, Instr{Op: OpAddInt, A: ri, B: ri, C: one})
 	fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
