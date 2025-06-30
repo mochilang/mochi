@@ -6783,6 +6783,9 @@ func toFloat(v Value) float64 {
 		}
 		return 0
 	}
+	if v.Tag == ValueNull {
+		return 0
+	}
 	return float64(v.Int)
 }
 
