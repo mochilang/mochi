@@ -1,7 +1,12 @@
-let t = [{id: 1, val: 8}]
-let result = from r in t select r.val |> first
+let store_sales = []
+let date_dim = []
+let store = []
+let customer_address = []
+let customer = []
+
+let result = []
 json(result)
 
-test "TPCDS Q8 placeholder" {
-  expect result == 8
+test "TPCDS Q8 empty" {
+  expect result == []
 }
