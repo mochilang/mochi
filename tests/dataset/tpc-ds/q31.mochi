@@ -1,7 +1,79 @@
-let t = [{id: 1, val: 31}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  {ss_sold_date_sk: 1, ss_addr_sk: 1, ss_ext_sales_price: 100.0},
+  {ss_sold_date_sk: 2, ss_addr_sk: 1, ss_ext_sales_price: 150.0},
+  {ss_sold_date_sk: 3, ss_addr_sk: 1, ss_ext_sales_price: 180.0},
+  {ss_sold_date_sk: 1, ss_addr_sk: 2, ss_ext_sales_price: 100.0},
+  {ss_sold_date_sk: 2, ss_addr_sk: 2, ss_ext_sales_price: 100.0},
+  {ss_sold_date_sk: 3, ss_addr_sk: 2, ss_ext_sales_price: 100.0},
+]
+
+let web_sales = [
+  {ws_sold_date_sk: 1, ws_bill_addr_sk: 1, ws_ext_sales_price: 80.0},
+  {ws_sold_date_sk: 2, ws_bill_addr_sk: 1, ws_ext_sales_price: 160.0},
+  {ws_sold_date_sk: 3, ws_bill_addr_sk: 1, ws_ext_sales_price: 240.0},
+  {ws_sold_date_sk: 1, ws_bill_addr_sk: 2, ws_ext_sales_price: 90.0},
+  {ws_sold_date_sk: 2, ws_bill_addr_sk: 2, ws_ext_sales_price: 95.0},
+  {ws_sold_date_sk: 3, ws_bill_addr_sk: 2, ws_ext_sales_price: 100.0},
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_qoy: 1, d_year: 2000},
+  {d_date_sk: 2, d_qoy: 2, d_year: 2000},
+  {d_date_sk: 3, d_qoy: 3, d_year: 2000},
+]
+
+let customer_address = [
+  {ca_address_sk: 1, ca_county: "A"},
+  {ca_address_sk: 2, ca_county: "B"},
+]
+
+let ss =
+  from s in store_sales
+  join d in date_dim on s.ss_sold_date_sk == d.d_date_sk
+  join ca in customer_address on s.ss_addr_sk == ca.ca_address_sk
+  group by {county: ca.ca_county, q: d.d_qoy, year: d.d_year} into g
+  select {ca_county: g.key.county, d_qoy: g.key.q, d_year: g.key.year,
+          store_sales: sum(from x in g select x.s.ss_ext_sales_price)}
+
+let ws =
+  from w in web_sales
+  join d in date_dim on w.ws_sold_date_sk == d.d_date_sk
+  join ca in customer_address on w.ws_bill_addr_sk == ca.ca_address_sk
+  group by {county: ca.ca_county, q: d.d_qoy, year: d.d_year} into g
+  select {ca_county: g.key.county, d_qoy: g.key.q, d_year: g.key.year,
+          web_sales: sum(from x in g select x.w.ws_ext_sales_price)}
+
+let result =
+  from ss1 in ss
+  join ss2 in ss on ss1.ca_county == ss2.ca_county && ss2.d_qoy == 2 && ss2.d_year == 2000
+  join ss3 in ss on ss1.ca_county == ss3.ca_county && ss3.d_qoy == 3 && ss3.d_year == 2000
+  join ws1 in ws on ss1.ca_county == ws1.ca_county && ws1.d_qoy == 1 && ws1.d_year == 2000
+  join ws2 in ws on ss1.ca_county == ws2.ca_county && ws2.d_qoy == 2 && ws2.d_year == 2000
+  join ws3 in ws on ss1.ca_county == ws3.ca_county && ws3.d_qoy == 3 && ws3.d_year == 2000
+  where ss1.d_qoy == 1 && ss1.d_year == 2000 &&
+        (ws1.web_sales > 0 ? ws2.web_sales/ws1.web_sales : null) >
+        (ss1.store_sales > 0 ? ss2.store_sales/ss1.store_sales : null) &&
+        (ws2.web_sales > 0 ? ws3.web_sales/ws2.web_sales : null) >
+        (ss2.store_sales > 0 ? ss3.store_sales/ss2.store_sales : null)
+  sort by ss1.ca_county
+  select {
+    ca_county: ss1.ca_county,
+    d_year: ss1.d_year,
+    web_q1_q2_increase: ws2.web_sales / ws1.web_sales,
+    store_q1_q2_increase: ss2.store_sales / ss1.store_sales,
+    web_q2_q3_increase: ws3.web_sales / ws2.web_sales,
+    store_q2_q3_increase: ss3.store_sales / ss2.store_sales
+  }
+  |> to_list
+
 json(result)
 
-test "TPCDS Q31 placeholder" {
-  expect result == 31
+test "TPCDS Q31 simplified" {
+  expect result == [
+    {ca_county: "A", d_year: 2000, web_q1_q2_increase: 2.0, store_q1_q2_increase: 1.5,
+     web_q2_q3_increase: 1.5, store_q2_q3_increase: 1.2},
+    {ca_county: "B", d_year: 2000, web_q1_q2_increase: 95.0/90.0,
+     store_q1_q2_increase: 1.0, web_q2_q3_increase: 100.0/95.0,
+     store_q2_q3_increase: 1.0}
+  ]
 }

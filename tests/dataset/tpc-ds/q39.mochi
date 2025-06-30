@@ -1,7 +1,58 @@
-let t = [{id: 1, val: 39}]
-let result = from r in t select r.val |> first
+fun stddev_sample(vals: list[int]): float {
+  let n = len(vals)
+  if n <= 1 { return 0.0 }
+  let mean = avg(from v in vals select float(v))
+  let sumsq = sum(from v in vals select (float(v) - mean) * (float(v) - mean))
+  return sqrt(sumsq / float(n - 1))
+}
+
+let item = [ {i_item_sk: 1} ]
+let warehouse = [ {w_warehouse_sk: 1, w_warehouse_name: "W1"} ]
+
+let date_dim = [
+  {d_date_sk: 1, d_moy: 1, d_year: 2000},
+  {d_date_sk: 2, d_moy: 1, d_year: 2000},
+  {d_date_sk: 3, d_moy: 1, d_year: 2000},
+  {d_date_sk: 4, d_moy: 2, d_year: 2000},
+  {d_date_sk: 5, d_moy: 2, d_year: 2000},
+  {d_date_sk: 6, d_moy: 2, d_year: 2000}
+]
+
+let inventory = [
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 1},
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 3000},
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 1},
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 4, inv_quantity_on_hand: 5},
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 5, inv_quantity_on_hand: 5},
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 6, inv_quantity_on_hand: 5},
+]
+
+let inv_stats =
+  from inv in inventory
+  join i in item on inv.inv_item_sk == i.i_item_sk
+  join w in warehouse on inv.inv_warehouse_sk == w.w_warehouse_sk
+  join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  where d.d_year == 2000
+  group by {w_name: w.w_warehouse_name, w_sk: w.w_warehouse_sk, item: i.i_item_sk, moy: d.d_moy} into g
+  let qtys = from x in g select x.inv.inv_quantity_on_hand |> to_list
+  let mean = avg(from q in qtys select float(q))
+  let stdev = stddev_sample(qtys)
+  let cov = mean == 0.0 ? null : stdev / mean
+  where (mean == 0.0 ? 0.0 : stdev / mean) > 1.0
+  select {w_warehouse_name: g.key.w_name, w_warehouse_sk: g.key.w_sk, i_item_sk: g.key.item, d_moy: g.key.moy, mean: mean, cov: cov}
+
+let result =
+  from inv1 in inv_stats
+  join inv2 in inv_stats on inv1.i_item_sk == inv2.i_item_sk && inv1.w_warehouse_sk == inv2.w_warehouse_sk && inv2.d_moy == 2
+  where inv1.d_moy == 1 && inv1.cov > 1.5
+  sort by inv1.w_warehouse_sk, inv1.i_item_sk, inv1.d_moy
+  select {inv1_w_warehouse_sk: inv1.w_warehouse_sk, inv1_i_item_sk: inv1.i_item_sk, inv1_d_moy: inv1.d_moy, inv1_mean: inv1.mean, inv1_cov: inv1.cov,
+          inv2_d_moy: inv2.d_moy, inv2_mean: inv2.mean, inv2_cov: inv2.cov}
+  |> to_list
+
 json(result)
 
-test "TPCDS Q39 placeholder" {
-  expect result == 39
+test "TPCDS Q39 simplified" {
+  expect result == [{inv1_w_warehouse_sk: 1, inv1_i_item_sk: 1, inv1_d_moy: 1, inv1_mean: 1000.6666666666666, inv1_cov: 1.7303199106925593,
+    inv2_d_moy: 2, inv2_mean: 5.0, inv2_cov: 0.0}]
 }

@@ -1,7 +1,44 @@
-let t = [{id: 1, val: 36}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  {ss_sold_date_sk: 1, ss_item_sk: 1, ss_store_sk: 1, ss_net_profit: 10.0, ss_ext_sales_price: 50.0},
+  {ss_sold_date_sk: 1, ss_item_sk: 2, ss_store_sk: 1, ss_net_profit: 20.0, ss_ext_sales_price: 80.0},
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_year: 2000}
+]
+
+let item = [
+  {i_item_sk: 1, i_category: "Books", i_class: "Novel"},
+  {i_item_sk: 2, i_category: "Books", i_class: "Guide"},
+]
+
+let store = [
+  {s_store_sk: 1, s_state: "A"}
+]
+
+let groups =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  where d.d_year == 2000 && s.s_state in ["A","B","C","D","E","F","G","H"]
+  group by {category: i.i_category, class: i.i_class} into g
+  let profit = sum(from x in g select x.ss.ss_net_profit)
+  let sales = sum(from x in g select x.ss.ss_ext_sales_price)
+  select {i_category: g.key.category, i_class: g.key.class, gross_margin: profit/sales}
+
+let result =
+  from g in groups
+  sort by -g.gross_margin
+  select {gross_margin: g.gross_margin, i_category: g.i_category, i_class: g.i_class,
+          lochierarchy: 0, rank_within_parent: 1}
+  |> to_list
+
 json(result)
 
-test "TPCDS Q36 placeholder" {
-  expect result == 36
+test "TPCDS Q36 simplified" {
+  expect result == [
+    {gross_margin: 0.25, i_category: "Books", i_class: "Guide", lochierarchy: 0, rank_within_parent: 1},
+    {gross_margin: 0.2, i_category: "Books", i_class: "Novel", lochierarchy: 0, rank_within_parent: 1}
+  ]
 }

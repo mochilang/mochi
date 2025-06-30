@@ -1,7 +1,57 @@
-let t = [{id: 1, val: 34}]
-let result = from r in t select r.val |> first
+let customer = [
+  {c_customer_sk: 1, c_last_name: "Doe", c_first_name: "John", c_salutation: "Mr.", c_preferred_cust_flag: "Y"},
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_dom: 1, d_year: 2000},
+]
+
+let store = [
+  {s_store_sk: 1, s_county: "A"},
+]
+
+let household_demographics = [
+  {hd_demo_sk: 1, hd_buy_potential: "1001-5000", hd_vehicle_count: 1, hd_dep_count: 2},
+]
+
+let store_sales = [
+]
+
+for i in 0..16 {
+  store_sales = append(store_sales, {ss_ticket_number: 1, ss_customer_sk: 1, ss_sold_date_sk: 1, ss_store_sk: 1, ss_hdemo_sk: 1})
+}
+
+let dn =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk
+  where (d.d_dom >= 1 && d.d_dom <= 3 || d.d_dom >= 25 && d.d_dom <= 28) &&
+        hd.hd_buy_potential in ["1001-5000"," >10000","501-1000","0-500","Unknown","5001-10000"] &&
+        hd.hd_vehicle_count > 0 &&
+        (hd.hd_vehicle_count > 0 ? hd.hd_dep_count / hd.hd_vehicle_count : null) > 1.2 &&
+        d.d_year in [1999,2000,2001] &&
+        s.s_county in ["A","B","C","D","E","F","G","H"]
+  group by {ticket: ss.ss_ticket_number, cust: ss.ss_customer_sk} into g
+  select {ss_ticket_number: g.key.ticket, ss_customer_sk: g.key.cust, cnt: len(g)}
+
+let result =
+  from dnrec in dn
+  join c in customer on dnrec.ss_customer_sk == c.c_customer_sk
+  where dnrec.cnt >= 15 && dnrec.cnt <= 20
+  sort by c.c_last_name, c.c_first_name, c.c_salutation, c.c_preferred_cust_flag desc, dnrec.ss_ticket_number
+  select {
+    c_last_name: c.c_last_name,
+    c_first_name: c.c_first_name,
+    c_salutation: c.c_salutation,
+    c_preferred_cust_flag: c.c_preferred_cust_flag,
+    ss_ticket_number: dnrec.ss_ticket_number,
+    cnt: dnrec.cnt
+  }
+  |> to_list
+
 json(result)
 
-test "TPCDS Q34 placeholder" {
-  expect result == 34
+test "TPCDS Q34 simplified" {
+  expect result == [{c_last_name: "Doe", c_first_name: "John", c_salutation: "Mr.", c_preferred_cust_flag: "Y", ss_ticket_number: 1, cnt: 16}]
 }

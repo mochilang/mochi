@@ -1,7 +1,65 @@
-let t = [{id: 1, val: 33}]
-let result = from r in t select r.val |> first
+let item = [
+  {i_item_sk: 1, i_manufact_id: 1, i_category: "Books"},
+  {i_item_sk: 2, i_manufact_id: 2, i_category: "Electronics"},
+  {i_item_sk: 3, i_manufact_id: 3, i_category: "Toys"},
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_year: 2000, d_moy: 1},
+]
+
+let customer_address = [
+  {ca_address_sk: 1, ca_gmt_offset: -5},
+  {ca_address_sk: 2, ca_gmt_offset: -5},
+]
+
+let store_sales = [
+  {ss_item_sk: 1, ss_sold_date_sk: 1, ss_addr_sk: 1, ss_ext_sales_price: 50.0},
+]
+
+let catalog_sales = [
+  {cs_item_sk: 1, cs_sold_date_sk: 1, cs_bill_addr_sk: 1, cs_ext_sales_price: 20.0},
+]
+
+let web_sales = [
+  {ws_item_sk: 2, ws_sold_date_sk: 1, ws_bill_addr_sk: 2, ws_ext_sales_price: 30.0},
+]
+
+let categories = ["Books", "Home", "Electronics", "Jewelry", "Sports"]
+
+let union_sales = concat(
+  from ss in store_sales
+    join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+    join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk
+    join i in item on i.i_item_sk == ss.ss_item_sk
+    where i.i_category in categories && d.d_year == 2000 && d.d_moy == 1 && ca.ca_gmt_offset == -5
+    select {manu: i.i_manufact_id, price: ss.ss_ext_sales_price},
+  from cs in catalog_sales
+    join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+    join ca in customer_address on cs.cs_bill_addr_sk == ca.ca_address_sk
+    join i in item on i.i_item_sk == cs.cs_item_sk
+    where i.i_category in categories && d.d_year == 2000 && d.d_moy == 1 && ca.ca_gmt_offset == -5
+    select {manu: i.i_manufact_id, price: cs.cs_ext_sales_price},
+  from ws in web_sales
+    join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
+    join ca in customer_address on ws.ws_bill_addr_sk == ca.ca_address_sk
+    join i in item on i.i_item_sk == ws.ws_item_sk
+    where i.i_category in categories && d.d_year == 2000 && d.d_moy == 1 && ca.ca_gmt_offset == -5
+    select {manu: i.i_manufact_id, price: ws.ws_ext_sales_price},
+)
+
+let result =
+  from s in union_sales
+  group by s.manu into g
+  sort by -sum(from x in g select x.price)
+  select {i_manufact_id: g.key, total_sales: sum(from x in g select x.price)}
+  |> to_list
+
 json(result)
 
-test "TPCDS Q33 placeholder" {
-  expect result == 33
+test "TPCDS Q33 simplified" {
+  expect result == [
+    {i_manufact_id: 1, total_sales: 70.0},
+    {i_manufact_id: 2, total_sales: 30.0}
+  ]
 }
