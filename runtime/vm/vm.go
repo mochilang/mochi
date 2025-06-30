@@ -79,6 +79,7 @@ const (
 	OpStr
 	OpUpper
 	OpInput
+	OpFirst
 	OpCount
 	OpExists
 	OpAvg
@@ -200,6 +201,8 @@ func (op Op) String() string {
 		return "Upper"
 	case OpInput:
 		return "Input"
+	case OpFirst:
+		return "First"
 	case OpCount:
 		return "Count"
 	case OpExists:
@@ -435,6 +438,8 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpInput:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
+			case OpFirst:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpIterPrep:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpCount:
@@ -1106,6 +1111,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			line = strings.TrimRight(line, "\r\n")
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: line}
+		case OpFirst:
+			lst := fr.regs[ins.B]
+			if lst.Tag != ValueList || len(lst.List) == 0 {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = lst.List[0]
+			}
 		case OpIterPrep:
 			src := fr.regs[ins.B]
 			switch src.Tag {
@@ -1922,7 +1934,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpUpper, OpInput:
+	case OpAppend, OpStr, OpUpper, OpInput, OpFirst:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
@@ -2836,10 +2848,8 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			return dst
 		case "first":
 			arg := fc.compileExpr(p.Call.Args[0])
-			zero := fc.newReg()
-			fc.emit(p.Pos, Instr{Op: OpConst, A: zero, Val: Value{Tag: ValueInt, Int: 0}})
 			dst := fc.newReg()
-			fc.emit(p.Pos, Instr{Op: OpIndex, A: dst, B: arg, C: zero})
+			fc.emit(p.Pos, Instr{Op: OpFirst, A: dst, B: arg})
 			return dst
 		case "substring":
 			str := fc.compileExpr(p.Call.Args[0])
