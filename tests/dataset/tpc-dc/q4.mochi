@@ -1,0 +1,89 @@
+let customer = [
+  {
+    c_customer_sk: 1,
+    c_customer_id: "C1",
+    c_first_name: "Alice",
+    c_last_name: "Smith",
+    c_login: "asmith"
+  }
+]
+
+let store_sales = [
+  {ss_customer_sk: 1, ss_sold_date_sk: 1, ss_ext_sales_price: 10.0},
+  {ss_customer_sk: 1, ss_sold_date_sk: 2, ss_ext_sales_price: 20.0}
+]
+
+let catalog_sales = [
+  {cs_bill_customer_sk: 1, cs_sold_date_sk: 1, cs_ext_sales_price: 40.0},
+  {cs_bill_customer_sk: 1, cs_sold_date_sk: 2, cs_ext_sales_price: 60.0}
+]
+
+let web_sales = [
+  {ws_bill_customer_sk: 1, ws_sold_date_sk: 1, ws_ext_sales_price: 50.0},
+  {ws_bill_customer_sk: 1, ws_sold_date_sk: 2, ws_ext_sales_price: 70.0}
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_year: 2000},
+  {d_date_sk: 2, d_year: 2001}
+]
+
+let totals =
+  from d in date_dim
+  join ss in store_sales on d.d_date_sk == ss.ss_sold_date_sk
+  select {customer_sk: ss.ss_customer_sk, year: d.d_year, sale_type: "s", amt: ss.ss_ext_sales_price}
+  union all
+  from d in date_dim
+  join cs in catalog_sales on d.d_date_sk == cs.cs_sold_date_sk
+  select {customer_sk: cs.cs_bill_customer_sk, year: d.d_year, sale_type: "c", amt: cs.cs_ext_sales_price}
+  union all
+  from d in date_dim
+  join ws in web_sales on d.d_date_sk == ws.ws_sold_date_sk
+  select {customer_sk: ws.ws_bill_customer_sk, year: d.d_year, sale_type: "w", amt: ws.ws_ext_sales_price}
+
+let yearly_totals =
+  from t in totals
+  group by {customer_sk: t.customer_sk, sale_type: t.sale_type, year: t.year} into g
+  select {
+    customer_sk: g.key.customer_sk,
+    sale_type: g.key.sale_type,
+    year: g.key.year,
+    total: sum(from x in g select x.amt)
+  }
+
+let sf = from y in yearly_totals where y.sale_type == "s" && y.year == 2000 select y
+let ss = from y in yearly_totals where y.sale_type == "s" && y.year == 2001 select y
+let cf = from y in yearly_totals where y.sale_type == "c" && y.year == 2000 select y
+let cs = from y in yearly_totals where y.sale_type == "c" && y.year == 2001 select y
+let wf = from y in yearly_totals where y.sale_type == "w" && y.year == 2000 select y
+let ws2 = from y in yearly_totals where y.sale_type == "w" && y.year == 2001 select y
+
+let result =
+  from s_first in sf
+  join s_second in ss on s_first.customer_sk == s_second.customer_sk
+  join c_first in cf on s_first.customer_sk == c_first.customer_sk
+  join c_second in cs on s_first.customer_sk == c_second.customer_sk
+  join w_first in wf on s_first.customer_sk == w_first.customer_sk
+  join w_second in ws2 on s_first.customer_sk == w_second.customer_sk
+  where s_second.total > s_first.total &&
+        c_second.total > c_first.total &&
+        w_second.total > w_first.total
+  join c in customer on s_first.customer_sk == c.c_customer_sk
+  select {
+    customer_id: c.c_customer_id,
+    customer_first_name: c.c_first_name,
+    customer_last_name: c.c_last_name,
+    customer_login: c.c_login
+  }
+json(result)
+
+test "TPCDC Q4 increased spend" {
+  expect result == [
+    {
+      customer_id: "C1",
+      customer_first_name: "Alice",
+      customer_last_name: "Smith",
+      customer_login: "asmith"
+    }
+  ]
+}

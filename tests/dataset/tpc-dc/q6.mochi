@@ -1,0 +1,46 @@
+let customer_address = [
+  {ca_address_sk: 1, ca_state: "TX"},
+  {ca_address_sk: 2, ca_state: "CA"}
+]
+
+let customer = [
+  {c_customer_sk: 1, c_current_addr_sk: 1},
+  {c_customer_sk: 2, c_current_addr_sk: 2}
+]
+
+let item = [
+  {i_item_sk: 1, i_current_price: 60.0},
+  {i_item_sk: 2, i_current_price: 40.0}
+]
+
+let date_dim = [{d_date_sk: 1, d_month_seq: 1, d_year: 1999, d_moy: 5}]
+
+let store_sales = [
+  {ss_customer_sk: 1, ss_item_sk: 1, ss_sold_date_sk: 1},
+  {ss_customer_sk: 2, ss_item_sk: 2, ss_sold_date_sk: 1}
+]
+
+let target_month =
+  from d in date_dim
+  where d.d_year == 1999 && d.d_moy == 5
+  select d.d_month_seq |> first
+
+let avg_price =
+  avg(from i in item select i.i_current_price)
+
+let result =
+  from a in customer_address
+  join c in customer on a.ca_address_sk == c.c_current_addr_sk
+  join s in store_sales on c.c_customer_sk == s.ss_customer_sk
+  join d in date_dim on s.ss_sold_date_sk == d.d_date_sk
+  join i in item on s.ss_item_sk == i.i_item_sk
+  where d.d_month_seq == target_month && i.i_current_price > avg_price
+  group by {state: a.ca_state} into g
+  select {state: g.key.state, cnt: count(g)}
+json(result)
+
+test "TPCDC Q6 count by state" {
+  expect result == [
+    {state: "TX", cnt: 1}
+  ]
+}

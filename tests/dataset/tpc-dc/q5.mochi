@@ -1,0 +1,55 @@
+let store_sales = [
+  {ss_store_sk: 1, ss_sold_date_sk: 1, ss_ext_sales_price: 100.0, ss_net_profit: 10.0}
+]
+let store_returns = [
+  {sr_store_sk: 1, sr_return_amt: 20.0, sr_net_loss: 5.0}
+]
+let store = [{s_store_sk: 1, s_store_name: "Main"}]
+
+let catalog_sales = [
+  {cs_sold_date_sk: 1, cs_call_center_sk: 1, cs_ext_sales_price: 50.0, cs_net_profit: 5.0}
+]
+let catalog_returns = [
+  {cr_call_center_sk: 1, cr_return_amt: 5.0, cr_net_loss: 1.0}
+]
+let catalog_page = []
+
+let web_sales = [
+  {ws_sold_date_sk: 1, ws_web_site_sk: 1, ws_ext_sales_price: 30.0, ws_net_profit: 3.0}
+]
+let web_returns = [
+  {wr_web_site_sk: 1, wr_return_amt: 2.0, wr_net_loss: 0.5}
+]
+let web_site = [{web_site_sk: 1, web_name: "WebSite"}]
+
+let date_dim = [{d_date_sk: 1}]
+
+let store_profit =
+  from s in store
+  let profit =
+    sum(from ss in store_sales where ss.ss_store_sk == s.s_store_sk select ss.ss_net_profit) -
+    sum(from sr in store_returns where sr.sr_store_sk == s.s_store_sk select sr.sr_net_loss)
+  select {channel: "store", net_profit: profit}
+
+let catalog_profit =
+  let profit =
+    sum(from cs in catalog_sales select cs.cs_net_profit) -
+    sum(from cr in catalog_returns select cr.cr_net_loss)
+  select {channel: "catalog", net_profit: profit}
+
+let web_profit =
+  let profit =
+    sum(from ws in web_sales select ws.ws_net_profit) -
+    sum(from wr in web_returns select wr.wr_net_loss)
+  select {channel: "web", net_profit: profit}
+
+let result = store_profit ++ catalog_profit ++ web_profit
+json(result)
+
+test "TPCDC Q5 channel profits" {
+  expect result == [
+    {channel: "store", net_profit: 5.0},
+    {channel: "catalog", net_profit: 4.0},
+    {channel: "web", net_profit: 2.5}
+  ]
+}

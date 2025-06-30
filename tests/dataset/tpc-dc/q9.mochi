@@ -1,0 +1,48 @@
+var store_sales = []
+
+for i in 0..11 {
+  store_sales = store_sales ++ [{ss_quantity: 10, ss_ext_discount_amt: 1.0, ss_net_paid: 5.0}]
+}
+for i in 0..21 {
+  store_sales = store_sales ++ [{ss_quantity: 25, ss_ext_discount_amt: 2.0, ss_net_paid: 6.0}]
+}
+for i in 0..31 {
+  store_sales = store_sales ++ [{ss_quantity: 45, ss_ext_discount_amt: 3.0, ss_net_paid: 7.0}]
+}
+for i in 0..41 {
+  store_sales = store_sales ++ [{ss_quantity: 65, ss_ext_discount_amt: 4.0, ss_net_paid: 8.0}]
+}
+for i in 0..51 {
+  store_sales = store_sales ++ [{ss_quantity: 85, ss_ext_discount_amt: 5.0, ss_net_paid: 9.0}]
+}
+
+let reason = [{r_reason_sk: 1}]
+
+let bucket = fun(min_q: int, max_q: int, threshold: int): float {
+  let cnt = count(from s in store_sales where s.ss_quantity >= min_q && s.ss_quantity <= max_q select s)
+  let disc = avg(from s in store_sales where s.ss_quantity >= min_q && s.ss_quantity <= max_q select s.ss_ext_discount_amt)
+  let net = avg(from s in store_sales where s.ss_quantity >= min_q && s.ss_quantity <= max_q select s.ss_net_paid)
+  if cnt > threshold { disc } else { net }
+}
+
+let result =
+  from r in reason
+  where r.r_reason_sk == 1
+  select {
+    bucket1: bucket(1,20,10),
+    bucket2: bucket(21,40,20),
+    bucket3: bucket(41,60,30),
+    bucket4: bucket(61,80,40),
+    bucket5: bucket(81,100,50)
+  } |> first
+json(result)
+
+test "TPCDC Q9 buckets" {
+  expect result == {
+    bucket1: 1.0,
+    bucket2: 2.0,
+    bucket3: 3.0,
+    bucket4: 4.0,
+    bucket5: 5.0
+  }
+}

@@ -1,0 +1,44 @@
+let customer_demographics = [{cd_demo_sk: 1}]
+let date_dim = [{d_date_sk: 1}]
+let item = [{i_item_sk: 1, i_item_id: "I1"}]
+let promotion = [{p_promo_sk: 1}]
+let store_sales = [
+  {
+    ss_sold_date_sk: 1,
+    ss_item_sk: 1,
+    ss_cdemo_sk: 1,
+    ss_promo_sk: 1,
+    ss_quantity: 10,
+    ss_list_price: 20.0,
+    ss_coupon_amt: 2.0,
+    ss_sales_price: 18.0
+  }
+]
+
+let result =
+  from ss in store_sales
+  join cd in customer_demographics on ss.ss_cdemo_sk == cd.cd_demo_sk
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join it in item on ss.ss_item_sk == it.i_item_sk
+  join p in promotion on ss.ss_promo_sk == p.p_promo_sk
+  group by {i_item_id: it.i_item_id} into g
+  select {
+    i_item_id: g.key.i_item_id,
+    agg1: avg(from x in g select x.ss.ss_quantity),
+    agg2: avg(from x in g select x.ss.ss_list_price),
+    agg3: avg(from x in g select x.ss.ss_coupon_amt),
+    agg4: avg(from x in g select x.ss.ss_sales_price)
+  }
+json(result)
+
+test "TPCDC Q7 averages" {
+  expect result == [
+    {
+      i_item_id: "I1",
+      agg1: 10.0,
+      agg2: 20.0,
+      agg3: 2.0,
+      agg4: 18.0
+    }
+  ]
+}

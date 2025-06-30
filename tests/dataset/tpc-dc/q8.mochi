@@ -1,0 +1,30 @@
+let store_sales = [
+  {ss_store_sk: 1, ss_sold_date_sk: 1, ss_addr_sk: 1, ss_net_profit: 100.0}
+]
+let date_dim = [{d_date_sk: 1}]
+let store = [{s_store_sk: 1, s_store_name: "Main"}]
+let customer_address = [{ca_address_sk: 1, ca_zip: "12345"}]
+let customer = [{c_customer_sk: 1, c_current_addr_sk: 1}]
+
+let zips = ["12345", "23456", "34567", "45678", "56789"]
+
+let eligible_addrs =
+  from ca in customer_address
+  where ca.ca_zip in zips
+  select ca.ca_address_sk
+
+let result =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  join c in customer on ss.ss_addr_sk == c.c_current_addr_sk
+  where c.c_current_addr_sk in eligible_addrs
+  group by {s_store_name: s.s_store_name} into g
+  select {s_store_name: g.key.s_store_name, sum_profit: sum(from x in g select x.ss.ss_net_profit)}
+json(result)
+
+test "TPCDC Q8 net profit" {
+  expect result == [
+    {s_store_name: "Main", sum_profit: 100.0}
+  ]
+}
