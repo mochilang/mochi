@@ -121,66 +121,154 @@ func VisualizeUsage(fn *Function) string {
 	return b.String()
 }
 
-// CompactRegisters remaps registers to reduce the overall count by reusing
-// registers whose lifetimes do not overlap. Parameters keep their original
-// numbers to avoid changing the calling convention.
+// CompactRegisters remaps registers to reduce the overall count while keeping
+// contiguous blocks used by instructions such as MakeList or MakeMap intact.
+// It implements a simple linear-scan allocator extended to handle
+// multi-register groups. Parameter registers keep their original numbers to
+// preserve the calling convention.
 func CompactRegisters(fn *Function) {
 	lt := RegLifetime(fn)
-	type regInfo struct{ r, start, end int }
-	regs := make([]regInfo, 0, fn.NumRegs)
+
+	// build contiguity groups for non-parameter registers
+	ufParent := make([]int, fn.NumRegs)
+	for i := range ufParent {
+		ufParent[i] = i
+	}
+	var find func(int) int
+	find = func(x int) int {
+		if ufParent[x] != x {
+			ufParent[x] = find(ufParent[x])
+		}
+		return ufParent[x]
+	}
+	union := func(a, b int) {
+		pa, pb := find(a), find(b)
+		if pa != pb {
+			ufParent[pb] = pa
+		}
+	}
+	for _, ins := range fn.Code {
+		switch ins.Op {
+		case OpMakeList:
+			for i := 0; i < ins.B-1; i++ {
+				r1 := ins.C + i
+				r2 := ins.C + i + 1
+				if r1 >= fn.NumParams && r2 >= fn.NumParams {
+					union(r1, r2)
+				}
+			}
+		case OpMakeMap:
+			n := ins.B * 2
+			for i := 0; i < n-1; i++ {
+				r1 := ins.C + i
+				r2 := ins.C + i + 1
+				if r1 >= fn.NumParams && r2 >= fn.NumParams {
+					union(r1, r2)
+				}
+			}
+		case OpCall, OpCallV, OpMakeClosure, OpPrintN:
+			for i := 0; i < ins.C-1; i++ {
+				r1 := ins.D + i
+				r2 := ins.D + i + 1
+				if r1 >= fn.NumParams && r2 >= fn.NumParams {
+					union(r1, r2)
+				}
+			}
+		}
+	}
+
+	groupsMap := map[int][]int{}
 	for r := 0; r < fn.NumRegs; r++ {
-		if lt[r].Start == -1 {
+		if r < fn.NumParams {
 			continue
 		}
-		regs = append(regs, regInfo{r: r, start: lt[r].Start, end: lt[r].End})
+		root := find(r)
+		groupsMap[root] = append(groupsMap[root], r)
 	}
-	sort.Slice(regs, func(i, j int) bool { return regs[i].start < regs[j].start })
+
+	type group struct {
+		regs  []int
+		start int
+		end   int
+	}
+	var groups []group
+	for _, regs := range groupsMap {
+		sort.Ints(regs)
+		gs, ge := -1, -1
+		for _, r := range regs {
+			lt := lt[r]
+			if gs == -1 || lt.Start < gs {
+				gs = lt.Start
+			}
+			if lt.End > ge {
+				ge = lt.End
+			}
+		}
+		groups = append(groups, group{regs: regs, start: gs, end: ge})
+	}
+
+	sort.Slice(groups, func(i, j int) bool { return groups[i].start < groups[j].start })
 
 	mapping := make([]int, fn.NumRegs)
 	for i := range mapping {
 		mapping[i] = -1
 	}
 
-	type activeReg struct{ old, end, new int }
-	var active []activeReg
-	var free []int
-	next := fn.NumParams
+	type activeGroup struct {
+		end, start, size int
+		regs             []int
+	}
+	var active []activeGroup
+	type freeRange struct{ start, size int }
+	var free []freeRange
 
-	// Reserve parameter registers
+	next := fn.NumParams
+	// parameters keep their numbers
 	for r := 0; r < fn.NumParams && r < len(mapping); r++ {
 		mapping[r] = r
-		active = append(active, activeReg{old: r, end: lt[r].End, new: r})
 		if next <= r {
 			next = r + 1
 		}
 	}
 
-	for _, reg := range regs {
-		if reg.r < fn.NumParams {
-			continue
-		}
-		// expire old regs
+	for _, g := range groups {
 		tmp := active[:0]
 		for _, a := range active {
-			if a.end < reg.start {
-				free = append(free, a.new)
+			if a.end < g.start {
+				free = append(free, freeRange{start: a.start, size: a.size})
 			} else {
 				tmp = append(tmp, a)
 			}
 		}
 		active = tmp
 
-		// allocate new register
-		var nr int
-		if len(free) > 0 {
-			nr = free[len(free)-1]
-			free = free[:len(free)-1]
-		} else {
-			nr = next
-			next++
+		base := -1
+		idx := -1
+		for i, fr := range free {
+			if fr.size >= len(g.regs) {
+				base = fr.start
+				fr.start += len(g.regs)
+				fr.size -= len(g.regs)
+				if fr.size == 0 {
+					idx = i
+				} else {
+					free[i] = fr
+					idx = -1
+				}
+				break
+			}
 		}
-		mapping[reg.r] = nr
-		active = append(active, activeReg{old: reg.r, end: reg.end, new: nr})
+		if base == -1 {
+			base = next
+			next += len(g.regs)
+		} else if idx >= 0 {
+			free = append(free[:idx], free[idx+1:]...)
+		}
+
+		for i, r := range g.regs {
+			mapping[r] = base + i
+		}
+		active = append(active, activeGroup{end: g.end, start: base, size: len(g.regs), regs: g.regs})
 	}
 
 	remap := func(r int) int {
@@ -194,8 +282,29 @@ func CompactRegisters(fn *Function) {
 		ins := &fn.Code[i]
 		ins.A = remap(ins.A)
 		ins.B = remap(ins.B)
-		ins.C = remap(ins.C)
-		ins.D = remap(ins.D)
+		switch ins.Op {
+		case OpMakeList:
+			start := remap(ins.C)
+			ins.C = start
+			for j := 1; j < ins.B; j++ {
+				_ = remap(ins.C + j)
+			}
+		case OpMakeMap:
+			start := remap(ins.C)
+			ins.C = start
+			for j := 1; j < ins.B*2; j++ {
+				_ = remap(ins.C + j)
+			}
+		case OpCall, OpCallV, OpMakeClosure, OpPrintN:
+			start := remap(ins.D)
+			ins.D = start
+			for j := 0; j < ins.C; j++ {
+				_ = remap(ins.D + j)
+			}
+		default:
+			ins.C = remap(ins.C)
+			ins.D = remap(ins.D)
+		}
 	}
 	fn.NumRegs = next
 }

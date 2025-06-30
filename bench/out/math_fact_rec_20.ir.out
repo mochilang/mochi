@@ -1,58 +1,58 @@
-func main (regs=23)
+func main (regs=10)
   // let n = 20
   Const        r0, 20
+L1:
   // let repeat = 1000
   Const        r1, 1000
   // var last = 0
-  Const        r3, 0
+  Const        r2, 0
   // let start = now()
-  Now          r4
-  // for i in 0..repeat {
-  Const        r6, 0
-L1:
-  Less         r7, r6, r1
-  JumpIfFalse  r7, L0
-  // last = fact_rec(n)
-  Move         r8, r0
-  Call         r3, fact_rec, r8
-  // for i in 0..repeat {
-  Const        r10, 1
-  Add          r6, r6, r10
-  Jump         L1
+  Now          r3
 L0:
+  // for i in 0..repeat {
+  Const        r4, 0
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  // last = fact_rec(n)
+  Move         r1, r0
+  Call         r2, fact_rec, r1
+  // for i in 0..repeat {
+  Const        r5, 1
+  Add          r4, r4, r5
+  Jump         L1
   // let duration = (now() - start) / 1000
-  Now          r12
-  SubInt       r13, r12, r4
-  Const        r14, 1000
-  DivInt       r15, r13, r14
+  Now          r4
+  SubInt       r5, r4, r3
+  Const        r1, 1000
+  DivInt       r3, r5, r1
   // "duration_us": duration,
-  Const        r16, "duration_us"
+  Const        r4, "duration_us"
   // "output": last,
-  Const        r17, "output"
+  Const        r5, "output"
   // "duration_us": duration,
-  Move         r18, r16
-  Move         r19, r15
+  Move         r6, r4
+  Move         r7, r3
   // "output": last,
-  Move         r20, r17
-  Move         r21, r3
+  Move         r8, r5
+  Move         r9, r2
   // json({
-  MakeMap      r22, 2, r18
-  JSON         r22
+  MakeMap      r1, 0, r6
+  JSON         r1
   Return       r0
 
   // fun fact_rec(n: int): int {
-func fact_rec (regs=9)
+func fact_rec (regs=3)
   // if n == 0 {
   Const        r1, 0
   Equal        r2, r0, r1
+L0:
   JumpIfFalse  r2, L0
   // return 1
-  Const        r3, 1
-  Return       r3
-L0:
+  Const        r1, 1
+  Return       r1
   // return n * fact_rec(n - 1)
-  Const        r5, 1
-  Sub          r4, r0, r5
-  Call         r7, fact_rec, r4
-  Mul          r8, r0, r7
-  Return       r8
+  Const        r2, 1
+  Sub          r1, r0, r2
+  Call         r2, fact_rec, r1
+  Mul          r1, r0, r2
+  Return       r1
