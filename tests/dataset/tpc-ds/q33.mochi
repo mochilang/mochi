@@ -33,19 +33,19 @@ let union_sales = concat(
     join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
     join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk
     join i in item on ss.ss_item_sk == i.i_item_sk
-    where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == -5
+    where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
     select {manu: i.i_manufact_id, price: ss.ss_ext_sales_price},
-  from cs in catalog_sales
-    join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
-    join ca in customer_address on cs.cs_bill_addr_sk == ca.ca_address_sk
-    join i in item on cs.cs_item_sk == i.i_item_sk
-    where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == -5
+    from cs in catalog_sales
+      join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+      join ca in customer_address on cs.cs_bill_addr_sk == ca.ca_address_sk
+      join i in item on cs.cs_item_sk == i.i_item_sk
+      where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
     select {manu: i.i_manufact_id, price: cs.cs_ext_sales_price},
-  from ws in web_sales
-    join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
-    join ca in customer_address on ws.ws_bill_addr_sk == ca.ca_address_sk
-    join i in item on ws.ws_item_sk == i.i_item_sk
-    where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == -5
+    from ws in web_sales
+      join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
+      join ca in customer_address on ws.ws_bill_addr_sk == ca.ca_address_sk
+      join i in item on ws.ws_item_sk == i.i_item_sk
+      where i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)
     select {manu: i.i_manufact_id, price: ws.ws_ext_sales_price}
 )
 
@@ -54,7 +54,7 @@ let result =
   group by s.manu into g
   sort by -sum(from x in g select x.price)
   select {i_manufact_id: g.key, total_sales: sum(from x in g select x.price)}
-  |> to_list
+  
 
 json(result)
 

@@ -18,8 +18,8 @@ let web_sales = [
 
 let counties = ["A", "B"]
 
-let result =
-  from county in counties
+var result = []
+for county in counties {
   let ss1 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 1 select s.ss_ext_sales_price)
   let ss2 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 2 select s.ss_ext_sales_price)
   let ss3 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 3 select s.ss_ext_sales_price)
@@ -30,16 +30,17 @@ let result =
   let store_g1 = ss2 / ss1
   let web_g2 = ws3 / ws2
   let store_g2 = ss3 / ss2
-  where web_g1 > store_g1 && web_g2 > store_g2
-  select {
-    ca_county: county,
-    d_year: 2000,
-    web_q1_q2_increase: web_g1,
-    store_q1_q2_increase: store_g1,
-    web_q2_q3_increase: web_g2,
-    store_q2_q3_increase: store_g2
+  if web_g1 > store_g1 && web_g2 > store_g2 {
+    result = append(result, {
+      ca_county: county,
+      d_year: 2000,
+      web_q1_q2_increase: web_g1,
+      store_q1_q2_increase: store_g1,
+      web_q2_q3_increase: web_g2,
+      store_q2_q3_increase: store_g2
+    })
   }
-  |> to_list
+}
 
 json(result)
 

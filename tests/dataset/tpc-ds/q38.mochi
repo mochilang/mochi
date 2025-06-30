@@ -16,9 +16,19 @@ let web_sales = [
   {ws_bill_customer_sk: 1, d_month_seq: 1206}
 ]
 
-let store_ids = from s in store_sales where s.d_month_seq >= 1200 && s.d_month_seq <= 1211 select s.ss_customer_sk |> to_list |> distinct
-let catalog_ids = from c in catalog_sales where c.d_month_seq >= 1200 && c.d_month_seq <= 1211 select c.cs_bill_customer_sk |> to_list |> distinct
-let web_ids = from w in web_sales where w.d_month_seq >= 1200 && w.d_month_seq <= 1211 select w.ws_bill_customer_sk |> to_list |> distinct
+fun distinct(xs: list<any>): list<any> {
+  var out = []
+  for x in xs {
+    if !contains(out, x) {
+      out = append(out, x)
+    }
+  }
+  return out
+}
+
+let store_ids = distinct(from s in store_sales where s.d_month_seq >= 1200 && s.d_month_seq <= 1211 select s.ss_customer_sk)
+let catalog_ids = distinct(from c in catalog_sales where c.d_month_seq >= 1200 && c.d_month_seq <= 1211 select c.cs_bill_customer_sk)
+let web_ids = distinct(from w in web_sales where w.d_month_seq >= 1200 && w.d_month_seq <= 1211 select w.ws_bill_customer_sk)
 
 let hot = store_ids intersect catalog_ids intersect web_ids
 let result = len(hot)

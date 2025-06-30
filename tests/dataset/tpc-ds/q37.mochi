@@ -25,7 +25,7 @@ let result =
   group by {id: i.i_item_id, desc: i.i_item_desc, price: i.i_current_price} into g
   sort by g.key.id
   select {i_item_id: g.key.id, i_item_desc: g.key.desc, i_current_price: g.key.price}
-  |> to_list
+  
 
 json(result)
 

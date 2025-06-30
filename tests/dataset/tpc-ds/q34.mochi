@@ -60,7 +60,7 @@ let result =
   where dn1.cnt >= 15 && dn1.cnt <= 20
   sort by c.c_last_name
   select {c_last_name: c.c_last_name, c_first_name: c.c_first_name, c_salutation: c.c_salutation, c_preferred_cust_flag: c.c_preferred_cust_flag, ss_ticket_number: dn1.ss_ticket_number, cnt: dn1.cnt}
-  |> to_list
+  
 
 json(result)
 

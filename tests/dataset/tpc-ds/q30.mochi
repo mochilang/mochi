@@ -46,7 +46,6 @@ let result =
     c_last_name: c.c_last_name,
     ctr_total_return: ctr.ctr_total_return
   }
-  |> to_list
 
 json(result)
 
