@@ -1334,11 +1334,23 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("sum expects list")
 			}
-			var sum float64
+			var sumF float64
+			var sumI int
+			allInt := true
 			for _, v := range lst.List {
-				sum += toFloat(v)
+				if v.Tag == ValueInt {
+					sumI += v.Int
+				} else {
+					allInt = false
+					sumF += toFloat(v)
+				}
 			}
-			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: sum}
+			if allInt {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: sumI}
+			} else {
+				sumF += float64(sumI)
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: sumF}
+			}
 		case OpMin:
 			lst := fr.regs[ins.B]
 			if lst.Tag == ValueMap {
