@@ -9,12 +9,14 @@ let store = [
 ]
 
 let date_dim = [
-  { d_date_sk: 1, d_year: 2001, d_qoy: 1, d_moy: 1, d_month_seq: 1200 }
+  { d_date_sk: 1, d_year: 2001, d_qoy: 1, d_moy: 1, d_month_seq: 1200 },
+  { d_date_sk: 2, d_year: 2000, d_qoy: 4, d_moy: 12, d_month_seq: 1190 }
 ]
 
 let store_sales = [
   { ss_item_sk: 1, ss_sold_date_sk: 1, ss_store_sk: 1, ss_sales_price: 10.0, ss_quantity: 1 },
-  { ss_item_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_sales_price: 5.0, ss_quantity: 3 }
+  { ss_item_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_sales_price: 5.0, ss_quantity: 3 },
+  { ss_item_sk: 2, ss_sold_date_sk: 2, ss_store_sk: 1, ss_sales_price: 8.0, ss_quantity: 2 }
 ]
 
 let dw1 =

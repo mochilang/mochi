@@ -11,7 +11,8 @@ let item = [
 
 let date_dim = [
   { d_date_sk: 1, d_month_seq: 1176 },
-  { d_date_sk: 2, d_month_seq: 1176 }
+  { d_date_sk: 2, d_month_seq: 1176 },
+  { d_date_sk: 3, d_month_seq: 1175 }
 ]
 
 let store_sales = [
@@ -19,7 +20,8 @@ let store_sales = [
   { ss_store_sk: 1, ss_item_sk: 1, ss_sold_date_sk: 2, ss_sales_price: 50.0 },
   { ss_store_sk: 1, ss_item_sk: 2, ss_sold_date_sk: 1, ss_sales_price: 5.0 },
   { ss_store_sk: 1, ss_item_sk: 3, ss_sold_date_sk: 1, ss_sales_price: 2.0 },
-  { ss_store_sk: 1, ss_item_sk: 3, ss_sold_date_sk: 2, ss_sales_price: 3.0 }
+  { ss_store_sk: 1, ss_item_sk: 3, ss_sold_date_sk: 2, ss_sales_price: 3.0 },
+  { ss_store_sk: 1, ss_item_sk: 1, ss_sold_date_sk: 3, ss_sales_price: 20.0 }
 ]
 
 let sales =

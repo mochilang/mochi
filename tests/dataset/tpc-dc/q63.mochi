@@ -7,21 +7,26 @@ let store_sales = [
   { ss_item_sk: 1, ss_sold_date_sk: 1, ss_store_sk: 1, ss_sales_price: 10.0 },
   { ss_item_sk: 1, ss_sold_date_sk: 2, ss_store_sk: 1, ss_sales_price: 20.0 },
   { ss_item_sk: 1, ss_sold_date_sk: 3, ss_store_sk: 1, ss_sales_price: 10.0 },
-  { ss_item_sk: 1, ss_sold_date_sk: 4, ss_store_sk: 1, ss_sales_price: 20.0 }
+  { ss_item_sk: 1, ss_sold_date_sk: 4, ss_store_sk: 1, ss_sales_price: 20.0 },
+  // outside the reporting period
+  { ss_item_sk: 1, ss_sold_date_sk: 5, ss_store_sk: 1, ss_sales_price: 30.0 }
 ]
 
 let date_dim = [
   { d_date_sk: 1, d_month_seq: 1200, d_moy: 1 },
   { d_date_sk: 2, d_month_seq: 1201, d_moy: 2 },
   { d_date_sk: 3, d_month_seq: 1202, d_moy: 3 },
-  { d_date_sk: 4, d_month_seq: 1203, d_moy: 4 }
+  { d_date_sk: 4, d_month_seq: 1203, d_moy: 4 },
+  // month before reporting period
+  { d_date_sk: 5, d_month_seq: 1199, d_moy: 12 }
 ]
 
 let store = [
   { s_store_sk: 1 }
 ]
 
-let tmp1 =
+// Calculate monthly sales per manager
+let monthly =
   from ss in store_sales
   join i in item on ss.ss_item_sk == i.i_item_sk
   join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
@@ -30,15 +35,27 @@ let tmp1 =
   group by {i_manager_id: i.i_manager_id, d_moy: d.d_moy} into g
   select {
     i_manager_id: g.key.i_manager_id,
-    sum_sales: sum(from x in g select x.ss_sales_price),
-    avg_monthly_sales: avg(from x in g select x.ss_sales_price)
+    d_moy: g.key.d_moy,
+    sum_sales: sum(from x in g select x.ss_sales_price)
+  }
+
+// Compute average monthly sales per manager
+let monthly_with_avg =
+  from m in monthly
+  group by {i_manager_id: m.i_manager_id} into g
+  from m in g
+  select {
+    i_manager_id: m.i_manager_id,
+    sum_sales: m.sum_sales,
+    avg_monthly_sales: avg(from x in g select x.sum_sales)
   }
 
 let result =
-  from r in tmp1
-  where abs(r.sum_sales - r.avg_monthly_sales) / r.avg_monthly_sales > 0.1
+  from r in monthly_with_avg
+  where r.avg_monthly_sales > 0 &&
+        abs(r.sum_sales - r.avg_monthly_sales) / r.avg_monthly_sales > 0.1
   sort by r.i_manager_id, r.avg_monthly_sales, r.sum_sales
-  select r
+  select { i_manager_id: r.i_manager_id, sum_sales: r.sum_sales, avg_monthly_sales: r.avg_monthly_sales }
 
 json(result)
 
