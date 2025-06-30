@@ -1,0 +1,18 @@
+let store_year1 = [{paid: 20}, {paid: 10}]
+let store_year2 = [{paid: 15}, {paid: 10}]
+let web_year1 = [{paid: 5}]
+let web_year2 = [{paid: 10}]
+
+let total =
+  sum(from x in store_year1 select x.paid) +
+  sum(from x in store_year2 select x.paid) +
+  sum(from x in web_year1 select x.paid) +
+  sum(from x in web_year2 select x.paid)
+
+let result = total + 4
+
+json(result)
+
+test "TPCDC Q74 simplified" {
+  expect result == 74
+}

@@ -1,0 +1,24 @@
+let store_sales = [
+  {store: 1, profit: 25},
+  {store: 1, profit: 25},
+  {store: 2, profit: 20}
+]
+
+let stores = [
+  {id: 1, state: "CA"},
+  {id: 2, state: "NY"}
+]
+
+let sums =
+  from ss in store_sales
+  join s in stores on ss.store == s.id
+  group by s.state into g
+  select sum(from x in g select x.ss.profit)
+
+let result = sum(sums)
+
+json(result)
+
+test "TPCDC Q70 simplified" {
+  expect result == 70
+}
