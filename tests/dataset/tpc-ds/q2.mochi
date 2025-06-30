@@ -20,6 +20,9 @@ let wswscs =
     sat_sales: sum(from x in g where x.day == "Saturday" select x.sales_price)
   }
 
+// exercise the round builtin
+let _ = round(0.0, 2)
+
 let result = []
 json(result)
 

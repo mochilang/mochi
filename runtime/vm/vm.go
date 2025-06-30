@@ -125,6 +125,7 @@ const (
 	OpIntersect
 	OpSort
 	OpExpect
+	OpRound
 )
 
 func (op Op) String() string {
@@ -275,6 +276,8 @@ func (op Op) String() string {
 		return "Sort"
 	case OpExpect:
 		return "Expect"
+	case OpRound:
+		return "Round"
 	default:
 		return "?"
 	}
@@ -1454,6 +1457,23 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				vals[i] = m.Map[k]
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: vals}
+		case OpRound:
+			val := fr.regs[ins.B]
+			digitsVal := fr.regs[ins.C]
+			d := 0
+			if digitsVal.Tag == ValueInt {
+				d = digitsVal.Int
+			} else if digitsVal.Tag != ValueNull {
+				d = int(toFloat(digitsVal))
+			}
+			f := toFloat(val)
+			factor := math.Pow(10, float64(d))
+			rounded := math.Round(f*factor) / factor
+			if d == 0 && val.Tag == ValueInt {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(rounded)}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: rounded}
+			}
 		case OpCast:
 			val := valueToAny(fr.regs[ins.B])
 			typ := m.prog.Types[ins.C]
@@ -2810,6 +2830,15 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpMax, A: dst, B: arg})
+			return dst
+		case "round":
+			val := fc.compileExpr(p.Call.Args[0])
+			digits := fc.constReg(p.Pos, Value{Tag: ValueInt, Int: 0})
+			if len(p.Call.Args) > 1 {
+				digits = fc.compileExpr(p.Call.Args[1])
+			}
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpRound, A: dst, B: val, C: digits})
 			return dst
 		case "values":
 			arg := fc.compileExpr(p.Call.Args[0])
@@ -6049,6 +6078,25 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			out = append(out, lst...)
 		}
 		return Value{Tag: ValueList, List: out}, true
+	case "round":
+		if len(args) < 1 || len(args) > 2 {
+			return Value{}, false
+		}
+		f := toFloat(args[0])
+		d := 0
+		if len(args) == 2 {
+			if args[1].Tag == ValueInt {
+				d = args[1].Int
+			} else {
+				d = int(toFloat(args[1]))
+			}
+		}
+		factor := math.Pow(10, float64(d))
+		rounded := math.Round(f*factor) / factor
+		if d == 0 && args[0].Tag == ValueInt {
+			return Value{Tag: ValueInt, Int: int(rounded)}, true
+		}
+		return Value{Tag: ValueFloat, Float: rounded}, true
 	case "values":
 		if len(args) != 1 {
 			return Value{}, false

@@ -1,4 +1,4 @@
-func main (regs=198)
+func main (regs=199)
   // let web_sales = []
   Const        r0, []
   // let date_dim = []
@@ -295,10 +295,10 @@ L23:
   Jump         L26
 L4:
   // let result = []
-  Move         r195, r0
+  Move         r196, r0
   // json(result)
-  JSON         r195
+  JSON         r196
   // expect result == []
-  Equal        r197, r195, r195
-  Expect       r197
+  Equal        r198, r196, r196
+  Expect       r198
   Return       r0

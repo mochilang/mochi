@@ -478,6 +478,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: AnyType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("round", FuncType{
+		Params: []Type{FloatType{}, IntType{}},
+		Return: FloatType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("reduce", FuncType{
 		Params: []Type{AnyType{}, AnyType{}, AnyType{}},
 		Return: AnyType{},
@@ -2167,6 +2172,7 @@ var builtinArity = map[string]int{
 	"keys":      1,
 	"values":    1,
 	"reduce":    3,
+	"round":     2,
 	"append":    2,
 	"push":      2,
 	"substring": 3,
@@ -2328,6 +2334,21 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 				if _, ok := a.(AnyType); !ok {
 					return errArgTypeMismatch(pos, i, IntType{}, a)
 				}
+			}
+		}
+		return nil
+	case "round":
+		if len(args) != 2 {
+			return errArgCount(pos, name, 2, len(args))
+		}
+		if !isNumeric(args[0]) {
+			if _, ok := args[0].(AnyType); !ok {
+				return fmt.Errorf("round() expects numeric value")
+			}
+		}
+		if _, ok := args[1].(IntType); !ok {
+			if _, ok := args[1].(AnyType); !ok {
+				return errArgTypeMismatch(pos, 1, IntType{}, args[1])
 			}
 		}
 		return nil
