@@ -1170,6 +1170,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if src.Tag == ValueMap {
 				if flag, ok := src.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					src = src.Map["items"]
+				} else {
+					keys := make([]string, 0, len(src.Map))
+					for k := range src.Map {
+						keys = append(keys, k)
+					}
+					sort.Strings(keys)
+					out := make([]Value, len(keys))
+					for i, k := range keys {
+						out[i] = src.Map[k]
+					}
+					fr.regs[ins.A] = Value{Tag: ValueList, List: out}
+					break
 				}
 			}
 			if src.Tag != ValueList {
