@@ -33,7 +33,7 @@ let records =
     w_state: w.state,
     i_item_id: i.item_id,
     sold_date: d.date,
-    net: cs.price - (cr?refunded ?? 0.0)
+    net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
   }
 
 let result =
@@ -42,8 +42,8 @@ let result =
   select {
     w_state: g.key.w_state,
     i_item_id: g.key.i_item_id,
-    sales_before: sum(from x in g select x.sold_date < sales_date ? x.net : 0.0),
-    sales_after: sum(from x in g select x.sold_date >= sales_date ? x.net : 0.0)
+    sales_before: sum(from x in g select if x.sold_date < sales_date { x.net } else { 0.0 }),
+    sales_after: sum(from x in g select if x.sold_date >= sales_date { x.net } else { 0.0 })
   }
 
 json(result)

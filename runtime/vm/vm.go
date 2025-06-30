@@ -79,7 +79,6 @@ const (
 	OpStr
 	OpUpper
 	OpInput
-	OpFirst
 	OpCount
 	OpExists
 	OpAvg
@@ -202,8 +201,6 @@ func (op Op) String() string {
 		return "Upper"
 	case OpInput:
 		return "Input"
-	case OpFirst:
-		return "First"
 	case OpCount:
 		return "Count"
 	case OpExists:
@@ -441,8 +438,6 @@ func (p *Program) Disassemble(src string) string {
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpInput:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
-			case OpFirst:
-				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpIterPrep:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpCount:
@@ -1109,13 +1104,6 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(fmt.Errorf("upper expects string"), trace, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToUpper(b.Str)}
-		case OpFirst:
-			list := fr.regs[ins.B]
-			if list.Tag != ValueList || len(list.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: ValueNull}
-			} else {
-				fr.regs[ins.A] = list.List[0]
-			}
 		case OpInput:
 			line, err := m.reader.ReadString('\n')
 			if err != nil && err != io.EOF {
