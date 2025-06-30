@@ -1,7 +1,37 @@
-let t = [{id: 1, val: 78}]
-let result = from r in t select r.val |> first
+let ss = [
+  { ss_sold_year: 1998, ss_item_sk: 1, ss_customer_sk: 1, ss_qty: 10, ss_wc: 50.0, ss_sp: 100.0 }
+]
+
+let ws = [
+  { ws_sold_year: 1998, ws_item_sk: 1, ws_customer_sk: 1, ws_qty: 5, ws_wc: 25.0, ws_sp: 50.0 }
+]
+
+let cs = [
+  { cs_sold_year: 1998, cs_item_sk: 1, cs_customer_sk: 1, cs_qty: 3, cs_wc: 15.0, cs_sp: 30.0 }
+]
+
+let result =
+  from s in ss
+  left join w in ws on w.ws_sold_year == s.ss_sold_year && w.ws_item_sk == s.ss_item_sk && w.ws_customer_sk == s.ss_customer_sk
+  left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
+  where (coalesce(w.ws_qty,0) > 0 || coalesce(c.cs_qty,0) > 0) && s.ss_sold_year == 1998
+  select {
+    ss_sold_year: s.ss_sold_year,
+    ss_item_sk: s.ss_item_sk,
+    ss_customer_sk: s.ss_customer_sk,
+    ratio: s.ss_qty / (coalesce(w.ws_qty,0) + coalesce(c.cs_qty,0)),
+    store_qty: s.ss_qty,
+    store_wholesale_cost: s.ss_wc,
+    store_sales_price: s.ss_sp,
+    other_chan_qty: coalesce(w.ws_qty,0) + coalesce(c.cs_qty,0),
+    other_chan_wholesale_cost: coalesce(w.ws_wc,0) + coalesce(c.cs_wc,0),
+    other_chan_sales_price: coalesce(w.ws_sp,0) + coalesce(c.cs_sp,0)
+  }
+
 json(result)
 
-test "TPCDS Q78 placeholder" {
-  expect result == 78
+test "TPCDS Q78 simplified" {
+  expect result == [
+    { ss_sold_year: 1998, ss_item_sk: 1, ss_customer_sk: 1, ratio: 1.25, store_qty: 10, store_wholesale_cost: 50.0, store_sales_price: 100.0, other_chan_qty: 8, other_chan_wholesale_cost: 40.0, other_chan_sales_price: 80.0 }
+  ]
 }
