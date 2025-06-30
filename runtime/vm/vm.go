@@ -803,7 +803,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			case ValueStr:
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len([]rune(v.Str))}
 			case ValueMap:
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(v.Map)}
+				if flag, ok := v.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					items := v.Map["items"]
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(items.List)}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(v.Map)}
+				}
 			case ValueNull:
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
 			default:
