@@ -1135,8 +1135,6 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 		op := part.Op
 		if part.Op == "union" && part.All {
 			op = "union_all"
-		} else if part.Op == "++" {
-			op = "union_all"
 		}
 		operators = append(operators, token{part.Pos, op})
 	}
@@ -1148,7 +1146,7 @@ func checkBinaryExpr(b *parser.BinaryExpr, env *Env) (Type, error) {
 		{"==", "!=", "in"},
 		{"&&"},
 		{"||"},
-		{"union", "union_all", "except", "intersect", "++"},
+		{"union", "union_all", "except", "intersect"},
 	} {
 		for i := 0; i < len(operators); {
 			op := operators[i].op
@@ -1181,7 +1179,7 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 	if _, ok := right.(AnyType); ok {
 		return AnyType{}, nil
 	}
-	if op == "+" || op == "union" || op == "union_all" || op == "except" || op == "intersect" || op == "++" {
+	if op == "+" || op == "union" || op == "union_all" || op == "except" || op == "intersect" {
 		if llist, ok := left.(ListType); ok {
 			if rlist, ok := right.(ListType); ok {
 				if !unify(llist.Elem, rlist.Elem, nil) {
