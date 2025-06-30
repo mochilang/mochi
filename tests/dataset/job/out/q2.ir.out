@@ -1,4 +1,4 @@
-func main (regs=120)
+func main (regs=119)
   // let company_name = [
   Const        r0, [{"country_code": "[de]", "id": 1}, {"country_code": "[us]", "id": 2}]
   // let keyword = [
@@ -23,11 +23,13 @@ func main (regs=120)
   // from cn in company_name
   IterPrep     r11, r0
   Len          r12, r11
-  Const        r13, 0
-L12:
+  Const        r14, 0
+  Move         r13, r14
+L11:
   LessInt      r15, r13, r12
   JumpIfFalse  r15, L0
-  Index        r17, r11, r13
+  Index        r16, r11, r13
+  Move         r17, r16
   // join mc in movie_companies on mc.company_id == cn.id
   IterPrep     r18, r2
   Len          r19, r18
@@ -43,11 +45,13 @@ L12:
   // select t.title
   Const        r26, "title"
   // join mc in movie_companies on mc.company_id == cn.id
-  Const        r27, 0
-L11:
+  Const        r28, 0
+  Move         r27, r28
+L10:
   LessInt      r29, r27, r19
   JumpIfFalse  r29, L1
-  Index        r31, r18, r27
+  Index        r30, r18, r27
+  Move         r31, r30
   Const        r32, "company_id"
   Index        r33, r31, r32
   Const        r34, "id"
@@ -69,11 +73,13 @@ L11:
   // select t.title
   Const        r45, "title"
   // join t in title on mc.movie_id == t.id
-  Const        r46, 0
-L10:
+  Const        r47, 0
+  Move         r46, r47
+L9:
   LessInt      r48, r46, r38
   JumpIfFalse  r48, L2
-  Index        r50, r37, r46
+  Index        r49, r37, r46
+  Move         r50, r49
   Const        r51, "movie_id"
   Index        r52, r31, r51
   Const        r53, "id"
@@ -95,11 +101,13 @@ L10:
   // select t.title
   Const        r64, "title"
   // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r65, 0
-L9:
+  Const        r66, 0
+  Move         r65, r66
+L8:
   LessInt      r67, r65, r57
   JumpIfFalse  r67, L3
-  Index        r69, r56, r65
+  Index        r68, r56, r65
+  Move         r69, r68
   Const        r70, "movie_id"
   Index        r71, r69, r70
   Const        r72, "id"
@@ -121,11 +129,13 @@ L9:
   // select t.title
   Const        r83, "title"
   // join k in keyword on mk.keyword_id == k.id
-  Const        r84, 0
-L8:
+  Const        r85, 0
+  Move         r84, r85
+L7:
   LessInt      r86, r84, r76
   JumpIfFalse  r86, L4
-  Index        r88, r75, r84
+  Index        r87, r75, r84
+  Move         r88, r87
   Const        r89, "keyword_id"
   Index        r90, r69, r89
   Const        r91, "id"
@@ -151,51 +161,51 @@ L8:
   // where cn.country_code == "[de]" &&
   Move         r107, r97
   JumpIfFalse  r107, L6
-L6:
+  Move         r107, r101
   // k.keyword == "character-name-in-title" &&
-  Move         r108, r101
-  JumpIfFalse  r108, L7
-  Move         r108, r106
-L7:
+  JumpIfFalse  r107, L6
+  Move         r107, r106
+L6:
   // where cn.country_code == "[de]" &&
-  JumpIfFalse  r108, L5
+  JumpIfFalse  r107, L5
   // select t.title
-  Const        r109, "title"
-  Index        r110, r50, r109
+  Const        r108, "title"
+  Index        r109, r50, r108
   // from cn in company_name
-  Append       r5, r5, r110
+  Append       r110, r5, r109
+  Move         r5, r110
 L5:
   // join k in keyword on mk.keyword_id == k.id
-  Const        r112, 1
-  Add          r84, r84, r112
-  Jump         L8
+  Const        r111, 1
+  Add          r84, r84, r111
+  Jump         L7
 L4:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r113, 1
-  Add          r65, r65, r113
-  Jump         L9
+  Const        r112, 1
+  Add          r65, r65, r112
+  Jump         L8
 L3:
   // join t in title on mc.movie_id == t.id
-  Const        r114, 1
-  Add          r46, r46, r114
-  Jump         L10
+  Const        r113, 1
+  Add          r46, r46, r113
+  Jump         L9
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
-  Const        r115, 1
-  Add          r27, r27, r115
-  Jump         L11
+  Const        r114, 1
+  Add          r27, r27, r114
+  Jump         L10
 L1:
   // from cn in company_name
-  Const        r116, 1
-  AddInt       r13, r13, r116
-  Jump         L12
+  Const        r115, 1
+  AddInt       r13, r13, r115
+  Jump         L11
 L0:
   // let result = min(titles)
-  Min          r117, r5
+  Min          r116, r5
   // json(result)
-  JSON         r117
+  JSON         r116
   // expect result == "Der Film"
-  Const        r118, "Der Film"
-  Equal        r119, r117, r118
-  Expect       r119
+  Const        r117, "Der Film"
+  Equal        r118, r116, r117
+  Expect       r118
   Return       r0

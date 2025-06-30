@@ -1,4 +1,4 @@
-func main (regs=240)
+func main (regs=238)
   // let company_type = [
   Const        r0, [{"id": 1, "kind": "production companies"}, {"id": 2, "kind": "distributors"}]
   // let info_type = [
@@ -33,11 +33,13 @@ func main (regs=240)
   // from ct in company_type
   IterPrep     r20, r0
   Len          r21, r20
-  Const        r22, 0
-L13:
+  Const        r23, 0
+  Move         r22, r23
+L12:
   LessInt      r24, r22, r21
   JumpIfFalse  r24, L0
-  Index        r26, r20, r22
+  Index        r25, r20, r22
+  Move         r26, r25
   // join mc in movie_companies on ct.id == mc.company_type_id
   IterPrep     r27, r3
   Len          r28, r27
@@ -63,11 +65,13 @@ L13:
   Const        r43, "year"
   Const        r44, "production_year"
   // join mc in movie_companies on ct.id == mc.company_type_id
-  Const        r45, 0
-L12:
+  Const        r46, 0
+  Move         r45, r46
+L11:
   LessInt      r47, r45, r28
   JumpIfFalse  r47, L1
-  Index        r49, r27, r45
+  Index        r48, r27, r45
+  Move         r49, r48
   Const        r50, "id"
   Index        r51, r26, r50
   Const        r52, "company_type_id"
@@ -99,11 +103,13 @@ L12:
   Const        r71, "year"
   Const        r72, "production_year"
   // join t in title on t.id == mc.movie_id
-  Const        r73, 0
-L11:
+  Const        r74, 0
+  Move         r73, r74
+L10:
   LessInt      r75, r73, r56
   JumpIfFalse  r75, L2
-  Index        r77, r55, r73
+  Index        r76, r55, r73
+  Move         r77, r76
   Const        r78, "id"
   Index        r79, r77, r78
   Const        r80, "movie_id"
@@ -135,11 +141,13 @@ L11:
   Const        r99, "year"
   Const        r100, "production_year"
   // join mi in movie_info_idx on mi.movie_id == t.id
-  Const        r101, 0
-L10:
+  Const        r102, 0
+  Move         r101, r102
+L9:
   LessInt      r103, r101, r84
   JumpIfFalse  r103, L3
-  Index        r105, r83, r101
+  Index        r104, r83, r101
+  Move         r105, r104
   Const        r106, "movie_id"
   Index        r107, r105, r106
   Const        r108, "id"
@@ -171,11 +179,13 @@ L10:
   Const        r127, "year"
   Const        r128, "production_year"
   // join it in info_type on it.id == mi.info_type_id
-  Const        r129, 0
-L9:
+  Const        r130, 0
+  Move         r129, r130
+L8:
   LessInt      r131, r129, r112
   JumpIfFalse  r131, L4
-  Index        r133, r111, r129
+  Index        r132, r111, r129
+  Move         r133, r132
   Const        r134, "id"
   Index        r135, r133, r134
   Const        r136, "info_type_id"
@@ -195,150 +205,166 @@ L9:
   // where ct.kind == "production companies" &&
   Move         r147, r142
   JumpIfFalse  r147, L6
-L6:
+  Move         r147, r146
   // it.info == "top 250 rank" &&
-  Move         r148, r146
-  JumpIfFalse  r148, L7
-  Const        r149, "note"
-  Index        r150, r49, r149
+  JumpIfFalse  r147, L6
+  Const        r148, "note"
+  Index        r149, r49, r148
   // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
-  Const        r151, "(as Metro-Goldwyn-Mayer Pictures)"
-  In           r152, r151, r150
-  Not          r154, r152
-L7:
-  JumpIfFalse  r154, L8
-  Const        r155, "note"
-  Index        r156, r49, r155
+  Const        r150, "(as Metro-Goldwyn-Mayer Pictures)"
+  In           r151, r150, r149
+  Not          r152, r151
+  // it.info == "top 250 rank" &&
+  Move         r147, r152
+  // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
+  JumpIfFalse  r147, L6
+  Const        r153, "note"
+  Index        r154, r49, r153
   // (mc.note.contains("(co-production)") || mc.note.contains("(presents)"))
-  Const        r157, "(co-production)"
-  In           r159, r157, r156
-  JumpIfTrue   r159, L8
-  Const        r160, "note"
-  Index        r161, r49, r160
-  Const        r162, "(presents)"
-  In           r154, r162, r161
-L8:
+  Const        r155, "(co-production)"
+  In           r156, r155, r154
+  Move         r157, r156
+  JumpIfTrue   r157, L7
+  Const        r158, "note"
+  Index        r159, r49, r158
+  Const        r160, "(presents)"
+  In           r161, r160, r159
+  Move         r157, r161
+L7:
+  // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
+  Move         r147, r157
+L6:
   // where ct.kind == "production companies" &&
-  JumpIfFalse  r154, L5
+  JumpIfFalse  r147, L5
   // select { note: mc.note, title: t.title, year: t.production_year }
-  Const        r164, "note"
-  Const        r165, "note"
-  Index        r166, r49, r165
-  Const        r167, "title"
-  Const        r168, "title"
-  Index        r169, r77, r168
-  Const        r170, "year"
-  Const        r171, "production_year"
-  Index        r172, r77, r171
-  Move         r173, r164
-  Move         r174, r166
-  Move         r175, r167
-  Move         r176, r169
-  Move         r177, r170
-  Move         r178, r172
-  MakeMap      r179, 3, r173
+  Const        r162, "note"
+  Const        r163, "note"
+  Index        r164, r49, r163
+  Const        r165, "title"
+  Const        r166, "title"
+  Index        r167, r77, r166
+  Const        r168, "year"
+  Const        r169, "production_year"
+  Index        r170, r77, r169
+  Move         r171, r162
+  Move         r172, r164
+  Move         r173, r165
+  Move         r174, r167
+  Move         r175, r168
+  Move         r176, r170
+  MakeMap      r177, 3, r171
   // from ct in company_type
-  Append       r5, r5, r179
+  Append       r178, r5, r177
+  Move         r5, r178
 L5:
   // join it in info_type on it.id == mi.info_type_id
-  Const        r181, 1
-  Add          r129, r129, r181
-  Jump         L9
+  Const        r179, 1
+  Add          r129, r129, r179
+  Jump         L8
 L4:
   // join mi in movie_info_idx on mi.movie_id == t.id
-  Const        r182, 1
-  Add          r101, r101, r182
-  Jump         L10
+  Const        r180, 1
+  Add          r101, r101, r180
+  Jump         L9
 L3:
   // join t in title on t.id == mc.movie_id
-  Const        r183, 1
-  Add          r73, r73, r183
-  Jump         L11
+  Const        r181, 1
+  Add          r73, r73, r181
+  Jump         L10
 L2:
   // join mc in movie_companies on ct.id == mc.company_type_id
-  Const        r184, 1
-  Add          r45, r45, r184
-  Jump         L12
+  Const        r182, 1
+  Add          r45, r45, r182
+  Jump         L11
 L1:
   // from ct in company_type
-  Const        r185, 1
-  AddInt       r22, r22, r185
-  Jump         L13
+  Const        r183, 1
+  AddInt       r22, r22, r183
+  Jump         L12
 L0:
   // production_note: min(from r in filtered select r.note),
-  Const        r186, "production_note"
-  Const        r187, []
-  Const        r188, "note"
-  IterPrep     r189, r5
-  Len          r190, r189
-  Const        r191, 0
-L15:
-  LessInt      r193, r191, r190
-  JumpIfFalse  r193, L14
-  Index        r195, r189, r191
-  Const        r196, "note"
-  Index        r197, r195, r196
-  Append       r187, r187, r197
-  Const        r199, 1
-  AddInt       r191, r191, r199
-  Jump         L15
+  Const        r184, "production_note"
+  Const        r185, []
+  Const        r186, "note"
+  IterPrep     r187, r5
+  Len          r188, r187
+  Const        r190, 0
+  Move         r189, r190
 L14:
-  Min          r200, r187
+  LessInt      r191, r189, r188
+  JumpIfFalse  r191, L13
+  Index        r192, r187, r189
+  Move         r193, r192
+  Const        r194, "note"
+  Index        r195, r193, r194
+  Append       r196, r185, r195
+  Move         r185, r196
+  Const        r197, 1
+  AddInt       r189, r189, r197
+  Jump         L14
+L13:
+  Min          r198, r185
   // movie_title: min(from r in filtered select r.title),
-  Const        r201, "movie_title"
-  Const        r202, []
-  Const        r203, "title"
-  IterPrep     r204, r5
-  Len          r205, r204
-  Const        r206, 0
-L17:
-  LessInt      r208, r206, r205
-  JumpIfFalse  r208, L16
-  Index        r195, r204, r206
-  Const        r210, "title"
-  Index        r211, r195, r210
-  Append       r202, r202, r211
-  Const        r213, 1
-  AddInt       r206, r206, r213
-  Jump         L17
+  Const        r199, "movie_title"
+  Const        r200, []
+  Const        r201, "title"
+  IterPrep     r202, r5
+  Len          r203, r202
+  Const        r205, 0
+  Move         r204, r205
 L16:
-  Min          r214, r202
+  LessInt      r206, r204, r203
+  JumpIfFalse  r206, L15
+  Index        r207, r202, r204
+  Move         r193, r207
+  Const        r208, "title"
+  Index        r209, r193, r208
+  Append       r210, r200, r209
+  Move         r200, r210
+  Const        r211, 1
+  AddInt       r204, r204, r211
+  Jump         L16
+L15:
+  Min          r212, r200
   // movie_year: min(from r in filtered select r.year)
-  Const        r215, "movie_year"
-  Const        r216, []
-  Const        r217, "year"
-  IterPrep     r218, r5
-  Len          r219, r218
-  Const        r220, 0
-L19:
-  LessInt      r222, r220, r219
-  JumpIfFalse  r222, L18
-  Index        r195, r218, r220
-  Const        r224, "year"
-  Index        r225, r195, r224
-  Append       r216, r216, r225
-  Const        r227, 1
-  AddInt       r220, r220, r227
-  Jump         L19
+  Const        r213, "movie_year"
+  Const        r214, []
+  Const        r215, "year"
+  IterPrep     r216, r5
+  Len          r217, r216
+  Const        r219, 0
+  Move         r218, r219
 L18:
-  Min          r228, r216
+  LessInt      r220, r218, r217
+  JumpIfFalse  r220, L17
+  Index        r221, r216, r218
+  Move         r193, r221
+  Const        r222, "year"
+  Index        r223, r193, r222
+  Append       r224, r214, r223
+  Move         r214, r224
+  Const        r225, 1
+  AddInt       r218, r218, r225
+  Jump         L18
+L17:
+  Min          r226, r214
   // production_note: min(from r in filtered select r.note),
-  Move         r229, r186
-  Move         r230, r200
+  Move         r227, r184
+  Move         r228, r198
   // movie_title: min(from r in filtered select r.title),
-  Move         r231, r201
-  Move         r232, r214
+  Move         r229, r199
+  Move         r230, r212
   // movie_year: min(from r in filtered select r.year)
-  Move         r233, r215
-  Move         r234, r228
+  Move         r231, r213
+  Move         r232, r226
   // let result = {
-  MakeMap      r235, 3, r229
+  MakeMap      r233, 3, r227
   // json([result])
-  Move         r236, r235
-  MakeList     r237, 1, r236
-  JSON         r237
+  Move         r234, r233
+  MakeList     r235, 1, r234
+  JSON         r235
   // expect result == {
-  Const        r238, {"movie_title": "Good Movie", "movie_year": 1995, "production_note": "ACME (co-production)"}
-  Equal        r239, r235, r238
-  Expect       r239
+  Const        r236, {"movie_title": "Good Movie", "movie_year": 1995, "production_note": "ACME (co-production)"}
+  Equal        r237, r233, r236
+  Expect       r237
   Return       r0
