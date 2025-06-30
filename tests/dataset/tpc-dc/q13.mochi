@@ -1,0 +1,41 @@
+let customer = [
+  { c_custkey: 1 },
+  { c_custkey: 2 },
+  { c_custkey: 3 }
+]
+
+let orders = [
+  { o_orderkey: 100, o_custkey: 1, o_comment: "fast delivery" },
+  { o_orderkey: 101, o_custkey: 1, o_comment: "no comment" },
+  { o_orderkey: 102, o_custkey: 2, o_comment: "special requests only" } // excluded
+]
+
+let per_customer =
+  from c in customer
+  select {
+    c_count: count(
+      from o in orders
+      where (
+        o.o_custkey == c.c_custkey &&
+        (!("special" in o.o_comment)) &&
+        (!("requests" in o.o_comment))
+      )
+      select o
+    )
+  }
+
+
+let grouped =
+  from x in per_customer
+  group by x.c_count into g
+  sort by -g.key
+  select { c_count: g.key, custdist: count(g) }
+
+json(grouped)
+
+test "TPCDC Q13 groups customers by non-special order count" {
+  expect grouped == [
+    { c_count: 2, custdist: 1 },  // customer 1
+    { c_count: 0, custdist: 2 }   // customer 2 & 3
+  ]
+}

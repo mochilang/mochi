@@ -236,6 +236,9 @@ out
 # Keep job golden files
 !tests/dataset/job/out
 !tests/dataset/job/out/*
+# Keep tpc-dc golden files
+!tests/dataset/tpc-dc/out
+!tests/dataset/tpc-dc/out/*
 
 # Nuxt.js build / generate output
 .nuxt

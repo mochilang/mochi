@@ -1,0 +1,159 @@
+func main (regs=23)
+  // let customer = [
+  Const        r0, [{"c_custkey": 1}, {"c_custkey": 2}, {"c_custkey": 3}]
+  // let orders = [
+  Const        r1, [{"o_comment": "fast delivery", "o_custkey": 1, "o_orderkey": 100}, {"o_comment": "no comment", "o_custkey": 1, "o_orderkey": 101}, {"o_comment": "special requests only", "o_custkey": 2, "o_orderkey": 102}]
+L5:
+  // from c in customer
+  Const        r2, []
+  // c_count: count(
+  Const        r3, "c_count"
+L2:
+  // o.o_custkey == c.c_custkey &&
+  Const        r4, "o_custkey"
+  Const        r5, "c_custkey"
+  // (!("special" in o.o_comment)) &&
+  Const        r6, "o_comment"
+  // from c in customer
+  IterPrep     r7, r0
+  Len          r8, r7
+  Const        r9, 0
+L0:
+  Move         r10, r9
+L4:
+  LessInt      r11, r10, r8
+L8:
+  JumpIfFalse  r11, L0
+L6:
+  Index        r8, r7, r10
+  // c_count: count(
+  Move         r7, r3
+L1:
+  // from o in orders
+  Move         r12, r2
+  IterPrep     r13, r1
+  Len          r1, r13
+  Move         r14, r9
+  LessInt      r15, r14, r1
+  JumpIfFalse  r15, L1
+  Index        r1, r13, r14
+  // o.o_custkey == c.c_custkey &&
+  Index        r13, r1, r4
+  Index        r4, r8, r5
+  Equal        r8, r13, r4
+  JumpIfFalse  r8, L2
+  // (!("special" in o.o_comment)) &&
+  Const        r8, "special"
+  Index        r4, r1, r6
+  In           r13, r8, r4
+  Not          r4, r13
+  JumpIfFalse  r4, L3
+  // (!("requests" in o.o_comment))
+  Const        r13, "requests"
+  Index        r8, r1, r6
+  In           r6, r13, r8
+  Not          r4, r6
+L3:
+  // where (
+  JumpIfFalse  r4, L1
+  // from o in orders
+  Append       r12, r12, r1
+  Const        r6, 1
+  AddInt       r14, r14, r6
+  Jump         L1
+  // c_count: count(
+  Count        r15, r12
+  Move         r12, r7
+  Move         r7, r15
+  // select {
+  MakeMap      r15, 1, r12
+  // from c in customer
+  Append       r2, r2, r15
+  AddInt       r10, r10, r6
+  Jump         L4
+  // from x in per_customer
+  Const        r15, []
+  // select { c_count: g.key, custdist: count(g) }
+  Const        r7, "key"
+  Const        r12, "custdist"
+  // from x in per_customer
+  IterPrep     r11, r2
+  Len          r2, r11
+  Move         r10, r9
+  MakeMap      r14, 0, r0
+  LessInt      r8, r10, r2
+  JumpIfFalse  r8, L5
+  Index        r8, r11, r10
+  // group by x.c_count into g
+  Index        r11, r8, r3
+  Str          r2, r11
+  In           r13, r2, r14
+  JumpIfTrue   r13, L5
+  // from x in per_customer
+  Move         r4, r15
+  Const        r1, "__group__"
+  Const        r5, true
+  Move         r16, r7
+  // group by x.c_count into g
+  Move         r17, r11
+  // from x in per_customer
+  Const        r11, "items"
+  Move         r18, r4
+  Const        r4, "count"
+  Move         r19, r9
+  Move         r20, r1
+  Move         r1, r5
+  Move         r5, r16
+  Move         r16, r17
+  Move         r17, r11
+  Move         r21, r18
+  Move         r18, r4
+  Move         r22, r19
+  MakeMap      r19, 4, r20
+  SetIndex     r14, r2, r19
+  Move         r19, r11
+  Index        r11, r14, r2
+  Index        r2, r11, r19
+  Append       r22, r2, r8
+  SetIndex     r11, r19, r22
+  Move         r22, r4
+  Index        r4, r11, r22
+  AddInt       r2, r4, r6
+  SetIndex     r11, r22, r2
+  AddInt       r10, r10, r6
+  Jump         L6
+  Values       2,14,0,0
+  Move         r14, r9
+  Len          r9, r2
+  LessInt      r4, r14, r9
+  JumpIfFalse  r4, L7
+  Index        r4, r2, r14
+  // select { c_count: g.key, custdist: count(g) }
+  Move         r2, r3
+  Index        r3, r4, r7
+  Move         r9, r12
+  Index        r12, r4, r22
+  Move         r22, r2
+  Move         r2, r3
+  Move         r3, r9
+  Move         r9, r12
+  MakeMap      r12, 2, r22
+  // sort by -g.key
+  Index        r9, r4, r7
+  Neg          r4, r9
+  // from x in per_customer
+  Move         r9, r12
+  MakeList     r7, 2, r4
+  Append       r15, r15, r7
+  AddInt       r14, r14, r6
+  Jump         L8
+L7:
+  // sort by -g.key
+  Sort         r15, r15
+  // json(grouped)
+  JSON         r15
+  // expect grouped == [
+  Const        r7, [{"c_count": 2, "custdist": 1}, {"c_count": 0, "custdist": 2}]
+  Equal        r9, r15, r7
+  Expect       r9
+  Return       r0

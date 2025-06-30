@@ -1,0 +1,48 @@
+let supplier = [
+  {
+    s_suppkey: 100,
+    s_name: "AlphaSupply",
+    s_address: "123 Hilltop",
+    s_comment: "Reliable and efficient"
+  },
+  {
+    s_suppkey: 200,
+    s_name: "BetaSupply",
+    s_address: "456 Riverside",
+    s_comment: "Known for Customer Complaints"
+  }
+]
+
+let part = [
+  { p_partkey: 1, p_brand: "Brand#12", p_type: "SMALL ANODIZED", p_size: 5 },
+  { p_partkey: 2, p_brand: "Brand#23", p_type: "MEDIUM POLISHED", p_size: 10 }
+]
+
+let partsupp = [
+  { ps_partkey: 1, ps_suppkey: 100 }, // matches exclusion filter
+  { ps_partkey: 2, ps_suppkey: 200 }
+]
+
+let excluded_suppliers =
+  from ps in partsupp
+  join p in part on p.p_partkey == ps.ps_partkey
+  where
+    p.p_brand == "Brand#12" &&
+    p.p_type.contains("SMALL") &&
+    p.p_size == 5
+  select ps.ps_suppkey
+
+let result =
+  from s in supplier
+  where !(s.s_suppkey in excluded_suppliers) && (!s.s_comment.contains("Customer")) && (!s.s_comment.contains("Complaints"))
+  order by s.s_name
+  select {
+    s_name: s.s_name,
+    s_address: s.s_address
+  }
+
+print(result)
+
+test "TPCDC Q16 returns suppliers not linked to certain parts or complaints" {
+  expect result == []
+}

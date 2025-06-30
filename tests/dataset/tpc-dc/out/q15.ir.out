@@ -1,0 +1,372 @@
+func main (regs=36)
+L8:
+  // let supplier = [
+  Const        r0, [{"s_address": "123 Market St", "s_name": "Best Supplier", "s_phone": "123-456", "s_suppkey": 100}, {"s_address": "456 Elm St", "s_name": "Second Supplier", "s_phone": "987-654", "s_suppkey": 200}]
+L16:
+  // let lineitem = [
+  Const        r1, [{"l_discount": 0.1, "l_extendedprice": 1000, "l_shipdate": "1996-01-15", "l_suppkey": 100}, {"l_discount": 0, "l_extendedprice": 500, "l_shipdate": "1996-03-20", "l_suppkey": 100}, {"l_discount": 0.05, "l_extendedprice": 800, "l_shipdate": "1995-12-30", "l_suppkey": 200}]
+  // let start_date = "1996-01-01"
+  Const        r2, "1996-01-01"
+  // let end_date = "1996-04-01"
+  Const        r3, "1996-04-01"
+  // from l in lineitem
+  Const        r4, []
+L1:
+  // group by l.l_suppkey into g
+  Const        r5, "l_suppkey"
+  // where l.l_shipdate >= start_date && l.l_shipdate < end_date
+  Const        r6, "l_shipdate"
+  // supplier_no: g.key,
+  Const        r7, "supplier_no"
+  Const        r8, "key"
+  // total_revenue: sum(from x in g select x.l_extendedprice * (1 - x.l_discount))
+  Const        r9, "total_revenue"
+L6:
+  Const        r10, "l_extendedprice"
+  Const        r11, "l_discount"
+L3:
+  // from l in lineitem
+  IterPrep     r12, r1
+  Len          r1, r12
+  Const        r13, 0
+L0:
+  MakeMap      r14, 0, r0
+  LessInt      r15, r13, r1
+L12:
+  JumpIfFalse  r15, L0
+L4:
+  Index        r1, r12, r13
+  Move         r12, r1
+  // where l.l_shipdate >= start_date && l.l_shipdate < end_date
+  Index        r16, r12, r6
+L7:
+  LessEq       r17, r2, r16
+L2:
+  Index        r16, r12, r6
+L11:
+  Less         r6, r16, r3
+  Move         r16, r17
+  JumpIfFalse  r16, L1
+L9:
+  Move         r16, r6
+  JumpIfFalse  r16, L2
+L10:
+  // group by l.l_suppkey into g
+  Index        r16, r12, r5
+L14:
+  Str          r12, r16
+  In           r5, r12, r14
+  JumpIfTrue   r5, L3
+  // from l in lineitem
+  Move         r5, r4
+  Const        r6, "__group__"
+L13:
+  Const        r17, true
+  Move         r3, r8
+  // group by l.l_suppkey into g
+  Move         r2, r16
+  // from l in lineitem
+  Const        r16, "items"
+  Move         r18, r5
+  Const        r5, "count"
+  Move         r19, r13
+  Move         r20, r6
+  Move         r6, r17
+  Move         r17, r3
+  Move         r3, r2
+  Move         r2, r16
+  Move         r21, r18
+  Move         r18, r5
+  Move         r22, r19
+  MakeMap      r19, 4, r20
+  SetIndex     r14, r12, r19
+  Move         r19, r16
+  Index        r16, r14, r12
+  Index        r12, r16, r19
+  Append       r22, r12, r1
+  SetIndex     r16, r19, r22
+  Move         r22, r5
+  Index        r5, r16, r22
+  Const        r12, 1
+  AddInt       r19, r5, r12
+  SetIndex     r16, r22, r19
+  AddInt       r13, r13, r12
+  Jump         L0
+  Values       19,14,0,0
+  Const        r14, 0
+  Move         r5, r14
+  Len          r22, r19
+  LessInt      r16, r5, r22
+  JumpIfFalse  r16, L4
+  Index        r16, r19, r5
+  // supplier_no: g.key,
+  Move         r19, r7
+  Index        r22, r16, r8
+  // total_revenue: sum(from x in g select x.l_extendedprice * (1 - x.l_discount))
+  Move         r8, r9
+  Move         r15, r4
+  IterPrep     r13, r16
+  Len          r16, r13
+  Move         r1, r14
+  LessInt      r18, r1, r16
+  JumpIfFalse  r18, L5
+  Index        r16, r13, r1
+  Index        r13, r16, r10
+  Index        r10, r16, r11
+  Sub          r11, r12, r10
+  Mul          r10, r13, r11
+  Append       r15, r15, r10
+  AddInt       r1, r1, r12
+  Jump         L6
+L5:
+  Sum          r11, r15
+  // supplier_no: g.key,
+  Move         r15, r19
+  Move         r10, r22
+  // total_revenue: sum(from x in g select x.l_extendedprice * (1 - x.l_discount))
+  Move         r22, r8
+  Move         r8, r11
+  // select {
+  MakeMap      r11, 2, r15
+  // from l in lineitem
+  Append       r4, r4, r11
+  AddInt       r5, r5, r12
+  Jump         L4
+  // let revenues = from x in revenue0 select x.total_revenue
+  Const        r11, []
+  IterPrep     r8, r4
+  Len          r22, r8
+  Move         r15, r14
+  LessInt      r10, r15, r22
+  JumpIfFalse  r10, L7
+  Index        r16, r8, r15
+  Index        r10, r16, r9
+  Append       r11, r11, r10
+  AddInt       r15, r15, r12
+  Jump         L6
+  // let max_revenue = max(revenues)
+  Max          r15, r11
+  // let result = from s in supplier
+  Const        r11, []
+  IterPrep     r16, r0
+  Len          r22, r16
+  // join r in revenue0 on s.s_suppkey == r.supplier_no
+  IterPrep     r8, r4
+  Len          r4, r8
+  // let result = from s in supplier
+  EqualInt     r18, r22, r14
+  JumpIfTrue   r18, L8
+  EqualInt     r18, r4, r14
+  JumpIfTrue   r18, L8
+  LessEq       r18, r4, r22
+  JumpIfFalse  r18, L9
+  // join r in revenue0 on s.s_suppkey == r.supplier_no
+  MakeMap      r18, 0, r0
+  Move         r10, r14
+  LessInt      r5, r10, r4
+  JumpIfFalse  r5, L10
+  Index        r5, r8, r10
+  Index        r19, r5, r7
+  Index        r13, r18, r19
+  Const        r1, nil
+  NotEqual     r21, r13, r1
+  JumpIfTrue   r21, L11
+  MakeList     r21, 0, r0
+  SetIndex     r18, r19, r21
+  Index        r13, r18, r19
+  Append       r21, r13, r5
+  SetIndex     r18, r19, r21
+  AddInt       r10, r10, r12
+  Jump         L7
+  // let result = from s in supplier
+  Move         r13, r14
+  LessInt      r19, r13, r22
+  JumpIfFalse  r19, L8
+  Index        r19, r16, r13
+  // join r in revenue0 on s.s_suppkey == r.supplier_no
+  Const        r5, "s_suppkey"
+  Index        r10, r19, r5
+  // let result = from s in supplier
+  Index        r2, r18, r10
+  NotEqual     r10, r2, r1
+  JumpIfFalse  r10, L11
+  Len          r10, r2
+  Move         r18, r13
+  LessInt      r21, r18, r10
+  JumpIfFalse  r21, L11
+  Index        r10, r2, r18
+  // where r.total_revenue == max_revenue
+  Index        r2, r10, r9
+  Equal        r21, r2, r15
+  JumpIfFalse  r21, L12
+  // s_suppkey: s.s_suppkey,
+  Move         r21, r5
+  Index        r2, r19, r5
+  // s_name: s.s_name,
+  Const        r3, "s_name"
+  Move         r17, r3
+  Index        r6, r19, r17
+  // s_address: s.s_address,
+  Const        r20, "s_address"
+  Move         r23, r20
+  Index        r24, r19, r23
+  // s_phone: s.s_phone,
+  Const        r25, "s_phone"
+  Move         r26, r25
+  Index        r27, r19, r26
+  // total_revenue: r.total_revenue
+  Move         r28, r9
+  Index        r29, r10, r9
+  // s_suppkey: s.s_suppkey,
+  Move         r30, r21
+  Move         r21, r2
+  // s_name: s.s_name,
+  Move         r2, r3
+  Move         r31, r6
+  // s_address: s.s_address,
+  Move         r6, r20
+  Move         r32, r24
+  // s_phone: s.s_phone,
+  Move         r24, r25
+  Move         r33, r27
+  // total_revenue: r.total_revenue
+  Move         r27, r28
+  Move         r34, r29
+  // select {
+  MakeMap      r35, 5, r30
+  // sort by s.s_suppkey
+  Index        r27, r19, r5
+  // let result = from s in supplier
+  Move         r33, r35
+  MakeList     r35, 2, r27
+  Append       r11, r11, r35
+  AddInt       r18, r18, r12
+  Jump         L13
+  AddInt       r13, r13, r12
+  Jump         L14
+  MakeMap      r35, 0, r0
+  Move         r33, r14
+  LessInt      r27, r33, r22
+  JumpIfFalse  r27, L15
+  Index        r27, r16, r33
+  // join r in revenue0 on s.s_suppkey == r.supplier_no
+  Index        r16, r27, r5
+  // let result = from s in supplier
+  Index        r22, r35, r16
+  Move         r34, r1
+  NotEqual     r1, r22, r34
+  JumpIfTrue   r1, L10
+  MakeList     r1, 0, r0
+  SetIndex     r35, r16, r1
+  Index        r22, r35, r16
+  Append       r1, r22, r27
+  SetIndex     r35, r16, r1
+  AddInt       r33, r33, r12
+  Jump         L16
+L15:
+  // join r in revenue0 on s.s_suppkey == r.supplier_no
+  Move         r22, r14
+  LessInt      r14, r22, r4
+  JumpIfFalse  r14, L17
+  Index        r10, r8, r22
+  Index        r14, r10, r7
+  Index        r7, r35, r14
+  NotEqual     r14, r7, r34
+  JumpIfFalse  r14, L18
+  Len          r14, r7
+  Move         r34, r22
+  LessInt      r35, r34, r14
+  JumpIfFalse  r35, L18
+  Index        r19, r7, r34
+  // where r.total_revenue == max_revenue
+  Index        r35, r10, r9
+  Equal        r14, r35, r15
+  JumpIfFalse  r14, L19
+  // s_suppkey: s.s_suppkey,
+  Move         r14, r5
+  Index        r35, r19, r5
+  // s_name: s.s_name,
+  Move         r15, r3
+  Index        r3, r19, r17
+  // s_address: s.s_address,
+  Move         r17, r20
+  Index        r20, r19, r23
+  // s_phone: s.s_phone,
+  Move         r23, r25
+  Index        r25, r19, r26
+  // total_revenue: r.total_revenue
+  Move         r26, r28
+  Index        r28, r10, r9
+  // s_suppkey: s.s_suppkey,
+  Move         r1, r14
+  Move         r10, r35
+  // s_name: s.s_name,
+  Move         r35, r15
+  Move         r7, r3
+  // s_address: s.s_address,
+  Move         r3, r17
+  Move         r4, r20
+  // s_phone: s.s_phone,
+  Move         r20, r23
+  Move         r8, r25
+  // total_revenue: r.total_revenue
+  Move         r25, r26
+  Move         r26, r28
+  // select {
+  MakeMap      r28, 5, r1
+  // sort by s.s_suppkey
+  Index        r26, r19, r5
+  // let result = from s in supplier
+  Move         r5, r28
+  MakeList     r28, 2, r26
+  Append       r11, r11, r28
+L19:
+  // join r in revenue0 on s.s_suppkey == r.supplier_no
+  AddInt       r34, r34, r12
+  Jump         L10
+L18:
+  AddInt       r22, r22, r12
+  Jump         L2
+L17:
+  // sort by s.s_suppkey
+  Sort         r11, r11
+  // json(result)
+  JSON         r11
+  // let rev = 1000.0 * 0.9 + 500.0
+  Const        r22, 1400
+  // s_suppkey: 100,
+  Move         r12, r14
+  Const        r14, 100
+  // s_name: "Best Supplier",
+  Move         r5, r15
+  Const        r28, "Best Supplier"
+  // s_address: "123 Market St",
+  Move         r15, r17
+  Const        r17, "123 Market St"
+  // s_phone: "123-456",
+  Move         r26, r23
+  Const        r23, "123-456"
+  // total_revenue: rev // 900 + 500 = 1400
+  Move         r34, r9
+  // s_suppkey: 100,
+  Move         r9, r12
+  Move         r12, r14
+  // s_name: "Best Supplier",
+  Move         r14, r5
+  Move         r5, r28
+  // s_address: "123 Market St",
+  Move         r28, r15
+  Move         r15, r17
+  // s_phone: "123-456",
+  Move         r17, r26
+  Move         r26, r23
+  // total_revenue: rev // 900 + 500 = 1400
+  Move         r23, r34
+  Move         r34, r22
+  // {
+  MakeMap      r22, 5, r9
+  // expect result == [
+  MakeList     r34, 1, r22
+  Equal        r22, r11, r34
+  Expect       r22
+  Return       r0
