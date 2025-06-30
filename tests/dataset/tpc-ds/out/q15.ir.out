@@ -1,4 +1,4 @@
-func main (regs=16)
+func main (regs=17)
   // let t = [{id: 1, val: 15}]
   Const        r0, [{"id": 1, "val": 15}]
   // let vals = from r in t select r.val
@@ -18,12 +18,12 @@ L1:
   AddInt       r5, r5, r12
   Jump         L1
 L0:
-  // let result = vals[0]
-  Index        r13, r1, r6
+  // let result = first(vals)
+  Index        r14, r1, r6
   // json(result)
-  JSON         r13
+  JSON         r14
   // expect result == 15
-  Const        r14, 15
-  Equal        r15, r13, r14
-  Expect       r15
+  Const        r15, 15
+  Equal        r16, r14, r15
+  Expect       r16
   Return       r0
