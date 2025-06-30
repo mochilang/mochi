@@ -8,38 +8,45 @@ import (
 // aggregateCall returns the aggregate opcode and argument if e is a simple
 // aggregate function call like `sum(x)`.
 func aggregateCall(e *parser.Expr) (Op, *parser.Expr, lexer.Position, bool) {
-	if e == nil || e.Binary == nil {
+	for e != nil {
+		if e.Binary == nil || len(e.Binary.Right) != 0 {
+			return 0, nil, lexer.Position{}, false
+		}
+		u := e.Binary.Left
+		if len(u.Ops) != 0 {
+			return 0, nil, lexer.Position{}, false
+		}
+		p := u.Value
+		if p == nil || len(p.Ops) != 0 {
+			return 0, nil, lexer.Position{}, false
+		}
+		if p.Target != nil && p.Target.Call != nil {
+			call := p.Target.Call
+			if len(call.Args) != 1 {
+				return 0, nil, lexer.Position{}, false
+			}
+			switch call.Func {
+			case "sum":
+				return OpSum, call.Args[0], call.Pos, true
+			case "avg":
+				return OpAvg, call.Args[0], call.Pos, true
+			case "min":
+				return OpMin, call.Args[0], call.Pos, true
+			case "max":
+				return OpMax, call.Args[0], call.Pos, true
+			case "count":
+				return OpCount, call.Args[0], call.Pos, true
+			default:
+				return 0, nil, lexer.Position{}, false
+			}
+		}
+		if p.Target != nil && p.Target.Group != nil {
+			e = p.Target.Group
+			continue
+		}
 		return 0, nil, lexer.Position{}, false
 	}
-	if len(e.Binary.Right) != 0 {
-		return 0, nil, lexer.Position{}, false
-	}
-	u := e.Binary.Left
-	if len(u.Ops) != 0 {
-		return 0, nil, lexer.Position{}, false
-	}
-	p := u.Value
-	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
-		return 0, nil, lexer.Position{}, false
-	}
-	call := p.Target.Call
-	if len(call.Args) != 1 {
-		return 0, nil, lexer.Position{}, false
-	}
-	switch call.Func {
-	case "sum":
-		return OpSum, call.Args[0], call.Pos, true
-	case "avg":
-		return OpAvg, call.Args[0], call.Pos, true
-	case "min":
-		return OpMin, call.Args[0], call.Pos, true
-	case "max":
-		return OpMax, call.Args[0], call.Pos, true
-	case "count":
-		return OpCount, call.Args[0], call.Pos, true
-	default:
-		return 0, nil, lexer.Position{}, false
-	}
+	return 0, nil, lexer.Position{}, false
 }
 
 // exprVars collects variable names referenced in expression e.
