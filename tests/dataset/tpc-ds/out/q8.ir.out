@@ -1,4 +1,4 @@
-func main (regs=10)
+func main (regs=11)
   // let store_sales = []
   Const        r0, []
   // let date_dim = []
@@ -9,15 +9,16 @@ func main (regs=10)
   Const        r3, []
   // let customer = []
   Const        r4, []
-  // substr("zip", 0, 2)
+  // reverse(substr("zip", 0, 2))
   Const        r5, "zi"
+  Reverse      r6, r5
   // let result = []
-  Const        r6, []
+  Const        r7, []
   // json(result)
-  JSON         r6
+  JSON         r7
   // expect len(result) == 0
-  Const        r7, 0
   Const        r8, 0
-  Const        r9, true
-  Expect       r9
+  Const        r9, 0
+  Const        r10, true
+  Expect       r10
   Return       r0
