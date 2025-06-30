@@ -1,4 +1,22 @@
 # 📦 CHANGELOG.md
+
+## [0.10.8] – 2025-06-30
+
+### Added
+
+* Numeric string parsing for generic operations
+* Reverse builtin with nested map lookup and cycle-safe printing
+* Expanded TPC-DS and TPC-DC query examples
+
+### Changed
+
+* Constant register reuse and canonicalized float constants
+* Optimized union operations with updated IR and benchmarks
+
+### Fixed
+
+* Boolean compile errors and row map handling in groups
+* `toFloat` null cases and safe slice indices
 ## [0.10.7] – 2025-06-30T11:05:48+07:00
 
 ### Added
