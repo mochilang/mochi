@@ -1,4 +1,4 @@
-func main (regs=404)
+func main (regs=418)
   // let ss = [
   Const        r0, [{"ss_customer_sk": 1, "ss_item_sk": 1, "ss_qty": 10, "ss_sold_year": 1998, "ss_sp": 100, "ss_wc": 50}]
   // let ws = [
@@ -41,10 +41,11 @@ func main (regs=404)
   Len          r24, r23
   Const        r26, 0
   Move         r25, r26
-L22:
+L25:
   LessInt      r27, r25, r24
   JumpIfFalse  r27, L0
-  Index        r29, r23, r25
+  Index        r28, r23, r25
+  Move         r29, r28
   // left join w in ws on w.ws_sold_year == s.ss_sold_year && w.ws_item_sk == s.ss_item_sk && w.ws_customer_sk == s.ss_customer_sk
   IterPrep     r30, r1
   Len          r31, r30
@@ -52,10 +53,11 @@ L22:
   Const        r33, "ws_item_sk"
   Const        r34, "ws_customer_sk"
   Move         r35, r26
-L12:
+L14:
   LessInt      r36, r35, r31
   JumpIfFalse  r36, L1
-  Index        r38, r30, r35
+  Index        r37, r30, r35
+  Move         r38, r37
   Const        r39, false
   Index        r40, r38, r32
   Index        r41, r29, r6
@@ -66,534 +68,557 @@ L12:
   Index        r46, r38, r34
   Index        r47, r29, r8
   Equal        r48, r46, r47
-  JumpIfFalse  r42, L2
-  Move         r42, r45
-  JumpIfFalse  r42, L2
-  Move         r42, r48
+  Move         r49, r42
+  JumpIfFalse  r49, L2
+  Move         r49, r45
 L2:
-  JumpIfFalse  r42, L3
+  Move         r50, r49
+  JumpIfFalse  r50, L3
+  Move         r50, r48
+L3:
+  JumpIfFalse  r50, L4
   Const        r39, true
   // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
-  IterPrep     r49, r2
-  Len          r50, r49
-  Const        r51, "cs_sold_year"
-  Const        r52, "cs_item_sk"
-  Const        r53, "cs_customer_sk"
-  Move         r54, r26
-L9:
-  LessInt      r55, r54, r50
-  JumpIfFalse  r55, L4
-  Index        r57, r49, r54
-  Const        r58, false
-  Index        r59, r57, r51
-  Index        r60, r29, r6
-  Equal        r61, r59, r60
-  Index        r62, r57, r52
-  Index        r63, r29, r7
-  Equal        r64, r62, r63
-  Index        r65, r57, r53
-  Index        r66, r29, r8
-  Equal        r67, r65, r66
-  JumpIfFalse  r61, L5
-  Move         r61, r64
-  JumpIfFalse  r61, L5
-  Move         r61, r67
-L5:
-  JumpIfFalse  r61, L6
-  Const        r58, true
+  IterPrep     r51, r2
+  Len          r52, r51
+  Const        r53, "cs_sold_year"
+  Const        r54, "cs_item_sk"
+  Const        r55, "cs_customer_sk"
+  Move         r56, r26
+L11:
+  LessInt      r57, r56, r52
+  JumpIfFalse  r57, L5
+  Index        r58, r51, r56
+  Move         r59, r58
+  Const        r60, false
+  Index        r61, r59, r53
+  Index        r62, r29, r6
+  Equal        r63, r61, r62
+  Index        r64, r59, r54
+  Index        r65, r29, r7
+  Equal        r66, r64, r65
+  Index        r67, r59, r55
+  Index        r68, r29, r8
+  Equal        r69, r67, r68
+  Move         r70, r63
+  JumpIfFalse  r70, L6
+  Move         r70, r66
+L6:
+  Move         r71, r70
+  JumpIfFalse  r71, L7
+  Move         r71, r69
+L7:
+  JumpIfFalse  r71, L8
+  Const        r60, true
   // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
-  Const        r68, nil
-  Equal        r69, r38, r68
-  Index        r70, r38, r4
-  Select       71,69,26,70
-  Less         r72, r26, r71
-  Equal        r73, r57, r68
-  Index        r74, r57, r5
+  Const        r72, nil
+  Equal        r73, r38, r72
+  Index        r74, r38, r4
   Select       75,73,26,74
   Less         r76, r26, r75
-  JumpIfTrue   r72, L7
-  Move         r72, r76
-L7:
-  Index        r77, r29, r6
-  Const        r78, 1998
-  Equal        r79, r77, r78
-  JumpIfFalse  r72, L8
-  Move         r72, r79
-L8:
-  JumpIfFalse  r72, L6
-  // ss_sold_year: s.ss_sold_year,
-  Const        r80, "ss_sold_year"
-  Index        r81, r29, r6
-  // ss_item_sk: s.ss_item_sk,
-  Const        r82, "ss_item_sk"
-  Index        r83, r29, r7
-  // ss_customer_sk: s.ss_customer_sk,
-  Const        r84, "ss_customer_sk"
-  Index        r85, r29, r8
-  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
-  Const        r86, "ratio"
-  Index        r87, r29, r10
-  Equal        r88, r38, r68
-  Index        r89, r38, r4
-  Select       90,88,26,89
-  Equal        r91, r57, r68
-  Index        r92, r57, r5
-  Select       93,91,26,92
-  Add          r94, r90, r93
-  Div          r95, r87, r94
-  // store_qty: s.ss_qty,
-  Const        r96, "store_qty"
-  Index        r97, r29, r10
-  // store_wholesale_cost: s.ss_wc,
-  Const        r98, "store_wholesale_cost"
-  Index        r99, r29, r13
-  // store_sales_price: s.ss_sp,
-  Const        r100, "store_sales_price"
-  Index        r101, r29, r15
-  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
-  Const        r102, "other_chan_qty"
-  Equal        r103, r38, r68
-  Index        r104, r38, r4
-  Select       105,103,26,104
-  Equal        r106, r57, r68
-  Index        r107, r57, r5
-  Select       108,106,26,107
-  Add          r109, r105, r108
-  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
-  Const        r110, "other_chan_wholesale_cost"
-  Equal        r111, r38, r68
-  Const        r112, 0
-  Index        r113, r38, r18
-  Select       114,111,112,113
-  Equal        r115, r57, r68
-  Index        r116, r57, r19
-  Select       117,115,112,116
-  Add          r118, r114, r117
-  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
-  Const        r119, "other_chan_sales_price"
-  Equal        r120, r38, r68
-  Index        r121, r38, r21
-  Select       122,120,112,121
-  Equal        r123, r57, r68
-  Index        r124, r57, r22
-  Select       125,123,112,124
-  Add          r126, r122, r125
-  // ss_sold_year: s.ss_sold_year,
-  Move         r127, r80
-  Move         r128, r81
-  // ss_item_sk: s.ss_item_sk,
-  Move         r129, r82
-  Move         r130, r83
-  // ss_customer_sk: s.ss_customer_sk,
-  Move         r131, r84
-  Move         r132, r85
-  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
-  Move         r133, r86
-  Move         r134, r95
-  // store_qty: s.ss_qty,
-  Move         r135, r96
-  Move         r136, r97
-  // store_wholesale_cost: s.ss_wc,
-  Move         r137, r98
-  Move         r138, r99
-  // store_sales_price: s.ss_sp,
-  Move         r139, r100
-  Move         r140, r101
-  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
-  Move         r141, r102
-  Move         r142, r109
-  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
-  Move         r143, r110
-  Move         r144, r118
-  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
-  Move         r145, r119
-  Move         r146, r126
-  // select {
-  MakeMap      r147, 10, r127
-  // from s in ss
-  Append       r3, r3, r147
-L6:
-  // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
-  Const        r149, 1
-  Add          r54, r54, r149
-  Jump         L9
-L4:
-  Move         r150, r58
-  JumpIfTrue   r150, L3
-  Move         r57, r68
-  // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
-  Equal        r151, r38, r68
-  Index        r152, r38, r4
-  Select       153,151,26,152
-  Less         r154, r26, r153
-  Equal        r155, r57, r68
-  Index        r156, r57, r5
-  Select       157,155,26,156
-  Less         r158, r26, r157
-  JumpIfTrue   r154, L10
-  Move         r154, r158
+  Equal        r77, r59, r72
+  Index        r78, r59, r5
+  Select       79,77,26,78
+  Less         r80, r26, r79
+  Move         r81, r76
+  JumpIfTrue   r81, L9
+  Move         r81, r80
+L9:
+  Index        r82, r29, r6
+  Const        r83, 1998
+  Equal        r84, r82, r83
+  Move         r85, r81
+  JumpIfFalse  r85, L10
+  Move         r85, r84
 L10:
-  Index        r159, r29, r6
-  Equal        r160, r159, r78
-  JumpIfFalse  r154, L11
-  Move         r154, r160
-L11:
-  JumpIfFalse  r154, L3
+  JumpIfFalse  r85, L8
   // ss_sold_year: s.ss_sold_year,
-  Const        r161, "ss_sold_year"
-  Index        r162, r29, r6
+  Const        r86, "ss_sold_year"
+  Index        r87, r29, r6
   // ss_item_sk: s.ss_item_sk,
-  Const        r163, "ss_item_sk"
-  Index        r164, r29, r7
+  Const        r88, "ss_item_sk"
+  Index        r89, r29, r7
   // ss_customer_sk: s.ss_customer_sk,
-  Const        r165, "ss_customer_sk"
-  Index        r166, r29, r8
+  Const        r90, "ss_customer_sk"
+  Index        r91, r29, r8
   // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
-  Const        r167, "ratio"
-  Index        r168, r29, r10
-  Equal        r169, r38, r68
-  Index        r170, r38, r4
-  Select       171,169,26,170
-  Equal        r172, r57, r68
-  Index        r173, r57, r5
-  Select       174,172,26,173
-  Add          r175, r171, r174
-  Div          r176, r168, r175
+  Const        r92, "ratio"
+  Index        r93, r29, r10
+  Equal        r94, r38, r72
+  Index        r95, r38, r4
+  Select       96,94,26,95
+  Equal        r97, r59, r72
+  Index        r98, r59, r5
+  Select       99,97,26,98
+  Add          r100, r96, r99
+  Div          r101, r93, r100
   // store_qty: s.ss_qty,
-  Const        r177, "store_qty"
-  Index        r178, r29, r10
+  Const        r102, "store_qty"
+  Index        r103, r29, r10
   // store_wholesale_cost: s.ss_wc,
-  Const        r179, "store_wholesale_cost"
-  Index        r180, r29, r13
+  Const        r104, "store_wholesale_cost"
+  Index        r105, r29, r13
   // store_sales_price: s.ss_sp,
-  Const        r181, "store_sales_price"
-  Index        r182, r29, r15
+  Const        r106, "store_sales_price"
+  Index        r107, r29, r15
   // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
-  Const        r183, "other_chan_qty"
-  Equal        r184, r38, r68
-  Index        r185, r38, r4
-  Select       186,184,26,185
-  Equal        r187, r57, r68
-  Index        r188, r57, r5
-  Select       189,187,26,188
-  Add          r190, r186, r189
+  Const        r108, "other_chan_qty"
+  Equal        r109, r38, r72
+  Index        r110, r38, r4
+  Select       111,109,26,110
+  Equal        r112, r59, r72
+  Index        r113, r59, r5
+  Select       114,112,26,113
+  Add          r115, r111, r114
   // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
-  Const        r191, "other_chan_wholesale_cost"
-  Equal        r192, r38, r68
-  Index        r193, r38, r18
-  Select       194,192,112,193
-  Equal        r195, r57, r68
-  Index        r196, r57, r19
-  Select       197,195,112,196
-  Add          r198, r194, r197
+  Const        r116, "other_chan_wholesale_cost"
+  Equal        r117, r38, r72
+  Const        r118, 0
+  Index        r119, r38, r18
+  Select       120,117,118,119
+  Equal        r121, r59, r72
+  Index        r122, r59, r19
+  Select       123,121,118,122
+  Add          r124, r120, r123
   // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
-  Const        r199, "other_chan_sales_price"
-  Equal        r200, r38, r68
-  Index        r201, r38, r21
-  Select       202,200,112,201
-  Equal        r203, r57, r68
-  Index        r204, r57, r22
-  Select       205,203,112,204
-  Add          r206, r202, r205
+  Const        r125, "other_chan_sales_price"
+  Equal        r126, r38, r72
+  Index        r127, r38, r21
+  Select       128,126,118,127
+  Equal        r129, r59, r72
+  Index        r130, r59, r22
+  Select       131,129,118,130
+  Add          r132, r128, r131
   // ss_sold_year: s.ss_sold_year,
-  Move         r207, r161
-  Move         r208, r162
+  Move         r133, r86
+  Move         r134, r87
   // ss_item_sk: s.ss_item_sk,
-  Move         r209, r163
-  Move         r210, r164
+  Move         r135, r88
+  Move         r136, r89
   // ss_customer_sk: s.ss_customer_sk,
-  Move         r211, r165
-  Move         r212, r166
+  Move         r137, r90
+  Move         r138, r91
   // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
-  Move         r213, r167
-  Move         r214, r176
+  Move         r139, r92
+  Move         r140, r101
   // store_qty: s.ss_qty,
-  Move         r215, r177
-  Move         r216, r178
+  Move         r141, r102
+  Move         r142, r103
   // store_wholesale_cost: s.ss_wc,
-  Move         r217, r179
-  Move         r218, r180
+  Move         r143, r104
+  Move         r144, r105
   // store_sales_price: s.ss_sp,
-  Move         r219, r181
-  Move         r220, r182
+  Move         r145, r106
+  Move         r146, r107
   // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
-  Move         r221, r183
-  Move         r222, r190
+  Move         r147, r108
+  Move         r148, r115
   // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
-  Move         r223, r191
-  Move         r224, r198
+  Move         r149, r116
+  Move         r150, r124
   // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
-  Move         r225, r199
-  Move         r226, r206
+  Move         r151, r125
+  Move         r152, r132
   // select {
-  MakeMap      r227, 10, r207
+  MakeMap      r153, 10, r133
   // from s in ss
-  Append       r3, r3, r227
-L3:
-  // left join w in ws on w.ws_sold_year == s.ss_sold_year && w.ws_item_sk == s.ss_item_sk && w.ws_customer_sk == s.ss_customer_sk
-  Add          r35, r35, r149
-  Jump         L12
-L1:
-  Move         r229, r39
-  JumpIfTrue   r229, L13
-  Move         r38, r68
+  Append       r154, r3, r153
+  Move         r3, r154
+L8:
   // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
-  IterPrep     r230, r2
-  Len          r231, r230
-  Move         r232, r26
-L19:
-  LessInt      r233, r232, r231
-  JumpIfFalse  r233, L14
-  Index        r57, r230, r232
-  Const        r235, false
-  Index        r236, r57, r51
-  Index        r237, r29, r6
-  Equal        r238, r236, r237
-  Index        r239, r57, r52
-  Index        r240, r29, r7
-  Equal        r241, r239, r240
-  Index        r242, r57, r53
-  Index        r243, r29, r8
-  Equal        r244, r242, r243
-  JumpIfFalse  r238, L15
-  Move         r238, r241
-  JumpIfFalse  r238, L15
-  Move         r238, r244
-L15:
-  JumpIfFalse  r238, L16
-  Const        r235, true
+  Const        r155, 1
+  Add          r56, r56, r155
+  Jump         L11
+L5:
+  Move         r156, r60
+  JumpIfTrue   r156, L4
+  Move         r59, r72
   // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
-  Equal        r245, r38, r68
-  Index        r246, r38, r4
-  Select       247,245,26,246
-  Less         r248, r26, r247
-  Equal        r249, r57, r68
-  Index        r250, r57, r5
-  Select       251,249,26,250
-  Less         r252, r26, r251
-  JumpIfTrue   r248, L17
-  Move         r248, r252
-L17:
-  Index        r253, r29, r6
-  Equal        r254, r253, r78
-  JumpIfFalse  r248, L18
-  Move         r248, r254
-L18:
-  JumpIfFalse  r248, L16
-  // ss_sold_year: s.ss_sold_year,
-  Const        r255, "ss_sold_year"
-  Index        r256, r29, r6
-  // ss_item_sk: s.ss_item_sk,
-  Const        r257, "ss_item_sk"
-  Index        r258, r29, r7
-  // ss_customer_sk: s.ss_customer_sk,
-  Const        r259, "ss_customer_sk"
-  Index        r260, r29, r8
-  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
-  Const        r261, "ratio"
-  Index        r262, r29, r10
-  Equal        r263, r38, r68
-  Index        r264, r38, r4
-  Select       265,263,26,264
-  Equal        r266, r57, r68
-  Index        r267, r57, r5
-  Select       268,266,26,267
-  Add          r269, r265, r268
-  Div          r270, r262, r269
-  // store_qty: s.ss_qty,
-  Const        r271, "store_qty"
-  Index        r272, r29, r10
-  // store_wholesale_cost: s.ss_wc,
-  Const        r273, "store_wholesale_cost"
-  Index        r274, r29, r13
-  // store_sales_price: s.ss_sp,
-  Const        r275, "store_sales_price"
-  Index        r276, r29, r15
-  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
-  Const        r277, "other_chan_qty"
-  Equal        r278, r38, r68
-  Index        r279, r38, r4
-  Select       280,278,26,279
-  Equal        r281, r57, r68
-  Index        r282, r57, r5
-  Select       283,281,26,282
-  Add          r284, r280, r283
-  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
-  Const        r285, "other_chan_wholesale_cost"
-  Equal        r286, r38, r68
-  Index        r287, r38, r18
-  Select       288,286,112,287
-  Equal        r289, r57, r68
-  Index        r290, r57, r19
-  Select       291,289,112,290
-  Add          r292, r288, r291
-  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
-  Const        r293, "other_chan_sales_price"
-  Equal        r294, r38, r68
-  Index        r295, r38, r21
-  Select       296,294,112,295
-  Equal        r297, r57, r68
-  Index        r298, r57, r22
-  Select       299,297,112,298
-  Add          r300, r296, r299
-  // ss_sold_year: s.ss_sold_year,
-  Move         r301, r255
-  Move         r302, r256
-  // ss_item_sk: s.ss_item_sk,
-  Move         r303, r257
-  Move         r304, r258
-  // ss_customer_sk: s.ss_customer_sk,
-  Move         r305, r259
-  Move         r306, r260
-  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
-  Move         r307, r261
-  Move         r308, r270
-  // store_qty: s.ss_qty,
-  Move         r309, r271
-  Move         r310, r272
-  // store_wholesale_cost: s.ss_wc,
-  Move         r311, r273
-  Move         r312, r274
-  // store_sales_price: s.ss_sp,
-  Move         r313, r275
-  Move         r314, r276
-  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
-  Move         r315, r277
-  Move         r316, r284
-  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
-  Move         r317, r285
-  Move         r318, r292
-  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
-  Move         r319, r293
-  Move         r320, r300
-  // select {
-  MakeMap      r321, 10, r301
-  // from s in ss
-  Append       r3, r3, r321
-L16:
-  // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
-  Add          r232, r232, r149
-  Jump         L19
-L14:
-  Move         r323, r235
-  JumpIfTrue   r323, L13
-  Move         r57, r68
-  // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
-  Equal        r324, r38, r68
-  Index        r325, r38, r4
-  Select       326,324,26,325
-  Less         r327, r26, r326
-  Equal        r328, r57, r68
-  Index        r329, r57, r5
-  Select       330,328,26,329
-  Less         r331, r26, r330
-  JumpIfTrue   r327, L20
-  Move         r327, r331
-L20:
-  Index        r332, r29, r6
-  Equal        r333, r332, r78
-  JumpIfFalse  r327, L21
-  Move         r327, r333
-L21:
-  JumpIfFalse  r327, L13
-  // ss_sold_year: s.ss_sold_year,
-  Const        r334, "ss_sold_year"
-  Index        r335, r29, r6
-  // ss_item_sk: s.ss_item_sk,
-  Const        r336, "ss_item_sk"
-  Index        r337, r29, r7
-  // ss_customer_sk: s.ss_customer_sk,
-  Const        r338, "ss_customer_sk"
-  Index        r339, r29, r8
-  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
-  Const        r340, "ratio"
-  Index        r341, r29, r10
-  Equal        r342, r38, r68
-  Index        r343, r38, r4
-  Select       344,342,26,343
-  Equal        r345, r57, r68
-  Index        r346, r57, r5
-  Select       347,345,26,346
-  Add          r348, r344, r347
-  Div          r349, r341, r348
-  // store_qty: s.ss_qty,
-  Const        r350, "store_qty"
-  Index        r351, r29, r10
-  // store_wholesale_cost: s.ss_wc,
-  Const        r352, "store_wholesale_cost"
-  Index        r353, r29, r13
-  // store_sales_price: s.ss_sp,
-  Const        r354, "store_sales_price"
-  Index        r355, r29, r15
-  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
-  Const        r356, "other_chan_qty"
-  Equal        r357, r38, r68
-  Index        r358, r38, r4
-  Select       359,357,26,358
-  Equal        r360, r57, r68
-  Index        r361, r57, r5
-  Select       362,360,26,361
-  Add          r363, r359, r362
-  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
-  Const        r364, "other_chan_wholesale_cost"
-  Equal        r365, r38, r68
-  Index        r366, r38, r18
-  Select       367,365,112,366
-  Equal        r368, r57, r68
-  Index        r369, r57, r19
-  Select       370,368,112,369
-  Add          r371, r367, r370
-  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
-  Const        r372, "other_chan_sales_price"
-  Equal        r373, r38, r68
-  Index        r374, r38, r21
-  Select       375,373,112,374
-  Equal        r376, r57, r68
-  Index        r377, r57, r22
-  Select       378,376,112,377
-  Add          r379, r375, r378
-  // ss_sold_year: s.ss_sold_year,
-  Move         r380, r334
-  Move         r381, r335
-  // ss_item_sk: s.ss_item_sk,
-  Move         r382, r336
-  Move         r383, r337
-  // ss_customer_sk: s.ss_customer_sk,
-  Move         r384, r338
-  Move         r385, r339
-  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
-  Move         r386, r340
-  Move         r387, r349
-  // store_qty: s.ss_qty,
-  Move         r388, r350
-  Move         r389, r351
-  // store_wholesale_cost: s.ss_wc,
-  Move         r390, r352
-  Move         r391, r353
-  // store_sales_price: s.ss_sp,
-  Move         r392, r354
-  Move         r393, r355
-  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
-  Move         r394, r356
-  Move         r395, r363
-  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
-  Move         r396, r364
-  Move         r397, r371
-  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
-  Move         r398, r372
-  Move         r399, r379
-  // select {
-  MakeMap      r400, 10, r380
-  // from s in ss
-  Append       r3, r3, r400
+  Equal        r157, r38, r72
+  Index        r158, r38, r4
+  Select       159,157,26,158
+  Less         r160, r26, r159
+  Equal        r161, r59, r72
+  Index        r162, r59, r5
+  Select       163,161,26,162
+  Less         r164, r26, r163
+  Move         r165, r160
+  JumpIfTrue   r165, L12
+  Move         r165, r164
+L12:
+  Index        r166, r29, r6
+  Equal        r167, r166, r83
+  Move         r168, r165
+  JumpIfFalse  r168, L13
+  Move         r168, r167
 L13:
-  AddInt       r25, r25, r149
+  JumpIfFalse  r168, L4
+  // ss_sold_year: s.ss_sold_year,
+  Const        r169, "ss_sold_year"
+  Index        r170, r29, r6
+  // ss_item_sk: s.ss_item_sk,
+  Const        r171, "ss_item_sk"
+  Index        r172, r29, r7
+  // ss_customer_sk: s.ss_customer_sk,
+  Const        r173, "ss_customer_sk"
+  Index        r174, r29, r8
+  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
+  Const        r175, "ratio"
+  Index        r176, r29, r10
+  Equal        r177, r38, r72
+  Index        r178, r38, r4
+  Select       179,177,26,178
+  Equal        r180, r59, r72
+  Index        r181, r59, r5
+  Select       182,180,26,181
+  Add          r183, r179, r182
+  Div          r184, r176, r183
+  // store_qty: s.ss_qty,
+  Const        r185, "store_qty"
+  Index        r186, r29, r10
+  // store_wholesale_cost: s.ss_wc,
+  Const        r187, "store_wholesale_cost"
+  Index        r188, r29, r13
+  // store_sales_price: s.ss_sp,
+  Const        r189, "store_sales_price"
+  Index        r190, r29, r15
+  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
+  Const        r191, "other_chan_qty"
+  Equal        r192, r38, r72
+  Index        r193, r38, r4
+  Select       194,192,26,193
+  Equal        r195, r59, r72
+  Index        r196, r59, r5
+  Select       197,195,26,196
+  Add          r198, r194, r197
+  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
+  Const        r199, "other_chan_wholesale_cost"
+  Equal        r200, r38, r72
+  Index        r201, r38, r18
+  Select       202,200,118,201
+  Equal        r203, r59, r72
+  Index        r204, r59, r19
+  Select       205,203,118,204
+  Add          r206, r202, r205
+  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
+  Const        r207, "other_chan_sales_price"
+  Equal        r208, r38, r72
+  Index        r209, r38, r21
+  Select       210,208,118,209
+  Equal        r211, r59, r72
+  Index        r212, r59, r22
+  Select       213,211,118,212
+  Add          r214, r210, r213
+  // ss_sold_year: s.ss_sold_year,
+  Move         r215, r169
+  Move         r216, r170
+  // ss_item_sk: s.ss_item_sk,
+  Move         r217, r171
+  Move         r218, r172
+  // ss_customer_sk: s.ss_customer_sk,
+  Move         r219, r173
+  Move         r220, r174
+  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
+  Move         r221, r175
+  Move         r222, r184
+  // store_qty: s.ss_qty,
+  Move         r223, r185
+  Move         r224, r186
+  // store_wholesale_cost: s.ss_wc,
+  Move         r225, r187
+  Move         r226, r188
+  // store_sales_price: s.ss_sp,
+  Move         r227, r189
+  Move         r228, r190
+  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
+  Move         r229, r191
+  Move         r230, r198
+  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
+  Move         r231, r199
+  Move         r232, r206
+  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
+  Move         r233, r207
+  Move         r234, r214
+  // select {
+  MakeMap      r235, 10, r215
+  // from s in ss
+  Append       r236, r3, r235
+  Move         r3, r236
+L4:
+  // left join w in ws on w.ws_sold_year == s.ss_sold_year && w.ws_item_sk == s.ss_item_sk && w.ws_customer_sk == s.ss_customer_sk
+  Add          r35, r35, r155
+  Jump         L14
+L1:
+  Move         r237, r39
+  JumpIfTrue   r237, L15
+  Move         r38, r72
+  // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
+  IterPrep     r238, r2
+  Len          r239, r238
+  Move         r240, r26
+L22:
+  LessInt      r241, r240, r239
+  JumpIfFalse  r241, L16
+  Index        r242, r238, r240
+  Move         r59, r242
+  Const        r243, false
+  Index        r244, r59, r53
+  Index        r245, r29, r6
+  Equal        r246, r244, r245
+  Index        r247, r59, r54
+  Index        r248, r29, r7
+  Equal        r249, r247, r248
+  Index        r250, r59, r55
+  Index        r251, r29, r8
+  Equal        r252, r250, r251
+  Move         r253, r246
+  JumpIfFalse  r253, L17
+  Move         r253, r249
+L17:
+  Move         r254, r253
+  JumpIfFalse  r254, L18
+  Move         r254, r252
+L18:
+  JumpIfFalse  r254, L19
+  Const        r243, true
+  // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
+  Equal        r255, r38, r72
+  Index        r256, r38, r4
+  Select       257,255,26,256
+  Less         r258, r26, r257
+  Equal        r259, r59, r72
+  Index        r260, r59, r5
+  Select       261,259,26,260
+  Less         r262, r26, r261
+  Move         r263, r258
+  JumpIfTrue   r263, L20
+  Move         r263, r262
+L20:
+  Index        r264, r29, r6
+  Equal        r265, r264, r83
+  Move         r266, r263
+  JumpIfFalse  r266, L21
+  Move         r266, r265
+L21:
+  JumpIfFalse  r266, L19
+  // ss_sold_year: s.ss_sold_year,
+  Const        r267, "ss_sold_year"
+  Index        r268, r29, r6
+  // ss_item_sk: s.ss_item_sk,
+  Const        r269, "ss_item_sk"
+  Index        r270, r29, r7
+  // ss_customer_sk: s.ss_customer_sk,
+  Const        r271, "ss_customer_sk"
+  Index        r272, r29, r8
+  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
+  Const        r273, "ratio"
+  Index        r274, r29, r10
+  Equal        r275, r38, r72
+  Index        r276, r38, r4
+  Select       277,275,26,276
+  Equal        r278, r59, r72
+  Index        r279, r59, r5
+  Select       280,278,26,279
+  Add          r281, r277, r280
+  Div          r282, r274, r281
+  // store_qty: s.ss_qty,
+  Const        r283, "store_qty"
+  Index        r284, r29, r10
+  // store_wholesale_cost: s.ss_wc,
+  Const        r285, "store_wholesale_cost"
+  Index        r286, r29, r13
+  // store_sales_price: s.ss_sp,
+  Const        r287, "store_sales_price"
+  Index        r288, r29, r15
+  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
+  Const        r289, "other_chan_qty"
+  Equal        r290, r38, r72
+  Index        r291, r38, r4
+  Select       292,290,26,291
+  Equal        r293, r59, r72
+  Index        r294, r59, r5
+  Select       295,293,26,294
+  Add          r296, r292, r295
+  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
+  Const        r297, "other_chan_wholesale_cost"
+  Equal        r298, r38, r72
+  Index        r299, r38, r18
+  Select       300,298,118,299
+  Equal        r301, r59, r72
+  Index        r302, r59, r19
+  Select       303,301,118,302
+  Add          r304, r300, r303
+  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
+  Const        r305, "other_chan_sales_price"
+  Equal        r306, r38, r72
+  Index        r307, r38, r21
+  Select       308,306,118,307
+  Equal        r309, r59, r72
+  Index        r310, r59, r22
+  Select       311,309,118,310
+  Add          r312, r308, r311
+  // ss_sold_year: s.ss_sold_year,
+  Move         r313, r267
+  Move         r314, r268
+  // ss_item_sk: s.ss_item_sk,
+  Move         r315, r269
+  Move         r316, r270
+  // ss_customer_sk: s.ss_customer_sk,
+  Move         r317, r271
+  Move         r318, r272
+  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
+  Move         r319, r273
+  Move         r320, r282
+  // store_qty: s.ss_qty,
+  Move         r321, r283
+  Move         r322, r284
+  // store_wholesale_cost: s.ss_wc,
+  Move         r323, r285
+  Move         r324, r286
+  // store_sales_price: s.ss_sp,
+  Move         r325, r287
+  Move         r326, r288
+  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
+  Move         r327, r289
+  Move         r328, r296
+  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
+  Move         r329, r297
+  Move         r330, r304
+  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
+  Move         r331, r305
+  Move         r332, r312
+  // select {
+  MakeMap      r333, 10, r313
+  // from s in ss
+  Append       r334, r3, r333
+  Move         r3, r334
+L19:
+  // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
+  Add          r240, r240, r155
   Jump         L22
+L16:
+  Move         r335, r243
+  JumpIfTrue   r335, L15
+  Move         r59, r72
+  // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
+  Equal        r336, r38, r72
+  Index        r337, r38, r4
+  Select       338,336,26,337
+  Less         r339, r26, r338
+  Equal        r340, r59, r72
+  Index        r341, r59, r5
+  Select       342,340,26,341
+  Less         r343, r26, r342
+  Move         r344, r339
+  JumpIfTrue   r344, L23
+  Move         r344, r343
+L23:
+  Index        r345, r29, r6
+  Equal        r346, r345, r83
+  Move         r347, r344
+  JumpIfFalse  r347, L24
+  Move         r347, r346
+L24:
+  JumpIfFalse  r347, L15
+  // ss_sold_year: s.ss_sold_year,
+  Const        r348, "ss_sold_year"
+  Index        r349, r29, r6
+  // ss_item_sk: s.ss_item_sk,
+  Const        r350, "ss_item_sk"
+  Index        r351, r29, r7
+  // ss_customer_sk: s.ss_customer_sk,
+  Const        r352, "ss_customer_sk"
+  Index        r353, r29, r8
+  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
+  Const        r354, "ratio"
+  Index        r355, r29, r10
+  Equal        r356, r38, r72
+  Index        r357, r38, r4
+  Select       358,356,26,357
+  Equal        r359, r59, r72
+  Index        r360, r59, r5
+  Select       361,359,26,360
+  Add          r362, r358, r361
+  Div          r363, r355, r362
+  // store_qty: s.ss_qty,
+  Const        r364, "store_qty"
+  Index        r365, r29, r10
+  // store_wholesale_cost: s.ss_wc,
+  Const        r366, "store_wholesale_cost"
+  Index        r367, r29, r13
+  // store_sales_price: s.ss_sp,
+  Const        r368, "store_sales_price"
+  Index        r369, r29, r15
+  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
+  Const        r370, "other_chan_qty"
+  Equal        r371, r38, r72
+  Index        r372, r38, r4
+  Select       373,371,26,372
+  Equal        r374, r59, r72
+  Index        r375, r59, r5
+  Select       376,374,26,375
+  Add          r377, r373, r376
+  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
+  Const        r378, "other_chan_wholesale_cost"
+  Equal        r379, r38, r72
+  Index        r380, r38, r18
+  Select       381,379,118,380
+  Equal        r382, r59, r72
+  Index        r383, r59, r19
+  Select       384,382,118,383
+  Add          r385, r381, r384
+  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
+  Const        r386, "other_chan_sales_price"
+  Equal        r387, r38, r72
+  Index        r388, r38, r21
+  Select       389,387,118,388
+  Equal        r390, r59, r72
+  Index        r391, r59, r22
+  Select       392,390,118,391
+  Add          r393, r389, r392
+  // ss_sold_year: s.ss_sold_year,
+  Move         r394, r348
+  Move         r395, r349
+  // ss_item_sk: s.ss_item_sk,
+  Move         r396, r350
+  Move         r397, r351
+  // ss_customer_sk: s.ss_customer_sk,
+  Move         r398, r352
+  Move         r399, r353
+  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
+  Move         r400, r354
+  Move         r401, r363
+  // store_qty: s.ss_qty,
+  Move         r402, r364
+  Move         r403, r365
+  // store_wholesale_cost: s.ss_wc,
+  Move         r404, r366
+  Move         r405, r367
+  // store_sales_price: s.ss_sp,
+  Move         r406, r368
+  Move         r407, r369
+  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
+  Move         r408, r370
+  Move         r409, r377
+  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
+  Move         r410, r378
+  Move         r411, r385
+  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
+  Move         r412, r386
+  Move         r413, r393
+  // select {
+  MakeMap      r414, 10, r394
+  // from s in ss
+  Append       r415, r3, r414
+  Move         r3, r415
+L15:
+  AddInt       r25, r25, r155
+  Jump         L25
 L0:
   // json(result)
   JSON         r3
   // expect result == [
-  Const        r402, [{"other_chan_qty": 8, "other_chan_sales_price": 80, "other_chan_wholesale_cost": 40, "ratio": 1.25, "ss_customer_sk": 1, "ss_item_sk": 1, "ss_sold_year": 1998, "store_qty": 10, "store_sales_price": 100, "store_wholesale_cost": 50}]
-  Equal        r403, r3, r402
-  Expect       r403
+  Const        r416, [{"other_chan_qty": 8, "other_chan_sales_price": 80, "other_chan_wholesale_cost": 40, "ratio": 1.25, "ss_customer_sk": 1, "ss_item_sk": 1, "ss_sold_year": 1998, "store_qty": 10, "store_sales_price": 100, "store_wholesale_cost": 50}]
+  Equal        r417, r3, r416
+  Expect       r417
   Return       r0
