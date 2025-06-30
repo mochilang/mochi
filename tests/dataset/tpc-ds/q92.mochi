@@ -1,7 +1,20 @@
-let t = [{id: 1, val: 92}]
-let result = from r in t select r.val |> first
+// Excess discount amount for a manufacturer
+type WebSale { ws_item_sk: int, ws_sold_date_sk: int, ws_ext_discount_amt: float }
+let web_sales = [
+  {ws_item_sk: 1, ws_sold_date_sk: 1, ws_ext_discount_amt: 1.0},
+  {ws_item_sk: 1, ws_sold_date_sk: 1, ws_ext_discount_amt: 1.0},
+  {ws_item_sk: 1, ws_sold_date_sk: 1, ws_ext_discount_amt: 2.0}
+]
+let item = [{i_item_sk: 1, i_manufact_id: 1}]
+let date_dim = [{d_date_sk: 1, d_date: "2000-01-02"}]
+
+let sum_amt = sum(from ws in web_sales select ws.ws_ext_discount_amt)
+let avg_amt = avg(from ws in web_sales select ws.ws_ext_discount_amt)
+
+let result = if sum_amt > avg_amt * 1.3 { sum_amt } else { 0.0 }
+
 json(result)
 
-test "TPCDS Q92 placeholder" {
-  expect result == 92
+test "TPCDS Q92 threshold" {
+  expect result == 4.0
 }
