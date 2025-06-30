@@ -1,11 +1,11 @@
-func main (regs=8)
+func main (regs=9)
   // let store_sales = []
   Const        r0, []
   // let result = []
-  Move         r5, r0
+  Move         r6, r0
   // json(result)
-  JSON         r5
+  JSON         r6
   // expect result == []
-  Equal        r7, r5, r0
-  Expect       r7
+  Equal        r8, r6, r0
+  Expect       r8
   Return       r0

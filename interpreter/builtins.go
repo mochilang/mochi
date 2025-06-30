@@ -285,6 +285,7 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"input":     builtinInput,
 		"count":     builtinCount,
 		"avg":       builtinAvg,
+		"substr":    builtinSubstring,
 		"substring": builtinSubstring,
 		"eval":      builtinEval,
 	}

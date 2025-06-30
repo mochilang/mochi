@@ -434,6 +434,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("substr", FuncType{
+		Params: []Type{StringType{}, IntType{}, IntType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("input", FuncType{
 		Params: []Type{},
 		Return: StringType{},
