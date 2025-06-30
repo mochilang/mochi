@@ -1,4 +1,4 @@
-func main (regs=151)
+func main (regs=144)
   // let nation = [
   Const        r0, [{"n_name": "SAUDI ARABIA", "n_nationkey": 1}, {"n_name": "FRANCE", "n_nationkey": 2}]
   // let supplier = [
@@ -27,7 +27,8 @@ func main (regs=151)
   Const        r13, "numwait"
   // from s in supplier
   MakeMap      r14, 0, r0
-  Const        r15, []
+  Const        r16, []
+  Move         r15, r16
   IterPrep     r17, r1
   Len          r18, r17
   Const        r19, 0
@@ -89,150 +90,143 @@ L11:
   Const        r61, "SAUDI ARABIA"
   Equal        r62, r60, r61
   // o.o_orderstatus == "F" &&
-  Move         r63, r59
-  JumpIfFalse  r63, L5
-  Move         r63, r57
+  JumpIfFalse  r59, L5
+  Move         r59, r57
   // l1.l_receiptdate > l1.l_commitdate &&
-  JumpIfFalse  r63, L5
-  Move         r63, r62
+  JumpIfFalse  r59, L5
+  Move         r59, r62
   // n.n_name == "SAUDI ARABIA" && (!exists(
-  JumpIfFalse  r63, L5
+  JumpIfFalse  r59, L5
   // from x in lineitem
-  Const        r64, []
-  IterPrep     r65, r3
-  Len          r66, r65
-  Const        r68, 0
-  Move         r67, r68
+  Const        r63, []
+  IterPrep     r64, r3
+  Len          r65, r64
+  Const        r67, 0
+  Move         r66, r67
 L9:
-  LessInt      r69, r67, r66
-  JumpIfFalse  r69, L6
-  Index        r71, r65, r67
+  LessInt      r68, r66, r65
+  JumpIfFalse  r68, L6
+  Index        r70, r64, r66
   // where x.l_orderkey == l1.l_orderkey && x.l_suppkey != l1.l_suppkey && x.l_receiptdate > x.l_commitdate
-  Index        r72, r71, r10
-  Index        r73, r71, r7
-  Index        r74, r71, r8
-  Less         r75, r74, r73
-  Index        r76, r28, r10
-  Equal        r77, r72, r76
-  Index        r78, r71, r11
-  Index        r79, r28, r11
-  NotEqual     r80, r78, r79
-  Move         r81, r77
-  JumpIfFalse  r81, L7
-  Move         r81, r80
-  JumpIfFalse  r81, L7
-  Move         r81, r75
+  Index        r71, r70, r10
+  Index        r72, r70, r7
+  Index        r73, r70, r8
+  Less         r74, r73, r72
+  Index        r75, r28, r10
+  Equal        r76, r71, r75
+  Index        r77, r70, r11
+  Index        r78, r28, r11
+  NotEqual     r79, r77, r78
+  JumpIfFalse  r76, L7
+  Move         r76, r79
+  JumpIfFalse  r76, L7
+  Move         r76, r74
 L7:
-  JumpIfFalse  r81, L8
+  JumpIfFalse  r76, L8
   // from x in lineitem
-  Append       r64, r64, r71
+  Append       r63, r63, r70
 L8:
-  Const        r83, 1
-  AddInt       r67, r67, r83
+  Const        r81, 1
+  AddInt       r66, r66, r81
   Jump         L9
 L6:
   // n.n_name == "SAUDI ARABIA" && (!exists(
-  Exists       r84, r64
-  Not          r63, r84
+  Exists       r82, r63
+  Not          r59, r82
 L5:
   // o.o_orderstatus == "F" &&
-  JumpIfFalse  r63, L4
+  JumpIfFalse  r59, L4
   // from s in supplier
-  Const        r86, "s"
-  Move         r87, r22
-  Const        r88, "l1"
-  Move         r89, r28
-  Const        r90, "o"
-  Move         r91, r38
-  Const        r92, "n"
-  Move         r93, r48
-  MakeMap      r94, 4, r86
+  Const        r84, "s"
+  Move         r85, r22
+  Const        r86, "l1"
+  Move         r87, r28
+  Const        r88, "o"
+  Move         r89, r38
+  Const        r90, "n"
+  Move         r91, r48
+  MakeMap      r92, 4, r84
   // group by s.s_name into g
-  Index        r95, r22, r5
-  Str          r96, r95
-  In           r97, r96, r14
-  JumpIfTrue   r97, L10
+  Index        r93, r22, r5
+  Str          r94, r93
+  In           r95, r94, r14
+  JumpIfTrue   r95, L10
   // from s in supplier
-  Const        r98, []
-  Const        r99, "__group__"
-  Const        r100, true
-  Const        r101, "key"
+  Const        r96, "__group__"
+  Const        r97, true
   // group by s.s_name into g
-  Move         r102, r95
+  Move         r98, r93
   // from s in supplier
-  Const        r103, "items"
-  Move         r104, r98
-  Const        r105, "count"
-  Const        r106, 0
-  Move         r107, r99
-  Move         r108, r100
-  Move         r109, r101
-  Move         r110, r102
-  Move         r111, r103
-  Move         r112, r104
-  Move         r113, r105
-  Move         r114, r106
-  MakeMap      r115, 4, r107
-  SetIndex     r14, r96, r115
-  Append       r15, r15, r115
+  Const        r99, "items"
+  Move         r100, r16
+  Const        r101, "count"
+  Move         r102, r96
+  Move         r103, r97
+  Move         r104, r12
+  Move         r105, r98
+  Move         r106, r99
+  Move         r107, r100
+  Move         r108, r101
+  Move         r109, r67
+  MakeMap      r110, 4, r102
+  SetIndex     r14, r94, r110
+  Append       r15, r15, r110
 L10:
-  Const        r117, "items"
-  Index        r118, r14, r96
-  Index        r119, r118, r117
-  Append       r120, r119, r94
-  SetIndex     r118, r117, r120
-  Const        r121, "count"
-  Index        r122, r118, r121
-  AddInt       r123, r122, r83
-  SetIndex     r118, r121, r123
+  Index        r112, r14, r94
+  Index        r113, r112, r99
+  Append       r114, r113, r92
+  SetIndex     r112, r99, r114
+  Index        r115, r112, r101
+  AddInt       r116, r115, r81
+  SetIndex     r112, r101, r116
 L4:
   // join n in nation on n.n_nationkey == s.s_nationkey
-  AddInt       r45, r45, r83
+  AddInt       r45, r45, r81
   Jump         L11
 L3:
   // join o in orders on o.o_orderkey == l1.l_orderkey
-  AddInt       r35, r35, r83
+  AddInt       r35, r35, r81
   Jump         L12
 L2:
   // join l1 in lineitem on s.s_suppkey == l1.l_suppkey
-  AddInt       r25, r25, r83
+  AddInt       r25, r25, r81
   Jump         L13
 L1:
   // from s in supplier
-  AddInt       r19, r19, r83
+  AddInt       r19, r19, r81
   Jump         L14
 L0:
-  Move         r124, r68
-  Len          r125, r15
+  Move         r117, r67
+  Len          r118, r15
 L16:
-  LessInt      r126, r124, r125
-  JumpIfFalse  r126, L15
-  Index        r128, r15, r124
+  LessInt      r119, r117, r118
+  JumpIfFalse  r119, L15
+  Index        r121, r15, r117
   // s_name: g.key,
-  Const        r129, "s_name"
-  Index        r130, r128, r12
+  Const        r122, "s_name"
+  Index        r123, r121, r12
   // numwait: count(g)
-  Const        r131, "numwait"
-  Index        r132, r128, r121
+  Const        r124, "numwait"
+  Index        r125, r121, r101
   // s_name: g.key,
-  Move         r133, r129
-  Move         r134, r130
+  Move         r126, r122
+  Move         r127, r123
   // numwait: count(g)
-  Move         r135, r131
-  Move         r136, r132
+  Move         r128, r124
+  Move         r129, r125
   // select {
-  MakeMap      r137, 2, r133
+  MakeMap      r130, 2, r126
   // sort by [ -count(g), g.key ]
-  Index        r138, r128, r121
-  Neg          r140, r138
-  Index        r141, r128, r12
-  Move         r142, r141
-  MakeList     r144, 2, r140
+  Index        r131, r121, r101
+  Neg          r133, r131
+  Index        r134, r121, r12
+  Move         r135, r134
+  MakeList     r137, 2, r133
   // from s in supplier
-  Move         r145, r137
-  MakeList     r146, 2, r144
-  Append       r4, r4, r146
-  AddInt       r124, r124, r83
+  Move         r138, r130
+  MakeList     r139, 2, r137
+  Append       r4, r4, r139
+  AddInt       r117, r117, r81
   Jump         L16
 L15:
   // sort by [ -count(g), g.key ]
@@ -240,7 +234,7 @@ L15:
   // json(result)
   JSON         r4
   // expect result == [
-  Const        r149, [{"numwait": 1, "s_name": "Desert Trade"}]
-  Equal        r150, r4, r149
-  Expect       r150
+  Const        r142, [{"numwait": 1, "s_name": "Desert Trade"}]
+  Equal        r143, r4, r142
+  Expect       r143
   Return       r0
