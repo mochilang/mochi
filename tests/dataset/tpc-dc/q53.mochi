@@ -1,5 +1,6 @@
 let item = [
-  {i_item_sk: 1, i_manufact_id: 1, i_category: "Books", i_class: "personal", i_brand: "scholaramalgamalg #14"}
+  {i_item_sk: 1, i_manufact_id: 1, i_category: "Books", i_class: "personal", i_brand: "scholaramalgamalg #14"},
+  {i_item_sk: 2, i_manufact_id: 2, i_category: "Books", i_class: "personal", i_brand: "scholaramalgamalg #14"}
 ]
 
 let date_dim = [
@@ -13,7 +14,10 @@ let store = [ {s_store_sk: 1} ]
 let store_sales = [
   {ss_item_sk: 1, ss_sold_date_sk: 1, ss_store_sk:1, ss_sales_price: 100},
   {ss_item_sk: 1, ss_sold_date_sk: 2, ss_store_sk:1, ss_sales_price: 200},
-  {ss_item_sk: 1, ss_sold_date_sk: 3, ss_store_sk:1, ss_sales_price: 150}
+  {ss_item_sk: 1, ss_sold_date_sk: 3, ss_store_sk:1, ss_sales_price: 150},
+  {ss_item_sk: 2, ss_sold_date_sk: 1, ss_store_sk:1, ss_sales_price: 80},
+  {ss_item_sk: 2, ss_sold_date_sk: 2, ss_store_sk:1, ss_sales_price: 80},
+  {ss_item_sk: 2, ss_sold_date_sk: 3, ss_store_sk:1, ss_sales_price: 80}
 ]
 
 let tmp =
@@ -33,7 +37,9 @@ json(result)
 
 test "TPCDC Q53 quarterly" {
   expect result == [
-    {i_manufact_id:1, sum_sales:300, avg_quarterly_sales:225},
-    {i_manufact_id:1, sum_sales:150, avg_quarterly_sales:225}
+    {i_manufact_id:2, sum_sales:80, avg_quarterly_sales:120},
+    {i_manufact_id:2, sum_sales:160, avg_quarterly_sales:120},
+    {i_manufact_id:1, sum_sales:150, avg_quarterly_sales:225},
+    {i_manufact_id:1, sum_sales:300, avg_quarterly_sales:225}
   ]
 }

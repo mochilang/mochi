@@ -6,24 +6,41 @@ let date_dim=[
 ]
 let catalog_sales=[
   {cs_item_sk:1, cs_sold_date_sk:1, cs_call_center_sk:1, cs_sales_price:100},
+  {cs_item_sk:1, cs_sold_date_sk:1, cs_call_center_sk:1, cs_sales_price:50},
   {cs_item_sk:1, cs_sold_date_sk:2, cs_call_center_sk:1, cs_sales_price:200}
 ]
 
-let v1=
+let monthly=
   from cs in catalog_sales
   join i in item on cs.cs_item_sk == i.i_item_sk
   join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
   join cc in call_center on cs.cs_call_center_sk == cc.cc_call_center_sk
   group by {cat:i.i_category, brand:i.i_brand, cc:cc.cc_name, year:d.d_year, moy:d.d_moy} into g
-  select {
-    i_category:g.key.cat,
-    i_brand:g.key.brand,
-    cc_name:g.key.cc,
-    d_year:g.key.year,
-    d_moy:g.key.moy,
-    sum_sales: sum(from x in g select x.cs.cs_sales_price),
-    avg_monthly_sales: avg(from x in g select x.cs.cs_sales_price)
+  select {i_category:g.key.cat, i_brand:g.key.brand, cc_name:g.key.cc, d_year:g.key.year, d_moy:g.key.moy, sum_sales: sum(from x in g select x.cs.cs_sales_price)}
+
+let yearly=
+  from m in monthly
+  group by {cat:m.i_category, brand:m.i_brand, cc:m.cc_name, year:m.d_year} into g
+  select {cat:g.key.cat, brand:g.key.brand, cc:g.key.cc, year:g.key.year, avg_sales: avg(from x in g select x.sum_sales), months: from x in g select {moy:x.d_moy, sum_sales:x.sum_sales}}
+
+var v1 = []
+for y in yearly {
+  var sorted = sort(y.months, fn a,b -> a.moy < b.moy end)
+  var rn = 1
+  for m in sorted {
+    v1 = v1 + [{
+      i_category:y.cat,
+      i_brand:y.brand,
+      cc_name:y.cc,
+      d_year:y.year,
+      d_moy:m.moy,
+      sum_sales:m.sum_sales,
+      avg_monthly_sales:y.avg_sales,
+      rn:rn
+    }]
+    rn = rn + 1
   }
+}
 
 let result =
   from r in v1
@@ -34,7 +51,7 @@ json(result)
 
 test "TPCDC Q57 call center" {
   expect result == [
-    {cc_name:"CC", sum_sales:100, avg_monthly_sales:150},
-    {cc_name:"CC", sum_sales:200, avg_monthly_sales:150}
+    {cc_name:"CC", sum_sales:150, avg_monthly_sales:175},
+    {cc_name:"CC", sum_sales:200, avg_monthly_sales:175}
   ]
 }
