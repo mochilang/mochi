@@ -12,7 +12,7 @@ func main (regs=29)
   Len          r5, r4
   Const        r6, 0
 L4:
-  Less         r7, r6, r5
+  LessInt      r7, r6, r5
   JumpIfFalse  r7, L0
   Index        r8, r4, r6
   Move         r9, r8
@@ -21,7 +21,7 @@ L4:
   Len          r11, r10
   Const        r12, 0
 L3:
-  Less         r13, r12, r11
+  LessInt      r13, r12, r11
   JumpIfFalse  r13, L1
   Index        r14, r10, r12
   Move         r15, r14
@@ -39,13 +39,13 @@ L3:
 L2:
   // for s in store_sales {
   Const        r23, 1
-  Add          r24, r12, r23
+  AddInt       r24, r12, r23
   Move         r12, r24
   Jump         L3
 L1:
   // for inv in inventory {
   Const        r25, 1
-  Add          r26, r6, r25
+  AddInt       r26, r6, r25
   Move         r6, r26
   Jump         L4
 L0:

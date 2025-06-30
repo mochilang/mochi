@@ -1,6 +1,6 @@
 func main (regs=25)
   // let web_sales = [
-  Const        r0, [{"cat": "A", "class": "B", "net": 40}, {"cat": "A", "class": "B", "net": 46}, {"cat": "A", "class": "C", "net": 10}, {"cat": "B", "class": "B", "net": 20}]
+  Const        r0, [{"cat": "A", "class": "B", "net": 40.0}, {"cat": "A", "class": "B", "net": 46.0}, {"cat": "A", "class": "C", "net": 10.0}, {"cat": "B", "class": "B", "net": 20.0}]
   // sum(from ws in web_sales
   Const        r1, []
   // where ws.cat == "A" && ws.class == "B"
@@ -44,7 +44,7 @@ L0:
   // json(result)
   JSON         r22
   // expect result == 86.0
-  Const        r23, 86
+  Const        r23, 86.0
   EqualFloat   r24, r22, r23
   Expect       r24
   Return       r0
