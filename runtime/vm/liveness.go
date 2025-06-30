@@ -275,12 +275,10 @@ func Optimize(fn *Function) {
 			break
 		}
 	}
-	// CompactRegisters currently has issues with overlapping register
-	// lifetimes when nested loops are present. Disabling register
-	// compaction avoids incorrect reuse that can corrupt loop state.
-	// TODO: fix CompactRegisters and re-enable once the allocator
-	// handles lifetimes correctly.
-	// CompactRegisters(fn)
+	// Compact registers to reduce the overall register count. The
+	// allocator has been improved to correctly handle overlapping
+	// lifetimes so compaction can be enabled again.
+	CompactRegisters(fn)
 }
 
 // removeDead eliminates instructions that only define dead registers.
