@@ -132,7 +132,7 @@ L8:
   Jump         L8
 L7:
   Sort         r80, r80
-  First        97,80,0,0
+  First        r97, r80
   // let worst = first(from x in grouped sort by x.avg_profit select x)
   Const        r98, []
   Const        r99, "avg_profit"
@@ -153,7 +153,7 @@ L10:
   Jump         L10
 L9:
   Sort         r98, r98
-  First        114,98,0,0
+  First        r114, r98
   // let best_name = first(from i in item where i.i_item_sk == best.item_sk select i.i_product_name)
   Const        r115, []
   Const        r116, "i_item_sk"
@@ -180,7 +180,7 @@ L12:
   AddInt       r121, r121, r134
   Jump         L13
 L11:
-  First        135,115,0,0
+  First        r135, r115
   // let worst_name = first(from i in item where i.i_item_sk == worst.item_sk select i.i_product_name)
   Const        r136, []
   Const        r137, "i_item_sk"
@@ -207,7 +207,7 @@ L15:
   AddInt       r142, r142, r154
   Jump         L16
 L14:
-  First        155,136,0,0
+  First        r155, r136
   // let result = { best_performing: best_name, worst_performing: worst_name }
   Const        r156, "best_performing"
   Const        r157, "worst_performing"
