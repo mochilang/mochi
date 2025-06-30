@@ -1265,6 +1265,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: line}
 		case OpFirst:
 			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+				break
+			}
 			if lst.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("first expects list"), trace, ins.Line)
 			}
