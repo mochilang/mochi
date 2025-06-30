@@ -9,12 +9,38 @@ func main (regs=174)
   Const        r3, 1200
   // from ss in store_sales
   Const        r4, []
+  // group by { state: s.s_state, county: s.s_county } into g
+  Const        r5, "state"
+  Const        r6, "s_state"
+  Const        r7, "county"
+  Const        r8, "s_county"
+  // where d.d_month_seq >= dms && d.d_month_seq <= dms + 11
+  Const        r9, "d_month_seq"
+  Const        r10, "d_month_seq"
+  // s_state: g.key.state,
+  Const        r11, "s_state"
+  Const        r12, "key"
+  Const        r13, "state"
+  // s_county: g.key.county,
+  Const        r14, "s_county"
+  Const        r15, "key"
+  Const        r16, "county"
+  // total_sum: sum(from x in g select x.ss.ss_net_profit)
+  Const        r17, "total_sum"
+  Const        r18, "ss"
+  Const        r19, "ss_net_profit"
+  // sort by [g.key.state, g.key.county]
+  Const        r20, "key"
+  Const        r21, "state"
+  Const        r22, "key"
+  Const        r23, "county"
+  // from ss in store_sales
   MakeMap      r24, 0, r0
   Const        r25, []
   IterPrep     r27, r2
   Len          r28, r27
   Const        r29, 0
-L1:
+L8:
   LessInt      r30, r29, r28
   JumpIfFalse  r30, L0
   Index        r32, r27, r29
@@ -22,7 +48,7 @@ L1:
   IterPrep     r33, r1
   Len          r34, r33
   Const        r35, 0
-L2:
+L7:
   LessInt      r36, r35, r34
   JumpIfFalse  r36, L1
   Index        r38, r33, r35
@@ -49,6 +75,7 @@ L6:
   // where d.d_month_seq >= dms && d.d_month_seq <= dms + 11
   Const        r55, "d_month_seq"
   Index        r56, r38, r55
+  Const        r57, 11
   Const        r58, 1211
   LessEq       r59, r3, r56
   Const        r60, "d_month_seq"
@@ -121,13 +148,22 @@ L3:
   Const        r111, 1
   AddInt       r46, r46, r111
   Jump         L6
-L0:
+L2:
+  // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
+  Const        r112, 1
+  AddInt       r35, r35, r112
+  Jump         L7
+L1:
   // from ss in store_sales
+  Const        r113, 1
+  AddInt       r29, r29, r113
+  Jump         L8
+L0:
   Const        r114, 0
   Len          r116, r25
-L10:
+L12:
   LessInt      r117, r114, r116
-  JumpIfFalse  r117, L7
+  JumpIfFalse  r117, L9
   Index        r119, r25, r114
   // s_state: g.key.state,
   Const        r120, "s_state"
@@ -144,12 +180,14 @@ L10:
   // total_sum: sum(from x in g select x.ss.ss_net_profit)
   Const        r130, "total_sum"
   Const        r131, []
+  Const        r132, "ss"
+  Const        r133, "ss_net_profit"
   IterPrep     r134, r119
   Len          r135, r134
   Const        r136, 0
-L9:
+L11:
   LessInt      r138, r136, r135
-  JumpIfFalse  r138, L8
+  JumpIfFalse  r138, L10
   Index        r140, r134, r136
   Const        r141, "ss"
   Index        r142, r140, r141
@@ -158,8 +196,8 @@ L9:
   Append       r131, r131, r144
   Const        r146, 1
   AddInt       r136, r136, r146
-  Jump         L9
-L8:
+  Jump         L11
+L10:
   Sum          r147, r131
   // s_state: g.key.state,
   Move         r148, r120
@@ -178,6 +216,9 @@ L8:
   Const        r157, "state"
   Index        r159, r156, r157
   Const        r160, "key"
+  Index        r161, r119, r160
+  Const        r162, "county"
+  Index        r164, r161, r162
   MakeList     r166, 2, r159
   // from ss in store_sales
   Move         r167, r154
@@ -185,8 +226,8 @@ L8:
   Append       r4, r4, r168
   Const        r170, 1
   AddInt       r114, r114, r170
-  Jump         L10
-L7:
+  Jump         L12
+L9:
   // sort by [g.key.state, g.key.county]
   Sort         r4, r4
   // json(result)
