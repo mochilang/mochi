@@ -1,4 +1,4 @@
-func main (regs=204)
+func main (regs=201)
   // let info_type = [
   Const        r0, [{"id": 1, "info": "rating"}, {"id": 2, "info": "other"}]
   // let keyword = [
@@ -31,11 +31,13 @@ func main (regs=204)
   // from it in info_type
   IterPrep     r17, r0
   Len          r18, r17
-  Const        r19, 0
-L14:
+  Const        r20, 0
+  Move         r19, r20
+L11:
   LessInt      r21, r19, r18
   JumpIfFalse  r21, L0
-  Index        r23, r17, r19
+  Index        r22, r17, r19
+  Move         r23, r22
   // join mi in movie_info_idx on it.id == mi.info_type_id
   IterPrep     r24, r4
   Len          r25, r24
@@ -59,11 +61,13 @@ L14:
   Const        r37, "title"
   Const        r38, "title"
   // join mi in movie_info_idx on it.id == mi.info_type_id
-  Const        r39, 0
-L13:
+  Const        r40, 0
+  Move         r39, r40
+L10:
   LessInt      r41, r39, r25
   JumpIfFalse  r41, L1
-  Index        r43, r24, r39
+  Index        r42, r24, r39
+  Move         r43, r42
   Const        r44, "id"
   Index        r45, r23, r44
   Const        r46, "info_type_id"
@@ -93,11 +97,13 @@ L13:
   Const        r62, "title"
   Const        r63, "title"
   // join t in title on t.id == mi.movie_id
-  Const        r64, 0
-L12:
+  Const        r65, 0
+  Move         r64, r65
+L9:
   LessInt      r66, r64, r50
   JumpIfFalse  r66, L2
-  Index        r68, r49, r64
+  Index        r67, r49, r64
+  Move         r68, r67
   Const        r69, "id"
   Index        r70, r68, r69
   Const        r71, "movie_id"
@@ -127,11 +133,13 @@ L12:
   Const        r87, "title"
   Const        r88, "title"
   // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r89, 0
-L11:
+  Const        r90, 0
+  Move         r89, r90
+L8:
   LessInt      r91, r89, r75
   JumpIfFalse  r91, L3
-  Index        r93, r74, r89
+  Index        r92, r74, r89
+  Move         r93, r92
   Const        r94, "movie_id"
   Index        r95, r93, r94
   Const        r96, "id"
@@ -161,11 +169,13 @@ L11:
   Const        r112, "title"
   Const        r113, "title"
   // join k in keyword on k.id == mk.keyword_id
-  Const        r114, 0
-L10:
+  Const        r115, 0
+  Move         r114, r115
+L7:
   LessInt      r116, r114, r100
   JumpIfFalse  r116, L4
-  Index        r118, r99, r114
+  Index        r117, r99, r114
+  Move         r118, r117
   Const        r119, "id"
   Index        r120, r118, r119
   Const        r121, "keyword_id"
@@ -201,113 +211,121 @@ L10:
   Index        r143, r118, r142
   // k.keyword.contains("sequel") &&
   Const        r144, "sequel"
-  In           r146, r144, r143
-L6:
-  JumpIfFalse  r146, L7
-L7:
-  // mi.info > "5.0" &&
-  Move         r147, r129
-  JumpIfFalse  r147, L8
-L8:
-  // t.production_year > 2005 &&
-  Move         r148, r133
-  JumpIfFalse  r148, L9
-  Move         r148, r140
-L9:
+  In           r145, r144, r143
   // where it.info == "rating" &&
-  JumpIfFalse  r148, L5
+  Move         r141, r145
+  // k.keyword.contains("sequel") &&
+  JumpIfFalse  r141, L6
+  Move         r141, r129
+  // mi.info > "5.0" &&
+  JumpIfFalse  r141, L6
+  Move         r141, r133
+  // t.production_year > 2005 &&
+  JumpIfFalse  r141, L6
+  Move         r141, r140
+L6:
+  // where it.info == "rating" &&
+  JumpIfFalse  r141, L5
   // select { rating: mi.info, title: t.title }
-  Const        r149, "rating"
-  Const        r150, "info"
-  Index        r151, r43, r150
-  Const        r152, "title"
-  Const        r153, "title"
-  Index        r154, r68, r153
-  Move         r155, r149
-  Move         r156, r151
-  Move         r157, r152
-  Move         r158, r154
-  MakeMap      r159, 2, r155
+  Const        r146, "rating"
+  Const        r147, "info"
+  Index        r148, r43, r147
+  Const        r149, "title"
+  Const        r150, "title"
+  Index        r151, r68, r150
+  Move         r152, r146
+  Move         r153, r148
+  Move         r154, r149
+  Move         r155, r151
+  MakeMap      r156, 2, r152
   // from it in info_type
-  Append       r5, r5, r159
+  Append       r157, r5, r156
+  Move         r5, r157
 L5:
   // join k in keyword on k.id == mk.keyword_id
-  Const        r161, 1
-  Add          r114, r114, r161
-  Jump         L10
+  Const        r158, 1
+  Add          r114, r114, r158
+  Jump         L7
 L4:
   // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r162, 1
-  Add          r89, r89, r162
-  Jump         L11
+  Const        r159, 1
+  Add          r89, r89, r159
+  Jump         L8
 L3:
   // join t in title on t.id == mi.movie_id
-  Const        r163, 1
-  Add          r64, r64, r163
-  Jump         L12
+  Const        r160, 1
+  Add          r64, r64, r160
+  Jump         L9
 L2:
   // join mi in movie_info_idx on it.id == mi.info_type_id
-  Const        r164, 1
-  Add          r39, r39, r164
-  Jump         L13
+  Const        r161, 1
+  Add          r39, r39, r161
+  Jump         L10
 L1:
   // from it in info_type
-  Const        r165, 1
-  AddInt       r19, r19, r165
-  Jump         L14
+  Const        r162, 1
+  AddInt       r19, r19, r162
+  Jump         L11
 L0:
   // rating: min(from r in rows select r.rating),
-  Const        r166, "rating"
-  Const        r167, []
-  Const        r168, "rating"
-  IterPrep     r169, r5
-  Len          r170, r169
-  Const        r171, 0
-L16:
-  LessInt      r173, r171, r170
-  JumpIfFalse  r173, L15
-  Index        r175, r169, r171
-  Const        r176, "rating"
-  Index        r177, r175, r176
-  Append       r167, r167, r177
-  Const        r179, 1
-  AddInt       r171, r171, r179
-  Jump         L16
+  Const        r163, "rating"
+  Const        r164, []
+  Const        r165, "rating"
+  IterPrep     r166, r5
+  Len          r167, r166
+  Const        r169, 0
+  Move         r168, r169
+L13:
+  LessInt      r170, r168, r167
+  JumpIfFalse  r170, L12
+  Index        r171, r166, r168
+  Move         r172, r171
+  Const        r173, "rating"
+  Index        r174, r172, r173
+  Append       r175, r164, r174
+  Move         r164, r175
+  Const        r176, 1
+  AddInt       r168, r168, r176
+  Jump         L13
+L12:
+  Min          r177, r164
+  // movie_title: min(from r in rows select r.title)
+  Const        r178, "movie_title"
+  Const        r179, []
+  Const        r180, "title"
+  IterPrep     r181, r5
+  Len          r182, r181
+  Const        r184, 0
+  Move         r183, r184
 L15:
-  Min          r180, r167
-  // movie_title: min(from r in rows select r.title)
-  Const        r181, "movie_title"
-  Const        r182, []
-  Const        r183, "title"
-  IterPrep     r184, r5
-  Len          r185, r184
-  Const        r186, 0
-L18:
-  LessInt      r188, r186, r185
-  JumpIfFalse  r188, L17
-  Index        r175, r184, r186
-  Const        r190, "title"
-  Index        r191, r175, r190
-  Append       r182, r182, r191
-  Const        r193, 1
-  AddInt       r186, r186, r193
-  Jump         L18
-L17:
-  Min          r194, r182
+  LessInt      r185, r183, r182
+  JumpIfFalse  r185, L14
+  Index        r186, r181, r183
+  Move         r172, r186
+  Const        r187, "title"
+  Index        r188, r172, r187
+  Append       r189, r179, r188
+  Move         r179, r189
+  Const        r190, 1
+  AddInt       r183, r183, r190
+  Jump         L15
+L14:
+  Min          r191, r179
   // rating: min(from r in rows select r.rating),
-  Move         r195, r166
-  Move         r196, r180
+  Move         r192, r163
+  Move         r193, r177
   // movie_title: min(from r in rows select r.title)
-  Move         r197, r181
-  Move         r198, r194
+  Move         r194, r178
+  Move         r195, r191
   // {
-  MakeMap      r200, 2, r195
+  MakeMap      r196, 2, r192
+  Move         r197, r196
   // let result = [
-  MakeList     r201, 1, r200
+  MakeList     r198, 1, r197
   // json(result)
-  JSON         r201
+  JSON         r198
   // expect result == [ { rating: "6.2", movie_title: "Alpha Movie" } ]
-  Const        r202, [{"movie_title": "Alpha Movie", "rating": "6.2"}]
-  Equal        r203, r201, r202
-  Expect       r203
+  Const        r199, [{"movie_title": "Alpha Movie", "rating": "6.2"}]
+  Equal        r200, r198, r199
+  Expect       r200
   Return       r0

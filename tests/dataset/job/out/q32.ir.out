@@ -23,11 +23,13 @@ func main (regs=206)
   // from k in keyword
   IterPrep     r13, r0
   Len          r14, r13
-  Const        r15, 0
+  Const        r16, 0
+  Move         r15, r16
 L12:
   LessInt      r17, r15, r14
   JumpIfFalse  r17, L0
-  Index        r19, r13, r15
+  Index        r18, r13, r15
+  Move         r19, r18
   // join mk in movie_keyword on mk.keyword_id == k.id
   IterPrep     r20, r2
   Len          r21, r20
@@ -43,11 +45,13 @@ L12:
   Const        r29, "second_movie"
   Const        r30, "title"
   // join mk in movie_keyword on mk.keyword_id == k.id
-  Const        r31, 0
+  Const        r32, 0
+  Move         r31, r32
 L11:
   LessInt      r33, r31, r21
   JumpIfFalse  r33, L1
-  Index        r35, r20, r31
+  Index        r34, r20, r31
+  Move         r35, r34
   Const        r36, "keyword_id"
   Index        r37, r35, r36
   Const        r38, "id"
@@ -69,11 +73,13 @@ L11:
   Const        r50, "second_movie"
   Const        r51, "title"
   // join t1 in title on t1.id == mk.movie_id
-  Const        r52, 0
+  Const        r53, 0
+  Move         r52, r53
 L10:
   LessInt      r54, r52, r42
   JumpIfFalse  r54, L2
-  Index        r56, r41, r52
+  Index        r55, r41, r52
+  Move         r56, r55
   Const        r57, "id"
   Index        r58, r56, r57
   Const        r59, "movie_id"
@@ -95,11 +101,13 @@ L10:
   Const        r71, "second_movie"
   Const        r72, "title"
   // join ml in movie_link on ml.movie_id == t1.id
-  Const        r73, 0
+  Const        r74, 0
+  Move         r73, r74
 L9:
   LessInt      r75, r73, r63
   JumpIfFalse  r75, L3
-  Index        r77, r62, r73
+  Index        r76, r62, r73
+  Move         r77, r76
   Const        r78, "movie_id"
   Index        r79, r77, r78
   Const        r80, "id"
@@ -121,11 +129,13 @@ L9:
   Const        r92, "second_movie"
   Const        r93, "title"
   // join t2 in title on t2.id == ml.linked_movie_id
-  Const        r94, 0
+  Const        r95, 0
+  Move         r94, r95
 L8:
   LessInt      r96, r94, r84
   JumpIfFalse  r96, L4
-  Index        r98, r83, r94
+  Index        r97, r83, r94
+  Move         r98, r97
   Const        r99, "id"
   Index        r100, r98, r99
   Const        r101, "linked_movie_id"
@@ -147,11 +157,13 @@ L8:
   Const        r113, "second_movie"
   Const        r114, "title"
   // join lt in link_type on lt.id == ml.link_type_id
-  Const        r115, 0
+  Const        r116, 0
+  Move         r115, r116
 L7:
   LessInt      r117, r115, r105
   JumpIfFalse  r117, L5
-  Index        r119, r104, r115
+  Index        r118, r104, r115
+  Move         r119, r118
   Const        r120, "id"
   Index        r121, r119, r120
   Const        r122, "link_type_id"
@@ -182,7 +194,8 @@ L7:
   Move         r143, r137
   MakeMap      r144, 3, r138
   // from k in keyword
-  Append       r5, r5, r144
+  Append       r145, r5, r144
+  Move         r5, r145
 L6:
   // join lt in link_type on lt.id == ml.link_type_id
   Const        r146, 1
@@ -220,14 +233,17 @@ L0:
   Const        r154, "link_type"
   IterPrep     r155, r5
   Len          r156, r155
-  Const        r157, 0
+  Const        r158, 0
+  Move         r157, r158
 L14:
   LessInt      r159, r157, r156
   JumpIfFalse  r159, L13
-  Index        r161, r155, r157
+  Index        r160, r155, r157
+  Move         r161, r160
   Const        r162, "link_type"
   Index        r163, r161, r162
-  Append       r153, r153, r163
+  Append       r164, r153, r163
+  Move         r153, r164
   Const        r165, 1
   AddInt       r157, r157, r165
   Jump         L14
@@ -239,14 +255,17 @@ L13:
   Const        r169, "first_movie"
   IterPrep     r170, r5
   Len          r171, r170
-  Const        r172, 0
+  Const        r173, 0
+  Move         r172, r173
 L16:
   LessInt      r174, r172, r171
   JumpIfFalse  r174, L15
-  Index        r161, r170, r172
+  Index        r175, r170, r172
+  Move         r161, r175
   Const        r176, "first_movie"
   Index        r177, r161, r176
-  Append       r168, r168, r177
+  Append       r178, r168, r177
+  Move         r168, r178
   Const        r179, 1
   AddInt       r172, r172, r179
   Jump         L16
@@ -258,14 +277,17 @@ L15:
   Const        r183, "second_movie"
   IterPrep     r184, r5
   Len          r185, r184
-  Const        r186, 0
+  Const        r187, 0
+  Move         r186, r187
 L18:
   LessInt      r188, r186, r185
   JumpIfFalse  r188, L17
-  Index        r161, r184, r186
+  Index        r189, r184, r186
+  Move         r161, r189
   Const        r190, "second_movie"
   Index        r191, r161, r190
-  Append       r182, r182, r191
+  Append       r192, r182, r191
+  Move         r182, r192
   Const        r193, 1
   AddInt       r186, r186, r193
   Jump         L18

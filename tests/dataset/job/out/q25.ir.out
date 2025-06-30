@@ -1,4 +1,4 @@
-func main (regs=328)
+func main (regs=310)
   // let cast_info = [
   Const        r0, [{"movie_id": 1, "note": "(writer)", "person_id": 1}, {"movie_id": 2, "note": "(writer)", "person_id": 2}]
   // let info_type = [
@@ -90,75 +90,93 @@ func main (regs=328)
   // from ci in cast_info
   IterPrep     r53, r0
   Len          r54, r53
-  Const        r55, 0
-L37:
+  Const        r56, 0
+  Move         r55, r56
+L19:
   LessInt      r57, r55, r54
   JumpIfFalse  r57, L0
-  Index        r59, r53, r55
+  Index        r58, r53, r55
+  Move         r59, r58
   // from it1 in info_type
   IterPrep     r60, r1
   Len          r61, r60
-  Const        r62, 0
-L36:
+  Const        r63, 0
+  Move         r62, r63
+L18:
   LessInt      r64, r62, r61
   JumpIfFalse  r64, L1
-  Index        r66, r60, r62
+  Index        r65, r60, r62
+  Move         r66, r65
   // from it2 in info_type
   IterPrep     r67, r1
   Len          r68, r67
-  Const        r69, 0
-L35:
+  Const        r70, 0
+  Move         r69, r70
+L17:
   LessInt      r71, r69, r68
   JumpIfFalse  r71, L2
-  Index        r73, r67, r69
+  Index        r72, r67, r69
+  Move         r73, r72
   // from k in keyword
   IterPrep     r74, r2
   Len          r75, r74
-  Const        r76, 0
-L34:
+  Const        r77, 0
+  Move         r76, r77
+L16:
   LessInt      r78, r76, r75
   JumpIfFalse  r78, L3
-  Index        r80, r74, r76
+  Index        r79, r74, r76
+  Move         r80, r79
   // from mi in movie_info
   IterPrep     r81, r3
   Len          r82, r81
-  Const        r83, 0
-L33:
+  Const        r84, 0
+  Move         r83, r84
+L15:
   LessInt      r85, r83, r82
   JumpIfFalse  r85, L4
-  Index        r87, r81, r83
+  Index        r86, r81, r83
+  Move         r87, r86
   // from mi_idx in movie_info_idx
   IterPrep     r88, r4
   Len          r89, r88
-  Const        r90, 0
-L32:
+  Const        r91, 0
+  Move         r90, r91
+L14:
   LessInt      r92, r90, r89
   JumpIfFalse  r92, L5
-  Index        r94, r88, r90
+  Index        r93, r88, r90
+  Move         r94, r93
   // from mk in movie_keyword
   IterPrep     r95, r5
   Len          r96, r95
-  Const        r97, 0
-L31:
+  Const        r98, 0
+  Move         r97, r98
+L13:
   LessInt      r99, r97, r96
   JumpIfFalse  r99, L6
-  Index        r101, r95, r97
+  Index        r100, r95, r97
+  Move         r101, r100
   // from n in name
   IterPrep     r102, r6
   Len          r103, r102
-  Const        r104, 0
-L30:
+  Const        r105, 0
+  Move         r104, r105
+L12:
   LessInt      r106, r104, r103
   JumpIfFalse  r106, L7
-  Index        r108, r102, r104
+  Index        r107, r102, r104
+  Move         r108, r107
   // from t in title
   IterPrep     r109, r7
   Len          r110, r109
-  Const        r111, 0
-L29:
+  Const        r112, 0
+  Move         r111, r112
+L11:
   LessInt      r113, r111, r110
   JumpIfFalse  r113, L8
-  Index        r115, r109, r111
+  Index        r114, r109, r111
+  Move         r115, r114
   // (ci.note in allowed_notes) &&
   Const        r116, "note"
   Index        r117, r59, r116
@@ -270,258 +288,257 @@ L29:
   // (ci.note in allowed_notes) &&
   Move         r205, r118
   JumpIfFalse  r205, L9
-L9:
+  Move         r205, r122
   // it1.info == "genres" &&
-  Move         r206, r122
-  JumpIfFalse  r206, L10
-L10:
+  JumpIfFalse  r205, L9
+  Move         r205, r126
   // it2.info == "votes" &&
-  Move         r207, r126
-  JumpIfFalse  r207, L11
+  JumpIfFalse  r205, L9
   // (k.keyword in allowed_keywords) &&
-  Const        r208, "keyword"
-  Index        r209, r80, r208
-  In           r211, r209, r9
-L11:
-  JumpIfFalse  r211, L12
-L12:
+  Const        r206, "keyword"
+  Index        r207, r80, r206
+  In           r208, r207, r9
+  // it2.info == "votes" &&
+  Move         r205, r208
+  // (k.keyword in allowed_keywords) &&
+  JumpIfFalse  r205, L9
+  Move         r205, r130
   // mi.info == "Horror" &&
-  Move         r212, r130
-  JumpIfFalse  r212, L13
-L13:
+  JumpIfFalse  r205, L9
+  Move         r205, r134
   // n.gender == "m" &&
-  Move         r213, r134
-  JumpIfFalse  r213, L14
-L14:
+  JumpIfFalse  r205, L9
+  Move         r205, r139
   // t.id == mi.movie_id &&
-  Move         r214, r139
-  JumpIfFalse  r214, L15
-L15:
+  JumpIfFalse  r205, L9
+  Move         r205, r144
   // t.id == mi_idx.movie_id &&
-  Move         r215, r144
-  JumpIfFalse  r215, L16
-L16:
+  JumpIfFalse  r205, L9
+  Move         r205, r149
   // t.id == ci.movie_id &&
-  Move         r216, r149
-  JumpIfFalse  r216, L17
-L17:
+  JumpIfFalse  r205, L9
+  Move         r205, r154
   // t.id == mk.movie_id &&
-  Move         r217, r154
-  JumpIfFalse  r217, L18
-L18:
+  JumpIfFalse  r205, L9
+  Move         r205, r159
   // ci.movie_id == mi.movie_id &&
-  Move         r218, r159
-  JumpIfFalse  r218, L19
-L19:
+  JumpIfFalse  r205, L9
+  Move         r205, r164
   // ci.movie_id == mi_idx.movie_id &&
-  Move         r219, r164
-  JumpIfFalse  r219, L20
-L20:
+  JumpIfFalse  r205, L9
+  Move         r205, r169
   // ci.movie_id == mk.movie_id &&
-  Move         r220, r169
-  JumpIfFalse  r220, L21
-L21:
+  JumpIfFalse  r205, L9
+  Move         r205, r174
   // mi.movie_id == mi_idx.movie_id &&
-  Move         r221, r174
-  JumpIfFalse  r221, L22
-L22:
+  JumpIfFalse  r205, L9
+  Move         r205, r179
   // mi.movie_id == mk.movie_id &&
-  Move         r222, r179
-  JumpIfFalse  r222, L23
-L23:
+  JumpIfFalse  r205, L9
+  Move         r205, r184
   // mi_idx.movie_id == mk.movie_id &&
-  Move         r223, r184
-  JumpIfFalse  r223, L24
-L24:
+  JumpIfFalse  r205, L9
+  Move         r205, r189
   // n.id == ci.person_id &&
-  Move         r224, r189
-  JumpIfFalse  r224, L25
-L25:
+  JumpIfFalse  r205, L9
+  Move         r205, r194
   // it1.id == mi.info_type_id &&
-  Move         r225, r194
-  JumpIfFalse  r225, L26
-L26:
+  JumpIfFalse  r205, L9
+  Move         r205, r199
   // it2.id == mi_idx.info_type_id &&
-  Move         r226, r199
-  JumpIfFalse  r226, L27
-  Move         r226, r204
-L27:
+  JumpIfFalse  r205, L9
+  Move         r205, r204
+L9:
   // where (
-  JumpIfFalse  r226, L28
+  JumpIfFalse  r205, L10
   // budget: mi.info,
-  Const        r227, "budget"
-  Const        r228, "info"
-  Index        r229, r87, r228
+  Const        r209, "budget"
+  Const        r210, "info"
+  Index        r211, r87, r210
   // votes: mi_idx.info,
-  Const        r230, "votes"
-  Const        r231, "info"
-  Index        r232, r94, r231
+  Const        r212, "votes"
+  Const        r213, "info"
+  Index        r214, r94, r213
   // writer: n.name,
-  Const        r233, "writer"
-  Const        r234, "name"
-  Index        r235, r108, r234
+  Const        r215, "writer"
+  Const        r216, "name"
+  Index        r217, r108, r216
   // title: t.title
-  Const        r236, "title"
-  Const        r237, "title"
-  Index        r238, r115, r237
+  Const        r218, "title"
+  Const        r219, "title"
+  Index        r220, r115, r219
   // budget: mi.info,
-  Move         r239, r227
-  Move         r240, r229
+  Move         r221, r209
+  Move         r222, r211
   // votes: mi_idx.info,
-  Move         r241, r230
-  Move         r242, r232
+  Move         r223, r212
+  Move         r224, r214
   // writer: n.name,
-  Move         r243, r233
-  Move         r244, r235
+  Move         r225, r215
+  Move         r226, r217
   // title: t.title
-  Move         r245, r236
-  Move         r246, r238
+  Move         r227, r218
+  Move         r228, r220
   // select {
-  MakeMap      r247, 4, r239
+  MakeMap      r229, 4, r221
   // from ci in cast_info
-  Append       r10, r10, r247
-L28:
+  Append       r230, r10, r229
+  Move         r10, r230
+L10:
   // from t in title
-  Const        r249, 1
-  AddInt       r111, r111, r249
-  Jump         L29
+  Const        r231, 1
+  AddInt       r111, r111, r231
+  Jump         L11
 L8:
   // from n in name
-  Const        r250, 1
-  AddInt       r104, r104, r250
-  Jump         L30
+  Const        r232, 1
+  AddInt       r104, r104, r232
+  Jump         L12
 L7:
   // from mk in movie_keyword
-  Const        r251, 1
-  AddInt       r97, r97, r251
-  Jump         L31
+  Const        r233, 1
+  AddInt       r97, r97, r233
+  Jump         L13
 L6:
   // from mi_idx in movie_info_idx
-  Const        r252, 1
-  AddInt       r90, r90, r252
-  Jump         L32
+  Const        r234, 1
+  AddInt       r90, r90, r234
+  Jump         L14
 L5:
   // from mi in movie_info
-  Const        r253, 1
-  AddInt       r83, r83, r253
-  Jump         L33
+  Const        r235, 1
+  AddInt       r83, r83, r235
+  Jump         L15
 L4:
   // from k in keyword
-  Const        r254, 1
-  AddInt       r76, r76, r254
-  Jump         L34
+  Const        r236, 1
+  AddInt       r76, r76, r236
+  Jump         L16
 L3:
   // from it2 in info_type
-  Const        r255, 1
-  AddInt       r69, r69, r255
-  Jump         L35
+  Const        r237, 1
+  AddInt       r69, r69, r237
+  Jump         L17
 L2:
   // from it1 in info_type
-  Const        r256, 1
-  AddInt       r62, r62, r256
-  Jump         L36
+  Const        r238, 1
+  AddInt       r62, r62, r238
+  Jump         L18
 L1:
   // from ci in cast_info
-  Const        r257, 1
-  AddInt       r55, r55, r257
-  Jump         L37
+  Const        r239, 1
+  AddInt       r55, r55, r239
+  Jump         L19
 L0:
   // movie_budget: min(from x in matches select x.budget),
-  Const        r258, "movie_budget"
-  Const        r259, []
-  Const        r260, "budget"
-  IterPrep     r261, r10
-  Len          r262, r261
-  Const        r263, 0
-L39:
-  LessInt      r265, r263, r262
-  JumpIfFalse  r265, L38
-  Index        r267, r261, r263
-  Const        r268, "budget"
-  Index        r269, r267, r268
-  Append       r259, r259, r269
-  Const        r271, 1
-  AddInt       r263, r263, r271
-  Jump         L39
-L38:
-  Min          r272, r259
+  Const        r240, "movie_budget"
+  Const        r241, []
+  Const        r242, "budget"
+  IterPrep     r243, r10
+  Len          r244, r243
+  Const        r246, 0
+  Move         r245, r246
+L21:
+  LessInt      r247, r245, r244
+  JumpIfFalse  r247, L20
+  Index        r248, r243, r245
+  Move         r249, r248
+  Const        r250, "budget"
+  Index        r251, r249, r250
+  Append       r252, r241, r251
+  Move         r241, r252
+  Const        r253, 1
+  AddInt       r245, r245, r253
+  Jump         L21
+L20:
+  Min          r254, r241
   // movie_votes: min(from x in matches select x.votes),
-  Const        r273, "movie_votes"
-  Const        r274, []
-  Const        r275, "votes"
-  IterPrep     r276, r10
-  Len          r277, r276
-  Const        r278, 0
-L41:
-  LessInt      r280, r278, r277
-  JumpIfFalse  r280, L40
-  Index        r267, r276, r278
-  Const        r282, "votes"
-  Index        r283, r267, r282
-  Append       r274, r274, r283
-  Const        r285, 1
-  AddInt       r278, r278, r285
-  Jump         L41
-L40:
-  Min          r286, r274
+  Const        r255, "movie_votes"
+  Const        r256, []
+  Const        r257, "votes"
+  IterPrep     r258, r10
+  Len          r259, r258
+  Const        r261, 0
+  Move         r260, r261
+L23:
+  LessInt      r262, r260, r259
+  JumpIfFalse  r262, L22
+  Index        r263, r258, r260
+  Move         r249, r263
+  Const        r264, "votes"
+  Index        r265, r249, r264
+  Append       r266, r256, r265
+  Move         r256, r266
+  Const        r267, 1
+  AddInt       r260, r260, r267
+  Jump         L23
+L22:
+  Min          r268, r256
   // male_writer: min(from x in matches select x.writer),
-  Const        r287, "male_writer"
-  Const        r288, []
-  Const        r289, "writer"
-  IterPrep     r290, r10
-  Len          r291, r290
-  Const        r292, 0
-L43:
-  LessInt      r294, r292, r291
-  JumpIfFalse  r294, L42
-  Index        r267, r290, r292
-  Const        r296, "writer"
-  Index        r297, r267, r296
-  Append       r288, r288, r297
-  Const        r299, 1
-  AddInt       r292, r292, r299
-  Jump         L43
-L42:
-  Min          r300, r288
+  Const        r269, "male_writer"
+  Const        r270, []
+  Const        r271, "writer"
+  IterPrep     r272, r10
+  Len          r273, r272
+  Const        r275, 0
+  Move         r274, r275
+L25:
+  LessInt      r276, r274, r273
+  JumpIfFalse  r276, L24
+  Index        r277, r272, r274
+  Move         r249, r277
+  Const        r278, "writer"
+  Index        r279, r249, r278
+  Append       r280, r270, r279
+  Move         r270, r280
+  Const        r281, 1
+  AddInt       r274, r274, r281
+  Jump         L25
+L24:
+  Min          r282, r270
   // violent_movie_title: min(from x in matches select x.title)
-  Const        r301, "violent_movie_title"
-  Const        r302, []
-  Const        r303, "title"
-  IterPrep     r304, r10
-  Len          r305, r304
-  Const        r306, 0
-L45:
-  LessInt      r308, r306, r305
-  JumpIfFalse  r308, L44
-  Index        r267, r304, r306
-  Const        r310, "title"
-  Index        r311, r267, r310
-  Append       r302, r302, r311
-  Const        r313, 1
-  AddInt       r306, r306, r313
-  Jump         L45
-L44:
-  Min          r314, r302
+  Const        r283, "violent_movie_title"
+  Const        r284, []
+  Const        r285, "title"
+  IterPrep     r286, r10
+  Len          r287, r286
+  Const        r289, 0
+  Move         r288, r289
+L27:
+  LessInt      r290, r288, r287
+  JumpIfFalse  r290, L26
+  Index        r291, r286, r288
+  Move         r249, r291
+  Const        r292, "title"
+  Index        r293, r249, r292
+  Append       r294, r284, r293
+  Move         r284, r294
+  Const        r295, 1
+  AddInt       r288, r288, r295
+  Jump         L27
+L26:
+  Min          r296, r284
   // movie_budget: min(from x in matches select x.budget),
-  Move         r315, r258
-  Move         r316, r272
+  Move         r297, r240
+  Move         r298, r254
   // movie_votes: min(from x in matches select x.votes),
-  Move         r317, r273
-  Move         r318, r286
+  Move         r299, r255
+  Move         r300, r268
   // male_writer: min(from x in matches select x.writer),
-  Move         r319, r287
-  Move         r320, r300
+  Move         r301, r269
+  Move         r302, r282
   // violent_movie_title: min(from x in matches select x.title)
-  Move         r321, r301
-  Move         r322, r314
+  Move         r303, r283
+  Move         r304, r296
   // {
-  MakeMap      r324, 4, r315
+  MakeMap      r305, 4, r297
+  Move         r306, r305
   // let result = [
-  MakeList     r325, 1, r324
+  MakeList     r307, 1, r306
   // json(result)
-  JSON         r325
+  JSON         r307
   // expect result == [
-  Const        r326, [{"male_writer": "Mike", "movie_budget": "Horror", "movie_votes": 100, "violent_movie_title": "Scary Movie"}]
-  Equal        r327, r325, r326
-  Expect       r327
+  Const        r308, [{"male_writer": "Mike", "movie_budget": "Horror", "movie_votes": 100, "violent_movie_title": "Scary Movie"}]
+  Equal        r309, r307, r308
+  Expect       r309
   Return       r0

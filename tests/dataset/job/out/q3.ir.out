@@ -1,4 +1,4 @@
-func main (regs=118)
+func main (regs=116)
   // let keyword = [
   Const        r0, [{"id": 1, "keyword": "amazing sequel"}, {"id": 2, "keyword": "prequel"}]
   // let movie_info = [
@@ -26,11 +26,13 @@ func main (regs=118)
   // from k in keyword
   IterPrep     r13, r0
   Len          r14, r13
-  Const        r15, 0
-L11:
+  Const        r16, 0
+  Move         r15, r16
+L9:
   LessInt      r17, r15, r14
   JumpIfFalse  r17, L0
-  Index        r19, r13, r15
+  Index        r18, r13, r15
+  Move         r19, r18
   // join mk in movie_keyword on mk.keyword_id == k.id
   IterPrep     r20, r2
   Len          r21, r20
@@ -49,11 +51,13 @@ L11:
   // select t.title
   Const        r30, "title"
   // join mk in movie_keyword on mk.keyword_id == k.id
-  Const        r31, 0
-L10:
+  Const        r32, 0
+  Move         r31, r32
+L8:
   LessInt      r33, r31, r21
   JumpIfFalse  r33, L1
-  Index        r35, r20, r31
+  Index        r34, r20, r31
+  Move         r35, r34
   Const        r36, "keyword_id"
   Index        r37, r35, r36
   Const        r38, "id"
@@ -78,11 +82,13 @@ L10:
   // select t.title
   Const        r51, "title"
   // join mi in movie_info on mi.movie_id == mk.movie_id
-  Const        r52, 0
-L9:
+  Const        r53, 0
+  Move         r52, r53
+L7:
   LessInt      r54, r52, r42
   JumpIfFalse  r54, L2
-  Index        r56, r41, r52
+  Index        r55, r41, r52
+  Move         r56, r55
   Const        r57, "movie_id"
   Index        r58, r56, r57
   Const        r59, "movie_id"
@@ -107,11 +113,13 @@ L9:
   // select t.title
   Const        r72, "title"
   // join t in title on t.id == mi.movie_id
-  Const        r73, 0
-L8:
+  Const        r74, 0
+  Move         r73, r74
+L6:
   LessInt      r75, r73, r63
   JumpIfFalse  r75, L3
-  Index        r77, r62, r73
+  Index        r76, r62, r73
+  Move         r77, r76
   Const        r78, "id"
   Index        r79, r77, r78
   Const        r80, "movie_id"
@@ -141,55 +149,55 @@ L8:
   // where k.keyword.contains("sequel") &&
   Move         r99, r86
   JumpIfFalse  r99, L5
-L5:
+  Move         r99, r93
   // mi.info in allowed_infos &&
-  Move         r100, r93
-  JumpIfFalse  r100, L6
-L6:
+  JumpIfFalse  r99, L5
+  Move         r99, r90
   // t.production_year > 2005 &&
-  Move         r101, r90
-  JumpIfFalse  r101, L7
-  Move         r101, r98
-L7:
+  JumpIfFalse  r99, L5
+  Move         r99, r98
+L5:
   // where k.keyword.contains("sequel") &&
-  JumpIfFalse  r101, L4
+  JumpIfFalse  r99, L4
   // select t.title
-  Const        r102, "title"
-  Index        r103, r77, r102
+  Const        r100, "title"
+  Index        r101, r77, r100
   // from k in keyword
-  Append       r5, r5, r103
+  Append       r102, r5, r101
+  Move         r5, r102
 L4:
   // join t in title on t.id == mi.movie_id
-  Const        r105, 1
-  Add          r73, r73, r105
-  Jump         L8
+  Const        r103, 1
+  Add          r73, r73, r103
+  Jump         L6
 L3:
   // join mi in movie_info on mi.movie_id == mk.movie_id
-  Const        r106, 1
-  Add          r52, r52, r106
-  Jump         L9
+  Const        r104, 1
+  Add          r52, r52, r104
+  Jump         L7
 L2:
   // join mk in movie_keyword on mk.keyword_id == k.id
-  Const        r107, 1
-  Add          r31, r31, r107
-  Jump         L10
+  Const        r105, 1
+  Add          r31, r31, r105
+  Jump         L8
 L1:
   // from k in keyword
-  Const        r108, 1
-  AddInt       r15, r15, r108
-  Jump         L11
+  Const        r106, 1
+  AddInt       r15, r15, r106
+  Jump         L9
 L0:
   // let result = [{ movie_title: min(candidate_titles) }]
-  Const        r109, "movie_title"
-  Min          r110, r5
-  Move         r111, r109
-  Move         r112, r110
-  MakeMap      r114, 1, r111
-  MakeList     r115, 1, r114
+  Const        r107, "movie_title"
+  Min          r108, r5
+  Move         r109, r107
+  Move         r110, r108
+  MakeMap      r111, 1, r109
+  Move         r112, r111
+  MakeList     r113, 1, r112
   // json(result)
-  JSON         r115
+  JSON         r113
   // expect result == [ { movie_title: "Alpha" } ]
-  Const        r116, [{"movie_title": "Alpha"}]
-  Equal        r117, r115, r116
-  Expect       r117
+  Const        r114, [{"movie_title": "Alpha"}]
+  Equal        r115, r113, r114
+  Expect       r115
   Return       r0

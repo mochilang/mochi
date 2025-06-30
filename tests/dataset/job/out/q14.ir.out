@@ -1,4 +1,4 @@
-func main (regs=245)
+func main (regs=230)
   // let info_type = [
   Const        r0, [{"id": 1, "info": "countries"}, {"id": 2, "info": "rating"}]
   // let keyword = [
@@ -72,67 +72,83 @@ func main (regs=245)
   // from it1 in info_type
   IterPrep     r41, r0
   Len          r42, r41
-  Const        r43, 0
-L32:
+  Const        r44, 0
+  Move         r43, r44
+L17:
   LessInt      r45, r43, r42
   JumpIfFalse  r45, L0
-  Index        r47, r41, r43
+  Index        r46, r41, r43
+  Move         r47, r46
   // from it2 in info_type
   IterPrep     r48, r0
   Len          r49, r48
-  Const        r50, 0
-L31:
+  Const        r51, 0
+  Move         r50, r51
+L16:
   LessInt      r52, r50, r49
   JumpIfFalse  r52, L1
-  Index        r54, r48, r50
+  Index        r53, r48, r50
+  Move         r54, r53
   // from k in keyword
   IterPrep     r55, r1
   Len          r56, r55
-  Const        r57, 0
-L30:
+  Const        r58, 0
+  Move         r57, r58
+L15:
   LessInt      r59, r57, r56
   JumpIfFalse  r59, L2
-  Index        r61, r55, r57
+  Index        r60, r55, r57
+  Move         r61, r60
   // from kt in kind_type
   IterPrep     r62, r2
   Len          r63, r62
-  Const        r64, 0
-L29:
+  Const        r65, 0
+  Move         r64, r65
+L14:
   LessInt      r66, r64, r63
   JumpIfFalse  r66, L3
-  Index        r68, r62, r64
+  Index        r67, r62, r64
+  Move         r68, r67
   // from mi in movie_info
   IterPrep     r69, r4
   Len          r70, r69
-  Const        r71, 0
-L28:
+  Const        r72, 0
+  Move         r71, r72
+L13:
   LessInt      r73, r71, r70
   JumpIfFalse  r73, L4
-  Index        r75, r69, r71
+  Index        r74, r69, r71
+  Move         r75, r74
   // from mi_idx in movie_info_idx
   IterPrep     r76, r5
   Len          r77, r76
-  Const        r78, 0
-L27:
+  Const        r79, 0
+  Move         r78, r79
+L12:
   LessInt      r80, r78, r77
   JumpIfFalse  r80, L5
-  Index        r82, r76, r78
+  Index        r81, r76, r78
+  Move         r82, r81
   // from mk in movie_keyword
   IterPrep     r83, r6
   Len          r84, r83
-  Const        r85, 0
-L26:
+  Const        r86, 0
+  Move         r85, r86
+L11:
   LessInt      r87, r85, r84
   JumpIfFalse  r87, L6
-  Index        r89, r83, r85
+  Index        r88, r83, r85
+  Move         r89, r88
   // from t in title
   IterPrep     r90, r3
   Len          r91, r90
-  Const        r92, 0
-L25:
+  Const        r93, 0
+  Move         r92, r93
+L10:
   LessInt      r94, r92, r91
   JumpIfFalse  r94, L7
-  Index        r96, r90, r92
+  Index        r95, r90, r92
+  Move         r96, r95
   // it1.info == "countries" &&
   Const        r97, "info"
   Index        r98, r47, r97
@@ -222,183 +238,181 @@ L25:
   // it1.info == "countries" &&
   Move         r167, r108
   JumpIfFalse  r167, L8
-L8:
+  Move         r167, r112
   // it2.info == "rating" &&
-  Move         r168, r112
-  JumpIfFalse  r168, L9
+  JumpIfFalse  r167, L8
   // (k.keyword in allowed_keywords) &&
-  Const        r169, "keyword"
-  Index        r170, r61, r169
-  In           r172, r170, r7
-L9:
-  JumpIfFalse  r172, L10
-L10:
+  Const        r168, "keyword"
+  Index        r169, r61, r168
+  In           r170, r169, r7
+  // it2.info == "rating" &&
+  Move         r167, r170
+  // (k.keyword in allowed_keywords) &&
+  JumpIfFalse  r167, L8
+  Move         r167, r116
   // kt.kind == "movie" &&
-  Move         r173, r116
-  JumpIfFalse  r173, L11
+  JumpIfFalse  r167, L8
   // (mi.info in allowed_countries) &&
-  Const        r174, "info"
-  Index        r175, r75, r174
-  In           r177, r175, r8
-L11:
-  JumpIfFalse  r177, L12
-L12:
+  Const        r171, "info"
+  Index        r172, r75, r171
+  In           r173, r172, r8
+  // kt.kind == "movie" &&
+  Move         r167, r173
+  // (mi.info in allowed_countries) &&
+  JumpIfFalse  r167, L8
+  Move         r167, r102
   // mi_idx.info < 8.5 &&
-  Move         r178, r102
-  JumpIfFalse  r178, L13
-L13:
+  JumpIfFalse  r167, L8
+  Move         r167, r106
   // t.production_year > 2010 &&
-  Move         r179, r106
-  JumpIfFalse  r179, L14
-L14:
+  JumpIfFalse  r167, L8
+  Move         r167, r121
   // kt.id == t.kind_id &&
-  Move         r180, r121
-  JumpIfFalse  r180, L15
-L15:
+  JumpIfFalse  r167, L8
+  Move         r167, r126
   // t.id == mi.movie_id &&
-  Move         r181, r126
-  JumpIfFalse  r181, L16
-L16:
+  JumpIfFalse  r167, L8
+  Move         r167, r131
   // t.id == mk.movie_id &&
-  Move         r182, r131
-  JumpIfFalse  r182, L17
-L17:
+  JumpIfFalse  r167, L8
+  Move         r167, r136
   // t.id == mi_idx.movie_id &&
-  Move         r183, r136
-  JumpIfFalse  r183, L18
-L18:
+  JumpIfFalse  r167, L8
+  Move         r167, r141
   // mk.movie_id == mi.movie_id &&
-  Move         r184, r141
-  JumpIfFalse  r184, L19
-L19:
+  JumpIfFalse  r167, L8
+  Move         r167, r146
   // mk.movie_id == mi_idx.movie_id &&
-  Move         r185, r146
-  JumpIfFalse  r185, L20
-L20:
+  JumpIfFalse  r167, L8
+  Move         r167, r151
   // mi.movie_id == mi_idx.movie_id &&
-  Move         r186, r151
-  JumpIfFalse  r186, L21
-L21:
+  JumpIfFalse  r167, L8
+  Move         r167, r156
   // k.id == mk.keyword_id &&
-  Move         r187, r156
-  JumpIfFalse  r187, L22
-L22:
+  JumpIfFalse  r167, L8
+  Move         r167, r161
   // it1.id == mi.info_type_id &&
-  Move         r188, r161
-  JumpIfFalse  r188, L23
-  Move         r188, r166
-L23:
+  JumpIfFalse  r167, L8
+  Move         r167, r166
+L8:
   // where (
-  JumpIfFalse  r188, L24
+  JumpIfFalse  r167, L9
   // rating: mi_idx.info,
-  Const        r189, "rating"
-  Const        r190, "info"
-  Index        r191, r82, r190
+  Const        r174, "rating"
+  Const        r175, "info"
+  Index        r176, r82, r175
   // title: t.title
-  Const        r192, "title"
-  Const        r193, "title"
-  Index        r194, r96, r193
+  Const        r177, "title"
+  Const        r178, "title"
+  Index        r179, r96, r178
   // rating: mi_idx.info,
-  Move         r195, r189
-  Move         r196, r191
+  Move         r180, r174
+  Move         r181, r176
   // title: t.title
-  Move         r197, r192
-  Move         r198, r194
+  Move         r182, r177
+  Move         r183, r179
   // select {
-  MakeMap      r199, 2, r195
+  MakeMap      r184, 2, r180
   // from it1 in info_type
-  Append       r9, r9, r199
-L24:
+  Append       r185, r9, r184
+  Move         r9, r185
+L9:
   // from t in title
-  Const        r201, 1
-  AddInt       r92, r92, r201
-  Jump         L25
+  Const        r186, 1
+  AddInt       r92, r92, r186
+  Jump         L10
 L7:
   // from mk in movie_keyword
-  Const        r202, 1
-  AddInt       r85, r85, r202
-  Jump         L26
+  Const        r187, 1
+  AddInt       r85, r85, r187
+  Jump         L11
 L6:
   // from mi_idx in movie_info_idx
-  Const        r203, 1
-  AddInt       r78, r78, r203
-  Jump         L27
+  Const        r188, 1
+  AddInt       r78, r78, r188
+  Jump         L12
 L5:
   // from mi in movie_info
-  Const        r204, 1
-  AddInt       r71, r71, r204
-  Jump         L28
+  Const        r189, 1
+  AddInt       r71, r71, r189
+  Jump         L13
 L4:
   // from kt in kind_type
-  Const        r205, 1
-  AddInt       r64, r64, r205
-  Jump         L29
+  Const        r190, 1
+  AddInt       r64, r64, r190
+  Jump         L14
 L3:
   // from k in keyword
-  Const        r206, 1
-  AddInt       r57, r57, r206
-  Jump         L30
+  Const        r191, 1
+  AddInt       r57, r57, r191
+  Jump         L15
 L2:
   // from it2 in info_type
-  Const        r207, 1
-  AddInt       r50, r50, r207
-  Jump         L31
+  Const        r192, 1
+  AddInt       r50, r50, r192
+  Jump         L16
 L1:
   // from it1 in info_type
-  Const        r208, 1
-  AddInt       r43, r43, r208
-  Jump         L32
+  Const        r193, 1
+  AddInt       r43, r43, r193
+  Jump         L17
 L0:
   // rating: min(from x in matches select x.rating),
-  Const        r209, "rating"
+  Const        r194, "rating"
+  Const        r195, []
+  Const        r196, "rating"
+  IterPrep     r197, r9
+  Len          r198, r197
+  Const        r200, 0
+  Move         r199, r200
+L19:
+  LessInt      r201, r199, r198
+  JumpIfFalse  r201, L18
+  Index        r202, r197, r199
+  Move         r203, r202
+  Const        r204, "rating"
+  Index        r205, r203, r204
+  Append       r206, r195, r205
+  Move         r195, r206
+  Const        r207, 1
+  AddInt       r199, r199, r207
+  Jump         L19
+L18:
+  Min          r208, r195
+  // northern_dark_movie: min(from x in matches select x.title)
+  Const        r209, "northern_dark_movie"
   Const        r210, []
-  Const        r211, "rating"
+  Const        r211, "title"
   IterPrep     r212, r9
   Len          r213, r212
-  Const        r214, 0
-L34:
+  Const        r215, 0
+  Move         r214, r215
+L21:
   LessInt      r216, r214, r213
-  JumpIfFalse  r216, L33
-  Index        r218, r212, r214
-  Const        r219, "rating"
-  Index        r220, r218, r219
-  Append       r210, r210, r220
-  Const        r222, 1
-  AddInt       r214, r214, r222
-  Jump         L34
-L33:
-  Min          r223, r210
-  // northern_dark_movie: min(from x in matches select x.title)
-  Const        r224, "northern_dark_movie"
-  Const        r225, []
-  Const        r226, "title"
-  IterPrep     r227, r9
-  Len          r228, r227
-  Const        r229, 0
-L36:
-  LessInt      r231, r229, r228
-  JumpIfFalse  r231, L35
-  Index        r218, r227, r229
-  Const        r233, "title"
-  Index        r234, r218, r233
-  Append       r225, r225, r234
-  Const        r236, 1
-  AddInt       r229, r229, r236
-  Jump         L36
-L35:
-  Min          r237, r225
+  JumpIfFalse  r216, L20
+  Index        r217, r212, r214
+  Move         r203, r217
+  Const        r218, "title"
+  Index        r219, r203, r218
+  Append       r220, r210, r219
+  Move         r210, r220
+  Const        r221, 1
+  AddInt       r214, r214, r221
+  Jump         L21
+L20:
+  Min          r222, r210
   // rating: min(from x in matches select x.rating),
-  Move         r238, r209
-  Move         r239, r223
+  Move         r223, r194
+  Move         r224, r208
   // northern_dark_movie: min(from x in matches select x.title)
-  Move         r240, r224
-  Move         r241, r237
+  Move         r225, r209
+  Move         r226, r222
   // let result = {
-  MakeMap      r242, 2, r238
+  MakeMap      r227, 2, r223
   // json(result)
-  JSON         r242
+  JSON         r227
   // expect result == { rating: 7.0, northern_dark_movie: "A Dark Movie" }
-  Const        r243, {"northern_dark_movie": "A Dark Movie", "rating": 7}
-  Equal        r244, r242, r243
-  Expect       r244
+  Const        r228, {"northern_dark_movie": "A Dark Movie", "rating": 7}
+  Equal        r229, r227, r228
+  Expect       r229
   Return       r0

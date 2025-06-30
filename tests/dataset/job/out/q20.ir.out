@@ -1,4 +1,4 @@
-func main (regs=335)
+func main (regs=330)
   // let comp_cast_type = [
   Const        r0, [{"id": 1, "kind": "cast"}, {"id": 2, "kind": "complete cast"}]
   // let char_name = [
@@ -43,11 +43,13 @@ func main (regs=335)
   // from cc in complete_cast
   IterPrep     r23, r2
   Len          r24, r23
-  Const        r25, 0
-L26:
+  Const        r26, 0
+  Move         r25, r26
+L22:
   LessInt      r27, r25, r24
   JumpIfFalse  r27, L0
-  Index        r29, r23, r25
+  Index        r28, r23, r25
+  Move         r29, r28
   // join cct1 in comp_cast_type on cct1.id == cc.subject_id
   IterPrep     r30, r0
   Len          r31, r30
@@ -75,11 +77,13 @@ L26:
   // select t.title
   Const        r46, "title"
   // join cct1 in comp_cast_type on cct1.id == cc.subject_id
-  Const        r47, 0
-L25:
+  Const        r48, 0
+  Move         r47, r48
+L21:
   LessInt      r49, r47, r31
   JumpIfFalse  r49, L1
-  Index        r51, r30, r47
+  Index        r50, r30, r47
+  Move         r51, r50
   Const        r52, "id"
   Index        r53, r51, r52
   Const        r54, "subject_id"
@@ -113,11 +117,13 @@ L25:
   // select t.title
   Const        r73, "title"
   // join cct2 in comp_cast_type on cct2.id == cc.status_id
-  Const        r74, 0
-L24:
+  Const        r75, 0
+  Move         r74, r75
+L20:
   LessInt      r76, r74, r58
   JumpIfFalse  r76, L2
-  Index        r78, r57, r74
+  Index        r77, r57, r74
+  Move         r78, r77
   Const        r79, "id"
   Index        r80, r78, r79
   Const        r81, "status_id"
@@ -151,11 +157,13 @@ L24:
   // select t.title
   Const        r100, "title"
   // join ci in cast_info on ci.movie_id == cc.movie_id
-  Const        r101, 0
-L23:
+  Const        r102, 0
+  Move         r101, r102
+L19:
   LessInt      r103, r101, r85
   JumpIfFalse  r103, L3
-  Index        r105, r84, r101
+  Index        r104, r84, r101
+  Move         r105, r104
   Const        r106, "movie_id"
   Index        r107, r105, r106
   Const        r108, "movie_id"
@@ -189,11 +197,13 @@ L23:
   // select t.title
   Const        r127, "title"
   // join chn in char_name on chn.id == ci.person_role_id
-  Const        r128, 0
-L22:
+  Const        r129, 0
+  Move         r128, r129
+L18:
   LessInt      r130, r128, r112
   JumpIfFalse  r130, L4
-  Index        r132, r111, r128
+  Index        r131, r111, r128
+  Move         r132, r131
   Const        r133, "id"
   Index        r134, r132, r133
   Const        r135, "person_role_id"
@@ -227,11 +237,13 @@ L22:
   // select t.title
   Const        r154, "title"
   // join n in name on n.id == ci.person_id
-  Const        r155, 0
-L21:
+  Const        r156, 0
+  Move         r155, r156
+L17:
   LessInt      r157, r155, r139
   JumpIfFalse  r157, L5
-  Index        r159, r138, r155
+  Index        r158, r138, r155
+  Move         r159, r158
   Const        r160, "id"
   Index        r161, r159, r160
   Const        r162, "person_id"
@@ -265,11 +277,13 @@ L21:
   // select t.title
   Const        r181, "title"
   // join mk in movie_keyword on mk.movie_id == cc.movie_id
-  Const        r182, 0
-L20:
+  Const        r183, 0
+  Move         r182, r183
+L16:
   LessInt      r184, r182, r166
   JumpIfFalse  r184, L6
-  Index        r186, r165, r182
+  Index        r185, r165, r182
+  Move         r186, r185
   Const        r187, "movie_id"
   Index        r188, r186, r187
   Const        r189, "movie_id"
@@ -303,11 +317,13 @@ L20:
   // select t.title
   Const        r208, "title"
   // join k in keyword on k.id == mk.keyword_id
-  Const        r209, 0
-L19:
+  Const        r210, 0
+  Move         r209, r210
+L15:
   LessInt      r211, r209, r193
   JumpIfFalse  r211, L7
-  Index        r213, r192, r209
+  Index        r212, r192, r209
+  Move         r213, r212
   Const        r214, "id"
   Index        r215, r213, r214
   Const        r216, "keyword_id"
@@ -341,11 +357,13 @@ L19:
   // select t.title
   Const        r235, "title"
   // join t in title on t.id == cc.movie_id
-  Const        r236, 0
-L18:
+  Const        r237, 0
+  Move         r236, r237
+L14:
   LessInt      r238, r236, r220
   JumpIfFalse  r238, L8
-  Index        r240, r219, r236
+  Index        r239, r219, r236
+  Move         r240, r239
   Const        r241, "id"
   Index        r242, r240, r241
   Const        r243, "movie_id"
@@ -379,11 +397,13 @@ L18:
   // select t.title
   Const        r262, "title"
   // join kt in kind_type on kt.id == t.kind_id
-  Const        r263, 0
-L17:
+  Const        r264, 0
+  Move         r263, r264
+L13:
   LessInt      r265, r263, r247
   JumpIfFalse  r265, L9
-  Index        r267, r246, r263
+  Index        r266, r246, r263
+  Move         r267, r266
   Const        r268, "id"
   Index        r269, r267, r268
   Const        r270, "kind_id"
@@ -418,109 +438,117 @@ L17:
   Index        r291, r78, r290
   // cct2.kind.contains("complete") &&
   Const        r292, "complete"
-  In           r294, r292, r291
-L11:
-  JumpIfFalse  r294, L12
-  Const        r295, "name"
-  Index        r296, r132, r295
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r297, "Sherlock"
-  In           r298, r297, r296
-  Not          r300, r298
-L12:
-  JumpIfFalse  r300, L13
-  Const        r301, "name"
-  Index        r302, r132, r301
-  // (chn.name.contains("Tony Stark") || chn.name.contains("Iron Man")) &&
-  Const        r303, "Tony Stark"
-  In           r305, r303, r302
-  JumpIfTrue   r305, L13
-  Const        r306, "name"
-  Index        r307, r132, r306
-  Const        r308, "Iron Man"
-  In           r305, r308, r307
-L13:
-  Move         r310, r305
-  JumpIfFalse  r310, L14
-L14:
-  // ] &&
-  Move         r311, r284
-  JumpIfFalse  r311, L15
-L15:
-  // kt.kind == "movie" &&
-  Move         r312, r288
-  JumpIfFalse  r312, L16
-  Move         r312, r278
-L16:
+  In           r293, r292, r291
   // where cct1.kind == "cast" &&
-  JumpIfFalse  r312, L10
+  Move         r289, r293
+  // cct2.kind.contains("complete") &&
+  JumpIfFalse  r289, L11
+  Const        r294, "name"
+  Index        r295, r132, r294
+  // (!chn.name.contains("Sherlock")) &&
+  Const        r296, "Sherlock"
+  In           r297, r296, r295
+  Not          r298, r297
+  // cct2.kind.contains("complete") &&
+  Move         r289, r298
+  // (!chn.name.contains("Sherlock")) &&
+  JumpIfFalse  r289, L11
+  Const        r299, "name"
+  Index        r300, r132, r299
+  // (chn.name.contains("Tony Stark") || chn.name.contains("Iron Man")) &&
+  Const        r301, "Tony Stark"
+  In           r302, r301, r300
+  Move         r303, r302
+  JumpIfTrue   r303, L12
+  Const        r304, "name"
+  Index        r305, r132, r304
+  Const        r306, "Iron Man"
+  In           r307, r306, r305
+  Move         r303, r307
+L12:
+  // (!chn.name.contains("Sherlock")) &&
+  Move         r289, r303
+  // (chn.name.contains("Tony Stark") || chn.name.contains("Iron Man")) &&
+  JumpIfFalse  r289, L11
+  Move         r289, r284
+  // ] &&
+  JumpIfFalse  r289, L11
+  Move         r289, r288
+  // kt.kind == "movie" &&
+  JumpIfFalse  r289, L11
+  Move         r289, r278
+L11:
+  // where cct1.kind == "cast" &&
+  JumpIfFalse  r289, L10
   // select t.title
-  Const        r313, "title"
-  Index        r314, r240, r313
+  Const        r308, "title"
+  Index        r309, r240, r308
   // from cc in complete_cast
-  Append       r9, r9, r314
+  Append       r310, r9, r309
+  Move         r9, r310
 L10:
   // join kt in kind_type on kt.id == t.kind_id
-  Const        r316, 1
-  Add          r263, r263, r316
-  Jump         L17
+  Const        r311, 1
+  Add          r263, r263, r311
+  Jump         L13
 L9:
   // join t in title on t.id == cc.movie_id
-  Const        r317, 1
-  Add          r236, r236, r317
-  Jump         L18
+  Const        r312, 1
+  Add          r236, r236, r312
+  Jump         L14
 L8:
   // join k in keyword on k.id == mk.keyword_id
-  Const        r318, 1
-  Add          r209, r209, r318
-  Jump         L19
+  Const        r313, 1
+  Add          r209, r209, r313
+  Jump         L15
 L7:
   // join mk in movie_keyword on mk.movie_id == cc.movie_id
-  Const        r319, 1
-  Add          r182, r182, r319
-  Jump         L20
+  Const        r314, 1
+  Add          r182, r182, r314
+  Jump         L16
 L6:
   // join n in name on n.id == ci.person_id
-  Const        r320, 1
-  Add          r155, r155, r320
-  Jump         L21
+  Const        r315, 1
+  Add          r155, r155, r315
+  Jump         L17
 L5:
   // join chn in char_name on chn.id == ci.person_role_id
-  Const        r321, 1
-  Add          r128, r128, r321
-  Jump         L22
+  Const        r316, 1
+  Add          r128, r128, r316
+  Jump         L18
 L4:
   // join ci in cast_info on ci.movie_id == cc.movie_id
-  Const        r322, 1
-  Add          r101, r101, r322
-  Jump         L23
+  Const        r317, 1
+  Add          r101, r101, r317
+  Jump         L19
 L3:
   // join cct2 in comp_cast_type on cct2.id == cc.status_id
-  Const        r323, 1
-  Add          r74, r74, r323
-  Jump         L24
+  Const        r318, 1
+  Add          r74, r74, r318
+  Jump         L20
 L2:
   // join cct1 in comp_cast_type on cct1.id == cc.subject_id
-  Const        r324, 1
-  Add          r47, r47, r324
-  Jump         L25
+  Const        r319, 1
+  Add          r47, r47, r319
+  Jump         L21
 L1:
   // from cc in complete_cast
-  Const        r325, 1
-  AddInt       r25, r25, r325
-  Jump         L26
+  Const        r320, 1
+  AddInt       r25, r25, r320
+  Jump         L22
 L0:
   // let result = [ { complete_downey_ironman_movie: min(matches) } ]
-  Const        r326, "complete_downey_ironman_movie"
-  Min          r327, r9
-  Move         r328, r326
-  Move         r329, r327
-  MakeMap      r331, 1, r328
-  MakeList     r332, 1, r331
+  Const        r321, "complete_downey_ironman_movie"
+  Min          r322, r9
+  Move         r323, r321
+  Move         r324, r322
+  MakeMap      r325, 1, r323
+  Move         r326, r325
+  MakeList     r327, 1, r326
   // json(result)
-  JSON         r332
+  JSON         r327
   // expect result == [ { complete_downey_ironman_movie: "Iron Man" } ]
-  Const        r333, [{"complete_downey_ironman_movie": "Iron Man"}]
-  Equal        r334, r332, r333
-  Expect       r334
+  Const        r328, [{"complete_downey_ironman_movie": "Iron Man"}]
+  Equal        r329, r327, r328
+  Expect       r329
   Return       r0
