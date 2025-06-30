@@ -33,6 +33,7 @@ The VM supports a small but useful subset of Mochi:
 * List and string slicing with `[start:end]` syntax (supports negative indices)
 * Pattern matching
 * Test blocks with `expect` statements
+* Capable of running the full suite of simplified TPC‑DS benchmark queries
 
 ## Unsupported features
 
