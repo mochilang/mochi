@@ -1,0 +1,37 @@
+let store_sales = [
+  {ss_item_sk: 1, ss_store_sk: 1, ss_sold_date_sk: 1, ss_net_profit: 10.0, ss_ext_sales_price: 100.0},
+  {ss_item_sk: 1, ss_store_sk: 1, ss_sold_date_sk: 1, ss_net_profit: 20.0, ss_ext_sales_price: 200.0}
+]
+
+let item = [
+  {i_item_sk: 1, i_category: "Books", i_class: "Fiction"}
+]
+
+let store = [
+  {s_store_sk: 1, s_state: "CA"}
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_year: 1999}
+]
+
+let ratios =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  where d.d_year == 1999 && s.s_state in ["CA","TX","WA","OR","NY","MA","MI","OH"]
+  group by {category: i.i_category, class: i.i_class} into g
+  select {
+    i_category: g.key.category,
+    i_class: g.key.class,
+    ratio: sum(from x in g select x.ss_net_profit) / sum(from x in g select x.ss_ext_sales_price)
+  }
+
+json(ratios)
+
+test "TPCDC Q36 simplified" {
+  expect ratios == [
+    {i_category: "Books", i_class: "Fiction", ratio: 0.1}
+  ]
+}

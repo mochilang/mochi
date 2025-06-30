@@ -1,0 +1,32 @@
+let item = [
+  {i_item_sk: 1, i_manufact_id: 1, i_category: "Books"},
+  {i_item_sk: 2, i_manufact_id: 2, i_category: "Music"}
+]
+
+let store_sales = [
+  {ss_item_sk: 1, ss_ext_sales_price: 100.0},
+  {ss_item_sk: 2, ss_ext_sales_price: 50.0}
+]
+
+let catalog_sales = [
+  {cs_item_sk: 1, cs_ext_sales_price: 80.0}
+]
+
+let web_sales = [
+  {ws_item_sk: 1, ws_ext_sales_price: 70.0}
+]
+
+let total_sales =
+  sum(from ss in store_sales join i in item on ss.ss_item_sk == i.i_item_sk where i.i_category == "Books" select ss.ss_ext_sales_price) +
+  sum(from cs in catalog_sales join i in item on cs.cs_item_sk == i.i_item_sk where i.i_category == "Books" select cs.cs_ext_sales_price) +
+  sum(from ws in web_sales join i in item on ws.ws_item_sk == i.i_item_sk where i.i_category == "Books" select ws.ws_ext_sales_price)
+
+let result = [{i_manufact_id: 1, total_sales: total_sales}]
+
+json(result)
+
+test "TPCDC Q33 simplified" {
+  expect result == [
+    {i_manufact_id: 1, total_sales: 250.0}
+  ]
+}

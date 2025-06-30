@@ -1,0 +1,35 @@
+let item = [
+  {i_item_sk: 1, i_item_id: "I1", i_item_desc: "Item 1", i_current_price: 25.0, i_manufact_id: 1}
+]
+
+let inventory = [
+  {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 200}
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_date: "1999-01-15"}
+]
+
+let catalog_sales = [
+  {cs_item_sk: 1}
+]
+
+let result =
+  from i in item
+  join inv in inventory on i.i_item_sk == inv.inv_item_sk
+  join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  join cs in catalog_sales on i.i_item_sk == cs.cs_item_sk
+  where i.i_current_price >= 20 && i.i_current_price <= 50 &&
+        d.d_date >= "1999-01-01" && d.d_date <= "1999-01-01" + 60*day &&
+        i.i_manufact_id in [1,2,3,4] &&
+        inv.inv_quantity_on_hand >= 100 && inv.inv_quantity_on_hand <= 500
+  group by {i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, i_current_price: i.i_current_price} into g
+  select g.key
+
+json(result)
+
+test "TPCDC Q37 simplified" {
+  expect result == [
+    {i_item_id: "I1", i_item_desc: "Item 1", i_current_price: 25.0}
+  ]
+}

@@ -1,0 +1,69 @@
+let date_dim = [
+  {d_date_sk: 1, d_year: 1999, d_qoy: 1},
+  {d_date_sk: 2, d_year: 1999, d_qoy: 2},
+  {d_date_sk: 3, d_year: 1999, d_qoy: 3}
+]
+
+let customer_address = [
+  {ca_address_sk: 1, ca_state: "CA", ca_county: "County1"},
+  {ca_address_sk: 2, ca_state: "CA", ca_county: "County1"}
+]
+
+let store_sales = [
+  {ss_addr_sk: 1, ss_sold_date_sk: 1, ss_ext_sales_price: 10.0},
+  {ss_addr_sk: 1, ss_sold_date_sk: 2, ss_ext_sales_price: 20.0},
+  {ss_addr_sk: 1, ss_sold_date_sk: 3, ss_ext_sales_price: 40.0}
+]
+
+let web_sales = [
+  {ws_bill_addr_sk: 1, ws_sold_date_sk: 1, ws_ext_sales_price: 5.0},
+  {ws_bill_addr_sk: 1, ws_sold_date_sk: 2, ws_ext_sales_price: 10.0},
+  {ws_bill_addr_sk: 1, ws_sold_date_sk: 3, ws_ext_sales_price: 20.0}
+]
+
+let ss_by_q =
+  from ss in store_sales
+  join dd in date_dim on ss.ss_sold_date_sk == dd.d_date_sk
+  join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk
+  group by {county: ca.ca_county, q: dd.d_qoy, year: dd.d_year} into g
+  select {county: g.key.county, q: g.key.q, year: g.key.year, total: sum(from x in g select x.ss_ext_sales_price)}
+
+let ws_by_q =
+  from ws in web_sales
+  join dd in date_dim on ws.ws_sold_date_sk == dd.d_date_sk
+  join ca in customer_address on ws.ws_bill_addr_sk == ca.ca_address_sk
+  group by {county: ca.ca_county, q: dd.d_qoy, year: dd.d_year} into g
+  select {county: g.key.county, q: g.key.q, year: g.key.year, total: sum(from x in g select x.ws_ext_sales_price)}
+
+let ss1 = first(from r in ss_by_q where r.q == 1 select r.total)
+let ss2 = first(from r in ss_by_q where r.q == 2 select r.total)
+let ss3 = first(from r in ss_by_q where r.q == 3 select r.total)
+let ws1 = first(from r in ws_by_q where r.q == 1 select r.total)
+let ws2 = first(from r in ws_by_q where r.q == 2 select r.total)
+let ws3 = first(from r in ws_by_q where r.q == 3 select r.total)
+
+let result = [
+  {
+    ca_county: "County1",
+    d_year: 1999,
+    web_q1_q2_increase: ws2 / ws1,
+    store_q1_q2_increase: ss2 / ss1,
+    web_q2_q3_increase: ws3 / ws2,
+    store_q2_q3_increase: ss3 / ss2
+  }
+]
+
+json(result)
+
+test "TPCDC Q31 simplified" {
+  expect result == [
+    {
+      ca_county: "County1",
+      d_year: 1999,
+      web_q1_q2_increase: 2,
+      store_q1_q2_increase: 2,
+      web_q2_q3_increase: 2,
+      store_q2_q3_increase: 2
+    }
+  ]
+}
