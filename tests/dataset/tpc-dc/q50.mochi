@@ -1,11 +1,18 @@
+// Expanded dataset with one sale/return for each return bucket
 let store_sales = [
-  {ticket: 1, item: 100, sold_date: 1, customer: 1, store: 1},
-  {ticket: 2, item: 101, sold_date: 10, customer: 2, store: 1}
+  {ticket: 1, item: 100, sold_date: 1,  customer: 1, store: 1},  // <30 days
+  {ticket: 2, item: 101, sold_date: 10, customer: 2, store: 1}, // 31-60 days
+  {ticket: 3, item: 102, sold_date: 30, customer: 1, store: 1}, // 61-90 days
+  {ticket: 4, item: 103, sold_date: 40, customer: 2, store: 1}, // 91-120 days
+  {ticket: 5, item: 104, sold_date: 50, customer: 1, store: 1}  // >120 days
 ]
 
 let store_returns = [
-  {ticket: 1, item: 100, returned_date: 21, customer: 1},
-  {ticket: 2, item: 101, returned_date: 70, customer: 2}
+  {ticket: 1, item: 100, returned_date: 21,  customer: 1},  // diff 20
+  {ticket: 2, item: 101, returned_date: 50,  customer: 2},  // diff 40
+  {ticket: 3, item: 102, returned_date: 100, customer: 1},  // diff 70
+  {ticket: 4, item: 103, returned_date: 140, customer: 2},  // diff 100
+  {ticket: 5, item: 104, returned_date: 180, customer: 1}   // diff 130
 ]
 
 let store = [
@@ -25,10 +32,16 @@ let store = [
 ]
 
 let date_dim = [
-  {date_sk: 1, year: 2000, month: 1},
-  {date_sk: 10, year: 2000, month: 1},
-  {date_sk: 21, year: 2000, month: 1},
-  {date_sk: 70, year: 2000, month: 2}
+  {date_sk: 1,   year: 2000, month: 1},
+  {date_sk: 10,  year: 2000, month: 1},
+  {date_sk: 21,  year: 2000, month: 1},
+  {date_sk: 30,  year: 2000, month: 1},
+  {date_sk: 40,  year: 2000, month: 1},
+  {date_sk: 50,  year: 2000, month: 1},
+  {date_sk: 100, year: 2000, month: 1},
+  {date_sk: 130, year: 2000, month: 1},
+  {date_sk: 140, year: 2000, month: 1},
+  {date_sk: 180, year: 2000, month: 1}
 ]
 
 let result =
@@ -83,9 +96,9 @@ test "TPCDC Q50 return days by store" {
     s_state: "CA",
     s_zip: "12345",
     "30 days": 1,
-    "31-60 days": 0,
+    "31-60 days": 1,
     "61-90 days": 1,
-    "91-120 days": 0,
-    ">120 days": 0
+    "91-120 days": 1,
+    ">120 days": 1
   }]
 }

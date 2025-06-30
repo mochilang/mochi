@@ -1,7 +1,13 @@
 let item=[{i_item_sk:1, i_category:"Cat", i_brand:"Brand"}]
 let call_center=[{cc_call_center_sk:1, cc_name:"CC"}]
-let date_dim=[{d_date_sk:1, d_year:2000, d_moy:1}]
-let catalog_sales=[{cs_item_sk:1, cs_sold_date_sk:1, cs_call_center_sk:1, cs_sales_price:100}]
+let date_dim=[
+  {d_date_sk:1, d_year:2000, d_moy:1},
+  {d_date_sk:2, d_year:2000, d_moy:2}
+]
+let catalog_sales=[
+  {cs_item_sk:1, cs_sold_date_sk:1, cs_call_center_sk:1, cs_sales_price:100},
+  {cs_item_sk:1, cs_sold_date_sk:2, cs_call_center_sk:1, cs_sales_price:200}
+]
 
 let v1=
   from cs in catalog_sales
@@ -27,5 +33,8 @@ let result =
 json(result)
 
 test "TPCDC Q57 call center" {
-  expect result == [{cc_name:"CC", sum_sales:100, avg_monthly_sales:50}]
+  expect result == [
+    {cc_name:"CC", sum_sales:100, avg_monthly_sales:150},
+    {cc_name:"CC", sum_sales:200, avg_monthly_sales:150}
+  ]
 }
