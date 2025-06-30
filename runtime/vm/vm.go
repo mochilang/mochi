@@ -1222,15 +1222,23 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(b)))}
 			}
 		case OpReverse:
-			lst := fr.regs[ins.B]
-			if lst.Tag != ValueList {
-				return Value{}, m.newError(fmt.Errorf("reverse expects list"), trace, ins.Line)
+			val := fr.regs[ins.B]
+			switch val.Tag {
+			case ValueList:
+				newList := append([]Value(nil), val.List...)
+				for i, j := 0, len(newList)-1; i < j; i, j = i+1, j-1 {
+					newList[i], newList[j] = newList[j], newList[i]
+				}
+				fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
+			case ValueStr:
+				r := []rune(val.Str)
+				for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
+					r[i], r[j] = r[j], r[i]
+				}
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(r)}
+			default:
+				return Value{}, m.newError(fmt.Errorf("reverse expects list or string"), trace, ins.Line)
 			}
-			newList := append([]Value(nil), lst.List...)
-			for i, j := 0, len(newList)-1; i < j; i, j = i+1, j-1 {
-				newList[i], newList[j] = newList[j], newList[i]
-			}
-			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpInput:
 			line, err := m.reader.ReadString('\n')
 			if err != nil && err != io.EOF {

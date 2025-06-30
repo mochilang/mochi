@@ -366,8 +366,8 @@ func Check(prog *parser.Program, env *Env) []error {
 		Pure:   true,
 	}, false)
 	env.SetVar("reverse", FuncType{
-		Params: []Type{ListType{Elem: AnyType{}}},
-		Return: ListType{Elem: AnyType{}},
+		Params: []Type{AnyType{}},
+		Return: AnyType{},
 		Pure:   true,
 	}, false)
 	env.SetVar("push", FuncType{
@@ -2357,12 +2357,12 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))
 		}
-		if _, ok := args[0].(ListType); !ok {
-			if _, ok := args[0].(AnyType); !ok {
-				return fmt.Errorf("reverse() expects list, got %v", args[0])
-			}
+		switch args[0].(type) {
+		case ListType, StringType, AnyType:
+			return nil
+		default:
+			return fmt.Errorf("reverse() expects list or string, got %v", args[0])
 		}
-		return nil
 	case "substring":
 		if len(args) != 3 {
 			return errArgCount(pos, name, 3, len(args))
