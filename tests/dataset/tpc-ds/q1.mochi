@@ -4,6 +4,8 @@ let date_dim = []
 let store = []
 let customer = []
 
+// Tables are intentionally empty so the query executes without loading data
+
 // Query executes over the empty tables and therefore
 // produces an empty result set.
 let customer_total_return =
