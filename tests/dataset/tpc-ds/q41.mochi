@@ -6,15 +6,12 @@ let item = [
 
 let lower = 100
 
-let dummy = null
-let base =
+let result =
   from i1 in item
   where i1.manufact_id >= lower && i1.manufact_id <= lower + 40 &&
         count(from i2 in item where i2.manufact == i1.manufact && i2.category == i1.category select i2) > 1
   order by i1.product_name
   select i1.product_name
-
-let result = concat(dummy, base)
 
 json(result)
 

@@ -9,15 +9,13 @@ let item = [
   { i_item_sk: 2, i_product_name: "ItemB" }
 ]
 
-let dummy = null
-
 let grouped_base = (
   from ss in store_sales
   group by ss.ss_item_sk into g
   select { item_sk: g.key,
            avg_profit: avg(from x in g select x.ss_net_profit) }
 )
-let grouped = concat(dummy, grouped_base)
+let grouped = grouped_base
 
 let best = first(from x in grouped sort by -x.avg_profit select x)
 let worst = first(from x in grouped sort by x.avg_profit select x)

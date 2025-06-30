@@ -20,8 +20,6 @@ let item = [
 
 let date_dim = [ { d_date_sk: 1, d_qoy: 1, d_year: 2020 } ]
 
-let dummy = null
-
 let zip_list = ["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"]
 let item_ids = ["I2"]
 let qoy = 1
@@ -38,7 +36,7 @@ let base =
   group by ca.ca_zip into g
   select { ca_zip: g.key, sum_ws_sales_price: sum(from x in g select x.ws.sales_price) }
 
-let records = concat(dummy, base)
+let records = base
 
 json(records)
 

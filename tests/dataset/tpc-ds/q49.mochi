@@ -11,8 +11,6 @@ let store = [
   { item: "A", return_ratio: 0.25, currency_ratio: 0.35, return_rank: 1, currency_rank: 1 }
 ]
 
-let dummy = null
-
 let tmp = (
   concat(
   from w in web
@@ -27,12 +25,10 @@ let tmp = (
   )
 )
 
-let base =
+let result =
   from r in tmp
   sort by [r.channel, r.return_rank, r.currency_rank, r.item]
   select r
-
-let result = concat(dummy, base)
 
 json(result)
 
