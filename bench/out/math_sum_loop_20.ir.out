@@ -47,8 +47,8 @@ func sum_loop (regs=5)
 L1:
   // for i in 1..n {
   Const        r2, 1
-  Less         r3, r2, r0
 L0:
+  Less         r3, r2, r0
   JumpIfFalse  r3, L0
   // total = total + i
   AddInt       r1, r1, r2

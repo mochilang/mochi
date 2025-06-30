@@ -36,7 +36,7 @@ L0:
   Move         r8, r5
   Move         r9, r2
   // json({
-  MakeMap      r1, 2, r6
+  MakeMap      r1, 1, r6
   JSON         r1
   Return       r0
 
@@ -47,8 +47,8 @@ func sum_loop (regs=5)
 L1:
   // for i in 1..n {
   Const        r2, 1
-L0:
   Less         r3, r2, r0
+L0:
   JumpIfFalse  r3, L0
   // total = total + i
   AddInt       r1, r1, r2

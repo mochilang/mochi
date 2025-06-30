@@ -5,13 +5,13 @@ func main (regs=24)
   Const        r1, 10
   // var a: list<list<int>> = []
   Const        r2, []
+L6:
   // for i in 0..size {
   Const        r3, 0
   Less         r4, r3, r0
   JumpIfFalse  r4, L0
   // var row: list<int> = []
   Const        r5, []
-L4:
   // for j in 0..size {
   Const        r6, 0
 L5:
@@ -22,6 +22,7 @@ L1:
   AddInt       r8, r3, r6
 L2:
   MakeList     r9, 1, r8
+L4:
   Add          r5, r5, r9
   // for j in 0..size {
   Const        r10, 1
@@ -35,7 +36,6 @@ L7:
   Add          r2, r2, r13
   // for i in 0..size {
   Const        r14, 1
-L6:
   Add          r3, r3, r14
   Jump         L3
   // var b: list<list<int>> = []
@@ -43,13 +43,13 @@ L6:
   // for i in 0..size {
   Const        r3, 0
   Less         r17, r3, r0
-  JumpIfFalse  r17, L2
+  JumpIfFalse  r17, L4
   // var row: list<int> = []
   Const        r18, []
   // for j in 0..size {
   Const        r19, 0
   Less         r4, r19, r0
-  JumpIfFalse  r4, L4
+  JumpIfFalse  r4, L3
   // row = row + [i * j]
   MulInt       r7, r3, r19
   MakeList     r5, 1, r7
@@ -100,7 +100,7 @@ L6:
   Move         r22, r8
   Move         r23, r11
   // json({
-  MakeMap      r1, 5, r20
+  MakeMap      r1, 4, r20
   JSON         r1
   Return       r0
 
@@ -110,6 +110,7 @@ func matmul (regs=13)
   Len          r2, r0
   // let m = len(b[0])
   Const        r3, 0
+L1:
   Index        r4, r1, r3
 L0:
   Len          r5, r4
@@ -121,7 +122,6 @@ L2:
   // for i in 0..n {
   Const        r8, 0
   Less         r9, r8, r2
-L1:
   JumpIfFalse  r9, L0
 L4:
   // var row: list<int> = []

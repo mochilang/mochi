@@ -54,7 +54,7 @@ L0:
   Move         r10, r3
   Move         r11, r2
   // json({
-  MakeMap      r5, 5, r8
+  MakeMap      r5, 4, r8
   JSON         r5
   Return       r0
 
