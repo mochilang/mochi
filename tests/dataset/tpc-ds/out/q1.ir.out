@@ -29,14 +29,16 @@ func main (regs=239)
   Const        r17, "sr_return_amt"
   // from sr in store_returns
   MakeMap      r18, 0, r0
-  Const        r19, []
+  Const        r20, []
+  Move         r19, r20
   IterPrep     r21, r0
   Len          r22, r21
   Const        r23, 0
 L5:
   LessInt      r24, r23, r22
   JumpIfFalse  r24, L0
-  Index        r26, r21, r23
+  Index        r25, r21, r23
+  Move         r26, r25
   // join d in date_dim on sr.sr_returned_date_sk == d.d_date_sk
   IterPrep     r27, r1
   Len          r28, r27
@@ -44,7 +46,8 @@ L5:
 L4:
   LessInt      r30, r29, r28
   JumpIfFalse  r30, L1
-  Index        r32, r27, r29
+  Index        r31, r27, r29
+  Move         r32, r31
   Const        r33, "sr_returned_date_sk"
   Index        r34, r26, r33
   Const        r35, "d_date_sk"
@@ -100,7 +103,8 @@ L4:
   Move         r76, r68
   MakeMap      r77, 4, r69
   SetIndex     r18, r58, r77
-  Append       r19, r19, r77
+  Append       r78, r19, r77
+  Move         r19, r78
 L3:
   Const        r79, "items"
   Index        r80, r18, r58
@@ -123,12 +127,14 @@ L1:
   AddInt       r23, r23, r88
   Jump         L5
 L0:
-  Const        r89, 0
+  Const        r90, 0
+  Move         r89, r90
   Len          r91, r19
 L9:
   LessInt      r92, r89, r91
   JumpIfFalse  r92, L6
-  Index        r94, r19, r89
+  Index        r93, r19, r89
+  Move         r94, r93
   // ctr_customer_sk: g.key.customer_sk,
   Const        r95, "ctr_customer_sk"
   Const        r96, "key"
@@ -147,14 +153,17 @@ L9:
   Const        r107, "sr_return_amt"
   IterPrep     r108, r94
   Len          r109, r108
-  Const        r110, 0
+  Const        r111, 0
+  Move         r110, r111
 L8:
   LessInt      r112, r110, r109
   JumpIfFalse  r112, L7
-  Index        r114, r108, r110
+  Index        r113, r108, r110
+  Move         r114, r113
   Const        r115, "sr_return_amt"
   Index        r116, r114, r115
-  Append       r106, r106, r116
+  Append       r117, r106, r116
+  Move         r106, r117
   Const        r118, 1
   AddInt       r110, r110, r118
   Jump         L8
@@ -172,7 +181,8 @@ L7:
   // select {
   MakeMap      r126, 3, r120
   // from sr in store_returns
-  Append       r4, r4, r126
+  Append       r127, r4, r126
+  Move         r4, r127
   Const        r128, 1
   AddInt       r89, r89, r128
   Jump         L9
@@ -196,11 +206,13 @@ L6:
   // from ctr1 in customer_total_return
   IterPrep     r138, r4
   Len          r139, r138
-  Const        r140, 0
+  Const        r141, 0
+  Move         r140, r141
 L20:
   LessInt      r142, r140, r139
   JumpIfFalse  r142, L10
-  Index        r144, r138, r140
+  Index        r143, r138, r140
+  Move         r144, r143
   // join s in store on ctr1.ctr_store_sk == s.s_store_sk
   IterPrep     r145, r2
   Len          r146, r145
@@ -221,11 +233,13 @@ L20:
   // sort by c.c_customer_id
   Const        r156, "c_customer_id"
   // join s in store on ctr1.ctr_store_sk == s.s_store_sk
-  Const        r157, 0
+  Const        r158, 0
+  Move         r157, r158
 L19:
   LessInt      r159, r157, r146
   JumpIfFalse  r159, L11
-  Index        r161, r145, r157
+  Index        r160, r145, r157
+  Move         r161, r160
   Const        r162, "ctr_store_sk"
   Index        r163, r144, r162
   Const        r164, "s_store_sk"
@@ -252,11 +266,13 @@ L19:
   // sort by c.c_customer_id
   Const        r178, "c_customer_id"
   // join c in customer on ctr1.ctr_customer_sk == c.c_customer_sk
-  Const        r179, 0
+  Const        r180, 0
+  Move         r179, r180
 L18:
   LessInt      r181, r179, r168
   JumpIfFalse  r181, L12
-  Index        r183, r167, r179
+  Index        r182, r167, r179
+  Move         r183, r182
   Const        r184, "ctr_customer_sk"
   Index        r185, r144, r184
   Const        r186, "c_customer_sk"
@@ -276,11 +292,13 @@ L18:
   // from ctr2 in customer_total_return
   IterPrep     r195, r4
   Len          r196, r195
-  Const        r197, 0
+  Const        r198, 0
+  Move         r197, r198
 L16:
   LessInt      r199, r197, r196
   JumpIfFalse  r199, L14
-  Index        r201, r195, r197
+  Index        r200, r195, r197
+  Move         r201, r200
   // where ctr1.ctr_store_sk == ctr2.ctr_store_sk
   Const        r202, "ctr_store_sk"
   Index        r203, r144, r202
@@ -292,7 +310,8 @@ L16:
   Const        r207, "ctr_total_return"
   Index        r208, r201, r207
   // from ctr2 in customer_total_return
-  Append       r191, r191, r208
+  Append       r209, r191, r208
+  Move         r191, r209
 L15:
   Const        r210, 1
   AddInt       r197, r197, r210
@@ -326,11 +345,13 @@ L17:
   MakeMap      r225, 1, r223
   // sort by c.c_customer_id
   Const        r226, "c_customer_id"
-  Index        r228, r183, r226
+  Index        r227, r183, r226
+  Move         r228, r227
   // from ctr1 in customer_total_return
   Move         r229, r225
   MakeList     r230, 2, r228
-  Append       r129, r129, r230
+  Append       r231, r129, r230
+  Move         r129, r231
 L13:
   // join c in customer on ctr1.ctr_customer_sk == c.c_customer_sk
   Const        r232, 1
@@ -348,7 +369,9 @@ L11:
   Jump         L20
 L10:
   // sort by c.c_customer_id
-  Sort         r129, r129
+  Sort         r235, r129
+  // from ctr1 in customer_total_return
+  Move         r129, r235
   // json(result)
   JSON         r129
   // expect len(result) == 0

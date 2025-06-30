@@ -6,14 +6,17 @@ func main (regs=18)
   Const        r2, "val"
   IterPrep     r3, r0
   Len          r4, r3
-  Const        r5, 0
+  Const        r6, 0
+  Move         r5, r6
 L1:
   LessInt      r7, r5, r4
   JumpIfFalse  r7, L0
-  Index        r9, r3, r5
+  Index        r8, r3, r5
+  Move         r9, r8
   Const        r10, "val"
   Index        r11, r9, r10
-  Append       r1, r1, r11
+  Append       r12, r1, r11
+  Move         r1, r12
   Const        r13, 1
   AddInt       r5, r5, r13
   Jump         L1

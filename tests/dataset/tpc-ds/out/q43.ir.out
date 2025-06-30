@@ -26,11 +26,13 @@ func main (regs=372)
   // from d in date_dim
   IterPrep     r16, r0
   Len          r17, r16
-  Const        r18, 0
+  Const        r19, 0
+  Move         r18, r19
 L7:
   LessInt      r20, r18, r17
   JumpIfFalse  r20, L0
-  Index        r22, r16, r18
+  Index        r21, r16, r18
+  Move         r22, r21
   // join ss in store_sales on ss.sold_date_sk == d.date_sk
   IterPrep     r23, r2
   Len          r24, r23
@@ -49,11 +51,13 @@ L7:
   Const        r35, "price"
   Const        r36, "sales_price"
   // join ss in store_sales on ss.sold_date_sk == d.date_sk
-  Const        r37, 0
+  Const        r38, 0
+  Move         r37, r38
 L6:
   LessInt      r39, r37, r24
   JumpIfFalse  r39, L1
-  Index        r41, r23, r37
+  Index        r40, r23, r37
+  Move         r41, r40
   Const        r42, "sold_date_sk"
   Index        r43, r41, r42
   Const        r44, "date_sk"
@@ -78,11 +82,13 @@ L6:
   Const        r59, "price"
   Const        r60, "sales_price"
   // join s in store on ss.store_sk == s.store_sk
-  Const        r61, 0
+  Const        r62, 0
+  Move         r61, r62
 L5:
   LessInt      r63, r61, r48
   JumpIfFalse  r63, L2
-  Index        r65, r47, r61
+  Index        r64, r47, r61
+  Move         r65, r64
   Const        r66, "store_sk"
   Index        r67, r41, r66
   Const        r68, "store_sk"
@@ -124,7 +130,8 @@ L4:
   Move         r97, r89
   MakeMap      r98, 4, r90
   // from d in date_dim
-  Append       r5, r5, r98
+  Append       r99, r5, r98
+  Move         r5, r99
 L3:
   // join s in store on ss.store_sk == s.store_sk
   Const        r100, 1
@@ -189,7 +196,8 @@ L0:
   Len          r136, r135
   Const        r137, 0
   MakeMap      r138, 0, r0
-  Const        r139, []
+  Const        r140, []
+  Move         r139, r140
 L10:
   LessInt      r141, r137, r136
   JumpIfFalse  r141, L8
@@ -232,7 +240,8 @@ L10:
   Move         r173, r165
   MakeMap      r174, 4, r166
   SetIndex     r138, r155, r174
-  Append       r139, r139, r174
+  Append       r175, r139, r174
+  Move         r139, r175
 L9:
   Const        r176, "items"
   Index        r177, r138, r155
@@ -248,12 +257,14 @@ L9:
   AddInt       r137, r137, r184
   Jump         L10
 L8:
-  Const        r185, 0
+  Const        r186, 0
+  Move         r185, r186
   Len          r187, r139
 L40:
   LessInt      r188, r185, r187
   JumpIfFalse  r188, L11
-  Index        r190, r139, r185
+  Index        r189, r139, r185
+  Move         r190, r189
   // s_store_name: g.key.name,
   Const        r191, "s_store_name"
   Const        r192, "key"
@@ -273,23 +284,28 @@ L40:
   Const        r204, "price"
   IterPrep     r205, r190
   Len          r206, r205
-  Const        r207, 0
+  Const        r208, 0
+  Move         r207, r208
 L15:
   LessInt      r209, r207, r206
   JumpIfFalse  r209, L12
-  Index        r211, r205, r207
+  Index        r210, r205, r207
+  Move         r211, r210
   Const        r212, "d_day_name"
   Index        r213, r211, r212
   Const        r214, "Sunday"
   Equal        r215, r213, r214
   JumpIfFalse  r215, L13
   Const        r216, "price"
-  Index        r218, r211, r216
+  Index        r217, r211, r216
+  Move         r218, r217
   Jump         L14
 L13:
-  Const        r218, 0
+  Const        r219, 0
+  Move         r218, r219
 L14:
-  Append       r202, r202, r218
+  Append       r220, r202, r218
+  Move         r202, r220
   Const        r221, 1
   AddInt       r207, r207, r221
   Jump         L15
@@ -302,23 +318,28 @@ L12:
   Const        r226, "price"
   IterPrep     r227, r190
   Len          r228, r227
-  Const        r229, 0
+  Const        r230, 0
+  Move         r229, r230
 L19:
   LessInt      r231, r229, r228
   JumpIfFalse  r231, L16
-  Index        r211, r227, r229
+  Index        r232, r227, r229
+  Move         r211, r232
   Const        r233, "d_day_name"
   Index        r234, r211, r233
   Const        r235, "Monday"
   Equal        r236, r234, r235
   JumpIfFalse  r236, L17
   Const        r237, "price"
-  Index        r239, r211, r237
+  Index        r238, r211, r237
+  Move         r239, r238
   Jump         L18
 L17:
-  Const        r239, 0
+  Const        r240, 0
+  Move         r239, r240
 L18:
-  Append       r224, r224, r239
+  Append       r241, r224, r239
+  Move         r224, r241
   Const        r242, 1
   AddInt       r229, r229, r242
   Jump         L19
@@ -331,23 +352,28 @@ L16:
   Const        r247, "price"
   IterPrep     r248, r190
   Len          r249, r248
-  Const        r250, 0
+  Const        r251, 0
+  Move         r250, r251
 L23:
   LessInt      r252, r250, r249
   JumpIfFalse  r252, L20
-  Index        r211, r248, r250
+  Index        r253, r248, r250
+  Move         r211, r253
   Const        r254, "d_day_name"
   Index        r255, r211, r254
   Const        r256, "Tuesday"
   Equal        r257, r255, r256
   JumpIfFalse  r257, L21
   Const        r258, "price"
-  Index        r260, r211, r258
+  Index        r259, r211, r258
+  Move         r260, r259
   Jump         L22
 L21:
-  Const        r260, 0
+  Const        r261, 0
+  Move         r260, r261
 L22:
-  Append       r245, r245, r260
+  Append       r262, r245, r260
+  Move         r245, r262
   Const        r263, 1
   AddInt       r250, r250, r263
   Jump         L23
@@ -360,23 +386,28 @@ L20:
   Const        r268, "price"
   IterPrep     r269, r190
   Len          r270, r269
-  Const        r271, 0
+  Const        r272, 0
+  Move         r271, r272
 L27:
   LessInt      r273, r271, r270
   JumpIfFalse  r273, L24
-  Index        r211, r269, r271
+  Index        r274, r269, r271
+  Move         r211, r274
   Const        r275, "d_day_name"
   Index        r276, r211, r275
   Const        r277, "Wednesday"
   Equal        r278, r276, r277
   JumpIfFalse  r278, L25
   Const        r279, "price"
-  Index        r281, r211, r279
+  Index        r280, r211, r279
+  Move         r281, r280
   Jump         L26
 L25:
-  Const        r281, 0
+  Const        r282, 0
+  Move         r281, r282
 L26:
-  Append       r266, r266, r281
+  Append       r283, r266, r281
+  Move         r266, r283
   Const        r284, 1
   AddInt       r271, r271, r284
   Jump         L27
@@ -389,23 +420,28 @@ L24:
   Const        r289, "price"
   IterPrep     r290, r190
   Len          r291, r290
-  Const        r292, 0
+  Const        r293, 0
+  Move         r292, r293
 L31:
   LessInt      r294, r292, r291
   JumpIfFalse  r294, L28
-  Index        r211, r290, r292
+  Index        r295, r290, r292
+  Move         r211, r295
   Const        r296, "d_day_name"
   Index        r297, r211, r296
   Const        r298, "Thursday"
   Equal        r299, r297, r298
   JumpIfFalse  r299, L29
   Const        r300, "price"
-  Index        r302, r211, r300
+  Index        r301, r211, r300
+  Move         r302, r301
   Jump         L30
 L29:
-  Const        r302, 0
+  Const        r303, 0
+  Move         r302, r303
 L30:
-  Append       r287, r287, r302
+  Append       r304, r287, r302
+  Move         r287, r304
   Const        r305, 1
   AddInt       r292, r292, r305
   Jump         L31
@@ -418,23 +454,28 @@ L28:
   Const        r310, "price"
   IterPrep     r311, r190
   Len          r312, r311
-  Const        r313, 0
+  Const        r314, 0
+  Move         r313, r314
 L35:
   LessInt      r315, r313, r312
   JumpIfFalse  r315, L32
-  Index        r211, r311, r313
+  Index        r316, r311, r313
+  Move         r211, r316
   Const        r317, "d_day_name"
   Index        r318, r211, r317
   Const        r319, "Friday"
   Equal        r320, r318, r319
   JumpIfFalse  r320, L33
   Const        r321, "price"
-  Index        r323, r211, r321
+  Index        r322, r211, r321
+  Move         r323, r322
   Jump         L34
 L33:
-  Const        r323, 0
+  Const        r324, 0
+  Move         r323, r324
 L34:
-  Append       r308, r308, r323
+  Append       r325, r308, r323
+  Move         r308, r325
   Const        r326, 1
   AddInt       r313, r313, r326
   Jump         L35
@@ -447,23 +488,28 @@ L32:
   Const        r331, "price"
   IterPrep     r332, r190
   Len          r333, r332
-  Const        r334, 0
+  Const        r335, 0
+  Move         r334, r335
 L39:
   LessInt      r336, r334, r333
   JumpIfFalse  r336, L36
-  Index        r211, r332, r334
+  Index        r337, r332, r334
+  Move         r211, r337
   Const        r338, "d_day_name"
   Index        r339, r211, r338
   Const        r340, "Saturday"
   Equal        r341, r339, r340
   JumpIfFalse  r341, L37
   Const        r342, "price"
-  Index        r344, r211, r342
+  Index        r343, r211, r342
+  Move         r344, r343
   Jump         L38
 L37:
-  Const        r344, 0
+  Const        r345, 0
+  Move         r344, r345
 L38:
-  Append       r329, r329, r344
+  Append       r346, r329, r344
+  Move         r329, r346
   Const        r347, 1
   AddInt       r334, r334, r347
   Jump         L39
@@ -499,7 +545,8 @@ L36:
   // select {
   MakeMap      r367, 9, r349
   // from r in records
-  Append       r103, r103, r367
+  Append       r368, r103, r367
+  Move         r103, r368
   Const        r369, 1
   AddInt       r185, r185, r369
   Jump         L40

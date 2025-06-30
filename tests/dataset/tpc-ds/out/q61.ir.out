@@ -7,17 +7,20 @@ func main (regs=36)
   Const        r3, "price"
   IterPrep     r4, r0
   Len          r5, r4
-  Const        r6, 0
+  Const        r7, 0
+  Move         r6, r7
 L2:
   LessInt      r8, r6, r5
   JumpIfFalse  r8, L0
-  Index        r10, r4, r6
+  Index        r9, r4, r6
+  Move         r10, r9
   Const        r11, "promo"
   Index        r12, r10, r11
   JumpIfFalse  r12, L1
   Const        r13, "price"
   Index        r14, r10, r13
-  Append       r1, r1, r14
+  Append       r15, r1, r14
+  Move         r1, r15
 L1:
   Const        r16, 1
   AddInt       r6, r6, r16
@@ -29,14 +32,17 @@ L0:
   Const        r19, "price"
   IterPrep     r20, r0
   Len          r21, r20
-  Const        r22, 0
+  Const        r23, 0
+  Move         r22, r23
 L4:
   LessInt      r24, r22, r21
   JumpIfFalse  r24, L3
-  Index        r10, r20, r22
+  Index        r25, r20, r22
+  Move         r10, r25
   Const        r26, "price"
   Index        r27, r10, r26
-  Append       r18, r18, r27
+  Append       r28, r18, r27
+  Move         r18, r28
   Const        r29, 1
   AddInt       r22, r22, r29
   Jump         L4

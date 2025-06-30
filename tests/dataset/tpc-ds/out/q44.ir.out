@@ -18,7 +18,8 @@ func main (regs=165)
   Len          r9, r8
   Const        r10, 0
   MakeMap      r11, 0, r0
-  Const        r12, []
+  Const        r13, []
+  Move         r12, r13
 L2:
   LessInt      r14, r10, r9
   JumpIfFalse  r14, L0
@@ -52,7 +53,8 @@ L2:
   Move         r37, r29
   MakeMap      r38, 4, r30
   SetIndex     r11, r19, r38
-  Append       r12, r12, r38
+  Append       r39, r12, r38
+  Move         r12, r39
 L1:
   Const        r40, "items"
   Index        r41, r11, r19
@@ -68,12 +70,14 @@ L1:
   AddInt       r10, r10, r48
   Jump         L2
 L0:
-  Const        r49, 0
+  Const        r50, 0
+  Move         r49, r50
   Len          r51, r12
 L6:
   LessInt      r52, r49, r51
   JumpIfFalse  r52, L3
-  Index        r54, r12, r49
+  Index        r53, r12, r49
+  Move         r54, r53
   // select { item_sk: g.key,
   Const        r55, "item_sk"
   Const        r56, "key"
@@ -84,14 +88,17 @@ L6:
   Const        r60, "ss_net_profit"
   IterPrep     r61, r54
   Len          r62, r61
-  Const        r63, 0
+  Const        r64, 0
+  Move         r63, r64
 L5:
   LessInt      r65, r63, r62
   JumpIfFalse  r65, L4
-  Index        r67, r61, r63
+  Index        r66, r61, r63
+  Move         r67, r66
   Const        r68, "ss_net_profit"
   Index        r69, r67, r68
-  Append       r59, r59, r69
+  Append       r70, r59, r69
+  Move         r59, r70
   Const        r71, 1
   AddInt       r63, r63, r71
   Jump         L5
@@ -106,7 +113,8 @@ L4:
   // select { item_sk: g.key,
   MakeMap      r77, 2, r73
   // from ss in store_sales
-  Append       r2, r2, r77
+  Append       r78, r2, r77
+  Move         r2, r78
   Const        r79, 1
   AddInt       r49, r49, r79
   Jump         L6
@@ -116,43 +124,53 @@ L3:
   Const        r81, "avg_profit"
   IterPrep     r82, r2
   Len          r83, r82
-  Const        r84, 0
+  Const        r85, 0
+  Move         r84, r85
 L8:
   LessInt      r86, r84, r83
   JumpIfFalse  r86, L7
-  Index        r67, r82, r84
+  Index        r87, r82, r84
+  Move         r67, r87
   Const        r88, "avg_profit"
   Index        r89, r67, r88
-  Neg          r91, r89
+  Neg          r90, r89
+  Move         r91, r90
   Move         r92, r67
   MakeList     r93, 2, r91
-  Append       r80, r80, r93
+  Append       r94, r80, r93
+  Move         r80, r94
   Const        r95, 1
   AddInt       r84, r84, r95
   Jump         L8
 L7:
-  Sort         r80, r80
+  Sort         r96, r80
+  Move         r80, r96
   First        r97, r80
   // let worst = first(from x in grouped sort by x.avg_profit select x)
   Const        r98, []
   Const        r99, "avg_profit"
   IterPrep     r100, r2
   Len          r101, r100
-  Const        r102, 0
+  Const        r103, 0
+  Move         r102, r103
 L10:
   LessInt      r104, r102, r101
   JumpIfFalse  r104, L9
-  Index        r67, r100, r102
+  Index        r105, r100, r102
+  Move         r67, r105
   Const        r106, "avg_profit"
-  Index        r108, r67, r106
+  Index        r107, r67, r106
+  Move         r108, r107
   Move         r109, r67
   MakeList     r110, 2, r108
-  Append       r98, r98, r110
+  Append       r111, r98, r110
+  Move         r98, r111
   Const        r112, 1
   AddInt       r102, r102, r112
   Jump         L10
 L9:
-  Sort         r98, r98
+  Sort         r113, r98
+  Move         r98, r113
   First        r114, r98
   // let best_name = first(from i in item where i.i_item_sk == best.item_sk select i.i_product_name)
   Const        r115, []
@@ -161,11 +179,13 @@ L9:
   Const        r118, "i_product_name"
   IterPrep     r119, r1
   Len          r120, r119
-  Const        r121, 0
+  Const        r122, 0
+  Move         r121, r122
 L13:
   LessInt      r123, r121, r120
   JumpIfFalse  r123, L11
-  Index        r125, r119, r121
+  Index        r124, r119, r121
+  Move         r125, r124
   Const        r126, "i_item_sk"
   Index        r127, r125, r126
   Const        r128, "item_sk"
@@ -174,7 +194,8 @@ L13:
   JumpIfFalse  r130, L12
   Const        r131, "i_product_name"
   Index        r132, r125, r131
-  Append       r115, r115, r132
+  Append       r133, r115, r132
+  Move         r115, r133
 L12:
   Const        r134, 1
   AddInt       r121, r121, r134
@@ -188,11 +209,13 @@ L11:
   Const        r139, "i_product_name"
   IterPrep     r140, r1
   Len          r141, r140
-  Const        r142, 0
+  Const        r143, 0
+  Move         r142, r143
 L16:
   LessInt      r144, r142, r141
   JumpIfFalse  r144, L14
-  Index        r125, r140, r142
+  Index        r145, r140, r142
+  Move         r125, r145
   Const        r146, "i_item_sk"
   Index        r147, r125, r146
   Const        r148, "item_sk"
@@ -201,7 +224,8 @@ L16:
   JumpIfFalse  r150, L15
   Const        r151, "i_product_name"
   Index        r152, r125, r151
-  Append       r136, r136, r152
+  Append       r153, r136, r152
+  Move         r136, r153
 L15:
   Const        r154, 1
   AddInt       r142, r142, r154

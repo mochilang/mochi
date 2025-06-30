@@ -17,7 +17,8 @@ func main (regs=102)
   Len          r10, r9
   Const        r11, 0
   MakeMap      r12, 0, r0
-  Const        r13, []
+  Const        r14, []
+  Move         r13, r14
 L2:
   LessInt      r15, r11, r10
   JumpIfFalse  r15, L0
@@ -55,7 +56,8 @@ L2:
   Move         r42, r34
   MakeMap      r43, 4, r35
   SetIndex     r12, r24, r43
-  Append       r13, r13, r43
+  Append       r44, r13, r43
+  Move         r13, r44
 L1:
   Const        r45, "items"
   Index        r46, r12, r24
@@ -71,12 +73,14 @@ L1:
   AddInt       r11, r11, r53
   Jump         L2
 L0:
-  Const        r54, 0
+  Const        r55, 0
+  Move         r54, r55
   Len          r56, r13
 L6:
   LessInt      r57, r54, r56
   JumpIfFalse  r57, L3
-  Index        r59, r13, r54
+  Index        r58, r13, r54
+  Move         r59, r58
   // select {mgr: g.key.mgr, sum_sales: sum(from x in g select x.amount)}
   Const        r60, "mgr"
   Const        r61, "key"
@@ -88,14 +92,17 @@ L6:
   Const        r67, "amount"
   IterPrep     r68, r59
   Len          r69, r68
-  Const        r70, 0
+  Const        r71, 0
+  Move         r70, r71
 L5:
   LessInt      r72, r70, r69
   JumpIfFalse  r72, L4
-  Index        r74, r68, r70
+  Index        r73, r68, r70
+  Move         r74, r73
   Const        r75, "amount"
   Index        r76, r74, r75
-  Append       r66, r66, r76
+  Append       r77, r66, r76
+  Move         r66, r77
   Const        r78, 1
   AddInt       r70, r70, r78
   Jump         L5
@@ -107,7 +114,8 @@ L4:
   Move         r83, r79
   MakeMap      r84, 2, r80
   // from s in sales
-  Append       r1, r1, r84
+  Append       r85, r1, r84
+  Move         r1, r85
   Const        r86, 1
   AddInt       r54, r54, r86
   Jump         L6
@@ -117,14 +125,17 @@ L3:
   Const        r88, "sum_sales"
   IterPrep     r89, r1
   Len          r90, r89
-  Const        r91, 0
+  Const        r92, 0
+  Move         r91, r92
 L8:
   LessInt      r93, r91, r90
   JumpIfFalse  r93, L7
-  Index        r74, r89, r91
+  Index        r94, r89, r91
+  Move         r74, r94
   Const        r95, "sum_sales"
   Index        r96, r74, r95
-  Append       r87, r87, r96
+  Append       r97, r87, r96
+  Move         r87, r97
   Const        r98, 1
   AddInt       r91, r91, r98
   Jump         L8

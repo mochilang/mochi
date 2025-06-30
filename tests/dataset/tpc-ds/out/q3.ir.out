@@ -44,14 +44,16 @@ func main (regs=211)
   Const        r29, "brand_id"
   // from dt in date_dim
   MakeMap      r30, 0, r0
-  Const        r31, []
+  Const        r32, []
+  Move         r31, r32
   IterPrep     r33, r0
   Len          r34, r33
   Const        r35, 0
 L8:
   LessInt      r36, r35, r34
   JumpIfFalse  r36, L0
-  Index        r38, r33, r35
+  Index        r37, r33, r35
+  Move         r38, r37
   // join ss in store_sales on dt.d_date_sk == ss.ss_sold_date_sk
   IterPrep     r39, r1
   Len          r40, r39
@@ -59,7 +61,8 @@ L8:
 L7:
   LessInt      r42, r41, r40
   JumpIfFalse  r42, L1
-  Index        r44, r39, r41
+  Index        r43, r39, r41
+  Move         r44, r43
   Const        r45, "d_date_sk"
   Index        r46, r38, r45
   Const        r47, "ss_sold_date_sk"
@@ -73,7 +76,8 @@ L7:
 L6:
   LessInt      r53, r52, r51
   JumpIfFalse  r53, L2
-  Index        r55, r50, r52
+  Index        r54, r50, r52
+  Move         r55, r54
   Const        r56, "ss_item_sk"
   Index        r57, r44, r56
   Const        r58, "i_item_sk"
@@ -144,7 +148,8 @@ L4:
   Move         r111, r103
   MakeMap      r112, 4, r104
   SetIndex     r30, r93, r112
-  Append       r31, r31, r112
+  Append       r113, r31, r112
+  Move         r31, r113
 L5:
   Const        r114, "items"
   Index        r115, r30, r93
@@ -172,12 +177,14 @@ L1:
   AddInt       r35, r35, r124
   Jump         L8
 L0:
-  Const        r125, 0
+  Const        r126, 0
+  Move         r125, r126
   Len          r127, r31
 L14:
   LessInt      r128, r125, r127
   JumpIfFalse  r128, L9
-  Index        r130, r31, r125
+  Index        r129, r31, r125
+  Move         r130, r129
   // d_year: g.key.d_year,
   Const        r131, "d_year"
   Const        r132, "key"
@@ -203,16 +210,19 @@ L14:
   Const        r149, "ss_ext_sales_price"
   IterPrep     r150, r130
   Len          r151, r150
-  Const        r152, 0
+  Const        r153, 0
+  Move         r152, r153
 L11:
   LessInt      r154, r152, r151
   JumpIfFalse  r154, L10
-  Index        r156, r150, r152
+  Index        r155, r150, r152
+  Move         r156, r155
   Const        r157, "ss"
   Index        r158, r156, r157
   Const        r159, "ss_ext_sales_price"
   Index        r160, r158, r159
-  Append       r147, r147, r160
+  Append       r161, r147, r160
+  Move         r147, r161
   Const        r162, 1
   AddInt       r152, r152, r162
   Jump         L11
@@ -236,46 +246,56 @@ L10:
   Const        r173, "key"
   Index        r174, r130, r173
   Const        r175, "d_year"
-  Index        r177, r174, r175
+  Index        r176, r174, r175
+  Move         r177, r176
   // -sum(from x in g select x.ss.ss_ext_sales_price),
   Const        r178, []
   Const        r179, "ss"
   Const        r180, "ss_ext_sales_price"
   IterPrep     r181, r130
   Len          r182, r181
-  Const        r183, 0
+  Const        r184, 0
+  Move         r183, r184
 L13:
   LessInt      r185, r183, r182
   JumpIfFalse  r185, L12
-  Index        r156, r181, r183
+  Index        r186, r181, r183
+  Move         r156, r186
   Const        r187, "ss"
   Index        r188, r156, r187
   Const        r189, "ss_ext_sales_price"
   Index        r190, r188, r189
-  Append       r178, r178, r190
+  Append       r191, r178, r190
+  Move         r178, r191
   Const        r192, 1
   AddInt       r183, r183, r192
   Jump         L13
 L12:
   Sum          r193, r178
-  Neg          r195, r193
+  Neg          r194, r193
+  Move         r195, r194
   // g.key.brand_id]
   Const        r196, "key"
   Index        r197, r130, r196
   Const        r198, "brand_id"
-  Index        r200, r197, r198
+  Index        r199, r197, r198
+  Move         r200, r199
   // sort by [g.key.d_year,
-  MakeList     r202, 3, r177
+  MakeList     r201, 3, r177
+  Move         r202, r201
   // from dt in date_dim
   Move         r203, r172
   MakeList     r204, 2, r202
-  Append       r3, r3, r204
+  Append       r205, r3, r204
+  Move         r3, r205
   Const        r206, 1
   AddInt       r125, r125, r206
   Jump         L14
 L9:
   // sort by [g.key.d_year,
-  Sort         r3, r3
+  Sort         r207, r3
+  // from dt in date_dim
+  Move         r3, r207
   // json(result)
   JSON         r3
   // expect len(result) == 0

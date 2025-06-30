@@ -32,11 +32,13 @@ func main (regs=429)
   // from cs in catalog_sales
   IterPrep     r18, r0
   Len          r19, r18
-  Const        r20, 0
+  Const        r21, 0
+  Move         r20, r21
 L24:
   LessInt      r22, r20, r19
   JumpIfFalse  r22, L0
-  Index        r24, r18, r20
+  Index        r23, r18, r20
+  Move         r24, r23
   // left join cr in catalog_returns on cs.order == cr.order && cs.item_sk == cr.item_sk
   IterPrep     r25, r1
   Len          r26, r25
@@ -61,11 +63,13 @@ L24:
   Const        r40, "price"
   Const        r41, "refunded"
   // left join cr in catalog_returns on cs.order == cr.order && cs.item_sk == cr.item_sk
-  Const        r42, 0
+  Const        r43, 0
+  Move         r42, r43
 L13:
   LessInt      r44, r42, r26
   JumpIfFalse  r44, L1
-  Index        r46, r25, r42
+  Index        r45, r25, r42
+  Move         r46, r45
   Const        r47, false
   Const        r48, "order"
   Index        r49, r24, r48
@@ -105,11 +109,13 @@ L2:
   Const        r72, "price"
   Const        r73, "refunded"
   // join w in warehouse on cs.warehouse_sk == w.warehouse_sk
-  Const        r74, 0
+  Const        r75, 0
+  Move         r74, r75
 L12:
   LessInt      r76, r74, r60
   JumpIfFalse  r76, L3
-  Index        r78, r59, r74
+  Index        r77, r59, r74
+  Move         r78, r77
   Const        r79, "warehouse_sk"
   Index        r80, r24, r79
   Const        r81, "warehouse_sk"
@@ -138,11 +144,13 @@ L12:
   Const        r97, "price"
   Const        r98, "refunded"
   // join i in item on cs.item_sk == i.item_sk
-  Const        r99, 0
+  Const        r100, 0
+  Move         r99, r100
 L11:
   LessInt      r101, r99, r85
   JumpIfFalse  r101, L4
-  Index        r103, r84, r99
+  Index        r102, r84, r99
+  Move         r103, r102
   Const        r104, "item_sk"
   Index        r105, r24, r104
   Const        r106, "item_sk"
@@ -171,11 +179,13 @@ L11:
   Const        r122, "price"
   Const        r123, "refunded"
   // join d in date_dim on cs.date_sk == d.date_sk
-  Const        r124, 0
+  Const        r125, 0
+  Move         r124, r125
 L10:
   LessInt      r126, r124, r110
   JumpIfFalse  r126, L5
-  Index        r128, r109, r124
+  Index        r127, r109, r124
+  Move         r128, r127
   Const        r129, "date_sk"
   Index        r130, r24, r129
   Const        r131, "date_sk"
@@ -215,11 +225,13 @@ L7:
   Const        r155, nil
   Equal        r156, r46, r155
   JumpIfFalse  r156, L8
-  Const        r158, 0
+  Const        r157, 0
+  Move         r158, r157
   Jump         L9
 L8:
   Const        r159, "refunded"
-  Index        r158, r46, r159
+  Index        r160, r46, r159
+  Move         r158, r160
 L9:
   Sub          r161, r154, r158
   // w_state: w.state,
@@ -237,7 +249,8 @@ L9:
   // select {
   MakeMap      r170, 4, r162
   // from cs in catalog_sales
-  Append       r6, r6, r170
+  Append       r171, r6, r170
+  Move         r6, r171
 L6:
   // join d in date_dim on cs.date_sk == d.date_sk
   Const        r172, 1
@@ -261,7 +274,8 @@ L3:
 L1:
   Move         r176, r47
   JumpIfTrue   r176, L14
-  Const        r46, nil
+  Const        r177, nil
+  Move         r46, r177
   // join w in warehouse on cs.warehouse_sk == w.warehouse_sk
   IterPrep     r178, r3
   Len          r179, r178
@@ -284,11 +298,13 @@ L1:
   Const        r191, "price"
   Const        r192, "refunded"
   // join w in warehouse on cs.warehouse_sk == w.warehouse_sk
-  Const        r193, 0
+  Const        r194, 0
+  Move         r193, r194
 L23:
   LessInt      r195, r193, r179
   JumpIfFalse  r195, L14
-  Index        r78, r178, r193
+  Index        r196, r178, r193
+  Move         r78, r196
   Const        r197, "warehouse_sk"
   Index        r198, r24, r197
   Const        r199, "warehouse_sk"
@@ -317,11 +333,13 @@ L23:
   Const        r215, "price"
   Const        r216, "refunded"
   // join i in item on cs.item_sk == i.item_sk
-  Const        r217, 0
+  Const        r218, 0
+  Move         r217, r218
 L22:
   LessInt      r219, r217, r203
   JumpIfFalse  r219, L15
-  Index        r103, r202, r217
+  Index        r220, r202, r217
+  Move         r103, r220
   Const        r221, "item_sk"
   Index        r222, r24, r221
   Const        r223, "item_sk"
@@ -350,11 +368,13 @@ L22:
   Const        r239, "price"
   Const        r240, "refunded"
   // join d in date_dim on cs.date_sk == d.date_sk
-  Const        r241, 0
+  Const        r242, 0
+  Move         r241, r242
 L21:
   LessInt      r243, r241, r227
   JumpIfFalse  r243, L16
-  Index        r128, r226, r241
+  Index        r244, r226, r241
+  Move         r128, r244
   Const        r245, "date_sk"
   Index        r246, r24, r245
   Const        r247, "date_sk"
@@ -394,11 +414,13 @@ L18:
   Const        r271, nil
   Equal        r272, r46, r271
   JumpIfFalse  r272, L19
-  Const        r274, 0
+  Const        r273, 0
+  Move         r274, r273
   Jump         L20
 L19:
   Const        r275, "refunded"
-  Index        r274, r46, r275
+  Index        r276, r46, r275
+  Move         r274, r276
 L20:
   Sub          r277, r270, r274
   // w_state: w.state,
@@ -416,7 +438,8 @@ L20:
   // select {
   MakeMap      r286, 4, r278
   // from cs in catalog_sales
-  Append       r6, r6, r286
+  Append       r287, r6, r286
+  Move         r6, r287
 L17:
   // join d in date_dim on cs.date_sk == d.date_sk
   Const        r288, 1
@@ -466,7 +489,8 @@ L0:
   Len          r310, r309
   Const        r311, 0
   MakeMap      r312, 0, r0
-  Const        r313, []
+  Const        r314, []
+  Move         r313, r314
 L27:
   LessInt      r315, r311, r310
   JumpIfFalse  r315, L25
@@ -509,7 +533,8 @@ L27:
   Move         r347, r339
   MakeMap      r348, 4, r340
   SetIndex     r312, r329, r348
-  Append       r313, r313, r348
+  Append       r349, r313, r348
+  Move         r313, r349
 L26:
   Const        r350, "items"
   Index        r351, r312, r329
@@ -525,12 +550,14 @@ L26:
   AddInt       r311, r311, r358
   Jump         L27
 L25:
-  Const        r359, 0
+  Const        r360, 0
+  Move         r359, r360
   Len          r361, r313
 L37:
   LessInt      r362, r359, r361
   JumpIfFalse  r362, L28
-  Index        r364, r313, r359
+  Index        r363, r313, r359
+  Move         r364, r363
   // w_state: g.key.w_state,
   Const        r365, "w_state"
   Const        r366, "key"
@@ -550,22 +577,27 @@ L37:
   Const        r378, "net"
   IterPrep     r379, r364
   Len          r380, r379
-  Const        r381, 0
+  Const        r382, 0
+  Move         r381, r382
 L32:
   LessInt      r383, r381, r380
   JumpIfFalse  r383, L29
-  Index        r385, r379, r381
+  Index        r384, r379, r381
+  Move         r385, r384
   Const        r386, "sold_date"
   Index        r387, r385, r386
   Less         r388, r387, r5
   JumpIfFalse  r388, L30
   Const        r389, "net"
-  Index        r391, r385, r389
+  Index        r390, r385, r389
+  Move         r391, r390
   Jump         L31
 L30:
-  Const        r391, 0
+  Const        r392, 0
+  Move         r391, r392
 L31:
-  Append       r376, r376, r391
+  Append       r393, r376, r391
+  Move         r376, r393
   Const        r394, 1
   AddInt       r381, r381, r394
   Jump         L32
@@ -578,22 +610,27 @@ L29:
   Const        r399, "net"
   IterPrep     r400, r364
   Len          r401, r400
-  Const        r402, 0
+  Const        r403, 0
+  Move         r402, r403
 L36:
   LessInt      r404, r402, r401
   JumpIfFalse  r404, L33
-  Index        r385, r400, r402
+  Index        r405, r400, r402
+  Move         r385, r405
   Const        r406, "sold_date"
   Index        r407, r385, r406
   LessEq       r408, r5, r407
   JumpIfFalse  r408, L34
   Const        r409, "net"
-  Index        r411, r385, r409
+  Index        r410, r385, r409
+  Move         r411, r410
   Jump         L35
 L34:
-  Const        r411, 0
+  Const        r412, 0
+  Move         r411, r412
 L35:
-  Append       r397, r397, r411
+  Append       r413, r397, r411
+  Move         r397, r413
   Const        r414, 1
   AddInt       r402, r402, r414
   Jump         L36
@@ -614,7 +651,8 @@ L33:
   // select {
   MakeMap      r424, 4, r416
   // from r in records
-  Append       r292, r292, r424
+  Append       r425, r292, r424
+  Move         r292, r425
   Const        r426, 1
   AddInt       r359, r359, r426
   Jump         L37

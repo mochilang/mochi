@@ -19,11 +19,13 @@ func main (regs=325)
   // (from ws in web_sales
   IterPrep     r10, r0
   Len          r11, r10
-  Const        r12, 0
+  Const        r13, 0
+  Move         r12, r13
 L1:
   LessInt      r14, r12, r11
   JumpIfFalse  r14, L0
-  Index        r16, r10, r12
+  Index        r15, r10, r12
+  Move         r16, r15
   // sold_date_sk: ws.ws_sold_date_sk,
   Const        r17, "sold_date_sk"
   Const        r18, "ws_sold_date_sk"
@@ -48,7 +50,8 @@ L1:
   // select {
   MakeMap      r32, 3, r26
   // (from ws in web_sales
-  Append       r3, r3, r32
+  Append       r33, r3, r32
+  Move         r3, r33
   Const        r34, 1
   AddInt       r12, r12, r34
   Jump         L1
@@ -67,11 +70,13 @@ L0:
   // from cs in catalog_sales
   IterPrep     r42, r1
   Len          r43, r42
-  Const        r44, 0
+  Const        r45, 0
+  Move         r44, r45
 L3:
   LessInt      r46, r44, r43
   JumpIfFalse  r46, L2
-  Index        r48, r42, r44
+  Index        r47, r42, r44
+  Move         r48, r47
   // sold_date_sk: cs.cs_sold_date_sk,
   Const        r49, "sold_date_sk"
   Const        r50, "cs_sold_date_sk"
@@ -96,7 +101,8 @@ L3:
   // select {
   MakeMap      r64, 3, r58
   // from cs in catalog_sales
-  Append       r35, r35, r64
+  Append       r65, r35, r64
+  Move         r35, r65
   Const        r66, 1
   AddInt       r44, r44, r66
   Jump         L3
@@ -142,14 +148,16 @@ L2:
   Const        r94, "sales_price"
   // from w in wscs
   MakeMap      r95, 0, r0
-  Const        r96, []
+  Const        r97, []
+  Move         r96, r97
   IterPrep     r98, r67
   Len          r99, r98
   Const        r100, 0
 L9:
   LessInt      r101, r100, r99
   JumpIfFalse  r101, L4
-  Index        r103, r98, r100
+  Index        r102, r98, r100
+  Move         r103, r102
   // join d in date_dim on w.sold_date_sk == d.d_date_sk
   IterPrep     r104, r2
   Len          r105, r104
@@ -157,7 +165,8 @@ L9:
 L8:
   LessInt      r107, r106, r105
   JumpIfFalse  r107, L5
-  Index        r109, r104, r106
+  Index        r108, r104, r106
+  Move         r109, r108
   Const        r110, "sold_date_sk"
   Index        r111, r103, r110
   Const        r112, "d_date_sk"
@@ -202,7 +211,8 @@ L8:
   Move         r144, r136
   MakeMap      r145, 4, r137
   SetIndex     r95, r126, r145
-  Append       r96, r96, r145
+  Append       r146, r96, r145
+  Move         r96, r146
 L7:
   Const        r147, "items"
   Index        r148, r95, r126
@@ -225,12 +235,14 @@ L5:
   AddInt       r100, r100, r156
   Jump         L9
 L4:
-  Const        r157, 0
+  Const        r158, 0
+  Move         r157, r158
   Len          r159, r96
 L32:
   LessInt      r160, r157, r159
   JumpIfFalse  r160, L10
-  Index        r162, r96, r157
+  Index        r161, r96, r157
+  Move         r162, r161
   // d_week_seq: g.key.week_seq,
   Const        r163, "d_week_seq"
   Const        r164, "key"
@@ -244,11 +256,13 @@ L32:
   Const        r171, "sales_price"
   IterPrep     r172, r162
   Len          r173, r172
-  Const        r174, 0
+  Const        r175, 0
+  Move         r174, r175
 L13:
   LessInt      r176, r174, r173
   JumpIfFalse  r176, L11
-  Index        r178, r172, r174
+  Index        r177, r172, r174
+  Move         r178, r177
   Const        r179, "day"
   Index        r180, r178, r179
   Const        r181, "Sunday"
@@ -256,7 +270,8 @@ L13:
   JumpIfFalse  r182, L12
   Const        r183, "sales_price"
   Index        r184, r178, r183
-  Append       r169, r169, r184
+  Append       r185, r169, r184
+  Move         r169, r185
 L12:
   Const        r186, 1
   AddInt       r174, r174, r186
@@ -270,11 +285,13 @@ L11:
   Const        r191, "sales_price"
   IterPrep     r192, r162
   Len          r193, r192
-  Const        r194, 0
+  Const        r195, 0
+  Move         r194, r195
 L16:
   LessInt      r196, r194, r193
   JumpIfFalse  r196, L14
-  Index        r178, r192, r194
+  Index        r197, r192, r194
+  Move         r178, r197
   Const        r198, "day"
   Index        r199, r178, r198
   Const        r200, "Monday"
@@ -282,7 +299,8 @@ L16:
   JumpIfFalse  r201, L15
   Const        r202, "sales_price"
   Index        r203, r178, r202
-  Append       r189, r189, r203
+  Append       r204, r189, r203
+  Move         r189, r204
 L15:
   Const        r205, 1
   AddInt       r194, r194, r205
@@ -296,11 +314,13 @@ L14:
   Const        r210, "sales_price"
   IterPrep     r211, r162
   Len          r212, r211
-  Const        r213, 0
+  Const        r214, 0
+  Move         r213, r214
 L19:
   LessInt      r215, r213, r212
   JumpIfFalse  r215, L17
-  Index        r178, r211, r213
+  Index        r216, r211, r213
+  Move         r178, r216
   Const        r217, "day"
   Index        r218, r178, r217
   Const        r219, "Tuesday"
@@ -308,7 +328,8 @@ L19:
   JumpIfFalse  r220, L18
   Const        r221, "sales_price"
   Index        r222, r178, r221
-  Append       r208, r208, r222
+  Append       r223, r208, r222
+  Move         r208, r223
 L18:
   Const        r224, 1
   AddInt       r213, r213, r224
@@ -322,11 +343,13 @@ L17:
   Const        r229, "sales_price"
   IterPrep     r230, r162
   Len          r231, r230
-  Const        r232, 0
+  Const        r233, 0
+  Move         r232, r233
 L22:
   LessInt      r234, r232, r231
   JumpIfFalse  r234, L20
-  Index        r178, r230, r232
+  Index        r235, r230, r232
+  Move         r178, r235
   Const        r236, "day"
   Index        r237, r178, r236
   Const        r238, "Wednesday"
@@ -334,7 +357,8 @@ L22:
   JumpIfFalse  r239, L21
   Const        r240, "sales_price"
   Index        r241, r178, r240
-  Append       r227, r227, r241
+  Append       r242, r227, r241
+  Move         r227, r242
 L21:
   Const        r243, 1
   AddInt       r232, r232, r243
@@ -348,11 +372,13 @@ L20:
   Const        r248, "sales_price"
   IterPrep     r249, r162
   Len          r250, r249
-  Const        r251, 0
+  Const        r252, 0
+  Move         r251, r252
 L25:
   LessInt      r253, r251, r250
   JumpIfFalse  r253, L23
-  Index        r178, r249, r251
+  Index        r254, r249, r251
+  Move         r178, r254
   Const        r255, "day"
   Index        r256, r178, r255
   Const        r257, "Thursday"
@@ -360,7 +386,8 @@ L25:
   JumpIfFalse  r258, L24
   Const        r259, "sales_price"
   Index        r260, r178, r259
-  Append       r246, r246, r260
+  Append       r261, r246, r260
+  Move         r246, r261
 L24:
   Const        r262, 1
   AddInt       r251, r251, r262
@@ -374,11 +401,13 @@ L23:
   Const        r267, "sales_price"
   IterPrep     r268, r162
   Len          r269, r268
-  Const        r270, 0
+  Const        r271, 0
+  Move         r270, r271
 L28:
   LessInt      r272, r270, r269
   JumpIfFalse  r272, L26
-  Index        r178, r268, r270
+  Index        r273, r268, r270
+  Move         r178, r273
   Const        r274, "day"
   Index        r275, r178, r274
   Const        r276, "Friday"
@@ -386,7 +415,8 @@ L28:
   JumpIfFalse  r277, L27
   Const        r278, "sales_price"
   Index        r279, r178, r278
-  Append       r265, r265, r279
+  Append       r280, r265, r279
+  Move         r265, r280
 L27:
   Const        r281, 1
   AddInt       r270, r270, r281
@@ -400,11 +430,13 @@ L26:
   Const        r286, "sales_price"
   IterPrep     r287, r162
   Len          r288, r287
-  Const        r289, 0
+  Const        r290, 0
+  Move         r289, r290
 L31:
   LessInt      r291, r289, r288
   JumpIfFalse  r291, L29
-  Index        r178, r287, r289
+  Index        r292, r287, r289
+  Move         r178, r292
   Const        r293, "day"
   Index        r294, r178, r293
   Const        r295, "Saturday"
@@ -412,7 +444,8 @@ L31:
   JumpIfFalse  r296, L30
   Const        r297, "sales_price"
   Index        r298, r178, r297
-  Append       r284, r284, r298
+  Append       r299, r284, r298
+  Move         r284, r299
 L30:
   Const        r300, 1
   AddInt       r289, r289, r300
@@ -446,7 +479,8 @@ L29:
   // select {
   MakeMap      r318, 8, r302
   // from w in wscs
-  Append       r68, r68, r318
+  Append       r319, r68, r318
+  Move         r68, r319
   Const        r320, 1
   AddInt       r157, r157, r320
   Jump         L32
