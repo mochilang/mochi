@@ -1,241 +1,387 @@
-func main (regs=144)
+func main (regs=30)
   // let char_name = [
   Const        r0, [{"id": 1, "name": "Ivan"}, {"id": 2, "name": "Alex"}]
   // let cast_info = [
   Const        r1, [{"movie_id": 10, "note": "Soldier (voice) (uncredited)", "person_role_id": 1, "role_id": 1}, {"movie_id": 11, "note": "(voice)", "person_role_id": 2, "role_id": 1}]
+L10:
   // let company_name = [
   Const        r2, [{"country_code": "[ru]", "id": 1}, {"country_code": "[us]", "id": 2}]
+L14:
   // let company_type = [
   Const        r3, [{"id": 1}, {"id": 2}]
+L0:
   // let movie_companies = [
   Const        r4, [{"company_id": 1, "company_type_id": 1, "movie_id": 10}, {"company_id": 2, "company_type_id": 1, "movie_id": 11}]
   // let role_type = [
   Const        r5, [{"id": 1, "role": "actor"}, {"id": 2, "role": "director"}]
+L6:
   // let title = [
   Const        r6, [{"id": 10, "production_year": 2006, "title": "Vodka Dreams"}, {"id": 11, "production_year": 2004, "title": "Other Film"}]
   // from chn in char_name
   Const        r7, []
+L7:
   // where ci.note.contains("(voice)") &&
   Const        r8, "note"
-  // cn.country_code == "[ru]" &&
-  Const        r10, "country_code"
-  // rt.role == "actor" &&
-  Const        r11, "role"
-  // t.production_year > 2005
-  Const        r12, "production_year"
-  // select { character: chn.name, movie: t.title }
-  Const        r13, "character"
-  Const        r14, "name"
-  Const        r15, "movie"
-  Const        r16, "title"
-  // from chn in char_name
-  IterPrep     r17, r0
-  Len          r18, r17
-  Const        r20, 0
-  Move         r19, r20
-L17:
-  LessInt      r21, r19, r18
-  JumpIfFalse  r21, L0
-  Index        r23, r17, r19
-  // join ci in cast_info on chn.id == ci.person_role_id
-  IterPrep     r24, r1
-  Len          r25, r24
-  Const        r26, "id"
-  Const        r27, "person_role_id"
-  Move         r28, r20
-L2:
-  LessInt      r29, r28, r25
-  JumpIfFalse  r29, L1
-  Index        r31, r24, r28
-  Index        r32, r23, r26
-  Index        r33, r31, r27
-  Equal        r34, r32, r33
-  JumpIfFalse  r34, L2
-  // join rt in role_type on rt.id == ci.role_id
-  IterPrep     r35, r5
-  Len          r36, r35
-  Const        r37, "role_id"
-  Move         r38, r20
-L16:
-  LessInt      r39, r38, r36
-  JumpIfFalse  r39, L2
-  Index        r41, r35, r38
-  Index        r42, r41, r26
-  Index        r43, r31, r37
-  Equal        r44, r42, r43
-  JumpIfFalse  r44, L3
-  // join t in title on t.id == ci.movie_id
-  IterPrep     r45, r6
-  Len          r46, r45
-  Const        r47, "movie_id"
-  Move         r48, r20
-L15:
-  LessInt      r49, r48, r46
-  JumpIfFalse  r49, L3
-  Index        r51, r45, r48
-  Index        r52, r51, r26
-  Index        r53, r31, r47
-  Equal        r54, r52, r53
-  JumpIfFalse  r54, L4
-  // join mc in movie_companies on mc.movie_id == t.id
-  IterPrep     r55, r4
-  Len          r56, r55
-  Move         r57, r20
-L14:
-  LessInt      r58, r57, r56
-  JumpIfFalse  r58, L4
-  Index        r60, r55, r57
-  Index        r61, r60, r47
-  Index        r62, r51, r26
-  Equal        r63, r61, r62
-  JumpIfFalse  r63, L5
-  // join cn in company_name on cn.id == mc.company_id
-  IterPrep     r64, r2
-  Len          r65, r64
-  Const        r66, "company_id"
-  Move         r67, r20
-L13:
-  LessInt      r68, r67, r65
-  JumpIfFalse  r68, L5
-  Index        r70, r64, r67
-  Index        r71, r70, r26
-  Index        r72, r60, r66
-  Equal        r73, r71, r72
-  JumpIfFalse  r73, L6
-  // join ct in company_type on ct.id == mc.company_type_id
-  IterPrep     r74, r3
-  Len          r75, r74
-  Const        r76, "company_type_id"
-  Move         r77, r20
+L4:
+  Const        r9, "contains"
 L12:
-  LessInt      r78, r77, r75
-  JumpIfFalse  r78, L6
-  Index        r80, r74, r77
-  Index        r81, r80, r26
-  Index        r82, r60, r76
-  Equal        r83, r81, r82
-  JumpIfFalse  r83, L7
-  Index        r84, r31, r8
-  // where ci.note.contains("(voice)") &&
-  Const        r85, "(voice)"
-  In           r86, r85, r84
-  // t.production_year > 2005
-  Index        r87, r51, r12
-  Const        r88, 2005
-  Less         r89, r88, r87
-  // cn.country_code == "[ru]" &&
-  Index        r90, r70, r10
-  Const        r91, "[ru]"
-  Equal        r92, r90, r91
-  // rt.role == "actor" &&
-  Index        r93, r41, r11
-  Const        r94, "actor"
-  Equal        r95, r93, r94
-  // where ci.note.contains("(voice)") &&
-  Move         r96, r86
-  JumpIfFalse  r96, L8
-  Index        r97, r31, r8
   // ci.note.contains("(uncredited)") &&
-  Const        r98, "(uncredited)"
-  In           r100, r98, r97
-L8:
-  JumpIfFalse  r100, L9
+  Const        r10, "note"
+  Const        r11, "contains"
 L9:
   // cn.country_code == "[ru]" &&
-  Move         r101, r92
-  JumpIfFalse  r101, L10
-L10:
+  Const        r12, "country_code"
   // rt.role == "actor" &&
-  Move         r102, r95
-  JumpIfFalse  r102, L11
-  Move         r102, r89
-L11:
-  // where ci.note.contains("(voice)") &&
-  JumpIfFalse  r102, L7
-  // select { character: chn.name, movie: t.title }
-  Move         r103, r13
-  Index        r104, r23, r14
-  Move         r105, r15
-  Index        r106, r51, r16
-  Move         r107, r103
-  Move         r108, r104
-  Move         r109, r105
-  Move         r110, r106
-  MakeMap      r111, 2, r107
-  // from chn in char_name
-  Append       r7, r7, r111
-L7:
-  // join ct in company_type on ct.id == mc.company_type_id
-  Const        r113, 1
-  Add          r77, r77, r113
-  Jump         L12
-L6:
-  // join cn in company_name on cn.id == mc.company_id
-  Add          r67, r67, r113
-  Jump         L13
+  Const        r13, "role"
+L13:
+  // t.production_year > 2005
+  Const        r14, "production_year"
 L5:
-  // join mc in movie_companies on mc.movie_id == t.id
-  Add          r57, r57, r113
-  Jump         L14
-L4:
-  // join t in title on t.id == ci.movie_id
-  Add          r48, r48, r113
-  Jump         L15
-L3:
-  // join rt in role_type on rt.id == ci.role_id
-  Add          r38, r38, r113
-  Jump         L16
+  // select { character: chn.name, movie: t.title }
+  Const        r15, "character"
+L2:
+  Const        r16, "name"
 L1:
+  Const        r17, "movie"
+  Const        r18, "title"
+L11:
   // from chn in char_name
-  AddInt       r19, r19, r113
-  Jump         L17
-L0:
+  IterPrep     r19, r0
+L8:
+  Len          r20, r19
+  Const        r21, 0
+  LessInt      r8, r21, r20
+  JumpIfFalse  r8, L0
+  Index        r9, r19, r21
+L3:
+  // join ci in cast_info on chn.id == ci.person_role_id
+  IterPrep     r10, r1
+  Len          r11, r10
+  Const        r12, "id"
+  Const        r13, "person_role_id"
+  // where ci.note.contains("(voice)") &&
+  Const        r14, "note"
+  Const        r15, "contains"
+  // ci.note.contains("(uncredited)") &&
+  Const        r16, "note"
+  Const        r17, "contains"
+  // cn.country_code == "[ru]" &&
+  Const        r18, "country_code"
+  // rt.role == "actor" &&
+  Const        r20, "role"
+  // t.production_year > 2005
+  Const        r8, "production_year"
+  // select { character: chn.name, movie: t.title }
+  Const        r19, "character"
+  Const        r1, "name"
+  Const        r12, "movie"
+  Const        r13, "title"
+  // join ci in cast_info on chn.id == ci.person_role_id
+  Const        r14, 0
+  LessInt      r15, r14, r11
+  JumpIfFalse  r15, L1
+  Index        r16, r10, r14
+  Const        r17, "id"
+  Index        r18, r9, r17
+  Const        r20, "person_role_id"
+  Index        r8, r16, r20
+  Equal        r19, r18, r8
+  JumpIfFalse  r19, L2
+  // join rt in role_type on rt.id == ci.role_id
+  IterPrep     r1, r5
+  Len          r12, r1
+  Const        r13, "id"
+  Const        r11, "role_id"
+  // where ci.note.contains("(voice)") &&
+  Const        r15, "note"
+  Const        r10, "contains"
+  // ci.note.contains("(uncredited)") &&
+  Const        r17, "note"
+  Const        r20, "contains"
+  // cn.country_code == "[ru]" &&
+  Const        r18, "country_code"
+  // rt.role == "actor" &&
+  Const        r8, "role"
+  // t.production_year > 2005
+  Const        r19, "production_year"
+  // select { character: chn.name, movie: t.title }
+  Const        r5, "character"
+  Const        r13, "name"
+  Const        r11, "movie"
+  Const        r15, "title"
+  // join rt in role_type on rt.id == ci.role_id
+  Const        r10, 0
+  LessInt      r17, r10, r12
+  JumpIfFalse  r17, L2
+  Index        r20, r1, r10
+  Const        r18, "id"
+  Index        r8, r20, r18
+  Const        r19, "role_id"
+  Index        r5, r16, r19
+  Equal        r13, r8, r5
+  JumpIfFalse  r13, L3
+  // join t in title on t.id == ci.movie_id
+  IterPrep     r11, r6
+  Len          r15, r11
+  Const        r12, "id"
+  Const        r17, "movie_id"
+  // where ci.note.contains("(voice)") &&
+  Const        r1, "note"
+  Const        r18, "contains"
+  // ci.note.contains("(uncredited)") &&
+  Const        r19, "note"
+  Const        r8, "contains"
+  // cn.country_code == "[ru]" &&
+  Const        r5, "country_code"
+  // rt.role == "actor" &&
+  Const        r13, "role"
+  // t.production_year > 2005
+  Const        r6, "production_year"
+  // select { character: chn.name, movie: t.title }
+  Const        r12, "character"
+  Const        r17, "name"
+  Const        r1, "movie"
+  Const        r18, "title"
+  // join t in title on t.id == ci.movie_id
+  Const        r19, 0
+  LessInt      r8, r19, r15
+  JumpIfFalse  r8, L3
+  Index        r5, r11, r19
+  Const        r13, "id"
+  Index        r6, r5, r13
+  Const        r12, "movie_id"
+  Index        r17, r16, r12
+  Equal        r1, r6, r17
+  JumpIfFalse  r1, L4
+  // join mc in movie_companies on mc.movie_id == t.id
+  IterPrep     r18, r4
+  Len          r15, r18
+  Const        r8, "movie_id"
+  Const        r11, "id"
+  // where ci.note.contains("(voice)") &&
+  Const        r13, "note"
+  Const        r12, "contains"
+  // ci.note.contains("(uncredited)") &&
+  Const        r6, "note"
+  Const        r17, "contains"
+  // cn.country_code == "[ru]" &&
+  Const        r1, "country_code"
+  // rt.role == "actor" &&
+  Const        r4, "role"
+  // t.production_year > 2005
+  Const        r8, "production_year"
+  // select { character: chn.name, movie: t.title }
+  Const        r11, "character"
+  Const        r13, "name"
+  Const        r12, "movie"
+  Const        r6, "title"
+  // join mc in movie_companies on mc.movie_id == t.id
+  Const        r17, 0
+  LessInt      r1, r17, r15
+  JumpIfFalse  r1, L4
+  Index        r4, r18, r17
+  Const        r8, "movie_id"
+  Index        r11, r4, r8
+  Const        r13, "id"
+  Index        r12, r5, r13
+  Equal        r6, r11, r12
+  JumpIfFalse  r6, L5
+  // join cn in company_name on cn.id == mc.company_id
+  IterPrep     r15, r2
+  Len          r1, r15
+  Const        r18, "id"
+  Const        r8, "company_id"
+  // where ci.note.contains("(voice)") &&
+  Const        r13, "note"
+  Const        r11, "contains"
+  // ci.note.contains("(uncredited)") &&
+  Const        r12, "note"
+  Const        r6, "contains"
+  // cn.country_code == "[ru]" &&
+  Const        r2, "country_code"
+  // rt.role == "actor" &&
+  Const        r18, "role"
+  // t.production_year > 2005
+  Const        r8, "production_year"
+  // select { character: chn.name, movie: t.title }
+  Const        r13, "character"
+  Const        r11, "name"
+  Const        r12, "movie"
+  Const        r6, "title"
+  // join cn in company_name on cn.id == mc.company_id
+  Const        r2, 0
+  LessInt      r18, r2, r1
+  JumpIfFalse  r18, L5
+  Index        r8, r15, r2
+  Const        r13, "id"
+  Index        r11, r8, r13
+  Const        r12, "company_id"
+  Index        r6, r4, r12
+  Equal        r1, r11, r6
+  JumpIfFalse  r1, L6
+  // join ct in company_type on ct.id == mc.company_type_id
+  IterPrep     r18, r3
+  Len          r15, r18
+  Const        r13, "id"
+  Const        r12, "company_type_id"
+  // where ci.note.contains("(voice)") &&
+  Const        r11, "note"
+  Const        r6, "contains"
+  // ci.note.contains("(uncredited)") &&
+  Const        r1, "note"
+  Const        r3, "contains"
+  // cn.country_code == "[ru]" &&
+  Const        r13, "country_code"
+  // rt.role == "actor" &&
+  Const        r12, "role"
+  // t.production_year > 2005
+  Const        r11, "production_year"
+  // select { character: chn.name, movie: t.title }
+  Const        r6, "character"
+  Const        r1, "name"
+  Const        r3, "movie"
+  Const        r13, "title"
+  // join ct in company_type on ct.id == mc.company_type_id
+  Const        r12, 0
+  LessInt      r11, r12, r15
+  JumpIfFalse  r11, L6
+  Index        r6, r18, r12
+  Const        r1, "id"
+  Index        r3, r6, r1
+  Const        r13, "company_type_id"
+  Index        r15, r4, r13
+  Equal        r11, r3, r15
+  JumpIfFalse  r11, L4
+  Const        r18, "note"
+  Index        r6, r16, r18
+  // where ci.note.contains("(voice)") &&
+  Const        r1, "(voice)"
+  In           r4, r1, r6
+  // t.production_year > 2005
+  Const        r13, "production_year"
+  Index        r3, r5, r13
+  Const        r15, 2005
+  Less         r11, r15, r3
+  // cn.country_code == "[ru]" &&
+  Const        r18, "country_code"
+  Index        r6, r8, r18
+  Const        r1, "[ru]"
+  Equal        r13, r6, r1
+  // rt.role == "actor" &&
+  Const        r3, "role"
+  Index        r15, r20, r3
+  Const        r8, "actor"
+  Equal        r18, r15, r8
+  // where ci.note.contains("(voice)") &&
+  Move         r6, r4
+  JumpIfFalse  r6, L5
+  Const        r1, "note"
+  Index        r20, r16, r1
+  // ci.note.contains("(uncredited)") &&
+  Const        r3, "(uncredited)"
+  In           r15, r3, r20
+  JumpIfFalse  r15, L7
+  // cn.country_code == "[ru]" &&
+  Move         r8, r13
+  JumpIfFalse  r8, L6
+  // rt.role == "actor" &&
+  Move         r4, r18
+  JumpIfFalse  r4, L8
+  Move         r4, r11
+  // where ci.note.contains("(voice)") &&
+  JumpIfFalse  r4, L4
+  // select { character: chn.name, movie: t.title }
+  Const        r6, "character"
+  Const        r16, "name"
+  Index        r1, r9, r16
+  Const        r20, "movie"
+  Const        r3, "title"
+  Index        r15, r5, r3
+  Move         r22, r6
+  Move         r23, r1
+  Move         r24, r20
+  Move         r25, r15
+  MakeMap      r13, 2, r22
+  // from chn in char_name
+  Append       r7, r7, r13
+  // join ct in company_type on ct.id == mc.company_type_id
+  Const        r8, 1
+  Add          r12, r12, r8
+  Jump         L9
+  // join cn in company_name on cn.id == mc.company_id
+  Const        r11, 1
+  Add          r2, r2, r11
+  Jump         L10
+  // join mc in movie_companies on mc.movie_id == t.id
+  Const        r18, 1
+  Add          r17, r17, r18
+  Jump         L1
+  // join t in title on t.id == ci.movie_id
+  Const        r4, 1
+  Add          r19, r19, r4
+  Jump         L11
+  // join rt in role_type on rt.id == ci.role_id
+  Const        r9, 1
+  Add          r10, r10, r9
+  Jump         L12
+  // join ci in cast_info on chn.id == ci.person_role_id
+  Const        r16, 1
+  Add          r14, r14, r16
+  Jump         L13
+  // from chn in char_name
+  Const        r5, 1
+  AddInt       r21, r21, r5
+  Jump         L14
   // uncredited_voiced_character: min(from x in matches select x.character),
-  Const        r114, "uncredited_voiced_character"
-  Const        r115, []
-  IterPrep     r116, r7
-  Len          r117, r116
-  Move         r118, r20
-L19:
-  LessInt      r119, r118, r117
-  JumpIfFalse  r119, L18
-  Index        r121, r116, r118
-  Index        r122, r121, r13
-  Append       r115, r115, r122
-  AddInt       r118, r118, r113
-  Jump         L19
-L18:
-  Min          r124, r115
+  Const        r6, "uncredited_voiced_character"
+  Const        r1, []
+  Const        r20, "character"
+  IterPrep     r15, r7
+  Len          r22, r15
+  Const        r23, 0
+  LessInt      r24, r23, r22
+  JumpIfFalse  r24, L11
+  Index        r25, r15, r23
+  Const        r13, "character"
+  Index        r12, r25, r13
+  Append       r1, r1, r12
+  Const        r8, 1
+  AddInt       r23, r23, r8
+  Jump         L10
+  Min          r11, r1
   // russian_movie: min(from x in matches select x.movie)
-  Const        r125, "russian_movie"
-  Const        r126, []
-  IterPrep     r127, r7
-  Len          r128, r127
-  Move         r129, r20
-L21:
-  LessInt      r130, r129, r128
-  JumpIfFalse  r130, L20
-  Index        r121, r127, r129
-  Index        r132, r121, r15
-  Append       r126, r126, r132
-  AddInt       r129, r129, r113
-  Jump         L21
-L20:
-  Min          r134, r126
+  Const        r17, "russian_movie"
+  Const        r18, []
+  Const        r19, "movie"
+  IterPrep     r4, r7
+  Len          r10, r4
+  Const        r9, 0
+L16:
+  LessInt      r14, r9, r10
+  JumpIfFalse  r14, L15
+  Index        r25, r4, r9
+  Const        r2, "movie"
+  Index        r16, r25, r2
+  Append       r18, r18, r16
+  Const        r21, 1
+  AddInt       r9, r9, r21
+  Jump         L16
+L15:
+  Min          r5, r18
   // uncredited_voiced_character: min(from x in matches select x.character),
-  Move         r135, r114
-  Move         r136, r124
+  Move         r26, r6
+  Move         r27, r11
   // russian_movie: min(from x in matches select x.movie)
-  Move         r137, r125
-  Move         r138, r134
+  Move         r28, r17
+  Move         r29, r5
   // {
-  MakeMap      r140, 2, r135
+  MakeMap      r3, 2, r26
   // let result = [
-  MakeList     r141, 1, r140
+  MakeList     r20, 1, r3
   // json(result)
-  JSON         r141
+  JSON         r20
   // expect result == [
-  Const        r142, [{"russian_movie": "Vodka Dreams", "uncredited_voiced_character": "Ivan"}]
-  Equal        r143, r141, r142
-  Expect       r143
+  Const        r22, [{"russian_movie": "Vodka Dreams", "uncredited_voiced_character": "Ivan"}]
+  Equal        r24, r20, r22
+  Expect       r24
   Return       r0

@@ -1,288 +1,540 @@
-func main (regs=168)
+func main (regs=36)
   // let info_type = [
   Const        r0, [{"id": 1, "info": "budget"}, {"id": 2, "info": "votes"}, {"id": 3, "info": "rating"}]
+L0:
   // let name = [
   Const        r1, [{"gender": "m", "id": 1, "name": "Big Tim"}, {"gender": "m", "id": 2, "name": "Slim Tim"}, {"gender": "f", "id": 3, "name": "Alice"}]
+L2:
   // let title = [
   Const        r2, [{"id": 10, "title": "Alpha"}, {"id": 20, "title": "Beta"}, {"id": 30, "title": "Gamma"}]
+L15:
   // let cast_info = [
   Const        r3, [{"movie_id": 10, "note": "(producer)", "person_id": 1}, {"movie_id": 20, "note": "(executive producer)", "person_id": 2}, {"movie_id": 30, "note": "(producer)", "person_id": 3}]
   // let movie_info = [
   Const        r4, [{"info": 90, "info_type_id": 1, "movie_id": 10}, {"info": 120, "info_type_id": 1, "movie_id": 20}, {"info": 110, "info_type_id": 1, "movie_id": 30}]
+L9:
   // let movie_info_idx = [
   Const        r5, [{"info": 500, "info_type_id": 2, "movie_id": 10}, {"info": 400, "info_type_id": 2, "movie_id": 20}, {"info": 800, "info_type_id": 2, "movie_id": 30}]
   // from ci in cast_info
   Const        r6, []
+L16:
   // ci.note in ["(producer)", "(executive producer)"] &&
   Const        r7, "note"
-  // it1.info == "budget" &&
-  Const        r8, "info"
-  // n.gender == "m" &&
-  Const        r9, "gender"
-  // n.name.contains("Tim") &&
-  Const        r10, "name"
-  // t.id == ci.movie_id &&
-  Const        r12, "id"
-  Const        r13, "movie_id"
-  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
-  Const        r14, "budget"
-  Const        r15, "votes"
-  Const        r16, "title"
-  // from ci in cast_info
-  IterPrep     r17, r3
-  Len          r18, r17
-  Const        r20, 0
-  Move         r19, r20
-L21:
-  LessInt      r21, r19, r18
-  JumpIfFalse  r21, L0
-  Index        r23, r17, r19
-  // join n in name on n.id == ci.person_id
-  IterPrep     r24, r1
-  Len          r25, r24
-  Const        r26, "person_id"
-  Move         r27, r20
-L2:
-  LessInt      r28, r27, r25
-  JumpIfFalse  r28, L1
-  Index        r30, r24, r27
-  Index        r31, r30, r12
-  Index        r32, r23, r26
-  Equal        r33, r31, r32
-  JumpIfFalse  r33, L2
-  // join t in title on t.id == ci.movie_id
-  IterPrep     r34, r2
-  Len          r35, r34
-  Move         r36, r20
-L20:
-  LessInt      r37, r36, r35
-  JumpIfFalse  r37, L2
-  Index        r39, r34, r36
-  Index        r40, r39, r12
-  Index        r41, r23, r13
-  Equal        r42, r40, r41
-  JumpIfFalse  r42, L3
-  // join mi in movie_info on mi.movie_id == t.id
-  IterPrep     r43, r4
-  Len          r44, r43
-  Move         r45, r20
-L19:
-  LessInt      r46, r45, r44
-  JumpIfFalse  r46, L3
-  Index        r48, r43, r45
-  Index        r49, r48, r13
-  Index        r50, r39, r12
-  Equal        r51, r49, r50
-  JumpIfFalse  r51, L4
-  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  IterPrep     r52, r5
-  Len          r53, r52
-  Move         r54, r20
-L18:
-  LessInt      r55, r54, r53
-  JumpIfFalse  r55, L4
-  Index        r57, r52, r54
-  Index        r58, r57, r13
-  Index        r59, r39, r12
-  Equal        r60, r58, r59
-  JumpIfFalse  r60, L5
-  // join it1 in info_type on it1.id == mi.info_type_id
-  IterPrep     r61, r0
-  Len          r62, r61
-  Const        r63, "info_type_id"
-  Move         r64, r20
-L17:
-  LessInt      r65, r64, r62
-  JumpIfFalse  r65, L5
-  Index        r67, r61, r64
-  Index        r68, r67, r12
-  Index        r69, r48, r63
-  Equal        r70, r68, r69
-  JumpIfFalse  r70, L6
-  // join it2 in info_type on it2.id == mi_idx.info_type_id
-  IterPrep     r71, r0
-  Len          r72, r71
-  Move         r73, r20
-L16:
-  LessInt      r74, r73, r72
-  JumpIfFalse  r74, L6
-  Index        r76, r71, r73
-  Index        r77, r76, r12
-  Index        r78, r57, r63
-  Equal        r79, r77, r78
-  JumpIfFalse  r79, L7
-  // ci.note in ["(producer)", "(executive producer)"] &&
-  Index        r80, r23, r7
-  Const        r81, ["(producer)", "(executive producer)"]
-  In           r82, r80, r81
-  // it1.info == "budget" &&
-  Index        r83, r67, r8
-  Equal        r84, r83, r14
-  // it2.info == "votes" &&
-  Index        r85, r76, r8
-  Equal        r86, r85, r15
-  // n.gender == "m" &&
-  Index        r87, r30, r9
-  Const        r88, "m"
-  Equal        r89, r87, r88
-  // t.id == ci.movie_id &&
-  Index        r90, r39, r12
-  Index        r91, r23, r13
-  Equal        r92, r90, r91
-  // ci.movie_id == mi.movie_id &&
-  Index        r93, r23, r13
-  Index        r94, r48, r13
-  Equal        r95, r93, r94
-  // ci.movie_id == mi_idx.movie_id &&
-  Index        r96, r23, r13
-  Index        r97, r57, r13
-  Equal        r98, r96, r97
-  // mi.movie_id == mi_idx.movie_id
-  Index        r99, r48, r13
-  Index        r100, r57, r13
-  Equal        r101, r99, r100
-  // ci.note in ["(producer)", "(executive producer)"] &&
-  Move         r102, r82
-  JumpIfFalse  r102, L8
 L8:
   // it1.info == "budget" &&
-  Move         r103, r84
-  JumpIfFalse  r103, L9
-L9:
-  // it2.info == "votes" &&
-  Move         r104, r86
-  JumpIfFalse  r104, L10
+  Const        r8, "info"
 L10:
-  // n.gender == "m" &&
-  Move         r105, r89
-  JumpIfFalse  r105, L11
-  Index        r106, r30, r10
-  // n.name.contains("Tim") &&
-  Const        r107, "Tim"
-  In           r109, r107, r106
-L11:
-  JumpIfFalse  r109, L12
+  // it2.info == "votes" &&
+  Const        r9, "info"
 L12:
-  // t.id == ci.movie_id &&
-  Move         r110, r92
-  JumpIfFalse  r110, L13
-L13:
-  // ci.movie_id == mi.movie_id &&
-  Move         r111, r95
-  JumpIfFalse  r111, L14
+  // n.gender == "m" &&
+  Const        r10, "gender"
+  // n.name.contains("Tim") &&
+  Const        r11, "name"
+  Const        r12, "contains"
 L14:
-  // ci.movie_id == mi_idx.movie_id &&
-  Move         r112, r98
-  JumpIfFalse  r112, L15
-  Move         r112, r101
-L15:
-  // where (
-  JumpIfFalse  r112, L7
-  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
-  Move         r113, r14
-  Index        r114, r48, r8
-  Move         r115, r15
-  Index        r116, r57, r8
-  Move         r117, r16
-  Index        r118, r39, r16
-  Move         r119, r113
-  Move         r120, r114
-  Move         r121, r115
-  Move         r122, r116
-  Move         r123, r117
-  Move         r124, r118
-  MakeMap      r125, 3, r119
-  // from ci in cast_info
-  Append       r6, r6, r125
-L7:
-  // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Const        r127, 1
-  Add          r73, r73, r127
-  Jump         L16
-L6:
-  // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r64, r64, r127
-  Jump         L17
-L5:
-  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Add          r54, r54, r127
-  Jump         L18
-L4:
-  // join mi in movie_info on mi.movie_id == t.id
-  Add          r45, r45, r127
-  Jump         L19
-L3:
-  // join t in title on t.id == ci.movie_id
-  Add          r36, r36, r127
-  Jump         L20
+  // t.id == ci.movie_id &&
+  Const        r13, "id"
+  Const        r14, "movie_id"
 L1:
+  // ci.movie_id == mi.movie_id &&
+  Const        r15, "movie_id"
+  Const        r16, "movie_id"
+  // ci.movie_id == mi_idx.movie_id &&
+  Const        r17, "movie_id"
+L11:
+  Const        r18, "movie_id"
+L13:
+  // mi.movie_id == mi_idx.movie_id
+  Const        r19, "movie_id"
+  Const        r20, "movie_id"
+L6:
+  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
+  Const        r21, "budget"
+L7:
+  Const        r22, "info"
+  Const        r23, "votes"
+L5:
+  Const        r7, "info"
+  Const        r8, "title"
+L4:
+  Const        r9, "title"
   // from ci in cast_info
-  AddInt       r19, r19, r127
+  IterPrep     r10, r3
+L3:
+  Len          r11, r10
+L17:
+  Const        r12, 0
+  LessInt      r13, r12, r11
+L19:
+  JumpIfFalse  r13, L0
+  Index        r14, r10, r12
+  // join n in name on n.id == ci.person_id
+  IterPrep     r15, r1
+  Len          r16, r15
+  Const        r17, "id"
+  Const        r18, "person_id"
+  // ci.note in ["(producer)", "(executive producer)"] &&
+  Const        r19, "note"
+  // it1.info == "budget" &&
+  Const        r20, "info"
+  // it2.info == "votes" &&
+  Const        r21, "info"
+  // n.gender == "m" &&
+  Const        r22, "gender"
+  // n.name.contains("Tim") &&
+  Const        r23, "name"
+  Const        r7, "contains"
+  // t.id == ci.movie_id &&
+  Const        r8, "id"
+  Const        r9, "movie_id"
+  // ci.movie_id == mi.movie_id &&
+  Const        r3, "movie_id"
+  Const        r11, "movie_id"
+  // ci.movie_id == mi_idx.movie_id &&
+  Const        r13, "movie_id"
+  Const        r10, "movie_id"
+  // mi.movie_id == mi_idx.movie_id
+  Const        r1, "movie_id"
+  Const        r17, "movie_id"
+  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
+  Const        r18, "budget"
+  Const        r19, "info"
+  Const        r20, "votes"
+  Const        r21, "info"
+  Const        r22, "title"
+  Const        r23, "title"
+  // join n in name on n.id == ci.person_id
+  Const        r7, 0
+  LessInt      r8, r7, r16
+  JumpIfFalse  r8, L1
+  Index        r9, r15, r7
+  Const        r3, "id"
+  Index        r11, r9, r3
+  Const        r13, "person_id"
+  Index        r10, r14, r13
+  Equal        r1, r11, r10
+  JumpIfFalse  r1, L2
+  // join t in title on t.id == ci.movie_id
+  IterPrep     r17, r2
+  Len          r18, r17
+  Const        r19, "id"
+  Const        r20, "movie_id"
+  // ci.note in ["(producer)", "(executive producer)"] &&
+  Const        r21, "note"
+  // it1.info == "budget" &&
+  Const        r22, "info"
+  // it2.info == "votes" &&
+  Const        r23, "info"
+  // n.gender == "m" &&
+  Const        r16, "gender"
+  // n.name.contains("Tim") &&
+  Const        r8, "name"
+  Const        r15, "contains"
+  // t.id == ci.movie_id &&
+  Const        r3, "id"
+  Const        r13, "movie_id"
+  // ci.movie_id == mi.movie_id &&
+  Const        r11, "movie_id"
+  Const        r10, "movie_id"
+  // ci.movie_id == mi_idx.movie_id &&
+  Const        r1, "movie_id"
+  Const        r2, "movie_id"
+  // mi.movie_id == mi_idx.movie_id
+  Const        r19, "movie_id"
+  Const        r20, "movie_id"
+  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
+  Const        r21, "budget"
+  Const        r22, "info"
+  Const        r23, "votes"
+  Const        r16, "info"
+  Const        r8, "title"
+  Const        r15, "title"
+  // join t in title on t.id == ci.movie_id
+  Const        r3, 0
+  LessInt      r13, r3, r18
+  JumpIfFalse  r13, L2
+  Index        r11, r17, r3
+  Const        r10, "id"
+  Index        r1, r11, r10
+  Const        r2, "movie_id"
+  Index        r19, r14, r2
+  Equal        r20, r1, r19
+  JumpIfFalse  r20, L3
+  // join mi in movie_info on mi.movie_id == t.id
+  IterPrep     r21, r4
+  Len          r22, r21
+  Const        r23, "movie_id"
+  Const        r16, "id"
+  // ci.note in ["(producer)", "(executive producer)"] &&
+  Const        r8, "note"
+  // it1.info == "budget" &&
+  Const        r15, "info"
+  // it2.info == "votes" &&
+  Const        r18, "info"
+  // n.gender == "m" &&
+  Const        r13, "gender"
+  // n.name.contains("Tim") &&
+  Const        r17, "name"
+  Const        r10, "contains"
+  // t.id == ci.movie_id &&
+  Const        r2, "id"
+  Const        r1, "movie_id"
+  // ci.movie_id == mi.movie_id &&
+  Const        r19, "movie_id"
+  Const        r20, "movie_id"
+  // ci.movie_id == mi_idx.movie_id &&
+  Const        r4, "movie_id"
+  Const        r23, "movie_id"
+  // mi.movie_id == mi_idx.movie_id
+  Const        r16, "movie_id"
+  Const        r8, "movie_id"
+  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
+  Const        r15, "budget"
+  Const        r18, "info"
+  Const        r13, "votes"
+  Const        r17, "info"
+  Const        r10, "title"
+  Const        r2, "title"
+  // join mi in movie_info on mi.movie_id == t.id
+  Const        r1, 0
+  LessInt      r19, r1, r22
+  JumpIfFalse  r19, L3
+  Index        r20, r21, r1
+  Const        r4, "movie_id"
+  Index        r23, r20, r4
+  Const        r16, "id"
+  Index        r8, r11, r16
+  Equal        r15, r23, r8
+  JumpIfFalse  r15, L4
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  IterPrep     r18, r5
+  Len          r13, r18
+  Const        r17, "movie_id"
+  Const        r10, "id"
+  // ci.note in ["(producer)", "(executive producer)"] &&
+  Const        r2, "note"
+  // it1.info == "budget" &&
+  Const        r22, "info"
+  // it2.info == "votes" &&
+  Const        r19, "info"
+  // n.gender == "m" &&
+  Const        r21, "gender"
+  // n.name.contains("Tim") &&
+  Const        r4, "name"
+  Const        r16, "contains"
+  // t.id == ci.movie_id &&
+  Const        r23, "id"
+  Const        r8, "movie_id"
+  // ci.movie_id == mi.movie_id &&
+  Const        r15, "movie_id"
+  Const        r5, "movie_id"
+  // ci.movie_id == mi_idx.movie_id &&
+  Const        r17, "movie_id"
+  Const        r10, "movie_id"
+  // mi.movie_id == mi_idx.movie_id
+  Const        r2, "movie_id"
+  Const        r22, "movie_id"
+  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
+  Const        r19, "budget"
+  Const        r21, "info"
+  Const        r4, "votes"
+  Const        r16, "info"
+  Const        r23, "title"
+  Const        r8, "title"
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  Const        r15, 0
+  LessInt      r5, r15, r13
+  JumpIfFalse  r5, L4
+  Index        r17, r18, r15
+  Const        r10, "movie_id"
+  Index        r2, r17, r10
+  Const        r22, "id"
+  Index        r19, r11, r22
+  Equal        r21, r2, r19
+  JumpIfFalse  r21, L5
+  // join it1 in info_type on it1.id == mi.info_type_id
+  IterPrep     r4, r0
+  Len          r16, r4
+  Const        r23, "id"
+  Const        r8, "info_type_id"
+  // ci.note in ["(producer)", "(executive producer)"] &&
+  Const        r13, "note"
+  // it1.info == "budget" &&
+  Const        r5, "info"
+  // it2.info == "votes" &&
+  Const        r18, "info"
+  // n.gender == "m" &&
+  Const        r10, "gender"
+  // n.name.contains("Tim") &&
+  Const        r22, "name"
+  Const        r2, "contains"
+  // t.id == ci.movie_id &&
+  Const        r19, "id"
+  Const        r21, "movie_id"
+  // ci.movie_id == mi.movie_id &&
+  Const        r23, "movie_id"
+  Const        r8, "movie_id"
+  // ci.movie_id == mi_idx.movie_id &&
+  Const        r13, "movie_id"
+  Const        r5, "movie_id"
+  // mi.movie_id == mi_idx.movie_id
+  Const        r18, "movie_id"
+  Const        r10, "movie_id"
+  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
+  Const        r22, "budget"
+  Const        r2, "info"
+  Const        r19, "votes"
+  Const        r21, "info"
+  Const        r23, "title"
+  Const        r8, "title"
+  // join it1 in info_type on it1.id == mi.info_type_id
+  Const        r13, 0
+  LessInt      r5, r13, r16
+  JumpIfFalse  r5, L5
+  Index        r18, r4, r13
+  Const        r10, "id"
+  Index        r22, r18, r10
+  Const        r2, "info_type_id"
+  Index        r19, r20, r2
+  Equal        r21, r22, r19
+  JumpIfFalse  r21, L6
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  IterPrep     r23, r0
+  Len          r8, r23
+  Const        r16, "id"
+  Const        r5, "info_type_id"
+  // ci.note in ["(producer)", "(executive producer)"] &&
+  Const        r4, "note"
+  // it1.info == "budget" &&
+  Const        r10, "info"
+  // it2.info == "votes" &&
+  Const        r2, "info"
+  // n.gender == "m" &&
+  Const        r22, "gender"
+  // n.name.contains("Tim") &&
+  Const        r19, "name"
+  Const        r21, "contains"
+  // t.id == ci.movie_id &&
+  Const        r16, "id"
+  Const        r5, "movie_id"
+  // ci.movie_id == mi.movie_id &&
+  Const        r4, "movie_id"
+  Const        r10, "movie_id"
+  // ci.movie_id == mi_idx.movie_id &&
+  Const        r2, "movie_id"
+  Const        r22, "movie_id"
+  // mi.movie_id == mi_idx.movie_id
+  Const        r19, "movie_id"
+  Const        r21, "movie_id"
+  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
+  Const        r16, "budget"
+  Const        r5, "info"
+  Const        r4, "votes"
+  Const        r10, "info"
+  Const        r2, "title"
+  Const        r22, "title"
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  Const        r19, 0
+  LessInt      r21, r19, r8
+  JumpIfFalse  r21, L6
+  Index        r16, r23, r19
+  Const        r5, "id"
+  Index        r4, r16, r5
+  Const        r10, "info_type_id"
+  Index        r2, r17, r10
+  Equal        r22, r4, r2
+  JumpIfFalse  r22, L7
+  // ci.note in ["(producer)", "(executive producer)"] &&
+  Const        r8, "note"
+  Index        r21, r14, r8
+  Const        r23, ["(producer)", "(executive producer)"]
+  In           r5, r21, r23
+  // it1.info == "budget" &&
+  Const        r10, "info"
+  Index        r4, r18, r10
+  Const        r2, "budget"
+  Equal        r22, r4, r2
+  // it2.info == "votes" &&
+  Const        r8, "info"
+  Index        r21, r16, r8
+  Const        r23, "votes"
+  Equal        r18, r21, r23
+  // n.gender == "m" &&
+  Const        r10, "gender"
+  Index        r4, r9, r10
+  Const        r2, "m"
+  Equal        r16, r4, r2
+  // t.id == ci.movie_id &&
+  Const        r8, "id"
+  Index        r21, r11, r8
+  Const        r23, "movie_id"
+  Index        r10, r14, r23
+  Equal        r4, r21, r10
+  // ci.movie_id == mi.movie_id &&
+  Const        r2, "movie_id"
+  Index        r8, r14, r2
+  Const        r23, "movie_id"
+  Index        r21, r20, r23
+  Equal        r10, r8, r21
+  // ci.movie_id == mi_idx.movie_id &&
+  Const        r2, "movie_id"
+  Index        r23, r14, r2
+  Const        r8, "movie_id"
+  Index        r21, r17, r8
+  Equal        r14, r23, r21
+  // mi.movie_id == mi_idx.movie_id
+  Const        r2, "movie_id"
+  Index        r8, r20, r2
+  Const        r23, "movie_id"
+  Index        r21, r17, r23
+  Equal        r2, r8, r21
+  // ci.note in ["(producer)", "(executive producer)"] &&
+  Move         r23, r5
+  JumpIfFalse  r23, L8
+  // it1.info == "budget" &&
+  Move         r8, r22
+  JumpIfFalse  r8, L9
+  // it2.info == "votes" &&
+  Move         r21, r18
+  JumpIfFalse  r21, L7
+  // n.gender == "m" &&
+  Move         r5, r16
+  JumpIfFalse  r5, L9
+  Const        r23, "name"
+  Index        r22, r9, r23
+  // n.name.contains("Tim") &&
+  Const        r8, "Tim"
+  In           r18, r8, r22
+  JumpIfFalse  r18, L10
+  // t.id == ci.movie_id &&
+  Move         r21, r4
+  JumpIfFalse  r21, L7
+  // ci.movie_id == mi.movie_id &&
+  Move         r16, r10
+  JumpIfFalse  r16, L11
+  // ci.movie_id == mi_idx.movie_id &&
+  Move         r5, r14
+  JumpIfFalse  r5, L12
+  Move         r5, r2
+  // where (
+  JumpIfFalse  r5, L7
+  // select { budget: mi.info, votes: mi_idx.info, title: t.title }
+  Const        r9, "budget"
+  Const        r23, "info"
+  Index        r22, r20, r23
+  Const        r8, "votes"
+  Const        r18, "info"
+  Index        r4, r17, r18
+  Const        r21, "title"
+  Const        r10, "title"
+  Index        r16, r11, r10
+  Move         r24, r9
+  Move         r25, r22
+  Move         r26, r8
+  Move         r27, r4
+  Move         r28, r21
+  Move         r29, r16
+  MakeMap      r14, 3, r24
+  // from ci in cast_info
+  Append       r6, r6, r14
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  Const        r2, 1
+  Add          r19, r19, r2
+  Jump         L13
+  // join it1 in info_type on it1.id == mi.info_type_id
+  Const        r5, 1
+  Add          r13, r13, r5
+  Jump         L14
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  Const        r20, 1
+  Add          r15, r15, r20
+  Jump         L1
+  // join mi in movie_info on mi.movie_id == t.id
+  Const        r23, 1
+  Add          r1, r1, r23
+  Jump         L0
+  // join t in title on t.id == ci.movie_id
+  Const        r17, 1
+  Add          r3, r3, r17
+  Jump         L15
+  // join n in name on n.id == ci.person_id
+  Const        r18, 1
+  Add          r7, r7, r18
+  Jump         L16
+  // from ci in cast_info
+  Const        r11, 1
+  AddInt       r12, r12, r11
+  Jump         L12
+  // movie_budget: min(from r in rows select r.budget),
+  Const        r9, "movie_budget"
+  Const        r22, []
+  Const        r8, "budget"
+  IterPrep     r4, r6
+  Len          r21, r4
+  Const        r16, 0
+  LessInt      r24, r16, r21
+  JumpIfFalse  r24, L0
+  Index        r25, r4, r16
+  Const        r26, "budget"
+  Index        r27, r25, r26
+  Append       r22, r22, r27
+  Const        r28, 1
+  AddInt       r16, r16, r28
+  Jump         L17
+  Min          r14, r22
+  // movie_votes: min(from r in rows select r.votes),
+  Const        r19, "movie_votes"
+  Const        r2, []
+  Const        r13, "votes"
+  IterPrep     r5, r6
+  Len          r15, r5
+  Const        r20, 0
+  LessInt      r1, r20, r15
+  JumpIfFalse  r1, L18
+  Index        r25, r5, r20
+  Const        r23, "votes"
+  Index        r3, r25, r23
+  Append       r2, r2, r3
+  Const        r17, 1
+  AddInt       r20, r20, r17
+  Jump         L19
+L18:
+  Min          r29, r2
+  // movie_title: min(from r in rows select r.title)
+  Const        r7, "movie_title"
+  Const        r18, []
+  Const        r12, "title"
+  IterPrep     r11, r6
+  Len          r10, r11
+  Const        r8, 0
+L21:
+  LessInt      r21, r8, r10
+  JumpIfFalse  r21, L20
+  Index        r25, r11, r8
+  Const        r24, "title"
+  Index        r4, r25, r24
+  Append       r18, r18, r4
+  Const        r26, 1
+  AddInt       r8, r8, r26
   Jump         L21
-L0:
+L20:
+  Min          r27, r18
   // movie_budget: min(from r in rows select r.budget),
-  Const        r128, "movie_budget"
-  Const        r129, []
-  IterPrep     r130, r6
-  Len          r131, r130
-  Move         r132, r20
-L23:
-  LessInt      r133, r132, r131
-  JumpIfFalse  r133, L22
-  Index        r135, r130, r132
-  Index        r136, r135, r14
-  Append       r129, r129, r136
-  AddInt       r132, r132, r127
-  Jump         L23
-L22:
-  Min          r138, r129
+  Move         r30, r9
+  Move         r31, r14
   // movie_votes: min(from r in rows select r.votes),
-  Const        r139, "movie_votes"
-  Const        r140, []
-  IterPrep     r141, r6
-  Len          r142, r141
-  Move         r143, r20
-L25:
-  LessInt      r144, r143, r142
-  JumpIfFalse  r144, L24
-  Index        r135, r141, r143
-  Index        r146, r135, r15
-  Append       r140, r140, r146
-  AddInt       r143, r143, r127
-  Jump         L25
-L24:
-  Min          r148, r140
+  Move         r32, r19
+  Move         r33, r29
   // movie_title: min(from r in rows select r.title)
-  Const        r149, "movie_title"
-  Const        r150, []
-  IterPrep     r151, r6
-  Len          r152, r151
-  Move         r153, r20
-L27:
-  LessInt      r154, r153, r152
-  JumpIfFalse  r154, L26
-  Index        r135, r151, r153
-  Index        r156, r135, r16
-  Append       r150, r150, r156
-  AddInt       r153, r153, r127
-  Jump         L27
-L26:
-  Min          r158, r150
-  // movie_budget: min(from r in rows select r.budget),
-  Move         r159, r128
-  Move         r160, r138
-  // movie_votes: min(from r in rows select r.votes),
-  Move         r161, r139
-  Move         r162, r148
-  // movie_title: min(from r in rows select r.title)
-  Move         r163, r149
-  Move         r164, r158
+  Move         r34, r7
+  Move         r35, r27
   // let result = {
-  MakeMap      r165, 3, r159
+  MakeMap      r16, 3, r30
   // json(result)
-  JSON         r165
+  JSON         r16
   // expect result == { movie_budget: 90, movie_votes: 400, movie_title: "Alpha" }
-  Const        r166, {"movie_budget": 90, "movie_title": "Alpha", "movie_votes": 400}
-  Equal        r167, r165, r166
-  Expect       r167
+  Const        r28, {"movie_budget": 90, "movie_title": "Alpha", "movie_votes": 400}
+  Equal        r22, r16, r28
+  Expect       r22
   Return       r0

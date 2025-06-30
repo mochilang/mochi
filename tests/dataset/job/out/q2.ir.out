@@ -1,139 +1,201 @@
-func main (regs=73)
+func main (regs=15)
   // let company_name = [
   Const        r0, [{"country_code": "[de]", "id": 1}, {"country_code": "[us]", "id": 2}]
+L8:
   // let keyword = [
   Const        r1, [{"id": 1, "keyword": "character-name-in-title"}, {"id": 2, "keyword": "other"}]
+L11:
   // let movie_companies = [
   Const        r2, [{"company_id": 1, "movie_id": 100}, {"company_id": 2, "movie_id": 200}]
+L9:
   // let movie_keyword = [
   Const        r3, [{"keyword_id": 1, "movie_id": 100}, {"keyword_id": 2, "movie_id": 200}]
+L10:
   // let title = [
   Const        r4, [{"id": 100, "title": "Der Film"}, {"id": 200, "title": "Other Movie"}]
+L7:
   // from cn in company_name
   Const        r5, []
+L5:
   // where cn.country_code == "[de]" &&
   Const        r6, "country_code"
+L4:
   // k.keyword == "character-name-in-title" &&
   Const        r7, "keyword"
   // mc.movie_id == mk.movie_id
   Const        r8, "movie_id"
-  // select t.title
-  Const        r9, "title"
-  // from cn in company_name
-  IterPrep     r10, r0
-  Len          r11, r10
-  Const        r13, 0
-  Move         r12, r13
-L12:
-  LessInt      r14, r12, r11
-  JumpIfFalse  r14, L0
-  Index        r16, r10, r12
-  // join mc in movie_companies on mc.company_id == cn.id
-  IterPrep     r17, r2
-  Len          r18, r17
-  Const        r19, "company_id"
-  Const        r20, "id"
-  Move         r21, r13
-L11:
-  LessInt      r22, r21, r18
-  JumpIfFalse  r22, L1
-  Index        r24, r17, r21
-  Index        r25, r24, r19
-  Index        r26, r16, r20
-  Equal        r27, r25, r26
-  JumpIfFalse  r27, L2
-  // join t in title on mc.movie_id == t.id
-  IterPrep     r28, r4
-  Len          r29, r28
-  Move         r30, r13
-L10:
-  LessInt      r31, r30, r29
-  JumpIfFalse  r31, L2
-  Index        r33, r28, r30
-  Index        r34, r24, r8
-  Index        r35, r33, r20
-  Equal        r36, r34, r35
-  JumpIfFalse  r36, L3
-  // join mk in movie_keyword on mk.movie_id == t.id
-  IterPrep     r37, r3
-  Len          r38, r37
-  Move         r39, r13
-L9:
-  LessInt      r40, r39, r38
-  JumpIfFalse  r40, L3
-  Index        r42, r37, r39
-  Index        r43, r42, r8
-  Index        r44, r33, r20
-  Equal        r45, r43, r44
-  JumpIfFalse  r45, L4
-  // join k in keyword on mk.keyword_id == k.id
-  IterPrep     r46, r1
-  Len          r47, r46
-  Const        r48, "keyword_id"
-  Move         r49, r13
-L8:
-  LessInt      r50, r49, r47
-  JumpIfFalse  r50, L4
-  Index        r52, r46, r49
-  Index        r53, r42, r48
-  Index        r54, r52, r20
-  Equal        r55, r53, r54
-  JumpIfFalse  r55, L5
-  // where cn.country_code == "[de]" &&
-  Index        r56, r16, r6
-  Const        r57, "[de]"
-  Equal        r58, r56, r57
-  // k.keyword == "character-name-in-title" &&
-  Index        r59, r52, r7
-  Const        r60, "character-name-in-title"
-  Equal        r61, r59, r60
-  // mc.movie_id == mk.movie_id
-  Index        r62, r24, r8
-  Index        r63, r42, r8
-  Equal        r64, r62, r63
-  // where cn.country_code == "[de]" &&
-  Move         r65, r58
-  JumpIfFalse  r65, L6
+  Const        r9, "movie_id"
 L6:
-  // k.keyword == "character-name-in-title" &&
-  Move         r66, r61
-  JumpIfFalse  r66, L7
-  Move         r66, r64
-L7:
-  // where cn.country_code == "[de]" &&
-  JumpIfFalse  r66, L5
   // select t.title
-  Index        r67, r33, r9
+  Const        r6, "title"
+L12:
   // from cn in company_name
-  Append       r5, r5, r67
-L5:
-  // join k in keyword on mk.keyword_id == k.id
-  Const        r69, 1
-  Add          r49, r49, r69
-  Jump         L8
-L4:
+  IterPrep     r7, r0
+  Len          r8, r7
+  Const        r9, 0
+  LessInt      r6, r9, r8
+  JumpIfFalse  r6, L0
+  Index        r8, r7, r9
+  // join mc in movie_companies on mc.company_id == cn.id
+  IterPrep     r6, r2
+  Len          r7, r6
+  Const        r2, "company_id"
+  Const        r2, "id"
+  // where cn.country_code == "[de]" &&
+  Const        r2, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r2, "keyword"
+  // mc.movie_id == mk.movie_id
+  Const        r2, "movie_id"
+  Const        r2, "movie_id"
+  // select t.title
+  Const        r2, "title"
+  // join mc in movie_companies on mc.company_id == cn.id
+  Const        r2, 0
+  LessInt      r10, r2, r7
+  JumpIfFalse  r10, L1
+  Index        r7, r6, r2
+  Const        r10, "company_id"
+  Index        r6, r7, r10
+  Const        r10, "id"
+  Index        r11, r8, r10
+  Equal        r10, r6, r11
+  JumpIfFalse  r10, L2
+  // join t in title on mc.movie_id == t.id
+  IterPrep     r6, r4
+  Len          r11, r6
+  Const        r10, "movie_id"
+  Const        r4, "id"
+  // where cn.country_code == "[de]" &&
+  Const        r10, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r4, "keyword"
+  // mc.movie_id == mk.movie_id
+  Const        r10, "movie_id"
+  Const        r4, "movie_id"
+  // select t.title
+  Const        r10, "title"
+  // join t in title on mc.movie_id == t.id
+  Const        r4, 0
+  LessInt      r10, r4, r11
+  JumpIfFalse  r10, L2
+  Index        r11, r6, r4
+  Const        r10, "movie_id"
+  Index        r6, r7, r10
+  Const        r10, "id"
+  Index        r12, r11, r10
+  Equal        r10, r6, r12
+  JumpIfFalse  r10, L3
   // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r39, r39, r69
+  IterPrep     r6, r3
+  Len          r12, r6
+  Const        r10, "movie_id"
+  Const        r3, "id"
+  // where cn.country_code == "[de]" &&
+  Const        r10, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r3, "keyword"
+  // mc.movie_id == mk.movie_id
+  Const        r10, "movie_id"
+  Const        r3, "movie_id"
+  // select t.title
+  Const        r10, "title"
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r3, 0
+  LessInt      r10, r3, r12
+  JumpIfFalse  r10, L3
+  Index        r12, r6, r3
+  Const        r10, "movie_id"
+  Index        r6, r12, r10
+  Const        r10, "id"
+  Index        r13, r11, r10
+  Equal        r10, r6, r13
+  JumpIfFalse  r10, L4
+  // join k in keyword on mk.keyword_id == k.id
+  IterPrep     r6, r1
+  Len          r13, r6
+  Const        r10, "keyword_id"
+  Const        r1, "id"
+  // where cn.country_code == "[de]" &&
+  Const        r10, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r1, "keyword"
+  // mc.movie_id == mk.movie_id
+  Const        r10, "movie_id"
+  Const        r1, "movie_id"
+  // select t.title
+  Const        r10, "title"
+  // join k in keyword on mk.keyword_id == k.id
+  Const        r1, 0
+  LessInt      r10, r1, r13
+  JumpIfFalse  r10, L4
+  Index        r13, r6, r1
+  Const        r10, "keyword_id"
+  Index        r6, r12, r10
+  Const        r10, "id"
+  Index        r14, r13, r10
+  Equal        r10, r6, r14
+  JumpIfFalse  r10, L5
+  // where cn.country_code == "[de]" &&
+  Const        r6, "country_code"
+  Index        r14, r8, r6
+  Const        r10, "[de]"
+  Equal        r8, r14, r10
+  // k.keyword == "character-name-in-title" &&
+  Const        r6, "keyword"
+  Index        r14, r13, r6
+  Const        r10, "character-name-in-title"
+  Equal        r13, r14, r10
+  // mc.movie_id == mk.movie_id
+  Const        r6, "movie_id"
+  Index        r14, r7, r6
+  Const        r10, "movie_id"
+  Index        r7, r12, r10
+  Equal        r6, r14, r7
+  // where cn.country_code == "[de]" &&
+  Move         r12, r8
+  JumpIfFalse  r12, L6
+  // k.keyword == "character-name-in-title" &&
+  Move         r10, r13
+  JumpIfFalse  r10, L7
+  Move         r10, r6
+  // where cn.country_code == "[de]" &&
+  JumpIfFalse  r10, L5
+  // select t.title
+  Const        r14, "title"
+  Index        r7, r11, r14
+  // from cn in company_name
+  Append       r5, r5, r7
+  // join k in keyword on mk.keyword_id == k.id
+  Const        r8, 1
+  Add          r1, r1, r8
+  Jump         L8
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r12, 1
+  Add          r3, r3, r12
   Jump         L9
 L3:
   // join t in title on mc.movie_id == t.id
-  Add          r30, r30, r69
+  Const        r13, 1
+  Add          r4, r4, r13
   Jump         L10
 L2:
   // join mc in movie_companies on mc.company_id == cn.id
-  Add          r21, r21, r69
+  Const        r6, 1
+  Add          r2, r2, r6
   Jump         L11
 L1:
   // from cn in company_name
-  AddInt       r12, r12, r69
+  Const        r10, 1
+  AddInt       r9, r9, r10
   Jump         L12
 L0:
   // let result = min(titles)
-  Min          r70, r5
+  Min          r14, r5
   // json(result)
-  JSON         r70
+  JSON         r14
   // expect result == "Der Film"
-  Const        r71, "Der Film"
-  Equal        r72, r70, r71
-  Expect       r72
+  Const        r7, "Der Film"
+  Equal        r1, r14, r7
+  Expect       r1
   Return       r0

@@ -1,425 +1,892 @@
-func main (regs=248)
+func main (regs=56)
   // let complete_cast = [
   Const        r0, [{"movie_id": 1, "status_id": 2, "subject_id": 1}, {"movie_id": 2, "status_id": 2, "subject_id": 1}]
+L15:
   // let comp_cast_type = [
   Const        r1, [{"id": 1, "kind": "cast"}, {"id": 2, "kind": "complete"}]
+L0:
   // let char_name = [
   Const        r2, [{"id": 1, "name": "Spider-Man"}, {"id": 2, "name": "Villain"}]
+L19:
   // let cast_info = [
   Const        r3, [{"movie_id": 1, "person_id": 1, "person_role_id": 1}, {"movie_id": 2, "person_id": 2, "person_role_id": 2}]
+L8:
   // let info_type = [
   Const        r4, [{"id": 1, "info": "rating"}]
+L25:
   // let keyword = [
   Const        r5, [{"id": 1, "keyword": "superhero"}, {"id": 2, "keyword": "comedy"}]
   // let kind_type = [
   Const        r6, [{"id": 1, "kind": "movie"}]
+L14:
   // let movie_info_idx = [
   Const        r7, [{"info": 8.5, "info_type_id": 1, "movie_id": 1}, {"info": 6.5, "info_type_id": 1, "movie_id": 2}]
   // let movie_keyword = [
   Const        r8, [{"keyword_id": 1, "movie_id": 1}, {"keyword_id": 2, "movie_id": 2}]
   // let name = [
   Const        r9, [{"id": 1, "name": "Actor One"}, {"id": 2, "name": "Actor Two"}]
+L18:
   // let title = [
   Const        r10, [{"id": 1, "kind_id": 1, "production_year": 2005, "title": "Hero Movie"}, {"id": 2, "kind_id": 1, "production_year": 1999, "title": "Old Film"}]
+L1:
   // let allowed_keywords = [
   Const        r11, ["superhero", "marvel-comics", "based-on-comic", "tv-special", "fight", "violence", "magnet", "web", "claw", "laser"]
   // from cc in complete_cast
   Const        r12, []
+L22:
   // where cct1.kind == "cast" &&
   Const        r13, "kind"
+L24:
+  // cct2.kind.contains("complete") &&
+  Const        r14, "kind"
+L9:
+  Const        r15, "contains"
   // chn.name != null &&
-  Const        r15, "name"
+  Const        r16, "name"
+L7:
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r17, "name"
+L17:
+  Const        r18, "contains"
+  Const        r19, "name"
+  Const        r20, "contains"
   // it2.info == "rating" &&
-  Const        r16, "info"
+  Const        r21, "info"
+L21:
   // (k.keyword in allowed_keywords) &&
-  Const        r17, "keyword"
+  Const        r22, "keyword"
+  // kt.kind == "movie" &&
+  Const        r23, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r24, "info"
+L23:
   // t.production_year > 2000
-  Const        r18, "production_year"
+  Const        r25, "production_year"
+L13:
   // character: chn.name,
-  Const        r19, "character"
+  Const        r26, "character"
+  Const        r27, "name"
+L6:
   // rating: mi_idx.info,
-  Const        r20, "rating"
+  Const        r28, "rating"
+  Const        r29, "info"
+L26:
+  // actor: n.name,
+  Const        r30, "actor"
+L12:
+  Const        r31, "name"
+L2:
+  // movie: t.title
+  Const        r32, "movie"
+L10:
+  Const        r33, "title"
+L11:
+  // from cc in complete_cast
+  IterPrep     r34, r0
+L16:
+  Len          r35, r34
+  Const        r36, 0
+  LessInt      r37, r36, r35
+L20:
+  JumpIfFalse  r37, L0
+  Index        r38, r34, r36
+  // join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  IterPrep     r39, r1
+  Len          r13, r39
+L5:
+  Const        r14, "id"
+  Const        r15, "subject_id"
+  // where cct1.kind == "cast" &&
+  Const        r16, "kind"
+L4:
+  // cct2.kind.contains("complete") &&
+  Const        r17, "kind"
+  Const        r18, "contains"
+L3:
+  // chn.name != null &&
+  Const        r19, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r20, "name"
+  Const        r21, "contains"
+  Const        r22, "name"
+  Const        r23, "contains"
+  // it2.info == "rating" &&
+  Const        r24, "info"
+L27:
+  // (k.keyword in allowed_keywords) &&
+  Const        r25, "keyword"
+  // kt.kind == "movie" &&
+  Const        r26, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r27, "info"
+  // t.production_year > 2000
+  Const        r28, "production_year"
+  // character: chn.name,
+  Const        r29, "character"
+  Const        r30, "name"
+  // rating: mi_idx.info,
+  Const        r31, "rating"
+  Const        r32, "info"
+  // actor: n.name,
+  Const        r33, "actor"
+  Const        r35, "name"
+  // movie: t.title
+  Const        r37, "movie"
+  Const        r34, "title"
+  // join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  Const        r14, 0
+  LessInt      r15, r14, r13
+  JumpIfFalse  r15, L1
+  Index        r16, r39, r14
+  Const        r17, "id"
+  Index        r18, r16, r17
+  Const        r19, "subject_id"
+  Index        r20, r38, r19
+  Equal        r21, r18, r20
+  JumpIfFalse  r21, L2
+  // join cct2 in comp_cast_type on cct2.id == cc.status_id
+  IterPrep     r22, r1
+  Len          r23, r22
+  Const        r24, "id"
+  Const        r25, "status_id"
+  // where cct1.kind == "cast" &&
+  Const        r26, "kind"
+  // cct2.kind.contains("complete") &&
+  Const        r27, "kind"
+  Const        r28, "contains"
+  // chn.name != null &&
+  Const        r29, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r30, "name"
+  Const        r31, "contains"
+  Const        r32, "name"
+  Const        r33, "contains"
+  // it2.info == "rating" &&
+  Const        r35, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r37, "keyword"
+  // kt.kind == "movie" &&
+  Const        r34, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r13, "info"
+  // t.production_year > 2000
+  Const        r15, "production_year"
+  // character: chn.name,
+  Const        r39, "character"
+  Const        r17, "name"
+  // rating: mi_idx.info,
+  Const        r19, "rating"
+  Const        r18, "info"
+  // actor: n.name,
+  Const        r20, "actor"
+  Const        r21, "name"
+  // movie: t.title
+  Const        r1, "movie"
+  Const        r24, "title"
+  // join cct2 in comp_cast_type on cct2.id == cc.status_id
+  Const        r25, 0
+  LessInt      r26, r25, r23
+  JumpIfFalse  r26, L2
+  Index        r27, r22, r25
+  Const        r28, "id"
+  Index        r29, r27, r28
+  Const        r30, "status_id"
+  Index        r31, r38, r30
+  Equal        r32, r29, r31
+  JumpIfFalse  r32, L3
+  // join ci in cast_info on ci.movie_id == cc.movie_id
+  IterPrep     r33, r3
+  Len          r35, r33
+  Const        r37, "movie_id"
+  Const        r34, "movie_id"
+  // where cct1.kind == "cast" &&
+  Const        r13, "kind"
+  // cct2.kind.contains("complete") &&
+  Const        r15, "kind"
+  Const        r39, "contains"
+  // chn.name != null &&
+  Const        r17, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r19, "name"
+  Const        r18, "contains"
+  Const        r20, "name"
+  Const        r21, "contains"
+  // it2.info == "rating" &&
+  Const        r1, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r24, "keyword"
+  // kt.kind == "movie" &&
+  Const        r23, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r26, "info"
+  // t.production_year > 2000
+  Const        r22, "production_year"
+  // character: chn.name,
+  Const        r28, "character"
+  Const        r30, "name"
+  // rating: mi_idx.info,
+  Const        r29, "rating"
+  Const        r31, "info"
+  // actor: n.name,
+  Const        r32, "actor"
+  Const        r3, "name"
+  // movie: t.title
+  Const        r37, "movie"
+  Const        r34, "title"
+  // join ci in cast_info on ci.movie_id == cc.movie_id
+  Const        r13, 0
+  LessInt      r15, r13, r35
+  JumpIfFalse  r15, L3
+  Index        r39, r33, r13
+  Const        r17, "movie_id"
+  Index        r19, r39, r17
+  Const        r18, "movie_id"
+  Index        r20, r38, r18
+  Equal        r21, r19, r20
+  JumpIfFalse  r21, L4
+  // join chn in char_name on chn.id == ci.person_role_id
+  IterPrep     r1, r2
+  Len          r24, r1
+  Const        r23, "id"
+  Const        r26, "person_role_id"
+  // where cct1.kind == "cast" &&
+  Const        r22, "kind"
+  // cct2.kind.contains("complete") &&
+  Const        r28, "kind"
+  Const        r30, "contains"
+  // chn.name != null &&
+  Const        r29, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r31, "name"
+  Const        r32, "contains"
+  Const        r3, "name"
+  Const        r37, "contains"
+  // it2.info == "rating" &&
+  Const        r34, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r35, "keyword"
+  // kt.kind == "movie" &&
+  Const        r15, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r33, "info"
+  // t.production_year > 2000
+  Const        r17, "production_year"
+  // character: chn.name,
+  Const        r38, "character"
+  Const        r18, "name"
+  // rating: mi_idx.info,
+  Const        r19, "rating"
+  Const        r20, "info"
   // actor: n.name,
   Const        r21, "actor"
+  Const        r2, "name"
   // movie: t.title
-  Const        r22, "movie"
-  Const        r23, "title"
-  // from cc in complete_cast
-  IterPrep     r24, r0
-  Len          r25, r24
-  Const        r27, 0
-  Move         r26, r27
-L31:
-  LessInt      r28, r26, r25
-  JumpIfFalse  r28, L0
-  Index        r30, r24, r26
-  // join cct1 in comp_cast_type on cct1.id == cc.subject_id
-  IterPrep     r31, r1
-  Len          r32, r31
-  Const        r33, "id"
-  Const        r34, "subject_id"
-  Move         r35, r27
-L2:
-  LessInt      r36, r35, r32
-  JumpIfFalse  r36, L1
-  Index        r38, r31, r35
-  Index        r39, r38, r33
-  Index        r40, r30, r34
-  Equal        r41, r39, r40
-  JumpIfFalse  r41, L2
-  // join cct2 in comp_cast_type on cct2.id == cc.status_id
-  IterPrep     r42, r1
-  Len          r43, r42
-  Const        r44, "status_id"
-  Move         r45, r27
-L30:
-  LessInt      r46, r45, r43
-  JumpIfFalse  r46, L2
-  Index        r48, r42, r45
-  Index        r49, r48, r33
-  Index        r50, r30, r44
-  Equal        r51, r49, r50
-  JumpIfFalse  r51, L3
-  // join ci in cast_info on ci.movie_id == cc.movie_id
-  IterPrep     r52, r3
-  Len          r53, r52
-  Const        r54, "movie_id"
-  Move         r55, r27
-L29:
-  LessInt      r56, r55, r53
-  JumpIfFalse  r56, L3
-  Index        r58, r52, r55
-  Index        r59, r58, r54
-  Index        r60, r30, r54
-  Equal        r61, r59, r60
-  JumpIfFalse  r61, L4
+  Const        r23, "movie"
+  Const        r26, "title"
   // join chn in char_name on chn.id == ci.person_role_id
-  IterPrep     r62, r2
-  Len          r63, r62
-  Const        r64, "person_role_id"
-  Move         r65, r27
-L28:
-  LessInt      r66, r65, r63
-  JumpIfFalse  r66, L4
-  Index        r68, r62, r65
-  Index        r69, r68, r33
-  Index        r70, r58, r64
-  Equal        r71, r69, r70
-  JumpIfFalse  r71, L5
+  Const        r22, 0
+  LessInt      r28, r22, r24
+  JumpIfFalse  r28, L4
+  Index        r30, r1, r22
+  Const        r29, "id"
+  Index        r31, r30, r29
+  Const        r32, "person_role_id"
+  Index        r3, r39, r32
+  Equal        r37, r31, r3
+  JumpIfFalse  r37, L5
   // join n in name on n.id == ci.person_id
-  IterPrep     r72, r9
-  Len          r73, r72
-  Const        r74, "person_id"
-  Move         r75, r27
-L27:
-  LessInt      r76, r75, r73
-  JumpIfFalse  r76, L5
-  Index        r78, r72, r75
-  Index        r79, r78, r33
-  Index        r80, r58, r74
-  Equal        r81, r79, r80
-  JumpIfFalse  r81, L6
-  // join t in title on t.id == ci.movie_id
-  IterPrep     r82, r10
-  Len          r83, r82
-  Move         r84, r27
-L26:
-  LessInt      r85, r84, r83
-  JumpIfFalse  r85, L6
-  Index        r87, r82, r84
-  Index        r88, r87, r33
-  Index        r89, r58, r54
-  Equal        r90, r88, r89
-  JumpIfFalse  r90, L7
-  // join kt in kind_type on kt.id == t.kind_id
-  IterPrep     r91, r6
-  Len          r92, r91
-  Const        r93, "kind_id"
-  Move         r94, r27
-L25:
-  LessInt      r95, r94, r92
-  JumpIfFalse  r95, L7
-  Index        r97, r91, r94
-  Index        r98, r97, r33
-  Index        r99, r87, r93
-  Equal        r100, r98, r99
-  JumpIfFalse  r100, L8
-  // join mk in movie_keyword on mk.movie_id == t.id
-  IterPrep     r101, r8
-  Len          r102, r101
-  Move         r103, r27
-L24:
-  LessInt      r104, r103, r102
-  JumpIfFalse  r104, L8
-  Index        r106, r101, r103
-  Index        r107, r106, r54
-  Index        r108, r87, r33
-  Equal        r109, r107, r108
-  JumpIfFalse  r109, L9
-  // join k in keyword on k.id == mk.keyword_id
-  IterPrep     r110, r5
-  Len          r111, r110
-  Const        r112, "keyword_id"
-  Move         r113, r27
-L23:
-  LessInt      r114, r113, r111
-  JumpIfFalse  r114, L9
-  Index        r116, r110, r113
-  Index        r117, r116, r33
-  Index        r118, r106, r112
-  Equal        r119, r117, r118
-  JumpIfFalse  r119, L10
-  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  IterPrep     r120, r7
-  Len          r121, r120
-  Move         r122, r27
-L22:
-  LessInt      r123, r122, r121
-  JumpIfFalse  r123, L10
-  Index        r125, r120, r122
-  Index        r126, r125, r54
-  Index        r127, r87, r33
-  Equal        r128, r126, r127
-  JumpIfFalse  r128, L11
-  // join it2 in info_type on it2.id == mi_idx.info_type_id
-  IterPrep     r129, r4
-  Len          r130, r129
-  Const        r131, "info_type_id"
-  Move         r132, r27
-L21:
-  LessInt      r133, r132, r130
-  JumpIfFalse  r133, L11
-  Index        r135, r129, r132
-  Index        r136, r135, r33
-  Index        r137, r125, r131
-  Equal        r138, r136, r137
-  JumpIfFalse  r138, L12
+  IterPrep     r34, r9
+  Len          r35, r34
+  Const        r15, "id"
+  Const        r33, "person_id"
   // where cct1.kind == "cast" &&
-  Index        r139, r38, r13
-  // mi_idx.info > 7.0 &&
-  Index        r140, r125, r16
-  Const        r141, 7
-  LessFloat    r142, r141, r140
-  // t.production_year > 2000
-  Index        r143, r87, r18
-  Const        r144, 2000
-  Less         r145, r144, r143
-  // where cct1.kind == "cast" &&
-  Const        r146, "cast"
-  Equal        r147, r139, r146
-  // chn.name != null &&
-  Index        r148, r68, r15
-  Const        r149, nil
-  NotEqual     r150, r148, r149
-  // it2.info == "rating" &&
-  Index        r151, r135, r16
-  Equal        r152, r151, r20
-  // kt.kind == "movie" &&
-  Index        r153, r97, r13
-  Equal        r154, r153, r22
-  // where cct1.kind == "cast" &&
-  Move         r155, r147
-  JumpIfFalse  r155, L13
-  Index        r156, r48, r13
+  Const        r17, "kind"
   // cct2.kind.contains("complete") &&
-  Const        r157, "complete"
-  In           r159, r157, r156
-L13:
-  JumpIfFalse  r159, L14
-L14:
+  Const        r38, "kind"
+  Const        r18, "contains"
   // chn.name != null &&
-  Move         r160, r150
-  JumpIfFalse  r160, L15
-  Index        r161, r68, r15
+  Const        r19, "name"
   // (chn.name.contains("man") || chn.name.contains("Man")) &&
-  Const        r162, "man"
-  In           r164, r162, r161
-  JumpIfTrue   r164, L15
-  Index        r165, r68, r15
-  Const        r166, "Man"
-  In           r164, r166, r165
-L15:
-  Move         r168, r164
-  JumpIfFalse  r168, L16
-L16:
+  Const        r20, "name"
+  Const        r21, "contains"
+  Const        r2, "name"
+  Const        r23, "contains"
   // it2.info == "rating" &&
-  Move         r169, r152
-  JumpIfFalse  r169, L17
+  Const        r26, "info"
   // (k.keyword in allowed_keywords) &&
-  Index        r170, r116, r17
-  In           r172, r170, r11
-L17:
-  JumpIfFalse  r172, L18
-L18:
+  Const        r24, "keyword"
   // kt.kind == "movie" &&
-  Move         r173, r154
-  JumpIfFalse  r173, L19
-L19:
+  Const        r28, "kind"
   // mi_idx.info > 7.0 &&
-  Move         r174, r142
-  JumpIfFalse  r174, L20
-  Move         r174, r145
-L20:
-  // where cct1.kind == "cast" &&
-  JumpIfFalse  r174, L12
+  Const        r1, "info"
+  // t.production_year > 2000
+  Const        r29, "production_year"
   // character: chn.name,
-  Move         r175, r19
-  Index        r176, r68, r15
+  Const        r32, "character"
+  Const        r31, "name"
   // rating: mi_idx.info,
-  Move         r177, r20
-  Index        r178, r125, r16
+  Const        r3, "rating"
+  Const        r37, "info"
   // actor: n.name,
-  Move         r179, r21
-  Index        r180, r78, r15
+  Const        r9, "actor"
+  Const        r15, "name"
   // movie: t.title
-  Move         r181, r22
-  Index        r182, r87, r23
-  // character: chn.name,
-  Move         r183, r175
-  Move         r184, r176
-  // rating: mi_idx.info,
-  Move         r185, r177
-  Move         r186, r178
-  // actor: n.name,
-  Move         r187, r179
-  Move         r188, r180
-  // movie: t.title
-  Move         r189, r181
-  Move         r190, r182
-  // select {
-  MakeMap      r191, 4, r183
-  // from cc in complete_cast
-  Append       r12, r12, r191
-L12:
-  // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Const        r193, 1
-  Add          r132, r132, r193
-  Jump         L21
-L11:
-  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Add          r122, r122, r193
-  Jump         L22
-L10:
-  // join k in keyword on k.id == mk.keyword_id
-  Add          r113, r113, r193
-  Jump         L23
-L9:
-  // join mk in movie_keyword on mk.movie_id == t.id
-  Add          r103, r103, r193
-  Jump         L24
-L8:
-  // join kt in kind_type on kt.id == t.kind_id
-  Add          r94, r94, r193
-  Jump         L25
-L7:
-  // join t in title on t.id == ci.movie_id
-  Add          r84, r84, r193
-  Jump         L26
-L6:
+  Const        r33, "movie"
+  Const        r17, "title"
   // join n in name on n.id == ci.person_id
-  Add          r75, r75, r193
-  Jump         L27
-L5:
-  // join chn in char_name on chn.id == ci.person_role_id
-  Add          r65, r65, r193
-  Jump         L28
-L4:
-  // join ci in cast_info on ci.movie_id == cc.movie_id
-  Add          r55, r55, r193
-  Jump         L29
-L3:
-  // join cct2 in comp_cast_type on cct2.id == cc.status_id
-  Add          r45, r45, r193
-  Jump         L30
-L1:
+  Const        r38, 0
+  LessInt      r18, r38, r35
+  JumpIfFalse  r18, L5
+  Index        r19, r34, r38
+  Const        r20, "id"
+  Index        r21, r19, r20
+  Const        r2, "person_id"
+  Index        r23, r39, r2
+  Equal        r26, r21, r23
+  JumpIfFalse  r26, L6
+  // join t in title on t.id == ci.movie_id
+  IterPrep     r24, r10
+  Len          r28, r24
+  Const        r1, "id"
+  Const        r29, "movie_id"
+  // where cct1.kind == "cast" &&
+  Const        r32, "kind"
+  // cct2.kind.contains("complete") &&
+  Const        r31, "kind"
+  Const        r3, "contains"
+  // chn.name != null &&
+  Const        r37, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r9, "name"
+  Const        r15, "contains"
+  Const        r33, "name"
+  Const        r17, "contains"
+  // it2.info == "rating" &&
+  Const        r35, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // kt.kind == "movie" &&
+  Const        r34, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r20, "info"
+  // t.production_year > 2000
+  Const        r2, "production_year"
+  // character: chn.name,
+  Const        r21, "character"
+  Const        r23, "name"
+  // rating: mi_idx.info,
+  Const        r26, "rating"
+  Const        r10, "info"
+  // actor: n.name,
+  Const        r1, "actor"
+  Const        r29, "name"
+  // movie: t.title
+  Const        r32, "movie"
+  Const        r31, "title"
+  // join t in title on t.id == ci.movie_id
+  Const        r3, 0
+  LessInt      r37, r3, r28
+  JumpIfFalse  r37, L6
+  Index        r9, r24, r3
+  Const        r15, "id"
+  Index        r33, r9, r15
+  Const        r17, "movie_id"
+  Index        r35, r39, r17
+  Equal        r18, r33, r35
+  JumpIfFalse  r18, L7
+  // join kt in kind_type on kt.id == t.kind_id
+  IterPrep     r34, r6
+  Len          r20, r34
+  Const        r2, "id"
+  Const        r21, "kind_id"
+  // where cct1.kind == "cast" &&
+  Const        r23, "kind"
+  // cct2.kind.contains("complete") &&
+  Const        r26, "kind"
+  Const        r10, "contains"
+  // chn.name != null &&
+  Const        r1, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r29, "name"
+  Const        r32, "contains"
+  Const        r31, "name"
+  Const        r28, "contains"
+  // it2.info == "rating" &&
+  Const        r37, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r24, "keyword"
+  // kt.kind == "movie" &&
+  Const        r15, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r39, "info"
+  // t.production_year > 2000
+  Const        r17, "production_year"
+  // character: chn.name,
+  Const        r33, "character"
+  Const        r35, "name"
+  // rating: mi_idx.info,
+  Const        r18, "rating"
+  Const        r6, "info"
+  // actor: n.name,
+  Const        r2, "actor"
+  Const        r21, "name"
+  // movie: t.title
+  Const        r23, "movie"
+  Const        r26, "title"
+  // join kt in kind_type on kt.id == t.kind_id
+  Const        r10, 0
+  LessInt      r1, r10, r20
+  JumpIfFalse  r1, L7
+  Index        r29, r34, r10
+  Const        r32, "id"
+  Index        r31, r29, r32
+  Const        r28, "kind_id"
+  Index        r37, r9, r28
+  Equal        r24, r31, r37
+  JumpIfFalse  r24, L8
+  // join mk in movie_keyword on mk.movie_id == t.id
+  IterPrep     r15, r8
+  Len          r39, r15
+  Const        r17, "movie_id"
+  Const        r33, "id"
+  // where cct1.kind == "cast" &&
+  Const        r35, "kind"
+  // cct2.kind.contains("complete") &&
+  Const        r18, "kind"
+  Const        r6, "contains"
+  // chn.name != null &&
+  Const        r2, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r21, "name"
+  Const        r23, "contains"
+  Const        r26, "name"
+  Const        r20, "contains"
+  // it2.info == "rating" &&
+  Const        r1, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r34, "keyword"
+  // kt.kind == "movie" &&
+  Const        r32, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r28, "info"
+  // t.production_year > 2000
+  Const        r31, "production_year"
+  // character: chn.name,
+  Const        r37, "character"
+  Const        r24, "name"
+  // rating: mi_idx.info,
+  Const        r8, "rating"
+  Const        r17, "info"
+  // actor: n.name,
+  Const        r33, "actor"
+  Const        r35, "name"
+  // movie: t.title
+  Const        r18, "movie"
+  Const        r6, "title"
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r2, 0
+  LessInt      r21, r2, r39
+  JumpIfFalse  r21, L8
+  Index        r23, r15, r2
+  Const        r26, "movie_id"
+  Index        r20, r23, r26
+  Const        r1, "id"
+  Index        r34, r9, r1
+  Equal        r32, r20, r34
+  JumpIfFalse  r32, L9
+  // join k in keyword on k.id == mk.keyword_id
+  IterPrep     r28, r5
+  Len          r31, r28
+  Const        r37, "id"
+  Const        r24, "keyword_id"
+  // where cct1.kind == "cast" &&
+  Const        r8, "kind"
+  // cct2.kind.contains("complete") &&
+  Const        r17, "kind"
+  Const        r33, "contains"
+  // chn.name != null &&
+  Const        r35, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r18, "name"
+  Const        r6, "contains"
+  Const        r39, "name"
+  Const        r21, "contains"
+  // it2.info == "rating" &&
+  Const        r15, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r26, "keyword"
+  // kt.kind == "movie" &&
+  Const        r1, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r20, "info"
+  // t.production_year > 2000
+  Const        r34, "production_year"
+  // character: chn.name,
+  Const        r32, "character"
+  Const        r5, "name"
+  // rating: mi_idx.info,
+  Const        r37, "rating"
+  Const        r24, "info"
+  // actor: n.name,
+  Const        r8, "actor"
+  Const        r17, "name"
+  // movie: t.title
+  Const        r33, "movie"
+  Const        r35, "title"
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r18, 0
+  LessInt      r6, r18, r31
+  JumpIfFalse  r6, L9
+  Index        r39, r28, r18
+  Const        r21, "id"
+  Index        r15, r39, r21
+  Const        r26, "keyword_id"
+  Index        r1, r23, r26
+  Equal        r20, r15, r1
+  JumpIfFalse  r20, L10
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  IterPrep     r34, r7
+  Len          r32, r34
+  Const        r5, "movie_id"
+  Const        r37, "id"
+  // where cct1.kind == "cast" &&
+  Const        r24, "kind"
+  // cct2.kind.contains("complete") &&
+  Const        r8, "kind"
+  Const        r17, "contains"
+  // chn.name != null &&
+  Const        r33, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r35, "name"
+  Const        r31, "contains"
+  Const        r6, "name"
+  Const        r28, "contains"
+  // it2.info == "rating" &&
+  Const        r21, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r23, "keyword"
+  // kt.kind == "movie" &&
+  Const        r26, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r15, "info"
+  // t.production_year > 2000
+  Const        r1, "production_year"
+  // character: chn.name,
+  Const        r20, "character"
+  Const        r7, "name"
+  // rating: mi_idx.info,
+  Const        r5, "rating"
+  Const        r37, "info"
+  // actor: n.name,
+  Const        r24, "actor"
+  Const        r8, "name"
+  // movie: t.title
+  Const        r17, "movie"
+  Const        r33, "title"
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  Const        r35, 0
+  LessInt      r31, r35, r32
+  JumpIfFalse  r31, L10
+  Index        r6, r34, r35
+  Const        r28, "movie_id"
+  Index        r21, r6, r28
+  Const        r23, "id"
+  Index        r26, r9, r23
+  Equal        r15, r21, r26
+  JumpIfFalse  r15, L11
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  IterPrep     r1, r4
+  Len          r20, r1
+  Const        r7, "id"
+  Const        r5, "info_type_id"
+  // where cct1.kind == "cast" &&
+  Const        r37, "kind"
+  // cct2.kind.contains("complete") &&
+  Const        r24, "kind"
+  Const        r8, "contains"
+  // chn.name != null &&
+  Const        r17, "name"
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r33, "name"
+  Const        r32, "contains"
+  Const        r31, "name"
+  Const        r34, "contains"
+  // it2.info == "rating" &&
+  Const        r28, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r23, "keyword"
+  // kt.kind == "movie" &&
+  Const        r21, "kind"
+  // mi_idx.info > 7.0 &&
+  Const        r26, "info"
+  // t.production_year > 2000
+  Const        r15, "production_year"
+  // character: chn.name,
+  Const        r4, "character"
+  Const        r7, "name"
+  // rating: mi_idx.info,
+  Const        r5, "rating"
+  Const        r37, "info"
+  // actor: n.name,
+  Const        r24, "actor"
+  Const        r8, "name"
+  // movie: t.title
+  Const        r17, "movie"
+  Const        r33, "title"
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  Const        r32, 0
+  LessInt      r31, r32, r20
+  JumpIfFalse  r31, L11
+  Index        r34, r1, r32
+  Const        r28, "id"
+  Index        r23, r34, r28
+  Const        r21, "info_type_id"
+  Index        r26, r6, r21
+  Equal        r15, r23, r26
+  JumpIfFalse  r15, L12
+  // where cct1.kind == "cast" &&
+  Const        r4, "kind"
+  Index        r7, r16, r4
+  // mi_idx.info > 7.0 &&
+  Const        r5, "info"
+  Index        r37, r6, r5
+  Const        r24, 7
+  LessFloat    r8, r24, r37
+  // t.production_year > 2000
+  Const        r17, "production_year"
+  Index        r33, r9, r17
+  Const        r20, 2000
+  Less         r31, r20, r33
+  // where cct1.kind == "cast" &&
+  Const        r1, "cast"
+  Equal        r28, r7, r1
+  // chn.name != null &&
+  Const        r21, "name"
+  Index        r23, r30, r21
+  Const        r26, nil
+  NotEqual     r15, r23, r26
+  // it2.info == "rating" &&
+  Const        r16, "info"
+  Index        r4, r34, r16
+  Const        r5, "rating"
+  Equal        r37, r4, r5
+  // kt.kind == "movie" &&
+  Const        r24, "kind"
+  Index        r17, r29, r24
+  Const        r33, "movie"
+  Equal        r20, r17, r33
+  // where cct1.kind == "cast" &&
+  Move         r7, r28
+  JumpIfFalse  r7, L13
+  Const        r1, "kind"
+  Index        r21, r27, r1
+  // cct2.kind.contains("complete") &&
+  Const        r23, "complete"
+  In           r26, r23, r21
+  JumpIfFalse  r26, L11
+  // chn.name != null &&
+  Move         r34, r15
+  JumpIfFalse  r34, L14
+  Const        r16, "name"
+  Index        r4, r30, r16
+  // (chn.name.contains("man") || chn.name.contains("Man")) &&
+  Const        r5, "man"
+  In           r29, r5, r4
+  JumpIfTrue   r29, L14
+  Const        r24, "name"
+  Index        r17, r30, r24
+  Const        r33, "Man"
+  In           r29, r33, r17
+  Move         r28, r29
+  JumpIfFalse  r28, L15
+  // it2.info == "rating" &&
+  Move         r7, r37
+  JumpIfFalse  r7, L9
+  // (k.keyword in allowed_keywords) &&
+  Const        r27, "keyword"
+  Index        r1, r39, r27
+  In           r21, r1, r11
+  JumpIfFalse  r21, L11
+  // kt.kind == "movie" &&
+  Move         r23, r20
+  JumpIfFalse  r23, L8
+  // mi_idx.info > 7.0 &&
+  Move         r26, r8
+  JumpIfFalse  r26, L7
+  Move         r26, r31
+  // where cct1.kind == "cast" &&
+  JumpIfFalse  r26, L12
+  // character: chn.name,
+  Const        r15, "character"
+  Const        r34, "name"
+  Index        r16, r30, r34
+  // rating: mi_idx.info,
+  Const        r4, "rating"
+  Const        r5, "info"
+  Index        r24, r6, r5
+  // actor: n.name,
+  Const        r17, "actor"
+  Const        r33, "name"
+  Index        r29, r19, r33
+  // movie: t.title
+  Const        r28, "movie"
+  Const        r37, "title"
+  Index        r7, r9, r37
+  // character: chn.name,
+  Move         r40, r15
+  Move         r41, r16
+  // rating: mi_idx.info,
+  Move         r42, r4
+  Move         r43, r24
+  // actor: n.name,
+  Move         r44, r17
+  Move         r45, r29
+  // movie: t.title
+  Move         r46, r28
+  Move         r47, r7
+  // select {
+  MakeMap      r39, 4, r40
   // from cc in complete_cast
-  AddInt       r26, r26, r193
-  Jump         L31
-L0:
+  Append       r12, r12, r39
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  Const        r27, 1
+  Add          r32, r32, r27
+  Jump         L2
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  Const        r11, 1
+  Add          r35, r35, r11
+  Jump         L16
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r1, 1
+  Add          r18, r18, r1
+  Jump         L17
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r21, 1
+  Add          r2, r2, r21
+  Jump         L0
+  // join kt in kind_type on kt.id == t.kind_id
+  Const        r20, 1
+  Add          r10, r10, r20
+  Jump         L18
+  // join t in title on t.id == ci.movie_id
+  Const        r23, 1
+  Add          r3, r3, r23
+  Jump         L19
+  // join n in name on n.id == ci.person_id
+  Const        r8, 1
+  Add          r38, r38, r8
+  Jump         L20
+  // join chn in char_name on chn.id == ci.person_role_id
+  Const        r31, 1
+  Add          r22, r22, r31
+  Jump         L21
+  // join ci in cast_info on ci.movie_id == cc.movie_id
+  Const        r26, 1
+  Add          r13, r13, r26
+  Jump         L22
+  // join cct2 in comp_cast_type on cct2.id == cc.status_id
+  Const        r30, 1
+  Add          r25, r25, r30
+  Jump         L23
+  // join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  Const        r34, 1
+  Add          r14, r14, r34
+  Jump         L24
+  // from cc in complete_cast
+  Const        r6, 1
+  AddInt       r36, r36, r6
+  Jump         L25
   // character_name: min(from r in rows select r.character),
-  Const        r194, "character_name"
-  Const        r195, []
-  IterPrep     r196, r12
-  Len          r197, r196
-  Move         r198, r27
-L33:
-  LessInt      r199, r198, r197
-  JumpIfFalse  r199, L32
-  Index        r201, r196, r198
-  Index        r202, r201, r19
-  Append       r195, r195, r202
-  AddInt       r198, r198, r193
-  Jump         L33
-L32:
-  Min          r204, r195
+  Const        r19, "character_name"
+  Const        r33, []
+  Const        r9, "character"
+  IterPrep     r37, r12
+  Len          r15, r37
+  Const        r16, 0
+  LessInt      r4, r16, r15
+  JumpIfFalse  r4, L26
+  Index        r24, r37, r16
+  Const        r17, "character"
+  Index        r29, r24, r17
+  Append       r33, r33, r29
+  Const        r28, 1
+  AddInt       r16, r16, r28
+  Jump         L14
+  Min          r40, r33
   // rating: min(from r in rows select r.rating),
-  Move         r205, r20
-  Const        r206, []
-  IterPrep     r207, r12
-  Len          r208, r207
-  Move         r209, r27
-L35:
-  LessInt      r210, r209, r208
-  JumpIfFalse  r210, L34
-  Index        r201, r207, r209
-  Index        r212, r201, r20
-  Append       r206, r206, r212
-  AddInt       r209, r209, r193
-  Jump         L35
-L34:
-  Min          r214, r206
+  Const        r41, "rating"
+  Const        r42, []
+  Const        r43, "rating"
+  IterPrep     r44, r12
+  Len          r45, r44
+  Const        r46, 0
+  LessInt      r47, r46, r45
+  JumpIfFalse  r47, L27
+  Index        r24, r44, r46
+  Const        r39, "rating"
+  Index        r32, r24, r39
+  Append       r42, r42, r32
+  Const        r27, 1
+  AddInt       r46, r46, r27
+  Jump         L16
+  Min          r11, r42
   // playing_actor: min(from r in rows select r.actor),
-  Const        r215, "playing_actor"
-  Const        r216, []
-  IterPrep     r217, r12
-  Len          r218, r217
-  Move         r219, r27
-L37:
-  LessInt      r220, r219, r218
-  JumpIfFalse  r220, L36
-  Index        r201, r217, r219
-  Index        r222, r201, r21
-  Append       r216, r216, r222
-  AddInt       r219, r219, r193
-  Jump         L37
-L36:
-  Min          r224, r216
+  Const        r18, "playing_actor"
+  Const        r1, []
+  Const        r2, "actor"
+  IterPrep     r21, r12
+  Len          r10, r21
+  Const        r20, 0
+  LessInt      r3, r20, r10
+  JumpIfFalse  r3, L28
+  Index        r24, r21, r20
+  Const        r23, "actor"
+  Index        r38, r24, r23
+  Append       r1, r1, r38
+  Const        r8, 1
+  AddInt       r20, r20, r8
+  Jump         L21
+L28:
+  Min          r31, r1
   // complete_hero_movie: min(from r in rows select r.movie)
-  Const        r225, "complete_hero_movie"
-  Const        r226, []
-  IterPrep     r227, r12
-  Len          r228, r227
-  Move         r229, r27
-L39:
-  LessInt      r230, r229, r228
-  JumpIfFalse  r230, L38
-  Index        r201, r227, r229
-  Index        r232, r201, r22
-  Append       r226, r226, r232
-  AddInt       r229, r229, r193
-  Jump         L39
-L38:
-  Min          r234, r226
+  Const        r13, "complete_hero_movie"
+  Const        r26, []
+  Const        r25, "movie"
+  IterPrep     r30, r12
+  Len          r14, r30
+  Const        r34, 0
+L30:
+  LessInt      r36, r34, r14
+  JumpIfFalse  r36, L29
+  Index        r24, r30, r34
+  Const        r6, "movie"
+  Index        r35, r24, r6
+  Append       r26, r26, r35
+  Const        r5, 1
+  AddInt       r34, r34, r5
+  Jump         L30
+L29:
+  Min          r9, r26
   // character_name: min(from r in rows select r.character),
-  Move         r235, r194
-  Move         r236, r204
+  Move         r48, r19
+  Move         r49, r40
   // rating: min(from r in rows select r.rating),
-  Move         r237, r205
-  Move         r238, r214
+  Move         r50, r41
+  Move         r51, r11
   // playing_actor: min(from r in rows select r.actor),
-  Move         r239, r215
-  Move         r240, r224
+  Move         r52, r18
+  Move         r53, r31
   // complete_hero_movie: min(from r in rows select r.movie)
-  Move         r241, r225
-  Move         r242, r234
+  Move         r54, r13
+  Move         r55, r9
   // {
-  MakeMap      r244, 4, r235
+  MakeMap      r15, 4, r48
   // let result = [
-  MakeList     r245, 1, r244
+  MakeList     r4, 1, r15
   // json(result)
-  JSON         r245
+  JSON         r4
   // expect result == [
-  Const        r246, [{"character_name": "Spider-Man", "complete_hero_movie": "Hero Movie", "playing_actor": "Actor One", "rating": 8.5}]
-  Equal        r247, r245, r246
-  Expect       r247
+  Const        r37, [{"character_name": "Spider-Man", "complete_hero_movie": "Hero Movie", "playing_actor": "Actor One", "rating": 8.5}]
+  Equal        r22, r4, r37
+  Expect       r22
   Return       r0
