@@ -598,6 +598,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: AnyType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("round", FuncType{
+		Params: []Type{FloatType{}, IntType{}},
+		Return: FloatType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("reduce", FuncType{
 		Params: []Type{AnyType{}, AnyType{}, AnyType{}},
 		Return: AnyType{},
