@@ -1,4 +1,4 @@
-func main (regs=30)
+func main (regs=29)
   // let item = [
   Const        r0, [{"id": 1}, {"id": 2}, {"id": 3}]
   // let inventory = [
@@ -26,29 +26,28 @@ L3:
   // if inv.item == s.item {
   Const        r16, "item"
   Index        r17, r9, r16
-  Const        r18, "item"
-  Index        r19, r15, r18
-  Equal        r20, r17, r19
-  JumpIfFalse  r20, L2
+  Index        r18, r15, r16
+  Equal        r19, r17, r18
+  JumpIfFalse  r19, L2
   // result = result + inv.qty
-  Const        r21, "qty"
-  Index        r22, r9, r21
-  Add          r3, r3, r22
+  Const        r20, "qty"
+  Index        r21, r9, r20
+  Add          r3, r3, r21
 L2:
   // for s in store_sales {
-  Const        r24, 1
-  Add          r12, r12, r24
+  Const        r23, 1
+  Add          r12, r12, r23
   Jump         L3
 L1:
   // for inv in inventory {
-  Const        r26, 1
-  Add          r6, r6, r26
+  Const        r25, 1
+  Add          r6, r6, r25
   Jump         L4
 L0:
   // json(result)
   JSON         r3
   // expect result == 82
-  Const        r28, 82
-  Equal        r29, r3, r28
-  Expect       r29
+  Const        r27, 82
+  Equal        r28, r3, r27
+  Expect       r28
   Return       r0

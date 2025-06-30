@@ -1,4 +1,4 @@
-func main (regs=5)
+func main (regs=4)
   // let time_dim = [
   Const        r0, [{"hour": 8, "minute": 30, "time_sk": 1}, {"hour": 9, "minute": 0, "time_sk": 2}, {"hour": 11, "minute": 15, "time_sk": 3}]
   // let store_sales = [
@@ -8,7 +8,6 @@ func main (regs=5)
   // json(result)
   JSON         r2
   // expect result == 88
-  Const        r3, 88
-  Const        r4, true
-  Expect       r4
+  Const        r3, true
+  Expect       r3
   Return       r0

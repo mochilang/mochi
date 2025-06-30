@@ -1,4 +1,4 @@
-func main (regs=47)
+func main (regs=38)
   // let sr_items = [
   Const        r0, [{"qty": 10}, {"qty": 5}]
   // let cr_items = [
@@ -10,63 +10,57 @@ func main (regs=47)
   Const        r4, "qty"
   IterPrep     r5, r0
   Len          r6, r5
-  Const        r7, 0
+  Const        r8, 0
+  Move         r7, r8
 L1:
   LessInt      r9, r7, r6
   JumpIfFalse  r9, L0
   Index        r11, r5, r7
-  Const        r12, "qty"
-  Index        r13, r11, r12
-  Append       r3, r3, r13
-  Const        r15, 1
-  AddInt       r7, r7, r15
+  Index        r12, r11, r4
+  Append       r3, r3, r12
+  Const        r14, 1
+  AddInt       r7, r7, r14
   Jump         L1
 L0:
-  Sum          r16, r3
+  Sum          r15, r3
   // sum(from x in cr_items select x.qty) +
-  Const        r17, []
-  Const        r18, "qty"
-  IterPrep     r19, r1
-  Len          r20, r19
-  Const        r21, 0
+  Const        r16, []
+  IterPrep     r17, r1
+  Len          r18, r17
+  Move         r19, r8
 L3:
-  LessInt      r23, r21, r20
-  JumpIfFalse  r23, L2
-  Index        r11, r19, r21
-  Const        r25, "qty"
-  Index        r26, r11, r25
-  Append       r17, r17, r26
-  Const        r28, 1
-  AddInt       r21, r21, r28
+  LessInt      r20, r19, r18
+  JumpIfFalse  r20, L2
+  Index        r11, r17, r19
+  Index        r22, r11, r4
+  Append       r16, r16, r22
+  AddInt       r19, r19, r14
   Jump         L3
 L2:
-  Sum          r29, r17
+  Sum          r24, r16
   // let result = sum(from x in sr_items select x.qty) +
-  Add          r30, r16, r29
+  Add          r25, r15, r24
   // sum(from x in wr_items select x.qty)
-  Const        r31, []
-  Const        r32, "qty"
-  IterPrep     r33, r2
-  Len          r34, r33
-  Const        r35, 0
+  Const        r26, []
+  IterPrep     r27, r2
+  Len          r28, r27
+  Move         r29, r8
 L5:
-  LessInt      r37, r35, r34
-  JumpIfFalse  r37, L4
-  Index        r11, r33, r35
-  Const        r39, "qty"
-  Index        r40, r11, r39
-  Append       r31, r31, r40
-  Const        r42, 1
-  AddInt       r35, r35, r42
+  LessInt      r30, r29, r28
+  JumpIfFalse  r30, L4
+  Index        r11, r27, r29
+  Index        r32, r11, r4
+  Append       r26, r26, r32
+  AddInt       r29, r29, r14
   Jump         L5
 L4:
-  Sum          r43, r31
+  Sum          r34, r26
   // sum(from x in cr_items select x.qty) +
-  Add          r44, r30, r43
+  Add          r35, r25, r34
   // json(result)
-  JSON         r44
+  JSON         r35
   // expect result == 83
-  Const        r45, 83
-  Equal        r46, r44, r45
-  Expect       r46
+  Const        r36, 83
+  Equal        r37, r35, r36
+  Expect       r37
   Return       r0
