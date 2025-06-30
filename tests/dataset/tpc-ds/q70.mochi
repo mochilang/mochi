@@ -23,7 +23,7 @@ let result =
   join s in store on s.s_store_sk == ss.ss_store_sk
   where d.d_month_seq >= dms && d.d_month_seq <= dms + 11
   group by { state: s.s_state, county: s.s_county } into g
-  sort by g.key.state, g.key.county
+  sort by [g.key.state, g.key.county]
   select {
     s_state: g.key.state,
     s_county: g.key.county,
