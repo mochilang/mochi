@@ -1,4 +1,4 @@
-func main (regs=189)
+func main (regs=187)
   // let region = [
   Const        r0, [{"r_name": "ASIA", "r_regionkey": 0}, {"r_name": "EUROPE", "r_regionkey": 1}]
   // let nation = [
@@ -27,13 +27,15 @@ func main (regs=189)
 L4:
   LessInt      r15, r14, r8
   JumpIfFalse  r15, L0
-  Index        r17, r7, r14
+  Index        r16, r7, r14
+  Move         r17, r16
   // join n in nation on n.n_regionkey == r.r_regionkey
   Const        r18, 0
 L3:
   LessInt      r19, r18, r10
   JumpIfFalse  r19, L1
-  Index        r21, r9, r18
+  Index        r20, r9, r18
+  Move         r21, r20
   Index        r22, r21, r11
   Index        r23, r17, r12
   Equal        r24, r22, r23
@@ -44,7 +46,8 @@ L3:
   Equal        r27, r25, r26
   JumpIfFalse  r27, L2
   // from r in region
-  Append       r6, r6, r21
+  Append       r28, r6, r21
+  Move         r6, r28
 L2:
   // join n in nation on n.n_regionkey == r.r_regionkey
   Const        r29, 1
@@ -73,19 +76,21 @@ L0:
   Len          r40, r39
   Const        r42, 0
   Move         r41, r42
-L16:
+L17:
   LessInt      r43, r41, r40
   JumpIfFalse  r43, L5
-  Index        r45, r39, r41
+  Index        r44, r39, r41
+  Move         r45, r44
   // join n in asia_nations on c.c_nationkey == n.n_nationkey
   IterPrep     r46, r6
   Len          r47, r46
   Const        r48, "n_nationkey"
   Move         r49, r42
-L15:
+L16:
   LessInt      r50, r49, r47
   JumpIfFalse  r50, L6
-  Index        r21, r46, r49
+  Index        r51, r46, r49
+  Move         r21, r51
   Index        r52, r45, r33
   Index        r53, r21, r48
   Equal        r54, r52, r53
@@ -96,10 +101,11 @@ L15:
   Const        r57, "o_custkey"
   Const        r58, "c_custkey"
   Move         r59, r42
-L14:
+L15:
   LessInt      r60, r59, r56
   JumpIfFalse  r60, L7
-  Index        r62, r55, r59
+  Index        r61, r55, r59
+  Move         r62, r61
   Index        r63, r62, r57
   Index        r64, r45, r58
   Equal        r65, r63, r64
@@ -110,10 +116,11 @@ L14:
   Const        r68, "l_orderkey"
   Const        r69, "o_orderkey"
   Move         r70, r42
-L13:
+L14:
   LessInt      r71, r70, r67
   JumpIfFalse  r71, L8
-  Index        r73, r66, r70
+  Index        r72, r66, r70
+  Move         r73, r72
   Index        r74, r73, r68
   Index        r75, r62, r69
   Equal        r76, r74, r75
@@ -124,10 +131,11 @@ L13:
   Const        r79, "s_suppkey"
   Const        r80, "l_suppkey"
   Move         r81, r42
-L12:
+L13:
   LessInt      r82, r81, r78
   JumpIfFalse  r82, L9
-  Index        r84, r77, r81
+  Index        r83, r77, r81
+  Move         r84, r83
   Index        r85, r84, r79
   Index        r86, r73, r80
   Equal        r87, r85, r86
@@ -142,169 +150,181 @@ L12:
   Index        r94, r84, r32
   Index        r95, r45, r33
   Equal        r96, r94, r95
-  JumpIfFalse  r90, L11
-  Move         r90, r93
-  JumpIfFalse  r90, L11
-  Move         r90, r96
+  Move         r97, r90
+  JumpIfFalse  r97, L11
+  Move         r97, r93
 L11:
-  JumpIfFalse  r90, L10
+  Move         r98, r97
+  JumpIfFalse  r98, L12
+  Move         r98, r96
+L12:
+  JumpIfFalse  r98, L10
   // nation: n.n_name,
-  Const        r97, "nation"
-  Index        r98, r21, r35
+  Const        r99, "nation"
+  Index        r100, r21, r35
   // revenue: l.l_extendedprice * (1 - l.l_discount)
-  Const        r99, "revenue"
-  Index        r100, r73, r37
-  Index        r101, r73, r38
-  Sub          r102, r29, r101
-  Mul          r103, r100, r102
+  Const        r101, "revenue"
+  Index        r102, r73, r37
+  Index        r103, r73, r38
+  Sub          r104, r29, r103
+  Mul          r105, r102, r104
   // nation: n.n_name,
-  Move         r104, r97
-  Move         r105, r98
-  // revenue: l.l_extendedprice * (1 - l.l_discount)
   Move         r106, r99
-  Move         r107, r103
+  Move         r107, r100
+  // revenue: l.l_extendedprice * (1 - l.l_discount)
+  Move         r108, r101
+  Move         r109, r105
   // select {
-  MakeMap      r108, 2, r104
+  MakeMap      r110, 2, r106
   // from c in customer
-  Append       r30, r30, r108
+  Append       r111, r30, r110
+  Move         r30, r111
 L10:
   // join s in supplier on s.s_suppkey == l.l_suppkey
   Add          r81, r81, r29
-  Jump         L12
+  Jump         L13
 L9:
   // join l in lineitem on l.l_orderkey == o.o_orderkey
   Add          r70, r70, r29
-  Jump         L13
+  Jump         L14
 L8:
   // join o in orders on o.o_custkey == c.c_custkey
   Add          r59, r59, r29
-  Jump         L14
+  Jump         L15
 L7:
   // join n in asia_nations on c.c_nationkey == n.n_nationkey
   Add          r49, r49, r29
-  Jump         L15
+  Jump         L16
 L6:
   // from c in customer
   AddInt       r41, r41, r29
-  Jump         L16
+  Jump         L17
 L5:
   // from r in local_customer_supplier_orders
-  Const        r110, []
+  Const        r112, []
   // n_name: g.key,
-  Const        r111, "key"
+  Const        r113, "key"
   // from r in local_customer_supplier_orders
-  IterPrep     r112, r30
-  Len          r113, r112
-  Const        r114, 0
-  MakeMap      r115, 0, r0
-  Const        r116, []
-L19:
-  LessInt      r118, r114, r113
-  JumpIfFalse  r118, L17
-  Index        r119, r112, r114
-  // group by r.nation into g
-  Index        r120, r119, r34
-  Str          r121, r120
-  In           r122, r121, r115
-  JumpIfTrue   r122, L18
-  // from r in local_customer_supplier_orders
-  Const        r123, []
-  Const        r124, "__group__"
-  Const        r125, true
-  Const        r126, "key"
-  // group by r.nation into g
-  Move         r127, r120
-  // from r in local_customer_supplier_orders
-  Const        r128, "items"
-  Move         r129, r123
-  Const        r130, "count"
-  Const        r131, 0
-  Move         r132, r124
-  Move         r133, r125
-  Move         r134, r126
-  Move         r135, r127
-  Move         r136, r128
-  Move         r137, r129
-  Move         r138, r130
-  Move         r139, r131
-  MakeMap      r140, 4, r132
-  SetIndex     r115, r121, r140
-  Append       r116, r116, r140
-L18:
-  Const        r142, "items"
-  Index        r143, r115, r121
-  Index        r144, r143, r142
-  Append       r145, r144, r119
-  SetIndex     r143, r142, r145
-  Const        r146, "count"
-  Index        r147, r143, r146
-  AddInt       r148, r147, r29
-  SetIndex     r143, r146, r148
-  AddInt       r114, r114, r29
-  Jump         L19
-L17:
-  Move         r149, r42
-  Len          r150, r116
-L25:
-  LessInt      r151, r149, r150
-  JumpIfFalse  r151, L20
-  Index        r153, r116, r149
-  // n_name: g.key,
-  Const        r154, "n_name"
-  Index        r155, r153, r111
-  // revenue: sum(from x in g select x.revenue)
-  Const        r156, "revenue"
-  Const        r157, []
-  IterPrep     r158, r153
-  Len          r159, r158
-  Move         r160, r42
-L22:
-  LessInt      r161, r160, r159
-  JumpIfFalse  r161, L21
-  Index        r163, r158, r160
-  Index        r164, r163, r36
-  Append       r157, r157, r164
-  AddInt       r160, r160, r29
-  Jump         L22
-L21:
-  Sum          r166, r157
-  // n_name: g.key,
-  Move         r167, r154
-  Move         r168, r155
-  // revenue: sum(from x in g select x.revenue)
-  Move         r169, r156
-  Move         r170, r166
-  // select {
-  MakeMap      r171, 2, r167
-  // sort by -sum(from x in g select x.revenue)
-  Const        r172, []
-  IterPrep     r173, r153
-  Len          r174, r173
-  Move         r175, r42
-L24:
-  LessInt      r176, r175, r174
-  JumpIfFalse  r176, L23
-  Index        r163, r173, r175
-  Index        r178, r163, r36
-  Append       r172, r172, r178
-  AddInt       r175, r175, r29
-  Jump         L24
-L23:
-  Sum          r180, r172
-  Neg          r182, r180
-  // from r in local_customer_supplier_orders
-  Move         r183, r171
-  MakeList     r184, 2, r182
-  Append       r110, r110, r184
-  AddInt       r149, r149, r29
-  Jump         L25
+  IterPrep     r114, r30
+  Len          r115, r114
+  Const        r116, 0
+  MakeMap      r117, 0, r0
+  Const        r119, []
+  Move         r118, r119
 L20:
+  LessInt      r120, r116, r115
+  JumpIfFalse  r120, L18
+  Index        r121, r114, r116
+  Move         r17, r121
+  // group by r.nation into g
+  Index        r122, r17, r34
+  Str          r123, r122
+  In           r124, r123, r117
+  JumpIfTrue   r124, L19
+  // from r in local_customer_supplier_orders
+  Const        r125, []
+  Const        r126, "__group__"
+  Const        r127, true
+  // group by r.nation into g
+  Move         r128, r122
+  // from r in local_customer_supplier_orders
+  Const        r129, "items"
+  Move         r130, r125
+  Const        r131, "count"
+  Move         r132, r126
+  Move         r133, r127
+  Move         r134, r113
+  Move         r135, r128
+  Move         r136, r129
+  Move         r137, r130
+  Move         r138, r131
+  Move         r139, r42
+  MakeMap      r140, 4, r132
+  SetIndex     r117, r123, r140
+  Append       r141, r118, r140
+  Move         r118, r141
+L19:
+  Index        r142, r117, r123
+  Index        r143, r142, r129
+  Append       r144, r143, r121
+  SetIndex     r142, r129, r144
+  Index        r145, r142, r131
+  AddInt       r146, r145, r29
+  SetIndex     r142, r131, r146
+  AddInt       r116, r116, r29
+  Jump         L20
+L18:
+  Move         r147, r42
+  Len          r148, r118
+L26:
+  LessInt      r149, r147, r148
+  JumpIfFalse  r149, L21
+  Index        r150, r118, r147
+  Move         r151, r150
+  // n_name: g.key,
+  Const        r152, "n_name"
+  Index        r153, r151, r113
+  // revenue: sum(from x in g select x.revenue)
+  Const        r154, "revenue"
+  Const        r155, []
+  IterPrep     r156, r151
+  Len          r157, r156
+  Move         r158, r42
+L23:
+  LessInt      r159, r158, r157
+  JumpIfFalse  r159, L22
+  Index        r160, r156, r158
+  Move         r161, r160
+  Index        r162, r161, r36
+  Append       r163, r155, r162
+  Move         r155, r163
+  AddInt       r158, r158, r29
+  Jump         L23
+L22:
+  Sum          r164, r155
+  // n_name: g.key,
+  Move         r165, r152
+  Move         r166, r153
+  // revenue: sum(from x in g select x.revenue)
+  Move         r167, r154
+  Move         r168, r164
+  // select {
+  MakeMap      r169, 2, r165
   // sort by -sum(from x in g select x.revenue)
-  Sort         r110, r110
+  Const        r170, []
+  IterPrep     r171, r151
+  Len          r172, r171
+  Move         r173, r42
+L25:
+  LessInt      r174, r173, r172
+  JumpIfFalse  r174, L24
+  Index        r175, r171, r173
+  Move         r161, r175
+  Index        r176, r161, r36
+  Append       r177, r170, r176
+  Move         r170, r177
+  AddInt       r173, r173, r29
+  Jump         L25
+L24:
+  Sum          r178, r170
+  Neg          r179, r178
+  Move         r180, r179
+  // from r in local_customer_supplier_orders
+  Move         r181, r169
+  MakeList     r182, 2, r180
+  Append       r183, r112, r182
+  Move         r112, r183
+  AddInt       r147, r147, r29
+  Jump         L26
+L21:
+  // sort by -sum(from x in g select x.revenue)
+  Sort         r184, r112
+  // from r in local_customer_supplier_orders
+  Move         r112, r184
   // json(result)
-  JSON         r110
+  JSON         r112
   // expect result == [
-  Const        r187, [{"n_name": "JAPAN", "revenue": 950}, {"n_name": "INDIA", "revenue": 720}]
-  Equal        r188, r110, r187
-  Expect       r188
+  Const        r185, [{"n_name": "JAPAN", "revenue": 950}, {"n_name": "INDIA", "revenue": 720}]
+  Equal        r186, r112, r185
+  Expect       r186
   Return       r0
