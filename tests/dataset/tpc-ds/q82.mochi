@@ -17,10 +17,14 @@ let store_sales = [
   {item: 2}
 ]
 
-let result =
-  sum(from inv in inventory
-      join s in store_sales on inv.item == s.item
-      select inv.qty)
+let result = 0
+for inv in inventory {
+  for s in store_sales {
+    if inv.item == s.item {
+      result = result + inv.qty
+    }
+  }
+}
 
 json(result)
 

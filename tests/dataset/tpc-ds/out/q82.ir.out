@@ -1,0 +1,54 @@
+func main (regs=30)
+  // let item = [
+  Const        r0, [{"id": 1}, {"id": 2}, {"id": 3}]
+  // let inventory = [
+  Const        r1, [{"item": 1, "qty": 20}, {"item": 1, "qty": 22}, {"item": 1, "qty": 5}, {"item": 2, "qty": 30}, {"item": 2, "qty": 5}, {"item": 3, "qty": 10}]
+  // let store_sales = [
+  Const        r2, [{"item": 1}, {"item": 2}]
+  // let result = 0
+  Const        r3, 0
+  // for inv in inventory {
+  IterPrep     r4, r1
+  Len          r5, r4
+  Const        r6, 0
+L4:
+  Less         r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r9, r4, r6
+  // for s in store_sales {
+  IterPrep     r10, r2
+  Len          r11, r10
+  Const        r12, 0
+L3:
+  Less         r13, r12, r11
+  JumpIfFalse  r13, L1
+  Index        r15, r10, r12
+  // if inv.item == s.item {
+  Const        r16, "item"
+  Index        r17, r9, r16
+  Const        r18, "item"
+  Index        r19, r15, r18
+  Equal        r20, r17, r19
+  JumpIfFalse  r20, L2
+  // result = result + inv.qty
+  Const        r21, "qty"
+  Index        r22, r9, r21
+  Add          r3, r3, r22
+L2:
+  // for s in store_sales {
+  Const        r24, 1
+  Add          r12, r12, r24
+  Jump         L3
+L1:
+  // for inv in inventory {
+  Const        r26, 1
+  Add          r6, r6, r26
+  Jump         L4
+L0:
+  // json(result)
+  JSON         r3
+  // expect result == 82
+  Const        r28, 82
+  Equal        r29, r3, r28
+  Expect       r29
+  Return       r0

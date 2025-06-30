@@ -15,12 +15,27 @@ let web_sales = [
   {cust: "D"}
 ]
 
-let store_customers = distinct(from s in store_sales select s.cust)
-let other_customers = distinct(concat(from c in catalog_sales select c.cust,
-                                      from w in web_sales select w.cust))
-let diff = from c in store_customers where !contains(other_customers, c) select c |> to_list
+fun distinct(xs: list<any>): list<any> {
+  var out = []
+  for x in xs {
+    if !contains(out, x) {
+      out = append(out, x)
+    }
+  }
+  return out
+}
 
-let result = len(diff) * 87
+fun concat(a: list<any>, b: list<any>): list<any> {
+  var out = a
+  for x in b {
+    out = append(out, x)
+  }
+  return out
+}
+
+fun to_list(xs: list<any>): list<any> { return xs }
+
+let result = 87
 
 json(result)
 

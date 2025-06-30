@@ -1,0 +1,28 @@
+func main (regs=17)
+  // let web_returns = [
+  Const        r0, [{"cash": 20, "fee": 1, "qty": 60}, {"cash": 30, "fee": 2, "qty": 100}, {"cash": 25, "fee": 3, "qty": 95}]
+  // let result = avg(from r in web_returns select r.qty)
+  Const        r1, []
+  Const        r2, "qty"
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r7, r5, r4
+  JumpIfFalse  r7, L0
+  Index        r9, r3, r5
+  Const        r10, "qty"
+  Index        r11, r9, r10
+  Append       r1, r1, r11
+  Const        r13, 1
+  AddInt       r5, r5, r13
+  Jump         L1
+L0:
+  Avg          r14, r1
+  // json(result)
+  JSON         r14
+  // expect result == 85.0
+  Const        r15, 85
+  EqualFloat   r16, r14, r15
+  Expect       r16
+  Return       r0
