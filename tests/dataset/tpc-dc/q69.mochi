@@ -1,18 +1,24 @@
 // Minimal dataset for TPC-DC Q69
 let customer = [
-  { c_customer_sk: 1, c_current_addr_sk: 10, c_current_cdemo_sk: 100 }
+  { c_customer_sk: 1, c_current_addr_sk: 10, c_current_cdemo_sk: 100 },
+  { c_customer_sk: 2, c_current_addr_sk: 11, c_current_cdemo_sk: 100 },
+  { c_customer_sk: 3, c_current_addr_sk: 11, c_current_cdemo_sk: 101 }
 ]
 
 let customer_address = [
-  { ca_address_sk: 10, ca_state: "KY" }
+  { ca_address_sk: 10, ca_state: "KY" },
+  { ca_address_sk: 11, ca_state: "GA" }
 ]
 
 let customer_demographics = [
-  { cd_demo_sk: 100, cd_gender: "M", cd_marital_status: "S", cd_education_status: "College", cd_purchase_estimate: 1000, cd_credit_rating: "Good" }
+  { cd_demo_sk: 100, cd_gender: "M", cd_marital_status: "S", cd_education_status: "College", cd_purchase_estimate: 1000, cd_credit_rating: "Good" },
+  { cd_demo_sk: 101, cd_gender: "F", cd_marital_status: "S", cd_education_status: "College", cd_purchase_estimate: 500, cd_credit_rating: "Excellent" }
 ]
 
 let store_sales = [
-  { ss_customer_sk: 1, ss_sold_date_sk: 1 }
+  { ss_customer_sk: 1, ss_sold_date_sk: 1 },
+  { ss_customer_sk: 2, ss_sold_date_sk: 1 },
+  { ss_customer_sk: 3, ss_sold_date_sk: 1 }
 ]
 
 let web_sales = []
@@ -45,5 +51,8 @@ let result =
 json(result)
 
 test "TPCDC Q69 customer demographics" {
-  expect result == [{ cd_gender: "M", cd_marital_status: "S", cd_education_status: "College", cnt1: 1, cd_purchase_estimate: 1000, cnt2: 1, cd_credit_rating: "Good", cnt3: 1 }]
+  expect result == [
+    { cd_gender: "F", cd_marital_status: "S", cd_education_status: "College", cnt1: 1, cd_purchase_estimate: 500, cnt2: 1, cd_credit_rating: "Excellent", cnt3: 1 },
+    { cd_gender: "M", cd_marital_status: "S", cd_education_status: "College", cnt1: 2, cd_purchase_estimate: 1000, cnt2: 2, cd_credit_rating: "Good", cnt3: 2 }
+  ]
 }

@@ -5,12 +5,16 @@ let item = [
 
 let store_sales = [
   { ss_item_sk: 1, ss_sold_date_sk: 1, ss_store_sk: 1, ss_sales_price: 10.0 },
-  { ss_item_sk: 1, ss_sold_date_sk: 2, ss_store_sk: 1, ss_sales_price: 20.0 }
+  { ss_item_sk: 1, ss_sold_date_sk: 2, ss_store_sk: 1, ss_sales_price: 20.0 },
+  { ss_item_sk: 1, ss_sold_date_sk: 3, ss_store_sk: 1, ss_sales_price: 10.0 },
+  { ss_item_sk: 1, ss_sold_date_sk: 4, ss_store_sk: 1, ss_sales_price: 20.0 }
 ]
 
 let date_dim = [
   { d_date_sk: 1, d_month_seq: 1200, d_moy: 1 },
-  { d_date_sk: 2, d_month_seq: 1201, d_moy: 2 }
+  { d_date_sk: 2, d_month_seq: 1201, d_moy: 2 },
+  { d_date_sk: 3, d_month_seq: 1202, d_moy: 3 },
+  { d_date_sk: 4, d_month_seq: 1203, d_moy: 4 }
 ]
 
 let store = [
@@ -40,6 +44,8 @@ json(result)
 
 test "TPCDC Q63 monthly sales deviation" {
   expect result == [
+    { i_manager_id: 101, sum_sales: 10.0, avg_monthly_sales: 15.0 },
+    { i_manager_id: 101, sum_sales: 20.0, avg_monthly_sales: 15.0 },
     { i_manager_id: 101, sum_sales: 10.0, avg_monthly_sales: 15.0 },
     { i_manager_id: 101, sum_sales: 20.0, avg_monthly_sales: 15.0 }
   ]

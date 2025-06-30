@@ -17,7 +17,9 @@ let date_dim = [
   { d_date_sk: 80, d_month_seq: 1200 },
   { d_date_sk: 120, d_month_seq: 1200 },
   { d_date_sk: 150, d_month_seq: 1200 },
-  { d_date_sk: 200, d_month_seq: 1200 }
+  { d_date_sk: 200, d_month_seq: 1200 },
+  { d_date_sk: 25, d_month_seq: 1200 },
+  { d_date_sk: 115, d_month_seq: 1200 }
 ]
 
 let web_sales = [
@@ -25,7 +27,9 @@ let web_sales = [
   { ws_ship_date_sk: 80, ws_sold_date_sk: 40, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 },   // 40 days
   { ws_ship_date_sk: 120, ws_sold_date_sk: 40, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 },  // 80 days
   { ws_ship_date_sk: 150, ws_sold_date_sk: 40, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 },  // 110 days
-  { ws_ship_date_sk: 200, ws_sold_date_sk: 40, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 }   // 160 days
+  { ws_ship_date_sk: 200, ws_sold_date_sk: 40, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 },   // 160 days
+  { ws_ship_date_sk: 25, ws_sold_date_sk: 5, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 },     // 20 days
+  { ws_ship_date_sk: 115, ws_sold_date_sk: 40, ws_warehouse_sk: 1, ws_ship_mode_sk: 1, ws_web_site_sk: 1 }    // 75 days
 ]
 
 let result =
@@ -50,5 +54,5 @@ let result =
 json(result)
 
 test "TPCDC Q62 shipping days buckets" {
-  expect result == [{warehouse: "MainWarehouse", sm_type: "AIR", web_name: "WebStore", d30: 1, d31_60: 1, d61_90: 1, d91_120: 1, d120_plus: 1}]
+  expect result == [{warehouse: "MainWarehouse", sm_type: "AIR", web_name: "WebStore", d30: 2, d31_60: 1, d61_90: 2, d91_120: 1, d120_plus: 1}]
 }
