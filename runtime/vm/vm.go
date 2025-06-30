@@ -78,6 +78,7 @@ const (
 	OpAppend
 	OpStr
 	OpUpper
+	OpLower
 	OpInput
 	OpFirst
 	OpCount
@@ -199,6 +200,8 @@ func (op Op) String() string {
 		return "Str"
 	case OpUpper:
 		return "Upper"
+	case OpLower:
+		return "Lower"
 	case OpInput:
 		return "Input"
 	case OpFirst:
@@ -1102,6 +1105,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(fmt.Errorf("upper expects string"), trace, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToUpper(b.Str)}
+		case OpLower:
+			b := fr.regs[ins.B]
+			if b.Tag != ValueStr {
+				return Value{}, m.newError(fmt.Errorf("lower expects string"), trace, ins.Line)
+			}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(b.Str)}
 		case OpInput:
 			line, err := m.reader.ReadString('\n')
 			if err != nil && err != io.EOF {
@@ -1935,7 +1944,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpUpper, OpInput, OpFirst:
+	case OpAppend, OpStr, OpUpper, OpLower, OpInput, OpFirst:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
@@ -2875,6 +2884,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpUpper, A: dst, B: arg})
+			return dst
+		case "lower":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpLower, A: dst, B: arg})
 			return dst
 		case "str":
 			arg := fc.compileExpr(p.Call.Args[0])
