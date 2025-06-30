@@ -2135,6 +2135,16 @@ func constKey(v Value) (string, bool) {
 		return "s" + v.Str, true
 	case ValueNull:
 		return "n", true
+	case ValueList:
+		if len(v.List) == 0 {
+			return "[]", true
+		}
+		return "", false
+	case ValueMap:
+		if len(v.Map) == 0 {
+			return "{}", true
+		}
+		return "", false
 	default:
 		return "", false
 	}
