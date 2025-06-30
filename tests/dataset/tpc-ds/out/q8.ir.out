@@ -1,11 +1,23 @@
 func main (regs=10)
   // let store_sales = []
   Const        r0, []
+  // let date_dim = []
+  Const        r1, []
+  // let store = []
+  Const        r2, []
+  // let customer_address = []
+  Const        r3, []
+  // let customer = []
+  Const        r4, []
+  // substr("zip", 0, 2)
+  Const        r5, "zi"
   // let result = []
   Const        r6, []
   // json(result)
   JSON         r6
   // expect len(result) == 0
+  Const        r7, 0
+  Const        r8, 0
   Const        r9, true
   Expect       r9
   Return       r0

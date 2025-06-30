@@ -7,12 +7,48 @@ func main (regs=211)
   Const        r2, []
   // from dt in date_dim
   Const        r3, []
+  // group by { d_year: dt.d_year, brand_id: i.i_brand_id, brand: i.i_brand } into g
+  Const        r4, "d_year"
+  Const        r5, "d_year"
+  Const        r6, "brand_id"
+  Const        r7, "i_brand_id"
+  Const        r8, "brand"
+  Const        r9, "i_brand"
+  // where i.i_manufact_id == 100 && dt.d_moy == 12
+  Const        r10, "i_manufact_id"
+  Const        r11, "d_moy"
+  // d_year: g.key.d_year,
+  Const        r12, "d_year"
+  Const        r13, "key"
+  Const        r14, "d_year"
+  // brand_id: g.key.brand_id,
+  Const        r15, "brand_id"
+  Const        r16, "key"
+  Const        r17, "brand_id"
+  // brand: g.key.brand,
+  Const        r18, "brand"
+  Const        r19, "key"
+  Const        r20, "brand"
+  // sum_agg: sum(from x in g select x.ss.ss_ext_sales_price)
+  Const        r21, "sum_agg"
+  Const        r22, "ss"
+  Const        r23, "ss_ext_sales_price"
+  // sort by [g.key.d_year,
+  Const        r24, "key"
+  Const        r25, "d_year"
+  // -sum(from x in g select x.ss.ss_ext_sales_price),
+  Const        r26, "ss"
+  Const        r27, "ss_ext_sales_price"
+  // g.key.brand_id]
+  Const        r28, "key"
+  Const        r29, "brand_id"
+  // from dt in date_dim
   MakeMap      r30, 0, r0
   Const        r31, []
   IterPrep     r33, r0
   Len          r34, r33
   Const        r35, 0
-L1:
+L8:
   LessInt      r36, r35, r34
   JumpIfFalse  r36, L0
   Index        r38, r33, r35
@@ -20,7 +56,7 @@ L1:
   IterPrep     r39, r1
   Len          r40, r39
   Const        r41, 0
-L2:
+L7:
   LessInt      r42, r41, r40
   JumpIfFalse  r42, L1
   Index        r44, r39, r41
@@ -125,13 +161,22 @@ L3:
   Const        r122, 1
   AddInt       r52, r52, r122
   Jump         L6
-L0:
+L2:
+  // join ss in store_sales on dt.d_date_sk == ss.ss_sold_date_sk
+  Const        r123, 1
+  AddInt       r41, r41, r123
+  Jump         L7
+L1:
   // from dt in date_dim
+  Const        r124, 1
+  AddInt       r35, r35, r124
+  Jump         L8
+L0:
   Const        r125, 0
   Len          r127, r31
-L12:
+L14:
   LessInt      r128, r125, r127
-  JumpIfFalse  r128, L7
+  JumpIfFalse  r128, L9
   Index        r130, r31, r125
   // d_year: g.key.d_year,
   Const        r131, "d_year"
@@ -154,12 +199,14 @@ L12:
   // sum_agg: sum(from x in g select x.ss.ss_ext_sales_price)
   Const        r146, "sum_agg"
   Const        r147, []
+  Const        r148, "ss"
+  Const        r149, "ss_ext_sales_price"
   IterPrep     r150, r130
   Len          r151, r150
   Const        r152, 0
-L9:
+L11:
   LessInt      r154, r152, r151
-  JumpIfFalse  r154, L8
+  JumpIfFalse  r154, L10
   Index        r156, r150, r152
   Const        r157, "ss"
   Index        r158, r156, r157
@@ -168,8 +215,8 @@ L9:
   Append       r147, r147, r160
   Const        r162, 1
   AddInt       r152, r152, r162
-  Jump         L9
-L8:
+  Jump         L11
+L10:
   Sum          r163, r147
   // d_year: g.key.d_year,
   Move         r164, r131
@@ -193,12 +240,13 @@ L8:
   // -sum(from x in g select x.ss.ss_ext_sales_price),
   Const        r178, []
   Const        r179, "ss"
+  Const        r180, "ss_ext_sales_price"
   IterPrep     r181, r130
   Len          r182, r181
   Const        r183, 0
-L11:
+L13:
   LessInt      r185, r183, r182
-  JumpIfFalse  r185, L10
+  JumpIfFalse  r185, L12
   Index        r156, r181, r183
   Const        r187, "ss"
   Index        r188, r156, r187
@@ -207,8 +255,15 @@ L11:
   Append       r178, r178, r190
   Const        r192, 1
   AddInt       r183, r183, r192
-  Jump         L11
-L10:
+  Jump         L13
+L12:
+  Sum          r193, r178
+  Neg          r195, r193
+  // g.key.brand_id]
+  Const        r196, "key"
+  Index        r197, r130, r196
+  Const        r198, "brand_id"
+  Index        r200, r197, r198
   // sort by [g.key.d_year,
   MakeList     r202, 3, r177
   // from dt in date_dim
@@ -217,8 +272,8 @@ L10:
   Append       r3, r3, r204
   Const        r206, 1
   AddInt       r125, r125, r206
-  Jump         L12
-L7:
+  Jump         L14
+L9:
   // sort by [g.key.d_year,
   Sort         r3, r3
   // json(result)
