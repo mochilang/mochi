@@ -1,4 +1,4 @@
-func main (regs=232)
+func main (regs=233)
   // let nation = [
   Const        r0, [{"n_name": "BRAZIL", "n_nationkey": 1}, {"n_name": "CANADA", "n_nationkey": 2}]
   // let supplier = [
@@ -321,31 +321,32 @@ L16:
   Const        r211, 0.9
   Const        r212, 900
   // let cost = 5 * 10.0          // 50
-  Const        r213, 5
-  Const        r214, 10
-  Const        r215, 50
+  Const        r213, 10
+  Const        r214, 50
   // nation: "BRAZIL",
-  Const        r216, "nation"
-  Const        r217, "BRAZIL"
+  Const        r215, "nation"
+  Const        r216, "BRAZIL"
   // o_year: "1995",
-  Const        r218, "o_year"
-  Const        r219, "1995"
+  Const        r217, "o_year"
+  Const        r218, "1995"
   // profit: revenue - cost   // 850
-  Const        r220, "profit"
-  Const        r221, 850
+  Const        r219, "profit"
+  Const        r220, 900
+  Const        r221, 50
+  Const        r222, 850
   // nation: "BRAZIL",
-  Move         r222, r216
-  Move         r223, r217
+  Move         r223, r215
+  Move         r224, r216
   // o_year: "1995",
-  Move         r224, r218
-  Move         r225, r219
+  Move         r225, r217
+  Move         r226, r218
   // profit: revenue - cost   // 850
-  Move         r226, r220
-  Move         r227, r221
+  Move         r227, r219
+  Move         r228, r222
   // {
-  MakeMap      r229, 3, r222
+  MakeMap      r230, 3, r223
   // expect result == [
-  MakeList     r230, 1, r229
-  Equal        r231, r9, r230
-  Expect       r231
+  MakeList     r231, 1, r230
+  Equal        r232, r9, r231
+  Expect       r232
   Return       r0
