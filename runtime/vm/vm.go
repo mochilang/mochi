@@ -5108,17 +5108,17 @@ func (fc *funcCompiler) compileGroupAccum(q *parser.QueryExpr, elemReg, varReg, 
 	jump := len(fc.fn.Code)
 	fc.emit(q.Group.Pos, Instr{Op: OpJumpIfTrue, A: exists})
 
-	items := fc.freshConst(q.Pos, Value{Tag: ValueList, List: []Value{}})
-	k1 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "__group__"})
-	v1 := fc.freshConst(q.Pos, Value{Tag: ValueBool, Bool: true})
-	k2 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "key"})
+	items := fc.constReg(q.Pos, Value{Tag: ValueList, List: []Value{}})
+	k1 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "__group__"})
+	v1 := fc.constReg(q.Pos, Value{Tag: ValueBool, Bool: true})
+	k2 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "key"})
 	v2 := fc.newReg()
 	fc.emit(q.Group.Pos, Instr{Op: OpMove, A: v2, B: key})
-	k3 := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "items"})
+	k3 := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "items"})
 	v3 := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpMove, A: v3, B: items})
-	kcnt := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: "count"})
-	vcnt := fc.freshConst(q.Pos, Value{Tag: ValueInt, Int: 0})
+	kcnt := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: "count"})
+	vcnt := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
 	pairsGrp := []int{k1, v1, k2, v2, k3, v3, kcnt, vcnt}
 	if len(fieldNames) > 0 {
 		for i, name := range fieldNames {
@@ -5403,7 +5403,7 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 
 	pairs := make([]int, len(names)*2)
 	for i, n := range names {
-		k := fc.freshConst(q.Pos, Value{Tag: ValueStr, Str: n})
+		k := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: n})
 		v := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMove, A: v, B: regs[i]})
 		pairs[i*2] = k
