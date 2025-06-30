@@ -1491,7 +1491,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, fmt.Errorf("avg expects list")
 			}
 			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: 0}
 			} else {
 				var sum float64
 				for _, v := range lst.List {
