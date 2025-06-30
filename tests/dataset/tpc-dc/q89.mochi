@@ -1,13 +1,61 @@
-let store_sales = [
-  {price: 40.0},
-  {price: 30.0},
-  {price: 19.0}
+let item = [
+  { i_item_sk: 1, i_category: "CatA", i_class: "Class1", i_brand: "Brand1" },
+  { i_item_sk: 2, i_category: "CatA", i_class: "Class2", i_brand: "Brand1" },
+  { i_item_sk: 3, i_category: "CatB", i_class: "Class3", i_brand: "Brand2" }
 ]
 
-let result = sum(from s in store_sales select s.price)
+let store = [
+  { s_store_sk: 1, s_store_name: "Store1", s_company_name: "CompanyA" }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_moy: 1, d_year: 1999 },
+  { d_date_sk: 2, d_moy: 2, d_year: 1999 }
+]
+
+let store_sales = [
+  { ss_item_sk: 1, ss_store_sk: 1, ss_sold_date_sk: 1, ss_sales_price: 10.0 },
+  { ss_item_sk: 1, ss_store_sk: 1, ss_sold_date_sk: 2, ss_sales_price: 20.0 },
+  { ss_item_sk: 2, ss_store_sk: 1, ss_sold_date_sk: 1, ss_sales_price: 15.0 },
+  { ss_item_sk: 3, ss_store_sk: 1, ss_sold_date_sk: 1, ss_sales_price: 30.0 }
+]
+
+let yearly =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  where d.d_year == 1999
+  group by { cat: i.i_category, class: i.i_class, brand: i.i_brand, store: s.s_store_name, company: s.s_company_name, moy: d.d_moy } into g
+  select { key: g.key, sum_sales: sum(from x in g select x.ss.ss_sales_price) }
+
+let avg_map =
+  from y in yearly
+  group by { cat: y.key.cat, brand: y.key.brand, store: y.key.store, company: y.key.company } into g
+  select { key: g.key, avg_sales: avg(from x in g select x.sum_sales) }
+
+let result =
+  from y in yearly
+  join a in avg_map on y.key.cat == a.key.cat && y.key.brand == a.key.brand && y.key.store == a.key.store && y.key.company == a.key.company
+  where abs(y.sum_sales - a.avg_sales) / a.avg_sales > 0.1
+  sort by y.key.cat, y.key.class, y.key.moy
+  select {
+    i_category: y.key.cat,
+    i_class: y.key.class,
+    i_brand: y.key.brand,
+    s_store_name: y.key.store,
+    s_company_name: y.key.company,
+    d_moy: y.key.moy,
+    sum_sales: y.sum_sales,
+    avg_monthly_sales: a.avg_sales
+  }
+  |> to_list
 
 json(result)
 
-test "TPCDC Q89 sample" {
-  expect result == 89.0
+test "TPCDC Q89 variance" {
+  expect result == [
+    { i_category: "CatA", i_class: "Class1", i_brand: "Brand1", s_store_name: "Store1", s_company_name: "CompanyA", d_moy: 1, sum_sales: 10.0, avg_monthly_sales: 15.0 },
+    { i_category: "CatA", i_class: "Class1", i_brand: "Brand1", s_store_name: "Store1", s_company_name: "CompanyA", d_moy: 2, sum_sales: 20.0, avg_monthly_sales: 15.0 }
+  ]
 }

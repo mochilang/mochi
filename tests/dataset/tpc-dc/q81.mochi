@@ -1,19 +1,55 @@
 let catalog_returns = [
-  {cust: 1, state: "CA", amt: 40.0},
-  {cust: 2, state: "CA", amt: 50.0},
-  {cust: 3, state: "CA", amt: 81.0},
-  {cust: 4, state: "TX", amt: 30.0},
-  {cust: 5, state: "TX", amt: 20.0}
+  { cr_returning_customer_sk: 1, cr_returned_date_sk: 1, cr_return_amt_inc_tax: 100.0, cr_returning_addr_sk: 1 },
+  { cr_returning_customer_sk: 1, cr_returned_date_sk: 1, cr_return_amt_inc_tax: 80.0, cr_returning_addr_sk: 1 },
+  { cr_returning_customer_sk: 2, cr_returned_date_sk: 1, cr_return_amt_inc_tax: 50.0, cr_returning_addr_sk: 2 },
+  { cr_returning_customer_sk: 3, cr_returned_date_sk: 1, cr_return_amt_inc_tax: 40.0, cr_returning_addr_sk: 3 }
 ]
 
-let avg_amt = avg(from r in catalog_returns where r.state == "CA" select r.amt)
-let result_list = to_list(from r in catalog_returns
-  where r.state == "CA" && r.amt > avg_amt * 1.2
-  select r.amt)
-let result = result_list[0]
+let date_dim = [
+  { d_date_sk: 1, d_year: 2000 }
+]
+
+let customer_address = [
+  { ca_address_sk: 1, ca_state: "CA" },
+  { ca_address_sk: 2, ca_state: "CA" },
+  { ca_address_sk: 3, ca_state: "TX" }
+]
+
+let customer = [
+  { c_customer_sk: 1, c_customer_id: "C1", c_salutation: "Mr.", c_first_name: "John", c_last_name: "Doe", c_current_addr_sk: 1 },
+  { c_customer_sk: 2, c_customer_id: "C2", c_salutation: "Ms.", c_first_name: "Jane", c_last_name: "Smith", c_current_addr_sk: 2 },
+  { c_customer_sk: 3, c_customer_id: "C3", c_salutation: "Mr.", c_first_name: "Bob", c_last_name: "Brown", c_current_addr_sk: 3 }
+]
+
+let customer_total_return =
+  from cr in catalog_returns
+  join d in date_dim on cr.cr_returned_date_sk == d.d_date_sk
+  join ca in customer_address on cr.cr_returning_addr_sk == ca.ca_address_sk
+  where d.d_year == 2000
+  group by {cust: cr.cr_returning_customer_sk, state: ca.ca_state} into g
+  select {
+    ctr_customer_sk: g.key.cust,
+    ctr_state: g.key.state,
+    ctr_total_return: sum(from x in g select x.cr.cr_return_amt_inc_tax)
+  }
+
+let avg_by_state =
+  from ctr in customer_total_return
+  group by ctr.ctr_state into g
+  select { state: g.key, avg_return: avg(from x in g select x.ctr_total_return) }
+
+let result =
+  from ctr in customer_total_return
+  join avg in avg_by_state on ctr.ctr_state == avg.state
+  join c in customer on ctr.ctr_customer_sk == c.c_customer_sk
+  join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  where ca.ca_state == "CA" && ctr.ctr_total_return > avg.avg_return * 1.2
+  sort by c.c_customer_id
+  select { c_customer_id: c.c_customer_id, ctr_total_return: ctr.ctr_total_return }
+  |> to_list
 
 json(result)
 
-test "TPCDC Q81 sample" {
-  expect result == 81.0
+test "TPCDC Q81 high returns" {
+  expect result == [{ c_customer_id: "C1", ctr_total_return: 180.0 }]
 }

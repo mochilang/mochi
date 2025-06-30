@@ -1,22 +1,41 @@
 let sr_items = [
-  {qty: 10},
-  {qty: 15}
-]
-let cr_items = [
-  {qty: 18},
-  {qty: 20}
-]
-let wr_items = [
-  {qty: 10},
-  {qty: 10}
+  { item_id: 1, sr_return_quantity: 30 },
+  { item_id: 2, sr_return_quantity: 15 }
 ]
 
-let result = sum(from x in sr_items select x.qty) +
-             sum(from x in cr_items select x.qty) +
-             sum(from x in wr_items select x.qty)
+let cr_items = [
+  { item_id: 1, cr_return_quantity: 20 },
+  { item_id: 2, cr_return_quantity: 10 }
+]
+
+let wr_items = [
+  { item_id: 1, wr_return_quantity: 10 },
+  { item_id: 2, wr_return_quantity: 5 }
+]
+
+let result =
+  from sr in sr_items
+  join cr in cr_items on sr.item_id == cr.item_id
+  join wr in wr_items on sr.item_id == wr.item_id
+  let total = sr.sr_return_quantity + cr.cr_return_quantity + wr.wr_return_quantity
+  sort by sr.item_id
+  select {
+    item_id: sr.item_id,
+    sr_item_qty: sr.sr_return_quantity,
+    sr_dev: sr.sr_return_quantity / total / 3.0 * 100,
+    cr_item_qty: cr.cr_return_quantity,
+    cr_dev: cr.cr_return_quantity / total / 3.0 * 100,
+    wr_item_qty: wr.wr_return_quantity,
+    wr_dev: wr.wr_return_quantity / total / 3.0 * 100,
+    average: total / 3.0
+  }
+  |> to_list
 
 json(result)
 
-test "TPCDC Q83 sample" {
-  expect result == 83
+test "TPCDC Q83 returns" {
+  expect result == [
+    { item_id: 1, sr_item_qty: 30, sr_dev: 16.666666666666664, cr_item_qty: 20, cr_dev: 11.11111111111111, wr_item_qty: 10, wr_dev: 5.555555555555555, average: 20.0 },
+    { item_id: 2, sr_item_qty: 15, sr_dev: 16.666666666666664, cr_item_qty: 10, cr_dev: 11.11111111111111, wr_item_qty: 5, wr_dev: 5.555555555555555, average: 10.0 }
+  ]
 }
