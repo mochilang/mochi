@@ -3,6 +3,7 @@ func main (regs=17)
   Const        r0, [{"id": 1, "val": 11}]
   // let vals = from r in t select r.val
   Const        r1, []
+  Const        r2, "val"
   IterPrep     r3, r0
   Len          r4, r3
   Const        r5, 0
@@ -13,6 +14,8 @@ L1:
   Const        r10, "val"
   Index        r11, r9, r10
   Append       r1, r1, r11
+  Const        r13, 1
+  AddInt       r5, r5, r13
   Jump         L1
 L0:
   // let result = first(vals)
