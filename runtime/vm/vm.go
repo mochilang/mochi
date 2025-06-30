@@ -2133,6 +2133,8 @@ func constKey(v Value) (string, bool) {
 		return "bf", true
 	case ValueStr:
 		return "s" + v.Str, true
+	case ValueNull:
+		return "n", true
 	default:
 		return "", false
 	}
