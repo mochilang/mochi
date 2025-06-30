@@ -1,0 +1,46 @@
+let catalog_sales = [
+  {cs_order_number: 1, cs_warehouse_sk: 1, cs_ship_date_sk: 1, cs_ship_addr_sk: 1,
+   cs_call_center_sk: 1, cs_ext_ship_cost: 10.0, cs_net_profit: 20.0},
+  {cs_order_number: 1, cs_warehouse_sk: 2, cs_ship_date_sk: 1, cs_ship_addr_sk: 1,
+   cs_call_center_sk: 1, cs_ext_ship_cost: 15.0, cs_net_profit: 25.0},
+  {cs_order_number: 2, cs_warehouse_sk: 1, cs_ship_date_sk: 1, cs_ship_addr_sk: 1,
+   cs_call_center_sk: 1, cs_ext_ship_cost: 5.0, cs_net_profit: 10.0}
+]
+
+let catalog_returns = [
+  {cr_order_number: 2}
+]
+
+let date_dim = [{d_date_sk: 1, d_date: "2002-02-10"}]
+let customer_address = [{ca_address_sk: 1, ca_state: "GA"}]
+let call_center = [{cc_call_center_sk: 1, cc_county: "Williamson County"}]
+
+// filter catalog sales with the complex conditions
+let filtered =
+  from cs1 in catalog_sales
+  join d in date_dim on cs1.cs_ship_date_sk == d.d_date_sk
+  join ca in customer_address on cs1.cs_ship_addr_sk == ca.ca_address_sk
+  join cc in call_center on cs1.cs_call_center_sk == cc.cc_call_center_sk
+  where d.d_date >= "2002-02-01" && d.d_date <= "2002-04-02" &&
+        ca.ca_state == "GA" &&
+        cc.cc_county == "Williamson County" &&
+        exists(from cs2 in catalog_sales
+               where cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk
+               select cs2) &&
+        !exists(from cr in catalog_returns where cs1.cs_order_number == cr.cr_order_number select cr)
+  select cs1
+  |> to_list
+
+let result = {
+  order_count: len(distinct(from x in filtered select x.cs_order_number)),
+  total_shipping_cost: sum(from x in filtered select x.cs_ext_ship_cost),
+  total_net_profit: sum(from x in filtered select x.cs_net_profit)
+}
+
+json(result)
+
+test "TPCDC Q16 order summary" {
+  expect result.order_count == 1
+  expect result.total_shipping_cost == 25.0
+  expect result.total_net_profit == 45.0
+}
