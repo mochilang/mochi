@@ -5,11 +5,14 @@ let catalog_sales = [
   {cs_item_sk: 1, cs_sold_date_sk: 4, cs_ext_discount_amt: 8.0},
   {cs_item_sk: 2, cs_sold_date_sk: 1, cs_ext_discount_amt: 15.0},
   {cs_item_sk: 1, cs_sold_date_sk: 5, cs_ext_discount_amt: 18.0}
+  ,{cs_item_sk: 2, cs_sold_date_sk: 6, cs_ext_discount_amt: 12.0}
+  ,{cs_item_sk: 1, cs_sold_date_sk: 7, cs_ext_discount_amt: 7.0}
 ]
 
 let item = [
   {i_item_sk: 1, i_manufact_id: 1},
-  {i_item_sk: 2, i_manufact_id: 2}
+  {i_item_sk: 2, i_manufact_id: 2},
+  {i_item_sk: 3, i_manufact_id: 3}
 ]
 
 let date_dim = [
@@ -17,7 +20,9 @@ let date_dim = [
   {d_date_sk: 2, d_year: 2000, d_date: 30},
   {d_date_sk: 3, d_year: 2000, d_date: 60},
   {d_date_sk: 4, d_year: 2001, d_date: 1},
-  {d_date_sk: 5, d_year: 2000, d_date: 120}
+  {d_date_sk: 5, d_year: 2000, d_date: 120},
+  {d_date_sk: 6, d_year: 2001, d_date: 200},
+  {d_date_sk: 7, d_year: 1999, d_date: 300}
 ]
 
 let filtered =
