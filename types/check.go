@@ -410,7 +410,7 @@ func Check(prog *parser.Program, env *Env) []error {
 		Pure:   true,
 	}, false)
 	env.SetVar("upper", FuncType{
-		Params: []Type{StringType{}},
+		Params: []Type{AnyType{}},
 		Return: StringType{},
 		Pure:   true,
 	}, false)

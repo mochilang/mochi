@@ -778,6 +778,7 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 		if v.Tag == ValueStr {
 			return Value{Tag: ValueStr, Str: strings.ToUpper(v.Str)}, true
 		}
+		return Value{Tag: ValueStr, Str: strings.ToUpper(fmt.Sprint(valueToAny(v)))}, true
 	case OpLower:
 		if v.Tag == ValueStr {
 			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true

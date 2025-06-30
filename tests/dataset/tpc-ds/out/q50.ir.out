@@ -1,9 +1,9 @@
 func main (regs=19)
   // let t = [{id: 1, val: 50}]
   Const        r0, [{"id": 1, "val": 50}]
-  // let tmp = lower("ignore")
-  Const        r1, "ignore"
-  Const        r2, "ignore"
+  // let tmp = upper(50)
+  Const        r1, 50
+  Const        r2, "50"
   // let vals = from r in t select r.val
   Const        r3, []
   Const        r4, "val"
