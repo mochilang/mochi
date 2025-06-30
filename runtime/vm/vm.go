@@ -130,6 +130,7 @@ const (
 	OpSort
 	OpDistinct
 	OpExpect
+	OpSelect
 )
 
 func (op Op) String() string {
@@ -290,6 +291,8 @@ func (op Op) String() string {
 		return "Distinct"
 	case OpExpect:
 		return "Expect"
+	case OpSelect:
+		return "Select"
 	default:
 		return "?"
 	}
@@ -1205,6 +1208,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			val := fr.regs[ins.A]
 			if val.Tag != ValueBool || !val.Bool {
 				return Value{}, m.newError(fmt.Errorf("expect condition failed"), trace, ins.Line)
+			}
+		case OpSelect:
+			cond := fr.regs[ins.B]
+			if cond.Tag == ValueBool && cond.Bool {
+				fr.regs[ins.A] = fr.regs[ins.C]
+			} else {
+				fr.regs[ins.A] = fr.regs[ins.D]
 			}
 		case OpStr:
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
@@ -5578,34 +5588,17 @@ func (fc *funcCompiler) compileIf(s *parser.IfStmt) error {
 
 func (fc *funcCompiler) compileIfExpr(e *parser.IfExpr) int {
 	cond := fc.compileExpr(e.Cond)
-	jmpFalse := len(fc.fn.Code)
-	fc.emit(e.Pos, Instr{Op: OpJumpIfFalse, A: cond})
-
 	thenReg := fc.compileExpr(e.Then)
-	dst := fc.newReg()
-	fc.emit(e.Pos, Instr{Op: OpMove, A: dst, B: thenReg})
-
-	endJump := -1
-	if e.ElseIf != nil || e.Else != nil {
-		endJump = len(fc.fn.Code)
-		fc.emit(e.Pos, Instr{Op: OpJump})
-	}
-
-	fc.fn.Code[jmpFalse].B = len(fc.fn.Code)
-
+	var elseReg int
 	if e.ElseIf != nil {
-		elseReg := fc.compileIfExpr(e.ElseIf)
-		fc.emit(e.Pos, Instr{Op: OpMove, A: dst, B: elseReg})
+		elseReg = fc.compileIfExpr(e.ElseIf)
 	} else if e.Else != nil {
-		elseReg := fc.compileExpr(e.Else)
-		fc.emit(e.Pos, Instr{Op: OpMove, A: dst, B: elseReg})
+		elseReg = fc.compileExpr(e.Else)
 	} else {
-		fc.emit(lexer.Position{}, Instr{Op: OpConst, A: dst, Val: Value{Tag: ValueNull}})
+		elseReg = fc.constReg(lexer.Position{}, Value{Tag: ValueNull})
 	}
-
-	if endJump != -1 {
-		fc.fn.Code[endJump].A = len(fc.fn.Code)
-	}
+	dst := fc.newReg()
+	fc.emit(e.Pos, Instr{Op: OpSelect, A: dst, B: cond, C: thenReg, D: elseReg})
 	return dst
 }
 
