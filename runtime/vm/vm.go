@@ -1037,48 +1037,48 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
 			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
-               case OpUnionAll:
-                        a := fr.regs[ins.B]
-                        if a.Tag == ValueNull {
-                                a = Value{Tag: ValueList}
-                        } else if a.Tag == ValueMap {
-                                if flag, ok := a.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                        a = a.Map["items"]
-                                }
-                        }
-                        b := fr.regs[ins.C]
-                        if b.Tag == ValueNull {
-                                b = Value{Tag: ValueList}
-                        } else if b.Tag == ValueMap {
-                                if flag, ok := b.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                        b = b.Map["items"]
-                                }
-                        }
-                        if a.Tag != ValueList || b.Tag != ValueList {
-                                return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
-                        }
-                        out := append(append([]Value(nil), a.List...), b.List...)
-                        fr.regs[ins.A] = Value{Tag: ValueList, List: out}
-               case OpUnion:
-                        a := fr.regs[ins.B]
-                        if a.Tag == ValueNull {
-                                a = Value{Tag: ValueList}
-                        } else if a.Tag == ValueMap {
-                                if flag, ok := a.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                        a = a.Map["items"]
-                                }
-                        }
-                        b := fr.regs[ins.C]
-                        if b.Tag == ValueNull {
-                                b = Value{Tag: ValueList}
-                        } else if b.Tag == ValueMap {
-                                if flag, ok := b.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                        b = b.Map["items"]
-                                }
-                        }
-                        if a.Tag != ValueList || b.Tag != ValueList {
-                                return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
-                        }
+		case OpUnionAll:
+			a := fr.regs[ins.B]
+			if a.Tag == ValueNull {
+				a = Value{Tag: ValueList}
+			} else if a.Tag == ValueMap {
+				if flag, ok := a.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					a = a.Map["items"]
+				}
+			}
+			b := fr.regs[ins.C]
+			if b.Tag == ValueNull {
+				b = Value{Tag: ValueList}
+			} else if b.Tag == ValueMap {
+				if flag, ok := b.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					b = b.Map["items"]
+				}
+			}
+			if a.Tag != ValueList || b.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
+			}
+			out := append(append([]Value(nil), a.List...), b.List...)
+			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
+		case OpUnion:
+			a := fr.regs[ins.B]
+			if a.Tag == ValueNull {
+				a = Value{Tag: ValueList}
+			} else if a.Tag == ValueMap {
+				if flag, ok := a.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					a = a.Map["items"]
+				}
+			}
+			b := fr.regs[ins.C]
+			if b.Tag == ValueNull {
+				b = Value{Tag: ValueList}
+			} else if b.Tag == ValueMap {
+				if flag, ok := b.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					b = b.Map["items"]
+				}
+			}
+			if a.Tag != ValueList || b.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
+			}
 			seen := make(map[string]struct{}, len(a.List)+len(b.List))
 			out := make([]Value, 0, len(a.List)+len(b.List))
 			for _, v := range a.List {
@@ -1096,26 +1096,26 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
-               case OpExcept:
-                        a := fr.regs[ins.B]
-                        if a.Tag == ValueNull {
-                                a = Value{Tag: ValueList}
-                        } else if a.Tag == ValueMap {
-                                if flag, ok := a.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                        a = a.Map["items"]
-                                }
-                        }
-                        b := fr.regs[ins.C]
-                        if b.Tag == ValueNull {
-                                b = Value{Tag: ValueList}
-                        } else if b.Tag == ValueMap {
-                                if flag, ok := b.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                        b = b.Map["items"]
-                                }
-                        }
-                        if a.Tag != ValueList || b.Tag != ValueList {
-                                return Value{}, m.newError(fmt.Errorf("except expects lists"), trace, ins.Line)
-                        }
+		case OpExcept:
+			a := fr.regs[ins.B]
+			if a.Tag == ValueNull {
+				a = Value{Tag: ValueList}
+			} else if a.Tag == ValueMap {
+				if flag, ok := a.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					a = a.Map["items"]
+				}
+			}
+			b := fr.regs[ins.C]
+			if b.Tag == ValueNull {
+				b = Value{Tag: ValueList}
+			} else if b.Tag == ValueMap {
+				if flag, ok := b.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					b = b.Map["items"]
+				}
+			}
+			if a.Tag != ValueList || b.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("except expects lists"), trace, ins.Line)
+			}
 			set := make(map[string]struct{}, len(b.List))
 			for _, v := range b.List {
 				set[valueToString(v)] = struct{}{}
@@ -1127,26 +1127,26 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: diff}
-               case OpIntersect:
-                        a := fr.regs[ins.B]
-                        if a.Tag == ValueNull {
-                                a = Value{Tag: ValueList}
-                        } else if a.Tag == ValueMap {
-                                if flag, ok := a.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                        a = a.Map["items"]
-                                }
-                        }
-                        b := fr.regs[ins.C]
-                        if b.Tag == ValueNull {
-                                b = Value{Tag: ValueList}
-                        } else if b.Tag == ValueMap {
-                                if flag, ok := b.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                        b = b.Map["items"]
-                                }
-                        }
-                        if a.Tag != ValueList || b.Tag != ValueList {
-                                return Value{}, m.newError(fmt.Errorf("intersect expects lists"), trace, ins.Line)
-                        }
+		case OpIntersect:
+			a := fr.regs[ins.B]
+			if a.Tag == ValueNull {
+				a = Value{Tag: ValueList}
+			} else if a.Tag == ValueMap {
+				if flag, ok := a.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					a = a.Map["items"]
+				}
+			}
+			b := fr.regs[ins.C]
+			if b.Tag == ValueNull {
+				b = Value{Tag: ValueList}
+			} else if b.Tag == ValueMap {
+				if flag, ok := b.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					b = b.Map["items"]
+				}
+			}
+			if a.Tag != ValueList || b.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("intersect expects lists"), trace, ins.Line)
+			}
 			setA := make(map[string]struct{}, len(a.List))
 			for _, v := range a.List {
 				setA[valueToString(v)] = struct{}{}
