@@ -22,8 +22,6 @@ let date_dim = [
 
 let sales_date = "2020-01-15"
 
-let dummy = null
-
 let records =
   from cs in catalog_sales
   left join cr in catalog_returns on cs.order == cr.order && cs.item_sk == cr.item_sk
@@ -38,7 +36,7 @@ let records =
     net: cs.price - (if cr == null { 0.0 } else { cr.refunded })
   }
 
-let base =
+let result =
   from r in records
   group by { w_state: r.w_state, i_item_id: r.i_item_id } into g
   select {
@@ -46,9 +44,7 @@ let base =
     i_item_id: g.key.i_item_id,
     sales_before: sum(from x in g select if x.sold_date < sales_date { x.net } else { 0.0 }),
     sales_after: sum(from x in g select if x.sold_date >= sales_date { x.net } else { 0.0 })
-  }
-
-let result = concat(dummy, base)
+}
 
 json(result)
 

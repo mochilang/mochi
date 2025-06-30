@@ -23,8 +23,6 @@ let store_sales = [
 let year = 2020
 let gmt = 0
 
-let dummy = null
-
 let records =
   from d in date_dim
   join ss in store_sales on ss.sold_date_sk == d.date_sk
@@ -47,7 +45,7 @@ let base =
     sat_sales: sum(from x in g select if x.d_day_name == "Saturday" { x.price } else { 0.0 })
   }
 
-let result = concat(dummy, base)
+let result = base
 
 json(result)
 

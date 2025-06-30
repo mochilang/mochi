@@ -13,8 +13,6 @@ let vehcnt = 0
 let year = 2020
 let cities = ["CityA"]
 
-let dummy = null
-
 let dn =
   from ss in store_sales
   join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
@@ -34,7 +32,7 @@ let base =
   sort by [c.c_last_name, c.c_first_name, current_addr.ca_city, dnrec.bought_city, dnrec.ss_ticket_number]
   select { c_last_name: c.c_last_name, c_first_name: c.c_first_name, ca_city: current_addr.ca_city, bought_city: dnrec.bought_city, ss_ticket_number: dnrec.ss_ticket_number, amt: dnrec.amt, profit: dnrec.profit }
 
-let result = concat(dummy, base)
+let result = base
 
 json(result)
 

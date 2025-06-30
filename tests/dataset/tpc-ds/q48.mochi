@@ -17,8 +17,6 @@ let customer_address = [
 ]
 let date_dim = [ { d_date_sk: 1, d_year: 2000 } ]
 
-let dummy = null
-
 let year = 2000
 
 let states1 = ["TX"]
@@ -43,7 +41,7 @@ let qty_base =
     )
   select ss.quantity
 
-let qty = concat(dummy, qty_base)
+let qty = qty_base
 
 let result = sum(qty)
 

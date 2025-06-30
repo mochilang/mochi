@@ -17,8 +17,6 @@ let date_dim = [
 let month = 5
 let year = 2020
 
-let dummy = null
-
 let records =
   from dt in date_dim
   join ss in store_sales on ss.sold_date_sk == dt.d_date_sk
@@ -35,9 +33,9 @@ let base =
     i_category_id: g.key.i_category_id,
     i_category: g.key.i_category,
     sum_ss_ext_sales_price: sum(from x in g select x.price)
-  }
+}
 
-let result = concat(dummy, base)
+let result = base
 
 json(result)
 
