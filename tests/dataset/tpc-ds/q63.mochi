@@ -1,6 +1,6 @@
 let sales = [
-  {mgr: 1, amount: 30},
-  {mgr: 2, amount: 33}
+  {mgr: 1, amount: 15.75},
+  {mgr: 2, amount: 47.25}
 ]
 
 
@@ -16,3 +16,4 @@ json(result)
 test "TPCDS Q63 simplified" {
   expect result == 63
 }
+
