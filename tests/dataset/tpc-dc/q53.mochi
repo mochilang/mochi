@@ -4,14 +4,16 @@ let item = [
 
 let date_dim = [
   {d_date_sk: 1, d_qoy: 1, d_month_seq: 1},
-  {d_date_sk: 2, d_qoy: 1, d_month_seq: 2}
+  {d_date_sk: 2, d_qoy: 1, d_month_seq: 2},
+  {d_date_sk: 3, d_qoy: 2, d_month_seq: 4}
 ]
 
 let store = [ {s_store_sk: 1} ]
 
 let store_sales = [
   {ss_item_sk: 1, ss_sold_date_sk: 1, ss_store_sk:1, ss_sales_price: 100},
-  {ss_item_sk: 1, ss_sold_date_sk: 2, ss_store_sk:1, ss_sales_price: 200}
+  {ss_item_sk: 1, ss_sold_date_sk: 2, ss_store_sk:1, ss_sales_price: 200},
+  {ss_item_sk: 1, ss_sold_date_sk: 3, ss_store_sk:1, ss_sales_price: 150}
 ]
 
 let tmp =
@@ -30,5 +32,8 @@ let result =
 json(result)
 
 test "TPCDC Q53 quarterly" {
-  expect result == [{i_manufact_id:1, sum_sales:300, avg_quarterly_sales:150}]
+  expect result == [
+    {i_manufact_id:1, sum_sales:300, avg_quarterly_sales:225},
+    {i_manufact_id:1, sum_sales:150, avg_quarterly_sales:225}
+  ]
 }

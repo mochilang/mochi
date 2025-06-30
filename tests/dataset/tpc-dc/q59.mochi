@@ -1,7 +1,20 @@
-let wss=[{d_week_seq:1, ss_store_sk:1,
-  sun_sales:10, mon_sales:10, tue_sales:10, wed_sales:10, thu_sales:10, fri_sales:10, sat_sales:10}]
+let wss=[
+  {d_week_seq:1, ss_store_sk:1,
+    sun_sales:10, mon_sales:10, tue_sales:10, wed_sales:10, thu_sales:10, fri_sales:10, sat_sales:10},
+  {d_week_seq:2, ss_store_sk:1,
+    sun_sales:8, mon_sales:8, tue_sales:8, wed_sales:8, thu_sales:8, fri_sales:8, sat_sales:8},
+  {d_week_seq:53, ss_store_sk:1,
+    sun_sales:5, mon_sales:5, tue_sales:5, wed_sales:5, thu_sales:5, fri_sales:5, sat_sales:5},
+  {d_week_seq:54, ss_store_sk:1,
+    sun_sales:12, mon_sales:12, tue_sales:12, wed_sales:12, thu_sales:12, fri_sales:12, sat_sales:12}
+]
 let store=[{s_store_sk:1, s_store_name:"Store", s_store_id:1}]
-let date_dim=[{d_week_seq:1, d_month_seq:1},{d_week_seq:53, d_month_seq:13}]
+let date_dim=[
+  {d_week_seq:1, d_month_seq:1},
+  {d_week_seq:2, d_month_seq:2},
+  {d_week_seq:53, d_month_seq:13},
+  {d_week_seq:54, d_month_seq:14}
+]
 
 let y=
   from w in wss
@@ -24,10 +37,29 @@ let x=
 let result=
   from a in y
   join b in x on a.s_store_id1==b.s_store_id2 && a.d_week_seq1==b.d_week_seq2-52
-  select {s_store_name1:a.s_store_name1, d_week_seq1:a.d_week_seq1}
+  select {
+    s_store_name1:a.s_store_name1,
+    d_week_seq1:a.d_week_seq1,
+    sun_ratio:a.sun_sales1 / b.sun_sales2,
+    mon_ratio:a.mon_sales1 / b.mon_sales2,
+    tue_ratio:a.tue_sales1 / b.tue_sales2,
+    wed_ratio:a.wed_sales1 / b.wed_sales2,
+    thu_ratio:a.thu_sales1 / b.thu_sales2,
+    fri_ratio:a.fri_sales1 / b.fri_sales2,
+    sat_ratio:a.sat_sales1 / b.sat_sales2
+  }
 
 json(result)
 
 test "TPCDC Q59 ratios" {
-  expect result == [{s_store_name1:"Store", d_week_seq1:1}]
+  expect result == [
+    {s_store_name1:"Store", d_week_seq1:1,
+     sun_ratio:2, mon_ratio:2, tue_ratio:2, wed_ratio:2,
+     thu_ratio:2, fri_ratio:2, sat_ratio:2},
+    {s_store_name1:"Store", d_week_seq1:2,
+     sun_ratio:0.6666666666666666, mon_ratio:0.6666666666666666,
+     tue_ratio:0.6666666666666666, wed_ratio:0.6666666666666666,
+     thu_ratio:0.6666666666666666, fri_ratio:0.6666666666666666,
+     sat_ratio:0.6666666666666666}
+  ]
 }
