@@ -1,0 +1,61 @@
+// Average quantity on hand by product hierarchy
+
+type Inventory { inv_item_sk: int, inv_date_sk: int, inv_quantity_on_hand: int }
+type DateDim { d_date_sk: int, d_month_seq: int }
+type Item {
+  i_item_sk: int
+  i_product_name: string
+  i_brand: string
+  i_class: string
+  i_category: string
+}
+
+let inventory = [
+  { inv_item_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10 },
+  { inv_item_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 20 }
+]
+
+let date_dim = [ { d_date_sk: 1, d_month_seq: 0 }, { d_date_sk: 2, d_month_seq: 1 } ]
+
+let item = [
+  {
+    i_item_sk: 1,
+    i_product_name: "Prod1",
+    i_brand: "Brand1",
+    i_class: "Class1",
+    i_category: "Cat1"
+  }
+]
+
+let qoh =
+  from inv in inventory
+  join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  join i in item on inv.inv_item_sk == i.i_item_sk
+  where d.d_month_seq >= 0 && d.d_month_seq <= 11
+  group by {
+    product_name: i.i_product_name,
+    brand: i.i_brand,
+    class: i.i_class,
+    category: i.i_category
+  } into g
+  select {
+    i_product_name: g.key.product_name,
+    i_brand: g.key.brand,
+    i_class: g.key.class,
+    i_category: g.key.category,
+    qoh: avg(from x in g select x.inv_quantity_on_hand)
+  }
+
+json(qoh)
+
+test "TPCDC Q22 average inventory" {
+  expect qoh == [
+    {
+      i_product_name: "Prod1",
+      i_brand: "Brand1",
+      i_class: "Class1",
+      i_category: "Cat1",
+      qoh: 15.0
+    }
+  ]
+}

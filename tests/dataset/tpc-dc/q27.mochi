@@ -1,0 +1,42 @@
+// Average store sales metrics by item and state
+
+type StoreSale { ss_item_sk: int, ss_store_sk: int, ss_cdemo_sk: int, ss_sold_date_sk: int, ss_quantity: int, ss_list_price: float, ss_coupon_amt: float, ss_sales_price: float }
+type CustomerDemo { cd_demo_sk: int, cd_gender: string, cd_marital_status: string, cd_education_status: string }
+type DateDim { d_date_sk: int, d_year: int }
+type Store { s_store_sk: int, s_state: string }
+type Item { i_item_sk: int, i_item_id: string }
+
+let store_sales = [
+  { ss_item_sk: 1, ss_store_sk: 1, ss_cdemo_sk: 1, ss_sold_date_sk: 1, ss_quantity: 5, ss_list_price: 100.0, ss_coupon_amt: 10.0, ss_sales_price: 90.0 }
+]
+
+let customer_demographics = [ { cd_demo_sk: 1, cd_gender: "F", cd_marital_status: "M", cd_education_status: "College" } ]
+let date_dim = [ { d_date_sk: 1, d_year: 2000 } ]
+let store = [ { s_store_sk: 1, s_state: "CA" } ]
+let item = [ { i_item_sk: 1, i_item_id: "ITEM1" } ]
+
+let result =
+  from ss in store_sales
+  join cd in customer_demographics on ss.ss_cdemo_sk == cd.cd_demo_sk
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  where cd.cd_gender == "F" && cd.cd_marital_status == "M" && cd.cd_education_status == "College" && d.d_year == 2000 && s.s_state in ["CA"]
+  group by { item_id: i.i_item_id, state: s.s_state } into g
+  sort by [g.key.item_id, g.key.state]
+  select {
+    i_item_id: g.key.item_id,
+    s_state: g.key.state,
+    agg1: avg(from x in g select x.ss_quantity),
+    agg2: avg(from x in g select x.ss_list_price),
+    agg3: avg(from x in g select x.ss_coupon_amt),
+    agg4: avg(from x in g select x.ss_sales_price)
+  }
+
+json(result)
+
+test "TPCDC Q27 averages by state" {
+  expect result == [
+    { i_item_id: "ITEM1", s_state: "CA", agg1: 5.0, agg2: 100.0, agg3: 10.0, agg4: 90.0 }
+  ]
+}
