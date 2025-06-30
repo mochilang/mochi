@@ -920,7 +920,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
-			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+			if b.Tag == ValueFloat || c.Tag == ValueFloat || (b.Tag == ValueInt && c.Tag == ValueInt) {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) / toFloat(c)}
 			} else if b.Tag == ValueBigRat || c.Tag == ValueBigRat {
 				br := new(big.Rat).Quo(toRat(b), toRat(c))
@@ -3220,7 +3220,8 @@ func (fc *funcCompiler) emitBinaryOp(pos lexer.Position, op string, all bool, le
 			// SQL division with floats yields a float result.
 			fc.emit(pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
 		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-			fc.emit(pos, Instr{Op: OpDivInt, A: dst, B: left, C: right})
+			// Perform floating-point division for two integer operands
+			fc.emit(pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
 		} else {
 			fc.emit(pos, Instr{Op: OpDiv, A: dst, B: left, C: right})
 		}
