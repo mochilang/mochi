@@ -2,17 +2,20 @@
 let customer = [
   { c_customer_sk: 1, c_current_addr_sk: 10, c_current_cdemo_sk: 100 },
   { c_customer_sk: 2, c_current_addr_sk: 11, c_current_cdemo_sk: 100 },
-  { c_customer_sk: 3, c_current_addr_sk: 11, c_current_cdemo_sk: 101 }
+  { c_customer_sk: 3, c_current_addr_sk: 11, c_current_cdemo_sk: 101 },
+  { c_customer_sk: 4, c_current_addr_sk: 12, c_current_cdemo_sk: 102 }
 ]
 
 let customer_address = [
   { ca_address_sk: 10, ca_state: "KY" },
-  { ca_address_sk: 11, ca_state: "GA" }
+  { ca_address_sk: 11, ca_state: "GA" },
+  { ca_address_sk: 12, ca_state: "TX" }
 ]
 
 let customer_demographics = [
   { cd_demo_sk: 100, cd_gender: "M", cd_marital_status: "S", cd_education_status: "College", cd_purchase_estimate: 1000, cd_credit_rating: "Good" },
-  { cd_demo_sk: 101, cd_gender: "F", cd_marital_status: "S", cd_education_status: "College", cd_purchase_estimate: 500, cd_credit_rating: "Excellent" }
+  { cd_demo_sk: 101, cd_gender: "F", cd_marital_status: "S", cd_education_status: "College", cd_purchase_estimate: 500, cd_credit_rating: "Excellent" },
+  { cd_demo_sk: 102, cd_gender: "M", cd_marital_status: "M", cd_education_status: "College", cd_purchase_estimate: 700, cd_credit_rating: "Fair" }
 ]
 
 let store_sales = [
