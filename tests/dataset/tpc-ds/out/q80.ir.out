@@ -1,4 +1,4 @@
-func main (regs=61)
+func main (regs=47)
   // let store_sales = [
   Const        r0, [{"price": 20, "ret": 5}, {"price": 10, "ret": 2}, {"price": 5, "ret": 0}]
   // let catalog_sales = [
@@ -11,74 +11,63 @@ func main (regs=61)
   Const        r5, "ret"
   IterPrep     r6, r0
   Len          r7, r6
-  Const        r8, 0
+  Const        r9, 0
+  Move         r8, r9
 L1:
   LessInt      r10, r8, r7
   JumpIfFalse  r10, L0
   Index        r12, r6, r8
-  Const        r13, "price"
-  Index        r14, r12, r13
-  Const        r15, "ret"
-  Index        r16, r12, r15
-  Sub          r17, r14, r16
-  Append       r3, r3, r17
-  Const        r19, 1
-  AddInt       r8, r8, r19
+  Index        r13, r12, r4
+  Index        r14, r12, r5
+  Sub          r15, r13, r14
+  Append       r3, r3, r15
+  Const        r17, 1
+  AddInt       r8, r8, r17
   Jump         L1
 L0:
-  Sum          r20, r3
+  Sum          r18, r3
   // sum(from c in catalog_sales select c.price - c.ret) +
-  Const        r21, []
-  Const        r22, "price"
-  Const        r23, "ret"
-  IterPrep     r24, r1
-  Len          r25, r24
-  Const        r26, 0
+  Const        r19, []
+  IterPrep     r20, r1
+  Len          r21, r20
+  Move         r22, r9
 L3:
-  LessInt      r28, r26, r25
-  JumpIfFalse  r28, L2
-  Index        r30, r24, r26
-  Const        r31, "price"
-  Index        r32, r30, r31
-  Const        r33, "ret"
-  Index        r34, r30, r33
-  Sub          r35, r32, r34
-  Append       r21, r21, r35
-  Const        r37, 1
-  AddInt       r26, r26, r37
+  LessInt      r23, r22, r21
+  JumpIfFalse  r23, L2
+  Index        r25, r20, r22
+  Index        r26, r25, r4
+  Index        r27, r25, r5
+  Sub          r28, r26, r27
+  Append       r19, r19, r28
+  AddInt       r22, r22, r17
   Jump         L3
 L2:
-  Sum          r38, r21
+  Sum          r30, r19
   // sum(from s in store_sales select s.price - s.ret) +
-  Add          r39, r20, r38
+  Add          r31, r18, r30
   // sum(from w in web_sales select w.price - w.ret)
-  Const        r40, []
-  Const        r41, "price"
-  Const        r42, "ret"
-  IterPrep     r43, r2
-  Len          r44, r43
-  Const        r45, 0
+  Const        r32, []
+  IterPrep     r33, r2
+  Len          r34, r33
+  Move         r35, r9
 L5:
-  LessInt      r47, r45, r44
-  JumpIfFalse  r47, L4
-  Index        r49, r43, r45
-  Const        r50, "price"
-  Index        r51, r49, r50
-  Const        r52, "ret"
-  Index        r53, r49, r52
-  Sub          r54, r51, r53
-  Append       r40, r40, r54
-  Const        r56, 1
-  AddInt       r45, r45, r56
+  LessInt      r36, r35, r34
+  JumpIfFalse  r36, L4
+  Index        r38, r33, r35
+  Index        r39, r38, r4
+  Index        r40, r38, r5
+  Sub          r41, r39, r40
+  Append       r32, r32, r41
+  AddInt       r35, r35, r17
   Jump         L5
 L4:
-  Sum          r57, r40
+  Sum          r43, r32
   // sum(from c in catalog_sales select c.price - c.ret) +
-  Add          r58, r39, r57
+  Add          r44, r31, r43
   // json(total_profit)
-  JSON         r58
+  JSON         r44
   // expect total_profit == 80.0
-  Const        r59, 80
-  EqualFloat   r60, r58, r59
-  Expect       r60
+  Const        r45, 80
+  EqualFloat   r46, r44, r45
+  Expect       r46
   Return       r0

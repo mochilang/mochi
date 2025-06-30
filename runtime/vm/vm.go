@@ -6769,14 +6769,18 @@ func clampSlice(n, start, end int) (int, int) {
 }
 
 func toFloat(v Value) float64 {
-	if v.Tag == ValueFloat {
+	switch v.Tag {
+	case ValueFloat:
 		return v.Float
-	}
-	if v.Tag == ValueBool {
+	case ValueBool:
 		if v.Bool {
 			return 1
 		}
 		return 0
+	case ValueStr:
+		if f, err := strconv.ParseFloat(v.Str, 64); err == nil {
+			return f
+		}
 	}
 	if v.Tag == ValueStr {
 		if f, err := strconv.ParseFloat(v.Str, 64); err == nil {
