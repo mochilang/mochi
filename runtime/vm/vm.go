@@ -2,6 +2,7 @@ package vm
 
 import (
 	"bufio"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/zeebo/xxh3"
 
 	"github.com/alecthomas/participle/v2/lexer"
 	"mochi/parser"
@@ -754,12 +757,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			found := false
 			switch container.Tag {
 			case ValueList:
+				set := make(map[uint64]struct{}, len(container.List))
 				for _, v := range container.List {
-					if valuesEqual(v, item) {
-						found = true
-						break
-					}
+					set[valueHash(v)] = struct{}{}
 				}
+				_, found = set[valueHash(item)]
 			case ValueMap:
 				key := fmt.Sprint(valueToAny(item))
 				_, found = container.Map[key]
@@ -999,17 +1001,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("union expects lists"), trace, ins.Line)
 			}
-			seen := make(map[string]struct{}, len(a.List)+len(b.List))
+			seen := make(map[uint64]struct{}, len(a.List)+len(b.List))
 			out := make([]Value, 0, len(a.List)+len(b.List))
 			for _, v := range a.List {
-				k := valueToString(v)
+				k := valueHash(v)
 				if _, ok := seen[k]; !ok {
 					seen[k] = struct{}{}
 					out = append(out, v)
 				}
 			}
 			for _, v := range b.List {
-				k := valueToString(v)
+				k := valueHash(v)
 				if _, ok := seen[k]; !ok {
 					seen[k] = struct{}{}
 					out = append(out, v)
@@ -1022,13 +1024,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("except expects lists"), trace, ins.Line)
 			}
-			set := make(map[string]struct{}, len(b.List))
+			set := make(map[uint64]struct{}, len(b.List))
 			for _, v := range b.List {
-				set[valueToString(v)] = struct{}{}
+				set[valueHash(v)] = struct{}{}
 			}
 			diff := make([]Value, 0, len(a.List))
 			for _, v := range a.List {
-				if _, ok := set[valueToString(v)]; !ok {
+				if _, ok := set[valueHash(v)]; !ok {
 					diff = append(diff, v)
 				}
 			}
@@ -1039,14 +1041,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if a.Tag != ValueList || b.Tag != ValueList {
 				return Value{}, m.newError(fmt.Errorf("intersect expects lists"), trace, ins.Line)
 			}
-			setA := make(map[string]struct{}, len(a.List))
+			setA := make(map[uint64]struct{}, len(a.List))
 			for _, v := range a.List {
-				setA[valueToString(v)] = struct{}{}
+				setA[valueHash(v)] = struct{}{}
 			}
 			inter := []Value{}
-			added := make(map[string]struct{}, len(b.List))
+			added := make(map[uint64]struct{}, len(b.List))
 			for _, v := range b.List {
-				k := valueToString(v)
+				k := valueHash(v)
 				if _, ok := setA[k]; ok {
 					if _, done := added[k]; !done {
 						added[k] = struct{}{}
@@ -1957,6 +1959,13 @@ func (fc *funcCompiler) constListLen(e *parser.Expr) (int, bool) {
 		return len(v.List), true
 	}
 	return 0, false
+}
+
+func (fc *funcCompiler) constBool(e *parser.Expr) (bool, bool) {
+	if v, ok := fc.evalConstExpr(e); ok && v.Tag == ValueBool {
+		return v.Bool, true
+	}
+	return false, false
 }
 
 // smallConstJoin reports whether both expressions evaluate to constant lists
@@ -2974,6 +2983,17 @@ func (fc *funcCompiler) compileQuery(q *parser.QueryExpr) int {
 
 	dst := fc.newReg()
 	fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: ValueList, List: []Value{}}})
+
+	if q.Where != nil {
+		if b, ok := fc.constBool(q.Where); ok && !b {
+			if aggOp != 0 {
+				out := fc.newReg()
+				fc.emit(aggPos, Instr{Op: aggOp, A: out, B: dst})
+				return out
+			}
+			return dst
+		}
+	}
 	if q.Group != nil {
 		if len(q.Froms) == 0 && len(q.Joins) == 0 {
 			fc.compileGroupQuery(q, dst)
@@ -3190,6 +3210,26 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 	joinType := "inner"
 	if join.Side != nil {
 		joinType = *join.Side
+	}
+
+	if q.Where != nil {
+		if b, ok := fc.constBool(q.Where); ok && !b {
+			fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: ValueList, List: []Value{}}})
+			return
+		}
+	}
+	if join.On != nil && joinType == "inner" {
+		if b, ok := fc.constBool(join.On); ok && !b {
+			fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: ValueList, List: []Value{}}})
+			return
+		}
+	}
+
+	if ll, ok := fc.constListLen(q.Source); ok && ll == 0 {
+		return
+	}
+	if rl, ok := fc.constListLen(join.Src); ok && rl == 0 {
+		return
 	}
 
 	if joinType == "inner" {
@@ -5150,10 +5190,20 @@ func (fc *funcCompiler) compileQueryFrom(q *parser.QueryExpr, dst int, level int
 	if level == 0 {
 		name = q.Var
 		src = q.Source
+		if q.Where != nil {
+			if b, ok := fc.constBool(q.Where); ok && !b {
+				fc.emit(q.Pos, Instr{Op: OpConst, A: dst, Val: Value{Tag: ValueList, List: []Value{}}})
+				return
+			}
+		}
 	} else {
 		from := q.Froms[level-1]
 		name = from.Var
 		src = from.Src
+	}
+
+	if l, ok := fc.constListLen(src); ok && l == 0 {
+		return
 	}
 
 	if level == 0 {
@@ -6210,12 +6260,12 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 	case "in":
 		switch b.Tag {
 		case ValueList:
+			set := make(map[uint64]struct{}, len(b.List))
 			for _, item := range b.List {
-				if valuesEqual(item, a) {
-					return Value{Tag: ValueBool, Bool: true}, true
-				}
+				set[valueHash(item)] = struct{}{}
 			}
-			return Value{Tag: ValueBool, Bool: false}, true
+			_, ok := set[valueHash(a)]
+			return Value{Tag: ValueBool, Bool: ok}, true
 		case ValueMap:
 			key := fmt.Sprint(valueToAny(a))
 			_, ok := b.Map[key]
@@ -6233,15 +6283,14 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 	case "union":
 		if a.Tag == ValueList && b.Tag == ValueList {
 			merged := append([]Value{}, a.List...)
+			seen := make(map[uint64]struct{}, len(a.List)+len(b.List))
+			for _, v := range merged {
+				seen[valueHash(v)] = struct{}{}
+			}
 			for _, rv := range b.List {
-				exists := false
-				for _, lv := range merged {
-					if valuesEqual(lv, rv) {
-						exists = true
-						break
-					}
-				}
-				if !exists {
+				k := valueHash(rv)
+				if _, ok := seen[k]; !ok {
+					seen[k] = struct{}{}
 					merged = append(merged, rv)
 				}
 			}
@@ -6249,16 +6298,13 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 		}
 	case "except":
 		if a.Tag == ValueList && b.Tag == ValueList {
-			diff := []Value{}
+			set := make(map[uint64]struct{}, len(b.List))
+			for _, rv := range b.List {
+				set[valueHash(rv)] = struct{}{}
+			}
+			diff := make([]Value, 0, len(a.List))
 			for _, lv := range a.List {
-				found := false
-				for _, rv := range b.List {
-					if valuesEqual(lv, rv) {
-						found = true
-						break
-					}
-				}
-				if !found {
+				if _, ok := set[valueHash(lv)]; !ok {
 					diff = append(diff, lv)
 				}
 			}
@@ -6266,21 +6312,18 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 		}
 	case "intersect":
 		if a.Tag == ValueList && b.Tag == ValueList {
-			inter := []Value{}
+			setA := make(map[uint64]struct{}, len(a.List))
 			for _, lv := range a.List {
-				for _, rv := range b.List {
-					if valuesEqual(lv, rv) {
-						exists := false
-						for _, iv := range inter {
-							if valuesEqual(iv, lv) {
-								exists = true
-								break
-							}
-						}
-						if !exists {
-							inter = append(inter, lv)
-						}
-						break
+				setA[valueHash(lv)] = struct{}{}
+			}
+			inter := []Value{}
+			added := make(map[uint64]struct{}, len(b.List))
+			for _, rv := range b.List {
+				k := valueHash(rv)
+				if _, ok := setA[k]; ok {
+					if _, done := added[k]; !done {
+						added[k] = struct{}{}
+						inter = append(inter, rv)
 					}
 				}
 			}
@@ -6422,6 +6465,53 @@ func valueToString(v Value) string {
 		return "{" + strings.Join(parts, ", ") + "}"
 	default:
 		return "nil"
+	}
+}
+
+func valueHash(v Value) uint64 {
+	var buf [9]byte
+	buf[0] = byte(v.Tag)
+	switch v.Tag {
+	case ValueInt:
+		binary.LittleEndian.PutUint64(buf[1:], uint64(v.Int))
+		return xxh3.Hash(buf[:])
+	case ValueFloat:
+		binary.LittleEndian.PutUint64(buf[1:], math.Float64bits(v.Float))
+		return xxh3.Hash(buf[:])
+	case ValueBool:
+		if v.Bool {
+			buf[1] = 1
+		}
+		return xxh3.Hash(buf[:2])
+	case ValueStr:
+		return xxh3.HashString(v.Str)
+	case ValueList:
+		h := xxh3.New()
+		h.Write([]byte{byte(ValueList)})
+		var x [8]byte
+		for _, it := range v.List {
+			binary.LittleEndian.PutUint64(x[:], valueHash(it))
+			h.Write(x[:])
+		}
+		return h.Sum64()
+	case ValueMap:
+		h := xxh3.New()
+		h.Write([]byte{byte(ValueMap)})
+		keys := make([]string, 0, len(v.Map))
+		for k := range v.Map {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		var x [8]byte
+		for _, k := range keys {
+			binary.LittleEndian.PutUint64(x[:], xxh3.HashString(k))
+			h.Write(x[:])
+			binary.LittleEndian.PutUint64(x[:], valueHash(v.Map[k]))
+			h.Write(x[:])
+		}
+		return h.Sum64()
+	default:
+		return xxh3.Hash(buf[:1])
 	}
 }
 
