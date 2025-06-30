@@ -1,5 +1,4 @@
-func main (regs=398)
-L20:
+func main (regs=240)
   // let date_dim = [
   Const        r0, [{"d_date_sk": 1, "d_dow": 1, "d_year": 1999}]
   // let store = [
@@ -12,470 +11,345 @@ L20:
   Const        r4, [{"c_customer_sk": 1, "c_first_name": "Alice", "c_last_name": "Smith"}]
   // from ss in store_sales
   Const        r5, []
-  MakeMap      r28, 0, r0
-  Const        r29, []
-  IterPrep     r31, r3
-  Len          r32, r31
-  Const        r33, 0
-L1:
-  LessInt      r34, r33, r32
-  JumpIfFalse  r34, L0
-  Index        r36, r31, r33
-  // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
-  IterPrep     r37, r0
-  Len          r38, r37
-  Const        r39, 0
-L2:
-  LessInt      r40, r39, r38
-  JumpIfFalse  r40, L1
-  Index        r42, r37, r39
-  Const        r43, "d_date_sk"
-  Index        r44, r42, r43
-  Const        r45, "ss_sold_date_sk"
-  Index        r46, r36, r45
-  Equal        r47, r44, r46
-  JumpIfFalse  r47, L2
-  // join s in store on s.s_store_sk == ss.ss_store_sk
-  IterPrep     r48, r1
-  Len          r49, r48
-  Const        r50, 0
-L13:
-  LessInt      r51, r50, r49
-  JumpIfFalse  r51, L2
-  Index        r53, r48, r50
-  Const        r54, "s_store_sk"
-  Index        r55, r53, r54
-  Const        r56, "ss_store_sk"
-  Index        r57, r36, r56
-  Equal        r58, r55, r57
-  JumpIfFalse  r58, L3
-  // join hd in household_demographics on hd.hd_demo_sk == ss.ss_hdemo_sk
-  IterPrep     r59, r2
-  Len          r60, r59
-  Const        r61, 0
-L12:
-  LessInt      r62, r61, r60
-  JumpIfFalse  r62, L3
-  Index        r64, r59, r61
-  Const        r65, "hd_demo_sk"
-  Index        r66, r64, r65
-  Const        r67, "ss_hdemo_sk"
-  Index        r68, r36, r67
-  Equal        r69, r66, r68
-  JumpIfFalse  r69, L4
+  // group by { ticket: ss.ss_ticket_number, customer_sk: ss.ss_customer_sk, city: s.s_city } into g
+  Const        r6, "ticket"
+  Const        r7, "ss_ticket_number"
+  Const        r8, "customer_sk"
+  Const        r9, "ss_customer_sk"
+  Const        r10, "city"
+  Const        r11, "s_city"
   // where (hd.hd_dep_count == 2 || hd.hd_vehicle_count > 1) &&
-  Const        r70, "hd_dep_count"
-  Index        r71, r64, r70
-  Const        r72, "hd_vehicle_count"
-  Index        r73, r64, r72
-  Const        r74, 1
-  Less         r75, r74, r73
-  Const        r76, 2
-  Equal        r78, r71, r76
-  JumpIfTrue   r78, L5
-  Move         r78, r75
+  Const        r12, "hd_dep_count"
+  Const        r13, "hd_vehicle_count"
+  // d.d_dow == 1 &&
+  Const        r14, "d_dow"
+  // (d.d_year == 1998 || d.d_year == 1999 || d.d_year == 2000) &&
+  Const        r15, "d_year"
+  // s.s_number_employees >= 200 && s.s_number_employees <= 295
+  Const        r16, "s_number_employees"
+  // select { key: g.key, amt: sum(from x in g select x.ss.ss_coupon_amt), profit: sum(from x in g select x.ss.ss_net_profit) }
+  Const        r17, "key"
+  Const        r18, "amt"
+  Const        r19, "ss"
+  Const        r20, "ss_coupon_amt"
+  Const        r21, "profit"
+  Const        r22, "ss_net_profit"
+  // from ss in store_sales
+  MakeMap      r23, 0, r0
+  Const        r25, []
+  Move         r24, r25
+  IterPrep     r26, r3
+  Len          r27, r26
+  Const        r28, 0
+L12:
+  LessInt      r29, r28, r27
+  JumpIfFalse  r29, L0
+  Index        r31, r26, r28
+  // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
+  IterPrep     r32, r0
+  Len          r33, r32
+  Const        r34, 0
+L11:
+  LessInt      r35, r34, r33
+  JumpIfFalse  r35, L1
+  Index        r37, r32, r34
+  Const        r38, "d_date_sk"
+  Index        r39, r37, r38
+  Const        r40, "ss_sold_date_sk"
+  Index        r41, r31, r40
+  Equal        r42, r39, r41
+  JumpIfFalse  r42, L2
+  // join s in store on s.s_store_sk == ss.ss_store_sk
+  IterPrep     r43, r1
+  Len          r44, r43
+  Const        r45, 0
+L10:
+  LessInt      r46, r45, r44
+  JumpIfFalse  r46, L2
+  Index        r48, r43, r45
+  Const        r49, "s_store_sk"
+  Index        r50, r48, r49
+  Const        r51, "ss_store_sk"
+  Index        r52, r31, r51
+  Equal        r53, r50, r52
+  JumpIfFalse  r53, L3
+  // join hd in household_demographics on hd.hd_demo_sk == ss.ss_hdemo_sk
+  IterPrep     r54, r2
+  Len          r55, r54
+  Const        r56, 0
+L9:
+  LessInt      r57, r56, r55
+  JumpIfFalse  r57, L3
+  Index        r59, r54, r56
+  Const        r60, "hd_demo_sk"
+  Index        r61, r59, r60
+  Const        r62, "ss_hdemo_sk"
+  Index        r63, r31, r62
+  Equal        r64, r61, r63
+  JumpIfFalse  r64, L4
+  // where (hd.hd_dep_count == 2 || hd.hd_vehicle_count > 1) &&
+  Index        r65, r59, r12
+  Index        r66, r59, r13
+  Const        r67, 1
+  Less         r68, r67, r66
+  Const        r69, 2
+  Equal        r70, r65, r69
+  JumpIfTrue   r70, L5
+  Move         r70, r68
 L5:
   // s.s_number_employees >= 200 && s.s_number_employees <= 295
-  Const        r79, "s_number_employees"
-  Index        r80, r53, r79
-  Const        r81, 200
-  LessEq       r82, r81, r80
-  Const        r83, "s_number_employees"
-  Index        r84, r53, r83
-  Const        r85, 295
-  LessEq       r86, r84, r85
+  Index        r71, r48, r16
+  Const        r72, 200
+  LessEq       r73, r72, r71
+  Index        r74, r48, r16
+  Const        r75, 295
+  LessEq       r76, r74, r75
   // d.d_dow == 1 &&
-  Const        r87, "d_dow"
-  Index        r88, r42, r87
-  Const        r89, 1
-  Equal        r90, r88, r89
+  Index        r77, r37, r14
+  Equal        r78, r77, r67
   // where (hd.hd_dep_count == 2 || hd.hd_vehicle_count > 1) &&
-  Move         r91, r78
-  JumpIfFalse  r91, L6
-L6:
+  JumpIfFalse  r70, L6
+  Move         r70, r78
   // d.d_dow == 1 &&
-  Move         r92, r90
-  JumpIfFalse  r92, L7
+  JumpIfFalse  r70, L6
   // (d.d_year == 1998 || d.d_year == 1999 || d.d_year == 2000) &&
-  Const        r93, "d_year"
-  Index        r94, r42, r93
-  Const        r95, 1998
-  Equal        r96, r94, r95
-  Const        r97, "d_year"
-  Index        r98, r42, r97
-  Const        r99, 1999
-  Equal        r100, r98, r99
-  Const        r101, "d_year"
-  Index        r102, r42, r101
-  Const        r103, 2000
-  Equal        r104, r102, r103
-  Move         r105, r96
-  JumpIfTrue   r105, L8
-L8:
-  Move         r106, r100
-  JumpIfTrue   r106, L7
+  Index        r79, r37, r15
+  Const        r80, 1998
+  Equal        r81, r79, r80
+  Index        r82, r37, r15
+  Const        r83, 1999
+  Equal        r84, r82, r83
+  Index        r85, r37, r15
+  Const        r86, 2000
+  Equal        r87, r85, r86
+  JumpIfTrue   r81, L7
+  Move         r81, r84
+  JumpIfTrue   r81, L7
 L7:
-  Move         r107, r104
-  JumpIfFalse  r107, L9
-L9:
+  // d.d_dow == 1 &&
+  Move         r70, r87
+  // (d.d_year == 1998 || d.d_year == 1999 || d.d_year == 2000) &&
+  JumpIfFalse  r70, L6
+  Move         r70, r73
   // s.s_number_employees >= 200 && s.s_number_employees <= 295
-  Move         r108, r82
-  JumpIfFalse  r108, L10
-  Move         r108, r86
-L10:
+  JumpIfFalse  r70, L6
+  Move         r70, r76
+L6:
   // where (hd.hd_dep_count == 2 || hd.hd_vehicle_count > 1) &&
-  JumpIfFalse  r108, L4
+  JumpIfFalse  r70, L4
   // from ss in store_sales
-  Const        r109, "ss"
-  Move         r110, r36
-  Const        r111, "d"
-  Move         r112, r42
-  Const        r113, "s"
-  Move         r114, r53
-  Const        r115, "hd"
-  Move         r116, r64
-  MakeMap      r117, 4, r109
+  Move         r88, r31
+  Const        r89, "d"
+  Move         r90, r37
+  Const        r91, "s"
+  Move         r92, r48
+  Const        r93, "hd"
+  Move         r94, r59
+  MakeMap      r95, 4, r19
   // group by { ticket: ss.ss_ticket_number, customer_sk: ss.ss_customer_sk, city: s.s_city } into g
-  Const        r118, "ticket"
-  Const        r119, "ss_ticket_number"
-  Index        r120, r36, r119
-  Const        r121, "customer_sk"
-  Const        r122, "ss_customer_sk"
-  Index        r123, r36, r122
-  Const        r124, "city"
-  Const        r125, "s_city"
-  Index        r126, r53, r125
-  Move         r127, r118
-  Move         r128, r120
-  Move         r129, r121
-  Move         r130, r123
-  Move         r131, r124
-  Move         r132, r126
-  MakeMap      r133, 3, r127
-  Str          r134, r133
-  In           r135, r134, r28
-  JumpIfTrue   r135, L11
+  Const        r96, "ticket"
+  Index        r97, r31, r7
+  Const        r98, "customer_sk"
+  Index        r99, r31, r9
+  Const        r100, "city"
+  Index        r101, r48, r11
+  Move         r102, r96
+  Move         r103, r97
+  Move         r104, r98
+  Move         r105, r99
+  Move         r106, r100
+  Move         r107, r101
+  MakeMap      r108, 3, r102
+  Str          r109, r108
+  In           r110, r109, r23
+  JumpIfTrue   r110, L8
   // from ss in store_sales
-  Const        r136, []
-  Const        r137, "__group__"
-  Const        r138, true
-  Const        r139, "key"
+  Const        r111, []
+  Const        r112, "__group__"
+  Const        r113, true
+  Const        r114, "key"
   // group by { ticket: ss.ss_ticket_number, customer_sk: ss.ss_customer_sk, city: s.s_city } into g
-  Move         r140, r133
+  Move         r115, r108
   // from ss in store_sales
-  Const        r141, "items"
-  Move         r142, r136
-  Const        r143, "count"
-  Const        r144, 0
-  Move         r145, r137
-  Move         r146, r138
-  Move         r147, r139
-  Move         r148, r140
-  Move         r149, r141
-  Move         r150, r142
-  Move         r151, r143
-  Move         r152, r144
-  MakeMap      r153, 4, r145
-  SetIndex     r28, r134, r153
-  Append       r29, r29, r153
-L11:
-  Const        r155, "items"
-  Index        r156, r28, r134
-  Index        r157, r156, r155
-  Append       r158, r157, r117
-  SetIndex     r156, r155, r158
-  Const        r159, "count"
-  Index        r160, r156, r159
-  Const        r161, 1
-  AddInt       r162, r160, r161
-  SetIndex     r156, r159, r162
+  Const        r116, "items"
+  Move         r117, r111
+  Const        r118, "count"
+  Const        r119, 0
+  Move         r120, r112
+  Move         r121, r113
+  Move         r122, r114
+  Move         r123, r115
+  Move         r124, r116
+  Move         r125, r117
+  Move         r126, r118
+  Move         r127, r119
+  MakeMap      r128, 4, r120
+  SetIndex     r23, r109, r128
+  Append       r24, r24, r128
+L8:
+  Const        r130, "items"
+  Index        r131, r23, r109
+  Index        r132, r131, r130
+  Append       r133, r132, r95
+  SetIndex     r131, r130, r133
+  Const        r134, "count"
+  Index        r135, r131, r134
+  AddInt       r136, r135, r67
+  SetIndex     r131, r134, r136
 L4:
   // join hd in household_demographics on hd.hd_demo_sk == ss.ss_hdemo_sk
-  Const        r163, 1
-  AddInt       r61, r61, r163
-  Jump         L12
+  AddInt       r56, r56, r67
+  Jump         L9
 L3:
   // join s in store on s.s_store_sk == ss.ss_store_sk
-  Const        r164, 1
-  AddInt       r50, r50, r164
-  Jump         L13
+  AddInt       r45, r45, r67
+  Jump         L10
+L2:
+  // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
+  AddInt       r34, r34, r67
+  Jump         L11
+L1:
+  // from ss in store_sales
+  AddInt       r28, r28, r67
+  Jump         L12
 L0:
-  // from ss in store_sales
-  Const        r167, 0
-  Len          r169, r29
-L19:
-  LessInt      r170, r167, r169
-  JumpIfFalse  r170, L14
-  Index        r172, r29, r167
-  // select { key: g.key, amt: sum(from x in g select x.ss.ss_coupon_amt), profit: sum(from x in g select x.ss.ss_net_profit) }
-  Const        r173, "key"
-  Const        r174, "key"
-  Index        r175, r172, r174
-  Const        r176, "amt"
-  IterPrep     r180, r172
-  Len          r181, r180
-  Const        r182, 0
-L16:
-  LessInt      r184, r182, r181
-  JumpIfFalse  r184, L15
-  Const        r192, 1
-  AddInt       r182, r182, r192
-  Jump         L16
-L15:
-  Const        r193, 0
-  Const        r194, "profit"
-  Const        r195, []
-  IterPrep     r198, r172
-  Len          r199, r198
-  Const        r200, 0
+  Const        r138, 0
+  Move         r137, r138
+  Len          r139, r24
 L18:
-  LessInt      r202, r200, r199
-  JumpIfFalse  r202, L17
-  Index        r186, r198, r200
-  Const        r204, "ss"
-  Index        r205, r186, r204
-  Const        r206, "ss_net_profit"
-  Index        r207, r205, r206
-  Append       r195, r195, r207
-  Const        r209, 1
-  AddInt       r200, r200, r209
-  Jump         L18
-L17:
-  Sum          r210, r195
-  Move         r211, r173
-  Move         r212, r175
-  Move         r213, r176
-  Move         r214, r193
-  Move         r215, r194
-  Move         r216, r210
-  MakeMap      r217, 3, r211
-  // from ss in store_sales
-  Append       r5, r5, r217
-  Const        r219, 1
-  AddInt       r167, r167, r219
-  Jump         L19
+  LessInt      r140, r137, r139
+  JumpIfFalse  r140, L13
+  Index        r142, r24, r137
+  // select { key: g.key, amt: sum(from x in g select x.ss.ss_coupon_amt), profit: sum(from x in g select x.ss.ss_net_profit) }
+  Const        r143, "key"
+  Index        r144, r142, r17
+  Const        r145, "amt"
+  Const        r146, []
+  IterPrep     r147, r142
+  Len          r148, r147
+  Move         r149, r138
+L15:
+  LessInt      r150, r149, r148
+  JumpIfFalse  r150, L14
+  Index        r152, r147, r149
+  Index        r153, r152, r19
+  Index        r154, r153, r20
+  Append       r146, r146, r154
+  AddInt       r149, r149, r67
+  Jump         L15
 L14:
+  Sum          r156, r146
+  Const        r157, "profit"
+  Const        r158, []
+  IterPrep     r159, r142
+  Len          r160, r159
+  Move         r161, r138
+L17:
+  LessInt      r162, r161, r160
+  JumpIfFalse  r162, L16
+  Index        r152, r159, r161
+  Index        r164, r152, r19
+  Index        r165, r164, r22
+  Append       r158, r158, r165
+  AddInt       r161, r161, r67
+  Jump         L17
+L16:
+  Sum          r167, r158
+  Move         r168, r143
+  Move         r169, r144
+  Move         r170, r145
+  Move         r171, r156
+  Move         r172, r157
+  Move         r173, r167
+  MakeMap      r174, 3, r168
+  // from ss in store_sales
+  Append       r5, r5, r174
+  AddInt       r137, r137, r67
+  Jump         L18
+L13:
   // from a in agg
-  Const        r220, []
-  IterPrep     r221, r5
-  Len          r222, r221
+  Const        r176, []
+  IterPrep     r177, r5
+  Len          r178, r177
   // join c in customer on c.c_customer_sk == a.key.customer_sk
-  IterPrep     r223, r4
-  Len          r224, r223
+  IterPrep     r179, r4
+  Len          r180, r179
+  Const        r181, "c_customer_sk"
+  // select { c_last_name: c.c_last_name, c_first_name: c.c_first_name, s_city: a.key.city, ss_ticket_number: a.key.ticket, amt: a.amt, profit: a.profit }
+  Const        r182, "c_last_name"
+  Const        r183, "c_first_name"
   // from a in agg
-  Const        r225, 0
-  EqualInt     r226, r222, r225
-  JumpIfTrue   r226, L20
-  EqualInt     r227, r224, r225
-  JumpIfTrue   r227, L20
-  LessEq       r228, r224, r222
-  JumpIfFalse  r228, L21
-  // join c in customer on c.c_customer_sk == a.key.customer_sk
-  MakeMap      r229, 0, r0
-  Const        r230, 0
-L24:
-  LessInt      r231, r230, r224
-  JumpIfFalse  r231, L22
-  Index        r232, r223, r230
-  Move         r233, r232
-  Const        r234, "c_customer_sk"
-  Index        r235, r233, r234
-  Index        r236, r229, r235
-  Const        r237, nil
-  NotEqual     r238, r236, r237
-  JumpIfTrue   r238, L23
-  MakeList     r239, 0, r0
-  SetIndex     r229, r235, r239
+  Const        r184, 0
 L23:
-  Index        r236, r229, r235
-  Append       r240, r236, r232
-  SetIndex     r229, r235, r240
-  Const        r241, 1
-  AddInt       r230, r230, r241
-  Jump         L24
+  LessInt      r185, r184, r178
+  JumpIfFalse  r185, L19
+  Index        r187, r177, r184
+  // join c in customer on c.c_customer_sk == a.key.customer_sk
+  Const        r188, 0
 L22:
-  // from a in agg
-  Const        r242, 0
-L27:
-  LessInt      r243, r242, r222
-  JumpIfFalse  r243, L20
-  Index        r245, r221, r242
-  // join c in customer on c.c_customer_sk == a.key.customer_sk
-  Const        r246, "key"
-  Index        r247, r245, r246
-  Const        r248, "customer_sk"
-  Index        r249, r247, r248
-  // from a in agg
-  Index        r250, r229, r249
-  Const        r251, nil
-  NotEqual     r252, r250, r251
-  JumpIfFalse  r252, L25
-  Len          r253, r250
-  Const        r254, 0
-L26:
-  LessInt      r255, r254, r253
-  JumpIfFalse  r255, L25
-  Index        r233, r250, r254
+  LessInt      r189, r188, r180
+  JumpIfFalse  r189, L20
+  Index        r191, r179, r188
+  Index        r192, r191, r181
+  Index        r193, r187, r17
+  Index        r194, r193, r8
+  Equal        r195, r192, r194
+  JumpIfFalse  r195, L21
   // select { c_last_name: c.c_last_name, c_first_name: c.c_first_name, s_city: a.key.city, ss_ticket_number: a.key.ticket, amt: a.amt, profit: a.profit }
-  Const        r257, "c_last_name"
-  Const        r258, "c_last_name"
-  Index        r259, r233, r258
-  Const        r260, "c_first_name"
-  Const        r261, "c_first_name"
-  Index        r262, r233, r261
-  Const        r263, "s_city"
-  Const        r264, "key"
-  Index        r265, r245, r264
-  Const        r266, "city"
-  Index        r267, r265, r266
-  Const        r268, "ss_ticket_number"
-  Const        r269, "key"
-  Index        r270, r245, r269
-  Const        r271, "ticket"
-  Index        r272, r270, r271
-  Const        r273, "amt"
-  Const        r274, "amt"
-  Index        r275, r245, r274
-  Const        r276, "profit"
-  Const        r277, "profit"
-  Index        r278, r245, r277
-  Move         r279, r257
-  Move         r280, r259
-  Move         r281, r260
-  Move         r282, r262
-  Move         r283, r263
-  Move         r284, r267
-  Move         r285, r268
-  Move         r286, r272
-  Move         r287, r273
-  Move         r288, r275
-  Move         r289, r276
-  Move         r290, r278
-  MakeMap      r291, 6, r279
+  Const        r196, "c_last_name"
+  Index        r197, r191, r182
+  Const        r198, "c_first_name"
+  Index        r199, r191, r183
+  Const        r200, "s_city"
+  Index        r201, r187, r17
+  Index        r202, r201, r10
+  Const        r203, "ss_ticket_number"
+  Index        r204, r187, r17
+  Index        r205, r204, r6
+  Const        r206, "amt"
+  Index        r207, r187, r18
+  Const        r208, "profit"
+  Index        r209, r187, r21
+  Move         r210, r196
+  Move         r211, r197
+  Move         r212, r198
+  Move         r213, r199
+  Move         r214, r200
+  Move         r215, r202
+  Move         r216, r203
+  Move         r217, r205
+  Move         r218, r206
+  Move         r219, r207
+  Move         r220, r208
+  Move         r221, r209
+  MakeMap      r222, 6, r210
   // sort by [c.c_last_name, c.c_first_name, a.key.city, a.profit]
-  Const        r292, "c_last_name"
-  Index        r294, r233, r292
-  Const        r295, "c_first_name"
-  Index        r296, r233, r295
-  Move         r297, r296
-  MakeList     r307, 4, r294
+  Index        r224, r191, r182
+  Index        r225, r191, r183
+  Move         r226, r225
+  Index        r227, r187, r17
+  Index        r229, r227, r10
+  Index        r231, r187, r21
+  MakeList     r233, 4, r224
   // from a in agg
-  Move         r308, r291
-  MakeList     r309, 2, r307
-  Append       r220, r220, r309
-  Jump         L26
-L25:
-  Const        r312, 1
-  AddInt       r242, r242, r312
-  Jump         L27
+  Move         r234, r222
+  MakeList     r235, 2, r233
+  Append       r176, r176, r235
 L21:
-  MakeMap      r313, 0, r0
-  Const        r314, 0
-L30:
-  LessInt      r315, r314, r222
-  JumpIfFalse  r315, L28
-  Index        r316, r221, r314
-  Move         r245, r316
   // join c in customer on c.c_customer_sk == a.key.customer_sk
-  Const        r317, "key"
-  Index        r318, r245, r317
-  Const        r319, "customer_sk"
-  Index        r320, r318, r319
+  AddInt       r188, r188, r67
+  Jump         L22
+L20:
   // from a in agg
-  Index        r321, r313, r320
-  Const        r322, nil
-  NotEqual     r323, r321, r322
-  JumpIfTrue   r323, L29
-  MakeList     r324, 0, r0
-  SetIndex     r313, r320, r324
-L29:
-  Index        r321, r313, r320
-  Append       r325, r321, r316
-  SetIndex     r313, r320, r325
-  Const        r326, 1
-  AddInt       r314, r314, r326
-  Jump         L30
-L28:
-  // join c in customer on c.c_customer_sk == a.key.customer_sk
-  Const        r327, 0
-L34:
-  LessInt      r328, r327, r224
-  JumpIfFalse  r328, L31
-  Index        r233, r223, r327
-  Const        r330, "c_customer_sk"
-  Index        r331, r233, r330
-  Index        r332, r313, r331
-  Const        r333, nil
-  NotEqual     r334, r332, r333
-  JumpIfFalse  r334, L32
-  Len          r335, r332
-  Const        r336, 0
-L33:
-  LessInt      r337, r336, r335
-  JumpIfFalse  r337, L32
-  Index        r245, r332, r336
-  // select { c_last_name: c.c_last_name, c_first_name: c.c_first_name, s_city: a.key.city, ss_ticket_number: a.key.ticket, amt: a.amt, profit: a.profit }
-  Const        r339, "c_last_name"
-  Const        r340, "c_last_name"
-  Index        r341, r233, r340
-  Const        r342, "c_first_name"
-  Const        r343, "c_first_name"
-  Index        r344, r233, r343
-  Const        r345, "s_city"
-  Const        r346, "key"
-  Index        r347, r245, r346
-  Const        r348, "city"
-  Index        r349, r347, r348
-  Const        r350, "ss_ticket_number"
-  Const        r351, "key"
-  Index        r352, r245, r351
-  Const        r353, "ticket"
-  Index        r354, r352, r353
-  Const        r355, "amt"
-  Const        r356, "amt"
-  Index        r357, r245, r356
-  Const        r358, "profit"
-  Const        r359, "profit"
-  Index        r360, r245, r359
-  Move         r361, r339
-  Move         r362, r341
-  Move         r363, r342
-  Move         r364, r344
-  Move         r365, r345
-  Move         r366, r349
-  Move         r367, r350
-  Move         r368, r354
-  Move         r369, r355
-  Move         r370, r357
-  Move         r371, r358
-  Move         r372, r360
-  MakeMap      r373, 6, r361
+  AddInt       r184, r184, r67
+  Jump         L23
+L19:
   // sort by [c.c_last_name, c.c_first_name, a.key.city, a.profit]
-  Const        r374, "c_last_name"
-  Index        r376, r233, r374
-  Const        r377, "c_first_name"
-  Index        r378, r233, r377
-  Move         r379, r378
-  MakeList     r389, 4, r376
-  // from a in agg
-  Move         r390, r373
-  MakeList     r391, 2, r389
-  Append       r220, r220, r391
-  // join c in customer on c.c_customer_sk == a.key.customer_sk
-  Const        r393, 1
-  AddInt       r336, r336, r393
-  Jump         L33
-L32:
-  Const        r394, 1
-  AddInt       r327, r327, r394
-  Jump         L34
-L31:
-  // sort by [c.c_last_name, c.c_first_name, a.key.city, a.profit]
-  Sort         r220, r220
+  Sort         r176, r176
   // json(result)
-  JSON         r220
+  JSON         r176
   // expect result == [
-  Const        r396, [{"amt": 5, "c_first_name": "Alice", "c_last_name": "Smith", "profit": 10, "s_city": "CityA", "ss_ticket_number": 1}]
-  Equal        r397, r220, r396
-  Expect       r397
+  Const        r238, [{"amt": 5, "c_first_name": "Alice", "c_last_name": "Smith", "profit": 10, "s_city": "CityA", "ss_ticket_number": 1}]
+  Equal        r239, r176, r238
+  Expect       r239
   Return       r0
