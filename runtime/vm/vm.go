@@ -1340,11 +1340,20 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			lst := fr.regs[ins.B]
 			if lst.Tag == ValueMap {
 				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					// fast path: check group count before iterating
+					if cnt, ok := lst.Map["count"]; ok && cnt.Tag == ValueInt && cnt.Int == 0 {
+						fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+						break
+					}
 					lst = lst.Map["items"]
 				}
 			}
 			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("sum expects list")
+			}
+			if len(lst.List) == 0 {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				break
 			}
 			var sumF float64
 			var sumI int
