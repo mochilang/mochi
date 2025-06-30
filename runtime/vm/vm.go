@@ -6089,6 +6089,36 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true
 		}
 		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(v)))}, true
+	case "upper":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if v.Tag == ValueStr {
+			return Value{Tag: ValueStr, Str: strings.ToUpper(v.Str)}, true
+		}
+		return Value{Tag: ValueStr, Str: strings.ToUpper(fmt.Sprint(valueToAny(v)))}, true
+	case "reverse":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if v.Tag == ValueStr {
+			r := []rune(v.Str)
+			for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
+				r[i], r[j] = r[j], r[i]
+			}
+			return Value{Tag: ValueStr, Str: string(r)}, true
+		}
+		if lst, ok := toList(v); ok {
+			out := make([]Value, len(lst))
+			copy(out, lst)
+			for i, j := 0, len(out)-1; i < j; i, j = i+1, j-1 {
+				out[i], out[j] = out[j], out[i]
+			}
+			return Value{Tag: ValueList, List: out}, true
+		}
+		return Value{}, false
 	case "substring":
 		if len(args) != 3 {
 			return Value{}, false
