@@ -3110,6 +3110,23 @@ func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 		joinType = *join.Side
 	}
 
+	if rl, ok := fc.constListLen(join.Src); ok && rl == 0 {
+		switch joinType {
+		case "inner", "right":
+			return
+		case "left", "outer":
+			rvar, ok := fc.vars[join.Var]
+			if !ok {
+				rvar = fc.newReg()
+				fc.vars[join.Var] = rvar
+			}
+			nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
+			fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
+			fc.compileJoins(q, dst, idx+1)
+			return
+		}
+	}
+
 	rightReg := fc.compileExpr(join.Src)
 	rlist := fc.newReg()
 	fc.emit(join.Pos, Instr{Op: OpIterPrep, A: rlist, B: rightReg})
