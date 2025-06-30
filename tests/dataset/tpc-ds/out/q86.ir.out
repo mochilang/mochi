@@ -1,0 +1,50 @@
+func main (regs=28)
+  // let web_sales = [
+  Const        r0, [{"cat": "A", "class": "B", "net": 40}, {"cat": "A", "class": "B", "net": 46}, {"cat": "A", "class": "C", "net": 10}, {"cat": "B", "class": "B", "net": 20}]
+  // sum(from ws in web_sales
+  Const        r1, []
+  // where ws.cat == "A" && ws.class == "B"
+  Const        r2, "cat"
+  Const        r3, "class"
+  // select ws.net)
+  Const        r4, "net"
+  // sum(from ws in web_sales
+  IterPrep     r5, r0
+  Len          r6, r5
+  Const        r7, 0
+L3:
+  LessInt      r9, r7, r6
+  JumpIfFalse  r9, L0
+  Index        r11, r5, r7
+  // where ws.cat == "A" && ws.class == "B"
+  Const        r12, "cat"
+  Index        r13, r11, r12
+  Const        r14, "A"
+  Equal        r15, r13, r14
+  Const        r16, "class"
+  Index        r17, r11, r16
+  Const        r18, "B"
+  Equal        r19, r17, r18
+  Move         r20, r15
+  JumpIfFalse  r20, L1
+  Move         r20, r19
+L1:
+  JumpIfFalse  r20, L2
+  // select ws.net)
+  Const        r21, "net"
+  Index        r22, r11, r21
+  // sum(from ws in web_sales
+  Append       r1, r1, r22
+L2:
+  Const        r24, 1
+  AddInt       r7, r7, r24
+  Jump         L3
+L0:
+  Sum          r25, r1
+  // json(result)
+  JSON         r25
+  // expect result == 86.0
+  Const        r26, 86
+  EqualFloat   r27, r25, r26
+  Expect       r27
+  Return       r0

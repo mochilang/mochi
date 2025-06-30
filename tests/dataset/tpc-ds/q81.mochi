@@ -7,17 +7,22 @@ let catalog_returns = [
   {cust: 5, state: "TX", amt: 20.0}
 ]
 
-let avg_state =
+let avg_list =
   from r in catalog_returns
   group by r.state into g
   select {state: g.key, avg_amt: avg(from x in g select x.amt)}
-  |> first(where _.state == "CA")
 
-let result =
+let avg_state =
+  first(from a in avg_list
+        where a.state == "CA"
+        select a)
+
+let result_list =
   from r in catalog_returns
   where r.state == "CA" && r.amt > avg_state.avg_amt * 1.2
   select r.amt
-  |> first
+
+let result = first(result_list)
 
 json(result)
 

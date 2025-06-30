@@ -1,0 +1,72 @@
+func main (regs=47)
+  // let sr_items = [
+  Const        r0, [{"qty": 10}, {"qty": 5}]
+  // let cr_items = [
+  Const        r1, [{"qty": 25}, {"qty": 20}]
+  // let wr_items = [
+  Const        r2, [{"qty": 10}, {"qty": 13}]
+  // let result = sum(from x in sr_items select x.qty) +
+  Const        r3, []
+  Const        r4, "qty"
+  IterPrep     r5, r0
+  Len          r6, r5
+  Const        r7, 0
+L1:
+  LessInt      r9, r7, r6
+  JumpIfFalse  r9, L0
+  Index        r11, r5, r7
+  Const        r12, "qty"
+  Index        r13, r11, r12
+  Append       r3, r3, r13
+  Const        r15, 1
+  AddInt       r7, r7, r15
+  Jump         L1
+L0:
+  Sum          r16, r3
+  // sum(from x in cr_items select x.qty) +
+  Const        r17, []
+  Const        r18, "qty"
+  IterPrep     r19, r1
+  Len          r20, r19
+  Const        r21, 0
+L3:
+  LessInt      r23, r21, r20
+  JumpIfFalse  r23, L2
+  Index        r11, r19, r21
+  Const        r25, "qty"
+  Index        r26, r11, r25
+  Append       r17, r17, r26
+  Const        r28, 1
+  AddInt       r21, r21, r28
+  Jump         L3
+L2:
+  Sum          r29, r17
+  // let result = sum(from x in sr_items select x.qty) +
+  Add          r30, r16, r29
+  // sum(from x in wr_items select x.qty)
+  Const        r31, []
+  Const        r32, "qty"
+  IterPrep     r33, r2
+  Len          r34, r33
+  Const        r35, 0
+L5:
+  LessInt      r37, r35, r34
+  JumpIfFalse  r37, L4
+  Index        r11, r33, r35
+  Const        r39, "qty"
+  Index        r40, r11, r39
+  Append       r31, r31, r40
+  Const        r42, 1
+  AddInt       r35, r35, r42
+  Jump         L5
+L4:
+  Sum          r43, r31
+  // sum(from x in cr_items select x.qty) +
+  Add          r44, r30, r43
+  // json(result)
+  JSON         r44
+  // expect result == 83
+  Const        r45, 83
+  Equal        r46, r44, r45
+  Expect       r46
+  Return       r0

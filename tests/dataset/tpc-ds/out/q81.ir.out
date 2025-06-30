@@ -1,0 +1,183 @@
+func main (regs=125)
+  // let catalog_returns = [
+  Const        r0, [{"amt": 40, "cust": 1, "state": "CA"}, {"amt": 50, "cust": 2, "state": "CA"}, {"amt": 81, "cust": 3, "state": "CA"}, {"amt": 30, "cust": 4, "state": "TX"}, {"amt": 20, "cust": 5, "state": "TX"}]
+  // from r in catalog_returns
+  Const        r1, []
+  // group by r.state into g
+  Const        r2, "state"
+  // select {state: g.key, avg_amt: avg(from x in g select x.amt)}
+  Const        r3, "state"
+  Const        r4, "key"
+  Const        r5, "avg_amt"
+  Const        r6, "amt"
+  // from r in catalog_returns
+  IterPrep     r7, r0
+  Len          r8, r7
+  Const        r9, 0
+  MakeMap      r10, 0, r0
+  Const        r11, []
+L2:
+  LessInt      r13, r9, r8
+  JumpIfFalse  r13, L0
+  Index        r14, r7, r9
+  Move         r15, r14
+  // group by r.state into g
+  Const        r16, "state"
+  Index        r17, r15, r16
+  Str          r18, r17
+  In           r19, r18, r10
+  JumpIfTrue   r19, L1
+  // from r in catalog_returns
+  Const        r20, []
+  Const        r21, "__group__"
+  Const        r22, true
+  Const        r23, "key"
+  // group by r.state into g
+  Move         r24, r17
+  // from r in catalog_returns
+  Const        r25, "items"
+  Move         r26, r20
+  Const        r27, "count"
+  Const        r28, 0
+  Move         r29, r21
+  Move         r30, r22
+  Move         r31, r23
+  Move         r32, r24
+  Move         r33, r25
+  Move         r34, r26
+  Move         r35, r27
+  Move         r36, r28
+  MakeMap      r37, 4, r29
+  SetIndex     r10, r18, r37
+  Append       r11, r11, r37
+L1:
+  Const        r39, "items"
+  Index        r40, r10, r18
+  Index        r41, r40, r39
+  Append       r42, r41, r14
+  SetIndex     r40, r39, r42
+  Const        r43, "count"
+  Index        r44, r40, r43
+  Const        r45, 1
+  AddInt       r46, r44, r45
+  SetIndex     r40, r43, r46
+  Const        r47, 1
+  AddInt       r9, r9, r47
+  Jump         L2
+L0:
+  Const        r48, 0
+  Len          r50, r11
+L6:
+  LessInt      r51, r48, r50
+  JumpIfFalse  r51, L3
+  Index        r53, r11, r48
+  // select {state: g.key, avg_amt: avg(from x in g select x.amt)}
+  Const        r54, "state"
+  Const        r55, "key"
+  Index        r56, r53, r55
+  Const        r57, "avg_amt"
+  Const        r58, []
+  Const        r59, "amt"
+  IterPrep     r60, r53
+  Len          r61, r60
+  Const        r62, 0
+L5:
+  LessInt      r64, r62, r61
+  JumpIfFalse  r64, L4
+  Index        r66, r60, r62
+  Const        r67, "amt"
+  Index        r68, r66, r67
+  Append       r58, r58, r68
+  Const        r70, 1
+  AddInt       r62, r62, r70
+  Jump         L5
+L4:
+  Avg          r71, r58
+  Move         r72, r54
+  Move         r73, r56
+  Move         r74, r57
+  Move         r75, r71
+  MakeMap      r76, 2, r72
+  // from r in catalog_returns
+  Append       r1, r1, r76
+  Const        r78, 1
+  AddInt       r48, r48, r78
+  Jump         L6
+L3:
+  // first(from a in avg_list
+  Const        r79, []
+  // where a.state == "CA"
+  Const        r80, "state"
+  // first(from a in avg_list
+  IterPrep     r81, r1
+  Len          r82, r81
+  Const        r83, 0
+L9:
+  LessInt      r85, r83, r82
+  JumpIfFalse  r85, L7
+  Index        r87, r81, r83
+  // where a.state == "CA"
+  Const        r88, "state"
+  Index        r89, r87, r88
+  Const        r90, "CA"
+  Equal        r91, r89, r90
+  JumpIfFalse  r91, L8
+  // first(from a in avg_list
+  Append       r79, r79, r87
+L8:
+  Const        r93, 1
+  AddInt       r83, r83, r93
+  Jump         L9
+L7:
+  First        r94, r79
+  // from r in catalog_returns
+  Const        r95, []
+  // where r.state == "CA" && r.amt > avg_state.avg_amt * 1.2
+  Const        r96, "state"
+  Const        r97, "amt"
+  Const        r98, "avg_amt"
+  // select r.amt
+  Const        r99, "amt"
+  // from r in catalog_returns
+  IterPrep     r100, r0
+  Len          r101, r100
+  Const        r102, 0
+L13:
+  LessInt      r104, r102, r101
+  JumpIfFalse  r104, L10
+  Index        r15, r100, r102
+  // where r.state == "CA" && r.amt > avg_state.avg_amt * 1.2
+  Const        r106, "state"
+  Index        r107, r15, r106
+  Const        r108, "avg_amt"
+  Index        r109, r94, r108
+  Const        r110, 1.2
+  MulFloat     r111, r109, r110
+  Const        r112, "amt"
+  Index        r113, r15, r112
+  LessFloat    r114, r111, r113
+  Const        r115, "CA"
+  Equal        r117, r107, r115
+  JumpIfFalse  r117, L11
+  Move         r117, r114
+L11:
+  JumpIfFalse  r117, L12
+  // select r.amt
+  Const        r118, "amt"
+  Index        r119, r15, r118
+  // from r in catalog_returns
+  Append       r95, r95, r119
+L12:
+  Const        r121, 1
+  AddInt       r102, r102, r121
+  Jump         L13
+L10:
+  // let result = first(result_list)
+  First        r122, r95
+  // json(result)
+  JSON         r122
+  // expect result == 81.0
+  Const        r123, 81
+  EqualFloat   r124, r122, r123
+  Expect       r124
+  Return       r0

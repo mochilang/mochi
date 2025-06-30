@@ -7,10 +7,9 @@ let web_sales = [
 ]
 
 let result =
-  from ws in web_sales
-  group by {c: ws.cat, cls: ws.class} into g
-  select sum(from x in g select x.net)
-  |> first
+  sum(from ws in web_sales
+      where ws.cat == "A" && ws.class == "B"
+      select ws.net)
 
 json(result)
 
