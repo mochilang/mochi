@@ -1,4 +1,4 @@
-func main (regs=196)
+func main (regs=195)
 L0:
   // let part = [
   Const        r0, [{"p_brand": "Brand#12", "p_container": "SM BOX", "p_partkey": 1, "p_size": 3}, {"p_brand": "Brand#23", "p_container": "MED BOX", "p_partkey": 2, "p_size": 5}, {"p_brand": "Brand#34", "p_container": "LG BOX", "p_partkey": 3, "p_size": 15}]

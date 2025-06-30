@@ -2379,8 +2379,7 @@ func (fc *funcCompiler) compileBinary(b *parser.BinaryExpr) int {
 				left := valueOf(&operands[i])
 				var dst int
 				if opName == "&&" || opName == "||" {
-					dst = fc.newReg()
-					fc.emit(ops[i].Pos, Instr{Op: OpMove, A: dst, B: left})
+					dst = left
 					jumps := []int{}
 					condOp := OpJumpIfFalse
 					if opName == "||" {
