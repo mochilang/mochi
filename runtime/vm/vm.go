@@ -888,9 +888,6 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
 					}
 					start = startVal.Int
-					if start < 0 {
-						start += n
-					}
 				}
 				end := n
 				if endVal.Tag != ValueNull {
@@ -898,19 +895,8 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
 					}
 					end = endVal.Int
-					if end < 0 {
-						end += n
-					}
 				}
-				if start < 0 {
-					start = 0
-				}
-				if end > n {
-					end = n
-				}
-				if start > end {
-					start, end = end, start
-				}
+				start, end = clampSlice(n, start, end)
 				out := make([]Value, end-start)
 				copy(out, src.List[start:end])
 				fr.regs[ins.A] = Value{Tag: ValueList, List: out}
@@ -923,9 +909,6 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
 					}
 					start = startVal.Int
-					if start < 0 {
-						start += n
-					}
 				}
 				end := n
 				if endVal.Tag != ValueNull {
@@ -933,19 +916,8 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						return Value{}, m.newError(fmt.Errorf("invalid index"), trace, ins.Line)
 					}
 					end = endVal.Int
-					if end < 0 {
-						end += n
-					}
 				}
-				if start < 0 {
-					start = 0
-				}
-				if end > n {
-					end = n
-				}
-				if start > end {
-					start, end = end, start
-				}
+				start, end = clampSlice(n, start, end)
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(runes[start:end])}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid index target"), trace, ins.Line)
@@ -6771,6 +6743,25 @@ func formatRegs(start, n int) string {
 		regs[i] = formatReg(start + i)
 	}
 	return strings.Join(regs, ", ")
+}
+
+func clampSlice(n, start, end int) (int, int) {
+	if start < 0 {
+		start += n
+	}
+	if end < 0 {
+		end += n
+	}
+	if start < 0 {
+		start = 0
+	}
+	if end > n {
+		end = n
+	}
+	if start > end {
+		start, end = end, start
+	}
+	return start, end
 }
 
 func toFloat(v Value) float64 {
