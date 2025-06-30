@@ -4,7 +4,26 @@ let date_dim = []
 let item = []
 let promotion = []
 
-let result = []
+let result =
+  from ss in store_sales
+  join cd in customer_demographics on ss.ss_cdemo_sk == cd.cd_demo_sk
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  join p in promotion on ss.ss_promo_sk == p.p_promo_sk
+  where cd.cd_gender == "M" &&
+        cd.cd_marital_status == "S" &&
+        cd.cd_education_status == "College" &&
+        (p.p_channel_email == "N" || p.p_channel_event == "N") &&
+        d.d_year == 1998
+  group by { i_item_id: i.i_item_id } into g
+  sort by g.key.i_item_id
+  select {
+    i_item_id: g.key.i_item_id,
+    agg1: avg(from x in g select x.ss.ss_quantity),
+    agg2: avg(from x in g select x.ss.ss_list_price),
+    agg3: avg(from x in g select x.ss.ss_coupon_amt),
+    agg4: avg(from x in g select x.ss.ss_sales_price)
+  }
 json(result)
 
 test "TPCDS Q7 empty" {
