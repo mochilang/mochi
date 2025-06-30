@@ -11,15 +11,18 @@ let inventory = [
   {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 60},
   {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 3, inv_quantity_on_hand: 55},
   {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 4, inv_quantity_on_hand: 70}
+  ,{inv_item_sk: 3, inv_warehouse_sk: 2, inv_date_sk: 1, inv_quantity_on_hand: 40}
 ]
 
 let item = [
   {i_item_sk: 1},
-  {i_item_sk: 2}
+  {i_item_sk: 2},
+  {i_item_sk: 3}
 ]
 
 let warehouse = [
   {w_warehouse_sk: 1, w_warehouse_name: "W1"}
+  ,{w_warehouse_sk: 2, w_warehouse_name: "W2"}
 ]
 
 let date_dim = [
@@ -27,6 +30,7 @@ let date_dim = [
   {d_date_sk: 2, d_year: 2000, d_moy: 2},
   {d_date_sk: 3, d_year: 2000, d_moy: 3},
   {d_date_sk: 4, d_year: 2000, d_moy: 4}
+  ,{d_date_sk: 5, d_year: 2001, d_moy: 1}
 ]
 
 let monthly =

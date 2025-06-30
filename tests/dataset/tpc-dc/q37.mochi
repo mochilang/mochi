@@ -2,6 +2,7 @@ let item = [
   {i_item_sk: 1, i_item_id: "I1", i_item_desc: "Item1", i_current_price: 30.0, i_manufact_id: 800},
   {i_item_sk: 2, i_item_id: "I2", i_item_desc: "Item2", i_current_price: 60.0, i_manufact_id: 801},
   {i_item_sk: 3, i_item_id: "I3", i_item_desc: "Item3", i_current_price: 45.0, i_manufact_id: 802}
+  ,{i_item_sk: 4, i_item_id: "I4", i_item_desc: "Item4", i_current_price: 55.0, i_manufact_id: 804}
 ]
 
 let inventory = [
@@ -9,16 +10,19 @@ let inventory = [
   {inv_item_sk: 2, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 300},
   {inv_item_sk: 3, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 150},
   {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 250}
+  ,{inv_item_sk: 4, inv_warehouse_sk: 2, inv_date_sk: 1, inv_quantity_on_hand: 100}
 ]
 
 let date_dim = [
   {d_date_sk: 1, d_date: "2000-01-15"},
   {d_date_sk: 2, d_date: "2000-02-15"}
+  ,{d_date_sk: 3, d_date: "1999-12-15"}
 ]
 
 let catalog_sales = [
   {cs_item_sk: 1, cs_sold_date_sk: 1},
   {cs_item_sk: 2, cs_sold_date_sk: 1}
+  ,{cs_item_sk: 4, cs_sold_date_sk: 3}
 ]
 
 let result =
