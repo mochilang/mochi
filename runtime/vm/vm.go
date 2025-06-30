@@ -6657,6 +6657,10 @@ func valueLess(a, b Value) bool {
 		if b.Tag == ValueStr {
 			return a.Str < b.Str
 		}
+	case ValueBool:
+		if b.Tag == ValueBool {
+			return !a.Bool && b.Bool
+		}
 	case ValueList:
 		if b.Tag == ValueList {
 			n := len(a.List)

@@ -33,7 +33,7 @@ let agg =
 let result =
   from a in agg
   join c in customer on c.c_customer_sk == a.key.customer_sk
-  sort by c.c_last_name, c.c_first_name, a.key.city, a.profit
+  sort by [c.c_last_name, c.c_first_name, a.key.city, a.profit]
   select { c_last_name: c.c_last_name, c_first_name: c.c_first_name, s_city: a.key.city, ss_ticket_number: a.key.ticket, amt: a.amt, profit: a.profit }
 
 json(result)
