@@ -14,7 +14,8 @@ func main (regs=82)
   Len          r7, r6
   Const        r8, 0
   MakeMap      r9, 0, r0
-  Const        r10, []
+  Const        r11, []
+  Move         r10, r11
 L2:
   LessInt      r12, r8, r7
   JumpIfFalse  r12, L0
@@ -50,7 +51,8 @@ L2:
   Move         r37, r29
   MakeMap      r38, 4, r30
   SetIndex     r9, r20, r38
-  Append       r10, r10, r38
+  Append       r39, r10, r38
+  Move         r10, r39
 L1:
   Index        r40, r9, r20
   Index        r41, r40, r26
@@ -68,7 +70,8 @@ L0:
 L6:
   LessInt      r48, r46, r47
   JumpIfFalse  r48, L3
-  Index        r50, r10, r46
+  Index        r49, r10, r46
+  Move         r50, r49
   // select {mgr: g.key.mgr, sum_sales: sum(from x in g select x.amount)}
   Const        r51, "mgr"
   Index        r52, r50, r3
@@ -81,9 +84,11 @@ L6:
 L5:
   LessInt      r59, r58, r57
   JumpIfFalse  r59, L4
-  Index        r61, r56, r58
+  Index        r60, r56, r58
+  Move         r61, r60
   Index        r62, r61, r5
-  Append       r55, r55, r62
+  Append       r63, r55, r62
+  Move         r55, r63
   AddInt       r58, r58, r44
   Jump         L5
 L4:
@@ -94,7 +99,8 @@ L4:
   Move         r68, r64
   MakeMap      r69, 2, r65
   // from s in sales
-  Append       r1, r1, r69
+  Append       r70, r1, r69
+  Move         r1, r70
   AddInt       r46, r46, r44
   Jump         L6
 L3:
@@ -106,9 +112,11 @@ L3:
 L8:
   LessInt      r75, r74, r73
   JumpIfFalse  r75, L7
-  Index        r61, r72, r74
+  Index        r76, r72, r74
+  Move         r61, r76
   Index        r77, r61, r4
-  Append       r71, r71, r77
+  Append       r78, r71, r77
+  Move         r71, r78
   AddInt       r74, r74, r44
   Jump         L8
 L7:
