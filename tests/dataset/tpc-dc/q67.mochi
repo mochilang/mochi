@@ -1,6 +1,7 @@
 // Minimal dataset for TPC-DC Q67
 let item = [
-  { i_item_sk: 1, i_category: "Cat1", i_class: "Class1", i_brand: "Brand1", i_product_name: "Prod1" }
+  { i_item_sk: 1, i_category: "Cat1", i_class: "Class1", i_brand: "Brand1", i_product_name: "Prod1" },
+  { i_item_sk: 2, i_category: "Cat1", i_class: "Class2", i_brand: "Brand2", i_product_name: "Prod2" }
 ]
 
 let store = [
@@ -12,7 +13,8 @@ let date_dim = [
 ]
 
 let store_sales = [
-  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_store_sk: 1, ss_sales_price: 10.0, ss_quantity: 1 }
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_store_sk: 1, ss_sales_price: 10.0, ss_quantity: 1 },
+  { ss_item_sk: 2, ss_sold_date_sk: 1, ss_store_sk: 1, ss_sales_price: 5.0, ss_quantity: 3 }
 ]
 
 let dw1 =

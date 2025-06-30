@@ -5,7 +5,8 @@ let store = [
 
 let item = [
   { i_item_sk: 1, i_item_desc: "Item1", i_current_price: 12.0, i_wholesale_cost: 8.0, i_brand: "Brand1" },
-  { i_item_sk: 2, i_item_desc: "Item2", i_current_price: 10.0, i_wholesale_cost: 7.0, i_brand: "Brand2" }
+  { i_item_sk: 2, i_item_desc: "Item2", i_current_price: 10.0, i_wholesale_cost: 7.0, i_brand: "Brand2" },
+  { i_item_sk: 3, i_item_desc: "Item3", i_current_price: 9.0, i_wholesale_cost: 6.0, i_brand: "Brand3" }
 ]
 
 let date_dim = [
@@ -16,7 +17,9 @@ let date_dim = [
 let store_sales = [
   { ss_store_sk: 1, ss_item_sk: 1, ss_sold_date_sk: 1, ss_sales_price: 100.0 },
   { ss_store_sk: 1, ss_item_sk: 1, ss_sold_date_sk: 2, ss_sales_price: 50.0 },
-  { ss_store_sk: 1, ss_item_sk: 2, ss_sold_date_sk: 1, ss_sales_price: 5.0 }
+  { ss_store_sk: 1, ss_item_sk: 2, ss_sold_date_sk: 1, ss_sales_price: 5.0 },
+  { ss_store_sk: 1, ss_item_sk: 3, ss_sold_date_sk: 1, ss_sales_price: 2.0 },
+  { ss_store_sk: 1, ss_item_sk: 3, ss_sold_date_sk: 2, ss_sales_price: 3.0 }
 ]
 
 let sales =
@@ -43,5 +46,8 @@ let result =
 json(result)
 
 test "TPCDC Q65 low selling items" {
-  expect result == [{ s_store_name: "Store1", i_item_desc: "Item2", revenue: 5.0, i_current_price: 10.0, i_wholesale_cost: 7.0, i_brand: "Brand2" }]
+  expect result == [
+    { s_store_name: "Store1", i_item_desc: "Item2", revenue: 5.0, i_current_price: 10.0, i_wholesale_cost: 7.0, i_brand: "Brand2" },
+    { s_store_name: "Store1", i_item_desc: "Item3", revenue: 5.0, i_current_price: 9.0, i_wholesale_cost: 6.0, i_brand: "Brand3" }
+  ]
 }

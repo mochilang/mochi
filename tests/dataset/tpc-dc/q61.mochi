@@ -9,7 +9,8 @@ let store = [
 ]
 
 let date_dim = [
-  { d_date_sk: 1, d_year: 1998, d_moy: 11 }
+  { d_date_sk: 1, d_year: 1998, d_moy: 11 },
+  { d_date_sk: 2, d_year: 1998, d_moy: 12 }
 ]
 
 let customer = [
@@ -26,7 +27,9 @@ let item = [
 
 let store_sales = [
   { ss_ext_sales_price: 100.0, ss_sold_date_sk: 1, ss_store_sk: 1, ss_promo_sk: 1, ss_customer_sk: 1, ss_item_sk: 1 },
-  { ss_ext_sales_price: 200.0, ss_sold_date_sk: 1, ss_store_sk: 1, ss_promo_sk: 2, ss_customer_sk: 1, ss_item_sk: 1 }
+  { ss_ext_sales_price: 200.0, ss_sold_date_sk: 1, ss_store_sk: 1, ss_promo_sk: 2, ss_customer_sk: 1, ss_item_sk: 1 },
+  { ss_ext_sales_price: 150.0, ss_sold_date_sk: 1, ss_store_sk: 1, ss_promo_sk: 1, ss_customer_sk: 1, ss_item_sk: 1 },
+  { ss_ext_sales_price: 80.0, ss_sold_date_sk: 2, ss_store_sk: 1, ss_promo_sk: 1, ss_customer_sk: 1, ss_item_sk: 1 }
 ]
 
 let promotional_sales =
@@ -67,5 +70,5 @@ let result = [{ promotions: promotions, total: total, pct: promotions * 100 / to
 json(result)
 
 test "TPCDC Q61 ratio of promotional to total sales" {
-  expect result == [{promotions: 100.0, total: 300.0, pct: 33.333333333333336}]
+  expect result == [{promotions: 250.0, total: 450.0, pct: 55.55555555555556}]
 }
