@@ -79,6 +79,7 @@ const (
 	OpStr
 	OpUpper
 	OpLower
+	OpReverse
 	OpInput
 	OpFirst
 	OpCount
@@ -202,6 +203,8 @@ func (op Op) String() string {
 		return "Upper"
 	case OpLower:
 		return "Lower"
+	case OpReverse:
+		return "Reverse"
 	case OpInput:
 		return "Input"
 	case OpFirst:
@@ -1127,6 +1130,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(fmt.Errorf("lower expects string"), trace, ins.Line)
 			}
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(b.Str)}
+		case OpReverse:
+			lst := fr.regs[ins.B]
+			if lst.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("reverse expects list"), trace, ins.Line)
+			}
+			newList := append([]Value(nil), lst.List...)
+			for i, j := 0, len(newList)-1; i < j; i, j = i+1, j-1 {
+				newList[i], newList[j] = newList[j], newList[i]
+			}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpInput:
 			line, err := m.reader.ReadString('\n')
 			if err != nil && err != io.EOF {
@@ -1980,7 +1993,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpUpper, OpLower, OpInput, OpFirst:
+	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpInput, OpFirst:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
@@ -2925,6 +2938,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpLower, A: dst, B: arg})
+			return dst
+		case "reverse":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpReverse, A: dst, B: arg})
 			return dst
 		case "str":
 			arg := fc.compileExpr(p.Call.Args[0])
