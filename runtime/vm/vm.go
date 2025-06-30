@@ -909,7 +909,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					end = n
 				}
 				if start > end {
-					start = end
+					start, end = end, start
 				}
 				out := make([]Value, end-start)
 				copy(out, src.List[start:end])
@@ -944,7 +944,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					end = n
 				}
 				if start > end {
-					start = end
+					start, end = end, start
 				}
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(runes[start:end])}
 			default:
