@@ -1,0 +1,52 @@
+let web_sales = [
+  { bill_customer_sk: 1, item_sk: 1, sold_date_sk: 1, sales_price: 50.0 },
+  { bill_customer_sk: 2, item_sk: 2, sold_date_sk: 1, sales_price: 30.0 },
+  { bill_customer_sk: 1, item_sk: 2, sold_date_sk: 1, sales_price: 40.0 },
+  { bill_customer_sk: 1, item_sk: 1, sold_date_sk: 1, sales_price: 10.0 },
+  { bill_customer_sk: 3, item_sk: 1, sold_date_sk: 1, sales_price: 20.0 }
+]
+
+let customer = [
+  { c_customer_sk: 1, c_current_addr_sk: 1 },
+  { c_customer_sk: 2, c_current_addr_sk: 2 },
+  { c_customer_sk: 3, c_current_addr_sk: 3 }
+]
+
+let customer_address = [
+  { ca_address_sk: 1, ca_zip: "85669" },
+  { ca_address_sk: 2, ca_zip: "99999" },
+  { ca_address_sk: 3, ca_zip: "80348" }
+]
+
+let item = [
+  { i_item_sk: 1, i_item_id: "I1" },
+  { i_item_sk: 2, i_item_id: "I2" }
+]
+
+let date_dim = [ { d_date_sk: 1, d_qoy: 1, d_year: 2020 } ]
+
+let zip_list = ["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"]
+let item_ids = ["I2"]
+let qoy = 1
+let year = 2020
+
+let records =
+  from ws in web_sales
+  join c in customer on ws.bill_customer_sk == c.c_customer_sk
+  join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  join i in item on ws.item_sk == i.i_item_sk
+  join d in date_dim on ws.sold_date_sk == d.d_date_sk
+  where (zip_list.contains(substr(ca.ca_zip, 0, 5)) || item_ids.contains(i.i_item_id)) &&
+        d.d_qoy == qoy && d.d_year == year
+  group by ca.ca_zip into g
+  select { ca_zip: g.key, sum_ws_sales_price: sum(from x in g select x.ws.sales_price) }
+
+json(records)
+
+test "TPCDS Q45 simplified" {
+  expect records == [
+    { ca_zip: "80348", sum_ws_sales_price: 20.0 },
+    { ca_zip: "85669", sum_ws_sales_price: 100.0 },
+    { ca_zip: "99999", sum_ws_sales_price: 30.0 }
+  ]
+}
