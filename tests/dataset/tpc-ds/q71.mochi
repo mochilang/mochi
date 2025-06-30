@@ -38,7 +38,7 @@ let result =
   join t in time_dim on t.t_time_sk == s.time_sk
   where i.i_manager_id == 1 && (t.t_meal_time == "breakfast" || t.t_meal_time == "dinner")
   group by { brand_id: i.i_brand_id, brand: i.i_brand, t_hour: t.t_hour, t_minute: t.t_minute } into g
-  sort by -sum(from x in g select x.s.ext_price), g.key.brand_id
+  sort by [-sum(from x in g select x.s.ext_price), g.key.brand_id]
   select {
     i_brand_id: g.key.brand_id,
     i_brand: g.key.brand,

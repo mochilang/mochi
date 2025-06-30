@@ -33,10 +33,10 @@ let year_total =
     select { customer_id: g.key.id, customer_first_name: g.key.first, customer_last_name: g.key.last, year: g.key.year, year_total: sum(from x in g select x.ws.ws_net_paid), sale_type: "w" }
   )
 
-let s_firstyear = from y in year_total where y.sale_type == "s" && y.year == 1998 select y |> first
-let s_secyear = from y in year_total where y.sale_type == "s" && y.year == 1999 select y |> first
-let w_firstyear = from y in year_total where y.sale_type == "w" && y.year == 1998 select y |> first
-let w_secyear = from y in year_total where y.sale_type == "w" && y.year == 1999 select y |> first
+let s_firstyear = first(from y in year_total where y.sale_type == "s" && y.year == 1998 select y)
+let s_secyear = first(from y in year_total where y.sale_type == "s" && y.year == 1999 select y)
+let w_firstyear = first(from y in year_total where y.sale_type == "w" && y.year == 1998 select y)
+let w_secyear = first(from y in year_total where y.sale_type == "w" && y.year == 1999 select y)
 
 let result =
   if s_firstyear.year_total > 0 && w_firstyear.year_total > 0 &&

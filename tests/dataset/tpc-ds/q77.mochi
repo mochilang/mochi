@@ -64,9 +64,21 @@ let wr =
 
 let per_channel =
   concat(
-    from s in ss left join r in sr on s.s_store_sk == r.s_store_sk select { channel: "store channel", id: s.s_store_sk, sales: s.sales, returns: r?.returns ?? 0.0, profit: s.profit - (r?.profit_loss ?? 0.0) },
+    from s in ss left join r in sr on s.s_store_sk == r.s_store_sk select {
+      channel: "store channel",
+      id: s.s_store_sk,
+      sales: s.sales,
+      returns: if r == null { 0.0 } else { r.returns },
+      profit: s.profit - (if r == null { 0.0 } else { r.profit_loss })
+    },
     from c in cs join r in cr on c.cs_call_center_sk == r.cr_call_center_sk select { channel: "catalog channel", id: c.cs_call_center_sk, sales: c.sales, returns: r.returns, profit: c.profit - r.profit_loss },
-    from w in ws left join r in wr on w.wp_web_page_sk == r.wp_web_page_sk select { channel: "web channel", id: w.wp_web_page_sk, sales: w.sales, returns: r?.returns ?? 0.0, profit: w.profit - (r?.profit_loss ?? 0.0) }
+    from w in ws left join r in wr on w.wp_web_page_sk == r.wp_web_page_sk select {
+      channel: "web channel",
+      id: w.wp_web_page_sk,
+      sales: w.sales,
+      returns: if r == null { 0.0 } else { r.returns },
+      profit: w.profit - (if r == null { 0.0 } else { r.profit_loss })
+    }
   )
 
 let result =
