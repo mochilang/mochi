@@ -4,7 +4,77 @@ let catalog_sales = []
 let web_sales = []
 let date_dim = []
 
-let result = []
+// Yearly totals across sales channels
+let year_total =
+  (
+    from c in customer
+    join s in store_sales on c.c_customer_sk == s.ss_customer_sk
+    join d in date_dim on s.ss_sold_date_sk == d.d_date_sk
+    group by {id: c.c_customer_id, first: c.c_first_name, last: c.c_last_name, login: c.c_login, year: d.d_year} into g
+    select {
+      customer_id: g.key.id,
+      customer_first_name: g.key.first,
+      customer_last_name: g.key.last,
+      customer_login: g.key.login,
+      dyear: g.key.year,
+      year_total: sum(from x in g select ((x.ss_ext_list_price - x.ss_ext_wholesale_cost - x.ss_ext_discount_amt) + x.ss_ext_sales_price) / 2),
+      sale_type: "s",
+    }
+  ) union all (
+    from c in customer
+    join cs in catalog_sales on c.c_customer_sk == cs.cs_bill_customer_sk
+    join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+    group by {id: c.c_customer_id, first: c.c_first_name, last: c.c_last_name, login: c.c_login, year: d.d_year} into g
+    select {
+      customer_id: g.key.id,
+      customer_first_name: g.key.first,
+      customer_last_name: g.key.last,
+      customer_login: g.key.login,
+      dyear: g.key.year,
+      year_total: sum(from x in g select ((x.cs_ext_list_price - x.cs_ext_wholesale_cost - x.cs_ext_discount_amt) + x.cs_ext_sales_price) / 2),
+      sale_type: "c",
+    }
+  ) union all (
+    from c in customer
+    join ws in web_sales on c.c_customer_sk == ws.ws_bill_customer_sk
+    join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
+    group by {id: c.c_customer_id, first: c.c_first_name, last: c.c_last_name, login: c.c_login, year: d.d_year} into g
+    select {
+      customer_id: g.key.id,
+      customer_first_name: g.key.first,
+      customer_last_name: g.key.last,
+      customer_login: g.key.login,
+      dyear: g.key.year,
+      year_total: sum(from x in g select ((x.ws_ext_list_price - x.ws_ext_wholesale_cost - x.ws_ext_discount_amt) + x.ws_ext_sales_price) / 2),
+      sale_type: "w",
+    }
+  )
+
+let result =
+  from s1 in year_total
+  join s2 in year_total on s2.customer_id == s1.customer_id
+  join c1 in year_total on c1.customer_id == s1.customer_id
+  join c2 in year_total on c2.customer_id == s1.customer_id
+  join w1 in year_total on w1.customer_id == s1.customer_id
+  join w2 in year_total on w2.customer_id == s1.customer_id
+  where s1.sale_type == "s" && c1.sale_type == "c" && w1.sale_type == "w" &&
+        s2.sale_type == "s" && c2.sale_type == "c" && w2.sale_type == "w" &&
+        s1.dyear == 2001 && s2.dyear == 2002 &&
+        c1.dyear == 2001 && c2.dyear == 2002 &&
+        w1.dyear == 2001 && w2.dyear == 2002 &&
+        s1.year_total > 0 && c1.year_total > 0 && w1.year_total > 0 &&
+        (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
+        (if s1.year_total > 0 { s2.year_total / s1.year_total } else { null }) &&
+        (if c1.year_total > 0 { c2.year_total / c1.year_total } else { null }) >
+        (if w1.year_total > 0 { w2.year_total / w1.year_total } else { null })
+  sort by [s2.customer_id, s2.customer_first_name, s2.customer_last_name, s2.customer_login]
+  select {
+    customer_id: s2.customer_id,
+    customer_first_name: s2.customer_first_name,
+    customer_last_name: s2.customer_last_name,
+    customer_login: s2.customer_login,
+  }
+
 json(result)
 
 test "TPCDS Q4 empty" {
