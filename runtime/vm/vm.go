@@ -6732,35 +6732,56 @@ func anyToValue(v any) Value {
 }
 
 func valueToString(v Value) string {
-	switch v.Tag {
-	case ValueInt:
-		return fmt.Sprintf("%d", v.Int)
-	case ValueFloat:
-		return fmt.Sprintf("%g", v.Float)
-	case ValueBool:
-		return fmt.Sprintf("%v", v.Bool)
-	case ValueStr:
-		return fmt.Sprintf("%q", v.Str)
-	case ValueList:
-		parts := make([]string, len(v.List))
-		for i, x := range v.List {
-			parts[i] = valueToString(x)
+	visited := map[uintptr]bool{}
+	var recur func(Value) string
+	recur = func(val Value) string {
+		switch val.Tag {
+		case ValueInt:
+			return fmt.Sprintf("%d", val.Int)
+		case ValueFloat:
+			return fmt.Sprintf("%g", val.Float)
+		case ValueBool:
+			return fmt.Sprintf("%v", val.Bool)
+		case ValueStr:
+			return fmt.Sprintf("%q", val.Str)
+		case ValueList:
+			ptr := reflect.ValueOf(val.List).Pointer()
+			if ptr != 0 {
+				if visited[ptr] {
+					return "[...]"
+				}
+				visited[ptr] = true
+				defer delete(visited, ptr)
+			}
+			parts := make([]string, len(val.List))
+			for i, x := range val.List {
+				parts[i] = recur(x)
+			}
+			return "[" + strings.Join(parts, ", ") + "]"
+		case ValueMap:
+			ptr := reflect.ValueOf(val.Map).Pointer()
+			if ptr != 0 {
+				if visited[ptr] {
+					return "{...}"
+				}
+				visited[ptr] = true
+				defer delete(visited, ptr)
+			}
+			keys := make([]string, 0, len(val.Map))
+			for k := range val.Map {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			parts := make([]string, len(keys))
+			for i, k := range keys {
+				parts[i] = fmt.Sprintf("%q: %s", k, recur(val.Map[k]))
+			}
+			return "{" + strings.Join(parts, ", ") + "}"
+		default:
+			return "nil"
 		}
-		return "[" + strings.Join(parts, ", ") + "]"
-	case ValueMap:
-		keys := make([]string, 0, len(v.Map))
-		for k := range v.Map {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		parts := make([]string, len(keys))
-		for i, k := range keys {
-			parts[i] = fmt.Sprintf("%q: %s", k, valueToString(v.Map[k]))
-		}
-		return "{" + strings.Join(parts, ", ") + "}"
-	default:
-		return "nil"
 	}
+	return recur(v)
 }
 
 func formatReg(n int) string {
