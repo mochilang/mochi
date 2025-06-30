@@ -11,23 +11,24 @@ let store = [
   { item: "A", return_ratio: 0.25, currency_ratio: 0.35, return_rank: 1, currency_rank: 1 }
 ]
 
-let result =
-  (
-    from w in web
-    where w.return_rank <= 10 || w.currency_rank <= 10
-    select { channel: "web", item: w.item, return_ratio: w.return_ratio, return_rank: w.return_rank, currency_rank: w.currency_rank }
-  ) ++
-  (
-    from c in catalog
-    where c.return_rank <= 10 || c.currency_rank <= 10
-    select { channel: "catalog", item: c.item, return_ratio: c.return_ratio, return_rank: c.return_rank, currency_rank: c.currency_rank }
-  ) ++
-  (
-    from s in store
-    where s.return_rank <= 10 || s.currency_rank <= 10
-    select { channel: "store", item: s.item, return_ratio: s.return_ratio, return_rank: s.return_rank, currency_rank: s.currency_rank }
+let tmp = (
+  concat(
+  from w in web
+  where w.return_rank <= 10 || w.currency_rank <= 10
+  select { channel: "web", item: w.item, return_ratio: w.return_ratio, return_rank: w.return_rank, currency_rank: w.currency_rank },
+  from c in catalog
+  where c.return_rank <= 10 || c.currency_rank <= 10
+  select { channel: "catalog", item: c.item, return_ratio: c.return_ratio, return_rank: c.return_rank, currency_rank: c.currency_rank },
+  from s in store
+  where s.return_rank <= 10 || s.currency_rank <= 10
+  select { channel: "store", item: s.item, return_ratio: s.return_ratio, return_rank: s.return_rank, currency_rank: s.currency_rank }
   )
-  sort by [channel, return_rank, currency_rank, item]
+)
+
+let result =
+  from r in tmp
+  sort by [r.channel, r.return_rank, r.currency_rank, r.item]
+  select r
 
 json(result)
 

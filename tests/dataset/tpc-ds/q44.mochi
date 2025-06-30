@@ -9,17 +9,18 @@ let item = [
   { i_item_sk: 2, i_product_name: "ItemB" }
 ]
 
-let grouped =
+let grouped = (
   from ss in store_sales
   group by ss.ss_item_sk into g
   let avg_profit = avg(from x in g select x.ss_net_profit)
   select { item_sk: g.key, avg_profit: avg_profit }
+)
 
 let best = first(from x in grouped sort by -x.avg_profit select x)
 let worst = first(from x in grouped sort by x.avg_profit select x)
 
-let best_name = from i in item where i.i_item_sk == best.item_sk select i.i_product_name |> first
-let worst_name = from i in item where i.i_item_sk == worst.item_sk select i.i_product_name |> first
+let best_name = first(from i in item where i.i_item_sk == best.item_sk select i.i_product_name)
+let worst_name = first(from i in item where i.i_item_sk == worst.item_sk select i.i_product_name)
 
 let result = { best_performing: best_name, worst_performing: worst_name }
 

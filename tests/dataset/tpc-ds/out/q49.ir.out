@@ -1,0 +1,264 @@
+func main (regs=203)
+  // let web = [
+  Const        r0, [{"currency_rank": 1, "currency_ratio": 0.3, "item": "A", "return_rank": 1, "return_ratio": 0.2}, {"currency_rank": 2, "currency_ratio": 0.6, "item": "B", "return_rank": 2, "return_ratio": 0.5}]
+  // let catalog = [
+  Const        r1, [{"currency_rank": 1, "currency_ratio": 0.4, "item": "A", "return_rank": 1, "return_ratio": 0.3}]
+  // let store = [
+  Const        r2, [{"currency_rank": 1, "currency_ratio": 0.35, "item": "A", "return_rank": 1, "return_ratio": 0.25}]
+  // from w in web
+  Const        r3, []
+  // where w.return_rank <= 10 || w.currency_rank <= 10
+  Const        r4, "return_rank"
+  Const        r5, "currency_rank"
+  // select { channel: "web", item: w.item, return_ratio: w.return_ratio, return_rank: w.return_rank, currency_rank: w.currency_rank },
+  Const        r6, "channel"
+  Const        r7, "item"
+  Const        r8, "item"
+  Const        r9, "return_ratio"
+  Const        r10, "return_ratio"
+  Const        r11, "return_rank"
+  Const        r12, "return_rank"
+  Const        r13, "currency_rank"
+  Const        r14, "currency_rank"
+  // from w in web
+  IterPrep     r15, r0
+  Len          r16, r15
+  Const        r17, 0
+L3:
+  LessInt      r19, r17, r16
+  JumpIfFalse  r19, L0
+  Index        r21, r15, r17
+  // where w.return_rank <= 10 || w.currency_rank <= 10
+  Const        r22, "return_rank"
+  Index        r23, r21, r22
+  Const        r24, 10
+  LessEq       r25, r23, r24
+  Const        r26, "currency_rank"
+  Index        r27, r21, r26
+  Const        r28, 10
+  LessEq       r29, r27, r28
+  Move         r30, r25
+  JumpIfTrue   r30, L1
+  Move         r30, r29
+L1:
+  JumpIfFalse  r30, L2
+  // select { channel: "web", item: w.item, return_ratio: w.return_ratio, return_rank: w.return_rank, currency_rank: w.currency_rank },
+  Const        r31, "channel"
+  Const        r32, "web"
+  Const        r33, "item"
+  Const        r34, "item"
+  Index        r35, r21, r34
+  Const        r36, "return_ratio"
+  Const        r37, "return_ratio"
+  Index        r38, r21, r37
+  Const        r39, "return_rank"
+  Const        r40, "return_rank"
+  Index        r41, r21, r40
+  Const        r42, "currency_rank"
+  Const        r43, "currency_rank"
+  Index        r44, r21, r43
+  Move         r45, r31
+  Move         r46, r32
+  Move         r47, r33
+  Move         r48, r35
+  Move         r49, r36
+  Move         r50, r38
+  Move         r51, r39
+  Move         r52, r41
+  Move         r53, r42
+  Move         r54, r44
+  MakeMap      r55, 5, r45
+  // from w in web
+  Append       r3, r3, r55
+L2:
+  Const        r57, 1
+  AddInt       r17, r17, r57
+  Jump         L3
+L0:
+  // from c in catalog
+  Const        r58, []
+  // where c.return_rank <= 10 || c.currency_rank <= 10
+  Const        r59, "return_rank"
+  Const        r60, "currency_rank"
+  // select { channel: "catalog", item: c.item, return_ratio: c.return_ratio, return_rank: c.return_rank, currency_rank: c.currency_rank },
+  Const        r61, "channel"
+  Const        r62, "item"
+  Const        r63, "item"
+  Const        r64, "return_ratio"
+  Const        r65, "return_ratio"
+  Const        r66, "return_rank"
+  Const        r67, "return_rank"
+  Const        r68, "currency_rank"
+  Const        r69, "currency_rank"
+  // from c in catalog
+  IterPrep     r70, r1
+  Len          r71, r70
+  Const        r72, 0
+L7:
+  LessInt      r74, r72, r71
+  JumpIfFalse  r74, L4
+  Index        r76, r70, r72
+  // where c.return_rank <= 10 || c.currency_rank <= 10
+  Const        r77, "return_rank"
+  Index        r78, r76, r77
+  Const        r79, 10
+  LessEq       r80, r78, r79
+  Const        r81, "currency_rank"
+  Index        r82, r76, r81
+  Const        r83, 10
+  LessEq       r84, r82, r83
+  Move         r85, r80
+  JumpIfTrue   r85, L5
+  Move         r85, r84
+L5:
+  JumpIfFalse  r85, L6
+  // select { channel: "catalog", item: c.item, return_ratio: c.return_ratio, return_rank: c.return_rank, currency_rank: c.currency_rank },
+  Const        r86, "channel"
+  Const        r87, "catalog"
+  Const        r88, "item"
+  Const        r89, "item"
+  Index        r90, r76, r89
+  Const        r91, "return_ratio"
+  Const        r92, "return_ratio"
+  Index        r93, r76, r92
+  Const        r94, "return_rank"
+  Const        r95, "return_rank"
+  Index        r96, r76, r95
+  Const        r97, "currency_rank"
+  Const        r98, "currency_rank"
+  Index        r99, r76, r98
+  Move         r100, r86
+  Move         r101, r87
+  Move         r102, r88
+  Move         r103, r90
+  Move         r104, r91
+  Move         r105, r93
+  Move         r106, r94
+  Move         r107, r96
+  Move         r108, r97
+  Move         r109, r99
+  MakeMap      r110, 5, r100
+  // from c in catalog
+  Append       r58, r58, r110
+L6:
+  Const        r112, 1
+  AddInt       r72, r72, r112
+  Jump         L7
+L4:
+  // concat(
+  UnionAll     r113, r3, r58
+  // from s in store
+  Const        r114, []
+  // where s.return_rank <= 10 || s.currency_rank <= 10
+  Const        r115, "return_rank"
+  Const        r116, "currency_rank"
+  // select { channel: "store", item: s.item, return_ratio: s.return_ratio, return_rank: s.return_rank, currency_rank: s.currency_rank }
+  Const        r117, "channel"
+  Const        r118, "item"
+  Const        r119, "item"
+  Const        r120, "return_ratio"
+  Const        r121, "return_ratio"
+  Const        r122, "return_rank"
+  Const        r123, "return_rank"
+  Const        r124, "currency_rank"
+  Const        r125, "currency_rank"
+  // from s in store
+  IterPrep     r126, r2
+  Len          r127, r126
+  Const        r128, 0
+L11:
+  LessInt      r130, r128, r127
+  JumpIfFalse  r130, L8
+  Index        r132, r126, r128
+  // where s.return_rank <= 10 || s.currency_rank <= 10
+  Const        r133, "return_rank"
+  Index        r134, r132, r133
+  Const        r135, 10
+  LessEq       r136, r134, r135
+  Const        r137, "currency_rank"
+  Index        r138, r132, r137
+  Const        r139, 10
+  LessEq       r140, r138, r139
+  Move         r141, r136
+  JumpIfTrue   r141, L9
+  Move         r141, r140
+L9:
+  JumpIfFalse  r141, L10
+  // select { channel: "store", item: s.item, return_ratio: s.return_ratio, return_rank: s.return_rank, currency_rank: s.currency_rank }
+  Const        r142, "channel"
+  Const        r143, "store"
+  Const        r144, "item"
+  Const        r145, "item"
+  Index        r146, r132, r145
+  Const        r147, "return_ratio"
+  Const        r148, "return_ratio"
+  Index        r149, r132, r148
+  Const        r150, "return_rank"
+  Const        r151, "return_rank"
+  Index        r152, r132, r151
+  Const        r153, "currency_rank"
+  Const        r154, "currency_rank"
+  Index        r155, r132, r154
+  Move         r156, r142
+  Move         r157, r143
+  Move         r158, r144
+  Move         r159, r146
+  Move         r160, r147
+  Move         r161, r149
+  Move         r162, r150
+  Move         r163, r152
+  Move         r164, r153
+  Move         r165, r155
+  MakeMap      r166, 5, r156
+  // from s in store
+  Append       r114, r114, r166
+L10:
+  Const        r168, 1
+  AddInt       r128, r128, r168
+  Jump         L11
+L8:
+  // concat(
+  UnionAll     r169, r113, r114
+  // from r in tmp
+  Const        r170, []
+  // sort by [r.channel, r.return_rank, r.currency_rank, r.item]
+  Const        r171, "channel"
+  Const        r172, "return_rank"
+  Const        r173, "currency_rank"
+  Const        r174, "item"
+  // from r in tmp
+  IterPrep     r175, r169
+  Len          r176, r175
+  Const        r177, 0
+L13:
+  LessInt      r179, r177, r176
+  JumpIfFalse  r179, L12
+  Index        r181, r175, r177
+  // sort by [r.channel, r.return_rank, r.currency_rank, r.item]
+  Const        r182, "channel"
+  Index        r184, r181, r182
+  Const        r185, "return_rank"
+  Index        r186, r181, r185
+  Move         r187, r186
+  Const        r188, "currency_rank"
+  Index        r190, r181, r188
+  Const        r191, "item"
+  Index        r193, r181, r191
+  MakeList     r195, 4, r184
+  // from r in tmp
+  Move         r196, r181
+  MakeList     r197, 2, r195
+  Append       r170, r170, r197
+  Const        r199, 1
+  AddInt       r177, r177, r199
+  Jump         L13
+L12:
+  // sort by [r.channel, r.return_rank, r.currency_rank, r.item]
+  Sort         r170, r170
+  // json(result)
+  JSON         r170
+  // expect result == [
+  Const        r201, [{"channel": "catalog", "currency_rank": 1, "item": "A", "return_rank": 1, "return_ratio": 0.3}, {"channel": "store", "currency_rank": 1, "item": "A", "return_rank": 1, "return_ratio": 0.25}, {"channel": "web", "currency_rank": 1, "item": "A", "return_rank": 1, "return_ratio": 0.2}, {"channel": "web", "currency_rank": 2, "item": "B", "return_rank": 2, "return_ratio": 0.5}]
+  Equal        r202, r170, r201
+  Expect       r202
+  Return       r0
