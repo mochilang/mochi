@@ -1,0 +1,382 @@
+func main (regs=263)
+  // let store_sales = [
+  Const        r0, [{"ss_customer_sk": 1, "ss_item_sk": 1, "ss_net_paid": 100, "ss_store_sk": 1, "ss_ticket_number": 1}]
+  // let store_returns = [ { sr_ticket_number: 1, sr_item_sk: 1 } ]
+  Const        r1, [{"sr_item_sk": 1, "sr_ticket_number": 1}]
+  // let store = [ { s_store_sk: 1, s_store_name: "Store1", s_market_id: 5, s_state: "CA", s_zip: "12345" } ]
+  Const        r2, [{"s_market_id": 5, "s_state": "CA", "s_store_name": "Store1", "s_store_sk": 1, "s_zip": "12345"}]
+  // let item = [ { i_item_sk: 1, i_color: "RED", i_current_price: 10.0, i_manager_id: 1, i_units: "EA", i_size: "M" } ]
+  Const        r3, [{"i_color": "RED", "i_current_price": 10, "i_item_sk": 1, "i_manager_id": 1, "i_size": "M", "i_units": "EA"}]
+  // let customer = [ { c_customer_sk: 1, c_first_name: "Ann", c_last_name: "Smith", c_current_addr_sk: 1, c_birth_country: "Canada" } ]
+  Const        r4, [{"c_birth_country": "Canada", "c_current_addr_sk": 1, "c_customer_sk": 1, "c_first_name": "Ann", "c_last_name": "Smith"}]
+  // let customer_address = [ { ca_address_sk: 1, ca_state: "CA", ca_country: "USA", ca_zip: "12345" } ]
+  Const        r5, [{"ca_address_sk": 1, "ca_country": "USA", "ca_state": "CA", "ca_zip": "12345"}]
+  // from ss in store_sales
+  Const        r6, []
+  // last: c.c_last_name,
+  Const        r7, "last"
+  Const        r8, "c_last_name"
+  // first: c.c_first_name,
+  Const        r9, "first"
+  Const        r10, "c_first_name"
+  // store_name: s.s_store_name,
+  Const        r11, "store_name"
+  Const        r12, "s_store_name"
+  // color: i.i_color
+  Const        r13, "color"
+  Const        r14, "i_color"
+  // where c.c_birth_country != strings.ToUpper(ca.ca_country) && s.s_zip == ca.ca_zip && s.s_market_id == 5
+  Const        r15, "c_birth_country"
+  Const        r16, "ToUpper"
+  Const        r17, "ca_country"
+  Const        r18, "s_zip"
+  Const        r19, "ca_zip"
+  Const        r20, "s_market_id"
+  // c_last_name: g.key.last,
+  Const        r21, "key"
+  // netpaid: sum(from x in g select x.ss_net_paid)
+  Const        r22, "netpaid"
+  Const        r23, "ss_net_paid"
+  // from ss in store_sales
+  MakeMap      r24, 0, r0
+  Move         r25, r6
+  IterPrep     r27, r0
+  Len          r28, r27
+  Const        r29, 0
+L1:
+  LessInt      r30, r29, r28
+  JumpIfFalse  r30, L0
+  Index        r32, r27, r29
+  // join sr in store_returns on ss.ss_ticket_number == sr.sr_ticket_number && ss.ss_item_sk == sr.sr_item_sk
+  IterPrep     r33, r1
+  Len          r34, r33
+  Move         r35, r29
+L3:
+  LessInt      r36, r35, r34
+  JumpIfFalse  r36, L1
+  Index        r38, r33, r35
+  Const        r39, "ss_ticket_number"
+  Index        r40, r32, r39
+  Const        r41, "sr_ticket_number"
+  Index        r42, r38, r41
+  Equal        r43, r40, r42
+  Const        r44, "ss_item_sk"
+  Index        r45, r32, r44
+  Const        r46, "sr_item_sk"
+  Index        r47, r38, r46
+  Equal        r48, r45, r47
+  Move         r49, r43
+  JumpIfFalse  r49, L2
+  Move         r49, r48
+L2:
+  JumpIfFalse  r49, L3
+  // join s in store on ss.ss_store_sk == s.s_store_sk
+  IterPrep     r50, r2
+  Len          r51, r50
+  Move         r52, r29
+L14:
+  LessInt      r53, r52, r51
+  JumpIfFalse  r53, L3
+  Index        r55, r50, r52
+  Const        r56, "ss_store_sk"
+  Index        r57, r32, r56
+  Const        r58, "s_store_sk"
+  Index        r59, r55, r58
+  Equal        r60, r57, r59
+  JumpIfFalse  r60, L4
+  // join i in item on ss.ss_item_sk == i.i_item_sk
+  IterPrep     r61, r3
+  Len          r62, r61
+  Move         r63, r52
+L13:
+  LessInt      r64, r63, r62
+  JumpIfFalse  r64, L4
+  Index        r66, r61, r63
+  Index        r67, r32, r44
+  Const        r68, "i_item_sk"
+  Index        r69, r66, r68
+  Equal        r70, r67, r69
+  JumpIfFalse  r70, L5
+  // join c in customer on ss.ss_customer_sk == c.c_customer_sk
+  IterPrep     r71, r4
+  Len          r72, r71
+  Move         r73, r29
+L12:
+  LessInt      r74, r73, r72
+  JumpIfFalse  r74, L5
+  Index        r76, r71, r73
+  Const        r77, "ss_customer_sk"
+  Index        r78, r32, r77
+  Const        r79, "c_customer_sk"
+  Index        r80, r76, r79
+  Equal        r81, r78, r80
+  JumpIfFalse  r81, L6
+  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  IterPrep     r82, r5
+  Len          r83, r82
+  Move         r84, r73
+L11:
+  LessInt      r85, r84, r83
+  JumpIfFalse  r85, L6
+  Index        r87, r82, r84
+  Const        r88, "c_current_addr_sk"
+  Index        r89, r76, r88
+  Const        r90, "ca_address_sk"
+  Index        r91, r87, r90
+  Equal        r92, r89, r91
+  JumpIfFalse  r92, L7
+  // where c.c_birth_country != strings.ToUpper(ca.ca_country) && s.s_zip == ca.ca_zip && s.s_market_id == 5
+  Index        r93, r76, r15
+  Index        r95, r94, r16
+  Index        r96, r87, r17
+  CallV        r98, r95, 1, r96
+  NotEqual     r99, r93, r98
+  Index        r100, r55, r18
+  Index        r101, r87, r19
+  Equal        r102, r100, r101
+  Index        r103, r55, r20
+  Const        r104, 5
+  Equal        r105, r103, r104
+  Move         r106, r99
+  JumpIfFalse  r106, L8
+L8:
+  Move         r107, r102
+  JumpIfFalse  r107, L9
+  Move         r107, r105
+L9:
+  JumpIfFalse  r107, L7
+  // from ss in store_sales
+  Const        r108, "ss"
+  Move         r109, r32
+  Const        r110, "sr"
+  Move         r111, r38
+  Const        r112, "s"
+  Move         r113, r55
+  Const        r114, "i"
+  Move         r115, r66
+  Const        r116, "c"
+  Move         r117, r76
+  Const        r118, "ca"
+  Move         r119, r87
+  MakeMap      r120, 6, r108
+  // last: c.c_last_name,
+  Move         r121, r7
+  Index        r122, r76, r8
+  // first: c.c_first_name,
+  Move         r123, r9
+  Index        r124, r76, r10
+  // store_name: s.s_store_name,
+  Move         r125, r11
+  Index        r126, r55, r12
+  // color: i.i_color
+  Move         r127, r13
+  Index        r128, r66, r14
+  // last: c.c_last_name,
+  Move         r129, r121
+  Move         r130, r122
+  // first: c.c_first_name,
+  Move         r131, r123
+  Move         r132, r124
+  // store_name: s.s_store_name,
+  Move         r133, r125
+  Move         r134, r126
+  // color: i.i_color
+  Move         r135, r127
+  Move         r136, r128
+  // group by {
+  MakeMap      r137, 4, r129
+  Str          r138, r137
+  In           r139, r138, r24
+  JumpIfTrue   r139, L10
+  // from ss in store_sales
+  Move         r140, r6
+  Const        r141, "__group__"
+  Const        r142, true
+  Move         r143, r21
+  // group by {
+  Move         r144, r137
+  // from ss in store_sales
+  Const        r145, "items"
+  Move         r146, r140
+  Const        r147, "count"
+  Move         r148, r73
+  Move         r149, r141
+  Move         r150, r142
+  Move         r151, r143
+  Move         r152, r144
+  Move         r153, r145
+  Move         r154, r146
+  Move         r155, r147
+  Move         r156, r148
+  MakeMap      r157, 4, r149
+  SetIndex     r24, r138, r157
+  Append       r25, r25, r157
+L10:
+  Move         r159, r145
+  Index        r160, r24, r138
+  Index        r161, r160, r159
+  Append       r162, r161, r120
+  SetIndex     r160, r159, r162
+  Move         r163, r147
+  Index        r164, r160, r163
+  Const        r165, 1
+  AddInt       r166, r164, r165
+  SetIndex     r160, r163, r166
+L7:
+  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  AddInt       r84, r84, r165
+  Jump         L11
+L6:
+  // join c in customer on ss.ss_customer_sk == c.c_customer_sk
+  AddInt       r73, r73, r165
+  Jump         L12
+L5:
+  // join i in item on ss.ss_item_sk == i.i_item_sk
+  AddInt       r63, r63, r165
+  Jump         L13
+L4:
+  // join s in store on ss.ss_store_sk == s.s_store_sk
+  AddInt       r52, r52, r165
+  Jump         L14
+L0:
+  // from ss in store_sales
+  Move         r168, r148
+  Move         r167, r168
+  Len          r169, r25
+L18:
+  LessInt      r170, r167, r169
+  JumpIfFalse  r170, L15
+  Index        r172, r25, r167
+  // c_last_name: g.key.last,
+  Move         r173, r8
+  Index        r174, r172, r21
+  Index        r175, r174, r7
+  // c_first_name: g.key.first,
+  Move         r176, r10
+  Index        r177, r172, r21
+  Index        r178, r177, r9
+  // s_store_name: g.key.store_name,
+  Move         r179, r12
+  Index        r180, r172, r21
+  Index        r181, r180, r11
+  // color: g.key.color,
+  Move         r182, r13
+  Index        r183, r172, r21
+  Index        r184, r183, r13
+  // netpaid: sum(from x in g select x.ss_net_paid)
+  Move         r185, r22
+  Move         r186, r140
+  IterPrep     r187, r172
+  Len          r188, r187
+  Move         r189, r168
+L17:
+  LessInt      r190, r189, r188
+  JumpIfFalse  r190, L16
+  Index        r192, r187, r189
+  Index        r193, r192, r23
+  Append       r186, r186, r193
+  AddInt       r189, r189, r165
+  Jump         L17
+L16:
+  Sum          r195, r186
+  // c_last_name: g.key.last,
+  Move         r196, r173
+  Move         r197, r175
+  // c_first_name: g.key.first,
+  Move         r198, r176
+  Move         r199, r178
+  // s_store_name: g.key.store_name,
+  Move         r200, r179
+  Move         r201, r181
+  // color: g.key.color,
+  Move         r202, r182
+  Move         r203, r184
+  // netpaid: sum(from x in g select x.ss_net_paid)
+  Move         r204, r185
+  Move         r205, r195
+  // select {
+  MakeMap      r206, 5, r196
+  // from ss in store_sales
+  Append       r6, r6, r206
+  AddInt       r167, r167, r165
+  Jump         L18
+L15:
+  // let avg_paid = avg(from x in ssales select x.netpaid)
+  Const        r208, []
+  IterPrep     r209, r6
+  Len          r210, r209
+  Move         r211, r168
+L20:
+  LessInt      r212, r211, r210
+  JumpIfFalse  r212, L19
+  Index        r192, r209, r211
+  Index        r214, r192, r22
+  Append       r208, r208, r214
+  AddInt       r211, r211, r165
+  Jump         L20
+L19:
+  Avg          r216, r208
+  // from x in ssales
+  Const        r217, []
+  // select { c_last_name: x.c_last_name, c_first_name: x.c_first_name, s_store_name: x.s_store_name, paid: x.netpaid }
+  Const        r218, "paid"
+  // from x in ssales
+  IterPrep     r219, r6
+  Len          r220, r219
+  Move         r221, r168
+L24:
+  LessInt      r222, r221, r220
+  JumpIfFalse  r222, L21
+  Index        r192, r219, r221
+  // where x.color == "RED" && x.netpaid > 0.05 * avg_paid
+  Index        r224, r192, r13
+  Const        r225, 0.05
+  MulFloat     r226, r225, r216
+  Index        r227, r192, r22
+  LessFloat    r228, r226, r227
+  Const        r229, "RED"
+  Equal        r231, r224, r229
+  JumpIfFalse  r231, L22
+  Move         r231, r228
+L22:
+  JumpIfFalse  r231, L23
+  // select { c_last_name: x.c_last_name, c_first_name: x.c_first_name, s_store_name: x.s_store_name, paid: x.netpaid }
+  Move         r232, r8
+  Index        r233, r192, r8
+  Move         r234, r10
+  Index        r235, r192, r10
+  Move         r236, r12
+  Index        r237, r192, r12
+  Move         r238, r218
+  Index        r239, r192, r22
+  Move         r240, r232
+  Move         r241, r233
+  Move         r242, r234
+  Move         r243, r235
+  Move         r244, r236
+  Move         r245, r237
+  Move         r246, r238
+  Move         r247, r239
+  MakeMap      r248, 4, r240
+  // sort by [x.c_last_name, x.c_first_name, x.s_store_name]
+  Index        r250, r192, r8
+  Index        r251, r192, r10
+  Move         r252, r251
+  MakeList     r256, 3, r250
+  // from x in ssales
+  Move         r257, r248
+  MakeList     r258, 2, r256
+  Append       r217, r217, r258
+L23:
+  AddInt       r221, r221, r165
+  Jump         L24
+L21:
+  // sort by [x.c_last_name, x.c_first_name, x.s_store_name]
+  Sort         r217, r217
+  // json(result)
+  JSON         r217
+  // expect result == [ { c_last_name: "Smith", c_first_name: "Ann", s_store_name: "Store1", paid: 100.0 } ]
+  Const        r261, [{"c_first_name": "Ann", "c_last_name": "Smith", "paid": 100, "s_store_name": "Store1"}]
+  Equal        r262, r217, r261
+  Expect       r262
+  Return       r0

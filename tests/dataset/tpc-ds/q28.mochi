@@ -10,22 +10,22 @@ let store_sales = [
 let bucket1 =
   from ss in store_sales
   where ss.ss_quantity >= 0 && ss.ss_quantity <= 5
-    && (ss.ss_list_price between 0 && 110 || ss.ss_coupon_amt between 0 && 1000 || ss.ss_wholesale_cost between 0 && 50)
+    && ((ss.ss_list_price >= 0 && ss.ss_list_price <= 110) || (ss.ss_coupon_amt >= 0 && ss.ss_coupon_amt <= 1000) || (ss.ss_wholesale_cost >= 0 && ss.ss_wholesale_cost <= 50))
   select ss
 
 let bucket2 =
   from ss in store_sales
   where ss.ss_quantity >= 6 && ss.ss_quantity <= 10
-    && (ss.ss_list_price between 0 && 110 || ss.ss_coupon_amt between 0 && 1000 || ss.ss_wholesale_cost between 0 && 50)
+    && ((ss.ss_list_price >= 0 && ss.ss_list_price <= 110) || (ss.ss_coupon_amt >= 0 && ss.ss_coupon_amt <= 1000) || (ss.ss_wholesale_cost >= 0 && ss.ss_wholesale_cost <= 50))
   select ss
 
 let result = {
   B1_LP: avg(from x in bucket1 select x.ss_list_price),
   B1_CNT: count(bucket1),
-  B1_CNTD: count(distinct from x in bucket1 select x.ss_list_price),
+  B1_CNTD: count(from x in bucket1 group by x.ss_list_price into g select g.key),
   B2_LP: avg(from x in bucket2 select x.ss_list_price),
   B2_CNT: count(bucket2),
-  B2_CNTD: count(distinct from x in bucket2 select x.ss_list_price)
+  B2_CNTD: count(from x in bucket2 group by x.ss_list_price into g select g.key)
 }
 
 json(result)
