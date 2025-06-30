@@ -21,11 +21,11 @@ let filtered =
   join ca in customer_address on ws.ws_ship_addr_sk == ca.ca_address_sk
   join w in web_site on ws.ws_web_site_sk == w.web_site_sk
   where ca.ca_state == "CA" && w.web_company_name == "pri" &&
-        not exists(from wr in web_returns where wr.wr_order_number == ws.ws_order_number select wr)
+        exists(from wr in web_returns where wr.wr_order_number == ws.ws_order_number select wr) == false
   select ws
 
 let result = {
-  order_count: count(distinct from x in filtered select x.ws_order_number),
+  order_count: count(from x in filtered group by x.ws_order_number into g select g.key),
   total_shipping_cost: sum(from x in filtered select x.ws_ext_ship_cost),
   total_net_profit: sum(from x in filtered select x.ws_net_profit)
 }

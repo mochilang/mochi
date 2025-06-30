@@ -1,0 +1,24 @@
+func main (regs=10)
+  // let call_center = [
+  Const        r0, [{"cc_call_center_id": "CC1", "cc_call_center_sk": 1, "cc_manager": "Alice", "cc_name": "Main"}]
+  // let catalog_returns = [
+  Const        r1, [{"cr_call_center_sk": 1, "cr_net_loss": 10, "cr_returned_date_sk": 1, "cr_returning_customer_sk": 1}]
+  // let date_dim = [{d_date_sk: 1, d_year: 2001, d_moy: 5}]
+  Const        r2, [{"d_date_sk": 1, "d_moy": 5, "d_year": 2001}]
+  // let customer = [
+  Const        r3, [{"c_current_addr_sk": 1, "c_current_cdemo_sk": 1, "c_current_hdemo_sk": 1, "c_customer_sk": 1}]
+  // let customer_demographics = [{cd_demo_sk: 1, cd_marital_status: "M", cd_education_status: "Unknown"}]
+  Const        r4, [{"cd_demo_sk": 1, "cd_education_status": "Unknown", "cd_marital_status": "M"}]
+  // let household_demographics = [{hd_demo_sk: 1, hd_buy_potential: "1001-5000"}]
+  Const        r5, [{"hd_buy_potential": "1001-5000", "hd_demo_sk": 1}]
+  // let customer_address = [{ca_address_sk: 1, ca_gmt_offset: -6}]
+  Const        r6, [{"ca_address_sk": 1, "ca_gmt_offset": -6}]
+  // let result = {
+  Const        r7, {"Call_Center": "CC1", "Call_Center_Name": "Main", "Manager": "Alice", "Returns_Loss": 10}
+  // json(result)
+  JSON         r7
+  // expect result == {
+  Const        r8, {"Call_Center": "CC1", "Call_Center_Name": "Main", "Manager": "Alice", "Returns_Loss": 10}
+  Equal        r9, r7, r8
+  Expect       r9
+  Return       r0

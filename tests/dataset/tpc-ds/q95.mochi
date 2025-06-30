@@ -32,7 +32,7 @@ let filtered =
   select ws
 
 let result = {
-  order_count: count(distinct from x in filtered select x.ws_order_number),
+  order_count: count(from x in filtered group by x.ws_order_number into g select g.key),
   total_shipping_cost: sum(from x in filtered select x.ws_ext_ship_cost),
   total_net_profit: sum(from x in filtered select x.ws_net_profit)
 }

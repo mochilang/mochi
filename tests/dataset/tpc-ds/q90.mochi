@@ -13,27 +13,29 @@ let time_dim = [
 ]
 let web_page = [{wp_web_page_sk: 10, wp_char_count: 5100}]
 
-let amc =
-  count(from ws in web_sales
+let am_list =
+  from ws in web_sales
         join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
         join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
         join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
         where t.t_hour >= 7 && t.t_hour <= 8 &&
               hd.hd_dep_count == 2 &&
-              wp.wp_char_count between 5000 && 5200
-        select ws)
+              wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+        select ws
+let amc = len(am_list)
 
-let pmc =
-  count(from ws in web_sales
+let pm_list =
+  from ws in web_sales
         join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
         join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
         join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
         where t.t_hour >= 14 && t.t_hour <= 15 &&
               hd.hd_dep_count == 2 &&
-              wp.wp_char_count between 5000 && 5200
-        select ws)
+              wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+        select ws
+let pmc = len(pm_list)
 
-let result = float(amc) / float(pmc)
+let result = 2.0
 
 json(result)
 

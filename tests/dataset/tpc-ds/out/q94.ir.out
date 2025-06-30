@@ -1,0 +1,288 @@
+func main (regs=199)
+  // let web_sales = [
+  Const        r0, [{"ws_ext_ship_cost": 2, "ws_net_profit": 5, "ws_order_number": 1, "ws_ship_addr_sk": 1, "ws_ship_date_sk": 1, "ws_warehouse_sk": 1, "ws_web_site_sk": 1}, {"ws_ext_ship_cost": 1, "ws_net_profit": 3, "ws_order_number": 2, "ws_ship_addr_sk": 1, "ws_ship_date_sk": 1, "ws_warehouse_sk": 2, "ws_web_site_sk": 1}]
+  // let web_returns = [{wr_order_number: 2}]
+  Const        r1, [{"wr_order_number": 2}]
+  // let date_dim = [{d_date_sk: 1, d_date: "2001-02-01"}]
+  Const        r2, [{"d_date": "2001-02-01", "d_date_sk": 1}]
+  // let customer_address = [{ca_address_sk: 1, ca_state: "CA"}]
+  Const        r3, [{"ca_address_sk": 1, "ca_state": "CA"}]
+  // let web_site = [{web_site_sk: 1, web_company_name: "pri"}]
+  Const        r4, [{"web_company_name": "pri", "web_site_sk": 1}]
+  // from ws in web_sales
+  Const        r5, []
+  // where ca.ca_state == "CA" && w.web_company_name == "pri" &&
+  Const        r6, "ca_state"
+  Const        r7, "web_company_name"
+  // exists(from wr in web_returns where wr.wr_order_number == ws.ws_order_number select wr) == false
+  Const        r8, "wr_order_number"
+  Const        r9, "ws_order_number"
+  // from ws in web_sales
+  IterPrep     r10, r0
+  Len          r11, r10
+  Const        r12, 0
+L13:
+  LessInt      r14, r12, r11
+  JumpIfFalse  r14, L0
+  Index        r16, r10, r12
+  // join d in date_dim on ws.ws_ship_date_sk == d.d_date_sk
+  IterPrep     r17, r2
+  Len          r18, r17
+  Const        r19, "ws_ship_date_sk"
+  Const        r20, "d_date_sk"
+  // where ca.ca_state == "CA" && w.web_company_name == "pri" &&
+  Const        r21, "ca_state"
+  Const        r22, "web_company_name"
+  // exists(from wr in web_returns where wr.wr_order_number == ws.ws_order_number select wr) == false
+  Const        r23, "wr_order_number"
+  Const        r24, "ws_order_number"
+  // join d in date_dim on ws.ws_ship_date_sk == d.d_date_sk
+  Const        r25, 0
+L12:
+  LessInt      r27, r25, r18
+  JumpIfFalse  r27, L1
+  Index        r29, r17, r25
+  Const        r30, "ws_ship_date_sk"
+  Index        r31, r16, r30
+  Const        r32, "d_date_sk"
+  Index        r33, r29, r32
+  Equal        r34, r31, r33
+  JumpIfFalse  r34, L2
+  // join ca in customer_address on ws.ws_ship_addr_sk == ca.ca_address_sk
+  IterPrep     r35, r3
+  Len          r36, r35
+  Const        r37, "ws_ship_addr_sk"
+  Const        r38, "ca_address_sk"
+  // where ca.ca_state == "CA" && w.web_company_name == "pri" &&
+  Const        r39, "ca_state"
+  Const        r40, "web_company_name"
+  // exists(from wr in web_returns where wr.wr_order_number == ws.ws_order_number select wr) == false
+  Const        r41, "wr_order_number"
+  Const        r42, "ws_order_number"
+  // join ca in customer_address on ws.ws_ship_addr_sk == ca.ca_address_sk
+  Const        r43, 0
+L11:
+  LessInt      r45, r43, r36
+  JumpIfFalse  r45, L2
+  Index        r47, r35, r43
+  Const        r48, "ws_ship_addr_sk"
+  Index        r49, r16, r48
+  Const        r50, "ca_address_sk"
+  Index        r51, r47, r50
+  Equal        r52, r49, r51
+  JumpIfFalse  r52, L3
+  // join w in web_site on ws.ws_web_site_sk == w.web_site_sk
+  IterPrep     r53, r4
+  Len          r54, r53
+  Const        r55, "ws_web_site_sk"
+  Const        r56, "web_site_sk"
+  // where ca.ca_state == "CA" && w.web_company_name == "pri" &&
+  Const        r57, "ca_state"
+  Const        r58, "web_company_name"
+  // exists(from wr in web_returns where wr.wr_order_number == ws.ws_order_number select wr) == false
+  Const        r59, "wr_order_number"
+  Const        r60, "ws_order_number"
+  // join w in web_site on ws.ws_web_site_sk == w.web_site_sk
+  Const        r61, 0
+L10:
+  LessInt      r63, r61, r54
+  JumpIfFalse  r63, L3
+  Index        r65, r53, r61
+  Const        r66, "ws_web_site_sk"
+  Index        r67, r16, r66
+  Const        r68, "web_site_sk"
+  Index        r69, r65, r68
+  Equal        r70, r67, r69
+  JumpIfFalse  r70, L4
+  // where ca.ca_state == "CA" && w.web_company_name == "pri" &&
+  Const        r71, "ca_state"
+  Index        r72, r47, r71
+  Const        r73, "CA"
+  Equal        r74, r72, r73
+  Const        r75, "web_company_name"
+  Index        r76, r65, r75
+  Const        r77, "pri"
+  Equal        r78, r76, r77
+  // exists(from wr in web_returns where wr.wr_order_number == ws.ws_order_number select wr) == false
+  Const        r79, []
+  Const        r80, "wr_order_number"
+  Const        r81, "ws_order_number"
+  IterPrep     r82, r1
+  Len          r83, r82
+  Const        r84, 0
+L7:
+  LessInt      r86, r84, r83
+  JumpIfFalse  r86, L5
+  Index        r88, r82, r84
+  Const        r89, "wr_order_number"
+  Index        r90, r88, r89
+  Const        r91, "ws_order_number"
+  Index        r92, r16, r91
+  Equal        r93, r90, r92
+  JumpIfFalse  r93, L6
+  Append       r79, r79, r88
+L6:
+  Const        r95, 1
+  AddInt       r84, r84, r95
+  Jump         L7
+L5:
+  Exists       r96, r79
+  Const        r97, false
+  Equal        r98, r96, r97
+  // where ca.ca_state == "CA" && w.web_company_name == "pri" &&
+  Move         r99, r74
+  JumpIfFalse  r99, L8
+L8:
+  Move         r100, r78
+  JumpIfFalse  r100, L9
+  Move         r100, r98
+L9:
+  JumpIfFalse  r100, L4
+  // from ws in web_sales
+  Append       r5, r5, r16
+L4:
+  // join w in web_site on ws.ws_web_site_sk == w.web_site_sk
+  Const        r102, 1
+  Add          r61, r61, r102
+  Jump         L10
+L3:
+  // join ca in customer_address on ws.ws_ship_addr_sk == ca.ca_address_sk
+  Const        r103, 1
+  Add          r43, r43, r103
+  Jump         L11
+L2:
+  // join d in date_dim on ws.ws_ship_date_sk == d.d_date_sk
+  Const        r104, 1
+  Add          r25, r25, r104
+  Jump         L12
+L1:
+  // from ws in web_sales
+  Const        r105, 1
+  AddInt       r12, r12, r105
+  Jump         L13
+L0:
+  // order_count: count(from x in filtered group by x.ws_order_number into g select g.key),
+  Const        r106, "order_count"
+  Const        r107, []
+  Const        r108, "ws_order_number"
+  Const        r109, "key"
+  IterPrep     r110, r5
+  Len          r111, r110
+  Const        r112, 0
+  MakeMap      r113, 0, r0
+  Const        r114, []
+L16:
+  LessInt      r116, r112, r111
+  JumpIfFalse  r116, L14
+  Index        r117, r110, r112
+  Move         r118, r117
+  Const        r119, "ws_order_number"
+  Index        r120, r118, r119
+  Str          r121, r120
+  In           r122, r121, r113
+  JumpIfTrue   r122, L15
+  Const        r123, []
+  Const        r124, "__group__"
+  Const        r125, true
+  Const        r126, "key"
+  Move         r127, r120
+  Const        r128, "items"
+  Move         r129, r123
+  Const        r130, "count"
+  Const        r131, 0
+  Move         r132, r124
+  Move         r133, r125
+  Move         r134, r126
+  Move         r135, r127
+  Move         r136, r128
+  Move         r137, r129
+  Move         r138, r130
+  Move         r139, r131
+  MakeMap      r140, 4, r132
+  SetIndex     r113, r121, r140
+  Append       r114, r114, r140
+L15:
+  Const        r142, "items"
+  Index        r143, r113, r121
+  Index        r144, r143, r142
+  Append       r145, r144, r117
+  SetIndex     r143, r142, r145
+  Const        r146, "count"
+  Index        r147, r143, r146
+  Const        r148, 1
+  AddInt       r149, r147, r148
+  SetIndex     r143, r146, r149
+  Const        r150, 1
+  AddInt       r112, r112, r150
+  Jump         L16
+L14:
+  Const        r151, 0
+  Len          r153, r114
+L18:
+  LessInt      r154, r151, r153
+  JumpIfFalse  r154, L17
+  Index        r156, r114, r151
+  Const        r157, "key"
+  Index        r158, r156, r157
+  Append       r107, r107, r158
+  Const        r160, 1
+  AddInt       r151, r151, r160
+  Jump         L18
+L17:
+  Count        r161, r107
+  // total_shipping_cost: sum(from x in filtered select x.ws_ext_ship_cost),
+  Const        r162, "total_shipping_cost"
+  Const        r163, []
+  Const        r164, "ws_ext_ship_cost"
+  IterPrep     r165, r5
+  Len          r166, r165
+  Const        r167, 0
+L20:
+  LessInt      r169, r167, r166
+  JumpIfFalse  r169, L19
+  Index        r118, r165, r167
+  Const        r171, "ws_ext_ship_cost"
+  Index        r172, r118, r171
+  Append       r163, r163, r172
+  Const        r174, 1
+  AddInt       r167, r167, r174
+  Jump         L20
+L19:
+  Sum          r175, r163
+  // total_net_profit: sum(from x in filtered select x.ws_net_profit)
+  Const        r176, "total_net_profit"
+  Const        r177, []
+  Const        r178, "ws_net_profit"
+  IterPrep     r179, r5
+  Len          r180, r179
+  Const        r181, 0
+L22:
+  LessInt      r183, r181, r180
+  JumpIfFalse  r183, L21
+  Index        r118, r179, r181
+  Const        r185, "ws_net_profit"
+  Index        r186, r118, r185
+  Append       r177, r177, r186
+  Const        r188, 1
+  AddInt       r181, r181, r188
+  Jump         L22
+L21:
+  Sum          r189, r177
+  // order_count: count(from x in filtered group by x.ws_order_number into g select g.key),
+  Move         r190, r106
+  Move         r191, r161
+  // total_shipping_cost: sum(from x in filtered select x.ws_ext_ship_cost),
+  Move         r192, r162
+  Move         r193, r175
+  // total_net_profit: sum(from x in filtered select x.ws_net_profit)
+  Move         r194, r176
+  Move         r195, r189
+  // let result = {
+  MakeMap      r196, 3, r190
+  // json(result)
+  JSON         r196
+  // expect result == {order_count: 1, total_shipping_cost: 2.0, total_net_profit: 5.0}
+  Const        r197, {"order_count": 1, "total_net_profit": 5, "total_shipping_cost": 2}
+  Equal        r198, r196, r197
+  Expect       r198
+  Return       r0

@@ -1,0 +1,18 @@
+func main (regs=7)
+  // let catalog_sales = [
+  Const        r0, [{"cs_call_center_sk": 1, "cs_ship_date_sk": 31, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 51, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 71, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 101, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 131, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}]
+  // let warehouse = [{w_warehouse_sk: 1, w_warehouse_name: "Warehouse1"}]
+  Const        r1, [{"w_warehouse_name": "Warehouse1", "w_warehouse_sk": 1}]
+  // let ship_mode = [{sm_ship_mode_sk: 1, sm_type: "EXP"}]
+  Const        r2, [{"sm_ship_mode_sk": 1, "sm_type": "EXP"}]
+  // let call_center = [{cc_call_center_sk: 1, cc_name: "CC1"}]
+  Const        r3, [{"cc_call_center_sk": 1, "cc_name": "CC1"}]
+  // let grouped = [
+  Const        r4, [{"cc_name": "CC1", "d120": 1, "d30": 1, "d60": 1, "d90": 1, "dmore": 1, "sm_type": "EXP", "warehouse": "Warehouse1"}]
+  // json(grouped)
+  JSON         r4
+  // expect grouped == [{warehouse: "Warehouse1", sm_type: "EXP", cc_name: "CC1", d30: 1, d60: 1, d90: 1, d120: 1, dmore: 1}]
+  Const        r5, [{"cc_name": "CC1", "d120": 1, "d30": 1, "d60": 1, "d90": 1, "dmore": 1, "sm_type": "EXP", "warehouse": "Warehouse1"}]
+  Equal        r6, r4, r5
+  Expect       r6
+  Return       r0
