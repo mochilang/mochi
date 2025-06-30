@@ -117,6 +117,7 @@ from the disassembler:
 | `Append` | Append C to list B | `Append r0, r1, r2` |
 | `Str` | Convert value B to string | `Str r0, r1` |
 | `Input` | Read line from input | `Input r0` |
+| `First` | First element of list B | `First r0, r1` |
 | `Count` | Count elements in list/map B | `Count r0, r1` |
 | `Exists` | True if list/map/string B is non-empty | `Exists r0, r1` |
 | `Avg` | Average of numeric list B | `Avg r0, r1` |
