@@ -1,7 +1,54 @@
-let t = [{id: 1, val: 91}]
-let result = from r in t select r.val |> first
+let call_center = [
+  { cc_call_center_sk: 1, cc_call_center_id: 100, cc_name: "Center", cc_manager: "Manager" }
+]
+
+let catalog_returns = [
+  { cr_call_center_sk: 1, cr_returned_date_sk: 1, cr_returning_customer_sk: 1, cr_net_loss: 50.0 }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_year: 1998, d_moy: 11 }
+]
+
+let customer = [
+  { c_customer_sk: 1, c_current_cdemo_sk: 1, c_current_hdemo_sk: 1, c_current_addr_sk: 1 }
+]
+
+let customer_address = [
+  { ca_address_sk: 1, ca_gmt_offset: -6 }
+]
+
+let customer_demographics = [
+  { cd_demo_sk: 1, cd_marital_status: "M", cd_education_status: "Unknown" }
+]
+
+let household_demographics = [
+  { hd_demo_sk: 1, hd_buy_potential: "1001-5000" }
+]
+
+let result =
+  from cc in call_center
+  join cr in catalog_returns on cr.cr_call_center_sk == cc.cc_call_center_sk
+  join d in date_dim on d.d_date_sk == cr.cr_returned_date_sk
+  join c in customer on c.c_customer_sk == cr.cr_returning_customer_sk
+  join ca in customer_address on ca.ca_address_sk == c.c_current_addr_sk
+  join cd in customer_demographics on cd.cd_demo_sk == c.c_current_cdemo_sk
+  join hd in household_demographics on hd.hd_demo_sk == c.c_current_hdemo_sk
+  where d.d_year == 1998 && d.d_moy == 11 &&
+        ((cd.cd_marital_status == "M" && cd.cd_education_status == "Unknown") ||
+         (cd.cd_marital_status == "W" && cd.cd_education_status == "Advanced Degree")) &&
+        hd.hd_buy_potential.starts_with("1001-5000") &&
+        ca.ca_gmt_offset == -6
+  group by { id: cc.cc_call_center_id, name: cc.cc_name, mgr: cc.cc_manager } into g
+  select {
+    Call_Center: g.key.id,
+    Call_Center_Name: g.key.name,
+    Manager: g.key.mgr,
+    Returns_Loss: sum(from x in g select x.cr.cr_net_loss)
+  }
+
 json(result)
 
-test "TPCDS Q91 placeholder" {
-  expect result == 91
+test "TPCDS Q91 simplified" {
+  expect result == [{ Call_Center: 100, Call_Center_Name: "Center", Manager: "Manager", Returns_Loss: 50.0 }]
 }

@@ -1,7 +1,33 @@
-let t = [{id: 1, val: 93}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  { ss_item_sk: 1, ss_ticket_number: 1, ss_customer_sk: 1, ss_quantity: 2, ss_sales_price: 5.0 }
+]
+
+let store_returns = [
+  { sr_item_sk: 1, sr_ticket_number: 1, sr_return_quantity: 1 }
+]
+
+let reason = [
+  { r_reason_sk: 1, r_reason_desc: "ReasonA" }
+]
+
+let rows =
+  from ss in store_sales
+  left join sr in store_returns on sr.sr_item_sk == ss.ss_item_sk && sr.sr_ticket_number == ss.ss_ticket_number
+  join r in reason on sr.sr_reason_sk == r.r_reason_sk
+  where r.r_reason_desc == "ReasonA"
+  select {
+    ss_customer_sk: ss.ss_customer_sk,
+    act_sales: (sr.sr_return_quantity != null ? (ss.ss_quantity - sr.sr_return_quantity) : ss.ss_quantity) * ss.ss_sales_price
+  }
+
+let result =
+  from row in rows
+  group by row.ss_customer_sk into g
+  sort by sum(from x in g select x.act_sales), g.key
+  select { ss_customer_sk: g.key, sumsales: sum(from x in g select x.act_sales) }
+
 json(result)
 
-test "TPCDS Q93 placeholder" {
-  expect result == 93
+test "TPCDS Q93 simplified" {
+  expect result == [{ ss_customer_sk: 1, sumsales: 5.0 }]
 }

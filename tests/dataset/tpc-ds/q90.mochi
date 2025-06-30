@@ -1,7 +1,51 @@
-let t = [{id: 1, val: 90}]
-let result = from r in t select r.val |> first
+let household_demographics = [
+  { hd_demo_sk: 1, hd_dep_count: 0 }
+]
+
+let time_dim = [
+  { t_time_sk: 1, t_hour: 6, t_minute: 0 },
+  { t_time_sk: 2, t_hour: 18, t_minute: 0 }
+]
+
+let web_page = [
+  { wp_web_page_sk: 1, wp_char_count: 5100 }
+]
+
+let web_sales = [
+  { ws_sold_time_sk: 1, ws_ship_hdemo_sk: 1, ws_web_page_sk: 1 },
+  { ws_sold_time_sk: 2, ws_ship_hdemo_sk: 1, ws_web_page_sk: 1 }
+]
+
+let depcnt = 0
+let hour_am = 6
+let hour_pm = 18
+
+let amc = count(
+  from ws in web_sales
+  join hd in household_demographics on hd.hd_demo_sk == ws.ws_ship_hdemo_sk
+  join t in time_dim on t.t_time_sk == ws.ws_sold_time_sk
+  join wp in web_page on wp.wp_web_page_sk == ws.ws_web_page_sk
+  where t.t_hour >= hour_am && t.t_hour <= hour_am + 1 &&
+        hd.hd_dep_count == depcnt &&
+        wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  select 1
+)
+
+let pmc = count(
+  from ws in web_sales
+  join hd in household_demographics on hd.hd_demo_sk == ws.ws_ship_hdemo_sk
+  join t in time_dim on t.t_time_sk == ws.ws_sold_time_sk
+  join wp in web_page on wp.wp_web_page_sk == ws.ws_web_page_sk
+  where t.t_hour >= hour_pm && t.t_hour <= hour_pm + 1 &&
+        hd.hd_dep_count == depcnt &&
+        wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
+  select 1
+)
+
+let result = [{ am_pm_ratio: amc as float / pmc as float }]
+
 json(result)
 
-test "TPCDS Q90 placeholder" {
-  expect result == 90
+test "TPCDS Q90 simplified" {
+  expect result == [{ am_pm_ratio: 1.0 }]
 }

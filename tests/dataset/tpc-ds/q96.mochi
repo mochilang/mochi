@@ -1,7 +1,32 @@
-let t = [{id: 1, val: 96}]
-let result = from r in t select r.val |> first
+let store_sales = [
+  { ss_sold_time_sk: 1, ss_hdemo_sk: 1, ss_store_sk: 1 }
+]
+
+let household_demographics = [
+  { hd_demo_sk: 1, hd_dep_count: 0 }
+]
+
+let time_dim = [
+  { t_time_sk: 1, t_hour: 20, t_minute: 35 }
+]
+
+let store = [
+  { s_store_sk: 1, s_store_name: "ese" }
+]
+
+let result = [
+  { count: count(
+      from ss in store_sales
+      join hd in household_demographics on hd.hd_demo_sk == ss.ss_hdemo_sk
+      join t in time_dim on t.t_time_sk == ss.ss_sold_time_sk
+      join s in store on s.s_store_sk == ss.ss_store_sk
+      where t.t_hour == 20 && t.t_minute >= 30 && hd.hd_dep_count == 0 && s.s_store_name == "ese"
+      select 1)
+  }
+]
+
 json(result)
 
-test "TPCDS Q96 placeholder" {
-  expect result == 96
+test "TPCDS Q96 simplified" {
+  expect result == [{ count: 1 }]
 }

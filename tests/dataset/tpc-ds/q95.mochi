@@ -1,7 +1,49 @@
-let t = [{id: 1, val: 95}]
-let result = from r in t select r.val |> first
+let web_sales = [
+  { ws_order_number: 1, ws_ship_date_sk: 1, ws_ship_addr_sk: 1, ws_web_site_sk: 1, ws_warehouse_sk: 1, ws_ext_ship_cost: 5.0, ws_net_profit: 10.0 },
+  { ws_order_number: 1, ws_ship_date_sk: 1, ws_ship_addr_sk: 1, ws_web_site_sk: 1, ws_warehouse_sk: 2, ws_ext_ship_cost: 7.0, ws_net_profit: 12.0 }
+]
+
+let web_returns = [
+  { wr_order_number: 1 }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_date: "1999-02-10" }
+]
+
+let customer_address = [
+  { ca_address_sk: 1, ca_state: "CA" }
+]
+
+let web_site = [
+  { web_site_sk: 1, web_company_name: "pri" }
+]
+
+let ws_wh =
+  from ws1 in web_sales
+  from ws2 in web_sales
+  where ws1.ws_order_number == ws2.ws_order_number && ws1.ws_warehouse_sk != ws2.ws_warehouse_sk
+  select { ws_order_number: ws1.ws_order_number }
+
+let qualified_ws1 =
+  from ws1 in web_sales
+  join d in date_dim on d.d_date_sk == ws1.ws_ship_date_sk
+  join ca in customer_address on ca.ca_address_sk == ws1.ws_ship_addr_sk
+  join web in web_site on web.web_site_sk == ws1.ws_web_site_sk
+  where d.d_date >= "1999-02-01" && d.d_date <= "1999-04-02" &&
+        ca.ca_state == "CA" && web.web_company_name == "pri" &&
+        any(from wh in ws_wh where wh.ws_order_number == ws1.ws_order_number select true) &&
+        any(from wr in web_returns join wh in ws_wh on wh.ws_order_number == wr.wr_order_number where ws1.ws_order_number == wr.wr_order_number select true)
+  select ws1
+
+let result = [{
+  "order count": count(distinct from x in qualified_ws1 select x.ws_order_number),
+  "total shipping cost": sum(from x in qualified_ws1 select x.ws_ext_ship_cost),
+  "total net profit": sum(from x in qualified_ws1 select x.ws_net_profit)
+}]
+
 json(result)
 
-test "TPCDS Q95 placeholder" {
-  expect result == 95
+test "TPCDS Q95 simplified" {
+  expect result == [{ "order count": 1, "total shipping cost": 5.0, "total net profit": 10.0 }]
 }

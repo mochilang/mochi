@@ -1,7 +1,53 @@
-let t = [{id: 1, val: 99}]
-let result = from r in t select r.val |> first
+let catalog_sales = [
+  { cs_ship_date_sk: 1, cs_sold_date_sk: 1, cs_warehouse_sk: 1, cs_ship_mode_sk: 1, cs_call_center_sk: 1 }
+]
+
+let warehouse = [
+  { w_warehouse_sk: 1, w_warehouse_name: "Main" }
+]
+
+let ship_mode = [
+  { sm_ship_mode_sk: 1, sm_type: "REG" }
+]
+
+let call_center = [
+  { cc_call_center_sk: 1, cc_name: "Center1" }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_month_seq: 1176 }
+]
+
+let result =
+  from cs in catalog_sales
+  join w in warehouse on w.w_warehouse_sk == cs.cs_warehouse_sk
+  join sm in ship_mode on sm.sm_ship_mode_sk == cs.cs_ship_mode_sk
+  join cc in call_center on cc.cc_call_center_sk == cs.cs_call_center_sk
+  join d in date_dim on d.d_date_sk == cs.cs_ship_date_sk
+  where d.d_month_seq >= 1176 && d.d_month_seq <= 1176 + 11
+  group by { wh: substr(w.w_warehouse_name,1,20), sm: sm.sm_type, cc: cc.cc_name } into g
+  select {
+    w_warehouse_name: g.key.wh,
+    sm_type: g.key.sm,
+    cc_name: g.key.cc,
+    "30 days": sum(from x in g where (x.cs.cs_ship_date_sk - x.cs.cs_sold_date_sk) <= 30 select 1),
+    "31-60 days": sum(from x in g where (x.cs.cs_ship_date_sk - x.cs.cs_sold_date_sk) > 30 && (x.cs.cs_ship_date_sk - x.cs.cs_sold_date_sk) <= 60 select 1),
+    "61-90 days": sum(from x in g where (x.cs.cs_ship_date_sk - x.cs.cs_sold_date_sk) > 60 && (x.cs.cs_ship_date_sk - x.cs.cs_sold_date_sk) <= 90 select 1),
+    "91-120 days": sum(from x in g where (x.cs.cs_ship_date_sk - x.cs.cs_sold_date_sk) > 90 && (x.cs.cs_ship_date_sk - x.cs.cs_sold_date_sk) <= 120 select 1),
+    ">120 days": sum(from x in g where (x.cs.cs_ship_date_sk - x.cs.cs_sold_date_sk) > 120 select 1)
+  }
+
 json(result)
 
-test "TPCDS Q99 placeholder" {
-  expect result == 99
+test "TPCDS Q99 simplified" {
+  expect result == [{
+    w_warehouse_name: "Main",
+    sm_type: "REG",
+    cc_name: "Center1",
+    "30 days": 1,
+    "31-60 days": 0,
+    "61-90 days": 0,
+    "91-120 days": 0,
+    ">120 days": 0
+  }]
 }

@@ -1,7 +1,30 @@
-let t = [{id: 1, val: 92}]
-let result = from r in t select r.val |> first
+let item = [
+  { i_item_sk: 1, i_manufact_id: 1 }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_date: "1998-01-15" }
+]
+
+let web_sales = [
+  { ws_item_sk: 1, ws_sold_date_sk: 1, ws_ext_discount_amt: 10.0 },
+  { ws_item_sk: 1, ws_sold_date_sk: 1, ws_ext_discount_amt: 5.0 }
+]
+
+let avg_disc = avg(from ws in web_sales select ws.ws_ext_discount_amt)
+
+let result = [{ "Excess Discount Amount":
+  sum(from ws in web_sales
+      join i in item on i.i_item_sk == ws.ws_item_sk
+      join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk
+      where i.i_manufact_id == 1 &&
+            d.d_date >= "1998-01-01" && d.d_date <= "1998-04-01" &&
+            ws.ws_ext_discount_amt > 1.3 * avg_disc
+      select ws.ws_ext_discount_amt)
+}]
+
 json(result)
 
-test "TPCDS Q92 placeholder" {
-  expect result == 92
+test "TPCDS Q92 simplified" {
+  expect result == [{ "Excess Discount Amount": 10.0 }]
 }

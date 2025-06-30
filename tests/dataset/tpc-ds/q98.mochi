@@ -1,7 +1,51 @@
-let t = [{id: 1, val: 98}]
-let result = from r in t select r.val |> first
+let item = [
+  { i_item_sk: 1, i_item_id: "A", i_item_desc: "Item A", i_category: "Cat1", i_class: "ClassA", i_current_price: 10.0 },
+  { i_item_sk: 2, i_item_id: "B", i_item_desc: "Item B", i_category: "Cat2", i_class: "ClassA", i_current_price: 20.0 }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_date: "1998-01-15" }
+]
+
+let store_sales = [
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_ext_sales_price: 100.0 },
+  { ss_item_sk: 2, ss_sold_date_sk: 1, ss_ext_sales_price: 200.0 }
+]
+
+let totals =
+  from ss in store_sales
+  join i in item on i.i_item_sk == ss.ss_item_sk
+  join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
+  where d.d_date >= "1998-01-01" && d.d_date <= "1998-01-31" &&
+        (i.i_category == "Cat1" || i.i_category == "Cat2" || i.i_category == "Cat3")
+  group by { class: i.i_class } into g
+  select { class: g.key.class, total: sum(from x in g select x.ss.ss_ext_sales_price) }
+
+let class_total = totals[0].total
+
+let result =
+  from ss in store_sales
+  join i in item on i.i_item_sk == ss.ss_item_sk
+  join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
+  where d.d_date >= "1998-01-01" && d.d_date <= "1998-01-31" &&
+        (i.i_category == "Cat1" || i.i_category == "Cat2" || i.i_category == "Cat3")
+  group by { id: i.i_item_id, desc: i.i_item_desc, cat: i.i_category, class: i.i_class, price: i.i_current_price } into g
+  sort by g.key.cat, g.key.class, g.key.id
+  select {
+    i_item_id: g.key.id,
+    i_item_desc: g.key.desc,
+    i_category: g.key.cat,
+    i_class: g.key.class,
+    i_current_price: g.key.price,
+    itemrevenue: sum(from x in g select x.ss.ss_ext_sales_price),
+    revenueratio: sum(from x in g select x.ss.ss_ext_sales_price) * 100.0 / class_total
+  }
+  
 json(result)
 
-test "TPCDS Q98 placeholder" {
-  expect result == 98
+test "TPCDS Q98 simplified" {
+  expect result == [
+    { i_item_id: "A", i_item_desc: "Item A", i_category: "Cat1", i_class: "ClassA", i_current_price: 10.0, itemrevenue: 100.0, revenueratio: 100.0 * 100.0 / 300.0 },
+    { i_item_id: "B", i_item_desc: "Item B", i_category: "Cat2", i_class: "ClassA", i_current_price: 20.0, itemrevenue: 200.0, revenueratio: 200.0 * 100.0 / 300.0 }
+  ]
 }
