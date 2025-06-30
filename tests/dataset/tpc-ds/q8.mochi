@@ -4,8 +4,8 @@ let store = []
 let customer_address = []
 let customer = []
 
-// exercise substr builtin
-substr("zip", 0, 2)
+// exercise substr builtin with negative index
+print(substr("zip", 0, -1))
 
 let result = []
 json(result)
