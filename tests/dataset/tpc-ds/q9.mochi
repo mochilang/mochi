@@ -1,7 +1,83 @@
+// Average discount or net paid for quantity buckets
 let store_sales = []
 let reason = []
 
-let result = []
+let bucket1 =
+  if count(from s in store_sales
+           where s.ss_quantity >= 1 && s.ss_quantity <= 20
+           select s) > 10 {
+    avg(from s in store_sales
+        where s.ss_quantity >= 1 && s.ss_quantity <= 20
+        select s.ss_ext_discount_amt)
+  } else {
+    avg(from s in store_sales
+        where s.ss_quantity >= 1 && s.ss_quantity <= 20
+        select s.ss_net_paid)
+  }
+
+let bucket2 =
+  if count(from s in store_sales
+           where s.ss_quantity >= 21 && s.ss_quantity <= 40
+           select s) > 20 {
+    avg(from s in store_sales
+        where s.ss_quantity >= 21 && s.ss_quantity <= 40
+        select s.ss_ext_discount_amt)
+  } else {
+    avg(from s in store_sales
+        where s.ss_quantity >= 21 && s.ss_quantity <= 40
+        select s.ss_net_paid)
+  }
+
+let bucket3 =
+  if count(from s in store_sales
+           where s.ss_quantity >= 41 && s.ss_quantity <= 60
+           select s) > 30 {
+    avg(from s in store_sales
+        where s.ss_quantity >= 41 && s.ss_quantity <= 60
+        select s.ss_ext_discount_amt)
+  } else {
+    avg(from s in store_sales
+        where s.ss_quantity >= 41 && s.ss_quantity <= 60
+        select s.ss_net_paid)
+  }
+
+let bucket4 =
+  if count(from s in store_sales
+           where s.ss_quantity >= 61 && s.ss_quantity <= 80
+           select s) > 40 {
+    avg(from s in store_sales
+        where s.ss_quantity >= 61 && s.ss_quantity <= 80
+        select s.ss_ext_discount_amt)
+  } else {
+    avg(from s in store_sales
+        where s.ss_quantity >= 61 && s.ss_quantity <= 80
+        select s.ss_net_paid)
+  }
+
+let bucket5 =
+  if count(from s in store_sales
+           where s.ss_quantity >= 81 && s.ss_quantity <= 100
+           select s) > 50 {
+    avg(from s in store_sales
+        where s.ss_quantity >= 81 && s.ss_quantity <= 100
+        select s.ss_ext_discount_amt)
+  } else {
+    avg(from s in store_sales
+        where s.ss_quantity >= 81 && s.ss_quantity <= 100
+        select s.ss_net_paid)
+  }
+
+let result =
+  from r in reason
+  where r.r_reason_sk == 1
+  select {
+    bucket1: bucket1,
+    bucket2: bucket2,
+    bucket3: bucket3,
+    bucket4: bucket4,
+    bucket5: bucket5
+  }
+
 json(result)
 
 test "TPCDS Q9 empty" {
