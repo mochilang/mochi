@@ -2135,6 +2135,10 @@ func constKey(v Value) (string, bool) {
 		return "s" + v.Str, true
 	case ValueNull:
 		return "n", true
+	case ValueList:
+		return "l" + valueToString(v), true
+	case ValueMap:
+		return "m" + valueToString(v), true
 	default:
 		return "", false
 	}
