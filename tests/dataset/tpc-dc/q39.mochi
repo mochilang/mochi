@@ -1,0 +1,37 @@
+let inventory = [
+  {inv_warehouse_sk: 1, inv_item_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10},
+  {inv_warehouse_sk: 1, inv_item_sk: 1, inv_date_sk: 2, inv_quantity_on_hand: 30}
+]
+
+let item = [
+  {i_item_sk: 1}
+]
+
+let warehouse = [
+  {w_warehouse_sk: 1, w_warehouse_name: "W1"}
+]
+
+let date_dim = [
+  {d_date_sk: 1, d_moy: 1, d_year: 1999},
+  {d_date_sk: 2, d_moy: 2, d_year: 1999}
+]
+
+let qty =
+  from inv in inventory
+  join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  where d.d_year == 1999 && d.d_moy <= 1
+  select inv.inv_quantity_on_hand
+
+let mean = avg(qty)
+let stdev = sqrt(avg(from x in qty select (x - mean) * (x - mean)))
+let cov = stdev / mean
+
+let result = [{w_warehouse_sk: 1, i_item_sk: 1, d_moy: 1, mean: mean, cov: cov}]
+
+json(result)
+
+test "TPCDC Q39 simplified" {
+  expect result == [
+    {w_warehouse_sk: 1, i_item_sk: 1, d_moy: 1, mean: 20.0, cov: 0.5}
+  ]
+}

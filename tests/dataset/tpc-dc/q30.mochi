@@ -1,0 +1,56 @@
+let date_dim = [
+  {d_date_sk: 1, d_year: 1999},
+  {d_date_sk: 2, d_year: 1999}
+]
+
+let customer_address = [
+  {ca_address_sk: 1, ca_state: "CA"},
+  {ca_address_sk: 2, ca_state: "CA"}
+]
+
+let web_returns = [
+  {wr_returned_date_sk: 1, wr_returning_customer_sk: 1, wr_returning_addr_sk: 1, wr_return_amt: 100.0},
+  {wr_returned_date_sk: 2, wr_returning_customer_sk: 2, wr_returning_addr_sk: 2, wr_return_amt: 50.0}
+]
+
+let customer = [
+  {c_customer_sk: 1, c_customer_id: "C1", c_current_addr_sk: 1, c_salutation: "Mr", c_first_name: "John", c_last_name: "Doe", c_preferred_cust_flag: "Y", c_birth_day: 1, c_birth_month: 1, c_birth_year: 1980, c_birth_country: "US", c_login: "john", c_email_address: "j@example.com", c_last_review_date_sk: 1},
+  {c_customer_sk: 2, c_customer_id: "C2", c_current_addr_sk: 2, c_salutation: "Ms", c_first_name: "Jane", c_last_name: "Smith", c_preferred_cust_flag: "N", c_birth_day: 2, c_birth_month: 2, c_birth_year: 1985, c_birth_country: "US", c_login: "jane", c_email_address: "js@example.com", c_last_review_date_sk: 1}
+]
+
+let customer_total_return =
+  from wr in web_returns
+  join dd in date_dim on wr.wr_returned_date_sk == dd.d_date_sk
+  join ca in customer_address on wr.wr_returning_addr_sk == ca.ca_address_sk
+  where dd.d_year == 1999
+  group by {customer_sk: wr.wr_returning_customer_sk, state: ca.ca_state} into g
+  select {
+    ctr_customer_sk: g.key.customer_sk,
+    ctr_state: g.key.state,
+    ctr_total_return: sum(from x in g select x.wr_return_amt)
+  }
+
+let result =
+  from ctr in customer_total_return
+  join ca in customer_address on ca.ca_state == ctr.ctr_state
+  join c in customer on ctr.ctr_customer_sk == c.c_customer_sk
+  where ca.ca_address_sk == c.c_current_addr_sk &&
+        ctr.ctr_total_return > avg(
+          from ctr2 in customer_total_return
+          where ctr.ctr_state == ctr2.ctr_state
+          select ctr2.ctr_total_return
+        ) * 1.2 &&
+        ca.ca_state == "CA"
+  sort by c.c_customer_id
+  select {
+    c_customer_id: c.c_customer_id,
+    ctr_total_return: ctr.ctr_total_return
+  }
+
+json(result)
+
+test "TPCDC Q30 simplified" {
+  expect result == [
+    {c_customer_id: "C1", ctr_total_return: 100.0}
+  ]
+}
