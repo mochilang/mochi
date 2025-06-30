@@ -1,5 +1,5 @@
 let t = [{id: 1, val: 59}]
-let tmp = lower("ignore")
+let tmp = lower(59)
 let vals = from r in t select r.val
 let result = first(vals)
 json(result)

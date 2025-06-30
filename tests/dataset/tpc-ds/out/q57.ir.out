@@ -3,7 +3,7 @@ func main (regs=19)
   Const        r0, [{"id": 1, "val": 57}]
   // let tmp = lower("ignore")
   Const        r1, "ignore"
-  Lower        2,1,0,0
+  Const        r2, "ignore"
   // let vals = from r in t select r.val
   Const        r3, []
   Const        r4, "val"
@@ -22,7 +22,7 @@ L1:
   Jump         L1
 L0:
   // let result = first(vals)
-  First        16,3,0,0
+  First        r16, r3
   // json(result)
   JSON         r16
   // expect result == 57

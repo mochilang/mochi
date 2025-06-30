@@ -1131,10 +1131,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToUpper(b.Str)}
 		case OpLower:
 			b := fr.regs[ins.B]
-			if b.Tag != ValueStr {
-				return Value{}, m.newError(fmt.Errorf("lower expects string"), trace, ins.Line)
+			if b.Tag == ValueStr {
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(b.Str)}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(b)))}
 			}
-			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(b.Str)}
 		case OpReverse:
 			lst := fr.regs[ins.B]
 			if lst.Tag != ValueList {
