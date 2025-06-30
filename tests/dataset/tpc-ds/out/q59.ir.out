@@ -1,32 +1,611 @@
-func main (regs=19)
-  // let t = [{id: 1, val: 59}]
-  Const        r0, [{"id": 1, "val": 59}]
-  // let tmp = lower("ignore")
-  Const        r1, "ignore"
-  Lower        2,1,0,0
-  // let vals = from r in t select r.val
+func main (regs=459)
+  // let wss=[
+  Const        r0, [{"d_week_seq": 1, "fri_sales": 10, "mon_sales": 10, "sat_sales": 10, "ss_store_sk": 1, "sun_sales": 10, "thu_sales": 10, "tue_sales": 10, "wed_sales": 10}, {"d_week_seq": 2, "fri_sales": 8, "mon_sales": 8, "sat_sales": 8, "ss_store_sk": 1, "sun_sales": 8, "thu_sales": 8, "tue_sales": 8, "wed_sales": 8}, {"d_week_seq": 53, "fri_sales": 5, "mon_sales": 5, "sat_sales": 5, "ss_store_sk": 1, "sun_sales": 5, "thu_sales": 5, "tue_sales": 5, "wed_sales": 5}, {"d_week_seq": 54, "fri_sales": 12, "mon_sales": 12, "sat_sales": 12, "ss_store_sk": 1, "sun_sales": 12, "thu_sales": 12, "tue_sales": 12, "wed_sales": 12}]
+  // let store=[{s_store_sk:1, s_store_name:"Store", s_store_id:1}]
+  Const        r1, [{"s_store_id": 1, "s_store_name": "Store", "s_store_sk": 1}]
+  // let date_dim=[
+  Const        r2, [{"d_month_seq": 1, "d_week_seq": 1}, {"d_month_seq": 2, "d_week_seq": 2}, {"d_month_seq": 13, "d_week_seq": 53}, {"d_month_seq": 14, "d_week_seq": 54}]
+  // from w in wss
   Const        r3, []
-  Const        r4, "val"
-  IterPrep     r5, r0
-  Len          r6, r5
-  Const        r7, 0
+  // where d.d_month_seq >=1 && d.d_month_seq <=12
+  Const        r4, "d_month_seq"
+  Const        r5, "d_month_seq"
+  // select {s_store_name1:s.s_store_name, s_store_id1:s.s_store_id, d_week_seq1:w.d_week_seq,
+  Const        r6, "s_store_name1"
+  Const        r7, "s_store_name"
+  Const        r8, "s_store_id1"
+  Const        r9, "s_store_id"
+  Const        r10, "d_week_seq1"
+  Const        r11, "d_week_seq"
+  // sun_sales1:w.sun_sales, mon_sales1:w.mon_sales, tue_sales1:w.tue_sales,
+  Const        r12, "sun_sales1"
+  Const        r13, "sun_sales"
+  Const        r14, "mon_sales1"
+  Const        r15, "mon_sales"
+  Const        r16, "tue_sales1"
+  Const        r17, "tue_sales"
+  // wed_sales1:w.wed_sales, thu_sales1:w.thu_sales, fri_sales1:w.fri_sales, sat_sales1:w.sat_sales}
+  Const        r18, "wed_sales1"
+  Const        r19, "wed_sales"
+  Const        r20, "thu_sales1"
+  Const        r21, "thu_sales"
+  Const        r22, "fri_sales1"
+  Const        r23, "fri_sales"
+  Const        r24, "sat_sales1"
+  Const        r25, "sat_sales"
+  // from w in wss
+  IterPrep     r26, r0
+  Len          r27, r26
+  Const        r28, 0
+L7:
+  LessInt      r30, r28, r27
+  JumpIfFalse  r30, L0
+  Index        r32, r26, r28
+  // join s in store on w.ss_store_sk==s.s_store_sk
+  IterPrep     r33, r1
+  Len          r34, r33
+  Const        r35, "ss_store_sk"
+  Const        r36, "s_store_sk"
+  // where d.d_month_seq >=1 && d.d_month_seq <=12
+  Const        r37, "d_month_seq"
+  Const        r38, "d_month_seq"
+  // select {s_store_name1:s.s_store_name, s_store_id1:s.s_store_id, d_week_seq1:w.d_week_seq,
+  Const        r39, "s_store_name1"
+  Const        r40, "s_store_name"
+  Const        r41, "s_store_id1"
+  Const        r42, "s_store_id"
+  Const        r43, "d_week_seq1"
+  Const        r44, "d_week_seq"
+  // sun_sales1:w.sun_sales, mon_sales1:w.mon_sales, tue_sales1:w.tue_sales,
+  Const        r45, "sun_sales1"
+  Const        r46, "sun_sales"
+  Const        r47, "mon_sales1"
+  Const        r48, "mon_sales"
+  Const        r49, "tue_sales1"
+  Const        r50, "tue_sales"
+  // wed_sales1:w.wed_sales, thu_sales1:w.thu_sales, fri_sales1:w.fri_sales, sat_sales1:w.sat_sales}
+  Const        r51, "wed_sales1"
+  Const        r52, "wed_sales"
+  Const        r53, "thu_sales1"
+  Const        r54, "thu_sales"
+  Const        r55, "fri_sales1"
+  Const        r56, "fri_sales"
+  Const        r57, "sat_sales1"
+  Const        r58, "sat_sales"
+  // join s in store on w.ss_store_sk==s.s_store_sk
+  Const        r59, 0
+L6:
+  LessInt      r61, r59, r34
+  JumpIfFalse  r61, L1
+  Index        r63, r33, r59
+  Const        r64, "ss_store_sk"
+  Index        r65, r32, r64
+  Const        r66, "s_store_sk"
+  Index        r67, r63, r66
+  Equal        r68, r65, r67
+  JumpIfFalse  r68, L2
+  // join d in date_dim on w.d_week_seq==d.d_week_seq
+  IterPrep     r69, r2
+  Len          r70, r69
+  Const        r71, "d_week_seq"
+  Const        r72, "d_week_seq"
+  // where d.d_month_seq >=1 && d.d_month_seq <=12
+  Const        r73, "d_month_seq"
+  Const        r74, "d_month_seq"
+  // select {s_store_name1:s.s_store_name, s_store_id1:s.s_store_id, d_week_seq1:w.d_week_seq,
+  Const        r75, "s_store_name1"
+  Const        r76, "s_store_name"
+  Const        r77, "s_store_id1"
+  Const        r78, "s_store_id"
+  Const        r79, "d_week_seq1"
+  Const        r80, "d_week_seq"
+  // sun_sales1:w.sun_sales, mon_sales1:w.mon_sales, tue_sales1:w.tue_sales,
+  Const        r81, "sun_sales1"
+  Const        r82, "sun_sales"
+  Const        r83, "mon_sales1"
+  Const        r84, "mon_sales"
+  Const        r85, "tue_sales1"
+  Const        r86, "tue_sales"
+  // wed_sales1:w.wed_sales, thu_sales1:w.thu_sales, fri_sales1:w.fri_sales, sat_sales1:w.sat_sales}
+  Const        r87, "wed_sales1"
+  Const        r88, "wed_sales"
+  Const        r89, "thu_sales1"
+  Const        r90, "thu_sales"
+  Const        r91, "fri_sales1"
+  Const        r92, "fri_sales"
+  Const        r93, "sat_sales1"
+  Const        r94, "sat_sales"
+  // join d in date_dim on w.d_week_seq==d.d_week_seq
+  Const        r95, 0
+L5:
+  LessInt      r97, r95, r70
+  JumpIfFalse  r97, L2
+  Index        r99, r69, r95
+  Const        r100, "d_week_seq"
+  Index        r101, r32, r100
+  Const        r102, "d_week_seq"
+  Index        r103, r99, r102
+  Equal        r104, r101, r103
+  JumpIfFalse  r104, L3
+  // where d.d_month_seq >=1 && d.d_month_seq <=12
+  Const        r105, "d_month_seq"
+  Index        r106, r99, r105
+  Const        r107, 1
+  LessEq       r108, r107, r106
+  Const        r109, "d_month_seq"
+  Index        r110, r99, r109
+  Const        r111, 12
+  LessEq       r112, r110, r111
+  Move         r113, r108
+  JumpIfFalse  r113, L4
+  Move         r113, r112
+L4:
+  JumpIfFalse  r113, L3
+  // select {s_store_name1:s.s_store_name, s_store_id1:s.s_store_id, d_week_seq1:w.d_week_seq,
+  Const        r114, "s_store_name1"
+  Const        r115, "s_store_name"
+  Index        r116, r63, r115
+  Const        r117, "s_store_id1"
+  Const        r118, "s_store_id"
+  Index        r119, r63, r118
+  Const        r120, "d_week_seq1"
+  Const        r121, "d_week_seq"
+  Index        r122, r32, r121
+  // sun_sales1:w.sun_sales, mon_sales1:w.mon_sales, tue_sales1:w.tue_sales,
+  Const        r123, "sun_sales1"
+  Const        r124, "sun_sales"
+  Index        r125, r32, r124
+  Const        r126, "mon_sales1"
+  Const        r127, "mon_sales"
+  Index        r128, r32, r127
+  Const        r129, "tue_sales1"
+  Const        r130, "tue_sales"
+  Index        r131, r32, r130
+  // wed_sales1:w.wed_sales, thu_sales1:w.thu_sales, fri_sales1:w.fri_sales, sat_sales1:w.sat_sales}
+  Const        r132, "wed_sales1"
+  Const        r133, "wed_sales"
+  Index        r134, r32, r133
+  Const        r135, "thu_sales1"
+  Const        r136, "thu_sales"
+  Index        r137, r32, r136
+  Const        r138, "fri_sales1"
+  Const        r139, "fri_sales"
+  Index        r140, r32, r139
+  Const        r141, "sat_sales1"
+  Const        r142, "sat_sales"
+  Index        r143, r32, r142
+  // select {s_store_name1:s.s_store_name, s_store_id1:s.s_store_id, d_week_seq1:w.d_week_seq,
+  Move         r144, r114
+  Move         r145, r116
+  Move         r146, r117
+  Move         r147, r119
+  Move         r148, r120
+  Move         r149, r122
+  // sun_sales1:w.sun_sales, mon_sales1:w.mon_sales, tue_sales1:w.tue_sales,
+  Move         r150, r123
+  Move         r151, r125
+  Move         r152, r126
+  Move         r153, r128
+  Move         r154, r129
+  Move         r155, r131
+  // wed_sales1:w.wed_sales, thu_sales1:w.thu_sales, fri_sales1:w.fri_sales, sat_sales1:w.sat_sales}
+  Move         r156, r132
+  Move         r157, r134
+  Move         r158, r135
+  Move         r159, r137
+  Move         r160, r138
+  Move         r161, r140
+  Move         r162, r141
+  Move         r163, r143
+  // select {s_store_name1:s.s_store_name, s_store_id1:s.s_store_id, d_week_seq1:w.d_week_seq,
+  MakeMap      r164, 10, r144
+  // from w in wss
+  Append       r3, r3, r164
+L3:
+  // join d in date_dim on w.d_week_seq==d.d_week_seq
+  Const        r166, 1
+  Add          r95, r95, r166
+  Jump         L5
+L2:
+  // join s in store on w.ss_store_sk==s.s_store_sk
+  Const        r167, 1
+  Add          r59, r59, r167
+  Jump         L6
 L1:
-  LessInt      r9, r7, r6
-  JumpIfFalse  r9, L0
-  Index        r11, r5, r7
-  Const        r12, "val"
-  Index        r13, r11, r12
-  Append       r3, r3, r13
-  Const        r15, 1
-  AddInt       r7, r7, r15
-  Jump         L1
+  // from w in wss
+  Const        r168, 1
+  AddInt       r28, r28, r168
+  Jump         L7
 L0:
-  // let result = first(vals)
-  First        16,3,0,0
+  // from w in wss
+  Const        r169, []
+  // where d.d_month_seq >=13 && d.d_month_seq <=24
+  Const        r170, "d_month_seq"
+  Const        r171, "d_month_seq"
+  // select {s_store_name2:s.s_store_name, s_store_id2:s.s_store_id, d_week_seq2:w.d_week_seq,
+  Const        r172, "s_store_name2"
+  Const        r173, "s_store_name"
+  Const        r174, "s_store_id2"
+  Const        r175, "s_store_id"
+  Const        r176, "d_week_seq2"
+  Const        r177, "d_week_seq"
+  // sun_sales2:w.sun_sales, mon_sales2:w.mon_sales, tue_sales2:w.tue_sales,
+  Const        r178, "sun_sales2"
+  Const        r179, "sun_sales"
+  Const        r180, "mon_sales2"
+  Const        r181, "mon_sales"
+  Const        r182, "tue_sales2"
+  Const        r183, "tue_sales"
+  // wed_sales2:w.wed_sales, thu_sales2:w.thu_sales, fri_sales2:w.fri_sales, sat_sales2:w.sat_sales}
+  Const        r184, "wed_sales2"
+  Const        r185, "wed_sales"
+  Const        r186, "thu_sales2"
+  Const        r187, "thu_sales"
+  Const        r188, "fri_sales2"
+  Const        r189, "fri_sales"
+  Const        r190, "sat_sales2"
+  Const        r191, "sat_sales"
+  // from w in wss
+  IterPrep     r192, r0
+  Len          r193, r192
+  Const        r194, 0
+L15:
+  LessInt      r196, r194, r193
+  JumpIfFalse  r196, L8
+  Index        r32, r192, r194
+  // join s in store on w.ss_store_sk==s.s_store_sk
+  IterPrep     r198, r1
+  Len          r199, r198
+  Const        r200, "ss_store_sk"
+  Const        r201, "s_store_sk"
+  // where d.d_month_seq >=13 && d.d_month_seq <=24
+  Const        r202, "d_month_seq"
+  Const        r203, "d_month_seq"
+  // select {s_store_name2:s.s_store_name, s_store_id2:s.s_store_id, d_week_seq2:w.d_week_seq,
+  Const        r204, "s_store_name2"
+  Const        r205, "s_store_name"
+  Const        r206, "s_store_id2"
+  Const        r207, "s_store_id"
+  Const        r208, "d_week_seq2"
+  Const        r209, "d_week_seq"
+  // sun_sales2:w.sun_sales, mon_sales2:w.mon_sales, tue_sales2:w.tue_sales,
+  Const        r210, "sun_sales2"
+  Const        r211, "sun_sales"
+  Const        r212, "mon_sales2"
+  Const        r213, "mon_sales"
+  Const        r214, "tue_sales2"
+  Const        r215, "tue_sales"
+  // wed_sales2:w.wed_sales, thu_sales2:w.thu_sales, fri_sales2:w.fri_sales, sat_sales2:w.sat_sales}
+  Const        r216, "wed_sales2"
+  Const        r217, "wed_sales"
+  Const        r218, "thu_sales2"
+  Const        r219, "thu_sales"
+  Const        r220, "fri_sales2"
+  Const        r221, "fri_sales"
+  Const        r222, "sat_sales2"
+  Const        r223, "sat_sales"
+  // join s in store on w.ss_store_sk==s.s_store_sk
+  Const        r224, 0
+L14:
+  LessInt      r226, r224, r199
+  JumpIfFalse  r226, L9
+  Index        r63, r198, r224
+  Const        r228, "ss_store_sk"
+  Index        r229, r32, r228
+  Const        r230, "s_store_sk"
+  Index        r231, r63, r230
+  Equal        r232, r229, r231
+  JumpIfFalse  r232, L10
+  // join d in date_dim on w.d_week_seq==d.d_week_seq
+  IterPrep     r233, r2
+  Len          r234, r233
+  Const        r235, "d_week_seq"
+  Const        r236, "d_week_seq"
+  // where d.d_month_seq >=13 && d.d_month_seq <=24
+  Const        r237, "d_month_seq"
+  Const        r238, "d_month_seq"
+  // select {s_store_name2:s.s_store_name, s_store_id2:s.s_store_id, d_week_seq2:w.d_week_seq,
+  Const        r239, "s_store_name2"
+  Const        r240, "s_store_name"
+  Const        r241, "s_store_id2"
+  Const        r242, "s_store_id"
+  Const        r243, "d_week_seq2"
+  Const        r244, "d_week_seq"
+  // sun_sales2:w.sun_sales, mon_sales2:w.mon_sales, tue_sales2:w.tue_sales,
+  Const        r245, "sun_sales2"
+  Const        r246, "sun_sales"
+  Const        r247, "mon_sales2"
+  Const        r248, "mon_sales"
+  Const        r249, "tue_sales2"
+  Const        r250, "tue_sales"
+  // wed_sales2:w.wed_sales, thu_sales2:w.thu_sales, fri_sales2:w.fri_sales, sat_sales2:w.sat_sales}
+  Const        r251, "wed_sales2"
+  Const        r252, "wed_sales"
+  Const        r253, "thu_sales2"
+  Const        r254, "thu_sales"
+  Const        r255, "fri_sales2"
+  Const        r256, "fri_sales"
+  Const        r257, "sat_sales2"
+  Const        r258, "sat_sales"
+  // join d in date_dim on w.d_week_seq==d.d_week_seq
+  Const        r259, 0
+L13:
+  LessInt      r261, r259, r234
+  JumpIfFalse  r261, L10
+  Index        r99, r233, r259
+  Const        r263, "d_week_seq"
+  Index        r264, r32, r263
+  Const        r265, "d_week_seq"
+  Index        r266, r99, r265
+  Equal        r267, r264, r266
+  JumpIfFalse  r267, L11
+  // where d.d_month_seq >=13 && d.d_month_seq <=24
+  Const        r268, "d_month_seq"
+  Index        r269, r99, r268
+  Const        r270, 13
+  LessEq       r271, r270, r269
+  Const        r272, "d_month_seq"
+  Index        r273, r99, r272
+  Const        r274, 24
+  LessEq       r275, r273, r274
+  Move         r276, r271
+  JumpIfFalse  r276, L12
+  Move         r276, r275
+L12:
+  JumpIfFalse  r276, L11
+  // select {s_store_name2:s.s_store_name, s_store_id2:s.s_store_id, d_week_seq2:w.d_week_seq,
+  Const        r277, "s_store_name2"
+  Const        r278, "s_store_name"
+  Index        r279, r63, r278
+  Const        r280, "s_store_id2"
+  Const        r281, "s_store_id"
+  Index        r282, r63, r281
+  Const        r283, "d_week_seq2"
+  Const        r284, "d_week_seq"
+  Index        r285, r32, r284
+  // sun_sales2:w.sun_sales, mon_sales2:w.mon_sales, tue_sales2:w.tue_sales,
+  Const        r286, "sun_sales2"
+  Const        r287, "sun_sales"
+  Index        r288, r32, r287
+  Const        r289, "mon_sales2"
+  Const        r290, "mon_sales"
+  Index        r291, r32, r290
+  Const        r292, "tue_sales2"
+  Const        r293, "tue_sales"
+  Index        r294, r32, r293
+  // wed_sales2:w.wed_sales, thu_sales2:w.thu_sales, fri_sales2:w.fri_sales, sat_sales2:w.sat_sales}
+  Const        r295, "wed_sales2"
+  Const        r296, "wed_sales"
+  Index        r297, r32, r296
+  Const        r298, "thu_sales2"
+  Const        r299, "thu_sales"
+  Index        r300, r32, r299
+  Const        r301, "fri_sales2"
+  Const        r302, "fri_sales"
+  Index        r303, r32, r302
+  Const        r304, "sat_sales2"
+  Const        r305, "sat_sales"
+  Index        r306, r32, r305
+  // select {s_store_name2:s.s_store_name, s_store_id2:s.s_store_id, d_week_seq2:w.d_week_seq,
+  Move         r307, r277
+  Move         r308, r279
+  Move         r309, r280
+  Move         r310, r282
+  Move         r311, r283
+  Move         r312, r285
+  // sun_sales2:w.sun_sales, mon_sales2:w.mon_sales, tue_sales2:w.tue_sales,
+  Move         r313, r286
+  Move         r314, r288
+  Move         r315, r289
+  Move         r316, r291
+  Move         r317, r292
+  Move         r318, r294
+  // wed_sales2:w.wed_sales, thu_sales2:w.thu_sales, fri_sales2:w.fri_sales, sat_sales2:w.sat_sales}
+  Move         r319, r295
+  Move         r320, r297
+  Move         r321, r298
+  Move         r322, r300
+  Move         r323, r301
+  Move         r324, r303
+  Move         r325, r304
+  Move         r326, r306
+  // select {s_store_name2:s.s_store_name, s_store_id2:s.s_store_id, d_week_seq2:w.d_week_seq,
+  MakeMap      r327, 10, r307
+  // from w in wss
+  Append       r169, r169, r327
+L11:
+  // join d in date_dim on w.d_week_seq==d.d_week_seq
+  Const        r329, 1
+  Add          r259, r259, r329
+  Jump         L13
+L10:
+  // join s in store on w.ss_store_sk==s.s_store_sk
+  Const        r330, 1
+  Add          r224, r224, r330
+  Jump         L14
+L9:
+  // from w in wss
+  Const        r331, 1
+  AddInt       r194, r194, r331
+  Jump         L15
+L8:
+  // from a in y
+  Const        r332, []
+  IterPrep     r333, r3
+  Len          r334, r333
+  // join b in x on a.s_store_id1==b.s_store_id2 && a.d_week_seq1==b.d_week_seq2-52
+  IterPrep     r335, r169
+  Len          r336, r335
+  Const        r337, "s_store_id1"
+  Const        r338, "s_store_id2"
+  Const        r339, "d_week_seq1"
+  Const        r340, "d_week_seq2"
+  // s_store_name1:a.s_store_name1,
+  Const        r341, "s_store_name1"
+  Const        r342, "s_store_name1"
+  // d_week_seq1:a.d_week_seq1,
+  Const        r343, "d_week_seq1"
+  Const        r344, "d_week_seq1"
+  // sun_ratio:a.sun_sales1 / b.sun_sales2,
+  Const        r345, "sun_ratio"
+  Const        r346, "sun_sales1"
+  Const        r347, "sun_sales2"
+  // mon_ratio:a.mon_sales1 / b.mon_sales2,
+  Const        r348, "mon_ratio"
+  Const        r349, "mon_sales1"
+  Const        r350, "mon_sales2"
+  // tue_ratio:a.tue_sales1 / b.tue_sales2,
+  Const        r351, "tue_ratio"
+  Const        r352, "tue_sales1"
+  Const        r353, "tue_sales2"
+  // wed_ratio:a.wed_sales1 / b.wed_sales2,
+  Const        r354, "wed_ratio"
+  Const        r355, "wed_sales1"
+  Const        r356, "wed_sales2"
+  // thu_ratio:a.thu_sales1 / b.thu_sales2,
+  Const        r357, "thu_ratio"
+  Const        r358, "thu_sales1"
+  Const        r359, "thu_sales2"
+  // fri_ratio:a.fri_sales1 / b.fri_sales2,
+  Const        r360, "fri_ratio"
+  Const        r361, "fri_sales1"
+  Const        r362, "fri_sales2"
+  // sat_ratio:a.sat_sales1 / b.sat_sales2
+  Const        r363, "sat_ratio"
+  Const        r364, "sat_sales1"
+  Const        r365, "sat_sales2"
+  // from a in y
+  Const        r366, 0
+L21:
+  LessInt      r367, r366, r334
+  JumpIfFalse  r367, L16
+  Index        r369, r333, r366
+  // join b in x on a.s_store_id1==b.s_store_id2 && a.d_week_seq1==b.d_week_seq2-52
+  Const        r370, 0
+L20:
+  LessInt      r371, r370, r336
+  JumpIfFalse  r371, L17
+  Index        r373, r335, r370
+  Const        r374, "s_store_id1"
+  Index        r375, r369, r374
+  Const        r376, "d_week_seq2"
+  Index        r377, r373, r376
+  Const        r378, 52
+  Sub          r379, r377, r378
+  Const        r380, "s_store_id2"
+  Index        r381, r373, r380
+  Equal        r382, r375, r381
+  Const        r383, "d_week_seq1"
+  Index        r384, r369, r383
+  Equal        r385, r384, r379
+  Move         r386, r382
+  JumpIfFalse  r386, L18
+  Move         r386, r385
+L18:
+  JumpIfFalse  r386, L19
+  // s_store_name1:a.s_store_name1,
+  Const        r387, "s_store_name1"
+  Const        r388, "s_store_name1"
+  Index        r389, r369, r388
+  // d_week_seq1:a.d_week_seq1,
+  Const        r390, "d_week_seq1"
+  Const        r391, "d_week_seq1"
+  Index        r392, r369, r391
+  // sun_ratio:a.sun_sales1 / b.sun_sales2,
+  Const        r393, "sun_ratio"
+  Const        r394, "sun_sales1"
+  Index        r395, r369, r394
+  Const        r396, "sun_sales2"
+  Index        r397, r373, r396
+  Div          r398, r395, r397
+  // mon_ratio:a.mon_sales1 / b.mon_sales2,
+  Const        r399, "mon_ratio"
+  Const        r400, "mon_sales1"
+  Index        r401, r369, r400
+  Const        r402, "mon_sales2"
+  Index        r403, r373, r402
+  Div          r404, r401, r403
+  // tue_ratio:a.tue_sales1 / b.tue_sales2,
+  Const        r405, "tue_ratio"
+  Const        r406, "tue_sales1"
+  Index        r407, r369, r406
+  Const        r408, "tue_sales2"
+  Index        r409, r373, r408
+  Div          r410, r407, r409
+  // wed_ratio:a.wed_sales1 / b.wed_sales2,
+  Const        r411, "wed_ratio"
+  Const        r412, "wed_sales1"
+  Index        r413, r369, r412
+  Const        r414, "wed_sales2"
+  Index        r415, r373, r414
+  Div          r416, r413, r415
+  // thu_ratio:a.thu_sales1 / b.thu_sales2,
+  Const        r417, "thu_ratio"
+  Const        r418, "thu_sales1"
+  Index        r419, r369, r418
+  Const        r420, "thu_sales2"
+  Index        r421, r373, r420
+  Div          r422, r419, r421
+  // fri_ratio:a.fri_sales1 / b.fri_sales2,
+  Const        r423, "fri_ratio"
+  Const        r424, "fri_sales1"
+  Index        r425, r369, r424
+  Const        r426, "fri_sales2"
+  Index        r427, r373, r426
+  Div          r428, r425, r427
+  // sat_ratio:a.sat_sales1 / b.sat_sales2
+  Const        r429, "sat_ratio"
+  Const        r430, "sat_sales1"
+  Index        r431, r369, r430
+  Const        r432, "sat_sales2"
+  Index        r433, r373, r432
+  Div          r434, r431, r433
+  // s_store_name1:a.s_store_name1,
+  Move         r435, r387
+  Move         r436, r389
+  // d_week_seq1:a.d_week_seq1,
+  Move         r437, r390
+  Move         r438, r392
+  // sun_ratio:a.sun_sales1 / b.sun_sales2,
+  Move         r439, r393
+  Move         r440, r398
+  // mon_ratio:a.mon_sales1 / b.mon_sales2,
+  Move         r441, r399
+  Move         r442, r404
+  // tue_ratio:a.tue_sales1 / b.tue_sales2,
+  Move         r443, r405
+  Move         r444, r410
+  // wed_ratio:a.wed_sales1 / b.wed_sales2,
+  Move         r445, r411
+  Move         r446, r416
+  // thu_ratio:a.thu_sales1 / b.thu_sales2,
+  Move         r447, r417
+  Move         r448, r422
+  // fri_ratio:a.fri_sales1 / b.fri_sales2,
+  Move         r449, r423
+  Move         r450, r428
+  // sat_ratio:a.sat_sales1 / b.sat_sales2
+  Move         r451, r429
+  Move         r452, r434
+  // select {
+  MakeMap      r453, 9, r435
+  // from a in y
+  Append       r332, r332, r453
+L19:
+  // join b in x on a.s_store_id1==b.s_store_id2 && a.d_week_seq1==b.d_week_seq2-52
+  Const        r455, 1
+  AddInt       r370, r370, r455
+  Jump         L20
+L17:
+  // from a in y
+  Const        r456, 1
+  AddInt       r366, r366, r456
+  Jump         L21
+L16:
   // json(result)
-  JSON         r16
-  // expect result == 59
-  Const        r17, 59
-  Equal        r18, r16, r17
-  Expect       r18
+  JSON         r332
+  // expect result == [
+  Const        r457, [{"d_week_seq1": 1, "fri_ratio": 2, "mon_ratio": 2, "s_store_name1": "Store", "sat_ratio": 2, "sun_ratio": 2, "thu_ratio": 2, "tue_ratio": 2, "wed_ratio": 2}, {"d_week_seq1": 2, "fri_ratio": 0.6666666666666666, "mon_ratio": 0.6666666666666666, "s_store_name1": "Store", "sat_ratio": 0.6666666666666666, "sun_ratio": 0.6666666666666666, "thu_ratio": 0.6666666666666666, "tue_ratio": 0.6666666666666666, "wed_ratio": 0.6666666666666666}]
+  Equal        r458, r332, r457
+  Expect       r458
   Return       r0
