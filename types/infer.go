@@ -51,78 +51,126 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 	if b == nil {
 		return AnyType{}
 	}
-	t := inferUnaryType(env, b.Left)
-	for _, op := range b.Right {
-		rt := inferPostfixType(env, op.Right)
-		switch op.Op {
-		case "+", "-", "*", "/", "%":
-			if isInt64(t) {
-				if isInt64(rt) || isInt(rt) {
-					t = Int64Type{}
-					continue
-				}
+
+	operands := []Type{inferUnaryType(env, b.Left)}
+	ops := []string{}
+
+	for _, part := range b.Right {
+		op := part.Op
+		if op == "union" && part.All {
+			op = "union_all"
+		}
+		ops = append(ops, op)
+		operands = append(operands, inferPostfixType(env, part.Right))
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
 			}
-			if _, ok := t.(IntType); ok {
-				if _, ok := rt.(IntType); ok {
-					t = IntType{}
-					continue
-				}
-			}
-			if _, ok := t.(FloatType); ok {
-				if _, ok := rt.(FloatType); ok {
-					t = FloatType{}
-					continue
-				}
-			}
-			if op.Op == "+" {
-				if llist, ok := t.(ListType); ok {
-					if rlist, ok := rt.(ListType); ok && equalTypes(llist.Elem, rlist.Elem) {
-						t = llist
-						continue
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				left := operands[i]
+				right := operands[i+1]
+				var res Type
+				switch ops[i] {
+				case "+", "-", "*", "/", "%":
+					if isInt64(left) {
+						if isInt64(right) || isInt(right) {
+							res = Int64Type{}
+							break
+						}
 					}
-				}
-				if _, ok := t.(StringType); ok {
-					if _, ok := rt.(StringType); ok {
-						t = StringType{}
-						continue
+					if _, ok := left.(IntType); ok {
+						if _, ok := right.(IntType); ok {
+							res = IntType{}
+							break
+						}
 					}
-				}
-			}
-			t = AnyType{}
-		case "==", "!=", "<", "<=", ">", ">=":
-			t = BoolType{}
-		case "&&", "||":
-			if isBool(t) && isBool(rt) {
-				t = BoolType{}
-			} else {
-				t = AnyType{}
-			}
-		case "in":
-			switch rt.(type) {
-			case MapType, ListType, StringType:
-				t = BoolType{}
-			default:
-				t = AnyType{}
-			}
-		case "union", "union_all", "except", "intersect":
-			if llist, ok := t.(ListType); ok {
-				if rlist, ok := rt.(ListType); ok {
-					if equalTypes(llist.Elem, rlist.Elem) {
-						t = llist
+					if _, ok := left.(FloatType); ok {
+						if _, ok := right.(FloatType); ok {
+							res = FloatType{}
+							break
+						}
+					}
+					if ops[i] == "+" {
+						if ll, ok := left.(ListType); ok {
+							if rl, ok := right.(ListType); ok && equalTypes(ll.Elem, rl.Elem) {
+								res = ll
+								break
+							}
+							res = ListType{Elem: AnyType{}}
+							break
+						}
+						if _, ok := left.(StringType); ok {
+							if _, ok := right.(StringType); ok {
+								res = StringType{}
+								break
+							}
+						}
+					}
+					res = AnyType{}
+				case "==", "!=", "<", "<=", ">", ">=":
+					res = BoolType{}
+				case "&&", "||":
+					if isBool(left) && isBool(right) {
+						res = BoolType{}
 					} else {
-						t = ListType{Elem: AnyType{}}
+						res = AnyType{}
 					}
-				} else {
-					t = ListType{Elem: AnyType{}}
+				case "in":
+					switch right.(type) {
+					case MapType, ListType, StringType:
+						res = BoolType{}
+					default:
+						res = AnyType{}
+					}
+				case "union", "union_all", "except", "intersect":
+					if ll, ok := left.(ListType); ok {
+						if rl, ok := right.(ListType); ok {
+							if equalTypes(ll.Elem, rl.Elem) {
+								res = ll
+							} else {
+								res = ListType{Elem: AnyType{}}
+							}
+						} else {
+							res = ListType{Elem: AnyType{}}
+						}
+					} else {
+						res = AnyType{}
+					}
+				default:
+					res = AnyType{}
 				}
+				operands[i] = res
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
 			} else {
-				t = AnyType{}
+				i++
 			}
-		default:
-			t = AnyType{}
 		}
 	}
-	return t
+
+	if len(operands) != 1 {
+		return AnyType{}
+	}
+	return operands[0]
 }
 
 func inferUnaryType(env *Env, u *parser.Unary) Type {
