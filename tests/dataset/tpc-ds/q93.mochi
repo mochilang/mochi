@@ -1,7 +1,39 @@
-let t = [{id: 1, val: 93}]
-let result = from r in t select r.val |> first
+// Active sales by customer after returns
+type StoreSale { ss_item_sk: int, ss_ticket_number: int, ss_customer_sk: int, ss_quantity: int, ss_sales_price: float }
+type StoreReturn { sr_item_sk: int, sr_ticket_number: int, sr_reason_sk: int, sr_return_quantity: int }
+type Reason { r_reason_sk: int, r_reason_desc: string }
+
+let store_sales = [
+  {ss_item_sk: 1, ss_ticket_number: 1, ss_customer_sk: 1, ss_quantity: 5, ss_sales_price: 10.0},
+  {ss_item_sk: 1, ss_ticket_number: 2, ss_customer_sk: 2, ss_quantity: 3, ss_sales_price: 20.0}
+]
+
+let store_returns = [
+  {sr_item_sk: 1, sr_ticket_number: 1, sr_reason_sk: 1, sr_return_quantity: 1}
+]
+
+let reason = [{r_reason_sk: 1, r_reason_desc: "ReasonA"}]
+
+let t =
+  from ss in store_sales
+  left join sr in store_returns on ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number
+  join r in reason on sr.sr_reason_sk == r.r_reason_sk
+  where r.r_reason_desc == "ReasonA"
+  select {
+    ss_customer_sk: ss.ss_customer_sk,
+    act_sales: if sr != null { (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price } else { ss.ss_quantity * ss.ss_sales_price }
+  }
+
+let result =
+  from x in t
+  group by x.ss_customer_sk into g
+  select {ss_customer_sk: g.key, sumsales: sum(from y in g select y.act_sales)} |> collect
+
 json(result)
 
-test "TPCDS Q93 placeholder" {
-  expect result == 93
+test "TPCDS Q93 active sales" {
+  expect result == [
+    {ss_customer_sk: 1, sumsales: 40.0},
+    {ss_customer_sk: 2, sumsales: 60.0}
+  ]
 }
