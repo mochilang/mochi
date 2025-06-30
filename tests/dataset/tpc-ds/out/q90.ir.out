@@ -1,4 +1,4 @@
-func main (regs=205)
+func main (regs=123)
   // let web_sales = [
   Const        r0, [{"ws_ship_hdemo_sk": 1, "ws_sold_time_sk": 1, "ws_web_page_sk": 10}, {"ws_ship_hdemo_sk": 1, "ws_sold_time_sk": 1, "ws_web_page_sk": 10}, {"ws_ship_hdemo_sk": 1, "ws_sold_time_sk": 2, "ws_web_page_sk": 10}]
   // let household_demographics = [{hd_demo_sk: 1, hd_dep_count: 2}]
@@ -11,326 +11,240 @@ func main (regs=205)
   Const        r4, []
   // where t.t_hour >= 7 && t.t_hour <= 8 &&
   Const        r5, "t_hour"
-  Const        r6, "t_hour"
   // hd.hd_dep_count == 2 &&
-  Const        r7, "hd_dep_count"
+  Const        r6, "hd_dep_count"
   // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r8, "wp_char_count"
-  Const        r9, "wp_char_count"
+  Const        r7, "wp_char_count"
   // count(from ws in web_sales
-  IterPrep     r10, r0
-  Len          r11, r10
-  Const        r12, 0
+  IterPrep     r8, r0
+  Len          r9, r8
+  Const        r11, 0
+  Move         r10, r11
 L12:
-  LessInt      r14, r12, r11
-  JumpIfFalse  r14, L0
-  Index        r16, r10, r12
+  LessInt      r12, r10, r9
+  JumpIfFalse  r12, L0
+  Index        r13, r8, r10
+  Move         r14, r13
   // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
-  IterPrep     r17, r1
-  Len          r18, r17
-  Const        r19, "ws_ship_hdemo_sk"
-  Const        r20, "hd_demo_sk"
-  // where t.t_hour >= 7 && t.t_hour <= 8 &&
-  Const        r21, "t_hour"
-  Const        r22, "t_hour"
-  // hd.hd_dep_count == 2 &&
-  Const        r23, "hd_dep_count"
-  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r24, "wp_char_count"
-  Const        r25, "wp_char_count"
-  // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
-  Const        r26, 0
+  IterPrep     r15, r1
+  Len          r16, r15
+  Const        r17, "ws_ship_hdemo_sk"
+  Const        r18, "hd_demo_sk"
+  Move         r19, r11
 L11:
-  LessInt      r28, r26, r18
-  JumpIfFalse  r28, L1
-  Index        r30, r17, r26
-  Const        r31, "ws_ship_hdemo_sk"
-  Index        r32, r16, r31
-  Const        r33, "hd_demo_sk"
-  Index        r34, r30, r33
-  Equal        r35, r32, r34
-  JumpIfFalse  r35, L2
+  LessInt      r20, r19, r16
+  JumpIfFalse  r20, L1
+  Index        r21, r15, r19
+  Move         r22, r21
+  Index        r23, r14, r17
+  Index        r24, r22, r18
+  Equal        r25, r23, r24
+  JumpIfFalse  r25, L2
   // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
-  IterPrep     r36, r2
-  Len          r37, r36
-  Const        r38, "ws_sold_time_sk"
-  Const        r39, "t_time_sk"
-  // where t.t_hour >= 7 && t.t_hour <= 8 &&
-  Const        r40, "t_hour"
-  Const        r41, "t_hour"
-  // hd.hd_dep_count == 2 &&
-  Const        r42, "hd_dep_count"
-  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r43, "wp_char_count"
-  Const        r44, "wp_char_count"
-  // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
-  Const        r45, 0
+  IterPrep     r26, r2
+  Len          r27, r26
+  Const        r28, "ws_sold_time_sk"
+  Const        r29, "t_time_sk"
+  Move         r30, r11
 L10:
-  LessInt      r47, r45, r37
-  JumpIfFalse  r47, L2
-  Index        r49, r36, r45
-  Const        r50, "ws_sold_time_sk"
-  Index        r51, r16, r50
-  Const        r52, "t_time_sk"
-  Index        r53, r49, r52
-  Equal        r54, r51, r53
-  JumpIfFalse  r54, L3
+  LessInt      r31, r30, r27
+  JumpIfFalse  r31, L2
+  Index        r32, r26, r30
+  Move         r33, r32
+  Index        r34, r14, r28
+  Index        r35, r33, r29
+  Equal        r36, r34, r35
+  JumpIfFalse  r36, L3
   // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
-  IterPrep     r55, r3
-  Len          r56, r55
-  Const        r57, "ws_web_page_sk"
-  Const        r58, "wp_web_page_sk"
-  // where t.t_hour >= 7 && t.t_hour <= 8 &&
-  Const        r59, "t_hour"
-  Const        r60, "t_hour"
-  // hd.hd_dep_count == 2 &&
-  Const        r61, "hd_dep_count"
-  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r62, "wp_char_count"
-  Const        r63, "wp_char_count"
-  // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
-  Const        r64, 0
+  IterPrep     r37, r3
+  Len          r38, r37
+  Const        r39, "ws_web_page_sk"
+  Const        r40, "wp_web_page_sk"
+  Move         r41, r11
 L9:
-  LessInt      r66, r64, r56
-  JumpIfFalse  r66, L3
-  Index        r68, r55, r64
-  Const        r69, "ws_web_page_sk"
-  Index        r70, r16, r69
-  Const        r71, "wp_web_page_sk"
-  Index        r72, r68, r71
-  Equal        r73, r70, r72
-  JumpIfFalse  r73, L4
+  LessInt      r42, r41, r38
+  JumpIfFalse  r42, L3
+  Index        r43, r37, r41
+  Move         r44, r43
+  Index        r45, r14, r39
+  Index        r46, r44, r40
+  Equal        r47, r45, r46
+  JumpIfFalse  r47, L4
   // where t.t_hour >= 7 && t.t_hour <= 8 &&
-  Const        r74, "t_hour"
-  Index        r75, r49, r74
-  Const        r76, 7
-  LessEq       r77, r76, r75
-  Const        r78, "t_hour"
-  Index        r79, r49, r78
-  Const        r80, 8
-  LessEq       r81, r79, r80
+  Index        r48, r33, r5
+  Const        r49, 7
+  LessEq       r50, r49, r48
+  Index        r51, r33, r5
+  Const        r52, 8
+  LessEq       r53, r51, r52
   // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r82, "wp_char_count"
-  Index        r83, r68, r82
-  Const        r84, 5000
-  LessEq       r85, r84, r83
-  Const        r86, "wp_char_count"
-  Index        r87, r68, r86
-  Const        r88, 5200
-  LessEq       r89, r87, r88
+  Index        r54, r44, r7
+  Const        r55, 5000
+  LessEq       r56, r55, r54
+  Index        r57, r44, r7
+  Const        r58, 5200
+  LessEq       r59, r57, r58
   // hd.hd_dep_count == 2 &&
-  Const        r90, "hd_dep_count"
-  Index        r91, r30, r90
-  Const        r92, 2
-  Equal        r93, r91, r92
+  Index        r60, r22, r6
+  Const        r61, 2
+  Equal        r62, r60, r61
   // where t.t_hour >= 7 && t.t_hour <= 8 &&
-  Move         r94, r77
-  JumpIfFalse  r94, L5
+  Move         r63, r50
+  JumpIfFalse  r63, L5
+  Move         r63, r53
 L5:
-  Move         r95, r81
-  JumpIfFalse  r95, L6
+  Move         r64, r63
+  JumpIfFalse  r64, L6
+  Move         r64, r62
 L6:
   // hd.hd_dep_count == 2 &&
-  Move         r96, r93
-  JumpIfFalse  r96, L7
+  Move         r65, r64
+  JumpIfFalse  r65, L7
+  Move         r65, r56
 L7:
   // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Move         r97, r85
-  JumpIfFalse  r97, L8
-  Move         r97, r89
+  Move         r66, r65
+  JumpIfFalse  r66, L8
+  Move         r66, r59
 L8:
   // where t.t_hour >= 7 && t.t_hour <= 8 &&
-  JumpIfFalse  r97, L4
+  JumpIfFalse  r66, L4
   // count(from ws in web_sales
-  Append       r4, r4, r16
+  Append       r67, r4, r14
+  Move         r4, r67
 L4:
   // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
-  Const        r99, 1
-  Add          r64, r64, r99
+  Const        r68, 1
+  Add          r41, r41, r68
   Jump         L9
 L3:
   // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
-  Const        r100, 1
-  Add          r45, r45, r100
+  Add          r30, r30, r68
   Jump         L10
 L2:
   // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
-  Const        r101, 1
-  Add          r26, r26, r101
+  Add          r19, r19, r68
   Jump         L11
 L1:
   // count(from ws in web_sales
-  Const        r102, 1
-  AddInt       r12, r12, r102
+  AddInt       r10, r10, r68
   Jump         L12
 L0:
-  Count        r103, r4
+  Count        r69, r4
   // count(from ws in web_sales
-  Const        r104, []
-  // where t.t_hour >= 14 && t.t_hour <= 15 &&
-  Const        r105, "t_hour"
-  Const        r106, "t_hour"
-  // hd.hd_dep_count == 2 &&
-  Const        r107, "hd_dep_count"
-  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r108, "wp_char_count"
-  Const        r109, "wp_char_count"
-  // count(from ws in web_sales
-  IterPrep     r110, r0
-  Len          r111, r110
-  Const        r112, 0
+  Const        r70, []
+  IterPrep     r71, r0
+  Len          r72, r71
+  Move         r73, r11
 L25:
-  LessInt      r114, r112, r111
-  JumpIfFalse  r114, L13
-  Index        r16, r110, r112
+  LessInt      r74, r73, r72
+  JumpIfFalse  r74, L13
+  Index        r75, r71, r73
+  Move         r14, r75
   // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
-  IterPrep     r116, r1
-  Len          r117, r116
-  Const        r118, "ws_ship_hdemo_sk"
-  Const        r119, "hd_demo_sk"
-  // where t.t_hour >= 14 && t.t_hour <= 15 &&
-  Const        r120, "t_hour"
-  Const        r121, "t_hour"
-  // hd.hd_dep_count == 2 &&
-  Const        r122, "hd_dep_count"
-  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r123, "wp_char_count"
-  Const        r124, "wp_char_count"
-  // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
-  Const        r125, 0
+  IterPrep     r76, r1
+  Len          r77, r76
+  Move         r78, r11
 L24:
-  LessInt      r127, r125, r117
-  JumpIfFalse  r127, L14
-  Index        r30, r116, r125
-  Const        r129, "ws_ship_hdemo_sk"
-  Index        r130, r16, r129
-  Const        r131, "hd_demo_sk"
-  Index        r132, r30, r131
-  Equal        r133, r130, r132
-  JumpIfFalse  r133, L15
+  LessInt      r79, r78, r77
+  JumpIfFalse  r79, L14
+  Index        r80, r76, r78
+  Move         r22, r80
+  Index        r81, r14, r17
+  Index        r82, r22, r18
+  Equal        r83, r81, r82
+  JumpIfFalse  r83, L15
   // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
-  IterPrep     r134, r2
-  Len          r135, r134
-  Const        r136, "ws_sold_time_sk"
-  Const        r137, "t_time_sk"
-  // where t.t_hour >= 14 && t.t_hour <= 15 &&
-  Const        r138, "t_hour"
-  Const        r139, "t_hour"
-  // hd.hd_dep_count == 2 &&
-  Const        r140, "hd_dep_count"
-  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r141, "wp_char_count"
-  Const        r142, "wp_char_count"
-  // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
-  Const        r143, 0
+  IterPrep     r84, r2
+  Len          r85, r84
+  Move         r86, r11
 L23:
-  LessInt      r145, r143, r135
-  JumpIfFalse  r145, L15
-  Index        r49, r134, r143
-  Const        r147, "ws_sold_time_sk"
-  Index        r148, r16, r147
-  Const        r149, "t_time_sk"
-  Index        r150, r49, r149
-  Equal        r151, r148, r150
-  JumpIfFalse  r151, L16
+  LessInt      r87, r86, r85
+  JumpIfFalse  r87, L15
+  Index        r88, r84, r86
+  Move         r33, r88
+  Index        r89, r14, r28
+  Index        r90, r33, r29
+  Equal        r91, r89, r90
+  JumpIfFalse  r91, L16
   // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
-  IterPrep     r152, r3
-  Len          r153, r152
-  Const        r154, "ws_web_page_sk"
-  Const        r155, "wp_web_page_sk"
-  // where t.t_hour >= 14 && t.t_hour <= 15 &&
-  Const        r156, "t_hour"
-  Const        r157, "t_hour"
-  // hd.hd_dep_count == 2 &&
-  Const        r158, "hd_dep_count"
-  // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r159, "wp_char_count"
-  Const        r160, "wp_char_count"
-  // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
-  Const        r161, 0
+  IterPrep     r92, r3
+  Len          r93, r92
+  Move         r94, r11
 L22:
-  LessInt      r163, r161, r153
-  JumpIfFalse  r163, L16
-  Index        r68, r152, r161
-  Const        r165, "ws_web_page_sk"
-  Index        r166, r16, r165
-  Const        r167, "wp_web_page_sk"
-  Index        r168, r68, r167
-  Equal        r169, r166, r168
-  JumpIfFalse  r169, L17
+  LessInt      r95, r94, r93
+  JumpIfFalse  r95, L16
+  Index        r96, r92, r94
+  Move         r44, r96
+  Index        r97, r14, r39
+  Index        r98, r44, r40
+  Equal        r99, r97, r98
+  JumpIfFalse  r99, L17
   // where t.t_hour >= 14 && t.t_hour <= 15 &&
-  Const        r170, "t_hour"
-  Index        r171, r49, r170
-  Const        r172, 14
-  LessEq       r173, r172, r171
-  Const        r174, "t_hour"
-  Index        r175, r49, r174
-  Const        r176, 15
-  LessEq       r177, r175, r176
+  Index        r100, r33, r5
+  Const        r101, 14
+  LessEq       r102, r101, r100
+  Index        r103, r33, r5
+  Const        r104, 15
+  LessEq       r105, r103, r104
   // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Const        r178, "wp_char_count"
-  Index        r179, r68, r178
-  Const        r180, 5000
-  LessEq       r181, r180, r179
-  Const        r182, "wp_char_count"
-  Index        r183, r68, r182
-  Const        r184, 5200
-  LessEq       r185, r183, r184
+  Index        r106, r44, r7
+  LessEq       r107, r55, r106
+  Index        r108, r44, r7
+  LessEq       r109, r108, r58
   // hd.hd_dep_count == 2 &&
-  Const        r186, "hd_dep_count"
-  Index        r187, r30, r186
-  Const        r188, 2
-  Equal        r189, r187, r188
+  Index        r110, r22, r6
+  Equal        r111, r110, r61
   // where t.t_hour >= 14 && t.t_hour <= 15 &&
-  Move         r190, r173
-  JumpIfFalse  r190, L18
+  Move         r112, r102
+  JumpIfFalse  r112, L18
+  Move         r112, r105
 L18:
-  Move         r191, r177
-  JumpIfFalse  r191, L19
+  Move         r113, r112
+  JumpIfFalse  r113, L19
+  Move         r113, r111
 L19:
   // hd.hd_dep_count == 2 &&
-  Move         r192, r189
-  JumpIfFalse  r192, L20
+  Move         r114, r113
+  JumpIfFalse  r114, L20
+  Move         r114, r107
 L20:
   // wp.wp_char_count >= 5000 && wp.wp_char_count <= 5200
-  Move         r193, r181
-  JumpIfFalse  r193, L21
-  Move         r193, r185
+  Move         r115, r114
+  JumpIfFalse  r115, L21
+  Move         r115, r109
 L21:
   // where t.t_hour >= 14 && t.t_hour <= 15 &&
-  JumpIfFalse  r193, L17
+  JumpIfFalse  r115, L17
   // count(from ws in web_sales
-  Append       r104, r104, r16
+  Append       r116, r70, r14
+  Move         r70, r116
 L17:
   // join wp in web_page on ws.ws_web_page_sk == wp.wp_web_page_sk
-  Const        r195, 1
-  Add          r161, r161, r195
+  Add          r94, r94, r68
   Jump         L22
 L16:
   // join t in time_dim on ws.ws_sold_time_sk == t.t_time_sk
-  Const        r196, 1
-  Add          r143, r143, r196
+  Add          r86, r86, r68
   Jump         L23
 L15:
   // join hd in household_demographics on ws.ws_ship_hdemo_sk == hd.hd_demo_sk
-  Const        r197, 1
-  Add          r125, r125, r197
+  Add          r78, r78, r68
   Jump         L24
 L14:
   // count(from ws in web_sales
-  Const        r198, 1
-  AddInt       r112, r112, r198
+  AddInt       r73, r73, r68
   Jump         L25
 L13:
-  Count        r199, r104
+  Count        r117, r70
   // let result = (amc as float) / (pmc as float)
-  Cast         r200, r103, float
-  Cast         r201, r199, float
-  Div          r202, r200, r201
+  Cast         r118, r69, float
+  Cast         r119, r117, float
+  Div          r120, r118, r119
   // json(result)
-  JSON         r202
-  // expect result == 1.0
-  Const        r203, 1
-  EqualFloat   r204, r202, r203
-  Expect       r204
+  JSON         r120
+  // expect result == 2.0
+  Const        r121, 2
+  EqualFloat   r122, r120, r121
+  Expect       r122
   Return       r0

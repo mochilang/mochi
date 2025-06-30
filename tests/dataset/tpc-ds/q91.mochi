@@ -51,6 +51,6 @@ test "TPCDS Q91 returns" {
     Call_Center: "CC1",
     Call_Center_Name: "Main",
     Manager: "Alice",
-    Returns_Loss: 0.0
+    Returns_Loss: 10.0
   }
 }

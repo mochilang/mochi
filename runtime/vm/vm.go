@@ -3501,17 +3501,19 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		}
 	}
 
-	if joinType == "outer" {
-		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
-			if !fc.smallConstJoin(q.Source, join.Src) {
-				fc.compileHashOuterJoin(q, dst, lk, rk)
-				return
-			}
-		} else {
-			fc.compileJoinQueryRight(q, dst)
-			return
-		}
-	}
+        if joinType == "outer" {
+                if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
+                        if !fc.smallConstJoin(q.Source, join.Src) {
+                                fc.compileHashOuterJoin(q, dst, lk, rk)
+                                return
+                        }
+                }
+                // For complex ON clauses without simple equality keys, fall
+                // back to the generic nested loop implementation below which
+                // handles unmatched rows from both sides. The specialized right
+                // join path only produces right-side unmatched rows and would
+                // drop left-side rows.
+        }
 
 	leftReg := fc.compileExpr(q.Source)
 	llist := fc.newReg()
