@@ -1,4 +1,4 @@
-func main (regs=165)
+func main (regs=135)
   // let store_sales = [
   Const        r0, [{"ss_item_sk": 1, "ss_net_profit": 5, "ss_store_sk": 1}, {"ss_item_sk": 1, "ss_net_profit": 5, "ss_store_sk": 1}, {"ss_item_sk": 2, "ss_net_profit": -1, "ss_store_sk": 1}]
   // let item = [
@@ -23,25 +23,24 @@ L2:
   LessInt      r14, r10, r9
   JumpIfFalse  r14, L0
   Index        r15, r8, r10
-  Move         r16, r15
   // group by ss.ss_item_sk into g
-  Const        r17, "ss_item_sk"
-  Index        r18, r16, r17
-  Str          r19, r18
-  In           r20, r19, r11
-  JumpIfTrue   r20, L1
+  Index        r17, r15, r3
+  Str          r18, r17
+  In           r19, r18, r11
+  JumpIfTrue   r19, L1
   // from ss in store_sales
-  Const        r21, []
-  Const        r22, "__group__"
-  Const        r23, true
-  Const        r24, "key"
+  Const        r20, []
+  Const        r21, "__group__"
+  Const        r22, true
+  Const        r23, "key"
   // group by ss.ss_item_sk into g
-  Move         r25, r18
+  Move         r24, r17
   // from ss in store_sales
-  Const        r26, "items"
-  Move         r27, r21
-  Const        r28, "count"
-  Const        r29, 0
+  Const        r25, "items"
+  Move         r26, r20
+  Const        r27, "count"
+  Const        r28, 0
+  Move         r29, r21
   Move         r30, r22
   Move         r31, r23
   Move         r32, r24
@@ -49,177 +48,153 @@ L2:
   Move         r34, r26
   Move         r35, r27
   Move         r36, r28
-  Move         r37, r29
-  MakeMap      r38, 4, r30
-  SetIndex     r11, r19, r38
-  Append       r12, r12, r38
+  MakeMap      r37, 4, r29
+  SetIndex     r11, r18, r37
+  Append       r12, r12, r37
 L1:
-  Const        r40, "items"
-  Index        r41, r11, r19
-  Index        r42, r41, r40
-  Append       r43, r42, r15
-  SetIndex     r41, r40, r43
-  Const        r44, "count"
-  Index        r45, r41, r44
-  Const        r46, 1
-  AddInt       r47, r45, r46
-  SetIndex     r41, r44, r47
-  Const        r48, 1
-  AddInt       r10, r10, r48
+  Const        r39, "items"
+  Index        r40, r11, r18
+  Index        r41, r40, r39
+  Append       r42, r41, r15
+  SetIndex     r40, r39, r42
+  Const        r43, "count"
+  Index        r44, r40, r43
+  Const        r45, 1
+  AddInt       r46, r44, r45
+  SetIndex     r40, r43, r46
+  AddInt       r10, r10, r45
   Jump         L2
 L0:
-  Const        r49, 0
-  Len          r51, r12
+  Const        r48, 0
+  Move         r47, r48
+  Len          r49, r12
 L6:
-  LessInt      r52, r49, r51
-  JumpIfFalse  r52, L3
-  Index        r54, r12, r49
+  LessInt      r50, r47, r49
+  JumpIfFalse  r50, L3
+  Index        r52, r12, r47
   // select { item_sk: g.key,
-  Const        r55, "item_sk"
-  Const        r56, "key"
-  Index        r57, r54, r56
+  Const        r53, "item_sk"
+  Index        r54, r52, r5
   // avg_profit: avg(from x in g select x.ss_net_profit) }
-  Const        r58, "avg_profit"
-  Const        r59, []
-  Const        r60, "ss_net_profit"
-  IterPrep     r61, r54
-  Len          r62, r61
-  Const        r63, 0
+  Const        r55, "avg_profit"
+  Const        r56, []
+  IterPrep     r57, r52
+  Len          r58, r57
+  Move         r59, r48
 L5:
-  LessInt      r65, r63, r62
-  JumpIfFalse  r65, L4
-  Index        r67, r61, r63
-  Const        r68, "ss_net_profit"
-  Index        r69, r67, r68
-  Append       r59, r59, r69
-  Const        r71, 1
-  AddInt       r63, r63, r71
+  LessInt      r60, r59, r58
+  JumpIfFalse  r60, L4
+  Index        r62, r57, r59
+  Index        r63, r62, r7
+  Append       r56, r56, r63
+  AddInt       r59, r59, r45
   Jump         L5
 L4:
-  Avg          r72, r59
+  Avg          r65, r56
   // select { item_sk: g.key,
-  Move         r73, r55
-  Move         r74, r57
+  Move         r66, r53
+  Move         r67, r54
   // avg_profit: avg(from x in g select x.ss_net_profit) }
-  Move         r75, r58
-  Move         r76, r72
+  Move         r68, r55
+  Move         r69, r65
   // select { item_sk: g.key,
-  MakeMap      r77, 2, r73
+  MakeMap      r70, 2, r66
   // from ss in store_sales
-  Append       r2, r2, r77
-  Const        r79, 1
-  AddInt       r49, r49, r79
+  Append       r2, r2, r70
+  AddInt       r47, r47, r45
   Jump         L6
 L3:
   // let best = first(from x in grouped sort by -x.avg_profit select x)
-  Const        r80, []
-  Const        r81, "avg_profit"
-  IterPrep     r82, r2
-  Len          r83, r82
-  Const        r84, 0
+  Const        r72, []
+  IterPrep     r73, r2
+  Len          r74, r73
+  Move         r75, r48
 L8:
-  LessInt      r86, r84, r83
-  JumpIfFalse  r86, L7
-  Index        r67, r82, r84
-  Const        r88, "avg_profit"
-  Index        r89, r67, r88
-  Neg          r91, r89
-  Move         r92, r67
-  MakeList     r93, 2, r91
-  Append       r80, r80, r93
-  Const        r95, 1
-  AddInt       r84, r84, r95
+  LessInt      r76, r75, r74
+  JumpIfFalse  r76, L7
+  Index        r62, r73, r75
+  Index        r78, r62, r6
+  Neg          r80, r78
+  Move         r81, r62
+  MakeList     r82, 2, r80
+  Append       r72, r72, r82
+  AddInt       r75, r75, r45
   Jump         L8
 L7:
-  Sort         r80, r80
-  First        r97, r80
+  Sort         r72, r72
+  First        r85, r72
   // let worst = first(from x in grouped sort by x.avg_profit select x)
-  Const        r98, []
-  Const        r99, "avg_profit"
-  IterPrep     r100, r2
-  Len          r101, r100
-  Const        r102, 0
+  Const        r86, []
+  IterPrep     r87, r2
+  Len          r88, r87
+  Move         r89, r48
 L10:
-  LessInt      r104, r102, r101
-  JumpIfFalse  r104, L9
-  Index        r67, r100, r102
-  Const        r106, "avg_profit"
-  Index        r108, r67, r106
-  Move         r109, r67
-  MakeList     r110, 2, r108
-  Append       r98, r98, r110
-  Const        r112, 1
-  AddInt       r102, r102, r112
+  LessInt      r90, r89, r88
+  JumpIfFalse  r90, L9
+  Index        r62, r87, r89
+  Index        r93, r62, r6
+  Move         r94, r62
+  MakeList     r95, 2, r93
+  Append       r86, r86, r95
+  AddInt       r89, r89, r45
   Jump         L10
 L9:
-  Sort         r98, r98
-  First        r114, r98
+  Sort         r86, r86
+  First        r98, r86
   // let best_name = first(from i in item where i.i_item_sk == best.item_sk select i.i_product_name)
-  Const        r115, []
-  Const        r116, "i_item_sk"
-  Const        r117, "item_sk"
-  Const        r118, "i_product_name"
-  IterPrep     r119, r1
-  Len          r120, r119
-  Const        r121, 0
+  Const        r99, []
+  Const        r100, "i_item_sk"
+  Const        r101, "i_product_name"
+  IterPrep     r102, r1
+  Len          r103, r102
+  Move         r104, r48
 L13:
-  LessInt      r123, r121, r120
-  JumpIfFalse  r123, L11
-  Index        r125, r119, r121
-  Const        r126, "i_item_sk"
-  Index        r127, r125, r126
-  Const        r128, "item_sk"
-  Index        r129, r97, r128
-  Equal        r130, r127, r129
-  JumpIfFalse  r130, L12
-  Const        r131, "i_product_name"
-  Index        r132, r125, r131
-  Append       r115, r115, r132
+  LessInt      r105, r104, r103
+  JumpIfFalse  r105, L11
+  Index        r107, r102, r104
+  Index        r108, r107, r100
+  Index        r109, r85, r4
+  Equal        r110, r108, r109
+  JumpIfFalse  r110, L12
+  Index        r111, r107, r101
+  Append       r99, r99, r111
 L12:
-  Const        r134, 1
-  AddInt       r121, r121, r134
+  AddInt       r104, r104, r45
   Jump         L13
 L11:
-  First        r135, r115
+  First        r113, r99
   // let worst_name = first(from i in item where i.i_item_sk == worst.item_sk select i.i_product_name)
-  Const        r136, []
-  Const        r137, "i_item_sk"
-  Const        r138, "item_sk"
-  Const        r139, "i_product_name"
-  IterPrep     r140, r1
-  Len          r141, r140
-  Const        r142, 0
+  Const        r114, []
+  IterPrep     r115, r1
+  Len          r116, r115
+  Move         r117, r48
 L16:
-  LessInt      r144, r142, r141
-  JumpIfFalse  r144, L14
-  Index        r125, r140, r142
-  Const        r146, "i_item_sk"
-  Index        r147, r125, r146
-  Const        r148, "item_sk"
-  Index        r149, r114, r148
-  Equal        r150, r147, r149
-  JumpIfFalse  r150, L15
-  Const        r151, "i_product_name"
-  Index        r152, r125, r151
-  Append       r136, r136, r152
+  LessInt      r118, r117, r116
+  JumpIfFalse  r118, L14
+  Index        r107, r115, r117
+  Index        r120, r107, r100
+  Index        r121, r98, r4
+  Equal        r122, r120, r121
+  JumpIfFalse  r122, L15
+  Index        r123, r107, r101
+  Append       r114, r114, r123
 L15:
-  Const        r154, 1
-  AddInt       r142, r142, r154
+  AddInt       r117, r117, r45
   Jump         L16
 L14:
-  First        r155, r136
+  First        r125, r114
   // let result = { best_performing: best_name, worst_performing: worst_name }
-  Const        r156, "best_performing"
-  Const        r157, "worst_performing"
-  Move         r158, r156
-  Move         r159, r135
-  Move         r160, r157
-  Move         r161, r155
-  MakeMap      r162, 2, r158
+  Const        r126, "best_performing"
+  Const        r127, "worst_performing"
+  Move         r128, r126
+  Move         r129, r113
+  Move         r130, r127
+  Move         r131, r125
+  MakeMap      r132, 2, r128
   // json(result)
-  JSON         r162
+  JSON         r132
   // expect result == { best_performing: "ItemA", worst_performing: "ItemB" }
-  Const        r163, {"best_performing": "ItemA", "worst_performing": "ItemB"}
-  Equal        r164, r162, r163
-  Expect       r164
+  Const        r133, {"best_performing": "ItemA", "worst_performing": "ItemB"}
+  Equal        r134, r132, r133
+  Expect       r134
   Return       r0
