@@ -1,0 +1,60 @@
+func main (regs=37)
+  // let web_sales = [
+  Const        r0, [{"ws_ext_discount_amt": 1, "ws_item_sk": 1, "ws_sold_date_sk": 1}, {"ws_ext_discount_amt": 1, "ws_item_sk": 1, "ws_sold_date_sk": 1}, {"ws_ext_discount_amt": 2, "ws_item_sk": 1, "ws_sold_date_sk": 1}]
+  // let item = [{i_item_sk: 1, i_manufact_id: 1}]
+  Const        r1, [{"i_item_sk": 1, "i_manufact_id": 1}]
+  // let date_dim = [{d_date_sk: 1, d_date: "2000-01-02"}]
+  Const        r2, [{"d_date": "2000-01-02", "d_date_sk": 1}]
+  // let sum_amt = sum(from ws in web_sales select ws.ws_ext_discount_amt)
+  Const        r3, []
+  Const        r4, "ws_ext_discount_amt"
+  IterPrep     r5, r0
+  Len          r6, r5
+  Const        r7, 0
+L1:
+  LessInt      r9, r7, r6
+  JumpIfFalse  r9, L0
+  Index        r11, r5, r7
+  Const        r12, "ws_ext_discount_amt"
+  Index        r13, r11, r12
+  Append       r3, r3, r13
+  Const        r15, 1
+  AddInt       r7, r7, r15
+  Jump         L1
+L0:
+  Sum          r16, r3
+  // let avg_amt = avg(from ws in web_sales select ws.ws_ext_discount_amt)
+  Const        r17, []
+  Const        r18, "ws_ext_discount_amt"
+  IterPrep     r19, r0
+  Len          r20, r19
+  Const        r21, 0
+L3:
+  LessInt      r23, r21, r20
+  JumpIfFalse  r23, L2
+  Index        r11, r19, r21
+  Const        r25, "ws_ext_discount_amt"
+  Index        r26, r11, r25
+  Append       r17, r17, r26
+  Const        r28, 1
+  AddInt       r21, r21, r28
+  Jump         L3
+L2:
+  Avg          r29, r17
+  // let result = if sum_amt > avg_amt * 1.3 { sum_amt } else { 0.0 }
+  Const        r30, 1.3
+  MulFloat     r31, r29, r30
+  LessFloat    r32, r31, r16
+  JumpIfFalse  r32, L4
+  Move         r33, r16
+  Jump         L5
+L4:
+  Const        r33, 0
+L5:
+  // json(result)
+  JSON         r33
+  // expect result == 4.0
+  Const        r35, 4
+  EqualFloat   r36, r33, r35
+  Expect       r36
+  Return       r0

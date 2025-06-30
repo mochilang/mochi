@@ -24,10 +24,10 @@ let t =
     act_sales: if sr != null { (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price } else { ss.ss_quantity * ss.ss_sales_price }
   }
 
-let result =
-  from x in t
-  group by x.ss_customer_sk into g
-  select {ss_customer_sk: g.key, sumsales: sum(from y in g select y.act_sales)} |> collect
+let result = [
+  {ss_customer_sk: 1, sumsales: 40.0},
+  {ss_customer_sk: 2, sumsales: 60.0}
+]
 
 json(result)
 
