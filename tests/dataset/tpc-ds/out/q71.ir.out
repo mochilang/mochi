@@ -1,0 +1,421 @@
+func main (regs=292)
+  // let item = [
+  Const        r0, [{"i_brand": "BrandA", "i_brand_id": 10, "i_item_sk": 1, "i_manager_id": 1}, {"i_brand": "BrandB", "i_brand_id": 20, "i_item_sk": 2, "i_manager_id": 1}]
+  // let time_dim = [
+  Const        r1, [{"t_hour": 8, "t_meal_time": "breakfast", "t_minute": 30, "t_time_sk": 1}, {"t_hour": 18, "t_meal_time": "dinner", "t_minute": 0, "t_time_sk": 2}, {"t_hour": 12, "t_meal_time": "lunch", "t_minute": 0, "t_time_sk": 3}]
+  // let date_dim = [
+  Const        r2, [{"d_date_sk": 1, "d_moy": 12, "d_year": 1998}]
+  // let web_sales = [
+  Const        r3, [{"ws_ext_sales_price": 100, "ws_item_sk": 1, "ws_sold_date_sk": 1, "ws_sold_time_sk": 1}]
+  // let catalog_sales = [
+  Const        r4, [{"cs_ext_sales_price": 200, "cs_item_sk": 1, "cs_sold_date_sk": 1, "cs_sold_time_sk": 2}]
+  // let store_sales = [
+  Const        r5, [{"ss_ext_sales_price": 150, "ss_item_sk": 2, "ss_sold_date_sk": 1, "ss_sold_time_sk": 1}]
+  // let month = 12
+  Const        r6, 12
+  // let year = 1998
+  Const        r7, 1998
+  // from ws in web_sales join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk where d.d_moy == month && d.d_year == year select {ext_price: ws.ws_ext_sales_price, item_sk: ws.ws_item_sk, time_sk: ws.ws_sold_time_sk},
+  Const        r8, []
+  IterPrep     r9, r3
+  Len          r10, r9
+  IterPrep     r11, r2
+  Len          r12, r11
+  Const        r13, "d_date_sk"
+  Const        r14, "ws_sold_date_sk"
+  Const        r15, "d_moy"
+  Const        r16, "d_year"
+  Const        r17, "ext_price"
+  Const        r18, "ws_ext_sales_price"
+  Const        r19, "item_sk"
+  Const        r20, "ws_item_sk"
+  Const        r21, "time_sk"
+  Const        r22, "ws_sold_time_sk"
+  Const        r23, 0
+L5:
+  LessInt      r24, r23, r10
+  JumpIfFalse  r24, L0
+  Index        r26, r9, r23
+  Const        r27, 0
+L4:
+  LessInt      r28, r27, r12
+  JumpIfFalse  r28, L1
+  Index        r30, r11, r27
+  Index        r31, r30, r13
+  Index        r32, r26, r14
+  Equal        r33, r31, r32
+  JumpIfFalse  r33, L2
+  Index        r34, r30, r15
+  Equal        r35, r34, r6
+  Index        r36, r30, r16
+  Equal        r37, r36, r7
+  JumpIfFalse  r35, L3
+  Move         r35, r37
+L3:
+  JumpIfFalse  r35, L2
+  Const        r38, "ext_price"
+  Index        r39, r26, r18
+  Const        r40, "item_sk"
+  Index        r41, r26, r20
+  Const        r42, "time_sk"
+  Index        r43, r26, r22
+  Move         r44, r38
+  Move         r45, r39
+  Move         r46, r40
+  Move         r47, r41
+  Move         r48, r42
+  Move         r49, r43
+  MakeMap      r50, 3, r44
+  Append       r8, r8, r50
+L2:
+  Const        r52, 1
+  AddInt       r27, r27, r52
+  Jump         L4
+L1:
+  AddInt       r23, r23, r52
+  Jump         L5
+L0:
+  // from cs in catalog_sales join d in date_dim on d.d_date_sk == cs.cs_sold_date_sk where d.d_moy == month && d.d_year == year select {ext_price: cs.cs_ext_sales_price, item_sk: cs.cs_item_sk, time_sk: cs.cs_sold_time_sk},
+  Const        r53, []
+  IterPrep     r54, r4
+  Len          r55, r54
+  IterPrep     r56, r2
+  Len          r57, r56
+  Const        r58, "cs_sold_date_sk"
+  Const        r59, "cs_ext_sales_price"
+  Const        r60, "cs_item_sk"
+  Const        r61, "cs_sold_time_sk"
+  Const        r62, 0
+L11:
+  LessInt      r63, r62, r55
+  JumpIfFalse  r63, L6
+  Index        r65, r54, r62
+  Const        r66, 0
+L10:
+  LessInt      r67, r66, r57
+  JumpIfFalse  r67, L7
+  Index        r30, r56, r66
+  Index        r69, r30, r13
+  Index        r70, r65, r58
+  Equal        r71, r69, r70
+  JumpIfFalse  r71, L8
+  Index        r72, r30, r15
+  Equal        r73, r72, r6
+  Index        r74, r30, r16
+  Equal        r75, r74, r7
+  JumpIfFalse  r73, L9
+  Move         r73, r75
+L9:
+  JumpIfFalse  r73, L8
+  Const        r76, "ext_price"
+  Index        r77, r65, r59
+  Const        r78, "item_sk"
+  Index        r79, r65, r60
+  Const        r80, "time_sk"
+  Index        r81, r65, r61
+  Move         r82, r76
+  Move         r83, r77
+  Move         r84, r78
+  Move         r85, r79
+  Move         r86, r80
+  Move         r87, r81
+  MakeMap      r88, 3, r82
+  Append       r53, r53, r88
+L8:
+  AddInt       r66, r66, r52
+  Jump         L10
+L7:
+  AddInt       r62, r62, r52
+  Jump         L11
+L6:
+  // let union_sales = concat(
+  UnionAll     r90, r8, r53
+  // from ss in store_sales join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk where d.d_moy == month && d.d_year == year select {ext_price: ss.ss_ext_sales_price, item_sk: ss.ss_item_sk, time_sk: ss.ss_sold_time_sk}
+  Const        r91, []
+  IterPrep     r92, r5
+  Len          r93, r92
+  IterPrep     r94, r2
+  Len          r95, r94
+  Const        r96, "ss_sold_date_sk"
+  Const        r97, "ss_ext_sales_price"
+  Const        r98, "ss_item_sk"
+  Const        r99, "ss_sold_time_sk"
+  Const        r100, 0
+L17:
+  LessInt      r101, r100, r93
+  JumpIfFalse  r101, L12
+  Index        r103, r92, r100
+  Const        r104, 0
+L16:
+  LessInt      r105, r104, r95
+  JumpIfFalse  r105, L13
+  Index        r30, r94, r104
+  Index        r107, r30, r13
+  Index        r108, r103, r96
+  Equal        r109, r107, r108
+  JumpIfFalse  r109, L14
+  Index        r110, r30, r15
+  Equal        r111, r110, r6
+  Index        r112, r30, r16
+  Equal        r113, r112, r7
+  JumpIfFalse  r111, L15
+  Move         r111, r113
+L15:
+  JumpIfFalse  r111, L14
+  Const        r114, "ext_price"
+  Index        r115, r103, r97
+  Const        r116, "item_sk"
+  Index        r117, r103, r98
+  Const        r118, "time_sk"
+  Index        r119, r103, r99
+  Move         r120, r114
+  Move         r121, r115
+  Move         r122, r116
+  Move         r123, r117
+  Move         r124, r118
+  Move         r125, r119
+  MakeMap      r126, 3, r120
+  Append       r91, r91, r126
+L14:
+  AddInt       r104, r104, r52
+  Jump         L16
+L13:
+  AddInt       r100, r100, r52
+  Jump         L17
+L12:
+  // let union_sales = concat(
+  UnionAll     r128, r90, r91
+  // from i in item
+  Const        r129, []
+  // group by { brand_id: i.i_brand_id, brand: i.i_brand, t_hour: t.t_hour, t_minute: t.t_minute } into g
+  Const        r130, "brand_id"
+  Const        r131, "i_brand_id"
+  Const        r132, "brand"
+  Const        r133, "i_brand"
+  Const        r134, "t_hour"
+  Const        r135, "t_minute"
+  // where i.i_manager_id == 1 && (t.t_meal_time == "breakfast" || t.t_meal_time == "dinner")
+  Const        r136, "i_manager_id"
+  Const        r137, "t_meal_time"
+  // i_brand_id: g.key.brand_id,
+  Const        r138, "key"
+  // ext_price: sum(from x in g select x.s.ext_price)
+  Const        r139, "s"
+  // from i in item
+  MakeMap      r140, 0, r0
+  Const        r141, []
+  IterPrep     r143, r0
+  Len          r144, r143
+  Const        r145, 0
+L27:
+  LessInt      r146, r145, r144
+  JumpIfFalse  r146, L18
+  Index        r148, r143, r145
+  // join s in union_sales on s.item_sk == i.i_item_sk
+  IterPrep     r149, r128
+  Len          r150, r149
+  Const        r151, 0
+L26:
+  LessInt      r152, r151, r150
+  JumpIfFalse  r152, L19
+  Index        r154, r149, r151
+  Index        r155, r154, r19
+  Const        r156, "i_item_sk"
+  Index        r157, r148, r156
+  Equal        r158, r155, r157
+  JumpIfFalse  r158, L20
+  // join t in time_dim on t.t_time_sk == s.time_sk
+  IterPrep     r159, r1
+  Len          r160, r159
+  Const        r161, 0
+L25:
+  LessInt      r162, r161, r160
+  JumpIfFalse  r162, L20
+  Index        r164, r159, r161
+  Const        r165, "t_time_sk"
+  Index        r166, r164, r165
+  Index        r167, r154, r21
+  Equal        r168, r166, r167
+  JumpIfFalse  r168, L21
+  // where i.i_manager_id == 1 && (t.t_meal_time == "breakfast" || t.t_meal_time == "dinner")
+  Index        r169, r148, r136
+  Equal        r170, r169, r52
+  JumpIfFalse  r170, L22
+  Index        r171, r164, r137
+  Const        r172, "breakfast"
+  Equal        r173, r171, r172
+  Index        r174, r164, r137
+  Const        r175, "dinner"
+  Equal        r176, r174, r175
+  JumpIfTrue   r173, L23
+L23:
+  Move         r170, r176
+L22:
+  JumpIfFalse  r170, L21
+  // from i in item
+  Const        r177, "i"
+  Move         r178, r148
+  Move         r179, r154
+  Const        r180, "t"
+  Move         r181, r164
+  MakeMap      r182, 3, r177
+  // group by { brand_id: i.i_brand_id, brand: i.i_brand, t_hour: t.t_hour, t_minute: t.t_minute } into g
+  Const        r183, "brand_id"
+  Index        r184, r148, r131
+  Const        r185, "brand"
+  Index        r186, r148, r133
+  Const        r187, "t_hour"
+  Index        r188, r164, r134
+  Const        r189, "t_minute"
+  Index        r190, r164, r135
+  Move         r191, r183
+  Move         r192, r184
+  Move         r193, r185
+  Move         r194, r186
+  Move         r195, r187
+  Move         r196, r188
+  Move         r197, r189
+  Move         r198, r190
+  MakeMap      r199, 4, r191
+  Str          r200, r199
+  In           r201, r200, r140
+  JumpIfTrue   r201, L24
+  // from i in item
+  Const        r202, []
+  Const        r203, "__group__"
+  Const        r204, true
+  Const        r205, "key"
+  // group by { brand_id: i.i_brand_id, brand: i.i_brand, t_hour: t.t_hour, t_minute: t.t_minute } into g
+  Move         r206, r199
+  // from i in item
+  Const        r207, "items"
+  Move         r208, r202
+  Const        r209, "count"
+  Const        r210, 0
+  Move         r211, r203
+  Move         r212, r204
+  Move         r213, r205
+  Move         r214, r206
+  Move         r215, r207
+  Move         r216, r208
+  Move         r217, r209
+  Move         r218, r210
+  MakeMap      r219, 4, r211
+  SetIndex     r140, r200, r219
+  Append       r141, r141, r219
+L24:
+  Const        r221, "items"
+  Index        r222, r140, r200
+  Index        r223, r222, r221
+  Append       r224, r223, r182
+  SetIndex     r222, r221, r224
+  Const        r225, "count"
+  Index        r226, r222, r225
+  AddInt       r227, r226, r52
+  SetIndex     r222, r225, r227
+L21:
+  // join t in time_dim on t.t_time_sk == s.time_sk
+  AddInt       r161, r161, r52
+  Jump         L25
+L20:
+  // join s in union_sales on s.item_sk == i.i_item_sk
+  AddInt       r151, r151, r52
+  Jump         L26
+L19:
+  // from i in item
+  AddInt       r145, r145, r52
+  Jump         L27
+L18:
+  Const        r229, 0
+  Move         r228, r229
+  Len          r230, r141
+L33:
+  LessInt      r231, r228, r230
+  JumpIfFalse  r231, L28
+  Index        r233, r141, r228
+  // i_brand_id: g.key.brand_id,
+  Const        r234, "i_brand_id"
+  Index        r235, r233, r138
+  Index        r236, r235, r130
+  // i_brand: g.key.brand,
+  Const        r237, "i_brand"
+  Index        r238, r233, r138
+  Index        r239, r238, r132
+  // t_hour: g.key.t_hour,
+  Const        r240, "t_hour"
+  Index        r241, r233, r138
+  Index        r242, r241, r134
+  // t_minute: g.key.t_minute,
+  Const        r243, "t_minute"
+  Index        r244, r233, r138
+  Index        r245, r244, r135
+  // ext_price: sum(from x in g select x.s.ext_price)
+  Const        r246, "ext_price"
+  Const        r247, []
+  IterPrep     r248, r233
+  Len          r249, r248
+  Move         r250, r229
+L30:
+  LessInt      r251, r250, r249
+  JumpIfFalse  r251, L29
+  Index        r253, r248, r250
+  Index        r254, r253, r139
+  Index        r255, r254, r17
+  Append       r247, r247, r255
+  AddInt       r250, r250, r52
+  Jump         L30
+L29:
+  Sum          r257, r247
+  // i_brand_id: g.key.brand_id,
+  Move         r258, r234
+  Move         r259, r236
+  // i_brand: g.key.brand,
+  Move         r260, r237
+  Move         r261, r239
+  // t_hour: g.key.t_hour,
+  Move         r262, r240
+  Move         r263, r242
+  // t_minute: g.key.t_minute,
+  Move         r264, r243
+  Move         r265, r245
+  // ext_price: sum(from x in g select x.s.ext_price)
+  Move         r266, r246
+  Move         r267, r257
+  // select {
+  MakeMap      r268, 5, r258
+  // sort by [-sum(from x in g select x.s.ext_price), g.key.brand_id]
+  Const        r269, []
+  IterPrep     r270, r233
+  Len          r271, r270
+  Move         r272, r229
+L32:
+  LessInt      r273, r272, r271
+  JumpIfFalse  r273, L31
+  Index        r253, r270, r272
+  Index        r275, r253, r139
+  Index        r276, r275, r17
+  Append       r269, r269, r276
+  AddInt       r272, r272, r52
+  Jump         L32
+L31:
+  Sum          r278, r269
+  Neg          r280, r278
+  Index        r281, r233, r138
+  Index        r283, r281, r130
+  MakeList     r285, 2, r280
+  // from i in item
+  Move         r286, r268
+  MakeList     r287, 2, r285
+  Append       r129, r129, r287
+  AddInt       r228, r228, r52
+  Jump         L33
+L28:
+  // sort by [-sum(from x in g select x.s.ext_price), g.key.brand_id]
+  Sort         r129, r129
+  // json(result)
+  JSON         r129
+  // expect result == [
+  Const        r290, [{"ext_price": 200, "i_brand": "BrandA", "i_brand_id": 10, "t_hour": 18, "t_minute": 0}, {"ext_price": 150, "i_brand": "BrandB", "i_brand_id": 20, "t_hour": 8, "t_minute": 30}, {"ext_price": 100, "i_brand": "BrandA", "i_brand_id": 10, "t_hour": 8, "t_minute": 30}]
+  Equal        r291, r129, r290
+  Expect       r291
+  Return       r0
