@@ -6777,6 +6777,12 @@ func toFloat(v Value) float64 {
 	if v.Tag == ValueFloat {
 		return v.Float
 	}
+	if v.Tag == ValueBool {
+		if v.Bool {
+			return 1
+		}
+		return 0
+	}
 	return float64(v.Int)
 }
 
