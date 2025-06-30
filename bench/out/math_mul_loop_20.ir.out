@@ -15,10 +15,12 @@ L1:
   JumpIfFalse  r6, L0
   // last = mul(n)
   Move         r7, r0
-  Call         r3, mul, r7
+  Call         r8, mul, r7
+  Move         r3, r8
   // for i in 0..repeat {
   Const        r9, 1
-  Add          r5, r5, r9
+  Add          r10, r5, r9
+  Move         r5, r10
   Jump         L1
 L0:
   // let duration = (now() - start) / 1000
@@ -51,10 +53,12 @@ L1:
   Less         r4, r3, r0
   JumpIfFalse  r4, L0
   // result = result * i
-  MulInt       r2, r2, r3
+  MulInt       r5, r2, r3
+  Move         r2, r5
   // for i in 1..n {
   Const        r6, 1
-  Add          r3, r3, r6
+  Add          r7, r3, r6
+  Move         r3, r7
   Jump         L1
 L0:
   // return result
