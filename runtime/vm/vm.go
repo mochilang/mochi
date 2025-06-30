@@ -3258,6 +3258,21 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 		}
 	}
 
+	if joinType == "outer" {
+		if rl, ok := fc.constListLen(join.Src); ok && rl == 1 {
+			if ll, ok2 := fc.constListLen(q.Source); ok2 && ll == 1 {
+				fc.compileSingleRowFullOuterJoin(q, dst)
+			} else {
+				fc.compileSingleRowRightOuterJoin(q, dst)
+			}
+			return
+		}
+		if ll, ok := fc.constListLen(q.Source); ok && ll == 1 {
+			fc.compileSingleRowLeftOuterJoin(q, dst)
+			return
+		}
+	}
+
 	if joinType == "inner" {
 		if lk, rk, ok := eqJoinKeys(join.On, q.Var, join.Var); ok {
 			if !fc.smallConstJoin(q.Source, join.Src) {
@@ -4942,6 +4957,123 @@ func (fc *funcCompiler) compileSingleRowLeftOuterJoin(q *parser.QueryExpr, dst i
 	fc.emit(join.Pos, Instr{Op: OpJump, A: rstart})
 	rend := len(fc.fn.Code)
 	fc.fn.Code[rjmp].B = rend
+}
+
+// compileSingleRowFullOuterJoin handles outer joins when both sides have exactly
+// one element each. The join condition is evaluated once to decide whether to
+// produce a matched row or two unmatched rows.
+func (fc *funcCompiler) compileSingleRowFullOuterJoin(q *parser.QueryExpr, dst int) {
+	join := q.Joins[0]
+
+	fc.preloadFieldConsts(join.On)
+	fc.preloadFieldConsts(q.Where)
+	fc.preloadFieldConsts(q.Select)
+	fc.preloadFieldConsts(q.Sort)
+
+	leftReg := fc.compileExpr(q.Source)
+	llist := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpIterPrep, A: llist, B: leftReg})
+	zero := fc.constReg(q.Pos, Value{Tag: ValueInt, Int: 0})
+	lelem := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpIndex, A: lelem, B: llist, C: zero})
+	lrow := fc.newReg()
+	fc.emit(q.Pos, Instr{Op: OpMove, A: lrow, B: lelem})
+
+	rightReg := fc.compileExpr(join.Src)
+	rlist := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpIterPrep, A: rlist, B: rightReg})
+	relem := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpIndex, A: relem, B: rlist, C: zero})
+	rrow := fc.newReg()
+	fc.emit(join.Pos, Instr{Op: OpMove, A: rrow, B: relem})
+
+	lvar, ok := fc.vars[q.Var]
+	if !ok {
+		lvar = fc.newReg()
+		fc.vars[q.Var] = lvar
+	}
+	rvar, ok := fc.vars[join.Var]
+	if !ok {
+		rvar = fc.newReg()
+		fc.vars[join.Var] = rvar
+	}
+
+	appendSelect := func() {
+		val := fc.compileExpr(q.Select)
+		if q.Sort != nil {
+			key := fc.compileExpr(q.Sort)
+			kreg := fc.newReg()
+			fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
+			vreg := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+			pair := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		} else {
+			tmp := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+			fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
+		}
+	}
+
+	fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lrow})
+	fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: rrow})
+	if join.On != nil {
+		cond := fc.compileExpr(join.On)
+		skip := len(fc.fn.Code)
+		fc.emit(join.On.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+		if q.Where != nil {
+			w := fc.compileExpr(q.Where)
+			wskip := len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+			appendSelect()
+			fc.fn.Code[wskip].B = len(fc.fn.Code)
+		} else {
+			appendSelect()
+		}
+		jumpEnd := len(fc.fn.Code)
+		fc.emit(join.Pos, Instr{Op: OpJump})
+		fc.fn.Code[skip].B = len(fc.fn.Code)
+
+		nilreg := fc.constReg(join.Pos, Value{Tag: ValueNull})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: lrow})
+		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: nilreg})
+		if q.Where != nil {
+			w := fc.compileExpr(q.Where)
+			wskip := len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+			appendSelect()
+			fc.fn.Code[wskip].B = len(fc.fn.Code)
+		} else {
+			appendSelect()
+		}
+
+		fc.emit(join.Pos, Instr{Op: OpMove, A: rvar, B: rrow})
+		fc.emit(q.Pos, Instr{Op: OpMove, A: lvar, B: nilreg})
+		if q.Where != nil {
+			w := fc.compileExpr(q.Where)
+			wskip2 := len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+			appendSelect()
+			fc.fn.Code[wskip2].B = len(fc.fn.Code)
+		} else {
+			appendSelect()
+		}
+
+		fc.fn.Code[jumpEnd].B = len(fc.fn.Code)
+	} else {
+		if q.Where != nil {
+			w := fc.compileExpr(q.Where)
+			wskip := len(fc.fn.Code)
+			fc.emit(q.Where.Pos, Instr{Op: OpJumpIfFalse, A: w})
+			appendSelect()
+			fc.fn.Code[wskip].B = len(fc.fn.Code)
+		} else {
+			appendSelect()
+		}
+	}
 }
 
 // compileEmptyRightOuterJoin handles left or outer joins when the right side is empty.
