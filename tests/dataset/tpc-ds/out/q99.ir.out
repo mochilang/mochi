@@ -1,4 +1,4 @@
-func main (regs=233)
+func main (regs=236)
   // let catalog_sales = [
   Const        r0, [{"cs_call_center_sk": 1, "cs_ship_date_sk": 31, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 51, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 71, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 101, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ship_date_sk": 131, "cs_ship_mode_sk": 1, "cs_sold_date_sk": 1, "cs_warehouse_sk": 1}]
   // let warehouse = [{w_warehouse_sk: 1, w_warehouse_name: "Warehouse1"}]
@@ -30,14 +30,16 @@ func main (regs=233)
   Const        r16, "dmore"
   // from cs in catalog_sales
   MakeMap      r17, 0, r0
-  Const        r18, []
+  Const        r19, []
+  Move         r18, r19
   IterPrep     r20, r0
   Len          r21, r20
   Const        r22, 0
 L9:
   LessInt      r23, r22, r21
   JumpIfFalse  r23, L0
-  Index        r25, r20, r22
+  Index        r24, r20, r22
+  Move         r25, r24
   // join w in warehouse on cs.cs_warehouse_sk == w.w_warehouse_sk
   IterPrep     r26, r1
   Len          r27, r26
@@ -45,7 +47,8 @@ L9:
 L8:
   LessInt      r29, r28, r27
   JumpIfFalse  r29, L1
-  Index        r31, r26, r28
+  Index        r30, r26, r28
+  Move         r31, r30
   Const        r32, "cs_warehouse_sk"
   Index        r33, r25, r32
   Const        r34, "w_warehouse_sk"
@@ -59,7 +62,8 @@ L8:
 L7:
   LessInt      r40, r39, r38
   JumpIfFalse  r40, L2
-  Index        r42, r37, r39
+  Index        r41, r37, r39
+  Move         r42, r41
   Const        r43, "cs_ship_mode_sk"
   Index        r44, r25, r43
   Const        r45, "sm_ship_mode_sk"
@@ -73,7 +77,8 @@ L7:
 L6:
   LessInt      r51, r50, r49
   JumpIfFalse  r51, L3
-  Index        r53, r48, r50
+  Index        r52, r48, r50
+  Move         r53, r52
   Const        r54, "cs_call_center_sk"
   Index        r55, r25, r54
   Const        r56, "cc_call_center_sk"
@@ -138,7 +143,8 @@ L6:
   Move         r108, r78
   MakeMap      r109, 4, r101
   SetIndex     r17, r92, r109
-  Append       r18, r18, r109
+  Append       r110, r18, r109
+  Move         r18, r110
 L5:
   Index        r111, r17, r92
   Index        r112, r111, r98
@@ -170,7 +176,8 @@ L0:
 L29:
   LessInt      r119, r117, r118
   JumpIfFalse  r119, L10
-  Index        r121, r18, r117
+  Index        r120, r18, r117
+  Move         r121, r120
   // warehouse: g.key.warehouse,
   Const        r122, "warehouse"
   Index        r123, r121, r9
@@ -192,14 +199,16 @@ L29:
 L13:
   LessInt      r136, r135, r134
   JumpIfFalse  r136, L11
-  Index        r138, r133, r135
+  Index        r137, r133, r135
+  Move         r138, r137
   Index        r139, r138, r11
   Index        r140, r138, r12
   Sub          r141, r139, r140
   Const        r142, 30
   LessEq       r143, r141, r142
   JumpIfFalse  r143, L12
-  Append       r132, r132, r138
+  Append       r144, r132, r138
+  Move         r132, r144
 L12:
   AddInt       r135, r135, r115
   Jump         L13
@@ -214,7 +223,8 @@ L11:
 L17:
   LessInt      r151, r150, r149
   JumpIfFalse  r151, L14
-  Index        r138, r148, r150
+  Index        r152, r148, r150
+  Move         r138, r152
   Index        r153, r138, r11
   Index        r154, r138, r12
   Sub          r155, r153, r154
@@ -224,130 +234,141 @@ L17:
   Less         r159, r142, r155
   Const        r160, 60
   LessEq       r161, r158, r160
-  JumpIfFalse  r159, L15
-  Move         r159, r161
+  Move         r162, r159
+  JumpIfFalse  r162, L15
+  Move         r162, r161
 L15:
-  JumpIfFalse  r159, L16
-  Append       r147, r147, r138
+  JumpIfFalse  r162, L16
+  Append       r163, r147, r138
+  Move         r147, r163
 L16:
   AddInt       r150, r150, r115
   Jump         L17
 L14:
-  Count        r163, r147
+  Count        r164, r147
   // d90: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 60 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 90 select x),
-  Const        r164, "d90"
-  Const        r165, []
-  IterPrep     r166, r121
-  Len          r167, r166
-  Move         r168, r78
+  Const        r165, "d90"
+  Const        r166, []
+  IterPrep     r167, r121
+  Len          r168, r167
+  Move         r169, r78
 L21:
-  LessInt      r169, r168, r167
-  JumpIfFalse  r169, L18
-  Index        r138, r166, r168
-  Index        r171, r138, r11
-  Index        r172, r138, r12
-  Sub          r173, r171, r172
-  Index        r174, r138, r11
-  Index        r175, r138, r12
-  Sub          r176, r174, r175
-  Less         r177, r160, r173
-  Const        r178, 90
-  LessEq       r179, r176, r178
-  JumpIfFalse  r177, L19
-  Move         r177, r179
+  LessInt      r170, r169, r168
+  JumpIfFalse  r170, L18
+  Index        r171, r167, r169
+  Move         r138, r171
+  Index        r172, r138, r11
+  Index        r173, r138, r12
+  Sub          r174, r172, r173
+  Index        r175, r138, r11
+  Index        r176, r138, r12
+  Sub          r177, r175, r176
+  Less         r178, r160, r174
+  Const        r179, 90
+  LessEq       r180, r177, r179
+  Move         r181, r178
+  JumpIfFalse  r181, L19
+  Move         r181, r180
 L19:
-  JumpIfFalse  r177, L20
-  Append       r165, r165, r138
+  JumpIfFalse  r181, L20
+  Append       r182, r166, r138
+  Move         r166, r182
 L20:
-  AddInt       r168, r168, r115
+  AddInt       r169, r169, r115
   Jump         L21
 L18:
-  Count        r181, r165
+  Count        r183, r166
   // d120: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 90 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 120 select x),
-  Const        r182, "d120"
-  Const        r183, []
-  IterPrep     r184, r121
-  Len          r185, r184
-  Move         r186, r78
+  Const        r184, "d120"
+  Const        r185, []
+  IterPrep     r186, r121
+  Len          r187, r186
+  Move         r188, r78
 L25:
-  LessInt      r187, r186, r185
-  JumpIfFalse  r187, L22
-  Index        r138, r184, r186
-  Index        r189, r138, r11
-  Index        r190, r138, r12
-  Sub          r191, r189, r190
-  Index        r192, r138, r11
-  Index        r193, r138, r12
-  Sub          r194, r192, r193
-  Less         r195, r178, r191
-  Const        r196, 120
-  LessEq       r197, r194, r196
-  JumpIfFalse  r195, L23
-  Move         r195, r197
+  LessInt      r189, r188, r187
+  JumpIfFalse  r189, L22
+  Index        r190, r186, r188
+  Move         r138, r190
+  Index        r191, r138, r11
+  Index        r192, r138, r12
+  Sub          r193, r191, r192
+  Index        r194, r138, r11
+  Index        r195, r138, r12
+  Sub          r196, r194, r195
+  Less         r197, r179, r193
+  Const        r198, 120
+  LessEq       r199, r196, r198
+  Move         r200, r197
+  JumpIfFalse  r200, L23
+  Move         r200, r199
 L23:
-  JumpIfFalse  r195, L24
-  Append       r183, r183, r138
+  JumpIfFalse  r200, L24
+  Append       r201, r185, r138
+  Move         r185, r201
 L24:
-  AddInt       r186, r186, r115
+  AddInt       r188, r188, r115
   Jump         L25
 L22:
-  Count        r199, r183
+  Count        r202, r185
   // dmore: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 120 select x)
-  Const        r200, "dmore"
-  Const        r201, []
-  IterPrep     r202, r121
-  Len          r203, r202
-  Move         r204, r78
+  Const        r203, "dmore"
+  Const        r204, []
+  IterPrep     r205, r121
+  Len          r206, r205
+  Move         r207, r78
 L28:
-  LessInt      r205, r204, r203
-  JumpIfFalse  r205, L26
-  Index        r138, r202, r204
-  Index        r207, r138, r11
-  Index        r208, r138, r12
-  Sub          r209, r207, r208
-  Less         r210, r196, r209
-  JumpIfFalse  r210, L27
-  Append       r201, r201, r138
+  LessInt      r208, r207, r206
+  JumpIfFalse  r208, L26
+  Index        r209, r205, r207
+  Move         r138, r209
+  Index        r210, r138, r11
+  Index        r211, r138, r12
+  Sub          r212, r210, r211
+  Less         r213, r198, r212
+  JumpIfFalse  r213, L27
+  Append       r214, r204, r138
+  Move         r204, r214
 L27:
-  AddInt       r204, r204, r115
+  AddInt       r207, r207, r115
   Jump         L28
 L26:
-  Count        r212, r201
+  Count        r215, r204
   // warehouse: g.key.warehouse,
-  Move         r213, r122
-  Move         r214, r124
+  Move         r216, r122
+  Move         r217, r124
   // sm_type: g.key.sm_type,
-  Move         r215, r125
-  Move         r216, r127
+  Move         r218, r125
+  Move         r219, r127
   // cc_name: g.key.cc_name,
-  Move         r217, r128
-  Move         r218, r130
+  Move         r220, r128
+  Move         r221, r130
   // d30: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk <= 30 select x),
-  Move         r219, r131
-  Move         r220, r145
+  Move         r222, r131
+  Move         r223, r145
   // d60: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 30 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 60 select x),
-  Move         r221, r146
-  Move         r222, r163
+  Move         r224, r146
+  Move         r225, r164
   // d90: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 60 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 90 select x),
-  Move         r223, r164
-  Move         r224, r181
+  Move         r226, r165
+  Move         r227, r183
   // d120: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 90 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 120 select x),
-  Move         r225, r182
-  Move         r226, r199
+  Move         r228, r184
+  Move         r229, r202
   // dmore: count(from x in g where x.cs_ship_date_sk - x.cs_sold_date_sk > 120 select x)
-  Move         r227, r200
-  Move         r228, r212
+  Move         r230, r203
+  Move         r231, r215
   // select {
-  MakeMap      r229, 8, r213
+  MakeMap      r232, 8, r216
   // from cs in catalog_sales
-  Append       r4, r4, r229
+  Append       r233, r4, r232
+  Move         r4, r233
   AddInt       r117, r117, r115
   Jump         L29
 L10:
   // json(grouped)
   JSON         r4
   // expect grouped == [{warehouse: "Warehouse1", sm_type: "EXP", cc_name: "CC1", d30: 1, d60: 1, d90: 1, d120: 1, dmore: 1}]
-  Const        r231, [{"cc_name": "CC1", "d120": 1, "d30": 1, "d60": 1, "d90": 1, "dmore": 1, "sm_type": "EXP", "warehouse": "Warehouse1"}]
-  Equal        r232, r4, r231
-  Expect       r232
+  Const        r234, [{"cc_name": "CC1", "d120": 1, "d30": 1, "d60": 1, "d90": 1, "dmore": 1, "sm_type": "EXP", "warehouse": "Warehouse1"}]
+  Equal        r235, r4, r234
+  Expect       r235
   Return       r0

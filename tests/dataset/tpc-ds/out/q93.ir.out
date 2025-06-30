@@ -1,4 +1,4 @@
-func main (regs=162)
+func main (regs=163)
   // let store_sales = [
   Const        r0, [{"ss_customer_sk": 1, "ss_item_sk": 1, "ss_quantity": 5, "ss_sales_price": 10, "ss_ticket_number": 1}, {"ss_customer_sk": 2, "ss_item_sk": 1, "ss_quantity": 3, "ss_sales_price": 20, "ss_ticket_number": 2}]
   // let store_returns = [
@@ -24,7 +24,8 @@ func main (regs=162)
 L10:
   LessInt      r14, r12, r11
   JumpIfFalse  r14, L0
-  Index        r16, r10, r12
+  Index        r15, r10, r12
+  Move         r16, r15
   // left join sr in store_returns on ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number
   IterPrep     r17, r1
   Len          r18, r17
@@ -36,7 +37,8 @@ L10:
 L6:
   LessInt      r24, r23, r18
   JumpIfFalse  r24, L1
-  Index        r26, r17, r23
+  Index        r25, r17, r23
+  Move         r26, r25
   Const        r27, false
   Index        r28, r16, r19
   Index        r29, r26, r20
@@ -44,209 +46,221 @@ L6:
   Index        r31, r16, r21
   Index        r32, r26, r22
   Equal        r33, r31, r32
-  JumpIfFalse  r30, L2
-  Move         r30, r33
+  Move         r34, r30
+  JumpIfFalse  r34, L2
+  Move         r34, r33
 L2:
-  JumpIfFalse  r30, L3
+  JumpIfFalse  r34, L3
   Const        r27, true
   // join r in reason on sr.sr_reason_sk == r.r_reason_sk
-  IterPrep     r34, r2
-  Len          r35, r34
-  Const        r36, "sr_reason_sk"
-  Const        r37, "r_reason_sk"
-  Move         r38, r13
+  IterPrep     r35, r2
+  Len          r36, r35
+  Const        r37, "sr_reason_sk"
+  Const        r38, "r_reason_sk"
+  Move         r39, r13
 L5:
-  LessInt      r39, r38, r35
-  JumpIfFalse  r39, L3
-  Index        r41, r34, r38
-  Index        r42, r26, r36
-  Index        r43, r41, r37
-  Equal        r44, r42, r43
-  JumpIfFalse  r44, L4
+  LessInt      r40, r39, r36
+  JumpIfFalse  r40, L3
+  Index        r41, r35, r39
+  Move         r42, r41
+  Index        r43, r26, r37
+  Index        r44, r42, r38
+  Equal        r45, r43, r44
+  JumpIfFalse  r45, L4
   // where r.r_reason_desc == "ReasonA"
-  Index        r45, r41, r4
-  Const        r46, "ReasonA"
-  Equal        r47, r45, r46
-  JumpIfFalse  r47, L4
+  Index        r46, r42, r4
+  Const        r47, "ReasonA"
+  Equal        r48, r46, r47
+  JumpIfFalse  r48, L4
   // ss_customer_sk: ss.ss_customer_sk,
-  Const        r48, "ss_customer_sk"
-  Index        r49, r16, r5
+  Const        r49, "ss_customer_sk"
+  Index        r50, r16, r5
   // act_sales: if sr != null { (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price } else { ss.ss_quantity * ss.ss_sales_price }
-  Const        r50, "act_sales"
-  Const        r51, nil
-  NotEqual     r52, r26, r51
-  Index        r53, r16, r7
-  Index        r54, r26, r8
-  Sub          r55, r53, r54
-  Index        r56, r16, r9
-  Mul          r57, r55, r56
-  Index        r58, r16, r7
-  Index        r59, r16, r9
-  Mul          r60, r58, r59
-  Select       61,52,57,60
+  Const        r51, "act_sales"
+  Const        r52, nil
+  NotEqual     r53, r26, r52
+  Index        r54, r16, r7
+  Index        r55, r26, r8
+  Sub          r56, r54, r55
+  Index        r57, r16, r9
+  Mul          r58, r56, r57
+  Index        r59, r16, r7
+  Index        r60, r16, r9
+  Mul          r61, r59, r60
+  Select       62,53,58,61
   // ss_customer_sk: ss.ss_customer_sk,
-  Move         r62, r48
   Move         r63, r49
-  // act_sales: if sr != null { (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price } else { ss.ss_quantity * ss.ss_sales_price }
   Move         r64, r50
-  Move         r65, r61
+  // act_sales: if sr != null { (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price } else { ss.ss_quantity * ss.ss_sales_price }
+  Move         r65, r51
+  Move         r66, r62
   // select {
-  MakeMap      r66, 2, r62
+  MakeMap      r67, 2, r63
   // from ss in store_sales
-  Append       r3, r3, r66
+  Append       r68, r3, r67
+  Move         r3, r68
 L4:
   // join r in reason on sr.sr_reason_sk == r.r_reason_sk
-  Const        r68, 1
-  Add          r38, r38, r68
+  Const        r69, 1
+  Add          r39, r39, r69
   Jump         L5
 L3:
   // left join sr in store_returns on ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number
-  Add          r23, r23, r68
+  Add          r23, r23, r69
   Jump         L6
 L1:
-  Move         r69, r27
-  JumpIfTrue   r69, L7
-  Move         r26, r51
+  Move         r70, r27
+  JumpIfTrue   r70, L7
+  Move         r26, r52
   // join r in reason on sr.sr_reason_sk == r.r_reason_sk
-  IterPrep     r70, r2
-  Len          r71, r70
-  Move         r72, r13
+  IterPrep     r71, r2
+  Len          r72, r71
+  Move         r73, r13
 L9:
-  LessInt      r73, r72, r71
-  JumpIfFalse  r73, L7
-  Index        r41, r70, r72
-  Index        r75, r26, r36
-  Index        r76, r41, r37
-  Equal        r77, r75, r76
-  JumpIfFalse  r77, L8
+  LessInt      r74, r73, r72
+  JumpIfFalse  r74, L7
+  Index        r75, r71, r73
+  Move         r42, r75
+  Index        r76, r26, r37
+  Index        r77, r42, r38
+  Equal        r78, r76, r77
+  JumpIfFalse  r78, L8
   // where r.r_reason_desc == "ReasonA"
-  Index        r78, r41, r4
-  Equal        r79, r78, r46
-  JumpIfFalse  r79, L8
+  Index        r79, r42, r4
+  Equal        r80, r79, r47
+  JumpIfFalse  r80, L8
   // ss_customer_sk: ss.ss_customer_sk,
-  Const        r80, "ss_customer_sk"
-  Index        r81, r16, r5
+  Const        r81, "ss_customer_sk"
+  Index        r82, r16, r5
   // act_sales: if sr != null { (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price } else { ss.ss_quantity * ss.ss_sales_price }
-  Const        r82, "act_sales"
-  NotEqual     r83, r26, r51
-  Index        r84, r16, r7
-  Index        r85, r26, r8
-  Sub          r86, r84, r85
-  Index        r87, r16, r9
-  Mul          r88, r86, r87
-  Index        r89, r16, r7
-  Index        r90, r16, r9
-  Mul          r91, r89, r90
-  Select       92,83,88,91
+  Const        r83, "act_sales"
+  NotEqual     r84, r26, r52
+  Index        r85, r16, r7
+  Index        r86, r26, r8
+  Sub          r87, r85, r86
+  Index        r88, r16, r9
+  Mul          r89, r87, r88
+  Index        r90, r16, r7
+  Index        r91, r16, r9
+  Mul          r92, r90, r91
+  Select       93,84,89,92
   // ss_customer_sk: ss.ss_customer_sk,
-  Move         r93, r80
   Move         r94, r81
-  // act_sales: if sr != null { (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price } else { ss.ss_quantity * ss.ss_sales_price }
   Move         r95, r82
-  Move         r96, r92
+  // act_sales: if sr != null { (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price } else { ss.ss_quantity * ss.ss_sales_price }
+  Move         r96, r83
+  Move         r97, r93
   // select {
-  MakeMap      r97, 2, r93
+  MakeMap      r98, 2, r94
   // from ss in store_sales
-  Append       r3, r3, r97
+  Append       r99, r3, r98
+  Move         r3, r99
 L8:
   // join r in reason on sr.sr_reason_sk == r.r_reason_sk
-  Add          r72, r72, r68
+  Add          r73, r73, r69
   Jump         L9
 L7:
   // from ss in store_sales
-  AddInt       r12, r12, r68
+  AddInt       r12, r12, r69
   Jump         L10
 L0:
   // from x in t
-  Const        r99, []
+  Const        r100, []
   // select {ss_customer_sk: g.key, sumsales: sum(from y in g select y.act_sales)}
-  Const        r100, "key"
-  Const        r101, "sumsales"
+  Const        r101, "key"
+  Const        r102, "sumsales"
   // from x in t
-  IterPrep     r102, r3
-  Len          r103, r102
-  Const        r104, 0
-  MakeMap      r105, 0, r0
-  Const        r106, []
+  IterPrep     r103, r3
+  Len          r104, r103
+  Const        r105, 0
+  MakeMap      r106, 0, r0
+  Const        r108, []
+  Move         r107, r108
 L13:
-  LessInt      r108, r104, r103
-  JumpIfFalse  r108, L11
-  Index        r109, r102, r104
+  LessInt      r109, r105, r104
+  JumpIfFalse  r109, L11
+  Index        r110, r103, r105
+  Move         r111, r110
   // group by x.ss_customer_sk into g
-  Index        r111, r109, r5
-  Str          r112, r111
-  In           r113, r112, r105
-  JumpIfTrue   r113, L12
+  Index        r112, r111, r5
+  Str          r113, r112
+  In           r114, r113, r106
+  JumpIfTrue   r114, L12
   // from x in t
-  Const        r114, []
-  Const        r115, "__group__"
-  Const        r116, true
+  Const        r115, []
+  Const        r116, "__group__"
+  Const        r117, true
   // group by x.ss_customer_sk into g
-  Move         r117, r111
+  Move         r118, r112
   // from x in t
-  Const        r118, "items"
-  Move         r119, r114
-  Const        r120, "count"
-  Move         r121, r115
+  Const        r119, "items"
+  Move         r120, r115
+  Const        r121, "count"
   Move         r122, r116
-  Move         r123, r100
-  Move         r124, r117
+  Move         r123, r117
+  Move         r124, r101
   Move         r125, r118
   Move         r126, r119
   Move         r127, r120
-  Move         r128, r13
-  MakeMap      r129, 4, r121
-  SetIndex     r105, r112, r129
-  Append       r106, r106, r129
+  Move         r128, r121
+  Move         r129, r13
+  MakeMap      r130, 4, r122
+  SetIndex     r106, r113, r130
+  Append       r131, r107, r130
+  Move         r107, r131
 L12:
-  Index        r131, r105, r112
-  Index        r132, r131, r118
-  Append       r133, r132, r109
-  SetIndex     r131, r118, r133
-  Index        r134, r131, r120
-  AddInt       r135, r134, r68
-  SetIndex     r131, r120, r135
-  AddInt       r104, r104, r68
+  Index        r132, r106, r113
+  Index        r133, r132, r119
+  Append       r134, r133, r110
+  SetIndex     r132, r119, r134
+  Index        r135, r132, r121
+  AddInt       r136, r135, r69
+  SetIndex     r132, r121, r136
+  AddInt       r105, r105, r69
   Jump         L13
 L11:
-  Move         r136, r13
-  Len          r137, r106
+  Move         r137, r13
+  Len          r138, r107
 L17:
-  LessInt      r138, r136, r137
-  JumpIfFalse  r138, L14
-  Index        r140, r106, r136
+  LessInt      r139, r137, r138
+  JumpIfFalse  r139, L14
+  Index        r140, r107, r137
+  Move         r141, r140
   // select {ss_customer_sk: g.key, sumsales: sum(from y in g select y.act_sales)}
-  Const        r141, "ss_customer_sk"
-  Index        r142, r140, r100
-  Const        r143, "sumsales"
-  Const        r144, []
-  IterPrep     r145, r140
-  Len          r146, r145
-  Move         r147, r13
+  Const        r142, "ss_customer_sk"
+  Index        r143, r141, r101
+  Const        r144, "sumsales"
+  Const        r145, []
+  IterPrep     r146, r141
+  Len          r147, r146
+  Move         r148, r13
 L16:
-  LessInt      r148, r147, r146
-  JumpIfFalse  r148, L15
-  Index        r150, r145, r147
-  Index        r151, r150, r6
-  Append       r144, r144, r151
-  AddInt       r147, r147, r68
+  LessInt      r149, r148, r147
+  JumpIfFalse  r149, L15
+  Index        r150, r146, r148
+  Move         r151, r150
+  Index        r152, r151, r6
+  Append       r153, r145, r152
+  Move         r145, r153
+  AddInt       r148, r148, r69
   Jump         L16
 L15:
-  Sum          r153, r144
-  Move         r154, r141
+  Sum          r154, r145
   Move         r155, r142
   Move         r156, r143
-  Move         r157, r153
-  MakeMap      r158, 2, r154
+  Move         r157, r144
+  Move         r158, r154
+  MakeMap      r159, 2, r155
   // from x in t
-  Append       r99, r99, r158
-  AddInt       r136, r136, r68
+  Append       r160, r100, r159
+  Move         r100, r160
+  AddInt       r137, r137, r69
   Jump         L17
 L14:
   // json(result)
-  JSON         r99
+  JSON         r100
   // expect result == [
-  Const        r160, [{"ss_customer_sk": 1, "sumsales": 40}]
-  Equal        r161, r99, r160
-  Expect       r161
+  Const        r161, [{"ss_customer_sk": 1, "sumsales": 40}]
+  Equal        r162, r100, r161
+  Expect       r162
   Return       r0

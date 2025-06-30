@@ -25,14 +25,16 @@ func main (regs=258)
   Const        r16, "ss_ext_sales_price"
   // from ss in store_sales
   MakeMap      r17, 0, r0
-  Const        r18, []
+  Const        r19, []
+  Move         r18, r19
   IterPrep     r20, r0
   Len          r21, r20
   Const        r22, 0
 L7:
   LessInt      r23, r22, r21
   JumpIfFalse  r23, L0
-  Index        r25, r20, r22
+  Index        r24, r20, r22
+  Move         r25, r24
   // join i in item on ss.ss_item_sk == i.i_item_sk
   IterPrep     r26, r1
   Len          r27, r26
@@ -40,7 +42,8 @@ L7:
 L6:
   LessInt      r29, r28, r27
   JumpIfFalse  r29, L1
-  Index        r31, r26, r28
+  Index        r30, r26, r28
+  Move         r31, r30
   Const        r32, "ss_item_sk"
   Index        r33, r25, r32
   Const        r34, "i_item_sk"
@@ -54,7 +57,8 @@ L6:
 L5:
   LessInt      r40, r39, r38
   JumpIfFalse  r40, L2
-  Index        r42, r37, r39
+  Index        r41, r37, r39
+  Move         r42, r41
   Const        r43, "ss_sold_date_sk"
   Index        r44, r25, r43
   Const        r45, "d_date_sk"
@@ -121,7 +125,8 @@ L5:
   Move         r99, r91
   MakeMap      r100, 4, r92
   SetIndex     r17, r82, r100
-  Append       r18, r18, r100
+  Append       r101, r18, r100
+  Move         r18, r101
 L4:
   Index        r102, r17, r82
   Index        r103, r102, r88
@@ -149,7 +154,8 @@ L0:
 L11:
   LessInt      r110, r108, r109
   JumpIfFalse  r110, L8
-  Index        r112, r18, r108
+  Index        r111, r18, r108
+  Move         r112, r111
   // i_item_id: g.key.item_id,
   Const        r113, "i_item_id"
   Index        r114, r112, r14
@@ -179,9 +185,11 @@ L11:
 L10:
   LessInt      r133, r132, r131
   JumpIfFalse  r133, L9
-  Index        r135, r130, r132
+  Index        r134, r130, r132
+  Move         r135, r134
   Index        r136, r135, r16
-  Append       r129, r129, r136
+  Append       r137, r129, r136
+  Move         r129, r137
   AddInt       r132, r132, r106
   Jump         L10
 L9:
@@ -207,7 +215,8 @@ L9:
   // select {
   MakeMap      r151, 6, r139
   // from ss in store_sales
-  Append       r3, r3, r151
+  Append       r152, r3, r151
+  Move         r3, r152
   AddInt       r108, r108, r106
   Jump         L11
 L8:
@@ -220,13 +229,15 @@ L8:
   Len          r156, r155
   Const        r157, 0
   MakeMap      r158, 0, r0
-  Const        r159, []
+  Const        r160, []
+  Move         r159, r160
 L14:
   LessInt      r161, r157, r156
   JumpIfFalse  r161, L12
   Index        r162, r155, r157
+  Move         r112, r162
   // group by g.i_class into cg
-  Index        r163, r162, r11
+  Index        r163, r112, r11
   Str          r164, r163
   In           r165, r164, r158
   JumpIfTrue   r165, L13
@@ -243,7 +254,8 @@ L14:
   Move         r175, r91
   MakeMap      r176, 4, r168
   SetIndex     r158, r164, r176
-  Append       r159, r159, r176
+  Append       r177, r159, r176
+  Move         r159, r177
 L13:
   Index        r178, r158, r164
   Index        r179, r178, r88
@@ -260,7 +272,8 @@ L12:
 L18:
   LessInt      r185, r183, r184
   JumpIfFalse  r185, L15
-  Index        r187, r159, r183
+  Index        r186, r159, r183
+  Move         r187, r186
   // select {class: cg.key, total: sum(from x in cg select x.itemrevenue)}
   Const        r188, "class"
   Index        r189, r187, r14
@@ -272,9 +285,11 @@ L18:
 L17:
   LessInt      r195, r194, r193
   JumpIfFalse  r195, L16
-  Index        r135, r192, r194
+  Index        r196, r192, r194
+  Move         r135, r196
   Index        r197, r135, r15
-  Append       r191, r191, r197
+  Append       r198, r191, r197
+  Move         r191, r198
   AddInt       r194, r194, r106
   Jump         L17
 L16:
@@ -285,7 +300,8 @@ L16:
   Move         r203, r199
   MakeMap      r204, 2, r200
   // from g in grouped
-  Append       r153, r153, r204
+  Append       r205, r153, r204
+  Move         r153, r205
   AddInt       r183, r183, r106
   Jump         L18
 L15:
@@ -303,13 +319,15 @@ L15:
 L23:
   LessInt      r213, r212, r208
   JumpIfFalse  r213, L19
-  Index        r112, r207, r212
+  Index        r214, r207, r212
+  Move         r112, r214
   // join t in totals on g.i_class == t.class
   Const        r215, 0
 L22:
   LessInt      r216, r215, r210
   JumpIfFalse  r216, L20
-  Index        r218, r209, r215
+  Index        r217, r209, r215
+  Move         r218, r217
   Index        r219, r112, r11
   Index        r220, r218, r10
   Equal        r221, r219, r220
@@ -363,7 +381,8 @@ L22:
   // select {
   MakeMap      r254, 7, r240
   // from g in grouped
-  Append       r206, r206, r254
+  Append       r255, r206, r254
+  Move         r206, r255
 L21:
   // join t in totals on g.i_class == t.class
   AddInt       r215, r215, r106

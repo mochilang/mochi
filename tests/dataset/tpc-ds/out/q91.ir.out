@@ -1,4 +1,4 @@
-func main (regs=225)
+func main (regs=230)
   // let call_center = [
   Const        r0, [{"cc_call_center_id": "CC1", "cc_call_center_sk": 1, "cc_manager": "Alice", "cc_name": "Main"}]
   // let catalog_returns = [
@@ -43,22 +43,25 @@ func main (regs=225)
   Const        r25, "cr_net_loss"
   // from cc in call_center
   MakeMap      r26, 0, r0
-  Const        r27, []
+  Const        r28, []
+  Move         r27, r28
   IterPrep     r29, r0
   Len          r30, r29
   Const        r31, 0
-L16:
+L20:
   LessInt      r32, r31, r30
   JumpIfFalse  r32, L0
-  Index        r34, r29, r31
+  Index        r33, r29, r31
+  Move         r34, r33
   // join cr in catalog_returns on cc.cc_call_center_sk == cr.cr_call_center_sk
   IterPrep     r35, r1
   Len          r36, r35
   Const        r37, 0
-L15:
+L19:
   LessInt      r38, r37, r36
   JumpIfFalse  r38, L1
-  Index        r40, r35, r37
+  Index        r39, r35, r37
+  Move         r40, r39
   Const        r41, "cc_call_center_sk"
   Index        r42, r34, r41
   Const        r43, "cr_call_center_sk"
@@ -69,10 +72,11 @@ L15:
   IterPrep     r46, r2
   Len          r47, r46
   Const        r48, 0
-L14:
+L18:
   LessInt      r49, r48, r47
   JumpIfFalse  r49, L2
-  Index        r51, r46, r48
+  Index        r50, r46, r48
+  Move         r51, r50
   Const        r52, "cr_returned_date_sk"
   Index        r53, r40, r52
   Const        r54, "d_date_sk"
@@ -83,10 +87,11 @@ L14:
   IterPrep     r57, r3
   Len          r58, r57
   Const        r59, 0
-L13:
+L17:
   LessInt      r60, r59, r58
   JumpIfFalse  r60, L3
-  Index        r62, r57, r59
+  Index        r61, r57, r59
+  Move         r62, r61
   Const        r63, "cr_returning_customer_sk"
   Index        r64, r40, r63
   Const        r65, "c_customer_sk"
@@ -97,10 +102,11 @@ L13:
   IterPrep     r68, r4
   Len          r69, r68
   Const        r70, 0
-L12:
+L16:
   LessInt      r71, r70, r69
   JumpIfFalse  r71, L4
-  Index        r73, r68, r70
+  Index        r72, r68, r70
+  Move         r73, r72
   Const        r74, "c_current_cdemo_sk"
   Index        r75, r62, r74
   Const        r76, "cd_demo_sk"
@@ -111,10 +117,11 @@ L12:
   IterPrep     r79, r5
   Len          r80, r79
   Const        r81, 0
-L11:
+L15:
   LessInt      r82, r81, r80
   JumpIfFalse  r82, L5
-  Index        r84, r79, r81
+  Index        r83, r79, r81
+  Move         r84, r83
   Const        r85, "c_current_hdemo_sk"
   Index        r86, r62, r85
   Const        r87, "hd_demo_sk"
@@ -125,10 +132,11 @@ L11:
   IterPrep     r90, r6
   Len          r91, r90
   Const        r92, 0
-L10:
+L14:
   LessInt      r93, r92, r91
   JumpIfFalse  r93, L6
-  Index        r95, r90, r92
+  Index        r94, r90, r92
+  Move         r95, r94
   Const        r96, "c_current_addr_sk"
   Index        r97, r62, r96
   Const        r98, "ca_address_sk"
@@ -157,41 +165,45 @@ L10:
   Const        r117, -6
   Equal        r118, r116, r117
   // where d.d_year == 2001 && d.d_moy == 5 &&
-  JumpIfFalse  r103, L8
-  Move         r103, r106
-  JumpIfFalse  r103, L8
-  Move         r103, r109
-  // cd.cd_marital_status == "M" && cd.cd_education_status == "Unknown" &&
-  JumpIfFalse  r103, L8
-  Move         r103, r112
-  JumpIfFalse  r103, L8
-  Move         r103, r115
-  // hd.hd_buy_potential == "1001-5000" && ca.ca_gmt_offset == (-6)
-  JumpIfFalse  r103, L8
-  Move         r103, r118
+  Move         r119, r103
+  JumpIfFalse  r119, L8
+  Move         r119, r106
 L8:
+  Move         r120, r119
+  JumpIfFalse  r120, L9
+  Move         r120, r109
+L9:
+  // cd.cd_marital_status == "M" && cd.cd_education_status == "Unknown" &&
+  Move         r121, r120
+  JumpIfFalse  r121, L10
+  Move         r121, r112
+L10:
+  Move         r122, r121
+  JumpIfFalse  r122, L11
+  Move         r122, r115
+L11:
+  // hd.hd_buy_potential == "1001-5000" && ca.ca_gmt_offset == (-6)
+  Move         r123, r122
+  JumpIfFalse  r123, L12
+  Move         r123, r118
+L12:
   // where d.d_year == 2001 && d.d_moy == 5 &&
-  JumpIfFalse  r103, L7
+  JumpIfFalse  r123, L7
   // from cc in call_center
-  Const        r119, "cc"
-  Move         r120, r34
-  Const        r121, "cr"
-  Move         r122, r40
-  Const        r123, "d"
-  Move         r124, r51
-  Const        r125, "c"
-  Move         r126, r62
-  Const        r127, "cd"
-  Move         r128, r73
-  Const        r129, "hd"
-  Move         r130, r84
-  Const        r131, "ca"
-  Move         r132, r95
-  Move         r133, r119
-  Move         r134, r120
-  Move         r135, r121
-  Move         r136, r122
-  Move         r137, r123
+  Const        r124, "cc"
+  Move         r125, r34
+  Const        r126, "cr"
+  Move         r127, r40
+  Const        r128, "d"
+  Move         r129, r51
+  Const        r130, "c"
+  Move         r131, r62
+  Const        r132, "cd"
+  Move         r133, r73
+  Const        r134, "hd"
+  Move         r135, r84
+  Const        r136, "ca"
+  Move         r137, r95
   Move         r138, r124
   Move         r139, r125
   Move         r140, r126
@@ -201,143 +213,153 @@ L8:
   Move         r144, r130
   Move         r145, r131
   Move         r146, r132
-  MakeMap      r147, 7, r133
+  Move         r147, r133
+  Move         r148, r134
+  Move         r149, r135
+  Move         r150, r136
+  Move         r151, r137
+  MakeMap      r152, 7, r138
   // group by {id: cc.cc_call_center_id, name: cc.cc_name, mgr: cc.cc_manager} into g
-  Const        r148, "id"
-  Index        r149, r34, r9
-  Const        r150, "name"
-  Index        r151, r34, r11
-  Const        r152, "mgr"
-  Index        r153, r34, r13
-  Move         r154, r148
-  Move         r155, r149
-  Move         r156, r150
-  Move         r157, r151
-  Move         r158, r152
+  Const        r153, "id"
+  Index        r154, r34, r9
+  Const        r155, "name"
+  Index        r156, r34, r11
+  Const        r157, "mgr"
+  Index        r158, r34, r13
   Move         r159, r153
-  MakeMap      r160, 3, r154
-  Str          r161, r160
-  In           r162, r161, r26
-  JumpIfTrue   r162, L9
+  Move         r160, r154
+  Move         r161, r155
+  Move         r162, r156
+  Move         r163, r157
+  Move         r164, r158
+  MakeMap      r165, 3, r159
+  Str          r166, r165
+  In           r167, r166, r26
+  JumpIfTrue   r167, L13
   // from cc in call_center
-  Const        r163, []
-  Const        r164, "__group__"
-  Const        r165, true
+  Const        r168, []
+  Const        r169, "__group__"
+  Const        r170, true
   // group by {id: cc.cc_call_center_id, name: cc.cc_name, mgr: cc.cc_manager} into g
-  Move         r166, r160
+  Move         r171, r165
   // from cc in call_center
-  Const        r167, "items"
-  Move         r168, r163
-  Const        r169, "count"
-  Const        r170, 0
-  Move         r171, r164
-  Move         r172, r165
-  Move         r173, r21
-  Move         r174, r166
-  Move         r175, r167
-  Move         r176, r168
-  Move         r177, r169
-  Move         r178, r170
-  MakeMap      r179, 4, r171
-  SetIndex     r26, r161, r179
-  Append       r27, r27, r179
-L9:
-  Index        r181, r26, r161
-  Index        r182, r181, r167
-  Append       r183, r182, r147
-  SetIndex     r181, r167, r183
-  Index        r184, r181, r169
-  Const        r185, 1
-  AddInt       r186, r184, r185
-  SetIndex     r181, r169, r186
+  Const        r172, "items"
+  Move         r173, r168
+  Const        r174, "count"
+  Const        r175, 0
+  Move         r176, r169
+  Move         r177, r170
+  Move         r178, r21
+  Move         r179, r171
+  Move         r180, r172
+  Move         r181, r173
+  Move         r182, r174
+  Move         r183, r175
+  MakeMap      r184, 4, r176
+  SetIndex     r26, r166, r184
+  Append       r185, r27, r184
+  Move         r27, r185
+L13:
+  Index        r186, r26, r166
+  Index        r187, r186, r172
+  Append       r188, r187, r152
+  SetIndex     r186, r172, r188
+  Index        r189, r186, r174
+  Const        r190, 1
+  AddInt       r191, r189, r190
+  SetIndex     r186, r174, r191
 L7:
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
-  AddInt       r92, r92, r185
-  Jump         L10
+  AddInt       r92, r92, r190
+  Jump         L14
 L6:
   // join hd in household_demographics on c.c_current_hdemo_sk == hd.hd_demo_sk
-  AddInt       r81, r81, r185
-  Jump         L11
+  AddInt       r81, r81, r190
+  Jump         L15
 L5:
   // join cd in customer_demographics on c.c_current_cdemo_sk == cd.cd_demo_sk
-  AddInt       r70, r70, r185
-  Jump         L12
+  AddInt       r70, r70, r190
+  Jump         L16
 L4:
   // join c in customer on cr.cr_returning_customer_sk == c.c_customer_sk
-  AddInt       r59, r59, r185
-  Jump         L13
+  AddInt       r59, r59, r190
+  Jump         L17
 L3:
   // join d in date_dim on cr.cr_returned_date_sk == d.d_date_sk
-  AddInt       r48, r48, r185
-  Jump         L14
+  AddInt       r48, r48, r190
+  Jump         L18
 L2:
   // join cr in catalog_returns on cc.cc_call_center_sk == cr.cr_call_center_sk
-  AddInt       r37, r37, r185
-  Jump         L15
+  AddInt       r37, r37, r190
+  Jump         L19
 L1:
   // from cc in call_center
-  AddInt       r31, r31, r185
-  Jump         L16
-L0:
-  Move         r187, r170
-  Len          r188, r27
-L20:
-  LessInt      r189, r187, r188
-  JumpIfFalse  r189, L17
-  Index        r191, r27, r187
-  // Call_Center: g.key.id,
-  Const        r192, "Call_Center"
-  Index        r193, r191, r21
-  Index        r194, r193, r8
-  // Call_Center_Name: g.key.name,
-  Const        r195, "Call_Center_Name"
-  Index        r196, r191, r21
-  Index        r197, r196, r10
-  // Manager: g.key.mgr,
-  Const        r198, "Manager"
-  Index        r199, r191, r21
-  Index        r200, r199, r12
-  // Returns_Loss: sum(from x in g select x.cr_net_loss)
-  Const        r201, "Returns_Loss"
-  Const        r202, []
-  IterPrep     r203, r191
-  Len          r204, r203
-  Move         r205, r170
-L19:
-  LessInt      r206, r205, r204
-  JumpIfFalse  r206, L18
-  Index        r208, r203, r205
-  Index        r209, r208, r25
-  Append       r202, r202, r209
-  AddInt       r205, r205, r185
-  Jump         L19
-L18:
-  Sum          r211, r202
-  // Call_Center: g.key.id,
-  Move         r212, r192
-  Move         r213, r194
-  // Call_Center_Name: g.key.name,
-  Move         r214, r195
-  Move         r215, r197
-  // Manager: g.key.mgr,
-  Move         r216, r198
-  Move         r217, r200
-  // Returns_Loss: sum(from x in g select x.cr_net_loss)
-  Move         r218, r201
-  Move         r219, r211
-  // select {
-  MakeMap      r220, 4, r212
-  // from cc in call_center
-  Append       r7, r7, r220
-  AddInt       r187, r187, r185
+  AddInt       r31, r31, r190
   Jump         L20
-L17:
+L0:
+  Move         r192, r175
+  Len          r193, r27
+L24:
+  LessInt      r194, r192, r193
+  JumpIfFalse  r194, L21
+  Index        r195, r27, r192
+  Move         r196, r195
+  // Call_Center: g.key.id,
+  Const        r197, "Call_Center"
+  Index        r198, r196, r21
+  Index        r199, r198, r8
+  // Call_Center_Name: g.key.name,
+  Const        r200, "Call_Center_Name"
+  Index        r201, r196, r21
+  Index        r202, r201, r10
+  // Manager: g.key.mgr,
+  Const        r203, "Manager"
+  Index        r204, r196, r21
+  Index        r205, r204, r12
+  // Returns_Loss: sum(from x in g select x.cr_net_loss)
+  Const        r206, "Returns_Loss"
+  Const        r207, []
+  IterPrep     r208, r196
+  Len          r209, r208
+  Move         r210, r175
+L23:
+  LessInt      r211, r210, r209
+  JumpIfFalse  r211, L22
+  Index        r212, r208, r210
+  Move         r213, r212
+  Index        r214, r213, r25
+  Append       r215, r207, r214
+  Move         r207, r215
+  AddInt       r210, r210, r190
+  Jump         L23
+L22:
+  Sum          r216, r207
+  // Call_Center: g.key.id,
+  Move         r217, r197
+  Move         r218, r199
+  // Call_Center_Name: g.key.name,
+  Move         r219, r200
+  Move         r220, r202
+  // Manager: g.key.mgr,
+  Move         r221, r203
+  Move         r222, r205
+  // Returns_Loss: sum(from x in g select x.cr_net_loss)
+  Move         r223, r206
+  Move         r224, r216
+  // select {
+  MakeMap      r225, 4, r217
+  // from cc in call_center
+  Append       r226, r7, r225
+  Move         r7, r226
+  AddInt       r192, r192, r190
+  Jump         L24
+L21:
   // let result = first(
-  First        r222, r7
+  First        r227, r7
   // json(result)
-  JSON         r222
+  JSON         r227
   // expect result == {
-  Const        r223, {"Call_Center": "CC1", "Call_Center_Name": "Main", "Manager": "Alice", "Returns_Loss": 0}
-  Equal        r224, r222, r223
-  Expect       r224
+  Const        r228, {"Call_Center": "CC1", "Call_Center_Name": "Main", "Manager": "Alice", "Returns_Loss": 10}
+  Equal        r229, r227, r228
+  Expect       r229
   Return       r0
