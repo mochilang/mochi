@@ -2,7 +2,7 @@ func main (regs=85)
   // let part = [
   Const        r0, [{"p_partkey": 1, "p_type": "PROMO LUXURY"}, {"p_partkey": 2, "p_type": "STANDARD BRASS"}]
   // let lineitem = [
-  Const        r1, [{"l_discount": 0.1, "l_extendedprice": 1000, "l_partkey": 1, "l_shipdate": "1995-09-05"}, {"l_discount": 0, "l_extendedprice": 800, "l_partkey": 2, "l_shipdate": "1995-09-20"}, {"l_discount": 0.2, "l_extendedprice": 500, "l_partkey": 1, "l_shipdate": "1995-10-02"}]
+  Const        r1, [{"l_discount": 0.1, "l_extendedprice": 1000.0, "l_partkey": 1, "l_shipdate": "1995-09-05"}, {"l_discount": 0.0, "l_extendedprice": 800.0, "l_partkey": 2, "l_shipdate": "1995-09-20"}, {"l_discount": 0.2, "l_extendedprice": 500.0, "l_partkey": 1, "l_shipdate": "1995-10-02"}]
   // let start_date = "1995-09-01"
   Const        r2, "1995-09-01"
   // let end_date = "1995-10-01"
@@ -124,23 +124,23 @@ L10:
 L9:
   Sum          r69, r61
   // let result = 100.0 * promo_sum / total_sum
-  Const        r70, 100
+  Const        r70, 100.0
   MulFloat     r71, r70, r60
   DivFloat     r72, r71, r69
   // json(result)
   JSON         r72
   // let promo = 1000.0 * 0.9       // = 900
-  Const        r73, 1000
+  Const        r73, 1000.0
   Const        r74, 0.9
-  Const        r75, 900
+  Const        r75, 900.0
   // let total = 900 + 800.0        // = 1700
   Const        r76, 900
-  Const        r77, 800
-  Const        r78, 1700
+  Const        r77, 800.0
+  Const        r78, 1700.0
   // let expected = 100.0 * promo / total  // ≈ 52.94
-  Const        r79, 900
-  Const        r80, 90000
-  Const        r81, 1700
+  Const        r79, 900.0
+  Const        r80, 90000.0
+  Const        r81, 1700.0
   Const        r82, 52.94117647058823
   // expect result == expected
   Const        r83, 52.94117647058823
