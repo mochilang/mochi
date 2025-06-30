@@ -1,4 +1,4 @@
-func main (regs=310)
+func main (regs=309)
   // let inventory = [
   Const        r0, [{"inv_date_sk": 1, "inv_item_sk": 1, "inv_quantity_on_hand": 30, "inv_warehouse_sk": 1}, {"inv_date_sk": 2, "inv_item_sk": 1, "inv_quantity_on_hand": 40, "inv_warehouse_sk": 1}, {"inv_date_sk": 1, "inv_item_sk": 2, "inv_quantity_on_hand": 20, "inv_warehouse_sk": 2}, {"inv_date_sk": 2, "inv_item_sk": 2, "inv_quantity_on_hand": 20, "inv_warehouse_sk": 2}]
   // let warehouse = [
@@ -22,14 +22,16 @@ func main (regs=310)
   Const        r12, "inv_quantity_on_hand"
   // from inv in inventory
   MakeMap      r13, 0, r0
-  Const        r14, []
+  Const        r15, []
+  Move         r14, r15
   IterPrep     r16, r0
   Len          r17, r16
   Const        r18, 0
 L5:
   LessInt      r19, r18, r17
   JumpIfFalse  r19, L0
-  Index        r21, r16, r18
+  Index        r20, r16, r18
+  Move         r21, r20
   // join d in date_dim on inv.inv_date_sk == d.d_date_sk
   IterPrep     r22, r3
   Len          r23, r22
@@ -37,7 +39,8 @@ L5:
 L4:
   LessInt      r25, r24, r23
   JumpIfFalse  r25, L1
-  Index        r27, r22, r24
+  Index        r26, r22, r24
+  Move         r27, r26
   Const        r28, "inv_date_sk"
   Index        r29, r21, r28
   Const        r30, "d_date_sk"
@@ -54,70 +57,72 @@ L4:
   Move         r37, r21
   Const        r38, "d"
   Move         r39, r27
-  MakeMap      r40, 2, r36
+  Move         r40, r36
+  Move         r41, r37
+  Move         r42, r38
+  Move         r43, r39
+  MakeMap      r44, 2, r40
   // group by { w: inv.inv_warehouse_sk, i: inv.inv_item_sk } into g
-  Const        r41, "w"
-  Index        r42, r21, r6
-  Const        r43, "i"
-  Index        r44, r21, r8
-  Move         r45, r41
-  Move         r46, r42
-  Move         r47, r43
-  Move         r48, r44
-  MakeMap      r49, 2, r45
-  Str          r50, r49
-  In           r51, r50, r13
-  JumpIfTrue   r51, L3
+  Const        r45, "w"
+  Index        r46, r21, r6
+  Const        r47, "i"
+  Index        r48, r21, r8
+  Move         r49, r45
+  Move         r50, r46
+  Move         r51, r47
+  Move         r52, r48
+  MakeMap      r53, 2, r49
+  Str          r54, r53
+  In           r55, r54, r13
+  JumpIfTrue   r55, L3
   // from inv in inventory
-  Const        r52, []
-  Const        r53, "__group__"
-  Const        r54, true
-  Const        r55, "key"
+  Const        r56, []
+  Const        r57, "__group__"
+  Const        r58, true
   // group by { w: inv.inv_warehouse_sk, i: inv.inv_item_sk } into g
-  Move         r56, r49
+  Move         r59, r53
   // from inv in inventory
-  Const        r57, "items"
-  Move         r58, r52
-  Const        r59, "count"
-  Const        r60, 0
-  Move         r61, r53
-  Move         r62, r54
-  Move         r63, r55
-  Move         r64, r56
-  Move         r65, r57
-  Move         r66, r58
+  Const        r60, "items"
+  Move         r61, r56
+  Const        r62, "count"
+  Const        r63, 0
+  Move         r64, r57
+  Move         r65, r58
+  Move         r66, r10
   Move         r67, r59
   Move         r68, r60
-  MakeMap      r69, 4, r61
-  SetIndex     r13, r50, r69
-  Append       r14, r14, r69
+  Move         r69, r61
+  Move         r70, r62
+  Move         r71, r63
+  MakeMap      r72, 4, r64
+  SetIndex     r13, r54, r72
+  Append       r73, r14, r72
+  Move         r14, r73
 L3:
-  Const        r71, "items"
-  Index        r72, r13, r50
-  Index        r73, r72, r71
-  Append       r74, r73, r40
-  SetIndex     r72, r71, r74
-  Const        r75, "count"
-  Index        r76, r72, r75
-  Const        r77, 1
-  AddInt       r78, r76, r77
-  SetIndex     r72, r75, r78
+  Index        r74, r13, r54
+  Index        r75, r74, r60
+  Append       r76, r75, r44
+  SetIndex     r74, r60, r76
+  Index        r77, r74, r62
+  Const        r78, 1
+  AddInt       r79, r77, r78
+  SetIndex     r74, r62, r79
 L2:
   // join d in date_dim on inv.inv_date_sk == d.d_date_sk
-  AddInt       r24, r24, r77
+  AddInt       r24, r24, r78
   Jump         L4
 L1:
   // from inv in inventory
-  AddInt       r18, r18, r77
+  AddInt       r18, r18, r78
   Jump         L5
 L0:
-  Const        r80, 0
-  Move         r79, r80
+  Move         r80, r63
   Len          r81, r14
 L9:
-  LessInt      r82, r79, r81
+  LessInt      r82, r80, r81
   JumpIfFalse  r82, L6
-  Index        r84, r14, r79
+  Index        r83, r14, r80
+  Move         r84, r83
   // select { w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand) }
   Const        r85, "w"
   Index        r86, r84, r10
@@ -129,14 +134,16 @@ L9:
   Const        r92, []
   IterPrep     r93, r84
   Len          r94, r93
-  Move         r95, r80
+  Move         r95, r63
 L8:
   LessInt      r96, r95, r94
   JumpIfFalse  r96, L7
-  Index        r98, r93, r95
+  Index        r97, r93, r95
+  Move         r98, r97
   Index        r99, r98, r12
-  Append       r92, r92, r99
-  AddInt       r95, r95, r77
+  Append       r100, r92, r99
+  Move         r92, r100
+  AddInt       r95, r95, r78
   Jump         L8
 L7:
   Sum          r101, r92
@@ -148,21 +155,24 @@ L7:
   Move         r107, r101
   MakeMap      r108, 3, r102
   // from inv in inventory
-  Append       r4, r4, r108
-  AddInt       r79, r79, r77
+  Append       r109, r4, r108
+  Move         r4, r109
+  AddInt       r80, r80, r78
   Jump         L9
 L6:
   // from inv in inventory
   Const        r110, []
   MakeMap      r111, 0, r0
-  Const        r112, []
+  Const        r113, []
+  Move         r112, r113
   IterPrep     r114, r0
   Len          r115, r114
   Const        r116, 0
 L15:
   LessInt      r117, r116, r115
   JumpIfFalse  r117, L10
-  Index        r21, r114, r116
+  Index        r118, r114, r116
+  Move         r21, r118
   // join d in date_dim on inv.inv_date_sk == d.d_date_sk
   IterPrep     r119, r3
   Len          r120, r119
@@ -170,7 +180,8 @@ L15:
 L14:
   LessInt      r122, r121, r120
   JumpIfFalse  r122, L11
-  Index        r124, r119, r121
+  Index        r123, r119, r121
+  Move         r124, r123
   Index        r125, r21, r28
   Index        r126, r124, r30
   Equal        r127, r125, r126
@@ -182,252 +193,261 @@ L14:
   // from inv in inventory
   Move         r130, r21
   Move         r131, r124
-  MakeMap      r132, 2, r36
+  Move         r132, r36
+  Move         r133, r130
+  Move         r134, r38
+  Move         r135, r131
+  MakeMap      r136, 2, r132
   // group by { w: inv.inv_warehouse_sk, i: inv.inv_item_sk } into g
-  Const        r133, "w"
-  Index        r134, r21, r6
-  Const        r135, "i"
-  Index        r136, r21, r8
-  Move         r137, r133
-  Move         r138, r134
-  Move         r139, r135
-  Move         r140, r136
-  MakeMap      r141, 2, r137
-  Str          r142, r141
-  In           r143, r142, r111
-  JumpIfTrue   r143, L13
+  Const        r137, "w"
+  Index        r138, r21, r6
+  Const        r139, "i"
+  Index        r140, r21, r8
+  Move         r141, r137
+  Move         r142, r138
+  Move         r143, r139
+  Move         r144, r140
+  MakeMap      r145, 2, r141
+  Str          r146, r145
+  In           r147, r146, r111
+  JumpIfTrue   r147, L13
+  Move         r148, r145
   // from inv in inventory
-  Const        r144, []
-  Const        r145, "__group__"
-  Const        r146, true
-  Const        r147, "key"
-  // group by { w: inv.inv_warehouse_sk, i: inv.inv_item_sk } into g
-  Move         r148, r141
-  // from inv in inventory
-  Const        r149, "items"
-  Move         r150, r144
-  Const        r151, "count"
-  Const        r152, 0
-  Move         r153, r145
-  Move         r154, r146
-  Move         r155, r147
-  Move         r156, r148
-  Move         r157, r149
-  Move         r158, r150
-  Move         r159, r151
-  Move         r160, r152
-  MakeMap      r161, 4, r153
-  SetIndex     r111, r142, r161
-  Append       r112, r112, r161
+  Move         r149, r56
+  Move         r150, r57
+  Move         r151, r58
+  Move         r152, r10
+  Move         r153, r148
+  Move         r154, r60
+  Move         r155, r149
+  Move         r156, r62
+  Move         r157, r63
+  MakeMap      r158, 4, r150
+  SetIndex     r111, r146, r158
+  Append       r159, r112, r158
+  Move         r112, r159
 L13:
-  Index        r163, r111, r142
-  Index        r164, r163, r71
-  Append       r165, r164, r132
-  SetIndex     r163, r71, r165
-  Index        r166, r163, r75
-  AddInt       r167, r166, r77
-  SetIndex     r163, r75, r167
+  Index        r160, r111, r146
+  Index        r161, r160, r60
+  Append       r162, r161, r136
+  SetIndex     r160, r60, r162
+  Index        r163, r160, r62
+  AddInt       r164, r163, r78
+  SetIndex     r160, r62, r164
 L12:
   // join d in date_dim on inv.inv_date_sk == d.d_date_sk
-  AddInt       r121, r121, r77
+  AddInt       r121, r121, r78
   Jump         L14
 L11:
   // from inv in inventory
-  AddInt       r116, r116, r77
+  AddInt       r116, r116, r78
   Jump         L15
 L10:
-  Move         r168, r80
-  Len          r169, r112
+  Move         r165, r63
+  Len          r166, r112
 L19:
-  LessInt      r170, r168, r169
-  JumpIfFalse  r170, L16
-  Index        r84, r112, r168
+  LessInt      r167, r165, r166
+  JumpIfFalse  r167, L16
+  Index        r168, r112, r165
+  Move         r84, r168
   // select { w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand) }
-  Const        r172, "w"
+  Const        r169, "w"
+  Index        r170, r84, r10
+  Index        r171, r170, r5
+  Const        r172, "i"
   Index        r173, r84, r10
-  Index        r174, r173, r5
-  Const        r175, "i"
-  Index        r176, r84, r10
-  Index        r177, r176, r7
-  Const        r178, "qty"
-  Const        r179, []
-  IterPrep     r180, r84
-  Len          r181, r180
-  Move         r182, r80
+  Index        r174, r173, r7
+  Const        r175, "qty"
+  Const        r176, []
+  IterPrep     r177, r84
+  Len          r178, r177
+  Move         r179, r63
 L18:
-  LessInt      r183, r182, r181
-  JumpIfFalse  r183, L17
-  Index        r98, r180, r182
-  Index        r185, r98, r12
-  Append       r179, r179, r185
-  AddInt       r182, r182, r77
+  LessInt      r180, r179, r178
+  JumpIfFalse  r180, L17
+  Index        r181, r177, r179
+  Move         r98, r181
+  Index        r182, r98, r12
+  Append       r183, r176, r182
+  Move         r176, r183
+  AddInt       r179, r179, r78
   Jump         L18
 L17:
-  Sum          r187, r179
-  Move         r188, r172
-  Move         r189, r174
-  Move         r190, r175
-  Move         r191, r177
-  Move         r192, r178
-  Move         r193, r187
-  MakeMap      r194, 3, r188
+  Sum          r184, r176
+  Move         r185, r169
+  Move         r186, r171
+  Move         r187, r172
+  Move         r188, r174
+  Move         r189, r175
+  Move         r190, r184
+  MakeMap      r191, 3, r185
   // from inv in inventory
-  Append       r110, r110, r194
-  AddInt       r168, r168, r77
+  Append       r192, r110, r191
+  Move         r110, r192
+  AddInt       r165, r165, r78
   Jump         L19
 L16:
   // from b in before
-  Const        r196, []
+  Const        r193, []
   // w_name: w.w_warehouse_name,
-  Const        r197, "w_name"
-  Const        r198, "w_warehouse_name"
+  Const        r194, "w_name"
+  Const        r195, "w_warehouse_name"
   // i_id: it.i_item_id,
-  Const        r199, "i_id"
-  Const        r200, "i_item_id"
+  Const        r196, "i_id"
+  Const        r197, "i_item_id"
   // before_qty: b.qty,
-  Const        r201, "before_qty"
+  Const        r198, "before_qty"
   // after_qty: a.qty,
-  Const        r202, "after_qty"
+  Const        r199, "after_qty"
   // ratio: a.qty / b.qty
-  Const        r203, "ratio"
+  Const        r200, "ratio"
   // from b in before
-  IterPrep     r204, r4
-  Len          r205, r204
-  Move         r206, r80
+  IterPrep     r201, r4
+  Len          r202, r201
+  Move         r203, r63
 L29:
-  LessInt      r207, r206, r205
-  JumpIfFalse  r207, L20
-  Index        r209, r204, r206
+  LessInt      r204, r203, r202
+  JumpIfFalse  r204, L20
+  Index        r205, r201, r203
+  Move         r206, r205
   // join a in after on b.w == a.w && b.i == a.i
-  IterPrep     r210, r110
-  Len          r211, r210
-  Move         r212, r80
+  IterPrep     r207, r110
+  Len          r208, r207
+  Move         r209, r63
 L28:
-  LessInt      r213, r212, r211
-  JumpIfFalse  r213, L21
-  Index        r215, r210, r212
-  Index        r216, r209, r5
-  Index        r217, r215, r5
+  LessInt      r210, r209, r208
+  JumpIfFalse  r210, L21
+  Index        r211, r207, r209
+  Move         r212, r211
+  Index        r213, r206, r5
+  Index        r214, r212, r5
+  Equal        r215, r213, r214
+  Index        r216, r206, r7
+  Index        r217, r212, r7
   Equal        r218, r216, r217
-  Index        r219, r209, r7
-  Index        r220, r215, r7
-  Equal        r221, r219, r220
-  JumpIfFalse  r218, L22
-  Move         r218, r221
+  Move         r219, r215
+  JumpIfFalse  r219, L22
+  Move         r219, r218
 L22:
-  JumpIfFalse  r218, L23
+  JumpIfFalse  r219, L23
   // join w in warehouse on w.w_warehouse_sk == b.w
-  IterPrep     r222, r1
-  Len          r223, r222
-  Const        r224, "w_warehouse_sk"
-  Move         r225, r80
+  IterPrep     r220, r1
+  Len          r221, r220
+  Const        r222, "w_warehouse_sk"
+  Move         r223, r63
 L27:
-  LessInt      r226, r225, r223
-  JumpIfFalse  r226, L23
-  Index        r228, r222, r225
-  Index        r229, r228, r224
-  Index        r230, r209, r5
-  Equal        r231, r229, r230
-  JumpIfFalse  r231, L24
+  LessInt      r224, r223, r221
+  JumpIfFalse  r224, L23
+  Index        r225, r220, r223
+  Move         r226, r225
+  Index        r227, r226, r222
+  Index        r228, r206, r5
+  Equal        r229, r227, r228
+  JumpIfFalse  r229, L24
   // join it in item on it.i_item_sk == b.i
-  IterPrep     r232, r2
-  Len          r233, r232
-  Const        r234, "i_item_sk"
-  Move         r235, r80
+  IterPrep     r230, r2
+  Len          r231, r230
+  Const        r232, "i_item_sk"
+  Move         r233, r63
 L26:
-  LessInt      r236, r235, r233
-  JumpIfFalse  r236, L24
-  Index        r238, r232, r235
-  Index        r239, r238, r234
-  Index        r240, r209, r7
-  Equal        r241, r239, r240
-  JumpIfFalse  r241, L25
+  LessInt      r234, r233, r231
+  JumpIfFalse  r234, L24
+  Index        r235, r230, r233
+  Move         r236, r235
+  Index        r237, r236, r232
+  Index        r238, r206, r7
+  Equal        r239, r237, r238
+  JumpIfFalse  r239, L25
   // w_name: w.w_warehouse_name,
-  Const        r242, "w_name"
-  Index        r243, r228, r198
+  Const        r240, "w_name"
+  Index        r241, r226, r195
   // i_id: it.i_item_id,
-  Const        r244, "i_id"
-  Index        r245, r238, r200
+  Const        r242, "i_id"
+  Index        r243, r236, r197
   // before_qty: b.qty,
-  Const        r246, "before_qty"
-  Index        r247, r209, r11
+  Const        r244, "before_qty"
+  Index        r245, r206, r11
   // after_qty: a.qty,
-  Const        r248, "after_qty"
-  Index        r249, r215, r11
+  Const        r246, "after_qty"
+  Index        r247, r212, r11
   // ratio: a.qty / b.qty
-  Const        r250, "ratio"
-  Index        r251, r215, r11
-  Index        r252, r209, r11
-  Div          r253, r251, r252
+  Const        r248, "ratio"
+  Index        r249, r212, r11
+  Index        r250, r206, r11
+  Div          r251, r249, r250
   // w_name: w.w_warehouse_name,
+  Move         r252, r240
+  Move         r253, r241
+  // i_id: it.i_item_id,
   Move         r254, r242
   Move         r255, r243
-  // i_id: it.i_item_id,
+  // before_qty: b.qty,
   Move         r256, r244
   Move         r257, r245
-  // before_qty: b.qty,
+  // after_qty: a.qty,
   Move         r258, r246
   Move         r259, r247
-  // after_qty: a.qty,
-  Move         r260, r248
-  Move         r261, r249
   // ratio: a.qty / b.qty
-  Move         r262, r250
-  Move         r263, r253
+  Move         r260, r248
+  Move         r261, r251
   // select {
-  MakeMap      r264, 5, r254
+  MakeMap      r262, 5, r252
   // from b in before
-  Append       r196, r196, r264
+  Append       r263, r193, r262
+  Move         r193, r263
 L25:
   // join it in item on it.i_item_sk == b.i
-  Add          r235, r235, r77
+  Add          r233, r233, r78
   Jump         L26
 L24:
   // join w in warehouse on w.w_warehouse_sk == b.w
-  Add          r225, r225, r77
+  Add          r223, r223, r78
   Jump         L27
 L23:
   // join a in after on b.w == a.w && b.i == a.i
-  Add          r212, r212, r77
+  Add          r209, r209, r78
   Jump         L28
 L21:
   // from b in before
-  AddInt       r206, r206, r77
+  AddInt       r203, r203, r78
   Jump         L29
 L20:
   // from r in joined
-  Const        r266, []
+  Const        r264, []
   // select { w_warehouse_name: r.w_name, i_item_id: r.i_id, inv_before: r.before_qty, inv_after: r.after_qty }
-  Const        r267, "inv_before"
-  Const        r268, "inv_after"
+  Const        r265, "inv_before"
+  Const        r266, "inv_after"
   // from r in joined
-  IterPrep     r269, r196
-  Len          r270, r269
-  Move         r271, r80
+  IterPrep     r267, r193
+  Len          r268, r267
+  Move         r269, r63
 L33:
-  LessInt      r272, r271, r270
-  JumpIfFalse  r272, L30
-  Index        r274, r269, r271
+  LessInt      r270, r269, r268
+  JumpIfFalse  r270, L30
+  Index        r271, r267, r269
+  Move         r272, r271
   // where r.ratio >= (2.0 / 3.0) && r.ratio <= (3.0 / 2.0)
-  Index        r275, r274, r203
-  Const        r276, 0.6666666666666666
-  LessEqFloat  r277, r276, r275
-  Index        r278, r274, r203
-  Const        r279, 1.5
-  LessEqFloat  r280, r278, r279
-  JumpIfFalse  r277, L31
-  Move         r277, r280
+  Index        r273, r272, r200
+  Const        r274, 0.6666666666666666
+  LessEqFloat  r275, r274, r273
+  Index        r276, r272, r200
+  Const        r277, 1.5
+  LessEqFloat  r278, r276, r277
+  Move         r279, r275
+  JumpIfFalse  r279, L31
+  Move         r279, r278
 L31:
-  JumpIfFalse  r277, L32
+  JumpIfFalse  r279, L32
   // select { w_warehouse_name: r.w_name, i_item_id: r.i_id, inv_before: r.before_qty, inv_after: r.after_qty }
-  Const        r281, "w_warehouse_name"
-  Index        r282, r274, r197
-  Const        r283, "i_item_id"
-  Index        r284, r274, r199
-  Const        r285, "inv_before"
-  Index        r286, r274, r201
-  Const        r287, "inv_after"
-  Index        r288, r274, r202
+  Const        r280, "w_warehouse_name"
+  Index        r281, r272, r194
+  Const        r282, "i_item_id"
+  Index        r283, r272, r196
+  Const        r284, "inv_before"
+  Index        r285, r272, r198
+  Const        r286, "inv_after"
+  Index        r287, r272, r199
+  Move         r288, r280
   Move         r289, r281
   Move         r290, r282
   Move         r291, r283
@@ -435,27 +455,31 @@ L31:
   Move         r293, r285
   Move         r294, r286
   Move         r295, r287
-  Move         r296, r288
-  MakeMap      r297, 4, r289
+  MakeMap      r296, 4, r288
   // sort by [r.w_name, r.i_id]
-  Index        r299, r274, r197
-  Index        r300, r274, r199
-  Move         r301, r300
-  MakeList     r303, 2, r299
+  Index        r297, r272, r194
+  Move         r298, r297
+  Index        r299, r272, r196
+  Move         r300, r299
+  MakeList     r301, 2, r298
+  Move         r302, r301
   // from r in joined
-  Move         r304, r297
-  MakeList     r305, 2, r303
-  Append       r266, r266, r305
+  Move         r303, r296
+  MakeList     r304, 2, r302
+  Append       r305, r264, r304
+  Move         r264, r305
 L32:
-  AddInt       r271, r271, r77
+  AddInt       r269, r269, r78
   Jump         L33
 L30:
   // sort by [r.w_name, r.i_id]
-  Sort         r266, r266
+  Sort         r306, r264
+  // from r in joined
+  Move         r264, r306
   // json(result)
-  JSON         r266
+  JSON         r264
   // expect result == [
-  Const        r308, [{"i_item_id": "ITEM1", "inv_after": 40, "inv_before": 30, "w_warehouse_name": "Main"}]
-  Equal        r309, r266, r308
-  Expect       r309
+  Const        r307, [{"i_item_id": "ITEM1", "inv_after": 40, "inv_before": 30, "w_warehouse_name": "Main"}]
+  Equal        r308, r264, r307
+  Expect       r308
   Return       r0

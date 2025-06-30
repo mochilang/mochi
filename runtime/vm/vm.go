@@ -602,7 +602,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		return Value{Tag: ValueFunc, Func: cl}, nil
 	}
 	if len(args) > fn.NumParams {
-		return Value{}, m.newError(fmt.Errorf("too many args"), trace, fn.Line)
+		// Older dataset queries may pass extraneous arguments to built-in
+		// functions. Drop any excess arguments instead of failing.
+		args = args[:fn.NumParams]
 	}
 	f := &frame{fn: fn, regs: make([]Value, fn.NumRegs)}
 	for i := 0; i < len(args) && i < len(f.regs); i++ {
