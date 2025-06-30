@@ -9,7 +9,7 @@ func main (regs=317)
   Const        r3, [{"cc_call_center_sk": 1, "cc_name": "CC1"}]
   // from cs in catalog_sales
   Const        r4, []
-  // group by {warehouse: substr(w.w_warehouse_name,1,20), sm_type: sm.sm_type, cc_name: cc.cc_name} into g
+  // group by {warehouse: substr(w.w_warehouse_name,0,20), sm_type: sm.sm_type, cc_name: cc.cc_name} into g
   Const        r5, "warehouse"
   Const        r6, "w_warehouse_name"
   Const        r7, "sm_type"
@@ -116,11 +116,11 @@ L6:
   Const        r89, "cc"
   Move         r90, r77
   MakeMap      r91, 4, r83
-  // group by {warehouse: substr(w.w_warehouse_name,1,20), sm_type: sm.sm_type, cc_name: cc.cc_name} into g
+  // group by {warehouse: substr(w.w_warehouse_name,0,20), sm_type: sm.sm_type, cc_name: cc.cc_name} into g
   Const        r92, "warehouse"
   Const        r93, "w_warehouse_name"
   Index        r94, r55, r93
-  Const        r95, 1
+  Const        r95, 0
   Const        r96, 20
   Slice        r97, r94, r95, r96
   Const        r98, "sm_type"
@@ -144,7 +144,7 @@ L6:
   Const        r114, "__group__"
   Const        r115, true
   Const        r116, "key"
-  // group by {warehouse: substr(w.w_warehouse_name,1,20), sm_type: sm.sm_type, cc_name: cc.cc_name} into g
+  // group by {warehouse: substr(w.w_warehouse_name,0,20), sm_type: sm.sm_type, cc_name: cc.cc_name} into g
   Move         r117, r110
   // from cs in catalog_sales
   Const        r118, "items"

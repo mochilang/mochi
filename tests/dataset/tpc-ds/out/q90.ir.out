@@ -329,8 +329,8 @@ L13:
   Div          r202, r200, r201
   // json(result)
   JSON         r202
-  // expect result == 2.0
-  Const        r203, 2
+  // expect result == 1.0
+  Const        r203, 1
   EqualFloat   r204, r202, r203
   Expect       r204
   Return       r0
