@@ -1,7 +1,67 @@
-let t = [{id: 1, val: 66}]
-let result = from r in t select r.val |> first
+// Simplified aggregated data for TPC-DC Q66
+let x = [
+  { w_warehouse_name: "Wh1", w_warehouse_sq_ft: 1000.0, w_city: "City1", w_county: "County1", w_state: "ST", w_country: "USA", ship_carriers: "DHL,BARIAN", year: 2001,
+    jan_sales: 10.0, feb_sales: 20.0, mar_sales: 0.0, apr_sales: 0.0, may_sales: 0.0, jun_sales: 0.0, jul_sales: 0.0, aug_sales: 0.0, sep_sales: 0.0, oct_sales: 0.0, nov_sales: 0.0, dec_sales: 0.0,
+    jan_net: 9.0, feb_net: 18.0, mar_net: 0.0, apr_net: 0.0, may_net: 0.0, jun_net: 0.0, jul_net: 0.0, aug_net: 0.0, sep_net: 0.0, oct_net: 0.0, nov_net: 0.0, dec_net: 0.0 }
+]
+
+let result =
+  from r in x
+  group by { w_warehouse_name: r.w_warehouse_name, w_warehouse_sq_ft: r.w_warehouse_sq_ft, w_city: r.w_city, w_county: r.w_county, w_state: r.w_state, w_country: r.w_country, ship_carriers: r.ship_carriers, year: r.year } into g
+  select {
+    w_warehouse_name: g.key.w_warehouse_name,
+    w_warehouse_sq_ft: g.key.w_warehouse_sq_ft,
+    w_city: g.key.w_city,
+    w_county: g.key.w_county,
+    w_state: g.key.w_state,
+    w_country: g.key.w_country,
+    ship_carriers: g.key.ship_carriers,
+    year: g.key.year,
+    jan_sales: sum(from x in g select x.jan_sales),
+    feb_sales: sum(from x in g select x.feb_sales),
+    mar_sales: sum(from x in g select x.mar_sales),
+    apr_sales: sum(from x in g select x.apr_sales),
+    may_sales: sum(from x in g select x.may_sales),
+    jun_sales: sum(from x in g select x.jun_sales),
+    jul_sales: sum(from x in g select x.jul_sales),
+    aug_sales: sum(from x in g select x.aug_sales),
+    sep_sales: sum(from x in g select x.sep_sales),
+    oct_sales: sum(from x in g select x.oct_sales),
+    nov_sales: sum(from x in g select x.nov_sales),
+    dec_sales: sum(from x in g select x.dec_sales),
+    jan_sales_per_sq_foot: sum(from x in g select x.jan_sales) / g.key.w_warehouse_sq_ft,
+    feb_sales_per_sq_foot: sum(from x in g select x.feb_sales) / g.key.w_warehouse_sq_ft,
+    mar_sales_per_sq_foot: sum(from x in g select x.mar_sales) / g.key.w_warehouse_sq_ft,
+    apr_sales_per_sq_foot: sum(from x in g select x.apr_sales) / g.key.w_warehouse_sq_ft,
+    may_sales_per_sq_foot: sum(from x in g select x.may_sales) / g.key.w_warehouse_sq_ft,
+    jun_sales_per_sq_foot: sum(from x in g select x.jun_sales) / g.key.w_warehouse_sq_ft,
+    jul_sales_per_sq_foot: sum(from x in g select x.jul_sales) / g.key.w_warehouse_sq_ft,
+    aug_sales_per_sq_foot: sum(from x in g select x.aug_sales) / g.key.w_warehouse_sq_ft,
+    sep_sales_per_sq_foot: sum(from x in g select x.sep_sales) / g.key.w_warehouse_sq_ft,
+    oct_sales_per_sq_foot: sum(from x in g select x.oct_sales) / g.key.w_warehouse_sq_ft,
+    nov_sales_per_sq_foot: sum(from x in g select x.nov_sales) / g.key.w_warehouse_sq_ft,
+    dec_sales_per_sq_foot: sum(from x in g select x.dec_sales) / g.key.w_warehouse_sq_ft,
+    jan_net: sum(from x in g select x.jan_net),
+    feb_net: sum(from x in g select x.feb_net),
+    mar_net: sum(from x in g select x.mar_net),
+    apr_net: sum(from x in g select x.apr_net),
+    may_net: sum(from x in g select x.may_net),
+    jun_net: sum(from x in g select x.jun_net),
+    jul_net: sum(from x in g select x.jul_net),
+    aug_net: sum(from x in g select x.aug_net),
+    sep_net: sum(from x in g select x.sep_net),
+    oct_net: sum(from x in g select x.oct_net),
+    nov_net: sum(from x in g select x.nov_net),
+    dec_net: sum(from x in g select x.dec_net)
+  }
+
 json(result)
 
-test "TPCDC Q66 placeholder" {
-  expect result == 66
+test "TPCDC Q66 yearly warehouse totals" {
+  expect result == [{
+    w_warehouse_name: "Wh1", w_warehouse_sq_ft: 1000.0, w_city: "City1", w_county: "County1", w_state: "ST", w_country: "USA", ship_carriers: "DHL,BARIAN", year: 2001,
+    jan_sales: 10.0, feb_sales: 20.0, mar_sales: 0.0, apr_sales: 0.0, may_sales: 0.0, jun_sales: 0.0, jul_sales: 0.0, aug_sales: 0.0, sep_sales: 0.0, oct_sales: 0.0, nov_sales: 0.0, dec_sales: 0.0,
+    jan_sales_per_sq_foot: 0.01, feb_sales_per_sq_foot: 0.02, mar_sales_per_sq_foot: 0.0, apr_sales_per_sq_foot: 0.0, may_sales_per_sq_foot: 0.0, jun_sales_per_sq_foot: 0.0, jul_sales_per_sq_foot: 0.0, aug_sales_per_sq_foot: 0.0, sep_sales_per_sq_foot: 0.0, oct_sales_per_sq_foot: 0.0, nov_sales_per_sq_foot: 0.0, dec_sales_per_sq_foot: 0.0,
+    jan_net: 9.0, feb_net: 18.0, mar_net: 0.0, apr_net: 0.0, may_net: 0.0, jun_net: 0.0, jul_net: 0.0, aug_net: 0.0, sep_net: 0.0, oct_net: 0.0, nov_net: 0.0, dec_net: 0.0
+  }]
 }

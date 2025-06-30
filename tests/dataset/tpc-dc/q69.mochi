@@ -1,7 +1,49 @@
-let t = [{id: 1, val: 69}]
-let result = from r in t select r.val |> first
+// Minimal dataset for TPC-DC Q69
+let customer = [
+  { c_customer_sk: 1, c_current_addr_sk: 10, c_current_cdemo_sk: 100 }
+]
+
+let customer_address = [
+  { ca_address_sk: 10, ca_state: "KY" }
+]
+
+let customer_demographics = [
+  { cd_demo_sk: 100, cd_gender: "M", cd_marital_status: "S", cd_education_status: "College", cd_purchase_estimate: 1000, cd_credit_rating: "Good" }
+]
+
+let store_sales = [
+  { ss_customer_sk: 1, ss_sold_date_sk: 1 }
+]
+
+let web_sales = []
+let catalog_sales = []
+
+let date_dim = [
+  { d_date_sk: 1, d_year: 2001, d_moy: 4 }
+]
+
+let result =
+  from c in customer
+  join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  join cd in customer_demographics on c.c_current_cdemo_sk == cd.cd_demo_sk
+  where ca.ca_state in ["KY", "GA", "NM"] &&
+        exists(from ss in store_sales join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk where ss.ss_customer_sk == c.c_customer_sk && d.d_year == 2001 && d.d_moy >= 4 && d.d_moy <= 6 select 1) &&
+        !exists(from ws in web_sales join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk where ws.ws_bill_customer_sk == c.c_customer_sk && d.d_year == 2001 && d.d_moy >= 4 && d.d_moy <= 6 select 1) &&
+        !exists(from cs in catalog_sales join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk where cs.cs_ship_customer_sk == c.c_customer_sk && d.d_year == 2001 && d.d_moy >= 4 && d.d_moy <= 6 select 1)
+  group by {cd_gender: cd.cd_gender, cd_marital_status: cd.cd_marital_status, cd_education_status: cd.cd_education_status, cd_purchase_estimate: cd.cd_purchase_estimate, cd_credit_rating: cd.cd_credit_rating} into g
+  select {
+    cd_gender: g.key.cd_gender,
+    cd_marital_status: g.key.cd_marital_status,
+    cd_education_status: g.key.cd_education_status,
+    cnt1: count(g),
+    cd_purchase_estimate: g.key.cd_purchase_estimate,
+    cnt2: count(g),
+    cd_credit_rating: g.key.cd_credit_rating,
+    cnt3: count(g)
+  }
+
 json(result)
 
-test "TPCDC Q69 placeholder" {
-  expect result == 69
+test "TPCDC Q69 customer demographics" {
+  expect result == [{ cd_gender: "M", cd_marital_status: "S", cd_education_status: "College", cnt1: 1, cd_purchase_estimate: 1000, cnt2: 1, cd_credit_rating: "Good", cnt3: 1 }]
 }

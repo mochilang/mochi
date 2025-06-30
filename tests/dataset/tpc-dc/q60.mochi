@@ -1,7 +1,64 @@
-let t = [{id: 1, val: 60}]
-let result = from r in t select r.val |> first
+// Minimal dataset for TPC-DC Q60
+let item = [
+  { i_item_sk: 1, i_item_id: "I1", i_category: "Music" },
+  { i_item_sk: 2, i_item_id: "I2", i_category: "Electronics" }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_year: 1998, d_moy: 9 }
+]
+
+let customer_address = [
+  { ca_address_sk: 10, ca_gmt_offset: -5 }
+]
+
+let store_sales = [
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_addr_sk: 10, ss_ext_sales_price: 100 }
+]
+
+let catalog_sales = [
+  { cs_item_sk: 1, cs_sold_date_sk: 1, cs_bill_addr_sk: 10, cs_ext_sales_price: 50 }
+]
+
+let web_sales = [
+  { ws_item_sk: 1, ws_sold_date_sk: 1, ws_bill_addr_sk: 10, ws_ext_sales_price: 30 }
+]
+
+let ss =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  where i.i_category == "Music" && d.d_year == 1998 && d.d_moy == 9 && ca.ca_gmt_offset == -5
+  group by {i_item_id: i.i_item_id} into g
+  select {i_item_id: g.key.i_item_id, total_sales: sum(from x in g select x.ss_ext_sales_price)}
+
+let cs =
+  from cs in catalog_sales
+  join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+  join ca in customer_address on cs.cs_bill_addr_sk == ca.ca_address_sk
+  join i in item on cs.cs_item_sk == i.i_item_sk
+  where i.i_category == "Music" && d.d_year == 1998 && d.d_moy == 9 && ca.ca_gmt_offset == -5
+  group by {i_item_id: i.i_item_id} into g
+  select {i_item_id: g.key.i_item_id, total_sales: sum(from x in g select x.cs_ext_sales_price)}
+
+let ws =
+  from ws in web_sales
+  join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
+  join ca in customer_address on ws.ws_bill_addr_sk == ca.ca_address_sk
+  join i in item on ws.ws_item_sk == i.i_item_sk
+  where i.i_category == "Music" && d.d_year == 1998 && d.d_moy == 9 && ca.ca_gmt_offset == -5
+  group by {i_item_id: i.i_item_id} into g
+  select {i_item_id: g.key.i_item_id, total_sales: sum(from x in g select x.ws_ext_sales_price)}
+
+let result =
+  from r in ss union all from r in cs union all from r in ws
+  group by {i_item_id: r.i_item_id} into g
+  sort by g.key.i_item_id, sum(from x in g select x.total_sales) into total
+  select {i_item_id: g.key.i_item_id, total_sales: total}
+
 json(result)
 
-test "TPCDC Q60 placeholder" {
-  expect result == 60
+test "TPCDC Q60 aggregates sales across channels" {
+  expect result == [{i_item_id: "I1", total_sales: 180}]
 }

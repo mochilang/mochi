@@ -1,7 +1,52 @@
-let t = [{id: 1, val: 67}]
-let result = from r in t select r.val |> first
+// Minimal dataset for TPC-DC Q67
+let item = [
+  { i_item_sk: 1, i_category: "Cat1", i_class: "Class1", i_brand: "Brand1", i_product_name: "Prod1" }
+]
+
+let store = [
+  { s_store_sk: 1, s_store_id: "Store1" }
+]
+
+let date_dim = [
+  { d_date_sk: 1, d_year: 2001, d_qoy: 1, d_moy: 1, d_month_seq: 1200 }
+]
+
+let store_sales = [
+  { ss_item_sk: 1, ss_sold_date_sk: 1, ss_store_sk: 1, ss_sales_price: 10.0, ss_quantity: 1 }
+]
+
+let dw1 =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  where d.d_month_seq >= 1200 && d.d_month_seq <= 1211
+  group by { i_category: i.i_category, i_class: i.i_class, i_brand: i.i_brand, i_product_name: i.i_product_name, d_year: d.d_year, d_qoy: d.d_qoy, d_moy: d.d_moy, s_store_id: s.s_store_id } into g
+  select { i_category: g.key.i_category, i_class: g.key.i_class, i_brand: g.key.i_brand, i_product_name: g.key.i_product_name, d_year: g.key.d_year, d_qoy: g.key.d_qoy, d_moy: g.key.d_moy, s_store_id: g.key.s_store_id, sumsales: sum(from x in g select x.ss_sales_price * x.ss_quantity) }
+
+let dw2 =
+  from r in dw1
+  group by { i_category: r.i_category } into g
+  select {
+    i_category: g.key.i_category,
+    i_class: first(from x in g select x.i_class),
+    i_brand: first(from x in g select x.i_brand),
+    i_product_name: first(from x in g select x.i_product_name),
+    d_year: first(from x in g select x.d_year),
+    d_qoy: first(from x in g select x.d_qoy),
+    d_moy: first(from x in g select x.d_moy),
+    s_store_id: first(from x in g select x.s_store_id),
+    sumsales: first(from x in g select x.sumsales),
+    rk: 1
+  }
+
+let result =
+  from r in dw2
+  sort by r.i_category, r.i_class, r.i_brand, r.i_product_name, r.d_year, r.d_qoy, r.d_moy, r.s_store_id, r.sumsales, r.rk
+  select r
+
 json(result)
 
-test "TPCDC Q67 placeholder" {
-  expect result == 67
+test "TPCDC Q67 ranking by category" {
+  expect result == [{ i_category: "Cat1", i_class: "Class1", i_brand: "Brand1", i_product_name: "Prod1", d_year: 2001, d_qoy: 1, d_moy: 1, s_store_id: "Store1", sumsales: 10.0, rk: 1 }]
 }
