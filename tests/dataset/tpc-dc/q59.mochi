@@ -1,0 +1,33 @@
+let wss=[{d_week_seq:1, ss_store_sk:1,
+  sun_sales:10, mon_sales:10, tue_sales:10, wed_sales:10, thu_sales:10, fri_sales:10, sat_sales:10}]
+let store=[{s_store_sk:1, s_store_name:"Store", s_store_id:1}]
+let date_dim=[{d_week_seq:1, d_month_seq:1},{d_week_seq:53, d_month_seq:13}]
+
+let y=
+  from w in wss
+  join s in store on w.ss_store_sk==s.s_store_sk
+  join d in date_dim on w.d_week_seq==d.d_week_seq
+  where d.d_month_seq >=1 && d.d_month_seq <=12
+  select {s_store_name1:s.s_store_name, s_store_id1:s.s_store_id, d_week_seq1:w.d_week_seq,
+          sun_sales1:w.sun_sales, mon_sales1:w.mon_sales, tue_sales1:w.tue_sales,
+          wed_sales1:w.wed_sales, thu_sales1:w.thu_sales, fri_sales1:w.fri_sales, sat_sales1:w.sat_sales}
+
+let x=
+  from w in wss
+  join s in store on w.ss_store_sk==s.s_store_sk
+  join d in date_dim on w.d_week_seq==d.d_week_seq
+  where d.d_month_seq >=13 && d.d_month_seq <=24
+  select {s_store_name2:s.s_store_name, s_store_id2:s.s_store_id, d_week_seq2:w.d_week_seq,
+          sun_sales2:w.sun_sales, mon_sales2:w.mon_sales, tue_sales2:w.tue_sales,
+          wed_sales2:w.wed_sales, thu_sales2:w.thu_sales, fri_sales2:w.fri_sales, sat_sales2:w.sat_sales}
+
+let result=
+  from a in y
+  join b in x on a.s_store_id1==b.s_store_id2 && a.d_week_seq1==b.d_week_seq2-52
+  select {s_store_name1:a.s_store_name1, d_week_seq1:a.d_week_seq1}
+
+json(result)
+
+test "TPCDC Q59 ratios" {
+  expect result == [{s_store_name1:"Store", d_week_seq1:1}]
+}
