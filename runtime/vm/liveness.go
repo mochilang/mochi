@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 )
 
 // Automatically generated liveness analysis and optimization
@@ -601,9 +602,8 @@ func constFold(fn *Function) bool {
 			} else {
 				consts[ins.A] = cinfo{}
 			}
-		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpFirst, OpLen,
-			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues,
-			OpSort:
+		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpUpper, OpLower, OpFirst, OpLen,
+			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues, OpSort:
 			b := consts[ins.B]
 			if b.known {
 				if val, ok := evalUnaryConst(ins.Op, b.val); ok {
@@ -774,6 +774,14 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 		}
 	case OpStr:
 		return Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(v))}, true
+	case OpUpper:
+		if v.Tag == ValueStr {
+			return Value{Tag: ValueStr, Str: strings.ToUpper(v.Str)}, true
+		}
+	case OpLower:
+		if v.Tag == ValueStr {
+			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true
+		}
 	case OpFirst:
 		if lst, ok := toList(v); ok {
 			if len(lst) > 0 {
