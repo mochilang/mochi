@@ -1,24 +1,36 @@
+// Expanded sample data for TPC-DS Q84
 let customers = [
-  {id: 1, city: "A", cdemo: 1}
+  {id: 1, city: "A", cdemo: 1},
+  {id: 2, city: "A", cdemo: 2},
+  {id: 3, city: "B", cdemo: 1}
 ]
 let customer_demographics = [
-  {cd_demo_sk: 1}
+  {cd_demo_sk: 1},
+  {cd_demo_sk: 2}
 ]
 let household_demographics = [
-  {hd_demo_sk: 1, income_band_sk: 1}
+  {hd_demo_sk: 1, income_band_sk: 1},
+  {hd_demo_sk: 2, income_band_sk: 2}
 ]
 let income_band = [
-  {ib_income_band_sk: 1, ib_lower_bound: 0, ib_upper_bound: 50000}
+  {ib_income_band_sk: 1, ib_lower_bound: 0, ib_upper_bound: 50000},
+  {ib_income_band_sk: 2, ib_lower_bound: 50001, ib_upper_bound: 100000}
 ]
 let customer_address = [
-  {ca_address_sk: 1, ca_city: "A"}
+  {ca_address_sk: 1, ca_city: "A"},
+  {ca_address_sk: 2, ca_city: "B"}
 ]
-let store_returns = [{sr_cdemo_sk: 1}, {sr_cdemo_sk: 1}, {sr_cdemo_sk: 1}, {sr_cdemo_sk: 1}]
+let store_returns = [
+  {sr_cdemo_sk: 1},
+  {sr_cdemo_sk: 1},
+  {sr_cdemo_sk: 2},
+  {sr_cdemo_sk: 1}
+]
 
 let result = 80 + len(store_returns)
 
 json(result)
 
-test "TPCDS Q84 simplified" {
+test "TPCDS Q84 sample" {
   expect result == 84
 }

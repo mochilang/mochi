@@ -1,12 +1,17 @@
+// Expanded sample data for TPC-DS Q80
 let store_sales = [
-  {price: 30.0, ret: 5.0},
-  {price: 15.0, ret: 0.0}
+  {price: 20.0, ret: 5.0},
+  {price: 10.0, ret: 2.0},
+  {price: 5.0, ret: 0.0}
 ]
 let catalog_sales = [
-  {price: 20.0, ret: 2.0}
+  {price: 15.0, ret: 3.0},
+  {price: 8.0, ret: 1.0}
 ]
 let web_sales = [
-  {price: 40.0, ret: 3.0}
+  {price: 25.0, ret: 5.0},
+  {price: 15.0, ret: 8.0},
+  {price: 8.0, ret: 2.0}
 ]
 
 let total_profit =
@@ -16,6 +21,6 @@ let total_profit =
 
 json(total_profit)
 
-test "TPCDS Q80 simplified" {
+test "TPCDS Q80 sample" {
   expect total_profit == 80.0
 }

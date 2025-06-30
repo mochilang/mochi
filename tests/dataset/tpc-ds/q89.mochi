@@ -1,12 +1,14 @@
+// Expanded sample data for TPC-DS Q89
 let store_sales = [
-  {price: 50.0},
-  {price: 39.0}
+  {price: 40.0},
+  {price: 30.0},
+  {price: 19.0}
 ]
 
 let result = sum(from s in store_sales select s.price)
 
 json(result)
 
-test "TPCDS Q89 simplified" {
+test "TPCDS Q89 sample" {
   expect result == 89.0
 }

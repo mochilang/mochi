@@ -1,12 +1,14 @@
+// Expanded sample data for TPC-DS Q85
 let web_returns = [
-  {qty: 84, cash: 20.0, fee: 1.0},
-  {qty: 86, cash: 30.0, fee: 2.0}
+  {qty: 60, cash: 20.0, fee: 1.0},
+  {qty: 100, cash: 30.0, fee: 2.0},
+  {qty: 95, cash: 25.0, fee: 3.0}
 ]
 
 let result = avg(from r in web_returns select r.qty)
 
 json(result)
 
-test "TPCDS Q85 simplified" {
+test "TPCDS Q85 sample" {
   expect result == 85.0
 }
