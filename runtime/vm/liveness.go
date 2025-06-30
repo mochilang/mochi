@@ -254,10 +254,13 @@ func Optimize(fn *Function) {
 			changed = true
 		}
 		analysis := Liveness(fn)
-		if peephole(fn, analysis) {
-			changed = true
-			analysis = Liveness(fn)
-		}
+		_ = analysis
+		// Peephole optimization disabled to avoid incorrect register
+		// propagation across branches.
+		// if peephole(fn, analysis) {
+		//         changed = true
+		//         analysis = Liveness(fn)
+		// }
 		pruneRedundantJumps(fn)
 		if foldJumpChains(fn) {
 			changed = true
