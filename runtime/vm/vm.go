@@ -2133,7 +2133,12 @@ func constKey(v Value) (string, bool) {
 	case ValueInt:
 		return fmt.Sprintf("i%v", v.Int), true
 	case ValueFloat:
-		return "f" + strconv.FormatFloat(v.Float, 'g', -1, 64), true
+		s := strconv.FormatFloat(v.Float, 'f', -1, 64)
+		if strings.Contains(s, ".") {
+			s = strings.TrimRight(s, "0")
+			s = strings.TrimRight(s, ".")
+		}
+		return "f" + s, true
 	case ValueBool:
 		if v.Bool {
 			return "bt", true
