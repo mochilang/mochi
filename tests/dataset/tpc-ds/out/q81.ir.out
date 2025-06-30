@@ -1,4 +1,4 @@
-func main (regs=100)
+func main (regs=97)
   // let catalog_returns = [
   Const        r0, [{"amt": 40, "cust": 1, "state": "CA"}, {"amt": 50, "cust": 2, "state": "CA"}, {"amt": 81, "cust": 3, "state": "CA"}, {"amt": 30, "cust": 4, "state": "TX"}, {"amt": 20, "cust": 5, "state": "TX"}]
   // from r in catalog_returns
@@ -14,13 +14,15 @@ func main (regs=100)
   Len          r7, r6
   Const        r8, 0
   MakeMap      r9, 0, r0
-  Const        r10, []
+  Const        r11, []
+  Move         r10, r11
 L2:
   LessInt      r12, r8, r7
   JumpIfFalse  r12, L0
   Index        r13, r6, r8
+  Move         r14, r13
   // group by r.state into g
-  Index        r15, r13, r2
+  Index        r15, r14, r2
   Str          r16, r15
   In           r17, r16, r9
   JumpIfTrue   r17, L1
@@ -28,130 +30,136 @@ L2:
   Const        r18, []
   Const        r19, "__group__"
   Const        r20, true
-  Const        r21, "key"
   // group by r.state into g
-  Move         r22, r15
+  Move         r21, r15
   // from r in catalog_returns
-  Const        r23, "items"
-  Move         r24, r18
-  Const        r25, "count"
-  Const        r26, 0
-  Move         r27, r19
-  Move         r28, r20
+  Const        r22, "items"
+  Move         r23, r18
+  Const        r24, "count"
+  Const        r25, 0
+  Move         r26, r19
+  Move         r27, r20
+  Move         r28, r3
   Move         r29, r21
   Move         r30, r22
   Move         r31, r23
   Move         r32, r24
   Move         r33, r25
-  Move         r34, r26
-  MakeMap      r35, 4, r27
-  SetIndex     r9, r16, r35
-  Append       r10, r10, r35
+  MakeMap      r34, 4, r26
+  SetIndex     r9, r16, r34
+  Append       r35, r10, r34
+  Move         r10, r35
 L1:
-  Const        r37, "items"
-  Index        r38, r9, r16
-  Index        r39, r38, r37
-  Append       r40, r39, r13
-  SetIndex     r38, r37, r40
-  Const        r41, "count"
-  Index        r42, r38, r41
-  Const        r43, 1
-  AddInt       r44, r42, r43
-  SetIndex     r38, r41, r44
-  AddInt       r8, r8, r43
+  Index        r36, r9, r16
+  Index        r37, r36, r22
+  Append       r38, r37, r13
+  SetIndex     r36, r22, r38
+  Index        r39, r36, r24
+  Const        r40, 1
+  AddInt       r41, r39, r40
+  SetIndex     r36, r24, r41
+  AddInt       r8, r8, r40
   Jump         L2
 L0:
-  Const        r46, 0
-  Move         r45, r46
-  Len          r47, r10
+  Move         r42, r25
+  Len          r43, r10
 L6:
-  LessInt      r48, r45, r47
-  JumpIfFalse  r48, L3
-  Index        r50, r10, r45
+  LessInt      r44, r42, r43
+  JumpIfFalse  r44, L3
+  Index        r45, r10, r42
+  Move         r46, r45
   // select {state: g.key, avg_amt: avg(from x in g select x.amt)}
-  Const        r51, "state"
-  Index        r52, r50, r3
-  Const        r53, "avg_amt"
-  Const        r54, []
-  IterPrep     r55, r50
-  Len          r56, r55
-  Move         r57, r46
+  Const        r47, "state"
+  Index        r48, r46, r3
+  Const        r49, "avg_amt"
+  Const        r50, []
+  IterPrep     r51, r46
+  Len          r52, r51
+  Move         r53, r25
 L5:
-  LessInt      r58, r57, r56
-  JumpIfFalse  r58, L4
-  Index        r60, r55, r57
-  Index        r61, r60, r5
-  Append       r54, r54, r61
-  AddInt       r57, r57, r43
+  LessInt      r54, r53, r52
+  JumpIfFalse  r54, L4
+  Index        r55, r51, r53
+  Move         r56, r55
+  Index        r57, r56, r5
+  Append       r58, r50, r57
+  Move         r50, r58
+  AddInt       r53, r53, r40
   Jump         L5
 L4:
-  Avg          r63, r54
-  Move         r64, r51
-  Move         r65, r52
-  Move         r66, r53
-  Move         r67, r63
-  MakeMap      r68, 2, r64
+  Avg          r59, r50
+  Move         r60, r47
+  Move         r61, r48
+  Move         r62, r49
+  Move         r63, r59
+  MakeMap      r64, 2, r60
   // from r in catalog_returns
-  Append       r1, r1, r68
-  AddInt       r45, r45, r43
+  Append       r65, r1, r64
+  Move         r1, r65
+  AddInt       r42, r42, r40
   Jump         L6
 L3:
   // first(from a in avg_list
-  Const        r70, []
-  IterPrep     r71, r1
-  Len          r72, r71
-  Move         r73, r46
+  Const        r66, []
+  IterPrep     r67, r1
+  Len          r68, r67
+  Move         r69, r25
 L9:
-  LessInt      r74, r73, r72
-  JumpIfFalse  r74, L7
-  Index        r76, r71, r73
+  LessInt      r70, r69, r68
+  JumpIfFalse  r70, L7
+  Index        r71, r67, r69
+  Move         r72, r71
   // where a.state == "CA"
-  Index        r77, r76, r2
-  Const        r78, "CA"
-  Equal        r79, r77, r78
-  JumpIfFalse  r79, L8
+  Index        r73, r72, r2
+  Const        r74, "CA"
+  Equal        r75, r73, r74
+  JumpIfFalse  r75, L8
   // first(from a in avg_list
-  Append       r70, r70, r76
+  Append       r76, r66, r72
+  Move         r66, r76
 L8:
-  AddInt       r73, r73, r43
+  AddInt       r69, r69, r40
   Jump         L9
 L7:
-  First        r81, r70
+  First        r77, r66
   // from r in catalog_returns
-  Const        r82, []
-  IterPrep     r83, r0
-  Len          r84, r83
-  Move         r85, r46
+  Const        r78, []
+  IterPrep     r79, r0
+  Len          r80, r79
+  Move         r81, r25
 L13:
-  LessInt      r86, r85, r84
-  JumpIfFalse  r86, L10
-  Index        r14, r83, r85
+  LessInt      r82, r81, r80
+  JumpIfFalse  r82, L10
+  Index        r83, r79, r81
+  Move         r14, r83
   // where r.state == "CA" && r.amt > avg_state.avg_amt * 1.2
-  Index        r88, r14, r2
-  Index        r89, r81, r4
-  Const        r90, 1.2
-  MulFloat     r91, r89, r90
-  Index        r92, r14, r5
-  LessFloat    r93, r91, r92
-  Equal        r94, r88, r78
-  JumpIfFalse  r94, L11
-  Move         r94, r93
+  Index        r84, r14, r2
+  Index        r85, r77, r4
+  Const        r86, 1.2
+  MulFloat     r87, r85, r86
+  Index        r88, r14, r5
+  LessFloat    r89, r87, r88
+  Equal        r90, r84, r74
+  Move         r91, r90
+  JumpIfFalse  r91, L11
+  Move         r91, r89
 L11:
-  JumpIfFalse  r94, L12
+  JumpIfFalse  r91, L12
   // select r.amt
-  Index        r95, r14, r5
+  Index        r92, r14, r5
   // from r in catalog_returns
-  Append       r82, r82, r95
+  Append       r93, r78, r92
+  Move         r78, r93
 L12:
-  AddInt       r85, r85, r43
+  AddInt       r81, r81, r40
   Jump         L13
 L10:
   // let result = first(result_list)
-  First        r97, r82
+  First        r94, r78
   // json(result)
-  JSON         r97
+  JSON         r94
   // expect result == 81.0
-  Const        r98, 81
-  EqualFloat   r99, r97, r98
-  Expect       r99
+  Const        r95, 81
+  EqualFloat   r96, r94, r95
+  Expect       r96
   Return       r0

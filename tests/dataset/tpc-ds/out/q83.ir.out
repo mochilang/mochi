@@ -15,9 +15,11 @@ func main (regs=38)
 L1:
   LessInt      r9, r7, r6
   JumpIfFalse  r9, L0
-  Index        r11, r5, r7
+  Index        r10, r5, r7
+  Move         r11, r10
   Index        r12, r11, r4
-  Append       r3, r3, r12
+  Append       r13, r3, r12
+  Move         r3, r13
   Const        r14, 1
   AddInt       r7, r7, r14
   Jump         L1
@@ -31,9 +33,11 @@ L0:
 L3:
   LessInt      r20, r19, r18
   JumpIfFalse  r20, L2
-  Index        r11, r17, r19
+  Index        r21, r17, r19
+  Move         r11, r21
   Index        r22, r11, r4
-  Append       r16, r16, r22
+  Append       r23, r16, r22
+  Move         r16, r23
   AddInt       r19, r19, r14
   Jump         L3
 L2:
@@ -48,9 +52,11 @@ L2:
 L5:
   LessInt      r30, r29, r28
   JumpIfFalse  r30, L4
-  Index        r11, r27, r29
+  Index        r31, r27, r29
+  Move         r11, r31
   Index        r32, r11, r4
-  Append       r26, r26, r32
+  Append       r33, r26, r32
+  Move         r26, r33
   AddInt       r29, r29, r14
   Jump         L5
 L4:
