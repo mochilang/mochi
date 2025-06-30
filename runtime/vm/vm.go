@@ -633,7 +633,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int + c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) + toInt(c)}
 			}
 		case OpAddInt:
 			b := toInt(fr.regs[ins.B])
@@ -649,7 +649,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int - c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) - toInt(c)}
 			}
 		case OpSubInt:
 			b := toInt(fr.regs[ins.B])
@@ -678,7 +678,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int * c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) * toInt(c)}
 			}
 		case OpMulInt:
 			b := toInt(fr.regs[ins.B])
@@ -691,13 +691,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpDiv:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if (c.Tag == ValueInt && c.Int == 0) || (c.Tag == ValueFloat && c.Float == 0) {
+			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) / toFloat(c)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int / c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) / toInt(c)}
 			}
 		case OpDivInt:
 			b := toInt(fr.regs[ins.B])
@@ -716,13 +716,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpMod:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if (c.Tag == ValueInt && c.Int == 0) || (c.Tag == ValueFloat && c.Float == 0) {
+			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b.Int % c.Int}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) % toInt(c)}
 			}
 		case OpModInt:
 			b := toInt(fr.regs[ins.B])

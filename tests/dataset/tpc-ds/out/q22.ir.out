@@ -1,10 +1,10 @@
-func main (regs=149)
+func main (regs=148)
   // let inventory = [
-  Const        r0, [{"inv_date_sk": 1, "inv_item_sk": 1, "inv_quantity_on_hand": 10}, {"inv_date_sk": 2, "inv_item_sk": 1, "inv_quantity_on_hand": 20}]
-  // let date_dim = [ { d_date_sk: 1, d_month_seq: 0 }, { d_date_sk: 2, d_month_seq: 1 } ]
-  Const        r1, [{"d_date_sk": 1, "d_month_seq": 0}, {"d_date_sk": 2, "d_month_seq": 1}]
+  Const        r0, [{"inv_date_sk": 1, "inv_item_sk": 1, "inv_quantity_on_hand": 10}, {"inv_date_sk": 2, "inv_item_sk": 1, "inv_quantity_on_hand": 20}, {"inv_date_sk": 3, "inv_item_sk": 1, "inv_quantity_on_hand": 10}, {"inv_date_sk": 4, "inv_item_sk": 1, "inv_quantity_on_hand": 20}, {"inv_date_sk": 1, "inv_item_sk": 2, "inv_quantity_on_hand": 50}]
+  // let date_dim = [
+  Const        r1, [{"d_date_sk": 1, "d_month_seq": 0}, {"d_date_sk": 2, "d_month_seq": 1}, {"d_date_sk": 3, "d_month_seq": 2}, {"d_date_sk": 4, "d_month_seq": 3}]
   // let item = [
-  Const        r2, [{"i_brand": "Brand1", "i_category": "Cat1", "i_class": "Class1", "i_item_sk": 1, "i_product_name": "Prod1"}]
+  Const        r2, [{"i_brand": "Brand1", "i_category": "Cat1", "i_class": "Class1", "i_item_sk": 1, "i_product_name": "Prod1"}, {"i_brand": "Brand2", "i_category": "Cat2", "i_class": "Class2", "i_item_sk": 2, "i_product_name": "Prod2"}]
   // from inv in inventory
   Const        r3, []
   // product_name: i.i_product_name,
@@ -28,19 +28,19 @@ func main (regs=149)
   Const        r15, "inv_quantity_on_hand"
   // from inv in inventory
   MakeMap      r16, 0, r0
-  Move         r17, r3
+  Const        r17, []
   IterPrep     r19, r0
   Len          r20, r19
   Const        r21, 0
-L1:
+L8:
   LessInt      r22, r21, r20
   JumpIfFalse  r22, L0
   Index        r24, r19, r21
   // join d in date_dim on inv.inv_date_sk == d.d_date_sk
   IterPrep     r25, r1
   Len          r26, r25
-  Move         r27, r21
-L2:
+  Const        r27, 0
+L7:
   LessInt      r28, r27, r26
   JumpIfFalse  r28, L1
   Index        r30, r25, r27
@@ -53,7 +53,7 @@ L2:
   // join i in item on inv.inv_item_sk == i.i_item_sk
   IterPrep     r36, r2
   Len          r37, r36
-  Move         r38, r21
+  Const        r38, 0
 L6:
   LessInt      r39, r38, r37
   JumpIfFalse  r39, L2
@@ -66,65 +66,65 @@ L6:
   JumpIfFalse  r46, L3
   // where d.d_month_seq >= 0 && d.d_month_seq <= 11
   Index        r47, r30, r12
-  Move         r48, r38
+  Const        r48, 0
   LessEq       r49, r48, r47
   Index        r50, r30, r12
   Const        r51, 11
   LessEq       r52, r50, r51
-  Move         r53, r49
-  JumpIfFalse  r53, L4
-  Move         r53, r52
+  JumpIfFalse  r49, L4
+  Move         r49, r52
 L4:
-  JumpIfFalse  r53, L3
+  JumpIfFalse  r49, L3
   // from inv in inventory
-  Const        r54, "inv"
-  Move         r55, r24
-  Const        r56, "d"
-  Move         r57, r30
-  Const        r58, "i"
-  Move         r59, r41
-  MakeMap      r60, 3, r54
+  Const        r53, "inv"
+  Move         r54, r24
+  Const        r55, "d"
+  Move         r56, r30
+  Const        r57, "i"
+  Move         r58, r41
+  MakeMap      r59, 3, r53
   // product_name: i.i_product_name,
-  Move         r61, r4
-  Index        r62, r41, r5
+  Const        r60, "product_name"
+  Index        r61, r41, r5
   // brand: i.i_brand,
-  Move         r63, r6
-  Index        r64, r41, r7
+  Const        r62, "brand"
+  Index        r63, r41, r7
   // class: i.i_class,
-  Move         r65, r8
-  Index        r66, r41, r9
+  Const        r64, "class"
+  Index        r65, r41, r9
   // category: i.i_category
-  Move         r67, r10
-  Index        r68, r41, r11
+  Const        r66, "category"
+  Index        r67, r41, r11
   // product_name: i.i_product_name,
+  Move         r68, r60
   Move         r69, r61
-  Move         r70, r62
   // brand: i.i_brand,
+  Move         r70, r62
   Move         r71, r63
-  Move         r72, r64
   // class: i.i_class,
+  Move         r72, r64
   Move         r73, r65
-  Move         r74, r66
   // category: i.i_category
+  Move         r74, r66
   Move         r75, r67
-  Move         r76, r68
   // group by {
-  MakeMap      r77, 4, r69
-  Str          r78, r77
-  In           r79, r78, r16
-  JumpIfTrue   r79, L5
+  MakeMap      r76, 4, r68
+  Str          r77, r76
+  In           r78, r77, r16
+  JumpIfTrue   r78, L5
   // from inv in inventory
-  Move         r80, r3
-  Const        r81, "__group__"
-  Const        r82, true
-  Move         r83, r13
+  Const        r79, []
+  Const        r80, "__group__"
+  Const        r81, true
+  Const        r82, "key"
   // group by {
-  Move         r84, r77
+  Move         r83, r76
   // from inv in inventory
-  Const        r85, "items"
-  Move         r86, r80
-  Const        r87, "count"
-  Move         r88, r21
+  Const        r84, "items"
+  Move         r85, r79
+  Const        r86, "count"
+  Const        r87, 0
+  Move         r88, r80
   Move         r89, r81
   Move         r90, r82
   Move         r91, r83
@@ -132,91 +132,97 @@ L4:
   Move         r93, r85
   Move         r94, r86
   Move         r95, r87
-  Move         r96, r88
-  MakeMap      r97, 4, r89
-  SetIndex     r16, r78, r97
-  Append       r17, r17, r97
+  MakeMap      r96, 4, r88
+  SetIndex     r16, r77, r96
+  Append       r17, r17, r96
 L5:
-  Move         r99, r85
-  Index        r100, r16, r78
-  Index        r101, r100, r99
-  Append       r102, r101, r60
-  SetIndex     r100, r99, r102
-  Move         r103, r87
-  Index        r104, r100, r103
-  Const        r105, 1
-  AddInt       r106, r104, r105
-  SetIndex     r100, r103, r106
+  Const        r98, "items"
+  Index        r99, r16, r77
+  Index        r100, r99, r98
+  Append       r101, r100, r59
+  SetIndex     r99, r98, r101
+  Const        r102, "count"
+  Index        r103, r99, r102
+  Const        r104, 1
+  AddInt       r105, r103, r104
+  SetIndex     r99, r102, r105
 L3:
   // join i in item on inv.inv_item_sk == i.i_item_sk
-  AddInt       r38, r38, r105
+  AddInt       r38, r38, r104
   Jump         L6
+L2:
+  // join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  AddInt       r27, r27, r104
+  Jump         L7
+L1:
+  // from inv in inventory
+  AddInt       r21, r21, r104
+  Jump         L8
 L0:
-  // from inv in inventory
-  Move         r107, r48
-  Len          r108, r17
+  Move         r106, r48
+  Len          r107, r17
+L12:
+  LessInt      r108, r106, r107
+  JumpIfFalse  r108, L9
+  Index        r110, r17, r106
+  // i_product_name: g.key.product_name,
+  Const        r111, "i_product_name"
+  Index        r112, r110, r13
+  Index        r113, r112, r4
+  // i_brand: g.key.brand,
+  Const        r114, "i_brand"
+  Index        r115, r110, r13
+  Index        r116, r115, r6
+  // i_class: g.key.class,
+  Const        r117, "i_class"
+  Index        r118, r110, r13
+  Index        r119, r118, r8
+  // i_category: g.key.category,
+  Const        r120, "i_category"
+  Index        r121, r110, r13
+  Index        r122, r121, r10
+  // qoh: avg(from x in g select x.inv_quantity_on_hand)
+  Const        r123, "qoh"
+  Const        r124, []
+  IterPrep     r125, r110
+  Len          r126, r125
+  Move         r127, r48
+L11:
+  LessInt      r128, r127, r126
+  JumpIfFalse  r128, L10
+  Index        r130, r125, r127
+  Index        r131, r130, r15
+  Append       r124, r124, r131
+  AddInt       r127, r127, r104
+  Jump         L11
 L10:
-  LessInt      r109, r107, r108
-  JumpIfFalse  r109, L7
-  Index        r111, r17, r107
+  Avg          r133, r124
   // i_product_name: g.key.product_name,
-  Move         r112, r5
-  Index        r113, r111, r13
-  Index        r114, r113, r4
+  Move         r134, r111
+  Move         r135, r113
   // i_brand: g.key.brand,
-  Move         r115, r7
-  Index        r116, r111, r13
-  Index        r117, r116, r6
-  // i_class: g.key.class,
-  Move         r118, r9
-  Index        r119, r111, r13
-  Index        r120, r119, r8
-  // i_category: g.key.category,
-  Move         r121, r11
-  Index        r122, r111, r13
-  Index        r123, r122, r10
-  // qoh: avg(from x in g select x.inv_quantity_on_hand)
-  Move         r124, r14
-  Move         r125, r80
-  IterPrep     r126, r111
-  Len          r127, r126
-  Move         r128, r48
-L9:
-  LessInt      r129, r128, r127
-  JumpIfFalse  r129, L8
-  Index        r131, r126, r128
-  Index        r132, r131, r15
-  Append       r125, r125, r132
-  AddInt       r128, r128, r105
-  Jump         L9
-L8:
-  Avg          r134, r125
-  // i_product_name: g.key.product_name,
-  Move         r135, r112
   Move         r136, r114
-  // i_brand: g.key.brand,
-  Move         r137, r115
-  Move         r138, r117
+  Move         r137, r116
   // i_class: g.key.class,
-  Move         r139, r118
-  Move         r140, r120
+  Move         r138, r117
+  Move         r139, r119
   // i_category: g.key.category,
-  Move         r141, r121
-  Move         r142, r123
+  Move         r140, r120
+  Move         r141, r122
   // qoh: avg(from x in g select x.inv_quantity_on_hand)
-  Move         r143, r124
-  Move         r144, r134
+  Move         r142, r123
+  Move         r143, r133
   // select {
-  MakeMap      r145, 5, r135
+  MakeMap      r144, 5, r134
   // from inv in inventory
-  Append       r3, r3, r145
-  AddInt       r107, r107, r105
-  Jump         L10
-L7:
+  Append       r3, r3, r144
+  AddInt       r106, r106, r104
+  Jump         L12
+L9:
   // json(qoh)
   JSON         r3
   // expect qoh == [
-  Const        r147, [{"i_brand": "Brand1", "i_category": "Cat1", "i_class": "Class1", "i_product_name": "Prod1", "qoh": 15}]
-  Equal        r148, r3, r147
-  Expect       r148
+  Const        r146, [{"i_brand": "Brand1", "i_category": "Cat1", "i_class": "Class1", "i_product_name": "Prod1", "qoh": 15}]
+  Equal        r147, r3, r146
+  Expect       r147
   Return       r0
