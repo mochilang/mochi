@@ -800,7 +800,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			case ValueStr:
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len([]rune(v.Str))}
 			case ValueMap:
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(v.Map)}
+				if flag, ok := v.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					items := v.Map["items"]
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(items.List)}
+				} else {
+					fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(v.Map)}
+				}
 			case ValueNull:
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
 			default:
@@ -1364,18 +1369,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
 			}
-               case OpAvg:
-                       lst := fr.regs[ins.B]
-                       if lst.Tag == ValueNull {
-                               fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
-                               break
-                       }
-                       if lst.Tag == ValueMap {
-                               if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                       lst = lst.Map["items"]
-                               }
-                       }
-                       if lst.Tag != ValueList {
+		case OpAvg:
+			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				break
+			}
+			if lst.Tag == ValueMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					lst = lst.Map["items"]
+				}
+			}
+			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("avg expects list")
 			}
 			if len(lst.List) == 0 {
@@ -1387,19 +1392,19 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				}
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: sum / float64(len(lst.List))}
 			}
-               case OpSum:
-                       lst := fr.regs[ins.B]
-                       if lst.Tag == ValueNull {
-                               fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
-                               break
-                       }
-                       if lst.Tag == ValueMap {
-                               if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                       lst = lst.Map["items"]
-                               }
-                       }
-                       if lst.Tag != ValueList {
-                               return Value{}, fmt.Errorf("sum expects list")
+		case OpSum:
+			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				break
+			}
+			if lst.Tag == ValueMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					lst = lst.Map["items"]
+				}
+			}
+			if lst.Tag != ValueList {
+				return Value{}, fmt.Errorf("sum expects list")
 			}
 			var sumF float64
 			var sumI int
@@ -1418,17 +1423,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				sumF += float64(sumI)
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: sumF}
 			}
-               case OpMin:
-                       lst := fr.regs[ins.B]
-                       if lst.Tag == ValueNull {
-                               fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
-                               break
-                       }
-                       if lst.Tag == ValueMap {
-                               if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                       lst = lst.Map["items"]
-                               }
-                       }
+		case OpMin:
+			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				break
+			}
+			if lst.Tag == ValueMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					lst = lst.Map["items"]
+				}
+			}
 			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("min expects list")
 			}
@@ -1460,17 +1465,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(minVal)}
 				}
 			}
-               case OpMax:
-                       lst := fr.regs[ins.B]
-                       if lst.Tag == ValueNull {
-                               fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
-                               break
-                       }
-                       if lst.Tag == ValueMap {
-                               if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
-                                       lst = lst.Map["items"]
-                               }
-                       }
+		case OpMax:
+			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				break
+			}
+			if lst.Tag == ValueMap {
+				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
+					lst = lst.Map["items"]
+				}
+			}
 			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("max expects list")
 			}
