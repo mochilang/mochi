@@ -1,0 +1,140 @@
+func main (regs=87)
+  // let customer = [
+  Const        r0, [{"c_customer_sk": 1, "c_first_name": "John", "c_last_name": "Smith"}, {"c_customer_sk": 2, "c_first_name": "Alice", "c_last_name": "Jones"}]
+  // let store_sales = [
+  Const        r1, [{"d_month_seq": 1200, "ss_customer_sk": 1}, {"d_month_seq": 1205, "ss_customer_sk": 2}]
+  // let catalog_sales = [
+  Const        r2, [{"cs_bill_customer_sk": 1, "d_month_seq": 1203}]
+  // let web_sales = [
+  Const        r3, [{"d_month_seq": 1206, "ws_bill_customer_sk": 1}]
+  // let store_ids = distinct(from s in store_sales where s.d_month_seq >= 1200 && s.d_month_seq <= 1211 select s.ss_customer_sk)
+  Const        r5, []
+  IterPrep     r9, r1
+  Len          r10, r9
+  Const        r11, 0
+L2:
+  LessInt      r13, r11, r10
+  JumpIfFalse  r13, L0
+  Index        r15, r9, r11
+  Const        r16, "d_month_seq"
+  Index        r17, r15, r16
+  Const        r18, 1200
+  LessEq       r19, r18, r17
+  Const        r20, "d_month_seq"
+  Index        r21, r15, r20
+  Const        r22, 1211
+  LessEq       r23, r21, r22
+  Move         r24, r19
+  JumpIfFalse  r24, L1
+  Move         r24, r23
+L1:
+  JumpIfFalse  r24, L2
+  Const        r25, "ss_customer_sk"
+  Index        r26, r15, r25
+  Append       r5, r5, r26
+  Jump         L2
+L0:
+  Move         r4, r5
+  Call         r29, distinct, r4
+  // let catalog_ids = distinct(from c in catalog_sales where c.d_month_seq >= 1200 && c.d_month_seq <= 1211 select c.cs_bill_customer_sk)
+  Const        r31, []
+  IterPrep     r35, r2
+  Len          r36, r35
+  Const        r37, 0
+L6:
+  LessInt      r39, r37, r36
+  JumpIfFalse  r39, L3
+  Index        r41, r35, r37
+  Const        r42, "d_month_seq"
+  Index        r43, r41, r42
+  Const        r44, 1200
+  LessEq       r45, r44, r43
+  Const        r46, "d_month_seq"
+  Index        r47, r41, r46
+  Const        r48, 1211
+  LessEq       r49, r47, r48
+  Move         r50, r45
+  JumpIfFalse  r50, L4
+  Move         r50, r49
+L4:
+  JumpIfFalse  r50, L5
+  Const        r51, "cs_bill_customer_sk"
+  Index        r52, r41, r51
+  Append       r31, r31, r52
+L5:
+  Const        r54, 1
+  AddInt       r37, r37, r54
+  Jump         L6
+L3:
+  Move         r30, r31
+  Call         r55, distinct, r30
+  // let web_ids = distinct(from w in web_sales where w.d_month_seq >= 1200 && w.d_month_seq <= 1211 select w.ws_bill_customer_sk)
+  Const        r57, []
+  IterPrep     r61, r3
+  Len          r62, r61
+  Const        r63, 0
+L10:
+  LessInt      r65, r63, r62
+  JumpIfFalse  r65, L7
+  Index        r67, r61, r63
+  Const        r68, "d_month_seq"
+  Index        r69, r67, r68
+  Const        r70, 1200
+  LessEq       r71, r70, r69
+  Const        r72, "d_month_seq"
+  Index        r73, r67, r72
+  Const        r74, 1211
+  LessEq       r75, r73, r74
+  Move         r76, r71
+  JumpIfFalse  r76, L8
+  Move         r76, r75
+L8:
+  JumpIfFalse  r76, L9
+  Const        r77, "ws_bill_customer_sk"
+  Index        r78, r67, r77
+  Append       r57, r57, r78
+L9:
+  Const        r80, 1
+  AddInt       r63, r63, r80
+  Jump         L10
+L7:
+  Move         r56, r57
+  Call         r81, distinct, r56
+  // let hot = store_ids intersect catalog_ids intersect web_ids
+  Intersect    r82, r29, r55
+  Intersect    r83, r82, r81
+  // let result = len(hot)
+  Len          r84, r83
+  // json(result)
+  JSON         r84
+  // expect result == 1
+  Const        r85, 1
+  EqualInt     r86, r84, r85
+  Expect       r86
+  Return       r0
+
+  // fun distinct(xs: list<any>): list<any> {
+func distinct (regs=14)
+  // var out = []
+  Const        r2, []
+  // for x in xs {
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L2:
+  Less         r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r8, r3, r5
+  // if !contains(out, x) {
+  Not          r10, r9
+  JumpIfFalse  r10, L1
+  // out = append(out, x)
+  Append       r2, r2, r8
+L1:
+  // for x in xs {
+  Const        r12, 1
+  Add          r5, r5, r12
+  Jump         L2
+L0:
+  // return out
+  Return       r2

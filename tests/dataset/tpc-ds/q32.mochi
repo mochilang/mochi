@@ -20,7 +20,7 @@ let filtered =
   join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
   where i.i_manufact_id == 1 && d.d_year == 2000
   select cs.cs_ext_discount_amt
-  |> to_list
+  
 
 let avg_discount = avg(filtered)
 let result = sum(from x in filtered where x > avg_discount * 1.3 select x)

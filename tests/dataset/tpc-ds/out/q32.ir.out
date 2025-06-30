@@ -1,0 +1,100 @@
+func main (regs=80)
+  // let catalog_sales = [
+  Const        r0, [{"cs_ext_discount_amt": 5, "cs_item_sk": 1, "cs_sold_date_sk": 1}, {"cs_ext_discount_amt": 10, "cs_item_sk": 1, "cs_sold_date_sk": 2}, {"cs_ext_discount_amt": 20, "cs_item_sk": 1, "cs_sold_date_sk": 3}]
+  // let item = [
+  Const        r1, [{"i_item_sk": 1, "i_manufact_id": 1}]
+  // let date_dim = [
+  Const        r2, [{"d_date_sk": 1, "d_year": 2000}, {"d_date_sk": 2, "d_year": 2000}, {"d_date_sk": 3, "d_year": 2000}]
+  // from cs in catalog_sales
+  Const        r3, []
+  IterPrep     r7, r0
+  Len          r8, r7
+  Const        r9, 0
+L5:
+  LessInt      r11, r9, r8
+  JumpIfFalse  r11, L0
+  Index        r13, r7, r9
+  // join i in item on cs.cs_item_sk == i.i_item_sk
+  IterPrep     r14, r1
+  Len          r15, r14
+  Const        r21, 0
+L2:
+  LessInt      r23, r21, r15
+  JumpIfFalse  r23, L1
+  Index        r25, r14, r21
+  Const        r26, "cs_item_sk"
+  Index        r27, r13, r26
+  Const        r28, "i_item_sk"
+  Index        r29, r25, r28
+  Equal        r30, r27, r29
+  JumpIfFalse  r30, L2
+  // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+  IterPrep     r31, r2
+  Len          r32, r31
+  Const        r38, 0
+L3:
+  LessInt      r40, r38, r32
+  JumpIfFalse  r40, L2
+  Index        r42, r31, r38
+  Const        r43, "cs_sold_date_sk"
+  Index        r44, r13, r43
+  Const        r45, "d_date_sk"
+  Index        r46, r42, r45
+  Equal        r47, r44, r46
+  JumpIfFalse  r47, L3
+  // where i.i_manufact_id == 1 && d.d_year == 2000
+  Const        r48, "i_manufact_id"
+  Index        r49, r25, r48
+  Const        r50, 1
+  Equal        r51, r49, r50
+  Const        r52, "d_year"
+  Index        r53, r42, r52
+  Const        r54, 2000
+  Equal        r55, r53, r54
+  Move         r56, r51
+  JumpIfFalse  r56, L4
+  Move         r56, r55
+L4:
+  JumpIfFalse  r56, L3
+  // select cs.cs_ext_discount_amt
+  Const        r57, "cs_ext_discount_amt"
+  Index        r58, r13, r57
+  // from cs in catalog_sales
+  Append       r3, r3, r58
+  // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+  Jump         L3
+L1:
+  // from cs in catalog_sales
+  Const        r62, 1
+  AddInt       r9, r9, r62
+  Jump         L5
+L0:
+  // let avg_discount = avg(filtered)
+  Avg          r63, r3
+  // let result = sum(from x in filtered where x > avg_discount * 1.3 select x)
+  Const        r64, []
+  IterPrep     r65, r3
+  Len          r66, r65
+  Const        r67, 0
+L8:
+  LessInt      r69, r67, r66
+  JumpIfFalse  r69, L6
+  Index        r71, r65, r67
+  Const        r72, 1.3
+  MulFloat     r73, r63, r72
+  LessFloat    r74, r73, r71
+  JumpIfFalse  r74, L7
+  Append       r64, r64, r71
+L7:
+  Const        r76, 1
+  AddInt       r67, r67, r76
+  Jump         L8
+L6:
+  Sum          r77, r64
+  // json(result)
+  JSON         r77
+  // expect result == 20.0
+  Const        r78, 20
+  EqualFloat   r79, r77, r78
+  Expect       r79
+  Return       r0

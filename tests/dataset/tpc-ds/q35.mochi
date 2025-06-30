@@ -26,13 +26,13 @@ let purchased =
   join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
   where d.d_year == 2000 && d.d_qoy < 4
   select ss.ss_customer_sk
-  |> to_list
+  
 
 let groups =
   from c in customer
   join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
   join cd in customer_demographics on c.c_current_cdemo_sk == cd.cd_demo_sk
-  where contains(purchased, c.c_customer_sk)
+  where c.c_customer_sk in purchased
   group by {state: ca.ca_state, gender: cd.cd_gender, marital: cd.cd_marital_status, dep: cd.cd_dep_count, emp: cd.cd_dep_employed_count, col: cd.cd_dep_college_count} into g
   select {
     ca_state: g.key.state,
@@ -43,7 +43,7 @@ let groups =
     cd_dep_college_count: g.key.col,
     cnt: count(g)
   }
-  |> to_list
+  
 
 json(groups)
 

@@ -26,13 +26,13 @@ let result =
   join s in store on ss.ss_store_sk == s.s_store_sk
   where d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")
   group by {category: i.i_category, class: i.i_class} into g
-  sort by g.key.category, g.key.class
+  sort by [g.key.category, g.key.class]
   select {
     i_category: g.key.category,
     i_class: g.key.class,
     gross_margin: sum(from x in g select x.ss_net_profit) / sum(from x in g select x.ss_ext_sales_price)
   }
-  |> to_list
+  
 
 json(result)
 

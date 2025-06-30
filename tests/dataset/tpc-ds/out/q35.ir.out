@@ -1,0 +1,403 @@
+func main (regs=296)
+L0:
+  // let customer = [
+  Const        r0, [{"c_current_addr_sk": 1, "c_current_cdemo_sk": 1, "c_customer_sk": 1}, {"c_current_addr_sk": 2, "c_current_cdemo_sk": 2, "c_customer_sk": 2}]
+  // let customer_address = [
+  Const        r1, [{"ca_address_sk": 1, "ca_state": "CA"}, {"ca_address_sk": 2, "ca_state": "NY"}]
+  // let customer_demographics = [
+  Const        r2, [{"cd_demo_sk": 1, "cd_dep_college_count": 0, "cd_dep_count": 1, "cd_dep_employed_count": 1, "cd_gender": "M", "cd_marital_status": "S"}, {"cd_demo_sk": 2, "cd_dep_college_count": 1, "cd_dep_count": 2, "cd_dep_employed_count": 1, "cd_gender": "F", "cd_marital_status": "M"}]
+  // let store_sales = [
+  Const        r3, [{"ss_customer_sk": 1, "ss_sold_date_sk": 1}]
+  // let date_dim = [
+  Const        r4, [{"d_date_sk": 1, "d_qoy": 1, "d_year": 2000}]
+  // from ss in store_sales
+  Const        r5, []
+  IterPrep     r6, r3
+  Len          r7, r6
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  IterPrep     r8, r4
+  Len          r9, r8
+  // from ss in store_sales
+  Const        r10, 0
+  EqualInt     r11, r7, r10
+  JumpIfTrue   r11, L0
+  EqualInt     r12, r9, r10
+  JumpIfTrue   r12, L0
+  LessEq       r13, r9, r7
+  JumpIfFalse  r13, L1
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  MakeMap      r14, 0, r0
+  Const        r15, 0
+L6:
+  LessInt      r16, r15, r9
+  JumpIfFalse  r16, L2
+  Index        r17, r8, r15
+  Move         r18, r17
+  // where d.d_year == 2000 && d.d_qoy < 4
+  Const        r19, "d_year"
+  Index        r20, r18, r19
+  Const        r21, "d_qoy"
+  Index        r22, r18, r21
+  Const        r23, 4
+  Less         r24, r22, r23
+  Const        r25, 2000
+  Equal        r27, r20, r25
+  JumpIfFalse  r27, L3
+  Move         r27, r24
+L3:
+  JumpIfFalse  r27, L4
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r28, "d_date_sk"
+  Index        r29, r18, r28
+  Index        r30, r14, r29
+  Const        r31, nil
+  NotEqual     r32, r30, r31
+  JumpIfTrue   r32, L5
+  MakeList     r33, 0, r0
+  SetIndex     r14, r29, r33
+L5:
+  Index        r30, r14, r29
+  Append       r34, r30, r17
+  SetIndex     r14, r29, r34
+L4:
+  Const        r35, 1
+  AddInt       r15, r15, r35
+  Jump         L6
+L2:
+  // from ss in store_sales
+  Const        r36, 0
+L11:
+  LessInt      r37, r36, r7
+  JumpIfFalse  r37, L0
+  Index        r39, r6, r36
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r40, "ss_sold_date_sk"
+  Index        r41, r39, r40
+  // from ss in store_sales
+  Index        r42, r14, r41
+  Const        r43, nil
+  NotEqual     r44, r42, r43
+  JumpIfFalse  r44, L7
+  Len          r45, r42
+  Const        r46, 0
+L10:
+  LessInt      r47, r46, r45
+  JumpIfFalse  r47, L7
+  Index        r18, r42, r46
+  // where d.d_year == 2000 && d.d_qoy < 4
+  Const        r49, "d_year"
+  Index        r50, r18, r49
+  Const        r51, "d_qoy"
+  Index        r52, r18, r51
+  Const        r53, 4
+  Less         r54, r52, r53
+  Const        r55, 2000
+  Equal        r57, r50, r55
+  JumpIfFalse  r57, L8
+  Move         r57, r54
+L8:
+  JumpIfFalse  r57, L9
+  // select ss.ss_customer_sk
+  Const        r58, "ss_customer_sk"
+  Index        r59, r39, r58
+  // from ss in store_sales
+  Append       r5, r5, r59
+L9:
+  Const        r61, 1
+  AddInt       r46, r46, r61
+  Jump         L10
+L7:
+  Const        r62, 1
+  AddInt       r36, r36, r62
+  Jump         L11
+L1:
+  MakeMap      r63, 0, r0
+  Const        r64, 0
+L14:
+  LessInt      r65, r64, r7
+  JumpIfFalse  r65, L12
+  Index        r66, r6, r64
+  Move         r39, r66
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r67, "ss_sold_date_sk"
+  Index        r68, r39, r67
+  // from ss in store_sales
+  Index        r69, r63, r68
+  Const        r70, nil
+  NotEqual     r71, r69, r70
+  JumpIfTrue   r71, L13
+  MakeList     r72, 0, r0
+  SetIndex     r63, r68, r72
+L13:
+  Index        r69, r63, r68
+  Append       r73, r69, r66
+  SetIndex     r63, r68, r73
+  Const        r74, 1
+  AddInt       r64, r64, r74
+  Jump         L14
+L12:
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r75, 0
+L20:
+  LessInt      r76, r75, r9
+  JumpIfFalse  r76, L15
+  Index        r18, r8, r75
+  Const        r78, "d_date_sk"
+  Index        r79, r18, r78
+  Index        r80, r63, r79
+  Const        r81, nil
+  NotEqual     r82, r80, r81
+  JumpIfFalse  r82, L16
+  Len          r83, r80
+  Const        r84, 0
+L19:
+  LessInt      r85, r84, r83
+  JumpIfFalse  r85, L16
+  Index        r39, r80, r84
+  // where d.d_year == 2000 && d.d_qoy < 4
+  Const        r87, "d_year"
+  Index        r88, r18, r87
+  Const        r89, "d_qoy"
+  Index        r90, r18, r89
+  Const        r91, 4
+  Less         r92, r90, r91
+  Const        r93, 2000
+  Equal        r95, r88, r93
+  JumpIfFalse  r95, L17
+  Move         r95, r92
+L17:
+  JumpIfFalse  r95, L18
+  // select ss.ss_customer_sk
+  Const        r96, "ss_customer_sk"
+  Index        r97, r39, r96
+  // from ss in store_sales
+  Append       r5, r5, r97
+L18:
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r99, 1
+  AddInt       r84, r84, r99
+  Jump         L19
+L16:
+  Const        r100, 1
+  AddInt       r75, r75, r100
+  Jump         L20
+L15:
+  // from c in customer
+  Const        r101, []
+  MakeMap      r134, 0, r0
+  Const        r135, []
+  IterPrep     r137, r0
+  Len          r138, r137
+  Const        r139, 0
+L28:
+  LessInt      r140, r139, r138
+  JumpIfFalse  r140, L21
+  Index        r142, r137, r139
+  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  IterPrep     r143, r1
+  Len          r144, r143
+  Const        r145, 0
+L27:
+  LessInt      r146, r145, r144
+  JumpIfFalse  r146, L22
+  Index        r148, r143, r145
+  Const        r149, "c_current_addr_sk"
+  Index        r150, r142, r149
+  Const        r151, "ca_address_sk"
+  Index        r152, r148, r151
+  Equal        r153, r150, r152
+  JumpIfFalse  r153, L23
+  // join cd in customer_demographics on c.c_current_cdemo_sk == cd.cd_demo_sk
+  IterPrep     r154, r2
+  Len          r155, r154
+  Const        r156, 0
+L26:
+  LessInt      r157, r156, r155
+  JumpIfFalse  r157, L23
+  Index        r159, r154, r156
+  Const        r160, "c_current_cdemo_sk"
+  Index        r161, r142, r160
+  Const        r162, "cd_demo_sk"
+  Index        r163, r159, r162
+  Equal        r164, r161, r163
+  JumpIfFalse  r164, L24
+  // where c.c_customer_sk in purchased
+  Const        r165, "c_customer_sk"
+  Index        r166, r142, r165
+  In           r167, r166, r5
+  JumpIfFalse  r167, L24
+  // from c in customer
+  Const        r168, "c"
+  Move         r169, r142
+  Const        r170, "ca"
+  Move         r171, r148
+  Const        r172, "cd"
+  Move         r173, r159
+  MakeMap      r174, 3, r168
+  // group by {state: ca.ca_state, gender: cd.cd_gender, marital: cd.cd_marital_status, dep: cd.cd_dep_count, emp: cd.cd_dep_employed_count, col: cd.cd_dep_college_count} into g
+  Const        r175, "state"
+  Const        r176, "ca_state"
+  Index        r177, r148, r176
+  Const        r178, "gender"
+  Const        r179, "cd_gender"
+  Index        r180, r159, r179
+  Const        r181, "marital"
+  Const        r182, "cd_marital_status"
+  Index        r183, r159, r182
+  Const        r184, "dep"
+  Const        r185, "cd_dep_count"
+  Index        r186, r159, r185
+  Const        r187, "emp"
+  Const        r188, "cd_dep_employed_count"
+  Index        r189, r159, r188
+  Const        r190, "col"
+  Const        r191, "cd_dep_college_count"
+  Index        r192, r159, r191
+  Move         r193, r175
+  Move         r194, r177
+  Move         r195, r178
+  Move         r196, r180
+  Move         r197, r181
+  Move         r198, r183
+  Move         r199, r184
+  Move         r200, r186
+  Move         r201, r187
+  Move         r202, r189
+  Move         r203, r190
+  Move         r204, r192
+  MakeMap      r205, 6, r193
+  Str          r206, r205
+  In           r207, r206, r134
+  JumpIfTrue   r207, L25
+  // from c in customer
+  Const        r208, []
+  Const        r209, "__group__"
+  Const        r210, true
+  Const        r211, "key"
+  // group by {state: ca.ca_state, gender: cd.cd_gender, marital: cd.cd_marital_status, dep: cd.cd_dep_count, emp: cd.cd_dep_employed_count, col: cd.cd_dep_college_count} into g
+  Move         r212, r205
+  // from c in customer
+  Const        r213, "items"
+  Move         r214, r208
+  Const        r215, "count"
+  Const        r216, 0
+  Move         r217, r209
+  Move         r218, r210
+  Move         r219, r211
+  Move         r220, r212
+  Move         r221, r213
+  Move         r222, r214
+  Move         r223, r215
+  Move         r224, r216
+  MakeMap      r225, 4, r217
+  SetIndex     r134, r206, r225
+  Append       r135, r135, r225
+L25:
+  Const        r227, "items"
+  Index        r228, r134, r206
+  Index        r229, r228, r227
+  Append       r230, r229, r174
+  SetIndex     r228, r227, r230
+  Const        r231, "count"
+  Index        r232, r228, r231
+  Const        r233, 1
+  AddInt       r234, r232, r233
+  SetIndex     r228, r231, r234
+L24:
+  // join cd in customer_demographics on c.c_current_cdemo_sk == cd.cd_demo_sk
+  Const        r235, 1
+  AddInt       r156, r156, r235
+  Jump         L26
+L23:
+  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  Const        r236, 1
+  AddInt       r145, r145, r236
+  Jump         L27
+L22:
+  // from c in customer
+  Const        r237, 1
+  AddInt       r139, r139, r237
+  Jump         L28
+L21:
+  Const        r238, 0
+  Len          r240, r135
+L30:
+  LessInt      r241, r238, r240
+  JumpIfFalse  r241, L29
+  Index        r243, r135, r238
+  // ca_state: g.key.state,
+  Const        r244, "ca_state"
+  Const        r245, "key"
+  Index        r246, r243, r245
+  Const        r247, "state"
+  Index        r248, r246, r247
+  // cd_gender: g.key.gender,
+  Const        r249, "cd_gender"
+  Const        r250, "key"
+  Index        r251, r243, r250
+  Const        r252, "gender"
+  Index        r253, r251, r252
+  // cd_marital_status: g.key.marital,
+  Const        r254, "cd_marital_status"
+  Const        r255, "key"
+  Index        r256, r243, r255
+  Const        r257, "marital"
+  Index        r258, r256, r257
+  // cd_dep_count: g.key.dep,
+  Const        r259, "cd_dep_count"
+  Const        r260, "key"
+  Index        r261, r243, r260
+  Const        r262, "dep"
+  Index        r263, r261, r262
+  // cd_dep_employed_count: g.key.emp,
+  Const        r264, "cd_dep_employed_count"
+  Const        r265, "key"
+  Index        r266, r243, r265
+  Const        r267, "emp"
+  Index        r268, r266, r267
+  // cd_dep_college_count: g.key.col,
+  Const        r269, "cd_dep_college_count"
+  Const        r270, "key"
+  Index        r271, r243, r270
+  Const        r272, "col"
+  Index        r273, r271, r272
+  // cnt: count(g)
+  Const        r274, "cnt"
+  Const        r275, "count"
+  Index        r276, r243, r275
+  // ca_state: g.key.state,
+  Move         r277, r244
+  Move         r278, r248
+  // cd_gender: g.key.gender,
+  Move         r279, r249
+  Move         r280, r253
+  // cd_marital_status: g.key.marital,
+  Move         r281, r254
+  Move         r282, r258
+  // cd_dep_count: g.key.dep,
+  Move         r283, r259
+  Move         r284, r263
+  // cd_dep_employed_count: g.key.emp,
+  Move         r285, r264
+  Move         r286, r268
+  // cd_dep_college_count: g.key.col,
+  Move         r287, r269
+  Move         r288, r273
+  // cnt: count(g)
+  Move         r289, r274
+  Move         r290, r276
+  // select {
+  MakeMap      r291, 7, r277
+  // from c in customer
+  Append       r101, r101, r291
+  Const        r293, 1
+  AddInt       r238, r238, r293
+  Jump         L30
+L29:
+  // json(groups)
+  JSON         r101
+  // expect groups == [{ca_state: "CA", cd_gender: "M", cd_marital_status: "S", cd_dep_count: 1, cd_dep_employed_count: 1, cd_dep_college_count: 0, cnt: 1}]
+  Const        r294, [{"ca_state": "CA", "cd_dep_college_count": 0, "cd_dep_count": 1, "cd_dep_employed_count": 1, "cd_gender": "M", "cd_marital_status": "S", "cnt": 1}]
+  Equal        r295, r101, r294
+  Expect       r295
+  Return       r0

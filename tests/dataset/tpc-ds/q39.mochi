@@ -1,6 +1,12 @@
-import python "math" as math
-extern fun math.pow(x: float, y: float): float
-extern fun math.sqrt(x: float): float
+
+fun sqrt(x: float): float {
+  let guess = x / 2.0
+  var result = guess
+  for i in 0..5 {
+    result = (result + x / result) / 2.0
+  }
+  return result
+}
 
 let inventory = [
   {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10},
@@ -31,17 +37,31 @@ let monthly =
   group by {w: w.w_warehouse_sk, i: i.i_item_sk, month: d.d_moy} into g
   select {w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand)}
 
-let summary =
-  from m in monthly
-  group by {w: m.w, i: m.i} into g
-  let qtys = to_list(from x in g select x.qty)
-  let mean = avg(qtys)
-  let variance = avg(from q in qtys select math.pow(q - mean, 2.0))
-  let stdev = math.sqrt(variance)
-  let cov = stdev / mean
-  where cov > 1.5
-  select {w_warehouse_sk: g.key.w, i_item_sk: g.key.i, cov: cov}
-  |> to_list
+var grouped: map<string, map<string, any>> = {}
+for m in monthly {
+  let key = str({w: m.w, i: m.i})
+  if key in grouped {
+    let g = grouped[key]
+    grouped[key] = {w: g.w, i: g.i, qtys: append(g.qtys, m.qty)}
+  } else {
+    grouped[key] = {w: m.w, i: m.i, qtys: [m.qty]}
+  }
+}
+
+var summary = []
+for g in values(grouped) {
+  let mean = avg(g.qtys)
+  var sumsq = 0.0
+  for q in g.qtys {
+    sumsq = sumsq + (q - mean) * (q - mean)
+  }
+  let variance = sumsq / len(g.qtys)
+  let cov = sqrt(variance) / mean
+  if cov > 1.5 {
+    summary = append(summary, {w_warehouse_sk: g.w, i_item_sk: g.i, cov: cov})
+  }
+}
+  
 
 json(summary)
 
