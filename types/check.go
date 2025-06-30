@@ -365,6 +365,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: AnyType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("reverse", FuncType{
+		Params: []Type{ListType{Elem: AnyType{}}},
+		Return: ListType{Elem: AnyType{}},
+		Pure:   true,
+	}, false)
 	env.SetVar("push", FuncType{
 		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
 		Return: ListType{Elem: AnyType{}},
@@ -2157,6 +2162,7 @@ var builtinArity = map[string]int{
 	"str":       1,
 	"upper":     1,
 	"lower":     1,
+	"reverse":   1,
 	"trim":      1,
 	"contains":  2,
 	"split":     2,
@@ -2344,6 +2350,16 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 		if _, ok := args[0].(ListType); !ok {
 			if _, ok := args[0].(AnyType); !ok {
 				return fmt.Errorf("first() expects list, got %v", args[0])
+			}
+		}
+		return nil
+	case "reverse":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		if _, ok := args[0].(ListType); !ok {
+			if _, ok := args[0].(AnyType); !ok {
+				return fmt.Errorf("reverse() expects list, got %v", args[0])
 			}
 		}
 		return nil

@@ -1,6 +1,6 @@
-let t = [{id: 1, val: 18}]
+let t = [{id: 0, val: 0}, {id: 1, val: 18}]
 let vals = from r in t select r.val
-let result = first(vals)
+let result = first(reverse(vals))
 json(result)
 
 test "TPCDS Q18 first" {
