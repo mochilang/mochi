@@ -997,17 +997,17 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpJSON:
 			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
 			fmt.Fprintln(m.writer, string(b))
-               case OpAppend:
-                       lst := fr.regs[ins.B]
-                       if lst.Tag == ValueNull {
-                               fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{fr.regs[ins.C]}}
-                               break
-                       }
-                       if lst.Tag != ValueList {
-                               return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
-                       }
-                       newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
-                       fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
+		case OpAppend:
+			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueList, List: []Value{fr.regs[ins.C]}}
+				break
+			}
+			if lst.Tag != ValueList {
+				return Value{}, m.newError(fmt.Errorf("append expects list"), trace, ins.Line)
+			}
+			newList := append(append([]Value(nil), lst.List...), fr.regs[ins.C])
+			fr.regs[ins.A] = Value{Tag: ValueList, List: newList}
 		case OpUnionAll:
 			a := fr.regs[ins.B]
 			b := fr.regs[ins.C]
@@ -6085,12 +6085,19 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{Tag: ValueInt, Int: int(maxVal)}, true
 		}
 	case "concat":
-		out := []Value{}
-		for _, v := range args {
+		// Preallocate the result list to avoid repeated allocations
+		lists := make([][]Value, len(args))
+		total := 0
+		for i, v := range args {
 			lst, ok := toList(v)
 			if !ok {
 				return Value{}, false
 			}
+			lists[i] = lst
+			total += len(lst)
+		}
+		out := make([]Value, 0, total)
+		for _, lst := range lists {
 			out = append(out, lst...)
 		}
 		return Value{Tag: ValueList, List: out}, true
