@@ -9,12 +9,40 @@ func main (regs=197)
   Const        r3, [{"cs_item_sk": 1, "cs_sold_date_sk": 1}]
   // from i in item
   Const        r4, []
+  // group by {id: i.i_item_id, desc: i.i_item_desc, price: i.i_current_price} into g
+  Const        r5, "id"
+  Const        r6, "i_item_id"
+  Const        r7, "desc"
+  Const        r8, "i_item_desc"
+  Const        r9, "price"
+  Const        r10, "i_current_price"
+  // where i.i_current_price >= 20 && i.i_current_price <= 50 && i.i_manufact_id >= 800 && i.i_manufact_id <= 803 && inv.inv_quantity_on_hand >= 100 && inv.inv_quantity_on_hand <= 500
+  Const        r11, "i_current_price"
+  Const        r12, "i_current_price"
+  Const        r13, "i_manufact_id"
+  Const        r14, "i_manufact_id"
+  Const        r15, "inv_quantity_on_hand"
+  Const        r16, "inv_quantity_on_hand"
+  // select {i_item_id: g.key.id, i_item_desc: g.key.desc, i_current_price: g.key.price}
+  Const        r17, "i_item_id"
+  Const        r18, "key"
+  Const        r19, "id"
+  Const        r20, "i_item_desc"
+  Const        r21, "key"
+  Const        r22, "desc"
+  Const        r23, "i_current_price"
+  Const        r24, "key"
+  Const        r25, "price"
+  // sort by g.key.id
+  Const        r26, "key"
+  Const        r27, "id"
+  // from i in item
   MakeMap      r28, 0, r0
   Const        r29, []
   IterPrep     r31, r0
   Len          r32, r31
   Const        r33, 0
-L1:
+L14:
   LessInt      r34, r33, r32
   JumpIfFalse  r34, L0
   Index        r36, r31, r33
@@ -22,7 +50,7 @@ L1:
   IterPrep     r37, r1
   Len          r38, r37
   Const        r39, 0
-L2:
+L13:
   LessInt      r40, r39, r38
   JumpIfFalse  r40, L1
   Index        r42, r37, r39
@@ -176,13 +204,22 @@ L3:
   Const        r154, 1
   AddInt       r50, r50, r154
   Jump         L12
-L0:
+L2:
+  // join inv in inventory on i.i_item_sk == inv.inv_item_sk
+  Const        r155, 1
+  AddInt       r39, r39, r155
+  Jump         L13
+L1:
   // from i in item
+  Const        r156, 1
+  AddInt       r33, r33, r156
+  Jump         L14
+L0:
   Const        r157, 0
   Len          r159, r29
-L14:
+L16:
   LessInt      r160, r157, r159
-  JumpIfFalse  r160, L13
+  JumpIfFalse  r160, L15
   Index        r162, r29, r157
   // select {i_item_id: g.key.id, i_item_desc: g.key.desc, i_current_price: g.key.price}
   Const        r163, "i_item_id"
@@ -218,8 +255,8 @@ L14:
   Append       r4, r4, r191
   Const        r193, 1
   AddInt       r157, r157, r193
-  Jump         L14
-L13:
+  Jump         L16
+L15:
   // sort by g.key.id
   Sort         r4, r4
   // json(result)
