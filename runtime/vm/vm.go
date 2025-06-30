@@ -856,7 +856,20 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				default:
 					key = valueToString(idxVal)
 				}
-				fr.regs[ins.A] = src.Map[key]
+				if v, ok := src.Map[key]; ok {
+					fr.regs[ins.A] = v
+				} else {
+					found := Value{Tag: ValueNull}
+					for _, vv := range src.Map {
+						if vv.Tag == ValueMap {
+							if val, ok := vv.Map[key]; ok {
+								found = val
+								break
+							}
+						}
+					}
+					fr.regs[ins.A] = found
+				}
 			case ValueStr:
 				if idxVal.Tag != ValueInt {
 					fr.regs[ins.A] = Value{Tag: ValueNull}
@@ -5429,20 +5442,33 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 		regs = append(regs, fc.vars[j.Var])
 	}
 
-	pairs := make([]int, len(names)*2)
+	pairs := []int{}
+	addPair := func(k, v int) {
+		pairs = append(pairs, k, v)
+	}
 	for i, n := range names {
 		k := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: n})
 		v := fc.newReg()
 		fc.emit(q.Pos, Instr{Op: OpMove, A: v, B: regs[i]})
-		pairs[i*2] = k
-		pairs[i*2+1] = v
+		addPair(k, v)
+
+		if typ, err := fc.comp.env.GetVar(n); err == nil {
+			if st, ok := typ.(types.StructType); ok {
+				for _, field := range st.Order {
+					fk := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: field})
+					fv := fc.newReg()
+					fc.emit(q.Pos, Instr{Op: OpIndex, A: fv, B: regs[i], C: fk})
+					addPair(fk, fv)
+				}
+			}
+		}
 	}
 	row := fc.newReg()
 	start := 0
 	if len(pairs) > 0 {
 		start = pairs[0]
 	}
-	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: row, B: len(names), C: start})
+	fc.emit(q.Pos, Instr{Op: OpMakeMap, A: row, B: len(pairs) / 2, C: start})
 	return row
 }
 
