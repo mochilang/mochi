@@ -1,20 +1,16 @@
-func main (regs=38)
+func main (regs=380)
   // let aka_title = [
   Const        r0, [{"movie_id": 1}, {"movie_id": 2}]
   // let company_name = [
   Const        r1, [{"country_code": "[us]", "id": 1}, {"country_code": "[gb]", "id": 2}]
-L1:
   // let company_type = [
   Const        r2, [{"id": 10}, {"id": 20}]
-L7:
   // let info_type = [
   Const        r3, [{"id": 5, "info": "release dates"}, {"id": 6, "info": "other"}]
   // let keyword = [
   Const        r4, [{"id": 100}, {"id": 200}]
-L5:
   // let movie_companies = [
   Const        r5, [{"company_id": 1, "company_type_id": 10, "movie_id": 1, "note": "release (2005) (worldwide)"}, {"company_id": 2, "company_type_id": 20, "movie_id": 2, "note": "release (1999) (worldwide)"}]
-L6:
   // let movie_info = [
   Const        r6, [{"info": "USA: March 2005", "info_type_id": 5, "movie_id": 1, "note": "internet"}, {"info": "USA: May 1999", "info_type_id": 5, "movie_id": 2, "note": "theater"}]
   // let movie_keyword = [
@@ -23,545 +19,558 @@ L6:
   Const        r8, [{"id": 1, "production_year": 2005, "title": "Example Movie"}, {"id": 2, "production_year": 1999, "title": "Old Movie"}]
   // from t in title
   Const        r9, []
-L2:
   // where cn.country_code == "[us]" &&
   Const        r10, "country_code"
   // it1.info == "release dates" &&
   Const        r11, "info"
-L10:
   // mc.note.contains("200") &&
   Const        r12, "note"
-L11:
   Const        r13, "contains"
-L12:
   // mc.note.contains("worldwide") &&
   Const        r14, "note"
-L13:
   Const        r15, "contains"
-L3:
   // mi.note.contains("internet") &&
   Const        r16, "note"
-L8:
   Const        r17, "contains"
   // mi.info.contains("USA:") &&
   Const        r18, "info"
-L17:
   Const        r19, "contains"
-L14:
   // mi.info.contains("200") &&
   Const        r20, "info"
   Const        r21, "contains"
-L9:
   // t.production_year > 2000
   Const        r22, "production_year"
-L15:
   // select { release_date: mi.info, internet_movie: t.title }
   Const        r23, "release_date"
   Const        r24, "info"
   Const        r25, "internet_movie"
-L4:
   Const        r26, "title"
-L0:
   // from t in title
   IterPrep     r27, r8
-L16:
   Len          r28, r27
   Const        r29, 0
-  LessInt      r10, r29, r28
-  JumpIfFalse  r10, L0
-  Index        r11, r27, r29
-L18:
+L25:
+  LessInt      r31, r29, r28
+  JumpIfFalse  r31, L0
+  Index        r33, r27, r29
   // join at in aka_title on at.movie_id == t.id
-  IterPrep     r12, r0
-  Len          r13, r12
-  Const        r14, "movie_id"
-  Const        r15, "id"
+  IterPrep     r34, r0
+  Len          r35, r34
+  Const        r36, "movie_id"
+  Const        r37, "id"
   // where cn.country_code == "[us]" &&
-  Const        r16, "country_code"
+  Const        r38, "country_code"
   // it1.info == "release dates" &&
-  Const        r17, "info"
+  Const        r39, "info"
   // mc.note.contains("200") &&
-  Const        r18, "note"
-  Const        r19, "contains"
+  Const        r40, "note"
+  Const        r41, "contains"
   // mc.note.contains("worldwide") &&
-  Const        r20, "note"
-  Const        r21, "contains"
+  Const        r42, "note"
+  Const        r43, "contains"
   // mi.note.contains("internet") &&
-  Const        r22, "note"
-  Const        r23, "contains"
+  Const        r44, "note"
+  Const        r45, "contains"
   // mi.info.contains("USA:") &&
-  Const        r24, "info"
-  Const        r25, "contains"
+  Const        r46, "info"
+  Const        r47, "contains"
   // mi.info.contains("200") &&
-  Const        r26, "info"
-  Const        r8, "contains"
+  Const        r48, "info"
+  Const        r49, "contains"
   // t.production_year > 2000
-  Const        r28, "production_year"
+  Const        r50, "production_year"
   // select { release_date: mi.info, internet_movie: t.title }
-  Const        r10, "release_date"
-  Const        r27, "info"
-  Const        r14, "internet_movie"
-  Const        r15, "title"
+  Const        r51, "release_date"
+  Const        r52, "info"
+  Const        r53, "internet_movie"
+  Const        r54, "title"
   // join at in aka_title on at.movie_id == t.id
-  Const        r16, 0
-  LessInt      r17, r16, r13
-  JumpIfFalse  r17, L1
-  Index        r18, r12, r16
-  Const        r19, "movie_id"
-  Index        r20, r18, r19
-  Const        r21, "id"
-  Index        r22, r11, r21
-  Equal        r23, r20, r22
-  JumpIfFalse  r23, L2
+  Const        r55, 0
+L24:
+  LessInt      r57, r55, r35
+  JumpIfFalse  r57, L1
+  Index        r59, r34, r55
+  Const        r60, "movie_id"
+  Index        r61, r59, r60
+  Const        r62, "id"
+  Index        r63, r33, r62
+  Equal        r64, r61, r63
+  JumpIfFalse  r64, L2
   // join mi in movie_info on mi.movie_id == t.id
-  IterPrep     r24, r6
-  Len          r25, r24
-  Const        r26, "movie_id"
-  Const        r8, "id"
+  IterPrep     r65, r6
+  Len          r66, r65
+  Const        r67, "movie_id"
+  Const        r68, "id"
   // where cn.country_code == "[us]" &&
-  Const        r28, "country_code"
+  Const        r69, "country_code"
   // it1.info == "release dates" &&
-  Const        r10, "info"
+  Const        r70, "info"
   // mc.note.contains("200") &&
-  Const        r27, "note"
-  Const        r14, "contains"
+  Const        r71, "note"
+  Const        r72, "contains"
   // mc.note.contains("worldwide") &&
-  Const        r15, "note"
-  Const        r13, "contains"
+  Const        r73, "note"
+  Const        r74, "contains"
   // mi.note.contains("internet") &&
-  Const        r17, "note"
-  Const        r12, "contains"
+  Const        r75, "note"
+  Const        r76, "contains"
   // mi.info.contains("USA:") &&
-  Const        r18, "info"
-  Const        r19, "contains"
+  Const        r77, "info"
+  Const        r78, "contains"
   // mi.info.contains("200") &&
-  Const        r21, "info"
-  Const        r20, "contains"
+  Const        r79, "info"
+  Const        r80, "contains"
   // t.production_year > 2000
-  Const        r22, "production_year"
+  Const        r81, "production_year"
   // select { release_date: mi.info, internet_movie: t.title }
-  Const        r23, "release_date"
-  Const        r6, "info"
-  Const        r26, "internet_movie"
-  Const        r8, "title"
+  Const        r82, "release_date"
+  Const        r83, "info"
+  Const        r84, "internet_movie"
+  Const        r85, "title"
   // join mi in movie_info on mi.movie_id == t.id
-  Const        r28, 0
-  LessInt      r10, r28, r25
-  JumpIfFalse  r10, L2
-  Index        r27, r24, r28
-  Const        r14, "movie_id"
-  Index        r15, r27, r14
-  Const        r13, "id"
-  Index        r17, r11, r13
-  Equal        r12, r15, r17
-  JumpIfFalse  r12, L3
+  Const        r86, 0
+L23:
+  LessInt      r88, r86, r66
+  JumpIfFalse  r88, L2
+  Index        r90, r65, r86
+  Const        r91, "movie_id"
+  Index        r92, r90, r91
+  Const        r93, "id"
+  Index        r94, r33, r93
+  Equal        r95, r92, r94
+  JumpIfFalse  r95, L3
   // join mk in movie_keyword on mk.movie_id == t.id
-  IterPrep     r18, r7
-  Len          r19, r18
-  Const        r21, "movie_id"
-  Const        r20, "id"
+  IterPrep     r96, r7
+  Len          r97, r96
+  Const        r98, "movie_id"
+  Const        r99, "id"
   // where cn.country_code == "[us]" &&
-  Const        r22, "country_code"
+  Const        r100, "country_code"
   // it1.info == "release dates" &&
-  Const        r23, "info"
+  Const        r101, "info"
   // mc.note.contains("200") &&
-  Const        r6, "note"
-  Const        r26, "contains"
+  Const        r102, "note"
+  Const        r103, "contains"
   // mc.note.contains("worldwide") &&
-  Const        r8, "note"
-  Const        r25, "contains"
+  Const        r104, "note"
+  Const        r105, "contains"
   // mi.note.contains("internet") &&
-  Const        r10, "note"
-  Const        r24, "contains"
+  Const        r106, "note"
+  Const        r107, "contains"
   // mi.info.contains("USA:") &&
-  Const        r14, "info"
-  Const        r13, "contains"
+  Const        r108, "info"
+  Const        r109, "contains"
   // mi.info.contains("200") &&
-  Const        r15, "info"
-  Const        r17, "contains"
+  Const        r110, "info"
+  Const        r111, "contains"
   // t.production_year > 2000
-  Const        r12, "production_year"
+  Const        r112, "production_year"
   // select { release_date: mi.info, internet_movie: t.title }
-  Const        r7, "release_date"
-  Const        r21, "info"
-  Const        r20, "internet_movie"
-  Const        r22, "title"
+  Const        r113, "release_date"
+  Const        r114, "info"
+  Const        r115, "internet_movie"
+  Const        r116, "title"
   // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r23, 0
-  LessInt      r6, r23, r19
-  JumpIfFalse  r6, L3
-  Index        r26, r18, r23
-  Const        r8, "movie_id"
-  Index        r25, r26, r8
-  Const        r10, "id"
-  Index        r24, r11, r10
-  Equal        r14, r25, r24
-  JumpIfFalse  r14, L4
+  Const        r117, 0
+L22:
+  LessInt      r119, r117, r97
+  JumpIfFalse  r119, L3
+  Index        r121, r96, r117
+  Const        r122, "movie_id"
+  Index        r123, r121, r122
+  Const        r124, "id"
+  Index        r125, r33, r124
+  Equal        r126, r123, r125
+  JumpIfFalse  r126, L4
   // join mc in movie_companies on mc.movie_id == t.id
-  IterPrep     r13, r5
-  Len          r15, r13
-  Const        r17, "movie_id"
-  Const        r12, "id"
+  IterPrep     r127, r5
+  Len          r128, r127
+  Const        r129, "movie_id"
+  Const        r130, "id"
   // where cn.country_code == "[us]" &&
-  Const        r7, "country_code"
+  Const        r131, "country_code"
   // it1.info == "release dates" &&
-  Const        r21, "info"
+  Const        r132, "info"
   // mc.note.contains("200") &&
-  Const        r20, "note"
-  Const        r22, "contains"
+  Const        r133, "note"
+  Const        r134, "contains"
   // mc.note.contains("worldwide") &&
-  Const        r19, "note"
-  Const        r6, "contains"
+  Const        r135, "note"
+  Const        r136, "contains"
   // mi.note.contains("internet") &&
-  Const        r18, "note"
-  Const        r8, "contains"
+  Const        r137, "note"
+  Const        r138, "contains"
   // mi.info.contains("USA:") &&
-  Const        r10, "info"
-  Const        r25, "contains"
+  Const        r139, "info"
+  Const        r140, "contains"
   // mi.info.contains("200") &&
-  Const        r24, "info"
-  Const        r14, "contains"
+  Const        r141, "info"
+  Const        r142, "contains"
   // t.production_year > 2000
-  Const        r5, "production_year"
+  Const        r143, "production_year"
   // select { release_date: mi.info, internet_movie: t.title }
-  Const        r17, "release_date"
-  Const        r12, "info"
-  Const        r7, "internet_movie"
-  Const        r21, "title"
+  Const        r144, "release_date"
+  Const        r145, "info"
+  Const        r146, "internet_movie"
+  Const        r147, "title"
   // join mc in movie_companies on mc.movie_id == t.id
-  Const        r20, 0
-  LessInt      r22, r20, r15
-  JumpIfFalse  r22, L4
-  Index        r19, r13, r20
-  Const        r6, "movie_id"
-  Index        r18, r19, r6
-  Const        r8, "id"
-  Index        r10, r11, r8
-  Equal        r25, r18, r10
-  JumpIfFalse  r25, L5
+  Const        r148, 0
+L21:
+  LessInt      r150, r148, r128
+  JumpIfFalse  r150, L4
+  Index        r152, r127, r148
+  Const        r153, "movie_id"
+  Index        r154, r152, r153
+  Const        r155, "id"
+  Index        r156, r33, r155
+  Equal        r157, r154, r156
+  JumpIfFalse  r157, L5
   // join k in keyword on k.id == mk.keyword_id
-  IterPrep     r24, r4
-  Len          r14, r24
-  Const        r5, "id"
-  Const        r17, "keyword_id"
+  IterPrep     r158, r4
+  Len          r159, r158
+  Const        r160, "id"
+  Const        r161, "keyword_id"
   // where cn.country_code == "[us]" &&
-  Const        r12, "country_code"
+  Const        r162, "country_code"
   // it1.info == "release dates" &&
-  Const        r7, "info"
+  Const        r163, "info"
   // mc.note.contains("200") &&
-  Const        r21, "note"
-  Const        r15, "contains"
+  Const        r164, "note"
+  Const        r165, "contains"
   // mc.note.contains("worldwide") &&
-  Const        r22, "note"
-  Const        r13, "contains"
+  Const        r166, "note"
+  Const        r167, "contains"
   // mi.note.contains("internet") &&
-  Const        r6, "note"
-  Const        r8, "contains"
+  Const        r168, "note"
+  Const        r169, "contains"
   // mi.info.contains("USA:") &&
-  Const        r18, "info"
-  Const        r10, "contains"
+  Const        r170, "info"
+  Const        r171, "contains"
   // mi.info.contains("200") &&
-  Const        r25, "info"
-  Const        r4, "contains"
+  Const        r172, "info"
+  Const        r173, "contains"
   // t.production_year > 2000
-  Const        r5, "production_year"
+  Const        r174, "production_year"
   // select { release_date: mi.info, internet_movie: t.title }
-  Const        r17, "release_date"
-  Const        r12, "info"
-  Const        r7, "internet_movie"
-  Const        r21, "title"
+  Const        r175, "release_date"
+  Const        r176, "info"
+  Const        r177, "internet_movie"
+  Const        r178, "title"
   // join k in keyword on k.id == mk.keyword_id
-  Const        r15, 0
-  LessInt      r22, r15, r14
-  JumpIfFalse  r22, L5
-  Index        r13, r24, r15
-  Const        r6, "id"
-  Index        r8, r13, r6
-  Const        r18, "keyword_id"
-  Index        r10, r26, r18
-  Equal        r25, r8, r10
-  JumpIfFalse  r25, L6
-  // join it1 in info_type on it1.id == mi.info_type_id
-  IterPrep     r4, r3
-  Len          r5, r4
-  Const        r17, "id"
-  Const        r12, "info_type_id"
-  // where cn.country_code == "[us]" &&
-  Const        r7, "country_code"
-  // it1.info == "release dates" &&
-  Const        r21, "info"
-  // mc.note.contains("200") &&
-  Const        r14, "note"
-  Const        r22, "contains"
-  // mc.note.contains("worldwide") &&
-  Const        r24, "note"
-  Const        r13, "contains"
-  // mi.note.contains("internet") &&
-  Const        r6, "note"
-  Const        r26, "contains"
-  // mi.info.contains("USA:") &&
-  Const        r18, "info"
-  Const        r8, "contains"
-  // mi.info.contains("200") &&
-  Const        r10, "info"
-  Const        r25, "contains"
-  // t.production_year > 2000
-  Const        r3, "production_year"
-  // select { release_date: mi.info, internet_movie: t.title }
-  Const        r17, "release_date"
-  Const        r12, "info"
-  Const        r7, "internet_movie"
-  Const        r21, "title"
-  // join it1 in info_type on it1.id == mi.info_type_id
-  Const        r14, 0
-  LessInt      r22, r14, r5
-  JumpIfFalse  r22, L6
-  Index        r24, r4, r14
-  Const        r13, "id"
-  Index        r6, r24, r13
-  Const        r26, "info_type_id"
-  Index        r18, r27, r26
-  Equal        r8, r6, r18
-  JumpIfFalse  r8, L0
-  // join cn in company_name on cn.id == mc.company_id
-  IterPrep     r10, r1
-  Len          r25, r10
-  Const        r3, "id"
-  Const        r17, "company_id"
-  // where cn.country_code == "[us]" &&
-  Const        r12, "country_code"
-  // it1.info == "release dates" &&
-  Const        r7, "info"
-  // mc.note.contains("200") &&
-  Const        r21, "note"
-  Const        r5, "contains"
-  // mc.note.contains("worldwide") &&
-  Const        r22, "note"
-  Const        r4, "contains"
-  // mi.note.contains("internet") &&
-  Const        r13, "note"
-  Const        r26, "contains"
-  // mi.info.contains("USA:") &&
-  Const        r6, "info"
-  Const        r18, "contains"
-  // mi.info.contains("200") &&
-  Const        r8, "info"
-  Const        r1, "contains"
-  // t.production_year > 2000
-  Const        r3, "production_year"
-  // select { release_date: mi.info, internet_movie: t.title }
-  Const        r17, "release_date"
-  Const        r12, "info"
-  Const        r7, "internet_movie"
-  Const        r21, "title"
-  // join cn in company_name on cn.id == mc.company_id
-  Const        r5, 0
-  LessInt      r22, r5, r25
-  JumpIfFalse  r22, L0
-  Index        r4, r10, r5
-  Const        r13, "id"
-  Index        r26, r4, r13
-  Const        r6, "company_id"
-  Index        r18, r19, r6
-  Equal        r8, r26, r18
-  JumpIfFalse  r8, L7
-  // join ct in company_type on ct.id == mc.company_type_id
-  IterPrep     r1, r2
-  Len          r3, r1
-  Const        r17, "id"
-  Const        r12, "company_type_id"
-  // where cn.country_code == "[us]" &&
-  Const        r7, "country_code"
-  // it1.info == "release dates" &&
-  Const        r21, "info"
-  // mc.note.contains("200") &&
-  Const        r25, "note"
-  Const        r22, "contains"
-  // mc.note.contains("worldwide") &&
-  Const        r10, "note"
-  Const        r13, "contains"
-  // mi.note.contains("internet") &&
-  Const        r6, "note"
-  Const        r26, "contains"
-  // mi.info.contains("USA:") &&
-  Const        r18, "info"
-  Const        r8, "contains"
-  // mi.info.contains("200") &&
-  Const        r2, "info"
-  Const        r17, "contains"
-  // t.production_year > 2000
-  Const        r12, "production_year"
-  // select { release_date: mi.info, internet_movie: t.title }
-  Const        r7, "release_date"
-  Const        r21, "info"
-  Const        r25, "internet_movie"
-  Const        r22, "title"
-  // join ct in company_type on ct.id == mc.company_type_id
-  Const        r10, 0
-  LessInt      r13, r10, r3
-  JumpIfFalse  r13, L7
-  Index        r6, r1, r10
-  Const        r26, "id"
-  Index        r18, r6, r26
-  Const        r8, "company_type_id"
-  Index        r2, r19, r8
-  Equal        r17, r18, r2
-  JumpIfFalse  r17, L8
-  // where cn.country_code == "[us]" &&
-  Const        r12, "country_code"
-  Index        r7, r4, r12
-  // t.production_year > 2000
-  Const        r21, "production_year"
-  Index        r25, r11, r21
-  Const        r22, 2000
-  Less         r3, r22, r25
-  // where cn.country_code == "[us]" &&
-  Const        r13, "[us]"
-  Equal        r1, r7, r13
-  // it1.info == "release dates" &&
-  Const        r6, "info"
-  Index        r26, r24, r6
-  Const        r8, "release dates"
-  Equal        r18, r26, r8
-  // where cn.country_code == "[us]" &&
-  Move         r2, r1
-  JumpIfFalse  r2, L8
-  // it1.info == "release dates" &&
-  Move         r17, r18
-  JumpIfFalse  r17, L9
-  Const        r4, "note"
-  Index        r12, r19, r4
-  // mc.note.contains("200") &&
-  Const        r21, "200"
-  In           r25, r21, r12
-  JumpIfFalse  r25, L6
-  Const        r22, "note"
-  Index        r7, r19, r22
-  // mc.note.contains("worldwide") &&
-  Const        r13, "worldwide"
-  In           r24, r13, r7
-  JumpIfFalse  r24, L1
-  Const        r6, "note"
-  Index        r26, r27, r6
-  // mi.note.contains("internet") &&
-  Const        r8, "internet"
-  In           r1, r8, r26
-  JumpIfFalse  r1, L10
-  Const        r2, "info"
-  Index        r18, r27, r2
-  // mi.info.contains("USA:") &&
-  Const        r17, "USA:"
-  In           r4, r17, r18
-  JumpIfFalse  r4, L9
-  Const        r12, "info"
-  Index        r21, r27, r12
-  // mi.info.contains("200") &&
-  Const        r25, "200"
-  In           r19, r25, r21
-  JumpIfFalse  r19, L11
-  Move         r19, r3
-  // where cn.country_code == "[us]" &&
-  JumpIfFalse  r19, L8
-  // select { release_date: mi.info, internet_movie: t.title }
-  Const        r22, "release_date"
-  Const        r7, "info"
-  Index        r13, r27, r7
-  Const        r24, "internet_movie"
-  Const        r6, "title"
-  Index        r26, r11, r6
-  Move         r30, r22
-  Move         r31, r13
-  Move         r32, r24
-  Move         r33, r26
-  MakeMap      r8, 2, r30
-  // from t in title
-  Append       r9, r9, r8
-  // join ct in company_type on ct.id == mc.company_type_id
-  Const        r1, 1
-  Add          r10, r10, r1
-  Jump         L2
-  // join cn in company_name on cn.id == mc.company_id
-  Const        r2, 1
-  Add          r5, r5, r2
-  Jump         L5
-  // join it1 in info_type on it1.id == mi.info_type_id
-  Const        r18, 1
-  Add          r14, r14, r18
-  Jump         L12
-  // join k in keyword on k.id == mk.keyword_id
-  Const        r17, 1
-  Add          r15, r15, r17
-  Jump         L13
-  // join mc in movie_companies on mc.movie_id == t.id
-  Const        r4, 1
-  Add          r20, r20, r4
-  Jump         L14
-  // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r12, 1
-  Add          r23, r23, r12
-  Jump         L15
-  // join mi in movie_info on mi.movie_id == t.id
-  Const        r3, 1
-  Add          r28, r28, r3
-  Jump         L16
-  // join at in aka_title on at.movie_id == t.id
-  Const        r21, 1
-  Add          r16, r16, r21
-  Jump         L3
-  // from t in title
-  Const        r25, 1
-  AddInt       r29, r29, r25
-  Jump         L17
-  // release_date: min(from r in rows select r.release_date),
-  Const        r27, "release_date"
-  Const        r7, []
-  Const        r11, "release_date"
-  IterPrep     r6, r9
-  Len          r22, r6
-  Const        r13, 0
-  LessInt      r24, r13, r22
-  JumpIfFalse  r24, L16
-  Index        r26, r6, r13
-  Const        r30, "release_date"
-  Index        r31, r26, r30
-  Append       r7, r7, r31
-  Const        r32, 1
-  AddInt       r13, r13, r32
-  Jump         L18
-  Min          r8, r7
-  // internet_movie: min(from r in rows select r.internet_movie)
-  Const        r10, "internet_movie"
-  Const        r1, []
-  Const        r5, "internet_movie"
-  IterPrep     r2, r9
-  Len          r14, r2
-  Const        r18, 0
+  Const        r179, 0
 L20:
-  LessInt      r15, r18, r14
-  JumpIfFalse  r15, L19
-  Index        r26, r2, r18
-  Const        r17, "internet_movie"
-  Index        r20, r26, r17
-  Append       r1, r1, r20
-  Const        r33, 1
-  AddInt       r18, r18, r33
-  Jump         L20
+  LessInt      r181, r179, r159
+  JumpIfFalse  r181, L5
+  Index        r183, r158, r179
+  Const        r184, "id"
+  Index        r185, r183, r184
+  Const        r186, "keyword_id"
+  Index        r187, r121, r186
+  Equal        r188, r185, r187
+  JumpIfFalse  r188, L6
+  // join it1 in info_type on it1.id == mi.info_type_id
+  IterPrep     r189, r3
+  Len          r190, r189
+  Const        r191, "id"
+  Const        r192, "info_type_id"
+  // where cn.country_code == "[us]" &&
+  Const        r193, "country_code"
+  // it1.info == "release dates" &&
+  Const        r194, "info"
+  // mc.note.contains("200") &&
+  Const        r195, "note"
+  Const        r196, "contains"
+  // mc.note.contains("worldwide") &&
+  Const        r197, "note"
+  Const        r198, "contains"
+  // mi.note.contains("internet") &&
+  Const        r199, "note"
+  Const        r200, "contains"
+  // mi.info.contains("USA:") &&
+  Const        r201, "info"
+  Const        r202, "contains"
+  // mi.info.contains("200") &&
+  Const        r203, "info"
+  Const        r204, "contains"
+  // t.production_year > 2000
+  Const        r205, "production_year"
+  // select { release_date: mi.info, internet_movie: t.title }
+  Const        r206, "release_date"
+  Const        r207, "info"
+  Const        r208, "internet_movie"
+  Const        r209, "title"
+  // join it1 in info_type on it1.id == mi.info_type_id
+  Const        r210, 0
 L19:
-  Min          r4, r1
+  LessInt      r212, r210, r190
+  JumpIfFalse  r212, L6
+  Index        r214, r189, r210
+  Const        r215, "id"
+  Index        r216, r214, r215
+  Const        r217, "info_type_id"
+  Index        r218, r90, r217
+  Equal        r219, r216, r218
+  JumpIfFalse  r219, L7
+  // join cn in company_name on cn.id == mc.company_id
+  IterPrep     r220, r1
+  Len          r221, r220
+  Const        r222, "id"
+  Const        r223, "company_id"
+  // where cn.country_code == "[us]" &&
+  Const        r224, "country_code"
+  // it1.info == "release dates" &&
+  Const        r225, "info"
+  // mc.note.contains("200") &&
+  Const        r226, "note"
+  Const        r227, "contains"
+  // mc.note.contains("worldwide") &&
+  Const        r228, "note"
+  Const        r229, "contains"
+  // mi.note.contains("internet") &&
+  Const        r230, "note"
+  Const        r231, "contains"
+  // mi.info.contains("USA:") &&
+  Const        r232, "info"
+  Const        r233, "contains"
+  // mi.info.contains("200") &&
+  Const        r234, "info"
+  Const        r235, "contains"
+  // t.production_year > 2000
+  Const        r236, "production_year"
+  // select { release_date: mi.info, internet_movie: t.title }
+  Const        r237, "release_date"
+  Const        r238, "info"
+  Const        r239, "internet_movie"
+  Const        r240, "title"
+  // join cn in company_name on cn.id == mc.company_id
+  Const        r241, 0
+L18:
+  LessInt      r243, r241, r221
+  JumpIfFalse  r243, L7
+  Index        r245, r220, r241
+  Const        r246, "id"
+  Index        r247, r245, r246
+  Const        r248, "company_id"
+  Index        r249, r152, r248
+  Equal        r250, r247, r249
+  JumpIfFalse  r250, L8
+  // join ct in company_type on ct.id == mc.company_type_id
+  IterPrep     r251, r2
+  Len          r252, r251
+  Const        r253, "id"
+  Const        r254, "company_type_id"
+  // where cn.country_code == "[us]" &&
+  Const        r255, "country_code"
+  // it1.info == "release dates" &&
+  Const        r256, "info"
+  // mc.note.contains("200") &&
+  Const        r257, "note"
+  Const        r258, "contains"
+  // mc.note.contains("worldwide") &&
+  Const        r259, "note"
+  Const        r260, "contains"
+  // mi.note.contains("internet") &&
+  Const        r261, "note"
+  Const        r262, "contains"
+  // mi.info.contains("USA:") &&
+  Const        r263, "info"
+  Const        r264, "contains"
+  // mi.info.contains("200") &&
+  Const        r265, "info"
+  Const        r266, "contains"
+  // t.production_year > 2000
+  Const        r267, "production_year"
+  // select { release_date: mi.info, internet_movie: t.title }
+  Const        r268, "release_date"
+  Const        r269, "info"
+  Const        r270, "internet_movie"
+  Const        r271, "title"
+  // join ct in company_type on ct.id == mc.company_type_id
+  Const        r272, 0
+L17:
+  LessInt      r274, r272, r252
+  JumpIfFalse  r274, L8
+  Index        r276, r251, r272
+  Const        r277, "id"
+  Index        r278, r276, r277
+  Const        r279, "company_type_id"
+  Index        r280, r152, r279
+  Equal        r281, r278, r280
+  JumpIfFalse  r281, L9
+  // where cn.country_code == "[us]" &&
+  Const        r282, "country_code"
+  Index        r283, r245, r282
+  // t.production_year > 2000
+  Const        r284, "production_year"
+  Index        r285, r33, r284
+  Const        r286, 2000
+  Less         r287, r286, r285
+  // where cn.country_code == "[us]" &&
+  Const        r288, "[us]"
+  Equal        r289, r283, r288
+  // it1.info == "release dates" &&
+  Const        r290, "info"
+  Index        r291, r214, r290
+  Const        r292, "release dates"
+  Equal        r293, r291, r292
+  // where cn.country_code == "[us]" &&
+  Move         r294, r289
+  JumpIfFalse  r294, L10
+L10:
+  // it1.info == "release dates" &&
+  Move         r295, r293
+  JumpIfFalse  r295, L11
+  Const        r296, "note"
+  Index        r297, r152, r296
+  // mc.note.contains("200") &&
+  Const        r298, "200"
+  In           r300, r298, r297
+L11:
+  JumpIfFalse  r300, L12
+  Const        r301, "note"
+  Index        r302, r152, r301
+  // mc.note.contains("worldwide") &&
+  Const        r303, "worldwide"
+  In           r305, r303, r302
+L12:
+  JumpIfFalse  r305, L13
+  Const        r306, "note"
+  Index        r307, r90, r306
+  // mi.note.contains("internet") &&
+  Const        r308, "internet"
+  In           r310, r308, r307
+L13:
+  JumpIfFalse  r310, L14
+  Const        r311, "info"
+  Index        r312, r90, r311
+  // mi.info.contains("USA:") &&
+  Const        r313, "USA:"
+  In           r315, r313, r312
+L14:
+  JumpIfFalse  r315, L15
+  Const        r316, "info"
+  Index        r317, r90, r316
+  // mi.info.contains("200") &&
+  Const        r318, "200"
+  In           r320, r318, r317
+L15:
+  JumpIfFalse  r320, L16
+  Move         r320, r287
+L16:
+  // where cn.country_code == "[us]" &&
+  JumpIfFalse  r320, L9
+  // select { release_date: mi.info, internet_movie: t.title }
+  Const        r321, "release_date"
+  Const        r322, "info"
+  Index        r323, r90, r322
+  Const        r324, "internet_movie"
+  Const        r325, "title"
+  Index        r326, r33, r325
+  Move         r327, r321
+  Move         r328, r323
+  Move         r329, r324
+  Move         r330, r326
+  MakeMap      r331, 2, r327
+  // from t in title
+  Append       r9, r9, r331
+L9:
+  // join ct in company_type on ct.id == mc.company_type_id
+  Const        r333, 1
+  Add          r272, r272, r333
+  Jump         L17
+L8:
+  // join cn in company_name on cn.id == mc.company_id
+  Const        r334, 1
+  Add          r241, r241, r334
+  Jump         L18
+L7:
+  // join it1 in info_type on it1.id == mi.info_type_id
+  Const        r335, 1
+  Add          r210, r210, r335
+  Jump         L19
+L6:
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r336, 1
+  Add          r179, r179, r336
+  Jump         L20
+L5:
+  // join mc in movie_companies on mc.movie_id == t.id
+  Const        r337, 1
+  Add          r148, r148, r337
+  Jump         L21
+L4:
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r338, 1
+  Add          r117, r117, r338
+  Jump         L22
+L3:
+  // join mi in movie_info on mi.movie_id == t.id
+  Const        r339, 1
+  Add          r86, r86, r339
+  Jump         L23
+L2:
+  // join at in aka_title on at.movie_id == t.id
+  Const        r340, 1
+  Add          r55, r55, r340
+  Jump         L24
+L1:
+  // from t in title
+  Const        r341, 1
+  AddInt       r29, r29, r341
+  Jump         L25
+L0:
   // release_date: min(from r in rows select r.release_date),
-  Move         r34, r27
-  Move         r35, r8
+  Const        r342, "release_date"
+  Const        r343, []
+  Const        r344, "release_date"
+  IterPrep     r345, r9
+  Len          r346, r345
+  Const        r347, 0
+L27:
+  LessInt      r349, r347, r346
+  JumpIfFalse  r349, L26
+  Index        r351, r345, r347
+  Const        r352, "release_date"
+  Index        r353, r351, r352
+  Append       r343, r343, r353
+  Const        r355, 1
+  AddInt       r347, r347, r355
+  Jump         L27
+L26:
+  Min          r356, r343
   // internet_movie: min(from r in rows select r.internet_movie)
-  Move         r36, r10
-  Move         r37, r4
+  Const        r357, "internet_movie"
+  Const        r358, []
+  Const        r359, "internet_movie"
+  IterPrep     r360, r9
+  Len          r361, r360
+  Const        r362, 0
+L29:
+  LessInt      r364, r362, r361
+  JumpIfFalse  r364, L28
+  Index        r351, r360, r362
+  Const        r366, "internet_movie"
+  Index        r367, r351, r366
+  Append       r358, r358, r367
+  Const        r369, 1
+  AddInt       r362, r362, r369
+  Jump         L29
+L28:
+  Min          r370, r358
+  // release_date: min(from r in rows select r.release_date),
+  Move         r371, r342
+  Move         r372, r356
+  // internet_movie: min(from r in rows select r.internet_movie)
+  Move         r373, r357
+  Move         r374, r370
   // {
-  MakeMap      r23, 2, r34
+  MakeMap      r376, 2, r371
   // let result = [
-  MakeList     r12, 1, r23
+  MakeList     r377, 1, r376
   // json(result)
-  JSON         r12
+  JSON         r377
   // expect result == [
-  Const        r28, [{"internet_movie": "Example Movie", "release_date": "USA: March 2005"}]
-  Equal        r3, r12, r28
-  Expect       r3
+  Const        r378, [{"internet_movie": "Example Movie", "release_date": "USA: March 2005"}]
+  Equal        r379, r377, r378
+  Expect       r379
   Return       r0

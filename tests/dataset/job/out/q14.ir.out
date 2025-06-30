@@ -1,4 +1,4 @@
-func main (regs=42)
+func main (regs=245)
   // let info_type = [
   Const        r0, [{"id": 1, "info": "countries"}, {"id": 2, "info": "rating"}]
   // let keyword = [
@@ -7,385 +7,398 @@ func main (regs=42)
   Const        r2, [{"id": 1, "kind": "movie"}]
   // let title = [
   Const        r3, [{"id": 1, "kind_id": 1, "production_year": 2012, "title": "A Dark Movie"}, {"id": 2, "kind_id": 1, "production_year": 2013, "title": "Brutal Blood"}, {"id": 3, "kind_id": 1, "production_year": 2008, "title": "Old Film"}]
-L12:
   // let movie_info = [
   Const        r4, [{"info": "Sweden", "info_type_id": 1, "movie_id": 1}, {"info": "USA", "info_type_id": 1, "movie_id": 2}, {"info": "USA", "info_type_id": 1, "movie_id": 3}]
-L15:
   // let movie_info_idx = [
   Const        r5, [{"info": 7, "info_type_id": 2, "movie_id": 1}, {"info": 7.5, "info_type_id": 2, "movie_id": 2}, {"info": 9.1, "info_type_id": 2, "movie_id": 3}]
-L20:
   // let movie_keyword = [
   Const        r6, [{"keyword_id": 1, "movie_id": 1}, {"keyword_id": 2, "movie_id": 2}, {"keyword_id": 3, "movie_id": 3}]
-L4:
   // let allowed_keywords = ["murder", "murder-in-title", "blood", "violence"]
   Const        r7, ["murder", "murder-in-title", "blood", "violence"]
-L13:
   // let allowed_countries = [
   Const        r8, ["Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German", "USA", "American"]
   // from it1 in info_type
   Const        r9, []
   // it1.info == "countries" &&
   Const        r10, "info"
-L1:
   // it2.info == "rating" &&
   Const        r11, "info"
-L19:
   // (k.keyword in allowed_keywords) &&
   Const        r12, "keyword"
   // kt.kind == "movie" &&
   Const        r13, "kind"
-L10:
   // (mi.info in allowed_countries) &&
   Const        r14, "info"
-L0:
   // mi_idx.info < 8.5 &&
   Const        r15, "info"
-L18:
   // t.production_year > 2010 &&
   Const        r16, "production_year"
-L9:
   // kt.id == t.kind_id &&
   Const        r17, "id"
   Const        r18, "kind_id"
   // t.id == mi.movie_id &&
   Const        r19, "id"
-L17:
   Const        r20, "movie_id"
-L5:
   // t.id == mk.movie_id &&
   Const        r21, "id"
-  Const        r10, "movie_id"
+  Const        r22, "movie_id"
   // t.id == mi_idx.movie_id &&
-  Const        r11, "id"
-  Const        r12, "movie_id"
-L11:
-  // mk.movie_id == mi.movie_id &&
-  Const        r13, "movie_id"
-L6:
-  Const        r14, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r15, "movie_id"
-L2:
-  Const        r16, "movie_id"
-L3:
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r17, "movie_id"
-  Const        r18, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r19, "id"
-L16:
-  Const        r20, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r21, "id"
-  Const        r10, "info_type_id"
-L7:
-  // it2.id == mi_idx.info_type_id
-  Const        r11, "id"
-  Const        r12, "info_type_id"
-L8:
-  // rating: mi_idx.info,
-  Const        r13, "rating"
-  Const        r14, "info"
-L14:
-  // title: t.title
-  Const        r15, "title"
-  Const        r16, "title"
-  // from it1 in info_type
-  IterPrep     r17, r0
-  Len          r18, r17
-  Const        r19, 0
-  LessInt      r20, r19, r18
-  JumpIfFalse  r20, L0
-  Index        r21, r17, r19
-  // from it2 in info_type
-  IterPrep     r10, r0
-  Len          r11, r10
-  Const        r12, 0
-  LessInt      r13, r12, r11
-  JumpIfFalse  r13, L1
-  Index        r14, r10, r12
-  // from k in keyword
-  IterPrep     r15, r1
-  Len          r16, r15
-  Const        r18, 0
-  LessInt      r20, r18, r16
-  JumpIfFalse  r20, L2
-  Index        r17, r15, r18
-  // from kt in kind_type
-  IterPrep     r11, r2
-  Len          r13, r11
-  Const        r10, 0
-  LessInt      r1, r10, r13
-  JumpIfFalse  r1, L3
-  Index        r20, r11, r10
-  // from mi in movie_info
-  IterPrep     r15, r4
-  Len          r2, r15
-  Const        r13, 0
-  LessInt      r1, r13, r2
-  JumpIfFalse  r1, L4
-  Index        r4, r15, r13
-  // from mi_idx in movie_info_idx
-  IterPrep     r2, r5
-  Len          r1, r2
-  Const        r15, 0
-  LessInt      r5, r15, r1
-  JumpIfFalse  r5, L5
-  Index        r1, r2, r15
-  // from mk in movie_keyword
-  IterPrep     r2, r6
-  Len          r6, r2
-  Const        r22, 0
-  LessInt      r23, r22, r6
-  JumpIfFalse  r23, L5
-  Index        r6, r2, r22
-  // from t in title
-  IterPrep     r23, r3
-  Len          r2, r23
-  Const        r3, 0
-  LessInt      r24, r3, r2
-  JumpIfFalse  r24, L6
-  Index        r2, r23, r3
-  // it1.info == "countries" &&
-  Const        r24, "info"
-  Index        r23, r21, r24
-  // mi_idx.info < 8.5 &&
-  Const        r24, "info"
-  Index        r25, r1, r24
-  Const        r24, 8.5
-  LessFloat    r26, r25, r24
-  // t.production_year > 2010 &&
-  Const        r25, "production_year"
-  Index        r24, r2, r25
-  Const        r25, 2010
-  Less         r27, r25, r24
-  // it1.info == "countries" &&
-  Const        r24, "countries"
-  Equal        r25, r23, r24
-  // it2.info == "rating" &&
-  Const        r23, "info"
-  Index        r24, r14, r23
-  Const        r23, "rating"
-  Equal        r28, r24, r23
-  // kt.kind == "movie" &&
-  Const        r24, "kind"
-  Index        r23, r20, r24
-  Const        r24, "movie"
-  Equal        r29, r23, r24
-  // kt.id == t.kind_id &&
   Const        r23, "id"
-  Index        r24, r20, r23
-  Const        r23, "kind_id"
-  Index        r30, r2, r23
-  Equal        r23, r24, r30
-  // t.id == mi.movie_id &&
-  Const        r24, "id"
-  Index        r30, r2, r24
   Const        r24, "movie_id"
-  Index        r31, r4, r24
-  Equal        r24, r30, r31
-  // t.id == mk.movie_id &&
-  Const        r30, "id"
-  Index        r31, r2, r30
+  // mk.movie_id == mi.movie_id &&
+  Const        r25, "movie_id"
+  Const        r26, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r27, "movie_id"
+  Const        r28, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r29, "movie_id"
   Const        r30, "movie_id"
-  Index        r32, r6, r30
-  Equal        r30, r31, r32
-  // t.id == mi_idx.movie_id &&
+  // k.id == mk.keyword_id &&
   Const        r31, "id"
-  Index        r32, r2, r31
-  Const        r31, "movie_id"
-  Index        r33, r1, r31
-  Equal        r31, r32, r33
-  // mk.movie_id == mi.movie_id &&
-  Const        r32, "movie_id"
-  Index        r33, r6, r32
-  Const        r32, "movie_id"
-  Index        r34, r4, r32
-  Equal        r32, r33, r34
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r33, "movie_id"
-  Index        r34, r6, r33
-  Const        r33, "movie_id"
-  Index        r35, r1, r33
-  Equal        r33, r34, r35
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r34, "movie_id"
-  Index        r35, r4, r34
-  Const        r34, "movie_id"
-  Index        r36, r1, r34
-  Equal        r34, r35, r36
-  // k.id == mk.keyword_id &&
-  Const        r35, "id"
-  Index        r36, r17, r35
-  Const        r35, "keyword_id"
-  Index        r37, r6, r35
-  Equal        r6, r36, r37
+  Const        r32, "keyword_id"
   // it1.id == mi.info_type_id &&
-  Const        r35, "id"
-  Index        r36, r21, r35
-  Const        r37, "info_type_id"
-  Index        r21, r4, r37
-  Equal        r35, r36, r21
+  Const        r33, "id"
+  Const        r34, "info_type_id"
   // it2.id == mi_idx.info_type_id
-  Const        r37, "id"
-  Index        r36, r14, r37
-  Const        r21, "info_type_id"
-  Index        r14, r1, r21
-  Equal        r37, r36, r14
-  // it1.info == "countries" &&
-  Move         r21, r25
-  JumpIfFalse  r21, L7
-  // it2.info == "rating" &&
-  Move         r36, r28
-  JumpIfFalse  r36, L8
-  // (k.keyword in allowed_keywords) &&
-  Const        r14, "keyword"
-  Index        r25, r17, r14
-  In           r21, r25, r7
-  JumpIfFalse  r21, L5
-  // kt.kind == "movie" &&
-  Move         r28, r29
-  JumpIfFalse  r28, L5
-  // (mi.info in allowed_countries) &&
-  Const        r36, "info"
-  Index        r17, r4, r36
-  In           r14, r17, r8
-  JumpIfFalse  r14, L2
-  // mi_idx.info < 8.5 &&
-  Move         r7, r26
-  JumpIfFalse  r7, L9
-  // t.production_year > 2010 &&
-  Move         r25, r27
-  JumpIfFalse  r25, L10
-  // kt.id == t.kind_id &&
-  Move         r21, r23
-  JumpIfFalse  r21, L11
-  // t.id == mi.movie_id &&
-  Move         r29, r24
-  JumpIfFalse  r29, L3
-  // t.id == mk.movie_id &&
-  Move         r28, r30
-  JumpIfFalse  r28, L12
-  // t.id == mi_idx.movie_id &&
-  Move         r4, r31
-  JumpIfFalse  r4, L13
-  // mk.movie_id == mi.movie_id &&
-  Move         r36, r32
-  JumpIfFalse  r36, L10
-  // mk.movie_id == mi_idx.movie_id &&
-  Move         r8, r33
-  JumpIfFalse  r8, L4
-  // mi.movie_id == mi_idx.movie_id &&
-  Move         r17, r34
-  JumpIfFalse  r17, L11
-  // k.id == mk.keyword_id &&
-  Move         r14, r6
-  JumpIfFalse  r14, L5
-  // it1.id == mi.info_type_id &&
-  Move         r26, r35
-  JumpIfFalse  r26, L14
-  Move         r26, r37
-  // where (
-  JumpIfFalse  r26, L10
+  Const        r35, "id"
+  Const        r36, "info_type_id"
   // rating: mi_idx.info,
-  Const        r7, "rating"
-  Const        r27, "info"
-  Index        r25, r1, r27
-  // title: t.title
-  Const        r23, "title"
-  Const        r21, "title"
-  Index        r24, r2, r21
-  // rating: mi_idx.info,
-  Move         r38, r7
-  Move         r39, r25
-  // title: t.title
-  Move         r40, r23
-  Move         r41, r24
-  // select {
-  MakeMap      r29, 2, r38
-  // from it1 in info_type
-  Append       r9, r9, r29
-  // from t in title
-  Const        r30, 1
-  AddInt       r3, r3, r30
-  Jump         L2
-  // from mk in movie_keyword
-  Const        r31, 1
-  AddInt       r22, r22, r31
-  Jump         L15
-  // from mi_idx in movie_info_idx
-  Const        r4, 1
-  AddInt       r15, r15, r4
-  Jump         L16
-  // from mi in movie_info
-  Const        r36, 1
-  AddInt       r13, r13, r36
-  Jump         L17
-  // from kt in kind_type
-  Const        r33, 1
-  AddInt       r10, r10, r33
-  Jump         L1
-  // from k in keyword
-  Const        r8, 1
-  AddInt       r18, r18, r8
-  Jump         L18
-  // from it2 in info_type
-  Const        r34, 1
-  AddInt       r12, r12, r34
-  Jump         L19
-  // from it1 in info_type
-  Const        r17, 1
-  AddInt       r19, r19, r17
-  Jump         L20
-  // rating: min(from x in matches select x.rating),
-  Const        r14, "rating"
-  Const        r35, []
   Const        r37, "rating"
-  IterPrep     r26, r9
-  Len          r1, r26
-  Const        r27, 0
-  LessInt      r2, r27, r1
-  JumpIfFalse  r2, L21
-  Index        r21, r26, r27
-  Const        r7, "rating"
-  Index        r25, r21, r7
-  Append       r35, r35, r25
-  Const        r23, 1
-  AddInt       r27, r27, r23
-  Jump         L14
+  Const        r38, "info"
+  // title: t.title
+  Const        r39, "title"
+  Const        r40, "title"
+  // from it1 in info_type
+  IterPrep     r41, r0
+  Len          r42, r41
+  Const        r43, 0
+L32:
+  LessInt      r45, r43, r42
+  JumpIfFalse  r45, L0
+  Index        r47, r41, r43
+  // from it2 in info_type
+  IterPrep     r48, r0
+  Len          r49, r48
+  Const        r50, 0
+L31:
+  LessInt      r52, r50, r49
+  JumpIfFalse  r52, L1
+  Index        r54, r48, r50
+  // from k in keyword
+  IterPrep     r55, r1
+  Len          r56, r55
+  Const        r57, 0
+L30:
+  LessInt      r59, r57, r56
+  JumpIfFalse  r59, L2
+  Index        r61, r55, r57
+  // from kt in kind_type
+  IterPrep     r62, r2
+  Len          r63, r62
+  Const        r64, 0
+L29:
+  LessInt      r66, r64, r63
+  JumpIfFalse  r66, L3
+  Index        r68, r62, r64
+  // from mi in movie_info
+  IterPrep     r69, r4
+  Len          r70, r69
+  Const        r71, 0
+L28:
+  LessInt      r73, r71, r70
+  JumpIfFalse  r73, L4
+  Index        r75, r69, r71
+  // from mi_idx in movie_info_idx
+  IterPrep     r76, r5
+  Len          r77, r76
+  Const        r78, 0
+L27:
+  LessInt      r80, r78, r77
+  JumpIfFalse  r80, L5
+  Index        r82, r76, r78
+  // from mk in movie_keyword
+  IterPrep     r83, r6
+  Len          r84, r83
+  Const        r85, 0
+L26:
+  LessInt      r87, r85, r84
+  JumpIfFalse  r87, L6
+  Index        r89, r83, r85
+  // from t in title
+  IterPrep     r90, r3
+  Len          r91, r90
+  Const        r92, 0
+L25:
+  LessInt      r94, r92, r91
+  JumpIfFalse  r94, L7
+  Index        r96, r90, r92
+  // it1.info == "countries" &&
+  Const        r97, "info"
+  Index        r98, r47, r97
+  // mi_idx.info < 8.5 &&
+  Const        r99, "info"
+  Index        r100, r82, r99
+  Const        r101, 8.5
+  LessFloat    r102, r100, r101
+  // t.production_year > 2010 &&
+  Const        r103, "production_year"
+  Index        r104, r96, r103
+  Const        r105, 2010
+  Less         r106, r105, r104
+  // it1.info == "countries" &&
+  Const        r107, "countries"
+  Equal        r108, r98, r107
+  // it2.info == "rating" &&
+  Const        r109, "info"
+  Index        r110, r54, r109
+  Const        r111, "rating"
+  Equal        r112, r110, r111
+  // kt.kind == "movie" &&
+  Const        r113, "kind"
+  Index        r114, r68, r113
+  Const        r115, "movie"
+  Equal        r116, r114, r115
+  // kt.id == t.kind_id &&
+  Const        r117, "id"
+  Index        r118, r68, r117
+  Const        r119, "kind_id"
+  Index        r120, r96, r119
+  Equal        r121, r118, r120
+  // t.id == mi.movie_id &&
+  Const        r122, "id"
+  Index        r123, r96, r122
+  Const        r124, "movie_id"
+  Index        r125, r75, r124
+  Equal        r126, r123, r125
+  // t.id == mk.movie_id &&
+  Const        r127, "id"
+  Index        r128, r96, r127
+  Const        r129, "movie_id"
+  Index        r130, r89, r129
+  Equal        r131, r128, r130
+  // t.id == mi_idx.movie_id &&
+  Const        r132, "id"
+  Index        r133, r96, r132
+  Const        r134, "movie_id"
+  Index        r135, r82, r134
+  Equal        r136, r133, r135
+  // mk.movie_id == mi.movie_id &&
+  Const        r137, "movie_id"
+  Index        r138, r89, r137
+  Const        r139, "movie_id"
+  Index        r140, r75, r139
+  Equal        r141, r138, r140
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r142, "movie_id"
+  Index        r143, r89, r142
+  Const        r144, "movie_id"
+  Index        r145, r82, r144
+  Equal        r146, r143, r145
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r147, "movie_id"
+  Index        r148, r75, r147
+  Const        r149, "movie_id"
+  Index        r150, r82, r149
+  Equal        r151, r148, r150
+  // k.id == mk.keyword_id &&
+  Const        r152, "id"
+  Index        r153, r61, r152
+  Const        r154, "keyword_id"
+  Index        r155, r89, r154
+  Equal        r156, r153, r155
+  // it1.id == mi.info_type_id &&
+  Const        r157, "id"
+  Index        r158, r47, r157
+  Const        r159, "info_type_id"
+  Index        r160, r75, r159
+  Equal        r161, r158, r160
+  // it2.id == mi_idx.info_type_id
+  Const        r162, "id"
+  Index        r163, r54, r162
+  Const        r164, "info_type_id"
+  Index        r165, r82, r164
+  Equal        r166, r163, r165
+  // it1.info == "countries" &&
+  Move         r167, r108
+  JumpIfFalse  r167, L8
+L8:
+  // it2.info == "rating" &&
+  Move         r168, r112
+  JumpIfFalse  r168, L9
+  // (k.keyword in allowed_keywords) &&
+  Const        r169, "keyword"
+  Index        r170, r61, r169
+  In           r172, r170, r7
+L9:
+  JumpIfFalse  r172, L10
+L10:
+  // kt.kind == "movie" &&
+  Move         r173, r116
+  JumpIfFalse  r173, L11
+  // (mi.info in allowed_countries) &&
+  Const        r174, "info"
+  Index        r175, r75, r174
+  In           r177, r175, r8
+L11:
+  JumpIfFalse  r177, L12
+L12:
+  // mi_idx.info < 8.5 &&
+  Move         r178, r102
+  JumpIfFalse  r178, L13
+L13:
+  // t.production_year > 2010 &&
+  Move         r179, r106
+  JumpIfFalse  r179, L14
+L14:
+  // kt.id == t.kind_id &&
+  Move         r180, r121
+  JumpIfFalse  r180, L15
+L15:
+  // t.id == mi.movie_id &&
+  Move         r181, r126
+  JumpIfFalse  r181, L16
+L16:
+  // t.id == mk.movie_id &&
+  Move         r182, r131
+  JumpIfFalse  r182, L17
+L17:
+  // t.id == mi_idx.movie_id &&
+  Move         r183, r136
+  JumpIfFalse  r183, L18
+L18:
+  // mk.movie_id == mi.movie_id &&
+  Move         r184, r141
+  JumpIfFalse  r184, L19
+L19:
+  // mk.movie_id == mi_idx.movie_id &&
+  Move         r185, r146
+  JumpIfFalse  r185, L20
+L20:
+  // mi.movie_id == mi_idx.movie_id &&
+  Move         r186, r151
+  JumpIfFalse  r186, L21
 L21:
-  Min          r24, r35
-  // northern_dark_movie: min(from x in matches select x.title)
-  Const        r29, "northern_dark_movie"
-  Const        r3, []
-  Const        r30, "title"
-  IterPrep     r28, r9
-  Len          r5, r28
-  Const        r22, 0
-L23:
-  LessInt      r31, r22, r5
-  JumpIfFalse  r31, L22
-  Index        r21, r28, r22
-  Const        r15, "title"
-  Index        r4, r21, r15
-  Append       r3, r3, r4
-  Const        r32, 1
-  AddInt       r22, r22, r32
-  Jump         L23
+  // k.id == mk.keyword_id &&
+  Move         r187, r156
+  JumpIfFalse  r187, L22
 L22:
-  Min          r20, r3
+  // it1.id == mi.info_type_id &&
+  Move         r188, r161
+  JumpIfFalse  r188, L23
+  Move         r188, r166
+L23:
+  // where (
+  JumpIfFalse  r188, L24
+  // rating: mi_idx.info,
+  Const        r189, "rating"
+  Const        r190, "info"
+  Index        r191, r82, r190
+  // title: t.title
+  Const        r192, "title"
+  Const        r193, "title"
+  Index        r194, r96, r193
+  // rating: mi_idx.info,
+  Move         r195, r189
+  Move         r196, r191
+  // title: t.title
+  Move         r197, r192
+  Move         r198, r194
+  // select {
+  MakeMap      r199, 2, r195
+  // from it1 in info_type
+  Append       r9, r9, r199
+L24:
+  // from t in title
+  Const        r201, 1
+  AddInt       r92, r92, r201
+  Jump         L25
+L7:
+  // from mk in movie_keyword
+  Const        r202, 1
+  AddInt       r85, r85, r202
+  Jump         L26
+L6:
+  // from mi_idx in movie_info_idx
+  Const        r203, 1
+  AddInt       r78, r78, r203
+  Jump         L27
+L5:
+  // from mi in movie_info
+  Const        r204, 1
+  AddInt       r71, r71, r204
+  Jump         L28
+L4:
+  // from kt in kind_type
+  Const        r205, 1
+  AddInt       r64, r64, r205
+  Jump         L29
+L3:
+  // from k in keyword
+  Const        r206, 1
+  AddInt       r57, r57, r206
+  Jump         L30
+L2:
+  // from it2 in info_type
+  Const        r207, 1
+  AddInt       r50, r50, r207
+  Jump         L31
+L1:
+  // from it1 in info_type
+  Const        r208, 1
+  AddInt       r43, r43, r208
+  Jump         L32
+L0:
   // rating: min(from x in matches select x.rating),
-  Move         r38, r14
-  Move         r39, r24
+  Const        r209, "rating"
+  Const        r210, []
+  Const        r211, "rating"
+  IterPrep     r212, r9
+  Len          r213, r212
+  Const        r214, 0
+L34:
+  LessInt      r216, r214, r213
+  JumpIfFalse  r216, L33
+  Index        r218, r212, r214
+  Const        r219, "rating"
+  Index        r220, r218, r219
+  Append       r210, r210, r220
+  Const        r222, 1
+  AddInt       r214, r214, r222
+  Jump         L34
+L33:
+  Min          r223, r210
   // northern_dark_movie: min(from x in matches select x.title)
-  Move         r40, r29
-  Move         r41, r20
+  Const        r224, "northern_dark_movie"
+  Const        r225, []
+  Const        r226, "title"
+  IterPrep     r227, r9
+  Len          r228, r227
+  Const        r229, 0
+L36:
+  LessInt      r231, r229, r228
+  JumpIfFalse  r231, L35
+  Index        r218, r227, r229
+  Const        r233, "title"
+  Index        r234, r218, r233
+  Append       r225, r225, r234
+  Const        r236, 1
+  AddInt       r229, r229, r236
+  Jump         L36
+L35:
+  Min          r237, r225
+  // rating: min(from x in matches select x.rating),
+  Move         r238, r209
+  Move         r239, r223
+  // northern_dark_movie: min(from x in matches select x.title)
+  Move         r240, r224
+  Move         r241, r237
   // let result = {
-  MakeMap      r13, 2, r38
+  MakeMap      r242, 2, r238
   // json(result)
-  JSON         r13
+  JSON         r242
   // expect result == { rating: 7.0, northern_dark_movie: "A Dark Movie" }
-  Const        r36, {"northern_dark_movie": "A Dark Movie", "rating": 7}
-  Equal        r11, r13, r36
-  Expect       r11
+  Const        r243, {"northern_dark_movie": "A Dark Movie", "rating": 7}
+  Equal        r244, r242, r243
+  Expect       r244
   Return       r0
