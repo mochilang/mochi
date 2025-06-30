@@ -2,7 +2,6 @@ package sql
 
 import (
 	"database/sql"
-	_ "github.com/marcboeker/go-duckdb"
 )
 
 // DB wraps *sql.DB for Mochi runtime use.
