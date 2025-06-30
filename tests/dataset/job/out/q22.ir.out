@@ -1,23 +1,18 @@
-func main (regs=56)
+func main (regs=1049)
   // let company_name = [
   Const        r0, [{"country_code": "[de]", "id": 1, "name": "Euro Films"}, {"country_code": "[us]", "id": 2, "name": "US Films"}]
-L4:
   // let company_type = [
   Const        r1, [{"id": 1, "kind": "production"}]
-L7:
   // let info_type = [
   Const        r2, [{"id": 10, "info": "countries"}, {"id": 20, "info": "rating"}]
-L1:
   // let keyword = [
   Const        r3, [{"id": 1, "keyword": "murder"}, {"id": 2, "keyword": "comedy"}]
   // let kind_type = [
   Const        r4, [{"id": 100, "kind": "movie"}, {"id": 200, "kind": "episode"}]
-L5:
   // let movie_companies = [
   Const        r5, [{"company_id": 1, "company_type_id": 1, "movie_id": 10, "note": "release (2009) (worldwide)"}, {"company_id": 2, "company_type_id": 1, "movie_id": 20, "note": "release (2007) (USA)"}]
   // let movie_info = [
   Const        r6, [{"info": "Germany", "info_type_id": 10, "movie_id": 10}, {"info": "USA", "info_type_id": 10, "movie_id": 20}]
-L14:
   // let movie_info_idx = [
   Const        r7, [{"info": 6.5, "info_type_id": 20, "movie_id": 10}, {"info": 7.8, "info_type_id": 20, "movie_id": 20}]
   // let movie_keyword = [
@@ -26,1528 +21,1550 @@ L14:
   Const        r9, [{"id": 10, "kind_id": 100, "production_year": 2009, "title": "Violent Western"}, {"id": 20, "kind_id": 100, "production_year": 2007, "title": "Old Western"}]
   // from cn in company_name
   Const        r10, []
-L33:
   // cn.country_code != "[us]" &&
   Const        r11, "country_code"
   // it1.info == "countries" &&
   Const        r12, "info"
-L18:
   // it2.info == "rating" &&
   Const        r13, "info"
-L28:
   // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
   Const        r14, "keyword"
-L12:
   Const        r15, "keyword"
-L27:
   Const        r16, "keyword"
-L19:
   Const        r17, "keyword"
-L16:
   // (kt.kind == "movie" || kt.kind == "episode") &&
   Const        r18, "kind"
   Const        r19, "kind"
-L31:
   // mc.note.contains("(USA)") == false &&
   Const        r20, "note"
-L20:
   Const        r21, "contains"
-L11:
   // mc.note.contains("(200") &&
   Const        r22, "note"
-L17:
   Const        r23, "contains"
-L32:
   // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
   Const        r24, "info"
-L29:
   Const        r25, "info"
   Const        r26, "info"
-L15:
   Const        r27, "info"
   // mi_idx.info < 7.0 &&
   Const        r28, "info"
-L26:
   // t.production_year > 2008 &&
   Const        r29, "production_year"
-L30:
   // kt.id == t.kind_id &&
   Const        r30, "id"
   Const        r31, "kind_id"
-L6:
   // t.id == mi.movie_id &&
   Const        r32, "id"
-  Const        r11, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r12, "id"
-  Const        r13, "movie_id"
-L8:
-  // t.id == mi_idx.movie_id &&
-  Const        r14, "id"
-L22:
-  Const        r15, "movie_id"
-L23:
-  // t.id == mc.movie_id &&
-  Const        r16, "id"
-L24:
-  Const        r17, "movie_id"
-L25:
-  // mk.movie_id == mi.movie_id &&
-  Const        r18, "movie_id"
-L34:
-  Const        r19, "movie_id"
-L13:
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r20, "movie_id"
-  Const        r21, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r22, "movie_id"
-L10:
-  Const        r23, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r24, "movie_id"
-L9:
-  Const        r25, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r26, "movie_id"
-L21:
-  Const        r27, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r28, "movie_id"
-  Const        r29, "movie_id"
-L3:
-  // k.id == mk.keyword_id &&
-  Const        r30, "id"
-  Const        r31, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r32, "id"
-L2:
-  Const        r11, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r12, "id"
-  Const        r13, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r14, "id"
-  Const        r15, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r16, "id"
-  Const        r17, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r18, "company"
-  Const        r19, "name"
-  Const        r20, "rating"
-  Const        r21, "info"
-  Const        r22, "title"
-  Const        r23, "title"
-  // from cn in company_name
-  IterPrep     r24, r0
-  Len          r25, r24
-  Const        r26, 0
-  LessInt      r27, r26, r25
-  JumpIfFalse  r27, L0
-  Index        r28, r24, r26
-  // join mc in movie_companies on cn.id == mc.company_id
-  IterPrep     r29, r5
-  Len          r30, r29
-  Const        r31, "id"
-  Const        r32, "company_id"
-  // cn.country_code != "[us]" &&
-  Const        r11, "country_code"
-  // it1.info == "countries" &&
-  Const        r12, "info"
-  // it2.info == "rating" &&
-  Const        r13, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r14, "keyword"
-  Const        r15, "keyword"
-  Const        r16, "keyword"
-  Const        r17, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r18, "kind"
-  Const        r19, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r20, "note"
-  Const        r21, "contains"
-  // mc.note.contains("(200") &&
-  Const        r22, "note"
-  Const        r23, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r25, "info"
-  Const        r27, "info"
-  Const        r24, "info"
-  Const        r5, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r31, "info"
-  // t.production_year > 2008 &&
-  Const        r32, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r11, "id"
-  Const        r12, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r13, "id"
-  Const        r14, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r15, "id"
-  Const        r16, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r17, "id"
-  Const        r18, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r19, "id"
-  Const        r20, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r21, "movie_id"
-  Const        r22, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r23, "movie_id"
-  Const        r25, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r27, "movie_id"
-  Const        r24, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r5, "movie_id"
-  Const        r31, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r32, "movie_id"
-  Const        r11, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r12, "movie_id"
-  Const        r13, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r14, "id"
-  Const        r15, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r16, "id"
-  Const        r17, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r18, "id"
-  Const        r19, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r20, "id"
-  Const        r21, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r22, "id"
-  Const        r23, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r25, "company"
-  Const        r27, "name"
-  Const        r24, "rating"
-  Const        r5, "info"
-  Const        r31, "title"
-  Const        r32, "title"
-  // join mc in movie_companies on cn.id == mc.company_id
-  Const        r11, 0
-  LessInt      r12, r11, r30
-  JumpIfFalse  r12, L1
-  Index        r13, r29, r11
-  Const        r14, "id"
-  Index        r15, r28, r14
-  Const        r16, "company_id"
-  Index        r17, r13, r16
-  Equal        r18, r15, r17
-  JumpIfFalse  r18, L2
-  // join ct in company_type on ct.id == mc.company_type_id
-  IterPrep     r19, r1
-  Len          r20, r19
-  Const        r21, "id"
-  Const        r22, "company_type_id"
-  // cn.country_code != "[us]" &&
-  Const        r23, "country_code"
-  // it1.info == "countries" &&
-  Const        r25, "info"
-  // it2.info == "rating" &&
-  Const        r27, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r24, "keyword"
-  Const        r5, "keyword"
-  Const        r31, "keyword"
-  Const        r32, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r30, "kind"
-  Const        r12, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r29, "note"
-  Const        r14, "contains"
-  // mc.note.contains("(200") &&
-  Const        r16, "note"
-  Const        r15, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r17, "info"
-  Const        r18, "info"
-  Const        r1, "info"
-  Const        r21, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r22, "info"
-  // t.production_year > 2008 &&
-  Const        r23, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r25, "id"
-  Const        r27, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r24, "id"
-  Const        r5, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r31, "id"
-  Const        r32, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r30, "id"
-  Const        r12, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r29, "id"
-  Const        r14, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r16, "movie_id"
-  Const        r15, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r17, "movie_id"
-  Const        r18, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r1, "movie_id"
-  Const        r21, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r22, "movie_id"
-  Const        r23, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r25, "movie_id"
-  Const        r27, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r24, "movie_id"
-  Const        r5, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r31, "id"
-  Const        r32, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r30, "id"
-  Const        r12, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r29, "id"
-  Const        r14, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r16, "id"
-  Const        r15, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r17, "id"
-  Const        r18, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r1, "company"
-  Const        r21, "name"
-  Const        r22, "rating"
-  Const        r23, "info"
-  Const        r25, "title"
-  Const        r27, "title"
-  // join ct in company_type on ct.id == mc.company_type_id
-  Const        r24, 0
-  LessInt      r5, r24, r20
-  JumpIfFalse  r5, L2
-  Index        r31, r19, r24
-  Const        r32, "id"
-  Index        r30, r31, r32
-  Const        r12, "company_type_id"
-  Index        r29, r13, r12
-  Equal        r14, r30, r29
-  JumpIfFalse  r14, L3
-  // join t in title on t.id == mc.movie_id
-  IterPrep     r16, r9
-  Len          r15, r16
-  Const        r17, "id"
-  Const        r18, "movie_id"
-  // cn.country_code != "[us]" &&
-  Const        r1, "country_code"
-  // it1.info == "countries" &&
-  Const        r21, "info"
-  // it2.info == "rating" &&
-  Const        r22, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r23, "keyword"
-  Const        r25, "keyword"
-  Const        r27, "keyword"
-  Const        r20, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r5, "kind"
-  Const        r19, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r32, "note"
-  Const        r12, "contains"
-  // mc.note.contains("(200") &&
-  Const        r30, "note"
-  Const        r29, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r14, "info"
-  Const        r9, "info"
-  Const        r17, "info"
-  Const        r18, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r1, "info"
-  // t.production_year > 2008 &&
-  Const        r21, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r22, "id"
-  Const        r23, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r25, "id"
-  Const        r27, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r20, "id"
-  Const        r5, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r19, "id"
-  Const        r32, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r12, "id"
-  Const        r30, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r29, "movie_id"
-  Const        r14, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r9, "movie_id"
-  Const        r17, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r18, "movie_id"
-  Const        r1, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r21, "movie_id"
-  Const        r22, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r23, "movie_id"
-  Const        r25, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r27, "movie_id"
-  Const        r20, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r5, "id"
-  Const        r19, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r32, "id"
-  Const        r12, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r30, "id"
-  Const        r29, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r14, "id"
-  Const        r9, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r17, "id"
-  Const        r18, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r1, "company"
-  Const        r21, "name"
-  Const        r22, "rating"
-  Const        r23, "info"
-  Const        r25, "title"
-  Const        r27, "title"
-  // join t in title on t.id == mc.movie_id
-  Const        r20, 0
-  LessInt      r5, r20, r15
-  JumpIfFalse  r5, L3
-  Index        r19, r16, r20
-  Const        r32, "id"
-  Index        r12, r19, r32
-  Const        r30, "movie_id"
-  Index        r29, r13, r30
-  Equal        r14, r12, r29
-  JumpIfFalse  r14, L4
-  // join mk in movie_keyword on mk.movie_id == t.id
-  IterPrep     r9, r8
-  Len          r17, r9
-  Const        r18, "movie_id"
-  Const        r1, "id"
-  // cn.country_code != "[us]" &&
-  Const        r21, "country_code"
-  // it1.info == "countries" &&
-  Const        r22, "info"
-  // it2.info == "rating" &&
-  Const        r23, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r25, "keyword"
-  Const        r27, "keyword"
-  Const        r15, "keyword"
-  Const        r5, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r16, "kind"
-  Const        r32, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r30, "note"
-  Const        r12, "contains"
-  // mc.note.contains("(200") &&
-  Const        r29, "note"
-  Const        r14, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r8, "info"
-  Const        r18, "info"
-  Const        r1, "info"
-  Const        r21, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r22, "info"
-  // t.production_year > 2008 &&
-  Const        r23, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r25, "id"
-  Const        r27, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r15, "id"
-  Const        r5, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r16, "id"
-  Const        r32, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r30, "id"
-  Const        r12, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r29, "id"
-  Const        r14, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r8, "movie_id"
-  Const        r18, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r1, "movie_id"
-  Const        r21, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r22, "movie_id"
-  Const        r23, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r25, "movie_id"
-  Const        r27, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r15, "movie_id"
-  Const        r5, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r16, "movie_id"
-  Const        r32, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r30, "id"
-  Const        r12, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r29, "id"
-  Const        r14, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r8, "id"
-  Const        r18, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r1, "id"
-  Const        r21, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r22, "id"
-  Const        r23, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r25, "company"
-  Const        r27, "name"
-  Const        r15, "rating"
-  Const        r5, "info"
-  Const        r16, "title"
-  Const        r32, "title"
-  // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r30, 0
-  LessInt      r12, r30, r17
-  JumpIfFalse  r12, L4
-  Index        r29, r9, r30
-  Const        r14, "movie_id"
-  Index        r8, r29, r14
-  Const        r18, "id"
-  Index        r1, r19, r18
-  Equal        r21, r8, r1
-  JumpIfFalse  r21, L5
-  // join k in keyword on k.id == mk.keyword_id
-  IterPrep     r22, r3
-  Len          r23, r22
-  Const        r25, "id"
-  Const        r27, "keyword_id"
-  // cn.country_code != "[us]" &&
-  Const        r15, "country_code"
-  // it1.info == "countries" &&
-  Const        r5, "info"
-  // it2.info == "rating" &&
-  Const        r16, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r32, "keyword"
-  Const        r17, "keyword"
-  Const        r12, "keyword"
-  Const        r9, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r14, "kind"
-  Const        r18, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r8, "note"
-  Const        r1, "contains"
-  // mc.note.contains("(200") &&
-  Const        r21, "note"
-  Const        r3, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r25, "info"
-  Const        r27, "info"
-  Const        r15, "info"
-  Const        r5, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r16, "info"
-  // t.production_year > 2008 &&
-  Const        r32, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r17, "id"
-  Const        r12, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r9, "id"
-  Const        r14, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r18, "id"
-  Const        r8, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r1, "id"
-  Const        r21, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r3, "id"
-  Const        r25, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r27, "movie_id"
-  Const        r15, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r5, "movie_id"
-  Const        r16, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r32, "movie_id"
-  Const        r17, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r12, "movie_id"
-  Const        r9, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r14, "movie_id"
-  Const        r18, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r8, "movie_id"
-  Const        r1, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r21, "id"
-  Const        r3, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r25, "id"
-  Const        r27, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r15, "id"
-  Const        r5, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r16, "id"
-  Const        r32, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r17, "id"
-  Const        r12, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r9, "company"
-  Const        r14, "name"
-  Const        r18, "rating"
-  Const        r8, "info"
-  Const        r1, "title"
-  Const        r21, "title"
-  // join k in keyword on k.id == mk.keyword_id
-  Const        r3, 0
-  LessInt      r25, r3, r23
-  JumpIfFalse  r25, L5
-  Index        r27, r22, r3
-  Const        r15, "id"
-  Index        r5, r27, r15
-  Const        r16, "keyword_id"
-  Index        r32, r29, r16
-  Equal        r17, r5, r32
-  JumpIfFalse  r17, L6
-  // join mi in movie_info on mi.movie_id == t.id
-  IterPrep     r12, r6
-  Len          r9, r12
-  Const        r14, "movie_id"
-  Const        r18, "id"
-  // cn.country_code != "[us]" &&
-  Const        r8, "country_code"
-  // it1.info == "countries" &&
-  Const        r1, "info"
-  // it2.info == "rating" &&
-  Const        r21, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r23, "keyword"
-  Const        r25, "keyword"
-  Const        r22, "keyword"
-  Const        r15, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r16, "kind"
-  Const        r5, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r32, "note"
-  Const        r17, "contains"
-  // mc.note.contains("(200") &&
-  Const        r6, "note"
-  Const        r14, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r18, "info"
-  Const        r8, "info"
-  Const        r1, "info"
-  Const        r21, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r23, "info"
-  // t.production_year > 2008 &&
-  Const        r25, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r22, "id"
-  Const        r15, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r16, "id"
-  Const        r5, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r32, "id"
-  Const        r17, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r6, "id"
-  Const        r14, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r18, "id"
-  Const        r8, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r1, "movie_id"
-  Const        r21, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r23, "movie_id"
-  Const        r25, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r22, "movie_id"
-  Const        r15, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r16, "movie_id"
-  Const        r5, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r32, "movie_id"
-  Const        r17, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r6, "movie_id"
-  Const        r14, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r18, "id"
-  Const        r8, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r1, "id"
-  Const        r21, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r23, "id"
-  Const        r25, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r22, "id"
-  Const        r15, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r16, "id"
-  Const        r5, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r32, "company"
-  Const        r17, "name"
-  Const        r6, "rating"
-  Const        r14, "info"
-  Const        r18, "title"
-  Const        r8, "title"
-  // join mi in movie_info on mi.movie_id == t.id
-  Const        r1, 0
-  LessInt      r21, r1, r9
-  JumpIfFalse  r21, L6
-  Index        r23, r12, r1
-  Const        r25, "movie_id"
-  Index        r22, r23, r25
-  Const        r15, "id"
-  Index        r16, r19, r15
-  Equal        r5, r22, r16
-  JumpIfFalse  r5, L7
-  // join it1 in info_type on it1.id == mi.info_type_id
-  IterPrep     r32, r2
-  Len          r17, r32
-  Const        r6, "id"
-  Const        r14, "info_type_id"
-  // cn.country_code != "[us]" &&
-  Const        r18, "country_code"
-  // it1.info == "countries" &&
-  Const        r8, "info"
-  // it2.info == "rating" &&
-  Const        r9, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r21, "keyword"
-  Const        r12, "keyword"
-  Const        r25, "keyword"
-  Const        r15, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r22, "kind"
-  Const        r16, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r5, "note"
-  Const        r6, "contains"
-  // mc.note.contains("(200") &&
-  Const        r14, "note"
-  Const        r18, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r8, "info"
-  Const        r9, "info"
-  Const        r21, "info"
-  Const        r12, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r25, "info"
-  // t.production_year > 2008 &&
-  Const        r15, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r22, "id"
-  Const        r16, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r5, "id"
-  Const        r6, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r14, "id"
-  Const        r18, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r8, "id"
-  Const        r9, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r21, "id"
-  Const        r12, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r25, "movie_id"
-  Const        r15, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r22, "movie_id"
-  Const        r16, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r5, "movie_id"
-  Const        r6, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r14, "movie_id"
-  Const        r18, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r8, "movie_id"
-  Const        r9, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r21, "movie_id"
-  Const        r12, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r25, "id"
-  Const        r15, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r22, "id"
-  Const        r16, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r5, "id"
-  Const        r6, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r14, "id"
-  Const        r18, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r8, "id"
-  Const        r9, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r21, "company"
-  Const        r12, "name"
-  Const        r25, "rating"
-  Const        r15, "info"
-  Const        r22, "title"
-  Const        r16, "title"
-  // join it1 in info_type on it1.id == mi.info_type_id
-  Const        r5, 0
-  LessInt      r6, r5, r17
-  JumpIfFalse  r6, L7
-  Index        r14, r32, r5
-  Const        r18, "id"
-  Index        r8, r14, r18
-  Const        r9, "info_type_id"
-  Index        r21, r23, r9
-  Equal        r12, r8, r21
-  JumpIfFalse  r12, L8
-  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  IterPrep     r25, r7
-  Len          r15, r25
-  Const        r22, "movie_id"
-  Const        r16, "id"
-  // cn.country_code != "[us]" &&
-  Const        r17, "country_code"
-  // it1.info == "countries" &&
-  Const        r6, "info"
-  // it2.info == "rating" &&
-  Const        r32, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r18, "keyword"
-  Const        r9, "keyword"
-  Const        r8, "keyword"
-  Const        r21, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r12, "kind"
-  Const        r7, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r22, "note"
-  Const        r16, "contains"
-  // mc.note.contains("(200") &&
-  Const        r17, "note"
-  Const        r6, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r32, "info"
-  Const        r18, "info"
-  Const        r9, "info"
-  Const        r8, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r21, "info"
-  // t.production_year > 2008 &&
-  Const        r12, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r7, "id"
-  Const        r22, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r16, "id"
-  Const        r17, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r6, "id"
-  Const        r32, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r18, "id"
-  Const        r9, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r8, "id"
-  Const        r21, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r12, "movie_id"
-  Const        r7, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r22, "movie_id"
-  Const        r16, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r17, "movie_id"
-  Const        r6, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r32, "movie_id"
-  Const        r18, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r9, "movie_id"
-  Const        r8, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r21, "movie_id"
-  Const        r12, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r7, "id"
-  Const        r22, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r16, "id"
-  Const        r17, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r6, "id"
-  Const        r32, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r18, "id"
-  Const        r9, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r8, "id"
-  Const        r21, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r12, "company"
-  Const        r7, "name"
-  Const        r22, "rating"
-  Const        r16, "info"
-  Const        r17, "title"
-  Const        r6, "title"
-  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Const        r32, 0
-  LessInt      r18, r32, r15
-  JumpIfFalse  r18, L8
-  Index        r9, r25, r32
-  Const        r8, "movie_id"
-  Index        r21, r9, r8
-  Const        r12, "id"
-  Index        r7, r19, r12
-  Equal        r22, r21, r7
-  JumpIfFalse  r22, L9
-  // join it2 in info_type on it2.id == mi_idx.info_type_id
-  IterPrep     r16, r2
-  Len          r17, r16
-  Const        r6, "id"
-  Const        r15, "info_type_id"
-  // cn.country_code != "[us]" &&
-  Const        r18, "country_code"
-  // it1.info == "countries" &&
-  Const        r25, "info"
-  // it2.info == "rating" &&
-  Const        r8, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r12, "keyword"
-  Const        r21, "keyword"
-  Const        r7, "keyword"
-  Const        r22, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r2, "kind"
-  Const        r6, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r15, "note"
-  Const        r18, "contains"
-  // mc.note.contains("(200") &&
-  Const        r25, "note"
-  Const        r8, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r12, "info"
-  Const        r21, "info"
-  Const        r7, "info"
-  Const        r22, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r2, "info"
-  // t.production_year > 2008 &&
-  Const        r6, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r15, "id"
-  Const        r18, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r25, "id"
-  Const        r8, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r12, "id"
-  Const        r21, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r7, "id"
-  Const        r22, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r2, "id"
-  Const        r6, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r15, "movie_id"
-  Const        r18, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r25, "movie_id"
-  Const        r8, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r12, "movie_id"
-  Const        r21, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r7, "movie_id"
-  Const        r22, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r2, "movie_id"
-  Const        r6, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r15, "movie_id"
-  Const        r18, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r25, "id"
-  Const        r8, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r12, "id"
-  Const        r21, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r7, "id"
-  Const        r22, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r2, "id"
-  Const        r6, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r15, "id"
-  Const        r18, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r25, "company"
-  Const        r8, "name"
-  Const        r12, "rating"
-  Const        r21, "info"
-  Const        r7, "title"
-  Const        r22, "title"
-  // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Const        r2, 0
-  LessInt      r6, r2, r17
-  JumpIfFalse  r6, L9
-  Index        r15, r16, r2
-  Const        r18, "id"
-  Index        r25, r15, r18
-  Const        r8, "info_type_id"
-  Index        r12, r9, r8
-  Equal        r21, r25, r12
-  JumpIfFalse  r21, L10
-  // join kt in kind_type on kt.id == t.kind_id
-  IterPrep     r7, r4
-  Len          r22, r7
-  Const        r17, "id"
-  Const        r6, "kind_id"
-  // cn.country_code != "[us]" &&
-  Const        r16, "country_code"
-  // it1.info == "countries" &&
-  Const        r18, "info"
-  // it2.info == "rating" &&
-  Const        r8, "info"
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r25, "keyword"
-  Const        r12, "keyword"
-  Const        r21, "keyword"
-  Const        r4, "keyword"
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r17, "kind"
-  Const        r6, "kind"
-  // mc.note.contains("(USA)") == false &&
-  Const        r16, "note"
-  Const        r18, "contains"
-  // mc.note.contains("(200") &&
-  Const        r8, "note"
-  Const        r25, "contains"
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r12, "info"
-  Const        r21, "info"
-  Const        r4, "info"
-  Const        r17, "info"
-  // mi_idx.info < 7.0 &&
-  Const        r6, "info"
-  // t.production_year > 2008 &&
-  Const        r16, "production_year"
-  // kt.id == t.kind_id &&
-  Const        r18, "id"
-  Const        r8, "kind_id"
-  // t.id == mi.movie_id &&
-  Const        r25, "id"
-  Const        r12, "movie_id"
-  // t.id == mk.movie_id &&
-  Const        r21, "id"
-  Const        r4, "movie_id"
-  // t.id == mi_idx.movie_id &&
-  Const        r17, "id"
-  Const        r6, "movie_id"
-  // t.id == mc.movie_id &&
-  Const        r16, "id"
-  Const        r18, "movie_id"
-  // mk.movie_id == mi.movie_id &&
-  Const        r8, "movie_id"
-  Const        r25, "movie_id"
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r12, "movie_id"
-  Const        r21, "movie_id"
-  // mk.movie_id == mc.movie_id &&
-  Const        r4, "movie_id"
-  Const        r17, "movie_id"
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r6, "movie_id"
-  Const        r16, "movie_id"
-  // mi.movie_id == mc.movie_id &&
-  Const        r18, "movie_id"
-  Const        r8, "movie_id"
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r25, "movie_id"
-  Const        r12, "movie_id"
-  // k.id == mk.keyword_id &&
-  Const        r21, "id"
-  Const        r4, "keyword_id"
-  // it1.id == mi.info_type_id &&
-  Const        r17, "id"
-  Const        r6, "info_type_id"
-  // it2.id == mi_idx.info_type_id &&
-  Const        r16, "id"
-  Const        r18, "info_type_id"
-  // ct.id == mc.company_type_id &&
-  Const        r8, "id"
-  Const        r25, "company_type_id"
-  // cn.id == mc.company_id
-  Const        r12, "id"
-  Const        r21, "company_id"
-  // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r4, "company"
-  Const        r17, "name"
-  Const        r6, "rating"
-  Const        r16, "info"
-  Const        r18, "title"
-  Const        r8, "title"
-  // join kt in kind_type on kt.id == t.kind_id
-  Const        r25, 0
-  LessInt      r12, r25, r22
-  JumpIfFalse  r12, L10
-  Index        r21, r7, r25
-  Const        r4, "id"
-  Index        r17, r21, r4
-  Const        r6, "kind_id"
-  Index        r16, r19, r6
-  Equal        r18, r17, r16
-  JumpIfFalse  r18, L11
-  // cn.country_code != "[us]" &&
-  Const        r8, "country_code"
-  Index        r22, r28, r8
-  // mi_idx.info < 7.0 &&
-  Const        r12, "info"
-  Index        r7, r9, r12
-  Const        r4, 7
-  LessFloat    r6, r7, r4
-  // t.production_year > 2008 &&
-  Const        r17, "production_year"
-  Index        r16, r19, r17
-  Const        r18, 2008
-  Less         r8, r18, r16
-  // cn.country_code != "[us]" &&
-  Const        r12, "[us]"
-  NotEqual     r7, r22, r12
-  // it1.info == "countries" &&
-  Const        r4, "info"
-  Index        r17, r14, r4
-  Const        r16, "countries"
-  Equal        r18, r17, r16
-  // it2.info == "rating" &&
-  Const        r22, "info"
-  Index        r12, r15, r22
-  Const        r4, "rating"
-  Equal        r17, r12, r4
-  Const        r16, "note"
-  Index        r22, r13, r16
-  // mc.note.contains("(USA)") == false &&
-  Const        r12, "(USA)"
-  In           r4, r12, r22
-  Const        r16, false
-  Equal        r22, r4, r16
-  // kt.id == t.kind_id &&
-  Const        r12, "id"
-  Index        r4, r21, r12
-  Const        r16, "kind_id"
-  Index        r12, r19, r16
-  Equal        r16, r4, r12
-  // t.id == mi.movie_id &&
-  Const        r4, "id"
-  Index        r12, r19, r4
-  Const        r4, "movie_id"
-  Index        r33, r23, r4
-  Equal        r4, r12, r33
-  // t.id == mk.movie_id &&
-  Const        r12, "id"
-  Index        r33, r19, r12
-  Const        r12, "movie_id"
-  Index        r34, r29, r12
-  Equal        r12, r33, r34
-  // t.id == mi_idx.movie_id &&
-  Const        r33, "id"
-  Index        r34, r19, r33
   Const        r33, "movie_id"
-  Index        r35, r9, r33
-  Equal        r33, r34, r35
-  // t.id == mc.movie_id &&
-  Const        r34, "id"
-  Index        r35, r19, r34
-  Const        r34, "movie_id"
-  Index        r36, r13, r34
-  Equal        r34, r35, r36
-  // mk.movie_id == mi.movie_id &&
-  Const        r35, "movie_id"
-  Index        r36, r29, r35
-  Const        r35, "movie_id"
-  Index        r37, r23, r35
-  Equal        r35, r36, r37
-  // mk.movie_id == mi_idx.movie_id &&
-  Const        r36, "movie_id"
-  Index        r37, r29, r36
-  Const        r36, "movie_id"
-  Index        r38, r9, r36
-  Equal        r36, r37, r38
-  // mk.movie_id == mc.movie_id &&
-  Const        r37, "movie_id"
-  Index        r38, r29, r37
-  Const        r37, "movie_id"
-  Index        r39, r13, r37
-  Equal        r37, r38, r39
-  // mi.movie_id == mi_idx.movie_id &&
-  Const        r38, "movie_id"
-  Index        r39, r23, r38
-  Const        r38, "movie_id"
-  Index        r40, r9, r38
-  Equal        r38, r39, r40
-  // mi.movie_id == mc.movie_id &&
-  Const        r39, "movie_id"
-  Index        r40, r23, r39
-  Const        r39, "movie_id"
-  Index        r41, r13, r39
-  Equal        r39, r40, r41
-  // mc.movie_id == mi_idx.movie_id &&
-  Const        r40, "movie_id"
-  Index        r41, r13, r40
-  Const        r40, "movie_id"
-  Index        r42, r9, r40
-  Equal        r40, r41, r42
-  // k.id == mk.keyword_id &&
-  Const        r41, "id"
-  Index        r42, r27, r41
-  Const        r41, "keyword_id"
-  Index        r43, r29, r41
-  Equal        r29, r42, r43
-  // it1.id == mi.info_type_id &&
-  Const        r41, "id"
-  Index        r42, r14, r41
-  Const        r43, "info_type_id"
-  Index        r14, r23, r43
-  Equal        r41, r42, r14
-  // it2.id == mi_idx.info_type_id &&
-  Const        r43, "id"
-  Index        r42, r15, r43
-  Const        r14, "info_type_id"
-  Index        r15, r9, r14
-  Equal        r43, r42, r15
-  // ct.id == mc.company_type_id &&
-  Const        r14, "id"
-  Index        r42, r31, r14
-  Const        r15, "company_type_id"
-  Index        r31, r13, r15
-  Equal        r14, r42, r31
-  // cn.id == mc.company_id
-  Const        r15, "id"
-  Index        r42, r28, r15
-  Const        r31, "company_id"
-  Index        r15, r13, r31
-  Equal        r31, r42, r15
-  // cn.country_code != "[us]" &&
-  Move         r42, r7
-  JumpIfFalse  r42, L12
-  // it1.info == "countries" &&
-  Move         r15, r18
-  JumpIfFalse  r15, L13
-  // it2.info == "rating" &&
-  Move         r7, r17
-  JumpIfFalse  r7, L13
-  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
-  Const        r42, "keyword"
-  Index        r18, r27, r42
-  Const        r15, "murder"
-  Equal        r17, r18, r15
-  Const        r7, "keyword"
-  Index        r42, r27, r7
-  Const        r18, "murder-in-title"
-  Equal        r15, r42, r18
-  Const        r7, "keyword"
-  Index        r42, r27, r7
-  Const        r18, "blood"
-  Equal        r7, r42, r18
-  Const        r42, "keyword"
-  Index        r18, r27, r42
-  Const        r27, "violence"
-  Equal        r42, r18, r27
-  Move         r18, r17
-  JumpIfTrue   r18, L12
-  Move         r27, r15
-  JumpIfTrue   r27, L14
-  Move         r17, r7
-  JumpIfTrue   r17, L13
-  Move         r18, r42
-  JumpIfFalse  r18, L15
-  // (kt.kind == "movie" || kt.kind == "episode") &&
-  Const        r15, "kind"
-  Index        r27, r21, r15
-  Const        r7, "movie"
-  Equal        r17, r27, r7
-  Const        r42, "kind"
-  Index        r18, r21, r42
-  Const        r15, "episode"
-  Equal        r27, r18, r15
-  Move         r7, r17
-  JumpIfTrue   r7, L15
-  Move         r21, r27
-  JumpIfFalse  r21, L11
-  // mc.note.contains("(USA)") == false &&
-  Move         r42, r22
-  JumpIfFalse  r42, L14
-  Const        r18, "note"
-  Index        r15, r13, r18
-  // mc.note.contains("(200") &&
-  Const        r17, "(200"
-  In           r7, r17, r15
-  JumpIfFalse  r7, L16
-  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
-  Const        r27, "info"
-  Index        r21, r23, r27
-  Const        r22, "Germany"
-  Equal        r42, r21, r22
-  Const        r13, "info"
-  Index        r18, r23, r13
-  Const        r15, "German"
-  Equal        r17, r18, r15
-  Const        r7, "info"
-  Index        r27, r23, r7
-  Const        r21, "USA"
-  Equal        r22, r27, r21
-  Const        r13, "info"
-  Index        r18, r23, r13
-  Const        r15, "American"
-  Equal        r7, r18, r15
-  Move         r27, r42
-  JumpIfTrue   r27, L17
-  Move         r21, r17
-  JumpIfTrue   r21, L18
-  Move         r23, r22
-  JumpIfTrue   r23, L16
-  Move         r13, r7
-  JumpIfFalse  r13, L12
-  // mi_idx.info < 7.0 &&
-  Move         r18, r6
-  JumpIfFalse  r18, L13
-  // t.production_year > 2008 &&
-  Move         r15, r8
-  JumpIfFalse  r15, L15
-  // kt.id == t.kind_id &&
-  Move         r42, r16
-  JumpIfFalse  r42, L19
-  // t.id == mi.movie_id &&
-  Move         r27, r4
-  JumpIfFalse  r27, L20
   // t.id == mk.movie_id &&
-  Move         r17, r12
-  JumpIfFalse  r17, L11
+  Const        r34, "id"
+  Const        r35, "movie_id"
   // t.id == mi_idx.movie_id &&
-  Move         r21, r33
-  JumpIfFalse  r21, L17
+  Const        r36, "id"
+  Const        r37, "movie_id"
   // t.id == mc.movie_id &&
-  Move         r22, r34
-  JumpIfFalse  r22, L10
+  Const        r38, "id"
+  Const        r39, "movie_id"
   // mk.movie_id == mi.movie_id &&
-  Move         r23, r35
-  JumpIfFalse  r23, L9
+  Const        r40, "movie_id"
+  Const        r41, "movie_id"
   // mk.movie_id == mi_idx.movie_id &&
-  Move         r7, r36
-  JumpIfFalse  r7, L21
+  Const        r42, "movie_id"
+  Const        r43, "movie_id"
   // mk.movie_id == mc.movie_id &&
-  Move         r13, r37
-  JumpIfFalse  r13, L5
+  Const        r44, "movie_id"
+  Const        r45, "movie_id"
   // mi.movie_id == mi_idx.movie_id &&
-  Move         r6, r38
-  JumpIfFalse  r6, L22
+  Const        r46, "movie_id"
+  Const        r47, "movie_id"
   // mi.movie_id == mc.movie_id &&
-  Move         r18, r39
-  JumpIfFalse  r18, L23
+  Const        r48, "movie_id"
+  Const        r49, "movie_id"
   // mc.movie_id == mi_idx.movie_id &&
-  Move         r8, r40
-  JumpIfFalse  r8, L24
+  Const        r50, "movie_id"
+  Const        r51, "movie_id"
   // k.id == mk.keyword_id &&
-  Move         r15, r29
-  JumpIfFalse  r15, L25
+  Const        r52, "id"
+  Const        r53, "keyword_id"
   // it1.id == mi.info_type_id &&
-  Move         r16, r41
-  JumpIfFalse  r16, L26
+  Const        r54, "id"
+  Const        r55, "info_type_id"
   // it2.id == mi_idx.info_type_id &&
-  Move         r42, r43
-  JumpIfFalse  r42, L27
+  Const        r56, "id"
+  Const        r57, "info_type_id"
   // ct.id == mc.company_type_id &&
-  Move         r4, r14
-  JumpIfFalse  r4, L28
-  Move         r4, r31
-  // where (
-  JumpIfFalse  r4, L11
+  Const        r58, "id"
+  Const        r59, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r60, "id"
+  Const        r61, "company_id"
   // select { company: cn.name, rating: mi_idx.info, title: t.title }
-  Const        r27, "company"
-  Const        r12, "name"
-  Index        r17, r28, r12
-  Const        r33, "rating"
-  Const        r21, "info"
-  Index        r34, r9, r21
-  Const        r22, "title"
-  Const        r35, "title"
-  Index        r23, r19, r35
-  Move         r44, r27
-  Move         r45, r17
-  Move         r46, r33
-  Move         r47, r34
-  Move         r48, r22
-  Move         r49, r23
-  MakeMap      r36, 3, r44
+  Const        r62, "company"
+  Const        r63, "name"
+  Const        r64, "rating"
+  Const        r65, "info"
+  Const        r66, "title"
+  Const        r67, "title"
   // from cn in company_name
-  Append       r10, r10, r36
-  // join kt in kind_type on kt.id == t.kind_id
-  Const        r7, 1
-  Add          r25, r25, r7
-  Jump         L29
-  // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Const        r37, 1
-  Add          r2, r2, r37
-  Jump         L7
-  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Const        r13, 1
-  Add          r32, r32, r13
-  Jump         L6
-  // join it1 in info_type on it1.id == mi.info_type_id
-  Const        r38, 1
-  Add          r5, r5, r38
-  Jump         L5
-  // join mi in movie_info on mi.movie_id == t.id
-  Const        r6, 1
-  Add          r1, r1, r6
-  Jump         L4
-  // join k in keyword on k.id == mk.keyword_id
-  Const        r39, 1
-  Add          r3, r3, r39
-  Jump         L1
-  // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r18, 1
-  Add          r30, r30, r18
-  Jump         L30
-  // join t in title on t.id == mc.movie_id
-  Const        r40, 1
-  Add          r20, r20, r40
-  Jump         L31
-  // join ct in company_type on ct.id == mc.company_type_id
-  Const        r8, 1
-  Add          r24, r24, r8
-  Jump         L32
+  IterPrep     r68, r0
+  Len          r69, r68
+  Const        r70, 0
+L51:
+  LessInt      r72, r70, r69
+  JumpIfFalse  r72, L0
+  Index        r74, r68, r70
   // join mc in movie_companies on cn.id == mc.company_id
-  Const        r29, 1
-  Add          r11, r11, r29
-  Jump         L33
+  IterPrep     r75, r5
+  Len          r76, r75
+  Const        r77, "id"
+  Const        r78, "company_id"
+  // cn.country_code != "[us]" &&
+  Const        r79, "country_code"
+  // it1.info == "countries" &&
+  Const        r80, "info"
+  // it2.info == "rating" &&
+  Const        r81, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r82, "keyword"
+  Const        r83, "keyword"
+  Const        r84, "keyword"
+  Const        r85, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r86, "kind"
+  Const        r87, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r88, "note"
+  Const        r89, "contains"
+  // mc.note.contains("(200") &&
+  Const        r90, "note"
+  Const        r91, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r92, "info"
+  Const        r93, "info"
+  Const        r94, "info"
+  Const        r95, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r96, "info"
+  // t.production_year > 2008 &&
+  Const        r97, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r98, "id"
+  Const        r99, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r100, "id"
+  Const        r101, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r102, "id"
+  Const        r103, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r104, "id"
+  Const        r105, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r106, "id"
+  Const        r107, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r108, "movie_id"
+  Const        r109, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r110, "movie_id"
+  Const        r111, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r112, "movie_id"
+  Const        r113, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r114, "movie_id"
+  Const        r115, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r116, "movie_id"
+  Const        r117, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r118, "movie_id"
+  Const        r119, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r120, "id"
+  Const        r121, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r122, "id"
+  Const        r123, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r124, "id"
+  Const        r125, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r126, "id"
+  Const        r127, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r128, "id"
+  Const        r129, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r130, "company"
+  Const        r131, "name"
+  Const        r132, "rating"
+  Const        r133, "info"
+  Const        r134, "title"
+  Const        r135, "title"
+  // join mc in movie_companies on cn.id == mc.company_id
+  Const        r136, 0
+L50:
+  LessInt      r138, r136, r76
+  JumpIfFalse  r138, L1
+  Index        r140, r75, r136
+  Const        r141, "id"
+  Index        r142, r74, r141
+  Const        r143, "company_id"
+  Index        r144, r140, r143
+  Equal        r145, r142, r144
+  JumpIfFalse  r145, L2
+  // join ct in company_type on ct.id == mc.company_type_id
+  IterPrep     r146, r1
+  Len          r147, r146
+  Const        r148, "id"
+  Const        r149, "company_type_id"
+  // cn.country_code != "[us]" &&
+  Const        r150, "country_code"
+  // it1.info == "countries" &&
+  Const        r151, "info"
+  // it2.info == "rating" &&
+  Const        r152, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r153, "keyword"
+  Const        r154, "keyword"
+  Const        r155, "keyword"
+  Const        r156, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r157, "kind"
+  Const        r158, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r159, "note"
+  Const        r160, "contains"
+  // mc.note.contains("(200") &&
+  Const        r161, "note"
+  Const        r162, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r163, "info"
+  Const        r164, "info"
+  Const        r165, "info"
+  Const        r166, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r167, "info"
+  // t.production_year > 2008 &&
+  Const        r168, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r169, "id"
+  Const        r170, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r171, "id"
+  Const        r172, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r173, "id"
+  Const        r174, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r175, "id"
+  Const        r176, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r177, "id"
+  Const        r178, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r179, "movie_id"
+  Const        r180, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r181, "movie_id"
+  Const        r182, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r183, "movie_id"
+  Const        r184, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r185, "movie_id"
+  Const        r186, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r187, "movie_id"
+  Const        r188, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r189, "movie_id"
+  Const        r190, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r191, "id"
+  Const        r192, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r193, "id"
+  Const        r194, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r195, "id"
+  Const        r196, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r197, "id"
+  Const        r198, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r199, "id"
+  Const        r200, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r201, "company"
+  Const        r202, "name"
+  Const        r203, "rating"
+  Const        r204, "info"
+  Const        r205, "title"
+  Const        r206, "title"
+  // join ct in company_type on ct.id == mc.company_type_id
+  Const        r207, 0
+L49:
+  LessInt      r209, r207, r147
+  JumpIfFalse  r209, L2
+  Index        r211, r146, r207
+  Const        r212, "id"
+  Index        r213, r211, r212
+  Const        r214, "company_type_id"
+  Index        r215, r140, r214
+  Equal        r216, r213, r215
+  JumpIfFalse  r216, L3
+  // join t in title on t.id == mc.movie_id
+  IterPrep     r217, r9
+  Len          r218, r217
+  Const        r219, "id"
+  Const        r220, "movie_id"
+  // cn.country_code != "[us]" &&
+  Const        r221, "country_code"
+  // it1.info == "countries" &&
+  Const        r222, "info"
+  // it2.info == "rating" &&
+  Const        r223, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r224, "keyword"
+  Const        r225, "keyword"
+  Const        r226, "keyword"
+  Const        r227, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r228, "kind"
+  Const        r229, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r230, "note"
+  Const        r231, "contains"
+  // mc.note.contains("(200") &&
+  Const        r232, "note"
+  Const        r233, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r234, "info"
+  Const        r235, "info"
+  Const        r236, "info"
+  Const        r237, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r238, "info"
+  // t.production_year > 2008 &&
+  Const        r239, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r240, "id"
+  Const        r241, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r242, "id"
+  Const        r243, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r244, "id"
+  Const        r245, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r246, "id"
+  Const        r247, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r248, "id"
+  Const        r249, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r250, "movie_id"
+  Const        r251, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r252, "movie_id"
+  Const        r253, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r254, "movie_id"
+  Const        r255, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r256, "movie_id"
+  Const        r257, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r258, "movie_id"
+  Const        r259, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r260, "movie_id"
+  Const        r261, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r262, "id"
+  Const        r263, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r264, "id"
+  Const        r265, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r266, "id"
+  Const        r267, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r268, "id"
+  Const        r269, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r270, "id"
+  Const        r271, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r272, "company"
+  Const        r273, "name"
+  Const        r274, "rating"
+  Const        r275, "info"
+  Const        r276, "title"
+  Const        r277, "title"
+  // join t in title on t.id == mc.movie_id
+  Const        r278, 0
+L48:
+  LessInt      r280, r278, r218
+  JumpIfFalse  r280, L3
+  Index        r282, r217, r278
+  Const        r283, "id"
+  Index        r284, r282, r283
+  Const        r285, "movie_id"
+  Index        r286, r140, r285
+  Equal        r287, r284, r286
+  JumpIfFalse  r287, L4
+  // join mk in movie_keyword on mk.movie_id == t.id
+  IterPrep     r288, r8
+  Len          r289, r288
+  Const        r290, "movie_id"
+  Const        r291, "id"
+  // cn.country_code != "[us]" &&
+  Const        r292, "country_code"
+  // it1.info == "countries" &&
+  Const        r293, "info"
+  // it2.info == "rating" &&
+  Const        r294, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r295, "keyword"
+  Const        r296, "keyword"
+  Const        r297, "keyword"
+  Const        r298, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r299, "kind"
+  Const        r300, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r301, "note"
+  Const        r302, "contains"
+  // mc.note.contains("(200") &&
+  Const        r303, "note"
+  Const        r304, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r305, "info"
+  Const        r306, "info"
+  Const        r307, "info"
+  Const        r308, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r309, "info"
+  // t.production_year > 2008 &&
+  Const        r310, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r311, "id"
+  Const        r312, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r313, "id"
+  Const        r314, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r315, "id"
+  Const        r316, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r317, "id"
+  Const        r318, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r319, "id"
+  Const        r320, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r321, "movie_id"
+  Const        r322, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r323, "movie_id"
+  Const        r324, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r325, "movie_id"
+  Const        r326, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r327, "movie_id"
+  Const        r328, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r329, "movie_id"
+  Const        r330, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r331, "movie_id"
+  Const        r332, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r333, "id"
+  Const        r334, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r335, "id"
+  Const        r336, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r337, "id"
+  Const        r338, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r339, "id"
+  Const        r340, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r341, "id"
+  Const        r342, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r343, "company"
+  Const        r344, "name"
+  Const        r345, "rating"
+  Const        r346, "info"
+  Const        r347, "title"
+  Const        r348, "title"
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r349, 0
+L47:
+  LessInt      r351, r349, r289
+  JumpIfFalse  r351, L4
+  Index        r353, r288, r349
+  Const        r354, "movie_id"
+  Index        r355, r353, r354
+  Const        r356, "id"
+  Index        r357, r282, r356
+  Equal        r358, r355, r357
+  JumpIfFalse  r358, L5
+  // join k in keyword on k.id == mk.keyword_id
+  IterPrep     r359, r3
+  Len          r360, r359
+  Const        r361, "id"
+  Const        r362, "keyword_id"
+  // cn.country_code != "[us]" &&
+  Const        r363, "country_code"
+  // it1.info == "countries" &&
+  Const        r364, "info"
+  // it2.info == "rating" &&
+  Const        r365, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r366, "keyword"
+  Const        r367, "keyword"
+  Const        r368, "keyword"
+  Const        r369, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r370, "kind"
+  Const        r371, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r372, "note"
+  Const        r373, "contains"
+  // mc.note.contains("(200") &&
+  Const        r374, "note"
+  Const        r375, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r376, "info"
+  Const        r377, "info"
+  Const        r378, "info"
+  Const        r379, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r380, "info"
+  // t.production_year > 2008 &&
+  Const        r381, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r382, "id"
+  Const        r383, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r384, "id"
+  Const        r385, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r386, "id"
+  Const        r387, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r388, "id"
+  Const        r389, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r390, "id"
+  Const        r391, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r392, "movie_id"
+  Const        r393, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r394, "movie_id"
+  Const        r395, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r396, "movie_id"
+  Const        r397, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r398, "movie_id"
+  Const        r399, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r400, "movie_id"
+  Const        r401, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r402, "movie_id"
+  Const        r403, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r404, "id"
+  Const        r405, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r406, "id"
+  Const        r407, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r408, "id"
+  Const        r409, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r410, "id"
+  Const        r411, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r412, "id"
+  Const        r413, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r414, "company"
+  Const        r415, "name"
+  Const        r416, "rating"
+  Const        r417, "info"
+  Const        r418, "title"
+  Const        r419, "title"
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r420, 0
+L46:
+  LessInt      r422, r420, r360
+  JumpIfFalse  r422, L5
+  Index        r424, r359, r420
+  Const        r425, "id"
+  Index        r426, r424, r425
+  Const        r427, "keyword_id"
+  Index        r428, r353, r427
+  Equal        r429, r426, r428
+  JumpIfFalse  r429, L6
+  // join mi in movie_info on mi.movie_id == t.id
+  IterPrep     r430, r6
+  Len          r431, r430
+  Const        r432, "movie_id"
+  Const        r433, "id"
+  // cn.country_code != "[us]" &&
+  Const        r434, "country_code"
+  // it1.info == "countries" &&
+  Const        r435, "info"
+  // it2.info == "rating" &&
+  Const        r436, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r437, "keyword"
+  Const        r438, "keyword"
+  Const        r439, "keyword"
+  Const        r440, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r441, "kind"
+  Const        r442, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r443, "note"
+  Const        r444, "contains"
+  // mc.note.contains("(200") &&
+  Const        r445, "note"
+  Const        r446, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r447, "info"
+  Const        r448, "info"
+  Const        r449, "info"
+  Const        r450, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r451, "info"
+  // t.production_year > 2008 &&
+  Const        r452, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r453, "id"
+  Const        r454, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r455, "id"
+  Const        r456, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r457, "id"
+  Const        r458, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r459, "id"
+  Const        r460, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r461, "id"
+  Const        r462, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r463, "movie_id"
+  Const        r464, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r465, "movie_id"
+  Const        r466, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r467, "movie_id"
+  Const        r468, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r469, "movie_id"
+  Const        r470, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r471, "movie_id"
+  Const        r472, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r473, "movie_id"
+  Const        r474, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r475, "id"
+  Const        r476, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r477, "id"
+  Const        r478, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r479, "id"
+  Const        r480, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r481, "id"
+  Const        r482, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r483, "id"
+  Const        r484, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r485, "company"
+  Const        r486, "name"
+  Const        r487, "rating"
+  Const        r488, "info"
+  Const        r489, "title"
+  Const        r490, "title"
+  // join mi in movie_info on mi.movie_id == t.id
+  Const        r491, 0
+L45:
+  LessInt      r493, r491, r431
+  JumpIfFalse  r493, L6
+  Index        r495, r430, r491
+  Const        r496, "movie_id"
+  Index        r497, r495, r496
+  Const        r498, "id"
+  Index        r499, r282, r498
+  Equal        r500, r497, r499
+  JumpIfFalse  r500, L7
+  // join it1 in info_type on it1.id == mi.info_type_id
+  IterPrep     r501, r2
+  Len          r502, r501
+  Const        r503, "id"
+  Const        r504, "info_type_id"
+  // cn.country_code != "[us]" &&
+  Const        r505, "country_code"
+  // it1.info == "countries" &&
+  Const        r506, "info"
+  // it2.info == "rating" &&
+  Const        r507, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r508, "keyword"
+  Const        r509, "keyword"
+  Const        r510, "keyword"
+  Const        r511, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r512, "kind"
+  Const        r513, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r514, "note"
+  Const        r515, "contains"
+  // mc.note.contains("(200") &&
+  Const        r516, "note"
+  Const        r517, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r518, "info"
+  Const        r519, "info"
+  Const        r520, "info"
+  Const        r521, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r522, "info"
+  // t.production_year > 2008 &&
+  Const        r523, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r524, "id"
+  Const        r525, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r526, "id"
+  Const        r527, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r528, "id"
+  Const        r529, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r530, "id"
+  Const        r531, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r532, "id"
+  Const        r533, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r534, "movie_id"
+  Const        r535, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r536, "movie_id"
+  Const        r537, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r538, "movie_id"
+  Const        r539, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r540, "movie_id"
+  Const        r541, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r542, "movie_id"
+  Const        r543, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r544, "movie_id"
+  Const        r545, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r546, "id"
+  Const        r547, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r548, "id"
+  Const        r549, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r550, "id"
+  Const        r551, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r552, "id"
+  Const        r553, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r554, "id"
+  Const        r555, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r556, "company"
+  Const        r557, "name"
+  Const        r558, "rating"
+  Const        r559, "info"
+  Const        r560, "title"
+  Const        r561, "title"
+  // join it1 in info_type on it1.id == mi.info_type_id
+  Const        r562, 0
+L44:
+  LessInt      r564, r562, r502
+  JumpIfFalse  r564, L7
+  Index        r566, r501, r562
+  Const        r567, "id"
+  Index        r568, r566, r567
+  Const        r569, "info_type_id"
+  Index        r570, r495, r569
+  Equal        r571, r568, r570
+  JumpIfFalse  r571, L8
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  IterPrep     r572, r7
+  Len          r573, r572
+  Const        r574, "movie_id"
+  Const        r575, "id"
+  // cn.country_code != "[us]" &&
+  Const        r576, "country_code"
+  // it1.info == "countries" &&
+  Const        r577, "info"
+  // it2.info == "rating" &&
+  Const        r578, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r579, "keyword"
+  Const        r580, "keyword"
+  Const        r581, "keyword"
+  Const        r582, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r583, "kind"
+  Const        r584, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r585, "note"
+  Const        r586, "contains"
+  // mc.note.contains("(200") &&
+  Const        r587, "note"
+  Const        r588, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r589, "info"
+  Const        r590, "info"
+  Const        r591, "info"
+  Const        r592, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r593, "info"
+  // t.production_year > 2008 &&
+  Const        r594, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r595, "id"
+  Const        r596, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r597, "id"
+  Const        r598, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r599, "id"
+  Const        r600, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r601, "id"
+  Const        r602, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r603, "id"
+  Const        r604, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r605, "movie_id"
+  Const        r606, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r607, "movie_id"
+  Const        r608, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r609, "movie_id"
+  Const        r610, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r611, "movie_id"
+  Const        r612, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r613, "movie_id"
+  Const        r614, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r615, "movie_id"
+  Const        r616, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r617, "id"
+  Const        r618, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r619, "id"
+  Const        r620, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r621, "id"
+  Const        r622, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r623, "id"
+  Const        r624, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r625, "id"
+  Const        r626, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r627, "company"
+  Const        r628, "name"
+  Const        r629, "rating"
+  Const        r630, "info"
+  Const        r631, "title"
+  Const        r632, "title"
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  Const        r633, 0
+L43:
+  LessInt      r635, r633, r573
+  JumpIfFalse  r635, L8
+  Index        r637, r572, r633
+  Const        r638, "movie_id"
+  Index        r639, r637, r638
+  Const        r640, "id"
+  Index        r641, r282, r640
+  Equal        r642, r639, r641
+  JumpIfFalse  r642, L9
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  IterPrep     r643, r2
+  Len          r644, r643
+  Const        r645, "id"
+  Const        r646, "info_type_id"
+  // cn.country_code != "[us]" &&
+  Const        r647, "country_code"
+  // it1.info == "countries" &&
+  Const        r648, "info"
+  // it2.info == "rating" &&
+  Const        r649, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r650, "keyword"
+  Const        r651, "keyword"
+  Const        r652, "keyword"
+  Const        r653, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r654, "kind"
+  Const        r655, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r656, "note"
+  Const        r657, "contains"
+  // mc.note.contains("(200") &&
+  Const        r658, "note"
+  Const        r659, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r660, "info"
+  Const        r661, "info"
+  Const        r662, "info"
+  Const        r663, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r664, "info"
+  // t.production_year > 2008 &&
+  Const        r665, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r666, "id"
+  Const        r667, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r668, "id"
+  Const        r669, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r670, "id"
+  Const        r671, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r672, "id"
+  Const        r673, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r674, "id"
+  Const        r675, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r676, "movie_id"
+  Const        r677, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r678, "movie_id"
+  Const        r679, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r680, "movie_id"
+  Const        r681, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r682, "movie_id"
+  Const        r683, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r684, "movie_id"
+  Const        r685, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r686, "movie_id"
+  Const        r687, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r688, "id"
+  Const        r689, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r690, "id"
+  Const        r691, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r692, "id"
+  Const        r693, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r694, "id"
+  Const        r695, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r696, "id"
+  Const        r697, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r698, "company"
+  Const        r699, "name"
+  Const        r700, "rating"
+  Const        r701, "info"
+  Const        r702, "title"
+  Const        r703, "title"
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  Const        r704, 0
+L42:
+  LessInt      r706, r704, r644
+  JumpIfFalse  r706, L9
+  Index        r708, r643, r704
+  Const        r709, "id"
+  Index        r710, r708, r709
+  Const        r711, "info_type_id"
+  Index        r712, r637, r711
+  Equal        r713, r710, r712
+  JumpIfFalse  r713, L10
+  // join kt in kind_type on kt.id == t.kind_id
+  IterPrep     r714, r4
+  Len          r715, r714
+  Const        r716, "id"
+  Const        r717, "kind_id"
+  // cn.country_code != "[us]" &&
+  Const        r718, "country_code"
+  // it1.info == "countries" &&
+  Const        r719, "info"
+  // it2.info == "rating" &&
+  Const        r720, "info"
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r721, "keyword"
+  Const        r722, "keyword"
+  Const        r723, "keyword"
+  Const        r724, "keyword"
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r725, "kind"
+  Const        r726, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r727, "note"
+  Const        r728, "contains"
+  // mc.note.contains("(200") &&
+  Const        r729, "note"
+  Const        r730, "contains"
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r731, "info"
+  Const        r732, "info"
+  Const        r733, "info"
+  Const        r734, "info"
+  // mi_idx.info < 7.0 &&
+  Const        r735, "info"
+  // t.production_year > 2008 &&
+  Const        r736, "production_year"
+  // kt.id == t.kind_id &&
+  Const        r737, "id"
+  Const        r738, "kind_id"
+  // t.id == mi.movie_id &&
+  Const        r739, "id"
+  Const        r740, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r741, "id"
+  Const        r742, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r743, "id"
+  Const        r744, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r745, "id"
+  Const        r746, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r747, "movie_id"
+  Const        r748, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r749, "movie_id"
+  Const        r750, "movie_id"
+  // mk.movie_id == mc.movie_id &&
+  Const        r751, "movie_id"
+  Const        r752, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r753, "movie_id"
+  Const        r754, "movie_id"
+  // mi.movie_id == mc.movie_id &&
+  Const        r755, "movie_id"
+  Const        r756, "movie_id"
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r757, "movie_id"
+  Const        r758, "movie_id"
+  // k.id == mk.keyword_id &&
+  Const        r759, "id"
+  Const        r760, "keyword_id"
+  // it1.id == mi.info_type_id &&
+  Const        r761, "id"
+  Const        r762, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r763, "id"
+  Const        r764, "info_type_id"
+  // ct.id == mc.company_type_id &&
+  Const        r765, "id"
+  Const        r766, "company_type_id"
+  // cn.id == mc.company_id
+  Const        r767, "id"
+  Const        r768, "company_id"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r769, "company"
+  Const        r770, "name"
+  Const        r771, "rating"
+  Const        r772, "info"
+  Const        r773, "title"
+  Const        r774, "title"
+  // join kt in kind_type on kt.id == t.kind_id
+  Const        r775, 0
+L41:
+  LessInt      r777, r775, r715
+  JumpIfFalse  r777, L10
+  Index        r779, r714, r775
+  Const        r780, "id"
+  Index        r781, r779, r780
+  Const        r782, "kind_id"
+  Index        r783, r282, r782
+  Equal        r784, r781, r783
+  JumpIfFalse  r784, L11
+  // cn.country_code != "[us]" &&
+  Const        r785, "country_code"
+  Index        r786, r74, r785
+  // mi_idx.info < 7.0 &&
+  Const        r787, "info"
+  Index        r788, r637, r787
+  Const        r789, 7
+  LessFloat    r790, r788, r789
+  // t.production_year > 2008 &&
+  Const        r791, "production_year"
+  Index        r792, r282, r791
+  Const        r793, 2008
+  Less         r794, r793, r792
+  // cn.country_code != "[us]" &&
+  Const        r795, "[us]"
+  NotEqual     r796, r786, r795
+  // it1.info == "countries" &&
+  Const        r797, "info"
+  Index        r798, r566, r797
+  Const        r799, "countries"
+  Equal        r800, r798, r799
+  // it2.info == "rating" &&
+  Const        r801, "info"
+  Index        r802, r708, r801
+  Const        r803, "rating"
+  Equal        r804, r802, r803
+  Const        r805, "note"
+  Index        r806, r140, r805
+  // mc.note.contains("(USA)") == false &&
+  Const        r807, "(USA)"
+  In           r808, r807, r806
+  Const        r809, false
+  Equal        r810, r808, r809
+  // kt.id == t.kind_id &&
+  Const        r811, "id"
+  Index        r812, r779, r811
+  Const        r813, "kind_id"
+  Index        r814, r282, r813
+  Equal        r815, r812, r814
+  // t.id == mi.movie_id &&
+  Const        r816, "id"
+  Index        r817, r282, r816
+  Const        r818, "movie_id"
+  Index        r819, r495, r818
+  Equal        r820, r817, r819
+  // t.id == mk.movie_id &&
+  Const        r821, "id"
+  Index        r822, r282, r821
+  Const        r823, "movie_id"
+  Index        r824, r353, r823
+  Equal        r825, r822, r824
+  // t.id == mi_idx.movie_id &&
+  Const        r826, "id"
+  Index        r827, r282, r826
+  Const        r828, "movie_id"
+  Index        r829, r637, r828
+  Equal        r830, r827, r829
+  // t.id == mc.movie_id &&
+  Const        r831, "id"
+  Index        r832, r282, r831
+  Const        r833, "movie_id"
+  Index        r834, r140, r833
+  Equal        r835, r832, r834
+  // mk.movie_id == mi.movie_id &&
+  Const        r836, "movie_id"
+  Index        r837, r353, r836
+  Const        r838, "movie_id"
+  Index        r839, r495, r838
+  Equal        r840, r837, r839
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r841, "movie_id"
+  Index        r842, r353, r841
+  Const        r843, "movie_id"
+  Index        r844, r637, r843
+  Equal        r845, r842, r844
+  // mk.movie_id == mc.movie_id &&
+  Const        r846, "movie_id"
+  Index        r847, r353, r846
+  Const        r848, "movie_id"
+  Index        r849, r140, r848
+  Equal        r850, r847, r849
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r851, "movie_id"
+  Index        r852, r495, r851
+  Const        r853, "movie_id"
+  Index        r854, r637, r853
+  Equal        r855, r852, r854
+  // mi.movie_id == mc.movie_id &&
+  Const        r856, "movie_id"
+  Index        r857, r495, r856
+  Const        r858, "movie_id"
+  Index        r859, r140, r858
+  Equal        r860, r857, r859
+  // mc.movie_id == mi_idx.movie_id &&
+  Const        r861, "movie_id"
+  Index        r862, r140, r861
+  Const        r863, "movie_id"
+  Index        r864, r637, r863
+  Equal        r865, r862, r864
+  // k.id == mk.keyword_id &&
+  Const        r866, "id"
+  Index        r867, r424, r866
+  Const        r868, "keyword_id"
+  Index        r869, r353, r868
+  Equal        r870, r867, r869
+  // it1.id == mi.info_type_id &&
+  Const        r871, "id"
+  Index        r872, r566, r871
+  Const        r873, "info_type_id"
+  Index        r874, r495, r873
+  Equal        r875, r872, r874
+  // it2.id == mi_idx.info_type_id &&
+  Const        r876, "id"
+  Index        r877, r708, r876
+  Const        r878, "info_type_id"
+  Index        r879, r637, r878
+  Equal        r880, r877, r879
+  // ct.id == mc.company_type_id &&
+  Const        r881, "id"
+  Index        r882, r211, r881
+  Const        r883, "company_type_id"
+  Index        r884, r140, r883
+  Equal        r885, r882, r884
+  // cn.id == mc.company_id
+  Const        r886, "id"
+  Index        r887, r74, r886
+  Const        r888, "company_id"
+  Index        r889, r140, r888
+  Equal        r890, r887, r889
+  // cn.country_code != "[us]" &&
+  Move         r891, r796
+  JumpIfFalse  r891, L12
+L12:
+  // it1.info == "countries" &&
+  Move         r892, r800
+  JumpIfFalse  r892, L13
+L13:
+  // it2.info == "rating" &&
+  Move         r893, r804
+  JumpIfFalse  r893, L14
+  // (k.keyword == "murder" || k.keyword == "murder-in-title" || k.keyword == "blood" || k.keyword == "violence") &&
+  Const        r894, "keyword"
+  Index        r895, r424, r894
+  Const        r896, "murder"
+  Equal        r897, r895, r896
+  Const        r898, "keyword"
+  Index        r899, r424, r898
+  Const        r900, "murder-in-title"
+  Equal        r901, r899, r900
+  Const        r902, "keyword"
+  Index        r903, r424, r902
+  Const        r904, "blood"
+  Equal        r905, r903, r904
+  Const        r906, "keyword"
+  Index        r907, r424, r906
+  Const        r908, "violence"
+  Equal        r909, r907, r908
+  Move         r910, r897
+  JumpIfTrue   r910, L15
+L15:
+  Move         r911, r901
+  JumpIfTrue   r911, L16
+L16:
+  Move         r912, r905
+  JumpIfTrue   r912, L14
+L14:
+  Move         r913, r909
+  JumpIfFalse  r913, L17
+  // (kt.kind == "movie" || kt.kind == "episode") &&
+  Const        r914, "kind"
+  Index        r915, r779, r914
+  Const        r916, "movie"
+  Equal        r917, r915, r916
+  Const        r918, "kind"
+  Index        r919, r779, r918
+  Const        r920, "episode"
+  Equal        r921, r919, r920
+  Move         r922, r917
+  JumpIfTrue   r922, L17
+L17:
+  Move         r923, r921
+  JumpIfFalse  r923, L18
+L18:
+  // mc.note.contains("(USA)") == false &&
+  Move         r924, r810
+  JumpIfFalse  r924, L19
+  Const        r925, "note"
+  Index        r926, r140, r925
+  // mc.note.contains("(200") &&
+  Const        r927, "(200"
+  In           r929, r927, r926
+L19:
+  JumpIfFalse  r929, L20
+  // (mi.info == "Germany" || mi.info == "German" || mi.info == "USA" || mi.info == "American") &&
+  Const        r930, "info"
+  Index        r931, r495, r930
+  Const        r932, "Germany"
+  Equal        r933, r931, r932
+  Const        r934, "info"
+  Index        r935, r495, r934
+  Const        r936, "German"
+  Equal        r937, r935, r936
+  Const        r938, "info"
+  Index        r939, r495, r938
+  Const        r940, "USA"
+  Equal        r941, r939, r940
+  Const        r942, "info"
+  Index        r943, r495, r942
+  Const        r944, "American"
+  Equal        r945, r943, r944
+  Move         r946, r933
+  JumpIfTrue   r946, L21
+L21:
+  Move         r947, r937
+  JumpIfTrue   r947, L22
+L22:
+  Move         r948, r941
+  JumpIfTrue   r948, L20
+L20:
+  Move         r949, r945
+  JumpIfFalse  r949, L23
+L23:
+  // mi_idx.info < 7.0 &&
+  Move         r950, r790
+  JumpIfFalse  r950, L24
+L24:
+  // t.production_year > 2008 &&
+  Move         r951, r794
+  JumpIfFalse  r951, L25
+L25:
+  // kt.id == t.kind_id &&
+  Move         r952, r815
+  JumpIfFalse  r952, L26
+L26:
+  // t.id == mi.movie_id &&
+  Move         r953, r820
+  JumpIfFalse  r953, L27
+L27:
+  // t.id == mk.movie_id &&
+  Move         r954, r825
+  JumpIfFalse  r954, L28
+L28:
+  // t.id == mi_idx.movie_id &&
+  Move         r955, r830
+  JumpIfFalse  r955, L29
+L29:
+  // t.id == mc.movie_id &&
+  Move         r956, r835
+  JumpIfFalse  r956, L30
+L30:
+  // mk.movie_id == mi.movie_id &&
+  Move         r957, r840
+  JumpIfFalse  r957, L31
+L31:
+  // mk.movie_id == mi_idx.movie_id &&
+  Move         r958, r845
+  JumpIfFalse  r958, L32
+L32:
+  // mk.movie_id == mc.movie_id &&
+  Move         r959, r850
+  JumpIfFalse  r959, L33
+L33:
+  // mi.movie_id == mi_idx.movie_id &&
+  Move         r960, r855
+  JumpIfFalse  r960, L34
+L34:
+  // mi.movie_id == mc.movie_id &&
+  Move         r961, r860
+  JumpIfFalse  r961, L35
+L35:
+  // mc.movie_id == mi_idx.movie_id &&
+  Move         r962, r865
+  JumpIfFalse  r962, L36
+L36:
+  // k.id == mk.keyword_id &&
+  Move         r963, r870
+  JumpIfFalse  r963, L37
+L37:
+  // it1.id == mi.info_type_id &&
+  Move         r964, r875
+  JumpIfFalse  r964, L38
+L38:
+  // it2.id == mi_idx.info_type_id &&
+  Move         r965, r880
+  JumpIfFalse  r965, L39
+L39:
+  // ct.id == mc.company_type_id &&
+  Move         r966, r885
+  JumpIfFalse  r966, L40
+  Move         r966, r890
+L40:
+  // where (
+  JumpIfFalse  r966, L11
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r967, "company"
+  Const        r968, "name"
+  Index        r969, r74, r968
+  Const        r970, "rating"
+  Const        r971, "info"
+  Index        r972, r637, r971
+  Const        r973, "title"
+  Const        r974, "title"
+  Index        r975, r282, r974
+  Move         r976, r967
+  Move         r977, r969
+  Move         r978, r970
+  Move         r979, r972
+  Move         r980, r973
+  Move         r981, r975
+  MakeMap      r982, 3, r976
   // from cn in company_name
-  Const        r15, 1
-  AddInt       r26, r26, r15
-  Jump         L34
+  Append       r10, r10, r982
+L11:
+  // join kt in kind_type on kt.id == t.kind_id
+  Const        r984, 1
+  Add          r775, r775, r984
+  Jump         L41
+L10:
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  Const        r985, 1
+  Add          r704, r704, r985
+  Jump         L42
+L9:
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  Const        r986, 1
+  Add          r633, r633, r986
+  Jump         L43
+L8:
+  // join it1 in info_type on it1.id == mi.info_type_id
+  Const        r987, 1
+  Add          r562, r562, r987
+  Jump         L44
+L7:
+  // join mi in movie_info on mi.movie_id == t.id
+  Const        r988, 1
+  Add          r491, r491, r988
+  Jump         L45
+L6:
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r989, 1
+  Add          r420, r420, r989
+  Jump         L46
+L5:
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r990, 1
+  Add          r349, r349, r990
+  Jump         L47
+L4:
+  // join t in title on t.id == mc.movie_id
+  Const        r991, 1
+  Add          r278, r278, r991
+  Jump         L48
+L3:
+  // join ct in company_type on ct.id == mc.company_type_id
+  Const        r992, 1
+  Add          r207, r207, r992
+  Jump         L49
+L2:
+  // join mc in movie_companies on cn.id == mc.company_id
+  Const        r993, 1
+  Add          r136, r136, r993
+  Jump         L50
+L1:
+  // from cn in company_name
+  Const        r994, 1
+  AddInt       r70, r70, r994
+  Jump         L51
 L0:
   // movie_company: min(from r in rows select r.company),
-  Const        r16, "movie_company"
-  Const        r43, []
-  Const        r42, "company"
-  IterPrep     r14, r10
-  Len          r31, r14
-  Const        r4, 0
-L36:
-  LessInt      r28, r4, r31
-  JumpIfFalse  r28, L35
-  Index        r12, r14, r4
-  Const        r9, "company"
-  Index        r21, r12, r9
-  Append       r43, r43, r21
-  Const        r19, 1
-  AddInt       r4, r4, r19
-  Jump         L36
-L35:
-  Min          r35, r43
+  Const        r995, "movie_company"
+  Const        r996, []
+  Const        r997, "company"
+  IterPrep     r998, r10
+  Len          r999, r998
+  Const        r1000, 0
+L53:
+  LessInt      r1002, r1000, r999
+  JumpIfFalse  r1002, L52
+  Index        r1004, r998, r1000
+  Const        r1005, "company"
+  Index        r1006, r1004, r1005
+  Append       r996, r996, r1006
+  Const        r1008, 1
+  AddInt       r1000, r1000, r1008
+  Jump         L53
+L52:
+  Min          r1009, r996
   // rating: min(from r in rows select r.rating),
-  Const        r27, "rating"
-  Const        r17, []
-  Const        r33, "rating"
-  IterPrep     r34, r10
-  Len          r22, r34
-  Const        r23, 0
-L38:
-  LessInt      r44, r23, r22
-  JumpIfFalse  r44, L37
-  Index        r12, r34, r23
-  Const        r45, "rating"
-  Index        r46, r12, r45
-  Append       r17, r17, r46
-  Const        r47, 1
-  AddInt       r23, r23, r47
-  Jump         L38
-L37:
-  Min          r48, r17
+  Const        r1010, "rating"
+  Const        r1011, []
+  Const        r1012, "rating"
+  IterPrep     r1013, r10
+  Len          r1014, r1013
+  Const        r1015, 0
+L55:
+  LessInt      r1017, r1015, r1014
+  JumpIfFalse  r1017, L54
+  Index        r1004, r1013, r1015
+  Const        r1019, "rating"
+  Index        r1020, r1004, r1019
+  Append       r1011, r1011, r1020
+  Const        r1022, 1
+  AddInt       r1015, r1015, r1022
+  Jump         L55
+L54:
+  Min          r1023, r1011
   // western_violent_movie: min(from r in rows select r.title)
-  Const        r49, "western_violent_movie"
-  Const        r36, []
-  Const        r25, "title"
-  IterPrep     r7, r10
-  Len          r2, r7
-  Const        r37, 0
-L40:
-  LessInt      r32, r37, r2
-  JumpIfFalse  r32, L39
-  Index        r12, r7, r37
-  Const        r13, "title"
-  Index        r5, r12, r13
-  Append       r36, r36, r5
-  Const        r38, 1
-  AddInt       r37, r37, r38
-  Jump         L40
-L39:
-  Min          r1, r36
+  Const        r1024, "western_violent_movie"
+  Const        r1025, []
+  Const        r1026, "title"
+  IterPrep     r1027, r10
+  Len          r1028, r1027
+  Const        r1029, 0
+L57:
+  LessInt      r1031, r1029, r1028
+  JumpIfFalse  r1031, L56
+  Index        r1004, r1027, r1029
+  Const        r1033, "title"
+  Index        r1034, r1004, r1033
+  Append       r1025, r1025, r1034
+  Const        r1036, 1
+  AddInt       r1029, r1029, r1036
+  Jump         L57
+L56:
+  Min          r1037, r1025
   // movie_company: min(from r in rows select r.company),
-  Move         r50, r16
-  Move         r51, r35
+  Move         r1038, r995
+  Move         r1039, r1009
   // rating: min(from r in rows select r.rating),
-  Move         r52, r27
-  Move         r53, r48
+  Move         r1040, r1010
+  Move         r1041, r1023
   // western_violent_movie: min(from r in rows select r.title)
-  Move         r54, r49
-  Move         r55, r1
+  Move         r1042, r1024
+  Move         r1043, r1037
   // {
-  MakeMap      r6, 3, r50
+  MakeMap      r1045, 3, r1038
   // let result = [
-  MakeList     r3, 1, r6
+  MakeList     r1046, 1, r1045
   // json(result)
-  JSON         r3
+  JSON         r1046
   // expect result == [
-  Const        r39, [{"movie_company": "Euro Films", "rating": 6.5, "western_violent_movie": "Violent Western"}]
-  Equal        r30, r3, r39
-  Expect       r30
+  Const        r1047, [{"movie_company": "Euro Films", "rating": 6.5, "western_violent_movie": "Violent Western"}]
+  Equal        r1048, r1046, r1047
+  Expect       r1048
   Return       r0

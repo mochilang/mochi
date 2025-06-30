@@ -1,18 +1,14 @@
-func main (regs=30)
+func main (regs=255)
   // let aka_name = [
   Const        r0, [{"name": "Alpha", "person_id": 1}, {"name": "Beta", "person_id": 2}]
   // let cast_info = [
   Const        r1, [{"movie_id": 101, "person_id": 1}, {"movie_id": 102, "person_id": 2}]
-L9:
   // let company_name = [
   Const        r2, [{"country_code": "[us]", "id": 1}, {"country_code": "[de]", "id": 2}]
-L16:
   // let keyword = [
   Const        r3, [{"id": 1, "keyword": "character-name-in-title"}, {"id": 2, "keyword": "other"}]
-L8:
   // let movie_companies = [
   Const        r4, [{"company_id": 1, "movie_id": 101}, {"company_id": 2, "movie_id": 102}]
-L10:
   // let movie_keyword = [
   Const        r5, [{"keyword_id": 1, "movie_id": 101}, {"keyword_id": 2, "movie_id": 102}]
   // let name = [
@@ -21,372 +17,380 @@ L10:
   Const        r7, [{"episode_nr": 60, "id": 101, "title": "Hero Bob"}, {"episode_nr": 40, "id": 102, "title": "Other Show"}]
   // from an in aka_name
   Const        r8, []
-L11:
   // where cn.country_code == "[us]" &&
   Const        r9, "country_code"
-L13:
   // k.keyword == "character-name-in-title" &&
   Const        r10, "keyword"
-L15:
   // t.episode_nr >= 50 &&
   Const        r11, "episode_nr"
-L14:
   // t.episode_nr < 100
   Const        r12, "episode_nr"
-L0:
   // select { pseudonym: an.name, series: t.title }
   Const        r13, "pseudonym"
-L3:
   Const        r14, "name"
-L2:
   Const        r15, "series"
   Const        r16, "title"
-L1:
   // from an in aka_name
   IterPrep     r17, r0
-L7:
   Len          r18, r17
-L4:
   Const        r19, 0
-L12:
-  LessInt      r20, r19, r18
-  JumpIfFalse  r20, L0
-L6:
-  Index        r21, r17, r19
-  // join n in name on n.id == an.person_id
-  IterPrep     r9, r6
-L17:
-  Len          r10, r9
-L5:
-  Const        r11, "id"
-  Const        r12, "person_id"
-  // where cn.country_code == "[us]" &&
-  Const        r13, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r14, "keyword"
-  // t.episode_nr >= 50 &&
-  Const        r15, "episode_nr"
-  // t.episode_nr < 100
-  Const        r16, "episode_nr"
-  // select { pseudonym: an.name, series: t.title }
-  Const        r18, "pseudonym"
-  Const        r20, "name"
-  Const        r17, "series"
-  Const        r6, "title"
-  // join n in name on n.id == an.person_id
-  Const        r11, 0
-  LessInt      r12, r11, r10
-  JumpIfFalse  r12, L1
-  Index        r13, r9, r11
-  Const        r14, "id"
-  Index        r15, r13, r14
-  Const        r16, "person_id"
-  Index        r18, r21, r16
-  Equal        r20, r15, r18
-  JumpIfFalse  r20, L2
-  // join ci in cast_info on ci.person_id == n.id
-  IterPrep     r17, r1
-  Len          r6, r17
-  Const        r10, "person_id"
-  Const        r12, "id"
-  // where cn.country_code == "[us]" &&
-  Const        r9, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r14, "keyword"
-  // t.episode_nr >= 50 &&
-  Const        r16, "episode_nr"
-  // t.episode_nr < 100
-  Const        r15, "episode_nr"
-  // select { pseudonym: an.name, series: t.title }
-  Const        r18, "pseudonym"
-  Const        r20, "name"
-  Const        r1, "series"
-  Const        r10, "title"
-  // join ci in cast_info on ci.person_id == n.id
-  Const        r12, 0
-  LessInt      r9, r12, r6
-  JumpIfFalse  r9, L2
-  Index        r14, r17, r12
-  Const        r16, "person_id"
-  Index        r15, r14, r16
-  Const        r18, "id"
-  Index        r20, r13, r18
-  Equal        r1, r15, r20
-  JumpIfFalse  r1, L3
-  // join t in title on t.id == ci.movie_id
-  IterPrep     r10, r7
-  Len          r6, r10
-  Const        r9, "id"
-  Const        r17, "movie_id"
-  // where cn.country_code == "[us]" &&
-  Const        r16, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r13, "keyword"
-  // t.episode_nr >= 50 &&
-  Const        r18, "episode_nr"
-  // t.episode_nr < 100
-  Const        r15, "episode_nr"
-  // select { pseudonym: an.name, series: t.title }
-  Const        r20, "pseudonym"
-  Const        r1, "name"
-  Const        r7, "series"
-  Const        r9, "title"
-  // join t in title on t.id == ci.movie_id
-  Const        r17, 0
-  LessInt      r16, r17, r6
-  JumpIfFalse  r16, L3
-  Index        r13, r10, r17
-  Const        r18, "id"
-  Index        r15, r13, r18
-  Const        r20, "movie_id"
-  Index        r1, r14, r20
-  Equal        r7, r15, r1
-  JumpIfFalse  r7, L4
-  // join mk in movie_keyword on mk.movie_id == t.id
-  IterPrep     r9, r5
-  Len          r6, r9
-  Const        r16, "movie_id"
-  Const        r10, "id"
-  // where cn.country_code == "[us]" &&
-  Const        r18, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r14, "keyword"
-  // t.episode_nr >= 50 &&
-  Const        r20, "episode_nr"
-  // t.episode_nr < 100
-  Const        r15, "episode_nr"
-  // select { pseudonym: an.name, series: t.title }
-  Const        r1, "pseudonym"
-  Const        r7, "name"
-  Const        r5, "series"
-  Const        r16, "title"
-  // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r10, 0
-  LessInt      r18, r10, r6
-  JumpIfFalse  r18, L4
-  Index        r14, r9, r10
-  Const        r20, "movie_id"
-  Index        r15, r14, r20
-  Const        r1, "id"
-  Index        r7, r13, r1
-  Equal        r5, r15, r7
-  JumpIfFalse  r5, L5
-  // join k in keyword on k.id == mk.keyword_id
-  IterPrep     r16, r3
-  Len          r6, r16
-  Const        r18, "id"
-  Const        r9, "keyword_id"
-  // where cn.country_code == "[us]" &&
-  Const        r20, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r1, "keyword"
-  // t.episode_nr >= 50 &&
-  Const        r15, "episode_nr"
-  // t.episode_nr < 100
-  Const        r7, "episode_nr"
-  // select { pseudonym: an.name, series: t.title }
-  Const        r5, "pseudonym"
-  Const        r3, "name"
-  Const        r18, "series"
-  Const        r9, "title"
-  // join k in keyword on k.id == mk.keyword_id
-  Const        r20, 0
-  LessInt      r1, r20, r6
-  JumpIfFalse  r1, L5
-  Index        r15, r16, r20
-  Const        r7, "id"
-  Index        r5, r15, r7
-  Const        r3, "keyword_id"
-  Index        r18, r14, r3
-  Equal        r9, r5, r18
-  JumpIfFalse  r9, L6
-  // join mc in movie_companies on mc.movie_id == t.id
-  IterPrep     r6, r4
-  Len          r1, r6
-  Const        r16, "movie_id"
-  Const        r7, "id"
-  // where cn.country_code == "[us]" &&
-  Const        r14, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r3, "keyword"
-  // t.episode_nr >= 50 &&
-  Const        r5, "episode_nr"
-  // t.episode_nr < 100
-  Const        r18, "episode_nr"
-  // select { pseudonym: an.name, series: t.title }
-  Const        r9, "pseudonym"
-  Const        r4, "name"
-  Const        r16, "series"
-  Const        r7, "title"
-  // join mc in movie_companies on mc.movie_id == t.id
-  Const        r14, 0
-  LessInt      r3, r14, r1
-  JumpIfFalse  r3, L6
-  Index        r5, r6, r14
-  Const        r18, "movie_id"
-  Index        r9, r5, r18
-  Const        r4, "id"
-  Index        r16, r13, r4
-  Equal        r7, r9, r16
-  JumpIfFalse  r7, L7
-  // join cn in company_name on cn.id == mc.company_id
-  IterPrep     r1, r2
-  Len          r3, r1
-  Const        r6, "id"
-  Const        r18, "company_id"
-  // where cn.country_code == "[us]" &&
-  Const        r4, "country_code"
-  // k.keyword == "character-name-in-title" &&
-  Const        r9, "keyword"
-  // t.episode_nr >= 50 &&
-  Const        r16, "episode_nr"
-  // t.episode_nr < 100
-  Const        r7, "episode_nr"
-  // select { pseudonym: an.name, series: t.title }
-  Const        r2, "pseudonym"
-  Const        r6, "name"
-  Const        r18, "series"
-  Const        r4, "title"
-  // join cn in company_name on cn.id == mc.company_id
-  Const        r9, 0
-  LessInt      r16, r9, r3
-  JumpIfFalse  r16, L7
-  Index        r7, r1, r9
-  Const        r2, "id"
-  Index        r6, r7, r2
-  Const        r18, "company_id"
-  Index        r4, r5, r18
-  Equal        r3, r6, r4
-  JumpIfFalse  r3, L8
-  // where cn.country_code == "[us]" &&
-  Const        r16, "country_code"
-  Index        r1, r7, r16
-  // t.episode_nr >= 50 &&
-  Const        r2, "episode_nr"
-  Index        r5, r13, r2
-  Const        r18, 50
-  LessEq       r6, r18, r5
-  // t.episode_nr < 100
-  Const        r4, "episode_nr"
-  Index        r3, r13, r4
-  Const        r7, 100
-  Less         r16, r3, r7
-  // where cn.country_code == "[us]" &&
-  Const        r2, "[us]"
-  Equal        r5, r1, r2
-  // k.keyword == "character-name-in-title" &&
-  Const        r18, "keyword"
-  Index        r4, r15, r18
-  Const        r3, "character-name-in-title"
-  Equal        r7, r4, r3
-  // where cn.country_code == "[us]" &&
-  Move         r1, r5
-  JumpIfFalse  r1, L9
-  // k.keyword == "character-name-in-title" &&
-  Move         r2, r7
-  JumpIfFalse  r2, L7
-  // t.episode_nr >= 50 &&
-  Move         r15, r6
-  JumpIfFalse  r15, L10
-  Move         r15, r16
-  // where cn.country_code == "[us]" &&
-  JumpIfFalse  r15, L8
-  // select { pseudonym: an.name, series: t.title }
-  Const        r18, "pseudonym"
-  Const        r4, "name"
-  Index        r3, r21, r4
-  Const        r5, "series"
-  Const        r1, "title"
-  Index        r7, r13, r1
-  Move         r22, r18
-  Move         r23, r3
-  Move         r24, r5
-  Move         r25, r7
-  MakeMap      r2, 2, r22
-  // from an in aka_name
-  Append       r8, r8, r2
-  // join cn in company_name on cn.id == mc.company_id
-  Const        r6, 1
-  Add          r9, r9, r6
-  Jump         L11
-  // join mc in movie_companies on mc.movie_id == t.id
-  Const        r16, 1
-  Add          r14, r14, r16
-  Jump         L3
-  // join k in keyword on k.id == mk.keyword_id
-  Const        r15, 1
-  Add          r20, r20, r15
-  Jump         L12
-  // join mk in movie_keyword on mk.movie_id == t.id
-  Const        r21, 1
-  Add          r10, r10, r21
-  Jump         L13
-  // join t in title on t.id == ci.movie_id
-  Const        r4, 1
-  Add          r17, r17, r4
-  Jump         L1
-  // join ci in cast_info on ci.person_id == n.id
-  Const        r13, 1
-  Add          r12, r12, r13
-  Jump         L14
-  // join n in name on n.id == an.person_id
-  Const        r1, 1
-  Add          r11, r11, r1
-  Jump         L15
-  // from an in aka_name
-  Const        r18, 1
-  AddInt       r19, r19, r18
-  Jump         L16
-  // cool_actor_pseudonym: min(from r in rows select r.pseudonym),
-  Const        r5, "cool_actor_pseudonym"
-  Const        r7, []
-  Const        r22, "pseudonym"
-  IterPrep     r23, r8
-  Len          r24, r23
-  Const        r25, 0
-  LessInt      r2, r25, r24
-  JumpIfFalse  r2, L17
-  Index        r9, r23, r25
-  Const        r6, "pseudonym"
-  Index        r14, r9, r6
-  Append       r7, r7, r14
-  Const        r16, 1
-  AddInt       r25, r25, r16
-  Jump         L12
-  Min          r15, r7
-  // series_named_after_char: min(from r in rows select r.series)
-  Const        r10, "series_named_after_char"
-  Const        r21, []
-  Const        r17, "series"
-  IterPrep     r4, r8
-  Len          r12, r4
-  Const        r13, 0
 L19:
-  LessInt      r11, r13, r12
-  JumpIfFalse  r11, L18
-  Index        r9, r4, r13
-  Const        r1, "series"
-  Index        r19, r9, r1
-  Append       r21, r21, r19
-  Const        r18, 1
-  AddInt       r13, r13, r18
-  Jump         L19
+  LessInt      r21, r19, r18
+  JumpIfFalse  r21, L0
+  Index        r23, r17, r19
+  // join n in name on n.id == an.person_id
+  IterPrep     r24, r6
+  Len          r25, r24
+  Const        r26, "id"
+  Const        r27, "person_id"
+  // where cn.country_code == "[us]" &&
+  Const        r28, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r29, "keyword"
+  // t.episode_nr >= 50 &&
+  Const        r30, "episode_nr"
+  // t.episode_nr < 100
+  Const        r31, "episode_nr"
+  // select { pseudonym: an.name, series: t.title }
+  Const        r32, "pseudonym"
+  Const        r33, "name"
+  Const        r34, "series"
+  Const        r35, "title"
+  // join n in name on n.id == an.person_id
+  Const        r36, 0
 L18:
-  Min          r3, r21
+  LessInt      r38, r36, r25
+  JumpIfFalse  r38, L1
+  Index        r40, r24, r36
+  Const        r41, "id"
+  Index        r42, r40, r41
+  Const        r43, "person_id"
+  Index        r44, r23, r43
+  Equal        r45, r42, r44
+  JumpIfFalse  r45, L2
+  // join ci in cast_info on ci.person_id == n.id
+  IterPrep     r46, r1
+  Len          r47, r46
+  Const        r48, "person_id"
+  Const        r49, "id"
+  // where cn.country_code == "[us]" &&
+  Const        r50, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r51, "keyword"
+  // t.episode_nr >= 50 &&
+  Const        r52, "episode_nr"
+  // t.episode_nr < 100
+  Const        r53, "episode_nr"
+  // select { pseudonym: an.name, series: t.title }
+  Const        r54, "pseudonym"
+  Const        r55, "name"
+  Const        r56, "series"
+  Const        r57, "title"
+  // join ci in cast_info on ci.person_id == n.id
+  Const        r58, 0
+L17:
+  LessInt      r60, r58, r47
+  JumpIfFalse  r60, L2
+  Index        r62, r46, r58
+  Const        r63, "person_id"
+  Index        r64, r62, r63
+  Const        r65, "id"
+  Index        r66, r40, r65
+  Equal        r67, r64, r66
+  JumpIfFalse  r67, L3
+  // join t in title on t.id == ci.movie_id
+  IterPrep     r68, r7
+  Len          r69, r68
+  Const        r70, "id"
+  Const        r71, "movie_id"
+  // where cn.country_code == "[us]" &&
+  Const        r72, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r73, "keyword"
+  // t.episode_nr >= 50 &&
+  Const        r74, "episode_nr"
+  // t.episode_nr < 100
+  Const        r75, "episode_nr"
+  // select { pseudonym: an.name, series: t.title }
+  Const        r76, "pseudonym"
+  Const        r77, "name"
+  Const        r78, "series"
+  Const        r79, "title"
+  // join t in title on t.id == ci.movie_id
+  Const        r80, 0
+L16:
+  LessInt      r82, r80, r69
+  JumpIfFalse  r82, L3
+  Index        r84, r68, r80
+  Const        r85, "id"
+  Index        r86, r84, r85
+  Const        r87, "movie_id"
+  Index        r88, r62, r87
+  Equal        r89, r86, r88
+  JumpIfFalse  r89, L4
+  // join mk in movie_keyword on mk.movie_id == t.id
+  IterPrep     r90, r5
+  Len          r91, r90
+  Const        r92, "movie_id"
+  Const        r93, "id"
+  // where cn.country_code == "[us]" &&
+  Const        r94, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r95, "keyword"
+  // t.episode_nr >= 50 &&
+  Const        r96, "episode_nr"
+  // t.episode_nr < 100
+  Const        r97, "episode_nr"
+  // select { pseudonym: an.name, series: t.title }
+  Const        r98, "pseudonym"
+  Const        r99, "name"
+  Const        r100, "series"
+  Const        r101, "title"
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r102, 0
+L15:
+  LessInt      r104, r102, r91
+  JumpIfFalse  r104, L4
+  Index        r106, r90, r102
+  Const        r107, "movie_id"
+  Index        r108, r106, r107
+  Const        r109, "id"
+  Index        r110, r84, r109
+  Equal        r111, r108, r110
+  JumpIfFalse  r111, L5
+  // join k in keyword on k.id == mk.keyword_id
+  IterPrep     r112, r3
+  Len          r113, r112
+  Const        r114, "id"
+  Const        r115, "keyword_id"
+  // where cn.country_code == "[us]" &&
+  Const        r116, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r117, "keyword"
+  // t.episode_nr >= 50 &&
+  Const        r118, "episode_nr"
+  // t.episode_nr < 100
+  Const        r119, "episode_nr"
+  // select { pseudonym: an.name, series: t.title }
+  Const        r120, "pseudonym"
+  Const        r121, "name"
+  Const        r122, "series"
+  Const        r123, "title"
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r124, 0
+L14:
+  LessInt      r126, r124, r113
+  JumpIfFalse  r126, L5
+  Index        r128, r112, r124
+  Const        r129, "id"
+  Index        r130, r128, r129
+  Const        r131, "keyword_id"
+  Index        r132, r106, r131
+  Equal        r133, r130, r132
+  JumpIfFalse  r133, L6
+  // join mc in movie_companies on mc.movie_id == t.id
+  IterPrep     r134, r4
+  Len          r135, r134
+  Const        r136, "movie_id"
+  Const        r137, "id"
+  // where cn.country_code == "[us]" &&
+  Const        r138, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r139, "keyword"
+  // t.episode_nr >= 50 &&
+  Const        r140, "episode_nr"
+  // t.episode_nr < 100
+  Const        r141, "episode_nr"
+  // select { pseudonym: an.name, series: t.title }
+  Const        r142, "pseudonym"
+  Const        r143, "name"
+  Const        r144, "series"
+  Const        r145, "title"
+  // join mc in movie_companies on mc.movie_id == t.id
+  Const        r146, 0
+L13:
+  LessInt      r148, r146, r135
+  JumpIfFalse  r148, L6
+  Index        r150, r134, r146
+  Const        r151, "movie_id"
+  Index        r152, r150, r151
+  Const        r153, "id"
+  Index        r154, r84, r153
+  Equal        r155, r152, r154
+  JumpIfFalse  r155, L7
+  // join cn in company_name on cn.id == mc.company_id
+  IterPrep     r156, r2
+  Len          r157, r156
+  Const        r158, "id"
+  Const        r159, "company_id"
+  // where cn.country_code == "[us]" &&
+  Const        r160, "country_code"
+  // k.keyword == "character-name-in-title" &&
+  Const        r161, "keyword"
+  // t.episode_nr >= 50 &&
+  Const        r162, "episode_nr"
+  // t.episode_nr < 100
+  Const        r163, "episode_nr"
+  // select { pseudonym: an.name, series: t.title }
+  Const        r164, "pseudonym"
+  Const        r165, "name"
+  Const        r166, "series"
+  Const        r167, "title"
+  // join cn in company_name on cn.id == mc.company_id
+  Const        r168, 0
+L12:
+  LessInt      r170, r168, r157
+  JumpIfFalse  r170, L7
+  Index        r172, r156, r168
+  Const        r173, "id"
+  Index        r174, r172, r173
+  Const        r175, "company_id"
+  Index        r176, r150, r175
+  Equal        r177, r174, r176
+  JumpIfFalse  r177, L8
+  // where cn.country_code == "[us]" &&
+  Const        r178, "country_code"
+  Index        r179, r172, r178
+  // t.episode_nr >= 50 &&
+  Const        r180, "episode_nr"
+  Index        r181, r84, r180
+  Const        r182, 50
+  LessEq       r183, r182, r181
+  // t.episode_nr < 100
+  Const        r184, "episode_nr"
+  Index        r185, r84, r184
+  Const        r186, 100
+  Less         r187, r185, r186
+  // where cn.country_code == "[us]" &&
+  Const        r188, "[us]"
+  Equal        r189, r179, r188
+  // k.keyword == "character-name-in-title" &&
+  Const        r190, "keyword"
+  Index        r191, r128, r190
+  Const        r192, "character-name-in-title"
+  Equal        r193, r191, r192
+  // where cn.country_code == "[us]" &&
+  Move         r194, r189
+  JumpIfFalse  r194, L9
+L9:
+  // k.keyword == "character-name-in-title" &&
+  Move         r195, r193
+  JumpIfFalse  r195, L10
+L10:
+  // t.episode_nr >= 50 &&
+  Move         r196, r183
+  JumpIfFalse  r196, L11
+  Move         r196, r187
+L11:
+  // where cn.country_code == "[us]" &&
+  JumpIfFalse  r196, L8
+  // select { pseudonym: an.name, series: t.title }
+  Const        r197, "pseudonym"
+  Const        r198, "name"
+  Index        r199, r23, r198
+  Const        r200, "series"
+  Const        r201, "title"
+  Index        r202, r84, r201
+  Move         r203, r197
+  Move         r204, r199
+  Move         r205, r200
+  Move         r206, r202
+  MakeMap      r207, 2, r203
+  // from an in aka_name
+  Append       r8, r8, r207
+L8:
+  // join cn in company_name on cn.id == mc.company_id
+  Const        r209, 1
+  Add          r168, r168, r209
+  Jump         L12
+L7:
+  // join mc in movie_companies on mc.movie_id == t.id
+  Const        r210, 1
+  Add          r146, r146, r210
+  Jump         L13
+L6:
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r211, 1
+  Add          r124, r124, r211
+  Jump         L14
+L5:
+  // join mk in movie_keyword on mk.movie_id == t.id
+  Const        r212, 1
+  Add          r102, r102, r212
+  Jump         L15
+L4:
+  // join t in title on t.id == ci.movie_id
+  Const        r213, 1
+  Add          r80, r80, r213
+  Jump         L16
+L3:
+  // join ci in cast_info on ci.person_id == n.id
+  Const        r214, 1
+  Add          r58, r58, r214
+  Jump         L17
+L2:
+  // join n in name on n.id == an.person_id
+  Const        r215, 1
+  Add          r36, r36, r215
+  Jump         L18
+L1:
+  // from an in aka_name
+  Const        r216, 1
+  AddInt       r19, r19, r216
+  Jump         L19
+L0:
   // cool_actor_pseudonym: min(from r in rows select r.pseudonym),
-  Move         r26, r5
-  Move         r27, r15
+  Const        r217, "cool_actor_pseudonym"
+  Const        r218, []
+  Const        r219, "pseudonym"
+  IterPrep     r220, r8
+  Len          r221, r220
+  Const        r222, 0
+L21:
+  LessInt      r224, r222, r221
+  JumpIfFalse  r224, L20
+  Index        r226, r220, r222
+  Const        r227, "pseudonym"
+  Index        r228, r226, r227
+  Append       r218, r218, r228
+  Const        r230, 1
+  AddInt       r222, r222, r230
+  Jump         L21
+L20:
+  Min          r231, r218
   // series_named_after_char: min(from r in rows select r.series)
-  Move         r28, r10
-  Move         r29, r3
+  Const        r232, "series_named_after_char"
+  Const        r233, []
+  Const        r234, "series"
+  IterPrep     r235, r8
+  Len          r236, r235
+  Const        r237, 0
+L23:
+  LessInt      r239, r237, r236
+  JumpIfFalse  r239, L22
+  Index        r226, r235, r237
+  Const        r241, "series"
+  Index        r242, r226, r241
+  Append       r233, r233, r242
+  Const        r244, 1
+  AddInt       r237, r237, r244
+  Jump         L23
+L22:
+  Min          r245, r233
+  // cool_actor_pseudonym: min(from r in rows select r.pseudonym),
+  Move         r246, r217
+  Move         r247, r231
+  // series_named_after_char: min(from r in rows select r.series)
+  Move         r248, r232
+  Move         r249, r245
   // {
-  MakeMap      r22, 2, r26
+  MakeMap      r251, 2, r246
   // let result = [
-  MakeList     r24, 1, r22
+  MakeList     r252, 1, r251
   // json(result)
-  JSON         r24
+  JSON         r252
   // expect result == [
-  Const        r2, [{"cool_actor_pseudonym": "Alpha", "series_named_after_char": "Hero Bob"}]
-  Equal        r23, r24, r2
-  Expect       r23
+  Const        r253, [{"cool_actor_pseudonym": "Alpha", "series_named_after_char": "Hero Bob"}]
+  Equal        r254, r252, r253
+  Expect       r254
   Return       r0
