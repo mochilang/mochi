@@ -1,0 +1,392 @@
+func main (regs=264)
+  // let store_sales = [ { ss_sold_date_sk: 1, ss_item_sk: 1, ss_store_sk: 1, ss_customer_sk: 1, ss_quantity: 10, ss_ticket_number: 1 } ]
+  Const        r0, [{"ss_customer_sk": 1, "ss_item_sk": 1, "ss_quantity": 10, "ss_sold_date_sk": 1, "ss_store_sk": 1, "ss_ticket_number": 1}]
+  // let store_returns = [ { sr_returned_date_sk: 2, sr_item_sk: 1, sr_customer_sk: 1, sr_ticket_number: 1, sr_return_quantity: 2 } ]
+  Const        r1, [{"sr_customer_sk": 1, "sr_item_sk": 1, "sr_return_quantity": 2, "sr_returned_date_sk": 2, "sr_ticket_number": 1}]
+  // let catalog_sales = [ { cs_sold_date_sk: 3, cs_item_sk: 1, cs_bill_customer_sk: 1, cs_quantity: 5 } ]
+  Const        r2, [{"cs_bill_customer_sk": 1, "cs_item_sk": 1, "cs_quantity": 5, "cs_sold_date_sk": 3}]
+  // let date_dim = [
+  Const        r3, [{"d_date_sk": 1, "d_moy": 4, "d_year": 1999}, {"d_date_sk": 2, "d_moy": 5, "d_year": 1999}, {"d_date_sk": 3, "d_moy": 5, "d_year": 2000}]
+  // let store = [ { s_store_sk: 1, s_store_id: "S1", s_store_name: "Store1" } ]
+  Const        r4, [{"s_store_id": "S1", "s_store_name": "Store1", "s_store_sk": 1}]
+  // let item = [ { i_item_sk: 1, i_item_id: "ITEM1", i_item_desc: "Desc1" } ]
+  Const        r5, [{"i_item_desc": "Desc1", "i_item_id": "ITEM1", "i_item_sk": 1}]
+  // from ss in store_sales
+  Const        r6, []
+  // group by { item_id: i.i_item_id, item_desc: i.i_item_desc, s_store_id: s.s_store_id, s_store_name: s.s_store_name } into g
+  Const        r7, "item_id"
+  Const        r8, "i_item_id"
+  Const        r9, "item_desc"
+  Const        r10, "i_item_desc"
+  Const        r11, "s_store_id"
+  Const        r12, "s_store_name"
+  // where d1.d_moy == 4 && d1.d_year == 1999 && d2.d_moy >= 4 && d2.d_moy <= 7 && d3.d_year in [1999,2000,2001]
+  Const        r13, "d_moy"
+  Const        r14, "d_year"
+  // i_item_id: g.key.item_id,
+  Const        r15, "key"
+  // store_sales_quantity: sum(from x in g select x.ss_quantity),
+  Const        r16, "store_sales_quantity"
+  Const        r17, "ss_quantity"
+  // store_returns_quantity: sum(from x in g select x.sr_return_quantity),
+  Const        r18, "store_returns_quantity"
+  Const        r19, "sr_return_quantity"
+  // catalog_sales_quantity: sum(from x in g select x.cs_quantity)
+  Const        r20, "catalog_sales_quantity"
+  Const        r21, "cs_quantity"
+  // from ss in store_sales
+  MakeMap      r22, 0, r0
+  Move         r23, r6
+  IterPrep     r25, r0
+  Len          r26, r25
+  Const        r27, 0
+L1:
+  LessInt      r28, r27, r26
+  JumpIfFalse  r28, L0
+  Index        r30, r25, r27
+  // join sr in store_returns on ss.ss_ticket_number == sr.sr_ticket_number && ss.ss_item_sk == sr.sr_item_sk
+  IterPrep     r31, r1
+  Len          r32, r31
+  Move         r33, r27
+L3:
+  LessInt      r34, r33, r32
+  JumpIfFalse  r34, L1
+  Index        r36, r31, r33
+  Const        r37, "ss_ticket_number"
+  Index        r38, r30, r37
+  Const        r39, "sr_ticket_number"
+  Index        r40, r36, r39
+  Equal        r41, r38, r40
+  Const        r42, "ss_item_sk"
+  Index        r43, r30, r42
+  Const        r44, "sr_item_sk"
+  Index        r45, r36, r44
+  Equal        r46, r43, r45
+  Move         r47, r41
+  JumpIfFalse  r47, L2
+  Move         r47, r46
+L2:
+  JumpIfFalse  r47, L3
+  // join cs in catalog_sales on sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk
+  IterPrep     r48, r2
+  Len          r49, r48
+  Move         r50, r27
+L21:
+  LessInt      r51, r50, r49
+  JumpIfFalse  r51, L3
+  Index        r53, r48, r50
+  Const        r54, "sr_customer_sk"
+  Index        r55, r36, r54
+  Const        r56, "cs_bill_customer_sk"
+  Index        r57, r53, r56
+  Equal        r58, r55, r57
+  Index        r59, r36, r44
+  Const        r60, "cs_item_sk"
+  Index        r61, r53, r60
+  Equal        r62, r59, r61
+  Move         r63, r58
+  JumpIfFalse  r63, L4
+  Move         r63, r62
+L4:
+  JumpIfFalse  r63, L5
+  // join d1 in date_dim on d1.d_date_sk == ss.ss_sold_date_sk
+  IterPrep     r64, r3
+  Len          r65, r64
+  Move         r66, r50
+L20:
+  LessInt      r67, r66, r65
+  JumpIfFalse  r67, L5
+  Index        r69, r64, r66
+  Const        r70, "d_date_sk"
+  Index        r71, r69, r70
+  Const        r72, "ss_sold_date_sk"
+  Index        r73, r30, r72
+  Equal        r74, r71, r73
+  JumpIfFalse  r74, L6
+  // join d2 in date_dim on d2.d_date_sk == sr.sr_returned_date_sk
+  IterPrep     r75, r3
+  Len          r76, r75
+  Move         r77, r27
+L19:
+  LessInt      r78, r77, r76
+  JumpIfFalse  r78, L6
+  Index        r80, r75, r77
+  Index        r81, r80, r70
+  Const        r82, "sr_returned_date_sk"
+  Index        r83, r36, r82
+  Equal        r84, r81, r83
+  JumpIfFalse  r84, L7
+  // join d3 in date_dim on d3.d_date_sk == cs.cs_sold_date_sk
+  IterPrep     r85, r3
+  Len          r86, r85
+  Move         r87, r77
+L18:
+  LessInt      r88, r87, r86
+  JumpIfFalse  r88, L7
+  Index        r90, r85, r87
+  Index        r91, r90, r70
+  Const        r92, "cs_sold_date_sk"
+  Index        r93, r53, r92
+  Equal        r94, r91, r93
+  JumpIfFalse  r94, L8
+  // join s in store on s.s_store_sk == ss.ss_store_sk
+  IterPrep     r95, r4
+  Len          r96, r95
+  Move         r97, r77
+L17:
+  LessInt      r98, r97, r96
+  JumpIfFalse  r98, L8
+  Index        r100, r95, r97
+  Const        r101, "s_store_sk"
+  Index        r102, r100, r101
+  Const        r103, "ss_store_sk"
+  Index        r104, r30, r103
+  Equal        r105, r102, r104
+  JumpIfFalse  r105, L9
+  // join i in item on i.i_item_sk == ss.ss_item_sk
+  IterPrep     r106, r5
+  Len          r107, r106
+  Move         r108, r97
+L16:
+  LessInt      r109, r108, r107
+  JumpIfFalse  r109, L9
+  Index        r111, r106, r108
+  Const        r112, "i_item_sk"
+  Index        r113, r111, r112
+  Index        r114, r30, r42
+  Equal        r115, r113, r114
+  JumpIfFalse  r115, L10
+  // where d1.d_moy == 4 && d1.d_year == 1999 && d2.d_moy >= 4 && d2.d_moy <= 7 && d3.d_year in [1999,2000,2001]
+  Index        r116, r69, r13
+  Index        r117, r80, r13
+  Const        r118, 4
+  LessEq       r119, r118, r117
+  Index        r120, r80, r13
+  Const        r121, 7
+  LessEq       r122, r120, r121
+  Equal        r123, r116, r118
+  Index        r124, r69, r14
+  Const        r125, 1999
+  Equal        r126, r124, r125
+  Index        r127, r90, r14
+  Const        r128, [1999, 2000, 2001]
+  In           r129, r127, r128
+  Move         r130, r123
+  JumpIfFalse  r130, L11
+L11:
+  Move         r131, r126
+  JumpIfFalse  r131, L12
+L12:
+  Move         r132, r119
+  JumpIfFalse  r132, L13
+L13:
+  Move         r133, r122
+  JumpIfFalse  r133, L14
+  Move         r133, r129
+L14:
+  JumpIfFalse  r133, L10
+  // from ss in store_sales
+  Const        r134, "ss"
+  Move         r135, r30
+  Const        r136, "sr"
+  Move         r137, r36
+  Const        r138, "cs"
+  Move         r139, r53
+  Const        r140, "d1"
+  Move         r141, r69
+  Const        r142, "d2"
+  Move         r143, r80
+  Const        r144, "d3"
+  Move         r145, r90
+  Const        r146, "s"
+  Move         r147, r100
+  Const        r148, "i"
+  Move         r149, r111
+  MakeMap      r150, 8, r134
+  // group by { item_id: i.i_item_id, item_desc: i.i_item_desc, s_store_id: s.s_store_id, s_store_name: s.s_store_name } into g
+  Move         r151, r7
+  Index        r152, r111, r8
+  Move         r153, r9
+  Index        r154, r111, r10
+  Move         r155, r11
+  Index        r156, r100, r11
+  Move         r157, r12
+  Index        r158, r100, r12
+  Move         r159, r151
+  Move         r160, r152
+  Move         r161, r153
+  Move         r162, r154
+  Move         r163, r155
+  Move         r164, r156
+  Move         r165, r157
+  Move         r166, r158
+  MakeMap      r167, 4, r159
+  Str          r168, r167
+  In           r169, r168, r22
+  JumpIfTrue   r169, L15
+  // from ss in store_sales
+  Move         r170, r6
+  Const        r171, "__group__"
+  Const        r172, true
+  Move         r173, r15
+  // group by { item_id: i.i_item_id, item_desc: i.i_item_desc, s_store_id: s.s_store_id, s_store_name: s.s_store_name } into g
+  Move         r174, r167
+  // from ss in store_sales
+  Const        r175, "items"
+  Move         r176, r170
+  Const        r177, "count"
+  Move         r178, r27
+  Move         r179, r171
+  Move         r180, r172
+  Move         r181, r173
+  Move         r182, r174
+  Move         r183, r175
+  Move         r184, r176
+  Move         r185, r177
+  Move         r186, r178
+  MakeMap      r187, 4, r179
+  SetIndex     r22, r168, r187
+  Append       r23, r23, r187
+L15:
+  Move         r189, r175
+  Index        r190, r22, r168
+  Index        r191, r190, r189
+  Append       r192, r191, r150
+  SetIndex     r190, r189, r192
+  Move         r193, r177
+  Index        r194, r190, r193
+  Const        r195, 1
+  AddInt       r196, r194, r195
+  SetIndex     r190, r193, r196
+L10:
+  // join i in item on i.i_item_sk == ss.ss_item_sk
+  AddInt       r108, r108, r195
+  Jump         L16
+L9:
+  // join s in store on s.s_store_sk == ss.ss_store_sk
+  AddInt       r97, r97, r195
+  Jump         L17
+L8:
+  // join d3 in date_dim on d3.d_date_sk == cs.cs_sold_date_sk
+  AddInt       r87, r87, r195
+  Jump         L18
+L7:
+  // join d2 in date_dim on d2.d_date_sk == sr.sr_returned_date_sk
+  AddInt       r77, r77, r195
+  Jump         L19
+L6:
+  // join d1 in date_dim on d1.d_date_sk == ss.ss_sold_date_sk
+  AddInt       r66, r66, r195
+  Jump         L20
+L5:
+  // join cs in catalog_sales on sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk
+  AddInt       r50, r50, r195
+  Jump         L21
+L0:
+  // from ss in store_sales
+  Move         r198, r178
+  Move         r197, r198
+  Len          r199, r23
+L29:
+  LessInt      r200, r197, r199
+  JumpIfFalse  r200, L22
+  Index        r202, r23, r197
+  // i_item_id: g.key.item_id,
+  Move         r203, r8
+  Index        r204, r202, r15
+  Index        r205, r204, r7
+  // i_item_desc: g.key.item_desc,
+  Move         r206, r10
+  Index        r207, r202, r15
+  Index        r208, r207, r9
+  // s_store_id: g.key.s_store_id,
+  Move         r209, r11
+  Index        r210, r202, r15
+  Index        r211, r210, r11
+  // s_store_name: g.key.s_store_name,
+  Move         r212, r12
+  Index        r213, r202, r15
+  Index        r214, r213, r12
+  // store_sales_quantity: sum(from x in g select x.ss_quantity),
+  Move         r215, r16
+  Move         r216, r170
+  IterPrep     r217, r202
+  Len          r218, r217
+  Move         r219, r198
+L24:
+  LessInt      r220, r219, r218
+  JumpIfFalse  r220, L23
+  Index        r222, r217, r219
+  Index        r223, r222, r17
+  Append       r216, r216, r223
+  AddInt       r219, r219, r195
+  Jump         L24
+L23:
+  Sum          r225, r216
+  // store_returns_quantity: sum(from x in g select x.sr_return_quantity),
+  Move         r226, r18
+  Move         r227, r6
+  IterPrep     r228, r202
+  Len          r229, r228
+  Move         r230, r198
+L26:
+  LessInt      r231, r230, r229
+  JumpIfFalse  r231, L25
+  Index        r222, r228, r230
+  Index        r233, r222, r19
+  Append       r227, r227, r233
+  AddInt       r230, r230, r195
+  Jump         L26
+L25:
+  Sum          r235, r227
+  // catalog_sales_quantity: sum(from x in g select x.cs_quantity)
+  Move         r236, r20
+  Move         r237, r6
+  IterPrep     r238, r202
+  Len          r239, r238
+  Move         r240, r198
+L28:
+  LessInt      r241, r240, r239
+  JumpIfFalse  r241, L27
+  Index        r222, r238, r240
+  Index        r243, r222, r21
+  Append       r237, r237, r243
+  AddInt       r240, r240, r195
+  Jump         L28
+L27:
+  Sum          r245, r237
+  // i_item_id: g.key.item_id,
+  Move         r246, r203
+  Move         r247, r205
+  // i_item_desc: g.key.item_desc,
+  Move         r248, r206
+  Move         r249, r208
+  // s_store_id: g.key.s_store_id,
+  Move         r250, r209
+  Move         r251, r211
+  // s_store_name: g.key.s_store_name,
+  Move         r252, r212
+  Move         r253, r214
+  // store_sales_quantity: sum(from x in g select x.ss_quantity),
+  Move         r254, r215
+  Move         r255, r225
+  // store_returns_quantity: sum(from x in g select x.sr_return_quantity),
+  Move         r256, r226
+  Move         r257, r235
+  // catalog_sales_quantity: sum(from x in g select x.cs_quantity)
+  Move         r258, r236
+  Move         r259, r245
+  // select {
+  MakeMap      r260, 7, r246
+  // from ss in store_sales
+  Append       r6, r6, r260
+  AddInt       r197, r197, r195
+  Jump         L29
+L22:
+  // json(result)
+  JSON         r6
+  // expect result == [
+  Const        r262, [{"catalog_sales_quantity": 5, "i_item_desc": "Desc1", "i_item_id": "ITEM1", "s_store_id": "S1", "s_store_name": "Store1", "store_returns_quantity": 2, "store_sales_quantity": 10}]
+  Equal        r263, r6, r262
+  Expect       r263
+  Return       r0

@@ -28,15 +28,24 @@ let after =
   group by { w: inv.inv_warehouse_sk, i: inv.inv_item_sk } into g
   select { w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand) }
 
-let result =
+let joined =
   from b in before
   join a in after on b.w == a.w && b.i == a.i
   join w in warehouse on w.w_warehouse_sk == b.w
   join it in item on it.i_item_sk == b.i
-  let ratio = a.qty / b.qty
-  where ratio >= (2.0 / 3.0) && ratio <= (3.0 / 2.0)
-  sort by [w.w_warehouse_name, it.i_item_id]
-  select { w_warehouse_name: w.w_warehouse_name, i_item_id: it.i_item_id, inv_before: b.qty, inv_after: a.qty }
+  select {
+    w_name: w.w_warehouse_name,
+    i_id: it.i_item_id,
+    before_qty: b.qty,
+    after_qty: a.qty,
+    ratio: a.qty / b.qty
+  }
+
+let result =
+  from r in joined
+  where r.ratio >= (2.0 / 3.0) && r.ratio <= (3.0 / 2.0)
+  sort by [r.w_name, r.i_id]
+  select { w_warehouse_name: r.w_name, i_item_id: r.i_id, inv_before: r.before_qty, inv_after: r.after_qty }
 
 json(result)
 
