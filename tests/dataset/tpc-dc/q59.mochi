@@ -3,17 +3,23 @@ let wss=[
     sun_sales:10, mon_sales:10, tue_sales:10, wed_sales:10, thu_sales:10, fri_sales:10, sat_sales:10},
   {d_week_seq:2, ss_store_sk:1,
     sun_sales:8, mon_sales:8, tue_sales:8, wed_sales:8, thu_sales:8, fri_sales:8, sat_sales:8},
+  {d_week_seq:3, ss_store_sk:1,
+    sun_sales:9, mon_sales:9, tue_sales:9, wed_sales:9, thu_sales:9, fri_sales:9, sat_sales:9},
   {d_week_seq:53, ss_store_sk:1,
     sun_sales:5, mon_sales:5, tue_sales:5, wed_sales:5, thu_sales:5, fri_sales:5, sat_sales:5},
   {d_week_seq:54, ss_store_sk:1,
-    sun_sales:12, mon_sales:12, tue_sales:12, wed_sales:12, thu_sales:12, fri_sales:12, sat_sales:12}
+    sun_sales:12, mon_sales:12, tue_sales:12, wed_sales:12, thu_sales:12, fri_sales:12, sat_sales:12},
+  {d_week_seq:55, ss_store_sk:1,
+    sun_sales:3, mon_sales:3, tue_sales:3, wed_sales:3, thu_sales:3, fri_sales:3, sat_sales:3}
 ]
 let store=[{s_store_sk:1, s_store_name:"Store", s_store_id:1}]
 let date_dim=[
   {d_week_seq:1, d_month_seq:1},
   {d_week_seq:2, d_month_seq:2},
+  {d_week_seq:3, d_month_seq:3},
   {d_week_seq:53, d_month_seq:13},
-  {d_week_seq:54, d_month_seq:14}
+  {d_week_seq:54, d_month_seq:14},
+  {d_week_seq:55, d_month_seq:15}
 ]
 
 let y=
@@ -59,7 +65,10 @@ test "TPCDC Q59 ratios" {
     {s_store_name1:"Store", d_week_seq1:2,
      sun_ratio:0.6666666666666666, mon_ratio:0.6666666666666666,
      tue_ratio:0.6666666666666666, wed_ratio:0.6666666666666666,
-     thu_ratio:0.6666666666666666, fri_ratio:0.6666666666666666,
-     sat_ratio:0.6666666666666666}
+      thu_ratio:0.6666666666666666, fri_ratio:0.6666666666666666,
+      sat_ratio:0.6666666666666666},
+      {s_store_name1:"Store", d_week_seq1:3,
+       sun_ratio:3, mon_ratio:3, tue_ratio:3, wed_ratio:3,
+       thu_ratio:3, fri_ratio:3, sat_ratio:3}
   ]
 }
