@@ -1,11 +1,19 @@
-let date_dim = [{d_date_sk: 1, d_year: 2000, d_moy: 11}]
+let date_dim = [
+  {d_date_sk: 1, d_year: 2000, d_moy: 11},
+  {d_date_sk: 2, d_year: 2000, d_moy: 11},
+  {d_date_sk: 3, d_year: 2000, d_moy: 12},
+  {d_date_sk: 4, d_year: 2001, d_moy: 11}
+]
 let store_sales = [
   {ss_sold_date_sk: 1, ss_item_sk: 1, ss_ext_sales_price: 100.0},
-  {ss_sold_date_sk: 1, ss_item_sk: 2, ss_ext_sales_price: 80.0}
+  {ss_sold_date_sk: 2, ss_item_sk: 2, ss_ext_sales_price: 50.0},
+  {ss_sold_date_sk: 3, ss_item_sk: 1, ss_ext_sales_price: 70.0},
+  {ss_sold_date_sk: 4, ss_item_sk: 1, ss_ext_sales_price: 80.0}
 ]
 let item = [
   {i_item_sk: 1, i_brand_id: 10, i_brand: "B1", i_manufact_id: 128},
-  {i_item_sk: 2, i_brand_id: 20, i_brand: "B2", i_manufact_id: 129}
+  {i_item_sk: 2, i_brand_id: 10, i_brand: "B1", i_manufact_id: 128},
+  {i_item_sk: 3, i_brand_id: 20, i_brand: "B2", i_manufact_id: 129}
 ]
 
 let result =
@@ -20,5 +28,8 @@ let result =
 json(result)
 
 test "TPCDC Q3 brand sales" {
-  expect result == [{d_year: 2000, brand_id: 10, brand: "B1", sum_agg: 100.0}]
+  expect result == [
+    {d_year: 2000, brand_id: 10, brand: "B1", sum_agg: 150.0},
+    {d_year: 2001, brand_id: 10, brand: "B1", sum_agg: 80.0}
+  ]
 }

@@ -1,15 +1,19 @@
 let store_sales = [
   {store_sk: 1, sales_price: 100.0, profit: 10.0},
-  {store_sk: 1, sales_price: 50.0, profit: 5.0}
+  {store_sk: 1, sales_price: 50.0, profit: 5.0},
+  {store_sk: 2, sales_price: 70.0, profit: 8.0}
 ]
 let store_returns = [
-  {store_sk: 1, return_amt: 10.0, net_loss: 1.0}
+  {store_sk: 1, return_amt: 10.0, net_loss: 1.0},
+  {store_sk: 2, return_amt: 5.0, net_loss: 0.5}
 ]
 let catalog_sales = [
-  {call_center_sk: 1, sales_price: 80.0, profit: 8.0}
+  {call_center_sk: 1, sales_price: 80.0, profit: 8.0},
+  {call_center_sk: 2, sales_price: 40.0, profit: 4.0}
 ]
 let catalog_returns = [
-  {call_center_sk: 1, return_amt: 5.0, net_loss: 0.5}
+  {call_center_sk: 1, return_amt: 5.0, net_loss: 0.5},
+  {call_center_sk: 2, return_amt: 2.0, net_loss: 0.2}
 ]
 
 let ss_sales = sum(from s in store_sales select s.sales_price)
@@ -20,5 +24,5 @@ let result = [{store_sales: ss_sales, catalog_sales: cs_sales}]
 json(result)
 
 test "TPCDC Q5 simplified" {
-  expect result == [{store_sales: 150.0, catalog_sales: 80.0}]
+  expect result == [{store_sales: 220.0, catalog_sales: 120.0}]
 }
