@@ -1,5 +1,6 @@
 let t = [{id: 1, val: 15}]
-let result = from r in t select r.val |> first
+let vals = from r in t select r.val
+let result = vals[0]
 json(result)
 
 test "TPCDS Q15 placeholder" {
