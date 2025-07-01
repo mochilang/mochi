@@ -605,9 +605,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		tail := p.Selector.Tail
 		if fm, ok := c.tupleFields[expr]; ok && len(tail) > 0 {
-			if idx, ok := fm[sanitizeName(tail[0])]; ok {
+			key := sanitizeName(tail[0])
+			if idx, ok := fm[key]; ok {
 				expr += fmt.Sprintf("[%d]", idx)
+				if c.env != nil {
+					if vt, err := c.env.GetVar(key); err == nil {
+						typ = vt
+					}
+				}
 				tail = tail[1:]
+			} else if parts := strings.SplitN(key, "_", 2); len(parts) == 2 {
+				if idx, ok := fm[parts[0]]; ok {
+					expr += fmt.Sprintf("[%d]", idx)
+					if c.env != nil {
+						if vt, err := c.env.GetVar(parts[0]); err == nil {
+							typ = vt
+						}
+					}
+				}
 			}
 		}
 		for _, s := range tail {
