@@ -1,10 +1,10 @@
-fun test_TPCDS_Q9_empty() {
-    check((result.size == 0))
+fun test_TPCDS_Q9_result() {
+    check((result == listOf(mutableMapOf("bucket1" to 7, "bucket2" to 15, "bucket3" to 30, "bucket4" to 35, "bucket5" to 50))))
 }
 
 fun main() {
-    val store_sales = listOf<Any?>()
-    val reason = listOf<Any?>()
+    val store_sales = listOf(mutableMapOf("ss_quantity" to 5, "ss_ext_discount_amt" to 5, "ss_net_paid" to 7), mutableMapOf("ss_quantity" to 30, "ss_ext_discount_amt" to 10, "ss_net_paid" to 15), mutableMapOf("ss_quantity" to 50, "ss_ext_discount_amt" to 20, "ss_net_paid" to 30), mutableMapOf("ss_quantity" to 70, "ss_ext_discount_amt" to 25, "ss_net_paid" to 35), mutableMapOf("ss_quantity" to 90, "ss_ext_discount_amt" to 40, "ss_net_paid" to 50))
+    val reason = listOf(mutableMapOf("r_reason_sk" to 1))
     val bucket1 = if ((run {
         var res = store_sales
         res = res.filter { s -> ((s["ss_quantity"] >= 1) && (s["ss_quantity"] <= 20)) }
@@ -92,7 +92,7 @@ fun main() {
         res
     }
     _json(result)
-    test_TPCDS_Q9_empty()
+    test_TPCDS_Q9_result()
 }
 
 fun _avg(v: Any?): Double {

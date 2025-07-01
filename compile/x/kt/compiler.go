@@ -937,12 +937,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 func (c *Compiler) compileAdvancedQueryExpr(q *parser.QueryExpr, src string) (string, error) {
 	orig := c.env
 	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+		child.SetVar(q.Var, lt.Elem, true)
+	} else {
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
 	for _, f := range q.Froms {
-		child.SetVar(f.Var, types.AnyType{}, true)
+		if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, true)
+		} else {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
 	}
 	for _, j := range q.Joins {
-		child.SetVar(j.Var, types.AnyType{}, true)
+		if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
+			child.SetVar(j.Var, lt.Elem, true)
+		} else {
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
 	}
 	c.env = child
 
@@ -1044,7 +1056,7 @@ func (c *Compiler) compileAdvancedQueryExpr(q *parser.QueryExpr, src string) (st
 	}
 	for i, js := range joinSrcs {
 		onParams := append(append([]string(nil), paramNames...), sanitizeName(q.Joins[i].Var))
-		unpack := ktUnpackArgs(onParams, "                        ")
+		unpack := ktUnpackArgs(onParams, "                        ", child)
 		onBody := unpack + joinOns[i]
 		spec := fmt.Sprintf("_JoinSpec(items = %s, on = { args ->\n%s\n                        })", js, onBody)
 		if joinSides[i] == "left" || joinSides[i] == "outer" {
@@ -1058,17 +1070,24 @@ func (c *Compiler) compileAdvancedQueryExpr(q *parser.QueryExpr, src string) (st
 		paramNames = append(paramNames, sanitizeName(q.Joins[i].Var))
 	}
 
-	unpackAll := ktUnpackArgs(paramNames, "                        ")
+	unpackAll := ktUnpackArgs(paramNames, "                        ", child)
 	selectBody := unpackAll + sel
+	if q.Group != nil {
+		rowExpr := sanitizeName(q.Var)
+		if len(paramNames) > 1 {
+			rowExpr = "arrayOf(" + joinArgs(paramNames) + ")"
+		}
+		selectBody = unpackAll + rowExpr
+	}
 	selectFn := fmt.Sprintf("{ args ->\n%s\n                        }", selectBody)
 
 	var whereFn, sortFn string
 	if whereExpr != "" {
-		whereBody := ktUnpackArgs(paramNames, "                        ") + whereExpr
+		whereBody := ktUnpackArgs(paramNames, "                        ", child) + whereExpr
 		whereFn = fmt.Sprintf("{ args ->\n%s\n                        }", whereBody)
 	}
 	if sortExpr != "" {
-		sortBody := ktUnpackArgs(paramNames, "                        ") + sortExpr
+		sortBody := ktUnpackArgs(paramNames, "                        ", child) + sortExpr
 		sortFn = fmt.Sprintf("{ args ->\n%s\n                        }", sortBody)
 	}
 
@@ -1100,7 +1119,7 @@ func (c *Compiler) compileAdvancedQueryExpr(q *parser.QueryExpr, src string) (st
 
 	if q.Group != nil {
 		buf.WriteString("                val _groups = _group_by(_rows) { args ->\n")
-		buf.WriteString(ktUnpackArgs(paramNames, "                        "))
+		buf.WriteString(ktUnpackArgs(paramNames, "                        ", child))
 		buf.WriteString("                        " + keyExpr + "\n")
 		buf.WriteString("                }\n")
 		buf.WriteString("                val _res = mutableListOf<Any?>()\n")
@@ -1786,7 +1805,7 @@ func joinArgs(args []string) string {
 	return res
 }
 
-func ktUnpackArgs(names []string, indent string) string {
+func ktUnpackArgs(names []string, indent string, env *types.Env) string {
 	if len(names) == 0 {
 		return ""
 	}
@@ -1797,7 +1816,22 @@ func ktUnpackArgs(names []string, indent string) string {
 		b.WriteString(n)
 		b.WriteString(" = args[")
 		b.WriteString(fmt.Sprint(i))
-		b.WriteString("]\n")
+		b.WriteString("]")
+		if env != nil {
+			if t, err := env.GetVar(n); err == nil {
+				switch tt := t.(type) {
+				case types.MapType:
+					b.WriteString(" as MutableMap<" + ktType(tt.Key) + ", " + ktType(tt.Value) + ">")
+				case types.ListType:
+					b.WriteString(" as List<" + ktType(tt.Elem) + ">")
+				case types.StructType, types.UnionType:
+					b.WriteString(" as " + ktType(tt))
+				case types.GroupType:
+					b.WriteString(" as _Group")
+				}
+			}
+		}
+		b.WriteByte('\n')
 	}
 	return b.String()
 }

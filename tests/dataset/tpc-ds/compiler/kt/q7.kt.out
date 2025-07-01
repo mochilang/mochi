@@ -1,86 +1,70 @@
-fun test_TPCDS_Q7_empty() {
-    check((result.size == 0))
+fun test_TPCDS_Q7_result() {
+    check((result == listOf(mutableMapOf("i_item_id" to "I1", "agg1" to 5, "agg2" to 10, "agg3" to 2, "agg4" to 8))))
 }
 
 fun main() {
-    val store_sales = listOf<Any?>()
-    val customer_demographics = listOf<Any?>()
-    val date_dim = listOf<Any?>()
-    val item = listOf<Any?>()
-    val promotion = listOf<Any?>()
+    val store_sales = listOf(mutableMapOf("ss_cdemo_sk" to 1, "ss_sold_date_sk" to 1, "ss_item_sk" to 1, "ss_promo_sk" to 1, "ss_quantity" to 5, "ss_list_price" to 10, "ss_coupon_amt" to 2, "ss_sales_price" to 8))
+    val customer_demographics = listOf(mutableMapOf("cd_demo_sk" to 1, "cd_gender" to "M", "cd_marital_status" to "S", "cd_education_status" to "College"))
+    val date_dim = listOf(mutableMapOf("d_date_sk" to 1, "d_year" to 1998))
+    val item = listOf(mutableMapOf("i_item_sk" to 1, "i_item_id" to "I1"))
+    val promotion = listOf(mutableMapOf("p_promo_sk" to 1, "p_channel_email" to "N", "p_channel_event" to "Y"))
     val result = run {
         val _src = store_sales
         val _rows = _query(_src, listOf(
         _JoinSpec(items = customer_demographics, on = { args ->
-        val ss = args[0]
-        val cd = args[1]
+        val ss = args[0] as MutableMap<String, Any>
+        val cd = args[1] as MutableMap<String, Any>
         (ss["ss_cdemo_sk"] == cd["cd_demo_sk"])
     })),
     _JoinSpec(items = date_dim, on = { args ->
-    val ss = args[0]
-    val cd = args[1]
-    val d = args[2]
+    val ss = args[0] as MutableMap<String, Any>
+    val cd = args[1] as MutableMap<String, Any>
+    val d = args[2] as MutableMap<String, Int>
     (ss["ss_sold_date_sk"] == d["d_date_sk"])
 })),
 _JoinSpec(items = item, on = { args ->
-val ss = args[0]
-val cd = args[1]
-val d = args[2]
-val i = args[3]
+val ss = args[0] as MutableMap<String, Any>
+val cd = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
+val i = args[3] as MutableMap<String, Any>
 (ss["ss_item_sk"] == i["i_item_sk"])
 })),
 _JoinSpec(items = promotion, on = { args ->
-val ss = args[0]
-val cd = args[1]
-val d = args[2]
-val i = args[3]
-val p = args[4]
+val ss = args[0] as MutableMap<String, Any>
+val cd = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
+val i = args[3] as MutableMap<String, Any>
+val p = args[4] as MutableMap<String, Any>
 (ss["ss_promo_sk"] == p["p_promo_sk"])
 }))
 ), _QueryOpts(selectFn = { args ->
-val ss = args[0]
-val cd = args[1]
-val d = args[2]
-val i = args[3]
-val p = args[4]
-mutableMapOf("i_item_id" to g.key.i_item_id, "agg1" to _avg(run {
-    var res = g.Items as List<Any?>
-    res = res.map { x -> x["ss"].ss_quantity }
-    res
-}), "agg2" to _avg(run {
-    var res = g.Items as List<Any?>
-    res = res.map { x -> x["ss"].ss_list_price }
-    res
-}), "agg3" to _avg(run {
-    var res = g.Items as List<Any?>
-    res = res.map { x -> x["ss"].ss_coupon_amt }
-    res
-}), "agg4" to _avg(run {
-    var res = g.Items as List<Any?>
-    res = res.map { x -> x["ss"].ss_sales_price }
-    res
-}))
+val ss = args[0] as MutableMap<String, Any>
+val cd = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
+val i = args[3] as MutableMap<String, Any>
+val p = args[4] as MutableMap<String, Any>
+arrayOf(ss, cd, d, i, p)
 }, where = { args ->
-val ss = args[0]
-val cd = args[1]
-val d = args[2]
-val i = args[3]
-val p = args[4]
+val ss = args[0] as MutableMap<String, Any>
+val cd = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
+val i = args[3] as MutableMap<String, Any>
+val p = args[4] as MutableMap<String, Any>
 (((((cd["cd_gender"] == "M") && (cd["cd_marital_status"] == "S")) && (cd["cd_education_status"] == "College")) && (((p["p_channel_email"] == "N") || (p["p_channel_event"] == "N")))) && (d["d_year"] == 1998))
 }, sortKey = { args ->
-val ss = args[0]
-val cd = args[1]
-val d = args[2]
-val i = args[3]
-val p = args[4]
+val ss = args[0] as MutableMap<String, Any>
+val cd = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
+val i = args[3] as MutableMap<String, Any>
+val p = args[4] as MutableMap<String, Any>
 g["key"].i_item_id
 }) )
 val _groups = _group_by(_rows) { args ->
-val ss = args[0]
-val cd = args[1]
-val d = args[2]
-val i = args[3]
-val p = args[4]
+val ss = args[0] as MutableMap<String, Any>
+val cd = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
+val i = args[3] as MutableMap<String, Any>
+val p = args[4] as MutableMap<String, Any>
 mutableMapOf("i_item_id" to i["i_item_id"])
 }
 val _res = mutableListOf<Any?>()
@@ -106,7 +90,7 @@ for (g in _groups) {
 _res
 }
 _json(result)
-test_TPCDS_Q7_empty()
+test_TPCDS_Q7_result()
 }
 
 class _Group(var key: Any?) {
