@@ -1,0 +1,2 @@
+[{"curr_yr_cnt":80,"sales_amt_diff":-200,"i_category_id":3,"prev_yr_cnt":100,"i_manufact_id":4,"i_class_id":2,"i_brand_id":1,"sales_cnt_diff":-20,"year":2001,"prev_year":2000}]
+   test TPCDS Q75 simplified ... ok (7.0µs)

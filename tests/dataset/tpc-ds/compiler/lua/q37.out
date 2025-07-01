@@ -1,2 +1,2 @@
-[{"i_item_desc":"Item1","i_item_id":"I1","i_current_price":30}]
-   test TPCDS Q37 simplified ... ok (7.0µs)
+[{"i_current_price":30,"i_item_id":"I1","i_item_desc":"Item1"}]
+   test TPCDS Q37 simplified ... ok (4.0µs)

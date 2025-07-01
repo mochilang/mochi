@@ -1,2 +1,2 @@
-[{"brand_id":1,"brand":"Brand1","d_year":1998,"sum_agg":10},{"brand_id":2,"brand":"Brand2","d_year":1998,"sum_agg":20}]
-   test TPCDS Q3 result ... ok (8.0µs)
+[{"brand_id":1,"d_year":1998,"brand":"Brand1","sum_agg":10},{"brand_id":2,"d_year":1998,"brand":"Brand2","sum_agg":20}]
+   test TPCDS Q3 result ... ok (6.0µs)

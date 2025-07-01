@@ -1,2 +1,2 @@
 [{"total_shipping_cost":5,"order_count":1,"total_net_profit":20}]
-   test TPCDS Q16 shipping ... ok (4.0µs)
+   test TPCDS Q16 shipping ... ok (5.0µs)
