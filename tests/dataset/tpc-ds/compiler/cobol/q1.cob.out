@@ -1,0 +1,108 @@
+>>SOURCE FORMAT FREE
+IDENTIFICATION DIVISION.
+PROGRAM-ID. MAIN.
+
+DATA DIVISION.
+WORKING-STORAGE SECTION.
+01 STORE_RETURNS OCCURS 0 TIMES PIC 9.
+01 DATE_DIM OCCURS 0 TIMES PIC 9.
+01 STORE OCCURS 0 TIMES PIC 9.
+01 CUSTOMER OCCURS 0 TIMES PIC 9.
+01 SR PIC 9.
+01 D PIC 9.
+01 CUSTOMER_TOTAL_RETURN OCCURS 0 TIMES PIC 9.
+01 TMP0 PIC 9.
+01 TMP1 PIC 9.
+01 IDX PIC 9.
+01 IDX2 PIC 9.
+01 CTR1 PIC 9.
+01 S PIC 9.
+01 C PIC 9.
+01 RESULT OCCURS 0 TIMES PIC 9.
+01 TMP2 PIC 9.
+01 TMP3 PIC 9.
+01 IDX3 PIC 9.
+01 TMP4 PIC 9.
+01 TMP5 PIC 9.
+01 CTR2 PIC 9.
+01 TMP6 OCCURS 0 TIMES PIC 9.
+01 TMP7 PIC 9.
+01 TMP8 PIC 9.
+01 TMP9 PIC 9(4)V9(4).
+01 TMP10 PIC 9.
+
+PROCEDURE DIVISION.
+    MOVE 0 TO TMP0
+    MOVE 0 TO TMP1
+    MOVE 0 TO IDX
+    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= 0
+    MOVE STORE_RETURNS(IDX + 1) TO SR
+        MOVE 0 TO IDX2
+        PERFORM VARYING IDX2 FROM 0 BY 1 UNTIL IDX2 >= 0
+        MOVE DATE_DIM(IDX2 + 1) TO D
+        IF D_D_YEAR = 1998 * SR_SR_RETURNED_DATE_SK = D_D_DATE_SK
+            ADD 1 TO TMP1
+            IF TMP1 > 0
+                IF 0 = 0 OR TMP0 < 0
+                    ADD 1 TO TMP0
+                    COMPUTE CUSTOMER_TOTAL_RETURN(TMP0) = 0
+                END-IF
+            END-IF
+        END-IF
+        END-PERFORM
+    END-PERFORM
+    MOVE 0 TO TMP2
+    MOVE 0 TO TMP3
+    MOVE 0 TO IDX
+    PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= 0
+    MOVE CUSTOMER_TOTAL_RETURN(IDX + 1) TO CTR1
+        MOVE 0 TO IDX2
+        PERFORM VARYING IDX2 FROM 0 BY 1 UNTIL IDX2 >= 0
+        MOVE STORE(IDX2 + 1) TO S
+            MOVE 0 TO IDX3
+            PERFORM VARYING IDX3 FROM 0 BY 1 UNTIL IDX3 >= 0
+            MOVE CUSTOMER(IDX3 + 1) TO C
+                *> unsupported reduce
+                COMPUTE TMP4 = 0
+                MOVE 0 TO TMP7
+                MOVE 0 TO TMP8
+                MOVE 0 TO IDX
+                PERFORM VARYING IDX FROM 0 BY 1 UNTIL IDX >= 0
+                MOVE CUSTOMER_TOTAL_RETURN(IDX + 1) TO CTR2
+                IF CTR1_CTR_STORE_SK = CTR2_CTR_STORE_SK
+                    ADD 1 TO TMP8
+                    IF TMP8 > 0
+                        IF 0 = 0 OR TMP7 < 0
+                            ADD 1 TO TMP7
+                            COMPUTE TMP6(TMP7) = CTR2_CTR_TOTAL_RETURN
+                        END-IF
+                    END-IF
+                END-IF
+                END-PERFORM
+                COMPUTE TMP5 = FUNCTION LENGTH(TMP6)
+                IF TMP5 = 0
+                MOVE 0 TO TMP9
+                ELSE
+                COMPUTE TMP9 = TMP4 / TMP5
+                END-IF
+            IF CTR1_CTR_TOTAL_RETURN > TMP9 * 1.2 * S_S_STATE = "TN" * CTR1_CTR_STORE_SK = S_S_STORE_SK * CTR1_CTR_CUSTOMER_SK = C_C_CUSTOMER_SK
+                ADD 1 TO TMP3
+                IF TMP3 > 0
+                    IF 0 = 0 OR TMP2 < 0
+                        ADD 1 TO TMP2
+                        COMPUTE RESULT(TMP2) = 0
+                    END-IF
+                END-IF
+            END-IF
+            END-PERFORM
+        END-PERFORM
+    END-PERFORM
+DISPLAY "-- TEST TPCDS Q1 empty --"
+    COMPUTE TMP10 = FUNCTION LENGTH(RESULT)
+IF NOT (TMP10 = 0)
+    DISPLAY "expect failed"
+    STOP RUN
+END-IF
+DISPLAY "-- END TPCDS Q1 empty --"
+    STOP RUN.
+
