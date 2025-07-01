@@ -1179,7 +1179,11 @@ func exprVars(e *parser.Expr) map[string]bool {
 				walkExpr(j.On)
 			}
 			walkExpr(p.Query.Where)
-			walkExpr(p.Query.Group.Exprs[0])
+			if p.Query.Group != nil {
+				for _, ge := range p.Query.Group.Exprs {
+					walkExpr(ge)
+				}
+			}
 			walkExpr(p.Query.Sort)
 			walkExpr(p.Query.Skip)
 			walkExpr(p.Query.Take)
