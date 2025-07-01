@@ -333,6 +333,18 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_exists"] {
+		c.writeln("")
+		c.writeln("static boolean _exists(Object v) {")
+		c.indent++
+		c.writeln("if (v instanceof _Group) return ((_Group)v).length() > 0;")
+		c.writeln("if (v instanceof java.util.Map<?,?>) return !((java.util.Map<?,?>)v).isEmpty();")
+		c.writeln("if (v instanceof String) return !((String)v).isEmpty();")
+		c.writeln("java.util.List<Object> items = _toList(v);")
+		c.writeln("return !items.isEmpty();")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_sum"] {
 		c.writeln("")
 		c.writeln("static double _sum(Object v) {")

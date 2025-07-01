@@ -1,0 +1,281 @@
+public class Main {
+    static class StoreSale {
+        int ss_sold_date_sk;
+        int ss_item_sk;
+        int ss_customer_sk;
+        int ss_store_sk;
+        double ss_ext_sales_price;
+        
+        StoreSale(int ss_sold_date_sk, int ss_item_sk, int ss_customer_sk, int ss_store_sk, double ss_ext_sales_price) {
+            this.ss_sold_date_sk = ss_sold_date_sk;
+            this.ss_item_sk = ss_item_sk;
+            this.ss_customer_sk = ss_customer_sk;
+            this.ss_store_sk = ss_store_sk;
+            this.ss_ext_sales_price = ss_ext_sales_price;
+        }
+        
+        StoreSale() {}
+    }
+    
+    static class DateDim {
+        int d_date_sk;
+        int d_year;
+        int d_moy;
+        
+        DateDim(int d_date_sk, int d_year, int d_moy) {
+            this.d_date_sk = d_date_sk;
+            this.d_year = d_year;
+            this.d_moy = d_moy;
+        }
+        
+        DateDim() {}
+    }
+    
+    static class Item {
+        int i_item_sk;
+        int i_brand_id;
+        String i_brand;
+        int i_manufact_id;
+        String i_manufact;
+        int i_manager_id;
+        
+        Item(int i_item_sk, int i_brand_id, String i_brand, int i_manufact_id, String i_manufact, int i_manager_id) {
+            this.i_item_sk = i_item_sk;
+            this.i_brand_id = i_brand_id;
+            this.i_brand = i_brand;
+            this.i_manufact_id = i_manufact_id;
+            this.i_manufact = i_manufact;
+            this.i_manager_id = i_manager_id;
+        }
+        
+        Item() {}
+    }
+    
+    static class Customer {
+        int c_customer_sk;
+        int c_current_addr_sk;
+        
+        Customer(int c_customer_sk, int c_current_addr_sk) {
+            this.c_customer_sk = c_customer_sk;
+            this.c_current_addr_sk = c_current_addr_sk;
+        }
+        
+        Customer() {}
+    }
+    
+    static class CustomerAddress {
+        int ca_address_sk;
+        String ca_zip;
+        
+        CustomerAddress(int ca_address_sk, String ca_zip) {
+            this.ca_address_sk = ca_address_sk;
+            this.ca_zip = ca_zip;
+        }
+        
+        CustomerAddress() {}
+    }
+    
+    static class Store {
+        int s_store_sk;
+        String s_zip;
+        
+        Store(int s_store_sk, String s_zip) {
+            this.s_store_sk = s_store_sk;
+            this.s_zip = s_zip;
+        }
+        
+        Store() {}
+    }
+    
+    static void test_TPCDS_Q19_brand() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("i_brand", "B1", "i_brand_id", 1, "i_manufact_id", 1, "i_manufact", "M1", "ext_price", 100))}));
+    }
+    
+    static Object[] store_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ss_sold_date_sk", 1, "ss_item_sk", 1, "ss_customer_sk", 1, "ss_store_sk", 1, "ss_ext_sales_price", 100))};
+    
+    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_year", 1999, "d_moy", 11))};
+    
+    static Object[] item = new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_sk", 1, "i_brand_id", 1, "i_brand", "B1", "i_manufact_id", 1, "i_manufact", "M1", "i_manager_id", 10))};
+    
+    static Object[] customer = new Object[]{new java.util.HashMap<>(java.util.Map.of("c_customer_sk", 1, "c_current_addr_sk", 1))};
+    
+    static Object[] customer_address = new Object[]{new java.util.HashMap<>(java.util.Map.of("ca_address_sk", 1, "ca_zip", "11111"))};
+    
+    static Object[] store = new Object[]{new java.util.HashMap<>(java.util.Map.of("s_store_sk", 1, "s_zip", "99999"))};
+    
+    static Object[] result = (new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(date_dim);
+        _src = _filter(_src, (Object d) -> { return ((d.get("d_moy") == 11) && (d.get("d_year") == 1999)); });
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+            new _JoinSpec(_toList(store_sales), (Object[] a) -> { Object d = a[0]; Object ss = a[1]; return (ss.get("ss_sold_date_sk") == d.get("d_date_sk")); }, false, false),
+            new _JoinSpec(_toList(item), (Object[] a) -> { Object d = a[0]; Object ss = a[1]; Object i = a[2]; return ((ss.get("ss_item_sk") == i.get("i_item_sk")) && (i.get("i_manager_id") == 10)); }, false, false),
+            new _JoinSpec(_toList(customer), (Object[] a) -> { Object d = a[0]; Object ss = a[1]; Object i = a[2]; Object c = a[3]; return (ss.get("ss_customer_sk") == c.get("c_customer_sk")); }, false, false),
+            new _JoinSpec(_toList(customer_address), (Object[] a) -> { Object d = a[0]; Object ss = a[1]; Object i = a[2]; Object c = a[3]; Object ca = a[4]; return (c.get("c_current_addr_sk") == ca.get("ca_address_sk")); }, false, false),
+            new _JoinSpec(_toList(store), (Object[] a) -> { Object d = a[0]; Object ss = a[1]; Object i = a[2]; Object c = a[3]; Object ca = a[4]; Object s = a[5]; return ((ss.get("ss_store_sk") == s.get("s_store_sk")) && (_sliceString(ca.get("ca_zip"), 0, 0 + 5) != _sliceString(s.get("s_zip"), 0, 0 + 5))); }, false, false)
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object d = a[0]; Object ss = a[1]; Object i = a[2]; Object c = a[3]; Object ca = a[4]; Object s = a[5]; return new java.util.HashMap<>(java.util.Map.of("i_brand", g.get("key").brand, "i_brand_id", g.get("key").brand_id, "i_manufact_id", g.get("key").man_id, "i_manufact", g.get("key").man, "ext_price", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(g);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss_ext_sales_price"); }, null, null, -1, -1));
+    }
+}).get()))); }, null, (Object[] a) -> { Object d = a[0]; Object ss = a[1]; Object i = a[2]; Object c = a[3]; Object ca = a[4]; Object s = a[5]; return new Object[]{g.get("key").brand}; }, -1, -1));
+    }
+}).get();
+    
+    public static void main(String[] args) {
+        test_TPCDS_Q19_brand();
+        _json(result);
+    }
+    
+    static double _sum(Object v) {
+        java.util.List<Object> items = (v instanceof _Group) ? ((_Group)v).Items : _toList(v);
+        double sum = 0;
+        for (Object it : items) {
+            if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException("sum() expects numbers");
+        }
+        return sum;
+    }
+    
+    static String _sliceString(String s, int i, int j) {
+        int start = i;
+        int end = j;
+        int n = s.length();
+        if (start < 0) start += n;
+        if (end < 0) end += n;
+        if (start < 0) start = 0;
+        if (end > n) end = n;
+        if (end < start) end = start;
+        return s.substring(start, end);
+    }
+    
+    static void expect(boolean cond) {
+        if (!cond) throw new RuntimeException("expect failed");
+    }
+    
+    static void _json(Object v) {
+        System.out.println(_toJson(v));
+    }
+    
+    static java.util.List<Object> _toList(Object v) {
+        if (v instanceof java.util.List<?>) return new java.util.ArrayList<>((java.util.List<?>)v);
+        int n = java.lang.reflect.Array.getLength(v);
+        java.util.List<Object> out = new java.util.ArrayList<>(n);
+        for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));
+        return out;
+    }
+    
+    static java.util.List<Object> _filter(java.util.List<Object> src, java.util.function.Function<Object,Boolean> pred) {
+        java.util.List<Object> out = new java.util.ArrayList<>();
+        for (Object it : src) { if (pred.apply(it)) out.add(it); }
+        return out;
+    }
+    
+    static class _JoinSpec {
+        java.util.List<Object> items;
+        java.util.function.Function<Object[],Boolean> on;
+        boolean left;
+        boolean right;
+        _JoinSpec(java.util.List<Object> items, java.util.function.Function<Object[],Boolean> on, boolean left, boolean right) {
+            this.items=items; this.on=on; this.left=left; this.right=right;
+        }
+    }
+    
+    static class _QueryOpts {
+        java.util.function.Function<Object[],Object> selectFn;
+        java.util.function.Function<Object[],Boolean> where;
+        java.util.function.Function<Object[],Object> sortKey;
+        int skip; int take;
+        _QueryOpts(java.util.function.Function<Object[],Object> s, java.util.function.Function<Object[],Boolean> w, java.util.function.Function<Object[],Object> k, int skip, int take) {
+            this.selectFn=s; this.where=w; this.sortKey=k; this.skip=skip; this.take=take;
+        }
+    }
+    static java.util.List<Object> _query(java.util.List<Object> src, java.util.List<_JoinSpec> joins, _QueryOpts opts) {
+        java.util.List<java.util.List<Object>> items = new java.util.ArrayList<>();
+        for (Object v : src) { java.util.List<Object> r = new java.util.ArrayList<>(); r.add(v); items.add(r); }
+        for (_JoinSpec j : joins) {
+            java.util.List<java.util.List<Object>> joined = new java.util.ArrayList<>();
+            java.util.List<Object> jitems = j.items;
+            if (j.right && j.left) {
+                boolean[] matched = new boolean[jitems.size()];
+                for (java.util.List<Object> left : items) {
+                    boolean m = false;
+                    for (int ri=0; ri<jitems.size(); ri++) {
+                        Object right = jitems.get(ri);
+                        boolean keep = true;
+                        if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
+                            args[left.size()] = right;
+                            keep = j.on.apply(args);
+                        }
+                        if (!keep) continue;
+                        m = true; matched[ri] = true;
+                        java.util.List<Object> row = new java.util.ArrayList<>(left);
+                        row.add(right); joined.add(row);
+                    }
+                    if (!m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
+                }
+                for (int ri=0; ri<jitems.size(); ri++) {
+                    if (!matched[ri]) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(jitems.get(ri)); joined.add(undef); }
+                }
+            } else if (j.right) {
+                for (Object right : jitems) {
+                    boolean m = false;
+                    for (java.util.List<Object> left : items) {
+                        boolean keep = true;
+                        if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
+                            args[left.size()] = right;
+                            keep = j.on.apply(args);
+                        }
+                        if (!keep) continue;
+                        m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
+                    }
+                    if (!m) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(right); joined.add(undef); }
+                }
+            } else {
+                for (java.util.List<Object> left : items) {
+                    boolean m = false;
+                    for (Object right : jitems) {
+                        boolean keep = true;
+                        if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
+                            args[left.size()] = right;
+                            keep = j.on.apply(args);
+                        }
+                        if (!keep) continue;
+                        m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
+                    }
+                    if (j.left && !m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
+                }
+            items = joined;
+        }
+        if (opts.where != null) {
+            java.util.List<java.util.List<Object>> filtered = new java.util.ArrayList<>();
+            for (java.util.List<Object> r : items) if (opts.where.apply(r.toArray(new Object[0]))) filtered.add(r);
+            items = filtered;
+        }
+        if (opts.sortKey != null) {
+            class Pair { java.util.List<Object> item; Object key; Pair(java.util.List<Object> i,Object k){item=i;key=k;} }
+            java.util.List<Pair> pairs = new java.util.ArrayList<>();
+            for (java.util.List<Object> it : items) pairs.add(new Pair(it, opts.sortKey.apply(it.toArray(new Object[0]))));
+            pairs.sort((a,b) -> {
+                Object ak=a.key, bk=b.key;
+                if (ak instanceof Number && bk instanceof Number) return Double.compare(((Number)ak).doubleValue(), ((Number)bk).doubleValue());
+                if (ak instanceof String && bk instanceof String) return ((String)ak).compareTo((String)bk);
+                return ak.toString().compareTo(bk.toString());
+            });
+            for (int i=0;i<pairs.size();i++) items.set(i, pairs.get(i).item);
+        }
+        if (opts.skip >= 0) { if (opts.skip < items.size()) items = new java.util.ArrayList<>(items.subList(opts.skip, items.size())); else items = new java.util.ArrayList<>(); }
+        if (opts.take >= 0) { if (opts.take < items.size()) items = new java.util.ArrayList<>(items.subList(0, opts.take)); }
+        java.util.List<Object> res = new java.util.ArrayList<>();
+        for (java.util.List<Object> r : items) res.add(opts.selectFn.apply(r.toArray(new Object[0])));
+        return res;
+    }
+}
