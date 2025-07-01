@@ -148,7 +148,22 @@ const groupHelpers = `(define (_count v)
                (else '())))
         (n 0))
     (set! n (length lst))
-    (if (= n 0) 0 (/ (_sum lst) n))))
+    (if (= n 0) 0 (/ (_sum lst) n)))
+
+(define (_max v)
+  (let ((lst (cond
+               ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))
+               ((list? v) v)
+               (else '())))
+        (m 0))
+    (when (not (null? lst))
+      (set! m (car lst))
+      (for-each (lambda (n)
+                  (when (> n m) (set! m n)))
+                (cdr lst)))
+    m))
+
+(define (_group_by src keyfn)
 
 (define (_group_by src keyfn)
   (let ((groups '()) (order '()))
@@ -1125,6 +1140,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		}
 		c.needGroup = true
 		return fmt.Sprintf("(_avg %s)", args[0]), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		c.needGroup = true
+		return fmt.Sprintf("(_max %s)", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
@@ -1391,6 +1412,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
+		var havingExpr string
+		if err == nil && q.Group.Having != nil {
+			havingExpr, err = c.compileExpr(q.Group.Having)
+		}
 		c.env = orig
 		if err != nil {
 			return "", err
@@ -1407,7 +1432,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("  ) (if (string? %s) (string->list %s) %s))\n", src, src, src))
 		b.WriteString("  (let ((_res '()))\n")
 		b.WriteString(fmt.Sprintf("    (for-each (lambda (%s)\n", sanitizeName(q.Group.Name)))
-		b.WriteString(fmt.Sprintf("      (set! _res (append _res (list %s)))\n", valExpr))
+		if havingExpr != "" {
+			b.WriteString(fmt.Sprintf("      (when %s (set! _res (append _res (list %s))))\n", havingExpr, valExpr))
+		} else {
+			b.WriteString(fmt.Sprintf("      (set! _res (append _res (list %s)))\n", valExpr))
+		}
 		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
 		if sortExpr != "" {
 			b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
@@ -1462,6 +1491,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
+		var havingExpr string
+		if err == nil && q.Group.Having != nil {
+			havingExpr, err = c.compileExpr(q.Group.Having)
+		}
 		c.env = orig
 		if err != nil {
 			return "", err
@@ -1562,7 +1595,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("  ) (if (string? %s) (string->list %s) %s))\n", src, src, src))
 		b.WriteString("  (let ((_res '()))\n")
 		b.WriteString(fmt.Sprintf("    (for-each (lambda (%s)\n", sanitizeName(q.Group.Name)))
-		b.WriteString(fmt.Sprintf("      (set! _res (append _res (list %s)))\n", valExpr))
+		if havingExpr != "" {
+			b.WriteString(fmt.Sprintf("      (when %s (set! _res (append _res (list %s))))\n", havingExpr, valExpr))
+		} else {
+			b.WriteString(fmt.Sprintf("      (set! _res (append _res (list %s)))\n", valExpr))
+		}
 		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
 		if sortExpr != "" {
 			b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
