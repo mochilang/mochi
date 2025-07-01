@@ -1,12 +1,6 @@
 
-fun sqrt(x: float): float {
-  let guess = x / 2.0
-  var result = guess
-  for i in 0..5 {
-    result = (result + x / result) / 2.0
-  }
-  return result
-}
+import python "math" as math
+extern fun math.sqrt(x: float): float
 
 let inventory = [
   {inv_item_sk: 1, inv_warehouse_sk: 1, inv_date_sk: 1, inv_quantity_on_hand: 10},
@@ -55,8 +49,8 @@ for g in values(grouped) {
   for q in g.qtys {
     sumsq = sumsq + (q - mean) * (q - mean)
   }
-  let variance = sumsq / len(g.qtys)
-  let cov = sqrt(variance) / mean
+  let variance = sumsq / (len(g.qtys) - 1)
+  let cov = math.sqrt(variance) / mean
   if cov > 1.5 {
     summary = append(summary, {w_warehouse_sk: g.w, i_item_sk: g.i, cov: cov})
   }

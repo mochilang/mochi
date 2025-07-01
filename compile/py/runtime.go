@@ -276,6 +276,38 @@ var helperIntersect = "def _intersect(a, b):\n" +
 	"            res.append(it)\n" +
 	"    return res\n"
 
+var helperGet = "def _get(obj, name):\n" +
+	"    if isinstance(obj, dict):\n" +
+	"        return obj.get(name)\n" +
+	"    if hasattr(obj, name):\n" +
+	"        return getattr(obj, name)\n" +
+	"    if isinstance(obj, (list, tuple)):\n" +
+	"        for it in obj:\n" +
+	"            try:\n" +
+	"                return _get(it, name)\n" +
+	"            except Exception:\n" +
+	"                pass\n" +
+	"    raise Exception('field not found: ' + name)\n"
+
+var helperAppend = "def _append(lst, v):\n" +
+	"    out = list(lst) if lst is not None else []\n" +
+	"    out.append(v)\n" +
+	"    return out\n"
+
+var helperContains = "def _contains(c, v):\n" +
+	"    if isinstance(c, list):\n" +
+	"        return v in c\n" +
+	"    if isinstance(c, str):\n" +
+	"        return str(v) in c\n" +
+	"    if isinstance(c, dict):\n" +
+	"        return str(v) in c\n" +
+	"    return False\n"
+
+var helperValues = "def _values(m):\n" +
+	"    if isinstance(m, dict):\n" +
+	"        return list(m.values())\n" +
+	"    raise Exception('values() expects map')\n"
+
 var helperStream = "class Stream:\n" +
 	"    def __init__(self, name):\n" +
 	"        self.name = name\n" +
@@ -410,6 +442,10 @@ var helperMap = map[string]string{
 	"_union":      helperUnion,
 	"_except":     helperExcept,
 	"_intersect":  helperIntersect,
+	"_get":        helperGet,
+	"_append":     helperAppend,
+	"_contains":   helperContains,
+	"_values":     helperValues,
 	"_fetch":      helperFetch,
 	"_load":       helperLoad,
 	"_save":       helperSave,
