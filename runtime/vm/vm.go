@@ -2612,6 +2612,13 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 			fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpUpper, A: dst, B: arg})
 			return dst
 		}
+		// strings.ToLower(x) -> lower(x)
+		if rootName == "strings" && methodName == "ToLower" {
+			arg := fc.compileExpr(p.Ops[0].Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpLower, A: dst, B: arg})
+			return dst
+		}
 		if typ, err := fc.comp.env.GetVar(rootName); err == nil {
 			if st, ok := typ.(types.StructType); ok {
 				if _, ok := st.Methods[methodName]; ok {
