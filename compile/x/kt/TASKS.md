@@ -10,7 +10,7 @@ Implemented features:
 - Golden tests under `tests/dataset/tpc-h/compiler/kt` verify generated code and
   runtime output.
 - Golden tests under `tests/dataset/tpc-ds/compiler/kt` now cover queries
-  `q1` through `q9`.
+  `q1` through `q19`.
 - `q2` from TPCH needs golden runtime output recorded once `kotlinc` is
   available.
 

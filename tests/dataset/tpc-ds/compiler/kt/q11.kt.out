@@ -1,0 +1,80 @@
+data class Customer(val c_customer_sk: Int, val c_customer_id: String, val c_first_name: String, val c_last_name: String)
+
+data class StoreSale(val ss_customer_sk: Int, val ss_sold_date_sk: Int, val ss_ext_list_price: Double)
+
+data class WebSale(val ws_bill_customer_sk: Int, val ws_sold_date_sk: Int, val ws_ext_list_price: Double)
+
+fun test_TPCDS_Q11_growth() {
+    check((result == listOf(mutableMapOf("customer_id" to "C1", "customer_first_name" to "John", "customer_last_name" to "Doe"))))
+}
+
+fun main() {
+    val customer = listOf(mutableMapOf("c_customer_sk" to 1, "c_customer_id" to "C1", "c_first_name" to "John", "c_last_name" to "Doe"))
+    val store_sales = listOf(mutableMapOf("ss_customer_sk" to 1, "ss_sold_date_sk" to 1998, "ss_ext_list_price" to 60), mutableMapOf("ss_customer_sk" to 1, "ss_sold_date_sk" to 1999, "ss_ext_list_price" to 90))
+    val web_sales = listOf(mutableMapOf("ws_bill_customer_sk" to 1, "ws_sold_date_sk" to 1998, "ws_ext_list_price" to 50), mutableMapOf("ws_bill_customer_sk" to 1, "ws_sold_date_sk" to 1999, "ws_ext_list_price" to 150))
+    val ss98 = _sum(run {
+        var res = store_sales
+        res = res.filter { ss -> (ss["ss_sold_date_sk"] == 1998) }
+        res = res.map { ss -> ss["ss_ext_list_price"] }
+        res
+    })
+    val ss99 = _sum(run {
+        var res = store_sales
+        res = res.filter { ss -> (ss["ss_sold_date_sk"] == 1999) }
+        res = res.map { ss -> ss["ss_ext_list_price"] }
+        res
+    })
+    val ws98 = _sum(run {
+        var res = web_sales
+        res = res.filter { ws -> (ws["ws_sold_date_sk"] == 1998) }
+        res = res.map { ws -> ws["ws_ext_list_price"] }
+        res
+    })
+    val ws99 = _sum(run {
+        var res = web_sales
+        res = res.filter { ws -> (ws["ws_sold_date_sk"] == 1999) }
+        res = res.map { ws -> ws["ws_ext_list_price"] }
+        res
+    })
+    val growth_ok = (((ws98 > 0) && (ss98 > 0)) && (((ws99 / ws98)) > ((ss99 / ss98))))
+    val result = if (growth_ok) listOf(mutableMapOf("customer_id" to "C1", "customer_first_name" to "John", "customer_last_name" to "Doe")) else listOf<Any?>()
+    _json(result)
+    test_TPCDS_Q11_growth()
+}
+
+fun _json(v: Any?) {
+    fun encode(x: Any?): String = when (x) {
+        null -> "null"
+        is String -> \"""${x.replace("\"", "\\\"")}\"""
+        is Int, is Double, is Boolean -> x.toString()
+        is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
+        is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e ->
+        "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
+    }
+    else -> \"""${x.toString().replace("\"", "\\\"")}\"""
+}
+println(encode(v))
+}
+fun _sum(v: Any?): Double {
+    var list: List<Any?>? = null
+    when (v) {
+        is List<*> -> list = v as List<Any?>
+        is Map<*, *> -> {
+            val items = when {
+                v["items"] is List<*> -> v["items"] as List<*>
+                v["Items"] is List<*> -> v["Items"] as List<*>
+                else -> null
+            }
+            if (items != null) list = items as List<Any?>
+        }
+        is _Group -> list = v.Items
+    }
+    if (list == null || list.isEmpty()) return 0.0
+    var sum = 0.0
+    for (n in list!!) {
+        sum += (n as Number).toDouble()
+    }
+    return sum
+}
+
+
