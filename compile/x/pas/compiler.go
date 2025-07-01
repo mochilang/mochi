@@ -63,7 +63,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 					return nil, err
 				}
 			} else {
-				return nil, fmt.Errorf("foreign imports not supported")
+				// Allow builtin foreign packages like strings
+				if strings.Trim(s.Import.Path, "\"") != "strings" {
+					return nil, fmt.Errorf("foreign imports not supported")
+				}
 			}
 		}
 	}
@@ -297,6 +300,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Import != nil:
 		if s.Import.Lang == nil {
 			return c.compilePackageImport(s.Import)
+		}
+		if strings.Trim(s.Import.Path, "\"") == "strings" {
+			return nil
 		}
 		return fmt.Errorf("foreign imports not supported")
 	case s.Fun != nil:
@@ -1334,6 +1340,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			c.use("_joinStrings")
 			return fmt.Sprintf("_joinStrings(%s, %s)", args[0], args[1]), nil
+		case "strings.ToUpper":
+			if len(args) != 1 {
+				return "", fmt.Errorf("strings.ToUpper expects 1 arg")
+			}
+			return fmt.Sprintf("UpperCase(%s)", args[0]), nil
 		case "json":
 			if len(args) != 1 {
 				return "", fmt.Errorf("json expects 1 argument")

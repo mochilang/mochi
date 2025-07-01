@@ -1,0 +1,160 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+type Inventory = record
+  inv_item_sk: integer;
+  inv_date_sk: integer;
+  inv_quantity_on_hand: integer;
+end;
+
+type DateDim = record
+  d_date_sk: integer;
+  d_month_seq: integer;
+end;
+
+type Item = record
+  i_item_sk: integer;
+  i_product_name: string;
+  i_brand: string;
+  i_class: string;
+  i_category: string;
+end;
+
+generic function _avgList<T>(arr: specialize TArray<T>): double;
+begin
+  if Length(arr) = 0 then exit(0);
+  Result := specialize _sumList<T>(arr) / Length(arr);
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, integer>;
+  _tmp1: specialize TFPGMap<Variant, integer>;
+  _tmp10: specialize TFPGMap<Variant, Variant>;
+  _tmp11: specialize TFPGMap<Variant, Variant>;
+  _tmp12: specialize TArray<Variant>;
+  _tmp13: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp2: specialize TFPGMap<Variant, integer>;
+  _tmp3: specialize TFPGMap<Variant, integer>;
+  _tmp4: specialize TFPGMap<Variant, integer>;
+  _tmp5: specialize TFPGMap<Variant, integer>;
+  _tmp6: specialize TFPGMap<Variant, integer>;
+  _tmp7: specialize TFPGMap<Variant, integer>;
+  _tmp8: specialize TFPGMap<Variant, integer>;
+  _tmp9: specialize TFPGMap<Variant, Variant>;
+  date_dim: specialize TArray<specialize TFPGMap<string, integer>>;
+  inv: specialize TFPGMap<string, integer>;
+  inventory: specialize TArray<specialize TFPGMap<string, integer>>;
+  item: specialize TArray<specialize TFPGMap<string, Variant>>;
+  qoh: specialize TArray<specialize TFPGMap<string, Variant>>;
+  x: integer;
+
+procedure test_TPCDS_Q22_average_inventory;
+
+var
+  _tmp14: specialize TFPGMap<Variant, Variant>;
+  _tmp15: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp14 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp14.AddOrSetData('i_product_name', 'Prod1');
+  _tmp14.AddOrSetData('i_brand', 'Brand1');
+  _tmp14.AddOrSetData('i_class', 'Class1');
+  _tmp14.AddOrSetData('i_category', 'Cat1');
+  _tmp14.AddOrSetData('qoh', 15);
+  _tmp15 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp15.AddOrSetData('i_product_name', 'Prod2');
+  _tmp15.AddOrSetData('i_brand', 'Brand2');
+  _tmp15.AddOrSetData('i_class', 'Class2');
+  _tmp15.AddOrSetData('i_category', 'Cat2');
+  _tmp15.AddOrSetData('qoh', 50);
+  if not ((qoh = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp14, _tmp15]))) then
+    raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp0.AddOrSetData('inv_item_sk', 1);
+  _tmp0.AddOrSetData('inv_date_sk', 1);
+  _tmp0.AddOrSetData('inv_quantity_on_hand', 10);
+  _tmp1 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp1.AddOrSetData('inv_item_sk', 1);
+  _tmp1.AddOrSetData('inv_date_sk', 2);
+  _tmp1.AddOrSetData('inv_quantity_on_hand', 20);
+  _tmp2 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp2.AddOrSetData('inv_item_sk', 1);
+  _tmp2.AddOrSetData('inv_date_sk', 3);
+  _tmp2.AddOrSetData('inv_quantity_on_hand', 10);
+  _tmp3 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp3.AddOrSetData('inv_item_sk', 1);
+  _tmp3.AddOrSetData('inv_date_sk', 4);
+  _tmp3.AddOrSetData('inv_quantity_on_hand', 20);
+  _tmp4 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp4.AddOrSetData('inv_item_sk', 2);
+  _tmp4.AddOrSetData('inv_date_sk', 1);
+  _tmp4.AddOrSetData('inv_quantity_on_hand', 50);
+  inventory := specialize TArray<specialize TFPGMap<string, integer>>([_tmp0, _tmp1, _tmp2, _tmp3,
+               _tmp4]);
+  _tmp5 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp5.AddOrSetData('d_date_sk', 1);
+  _tmp5.AddOrSetData('d_month_seq', 0);
+  _tmp6 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp6.AddOrSetData('d_date_sk', 2);
+  _tmp6.AddOrSetData('d_month_seq', 1);
+  _tmp7 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp7.AddOrSetData('d_date_sk', 3);
+  _tmp7.AddOrSetData('d_month_seq', 2);
+  _tmp8 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp8.AddOrSetData('d_date_sk', 4);
+  _tmp8.AddOrSetData('d_month_seq', 3);
+  date_dim := specialize TArray<specialize TFPGMap<string, integer>>([_tmp5, _tmp6, _tmp7, _tmp8]);
+  _tmp9 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp9.AddOrSetData('i_item_sk', 1);
+  _tmp9.AddOrSetData('i_product_name', 'Prod1');
+  _tmp9.AddOrSetData('i_brand', 'Brand1');
+  _tmp9.AddOrSetData('i_class', 'Class1');
+  _tmp9.AddOrSetData('i_category', 'Cat1');
+  _tmp10 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp10.AddOrSetData('i_item_sk', 2);
+  _tmp10.AddOrSetData('i_product_name', 'Prod2');
+  _tmp10.AddOrSetData('i_brand', 'Brand2');
+  _tmp10.AddOrSetData('i_class', 'Class2');
+  _tmp10.AddOrSetData('i_category', 'Cat2');
+  item := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp9, _tmp10]);
+  _tmp11 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp11.AddOrSetData('i_product_name', g.key.product_name);
+  _tmp11.AddOrSetData('i_brand', g.key.brand);
+  _tmp11.AddOrSetData('i_class', g.key.class);
+  _tmp11.AddOrSetData('i_category', g.key.category);
+  SetLength(_tmp12, 0);
+  for x in g do
+    begin
+      _tmp12 := Concat(_tmp12, [x.inv_quantity_on_hand]);
+    end;
+  _tmp11.AddOrSetData('qoh', specialize _avgList<Variant>(_tmp12));
+  SetLength(_tmp13, 0);
+  for inv in inventory do
+    begin
+      for d in date_dim do
+        begin
+          if not ((inv.inv_date_sk = d.d_date_sk)) then continue;
+          for i in item do
+            begin
+              if not ((inv.inv_item_sk = i.i_item_sk)) then continue;
+              if not (((d.d_month_seq >= 0) and (d.d_month_seq <= 11))) then continue;
+              _tmp13 := Concat(_tmp13, [_tmp11]);
+            end;
+        end;
+    end;
+  qoh := _tmp13;
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(qoh);
+  test_TPCDS_Q22_average_inventory;
+end.

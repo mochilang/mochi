@@ -1,0 +1,222 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+type StoreSale = record
+  ss_item_sk: integer;
+  ss_store_sk: integer;
+  ss_cdemo_sk: integer;
+  ss_sold_date_sk: integer;
+  ss_quantity: integer;
+  ss_list_price: double;
+  ss_coupon_amt: double;
+  ss_sales_price: double;
+end;
+
+type CustomerDemo = record
+  cd_demo_sk: integer;
+  cd_gender: string;
+  cd_marital_status: string;
+  cd_education_status: string;
+end;
+
+type DateDim = record
+  d_date_sk: integer;
+  d_year: integer;
+end;
+
+type Store = record
+  s_store_sk: integer;
+  s_state: string;
+end;
+
+type Item = record
+  i_item_sk: integer;
+  i_item_id: string;
+end;
+
+generic function _avgList<T>(arr: specialize TArray<T>): double;
+begin
+  if Length(arr) = 0 then exit(0);
+  Result := specialize _sumList<T>(arr) / Length(arr);
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+
+var i,j: integer;
+  tmp: T;
+  k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+    for j := i + 1 to High(arr) do
+      if keys[i] > keys[j] then
+        begin
+          tmp := arr[i];
+          arr[i] := arr[j];
+          arr[j] := tmp;
+          k := keys[i];
+          keys[i] := keys[j];
+          keys[j] := k;
+        end;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TArray<Variant>;
+  _tmp11: specialize TArray<Variant>;
+  _tmp12: specialize TArray<Variant>;
+  _tmp13: specialize TArray<Variant>;
+  _tmp14: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp15: specialize TArray<Variant>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp4: specialize TFPGMap<Variant, integer>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp7: specialize TFPGMap<Variant, Variant>;
+  _tmp8: specialize TFPGMap<Variant, Variant>;
+  _tmp9: specialize TFPGMap<Variant, Variant>;
+  customer_demographics: specialize TArray<specialize TFPGMap<string, Variant>>;
+  date_dim: specialize TArray<specialize TFPGMap<string, integer>>;
+  item: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+  ss: specialize TFPGMap<string, Variant>;
+  store: specialize TArray<specialize TFPGMap<string, Variant>>;
+  store_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  x: integer;
+
+procedure test_TPCDS_Q27_averages_by_state;
+
+var
+  _tmp16: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp16 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp16.AddOrSetData('i_item_id', 'ITEM1');
+  _tmp16.AddOrSetData('s_state', 'CA');
+  _tmp16.AddOrSetData('agg1', 5);
+  _tmp16.AddOrSetData('agg2', 100);
+  _tmp16.AddOrSetData('agg3', 10);
+  _tmp16.AddOrSetData('agg4', 90);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp16]))) then raise
+    Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('ss_item_sk', 1);
+  _tmp0.AddOrSetData('ss_store_sk', 1);
+  _tmp0.AddOrSetData('ss_cdemo_sk', 1);
+  _tmp0.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp0.AddOrSetData('ss_quantity', 5);
+  _tmp0.AddOrSetData('ss_list_price', 100);
+  _tmp0.AddOrSetData('ss_coupon_amt', 10);
+  _tmp0.AddOrSetData('ss_sales_price', 90);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('ss_item_sk', 2);
+  _tmp1.AddOrSetData('ss_store_sk', 2);
+  _tmp1.AddOrSetData('ss_cdemo_sk', 2);
+  _tmp1.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp1.AddOrSetData('ss_quantity', 2);
+  _tmp1.AddOrSetData('ss_list_price', 50);
+  _tmp1.AddOrSetData('ss_coupon_amt', 5);
+  _tmp1.AddOrSetData('ss_sales_price', 45);
+  store_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1]);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('cd_demo_sk', 1);
+  _tmp2.AddOrSetData('cd_gender', 'F');
+  _tmp2.AddOrSetData('cd_marital_status', 'M');
+  _tmp2.AddOrSetData('cd_education_status', 'College');
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('cd_demo_sk', 2);
+  _tmp3.AddOrSetData('cd_gender', 'M');
+  _tmp3.AddOrSetData('cd_marital_status', 'S');
+  _tmp3.AddOrSetData('cd_education_status', 'College');
+  customer_demographics := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp2, _tmp3]);
+  _tmp4 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp4.AddOrSetData('d_date_sk', 1);
+  _tmp4.AddOrSetData('d_year', 2000);
+  date_dim := specialize TArray<specialize TFPGMap<string, integer>>([_tmp4]);
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('s_store_sk', 1);
+  _tmp5.AddOrSetData('s_state', 'CA');
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('s_store_sk', 2);
+  _tmp6.AddOrSetData('s_state', 'TX');
+  store := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp5, _tmp6]);
+  _tmp7 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp7.AddOrSetData('i_item_sk', 1);
+  _tmp7.AddOrSetData('i_item_id', 'ITEM1');
+  _tmp8 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp8.AddOrSetData('i_item_sk', 2);
+  _tmp8.AddOrSetData('i_item_id', 'ITEM2');
+  item := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp7, _tmp8]);
+  _tmp9 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp9.AddOrSetData('i_item_id', g.key.item_id);
+  _tmp9.AddOrSetData('s_state', g.key.state);
+  SetLength(_tmp10, 0);
+  for x in g do
+    begin
+      _tmp10 := Concat(_tmp10, [x.ss_quantity]);
+    end;
+  _tmp9.AddOrSetData('agg1', specialize _avgList<Variant>(_tmp10));
+  SetLength(_tmp11, 0);
+  for x in g do
+    begin
+      _tmp11 := Concat(_tmp11, [x.ss_list_price]);
+    end;
+  _tmp9.AddOrSetData('agg2', specialize _avgList<Variant>(_tmp11));
+  SetLength(_tmp12, 0);
+  for x in g do
+    begin
+      _tmp12 := Concat(_tmp12, [x.ss_coupon_amt]);
+    end;
+  _tmp9.AddOrSetData('agg3', specialize _avgList<Variant>(_tmp12));
+  SetLength(_tmp13, 0);
+  for x in g do
+    begin
+      _tmp13 := Concat(_tmp13, [x.ss_sales_price]);
+    end;
+  _tmp9.AddOrSetData('agg4', specialize _avgList<Variant>(_tmp13));
+  SetLength(_tmp14, 0);
+  SetLength(_tmp15, 0);
+  for ss in store_sales do
+    begin
+      for cd in customer_demographics do
+        begin
+          if not ((ss.ss_cdemo_sk = cd.cd_demo_sk)) then continue;
+          for d in date_dim do
+            begin
+              if not ((ss.ss_sold_date_sk = d.d_date_sk)) then continue;
+              for s in store do
+                begin
+                  if not ((ss.ss_store_sk = s.s_store_sk)) then continue;
+                  for i in item do
+                    begin
+                      if not ((ss.ss_item_sk = i.i_item_sk)) then continue;
+                      if not ((((((cd.cd_gender = 'F') and (cd.cd_marital_status = 'M')) and (cd.
+                         cd_education_status = 'College')) and (d.d_year = 2000)) and (s.s_state in
+                         specialize TArray<specialize TFPGMap<string, Variant>>(['CA'])))) then
+                        continue;
+                      _tmp14 := Concat(_tmp14, [_tmp9]);
+                      _tmp15 := Concat(_tmp15, [specialize TArray<specialize TFPGMap<string, Variant
+                                >>([g.key.item_id, g.key.state])]);
+                    end;
+                end;
+            end;
+        end;
+    end;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp14, _tmp15);
+  _result := _tmp14;
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(_result);
+  test_TPCDS_Q27_averages_by_state;
+end.

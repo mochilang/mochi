@@ -1,0 +1,313 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+type StoreSale = record
+  ss_item_sk: integer;
+  ss_sold_date_sk: integer;
+  ss_customer_sk: integer;
+  ss_quantity: integer;
+  ss_sales_price: double;
+end;
+
+type DateDim = record
+  d_date_sk: integer;
+  d_year: integer;
+  d_moy: integer;
+end;
+
+type Item = record
+  i_item_sk: integer;
+end;
+
+type CatalogSale = record
+  cs_sold_date_sk: integer;
+  cs_item_sk: integer;
+  cs_bill_customer_sk: integer;
+  cs_quantity: integer;
+  cs_list_price: double;
+end;
+
+type WebSale = record
+  ws_sold_date_sk: integer;
+  ws_item_sk: integer;
+  ws_bill_customer_sk: integer;
+  ws_quantity: integer;
+  ws_list_price: double;
+end;
+
+generic _Group<T> = record
+  Key: Variant;
+  Items: specialize TArray<T>;
+end;
+
+generic function _group_by<T>(src: specialize TArray<T>; keyfn: function(it: T): Variant):
+                                                                                          specialize
+                                                                                           TArray<
+                                                                                          specialize
+                                                                                           _Group<T>
+                                                                                           >;
+
+var i,j,idx: Integer;
+  key: Variant;
+  ks: string;
+begin
+  SetLength(Result, 0);
+  for i := 0 to High(src) do
+    begin
+      key := keyfn(src[i]);
+      ks := VarToStr(key);
+      idx := -1;
+      for j := 0 to High(Result) do
+        if VarToStr(Result[j].Key) = ks then
+          begin
+            idx := j;
+            Break;
+          end;
+      if idx = -1 then
+        begin
+          idx := Length(Result);
+          SetLength(Result, idx + 1);
+          Result[idx].Key := key;
+          SetLength(Result[idx].Items, 0);
+        end;
+      SetLength(Result[idx].Items, Length(Result[idx].Items)+1);
+      Result[idx].Items[High(Result[idx].Items)] := src[i];
+    end;
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic function _sumList<T>(arr: specialize TArray<T>): double;
+
+var i: integer;
+  s: double;
+begin
+  s := 0;
+  for i := 0 to High(arr) do
+    s := s + arr[i];
+  Result := s;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TFPGMap<Variant, integer>;
+  _tmp11: specialize TFPGMap<Variant, Variant>;
+  _tmp12: specialize TFPGMap<Variant, Variant>;
+  _tmp13: specialize TFPGMap<Variant, Variant>;
+  _tmp14: specialize TFPGMap<Variant, Variant>;
+  _tmp15: specialize TArray<Variant>;
+  _tmp16: specialize TFPGMap<Variant, Variant>;
+  _tmp17: specialize TArray<Variant>;
+  _tmp18: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp19: specialize TArray<specialize _Group<specialize TFPGMap<string, Variant>>>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp20: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp21: specialize TArray<Variant>;
+  _tmp22: specialize TArray<Variant>;
+  _tmp23: specialize TArray<Variant>;
+  _tmp24: specialize TArray<Variant>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp7: specialize TFPGMap<Variant, Variant>;
+  _tmp8: specialize TFPGMap<Variant, integer>;
+  _tmp9: specialize TFPGMap<Variant, integer>;
+  best_ss_customer: specialize TArray<Variant>;
+  c: specialize TFPGMap<string, Variant>;
+  catalog: specialize TArray<Variant>;
+  catalog_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  cs: specialize TFPGMap<string, Variant>;
+  customer_totals: specialize TArray<specialize TFPGMap<string, Variant>>;
+  date_dim: specialize TArray<specialize TFPGMap<string, integer>>;
+  frequent_ss_items: specialize TArray<Variant>;
+  item: specialize TArray<specialize TFPGMap<string, integer>>;
+  max_sales: Variant;
+  _result: double;
+  ss: specialize TFPGMap<string, Variant>;
+  store_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  web: specialize TArray<Variant>;
+  web_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  ws: specialize TFPGMap<string, Variant>;
+  x: integer;
+
+procedure test_TPCDS_Q23_cross_channel_sales;
+begin
+  if not ((_result = 50)) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('ss_item_sk', 1);
+  _tmp0.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp0.AddOrSetData('ss_customer_sk', 1);
+  _tmp0.AddOrSetData('ss_quantity', 1);
+  _tmp0.AddOrSetData('ss_sales_price', 10);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('ss_item_sk', 1);
+  _tmp1.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp1.AddOrSetData('ss_customer_sk', 1);
+  _tmp1.AddOrSetData('ss_quantity', 1);
+  _tmp1.AddOrSetData('ss_sales_price', 10);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('ss_item_sk', 1);
+  _tmp2.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp2.AddOrSetData('ss_customer_sk', 1);
+  _tmp2.AddOrSetData('ss_quantity', 1);
+  _tmp2.AddOrSetData('ss_sales_price', 10);
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('ss_item_sk', 1);
+  _tmp3.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp3.AddOrSetData('ss_customer_sk', 1);
+  _tmp3.AddOrSetData('ss_quantity', 1);
+  _tmp3.AddOrSetData('ss_sales_price', 10);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('ss_item_sk', 1);
+  _tmp4.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp4.AddOrSetData('ss_customer_sk', 1);
+  _tmp4.AddOrSetData('ss_quantity', 1);
+  _tmp4.AddOrSetData('ss_sales_price', 10);
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('ss_item_sk', 2);
+  _tmp5.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp5.AddOrSetData('ss_customer_sk', 2);
+  _tmp5.AddOrSetData('ss_quantity', 1);
+  _tmp5.AddOrSetData('ss_sales_price', 10);
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('ss_item_sk', 2);
+  _tmp6.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp6.AddOrSetData('ss_customer_sk', 2);
+  _tmp6.AddOrSetData('ss_quantity', 1);
+  _tmp6.AddOrSetData('ss_sales_price', 10);
+  _tmp7 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp7.AddOrSetData('ss_item_sk', 2);
+  _tmp7.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp7.AddOrSetData('ss_customer_sk', 2);
+  _tmp7.AddOrSetData('ss_quantity', 1);
+  _tmp7.AddOrSetData('ss_sales_price', 10);
+  store_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2, _tmp3,
+                 _tmp4, _tmp5, _tmp6, _tmp7]);
+  _tmp8 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp8.AddOrSetData('d_date_sk', 1);
+  _tmp8.AddOrSetData('d_year', 2000);
+  _tmp8.AddOrSetData('d_moy', 1);
+  date_dim := specialize TArray<specialize TFPGMap<string, integer>>([_tmp8]);
+  _tmp9 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp9.AddOrSetData('i_item_sk', 1);
+  _tmp10 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp10.AddOrSetData('i_item_sk', 2);
+  item := specialize TArray<specialize TFPGMap<string, integer>>([_tmp9, _tmp10]);
+  _tmp11 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp11.AddOrSetData('cs_sold_date_sk', 1);
+  _tmp11.AddOrSetData('cs_item_sk', 1);
+  _tmp11.AddOrSetData('cs_bill_customer_sk', 1);
+  _tmp11.AddOrSetData('cs_quantity', 2);
+  _tmp11.AddOrSetData('cs_list_price', 10);
+  _tmp12 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp12.AddOrSetData('cs_sold_date_sk', 1);
+  _tmp12.AddOrSetData('cs_item_sk', 2);
+  _tmp12.AddOrSetData('cs_bill_customer_sk', 2);
+  _tmp12.AddOrSetData('cs_quantity', 2);
+  _tmp12.AddOrSetData('cs_list_price', 10);
+  catalog_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp11, _tmp12]);
+  _tmp13 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp13.AddOrSetData('ws_sold_date_sk', 1);
+  _tmp13.AddOrSetData('ws_item_sk', 1);
+  _tmp13.AddOrSetData('ws_bill_customer_sk', 1);
+  _tmp13.AddOrSetData('ws_quantity', 3);
+  _tmp13.AddOrSetData('ws_list_price', 10);
+  _tmp14 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp14.AddOrSetData('ws_sold_date_sk', 1);
+  _tmp14.AddOrSetData('ws_item_sk', 2);
+  _tmp14.AddOrSetData('ws_bill_customer_sk', 2);
+  _tmp14.AddOrSetData('ws_quantity', 1);
+  _tmp14.AddOrSetData('ws_list_price', 10);
+  web_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp13, _tmp14]);
+  SetLength(_tmp15, 0);
+  for ss in store_sales do
+    begin
+      for d in date_dim do
+        begin
+          if not ((ss.ss_sold_date_sk = d.d_date_sk)) then continue;
+          for i in item do
+            begin
+              if not ((ss.ss_item_sk = i.i_item_sk)) then continue;
+              if not ((d.d_year = 2000)) then continue;
+              _tmp15 := Concat(_tmp15, [g.key.item_sk]);
+            end;
+        end;
+    end;
+  frequent_ss_items := _tmp15;
+  _tmp16 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp16.AddOrSetData('cust', g.key);
+  SetLength(_tmp17, 0);
+  for x in g do
+    begin
+      _tmp17 := Concat(_tmp17, [x.ss_quantity * x.ss_sales_price]);
+    end;
+  _tmp16.AddOrSetData('sales', specialize _sumList<Variant>(_tmp17));
+  SetLength(_tmp18, 0);
+  for ss in store_sales do
+    begin
+      _tmp18 := Concat(_tmp18, [ss]);
+    end;
+  _tmp19 := specialize _group_by<specialize TFPGMap<string, Variant>>(_tmp18, function(ss:
+            specialize TFPGMap<string, Variant>): Variant begin Result := ss.ss_customer_sk
+end
+);
+SetLength(_tmp20, 0);
+for g in _tmp19 do
+  begin
+    _tmp20 := Concat(_tmp20, [_tmp16]);
+  end;
+customer_totals := _tmp20;
+SetLength(_tmp21, 0);
+for c in customer_totals do
+  begin
+    _tmp21 := Concat(_tmp21, [c.sales]);
+  end;
+max_sales := max(_tmp21);
+SetLength(_tmp22, 0);
+for c in customer_totals do
+  begin
+    if not ((c.sales > 0.95 * max_sales)) then continue;
+    _tmp22 := Concat(_tmp22, [c.cust]);
+  end;
+best_ss_customer := _tmp22;
+SetLength(_tmp23, 0);
+for cs in catalog_sales do
+  begin
+    for d in date_dim do
+      begin
+        if not ((cs.cs_sold_date_sk = d.d_date_sk)) then continue;
+        if not (((((d.d_year = 2000) and (d.d_moy = 1)) and (cs.cs_bill_customer_sk in
+           best_ss_customer)) and (frequent_ss_items.IndexOf(cs.cs_item_sk) >= 0))) then continue;
+        _tmp23 := Concat(_tmp23, [cs.cs_quantity * cs.cs_list_price]);
+      end;
+  end;
+catalog := _tmp23;
+SetLength(_tmp24, 0);
+for ws in web_sales do
+  begin
+    for d in date_dim do
+      begin
+        if not ((ws.ws_sold_date_sk = d.d_date_sk)) then continue;
+        if not (((((d.d_year = 2000) and (d.d_moy = 1)) and (ws.ws_bill_customer_sk in
+           best_ss_customer)) and (frequent_ss_items.IndexOf(ws.ws_item_sk) >= 0))) then continue;
+        _tmp24 := Concat(_tmp24, [ws.ws_quantity * ws.ws_list_price]);
+      end;
+  end;
+web := _tmp24;
+_result := specialize _sumList<Variant>(catalog) + specialize _sumList<Variant>(web);
+specialize _json<double>(_result);
+test_TPCDS_Q23_cross_channel_sales;
+end.
