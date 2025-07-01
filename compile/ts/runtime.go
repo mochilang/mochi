@@ -50,6 +50,11 @@ const (
 		"  return out;\n" +
 		"}\n"
 
+	helperValues = "function _values(m: any): any[] {\n" +
+		"  if (m && typeof m === 'object' && !Array.isArray(m)) return Object.values(m);\n" +
+		"  throw new Error('values() expects map');\n" +
+		"}\n"
+
 	helperAvg = "function _avg(v: any): number {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
@@ -360,6 +365,17 @@ const (
 		"    let pairs = items.map(it => ({item: it, key: opts.sortKey(...it)}));\n" +
 		"    pairs.sort((a,b) => {\n" +
 		"      const ak = a.key; const bk = b.key;\n" +
+		"      if (Array.isArray(ak) && Array.isArray(bk)) {\n" +
+		"        for (let i=0;i<Math.min(ak.length,bk.length);i++) {\n" +
+		"          const ai = ak[i]; const bi = bk[i];\n" +
+		"          if (ai === bi) continue;\n" +
+		"          if (typeof ai === 'number' && typeof bi === 'number') return ai - bi;\n" +
+		"          if (typeof ai === 'string' && typeof bi === 'string') return ai < bi ? -1 : (ai > bi ? 1 : 0);\n" +
+		"          const sa = String(ai); const sb = String(bi);\n" +
+		"          if (sa < sb) return -1; if (sa > sb) return 1;\n" +
+		"        }\n" +
+		"        return ak.length - bk.length;\n" +
+		"      }\n" +
 		"      if (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n" +
 		"      if (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n" +
 		"      return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n" +
@@ -485,6 +501,7 @@ var helperMap = map[string]string{
 	"_sliceString": helperSliceString,
 	"_slice":       helperSlice,
 	"_append":      helperAppend,
+	"_values":      helperValues,
 	"_count":       helperCount,
 	"_avg":         helperAvg,
 	"_sum":         helperSum,

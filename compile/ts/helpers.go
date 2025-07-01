@@ -132,6 +132,24 @@ func sanitizeName(name string) string {
 	return res
 }
 
+// sanitizeFieldName converts a string to a valid TypeScript field identifier but
+// does not prefix reserved words. It is used for object property access where
+// reserved words like "class" are allowed.
+func sanitizeFieldName(name string) string {
+	var b strings.Builder
+	for i, r := range name {
+		if r == '_' || ('0' <= r && r <= '9' && i > 0) || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') {
+			b.WriteRune(r)
+		} else {
+			b.WriteRune('_')
+		}
+	}
+	if b.Len() == 0 || !((b.String()[0] >= 'A' && b.String()[0] <= 'Z') || (b.String()[0] >= 'a' && b.String()[0] <= 'z') || b.String()[0] == '_') {
+		return "_" + b.String()
+	}
+	return b.String()
+}
+
 func isUnderscoreExpr(e *parser.Expr) bool {
 	if e == nil {
 		return false

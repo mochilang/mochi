@@ -111,6 +111,17 @@ func (c *Compiler) collectImports(stmts []*parser.Statement) {
 			}
 			alias = sanitizeName(alias)
 			c.imports[alias] = path
+		} else if s.Import != nil && s.Import.Lang != nil && *s.Import.Lang == "python" {
+			// Map common Python imports to native JS objects when possible
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			alias = sanitizeName(alias)
+			path := strings.Trim(s.Import.Path, "\"")
+			if path == "math" {
+				c.imports[alias] = "Math"
+			}
 		}
 	}
 }
@@ -294,7 +305,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Collect TypeScript imports and emit them.
 	c.collectImports(prog.Statements)
 	for alias, path := range c.imports {
-		c.writeln(fmt.Sprintf("import * as %s from \"%s\"", alias, path))
+		if path == "Math" {
+			c.writeln(fmt.Sprintf("const %s = Math", alias))
+		} else {
+			c.writeln(fmt.Sprintf("import * as %s from \"%s\"", alias, path))
+		}
 	}
 	if len(c.imports) > 0 {
 		c.writeln("")
@@ -1212,6 +1227,9 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		}
 		return fmt.Sprintf("(%s %s %s)", left, op, right), leftType, nil
 	case "==", "!=":
+		if right == "null" || left == "null" {
+			return fmt.Sprintf("(%s %s %s)", left, op, right), types.BoolType{}, nil
+		}
 		if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) || isAny(leftType) || isAny(rightType) {
 			c.use("_equal")
 			if op == "==" {
@@ -1433,7 +1451,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
 		for _, s := range p.Selector.Tail {
-			expr += "." + sanitizeName(s)
+			expr += "." + sanitizeFieldName(s)
 		}
 		return expr, nil
 	case p.Struct != nil:
@@ -1555,6 +1573,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_contains")
 		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		c.use("_values")
+		return fmt.Sprintf("_values(%s)", args[0]), nil
 	case "exists":
 		c.use("_exists")
 		return fmt.Sprintf("_exists(%s)", argStr), nil
@@ -2155,6 +2179,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString("\tlet _pairs = _items.map(it => { const " + sv + " = it; return {item: it, key: " + sortExpr + "}; });\n")
 			b.WriteString("\t_pairs.sort((a, b) => {\n")
 			b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
+			b.WriteString("\t\tif (Array.isArray(ak) && Array.isArray(bk)) {\n")
+			b.WriteString("\t\t\tfor (let i=0;i<Math.min(ak.length,bk.length);i++) {\n")
+			b.WriteString("\t\t\t\tconst ai = ak[i]; const bi = bk[i];\n")
+			b.WriteString("\t\t\t\tif (ai === bi) continue;\n")
+			b.WriteString("\t\t\t\tif (typeof ai === 'number' && typeof bi === 'number') return ai - bi;\n")
+			b.WriteString("\t\t\t\tif (typeof ai === 'string' && typeof bi === 'string') return ai < bi ? -1 : (ai > bi ? 1 : 0);\n")
+			b.WriteString("\t\t\t\tconst sa = String(ai); const sb = String(bi);\n")
+			b.WriteString("\t\t\t\tif (sa < sb) return -1; if (sa > sb) return 1;\n")
+			b.WriteString("\t\t\t}\n")
+			b.WriteString("\t\t\treturn ak.length - bk.length;\n")
+			b.WriteString("\t\t}\n")
 			b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
 			b.WriteString("\t\tif (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n")
 			b.WriteString("\t\treturn String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n")
@@ -2388,6 +2423,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString("\tlet _pairs = _itemsG.map(it => { const " + sanitizeName(q.Group.Name) + " = it; return {item: it, key: " + sortExpr + "}; });\n")
 			b.WriteString("\t_pairs.sort((a, b) => {\n")
 			b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
+			b.WriteString("\t\tif (Array.isArray(ak) && Array.isArray(bk)) {\n")
+			b.WriteString("\t\t\tfor (let i=0;i<Math.min(ak.length,bk.length);i++) {\n")
+			b.WriteString("\t\t\t\tconst ai = ak[i]; const bi = bk[i];\n")
+			b.WriteString("\t\t\t\tif (ai === bi) continue;\n")
+			b.WriteString("\t\t\t\tif (typeof ai === 'number' && typeof bi === 'number') return ai - bi;\n")
+			b.WriteString("\t\t\t\tif (typeof ai === 'string' && typeof bi === 'string') return ai < bi ? -1 : (ai > bi ? 1 : 0);\n")
+			b.WriteString("\t\t\t\tconst sa = String(ai); const sb = String(bi);\n")
+			b.WriteString("\t\t\t\tif (sa < sb) return -1; if (sa > sb) return 1;\n")
+			b.WriteString("\t\t\t}\n")
+			b.WriteString("\t\t\treturn ak.length - bk.length;\n")
+			b.WriteString("\t\t}\n")
 			b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
 			b.WriteString("\t\tif (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n")
 			b.WriteString("\t\treturn String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n")

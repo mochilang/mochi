@@ -21,7 +21,7 @@ let records =
   from dt in date_dim
   join ss in store_sales on ss.sold_date_sk == dt.d_date_sk
   join it in item on ss.item_sk == it.i_item_sk
-  where it.i_manager_id == 1 && dt.d_moy == month && dt.d_year == year
+  where dt.d_moy == month && dt.d_year == year
   select { d_year: dt.d_year, i_category_id: it.i_category_id, i_category: it.i_category, price: ss.ext_sales_price }
 
 let base =
