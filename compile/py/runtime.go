@@ -319,6 +319,31 @@ var helperContains = "def _contains(c, v):\n" +
 	"        return str(v) in c\n" +
 	"    return False\n"
 
+var helperExists = "def _exists(v):\n" +
+	"    if isinstance(v, list):\n" +
+	"        return len(v) > 0\n" +
+	"    if isinstance(v, dict):\n" +
+	"        if isinstance(v.get('items'), list):\n" +
+	"            return len(v['items']) > 0\n" +
+	"        if isinstance(v.get('Items'), list):\n" +
+	"            return len(v['Items']) > 0\n" +
+	"        return len(v) > 0\n" +
+	"    if isinstance(v, str):\n" +
+	"        return len(v) > 0\n" +
+	"    try:\n" +
+	"        items = v.Items\n" +
+	"        if isinstance(items, list):\n" +
+	"            return len(items) > 0\n" +
+	"    except Exception:\n" +
+	"        pass\n" +
+	"    try:\n" +
+	"        items = v.items\n" +
+	"        if isinstance(items, list):\n" +
+	"            return len(items) > 0\n" +
+	"    except Exception:\n" +
+	"        pass\n" +
+	"    return False\n"
+
 var helperValues = "def _values(m):\n" +
 	"    if isinstance(m, dict):\n" +
 	"        return list(m.values())\n" +
@@ -466,6 +491,7 @@ var helperMap = map[string]string{
 	"_get":        helperGet,
 	"_append":     helperAppend,
 	"_contains":   helperContains,
+	"_exists":     helperExists,
 	"_values":     helperValues,
 	"_fetch":      helperFetch,
 	"_load":       helperLoad,

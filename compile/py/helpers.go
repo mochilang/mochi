@@ -538,6 +538,140 @@ func exprVars(e *parser.Expr, vars map[string]struct{}) {
 	}
 }
 
+// exprHasCall reports whether expression e contains any function call.
+func exprHasCall(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	has := false
+	var scanUnary func(*parser.Unary)
+	var scanPostfix func(*parser.PostfixExpr)
+	var scanPrimary func(*parser.Primary)
+
+	scanUnary = func(u *parser.Unary) {
+		if u == nil || has {
+			return
+		}
+		scanPostfix(u.Value)
+	}
+	scanPostfix = func(p *parser.PostfixExpr) {
+		if p == nil || has {
+			return
+		}
+		scanPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Call != nil {
+				has = true
+				return
+			}
+			if op.Index != nil {
+				if exprHasCall(op.Index.Start) || exprHasCall(op.Index.End) {
+					has = true
+					return
+				}
+			}
+		}
+	}
+	scanPrimary = func(p *parser.Primary) {
+		if p == nil || has {
+			return
+		}
+		if p.Call != nil {
+			has = true
+			return
+		}
+		if p.Group != nil {
+			if exprHasCall(p.Group) {
+				has = true
+				return
+			}
+		}
+		if p.FunExpr != nil {
+			if exprHasCall(p.FunExpr.ExprBody) {
+				has = true
+				return
+			}
+			for _, st := range p.FunExpr.BlockBody {
+				if stmtHasCall(st) {
+					has = true
+					return
+				}
+			}
+		}
+		if p.List != nil {
+			for _, el := range p.List.Elems {
+				if exprHasCall(el) {
+					has = true
+					return
+				}
+			}
+		}
+		if p.Map != nil {
+			for _, it := range p.Map.Items {
+				if exprHasCall(it.Key) || exprHasCall(it.Value) {
+					has = true
+					return
+				}
+			}
+		}
+	}
+
+	scanUnary(e.Binary.Left)
+	for _, op := range e.Binary.Right {
+		scanPostfix(op.Right)
+	}
+	return has
+}
+
+func stmtHasCall(s *parser.Statement) bool {
+	switch {
+	case s == nil:
+		return false
+	case s.Let != nil:
+		return exprHasCall(s.Let.Value)
+	case s.Var != nil:
+		return exprHasCall(s.Var.Value)
+	case s.Assign != nil:
+		return exprHasCall(s.Assign.Value)
+	case s.For != nil:
+		for _, st := range s.For.Body {
+			if stmtHasCall(st) {
+				return true
+			}
+		}
+	case s.While != nil:
+		for _, st := range s.While.Body {
+			if stmtHasCall(st) {
+				return true
+			}
+		}
+	case s.If != nil:
+		if exprHasCall(s.If.Cond) {
+			return true
+		}
+		for _, st := range s.If.Then {
+			if stmtHasCall(st) {
+				return true
+			}
+		}
+		if s.If.ElseIf != nil && stmtHasCall(&parser.Statement{If: s.If.ElseIf}) {
+			return true
+		}
+		for _, st := range s.If.Else {
+			if stmtHasCall(st) {
+				return true
+			}
+		}
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			if stmtHasCall(st) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func scanStmtVars(s *parser.Statement, vars map[string]struct{}) {}
 
 // whereEvalLevel returns the earliest FROM clause index where the query's WHERE
