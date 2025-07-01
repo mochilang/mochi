@@ -26,16 +26,14 @@ const datasetHelpers = `(define (_fetch url opts)
   (when (hash-has-key? opts 'timeout)
     (set! args (append args (list "--max-time" (format "~a" (hash-ref opts 'timeout))))) )
   (set! args (append args (list url)))
-  (define p (open-input-pipe (string-join args " ")))
-  (define txt (port->string p))
-  (close-input-port p)
-  (string->jsexpr txt))
+  (define out (with-output-to-string (lambda () (apply system* args))))
+  (string->jsexpr out))
 
 (define (_load path opts)
   (define opts (or opts (hash)))
   (define fmt (hash-ref opts 'format "json"))
   (define text (if path (call-with-input-file path port->string) (port->string (current-input-port))))
-  (cond [(string=? fmt "jsonl") (for/list ([l (in-lines (open-input-string text))] #:unless (string-blank? l)) (string->jsexpr l))]
+  (cond [(string=? fmt "jsonl") (for/list ([l (in-lines (open-input-string text))] #:unless (regexp-match? #px"^\\s*$" l)) (string->jsexpr l))]
         [(string=? fmt "json") (let ([d (string->jsexpr text)]) (if (list? d) d (list d)))]
         [else '()]))
 
@@ -58,7 +56,7 @@ const datasetHelpers = `(define (_fetch url opts)
     (define ks (format "~a" k))
     (define g (hash-ref groups ks #f))
     (unless g
-      (set! g (make-_Group k '()))
+      (set! g (_Group k '()))
       (hash-set! groups ks g)
       (set! order (append order (list ks))))
     (set-_Group-Items! g (append (_Group-Items g) (list it))))
@@ -309,7 +307,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		imports = append(imports, "racket/match")
 	}
 	if c.needsDataset {
-		imports = append(imports, "racket/string", "json")
+		imports = append(imports, "racket/string", "racket/system", "json")
 	} else if c.needsLLM {
 		imports = append(imports, "json")
 	}
@@ -1333,6 +1331,149 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("    _res)")
 		return b.String(), nil
 	}
+
+	if q.Group != nil && len(q.Froms) == 0 {
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		for _, j := range q.Joins {
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
+		c.env = child
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinSrcs[i] = js
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinOns[i] = on
+		}
+		var whereExpr string
+		if q.Where != nil {
+			whereExpr, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		keyParts := make([]string, len(q.Group.Exprs))
+		for i, e := range q.Group.Exprs {
+			k, err := c.compileExpr(e)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			keyParts[i] = k
+		}
+		keyExpr := strings.Join(keyParts, " ")
+		if len(keyParts) > 1 {
+			keyExpr = fmt.Sprintf("(list %s)", keyExpr)
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		var sortExpr, skipExpr, takeExpr string
+		if q.Sort != nil {
+			sortExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Skip != nil {
+			skipExpr, err = c.compileExpr(q.Skip)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		if q.Take != nil {
+			takeExpr, err = c.compileExpr(q.Take)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		c.env = orig
+		c.needsDataset = true
+		var b strings.Builder
+		b.WriteString("(let ([groups (let ([map (make-hash)] [order '()])\n")
+		b.WriteString(fmt.Sprintf("  (for ([%s %s])\n", sanitizeName(q.Var), src))
+		indent := "    "
+		for i := range q.Joins {
+			b.WriteString(indent + fmt.Sprintf("(for ([%s %s])\n", sanitizeName(q.Joins[i].Var), joinSrcs[i]))
+			indent += "  "
+			b.WriteString(indent + fmt.Sprintf("(when %s\n", joinOns[i]))
+			indent += "  "
+		}
+		if whereExpr != "" {
+			b.WriteString(indent + fmt.Sprintf("(when %s\n", whereExpr))
+			indent += "  "
+		}
+		b.WriteString(indent + "(let* ([key " + keyExpr + "]\n")
+		b.WriteString(indent + "       [ks (format \"~a\" key)]\n")
+		b.WriteString(indent + "       [g (hash-ref map ks #f)])\n")
+		b.WriteString(indent + "  (unless g\n")
+		b.WriteString(indent + "    (set! g (_Group key '()))\n")
+		b.WriteString(indent + "    (hash-set! map ks g)\n")
+		b.WriteString(indent + "    (set! order (append order (list ks))))\n")
+		b.WriteString(indent + fmt.Sprintf("  (set-_Group-Items! g (append (_Group-Items g) (list %s)))\n", sanitizeName(q.Var)))
+		b.WriteString(indent + ")\n")
+		if whereExpr != "" {
+			indent = indent[:len(indent)-2]
+			b.WriteString(indent + ")\n")
+		}
+		for range q.Joins {
+			indent = indent[:len(indent)-2]
+			b.WriteString(indent + ")\n")
+			indent = indent[:len(indent)-2]
+			b.WriteString(indent + ")\n")
+		}
+		b.WriteString("  )\n")
+		b.WriteString("  (for/list ([ks order]) (hash-ref map ks)))]\n")
+		b.WriteString("  (let ([_res '()])\n")
+		b.WriteString(fmt.Sprintf("    (for ([%s groups])\n", sanitizeName(q.Group.Name)))
+		if sortExpr != "" {
+			b.WriteString(fmt.Sprintf("      (set! _res (append _res (list (cons %s %s))))\n", sortExpr, valExpr))
+		} else {
+			b.WriteString(fmt.Sprintf("      (set! _res (append _res (list %s)))\n", valExpr))
+		}
+		b.WriteString("    )\n")
+		if sortExpr != "" {
+			b.WriteString("    (set! _res (map cdr (sort _res (lambda (a b)\n" +
+				"      (let ([ak (car a)] [bk (car b)])\n" +
+				"        (cond [(and (number? ak) (number? bk)) (< ak bk)]\n" +
+				"              [(and (string? ak) (string? bk)) (string<? ak bk)]\n" +
+				"              [else (string<? (format \"~a\" ak) (format \"~a\" bk))])))\n" +
+				"    )))\n")
+		}
+		if skipExpr != "" {
+			b.WriteString(fmt.Sprintf("    (set! _res (drop _res %s))\n", skipExpr))
+		}
+		if takeExpr != "" {
+			b.WriteString(fmt.Sprintf("    (set! _res (take _res %s))\n", takeExpr))
+		}
+		b.WriteString("    _res)))")
+		return b.String(), nil
+	}
+
 	if q.Group != nil {
 		return "", fmt.Errorf("group clause not supported")
 	}
