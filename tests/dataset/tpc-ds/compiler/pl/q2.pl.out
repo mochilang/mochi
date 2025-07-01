@@ -1,0 +1,78 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+sum(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), sum_list(Items, R).
+sum(V, R) :-
+    is_list(V), !, sum_list(V, R).
+sum(_, _) :- throw(error('sum expects list or group')).
+
+
+expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
+
+
+group_insert(Key, Item, [], [_{key:Key, 'Items':[Item]}]).
+group_insert(Key, Item, [G|Gs], [NG|Gs]) :- get_dict(key, G, Key), !, get_dict('Items', G, Items), append(Items, [Item], NItems), put_dict('Items', G, NItems, NG).
+group_insert(Key, Item, [G|Gs], [G|Rs]) :- group_insert(Key, Item, Gs, Rs).
+group_pairs([], Acc, Res) :- reverse(Acc, Res).
+group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).
+group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).
+
+
+:- use_module(library(http/json)).
+json(V) :- json_write_dict(current_output, V), nl.
+
+
+test_p_tpcds_q2_result :-
+    dict_create(_V0, map, [d_week_seq1-1, sun_ratio-0.5, mon_ratio-0.5]),
+    expect(Result = [_V0])    ,
+    true.
+
+    main :-
+    dict_create(_V1, map, [ws_sold_date_sk-1, ws_ext_sales_price-5, ws_sold_date_name-"Sunday"]),
+    dict_create(_V2, map, [ws_sold_date_sk-2, ws_ext_sales_price-5, ws_sold_date_name-"Monday"]),
+    dict_create(_V3, map, [ws_sold_date_sk-8, ws_ext_sales_price-10, ws_sold_date_name-"Sunday"]),
+    dict_create(_V4, map, [ws_sold_date_sk-9, ws_ext_sales_price-10, ws_sold_date_name-"Monday"]),
+    Web_sales = [_V1, _V2, _V3, _V4],
+    dict_create(_V5, map, [cs_sold_date_sk-1, cs_ext_sales_price-5, cs_sold_date_name-"Sunday"]),
+    dict_create(_V6, map, [cs_sold_date_sk-2, cs_ext_sales_price-5, cs_sold_date_name-"Monday"]),
+    dict_create(_V7, map, [cs_sold_date_sk-8, cs_ext_sales_price-10, cs_sold_date_name-"Sunday"]),
+    dict_create(_V8, map, [cs_sold_date_sk-9, cs_ext_sales_price-10, cs_sold_date_name-"Monday"]),
+    Catalog_sales = [_V5, _V6, _V7, _V8],
+    dict_create(_V9, map, [d_date_sk-1, d_week_seq-1, d_day_name-"Sunday", d_year-1998]),
+    dict_create(_V10, map, [d_date_sk-2, d_week_seq-1, d_day_name-"Monday", d_year-1998]),
+    dict_create(_V11, map, [d_date_sk-8, d_week_seq-54, d_day_name-"Sunday", d_year-1999]),
+    dict_create(_V12, map, [d_date_sk-9, d_week_seq-54, d_day_name-"Monday", d_year-1999]),
+    Date_dim = [_V9, _V10, _V11, _V12],
+    to_list(Web_sales, _V17),
+    findall(_V18, (member(Ws, _V17), get_dict(ws_sold_date_sk, Ws, _V13), get_dict(ws_ext_sales_price, Ws, _V14), get_dict(ws_sold_date_name, Ws, _V15), dict_create(_V16, map, [sold_date_sk-_V13, sales_price-_V14, day-_V15]), _V18 = _V16), _V19),
+    to_list(Catalog_sales, _V24),
+    findall(_V25, (member(Cs, _V24), get_dict(cs_sold_date_sk, Cs, _V20), get_dict(cs_ext_sales_price, Cs, _V21), get_dict(cs_sold_date_name, Cs, _V22), dict_create(_V23, map, [sold_date_sk-_V20, sales_price-_V21, day-_V22]), _V25 = _V23), _V26),
+    append(_V19, _V26, _V27),
+    Wscs = _V27,
+    to_list(Wscs, _V30),
+    to_list(Date_dim, _V33),
+    findall(_V35, (member(W, _V30), member(D, _V33), get_dict(sold_date_sk, W, _V31), get_dict(d_date_sk, D, _V32), _V31 = _V32, get_dict(d_week_seq, D, _V28), dict_create(_V29, map, [week_seq-_V28]), _V34 = _V29, _V35 = _V34-W), _V36),
+    group_pairs(_V36, [], _V37),
+    findall(_V104, (member(G, _V37), get_dict(key, G, _V38), get_dict(week_seq, _V38, _V39), get_dict('Items', G, _V40), to_list(_V40, _V43), findall(X, (member(X, _V43), get_dict(day, X, _V44), _V44 = "Sunday"), _V45), findall(_V46, (member(X, _V45), get_dict(sales_price, X, _V41), _V46 = _V41), _V47), sum(_V47, _V48), get_dict('Items', G, _V49), to_list(_V49, _V52), findall(X, (member(X, _V52), get_dict(day, X, _V53), _V53 = "Monday"), _V54), findall(_V55, (member(X, _V54), get_dict(sales_price, X, _V50), _V55 = _V50), _V56), sum(_V56, _V57), get_dict('Items', G, _V58), to_list(_V58, _V61), findall(X, (member(X, _V61), get_dict(day, X, _V62), _V62 = "Tuesday"), _V63), findall(_V64, (member(X, _V63), get_dict(sales_price, X, _V59), _V64 = _V59), _V65), sum(_V65, _V66), get_dict('Items', G, _V67), to_list(_V67, _V70), findall(X, (member(X, _V70), get_dict(day, X, _V71), _V71 = "Wednesday"), _V72), findall(_V73, (member(X, _V72), get_dict(sales_price, X, _V68), _V73 = _V68), _V74), sum(_V74, _V75), get_dict('Items', G, _V76), to_list(_V76, _V79), findall(X, (member(X, _V79), get_dict(day, X, _V80), _V80 = "Thursday"), _V81), findall(_V82, (member(X, _V81), get_dict(sales_price, X, _V77), _V82 = _V77), _V83), sum(_V83, _V84), get_dict('Items', G, _V85), to_list(_V85, _V88), findall(X, (member(X, _V88), get_dict(day, X, _V89), _V89 = "Friday"), _V90), findall(_V91, (member(X, _V90), get_dict(sales_price, X, _V86), _V91 = _V86), _V92), sum(_V92, _V93), get_dict('Items', G, _V94), to_list(_V94, _V97), findall(X, (member(X, _V97), get_dict(day, X, _V98), _V98 = "Saturday"), _V99), findall(_V100, (member(X, _V99), get_dict(sales_price, X, _V95), _V100 = _V95), _V101), sum(_V101, _V102), dict_create(_V103, map, [d_week_seq-_V39, sun_sales-_V48, mon_sales-_V57, tue_sales-_V66, wed_sales-_V75, thu_sales-_V84, fri_sales-_V93, sat_sales-_V102]), _V104 = _V103), _V105),
+    Wswscs = _V105,
+    to_list(Wswscs, _V107),
+    findall(W, (member(W, _V107), get_dict(d_week_seq, W, _V108), _V108 = 1), _V109),
+    findall(_V110, (member(W, _V109), _V110 = W), _V111),
+    Year1 = _V111,
+    to_list(Wswscs, _V113),
+    findall(W, (member(W, _V113), get_dict(d_week_seq, W, _V114), _V114 = 54), _V115),
+    findall(_V116, (member(W, _V115), _V116 = W), _V117),
+    Year2 = _V117,
+    to_list(Year1, _V126),
+    to_list(Year2, _V130),
+    findall(_V131, (member(Y, _V126), member(Z, _V130), get_dict(d_week_seq, Y, _V127), get_dict(d_week_seq, Z, _V128), _V129 is _V128 - 53, _V127 = _V129, get_dict(d_week_seq, Y, _V118), get_dict(sun_sales, Y, _V119), get_dict(sun_sales, Z, _V120), _V121 is _V119 / _V120, get_dict(mon_sales, Y, _V122), get_dict(mon_sales, Z, _V123), _V124 is _V122 / _V123, dict_create(_V125, map, [d_week_seq1-_V118, sun_ratio-_V121, mon_ratio-_V124]), _V131 = _V125), _V132),
+    Result = _V132,
+    json(Result),
+    test_p_tpcds_q2_result
+    .
+:- initialization(main, main).

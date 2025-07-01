@@ -84,7 +84,7 @@ func (c *Compiler) binaryOp(left operand, op string, right operand) (operand, er
 		return operand{expr: res}, nil
 	case "/":
 		tmp := c.newVar()
-		res.code = append(res.code, fmt.Sprintf("%s is %s // %s,", tmp, left.expr.val, right.expr.val))
+		res.code = append(res.code, fmt.Sprintf("%s is %s / %s,", tmp, left.expr.val, right.expr.val))
 		res.val = tmp
 		return operand{expr: res}, nil
 	case "%":
@@ -351,6 +351,15 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (exprRes, error) {
 		}
 	} else {
 		cur = sanitizeVar(sel.Root)
+	}
+	if len(sel.Tail) == 0 && c.env != nil {
+		if t, err := c.env.GetVar(sel.Root); err == nil {
+			if _, ok := t.(types.GroupType); ok {
+				tmp := c.newVar()
+				res.code = append(res.code, fmt.Sprintf("get_dict('Items', %s, %s)", cur, tmp)+",")
+				cur = tmp
+			}
+		}
 	}
 	for _, field := range sel.Tail {
 		tmp := c.newVar()
@@ -858,34 +867,116 @@ func (c *Compiler) compileSimpleQueryExpr(q *parser.QueryExpr) (exprRes, error) 
 }
 
 func (c *Compiler) compileGroupedQueryWithJoins(q *parser.QueryExpr) (exprRes, error) {
-	inner := *q
-	inner.Group = nil
-	inner.Sort = nil
-	inner.Skip = nil
-	inner.Take = nil
-	inner.Select = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: q.Var}}}}}}
-
-	listRes, err := c.compileSimpleQueryExpr(&inner)
+	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return exprRes{}, err
 	}
 
+	child := types.NewEnv(c.env)
 	var elem types.Type = types.AnyType{}
 	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
 		elem = lt.Elem
 	}
-
-	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elem, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, types.AnyType{}, true)
+	}
 	origEnv := c.env
 	c.env = child
-	keyLambdaExpr := &parser.FunExpr{Params: []*parser.Param{{Name: q.Var}}, ExprBody: q.Group.Exprs[0]}
-	keyRes, err := c.compileFunExpr(keyLambdaExpr)
+	var condRes exprRes
+	if q.Where != nil {
+		condRes, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = origEnv
+			return exprRes{}, err
+		}
+	}
+	keyRes, err := c.compileExpr(q.Group.Exprs[0])
 	if err != nil {
 		c.env = origEnv
 		return exprRes{}, err
 	}
 	c.env = origEnv
+
+	// source list
+	listVar := c.newVar()
+	code := append([]string{}, src.code...)
+	c.use("tolist")
+	code = append(code, fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
+
+	// from clauses
+	fromLists := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fr, err := c.compileExpr(f.Src)
+		if err != nil {
+			return exprRes{}, err
+		}
+		code = append(code, fr.code...)
+		lv := c.newVar()
+		c.use("tolist")
+		code = append(code, fmt.Sprintf("to_list(%s, %s),", fr.val, lv))
+		fromLists[i] = lv
+	}
+
+	// join clauses
+	joinLists := make([]string, len(q.Joins))
+	joinConds := make([][]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			return exprRes{}, err
+		}
+		onRes, err := c.compileExpr(j.On)
+		if err != nil {
+			return exprRes{}, err
+		}
+		code = append(code, js.code...)
+		lv := c.newVar()
+		c.use("tolist")
+		code = append(code, fmt.Sprintf("to_list(%s, %s),", js.val, lv))
+		joinLists[i] = lv
+		tmp := []string{}
+		for _, line := range onRes.code {
+			tmp = append(tmp, strings.TrimSuffix(line, ","))
+		}
+		tmp = append(tmp, onRes.val)
+		joinConds[i] = tmp
+	}
+
+	// build key-item pairs
+	keyVar := c.newVar()
+	pairVar := c.newVar()
+	innerParts := []string{fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Var), listVar)}
+	for i, lv := range fromLists {
+		innerParts = append(innerParts, fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Froms[i].Var), lv))
+	}
+	for i, lv := range joinLists {
+		innerParts = append(innerParts, fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Joins[i].Var), lv))
+		for _, l := range joinConds[i] {
+			innerParts = append(innerParts, l)
+		}
+	}
+	if q.Where != nil {
+		for _, line := range condRes.code {
+			innerParts = append(innerParts, strings.TrimSuffix(line, ","))
+		}
+		innerParts = append(innerParts, condRes.val)
+	}
+	for _, line := range keyRes.code {
+		innerParts = append(innerParts, strings.TrimSuffix(line, ","))
+	}
+	innerParts = append(innerParts, fmt.Sprintf("%s = %s", keyVar, keyRes.val))
+	innerParts = append(innerParts, fmt.Sprintf("%s = %s-%s", pairVar, keyVar, sanitizeVar(q.Var)))
+	goal := strings.Join(innerParts, ", ")
+	pairsVar := c.newVar()
+	c.use("group_by")
+	code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", pairVar, goal, pairsVar))
+
+	groupsVar := c.newVar()
+	code = append(code, fmt.Sprintf("group_pairs(%s, [], %s),", pairsVar, groupsVar))
 
 	genv := types.NewEnv(c.env)
 	genv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
@@ -897,20 +988,13 @@ func (c *Compiler) compileGroupedQueryWithJoins(q *parser.QueryExpr) (exprRes, e
 	}
 	c.env = origEnv
 
-	code := append([]string{}, listRes.code...)
-	listVar := listRes.val
-
-	groupsVar := c.newVar()
-	c.use("group_by")
-	code = append(code, fmt.Sprintf("group_by(%s, %s, %s),", listVar, keyRes.val, groupsVar))
-
 	resultVar := c.newVar()
 	parts := []string{fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Group.Name), groupsVar)}
 	for _, line := range selRes.code {
 		parts = append(parts, strings.TrimSuffix(line, ","))
 	}
 	parts = append(parts, fmt.Sprintf("%s = %s", resultVar, selRes.val))
-	goal := strings.Join(parts, ", ")
+	goal = strings.Join(parts, ", ")
 	outVar := c.newVar()
 	code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", resultVar, goal, outVar))
 
