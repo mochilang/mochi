@@ -724,6 +724,30 @@ func (c *Compiler) emitRuntime() {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["_reverseString"] {
+		c.writeln("")
+		c.writeln("static String _reverseString(String s) {")
+		c.indent++
+		c.writeln("char[] r = s.toCharArray();")
+		c.writeln("for (int i=0, j=r.length-1; i<j; i++, j--) {")
+		c.indent++
+		c.writeln("char tmp = r[i]; r[i] = r[j]; r[j] = tmp;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("return new String(r);")
+		c.indent--
+		c.writeln("}")
+	}
+	if c.helpers["_reverseList"] {
+		c.writeln("")
+		c.writeln("static java.util.List<Object> _reverseList(java.util.List<Object> src) {")
+		c.indent++
+		c.writeln("java.util.List<Object> out = new java.util.ArrayList<>(src);")
+		c.writeln("java.util.Collections.reverse(out);")
+		c.writeln("return out;")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["_expect"] {
 		c.writeln("")
 		c.writeln("static void expect(boolean cond) {")
