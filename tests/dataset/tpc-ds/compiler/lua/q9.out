@@ -1,2 +1,2 @@
-[]
-   test TPCDS Q9 empty ... ok (2.0µs)
+[{"bucket4":35,"bucket1":7,"bucket5":50,"bucket2":15,"bucket3":30}]
+   test TPCDS Q9 result ... ok (5.0µs)

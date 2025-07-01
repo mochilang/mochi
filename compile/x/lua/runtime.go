@@ -592,6 +592,48 @@ const (
 		"    return res\n" +
 		"end\n"
 
+	helperGroupByRows = "function __group_by_rows(rows, keyfn, valfn)\n" +
+		"    local groups = {}\n" +
+		"    local order = {}\n" +
+		"    for _, r in ipairs(rows) do\n" +
+		"        local key = keyfn(table.unpack(r))\n" +
+		"        local ks\n" +
+		"        if type(key) == 'table' then\n" +
+		"            local fields = {}\n" +
+		"            for k,_ in pairs(key) do fields[#fields+1] = k end\n" +
+		"            table.sort(fields)\n" +
+		"            local parts = {}\n" +
+		"            for _,k in ipairs(fields) do parts[#parts+1] = tostring(k)..'='..tostring(key[k]) end\n" +
+		"            ks = table.concat(parts, ',')\n" +
+		"        else\n" +
+		"            ks = tostring(key)\n" +
+		"        end\n" +
+		"        local g = groups[ks]\n" +
+		"        if not g then\n" +
+		"            g = _Group.new(key)\n" +
+		"            groups[ks] = g\n" +
+		"            order[#order+1] = ks\n" +
+		"        end\n" +
+		"        table.insert(g.items, valfn(table.unpack(r)))\n" +
+		"    end\n" +
+		"    local res = {}\n" +
+		"    for _, ks in ipairs(order) do\n" +
+		"        res[#res+1] = groups[ks]\n" +
+		"    end\n" +
+		"    return res\n" +
+		"end\n"
+
+	helperMerge = "function __merge(...)\n" +
+		"    local res = {}\n" +
+		"    for i=1,select('#', ...) do\n" +
+		"        local t = select(i, ...)\n" +
+		"        if type(t) == 'table' then\n" +
+		"            for k,v in pairs(t) do res[k] = v end\n" +
+		"        end\n" +
+		"    end\n" +
+		"    return res\n" +
+		"end\n"
+
 	helperQuery = "function __query(src, joins, opts)\n" +
 		"    local whereFn = opts.where\n" +
 		"    local items = {}\n" +
@@ -776,6 +818,8 @@ var helperMap = map[string]string{
 	"save":           helperSave,
 	"_Group":         helperGroup,
 	"_group_by":      helperGroupBy,
+	"_group_by_rows": helperGroupByRows,
+	"merge":          helperMerge,
 	"query":          helperQuery,
 }
 

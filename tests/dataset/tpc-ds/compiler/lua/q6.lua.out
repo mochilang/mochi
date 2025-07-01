@@ -2,11 +2,11 @@ _Group = {}
 function _Group.new(k)
     return {key = k, items = {}}
 end
-function __group_by(src, keyfn)
+function __group_by_rows(rows, keyfn, valfn)
     local groups = {}
     local order = {}
-    for _, it in ipairs(src) do
-        local key = keyfn(it)
+    for _, r in ipairs(rows) do
+        local key = keyfn(table.unpack(r))
         local ks
         if type(key) == 'table' then
             local fields = {}
@@ -24,7 +24,7 @@ function __group_by(src, keyfn)
             groups[ks] = g
             order[#order+1] = ks
         end
-        table.insert(g.items, it)
+        table.insert(g.items, valfn(table.unpack(r)))
     end
     local res = {}
     for _, ks in ipairs(order) do
@@ -146,6 +146,16 @@ function __max(v)
         end
         return m
     end
+end
+function __merge(...)
+    local res = {}
+    for i=1,select('#', ...) do
+        local t = select(i, ...)
+        if type(t) == 'table' then
+            for k,v in pairs(t) do res[k] = v end
+        end
+    end
+    return res
 end
 function __query(src, joins, opts)
     local whereFn = opts.where
@@ -317,15 +327,15 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_TPCDS_Q6_empty()
-    if not (__eq(#result, 0)) then error('expect failed') end
+function test_TPCDS_Q6_result()
+    if not (__eq(result, {{["state"]="CA", ["cnt"]=10}})) then error('expect failed') end
 end
 
-customer_address = {}
-customer = {}
-store_sales = {}
-date_dim = {}
-item = {}
+customer_address = {{["ca_address_sk"]=1, ["ca_state"]="CA", ["ca_zip"]="12345"}}
+customer = {{["c_customer_sk"]=1, ["c_current_addr_sk"]=1}}
+store_sales = {{["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}, {["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}, {["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}, {["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}, {["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}, {["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}, {["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}, {["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}, {["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}, {["ss_customer_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1}}
+date_dim = {{["d_date_sk"]=1, ["d_year"]=1999, ["d_moy"]=5, ["d_month_seq"]=120}}
+item = {{["i_item_sk"]=1, ["i_category"]="A", ["i_current_price"]=100.0}, {["i_item_sk"]=2, ["i_category"]="A", ["i_current_price"]=50.0}}
 target_month_seq = __max((function()
     local _res = {}
     for _, d in ipairs(date_dim) do
@@ -342,7 +352,7 @@ result = (function()
         { items = store_sales, on = function(a, c, s) return __eq(c.c_customer_sk, s.ss_customer_sk) end },
         { items = date_dim, on = function(a, c, s, d) return __eq(s.ss_sold_date_sk, d.d_date_sk) end },
         { items = item, on = function(a, c, s, d, i) return __eq(s.ss_item_sk, i.i_item_sk) end }
-    }, { selectFn = function(a, c, s, d, i) return a end, where = function(a, c, s, d, i) return ((__eq(d.d_month_seq, target_month_seq) and (i.i_current_price > (1.2 * __avg((function()
+    }, { selectFn = function(a, c, s, d, i) return {a, c, s, d, i} end, where = function(a, c, s, d, i) return ((__eq(d.d_month_seq, target_month_seq) and (i.i_current_price > (1.2 * __avg((function()
     local _res = {}
     for _, j in ipairs(item) do
         if __eq(j.i_category, i.i_category) then
@@ -351,7 +361,7 @@ result = (function()
     end
     return _res
 end)()))))) end })
-    local _groups = __group_by(_rows, function(a) return a.ca_state end)
+    local _groups = __group_by_rows(_rows, function(a, c, s, d, i) return a.ca_state end, function(a, c, s, d, i) local _row = __merge(a, c, s, d, i); _row.a = a; _row.c = c; _row.s = s; _row.d = d; _row.i = i; return _row end)
     local _res = {}
     for _, g in ipairs(_groups) do
         _res[#_res+1] = {["state"]=g.key, ["cnt"]=__count(g)}
@@ -360,6 +370,6 @@ end)()))))) end })
 end)()
 __json(result)
 local __tests = {
-    {name="TPCDS Q6 empty", fn=test_TPCDS_Q6_empty},
+    {name="TPCDS Q6 result", fn=test_TPCDS_Q6_result},
 }
 __run_tests(__tests)

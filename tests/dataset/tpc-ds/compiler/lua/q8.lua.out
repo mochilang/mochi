@@ -1,3 +1,53 @@
+_Group = {}
+function _Group.new(k)
+    return {key = k, items = {}}
+end
+function __group_by_rows(rows, keyfn, valfn)
+    local groups = {}
+    local order = {}
+    for _, r in ipairs(rows) do
+        local key = keyfn(table.unpack(r))
+        local ks
+        if type(key) == 'table' then
+            local fields = {}
+            for k,_ in pairs(key) do fields[#fields+1] = k end
+            table.sort(fields)
+            local parts = {}
+            for _,k in ipairs(fields) do parts[#parts+1] = tostring(k)..'='..tostring(key[k]) end
+            ks = table.concat(parts, ',')
+        else
+            ks = tostring(key)
+        end
+        local g = groups[ks]
+        if not g then
+            g = _Group.new(key)
+            groups[ks] = g
+            order[#order+1] = ks
+        end
+        table.insert(g.items, valfn(table.unpack(r)))
+    end
+    local res = {}
+    for _, ks in ipairs(order) do
+        res[#res+1] = groups[ks]
+    end
+    return res
+end
+function __contains(container, item)
+    if type(container) == 'table' then
+        if container[1] ~= nil or #container > 0 then
+            for _, v in ipairs(container) do
+                if v == item then return true end
+            end
+            return false
+        else
+            return container[item] ~= nil
+        end
+    elseif type(container) == 'string' then
+        return string.find(container, item, 1, true) ~= nil
+    else
+        return false
+    end
+end
 function __eq(a, b)
     if type(a) ~= type(b) then return false end
     if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
@@ -60,6 +110,162 @@ function __json(v)
     end
     print(enc(sort(v)))
 end
+function __merge(...)
+    local res = {}
+    for i=1,select('#', ...) do
+        local t = select(i, ...)
+        if type(t) == 'table' then
+            for k,v in pairs(t) do res[k] = v end
+        end
+    end
+    return res
+end
+function __query(src, joins, opts)
+    local whereFn = opts.where
+    local items = {}
+    if #joins == 0 and whereFn then
+        for _, v in ipairs(src) do if whereFn(v) then items[#items+1] = {v} end end
+    else
+        for _, v in ipairs(src) do items[#items+1] = {v} end
+    end
+    for ji, j in ipairs(joins) do
+        local joined = {}
+        local jitems = j.items or {}
+        if j.right and j.left then
+            local matched = {}
+            for _, left in ipairs(items) do
+                local m = false
+                for ri, right in ipairs(jitems) do
+                    local keep = true
+                    if j.on then
+                        local args = {table.unpack(left)}
+                        args[#args+1] = right
+                        keep = j.on(table.unpack(args))
+                    end
+                    if keep then
+                        m = true; matched[ri] = true
+                        local row = {table.unpack(left)}
+                        row[#row+1] = right
+                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                        else
+                            joined[#joined+1] = row
+                        end
+                    end
+                end
+                if not m then
+                    local row = {table.unpack(left)}
+                    row[#row+1] = nil
+                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                    else
+                        joined[#joined+1] = row
+                    end
+                end
+            end
+            for ri, right in ipairs(jitems) do
+                if not matched[ri] then
+                    local undef = {}
+                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
+                    local row = {table.unpack(undef)}
+                    row[#row+1] = right
+                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                    else
+                        joined[#joined+1] = row
+                    end
+                end
+            end
+        elseif j.right then
+            for _, right in ipairs(jitems) do
+                local m = false
+                for _, left in ipairs(items) do
+                    local keep = true
+                    if j.on then
+                        local args = {table.unpack(left)}
+                        args[#args+1] = right
+                        keep = j.on(table.unpack(args))
+                    end
+                    if keep then
+                        m = true
+                        local row = {table.unpack(left)}
+                        row[#row+1] = right
+                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                        else
+                            joined[#joined+1] = row
+                        end
+                    end
+                end
+                if not m then
+                    local undef = {}
+                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
+                    local row = {table.unpack(undef)}
+                    row[#row+1] = right
+                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                    else
+                        joined[#joined+1] = row
+                    end
+                end
+            end
+        else
+            for _, left in ipairs(items) do
+                local m = false
+                for _, right in ipairs(jitems) do
+                    local keep = true
+                    if j.on then
+                        local args = {table.unpack(left)}
+                        args[#args+1] = right
+                        keep = j.on(table.unpack(args))
+                    end
+                    if keep then
+                        m = true
+                        local row = {table.unpack(left)}
+                        row[#row+1] = right
+                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                        else
+                            joined[#joined+1] = row
+                        end
+                    end
+                end
+                if j.left and not m then
+                    local row = {table.unpack(left)}
+                    row[#row+1] = nil
+                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                    else
+                        joined[#joined+1] = row
+                    end
+                end
+            end
+        end
+        items = joined
+    end
+    if opts.sortKey then
+        local pairs = {}
+        for _, it in ipairs(items) do pairs[#pairs+1] = {item=it, key=opts.sortKey(table.unpack(it))} end
+        table.sort(pairs, function(a,b)
+            local ak, bk = a.key, b.key
+            if type(ak)=='number' and type(bk)=='number' then return ak < bk end
+            if type(ak)=='string' and type(bk)=='string' then return ak < bk end
+            return tostring(ak) < tostring(bk)
+        end)
+        items = {}
+        for i,p in ipairs(pairs) do items[i] = p.item end
+    end
+    if opts.skip ~= nil then
+        local n = opts.skip
+        if n < #items then
+            for i=1,n do table.remove(items,1) end
+        else
+            items = {}
+        end
+    end
+    if opts.take ~= nil then
+        local n = opts.take
+        if n < #items then
+            for i=#items, n+1, -1 do table.remove(items) end
+        end
+    end
+    local res = {}
+    for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r)) end
+    return res
+end
 function __reverse_string(s)
     return string.reverse(s)
 end
@@ -113,19 +319,53 @@ function __slice(obj, i, j)
         return {}
     end
 end
-function test_TPCDS_Q8_empty()
-    if not (__eq(#result, 0)) then error('expect failed') end
+function __sum(v)
+    local items
+    if type(v) == 'table' and v.items ~= nil then
+        items = v.items
+    elseif type(v) == 'table' then
+        items = v
+    else
+        error('sum() expects list or group')
+    end
+    local sum = 0
+    for _, it in ipairs(items) do sum = sum + it end
+    return sum
+end
+function test_TPCDS_Q8_result()
+    if not (__eq(result, {{["s_store_name"]="Store1", ["net_profit"]=10.0}})) then error('expect failed') end
 end
 
-store_sales = {}
-date_dim = {}
-store = {}
-customer_address = {}
-customer = {}
+store_sales = {{["ss_store_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_net_profit"]=10.0}}
+date_dim = {{["d_date_sk"]=1, ["d_qoy"]=1, ["d_year"]=1998}}
+store = {{["s_store_sk"]=1, ["s_store_name"]="Store1", ["s_zip"]="12345"}}
+customer_address = {{["ca_address_sk"]=1, ["ca_zip"]="12345"}}
+customer = {{["c_customer_sk"]=1, ["c_current_addr_sk"]=1, ["c_preferred_cust_flag"]="Y"}}
 __reverse_string(__slice("zip", 0, 2))
-result = {}
+zip_list = {"12345"}
+result = (function()
+    local _src = store_sales
+    local _rows = __query(_src, {
+        { items = date_dim, on = function(ss, d) return ((__eq(ss.ss_sold_date_sk, d.d_date_sk) and __eq(d.d_qoy, 1)) and __eq(d.d_year, 1998)) end },
+        { items = store, on = function(ss, d, s) return __eq(ss.ss_store_sk, s.s_store_sk) end },
+        { items = customer_address, on = function(ss, d, s, ca) return __eq(__slice(s.s_zip, 0, 2), __slice(ca.ca_zip, 0, 2)) end },
+        { items = customer, on = function(ss, d, s, ca, c) return (__eq(ca.ca_address_sk, c.c_current_addr_sk) and __eq(c.c_preferred_cust_flag, "Y")) end }
+    }, { selectFn = function(ss, d, s, ca, c) return {ss, d, s, ca, c} end, where = function(ss, d, s, ca, c) return (__contains(zip_list, __slice(ca.ca_zip, 0, 5))) end })
+    local _groups = __group_by_rows(_rows, function(ss, d, s, ca, c) return s.s_store_name end, function(ss, d, s, ca, c) local _row = __merge(ss, d, s, ca, c); _row.ss = ss; _row.d = d; _row.s = s; _row.ca = ca; _row.c = c; return _row end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["s_store_name"]=g.key, ["net_profit"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.ss.ss_net_profit
+    end
+    return _res
+end)())}
+    end
+    return _res
+end)()
 __json(result)
 local __tests = {
-    {name="TPCDS Q8 empty", fn=test_TPCDS_Q8_empty},
+    {name="TPCDS Q8 result", fn=test_TPCDS_Q8_result},
 }
 __run_tests(__tests)

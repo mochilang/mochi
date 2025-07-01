@@ -111,12 +111,12 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_TPCDS_Q9_empty()
-    if not (__eq(#result, 0)) then error('expect failed') end
+function test_TPCDS_Q9_result()
+    if not (__eq(result, {{["bucket1"]=7.0, ["bucket2"]=15.0, ["bucket3"]=30.0, ["bucket4"]=35.0, ["bucket5"]=50.0}})) then error('expect failed') end
 end
 
-store_sales = {}
-reason = {}
+store_sales = {{["ss_quantity"]=5, ["ss_ext_discount_amt"]=5.0, ["ss_net_paid"]=7.0}, {["ss_quantity"]=30, ["ss_ext_discount_amt"]=10.0, ["ss_net_paid"]=15.0}, {["ss_quantity"]=50, ["ss_ext_discount_amt"]=20.0, ["ss_net_paid"]=30.0}, {["ss_quantity"]=70, ["ss_ext_discount_amt"]=25.0, ["ss_net_paid"]=35.0}, {["ss_quantity"]=90, ["ss_ext_discount_amt"]=40.0, ["ss_net_paid"]=50.0}}
+reason = {{["r_reason_sk"]=1}}
 bucket1 = (function()
     if (__count((function()
     local _res = {}
@@ -283,6 +283,6 @@ result = (function()
 end)()
 __json(result)
 local __tests = {
-    {name="TPCDS Q9 empty", fn=test_TPCDS_Q9_empty},
+    {name="TPCDS Q9 result", fn=test_TPCDS_Q9_result},
 }
 __run_tests(__tests)

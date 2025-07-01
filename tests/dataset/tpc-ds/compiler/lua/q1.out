@@ -1,2 +1,2 @@
-[]
-   test TPCDS Q1 empty ... ok (3.0µs)
+[{"c_customer_id":"C2"}]
+   test TPCDS Q1 result ... ok (5.0µs)

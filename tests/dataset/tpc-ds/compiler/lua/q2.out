@@ -1,2 +1,2 @@
-[]
-   test TPCDS Q2 empty ... ok (40.0µs)
+[{"d_week_seq1":1,"sun_ratio":0.5,"mon_ratio":0.5}]
+   test TPCDS Q2 result ... ok (5.0µs)

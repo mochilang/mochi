@@ -566,11 +566,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 
 		allParams := strings.Join(paramCopy, ", ")
-		selectFn := fmt.Sprintf("function(%s) return %s end", allParams, sanitizeName(q.Var))
+		selectFn := fmt.Sprintf("function(%s) return {%s} end", allParams, strings.Join(paramCopy, ", "))
 		var whereFn string
 		if whereExpr != "" {
 			whereFn = fmt.Sprintf("function(%s) return (%s) end", allParams, whereExpr)
 		}
+		keyFn := fmt.Sprintf("function(%s) return %s end", allParams, keyExpr)
+		var valBuilder strings.Builder
+		valBuilder.WriteString(fmt.Sprintf("function(%s) ", allParams))
+		valBuilder.WriteString(fmt.Sprintf("local _row = __merge(%s)", strings.Join(paramCopy, ", ")))
+		for _, v := range paramCopy {
+			valBuilder.WriteString(fmt.Sprintf("; _row.%s = %s", v, v))
+		}
+		valBuilder.WriteString("; return _row end")
+		valFn := valBuilder.String()
 
 		var b strings.Builder
 		b.WriteString("(function()\n")
@@ -588,7 +597,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(", where = " + whereFn)
 		}
 		b.WriteString(" })\n")
-		b.WriteString(fmt.Sprintf("\tlocal _groups = __group_by(_rows, function(%s) return %s end)\n", sanitizeName(q.Var), keyExpr))
+		b.WriteString(fmt.Sprintf("\tlocal _groups = __group_by_rows(_rows, %s, %s)\n", keyFn, valFn))
 		b.WriteString("\tlocal _res = {}\n")
 		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(_groups) do\n", sanitizeName(q.Group.Name)))
 		b.WriteString(fmt.Sprintf("\t\t_res[#_res+1] = %s\n", valExpr))
@@ -597,7 +606,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("end)()")
 		c.helpers["query"] = true
 		c.helpers["_Group"] = true
-		c.helpers["_group_by"] = true
+		c.helpers["_group_by_rows"] = true
+		c.helpers["merge"] = true
 		return b.String(), nil
 	}
 

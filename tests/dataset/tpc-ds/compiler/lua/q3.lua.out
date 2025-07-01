@@ -2,11 +2,11 @@ _Group = {}
 function _Group.new(k)
     return {key = k, items = {}}
 end
-function __group_by(src, keyfn)
+function __group_by_rows(rows, keyfn, valfn)
     local groups = {}
     local order = {}
-    for _, it in ipairs(src) do
-        local key = keyfn(it)
+    for _, r in ipairs(rows) do
+        local key = keyfn(table.unpack(r))
         local ks
         if type(key) == 'table' then
             local fields = {}
@@ -24,7 +24,7 @@ function __group_by(src, keyfn)
             groups[ks] = g
             order[#order+1] = ks
         end
-        table.insert(g.items, it)
+        table.insert(g.items, valfn(table.unpack(r)))
     end
     local res = {}
     for _, ks in ipairs(order) do
@@ -93,6 +93,16 @@ function __json(v)
         end
     end
     print(enc(sort(v)))
+end
+function __merge(...)
+    local res = {}
+    for i=1,select('#', ...) do
+        local t = select(i, ...)
+        if type(t) == 'table' then
+            for k,v in pairs(t) do res[k] = v end
+        end
+    end
+    return res
 end
 function __query(src, joins, opts)
     local whereFn = opts.where
@@ -277,26 +287,26 @@ function __sum(v)
     for _, it in ipairs(items) do sum = sum + it end
     return sum
 end
-function test_TPCDS_Q3_empty()
-    if not (__eq(#result, 0)) then error('expect failed') end
+function test_TPCDS_Q3_result()
+    if not (__eq(result, {{["d_year"]=1998, ["brand_id"]=1, ["brand"]="Brand1", ["sum_agg"]=10.0}, {["d_year"]=1998, ["brand_id"]=2, ["brand"]="Brand2", ["sum_agg"]=20.0}})) then error('expect failed') end
 end
 
-date_dim = {}
-store_sales = {}
-item = {}
+date_dim = {{["d_date_sk"]=1, ["d_year"]=1998, ["d_moy"]=12}}
+store_sales = {{["ss_sold_date_sk"]=1, ["ss_item_sk"]=1, ["ss_ext_sales_price"]=10.0}, {["ss_sold_date_sk"]=1, ["ss_item_sk"]=2, ["ss_ext_sales_price"]=20.0}}
+item = {{["i_item_sk"]=1, ["i_manufact_id"]=100, ["i_brand_id"]=1, ["i_brand"]="Brand1"}, {["i_item_sk"]=2, ["i_manufact_id"]=100, ["i_brand_id"]=2, ["i_brand"]="Brand2"}}
 result = (function()
     local _src = date_dim
     local _rows = __query(_src, {
         { items = store_sales, on = function(dt, ss) return __eq(dt.d_date_sk, ss.ss_sold_date_sk) end },
         { items = item, on = function(dt, ss, i) return __eq(ss.ss_item_sk, i.i_item_sk) end }
-    }, { selectFn = function(dt, ss, i) return dt end, where = function(dt, ss, i) return ((__eq(i.i_manufact_id, 100) and __eq(dt.d_moy, 12))) end })
-    local _groups = __group_by(_rows, function(dt) return {["d_year"]=dt.d_year, ["brand_id"]=i.i_brand_id, ["brand"]=i.i_brand} end)
+    }, { selectFn = function(dt, ss, i) return {dt, ss, i} end, where = function(dt, ss, i) return ((__eq(i.i_manufact_id, 100) and __eq(dt.d_moy, 12))) end })
+    local _groups = __group_by_rows(_rows, function(dt, ss, i) return {["d_year"]=dt.d_year, ["brand_id"]=i.i_brand_id, ["brand"]=i.i_brand} end, function(dt, ss, i) local _row = __merge(dt, ss, i); _row.dt = dt; _row.ss = ss; _row.i = i; return _row end)
     local _res = {}
     for _, g in ipairs(_groups) do
         _res[#_res+1] = {["d_year"]=g.key.d_year, ["brand_id"]=g.key.brand_id, ["brand"]=g.key.brand, ["sum_agg"]=__sum((function()
     local _res = {}
     for _, x in ipairs(g.items) do
-        _res[#_res+1] = x.ss.ss_ext_sales_price
+        _res[#_res+1] = x.ss_ext_sales_price
     end
     return _res
 end)())}
@@ -305,6 +315,6 @@ end)())}
 end)()
 __json(result)
 local __tests = {
-    {name="TPCDS Q3 empty", fn=test_TPCDS_Q3_empty},
+    {name="TPCDS Q3 result", fn=test_TPCDS_Q3_result},
 }
 __run_tests(__tests)

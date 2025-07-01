@@ -2,11 +2,11 @@ _Group = {}
 function _Group.new(k)
     return {key = k, items = {}}
 end
-function __group_by(src, keyfn)
+function __group_by_rows(rows, keyfn, valfn)
     local groups = {}
     local order = {}
-    for _, it in ipairs(src) do
-        local key = keyfn(it)
+    for _, r in ipairs(rows) do
+        local key = keyfn(table.unpack(r))
         local ks
         if type(key) == 'table' then
             local fields = {}
@@ -24,7 +24,7 @@ function __group_by(src, keyfn)
             groups[ks] = g
             order[#order+1] = ks
         end
-        table.insert(g.items, it)
+        table.insert(g.items, valfn(table.unpack(r)))
     end
     local res = {}
     for _, ks in ipairs(order) do
@@ -107,6 +107,16 @@ function __json(v)
         end
     end
     print(enc(sort(v)))
+end
+function __merge(...)
+    local res = {}
+    for i=1,select('#', ...) do
+        local t = select(i, ...)
+        if type(t) == 'table' then
+            for k,v in pairs(t) do res[k] = v end
+        end
+    end
+    return res
 end
 function __query(src, joins, opts)
     local whereFn = opts.where
@@ -278,15 +288,15 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_TPCDS_Q7_empty()
-    if not (__eq(#result, 0)) then error('expect failed') end
+function test_TPCDS_Q7_result()
+    if not (__eq(result, {{["i_item_id"]="I1", ["agg1"]=5.0, ["agg2"]=10.0, ["agg3"]=2.0, ["agg4"]=8.0}})) then error('expect failed') end
 end
 
-store_sales = {}
-customer_demographics = {}
-date_dim = {}
-item = {}
-promotion = {}
+store_sales = {{["ss_cdemo_sk"]=1, ["ss_sold_date_sk"]=1, ["ss_item_sk"]=1, ["ss_promo_sk"]=1, ["ss_quantity"]=5, ["ss_list_price"]=10.0, ["ss_coupon_amt"]=2.0, ["ss_sales_price"]=8.0}}
+customer_demographics = {{["cd_demo_sk"]=1, ["cd_gender"]="M", ["cd_marital_status"]="S", ["cd_education_status"]="College"}}
+date_dim = {{["d_date_sk"]=1, ["d_year"]=1998}}
+item = {{["i_item_sk"]=1, ["i_item_id"]="I1"}}
+promotion = {{["p_promo_sk"]=1, ["p_channel_email"]="N", ["p_channel_event"]="Y"}}
 result = (function()
     local _src = store_sales
     local _rows = __query(_src, {
@@ -294,8 +304,8 @@ result = (function()
         { items = date_dim, on = function(ss, cd, d) return __eq(ss.ss_sold_date_sk, d.d_date_sk) end },
         { items = item, on = function(ss, cd, d, i) return __eq(ss.ss_item_sk, i.i_item_sk) end },
         { items = promotion, on = function(ss, cd, d, i, p) return __eq(ss.ss_promo_sk, p.p_promo_sk) end }
-    }, { selectFn = function(ss, cd, d, i, p) return ss end, where = function(ss, cd, d, i, p) return (((((__eq(cd.cd_gender, "M") and __eq(cd.cd_marital_status, "S")) and __eq(cd.cd_education_status, "College")) and ((__eq(p.p_channel_email, "N") or __eq(p.p_channel_event, "N")))) and __eq(d.d_year, 1998))) end })
-    local _groups = __group_by(_rows, function(ss) return {["i_item_id"]=i.i_item_id} end)
+    }, { selectFn = function(ss, cd, d, i, p) return {ss, cd, d, i, p} end, where = function(ss, cd, d, i, p) return (((((__eq(cd.cd_gender, "M") and __eq(cd.cd_marital_status, "S")) and __eq(cd.cd_education_status, "College")) and ((__eq(p.p_channel_email, "N") or __eq(p.p_channel_event, "N")))) and __eq(d.d_year, 1998))) end })
+    local _groups = __group_by_rows(_rows, function(ss, cd, d, i, p) return {["i_item_id"]=i.i_item_id} end, function(ss, cd, d, i, p) local _row = __merge(ss, cd, d, i, p); _row.ss = ss; _row.cd = cd; _row.d = d; _row.i = i; _row.p = p; return _row end)
     local _res = {}
     for _, g in ipairs(_groups) do
         _res[#_res+1] = {["i_item_id"]=g.key.i_item_id, ["agg1"]=__avg((function()
@@ -328,6 +338,6 @@ end)())}
 end)()
 __json(result)
 local __tests = {
-    {name="TPCDS Q7 empty", fn=test_TPCDS_Q7_empty},
+    {name="TPCDS Q7 result", fn=test_TPCDS_Q7_result},
 }
 __run_tests(__tests)
