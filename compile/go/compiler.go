@@ -1476,6 +1476,12 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				case isString(leftType) && isAny(rightType):
 					c.use("_cast")
 					right = fmt.Sprintf("_cast[string](%s)", right)
+				case isAny(leftType) && isNumeric(rightType):
+					c.use("_cast")
+					left = fmt.Sprintf("_cast[%s](%s)", goType(rightType), left)
+				case isNumeric(leftType) && isAny(rightType):
+					c.use("_cast")
+					right = fmt.Sprintf("_cast[%s](%s)", goType(leftType), right)
 				default:
 					return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
 				}
