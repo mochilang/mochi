@@ -11,7 +11,7 @@ func main (regs=30)
   // for r in 0..repeat {
   Move         r5, r2
 L4:
-  Less         r6, r5, r1
+  LessInt      r6, r5, r1
   JumpIfFalse  r6, L0
   // var count = 0
   Move         r7, r2
@@ -19,7 +19,7 @@ L4:
   Const        r8, 2
   Move         r9, r8
 L3:
-  Less         r10, r9, r0
+  LessInt      r10, r9, r0
   JumpIfFalse  r10, L1
   // if is_prime(i) {
   Move         r11, r9
@@ -32,7 +32,7 @@ L3:
 L2:
   // for i in 2..n {
   Const        r15, 1
-  Add          r16, r9, r15
+  AddInt       r16, r9, r15
   Move         r9, r16
   Jump         L3
 L1:
@@ -40,7 +40,7 @@ L1:
   Move         r3, r7
   // for r in 0..repeat {
   Const        r17, 1
-  Add          r18, r5, r17
+  AddInt       r18, r5, r17
   Move         r5, r18
   Jump         L4
 L0:
@@ -79,7 +79,7 @@ L0:
   Sub          r5, r0, r4
   Move         r6, r1
 L3:
-  Less         r7, r6, r5
+  LessInt      r7, r6, r5
   JumpIfFalse  r7, L1
   // if n % i == 0 {
   Mod          r8, r0, r6
@@ -91,7 +91,7 @@ L3:
 L2:
   // for i in 2..(n - 1) {
   Const        r11, 1
-  Add          r12, r6, r11
+  AddInt       r12, r6, r11
   Move         r6, r12
   Jump         L3
 L1:
