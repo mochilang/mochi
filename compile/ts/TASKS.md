@@ -11,5 +11,6 @@ The TPCH dataset has golden tests for `q1` and `q2` stored under
 
 The TPCDS suite begins with query `q1` under `tests/dataset/tpc-ds`. The TypeScript
 backend now compiles and executes this query. Generated code and runtime output are
-checked in at `tests/dataset/tpc-ds/compiler/ts`.
+checked in at `tests/dataset/tpc-ds/compiler/ts`. Query `q2` has also been added
+to the suite and compiles and runs successfully with Deno.
 
