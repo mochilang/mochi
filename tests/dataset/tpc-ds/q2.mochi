@@ -1,7 +1,24 @@
 // Minimal schema for TPC-DS Q2
-let web_sales = []
-let catalog_sales = []
-let date_dim = []
+let web_sales = [
+  // 1998 sales
+  { ws_sold_date_sk: 1, ws_ext_sales_price: 5.0, ws_sold_date_name: "Sunday" },
+  { ws_sold_date_sk: 2, ws_ext_sales_price: 5.0, ws_sold_date_name: "Monday" },
+  // 1999 sales a year later
+  { ws_sold_date_sk: 8, ws_ext_sales_price: 10.0, ws_sold_date_name: "Sunday" },
+  { ws_sold_date_sk: 9, ws_ext_sales_price: 10.0, ws_sold_date_name: "Monday" },
+]
+let catalog_sales = [
+  { cs_sold_date_sk: 1, cs_ext_sales_price: 5.0, cs_sold_date_name: "Sunday" },
+  { cs_sold_date_sk: 2, cs_ext_sales_price: 5.0, cs_sold_date_name: "Monday" },
+  { cs_sold_date_sk: 8, cs_ext_sales_price: 10.0, cs_sold_date_name: "Sunday" },
+  { cs_sold_date_sk: 9, cs_ext_sales_price: 10.0, cs_sold_date_name: "Monday" },
+]
+let date_dim = [
+  { d_date_sk: 1, d_week_seq: 1, d_day_name: "Sunday", d_year: 1998 },
+  { d_date_sk: 2, d_week_seq: 1, d_day_name: "Monday", d_year: 1998 },
+  { d_date_sk: 8, d_week_seq: 54, d_day_name: "Sunday", d_year: 1999 },
+  { d_date_sk: 9, d_week_seq: 54, d_day_name: "Monday", d_year: 1999 },
+]
 
 let wscs =
   (from ws in web_sales
@@ -32,9 +49,19 @@ let wswscs =
     sat_sales: sum(from x in g where x.day == "Saturday" select x.sales_price)
   }
 
-let result = []
+let year1 = from w in wswscs where w.d_week_seq == 1 select w
+let year2 = from w in wswscs where w.d_week_seq == 54 select w
+
+let result =
+  from y in year1
+  join z in year2 on y.d_week_seq == z.d_week_seq - 53
+  select {
+    d_week_seq1: y.d_week_seq,
+    sun_ratio: y.sun_sales / z.sun_sales,
+    mon_ratio: y.mon_sales / z.mon_sales,
+  }
 json(result)
 
-test "TPCDS Q2 empty" {
-  expect len(result) == 0
+test "TPCDS Q2 result" {
+  expect result == [ { d_week_seq1: 1, sun_ratio: 0.5, mon_ratio: 0.5 } ]
 }
