@@ -7,46 +7,55 @@ using System.Text;
 using System.Web;
 using System.Linq;
 
-public class Program {
-    static void test_TPCDS_Q9_empty() {
-        expect((result.Length == 0L));
+public class Program
+{
+    static void test_TPCDS_Q9_result()
+    {
+        expect((result == new Dictionary<string, double>[] { new Dictionary<string, double> { { "bucket1", 7.000000 }, { "bucket2", 15.000000 }, { "bucket3", 30.000000 }, { "bucket4", 35.000000 }, { "bucket5", 50.000000 } } }));
     }
-    
-    public static void Main() {
-        var store_sales = new dynamic[] { };
-        var reason = new dynamic[] { };
-        double bucket1 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 10L) ? _avg(new List<dynamic>(store_sales.Select(s => s.ss_ext_discount_amt))) : _avg(new List<dynamic>(store_sales.Select(s => s.ss_net_paid))));
-        double bucket2 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 20L) ? _avg(new List<dynamic>(store_sales.Select(s => s.ss_ext_discount_amt))) : _avg(new List<dynamic>(store_sales.Select(s => s.ss_net_paid))));
-        double bucket3 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 30L) ? _avg(new List<dynamic>(store_sales.Select(s => s.ss_ext_discount_amt))) : _avg(new List<dynamic>(store_sales.Select(s => s.ss_net_paid))));
-        double bucket4 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 40L) ? _avg(new List<dynamic>(store_sales.Select(s => s.ss_ext_discount_amt))) : _avg(new List<dynamic>(store_sales.Select(s => s.ss_net_paid))));
-        double bucket5 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 50L) ? _avg(new List<dynamic>(store_sales.Select(s => s.ss_ext_discount_amt))) : _avg(new List<dynamic>(store_sales.Select(s => s.ss_net_paid))));
+
+    public static void Main()
+    {
+        var store_sales = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "ss_quantity", 5L }, { "ss_ext_discount_amt", 5.000000 }, { "ss_net_paid", 7.000000 } }, new Dictionary<string, dynamic> { { "ss_quantity", 30L }, { "ss_ext_discount_amt", 10.000000 }, { "ss_net_paid", 15.000000 } }, new Dictionary<string, dynamic> { { "ss_quantity", 50L }, { "ss_ext_discount_amt", 20.000000 }, { "ss_net_paid", 30.000000 } }, new Dictionary<string, dynamic> { { "ss_quantity", 70L }, { "ss_ext_discount_amt", 25.000000 }, { "ss_net_paid", 35.000000 } }, new Dictionary<string, dynamic> { { "ss_quantity", 90L }, { "ss_ext_discount_amt", 40.000000 }, { "ss_net_paid", 50.000000 } } };
+        Dictionary<string, long>[] reason = new Dictionary<string, long>[] { new Dictionary<string, long> { { "r_reason_sk", 1L } } };
+        double bucket1 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 10L) ? _avg(new List<dynamic>(store_sales.Select(s => s["ss_ext_discount_amt"]))) : _avg(new List<dynamic>(store_sales.Select(s => s["ss_net_paid"]))));
+        double bucket2 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 20L) ? _avg(new List<dynamic>(store_sales.Select(s => s["ss_ext_discount_amt"]))) : _avg(new List<dynamic>(store_sales.Select(s => s["ss_net_paid"]))));
+        double bucket3 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 30L) ? _avg(new List<dynamic>(store_sales.Select(s => s["ss_ext_discount_amt"]))) : _avg(new List<dynamic>(store_sales.Select(s => s["ss_net_paid"]))));
+        double bucket4 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 40L) ? _avg(new List<dynamic>(store_sales.Select(s => s["ss_ext_discount_amt"]))) : _avg(new List<dynamic>(store_sales.Select(s => s["ss_net_paid"]))));
+        double bucket5 = ((_count(new List<dynamic>(store_sales.Select(s => s))) > 50L) ? _avg(new List<dynamic>(store_sales.Select(s => s["ss_ext_discount_amt"]))) : _avg(new List<dynamic>(store_sales.Select(s => s["ss_net_paid"]))));
         Dictionary<string, double>[] result = new List<Dictionary<string, double>>(reason.Select(r => new Dictionary<string, double> { { "bucket1", bucket1 }, { "bucket2", bucket2 }, { "bucket3", bucket3 }, { "bucket4", bucket4 }, { "bucket5", bucket5 } }));
         Console.WriteLine(JsonSerializer.Serialize(result));
-        test_TPCDS_Q9_empty();
+        test_TPCDS_Q9_result();
     }
-    static void expect(bool cond) {
+    static void expect(bool cond)
+    {
         if (!cond) throw new Exception("expect failed");
     }
-    
-    static int _count(dynamic v) {
-        if (v is string) {
+
+    static int _count(dynamic v)
+    {
+        if (v is string)
+        {
             return ((string)v).Length;
         }
-        if (v is System.Collections.ICollection c) {
+        if (v is System.Collections.ICollection c)
+        {
             return c.Count;
         }
         throw new Exception("count() expects list or string");
     }
-    
-    static double _avg(dynamic v) {
+
+    static double _avg(dynamic v)
+    {
         if (v == null) return 0.0;
         int _n = 0;
         double _sum = 0;
-        foreach (var it in v) {
+        foreach (var it in v)
+        {
             _sum += Convert.ToDouble(it);
             _n++;
         }
         return _n == 0 ? 0.0 : _sum / _n;
     }
-    
+
 }

@@ -5,25 +5,111 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Web;
+using System.Linq;
 
-public class Program {
-    static void test_TPCDS_Q8_empty() {
-        expect((result.Length == 0L));
+public class Program
+{
+    static void test_TPCDS_Q8_result()
+    {
+        expect((result == new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "s_store_name", "Store1" }, { "net_profit", 10.000000 } } }));
     }
-    
-    public static void Main() {
-        var store_sales = new dynamic[] { };
-        var date_dim = new dynamic[] { };
-        var store = new dynamic[] { };
-        var customer_address = new dynamic[] { };
-        var customer = new dynamic[] { };
+
+    public static void Main()
+    {
+        var store_sales = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "ss_store_sk", 1L }, { "ss_sold_date_sk", 1L }, { "ss_net_profit", 10.000000 } } };
+        Dictionary<string, long>[] date_dim = new Dictionary<string, long>[] { new Dictionary<string, long> { { "d_date_sk", 1L }, { "d_qoy", 1L }, { "d_year", 1998L } } };
+        var store = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "s_store_sk", 1L }, { "s_store_name", "Store1" }, { "s_zip", "12345" } } };
+        var customer_address = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "ca_address_sk", 1L }, { "ca_zip", "12345" } } };
+        var customer = new Dictionary<string, dynamic>[] { new Dictionary<string, dynamic> { { "c_customer_sk", 1L }, { "c_current_addr_sk", 1L }, { "c_preferred_cust_flag", "Y" } } };
         reverse(substr("zip", 0L, 2L));
-        var result = new dynamic[] { };
+        string[] zip_list = new string[] { "12345" };
+        var result = new Func<List<Dictionary<string, dynamic>>>(() =>
+        {
+            var groups = new Dictionary<string, _Group>();
+            var order = new List<string>();
+            foreach (var ss in store_sales)
+            {
+                foreach (var d in date_dim)
+                {
+                    if (!((((ss["ss_sold_date_sk"] == d["d_date_sk"]) && (d["d_qoy"] == 1L)) && (d["d_year"] == 1998L)))) continue;
+                    foreach (var s in store)
+                    {
+                        if (!((ss["ss_store_sk"] == s["s_store_sk"]))) continue;
+                        foreach (var ca in customer_address)
+                        {
+                            if (!((substr(s["s_zip"], 0L, 2L) == substr(ca["ca_zip"], 0L, 2L)))) continue;
+                            foreach (var c in customer)
+                            {
+                                if (!(((ca["ca_address_sk"] == c["c_current_addr_sk"]) && (c["c_preferred_cust_flag"] == "Y")))) continue;
+                                var key = s["s_store_name"];
+                                var ks = Convert.ToString(key);
+                                if (!groups.TryGetValue(ks, out var g))
+                                {
+                                    g = new _Group(key);
+                                    groups[ks] = g;
+                                    order.Add(ks);
+                                }
+                                g.Items.Add(ss);
+                            }
+                        }
+                    }
+                }
+            }
+            var items = new List<_Group>();
+            foreach (var ks in order) items.Add(groups[ks]);
+            items = items.OrderBy(g => g["key"]).ToList();
+            var _res = new List<Dictionary<string, dynamic>>();
+            foreach (var g in items)
+            {
+                _res.Add(new Dictionary<string, dynamic> { { "s_store_name", g["key"] }, { "net_profit", _sum(new List<dynamic>(g.Select(x => x.ss.ss_net_profit))) } });
+            }
+            return _res;
+        })();
         Console.WriteLine(JsonSerializer.Serialize(result));
-        test_TPCDS_Q8_empty();
+        test_TPCDS_Q8_result();
     }
-    static void expect(bool cond) {
+    static void expect(bool cond)
+    {
         if (!cond) throw new Exception("expect failed");
     }
-    
+
+    static double _sum(dynamic v)
+    {
+        if (v == null) return 0.0;
+        double _sum = 0;
+        foreach (var it in v)
+        {
+            _sum += Convert.ToDouble(it);
+        }
+        return _sum;
+    }
+
+    static bool _in(dynamic item, dynamic col)
+    {
+        if (col is string s && item is string sub)
+        {
+            return s.Contains(sub);
+        }
+        if (col is System.Collections.IDictionary d)
+        {
+            return d.Contains(item);
+        }
+        if (col is System.Collections.IEnumerable e)
+        {
+            foreach (var it in e)
+            {
+                if (Equals(it, item)) return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public class _Group
+    {
+        public dynamic key;
+        public List<dynamic> Items = new List<dynamic>();
+        public _Group(dynamic k) { key = k; }
+    }
+
 }
