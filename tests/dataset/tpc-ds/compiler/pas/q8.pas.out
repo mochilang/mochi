@@ -1,0 +1,31 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+procedure test_TPCDS_Q8_empty;
+begin
+  if not ((Length(_result) = 0)) then raise Exception.Create('expect failed');
+end;
+
+var
+  customer: specialize TArray<integer>;
+  customer_address: specialize TArray<integer>;
+  date_dim: specialize TArray<integer>;
+  _result: specialize TArray<integer>;
+  store: specialize TArray<integer>;
+  store_sales: specialize TArray<integer>;
+
+begin
+  store_sales := specialize TArray<integer>([]);
+  date_dim := specialize TArray<integer>([]);
+  store := specialize TArray<integer>([]);
+  customer_address := specialize TArray<integer>([]);
+  customer := specialize TArray<integer>([]);
+  reverse(substr('zip', 0, 2));
+  _result := specialize TArray<integer>([]);
+  json(_result);
+  test_TPCDS_Q8_empty;
+end.

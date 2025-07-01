@@ -1,0 +1,212 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+procedure test_TPCDS_Q4_empty;
+begin
+  if not ((Length(_result) = 0)) then raise Exception.Create('expect failed');
+end;
+
+var
+  _tmp0: specialize TArray<integer>;
+  _tmp1: specialize TFPGMap<string, integer>;
+  _tmp10: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp11: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp12: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp13: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp14: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp15: specialize TArray<Variant>;
+  _tmp2: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp3: specialize TArray<integer>;
+  _tmp4: specialize TFPGMap<string, integer>;
+  _tmp5: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp6: specialize TArray<integer>;
+  _tmp7: specialize TFPGMap<string, integer>;
+  _tmp8: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp9: specialize TFPGMap<string, integer>;
+  c: integer;
+  catalog_sales: specialize TArray<integer>;
+  customer: specialize TArray<integer>;
+  date_dim: specialize TArray<integer>;
+  _result: specialize TArray<specialize TFPGMap<string, integer>>;
+  s1: specialize TFPGMap<string, integer>;
+  store_sales: specialize TArray<integer>;
+  web_sales: specialize TArray<integer>;
+  x: integer;
+  year_total: specialize TArray<specialize TFPGMap<string, integer>>;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+var i,j: integer; tmp: T; k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+  for j := i + 1 to High(arr) do
+    if keys[i] > keys[j] then
+    begin
+      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
+      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
+    end;
+end;
+
+generic function _sumList<T>(arr: specialize TArray<T>): double;
+var i: integer; s: double;
+begin
+  s := 0;
+  for i := 0 to High(arr) do
+    s := s + arr[i];
+  Result := s;
+end;
+
+begin
+  customer := specialize TArray<integer>([]);
+  store_sales := specialize TArray<integer>([]);
+  catalog_sales := specialize TArray<integer>([]);
+  web_sales := specialize TArray<integer>([]);
+  date_dim := specialize TArray<integer>([]);
+  SetLength(_tmp0, 0);
+  for x in g do
+  begin
+    _tmp0 := Concat(_tmp0, [x.ss_ext_list_price - x.ss_ext_wholesale_cost - x.ss_ext_discount_amt + x.ss_ext_sales_price / 2]);
+  end;
+  _tmp1 := specialize TFPGMap<string, integer>.Create;
+  _tmp1.AddOrSetData('custo_tmp1er_id', g.key.id);
+  _tmp1.AddOrSetData('custo_tmp1er_first_na_tmp1e', g.key.first);
+  _tmp1.AddOrSetData('custo_tmp1er_last_na_tmp1e', g.key.last);
+  _tmp1.AddOrSetData('custo_tmp1er_login', g.key.login);
+  _tmp1.AddOrSetData('dyear', g.key.year);
+  _tmp1.AddOrSetData('year_total', specialize _su_tmp1List<integer>(_t_tmp1p0));
+  _tmp1.AddOrSetData('sale_type', 's');
+  SetLength(_tmp2, 0);
+  for c in customer do
+  begin
+    for s in store_sales do
+    begin
+      if not ((c.c_customer_sk = s.ss_customer_sk)) then continue;
+      for d in date_dim do
+      begin
+        if not ((s.ss_sold_date_sk = d.d_date_sk)) then continue;
+        _tmp2 := Concat(_tmp2, [_tmp1]);
+      end;
+    end;
+  end;
+  SetLength(_tmp3, 0);
+  for x in g do
+  begin
+    _tmp3 := Concat(_tmp3, [x.cs_ext_list_price - x.cs_ext_wholesale_cost - x.cs_ext_discount_amt + x.cs_ext_sales_price / 2]);
+  end;
+  _tmp4 := specialize TFPGMap<string, integer>.Create;
+  _tmp4.AddOrSetData('custo_tmp4er_id', g.key.id);
+  _tmp4.AddOrSetData('custo_tmp4er_first_na_tmp4e', g.key.first);
+  _tmp4.AddOrSetData('custo_tmp4er_last_na_tmp4e', g.key.last);
+  _tmp4.AddOrSetData('custo_tmp4er_login', g.key.login);
+  _tmp4.AddOrSetData('dyear', g.key.year);
+  _tmp4.AddOrSetData('year_total', specialize _su_tmp4List<integer>(_t_tmp4p3));
+  _tmp4.AddOrSetData('sale_type', 'c');
+  SetLength(_tmp5, 0);
+  for c in customer do
+  begin
+    for cs in catalog_sales do
+    begin
+      if not ((c.c_customer_sk = cs.cs_bill_customer_sk)) then continue;
+      for d in date_dim do
+      begin
+        if not ((cs.cs_sold_date_sk = d.d_date_sk)) then continue;
+        _tmp5 := Concat(_tmp5, [_tmp4]);
+      end;
+    end;
+  end;
+  SetLength(_tmp6, 0);
+  for x in g do
+  begin
+    _tmp6 := Concat(_tmp6, [x.ws_ext_list_price - x.ws_ext_wholesale_cost - x.ws_ext_discount_amt + x.ws_ext_sales_price / 2]);
+  end;
+  _tmp7 := specialize TFPGMap<string, integer>.Create;
+  _tmp7.AddOrSetData('custo_tmp7er_id', g.key.id);
+  _tmp7.AddOrSetData('custo_tmp7er_first_na_tmp7e', g.key.first);
+  _tmp7.AddOrSetData('custo_tmp7er_last_na_tmp7e', g.key.last);
+  _tmp7.AddOrSetData('custo_tmp7er_login', g.key.login);
+  _tmp7.AddOrSetData('dyear', g.key.year);
+  _tmp7.AddOrSetData('year_total', specialize _su_tmp7List<integer>(_t_tmp7p6));
+  _tmp7.AddOrSetData('sale_type', 'w');
+  SetLength(_tmp8, 0);
+  for c in customer do
+  begin
+    for ws in web_sales do
+    begin
+      if not ((c.c_customer_sk = ws.ws_bill_customer_sk)) then continue;
+      for d in date_dim do
+      begin
+        if not ((ws.ws_sold_date_sk = d.d_date_sk)) then continue;
+        _tmp8 := Concat(_tmp8, [_tmp7]);
+      end;
+    end;
+  end;
+  year_total := Concat(Concat(_tmp2, _tmp5), _tmp8);
+  _tmp9 := specialize TFPGMap<string, integer>.Create;
+  _tmp9.AddOrSetData('custo_tmp9er_id', s2.custo_tmp9er_id);
+  _tmp9.AddOrSetData('custo_tmp9er_first_na_tmp9e', s2.custo_tmp9er_first_na_tmp9e);
+  _tmp9.AddOrSetData('custo_tmp9er_last_na_tmp9e', s2.custo_tmp9er_last_na_tmp9e);
+  _tmp9.AddOrSetData('custo_tmp9er_login', s2.custo_tmp9er_login);
+  if (c1.year_total > 0) then
+  begin
+    _tmp10 := c2.year_total / c1.year_total;
+  end else
+  begin
+    _tmp10 := Null;
+  end;
+  if (s1.year_total > 0) then
+  begin
+    _tmp11 := s2.year_total / s1.year_total;
+  end else
+  begin
+    _tmp11 := Null;
+  end;
+  if (c1.year_total > 0) then
+  begin
+    _tmp12 := c2.year_total / c1.year_total;
+  end else
+  begin
+    _tmp12 := Null;
+  end;
+  if (w1.year_total > 0) then
+  begin
+    _tmp13 := w2.year_total / w1.year_total;
+  end else
+  begin
+    _tmp13 := Null;
+  end;
+  SetLength(_tmp14, 0);
+  SetLength(_tmp15, 0);
+  for s1 in year_total do
+  begin
+    for s2 in year_total do
+    begin
+      if not ((s2.customer_id = s1.customer_id)) then continue;
+      for c1 in year_total do
+      begin
+        if not ((c1.customer_id = s1.customer_id)) then continue;
+        for c2 in year_total do
+        begin
+          if not ((c2.customer_id = s1.customer_id)) then continue;
+          for w1 in year_total do
+          begin
+            if not ((w1.customer_id = s1.customer_id)) then continue;
+            for w2 in year_total do
+            begin
+              if not ((w2.customer_id = s1.customer_id)) then continue;
+              if not ((((((((((((((((((s1.sale_type = 's') and (c1.sale_type = 'c')) and (w1.sale_type = 'w')) and (s2.sale_type = 's')) and (c2.sale_type = 'c')) and (w2.sale_type = 'w')) and (s1.dyear = 2001)) and (s2.dyear = 2002)) and (c1.dyear = 2001)) and (c2.dyear = 2002)) and (w1.dyear = 2001)) and (w2.dyear = 2002)) and (s1.year_total > 0)) and (c1.year_total > 0)) and (w1.year_total > 0)) and (_tmp10 > _tmp11)) and (_tmp12 > _tmp13))) then continue;
+              _tmp14 := Concat(_tmp14, [_tmp9]);
+              _tmp15 := Concat(_tmp15, [specialize TArray<specialize TFPGMap<string, integer>>([s2.customer_id, s2.customer_first_name, s2.customer_last_name, s2.customer_login])]);
+            end;
+          end;
+        end;
+      end;
+    end;
+  end;
+  specialize _sortBy<specialize TFPGMap<string, integer>>(_tmp14, _tmp15);
+  _result := _tmp14;
+  json(_result);
+  test_TPCDS_Q4_empty;
+end.
