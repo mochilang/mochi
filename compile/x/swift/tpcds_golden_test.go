@@ -48,7 +48,7 @@ func runTPCDSQuery(t *testing.T, q string) {
 }
 
 func TestSwiftCompiler_TPCDS_Golden(t *testing.T) {
-	for i := 1; i <= 9; i++ {
+	for i := 1; i <= 19; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			runTPCDSQuery(t, q)

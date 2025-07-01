@@ -1,0 +1,207 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q9_result() {
+  expect(result == [["bucket1": 7, "bucket2": 15, "bucket3": 30, "bucket4": 35, "bucket5": 50]])
+}
+
+let store_sales = [
+  ["ss_quantity": 5, "ss_ext_discount_amt": 5, "ss_net_paid": 7],
+  ["ss_quantity": 30, "ss_ext_discount_amt": 10, "ss_net_paid": 15],
+  ["ss_quantity": 50, "ss_ext_discount_amt": 20, "ss_net_paid": 30],
+  ["ss_quantity": 70, "ss_ext_discount_amt": 25, "ss_net_paid": 35],
+  ["ss_quantity": 90, "ss_ext_discount_amt": 40, "ss_net_paid": 50],
+]
+let reason: [[String: Int]] = [["r_reason_sk": 1]]
+let bucket1 =
+  (({
+    var _res: [[String: Any]] = []
+    for s in store_sales {
+      if !(s["ss_quantity"]! >= 1 && s["ss_quantity"]! <= 20) { continue }
+      _res.append(s)
+    }
+    var _items = _res
+    return _items
+  }()).count > 10
+    ? _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 1 && s["ss_quantity"]! <= 20) { continue }
+          _res.append(s["ss_ext_discount_amt"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) })
+    : _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 1 && s["ss_quantity"]! <= 20) { continue }
+          _res.append(s["ss_net_paid"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }))
+let bucket2 =
+  (({
+    var _res: [[String: Any]] = []
+    for s in store_sales {
+      if !(s["ss_quantity"]! >= 21 && s["ss_quantity"]! <= 40) { continue }
+      _res.append(s)
+    }
+    var _items = _res
+    return _items
+  }()).count > 20
+    ? _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 21 && s["ss_quantity"]! <= 40) { continue }
+          _res.append(s["ss_ext_discount_amt"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) })
+    : _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 21 && s["ss_quantity"]! <= 40) { continue }
+          _res.append(s["ss_net_paid"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }))
+let bucket3 =
+  (({
+    var _res: [[String: Any]] = []
+    for s in store_sales {
+      if !(s["ss_quantity"]! >= 41 && s["ss_quantity"]! <= 60) { continue }
+      _res.append(s)
+    }
+    var _items = _res
+    return _items
+  }()).count > 30
+    ? _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 41 && s["ss_quantity"]! <= 60) { continue }
+          _res.append(s["ss_ext_discount_amt"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) })
+    : _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 41 && s["ss_quantity"]! <= 60) { continue }
+          _res.append(s["ss_net_paid"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }))
+let bucket4 =
+  (({
+    var _res: [[String: Any]] = []
+    for s in store_sales {
+      if !(s["ss_quantity"]! >= 61 && s["ss_quantity"]! <= 80) { continue }
+      _res.append(s)
+    }
+    var _items = _res
+    return _items
+  }()).count > 40
+    ? _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 61 && s["ss_quantity"]! <= 80) { continue }
+          _res.append(s["ss_ext_discount_amt"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) })
+    : _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 61 && s["ss_quantity"]! <= 80) { continue }
+          _res.append(s["ss_net_paid"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }))
+let bucket5 =
+  (({
+    var _res: [[String: Any]] = []
+    for s in store_sales {
+      if !(s["ss_quantity"]! >= 81 && s["ss_quantity"]! <= 100) { continue }
+      _res.append(s)
+    }
+    var _items = _res
+    return _items
+  }()).count > 50
+    ? _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 81 && s["ss_quantity"]! <= 100) { continue }
+          _res.append(s["ss_ext_discount_amt"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) })
+    : _avg(
+      ({
+        var _res: [Any] = []
+        for s in store_sales {
+          if !(s["ss_quantity"]! >= 81 && s["ss_quantity"]! <= 100) { continue }
+          _res.append(s["ss_net_paid"]!)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }))
+let result: [[String: Double]] =
+  ({
+    var _res: [[String: Double]] = []
+    for r in reason {
+      if !(r["r_reason_sk"]! == 1) { continue }
+      _res.append([
+        "bucket1": bucket1, "bucket2": bucket2, "bucket3": bucket3, "bucket4": bucket4,
+        "bucket5": bucket5,
+      ])
+    }
+    var _items = _res
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q9_result()
+}
+main()

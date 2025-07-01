@@ -1,0 +1,143 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+struct StoreSale {
+  var ss_sold_date_sk: Int
+  var ss_item_sk: Int
+  var ss_customer_sk: Int
+  var ss_store_sk: Int
+  var ss_ext_sales_price: Double
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_year: Int
+  var d_moy: Int
+}
+
+struct Item {
+  var i_item_sk: Int
+  var i_brand_id: Int
+  var i_brand: String
+  var i_manufact_id: Int
+  var i_manufact: String
+  var i_manager_id: Int
+}
+
+struct Customer {
+  var c_customer_sk: Int
+  var c_current_addr_sk: Int
+}
+
+struct CustomerAddress {
+  var ca_address_sk: Int
+  var ca_zip: String
+}
+
+struct Store {
+  var s_store_sk: Int
+  var s_zip: String
+}
+
+func test_TPCDS_Q19_brand() {
+  expect(
+    result == [
+      ["i_brand": "B1", "i_brand_id": 1, "i_manufact_id": 1, "i_manufact": "M1", "ext_price": 100]
+    ])
+}
+
+let store_sales = [
+  [
+    "ss_sold_date_sk": 1, "ss_item_sk": 1, "ss_customer_sk": 1, "ss_store_sk": 1,
+    "ss_ext_sales_price": 100,
+  ]
+]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_year": 1999, "d_moy": 11]]
+let item = [
+  [
+    "i_item_sk": 1, "i_brand_id": 1, "i_brand": "B1", "i_manufact_id": 1, "i_manufact": "M1",
+    "i_manager_id": 10,
+  ]
+]
+let customer: [[String: Int]] = [["c_customer_sk": 1, "c_current_addr_sk": 1]]
+let customer_address = [["ca_address_sk": 1, "ca_zip": "11111"]]
+let store = [["s_store_sk": 1, "s_zip": "99999"]]
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for d in date_dim {
+      if !(d["d_moy"]! == 11 && d["d_year"]! == 1999) { continue }
+      for ss in store_sales {
+        if !(ss["ss_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+        for i in item {
+          if !(ss["ss_item_sk"]! == i["i_item_sk"]! && i["i_manager_id"]! == 10) { continue }
+          for c in customer {
+            if !(ss["ss_customer_sk"]! == c["c_customer_sk"]!) { continue }
+            for ca in customer_address {
+              if !(c["c_current_addr_sk"]! == ca["ca_address_sk"]!) { continue }
+              for s in store {
+                if !(ss["ss_store_sk"]! == s["s_store_sk"]!
+                  && substr(ca["ca_zip"]!, 0, 5) != substr(s["s_zip"]!, 0, 5))
+                {
+                  continue
+                }
+                _pairs.append(
+                  (
+                    item: [
+                      "i_brand": g.key.brand, "i_brand_id": g.key.brand_id,
+                      "i_manufact_id": g.key.man_id, "i_manufact": g.key.man,
+                      "ext_price": _sum(
+                        ({
+                          var _res: [Any] = []
+                          for x in g {
+                            _res.append(x.ss_ext_sales_price)
+                          }
+                          var _items = _res
+                          return _items
+                        }()).map { Double($0) }),
+                    ], key: [g.key.brand]
+                  ))
+              }
+            }
+          }
+        }
+      }
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q19_brand()
+}
+main()

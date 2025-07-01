@@ -1,0 +1,252 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+class _Group {
+  var key: Any
+  var Items: [Any] = []
+  init(_ k: Any) { self.key = k }
+}
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+
+func _group_by(_ src: [Any], _ keyfn: (Any) -> Any) -> [_Group] {
+  func keyStr(_ v: Any) -> String {
+    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
+      let s = String(data: data, encoding: .utf8)
+    {
+      return s
+    }
+    return String(describing: v)
+  }
+  var groups: [String: _Group] = [:]
+  var order: [String] = []
+  for it in src {
+    let key = keyfn(it)
+    let ks = keyStr(key)
+    if groups[ks] == nil {
+      groups[ks] = _Group(key)
+      order.append(ks)
+    }
+    groups[ks]!.Items.append(it)
+  }
+  return order.compactMap { groups[$0] }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+struct StoreSale {
+  var ss_sold_date_sk: Int
+  var ss_item_sk: Int
+  var ss_customer_sk: Int
+  var ss_ticket_number: Int
+  var ss_quantity: Int
+  var ss_store_sk: Int
+}
+
+struct StoreReturn {
+  var sr_returned_date_sk: Int
+  var sr_customer_sk: Int
+  var sr_item_sk: Int
+  var sr_ticket_number: Int
+  var sr_return_quantity: Int
+}
+
+struct CatalogSale {
+  var cs_sold_date_sk: Int
+  var cs_item_sk: Int
+  var cs_bill_customer_sk: Int
+  var cs_quantity: Int
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_quarter_name: String
+}
+
+struct Store {
+  var s_store_sk: Int
+  var s_state: String
+}
+
+struct Item {
+  var i_item_sk: Int
+  var i_item_id: String
+  var i_item_desc: String
+}
+
+func test_TPCDS_Q17_stats() {
+  expect(
+    result == [
+      [
+        "i_item_id": "I1", "i_item_desc": "Item 1", "s_state": "CA", "store_sales_quantitycount": 1,
+        "store_sales_quantityave": 10, "store_sales_quantitystdev": 0, "store_sales_quantitycov": 0,
+        "store_returns_quantitycount": 1, "store_returns_quantityave": 2,
+        "store_returns_quantitystdev": 0, "store_returns_quantitycov": 0,
+        "catalog_sales_quantitycount": 1, "catalog_sales_quantityave": 5,
+        "catalog_sales_quantitystdev": 0, "catalog_sales_quantitycov": 0,
+      ]
+    ])
+}
+
+let store_sales: [[String: Int]] = [
+  [
+    "ss_sold_date_sk": 1, "ss_item_sk": 1, "ss_customer_sk": 1, "ss_ticket_number": 1,
+    "ss_quantity": 10, "ss_store_sk": 1,
+  ]
+]
+let store_returns: [[String: Int]] = [
+  [
+    "sr_returned_date_sk": 2, "sr_customer_sk": 1, "sr_item_sk": 1, "sr_ticket_number": 1,
+    "sr_return_quantity": 2,
+  ]
+]
+let catalog_sales: [[String: Int]] = [
+  ["cs_sold_date_sk": 3, "cs_item_sk": 1, "cs_bill_customer_sk": 1, "cs_quantity": 5]
+]
+let date_dim = [
+  ["d_date_sk": 1, "d_quarter_name": "1998Q1"], ["d_date_sk": 2, "d_quarter_name": "1998Q2"],
+  ["d_date_sk": 3, "d_quarter_name": "1998Q3"],
+]
+let store = [["s_store_sk": 1, "s_state": "CA"]]
+let item = [["i_item_sk": 1, "i_item_id": "I1", "i_item_desc": "Item 1"]]
+let joined: [[String: Int]] =
+  ({
+    var _res: [[String: Any]] = []
+    for ss in store_sales {
+      for sr in store_returns {
+        if !(ss["ss_customer_sk"]! == sr["sr_customer_sk"]!
+          && ss["ss_item_sk"]! == sr["sr_item_sk"]!
+          && ss["ss_ticket_number"]! == sr["sr_ticket_number"]!)
+        {
+          continue
+        }
+        for cs in catalog_sales {
+          if !(sr["sr_customer_sk"]! == cs["cs_bill_customer_sk"]!
+            && sr["sr_item_sk"]! == cs["cs_item_sk"]!)
+          {
+            continue
+          }
+          for d1 in date_dim {
+            if !(ss["ss_sold_date_sk"]! == d1["d_date_sk"]! && d1["d_quarter_name"]! == "1998Q1") {
+              continue
+            }
+            for d2 in date_dim {
+              if !(["1998Q1", "1998Q2", "1998Q3"].contains(
+                sr["sr_returned_date_sk"]! == d2["d_date_sk"]! && d2["d_quarter_name"]!))
+              {
+                continue
+              }
+              for d3 in date_dim {
+                if !(["1998Q1", "1998Q2", "1998Q3"].contains(
+                  cs["cs_sold_date_sk"]! == d3["d_date_sk"]! && d3["d_quarter_name"]!))
+                {
+                  continue
+                }
+                for s in store {
+                  if !(ss["ss_store_sk"]! == s["s_store_sk"]!) { continue }
+                  for i in item {
+                    if !(ss["ss_item_sk"]! == i["i_item_sk"]!) { continue }
+                    _res.append([
+                      "qty": ss["ss_quantity"]!, "ret": sr["sr_return_quantity"]!,
+                      "csq": cs["cs_quantity"]!, "i_item_id": i["i_item_id"]!,
+                      "i_item_desc": i["i_item_desc"]!, "s_state": s["s_state"]!,
+                    ])
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let result = _group_by(
+  joined.map { $0 as Any },
+  { j in ["i_item_id": j["i_item_id"]!, "i_item_desc": j["i_item_desc"]!, "s_state": j["s_state"]!]
+  }
+).map { g in
+  [
+    "i_item_id": g.key.i_item_id, "i_item_desc": g.key.i_item_desc, "s_state": g.key.s_state,
+    "store_sales_quantitycount":
+      ({
+        var _res: [Any] = []
+        for _ in g {
+          _res.append(_)
+        }
+        var _items = _res
+        return _items
+      }()).count,
+    "store_sales_quantityave": _avg(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append(x.qty)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }), "store_sales_quantitystdev": 0, "store_sales_quantitycov": 0,
+    "store_returns_quantitycount":
+      ({
+        var _res: [Any] = []
+        for _ in g {
+          _res.append(_)
+        }
+        var _items = _res
+        return _items
+      }()).count,
+    "store_returns_quantityave": _avg(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append(x.ret)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }), "store_returns_quantitystdev": 0, "store_returns_quantitycov": 0,
+    "catalog_sales_quantitycount":
+      ({
+        var _res: [Any] = []
+        for _ in g {
+          _res.append(_)
+        }
+        var _items = _res
+        return _items
+      }()).count,
+    "catalog_sales_quantityave": _avg(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append(x.csq)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }), "catalog_sales_quantitystdev": 0, "catalog_sales_quantitycov": 0,
+  ]
+}
+func main() {
+  _json(result)
+  test_TPCDS_Q17_stats()
+}
+main()

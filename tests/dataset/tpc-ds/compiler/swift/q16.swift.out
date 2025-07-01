@@ -1,0 +1,136 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+    if let d = try? JSONSerialization.data(withJSONObject: v, options: []), let s = String(data: d, encoding: .utf8) {
+        print(s)
+    }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum
+}
+
+struct CatalogSale {
+  var cs_order_number: Int
+  var cs_ship_date_sk: Int
+  var cs_ship_addr_sk: Int
+  var cs_call_center_sk: Int
+  var cs_warehouse_sk: Int
+  var cs_ext_ship_cost: Double
+  var cs_net_profit: Double
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_date: String
+}
+
+struct CustomerAddress {
+  var ca_address_sk: Int
+  var ca_state: String
+}
+
+struct CallCenter {
+  var cc_call_center_sk: Int
+  var cc_county: String
+}
+
+struct CatalogReturn {
+  var cr_order_number: Int
+}
+
+func distinct(_ xs: [any]) -> [any] {
+  let xs = xs
+
+  var out: [Any] = []
+  for x in xs {
+    if !contains(out, x) {
+      out = append(out, x)
+    }
+  }
+  return out
+}
+
+func test_TPCDS_Q16_shipping() {
+  expect(filtered == [["order_count": 1, "total_shipping_cost": 5, "total_net_profit": 20]])
+}
+
+let catalog_sales = [["cs_order_number": 1, "cs_ship_date_sk": 1, "cs_ship_addr_sk": 1, "cs_call_center_sk": 1, "cs_warehouse_sk": 1, "cs_ext_ship_cost": 5, "cs_net_profit": 20], ["cs_order_number": 1, "cs_ship_date_sk": 1, "cs_ship_addr_sk": 1, "cs_call_center_sk": 1, "cs_warehouse_sk": 2, "cs_ext_ship_cost": 0, "cs_net_profit": 0]]
+let date_dim = [["d_date_sk": 1, "d_date": "2000-03-01"]]
+let customer_address = [["ca_address_sk": 1, "ca_state": "CA"]]
+let call_center = [["cc_call_center_sk": 1, "cc_county": "CountyA"]]
+let catalog_returns = []
+let filtered = ({
+  var _res: [[String: Any]] = []
+  for cs1 in catalog_sales {
+    for d in date_dim {
+      if !(cs1["cs_ship_date_sk"]! == d["d_date_sk"]! && d["d_date"]! >= "2000-03-01" && d["d_date"]! <= "2000-04-30") { continue }
+      for ca in customer_address {
+        if !(cs1["cs_ship_addr_sk"]! == ca["ca_address_sk"]! && ca["ca_state"]! == "CA") { continue }
+        for cc in call_center {
+          if !(cs1["cs_call_center_sk"]! == cc["cc_call_center_sk"]! && cc["cc_county"]! == "CountyA") { continue }
+          if exists(({
+  var _res: [[String: Any]] = []
+  for cs2 in catalog_sales {
+    if cs1["cs_order_number"]! == cs2["cs_order_number"]! && cs1["cs_warehouse_sk"]! != cs2["cs_warehouse_sk"]! {
+      _res.append(cs2)
+    }
+  }
+  var _items = _res
+  return _items
+}())) && exists(({
+  var _res: [Any] = []
+  for cr in catalog_returns {
+    if cs1["cs_order_number"]! == cr.cr_order_number {
+      _res.append(cr)
+    }
+  }
+  var _items = _res
+  return _items
+}())) == false {
+            _res.append(["order_count": distinct(({
+  var _res: [Any] = []
+  for x in g {
+    _res.append(x.cs_order_number)
+  }
+  var _items = _res
+  return _items
+}())).count, "total_shipping_cost": _sum(({
+  var _res: [Any] = []
+  for x in g {
+    _res.append(x.cs_ext_ship_cost)
+  }
+  var _items = _res
+  return _items
+}()).map { Double($0) }), "total_net_profit": _sum(({
+  var _res: [Any] = []
+  for x in g {
+    _res.append(x.cs_net_profit)
+  }
+  var _items = _res
+  return _items
+}()).map { Double($0) })])
+          }
+        }
+      }
+    }
+  }
+  var _items = _res
+  return _items
+}())
+func main() {
+  _json(filtered)
+  test_TPCDS_Q16_shipping()
+}
+main()
