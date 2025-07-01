@@ -16,7 +16,7 @@ import (
 	"mochi/types"
 )
 
-// TestZigCompiler_TPCDS_Run compiles and executes TPC-DS queries q1 to q9
+// TestZigCompiler_TPCDS_Run compiles and executes TPC-DS queries q1 to q19
 // and compares the output with the golden files.
 func TestZigCompiler_TPCDS_Run(t *testing.T) {
 	t.Skip("TPC-DS runtime execution not supported in this environment")
@@ -25,7 +25,7 @@ func TestZigCompiler_TPCDS_Run(t *testing.T) {
 		t.Skipf("zig not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 9; i++ {
+	for i := 1; i <= 19; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
