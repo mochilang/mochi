@@ -1,0 +1,86 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+procedure test_TPCDS_Q3_empty;
+begin
+  if not ((Length(_result) = 0)) then raise Exception.Create('expect failed');
+end;
+
+var
+  _tmp0: specialize TArray<integer>;
+  _tmp1: specialize TFPGMap<string, integer>;
+  _tmp2: specialize TArray<integer>;
+  _tmp3: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp4: specialize TArray<Variant>;
+  date_dim: specialize TArray<integer>;
+  dt: integer;
+  item: specialize TArray<integer>;
+  _result: specialize TArray<specialize TFPGMap<string, integer>>;
+  store_sales: specialize TArray<integer>;
+  x: integer;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+var i,j: integer; tmp: T; k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+  for j := i + 1 to High(arr) do
+    if keys[i] > keys[j] then
+    begin
+      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
+      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
+    end;
+end;
+
+generic function _sumList<T>(arr: specialize TArray<T>): double;
+var i: integer; s: double;
+begin
+  s := 0;
+  for i := 0 to High(arr) do
+    s := s + arr[i];
+  Result := s;
+end;
+
+begin
+  date_dim := specialize TArray<integer>([]);
+  store_sales := specialize TArray<integer>([]);
+  item := specialize TArray<integer>([]);
+  SetLength(_tmp0, 0);
+  for x in g do
+  begin
+    _tmp0 := Concat(_tmp0, [x.ss.ss_ext_sales_price]);
+  end;
+  _tmp1 := specialize TFPGMap<string, integer>.Create;
+  _tmp1.AddOrSetData('d_year', g.key.d_year);
+  _tmp1.AddOrSetData('brand_id', g.key.brand_id);
+  _tmp1.AddOrSetData('brand', g.key.brand);
+  _tmp1.AddOrSetData('su_tmp1_agg', specialize _su_tmp1List<integer>(_t_tmp1p0));
+  SetLength(_tmp2, 0);
+  for x in g do
+  begin
+    _tmp2 := Concat(_tmp2, [x.ss.ss_ext_sales_price]);
+  end;
+  SetLength(_tmp3, 0);
+  SetLength(_tmp4, 0);
+  for dt in date_dim do
+  begin
+    for ss in store_sales do
+    begin
+      if not ((dt.d_date_sk = ss.ss_sold_date_sk)) then continue;
+      for i in item do
+      begin
+        if not ((ss.ss_item_sk = i.i_item_sk)) then continue;
+        if not (((i.i_manufact_id = 100) and (dt.d_moy = 12))) then continue;
+        _tmp3 := Concat(_tmp3, [_tmp1]);
+        _tmp4 := Concat(_tmp4, [specialize TArray<specialize TFPGMap<string, integer>>([g.key.d_year, -specialize _sumList<integer>(_tmp2), g.key.brand_id])]);
+      end;
+    end;
+  end;
+  specialize _sortBy<specialize TFPGMap<string, integer>>(_tmp3, _tmp4);
+  _result := _tmp3;
+  json(_result);
+  test_TPCDS_Q3_empty;
+end.

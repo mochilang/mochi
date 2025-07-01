@@ -48,7 +48,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
-	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;")
+	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;")
 	c.writeln("")
 	c.writeln("type")
 	c.indent++
@@ -989,10 +989,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operands = append(operands, r)
 		lists = append(lists, c.isListPostfix(part.Right))
 		maps = append(maps, c.isMapPostfix(part.Right))
-		operators = append(operators, part.Op)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
+		}
+		operators = append(operators, op)
 	}
 
-	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
+	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union_all"}}
 
 	for _, level := range levels {
 		for i := 0; i < len(operators); {
@@ -1040,6 +1044,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					res = fmt.Sprintf("(%s and %s)", l, r)
 				case "||":
 					res = fmt.Sprintf("(%s or %s)", l, r)
+				case "union_all":
+					res = fmt.Sprintf("Concat(%s, %s)", l, r)
+					isList = true
 				}
 				operands[i] = res
 				lists[i] = isList
@@ -1174,6 +1181,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			s := strings.ReplaceAll(*p.Lit.Str, "'", "''")
 			return fmt.Sprintf("'%s'", s), nil
 		}
+		if p.Lit.Null {
+			return "Null", nil
+		}
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
 		if c.packages != nil {
@@ -1298,6 +1308,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			c.use("_joinStrings")
 			return fmt.Sprintf("_joinStrings(%s, %s)", args[0], args[1]), nil
+		case "json":
+			if len(args) != 1 {
+				return "", fmt.Errorf("json expects 1 argument")
+			}
+			typ := typeString(types.TypeOfExpr(p.Call.Args[0], c.env))
+			c.use("_json")
+			return fmt.Sprintf("specialize _json<%s>(%s)", typ, args[0]), nil
 		default:
 			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 		}
@@ -2081,6 +2098,14 @@ func (c *Compiler) emitHelpers() {
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
+		case "_json":
+			c.writeln("generic procedure _json<T>(v: T);")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("writeln('[]');")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
 		case "_splitString":
 			c.writeln("function _splitString(s, sep: string): specialize TArray<string>;")
 			c.writeln("var sl: TStringList; i: Integer;")
@@ -2157,7 +2182,7 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("begin")
 			c.indent++
 			c.writeln("if Length(arr) = 0 then exit(0);")
-			c.writeln("Result := _sumList<T>(arr) / Length(arr);")
+			c.writeln("Result := specialize _sumList<T>(arr) / Length(arr);")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
