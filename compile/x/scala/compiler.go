@@ -1129,6 +1129,46 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("append expects 2 args")
 		}
 		return fmt.Sprintf("%s.append(%s)", args[0], args[1]), nil
+	case "concat":
+		if len(args) == 0 {
+			return "scala.collection.mutable.ArrayBuffer()", nil
+		}
+		expr := args[0]
+		for _, a := range args[1:] {
+			expr = fmt.Sprintf("%s ++ %s", expr, a)
+		}
+		return expr, nil
+	case "substr", "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substr expects 3 args")
+		}
+		if isStringExpr(call.Args[0], c.env) {
+			c.use("_sliceString")
+			return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], args[2]), nil
+		}
+		c.use("_slice")
+		return fmt.Sprintf("_slice(%s, %s, %s)", args[0], args[1], args[2]), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists expects 1 arg")
+		}
+		c.use("_exists")
+		return fmt.Sprintf("_exists(%s)", args[0]), nil
+	case "contains":
+		if len(args) != 2 {
+			return "", fmt.Errorf("contains expects 2 args")
+		}
+		return fmt.Sprintf("%s.contains(%s)", args[0], args[1]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		return fmt.Sprintf("%s.values.toSeq", args[0]), nil
+	case "strings.ToUpper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("strings.ToUpper expects 1 arg")
+		}
+		return fmt.Sprintf("%s.toUpperCase()", args[0]), nil
 	case "eval":
 		if len(args) != 1 {
 			return "", fmt.Errorf("eval expects 1 arg")
