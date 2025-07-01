@@ -1,0 +1,386 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+type Inventory struct {
+	Inv_item_sk          int `json:"inv_item_sk"`
+	Inv_date_sk          int `json:"inv_date_sk"`
+	Inv_quantity_on_hand int `json:"inv_quantity_on_hand"`
+}
+
+type DateDim struct {
+	D_date_sk   int `json:"d_date_sk"`
+	D_month_seq int `json:"d_month_seq"`
+}
+
+type Item struct {
+	I_item_sk      int    `json:"i_item_sk"`
+	I_product_name string `json:"i_product_name"`
+	I_brand        string `json:"i_brand"`
+	I_class        string `json:"i_class"`
+	I_category     string `json:"i_category"`
+}
+
+func test_TPCDS_Q22_average_inventory() {
+	expect(_equal(qoh, []map[string]any{map[string]any{
+		"i_product_name": "Prod1",
+		"i_brand":        "Brand1",
+		"i_class":        "Class1",
+		"i_category":     "Cat1",
+		"qoh":            15.0,
+	}, map[string]any{
+		"i_product_name": "Prod2",
+		"i_brand":        "Brand2",
+		"i_class":        "Class2",
+		"i_category":     "Cat2",
+		"qoh":            50.0,
+	}}))
+}
+
+type InventoryItem struct {
+	Inv_item_sk          int `json:"inv_item_sk"`
+	Inv_date_sk          int `json:"inv_date_sk"`
+	Inv_quantity_on_hand int `json:"inv_quantity_on_hand"`
+}
+
+var inventory []InventoryItem
+
+type Date_dimItem struct {
+	D_date_sk   int `json:"d_date_sk"`
+	D_month_seq int `json:"d_month_seq"`
+}
+
+var date_dim []Date_dimItem
+
+type ItemItem struct {
+	I_item_sk      int    `json:"i_item_sk"`
+	I_product_name string `json:"i_product_name"`
+	I_brand        string `json:"i_brand"`
+	I_class        string `json:"i_class"`
+	I_category     string `json:"i_category"`
+}
+
+var item []ItemItem
+var qoh []map[string]any
+
+func main() {
+	failures := 0
+	inventory = _cast[[]InventoryItem]([]InventoryItem{
+		InventoryItem{
+			Inv_item_sk:          1,
+			Inv_date_sk:          1,
+			Inv_quantity_on_hand: 10,
+		},
+		InventoryItem{
+			Inv_item_sk:          1,
+			Inv_date_sk:          2,
+			Inv_quantity_on_hand: 20,
+		},
+		InventoryItem{
+			Inv_item_sk:          1,
+			Inv_date_sk:          3,
+			Inv_quantity_on_hand: 10,
+		},
+		InventoryItem{
+			Inv_item_sk:          1,
+			Inv_date_sk:          4,
+			Inv_quantity_on_hand: 20,
+		},
+		InventoryItem{
+			Inv_item_sk:          2,
+			Inv_date_sk:          1,
+			Inv_quantity_on_hand: 50,
+		},
+	})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{
+		Date_dimItem{
+			D_date_sk:   1,
+			D_month_seq: 0,
+		},
+		Date_dimItem{
+			D_date_sk:   2,
+			D_month_seq: 1,
+		},
+		Date_dimItem{
+			D_date_sk:   3,
+			D_month_seq: 2,
+		},
+		Date_dimItem{
+			D_date_sk:   4,
+			D_month_seq: 3,
+		},
+	})
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
+		I_item_sk:      1,
+		I_product_name: "Prod1",
+		I_brand:        "Brand1",
+		I_class:        "Class1",
+		I_category:     "Cat1",
+	}, ItemItem{
+		I_item_sk:      2,
+		I_product_name: "Prod2",
+		I_brand:        "Brand2",
+		I_class:        "Class2",
+		I_category:     "Cat2",
+	}})
+	qoh = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, inv := range inventory {
+			for _, d := range date_dim {
+				if !(inv.Inv_date_sk == d.D_date_sk) {
+					continue
+				}
+				for _, i := range item {
+					if !(inv.Inv_item_sk == i.I_item_sk) {
+						continue
+					}
+					if (d.D_month_seq >= 0) && (d.D_month_seq <= 11) {
+						key := map[string]string{
+							"product_name": i.I_product_name,
+							"brand":        i.I_brand,
+							"class":        i.I_class,
+							"category":     i.I_category,
+						}
+						ks := fmt.Sprint(key)
+						g, ok := groups[ks]
+						if !ok {
+							g = &data.Group{Key: key}
+							groups[ks] = g
+							order = append(order, ks)
+						}
+						g.Items = append(g.Items, inv)
+					}
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"i_product_name": _cast[map[string]any](g.Key)["product_name"],
+				"i_brand":        _cast[map[string]any](g.Key)["brand"],
+				"i_class":        _cast[map[string]any](g.Key)["class"],
+				"i_category":     _cast[map[string]any](g.Key)["category"],
+				"qoh": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["inv_quantity_on_hand"])
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
+	func() { b, _ := json.Marshal(qoh); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q22 average inventory")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q22_average_inventory()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _avg(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []bool:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		default:
+			panic("avg() expects list or group")
+		}
+	}
+	if len(items) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("avg() expects numbers")
+		}
+	}
+	return sum / float64(len(items))
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
