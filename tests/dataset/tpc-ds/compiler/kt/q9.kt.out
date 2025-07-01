@@ -1,0 +1,133 @@
+fun test_TPCDS_Q9_empty() {
+    check((result.size == 0))
+}
+
+fun main() {
+    val store_sales = listOf<Any?>()
+    val reason = listOf<Any?>()
+    val bucket1 = if ((run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 1) && (s["ss_quantity"] <= 20)) }
+        res = res.map { s -> s }
+        res
+    }.size > 10)) _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 1) && (s["ss_quantity"] <= 20)) }
+        res = res.map { s -> s["ss_ext_discount_amt"] }
+        res
+    }) else _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 1) && (s["ss_quantity"] <= 20)) }
+        res = res.map { s -> s["ss_net_paid"] }
+        res
+    })
+    val bucket2 = if ((run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 21) && (s["ss_quantity"] <= 40)) }
+        res = res.map { s -> s }
+        res
+    }.size > 20)) _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 21) && (s["ss_quantity"] <= 40)) }
+        res = res.map { s -> s["ss_ext_discount_amt"] }
+        res
+    }) else _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 21) && (s["ss_quantity"] <= 40)) }
+        res = res.map { s -> s["ss_net_paid"] }
+        res
+    })
+    val bucket3 = if ((run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 41) && (s["ss_quantity"] <= 60)) }
+        res = res.map { s -> s }
+        res
+    }.size > 30)) _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 41) && (s["ss_quantity"] <= 60)) }
+        res = res.map { s -> s["ss_ext_discount_amt"] }
+        res
+    }) else _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 41) && (s["ss_quantity"] <= 60)) }
+        res = res.map { s -> s["ss_net_paid"] }
+        res
+    })
+    val bucket4 = if ((run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 61) && (s["ss_quantity"] <= 80)) }
+        res = res.map { s -> s }
+        res
+    }.size > 40)) _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 61) && (s["ss_quantity"] <= 80)) }
+        res = res.map { s -> s["ss_ext_discount_amt"] }
+        res
+    }) else _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 61) && (s["ss_quantity"] <= 80)) }
+        res = res.map { s -> s["ss_net_paid"] }
+        res
+    })
+    val bucket5 = if ((run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 81) && (s["ss_quantity"] <= 100)) }
+        res = res.map { s -> s }
+        res
+    }.size > 50)) _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 81) && (s["ss_quantity"] <= 100)) }
+        res = res.map { s -> s["ss_ext_discount_amt"] }
+        res
+    }) else _avg(run {
+        var res = store_sales
+        res = res.filter { s -> ((s["ss_quantity"] >= 81) && (s["ss_quantity"] <= 100)) }
+        res = res.map { s -> s["ss_net_paid"] }
+        res
+    })
+    val result = run {
+        var res = reason
+        res = res.filter { r -> (r["r_reason_sk"] == 1) }
+        res = res.map { r -> mutableMapOf("bucket1" to bucket1, "bucket2" to bucket2, "bucket3" to bucket3, "bucket4" to bucket4, "bucket5" to bucket5) }
+        res
+    }
+    _json(result)
+    test_TPCDS_Q9_empty()
+}
+
+fun _avg(v: Any?): Double {
+    var list: List<Any?>? = null
+    when (v) {
+        is List<*> -> list = v as List<Any?>
+        is Map<*, *> -> {
+            val items = when {
+                v["items"] is List<*> -> v["items"] as List<*>
+                v["Items"] is List<*> -> v["Items"] as List<*>
+                else -> null
+            }
+            if (items != null) list = items as List<Any?>
+        }
+        is _Group -> list = v.Items
+    }
+    if (list == null || list.isEmpty()) return 0.0
+    var sum = 0.0
+    for (n in list!!) {
+        sum += (n as Number).toDouble()
+    }
+    return sum / list!!.size
+}
+fun _json(v: Any?) {
+    fun encode(x: Any?): String = when (x) {
+        null -> "null"
+        is String -> \"""${x.replace("\"", "\\\"")}\"""
+        is Int, is Double, is Boolean -> x.toString()
+        is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
+        is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e ->
+        "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
+    }
+    else -> \"""${x.toString().replace("\"", "\\\"")}\"""
+}
+println(encode(v))
+}
+
+

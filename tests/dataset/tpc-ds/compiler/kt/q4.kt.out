@@ -1,0 +1,380 @@
+fun test_TPCDS_Q4_empty() {
+    check((result.size == 0))
+}
+
+fun main() {
+    val customer = listOf<Any?>()
+    val store_sales = listOf<Any?>()
+    val catalog_sales = listOf<Any?>()
+    val web_sales = listOf<Any?>()
+    val date_dim = listOf<Any?>()
+    val year_total = _unionAll(_unionAll((run {
+        val _src = customer
+        val _rows = _query(_src, listOf(
+        _JoinSpec(items = store_sales, on = { args ->
+        val c = args[0]
+        val s = args[1]
+        (c["c_customer_sk"] == s["ss_customer_sk"])
+    })),
+    _JoinSpec(items = date_dim, on = { args ->
+    val c = args[0]
+    val s = args[1]
+    val d = args[2]
+    (s["ss_sold_date_sk"] == d["d_date_sk"])
+}))
+), _QueryOpts(selectFn = { args ->
+val c = args[0]
+val s = args[1]
+val d = args[2]
+mutableMapOf("customer_id" to g.key.id, "customer_first_name" to g.key.first, "customer_last_name" to g.key.last, "customer_login" to g.key.login, "dyear" to g.key.year, "year_total" to _sum(run {
+    var res = g.Items as List<Any?>
+    res = res.map { x -> ((((((x["ss_ext_list_price"] - x["ss_ext_wholesale_cost"]) - x["ss_ext_discount_amt"])) + x["ss_ext_sales_price"])) / 2) }
+    res
+}), "sale_type" to "s")
+}) )
+val _groups = _group_by(_rows) { args ->
+val c = args[0]
+val s = args[1]
+val d = args[2]
+mutableMapOf("id" to c["c_customer_id"], "first" to c["c_first_name"], "last" to c["c_last_name"], "login" to c["c_login"], "year" to d["d_year"])
+}
+val _res = mutableListOf<Any?>()
+for (g in _groups) {
+    _res.add(mutableMapOf("customer_id" to g.key.id, "customer_first_name" to g.key.first, "customer_last_name" to g.key.last, "customer_login" to g.key.login, "dyear" to g.key.year, "year_total" to _sum(run {
+        var res = g.Items as List<Any?>
+        res = res.map { x -> ((((((x["ss_ext_list_price"] - x["ss_ext_wholesale_cost"]) - x["ss_ext_discount_amt"])) + x["ss_ext_sales_price"])) / 2) }
+        res
+    }), "sale_type" to "s"))
+}
+_res
+}), (run {
+    val _src = customer
+    val _rows = _query(_src, listOf(
+    _JoinSpec(items = catalog_sales, on = { args ->
+    val c = args[0]
+    val cs = args[1]
+    (c["c_customer_sk"] == cs["cs_bill_customer_sk"])
+})),
+_JoinSpec(items = date_dim, on = { args ->
+val c = args[0]
+val cs = args[1]
+val d = args[2]
+(cs["cs_sold_date_sk"] == d["d_date_sk"])
+}))
+), _QueryOpts(selectFn = { args ->
+val c = args[0]
+val cs = args[1]
+val d = args[2]
+mutableMapOf("customer_id" to g.key.id, "customer_first_name" to g.key.first, "customer_last_name" to g.key.last, "customer_login" to g.key.login, "dyear" to g.key.year, "year_total" to _sum(run {
+    var res = g.Items as List<Any?>
+    res = res.map { x -> ((((((x["cs_ext_list_price"] - x["cs_ext_wholesale_cost"]) - x["cs_ext_discount_amt"])) + x["cs_ext_sales_price"])) / 2) }
+    res
+}), "sale_type" to "c")
+}) )
+val _groups = _group_by(_rows) { args ->
+val c = args[0]
+val cs = args[1]
+val d = args[2]
+mutableMapOf("id" to c["c_customer_id"], "first" to c["c_first_name"], "last" to c["c_last_name"], "login" to c["c_login"], "year" to d["d_year"])
+}
+val _res = mutableListOf<Any?>()
+for (g in _groups) {
+    _res.add(mutableMapOf("customer_id" to g.key.id, "customer_first_name" to g.key.first, "customer_last_name" to g.key.last, "customer_login" to g.key.login, "dyear" to g.key.year, "year_total" to _sum(run {
+        var res = g.Items as List<Any?>
+        res = res.map { x -> ((((((x["cs_ext_list_price"] - x["cs_ext_wholesale_cost"]) - x["cs_ext_discount_amt"])) + x["cs_ext_sales_price"])) / 2) }
+        res
+    }), "sale_type" to "c"))
+}
+_res
+})), (run {
+    val _src = customer
+    val _rows = _query(_src, listOf(
+    _JoinSpec(items = web_sales, on = { args ->
+    val c = args[0]
+    val ws = args[1]
+    (c["c_customer_sk"] == ws["ws_bill_customer_sk"])
+})),
+_JoinSpec(items = date_dim, on = { args ->
+val c = args[0]
+val ws = args[1]
+val d = args[2]
+(ws["ws_sold_date_sk"] == d["d_date_sk"])
+}))
+), _QueryOpts(selectFn = { args ->
+val c = args[0]
+val ws = args[1]
+val d = args[2]
+mutableMapOf("customer_id" to g.key.id, "customer_first_name" to g.key.first, "customer_last_name" to g.key.last, "customer_login" to g.key.login, "dyear" to g.key.year, "year_total" to _sum(run {
+    var res = g.Items as List<Any?>
+    res = res.map { x -> ((((((x["ws_ext_list_price"] - x["ws_ext_wholesale_cost"]) - x["ws_ext_discount_amt"])) + x["ws_ext_sales_price"])) / 2) }
+    res
+}), "sale_type" to "w")
+}) )
+val _groups = _group_by(_rows) { args ->
+val c = args[0]
+val ws = args[1]
+val d = args[2]
+mutableMapOf("id" to c["c_customer_id"], "first" to c["c_first_name"], "last" to c["c_last_name"], "login" to c["c_login"], "year" to d["d_year"])
+}
+val _res = mutableListOf<Any?>()
+for (g in _groups) {
+    _res.add(mutableMapOf("customer_id" to g.key.id, "customer_first_name" to g.key.first, "customer_last_name" to g.key.last, "customer_login" to g.key.login, "dyear" to g.key.year, "year_total" to _sum(run {
+        var res = g.Items as List<Any?>
+        res = res.map { x -> ((((((x["ws_ext_list_price"] - x["ws_ext_wholesale_cost"]) - x["ws_ext_discount_amt"])) + x["ws_ext_sales_price"])) / 2) }
+        res
+    }), "sale_type" to "w"))
+}
+_res
+}))
+val result = run {
+    val _src = year_total
+    val _rows = _query(_src, listOf(
+    _JoinSpec(items = year_total, on = { args ->
+    val s1 = args[0]
+    val s2 = args[1]
+    (s2["customer_id"] == s1["customer_id"])
+})),
+_JoinSpec(items = year_total, on = { args ->
+val s1 = args[0]
+val s2 = args[1]
+val c1 = args[2]
+(c1["customer_id"] == s1["customer_id"])
+})),
+_JoinSpec(items = year_total, on = { args ->
+val s1 = args[0]
+val s2 = args[1]
+val c1 = args[2]
+val c2 = args[3]
+(c2["customer_id"] == s1["customer_id"])
+})),
+_JoinSpec(items = year_total, on = { args ->
+val s1 = args[0]
+val s2 = args[1]
+val c1 = args[2]
+val c2 = args[3]
+val w1 = args[4]
+(w1["customer_id"] == s1["customer_id"])
+})),
+_JoinSpec(items = year_total, on = { args ->
+val s1 = args[0]
+val s2 = args[1]
+val c1 = args[2]
+val c2 = args[3]
+val w1 = args[4]
+val w2 = args[5]
+(w2["customer_id"] == s1["customer_id"])
+}))
+), _QueryOpts(selectFn = { args ->
+val s1 = args[0]
+val s2 = args[1]
+val c1 = args[2]
+val c2 = args[3]
+val w1 = args[4]
+val w2 = args[5]
+mutableMapOf("customer_id" to s2["customer_id"], "customer_first_name" to s2["customer_first_name"], "customer_last_name" to s2["customer_last_name"], "customer_login" to s2["customer_login"])
+}, where = { args ->
+val s1 = args[0]
+val s2 = args[1]
+val c1 = args[2]
+val c2 = args[3]
+val w1 = args[4]
+val w2 = args[5]
+(((((((((((((((((s1["sale_type"] == "s") && (c1["sale_type"] == "c")) && (w1["sale_type"] == "w")) && (s2["sale_type"] == "s")) && (c2["sale_type"] == "c")) && (w2["sale_type"] == "w")) && (s1["dyear"] == 2001)) && (s2["dyear"] == 2002)) && (c1["dyear"] == 2001)) && (c2["dyear"] == 2002)) && (w1["dyear"] == 2001)) && (w2["dyear"] == 2002)) && (s1["year_total"] > 0)) && (c1["year_total"] > 0)) && (w1["year_total"] > 0)) && ((if ((c1["year_total"] > 0)) (c2["year_total"] / c1["year_total"]) else null) > (if ((s1["year_total"] > 0)) (s2["year_total"] / s1["year_total"]) else null))) && ((if ((c1["year_total"] > 0)) (c2["year_total"] / c1["year_total"]) else null) > (if ((w1["year_total"] > 0)) (w2["year_total"] / w1["year_total"]) else null)))
+}, sortKey = { args ->
+val s1 = args[0]
+val s2 = args[1]
+val c1 = args[2]
+val c2 = args[3]
+val w1 = args[4]
+val w2 = args[5]
+listOf(s2["customer_id"], s2["customer_first_name"], s2["customer_last_name"], s2["customer_login"])
+}) )
+_rows
+}
+_json(result)
+test_TPCDS_Q4_empty()
+}
+
+class _Group(var key: Any?) {
+    val Items = mutableListOf<Any?>()
+    val size: Int
+    get() = Items.size
+}
+fun _arrConcat(a: Array<Any?>, b: Array<Any?>): Array<Any?> {
+    return a + b
+}
+fun _group_by(src: List<Any?>, keyfn: (Any?) -> Any?): List<_Group> {
+    val groups = mutableMapOf<String, _Group>()
+    val order = mutableListOf<String>()
+    for (it in src) {
+        val key = keyfn(it)
+        val ks = key.toString()
+        var g = groups[ks]
+        if (g == null) {
+            g = _Group(key)
+            groups[ks] = g
+            order.add(ks)
+        }
+        if (it is Array<*> && it.size == 1) {
+            g.Items.add(it[0])
+        } else {
+            g.Items.add(it)
+        }
+    }
+    return order.map { groups[it]!! }
+}
+fun _json(v: Any?) {
+    fun encode(x: Any?): String = when (x) {
+        null -> "null"
+        is String -> \"""${x.replace("\"", "\\\"")}\"""
+        is Int, is Double, is Boolean -> x.toString()
+        is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
+        is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e ->
+        "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
+    }
+    else -> \"""${x.toString().replace("\"", "\\\"")}\"""
+}
+println(encode(v))
+}
+data class _JoinSpec(
+val items: List<Any?>,
+val on: ((Array<Any?>) -> Boolean)? = null,
+val left: Boolean = false,
+val right: Boolean = false,
+)
+
+data class _QueryOpts(
+val selectFn: (Array<Any?>) -> Any?,
+val where: ((Array<Any?>) -> Boolean)? = null,
+val sortKey: ((Array<Any?>) -> Any?)? = null,
+val skip: Int = -1,
+val take: Int = -1,
+)
+
+fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?> {
+    var items = src.map { arrayOf(it) }.toMutableList()
+    if (opts.where != null) {
+        items = items.filter { opts.where.invoke(it) }.toMutableList()
+    }
+    for (j in joins) {
+        val joined = mutableListOf<Array<Any?>>()
+        if (j.right && j.left) {
+            val matched = BooleanArray(j.items.size)
+            for (left in items) {
+                var m = false
+                for ((ri, right) in j.items.withIndex()) {
+                    var keep = true
+                    if (j.on != null) {
+                        keep = j.on.invoke(_arrConcat(left, arrayOf(right)))
+                    }
+                    if (!keep) continue
+                    m = true
+                    matched[ri] = true
+                    joined.add(_arrConcat(left, arrayOf(right)))
+                }
+                if (!m) joined.add(_arrConcat(left, arrayOf<Any?>(null)))
+            }
+            for ((ri, right) in j.items.withIndex()) {
+                if (!matched[ri]) {
+                    val undef = Array<Any?>(items.firstOrNull()?.size ?: 0) { null }
+                    joined.add(_arrConcat(undef, arrayOf(right)))
+                }
+            }
+        } else if (j.right) {
+            for (right in j.items) {
+                var m = false
+                for (left in items) {
+                    var keep = true
+                    if (j.on != null) {
+                        keep = j.on.invoke(_arrConcat(left, arrayOf(right)))
+                    }
+                    if (!keep) continue
+                    m = true
+                    joined.add(_arrConcat(left, arrayOf(right)))
+                }
+                if (!m) {
+                    val undef = Array<Any?>(items.firstOrNull()?.size ?: 0) { null }
+                    joined.add(_arrConcat(undef, arrayOf(right)))
+                }
+            }
+        } else {
+            for (left in items) {
+                var m = false
+                for (right in j.items) {
+                    var keep = true
+                    if (j.on != null) {
+                        keep = j.on.invoke(_arrConcat(left, arrayOf(right)))
+                    }
+                    if (!keep) continue
+                    m = true
+                    joined.add(_arrConcat(left, arrayOf(right)))
+                }
+                if (j.left && !m) joined.add(_arrConcat(left, arrayOf<Any?>(null)))
+            }
+        }
+        items = joined
+        if (opts.where != null) {
+            items = items.filter { opts.where.invoke(it) }.toMutableList()
+        }
+    }
+    if (opts.where != null) {
+        items = items.filter { opts.where.invoke(it) }.toMutableList()
+    }
+    if (opts.sortKey != null) {
+        val pairs = items.map { it to opts.sortKey.invoke(it) }.toMutableList()
+        pairs.sortWith(java.util.Comparator { a, b ->
+        val av = a.second
+        val bv = b.second
+        when (av) {
+            is Int -> when (bv) {
+                is Int -> av.compareTo(bv)
+                is Double -> av.toDouble().compareTo(bv)
+                else -> av.toString().compareTo(bv.toString())
+            }
+            is Double -> when (bv) {
+                is Int -> av.compareTo(bv.toDouble())
+                is Double -> av.compareTo(bv)
+                else -> av.toString().compareTo(bv.toString())
+            }
+            is String -> av.compareTo(bv.toString())
+            else -> av.toString().compareTo(bv.toString())
+        }
+    })
+    items = pairs.map { it.first }.toMutableList()
+}
+if (opts.skip >= 0) {
+    items = if (opts.skip < items.size) items.drop(opts.skip).toMutableList() else mutableListOf()
+}
+if (opts.take >= 0) {
+    if (opts.take < items.size) items = items.take(opts.take).toMutableList()
+}
+val res = mutableListOf<Any?>()
+for (r in items) {
+    res.add(opts.selectFn.invoke(r))
+}
+return res
+}
+fun _sum(v: Any?): Double {
+    var list: List<Any?>? = null
+    when (v) {
+        is List<*> -> list = v as List<Any?>
+        is Map<*, *> -> {
+            val items = when {
+                v["items"] is List<*> -> v["items"] as List<*>
+                v["Items"] is List<*> -> v["Items"] as List<*>
+                else -> null
+            }
+            if (items != null) list = items as List<Any?>
+        }
+        is _Group -> list = v.Items
+    }
+    if (list == null || list.isEmpty()) return 0.0
+    var sum = 0.0
+    for (n in list!!) {
+        sum += (n as Number).toDouble()
+    }
+    return sum
+}
+fun <T> _unionAll(a: List<T>, b: List<T>): List<T> = a + b
+
+
