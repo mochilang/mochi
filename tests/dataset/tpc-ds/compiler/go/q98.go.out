@@ -1,0 +1,401 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+type StoreSale struct {
+	Ss_item_sk         int     `json:"ss_item_sk"`
+	Ss_sold_date_sk    int     `json:"ss_sold_date_sk"`
+	Ss_ext_sales_price float64 `json:"ss_ext_sales_price"`
+}
+
+type Item struct {
+	I_item_sk       int     `json:"i_item_sk"`
+	I_item_id       string  `json:"i_item_id"`
+	I_item_desc     string  `json:"i_item_desc"`
+	I_category      string  `json:"i_category"`
+	I_class         string  `json:"i_class"`
+	I_current_price float64 `json:"i_current_price"`
+}
+
+type DateDim struct {
+	D_date_sk int    `json:"d_date_sk"`
+	D_date    string `json:"d_date"`
+}
+
+func test_TPCDS_Q98_revenue() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"i_item_id":       "I1",
+		"i_item_desc":     "desc1",
+		"i_category":      "CatA",
+		"i_class":         "Class1",
+		"i_current_price": 100.0,
+		"itemrevenue":     50.0,
+		"revenueratio":    33.333333333333336,
+	}, map[string]any{
+		"i_item_id":       "I2",
+		"i_item_desc":     "desc2",
+		"i_category":      "CatB",
+		"i_class":         "Class1",
+		"i_current_price": 200.0,
+		"itemrevenue":     100.0,
+		"revenueratio":    66.66666666666667,
+	}}))
+}
+
+type Store_salesItem struct {
+	Ss_item_sk         int     `json:"ss_item_sk"`
+	Ss_sold_date_sk    int     `json:"ss_sold_date_sk"`
+	Ss_ext_sales_price float64 `json:"ss_ext_sales_price"`
+}
+
+var store_sales []Store_salesItem
+
+type ItemItem struct {
+	I_item_sk       int     `json:"i_item_sk"`
+	I_item_id       string  `json:"i_item_id"`
+	I_item_desc     string  `json:"i_item_desc"`
+	I_category      string  `json:"i_category"`
+	I_class         string  `json:"i_class"`
+	I_current_price float64 `json:"i_current_price"`
+}
+
+var item []ItemItem
+
+type Date_dimItem struct {
+	D_date_sk int    `json:"d_date_sk"`
+	D_date    string `json:"d_date"`
+}
+
+var date_dim []Date_dimItem
+var grouped []map[string]any
+var totals []map[string]any
+var result []map[string]any
+
+func main() {
+	failures := 0
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_item_sk:         1,
+		Ss_sold_date_sk:    1,
+		Ss_ext_sales_price: 50.0,
+	}, Store_salesItem{
+		Ss_item_sk:         2,
+		Ss_sold_date_sk:    1,
+		Ss_ext_sales_price: 100.0,
+	}})
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
+		I_item_sk:       1,
+		I_item_id:       "I1",
+		I_item_desc:     "desc1",
+		I_category:      "CatA",
+		I_class:         "Class1",
+		I_current_price: 100.0,
+	}, ItemItem{
+		I_item_sk:       2,
+		I_item_id:       "I2",
+		I_item_desc:     "desc2",
+		I_category:      "CatB",
+		I_class:         "Class1",
+		I_current_price: 200.0,
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_date:    "2000-02-01",
+	}})
+	grouped = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, ss := range store_sales {
+			for _, i := range item {
+				if !(ss.Ss_item_sk == i.I_item_sk) {
+					continue
+				}
+				for _, d := range date_dim {
+					if !(ss.Ss_sold_date_sk == d.D_date_sk) {
+						continue
+					}
+					key := map[string]any{
+						"item_id":   i.I_item_id,
+						"item_desc": i.I_item_desc,
+						"category":  i.I_category,
+						"class":     i.I_class,
+						"price":     i.I_current_price,
+					}
+					ks := fmt.Sprint(key)
+					g, ok := groups[ks]
+					if !ok {
+						g = &data.Group{Key: key}
+						groups[ks] = g
+						order = append(order, ks)
+					}
+					g.Items = append(g.Items, ss)
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"i_item_id":       _cast[map[string]any](g.Key)["item_id"],
+				"i_item_desc":     _cast[map[string]any](g.Key)["item_desc"],
+				"i_category":      _cast[map[string]any](g.Key)["category"],
+				"i_class":         _cast[map[string]any](g.Key)["class"],
+				"i_current_price": _cast[map[string]any](g.Key)["price"],
+				"itemrevenue": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["ss_ext_sales_price"])
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
+	totals = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, g := range grouped {
+			key := g["i_class"]
+			ks := fmt.Sprint(key)
+			g, ok := groups[ks]
+			if !ok {
+				g = &data.Group{Key: key}
+				groups[ks] = g
+				order = append(order, ks)
+			}
+			g.Items = append(g.Items, g)
+		}
+		_res := []map[string]any{}
+		for _, ks := range order {
+			g := groups[ks]
+			cg := g
+			_res = append(_res, map[string]any{"class": cg.Key, "total": _sum(func() []any {
+				_res := []any{}
+				for _, x := range cg.Items {
+					_res = append(_res, _cast[map[string]any](x)["itemrevenue"])
+				}
+				return _res
+			}())})
+		}
+		return _res
+	}()
+	result = func() []map[string]any {
+		_res := []map[string]any{}
+		for _, g := range grouped {
+			for _, t := range totals {
+				if !(_equal(g["i_class"], t["class"])) {
+					continue
+				}
+				_res = append(_res, map[string]any{
+					"i_item_id":       g["i_item_id"],
+					"i_item_desc":     g["i_item_desc"],
+					"i_category":      g["i_category"],
+					"i_class":         g["i_class"],
+					"i_current_price": g["i_current_price"],
+					"itemrevenue":     g["itemrevenue"],
+					"revenueratio":    (_cast[float64]((_cast[float64](g["itemrevenue"]) * _cast[float64](100))) / _cast[float64](t["total"])),
+				})
+			}
+		}
+		return _res
+	}()
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q98 revenue")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q98_revenue()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func _sum(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string, []bool:
+			panic("sum() expects numbers")
+		default:
+			panic("sum() expects list or group")
+		}
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("sum() expects numbers")
+		}
+	}
+	return sum
+}

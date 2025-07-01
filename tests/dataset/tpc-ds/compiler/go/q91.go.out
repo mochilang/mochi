@@ -1,0 +1,481 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+type CallCenter struct {
+	Cc_call_center_sk int    `json:"cc_call_center_sk"`
+	Cc_call_center_id string `json:"cc_call_center_id"`
+	Cc_name           string `json:"cc_name"`
+	Cc_manager        string `json:"cc_manager"`
+}
+
+type CatalogReturn struct {
+	Cr_call_center_sk        int     `json:"cr_call_center_sk"`
+	Cr_returned_date_sk      int     `json:"cr_returned_date_sk"`
+	Cr_returning_customer_sk int     `json:"cr_returning_customer_sk"`
+	Cr_net_loss              float64 `json:"cr_net_loss"`
+}
+
+type DateDim struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+	D_moy     int `json:"d_moy"`
+}
+
+type Customer struct {
+	C_customer_sk      int `json:"c_customer_sk"`
+	C_current_cdemo_sk int `json:"c_current_cdemo_sk"`
+	C_current_hdemo_sk int `json:"c_current_hdemo_sk"`
+	C_current_addr_sk  int `json:"c_current_addr_sk"`
+}
+
+type CustomerAddress struct {
+	Ca_address_sk int `json:"ca_address_sk"`
+	Ca_gmt_offset int `json:"ca_gmt_offset"`
+}
+
+type CustomerDemographics struct {
+	Cd_demo_sk          int    `json:"cd_demo_sk"`
+	Cd_marital_status   string `json:"cd_marital_status"`
+	Cd_education_status string `json:"cd_education_status"`
+}
+
+type HouseholdDemographics struct {
+	Hd_demo_sk       int    `json:"hd_demo_sk"`
+	Hd_buy_potential string `json:"hd_buy_potential"`
+}
+
+func test_TPCDS_Q91_returns() {
+	expect(_equal(result, map[string]any{
+		"Call_Center":      "CC1",
+		"Call_Center_Name": "Main",
+		"Manager":          "Alice",
+		"Returns_Loss":     10.0,
+	}))
+}
+
+type Call_centerItem struct {
+	Cc_call_center_sk int    `json:"cc_call_center_sk"`
+	Cc_call_center_id string `json:"cc_call_center_id"`
+	Cc_name           string `json:"cc_name"`
+	Cc_manager        string `json:"cc_manager"`
+}
+
+var call_center []Call_centerItem
+
+type Catalog_returnsItem struct {
+	Cr_call_center_sk        int     `json:"cr_call_center_sk"`
+	Cr_returned_date_sk      int     `json:"cr_returned_date_sk"`
+	Cr_returning_customer_sk int     `json:"cr_returning_customer_sk"`
+	Cr_net_loss              float64 `json:"cr_net_loss"`
+}
+
+var catalog_returns []Catalog_returnsItem
+
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+	D_moy     int `json:"d_moy"`
+}
+
+var date_dim []Date_dimItem
+
+type CustomerItem struct {
+	C_customer_sk      int `json:"c_customer_sk"`
+	C_current_cdemo_sk int `json:"c_current_cdemo_sk"`
+	C_current_hdemo_sk int `json:"c_current_hdemo_sk"`
+	C_current_addr_sk  int `json:"c_current_addr_sk"`
+}
+
+var customer []CustomerItem
+
+type Customer_demographicsItem struct {
+	Cd_demo_sk          int    `json:"cd_demo_sk"`
+	Cd_marital_status   string `json:"cd_marital_status"`
+	Cd_education_status string `json:"cd_education_status"`
+}
+
+var customer_demographics []Customer_demographicsItem
+
+type Household_demographicsItem struct {
+	Hd_demo_sk       int    `json:"hd_demo_sk"`
+	Hd_buy_potential string `json:"hd_buy_potential"`
+}
+
+var household_demographics []Household_demographicsItem
+
+type Customer_addressItem struct {
+	Ca_address_sk int `json:"ca_address_sk"`
+	Ca_gmt_offset int `json:"ca_gmt_offset"`
+}
+
+var customer_address []Customer_addressItem
+var result any
+
+func main() {
+	failures := 0
+	call_center = _cast[[]Call_centerItem]([]Call_centerItem{Call_centerItem{
+		Cc_call_center_sk: 1,
+		Cc_call_center_id: "CC1",
+		Cc_name:           "Main",
+		Cc_manager:        "Alice",
+	}})
+	catalog_returns = _cast[[]Catalog_returnsItem]([]Catalog_returnsItem{Catalog_returnsItem{
+		Cr_call_center_sk:        1,
+		Cr_returned_date_sk:      1,
+		Cr_returning_customer_sk: 1,
+		Cr_net_loss:              10.0,
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_year:    2001,
+		D_moy:     5,
+	}})
+	customer = _cast[[]CustomerItem]([]CustomerItem{CustomerItem{
+		C_customer_sk:      1,
+		C_current_cdemo_sk: 1,
+		C_current_hdemo_sk: 1,
+		C_current_addr_sk:  1,
+	}})
+	customer_demographics = _cast[[]Customer_demographicsItem]([]Customer_demographicsItem{Customer_demographicsItem{
+		Cd_demo_sk:          1,
+		Cd_marital_status:   "M",
+		Cd_education_status: "Unknown",
+	}})
+	household_demographics = _cast[[]Household_demographicsItem]([]Household_demographicsItem{Household_demographicsItem{
+		Hd_demo_sk:       1,
+		Hd_buy_potential: "1001-5000",
+	}})
+	customer_address = _cast[[]Customer_addressItem]([]Customer_addressItem{Customer_addressItem{
+		Ca_address_sk: 1,
+		Ca_gmt_offset: -6,
+	}})
+	result = _first(_toAnySlice(_convSlice[map[string]any, any](func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, cc := range call_center {
+			for _, cr := range catalog_returns {
+				if !(cc.Cc_call_center_sk == cr.Cr_call_center_sk) {
+					continue
+				}
+				for _, d := range date_dim {
+					if !(cr.Cr_returned_date_sk == d.D_date_sk) {
+						continue
+					}
+					for _, c := range customer {
+						if !(cr.Cr_returning_customer_sk == c.C_customer_sk) {
+							continue
+						}
+						for _, cd := range customer_demographics {
+							if !(c.C_current_cdemo_sk == cd.Cd_demo_sk) {
+								continue
+							}
+							for _, hd := range household_demographics {
+								if !(c.C_current_hdemo_sk == hd.Hd_demo_sk) {
+									continue
+								}
+								for _, ca := range customer_address {
+									if !(c.C_current_addr_sk == ca.Ca_address_sk) {
+										continue
+									}
+									if (((((d.D_year == 2001) && (d.D_moy == 5)) && (cd.Cd_marital_status == "M")) && (cd.Cd_education_status == "Unknown")) && (hd.Hd_buy_potential == "1001-5000")) && (ca.Ca_gmt_offset == (-6)) {
+										key := map[string]string{
+											"id":   cc.Cc_call_center_id,
+											"name": cc.Cc_name,
+											"mgr":  cc.Cc_manager,
+										}
+										ks := fmt.Sprint(key)
+										g, ok := groups[ks]
+										if !ok {
+											g = &data.Group{Key: key}
+											groups[ks] = g
+											order = append(order, ks)
+										}
+										g.Items = append(g.Items, cc)
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"Call_Center":      _cast[map[string]any](g.Key)["id"],
+				"Call_Center_Name": _cast[map[string]any](g.Key)["name"],
+				"Manager":          _cast[map[string]any](g.Key)["mgr"],
+				"Returns_Loss": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["cr_net_loss"])
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}())))
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q91 returns")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q91_returns()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convSlice[T any, U any](s []T) []U {
+	out := make([]U, len(s))
+	for i, v := range s {
+		out[i] = any(v).(U)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func _first(v any) any {
+	if g, ok := v.(*data.Group); ok {
+		if len(g.Items) == 0 {
+			return nil
+		}
+		return g.Items[0]
+	}
+	switch s := v.(type) {
+	case []any:
+		if len(s) == 0 {
+			return nil
+		}
+		return s[0]
+	case []int:
+		if len(s) == 0 {
+			return 0
+		}
+		return s[0]
+	case []float64:
+		if len(s) == 0 {
+			return 0.0
+		}
+		return s[0]
+	case []string:
+		if len(s) == 0 {
+			return ""
+		}
+		return s[0]
+	case []bool:
+		if len(s) == 0 {
+			return false
+		}
+		return s[0]
+	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Slice && rv.Len() > 0 {
+			return rv.Index(0).Interface()
+		}
+		if rv.Kind() == reflect.Array && rv.Len() > 0 {
+			return rv.Index(0).Interface()
+		}
+	}
+	return nil
+}
+
+func _sum(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string, []bool:
+			panic("sum() expects numbers")
+		default:
+			panic("sum() expects list or group")
+		}
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("sum() expects numbers")
+		}
+	}
+	return sum
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}

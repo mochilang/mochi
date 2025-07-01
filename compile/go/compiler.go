@@ -1363,6 +1363,14 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		case isFloat(leftType) && isFloat(rightType):
 			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 			next = types.FloatType{}
+		case isFloat(leftType) && isInt(rightType):
+			right = fmt.Sprintf("float64(%s)", right)
+			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			next = types.FloatType{}
+		case isInt(leftType) && isFloat(rightType):
+			left = fmt.Sprintf("float64(%s)", left)
+			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			next = types.FloatType{}
 		case op == "+" && isAny(leftType) && isList(rightType):
 			rt := rightType.(types.ListType)
 			c.use("_cast")
@@ -3437,6 +3445,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_sliceString")
 		return fmt.Sprintf("_sliceString(%s)", argStr), nil
+	case "lower":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("lower expects 1 arg")
+		}
+		c.use("_lower")
+		return fmt.Sprintf("_lower(%s)", args[0]), nil
+	case "upper":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		c.use("_upper")
+		return fmt.Sprintf("_upper(%s)", args[0]), nil
 	case "reverse":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("reverse expects 1 arg")

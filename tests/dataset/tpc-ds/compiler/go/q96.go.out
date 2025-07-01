@@ -1,0 +1,277 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+type StoreSale struct {
+	Ss_sold_time_sk int `json:"ss_sold_time_sk"`
+	Ss_hdemo_sk     int `json:"ss_hdemo_sk"`
+	Ss_store_sk     int `json:"ss_store_sk"`
+}
+
+type HouseholdDemographics struct {
+	Hd_demo_sk   int `json:"hd_demo_sk"`
+	Hd_dep_count int `json:"hd_dep_count"`
+}
+
+type TimeDim struct {
+	T_time_sk int `json:"t_time_sk"`
+	T_hour    int `json:"t_hour"`
+	T_minute  int `json:"t_minute"`
+}
+
+type Store struct {
+	S_store_sk   int    `json:"s_store_sk"`
+	S_store_name string `json:"s_store_name"`
+}
+
+func test_TPCDS_Q96_count() {
+	expect((result == 3))
+}
+
+type Store_salesItem struct {
+	Ss_sold_time_sk int `json:"ss_sold_time_sk"`
+	Ss_hdemo_sk     int `json:"ss_hdemo_sk"`
+	Ss_store_sk     int `json:"ss_store_sk"`
+}
+
+var store_sales []Store_salesItem
+
+type Household_demographicsItem struct {
+	Hd_demo_sk   int `json:"hd_demo_sk"`
+	Hd_dep_count int `json:"hd_dep_count"`
+}
+
+var household_demographics []Household_demographicsItem
+
+type Time_dimItem struct {
+	T_time_sk int `json:"t_time_sk"`
+	T_hour    int `json:"t_hour"`
+	T_minute  int `json:"t_minute"`
+}
+
+var time_dim []Time_dimItem
+
+type StoreItem struct {
+	S_store_sk   int    `json:"s_store_sk"`
+	S_store_name string `json:"s_store_name"`
+}
+
+var store []StoreItem
+var result int
+
+func main() {
+	failures := 0
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_sold_time_sk: 1,
+		Ss_hdemo_sk:     1,
+		Ss_store_sk:     1,
+	}, Store_salesItem{
+		Ss_sold_time_sk: 1,
+		Ss_hdemo_sk:     1,
+		Ss_store_sk:     1,
+	}, Store_salesItem{
+		Ss_sold_time_sk: 2,
+		Ss_hdemo_sk:     1,
+		Ss_store_sk:     1,
+	}})
+	household_demographics = _cast[[]Household_demographicsItem]([]Household_demographicsItem{Household_demographicsItem{
+		Hd_demo_sk:   1,
+		Hd_dep_count: 3,
+	}})
+	time_dim = _cast[[]Time_dimItem]([]Time_dimItem{Time_dimItem{
+		T_time_sk: 1,
+		T_hour:    20,
+		T_minute:  35,
+	}, Time_dimItem{
+		T_time_sk: 2,
+		T_hour:    20,
+		T_minute:  45,
+	}})
+	store = _cast[[]StoreItem]([]StoreItem{StoreItem{
+		S_store_sk:   1,
+		S_store_name: "ese",
+	}})
+	result = _count(_toAnySlice(func() []Store_salesItem {
+		_res := []Store_salesItem{}
+		for _, ss := range store_sales {
+			for _, hd := range household_demographics {
+				if !(ss.Ss_hdemo_sk == hd.Hd_demo_sk) {
+					continue
+				}
+				for _, t := range time_dim {
+					if !(ss.Ss_sold_time_sk == t.T_time_sk) {
+						continue
+					}
+					for _, s := range store {
+						if !(ss.Ss_store_sk == s.S_store_sk) {
+							continue
+						}
+						if (((t.T_hour == 20) && (t.T_minute >= 30)) && (hd.Hd_dep_count == 3)) && (s.S_store_name == "ese") {
+							if (((t.T_hour == 20) && (t.T_minute >= 30)) && (hd.Hd_dep_count == 3)) && (s.S_store_name == "ese") {
+								_res = append(_res, ss)
+							}
+						}
+					}
+				}
+			}
+		}
+		return _res
+	}()))
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q96 count")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q96_count()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}
