@@ -627,12 +627,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
-	if q.Group != nil && (len(q.Froms) != 0 || len(q.Joins) != 0 || q.Sort != nil || q.Skip != nil || q.Take != nil) {
+	if q.Group != nil {
+		if len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+			if len(q.Joins) == 0 {
+				return c.compileGroupedQueryExpr(q)
+			}
+			return c.compileGroupedQueryWithJoins(q)
+		}
 		return exprRes{}, fmt.Errorf("unsupported query expression")
 	}
-	if q.Group != nil {
-		return c.compileGroupedQueryExpr(q)
-	}
+	return c.compileSimpleQueryExpr(q)
+}
+
+func (c *Compiler) compileSimpleQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 	for _, j := range q.Joins {
 		if j.Side != nil {
 			return exprRes{}, fmt.Errorf("unsupported join side")
@@ -710,8 +717,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 	c.use("tolist")
 	code = append(code, fmt.Sprintf("to_list(%s, %s),", src.val, listVar))
 
-	// Predicate pushdown: filter the source list before joins if the WHERE
-	// clause only references the main query variable.
 	filtered := false
 	if q.Where != nil {
 		varsUsed := exprVars(q.Where)
@@ -850,6 +855,66 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 	}
 
 	return exprRes{code: code, val: resultVar}, nil
+}
+
+func (c *Compiler) compileGroupedQueryWithJoins(q *parser.QueryExpr) (exprRes, error) {
+	inner := *q
+	inner.Group = nil
+	inner.Sort = nil
+	inner.Skip = nil
+	inner.Take = nil
+	inner.Select = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: q.Var}}}}}}
+
+	listRes, err := c.compileSimpleQueryExpr(&inner)
+	if err != nil {
+		return exprRes{}, err
+	}
+
+	var elem types.Type = types.AnyType{}
+	if lt, ok := types.TypeOfExprBasic(q.Source, c.env).(types.ListType); ok {
+		elem = lt.Elem
+	}
+
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, elem, true)
+	origEnv := c.env
+	c.env = child
+	keyLambdaExpr := &parser.FunExpr{Params: []*parser.Param{{Name: q.Var}}, ExprBody: q.Group.Exprs[0]}
+	keyRes, err := c.compileFunExpr(keyLambdaExpr)
+	if err != nil {
+		c.env = origEnv
+		return exprRes{}, err
+	}
+	c.env = origEnv
+
+	genv := types.NewEnv(c.env)
+	genv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+	c.env = genv
+	selRes, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = origEnv
+		return exprRes{}, err
+	}
+	c.env = origEnv
+
+	code := append([]string{}, listRes.code...)
+	listVar := listRes.val
+
+	groupsVar := c.newVar()
+	c.use("group_by")
+	code = append(code, fmt.Sprintf("group_by(%s, %s, %s),", listVar, keyRes.val, groupsVar))
+
+	resultVar := c.newVar()
+	parts := []string{fmt.Sprintf("member(%s, %s)", sanitizeVar(q.Group.Name), groupsVar)}
+	for _, line := range selRes.code {
+		parts = append(parts, strings.TrimSuffix(line, ","))
+	}
+	parts = append(parts, fmt.Sprintf("%s = %s", resultVar, selRes.val))
+	goal := strings.Join(parts, ", ")
+	outVar := c.newVar()
+	code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", resultVar, goal, outVar))
+
+	return exprRes{code: code, val: outVar}, nil
 }
 
 func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (exprRes, error) {
