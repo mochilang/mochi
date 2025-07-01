@@ -133,6 +133,18 @@ const (
 		"    end\n" +
 		"end\n"
 
+	helperExists = "function __exists(v)\n" +
+		"    if type(v) == 'table' then\n" +
+		"        if v.items ~= nil then return #v.items > 0 end\n" +
+		"        if v[1] ~= nil or #v > 0 then return #v > 0 end\n" +
+		"        return next(v) ~= nil\n" +
+		"    elseif type(v) == 'string' then\n" +
+		"        return #v > 0\n" +
+		"    else\n" +
+		"        return false\n" +
+		"    end\n" +
+		"end\n"
+
 	helperAvg = "function __avg(v)\n" +
 		"    local items\n" +
 		"    if type(v) == 'table' and v.items ~= nil then\n" +
@@ -792,6 +804,7 @@ var helperMap = map[string]string{
 	"contains":       helperContains,
 	"input":          helperInput,
 	"count":          helperCount,
+	"exists":         helperExists,
 	"avg":            helperAvg,
 	"sum":            helperSum,
 	"min":            helperMin,

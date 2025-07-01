@@ -1,0 +1,4 @@
+[{"i_product_name":"Prod1","i_brand":"Brand1","qoh":15,"i_class":"Class1","i_category":"Cat1"},{"i_product_name":"Prod2","i_brand":"Brand2","qoh":50,"i_class":"Class2","i_category":"Cat2"}]
+   test TPCDS Q22 average inventory ... fail /tmp/TestLuaCompiler_TPCDS_Goldenq221977254492/001/main.lua:316: expect failed (4.0µs)
+
+[FAIL] 1 test(s) failed.
