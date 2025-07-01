@@ -1,0 +1,223 @@
+import 'dart:io';
+import 'dart:convert';
+
+class StoreSale {
+  int ss_item_sk;
+  double ss_list_price;
+  int ss_quantity;
+  int ss_sold_date_sk;
+  StoreSale({required this.ss_item_sk, required this.ss_list_price, required this.ss_quantity, required this.ss_sold_date_sk});
+  factory StoreSale.fromJson(Map<String,dynamic> m) {
+    return StoreSale(ss_item_sk: m['ss_item_sk'] as int, ss_list_price: m['ss_list_price'] as double, ss_quantity: m['ss_quantity'] as int, ss_sold_date_sk: m['ss_sold_date_sk'] as int);
+  }
+}
+_structParsers['StoreSale'] = (m) => StoreSale.fromJson(m);
+
+class CatalogSale {
+  int cs_item_sk;
+  double cs_list_price;
+  int cs_quantity;
+  int cs_sold_date_sk;
+  CatalogSale({required this.cs_item_sk, required this.cs_list_price, required this.cs_quantity, required this.cs_sold_date_sk});
+  factory CatalogSale.fromJson(Map<String,dynamic> m) {
+    return CatalogSale(cs_item_sk: m['cs_item_sk'] as int, cs_list_price: m['cs_list_price'] as double, cs_quantity: m['cs_quantity'] as int, cs_sold_date_sk: m['cs_sold_date_sk'] as int);
+  }
+}
+_structParsers['CatalogSale'] = (m) => CatalogSale.fromJson(m);
+
+class WebSale {
+  int ws_item_sk;
+  double ws_list_price;
+  int ws_quantity;
+  int ws_sold_date_sk;
+  WebSale({required this.ws_item_sk, required this.ws_list_price, required this.ws_quantity, required this.ws_sold_date_sk});
+  factory WebSale.fromJson(Map<String,dynamic> m) {
+    return WebSale(ws_item_sk: m['ws_item_sk'] as int, ws_list_price: m['ws_list_price'] as double, ws_quantity: m['ws_quantity'] as int, ws_sold_date_sk: m['ws_sold_date_sk'] as int);
+  }
+}
+_structParsers['WebSale'] = (m) => WebSale.fromJson(m);
+
+class Item {
+  int i_item_sk;
+  int i_brand_id;
+  int i_class_id;
+  int i_category_id;
+  Item({required this.i_item_sk, required this.i_brand_id, required this.i_class_id, required this.i_category_id});
+  factory Item.fromJson(Map<String,dynamic> m) {
+    return Item(i_item_sk: m['i_item_sk'] as int, i_brand_id: m['i_brand_id'] as int, i_class_id: m['i_class_id'] as int, i_category_id: m['i_category_id'] as int);
+  }
+}
+_structParsers['Item'] = (m) => Item.fromJson(m);
+
+class DateDim {
+  int d_date_sk;
+  int d_year;
+  int d_moy;
+  DateDim({required this.d_date_sk, required this.d_year, required this.d_moy});
+  factory DateDim.fromJson(Map<String,dynamic> m) {
+    return DateDim(d_date_sk: m['d_date_sk'] as int, d_year: m['d_year'] as int, d_moy: m['d_moy'] as int);
+  }
+}
+_structParsers['DateDim'] = (m) => DateDim.fromJson(m);
+
+void test_TPCDS_Q14_cross_channel() {
+  if (!(_equal(result, [{"channel": "store", "i_brand_id": 1, "i_class_id": 1, "i_category_id": 1, "sales": 60, "number_sales": 1}]))) { throw Exception('expect failed'); }
+}
+
+void main() {
+  int failures = 0;
+  List<Map<String, dynamic>> store_sales = [{"ss_item_sk": 1, "ss_list_price": 10, "ss_quantity": 2, "ss_sold_date_sk": 1}, {"ss_item_sk": 1, "ss_list_price": 20, "ss_quantity": 3, "ss_sold_date_sk": 2}];
+  List<Map<String, dynamic>> catalog_sales = [{"cs_item_sk": 1, "cs_list_price": 10, "cs_quantity": 2, "cs_sold_date_sk": 1}];
+  List<Map<String, dynamic>> web_sales = [{"ws_item_sk": 1, "ws_list_price": 30, "ws_quantity": 1, "ws_sold_date_sk": 1}];
+  List<Map<String, int>> item = [{"i_item_sk": 1, "i_brand_id": 1, "i_class_id": 1, "i_category_id": 1}];
+  List<Map<String, int>> date_dim = [{"d_date_sk": 1, "d_year": 2000, "d_moy": 12}, {"d_date_sk": 2, "d_year": 2002, "d_moy": 11}];
+  List<Map<String, int>> cross_items = [{"ss_item_sk": 1}];
+  double avg_sales = _avg([20, 20, 30]);
+  List<Map<String, dynamic>> store_filtered = (() {
+  var groups = <String,_Group>{};
+  var order = <String>[];
+  for (var ss in store_sales) {
+    for (var d in date_dim) {
+      if (!(((_equal(ss.ss_sold_date_sk, d.d_date_sk) && _equal(d.d_year, 2002)) && _equal(d.d_moy, 11)))) {
+        continue;
+      }
+      if (!((((() {
+  var _res = [];
+  for (var ci in cross_items) {
+    _res.add(ci.ss_item_sk);
+  }
+  return _res;
+})()).contains(ss.ss_item_sk)))) {
+        continue;
+      }
+      var key = {"brand_id": 1, "class_id": 1, "category_id": 1};
+      var ks = key.toString();
+      var g = groups[ks];
+      if (g == null) {
+        g = _Group(key);
+        groups[ks] = g;
+        order.add(ks);
+      }
+      g.Items.add(ss);
+    }
+  }
+  var items = [for (var k in order) groups[k]!];
+  var _res = [];
+  for (var g in items) {
+    _res.add({"channel": "store", "sales": _sum((() {
+  var _res = [];
+  for (var x in g) {
+    _res.add((x.ss_quantity * x.ss_list_price));
+  }
+  return _res;
+})()), "number_sales": _count((() {
+  var _res = [];
+  for (var _ in g) {
+    _res.add(_);
+  }
+  return _res;
+})())});
+  }
+  return _res;
+})();
+  List<Map<String, dynamic>> result = (() {
+  var _res = [];
+  for (var r in store_filtered) {
+    if (!((r.sales > avg_sales))) {
+      continue;
+    }
+    _res.add({"channel": r.channel, "i_brand_id": 1, "i_class_id": 1, "i_category_id": 1, "sales": r.sales, "number_sales": r.number_sales});
+  }
+  return _res;
+})();
+  _json(result);
+  if (!_runTest("TPCDS Q14 cross channel", test_TPCDS_Q14_cross_channel)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+double _avg(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var s = 0.0;
+    for (var n in list) s += (n as num).toDouble();
+    return s / list.length;
+}
+
+int _count(dynamic v) {
+    if (v is String) return v.runes.length;
+    if (v is List) return v.length;
+    if (v is Map) return v.length;
+    try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
+    try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
+    return 0;
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
+double _sum(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var s = 0.0;
+    for (var n in list) s += (n as num).toDouble();
+    return s;
+}
+
+
