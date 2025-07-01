@@ -1363,6 +1363,14 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		case isFloat(leftType) && isFloat(rightType):
 			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 			next = types.FloatType{}
+		case (isInt(leftType) || isInt64(leftType)) && isFloat(rightType):
+			left = fmt.Sprintf("float64(%s)", left)
+			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			next = types.FloatType{}
+		case isFloat(leftType) && (isInt(rightType) || isInt64(rightType)):
+			right = fmt.Sprintf("float64(%s)", right)
+			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
+			next = types.FloatType{}
 		case op == "+" && isAny(leftType) && isList(rightType):
 			rt := rightType.(types.ListType)
 			c.use("_cast")
