@@ -1,0 +1,117 @@
+#[derive(Clone, Debug, Default)]
+struct StoreSale {
+    ss_sold_date_sk: i64,
+    ss_item_sk: i64,
+    ss_customer_sk: i64,
+    ss_store_sk: i64,
+    ss_ext_sales_price: f64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct DateDim {
+    d_date_sk: i64,
+    d_year: i64,
+    d_moy: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Item {
+    i_item_sk: i64,
+    i_brand_id: i64,
+    i_brand: String,
+    i_manufact_id: i64,
+    i_manufact: String,
+    i_manager_id: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Customer {
+    c_customer_sk: i64,
+    c_current_addr_sk: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct CustomerAddress {
+    ca_address_sk: i64,
+    ca_zip: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Store {
+    s_store_sk: i64,
+    s_zip: String,
+}
+
+fn test_TPCDS_Q19_brand() {
+    expect(result == vec![std::collections::HashMap::from([("i_brand".to_string(), "B1"), ("i_brand_id".to_string(), 1), ("i_manufact_id".to_string(), 1), ("i_manufact".to_string(), "M1"), ("ext_price".to_string(), 100.0)])]);
+}
+
+fn main() {
+    let mut store_sales = vec![std::collections::HashMap::from([("ss_sold_date_sk".to_string(), 1), ("ss_item_sk".to_string(), 1), ("ss_customer_sk".to_string(), 1), ("ss_store_sk".to_string(), 1), ("ss_ext_sales_price".to_string(), 100.0)])];
+    let mut date_dim = vec![std::collections::HashMap::from([("d_date_sk".to_string(), 1), ("d_year".to_string(), 1999), ("d_moy".to_string(), 11)])];
+    let mut item = vec![std::collections::HashMap::from([("i_item_sk".to_string(), 1), ("i_brand_id".to_string(), 1), ("i_brand".to_string(), "B1"), ("i_manufact_id".to_string(), 1), ("i_manufact".to_string(), "M1"), ("i_manager_id".to_string(), 10)])];
+    let mut customer = vec![std::collections::HashMap::from([("c_customer_sk".to_string(), 1), ("c_current_addr_sk".to_string(), 1)])];
+    let mut customer_address = vec![std::collections::HashMap::from([("ca_address_sk".to_string(), 1), ("ca_zip".to_string(), "11111")])];
+    let mut store = vec![std::collections::HashMap::from([("s_store_sk".to_string(), 1), ("s_zip".to_string(), "99999")])];
+    let mut result = {
+    let mut _pairs = Vec::new();
+    for d in date_dim.clone() {
+        if !(_map_get(&d, &"d_moy".to_string()) == 11 && _map_get(&d, &"d_year".to_string()) == 1999) { continue; }
+        for ss in store_sales.clone() {
+            if !(_map_get(&ss, &"ss_sold_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string())) { continue; }
+            for i in item.clone() {
+                if !(_map_get(&ss, &"ss_item_sk".to_string()) == _map_get(&i, &"i_item_sk".to_string()) && _map_get(&i, &"i_manager_id".to_string()) == 10) { continue; }
+                for c in customer.clone() {
+                    if !(_map_get(&ss, &"ss_customer_sk".to_string()) == _map_get(&c, &"c_customer_sk".to_string())) { continue; }
+                    for ca in customer_address.clone() {
+                        if !(_map_get(&c, &"c_current_addr_sk".to_string()) == _map_get(&ca, &"ca_address_sk".to_string())) { continue; }
+                        for s in store.clone() {
+                            if !(_map_get(&ss, &"ss_store_sk".to_string()) == _map_get(&s, &"s_store_sk".to_string()) && _slice_string(&_map_get(&ca, &"ca_zip".to_string()), 0, 5) != _slice_string(&_map_get(&s, &"s_zip".to_string()), 0, 5)) { continue; }
+                            if _map_get(&ss, &"ss_sold_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string()) && _map_get(&ss, &"ss_item_sk".to_string()) == _map_get(&i, &"i_item_sk".to_string()) && _map_get(&i, &"i_manager_id".to_string()) == 10 && _map_get(&ss, &"ss_customer_sk".to_string()) == _map_get(&c, &"c_customer_sk".to_string()) && _map_get(&c, &"c_current_addr_sk".to_string()) == _map_get(&ca, &"ca_address_sk".to_string()) && _map_get(&ss, &"ss_store_sk".to_string()) == _map_get(&s, &"s_store_sk".to_string()) && _slice_string(&_map_get(&ca, &"ca_zip".to_string()), 0, 5) != _slice_string(&_map_get(&s, &"s_zip".to_string()), 0, 5) {
+                                _pairs.push((vec![_map_get(&_map_get(&g, &"key".to_string()), &"brand".to_string())], std::collections::HashMap::from([("i_brand".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"brand".to_string())), ("i_brand_id".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"brand_id".to_string())), ("i_manufact_id".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"man_id".to_string())), ("i_manufact".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"man".to_string())), ("ext_price".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"ss_ext_sales_price".to_string()));
+    }
+    _res
+}))])));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    _pairs.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+    let mut _res = Vec::new();
+    for p in _pairs { _res.push(p.1); }
+    _res
+};
+    json(result);
+    test_TPCDS_Q19_brand();
+}
+
+fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {
+    m.get(k).unwrap().clone()
+}
+fn _slice_string(s: &str, start: i64, end: i64) -> String {
+    let mut sidx = start;
+    let mut eidx = end;
+    let chars: Vec<char> = s.chars().collect();
+    let n = chars.len() as i64;
+    if sidx < 0 { sidx += n; }
+    if eidx < 0 { eidx += n; }
+    if sidx < 0 { sidx = 0; }
+    if eidx > n { eidx = n; }
+    if eidx < sidx { eidx = sidx; }
+    chars[sidx as usize..eidx as usize].iter().collect()
+}
+fn _sum<T: Into<f64> + Copy>(v: &[T]) -> f64 {
+    if v.is_empty() { return 0.0 }
+    let mut sum = 0.0;
+    for &it in v { sum += Into::<f64>::into(it); }
+    sum
+}
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}

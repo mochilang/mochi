@@ -46,6 +46,18 @@ const (
 		"    sum\n" +
 		"}\n"
 
+	helperExistsSlice = "fn _exists_slice<T>(v: &[T]) -> bool {\n" +
+		"    !v.is_empty()\n" +
+		"}\n"
+
+	helperExistsMap = "fn _exists_map<K: std::cmp::Eq + std::hash::Hash, V>(m: &std::collections::HashMap<K, V>) -> bool {\n" +
+		"    !m.is_empty()\n" +
+		"}\n"
+
+	helperExistsString = "fn _exists_string(s: &str) -> bool {\n" +
+		"    !s.is_empty()\n" +
+		"}\n"
+
 	helperInMap = "fn _in_map<K: std::cmp::Eq + std::hash::Hash, V>(m: &std::collections::HashMap<K, V>, k: &K) -> bool {\n" +
 		"    m.contains_key(k)\n" +
 		"}\n"
@@ -149,26 +161,29 @@ const (
 )
 
 var helperMap = map[string]string{
-	"_index_string": helperIndexString,
-	"_slice_string": helperSliceString,
-	"_map_get":      helperMapGet,
-	"_count":        helperCount,
-	"_avg":          helperAvg,
-	"_sum":          helperSum,
-	"_in_map":       helperInMap,
-	"_in_string":    helperInString,
-	"_input":        helperInput,
-	"_concat":       helperConcat,
-	"_union_all":    helperUnionAll,
-	"_union":        helperUnion,
-	"_except":       helperExcept,
-	"_intersect":    helperIntersect,
-	"_gen_text":     helperGenText,
-	"_gen_embed":    helperGenEmbed,
-	"_fetch":        helperFetch,
-	"_load":         helperLoad,
-	"_save":         helperSave,
-	"expect":        helperExpect,
+	"_index_string":  helperIndexString,
+	"_slice_string":  helperSliceString,
+	"_map_get":       helperMapGet,
+	"_count":         helperCount,
+	"_avg":           helperAvg,
+	"_sum":           helperSum,
+	"_exists_slice":  helperExistsSlice,
+	"_exists_map":    helperExistsMap,
+	"_exists_string": helperExistsString,
+	"_in_map":        helperInMap,
+	"_in_string":     helperInString,
+	"_input":         helperInput,
+	"_concat":        helperConcat,
+	"_union_all":     helperUnionAll,
+	"_union":         helperUnion,
+	"_except":        helperExcept,
+	"_intersect":     helperIntersect,
+	"_gen_text":      helperGenText,
+	"_gen_embed":     helperGenEmbed,
+	"_fetch":         helperFetch,
+	"_load":          helperLoad,
+	"_save":          helperSave,
+	"expect":         helperExpect,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }

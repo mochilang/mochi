@@ -20,7 +20,7 @@ func TestRustCompiler_TPCDS(t *testing.T) {
 		t.Skipf("rust not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 9; i++ {
+	for i := 1; i <= 19; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")

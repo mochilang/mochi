@@ -864,6 +864,28 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			}
 			return fmt.Sprintf("_count(%s)", src), nil
 		}
+	case "exists":
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			if _, ok := t.(types.GroupType); ok {
+				c.use("_exists_slice")
+				return fmt.Sprintf("_exists_slice(&%s.items)", args[0]), nil
+			}
+			switch t.(type) {
+			case types.ListType:
+				c.use("_exists_slice")
+				return fmt.Sprintf("_exists_slice(&%s)", args[0]), nil
+			case types.MapType:
+				c.use("_exists_map")
+				return fmt.Sprintf("_exists_map(&%s)", args[0]), nil
+			case types.StringType:
+				c.use("_exists_string")
+				return fmt.Sprintf("_exists_string(&%s)", args[0]), nil
+			default:
+				c.use("_exists_slice")
+				return fmt.Sprintf("_exists_slice(&%s)", args[0]), nil
+			}
+		}
 	case "avg":
 		if len(args) == 1 {
 			c.use("_avg")
@@ -881,6 +903,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				src = fmt.Sprintf("&%s.items", args[0])
 			}
 			return fmt.Sprintf("_sum(%s)", src), nil
+		}
+	case "substr", "substring":
+		if len(args) == 3 {
+			c.use("_slice_string")
+			return fmt.Sprintf("_slice_string(%s, %s, %s)", args[0], args[1], args[2]), nil
 		}
 	case "input":
 		if len(args) == 0 {
