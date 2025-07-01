@@ -205,7 +205,7 @@ end`
   list.min
 end`
 
-	helperMax = `def _max(v)
+        helperMax = `def _max(v)
   list = nil
   if v.respond_to?(:Items)
     list = v.Items
@@ -216,6 +216,19 @@ end`
   end
   return 0 if !list || list.empty?
   list.max
+end`
+
+       helperFirst = `def _first(v)
+  list = nil
+  if v.respond_to?(:Items)
+    list = v.Items
+  elsif v.is_a?(Array)
+    list = v
+  elsif v.respond_to?(:to_a)
+    list = v.to_a
+  end
+  return nil if !list || list.empty?
+  list[0]
 end`
 
 	helperEval = `def _eval(code)
@@ -419,8 +432,9 @@ var helperMap = map[string]string{
 	"_genStruct":   helperGenStruct,
 	"_json":        helperJSON,
 	"_min":         helperMin,
-	"_max":         helperMax,
-	"_sum":         helperSum,
+       "_max":         helperMax,
+       "_first":       helperFirst,
+       "_sum":         helperSum,
 	"_eval":        helperEval,
 	"_group":       helperGroup,
 	"_group_by":    helperGroupBy,

@@ -1677,17 +1677,23 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		}
 		c.use("_min")
 		return fmt.Sprintf("_min(%s)", args[0]), true, nil
-	case "max":
-		if len(args) != 1 {
-			return "", true, fmt.Errorf("max expects 1 arg")
-		}
-		c.use("_max")
-		return fmt.Sprintf("_max(%s)", args[0]), true, nil
-	case "json":
-		if len(args) != 1 {
-			return "", true, fmt.Errorf("json expects 1 arg")
-		}
-		c.use("_json")
+        case "max":
+                if len(args) != 1 {
+                        return "", true, fmt.Errorf("max expects 1 arg")
+                }
+                c.use("_max")
+                return fmt.Sprintf("_max(%s)", args[0]), true, nil
+       case "first":
+               if len(args) != 1 {
+                       return "", true, fmt.Errorf("first expects 1 arg")
+               }
+               c.use("_first")
+               return fmt.Sprintf("_first(%s)", args[0]), true, nil
+        case "json":
+                if len(args) != 1 {
+                        return "", true, fmt.Errorf("json expects 1 arg")
+                }
+                c.use("_json")
 		return fmt.Sprintf("_json(%s)", args[0]), true, nil
 	case "input":
 		if len(args) != 0 {
