@@ -1,5 +1,9 @@
 open System
 
+let ss_quantity = "ss_quantity"
+let ss_ext_discount_amt = "ss_ext_discount_amt"
+let ss_net_paid = "ss_net_paid"
+let r_reason_sk = "r_reason_sk"
 let bucket1 = "bucket1"
 let bucket2 = "bucket2"
 let bucket3 = "bucket3"
@@ -48,8 +52,8 @@ let inline _max (xs: seq< ^T >) : ^T when ^T : comparison =
 let count (xs: seq<'T>) : int =
   Seq.length xs
 
-let store_sales = [||]
-let reason = [||]
+let store_sales = [|Map.ofList [(ss_quantity, 5); (ss_ext_discount_amt, 5.0); (ss_net_paid, 7.0)]; Map.ofList [(ss_quantity, 30); (ss_ext_discount_amt, 10.0); (ss_net_paid, 15.0)]; Map.ofList [(ss_quantity, 50); (ss_ext_discount_amt, 20.0); (ss_net_paid, 30.0)]; Map.ofList [(ss_quantity, 70); (ss_ext_discount_amt, 25.0); (ss_net_paid, 35.0)]; Map.ofList [(ss_quantity, 90); (ss_ext_discount_amt, 40.0); (ss_net_paid, 50.0)]|]
+let reason = [|Map.ofList [(r_reason_sk, 1)]|]
 let bucket1 = (if (count 
     [|
     for s in store_sales do
@@ -137,10 +141,10 @@ let result =
             yield Map.ofList [(bucket1, bucket1); (bucket2, bucket2); (bucket3, bucket3); (bucket4, bucket4); (bucket5, bucket5)]
     |]
 ignore (_json result)
-let test_TPCDS_Q9_empty() =
-    if not ((result.Length = 0)) then failwith "expect failed"
+let test_TPCDS_Q9_result() =
+    if not ((result = [|Map.ofList [(bucket1, 7.0); (bucket2, 15.0); (bucket3, 30.0); (bucket4, 35.0); (bucket5, 50.0)]|])) then failwith "expect failed"
 
 let mutable failures = 0
-if not (_run_test "TPCDS Q9 empty" test_TPCDS_Q9_empty) then failures <- failures + 1
+if not (_run_test "TPCDS Q9 result" test_TPCDS_Q9_result) then failures <- failures + 1
 if failures > 0 then
     printfn "\n[FAIL] %d test(s) failed." failures

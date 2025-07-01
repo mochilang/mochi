@@ -1,6 +1,15 @@
 open System
 
+let d_date_sk = "d_date_sk"
 let d_year = "d_year"
+let d_moy = "d_moy"
+let ss_sold_date_sk = "ss_sold_date_sk"
+let ss_item_sk = "ss_item_sk"
+let ss_ext_sales_price = "ss_ext_sales_price"
+let i_item_sk = "i_item_sk"
+let i_manufact_id = "i_manufact_id"
+let i_brand_id = "i_brand_id"
+let i_brand = "i_brand"
 let brand_id = "brand_id"
 let brand = "brand"
 let sum_agg = "sum_agg"
@@ -65,9 +74,9 @@ let inline _max (xs: seq< ^T >) : ^T when ^T : comparison =
 let count (xs: seq<'T>) : int =
   Seq.length xs
 
-let date_dim = [||]
-let store_sales = [||]
-let item = [||]
+let date_dim = [|Map.ofList [(d_date_sk, 1); (d_year, 1998); (d_moy, 12)]|]
+let store_sales = [|Map.ofList [(ss_sold_date_sk, 1); (ss_item_sk, 1); (ss_ext_sales_price, 10.0)]; Map.ofList [(ss_sold_date_sk, 1); (ss_item_sk, 2); (ss_ext_sales_price, 20.0)]|]
+let item = [|Map.ofList [(i_item_sk, 1); (i_manufact_id, 100); (i_brand_id, 1); (i_brand, "Brand1")]; Map.ofList [(i_item_sk, 2); (i_manufact_id, 100); (i_brand_id, 2); (i_brand, "Brand2")]|]
 let result = [| for g in _group_by [|
     for dt in date_dim do
         for ss in store_sales do
@@ -79,17 +88,17 @@ let result = [| for g in _group_by [|
 |] (fun (dt, ss, i) -> Map.ofList [(d_year, dt.d_year); (brand_id, i.i_brand_id); (brand, i.i_brand)]) do let g = g yield ([|g.key.d_year; (-sum 
     [|
     for x in g do
-        yield x.ss.ss_ext_sales_price
+        yield x.ss_ext_sales_price
     |]); g.key.brand_id|], Map.ofList [(d_year, g.key.d_year); (brand_id, g.key.brand_id); (brand, g.key.brand); (sum_agg, sum 
     [|
     for x in g do
-        yield x.ss.ss_ext_sales_price
+        yield x.ss_ext_sales_price
     |])]) |] |> Array.sortBy fst |> Array.map snd
 ignore (_json result)
-let test_TPCDS_Q3_empty() =
-    if not ((result.Length = 0)) then failwith "expect failed"
+let test_TPCDS_Q3_result() =
+    if not ((result = [|Map.ofList [(d_year, 1998); (brand_id, 1); (brand, "Brand1"); (sum_agg, 10.0)]; Map.ofList [(d_year, 1998); (brand_id, 2); (brand, "Brand2"); (sum_agg, 20.0)]|])) then failwith "expect failed"
 
 let mutable failures = 0
-if not (_run_test "TPCDS Q3 empty" test_TPCDS_Q3_empty) then failures <- failures + 1
+if not (_run_test "TPCDS Q3 result" test_TPCDS_Q3_result) then failures <- failures + 1
 if failures > 0 then
     printfn "\n[FAIL] %d test(s) failed." failures
