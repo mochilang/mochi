@@ -967,6 +967,37 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		case "min":
 			c.helpers["min"] = true
 			return fmt.Sprintf("_min(%s)", args[0])
+		case "substr":
+			if len(args) == 3 {
+				c.helpers["sliceStr"] = true
+				return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], args[2])
+			}
+			return fmt.Sprintf("substr(%s)", strings.Join(args, ", "))
+		case "reverse":
+			if len(args) == 1 {
+				typ := InferCppExprType(p.Call.Args[0], c.env, c.getVar)
+				if strings.HasPrefix(typ, "vector<") {
+					c.helpers["reverseVec"] = true
+					return fmt.Sprintf("_reverseVec(%s)", args[0])
+				}
+				if typ == "string" {
+					c.helpers["reverseString"] = true
+					return fmt.Sprintf("_reverseString(%s)", args[0])
+				}
+				c.helpers["reverseVec"] = true
+				return fmt.Sprintf("_reverseVec(%s)", args[0])
+			}
+			return fmt.Sprintf("reverse(%s)", strings.Join(args, ", "))
+		case "concat":
+			if len(args) >= 2 {
+				c.helpers["concat"] = true
+				expr := args[0]
+				for i := 1; i < len(args); i++ {
+					expr = fmt.Sprintf("_concat(%s, %s)", expr, args[i])
+				}
+				return expr
+			}
+			return fmt.Sprintf("concat(%s)", strings.Join(args, ", "))
 		case "json":
 			c.helpers["json"] = true
 			return fmt.Sprintf("_json(%s)", args[0])
@@ -1251,12 +1282,19 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			resType = "any"
 			sel = fmt.Sprintf("any(%s)", sel)
 		}
+		var having string
+		if q.Group.Having != nil {
+			having = c.compileExpr(q.Group.Having)
+		}
 		var buf bytes.Buffer
 		buf.WriteString("([&]() -> vector<" + resType + "> {\n")
 		buf.WriteString("\tauto _src = " + src + ";\n")
 		buf.WriteString("\tauto _groups = _group_by(_src, [&](auto& " + q.Var + "){ return " + key + "; });\n")
 		buf.WriteString("\tvector<" + resType + "> _res;\n")
 		buf.WriteString("\tfor (auto& " + q.Group.Name + " : _groups) {\n")
+		if having != "" {
+			buf.WriteString("\t\tif (!(" + having + ")) continue;\n")
+		}
 		buf.WriteString("\t\t_res.push_back(" + sel + ");\n")
 		buf.WriteString("\t}\n")
 		buf.WriteString("\treturn _res;\n")
@@ -1323,6 +1361,10 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		if q.Take != nil {
 			takeExpr = c.compileExpr(q.Take)
+		}
+		var having string
+		if q.Group.Having != nil {
+			having = c.compileExpr(q.Group.Having)
 		}
 		var cond string
 		var pushIdx int
@@ -1428,6 +1470,9 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		buf.WriteString("\tvector<" + resType + "> _res;\n")
 		buf.WriteString("\tfor (auto* " + q.Group.Name + " : items) {\n")
+		if having != "" {
+			buf.WriteString("\t\tif (!(" + having + ")) continue;\n")
+		}
 		buf.WriteString("\t\t_res.push_back(" + sel + ");\n")
 		buf.WriteString("\t}\n")
 		buf.WriteString("\treturn _res;\n")
