@@ -8,5 +8,4 @@ wrap these `if` expressions is required before `q1` will run successfully.
 Remaining tasks:
 
 - Wrap `if` expressions in `_query` helper with parentheses.
-- Ensure compiled scripts run with `Mix.install([:jason])` for JSON output.
 - Update golden files once the runtime issues are resolved.

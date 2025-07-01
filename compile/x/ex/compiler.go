@@ -581,8 +581,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		var b strings.Builder
 		b.WriteString("(fn ->\n")
-		b.WriteString("\t_src = " + src + "\n")
-		b.WriteString("\t_rows = _query(_src, [\n")
+		b.WriteString("\tsrc = " + src + "\n")
+		b.WriteString("\trows = _query(src, [\n")
 		specs := make([]string, 0, len(fromSrcs)+len(joinSrcs))
 		params := []string{sanitizeName(q.Var)}
 		for i, fs := range fromSrcs {
@@ -624,9 +624,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(", take: " + takeExpr)
 		}
 		b.WriteString(" })\n")
-		b.WriteString(fmt.Sprintf("\t_groups = _group_by(_rows, fn %s -> %s end)\n", allParams, keyExpr))
-		b.WriteString(fmt.Sprintf("\t_groups = Enum.map(_groups, fn g -> %%{g | Items: Enum.map(g.Items, fn [%s] -> %s end)} end)\n", allParams, sanitizeName(q.Var)))
-		b.WriteString("\titems = _groups\n")
+		b.WriteString(fmt.Sprintf("\tgroups = _group_by(rows, fn %s -> %s end)\n", allParams, keyExpr))
+		b.WriteString(fmt.Sprintf("\tgroups = Enum.map(groups, fn g -> %%{g | items: Enum.map(g.items, fn [%s] -> %s end)} end)\n", allParams, sanitizeName(q.Var)))
+		b.WriteString("\titems = groups\n")
 		if sortExpr != "" {
 			b.WriteString(fmt.Sprintf("\titems = Enum.sort_by(items, fn %s -> %s end)\n", sanitizeName(q.Group.Name), sortExpr))
 		}
@@ -717,8 +717,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		var b strings.Builder
 		b.WriteString("(fn ->\n")
-		b.WriteString("\t_src = " + src + "\n")
-		b.WriteString("\t_query(_src, [\n")
+		b.WriteString("\tsrc = " + src + "\n")
+		b.WriteString("\t_query(src, [\n")
 		for i, j := range joins {
 			b.WriteString("\t\t" + j)
 			if i != len(joins)-1 {
