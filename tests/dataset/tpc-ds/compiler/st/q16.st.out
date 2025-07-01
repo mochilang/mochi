@@ -1,0 +1,167 @@
+Smalltalk at: #call_center put: nil.
+Smalltalk at: #catalog_returns put: nil.
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #filtered put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newCatalogSale: cs_order_number cs_ship_date_sk: cs_ship_date_sk cs_ship_addr_sk: cs_ship_addr_sk cs_call_center_sk: cs_call_center_sk cs_warehouse_sk: cs_warehouse_sk cs_ext_ship_cost: cs_ext_ship_cost cs_net_profit: cs_net_profit | dict |
+    dict := Dictionary new.
+    dict at: 'cs_order_number' put: cs_order_number.
+    dict at: 'cs_ship_date_sk' put: cs_ship_date_sk.
+    dict at: 'cs_ship_addr_sk' put: cs_ship_addr_sk.
+    dict at: 'cs_call_center_sk' put: cs_call_center_sk.
+    dict at: 'cs_warehouse_sk' put: cs_warehouse_sk.
+    dict at: 'cs_ext_ship_cost' put: cs_ext_ship_cost.
+    dict at: 'cs_net_profit' put: cs_net_profit.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_date: d_date | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_date' put: d_date.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomerAddress: ca_address_sk ca_state: ca_state | dict |
+    dict := Dictionary new.
+    dict at: 'ca_address_sk' put: ca_address_sk.
+    dict at: 'ca_state' put: ca_state.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCallCenter: cc_call_center_sk cc_county: cc_county | dict |
+    dict := Dictionary new.
+    dict at: 'cc_call_center_sk' put: cc_call_center_sk.
+    dict at: 'cc_county' put: cc_county.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCatalogReturn: cr_order_number | dict |
+    dict := Dictionary new.
+    dict at: 'cr_order_number' put: cr_order_number.
+    ^ dict
+!
+!Main class methodsFor: 'mochi'!
+distinct: xs | out x |
+    out := Array new.
+    (xs) do: [:x |
+        ((contains value: out value: x) not) ifTrue: [
+            out := (out copyWith: x).
+        ]
+        .
+    ]
+    .
+    ^ out
+!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q16_shipping
+    ((filtered = Array with: (Dictionary from: {'order_count' -> 1. 'total_shipping_cost' -> 5.000000. 'total_net_profit' -> 20.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+catalog_sales := Array with: (Dictionary from: {'cs_order_number' -> 1. 'cs_ship_date_sk' -> 1. 'cs_ship_addr_sk' -> 1. 'cs_call_center_sk' -> 1. 'cs_warehouse_sk' -> 1. 'cs_ext_ship_cost' -> 5.000000. 'cs_net_profit' -> 20.000000}) with: (Dictionary from: {'cs_order_number' -> 1. 'cs_ship_date_sk' -> 1. 'cs_ship_addr_sk' -> 1. 'cs_call_center_sk' -> 1. 'cs_warehouse_sk' -> 2. 'cs_ext_ship_cost' -> 0.000000. 'cs_net_profit' -> 0.000000}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_date' -> '2000-03-01'}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_state' -> 'CA'}).
+call_center := Array with: (Dictionary from: {'cc_call_center_sk' -> 1. 'cc_county' -> 'CountyA'}).
+catalog_returns := Array new.
+filtered := ((| rows groups |
+rows := OrderedCollection new.
+(catalog_sales) do: [:cs1 |
+    (((exists value: ((| res |
+res := OrderedCollection new.
+((catalog_sales) select: [:cs2 | (((cs1 at: 'cs_order_number' = cs2 at: 'cs_order_number') and: [cs1 at: 'cs_warehouse_sk']) ~= cs2 at: 'cs_warehouse_sk')]) do: [:cs2 |
+    res add: cs2.
+]
+res := res asArray.
+res)) and: [exists value: ((| res |
+res := OrderedCollection new.
+((catalog_returns) select: [:cr | (cs1 at: 'cs_order_number' = cr at: 'cr_order_number')]) do: [:cr |
+    res add: cr.
+]
+res := res asArray.
+res))]) = false)) ifTrue: [ rows add: cs1 ].
+]
+groups := (Main _group_by: rows keyFn: [:cs1 | Dictionary new]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'order_count' -> ((Main distinct: (((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'cs_order_number'.
+]
+res := res asArray.
+res))))) size. 'total_shipping_cost' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'cs_ext_ship_cost'.
+]
+res := res asArray.
+res))). 'total_net_profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'cs_net_profit'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+(filtered toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q16_shipping.

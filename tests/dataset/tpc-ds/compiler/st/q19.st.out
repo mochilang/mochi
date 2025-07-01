@@ -1,0 +1,119 @@
+Smalltalk at: #customer put: nil.
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newStoreSale: ss_sold_date_sk ss_item_sk: ss_item_sk ss_customer_sk: ss_customer_sk ss_store_sk: ss_store_sk ss_ext_sales_price: ss_ext_sales_price | dict |
+    dict := Dictionary new.
+    dict at: 'ss_sold_date_sk' put: ss_sold_date_sk.
+    dict at: 'ss_item_sk' put: ss_item_sk.
+    dict at: 'ss_customer_sk' put: ss_customer_sk.
+    dict at: 'ss_store_sk' put: ss_store_sk.
+    dict at: 'ss_ext_sales_price' put: ss_ext_sales_price.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_year: d_year d_moy: d_moy | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_year' put: d_year.
+    dict at: 'd_moy' put: d_moy.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newItem: i_item_sk i_brand_id: i_brand_id i_brand: i_brand i_manufact_id: i_manufact_id i_manufact: i_manufact i_manager_id: i_manager_id | dict |
+    dict := Dictionary new.
+    dict at: 'i_item_sk' put: i_item_sk.
+    dict at: 'i_brand_id' put: i_brand_id.
+    dict at: 'i_brand' put: i_brand.
+    dict at: 'i_manufact_id' put: i_manufact_id.
+    dict at: 'i_manufact' put: i_manufact.
+    dict at: 'i_manager_id' put: i_manager_id.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomer: c_customer_sk c_current_addr_sk: c_current_addr_sk | dict |
+    dict := Dictionary new.
+    dict at: 'c_customer_sk' put: c_customer_sk.
+    dict at: 'c_current_addr_sk' put: c_current_addr_sk.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomerAddress: ca_address_sk ca_zip: ca_zip | dict |
+    dict := Dictionary new.
+    dict at: 'ca_address_sk' put: ca_address_sk.
+    dict at: 'ca_zip' put: ca_zip.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newStore: s_store_sk s_zip: s_zip | dict |
+    dict := Dictionary new.
+    dict at: 's_store_sk' put: s_store_sk.
+    dict at: 's_zip' put: s_zip.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q19_brand
+    ((result = Array with: (Dictionary from: {'i_brand' -> 'B1'. 'i_brand_id' -> 1. 'i_manufact_id' -> 1. 'i_manufact' -> 'M1'. 'ext_price' -> 100.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__slice_string: s start: i end: j
+    | start end n |
+    start := i.
+    end := j.
+    n := s size.
+    start < 0 ifTrue: [ start := start + n ].
+    end < 0 ifTrue: [ end := end + n ].
+    start < 0 ifTrue: [ start := 0 ].
+    end > n ifTrue: [ end := n ].
+    end < start ifTrue: [ end := start ].
+    ^ (s copyFrom: start + 1 to: end)
+!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_sold_date_sk' -> 1. 'ss_item_sk' -> 1. 'ss_customer_sk' -> 1. 'ss_store_sk' -> 1. 'ss_ext_sales_price' -> 100.000000}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 1999. 'd_moy' -> 11}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_brand_id' -> 1. 'i_brand' -> 'B1'. 'i_manufact_id' -> 1. 'i_manufact' -> 'M1'. 'i_manager_id' -> 10}).
+customer := Array with: (Dictionary from: {'c_customer_sk' -> 1. 'c_current_addr_sk' -> 1}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_zip' -> '11111'}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1. 's_zip' -> '99999'}).
+result := ((| res |
+res := OrderedCollection new.
+((date_dim) select: [:d | ((((((((d at: 'd_moy' = 11) and: [d at: 'd_year']) = 1999) and: [(ss at: 'ss_sold_date_sk' = d at: 'd_date_sk')]) and: [(((ss at: 'ss_item_sk' = i at: 'i_item_sk') and: [i at: 'i_manager_id']) = 10)]) and: [(ss at: 'ss_customer_sk' = c at: 'c_customer_sk')]) and: [(c at: 'c_current_addr_sk' = ca at: 'ca_address_sk')]) and: [(((ss at: 'ss_store_sk' = s at: 's_store_sk') and: [(Main __slice_string: ca at: 'ca_zip' start: 0 end: 0 + 5)]) ~= (Main __slice_string: s at: 's_zip' start: 0 end: 0 + 5))])]) do: [:d |
+    (store_sales) do: [:ss |
+        (item) do: [:i |
+            (customer) do: [:c |
+                (customer_address) do: [:ca |
+                    (store) do: [:s |
+                        res add: { Array with: (g at: 'key' at: 'brand') . Dictionary from: {'i_brand' -> g at: 'key' at: 'brand'. 'i_brand_id' -> g at: 'key' at: 'brand_id'. 'i_manufact_id' -> g at: 'key' at: 'man_id'. 'i_manufact' -> g at: 'key' at: 'man'. 'ext_price' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_ext_sales_price'.
+]
+res := res asArray.
+res)))} }.
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q19_brand.

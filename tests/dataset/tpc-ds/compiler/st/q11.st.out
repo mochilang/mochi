@@ -1,0 +1,86 @@
+Smalltalk at: #customer put: nil.
+Smalltalk at: #growth_ok put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #ss98 put: nil.
+Smalltalk at: #ss99 put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #web_sales put: nil.
+Smalltalk at: #ws98 put: nil.
+Smalltalk at: #ws99 put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newCustomer: c_customer_sk c_customer_id: c_customer_id c_first_name: c_first_name c_last_name: c_last_name | dict |
+    dict := Dictionary new.
+    dict at: 'c_customer_sk' put: c_customer_sk.
+    dict at: 'c_customer_id' put: c_customer_id.
+    dict at: 'c_first_name' put: c_first_name.
+    dict at: 'c_last_name' put: c_last_name.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newStoreSale: ss_customer_sk ss_sold_date_sk: ss_sold_date_sk ss_ext_list_price: ss_ext_list_price | dict |
+    dict := Dictionary new.
+    dict at: 'ss_customer_sk' put: ss_customer_sk.
+    dict at: 'ss_sold_date_sk' put: ss_sold_date_sk.
+    dict at: 'ss_ext_list_price' put: ss_ext_list_price.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newWebSale: ws_bill_customer_sk ws_sold_date_sk: ws_sold_date_sk ws_ext_list_price: ws_ext_list_price | dict |
+    dict := Dictionary new.
+    dict at: 'ws_bill_customer_sk' put: ws_bill_customer_sk.
+    dict at: 'ws_sold_date_sk' put: ws_sold_date_sk.
+    dict at: 'ws_ext_list_price' put: ws_ext_list_price.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q11_growth
+    ((result = Array with: (Dictionary from: {'customer_id' -> 'C1'. 'customer_first_name' -> 'John'. 'customer_last_name' -> 'Doe'}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+!!
+customer := Array with: (Dictionary from: {'c_customer_sk' -> 1. 'c_customer_id' -> 'C1'. 'c_first_name' -> 'John'. 'c_last_name' -> 'Doe'}).
+store_sales := Array with: (Dictionary from: {'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1998. 'ss_ext_list_price' -> 60.000000}) with: (Dictionary from: {'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1999. 'ss_ext_list_price' -> 90.000000}).
+web_sales := Array with: (Dictionary from: {'ws_bill_customer_sk' -> 1. 'ws_sold_date_sk' -> 1998. 'ws_ext_list_price' -> 50.000000}) with: (Dictionary from: {'ws_bill_customer_sk' -> 1. 'ws_sold_date_sk' -> 1999. 'ws_ext_list_price' -> 150.000000}).
+ss98 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | (ss at: 'ss_sold_date_sk' = 1998)]) do: [:ss |
+    res add: ss at: 'ss_ext_list_price'.
+]
+res := res asArray.
+res))).
+ss99 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | (ss at: 'ss_sold_date_sk' = 1999)]) do: [:ss |
+    res add: ss at: 'ss_ext_list_price'.
+]
+res := res asArray.
+res))).
+ws98 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((web_sales) select: [:ws | (ws at: 'ws_sold_date_sk' = 1998)]) do: [:ws |
+    res add: ws at: 'ws_ext_list_price'.
+]
+res := res asArray.
+res))).
+ws99 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((web_sales) select: [:ws | (ws at: 'ws_sold_date_sk' = 1999)]) do: [:ws |
+    res add: ws at: 'ws_ext_list_price'.
+]
+res := res asArray.
+res))).
+growth_ok := (((((ws98 > 0) and: [ss98]) > 0) and: [((ws99 / ws98))]) > ((ss99 / ss98))).
+result := ((growth_ok) ifTrue: [Array with: (Dictionary from: {'customer_id' -> 'C1'. 'customer_first_name' -> 'John'. 'customer_last_name' -> 'Doe'})] ifFalse: [Array new]).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q11_growth.

@@ -1,0 +1,186 @@
+Smalltalk at: #active put: nil.
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #customer put: nil.
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #customer_demographics put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #web_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newCustomer: c_customer_sk c_current_addr_sk: c_current_addr_sk c_current_cdemo_sk: c_current_cdemo_sk | dict |
+    dict := Dictionary new.
+    dict at: 'c_customer_sk' put: c_customer_sk.
+    dict at: 'c_current_addr_sk' put: c_current_addr_sk.
+    dict at: 'c_current_cdemo_sk' put: c_current_cdemo_sk.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomerAddress: ca_address_sk ca_county: ca_county | dict |
+    dict := Dictionary new.
+    dict at: 'ca_address_sk' put: ca_address_sk.
+    dict at: 'ca_county' put: ca_county.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomerDemographics: cd_demo_sk cd_gender: cd_gender cd_marital_status: cd_marital_status cd_education_status: cd_education_status cd_purchase_estimate: cd_purchase_estimate cd_credit_rating: cd_credit_rating cd_dep_count: cd_dep_count cd_dep_employed_count: cd_dep_employed_count cd_dep_college_count: cd_dep_college_count | dict |
+    dict := Dictionary new.
+    dict at: 'cd_demo_sk' put: cd_demo_sk.
+    dict at: 'cd_gender' put: cd_gender.
+    dict at: 'cd_marital_status' put: cd_marital_status.
+    dict at: 'cd_education_status' put: cd_education_status.
+    dict at: 'cd_purchase_estimate' put: cd_purchase_estimate.
+    dict at: 'cd_credit_rating' put: cd_credit_rating.
+    dict at: 'cd_dep_count' put: cd_dep_count.
+    dict at: 'cd_dep_employed_count' put: cd_dep_employed_count.
+    dict at: 'cd_dep_college_count' put: cd_dep_college_count.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newStoreSale: ss_customer_sk ss_sold_date_sk: ss_sold_date_sk | dict |
+    dict := Dictionary new.
+    dict at: 'ss_customer_sk' put: ss_customer_sk.
+    dict at: 'ss_sold_date_sk' put: ss_sold_date_sk.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_year: d_year d_moy: d_moy | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_year' put: d_year.
+    dict at: 'd_moy' put: d_moy.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q10_demographics_count
+    ((result = Array with: (Dictionary from: {'cd_gender' -> 'F'. 'cd_marital_status' -> 'M'. 'cd_education_status' -> 'College'. 'cnt1' -> 1. 'cd_purchase_estimate' -> 5000. 'cnt2' -> 1. 'cd_credit_rating' -> 'Good'. 'cnt3' -> 1. 'cd_dep_count' -> 1. 'cnt4' -> 1. 'cd_dep_employed_count' -> 1. 'cnt5' -> 1. 'cd_dep_college_count' -> 0. 'cnt6' -> 1}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__count: v
+    (v respondsTo: #size) ifTrue: [ ^ v size ]
+    ^ self error: 'count() expects collection'
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+customer := Array with: (Dictionary from: {'c_customer_sk' -> 1. 'c_current_addr_sk' -> 1. 'c_current_cdemo_sk' -> 1}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_county' -> 'CountyA'}).
+customer_demographics := Array with: (Dictionary from: {'cd_demo_sk' -> 1. 'cd_gender' -> 'F'. 'cd_marital_status' -> 'M'. 'cd_education_status' -> 'College'. 'cd_purchase_estimate' -> 5000. 'cd_credit_rating' -> 'Good'. 'cd_dep_count' -> 1. 'cd_dep_employed_count' -> 1. 'cd_dep_college_count' -> 0}).
+store_sales := Array with: (Dictionary from: {'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1}).
+web_sales := Array new.
+catalog_sales := Array new.
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 2000. 'd_moy' -> 2}).
+active := ((| res |
+res := OrderedCollection new.
+((customer) select: [:c | ((exists value: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | ((((((((ss at: 'ss_customer_sk' = c at: 'c_customer_sk') and: [d at: 'd_year']) = 2000) and: [d at: 'd_moy']) >= 2) and: [d at: 'd_moy']) <= 5) and: [(ss at: 'ss_sold_date_sk' = d at: 'd_date_sk')])]) do: [:ss |
+    (date_dim) do: [:d |
+        res add: ss.
+    ]
+]
+res := res asArray.
+res)) and: [(((c at: 'c_current_addr_sk' = ca at: 'ca_address_sk') and: [ca at: 'ca_county']) = 'CountyA')]) and: [(c at: 'c_current_cdemo_sk' = cd at: 'cd_demo_sk')])]) do: [:c |
+    (customer_address) do: [:ca |
+        (customer_demographics) do: [:cd |
+            res add: cd.
+        ]
+    ]
+]
+res := res asArray.
+res)).
+result := ((| rows groups |
+rows := OrderedCollection new.
+(active) do: [:a |
+    rows add: a.
+]
+groups := (Main _group_by: rows keyFn: [:a | Dictionary from: {'gender' -> a at: 'cd_gender'. 'marital' -> a at: 'cd_marital_status'. 'education' -> a at: 'cd_education_status'. 'purchase' -> a at: 'cd_purchase_estimate'. 'credit' -> a at: 'cd_credit_rating'. 'dep' -> a at: 'cd_dep_count'. 'depemp' -> a at: 'cd_dep_employed_count'. 'depcol' -> a at: 'cd_dep_college_count'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'cd_gender' -> g at: 'key' at: 'gender'. 'cd_marital_status' -> g at: 'key' at: 'marital'. 'cd_education_status' -> g at: 'key' at: 'education'. 'cnt1' -> (Main __count: ((| res |
+res := OrderedCollection new.
+(g) do: [:_ |
+    res add: _.
+]
+res := res asArray.
+res))). 'cd_purchase_estimate' -> g at: 'key' at: 'purchase'. 'cnt2' -> (Main __count: ((| res |
+res := OrderedCollection new.
+(g) do: [:_ |
+    res add: _.
+]
+res := res asArray.
+res))). 'cd_credit_rating' -> g at: 'key' at: 'credit'. 'cnt3' -> (Main __count: ((| res |
+res := OrderedCollection new.
+(g) do: [:_ |
+    res add: _.
+]
+res := res asArray.
+res))). 'cd_dep_count' -> g at: 'key' at: 'dep'. 'cnt4' -> (Main __count: ((| res |
+res := OrderedCollection new.
+(g) do: [:_ |
+    res add: _.
+]
+res := res asArray.
+res))). 'cd_dep_employed_count' -> g at: 'key' at: 'depemp'. 'cnt5' -> (Main __count: ((| res |
+res := OrderedCollection new.
+(g) do: [:_ |
+    res add: _.
+]
+res := res asArray.
+res))). 'cd_dep_college_count' -> g at: 'key' at: 'depcol'. 'cnt6' -> (Main __count: ((| res |
+res := OrderedCollection new.
+(g) do: [:_ |
+    res add: _.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q10_demographics_count.
