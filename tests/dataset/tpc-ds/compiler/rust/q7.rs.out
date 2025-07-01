@@ -1,13 +1,13 @@
-fn test_TPCDS_Q7_empty() {
-    expect(result.len() as i64 == 0);
+fn test_TPCDS_Q7_result() {
+    expect(result == vec![std::collections::HashMap::from([("i_item_id".to_string(), "I1"), ("agg1".to_string(), 5.0), ("agg2".to_string(), 10.0), ("agg3".to_string(), 2.0), ("agg4".to_string(), 8.0)])]);
 }
 
 fn main() {
-    let mut store_sales = vec![];
-    let mut customer_demographics = vec![];
-    let mut date_dim = vec![];
-    let mut item = vec![];
-    let mut promotion = vec![];
+    let mut store_sales = vec![std::collections::HashMap::from([("ss_cdemo_sk".to_string(), 1), ("ss_sold_date_sk".to_string(), 1), ("ss_item_sk".to_string(), 1), ("ss_promo_sk".to_string(), 1), ("ss_quantity".to_string(), 5), ("ss_list_price".to_string(), 10.0), ("ss_coupon_amt".to_string(), 2.0), ("ss_sales_price".to_string(), 8.0)])];
+    let mut customer_demographics = vec![std::collections::HashMap::from([("cd_demo_sk".to_string(), 1), ("cd_gender".to_string(), "M"), ("cd_marital_status".to_string(), "S"), ("cd_education_status".to_string(), "College")])];
+    let mut date_dim = vec![std::collections::HashMap::from([("d_date_sk".to_string(), 1), ("d_year".to_string(), 1998)])];
+    let mut item = vec![std::collections::HashMap::from([("i_item_sk".to_string(), 1), ("i_item_id".to_string(), "I1")])];
+    let mut promotion = vec![std::collections::HashMap::from([("p_promo_sk".to_string(), 1), ("p_channel_email".to_string(), "N"), ("p_channel_event".to_string(), "Y")])];
     let mut result = {
     let mut _pairs = Vec::new();
     for ss in store_sales.clone() {
@@ -57,7 +57,7 @@ fn main() {
     _res
 };
     json(result);
-    test_TPCDS_Q7_empty();
+    test_TPCDS_Q7_result();
 }
 
 fn _avg<T: Into<f64> + Copy>(v: &[T]) -> f64 {

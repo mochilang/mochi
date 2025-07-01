@@ -1,21 +1,20 @@
-fn test_TPCDS_Q1_empty() {
-    expect(result.len() as i64 == 0);
+fn test_TPCDS_Q1_result() {
+    expect(result == vec![std::collections::HashMap::from([("c_customer_id".to_string(), "C2")])]);
 }
 
 fn main() {
-    let mut store_returns = vec![];
-    let mut date_dim = vec![];
-    let mut store = vec![];
-    let mut customer = vec![];
+    let mut store_returns = vec![std::collections::HashMap::from([("sr_returned_date_sk".to_string(), 1), ("sr_customer_sk".to_string(), 1), ("sr_store_sk".to_string(), 10), ("sr_return_amt".to_string(), 20.0)]), std::collections::HashMap::from([("sr_returned_date_sk".to_string(), 1), ("sr_customer_sk".to_string(), 2), ("sr_store_sk".to_string(), 10), ("sr_return_amt".to_string(), 50.0)])];
+    let mut date_dim = vec![std::collections::HashMap::from([("d_date_sk".to_string(), 1), ("d_year".to_string(), 1998)])];
+    let mut store = vec![std::collections::HashMap::from([("s_store_sk".to_string(), 10), ("s_state".to_string(), "TN")])];
+    let mut customer = vec![std::collections::HashMap::from([("c_customer_sk".to_string(), 1), ("c_customer_id".to_string(), "C1")]), std::collections::HashMap::from([("c_customer_sk".to_string(), 2), ("c_customer_id".to_string(), "C2")])];
     let mut customer_total_return = {
     #[derive(Clone, Debug)]
-    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::boxed::Box<dyn std::any::Any>> }
+    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> }
     let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
     let mut order: Vec<String> = Vec::new();
     for sr in store_returns.clone() {
         for d in date_dim.clone() {
-            if !(_map_get(&sr, &"sr_returned_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string())) { continue; }
-            if !(_map_get(&d, &"d_year".to_string()) == 1998) { continue; }
+            if !(_map_get(&sr, &"sr_returned_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string()) && _map_get(&d, &"d_year".to_string()) == 1998) { continue; }
             let key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>> = std::collections::HashMap::from([("customer_sk".to_string(), _map_get(&sr, &"sr_customer_sk".to_string())), ("store_sk".to_string(), _map_get(&sr, &"sr_store_sk".to_string()))]);
             let ks = format!("{:?}", key.clone());
             if !groups.contains_key(&ks) {
@@ -66,7 +65,7 @@ fn main() {
     _res
 };
     json(result);
-    test_TPCDS_Q1_empty();
+    test_TPCDS_Q1_result();
 }
 
 fn _avg<T: Into<f64> + Copy>(v: &[T]) -> f64 {

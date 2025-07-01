@@ -1,11 +1,11 @@
-fn test_TPCDS_Q2_empty() {
-    expect(result.len() as i64 == 0);
+fn test_TPCDS_Q2_result() {
+    expect(result == vec![std::collections::HashMap::from([("d_week_seq1".to_string(), 1), ("sun_ratio".to_string(), 0.5), ("mon_ratio".to_string(), 0.5)])]);
 }
 
 fn main() {
-    let mut web_sales = vec![];
-    let mut catalog_sales = vec![];
-    let mut date_dim = vec![];
+    let mut web_sales = vec![std::collections::HashMap::from([("ws_sold_date_sk".to_string(), 1), ("ws_ext_sales_price".to_string(), 5.0), ("ws_sold_date_name".to_string(), "Sunday")]), std::collections::HashMap::from([("ws_sold_date_sk".to_string(), 2), ("ws_ext_sales_price".to_string(), 5.0), ("ws_sold_date_name".to_string(), "Monday")]), std::collections::HashMap::from([("ws_sold_date_sk".to_string(), 8), ("ws_ext_sales_price".to_string(), 10.0), ("ws_sold_date_name".to_string(), "Sunday")]), std::collections::HashMap::from([("ws_sold_date_sk".to_string(), 9), ("ws_ext_sales_price".to_string(), 10.0), ("ws_sold_date_name".to_string(), "Monday")])];
+    let mut catalog_sales = vec![std::collections::HashMap::from([("cs_sold_date_sk".to_string(), 1), ("cs_ext_sales_price".to_string(), 5.0), ("cs_sold_date_name".to_string(), "Sunday")]), std::collections::HashMap::from([("cs_sold_date_sk".to_string(), 2), ("cs_ext_sales_price".to_string(), 5.0), ("cs_sold_date_name".to_string(), "Monday")]), std::collections::HashMap::from([("cs_sold_date_sk".to_string(), 8), ("cs_ext_sales_price".to_string(), 10.0), ("cs_sold_date_name".to_string(), "Sunday")]), std::collections::HashMap::from([("cs_sold_date_sk".to_string(), 9), ("cs_ext_sales_price".to_string(), 10.0), ("cs_sold_date_name".to_string(), "Monday")])];
+    let mut date_dim = vec![std::collections::HashMap::from([("d_date_sk".to_string(), 1), ("d_week_seq".to_string(), 1), ("d_day_name".to_string(), "Sunday"), ("d_year".to_string(), 1998)]), std::collections::HashMap::from([("d_date_sk".to_string(), 2), ("d_week_seq".to_string(), 1), ("d_day_name".to_string(), "Monday"), ("d_year".to_string(), 1998)]), std::collections::HashMap::from([("d_date_sk".to_string(), 8), ("d_week_seq".to_string(), 54), ("d_day_name".to_string(), "Sunday"), ("d_year".to_string(), 1999)]), std::collections::HashMap::from([("d_date_sk".to_string(), 9), ("d_week_seq".to_string(), 54), ("d_day_name".to_string(), "Monday"), ("d_year".to_string(), 1999)])];
     let mut wscs = _union(&({
     let mut _res = Vec::new();
     for ws in web_sales {
@@ -93,9 +93,36 @@ fn main() {
     _res
 }
 ;
-    let mut result = vec![];
+    let mut year1 = {
+    let mut _res = Vec::new();
+    for w in wswscs {
+        if !(_map_get(&w, &"d_week_seq".to_string()) == 1) { continue; }
+        _res.push(w);
+    }
+    _res
+};
+    let mut year2 = {
+    let mut _res = Vec::new();
+    for w in wswscs {
+        if !(_map_get(&w, &"d_week_seq".to_string()) == 54) { continue; }
+        _res.push(w);
+    }
+    _res
+};
+    let mut result = {
+    let mut _res = Vec::new();
+    for y in year1.clone() {
+        for z in year2.clone() {
+            if !(_map_get(&y, &"d_week_seq".to_string()) == _map_get(&z, &"d_week_seq".to_string()) - 53) { continue; }
+            if _map_get(&y, &"d_week_seq".to_string()) == _map_get(&z, &"d_week_seq".to_string()) - 53 {
+                _res.push(std::collections::HashMap::from([("d_week_seq1".to_string(), _map_get(&y, &"d_week_seq".to_string())), ("sun_ratio".to_string(), _map_get(&y, &"sun_sales".to_string()) / _map_get(&z, &"sun_sales".to_string())), ("mon_ratio".to_string(), _map_get(&y, &"mon_sales".to_string()) / _map_get(&z, &"mon_sales".to_string()))]));
+            }
+        }
+    }
+    _res
+};
     json(result);
-    test_TPCDS_Q2_empty();
+    test_TPCDS_Q2_result();
 }
 
 fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {
