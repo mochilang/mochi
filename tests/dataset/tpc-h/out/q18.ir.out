@@ -2,11 +2,11 @@ func main (regs=222)
   // let nation = [
   Const        r0, [{"n_name": "GERMANY", "n_nationkey": 1}]
   // let customer = [
-  Const        r1, [{"c_acctbal": 1000, "c_address": "123 Market St", "c_comment": "Premium client", "c_custkey": 1, "c_name": "Alice", "c_nationkey": 1, "c_phone": "123-456"}, {"c_acctbal": 200, "c_address": "456 Side St", "c_comment": "Frequent returns", "c_custkey": 2, "c_name": "Bob", "c_nationkey": 1, "c_phone": "987-654"}]
+  Const        r1, [{"c_acctbal": 1000.0, "c_address": "123 Market St", "c_comment": "Premium client", "c_custkey": 1, "c_name": "Alice", "c_nationkey": 1, "c_phone": "123-456"}, {"c_acctbal": 200.0, "c_address": "456 Side St", "c_comment": "Frequent returns", "c_custkey": 2, "c_name": "Bob", "c_nationkey": 1, "c_phone": "987-654"}]
   // let orders = [
   Const        r2, [{"o_custkey": 1, "o_orderkey": 100}, {"o_custkey": 1, "o_orderkey": 200}, {"o_custkey": 2, "o_orderkey": 300}]
   // let lineitem = [
-  Const        r3, [{"l_discount": 0.1, "l_extendedprice": 1000, "l_orderkey": 100, "l_quantity": 150}, {"l_discount": 0, "l_extendedprice": 800, "l_orderkey": 200, "l_quantity": 100}, {"l_discount": 0.05, "l_extendedprice": 300, "l_orderkey": 300, "l_quantity": 30}]
+  Const        r3, [{"l_discount": 0.1, "l_extendedprice": 1000.0, "l_orderkey": 100, "l_quantity": 150}, {"l_discount": 0.0, "l_extendedprice": 800.0, "l_orderkey": 200, "l_quantity": 100}, {"l_discount": 0.05, "l_extendedprice": 300.0, "l_orderkey": 300, "l_quantity": 30}]
   // let threshold = 200
   Const        r4, 200
   // from c in customer
@@ -345,7 +345,7 @@ L10:
   // json(result)
   JSON         r5
   // expect result == [
-  Const        r220, [{"c_acctbal": 1000, "c_address": "123 Market St", "c_comment": "Premium client", "c_custkey": 1, "c_name": "Alice", "c_phone": "123-456", "n_name": "GERMANY", "revenue": 1700}]
+  Const        r220, [{"c_acctbal": 1000.0, "c_address": "123 Market St", "c_comment": "Premium client", "c_custkey": 1, "c_name": "Alice", "c_phone": "123-456", "n_name": "GERMANY", "revenue": 1700.0}]
   Equal        r221, r5, r220
   Expect       r221
   Return       r0
