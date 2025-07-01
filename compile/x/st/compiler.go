@@ -34,6 +34,8 @@ type Compiler struct {
 	needPaginate    bool
 	needSum         bool
 	needMin         bool
+	needMax         bool
+	needReverse     bool
 	needGroupBy     bool
 	needGroup       bool
 	needCast        bool
@@ -74,6 +76,8 @@ func (c *Compiler) reset() {
 	c.needPaginate = false
 	c.needSum = false
 	c.needMin = false
+	c.needMax = false
+	c.needReverse = false
 	c.needGroupBy = false
 	c.needGroup = false
 	c.globalVars = nil
@@ -123,7 +127,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.needContinue || c.needUnionAll || c.needUnion || c.needExcept ||
 		c.needIntersect || c.needIndexStr || c.needSliceStr ||
 		c.needContainsStr || c.needDataset || c.needFetch || c.needPaginate ||
-		c.needSum || c.needMin || c.needGroupBy || c.needGroup {
+		c.needSum || c.needMin || c.needMax || c.needReverse || c.needGroupBy || c.needGroup {
 		c.emitHelpers()
 	}
 	c.writelnNoIndent("!!")
@@ -937,6 +941,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needMin = true
 		return fmt.Sprintf("(Main __min: %s)", args[0]), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		c.needMax = true
+		return fmt.Sprintf("(Main __max: %s)", args[0]), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
@@ -959,6 +969,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.needInput = true
 		return "(Main __input)", nil
+	case "substr", "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substr expects 3 args")
+		}
+		c.needSliceStr = true
+		end := fmt.Sprintf("%s + %s", args[1], args[2])
+		return fmt.Sprintf("(Main __slice_string: %s start: %s end: %s)", args[0], args[1], end), nil
+	case "reverse":
+		if len(args) != 1 {
+			return "", fmt.Errorf("reverse expects 1 arg")
+		}
+		c.needReverse = true
+		return fmt.Sprintf("(Main __reverse: %s)", args[0]), nil
 	default:
 		params, ok := c.funParams[name]
 		if !ok {
@@ -1015,6 +1038,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	case l.Str != nil:
 		s := strings.ReplaceAll(*l.Str, "'", "''")
 		return "'" + s + "'", nil
+	case l.Null:
+		return "nil", nil
 	}
 	return "", fmt.Errorf("unknown literal")
 }
@@ -1160,6 +1185,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		var having string
+		if q.Group.Having != nil {
+			having, err = c.compileExpr(q.Group.Having)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		c.env = orig
 		c.needGroupBy = true
 		c.needGroup = true
@@ -1176,7 +1209,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("groups := (Main _group_by: rows keyFn: [:%s | %s]).\n", sanitizeName(q.Var), keyExpr))
 		b.WriteString("rows := OrderedCollection new.\n")
 		b.WriteString(fmt.Sprintf("(groups) do: [:%s |\n", sanitizeName(q.Group.Name)))
-		b.WriteString(fmt.Sprintf("\trows add: %s.\n", sel))
+		if having != "" {
+			b.WriteString(fmt.Sprintf("\t(%s) ifTrue: [ rows add: %s ].\n", having, sel))
+		} else {
+			b.WriteString(fmt.Sprintf("\trows add: %s.\n", sel))
+		}
 		b.WriteString("]\n")
 		b.WriteString("rows := rows asArray.\n")
 		b.WriteString("rows))")
@@ -1628,6 +1665,15 @@ func (c *Compiler) emitHelpers() {
 		c.indent--
 		c.writelnNoIndent("!")
 	}
+	if c.needReverse {
+		c.writeln("__reverse: obj")
+		c.indent++
+		c.writeln("(obj isKindOf: Array) ifTrue: [ ^ obj reverse ]")
+		c.writeln("(obj isString) ifTrue: [ ^ obj reverse ]")
+		c.writeln("^ self error: 'reverse expects list or string'")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
 	if c.needSum {
 		c.writeln("__sum: v")
 		c.indent++
@@ -1647,6 +1693,17 @@ func (c *Compiler) emitHelpers() {
 		c.writeln("m := nil.")
 		c.writeln("v do: [:it | m isNil ifTrue: [ m := it ] ifFalse: [ (it < m) ifTrue: [ m := it ] ] ].")
 		c.writeln("^ m")
+		c.indent--
+		c.writelnNoIndent("!")
+	}
+	if c.needMax {
+		c.writeln("__max: v")
+		c.indent++
+		c.writeln("(v respondsTo: #do:) ifFalse: [ ^ self error: 'max() expects collection' ]")
+		c.writeln("| m first |")
+		c.writeln("first := true.")
+		c.writeln("v do: [:it | first ifTrue: [ m := it. first := false ] ifFalse: [ (it > m) ifTrue: [ m := it ] ] ].")
+		c.writeln("^ first ifTrue: [ 0 ] ifFalse: [ m ]")
 		c.indent--
 		c.writelnNoIndent("!")
 	}
