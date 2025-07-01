@@ -15,3 +15,8 @@ determine why `q7` is skipped during compilation.
 TPC-H progress:
 
 - `q1` and `q2` now compile and execute successfully with the Go backend.
+
+TPC-DS progress:
+
+- Queries `q1` through `q10` compile and run. The updated
+  generated sources are stored under `tests/dataset/tpc-ds/compiler/go`.

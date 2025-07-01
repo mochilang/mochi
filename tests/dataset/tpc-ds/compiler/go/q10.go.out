@@ -39,36 +39,258 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q10_first() {
-	expect(_equal(result, 10))
+type Customer struct {
+	C_customer_sk      int `json:"c_customer_sk"`
+	C_current_addr_sk  int `json:"c_current_addr_sk"`
+	C_current_cdemo_sk int `json:"c_current_cdemo_sk"`
 }
 
-type TItem struct {
-	Id  int `json:"id"`
-	Val int `json:"val"`
+type CustomerAddress struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_county     string `json:"ca_county"`
 }
 
-var t []TItem
-var vals []int
-var result any
+type CustomerDemographics struct {
+	Cd_demo_sk            int    `json:"cd_demo_sk"`
+	Cd_gender             string `json:"cd_gender"`
+	Cd_marital_status     string `json:"cd_marital_status"`
+	Cd_education_status   string `json:"cd_education_status"`
+	Cd_purchase_estimate  int    `json:"cd_purchase_estimate"`
+	Cd_credit_rating      string `json:"cd_credit_rating"`
+	Cd_dep_count          int    `json:"cd_dep_count"`
+	Cd_dep_employed_count int    `json:"cd_dep_employed_count"`
+	Cd_dep_college_count  int    `json:"cd_dep_college_count"`
+}
+
+type StoreSale struct {
+	Ss_customer_sk  int `json:"ss_customer_sk"`
+	Ss_sold_date_sk int `json:"ss_sold_date_sk"`
+}
+
+type DateDim struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+	D_moy     int `json:"d_moy"`
+}
+
+func test_TPCDS_Q10_demographics_count() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"cd_gender":             "F",
+		"cd_marital_status":     "M",
+		"cd_education_status":   "College",
+		"cnt1":                  1,
+		"cd_purchase_estimate":  5000,
+		"cnt2":                  1,
+		"cd_credit_rating":      "Good",
+		"cnt3":                  1,
+		"cd_dep_count":          1,
+		"cnt4":                  1,
+		"cd_dep_employed_count": 1,
+		"cnt5":                  1,
+		"cd_dep_college_count":  0,
+		"cnt6":                  1,
+	}}))
+}
+
+type CustomerItem struct {
+	C_customer_sk      int `json:"c_customer_sk"`
+	C_current_addr_sk  int `json:"c_current_addr_sk"`
+	C_current_cdemo_sk int `json:"c_current_cdemo_sk"`
+}
+
+var customer []CustomerItem
+
+type Customer_addressItem struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_county     string `json:"ca_county"`
+}
+
+var customer_address []Customer_addressItem
+
+type Customer_demographicsItem struct {
+	Cd_demo_sk            int    `json:"cd_demo_sk"`
+	Cd_gender             string `json:"cd_gender"`
+	Cd_marital_status     string `json:"cd_marital_status"`
+	Cd_education_status   string `json:"cd_education_status"`
+	Cd_purchase_estimate  int    `json:"cd_purchase_estimate"`
+	Cd_credit_rating      string `json:"cd_credit_rating"`
+	Cd_dep_count          int    `json:"cd_dep_count"`
+	Cd_dep_employed_count int    `json:"cd_dep_employed_count"`
+	Cd_dep_college_count  int    `json:"cd_dep_college_count"`
+}
+
+var customer_demographics []Customer_demographicsItem
+
+type Store_salesItem struct {
+	Ss_customer_sk  int `json:"ss_customer_sk"`
+	Ss_sold_date_sk int `json:"ss_sold_date_sk"`
+}
+
+var store_sales []Store_salesItem
+var web_sales []any
+var catalog_sales []any
+
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+	D_moy     int `json:"d_moy"`
+}
+
+var date_dim []Date_dimItem
+var active []Customer_demographicsItem
+var result []map[string]any
 
 func main() {
 	failures := 0
-	t = _cast[[]TItem]([]TItem{TItem{
-		Id:  1,
-		Val: 10,
+	customer = _cast[[]CustomerItem]([]CustomerItem{CustomerItem{
+		C_customer_sk:      1,
+		C_current_addr_sk:  1,
+		C_current_cdemo_sk: 1,
 	}})
-	vals = func() []int {
-		_res := []int{}
-		for _, r := range t {
-			_res = append(_res, r.Val)
+	customer_address = _cast[[]Customer_addressItem]([]Customer_addressItem{Customer_addressItem{
+		Ca_address_sk: 1,
+		Ca_county:     "CountyA",
+	}})
+	customer_demographics = _cast[[]Customer_demographicsItem]([]Customer_demographicsItem{Customer_demographicsItem{
+		Cd_demo_sk:            1,
+		Cd_gender:             "F",
+		Cd_marital_status:     "M",
+		Cd_education_status:   "College",
+		Cd_purchase_estimate:  5000,
+		Cd_credit_rating:      "Good",
+		Cd_dep_count:          1,
+		Cd_dep_employed_count: 1,
+		Cd_dep_college_count:  0,
+	}})
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_customer_sk:  1,
+		Ss_sold_date_sk: 1,
+	}})
+	web_sales = []any{}
+	catalog_sales = []any{}
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_year:    2000,
+		D_moy:     2,
+	}})
+	active = func() []Customer_demographicsItem {
+		_res := []Customer_demographicsItem{}
+		for _, c := range customer {
+			if exists(func() []Store_salesItem {
+				_res := []Store_salesItem{}
+				for _, ss := range store_sales {
+					for _, d := range date_dim {
+						if !(ss.Ss_sold_date_sk == d.D_date_sk) {
+							continue
+						}
+						if (((ss.Ss_customer_sk == c.C_customer_sk) && (d.D_year == 2000)) && (d.D_moy >= 2)) && (d.D_moy <= 5) {
+							if (((ss.Ss_customer_sk == c.C_customer_sk) && (d.D_year == 2000)) && (d.D_moy >= 2)) && (d.D_moy <= 5) {
+								_res = append(_res, ss)
+							}
+						}
+					}
+				}
+				return _res
+			}()) {
+				for _, ca := range customer_address {
+					if !((c.C_current_addr_sk == ca.Ca_address_sk) && (ca.Ca_county == "CountyA")) {
+						continue
+					}
+					for _, cd := range customer_demographics {
+						if !(c.C_current_cdemo_sk == cd.Cd_demo_sk) {
+							continue
+						}
+						_res = append(_res, cd)
+					}
+				}
+			}
 		}
 		return _res
 	}()
-	result = _first(_toAnySlice(_convSlice[int, any](vals)))
+	result = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, a := range active {
+			key := map[string]any{
+				"gender":    a.Cd_gender,
+				"marital":   a.Cd_marital_status,
+				"education": a.Cd_education_status,
+				"purchase":  a.Cd_purchase_estimate,
+				"credit":    a.Cd_credit_rating,
+				"dep":       a.Cd_dep_count,
+				"depemp":    a.Cd_dep_employed_count,
+				"depcol":    a.Cd_dep_college_count,
+			}
+			ks := fmt.Sprint(key)
+			g, ok := groups[ks]
+			if !ok {
+				g = &data.Group{Key: key}
+				groups[ks] = g
+				order = append(order, ks)
+			}
+			g.Items = append(g.Items, a)
+		}
+		_res := []map[string]any{}
+		for _, ks := range order {
+			g := groups[ks]
+			_res = append(_res, map[string]any{
+				"cd_gender":           _cast[map[string]any](g.Key)["gender"],
+				"cd_marital_status":   _cast[map[string]any](g.Key)["marital"],
+				"cd_education_status": _cast[map[string]any](g.Key)["education"],
+				"cnt1": _count(func() []any {
+					_res := []any{}
+					for _, _ := range g.Items {
+						_res = append(_res, _)
+					}
+					return _res
+				}()),
+				"cd_purchase_estimate": _cast[map[string]any](g.Key)["purchase"],
+				"cnt2": _count(func() []any {
+					_res := []any{}
+					for _, _ := range g.Items {
+						_res = append(_res, _)
+					}
+					return _res
+				}()),
+				"cd_credit_rating": _cast[map[string]any](g.Key)["credit"],
+				"cnt3": _count(func() []any {
+					_res := []any{}
+					for _, _ := range g.Items {
+						_res = append(_res, _)
+					}
+					return _res
+				}()),
+				"cd_dep_count": _cast[map[string]any](g.Key)["dep"],
+				"cnt4": _count(func() []any {
+					_res := []any{}
+					for _, _ := range g.Items {
+						_res = append(_res, _)
+					}
+					return _res
+				}()),
+				"cd_dep_employed_count": _cast[map[string]any](g.Key)["depemp"],
+				"cnt5": _count(func() []any {
+					_res := []any{}
+					for _, _ := range g.Items {
+						_res = append(_res, _)
+					}
+					return _res
+				}()),
+				"cd_dep_college_count": _cast[map[string]any](g.Key)["depcol"],
+				"cnt6": _count(func() []any {
+					_res := []any{}
+					for _, _ := range g.Items {
+						_res = append(_res, _)
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q10 first")
+		printTestStart("TPCDS Q10 demographics count")
 		start := time.Now()
 		var failed error
 		func() {
@@ -77,7 +299,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q10_first()
+			test_TPCDS_Q10_demographics_count()
 		}()
 		if failed != nil {
 			failures++
@@ -138,14 +360,6 @@ func _cast[T any](v any) T {
 	return out
 }
 
-func _convSlice[T any, U any](s []T) []U {
-	out := make([]U, len(s))
-	for i, v := range s {
-		out[i] = any(v).(U)
-	}
-	return out
-}
-
 func _convertMapAny(m map[any]any) map[string]any {
 	out := make(map[string]any, len(m))
 	for k, v := range m {
@@ -157,6 +371,35 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
 }
 
 func _equal(a, b any) bool {
@@ -193,57 +436,4 @@ func _equal(a, b any) bool {
 		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
 	}
 	return reflect.DeepEqual(a, b)
-}
-
-func _first(v any) any {
-	if g, ok := v.(*data.Group); ok {
-		if len(g.Items) == 0 {
-			return nil
-		}
-		return g.Items[0]
-	}
-	switch s := v.(type) {
-	case []any:
-		if len(s) == 0 {
-			return nil
-		}
-		return s[0]
-	case []int:
-		if len(s) == 0 {
-			return 0
-		}
-		return s[0]
-	case []float64:
-		if len(s) == 0 {
-			return 0.0
-		}
-		return s[0]
-	case []string:
-		if len(s) == 0 {
-			return ""
-		}
-		return s[0]
-	case []bool:
-		if len(s) == 0 {
-			return false
-		}
-		return s[0]
-	default:
-		rv := reflect.ValueOf(v)
-		if rv.Kind() == reflect.Slice && rv.Len() > 0 {
-			return rv.Index(0).Interface()
-		}
-		if rv.Kind() == reflect.Array && rv.Len() > 0 {
-			return rv.Index(0).Interface()
-		}
-	}
-	return nil
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := make([]any, len(s))
-	for i, v := range s {
-		out[i] = v
-	}
-	return out
 }

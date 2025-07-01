@@ -40,46 +40,114 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q7_empty() {
-	expect((len(result) == 0))
+func test_TPCDS_Q7_result() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"i_item_id": "I1",
+		"agg1":      5.0,
+		"agg2":      10.0,
+		"agg3":      2.0,
+		"agg4":      8.0,
+	}}))
 }
 
-var store_sales []any
-var customer_demographics []any
-var date_dim []any
-var item []any
-var promotion []any
+type Store_salesItem struct {
+	Ss_cdemo_sk     int     `json:"ss_cdemo_sk"`
+	Ss_sold_date_sk int     `json:"ss_sold_date_sk"`
+	Ss_item_sk      int     `json:"ss_item_sk"`
+	Ss_promo_sk     int     `json:"ss_promo_sk"`
+	Ss_quantity     int     `json:"ss_quantity"`
+	Ss_list_price   float64 `json:"ss_list_price"`
+	Ss_coupon_amt   float64 `json:"ss_coupon_amt"`
+	Ss_sales_price  float64 `json:"ss_sales_price"`
+}
+
+var store_sales []Store_salesItem
+
+type Customer_demographicsItem struct {
+	Cd_demo_sk          int    `json:"cd_demo_sk"`
+	Cd_gender           string `json:"cd_gender"`
+	Cd_marital_status   string `json:"cd_marital_status"`
+	Cd_education_status string `json:"cd_education_status"`
+}
+
+var customer_demographics []Customer_demographicsItem
+
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+}
+
+var date_dim []Date_dimItem
+
+type ItemItem struct {
+	I_item_sk int    `json:"i_item_sk"`
+	I_item_id string `json:"i_item_id"`
+}
+
+var item []ItemItem
+
+type PromotionItem struct {
+	P_promo_sk      int    `json:"p_promo_sk"`
+	P_channel_email string `json:"p_channel_email"`
+	P_channel_event string `json:"p_channel_event"`
+}
+
+var promotion []PromotionItem
 var result []map[string]any
 
 func main() {
 	failures := 0
-	store_sales = []any{}
-	customer_demographics = []any{}
-	date_dim = []any{}
-	item = []any{}
-	promotion = []any{}
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_cdemo_sk:     1,
+		Ss_sold_date_sk: 1,
+		Ss_item_sk:      1,
+		Ss_promo_sk:     1,
+		Ss_quantity:     5,
+		Ss_list_price:   10.0,
+		Ss_coupon_amt:   2.0,
+		Ss_sales_price:  8.0,
+	}})
+	customer_demographics = _cast[[]Customer_demographicsItem]([]Customer_demographicsItem{Customer_demographicsItem{
+		Cd_demo_sk:          1,
+		Cd_gender:           "M",
+		Cd_marital_status:   "S",
+		Cd_education_status: "College",
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_year:    1998,
+	}})
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
+		I_item_sk: 1,
+		I_item_id: "I1",
+	}})
+	promotion = _cast[[]PromotionItem]([]PromotionItem{PromotionItem{
+		P_promo_sk:      1,
+		P_channel_email: "N",
+		P_channel_event: "Y",
+	}})
 	result = func() []map[string]any {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, ss := range store_sales {
 			for _, cd := range customer_demographics {
-				if !(_equal(_cast[map[string]any](ss)["ss_cdemo_sk"], _cast[map[string]any](cd)["cd_demo_sk"])) {
+				if !(ss.Ss_cdemo_sk == cd.Cd_demo_sk) {
 					continue
 				}
 				for _, d := range date_dim {
-					if !(_equal(_cast[map[string]any](ss)["ss_sold_date_sk"], _cast[map[string]any](d)["d_date_sk"])) {
+					if !(ss.Ss_sold_date_sk == d.D_date_sk) {
 						continue
 					}
 					for _, i := range item {
-						if !(_equal(_cast[map[string]any](ss)["ss_item_sk"], _cast[map[string]any](i)["i_item_sk"])) {
+						if !(ss.Ss_item_sk == i.I_item_sk) {
 							continue
 						}
 						for _, p := range promotion {
-							if !(_equal(_cast[map[string]any](ss)["ss_promo_sk"], _cast[map[string]any](p)["p_promo_sk"])) {
+							if !(ss.Ss_promo_sk == p.P_promo_sk) {
 								continue
 							}
-							if (((_equal(_cast[map[string]any](cd)["cd_gender"], "M") && _equal(_cast[map[string]any](cd)["cd_marital_status"], "S")) && _equal(_cast[map[string]any](cd)["cd_education_status"], "College")) && (_equal(_cast[map[string]any](p)["p_channel_email"], "N") || _equal(_cast[map[string]any](p)["p_channel_event"], "N"))) && _equal(_cast[map[string]any](d)["d_year"], 1998) {
-								key := map[string]any{"i_item_id": _cast[map[string]any](i)["i_item_id"]}
+							if ((((cd.Cd_gender == "M") && (cd.Cd_marital_status == "S")) && (cd.Cd_education_status == "College")) && ((p.P_channel_email == "N") || (p.P_channel_event == "N"))) && (d.D_year == 1998) {
+								key := map[string]string{"i_item_id": i.I_item_id}
 								ks := fmt.Sprint(key)
 								g, ok := groups[ks]
 								if !ok {
@@ -171,7 +239,7 @@ func main() {
 	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q7 empty")
+		printTestStart("TPCDS Q7 result")
 		start := time.Now()
 		var failed error
 		func() {
@@ -180,7 +248,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q7_empty()
+			test_TPCDS_Q7_result()
 		}()
 		if failed != nil {
 			failures++

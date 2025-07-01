@@ -40,31 +40,136 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q6_empty() {
-	expect((len(result) == 0))
+func test_TPCDS_Q6_result() {
+	expect(_equal(result, []map[string]any{map[string]any{"state": "CA", "cnt": 10}}))
 }
 
-var customer_address []any
-var customer []any
-var store_sales []any
-var date_dim []any
-var item []any
+type Customer_addressItem struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_state      string `json:"ca_state"`
+	Ca_zip        string `json:"ca_zip"`
+}
+
+var customer_address []Customer_addressItem
+
+type CustomerItem struct {
+	C_customer_sk     int `json:"c_customer_sk"`
+	C_current_addr_sk int `json:"c_current_addr_sk"`
+}
+
+var customer []CustomerItem
+
+type Store_salesItem struct {
+	Ss_customer_sk  int `json:"ss_customer_sk"`
+	Ss_sold_date_sk int `json:"ss_sold_date_sk"`
+	Ss_item_sk      int `json:"ss_item_sk"`
+}
+
+var store_sales []Store_salesItem
+
+type Date_dimItem struct {
+	D_date_sk   int `json:"d_date_sk"`
+	D_year      int `json:"d_year"`
+	D_moy       int `json:"d_moy"`
+	D_month_seq int `json:"d_month_seq"`
+}
+
+var date_dim []Date_dimItem
+
+type ItemItem struct {
+	I_item_sk       int     `json:"i_item_sk"`
+	I_category      string  `json:"i_category"`
+	I_current_price float64 `json:"i_current_price"`
+}
+
+var item []ItemItem
 var target_month_seq any
 var result []map[string]any
 
 func main() {
 	failures := 0
-	customer_address = []any{}
-	customer = []any{}
-	store_sales = []any{}
-	date_dim = []any{}
-	item = []any{}
-	target_month_seq = _max(func() []any {
-		_res := []any{}
+	customer_address = _cast[[]Customer_addressItem]([]Customer_addressItem{Customer_addressItem{
+		Ca_address_sk: 1,
+		Ca_state:      "CA",
+		Ca_zip:        "12345",
+	}})
+	customer = _cast[[]CustomerItem]([]CustomerItem{CustomerItem{
+		C_customer_sk:     1,
+		C_current_addr_sk: 1,
+	}})
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+		Store_salesItem{
+			Ss_customer_sk:  1,
+			Ss_sold_date_sk: 1,
+			Ss_item_sk:      1,
+		},
+	})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk:   1,
+		D_year:      1999,
+		D_moy:       5,
+		D_month_seq: 120,
+	}})
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
+		I_item_sk:       1,
+		I_category:      "A",
+		I_current_price: 100.0,
+	}, ItemItem{
+		I_item_sk:       2,
+		I_category:      "A",
+		I_current_price: 50.0,
+	}})
+	target_month_seq = _max(func() []int {
+		_res := []int{}
 		for _, d := range date_dim {
-			if _equal(_cast[map[string]any](d)["d_year"], 1999) && _equal(_cast[map[string]any](d)["d_moy"], 5) {
-				if _equal(_cast[map[string]any](d)["d_year"], 1999) && _equal(_cast[map[string]any](d)["d_moy"], 5) {
-					_res = append(_res, _cast[map[string]any](d)["d_month_seq"])
+			if (d.D_year == 1999) && (d.D_moy == 5) {
+				if (d.D_year == 1999) && (d.D_moy == 5) {
+					_res = append(_res, d.D_month_seq)
 				}
 			}
 		}
@@ -75,33 +180,33 @@ func main() {
 		order := []string{}
 		for _, a := range customer_address {
 			for _, c := range customer {
-				if !(_equal(_cast[map[string]any](a)["ca_address_sk"], _cast[map[string]any](c)["c_current_addr_sk"])) {
+				if !(a.Ca_address_sk == c.C_current_addr_sk) {
 					continue
 				}
 				for _, s := range store_sales {
-					if !(_equal(_cast[map[string]any](c)["c_customer_sk"], _cast[map[string]any](s)["ss_customer_sk"])) {
+					if !(c.C_customer_sk == s.Ss_customer_sk) {
 						continue
 					}
 					for _, d := range date_dim {
-						if !(_equal(_cast[map[string]any](s)["ss_sold_date_sk"], _cast[map[string]any](d)["d_date_sk"])) {
+						if !(s.Ss_sold_date_sk == d.D_date_sk) {
 							continue
 						}
 						for _, i := range item {
-							if !(_equal(_cast[map[string]any](s)["ss_item_sk"], _cast[map[string]any](i)["i_item_sk"])) {
+							if !(s.Ss_item_sk == i.I_item_sk) {
 								continue
 							}
-							if _equal(_cast[map[string]any](d)["d_month_seq"], target_month_seq) && (_cast[float64](_cast[map[string]any](i)["i_current_price"]) > (1.2 * _avg(func() []any {
-								_res := []any{}
+							if _equal(d.D_month_seq, target_month_seq) && (i.I_current_price > (1.2 * _avg(func() []float64 {
+								_res := []float64{}
 								for _, j := range item {
-									if _equal(_cast[map[string]any](j)["i_category"], _cast[map[string]any](i)["i_category"]) {
-										if _equal(_cast[map[string]any](j)["i_category"], _cast[map[string]any](i)["i_category"]) {
-											_res = append(_res, _cast[map[string]any](j)["i_current_price"])
+									if j.I_category == i.I_category {
+										if j.I_category == i.I_category {
+											_res = append(_res, j.I_current_price)
 										}
 									}
 								}
 								return _res
 							}()))) {
-								key := _cast[map[string]any](a)["ca_state"]
+								key := a.Ca_state
 								ks := fmt.Sprint(key)
 								g, ok := groups[ks]
 								if !ok {
@@ -164,7 +269,7 @@ func main() {
 	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q6 empty")
+		printTestStart("TPCDS Q6 result")
 		start := time.Now()
 		var failed error
 		func() {
@@ -173,7 +278,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q6_empty()
+			test_TPCDS_Q6_result()
 		}()
 		if failed != nil {
 			failures++

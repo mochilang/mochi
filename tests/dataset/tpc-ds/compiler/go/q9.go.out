@@ -39,12 +39,29 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q9_empty() {
-	expect((len(result) == 0))
+func test_TPCDS_Q9_result() {
+	expect(_equal(result, []map[string]float64{map[string]float64{
+		"bucket1": 7.0,
+		"bucket2": 15.0,
+		"bucket3": 30.0,
+		"bucket4": 35.0,
+		"bucket5": 50.0,
+	}}))
 }
 
-var store_sales []any
-var reason []any
+type Store_salesItem struct {
+	Ss_quantity         int     `json:"ss_quantity"`
+	Ss_ext_discount_amt float64 `json:"ss_ext_discount_amt"`
+	Ss_net_paid         float64 `json:"ss_net_paid"`
+}
+
+var store_sales []Store_salesItem
+
+type ReasonItem struct {
+	R_reason_sk int `json:"r_reason_sk"`
+}
+
+var reason []ReasonItem
 var bucket1 float64
 var bucket2 float64
 var bucket3 float64
@@ -54,38 +71,64 @@ var result []map[string]float64
 
 func main() {
 	failures := 0
-	store_sales = []any{}
-	reason = []any{}
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{
+		Store_salesItem{
+			Ss_quantity:         5,
+			Ss_ext_discount_amt: 5.0,
+			Ss_net_paid:         7.0,
+		},
+		Store_salesItem{
+			Ss_quantity:         30,
+			Ss_ext_discount_amt: 10.0,
+			Ss_net_paid:         15.0,
+		},
+		Store_salesItem{
+			Ss_quantity:         50,
+			Ss_ext_discount_amt: 20.0,
+			Ss_net_paid:         30.0,
+		},
+		Store_salesItem{
+			Ss_quantity:         70,
+			Ss_ext_discount_amt: 25.0,
+			Ss_net_paid:         35.0,
+		},
+		Store_salesItem{
+			Ss_quantity:         90,
+			Ss_ext_discount_amt: 40.0,
+			Ss_net_paid:         50.0,
+		},
+	})
+	reason = _cast[[]ReasonItem]([]ReasonItem{ReasonItem{R_reason_sk: 1}})
 	bucket1 = func() float64 {
-		if _count(func() []any {
-			_res := []any{}
+		if _count(_toAnySlice(func() []Store_salesItem {
+			_res := []Store_salesItem{}
 			for _, s := range store_sales {
-				if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 1) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 20) {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 1) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 20) {
+				if (s.Ss_quantity >= 1) && (s.Ss_quantity <= 20) {
+					if (s.Ss_quantity >= 1) && (s.Ss_quantity <= 20) {
 						_res = append(_res, s)
 					}
 				}
 			}
 			return _res
-		}()) > 10 {
-			return _avg(func() []any {
-				_res := []any{}
+		}())) > 10 {
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 1) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 20) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 1) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 20) {
-							_res = append(_res, _cast[map[string]any](s)["ss_ext_discount_amt"])
+					if (s.Ss_quantity >= 1) && (s.Ss_quantity <= 20) {
+						if (s.Ss_quantity >= 1) && (s.Ss_quantity <= 20) {
+							_res = append(_res, s.Ss_ext_discount_amt)
 						}
 					}
 				}
 				return _res
 			}())
 		} else {
-			return _avg(func() []any {
-				_res := []any{}
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 1) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 20) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 1) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 20) {
-							_res = append(_res, _cast[map[string]any](s)["ss_net_paid"])
+					if (s.Ss_quantity >= 1) && (s.Ss_quantity <= 20) {
+						if (s.Ss_quantity >= 1) && (s.Ss_quantity <= 20) {
+							_res = append(_res, s.Ss_net_paid)
 						}
 					}
 				}
@@ -94,35 +137,35 @@ func main() {
 		}
 	}()
 	bucket2 = func() float64 {
-		if _count(func() []any {
-			_res := []any{}
+		if _count(_toAnySlice(func() []Store_salesItem {
+			_res := []Store_salesItem{}
 			for _, s := range store_sales {
-				if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 21) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 40) {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 21) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 40) {
+				if (s.Ss_quantity >= 21) && (s.Ss_quantity <= 40) {
+					if (s.Ss_quantity >= 21) && (s.Ss_quantity <= 40) {
 						_res = append(_res, s)
 					}
 				}
 			}
 			return _res
-		}()) > 20 {
-			return _avg(func() []any {
-				_res := []any{}
+		}())) > 20 {
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 21) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 40) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 21) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 40) {
-							_res = append(_res, _cast[map[string]any](s)["ss_ext_discount_amt"])
+					if (s.Ss_quantity >= 21) && (s.Ss_quantity <= 40) {
+						if (s.Ss_quantity >= 21) && (s.Ss_quantity <= 40) {
+							_res = append(_res, s.Ss_ext_discount_amt)
 						}
 					}
 				}
 				return _res
 			}())
 		} else {
-			return _avg(func() []any {
-				_res := []any{}
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 21) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 40) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 21) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 40) {
-							_res = append(_res, _cast[map[string]any](s)["ss_net_paid"])
+					if (s.Ss_quantity >= 21) && (s.Ss_quantity <= 40) {
+						if (s.Ss_quantity >= 21) && (s.Ss_quantity <= 40) {
+							_res = append(_res, s.Ss_net_paid)
 						}
 					}
 				}
@@ -131,35 +174,35 @@ func main() {
 		}
 	}()
 	bucket3 = func() float64 {
-		if _count(func() []any {
-			_res := []any{}
+		if _count(_toAnySlice(func() []Store_salesItem {
+			_res := []Store_salesItem{}
 			for _, s := range store_sales {
-				if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 41) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 60) {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 41) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 60) {
+				if (s.Ss_quantity >= 41) && (s.Ss_quantity <= 60) {
+					if (s.Ss_quantity >= 41) && (s.Ss_quantity <= 60) {
 						_res = append(_res, s)
 					}
 				}
 			}
 			return _res
-		}()) > 30 {
-			return _avg(func() []any {
-				_res := []any{}
+		}())) > 30 {
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 41) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 60) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 41) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 60) {
-							_res = append(_res, _cast[map[string]any](s)["ss_ext_discount_amt"])
+					if (s.Ss_quantity >= 41) && (s.Ss_quantity <= 60) {
+						if (s.Ss_quantity >= 41) && (s.Ss_quantity <= 60) {
+							_res = append(_res, s.Ss_ext_discount_amt)
 						}
 					}
 				}
 				return _res
 			}())
 		} else {
-			return _avg(func() []any {
-				_res := []any{}
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 41) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 60) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 41) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 60) {
-							_res = append(_res, _cast[map[string]any](s)["ss_net_paid"])
+					if (s.Ss_quantity >= 41) && (s.Ss_quantity <= 60) {
+						if (s.Ss_quantity >= 41) && (s.Ss_quantity <= 60) {
+							_res = append(_res, s.Ss_net_paid)
 						}
 					}
 				}
@@ -168,35 +211,35 @@ func main() {
 		}
 	}()
 	bucket4 = func() float64 {
-		if _count(func() []any {
-			_res := []any{}
+		if _count(_toAnySlice(func() []Store_salesItem {
+			_res := []Store_salesItem{}
 			for _, s := range store_sales {
-				if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 61) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 80) {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 61) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 80) {
+				if (s.Ss_quantity >= 61) && (s.Ss_quantity <= 80) {
+					if (s.Ss_quantity >= 61) && (s.Ss_quantity <= 80) {
 						_res = append(_res, s)
 					}
 				}
 			}
 			return _res
-		}()) > 40 {
-			return _avg(func() []any {
-				_res := []any{}
+		}())) > 40 {
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 61) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 80) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 61) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 80) {
-							_res = append(_res, _cast[map[string]any](s)["ss_ext_discount_amt"])
+					if (s.Ss_quantity >= 61) && (s.Ss_quantity <= 80) {
+						if (s.Ss_quantity >= 61) && (s.Ss_quantity <= 80) {
+							_res = append(_res, s.Ss_ext_discount_amt)
 						}
 					}
 				}
 				return _res
 			}())
 		} else {
-			return _avg(func() []any {
-				_res := []any{}
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 61) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 80) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 61) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 80) {
-							_res = append(_res, _cast[map[string]any](s)["ss_net_paid"])
+					if (s.Ss_quantity >= 61) && (s.Ss_quantity <= 80) {
+						if (s.Ss_quantity >= 61) && (s.Ss_quantity <= 80) {
+							_res = append(_res, s.Ss_net_paid)
 						}
 					}
 				}
@@ -205,35 +248,35 @@ func main() {
 		}
 	}()
 	bucket5 = func() float64 {
-		if _count(func() []any {
-			_res := []any{}
+		if _count(_toAnySlice(func() []Store_salesItem {
+			_res := []Store_salesItem{}
 			for _, s := range store_sales {
-				if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 81) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 100) {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 81) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 100) {
+				if (s.Ss_quantity >= 81) && (s.Ss_quantity <= 100) {
+					if (s.Ss_quantity >= 81) && (s.Ss_quantity <= 100) {
 						_res = append(_res, s)
 					}
 				}
 			}
 			return _res
-		}()) > 50 {
-			return _avg(func() []any {
-				_res := []any{}
+		}())) > 50 {
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 81) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 100) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 81) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 100) {
-							_res = append(_res, _cast[map[string]any](s)["ss_ext_discount_amt"])
+					if (s.Ss_quantity >= 81) && (s.Ss_quantity <= 100) {
+						if (s.Ss_quantity >= 81) && (s.Ss_quantity <= 100) {
+							_res = append(_res, s.Ss_ext_discount_amt)
 						}
 					}
 				}
 				return _res
 			}())
 		} else {
-			return _avg(func() []any {
-				_res := []any{}
+			return _avg(func() []float64 {
+				_res := []float64{}
 				for _, s := range store_sales {
-					if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 81) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 100) {
-						if (_cast[int](_cast[map[string]any](s)["ss_quantity"]) >= 81) && (_cast[int](_cast[map[string]any](s)["ss_quantity"]) <= 100) {
-							_res = append(_res, _cast[map[string]any](s)["ss_net_paid"])
+					if (s.Ss_quantity >= 81) && (s.Ss_quantity <= 100) {
+						if (s.Ss_quantity >= 81) && (s.Ss_quantity <= 100) {
+							_res = append(_res, s.Ss_net_paid)
 						}
 					}
 				}
@@ -244,8 +287,8 @@ func main() {
 	result = func() []map[string]float64 {
 		_res := []map[string]float64{}
 		for _, r := range reason {
-			if _equal(_cast[map[string]any](r)["r_reason_sk"], 1) {
-				if _equal(_cast[map[string]any](r)["r_reason_sk"], 1) {
+			if r.R_reason_sk == 1 {
+				if r.R_reason_sk == 1 {
 					_res = append(_res, map[string]float64{
 						"bucket1": bucket1,
 						"bucket2": bucket2,
@@ -260,7 +303,7 @@ func main() {
 	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q9 empty")
+		printTestStart("TPCDS Q9 result")
 		start := time.Now()
 		var failed error
 		func() {
@@ -269,7 +312,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q9_empty()
+			test_TPCDS_Q9_result()
 		}()
 		if failed != nil {
 			failures++
@@ -457,4 +500,12 @@ func _equal(a, b any) bool {
 		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
 	}
 	return reflect.DeepEqual(a, b)
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
 }
