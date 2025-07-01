@@ -332,6 +332,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Str != nil {
 			return fmt.Sprintf("\"%s\"", *p.Lit.Str), nil
 		}
+		if p.Lit.Null {
+			return "null", nil
+		}
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -476,6 +479,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if name == "str" && len(args) == 1 {
 			return "String.valueOf(" + args[0] + ")", nil
 		}
+		if name == "substr" {
+			if len(args) == 2 {
+				c.helpers["_sliceString"] = true
+				return fmt.Sprintf("_sliceString(%s, %s, %s.length())", args[0], args[1], args[0]), nil
+			}
+			if len(args) == 3 {
+				c.helpers["_sliceString"] = true
+				return fmt.Sprintf("_sliceString(%s, %s, %s + %s)", args[0], args[1], args[1], args[2]), nil
+			}
+		}
+		if name == "reverse" && len(args) == 1 {
+			if c.isStringExprByExpr(p.Call.Args[0]) {
+				c.helpers["_reverseString"] = true
+				return fmt.Sprintf("_reverseString(%s)", args[0]), nil
+			}
+			c.helpers["_reverseList"] = true
+			c.helpers["_toList"] = true
+			return fmt.Sprintf("_reverseList(_toList(%s))", args[0]), nil
+		}
 		if name == "input" && len(args) == 0 {
 			c.helpers["_input"] = true
 			return "_input()", nil
@@ -526,6 +548,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileQueryExpr(p.Query)
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 	case p.Group != nil:
@@ -1019,6 +1043,32 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	buf.WriteString("\t}\n")
 	buf.WriteString("}).get()")
 	return buf.String(), nil
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseVal string
+	if ie.ElseIf != nil {
+		elseVal, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseVal, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseVal = "null"
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal), nil
 }
 
 // compileExprHint compiles an expression using a type hint. The hint is used
