@@ -1,8 +1,72 @@
-let t = [{id: 0, val: 0}, {id: 1, val: 12}]
-let vals = from r in t select r.val
-let result = first(reverse(vals))
+// Web sales revenue ratio by item class within a 30 day window
+
+type WebSale { ws_item_sk: int, ws_sold_date_sk: int, ws_ext_sales_price: float }
+type Item { i_item_sk: int, i_item_id: string, i_item_desc: string, i_category: string, i_class: string, i_current_price: float }
+type DateDim { d_date_sk: int, d_date: string }
+
+let web_sales = [
+  { ws_item_sk: 1, ws_sold_date_sk: 1, ws_ext_sales_price: 100.0 },
+  { ws_item_sk: 1, ws_sold_date_sk: 2, ws_ext_sales_price: 100.0 },
+  { ws_item_sk: 2, ws_sold_date_sk: 2, ws_ext_sales_price: 200.0 },
+  { ws_item_sk: 3, ws_sold_date_sk: 3, ws_ext_sales_price: 50.0 }
+]
+let item = [
+  { i_item_sk: 1, i_item_id: "ITEM1", i_item_desc: "Item One", i_category: "A", i_class: "C1", i_current_price: 10.0 },
+  { i_item_sk: 2, i_item_id: "ITEM2", i_item_desc: "Item Two", i_category: "A", i_class: "C1", i_current_price: 20.0 },
+  { i_item_sk: 3, i_item_id: "ITEM3", i_item_desc: "Item Three", i_category: "B", i_class: "C2", i_current_price: 30.0 }
+]
+let date_dim = [
+  { d_date_sk: 1, d_date: "2001-01-20" },
+  { d_date_sk: 2, d_date: "2001-02-05" },
+  { d_date_sk: 3, d_date: "2001-03-05" }
+]
+
+let filtered =
+  from ws in web_sales
+  join i in item on ws.ws_item_sk == i.i_item_sk
+  join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
+  where i.i_category in ["A", "B", "C"] &&
+        d.d_date >= "2001-01-15" && d.d_date <= "2001-02-14"
+  group by {
+    id: i.i_item_id,
+    desc: i.i_item_desc,
+    cat: i.i_category,
+    class: i.i_class,
+    price: i.i_current_price
+  } into g
+  select {
+    i_item_id: g.key.id,
+    i_item_desc: g.key.desc,
+    i_category: g.key.cat,
+    i_class: g.key.class,
+    i_current_price: g.key.price,
+    itemrevenue: sum(from x in g select x.ws_ext_sales_price)
+  }
+
+let class_totals =
+  from f in filtered
+  group by f.i_class into g
+  select { class: g.key, total: sum(from x in g select x.itemrevenue) }
+
+let result =
+  from f in filtered
+  join t in class_totals on f.i_class == t.class
+  sort by [f.i_category, f.i_class, f.i_item_id, f.i_item_desc]
+  select {
+    i_item_id: f.i_item_id,
+    i_item_desc: f.i_item_desc,
+    i_category: f.i_category,
+    i_class: f.i_class,
+    i_current_price: f.i_current_price,
+    itemrevenue: f.itemrevenue,
+    revenueratio: (f.itemrevenue * 100.0) / t.total
+  }
+
 json(result)
 
-test "TPCDS Q12 first" {
-  expect result == 12
+test "TPCDS Q12 revenue ratio" {
+  expect result == [
+    { i_item_id: "ITEM1", i_item_desc: "Item One", i_category: "A", i_class: "C1", i_current_price: 10.0, itemrevenue: 200.0, revenueratio: 50.0 },
+    { i_item_id: "ITEM2", i_item_desc: "Item Two", i_category: "A", i_class: "C1", i_current_price: 20.0, itemrevenue: 200.0, revenueratio: 50.0 }
+  ]
 }

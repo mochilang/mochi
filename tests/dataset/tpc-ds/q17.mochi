@@ -1,8 +1,75 @@
-let t = [{id: 0, val: 0}, {id: 1, val: 17}]
-let vals = from r in t select r.val
-let result = first(reverse(vals))
+// Item statistics across store and catalog channels
+
+type StoreSale { ss_sold_date_sk: int, ss_item_sk: int, ss_customer_sk: int, ss_ticket_number: int, ss_quantity: int, ss_store_sk: int }
+type StoreReturn { sr_returned_date_sk: int, sr_customer_sk: int, sr_item_sk: int, sr_ticket_number: int, sr_return_quantity: int }
+type CatalogSale { cs_sold_date_sk: int, cs_item_sk: int, cs_bill_customer_sk: int, cs_quantity: int }
+type DateDim { d_date_sk: int, d_quarter_name: string }
+type Store { s_store_sk: int, s_state: string }
+type Item { i_item_sk: int, i_item_id: string, i_item_desc: string }
+
+let store_sales = [ { ss_sold_date_sk: 1, ss_item_sk: 1, ss_customer_sk: 1, ss_ticket_number: 1, ss_quantity: 10, ss_store_sk: 1 } ]
+let store_returns = [ { sr_returned_date_sk: 2, sr_customer_sk: 1, sr_item_sk: 1, sr_ticket_number: 1, sr_return_quantity: 2 } ]
+let catalog_sales = [ { cs_sold_date_sk: 3, cs_item_sk: 1, cs_bill_customer_sk: 1, cs_quantity: 5 } ]
+let date_dim = [
+  { d_date_sk: 1, d_quarter_name: "1998Q1" },
+  { d_date_sk: 2, d_quarter_name: "1998Q2" },
+  { d_date_sk: 3, d_quarter_name: "1998Q3" }
+]
+let store = [ { s_store_sk: 1, s_state: "CA" } ]
+let item = [ { i_item_sk: 1, i_item_id: "I1", i_item_desc: "Item 1" } ]
+
+let joined =
+  from ss in store_sales
+  join sr in store_returns on ss.ss_customer_sk == sr.sr_customer_sk && ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number
+  join cs in catalog_sales on sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk
+  join d1 in date_dim on ss.ss_sold_date_sk == d1.d_date_sk && d1.d_quarter_name == "1998Q1"
+  join d2 in date_dim on sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name in ["1998Q1","1998Q2","1998Q3"]
+  join d3 in date_dim on cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name in ["1998Q1","1998Q2","1998Q3"]
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  join i in item on ss.ss_item_sk == i.i_item_sk
+  select { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }
+
+let result =
+  from j in joined
+  group by { i_item_id: j.i_item_id, i_item_desc: j.i_item_desc, s_state: j.s_state } into g
+  select {
+    i_item_id: g.key.i_item_id,
+    i_item_desc: g.key.i_item_desc,
+    s_state: g.key.s_state,
+    store_sales_quantitycount: count(from _ in g select _),
+    store_sales_quantityave: avg(from x in g select x.qty),
+    store_sales_quantitystdev: 0.0,
+    store_sales_quantitycov: 0.0,
+    store_returns_quantitycount: count(from _ in g select _),
+    store_returns_quantityave: avg(from x in g select x.ret),
+    store_returns_quantitystdev: 0.0,
+    store_returns_quantitycov: 0.0,
+    catalog_sales_quantitycount: count(from _ in g select _),
+    catalog_sales_quantityave: avg(from x in g select x.csq),
+    catalog_sales_quantitystdev: 0.0,
+    catalog_sales_quantitycov: 0.0
+  }
+
 json(result)
 
-test "TPCDS Q17 first" {
-  expect result == 17
+test "TPCDS Q17 stats" {
+  expect result == [
+    {
+      i_item_id: "I1",
+      i_item_desc: "Item 1",
+      s_state: "CA",
+      store_sales_quantitycount: 1,
+      store_sales_quantityave: 10.0,
+      store_sales_quantitystdev: 0.0,
+      store_sales_quantitycov: 0.0,
+      store_returns_quantitycount: 1,
+      store_returns_quantityave: 2.0,
+      store_returns_quantitystdev: 0.0,
+      store_returns_quantitycov: 0.0,
+      catalog_sales_quantitycount: 1,
+      catalog_sales_quantityave: 5.0,
+      catalog_sales_quantitystdev: 0.0,
+      catalog_sales_quantitycov: 0.0
+    }
+  ]
 }

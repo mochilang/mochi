@@ -1,8 +1,50 @@
-let t = [{id: 0, val: 0}, {id: 1, val: 16}]
-let vals = from r in t select r.val
-let result = first(reverse(vals))
-json(result)
+// Orders shipped from multiple warehouses within a date range
 
-test "TPCDS Q16 first" {
-  expect result == 16
+type CatalogSale { cs_order_number: int, cs_ship_date_sk: int, cs_ship_addr_sk: int,
+  cs_call_center_sk: int, cs_warehouse_sk: int, cs_ext_ship_cost: float, cs_net_profit: float }
+type DateDim { d_date_sk: int, d_date: string }
+type CustomerAddress { ca_address_sk: int, ca_state: string }
+type CallCenter { cc_call_center_sk: int, cc_county: string }
+type CatalogReturn { cr_order_number: int }
+
+let catalog_sales = [
+  { cs_order_number: 1, cs_ship_date_sk: 1, cs_ship_addr_sk: 1, cs_call_center_sk: 1, cs_warehouse_sk: 1, cs_ext_ship_cost: 5.0, cs_net_profit: 20.0 },
+  { cs_order_number: 1, cs_ship_date_sk: 1, cs_ship_addr_sk: 1, cs_call_center_sk: 1, cs_warehouse_sk: 2, cs_ext_ship_cost: 0.0, cs_net_profit: 0.0 }
+]
+let date_dim = [ { d_date_sk: 1, d_date: "2000-03-01" } ]
+let customer_address = [ { ca_address_sk: 1, ca_state: "CA" } ]
+let call_center = [ { cc_call_center_sk: 1, cc_county: "CountyA" } ]
+let catalog_returns = []
+
+fun distinct(xs: list<any>): list<any> {
+  var out = []
+  for x in xs {
+    if !contains(out, x) {
+      out = append(out, x)
+    }
+  }
+  return out
+}
+
+let filtered =
+  from cs1 in catalog_sales
+  join d in date_dim on cs1.cs_ship_date_sk == d.d_date_sk && d.d_date >= "2000-03-01" && d.d_date <= "2000-04-30"
+  join ca in customer_address on cs1.cs_ship_addr_sk == ca.ca_address_sk && ca.ca_state == "CA"
+  join cc in call_center on cs1.cs_call_center_sk == cc.cc_call_center_sk && cc.cc_county == "CountyA"
+  where exists(
+          from cs2 in catalog_sales
+          where cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk
+          select cs2) &&
+        exists(from cr in catalog_returns where cs1.cs_order_number == cr.cr_order_number select cr) == false
+  group by {} into g
+  select {
+    order_count: len(distinct(from x in g select x.cs_order_number)),
+    total_shipping_cost: sum(from x in g select x.cs_ext_ship_cost),
+    total_net_profit: sum(from x in g select x.cs_net_profit)
+  }
+
+json(filtered)
+
+test "TPCDS Q16 shipping" {
+  expect filtered == [ { order_count: 1, total_shipping_cost: 5.0, total_net_profit: 20.0 } ]
 }
