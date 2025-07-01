@@ -35,6 +35,7 @@ The VM supports a small but useful subset of Mochi:
 * Pattern matching
 * Test blocks with `expect` statements
 * Capable of running the full suite of simplified TPC‑DS benchmark queries
+* Able to execute the JOB dataset benchmark queries used for compiler testing
 
 ## Unsupported features
 
