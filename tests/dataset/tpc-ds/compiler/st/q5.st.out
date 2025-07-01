@@ -4,7 +4,7 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !Main class methodsFor: 'tests'!
 test_TPCDS_Q5_result
-	(((result) size = 3)) ifFalse: [ self error: 'expect failed' ]
+    (((result) size = 3)) ifFalse: [ self error: 'expect failed' ]
 !
 
 !!

@@ -7,16 +7,16 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !Main class methodsFor: 'tests'!
 test_TPCDS_Q3_result
-	((result = Array with: (Dictionary from: {'d_year' -> 1998. 'brand_id' -> 1. 'brand' -> 'Brand1'. 'sum_agg' -> 10.000000}) with: (Dictionary from: {'d_year' -> 1998. 'brand_id' -> 2. 'brand' -> 'Brand2'. 'sum_agg' -> 20.000000}))) ifFalse: [ self error: 'expect failed' ]
+    ((result = Array with: (Dictionary from: {'d_year' -> 1998. 'brand_id' -> 1. 'brand' -> 'Brand1'. 'sum_agg' -> 10.000000}) with: (Dictionary from: {'d_year' -> 1998. 'brand_id' -> 2. 'brand' -> 'Brand2'. 'sum_agg' -> 20.000000}))) ifFalse: [ self error: 'expect failed' ]
 !
 
 !Main class methodsFor: 'runtime'!
 __sum: v
-	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
-	| s |
-	s := 0.
-	v do: [:it | s := s + it].
-	^ s
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
 !
 !!
 date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 1998. 'd_moy' -> 12}).
@@ -25,23 +25,23 @@ item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_manufact_id' -> 100.
 result := ((| res |
 res := OrderedCollection new.
 ((date_dim) select: [:dt | (((((i at: 'i_manufact_id' = 100) and: [dt at: 'd_moy']) = 12) and: [(dt at: 'd_date_sk' = ss at: 'ss_sold_date_sk')]) and: [(ss at: 'ss_item_sk' = i at: 'i_item_sk')])]) do: [:dt |
-	(store_sales) do: [:ss |
-		(item) do: [:i |
-			res add: { Array with: (g at: 'key' at: 'd_year') with: (((Main __sum: ((| res |
+    (store_sales) do: [:ss |
+        (item) do: [:i |
+            res add: { Array with: (g at: 'key' at: 'd_year') with: (((Main __sum: ((| res |
 res := OrderedCollection new.
 (g) do: [:x |
-	res add: x at: 'ss_ext_sales_price'.
+    res add: x at: 'ss_ext_sales_price'.
 ]
 res := res asArray.
 res))) negated)) with: (g at: 'key' at: 'brand_id') . Dictionary from: {'d_year' -> g at: 'key' at: 'd_year'. 'brand_id' -> g at: 'key' at: 'brand_id'. 'brand' -> g at: 'key' at: 'brand'. 'sum_agg' -> (Main __sum: ((| res |
 res := OrderedCollection new.
 (g) do: [:x |
-	res add: x at: 'ss_ext_sales_price'.
+    res add: x at: 'ss_ext_sales_price'.
 ]
 res := res asArray.
 res)))} }.
-		]
-	]
+        ]
+    ]
 ]
 res := res asArray.
 res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.

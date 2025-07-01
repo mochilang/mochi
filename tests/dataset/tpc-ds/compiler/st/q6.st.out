@@ -10,36 +10,36 @@ Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDict
 
 !Main class methodsFor: 'tests'!
 test_TPCDS_Q6_result
-	((result = Array with: (Dictionary from: {'state' -> 'CA'. 'cnt' -> 10}))) ifFalse: [ self error: 'expect failed' ]
+    ((result = Array with: (Dictionary from: {'state' -> 'CA'. 'cnt' -> 10}))) ifFalse: [ self error: 'expect failed' ]
 !
 
 !Main class methodsFor: 'runtime'!
 __count: v
-	(v respondsTo: #size) ifTrue: [ ^ v size ]
-	^ self error: 'count() expects collection'
+    (v respondsTo: #size) ifTrue: [ ^ v size ]
+    ^ self error: 'count() expects collection'
 !
 __avg: v
-	(v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
-	v size = 0 ifTrue: [ ^ 0 ]
-	| sum |
-	sum := 0.
-	v do: [:it | sum := sum + it].
-	^ sum / v size
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
 !
 __max: v
-	(v respondsTo: #do:) ifFalse: [ ^ self error: 'max() expects collection' ]
-	| m first |
-	first := true.
-	v do: [:it | first ifTrue: [ m := it. first := false ] ifFalse: [ (it > m) ifTrue: [ m := it ] ] ].
-	^ first ifTrue: [ 0 ] ifFalse: [ m ]
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'max() expects collection' ]
+    | m first |
+    first := true.
+    v do: [:it | first ifTrue: [ m := it. first := false ] ifFalse: [ (it > m) ifTrue: [ m := it ] ] ].
+    ^ first ifTrue: [ 0 ] ifFalse: [ m ]
 !
 _paginate: items skip: s take: t
-	| out start |
-	out := items asArray.
-	start := s ifNil: [ 0 ] ifNotNil: [ s ].
-	start > 0 ifTrue: [ out := out copyFrom: start + 1 to: out size ].
-	t notNil ifTrue: [ out := out copyFrom: 1 to: (t min: out size) ].
-	^ out
+    | out start |
+    out := items asArray.
+    start := s ifNil: [ 0 ] ifNotNil: [ s ].
+    start > 0 ifTrue: [ out := out copyFrom: start + 1 to: out size ].
+    t notNil ifTrue: [ out := out copyFrom: 1 to: (t min: out size) ].
+    ^ out
 !
 !!
 customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_state' -> 'CA'. 'ca_zip' -> '12345'}).
@@ -50,7 +50,7 @@ item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_category' -> 'A'. 'i
 target_month_seq := (Main __max: ((| res |
 res := OrderedCollection new.
 ((date_dim) select: [:d | (((d at: 'd_year' = 1999) and: [d at: 'd_moy']) = 5)]) do: [:d |
-	res add: d at: 'd_month_seq'.
+    res add: d at: 'd_month_seq'.
 ]
 res := res asArray.
 res))).
@@ -59,19 +59,19 @@ res := OrderedCollection new.
 ((customer_address) select: [:a | ((((((((d at: 'd_month_seq' = target_month_seq) and: [i at: 'i_current_price']) > 1.200000) * (Main __avg: ((| res |
 res := OrderedCollection new.
 ((item) select: [:j | (j at: 'i_category' = i at: 'i_category')]) do: [:j |
-	res add: j at: 'i_current_price'.
+    res add: j at: 'i_current_price'.
 ]
 res := res asArray.
 res)))) and: [(a at: 'ca_address_sk' = c at: 'c_current_addr_sk')]) and: [(c at: 'c_customer_sk' = s at: 'ss_customer_sk')]) and: [(s at: 'ss_sold_date_sk' = d at: 'd_date_sk')]) and: [(s at: 'ss_item_sk' = i at: 'i_item_sk')])]) do: [:a |
-	(customer) do: [:c |
-		(store_sales) do: [:s |
-			(date_dim) do: [:d |
-				(item) do: [:i |
-					res add: { Array with: ((Main __count: g)) with: (g at: 'key') . Dictionary from: {'state' -> g at: 'key'. 'cnt' -> (Main __count: g)} }.
-				]
-			]
-		]
-	]
+    (customer) do: [:c |
+        (store_sales) do: [:s |
+            (date_dim) do: [:d |
+                (item) do: [:i |
+                    res add: { Array with: ((Main __count: g)) with: (g at: 'key') . Dictionary from: {'state' -> g at: 'key'. 'cnt' -> (Main __count: g)} }.
+                ]
+            ]
+        ]
+    ]
 ]
 res := res asArray.
 res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.

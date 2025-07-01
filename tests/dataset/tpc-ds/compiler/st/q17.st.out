@@ -1,0 +1,202 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #joined put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_returns put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newStoreSale: ss_sold_date_sk ss_item_sk: ss_item_sk ss_customer_sk: ss_customer_sk ss_ticket_number: ss_ticket_number ss_quantity: ss_quantity ss_store_sk: ss_store_sk | dict |
+    dict := Dictionary new.
+    dict at: 'ss_sold_date_sk' put: ss_sold_date_sk.
+    dict at: 'ss_item_sk' put: ss_item_sk.
+    dict at: 'ss_customer_sk' put: ss_customer_sk.
+    dict at: 'ss_ticket_number' put: ss_ticket_number.
+    dict at: 'ss_quantity' put: ss_quantity.
+    dict at: 'ss_store_sk' put: ss_store_sk.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newStoreReturn: sr_returned_date_sk sr_customer_sk: sr_customer_sk sr_item_sk: sr_item_sk sr_ticket_number: sr_ticket_number sr_return_quantity: sr_return_quantity | dict |
+    dict := Dictionary new.
+    dict at: 'sr_returned_date_sk' put: sr_returned_date_sk.
+    dict at: 'sr_customer_sk' put: sr_customer_sk.
+    dict at: 'sr_item_sk' put: sr_item_sk.
+    dict at: 'sr_ticket_number' put: sr_ticket_number.
+    dict at: 'sr_return_quantity' put: sr_return_quantity.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCatalogSale: cs_sold_date_sk cs_item_sk: cs_item_sk cs_bill_customer_sk: cs_bill_customer_sk cs_quantity: cs_quantity | dict |
+    dict := Dictionary new.
+    dict at: 'cs_sold_date_sk' put: cs_sold_date_sk.
+    dict at: 'cs_item_sk' put: cs_item_sk.
+    dict at: 'cs_bill_customer_sk' put: cs_bill_customer_sk.
+    dict at: 'cs_quantity' put: cs_quantity.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_quarter_name: d_quarter_name | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_quarter_name' put: d_quarter_name.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newStore: s_store_sk s_state: s_state | dict |
+    dict := Dictionary new.
+    dict at: 's_store_sk' put: s_store_sk.
+    dict at: 's_state' put: s_state.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newItem: i_item_sk i_item_id: i_item_id i_item_desc: i_item_desc | dict |
+    dict := Dictionary new.
+    dict at: 'i_item_sk' put: i_item_sk.
+    dict at: 'i_item_id' put: i_item_id.
+    dict at: 'i_item_desc' put: i_item_desc.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q17_stats
+    ((result = Array with: (Dictionary from: {'i_item_id' -> 'I1'. 'i_item_desc' -> 'Item 1'. 's_state' -> 'CA'. 'store_sales_quantitycount' -> 1. 'store_sales_quantityave' -> 10.000000. 'store_sales_quantitystdev' -> 0.000000. 'store_sales_quantitycov' -> 0.000000. 'store_returns_quantitycount' -> 1. 'store_returns_quantityave' -> 2.000000. 'store_returns_quantitystdev' -> 0.000000. 'store_returns_quantitycov' -> 0.000000. 'catalog_sales_quantitycount' -> 1. 'catalog_sales_quantityave' -> 5.000000. 'catalog_sales_quantitystdev' -> 0.000000. 'catalog_sales_quantitycov' -> 0.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__count: v
+    (v respondsTo: #size) ifTrue: [ ^ v size ]
+    ^ self error: 'count() expects collection'
+!
+__avg: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_sold_date_sk' -> 1. 'ss_item_sk' -> 1. 'ss_customer_sk' -> 1. 'ss_ticket_number' -> 1. 'ss_quantity' -> 10. 'ss_store_sk' -> 1}).
+store_returns := Array with: (Dictionary from: {'sr_returned_date_sk' -> 2. 'sr_customer_sk' -> 1. 'sr_item_sk' -> 1. 'sr_ticket_number' -> 1. 'sr_return_quantity' -> 2}).
+catalog_sales := Array with: (Dictionary from: {'cs_sold_date_sk' -> 3. 'cs_item_sk' -> 1. 'cs_bill_customer_sk' -> 1. 'cs_quantity' -> 5}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_quarter_name' -> '1998Q1'}) with: (Dictionary from: {'d_date_sk' -> 2. 'd_quarter_name' -> '1998Q2'}) with: (Dictionary from: {'d_date_sk' -> 3. 'd_quarter_name' -> '1998Q3'}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1. 's_state' -> 'CA'}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_item_id' -> 'I1'. 'i_item_desc' -> 'Item 1'}).
+joined := ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | (((((((((((ss at: 'ss_customer_sk' = sr at: 'sr_customer_sk') and: [ss at: 'ss_item_sk']) = sr at: 'sr_item_sk') and: [ss at: 'ss_ticket_number']) = sr at: 'sr_ticket_number') and: [(((sr at: 'sr_customer_sk' = cs at: 'cs_bill_customer_sk') and: [sr at: 'sr_item_sk']) = cs at: 'cs_item_sk')]) and: [(((ss at: 'ss_sold_date_sk' = d1 at: 'd_date_sk') and: [d1 at: 'd_quarter_name']) = '1998Q1')]) and: [(Array with: '1998Q1' with: '1998Q2' with: '1998Q3' includes: sr at: 'sr_returned_date_sk')]) and: [(Array with: '1998Q1' with: '1998Q2' with: '1998Q3' includes: cs at: 'cs_sold_date_sk')]) and: [(ss at: 'ss_store_sk' = s at: 's_store_sk')]) and: [(ss at: 'ss_item_sk' = i at: 'i_item_sk')])]) do: [:ss |
+    (store_returns) do: [:sr |
+        (catalog_sales) do: [:cs |
+            (date_dim) do: [:d1 |
+                (date_dim) do: [:d2 |
+                    (date_dim) do: [:d3 |
+                        (store) do: [:s |
+                            (item) do: [:i |
+                                res add: Dictionary from: {'qty' -> ss at: 'ss_quantity'. 'ret' -> sr at: 'sr_return_quantity'. 'csq' -> cs at: 'cs_quantity'. 'i_item_id' -> i at: 'i_item_id'. 'i_item_desc' -> i at: 'i_item_desc'. 's_state' -> s at: 's_state'}.
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res)).
+result := ((| rows groups |
+rows := OrderedCollection new.
+(joined) do: [:j |
+    rows add: j.
+]
+groups := (Main _group_by: rows keyFn: [:j | Dictionary from: {'i_item_id' -> j at: 'i_item_id'. 'i_item_desc' -> j at: 'i_item_desc'. 's_state' -> j at: 's_state'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'i_item_id' -> g at: 'key' at: 'i_item_id'. 'i_item_desc' -> g at: 'key' at: 'i_item_desc'. 's_state' -> g at: 'key' at: 's_state'. 'store_sales_quantitycount' -> (Main __count: ((| res |
+res := OrderedCollection new.
+(g) do: [:_ |
+    res add: _.
+]
+res := res asArray.
+res))). 'store_sales_quantityave' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'qty'.
+]
+res := res asArray.
+res))). 'store_sales_quantitystdev' -> 0.000000. 'store_sales_quantitycov' -> 0.000000. 'store_returns_quantitycount' -> (Main __count: ((| res |
+res := OrderedCollection new.
+(g) do: [:_ |
+    res add: _.
+]
+res := res asArray.
+res))). 'store_returns_quantityave' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ret'.
+]
+res := res asArray.
+res))). 'store_returns_quantitystdev' -> 0.000000. 'store_returns_quantitycov' -> 0.000000. 'catalog_sales_quantitycount' -> (Main __count: ((| res |
+res := OrderedCollection new.
+(g) do: [:_ |
+    res add: _.
+]
+res := res asArray.
+res))). 'catalog_sales_quantityave' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'csq'.
+]
+res := res asArray.
+res))). 'catalog_sales_quantitystdev' -> 0.000000. 'catalog_sales_quantitycov' -> 0.000000}.
+]
+rows := rows asArray.
+rows)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q17_stats.

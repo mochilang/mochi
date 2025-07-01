@@ -1,0 +1,189 @@
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #customer_demographics put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #filtered put: nil.
+Smalltalk at: #household_demographics put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newStoreSale: ss_store_sk ss_sold_date_sk: ss_sold_date_sk ss_hdemo_sk: ss_hdemo_sk ss_cdemo_sk: ss_cdemo_sk ss_addr_sk: ss_addr_sk ss_sales_price: ss_sales_price ss_net_profit: ss_net_profit ss_quantity: ss_quantity ss_ext_sales_price: ss_ext_sales_price ss_ext_wholesale_cost: ss_ext_wholesale_cost | dict |
+    dict := Dictionary new.
+    dict at: 'ss_store_sk' put: ss_store_sk.
+    dict at: 'ss_sold_date_sk' put: ss_sold_date_sk.
+    dict at: 'ss_hdemo_sk' put: ss_hdemo_sk.
+    dict at: 'ss_cdemo_sk' put: ss_cdemo_sk.
+    dict at: 'ss_addr_sk' put: ss_addr_sk.
+    dict at: 'ss_sales_price' put: ss_sales_price.
+    dict at: 'ss_net_profit' put: ss_net_profit.
+    dict at: 'ss_quantity' put: ss_quantity.
+    dict at: 'ss_ext_sales_price' put: ss_ext_sales_price.
+    dict at: 'ss_ext_wholesale_cost' put: ss_ext_wholesale_cost.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newStore: s_store_sk s_state: s_state | dict |
+    dict := Dictionary new.
+    dict at: 's_store_sk' put: s_store_sk.
+    dict at: 's_state' put: s_state.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomerDemographics: cd_demo_sk cd_marital_status: cd_marital_status cd_education_status: cd_education_status | dict |
+    dict := Dictionary new.
+    dict at: 'cd_demo_sk' put: cd_demo_sk.
+    dict at: 'cd_marital_status' put: cd_marital_status.
+    dict at: 'cd_education_status' put: cd_education_status.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newHouseholdDemographics: hd_demo_sk hd_dep_count: hd_dep_count | dict |
+    dict := Dictionary new.
+    dict at: 'hd_demo_sk' put: hd_demo_sk.
+    dict at: 'hd_dep_count' put: hd_dep_count.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomerAddress: ca_address_sk ca_country: ca_country ca_state: ca_state | dict |
+    dict := Dictionary new.
+    dict at: 'ca_address_sk' put: ca_address_sk.
+    dict at: 'ca_country' put: ca_country.
+    dict at: 'ca_state' put: ca_state.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_year: d_year | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_year' put: d_year.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q13_averages
+    ((result = Array with: (Dictionary from: {'avg_ss_quantity' -> 10.000000. 'avg_ss_ext_sales_price' -> 100.000000. 'avg_ss_ext_wholesale_cost' -> 50.000000. 'sum_ss_ext_wholesale_cost' -> 50.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__avg: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
+!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_store_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_hdemo_sk' -> 1. 'ss_cdemo_sk' -> 1. 'ss_addr_sk' -> 1. 'ss_sales_price' -> 120.000000. 'ss_net_profit' -> 150.000000. 'ss_quantity' -> 10. 'ss_ext_sales_price' -> 100.000000. 'ss_ext_wholesale_cost' -> 50.000000}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1. 's_state' -> 'CA'}).
+customer_demographics := Array with: (Dictionary from: {'cd_demo_sk' -> 1. 'cd_marital_status' -> 'M1'. 'cd_education_status' -> 'ES1'}).
+household_demographics := Array with: (Dictionary from: {'hd_demo_sk' -> 1. 'hd_dep_count' -> 3}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_country' -> 'United States'. 'ca_state' -> 'CA'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 2001}).
+filtered := ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | (((((ss at: 'ss_store_sk' = s at: 's_store_sk') and: [(((((ss at: 'ss_cdemo_sk' = cd at: 'cd_demo_sk') and: [cd at: 'cd_marital_status']) = 'M1') and: [cd at: 'cd_education_status']) = 'ES1')]) and: [(((ss at: 'ss_hdemo_sk' = hd at: 'hd_demo_sk') and: [hd at: 'hd_dep_count']) = 3)]) and: [(((((ss at: 'ss_addr_sk' = ca at: 'ca_address_sk') and: [ca at: 'ca_country']) = 'United States') and: [ca at: 'ca_state']) = 'CA')]) and: [(((ss at: 'ss_sold_date_sk' = d at: 'd_date_sk') and: [d at: 'd_year']) = 2001)])]) do: [:ss |
+    (store) do: [:s |
+        (customer_demographics) do: [:cd |
+            (household_demographics) do: [:hd |
+                (customer_address) do: [:ca |
+                    (date_dim) do: [:d |
+                        res add: ss.
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res)).
+result := ((| rows groups |
+rows := OrderedCollection new.
+(filtered) do: [:r |
+    rows add: r.
+]
+groups := (Main _group_by: rows keyFn: [:r | Dictionary new]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'avg_ss_quantity' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_quantity'.
+]
+res := res asArray.
+res))). 'avg_ss_ext_sales_price' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_ext_sales_price'.
+]
+res := res asArray.
+res))). 'avg_ss_ext_wholesale_cost' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_ext_wholesale_cost'.
+]
+res := res asArray.
+res))). 'sum_ss_ext_wholesale_cost' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_ext_wholesale_cost'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q13_averages.
