@@ -1,0 +1,19 @@
+fn test_TPCDS_Q8_empty() {
+    expect(result.len() as i64 == 0);
+}
+
+fn main() {
+    let mut store_sales = vec![];
+    let mut date_dim = vec![];
+    let mut store = vec![];
+    let mut customer_address = vec![];
+    let mut customer = vec![];
+    reverse(substr("zip", 0, 2));
+    let mut result = vec![];
+    json(result);
+    test_TPCDS_Q8_empty();
+}
+
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}

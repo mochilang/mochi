@@ -1,0 +1,160 @@
+fn test_TPCDS_Q4_empty() {
+    expect(result.len() as i64 == 0);
+}
+
+fn main() {
+    let mut customer = vec![];
+    let mut store_sales = vec![];
+    let mut catalog_sales = vec![];
+    let mut web_sales = vec![];
+    let mut date_dim = vec![];
+    let mut year_total = _union(&_union(&({
+    #[derive(Clone, Debug)]
+    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::boxed::Box<dyn std::any::Any>> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for c in customer.clone() {
+        for s in store_sales.clone() {
+            if !(_map_get(&c, &"c_customer_sk".to_string()) == _map_get(&s, &"ss_customer_sk".to_string())) { continue; }
+            for d in date_dim.clone() {
+                if !(_map_get(&s, &"ss_sold_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string())) { continue; }
+                let key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>> = std::collections::HashMap::from([("id".to_string(), _map_get(&c, &"c_customer_id".to_string())), ("first".to_string(), _map_get(&c, &"c_first_name".to_string())), ("last".to_string(), _map_get(&c, &"c_last_name".to_string())), ("login".to_string(), _map_get(&c, &"c_login".to_string())), ("year".to_string(), _map_get(&d, &"d_year".to_string()))]);
+                let ks = format!("{:?}", key.clone());
+                if !groups.contains_key(&ks) {
+                    groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+                    order.push(ks.clone());
+                }
+                groups.get_mut(&ks).unwrap().items.push(c.clone());
+            }
+        }
+    }
+    let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("customer_id".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"id".to_string())), ("customer_first_name".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"first".to_string())), ("customer_last_name".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"last".to_string())), ("customer_login".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"login".to_string())), ("dyear".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"year".to_string())), ("year_total".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(((_map_get(&x, &"ss_ext_list_price".to_string()) - _map_get(&x, &"ss_ext_wholesale_cost".to_string()) - _map_get(&x, &"ss_ext_discount_amt".to_string())) + _map_get(&x, &"ss_ext_sales_price".to_string())) / 2);
+    }
+    _res
+})), ("sale_type".to_string(), "s")]));
+    }
+    _res
+}
+), &({
+    #[derive(Clone, Debug)]
+    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::boxed::Box<dyn std::any::Any>> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for c in customer.clone() {
+        for cs in catalog_sales.clone() {
+            if !(_map_get(&c, &"c_customer_sk".to_string()) == _map_get(&cs, &"cs_bill_customer_sk".to_string())) { continue; }
+            for d in date_dim.clone() {
+                if !(_map_get(&cs, &"cs_sold_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string())) { continue; }
+                let key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>> = std::collections::HashMap::from([("id".to_string(), _map_get(&c, &"c_customer_id".to_string())), ("first".to_string(), _map_get(&c, &"c_first_name".to_string())), ("last".to_string(), _map_get(&c, &"c_last_name".to_string())), ("login".to_string(), _map_get(&c, &"c_login".to_string())), ("year".to_string(), _map_get(&d, &"d_year".to_string()))]);
+                let ks = format!("{:?}", key.clone());
+                if !groups.contains_key(&ks) {
+                    groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+                    order.push(ks.clone());
+                }
+                groups.get_mut(&ks).unwrap().items.push(c.clone());
+            }
+        }
+    }
+    let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("customer_id".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"id".to_string())), ("customer_first_name".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"first".to_string())), ("customer_last_name".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"last".to_string())), ("customer_login".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"login".to_string())), ("dyear".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"year".to_string())), ("year_total".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(((_map_get(&x, &"cs_ext_list_price".to_string()) - _map_get(&x, &"cs_ext_wholesale_cost".to_string()) - _map_get(&x, &"cs_ext_discount_amt".to_string())) + _map_get(&x, &"cs_ext_sales_price".to_string())) / 2);
+    }
+    _res
+})), ("sale_type".to_string(), "c")]));
+    }
+    _res
+}
+)), &({
+    #[derive(Clone, Debug)]
+    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::boxed::Box<dyn std::any::Any>> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for c in customer.clone() {
+        for ws in web_sales.clone() {
+            if !(_map_get(&c, &"c_customer_sk".to_string()) == _map_get(&ws, &"ws_bill_customer_sk".to_string())) { continue; }
+            for d in date_dim.clone() {
+                if !(_map_get(&ws, &"ws_sold_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string())) { continue; }
+                let key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>> = std::collections::HashMap::from([("id".to_string(), _map_get(&c, &"c_customer_id".to_string())), ("first".to_string(), _map_get(&c, &"c_first_name".to_string())), ("last".to_string(), _map_get(&c, &"c_last_name".to_string())), ("login".to_string(), _map_get(&c, &"c_login".to_string())), ("year".to_string(), _map_get(&d, &"d_year".to_string()))]);
+                let ks = format!("{:?}", key.clone());
+                if !groups.contains_key(&ks) {
+                    groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+                    order.push(ks.clone());
+                }
+                groups.get_mut(&ks).unwrap().items.push(c.clone());
+            }
+        }
+    }
+    let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("customer_id".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"id".to_string())), ("customer_first_name".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"first".to_string())), ("customer_last_name".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"last".to_string())), ("customer_login".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"login".to_string())), ("dyear".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"year".to_string())), ("year_total".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(((_map_get(&x, &"ws_ext_list_price".to_string()) - _map_get(&x, &"ws_ext_wholesale_cost".to_string()) - _map_get(&x, &"ws_ext_discount_amt".to_string())) + _map_get(&x, &"ws_ext_sales_price".to_string())) / 2);
+    }
+    _res
+})), ("sale_type".to_string(), "w")]));
+    }
+    _res
+}
+));
+    let mut result = {
+    let mut _pairs = Vec::new();
+    for s1 in year_total.clone() {
+        for s2 in year_total.clone() {
+            if !(_map_get(&s2, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string())) { continue; }
+            for c1 in year_total.clone() {
+                if !(_map_get(&c1, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string())) { continue; }
+                for c2 in year_total.clone() {
+                    if !(_map_get(&c2, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string())) { continue; }
+                    for w1 in year_total.clone() {
+                        if !(_map_get(&w1, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string())) { continue; }
+                        for w2 in year_total.clone() {
+                            if !(_map_get(&w2, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string())) { continue; }
+                            if _map_get(&s2, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string()) && _map_get(&c1, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string()) && _map_get(&c2, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string()) && _map_get(&w1, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string()) && _map_get(&w2, &"customer_id".to_string()) == _map_get(&s1, &"customer_id".to_string()) && _map_get(&s1, &"sale_type".to_string()) == "s" && _map_get(&c1, &"sale_type".to_string()) == "c" && _map_get(&w1, &"sale_type".to_string()) == "w" && _map_get(&s2, &"sale_type".to_string()) == "s" && _map_get(&c2, &"sale_type".to_string()) == "c" && _map_get(&w2, &"sale_type".to_string()) == "w" && _map_get(&s1, &"dyear".to_string()) == 2001 && _map_get(&s2, &"dyear".to_string()) == 2002 && _map_get(&c1, &"dyear".to_string()) == 2001 && _map_get(&c2, &"dyear".to_string()) == 2002 && _map_get(&w1, &"dyear".to_string()) == 2001 && _map_get(&w2, &"dyear".to_string()) == 2002 && _map_get(&s1, &"year_total".to_string()) > 0 && _map_get(&c1, &"year_total".to_string()) > 0 && _map_get(&w1, &"year_total".to_string()) > 0 && (if _map_get(&c1, &"year_total".to_string()) > 0 { _map_get(&c2, &"year_total".to_string()) / _map_get(&c1, &"year_total".to_string()) } else { Default::default() }) > (if _map_get(&s1, &"year_total".to_string()) > 0 { _map_get(&s2, &"year_total".to_string()) / _map_get(&s1, &"year_total".to_string()) } else { Default::default() }) && (if _map_get(&c1, &"year_total".to_string()) > 0 { _map_get(&c2, &"year_total".to_string()) / _map_get(&c1, &"year_total".to_string()) } else { Default::default() }) > (if _map_get(&w1, &"year_total".to_string()) > 0 { _map_get(&w2, &"year_total".to_string()) / _map_get(&w1, &"year_total".to_string()) } else { Default::default() }) {
+                                _pairs.push((vec![_map_get(&s2, &"customer_id".to_string()), _map_get(&s2, &"customer_first_name".to_string()), _map_get(&s2, &"customer_last_name".to_string()), _map_get(&s2, &"customer_login".to_string())], std::collections::HashMap::from([("customer_id".to_string(), _map_get(&s2, &"customer_id".to_string())), ("customer_first_name".to_string(), _map_get(&s2, &"customer_first_name".to_string())), ("customer_last_name".to_string(), _map_get(&s2, &"customer_last_name".to_string())), ("customer_login".to_string(), _map_get(&s2, &"customer_login".to_string()))])));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    _pairs.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+    let mut _res = Vec::new();
+    for p in _pairs { _res.push(p.1); }
+    _res
+};
+    json(result);
+    test_TPCDS_Q4_empty();
+}
+
+fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {
+    m.get(k).unwrap().clone()
+}
+fn _sum<T: Into<f64> + Copy>(v: &[T]) -> f64 {
+    if v.is_empty() { return 0.0 }
+    let mut sum = 0.0;
+    for &it in v { sum += Into::<f64>::into(it); }
+    sum
+}
+fn _union<T: PartialEq + Clone>(a: &[T], b: &[T]) -> Vec<T> {
+    let mut res = a.to_vec();
+    for it in b {
+        if !res.contains(it) { res.push(it.clone()); }
+    }
+    res
+}
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}
