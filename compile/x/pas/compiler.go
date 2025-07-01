@@ -88,16 +88,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// Emit test blocks as procedures.
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			if err := c.compileTestBlock(s.Test); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
-	}
-
 	// Emit generated lambda functions
 	for _, code := range c.lambdas {
 		c.buf.WriteString(code)
@@ -127,6 +117,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = prevBuf
 	c.indent = prevIndent
 
+	c.emitHelpers()
+
 	// Collect global vars and compiler-generated temporaries.
 	vars := map[string]string{}
 	collectVars(prog.Statements, c.env, vars)
@@ -136,6 +128,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		vars[n] = t
 	}
+
 	if len(vars) > 0 {
 		c.writeln("var")
 		c.indent++
@@ -151,7 +144,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
-	c.emitHelpers()
+	// Emit test blocks as procedures after variables.
+	for _, s := range prog.Statements {
+		if s.Test != nil {
+			if err := c.compileTestBlock(s.Test); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
 
 	c.writeln("begin")
 	c.indent++
@@ -730,6 +731,8 @@ func typeString(t types.Type) string {
 		return fmt.Sprintf("specialize TFPGMap<%s, %s>", typeString(mt.Key), typeString(mt.Value))
 	case types.StructType:
 		return sanitizeName(tt.Name)
+	case types.AnyType:
+		return "Variant"
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
@@ -1377,8 +1380,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		keyType := "string"
 		valType := "integer"
 		if len(p.Map.Items) > 0 {
-			if c.env != nil {
-				// no direct info; use defaults
+			keyType = typeString(types.TypeOfExpr(p.Map.Items[0].Key, c.env))
+			valType = typeString(types.TypeOfExpr(p.Map.Items[0].Value, c.env))
+			if valType != "integer" {
+				valType = "Variant"
+			} else {
+				for _, it := range p.Map.Items[1:] {
+					vt := typeString(types.TypeOfExpr(it.Value, c.env))
+					if vt != "integer" {
+						valType = "Variant"
+						break
+					}
+				}
 			}
 		}
 		pairs := make([]string, len(p.Map.Items))
