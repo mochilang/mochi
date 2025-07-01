@@ -64,25 +64,25 @@ def main():
             {
                 "d_week_seq": g.key.week_seq,
                 "sun_sales": _sum(
-                    [x["sales_price"] for x in g if (x["day"] == "Sunday")]
+                    [x[0]["sales_price"] for x in g if (x[0]["day"] == "Sunday")]
                 ),
                 "mon_sales": _sum(
-                    [x["sales_price"] for x in g if (x["day"] == "Monday")]
+                    [x[0]["sales_price"] for x in g if (x[0]["day"] == "Monday")]
                 ),
                 "tue_sales": _sum(
-                    [x["sales_price"] for x in g if (x["day"] == "Tuesday")]
+                    [x[0]["sales_price"] for x in g if (x[0]["day"] == "Tuesday")]
                 ),
                 "wed_sales": _sum(
-                    [x["sales_price"] for x in g if (x["day"] == "Wednesday")]
+                    [x[0]["sales_price"] for x in g if (x[0]["day"] == "Wednesday")]
                 ),
                 "thu_sales": _sum(
-                    [x["sales_price"] for x in g if (x["day"] == "Thursday")]
+                    [x[0]["sales_price"] for x in g if (x[0]["day"] == "Thursday")]
                 ),
                 "fri_sales": _sum(
-                    [x["sales_price"] for x in g if (x["day"] == "Friday")]
+                    [x[0]["sales_price"] for x in g if (x[0]["day"] == "Friday")]
                 ),
                 "sat_sales": _sum(
-                    [x["sales_price"] for x in g if (x["day"] == "Saturday")]
+                    [x[0]["sales_price"] for x in g if (x[0]["day"] == "Saturday")]
                 ),
             }
             for g in items

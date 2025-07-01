@@ -608,6 +608,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if idx, ok := fm[sanitizeName(tail[0])]; ok {
 				expr += fmt.Sprintf("[%d]", idx)
 				tail = tail[1:]
+			} else if sanitizeName(tail[0]) != "key" && sanitizeName(tail[0]) != "Items" {
+				// If the selector refers directly to a field
+				// without specifying which tuple element it
+				// belongs to, default to the first element.
+				expr += "[0]"
 			}
 		}
 		for _, s := range tail {
