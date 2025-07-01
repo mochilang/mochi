@@ -1,0 +1,364 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q2_empty() {
+	expect((len(result) == 0))
+}
+
+var web_sales []any
+var catalog_sales []any
+var date_dim []any
+var wscs []map[string]any
+var wswscs []map[string]any
+var result []any
+
+func main() {
+	failures := 0
+	web_sales = []any{}
+	catalog_sales = []any{}
+	date_dim = []any{}
+	wscs = _union[map[string]any]((func() []map[string]any {
+		_res := []map[string]any{}
+		for _, ws := range web_sales {
+			_res = append(_res, map[string]any{
+				"sold_date_sk": _cast[map[string]any](ws)["ws_sold_date_sk"],
+				"sales_price":  _cast[map[string]any](ws)["ws_ext_sales_price"],
+				"day":          _cast[map[string]any](ws)["ws_sold_date_name"],
+			})
+		}
+		return _res
+	}()), (func() []map[string]any {
+		_res := []map[string]any{}
+		for _, cs := range catalog_sales {
+			_res = append(_res, map[string]any{
+				"sold_date_sk": _cast[map[string]any](cs)["cs_sold_date_sk"],
+				"sales_price":  _cast[map[string]any](cs)["cs_ext_sales_price"],
+				"day":          _cast[map[string]any](cs)["cs_sold_date_name"],
+			})
+		}
+		return _res
+	}()))
+	wswscs = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, w := range wscs {
+			for _, d := range date_dim {
+				if !(_equal(w["sold_date_sk"], _cast[map[string]any](d)["d_date_sk"])) {
+					continue
+				}
+				key := map[string]any{"week_seq": _cast[map[string]any](d)["d_week_seq"]}
+				ks := fmt.Sprint(key)
+				g, ok := groups[ks]
+				if !ok {
+					g = &data.Group{Key: key}
+					groups[ks] = g
+					order = append(order, ks)
+				}
+				g.Items = append(g.Items, w)
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"d_week_seq": _cast[map[string]any](g.Key)["week_seq"],
+				"sun_sales": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if _equal(_cast[map[string]any](x)["day"], "Sunday") {
+							if _equal(_cast[map[string]any](x)["day"], "Sunday") {
+								_res = append(_res, _cast[map[string]any](x)["sales_price"])
+							}
+						}
+					}
+					return _res
+				}()),
+				"mon_sales": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if _equal(_cast[map[string]any](x)["day"], "Monday") {
+							if _equal(_cast[map[string]any](x)["day"], "Monday") {
+								_res = append(_res, _cast[map[string]any](x)["sales_price"])
+							}
+						}
+					}
+					return _res
+				}()),
+				"tue_sales": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if _equal(_cast[map[string]any](x)["day"], "Tuesday") {
+							if _equal(_cast[map[string]any](x)["day"], "Tuesday") {
+								_res = append(_res, _cast[map[string]any](x)["sales_price"])
+							}
+						}
+					}
+					return _res
+				}()),
+				"wed_sales": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if _equal(_cast[map[string]any](x)["day"], "Wednesday") {
+							if _equal(_cast[map[string]any](x)["day"], "Wednesday") {
+								_res = append(_res, _cast[map[string]any](x)["sales_price"])
+							}
+						}
+					}
+					return _res
+				}()),
+				"thu_sales": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if _equal(_cast[map[string]any](x)["day"], "Thursday") {
+							if _equal(_cast[map[string]any](x)["day"], "Thursday") {
+								_res = append(_res, _cast[map[string]any](x)["sales_price"])
+							}
+						}
+					}
+					return _res
+				}()),
+				"fri_sales": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if _equal(_cast[map[string]any](x)["day"], "Friday") {
+							if _equal(_cast[map[string]any](x)["day"], "Friday") {
+								_res = append(_res, _cast[map[string]any](x)["sales_price"])
+							}
+						}
+					}
+					return _res
+				}()),
+				"sat_sales": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if _equal(_cast[map[string]any](x)["day"], "Saturday") {
+							if _equal(_cast[map[string]any](x)["day"], "Saturday") {
+								_res = append(_res, _cast[map[string]any](x)["sales_price"])
+							}
+						}
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
+	result = []any{}
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q2 empty")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q2_empty()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func _sum(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string, []bool:
+			panic("sum() expects numbers")
+		default:
+			panic("sum() expects list or group")
+		}
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("sum() expects numbers")
+		}
+	}
+	return sum
+}
+
+func _union[T any](a, b []T) []T {
+	res := append([]T{}, a...)
+	for _, it := range b {
+		found := false
+		for _, v := range res {
+			if _equal(v, it) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			res = append(res, it)
+		}
+	}
+	return res
+}
