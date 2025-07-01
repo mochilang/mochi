@@ -2605,6 +2605,13 @@ func (fc *funcCompiler) compilePostfix(p *parser.PostfixExpr) int {
 	if len(p.Ops) == 1 && p.Ops[0].Call != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 {
 		rootName := p.Target.Selector.Root
 		methodName := p.Target.Selector.Tail[0]
+		// strings.ToUpper(x) -> upper(x)
+		if rootName == "strings" && methodName == "ToUpper" {
+			arg := fc.compileExpr(p.Ops[0].Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Ops[0].Call.Pos, Instr{Op: OpUpper, A: dst, B: arg})
+			return dst
+		}
 		if typ, err := fc.comp.env.GetVar(rootName); err == nil {
 			if st, ok := typ.(types.StructType); ok {
 				if _, ok := st.Methods[methodName]; ok {

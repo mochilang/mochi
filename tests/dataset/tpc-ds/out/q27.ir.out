@@ -1,6 +1,6 @@
-func main (regs=230)
+func main (regs=226)
   // let store_sales = [
-  Const        r0, [{"ss_cdemo_sk": 1, "ss_coupon_amt": 10, "ss_item_sk": 1, "ss_list_price": 100, "ss_quantity": 5, "ss_sales_price": 90, "ss_sold_date_sk": 1, "ss_store_sk": 1}, {"ss_cdemo_sk": 2, "ss_coupon_amt": 5, "ss_item_sk": 2, "ss_list_price": 50, "ss_quantity": 2, "ss_sales_price": 45, "ss_sold_date_sk": 1, "ss_store_sk": 2}]
+  Const        r0, [{"ss_cdemo_sk": 1, "ss_coupon_amt": 10.0, "ss_item_sk": 1, "ss_list_price": 100.0, "ss_quantity": 5, "ss_sales_price": 90.0, "ss_sold_date_sk": 1, "ss_store_sk": 1}, {"ss_cdemo_sk": 2, "ss_coupon_amt": 5.0, "ss_item_sk": 2, "ss_list_price": 50.0, "ss_quantity": 2, "ss_sales_price": 45.0, "ss_sold_date_sk": 1, "ss_store_sk": 2}]
   // let customer_demographics = [ { cd_demo_sk: 1, cd_gender: "F", cd_marital_status: "M", cd_education_status: "College" }, { cd_demo_sk: 2, cd_gender: "M", cd_marital_status: "S", cd_education_status: "College" } ]
   Const        r1, [{"cd_demo_sk": 1, "cd_education_status": "College", "cd_gender": "F", "cd_marital_status": "M"}, {"cd_demo_sk": 2, "cd_education_status": "College", "cd_gender": "M", "cd_marital_status": "S"}]
   // let date_dim = [ { d_date_sk: 1, d_year: 2000 } ]
@@ -42,7 +42,7 @@ func main (regs=230)
   IterPrep     r26, r0
   Len          r27, r26
   Const        r28, 0
-L15:
+L12:
   LessInt      r29, r28, r27
   JumpIfFalse  r29, L0
   Index        r30, r26, r28
@@ -51,7 +51,7 @@ L15:
   IterPrep     r32, r1
   Len          r33, r32
   Const        r34, 0
-L14:
+L11:
   LessInt      r35, r34, r33
   JumpIfFalse  r35, L1
   Index        r36, r32, r34
@@ -66,7 +66,7 @@ L14:
   IterPrep     r43, r2
   Len          r44, r43
   Const        r45, 0
-L13:
+L10:
   LessInt      r46, r45, r44
   JumpIfFalse  r46, L2
   Index        r47, r43, r45
@@ -81,7 +81,7 @@ L13:
   IterPrep     r54, r3
   Len          r55, r54
   Const        r56, 0
-L12:
+L9:
   LessInt      r57, r56, r55
   JumpIfFalse  r57, L3
   Index        r58, r54, r56
@@ -96,7 +96,7 @@ L12:
   IterPrep     r65, r4
   Len          r66, r65
   Const        r67, 0
-L11:
+L8:
   LessInt      r68, r67, r66
   JumpIfFalse  r68, L4
   Index        r69, r65, r67
@@ -126,31 +126,28 @@ L11:
   Move         r91, r78
   JumpIfFalse  r91, L6
   Move         r91, r81
+  JumpIfFalse  r91, L6
+  Move         r91, r84
+  JumpIfFalse  r91, L6
+  Move         r91, r87
+  JumpIfFalse  r91, L6
+  Move         r91, r90
 L6:
-  Move         r92, r91
-  JumpIfFalse  r92, L7
-  Move         r92, r84
-L7:
-  Move         r93, r92
-  JumpIfFalse  r93, L8
-  Move         r93, r87
-L8:
-  Move         r94, r93
-  JumpIfFalse  r94, L9
-  Move         r94, r90
-L9:
-  JumpIfFalse  r94, L5
+  JumpIfFalse  r91, L5
   // from ss in store_sales
-  Const        r95, "ss"
-  Move         r96, r31
-  Const        r97, "cd"
-  Move         r98, r37
-  Const        r99, "d"
-  Move         r100, r48
-  Const        r101, "s"
-  Move         r102, r59
-  Const        r103, "i"
-  Move         r104, r70
+  Const        r92, "ss"
+  Move         r93, r31
+  Const        r94, "cd"
+  Move         r95, r37
+  Const        r96, "d"
+  Move         r97, r48
+  Const        r98, "s"
+  Move         r99, r59
+  Const        r100, "i"
+  Move         r101, r70
+  Move         r102, r92
+  Move         r103, r93
+  Move         r104, r94
   Move         r105, r95
   Move         r106, r96
   Move         r107, r97
@@ -158,208 +155,204 @@ L9:
   Move         r109, r99
   Move         r110, r100
   Move         r111, r101
-  Move         r112, r102
-  Move         r113, r103
-  Move         r114, r104
-  MakeMap      r115, 5, r105
+  MakeMap      r112, 5, r102
   // group by { item_id: i.i_item_id, state: s.s_state } into g
-  Const        r116, "item_id"
-  Index        r117, r70, r7
-  Const        r118, "state"
-  Index        r119, r59, r9
+  Const        r113, "item_id"
+  Index        r114, r70, r7
+  Const        r115, "state"
+  Index        r116, r59, r9
+  Move         r117, r113
+  Move         r118, r114
+  Move         r119, r115
   Move         r120, r116
-  Move         r121, r117
-  Move         r122, r118
-  Move         r123, r119
-  MakeMap      r124, 2, r120
-  Str          r125, r124
-  In           r126, r125, r23
-  JumpIfTrue   r126, L10
+  MakeMap      r121, 2, r117
+  Str          r122, r121
+  In           r123, r122, r23
+  JumpIfTrue   r123, L7
   // from ss in store_sales
-  Const        r127, []
-  Const        r128, "__group__"
-  Const        r129, true
+  Const        r124, "__group__"
+  Const        r125, true
   // group by { item_id: i.i_item_id, state: s.s_state } into g
-  Move         r130, r124
+  Move         r126, r121
   // from ss in store_sales
-  Const        r131, "items"
-  Move         r132, r127
-  Const        r133, "count"
-  Const        r134, 0
-  Move         r135, r128
-  Move         r136, r129
-  Move         r137, r14
+  Const        r127, "items"
+  Move         r128, r25
+  Const        r129, "count"
+  Const        r130, 0
+  Move         r131, r124
+  Move         r132, r125
+  Move         r133, r14
+  Move         r134, r126
+  Move         r135, r127
+  Move         r136, r128
+  Move         r137, r129
   Move         r138, r130
-  Move         r139, r131
-  Move         r140, r132
-  Move         r141, r133
-  Move         r142, r134
-  MakeMap      r143, 4, r135
-  SetIndex     r23, r125, r143
-  Append       r144, r24, r143
-  Move         r24, r144
-L10:
-  Index        r145, r23, r125
-  Index        r146, r145, r131
-  Append       r147, r146, r115
-  SetIndex     r145, r131, r147
-  Index        r148, r145, r133
-  Const        r149, 1
-  AddInt       r150, r148, r149
-  SetIndex     r145, r133, r150
+  MakeMap      r139, 4, r131
+  SetIndex     r23, r122, r139
+  Append       r140, r24, r139
+  Move         r24, r140
+L7:
+  Index        r141, r23, r122
+  Index        r142, r141, r127
+  Append       r143, r142, r112
+  SetIndex     r141, r127, r143
+  Index        r144, r141, r129
+  Const        r145, 1
+  AddInt       r146, r144, r145
+  SetIndex     r141, r129, r146
 L5:
   // join i in item on ss.ss_item_sk == i.i_item_sk
-  AddInt       r67, r67, r149
-  Jump         L11
+  AddInt       r67, r67, r145
+  Jump         L8
 L4:
   // join s in store on ss.ss_store_sk == s.s_store_sk
-  AddInt       r56, r56, r149
-  Jump         L12
+  AddInt       r56, r56, r145
+  Jump         L9
 L3:
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
-  AddInt       r45, r45, r149
-  Jump         L13
+  AddInt       r45, r45, r145
+  Jump         L10
 L2:
   // join cd in customer_demographics on ss.ss_cdemo_sk == cd.cd_demo_sk
-  AddInt       r34, r34, r149
-  Jump         L14
+  AddInt       r34, r34, r145
+  Jump         L11
 L1:
   // from ss in store_sales
-  AddInt       r28, r28, r149
-  Jump         L15
+  AddInt       r28, r28, r145
+  Jump         L12
 L0:
-  Move         r151, r134
-  Len          r152, r24
-L25:
-  LessInt      r153, r151, r152
-  JumpIfFalse  r153, L16
-  Index        r154, r24, r151
-  Move         r155, r154
-  // i_item_id: g.key.item_id,
-  Const        r156, "i_item_id"
-  Index        r157, r155, r14
-  Index        r158, r157, r6
-  // s_state: g.key.state,
-  Const        r159, "s_state"
-  Index        r160, r155, r14
-  Index        r161, r160, r8
-  // agg1: avg(from x in g select x.ss_quantity),
-  Const        r162, "agg1"
-  Const        r163, []
-  IterPrep     r164, r155
-  Len          r165, r164
-  Move         r166, r134
-L18:
-  LessInt      r167, r166, r165
-  JumpIfFalse  r167, L17
-  Index        r168, r164, r166
-  Move         r169, r168
-  Index        r170, r169, r16
-  Append       r171, r163, r170
-  Move         r163, r171
-  AddInt       r166, r166, r149
-  Jump         L18
-L17:
-  Avg          r172, r163
-  // agg2: avg(from x in g select x.ss_list_price),
-  Const        r173, "agg2"
-  Const        r174, []
-  IterPrep     r175, r155
-  Len          r176, r175
-  Move         r177, r134
-L20:
-  LessInt      r178, r177, r176
-  JumpIfFalse  r178, L19
-  Index        r179, r175, r177
-  Move         r169, r179
-  Index        r180, r169, r18
-  Append       r181, r174, r180
-  Move         r174, r181
-  AddInt       r177, r177, r149
-  Jump         L20
-L19:
-  Avg          r182, r174
-  // agg3: avg(from x in g select x.ss_coupon_amt),
-  Const        r183, "agg3"
-  Const        r184, []
-  IterPrep     r185, r155
-  Len          r186, r185
-  Move         r187, r134
+  Move         r147, r130
+  Len          r148, r24
 L22:
-  LessInt      r188, r187, r186
-  JumpIfFalse  r188, L21
-  Index        r189, r185, r187
-  Move         r169, r189
-  Index        r190, r169, r20
-  Append       r191, r184, r190
-  Move         r184, r191
-  AddInt       r187, r187, r149
-  Jump         L22
-L21:
-  Avg          r192, r184
-  // agg4: avg(from x in g select x.ss_sales_price)
-  Const        r193, "agg4"
-  Const        r194, []
-  IterPrep     r195, r155
-  Len          r196, r195
-  Move         r197, r134
-L24:
-  LessInt      r198, r197, r196
-  JumpIfFalse  r198, L23
-  Index        r199, r195, r197
-  Move         r169, r199
-  Index        r200, r169, r22
-  Append       r201, r194, r200
-  Move         r194, r201
-  AddInt       r197, r197, r149
-  Jump         L24
-L23:
-  Avg          r202, r194
+  LessInt      r149, r147, r148
+  JumpIfFalse  r149, L13
+  Index        r150, r24, r147
+  Move         r151, r150
   // i_item_id: g.key.item_id,
-  Move         r203, r156
-  Move         r204, r158
+  Const        r152, "i_item_id"
+  Index        r153, r151, r14
+  Index        r154, r153, r6
   // s_state: g.key.state,
-  Move         r205, r159
-  Move         r206, r161
+  Const        r155, "s_state"
+  Index        r156, r151, r14
+  Index        r157, r156, r8
   // agg1: avg(from x in g select x.ss_quantity),
-  Move         r207, r162
-  Move         r208, r172
+  Const        r158, "agg1"
+  Const        r159, []
+  IterPrep     r160, r151
+  Len          r161, r160
+  Move         r162, r130
+L15:
+  LessInt      r163, r162, r161
+  JumpIfFalse  r163, L14
+  Index        r164, r160, r162
+  Move         r165, r164
+  Index        r166, r165, r16
+  Append       r167, r159, r166
+  Move         r159, r167
+  AddInt       r162, r162, r145
+  Jump         L15
+L14:
+  Avg          r168, r159
   // agg2: avg(from x in g select x.ss_list_price),
-  Move         r209, r173
-  Move         r210, r182
-  // agg3: avg(from x in g select x.ss_coupon_amt),
-  Move         r211, r183
-  Move         r212, r192
-  // agg4: avg(from x in g select x.ss_sales_price)
-  Move         r213, r193
-  Move         r214, r202
-  // select {
-  MakeMap      r215, 6, r203
-  // sort by [g.key.item_id, g.key.state]
-  Index        r216, r155, r14
-  Index        r217, r216, r6
-  Move         r218, r217
-  Index        r219, r155, r14
-  Index        r220, r219, r8
-  Move         r221, r220
-  MakeList     r222, 2, r218
-  Move         r223, r222
-  // from ss in store_sales
-  Move         r224, r215
-  MakeList     r225, 2, r223
-  Append       r226, r5, r225
-  Move         r5, r226
-  AddInt       r151, r151, r149
-  Jump         L25
+  Const        r169, "agg2"
+  Const        r170, []
+  IterPrep     r171, r151
+  Len          r172, r171
+  Move         r173, r130
+L17:
+  LessInt      r174, r173, r172
+  JumpIfFalse  r174, L16
+  Index        r175, r171, r173
+  Move         r165, r175
+  Index        r176, r165, r18
+  Append       r177, r170, r176
+  Move         r170, r177
+  AddInt       r173, r173, r145
+  Jump         L17
 L16:
+  Avg          r178, r170
+  // agg3: avg(from x in g select x.ss_coupon_amt),
+  Const        r179, "agg3"
+  Const        r180, []
+  IterPrep     r181, r151
+  Len          r182, r181
+  Move         r183, r130
+L19:
+  LessInt      r184, r183, r182
+  JumpIfFalse  r184, L18
+  Index        r185, r181, r183
+  Move         r165, r185
+  Index        r186, r165, r20
+  Append       r187, r180, r186
+  Move         r180, r187
+  AddInt       r183, r183, r145
+  Jump         L19
+L18:
+  Avg          r188, r180
+  // agg4: avg(from x in g select x.ss_sales_price)
+  Const        r189, "agg4"
+  Const        r190, []
+  IterPrep     r191, r151
+  Len          r192, r191
+  Move         r193, r130
+L21:
+  LessInt      r194, r193, r192
+  JumpIfFalse  r194, L20
+  Index        r195, r191, r193
+  Move         r165, r195
+  Index        r196, r165, r22
+  Append       r197, r190, r196
+  Move         r190, r197
+  AddInt       r193, r193, r145
+  Jump         L21
+L20:
+  Avg          r198, r190
+  // i_item_id: g.key.item_id,
+  Move         r199, r152
+  Move         r200, r154
+  // s_state: g.key.state,
+  Move         r201, r155
+  Move         r202, r157
+  // agg1: avg(from x in g select x.ss_quantity),
+  Move         r203, r158
+  Move         r204, r168
+  // agg2: avg(from x in g select x.ss_list_price),
+  Move         r205, r169
+  Move         r206, r178
+  // agg3: avg(from x in g select x.ss_coupon_amt),
+  Move         r207, r179
+  Move         r208, r188
+  // agg4: avg(from x in g select x.ss_sales_price)
+  Move         r209, r189
+  Move         r210, r198
+  // select {
+  MakeMap      r211, 6, r199
   // sort by [g.key.item_id, g.key.state]
-  Sort         r227, r5
+  Index        r212, r151, r14
+  Index        r213, r212, r6
+  Move         r214, r213
+  Index        r215, r151, r14
+  Index        r216, r215, r8
+  Move         r217, r216
+  MakeList     r218, 2, r214
+  Move         r219, r218
   // from ss in store_sales
-  Move         r5, r227
+  Move         r220, r211
+  MakeList     r221, 2, r219
+  Append       r222, r5, r221
+  Move         r5, r222
+  AddInt       r147, r147, r145
+  Jump         L22
+L13:
+  // sort by [g.key.item_id, g.key.state]
+  Sort         r223, r5
+  // from ss in store_sales
+  Move         r5, r223
   // json(result)
   JSON         r5
   // expect result == [
-  Const        r228, [{"agg1": 5, "agg2": 100, "agg3": 10, "agg4": 90, "i_item_id": "ITEM1", "s_state": "CA"}]
-  Equal        r229, r5, r228
-  Expect       r229
+  Const        r224, [{"agg1": 5.0, "agg2": 100.0, "agg3": 10.0, "agg4": 90.0, "i_item_id": "ITEM1", "s_state": "CA"}]
+  Equal        r225, r5, r224
+  Expect       r225
   Return       r0
