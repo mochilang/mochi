@@ -2140,6 +2140,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
+	case "exists":
+		if len(args) != 1 {
+			return "", fmt.Errorf("exists() expects 1 arg")
+		}
+		c.use("_exists")
+		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg() expects 1 arg")
@@ -2203,6 +2209,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("json() expects 1 arg")
 		}
 		return fmt.Sprintf("Console.WriteLine(JsonSerializer.Serialize(%s))", args[0]), nil
+	case "substr":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substr expects 3 args")
+		}
+		c.use("_sliceString")
+		end := fmt.Sprintf("(%s)+(%s)", args[1], args[2])
+		return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], end), nil
 	case "eval":
 		if len(args) != 1 {
 			return "", fmt.Errorf("eval expects 1 arg")

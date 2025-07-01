@@ -48,6 +48,21 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("return _sum;")
 				c.indent--
 				c.writeln("}")
+			case "_exists":
+				c.writeln("static bool _exists(dynamic v) {")
+				c.indent++
+				c.writeln("if (v is _Group g) v = g.Items;")
+				c.writeln("if (v is string s) return s.Length > 0;")
+				c.writeln("if (v is System.Collections.IDictionary d) return d.Count > 0;")
+				c.writeln("if (v is System.Collections.IEnumerable e) {")
+				c.indent++
+				c.writeln("foreach (var _ in e) return true;")
+				c.writeln("return false;")
+				c.indent--
+				c.writeln("}")
+				c.writeln("return v != null;")
+				c.indent--
+				c.writeln("}")
 			case "_min":
 				c.writeln("static dynamic _min(dynamic v) {")
 				c.indent++

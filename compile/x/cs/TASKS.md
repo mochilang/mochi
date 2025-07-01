@@ -25,6 +25,6 @@ running the compiled program and add it as `tests/dataset/tpc-h/compiler/cs/q2.o
 
 ## TPCDS Queries
 
-The first nine TPCDS queries `q1.mochi` through `q9.mochi` now compile and run
-successfully. Generated code and runtime output are stored under
+The first nineteen TPCDS queries `q1.mochi` through `q19.mochi` now compile and
+run successfully. Generated code and runtime output are stored under
 `tests/dataset/tpc-ds/compiler/cs`.
