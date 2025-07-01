@@ -271,7 +271,11 @@ func TestPyCompiler_TPCDSQueries(t *testing.T) {
 		t.Skip("python3 not installed")
 	}
 	root := findRepoRoot(t)
-	for _, q := range []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9"} {
+	queries := []string{}
+	for i := 1; i <= 19; i++ {
+		queries = append(queries, fmt.Sprintf("q%d", i))
+	}
+	for _, q := range queries {
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
 			prog, err := parser.Parse(src)

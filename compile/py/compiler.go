@@ -740,6 +740,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("_max(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("max(%s)", argStr), nil
+	case "first":
+		if len(args) != 1 {
+			return "", fmt.Errorf("first expects 1 arg")
+		}
+		c.use("_first")
+		return fmt.Sprintf("_first(%s)", args[0]), nil
 	case "concat":
 		if len(args) == 0 {
 			return "[]", nil
@@ -849,7 +855,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	for i, it := range m.Items {
 		var k string
 		if s, ok := simpleStringKey(it.Key); ok {
-			k = fmt.Sprintf("%q", s)
+			k = fmt.Sprintf("%q", sanitizeName(s))
 		} else {
 			var err error
 			k, err = c.compileExpr(it.Key)
