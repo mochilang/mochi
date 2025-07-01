@@ -11,7 +11,8 @@ import (
 	"mochi/types"
 )
 
-const datasetHelpers = `(define (_fetch url opts)
+const datasetHelpers = `(import (srfi 95) (chibi string))
+(define (_fetch url opts)
   (let* ((method (if (and opts (assq 'method opts)) (cdr (assq 'method opts)) "GET"))
          (args (list "curl" "-s" "-X" method)))
     (when (and opts (assq 'headers opts))
@@ -1336,7 +1337,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		src, err := c.compileExpr(q.Source)
 		if err != nil {
 			return "", err
@@ -1344,6 +1345,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		orig := c.env
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, types.AnyType{}, true)
+		for _, f := range q.Froms {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+		for _, j := range q.Joins {
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
 		c.env = child
 		var cond string
 		if q.Where != nil {
@@ -1370,11 +1377,74 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var b strings.Builder
 		b.WriteString("(let ((_tmp '()))\n")
 		b.WriteString(fmt.Sprintf("  (for-each (lambda (%s)\n", sanitizeName(q.Var)))
-		if cond != "" {
-			b.WriteString(fmt.Sprintf("    (when %s (set! _tmp (append _tmp (list %s))))\n", cond, sanitizeName(q.Var)))
-		} else {
-			b.WriteString(fmt.Sprintf("    (set! _tmp (append _tmp (list %s)))\n", sanitizeName(q.Var)))
+
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				return "", err
+			}
+			joinSrcs[i] = js
+			if j.On != nil {
+				on, err := c.compileExpr(j.On)
+				if err != nil {
+					return "", err
+				}
+				joinOns[i] = on
+			}
 		}
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				return "", err
+			}
+			fromSrcs[i] = fs
+		}
+
+		var writeJoins func(int, string)
+		writeJoins = func(j int, indent string) {
+			if j == len(joinSrcs) {
+				if cond != "" {
+					b.WriteString(indent + "(when " + cond + "\n")
+					indent += "  "
+				}
+				b.WriteString(indent + fmt.Sprintf("(set! _tmp (append _tmp (list %s)))\n", sanitizeName(q.Var)))
+				if cond != "" {
+					indent = indent[:len(indent)-2]
+					b.WriteString(indent + ")\n")
+				}
+				return
+			}
+			jv := sanitizeName(q.Joins[j].Var)
+			js := joinSrcs[j]
+			on := joinOns[j]
+			b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", jv))
+			if on != "" {
+				b.WriteString(indent + "  (when " + on + "\n")
+				writeJoins(j+1, indent+"    ")
+				b.WriteString(indent + "  )")
+			} else {
+				writeJoins(j+1, indent+"  ")
+			}
+			b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
+		}
+
+		var writeLoops func(int, string)
+		writeLoops = func(i int, indent string) {
+			if i == len(fromSrcs) {
+				writeJoins(0, indent)
+				return
+			}
+			fv := sanitizeName(q.Froms[i].Var)
+			fs := fromSrcs[i]
+			b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", fv))
+			writeLoops(i+1, indent+"  ")
+			b.WriteString(indent + fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", fs, fs, fs))
+		}
+
+		writeLoops(0, "    ")
 		b.WriteString(fmt.Sprintf("  ) (if (string? %s) (string->list %s) %s))\n", src, src, src))
 		b.WriteString("  (let ((_res '()))\n")
 		b.WriteString(fmt.Sprintf("    (for-each (lambda (%s)\n", sanitizeName(q.Group.Name)))

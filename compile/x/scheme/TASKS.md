@@ -14,4 +14,6 @@ such as date comparisons and sorting are not fully supported.
 - Golden tests under `tests/compiler/scheme` verify the generated code and
   execution result for `tpch_q1.mochi`. Additional golden files under
   `tests/dataset/tpc-h/compiler/scheme` ensure `q1` and `q2` compile even though
-  the programs fail at runtime.
+  the programs fail at runtime. The TPCDS suite is now started with query `q1`.
+  Generated Scheme code and output for this query are stored in
+  `tests/dataset/tpc-ds/compiler/scheme`.
