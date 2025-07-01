@@ -62,13 +62,23 @@ const datasetHelpers = `(import (srfi 95))
     (when (not (eq? out (current-output-port)))
       (close-output-port out))))
 
+(define (_lt a b)
+  (cond
+    ((and (number? a) (number? b)) (< a b))
+    ((and (string? a) (string? b)) (string<? a b))
+    ((and (pair? a) (pair? b))
+      (cond
+        ((null? a) (not (null? b)))
+        ((null? b) #f)
+        (else (let ((ka (car a)) (kb (car b)))
+                (if (equal? ka kb)
+                    (_lt (cdr a) (cdr b))
+                    (_lt ka kb)))))
+    )
+    (else (string<? (format "~a" a) (format "~a" b)))))
+
 (define (_sort pairs)
-  (sort pairs
-        (lambda (a b)
-          (let ((ka (cdr a)) (kb (cdr b)))
-            (cond ((and (number? ka) (number? kb)) (< ka kb))
-                  ((and (string? ka) (string? kb)) (string<? ka kb))
-                  (else (string<? (format "~a" ka) (format "~a" kb))))))))`
+  (sort pairs (lambda (a b) (_lt (cdr a) (cdr b)))))`
 
 const listOpHelpers = `(define (_union_all a b)
   (append a b))
@@ -1364,6 +1374,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		child.SetVar(q.Var, types.AnyType{}, true)
 		c.env = child
 		var cond string
+		var sortExpr, skipExpr, takeExpr string
 		if q.Where != nil {
 			cond, err = c.compileExpr(q.Where)
 			if err != nil {
@@ -1398,13 +1409,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("    (for-each (lambda (%s)\n", sanitizeName(q.Group.Name)))
 		b.WriteString(fmt.Sprintf("      (set! _res (append _res (list %s)))\n", valExpr))
 		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
+		if sortExpr != "" {
+			b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
+			b.WriteString("    (set! _res (map car _res))\n")
+		}
+		if skipExpr != "" {
+			c.needSlice = true
+			b.WriteString(fmt.Sprintf("    (set! _res (_slice _res %s (length _res)))\n", skipExpr))
+		}
+		if takeExpr != "" {
+			c.needSlice = true
+			b.WriteString(fmt.Sprintf("    (set! _res (_slice _res 0 %s))\n", takeExpr))
+		}
 		b.WriteString("    _res))")
 		return b.String(), nil
 	}
 	if q.Group != nil {
-		if q.Sort != nil || q.Skip != nil || q.Take != nil {
-			return "", fmt.Errorf("unsupported query expression")
-		}
 		for _, j := range q.Joins {
 			if j.Side != nil {
 				return "", fmt.Errorf("unsupported join type")
@@ -1425,6 +1445,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		c.env = child
 		var cond string
+		var sortExpr, skipExpr, takeExpr string
 		if q.Where != nil {
 			cond, err = c.compileExpr(q.Where)
 			if err != nil {
@@ -1444,6 +1465,31 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		if err != nil {
 			return "", err
+		}
+		if q.Sort != nil {
+			c.env = genv
+			sortExpr, err = c.compileExpr(q.Sort)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
+			c.needDataset = true
+		}
+		if q.Skip != nil {
+			c.env = genv
+			skipExpr, err = c.compileExpr(q.Skip)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
+		}
+		if q.Take != nil {
+			c.env = genv
+			takeExpr, err = c.compileExpr(q.Take)
+			c.env = orig
+			if err != nil {
+				return "", err
+			}
 		}
 		fromSrcs := make([]string, len(q.Froms))
 		for i, f := range q.Froms {
@@ -1518,6 +1564,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("    (for-each (lambda (%s)\n", sanitizeName(q.Group.Name)))
 		b.WriteString(fmt.Sprintf("      (set! _res (append _res (list %s)))\n", valExpr))
 		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
+		if sortExpr != "" {
+			b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
+			b.WriteString("    (set! _res (map car _res))\n")
+		}
+		if skipExpr != "" {
+			c.needSlice = true
+			b.WriteString(fmt.Sprintf("    (set! _res (_slice _res %s (length _res)))\n", skipExpr))
+		}
+		if takeExpr != "" {
+			c.needSlice = true
+			b.WriteString(fmt.Sprintf("    (set! _res (_slice _res 0 %s))\n", takeExpr))
+		}
 		b.WriteString("    _res))")
 		return b.String(), nil
 	}
