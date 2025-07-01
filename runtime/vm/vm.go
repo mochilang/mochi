@@ -3048,11 +3048,41 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			fc.emit(p.Pos, Instr{Op: OpSum, A: dst, B: arg})
 			return dst
 		case "min":
+			if fc.groupVar != "" {
+				if name, ok := identName(p.Call.Args[0]); ok && name == fc.groupVar {
+					greg, ok := fc.vars[fc.groupVar]
+					if !ok {
+						greg = fc.newReg()
+						fc.vars[fc.groupVar] = greg
+					}
+					key := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "items"})
+					lst := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpIndex, A: lst, B: greg, C: key})
+					dst := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpMin, A: dst, B: lst})
+					return dst
+				}
+			}
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpMin, A: dst, B: arg})
 			return dst
 		case "max":
+			if fc.groupVar != "" {
+				if name, ok := identName(p.Call.Args[0]); ok && name == fc.groupVar {
+					greg, ok := fc.vars[fc.groupVar]
+					if !ok {
+						greg = fc.newReg()
+						fc.vars[fc.groupVar] = greg
+					}
+					key := fc.constReg(p.Pos, Value{Tag: ValueStr, Str: "items"})
+					lst := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpIndex, A: lst, B: greg, C: key})
+					dst := fc.newReg()
+					fc.emit(p.Pos, Instr{Op: OpMax, A: dst, B: lst})
+					return dst
+				}
+			}
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpMax, A: dst, B: arg})
