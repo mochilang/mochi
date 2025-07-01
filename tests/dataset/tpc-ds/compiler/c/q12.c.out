@@ -1,0 +1,266 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+  int len;
+  int *data;
+} list_int;
+static list_int list_int_create(int len) {
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  double *data;
+} list_float;
+static list_float list_float_create(int len) {
+  list_float l;
+  l.len = len;
+  l.data = (double *)malloc(sizeof(double) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  char **data;
+} list_string;
+static list_string list_string_create(int len) {
+  list_string l;
+  l.len = len;
+  l.data = (char **)malloc(sizeof(char *) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  list_int *data;
+} list_list_int;
+static list_list_int list_list_int_create(int len) {
+  list_list_int l;
+  l.len = len;
+  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  return l;
+}
+typedef struct {
+  int key;
+  int value;
+} map_int_bool_item;
+static map_int_bool_item *map_int_bool_item_new(int key, int value) {
+  map_int_bool_item *it =
+      (map_int_bool_item *)malloc(sizeof(map_int_bool_item));
+  it->key = key;
+  it->value = value;
+  return it;
+}
+typedef struct {
+  int len;
+  int cap;
+  map_int_bool_item **data;
+} map_int_bool;
+static map_int_bool map_int_bool_create(int cap) {
+  map_int_bool m;
+  m.len = 0;
+  m.cap = cap;
+  m.data = cap ? (map_int_bool_item **)malloc(sizeof(map_int_bool_item *) * cap)
+               : NULL;
+  return m;
+}
+static void map_int_bool_put(map_int_bool *m, int key, int value) {
+  for (int i = 0; i < m->len; i++)
+    if (m->data[i]->key == key) {
+      m->data[i]->value = value;
+      return;
+    }
+  if (m->len >= m->cap) {
+    m->cap = m->cap ? m->cap * 2 : 4;
+    m->data = (map_int_bool_item **)realloc(
+        m->data, sizeof(map_int_bool_item *) * m->cap);
+  }
+  m->data[m->len++] = map_int_bool_item_new(key, value);
+}
+static int map_int_bool_contains(map_int_bool m, int key) {
+  for (int i = 0; i < m.len; i++)
+    if (m.data[i]->key == key)
+      return 1;
+  return 0;
+}
+static void _json_int(int v) { printf("%d", v); }
+static void _json_float(double v) { printf("%g", v); }
+static void _json_string(char *s) { printf("\"%s\"", s); }
+static void _json_list_int(list_int v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_int(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_float(list_float v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_float(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_string(list_string v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_string(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_list_int(list_list_int v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_list_int(v.data[i]);
+  }
+  printf("]");
+}
+typedef struct WebSale WebSale;
+typedef struct Item Item;
+typedef struct DateDim DateDim;
+
+typedef struct {
+  int ws_item_sk;
+  int ws_sold_date_sk;
+  double ws_ext_sales_price;
+} WebSale;
+
+typedef struct {
+  int i_item_sk;
+  char *i_item_id;
+  char *i_item_desc;
+  char *i_category;
+  char *i_class;
+  double i_current_price;
+} Item;
+
+typedef struct {
+  int d_date_sk;
+  char *d_date;
+} DateDim;
+
+static void test_TPCDS_Q12_revenue_ratio() {
+  list_int _t1 = list_int_create(2);
+  map_int_bool _t2 = map_int_bool_create(7);
+  map_int_bool_put(&_t2, i_item_id, "ITEM1");
+  map_int_bool_put(&_t2, i_item_desc, "Item One");
+  map_int_bool_put(&_t2, i_category, "A");
+  map_int_bool_put(&_t2, i_class, "C1");
+  map_int_bool_put(&_t2, i_current_price, 10.0);
+  map_int_bool_put(&_t2, itemrevenue, 200.0);
+  map_int_bool_put(&_t2, revenueratio, 50.0);
+  _t1.data[0] = _t2;
+  map_int_bool _t3 = map_int_bool_create(7);
+  map_int_bool_put(&_t3, i_item_id, "ITEM2");
+  map_int_bool_put(&_t3, i_item_desc, "Item Two");
+  map_int_bool_put(&_t3, i_category, "A");
+  map_int_bool_put(&_t3, i_class, "C1");
+  map_int_bool_put(&_t3, i_current_price, 20.0);
+  map_int_bool_put(&_t3, itemrevenue, 200.0);
+  map_int_bool_put(&_t3, revenueratio, 50.0);
+  _t1.data[1] = _t3;
+  if (!((result == _t1))) {
+    fprintf(stderr, "expect failed\n");
+    exit(1);
+  }
+}
+
+int main() {
+  typedef struct {
+    int ws_item_sk;
+    int ws_sold_date_sk;
+    double ws_ext_sales_price;
+  } web_salesItem;
+  typedef struct {
+    int len;
+    web_salesItem *data;
+  } list_web_salesItem;
+  static list_web_salesItem list_web_salesItem_create(int len) {
+    list_web_salesItem l;
+    l.len = len;
+    l.data = (web_salesItem *)malloc(sizeof(web_salesItem) * len);
+    return l;
+  }
+  list_web_salesItem _t4 = list_web_salesItem_create(4);
+  _t4.data[0] = (web_salesItem){
+      .ws_item_sk = 1, .ws_sold_date_sk = 1, .ws_ext_sales_price = 100.0};
+  _t4.data[1] = (web_salesItem){
+      .ws_item_sk = 1, .ws_sold_date_sk = 2, .ws_ext_sales_price = 100.0};
+  _t4.data[2] = (web_salesItem){
+      .ws_item_sk = 2, .ws_sold_date_sk = 2, .ws_ext_sales_price = 200.0};
+  _t4.data[3] = (web_salesItem){
+      .ws_item_sk = 3, .ws_sold_date_sk = 3, .ws_ext_sales_price = 50.0};
+  int web_sales = _t4;
+  typedef struct {
+    int i_item_sk;
+    char *i_item_id;
+    char *i_item_desc;
+    char *i_category;
+    char *i_class;
+    double i_current_price;
+  } itemItem;
+  typedef struct {
+    int len;
+    itemItem *data;
+  } list_itemItem;
+  static list_itemItem list_itemItem_create(int len) {
+    list_itemItem l;
+    l.len = len;
+    l.data = (itemItem *)malloc(sizeof(itemItem) * len);
+    return l;
+  }
+  list_itemItem _t5 = list_itemItem_create(3);
+  _t5.data[0] = (itemItem){.i_item_sk = 1,
+                           .i_item_id = "ITEM1",
+                           .i_item_desc = "Item One",
+                           .i_category = "A",
+                           .i_class = "C1",
+                           .i_current_price = 10.0};
+  _t5.data[1] = (itemItem){.i_item_sk = 2,
+                           .i_item_id = "ITEM2",
+                           .i_item_desc = "Item Two",
+                           .i_category = "A",
+                           .i_class = "C1",
+                           .i_current_price = 20.0};
+  _t5.data[2] = (itemItem){.i_item_sk = 3,
+                           .i_item_id = "ITEM3",
+                           .i_item_desc = "Item Three",
+                           .i_category = "B",
+                           .i_class = "C2",
+                           .i_current_price = 30.0};
+  int item = _t5;
+  typedef struct {
+    int d_date_sk;
+    char *d_date;
+  } date_dimItem;
+  typedef struct {
+    int len;
+    date_dimItem *data;
+  } list_date_dimItem;
+  static list_date_dimItem list_date_dimItem_create(int len) {
+    list_date_dimItem l;
+    l.len = len;
+    l.data = (date_dimItem *)malloc(sizeof(date_dimItem) * len);
+    return l;
+  }
+  list_date_dimItem _t6 = list_date_dimItem_create(3);
+  _t6.data[0] = (date_dimItem){.d_date_sk = 1, .d_date = "2001-01-20"};
+  _t6.data[1] = (date_dimItem){.d_date_sk = 2, .d_date = "2001-02-05"};
+  _t6.data[2] = (date_dimItem){.d_date_sk = 3, .d_date = "2001-03-05"};
+  int date_dim = _t6;
+  list_int filtered = 0;
+  list_int class_totals = 0;
+  list_int result = 0;
+  _json_int(result);
+  test_TPCDS_Q12_revenue_ratio();
+  return 0;
+}

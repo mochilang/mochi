@@ -1,0 +1,296 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+  int len;
+  int *data;
+} list_int;
+static list_int list_int_create(int len) {
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  double *data;
+} list_float;
+static list_float list_float_create(int len) {
+  list_float l;
+  l.len = len;
+  l.data = (double *)malloc(sizeof(double) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  char **data;
+} list_string;
+static list_string list_string_create(int len) {
+  list_string l;
+  l.len = len;
+  l.data = (char **)malloc(sizeof(char *) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  list_int *data;
+} list_list_int;
+static list_list_int list_list_int_create(int len) {
+  list_list_int l;
+  l.len = len;
+  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  return l;
+}
+typedef struct {
+  int key;
+  int value;
+} map_int_bool_item;
+static map_int_bool_item *map_int_bool_item_new(int key, int value) {
+  map_int_bool_item *it =
+      (map_int_bool_item *)malloc(sizeof(map_int_bool_item));
+  it->key = key;
+  it->value = value;
+  return it;
+}
+typedef struct {
+  int len;
+  int cap;
+  map_int_bool_item **data;
+} map_int_bool;
+static map_int_bool map_int_bool_create(int cap) {
+  map_int_bool m;
+  m.len = 0;
+  m.cap = cap;
+  m.data = cap ? (map_int_bool_item **)malloc(sizeof(map_int_bool_item *) * cap)
+               : NULL;
+  return m;
+}
+static void map_int_bool_put(map_int_bool *m, int key, int value) {
+  for (int i = 0; i < m->len; i++)
+    if (m->data[i]->key == key) {
+      m->data[i]->value = value;
+      return;
+    }
+  if (m->len >= m->cap) {
+    m->cap = m->cap ? m->cap * 2 : 4;
+    m->data = (map_int_bool_item **)realloc(
+        m->data, sizeof(map_int_bool_item *) * m->cap);
+  }
+  m->data[m->len++] = map_int_bool_item_new(key, value);
+}
+static int map_int_bool_contains(map_int_bool m, int key) {
+  for (int i = 0; i < m.len; i++)
+    if (m.data[i]->key == key)
+      return 1;
+  return 0;
+}
+static int _sum_int(list_int v) {
+  int sum = 0;
+  for (int i = 0; i < v.len; i++)
+    sum += v.data[i];
+  return sum;
+}
+static void _json_int(int v) { printf("%d", v); }
+static void _json_float(double v) { printf("%g", v); }
+static void _json_string(char *s) { printf("\"%s\"", s); }
+static void _json_list_int(list_int v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_int(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_float(list_float v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_float(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_string(list_string v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_string(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_list_int(list_list_int v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_list_int(v.data[i]);
+  }
+  printf("]");
+}
+typedef struct Customer Customer;
+typedef struct StoreSale StoreSale;
+typedef struct WebSale WebSale;
+
+typedef struct {
+  int c_customer_sk;
+  char *c_customer_id;
+  char *c_first_name;
+  char *c_last_name;
+} Customer;
+
+typedef struct {
+  int ss_customer_sk;
+  int ss_sold_date_sk;
+  double ss_ext_list_price;
+} StoreSale;
+
+typedef struct {
+  int ws_bill_customer_sk;
+  int ws_sold_date_sk;
+  double ws_ext_list_price;
+} WebSale;
+
+static void test_TPCDS_Q11_growth() {
+  list_int _t1 = list_int_create(1);
+  map_int_bool _t2 = map_int_bool_create(3);
+  map_int_bool_put(&_t2, customer_id, "C1");
+  map_int_bool_put(&_t2, customer_first_name, "John");
+  map_int_bool_put(&_t2, customer_last_name, "Doe");
+  _t1.data[0] = _t2;
+  if (!((result == _t1))) {
+    fprintf(stderr, "expect failed\n");
+    exit(1);
+  }
+}
+
+int main() {
+  typedef struct {
+    int c_customer_sk;
+    char *c_customer_id;
+    char *c_first_name;
+    char *c_last_name;
+  } customerItem;
+  typedef struct {
+    int len;
+    customerItem *data;
+  } list_customerItem;
+  static list_customerItem list_customerItem_create(int len) {
+    list_customerItem l;
+    l.len = len;
+    l.data = (customerItem *)malloc(sizeof(customerItem) * len);
+    return l;
+  }
+  list_customerItem _t3 = list_customerItem_create(1);
+  _t3.data[0] = (customerItem){.c_customer_sk = 1,
+                               .c_customer_id = "C1",
+                               .c_first_name = "John",
+                               .c_last_name = "Doe"};
+  int customer = _t3;
+  typedef struct {
+    int ss_customer_sk;
+    int ss_sold_date_sk;
+    double ss_ext_list_price;
+  } store_salesItem;
+  typedef struct {
+    int len;
+    store_salesItem *data;
+  } list_store_salesItem;
+  static list_store_salesItem list_store_salesItem_create(int len) {
+    list_store_salesItem l;
+    l.len = len;
+    l.data = (store_salesItem *)malloc(sizeof(store_salesItem) * len);
+    return l;
+  }
+  list_store_salesItem _t4 = list_store_salesItem_create(2);
+  _t4.data[0] = (store_salesItem){
+      .ss_customer_sk = 1, .ss_sold_date_sk = 1998, .ss_ext_list_price = 60.0};
+  _t4.data[1] = (store_salesItem){
+      .ss_customer_sk = 1, .ss_sold_date_sk = 1999, .ss_ext_list_price = 90.0};
+  int store_sales = _t4;
+  typedef struct {
+    int ws_bill_customer_sk;
+    int ws_sold_date_sk;
+    double ws_ext_list_price;
+  } web_salesItem;
+  typedef struct {
+    int len;
+    web_salesItem *data;
+  } list_web_salesItem;
+  static list_web_salesItem list_web_salesItem_create(int len) {
+    list_web_salesItem l;
+    l.len = len;
+    l.data = (web_salesItem *)malloc(sizeof(web_salesItem) * len);
+    return l;
+  }
+  list_web_salesItem _t5 = list_web_salesItem_create(2);
+  _t5.data[0] = (web_salesItem){.ws_bill_customer_sk = 1,
+                                .ws_sold_date_sk = 1998,
+                                .ws_ext_list_price = 50.0};
+  _t5.data[1] = (web_salesItem){.ws_bill_customer_sk = 1,
+                                .ws_sold_date_sk = 1999,
+                                .ws_ext_list_price = 150.0};
+  int web_sales = _t5;
+  list_float _t6 = list_float_create(store_sales.len);
+  int _t7 = 0;
+  for (int _t8 = 0; _t8 < store_sales.len; _t8++) {
+    store_salesItem ss = store_sales.data[_t8];
+    if (!((ss.ss_sold_date_sk == 1998))) {
+      continue;
+    }
+    _t6.data[_t7] = ss.ss_ext_list_price;
+    _t7++;
+  }
+  _t6.len = _t7;
+  double ss98 = _sum_int(_t6);
+  list_float _t9 = list_float_create(store_sales.len);
+  int _t10 = 0;
+  for (int _t11 = 0; _t11 < store_sales.len; _t11++) {
+    store_salesItem ss = store_sales.data[_t11];
+    if (!((ss.ss_sold_date_sk == 1999))) {
+      continue;
+    }
+    _t9.data[_t10] = ss.ss_ext_list_price;
+    _t10++;
+  }
+  _t9.len = _t10;
+  double ss99 = _sum_int(_t9);
+  list_float _t12 = list_float_create(web_sales.len);
+  int _t13 = 0;
+  for (int _t14 = 0; _t14 < web_sales.len; _t14++) {
+    web_salesItem ws = web_sales.data[_t14];
+    if (!((ws.ws_sold_date_sk == 1998))) {
+      continue;
+    }
+    _t12.data[_t13] = ws.ws_ext_list_price;
+    _t13++;
+  }
+  _t12.len = _t13;
+  double ws98 = _sum_int(_t12);
+  list_float _t15 = list_float_create(web_sales.len);
+  int _t16 = 0;
+  for (int _t17 = 0; _t17 < web_sales.len; _t17++) {
+    web_salesItem ws = web_sales.data[_t17];
+    if (!((ws.ws_sold_date_sk == 1999))) {
+      continue;
+    }
+    _t15.data[_t16] = ws.ws_ext_list_price;
+    _t16++;
+  }
+  _t15.len = _t16;
+  double ws99 = _sum_int(_t15);
+  int growth_ok =
+      (((((ws98 > 0) && ss98) > 0) && ((ws99 / ws98))) > ((ss99 / ss98)));
+  list_int _t18 = list_int_create(1);
+  map_int_bool _t19 = map_int_bool_create(3);
+  map_int_bool_put(&_t19, customer_id, "C1");
+  map_int_bool_put(&_t19, customer_first_name, "John");
+  map_int_bool_put(&_t19, customer_last_name, "Doe");
+  _t18.data[0] = _t19;
+  int result = (growth_ok ? _t18 : _t20);
+  _json_int(result);
+  test_TPCDS_Q11_growth();
+  return 0;
+}
