@@ -1,0 +1,265 @@
+{-# LANGUAGE DeriveGeneric #-}
+
+module Main where
+
+import qualified Data.Aeson as Aeson
+import qualified Data.Aeson.Key as Key
+import qualified Data.Aeson.KeyMap as KeyMap
+import qualified Data.ByteString.Lazy.Char8 as BSL
+import Data.List (intercalate, isPrefixOf)
+import qualified Data.List as List
+import qualified Data.Map as Map
+import Data.Maybe (fromMaybe)
+import qualified Data.Text as T
+import Data.Time.Clock.POSIX (getPOSIXTime)
+import qualified Data.Vector as V
+import GHC.Generics (Generic)
+
+forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
+forLoop start end f = go start
+  where
+    go i
+      | i < end =
+          case f i of
+            Just v -> Just v
+            Nothing -> go (i + 1)
+      | otherwise = Nothing
+
+whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
+whileLoop cond body = go ()
+  where
+    go _
+      | cond () =
+          case body () of
+            Just v -> Just v
+            Nothing -> go ()
+      | otherwise = Nothing
+
+avg :: (Real a) => [a] -> Double
+avg xs
+  | null xs = 0
+  | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
+
+data MGroup k a = MGroup {key :: k, items :: [a]} deriving (Show)
+
+_group_by :: (Ord k) => [a] -> (a -> k) -> [MGroup k a]
+_group_by src keyfn =
+  let go [] m order = (m, order)
+      go (x : xs) m order =
+        let k = keyfn x
+         in case Map.lookup k m of
+              Just is -> go xs (Map.insert k (is ++ [x]) m) order
+              Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+      (m, order) = go src Map.empty []
+   in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+
+_indexString :: String -> Int -> String
+_indexString s i =
+  let idx = if i < 0 then i + length s else i
+   in if idx < 0 || idx >= length s
+        then error "index out of range"
+        else [s !! idx]
+
+_input :: IO String
+_input = getLine
+
+_now :: IO Int
+_now = fmap round getPOSIXTime
+
+_json :: (Aeson.ToJSON a) => a -> IO ()
+_json v = BSL.putStrLn (Aeson.encode v)
+
+_readInput :: Maybe String -> IO String
+_readInput Nothing = getContents
+_readInput (Just p)
+  | null p || p == "-" = getContents
+  | otherwise = readFile p
+
+_writeOutput :: Maybe String -> String -> IO ()
+_writeOutput mp text = case mp of
+  Nothing -> putStr text
+  Just p
+    | null p || p == "-" -> putStr text
+    | otherwise -> writeFile p text
+
+_split :: Char -> String -> [String]
+_split _ "" = [""]
+_split d s =
+  let (h, t) = break (== d) s
+   in h : case t of
+        [] -> []
+        (_ : rest) -> _split d rest
+
+_parseCSV :: String -> Bool -> Char -> [Map.Map String String]
+_parseCSV text header delim =
+  let ls = filter (not . null) (lines text)
+   in if null ls
+        then []
+        else
+          let heads =
+                if header
+                  then _split delim (head ls)
+                  else ["c" ++ show i | i <- [0 .. length (_split delim (head ls)) - 1]]
+              start = if header then 1 else 0
+              row line =
+                let parts = _split delim line
+                 in Map.fromList
+                      [ (heads !! j, if j < length parts then parts !! j else "")
+                        | j <- [0 .. length heads - 1]
+                      ]
+           in map row (drop start ls)
+
+data AnyValue = VInt Int | VDouble Double | VString String | VBool Bool deriving (Show)
+
+instance Aeson.ToJSON AnyValue where
+  toJSON (VInt n) = Aeson.toJSON n
+  toJSON (VDouble d) = Aeson.toJSON d
+  toJSON (VString s) = Aeson.toJSON s
+  toJSON (VBool b) = Aeson.toJSON b
+
+_asInt :: AnyValue -> Int
+_asInt (VInt n) = n
+_asInt v = error ("expected int, got " ++ show v)
+
+_asDouble :: AnyValue -> Double
+_asDouble (VDouble d) = d
+_asDouble v = error ("expected double, got " ++ show v)
+
+_asString :: AnyValue -> String
+_asString (VString s) = s
+_asString v = error ("expected string, got " ++ show v)
+
+_asBool :: AnyValue -> Bool
+_asBool (VBool b) = b
+_asBool v = error ("expected bool, got " ++ show v)
+
+_parseJSON :: String -> [Map.Map String String]
+_parseJSON text =
+  case Aeson.decode (BSL.pack text) of
+    Just (Aeson.Array arr) -> map _valueToMap (V.toList arr)
+    Just v -> [_valueToMap v]
+    Nothing -> []
+
+_valueToMap :: Aeson.Value -> Map.Map String String
+_valueToMap (Aeson.Object o) =
+  Map.fromList [(T.unpack (Key.toText k), _valueToString v) | (k, v) <- KeyMap.toList o]
+_valueToMap _ = Map.empty
+
+_valueToString :: Aeson.Value -> String
+_valueToString (Aeson.String s) = T.unpack s
+_valueToString (Aeson.Number n) = show n
+_valueToString (Aeson.Bool b) = if b then "true" else "false"
+_valueToString _ = ""
+
+_mapToValue :: Map.Map String String -> Aeson.Value
+_mapToValue m =
+  Aeson.Object $ KeyMap.fromList [(Key.fromString k, Aeson.String (T.pack v)) | (k, v) <- Map.toList m]
+
+_load :: Maybe String -> Maybe (Map.Map String String) -> IO [Map.Map String String]
+_load path opts = do
+  txt <- _readInput path
+  let fmt = fromMaybe "csv" (opts >>= Map.lookup "format")
+  pure $ case fmt of
+    "json" -> _parseJSON txt
+    _ -> _parseCSV txt True ','
+
+_save :: [Map.Map String String] -> Maybe String -> Maybe (Map.Map String String) -> IO ()
+_save rows path opts =
+  let fmt = fromMaybe "csv" (opts >>= Map.lookup "format")
+   in case fmt of
+        "json" ->
+          let objs = map _mapToValue rows
+              val = if length objs == 1 then head objs else Aeson.Array (V.fromList objs)
+           in _writeOutput path (BSL.unpack (Aeson.encode val))
+        _ ->
+          let headers = if null rows then [] else Map.keys (head rows)
+              toLine m = intercalate "," [Map.findWithDefault "" h m | h <- headers]
+              text = unlines (if null headers then [] else intercalate "," headers : map toLine rows)
+           in _writeOutput path text
+
+expect :: Bool -> IO ()
+expect True = pure ()
+expect False = error "expect failed"
+
+data StoreSale = StoreSale
+  { ss_sold_date_sk :: Int,
+    ss_item_sk :: Int,
+    ss_customer_sk :: Int,
+    ss_ticket_number :: Int,
+    ss_quantity :: Int,
+    ss_store_sk :: Int
+  }
+  deriving (Show, Generic)
+
+instance Aeson.FromJSON StoreSale
+
+data StoreReturn = StoreReturn
+  { sr_returned_date_sk :: Int,
+    sr_customer_sk :: Int,
+    sr_item_sk :: Int,
+    sr_ticket_number :: Int,
+    sr_return_quantity :: Int
+  }
+  deriving (Show, Generic)
+
+instance Aeson.FromJSON StoreReturn
+
+data CatalogSale = CatalogSale
+  { cs_sold_date_sk :: Int,
+    cs_item_sk :: Int,
+    cs_bill_customer_sk :: Int,
+    cs_quantity :: Int
+  }
+  deriving (Show, Generic)
+
+instance Aeson.FromJSON CatalogSale
+
+data DateDim = DateDim
+  { d_date_sk :: Int,
+    d_quarter_name :: String
+  }
+  deriving (Show, Generic)
+
+instance Aeson.FromJSON DateDim
+
+data Store = Store
+  { s_store_sk :: Int,
+    s_state :: String
+  }
+  deriving (Show, Generic)
+
+instance Aeson.FromJSON Store
+
+data Item = Item
+  { i_item_sk :: Int,
+    i_item_id :: String,
+    i_item_desc :: String
+  }
+  deriving (Show, Generic)
+
+instance Aeson.FromJSON Item
+
+store_sales = [Map.fromList [("ss_sold_date_sk", 1), ("ss_item_sk", 1), ("ss_customer_sk", 1), ("ss_ticket_number", 1), ("ss_quantity", 10), ("ss_store_sk", 1)]]
+
+store_returns = [Map.fromList [("sr_returned_date_sk", 2), ("sr_customer_sk", 1), ("sr_item_sk", 1), ("sr_ticket_number", 1), ("sr_return_quantity", 2)]]
+
+catalog_sales = [Map.fromList [("cs_sold_date_sk", 3), ("cs_item_sk", 1), ("cs_bill_customer_sk", 1), ("cs_quantity", 5)]]
+
+date_dim = [Map.fromList [("d_date_sk", VInt (1)), ("d_quarter_name", VString ("1998Q1"))], Map.fromList [("d_date_sk", VInt (2)), ("d_quarter_name", VString ("1998Q2"))], Map.fromList [("d_date_sk", VInt (3)), ("d_quarter_name", VString ("1998Q3"))]]
+
+store = [Map.fromList [("s_store_sk", VInt (1)), ("s_state", VString ("CA"))]]
+
+item = [Map.fromList [("i_item_sk", VInt (1)), ("i_item_id", VString ("I1")), ("i_item_desc", VString ("Item 1"))]]
+
+joined = [Map.fromList [("qty", fromMaybe (error "missing") (Map.lookup "ss_quantity" ss)), ("ret", fromMaybe (error "missing") (Map.lookup "sr_return_quantity" sr)), ("csq", fromMaybe (error "missing") (Map.lookup "cs_quantity" cs)), ("i_item_id", fromMaybe (error "missing") (Map.lookup "i_item_id" i)), ("i_item_desc", fromMaybe (error "missing") (Map.lookup "i_item_desc" i)), ("s_state", fromMaybe (error "missing") (Map.lookup "s_state" s))] | ss <- store_sales, sr <- store_returns, cs <- catalog_sales, d1 <- date_dim, d2 <- date_dim, d3 <- date_dim, s <- store, i <- item, (((((fromMaybe (error "missing") (Map.lookup "ss_customer_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "sr_customer_sk" (sr))) && fromMaybe (error "missing") (Map.lookup "ss_item_sk" (ss))) == fromMaybe (error "missing") (Map.lookup "sr_item_sk" (sr))) && fromMaybe (error "missing") (Map.lookup "ss_ticket_number" (ss))) == fromMaybe (error "missing") (Map.lookup "sr_ticket_number" (sr))), (((fromMaybe (error "missing") (Map.lookup "sr_customer_sk" (sr)) == fromMaybe (error "missing") (Map.lookup "cs_bill_customer_sk" (cs))) && fromMaybe (error "missing") (Map.lookup "sr_item_sk" (sr))) == fromMaybe (error "missing") (Map.lookup "cs_item_sk" (cs))), (((fromMaybe (error "missing") (Map.lookup "ss_sold_date_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "d_date_sk" (d1))) && fromMaybe (error "missing") (Map.lookup "d_quarter_name" (d1))) == "1998Q1"), elem ((fromMaybe (error "missing") (Map.lookup "sr_returned_date_sk" (sr)) == fromMaybe (error "missing") (Map.lookup "d_date_sk" (d2))) && fromMaybe (error "missing") (Map.lookup "d_quarter_name" (d2))) ["1998Q1", "1998Q2", "1998Q3"], elem ((fromMaybe (error "missing") (Map.lookup "cs_sold_date_sk" (cs)) == fromMaybe (error "missing") (Map.lookup "d_date_sk" (d3))) && fromMaybe (error "missing") (Map.lookup "d_quarter_name" (d3))) ["1998Q1", "1998Q2", "1998Q3"], (fromMaybe (error "missing") (Map.lookup "ss_store_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "s_store_sk" (s))), (fromMaybe (error "missing") (Map.lookup "ss_item_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "i_item_sk" (i)))]
+
+result = [Map.fromList [("i_item_id", VString (fromMaybe (error "missing") (Map.lookup "i_item_id" (key (g))))), ("i_item_desc", VString (fromMaybe (error "missing") (Map.lookup "i_item_desc" (key (g))))), ("s_state", VString (fromMaybe (error "missing") (Map.lookup "s_state" (key (g))))), ("store_sales_quantitycount", VInt (length [_ | _ <- g])), ("store_sales_quantityave", VDouble (avg [fromMaybe (error "missing") (Map.lookup "qty" (x)) | x <- g])), ("store_sales_quantitystdev", VDouble (0.0)), ("store_sales_quantitycov", VDouble (0.0)), ("store_returns_quantitycount", VInt (length [_ | _ <- g])), ("store_returns_quantityave", VDouble (avg [fromMaybe (error "missing") (Map.lookup "ret" (x)) | x <- g])), ("store_returns_quantitystdev", VDouble (0.0)), ("store_returns_quantitycov", VDouble (0.0)), ("catalog_sales_quantitycount", VInt (length [_ | _ <- g])), ("catalog_sales_quantityave", VDouble (avg [fromMaybe (error "missing") (Map.lookup "csq" (x)) | x <- g])), ("catalog_sales_quantitystdev", VDouble (0.0)), ("catalog_sales_quantitycov", VDouble (0.0))] | g <- _group_by joined (\j -> Map.fromList [("i_item_id", fromMaybe (error "missing") (Map.lookup "i_item_id" j)), ("i_item_desc", fromMaybe (error "missing") (Map.lookup "i_item_desc" j)), ("s_state", fromMaybe (error "missing") (Map.lookup "s_state" j))]), let g = g]
+
+test_TPCDS_Q17_stats :: IO ()
+test_TPCDS_Q17_stats = do
+  expect ((result == [Map.fromList [("i_item_id", VString ("I1")), ("i_item_desc", VString ("Item 1")), ("s_state", VString ("CA")), ("store_sales_quantitycount", VInt (1)), ("store_sales_quantityave", VDouble (10.0)), ("store_sales_quantitystdev", VDouble (0.0)), ("store_sales_quantitycov", VDouble (0.0)), ("store_returns_quantitycount", VInt (1)), ("store_returns_quantityave", VDouble (2.0)), ("store_returns_quantitystdev", VDouble (0.0)), ("store_returns_quantitycov", VDouble (0.0)), ("catalog_sales_quantitycount", VInt (1)), ("catalog_sales_quantityave", VDouble (5.0)), ("catalog_sales_quantitystdev", VDouble (0.0)), ("catalog_sales_quantitycov", VDouble (0.0))]]))
+
+main :: IO ()
+main = do
+  _json result
+  test_TPCDS_Q17_stats
