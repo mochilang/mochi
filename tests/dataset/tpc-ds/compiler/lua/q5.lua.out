@@ -1,0 +1,491 @@
+_Group = {}
+function _Group.new(k)
+    return {key = k, items = {}}
+end
+function __group_by(src, keyfn)
+    local groups = {}
+    local order = {}
+    for _, it in ipairs(src) do
+        local key = keyfn(it)
+        local ks
+        if type(key) == 'table' then
+            local fields = {}
+            for k,_ in pairs(key) do fields[#fields+1] = k end
+            table.sort(fields)
+            local parts = {}
+            for _,k in ipairs(fields) do parts[#parts+1] = tostring(k)..'='..tostring(key[k]) end
+            ks = table.concat(parts, ',')
+        else
+            ks = tostring(key)
+        end
+        local g = groups[ks]
+        if not g then
+            g = _Group.new(key)
+            groups[ks] = g
+            order[#order+1] = ks
+        end
+        table.insert(g.items, it)
+    end
+    local res = {}
+    for _, ks in ipairs(order) do
+        res[#res+1] = groups[ks]
+    end
+    return res
+end
+function __eq(a, b)
+    if type(a) ~= type(b) then return false end
+    if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
+    if type(a) ~= 'table' then return a == b end
+    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
+        if #a ~= #b then return false end
+        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
+        return true
+    end
+    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
+    for k, _ in pairs(b) do if a[k] == nil then return false end end
+    return true
+end
+function __json(v)
+    if type(v) == 'table' and next(v) == nil then print('[]'); return end
+    local function sort(x)
+        if type(x) ~= 'table' then return x end
+        if x[1] ~= nil or #x > 0 then
+            local out = {}
+            for i=1,#x do out[i] = sort(x[i]) end
+            return out
+        end
+        local keys = {}
+        for k in pairs(x) do keys[#keys+1] = k end
+        table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
+        local out = {}
+        for _,k in ipairs(keys) do out[k] = sort(x[k]) end
+        return out
+    end
+    local ok, json = pcall(require, 'json')
+    if not ok then ok, json = pcall(require, 'cjson') end
+    if ok then
+        print(json.encode(sort(v)))
+        return
+    end
+    local function enc(x)
+        local t = type(x)
+        if t == 'nil' then
+            return 'null'
+        elseif t == 'boolean' or t == 'number' then
+            return tostring(x)
+        elseif t == 'string' then
+            return string.format('%q', x)
+        elseif t == 'table' then
+            if x[1] ~= nil or #x > 0 then
+                local parts = {}
+                for i=1,#x do parts[#parts+1] = enc(x[i]) end
+                return '['..table.concat(parts, ',')..']'
+            else
+                local keys = {}
+                for k in pairs(x) do keys[#keys+1] = k end
+                table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
+                local parts = {}
+                for _,k in ipairs(keys) do parts[#parts+1] = enc(k)..':'..enc(x[k]) end
+                return '{'..table.concat(parts, ',')..'}'
+            end
+        else
+            return 'null'
+        end
+    end
+    print(enc(sort(v)))
+end
+function __query(src, joins, opts)
+    local whereFn = opts.where
+    local items = {}
+    if #joins == 0 and whereFn then
+        for _, v in ipairs(src) do if whereFn(v) then items[#items+1] = {v} end end
+    else
+        for _, v in ipairs(src) do items[#items+1] = {v} end
+    end
+    for ji, j in ipairs(joins) do
+        local joined = {}
+        local jitems = j.items or {}
+        if j.right and j.left then
+            local matched = {}
+            for _, left in ipairs(items) do
+                local m = false
+                for ri, right in ipairs(jitems) do
+                    local keep = true
+                    if j.on then
+                        local args = {table.unpack(left)}
+                        args[#args+1] = right
+                        keep = j.on(table.unpack(args))
+                    end
+                    if keep then
+                        m = true; matched[ri] = true
+                        local row = {table.unpack(left)}
+                        row[#row+1] = right
+                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                        else
+                            joined[#joined+1] = row
+                        end
+                    end
+                end
+                if not m then
+                    local row = {table.unpack(left)}
+                    row[#row+1] = nil
+                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                    else
+                        joined[#joined+1] = row
+                    end
+                end
+            end
+            for ri, right in ipairs(jitems) do
+                if not matched[ri] then
+                    local undef = {}
+                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
+                    local row = {table.unpack(undef)}
+                    row[#row+1] = right
+                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                    else
+                        joined[#joined+1] = row
+                    end
+                end
+            end
+        elseif j.right then
+            for _, right in ipairs(jitems) do
+                local m = false
+                for _, left in ipairs(items) do
+                    local keep = true
+                    if j.on then
+                        local args = {table.unpack(left)}
+                        args[#args+1] = right
+                        keep = j.on(table.unpack(args))
+                    end
+                    if keep then
+                        m = true
+                        local row = {table.unpack(left)}
+                        row[#row+1] = right
+                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                        else
+                            joined[#joined+1] = row
+                        end
+                    end
+                end
+                if not m then
+                    local undef = {}
+                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
+                    local row = {table.unpack(undef)}
+                    row[#row+1] = right
+                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                    else
+                        joined[#joined+1] = row
+                    end
+                end
+            end
+        else
+            for _, left in ipairs(items) do
+                local m = false
+                for _, right in ipairs(jitems) do
+                    local keep = true
+                    if j.on then
+                        local args = {table.unpack(left)}
+                        args[#args+1] = right
+                        keep = j.on(table.unpack(args))
+                    end
+                    if keep then
+                        m = true
+                        local row = {table.unpack(left)}
+                        row[#row+1] = right
+                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                        else
+                            joined[#joined+1] = row
+                        end
+                    end
+                end
+                if j.left and not m then
+                    local row = {table.unpack(left)}
+                    row[#row+1] = nil
+                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
+                    else
+                        joined[#joined+1] = row
+                    end
+                end
+            end
+        end
+        items = joined
+    end
+    if opts.sortKey then
+        local pairs = {}
+        for _, it in ipairs(items) do pairs[#pairs+1] = {item=it, key=opts.sortKey(table.unpack(it))} end
+        table.sort(pairs, function(a,b)
+            local ak, bk = a.key, b.key
+            if type(ak)=='number' and type(bk)=='number' then return ak < bk end
+            if type(ak)=='string' and type(bk)=='string' then return ak < bk end
+            return tostring(ak) < tostring(bk)
+        end)
+        items = {}
+        for i,p in ipairs(pairs) do items[i] = p.item end
+    end
+    if opts.skip ~= nil then
+        local n = opts.skip
+        if n < #items then
+            for i=1,n do table.remove(items,1) end
+        else
+            items = {}
+        end
+    end
+    if opts.take ~= nil then
+        local n = opts.take
+        if n < #items then
+            for i=#items, n+1, -1 do table.remove(items) end
+        end
+    end
+    local res = {}
+    for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r)) end
+    return res
+end
+function __run_tests(tests)
+    local function format_duration(d)
+        if d < 1e-6 then return string.format('%dns', math.floor(d*1e9)) end
+        if d < 1e-3 then return string.format('%.1fµs', d*1e6) end
+        if d < 1 then return string.format('%.1fms', d*1e3) end
+        return string.format('%.2fs', d)
+    end
+    local failures = 0
+    for _, t in ipairs(tests) do
+        io.write('   test ' .. t.name .. ' ...')
+        local start = os.clock()
+        local ok, err = pcall(t.fn)
+        local dur = os.clock() - start
+        if ok then
+            io.write(' ok (' .. format_duration(dur) .. ')\n')
+        else
+            io.write(' fail ' .. tostring(err) .. ' (' .. format_duration(dur) .. ')\n')
+            failures = failures + 1
+        end
+    end
+    if failures > 0 then
+        io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
+    end
+end
+function __sum(v)
+    local items
+    if type(v) == 'table' and v.items ~= nil then
+        items = v.items
+    elseif type(v) == 'table' then
+        items = v
+    else
+        error('sum() expects list or group')
+    end
+    local sum = 0
+    for _, it in ipairs(items) do sum = sum + it end
+    return sum
+end
+function __union_all(a, b)
+    local res = {}
+    if a then for _, v in ipairs(a) do res[#res+1] = v end end
+    if b then for _, v in ipairs(b) do res[#res+1] = v end end
+    return res
+end
+function test_TPCDS_Q5_empty()
+    if not (__eq(#result, 0)) then error('expect failed') end
+end
+
+store_sales = {}
+store_returns = {}
+store = {}
+catalog_sales = {}
+catalog_returns = {}
+catalog_page = {}
+web_sales = {}
+web_returns = {}
+web_site = {}
+date_dim = {}
+ss = (function()
+    local _src = store_sales
+    local _rows = __query(_src, {
+        { items = date_dim, on = function(ss, d) return __eq(ss.ss_sold_date_sk, d.d_date_sk) end },
+        { items = store, on = function(ss, d, s) return __eq(ss.ss_store_sk, s.s_store_sk) end }
+    }, { selectFn = function(ss, d, s) return ss end, where = function(ss, d, s) return (((d.d_date >= "1998-12-01") and (d.d_date <= "1998-12-15"))) end })
+    local _groups = __group_by(_rows, function(ss) return s.s_store_id end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["channel"]="store channel", ["id"]=("store" .. tostring(g.key)), ["sales"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.ss.ss_ext_sales_price
+    end
+    return _res
+end)()), ["returns"]=0.0, ["profit"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.ss.ss_net_profit
+    end
+    return _res
+end)()), ["profit_loss"]=0.0}
+    end
+    return _res
+end)()
+sr = (function()
+    local _src = store_returns
+    local _rows = __query(_src, {
+        { items = date_dim, on = function(sr, d) return __eq(sr.sr_returned_date_sk, d.d_date_sk) end },
+        { items = store, on = function(sr, d, s) return __eq(sr.sr_store_sk, s.s_store_sk) end }
+    }, { selectFn = function(sr, d, s) return sr end, where = function(sr, d, s) return (((d.d_date >= "1998-12-01") and (d.d_date <= "1998-12-15"))) end })
+    local _groups = __group_by(_rows, function(sr) return s.s_store_id end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["channel"]="store channel", ["id"]=("store" .. tostring(g.key)), ["sales"]=0.0, ["returns"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.sr.sr_return_amt
+    end
+    return _res
+end)()), ["profit"]=0.0, ["profit_loss"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.sr.sr_net_loss
+    end
+    return _res
+end)())}
+    end
+    return _res
+end)()
+cs = (function()
+    local _src = catalog_sales
+    local _rows = __query(_src, {
+        { items = date_dim, on = function(cs, d) return __eq(cs.cs_sold_date_sk, d.d_date_sk) end },
+        { items = catalog_page, on = function(cs, d, cp) return __eq(cs.cs_catalog_page_sk, cp.cp_catalog_page_sk) end }
+    }, { selectFn = function(cs, d, cp) return cs end, where = function(cs, d, cp) return (((d.d_date >= "1998-12-01") and (d.d_date <= "1998-12-15"))) end })
+    local _groups = __group_by(_rows, function(cs) return cp.cp_catalog_page_id end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["channel"]="catalog channel", ["id"]=("catalog_page" .. tostring(g.key)), ["sales"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.cs.cs_ext_sales_price
+    end
+    return _res
+end)()), ["returns"]=0.0, ["profit"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.cs.cs_net_profit
+    end
+    return _res
+end)()), ["profit_loss"]=0.0}
+    end
+    return _res
+end)()
+cr = (function()
+    local _src = catalog_returns
+    local _rows = __query(_src, {
+        { items = date_dim, on = function(cr, d) return __eq(cr.cr_returned_date_sk, d.d_date_sk) end },
+        { items = catalog_page, on = function(cr, d, cp) return __eq(cr.cr_catalog_page_sk, cp.cp_catalog_page_sk) end }
+    }, { selectFn = function(cr, d, cp) return cr end, where = function(cr, d, cp) return (((d.d_date >= "1998-12-01") and (d.d_date <= "1998-12-15"))) end })
+    local _groups = __group_by(_rows, function(cr) return cp.cp_catalog_page_id end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["channel"]="catalog channel", ["id"]=("catalog_page" .. tostring(g.key)), ["sales"]=0.0, ["returns"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.cr.cr_return_amount
+    end
+    return _res
+end)()), ["profit"]=0.0, ["profit_loss"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.cr.cr_net_loss
+    end
+    return _res
+end)())}
+    end
+    return _res
+end)()
+ws = (function()
+    local _src = web_sales
+    local _rows = __query(_src, {
+        { items = date_dim, on = function(ws, d) return __eq(ws.ws_sold_date_sk, d.d_date_sk) end },
+        { items = web_site, on = function(ws, d, w) return __eq(ws.ws_web_site_sk, w.web_site_sk) end }
+    }, { selectFn = function(ws, d, w) return ws end, where = function(ws, d, w) return (((d.d_date >= "1998-12-01") and (d.d_date <= "1998-12-15"))) end })
+    local _groups = __group_by(_rows, function(ws) return w.web_site_id end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["channel"]="web channel", ["id"]=("web_site" .. tostring(g.key)), ["sales"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.ws.ws_ext_sales_price
+    end
+    return _res
+end)()), ["returns"]=0.0, ["profit"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.ws.ws_net_profit
+    end
+    return _res
+end)()), ["profit_loss"]=0.0}
+    end
+    return _res
+end)()
+wr = (function()
+    local _src = web_returns
+    local _rows = __query(_src, {
+        { items = web_sales, on = function(wr, ws) return (__eq(wr.wr_item_sk, ws.ws_item_sk) and __eq(wr.wr_order_number, ws.ws_order_number)) end },
+        { items = date_dim, on = function(wr, ws, d) return __eq(wr.wr_returned_date_sk, d.d_date_sk) end },
+        { items = web_site, on = function(wr, ws, d, w) return __eq(ws.ws_web_site_sk, w.web_site_sk) end }
+    }, { selectFn = function(wr, ws, d, w) return wr end, where = function(wr, ws, d, w) return (((d.d_date >= "1998-12-01") and (d.d_date <= "1998-12-15"))) end })
+    local _groups = __group_by(_rows, function(wr) return w.web_site_id end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["channel"]="web channel", ["id"]=("web_site" .. tostring(g.key)), ["sales"]=0.0, ["returns"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.wr.wr_return_amt
+    end
+    return _res
+end)()), ["profit"]=0.0, ["profit_loss"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.wr.wr_net_loss
+    end
+    return _res
+end)())}
+    end
+    return _res
+end)()
+per_channel = __union_all(__union_all(__union_all(ss, sr), __union_all(cs, cr)), __union_all(ws, wr))
+result = (function()
+    local _src = per_channel
+    local _rows = __query(_src, {
+    }, { selectFn = function(p) return p end })
+    local _groups = __group_by(_rows, function(p) return {["channel"]=p.channel, ["id"]=p.id} end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["channel"]=g.key.channel, ["id"]=g.key.id, ["sales"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.p.sales
+    end
+    return _res
+end)()), ["returns"]=__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.p.returns
+    end
+    return _res
+end)()), ["profit"]=(__sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.p.profit
+    end
+    return _res
+end)()) - __sum((function()
+    local _res = {}
+    for _, x in ipairs(g.items) do
+        _res[#_res+1] = x.p.profit_loss
+    end
+    return _res
+end)()))}
+    end
+    return _res
+end)()
+__json(result)
+local __tests = {
+    {name="TPCDS Q5 empty", fn=test_TPCDS_Q5_empty},
+}
+__run_tests(__tests)
