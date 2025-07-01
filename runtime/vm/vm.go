@@ -42,11 +42,12 @@ const (
 // the JOB benchmark queries which improves compatibility with the VM.
 const smallJoinThreshold = 16
 
-// maxCallDepth guards against runaway recursion leading to stack
+// defaultMaxCallDepth guards against runaway recursion leading to stack
 // overflows when executing user programs. The depth is measured as the
 // number of active function calls. When exceeded the VM returns an
-// error instead of crashing.
-const maxCallDepth = 1024
+// error instead of crashing. Individual VM instances can override this
+// limit via the MaxCallDepth field.
+const defaultMaxCallDepth = 1024
 
 // Op defines a VM instruction opcode.
 type Op uint8
@@ -508,6 +509,9 @@ type VM struct {
 	prog   *Program
 	writer io.Writer
 	reader *bufio.Reader
+	// MaxCallDepth limits the allowed recursion depth when executing
+	// Mochi programs. If zero, defaultMaxCallDepth is used.
+	MaxCallDepth int
 }
 
 // StackFrame represents a single call frame in a Mochi stack trace.
@@ -570,7 +574,12 @@ func (m *VM) newError(err error, trace []StackFrame, line int) *VMError {
 }
 
 func New(prog *Program, w io.Writer) *VM {
-	return &VM{prog: prog, writer: w, reader: bufio.NewReader(os.Stdin)}
+	return &VM{
+		prog:         prog,
+		writer:       w,
+		reader:       bufio.NewReader(os.Stdin),
+		MaxCallDepth: defaultMaxCallDepth,
+	}
 }
 
 func NewWithIO(prog *Program, r io.Reader, w io.Writer) *VM {
@@ -578,7 +587,12 @@ func NewWithIO(prog *Program, r io.Reader, w io.Writer) *VM {
 	if !ok {
 		br = bufio.NewReader(r)
 	}
-	return &VM{prog: prog, writer: w, reader: br}
+	return &VM{
+		prog:         prog,
+		writer:       w,
+		reader:       br,
+		MaxCallDepth: defaultMaxCallDepth,
+	}
 }
 
 func (m *VM) Run() error {
@@ -604,8 +618,12 @@ type frame struct {
 }
 
 func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) {
-	if len(trace) > maxCallDepth {
-		return Value{}, &VMError{Err: fmt.Errorf("call stack exceeded %d frames", maxCallDepth), Stack: trace}
+	limit := m.MaxCallDepth
+	if limit == 0 {
+		limit = defaultMaxCallDepth
+	}
+	if len(trace) > limit {
+		return Value{}, &VMError{Err: fmt.Errorf("call stack exceeded %d frames", limit), Stack: trace}
 	}
 	fn := &m.prog.Funcs[fnIndex]
 	if len(args) < fn.NumParams {
