@@ -1,5 +1,27 @@
 # 📦 CHANGELOG.md
 
+## [0.10.10] – 2025-07-01T18:41:01+07:00
+
+### Added
+
+* Sample TPC-DS dataset with queries 1–19 across languages
+* `first` builtin in Python, TypeScript and Go
+* `union` and `union_all` operations in Go and Python
+* `matrix_mul` builtin in the C backend and `if` expressions for C++
+* Typed map elements and join-group support in C#
+
+### Changed
+
+* Compiler tests marked slow with optional golden skips
+* Updated golden outputs for F#, Java, Rust and Zig compilers
+
+### Fixed
+
+* Kotlin query argument casting bug
+* Zig backend grouping issue with joins
+* Elixir TPC-DS query 1 test case
+* Miscellaneous fixes after helper additions
+
 ## [0.10.8] – 2025-06-30
 
 ### Added
