@@ -465,29 +465,29 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				continue
 			}
 
-                       if p.Target.Selector != nil && p.Target.Selector.Root == "strings" &&
-                               len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "ToUpper" &&
-                               len(op.Call.Args) == 1 {
-                               argExpr, err := c.compileExpr(op.Call.Args[0])
-                               if err != nil {
-                                       return "", err
-                               }
-                               expr = fmt.Sprintf("%s.upper()", argExpr)
-                               typ = types.StringType{}
-                               continue
-                       }
+			if p.Target.Selector != nil && p.Target.Selector.Root == "strings" &&
+				len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "ToUpper" &&
+				len(op.Call.Args) == 1 {
+				argExpr, err := c.compileExpr(op.Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("%s.upper()", argExpr)
+				typ = types.StringType{}
+				continue
+			}
 
-                       args := make([]string, len(op.Call.Args))
-                       for i, a := range op.Call.Args {
-                               v, err := c.compileExpr(a)
-                               if err != nil {
-                                       return "", err
-                               }
-                               args[i] = v
-                       }
-                       expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
-                       typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
-                       continue
+			args := make([]string, len(op.Call.Args))
+			for i, a := range op.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
+			}
+			expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
+			typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
+			continue
 		}
 		if op.Index != nil {
 			idx := op.Index
@@ -785,18 +785,23 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_reverse")
 		return fmt.Sprintf("_reverse(%s)", args[0]), nil
-       case "append":
-               if len(args) != 2 {
-                       return "", fmt.Errorf("append expects 2 args")
-               }
-               c.use("_append")
-               return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
-       case "strings.ToUpper":
-               if len(args) != 1 {
-                       return "", fmt.Errorf("strings.ToUpper expects 1 arg")
-               }
-               return fmt.Sprintf("%s.upper()", args[0]), nil
-       case "contains":
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		c.use("_append")
+		return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
+	case "strings.ToUpper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("strings.ToUpper expects 1 arg")
+		}
+		return fmt.Sprintf("%s.upper()", args[0]), nil
+	case "lower":
+		if len(args) != 1 {
+			return "", fmt.Errorf("lower expects 1 arg")
+		}
+		return fmt.Sprintf("str(%s).lower()", args[0]), nil
+	case "contains":
 		if len(args) != 2 {
 			return "", fmt.Errorf("contains expects 2 args")
 		}

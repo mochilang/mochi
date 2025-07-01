@@ -3,96 +3,10 @@ from __future__ import annotations
 
 import json
 
-date_dim = None
-store_sales = None
-item = None
-result = None
-
-
-def test_TPCDS_Q3_result():
-    assert result == [
-        {"d_year": 1998, "brand_id": 1, "brand": "Brand1", "sum_agg": 10},
-        {"d_year": 1998, "brand_id": 2, "brand": "Brand2", "sum_agg": 20},
-    ]
-
-
-def main():
-    global date_dim
-    date_dim = [{"d_date_sk": 1, "d_year": 1998, "d_moy": 12}]
-    global store_sales
-    store_sales = [
-        {"ss_sold_date_sk": 1, "ss_item_sk": 1, "ss_ext_sales_price": 10},
-        {"ss_sold_date_sk": 1, "ss_item_sk": 2, "ss_ext_sales_price": 20},
-    ]
-    global item
-    item = [
-        {"i_item_sk": 1, "i_manufact_id": 100, "i_brand_id": 1, "i_brand": "Brand1"},
-        {"i_item_sk": 2, "i_manufact_id": 100, "i_brand_id": 2, "i_brand": "Brand2"},
-    ]
-
-    def _q0():
-        _src = date_dim
-        _rows = _query(
-            _src,
-            [
-                {
-                    "items": store_sales,
-                    "on": lambda dt, ss: (
-                        (_get(dt, "d_date_sk") == _get(ss, "ss_sold_date_sk"))
-                    ),
-                },
-                {
-                    "items": item,
-                    "on": lambda dt, ss, i: (
-                        (_get(ss, "ss_item_sk") == _get(i, "i_item_sk"))
-                    ),
-                },
-            ],
-            {
-                "select": lambda dt, ss, i: (dt, ss, i),
-                "where": lambda dt, ss, i: (
-                    ((_get(i, "i_manufact_id") == 100) and (_get(dt, "d_moy") == 12))
-                ),
-            },
-        )
-        _groups = _group_by(
-            _rows,
-            lambda dt, ss, i: (
-                {
-                    "d_year": _get(dt, "d_year"),
-                    "brand_id": _get(i, "i_brand_id"),
-                    "brand": _get(i, "i_brand"),
-                }
-            ),
-        )
-        items = _groups
-        items = sorted(
-            items,
-            key=lambda g: _sort_key(
-                [
-                    _get(_get(g, "key"), "d_year"),
-                    (-_sum([_get(x, "ss_ext_sales_price") for x in g])),
-                    _get(_get(g, "key"), "brand_id"),
-                ]
-            ),
-        )
-        return [
-            {
-                "d_year": _get(_get(g, "key"), "d_year"),
-                "brand_id": _get(_get(g, "key"), "brand_id"),
-                "brand": _get(_get(g, "key"), "brand"),
-                "sum_agg": _sum([_get(x, "ss_ext_sales_price") for x in g]),
-            }
-            for g in items
-        ]
-
-    global result
-    result = _q0()
-    print(json.dumps(result, default=lambda o: vars(o)))
-    test_TPCDS_Q3_result()
-
 
 def _get(obj, name):
+    if obj is None:
+        return None
     if isinstance(obj, dict):
         if name in obj:
             return obj[name]
@@ -236,6 +150,95 @@ def _sum(v):
         else:
             raise Exception("sum() expects numbers")
     return s
+
+
+date_dim = None
+store_sales = None
+item = None
+result = None
+
+
+def test_TPCDS_Q3_result():
+    assert result == [
+        {"d_year": 1998, "brand_id": 1, "brand": "Brand1", "sum_agg": 10},
+        {"d_year": 1998, "brand_id": 2, "brand": "Brand2", "sum_agg": 20},
+    ]
+
+
+def main():
+    global date_dim
+    date_dim = [{"d_date_sk": 1, "d_year": 1998, "d_moy": 12}]
+    global store_sales
+    store_sales = [
+        {"ss_sold_date_sk": 1, "ss_item_sk": 1, "ss_ext_sales_price": 10},
+        {"ss_sold_date_sk": 1, "ss_item_sk": 2, "ss_ext_sales_price": 20},
+    ]
+    global item
+    item = [
+        {"i_item_sk": 1, "i_manufact_id": 100, "i_brand_id": 1, "i_brand": "Brand1"},
+        {"i_item_sk": 2, "i_manufact_id": 100, "i_brand_id": 2, "i_brand": "Brand2"},
+    ]
+
+    def _q0():
+        _src = date_dim
+        _rows = _query(
+            _src,
+            [
+                {
+                    "items": store_sales,
+                    "on": lambda dt, ss: (
+                        (_get(dt, "d_date_sk") == _get(ss, "ss_sold_date_sk"))
+                    ),
+                },
+                {
+                    "items": item,
+                    "on": lambda dt, ss, i: (
+                        (_get(ss, "ss_item_sk") == _get(i, "i_item_sk"))
+                    ),
+                },
+            ],
+            {
+                "select": lambda dt, ss, i: (dt, ss, i),
+                "where": lambda dt, ss, i: (
+                    ((_get(i, "i_manufact_id") == 100) and (_get(dt, "d_moy") == 12))
+                ),
+            },
+        )
+        _groups = _group_by(
+            _rows,
+            lambda dt, ss, i: (
+                {
+                    "d_year": _get(dt, "d_year"),
+                    "brand_id": _get(i, "i_brand_id"),
+                    "brand": _get(i, "i_brand"),
+                }
+            ),
+        )
+        items = _groups
+        items = sorted(
+            items,
+            key=lambda g: _sort_key(
+                [
+                    _get(_get(g, "key"), "d_year"),
+                    (-_sum([_get(x, "ss_ext_sales_price") for x in g])),
+                    _get(_get(g, "key"), "brand_id"),
+                ]
+            ),
+        )
+        return [
+            {
+                "d_year": _get(_get(g, "key"), "d_year"),
+                "brand_id": _get(_get(g, "key"), "brand_id"),
+                "brand": _get(_get(g, "key"), "brand"),
+                "sum_agg": _sum([_get(x, "ss_ext_sales_price") for x in g]),
+            }
+            for g in items
+        ]
+
+    global result
+    result = _q0()
+    print(json.dumps(result, default=lambda o: vars(o)))
+    test_TPCDS_Q3_result()
 
 
 if __name__ == "__main__":
