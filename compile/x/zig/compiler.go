@@ -1436,6 +1436,29 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("std.math.sqrt(%s)", arg), nil
 	}
+	if name == "lower" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("std.ascii.lowerString(%s)", arg), nil
+	}
+	if name == "substr" && len(call.Args) == 3 {
+		s, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		start, err := c.compileExpr(call.Args[1], false)
+		if err != nil {
+			return "", err
+		}
+		end, err := c.compileExpr(call.Args[2], false)
+		if err != nil {
+			return "", err
+		}
+		c.needsSliceString = true
+		return fmt.Sprintf("_slice_string(%s, %s, %s, 1)", s, start, end), nil
+	}
 	if name == "len" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
