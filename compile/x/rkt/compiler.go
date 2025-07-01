@@ -63,19 +63,19 @@ const datasetHelpers = `(define (_fetch url opts)
   (for/list ([ks order]) (hash-ref groups ks)))
 `
 
-const setOpsHelpers = `(define (union-all a b) (append (list->list a) (list->list b)))
+const setOpsHelpers = `(define (union-all a b) (append (sequence->list a) (sequence->list b)))
 (define (union a b)
-  (let loop ([res (list->list a)] [xs (list->list b)])
+  (let loop ([res (sequence->list a)] [xs (sequence->list b)])
     (if (null? xs) res
         (let ([x (car xs)])
           (if (member x res)
               (loop res (cdr xs))
               (loop (append res (list x)) (cdr xs)))))) )
 (define (except a b)
-  (for/list ([x (list->list a)] #:unless (member x (list->list b))) x))
+  (for/list ([x (sequence->list a)] #:unless (member x (sequence->list b))) x))
 (define (intersect a b)
-  (for/fold ([res '()]) ([x (list->list a)])
-    (if (and (member x (list->list b)) (not (member x res)))
+  (for/fold ([res '()]) ([x (sequence->list a)])
+    (if (and (member x (sequence->list b)) (not (member x res)))
         (append res (list x))
         res)))`
 
@@ -1447,7 +1447,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(indent + ")\n")
 		}
 		b.WriteString("  )\n")
-		b.WriteString("  (for/list ([ks order]) (hash-ref map ks)))]\n")
+		b.WriteString("  (for/list ([ks order]) (hash-ref map ks))\n")
+		b.WriteString("]\n")
 		b.WriteString("  (let ([_res '()])\n")
 		b.WriteString(fmt.Sprintf("    (for ([%s groups])\n", sanitizeName(q.Group.Name)))
 		if sortExpr != "" {
