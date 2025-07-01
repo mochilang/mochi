@@ -141,6 +141,13 @@ const (
 		"  return false;\n" +
 		"}\n"
 
+	helperValues = "function _values(m: any): any[] {\n" +
+		"  if (m && typeof m === 'object' && !Array.isArray(m)) {\n" +
+		"    return Object.values(m);\n" +
+		"  }\n" +
+		"  throw new Error('values() expects map');\n" +
+		"}\n"
+
 	helperInput = "function _input(): string {\n" +
 		"  const v = prompt('');\n" +
 		"  return v === null ? '' : v;\n" +
@@ -319,11 +326,11 @@ const (
 		"          m = true; matched[ri] = true;\n" +
 		"          joined.push([...left, right]);\n" +
 		"        }\n" +
-		"        if (!m) joined.push([...left, undefined]);\n" +
+		"        if (!m) joined.push([...left, null]);\n" +
 		"      }\n" +
 		"      for (let ri = 0; ri < j.items.length; ri++) {\n" +
 		"        if (!matched[ri]) {\n" +
-		"          const undef = Array(items[0]?.length || 0).fill(undefined);\n" +
+		"          const undef = Array(items[0]?.length || 0).fill(null);\n" +
 		"          joined.push([...undef, j.items[ri]]);\n" +
 		"        }\n" +
 		"      }\n" +
@@ -337,7 +344,7 @@ const (
 		"          m = true; joined.push([...left, right]);\n" +
 		"        }\n" +
 		"        if (!m) {\n" +
-		"          const undef = Array(items[0]?.length || 0).fill(undefined);\n" +
+		"          const undef = Array(items[0]?.length || 0).fill(null);\n" +
 		"          joined.push([...undef, right]);\n" +
 		"        }\n" +
 		"      }\n" +
@@ -350,7 +357,7 @@ const (
 		"          if (!keep) continue;\n" +
 		"          m = true; joined.push([...left, right]);\n" +
 		"        }\n" +
-		"        if (j.left && !m) joined.push([...left, undefined]);\n" +
+		"        if (j.left && !m) joined.push([...left, null]);\n" +
 		"      }\n" +
 		"    }\n" +
 		"    items = joined;\n" +
@@ -492,6 +499,7 @@ var helperMap = map[string]string{
 	"_max":         helperMax,
 	"_exists":      helperExists,
 	"_contains":    helperContains,
+	"_values":      helperValues,
 	"_input":       helperInput,
 	"_iter":        helperIter,
 	"_gen_text":    helperGenText,

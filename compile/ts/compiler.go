@@ -300,6 +300,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
+	// Handle simple built-in imports from other languages.
+	for _, s := range prog.Statements {
+		if s.Import != nil && s.Import.Lang != nil && *s.Import.Lang == "python" {
+			p := strings.Trim(s.Import.Path, "\"")
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			alias = sanitizeName(alias)
+			switch p {
+			case "math":
+				c.writeln(fmt.Sprintf("const %s = { sqrt: Math.sqrt }", alias))
+				c.writeln("")
+			}
+		}
+	}
+
 	// Compile Mochi package imports.
 	for _, s := range prog.Statements {
 		if s.Import != nil && s.Import.Lang == nil {
@@ -903,6 +920,28 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	return nil
 }
 
+func ifStmtToExpr(s *parser.IfStmt) *parser.IfExpr {
+	if s == nil {
+		return nil
+	}
+	if len(s.Then) != 1 || s.Then[0].Expr == nil {
+		return nil
+	}
+	ie := &parser.IfExpr{Pos: s.Pos, Cond: s.Cond, Then: s.Then[0].Expr.Expr}
+	if s.ElseIf != nil {
+		ie.ElseIf = ifStmtToExpr(s.ElseIf)
+		if ie.ElseIf == nil {
+			return nil
+		}
+	}
+	if len(s.Else) == 1 && s.Else[0].Expr != nil {
+		ie.Else = s.Else[0].Expr.Expr
+	} else if len(s.Else) > 0 {
+		return nil
+	}
+	return ie
+}
+
 func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	cond, err := c.compileExpr(stmt.Cond)
 	if err != nil {
@@ -1098,7 +1137,30 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	origEnv := c.env
 	c.env = child
 	c.indent++
-	for _, s := range fun.Body {
+	for i, s := range fun.Body {
+		if i == len(fun.Body)-1 {
+			if s.Expr != nil {
+				expr, err := c.compileExpr(s.Expr.Expr)
+				if err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln("return " + expr)
+				continue
+			}
+			if s.If != nil {
+				ifExpr := ifStmtToExpr(s.If)
+				if ifExpr != nil {
+					val, err := c.compileIfExpr(ifExpr)
+					if err != nil {
+						c.env = origEnv
+						return err
+					}
+					c.writeln("return " + val)
+					continue
+				}
+			}
+		}
 		if err := c.compileStmt(s); err != nil {
 			c.env = origEnv
 			return err
@@ -1555,6 +1617,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_contains")
 		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		c.use("_values")
+		return fmt.Sprintf("_values(%s)", args[0]), nil
 	case "exists":
 		c.use("_exists")
 		return fmt.Sprintf("_exists(%s)", argStr), nil
@@ -1656,13 +1724,26 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		sub.writeln("return " + expr)
 	} else {
 		for i, s := range fn.BlockBody {
-			if i == len(fn.BlockBody)-1 && s.Expr != nil {
-				expr, err := sub.compileExpr(s.Expr.Expr)
-				if err != nil {
-					return "", err
+			if i == len(fn.BlockBody)-1 {
+				if s.Expr != nil {
+					expr, err := sub.compileExpr(s.Expr.Expr)
+					if err != nil {
+						return "", err
+					}
+					sub.writeln("return " + expr)
+					continue
 				}
-				sub.writeln("return " + expr)
-				continue
+				if s.If != nil {
+					ifExpr := ifStmtToExpr(s.If)
+					if ifExpr != nil {
+						expr, err := sub.compileIfExpr(ifExpr)
+						if err != nil {
+							return "", err
+						}
+						sub.writeln("return " + expr)
+						continue
+					}
+				}
 			}
 			if err := sub.compileStmt(s); err != nil {
 				return "", err
@@ -1704,7 +1785,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	for i, it := range m.Items {
 		var k string
 		if s, ok := simpleStringKey(it.Key); ok {
-			k = fmt.Sprintf("\"%s\"", s)
+			k = fmt.Sprintf("\"%s\"", sanitizeName(s))
 		} else {
 			var err error
 			k, err = c.compileExpr(it.Key)
