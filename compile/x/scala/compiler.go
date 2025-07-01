@@ -987,6 +987,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Str != nil {
 			return strconv.Quote(*p.Lit.Str), nil
 		}
+		if p.Lit.Null {
+			return "null", nil
+		}
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -1037,6 +1040,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileFunExpr(p.FunExpr)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Fetch != nil:
@@ -1652,6 +1657,32 @@ func joinArgs(args []string) string {
 		res += ", " + args[i]
 	}
 	return res
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "null"
+	}
+	return fmt.Sprintf("(if (%s) %s else %s)", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
