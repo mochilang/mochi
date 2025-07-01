@@ -1,0 +1,98 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #customer_demographics put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #household_demographics put: nil.
+Smalltalk at: #inventory put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #warehouse put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q72_simplified
+	((result = Array with: (Dictionary from: {'i_item_desc' -> 'ItemA'. 'w_warehouse_name' -> 'Main'. 'd_week_seq' -> 10. 'no_promo' -> 1. 'promo' -> 0. 'total_cnt' -> 1}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+	g := self new.
+	g key: k.
+	g initialize.
+	^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+	items := OrderedCollection new.
+	^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+	^ key
+!
+key: k
+	key := k
+!
+add: it
+	items add: it
+!
+do: blk
+	items do: blk
+!
+size
+	^ items size
+!
+!Main class methodsFor: 'runtime'!
+__count: v
+	(v respondsTo: #size) ifTrue: [ ^ v size ]
+	^ self error: 'count() expects collection'
+!
+_group_by: src keyFn: blk
+	| groups order |
+	groups := Dictionary new.
+	order := OrderedCollection new.
+	src do: [:it |
+		| key ks g |
+		key := blk value: it.
+		ks := key printString.
+		g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+		g add: it.
+	]
+	^ order collect: [:k | groups at: k ]
+!
+!!
+catalog_sales := Array with: (Dictionary from: {'cs_item_sk' -> 1. 'cs_order_number' -> 1. 'cs_quantity' -> 1. 'cs_sold_date_sk' -> 1. 'cs_ship_date_sk' -> 3. 'cs_bill_cdemo_sk' -> 1. 'cs_bill_hdemo_sk' -> 1. 'cs_promo_sk' -> nil}).
+inventory := Array with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_warehouse_sk' -> 1. 'inv_date_sk' -> 2. 'inv_quantity_on_hand' -> 0}).
+warehouse := Array with: (Dictionary from: {'w_warehouse_sk' -> 1. 'w_warehouse_name' -> 'Main'}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_item_desc' -> 'ItemA'}).
+customer_demographics := Array with: (Dictionary from: {'cd_demo_sk' -> 1. 'cd_marital_status' -> 'M'}).
+household_demographics := Array with: (Dictionary from: {'hd_demo_sk' -> 1. 'hd_buy_potential' -> '5001-10000'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_week_seq' -> 10. 'd_date' -> 1. 'd_year' -> 2000}) with: (Dictionary from: {'d_date_sk' -> 2. 'd_week_seq' -> 10. 'd_date' -> 1. 'd_year' -> 2000}) with: (Dictionary from: {'d_date_sk' -> 3. 'd_week_seq' -> 10. 'd_date' -> 7. 'd_year' -> 2000}).
+result := ((| rows groups |
+rows := OrderedCollection new.
+(catalog_sales) do: [:cs |
+	(((((((((((((d1 at: 'd_week_seq' = d2 at: 'd_week_seq') and: [inv at: 'inv_quantity_on_hand']) < cs at: 'cs_quantity') and: [d3 at: 'd_date']) > d1 at: 'd_date') + 5) and: [hd at: 'hd_buy_potential']) = '5001-10000') and: [d1 at: 'd_year']) = 2000) and: [cd at: 'cd_marital_status']) = 'M')) ifTrue: [ rows add: cs ].
+]
+groups := (Main _group_by: rows keyFn: [:cs | Dictionary from: {'item_desc' -> i at: 'i_item_desc'. 'warehouse' -> w at: 'w_warehouse_name'. 'week_seq' -> d1 at: 'd_week_seq'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'i_item_desc' -> g at: 'key' at: 'item_desc'. 'w_warehouse_name' -> g at: 'key' at: 'warehouse'. 'd_week_seq' -> g at: 'key' at: 'week_seq'. 'no_promo' -> (Main __count: ((| res |
+res := OrderedCollection new.
+((g) select: [:x | (x at: 'cs_promo_sk' = nil)]) do: [:x |
+	res add: x.
+]
+res := res asArray.
+res))). 'promo' -> (Main __count: ((| res |
+res := OrderedCollection new.
+((g) select: [:x | (x at: 'cs_promo_sk' ~= nil)]) do: [:x |
+	res add: x.
+]
+res := res asArray.
+res))). 'total_cnt' -> (Main __count: g)}.
+]
+rows := rows asArray.
+rows)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q72_simplified.

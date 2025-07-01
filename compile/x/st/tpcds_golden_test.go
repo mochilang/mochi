@@ -17,7 +17,7 @@ import (
 
 func TestSTCompiler_TPCDS_Golden(t *testing.T) {
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 49; i++ {
+	for i := 1; i <= 99; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")

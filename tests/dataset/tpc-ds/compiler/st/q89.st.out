@@ -1,0 +1,29 @@
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q89_sample
+	((result = 89.000000)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+!!
+store_sales := Array with: (Dictionary from: {'price' -> 40.000000}) with: (Dictionary from: {'price' -> 30.000000}) with: (Dictionary from: {'price' -> 19.000000}).
+result := (Main __sum: ((| res |
+res := OrderedCollection new.
+(store_sales) do: [:s |
+	res add: s at: 'price'.
+]
+res := res asArray.
+res))).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q89_sample.

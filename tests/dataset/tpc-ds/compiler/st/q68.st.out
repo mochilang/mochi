@@ -1,0 +1,37 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q68_simplified
+	((result = 68)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+!!
+catalog_sales := Array with: (Dictionary from: {'item' -> 1. 'profit' -> 30}) with: (Dictionary from: {'item' -> 2. 'profit' -> 38}).
+store_sales := Array with: (Dictionary from: {'item' -> 1. 'profit' -> 30}).
+result := (((Main __sum: ((| res |
+res := OrderedCollection new.
+(catalog_sales) do: [:c |
+	res add: c at: 'profit'.
+]
+res := res asArray.
+res))) - (Main __sum: ((| res |
+res := OrderedCollection new.
+(store_sales) do: [:s |
+	res add: s at: 'profit'.
+]
+res := res asArray.
+res)))) + 30).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q68_simplified.

@@ -1,0 +1,17 @@
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_returns put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q64_simplified
+	((result = 64)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+store_sales := Array with: (Dictionary from: {'item' -> 1. 'cost' -> 20. 'list' -> 30. 'coupon' -> 5}).
+store_returns := Array with: (Dictionary from: {'item' -> 1. 'ticket' -> 1}).
+result := (((20 + 30) - 5) + 19).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q64_simplified.

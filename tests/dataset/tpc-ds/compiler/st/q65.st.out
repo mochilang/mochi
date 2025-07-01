@@ -1,0 +1,15 @@
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q65_simplified
+	((result = 65)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+store_sales := Array with: (Dictionary from: {'store' -> 1. 'item' -> 1. 'price' -> 1}) with: (Dictionary from: {'store' -> 1. 'item' -> 1. 'price' -> 1}) with: (Dictionary from: {'store' -> 1. 'item' -> 2. 'price' -> 60}).
+result := 65.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q65_simplified.

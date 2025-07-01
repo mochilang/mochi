@@ -1,0 +1,29 @@
+Smalltalk at: #cs put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #ss put: nil.
+Smalltalk at: #ws put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q78_simplified
+	((result = Array with: (Dictionary from: {'ss_sold_year' -> 1998. 'ss_item_sk' -> 1. 'ss_customer_sk' -> 1. 'ratio' -> 1.250000. 'store_qty' -> 10. 'store_wholesale_cost' -> 50.000000. 'store_sales_price' -> 100.000000. 'other_chan_qty' -> 8. 'other_chan_wholesale_cost' -> 40.000000. 'other_chan_sales_price' -> 80.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+ss := Array with: (Dictionary from: {'ss_sold_year' -> 1998. 'ss_item_sk' -> 1. 'ss_customer_sk' -> 1. 'ss_qty' -> 10. 'ss_wc' -> 50.000000. 'ss_sp' -> 100.000000}).
+ws := Array with: (Dictionary from: {'ws_sold_year' -> 1998. 'ws_item_sk' -> 1. 'ws_customer_sk' -> 1. 'ws_qty' -> 5. 'ws_wc' -> 25.000000. 'ws_sp' -> 50.000000}).
+cs := Array with: (Dictionary from: {'cs_sold_year' -> 1998. 'cs_item_sk' -> 1. 'cs_customer_sk' -> 1. 'cs_qty' -> 3. 'cs_wc' -> 15.000000. 'cs_sp' -> 30.000000}).
+result := ((| res |
+res := OrderedCollection new.
+((ss) select: [:s | ((((((((((((w = nil)) ifTrue: [0] ifFalse: [w at: 'ws_qty'])) > 0) or: [((((c = nil)) ifTrue: [0] ifFalse: [c at: 'cs_qty']))]) > 0)) and: [s at: 'ss_sold_year']) = 1998) and: [(((((w at: 'ws_sold_year' = s at: 'ss_sold_year') and: [w at: 'ws_item_sk']) = s at: 'ss_item_sk') and: [w at: 'ws_customer_sk']) = s at: 'ss_customer_sk')]) and: [(((((c at: 'cs_sold_year' = s at: 'ss_sold_year') and: [c at: 'cs_item_sk']) = s at: 'ss_item_sk') and: [c at: 'cs_customer_sk']) = s at: 'ss_customer_sk')])]) do: [:s |
+	(ws) do: [:w |
+		(cs) do: [:c |
+			res add: Dictionary from: {'ss_sold_year' -> s at: 'ss_sold_year'. 'ss_item_sk' -> s at: 'ss_item_sk'. 'ss_customer_sk' -> s at: 'ss_customer_sk'. 'ratio' -> (s at: 'ss_qty' / ((((((w = nil)) ifTrue: [0] ifFalse: [w at: 'ws_qty'])) + ((((c = nil)) ifTrue: [0] ifFalse: [c at: 'cs_qty']))))). 'store_qty' -> s at: 'ss_qty'. 'store_wholesale_cost' -> s at: 'ss_wc'. 'store_sales_price' -> s at: 'ss_sp'. 'other_chan_qty' -> (((((w = nil)) ifTrue: [0] ifFalse: [w at: 'ws_qty'])) + ((((c = nil)) ifTrue: [0] ifFalse: [c at: 'cs_qty']))). 'other_chan_wholesale_cost' -> (((((w = nil)) ifTrue: [0.000000] ifFalse: [w at: 'ws_wc'])) + ((((c = nil)) ifTrue: [0.000000] ifFalse: [c at: 'cs_wc']))). 'other_chan_sales_price' -> (((((w = nil)) ifTrue: [0.000000] ifFalse: [w at: 'ws_sp'])) + ((((c = nil)) ifTrue: [0.000000] ifFalse: [c at: 'cs_sp'])))}.
+		]
+	]
+]
+res := res asArray.
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q78_simplified.

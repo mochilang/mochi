@@ -1,0 +1,153 @@
+Smalltalk at: #call_center put: nil.
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #grouped put: nil.
+Smalltalk at: #ship_mode put: nil.
+Smalltalk at: #warehouse put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newCatalogSale: cs_ship_date_sk cs_sold_date_sk: cs_sold_date_sk cs_warehouse_sk: cs_warehouse_sk cs_ship_mode_sk: cs_ship_mode_sk cs_call_center_sk: cs_call_center_sk | dict |
+	dict := Dictionary new.
+	dict at: 'cs_ship_date_sk' put: cs_ship_date_sk.
+	dict at: 'cs_sold_date_sk' put: cs_sold_date_sk.
+	dict at: 'cs_warehouse_sk' put: cs_warehouse_sk.
+	dict at: 'cs_ship_mode_sk' put: cs_ship_mode_sk.
+	dict at: 'cs_call_center_sk' put: cs_call_center_sk.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newWarehouse: w_warehouse_sk w_warehouse_name: w_warehouse_name | dict |
+	dict := Dictionary new.
+	dict at: 'w_warehouse_sk' put: w_warehouse_sk.
+	dict at: 'w_warehouse_name' put: w_warehouse_name.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newShipMode: sm_ship_mode_sk sm_type: sm_type | dict |
+	dict := Dictionary new.
+	dict at: 'sm_ship_mode_sk' put: sm_ship_mode_sk.
+	dict at: 'sm_type' put: sm_type.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newCallCenter: cc_call_center_sk cc_name: cc_name | dict |
+	dict := Dictionary new.
+	dict at: 'cc_call_center_sk' put: cc_call_center_sk.
+	dict at: 'cc_name' put: cc_name.
+	^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q99_buckets
+	((grouped = Array with: (Dictionary from: {'warehouse' -> 'Warehouse1'. 'sm_type' -> 'EXP'. 'cc_name' -> 'CC1'. 'd30' -> 1. 'd60' -> 1. 'd90' -> 1. 'd120' -> 1. 'dmore' -> 1}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+	g := self new.
+	g key: k.
+	g initialize.
+	^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+	items := OrderedCollection new.
+	^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+	^ key
+!
+key: k
+	key := k
+!
+add: it
+	items add: it
+!
+do: blk
+	items do: blk
+!
+size
+	^ items size
+!
+!Main class methodsFor: 'runtime'!
+__count: v
+	(v respondsTo: #size) ifTrue: [ ^ v size ]
+	^ self error: 'count() expects collection'
+!
+__slice_string: s start: i end: j
+	| start end n |
+	start := i.
+	end := j.
+	n := s size.
+	start < 0 ifTrue: [ start := start + n ].
+	end < 0 ifTrue: [ end := end + n ].
+	start < 0 ifTrue: [ start := 0 ].
+	end > n ifTrue: [ end := n ].
+	end < start ifTrue: [ end := start ].
+	^ (s copyFrom: start + 1 to: end)
+!
+_group_by: src keyFn: blk
+	| groups order |
+	groups := Dictionary new.
+	order := OrderedCollection new.
+	src do: [:it |
+		| key ks g |
+		key := blk value: it.
+		ks := key printString.
+		g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+		g add: it.
+	]
+	^ order collect: [:k | groups at: k ]
+!
+!!
+catalog_sales := Array with: (Dictionary from: {'cs_ship_date_sk' -> 31. 'cs_sold_date_sk' -> 1. 'cs_warehouse_sk' -> 1. 'cs_ship_mode_sk' -> 1. 'cs_call_center_sk' -> 1}) with: (Dictionary from: {'cs_ship_date_sk' -> 51. 'cs_sold_date_sk' -> 1. 'cs_warehouse_sk' -> 1. 'cs_ship_mode_sk' -> 1. 'cs_call_center_sk' -> 1}) with: (Dictionary from: {'cs_ship_date_sk' -> 71. 'cs_sold_date_sk' -> 1. 'cs_warehouse_sk' -> 1. 'cs_ship_mode_sk' -> 1. 'cs_call_center_sk' -> 1}) with: (Dictionary from: {'cs_ship_date_sk' -> 101. 'cs_sold_date_sk' -> 1. 'cs_warehouse_sk' -> 1. 'cs_ship_mode_sk' -> 1. 'cs_call_center_sk' -> 1}) with: (Dictionary from: {'cs_ship_date_sk' -> 131. 'cs_sold_date_sk' -> 1. 'cs_warehouse_sk' -> 1. 'cs_ship_mode_sk' -> 1. 'cs_call_center_sk' -> 1}).
+warehouse := Array with: (Dictionary from: {'w_warehouse_sk' -> 1. 'w_warehouse_name' -> 'Warehouse1'}).
+ship_mode := Array with: (Dictionary from: {'sm_ship_mode_sk' -> 1. 'sm_type' -> 'EXP'}).
+call_center := Array with: (Dictionary from: {'cc_call_center_sk' -> 1. 'cc_name' -> 'CC1'}).
+grouped := ((| rows groups |
+rows := OrderedCollection new.
+(catalog_sales) do: [:cs |
+	rows add: cs.
+]
+groups := (Main _group_by: rows keyFn: [:cs | Dictionary from: {'warehouse' -> (Main __slice_string: w at: 'w_warehouse_name' start: 0 end: 0 + 20). 'sm_type' -> sm at: 'sm_type'. 'cc_name' -> cc at: 'cc_name'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'warehouse' -> g at: 'key' at: 'warehouse'. 'sm_type' -> g at: 'key' at: 'sm_type'. 'cc_name' -> g at: 'key' at: 'cc_name'. 'd30' -> (Main __count: ((| res |
+res := OrderedCollection new.
+((g) select: [:x | ((x at: 'cs_ship_date_sk' - x at: 'cs_sold_date_sk') <= 30)]) do: [:x |
+	res add: x.
+]
+res := res asArray.
+res))). 'd60' -> (Main __count: ((| res |
+res := OrderedCollection new.
+((g) select: [:x | (((((x at: 'cs_ship_date_sk' - x at: 'cs_sold_date_sk') > 30) and: [x at: 'cs_ship_date_sk']) - x at: 'cs_sold_date_sk') <= 60)]) do: [:x |
+	res add: x.
+]
+res := res asArray.
+res))). 'd90' -> (Main __count: ((| res |
+res := OrderedCollection new.
+((g) select: [:x | (((((x at: 'cs_ship_date_sk' - x at: 'cs_sold_date_sk') > 60) and: [x at: 'cs_ship_date_sk']) - x at: 'cs_sold_date_sk') <= 90)]) do: [:x |
+	res add: x.
+]
+res := res asArray.
+res))). 'd120' -> (Main __count: ((| res |
+res := OrderedCollection new.
+((g) select: [:x | (((((x at: 'cs_ship_date_sk' - x at: 'cs_sold_date_sk') > 90) and: [x at: 'cs_ship_date_sk']) - x at: 'cs_sold_date_sk') <= 120)]) do: [:x |
+	res add: x.
+]
+res := res asArray.
+res))). 'dmore' -> (Main __count: ((| res |
+res := OrderedCollection new.
+((g) select: [:x | ((x at: 'cs_ship_date_sk' - x at: 'cs_sold_date_sk') > 120)]) do: [:x |
+	res add: x.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+(grouped toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q99_buckets.

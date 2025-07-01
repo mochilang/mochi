@@ -1,0 +1,87 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #month put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #time_dim put: nil.
+Smalltalk at: #union_sales put: nil.
+Smalltalk at: #web_sales put: nil.
+Smalltalk at: #year put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q71_simplified
+	((result = Array with: (Dictionary from: {'i_brand_id' -> 10. 'i_brand' -> 'BrandA'. 't_hour' -> 18. 't_minute' -> 0. 'ext_price' -> 200.000000}) with: (Dictionary from: {'i_brand_id' -> 20. 'i_brand' -> 'BrandB'. 't_hour' -> 8. 't_minute' -> 30. 'ext_price' -> 150.000000}) with: (Dictionary from: {'i_brand_id' -> 10. 'i_brand' -> 'BrandA'. 't_hour' -> 8. 't_minute' -> 30. 'ext_price' -> 100.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+!!
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_brand_id' -> 10. 'i_brand' -> 'BrandA'. 'i_manager_id' -> 1}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_brand_id' -> 20. 'i_brand' -> 'BrandB'. 'i_manager_id' -> 1}).
+time_dim := Array with: (Dictionary from: {'t_time_sk' -> 1. 't_hour' -> 8. 't_minute' -> 30. 't_meal_time' -> 'breakfast'}) with: (Dictionary from: {'t_time_sk' -> 2. 't_hour' -> 18. 't_minute' -> 0. 't_meal_time' -> 'dinner'}) with: (Dictionary from: {'t_time_sk' -> 3. 't_hour' -> 12. 't_minute' -> 0. 't_meal_time' -> 'lunch'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_moy' -> 12. 'd_year' -> 1998}).
+web_sales := Array with: (Dictionary from: {'ws_ext_sales_price' -> 100.000000. 'ws_sold_date_sk' -> 1. 'ws_item_sk' -> 1. 'ws_sold_time_sk' -> 1}).
+catalog_sales := Array with: (Dictionary from: {'cs_ext_sales_price' -> 200.000000. 'cs_sold_date_sk' -> 1. 'cs_item_sk' -> 1. 'cs_sold_time_sk' -> 2}).
+store_sales := Array with: (Dictionary from: {'ss_ext_sales_price' -> 150.000000. 'ss_sold_date_sk' -> 1. 'ss_item_sk' -> 2. 'ss_sold_time_sk' -> 1}).
+month := 12.
+year := 1998.
+union_sales := concat value: ((| res |
+res := OrderedCollection new.
+((web_sales) select: [:ws | ((((d at: 'd_moy' = month) and: [d at: 'd_year']) = year) and: [(d at: 'd_date_sk' = ws at: 'ws_sold_date_sk')])]) do: [:ws |
+	(date_dim) do: [:d |
+		res add: Dictionary from: {'ext_price' -> ws at: 'ws_ext_sales_price'. 'item_sk' -> ws at: 'ws_item_sk'. 'time_sk' -> ws at: 'ws_sold_time_sk'}.
+	]
+]
+res := res asArray.
+res)) value: ((| res |
+res := OrderedCollection new.
+((catalog_sales) select: [:cs | ((((d at: 'd_moy' = month) and: [d at: 'd_year']) = year) and: [(d at: 'd_date_sk' = cs at: 'cs_sold_date_sk')])]) do: [:cs |
+	(date_dim) do: [:d |
+		res add: Dictionary from: {'ext_price' -> cs at: 'cs_ext_sales_price'. 'item_sk' -> cs at: 'cs_item_sk'. 'time_sk' -> cs at: 'cs_sold_time_sk'}.
+	]
+]
+res := res asArray.
+res)) value: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | ((((d at: 'd_moy' = month) and: [d at: 'd_year']) = year) and: [(d at: 'd_date_sk' = ss at: 'ss_sold_date_sk')])]) do: [:ss |
+	(date_dim) do: [:d |
+		res add: Dictionary from: {'ext_price' -> ss at: 'ss_ext_sales_price'. 'item_sk' -> ss at: 'ss_item_sk'. 'time_sk' -> ss at: 'ss_sold_time_sk'}.
+	]
+]
+res := res asArray.
+res)).
+result := ((| res |
+res := OrderedCollection new.
+((item) select: [:i | ((((i at: 'i_manager_id' = 1) and: [((((t at: 't_meal_time' = 'breakfast') or: [t at: 't_meal_time']) = 'dinner'))]) and: [(s at: 'item_sk' = i at: 'i_item_sk')]) and: [(t at: 't_time_sk' = s at: 'time_sk')])]) do: [:i |
+	(union_sales) do: [:s |
+		(time_dim) do: [:t |
+			res add: { Array with: (((Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 's' at: 'ext_price'.
+]
+res := res asArray.
+res))) negated)) with: (g at: 'key' at: 'brand_id') . Dictionary from: {'i_brand_id' -> g at: 'key' at: 'brand_id'. 'i_brand' -> g at: 'key' at: 'brand'. 't_hour' -> g at: 'key' at: 't_hour'. 't_minute' -> g at: 'key' at: 't_minute'. 'ext_price' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 's' at: 'ext_price'.
+]
+res := res asArray.
+res)))} }.
+		]
+	]
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q71_simplified.
