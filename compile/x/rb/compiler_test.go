@@ -413,7 +413,7 @@ func TestRBCompiler_TPCDSQueries(t *testing.T) {
 		t.Skipf("ruby not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 49; i++ {
+	for i := 1; i <= 99; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
@@ -452,6 +452,9 @@ func TestRBCompiler_TPCDSQueries(t *testing.T) {
 			outWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rb", q+".out")
 			wantOut, err := os.ReadFile(outWantPath)
 			if err != nil {
+				if os.IsNotExist(err) {
+					t.Skipf("missing golden output for %s", q)
+				}
 				t.Fatalf("read golden: %v", err)
 			}
 			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {

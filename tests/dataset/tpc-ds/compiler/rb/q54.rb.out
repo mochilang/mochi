@@ -1,0 +1,19 @@
+require "ostruct"
+
+def _json(v)
+  require "json"
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end
+
+t = [OpenStruct.new(id: 1, val: 54)]
+"ignore".downcase
+vals = t.map { |r| r.val }
+result = first.call(vals)
+_json(result)
+raise "expect failed" unless result == 54

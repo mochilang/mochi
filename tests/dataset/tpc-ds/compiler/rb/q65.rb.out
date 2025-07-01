@@ -1,0 +1,17 @@
+require "ostruct"
+
+def _json(v)
+  require "json"
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end
+
+[OpenStruct.new(store: 1, item: 1, price: 1), OpenStruct.new(store: 1, item: 1, price: 1), OpenStruct.new(store: 1, item: 2, price: 60)]
+result = 65
+_json(result)
+raise "expect failed" unless result == 65

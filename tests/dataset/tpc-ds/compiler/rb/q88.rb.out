@@ -1,0 +1,18 @@
+require "ostruct"
+
+def _json(v)
+  require "json"
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end
+
+[OpenStruct.new(time_sk: 1, hour: 8, minute: 30), OpenStruct.new(time_sk: 2, hour: 9, minute: 0), OpenStruct.new(time_sk: 3, hour: 11, minute: 15)]
+[OpenStruct.new(sold_time_sk: 1), OpenStruct.new(sold_time_sk: 2), OpenStruct.new(sold_time_sk: 3)]
+result = 88
+_json(result)
+raise "expect failed" unless result == 88

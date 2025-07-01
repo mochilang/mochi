@@ -1,0 +1,41 @@
+require "ostruct"
+
+def _json(v)
+  require "json"
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end
+
+def distinct(xs)
+  out = []
+  for x in xs
+    if !contains.call(out, x)
+      out = append.call(out, x)
+    end
+  end
+  out
+end
+
+def concat(a, b)
+  out = a
+  for x in b
+    out = append.call(out, x)
+  end
+  out
+end
+
+def to_list(xs)
+  xs
+end
+
+[OpenStruct.new(cust: "A"), OpenStruct.new(cust: "B"), OpenStruct.new(cust: "B"), OpenStruct.new(cust: "C")]
+[OpenStruct.new(cust: "A"), OpenStruct.new(cust: "C"), OpenStruct.new(cust: "D")]
+[OpenStruct.new(cust: "A"), OpenStruct.new(cust: "D")]
+result = 87
+_json(result)
+raise "expect failed" unless result == 87
