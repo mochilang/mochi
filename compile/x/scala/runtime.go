@@ -195,6 +195,17 @@ const (
                 acc = fn(acc, it)
         }
         acc
+        }`
+	helperExists = `def _exists(v: Any): Boolean = v match {
+        case null => false
+        case s: String => s.nonEmpty
+        case seq: Iterable[_] => seq.nonEmpty
+        case m: scala.collection.Map[_, _] =>
+                if (m.contains("items") && m("items").isInstanceOf[Iterable[_]]) m("items").asInstanceOf[Iterable[_]].nonEmpty
+                else if (m.contains("Items") && m("Items").isInstanceOf[Iterable[_]]) m("Items").asInstanceOf[Iterable[_]].nonEmpty
+                else m.nonEmpty
+        case g: _Group => g.Items.nonEmpty
+        case _ => false
 }`
 	helperGroup = `class _Group(var key: Any) {
         val Items = scala.collection.mutable.ArrayBuffer[Any]()
@@ -335,6 +346,7 @@ var helperMap = map[string]string{
 	"_group_by":    helperGroupBy,
 	"_query":       helperQuery,
 	"_reduce":      helperReduce,
+	"_exists":      helperExists,
 	"_pyAttr":      helperPyAttr,
 	"_extern":      helperExtern,
 	"_eval":        helperEval,
