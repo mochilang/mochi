@@ -35,7 +35,7 @@ func main() {
 		os.Exit(1)
 	}
 	queries := []string{}
-	for i := 1; i <= 19; i++ {
+	for i := 10; i <= 49; i++ {
 		queries = append(queries, fmt.Sprintf("q%d", i))
 	}
 	dir := filepath.Join(root, "tests", "dataset", "tpc-ds")
