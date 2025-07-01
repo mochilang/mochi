@@ -9,6 +9,12 @@ Work is ongoing to extend coverage to further TPCH queries and to improve
 runtime error handling. Query `q2` currently fails to compile due to missing
 support for complex record field accesses.
 
+## TPCDS dataset
+
+Queries `q1` through `q9` from the TPCDS suite now compile. The generated
+sources are stored under `tests/dataset/tpc-ds/compiler/pas` and executed as
+part of the slow test suite when `fpc` is available.
+
 ## JOB dataset
 
 The JOB benchmark programs up to `q10.mochi` now compile and the generated
