@@ -1,0 +1,271 @@
+public class Main {
+    static class CatalogSale {
+        int cs_sold_date_sk;
+        int cs_item_sk;
+        int cs_bill_cdemo_sk;
+        int cs_promo_sk;
+        int cs_quantity;
+        double cs_list_price;
+        double cs_coupon_amt;
+        double cs_sales_price;
+        
+        CatalogSale(int cs_sold_date_sk, int cs_item_sk, int cs_bill_cdemo_sk, int cs_promo_sk, int cs_quantity, double cs_list_price, double cs_coupon_amt, double cs_sales_price) {
+            this.cs_sold_date_sk = cs_sold_date_sk;
+            this.cs_item_sk = cs_item_sk;
+            this.cs_bill_cdemo_sk = cs_bill_cdemo_sk;
+            this.cs_promo_sk = cs_promo_sk;
+            this.cs_quantity = cs_quantity;
+            this.cs_list_price = cs_list_price;
+            this.cs_coupon_amt = cs_coupon_amt;
+            this.cs_sales_price = cs_sales_price;
+        }
+        
+        CatalogSale() {}
+    }
+    
+    static class CustomerDemo {
+        int cd_demo_sk;
+        String cd_gender;
+        String cd_marital_status;
+        String cd_education_status;
+        
+        CustomerDemo(int cd_demo_sk, String cd_gender, String cd_marital_status, String cd_education_status) {
+            this.cd_demo_sk = cd_demo_sk;
+            this.cd_gender = cd_gender;
+            this.cd_marital_status = cd_marital_status;
+            this.cd_education_status = cd_education_status;
+        }
+        
+        CustomerDemo() {}
+    }
+    
+    static class DateDim {
+        int d_date_sk;
+        int d_year;
+        
+        DateDim(int d_date_sk, int d_year) {
+            this.d_date_sk = d_date_sk;
+            this.d_year = d_year;
+        }
+        
+        DateDim() {}
+    }
+    
+    static class Item {
+        int i_item_sk;
+        String i_item_id;
+        
+        Item(int i_item_sk, String i_item_id) {
+            this.i_item_sk = i_item_sk;
+            this.i_item_id = i_item_id;
+        }
+        
+        Item() {}
+    }
+    
+    static class Promotion {
+        int p_promo_sk;
+        String p_channel_email;
+        String p_channel_event;
+        
+        Promotion(int p_promo_sk, String p_channel_email, String p_channel_event) {
+            this.p_promo_sk = p_promo_sk;
+            this.p_channel_email = p_channel_email;
+            this.p_channel_event = p_channel_event;
+        }
+        
+        Promotion() {}
+    }
+    
+    static void test_TPCDS_Q26_demographic_averages() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_id", "ITEM1", "agg1", 10, "agg2", 100, "agg3", 5, "agg4", 95))}));
+    }
+    
+    static Object[] catalog_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("cs_sold_date_sk", 1, "cs_item_sk", 1, "cs_bill_cdemo_sk", 1, "cs_promo_sk", 1, "cs_quantity", 10, "cs_list_price", 100, "cs_coupon_amt", 5, "cs_sales_price", 95)), new java.util.HashMap<>(java.util.Map.of("cs_sold_date_sk", 1, "cs_item_sk", 2, "cs_bill_cdemo_sk", 2, "cs_promo_sk", 2, "cs_quantity", 5, "cs_list_price", 50, "cs_coupon_amt", 2, "cs_sales_price", 48))};
+    
+    static Object[] customer_demographics = new Object[]{new java.util.HashMap<>(java.util.Map.of("cd_demo_sk", 1, "cd_gender", "M", "cd_marital_status", "S", "cd_education_status", "College")), new java.util.HashMap<>(java.util.Map.of("cd_demo_sk", 2, "cd_gender", "F", "cd_marital_status", "M", "cd_education_status", "High School"))};
+    
+    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_year", 2000))};
+    
+    static Object[] item = new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_sk", 1, "i_item_id", "ITEM1")), new java.util.HashMap<>(java.util.Map.of("i_item_sk", 2, "i_item_id", "ITEM2"))};
+    
+    static Object[] promotion = new Object[]{new java.util.HashMap<>(java.util.Map.of("p_promo_sk", 1, "p_channel_email", "N", "p_channel_event", "Y")), new java.util.HashMap<>(java.util.Map.of("p_promo_sk", 2, "p_channel_email", "Y", "p_channel_event", "N"))};
+    
+    static Object[] result = (new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(catalog_sales);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+            new _JoinSpec(_toList(customer_demographics), (Object[] a) -> { Object cs = a[0]; Object cd = a[1]; return (cs.get("cs_bill_cdemo_sk") == cd.get("cd_demo_sk")); }, false, false),
+            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object cs = a[0]; Object cd = a[1]; Object d = a[2]; return (cs.get("cs_sold_date_sk") == d.get("d_date_sk")); }, false, false),
+            new _JoinSpec(_toList(item), (Object[] a) -> { Object cs = a[0]; Object cd = a[1]; Object d = a[2]; Object i = a[3]; return (cs.get("cs_item_sk") == i.get("i_item_sk")); }, false, false),
+            new _JoinSpec(_toList(promotion), (Object[] a) -> { Object cs = a[0]; Object cd = a[1]; Object d = a[2]; Object i = a[3]; Object p = a[4]; return (cs.get("cs_promo_sk") == p.get("p_promo_sk")); }, false, false)
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object cs = a[0]; Object cd = a[1]; Object d = a[2]; Object i = a[3]; Object p = a[4]; return new java.util.HashMap<>(java.util.Map.of("i_item_id", g.get("key"), "agg1", _avg((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(g);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("cs_quantity"); }, null, null, -1, -1));
+    }
+}).get()), "agg2", _avg((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(g);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("cs_list_price"); }, null, null, -1, -1));
+    }
+}).get()), "agg3", _avg((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(g);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("cs_coupon_amt"); }, null, null, -1, -1));
+    }
+}).get()), "agg4", _avg((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(g);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("cs_sales_price"); }, null, null, -1, -1));
+    }
+}).get()))); }, (Object[] a) -> { Object cs = a[0]; Object cd = a[1]; Object d = a[2]; Object i = a[3]; Object p = a[4]; return (((((cd.get("cd_gender") == "M") && (cd.get("cd_marital_status") == "S")) && (cd.get("cd_education_status") == "College")) && ((p.get("p_channel_email") == "N") || (p.get("p_channel_event") == "N"))) && (d.get("d_year") == 2000)); }, null, -1, -1));
+    }
+}).get();
+    
+    public static void main(String[] args) {
+        test_TPCDS_Q26_demographic_averages();
+        _json(result);
+    }
+    
+    static double _avg(Object v) {
+        java.util.List<Object> items = (v instanceof _Group) ? ((_Group)v).Items : _toList(v);
+        if (items.isEmpty()) return 0;
+        double sum = 0;
+        for (Object it : items) {
+            if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException("avg() expects numbers");
+        }
+        return sum / items.size();
+    }
+    
+    static void expect(boolean cond) {
+        if (!cond) throw new RuntimeException("expect failed");
+    }
+    
+    static void _json(Object v) {
+        System.out.println(_toJson(v));
+    }
+    
+    static java.util.List<Object> _toList(Object v) {
+        if (v instanceof java.util.List<?>) return new java.util.ArrayList<>((java.util.List<?>)v);
+        int n = java.lang.reflect.Array.getLength(v);
+        java.util.List<Object> out = new java.util.ArrayList<>(n);
+        for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));
+        return out;
+    }
+    
+    static class _JoinSpec {
+        java.util.List<Object> items;
+        java.util.function.Function<Object[],Boolean> on;
+        boolean left;
+        boolean right;
+        _JoinSpec(java.util.List<Object> items, java.util.function.Function<Object[],Boolean> on, boolean left, boolean right) {
+            this.items=items; this.on=on; this.left=left; this.right=right;
+        }
+    }
+    
+    static class _QueryOpts {
+        java.util.function.Function<Object[],Object> selectFn;
+        java.util.function.Function<Object[],Boolean> where;
+        java.util.function.Function<Object[],Object> sortKey;
+        int skip; int take;
+        _QueryOpts(java.util.function.Function<Object[],Object> s, java.util.function.Function<Object[],Boolean> w, java.util.function.Function<Object[],Object> k, int skip, int take) {
+            this.selectFn=s; this.where=w; this.sortKey=k; this.skip=skip; this.take=take;
+        }
+    }
+    static java.util.List<Object> _query(java.util.List<Object> src, java.util.List<_JoinSpec> joins, _QueryOpts opts) {
+        java.util.List<java.util.List<Object>> items = new java.util.ArrayList<>();
+        for (Object v : src) { java.util.List<Object> r = new java.util.ArrayList<>(); r.add(v); items.add(r); }
+        for (_JoinSpec j : joins) {
+            java.util.List<java.util.List<Object>> joined = new java.util.ArrayList<>();
+            java.util.List<Object> jitems = j.items;
+            if (j.right && j.left) {
+                boolean[] matched = new boolean[jitems.size()];
+                for (java.util.List<Object> left : items) {
+                    boolean m = false;
+                    for (int ri=0; ri<jitems.size(); ri++) {
+                        Object right = jitems.get(ri);
+                        boolean keep = true;
+                        if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
+                            args[left.size()] = right;
+                            keep = j.on.apply(args);
+                        }
+                        if (!keep) continue;
+                        m = true; matched[ri] = true;
+                        java.util.List<Object> row = new java.util.ArrayList<>(left);
+                        row.add(right); joined.add(row);
+                    }
+                    if (!m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
+                }
+                for (int ri=0; ri<jitems.size(); ri++) {
+                    if (!matched[ri]) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(jitems.get(ri)); joined.add(undef); }
+                }
+            } else if (j.right) {
+                for (Object right : jitems) {
+                    boolean m = false;
+                    for (java.util.List<Object> left : items) {
+                        boolean keep = true;
+                        if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
+                            args[left.size()] = right;
+                            keep = j.on.apply(args);
+                        }
+                        if (!keep) continue;
+                        m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
+                    }
+                    if (!m) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(right); joined.add(undef); }
+                }
+            } else {
+                for (java.util.List<Object> left : items) {
+                    boolean m = false;
+                    for (Object right : jitems) {
+                        boolean keep = true;
+                        if (j.on != null) {
+                            Object[] args = new Object[left.size()+1];
+                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
+                            args[left.size()] = right;
+                            keep = j.on.apply(args);
+                        }
+                        if (!keep) continue;
+                        m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
+                    }
+                    if (j.left && !m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
+                }
+            items = joined;
+        }
+        if (opts.where != null) {
+            java.util.List<java.util.List<Object>> filtered = new java.util.ArrayList<>();
+            for (java.util.List<Object> r : items) if (opts.where.apply(r.toArray(new Object[0]))) filtered.add(r);
+            items = filtered;
+        }
+        if (opts.sortKey != null) {
+            class Pair { java.util.List<Object> item; Object key; Pair(java.util.List<Object> i,Object k){item=i;key=k;} }
+            java.util.List<Pair> pairs = new java.util.ArrayList<>();
+            for (java.util.List<Object> it : items) pairs.add(new Pair(it, opts.sortKey.apply(it.toArray(new Object[0]))));
+            pairs.sort((a,b) -> {
+                Object ak=a.key, bk=b.key;
+                if (ak instanceof Number && bk instanceof Number) return Double.compare(((Number)ak).doubleValue(), ((Number)bk).doubleValue());
+                if (ak instanceof String && bk instanceof String) return ((String)ak).compareTo((String)bk);
+                return ak.toString().compareTo(bk.toString());
+            });
+            for (int i=0;i<pairs.size();i++) items.set(i, pairs.get(i).item);
+        }
+        if (opts.skip >= 0) { if (opts.skip < items.size()) items = new java.util.ArrayList<>(items.subList(opts.skip, items.size())); else items = new java.util.ArrayList<>(); }
+        if (opts.take >= 0) { if (opts.take < items.size()) items = new java.util.ArrayList<>(items.subList(0, opts.take)); }
+        java.util.List<Object> res = new java.util.ArrayList<>();
+        for (java.util.List<Object> r : items) res.add(opts.selectFn.apply(r.toArray(new Object[0])));
+        return res;
+    }
+}

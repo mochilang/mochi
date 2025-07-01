@@ -506,6 +506,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.helpers["_count"] = true
 			return "_count(" + args[0] + ")", nil
 		}
+		if name == "exists" && len(args) == 1 {
+			c.helpers["_exists"] = true
+			return "_exists(" + args[0] + ")", nil
+		}
 		if name == "sum" && len(args) == 1 {
 			c.helpers["_sum"] = true
 			return "_sum(" + args[0] + ")", nil
