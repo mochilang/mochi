@@ -6,7 +6,7 @@
 
 * Numeric string parsing for generic operations
 * Reverse builtin with nested map lookup and cycle-safe printing
-* Expanded TPC-DS and TPC-DC query examples
+* Expanded TPC-DS query examples
 
 ### Changed
 
@@ -23,7 +23,7 @@
 
 * Hashed outer and right joins
 * Pure call folding for builtins
-* TPC-DS and TPC-DC queries with data for 1–99
+* TPC-DS queries with data for 1–99
 
 ### Changed
 
