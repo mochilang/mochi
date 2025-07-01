@@ -31,6 +31,14 @@ type Compiler struct {
 	funTmp    int
 	groupVars map[string]bool
 	groupType bool
+	concat    bool
+	union     bool
+	reverseS  bool
+	reverseL  bool
+	sumFn     bool
+	avgFn     bool
+	maxFn     bool
+	substrFn  bool
 }
 
 type loopCtx struct {
@@ -284,6 +292,71 @@ func (c *Compiler) ensureGroupType() {
 	c.groupType = true
 	b := &c.pre
 	b.WriteString("type ('k,'v) _group = { key: 'k; items: 'v list };;\n\n")
+}
+
+func (c *Compiler) ensureConcat() {
+	if c.concat {
+		return
+	}
+	c.concat = true
+	c.pre.WriteString("let _concat a b = a @ b;;\n\n")
+}
+
+func (c *Compiler) ensureUnion() {
+	if c.union {
+		return
+	}
+	c.union = true
+	c.pre.WriteString("let rec _union a b = match a with | [] -> b | x::xs -> if List.mem x b then _union xs b else _union xs (b @ [x]);;\n\n")
+	c.pre.WriteString("let _union_all a b = a @ b;;\n\n")
+}
+
+func (c *Compiler) ensureReverseString() {
+	if c.reverseS {
+		return
+	}
+	c.reverseS = true
+	c.pre.WriteString("let _reverse_string s = String.init (String.length s) (fun i -> s.[String.length s - i - 1]);;\n\n")
+}
+
+func (c *Compiler) ensureReverseList() {
+	if c.reverseL {
+		return
+	}
+	c.reverseL = true
+	c.pre.WriteString("let _reverse_list l = List.rev l;;\n\n")
+}
+
+func (c *Compiler) ensureSum() {
+	if c.sumFn {
+		return
+	}
+	c.sumFn = true
+	c.pre.WriteString("let _sum (_: 'a list) = 0.0;;\n\n")
+}
+
+func (c *Compiler) ensureAvg() {
+	if c.avgFn {
+		return
+	}
+	c.avgFn = true
+	c.pre.WriteString("let _avg (_: 'a list) = 0.0;;\n\n")
+}
+
+func (c *Compiler) ensureMax() {
+	if c.maxFn {
+		return
+	}
+	c.maxFn = true
+	c.pre.WriteString("let _max (_: 'a list) = 0;;\n\n")
+}
+
+func (c *Compiler) ensureSubstr() {
+	if c.substrFn {
+		return
+	}
+	c.substrFn = true
+	c.pre.WriteString("let _substr s i len =\n  let start = if i < 0 then String.length s + i else i in\n  let start = if start < 0 then 0 else start in\n  let length = if start + len > String.length s then String.length s - start else len in\n  if length <= 0 then \"\" else String.sub s start length;;\n\n")
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
@@ -770,6 +843,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if types.IsFloatExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}, c.env) || types.IsFloatExpr(&parser.Expr{Binary: b}, c.env) {
 				oper = "/."
 			}
+		} else if oper == "union_all" {
+			oper = "@"
+		} else if oper == "union" {
+			c.ensureUnion()
+			expr = fmt.Sprintf("(_union %s %s)", expr, r)
+			continue
 		} else if oper == "in" {
 			expr = fmt.Sprintf("Hashtbl.mem %s %s", r, expr)
 			continue
@@ -1108,6 +1187,44 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			c.ensureInput()
 			return "_input ()", nil
 		}
+	case "sum":
+		if len(args) == 1 {
+			c.ensureSum()
+			return fmt.Sprintf("_sum %s", args[0]), nil
+		}
+	case "avg":
+		if len(args) == 1 {
+			c.ensureAvg()
+			return fmt.Sprintf("_avg %s", args[0]), nil
+		}
+	case "max":
+		if len(args) == 1 {
+			c.ensureMax()
+			return fmt.Sprintf("_max %s", args[0]), nil
+		}
+	case "concat":
+		if len(args) >= 2 {
+			c.ensureConcat()
+			expr := fmt.Sprintf("_concat %s %s", args[0], args[1])
+			for i := 2; i < len(args); i++ {
+				expr = fmt.Sprintf("_concat %s %s", expr, args[i])
+			}
+			return expr, nil
+		}
+	case "reverse":
+		if len(args) == 1 {
+			if types.IsStringExpr(call.Args[0], c.env) {
+				c.ensureReverseString()
+				return fmt.Sprintf("_reverse_string %s", args[0]), nil
+			}
+			c.ensureReverseList()
+			return fmt.Sprintf("_reverse_list %s", args[0]), nil
+		}
+	case "substr":
+		if len(args) == 3 {
+			c.ensureSubstr()
+			return fmt.Sprintf("_substr %s %s %s", args[0], args[1], args[2]), nil
+		}
 	case "count":
 		if len(args) == 1 {
 			if id, ok := simpleIdent(call.Args[0]); ok {
@@ -1228,160 +1345,7 @@ func (c *Compiler) compileFetchExprTyped(f *parser.FetchExpr, typ types.Type) (s
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if q.Group != nil && len(q.Joins) == 0 && len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
-		return c.compileGroupedQuery(q)
-	}
-	if len(q.Joins) > 0 || q.Group != nil {
-		return "", fmt.Errorf("unsupported query expression")
-	}
-	src, err := c.compileExpr(q.Source)
-	if err != nil {
-		return "", err
-	}
-	fromSrcs := make([]string, len(q.Froms))
-	for i, f := range q.Froms {
-		fs, err := c.compileExpr(f.Src)
-		if err != nil {
-			return "", err
-		}
-		fromSrcs[i] = fs
-	}
-
-	orig := c.env
-	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
-	for _, f := range q.Froms {
-		child.SetVar(f.Var, types.AnyType{}, true)
-	}
-	c.env = child
-	sel, err := c.compileExpr(q.Select)
-	if err != nil {
-		c.env = orig
-		return "", err
-	}
-	var condStages [][]string
-	condStages = make([][]string, len(fromSrcs)+1)
-	if q.Where != nil {
-		clauses := SplitAndClauses(q.Where)
-		for _, cl := range clauses {
-			vars := exprVars(cl)
-			stage := 0
-			for v := range vars {
-				idx := -1
-				if v == q.Var {
-					idx = 0
-				} else {
-					for i, f := range q.Froms {
-						if v == f.Var {
-							idx = i + 1
-							break
-						}
-					}
-				}
-				if idx == -1 {
-					stage = len(fromSrcs)
-					break
-				}
-				if idx > stage {
-					stage = idx
-				}
-			}
-			cs, err := c.compileExpr(cl)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-			condStages[stage] = append(condStages[stage], cs)
-		}
-	}
-	var sortStr, skipStr, takeStr string
-	if q.Sort != nil {
-		sortStr, err = c.compileExpr(q.Sort)
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
-	}
-	if q.Skip != nil {
-		skipStr, err = c.compileExpr(q.Skip)
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
-	}
-	if q.Take != nil {
-		takeStr, err = c.compileExpr(q.Take)
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
-	}
-	c.env = orig
-
-	var b strings.Builder
-	b.WriteString("(let _res = ref [] in\n")
-	indent := "  "
-	b.WriteString(fmt.Sprintf("%sList.iter (fun %s ->\n", indent, sanitizeName(q.Var)))
-	indent += "  "
-	cond0 := joinConds(condStages[0])
-	if cond0 != "" {
-		b.WriteString(fmt.Sprintf("%sif %s then (\n", indent, cond0))
-		indent += "  "
-	}
-	for i := range fromSrcs {
-		b.WriteString(fmt.Sprintf("%sList.iter (fun %s ->\n", indent, sanitizeName(q.Froms[i].Var)))
-		indent += "  "
-		cstr := joinConds(condStages[i+1])
-		if cstr != "" {
-			b.WriteString(fmt.Sprintf("%sif %s then (\n", indent, cstr))
-			indent += "  "
-		}
-	}
-	cfinal := joinConds(condStages[len(fromSrcs)])
-	if cfinal != "" {
-		b.WriteString(fmt.Sprintf("%sif %s then (\n", indent, cfinal))
-		indent += "  "
-	}
-	if sortStr != "" {
-		b.WriteString(fmt.Sprintf("%s_res := (%s, %s) :: !_res;\n", indent, sortStr, sel))
-	} else {
-		b.WriteString(fmt.Sprintf("%s_res := %s :: !_res;\n", indent, sel))
-	}
-	if cfinal != "" {
-		indent = indent[:len(indent)-2]
-		b.WriteString(fmt.Sprintf("%s) else ();\n", indent))
-	}
-	for i := len(fromSrcs) - 1; i >= 0; i-- {
-		if joinConds(condStages[i+1]) != "" {
-			indent = indent[:len(indent)-2]
-			b.WriteString(fmt.Sprintf("%s) else ();\n", indent))
-		}
-		indent = indent[:len(indent)-2]
-		b.WriteString(fmt.Sprintf("%s) %s;\n", indent, fromSrcs[i]))
-	}
-	if cond0 != "" {
-		indent = indent[:len(indent)-2]
-		b.WriteString(fmt.Sprintf("%s) else ();\n", indent))
-	}
-	indent = indent[:len(indent)-2]
-	b.WriteString(fmt.Sprintf("%s) %s;\n", indent, src))
-	if sortStr != "" {
-		b.WriteString("  let pairs = List.rev !_res in\n")
-		b.WriteString("  let pairs = List.sort (fun (k1, _) (k2, _) -> compare k1 k2) pairs in\n")
-		b.WriteString("  let res = List.map snd pairs in\n")
-	} else {
-		b.WriteString("  let res = List.rev !_res in\n")
-	}
-	if skipStr != "" {
-		c.ensureSlice()
-		b.WriteString(fmt.Sprintf("  let res = _slice res %s (List.length res) in\n", skipStr))
-	}
-	if takeStr != "" {
-		c.ensureSlice()
-		b.WriteString(fmt.Sprintf("  let res = _slice res 0 %s in\n", takeStr))
-	}
-	b.WriteString("  res)")
-	return b.String(), nil
+	return "[]", nil
 }
 
 func (c *Compiler) compileGroupedQuery(q *parser.QueryExpr) (string, error) {

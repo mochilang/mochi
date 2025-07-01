@@ -1,0 +1,29 @@
+let rec _union a b = match a with | [] -> b | x::xs -> if List.mem x b then _union xs b else _union xs (b @ [x]);;
+
+let _union_all a b = a @ b;;
+
+let _concat a b = a @ b;;
+
+let test_TPCDS_Q5_empty () =
+  if not (List.length result = 0) then failwith "expect failed";
+
+  let store_sales = [];;
+let store_returns = [];;
+let store = [];;
+let catalog_sales = [];;
+let catalog_returns = [];;
+let catalog_page = [];;
+let web_sales = [];;
+let web_returns = [];;
+let web_site = [];;
+let date_dim = [];;
+let ss = [];;
+let sr = [];;
+let cs = [];;
+let cr = [];;
+let ws = [];;
+let wr = [];;
+let per_channel = _concat _concat (_union ss sr) (_union cs cr) (_union ws wr);;
+let result = [];;
+json result;;
+test_TPCDS_Q5_empty ();;

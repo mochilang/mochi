@@ -1,0 +1,14 @@
+let _max (_: 'a list) = 0;;
+
+let test_TPCDS_Q6_empty () =
+  if not (List.length result = 0) then failwith "expect failed";
+
+  let customer_address = [];;
+let customer = [];;
+let store_sales = [];;
+let date_dim = [];;
+let item = [];;
+let target_month_seq = _max [];;
+let result = [];;
+json result;;
+test_TPCDS_Q6_empty ();;
