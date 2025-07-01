@@ -1,67 +1,63 @@
-fun test_TPCDS_Q3_empty() {
-    check((result.size == 0))
+fun test_TPCDS_Q3_result() {
+    check((result == listOf(mutableMapOf("d_year" to 1998, "brand_id" to 1, "brand" to "Brand1", "sum_agg" to 10), mutableMapOf("d_year" to 1998, "brand_id" to 2, "brand" to "Brand2", "sum_agg" to 20))))
 }
 
 fun main() {
-    val date_dim = listOf<Any?>()
-    val store_sales = listOf<Any?>()
-    val item = listOf<Any?>()
+    val date_dim = listOf(mutableMapOf("d_date_sk" to 1, "d_year" to 1998, "d_moy" to 12))
+    val store_sales = listOf(mutableMapOf("ss_sold_date_sk" to 1, "ss_item_sk" to 1, "ss_ext_sales_price" to 10), mutableMapOf("ss_sold_date_sk" to 1, "ss_item_sk" to 2, "ss_ext_sales_price" to 20))
+    val item = listOf(mutableMapOf("i_item_sk" to 1, "i_manufact_id" to 100, "i_brand_id" to 1, "i_brand" to "Brand1"), mutableMapOf("i_item_sk" to 2, "i_manufact_id" to 100, "i_brand_id" to 2, "i_brand" to "Brand2"))
     val result = run {
         val _src = date_dim
         val _rows = _query(_src, listOf(
         _JoinSpec(items = store_sales, on = { args ->
-        val dt = args[0]
-        val ss = args[1]
+        val dt = args[0] as MutableMap<String, Int>
+        val ss = args[1] as MutableMap<String, Any>
         (dt["d_date_sk"] == ss["ss_sold_date_sk"])
     })),
     _JoinSpec(items = item, on = { args ->
-    val dt = args[0]
-    val ss = args[1]
-    val i = args[2]
+    val dt = args[0] as MutableMap<String, Int>
+    val ss = args[1] as MutableMap<String, Any>
+    val i = args[2] as MutableMap<String, Any>
     (ss["ss_item_sk"] == i["i_item_sk"])
 }))
 ), _QueryOpts(selectFn = { args ->
-val dt = args[0]
-val ss = args[1]
-val i = args[2]
-mutableMapOf("d_year" to g.key.d_year, "brand_id" to g.key.brand_id, "brand" to g.key.brand, "sum_agg" to _sum(run {
-    var res = g.Items as List<Any?>
-    res = res.map { x -> x["ss"].ss_ext_sales_price }
-    res
-}))
+val dt = args[0] as MutableMap<String, Int>
+val ss = args[1] as MutableMap<String, Any>
+val i = args[2] as MutableMap<String, Any>
+arrayOf(dt, ss, i)
 }, where = { args ->
-val dt = args[0]
-val ss = args[1]
-val i = args[2]
+val dt = args[0] as MutableMap<String, Int>
+val ss = args[1] as MutableMap<String, Any>
+val i = args[2] as MutableMap<String, Any>
 ((i["i_manufact_id"] == 100) && (dt["d_moy"] == 12))
 }, sortKey = { args ->
-val dt = args[0]
-val ss = args[1]
-val i = args[2]
+val dt = args[0] as MutableMap<String, Int>
+val ss = args[1] as MutableMap<String, Any>
+val i = args[2] as MutableMap<String, Any>
 listOf(g["key"].d_year, -_sum(run {
     var res = g
-    res = res.map { x -> x["ss"].ss_ext_sales_price }
+    res = res.map { x -> x["ss_ext_sales_price"] }
     res
 }), g["key"].brand_id)
 }) )
 val _groups = _group_by(_rows) { args ->
-val dt = args[0]
-val ss = args[1]
-val i = args[2]
+val dt = args[0] as MutableMap<String, Int>
+val ss = args[1] as MutableMap<String, Any>
+val i = args[2] as MutableMap<String, Any>
 mutableMapOf("d_year" to dt["d_year"], "brand_id" to i["i_brand_id"], "brand" to i["i_brand"])
 }
 val _res = mutableListOf<Any?>()
 for (g in _groups) {
     _res.add(mutableMapOf("d_year" to g.key.d_year, "brand_id" to g.key.brand_id, "brand" to g.key.brand, "sum_agg" to _sum(run {
         var res = g.Items as List<Any?>
-        res = res.map { x -> x["ss"].ss_ext_sales_price }
+        res = res.map { x -> x["ss_ext_sales_price"] }
         res
     })))
 }
 _res
 }
 _json(result)
-test_TPCDS_Q3_empty()
+test_TPCDS_Q3_result()
 }
 
 class _Group(var key: Any?) {

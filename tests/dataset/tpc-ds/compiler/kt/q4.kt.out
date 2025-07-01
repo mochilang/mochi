@@ -1,41 +1,37 @@
-fun test_TPCDS_Q4_empty() {
-    check((result.size == 0))
+fun test_TPCDS_Q4_result() {
+    check((result == listOf(mutableMapOf("customer_id" to "C1", "customer_first_name" to "Alice", "customer_last_name" to "A", "customer_login" to "alice"))))
 }
 
 fun main() {
-    val customer = listOf<Any?>()
-    val store_sales = listOf<Any?>()
-    val catalog_sales = listOf<Any?>()
-    val web_sales = listOf<Any?>()
-    val date_dim = listOf<Any?>()
+    val customer = listOf(mutableMapOf("c_customer_sk" to 1, "c_customer_id" to "C1", "c_first_name" to "Alice", "c_last_name" to "A", "c_login" to "alice"))
+    val store_sales = listOf(mutableMapOf("ss_customer_sk" to 1, "ss_sold_date_sk" to 1, "ss_ext_list_price" to 10, "ss_ext_wholesale_cost" to 5, "ss_ext_discount_amt" to 0, "ss_ext_sales_price" to 10), mutableMapOf("ss_customer_sk" to 1, "ss_sold_date_sk" to 2, "ss_ext_list_price" to 20, "ss_ext_wholesale_cost" to 5, "ss_ext_discount_amt" to 0, "ss_ext_sales_price" to 20))
+    val catalog_sales = listOf(mutableMapOf("cs_bill_customer_sk" to 1, "cs_sold_date_sk" to 1, "cs_ext_list_price" to 10, "cs_ext_wholesale_cost" to 2, "cs_ext_discount_amt" to 0, "cs_ext_sales_price" to 10), mutableMapOf("cs_bill_customer_sk" to 1, "cs_sold_date_sk" to 2, "cs_ext_list_price" to 30, "cs_ext_wholesale_cost" to 2, "cs_ext_discount_amt" to 0, "cs_ext_sales_price" to 30))
+    val web_sales = listOf(mutableMapOf("ws_bill_customer_sk" to 1, "ws_sold_date_sk" to 1, "ws_ext_list_price" to 10, "ws_ext_wholesale_cost" to 5, "ws_ext_discount_amt" to 0, "ws_ext_sales_price" to 10), mutableMapOf("ws_bill_customer_sk" to 1, "ws_sold_date_sk" to 2, "ws_ext_list_price" to 12, "ws_ext_wholesale_cost" to 5, "ws_ext_discount_amt" to 0, "ws_ext_sales_price" to 12))
+    val date_dim = listOf(mutableMapOf("d_date_sk" to 1, "d_year" to 2001), mutableMapOf("d_date_sk" to 2, "d_year" to 2002))
     val year_total = _unionAll(_unionAll((run {
         val _src = customer
         val _rows = _query(_src, listOf(
         _JoinSpec(items = store_sales, on = { args ->
-        val c = args[0]
-        val s = args[1]
+        val c = args[0] as MutableMap<String, Any>
+        val s = args[1] as MutableMap<String, Any>
         (c["c_customer_sk"] == s["ss_customer_sk"])
     })),
     _JoinSpec(items = date_dim, on = { args ->
-    val c = args[0]
-    val s = args[1]
-    val d = args[2]
+    val c = args[0] as MutableMap<String, Any>
+    val s = args[1] as MutableMap<String, Any>
+    val d = args[2] as MutableMap<String, Int>
     (s["ss_sold_date_sk"] == d["d_date_sk"])
 }))
 ), _QueryOpts(selectFn = { args ->
-val c = args[0]
-val s = args[1]
-val d = args[2]
-mutableMapOf("customer_id" to g.key.id, "customer_first_name" to g.key.first, "customer_last_name" to g.key.last, "customer_login" to g.key.login, "dyear" to g.key.year, "year_total" to _sum(run {
-    var res = g.Items as List<Any?>
-    res = res.map { x -> ((((((x["ss_ext_list_price"] - x["ss_ext_wholesale_cost"]) - x["ss_ext_discount_amt"])) + x["ss_ext_sales_price"])) / 2) }
-    res
-}), "sale_type" to "s")
+val c = args[0] as MutableMap<String, Any>
+val s = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
+arrayOf(c, s, d)
 }) )
 val _groups = _group_by(_rows) { args ->
-val c = args[0]
-val s = args[1]
-val d = args[2]
+val c = args[0] as MutableMap<String, Any>
+val s = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
 mutableMapOf("id" to c["c_customer_id"], "first" to c["c_first_name"], "last" to c["c_last_name"], "login" to c["c_login"], "year" to d["d_year"])
 }
 val _res = mutableListOf<Any?>()
@@ -51,30 +47,26 @@ _res
     val _src = customer
     val _rows = _query(_src, listOf(
     _JoinSpec(items = catalog_sales, on = { args ->
-    val c = args[0]
-    val cs = args[1]
+    val c = args[0] as MutableMap<String, Any>
+    val cs = args[1] as MutableMap<String, Any>
     (c["c_customer_sk"] == cs["cs_bill_customer_sk"])
 })),
 _JoinSpec(items = date_dim, on = { args ->
-val c = args[0]
-val cs = args[1]
-val d = args[2]
+val c = args[0] as MutableMap<String, Any>
+val cs = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
 (cs["cs_sold_date_sk"] == d["d_date_sk"])
 }))
 ), _QueryOpts(selectFn = { args ->
-val c = args[0]
-val cs = args[1]
-val d = args[2]
-mutableMapOf("customer_id" to g.key.id, "customer_first_name" to g.key.first, "customer_last_name" to g.key.last, "customer_login" to g.key.login, "dyear" to g.key.year, "year_total" to _sum(run {
-    var res = g.Items as List<Any?>
-    res = res.map { x -> ((((((x["cs_ext_list_price"] - x["cs_ext_wholesale_cost"]) - x["cs_ext_discount_amt"])) + x["cs_ext_sales_price"])) / 2) }
-    res
-}), "sale_type" to "c")
+val c = args[0] as MutableMap<String, Any>
+val cs = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
+arrayOf(c, cs, d)
 }) )
 val _groups = _group_by(_rows) { args ->
-val c = args[0]
-val cs = args[1]
-val d = args[2]
+val c = args[0] as MutableMap<String, Any>
+val cs = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
 mutableMapOf("id" to c["c_customer_id"], "first" to c["c_first_name"], "last" to c["c_last_name"], "login" to c["c_login"], "year" to d["d_year"])
 }
 val _res = mutableListOf<Any?>()
@@ -90,30 +82,26 @@ _res
     val _src = customer
     val _rows = _query(_src, listOf(
     _JoinSpec(items = web_sales, on = { args ->
-    val c = args[0]
-    val ws = args[1]
+    val c = args[0] as MutableMap<String, Any>
+    val ws = args[1] as MutableMap<String, Any>
     (c["c_customer_sk"] == ws["ws_bill_customer_sk"])
 })),
 _JoinSpec(items = date_dim, on = { args ->
-val c = args[0]
-val ws = args[1]
-val d = args[2]
+val c = args[0] as MutableMap<String, Any>
+val ws = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
 (ws["ws_sold_date_sk"] == d["d_date_sk"])
 }))
 ), _QueryOpts(selectFn = { args ->
-val c = args[0]
-val ws = args[1]
-val d = args[2]
-mutableMapOf("customer_id" to g.key.id, "customer_first_name" to g.key.first, "customer_last_name" to g.key.last, "customer_login" to g.key.login, "dyear" to g.key.year, "year_total" to _sum(run {
-    var res = g.Items as List<Any?>
-    res = res.map { x -> ((((((x["ws_ext_list_price"] - x["ws_ext_wholesale_cost"]) - x["ws_ext_discount_amt"])) + x["ws_ext_sales_price"])) / 2) }
-    res
-}), "sale_type" to "w")
+val c = args[0] as MutableMap<String, Any>
+val ws = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
+arrayOf(c, ws, d)
 }) )
 val _groups = _group_by(_rows) { args ->
-val c = args[0]
-val ws = args[1]
-val d = args[2]
+val c = args[0] as MutableMap<String, Any>
+val ws = args[1] as MutableMap<String, Any>
+val d = args[2] as MutableMap<String, Int>
 mutableMapOf("id" to c["c_customer_id"], "first" to c["c_first_name"], "last" to c["c_last_name"], "login" to c["c_login"], "year" to d["d_year"])
 }
 val _res = mutableListOf<Any?>()
@@ -130,69 +118,69 @@ val result = run {
     val _src = year_total
     val _rows = _query(_src, listOf(
     _JoinSpec(items = year_total, on = { args ->
-    val s1 = args[0]
-    val s2 = args[1]
+    val s1 = args[0] as MutableMap<String, Any>
+    val s2 = args[1] as MutableMap<String, Any>
     (s2["customer_id"] == s1["customer_id"])
 })),
 _JoinSpec(items = year_total, on = { args ->
-val s1 = args[0]
-val s2 = args[1]
-val c1 = args[2]
+val s1 = args[0] as MutableMap<String, Any>
+val s2 = args[1] as MutableMap<String, Any>
+val c1 = args[2] as MutableMap<String, Any>
 (c1["customer_id"] == s1["customer_id"])
 })),
 _JoinSpec(items = year_total, on = { args ->
-val s1 = args[0]
-val s2 = args[1]
-val c1 = args[2]
-val c2 = args[3]
+val s1 = args[0] as MutableMap<String, Any>
+val s2 = args[1] as MutableMap<String, Any>
+val c1 = args[2] as MutableMap<String, Any>
+val c2 = args[3] as MutableMap<String, Any>
 (c2["customer_id"] == s1["customer_id"])
 })),
 _JoinSpec(items = year_total, on = { args ->
-val s1 = args[0]
-val s2 = args[1]
-val c1 = args[2]
-val c2 = args[3]
-val w1 = args[4]
+val s1 = args[0] as MutableMap<String, Any>
+val s2 = args[1] as MutableMap<String, Any>
+val c1 = args[2] as MutableMap<String, Any>
+val c2 = args[3] as MutableMap<String, Any>
+val w1 = args[4] as MutableMap<String, Any>
 (w1["customer_id"] == s1["customer_id"])
 })),
 _JoinSpec(items = year_total, on = { args ->
-val s1 = args[0]
-val s2 = args[1]
-val c1 = args[2]
-val c2 = args[3]
-val w1 = args[4]
-val w2 = args[5]
+val s1 = args[0] as MutableMap<String, Any>
+val s2 = args[1] as MutableMap<String, Any>
+val c1 = args[2] as MutableMap<String, Any>
+val c2 = args[3] as MutableMap<String, Any>
+val w1 = args[4] as MutableMap<String, Any>
+val w2 = args[5] as MutableMap<String, Any>
 (w2["customer_id"] == s1["customer_id"])
 }))
 ), _QueryOpts(selectFn = { args ->
-val s1 = args[0]
-val s2 = args[1]
-val c1 = args[2]
-val c2 = args[3]
-val w1 = args[4]
-val w2 = args[5]
+val s1 = args[0] as MutableMap<String, Any>
+val s2 = args[1] as MutableMap<String, Any>
+val c1 = args[2] as MutableMap<String, Any>
+val c2 = args[3] as MutableMap<String, Any>
+val w1 = args[4] as MutableMap<String, Any>
+val w2 = args[5] as MutableMap<String, Any>
 mutableMapOf("customer_id" to s2["customer_id"], "customer_first_name" to s2["customer_first_name"], "customer_last_name" to s2["customer_last_name"], "customer_login" to s2["customer_login"])
 }, where = { args ->
-val s1 = args[0]
-val s2 = args[1]
-val c1 = args[2]
-val c2 = args[3]
-val w1 = args[4]
-val w2 = args[5]
+val s1 = args[0] as MutableMap<String, Any>
+val s2 = args[1] as MutableMap<String, Any>
+val c1 = args[2] as MutableMap<String, Any>
+val c2 = args[3] as MutableMap<String, Any>
+val w1 = args[4] as MutableMap<String, Any>
+val w2 = args[5] as MutableMap<String, Any>
 (((((((((((((((((s1["sale_type"] == "s") && (c1["sale_type"] == "c")) && (w1["sale_type"] == "w")) && (s2["sale_type"] == "s")) && (c2["sale_type"] == "c")) && (w2["sale_type"] == "w")) && (s1["dyear"] == 2001)) && (s2["dyear"] == 2002)) && (c1["dyear"] == 2001)) && (c2["dyear"] == 2002)) && (w1["dyear"] == 2001)) && (w2["dyear"] == 2002)) && (s1["year_total"] > 0)) && (c1["year_total"] > 0)) && (w1["year_total"] > 0)) && ((if ((c1["year_total"] > 0)) (c2["year_total"] / c1["year_total"]) else null) > (if ((s1["year_total"] > 0)) (s2["year_total"] / s1["year_total"]) else null))) && ((if ((c1["year_total"] > 0)) (c2["year_total"] / c1["year_total"]) else null) > (if ((w1["year_total"] > 0)) (w2["year_total"] / w1["year_total"]) else null)))
 }, sortKey = { args ->
-val s1 = args[0]
-val s2 = args[1]
-val c1 = args[2]
-val c2 = args[3]
-val w1 = args[4]
-val w2 = args[5]
+val s1 = args[0] as MutableMap<String, Any>
+val s2 = args[1] as MutableMap<String, Any>
+val c1 = args[2] as MutableMap<String, Any>
+val c2 = args[3] as MutableMap<String, Any>
+val w1 = args[4] as MutableMap<String, Any>
+val w2 = args[5] as MutableMap<String, Any>
 listOf(s2["customer_id"], s2["customer_first_name"], s2["customer_last_name"], s2["customer_login"])
 }) )
 _rows
 }
 _json(result)
-test_TPCDS_Q4_empty()
+test_TPCDS_Q4_result()
 }
 
 class _Group(var key: Any?) {

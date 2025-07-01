@@ -1,11 +1,11 @@
-fun test_TPCDS_Q2_empty() {
-    check((result.size == 0))
+fun test_TPCDS_Q2_result() {
+    check((result == listOf(mutableMapOf("d_week_seq1" to 1, "sun_ratio" to 0.5, "mon_ratio" to 0.5))))
 }
 
 fun main() {
-    val web_sales = listOf<Any?>()
-    val catalog_sales = listOf<Any?>()
-    val date_dim = listOf<Any?>()
+    val web_sales = listOf(mutableMapOf("ws_sold_date_sk" to 1, "ws_ext_sales_price" to 5, "ws_sold_date_name" to "Sunday"), mutableMapOf("ws_sold_date_sk" to 2, "ws_ext_sales_price" to 5, "ws_sold_date_name" to "Monday"), mutableMapOf("ws_sold_date_sk" to 8, "ws_ext_sales_price" to 10, "ws_sold_date_name" to "Sunday"), mutableMapOf("ws_sold_date_sk" to 9, "ws_ext_sales_price" to 10, "ws_sold_date_name" to "Monday"))
+    val catalog_sales = listOf(mutableMapOf("cs_sold_date_sk" to 1, "cs_ext_sales_price" to 5, "cs_sold_date_name" to "Sunday"), mutableMapOf("cs_sold_date_sk" to 2, "cs_ext_sales_price" to 5, "cs_sold_date_name" to "Monday"), mutableMapOf("cs_sold_date_sk" to 8, "cs_ext_sales_price" to 10, "cs_sold_date_name" to "Sunday"), mutableMapOf("cs_sold_date_sk" to 9, "cs_ext_sales_price" to 10, "cs_sold_date_name" to "Monday"))
+    val date_dim = listOf(mutableMapOf("d_date_sk" to 1, "d_week_seq" to 1, "d_day_name" to "Sunday", "d_year" to 1998), mutableMapOf("d_date_sk" to 2, "d_week_seq" to 1, "d_day_name" to "Monday", "d_year" to 1998), mutableMapOf("d_date_sk" to 8, "d_week_seq" to 54, "d_day_name" to "Sunday", "d_year" to 1999), mutableMapOf("d_date_sk" to 9, "d_week_seq" to 54, "d_day_name" to "Monday", "d_year" to 1999))
     val wscs = _unionAll((run {
         var res = web_sales
         res = res.map { ws -> mutableMapOf("sold_date_sk" to ws["ws_sold_date_sk"], "sales_price" to ws["ws_ext_sales_price"], "day" to ws["ws_sold_date_name"]) }
@@ -19,53 +19,18 @@ fun main() {
         val _src = wscs
         val _rows = _query(_src, listOf(
         _JoinSpec(items = date_dim, on = { args ->
-        val w = args[0]
-        val d = args[1]
+        val w = args[0] as MutableMap<String, Any>
+        val d = args[1] as MutableMap<String, Any>
         (w["sold_date_sk"] == d["d_date_sk"])
     }))
     ), _QueryOpts(selectFn = { args ->
-    val w = args[0]
-    val d = args[1]
-    mutableMapOf("d_week_seq" to g.key.week_seq, "sun_sales" to _sum(run {
-        var res = g.Items as List<Any?>
-        res = res.filter { x -> (x["day"] == "Sunday") }
-        res = res.map { x -> x["sales_price"] }
-        res
-    }), "mon_sales" to _sum(run {
-        var res = g.Items as List<Any?>
-        res = res.filter { x -> (x["day"] == "Monday") }
-        res = res.map { x -> x["sales_price"] }
-        res
-    }), "tue_sales" to _sum(run {
-        var res = g.Items as List<Any?>
-        res = res.filter { x -> (x["day"] == "Tuesday") }
-        res = res.map { x -> x["sales_price"] }
-        res
-    }), "wed_sales" to _sum(run {
-        var res = g.Items as List<Any?>
-        res = res.filter { x -> (x["day"] == "Wednesday") }
-        res = res.map { x -> x["sales_price"] }
-        res
-    }), "thu_sales" to _sum(run {
-        var res = g.Items as List<Any?>
-        res = res.filter { x -> (x["day"] == "Thursday") }
-        res = res.map { x -> x["sales_price"] }
-        res
-    }), "fri_sales" to _sum(run {
-        var res = g.Items as List<Any?>
-        res = res.filter { x -> (x["day"] == "Friday") }
-        res = res.map { x -> x["sales_price"] }
-        res
-    }), "sat_sales" to _sum(run {
-        var res = g.Items as List<Any?>
-        res = res.filter { x -> (x["day"] == "Saturday") }
-        res = res.map { x -> x["sales_price"] }
-        res
-    }))
+    val w = args[0] as MutableMap<String, Any>
+    val d = args[1] as MutableMap<String, Any>
+    arrayOf(w, d)
 }) )
 val _groups = _group_by(_rows) { args ->
-val w = args[0]
-val d = args[1]
+val w = args[0] as MutableMap<String, Any>
+val d = args[1] as MutableMap<String, Any>
 mutableMapOf("week_seq" to d["d_week_seq"])
 }
 val _res = mutableListOf<Any?>()
@@ -109,9 +74,35 @@ for (g in _groups) {
 }
 _res
 }
-val result = listOf<Any?>()
+val year1 = run {
+    var res = wswscs
+    res = res.filter { w -> (w["d_week_seq"] == 1) }
+    res = res.map { w -> w }
+    res
+}
+val year2 = run {
+    var res = wswscs
+    res = res.filter { w -> (w["d_week_seq"] == 54) }
+    res = res.map { w -> w }
+    res
+}
+val result = run {
+    val _src = year1
+    val _rows = _query(_src, listOf(
+    _JoinSpec(items = year2, on = { args ->
+    val y = args[0] as MutableMap<String, Any>
+    val z = args[1] as MutableMap<String, Any>
+    (y["d_week_seq"] == (z["d_week_seq"] - 53))
+}))
+), _QueryOpts(selectFn = { args ->
+val y = args[0] as MutableMap<String, Any>
+val z = args[1] as MutableMap<String, Any>
+mutableMapOf("d_week_seq1" to y["d_week_seq"], "sun_ratio" to (y["sun_sales"] / z["sun_sales"]), "mon_ratio" to (y["mon_sales"] / z["mon_sales"]))
+}) )
+_rows
+}
 _json(result)
-test_TPCDS_Q2_empty()
+test_TPCDS_Q2_result()
 }
 
 class _Group(var key: Any?) {
