@@ -262,6 +262,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	}
 	val := "null"
 	if l.Value != nil {
+		if c.env != nil {
+			c.env.SetVar(l.Name, types.AnyType{}, false)
+		}
 		v, err := c.compileExpr(l.Value)
 		if err != nil {
 			return err
@@ -408,6 +411,32 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 		c.writeln("}")
 	}
 	return nil
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	elseVal := "null"
+	if ie.ElseIf != nil {
+		v, err := c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		elseVal = v
+	} else if ie.Else != nil {
+		v, err := c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+		elseVal = v
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal), nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
@@ -758,6 +787,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + inner + ")", nil
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
 	case p.Load != nil:
@@ -828,6 +859,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("(count(%[1]s) ? array_sum(%[1]s) / count(%[1]s) : 0)", args[0]), nil
+	case "max":
+		if len(args) != 1 {
+			return "", fmt.Errorf("max expects 1 arg")
+		}
+		return fmt.Sprintf("(count(%[1]s) ? max(%[1]s) : 0)", args[0]), nil
+	case "concat":
+		if len(args) == 0 {
+			return "[]", nil
+		}
+		return fmt.Sprintf("array_merge(%s)", strings.Join(args, ", ")), nil
+	case "reverse":
+		if len(args) != 1 {
+			return "", fmt.Errorf("reverse expects 1 arg")
+		}
+		return fmt.Sprintf("(is_array(%[1]s) ? array_reverse(%[1]s) : (is_string(%[1]s) ? strrev(%[1]s) : null))", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", ")), nil
 	}
@@ -1245,6 +1291,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 			return "true", nil
 		}
 		return "false", nil
+	case l.Null:
+		return "null", nil
 	case l.Str != nil:
 		return strconv.Quote(*l.Str), nil
 	}
@@ -1417,6 +1465,9 @@ func queryFreeVars(q *parser.QueryExpr, env *types.Env) []string {
 	for _, f := range q.Froms {
 		delete(vars, f.Var)
 	}
+	for _, j := range q.Joins {
+		delete(vars, j.Var)
+	}
 	if q.Group != nil {
 		delete(vars, q.Group.Name)
 	}
@@ -1460,7 +1511,9 @@ func scanPrimary(p *parser.Primary, vars map[string]struct{}) {
 	}
 	if p.Map != nil {
 		for _, it := range p.Map.Items {
-			scanExpr(it.Key, vars)
+			if _, ok := types.SimpleStringKey(it.Key); !ok {
+				scanExpr(it.Key, vars)
+			}
 			scanExpr(it.Value, vars)
 		}
 	}

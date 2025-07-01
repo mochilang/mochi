@@ -1,0 +1,160 @@
+<?php
+function mochi_test_TPCDS_Q2_empty() {
+	global $result;
+	if (!(((is_array($result) ? count($result) : strlen($result)) == 0))) { throw new Exception('expect failed'); }
+}
+
+$web_sales = [];
+$catalog_sales = [];
+$date_dim = [];
+$wscs = array_merge(((function() use ($web_sales) {
+	$res = [];
+	foreach ((is_string($web_sales) ? str_split($web_sales) : $web_sales) as $ws) {
+		$res[] = ["sold_date_sk" => $ws['ws_sold_date_sk'], "sales_price" => $ws['ws_ext_sales_price'], "day" => $ws['ws_sold_date_name']];
+	}
+	return $res;
+})()), ((function() use ($catalog_sales) {
+	$res = [];
+	foreach ((is_string($catalog_sales) ? str_split($catalog_sales) : $catalog_sales) as $cs) {
+		$res[] = ["sold_date_sk" => $cs['cs_sold_date_sk'], "sales_price" => $cs['cs_ext_sales_price'], "day" => $cs['cs_sold_date_name']];
+	}
+	return $res;
+})()));
+$wswscs = (function() use ($date_dim, $wscs) {
+	$_src = $wscs;
+	return _query($_src, [
+		[ 'items' => $date_dim, 'on' => function($w, $d) use ($date_dim, $wscs) { return ($w['sold_date_sk'] == $d['d_date_sk']); } ]
+	], [ 'select' => function($w, $d) use ($date_dim, $wscs) { return ["d_week_seq" => $g['key']['week_seq'], "sun_sales" => array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		if (!(($x['day'] == "Sunday"))) { continue; }
+		$res[] = $x['sales_price'];
+	}
+	return $res;
+})()), "mon_sales" => array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		if (!(($x['day'] == "Monday"))) { continue; }
+		$res[] = $x['sales_price'];
+	}
+	return $res;
+})()), "tue_sales" => array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		if (!(($x['day'] == "Tuesday"))) { continue; }
+		$res[] = $x['sales_price'];
+	}
+	return $res;
+})()), "wed_sales" => array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		if (!(($x['day'] == "Wednesday"))) { continue; }
+		$res[] = $x['sales_price'];
+	}
+	return $res;
+})()), "thu_sales" => array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		if (!(($x['day'] == "Thursday"))) { continue; }
+		$res[] = $x['sales_price'];
+	}
+	return $res;
+})()), "fri_sales" => array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		if (!(($x['day'] == "Friday"))) { continue; }
+		$res[] = $x['sales_price'];
+	}
+	return $res;
+})()), "sat_sales" => array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		if (!(($x['day'] == "Saturday"))) { continue; }
+		$res[] = $x['sales_price'];
+	}
+	return $res;
+})())]; } ]);
+})();
+$result = [];
+echo json_encode($result), PHP_EOL;
+mochi_test_TPCDS_Q2_empty();
+
+function _query($src, $joins, $opts) {
+    $items = array_map(fn($v) => [$v], $src);
+    foreach ($joins as $j) {
+        $joined = [];
+        if (!empty($j['right']) && !empty($j['left'])) {
+            $matched = array_fill(0, count($j['items']), false);
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $ri => $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $matched[$ri] = true;
+                    $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) { $joined[] = array_merge($left, [null]); }
+            }
+            foreach ($j['items'] as $ri => $right) {
+                if (!$matched[$ri]) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } elseif (!empty($j['right'])) {
+            foreach ($j['items'] as $right) {
+                $m = false;
+                foreach ($items as $left) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } else {
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!empty($j['left']) && !$m) { $joined[] = array_merge($left, [null]); }
+            }
+        }
+        $items = $joined;
+    }
+    if (isset($opts['where'])) {
+        $filtered = [];
+        foreach ($items as $r) { if ($opts['where'](...$r)) $filtered[] = $r; }
+        $items = $filtered;
+    }
+    if (isset($opts['sortKey'])) {
+        $pairs = [];
+        foreach ($items as $it) { $pairs[] = ['item' => $it, 'key' => $opts['sortKey'](...$it)]; }
+        usort($pairs, function($a, $b) {
+            $ak = $a['key']; $bk = $b['key'];
+            if (is_int($ak) && is_int($bk)) return $ak <=> $bk;
+            if (is_string($ak) && is_string($bk)) return $ak <=> $bk;
+            return strcmp(strval($ak), strval($bk));
+        });
+        $items = array_map(fn($p) => $p['item'], $pairs);
+    }
+    if (array_key_exists('skip', $opts)) {
+        $n = $opts['skip'];
+        $items = $n < count($items) ? array_slice($items, $n) : [];
+    }
+    if (array_key_exists('take', $opts)) {
+        $n = $opts['take'];
+        if ($n < count($items)) $items = array_slice($items, 0, $n);
+    }
+    $res = [];
+    foreach ($items as $r) { $res[] = $opts['select'](...$r); }
+    return $res;
+}
