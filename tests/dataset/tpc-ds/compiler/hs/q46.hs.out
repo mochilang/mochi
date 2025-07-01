@@ -1,0 +1,209 @@
+{-# LANGUAGE DeriveGeneric #-}
+module Main where
+
+import Data.Maybe (fromMaybe)
+import Data.Time.Clock.POSIX (getPOSIXTime)
+import qualified Data.Map as Map
+import Data.List (intercalate, isPrefixOf)
+import qualified Data.List as List
+import qualified Data.Aeson as Aeson
+import qualified Data.Aeson.KeyMap as KeyMap
+import qualified Data.Aeson.Key as Key
+import qualified Data.Vector as V
+import qualified Data.Text as T
+import qualified Data.ByteString.Lazy.Char8 as BSL
+
+
+forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a
+forLoop start end f = go start
+  where
+    go i | i < end =
+            case f i of
+              Just v -> Just v
+              Nothing -> go (i + 1)
+         | otherwise = Nothing
+
+whileLoop :: (() -> Bool) -> (() -> Maybe a) -> Maybe a
+whileLoop cond body = go ()
+  where
+    go _ | cond () =
+            case body () of
+              Just v -> Just v
+              Nothing -> go ()
+         | otherwise = Nothing
+
+avg :: Real a => [a] -> Double
+avg xs | null xs = 0
+      | otherwise = sum (map realToFrac xs) / fromIntegral (length xs)
+
+data MGroup k a = MGroup { key :: k, items :: [a] } deriving (Show)
+
+_group_by :: Ord k => [a] -> (a -> k) -> [MGroup k a]
+_group_by src keyfn =
+  let go [] m order = (m, order)
+      go (x:xs) m order =
+        let k = keyfn x
+        in case Map.lookup k m of
+             Just is -> go xs (Map.insert k (is ++ [x]) m) order
+             Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+      (m, order) = go src Map.empty []
+  in [ MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order ]
+
+_indexString :: String -> Int -> String
+_indexString s i =
+  let idx = if i < 0 then i + length s else i
+  in if idx < 0 || idx >= length s
+       then error "index out of range"
+       else [s !! idx]
+
+_input :: IO String
+_input = getLine
+
+_now :: IO Int
+_now = fmap round getPOSIXTime
+
+_json :: Aeson.ToJSON a => a -> IO ()
+_json v = BSL.putStrLn (Aeson.encode v)
+
+_readInput :: Maybe String -> IO String
+_readInput Nothing = getContents
+_readInput (Just p)
+  | null p || p == "-" = getContents
+  | otherwise = readFile p
+
+_writeOutput :: Maybe String -> String -> IO ()
+_writeOutput mp text = case mp of
+  Nothing -> putStr text
+  Just p | null p || p == "-" -> putStr text
+         | otherwise -> writeFile p text
+
+_split :: Char -> String -> [String]
+_split _ "" = [""]
+_split d s =
+  let (h, t) = break (== d) s
+  in h : case t of
+            []      -> []
+            (_:rest) -> _split d rest
+
+_parseCSV :: String -> Bool -> Char -> [Map.Map String String]
+_parseCSV text header delim =
+  let ls = filter (not . null) (lines text)
+  in if null ls then [] else
+       let heads = if header
+                      then _split delim (head ls)
+                      else ["c" ++ show i | i <- [0 .. length (_split delim (head ls)) - 1]]
+           start = if header then 1 else 0
+           row line =
+             let parts = _split delim line
+             in Map.fromList [ (heads !! j, if j < length parts then parts !! j else "")
+                             | j <- [0 .. length heads - 1] ]
+       in map row (drop start ls)
+
+
+data AnyValue = VInt Int | VDouble Double | VString String | VBool Bool deriving (Show)
+
+instance Aeson.ToJSON AnyValue where
+  toJSON (VInt n) = Aeson.toJSON n
+  toJSON (VDouble d) = Aeson.toJSON d
+  toJSON (VString s) = Aeson.toJSON s
+  toJSON (VBool b) = Aeson.toJSON b
+
+_asInt :: AnyValue -> Int
+_asInt (VInt n) = n
+_asInt v = error ("expected int, got " ++ show v)
+
+_asDouble :: AnyValue -> Double
+_asDouble (VDouble d) = d
+_asDouble v = error ("expected double, got " ++ show v)
+
+_asString :: AnyValue -> String
+_asString (VString s) = s
+_asString v = error ("expected string, got " ++ show v)
+
+_asBool :: AnyValue -> Bool
+_asBool (VBool b) = b
+_asBool v = error ("expected bool, got " ++ show v)
+
+_parseJSON :: String -> [Map.Map String String]
+_parseJSON text =
+  case Aeson.decode (BSL.pack text) of
+    Just (Aeson.Array arr) -> map _valueToMap (V.toList arr)
+    Just v -> [_valueToMap v]
+    Nothing -> []
+
+_valueToMap :: Aeson.Value -> Map.Map String String
+_valueToMap (Aeson.Object o) =
+  Map.fromList [ (T.unpack (Key.toText k), _valueToString v) | (k,v) <- KeyMap.toList o ]
+_valueToMap _ = Map.empty
+
+_valueToString :: Aeson.Value -> String
+_valueToString (Aeson.String s) = T.unpack s
+_valueToString (Aeson.Number n) = show n
+_valueToString (Aeson.Bool b) = if b then "true" else "false"
+_valueToString _ = ""
+
+_mapToValue :: Map.Map String String -> Aeson.Value
+_mapToValue m =
+  Aeson.Object $ KeyMap.fromList [ (Key.fromString k, Aeson.String (T.pack v)) | (k,v) <- Map.toList m ]
+
+_load :: Maybe String -> Maybe (Map.Map String String) -> IO [Map.Map String String]
+_load path opts = do
+  txt <- _readInput path
+  let fmt = fromMaybe "csv" (opts >>= Map.lookup "format")
+  pure $ case fmt of
+    "json" -> _parseJSON txt
+    _ -> _parseCSV txt True ','
+
+_save :: [Map.Map String String] -> Maybe String -> Maybe (Map.Map String String) -> IO ()
+_save rows path opts =
+  let fmt = fromMaybe "csv" (opts >>= Map.lookup "format")
+  in case fmt of
+    "json" ->
+      let objs = map _mapToValue rows
+          val = if length objs == 1 then head objs else Aeson.Array (V.fromList objs)
+      in _writeOutput path (BSL.unpack (Aeson.encode val))
+    _ ->
+      let headers = if null rows then [] else Map.keys (head rows)
+          toLine m = intercalate "," [Map.findWithDefault "" h m | h <- headers]
+          text = unlines (if null headers then [] else intercalate "," headers : map toLine rows)
+      in _writeOutput path text
+
+expect :: Bool -> IO ()
+expect True = pure ()
+expect False = error "expect failed"
+
+
+store_sales = [Map.fromList [("ss_ticket_number", VInt (1)), ("ss_customer_sk", VInt (1)), ("ss_addr_sk", VInt (1)), ("ss_hdemo_sk", VInt (1)), ("ss_store_sk", VInt (1)), ("ss_sold_date_sk", VInt (1)), ("ss_coupon_amt", VDouble (5.0)), ("ss_net_profit", VDouble (20.0))]]
+
+date_dim = [Map.fromList [("d_date_sk", 1), ("d_dow", 6), ("d_year", 2020)]]
+
+store = [Map.fromList [("s_store_sk", VInt (1)), ("s_city", VString ("CityA"))]]
+
+household_demographics = [Map.fromList [("hd_demo_sk", 1), ("hd_dep_count", 2), ("hd_vehicle_count", 0)]]
+
+customer_address = [Map.fromList [("ca_address_sk", VInt (1)), ("ca_city", VString ("Portland"))], Map.fromList [("ca_address_sk", VInt (2)), ("ca_city", VString ("Seattle"))]]
+
+customer = [Map.fromList [("c_customer_sk", VInt (1)), ("c_last_name", VString ("Doe")), ("c_first_name", VString ("John")), ("c_current_addr_sk", VInt (2))]]
+
+depcnt = 2
+
+vehcnt = 0
+
+year = 2020
+
+cities = ["CityA"]
+
+dn = [ Map.fromList [("ss_ticket_number", VString (fromMaybe (error "missing") (Map.lookup "ss_ticket_number" (key (g))))), ("ss_customer_sk", VString (fromMaybe (error "missing") (Map.lookup "ss_customer_sk" (key (g))))), ("bought_city", VString (fromMaybe (error "missing") (Map.lookup "ca_city" (key (g))))), ("amt", VDouble (sum [fromMaybe (error "missing") (Map.lookup "ss_coupon_amt" (fromMaybe (error "missing") (Map.lookup "ss" (x)))) | x <- g])), ("profit", VDouble (sum [fromMaybe (error "missing") (Map.lookup "ss_net_profit" (fromMaybe (error "missing") (Map.lookup "ss" (x)))) | x <- g]))] | g <- _group_by [(ss, d, s, hd, ca) | ss <- store_sales, d <- date_dim, s <- store, hd <- household_demographics, ca <- customer_address, (fromMaybe (error "missing") (Map.lookup "ss_sold_date_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "d_date_sk" (d))), (fromMaybe (error "missing") (Map.lookup "ss_store_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "s_store_sk" (s))), (fromMaybe (error "missing") (Map.lookup "ss_hdemo_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "hd_demo_sk" (hd))), (fromMaybe (error "missing") (Map.lookup "ss_addr_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "ca_address_sk" (ca))), elem (((elem (((((fromMaybe (error "missing") (Map.lookup "hd_dep_count" hd) == depcnt) || fromMaybe (error "missing") (Map.lookup "hd_vehicle_count" hd)) == vehcnt)) && fromMaybe (error "missing") (Map.lookup "d_dow" d)) [6, 0] && fromMaybe (error "missing") (Map.lookup "d_year" d)) == year) && fromMaybe (error "missing") (Map.lookup "s_city" s)) cities] (\(ss, d, s, hd, ca) -> Map.fromList [("ss_ticket_number", VString (fromMaybe (error "missing") (Map.lookup "ss_ticket_number" ss))), ("ss_customer_sk", VString (fromMaybe (error "missing") (Map.lookup "ss_customer_sk" ss))), ("ca_city", VString (fromMaybe (error "missing") (Map.lookup "ca_city" ca)))]), let g = g ]
+
+base = map snd (List.sortOn fst [ ( [fromMaybe (error "missing") (Map.lookup "c_last_name" (c)), fromMaybe (error "missing") (Map.lookup "c_first_name" (c)), fromMaybe (error "missing") (Map.lookup "ca_city" (current_addr)), fromMaybe (error "missing") (Map.lookup "bought_city" (dnrec)), fromMaybe (error "missing") (Map.lookup "ss_ticket_number" (dnrec))], Map.fromList [("c_last_name", VString (fromMaybe (error "missing") (Map.lookup "c_last_name" c))), ("c_first_name", VString (fromMaybe (error "missing") (Map.lookup "c_first_name" c))), ("ca_city", VString (fromMaybe (error "missing") (Map.lookup "ca_city" current_addr))), ("bought_city", VString (fromMaybe (error "missing") (Map.lookup "bought_city" dnrec))), ("ss_ticket_number", VString (fromMaybe (error "missing") (Map.lookup "ss_ticket_number" dnrec))), ("amt", VString (fromMaybe (error "missing") (Map.lookup "amt" dnrec))), ("profit", VString (fromMaybe (error "missing") (Map.lookup "profit" dnrec)))] ) | dnrec <- dn, c <- customer, current_addr <- customer_address, (fromMaybe (error "missing") (Map.lookup "ss_customer_sk" (dnrec)) == fromMaybe (error "missing") (Map.lookup "c_customer_sk" (c))), (fromMaybe (error "missing") (Map.lookup "c_current_addr_sk" (c)) == fromMaybe (error "missing") (Map.lookup "ca_address_sk" (current_addr))), (fromMaybe (error "missing") (Map.lookup "ca_city" current_addr) /= fromMaybe (error "missing") (Map.lookup "bought_city" dnrec)) ])
+
+result = base
+
+test_TPCDS_Q46_simplified :: IO ()
+test_TPCDS_Q46_simplified = do
+    expect ((result == [Map.fromList [("c_last_name", VString ("Doe")), ("c_first_name", VString ("John")), ("ca_city", VString ("Seattle")), ("bought_city", VString ("Portland")), ("ss_ticket_number", VInt (1)), ("amt", VDouble (5.0)), ("profit", VDouble (20.0))]]))
+
+main :: IO ()
+main = do
+    _json result
+    test_TPCDS_Q46_simplified
