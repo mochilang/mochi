@@ -300,6 +300,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileSaveExpr(p.Save)
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Call != nil:
@@ -351,6 +353,39 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "min":
 		c.helpers["min"] = true
 		return fmt.Sprintf("__min(%s)", argStr), nil
+	case "max":
+		c.helpers["max"] = true
+		return fmt.Sprintf("__max(%s)", argStr), nil
+	case "substr":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substr expects 3 args")
+		}
+		c.helpers["slice"] = true
+		return fmt.Sprintf("__slice(%s, %s, %s)", args[0], args[1], args[2]), nil
+	case "reverse":
+		if len(args) != 1 {
+			return "", fmt.Errorf("reverse expects 1 arg")
+		}
+		at := c.inferExprType(call.Args[0])
+		if isString(at) {
+			c.helpers["reverse_string"] = true
+			return fmt.Sprintf("__reverse_string(%s)", args[0]), nil
+		}
+		if _, ok := at.(types.ListType); ok {
+			c.helpers["reverse_list"] = true
+			return fmt.Sprintf("__reverse_list(%s)", args[0]), nil
+		}
+		return "", fmt.Errorf("reverse expects string or list")
+	case "concat":
+		if len(args) < 2 {
+			return "", fmt.Errorf("concat expects at least 2 args")
+		}
+		c.helpers["concat"] = true
+		expr := fmt.Sprintf("__concat(%s, %s)", args[0], args[1])
+		for i := 2; i < len(args); i++ {
+			expr = fmt.Sprintf("__concat(%s, %s)", expr, args[i])
+		}
+		return expr, nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
@@ -988,6 +1023,40 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	return fmt.Sprintf("__fetch(%s, %s)", url, opts), nil
 }
 
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+	}
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("(function()\n")
+	b.WriteString("\tif " + cond + " then\n")
+	b.WriteString("\t\treturn " + thenExpr + "\n")
+	if elseExpr != "" {
+		b.WriteString("\telse\n")
+		b.WriteString("\t\treturn " + elseExpr + "\n")
+		b.WriteString("\tend\n")
+	} else {
+		b.WriteString("\tend\n")
+		b.WriteString("\treturn nil\n")
+	}
+	b.WriteString("end)()")
+	return b.String(), nil
+}
+
 func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 	switch {
 	case lit.Int != nil:
@@ -1005,6 +1074,8 @@ func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 			return "true", nil
 		}
 		return "false", nil
+	case lit.Null:
+		return "nil", nil
 	}
 	return "nil", fmt.Errorf("unknown literal")
 }

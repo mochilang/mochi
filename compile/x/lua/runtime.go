@@ -189,6 +189,50 @@ const (
 		"    end\n" +
 		"end\n"
 
+	helperMax = "function __max(v)\n" +
+		"    local items\n" +
+		"    if type(v) == 'table' and v.items ~= nil then\n" +
+		"        items = v.items\n" +
+		"    elseif type(v) == 'table' then\n" +
+		"        items = v\n" +
+		"    else\n" +
+		"        error('max() expects list or group')\n" +
+		"    end\n" +
+		"    if #items == 0 then return 0 end\n" +
+		"    local m = items[1]\n" +
+		"    if type(m) == 'string' then\n" +
+		"        for i=2,#items do\n" +
+		"            local it = items[i]\n" +
+		"            if type(it) == 'string' and it > m then m = it end\n" +
+		"        end\n" +
+		"        return m\n" +
+		"    else\n" +
+		"        m = tonumber(m)\n" +
+		"        for i=2,#items do\n" +
+		"            local n = tonumber(items[i])\n" +
+		"            if n > m then m = n end\n" +
+		"        end\n" +
+		"        return m\n" +
+		"    end\n" +
+		"end\n"
+
+	helperConcat = "function __concat(a, b)\n" +
+		"    local res = {}\n" +
+		"    if a then for i=1,#a do res[#res+1] = a[i] end end\n" +
+		"    if b then for i=1,#b do res[#res+1] = b[i] end end\n" +
+		"    return res\n" +
+		"end\n"
+
+	helperReverseString = "function __reverse_string(s)\n" +
+		"    return string.reverse(s)\n" +
+		"end\n"
+
+	helperReverseList = "function __reverse_list(lst)\n" +
+		"    local out = {}\n" +
+		"    for i=#lst,1,-1 do out[#out+1] = lst[i] end\n" +
+		"    return out\n" +
+		"end\n"
+
 	helperAppend = "function __append(lst, v)\n" +
 		"    local out = {}\n" +
 		"    if lst then for i = 1, #lst do out[#out+1] = lst[i] end end\n" +
@@ -697,38 +741,42 @@ const (
 )
 
 var helperMap = map[string]string{
-	"print":       helperPrint,
-	"run_tests":   helperRunTests,
-	"iter":        helperIter,
-	"div":         helperDiv,
-	"add":         helperAdd,
-	"eq":          helperEq,
-	"contains":    helperContains,
-	"input":       helperInput,
-	"count":       helperCount,
-	"avg":         helperAvg,
-	"sum":         helperSum,
-	"min":         helperMin,
-	"append":      helperAppend,
-	"reduce":      helperReduce,
-	"json":        helperJson,
-	"eval":        helperEval,
-	"index":       helperIndex,
-	"indexString": helperIndexString,
-	"slice":       helperSlice,
-	"union_all":   helperUnionAll,
-	"union":       helperUnion,
-	"except":      helperExcept,
-	"intersect":   helperIntersect,
-	"gen_text":    helperGenText,
-	"gen_embed":   helperGenEmbed,
-	"gen_struct":  helperGenStruct,
-	"fetch":       helperFetch,
-	"load":        helperLoad,
-	"save":        helperSave,
-	"_Group":      helperGroup,
-	"_group_by":   helperGroupBy,
-	"query":       helperQuery,
+	"print":          helperPrint,
+	"run_tests":      helperRunTests,
+	"iter":           helperIter,
+	"div":            helperDiv,
+	"add":            helperAdd,
+	"eq":             helperEq,
+	"contains":       helperContains,
+	"input":          helperInput,
+	"count":          helperCount,
+	"avg":            helperAvg,
+	"sum":            helperSum,
+	"min":            helperMin,
+	"max":            helperMax,
+	"concat":         helperConcat,
+	"append":         helperAppend,
+	"reduce":         helperReduce,
+	"json":           helperJson,
+	"eval":           helperEval,
+	"index":          helperIndex,
+	"indexString":    helperIndexString,
+	"slice":          helperSlice,
+	"reverse_string": helperReverseString,
+	"reverse_list":   helperReverseList,
+	"union_all":      helperUnionAll,
+	"union":          helperUnion,
+	"except":         helperExcept,
+	"intersect":      helperIntersect,
+	"gen_text":       helperGenText,
+	"gen_embed":      helperGenEmbed,
+	"gen_struct":     helperGenStruct,
+	"fetch":          helperFetch,
+	"load":           helperLoad,
+	"save":           helperSave,
+	"_Group":         helperGroup,
+	"_group_by":      helperGroupBy,
+	"query":          helperQuery,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
