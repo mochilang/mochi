@@ -2042,10 +2042,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if group {
 			b.WriteString(indent + "const _key = " + keyExpr + ";\n")
-			b.WriteString(indent + "const _ks = String(_key);\n")
+			b.WriteString(indent + "const _ks = JSON.stringify(_key);\n")
 			b.WriteString(indent + "let _g = _map.get(_ks);\n")
 			b.WriteString(indent + "if (!_g) { _g = { key: _key, items: [] }; _map.set(_ks, _g); _order.push(_ks); }\n")
-			b.WriteString(indent + "_g.items.push(" + sanitizeName(q.Var) + ");\n")
+			b.WriteString(indent + "_g.items.push({")
+			parts := []string{}
+			vars := []string{sanitizeName(q.Var)}
+			for _, f := range q.Froms {
+				vars = append(vars, sanitizeName(f.Var))
+			}
+			for _, j := range q.Joins {
+				vars = append(vars, sanitizeName(j.Var))
+			}
+			for _, v := range vars {
+				parts = append(parts, "..."+v)
+			}
+			for _, v := range vars {
+				parts = append(parts, v+": "+v)
+			}
+			b.WriteString(strings.Join(parts, ", "))
+			b.WriteString("});\n")
 		} else if simple {
 			b.WriteString(indent + "_res.push(" + val + ")\n")
 		} else {
@@ -2309,10 +2325,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\tfor (const _r of _items) {\n")
 		b.WriteString("\t\tconst [" + allParams + "] = _r;\n")
 		b.WriteString("\t\tconst _key = " + keyExpr + ";\n")
-		b.WriteString("\t\tconst _ks = String(_key);\n")
+		b.WriteString("\t\tconst _ks = JSON.stringify(_key);\n")
 		b.WriteString("\t\tlet _g = _map.get(_ks);\n")
 		b.WriteString("\t\tif (!_g) { _g = { key: _key, items: [] }; _map.set(_ks, _g); _order.push(_ks); }\n")
-		b.WriteString("\t\t_g.items.push(" + sanitizeName(q.Var) + ");\n")
+		b.WriteString("\t\t_g.items.push({")
+		parts := []string{}
+		vars := []string{sanitizeName(q.Var)}
+		for _, f := range q.Froms {
+			vars = append(vars, sanitizeName(f.Var))
+		}
+		for _, j := range q.Joins {
+			vars = append(vars, sanitizeName(j.Var))
+		}
+		for _, v := range vars {
+			parts = append(parts, "..."+v)
+		}
+		for _, v := range vars {
+			parts = append(parts, v+": "+v)
+		}
+		b.WriteString(strings.Join(parts, ", "))
+		b.WriteString("});\n")
 		b.WriteString("\t}\n")
 		b.WriteString("\tlet _itemsG = _order.map(k => _map.get(k)!);\n")
 		if sortExpr != "" {

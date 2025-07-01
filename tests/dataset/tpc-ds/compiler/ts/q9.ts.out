@@ -5,17 +5,53 @@ let bucket2: number;
 let bucket3: number;
 let bucket4: number;
 let bucket5: number;
-let reason: Array<any>;
+let reason: Array<Record<string, number>>;
 let result: Array<Record<string, number>>;
-let store_sales: Array<any>;
+let store_sales: Array<Record<string, any>>;
 
-function test_TPCDS_Q9_empty(): void {
-  if (!(result.length == 0)) throw new Error("expect failed");
+function test_TPCDS_Q9_result(): void {
+  if (
+    !(_equal(result, [
+      {
+        "bucket1": 7,
+        "bucket2": 15,
+        "bucket3": 30,
+        "bucket4": 35,
+        "bucket5": 50,
+      },
+    ]))
+  ) throw new Error("expect failed");
 }
 
 function main(): void {
-  store_sales = [];
-  reason = [];
+  store_sales = [
+    {
+      "ss_quantity": 5,
+      "ss_ext_discount_amt": 5,
+      "ss_net_paid": 7,
+    },
+    {
+      "ss_quantity": 30,
+      "ss_ext_discount_amt": 10,
+      "ss_net_paid": 15,
+    },
+    {
+      "ss_quantity": 50,
+      "ss_ext_discount_amt": 20,
+      "ss_net_paid": 30,
+    },
+    {
+      "ss_quantity": 70,
+      "ss_ext_discount_amt": 25,
+      "ss_net_paid": 35,
+    },
+    {
+      "ss_quantity": 90,
+      "ss_ext_discount_amt": 40,
+      "ss_net_paid": 50,
+    },
+  ];
+  reason = [{ "r_reason_sk": 1 }];
   bucket1 =
     (_count(
         store_sales.filter(
@@ -96,7 +132,7 @@ function main(): void {
           (s) => ((s.ss_quantity >= 81) && (s.ss_quantity <= 100))
         ).map((s) => s.ss_net_paid),
       );
-  result = reason.filter((r) => (_equal(r.r_reason_sk, 1))).map((r) => ({
+  result = reason.filter((r) => (r.r_reason_sk == 1)).map((r) => ({
     "bucket1": bucket1,
     "bucket2": bucket2,
     "bucket3": bucket3,
@@ -104,7 +140,7 @@ function main(): void {
     "bucket5": bucket5,
   }));
   console.log(_json(result));
-  test_TPCDS_Q9_empty();
+  test_TPCDS_Q9_result();
 }
 function _avg(v: any): number {
   let list: any[] | null = null;
