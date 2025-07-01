@@ -1,3 +1,5 @@
+//go:build slow
+
 package plcode_test
 
 import (
