@@ -243,6 +243,16 @@ end`
   chars[start...finish].join
 end`
 
+	helperReverse = `def _reverse(obj)
+  if obj.is_a?(Array)
+    obj.reverse
+  elsif obj.is_a?(String)
+    obj.reverse
+  else
+    raise 'reverse expects list or string'
+  end
+end`
+
 	helperGroup = `class MGroup
   include Enumerable
   attr_accessor :key, :Items
@@ -417,6 +427,7 @@ var helperMap = map[string]string{
 	"_query":       helperQuery,
 	"_indexString": helperIndexString,
 	"_sliceString": helperSliceString,
+	"_reverse":     helperReverse,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }

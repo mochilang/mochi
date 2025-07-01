@@ -1292,6 +1292,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return q, nil
+	case p.If != nil:
+		v, err := c.compileIfExpr(p.If)
+		if err != nil {
+			return "", err
+		}
+		return v, nil
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
 	case p.Fetch != nil:
@@ -1440,6 +1446,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "false", nil
 	case l.Str != nil:
 		return strconv.Quote(*l.Str), nil
+	case l.Null:
+		return "nil", nil
 	default:
 		return "", fmt.Errorf("unknown literal")
 	}
@@ -1510,6 +1518,32 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	}
 	b.WriteString("\telse\n\t\tnil\n\tend\nend)")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "nil"
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
@@ -1590,6 +1624,27 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 			return "", true, fmt.Errorf("%s expects 1 arg", name)
 		}
 		return fmt.Sprintf("(%s).length", args[0]), true, nil
+	case "concat":
+		if len(args) == 0 {
+			return "[]", true, nil
+		}
+		expr := args[0]
+		for _, a := range args[1:] {
+			expr = fmt.Sprintf("(%s + %s)", expr, a)
+		}
+		return expr, true, nil
+	case "substr", "substring":
+		if len(args) != 3 {
+			return "", true, fmt.Errorf("substr expects 3 args")
+		}
+		c.use("_sliceString")
+		return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], args[2]), true, nil
+	case "reverse":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("reverse expects 1 arg")
+		}
+		c.use("_reverse")
+		return fmt.Sprintf("_reverse(%s)", args[0]), true, nil
 	case "str":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("str expects 1 arg")

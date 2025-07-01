@@ -1,6 +1,6 @@
 # Ruby Backend Tasks
 
-The Ruby backend now supports running the TPCH `q1` and `q2` examples, the first ten JOB queries and the TPCDS `q1` query. Generated code and runtime output for JOB `q1` through `q10` are checked in under `tests/dataset/job/compiler/rb`, TPCH output for `q1` and `q2` under `tests/dataset/tpc-h/compiler/rb` and TPCDS output for `q1` under `tests/dataset/tpc-ds/compiler/rb`.
+The Ruby backend now supports running the TPCH `q1` and `q2` examples, the first ten JOB queries and the TPCDS `q1` through `q9` queries. Generated code and runtime output for JOB `q1` through `q10` are checked in under `tests/dataset/job/compiler/rb`, TPCH output for `q1` and `q2` under `tests/dataset/tpc-h/compiler/rb` and TPCDS output for `q1` through `q9` under `tests/dataset/tpc-ds/compiler/rb`.
 
 Implemented features:
 - Grouping and query helpers via `_group_by` and `_query`.

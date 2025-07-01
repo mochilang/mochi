@@ -1,0 +1,37 @@
+def _json(v)
+  require "json"
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end
+
+def _reverse(obj)
+  if obj.is_a?(Array)
+    obj.reverse
+  elsif obj.is_a?(String)
+    obj.reverse
+  else
+    raise "reverse expects list or string"
+  end
+end
+
+def _sliceString(s, i, j)
+  start = i
+  finish = j
+  chars = s.chars
+  n = chars.length
+  start += n if start < 0
+  finish += n if finish < 0
+  start = 0 if start < 0
+  finish = n if finish > n
+  finish = start if finish < start
+  chars[start...finish].join
+end
+_reverse(_sliceString("zip", 0, 2))
+result = []
+_json(result)
+raise "expect failed" unless result.length == 0

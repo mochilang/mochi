@@ -1,0 +1,43 @@
+require "ostruct"
+
+def _json(v)
+  require "json"
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end
+
+store_sales = []
+reason = []
+bucket1 = (if ((store_sales.select { |s| (s.ss_quantity >= 1) && (s.ss_quantity <= 20) }).map { |s| s }).length > 10
+             (((store_sales.select { |s| (s.ss_quantity >= 1) && (s.ss_quantity <= 20) }).map { |s| s.ss_ext_discount_amt }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 1) && (s.ss_quantity <= 20) }).map { |s| s.ss_ext_discount_amt }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 1) && (s.ss_quantity <= 20) }).map { |s| s.ss_ext_discount_amt }).length : 0
+           else
+             ((((store_sales.select { |s| (s.ss_quantity >= 1) && (s.ss_quantity <= 20) }).map { |s| s.ss_net_paid }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 1) && (s.ss_quantity <= 20) }).map { |s| s.ss_net_paid }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 1) && (s.ss_quantity <= 20) }).map { |s| s.ss_net_paid }).length : 0)
+end)
+bucket2 = (if ((store_sales.select { |s| (s.ss_quantity >= 21) && (s.ss_quantity <= 40) }).map { |s| s }).length > 20
+             (((store_sales.select { |s| (s.ss_quantity >= 21) && (s.ss_quantity <= 40) }).map { |s| s.ss_ext_discount_amt }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 21) && (s.ss_quantity <= 40) }).map { |s| s.ss_ext_discount_amt }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 21) && (s.ss_quantity <= 40) }).map { |s| s.ss_ext_discount_amt }).length : 0
+           else
+             ((((store_sales.select { |s| (s.ss_quantity >= 21) && (s.ss_quantity <= 40) }).map { |s| s.ss_net_paid }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 21) && (s.ss_quantity <= 40) }).map { |s| s.ss_net_paid }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 21) && (s.ss_quantity <= 40) }).map { |s| s.ss_net_paid }).length : 0)
+end)
+bucket3 = (if ((store_sales.select { |s| (s.ss_quantity >= 41) && (s.ss_quantity <= 60) }).map { |s| s }).length > 30
+             (((store_sales.select { |s| (s.ss_quantity >= 41) && (s.ss_quantity <= 60) }).map { |s| s.ss_ext_discount_amt }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 41) && (s.ss_quantity <= 60) }).map { |s| s.ss_ext_discount_amt }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 41) && (s.ss_quantity <= 60) }).map { |s| s.ss_ext_discount_amt }).length : 0
+           else
+             ((((store_sales.select { |s| (s.ss_quantity >= 41) && (s.ss_quantity <= 60) }).map { |s| s.ss_net_paid }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 41) && (s.ss_quantity <= 60) }).map { |s| s.ss_net_paid }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 41) && (s.ss_quantity <= 60) }).map { |s| s.ss_net_paid }).length : 0)
+end)
+bucket4 = (if ((store_sales.select { |s| (s.ss_quantity >= 61) && (s.ss_quantity <= 80) }).map { |s| s }).length > 40
+             (((store_sales.select { |s| (s.ss_quantity >= 61) && (s.ss_quantity <= 80) }).map { |s| s.ss_ext_discount_amt }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 61) && (s.ss_quantity <= 80) }).map { |s| s.ss_ext_discount_amt }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 61) && (s.ss_quantity <= 80) }).map { |s| s.ss_ext_discount_amt }).length : 0
+           else
+             ((((store_sales.select { |s| (s.ss_quantity >= 61) && (s.ss_quantity <= 80) }).map { |s| s.ss_net_paid }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 61) && (s.ss_quantity <= 80) }).map { |s| s.ss_net_paid }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 61) && (s.ss_quantity <= 80) }).map { |s| s.ss_net_paid }).length : 0)
+end)
+bucket5 = (if ((store_sales.select { |s| (s.ss_quantity >= 81) && (s.ss_quantity <= 100) }).map { |s| s }).length > 50
+             (((store_sales.select { |s| (s.ss_quantity >= 81) && (s.ss_quantity <= 100) }).map { |s| s.ss_ext_discount_amt }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 81) && (s.ss_quantity <= 100) }).map { |s| s.ss_ext_discount_amt }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 81) && (s.ss_quantity <= 100) }).map { |s| s.ss_ext_discount_amt }).length : 0
+           else
+             ((((store_sales.select { |s| (s.ss_quantity >= 81) && (s.ss_quantity <= 100) }).map { |s| s.ss_net_paid }).length > 0) ? ((store_sales.select { |s| (s.ss_quantity >= 81) && (s.ss_quantity <= 100) }).map { |s| s.ss_net_paid }).sum(0.0) / ((store_sales.select { |s| (s.ss_quantity >= 81) && (s.ss_quantity <= 100) }).map { |s| s.ss_net_paid }).length : 0)
+end)
+result = (reason.select { |r| (r.r_reason_sk == 1) }).map { |r| OpenStruct.new(bucket1: bucket1, bucket2: bucket2, bucket3: bucket3, bucket4: bucket4, bucket5: bucket5) }
+_json(result)
+raise "expect failed" unless result.length == 0
