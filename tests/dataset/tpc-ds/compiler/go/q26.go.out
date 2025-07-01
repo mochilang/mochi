@@ -1,0 +1,429 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+type CatalogSale struct {
+	Cs_sold_date_sk  int     `json:"cs_sold_date_sk"`
+	Cs_item_sk       int     `json:"cs_item_sk"`
+	Cs_bill_cdemo_sk int     `json:"cs_bill_cdemo_sk"`
+	Cs_promo_sk      int     `json:"cs_promo_sk"`
+	Cs_quantity      int     `json:"cs_quantity"`
+	Cs_list_price    float64 `json:"cs_list_price"`
+	Cs_coupon_amt    float64 `json:"cs_coupon_amt"`
+	Cs_sales_price   float64 `json:"cs_sales_price"`
+}
+
+type CustomerDemo struct {
+	Cd_demo_sk          int    `json:"cd_demo_sk"`
+	Cd_gender           string `json:"cd_gender"`
+	Cd_marital_status   string `json:"cd_marital_status"`
+	Cd_education_status string `json:"cd_education_status"`
+}
+
+type DateDim struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+}
+
+type Item struct {
+	I_item_sk int    `json:"i_item_sk"`
+	I_item_id string `json:"i_item_id"`
+}
+
+type Promotion struct {
+	P_promo_sk      int    `json:"p_promo_sk"`
+	P_channel_email string `json:"p_channel_email"`
+	P_channel_event string `json:"p_channel_event"`
+}
+
+func test_TPCDS_Q26_demographic_averages() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"i_item_id": "ITEM1",
+		"agg1":      10.0,
+		"agg2":      100.0,
+		"agg3":      5.0,
+		"agg4":      95.0,
+	}}))
+}
+
+type Catalog_salesItem struct {
+	Cs_sold_date_sk  int     `json:"cs_sold_date_sk"`
+	Cs_item_sk       int     `json:"cs_item_sk"`
+	Cs_bill_cdemo_sk int     `json:"cs_bill_cdemo_sk"`
+	Cs_promo_sk      int     `json:"cs_promo_sk"`
+	Cs_quantity      int     `json:"cs_quantity"`
+	Cs_list_price    float64 `json:"cs_list_price"`
+	Cs_coupon_amt    float64 `json:"cs_coupon_amt"`
+	Cs_sales_price   float64 `json:"cs_sales_price"`
+}
+
+var catalog_sales []Catalog_salesItem
+
+type Customer_demographicsItem struct {
+	Cd_demo_sk          int    `json:"cd_demo_sk"`
+	Cd_gender           string `json:"cd_gender"`
+	Cd_marital_status   string `json:"cd_marital_status"`
+	Cd_education_status string `json:"cd_education_status"`
+}
+
+var customer_demographics []Customer_demographicsItem
+
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+}
+
+var date_dim []Date_dimItem
+
+type ItemItem struct {
+	I_item_sk int    `json:"i_item_sk"`
+	I_item_id string `json:"i_item_id"`
+}
+
+var item []ItemItem
+
+type PromotionItem struct {
+	P_promo_sk      int    `json:"p_promo_sk"`
+	P_channel_email string `json:"p_channel_email"`
+	P_channel_event string `json:"p_channel_event"`
+}
+
+var promotion []PromotionItem
+var result []map[string]any
+
+func main() {
+	failures := 0
+	catalog_sales = _cast[[]Catalog_salesItem]([]Catalog_salesItem{Catalog_salesItem{
+		Cs_sold_date_sk:  1,
+		Cs_item_sk:       1,
+		Cs_bill_cdemo_sk: 1,
+		Cs_promo_sk:      1,
+		Cs_quantity:      10,
+		Cs_list_price:    100.0,
+		Cs_coupon_amt:    5.0,
+		Cs_sales_price:   95.0,
+	}, Catalog_salesItem{
+		Cs_sold_date_sk:  1,
+		Cs_item_sk:       2,
+		Cs_bill_cdemo_sk: 2,
+		Cs_promo_sk:      2,
+		Cs_quantity:      5,
+		Cs_list_price:    50.0,
+		Cs_coupon_amt:    2.0,
+		Cs_sales_price:   48.0,
+	}})
+	customer_demographics = _cast[[]Customer_demographicsItem]([]Customer_demographicsItem{Customer_demographicsItem{
+		Cd_demo_sk:          1,
+		Cd_gender:           "M",
+		Cd_marital_status:   "S",
+		Cd_education_status: "College",
+	}, Customer_demographicsItem{
+		Cd_demo_sk:          2,
+		Cd_gender:           "F",
+		Cd_marital_status:   "M",
+		Cd_education_status: "High School",
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_year:    2000,
+	}})
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
+		I_item_sk: 1,
+		I_item_id: "ITEM1",
+	}, ItemItem{
+		I_item_sk: 2,
+		I_item_id: "ITEM2",
+	}})
+	promotion = _cast[[]PromotionItem]([]PromotionItem{PromotionItem{
+		P_promo_sk:      1,
+		P_channel_email: "N",
+		P_channel_event: "Y",
+	}, PromotionItem{
+		P_promo_sk:      2,
+		P_channel_email: "Y",
+		P_channel_event: "N",
+	}})
+	result = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, cs := range catalog_sales {
+			for _, cd := range customer_demographics {
+				if !(cs.Cs_bill_cdemo_sk == cd.Cd_demo_sk) {
+					continue
+				}
+				for _, d := range date_dim {
+					if !(cs.Cs_sold_date_sk == d.D_date_sk) {
+						continue
+					}
+					for _, i := range item {
+						if !(cs.Cs_item_sk == i.I_item_sk) {
+							continue
+						}
+						for _, p := range promotion {
+							if !(cs.Cs_promo_sk == p.P_promo_sk) {
+								continue
+							}
+							if ((((cd.Cd_gender == "M") && (cd.Cd_marital_status == "S")) && (cd.Cd_education_status == "College")) && ((p.P_channel_email == "N") || (p.P_channel_event == "N"))) && (d.D_year == 2000) {
+								key := i.I_item_id
+								ks := fmt.Sprint(key)
+								g, ok := groups[ks]
+								if !ok {
+									g = &data.Group{Key: key}
+									groups[ks] = g
+									order = append(order, ks)
+								}
+								g.Items = append(g.Items, cs)
+							}
+						}
+					}
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"i_item_id": g.Key,
+				"agg1": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["cs_quantity"])
+					}
+					return _res
+				}()),
+				"agg2": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["cs_list_price"])
+					}
+					return _res
+				}()),
+				"agg3": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["cs_coupon_amt"])
+					}
+					return _res
+				}()),
+				"agg4": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["cs_sales_price"])
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q26 demographic averages")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q26_demographic_averages()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _avg(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []bool:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		default:
+			panic("avg() expects list or group")
+		}
+	}
+	if len(items) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("avg() expects numbers")
+		}
+	}
+	return sum / float64(len(items))
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
