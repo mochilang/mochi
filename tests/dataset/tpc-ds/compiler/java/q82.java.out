@@ -1,0 +1,50 @@
+public class Main {
+  static void test_TPCDS_Q82_sample() {
+    expect((result == 82));
+  }
+
+  static Object[] item =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("id", 1)),
+        new java.util.HashMap<>(java.util.Map.of("id", 2)),
+        new java.util.HashMap<>(java.util.Map.of("id", 3))
+      };
+
+  static Object[] inventory =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("item", 1, "qty", 20)),
+        new java.util.HashMap<>(java.util.Map.of("item", 1, "qty", 22)),
+        new java.util.HashMap<>(java.util.Map.of("item", 1, "qty", 5)),
+        new java.util.HashMap<>(java.util.Map.of("item", 2, "qty", 30)),
+        new java.util.HashMap<>(java.util.Map.of("item", 2, "qty", 5)),
+        new java.util.HashMap<>(java.util.Map.of("item", 3, "qty", 10))
+      };
+
+  static Object[] store_sales =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("item", 1)),
+        new java.util.HashMap<>(java.util.Map.of("item", 2))
+      };
+
+  static int result = 0;
+
+  public static void main(String[] args) {
+    test_TPCDS_Q82_sample();
+    for (var inv : inventory) {
+      for (var s : store_sales) {
+        if ((inv.get("item") == s.get("item"))) {
+          result = (result + inv.get("qty"));
+        }
+      }
+    }
+    _json(result);
+  }
+
+  static void expect(boolean cond) {
+    if (!cond) throw new RuntimeException("expect failed");
+  }
+
+  static void _json(Object v) {
+    System.out.println(_toJson(v));
+  }
+}
