@@ -1,0 +1,15 @@
+<?php
+function mochi_test_TPCDS_Q8_empty() {
+	global $result;
+	if (!(((is_array($result) ? count($result) : strlen($result)) == 0))) { throw new Exception('expect failed'); }
+}
+
+$store_sales = [];
+$date_dim = [];
+$store = [];
+$customer_address = [];
+$customer = [];
+(is_array(substr("zip", 0, 2)) ? array_reverse(substr("zip", 0, 2)) : (is_string(substr("zip", 0, 2)) ? strrev(substr("zip", 0, 2)) : null));
+$result = [];
+echo json_encode($result), PHP_EOL;
+mochi_test_TPCDS_Q8_empty();
