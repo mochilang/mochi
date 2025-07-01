@@ -1554,7 +1554,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			elems = append(elems, ce)
 		}
 		if len(elems) == 0 {
-			return "listOf()", nil
+			return "listOf<Any?>()", nil
 		}
 		return "listOf(" + joinArgs(elems) + ")", nil
 	case p.Map != nil:
@@ -1584,6 +1584,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		expr := sanitizeName(p.Selector.Root)
 		if len(p.Selector.Tail) == 0 {
 			return expr, nil
+		}
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			switch t.(type) {
+			case types.StructType, types.GroupType, types.UnionType:
+				for _, f := range p.Selector.Tail {
+					expr += "." + sanitizeName(f)
+				}
+				return expr, nil
+			}
 		}
 		for i, f := range p.Selector.Tail {
 			if i == len(p.Selector.Tail)-1 && len(p.Selector.Tail) > 1 {
