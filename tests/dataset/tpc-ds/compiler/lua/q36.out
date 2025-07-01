@@ -1,2 +1,2 @@
-[{"i_class":"C1","gross_margin":0.2,"i_category":"Books"},{"i_class":"C2","gross_margin":0.25,"i_category":"Books"},{"i_class":"C3","gross_margin":0.2,"i_category":"Electronics"}]
-   test TPCDS Q36 simplified ... ok (9.0µs)
+[{"gross_margin":0.2,"i_category":"Books","i_class":"C1"},{"gross_margin":0.25,"i_category":"Books","i_class":"C2"},{"gross_margin":0.2,"i_category":"Electronics","i_class":"C3"}]
+   test TPCDS Q36 simplified ... ok (8.0µs)

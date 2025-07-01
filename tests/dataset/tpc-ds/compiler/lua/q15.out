@@ -1,2 +1,2 @@
-[{"ca_zip":"85669","sum_sales":600}]
-   test TPCDS Q15 zip ... ok (4.0µs)
+[{"sum_sales":600,"ca_zip":"85669"}]
+   test TPCDS Q15 zip ... ok (5.0µs)
