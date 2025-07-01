@@ -1,0 +1,42 @@
+Smalltalk at: #all_sales put: nil.
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #web_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q60_simplified
+	((result = 60)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__union_all: a with: b
+	| out |
+	out := OrderedCollection new.
+	a ifNotNil: [ a do: [:v | out add: v ] ].
+	b ifNotNil: [ b do: [:v | out add: v ] ].
+	^ out asArray
+!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+!!
+store_sales := Array with: (Dictionary from: {'item' -> 1. 'price' -> 10}) with: (Dictionary from: {'item' -> 1. 'price' -> 20}).
+catalog_sales := Array with: (Dictionary from: {'item' -> 1. 'price' -> 15}).
+web_sales := Array with: (Dictionary from: {'item' -> 1. 'price' -> 15}).
+all_sales := (Main __union_all: ((Main __union_all: (store_sales) with: (catalog_sales))) with: (web_sales)).
+result := (Main __sum: ((| res |
+res := OrderedCollection new.
+(all_sales) do: [:s |
+	res add: s at: 'price'.
+]
+res := res asArray.
+res))).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q60_simplified.

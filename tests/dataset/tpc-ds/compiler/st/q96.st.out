@@ -1,0 +1,68 @@
+Smalltalk at: #household_demographics put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #time_dim put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newStoreSale: ss_sold_time_sk ss_hdemo_sk: ss_hdemo_sk ss_store_sk: ss_store_sk | dict |
+	dict := Dictionary new.
+	dict at: 'ss_sold_time_sk' put: ss_sold_time_sk.
+	dict at: 'ss_hdemo_sk' put: ss_hdemo_sk.
+	dict at: 'ss_store_sk' put: ss_store_sk.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newHouseholdDemographics: hd_demo_sk hd_dep_count: hd_dep_count | dict |
+	dict := Dictionary new.
+	dict at: 'hd_demo_sk' put: hd_demo_sk.
+	dict at: 'hd_dep_count' put: hd_dep_count.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newTimeDim: t_time_sk t_hour: t_hour t_minute: t_minute | dict |
+	dict := Dictionary new.
+	dict at: 't_time_sk' put: t_time_sk.
+	dict at: 't_hour' put: t_hour.
+	dict at: 't_minute' put: t_minute.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newStore: s_store_sk s_store_name: s_store_name | dict |
+	dict := Dictionary new.
+	dict at: 's_store_sk' put: s_store_sk.
+	dict at: 's_store_name' put: s_store_name.
+	^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q96_count
+	((result = 3)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__count: v
+	(v respondsTo: #size) ifTrue: [ ^ v size ]
+	^ self error: 'count() expects collection'
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_sold_time_sk' -> 1. 'ss_hdemo_sk' -> 1. 'ss_store_sk' -> 1}) with: (Dictionary from: {'ss_sold_time_sk' -> 1. 'ss_hdemo_sk' -> 1. 'ss_store_sk' -> 1}) with: (Dictionary from: {'ss_sold_time_sk' -> 2. 'ss_hdemo_sk' -> 1. 'ss_store_sk' -> 1}).
+household_demographics := Array with: (Dictionary from: {'hd_demo_sk' -> 1. 'hd_dep_count' -> 3}).
+time_dim := Array with: (Dictionary from: {'t_time_sk' -> 1. 't_hour' -> 20. 't_minute' -> 35}) with: (Dictionary from: {'t_time_sk' -> 2. 't_hour' -> 20. 't_minute' -> 45}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1. 's_store_name' -> 'ese'}).
+result := (Main __count: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | ((((((((((t at: 't_hour' = 20) and: [t at: 't_minute']) >= 30) and: [hd at: 'hd_dep_count']) = 3) and: [s at: 's_store_name']) = 'ese') and: [(ss at: 'ss_hdemo_sk' = hd at: 'hd_demo_sk')]) and: [(ss at: 'ss_sold_time_sk' = t at: 't_time_sk')]) and: [(ss at: 'ss_store_sk' = s at: 's_store_sk')])]) do: [:ss |
+	(household_demographics) do: [:hd |
+		(time_dim) do: [:t |
+			(store) do: [:s |
+				res add: ss.
+			]
+		]
+	]
+]
+res := res asArray.
+res))).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q96_count.

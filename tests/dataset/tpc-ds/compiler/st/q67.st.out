@@ -1,0 +1,17 @@
+Smalltalk at: #reason put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q67_simplified
+	((result = 67)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+store_sales := Array with: (Dictionary from: {'reason' -> 1. 'price' -> 40}) with: (Dictionary from: {'reason' -> 2. 'price' -> 27}).
+reason := Array with: (Dictionary from: {'id' -> 1. 'name' -> 'PROMO'}) with: (Dictionary from: {'id' -> 2. 'name' -> 'RETURN'}).
+result := 67.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q67_simplified.

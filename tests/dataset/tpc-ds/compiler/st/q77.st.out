@@ -1,0 +1,280 @@
+Smalltalk at: #catalog_returns put: nil.
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #cr put: nil.
+Smalltalk at: #cs put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #per_channel put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #sr put: nil.
+Smalltalk at: #ss put: nil.
+Smalltalk at: #store_returns put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #web_returns put: nil.
+Smalltalk at: #web_sales put: nil.
+Smalltalk at: #wr put: nil.
+Smalltalk at: #ws put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q77_simplified
+	((result = Array with: (Dictionary from: {'channel' -> 'catalog channel'. 'id' -> 1. 'sales' -> 150.000000. 'returns' -> 7.000000. 'profit' -> 12.000000}) with: (Dictionary from: {'channel' -> 'store channel'. 'id' -> 1. 'sales' -> 100.000000. 'returns' -> 5.000000. 'profit' -> 9.000000}) with: (Dictionary from: {'channel' -> 'web channel'. 'id' -> 1. 'sales' -> 200.000000. 'returns' -> 10.000000. 'profit' -> 18.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+	g := self new.
+	g key: k.
+	g initialize.
+	^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+	items := OrderedCollection new.
+	^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+	^ key
+!
+key: k
+	key := k
+!
+add: it
+	items add: it
+!
+do: blk
+	items do: blk
+!
+size
+	^ items size
+!
+!Main class methodsFor: 'runtime'!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+_group_by: src keyFn: blk
+	| groups order |
+	groups := Dictionary new.
+	order := OrderedCollection new.
+	src do: [:it |
+		| key ks g |
+		key := blk value: it.
+		ks := key printString.
+		g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+		g add: it.
+	]
+	^ order collect: [:k | groups at: k ]
+!
+!!
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_date' -> 1}).
+store_sales := Array with: (Dictionary from: {'ss_sold_date_sk' -> 1. 's_store_sk' -> 1. 'ss_ext_sales_price' -> 100.000000. 'ss_net_profit' -> 10.000000}).
+store_returns := Array with: (Dictionary from: {'sr_returned_date_sk' -> 1. 's_store_sk' -> 1. 'sr_return_amt' -> 5.000000. 'sr_net_loss' -> 1.000000}).
+catalog_sales := Array with: (Dictionary from: {'cs_sold_date_sk' -> 1. 'cs_call_center_sk' -> 1. 'cs_ext_sales_price' -> 150.000000. 'cs_net_profit' -> 15.000000}).
+catalog_returns := Array with: (Dictionary from: {'cr_returned_date_sk' -> 1. 'cr_call_center_sk' -> 1. 'cr_return_amount' -> 7.000000. 'cr_net_loss' -> 3.000000}).
+web_sales := Array with: (Dictionary from: {'ws_sold_date_sk' -> 1. 'ws_web_page_sk' -> 1. 'ws_ext_sales_price' -> 200.000000. 'ws_net_profit' -> 20.000000}).
+web_returns := Array with: (Dictionary from: {'wr_returned_date_sk' -> 1. 'wr_web_page_sk' -> 1. 'wr_return_amt' -> 10.000000. 'wr_net_loss' -> 2.000000}).
+ss := ((| rows groups |
+rows := OrderedCollection new.
+(store_sales) do: [:ss |
+	rows add: ss.
+]
+groups := (Main _group_by: rows keyFn: [:ss | ss at: 's_store_sk']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'s_store_sk' -> g at: 'key'. 'sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'ss' at: 'ss_ext_sales_price'.
+]
+res := res asArray.
+res))). 'profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'ss' at: 'ss_net_profit'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+sr := ((| rows groups |
+rows := OrderedCollection new.
+(store_returns) do: [:sr |
+	rows add: sr.
+]
+groups := (Main _group_by: rows keyFn: [:sr | sr at: 's_store_sk']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'s_store_sk' -> g at: 'key'. 'returns' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'sr' at: 'sr_return_amt'.
+]
+res := res asArray.
+res))). 'profit_loss' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'sr' at: 'sr_net_loss'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+cs := ((| rows groups |
+rows := OrderedCollection new.
+(catalog_sales) do: [:cs |
+	rows add: cs.
+]
+groups := (Main _group_by: rows keyFn: [:cs | cs at: 'cs_call_center_sk']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'cs_call_center_sk' -> g at: 'key'. 'sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'cs' at: 'cs_ext_sales_price'.
+]
+res := res asArray.
+res))). 'profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'cs' at: 'cs_net_profit'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+cr := ((| rows groups |
+rows := OrderedCollection new.
+(catalog_returns) do: [:cr |
+	rows add: cr.
+]
+groups := (Main _group_by: rows keyFn: [:cr | cr at: 'cr_call_center_sk']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'cr_call_center_sk' -> g at: 'key'. 'returns' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'cr' at: 'cr_return_amount'.
+]
+res := res asArray.
+res))). 'profit_loss' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'cr' at: 'cr_net_loss'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+ws := ((| rows groups |
+rows := OrderedCollection new.
+(web_sales) do: [:ws |
+	rows add: ws.
+]
+groups := (Main _group_by: rows keyFn: [:ws | ws at: 'ws_web_page_sk']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'wp_web_page_sk' -> g at: 'key'. 'sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'ws' at: 'ws_ext_sales_price'.
+]
+res := res asArray.
+res))). 'profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'ws' at: 'ws_net_profit'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+wr := ((| rows groups |
+rows := OrderedCollection new.
+(web_returns) do: [:wr |
+	rows add: wr.
+]
+groups := (Main _group_by: rows keyFn: [:wr | wr at: 'wr_web_page_sk']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'wp_web_page_sk' -> g at: 'key'. 'returns' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'wr' at: 'wr_return_amt'.
+]
+res := res asArray.
+res))). 'profit_loss' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'wr' at: 'wr_net_loss'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+per_channel := concat value: ((| res |
+res := OrderedCollection new.
+((ss) select: [:s | (s at: 's_store_sk' = r at: 's_store_sk')]) do: [:s |
+	(sr) do: [:r |
+		res add: Dictionary from: {'channel' -> 'store channel'. 'id' -> s at: 's_store_sk'. 'sales' -> s at: 'sales'. 'returns' -> (((r = nil)) ifTrue: [0.000000] ifFalse: [r at: 'returns']). 'profit' -> (s at: 'profit' - ((((r = nil)) ifTrue: [0.000000] ifFalse: [r at: 'profit_loss'])))}.
+	]
+]
+res := res asArray.
+res)) value: ((| res |
+res := OrderedCollection new.
+((cs) select: [:c | (c at: 'cs_call_center_sk' = r at: 'cr_call_center_sk')]) do: [:c |
+	(cr) do: [:r |
+		res add: Dictionary from: {'channel' -> 'catalog channel'. 'id' -> c at: 'cs_call_center_sk'. 'sales' -> c at: 'sales'. 'returns' -> r at: 'returns'. 'profit' -> (c at: 'profit' - r at: 'profit_loss')}.
+	]
+]
+res := res asArray.
+res)) value: ((| res |
+res := OrderedCollection new.
+((ws) select: [:w | (w at: 'wp_web_page_sk' = r at: 'wp_web_page_sk')]) do: [:w |
+	(wr) do: [:r |
+		res add: Dictionary from: {'channel' -> 'web channel'. 'id' -> w at: 'wp_web_page_sk'. 'sales' -> w at: 'sales'. 'returns' -> (((r = nil)) ifTrue: [0.000000] ifFalse: [r at: 'returns']). 'profit' -> (w at: 'profit' - ((((r = nil)) ifTrue: [0.000000] ifFalse: [r at: 'profit_loss'])))}.
+	]
+]
+res := res asArray.
+res)).
+result := ((| res |
+res := OrderedCollection new.
+(per_channel) do: [:p |
+	res add: { g at: 'key' at: 'channel' . Dictionary from: {'channel' -> g at: 'key' at: 'channel'. 'id' -> g at: 'key' at: 'id'. 'sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'p' at: 'sales'.
+]
+res := res asArray.
+res))). 'returns' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'p' at: 'returns'.
+]
+res := res asArray.
+res))). 'profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'p' at: 'profit'.
+]
+res := res asArray.
+res)))} }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q77_simplified.

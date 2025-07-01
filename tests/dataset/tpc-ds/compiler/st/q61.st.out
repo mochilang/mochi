@@ -1,0 +1,39 @@
+Smalltalk at: #promotions put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #sales put: nil.
+Smalltalk at: #total put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q61_simplified
+	((result = 61)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+!!
+sales := Array with: (Dictionary from: {'promo' -> true. 'price' -> 20}) with: (Dictionary from: {'promo' -> true. 'price' -> 41}) with: (Dictionary from: {'promo' -> false. 'price' -> 39}).
+promotions := (Main __sum: ((| res |
+res := OrderedCollection new.
+((sales) select: [:s | s at: 'promo']) do: [:s |
+	res add: s at: 'price'.
+]
+res := res asArray.
+res))).
+total := (Main __sum: ((| res |
+res := OrderedCollection new.
+(sales) do: [:s |
+	res add: s at: 'price'.
+]
+res := res asArray.
+res))).
+result := ((promotions * 100) / total).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q61_simplified.

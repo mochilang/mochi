@@ -1,0 +1,136 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #csci put: nil.
+Smalltalk at: #joined put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #ssci put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newStoreSale: ss_customer_sk ss_item_sk: ss_item_sk | dict |
+	dict := Dictionary new.
+	dict at: 'ss_customer_sk' put: ss_customer_sk.
+	dict at: 'ss_item_sk' put: ss_item_sk.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newCatalogSale: cs_bill_customer_sk cs_item_sk: cs_item_sk | dict |
+	dict := Dictionary new.
+	dict at: 'cs_bill_customer_sk' put: cs_bill_customer_sk.
+	dict at: 'cs_item_sk' put: cs_item_sk.
+	^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q97_overlap
+	((((((result at: 'store_only' = 1) and: [result at: 'catalog_only']) = 1) and: [result at: 'store_and_catalog']) = 1)) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+	g := self new.
+	g key: k.
+	g initialize.
+	^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+	items := OrderedCollection new.
+	^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+	^ key
+!
+key: k
+	key := k
+!
+add: it
+	items add: it
+!
+do: blk
+	items do: blk
+!
+size
+	^ items size
+!
+!Main class methodsFor: 'runtime'!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+_group_by: src keyFn: blk
+	| groups order |
+	groups := Dictionary new.
+	order := OrderedCollection new.
+	src do: [:it |
+		| key ks g |
+		key := blk value: it.
+		ks := key printString.
+		g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+		g add: it.
+	]
+	^ order collect: [:k | groups at: k ]
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_customer_sk' -> 1. 'ss_item_sk' -> 1}) with: (Dictionary from: {'ss_customer_sk' -> 2. 'ss_item_sk' -> 1}).
+catalog_sales := Array with: (Dictionary from: {'cs_bill_customer_sk' -> 1. 'cs_item_sk' -> 1}) with: (Dictionary from: {'cs_bill_customer_sk' -> 3. 'cs_item_sk' -> 2}).
+ssci := ((| rows groups |
+rows := OrderedCollection new.
+(store_sales) do: [:ss |
+	rows add: ss.
+]
+groups := (Main _group_by: rows keyFn: [:ss | Dictionary from: {'customer_sk' -> ss at: 'ss_customer_sk'. 'item_sk' -> ss at: 'ss_item_sk'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'customer_sk' -> g at: 'key' at: 'customer_sk'. 'item_sk' -> g at: 'key' at: 'item_sk'}.
+]
+rows := rows asArray.
+rows)).
+csci := ((| rows groups |
+rows := OrderedCollection new.
+(catalog_sales) do: [:cs |
+	rows add: cs.
+]
+groups := (Main _group_by: rows keyFn: [:cs | Dictionary from: {'customer_sk' -> cs at: 'cs_bill_customer_sk'. 'item_sk' -> cs at: 'cs_item_sk'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'customer_sk' -> g at: 'key' at: 'customer_sk'. 'item_sk' -> g at: 'key' at: 'item_sk'}.
+]
+rows := rows asArray.
+rows)).
+joined := ((| res |
+res := OrderedCollection new.
+((ssci) select: [:s | (((s at: 'customer_sk' = c at: 'customer_sk') and: [s at: 'item_sk']) = c at: 'item_sk')]) do: [:s |
+	(csci) do: [:c |
+		res add: Dictionary from: {'store_only' -> (((((s at: 'customer_sk' ~= nil) and: [c at: 'customer_sk']) = nil)) ifTrue: [1] ifFalse: [0]). 'catalog_only' -> (((((s at: 'customer_sk' = nil) and: [c at: 'customer_sk']) ~= nil)) ifTrue: [1] ifFalse: [0]). 'both' -> (((((s at: 'customer_sk' ~= nil) and: [c at: 'customer_sk']) ~= nil)) ifTrue: [1] ifFalse: [0])}.
+	]
+]
+res := res asArray.
+res)).
+result := Dictionary from: {'store_only' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(joined) do: [:x |
+	res add: x at: 'store_only'.
+]
+res := res asArray.
+res))). 'catalog_only' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(joined) do: [:x |
+	res add: x at: 'catalog_only'.
+]
+res := res asArray.
+res))). 'store_and_catalog' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(joined) do: [:x |
+	res add: x at: 'both'.
+]
+res := res asArray.
+res)))}.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q97_overlap.

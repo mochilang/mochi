@@ -1,0 +1,45 @@
+Smalltalk at: #cr_items put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #sr_items put: nil.
+Smalltalk at: #wr_items put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q83_sample
+	((result = 83)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+!!
+sr_items := Array with: (Dictionary from: {'qty' -> 10}) with: (Dictionary from: {'qty' -> 5}).
+cr_items := Array with: (Dictionary from: {'qty' -> 25}) with: (Dictionary from: {'qty' -> 20}).
+wr_items := Array with: (Dictionary from: {'qty' -> 10}) with: (Dictionary from: {'qty' -> 13}).
+result := (((Main __sum: ((| res |
+res := OrderedCollection new.
+(sr_items) do: [:x |
+	res add: x at: 'qty'.
+]
+res := res asArray.
+res))) + (Main __sum: ((| res |
+res := OrderedCollection new.
+(cr_items) do: [:x |
+	res add: x at: 'qty'.
+]
+res := res asArray.
+res)))) + (Main __sum: ((| res |
+res := OrderedCollection new.
+(wr_items) do: [:x |
+	res add: x at: 'qty'.
+]
+res := res asArray.
+res)))).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q83_sample.

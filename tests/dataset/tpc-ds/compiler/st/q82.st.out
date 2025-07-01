@@ -1,0 +1,29 @@
+Smalltalk at: #inventory put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q82_sample
+	((result = 82)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+item := Array with: (Dictionary from: {'id' -> 1}) with: (Dictionary from: {'id' -> 2}) with: (Dictionary from: {'id' -> 3}).
+inventory := Array with: (Dictionary from: {'item' -> 1. 'qty' -> 20}) with: (Dictionary from: {'item' -> 1. 'qty' -> 22}) with: (Dictionary from: {'item' -> 1. 'qty' -> 5}) with: (Dictionary from: {'item' -> 2. 'qty' -> 30}) with: (Dictionary from: {'item' -> 2. 'qty' -> 5}) with: (Dictionary from: {'item' -> 3. 'qty' -> 10}).
+store_sales := Array with: (Dictionary from: {'item' -> 1}) with: (Dictionary from: {'item' -> 2}).
+result := 0.
+(inventory) do: [:inv |
+	(store_sales) do: [:s |
+		((inv at: 'item' = s at: 'item')) ifTrue: [
+			result := (result + inv at: 'qty').
+		]
+		.
+	]
+	.
+]
+.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q82_sample.

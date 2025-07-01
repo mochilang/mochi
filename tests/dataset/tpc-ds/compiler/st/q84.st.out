@@ -1,0 +1,25 @@
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #customer_demographics put: nil.
+Smalltalk at: #customers put: nil.
+Smalltalk at: #household_demographics put: nil.
+Smalltalk at: #income_band put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_returns put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q84_sample
+	((result = 84)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+customers := Array with: (Dictionary from: {'id' -> 1. 'city' -> 'A'. 'cdemo' -> 1}) with: (Dictionary from: {'id' -> 2. 'city' -> 'A'. 'cdemo' -> 2}) with: (Dictionary from: {'id' -> 3. 'city' -> 'B'. 'cdemo' -> 1}).
+customer_demographics := Array with: (Dictionary from: {'cd_demo_sk' -> 1}) with: (Dictionary from: {'cd_demo_sk' -> 2}).
+household_demographics := Array with: (Dictionary from: {'hd_demo_sk' -> 1. 'income_band_sk' -> 1}) with: (Dictionary from: {'hd_demo_sk' -> 2. 'income_band_sk' -> 2}).
+income_band := Array with: (Dictionary from: {'ib_income_band_sk' -> 1. 'ib_lower_bound' -> 0. 'ib_upper_bound' -> 50000}) with: (Dictionary from: {'ib_income_band_sk' -> 2. 'ib_lower_bound' -> 50001. 'ib_upper_bound' -> 100000}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_city' -> 'A'}) with: (Dictionary from: {'ca_address_sk' -> 2. 'ca_city' -> 'B'}).
+store_returns := Array with: (Dictionary from: {'sr_cdemo_sk' -> 1}) with: (Dictionary from: {'sr_cdemo_sk' -> 1}) with: (Dictionary from: {'sr_cdemo_sk' -> 2}) with: (Dictionary from: {'sr_cdemo_sk' -> 1}).
+result := (80 + (store_returns) size).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q84_sample.

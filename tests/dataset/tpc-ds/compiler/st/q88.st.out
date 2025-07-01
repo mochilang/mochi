@@ -1,0 +1,17 @@
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #time_dim put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q88_sample
+	((result = 88)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+time_dim := Array with: (Dictionary from: {'time_sk' -> 1. 'hour' -> 8. 'minute' -> 30}) with: (Dictionary from: {'time_sk' -> 2. 'hour' -> 9. 'minute' -> 0}) with: (Dictionary from: {'time_sk' -> 3. 'hour' -> 11. 'minute' -> 15}).
+store_sales := Array with: (Dictionary from: {'sold_time_sk' -> 1}) with: (Dictionary from: {'sold_time_sk' -> 2}) with: (Dictionary from: {'sold_time_sk' -> 3}).
+result := 88.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q88_sample.

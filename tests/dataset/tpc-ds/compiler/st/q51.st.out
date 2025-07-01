@@ -1,0 +1,25 @@
+Smalltalk at: #result put: nil.
+Smalltalk at: #t put: nil.
+Smalltalk at: #tmp put: nil.
+Smalltalk at: #vals put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q51_placeholder
+	((result = 51)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+t := Array with: (Dictionary from: {'id' -> 1. 'val' -> 51}).
+tmp := lower value: 'ignore'.
+vals := ((| res |
+res := OrderedCollection new.
+(t) do: [:r |
+	res add: r at: 'val'.
+]
+res := res asArray.
+res)).
+result := first value: vals.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q51_placeholder.

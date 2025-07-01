@@ -1,0 +1,30 @@
+Smalltalk at: #result put: nil.
+Smalltalk at: #web_returns put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q85_sample
+	((result = 85.000000)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__avg: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+	v size = 0 ifTrue: [ ^ 0 ]
+	| sum |
+	sum := 0.
+	v do: [:it | sum := sum + it].
+	^ sum / v size
+!
+!!
+web_returns := Array with: (Dictionary from: {'qty' -> 60. 'cash' -> 20.000000. 'fee' -> 1.000000}) with: (Dictionary from: {'qty' -> 100. 'cash' -> 30.000000. 'fee' -> 2.000000}) with: (Dictionary from: {'qty' -> 95. 'cash' -> 25.000000. 'fee' -> 3.000000}).
+result := (Main __avg: ((| res |
+res := OrderedCollection new.
+(web_returns) do: [:r |
+	res add: r at: 'qty'.
+]
+res := res asArray.
+res))).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q85_sample.

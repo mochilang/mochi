@@ -1,0 +1,121 @@
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #filtered put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #web_returns put: nil.
+Smalltalk at: #web_sales put: nil.
+Smalltalk at: #web_site put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newWebSale: ws_order_number ws_ship_date_sk: ws_ship_date_sk ws_warehouse_sk: ws_warehouse_sk ws_ship_addr_sk: ws_ship_addr_sk ws_web_site_sk: ws_web_site_sk ws_net_profit: ws_net_profit ws_ext_ship_cost: ws_ext_ship_cost | dict |
+	dict := Dictionary new.
+	dict at: 'ws_order_number' put: ws_order_number.
+	dict at: 'ws_ship_date_sk' put: ws_ship_date_sk.
+	dict at: 'ws_warehouse_sk' put: ws_warehouse_sk.
+	dict at: 'ws_ship_addr_sk' put: ws_ship_addr_sk.
+	dict at: 'ws_web_site_sk' put: ws_web_site_sk.
+	dict at: 'ws_net_profit' put: ws_net_profit.
+	dict at: 'ws_ext_ship_cost' put: ws_ext_ship_cost.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newWebReturn: wr_order_number | dict |
+	dict := Dictionary new.
+	dict at: 'wr_order_number' put: wr_order_number.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_date: d_date | dict |
+	dict := Dictionary new.
+	dict at: 'd_date_sk' put: d_date_sk.
+	dict at: 'd_date' put: d_date.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomerAddress: ca_address_sk ca_state: ca_state | dict |
+	dict := Dictionary new.
+	dict at: 'ca_address_sk' put: ca_address_sk.
+	dict at: 'ca_state' put: ca_state.
+	^ dict
+!
+!Main class methodsFor: 'types'!
+newWebSite: web_site_sk web_company_name: web_company_name | dict |
+	dict := Dictionary new.
+	dict at: 'web_site_sk' put: web_site_sk.
+	dict at: 'web_company_name' put: web_company_name.
+	^ dict
+!
+!Main class methodsFor: 'mochi'!
+distinct: xs | out x |
+	out := Array new.
+	(xs) do: [:x |
+		((contains value: out value: x) not) ifTrue: [
+			out := (out copyWith: x).
+		]
+		.
+	]
+	.
+	^ out
+!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q94_shipping
+	((result = Dictionary from: {'order_count' -> 1. 'total_shipping_cost' -> 2.000000. 'total_net_profit' -> 5.000000})) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+!!
+web_sales := Array with: (Dictionary from: {'ws_order_number' -> 1. 'ws_ship_date_sk' -> 1. 'ws_warehouse_sk' -> 1. 'ws_ship_addr_sk' -> 1. 'ws_web_site_sk' -> 1. 'ws_net_profit' -> 5.000000. 'ws_ext_ship_cost' -> 2.000000}) with: (Dictionary from: {'ws_order_number' -> 2. 'ws_ship_date_sk' -> 1. 'ws_warehouse_sk' -> 2. 'ws_ship_addr_sk' -> 1. 'ws_web_site_sk' -> 1. 'ws_net_profit' -> 3.000000. 'ws_ext_ship_cost' -> 1.000000}).
+web_returns := Array with: (Dictionary from: {'wr_order_number' -> 2}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_date' -> '2001-02-01'}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_state' -> 'CA'}).
+web_site := Array with: (Dictionary from: {'web_site_sk' -> 1. 'web_company_name' -> 'pri'}).
+filtered := ((| res |
+res := OrderedCollection new.
+((web_sales) select: [:ws | ((((((((ca at: 'ca_state' = 'CA') and: [w at: 'web_company_name']) = 'pri') and: [exists value: ((| res |
+res := OrderedCollection new.
+((web_returns) select: [:wr | (wr at: 'wr_order_number' = ws at: 'ws_order_number')]) do: [:wr |
+	res add: wr.
+]
+res := res asArray.
+res))]) = false) and: [(ws at: 'ws_ship_date_sk' = d at: 'd_date_sk')]) and: [(ws at: 'ws_ship_addr_sk' = ca at: 'ca_address_sk')]) and: [(ws at: 'ws_web_site_sk' = w at: 'web_site_sk')])]) do: [:ws |
+	(date_dim) do: [:d |
+		(customer_address) do: [:ca |
+			(web_site) do: [:w |
+				res add: ws.
+			]
+		]
+	]
+]
+res := res asArray.
+res)).
+result := Dictionary from: {'order_count' -> ((Main distinct: (((| res |
+res := OrderedCollection new.
+(filtered) do: [:x |
+	res add: x at: 'ws_order_number'.
+]
+res := res asArray.
+res))))) size. 'total_shipping_cost' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(filtered) do: [:x |
+	res add: x at: 'ws_ext_ship_cost'.
+]
+res := res asArray.
+res))). 'total_net_profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(filtered) do: [:x |
+	res add: x at: 'ws_net_profit'.
+]
+res := res asArray.
+res)))}.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q94_shipping.

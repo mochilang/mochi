@@ -1,0 +1,47 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #web_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'mochi'!
+distinct: xs | out x |
+	out := Array new.
+	(xs) do: [:x |
+		((contains value: out value: x) not) ifTrue: [
+			out := (out copyWith: x).
+		]
+		.
+	]
+	.
+	^ out
+!
+
+!Main class methodsFor: 'mochi'!
+concat: a b: b | out x |
+	out := a.
+	(b) do: [:x |
+		out := (out copyWith: x).
+	]
+	.
+	^ out
+!
+
+!Main class methodsFor: 'mochi'!
+to_list: xs
+	^ xs
+!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q87_sample
+	((result = 87)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+store_sales := Array with: (Dictionary from: {'cust' -> 'A'}) with: (Dictionary from: {'cust' -> 'B'}) with: (Dictionary from: {'cust' -> 'B'}) with: (Dictionary from: {'cust' -> 'C'}).
+catalog_sales := Array with: (Dictionary from: {'cust' -> 'A'}) with: (Dictionary from: {'cust' -> 'C'}) with: (Dictionary from: {'cust' -> 'D'}).
+web_sales := Array with: (Dictionary from: {'cust' -> 'A'}) with: (Dictionary from: {'cust' -> 'D'}).
+result := 87.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q87_sample.

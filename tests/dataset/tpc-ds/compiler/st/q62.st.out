@@ -1,0 +1,20 @@
+Smalltalk at: #result put: nil.
+Smalltalk at: #web_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q62_simplified
+	((result = 62)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__count: v
+	(v respondsTo: #size) ifTrue: [ ^ v size ]
+	^ self error: 'count() expects collection'
+!
+!!
+web_sales := Array with: (Dictionary from: {'days' -> 10}) with: (Dictionary from: {'days' -> 40}) with: (Dictionary from: {'days' -> 70}) with: (Dictionary from: {'days' -> 100}) with: (Dictionary from: {'days' -> 130}).
+result := (((Main __count: web_sales) * 12) + 2).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q62_simplified.

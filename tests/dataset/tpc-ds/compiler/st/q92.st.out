@@ -1,0 +1,59 @@
+Smalltalk at: #avg_amt put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #sum_amt put: nil.
+Smalltalk at: #web_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newWebSale: ws_item_sk ws_sold_date_sk: ws_sold_date_sk ws_ext_discount_amt: ws_ext_discount_amt | dict |
+	dict := Dictionary new.
+	dict at: 'ws_item_sk' put: ws_item_sk.
+	dict at: 'ws_sold_date_sk' put: ws_sold_date_sk.
+	dict at: 'ws_ext_discount_amt' put: ws_ext_discount_amt.
+	^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q92_threshold
+	((result = 4.000000)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__avg: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+	v size = 0 ifTrue: [ ^ 0 ]
+	| sum |
+	sum := 0.
+	v do: [:it | sum := sum + it].
+	^ sum / v size
+!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+!!
+web_sales := Array with: (Dictionary from: {'ws_item_sk' -> 1. 'ws_sold_date_sk' -> 1. 'ws_ext_discount_amt' -> 1.000000}) with: (Dictionary from: {'ws_item_sk' -> 1. 'ws_sold_date_sk' -> 1. 'ws_ext_discount_amt' -> 1.000000}) with: (Dictionary from: {'ws_item_sk' -> 1. 'ws_sold_date_sk' -> 1. 'ws_ext_discount_amt' -> 2.000000}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_manufact_id' -> 1}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_date' -> '2000-01-02'}).
+sum_amt := (Main __sum: ((| res |
+res := OrderedCollection new.
+(web_sales) do: [:ws |
+	res add: ws at: 'ws_ext_discount_amt'.
+]
+res := res asArray.
+res))).
+avg_amt := (Main __avg: ((| res |
+res := OrderedCollection new.
+(web_sales) do: [:ws |
+	res add: ws at: 'ws_ext_discount_amt'.
+]
+res := res asArray.
+res))).
+result := ((((sum_amt > avg_amt) * 1.300000)) ifTrue: [sum_amt] ifFalse: [0.000000]).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q92_threshold.

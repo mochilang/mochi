@@ -1,0 +1,102 @@
+Smalltalk at: #avg_list put: nil.
+Smalltalk at: #avg_state put: nil.
+Smalltalk at: #catalog_returns put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #result_list put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q81_sample
+	((result = 81.000000)) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+	g := self new.
+	g key: k.
+	g initialize.
+	^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+	items := OrderedCollection new.
+	^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+	^ key
+!
+key: k
+	key := k
+!
+add: it
+	items add: it
+!
+do: blk
+	items do: blk
+!
+size
+	^ items size
+!
+!Main class methodsFor: 'runtime'!
+__avg: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+	v size = 0 ifTrue: [ ^ 0 ]
+	| sum |
+	sum := 0.
+	v do: [:it | sum := sum + it].
+	^ sum / v size
+!
+_group_by: src keyFn: blk
+	| groups order |
+	groups := Dictionary new.
+	order := OrderedCollection new.
+	src do: [:it |
+		| key ks g |
+		key := blk value: it.
+		ks := key printString.
+		g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+		g add: it.
+	]
+	^ order collect: [:k | groups at: k ]
+!
+!!
+catalog_returns := Array with: (Dictionary from: {'cust' -> 1. 'state' -> 'CA'. 'amt' -> 40.000000}) with: (Dictionary from: {'cust' -> 2. 'state' -> 'CA'. 'amt' -> 50.000000}) with: (Dictionary from: {'cust' -> 3. 'state' -> 'CA'. 'amt' -> 81.000000}) with: (Dictionary from: {'cust' -> 4. 'state' -> 'TX'. 'amt' -> 30.000000}) with: (Dictionary from: {'cust' -> 5. 'state' -> 'TX'. 'amt' -> 20.000000}).
+avg_list := ((| rows groups |
+rows := OrderedCollection new.
+(catalog_returns) do: [:r |
+	rows add: r.
+]
+groups := (Main _group_by: rows keyFn: [:r | r at: 'state']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+	rows add: Dictionary from: {'state' -> g at: 'key'. 'avg_amt' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'amt'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+avg_state := first value: ((| res |
+res := OrderedCollection new.
+((avg_list) select: [:a | (a at: 'state' = 'CA')]) do: [:a |
+	res add: a.
+]
+res := res asArray.
+res)).
+result_list := ((| res |
+res := OrderedCollection new.
+((catalog_returns) select: [:r | ((((r at: 'state' = 'CA') and: [r at: 'amt']) > avg_state at: 'avg_amt') * 1.200000)]) do: [:r |
+	res add: r at: 'amt'.
+]
+res := res asArray.
+res)).
+result := first value: result_list.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q81_sample.
