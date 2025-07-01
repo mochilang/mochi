@@ -61,6 +61,10 @@ public class Program {
         Console.WriteLine(JsonSerializer.Serialize(result));
         test_TPCDS_Q1_empty();
     }
+    static void expect(bool cond) {
+        if (!cond) throw new Exception("expect failed");
+    }
+    
     static double _sum(dynamic v) {
         if (v == null) return 0.0;
         double _sum = 0;
@@ -85,10 +89,6 @@ public class Program {
             _n++;
         }
         return _n == 0 ? 0.0 : _sum / _n;
-    }
-    
-    static void expect(bool cond) {
-        if (!cond) throw new Exception("expect failed");
     }
     
 }

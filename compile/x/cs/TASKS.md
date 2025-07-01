@@ -22,3 +22,9 @@ queries can be built and executed.
 also compiles, but we could not run the generated code in this environment
 because `dotnet` is missing. When `dotnet` is installed, capture the output of
 running the compiled program and add it as `tests/dataset/tpc-h/compiler/cs/q2.out`.
+
+## TPCDS Queries
+
+The first nine TPCDS queries `q1.mochi` through `q9.mochi` now compile and run
+successfully. Generated code and runtime output are stored under
+`tests/dataset/tpc-ds/compiler/cs`.

@@ -652,6 +652,30 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(e.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(e.Then)
+	if err != nil {
+		return "", err
+	}
+	elseExpr := "null"
+	if e.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(e.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if e.Else != nil {
+		elseExpr, err = c.compileExpr(e.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	return c.compileBinaryExpr(e.Binary)
 }
@@ -2056,6 +2080,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Group != nil:
 		e, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -2181,6 +2207,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "false", nil
 	case l.Str != nil:
 		return strconv.Quote(*l.Str), nil
+	case l.Null:
+		return "null", nil
 	default:
 		return "", fmt.Errorf("unknown literal")
 	}
