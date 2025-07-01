@@ -344,6 +344,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "count":
 		c.helpers["count"] = true
 		return fmt.Sprintf("__count(%s)", argStr), nil
+	case "contains":
+		c.helpers["contains"] = true
+		if len(args) != 2 {
+			return "", fmt.Errorf("contains expects 2 args")
+		}
+		return fmt.Sprintf("__contains(%s, %s)", args[0], args[1]), nil
+	case "exists":
+		c.helpers["exists"] = true
+		return fmt.Sprintf("__exists(%s)", argStr), nil
 	case "avg":
 		c.helpers["avg"] = true
 		return fmt.Sprintf("__avg(%s)", argStr), nil
@@ -691,7 +700,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
 		b.WriteString("\tlocal items = _res\n")
 		if sortExpr != "" {
-			b.WriteString("\ttable.sort(items, function(a,b) return a.__key < b.__key end)\n")
+			b.WriteString("\ttable.sort(items, function(a,b)\n")
+			b.WriteString("\t    local ak, bk = a.__key, b.__key\n")
+			b.WriteString("\t    if type(ak)=='number' and type(bk)=='number' then return ak < bk end\n")
+			b.WriteString("\t    if type(ak)=='string' and type(bk)=='string' then return ak < bk end\n")
+			b.WriteString("\t    return tostring(ak) < tostring(bk)\n")
+			b.WriteString("\tend)\n")
 			b.WriteString("\tlocal tmp = {}\n")
 			b.WriteString("\tfor _, it in ipairs(items) do tmp[#tmp+1] = it.__val end\n")
 			b.WriteString("\titems = tmp\n")

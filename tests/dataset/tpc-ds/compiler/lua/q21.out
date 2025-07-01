@@ -1,0 +1,4 @@
+[{"i_item_id":"ITEM1","inv_after":40,"w_warehouse_name":"Main","inv_before":30},{"i_item_id":"ITEM2","inv_after":20,"w_warehouse_name":"Backup","inv_before":20}]
+   test TPCDS Q21 inventory ratio ... fail /tmp/TestLuaCompiler_TPCDS_Goldenq212299207428/001/main.lua:329: expect failed (5.0µs)
+
+[FAIL] 1 test(s) failed.

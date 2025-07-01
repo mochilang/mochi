@@ -1,0 +1,2 @@
+[{"i_item_id":"I1","agg5":2,"agg4":9,"agg1":1,"agg2":10,"ca_state":"CA","ca_country":"US","agg6":1980,"agg3":1,"ca_county":"County1","agg7":2}]
+   test TPCDS Q18 averages ... ok (7.0µs)

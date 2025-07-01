@@ -91,6 +91,18 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 
 func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	if im.Lang != nil && *im.Lang != "lua" {
+		if *im.Lang == "go" {
+			alias := im.As
+			if alias == "" {
+				alias = parser.AliasFromPath(im.Path)
+			}
+			alias = sanitizeName(alias)
+			path := strings.Trim(im.Path, "\"")
+			if path == "strings" {
+				c.writeln(fmt.Sprintf("local %s = { ToUpper = string.upper }", alias))
+				return nil
+			}
+		}
 		return fmt.Errorf("unsupported import language: %s", *im.Lang)
 	}
 	if im.Lang == nil {

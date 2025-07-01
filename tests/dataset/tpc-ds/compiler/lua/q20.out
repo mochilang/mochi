@@ -1,0 +1,2 @@
+[{"i_category":"A","itemrevenue":600,"i_item_desc":"Item One","i_class":"X","i_current_price":10,"revenueratio":66.666666666667,"i_item_id":"ITEM1"},{"i_category":"A","itemrevenue":300,"i_item_desc":"Item Two","i_class":"X","i_current_price":20,"revenueratio":33.333333333333,"i_item_id":"ITEM2"}]
+   test TPCDS Q20 revenue ratio ... ok (11.0µs)
