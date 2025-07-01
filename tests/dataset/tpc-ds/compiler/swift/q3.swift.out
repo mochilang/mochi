@@ -1,0 +1,97 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q3_result() {
+  expect(
+    result == [
+      ["d_year": 1998, "brand_id": 1, "brand": "Brand1", "sum_agg": 10],
+      ["d_year": 1998, "brand_id": 2, "brand": "Brand2", "sum_agg": 20],
+    ])
+}
+
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_year": 1998, "d_moy": 12]]
+let store_sales = [
+  ["ss_sold_date_sk": 1, "ss_item_sk": 1, "ss_ext_sales_price": 10],
+  ["ss_sold_date_sk": 1, "ss_item_sk": 2, "ss_ext_sales_price": 20],
+]
+let item = [
+  ["i_item_sk": 1, "i_manufact_id": 100, "i_brand_id": 1, "i_brand": "Brand1"],
+  ["i_item_sk": 2, "i_manufact_id": 100, "i_brand_id": 2, "i_brand": "Brand2"],
+]
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for dt in date_dim {
+      for ss in store_sales {
+        if !(dt["d_date_sk"]! == ss["ss_sold_date_sk"]!) { continue }
+        for i in item {
+          if !(ss["ss_item_sk"]! == i["i_item_sk"]!) { continue }
+          if !(i["i_manufact_id"]! == 100 && dt["d_moy"]! == 12) { continue }
+          _pairs.append(
+            (
+              item: [
+                "d_year": g.key.d_year, "brand_id": g.key.brand_id, "brand": g.key.brand,
+                "sum_agg": _sum(
+                  ({
+                    var _res: [Any] = []
+                    for x in g {
+                      _res.append(x.ss_ext_sales_price)
+                    }
+                    var _items = _res
+                    return _items
+                  }()).map { Double($0) }),
+              ],
+              key: [
+                g.key.d_year,
+                -_sum(
+                  ({
+                    var _res: [Any] = []
+                    for x in g {
+                      _res.append(x.ss_ext_sales_price)
+                    }
+                    var _items = _res
+                    return _items
+                  }()).map { Double($0) }), g.key.brand_id,
+              ]
+            ))
+        }
+      }
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q3_result()
+}
+main()

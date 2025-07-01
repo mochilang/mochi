@@ -1,0 +1,125 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q7_result() {
+  expect(result == [["i_item_id": "I1", "agg1": 5, "agg2": 10, "agg3": 2, "agg4": 8]])
+}
+
+let store_sales = [
+  [
+    "ss_cdemo_sk": 1, "ss_sold_date_sk": 1, "ss_item_sk": 1, "ss_promo_sk": 1, "ss_quantity": 5,
+    "ss_list_price": 10, "ss_coupon_amt": 2, "ss_sales_price": 8,
+  ]
+]
+let customer_demographics = [
+  ["cd_demo_sk": 1, "cd_gender": "M", "cd_marital_status": "S", "cd_education_status": "College"]
+]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_year": 1998]]
+let item = [["i_item_sk": 1, "i_item_id": "I1"]]
+let promotion = [["p_promo_sk": 1, "p_channel_email": "N", "p_channel_event": "Y"]]
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for ss in store_sales {
+      for cd in customer_demographics {
+        if !(ss["ss_cdemo_sk"]! == cd["cd_demo_sk"]!) { continue }
+        for d in date_dim {
+          if !(ss["ss_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+          for i in item {
+            if !(ss["ss_item_sk"]! == i["i_item_sk"]!) { continue }
+            for p in promotion {
+              if !(ss["ss_promo_sk"]! == p["p_promo_sk"]!) { continue }
+              if !(cd["cd_gender"]! == "M" && cd["cd_marital_status"]! == "S"
+                && cd["cd_education_status"]! == "College"
+                && (p["p_channel_email"]! == "N" || p["p_channel_event"]! == "N")
+                && d["d_year"]! == 1998)
+              {
+                continue
+              }
+              _pairs.append(
+                (
+                  item: [
+                    "i_item_id": g.key.i_item_id,
+                    "agg1": _avg(
+                      ({
+                        var _res: [Any] = []
+                        for x in g {
+                          _res.append(x.ss.ss_quantity)
+                        }
+                        var _items = _res
+                        return _items
+                      }()).map { Double($0) }),
+                    "agg2": _avg(
+                      ({
+                        var _res: [Any] = []
+                        for x in g {
+                          _res.append(x.ss.ss_list_price)
+                        }
+                        var _items = _res
+                        return _items
+                      }()).map { Double($0) }),
+                    "agg3": _avg(
+                      ({
+                        var _res: [Any] = []
+                        for x in g {
+                          _res.append(x.ss.ss_coupon_amt)
+                        }
+                        var _items = _res
+                        return _items
+                      }()).map { Double($0) }),
+                    "agg4": _avg(
+                      ({
+                        var _res: [Any] = []
+                        for x in g {
+                          _res.append(x.ss.ss_sales_price)
+                        }
+                        var _items = _res
+                        return _items
+                      }()).map { Double($0) }),
+                  ], key: g.key.i_item_id
+                ))
+            }
+          }
+        }
+      }
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q7_result()
+}
+main()
