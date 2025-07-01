@@ -1,0 +1,337 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+  int len;
+  int *data;
+} list_int;
+static list_int list_int_create(int len) {
+  list_int l;
+  l.len = len;
+  l.data = (int *)malloc(sizeof(int) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  double *data;
+} list_float;
+static list_float list_float_create(int len) {
+  list_float l;
+  l.len = len;
+  l.data = (double *)malloc(sizeof(double) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  char **data;
+} list_string;
+static list_string list_string_create(int len) {
+  list_string l;
+  l.len = len;
+  l.data = (char **)malloc(sizeof(char *) * len);
+  return l;
+}
+typedef struct {
+  int len;
+  list_int *data;
+} list_list_int;
+static list_list_int list_list_int_create(int len) {
+  list_list_int l;
+  l.len = len;
+  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  return l;
+}
+typedef struct {
+  int key;
+  int value;
+} map_int_bool_item;
+static map_int_bool_item *map_int_bool_item_new(int key, int value) {
+  map_int_bool_item *it =
+      (map_int_bool_item *)malloc(sizeof(map_int_bool_item));
+  it->key = key;
+  it->value = value;
+  return it;
+}
+typedef struct {
+  int len;
+  int cap;
+  map_int_bool_item **data;
+} map_int_bool;
+static map_int_bool map_int_bool_create(int cap) {
+  map_int_bool m;
+  m.len = 0;
+  m.cap = cap;
+  m.data = cap ? (map_int_bool_item **)malloc(sizeof(map_int_bool_item *) * cap)
+               : NULL;
+  return m;
+}
+static void map_int_bool_put(map_int_bool *m, int key, int value) {
+  for (int i = 0; i < m->len; i++)
+    if (m->data[i]->key == key) {
+      m->data[i]->value = value;
+      return;
+    }
+  if (m->len >= m->cap) {
+    m->cap = m->cap ? m->cap * 2 : 4;
+    m->data = (map_int_bool_item **)realloc(
+        m->data, sizeof(map_int_bool_item *) * m->cap);
+  }
+  m->data[m->len++] = map_int_bool_item_new(key, value);
+}
+static int map_int_bool_contains(map_int_bool m, int key) {
+  for (int i = 0; i < m.len; i++)
+    if (m.data[i]->key == key)
+      return 1;
+  return 0;
+}
+static int _count(list_int v) { return v.len; }
+static double _avg(list_int v) {
+  if (v.len == 0)
+    return 0;
+  double sum = 0;
+  for (int i = 0; i < v.len; i++)
+    sum += v.data[i];
+  return sum / v.len;
+}
+static void _json_int(int v) { printf("%d", v); }
+static void _json_float(double v) { printf("%g", v); }
+static void _json_string(char *s) { printf("\"%s\"", s); }
+static void _json_list_int(list_int v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_int(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_float(list_float v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_float(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_string(list_string v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_string(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_list_int(list_list_int v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_list_int(v.data[i]);
+  }
+  printf("]");
+}
+static void test_TPCDS_Q9_empty() {
+  if (!((result.len == 0))) {
+    fprintf(stderr, "expect failed\n");
+    exit(1);
+  }
+}
+
+int main() {
+  list_int store_sales = _t1;
+  list_int reason = _t2;
+  list_int _t3 = list_int_create(store_sales.len);
+  int _t4 = 0;
+  for (int _t5 = 0; _t5 < store_sales.len; _t5++) {
+    int s = store_sales.data[_t5];
+    if (!((((s.ss_quantity >= 1) && s.ss_quantity) <= 20))) {
+      continue;
+    }
+    _t3.data[_t4] = s;
+    _t4++;
+  }
+  _t3.len = _t4;
+  list_int _t6 = list_int_create(store_sales.len);
+  int _t7 = 0;
+  for (int _t8 = 0; _t8 < store_sales.len; _t8++) {
+    int s = store_sales.data[_t8];
+    if (!((((s.ss_quantity >= 1) && s.ss_quantity) <= 20))) {
+      continue;
+    }
+    _t6.data[_t7] = s.ss_ext_discount_amt;
+    _t7++;
+  }
+  _t6.len = _t7;
+  list_int _t9 = list_int_create(store_sales.len);
+  int _t10 = 0;
+  for (int _t11 = 0; _t11 < store_sales.len; _t11++) {
+    int s = store_sales.data[_t11];
+    if (!((((s.ss_quantity >= 1) && s.ss_quantity) <= 20))) {
+      continue;
+    }
+    _t9.data[_t10] = s.ss_net_paid;
+    _t10++;
+  }
+  _t9.len = _t10;
+  double bucket1 = ((_count(_t3) > 10) ? _avg(_t6) : _avg(_t9));
+  list_int _t12 = list_int_create(store_sales.len);
+  int _t13 = 0;
+  for (int _t14 = 0; _t14 < store_sales.len; _t14++) {
+    int s = store_sales.data[_t14];
+    if (!((((s.ss_quantity >= 21) && s.ss_quantity) <= 40))) {
+      continue;
+    }
+    _t12.data[_t13] = s;
+    _t13++;
+  }
+  _t12.len = _t13;
+  list_int _t15 = list_int_create(store_sales.len);
+  int _t16 = 0;
+  for (int _t17 = 0; _t17 < store_sales.len; _t17++) {
+    int s = store_sales.data[_t17];
+    if (!((((s.ss_quantity >= 21) && s.ss_quantity) <= 40))) {
+      continue;
+    }
+    _t15.data[_t16] = s.ss_ext_discount_amt;
+    _t16++;
+  }
+  _t15.len = _t16;
+  list_int _t18 = list_int_create(store_sales.len);
+  int _t19 = 0;
+  for (int _t20 = 0; _t20 < store_sales.len; _t20++) {
+    int s = store_sales.data[_t20];
+    if (!((((s.ss_quantity >= 21) && s.ss_quantity) <= 40))) {
+      continue;
+    }
+    _t18.data[_t19] = s.ss_net_paid;
+    _t19++;
+  }
+  _t18.len = _t19;
+  double bucket2 = ((_count(_t12) > 20) ? _avg(_t15) : _avg(_t18));
+  list_int _t21 = list_int_create(store_sales.len);
+  int _t22 = 0;
+  for (int _t23 = 0; _t23 < store_sales.len; _t23++) {
+    int s = store_sales.data[_t23];
+    if (!((((s.ss_quantity >= 41) && s.ss_quantity) <= 60))) {
+      continue;
+    }
+    _t21.data[_t22] = s;
+    _t22++;
+  }
+  _t21.len = _t22;
+  list_int _t24 = list_int_create(store_sales.len);
+  int _t25 = 0;
+  for (int _t26 = 0; _t26 < store_sales.len; _t26++) {
+    int s = store_sales.data[_t26];
+    if (!((((s.ss_quantity >= 41) && s.ss_quantity) <= 60))) {
+      continue;
+    }
+    _t24.data[_t25] = s.ss_ext_discount_amt;
+    _t25++;
+  }
+  _t24.len = _t25;
+  list_int _t27 = list_int_create(store_sales.len);
+  int _t28 = 0;
+  for (int _t29 = 0; _t29 < store_sales.len; _t29++) {
+    int s = store_sales.data[_t29];
+    if (!((((s.ss_quantity >= 41) && s.ss_quantity) <= 60))) {
+      continue;
+    }
+    _t27.data[_t28] = s.ss_net_paid;
+    _t28++;
+  }
+  _t27.len = _t28;
+  double bucket3 = ((_count(_t21) > 30) ? _avg(_t24) : _avg(_t27));
+  list_int _t30 = list_int_create(store_sales.len);
+  int _t31 = 0;
+  for (int _t32 = 0; _t32 < store_sales.len; _t32++) {
+    int s = store_sales.data[_t32];
+    if (!((((s.ss_quantity >= 61) && s.ss_quantity) <= 80))) {
+      continue;
+    }
+    _t30.data[_t31] = s;
+    _t31++;
+  }
+  _t30.len = _t31;
+  list_int _t33 = list_int_create(store_sales.len);
+  int _t34 = 0;
+  for (int _t35 = 0; _t35 < store_sales.len; _t35++) {
+    int s = store_sales.data[_t35];
+    if (!((((s.ss_quantity >= 61) && s.ss_quantity) <= 80))) {
+      continue;
+    }
+    _t33.data[_t34] = s.ss_ext_discount_amt;
+    _t34++;
+  }
+  _t33.len = _t34;
+  list_int _t36 = list_int_create(store_sales.len);
+  int _t37 = 0;
+  for (int _t38 = 0; _t38 < store_sales.len; _t38++) {
+    int s = store_sales.data[_t38];
+    if (!((((s.ss_quantity >= 61) && s.ss_quantity) <= 80))) {
+      continue;
+    }
+    _t36.data[_t37] = s.ss_net_paid;
+    _t37++;
+  }
+  _t36.len = _t37;
+  double bucket4 = ((_count(_t30) > 40) ? _avg(_t33) : _avg(_t36));
+  list_int _t39 = list_int_create(store_sales.len);
+  int _t40 = 0;
+  for (int _t41 = 0; _t41 < store_sales.len; _t41++) {
+    int s = store_sales.data[_t41];
+    if (!((((s.ss_quantity >= 81) && s.ss_quantity) <= 100))) {
+      continue;
+    }
+    _t39.data[_t40] = s;
+    _t40++;
+  }
+  _t39.len = _t40;
+  list_int _t42 = list_int_create(store_sales.len);
+  int _t43 = 0;
+  for (int _t44 = 0; _t44 < store_sales.len; _t44++) {
+    int s = store_sales.data[_t44];
+    if (!((((s.ss_quantity >= 81) && s.ss_quantity) <= 100))) {
+      continue;
+    }
+    _t42.data[_t43] = s.ss_ext_discount_amt;
+    _t43++;
+  }
+  _t42.len = _t43;
+  list_int _t45 = list_int_create(store_sales.len);
+  int _t46 = 0;
+  for (int _t47 = 0; _t47 < store_sales.len; _t47++) {
+    int s = store_sales.data[_t47];
+    if (!((((s.ss_quantity >= 81) && s.ss_quantity) <= 100))) {
+      continue;
+    }
+    _t45.data[_t46] = s.ss_net_paid;
+    _t46++;
+  }
+  _t45.len = _t46;
+  double bucket5 = ((_count(_t39) > 50) ? _avg(_t42) : _avg(_t45));
+  map_int_bool _t48 = map_int_bool_create(5);
+  map_int_bool_put(&_t48, bucket1, bucket1);
+  map_int_bool_put(&_t48, bucket2, bucket2);
+  map_int_bool_put(&_t48, bucket3, bucket3);
+  map_int_bool_put(&_t48, bucket4, bucket4);
+  map_int_bool_put(&_t48, bucket5, bucket5);
+  list_int _t49 = list_int_create(reason.len);
+  int _t50 = 0;
+  for (int _t51 = 0; _t51 < reason.len; _t51++) {
+    int r = reason.data[_t51];
+    if (!((r.r_reason_sk == 1))) {
+      continue;
+    }
+    _t49.data[_t50] = _t48;
+    _t50++;
+  }
+  _t49.len = _t50;
+  list_int result = _t49;
+  _json_int(result);
+  test_TPCDS_Q9_empty();
+  return 0;
+}
