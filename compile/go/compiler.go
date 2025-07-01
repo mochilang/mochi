@@ -2164,7 +2164,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
-	needsHelper := false
+	needsHelper := q.Sort != nil
 	for _, j := range q.Joins {
 		if j.Side != nil {
 			needsHelper = true
@@ -2489,17 +2489,51 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.env = original
 	if needsHelper {
 		varNames := []string{sanitizeName(q.Var)}
+		paramTypes := []string{goType(elemType)}
 		for _, f := range q.Froms {
 			varNames = append(varNames, sanitizeName(f.Var))
+			ft := c.inferExprType(f.Src)
+			var felem types.Type = types.AnyType{}
+			if lt, ok := ft.(types.ListType); ok {
+				felem = lt.Elem
+			}
+			paramTypes = append(paramTypes, goType(felem))
 		}
 		params := append([]string(nil), varNames...)
+		if lt, ok := srcType.(types.ListType); !ok || !isAny(lt.Elem) {
+			c.use("_toAnySlice")
+			src = fmt.Sprintf("_toAnySlice(%s)", src)
+		}
+		for i := range joinSrcs {
+			if lt, ok := c.inferExprType(q.Joins[i].Src).(types.ListType); !ok || !isAny(lt.Elem) {
+				c.use("_toAnySlice")
+				joinSrcs[i] = fmt.Sprintf("_toAnySlice(%s)", joinSrcs[i])
+			}
+		}
+		assign := func(names []string, types []string) string {
+			parts := make([]string, len(names))
+			for i, n := range names {
+				typ := types[i]
+				if typ == "" {
+					typ = "any"
+				}
+				if typ != "any" {
+					c.use("_cast")
+					parts[i] = fmt.Sprintf("%s := _cast[%s](_a[%d]); _ = %s", n, typ, i, n)
+				} else {
+					parts[i] = fmt.Sprintf("%s := _a[%d]; _ = %s", n, i, n)
+				}
+			}
+			return strings.Join(parts, "; ")
+		}
 		joins := make([]string, 0, len(q.Froms)+len(q.Joins))
 		for _, fs := range fromSrcs {
 			joins = append(joins, fmt.Sprintf("{items: %s}", fs))
 		}
 		for i, js := range joinSrcs {
 			onParams := append(params, sanitizeName(q.Joins[i].Var))
-			onFn := fmt.Sprintf("func(%s) bool { return %s }", strings.Join(onParams, ", "), joinOns[i])
+			onTypes := append(paramTypes, joinTypes[i])
+			onFn := fmt.Sprintf("func(_a ...any) bool { %s; return %s }", assign(onParams, onTypes), joinOns[i])
 			spec := fmt.Sprintf("{items: %s, on: %s", js, onFn)
 			if joinSides[i] == "left" || joinSides[i] == "outer" {
 				spec += ", left: true"
@@ -2510,15 +2544,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			spec += "}"
 			joins = append(joins, spec)
 			params = append(params, sanitizeName(q.Joins[i].Var))
+			paramTypes = append(paramTypes, joinTypes[i])
 		}
-		allParams := strings.Join(params, ", ")
-		selectFn := fmt.Sprintf("func(%s) any { return %s }", allParams, sel)
+		assignParams := assign(params, paramTypes)
+		selectFn := fmt.Sprintf("func(_a ...any) any { %s; return %s }", assignParams, sel)
 		var whereFn, sortFn string
 		if cond != "" {
-			whereFn = fmt.Sprintf("func(%s) bool { return %s }", allParams, cond)
+			whereFn = fmt.Sprintf("func(_a ...any) bool { %s; return %s }", assignParams, cond)
 		}
 		if sortExpr != "" {
-			sortFn = fmt.Sprintf("func(%s) any { return %s }", allParams, sortExpr)
+			sortFn = fmt.Sprintf("func(_a ...any) any { %s; return %s }", assignParams, sortExpr)
 		}
 
 		var buf bytes.Buffer
