@@ -137,7 +137,8 @@ func inferCppPrimaryType(env *types.Env, lookup CppVarLookup, p *parser.Primary)
 				return "vector<" + t + ">"
 			}
 		}
-		return "vector<int>"
+		// default to a vector of any for empty list literals
+		return "vector<any>"
 	case p.Map != nil:
 		keyType := "string"
 		valType := ""

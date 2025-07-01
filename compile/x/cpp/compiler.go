@@ -892,15 +892,18 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return "self." + name
 		}
 		if len(p.Selector.Tail) == 1 {
+			key := p.Selector.Tail[0]
 			if typ, ok := c.getVar(name); ok {
 				if strings.HasPrefix(typ, "unordered_map<") {
-					key := p.Selector.Tail[0]
 					return fmt.Sprintf("%s[\"%s\"]", name, key)
+				}
+				if typ == "any" {
+					c.helpers["cast"] = true
+					return fmt.Sprintf("_cast<unordered_map<string,any>>(%s)[\"%s\"]", name, key)
 				}
 			} else if c.env != nil {
 				if t, err := c.env.GetVar(name); err == nil {
 					if _, ok := t.(types.MapType); ok {
-						key := p.Selector.Tail[0]
 						return fmt.Sprintf("%s[\"%s\"]", name, key)
 					}
 				}
