@@ -1568,6 +1568,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("ToLower expects 1 arg")
 		}
 		return fmt.Sprintf("String(%s).toLowerCase()", args[0]), nil
+	case "lower":
+		if len(args) != 1 {
+			return "", fmt.Errorf("lower expects 1 arg")
+		}
+		return fmt.Sprintf("String(%s).toLowerCase()", args[0]), nil
+	case "upper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		return fmt.Sprintf("String(%s).toUpperCase()", args[0]), nil
 	}
 	switch call.Func {
 	case "print":
