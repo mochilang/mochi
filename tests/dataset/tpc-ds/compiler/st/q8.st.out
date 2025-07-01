@@ -1,0 +1,73 @@
+Smalltalk at: #customer put: nil.
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #zip_list put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q8_result
+	((result = Array with: (Dictionary from: {'s_store_name' -> 'Store1'. 'net_profit' -> 10.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__slice_string: s start: i end: j
+	| start end n |
+	start := i.
+	end := j.
+	n := s size.
+	start < 0 ifTrue: [ start := start + n ].
+	end < 0 ifTrue: [ end := end + n ].
+	start < 0 ifTrue: [ start := 0 ].
+	end > n ifTrue: [ end := n ].
+	end < start ifTrue: [ end := start ].
+	^ (s copyFrom: start + 1 to: end)
+!
+__reverse: obj
+	(obj isKindOf: Array) ifTrue: [ ^ obj reverse ]
+	(obj isString) ifTrue: [ ^ obj reverse ]
+	^ self error: 'reverse expects list or string'
+!
+__sum: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+	| s |
+	s := 0.
+	v do: [:it | s := s + it].
+	^ s
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_store_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_net_profit' -> 10.000000}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_qoy' -> 1. 'd_year' -> 1998}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1. 's_store_name' -> 'Store1'. 's_zip' -> '12345'}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_zip' -> '12345'}).
+customer := Array with: (Dictionary from: {'c_customer_sk' -> 1. 'c_current_addr_sk' -> 1. 'c_preferred_cust_flag' -> 'Y'}).
+(Main __reverse: (Main __slice_string: 'zip' start: 0 end: 0 + 2)).
+zip_list := Array with: '12345'.
+result := ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | (((((zip_list includes: (Main __slice_string: ca at: 'ca_zip' start: 0 end: 0 + 5)) and: [(((((ss at: 'ss_sold_date_sk' = d at: 'd_date_sk') and: [d at: 'd_qoy']) = 1) and: [d at: 'd_year']) = 1998)]) and: [(ss at: 'ss_store_sk' = s at: 's_store_sk')]) and: [((Main __slice_string: s at: 's_zip' start: 0 end: 0 + 2) = (Main __slice_string: ca at: 'ca_zip' start: 0 end: 0 + 2))]) and: [(((ca at: 'ca_address_sk' = c at: 'c_current_addr_sk') and: [c at: 'c_preferred_cust_flag']) = 'Y')])]) do: [:ss |
+	(date_dim) do: [:d |
+		(store) do: [:s |
+			(customer_address) do: [:ca |
+				(customer) do: [:c |
+					res add: { g at: 'key' . Dictionary from: {'s_store_name' -> g at: 'key'. 'net_profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'ss' at: 'ss_net_profit'.
+]
+res := res asArray.
+res)))} }.
+				]
+			]
+		]
+	]
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q8_result.

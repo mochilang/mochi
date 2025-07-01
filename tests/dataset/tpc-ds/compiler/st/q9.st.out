@@ -1,0 +1,136 @@
+Smalltalk at: #bucket1 put: nil.
+Smalltalk at: #bucket2 put: nil.
+Smalltalk at: #bucket3 put: nil.
+Smalltalk at: #bucket4 put: nil.
+Smalltalk at: #bucket5 put: nil.
+Smalltalk at: #reason put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q9_result
+	((result = Array with: (Dictionary from: {'bucket1' -> 7.000000. 'bucket2' -> 15.000000. 'bucket3' -> 30.000000. 'bucket4' -> 35.000000. 'bucket5' -> 50.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__count: v
+	(v respondsTo: #size) ifTrue: [ ^ v size ]
+	^ self error: 'count() expects collection'
+!
+__avg: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+	v size = 0 ifTrue: [ ^ 0 ]
+	| sum |
+	sum := 0.
+	v do: [:it | sum := sum + it].
+	^ sum / v size
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_quantity' -> 5. 'ss_ext_discount_amt' -> 5.000000. 'ss_net_paid' -> 7.000000}) with: (Dictionary from: {'ss_quantity' -> 30. 'ss_ext_discount_amt' -> 10.000000. 'ss_net_paid' -> 15.000000}) with: (Dictionary from: {'ss_quantity' -> 50. 'ss_ext_discount_amt' -> 20.000000. 'ss_net_paid' -> 30.000000}) with: (Dictionary from: {'ss_quantity' -> 70. 'ss_ext_discount_amt' -> 25.000000. 'ss_net_paid' -> 35.000000}) with: (Dictionary from: {'ss_quantity' -> 90. 'ss_ext_discount_amt' -> 40.000000. 'ss_net_paid' -> 50.000000}).
+reason := Array with: (Dictionary from: {'r_reason_sk' -> 1}).
+bucket1 := ((((Main __count: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 1) and: [s at: 'ss_quantity']) <= 20)]) do: [:s |
+	res add: s.
+]
+res := res asArray.
+res))) > 10)) ifTrue: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 1) and: [s at: 'ss_quantity']) <= 20)]) do: [:s |
+	res add: s at: 'ss_ext_discount_amt'.
+]
+res := res asArray.
+res)))] ifFalse: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 1) and: [s at: 'ss_quantity']) <= 20)]) do: [:s |
+	res add: s at: 'ss_net_paid'.
+]
+res := res asArray.
+res)))]).
+bucket2 := ((((Main __count: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 21) and: [s at: 'ss_quantity']) <= 40)]) do: [:s |
+	res add: s.
+]
+res := res asArray.
+res))) > 20)) ifTrue: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 21) and: [s at: 'ss_quantity']) <= 40)]) do: [:s |
+	res add: s at: 'ss_ext_discount_amt'.
+]
+res := res asArray.
+res)))] ifFalse: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 21) and: [s at: 'ss_quantity']) <= 40)]) do: [:s |
+	res add: s at: 'ss_net_paid'.
+]
+res := res asArray.
+res)))]).
+bucket3 := ((((Main __count: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 41) and: [s at: 'ss_quantity']) <= 60)]) do: [:s |
+	res add: s.
+]
+res := res asArray.
+res))) > 30)) ifTrue: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 41) and: [s at: 'ss_quantity']) <= 60)]) do: [:s |
+	res add: s at: 'ss_ext_discount_amt'.
+]
+res := res asArray.
+res)))] ifFalse: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 41) and: [s at: 'ss_quantity']) <= 60)]) do: [:s |
+	res add: s at: 'ss_net_paid'.
+]
+res := res asArray.
+res)))]).
+bucket4 := ((((Main __count: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 61) and: [s at: 'ss_quantity']) <= 80)]) do: [:s |
+	res add: s.
+]
+res := res asArray.
+res))) > 40)) ifTrue: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 61) and: [s at: 'ss_quantity']) <= 80)]) do: [:s |
+	res add: s at: 'ss_ext_discount_amt'.
+]
+res := res asArray.
+res)))] ifFalse: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 61) and: [s at: 'ss_quantity']) <= 80)]) do: [:s |
+	res add: s at: 'ss_net_paid'.
+]
+res := res asArray.
+res)))]).
+bucket5 := ((((Main __count: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 81) and: [s at: 'ss_quantity']) <= 100)]) do: [:s |
+	res add: s.
+]
+res := res asArray.
+res))) > 50)) ifTrue: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 81) and: [s at: 'ss_quantity']) <= 100)]) do: [:s |
+	res add: s at: 'ss_ext_discount_amt'.
+]
+res := res asArray.
+res)))] ifFalse: [(Main __avg: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ss_quantity' >= 81) and: [s at: 'ss_quantity']) <= 100)]) do: [:s |
+	res add: s at: 'ss_net_paid'.
+]
+res := res asArray.
+res)))]).
+result := ((| res |
+res := OrderedCollection new.
+((reason) select: [:r | (r at: 'r_reason_sk' = 1)]) do: [:r |
+	res add: Dictionary from: {'bucket1' -> bucket1. 'bucket2' -> bucket2. 'bucket3' -> bucket3. 'bucket4' -> bucket4. 'bucket5' -> bucket5}.
+]
+res := res asArray.
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q9_result.

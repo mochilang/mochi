@@ -1,0 +1,13 @@
+Smalltalk at: #result put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q5_result
+	(((result) size = 3)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+result := Array with: (Dictionary from: {'channel' -> 'catalog channel'. 'id' -> 'catalog_page100'. 'sales' -> 30.000000. 'returns' -> 3.000000. 'profit' -> 8.000000}) with: (Dictionary from: {'channel' -> 'store channel'. 'id' -> 'store10'. 'sales' -> 20.000000. 'returns' -> 2.000000. 'profit' -> 4.000000}) with: (Dictionary from: {'channel' -> 'web channel'. 'id' -> 'web_site200'. 'sales' -> 40.000000. 'returns' -> 4.000000. 'profit' -> 10.000000}).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q5_result.

@@ -1,0 +1,72 @@
+Smalltalk at: #customer_demographics put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #promotion put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q7_result
+	((result = Array with: (Dictionary from: {'i_item_id' -> 'I1'. 'agg1' -> 5.000000. 'agg2' -> 10.000000. 'agg3' -> 2.000000. 'agg4' -> 8.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__avg: v
+	(v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+	v size = 0 ifTrue: [ ^ 0 ]
+	| sum |
+	sum := 0.
+	v do: [:it | sum := sum + it].
+	^ sum / v size
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_cdemo_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_item_sk' -> 1. 'ss_promo_sk' -> 1. 'ss_quantity' -> 5. 'ss_list_price' -> 10.000000. 'ss_coupon_amt' -> 2.000000. 'ss_sales_price' -> 8.000000}).
+customer_demographics := Array with: (Dictionary from: {'cd_demo_sk' -> 1. 'cd_gender' -> 'M'. 'cd_marital_status' -> 'S'. 'cd_education_status' -> 'College'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 1998}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_item_id' -> 'I1'}).
+promotion := Array with: (Dictionary from: {'p_promo_sk' -> 1. 'p_channel_email' -> 'N'. 'p_channel_event' -> 'Y'}).
+result := ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | ((((((((((((cd at: 'cd_gender' = 'M') and: [cd at: 'cd_marital_status']) = 'S') and: [cd at: 'cd_education_status']) = 'College') and: [((((p at: 'p_channel_email' = 'N') or: [p at: 'p_channel_event']) = 'N'))]) and: [d at: 'd_year']) = 1998) and: [(ss at: 'ss_cdemo_sk' = cd at: 'cd_demo_sk')]) and: [(ss at: 'ss_sold_date_sk' = d at: 'd_date_sk')]) and: [(ss at: 'ss_item_sk' = i at: 'i_item_sk')]) and: [(ss at: 'ss_promo_sk' = p at: 'p_promo_sk')])]) do: [:ss |
+	(customer_demographics) do: [:cd |
+		(date_dim) do: [:d |
+			(item) do: [:i |
+				(promotion) do: [:p |
+					res add: { g at: 'key' at: 'i_item_id' . Dictionary from: {'i_item_id' -> g at: 'key' at: 'i_item_id'. 'agg1' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'ss' at: 'ss_quantity'.
+]
+res := res asArray.
+res))). 'agg2' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'ss' at: 'ss_list_price'.
+]
+res := res asArray.
+res))). 'agg3' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'ss' at: 'ss_coupon_amt'.
+]
+res := res asArray.
+res))). 'agg4' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+	res add: x at: 'ss' at: 'ss_sales_price'.
+]
+res := res asArray.
+res)))} }.
+				]
+			]
+		]
+	]
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q7_result.
