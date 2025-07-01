@@ -1,0 +1,34 @@
+public class Main {
+  static void test_TPCDS_Q88_sample() {
+    expect((result == 88));
+  }
+
+  static Object[] time_dim =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("time_sk", 1, "hour", 8, "minute", 30)),
+        new java.util.HashMap<>(java.util.Map.of("time_sk", 2, "hour", 9, "minute", 0)),
+        new java.util.HashMap<>(java.util.Map.of("time_sk", 3, "hour", 11, "minute", 15))
+      };
+
+  static Object[] store_sales =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("sold_time_sk", 1)),
+        new java.util.HashMap<>(java.util.Map.of("sold_time_sk", 2)),
+        new java.util.HashMap<>(java.util.Map.of("sold_time_sk", 3))
+      };
+
+  static int result = 88;
+
+  public static void main(String[] args) {
+    test_TPCDS_Q88_sample();
+    _json(result);
+  }
+
+  static void expect(boolean cond) {
+    if (!cond) throw new RuntimeException("expect failed");
+  }
+
+  static void _json(Object v) {
+    System.out.println(_toJson(v));
+  }
+}
