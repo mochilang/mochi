@@ -36,21 +36,25 @@ func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
   return sum
 }
 
-func test_TPCDS_Q1_empty() {
-  expect(result.count == 0)
+func test_TPCDS_Q1_result() {
+  expect(result == [["c_customer_id": "C2"]])
 }
 
-let store_returns = []
-let date_dim = []
-let store = []
-let customer = []
+let store_returns = [
+  ["sr_returned_date_sk": 1, "sr_customer_sk": 1, "sr_store_sk": 10, "sr_return_amt": 20],
+  ["sr_returned_date_sk": 1, "sr_customer_sk": 2, "sr_store_sk": 10, "sr_return_amt": 50],
+]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_year": 1998]]
+let store = [["s_store_sk": 10, "s_state": "TN"]]
+let customer = [
+  ["c_customer_sk": 1, "c_customer_id": "C1"], ["c_customer_sk": 2, "c_customer_id": "C2"],
+]
 let customer_total_return =
   ({
     var _res: [[String: Any]] = []
     for sr in store_returns {
       for d in date_dim {
-        if !(sr.sr_returned_date_sk == d.d_date_sk) { continue }
-        if !(d.d_year == 1998) { continue }
+        if !(sr["sr_returned_date_sk"]! == d["d_date_sk"]! && d["d_year"]! == 1998) { continue }
         _res.append([
           "ctr_customer_sk": g.key.customer_sk, "ctr_store_sk": g.key.store_sk,
           "ctr_total_return": _sum(
@@ -73,9 +77,9 @@ let result =
     var _pairs: [(item: [String: Any], key: Any)] = []
     for ctr1 in customer_total_return {
       for s in store {
-        if !(ctr1["ctr_store_sk"]! == s.s_store_sk) { continue }
+        if !(ctr1["ctr_store_sk"]! == s["s_store_sk"]!) { continue }
         for c in customer {
-          if !(ctr1["ctr_customer_sk"]! == c.c_customer_sk) { continue }
+          if !(ctr1["ctr_customer_sk"]! == c["c_customer_sk"]!) { continue }
           if ctr1["ctr_total_return"]! > _avg(
             ({
               var _res: [Any] = []
@@ -86,9 +90,9 @@ let result =
               }
               var _items = _res
               return _items
-            }()).map { Double($0) }) * 1.2 && s.s_state == "TN"
+            }()).map { Double($0) }) * 1.2 && s["s_state"]! == "TN"
           {
-            _pairs.append((item: ["c_customer_id": c.c_customer_id], key: c.c_customer_id))
+            _pairs.append((item: ["c_customer_id": c["c_customer_id"]!], key: c["c_customer_id"]!))
           }
         }
       }
@@ -106,7 +110,6 @@ let result =
   }())
 func main() {
   _json(result)
-  test_TPCDS_Q1_empty()
+  test_TPCDS_Q1_result()
 }
 main()
-
