@@ -927,7 +927,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	resultType := csTypeOf(c.inferExprType(q.Select))
 	orig := c.env
 	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	var elemT types.Type = types.AnyType{}
+	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+		elemT = lt.Elem
+	}
+	child.SetVar(q.Var, elemT, true)
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -988,7 +992,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		var groupT types.Type = types.AnyType{}
+		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+			groupT = lt.Elem
+		}
+		genv.SetVar(q.Group.Name, groupT, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
@@ -1050,7 +1058,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			fromSrcs[i] = fs
-			child.SetVar(f.Var, types.AnyType{}, true)
+			var ft types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+				ft = lt.Elem
+			}
+			child.SetVar(f.Var, ft, true)
 		}
 		joinSrcs := make([]string, len(q.Joins))
 		joinOns := make([]string, len(q.Joins))
@@ -1065,7 +1077,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if j.Side != nil {
 				joinSides[i] = *j.Side
 			}
-			child.SetVar(j.Var, types.AnyType{}, true)
+			var jt types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
+				jt = lt.Elem
+			}
+			child.SetVar(j.Var, jt, true)
 			c.env = child
 			onExpr, err := c.compileExpr(j.On)
 			if err != nil {
@@ -1083,7 +1099,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			genv := types.NewEnv(child)
-			genv.SetVar(q.Group.Name, types.AnyType{}, true)
+			var groupT types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
+				groupT = lt.Elem
+			}
+			genv.SetVar(q.Group.Name, groupT, true)
 			c.env = genv
 			valExpr, err := c.compileExpr(q.Select)
 			if err != nil {
