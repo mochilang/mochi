@@ -992,7 +992,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operators = append(operators, part.Op)
 	}
 
-	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}}
+	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union_all"}}
 
 	for _, level := range levels {
 		for i := 0; i < len(operators); {
@@ -1040,6 +1040,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					res = fmt.Sprintf("(%s and %s)", l, r)
 				case "||":
 					res = fmt.Sprintf("(%s or %s)", l, r)
+				case "union_all":
+					res = fmt.Sprintf("Concat(%s, %s)", l, r)
+					isList = true
 				}
 				operands[i] = res
 				lists[i] = isList
@@ -1286,6 +1289,29 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("contains expects 2 arguments")
 			}
 			return fmt.Sprintf("(Pos(%s, %s) > 0)", args[1], args[0]), nil
+		case "substr", "substring":
+			if len(args) != 3 {
+				return "", fmt.Errorf("substr expects 3 args")
+			}
+			c.use("_sliceString")
+			end := fmt.Sprintf("%s + %s", args[1], args[2])
+			return fmt.Sprintf("_sliceString(%s, %s, %s)", args[0], args[1], end), nil
+		case "reverse":
+			if len(args) != 1 {
+				return "", fmt.Errorf("reverse expects 1 arg")
+			}
+			if c.isStringExpr(p.Call.Args[0]) {
+				c.use("_reverseString")
+				return fmt.Sprintf("_reverseString(%s)", args[0]), nil
+			}
+			if c.isListExpr(p.Call.Args[0]) {
+				if lt, ok := types.TypeOfExpr(p.Call.Args[0], c.env).(types.ListType); ok {
+					elem := typeString(lt.Elem)
+					c.use("_reverseList")
+					return fmt.Sprintf("specialize _reverseList<%s>(%s)", elem, args[0]), nil
+				}
+			}
+			return args[0], nil
 		case "split":
 			if len(args) != 2 {
 				return "", fmt.Errorf("split expects 2 arguments")
@@ -2119,6 +2145,28 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("Result := Result + parts[i];")
 			c.indent--
 			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_reverseString":
+			c.writeln("function _reverseString(s: string): string;")
+			c.writeln("var i: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, Length(s));")
+			c.writeln("for i := 1 to Length(s) do")
+			c.writeln("  Result[i] := s[Length(s) - i + 1];")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_reverseList":
+			c.writeln("generic function _reverseList<T>(arr: specialize TArray<T>): specialize TArray<T>;")
+			c.writeln("var i: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, Length(arr));")
+			c.writeln("for i := 0 to High(arr) do")
+			c.writeln("  Result[i] := arr[High(arr) - i];")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
