@@ -1154,7 +1154,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.writeln(fmt.Sprintf("_groups = _group_by(_rows, lambda %s: (%s))", allParams, keyExpr))
 			c.writeln("items = _groups")
 			if sortExpr != "" {
-				c.writeln(fmt.Sprintf("items = sorted(items, key=lambda %s: %s)", sanitizeName(q.Group.Name), sortExpr))
+				c.use("_sort_key")
+				c.writeln(fmt.Sprintf("items = sorted(items, key=lambda %s: _sort_key(%s))", sanitizeName(q.Group.Name), sortExpr))
 			}
 			if skipExpr != "" {
 				c.writeln(fmt.Sprintf("items = (items)[max(%s, 0):]", skipExpr))
@@ -1240,7 +1241,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				items = fmt.Sprintf("sorted(%s, key=lambda %s: %s)", items, strings.Join(paramList, ", "), s)
+				c.use("_sort_key")
+				items = fmt.Sprintf("sorted(%s, key=lambda %s: _sort_key(%s))", items, strings.Join(paramList, ", "), s)
 			}
 			if q.Skip != nil {
 				c.env = child
