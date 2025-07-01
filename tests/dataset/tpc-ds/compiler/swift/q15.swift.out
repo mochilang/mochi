@@ -1,0 +1,108 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+struct CatalogSale {
+  var cs_bill_customer_sk: Int
+  var cs_sales_price: Double
+  var cs_sold_date_sk: Int
+}
+
+struct Customer {
+  var c_customer_sk: Int
+  var c_current_addr_sk: Int
+}
+
+struct CustomerAddress {
+  var ca_address_sk: Int
+  var ca_zip: String
+  var ca_state: String
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_qoy: Int
+  var d_year: Int
+}
+
+func test_TPCDS_Q15_zip() {
+  expect(filtered == [["ca_zip": "85669", "sum_sales": 600]])
+}
+
+let catalog_sales = [["cs_bill_customer_sk": 1, "cs_sales_price": 600, "cs_sold_date_sk": 1]]
+let customer: [[String: Int]] = [["c_customer_sk": 1, "c_current_addr_sk": 1]]
+let customer_address = [["ca_address_sk": 1, "ca_zip": "85669", "ca_state": "CA"]]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_qoy": 1, "d_year": 2000]]
+let filtered =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for cs in catalog_sales {
+      for c in customer {
+        if !(cs["cs_bill_customer_sk"]! == c["c_customer_sk"]!) { continue }
+        for ca in customer_address {
+          if !(c["c_current_addr_sk"]! == ca["ca_address_sk"]!) { continue }
+          for d in date_dim {
+            if !(cs["cs_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+            if !((["CA", "WA", "GA"].contains(
+              ["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"]
+                .contains(substr(ca["ca_zip"]!, 0, 5)) || ca["ca_state"]!)
+              || cs["cs_sales_price"]! > 500) && d["d_qoy"]! == 1 && d["d_year"]! == 2000)
+            {
+              continue
+            }
+            _pairs.append(
+              (
+                item: [
+                  "ca_zip": g.key.zip,
+                  "sum_sales": _sum(
+                    ({
+                      var _res: [Any] = []
+                      for x in g {
+                        _res.append(x.cs_sales_price)
+                      }
+                      var _items = _res
+                      return _items
+                    }()).map { Double($0) }),
+                ], key: g.key.zip
+              ))
+          }
+        }
+      }
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(filtered)
+  test_TPCDS_Q15_zip()
+}
+main()

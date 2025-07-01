@@ -1,0 +1,208 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+class _Group {
+  var key: Any
+  var Items: [Any] = []
+  init(_ k: Any) { self.key = k }
+}
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+
+func _group_by(_ src: [Any], _ keyfn: (Any) -> Any) -> [_Group] {
+  func keyStr(_ v: Any) -> String {
+    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
+      let s = String(data: data, encoding: .utf8)
+    {
+      return s
+    }
+    return String(describing: v)
+  }
+  var groups: [String: _Group] = [:]
+  var order: [String] = []
+  for it in src {
+    let key = keyfn(it)
+    let ks = keyStr(key)
+    if groups[ks] == nil {
+      groups[ks] = _Group(key)
+      order.append(ks)
+    }
+    groups[ks]!.Items.append(it)
+  }
+  return order.compactMap { groups[$0] }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+struct StoreSale {
+  var ss_store_sk: Int
+  var ss_sold_date_sk: Int
+  var ss_hdemo_sk: Int
+  var ss_cdemo_sk: Int
+  var ss_addr_sk: Int
+  var ss_sales_price: Double
+  var ss_net_profit: Double
+  var ss_quantity: Int
+  var ss_ext_sales_price: Double
+  var ss_ext_wholesale_cost: Double
+}
+
+struct Store {
+  var s_store_sk: Int
+  var s_state: String
+}
+
+struct CustomerDemographics {
+  var cd_demo_sk: Int
+  var cd_marital_status: String
+  var cd_education_status: String
+}
+
+struct HouseholdDemographics {
+  var hd_demo_sk: Int
+  var hd_dep_count: Int
+}
+
+struct CustomerAddress {
+  var ca_address_sk: Int
+  var ca_country: String
+  var ca_state: String
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_year: Int
+}
+
+func test_TPCDS_Q13_averages() {
+  expect(
+    result == [
+      [
+        "avg_ss_quantity": 10, "avg_ss_ext_sales_price": 100, "avg_ss_ext_wholesale_cost": 50,
+        "sum_ss_ext_wholesale_cost": 50,
+      ]
+    ])
+}
+
+let store_sales = [
+  [
+    "ss_store_sk": 1, "ss_sold_date_sk": 1, "ss_hdemo_sk": 1, "ss_cdemo_sk": 1, "ss_addr_sk": 1,
+    "ss_sales_price": 120, "ss_net_profit": 150, "ss_quantity": 10, "ss_ext_sales_price": 100,
+    "ss_ext_wholesale_cost": 50,
+  ]
+]
+let store = [["s_store_sk": 1, "s_state": "CA"]]
+let customer_demographics = [
+  ["cd_demo_sk": 1, "cd_marital_status": "M1", "cd_education_status": "ES1"]
+]
+let household_demographics: [[String: Int]] = [["hd_demo_sk": 1, "hd_dep_count": 3]]
+let customer_address = [["ca_address_sk": 1, "ca_country": "United States", "ca_state": "CA"]]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_year": 2001]]
+let filtered =
+  ({
+    var _res: [[String: Any]] = []
+    for ss in store_sales {
+      for s in store {
+        if !(ss["ss_store_sk"]! == s["s_store_sk"]!) { continue }
+        for cd in customer_demographics {
+          if !(ss["ss_cdemo_sk"]! == cd["cd_demo_sk"]! && cd["cd_marital_status"]! == "M1"
+            && cd["cd_education_status"]! == "ES1")
+          {
+            continue
+          }
+          for hd in household_demographics {
+            if !(ss["ss_hdemo_sk"]! == hd["hd_demo_sk"]! && hd["hd_dep_count"]! == 3) { continue }
+            for ca in customer_address {
+              if !(ss["ss_addr_sk"]! == ca["ca_address_sk"]! && ca["ca_country"]! == "United States"
+                && ca["ca_state"]! == "CA")
+              {
+                continue
+              }
+              for d in date_dim {
+                if !(ss["ss_sold_date_sk"]! == d["d_date_sk"]! && d["d_year"]! == 2001) { continue }
+                _res.append(ss)
+              }
+            }
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let result: [[String: Double]] = _group_by(filtered.map { $0 as Any }, { r in [:] }).map { g in
+  [
+    "avg_ss_quantity": _avg(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append(x.ss_quantity)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "avg_ss_ext_sales_price": _avg(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append(x.ss_ext_sales_price)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "avg_ss_ext_wholesale_cost": _avg(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append(x.ss_ext_wholesale_cost)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "sum_ss_ext_wholesale_cost": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append(x.ss_ext_wholesale_cost)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+  ]
+}
+func main() {
+  _json(result)
+  test_TPCDS_Q13_averages()
+}
+main()

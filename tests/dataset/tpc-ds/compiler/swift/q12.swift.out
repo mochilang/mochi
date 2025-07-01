@@ -1,0 +1,191 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+class _Group {
+  var key: Any
+  var Items: [Any] = []
+  init(_ k: Any) { self.key = k }
+}
+
+func _group_by(_ src: [Any], _ keyfn: (Any) -> Any) -> [_Group] {
+  func keyStr(_ v: Any) -> String {
+    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
+      let s = String(data: data, encoding: .utf8)
+    {
+      return s
+    }
+    return String(describing: v)
+  }
+  var groups: [String: _Group] = [:]
+  var order: [String] = []
+  for it in src {
+    let key = keyfn(it)
+    let ks = keyStr(key)
+    if groups[ks] == nil {
+      groups[ks] = _Group(key)
+      order.append(ks)
+    }
+    groups[ks]!.Items.append(it)
+  }
+  return order.compactMap { groups[$0] }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+struct WebSale {
+  var ws_item_sk: Int
+  var ws_sold_date_sk: Int
+  var ws_ext_sales_price: Double
+}
+
+struct Item {
+  var i_item_sk: Int
+  var i_item_id: String
+  var i_item_desc: String
+  var i_category: String
+  var i_class: String
+  var i_current_price: Double
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_date: String
+}
+
+func test_TPCDS_Q12_revenue_ratio() {
+  expect(
+    result == [
+      [
+        "i_item_id": "ITEM1", "i_item_desc": "Item One", "i_category": "A", "i_class": "C1",
+        "i_current_price": 10, "itemrevenue": 200, "revenueratio": 50,
+      ],
+      [
+        "i_item_id": "ITEM2", "i_item_desc": "Item Two", "i_category": "A", "i_class": "C1",
+        "i_current_price": 20, "itemrevenue": 200, "revenueratio": 50,
+      ],
+    ])
+}
+
+let web_sales = [
+  ["ws_item_sk": 1, "ws_sold_date_sk": 1, "ws_ext_sales_price": 100],
+  ["ws_item_sk": 1, "ws_sold_date_sk": 2, "ws_ext_sales_price": 100],
+  ["ws_item_sk": 2, "ws_sold_date_sk": 2, "ws_ext_sales_price": 200],
+  ["ws_item_sk": 3, "ws_sold_date_sk": 3, "ws_ext_sales_price": 50],
+]
+let item = [
+  [
+    "i_item_sk": 1, "i_item_id": "ITEM1", "i_item_desc": "Item One", "i_category": "A",
+    "i_class": "C1", "i_current_price": 10,
+  ],
+  [
+    "i_item_sk": 2, "i_item_id": "ITEM2", "i_item_desc": "Item Two", "i_category": "A",
+    "i_class": "C1", "i_current_price": 20,
+  ],
+  [
+    "i_item_sk": 3, "i_item_id": "ITEM3", "i_item_desc": "Item Three", "i_category": "B",
+    "i_class": "C2", "i_current_price": 30,
+  ],
+]
+let date_dim = [
+  ["d_date_sk": 1, "d_date": "2001-01-20"], ["d_date_sk": 2, "d_date": "2001-02-05"],
+  ["d_date_sk": 3, "d_date": "2001-03-05"],
+]
+let filtered =
+  ({
+    var _res: [[String: Any]] = []
+    for ws in web_sales {
+      for i in item {
+        if !(ws["ws_item_sk"]! == i["i_item_sk"]!) { continue }
+        for d in date_dim {
+          if !(ws["ws_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+          if !(["A", "B", "C"].contains(i["i_category"]!) && d["d_date"]! >= "2001-01-15"
+            && d["d_date"]! <= "2001-02-14")
+          {
+            continue
+          }
+          _res.append([
+            "i_item_id": g.key.id, "i_item_desc": g.key.desc, "i_category": g.key.cat,
+            "i_class": g.key.class, "i_current_price": g.key.price,
+            "itemrevenue": _sum(
+              ({
+                var _res: [Any] = []
+                for x in g {
+                  _res.append(x.ws_ext_sales_price)
+                }
+                var _items = _res
+                return _items
+              }()).map { Double($0) }),
+          ])
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let class_totals = _group_by(filtered.map { $0 as Any }, { f in f["i_class"]! }).map { g in
+  [
+    "class": g.key,
+    "total": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append(x.itemrevenue)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+  ]
+}
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for f in filtered {
+      for t in class_totals {
+        if !(f["i_class"]! == t["class"]!) { continue }
+        _pairs.append(
+          (
+            item: [
+              "i_item_id": f["i_item_id"]!, "i_item_desc": f["i_item_desc"]!,
+              "i_category": f["i_category"]!, "i_class": f["i_class"]!,
+              "i_current_price": f["i_current_price"]!, "itemrevenue": f["itemrevenue"]!,
+              "revenueratio": (f["itemrevenue"]! * 100) / t["total"]!,
+            ], key: [f["i_category"]!, f["i_class"]!, f["i_item_id"]!, f["i_item_desc"]!]
+          ))
+      }
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q12_revenue_ratio()
+}
+main()
