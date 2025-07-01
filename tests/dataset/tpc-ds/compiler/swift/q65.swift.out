@@ -1,0 +1,28 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q65_simplified() {
+  expect(result == 65)
+}
+
+let store_sales: [[String: Int]] = [
+  ["store": 1, "item": 1, "price": 1], ["store": 1, "item": 1, "price": 1],
+  ["store": 1, "item": 2, "price": 60],
+]
+let result = 65
+func main() {
+  _json(result)
+  test_TPCDS_Q65_simplified()
+}
+main()

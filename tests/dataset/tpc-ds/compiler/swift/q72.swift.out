@@ -1,0 +1,111 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q72_simplified() {
+  expect(
+    result == [
+      [
+        "i_item_desc": "ItemA", "w_warehouse_name": "Main", "d_week_seq": 10, "no_promo": 1,
+        "promo": 0, "total_cnt": 1,
+      ]
+    ])
+}
+
+let catalog_sales = [
+  [
+    "cs_item_sk": 1, "cs_order_number": 1, "cs_quantity": 1, "cs_sold_date_sk": 1,
+    "cs_ship_date_sk": 3, "cs_bill_cdemo_sk": 1, "cs_bill_hdemo_sk": 1, "cs_promo_sk": nil,
+  ]
+]
+let inventory: [[String: Int]] = [
+  ["inv_item_sk": 1, "inv_warehouse_sk": 1, "inv_date_sk": 2, "inv_quantity_on_hand": 0]
+]
+let warehouse = [["w_warehouse_sk": 1, "w_warehouse_name": "Main"]]
+let item = [["i_item_sk": 1, "i_item_desc": "ItemA"]]
+let customer_demographics = [["cd_demo_sk": 1, "cd_marital_status": "M"]]
+let household_demographics = [["hd_demo_sk": 1, "hd_buy_potential": "5001-10000"]]
+let date_dim: [[String: Int]] = [
+  ["d_date_sk": 1, "d_week_seq": 10, "d_date": 1, "d_year": 2000],
+  ["d_date_sk": 2, "d_week_seq": 10, "d_date": 1, "d_year": 2000],
+  ["d_date_sk": 3, "d_week_seq": 10, "d_date": 7, "d_year": 2000],
+]
+let result =
+  ({
+    var _res: [[String: Any]] = []
+    for cs in catalog_sales {
+      for inv in inventory {
+        if !(inv["inv_item_sk"]! == cs["cs_item_sk"]!) { continue }
+        for w in warehouse {
+          if !(w["w_warehouse_sk"]! == inv["inv_warehouse_sk"]!) { continue }
+          for i in item {
+            if !(i["i_item_sk"]! == cs["cs_item_sk"]!) { continue }
+            for cd in customer_demographics {
+              if !(cd["cd_demo_sk"]! == cs["cs_bill_cdemo_sk"]!) { continue }
+              for hd in household_demographics {
+                if !(hd["hd_demo_sk"]! == cs["cs_bill_hdemo_sk"]!) { continue }
+                for d1 in date_dim {
+                  if !(d1["d_date_sk"]! == cs["cs_sold_date_sk"]!) { continue }
+                  for d2 in date_dim {
+                    if !(d2["d_date_sk"]! == inv["inv_date_sk"]!) { continue }
+                    for d3 in date_dim {
+                      if !(d3["d_date_sk"]! == cs["cs_ship_date_sk"]!) { continue }
+                      if !(d1["d_week_seq"]! == d2["d_week_seq"]!
+                        && inv["inv_quantity_on_hand"]! < cs["cs_quantity"]!
+                        && d3["d_date"]! > d1["d_date"]! + 5
+                        && hd["hd_buy_potential"]! == "5001-10000" && d1["d_year"]! == 2000
+                        && cd["cd_marital_status"]! == "M")
+                      {
+                        continue
+                      }
+                      _res.append([
+                        "i_item_desc": g.key.item_desc, "w_warehouse_name": g.key.warehouse,
+                        "d_week_seq": g.key.week_seq,
+                        "no_promo":
+                          ({
+                            var _res: [Any] = []
+                            for x in g {
+                              if !(x.cs_promo_sk == nil) { continue }
+                              _res.append(x)
+                            }
+                            var _items = _res
+                            return _items
+                          }()).count,
+                        "promo":
+                          ({
+                            var _res: [Any] = []
+                            for x in g {
+                              if !(x.cs_promo_sk != nil) { continue }
+                              _res.append(x)
+                            }
+                            var _items = _res
+                            return _items
+                          }()).count, "total_cnt": g.count,
+                      ])
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q72_simplified()
+}
+main()

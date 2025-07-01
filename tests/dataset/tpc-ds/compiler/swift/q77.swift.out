@@ -1,0 +1,352 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _concat<T>(_ a: [T], _ b: [T]) -> [T] {
+  var res: [T] = []
+  res.reserveCapacity(a.count + b.count)
+  res.append(contentsOf: a)
+  res.append(contentsOf: b)
+  return res
+}
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q77_simplified() {
+  expect(
+    result == [
+      ["channel": "catalog channel", "id": 1, "sales": 150, "returns": 7, "profit": 12],
+      ["channel": "store channel", "id": 1, "sales": 100, "returns": 5, "profit": 9],
+      ["channel": "web channel", "id": 1, "sales": 200, "returns": 10, "profit": 18],
+    ])
+}
+
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_date": 1]]
+let store_sales = [
+  ["ss_sold_date_sk": 1, "s_store_sk": 1, "ss_ext_sales_price": 100, "ss_net_profit": 10]
+]
+let store_returns = [
+  ["sr_returned_date_sk": 1, "s_store_sk": 1, "sr_return_amt": 5, "sr_net_loss": 1]
+]
+let catalog_sales = [
+  ["cs_sold_date_sk": 1, "cs_call_center_sk": 1, "cs_ext_sales_price": 150, "cs_net_profit": 15]
+]
+let catalog_returns = [
+  ["cr_returned_date_sk": 1, "cr_call_center_sk": 1, "cr_return_amount": 7, "cr_net_loss": 3]
+]
+let web_sales = [
+  ["ws_sold_date_sk": 1, "ws_web_page_sk": 1, "ws_ext_sales_price": 200, "ws_net_profit": 20]
+]
+let web_returns = [
+  ["wr_returned_date_sk": 1, "wr_web_page_sk": 1, "wr_return_amt": 10, "wr_net_loss": 2]
+]
+let ss =
+  ({
+    var _res: [[String: Any]] = []
+    for ss in store_sales {
+      for d in date_dim {
+        if !(d["d_date_sk"]! == ss["ss_sold_date_sk"]!) { continue }
+        _res.append([
+          "s_store_sk": g.key,
+          "sales": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.ss.ss_ext_sales_price)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+          "profit": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.ss.ss_net_profit)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+        ])
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let sr =
+  ({
+    var _res: [[String: Any]] = []
+    for sr in store_returns {
+      for d in date_dim {
+        if !(d["d_date_sk"]! == sr["sr_returned_date_sk"]!) { continue }
+        _res.append([
+          "s_store_sk": g.key,
+          "returns": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.sr.sr_return_amt)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+          "profit_loss": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.sr.sr_net_loss)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+        ])
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let cs =
+  ({
+    var _res: [[String: Any]] = []
+    for cs in catalog_sales {
+      for d in date_dim {
+        if !(d["d_date_sk"]! == cs["cs_sold_date_sk"]!) { continue }
+        _res.append([
+          "cs_call_center_sk": g.key,
+          "sales": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.cs.cs_ext_sales_price)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+          "profit": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.cs.cs_net_profit)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+        ])
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let cr =
+  ({
+    var _res: [[String: Any]] = []
+    for cr in catalog_returns {
+      for d in date_dim {
+        if !(d["d_date_sk"]! == cr["cr_returned_date_sk"]!) { continue }
+        _res.append([
+          "cr_call_center_sk": g.key,
+          "returns": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.cr.cr_return_amount)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+          "profit_loss": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.cr.cr_net_loss)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+        ])
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let ws =
+  ({
+    var _res: [[String: Any]] = []
+    for ws in web_sales {
+      for d in date_dim {
+        if !(d["d_date_sk"]! == ws["ws_sold_date_sk"]!) { continue }
+        _res.append([
+          "wp_web_page_sk": g.key,
+          "sales": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.ws.ws_ext_sales_price)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+          "profit": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.ws.ws_net_profit)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+        ])
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let wr =
+  ({
+    var _res: [[String: Any]] = []
+    for wr in web_returns {
+      for d in date_dim {
+        if !(d["d_date_sk"]! == wr["wr_returned_date_sk"]!) { continue }
+        _res.append([
+          "wp_web_page_sk": g.key,
+          "returns": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.wr.wr_return_amt)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+          "profit_loss": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.wr.wr_net_loss)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+        ])
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let per_channel = _concat(
+  _concat(
+    ({
+      var _res: [[String: Any]] = []
+      for s in ss {
+        for r in sr {
+          if !(s["s_store_sk"]! == r["s_store_sk"]!) { continue }
+          _res.append([
+            "channel": "store channel", "id": s["s_store_sk"]!, "sales": s["sales"]!,
+            "returns": (r == nil ? 0 : r["returns"]!),
+            "profit": s["profit"]! - ((r == nil ? 0 : r["profit_loss"]!)),
+          ])
+        }
+      }
+      var _items = _res
+      return _items
+    }()),
+    ({
+      var _res: [[String: Any]] = []
+      for c in cs {
+        for r in cr {
+          if !(c["cs_call_center_sk"]! == r["cr_call_center_sk"]!) { continue }
+          _res.append([
+            "channel": "catalog channel", "id": c["cs_call_center_sk"]!, "sales": c["sales"]!,
+            "returns": r["returns"]!, "profit": c["profit"]! - r["profit_loss"]!,
+          ])
+        }
+      }
+      var _items = _res
+      return _items
+    }())),
+  ({
+    var _res: [[String: Any]] = []
+    for w in ws {
+      for r in wr {
+        if !(w["wp_web_page_sk"]! == r["wp_web_page_sk"]!) { continue }
+        _res.append([
+          "channel": "web channel", "id": w["wp_web_page_sk"]!, "sales": w["sales"]!,
+          "returns": (r == nil ? 0 : r["returns"]!),
+          "profit": w["profit"]! - ((r == nil ? 0 : r["profit_loss"]!)),
+        ])
+      }
+    }
+    var _items = _res
+    return _items
+  }()))
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for p in per_channel {
+      _pairs.append(
+        (
+          item: [
+            "channel": g.key.channel, "id": g.key.id,
+            "sales": _sum(
+              ({
+                var _res: [Any] = []
+                for x in g {
+                  _res.append(x.p.sales)
+                }
+                var _items = _res
+                return _items
+              }()).map { Double($0) }),
+            "returns": _sum(
+              ({
+                var _res: [Any] = []
+                for x in g {
+                  _res.append(x.p.returns)
+                }
+                var _items = _res
+                return _items
+              }()).map { Double($0) }),
+            "profit": _sum(
+              ({
+                var _res: [Any] = []
+                for x in g {
+                  _res.append(x.p.profit)
+                }
+                var _items = _res
+                return _items
+              }()).map { Double($0) }),
+          ], key: g.key.channel
+        ))
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q77_simplified()
+}
+main()

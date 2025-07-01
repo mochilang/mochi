@@ -1,0 +1,87 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+class _Group {
+  var key: Any
+  var Items: [Any] = []
+  init(_ k: Any) { self.key = k }
+}
+
+func _group_by(_ src: [Any], _ keyfn: (Any) -> Any) -> [_Group] {
+  func keyStr(_ v: Any) -> String {
+    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
+      let s = String(data: data, encoding: .utf8)
+    {
+      return s
+    }
+    return String(describing: v)
+  }
+  var groups: [String: _Group] = [:]
+  var order: [String] = []
+  for it in src {
+    let key = keyfn(it)
+    let ks = keyStr(key)
+    if groups[ks] == nil {
+      groups[ks] = _Group(key)
+      order.append(ks)
+    }
+    groups[ks]!.Items.append(it)
+  }
+  return order.compactMap { groups[$0] }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q63_simplified() {
+  expect(result == 63)
+}
+
+let sales: [[String: Int]] = [["mgr": 1, "amount": 30], ["mgr": 2, "amount": 33]]
+let by_mgr = _group_by(sales.map { $0 as Any }, { s in ["mgr": s["mgr"]!] }).map { g in
+  [
+    "mgr": g.key.mgr,
+    "sum_sales": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append(x.amount)
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+  ]
+}
+let result = _sum(
+  ({
+    var _res: [Any] = []
+    for x in by_mgr {
+      _res.append(x["sum_sales"]!)
+    }
+    var _items = _res
+    return _items
+  }()).map { Double($0) })
+func main() {
+  _json(result)
+  test_TPCDS_Q63_simplified()
+}
+main()

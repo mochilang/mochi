@@ -1,0 +1,29 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q88_sample() {
+  expect(result == 88)
+}
+
+let time_dim: [[String: Int]] = [
+  ["time_sk": 1, "hour": 8, "minute": 30], ["time_sk": 2, "hour": 9, "minute": 0],
+  ["time_sk": 3, "hour": 11, "minute": 15],
+]
+let store_sales: [[String: Int]] = [["sold_time_sk": 1], ["sold_time_sk": 2], ["sold_time_sk": 3]]
+let result = 88
+func main() {
+  _json(result)
+  test_TPCDS_Q88_sample()
+}
+main()

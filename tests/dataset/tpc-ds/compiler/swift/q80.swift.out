@@ -1,0 +1,69 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q80_sample() {
+  expect(total_profit == 80)
+}
+
+let store_sales: [[String: Double]] = [
+  ["price": 20, "ret": 5], ["price": 10, "ret": 2], ["price": 5, "ret": 0],
+]
+let catalog_sales: [[String: Double]] = [["price": 15, "ret": 3], ["price": 8, "ret": 1]]
+let web_sales: [[String: Double]] = [
+  ["price": 25, "ret": 5], ["price": 15, "ret": 8], ["price": 8, "ret": 2],
+]
+let total_profit =
+  _sum(
+    ({
+      var _res: [Double] = []
+      for s in store_sales {
+        _res.append(s["price"]! - s["ret"]!)
+      }
+      var _items = _res
+      return _items
+    }()).map { Double($0) })
+  + _sum(
+    ({
+      var _res: [Double] = []
+      for c in catalog_sales {
+        _res.append(c["price"]! - c["ret"]!)
+      }
+      var _items = _res
+      return _items
+    }()).map { Double($0) })
+  + _sum(
+    ({
+      var _res: [Double] = []
+      for w in web_sales {
+        _res.append(w["price"]! - w["ret"]!)
+      }
+      var _items = _res
+      return _items
+    }()).map { Double($0) })
+func main() {
+  _json(total_profit)
+  test_TPCDS_Q80_sample()
+}
+main()

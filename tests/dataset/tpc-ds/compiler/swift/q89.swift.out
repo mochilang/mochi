@@ -1,0 +1,44 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q89_sample() {
+  expect(result == 89)
+}
+
+let store_sales: [[String: Double]] = [["price": 40], ["price": 30], ["price": 19]]
+let result = _sum(
+  ({
+    var _res: [Double] = []
+    for s in store_sales {
+      _res.append(s["price"]!)
+    }
+    var _items = _res
+    return _items
+  }()).map { Double($0) })
+func main() {
+  _json(result)
+  test_TPCDS_Q89_sample()
+}
+main()

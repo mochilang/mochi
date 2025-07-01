@@ -1,0 +1,49 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q85_sample() {
+  expect(result == 85)
+}
+
+let web_returns = [
+  ["qty": 60, "cash": 20, "fee": 1], ["qty": 100, "cash": 30, "fee": 2],
+  ["qty": 95, "cash": 25, "fee": 3],
+]
+let result = _avg(
+  ({
+    var _res: [Any] = []
+    for r in web_returns {
+      _res.append(r["qty"]!)
+    }
+    var _items = _res
+    return _items
+  }()).map { Double($0) })
+func main() {
+  _json(result)
+  test_TPCDS_Q85_sample()
+}
+main()

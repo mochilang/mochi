@@ -1,0 +1,57 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q61_simplified() {
+  expect(result == 61)
+}
+
+let sales = [
+  ["promo": true, "price": 20], ["promo": true, "price": 41], ["promo": false, "price": 39],
+]
+let promotions = _sum(
+  ({
+    var _res: [Any] = []
+    for s in sales {
+      if !(s["promo"]!) { continue }
+      _res.append(s["price"]!)
+    }
+    var _items = _res
+    return _items
+  }()).map { Double($0) })
+let total = _sum(
+  ({
+    var _res: [Any] = []
+    for s in sales {
+      _res.append(s["price"]!)
+    }
+    var _items = _res
+    return _items
+  }()).map { Double($0) })
+let result = promotions * 100 / total
+func main() {
+  _json(result)
+  test_TPCDS_Q61_simplified()
+}
+main()

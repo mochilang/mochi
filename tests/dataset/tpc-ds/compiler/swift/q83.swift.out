@@ -1,0 +1,65 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q83_sample() {
+  expect(result == 83)
+}
+
+let sr_items: [[String: Int]] = [["qty": 10], ["qty": 5]]
+let cr_items: [[String: Int]] = [["qty": 25], ["qty": 20]]
+let wr_items: [[String: Int]] = [["qty": 10], ["qty": 13]]
+let result =
+  _sum(
+    ({
+      var _res: [Int] = []
+      for x in sr_items {
+        _res.append(x["qty"]!)
+      }
+      var _items = _res
+      return _items
+    }()).map { Double($0) })
+  + _sum(
+    ({
+      var _res: [Int] = []
+      for x in cr_items {
+        _res.append(x["qty"]!)
+      }
+      var _items = _res
+      return _items
+    }()).map { Double($0) })
+  + _sum(
+    ({
+      var _res: [Int] = []
+      for x in wr_items {
+        _res.append(x["qty"]!)
+      }
+      var _items = _res
+      return _items
+    }()).map { Double($0) })
+func main() {
+  _json(result)
+  test_TPCDS_Q83_sample()
+}
+main()
