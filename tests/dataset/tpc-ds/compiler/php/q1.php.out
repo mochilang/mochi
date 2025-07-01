@@ -1,0 +1,135 @@
+<?php
+function mochi_test_TPCDS_Q1_empty() {
+	global $result;
+	if (!(((is_array($result) ? count($result) : strlen($result)) == 0))) { throw new Exception('expect failed'); }
+}
+
+$store_returns = [];
+$date_dim = [];
+$store = [];
+$customer = [];
+$customer_total_return = (function() use ($date_dim, $store_returns) {
+	$_src = $store_returns;
+	return _query($_src, [
+		[ 'items' => $date_dim, 'on' => function($sr, $d) use ($date_dim, $store_returns) { return ($sr['sr_returned_date_sk'] == $d['d_date_sk']); } ]
+	], [ 'select' => function($sr, $d) use ($date_dim, $store_returns) { return ["ctr_customer_sk" => $g['key']['customer_sk'], "ctr_store_sk" => $g['key']['store_sk'], "ctr_total_return" => array_sum((function() {
+	$res = [];
+	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
+		$res[] = $x['sr_return_amt'];
+	}
+	return $res;
+})())]; }, 'where' => function($sr, $d) use ($date_dim, $store_returns) { return (($d['d_year'] == 1998)); } ]);
+})();
+$result = (function() use ($customer, $customer_total_return, $store) {
+	$_src = $customer_total_return;
+	return _query($_src, [
+		[ 'items' => $store, 'on' => function($ctr1, $s) use ($customer, $customer_total_return, $store) { return ($ctr1['ctr_store_sk'] == $s['s_store_sk']); } ],
+		[ 'items' => $customer, 'on' => function($ctr1, $s, $c) use ($customer, $customer_total_return, $store) { return ($ctr1['ctr_customer_sk'] == $c['c_customer_sk']); } ]
+	], [ 'select' => function($ctr1, $s, $c) use ($customer, $customer_total_return, $store) { return ["c_customer_id" => $c['c_customer_id']]; }, 'where' => function($ctr1, $s, $c) use ($customer, $customer_total_return, $store) { return ((($ctr1['ctr_total_return'] > ((count((function() use ($ctr1, $customer_total_return) {
+	$res = [];
+	foreach ((is_string($customer_total_return) ? str_split($customer_total_return) : $customer_total_return) as $ctr2) {
+		if (($ctr1['ctr_store_sk'] == $ctr2['ctr_store_sk'])) {
+			$res[] = $ctr2['ctr_total_return'];
+		}
+	}
+	return $res;
+})()) ? array_sum((function() use ($ctr1, $customer_total_return) {
+	$res = [];
+	foreach ((is_string($customer_total_return) ? str_split($customer_total_return) : $customer_total_return) as $ctr2) {
+		if (($ctr1['ctr_store_sk'] == $ctr2['ctr_store_sk'])) {
+			$res[] = $ctr2['ctr_total_return'];
+		}
+	}
+	return $res;
+})()) / count((function() use ($ctr1, $customer_total_return) {
+	$res = [];
+	foreach ((is_string($customer_total_return) ? str_split($customer_total_return) : $customer_total_return) as $ctr2) {
+		if (($ctr1['ctr_store_sk'] == $ctr2['ctr_store_sk'])) {
+			$res[] = $ctr2['ctr_total_return'];
+		}
+	}
+	return $res;
+})()) : 0) * 1.2)) && ($s['s_state'] == "TN"))); }, 'sortKey' => function($ctr1, $s, $c) use ($customer, $customer_total_return, $store) { return ($c['c_customer_id']); } ]);
+})();
+echo json_encode($result), PHP_EOL;
+mochi_test_TPCDS_Q1_empty();
+
+function _query($src, $joins, $opts) {
+    $items = array_map(fn($v) => [$v], $src);
+    foreach ($joins as $j) {
+        $joined = [];
+        if (!empty($j['right']) && !empty($j['left'])) {
+            $matched = array_fill(0, count($j['items']), false);
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $ri => $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $matched[$ri] = true;
+                    $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) { $joined[] = array_merge($left, [null]); }
+            }
+            foreach ($j['items'] as $ri => $right) {
+                if (!$matched[$ri]) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } elseif (!empty($j['right'])) {
+            foreach ($j['items'] as $right) {
+                $m = false;
+                foreach ($items as $left) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!$m) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $joined[] = array_merge($undef, [$right]);
+                }
+            }
+        } else {
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($j['items'] as $right) {
+                    $keep = true;
+                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
+                    if (!$keep) continue;
+                    $m = true; $joined[] = array_merge($left, [$right]);
+                }
+                if (!empty($j['left']) && !$m) { $joined[] = array_merge($left, [null]); }
+            }
+        }
+        $items = $joined;
+    }
+    if (isset($opts['where'])) {
+        $filtered = [];
+        foreach ($items as $r) { if ($opts['where'](...$r)) $filtered[] = $r; }
+        $items = $filtered;
+    }
+    if (isset($opts['sortKey'])) {
+        $pairs = [];
+        foreach ($items as $it) { $pairs[] = ['item' => $it, 'key' => $opts['sortKey'](...$it)]; }
+        usort($pairs, function($a, $b) {
+            $ak = $a['key']; $bk = $b['key'];
+            if (is_int($ak) && is_int($bk)) return $ak <=> $bk;
+            if (is_string($ak) && is_string($bk)) return $ak <=> $bk;
+            return strcmp(strval($ak), strval($bk));
+        });
+        $items = array_map(fn($p) => $p['item'], $pairs);
+    }
+    if (array_key_exists('skip', $opts)) {
+        $n = $opts['skip'];
+        $items = $n < count($items) ? array_slice($items, $n) : [];
+    }
+    if (array_key_exists('take', $opts)) {
+        $n = $opts['take'];
+        if ($n < count($items)) $items = array_slice($items, 0, $n);
+    }
+    $res = [];
+    foreach ($items as $r) { $res[] = $opts['select'](...$r); }
+    return $res;
+}
