@@ -1,0 +1,129 @@
+#[derive(Clone, Debug, Default)]
+struct StoreSale {
+    ss_item_sk: i64,
+    ss_list_price: f64,
+    ss_quantity: i64,
+    ss_sold_date_sk: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct CatalogSale {
+    cs_item_sk: i64,
+    cs_list_price: f64,
+    cs_quantity: i64,
+    cs_sold_date_sk: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct WebSale {
+    ws_item_sk: i64,
+    ws_list_price: f64,
+    ws_quantity: i64,
+    ws_sold_date_sk: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Item {
+    i_item_sk: i64,
+    i_brand_id: i64,
+    i_class_id: i64,
+    i_category_id: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct DateDim {
+    d_date_sk: i64,
+    d_year: i64,
+    d_moy: i64,
+}
+
+fn test_TPCDS_Q14_cross_channel() {
+    expect(result == vec![std::collections::HashMap::from([("channel".to_string(), "store"), ("i_brand_id".to_string(), 1), ("i_class_id".to_string(), 1), ("i_category_id".to_string(), 1), ("sales".to_string(), 60.0), ("number_sales".to_string(), 1)])]);
+}
+
+fn main() {
+    let mut store_sales = vec![std::collections::HashMap::from([("ss_item_sk".to_string(), 1), ("ss_list_price".to_string(), 10.0), ("ss_quantity".to_string(), 2), ("ss_sold_date_sk".to_string(), 1)]), std::collections::HashMap::from([("ss_item_sk".to_string(), 1), ("ss_list_price".to_string(), 20.0), ("ss_quantity".to_string(), 3), ("ss_sold_date_sk".to_string(), 2)])];
+    let mut catalog_sales = vec![std::collections::HashMap::from([("cs_item_sk".to_string(), 1), ("cs_list_price".to_string(), 10.0), ("cs_quantity".to_string(), 2), ("cs_sold_date_sk".to_string(), 1)])];
+    let mut web_sales = vec![std::collections::HashMap::from([("ws_item_sk".to_string(), 1), ("ws_list_price".to_string(), 30.0), ("ws_quantity".to_string(), 1), ("ws_sold_date_sk".to_string(), 1)])];
+    let mut item = vec![std::collections::HashMap::from([("i_item_sk".to_string(), 1), ("i_brand_id".to_string(), 1), ("i_class_id".to_string(), 1), ("i_category_id".to_string(), 1)])];
+    let mut date_dim = vec![std::collections::HashMap::from([("d_date_sk".to_string(), 1), ("d_year".to_string(), 2000), ("d_moy".to_string(), 12)]), std::collections::HashMap::from([("d_date_sk".to_string(), 2), ("d_year".to_string(), 2002), ("d_moy".to_string(), 11)])];
+    let mut cross_items = vec![std::collections::HashMap::from([("ss_item_sk".to_string(), 1)])];
+    let mut avg_sales = _avg(&vec![20.0, 20.0, 30.0]);
+    let mut store_filtered = {
+    #[derive(Clone, Debug)]
+    struct Group { key: std::collections::HashMap<String, i64>, items: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for ss in store_sales.clone() {
+        for d in date_dim.clone() {
+            if !(_map_get(&ss, &"ss_sold_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string()) && _map_get(&d, &"d_year".to_string()) == 2002 && _map_get(&d, &"d_moy".to_string()) == 11) { continue; }
+            if !(({
+    let mut _res = Vec::new();
+    for ci in cross_items {
+        _res.push(_map_get(&ci, &"ss_item_sk".to_string()));
+    }
+    _res
+}).contains(&_map_get(&ss, &"ss_item_sk".to_string()))) { continue; }
+            let key: std::collections::HashMap<String, i64> = std::collections::HashMap::from([("brand_id".to_string(), 1), ("class_id".to_string(), 1), ("category_id".to_string(), 1)]);
+            let ks = format!("{:?}", key.clone());
+            if !groups.contains_key(&ks) {
+                groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+                order.push(ks.clone());
+            }
+            groups.get_mut(&ks).unwrap().items.push(ss.clone());
+        }
+    }
+    let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("channel".to_string(), "store"), ("sales".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"ss_quantity".to_string()) * _map_get(&x, &"ss_list_price".to_string()));
+    }
+    _res
+})), ("number_sales".to_string(), _count(&{
+    let mut _res = Vec::new();
+    for _ in g {
+        _res.push(_);
+    }
+    _res
+}))]));
+    }
+    _res
+}
+;
+    let mut result = {
+    let mut _res = Vec::new();
+    for r in store_filtered {
+        if _map_get(&r, &"sales".to_string()) > avg_sales {
+            _res.push(std::collections::HashMap::from([("channel".to_string(), _map_get(&r, &"channel".to_string())), ("i_brand_id".to_string(), 1), ("i_class_id".to_string(), 1), ("i_category_id".to_string(), 1), ("sales".to_string(), _map_get(&r, &"sales".to_string())), ("number_sales".to_string(), _map_get(&r, &"number_sales".to_string()))]));
+        }
+    }
+    _res
+};
+    json(result);
+    test_TPCDS_Q14_cross_channel();
+}
+
+fn _avg<T: Into<f64> + Copy>(v: &[T]) -> f64 {
+    if v.is_empty() { return 0.0 }
+    let mut sum = 0.0;
+    for &it in v { sum += Into::<f64>::into(it); }
+    sum / v.len() as f64
+}
+fn _count<T>(v: &[T]) -> i32 {
+    v.len() as i32
+}
+fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {
+    m.get(k).unwrap().clone()
+}
+fn _sum<T: Into<f64> + Copy>(v: &[T]) -> f64 {
+    if v.is_empty() { return 0.0 }
+    let mut sum = 0.0;
+    for &it in v { sum += Into::<f64>::into(it); }
+    sum
+}
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}
