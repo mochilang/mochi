@@ -1671,6 +1671,12 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		}
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", args[0]), true, nil
+	case "exists":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("exists expects 1 arg")
+		}
+		c.use("_exists")
+		return fmt.Sprintf("_exists(%s)", args[0]), true, nil
 	case "min":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("min expects 1 arg")

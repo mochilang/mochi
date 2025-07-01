@@ -218,6 +218,15 @@ end`
   list.max
 end`
 
+	helperExists = `def _exists(v)
+  v = v.Items if v.respond_to?(:Items)
+  if v.is_a?(Array) || v.is_a?(Hash) || v.is_a?(String)
+    !v.empty?
+  else
+    false
+  end
+end`
+
 	helperEval = `def _eval(code)
   eval(code)
 end`
@@ -421,6 +430,7 @@ var helperMap = map[string]string{
 	"_min":         helperMin,
 	"_max":         helperMax,
 	"_sum":         helperSum,
+	"_exists":      helperExists,
 	"_eval":        helperEval,
 	"_group":       helperGroup,
 	"_group_by":    helperGroupBy,
