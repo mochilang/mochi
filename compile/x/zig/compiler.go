@@ -1019,7 +1019,20 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 
 func (c *Compiler) addImport(im *parser.ImportStmt) error {
 	if im.Lang != nil && *im.Lang != "zig" {
-		return fmt.Errorf("unsupported import language: %s", *im.Lang)
+		switch *im.Lang {
+		case "go":
+			if strings.Trim(im.Path, "\"") == "strings" {
+				// builtin handled in compileCallExpr
+				return nil
+			}
+		case "python":
+			if strings.Trim(im.Path, "\"") == "math" {
+				// builtin handled in compileCallExpr
+				return nil
+			}
+		default:
+			return fmt.Errorf("unsupported import language: %s", *im.Lang)
+		}
 	}
 	alias := im.As
 	if alias == "" {
@@ -1409,6 +1422,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	name := sanitizeName(call.Func)
+	if name == "strings_ToUpper" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("std.ascii.upperString(%s)", arg), nil
+	}
+	if name == "math_sqrt" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("std.math.sqrt(%s)", arg), nil
+	}
 	if name == "len" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
