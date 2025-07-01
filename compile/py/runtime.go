@@ -45,25 +45,35 @@ var helperSum = "def _sum(v):\n" +
 	"        v = v.Items\n" +
 	"    if not isinstance(v, list):\n" +
 	"        raise Exception('sum() expects list or group')\n" +
-	"    return sum(v)\n"
+	"    s = 0.0\n" +
+	"    for it in v:\n" +
+	"        if it is None:\n" +
+	"            continue\n" +
+	"        if isinstance(it, (int, float)):\n" +
+	"            s += float(it)\n" +
+	"        else:\n" +
+	"            raise Exception('sum() expects numbers')\n" +
+	"    return s\n"
 
 var helperMin = "def _min(v):\n" +
 	"    if hasattr(v, 'Items'):\n" +
 	"        v = v.Items\n" +
 	"    if not isinstance(v, list):\n" +
 	"        raise Exception('min() expects list or group')\n" +
-	"    if not v:\n" +
+	"    vals = [it for it in v if it is not None]\n" +
+	"    if not vals:\n" +
 	"        return 0\n" +
-	"    return min(v)\n"
+	"    return min(vals)\n"
 
 var helperMax = "def _max(v):\n" +
 	"    if hasattr(v, 'Items'):\n" +
 	"        v = v.Items\n" +
 	"    if not isinstance(v, list):\n" +
 	"        raise Exception('max() expects list or group')\n" +
-	"    if not v:\n" +
+	"    vals = [it for it in v if it is not None]\n" +
+	"    if not vals:\n" +
 	"        return 0\n" +
-	"    return max(v)\n"
+	"    return max(vals)\n"
 
 var helperGroupClass = "class _Group:\n" +
 	"    def __init__(self, key):\n" +
@@ -278,7 +288,8 @@ var helperIntersect = "def _intersect(a, b):\n" +
 
 var helperGet = "def _get(obj, name):\n" +
 	"    if isinstance(obj, dict):\n" +
-	"        return obj.get(name)\n" +
+	"        if name in obj:\n" +
+	"            return obj[name]\n" +
 	"    if hasattr(obj, name):\n" +
 	"        return getattr(obj, name)\n" +
 	"    if isinstance(obj, (list, tuple)):\n" +
@@ -288,6 +299,11 @@ var helperGet = "def _get(obj, name):\n" +
 	"            except Exception:\n" +
 	"                pass\n" +
 	"    raise Exception('field not found: ' + name)\n"
+
+var helperSortKey = "def _sort_key(k):\n" +
+	"    if isinstance(k, (list, tuple, dict)):\n" +
+	"        return str(k)\n" +
+	"    return k\n"
 
 var helperAppend = "def _append(lst, v):\n" +
 	"    out = list(lst) if lst is not None else []\n" +
@@ -410,7 +426,12 @@ var helperQuery = "def _query(src, joins, opts):\n" +
 	"    if opts.get('where'):\n" +
 	"        items = [r for r in items if opts['where'](*r)]\n" +
 	"    if opts.get('sortKey'):\n" +
-	"        items.sort(key=lambda it: opts['sortKey'](*it))\n" +
+	"        def _key(it):\n" +
+	"            k = opts['sortKey'](*it)\n" +
+	"            if isinstance(k, (list, tuple, dict)):\n" +
+	"                return str(k)\n" +
+	"            return k\n" +
+	"        items.sort(key=_key)\n" +
 	"    if 'skip' in opts:\n" +
 	"        n = opts['skip']\n" +
 	"        if n < 0:\n" +
@@ -454,6 +475,7 @@ var helperMap = map[string]string{
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,
+	"_sort_key":   helperSortKey,
 	"_query":      helperQuery,
 }
 

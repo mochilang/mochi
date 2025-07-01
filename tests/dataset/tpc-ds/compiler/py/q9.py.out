@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import json
 
-store_sales = []
-reason = []
+store_sales = None
+reason = None
 bucket1 = None
 bucket2 = None
 bucket3 = None
@@ -13,22 +13,30 @@ bucket5 = None
 result = None
 
 
-def test_TPCDS_Q9_empty():
-    assert len(result) == 0
+def test_TPCDS_Q9_result():
+    assert result == [
+        {"bucket1": 7, "bucket2": 15, "bucket3": 30, "bucket4": 35, "bucket5": 50}
+    ]
 
 
 def main():
     global store_sales
-    store_sales = []
+    store_sales = [
+        {"ss_quantity": 5, "ss_ext_discount_amt": 5, "ss_net_paid": 7},
+        {"ss_quantity": 30, "ss_ext_discount_amt": 10, "ss_net_paid": 15},
+        {"ss_quantity": 50, "ss_ext_discount_amt": 20, "ss_net_paid": 30},
+        {"ss_quantity": 70, "ss_ext_discount_amt": 25, "ss_net_paid": 35},
+        {"ss_quantity": 90, "ss_ext_discount_amt": 40, "ss_net_paid": 50},
+    ]
     global reason
-    reason = []
+    reason = [{"r_reason_sk": 1}]
     global bucket1
     bucket1 = (
         _avg(
             [
-                s.ss_ext_discount_amt
+                _get(s, "ss_ext_discount_amt")
                 for s in store_sales
-                if ((s.ss_quantity >= 1) and (s.ss_quantity <= 20))
+                if ((_get(s, "ss_quantity") >= 1) and (_get(s, "ss_quantity") <= 20))
             ]
         )
         if (
@@ -36,16 +44,18 @@ def main():
                 [
                     s
                     for s in store_sales
-                    if ((s.ss_quantity >= 1) and (s.ss_quantity <= 20))
+                    if (
+                        (_get(s, "ss_quantity") >= 1) and (_get(s, "ss_quantity") <= 20)
+                    )
                 ]
             )
             > 10
         )
         else _avg(
             [
-                s.ss_net_paid
+                _get(s, "ss_net_paid")
                 for s in store_sales
-                if ((s.ss_quantity >= 1) and (s.ss_quantity <= 20))
+                if ((_get(s, "ss_quantity") >= 1) and (_get(s, "ss_quantity") <= 20))
             ]
         )
     )
@@ -53,9 +63,9 @@ def main():
     bucket2 = (
         _avg(
             [
-                s.ss_ext_discount_amt
+                _get(s, "ss_ext_discount_amt")
                 for s in store_sales
-                if ((s.ss_quantity >= 21) and (s.ss_quantity <= 40))
+                if ((_get(s, "ss_quantity") >= 21) and (_get(s, "ss_quantity") <= 40))
             ]
         )
         if (
@@ -63,16 +73,19 @@ def main():
                 [
                     s
                     for s in store_sales
-                    if ((s.ss_quantity >= 21) and (s.ss_quantity <= 40))
+                    if (
+                        (_get(s, "ss_quantity") >= 21)
+                        and (_get(s, "ss_quantity") <= 40)
+                    )
                 ]
             )
             > 20
         )
         else _avg(
             [
-                s.ss_net_paid
+                _get(s, "ss_net_paid")
                 for s in store_sales
-                if ((s.ss_quantity >= 21) and (s.ss_quantity <= 40))
+                if ((_get(s, "ss_quantity") >= 21) and (_get(s, "ss_quantity") <= 40))
             ]
         )
     )
@@ -80,9 +93,9 @@ def main():
     bucket3 = (
         _avg(
             [
-                s.ss_ext_discount_amt
+                _get(s, "ss_ext_discount_amt")
                 for s in store_sales
-                if ((s.ss_quantity >= 41) and (s.ss_quantity <= 60))
+                if ((_get(s, "ss_quantity") >= 41) and (_get(s, "ss_quantity") <= 60))
             ]
         )
         if (
@@ -90,16 +103,19 @@ def main():
                 [
                     s
                     for s in store_sales
-                    if ((s.ss_quantity >= 41) and (s.ss_quantity <= 60))
+                    if (
+                        (_get(s, "ss_quantity") >= 41)
+                        and (_get(s, "ss_quantity") <= 60)
+                    )
                 ]
             )
             > 30
         )
         else _avg(
             [
-                s.ss_net_paid
+                _get(s, "ss_net_paid")
                 for s in store_sales
-                if ((s.ss_quantity >= 41) and (s.ss_quantity <= 60))
+                if ((_get(s, "ss_quantity") >= 41) and (_get(s, "ss_quantity") <= 60))
             ]
         )
     )
@@ -107,9 +123,9 @@ def main():
     bucket4 = (
         _avg(
             [
-                s.ss_ext_discount_amt
+                _get(s, "ss_ext_discount_amt")
                 for s in store_sales
-                if ((s.ss_quantity >= 61) and (s.ss_quantity <= 80))
+                if ((_get(s, "ss_quantity") >= 61) and (_get(s, "ss_quantity") <= 80))
             ]
         )
         if (
@@ -117,16 +133,19 @@ def main():
                 [
                     s
                     for s in store_sales
-                    if ((s.ss_quantity >= 61) and (s.ss_quantity <= 80))
+                    if (
+                        (_get(s, "ss_quantity") >= 61)
+                        and (_get(s, "ss_quantity") <= 80)
+                    )
                 ]
             )
             > 40
         )
         else _avg(
             [
-                s.ss_net_paid
+                _get(s, "ss_net_paid")
                 for s in store_sales
-                if ((s.ss_quantity >= 61) and (s.ss_quantity <= 80))
+                if ((_get(s, "ss_quantity") >= 61) and (_get(s, "ss_quantity") <= 80))
             ]
         )
     )
@@ -134,9 +153,9 @@ def main():
     bucket5 = (
         _avg(
             [
-                s.ss_ext_discount_amt
+                _get(s, "ss_ext_discount_amt")
                 for s in store_sales
-                if ((s.ss_quantity >= 81) and (s.ss_quantity <= 100))
+                if ((_get(s, "ss_quantity") >= 81) and (_get(s, "ss_quantity") <= 100))
             ]
         )
         if (
@@ -144,16 +163,19 @@ def main():
                 [
                     s
                     for s in store_sales
-                    if ((s.ss_quantity >= 81) and (s.ss_quantity <= 100))
+                    if (
+                        (_get(s, "ss_quantity") >= 81)
+                        and (_get(s, "ss_quantity") <= 100)
+                    )
                 ]
             )
             > 50
         )
         else _avg(
             [
-                s.ss_net_paid
+                _get(s, "ss_net_paid")
                 for s in store_sales
-                if ((s.ss_quantity >= 81) and (s.ss_quantity <= 100))
+                if ((_get(s, "ss_quantity") >= 81) and (_get(s, "ss_quantity") <= 100))
             ]
         )
     )
@@ -167,10 +189,10 @@ def main():
             "bucket5": bucket5,
         }
         for r in reason
-        if (r.r_reason_sk == 1)
+        if (_get(r, "r_reason_sk") == 1)
     ]
     print(json.dumps(result, default=lambda o: vars(o)))
-    test_TPCDS_Q9_empty()
+    test_TPCDS_Q9_result()
 
 
 def _avg(v):
@@ -195,6 +217,21 @@ def _count(v):
     if hasattr(v, "Items"):
         return len(v.Items)
     raise Exception("count() expects list or group")
+
+
+def _get(obj, name):
+    if isinstance(obj, dict):
+        if name in obj:
+            return obj[name]
+    if hasattr(obj, name):
+        return getattr(obj, name)
+    if isinstance(obj, (list, tuple)):
+        for it in obj:
+            try:
+                return _get(it, name)
+            except Exception:
+                pass
+    raise Exception("field not found: " + name)
 
 
 if __name__ == "__main__":
