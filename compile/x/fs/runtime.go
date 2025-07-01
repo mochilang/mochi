@@ -243,6 +243,34 @@ let count (xs: seq<'T>) : int =
     g.Items.Add(it)
   [ for ks in order -> groups[ks] ]`
 
+	helperLeftJoin = `let _left_join (a: 'L[]) (b: 'R[]) (pred: 'L -> 'R -> bool) : ('L option * 'R option)[] =
+  [|
+  for x in a do
+    let mutable matched = false
+    for y in b do
+      if pred x y then
+        matched <- true
+        yield (Some x, Some y)
+    if not matched then
+      yield (Some x, None)
+  |]`
+
+	helperRightJoin = `let _right_join (a: 'L[]) (b: 'R[]) (pred: 'L -> 'R -> bool) : ('L option * 'R option)[] =
+  [|
+  for y in b do
+    let mutable matched = false
+    for x in a do
+      if pred x y then
+        matched <- true
+        yield (Some x, Some y)
+    if not matched then
+      yield (None, Some y)
+  |]`
+
+	helperOuterJoin = `let _outer_join (a: 'L[]) (b: 'R[]) (pred: 'L -> 'R -> bool) : ('L option * 'R option)[] =
+  Array.append (_left_join a b pred)
+    [| for y in b do if not (Array.exists (fun (_,r) -> match r with Some v -> pred v y | None -> false) (_left_join a b pred)) then yield (None, Some y) |]`
+
 	helperToJson = `let rec _to_json (v: obj) : string =
   match v with
   | null -> "null"
@@ -300,4 +328,7 @@ var helperMap = map[string]string{
 	"_seq_helpers":    helperSeq,
 	"_Group":          helperGroup,
 	"_group_by":       helperGroupBy,
+	"_left_join":      helperLeftJoin,
+	"_right_join":     helperRightJoin,
+	"_outer_join":     helperOuterJoin,
 }
