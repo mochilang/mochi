@@ -1,4 +1,4 @@
-func main (regs=243)
+func main (regs=247)
   // let inventory = [
   Const        r0, [{"inv_date_sk": 1, "inv_item_sk": 1, "inv_quantity_on_hand": 10, "inv_warehouse_sk": 1}, {"inv_date_sk": 2, "inv_item_sk": 1, "inv_quantity_on_hand": 10, "inv_warehouse_sk": 1}, {"inv_date_sk": 3, "inv_item_sk": 1, "inv_quantity_on_hand": 250, "inv_warehouse_sk": 1}]
   // let item = [
@@ -320,72 +320,47 @@ L20:
   Move         r208, r217
   Jump         L20
 L19:
-  // let variance = sumsq / len(g.qtys)
+  // let variance = sumsq / (len(g.qtys) - 1)
   Index        r218, r115, r166
   Len          r219, r218
-  DivFloat     r220, r204, r219
-  // let cov = sqrt(variance) / mean
-  Move         r221, r220
-  Call         r222, sqrt, r221
-  DivFloat     r223, r222, r202
+  SubInt       r220, r219, r109
+  DivFloat     r221, r204, r220
+  // let cov = math.sqrt(variance) / mean
+  Const        r223, "sqrt"
+  Index        r224, r222, r223
+  Move         r225, r221
+  CallV        r226, r224, 1, r225
+  DivFloat     r227, r226, r202
   // if cov > 1.5 {
-  Const        r224, 1.5
-  LessFloat    r225, r224, r223
-  JumpIfFalse  r225, L21
+  Const        r228, 1.5
+  LessFloat    r229, r228, r227
+  JumpIfFalse  r229, L21
   // summary = append(summary, {w_warehouse_sk: g.w, i_item_sk: g.i, cov: cov})
-  Const        r226, "w_warehouse_sk"
-  Index        r227, r115, r5
-  Const        r228, "i_item_sk"
-  Index        r229, r115, r7
-  Const        r230, "cov"
-  Move         r231, r226
-  Move         r232, r227
-  Move         r233, r228
-  Move         r234, r229
+  Const        r230, "w_warehouse_sk"
+  Index        r231, r115, r5
+  Const        r232, "i_item_sk"
+  Index        r233, r115, r7
+  Const        r234, "cov"
   Move         r235, r230
-  Move         r236, r223
-  MakeMap      r237, 3, r231
-  Append       r238, r194, r237
-  Move         r194, r238
+  Move         r236, r231
+  Move         r237, r232
+  Move         r238, r233
+  Move         r239, r234
+  Move         r240, r227
+  MakeMap      r241, 3, r235
+  Append       r242, r194, r241
+  Move         r194, r242
 L21:
   // for g in values(grouped) {
-  Const        r239, 1
-  AddInt       r240, r198, r239
-  Move         r198, r240
+  Const        r243, 1
+  AddInt       r244, r198, r243
+  Move         r198, r244
   Jump         L22
 L18:
   // json(summary)
   JSON         r194
   // expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.5396007178390022}]
-  Const        r241, [{"cov": 1.539600717839002, "i_item_sk": 1, "w_warehouse_sk": 1}]
-  Equal        r242, r194, r241
-  Expect       r242
+  Const        r245, [{"cov": 1.539600717839002, "i_item_sk": 1, "w_warehouse_sk": 1}]
+  Equal        r246, r194, r245
+  Expect       r246
   Return       r0
-
-  // fun sqrt(x: float): float {
-func sqrt (regs=13)
-  // let guess = x / 2.0
-  Const        r1, 2.0
-  DivFloat     r2, r0, r1
-  // var result = guess
-  Move         r3, r2
-  // for i in 0..5 {
-  Const        r4, 0
-  Const        r5, 5
-  Move         r6, r4
-L1:
-  LessInt      r7, r6, r5
-  JumpIfFalse  r7, L0
-  // result = (result + x / result) / 2.0
-  DivFloat     r8, r0, r3
-  AddFloat     r9, r3, r8
-  DivFloat     r10, r9, r1
-  Move         r3, r10
-  // for i in 0..5 {
-  Const        r11, 1
-  AddInt       r12, r6, r11
-  Move         r6, r12
-  Jump         L1
-L0:
-  // return result
-  Return       r3

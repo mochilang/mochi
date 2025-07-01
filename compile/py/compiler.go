@@ -613,10 +613,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		for _, s := range tail {
 			switch t := typ.(type) {
 			case types.MapType:
-				expr += fmt.Sprintf("[%q]", sanitizeName(s))
+				c.use("_get")
+				expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
 				typ = t.Value
 			default:
-				expr += "." + sanitizeName(s)
+				c.use("_get")
+				expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
 				typ = types.AnyType{}
 			}
 		}
@@ -768,6 +770,24 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_reverse")
 		return fmt.Sprintf("_reverse(%s)", args[0]), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		c.use("_append")
+		return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
+	case "contains":
+		if len(args) != 2 {
+			return "", fmt.Errorf("contains expects 2 args")
+		}
+		c.use("_contains")
+		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		c.use("_values")
+		return fmt.Sprintf("_values(%s)", args[0]), nil
 	case "eval":
 		return fmt.Sprintf("eval(%s)", argStr), nil
 	default:
