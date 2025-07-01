@@ -35,6 +35,11 @@ Attempted to compile `tpc-h/q2.mochi` as well. The code is generated but
 integers or strings. More robust schema generation is needed before the TPCH
 programs can run.
 
+Recent updates:
+
+- Grouping with simple joins is supported. Added golden test for TPCDS `q1` and
+  recorded output under `tests/dataset/tpc-ds/compiler/swift/q1.swift.out`.
+
 Next steps:
 
 - Generate typed struct representations for TPCH tables so dictionary lookups

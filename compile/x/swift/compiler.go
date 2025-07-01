@@ -1106,6 +1106,106 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return expr, nil
 	}
 
+	// grouping with joins but without sorting/pagination
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) > 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		orig := c.env
+		child := types.NewEnv(c.env)
+		elem := c.inferExprType(q.Source)
+		if lt, ok := elem.(types.ListType); ok {
+			elem = lt.Elem
+		}
+		child.SetVar(q.Var, elem, true)
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			jt := c.inferExprType(j.Src)
+			var je types.Type = types.AnyType{}
+			if lt, ok := jt.(types.ListType); ok {
+				je = lt.Elem
+			}
+			child.SetVar(j.Var, je, true)
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinSrcs[i] = js
+			joinOns[i] = on
+		}
+		c.env = child
+		cond := ""
+		if q.Where != nil {
+			var err error
+			cond, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.AnyType{}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		c.env = orig
+		if err != nil {
+			return "", err
+		}
+		resType := swiftType(c.inferExprType(q.Select))
+		if resType == "" {
+			resType = "Any"
+		}
+		c.use("_Group")
+		var b strings.Builder
+		b.WriteString("({\n")
+		b.WriteString("\tvar _groups: [String: _Group] = [:]\n")
+		b.WriteString("\tvar _order: [String] = []\n")
+		b.WriteString(fmt.Sprintf("\tfor %s in %s {\n", q.Var, src))
+		indent := "\t\t"
+		for i := range q.Joins {
+			b.WriteString(fmt.Sprintf("%sfor %s in %s {\n", indent, q.Joins[i].Var, joinSrcs[i]))
+			indent += "\t"
+			b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, joinOns[i]))
+		}
+		if cond != "" {
+			b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, cond))
+		}
+		b.WriteString(fmt.Sprintf("%slet _key = %s\n", indent, keyExpr))
+		b.WriteString(fmt.Sprintf("%slet _ks: String\n", indent))
+		b.WriteString(fmt.Sprintf("%sif let data = try? JSONSerialization.data(withJSONObject: _key, options: [.sortedKeys]), let s = String(data: data, encoding: .utf8) {\n", indent))
+		b.WriteString(fmt.Sprintf("%s\t_ks = s\n", indent))
+		b.WriteString(fmt.Sprintf("%s} else {\n", indent))
+		b.WriteString(fmt.Sprintf("%s\t_ks = String(describing: _key)\n", indent))
+		b.WriteString(fmt.Sprintf("%s}\n", indent))
+		b.WriteString(fmt.Sprintf("%sif _groups[_ks] == nil {\n", indent))
+		b.WriteString(fmt.Sprintf("%s\t_groups[_ks] = _Group(_key)\n", indent))
+		b.WriteString(fmt.Sprintf("%s\t_order.append(_ks)\n", indent))
+		b.WriteString(fmt.Sprintf("%s}\n", indent))
+		b.WriteString(fmt.Sprintf("%s_groups[_ks]!.Items.append(%s)\n", indent, q.Var))
+		for range q.Joins {
+			indent = indent[:len(indent)-1]
+			b.WriteString(indent + "}\n")
+		}
+		b.WriteString("\t}\n")
+		b.WriteString(fmt.Sprintf("\tvar _res: [%s] = []\n", resType))
+		b.WriteString("\tfor _ks in _order {\n")
+		b.WriteString(fmt.Sprintf("\t\tlet %s = _groups[_ks]!\n", sanitizeName(q.Group.Name)))
+		b.WriteString(fmt.Sprintf("\t\t_res.append(%s)\n", valExpr))
+		b.WriteString("\t}\n")
+		b.WriteString("\treturn _res\n")
+		b.WriteString("}())")
+		return b.String(), nil
+	}
+
 	// simple map with optional cross joins
 	orig := c.env
 	child := types.NewEnv(c.env)
