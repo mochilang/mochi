@@ -1275,23 +1275,55 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
+	if q.Group != nil {
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
-		innerSel := seqLambda([]string{sanitizeName(q.Var)}, sanitizeName(q.Var))
+
+		varNames := []string{sanitizeName(q.Var)}
+		for _, f := range q.Froms {
+			varNames = append(varNames, sanitizeName(f.Var))
+		}
+		params := append([]string(nil), varNames...)
+		joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+		for _, fs := range fromSrcs {
+			joins = append(joins, fmt.Sprintf("Map(\"items\" -> %s)", fs))
+		}
+		for i, js := range joinSrcs {
+			onParams := append(params, sanitizeName(q.Joins[i].Var))
+			onFn := seqLambda(onParams, joinOns[i])
+			spec := fmt.Sprintf("Map(\"items\" -> %s, \"on\" -> %s", js, onFn)
+			if joinSides[i] == "left" || joinSides[i] == "outer" {
+				spec += ", \"left\" -> true"
+			}
+			if joinSides[i] == "right" || joinSides[i] == "outer" {
+				spec += ", \"right\" -> true"
+			}
+			spec += ")"
+			joins = append(joins, spec)
+			params = append(params, sanitizeName(q.Joins[i].Var))
+		}
+
+		innerSel := seqLambda(varNames, sanitizeName(q.Var))
 		var inner strings.Builder
 		inner.WriteString("(() => {\n")
 		inner.WriteString(fmt.Sprintf("\tval src = %s\n", src))
 		inner.WriteString("\tval res = _query(src, Seq(\n")
+		for i, j := range joins {
+			inner.WriteString("\t\t" + j)
+			if i != len(joins)-1 {
+				inner.WriteString(",")
+			}
+			inner.WriteString("\n")
+		}
 		inner.WriteString("\t), Map(\"select\" -> " + innerSel)
 		if cond != "" {
-			inner.WriteString(", \"where\" -> " + seqLambda([]string{sanitizeName(q.Var)}, cond))
+			inner.WriteString(", \"where\" -> " + seqLambda(params, cond))
 		}
 		if sortExpr != "" {
-			inner.WriteString(", \"sortKey\" -> " + seqLambda([]string{sanitizeName(q.Var)}, sortExpr))
+			inner.WriteString(", \"sortKey\" -> " + seqLambda(params, sortExpr))
 		}
 		if skipExpr != "" {
 			inner.WriteString(", \"skip\" -> " + skipExpr)
@@ -1303,6 +1335,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		inner.WriteString("\tres\n")
 		inner.WriteString("})()")
 		innerQuery := inner.String()
+
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
 		c.env = genv
