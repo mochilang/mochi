@@ -23,9 +23,9 @@ let catalog_sales = [
 ]
 
 let date_dim = [
-  { d_date_sk: 1, d_moy: 4, d_year: 2000 },
-  { d_date_sk: 2, d_moy: 5, d_year: 2000 },
-  { d_date_sk: 3, d_moy: 6, d_year: 2000 }
+  { d_date_sk: 1, d_moy: 4, d_year: 2001 },
+  { d_date_sk: 2, d_moy: 5, d_year: 2001 },
+  { d_date_sk: 3, d_moy: 6, d_year: 2001 }
 ]
 
 let store = [ { s_store_sk: 1, s_store_id: "S1", s_store_name: "Store1" } ]
@@ -43,7 +43,7 @@ let result =
   join d3 in date_dim on d3.d_date_sk == cs.cs_sold_date_sk
   join s in store on s.s_store_sk == ss.ss_store_sk
   join i in item on i.i_item_sk == ss.ss_item_sk
-  where d1.d_moy == 4 && d1.d_year == 2000 && d2.d_moy >= 4 && d2.d_moy <= 10 && d3.d_moy >= 4 && d3.d_moy <= 10
+  where d1.d_moy == 4 && d1.d_year == 2001 && d2.d_moy >= 4 && d2.d_moy <= 10 && d3.d_moy >= 4 && d3.d_moy <= 10
   group by { item_id: i.i_item_id, item_desc: i.i_item_desc, s_store_id: s.s_store_id, s_store_name: s.s_store_name } into g
   select {
     i_item_id: g.key.item_id,

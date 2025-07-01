@@ -28,14 +28,14 @@ let date_dim = [
 let before =
   from inv in inventory
   join d in date_dim on inv.inv_date_sk == d.d_date_sk
-  where d.d_date < "2000-03-15"
+  where d.d_date < "2000-03-11"
   group by { w: inv.inv_warehouse_sk, i: inv.inv_item_sk } into g
   select { w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand) }
 
 let after =
   from inv in inventory
   join d in date_dim on inv.inv_date_sk == d.d_date_sk
-  where d.d_date >= "2000-03-15"
+  where d.d_date >= "2000-03-11"
   group by { w: inv.inv_warehouse_sk, i: inv.inv_item_sk } into g
   select { w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand) }
 

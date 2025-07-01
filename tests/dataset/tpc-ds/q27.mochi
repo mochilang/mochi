@@ -13,7 +13,7 @@ let store_sales = [
 
 let customer_demographics = [ { cd_demo_sk: 1, cd_gender: "F", cd_marital_status: "M", cd_education_status: "College" }, { cd_demo_sk: 2, cd_gender: "M", cd_marital_status: "S", cd_education_status: "College" } ]
 let date_dim = [ { d_date_sk: 1, d_year: 2000 } ]
-let store = [ { s_store_sk: 1, s_state: "CA" }, { s_store_sk: 2, s_state: "TX" } ]
+let store = [ { s_store_sk: 1, s_state: "TN" }, { s_store_sk: 2, s_state: "TN" } ]
 let item = [ { i_item_sk: 1, i_item_id: "ITEM1" }, { i_item_sk: 2, i_item_id: "ITEM2" } ]
 
 let result =
@@ -22,7 +22,7 @@ let result =
   join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
   join s in store on ss.ss_store_sk == s.s_store_sk
   join i in item on ss.ss_item_sk == i.i_item_sk
-  where cd.cd_gender == "F" && cd.cd_marital_status == "M" && cd.cd_education_status == "College" && d.d_year == 2000 && s.s_state in ["CA"]
+  where cd.cd_gender == "F" && cd.cd_marital_status == "M" && cd.cd_education_status == "College" && d.d_year == 2002 && s.s_state in ["TN"]
   group by { item_id: i.i_item_id, state: s.s_state } into g
   sort by [g.key.item_id, g.key.state]
   select {
@@ -38,6 +38,6 @@ json(result)
 
 test "TPCDS Q27 averages by state" {
   expect result == [
-    { i_item_id: "ITEM1", s_state: "CA", agg1: 5.0, agg2: 100.0, agg3: 10.0, agg4: 90.0 }
+    { i_item_id: "ITEM1", s_state: "TN", agg1: 5.0, agg2: 100.0, agg3: 10.0, agg4: 90.0 }
   ]
 }

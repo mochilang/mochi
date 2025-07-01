@@ -30,7 +30,7 @@ let store_sales = [
   { ss_item_sk: 2, ss_sold_date_sk: 1, ss_customer_sk: 2, ss_quantity: 1, ss_sales_price: 10.0 }
 ]
 
-let date_dim = [ { d_date_sk: 1, d_year: 2000, d_moy: 1 } ]
+let date_dim = [ { d_date_sk: 1, d_year: 2000, d_moy: 2 } ]
 let item = [ { i_item_sk: 1 }, { i_item_sk: 2 } ]
 let catalog_sales = [
   { cs_sold_date_sk: 1, cs_item_sk: 1, cs_bill_customer_sk: 1, cs_quantity: 2, cs_list_price: 10.0 },
@@ -68,13 +68,13 @@ let best_ss_customer =
 let catalog =
   from cs in catalog_sales
   join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
-  where d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk in best_ss_customer && cs.cs_item_sk in frequent_ss_items
+  where d.d_year == 2000 && d.d_moy == 2 && cs.cs_bill_customer_sk in best_ss_customer && cs.cs_item_sk in frequent_ss_items
   select cs.cs_quantity * cs.cs_list_price
 
 let web =
   from ws in web_sales
   join d in date_dim on ws.ws_sold_date_sk == d.d_date_sk
-  where d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk in best_ss_customer && ws.ws_item_sk in frequent_ss_items
+  where d.d_year == 2000 && d.d_moy == 2 && ws.ws_bill_customer_sk in best_ss_customer && ws.ws_item_sk in frequent_ss_items
   select ws.ws_quantity * ws.ws_list_price
 
 let result = sum(catalog) + sum(web)

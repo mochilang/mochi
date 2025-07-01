@@ -19,10 +19,10 @@ let inventory = [
 ]
 
 let date_dim = [
-  { d_date_sk: 1, d_month_seq: 0 },
-  { d_date_sk: 2, d_month_seq: 1 },
-  { d_date_sk: 3, d_month_seq: 2 },
-  { d_date_sk: 4, d_month_seq: 3 }
+  { d_date_sk: 1, d_month_seq: 1200 },
+  { d_date_sk: 2, d_month_seq: 1201 },
+  { d_date_sk: 3, d_month_seq: 1202 },
+  { d_date_sk: 4, d_month_seq: 1203 }
 ]
 
 let item = [
@@ -40,7 +40,7 @@ let qoh =
   from inv in inventory
   join d in date_dim on inv.inv_date_sk == d.d_date_sk
   join i in item on inv.inv_item_sk == i.i_item_sk
-  where d.d_month_seq >= 0 && d.d_month_seq <= 11
+  where d.d_month_seq >= 1200 && d.d_month_seq <= 1211
   group by {
     product_name: i.i_product_name,
     brand: i.i_brand,
