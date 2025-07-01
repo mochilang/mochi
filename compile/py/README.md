@@ -51,6 +51,7 @@ var helperMap = map[string]string{
     "_load":       helperLoad,
     "_save":       helperSave,
     "_slice":      helperSlice,
+    "_reverse":    helperReverse,
     "_stream":     helperStream,
     "_wait_all":   helperWaitAll,
     "_agent":      helperAgent,

@@ -240,6 +240,13 @@ var helperSlice = "def _slice(obj, i, j):\n" +
 	"        end = start\n" +
 	"    return obj[start:end]\n"
 
+var helperReverse = "def _reverse(obj):\n" +
+	"    if isinstance(obj, list):\n" +
+	"        return list(reversed(obj))\n" +
+	"    if isinstance(obj, str):\n" +
+	"        return obj[::-1]\n" +
+	"    raise Exception('reverse expects list or string')\n"
+
 var helperUnionAll = "def _union_all(a, b):\n" +
 	"    return list(a) + list(b)\n"
 
@@ -401,6 +408,7 @@ var helperMap = map[string]string{
 	"_load":       helperLoad,
 	"_save":       helperSave,
 	"_slice":      helperSlice,
+	"_reverse":    helperReverse,
 	"_stream":     helperStream,
 	"_wait_all":   helperWaitAll,
 	"_agent":      helperAgent,
