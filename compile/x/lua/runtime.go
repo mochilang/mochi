@@ -204,6 +204,7 @@ const (
 		"end\n"
 
 	helperJson = "function __json(v)\n" +
+		"    if type(v) == 'table' and next(v) == nil then print('[]'); return end\n" +
 		"    local function sort(x)\n" +
 		"        if type(x) ~= 'table' then return x end\n" +
 		"        if x[1] ~= nil or #x > 0 then\n" +
