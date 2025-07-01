@@ -545,6 +545,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		return fmt.Errorf("union types not supported")
 	}
+	for _, m := range t.Members {
+		if m.Field != nil && isMapType(m.Field.Type) {
+			return fmt.Errorf("map-based records unsupported")
+		}
+	}
 	name := sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("type :: %s", name))
 	c.indent++
@@ -590,6 +595,30 @@ func (c *Compiler) ftnScalarType(t types.Type) string {
 	}
 }
 
+func isMapType(t *parser.TypeRef) bool {
+	if t == nil {
+		return false
+	}
+	if t.Generic != nil && t.Generic.Name == "map" {
+		return true
+	}
+	if t.Struct != nil {
+		for _, f := range t.Struct.Fields {
+			if isMapType(f.Type) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
+		return nil
+	}
+	return e.Binary.Left.Value.Target.Map
+}
+
 func structLitName(e *parser.Expr) (string, bool) {
 	if e == nil {
 		return "", false
@@ -622,6 +651,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	case s.Let != nil:
+		if isMapType(s.Let.Type) {
+			return fmt.Errorf("map types unsupported")
+		}
 		if _, ok := structLitName(s.Let.Value); ok {
 			val, err := c.compileExpr(s.Let.Value)
 			if err != nil {
@@ -636,6 +668,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 			c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
 		}
 	case s.Var != nil:
+		if isMapType(s.Var.Type) {
+			return fmt.Errorf("map types unsupported")
+		}
 		if s.Var.Value != nil {
 			if _, ok := structLitName(s.Var.Value); ok {
 				val, err := c.compileExpr(s.Var.Value)
@@ -1605,7 +1640,10 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+	if q.Group != nil {
+		return "", fmt.Errorf("group by queries with aggregates are unsupported")
+	}
+	if len(q.Froms) > 0 || len(q.Joins) > 0 {
 		return "", fmt.Errorf("unsupported query expression")
 	}
 	src, err := c.compileExpr(q.Source)

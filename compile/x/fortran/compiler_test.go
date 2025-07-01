@@ -35,12 +35,15 @@ func TestFortranCompiler_GoldenOutput(t *testing.T) {
 		}
 		code, err := ftncode.New().Compile(prog)
 		if err != nil {
-			return nil, fmt.Errorf("compile error: %w", err)
+			return []byte("ERROR: " + err.Error()), nil
 		}
 		return bytes.TrimSpace(code), nil
 	}
 
 	golden.Run(t, "tests/compiler/fortran", ".mochi", ".f90.out", compile)
+
+	// Unsupported features emit an error string instead of code
+	golden.Run(t, "tests/compiler/fortran-unsupported", ".mochi", ".f90.out", compile)
 }
 
 func TestFortranCompiler_SubsetPrograms(t *testing.T) {

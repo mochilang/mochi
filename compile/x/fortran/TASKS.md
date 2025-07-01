@@ -9,3 +9,6 @@ The Fortran backend only handles simple array loops. Grouping, joins and dynamic
 - Add `q1.mochi` and `q2.mochi` to `tests/compiler/fortran` once implemented.
 - Implement join clauses for JOB queries and additional string helpers.
 - Implement joins and grouping so that `q1.mochi` and `q2.mochi` compile successfully.
+- Support map-based records used in various dataset schemas.
+- Add `group by` with aggregate functions for TPC-DS queries such as `tpc-ds/q1.mochi`.
+- Once joins and grouping work, add the TPC-DS queries to the Fortran golden tests.

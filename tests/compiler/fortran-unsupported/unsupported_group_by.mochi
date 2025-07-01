@@ -1,0 +1,2 @@
+let xs = [1,2,2]
+let res = from x in xs group by x into g select {k: g.key, n: count(g)}
