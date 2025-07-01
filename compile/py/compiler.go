@@ -144,7 +144,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			if isLiteralExpr(s.Let.Value) || isPureExpr(s.Let.Value) {
 				vars := map[string]struct{}{}
 				exprVars(s.Let.Value, vars)
-				if len(vars) == 0 {
+				if len(vars) == 0 && !exprHasCall(s.Let.Value) {
 					useExpr = true
 				}
 			}
@@ -169,7 +169,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			if isLiteralExpr(s.Var.Value) || isPureExpr(s.Var.Value) {
 				vars := map[string]struct{}{}
 				exprVars(s.Var.Value, vars)
-				if len(vars) == 0 {
+				if len(vars) == 0 && !exprHasCall(s.Var.Value) {
 					useExpr = true
 				}
 			}
@@ -721,6 +721,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "count":
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
+	case "exists":
+		c.use("_exists")
+		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
