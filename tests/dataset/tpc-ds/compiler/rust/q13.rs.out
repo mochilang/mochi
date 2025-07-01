@@ -1,0 +1,149 @@
+#[derive(Clone, Debug, Default)]
+struct StoreSale {
+    ss_store_sk: i64,
+    ss_sold_date_sk: i64,
+    ss_hdemo_sk: i64,
+    ss_cdemo_sk: i64,
+    ss_addr_sk: i64,
+    ss_sales_price: f64,
+    ss_net_profit: f64,
+    ss_quantity: i64,
+    ss_ext_sales_price: f64,
+    ss_ext_wholesale_cost: f64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Store {
+    s_store_sk: i64,
+    s_state: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct CustomerDemographics {
+    cd_demo_sk: i64,
+    cd_marital_status: String,
+    cd_education_status: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct HouseholdDemographics {
+    hd_demo_sk: i64,
+    hd_dep_count: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct CustomerAddress {
+    ca_address_sk: i64,
+    ca_country: String,
+    ca_state: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct DateDim {
+    d_date_sk: i64,
+    d_year: i64,
+}
+
+fn test_TPCDS_Q13_averages() {
+    expect(result == vec![std::collections::HashMap::from([("avg_ss_quantity".to_string(), 10.0), ("avg_ss_ext_sales_price".to_string(), 100.0), ("avg_ss_ext_wholesale_cost".to_string(), 50.0), ("sum_ss_ext_wholesale_cost".to_string(), 50.0)])]);
+}
+
+fn main() {
+    let mut store_sales = vec![std::collections::HashMap::from([("ss_store_sk".to_string(), 1), ("ss_sold_date_sk".to_string(), 1), ("ss_hdemo_sk".to_string(), 1), ("ss_cdemo_sk".to_string(), 1), ("ss_addr_sk".to_string(), 1), ("ss_sales_price".to_string(), 120.0), ("ss_net_profit".to_string(), 150.0), ("ss_quantity".to_string(), 10), ("ss_ext_sales_price".to_string(), 100.0), ("ss_ext_wholesale_cost".to_string(), 50.0)])];
+    let mut store = vec![std::collections::HashMap::from([("s_store_sk".to_string(), 1), ("s_state".to_string(), "CA")])];
+    let mut customer_demographics = vec![std::collections::HashMap::from([("cd_demo_sk".to_string(), 1), ("cd_marital_status".to_string(), "M1"), ("cd_education_status".to_string(), "ES1")])];
+    let mut household_demographics = vec![std::collections::HashMap::from([("hd_demo_sk".to_string(), 1), ("hd_dep_count".to_string(), 3)])];
+    let mut customer_address = vec![std::collections::HashMap::from([("ca_address_sk".to_string(), 1), ("ca_country".to_string(), "United States"), ("ca_state".to_string(), "CA")])];
+    let mut date_dim = vec![std::collections::HashMap::from([("d_date_sk".to_string(), 1), ("d_year".to_string(), 2001)])];
+    let mut filtered = {
+    let mut _res = Vec::new();
+    for ss in store_sales.clone() {
+        for s in store.clone() {
+            if !(_map_get(&ss, &"ss_store_sk".to_string()) == _map_get(&s, &"s_store_sk".to_string())) { continue; }
+            for cd in customer_demographics.clone() {
+                if !(_map_get(&ss, &"ss_cdemo_sk".to_string()) == _map_get(&cd, &"cd_demo_sk".to_string()) && _map_get(&cd, &"cd_marital_status".to_string()) == "M1" && _map_get(&cd, &"cd_education_status".to_string()) == "ES1") { continue; }
+                for hd in household_demographics.clone() {
+                    if !(_map_get(&ss, &"ss_hdemo_sk".to_string()) == _map_get(&hd, &"hd_demo_sk".to_string()) && _map_get(&hd, &"hd_dep_count".to_string()) == 3) { continue; }
+                    for ca in customer_address.clone() {
+                        if !(_map_get(&ss, &"ss_addr_sk".to_string()) == _map_get(&ca, &"ca_address_sk".to_string()) && _map_get(&ca, &"ca_country".to_string()) == "United States" && _map_get(&ca, &"ca_state".to_string()) == "CA") { continue; }
+                        for d in date_dim.clone() {
+                            if !(_map_get(&ss, &"ss_sold_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string()) && _map_get(&d, &"d_year".to_string()) == 2001) { continue; }
+                            if _map_get(&ss, &"ss_store_sk".to_string()) == _map_get(&s, &"s_store_sk".to_string()) && _map_get(&ss, &"ss_cdemo_sk".to_string()) == _map_get(&cd, &"cd_demo_sk".to_string()) && _map_get(&cd, &"cd_marital_status".to_string()) == "M1" && _map_get(&cd, &"cd_education_status".to_string()) == "ES1" && _map_get(&ss, &"ss_hdemo_sk".to_string()) == _map_get(&hd, &"hd_demo_sk".to_string()) && _map_get(&hd, &"hd_dep_count".to_string()) == 3 && _map_get(&ss, &"ss_addr_sk".to_string()) == _map_get(&ca, &"ca_address_sk".to_string()) && _map_get(&ca, &"ca_country".to_string()) == "United States" && _map_get(&ca, &"ca_state".to_string()) == "CA" && _map_get(&ss, &"ss_sold_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string()) && _map_get(&d, &"d_year".to_string()) == 2001 {
+                                _res.push(ss);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    _res
+};
+    let mut result = {
+    #[derive(Clone, Debug)]
+    struct Group { key: std::collections::HashMap<std::boxed::Box<dyn std::any::Any>, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for r in filtered.clone() {
+        let key: std::collections::HashMap<std::boxed::Box<dyn std::any::Any>, std::boxed::Box<dyn std::any::Any>> = std::collections::HashMap::from([]);
+        let ks = format!("{:?}", key.clone());
+        if !groups.contains_key(&ks) {
+            groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+            order.push(ks.clone());
+        }
+        groups.get_mut(&ks).unwrap().items.push(r.clone());
+    }
+    let mut _res: Vec<std::collections::HashMap<String, f64>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("avg_ss_quantity".to_string(), _avg(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"ss_quantity".to_string()));
+    }
+    _res
+})), ("avg_ss_ext_sales_price".to_string(), _avg(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"ss_ext_sales_price".to_string()));
+    }
+    _res
+})), ("avg_ss_ext_wholesale_cost".to_string(), _avg(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"ss_ext_wholesale_cost".to_string()));
+    }
+    _res
+})), ("sum_ss_ext_wholesale_cost".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"ss_ext_wholesale_cost".to_string()));
+    }
+    _res
+}))]));
+    }
+    _res
+}
+;
+    json(result);
+    test_TPCDS_Q13_averages();
+}
+
+fn _avg<T: Into<f64> + Copy>(v: &[T]) -> f64 {
+    if v.is_empty() { return 0.0 }
+    let mut sum = 0.0;
+    for &it in v { sum += Into::<f64>::into(it); }
+    sum / v.len() as f64
+}
+fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {
+    m.get(k).unwrap().clone()
+}
+fn _sum<T: Into<f64> + Copy>(v: &[T]) -> f64 {
+    if v.is_empty() { return 0.0 }
+    let mut sum = 0.0;
+    for &it in v { sum += Into::<f64>::into(it); }
+    sum
+}
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}

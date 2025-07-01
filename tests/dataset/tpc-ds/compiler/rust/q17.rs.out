@@ -1,0 +1,164 @@
+#[derive(Clone, Debug, Default)]
+struct StoreSale {
+    ss_sold_date_sk: i64,
+    ss_item_sk: i64,
+    ss_customer_sk: i64,
+    ss_ticket_number: i64,
+    ss_quantity: i64,
+    ss_store_sk: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct StoreReturn {
+    sr_returned_date_sk: i64,
+    sr_customer_sk: i64,
+    sr_item_sk: i64,
+    sr_ticket_number: i64,
+    sr_return_quantity: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct CatalogSale {
+    cs_sold_date_sk: i64,
+    cs_item_sk: i64,
+    cs_bill_customer_sk: i64,
+    cs_quantity: i64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct DateDim {
+    d_date_sk: i64,
+    d_quarter_name: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Store {
+    s_store_sk: i64,
+    s_state: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct Item {
+    i_item_sk: i64,
+    i_item_id: String,
+    i_item_desc: String,
+}
+
+fn test_TPCDS_Q17_stats() {
+    expect(result == vec![std::collections::HashMap::from([("i_item_id".to_string(), "I1"), ("i_item_desc".to_string(), "Item 1"), ("s_state".to_string(), "CA"), ("store_sales_quantitycount".to_string(), 1), ("store_sales_quantityave".to_string(), 10.0), ("store_sales_quantitystdev".to_string(), 0.0), ("store_sales_quantitycov".to_string(), 0.0), ("store_returns_quantitycount".to_string(), 1), ("store_returns_quantityave".to_string(), 2.0), ("store_returns_quantitystdev".to_string(), 0.0), ("store_returns_quantitycov".to_string(), 0.0), ("catalog_sales_quantitycount".to_string(), 1), ("catalog_sales_quantityave".to_string(), 5.0), ("catalog_sales_quantitystdev".to_string(), 0.0), ("catalog_sales_quantitycov".to_string(), 0.0)])]);
+}
+
+fn main() {
+    let mut store_sales = vec![std::collections::HashMap::from([("ss_sold_date_sk".to_string(), 1), ("ss_item_sk".to_string(), 1), ("ss_customer_sk".to_string(), 1), ("ss_ticket_number".to_string(), 1), ("ss_quantity".to_string(), 10), ("ss_store_sk".to_string(), 1)])];
+    let mut store_returns = vec![std::collections::HashMap::from([("sr_returned_date_sk".to_string(), 2), ("sr_customer_sk".to_string(), 1), ("sr_item_sk".to_string(), 1), ("sr_ticket_number".to_string(), 1), ("sr_return_quantity".to_string(), 2)])];
+    let mut catalog_sales = vec![std::collections::HashMap::from([("cs_sold_date_sk".to_string(), 3), ("cs_item_sk".to_string(), 1), ("cs_bill_customer_sk".to_string(), 1), ("cs_quantity".to_string(), 5)])];
+    let mut date_dim = vec![std::collections::HashMap::from([("d_date_sk".to_string(), 1), ("d_quarter_name".to_string(), "1998Q1")]), std::collections::HashMap::from([("d_date_sk".to_string(), 2), ("d_quarter_name".to_string(), "1998Q2")]), std::collections::HashMap::from([("d_date_sk".to_string(), 3), ("d_quarter_name".to_string(), "1998Q3")])];
+    let mut store = vec![std::collections::HashMap::from([("s_store_sk".to_string(), 1), ("s_state".to_string(), "CA")])];
+    let mut item = vec![std::collections::HashMap::from([("i_item_sk".to_string(), 1), ("i_item_id".to_string(), "I1"), ("i_item_desc".to_string(), "Item 1")])];
+    let mut joined = {
+    let mut _res = Vec::new();
+    for ss in store_sales.clone() {
+        for sr in store_returns.clone() {
+            if !(_map_get(&ss, &"ss_customer_sk".to_string()) == _map_get(&sr, &"sr_customer_sk".to_string()) && _map_get(&ss, &"ss_item_sk".to_string()) == _map_get(&sr, &"sr_item_sk".to_string()) && _map_get(&ss, &"ss_ticket_number".to_string()) == _map_get(&sr, &"sr_ticket_number".to_string())) { continue; }
+            for cs in catalog_sales.clone() {
+                if !(_map_get(&sr, &"sr_customer_sk".to_string()) == _map_get(&cs, &"cs_bill_customer_sk".to_string()) && _map_get(&sr, &"sr_item_sk".to_string()) == _map_get(&cs, &"cs_item_sk".to_string())) { continue; }
+                for d1 in date_dim.clone() {
+                    if !(_map_get(&ss, &"ss_sold_date_sk".to_string()) == _map_get(&d1, &"d_date_sk".to_string()) && _map_get(&d1, &"d_quarter_name".to_string()) == "1998Q1") { continue; }
+                    for d2 in date_dim.clone() {
+                        if !(vec!["1998Q1".to_string(), "1998Q2".to_string(), "1998Q3".to_string()].contains(&_map_get(&sr, &"sr_returned_date_sk".to_string()) == _map_get(&d2, &"d_date_sk".to_string()) && _map_get(&d2, &"d_quarter_name".to_string()))) { continue; }
+                        for d3 in date_dim.clone() {
+                            if !(vec!["1998Q1".to_string(), "1998Q2".to_string(), "1998Q3".to_string()].contains(&_map_get(&cs, &"cs_sold_date_sk".to_string()) == _map_get(&d3, &"d_date_sk".to_string()) && _map_get(&d3, &"d_quarter_name".to_string()))) { continue; }
+                            for s in store.clone() {
+                                if !(_map_get(&ss, &"ss_store_sk".to_string()) == _map_get(&s, &"s_store_sk".to_string())) { continue; }
+                                for i in item.clone() {
+                                    if !(_map_get(&ss, &"ss_item_sk".to_string()) == _map_get(&i, &"i_item_sk".to_string())) { continue; }
+                                    if _map_get(&ss, &"ss_customer_sk".to_string()) == _map_get(&sr, &"sr_customer_sk".to_string()) && _map_get(&ss, &"ss_item_sk".to_string()) == _map_get(&sr, &"sr_item_sk".to_string()) && _map_get(&ss, &"ss_ticket_number".to_string()) == _map_get(&sr, &"sr_ticket_number".to_string()) && _map_get(&sr, &"sr_customer_sk".to_string()) == _map_get(&cs, &"cs_bill_customer_sk".to_string()) && _map_get(&sr, &"sr_item_sk".to_string()) == _map_get(&cs, &"cs_item_sk".to_string()) && _map_get(&ss, &"ss_sold_date_sk".to_string()) == _map_get(&d1, &"d_date_sk".to_string()) && _map_get(&d1, &"d_quarter_name".to_string()) == "1998Q1" && vec!["1998Q1".to_string(), "1998Q2".to_string(), "1998Q3".to_string()].contains(&_map_get(&sr, &"sr_returned_date_sk".to_string()) == _map_get(&d2, &"d_date_sk".to_string()) && _map_get(&d2, &"d_quarter_name".to_string())) && vec!["1998Q1".to_string(), "1998Q2".to_string(), "1998Q3".to_string()].contains(&_map_get(&cs, &"cs_sold_date_sk".to_string()) == _map_get(&d3, &"d_date_sk".to_string()) && _map_get(&d3, &"d_quarter_name".to_string())) && _map_get(&ss, &"ss_store_sk".to_string()) == _map_get(&s, &"s_store_sk".to_string()) && _map_get(&ss, &"ss_item_sk".to_string()) == _map_get(&i, &"i_item_sk".to_string()) {
+                                        _res.push(std::collections::HashMap::from([("qty".to_string(), _map_get(&ss, &"ss_quantity".to_string())), ("ret".to_string(), _map_get(&sr, &"sr_return_quantity".to_string())), ("csq".to_string(), _map_get(&cs, &"cs_quantity".to_string())), ("i_item_id".to_string(), _map_get(&i, &"i_item_id".to_string())), ("i_item_desc".to_string(), _map_get(&i, &"i_item_desc".to_string())), ("s_state".to_string(), _map_get(&s, &"s_state".to_string()))]));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    _res
+};
+    let mut result = {
+    #[derive(Clone, Debug)]
+    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::collections::HashMap<String, i64>> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for j in joined.clone() {
+        let key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>> = std::collections::HashMap::from([("i_item_id".to_string(), _map_get(&j, &"i_item_id".to_string())), ("i_item_desc".to_string(), _map_get(&j, &"i_item_desc".to_string())), ("s_state".to_string(), _map_get(&j, &"s_state".to_string()))]);
+        let ks = format!("{:?}", key.clone());
+        if !groups.contains_key(&ks) {
+            groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+            order.push(ks.clone());
+        }
+        groups.get_mut(&ks).unwrap().items.push(j.clone());
+    }
+    let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("i_item_id".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"i_item_id".to_string())), ("i_item_desc".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"i_item_desc".to_string())), ("s_state".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"s_state".to_string())), ("store_sales_quantitycount".to_string(), _count(&{
+    let mut _res = Vec::new();
+    for _ in g {
+        _res.push(_);
+    }
+    _res
+})), ("store_sales_quantityave".to_string(), _avg(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"qty".to_string()));
+    }
+    _res
+})), ("store_sales_quantitystdev".to_string(), 0.0), ("store_sales_quantitycov".to_string(), 0.0), ("store_returns_quantitycount".to_string(), _count(&{
+    let mut _res = Vec::new();
+    for _ in g {
+        _res.push(_);
+    }
+    _res
+})), ("store_returns_quantityave".to_string(), _avg(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"ret".to_string()));
+    }
+    _res
+})), ("store_returns_quantitystdev".to_string(), 0.0), ("store_returns_quantitycov".to_string(), 0.0), ("catalog_sales_quantitycount".to_string(), _count(&{
+    let mut _res = Vec::new();
+    for _ in g {
+        _res.push(_);
+    }
+    _res
+})), ("catalog_sales_quantityave".to_string(), _avg(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"csq".to_string()));
+    }
+    _res
+})), ("catalog_sales_quantitystdev".to_string(), 0.0), ("catalog_sales_quantitycov".to_string(), 0.0)]));
+    }
+    _res
+}
+;
+    json(result);
+    test_TPCDS_Q17_stats();
+}
+
+fn _avg<T: Into<f64> + Copy>(v: &[T]) -> f64 {
+    if v.is_empty() { return 0.0 }
+    let mut sum = 0.0;
+    for &it in v { sum += Into::<f64>::into(it); }
+    sum / v.len() as f64
+}
+fn _count<T>(v: &[T]) -> i32 {
+    v.len() as i32
+}
+fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {
+    m.get(k).unwrap().clone()
+}
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}
