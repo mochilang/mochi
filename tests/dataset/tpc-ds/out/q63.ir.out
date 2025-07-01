@@ -1,4 +1,4 @@
-func main (regs=82)
+func main (regs=81)
   // let sales = [
   Const        r0, [{"amount": 30, "mgr": 1}, {"amount": 33, "mgr": 2}]
   // from s in sales
@@ -31,100 +31,99 @@ L2:
   In           r21, r20, r9
   JumpIfTrue   r21, L1
   // from s in sales
-  Const        r22, []
-  Const        r23, "__group__"
-  Const        r24, true
+  Const        r22, "__group__"
+  Const        r23, true
   // group by {mgr: s.mgr} into g
-  Move         r25, r19
+  Move         r24, r19
   // from s in sales
-  Const        r26, "items"
-  Move         r27, r22
-  Const        r28, "count"
-  Const        r29, 0
+  Const        r25, "items"
+  Move         r26, r11
+  Const        r27, "count"
+  Const        r28, 0
+  Move         r29, r22
   Move         r30, r23
-  Move         r31, r24
-  Move         r32, r3
+  Move         r31, r3
+  Move         r32, r24
   Move         r33, r25
   Move         r34, r26
   Move         r35, r27
   Move         r36, r28
-  Move         r37, r29
-  MakeMap      r38, 4, r30
-  SetIndex     r9, r20, r38
-  Append       r39, r10, r38
-  Move         r10, r39
+  MakeMap      r37, 4, r29
+  SetIndex     r9, r20, r37
+  Append       r38, r10, r37
+  Move         r10, r38
 L1:
-  Index        r40, r9, r20
-  Index        r41, r40, r26
-  Append       r42, r41, r13
-  SetIndex     r40, r26, r42
-  Index        r43, r40, r28
-  Const        r44, 1
-  AddInt       r45, r43, r44
-  SetIndex     r40, r28, r45
-  AddInt       r8, r8, r44
+  Index        r39, r9, r20
+  Index        r40, r39, r25
+  Append       r41, r40, r13
+  SetIndex     r39, r25, r41
+  Index        r42, r39, r27
+  Const        r43, 1
+  AddInt       r44, r42, r43
+  SetIndex     r39, r27, r44
+  AddInt       r8, r8, r43
   Jump         L2
 L0:
-  Move         r46, r29
-  Len          r47, r10
+  Move         r45, r28
+  Len          r46, r10
 L6:
-  LessInt      r48, r46, r47
-  JumpIfFalse  r48, L3
-  Index        r49, r10, r46
-  Move         r50, r49
+  LessInt      r47, r45, r46
+  JumpIfFalse  r47, L3
+  Index        r48, r10, r45
+  Move         r49, r48
   // select {mgr: g.key.mgr, sum_sales: sum(from x in g select x.amount)}
-  Const        r51, "mgr"
-  Index        r52, r50, r3
-  Index        r53, r52, r2
-  Const        r54, "sum_sales"
-  Const        r55, []
-  IterPrep     r56, r50
-  Len          r57, r56
-  Move         r58, r29
+  Const        r50, "mgr"
+  Index        r51, r49, r3
+  Index        r52, r51, r2
+  Const        r53, "sum_sales"
+  Const        r54, []
+  IterPrep     r55, r49
+  Len          r56, r55
+  Move         r57, r28
 L5:
-  LessInt      r59, r58, r57
-  JumpIfFalse  r59, L4
-  Index        r60, r56, r58
-  Move         r61, r60
-  Index        r62, r61, r5
-  Append       r63, r55, r62
-  Move         r55, r63
-  AddInt       r58, r58, r44
+  LessInt      r58, r57, r56
+  JumpIfFalse  r58, L4
+  Index        r59, r55, r57
+  Move         r60, r59
+  Index        r61, r60, r5
+  Append       r62, r54, r61
+  Move         r54, r62
+  AddInt       r57, r57, r43
   Jump         L5
 L4:
-  Sum          r64, r55
-  Move         r65, r51
+  Sum          r63, r54
+  Move         r64, r50
+  Move         r65, r52
   Move         r66, r53
-  Move         r67, r54
-  Move         r68, r64
-  MakeMap      r69, 2, r65
+  Move         r67, r63
+  MakeMap      r68, 2, r64
   // from s in sales
-  Append       r70, r1, r69
-  Move         r1, r70
-  AddInt       r46, r46, r44
+  Append       r69, r1, r68
+  Move         r1, r69
+  AddInt       r45, r45, r43
   Jump         L6
 L3:
   // let result = sum(from x in by_mgr select x.sum_sales)
-  Const        r71, []
-  IterPrep     r72, r1
-  Len          r73, r72
-  Move         r74, r29
+  Const        r70, []
+  IterPrep     r71, r1
+  Len          r72, r71
+  Move         r73, r28
 L8:
-  LessInt      r75, r74, r73
-  JumpIfFalse  r75, L7
-  Index        r76, r72, r74
-  Move         r61, r76
-  Index        r77, r61, r4
-  Append       r78, r71, r77
-  Move         r71, r78
-  AddInt       r74, r74, r44
+  LessInt      r74, r73, r72
+  JumpIfFalse  r74, L7
+  Index        r75, r71, r73
+  Move         r60, r75
+  Index        r76, r60, r4
+  Append       r77, r70, r76
+  Move         r70, r77
+  AddInt       r73, r73, r43
   Jump         L8
 L7:
-  Sum          r79, r71
+  Sum          r78, r70
   // json(result)
-  JSON         r79
+  JSON         r78
   // expect result == 63
-  Const        r80, 63
-  Equal        r81, r79, r80
-  Expect       r81
+  Const        r79, 63
+  Equal        r80, r78, r79
+  Expect       r80
   Return       r0
