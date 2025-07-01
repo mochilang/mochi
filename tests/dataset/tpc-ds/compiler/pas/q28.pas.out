@@ -1,0 +1,192 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+type StoreSale = record
+  ss_quantity: integer;
+  ss_list_price: double;
+  ss_coupon_amt: double;
+  ss_wholesale_cost: double;
+end;
+
+generic _Group<T> = record
+  Key: Variant;
+  Items: specialize TArray<T>;
+end;
+
+generic function _avgList<T>(arr: specialize TArray<T>): double;
+begin
+  if Length(arr) = 0 then exit(0);
+  Result := specialize _sumList<T>(arr) / Length(arr);
+end;
+
+generic function _countList<T>(arr: specialize TArray<T>): integer;
+begin
+  Result := Length(arr);
+end;
+
+generic function _group_by<T>(src: specialize TArray<T>; keyfn: function(it: T): Variant):
+                                                                                          specialize
+                                                                                           TArray<
+                                                                                          specialize
+                                                                                           _Group<T>
+                                                                                           >;
+
+var i,j,idx: Integer;
+  key: Variant;
+  ks: string;
+begin
+  SetLength(Result, 0);
+  for i := 0 to High(src) do
+    begin
+      key := keyfn(src[i]);
+      ks := VarToStr(key);
+      idx := -1;
+      for j := 0 to High(Result) do
+        if VarToStr(Result[j].Key) = ks then
+          begin
+            idx := j;
+            Break;
+          end;
+      if idx = -1 then
+        begin
+          idx := Length(Result);
+          SetLength(Result, idx + 1);
+          Result[idx].Key := key;
+          SetLength(Result[idx].Items, 0);
+        end;
+      SetLength(Result[idx].Items, Length(Result[idx].Items)+1);
+      Result[idx].Items[High(Result[idx].Items)] := src[i];
+    end;
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TArray<Variant>;
+  _tmp11: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp12: specialize TArray<specialize _Group<specialize TFPGMap<string, Variant>>>;
+  _tmp13: specialize TArray<Variant>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp4: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TArray<Variant>;
+  _tmp7: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp8: specialize TArray<specialize _Group<specialize TFPGMap<string, Variant>>>;
+  _tmp9: specialize TArray<Variant>;
+  bucket1: specialize TArray<specialize TFPGMap<string, Variant>>;
+  bucket2: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _result: specialize TFPGMap<string, Variant>;
+  ss: specialize TFPGMap<string, Variant>;
+  store_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  x: specialize TFPGMap<string, Variant>;
+
+procedure test_TPCDS_Q28_buckets;
+
+var
+  _tmp14: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp14 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp14.AddOrSetData('B1_LP', 100);
+  _tmp14.AddOrSetData('B1_CNT', 1);
+  _tmp14.AddOrSetData('B1_CNTD', 1);
+  _tmp14.AddOrSetData('B2_LP', 80);
+  _tmp14.AddOrSetData('B2_CNT', 1);
+  _tmp14.AddOrSetData('B2_CNTD', 1);
+  if not ((_result = _tmp14)) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('ss_quantity', 3);
+  _tmp0.AddOrSetData('ss_list_price', 100);
+  _tmp0.AddOrSetData('ss_coupon_amt', 50);
+  _tmp0.AddOrSetData('ss_wholesale_cost', 30);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('ss_quantity', 8);
+  _tmp1.AddOrSetData('ss_list_price', 80);
+  _tmp1.AddOrSetData('ss_coupon_amt', 10);
+  _tmp1.AddOrSetData('ss_wholesale_cost', 20);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('ss_quantity', 12);
+  _tmp2.AddOrSetData('ss_list_price', 60);
+  _tmp2.AddOrSetData('ss_coupon_amt', 5);
+  _tmp2.AddOrSetData('ss_wholesale_cost', 15);
+  store_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2]);
+  SetLength(_tmp3, 0);
+  for ss in store_sales do
+    begin
+      if not ((((ss.ss_quantity >= 0) and (ss.ss_quantity <= 5)) and ((((ss.ss_list_price >= 0) and
+         (ss.ss_list_price <= 110)) or ((ss.ss_coupon_amt >= 0) and (ss.ss_coupon_amt <= 1000))) or
+         ((ss.ss_wholesale_cost >= 0) and (ss.ss_wholesale_cost <= 50))))) then continue;
+      _tmp3 := Concat(_tmp3, [ss]);
+    end;
+  bucket1 := _tmp3;
+  SetLength(_tmp4, 0);
+  for ss in store_sales do
+    begin
+      if not ((((ss.ss_quantity >= 6) and (ss.ss_quantity <= 10)) and ((((ss.ss_list_price >= 0) and
+         (ss.ss_list_price <= 110)) or ((ss.ss_coupon_amt >= 0) and (ss.ss_coupon_amt <= 1000))) or
+         ((ss.ss_wholesale_cost >= 0) and (ss.ss_wholesale_cost <= 50))))) then continue;
+      _tmp4 := Concat(_tmp4, [ss]);
+    end;
+  bucket2 := _tmp4;
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  SetLength(_tmp6, 0);
+  for x in bucket1 do
+    begin
+      _tmp6 := Concat(_tmp6, [x.ss_list_price]);
+    end;
+  _tmp5.AddOrSetData('B1_LP', specialize _avgList<Variant>(_tmp6));
+  _tmp5.AddOrSetData('B1_CNT', specialize _countList<specialize TFPGMap<string, Variant>>(bucket1));
+  SetLength(_tmp7, 0);
+  for x in bucket1 do
+    begin
+      _tmp7 := Concat(_tmp7, [x]);
+    end;
+  _tmp8 := specialize _group_by<specialize TFPGMap<string, Variant>>(_tmp7, function(x: specialize
+           TFPGMap<string, Variant>): Variant begin Result := x.ss_list_price
+end
+);
+SetLength(_tmp9, 0);
+for g in _tmp8 do
+  begin
+    _tmp9 := Concat(_tmp9, [g.key]);
+  end;
+_tmp5.AddOrSetData('B1_CNTD', specialize _countList<Variant>(_tmp9));
+SetLength(_tmp10, 0);
+for x in bucket2 do
+  begin
+    _tmp10 := Concat(_tmp10, [x.ss_list_price]);
+  end;
+_tmp5.AddOrSetData('B2_LP', specialize _avgList<Variant>(_tmp10));
+_tmp5.AddOrSetData('B2_CNT', specialize _countList<specialize TFPGMap<string, Variant>>(bucket2));
+SetLength(_tmp11, 0);
+for x in bucket2 do
+  begin
+    _tmp11 := Concat(_tmp11, [x]);
+  end;
+_tmp12 := specialize _group_by<specialize TFPGMap<string, Variant>>(_tmp11, function(x: specialize
+          TFPGMap<string, Variant>): Variant begin Result := x.ss_list_price
+end
+);
+SetLength(_tmp13, 0);
+for g in _tmp12 do
+  begin
+    _tmp13 := Concat(_tmp13, [g.key]);
+  end;
+_tmp5.AddOrSetData('B2_CNTD', specialize _countList<Variant>(_tmp13));
+_result := _tmp5;
+specialize _json<specialize TFPGMap<string, Variant>>(_result);
+test_TPCDS_Q28_buckets;
+end.

@@ -1,0 +1,271 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+type StoreSale = record
+  ss_ticket_number: integer;
+  ss_item_sk: integer;
+  ss_customer_sk: integer;
+  ss_store_sk: integer;
+  ss_net_paid: double;
+end;
+
+type StoreReturn = record
+  sr_ticket_number: integer;
+  sr_item_sk: integer;
+end;
+
+type Store = record
+  s_store_sk: integer;
+  s_store_name: string;
+  s_market_id: integer;
+  s_state: string;
+  s_zip: string;
+end;
+
+type Item = record
+  i_item_sk: integer;
+  i_color: string;
+  i_current_price: double;
+  i_manager_id: integer;
+  i_units: string;
+  i_size: string;
+end;
+
+type Customer = record
+  c_customer_sk: integer;
+  c_first_name: string;
+  c_last_name: string;
+  c_current_addr_sk: integer;
+  c_birth_country: string;
+end;
+
+type CustomerAddress = record
+  ca_address_sk: integer;
+  ca_state: string;
+  ca_country: string;
+  ca_zip: string;
+end;
+
+generic function _avgList<T>(arr: specialize TArray<T>): double;
+begin
+  if Length(arr) = 0 then exit(0);
+  Result := specialize _sumList<T>(arr) / Length(arr);
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+
+var i,j: integer;
+  tmp: T;
+  k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+    for j := i + 1 to High(arr) do
+      if keys[i] > keys[j] then
+        begin
+          tmp := arr[i];
+          arr[i] := arr[j];
+          arr[j] := tmp;
+          k := keys[i];
+          keys[i] := keys[j];
+          keys[j] := k;
+        end;
+end;
+
+generic function _sumList<T>(arr: specialize TArray<T>): double;
+
+var i: integer;
+  s: double;
+begin
+  s := 0;
+  for i := 0 to High(arr) do
+    s := s + arr[i];
+  Result := s;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TFPGMap<Variant, Variant>;
+  _tmp11: specialize TFPGMap<Variant, Variant>;
+  _tmp12: specialize TArray<Variant>;
+  _tmp13: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp14: specialize TArray<Variant>;
+  _tmp15: specialize TFPGMap<Variant, Variant>;
+  _tmp16: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp17: specialize TArray<Variant>;
+  _tmp2: specialize TFPGMap<Variant, integer>;
+  _tmp3: specialize TFPGMap<Variant, integer>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp7: specialize TFPGMap<Variant, Variant>;
+  _tmp8: specialize TFPGMap<Variant, Variant>;
+  _tmp9: specialize TFPGMap<Variant, Variant>;
+  avg_paid: double;
+  customer: specialize TArray<specialize TFPGMap<string, Variant>>;
+  customer_address: specialize TArray<specialize TFPGMap<string, Variant>>;
+  item: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+  ss: specialize TFPGMap<string, Variant>;
+  ssales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  store: specialize TArray<specialize TFPGMap<string, Variant>>;
+  store_returns: specialize TArray<specialize TFPGMap<string, integer>>;
+  store_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  x: specialize TFPGMap<string, Variant>;
+
+procedure test_TPCDS_Q24_customer_net_paid;
+
+var
+  _tmp18: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp18 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp18.AddOrSetData('c_last_name', 'Smith');
+  _tmp18.AddOrSetData('c_first_name', 'Ann');
+  _tmp18.AddOrSetData('s_store_name', 'Store1');
+  _tmp18.AddOrSetData('paid', 100);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp18]))) then raise
+    Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('ss_ticket_number', 1);
+  _tmp0.AddOrSetData('ss_item_sk', 1);
+  _tmp0.AddOrSetData('ss_customer_sk', 1);
+  _tmp0.AddOrSetData('ss_store_sk', 1);
+  _tmp0.AddOrSetData('ss_net_paid', 100);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('ss_ticket_number', 2);
+  _tmp1.AddOrSetData('ss_item_sk', 2);
+  _tmp1.AddOrSetData('ss_customer_sk', 2);
+  _tmp1.AddOrSetData('ss_store_sk', 1);
+  _tmp1.AddOrSetData('ss_net_paid', 50);
+  store_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1]);
+  _tmp2 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp2.AddOrSetData('sr_ticket_number', 1);
+  _tmp2.AddOrSetData('sr_item_sk', 1);
+  _tmp3 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp3.AddOrSetData('sr_ticket_number', 2);
+  _tmp3.AddOrSetData('sr_item_sk', 2);
+  store_returns := specialize TArray<specialize TFPGMap<string, integer>>([_tmp2, _tmp3]);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('s_store_sk', 1);
+  _tmp4.AddOrSetData('s_store_name', 'Store1');
+  _tmp4.AddOrSetData('s_market_id', 5);
+  _tmp4.AddOrSetData('s_state', 'CA');
+  _tmp4.AddOrSetData('s_zip', '12345');
+  store := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp4]);
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('i_item_sk', 1);
+  _tmp5.AddOrSetData('i_color', 'RED');
+  _tmp5.AddOrSetData('i_current_price', 10);
+  _tmp5.AddOrSetData('i_manager_id', 1);
+  _tmp5.AddOrSetData('i_units', 'EA');
+  _tmp5.AddOrSetData('i_size', 'M');
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('i_item_sk', 2);
+  _tmp6.AddOrSetData('i_color', 'BLUE');
+  _tmp6.AddOrSetData('i_current_price', 20);
+  _tmp6.AddOrSetData('i_manager_id', 2);
+  _tmp6.AddOrSetData('i_units', 'EA');
+  _tmp6.AddOrSetData('i_size', 'L');
+  item := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp5, _tmp6]);
+  _tmp7 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp7.AddOrSetData('c_customer_sk', 1);
+  _tmp7.AddOrSetData('c_first_name', 'Ann');
+  _tmp7.AddOrSetData('c_last_name', 'Smith');
+  _tmp7.AddOrSetData('c_current_addr_sk', 1);
+  _tmp7.AddOrSetData('c_birth_country', 'Canada');
+  _tmp8 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp8.AddOrSetData('c_customer_sk', 2);
+  _tmp8.AddOrSetData('c_first_name', 'Bob');
+  _tmp8.AddOrSetData('c_last_name', 'Jones');
+  _tmp8.AddOrSetData('c_current_addr_sk', 2);
+  _tmp8.AddOrSetData('c_birth_country', 'USA');
+  customer := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp7, _tmp8]);
+  _tmp9 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp9.AddOrSetData('ca_address_sk', 1);
+  _tmp9.AddOrSetData('ca_state', 'CA');
+  _tmp9.AddOrSetData('ca_country', 'USA');
+  _tmp9.AddOrSetData('ca_zip', '12345');
+  _tmp10 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp10.AddOrSetData('ca_address_sk', 2);
+  _tmp10.AddOrSetData('ca_state', 'CA');
+  _tmp10.AddOrSetData('ca_country', 'USA');
+  _tmp10.AddOrSetData('ca_zip', '54321');
+  customer_address := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp9, _tmp10]);
+  _tmp11 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp11.AddOrSetData('c_last_name', g.key.last);
+  _tmp11.AddOrSetData('c_first_name', g.key.first);
+  _tmp11.AddOrSetData('s_store_name', g.key.store_name);
+  _tmp11.AddOrSetData('color', g.key.color);
+  SetLength(_tmp12, 0);
+  for x in g do
+    begin
+      _tmp12 := Concat(_tmp12, [x.ss_net_paid]);
+    end;
+  _tmp11.AddOrSetData('netpaid', specialize _sumList<Variant>(_tmp12));
+  SetLength(_tmp13, 0);
+  for ss in store_sales do
+    begin
+      for sr in store_returns do
+        begin
+          if not (((ss.ss_ticket_number = sr.sr_ticket_number) and (ss.ss_item_sk = sr.sr_item_sk)))
+            then continue;
+          for s in store do
+            begin
+              if not ((ss.ss_store_sk = s.s_store_sk)) then continue;
+              for i in item do
+                begin
+                  if not ((ss.ss_item_sk = i.i_item_sk)) then continue;
+                  for c in customer do
+                    begin
+                      if not ((ss.ss_customer_sk = c.c_customer_sk)) then continue;
+                      for ca in customer_address do
+                        begin
+                          if not ((c.c_current_addr_sk = ca.ca_address_sk)) then continue;
+                          if not ((((c.c_birth_country <> strings.ToUpper(ca.ca_country)) and (s.
+                             s_zip = ca.ca_zip)) and (s.s_market_id = 5))) then continue;
+                          _tmp13 := Concat(_tmp13, [_tmp11]);
+                        end;
+                    end;
+                end;
+            end;
+        end;
+    end;
+  ssales := _tmp13;
+  SetLength(_tmp14, 0);
+  for x in ssales do
+    begin
+      _tmp14 := Concat(_tmp14, [x.netpaid]);
+    end;
+  avg_paid := specialize _avgList<Variant>(_tmp14);
+  _tmp15 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp15.AddOrSetData('c_last_name', x.c_last_name);
+  _tmp15.AddOrSetData('c_first_name', x.c_first_name);
+  _tmp15.AddOrSetData('s_store_name', x.s_store_name);
+  _tmp15.AddOrSetData('paid', x.netpaid);
+  SetLength(_tmp16, 0);
+  SetLength(_tmp17, 0);
+  for x in ssales do
+    begin
+      if not (((x.color = 'RED') and (x.netpaid > 0.05 * avg_paid))) then continue;
+      _tmp16 := Concat(_tmp16, [_tmp15]);
+      _tmp17 := Concat(_tmp17, [specialize TArray<specialize TFPGMap<string, Variant>>([x.
+                c_last_name, x.c_first_name, x.s_store_name])]);
+    end;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp16, _tmp17);
+  _result := _tmp16;
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(_result);
+  test_TPCDS_Q24_customer_net_paid;
+end.
