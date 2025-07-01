@@ -922,6 +922,32 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenVal, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseVal string
+	if ie.ElseIf != nil {
+		elseVal, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseVal, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseVal = "undefined"
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenVal, elseVal), nil
+}
+
 func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	name := sanitizeName(stmt.Name)
 	if stmt.RangeEnd != nil {
@@ -1382,6 +1408,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Query != nil:
 		return c.compileQueryExpr(p.Query)
 	case p.Lit != nil:
@@ -1505,6 +1533,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "max":
 		c.use("_max")
 		return fmt.Sprintf("_max(%s)", argStr), nil
+	case "concat":
+		if len(args) == 0 {
+			return "[]", nil
+		}
+		return fmt.Sprintf("[].concat(%s)", strings.Join(args, ", ")), nil
+	case "substr":
+		if len(args) == 3 {
+			return fmt.Sprintf("(%s).substring(%s, (%s)+(%s))", args[0], args[1], args[1], args[2]), nil
+		}
+		return fmt.Sprintf("(%s).substring(%s)", args[0], args[1]), nil
+	case "reverse":
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			if _, ok := t.(types.StringType); ok {
+				return fmt.Sprintf("%s.split('') .reverse().join('')", args[0]), nil
+			}
+			return fmt.Sprintf("%s.slice().reverse()", args[0]), nil
+		}
+		return fmt.Sprintf("[].concat(%s).reverse()", strings.Join(args, ", ")), nil
 	case "now":
 		// performance.now() returns milliseconds as a float. Multiply
 		// by 1e6 so that `now()` is consistent with Go's UnixNano()
@@ -1891,7 +1938,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if simple && !group {
 			b.WriteString("\tconst _res = [];\n")
 		} else {
-			b.WriteString("\tlet _items = [];")
+			b.WriteString("\tvar _items = [];")
 			b.WriteString("\n")
 		}
 		b.WriteString("\tfor (const " + sanitizeName(q.Var) + " of _src) {\n")
@@ -2021,7 +2068,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.env = orig
 				return b.String(), nil
 			}
-			b.WriteString("\tlet _items = _groups;\n")
+			b.WriteString("\tvar _items = _groups;\n")
 		} else if simple {
 			b.WriteString("\treturn _res;\n")
 			b.WriteString("})()")
@@ -2405,6 +2452,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 			return "true", nil
 		}
 		return "false", nil
+	case l.Null:
+		return "null", nil
 	default:
 		return "null", fmt.Errorf("invalid literal")
 	}

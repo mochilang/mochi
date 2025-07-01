@@ -9,8 +9,7 @@ helper, fixing `q5` which previously produced `0` instead of "A Film".
 The TPCH dataset has golden tests for `q1` and `q2` stored under
 `tests/dataset/tpc-h/compiler/ts`. Both queries compile and run successfully with Deno.
 
-The TPCDS suite begins with query `q1` under `tests/dataset/tpc-ds`. The TypeScript
-backend now compiles and executes this query. Generated code and runtime output are
-checked in at `tests/dataset/tpc-ds/compiler/ts`. Query `q2` has also been added
-to the suite and compiles and runs successfully with Deno.
+The TPCDS suite now covers queries `q1` through `q9` under `tests/dataset/tpc-ds`.
+Generated TypeScript and runtime output are stored in `tests/dataset/tpc-ds/compiler/ts`.
+All nine queries compile and execute successfully with Deno.
 
