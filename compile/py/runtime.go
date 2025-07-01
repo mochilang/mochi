@@ -40,6 +40,13 @@ var helperAvg = "def _avg(v):\n" +
 	"            raise Exception('avg() expects numbers')\n" +
 	"    return s / len(v)\n"
 
+var helperExists = "def _exists(v):\n" +
+	"    if hasattr(v, 'Items'):\n" +
+	"        v = v.Items\n" +
+	"    if isinstance(v, (list, dict, str)):\n" +
+	"        return len(v) > 0\n" +
+	"    raise Exception('exists expects list, map or string')\n"
+
 var helperSum = "def _sum(v):\n" +
 	"    if hasattr(v, 'Items'):\n" +
 	"        v = v.Items\n" +
@@ -455,6 +462,7 @@ var helperMap = map[string]string{
 	"_group_by":   helperGroupBy,
 	"_count":      helperCount,
 	"_avg":        helperAvg,
+	"_exists":     helperExists,
 	"_sum":        helperSum,
 	"_min":        helperMin,
 	"_max":        helperMax,

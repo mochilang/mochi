@@ -261,10 +261,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.use("_wait_all")
 	}
 
-	c.buf.Write(body)
 	if len(c.helpers) > 0 {
 		c.emitRuntime()
 	}
+	c.buf.Write(body)
 
 	if needsAsync {
 		c.writeln("async def _run():")
@@ -721,6 +721,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "count":
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
+	case "exists":
+		c.use("_exists")
+		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
