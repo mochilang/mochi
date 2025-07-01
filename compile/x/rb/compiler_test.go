@@ -413,50 +413,52 @@ func TestRBCompiler_TPCDSQueries(t *testing.T) {
 		t.Skipf("ruby not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	q := "q1"
-	t.Run(q, func(t *testing.T) {
-		src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
-		prog, err := parser.Parse(src)
-		if err != nil {
-			t.Fatalf("parse error: %v", err)
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			t.Fatalf("type error: %v", errs[0])
-		}
-		code, err := rbcode.New(env).Compile(prog)
-		if err != nil {
-			t.Fatalf("compile error: %v", err)
-		}
-		codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rb", q+".rb.out")
-		wantCode, err := os.ReadFile(codeWantPath)
-		if err != nil {
-			t.Fatalf("read golden: %v", err)
-		}
-		if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-			t.Errorf("generated code mismatch for %s.rb.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", q, got, bytes.TrimSpace(wantCode))
-		}
-		dir := t.TempDir()
-		file := filepath.Join(dir, "main.rb")
-		if err := os.WriteFile(file, code, 0644); err != nil {
-			t.Fatalf("write error: %v", err)
-		}
-		cmd := exec.Command("ruby", file)
-		cmd.Dir = findRepoRoot(t)
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			t.Fatalf("ruby run error: %v\n%s", err, out)
-		}
-		gotOut := bytes.TrimSpace(out)
-		outWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rb", q+".out")
-		wantOut, err := os.ReadFile(outWantPath)
-		if err != nil {
-			t.Fatalf("read golden: %v", err)
-		}
-		if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-			t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", q, gotOut, bytes.TrimSpace(wantOut))
-		}
-	})
+	for i := 1; i <= 9; i++ {
+		q := fmt.Sprintf("q%d", i)
+		t.Run(q, func(t *testing.T) {
+			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := rbcode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rb", q+".rb.out")
+			wantCode, err := os.ReadFile(codeWantPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+				t.Errorf("generated code mismatch for %s.rb.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", q, got, bytes.TrimSpace(wantCode))
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.rb")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("ruby", file)
+			cmd.Dir = findRepoRoot(t)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("ruby run error: %v\n%s", err, out)
+			}
+			gotOut := bytes.TrimSpace(out)
+			outWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rb", q+".out")
+			wantOut, err := os.ReadFile(outWantPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", q, gotOut, bytes.TrimSpace(wantOut))
+			}
+		})
+	}
 }
 
 func findRepoRoot(t *testing.T) string {
