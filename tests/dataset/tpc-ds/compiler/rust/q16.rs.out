@@ -1,0 +1,136 @@
+#[derive(Clone, Debug, Default)]
+struct CatalogSale {
+    cs_order_number: i64,
+    cs_ship_date_sk: i64,
+    cs_ship_addr_sk: i64,
+    cs_call_center_sk: i64,
+    cs_warehouse_sk: i64,
+    cs_ext_ship_cost: f64,
+    cs_net_profit: f64,
+}
+
+#[derive(Clone, Debug, Default)]
+struct DateDim {
+    d_date_sk: i64,
+    d_date: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct CustomerAddress {
+    ca_address_sk: i64,
+    ca_state: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct CallCenter {
+    cc_call_center_sk: i64,
+    cc_county: String,
+}
+
+#[derive(Clone, Debug, Default)]
+struct CatalogReturn {
+    cr_order_number: i64,
+}
+
+fn distinct(xs: Vec<any>) -> Vec<any> {
+    let mut out = vec![];
+    for x in xs {
+        if !contains(&out, &x) {
+            out = append(out, x);
+        }
+    }
+    return out;
+}
+
+fn test_TPCDS_Q16_shipping() {
+    expect(filtered == vec![std::collections::HashMap::from([("order_count".to_string(), 1), ("total_shipping_cost".to_string(), 5.0), ("total_net_profit".to_string(), 20.0)])]);
+}
+
+fn main() {
+    let mut catalog_sales = vec![std::collections::HashMap::from([("cs_order_number".to_string(), 1), ("cs_ship_date_sk".to_string(), 1), ("cs_ship_addr_sk".to_string(), 1), ("cs_call_center_sk".to_string(), 1), ("cs_warehouse_sk".to_string(), 1), ("cs_ext_ship_cost".to_string(), 5.0), ("cs_net_profit".to_string(), 20.0)]), std::collections::HashMap::from([("cs_order_number".to_string(), 1), ("cs_ship_date_sk".to_string(), 1), ("cs_ship_addr_sk".to_string(), 1), ("cs_call_center_sk".to_string(), 1), ("cs_warehouse_sk".to_string(), 2), ("cs_ext_ship_cost".to_string(), 0.0), ("cs_net_profit".to_string(), 0.0)])];
+    let mut date_dim = vec![std::collections::HashMap::from([("d_date_sk".to_string(), 1), ("d_date".to_string(), "2000-03-01")])];
+    let mut customer_address = vec![std::collections::HashMap::from([("ca_address_sk".to_string(), 1), ("ca_state".to_string(), "CA")])];
+    let mut call_center = vec![std::collections::HashMap::from([("cc_call_center_sk".to_string(), 1), ("cc_county".to_string(), "CountyA")])];
+    let mut catalog_returns = vec![];
+    let mut filtered = {
+    #[derive(Clone, Debug)]
+    struct Group { key: std::collections::HashMap<std::boxed::Box<dyn std::any::Any>, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for cs1 in catalog_sales.clone() {
+        for d in date_dim.clone() {
+            if !(_map_get(&cs1, &"cs_ship_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string()) && _map_get(&d, &"d_date".to_string()) >= "2000-03-01" && _map_get(&d, &"d_date".to_string()) <= "2000-04-30") { continue; }
+            for ca in customer_address.clone() {
+                if !(_map_get(&cs1, &"cs_ship_addr_sk".to_string()) == _map_get(&ca, &"ca_address_sk".to_string()) && _map_get(&ca, &"ca_state".to_string()) == "CA") { continue; }
+                for cc in call_center.clone() {
+                    if !(_map_get(&cs1, &"cs_call_center_sk".to_string()) == _map_get(&cc, &"cc_call_center_sk".to_string()) && _map_get(&cc, &"cc_county".to_string()) == "CountyA") { continue; }
+                    if !(exists({
+    let mut _res = Vec::new();
+    for cs2 in catalog_sales {
+        if _map_get(&cs1, &"cs_order_number".to_string()) == _map_get(&cs2, &"cs_order_number".to_string()) && _map_get(&cs1, &"cs_warehouse_sk".to_string()) != _map_get(&cs2, &"cs_warehouse_sk".to_string()) {
+            _res.push(cs2);
+        }
+    }
+    _res
+}) && exists({
+    let mut _res = Vec::new();
+    for cr in catalog_returns {
+        if _map_get(&cs1, &"cs_order_number".to_string()) == _map_get(&cr, &"cr_order_number".to_string()) {
+            _res.push(cr);
+        }
+    }
+    _res
+}) == false) { continue; }
+                    let key: std::collections::HashMap<std::boxed::Box<dyn std::any::Any>, std::boxed::Box<dyn std::any::Any>> = std::collections::HashMap::from([]);
+                    let ks = format!("{:?}", key.clone());
+                    if !groups.contains_key(&ks) {
+                        groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+                        order.push(ks.clone());
+                    }
+                    groups.get_mut(&ks).unwrap().items.push(cs1.clone());
+                }
+            }
+        }
+    }
+    let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("order_count".to_string(), distinct({
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"cs_order_number".to_string()));
+    }
+    _res
+}).len() as i64), ("total_shipping_cost".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"cs_ext_ship_cost".to_string()));
+    }
+    _res
+})), ("total_net_profit".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        _res.push(_map_get(&x, &"cs_net_profit".to_string()));
+    }
+    _res
+}))]));
+    }
+    _res
+}
+;
+    json(filtered);
+    test_TPCDS_Q16_shipping();
+}
+
+fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {
+    m.get(k).unwrap().clone()
+}
+fn _sum<T: Into<f64> + Copy>(v: &[T]) -> f64 {
+    if v.is_empty() { return 0.0 }
+    let mut sum = 0.0;
+    for &it in v { sum += Into::<f64>::into(it); }
+    sum
+}
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}
