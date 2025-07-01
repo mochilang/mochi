@@ -3,125 +3,6 @@ from __future__ import annotations
 
 import json
 
-store_sales = None
-customer_demographics = None
-date_dim = None
-item = None
-promotion = None
-result = None
-
-
-def test_TPCDS_Q7_result():
-    assert result == [{"i_item_id": "I1", "agg1": 5, "agg2": 10, "agg3": 2, "agg4": 8}]
-
-
-def main():
-    global store_sales
-    store_sales = [
-        {
-            "ss_cdemo_sk": 1,
-            "ss_sold_date_sk": 1,
-            "ss_item_sk": 1,
-            "ss_promo_sk": 1,
-            "ss_quantity": 5,
-            "ss_list_price": 10,
-            "ss_coupon_amt": 2,
-            "ss_sales_price": 8,
-        }
-    ]
-    global customer_demographics
-    customer_demographics = [
-        {
-            "cd_demo_sk": 1,
-            "cd_gender": "M",
-            "cd_marital_status": "S",
-            "cd_education_status": "College",
-        }
-    ]
-    global date_dim
-    date_dim = [{"d_date_sk": 1, "d_year": 1998}]
-    global item
-    item = [{"i_item_sk": 1, "i_item_id": "I1"}]
-    global promotion
-    promotion = [{"p_promo_sk": 1, "p_channel_email": "N", "p_channel_event": "Y"}]
-
-    def _q0():
-        _src = store_sales
-        _rows = _query(
-            _src,
-            [
-                {
-                    "items": customer_demographics,
-                    "on": lambda ss, cd: (
-                        (_get(ss, "ss_cdemo_sk") == _get(cd, "cd_demo_sk"))
-                    ),
-                },
-                {
-                    "items": date_dim,
-                    "on": lambda ss, cd, d: (
-                        (_get(ss, "ss_sold_date_sk") == _get(d, "d_date_sk"))
-                    ),
-                },
-                {
-                    "items": item,
-                    "on": lambda ss, cd, d, i: (
-                        (_get(ss, "ss_item_sk") == _get(i, "i_item_sk"))
-                    ),
-                },
-                {
-                    "items": promotion,
-                    "on": lambda ss, cd, d, i, p: (
-                        (_get(ss, "ss_promo_sk") == _get(p, "p_promo_sk"))
-                    ),
-                },
-            ],
-            {
-                "select": lambda ss, cd, d, i, p: (ss, cd, d, i, p),
-                "where": lambda ss, cd, d, i, p: (
-                    (
-                        (
-                            (
-                                (
-                                    (_get(cd, "cd_gender") == "M")
-                                    and (_get(cd, "cd_marital_status") == "S")
-                                )
-                                and (_get(cd, "cd_education_status") == "College")
-                            )
-                            and (
-                                (
-                                    (_get(p, "p_channel_email") == "N")
-                                    or (_get(p, "p_channel_event") == "N")
-                                )
-                            )
-                        )
-                        and (_get(d, "d_year") == 1998)
-                    )
-                ),
-            },
-        )
-        _groups = _group_by(
-            _rows, lambda ss, cd, d, i, p: ({"i_item_id": _get(i, "i_item_id")})
-        )
-        items = _groups
-        items = sorted(
-            items, key=lambda g: _sort_key(_get(_get(g, "key"), "i_item_id"))
-        )
-        return [
-            {
-                "i_item_id": _get(_get(g, "key"), "i_item_id"),
-                "agg1": _avg([_get(x[0], "ss_quantity") for x in g]),
-                "agg2": _avg([_get(x[0], "ss_list_price") for x in g]),
-                "agg3": _avg([_get(x[0], "ss_coupon_amt") for x in g]),
-                "agg4": _avg([_get(x[0], "ss_sales_price") for x in g]),
-            }
-            for g in items
-        ]
-
-    global result
-    result = _q0()
-    print(json.dumps(result, default=lambda o: vars(o)))
-    test_TPCDS_Q7_result()
-
 
 def _avg(v):
     if hasattr(v, "Items"):
@@ -140,6 +21,8 @@ def _avg(v):
 
 
 def _get(obj, name):
+    if obj is None:
+        return None
     if isinstance(obj, dict):
         if name in obj:
             return obj[name]
@@ -267,6 +150,126 @@ def _sort_key(k):
     if isinstance(k, (list, tuple, dict)):
         return str(k)
     return k
+
+
+store_sales = None
+customer_demographics = None
+date_dim = None
+item = None
+promotion = None
+result = None
+
+
+def test_TPCDS_Q7_result():
+    assert result == [{"i_item_id": "I1", "agg1": 5, "agg2": 10, "agg3": 2, "agg4": 8}]
+
+
+def main():
+    global store_sales
+    store_sales = [
+        {
+            "ss_cdemo_sk": 1,
+            "ss_sold_date_sk": 1,
+            "ss_item_sk": 1,
+            "ss_promo_sk": 1,
+            "ss_quantity": 5,
+            "ss_list_price": 10,
+            "ss_coupon_amt": 2,
+            "ss_sales_price": 8,
+        }
+    ]
+    global customer_demographics
+    customer_demographics = [
+        {
+            "cd_demo_sk": 1,
+            "cd_gender": "M",
+            "cd_marital_status": "S",
+            "cd_education_status": "College",
+        }
+    ]
+    global date_dim
+    date_dim = [{"d_date_sk": 1, "d_year": 1998}]
+    global item
+    item = [{"i_item_sk": 1, "i_item_id": "I1"}]
+    global promotion
+    promotion = [{"p_promo_sk": 1, "p_channel_email": "N", "p_channel_event": "Y"}]
+
+    def _q0():
+        _src = store_sales
+        _rows = _query(
+            _src,
+            [
+                {
+                    "items": customer_demographics,
+                    "on": lambda ss, cd: (
+                        (_get(ss, "ss_cdemo_sk") == _get(cd, "cd_demo_sk"))
+                    ),
+                },
+                {
+                    "items": date_dim,
+                    "on": lambda ss, cd, d: (
+                        (_get(ss, "ss_sold_date_sk") == _get(d, "d_date_sk"))
+                    ),
+                },
+                {
+                    "items": item,
+                    "on": lambda ss, cd, d, i: (
+                        (_get(ss, "ss_item_sk") == _get(i, "i_item_sk"))
+                    ),
+                },
+                {
+                    "items": promotion,
+                    "on": lambda ss, cd, d, i, p: (
+                        (_get(ss, "ss_promo_sk") == _get(p, "p_promo_sk"))
+                    ),
+                },
+            ],
+            {
+                "select": lambda ss, cd, d, i, p: (ss, cd, d, i, p),
+                "where": lambda ss, cd, d, i, p: (
+                    (
+                        (
+                            (
+                                (
+                                    (_get(cd, "cd_gender") == "M")
+                                    and (_get(cd, "cd_marital_status") == "S")
+                                )
+                                and (_get(cd, "cd_education_status") == "College")
+                            )
+                            and (
+                                (
+                                    (_get(p, "p_channel_email") == "N")
+                                    or (_get(p, "p_channel_event") == "N")
+                                )
+                            )
+                        )
+                        and (_get(d, "d_year") == 1998)
+                    )
+                ),
+            },
+        )
+        _groups = _group_by(
+            _rows, lambda ss, cd, d, i, p: ({"i_item_id": _get(i, "i_item_id")})
+        )
+        items = _groups
+        items = sorted(
+            items, key=lambda g: _sort_key(_get(_get(g, "key"), "i_item_id"))
+        )
+        return [
+            {
+                "i_item_id": _get(_get(g, "key"), "i_item_id"),
+                "agg1": _avg([_get(x[0], "ss_quantity") for x in g]),
+                "agg2": _avg([_get(x[0], "ss_list_price") for x in g]),
+                "agg3": _avg([_get(x[0], "ss_coupon_amt") for x in g]),
+                "agg4": _avg([_get(x[0], "ss_sales_price") for x in g]),
+            }
+            for g in items
+        ]
+
+    global result
+    result = _q0()
+    print(json.dumps(result, default=lambda o: vars(o)))
+    test_TPCDS_Q7_result()
 
 
 if __name__ == "__main__":

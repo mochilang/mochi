@@ -22,6 +22,8 @@ def _contains(c, v):
 
 
 def _get(obj, name):
+    if obj is None:
+        return None
     if isinstance(obj, dict):
         if name in obj:
             return obj[name]
