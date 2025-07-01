@@ -1394,8 +1394,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 			}
 		}
-		pairs := make([]string, len(p.Map.Items))
-		for i, it := range p.Map.Items {
+		tmp := c.newTypedVar(fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType))
+		c.writeln(fmt.Sprintf("%s := specialize TFPGMap<%s, %s>.Create;", tmp, keyType, valType))
+		for _, it := range p.Map.Items {
 			k, err := c.compileExpr(it.Key)
 			if err != nil {
 				return "", err
@@ -1407,12 +1408,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			pairs[i] = fmt.Sprintf("m.AddOrSetData(%s, %s);", k, v)
-		}
-		tmp := c.newTypedVar(fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType))
-		c.writeln(fmt.Sprintf("%s := specialize TFPGMap<%s, %s>.Create;", tmp, keyType, valType))
-		for _, p := range pairs {
-			c.writeln(strings.ReplaceAll(p, "m", tmp))
+			c.writeln(fmt.Sprintf("%s.AddOrSetData(%s, %s);", tmp, k, v))
 		}
 		return tmp, nil
 	case p.Query != nil:
