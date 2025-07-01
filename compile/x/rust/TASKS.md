@@ -1,8 +1,6 @@
 # Rust Backend Tasks for TPCH Q1
 
-The Rust compiler now supports running the `tpc-h/q1.mochi` benchmark. Grouping
-with optional filters is handled using `HashMap` and `Vec` and aggregate helpers
-for `sum`, `avg` and `count`.
+The Rust compiler now supports running the `tpc-h/q1.mochi` benchmark. Grouping with optional filters is handled using `HashMap` and `Vec` and aggregate helpers for `sum`, `avg` and `count`. Support for the `tpc-ds/q1.mochi` query has been added using the same approach.
 
 Completed tasks:
 
@@ -12,6 +10,8 @@ Completed tasks:
 - [x] Add a golden test in `tests/compiler/rust` once the query compiles successfully.
 - [x] Support iterating over group values and updated builtins to use `_count`, `_avg` and `_sum` helpers.
 - [x] Added TPCH q1 generated code under `tests/dataset/tpc-h/compiler/rust`.
+
+- [x] Added TPCDS q1 generated code under `tests/dataset/tpc-ds/compiler/rust`.
 
 ## Remaining work
 

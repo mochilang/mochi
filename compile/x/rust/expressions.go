@@ -223,6 +223,101 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		condParts = append(condParts, whereExpr)
 	}
 	cond := strings.Join(condParts, " && ")
+
+	// Grouping with joins and filters
+	if q.Group != nil {
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			return "", err
+		}
+		selExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			return "", err
+		}
+		var elemType types.Type = types.AnyType{}
+		srcType := c.inferExprType(q.Source)
+		if lt, ok := srcType.(types.ListType); ok {
+			elemType = lt.Elem
+		}
+		keyType := c.inferExprType(q.Group.Exprs[0])
+		retType := c.inferExprType(q.Select)
+		alias := sanitizeName(q.Group.Name)
+
+		var b strings.Builder
+		b.WriteString("{\n")
+		b.WriteString("    #[derive(Clone, Debug)]\n")
+		b.WriteString(fmt.Sprintf("    struct Group { key: %s, items: Vec<%s> }\n", rustTypeFrom(keyType), rustTypeFrom(elemType)))
+		b.WriteString("    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();\n")
+		b.WriteString("    let mut order: Vec<String> = Vec::new();\n")
+		loopSrc := src
+		if len(fromSrcs) > 0 || len(joinSrcs) > 0 {
+			loopSrc += ".clone()"
+		}
+		b.WriteString(fmt.Sprintf("    for %s in %s {\n", sanitizeName(q.Var), loopSrc))
+		indent := "        "
+		if pushDown && pushAlias == q.Var {
+			b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", whereExpr))
+		}
+		for i, fs := range fromSrcs {
+			fvar := sanitizeName(q.Froms[i].Var)
+			srcPart := fs + ".clone()"
+			b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", fvar, srcPart))
+			indent += "    "
+			if pushDown && pushAlias == q.Froms[i].Var {
+				b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", whereExpr))
+			}
+		}
+		for i, js := range joinSrcs {
+			jvar := sanitizeName(q.Joins[i].Var)
+			srcPart := js + ".clone()"
+			b.WriteString(indent + fmt.Sprintf("for %s in %s {\n", jvar, srcPart))
+			indent += "    "
+			b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", joinOns[i]))
+			if pushDown && pushAlias == q.Joins[i].Var {
+				b.WriteString(indent + fmt.Sprintf("if !(%s) { continue; }\n", whereExpr))
+			}
+		}
+		if cond != "" {
+			b.WriteString(indent + fmt.Sprintf("if %s {\n", cond))
+			indent += "    "
+		}
+		b.WriteString(indent + fmt.Sprintf("let key: %s = %s;\n", rustTypeFrom(keyType), keyExpr))
+		b.WriteString(indent + "let ks = format!(\"{:?}\", key.clone());\n")
+		b.WriteString(indent + "if !groups.contains_key(&ks) {\n")
+		b.WriteString(indent + "    groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });\n")
+		b.WriteString(indent + "    order.push(ks.clone());\n")
+		b.WriteString(indent + "}\n")
+		b.WriteString(indent + fmt.Sprintf("groups.get_mut(&ks).unwrap().items.push(%s.clone());\n", sanitizeName(q.Var)))
+		if cond != "" {
+			indent = indent[:len(indent)-4]
+			b.WriteString(indent + "}\n")
+		}
+		for range joinSrcs {
+			indent = indent[:len(indent)-4]
+			b.WriteString(indent + "}\n")
+		}
+		for range fromSrcs {
+			indent = indent[:len(indent)-4]
+			b.WriteString(indent + "}\n")
+		}
+		indent = indent[:len(indent)-4]
+		b.WriteString(indent + "}\n")
+		b.WriteString("    let mut items: Vec<Group> = Vec::new();\n")
+		b.WriteString("    for ks in order {\n")
+		b.WriteString("        items.push(groups.remove(&ks).unwrap());\n")
+		b.WriteString("    }\n")
+		b.WriteString(fmt.Sprintf("    let mut _res: Vec<%s> = Vec::new();\n", rustTypeFrom(retType)))
+		b.WriteString("    for g in items {\n")
+		if alias != "g" {
+			b.WriteString(fmt.Sprintf("        let %s = g.clone();\n", alias))
+		}
+		b.WriteString(fmt.Sprintf("        _res.push(%s);\n", selExpr))
+		b.WriteString("    }\n")
+		b.WriteString("    _res\n")
+		b.WriteString("}\n")
+		return b.String(), nil
+	}
+
 	var b strings.Builder
 	b.WriteString("{\n")
 	if q.Sort != nil {
