@@ -2,8 +2,8 @@
 
 The current COBOL backend still fails to compile the TPC-H queries. Golden tests
 now cover `q1` and `q2` but both are skipped because the generated COBOL does not
-build. Query `q1` from the TPC-DS suite is also compiled under
-`tests/dataset/tpc-ds/compiler/cobol`, though the resulting program fails to
+build. Queries `q1` and `q2` from the TPC-DS suite are also compiled under
+`tests/dataset/tpc-ds/compiler/cobol`, though the resulting programs fail to
 build for the same reasons. The following work is required to support these queries:
 
 1. **Group by support** – add code generation for `group by` clauses. Queries should accumulate items by key and expose a `Group` structure similar to the Go runtime.
