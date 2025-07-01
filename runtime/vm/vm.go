@@ -37,10 +37,10 @@ const (
 // smallJoinThreshold controls when the compiler falls back to a simple
 // nested loop join instead of emitting a hash join. When both join
 // sources are constant lists smaller than this size, nested loops tend
-// to be faster due to lower allocation overhead. Increasing this
-// threshold avoids hash joins for the relatively small datasets used in
-// the JOB benchmark queries which improves compatibility with the VM.
-const smallJoinThreshold = 16
+// to be faster due to lower allocation overhead. Setting this to zero
+// avoids hash joins entirely which improves compatibility with the
+// simplified TPC‑DS benchmark queries executed by the VM.
+const smallJoinThreshold = 0
 
 // maxCallDepth guards against runaway recursion leading to stack
 // overflows when executing user programs. The depth is measured as the

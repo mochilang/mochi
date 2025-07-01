@@ -1,6 +1,6 @@
-func main (regs=44)
+func main (regs=43)
   // let v2 = [
-  Const        r0, [{"avg_monthly_sales": 100, "d_year": 2020, "item": "A", "sum_sales": 120}, {"avg_monthly_sales": 80, "d_year": 2020, "item": "B", "sum_sales": 70}, {"avg_monthly_sales": 50, "d_year": 2019, "item": "C", "sum_sales": 60}]
+  Const        r0, [{"avg_monthly_sales": 100.0, "d_year": 2020, "item": "A", "sum_sales": 120.0}, {"avg_monthly_sales": 80.0, "d_year": 2020, "item": "B", "sum_sales": 70.0}, {"avg_monthly_sales": 50.0, "d_year": 2019, "item": "C", "sum_sales": 60.0}]
   // let year = 2020
   Const        r1, 2020
   // let orderby = "item"
@@ -16,7 +16,7 @@ func main (regs=44)
   Len          r8, r7
   Const        r10, 0
   Move         r9, r10
-L4:
+L3:
   LessInt      r11, r9, r8
   JumpIfFalse  r11, L0
   Index        r12, r7, r9
@@ -38,47 +38,45 @@ L4:
   Move         r27, r26
   JumpIfFalse  r27, L1
   Move         r27, r23
+  JumpIfFalse  r27, L1
+  Move         r27, r25
 L1:
-  Move         r28, r27
-  JumpIfFalse  r28, L2
-  Move         r28, r25
-L2:
-  JumpIfFalse  r28, L3
+  JumpIfFalse  r27, L2
   // sort by [v.sum_sales - v.avg_monthly_sales, v.item]
-  Index        r29, r13, r6
-  Index        r30, r13, r5
-  Sub          r31, r29, r30
-  Move         r32, r31
-  Index        r33, r13, r2
-  Move         r34, r33
-  MakeList     r35, 2, r32
-  Move         r36, r35
+  Index        r28, r13, r6
+  Index        r29, r13, r5
+  Sub          r30, r28, r29
+  Move         r31, r30
+  Index        r32, r13, r2
+  Move         r33, r32
+  MakeList     r34, 2, r31
+  Move         r35, r34
   // from v in v2
-  Move         r37, r13
-  MakeList     r38, 2, r36
-  Append       r39, r3, r38
-  Move         r3, r39
-L3:
-  Const        r40, 1
-  AddInt       r9, r9, r40
-  Jump         L4
+  Move         r36, r13
+  MakeList     r37, 2, r35
+  Append       r38, r3, r37
+  Move         r3, r38
+L2:
+  Const        r39, 1
+  AddInt       r9, r9, r39
+  Jump         L3
 L0:
   // sort by [v.sum_sales - v.avg_monthly_sales, v.item]
-  Sort         r41, r3
+  Sort         r40, r3
   // from v in v2
-  Move         r3, r41
+  Move         r3, r40
   // json(result)
   JSON         r3
   // expect result == [
-  Const        r42, [{"avg_monthly_sales": 50, "d_year": 2019, "item": "C", "sum_sales": 60}, {"avg_monthly_sales": 100, "d_year": 2020, "item": "A", "sum_sales": 120}]
-  Equal        r43, r3, r42
-  Expect       r43
+  Const        r41, [{"avg_monthly_sales": 50.0, "d_year": 2019, "item": "C", "sum_sales": 60.0}, {"avg_monthly_sales": 100.0, "d_year": 2020, "item": "A", "sum_sales": 120.0}]
+  Equal        r42, r3, r41
+  Expect       r42
   Return       r0
 
   // fun abs(x: float): float {
 func abs (regs=4)
   // if x >= 0.0 { x } else { -x }
-  Const        r1, 0
+  Const        r1, 0.0
   LessEqFloat  r2, r1, r0
   JumpIfFalse  r2, L0
   Jump         L1
