@@ -1,0 +1,55 @@
+Smalltalk at: #avg_discount put: nil.
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #filtered put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #result put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q32_simplified
+    ((result = 20.000000)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__avg: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
+!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+!!
+catalog_sales := Array with: (Dictionary from: {'cs_item_sk' -> 1. 'cs_sold_date_sk' -> 1. 'cs_ext_discount_amt' -> 5.000000}) with: (Dictionary from: {'cs_item_sk' -> 1. 'cs_sold_date_sk' -> 2. 'cs_ext_discount_amt' -> 10.000000}) with: (Dictionary from: {'cs_item_sk' -> 1. 'cs_sold_date_sk' -> 3. 'cs_ext_discount_amt' -> 20.000000}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_manufact_id' -> 1}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 2000}) with: (Dictionary from: {'d_date_sk' -> 2. 'd_year' -> 2000}) with: (Dictionary from: {'d_date_sk' -> 3. 'd_year' -> 2000}).
+filtered := ((| res |
+res := OrderedCollection new.
+((catalog_sales) select: [:cs | (((((i at: 'i_manufact_id' = 1) and: [d at: 'd_year']) = 2000) and: [(cs at: 'cs_item_sk' = i at: 'i_item_sk')]) and: [(cs at: 'cs_sold_date_sk' = d at: 'd_date_sk')])]) do: [:cs |
+    (item) do: [:i |
+        (date_dim) do: [:d |
+            res add: cs at: 'cs_ext_discount_amt'.
+        ]
+    ]
+]
+res := res asArray.
+res)).
+avg_discount := (Main __avg: filtered).
+result := (Main __sum: ((| res |
+res := OrderedCollection new.
+((filtered) select: [:x | ((x > avg_discount) * 1.300000)]) do: [:x |
+    res add: x.
+]
+res := res asArray.
+res))).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q32_simplified.

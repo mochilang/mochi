@@ -1,0 +1,141 @@
+Smalltalk at: #base put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #gmt put: nil.
+Smalltalk at: #records put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #year put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q43_simplified
+    ((result = Array with: (Dictionary from: {'s_store_name' -> 'Main'. 's_store_id' -> 'S1'. 'sun_sales' -> 10.000000. 'mon_sales' -> 20.000000. 'tue_sales' -> 30.000000. 'wed_sales' -> 40.000000. 'thu_sales' -> 50.000000. 'fri_sales' -> 60.000000. 'sat_sales' -> 70.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+date_dim := Array with: (Dictionary from: {'date_sk' -> 1. 'd_day_name' -> 'Sunday'. 'd_year' -> 2020}) with: (Dictionary from: {'date_sk' -> 2. 'd_day_name' -> 'Monday'. 'd_year' -> 2020}) with: (Dictionary from: {'date_sk' -> 3. 'd_day_name' -> 'Tuesday'. 'd_year' -> 2020}) with: (Dictionary from: {'date_sk' -> 4. 'd_day_name' -> 'Wednesday'. 'd_year' -> 2020}) with: (Dictionary from: {'date_sk' -> 5. 'd_day_name' -> 'Thursday'. 'd_year' -> 2020}) with: (Dictionary from: {'date_sk' -> 6. 'd_day_name' -> 'Friday'. 'd_year' -> 2020}) with: (Dictionary from: {'date_sk' -> 7. 'd_day_name' -> 'Saturday'. 'd_year' -> 2020}).
+store := Array with: (Dictionary from: {'store_sk' -> 1. 'store_id' -> 'S1'. 'store_name' -> 'Main'. 'gmt_offset' -> 0}).
+store_sales := Array with: (Dictionary from: {'sold_date_sk' -> 1. 'store_sk' -> 1. 'sales_price' -> 10.000000}) with: (Dictionary from: {'sold_date_sk' -> 2. 'store_sk' -> 1. 'sales_price' -> 20.000000}) with: (Dictionary from: {'sold_date_sk' -> 3. 'store_sk' -> 1. 'sales_price' -> 30.000000}) with: (Dictionary from: {'sold_date_sk' -> 4. 'store_sk' -> 1. 'sales_price' -> 40.000000}) with: (Dictionary from: {'sold_date_sk' -> 5. 'store_sk' -> 1. 'sales_price' -> 50.000000}) with: (Dictionary from: {'sold_date_sk' -> 6. 'store_sk' -> 1. 'sales_price' -> 60.000000}) with: (Dictionary from: {'sold_date_sk' -> 7. 'store_sk' -> 1. 'sales_price' -> 70.000000}).
+year := 2020.
+gmt := 0.
+records := ((| res |
+res := OrderedCollection new.
+((date_dim) select: [:d | (((((s at: 'gmt_offset' = gmt) and: [d at: 'd_year']) = year) and: [(ss at: 'sold_date_sk' = d at: 'date_sk')]) and: [(ss at: 'store_sk' = s at: 'store_sk')])]) do: [:d |
+    (store_sales) do: [:ss |
+        (store) do: [:s |
+            res add: Dictionary from: {'d_day_name' -> d at: 'd_day_name'. 's_store_name' -> s at: 'store_name'. 's_store_id' -> s at: 'store_id'. 'price' -> ss at: 'sales_price'}.
+        ]
+    ]
+]
+res := res asArray.
+res)).
+base := ((| rows groups |
+rows := OrderedCollection new.
+(records) do: [:r |
+    rows add: r.
+]
+groups := (Main _group_by: rows keyFn: [:r | Dictionary from: {'name' -> r at: 's_store_name'. 'id' -> r at: 's_store_id'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'s_store_name' -> g at: 'key' at: 'name'. 's_store_id' -> g at: 'key' at: 'id'. 'sun_sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: (((x at: 'd_day_name' = 'Sunday')) ifTrue: [x at: 'price'] ifFalse: [0.000000]).
+]
+res := res asArray.
+res))). 'mon_sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: (((x at: 'd_day_name' = 'Monday')) ifTrue: [x at: 'price'] ifFalse: [0.000000]).
+]
+res := res asArray.
+res))). 'tue_sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: (((x at: 'd_day_name' = 'Tuesday')) ifTrue: [x at: 'price'] ifFalse: [0.000000]).
+]
+res := res asArray.
+res))). 'wed_sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: (((x at: 'd_day_name' = 'Wednesday')) ifTrue: [x at: 'price'] ifFalse: [0.000000]).
+]
+res := res asArray.
+res))). 'thu_sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: (((x at: 'd_day_name' = 'Thursday')) ifTrue: [x at: 'price'] ifFalse: [0.000000]).
+]
+res := res asArray.
+res))). 'fri_sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: (((x at: 'd_day_name' = 'Friday')) ifTrue: [x at: 'price'] ifFalse: [0.000000]).
+]
+res := res asArray.
+res))). 'sat_sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: (((x at: 'd_day_name' = 'Saturday')) ifTrue: [x at: 'price'] ifFalse: [0.000000]).
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+result := base.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q43_simplified.

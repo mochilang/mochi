@@ -1,0 +1,123 @@
+Smalltalk at: #base put: nil.
+Smalltalk at: #cities put: nil.
+Smalltalk at: #customer put: nil.
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #depcnt put: nil.
+Smalltalk at: #dn put: nil.
+Smalltalk at: #household_demographics put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #vehcnt put: nil.
+Smalltalk at: #year put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q46_simplified
+    ((result = Array with: (Dictionary from: {'c_last_name' -> 'Doe'. 'c_first_name' -> 'John'. 'ca_city' -> 'Seattle'. 'bought_city' -> 'Portland'. 'ss_ticket_number' -> 1. 'amt' -> 5.000000. 'profit' -> 20.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_addr_sk' -> 1. 'ss_hdemo_sk' -> 1. 'ss_store_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_coupon_amt' -> 5.000000. 'ss_net_profit' -> 20.000000}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_dow' -> 6. 'd_year' -> 2020}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1. 's_city' -> 'CityA'}).
+household_demographics := Array with: (Dictionary from: {'hd_demo_sk' -> 1. 'hd_dep_count' -> 2. 'hd_vehicle_count' -> 0}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_city' -> 'Portland'}) with: (Dictionary from: {'ca_address_sk' -> 2. 'ca_city' -> 'Seattle'}).
+customer := Array with: (Dictionary from: {'c_customer_sk' -> 1. 'c_last_name' -> 'Doe'. 'c_first_name' -> 'John'. 'c_current_addr_sk' -> 2}).
+depcnt := 2.
+vehcnt := 0.
+year := 2020.
+cities := Array with: 'CityA'.
+dn := ((| rows groups |
+rows := OrderedCollection new.
+(store_sales) do: [:ss |
+    ((cities includes: ((((hd at: 'hd_dep_count' = depcnt) or: [hd at: 'hd_vehicle_count']) = vehcnt)))) ifTrue: [ rows add: ss ].
+]
+groups := (Main _group_by: rows keyFn: [:ss | Dictionary from: {'ss_ticket_number' -> ss at: 'ss_ticket_number'. 'ss_customer_sk' -> ss at: 'ss_customer_sk'. 'ca_city' -> ca at: 'ca_city'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'ss_ticket_number' -> g at: 'key' at: 'ss_ticket_number'. 'ss_customer_sk' -> g at: 'key' at: 'ss_customer_sk'. 'bought_city' -> g at: 'key' at: 'ca_city'. 'amt' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss' at: 'ss_coupon_amt'.
+]
+res := res asArray.
+res))). 'profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss' at: 'ss_net_profit'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+base := ((| res |
+res := OrderedCollection new.
+((dn) select: [:dnrec | (((current_addr at: 'ca_city' ~= dnrec at: 'bought_city') and: [(dnrec at: 'ss_customer_sk' = c at: 'c_customer_sk')]) and: [(c at: 'c_current_addr_sk' = current_addr at: 'ca_address_sk')])]) do: [:dnrec |
+    (customer) do: [:c |
+        (customer_address) do: [:current_addr |
+            res add: { Array with: (c at: 'c_last_name') with: (c at: 'c_first_name') with: (current_addr at: 'ca_city') with: (dnrec at: 'bought_city') with: (dnrec at: 'ss_ticket_number') . Dictionary from: {'c_last_name' -> c at: 'c_last_name'. 'c_first_name' -> c at: 'c_first_name'. 'ca_city' -> current_addr at: 'ca_city'. 'bought_city' -> dnrec at: 'bought_city'. 'ss_ticket_number' -> dnrec at: 'ss_ticket_number'. 'amt' -> dnrec at: 'amt'. 'profit' -> dnrec at: 'profit'} }.
+        ]
+    ]
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+result := base.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q46_simplified.

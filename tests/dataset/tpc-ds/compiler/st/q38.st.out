@@ -1,0 +1,69 @@
+Smalltalk at: #catalog_ids put: nil.
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #customer put: nil.
+Smalltalk at: #hot put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_ids put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #web_ids put: nil.
+Smalltalk at: #web_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'mochi'!
+distinct: xs | out x |
+    out := Array new.
+    (xs) do: [:x |
+        ((contains value: out value: x) not) ifTrue: [
+            out := (out copyWith: x).
+        ]
+        .
+    ]
+    .
+    ^ out
+!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q38_simplified
+    ((result = 1)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__intersect: a with: b
+    | out |
+    out := OrderedCollection new.
+    (a notNil and: [ b notNil ]) ifTrue: [
+        a do: [:v | (b includes: v) ifTrue: [ (out includes: v) ifFalse: [ out add: v ] ] ].
+    ]
+    ^ out asArray
+!
+!!
+customer := Array with: (Dictionary from: {'c_customer_sk' -> 1. 'c_last_name' -> 'Smith'. 'c_first_name' -> 'John'}) with: (Dictionary from: {'c_customer_sk' -> 2. 'c_last_name' -> 'Jones'. 'c_first_name' -> 'Alice'}).
+store_sales := Array with: (Dictionary from: {'ss_customer_sk' -> 1. 'd_month_seq' -> 1200}) with: (Dictionary from: {'ss_customer_sk' -> 2. 'd_month_seq' -> 1205}).
+catalog_sales := Array with: (Dictionary from: {'cs_bill_customer_sk' -> 1. 'd_month_seq' -> 1203}).
+web_sales := Array with: (Dictionary from: {'ws_bill_customer_sk' -> 1. 'd_month_seq' -> 1206}).
+store_ids := (Main distinct: (((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'd_month_seq' >= 1200) and: [s at: 'd_month_seq']) <= 1211)]) do: [:s |
+    res add: s at: 'ss_customer_sk'.
+]
+res := res asArray.
+res)))).
+catalog_ids := (Main distinct: (((| res |
+res := OrderedCollection new.
+((catalog_sales) select: [:c | (((c at: 'd_month_seq' >= 1200) and: [c at: 'd_month_seq']) <= 1211)]) do: [:c |
+    res add: c at: 'cs_bill_customer_sk'.
+]
+res := res asArray.
+res)))).
+web_ids := (Main distinct: (((| res |
+res := OrderedCollection new.
+((web_sales) select: [:w | (((w at: 'd_month_seq' >= 1200) and: [w at: 'd_month_seq']) <= 1211)]) do: [:w |
+    res add: w at: 'ws_bill_customer_sk'.
+]
+res := res asArray.
+res)))).
+hot := (Main __intersect: ((Main __intersect: (store_ids) with: (catalog_ids))) with: (web_ids)).
+result := (hot) size.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q38_simplified.

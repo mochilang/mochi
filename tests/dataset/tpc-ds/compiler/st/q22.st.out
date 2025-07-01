@@ -1,0 +1,113 @@
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #inventory put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #qoh put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newInventory: inv_item_sk inv_date_sk: inv_date_sk inv_quantity_on_hand: inv_quantity_on_hand | dict |
+    dict := Dictionary new.
+    dict at: 'inv_item_sk' put: inv_item_sk.
+    dict at: 'inv_date_sk' put: inv_date_sk.
+    dict at: 'inv_quantity_on_hand' put: inv_quantity_on_hand.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_month_seq: d_month_seq | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_month_seq' put: d_month_seq.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newItem: i_item_sk i_product_name: i_product_name i_brand: i_brand i_class: i_class i_category: i_category | dict |
+    dict := Dictionary new.
+    dict at: 'i_item_sk' put: i_item_sk.
+    dict at: 'i_product_name' put: i_product_name.
+    dict at: 'i_brand' put: i_brand.
+    dict at: 'i_class' put: i_class.
+    dict at: 'i_category' put: i_category.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q22_average_inventory
+    ((qoh = Array with: (Dictionary from: {'i_product_name' -> 'Prod1'. 'i_brand' -> 'Brand1'. 'i_class' -> 'Class1'. 'i_category' -> 'Cat1'. 'qoh' -> 15.000000}) with: (Dictionary from: {'i_product_name' -> 'Prod2'. 'i_brand' -> 'Brand2'. 'i_class' -> 'Class2'. 'i_category' -> 'Cat2'. 'qoh' -> 50.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__avg: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+inventory := Array with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_date_sk' -> 1. 'inv_quantity_on_hand' -> 10}) with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_date_sk' -> 2. 'inv_quantity_on_hand' -> 20}) with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_date_sk' -> 3. 'inv_quantity_on_hand' -> 10}) with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_date_sk' -> 4. 'inv_quantity_on_hand' -> 20}) with: (Dictionary from: {'inv_item_sk' -> 2. 'inv_date_sk' -> 1. 'inv_quantity_on_hand' -> 50}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_month_seq' -> 0}) with: (Dictionary from: {'d_date_sk' -> 2. 'd_month_seq' -> 1}) with: (Dictionary from: {'d_date_sk' -> 3. 'd_month_seq' -> 2}) with: (Dictionary from: {'d_date_sk' -> 4. 'd_month_seq' -> 3}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_product_name' -> 'Prod1'. 'i_brand' -> 'Brand1'. 'i_class' -> 'Class1'. 'i_category' -> 'Cat1'}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_product_name' -> 'Prod2'. 'i_brand' -> 'Brand2'. 'i_class' -> 'Class2'. 'i_category' -> 'Cat2'}).
+qoh := ((| rows groups |
+rows := OrderedCollection new.
+(inventory) do: [:inv |
+    ((((d at: 'd_month_seq' >= 0) and: [d at: 'd_month_seq']) <= 11)) ifTrue: [ rows add: inv ].
+]
+groups := (Main _group_by: rows keyFn: [:inv | Dictionary from: {'product_name' -> i at: 'i_product_name'. 'brand' -> i at: 'i_brand'. 'class' -> i at: 'i_class'. 'category' -> i at: 'i_category'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'i_product_name' -> g at: 'key' at: 'product_name'. 'i_brand' -> g at: 'key' at: 'brand'. 'i_class' -> g at: 'key' at: 'class'. 'i_category' -> g at: 'key' at: 'category'. 'qoh' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'inv_quantity_on_hand'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+(qoh toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q22_average_inventory.

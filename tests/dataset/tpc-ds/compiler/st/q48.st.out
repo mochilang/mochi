@@ -1,0 +1,55 @@
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #customer_demographics put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #qty put: nil.
+Smalltalk at: #qty_base put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #states1 put: nil.
+Smalltalk at: #states2 put: nil.
+Smalltalk at: #states3 put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #year put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q48_simplified
+    ((result = 35)) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+!!
+store_sales := Array with: (Dictionary from: {'cdemo_sk' -> 1. 'addr_sk' -> 1. 'sold_date_sk' -> 1. 'sales_price' -> 120.000000. 'net_profit' -> 1000.000000. 'quantity' -> 5}) with: (Dictionary from: {'cdemo_sk' -> 2. 'addr_sk' -> 2. 'sold_date_sk' -> 1. 'sales_price' -> 60.000000. 'net_profit' -> 2000.000000. 'quantity' -> 10}) with: (Dictionary from: {'cdemo_sk' -> 3. 'addr_sk' -> 3. 'sold_date_sk' -> 1. 'sales_price' -> 170.000000. 'net_profit' -> 10000.000000. 'quantity' -> 20}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1}).
+customer_demographics := Array with: (Dictionary from: {'cd_demo_sk' -> 1. 'cd_marital_status' -> 'S'. 'cd_education_status' -> 'E1'}) with: (Dictionary from: {'cd_demo_sk' -> 2. 'cd_marital_status' -> 'M'. 'cd_education_status' -> 'E2'}) with: (Dictionary from: {'cd_demo_sk' -> 3. 'cd_marital_status' -> 'W'. 'cd_education_status' -> 'E3'}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_country' -> 'United States'. 'ca_state' -> 'TX'}) with: (Dictionary from: {'ca_address_sk' -> 2. 'ca_country' -> 'United States'. 'ca_state' -> 'CA'}) with: (Dictionary from: {'ca_address_sk' -> 3. 'ca_country' -> 'United States'. 'ca_state' -> 'NY'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 2000}).
+year := 2000.
+states1 := Array with: 'TX'.
+states2 := Array with: 'CA'.
+states3 := Array with: 'NY'.
+qty_base := ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | ((((((d at: 'd_year' = year) and: [(((((((((((cd at: 'cd_marital_status' = 'S') and: [cd at: 'cd_education_status']) = 'E1') and: [ss at: 'sales_price']) >= 100.000000) and: [ss at: 'sales_price']) <= 150.000000)) or: [((((((((cd at: 'cd_marital_status' = 'M') and: [cd at: 'cd_education_status']) = 'E2') and: [ss at: 'sales_price']) >= 50.000000) and: [ss at: 'sales_price']) <= 100.000000))]) or: [((((((((cd at: 'cd_marital_status' = 'W') and: [cd at: 'cd_education_status']) = 'E3') and: [ss at: 'sales_price']) >= 150.000000) and: [ss at: 'sales_price']) <= 200.000000))]))]) and: [(((((((((states1 includes: ca at: 'ca_state') and: [ss at: 'net_profit']) >= 0) and: [ss at: 'net_profit']) <= 2000)) or: [((((((states2 includes: ca at: 'ca_state') and: [ss at: 'net_profit']) >= 150) and: [ss at: 'net_profit']) <= 3000))]) or: [((((((states3 includes: ca at: 'ca_state') and: [ss at: 'net_profit']) >= 50) and: [ss at: 'net_profit']) <= 25000))]))]) and: [(ss at: 'cdemo_sk' = cd at: 'cd_demo_sk')]) and: [(ss at: 'addr_sk' = ca at: 'ca_address_sk')]) and: [(ss at: 'sold_date_sk' = d at: 'd_date_sk')])]) do: [:ss |
+    (customer_demographics) do: [:cd |
+        (customer_address) do: [:ca |
+            (date_dim) do: [:d |
+                res add: ss at: 'quantity'.
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res)).
+qty := qty_base.
+result := (Main __sum: qty).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q48_simplified.
