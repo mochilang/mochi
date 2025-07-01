@@ -1,7 +1,6 @@
 package fscode
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -129,30 +128,31 @@ func ensureFantomas() error {
 // FormatFS runs the Fantomas formatter on the given source code if available.
 // If Fantomas is not found or fails, the input is returned unchanged.
 func FormatFS(src []byte) []byte {
+	formatter := ""
+	args := []string{}
 	if path, err := exec.LookPath("fantomas"); err == nil {
-		cmd := exec.Command(path, "--stdin")
-		cmd.Stdin = bytes.NewReader(src)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		if err := cmd.Run(); err == nil {
-			res := out.Bytes()
-			if len(res) == 0 || res[len(res)-1] != '\n' {
-				res = append(res, '\n')
-			}
-			return res
-		}
+		formatter = path
+	} else if path, err := exec.LookPath("dotnet"); err == nil {
+		formatter = path
+		args = append(args, "fantomas")
 	}
-	if path, err := exec.LookPath("dotnet"); err == nil {
-		cmd := exec.Command(path, "fantomas", "--stdin")
-		cmd.Stdin = bytes.NewReader(src)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		if err := cmd.Run(); err == nil {
-			res := out.Bytes()
-			if len(res) == 0 || res[len(res)-1] != '\n' {
-				res = append(res, '\n')
+	if formatter != "" {
+		tmp, err := os.CreateTemp("", "fsfmt-*.fs")
+		if err == nil {
+			_ = tmp.Close()
+			if err := os.WriteFile(tmp.Name(), src, 0644); err == nil {
+				cmd := exec.Command(formatter, append(args, tmp.Name())...)
+				if err := cmd.Run(); err == nil {
+					if data, err := os.ReadFile(tmp.Name()); err == nil {
+						os.Remove(tmp.Name())
+						if len(data) == 0 || data[len(data)-1] != '\n' {
+							data = append(data, '\n')
+						}
+						return data
+					}
+				}
 			}
-			return res
+			os.Remove(tmp.Name())
 		}
 	}
 	if len(src) > 0 && src[len(src)-1] != '\n' {
