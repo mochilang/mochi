@@ -883,9 +883,20 @@ func collectQueryVars(e *parser.Expr, env *types.Env, vars map[string]string) {
 				}
 				vars[f.Var] = fe
 			}
+			for _, j := range p.Query.Joins {
+				jt := types.TypeOfExpr(j.Src, env)
+				je := "integer"
+				if lt, ok := jt.(types.ListType); ok {
+					je = typeString(lt.Elem)
+				}
+				vars[j.Var] = je
+			}
 			collectQueryVars(p.Query.Source, env, vars)
 			for _, f := range p.Query.Froms {
 				collectQueryVars(f.Src, env, vars)
+			}
+			for _, j := range p.Query.Joins {
+				collectQueryVars(j.Src, env, vars)
 			}
 			collectQueryVars(p.Query.Select, env, vars)
 			collectQueryVars(p.Query.Where, env, vars)
@@ -1441,6 +1452,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.writeln("end;")
 
 		tmpGrp := c.newTypedVar(fmt.Sprintf("specialize TArray<specialize _Group<%s>>", groupType))
+		// declare the group variable so the for..in loop compiles
+		c.tempVars[sanitizeName(q.Group.Name)] = fmt.Sprintf("specialize _Group<%s>", groupType)
 		c.use("_group_by")
 		c.use("_Group")
 		c.writeln(fmt.Sprintf("%s := specialize _group_by<%s>(%s, function(%s: %s): Variant begin Result := %s end);", tmpGrp, groupType, filtered, sanitizeName(q.Var), groupType, keyExpr))

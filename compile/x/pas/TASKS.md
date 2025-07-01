@@ -21,3 +21,9 @@ Remaining tasks:
 * Verify all JOB queries beyond `q10` compile and run once `fpc` is
   available.
 * Improve error handling during dataset joins.
+
+## TPCDS dataset
+
+The Pascal backend now compiles the first TPCDS query `q1`. Generated
+Pascal code and expected output are stored under
+`tests/dataset/tpc-ds/compiler/pas`.
