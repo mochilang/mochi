@@ -1,32 +1,259 @@
-func main (regs=17)
-  // let t = [{id: 0, val: 0}, {id: 1, val: 14}]
-  Const        r0, [{"id": 0, "val": 0}, {"id": 1, "val": 14}]
-  // let vals = from r in t select r.val
-  Const        r1, []
-  Const        r2, "val"
-  IterPrep     r3, r0
-  Len          r4, r3
-  Const        r6, 0
-  Move         r5, r6
+func main (regs=168)
+  // let store_sales = [
+  Const        r0, [{"ss_item_sk": 1, "ss_list_price": 10.0, "ss_quantity": 2, "ss_sold_date_sk": 1}, {"ss_item_sk": 1, "ss_list_price": 20.0, "ss_quantity": 3, "ss_sold_date_sk": 2}]
+  // let catalog_sales = [ { cs_item_sk: 1, cs_list_price: 10.0, cs_quantity: 2, cs_sold_date_sk: 1 } ]
+  Const        r1, [{"cs_item_sk": 1, "cs_list_price": 10.0, "cs_quantity": 2, "cs_sold_date_sk": 1}]
+  // let web_sales = [ { ws_item_sk: 1, ws_list_price: 30.0, ws_quantity: 1, ws_sold_date_sk: 1 } ]
+  Const        r2, [{"ws_item_sk": 1, "ws_list_price": 30.0, "ws_quantity": 1, "ws_sold_date_sk": 1}]
+  // let item = [ { i_item_sk: 1, i_brand_id: 1, i_class_id: 1, i_category_id: 1 } ]
+  Const        r3, [{"i_brand_id": 1, "i_category_id": 1, "i_class_id": 1, "i_item_sk": 1}]
+  // let date_dim = [ { d_date_sk: 1, d_year: 2000, d_moy: 12 }, { d_date_sk: 2, d_year: 2002, d_moy: 11 } ]
+  Const        r4, [{"d_date_sk": 1, "d_moy": 12, "d_year": 2000}, {"d_date_sk": 2, "d_moy": 11, "d_year": 2002}]
+  // let cross_items = [ { ss_item_sk: 1 } ]
+  Const        r5, [{"ss_item_sk": 1}]
+  // avg(
+  Const        r6, 23.333333333333332
+  // from ss in store_sales
+  Const        r7, []
+  // group by { brand_id: 1, class_id: 1, category_id: 1 } into g
+  Const        r8, "brand_id"
+  Const        r9, "class_id"
+  Const        r10, "category_id"
+  // where ss.ss_item_sk in (from ci in cross_items select ci.ss_item_sk)
+  Const        r11, "ss_item_sk"
+  // select { channel: "store", sales: sum(from x in g select x.ss_quantity * x.ss_list_price), number_sales: count(from _ in g select _) }
+  Const        r12, "channel"
+  Const        r13, "sales"
+  Const        r14, "ss_quantity"
+  Const        r15, "ss_list_price"
+  Const        r16, "number_sales"
+  // from ss in store_sales
+  MakeMap      r17, 0, r0
+  Const        r19, []
+  Move         r18, r19
+  IterPrep     r20, r0
+  Len          r21, r20
+  Const        r22, 0
+L8:
+  LessInt      r23, r22, r21
+  JumpIfFalse  r23, L0
+  Index        r24, r20, r22
+  Move         r25, r24
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk && d.d_year == 2002 && d.d_moy == 11
+  IterPrep     r26, r4
+  Len          r27, r26
+  Const        r28, 0
+L7:
+  LessInt      r29, r28, r27
+  JumpIfFalse  r29, L1
+  Index        r30, r26, r28
+  Move         r31, r30
+  Const        r32, "ss_sold_date_sk"
+  Index        r33, r25, r32
+  Const        r34, "d_date_sk"
+  Index        r35, r31, r34
+  Equal        r36, r33, r35
+  Const        r37, "d_year"
+  Index        r38, r31, r37
+  Const        r39, 2002
+  Equal        r40, r38, r39
+  Const        r41, "d_moy"
+  Index        r42, r31, r41
+  Const        r43, 11
+  Equal        r44, r42, r43
+  Move         r45, r36
+  JumpIfFalse  r45, L2
+  Move         r45, r40
+  JumpIfFalse  r45, L2
+  Move         r45, r44
+L2:
+  JumpIfFalse  r45, L3
+  // where ss.ss_item_sk in (from ci in cross_items select ci.ss_item_sk)
+  Index        r46, r25, r11
+  Const        r47, []
+  IterPrep     r48, r5
+  Len          r49, r48
+  Const        r51, 0
+  Move         r50, r51
+L5:
+  LessInt      r52, r50, r49
+  JumpIfFalse  r52, L4
+  Index        r53, r48, r50
+  Move         r54, r53
+  Index        r55, r54, r11
+  Append       r56, r47, r55
+  Move         r47, r56
+  Const        r57, 1
+  AddInt       r50, r50, r57
+  Jump         L5
+L4:
+  In           r58, r46, r47
+  JumpIfFalse  r58, L3
+  // from ss in store_sales
+  Const        r59, "ss"
+  Move         r60, r25
+  Const        r61, "d"
+  Move         r62, r31
+  Move         r63, r59
+  Move         r64, r60
+  Move         r65, r61
+  Move         r66, r62
+  MakeMap      r67, 2, r63
+  // group by { brand_id: 1, class_id: 1, category_id: 1 } into g
+  Const        r68, {"brand_id": 1, "category_id": 1, "class_id": 1}
+  Const        r69, "map[brand_id:1 category_id:1 class_id:1]"
+  In           r70, r69, r17
+  JumpIfTrue   r70, L6
+  // from ss in store_sales
+  Const        r71, "__group__"
+  Const        r72, true
+  Const        r73, "key"
+  // group by { brand_id: 1, class_id: 1, category_id: 1 } into g
+  Move         r74, r68
+  // from ss in store_sales
+  Const        r75, "items"
+  Move         r76, r19
+  Const        r77, "count"
+  Move         r78, r71
+  Move         r79, r72
+  Move         r80, r73
+  Move         r81, r74
+  Move         r82, r75
+  Move         r83, r76
+  Move         r84, r77
+  Move         r85, r51
+  MakeMap      r86, 4, r78
+  SetIndex     r17, r69, r86
+  Append       r87, r18, r86
+  Move         r18, r87
+L6:
+  Index        r88, r17, r69
+  Index        r89, r88, r75
+  Append       r90, r89, r67
+  SetIndex     r88, r75, r90
+  Index        r91, r88, r77
+  AddInt       r92, r91, r57
+  SetIndex     r88, r77, r92
+L3:
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk && d.d_year == 2002 && d.d_moy == 11
+  AddInt       r28, r28, r57
+  Jump         L7
 L1:
-  LessInt      r7, r5, r4
-  JumpIfFalse  r7, L0
-  Index        r8, r3, r5
-  Move         r9, r8
-  Index        r10, r9, r2
-  Append       r11, r1, r10
-  Move         r1, r11
-  Const        r12, 1
-  AddInt       r5, r5, r12
-  Jump         L1
+  // from ss in store_sales
+  AddInt       r22, r22, r57
+  Jump         L8
 L0:
-  // let result = first(reverse(vals))
-  Reverse      r13, r1
-  First        r14, r13
+  Move         r93, r51
+  Len          r94, r18
+L14:
+  LessInt      r95, r93, r94
+  JumpIfFalse  r95, L9
+  Index        r96, r18, r93
+  Move         r97, r96
+  // select { channel: "store", sales: sum(from x in g select x.ss_quantity * x.ss_list_price), number_sales: count(from _ in g select _) }
+  Const        r98, "channel"
+  Const        r99, "store"
+  Const        r100, "sales"
+  Const        r101, []
+  IterPrep     r102, r97
+  Len          r103, r102
+  Move         r104, r51
+L11:
+  LessInt      r105, r104, r103
+  JumpIfFalse  r105, L10
+  Index        r106, r102, r104
+  Move         r107, r106
+  Index        r108, r107, r14
+  Index        r109, r107, r15
+  Mul          r110, r108, r109
+  Append       r111, r101, r110
+  Move         r101, r111
+  AddInt       r104, r104, r57
+  Jump         L11
+L10:
+  Sum          r112, r101
+  Const        r113, "number_sales"
+  Const        r114, []
+  IterPrep     r115, r97
+  Len          r116, r115
+  Move         r117, r51
+L13:
+  LessInt      r118, r117, r116
+  JumpIfFalse  r118, L12
+  Index        r119, r115, r117
+  Move         r120, r119
+  Append       r121, r114, r120
+  Move         r114, r121
+  AddInt       r117, r117, r57
+  Jump         L13
+L12:
+  Count        r122, r114
+  Move         r123, r98
+  Move         r124, r99
+  Move         r125, r100
+  Move         r126, r112
+  Move         r127, r113
+  Move         r128, r122
+  MakeMap      r129, 3, r123
+  // from ss in store_sales
+  Append       r130, r7, r129
+  Move         r7, r130
+  AddInt       r93, r93, r57
+  Jump         L14
+L9:
+  // from r in store_filtered
+  Const        r131, []
+  // select { channel: r.channel, i_brand_id: 1, i_class_id: 1, i_category_id: 1, sales: r.sales, number_sales: r.number_sales }
+  Const        r132, "i_brand_id"
+  Const        r133, "i_class_id"
+  Const        r134, "i_category_id"
+  // from r in store_filtered
+  IterPrep     r135, r7
+  Len          r136, r135
+  Move         r137, r51
+L17:
+  LessInt      r138, r137, r136
+  JumpIfFalse  r138, L15
+  Index        r139, r135, r137
+  Move         r140, r139
+  // where r.sales > avg_sales
+  Index        r141, r140, r13
+  LessFloat    r142, r6, r141
+  JumpIfFalse  r142, L16
+  // select { channel: r.channel, i_brand_id: 1, i_class_id: 1, i_category_id: 1, sales: r.sales, number_sales: r.number_sales }
+  Const        r143, "channel"
+  Index        r144, r140, r12
+  Const        r145, "i_brand_id"
+  Const        r146, "i_class_id"
+  Const        r147, "i_category_id"
+  Const        r148, "sales"
+  Index        r149, r140, r13
+  Const        r150, "number_sales"
+  Index        r151, r140, r16
+  Move         r152, r143
+  Move         r153, r144
+  Move         r154, r145
+  Move         r155, r57
+  Move         r156, r146
+  Move         r157, r57
+  Move         r158, r147
+  Move         r159, r57
+  Move         r160, r148
+  Move         r161, r149
+  Move         r162, r150
+  Move         r163, r151
+  MakeMap      r164, 6, r152
+  // from r in store_filtered
+  Append       r165, r131, r164
+  Move         r131, r165
+L16:
+  AddInt       r137, r137, r57
+  Jump         L17
+L15:
   // json(result)
-  JSON         r14
-  // expect result == 14
-  Const        r15, 14
-  Equal        r16, r14, r15
-  Expect       r16
+  JSON         r131
+  // expect result == [ { channel: "store", i_brand_id: 1, i_class_id: 1, i_category_id: 1, sales: 60.0, number_sales: 1 } ]
+  Const        r166, [{"channel": "store", "i_brand_id": 1, "i_category_id": 1, "i_class_id": 1, "number_sales": 1, "sales": 60.0}]
+  Equal        r167, r131, r166
+  Expect       r167
   Return       r0

@@ -1,32 +1,360 @@
-func main (regs=17)
-  // let t = [{id: 0, val: 0}, {id: 1, val: 16}]
-  Const        r0, [{"id": 0, "val": 0}, {"id": 1, "val": 16}]
-  // let vals = from r in t select r.val
+func main (regs=195)
+  // let catalog_sales = [
+  Const        r0, [{"cs_call_center_sk": 1, "cs_ext_ship_cost": 5.0, "cs_net_profit": 20.0, "cs_order_number": 1, "cs_ship_addr_sk": 1, "cs_ship_date_sk": 1, "cs_warehouse_sk": 1}, {"cs_call_center_sk": 1, "cs_ext_ship_cost": 0.0, "cs_net_profit": 0.0, "cs_order_number": 1, "cs_ship_addr_sk": 1, "cs_ship_date_sk": 1, "cs_warehouse_sk": 2}]
+  // let date_dim = [ { d_date_sk: 1, d_date: "2000-03-01" } ]
+  Const        r1, [{"d_date": "2000-03-01", "d_date_sk": 1}]
+  // let customer_address = [ { ca_address_sk: 1, ca_state: "CA" } ]
+  Const        r2, [{"ca_address_sk": 1, "ca_state": "CA"}]
+  // let call_center = [ { cc_call_center_sk: 1, cc_county: "CountyA" } ]
+  Const        r3, [{"cc_call_center_sk": 1, "cc_county": "CountyA"}]
+  // let catalog_returns = []
+  Const        r4, []
+  // from cs1 in catalog_sales
+  Const        r5, []
+  // where cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk
+  Const        r6, "cs_order_number"
+  Const        r7, "cs_warehouse_sk"
+  // exists(from cr in catalog_returns where cs1.cs_order_number == cr.cr_order_number select cr) == false
+  Const        r8, "cr_order_number"
+  // order_count: len(distinct(from x in g select x.cs_order_number)),
+  Const        r9, "order_count"
+  // total_shipping_cost: sum(from x in g select x.cs_ext_ship_cost),
+  Const        r10, "total_shipping_cost"
+  Const        r11, "cs_ext_ship_cost"
+  // total_net_profit: sum(from x in g select x.cs_net_profit)
+  Const        r12, "total_net_profit"
+  Const        r13, "cs_net_profit"
+  // from cs1 in catalog_sales
+  MakeMap      r14, 0, r0
+  Move         r15, r4
+  IterPrep     r16, r0
+  Len          r17, r16
+  Const        r18, 0
+L20:
+  LessInt      r19, r18, r17
+  JumpIfFalse  r19, L0
+  Index        r20, r16, r18
+  Move         r21, r20
+  // join d in date_dim on cs1.cs_ship_date_sk == d.d_date_sk && d.d_date >= "2000-03-01" && d.d_date <= "2000-04-30"
+  IterPrep     r22, r1
+  Len          r23, r22
+  Const        r24, 0
+L19:
+  LessInt      r25, r24, r23
+  JumpIfFalse  r25, L1
+  Index        r26, r22, r24
+  Move         r27, r26
+  Const        r28, "cs_ship_date_sk"
+  Index        r29, r21, r28
+  Const        r30, "d_date"
+  Index        r31, r27, r30
+  Const        r32, "2000-03-01"
+  LessEq       r33, r32, r31
+  Index        r34, r27, r30
+  Const        r35, "2000-04-30"
+  LessEq       r36, r34, r35
+  Const        r37, "d_date_sk"
+  Index        r38, r27, r37
+  Equal        r39, r29, r38
+  Move         r40, r39
+  JumpIfFalse  r40, L2
+  Move         r40, r33
+  JumpIfFalse  r40, L2
+  Move         r40, r36
+L2:
+  JumpIfFalse  r40, L3
+  // join ca in customer_address on cs1.cs_ship_addr_sk == ca.ca_address_sk && ca.ca_state == "CA"
+  IterPrep     r41, r2
+  Len          r42, r41
+  Const        r43, 0
+L18:
+  LessInt      r44, r43, r42
+  JumpIfFalse  r44, L3
+  Index        r45, r41, r43
+  Move         r46, r45
+  Const        r47, "cs_ship_addr_sk"
+  Index        r48, r21, r47
+  Const        r49, "ca_address_sk"
+  Index        r50, r46, r49
+  Equal        r51, r48, r50
+  Const        r52, "ca_state"
+  Index        r53, r46, r52
+  Const        r54, "CA"
+  Equal        r55, r53, r54
+  Move         r56, r51
+  JumpIfFalse  r56, L4
+  Move         r56, r55
+L4:
+  JumpIfFalse  r56, L5
+  // join cc in call_center on cs1.cs_call_center_sk == cc.cc_call_center_sk && cc.cc_county == "CountyA"
+  IterPrep     r57, r3
+  Len          r58, r57
+  Const        r59, 0
+L17:
+  LessInt      r60, r59, r58
+  JumpIfFalse  r60, L5
+  Index        r61, r57, r59
+  Move         r62, r61
+  Const        r63, "cs_call_center_sk"
+  Index        r64, r21, r63
+  Const        r65, "cc_call_center_sk"
+  Index        r66, r62, r65
+  Equal        r67, r64, r66
+  Const        r68, "cc_county"
+  Index        r69, r62, r68
+  Const        r70, "CountyA"
+  Equal        r71, r69, r70
+  Move         r72, r67
+  JumpIfFalse  r72, L6
+  Move         r72, r71
+L6:
+  JumpIfFalse  r72, L7
+  // from cs2 in catalog_sales
+  Const        r73, []
+  IterPrep     r74, r0
+  Len          r75, r74
+  Const        r77, 0
+  Move         r76, r77
+L11:
+  LessInt      r78, r76, r75
+  JumpIfFalse  r78, L8
+  Index        r79, r74, r76
+  Move         r80, r79
+  // where cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk
+  Index        r81, r21, r6
+  Index        r82, r80, r6
+  Equal        r83, r81, r82
+  Index        r84, r21, r7
+  Index        r85, r80, r7
+  NotEqual     r86, r84, r85
+  Move         r87, r83
+  JumpIfFalse  r87, L9
+  Move         r87, r86
+L9:
+  JumpIfFalse  r87, L10
+  // from cs2 in catalog_sales
+  Append       r88, r73, r80
+  Move         r73, r88
+L10:
+  Const        r89, 1
+  AddInt       r76, r76, r89
+  Jump         L11
+L8:
+  // where exists(
+  Exists       r90, r73
+  // exists(from cr in catalog_returns where cs1.cs_order_number == cr.cr_order_number select cr) == false
+  Const        r91, []
+  IterPrep     r92, r4
+  Len          r93, r92
+  Move         r94, r77
+L14:
+  LessInt      r95, r94, r93
+  JumpIfFalse  r95, L12
+  Index        r96, r92, r94
+  Move         r97, r96
+  Index        r98, r21, r6
+  Index        r99, r97, r8
+  Equal        r100, r98, r99
+  JumpIfFalse  r100, L13
+  Append       r101, r91, r97
+  Move         r91, r101
+L13:
+  AddInt       r94, r94, r89
+  Jump         L14
+L12:
+  Exists       r102, r91
+  Const        r103, false
+  Equal        r104, r102, r103
+  // select cs2) &&
+  Move         r105, r90
+  JumpIfFalse  r105, L15
+  Move         r105, r104
+L15:
+  // where exists(
+  JumpIfFalse  r105, L7
+  // from cs1 in catalog_sales
+  Const        r106, "cs1"
+  Move         r107, r21
+  Const        r108, "d"
+  Move         r109, r27
+  Const        r110, "ca"
+  Move         r111, r46
+  Const        r112, "cc"
+  Move         r113, r62
+  Move         r114, r106
+  Move         r115, r107
+  Move         r116, r108
+  Move         r117, r109
+  Move         r118, r110
+  Move         r119, r111
+  Move         r120, r112
+  Move         r121, r113
+  MakeMap      r122, 4, r114
+  // group by {} into g
+  Const        r123, {}
+  Const        r124, "map[]"
+  In           r125, r124, r14
+  JumpIfTrue   r125, L16
+  // from cs1 in catalog_sales
+  Const        r126, "__group__"
+  Const        r127, true
+  Const        r128, "key"
+  // group by {} into g
+  Move         r129, r123
+  // from cs1 in catalog_sales
+  Const        r130, "items"
+  Move         r131, r4
+  Const        r132, "count"
+  Move         r133, r126
+  Move         r134, r127
+  Move         r135, r128
+  Move         r136, r129
+  Move         r137, r130
+  Move         r138, r131
+  Move         r139, r132
+  Move         r140, r77
+  MakeMap      r141, 4, r133
+  SetIndex     r14, r124, r141
+  Append       r142, r15, r141
+  Move         r15, r142
+L16:
+  Index        r143, r14, r124
+  Index        r144, r143, r130
+  Append       r145, r144, r122
+  SetIndex     r143, r130, r145
+  Index        r146, r143, r132
+  AddInt       r147, r146, r89
+  SetIndex     r143, r132, r147
+L7:
+  // join cc in call_center on cs1.cs_call_center_sk == cc.cc_call_center_sk && cc.cc_county == "CountyA"
+  AddInt       r59, r59, r89
+  Jump         L17
+L5:
+  // join ca in customer_address on cs1.cs_ship_addr_sk == ca.ca_address_sk && ca.ca_state == "CA"
+  AddInt       r43, r43, r89
+  Jump         L18
+L3:
+  // join d in date_dim on cs1.cs_ship_date_sk == d.d_date_sk && d.d_date >= "2000-03-01" && d.d_date <= "2000-04-30"
+  AddInt       r24, r24, r89
+  Jump         L19
+L1:
+  // from cs1 in catalog_sales
+  AddInt       r18, r18, r89
+  Jump         L20
+L0:
+  Move         r148, r77
+  Len          r149, r15
+L28:
+  LessInt      r150, r148, r149
+  JumpIfFalse  r150, L21
+  Index        r151, r15, r148
+  Move         r152, r151
+  // order_count: len(distinct(from x in g select x.cs_order_number)),
+  Const        r153, "order_count"
+  Const        r154, []
+  IterPrep     r155, r152
+  Len          r156, r155
+  Move         r157, r77
+L23:
+  LessInt      r158, r157, r156
+  JumpIfFalse  r158, L22
+  Index        r159, r155, r157
+  Move         r160, r159
+  Index        r161, r160, r6
+  Append       r162, r154, r161
+  Move         r154, r162
+  AddInt       r157, r157, r89
+  Jump         L23
+L22:
+  Distinct     163,154,0,0
+  Len          r164, r163
+  // total_shipping_cost: sum(from x in g select x.cs_ext_ship_cost),
+  Const        r165, "total_shipping_cost"
+  Const        r166, []
+  IterPrep     r167, r152
+  Len          r168, r167
+  Move         r169, r77
+L25:
+  LessInt      r170, r169, r168
+  JumpIfFalse  r170, L24
+  Index        r171, r167, r169
+  Move         r160, r171
+  Index        r172, r160, r11
+  Append       r173, r166, r172
+  Move         r166, r173
+  AddInt       r169, r169, r89
+  Jump         L25
+L24:
+  Sum          r174, r166
+  // total_net_profit: sum(from x in g select x.cs_net_profit)
+  Const        r175, "total_net_profit"
+  Const        r176, []
+  IterPrep     r177, r152
+  Len          r178, r177
+  Move         r179, r77
+L27:
+  LessInt      r180, r179, r178
+  JumpIfFalse  r180, L26
+  Index        r181, r177, r179
+  Move         r160, r181
+  Index        r182, r160, r13
+  Append       r183, r176, r182
+  Move         r176, r183
+  AddInt       r179, r179, r89
+  Jump         L27
+L26:
+  Sum          r184, r176
+  // order_count: len(distinct(from x in g select x.cs_order_number)),
+  Move         r185, r153
+  Move         r186, r164
+  // total_shipping_cost: sum(from x in g select x.cs_ext_ship_cost),
+  Move         r187, r165
+  Move         r188, r174
+  // total_net_profit: sum(from x in g select x.cs_net_profit)
+  Move         r189, r175
+  Move         r190, r184
+  // select {
+  MakeMap      r191, 3, r185
+  // from cs1 in catalog_sales
+  Append       r192, r5, r191
+  Move         r5, r192
+  AddInt       r148, r148, r89
+  Jump         L28
+L21:
+  // json(filtered)
+  JSON         r5
+  // expect filtered == [ { order_count: 1, total_shipping_cost: 5.0, total_net_profit: 20.0 } ]
+  Const        r193, [{"order_count": 1, "total_net_profit": 20.0, "total_shipping_cost": 5.0}]
+  Equal        r194, r5, r193
+  Expect       r194
+  Return       r0
+
+  // fun distinct(xs: list<any>): list<any> {
+func distinct (regs=14)
+  // var out = []
   Const        r1, []
-  Const        r2, "val"
+  Move         r2, r1
+  // for x in xs {
   IterPrep     r3, r0
   Len          r4, r3
-  Const        r6, 0
-  Move         r5, r6
+  Const        r5, 0
+L2:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // if !contains(out, x) {
+  Not          r10, r9
+  JumpIfFalse  r10, L1
+  // out = append(out, x)
+  Append       r11, r2, r8
+  Move         r2, r11
 L1:
-  LessInt      r7, r5, r4
-  JumpIfFalse  r7, L0
-  Index        r8, r3, r5
-  Move         r9, r8
-  Index        r10, r9, r2
-  Append       r11, r1, r10
-  Move         r1, r11
+  // for x in xs {
   Const        r12, 1
-  AddInt       r5, r5, r12
-  Jump         L1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  Jump         L2
 L0:
-  // let result = first(reverse(vals))
-  Reverse      r13, r1
-  First        r14, r13
-  // json(result)
-  JSON         r14
-  // expect result == 16
-  Const        r15, 16
-  Equal        r16, r14, r15
-  Expect       r16
-  Return       r0
+  // return out
+  Return       r2
