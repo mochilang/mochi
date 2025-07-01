@@ -1235,20 +1235,11 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = fr.regs[ins.D]
 			}
 		case OpStr:
-			fr.regs[ins.A] = Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: valueToText(fr.regs[ins.B])}
 		case OpUpper:
-			b := fr.regs[ins.B]
-			if b.Tag != ValueStr {
-				return Value{}, m.newError(fmt.Errorf("upper expects string"), trace, ins.Line)
-			}
-			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToUpper(b.Str)}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToUpper(valueToText(fr.regs[ins.B]))}
 		case OpLower:
-			b := fr.regs[ins.B]
-			if b.Tag == ValueStr {
-				fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(b.Str)}
-			} else {
-				fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(b)))}
-			}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(valueToText(fr.regs[ins.B]))}
 		case OpReverse:
 			val := fr.regs[ins.B]
 			switch val.Tag {
@@ -6207,19 +6198,13 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{}, false
 		}
 		v := args[0]
-		if v.Tag == ValueStr {
-			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true
-		}
-		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(v)))}, true
+		return Value{Tag: ValueStr, Str: strings.ToLower(valueToText(v))}, true
 	case "upper":
 		if len(args) != 1 {
 			return Value{}, false
 		}
 		v := args[0]
-		if v.Tag == ValueStr {
-			return Value{Tag: ValueStr, Str: strings.ToUpper(v.Str)}, true
-		}
-		return Value{Tag: ValueStr, Str: strings.ToUpper(fmt.Sprint(valueToAny(v)))}, true
+		return Value{Tag: ValueStr, Str: strings.ToUpper(valueToText(v))}, true
 	case "reverse":
 		if len(args) != 1 {
 			return Value{}, false
@@ -6849,11 +6834,24 @@ func anyToValue(v any) Value {
 	}
 }
 
+func valueToText(v Value) string {
+	switch v.Tag {
+	case ValueNull:
+		return "null"
+	case ValueStr:
+		return v.Str
+	default:
+		return fmt.Sprint(valueToAny(v))
+	}
+}
+
 func valueToString(v Value) string {
 	visited := map[uintptr]bool{}
 	var recur func(Value) string
 	recur = func(val Value) string {
 		switch val.Tag {
+		case ValueNull:
+			return "null"
 		case ValueInt:
 			return fmt.Sprintf("%d", val.Int)
 		case ValueFloat:
