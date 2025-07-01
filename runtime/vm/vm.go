@@ -5462,6 +5462,18 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 	addPair := func(k, v int) {
 		pairs = append(pairs, k, v)
 	}
+	var addStructFields func(reg int, st types.StructType)
+	addStructFields = func(reg int, st types.StructType) {
+		for _, field := range st.Order {
+			fk := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: field})
+			fv := fc.newReg()
+			fc.emit(q.Pos, Instr{Op: OpIndex, A: fv, B: reg, C: fk})
+			addPair(fk, fv)
+			if ft, ok := st.Fields[field].(types.StructType); ok {
+				addStructFields(fv, ft)
+			}
+		}
+	}
 	for i, n := range names {
 		k := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: n})
 		v := fc.newReg()
@@ -5470,12 +5482,7 @@ func (fc *funcCompiler) buildRowMap(q *parser.QueryExpr) int {
 
 		if typ, err := fc.comp.env.GetVar(n); err == nil {
 			if st, ok := typ.(types.StructType); ok {
-				for _, field := range st.Order {
-					fk := fc.constReg(q.Pos, Value{Tag: ValueStr, Str: field})
-					fv := fc.newReg()
-					fc.emit(q.Pos, Instr{Op: OpIndex, A: fv, B: regs[i], C: fk})
-					addPair(fk, fv)
-				}
+				addStructFields(regs[i], st)
 			}
 		}
 	}

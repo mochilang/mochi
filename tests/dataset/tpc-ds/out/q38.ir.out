@@ -1,125 +1,137 @@
-func main (regs=58)
+func main (regs=15)
   // let customer = [
   Const        r0, [{"c_customer_sk": 1, "c_first_name": "John", "c_last_name": "Smith"}, {"c_customer_sk": 2, "c_first_name": "Alice", "c_last_name": "Jones"}]
   // let store_sales = [
   Const        r1, [{"d_month_seq": 1200, "ss_customer_sk": 1}, {"d_month_seq": 1205, "ss_customer_sk": 2}]
+L0:
   // let catalog_sales = [
   Const        r2, [{"cs_bill_customer_sk": 1, "d_month_seq": 1203}]
+L6:
   // let web_sales = [
   Const        r3, [{"d_month_seq": 1206, "ws_bill_customer_sk": 1}]
   // let store_ids = distinct(from s in store_sales where s.d_month_seq >= 1200 && s.d_month_seq <= 1211 select s.ss_customer_sk)
   Const        r4, []
   Const        r5, "d_month_seq"
+L1:
   Const        r6, "ss_customer_sk"
   IterPrep     r7, r1
-  Len          r8, r7
-  Const        r10, 0
-  Move         r9, r10
-L3:
-  LessInt      r11, r9, r8
-  JumpIfFalse  r11, L0
-  Index        r13, r7, r9
-  Index        r14, r13, r5
-  Const        r15, 1200
-  LessEq       r16, r15, r14
-  Index        r17, r13, r5
-  Const        r18, 1211
-  LessEq       r19, r17, r18
-  JumpIfFalse  r16, L1
-  Move         r16, r19
-L1:
-  JumpIfFalse  r16, L2
-  Index        r20, r13, r6
-  Append       r4, r4, r20
-L2:
-  Const        r22, 1
-  AddInt       r9, r9, r22
-  Jump         L3
-L0:
-  Distinct     23,4,0,0
-  // let catalog_ids = distinct(from c in catalog_sales where c.d_month_seq >= 1200 && c.d_month_seq <= 1211 select c.cs_bill_customer_sk)
-  Const        r24, []
-  Const        r25, "cs_bill_customer_sk"
-  IterPrep     r26, r2
-  Len          r27, r26
-  Move         r28, r10
-L7:
-  LessInt      r29, r28, r27
-  JumpIfFalse  r29, L4
-  Index        r31, r26, r28
-  Index        r32, r31, r5
-  LessEq       r33, r15, r32
-  Index        r34, r31, r5
-  LessEq       r35, r34, r18
-  JumpIfFalse  r33, L5
-  Move         r33, r35
 L5:
-  JumpIfFalse  r33, L6
-  Index        r36, r31, r25
-  Append       r24, r24, r36
-L6:
-  AddInt       r28, r28, r22
-  Jump         L7
-L4:
-  Distinct     38,24,0,0
-  // let web_ids = distinct(from w in web_sales where w.d_month_seq >= 1200 && w.d_month_seq <= 1211 select w.ws_bill_customer_sk)
-  Const        r39, []
-  Const        r40, "ws_bill_customer_sk"
-  IterPrep     r41, r3
-  Len          r42, r41
-  Move         r43, r10
-L11:
-  LessInt      r44, r43, r42
-  JumpIfFalse  r44, L8
-  Index        r46, r41, r43
-  Index        r47, r46, r5
-  LessEq       r48, r15, r47
-  Index        r49, r46, r5
-  LessEq       r50, r49, r18
-  JumpIfFalse  r48, L9
-  Move         r48, r50
-L9:
-  JumpIfFalse  r48, L10
-  Index        r51, r46, r40
-  Append       r39, r39, r51
+  Len          r1, r7
+L2:
+  Const        r8, 0
+L3:
+  Move         r9, r8
+  LessInt      r10, r9, r1
+  JumpIfFalse  r10, L0
 L10:
-  AddInt       r43, r43, r22
-  Jump         L11
+  Index        r1, r7, r9
+L4:
+  Move         r7, r1
+  Index        r1, r7, r5
+  Const        r11, 1200
+  LessEq       r12, r11, r1
+  Index        r1, r7, r5
+  Const        r13, 1211
+  LessEq       r14, r1, r13
+  Move         r1, r12
+  JumpIfFalse  r1, L1
+  Move         r1, r14
+  JumpIfFalse  r1, L2
+  Index        r12, r7, r6
+  Append       r14, r4, r12
+  Move         r4, r14
+  Const        r1, 1
+  AddInt       r9, r9, r1
+  Jump         L3
+  Distinct     6,4,0,0
+  // let catalog_ids = distinct(from c in catalog_sales where c.d_month_seq >= 1200 && c.d_month_seq <= 1211 select c.cs_bill_customer_sk)
+  Const        r7, []
+  Const        r12, "cs_bill_customer_sk"
+  IterPrep     r14, r2
+  Len          r9, r14
+  Move         r10, r8
+  LessInt      r4, r10, r9
+  JumpIfFalse  r4, L4
+  Index        r2, r14, r10
+  Move         r9, r2
+  Index        r4, r9, r5
+  LessEq       r14, r11, r4
+  Index        r2, r9, r5
+  LessEq       r4, r2, r13
+  Move         r2, r14
+  JumpIfFalse  r2, L5
+  Move         r2, r4
+  JumpIfFalse  r2, L6
+  Index        r14, r9, r12
+  Append       r4, r7, r14
+  Move         r7, r4
+  AddInt       r10, r10, r1
+  Jump         L0
+  Distinct     12,7,0,0
+  // let web_ids = distinct(from w in web_sales where w.d_month_seq >= 1200 && w.d_month_seq <= 1211 select w.ws_bill_customer_sk)
+  Const        r9, []
+  Const        r10, "ws_bill_customer_sk"
+  IterPrep     r2, r3
+  Len          r14, r2
+  Move         r4, r8
+  LessInt      r7, r4, r14
+  JumpIfFalse  r7, L7
+  Index        r3, r2, r4
+  Move         r8, r3
+  Index        r14, r8, r5
+  LessEq       r7, r11, r14
+  Index        r2, r8, r5
+  LessEq       r3, r2, r13
+  Move         r11, r7
+  JumpIfFalse  r11, L8
+  Move         r11, r3
 L8:
-  Distinct     53,39,0,0
+  JumpIfFalse  r11, L9
+  Index        r14, r8, r10
+  Append       r5, r9, r14
+  Move         r9, r5
+L9:
+  AddInt       r4, r4, r1
+  Jump         L10
+L7:
+  Distinct     2,9,0,0
   // let hot = store_ids intersect catalog_ids intersect web_ids
-  Intersect    r54, r23, r38
-  Intersect    r55, r54, r53
+  Intersect    r7, r6, r12
+  Intersect    r3, r7, r2
   // let result = len(hot)
-  Len          r56, r55
+  Len          r11, r3
   // json(result)
-  JSON         r56
+  JSON         r11
   // expect result == 1
-  EqualInt     r57, r56, r22
-  Expect       r57
+  EqualInt     r13, r11, r1
+  Expect       r13
   Return       r0
 
   // fun distinct(xs: list<any>): list<any> {
-func distinct (regs=14)
+func distinct (regs=6)
   // var out = []
-  Const        r2, []
+  Const        r1, []
+  Move         r2, r1
   // for x in xs {
-  IterPrep     r3, r0
-  Len          r4, r3
-  Const        r5, 0
+  IterPrep     r1, r0
+  Len          r3, r1
 L2:
-  Less         r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r8, r3, r5
-  // if !contains(out, x) {
-  Not          r10, r9
-  JumpIfFalse  r10, L1
-  // out = append(out, x)
-  Append       r2, r2, r8
+  Const        r4, 0
 L1:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r3, r1, r4
+  Move         r5, r3
+  // if !contains(out, x) {
+  Not          r1, r3
+  JumpIfFalse  r1, L1
+  // out = append(out, x)
+  Append       r1, r2, r5
+  Move         r2, r1
   // for x in xs {
-  Const        r12, 1
-  Add          r5, r5, r12
+  Const        r3, 1
+  AddInt       r5, r4, r3
+  Move         r4, r5
   Jump         L2
 L0:
   // return out

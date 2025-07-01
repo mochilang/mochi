@@ -1,8 +1,10 @@
-func main (regs=155)
+func main (regs=54)
   // let item = [
-  Const        r0, [{"i_current_price": 30, "i_item_desc": "Item1", "i_item_id": "I1", "i_item_sk": 1, "i_manufact_id": 800}, {"i_current_price": 60, "i_item_desc": "Item2", "i_item_id": "I2", "i_item_sk": 2, "i_manufact_id": 801}]
+  Const        r0, [{"i_current_price": 30.0, "i_item_desc": "Item1", "i_item_id": "I1", "i_item_sk": 1, "i_manufact_id": 800}, {"i_current_price": 60.0, "i_item_desc": "Item2", "i_item_id": "I2", "i_item_sk": 2, "i_manufact_id": 801}]
+L8:
   // let inventory = [
   Const        r1, [{"inv_date_sk": 1, "inv_item_sk": 1, "inv_quantity_on_hand": 200, "inv_warehouse_sk": 1}, {"inv_date_sk": 1, "inv_item_sk": 2, "inv_quantity_on_hand": 300, "inv_warehouse_sk": 1}]
+L3:
   // let date_dim = [
   Const        r2, [{"d_date": "2000-01-15", "d_date_sk": 1}]
   // let catalog_sales = [
@@ -21,205 +23,218 @@ func main (regs=155)
   Const        r12, "inv_quantity_on_hand"
   // select {i_item_id: g.key.id, i_item_desc: g.key.desc, i_current_price: g.key.price}
   Const        r13, "key"
+L2:
   // from i in item
   MakeMap      r14, 0, r0
   Const        r15, []
+  Move         r16, r15
   IterPrep     r17, r0
   Len          r18, r17
   Const        r19, 0
-L10:
+L9:
   LessInt      r20, r19, r18
   JumpIfFalse  r20, L0
-  Index        r22, r17, r19
-  // join inv in inventory on i.i_item_sk == inv.inv_item_sk
-  IterPrep     r23, r1
-  Len          r24, r23
-  Const        r25, 0
-L9:
-  LessInt      r26, r25, r24
-  JumpIfFalse  r26, L1
-  Index        r28, r23, r25
-  Const        r29, "i_item_sk"
-  Index        r30, r22, r29
-  Const        r31, "inv_item_sk"
-  Index        r32, r28, r31
-  Equal        r33, r30, r32
-  JumpIfFalse  r33, L2
-  // join d in date_dim on inv.inv_date_sk == d.d_date_sk
-  IterPrep     r34, r2
-  Len          r35, r34
-  Const        r36, 0
-L8:
-  LessInt      r37, r36, r35
-  JumpIfFalse  r37, L2
-  Index        r39, r34, r36
-  Const        r40, "inv_date_sk"
-  Index        r41, r28, r40
-  Const        r42, "d_date_sk"
-  Index        r43, r39, r42
-  Equal        r44, r41, r43
-  JumpIfFalse  r44, L3
-  // join cs in catalog_sales on cs.cs_item_sk == i.i_item_sk
-  IterPrep     r45, r3
-  Len          r46, r45
-  Const        r47, 0
-L7:
-  LessInt      r48, r47, r46
-  JumpIfFalse  r48, L3
-  Index        r50, r45, r47
-  Const        r51, "cs_item_sk"
-  Index        r52, r50, r51
-  Index        r53, r22, r29
-  Equal        r54, r52, r53
-  JumpIfFalse  r54, L4
-  // where i.i_current_price >= 20 && i.i_current_price <= 50 && i.i_manufact_id >= 800 && i.i_manufact_id <= 803 && inv.inv_quantity_on_hand >= 100 && inv.inv_quantity_on_hand <= 500
-  Index        r55, r22, r10
-  Const        r56, 20
-  LessEq       r57, r56, r55
-  Index        r58, r22, r10
-  Const        r59, 50
-  LessEq       r60, r58, r59
-  Index        r61, r22, r11
-  Const        r62, 800
-  LessEq       r63, r62, r61
-  Index        r64, r22, r11
-  Const        r65, 803
-  LessEq       r66, r64, r65
-  Index        r67, r28, r12
-  Const        r68, 100
-  LessEq       r69, r68, r67
-  Index        r70, r28, r12
-  Const        r71, 500
-  LessEq       r72, r70, r71
-  JumpIfFalse  r57, L5
-  Move         r57, r60
-  JumpIfFalse  r57, L5
-  Move         r57, r63
-  JumpIfFalse  r57, L5
-  Move         r57, r66
-  JumpIfFalse  r57, L5
-  Move         r57, r69
-  JumpIfFalse  r57, L5
-  Move         r57, r72
-L5:
-  JumpIfFalse  r57, L4
-  // from i in item
-  Const        r73, "i"
-  Move         r74, r22
-  Const        r75, "inv"
-  Move         r76, r28
-  Const        r77, "d"
-  Move         r78, r39
-  Const        r79, "cs"
-  Move         r80, r50
-  MakeMap      r81, 4, r73
-  // group by {id: i.i_item_id, desc: i.i_item_desc, price: i.i_current_price} into g
-  Const        r82, "id"
-  Index        r83, r22, r6
-  Const        r84, "desc"
-  Index        r85, r22, r8
-  Const        r86, "price"
-  Index        r87, r22, r10
-  Move         r88, r82
-  Move         r89, r83
-  Move         r90, r84
-  Move         r91, r85
-  Move         r92, r86
-  Move         r93, r87
-  MakeMap      r94, 3, r88
-  Str          r95, r94
-  In           r96, r95, r14
-  JumpIfTrue   r96, L6
-  // from i in item
-  Const        r97, []
-  Const        r98, "__group__"
-  Const        r99, true
-  Const        r100, "key"
-  // group by {id: i.i_item_id, desc: i.i_item_desc, price: i.i_current_price} into g
-  Move         r101, r94
-  // from i in item
-  Const        r102, "items"
-  Move         r103, r97
-  Const        r104, "count"
-  Const        r105, 0
-  Move         r106, r98
-  Move         r107, r99
-  Move         r108, r100
-  Move         r109, r101
-  Move         r110, r102
-  Move         r111, r103
-  Move         r112, r104
-  Move         r113, r105
-  MakeMap      r114, 4, r106
-  SetIndex     r14, r95, r114
-  Append       r15, r15, r114
-L6:
-  Const        r116, "items"
-  Index        r117, r14, r95
-  Index        r118, r117, r116
-  Append       r119, r118, r81
-  SetIndex     r117, r116, r119
-  Const        r120, "count"
-  Index        r121, r117, r120
-  Const        r122, 1
-  AddInt       r123, r121, r122
-  SetIndex     r117, r120, r123
-L4:
-  // join cs in catalog_sales on cs.cs_item_sk == i.i_item_sk
-  AddInt       r47, r47, r122
-  Jump         L7
-L3:
-  // join d in date_dim on inv.inv_date_sk == d.d_date_sk
-  AddInt       r36, r36, r122
-  Jump         L8
-L2:
-  // join inv in inventory on i.i_item_sk == inv.inv_item_sk
-  AddInt       r25, r25, r122
-  Jump         L9
 L1:
+  Index        r18, r17, r19
+L7:
+  Move         r17, r18
+  // join inv in inventory on i.i_item_sk == inv.inv_item_sk
+  IterPrep     r18, r1
+L6:
+  Len          r1, r18
+  Const        r21, 0
+  LessInt      r22, r21, r1
+  JumpIfFalse  r22, L1
+  Index        r1, r18, r21
+  Move         r22, r1
+  Const        r18, "i_item_sk"
+  Index        r23, r17, r18
+  Const        r24, "inv_item_sk"
+  Index        r25, r22, r24
+  Equal        r24, r23, r25
+  JumpIfFalse  r24, L2
+  // join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  IterPrep     r23, r2
+  Len          r25, r23
+  Const        r24, 0
+  LessInt      r2, r24, r25
+  JumpIfFalse  r2, L2
+  Index        r25, r23, r24
+  Move         r2, r25
+  Const        r23, "inv_date_sk"
+  Index        r25, r22, r23
+L4:
+  Const        r26, "d_date_sk"
+  Index        r27, r2, r26
+  Equal        r26, r25, r27
+L5:
+  JumpIfFalse  r26, L3
+  // join cs in catalog_sales on cs.cs_item_sk == i.i_item_sk
+  IterPrep     r25, r3
+  Len          r27, r25
+  Const        r26, 0
+  LessInt      r3, r26, r27
+  JumpIfFalse  r3, L3
+  Index        r27, r25, r26
+  Move         r3, r27
+  Const        r25, "cs_item_sk"
+  Index        r27, r3, r25
+  Index        r25, r17, r18
+  Equal        r18, r27, r25
+  JumpIfFalse  r18, L4
+  // where i.i_current_price >= 20 && i.i_current_price <= 50 && i.i_manufact_id >= 800 && i.i_manufact_id <= 803 && inv.inv_quantity_on_hand >= 100 && inv.inv_quantity_on_hand <= 500
+  Index        r27, r17, r10
+  Const        r18, 20
+  LessEq       r28, r18, r27
+  Index        r27, r17, r10
+  Const        r18, 50
+  LessEq       r29, r27, r18
+  Index        r27, r17, r11
+  Const        r18, 800
+  LessEq       r30, r18, r27
+  Index        r27, r17, r11
+  Const        r18, 803
+  LessEq       r11, r27, r18
+  Index        r27, r22, r12
+  Const        r18, 100
+  LessEq       r31, r18, r27
+  Index        r27, r22, r12
+  Const        r18, 500
+  LessEq       r12, r27, r18
+  Move         r27, r28
+  JumpIfFalse  r27, L3
+  Move         r27, r29
+  JumpIfFalse  r27, L3
+  Move         r27, r30
+  JumpIfFalse  r27, L3
+  Move         r27, r11
+  JumpIfFalse  r27, L3
+  Move         r27, r31
+  JumpIfFalse  r27, L3
+  Move         r27, r12
+  JumpIfFalse  r27, L4
   // from i in item
-  AddInt       r19, r19, r122
-  Jump         L10
+  Const        r18, "i"
+  Move         r28, r17
+  Const        r29, "inv"
+  Move         r30, r22
+  Const        r11, "d"
+  Move         r31, r2
+  Const        r12, "cs"
+  Move         r27, r3
+  Move         r32, r18
+  Move         r33, r28
+  Move         r34, r29
+  Move         r35, r30
+  Move         r36, r11
+  Move         r37, r31
+  Move         r38, r12
+  Move         r39, r27
+  MakeMap      r22, 4, r32
+  // group by {id: i.i_item_id, desc: i.i_item_desc, price: i.i_current_price} into g
+  Const        r2, "id"
+  Index        r3, r17, r6
+  Const        r18, "desc"
+  Index        r28, r17, r8
+  Const        r29, "price"
+  Index        r30, r17, r10
+  Move         r32, r2
+  Move         r33, r3
+  Move         r34, r18
+  Move         r35, r28
+  Move         r36, r29
+  Move         r37, r30
+  MakeMap      r11, 3, r32
+  Str          r31, r11
+  In           r12, r31, r14
+  JumpIfTrue   r12, L5
+  // from i in item
+  Const        r27, "__group__"
+  Const        r38, true
+  // group by {id: i.i_item_id, desc: i.i_item_desc, price: i.i_current_price} into g
+  Move         r39, r11
+  // from i in item
+  Const        r6, "items"
+  Move         r8, r15
+  Const        r10, "count"
+  Const        r17, 0
+  Move         r40, r27
+  Move         r41, r38
+  Move         r42, r13
+  Move         r43, r39
+  Move         r44, r6
+  Move         r45, r8
+  Move         r46, r10
+  Move         r47, r17
+  MakeMap      r2, 4, r40
+  SetIndex     r14, r31, r2
+  Append       r3, r16, r2
+  Move         r16, r3
+  Index        r18, r14, r31
+  Index        r28, r18, r6
+  Append       r29, r28, r22
+  SetIndex     r18, r6, r29
+  Index        r30, r18, r10
+  Const        r32, 1
+  AddInt       r33, r30, r32
+  SetIndex     r18, r10, r33
+  // join cs in catalog_sales on cs.cs_item_sk == i.i_item_sk
+  AddInt       r26, r26, r32
+  Jump         L6
+  // join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  AddInt       r24, r24, r32
+  Jump         L7
+  // join inv in inventory on i.i_item_sk == inv.inv_item_sk
+  AddInt       r21, r21, r32
+  Jump         L8
+  // from i in item
+  AddInt       r19, r19, r32
+  Jump         L9
 L0:
-  Const        r124, 0
-  Len          r126, r15
-L12:
-  LessInt      r127, r124, r126
-  JumpIfFalse  r127, L11
-  Index        r129, r15, r124
-  // select {i_item_id: g.key.id, i_item_desc: g.key.desc, i_current_price: g.key.price}
-  Const        r130, "i_item_id"
-  Index        r131, r129, r13
-  Index        r132, r131, r5
-  Const        r133, "i_item_desc"
-  Index        r134, r129, r13
-  Index        r135, r134, r7
-  Const        r136, "i_current_price"
-  Index        r137, r129, r13
-  Index        r138, r137, r9
-  Move         r139, r130
-  Move         r140, r132
-  Move         r141, r133
-  Move         r142, r135
-  Move         r143, r136
-  Move         r144, r138
-  MakeMap      r145, 3, r139
-  // sort by g.key.id
-  Index        r146, r129, r13
-  Index        r148, r146, r5
-  // from i in item
-  Move         r149, r145
-  MakeList     r150, 2, r148
-  Append       r4, r4, r150
-  AddInt       r124, r124, r122
-  Jump         L12
+  Move         r34, r17
+  Len          r35, r16
 L11:
+  LessInt      r36, r34, r35
+  JumpIfFalse  r36, L10
+  Index        r37, r16, r34
+  Move         r12, r37
+  // select {i_item_id: g.key.id, i_item_desc: g.key.desc, i_current_price: g.key.price}
+  Const        r11, "i_item_id"
+  Index        r15, r12, r13
+  Index        r27, r15, r5
+  Const        r38, "i_item_desc"
+  Index        r39, r12, r13
+  Index        r8, r39, r7
+  Const        r40, "i_current_price"
+  Index        r41, r12, r13
+  Index        r42, r41, r9
+  Move         r48, r11
+  Move         r49, r27
+  Move         r50, r38
+  Move         r51, r8
+  Move         r52, r40
+  Move         r53, r42
+  MakeMap      r43, 3, r48
   // sort by g.key.id
-  Sort         r4, r4
+  Index        r44, r12, r13
+  Index        r45, r44, r5
+  Move         r46, r45
+  // from i in item
+  Move         r47, r43
+  MakeList     r2, 2, r46
+  Append       r3, r4, r2
+  Move         r4, r3
+  AddInt       r34, r34, r32
+  Jump         L11
+L10:
+  // sort by g.key.id
+  Sort         r14, r4
+  // from i in item
+  Move         r4, r14
   // json(result)
   JSON         r4
   // expect result == [{i_item_id: "I1", i_item_desc: "Item1", i_current_price: 30.0}]
-  Const        r153, [{"i_current_price": 30, "i_item_desc": "Item1", "i_item_id": "I1"}]
-  Equal        r154, r4, r153
-  Expect       r154
+  Const        r31, [{"i_current_price": 30.0, "i_item_desc": "Item1", "i_item_id": "I1"}]
+  Equal        r22, r4, r31
+  Expect       r22
   Return       r0
