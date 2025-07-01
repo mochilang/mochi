@@ -322,14 +322,14 @@ func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) simpleBodyExpr(stmts []*parser.Statement) (string, error) {
-	if len(stmts) != 1 {
-		return "", fmt.Errorf("unsupported loop body")
+	if len(stmts) == 1 && stmts[0].Expr != nil {
+		return c.compileExpr(stmts[0].Expr.Expr)
 	}
-	s := stmts[0]
-	if s.Expr != nil {
-		return c.compileExpr(s.Expr.Expr)
+	expr, err := c.compileStmtExpr(stmts, false)
+	if err != nil {
+		return "", err
 	}
-	return "", fmt.Errorf("unsupported loop body")
+	return fmt.Sprintf("fromMaybe () (%s)", expr), nil
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt) error {
