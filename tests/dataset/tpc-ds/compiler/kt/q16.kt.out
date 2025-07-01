@@ -1,0 +1,285 @@
+data class CatalogSale(val cs_order_number: Int, val cs_ship_date_sk: Int, val cs_ship_addr_sk: Int, val cs_call_center_sk: Int, val cs_warehouse_sk: Int, val cs_ext_ship_cost: Double, val cs_net_profit: Double)
+
+data class DateDim(val d_date_sk: Int, val d_date: String)
+
+data class CustomerAddress(val ca_address_sk: Int, val ca_state: String)
+
+data class CallCenter(val cc_call_center_sk: Int, val cc_county: String)
+
+data class CatalogReturn(val cr_order_number: Int)
+
+fun distinct(xs: List<Any>) : List<Any> {
+    var out = listOf<Any?>()
+    for (x in xs) {
+        if (!contains(out, x)) {
+            out = append(out, x)
+        }
+    }
+    return out
+}
+
+fun test_TPCDS_Q16_shipping() {
+    check((filtered == listOf(mutableMapOf("order_count" to 1, "total_shipping_cost" to 5, "total_net_profit" to 20))))
+}
+
+fun main() {
+    val catalog_sales = listOf(mutableMapOf("cs_order_number" to 1, "cs_ship_date_sk" to 1, "cs_ship_addr_sk" to 1, "cs_call_center_sk" to 1, "cs_warehouse_sk" to 1, "cs_ext_ship_cost" to 5, "cs_net_profit" to 20), mutableMapOf("cs_order_number" to 1, "cs_ship_date_sk" to 1, "cs_ship_addr_sk" to 1, "cs_call_center_sk" to 1, "cs_warehouse_sk" to 2, "cs_ext_ship_cost" to 0, "cs_net_profit" to 0))
+    val date_dim = listOf(mutableMapOf("d_date_sk" to 1, "d_date" to "2000-03-01"))
+    val customer_address = listOf(mutableMapOf("ca_address_sk" to 1, "ca_state" to "CA"))
+    val call_center = listOf(mutableMapOf("cc_call_center_sk" to 1, "cc_county" to "CountyA"))
+    val catalog_returns = listOf<Any?>()
+    val filtered = run {
+        val _src = catalog_sales
+        val _rows = _query(_src, listOf(
+        _JoinSpec(items = date_dim, on = { args ->
+        val cs1 = args[0] as MutableMap<String, Any>
+        val d = args[1] as MutableMap<String, Any>
+        (((cs1["cs_ship_date_sk"] == d["d_date_sk"]) && (d["d_date"] >= "2000-03-01")) && (d["d_date"] <= "2000-04-30"))
+    })),
+    _JoinSpec(items = customer_address, on = { args ->
+    val cs1 = args[0] as MutableMap<String, Any>
+    val d = args[1] as MutableMap<String, Any>
+    val ca = args[2] as MutableMap<String, Any>
+    ((cs1["cs_ship_addr_sk"] == ca["ca_address_sk"]) && (ca["ca_state"] == "CA"))
+})),
+_JoinSpec(items = call_center, on = { args ->
+val cs1 = args[0] as MutableMap<String, Any>
+val d = args[1] as MutableMap<String, Any>
+val ca = args[2] as MutableMap<String, Any>
+val cc = args[3] as MutableMap<String, Any>
+((cs1["cs_call_center_sk"] == cc["cc_call_center_sk"]) && (cc["cc_county"] == "CountyA"))
+}))
+), _QueryOpts(selectFn = { args ->
+val cs1 = args[0] as MutableMap<String, Any>
+val d = args[1] as MutableMap<String, Any>
+val ca = args[2] as MutableMap<String, Any>
+val cc = args[3] as MutableMap<String, Any>
+arrayOf(cs1, d, ca, cc)
+}, where = { args ->
+val cs1 = args[0] as MutableMap<String, Any>
+val d = args[1] as MutableMap<String, Any>
+val ca = args[2] as MutableMap<String, Any>
+val cc = args[3] as MutableMap<String, Any>
+(exists(run {
+    var res = catalog_sales
+    res = res.filter { cs2 -> ((cs1["cs_order_number"] == cs2["cs_order_number"]) && (cs1["cs_warehouse_sk"] != cs2["cs_warehouse_sk"])) }
+    res = res.map { cs2 -> cs2 }
+    res
+}) && (exists(run {
+    var res = catalog_returns
+    res = res.filter { cr -> (cs1["cs_order_number"] == cr["cr_order_number"]) }
+    res = res.map { cr -> cr }
+    res
+}) == false))
+}) )
+val _groups = _group_by(_rows) { args ->
+val cs1 = args[0] as MutableMap<String, Any>
+val d = args[1] as MutableMap<String, Any>
+val ca = args[2] as MutableMap<String, Any>
+val cc = args[3] as MutableMap<String, Any>
+mutableMapOf<Any, Any>()
+}
+val _res = mutableListOf<Any?>()
+for (g in _groups) {
+    _res.add(mutableMapOf("order_count" to distinct(run {
+        var res = g.Items as List<Any?>
+        res = res.map { x -> x["cs_order_number"] }
+        res
+    }).size, "total_shipping_cost" to _sum(run {
+        var res = g.Items as List<Any?>
+        res = res.map { x -> x["cs_ext_ship_cost"] }
+        res
+    }), "total_net_profit" to _sum(run {
+        var res = g.Items as List<Any?>
+        res = res.map { x -> x["cs_net_profit"] }
+        res
+    })))
+}
+_res
+}
+_json(filtered)
+test_TPCDS_Q16_shipping()
+}
+
+class _Group(var key: Any?) {
+    val Items = mutableListOf<Any?>()
+    val size: Int
+    get() = Items.size
+}
+fun _arrConcat(a: Array<Any?>, b: Array<Any?>): Array<Any?> {
+    return a + b
+}
+fun _group_by(src: List<Any?>, keyfn: (Any?) -> Any?): List<_Group> {
+    val groups = mutableMapOf<String, _Group>()
+    val order = mutableListOf<String>()
+    for (it in src) {
+        val key = keyfn(it)
+        val ks = key.toString()
+        var g = groups[ks]
+        if (g == null) {
+            g = _Group(key)
+            groups[ks] = g
+            order.add(ks)
+        }
+        if (it is Array<*> && it.size == 1) {
+            g.Items.add(it[0])
+        } else {
+            g.Items.add(it)
+        }
+    }
+    return order.map { groups[it]!! }
+}
+fun _json(v: Any?) {
+    fun encode(x: Any?): String = when (x) {
+        null -> "null"
+        is String -> \"""${x.replace("\"", "\\\"")}\"""
+        is Int, is Double, is Boolean -> x.toString()
+        is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
+        is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e ->
+        "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
+    }
+    else -> \"""${x.toString().replace("\"", "\\\"")}\"""
+}
+println(encode(v))
+}
+data class _JoinSpec(
+val items: List<Any?>,
+val on: ((Array<Any?>) -> Boolean)? = null,
+val left: Boolean = false,
+val right: Boolean = false,
+)
+
+data class _QueryOpts(
+val selectFn: (Array<Any?>) -> Any?,
+val where: ((Array<Any?>) -> Boolean)? = null,
+val sortKey: ((Array<Any?>) -> Any?)? = null,
+val skip: Int = -1,
+val take: Int = -1,
+)
+
+fun _query(src: List<Any?>, joins: List<_JoinSpec>, opts: _QueryOpts): List<Any?> {
+    var items = src.map { arrayOf(it) }.toMutableList()
+    if (opts.where != null) {
+        items = items.filter { opts.where.invoke(it) }.toMutableList()
+    }
+    for (j in joins) {
+        val joined = mutableListOf<Array<Any?>>()
+        if (j.right && j.left) {
+            val matched = BooleanArray(j.items.size)
+            for (left in items) {
+                var m = false
+                for ((ri, right) in j.items.withIndex()) {
+                    var keep = true
+                    if (j.on != null) {
+                        keep = j.on.invoke(_arrConcat(left, arrayOf(right)))
+                    }
+                    if (!keep) continue
+                    m = true
+                    matched[ri] = true
+                    joined.add(_arrConcat(left, arrayOf(right)))
+                }
+                if (!m) joined.add(_arrConcat(left, arrayOf<Any?>(null)))
+            }
+            for ((ri, right) in j.items.withIndex()) {
+                if (!matched[ri]) {
+                    val undef = Array<Any?>(items.firstOrNull()?.size ?: 0) { null }
+                    joined.add(_arrConcat(undef, arrayOf(right)))
+                }
+            }
+        } else if (j.right) {
+            for (right in j.items) {
+                var m = false
+                for (left in items) {
+                    var keep = true
+                    if (j.on != null) {
+                        keep = j.on.invoke(_arrConcat(left, arrayOf(right)))
+                    }
+                    if (!keep) continue
+                    m = true
+                    joined.add(_arrConcat(left, arrayOf(right)))
+                }
+                if (!m) {
+                    val undef = Array<Any?>(items.firstOrNull()?.size ?: 0) { null }
+                    joined.add(_arrConcat(undef, arrayOf(right)))
+                }
+            }
+        } else {
+            for (left in items) {
+                var m = false
+                for (right in j.items) {
+                    var keep = true
+                    if (j.on != null) {
+                        keep = j.on.invoke(_arrConcat(left, arrayOf(right)))
+                    }
+                    if (!keep) continue
+                    m = true
+                    joined.add(_arrConcat(left, arrayOf(right)))
+                }
+                if (j.left && !m) joined.add(_arrConcat(left, arrayOf<Any?>(null)))
+            }
+        }
+        items = joined
+        if (opts.where != null) {
+            items = items.filter { opts.where.invoke(it) }.toMutableList()
+        }
+    }
+    if (opts.where != null) {
+        items = items.filter { opts.where.invoke(it) }.toMutableList()
+    }
+    if (opts.sortKey != null) {
+        val pairs = items.map { it to opts.sortKey.invoke(it) }.toMutableList()
+        pairs.sortWith(java.util.Comparator { a, b ->
+        val av = a.second
+        val bv = b.second
+        when (av) {
+            is Int -> when (bv) {
+                is Int -> av.compareTo(bv)
+                is Double -> av.toDouble().compareTo(bv)
+                else -> av.toString().compareTo(bv.toString())
+            }
+            is Double -> when (bv) {
+                is Int -> av.compareTo(bv.toDouble())
+                is Double -> av.compareTo(bv)
+                else -> av.toString().compareTo(bv.toString())
+            }
+            is String -> av.compareTo(bv.toString())
+            else -> av.toString().compareTo(bv.toString())
+        }
+    })
+    items = pairs.map { it.first }.toMutableList()
+}
+if (opts.skip >= 0) {
+    items = if (opts.skip < items.size) items.drop(opts.skip).toMutableList() else mutableListOf()
+}
+if (opts.take >= 0) {
+    if (opts.take < items.size) items = items.take(opts.take).toMutableList()
+}
+val res = mutableListOf<Any?>()
+for (r in items) {
+    res.add(opts.selectFn.invoke(r))
+}
+return res
+}
+fun _sum(v: Any?): Double {
+    var list: List<Any?>? = null
+    when (v) {
+        is List<*> -> list = v as List<Any?>
+        is Map<*, *> -> {
+            val items = when {
+                v["items"] is List<*> -> v["items"] as List<*>
+                v["Items"] is List<*> -> v["Items"] as List<*>
+                else -> null
+            }
+            if (items != null) list = items as List<Any?>
+        }
+        is _Group -> list = v.Items
+    }
+    if (list == null || list.isEmpty()) return 0.0
+    var sum = 0.0
+    for (n in list!!) {
+        sum += (n as Number).toDouble()
+    }
+    return sum
+}
+
+
