@@ -3,7 +3,7 @@ package cppcode
 // Runtime helper data for the C++ backend.
 
 // ordered helper names ensures deterministic output
-var helperOrder = []string{"hashCombine", "indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "min", "unionAll", "union", "except", "intersect", "json", "cast", "fetch", "input", "load", "save"}
+var helperOrder = []string{"hashCombine", "indexString", "indexVec", "sliceVec", "sliceStr", "fmtVec", "groupBy", "reduce", "count", "sum", "avg", "min", "concat", "reverseVec", "reverseString", "unionAll", "union", "except", "intersect", "json", "cast", "fetch", "input", "load", "save"}
 
 // helperCode contains the C++ source for each optional runtime helper
 var helperCode = map[string][]string{
@@ -125,6 +125,28 @@ var helperCode = map[string][]string{
 		"}",
 		"template<typename T> auto _min(const T& v) -> decltype(v.Items, typename decltype(v.Items)::value_type{}) {",
 		"\treturn _min(v.Items);",
+		"}",
+	},
+	"concat": {
+		"template<typename T> vector<T> _concat(const vector<T>& a, const vector<T>& b) {",
+		"\tvector<T> res; res.reserve(a.size() + b.size());",
+		"\tres.insert(res.end(), a.begin(), a.end());",
+		"\tres.insert(res.end(), b.begin(), b.end());",
+		"\treturn res;",
+		"}",
+	},
+	"reverseVec": {
+		"template<typename T> vector<T> _reverseVec(const vector<T>& v) {",
+		"\tvector<T> out = v;",
+		"\treverse(out.begin(), out.end());",
+		"\treturn out;",
+		"}",
+	},
+	"reverseString": {
+		"string _reverseString(const string& s) {",
+		"\tstring out = s;",
+		"\treverse(out.begin(), out.end());",
+		"\treturn out;",
 		"}",
 	},
 	"unionAll": {

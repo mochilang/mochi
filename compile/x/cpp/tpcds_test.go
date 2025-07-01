@@ -3,6 +3,7 @@
 package cppcode_test
 
 import (
+	"fmt"
 	"testing"
 
 	cppcode "mochi/compile/x/cpp"
@@ -15,7 +16,10 @@ func TestCPPCompiler_TPCDS(t *testing.T) {
 	if _, err := cppcode.EnsureCPP(); err != nil {
 		t.Skipf("C++ compiler not installed: %v", err)
 	}
-	testutil.CompileTPCDS(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return cppcode.New(env).Compile(prog)
-	})
+	for i := 1; i <= 9; i++ {
+		q := fmt.Sprintf("q%d", i)
+		testutil.CompileTPCDS(t, q, func(env *types.Env, prog *parser.Program) ([]byte, error) {
+			return cppcode.New(env).Compile(prog)
+		})
+	}
 }
