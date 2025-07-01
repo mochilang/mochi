@@ -1,0 +1,9 @@
+let test_TPCDS_Q3_empty () =
+  if not (List.length result = 0) then failwith "expect failed";
+
+  let date_dim = [];;
+let store_sales = [];;
+let item = [];;
+let result = [];;
+json result;;
+test_TPCDS_Q3_empty ();;

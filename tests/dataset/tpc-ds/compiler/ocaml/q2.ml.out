@@ -1,0 +1,15 @@
+let rec _union a b = match a with | [] -> b | x::xs -> if List.mem x b then _union xs b else _union xs (b @ [x]);;
+
+let _union_all a b = a @ b;;
+
+let test_TPCDS_Q2_empty () =
+  if not (List.length result = 0) then failwith "expect failed";
+
+  let web_sales = [];;
+let catalog_sales = [];;
+let date_dim = [];;
+let wscs = (_union ([]) ([]));;
+let wswscs = [];;
+let result = [];;
+json result;;
+test_TPCDS_Q2_empty ();;

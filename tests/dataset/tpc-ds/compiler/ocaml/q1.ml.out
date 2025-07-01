@@ -1,0 +1,11 @@
+let test_TPCDS_Q1_empty () =
+  if not (List.length result = 0) then failwith "expect failed";
+
+  let store_returns = [];;
+let date_dim = [];;
+let store = [];;
+let customer = [];;
+let customer_total_return = [];;
+let result = [];;
+json result;;
+test_TPCDS_Q1_empty ();;

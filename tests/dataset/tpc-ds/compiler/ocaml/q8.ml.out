@@ -1,0 +1,20 @@
+let _substr s i len =
+  let start = if i < 0 then String.length s + i else i in
+  let start = if start < 0 then 0 else start in
+  let length = if start + len > String.length s then String.length s - start else len in
+  if length <= 0 then "" else String.sub s start length;;
+
+let _reverse_list l = List.rev l;;
+
+let test_TPCDS_Q8_empty () =
+  if not (List.length result = 0) then failwith "expect failed";
+
+  let store_sales = [];;
+let date_dim = [];;
+let store = [];;
+let customer_address = [];;
+let customer = [];;
+_reverse_list _substr "zip" 0 2;;
+let result = [];;
+json result;;
+test_TPCDS_Q8_empty ();;
