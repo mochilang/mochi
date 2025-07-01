@@ -11,7 +11,9 @@ import (
 	"mochi/types"
 )
 
-const datasetHelpers = `(define (_fetch url opts)
+const datasetHelpers = `(import (srfi 95))
+
+(define (_fetch url opts)
   (let* ((method (if (and opts (assq 'method opts)) (cdr (assq 'method opts)) "GET"))
          (args (list "curl" "-s" "-X" method)))
     (when (and opts (assq 'headers opts))
@@ -1384,7 +1386,124 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return b.String(), nil
 	}
 	if q.Group != nil {
-		return "", fmt.Errorf("unsupported query expression")
+		if q.Sort != nil || q.Skip != nil || q.Take != nil {
+			return "", fmt.Errorf("unsupported query expression")
+		}
+		for _, j := range q.Joins {
+			if j.Side != nil {
+				return "", fmt.Errorf("unsupported join type")
+			}
+		}
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		for _, f := range q.Froms {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+		for _, j := range q.Joins {
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
+		c.env = child
+		var cond string
+		if q.Where != nil {
+			cond, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		c.env = orig
+		if err != nil {
+			return "", err
+		}
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				return "", err
+			}
+			fromSrcs[i] = fs
+		}
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				return "", err
+			}
+			joinSrcs[i] = js
+			if j.On != nil {
+				on, err := c.compileExpr(j.On)
+				if err != nil {
+					return "", err
+				}
+				joinOns[i] = on
+			}
+		}
+		c.needGroup = true
+		var b strings.Builder
+		b.WriteString("(let ((_tmp '()))\n")
+		b.WriteString(fmt.Sprintf("  (for-each (lambda (%s)\n", sanitizeName(q.Var)))
+		var writeJoins func(int, string)
+		writeJoins = func(j int, indent string) {
+			if j == len(joinSrcs) {
+				if cond != "" {
+					b.WriteString(indent + "(when " + cond + "\n")
+					indent += "  "
+				}
+				b.WriteString(indent + fmt.Sprintf("(set! _tmp (append _tmp (list %s)))\n", sanitizeName(q.Var)))
+				if cond != "" {
+					indent = indent[:len(indent)-2]
+					b.WriteString(indent + ")\n")
+				}
+				return
+			}
+			jv := sanitizeName(q.Joins[j].Var)
+			js := joinSrcs[j]
+			on := joinOns[j]
+			b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", jv))
+			if on != "" {
+				b.WriteString(indent + "  (when " + on + "\n")
+				writeJoins(j+1, indent+"    ")
+				b.WriteString(indent + "  )")
+			} else {
+				writeJoins(j+1, indent+"  ")
+			}
+			b.WriteString(fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", js, js, js))
+		}
+		var writeLoops func(int, string)
+		writeLoops = func(i int, indent string) {
+			if i == len(fromSrcs) {
+				writeJoins(0, indent)
+				return
+			}
+			fv := sanitizeName(q.Froms[i].Var)
+			fs := fromSrcs[i]
+			b.WriteString(indent + fmt.Sprintf("(for-each (lambda (%s)\n", fv))
+			writeLoops(i+1, indent+"  ")
+			b.WriteString(indent + fmt.Sprintf(") (if (string? %s) (string->list %s) %s))\n", fs, fs, fs))
+		}
+		writeLoops(0, "    ")
+		b.WriteString(fmt.Sprintf("  ) (if (string? %s) (string->list %s) %s))\n", src, src, src))
+		b.WriteString("  (let ((_res '()))\n")
+		b.WriteString(fmt.Sprintf("    (for-each (lambda (%s)\n", sanitizeName(q.Group.Name)))
+		b.WriteString(fmt.Sprintf("      (set! _res (append _res (list %s)))\n", valExpr))
+		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
+		b.WriteString("    _res))")
+		return b.String(), nil
 	}
 	for _, j := range q.Joins {
 		if j.Side != nil {
