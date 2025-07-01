@@ -2,11 +2,11 @@ _Group = {}
 function _Group.new(k)
     return {key = k, items = {}}
 end
-function __group_by(src, keyfn)
+function __group_by_rows(rows, keyfn, valfn)
     local groups = {}
     local order = {}
-    for _, it in ipairs(src) do
-        local key = keyfn(it)
+    for _, r in ipairs(rows) do
+        local key = keyfn(table.unpack(r))
         local ks
         if type(key) == 'table' then
             local fields = {}
@@ -24,13 +24,19 @@ function __group_by(src, keyfn)
             groups[ks] = g
             order[#order+1] = ks
         end
-        table.insert(g.items, it)
+        table.insert(g.items, valfn(table.unpack(r)))
     end
     local res = {}
     for _, ks in ipairs(order) do
         res[#res+1] = groups[ks]
     end
     return res
+end
+function __div(a, b)
+    if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+        return a // b
+    end
+    return a / b
 end
 function __eq(a, b)
     if type(a) ~= type(b) then return false end
@@ -93,6 +99,16 @@ function __json(v)
         end
     end
     print(enc(sort(v)))
+end
+function __merge(...)
+    local res = {}
+    for i=1,select('#', ...) do
+        local t = select(i, ...)
+        if type(t) == 'table' then
+            for k,v in pairs(t) do res[k] = v end
+        end
+    end
+    return res
 end
 function __query(src, joins, opts)
     local whereFn = opts.where
@@ -283,13 +299,13 @@ function __union_all(a, b)
     if b then for _, v in ipairs(b) do res[#res+1] = v end end
     return res
 end
-function test_TPCDS_Q2_empty()
-    if not (__eq(#result, 0)) then error('expect failed') end
+function test_TPCDS_Q2_result()
+    if not (__eq(result, {{["d_week_seq1"]=1, ["sun_ratio"]=0.5, ["mon_ratio"]=0.5}})) then error('expect failed') end
 end
 
-web_sales = {}
-catalog_sales = {}
-date_dim = {}
+web_sales = {{["ws_sold_date_sk"]=1, ["ws_ext_sales_price"]=5.0, ["ws_sold_date_name"]="Sunday"}, {["ws_sold_date_sk"]=2, ["ws_ext_sales_price"]=5.0, ["ws_sold_date_name"]="Monday"}, {["ws_sold_date_sk"]=8, ["ws_ext_sales_price"]=10.0, ["ws_sold_date_name"]="Sunday"}, {["ws_sold_date_sk"]=9, ["ws_ext_sales_price"]=10.0, ["ws_sold_date_name"]="Monday"}}
+catalog_sales = {{["cs_sold_date_sk"]=1, ["cs_ext_sales_price"]=5.0, ["cs_sold_date_name"]="Sunday"}, {["cs_sold_date_sk"]=2, ["cs_ext_sales_price"]=5.0, ["cs_sold_date_name"]="Monday"}, {["cs_sold_date_sk"]=8, ["cs_ext_sales_price"]=10.0, ["cs_sold_date_name"]="Sunday"}, {["cs_sold_date_sk"]=9, ["cs_ext_sales_price"]=10.0, ["cs_sold_date_name"]="Monday"}}
+date_dim = {{["d_date_sk"]=1, ["d_week_seq"]=1, ["d_day_name"]="Sunday", ["d_year"]=1998}, {["d_date_sk"]=2, ["d_week_seq"]=1, ["d_day_name"]="Monday", ["d_year"]=1998}, {["d_date_sk"]=8, ["d_week_seq"]=54, ["d_day_name"]="Sunday", ["d_year"]=1999}, {["d_date_sk"]=9, ["d_week_seq"]=54, ["d_day_name"]="Monday", ["d_year"]=1999}}
 wscs = __union_all(((function()
     local _res = {}
     for _, ws in ipairs(web_sales) do
@@ -307,8 +323,8 @@ wswscs = (function()
     local _src = wscs
     local _rows = __query(_src, {
         { items = date_dim, on = function(w, d) return __eq(w.sold_date_sk, d.d_date_sk) end }
-    }, { selectFn = function(w, d) return w end })
-    local _groups = __group_by(_rows, function(w) return {["week_seq"]=d.d_week_seq} end)
+    }, { selectFn = function(w, d) return {w, d} end })
+    local _groups = __group_by_rows(_rows, function(w, d) return {["week_seq"]=d.d_week_seq} end, function(w, d) local _row = __merge(w, d); _row.w = w; _row.d = d; return _row end)
     local _res = {}
     for _, g in ipairs(_groups) do
         _res[#_res+1] = {["d_week_seq"]=g.key.week_seq, ["sun_sales"]=__sum((function()
@@ -371,9 +387,32 @@ end)())}
     end
     return _res
 end)()
-result = {}
+year1 = (function()
+    local _res = {}
+    for _, w in ipairs(wswscs) do
+        if __eq(w.d_week_seq, 1) then
+            _res[#_res+1] = w
+        end
+    end
+    return _res
+end)()
+year2 = (function()
+    local _res = {}
+    for _, w in ipairs(wswscs) do
+        if __eq(w.d_week_seq, 54) then
+            _res[#_res+1] = w
+        end
+    end
+    return _res
+end)()
+result = (function()
+    local _src = year1
+    return __query(_src, {
+        { items = year2, on = function(y, z) return __eq(y.d_week_seq, (z.d_week_seq - 53)) end }
+    }, { selectFn = function(y, z) return {["d_week_seq1"]=y.d_week_seq, ["sun_ratio"]=__div(y.sun_sales, z.sun_sales), ["mon_ratio"]=__div(y.mon_sales, z.mon_sales)} end })
+end)()
 __json(result)
 local __tests = {
-    {name="TPCDS Q2 empty", fn=test_TPCDS_Q2_empty},
+    {name="TPCDS Q2 result", fn=test_TPCDS_Q2_result},
 }
 __run_tests(__tests)

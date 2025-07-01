@@ -5,6 +5,7 @@ package luacode_test
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -22,6 +23,8 @@ func TestLuaCompiler_TPCDS_Golden(t *testing.T) {
 		t.Skipf("lua not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
+	updateFlag := flag.Lookup("update")
+	update := updateFlag != nil && updateFlag.Value.String() == "true"
 	for _, q := range []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9"} {
 		q := q
 		t.Run(q, func(t *testing.T) {
@@ -38,12 +41,19 @@ func TestLuaCompiler_TPCDS_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCode, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".lua.out"))
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s.lua.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
+			codePath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".lua.out")
+			if update {
+				if err := os.WriteFile(codePath, bytes.TrimSpace(code), 0644); err != nil {
+					t.Fatalf("write golden: %v", err)
+				}
+			} else {
+				wantCode, err := os.ReadFile(codePath)
+				if err != nil {
+					t.Fatalf("read golden: %v", err)
+				}
+				if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+					t.Errorf("generated code mismatch for %s.lua.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
+				}
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.lua")
@@ -55,12 +65,19 @@ func TestLuaCompiler_TPCDS_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("lua run error: %v\n%s", err, out)
 			}
+			outPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".out")
+			if update {
+				if err := os.WriteFile(outPath, bytes.TrimSpace(out), 0644); err != nil {
+					t.Fatalf("write golden: %v", err)
+				}
+				return
+			}
 			gotLines := bytes.Split(bytes.TrimSpace(out), []byte("\n"))
 			if len(gotLines) == 0 {
 				t.Fatalf("no output")
 			}
 			gotJSON := gotLines[0]
-			wantOut, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".out"))
+			wantOut, err := os.ReadFile(outPath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
