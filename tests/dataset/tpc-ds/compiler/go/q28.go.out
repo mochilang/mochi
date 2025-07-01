@@ -1,0 +1,379 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+type StoreSale struct {
+	Ss_quantity       int     `json:"ss_quantity"`
+	Ss_list_price     float64 `json:"ss_list_price"`
+	Ss_coupon_amt     float64 `json:"ss_coupon_amt"`
+	Ss_wholesale_cost float64 `json:"ss_wholesale_cost"`
+}
+
+func test_TPCDS_Q28_buckets() {
+	expect(_equal(result, map[string]any{
+		"B1_LP":   100.0,
+		"B1_CNT":  1,
+		"B1_CNTD": 1,
+		"B2_LP":   80.0,
+		"B2_CNT":  1,
+		"B2_CNTD": 1,
+	}))
+}
+
+type Store_salesItem struct {
+	Ss_quantity       int     `json:"ss_quantity"`
+	Ss_list_price     float64 `json:"ss_list_price"`
+	Ss_coupon_amt     float64 `json:"ss_coupon_amt"`
+	Ss_wholesale_cost float64 `json:"ss_wholesale_cost"`
+}
+
+var store_sales []Store_salesItem
+var bucket1 []Store_salesItem
+var bucket2 []Store_salesItem
+var result map[string]any
+
+func main() {
+	failures := 0
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_quantity:       3,
+		Ss_list_price:     100.0,
+		Ss_coupon_amt:     50.0,
+		Ss_wholesale_cost: 30.0,
+	}, Store_salesItem{
+		Ss_quantity:       8,
+		Ss_list_price:     80.0,
+		Ss_coupon_amt:     10.0,
+		Ss_wholesale_cost: 20.0,
+	}, Store_salesItem{
+		Ss_quantity:       12,
+		Ss_list_price:     60.0,
+		Ss_coupon_amt:     5.0,
+		Ss_wholesale_cost: 15.0,
+	}})
+	bucket1 = func() []Store_salesItem {
+		_res := []Store_salesItem{}
+		for _, ss := range store_sales {
+			if ((ss.Ss_quantity >= 0) && (ss.Ss_quantity <= 5)) && ((((ss.Ss_list_price >= 0) && (ss.Ss_list_price <= 110)) || ((ss.Ss_coupon_amt >= 0) && (ss.Ss_coupon_amt <= 1000))) || ((ss.Ss_wholesale_cost >= 0) && (ss.Ss_wholesale_cost <= 50))) {
+				if ((ss.Ss_quantity >= 0) && (ss.Ss_quantity <= 5)) && ((((ss.Ss_list_price >= 0) && (ss.Ss_list_price <= 110)) || ((ss.Ss_coupon_amt >= 0) && (ss.Ss_coupon_amt <= 1000))) || ((ss.Ss_wholesale_cost >= 0) && (ss.Ss_wholesale_cost <= 50))) {
+					_res = append(_res, ss)
+				}
+			}
+		}
+		return _res
+	}()
+	bucket2 = func() []Store_salesItem {
+		_res := []Store_salesItem{}
+		for _, ss := range store_sales {
+			if ((ss.Ss_quantity >= 6) && (ss.Ss_quantity <= 10)) && ((((ss.Ss_list_price >= 0) && (ss.Ss_list_price <= 110)) || ((ss.Ss_coupon_amt >= 0) && (ss.Ss_coupon_amt <= 1000))) || ((ss.Ss_wholesale_cost >= 0) && (ss.Ss_wholesale_cost <= 50))) {
+				if ((ss.Ss_quantity >= 6) && (ss.Ss_quantity <= 10)) && ((((ss.Ss_list_price >= 0) && (ss.Ss_list_price <= 110)) || ((ss.Ss_coupon_amt >= 0) && (ss.Ss_coupon_amt <= 1000))) || ((ss.Ss_wholesale_cost >= 0) && (ss.Ss_wholesale_cost <= 50))) {
+					_res = append(_res, ss)
+				}
+			}
+		}
+		return _res
+	}()
+	result = map[string]any{
+		"B1_LP": _avg(func() []float64 {
+			_res := []float64{}
+			for _, x := range bucket1 {
+				_res = append(_res, x.Ss_list_price)
+			}
+			return _res
+		}()),
+		"B1_CNT": _count(_toAnySlice(bucket1)),
+		"B1_CNTD": _count(func() []any {
+			groups := map[string]*data.Group{}
+			order := []string{}
+			for _, x := range bucket1 {
+				key := x.Ss_list_price
+				ks := fmt.Sprint(key)
+				g, ok := groups[ks]
+				if !ok {
+					g = &data.Group{Key: key}
+					groups[ks] = g
+					order = append(order, ks)
+				}
+				g.Items = append(g.Items, x)
+			}
+			_res := []any{}
+			for _, ks := range order {
+				g := groups[ks]
+				_res = append(_res, g.Key)
+			}
+			return _res
+		}()),
+		"B2_LP": _avg(func() []float64 {
+			_res := []float64{}
+			for _, x := range bucket2 {
+				_res = append(_res, x.Ss_list_price)
+			}
+			return _res
+		}()),
+		"B2_CNT": _count(_toAnySlice(bucket2)),
+		"B2_CNTD": _count(func() []any {
+			groups := map[string]*data.Group{}
+			order := []string{}
+			for _, x := range bucket2 {
+				key := x.Ss_list_price
+				ks := fmt.Sprint(key)
+				g, ok := groups[ks]
+				if !ok {
+					g = &data.Group{Key: key}
+					groups[ks] = g
+					order = append(order, ks)
+				}
+				g.Items = append(g.Items, x)
+			}
+			_res := []any{}
+			for _, ks := range order {
+				g := groups[ks]
+				_res = append(_res, g.Key)
+			}
+			return _res
+		}()),
+	}
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q28 buckets")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q28_buckets()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _avg(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []bool:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		default:
+			panic("avg() expects list or group")
+		}
+	}
+	if len(items) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("avg() expects numbers")
+		}
+	}
+	return sum / float64(len(items))
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}

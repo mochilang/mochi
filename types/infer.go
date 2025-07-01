@@ -594,10 +594,12 @@ func unionFieldPathType(ut UnionType, tail []string) (Type, bool) {
 
 func equalTypes(a, b Type) bool {
 	if _, ok := a.(AnyType); ok {
-		return true
+		_, ok2 := b.(AnyType)
+		return ok2
 	}
 	if _, ok := b.(AnyType); ok {
-		return true
+		_, ok2 := a.(AnyType)
+		return ok2
 	}
 	if la, ok := a.(ListType); ok {
 		if lb, ok := b.(ListType); ok {
