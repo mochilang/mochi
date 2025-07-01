@@ -19,3 +19,7 @@ Remaining work
   compile due to missing variable declarations inside query loops. Investigate
   the query code generation and ensure all temporary identifiers are declared
   before use so the tests in `job_run_test.go` succeed.
+- The TPCDS suite is not yet implemented. Attempting to compile `q1` results
+  in an "unsupported query features" error because grouping with joins is
+  unhandled. Full support for groups combined with join expressions is required
+  before the Zig backend can run the TPCDS queries.

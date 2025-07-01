@@ -588,7 +588,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
-		if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		if q.Sort != nil || q.Skip != nil || q.Take != nil {
 			return "", fmt.Errorf("unsupported query features")
 		}
 
@@ -603,6 +603,41 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, elemType, true)
+
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src, false)
+			if err != nil {
+				return "", err
+			}
+			fromSrcs[i] = fs
+			var fe types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+				fe = lt.Elem
+			}
+			child.SetVar(f.Var, fe, true)
+		}
+
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src, false)
+			if err != nil {
+				return "", err
+			}
+			joinSrcs[i] = js
+			on, err := c.compileExpr(j.On, false)
+			if err != nil {
+				return "", err
+			}
+			joinOns[i] = on
+			var je types.Type = types.AnyType{}
+			if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
+				je = lt.Elem
+			}
+			child.SetVar(j.Var, je, true)
+		}
+
 		orig := c.env
 		c.env = child
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0], false)
@@ -640,6 +675,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator); ")
 		b.WriteString("var " + idxMap + " = std.AutoHashMap(" + keyType + ", usize).init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
+		for i, fs := range fromSrcs {
+			b.WriteString(" for (" + fs + ") |" + sanitizeName(q.Froms[i].Var) + "| {")
+		}
+		for i, js := range joinSrcs {
+			b.WriteString(" for (" + js + ") |" + sanitizeName(q.Joins[i].Var) + "| {")
+			b.WriteString(" if (!(" + joinOns[i] + ")) continue;")
+		}
 		if cond != "" {
 			b.WriteString(" if (!(" + cond + ")) continue;")
 		}
@@ -648,6 +690,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(" if (" + idxMap + ".get(" + keyVar + ")) |idx| {")
 		b.WriteString(" " + tmp + ".items[idx].Items.append(" + sanitizeName(q.Var) + ") catch unreachable;")
 		b.WriteString(" } else { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; g.Items.append(" + sanitizeName(q.Var) + ") catch unreachable; " + tmp + ".append(g) catch unreachable; " + idxMap + ".put(" + keyVar + ", " + tmp + ".items.len - 1) catch unreachable; }")
+		for i := 0; i < len(q.Joins); i++ {
+			b.WriteString(" }")
+		}
+		for i := 0; i < len(q.Froms); i++ {
+			b.WriteString(" }")
+		}
 		b.WriteString(" }")
 		resVar := c.newTmp()
 		b.WriteString(" var " + resVar + " = std.ArrayList(" + resElem + ").init(std.heap.page_allocator);")

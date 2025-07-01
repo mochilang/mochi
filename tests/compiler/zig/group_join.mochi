@@ -1,0 +1,23 @@
+let returns = [
+  {c: 1, s: 10, amt: 5},
+  {c: 1, s: 10, amt: 7},
+  {c: 2, s: 20, amt: 3}
+]
+
+let dates = [
+  {id: 1, year: 1998},
+  {id: 2, year: 1999}
+]
+
+let result =
+  from sr in returns
+  join d in dates on sr.c == d.id
+  where d.year == 1998
+  group by {c: sr.c, s: sr.s} into g
+  select {
+    c: g.key.c,
+    s: g.key.s,
+    total: sum(from x in g select x.amt)
+  }
+
+json(result)
