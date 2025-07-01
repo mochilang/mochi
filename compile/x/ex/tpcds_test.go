@@ -21,7 +21,7 @@ func TestExCompiler_TPCDSQueries(t *testing.T) {
 		t.Skipf("elixir not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 59; i++ {
+	for i := 1; i <= 99; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
