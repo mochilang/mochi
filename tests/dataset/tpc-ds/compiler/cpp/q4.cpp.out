@@ -435,8 +435,25 @@ int main() {
                         s2["dyear"] == 2002 && c1["dyear"] == 2001 &&
                         c2["dyear"] == 2002 && w1["dyear"] == 2001 &&
                         w2["dyear"] == 2002 && s1["year_total"] > 0 &&
-                        c1["year_total"] > 0 && w1["year_total"] > 0 && ()>() &&
-                        ()>()) {
+                        c1["year_total"] > 0 && w1["year_total"] > 0 &&
+                        (([&]() {
+                          if (c1["year_total"] > 0)
+                            return c2["year_total"] / c1["year_total"];
+                          return {};
+                        })()) > (([&]() {
+                          if (s1["year_total"] > 0)
+                            return s2["year_total"] / s1["year_total"];
+                          return {};
+                        })()) &&
+                        (([&]() {
+                          if (c1["year_total"] > 0)
+                            return c2["year_total"] / c1["year_total"];
+                          return {};
+                        })()) > (([&]() {
+                          if (w1["year_total"] > 0)
+                            return w2["year_total"] / w1["year_total"];
+                          return {};
+                        })())) {
                       _tmp.push_back(
                           {vector<unordered_map<string, any>>{
                                s2["customer_id"], s2["customer_first_name"],

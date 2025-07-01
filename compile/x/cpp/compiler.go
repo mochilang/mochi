@@ -929,6 +929,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return c.compileMapLiteral(p.Map)
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.FunExpr != nil:
 		return c.compileFunExpr(p.FunExpr)
 	case p.Load != nil:
@@ -1202,6 +1204,32 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 		b.WriteString("return {};")
 	}
 	b.WriteString(" })()")
+	return b.String()
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) string {
+	cond := c.compileExpr(ie.Cond)
+	thenExpr := c.compileExpr(ie.Then)
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr = c.compileIfExpr(ie.ElseIf)
+	} else if ie.Else != nil {
+		elseExpr = c.compileExpr(ie.Else)
+	}
+	var b strings.Builder
+	b.WriteString("([&]() { if (")
+	b.WriteString(cond)
+	b.WriteString(") return ")
+	b.WriteString(thenExpr)
+	b.WriteString("; ")
+	if elseExpr != "" {
+		b.WriteString("return ")
+		b.WriteString(elseExpr)
+		b.WriteString("; ")
+	} else {
+		b.WriteString("return {}; ")
+	}
+	b.WriteString("})()")
 	return b.String()
 }
 
