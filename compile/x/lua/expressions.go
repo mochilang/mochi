@@ -401,6 +401,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.helpers["append"] = true
 		return fmt.Sprintf("__append(%s, %s)", args[0], args[1]), nil
+	case "values":
+		if len(args) != 1 {
+			return "", fmt.Errorf("values expects 1 arg")
+		}
+		c.helpers["values"] = true
+		return fmt.Sprintf("__values(%s)", args[0]), nil
 	case "reduce":
 		if len(args) != 3 {
 			return "", fmt.Errorf("reduce expects 3 args")

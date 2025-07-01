@@ -1,0 +1,4 @@
+[]
+   test TPCDS Q34 simplified ... fail /tmp/TestLuaCompiler_TPCDS_Goldenq343780728305/001/main.lua:297: expect failed (10.0µs)
+
+[FAIL] 1 test(s) failed.
