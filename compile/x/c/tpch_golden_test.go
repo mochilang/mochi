@@ -1,3 +1,5 @@
+//go:build slow
+
 package ccode_test
 
 import (
