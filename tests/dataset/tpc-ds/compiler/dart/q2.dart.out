@@ -1,0 +1,207 @@
+import 'dart:io';
+import 'dart:convert';
+
+void test_TPCDS_Q2_result() {
+  if (!(_equal(result, [{"d_week_seq1": 1, "sun_ratio": 0.5, "mon_ratio": 0.5}]))) { throw Exception('expect failed'); }
+}
+
+void main() {
+  int failures = 0;
+  List<Map<String, dynamic>> web_sales = [{"ws_sold_date_sk": 1, "ws_ext_sales_price": 5, "ws_sold_date_name": "Sunday"}, {"ws_sold_date_sk": 2, "ws_ext_sales_price": 5, "ws_sold_date_name": "Monday"}, {"ws_sold_date_sk": 8, "ws_ext_sales_price": 10, "ws_sold_date_name": "Sunday"}, {"ws_sold_date_sk": 9, "ws_ext_sales_price": 10, "ws_sold_date_name": "Monday"}];
+  List<Map<String, dynamic>> catalog_sales = [{"cs_sold_date_sk": 1, "cs_ext_sales_price": 5, "cs_sold_date_name": "Sunday"}, {"cs_sold_date_sk": 2, "cs_ext_sales_price": 5, "cs_sold_date_name": "Monday"}, {"cs_sold_date_sk": 8, "cs_ext_sales_price": 10, "cs_sold_date_name": "Sunday"}, {"cs_sold_date_sk": 9, "cs_ext_sales_price": 10, "cs_sold_date_name": "Monday"}];
+  List<Map<String, dynamic>> date_dim = [{"d_date_sk": 1, "d_week_seq": 1, "d_day_name": "Sunday", "d_year": 1998}, {"d_date_sk": 2, "d_week_seq": 1, "d_day_name": "Monday", "d_year": 1998}, {"d_date_sk": 8, "d_week_seq": 54, "d_day_name": "Sunday", "d_year": 1999}, {"d_date_sk": 9, "d_week_seq": 54, "d_day_name": "Monday", "d_year": 1999}];
+  List<Map<String, dynamic>> wscs = _union(((() {
+  var _res = [];
+  for (var ws in web_sales) {
+    _res.add({"sold_date_sk": ws.ws_sold_date_sk, "sales_price": ws.ws_ext_sales_price, "day": ws.ws_sold_date_name});
+  }
+  return _res;
+})()), ((() {
+  var _res = [];
+  for (var cs in catalog_sales) {
+    _res.add({"sold_date_sk": cs.cs_sold_date_sk, "sales_price": cs.cs_ext_sales_price, "day": cs.cs_sold_date_name});
+  }
+  return _res;
+})()));
+  List<Map<String, dynamic>> wswscs = (() {
+  var groups = <String,_Group>{};
+  var order = <String>[];
+  for (var w in wscs) {
+    for (var d in date_dim) {
+      if (!(_equal(w.sold_date_sk, d.d_date_sk))) {
+        continue;
+      }
+      var key = {"week_seq": d.d_week_seq};
+      var ks = key.toString();
+      var g = groups[ks];
+      if (g == null) {
+        g = _Group(key);
+        groups[ks] = g;
+        order.add(ks);
+      }
+      g.Items.add(w);
+    }
+  }
+  var items = [for (var k in order) groups[k]!];
+  var _res = [];
+  for (var g in items) {
+    _res.add({"d_week_seq": g.key.week_seq, "sun_sales": _sum((() {
+  var _res = [];
+  var _src = (g).where((x) => _equal(x.day, "Sunday")).toList();
+  for (var x in _src) {
+    _res.add(x.sales_price);
+  }
+  return _res;
+})()), "mon_sales": _sum((() {
+  var _res = [];
+  var _src = (g).where((x) => _equal(x.day, "Monday")).toList();
+  for (var x in _src) {
+    _res.add(x.sales_price);
+  }
+  return _res;
+})()), "tue_sales": _sum((() {
+  var _res = [];
+  var _src = (g).where((x) => _equal(x.day, "Tuesday")).toList();
+  for (var x in _src) {
+    _res.add(x.sales_price);
+  }
+  return _res;
+})()), "wed_sales": _sum((() {
+  var _res = [];
+  var _src = (g).where((x) => _equal(x.day, "Wednesday")).toList();
+  for (var x in _src) {
+    _res.add(x.sales_price);
+  }
+  return _res;
+})()), "thu_sales": _sum((() {
+  var _res = [];
+  var _src = (g).where((x) => _equal(x.day, "Thursday")).toList();
+  for (var x in _src) {
+    _res.add(x.sales_price);
+  }
+  return _res;
+})()), "fri_sales": _sum((() {
+  var _res = [];
+  var _src = (g).where((x) => _equal(x.day, "Friday")).toList();
+  for (var x in _src) {
+    _res.add(x.sales_price);
+  }
+  return _res;
+})()), "sat_sales": _sum((() {
+  var _res = [];
+  var _src = (g).where((x) => _equal(x.day, "Saturday")).toList();
+  for (var x in _src) {
+    _res.add(x.sales_price);
+  }
+  return _res;
+})())});
+  }
+  return _res;
+})();
+  List<Map<String, dynamic>> year1 = (() {
+  var _res = [];
+  var _src = (wswscs).where((w) => _equal(w.d_week_seq, 1)).toList();
+  for (var w in _src) {
+    _res.add(w);
+  }
+  return _res;
+})();
+  List<Map<String, dynamic>> year2 = (() {
+  var _res = [];
+  var _src = (wswscs).where((w) => _equal(w.d_week_seq, 54)).toList();
+  for (var w in _src) {
+    _res.add(w);
+  }
+  return _res;
+})();
+  List<Map<String, dynamic>> result = (() {
+  var _res = [];
+  for (var y in year1) {
+    for (var z in year2) {
+      if (!(_equal(y.d_week_seq, (z.d_week_seq - 53)))) {
+        continue;
+      }
+      _res.add({"d_week_seq1": y.d_week_seq, "sun_ratio": (y.sun_sales ~/ z.sun_sales), "mon_ratio": (y.mon_sales ~/ z.mon_sales)});
+    }
+  }
+  return _res;
+})();
+  _json(result);
+  if (!_runTest("TPCDS Q2 result", test_TPCDS_Q2_result)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
+double _sum(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var s = 0.0;
+    for (var n in list) s += (n as num).toDouble();
+    return s;
+}
+
+List<dynamic> _union(List<dynamic> a, List<dynamic> b) {
+    var res = [...a];
+    for (var it in b) {
+        if (!res.contains(it)) {
+            res.add(it);
+        }
+    }
+    return res;
+}
+
+

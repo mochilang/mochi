@@ -967,6 +967,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", arg), nil
 	}
+	// handle exists()
+	if name == "exists" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		c.use("_exists")
+		return fmt.Sprintf("_exists(%s)", arg), nil
+	}
 	// handle avg()
 	if name == "avg" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0])

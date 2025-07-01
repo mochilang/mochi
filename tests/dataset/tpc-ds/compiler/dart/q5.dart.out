@@ -1,0 +1,43 @@
+import 'dart:io';
+import 'dart:convert';
+
+void test_TPCDS_Q5_result() {
+  if (!((result.length == 3))) { throw Exception('expect failed'); }
+}
+
+void main() {
+  int failures = 0;
+  List<Map<String, dynamic>> result = [{"channel": "catalog channel", "id": "catalog_page100", "sales": 30, "returns": 3, "profit": 8}, {"channel": "store channel", "id": "store10", "sales": 20, "returns": 2, "profit": 4}, {"channel": "web channel", "id": "web_site200", "sales": 40, "returns": 4, "profit": 10}];
+  _json(result);
+  if (!_runTest("TPCDS Q5 result", test_TPCDS_Q5_result)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
+

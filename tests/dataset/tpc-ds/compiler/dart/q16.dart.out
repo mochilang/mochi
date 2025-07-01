@@ -1,0 +1,235 @@
+import 'dart:io';
+import 'dart:convert';
+
+class CatalogSale {
+  int cs_order_number;
+  int cs_ship_date_sk;
+  int cs_ship_addr_sk;
+  int cs_call_center_sk;
+  int cs_warehouse_sk;
+  double cs_ext_ship_cost;
+  double cs_net_profit;
+  CatalogSale({required this.cs_order_number, required this.cs_ship_date_sk, required this.cs_ship_addr_sk, required this.cs_call_center_sk, required this.cs_warehouse_sk, required this.cs_ext_ship_cost, required this.cs_net_profit});
+  factory CatalogSale.fromJson(Map<String,dynamic> m) {
+    return CatalogSale(cs_order_number: m['cs_order_number'] as int, cs_ship_date_sk: m['cs_ship_date_sk'] as int, cs_ship_addr_sk: m['cs_ship_addr_sk'] as int, cs_call_center_sk: m['cs_call_center_sk'] as int, cs_warehouse_sk: m['cs_warehouse_sk'] as int, cs_ext_ship_cost: m['cs_ext_ship_cost'] as double, cs_net_profit: m['cs_net_profit'] as double);
+  }
+}
+_structParsers['CatalogSale'] = (m) => CatalogSale.fromJson(m);
+
+class DateDim {
+  int d_date_sk;
+  String d_date;
+  DateDim({required this.d_date_sk, required this.d_date});
+  factory DateDim.fromJson(Map<String,dynamic> m) {
+    return DateDim(d_date_sk: m['d_date_sk'] as int, d_date: m['d_date'] as String);
+  }
+}
+_structParsers['DateDim'] = (m) => DateDim.fromJson(m);
+
+class CustomerAddress {
+  int ca_address_sk;
+  String ca_state;
+  CustomerAddress({required this.ca_address_sk, required this.ca_state});
+  factory CustomerAddress.fromJson(Map<String,dynamic> m) {
+    return CustomerAddress(ca_address_sk: m['ca_address_sk'] as int, ca_state: m['ca_state'] as String);
+  }
+}
+_structParsers['CustomerAddress'] = (m) => CustomerAddress.fromJson(m);
+
+class CallCenter {
+  int cc_call_center_sk;
+  String cc_county;
+  CallCenter({required this.cc_call_center_sk, required this.cc_county});
+  factory CallCenter.fromJson(Map<String,dynamic> m) {
+    return CallCenter(cc_call_center_sk: m['cc_call_center_sk'] as int, cc_county: m['cc_county'] as String);
+  }
+}
+_structParsers['CallCenter'] = (m) => CallCenter.fromJson(m);
+
+class CatalogReturn {
+  int cr_order_number;
+  CatalogReturn({required this.cr_order_number});
+  factory CatalogReturn.fromJson(Map<String,dynamic> m) {
+    return CatalogReturn(cr_order_number: m['cr_order_number'] as int);
+  }
+}
+_structParsers['CatalogReturn'] = (m) => CatalogReturn.fromJson(m);
+
+List distinct(List xs) {
+  List out = [];
+  for (var x in xs) {
+    if (!contains(out, x)) {
+      out = append(out, x);
+    }
+  }
+  return out;
+}
+
+void test_TPCDS_Q16_shipping() {
+  if (!(_equal(filtered, [{"order_count": 1, "total_shipping_cost": 5, "total_net_profit": 20}]))) { throw Exception('expect failed'); }
+}
+
+void main() {
+  int failures = 0;
+  List<Map<String, dynamic>> catalog_sales = [{"cs_order_number": 1, "cs_ship_date_sk": 1, "cs_ship_addr_sk": 1, "cs_call_center_sk": 1, "cs_warehouse_sk": 1, "cs_ext_ship_cost": 5, "cs_net_profit": 20}, {"cs_order_number": 1, "cs_ship_date_sk": 1, "cs_ship_addr_sk": 1, "cs_call_center_sk": 1, "cs_warehouse_sk": 2, "cs_ext_ship_cost": 0, "cs_net_profit": 0}];
+  List<Map<String, dynamic>> date_dim = [{"d_date_sk": 1, "d_date": "2000-03-01"}];
+  List<Map<String, dynamic>> customer_address = [{"ca_address_sk": 1, "ca_state": "CA"}];
+  List<Map<String, dynamic>> call_center = [{"cc_call_center_sk": 1, "cc_county": "CountyA"}];
+  List catalog_returns = [];
+  List<Map<String, dynamic>> filtered = (() {
+  var groups = <String,_Group>{};
+  var order = <String>[];
+  for (var cs1 in catalog_sales) {
+    for (var d in date_dim) {
+      if (!(((_equal(cs1.cs_ship_date_sk, d.d_date_sk) && (d.d_date.compareTo("2000-03-01") >= 0)) && (d.d_date.compareTo("2000-04-30") <= 0)))) {
+        continue;
+      }
+      for (var ca in customer_address) {
+        if (!((_equal(cs1.cs_ship_addr_sk, ca.ca_address_sk) && _equal(ca.ca_state, "CA")))) {
+          continue;
+        }
+        for (var cc in call_center) {
+          if (!((_equal(cs1.cs_call_center_sk, cc.cc_call_center_sk) && _equal(cc.cc_county, "CountyA")))) {
+            continue;
+          }
+          if (!((_exists((() {
+  var _res = [];
+  for (var cs2 in catalog_sales) {
+    if (!((_equal(cs1.cs_order_number, cs2.cs_order_number) && !_equal(cs1.cs_warehouse_sk, cs2.cs_warehouse_sk)))) {
+      continue;
+    }
+    _res.add(cs2);
+  }
+  return _res;
+})()) && (_exists((() {
+  var _res = [];
+  for (var cr in catalog_returns) {
+    if (!(_equal(cs1.cs_order_number, cr.cr_order_number))) {
+      continue;
+    }
+    _res.add(cr);
+  }
+  return _res;
+})()) == false)))) {
+            continue;
+          }
+          var key = {};
+          var ks = key.toString();
+          var g = groups[ks];
+          if (g == null) {
+            g = _Group(key);
+            groups[ks] = g;
+            order.add(ks);
+          }
+          g.Items.add(cs1);
+        }
+      }
+    }
+  }
+  var items = [for (var k in order) groups[k]!];
+  var _res = [];
+  for (var g in items) {
+    _res.add({"order_count": distinct((() {
+  var _res = [];
+  for (var x in g) {
+    _res.add(x.cs_order_number);
+  }
+  return _res;
+})()).length, "total_shipping_cost": _sum((() {
+  var _res = [];
+  for (var x in g) {
+    _res.add(x.cs_ext_ship_cost);
+  }
+  return _res;
+})()), "total_net_profit": _sum((() {
+  var _res = [];
+  for (var x in g) {
+    _res.add(x.cs_net_profit);
+  }
+  return _res;
+})())});
+  }
+  return _res;
+})();
+  _json(filtered);
+  if (!_runTest("TPCDS Q16 shipping", test_TPCDS_Q16_shipping)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+bool _exists(dynamic v) {
+    if (v is String) return v.isNotEmpty;
+    if (v is List) return v.isNotEmpty;
+    if (v is Map) {
+        if (v['items'] is List) return (v['items'] as List).isNotEmpty;
+        if (v['Items'] is List) return (v['Items'] as List).isNotEmpty;
+        return v.isNotEmpty;
+    }
+    try { var items = (v as dynamic).Items; if (items is List) return items.isNotEmpty; } catch (_) {}
+    try { var items = (v as dynamic).items; if (items is List) return items.isNotEmpty; } catch (_) {}
+    return false;
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
+double _sum(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var s = 0.0;
+    for (var n in list) s += (n as num).toDouble();
+    return s;
+}
+
+

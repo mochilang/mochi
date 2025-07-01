@@ -98,6 +98,18 @@ const (
 		"    for (var n in list) s += (n as num).toDouble();\n" +
 		"    return s;\n" +
 		"}\n"
+	helperExists = "bool _exists(dynamic v) {\n" +
+		"    if (v is String) return v.isNotEmpty;\n" +
+		"    if (v is List) return v.isNotEmpty;\n" +
+		"    if (v is Map) {\n" +
+		"        if (v['items'] is List) return (v['items'] as List).isNotEmpty;\n" +
+		"        if (v['Items'] is List) return (v['Items'] as List).isNotEmpty;\n" +
+		"        return v.isNotEmpty;\n" +
+		"    }\n" +
+		"    try { var items = (v as dynamic).Items; if (items is List) return items.isNotEmpty; } catch (_) {}\n" +
+		"    try { var items = (v as dynamic).items; if (items is List) return items.isNotEmpty; } catch (_) {}\n" +
+		"    return false;\n" +
+		"}\n"
 	helperMin = "dynamic _min(dynamic v) {\n" +
 		"    List<dynamic>? list;\n" +
 		"    if (v is List) list = v;\n" +
@@ -428,6 +440,7 @@ var helperMap = map[string]string{
 	"_count":          helperCount,
 	"_avg":            helperAvg,
 	"_sum":            helperSum,
+	"_exists":         helperExists,
 	"_min":            helperMin,
 	"_max":            helperMax,
 	"_genText":        helperGenText,
