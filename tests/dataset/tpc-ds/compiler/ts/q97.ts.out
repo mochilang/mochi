@@ -119,16 +119,20 @@ function main(): void {
     ], {
       select: (s, c) => ({
         "store_only":
-          ((!_equal(s.customer_sk, null) && _equal(c.customer_sk, null))
+          ((!_equal(s.customer_sk, null) &&
+              (_equal(c, null) || _equal(c.customer_sk, null)))
             ? 1
             : 0),
         "catalog_only":
-          ((_equal(s.customer_sk, null) && !_equal(c.customer_sk, null))
+          ((((_equal(s, null) || _equal(s.customer_sk, null)) &&
+              !_equal(c, null)) && !_equal(c.customer_sk, null))
             ? 1
             : 0),
-        "both": ((!_equal(s.customer_sk, null) && !_equal(c.customer_sk, null))
-          ? 1
-          : 0),
+        "both":
+          (((!_equal(s.customer_sk, null) && !_equal(c, null)) &&
+              !_equal(c.customer_sk, null))
+            ? 1
+            : 0),
       }),
     });
   })();

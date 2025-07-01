@@ -21,7 +21,7 @@ type WebSale = {
 
 let customer: Array<Record<string, any>>;
 let growth_ok: boolean;
-let result: Array<Record<string, string>>;
+let result: any;
 let ss98: number;
 let ss99: number;
 let store_sales: Array<Record<string, any>>;
