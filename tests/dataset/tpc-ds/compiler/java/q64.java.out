@@ -1,0 +1,28 @@
+public class Main {
+  static void test_TPCDS_Q64_simplified() {
+    expect((result == 64));
+  }
+
+  static Object[] store_sales =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("item", 1, "cost", 20, "list", 30, "coupon", 5))
+      };
+
+  static Object[] store_returns =
+      new Object[] {new java.util.HashMap<>(java.util.Map.of("item", 1, "ticket", 1))};
+
+  static int result = (((20 + 30) - 5) + 19);
+
+  public static void main(String[] args) {
+    test_TPCDS_Q64_simplified();
+    _json(result);
+  }
+
+  static void expect(boolean cond) {
+    if (!cond) throw new RuntimeException("expect failed");
+  }
+
+  static void _json(Object v) {
+    System.out.println(_toJson(v));
+  }
+}

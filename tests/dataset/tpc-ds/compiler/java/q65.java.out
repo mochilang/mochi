@@ -1,0 +1,27 @@
+public class Main {
+  static void test_TPCDS_Q65_simplified() {
+    expect((result == 65));
+  }
+
+  static Object[] store_sales =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("store", 1, "item", 1, "price", 1)),
+        new java.util.HashMap<>(java.util.Map.of("store", 1, "item", 1, "price", 1)),
+        new java.util.HashMap<>(java.util.Map.of("store", 1, "item", 2, "price", 60))
+      };
+
+  static int result = 65;
+
+  public static void main(String[] args) {
+    test_TPCDS_Q65_simplified();
+    _json(result);
+  }
+
+  static void expect(boolean cond) {
+    if (!cond) throw new RuntimeException("expect failed");
+  }
+
+  static void _json(Object v) {
+    System.out.println(_toJson(v));
+  }
+}
