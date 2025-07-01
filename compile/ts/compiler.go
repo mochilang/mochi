@@ -1301,6 +1301,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 								continue
 							}
 						}
+					case "ToUpper":
+						if len(op.Call.Args) == 1 {
+							arg, err := c.compileExpr(op.Call.Args[0])
+							if err != nil {
+								return "", err
+							}
+							expr = fmt.Sprintf("String(%s).toUpperCase()", arg)
+							typ = types.StringType{}
+							continue
+						}
 					}
 				}
 				args := make([]string, len(op.Call.Args))
@@ -1486,6 +1496,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	argStr := strings.Join(args, ", ")
 	switch call.Func {
+	case "strings.ToUpper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("ToUpper expects 1 arg")
+		}
+		return fmt.Sprintf("String(%s).toUpperCase()", args[0]), nil
+	case "strings.ToLower":
+		if len(args) != 1 {
+			return "", fmt.Errorf("ToLower expects 1 arg")
+		}
+		return fmt.Sprintf("String(%s).toLowerCase()", args[0]), nil
+	}
+	switch call.Func {
 	case "print":
 		return fmt.Sprintf("console.log(%s)", argStr), nil
 	case "keys":
@@ -1521,6 +1543,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "count":
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
+	case "append":
+		c.use("_append")
+		if len(args) == 2 {
+			return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
+		}
+		return fmt.Sprintf("_append(%s)", argStr), nil
+	case "contains":
+		if len(args) != 2 {
+			return "", fmt.Errorf("contains expects 2 args")
+		}
+		c.use("_contains")
+		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
+	case "exists":
+		c.use("_exists")
+		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil

@@ -44,6 +44,12 @@ const (
 		"  return 0;\n" +
 		"}\n"
 
+	helperAppend = "function _append(lst: any[] | null, v: any): any[] {\n" +
+		"  const out = lst ? lst.slice() : [];\n" +
+		"  out.push(v);\n" +
+		"  return out;\n" +
+		"}\n"
+
 	helperAvg = "function _avg(v: any): number {\n" +
 		"  let list: any[] | null = null;\n" +
 		"  if (Array.isArray(v)) list = v;\n" +
@@ -113,6 +119,17 @@ const (
 		"  let m = Number(list[0]);\n" +
 		"  for (const n of list) { const num = Number(n); if (num > m) m = num; }\n" +
 		"  return m;\n" +
+		"}\n"
+
+	helperExists = "function _exists(v: any): boolean {\n" +
+		"  if (Array.isArray(v)) return v.length > 0;\n" +
+		"  if (v && typeof v === 'object') {\n" +
+		"    if (Array.isArray((v as any).items)) return (v as any).items.length > 0;\n" +
+		"    if (Array.isArray((v as any).Items)) return (v as any).Items.length > 0;\n" +
+		"    return Object.keys(v).length > 0;\n" +
+		"  }\n" +
+		"  if (typeof v === 'string') return v.length > 0;\n" +
+		"  return false;\n" +
 		"}\n"
 
 	helperContains = "function _contains(c: any, v: any): boolean {\n" +
@@ -467,11 +484,13 @@ var helperMap = map[string]string{
 	"_indexString": helperIndexString,
 	"_sliceString": helperSliceString,
 	"_slice":       helperSlice,
+	"_append":      helperAppend,
 	"_count":       helperCount,
 	"_avg":         helperAvg,
 	"_sum":         helperSum,
 	"_min":         helperMin,
 	"_max":         helperMax,
+	"_exists":      helperExists,
 	"_contains":    helperContains,
 	"_input":       helperInput,
 	"_iter":        helperIter,
