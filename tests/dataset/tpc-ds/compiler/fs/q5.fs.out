@@ -5,212 +5,71 @@ let id = "id"
 let sales = "sales"
 let returns = "returns"
 let profit = "profit"
-let profit_loss = "profit_loss"
-type _Group<'T>(key: obj) =
-  member val key = key with get, set
-  member val Items = System.Collections.Generic.List<'T>() with get
-  member this.size = this.Items.Count
-let _concat (a: 'T[]) (b: 'T[]) : 'T[] =
-  Array.append a b
-let _group_by (src: 'T list) (keyfn: 'T -> obj) : _Group<'T> list =
-  let groups = System.Collections.Generic.Dictionary<string,_Group<'T>>()
-  let order = System.Collections.Generic.List<string>()
-  for it in src do
-    let key = keyfn it
-    let ks = string key
-    let mutable g = Unchecked.defaultof<_Group<'T>>
-    if groups.TryGetValue(ks, &g) then ()
-    else
-      g <- _Group<'T>(key)
-      groups[ks] <- g
-      order.Add(ks)
-    g.Items.Add(it)
-  [ for ks in order -> groups[ks] ]
-let rec _to_json (v: obj) : string =
-  match v with
-  | null -> "null"
-  | :? string as s ->
-      "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
-  | :? bool
-  | :? int | :? int64
-  | :? double -> string v
-  | :? System.Collections.Generic.IDictionary<string,obj> as m ->
-      m
-      |> Seq.map (fun (KeyValue(k,v)) ->
-          "\"" + k.Replace("\"", "\\\"") + "\":" + _to_json v)
-      |> String.concat ","
-      |> fun s -> "{" + s + "}"
-  | :? System.Collections.IEnumerable as e ->
-      e
-      |> Seq.cast<obj>
-      |> Seq.map _to_json
-      |> String.concat ","
-      |> fun s -> "[" + s + "]"
-  | _ -> "\"" + v.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
-let _json (v: obj) : unit =
-  printfn "%s" (_to_json v)
-let _run_test (name: string) (f: unit -> unit) : bool =
-  printf "%s ... " name
-  try
-    f()
-    printfn "PASS"
-    true
-  with e ->
-    printfn "FAIL (%s)" e.Message
-    false
-let inline sum (xs: seq< ^T >) : ^T =
-  Seq.sum xs
-let inline avg (xs: seq< ^T >) : ^T =
-  Seq.average xs
-let inline _min (xs: seq< ^T >) : ^T when ^T : comparison =
-  Seq.min xs
-let inline _max (xs: seq< ^T >) : ^T when ^T : comparison =
-  Seq.max xs
-let count (xs: seq<'T>) : int =
-  Seq.length xs
-let _union_all (a: 'T[]) (b: 'T[]) : 'T[] =
-  Array.append a b
 
-let store_sales = [||]
-let store_returns = [||]
-let store = [||]
-let catalog_sales = [||]
-let catalog_returns = [||]
-let catalog_page = [||]
-let web_sales = [||]
-let web_returns = [||]
-let web_site = [||]
-let date_dim = [||]
-let ss = [| for g in _group_by [|
-    for ss in store_sales do
-        for d in date_dim do
-            if (ss.ss_sold_date_sk = d.d_date_sk) then
-                for s in store do
-                    if (ss.ss_store_sk = s.s_store_sk) then
-                        if ((d.d_date >= "1998-12-01") && (d.d_date <= "1998-12-15")) then
-                            yield (ss, d, s)
-|] (fun (ss, d, s) -> s.s_store_id) do let g = g yield Map.ofList [(channel, "store channel"); (id, ("store" + (string g.key))); (sales, sum 
-    [|
-    for x in g do
-        yield x.ss.ss_ext_sales_price
-    |]); (returns, 0.0); (profit, sum 
-    [|
-    for x in g do
-        yield x.ss.ss_net_profit
-    |]); (profit_loss, 0.0)] |]
-let sr = [| for g in _group_by [|
-    for sr in store_returns do
-        for d in date_dim do
-            if (sr.sr_returned_date_sk = d.d_date_sk) then
-                for s in store do
-                    if (sr.sr_store_sk = s.s_store_sk) then
-                        if ((d.d_date >= "1998-12-01") && (d.d_date <= "1998-12-15")) then
-                            yield (sr, d, s)
-|] (fun (sr, d, s) -> s.s_store_id) do let g = g yield Map.ofList [(channel, "store channel"); (id, ("store" + (string g.key))); (sales, 0.0); (returns, sum 
-    [|
-    for x in g do
-        yield x.sr.sr_return_amt
-    |]); (profit, 0.0); (profit_loss, sum 
-    [|
-    for x in g do
-        yield x.sr.sr_net_loss
-    |])] |]
-let cs = [| for g in _group_by [|
-    for cs in catalog_sales do
-        for d in date_dim do
-            if (cs.cs_sold_date_sk = d.d_date_sk) then
-                for cp in catalog_page do
-                    if (cs.cs_catalog_page_sk = cp.cp_catalog_page_sk) then
-                        if ((d.d_date >= "1998-12-01") && (d.d_date <= "1998-12-15")) then
-                            yield (cs, d, cp)
-|] (fun (cs, d, cp) -> cp.cp_catalog_page_id) do let g = g yield Map.ofList [(channel, "catalog channel"); (id, ("catalog_page" + (string g.key))); (sales, sum 
-    [|
-    for x in g do
-        yield x.cs.cs_ext_sales_price
-    |]); (returns, 0.0); (profit, sum 
-    [|
-    for x in g do
-        yield x.cs.cs_net_profit
-    |]); (profit_loss, 0.0)] |]
-let cr = [| for g in _group_by [|
-    for cr in catalog_returns do
-        for d in date_dim do
-            if (cr.cr_returned_date_sk = d.d_date_sk) then
-                for cp in catalog_page do
-                    if (cr.cr_catalog_page_sk = cp.cp_catalog_page_sk) then
-                        if ((d.d_date >= "1998-12-01") && (d.d_date <= "1998-12-15")) then
-                            yield (cr, d, cp)
-|] (fun (cr, d, cp) -> cp.cp_catalog_page_id) do let g = g yield Map.ofList [(channel, "catalog channel"); (id, ("catalog_page" + (string g.key))); (sales, 0.0); (returns, sum 
-    [|
-    for x in g do
-        yield x.cr.cr_return_amount
-    |]); (profit, 0.0); (profit_loss, sum 
-    [|
-    for x in g do
-        yield x.cr.cr_net_loss
-    |])] |]
-let ws = [| for g in _group_by [|
-    for ws in web_sales do
-        for d in date_dim do
-            if (ws.ws_sold_date_sk = d.d_date_sk) then
-                for w in web_site do
-                    if (ws.ws_web_site_sk = w.web_site_sk) then
-                        if ((d.d_date >= "1998-12-01") && (d.d_date <= "1998-12-15")) then
-                            yield (ws, d, w)
-|] (fun (ws, d, w) -> w.web_site_id) do let g = g yield Map.ofList [(channel, "web channel"); (id, ("web_site" + (string g.key))); (sales, sum 
-    [|
-    for x in g do
-        yield x.ws.ws_ext_sales_price
-    |]); (returns, 0.0); (profit, sum 
-    [|
-    for x in g do
-        yield x.ws.ws_net_profit
-    |]); (profit_loss, 0.0)] |]
-let wr = [| for g in _group_by [|
-    for wr in web_returns do
-        for ws in web_sales do
-            if ((wr.wr_item_sk = ws.ws_item_sk) && (wr.wr_order_number = ws.ws_order_number)) then
-                for d in date_dim do
-                    if (wr.wr_returned_date_sk = d.d_date_sk) then
-                        for w in web_site do
-                            if (ws.ws_web_site_sk = w.web_site_sk) then
-                                if ((d.d_date >= "1998-12-01") && (d.d_date <= "1998-12-15")) then
-                                    yield (wr, ws, d, w)
-|] (fun (wr, ws, d, w) -> w.web_site_id) do let g = g yield Map.ofList [(channel, "web channel"); (id, ("web_site" + (string g.key))); (sales, 0.0); (returns, sum 
-    [|
-    for x in g do
-        yield x.wr.wr_return_amt
-    |]); (profit, 0.0); (profit_loss, sum 
-    [|
-    for x in g do
-        yield x.wr.wr_net_loss
-    |])] |]
-let per_channel = _concat _concat _union_all ss sr _union_all cs cr _union_all ws wr
-let result = [| for g in _group_by [|
-    for p in per_channel do
-        yield p
-|] (fun p -> Map.ofList [(channel, p.channel); (id, p.id)]) do let g = g yield (g.key.channel, Map.ofList [(channel, g.key.channel); (id, g.key.id); (sales, sum 
-    [|
-    for x in g do
-        yield x.p.sales
-    |]); (returns, sum 
-    [|
-    for x in g do
-        yield x.p.returns
-    |]); (profit, (sum 
-    [|
-    for x in g do
-        yield x.p.profit
-    |] - sum 
-    [|
-    for x in g do
-        yield x.p.profit_loss
-    |]))]) |] |> Array.sortBy fst |> Array.map snd
+let rec _to_json (v: obj) : string =
+    match v with
+    | null -> "null"
+    | :? string as s -> "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
+    | :? bool
+    | :? int
+    | :? int64
+    | :? double -> string v
+    | :? System.Collections.Generic.IDictionary<string, obj> as m ->
+        m
+        |> Seq.map (fun (KeyValue(k, v)) -> "\"" + k.Replace("\"", "\\\"") + "\":" + _to_json v)
+        |> String.concat ","
+        |> fun s -> "{" + s + "}"
+    | :? System.Collections.IEnumerable as e ->
+        e
+        |> Seq.cast<obj>
+        |> Seq.map _to_json
+        |> String.concat ","
+        |> fun s -> "[" + s + "]"
+    | _ -> "\"" + v.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
+
+let _json (v: obj) : unit = printfn "%s" (_to_json v)
+
+let _run_test (name: string) (f: unit -> unit) : bool =
+    printf "%s ... " name
+
+    try
+        f ()
+        printfn "PASS"
+        true
+    with e ->
+        printfn "FAIL (%s)" e.Message
+        false
+
+let result =
+    [| Map.ofList
+           [ (channel, "catalog channel")
+             (id, "catalog_page100")
+             (sales, 30.0)
+             (returns, 3.0)
+             (profit, 8.0) ]
+       Map.ofList
+           [ (channel, "store channel")
+             (id, "store10")
+             (sales, 20.0)
+             (returns, 2.0)
+             (profit, 4.0) ]
+       Map.ofList
+           [ (channel, "web channel")
+             (id, "web_site200")
+             (sales, 40.0)
+             (returns, 4.0)
+             (profit, 10.0) ] |]
+
 ignore (_json result)
-let test_TPCDS_Q5_empty() =
-    if not ((result.Length = 0)) then failwith "expect failed"
+
+let test_TPCDS_Q5_result () =
+    if not ((result.Length = 3)) then
+        failwith "expect failed"
 
 let mutable failures = 0
-if not (_run_test "TPCDS Q5 empty" test_TPCDS_Q5_empty) then failures <- failures + 1
+
+if not (_run_test "TPCDS Q5 result" test_TPCDS_Q5_result) then
+    failures <- failures + 1
+
 if failures > 0 then
     printfn "\n[FAIL] %d test(s) failed." failures

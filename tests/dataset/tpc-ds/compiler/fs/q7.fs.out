@@ -1,6 +1,24 @@
 open System
 
+let ss_cdemo_sk = "ss_cdemo_sk"
+let ss_sold_date_sk = "ss_sold_date_sk"
+let ss_item_sk = "ss_item_sk"
+let ss_promo_sk = "ss_promo_sk"
+let ss_quantity = "ss_quantity"
+let ss_list_price = "ss_list_price"
+let ss_coupon_amt = "ss_coupon_amt"
+let ss_sales_price = "ss_sales_price"
+let cd_demo_sk = "cd_demo_sk"
+let cd_gender = "cd_gender"
+let cd_marital_status = "cd_marital_status"
+let cd_education_status = "cd_education_status"
+let d_date_sk = "d_date_sk"
+let d_year = "d_year"
+let i_item_sk = "i_item_sk"
 let i_item_id = "i_item_id"
+let p_promo_sk = "p_promo_sk"
+let p_channel_email = "p_channel_email"
+let p_channel_event = "p_channel_event"
 let agg1 = "agg1"
 let agg2 = "agg2"
 let agg3 = "agg3"
@@ -66,11 +84,11 @@ let inline _max (xs: seq< ^T >) : ^T when ^T : comparison =
 let count (xs: seq<'T>) : int =
   Seq.length xs
 
-let store_sales = [||]
-let customer_demographics = [||]
-let date_dim = [||]
-let item = [||]
-let promotion = [||]
+let store_sales = [|Map.ofList [(ss_cdemo_sk, 1); (ss_sold_date_sk, 1); (ss_item_sk, 1); (ss_promo_sk, 1); (ss_quantity, 5); (ss_list_price, 10.0); (ss_coupon_amt, 2.0); (ss_sales_price, 8.0)]|]
+let customer_demographics = [|Map.ofList [(cd_demo_sk, 1); (cd_gender, "M"); (cd_marital_status, "S"); (cd_education_status, "College")]|]
+let date_dim = [|Map.ofList [(d_date_sk, 1); (d_year, 1998)]|]
+let item = [|Map.ofList [(i_item_sk, 1); (i_item_id, "I1")]|]
+let promotion = [|Map.ofList [(p_promo_sk, 1); (p_channel_email, "N"); (p_channel_event, "Y")]|]
 let result = [| for g in _group_by [|
     for ss in store_sales do
         for cd in customer_demographics do
@@ -101,10 +119,10 @@ let result = [| for g in _group_by [|
         yield x.ss.ss_sales_price
     |])]) |] |> Array.sortBy fst |> Array.map snd
 ignore (_json result)
-let test_TPCDS_Q7_empty() =
-    if not ((result.Length = 0)) then failwith "expect failed"
+let test_TPCDS_Q7_result() =
+    if not ((result = [|Map.ofList [(i_item_id, "I1"); (agg1, 5.0); (agg2, 10.0); (agg3, 2.0); (agg4, 8.0)]|])) then failwith "expect failed"
 
 let mutable failures = 0
-if not (_run_test "TPCDS Q7 empty" test_TPCDS_Q7_empty) then failures <- failures + 1
+if not (_run_test "TPCDS Q7 result" test_TPCDS_Q7_result) then failures <- failures + 1
 if failures > 0 then
     printfn "\n[FAIL] %d test(s) failed." failures
