@@ -1,0 +1,115 @@
+Smalltalk at: #customer_demographics put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newStoreSale: ss_item_sk ss_store_sk: ss_store_sk ss_cdemo_sk: ss_cdemo_sk ss_sold_date_sk: ss_sold_date_sk ss_quantity: ss_quantity ss_list_price: ss_list_price ss_coupon_amt: ss_coupon_amt ss_sales_price: ss_sales_price | dict |
+    dict := Dictionary new.
+    dict at: 'ss_item_sk' put: ss_item_sk.
+    dict at: 'ss_store_sk' put: ss_store_sk.
+    dict at: 'ss_cdemo_sk' put: ss_cdemo_sk.
+    dict at: 'ss_sold_date_sk' put: ss_sold_date_sk.
+    dict at: 'ss_quantity' put: ss_quantity.
+    dict at: 'ss_list_price' put: ss_list_price.
+    dict at: 'ss_coupon_amt' put: ss_coupon_amt.
+    dict at: 'ss_sales_price' put: ss_sales_price.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomerDemo: cd_demo_sk cd_gender: cd_gender cd_marital_status: cd_marital_status cd_education_status: cd_education_status | dict |
+    dict := Dictionary new.
+    dict at: 'cd_demo_sk' put: cd_demo_sk.
+    dict at: 'cd_gender' put: cd_gender.
+    dict at: 'cd_marital_status' put: cd_marital_status.
+    dict at: 'cd_education_status' put: cd_education_status.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_year: d_year | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_year' put: d_year.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newStore: s_store_sk s_state: s_state | dict |
+    dict := Dictionary new.
+    dict at: 's_store_sk' put: s_store_sk.
+    dict at: 's_state' put: s_state.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newItem: i_item_sk i_item_id: i_item_id | dict |
+    dict := Dictionary new.
+    dict at: 'i_item_sk' put: i_item_sk.
+    dict at: 'i_item_id' put: i_item_id.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q27_averages_by_state
+    ((result = Array with: (Dictionary from: {'i_item_id' -> 'ITEM1'. 's_state' -> 'CA'. 'agg1' -> 5.000000. 'agg2' -> 100.000000. 'agg3' -> 10.000000. 'agg4' -> 90.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__avg: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_item_sk' -> 1. 'ss_store_sk' -> 1. 'ss_cdemo_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_quantity' -> 5. 'ss_list_price' -> 100.000000. 'ss_coupon_amt' -> 10.000000. 'ss_sales_price' -> 90.000000}) with: (Dictionary from: {'ss_item_sk' -> 2. 'ss_store_sk' -> 2. 'ss_cdemo_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_quantity' -> 2. 'ss_list_price' -> 50.000000. 'ss_coupon_amt' -> 5.000000. 'ss_sales_price' -> 45.000000}).
+customer_demographics := Array with: (Dictionary from: {'cd_demo_sk' -> 1. 'cd_gender' -> 'F'. 'cd_marital_status' -> 'M'. 'cd_education_status' -> 'College'}) with: (Dictionary from: {'cd_demo_sk' -> 2. 'cd_gender' -> 'M'. 'cd_marital_status' -> 'S'. 'cd_education_status' -> 'College'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 2000}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1. 's_state' -> 'CA'}) with: (Dictionary from: {'s_store_sk' -> 2. 's_state' -> 'TX'}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_item_id' -> 'ITEM1'}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_item_id' -> 'ITEM2'}).
+result := ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | (((((Array with: 'CA' includes: cd at: 'cd_gender') and: [(ss at: 'ss_cdemo_sk' = cd at: 'cd_demo_sk')]) and: [(ss at: 'ss_sold_date_sk' = d at: 'd_date_sk')]) and: [(ss at: 'ss_store_sk' = s at: 's_store_sk')]) and: [(ss at: 'ss_item_sk' = i at: 'i_item_sk')])]) do: [:ss |
+    (customer_demographics) do: [:cd |
+        (date_dim) do: [:d |
+            (store) do: [:s |
+                (item) do: [:i |
+                    res add: { Array with: (g at: 'key' at: 'item_id') with: (g at: 'key' at: 'state') . Dictionary from: {'i_item_id' -> g at: 'key' at: 'item_id'. 's_state' -> g at: 'key' at: 'state'. 'agg1' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_quantity'.
+]
+res := res asArray.
+res))). 'agg2' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_list_price'.
+]
+res := res asArray.
+res))). 'agg3' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_coupon_amt'.
+]
+res := res asArray.
+res))). 'agg4' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_sales_price'.
+]
+res := res asArray.
+res)))} }.
+                ]
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q27_averages_by_state.

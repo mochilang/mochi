@@ -1,0 +1,80 @@
+Smalltalk at: #counties put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #web_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q31_simplified
+    ((result = Array with: (Dictionary from: {'ca_county' -> 'A'. 'd_year' -> 2000. 'web_q1_q2_increase' -> 1.500000. 'store_q1_q2_increase' -> 1.200000. 'web_q2_q3_increase' -> 1.666667. 'store_q2_q3_increase' -> 1.333333}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+!!
+store_sales := Array with: (Dictionary from: {'ca_county' -> 'A'. 'd_qoy' -> 1. 'd_year' -> 2000. 'ss_ext_sales_price' -> 100.000000}) with: (Dictionary from: {'ca_county' -> 'A'. 'd_qoy' -> 2. 'd_year' -> 2000. 'ss_ext_sales_price' -> 120.000000}) with: (Dictionary from: {'ca_county' -> 'A'. 'd_qoy' -> 3. 'd_year' -> 2000. 'ss_ext_sales_price' -> 160.000000}) with: (Dictionary from: {'ca_county' -> 'B'. 'd_qoy' -> 1. 'd_year' -> 2000. 'ss_ext_sales_price' -> 80.000000}) with: (Dictionary from: {'ca_county' -> 'B'. 'd_qoy' -> 2. 'd_year' -> 2000. 'ss_ext_sales_price' -> 90.000000}) with: (Dictionary from: {'ca_county' -> 'B'. 'd_qoy' -> 3. 'd_year' -> 2000. 'ss_ext_sales_price' -> 100.000000}).
+web_sales := Array with: (Dictionary from: {'ca_county' -> 'A'. 'd_qoy' -> 1. 'd_year' -> 2000. 'ws_ext_sales_price' -> 100.000000}) with: (Dictionary from: {'ca_county' -> 'A'. 'd_qoy' -> 2. 'd_year' -> 2000. 'ws_ext_sales_price' -> 150.000000}) with: (Dictionary from: {'ca_county' -> 'A'. 'd_qoy' -> 3. 'd_year' -> 2000. 'ws_ext_sales_price' -> 250.000000}) with: (Dictionary from: {'ca_county' -> 'B'. 'd_qoy' -> 1. 'd_year' -> 2000. 'ws_ext_sales_price' -> 80.000000}) with: (Dictionary from: {'ca_county' -> 'B'. 'd_qoy' -> 2. 'd_year' -> 2000. 'ws_ext_sales_price' -> 90.000000}) with: (Dictionary from: {'ca_county' -> 'B'. 'd_qoy' -> 3. 'd_year' -> 2000. 'ws_ext_sales_price' -> 95.000000}).
+counties := Array with: 'A' with: 'B'.
+result := Array new.
+(counties) do: [:county |
+    ss1 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ca_county' = county) and: [s at: 'd_qoy']) = 1)]) do: [:s |
+    res add: s at: 'ss_ext_sales_price'.
+]
+res := res asArray.
+res))).
+    ss2 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ca_county' = county) and: [s at: 'd_qoy']) = 2)]) do: [:s |
+    res add: s at: 'ss_ext_sales_price'.
+]
+res := res asArray.
+res))).
+    ss3 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:s | (((s at: 'ca_county' = county) and: [s at: 'd_qoy']) = 3)]) do: [:s |
+    res add: s at: 'ss_ext_sales_price'.
+]
+res := res asArray.
+res))).
+    ws1 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((web_sales) select: [:w | (((w at: 'ca_county' = county) and: [w at: 'd_qoy']) = 1)]) do: [:w |
+    res add: w at: 'ws_ext_sales_price'.
+]
+res := res asArray.
+res))).
+    ws2 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((web_sales) select: [:w | (((w at: 'ca_county' = county) and: [w at: 'd_qoy']) = 2)]) do: [:w |
+    res add: w at: 'ws_ext_sales_price'.
+]
+res := res asArray.
+res))).
+    ws3 := (Main __sum: ((| res |
+res := OrderedCollection new.
+((web_sales) select: [:w | (((w at: 'ca_county' = county) and: [w at: 'd_qoy']) = 3)]) do: [:w |
+    res add: w at: 'ws_ext_sales_price'.
+]
+res := res asArray.
+res))).
+    web_g1 := (ws2 / ws1).
+    store_g1 := (ss2 / ss1).
+    web_g2 := (ws3 / ws2).
+    store_g2 := (ss3 / ss2).
+    ((((web_g1 > store_g1) and: [web_g2]) > store_g2)) ifTrue: [
+        result := (result copyWith: Dictionary from: {'ca_county' -> county. 'd_year' -> 2000. 'web_q1_q2_increase' -> web_g1. 'store_q1_q2_increase' -> store_g1. 'web_q2_q3_increase' -> web_g2. 'store_q2_q3_increase' -> store_g2}).
+    ]
+    .
+]
+.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q31_simplified.

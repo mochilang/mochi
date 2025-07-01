@@ -1,0 +1,35 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #inventory put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #result put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q37_simplified
+    ((result = Array with: (Dictionary from: {'i_item_id' -> 'I1'. 'i_item_desc' -> 'Item1'. 'i_current_price' -> 30.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_item_id' -> 'I1'. 'i_item_desc' -> 'Item1'. 'i_current_price' -> 30.000000. 'i_manufact_id' -> 800}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_item_id' -> 'I2'. 'i_item_desc' -> 'Item2'. 'i_current_price' -> 60.000000. 'i_manufact_id' -> 801}).
+inventory := Array with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_warehouse_sk' -> 1. 'inv_date_sk' -> 1. 'inv_quantity_on_hand' -> 200}) with: (Dictionary from: {'inv_item_sk' -> 2. 'inv_warehouse_sk' -> 1. 'inv_date_sk' -> 1. 'inv_quantity_on_hand' -> 300}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_date' -> '2000-01-15'}).
+catalog_sales := Array with: (Dictionary from: {'cs_item_sk' -> 1. 'cs_sold_date_sk' -> 1}).
+result := ((| res |
+res := OrderedCollection new.
+((item) select: [:i | ((((((((((((((i at: 'i_current_price' >= 20) and: [i at: 'i_current_price']) <= 50) and: [i at: 'i_manufact_id']) >= 800) and: [i at: 'i_manufact_id']) <= 803) and: [inv at: 'inv_quantity_on_hand']) >= 100) and: [inv at: 'inv_quantity_on_hand']) <= 500) and: [(i at: 'i_item_sk' = inv at: 'inv_item_sk')]) and: [(inv at: 'inv_date_sk' = d at: 'd_date_sk')]) and: [(cs at: 'cs_item_sk' = i at: 'i_item_sk')])]) do: [:i |
+    (inventory) do: [:inv |
+        (date_dim) do: [:d |
+            (catalog_sales) do: [:cs |
+                res add: { g at: 'key' at: 'id' . Dictionary from: {'i_item_id' -> g at: 'key' at: 'id'. 'i_item_desc' -> g at: 'key' at: 'desc'. 'i_current_price' -> g at: 'key' at: 'price'} }.
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q37_simplified.

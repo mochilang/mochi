@@ -1,0 +1,65 @@
+Smalltalk at: #base put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #month put: nil.
+Smalltalk at: #records put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #year put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q42_simplified
+    ((result = Array with: (Dictionary from: {'d_year' -> 2020. 'i_category_id' -> 200. 'i_category' -> 'CatB'. 'sum_ss_ext_sales_price' -> 20.000000}) with: (Dictionary from: {'d_year' -> 2020. 'i_category_id' -> 100. 'i_category' -> 'CatA'. 'sum_ss_ext_sales_price' -> 10.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+!!
+store_sales := Array with: (Dictionary from: {'sold_date_sk' -> 1. 'item_sk' -> 1. 'ext_sales_price' -> 10.000000}) with: (Dictionary from: {'sold_date_sk' -> 1. 'item_sk' -> 2. 'ext_sales_price' -> 20.000000}) with: (Dictionary from: {'sold_date_sk' -> 2. 'item_sk' -> 1. 'ext_sales_price' -> 15.000000}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_manager_id' -> 1. 'i_category_id' -> 100. 'i_category' -> 'CatA'}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_manager_id' -> 2. 'i_category_id' -> 200. 'i_category' -> 'CatB'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 2020. 'd_moy' -> 5}) with: (Dictionary from: {'d_date_sk' -> 2. 'd_year' -> 2021. 'd_moy' -> 5}).
+month := 5.
+year := 2020.
+records := ((| res |
+res := OrderedCollection new.
+((date_dim) select: [:dt | (((((((it at: 'i_manager_id' = 1) and: [dt at: 'd_moy']) = month) and: [dt at: 'd_year']) = year) and: [(ss at: 'sold_date_sk' = dt at: 'd_date_sk')]) and: [(ss at: 'item_sk' = it at: 'i_item_sk')])]) do: [:dt |
+    (store_sales) do: [:ss |
+        (item) do: [:it |
+            res add: Dictionary from: {'d_year' -> dt at: 'd_year'. 'i_category_id' -> it at: 'i_category_id'. 'i_category' -> it at: 'i_category'. 'price' -> ss at: 'ext_sales_price'}.
+        ]
+    ]
+]
+res := res asArray.
+res)).
+base := ((| res |
+res := OrderedCollection new.
+(records) do: [:r |
+    res add: { Array with: (((Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'price'.
+]
+res := res asArray.
+res))) negated)) with: (g at: 'key' at: 'd_year') with: (g at: 'key' at: 'i_category_id') with: (g at: 'key' at: 'i_category') . Dictionary from: {'d_year' -> g at: 'key' at: 'd_year'. 'i_category_id' -> g at: 'key' at: 'i_category_id'. 'i_category' -> g at: 'key' at: 'i_category'. 'sum_ss_ext_sales_price' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'price'.
+]
+res := res asArray.
+res)))} }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+result := base.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q42_simplified.

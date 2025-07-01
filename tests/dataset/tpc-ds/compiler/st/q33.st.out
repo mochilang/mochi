@@ -1,0 +1,95 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #customer_address put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #month put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #union_sales put: nil.
+Smalltalk at: #web_sales put: nil.
+Smalltalk at: #year put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q33_simplified
+    ((result = Array with: (Dictionary from: {'i_manufact_id' -> 1. 'total_sales' -> 150.000000}) with: (Dictionary from: {'i_manufact_id' -> 2. 'total_sales' -> 50.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+!!
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_manufact_id' -> 1. 'i_category' -> 'Books'}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_manufact_id' -> 2. 'i_category' -> 'Books'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 2000. 'd_moy' -> 1}).
+customer_address := Array with: (Dictionary from: {'ca_address_sk' -> 1. 'ca_gmt_offset' -> (5 negated)}) with: (Dictionary from: {'ca_address_sk' -> 2. 'ca_gmt_offset' -> (5 negated)}).
+store_sales := Array with: (Dictionary from: {'ss_item_sk' -> 1. 'ss_ext_sales_price' -> 100.000000. 'ss_sold_date_sk' -> 1. 'ss_addr_sk' -> 1}) with: (Dictionary from: {'ss_item_sk' -> 2. 'ss_ext_sales_price' -> 50.000000. 'ss_sold_date_sk' -> 1. 'ss_addr_sk' -> 2}).
+catalog_sales := Array with: (Dictionary from: {'cs_item_sk' -> 1. 'cs_ext_sales_price' -> 20.000000. 'cs_sold_date_sk' -> 1. 'cs_bill_addr_sk' -> 1}).
+web_sales := Array with: (Dictionary from: {'ws_item_sk' -> 1. 'ws_ext_sales_price' -> 30.000000. 'ws_sold_date_sk' -> 1. 'ws_bill_addr_sk' -> 1}).
+month := 1.
+year := 2000.
+union_sales := concat value: ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | ((((((((((i at: 'i_category' = 'Books') and: [d at: 'd_year']) = year) and: [d at: 'd_moy']) = month) and: [ca at: 'ca_gmt_offset']) = ((5 negated))) and: [(ss at: 'ss_sold_date_sk' = d at: 'd_date_sk')]) and: [(ss at: 'ss_addr_sk' = ca at: 'ca_address_sk')]) and: [(ss at: 'ss_item_sk' = i at: 'i_item_sk')])]) do: [:ss |
+    (date_dim) do: [:d |
+        (customer_address) do: [:ca |
+            (item) do: [:i |
+                res add: Dictionary from: {'manu' -> i at: 'i_manufact_id'. 'price' -> ss at: 'ss_ext_sales_price'}.
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res)) value: ((| res |
+res := OrderedCollection new.
+((catalog_sales) select: [:cs | ((((((((((i at: 'i_category' = 'Books') and: [d at: 'd_year']) = year) and: [d at: 'd_moy']) = month) and: [ca at: 'ca_gmt_offset']) = ((5 negated))) and: [(cs at: 'cs_sold_date_sk' = d at: 'd_date_sk')]) and: [(cs at: 'cs_bill_addr_sk' = ca at: 'ca_address_sk')]) and: [(cs at: 'cs_item_sk' = i at: 'i_item_sk')])]) do: [:cs |
+    (date_dim) do: [:d |
+        (customer_address) do: [:ca |
+            (item) do: [:i |
+                res add: Dictionary from: {'manu' -> i at: 'i_manufact_id'. 'price' -> cs at: 'cs_ext_sales_price'}.
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res)) value: ((| res |
+res := OrderedCollection new.
+((web_sales) select: [:ws | ((((((((((i at: 'i_category' = 'Books') and: [d at: 'd_year']) = year) and: [d at: 'd_moy']) = month) and: [ca at: 'ca_gmt_offset']) = ((5 negated))) and: [(ws at: 'ws_sold_date_sk' = d at: 'd_date_sk')]) and: [(ws at: 'ws_bill_addr_sk' = ca at: 'ca_address_sk')]) and: [(ws at: 'ws_item_sk' = i at: 'i_item_sk')])]) do: [:ws |
+    (date_dim) do: [:d |
+        (customer_address) do: [:ca |
+            (item) do: [:i |
+                res add: Dictionary from: {'manu' -> i at: 'i_manufact_id'. 'price' -> ws at: 'ws_ext_sales_price'}.
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res)).
+result := ((| res |
+res := OrderedCollection new.
+(union_sales) do: [:s |
+    res add: { ((Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'price'.
+]
+res := res asArray.
+res))) negated) . Dictionary from: {'i_manufact_id' -> g at: 'key'. 'total_sales' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'price'.
+]
+res := res asArray.
+res)))} }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q33_simplified.

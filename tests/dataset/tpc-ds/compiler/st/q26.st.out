@@ -1,0 +1,154 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #customer_demographics put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #promotion put: nil.
+Smalltalk at: #result put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newCatalogSale: cs_sold_date_sk cs_item_sk: cs_item_sk cs_bill_cdemo_sk: cs_bill_cdemo_sk cs_promo_sk: cs_promo_sk cs_quantity: cs_quantity cs_list_price: cs_list_price cs_coupon_amt: cs_coupon_amt cs_sales_price: cs_sales_price | dict |
+    dict := Dictionary new.
+    dict at: 'cs_sold_date_sk' put: cs_sold_date_sk.
+    dict at: 'cs_item_sk' put: cs_item_sk.
+    dict at: 'cs_bill_cdemo_sk' put: cs_bill_cdemo_sk.
+    dict at: 'cs_promo_sk' put: cs_promo_sk.
+    dict at: 'cs_quantity' put: cs_quantity.
+    dict at: 'cs_list_price' put: cs_list_price.
+    dict at: 'cs_coupon_amt' put: cs_coupon_amt.
+    dict at: 'cs_sales_price' put: cs_sales_price.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCustomerDemo: cd_demo_sk cd_gender: cd_gender cd_marital_status: cd_marital_status cd_education_status: cd_education_status | dict |
+    dict := Dictionary new.
+    dict at: 'cd_demo_sk' put: cd_demo_sk.
+    dict at: 'cd_gender' put: cd_gender.
+    dict at: 'cd_marital_status' put: cd_marital_status.
+    dict at: 'cd_education_status' put: cd_education_status.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_year: d_year | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_year' put: d_year.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newItem: i_item_sk i_item_id: i_item_id | dict |
+    dict := Dictionary new.
+    dict at: 'i_item_sk' put: i_item_sk.
+    dict at: 'i_item_id' put: i_item_id.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newPromotion: p_promo_sk p_channel_email: p_channel_email p_channel_event: p_channel_event | dict |
+    dict := Dictionary new.
+    dict at: 'p_promo_sk' put: p_promo_sk.
+    dict at: 'p_channel_email' put: p_channel_email.
+    dict at: 'p_channel_event' put: p_channel_event.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q26_demographic_averages
+    ((result = Array with: (Dictionary from: {'i_item_id' -> 'ITEM1'. 'agg1' -> 10.000000. 'agg2' -> 100.000000. 'agg3' -> 5.000000. 'agg4' -> 95.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__avg: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+catalog_sales := Array with: (Dictionary from: {'cs_sold_date_sk' -> 1. 'cs_item_sk' -> 1. 'cs_bill_cdemo_sk' -> 1. 'cs_promo_sk' -> 1. 'cs_quantity' -> 10. 'cs_list_price' -> 100.000000. 'cs_coupon_amt' -> 5.000000. 'cs_sales_price' -> 95.000000}) with: (Dictionary from: {'cs_sold_date_sk' -> 1. 'cs_item_sk' -> 2. 'cs_bill_cdemo_sk' -> 2. 'cs_promo_sk' -> 2. 'cs_quantity' -> 5. 'cs_list_price' -> 50.000000. 'cs_coupon_amt' -> 2.000000. 'cs_sales_price' -> 48.000000}).
+customer_demographics := Array with: (Dictionary from: {'cd_demo_sk' -> 1. 'cd_gender' -> 'M'. 'cd_marital_status' -> 'S'. 'cd_education_status' -> 'College'}) with: (Dictionary from: {'cd_demo_sk' -> 2. 'cd_gender' -> 'F'. 'cd_marital_status' -> 'M'. 'cd_education_status' -> 'High School'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 2000}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_item_id' -> 'ITEM1'}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_item_id' -> 'ITEM2'}).
+promotion := Array with: (Dictionary from: {'p_promo_sk' -> 1. 'p_channel_email' -> 'N'. 'p_channel_event' -> 'Y'}) with: (Dictionary from: {'p_promo_sk' -> 2. 'p_channel_email' -> 'Y'. 'p_channel_event' -> 'N'}).
+result := ((| rows groups |
+rows := OrderedCollection new.
+(catalog_sales) do: [:cs |
+    (((((((((cd at: 'cd_gender' = 'M') and: [cd at: 'cd_marital_status']) = 'S') and: [cd at: 'cd_education_status']) = 'College') and: [((((p at: 'p_channel_email' = 'N') or: [p at: 'p_channel_event']) = 'N'))]) and: [d at: 'd_year']) = 2000)) ifTrue: [ rows add: cs ].
+]
+groups := (Main _group_by: rows keyFn: [:cs | i at: 'i_item_id']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'i_item_id' -> g at: 'key'. 'agg1' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'cs_quantity'.
+]
+res := res asArray.
+res))). 'agg2' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'cs_list_price'.
+]
+res := res asArray.
+res))). 'agg3' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'cs_coupon_amt'.
+]
+res := res asArray.
+res))). 'agg4' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'cs_sales_price'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q26_demographic_averages.

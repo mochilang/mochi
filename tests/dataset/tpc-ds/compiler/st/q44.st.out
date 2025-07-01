@@ -1,0 +1,126 @@
+Smalltalk at: #best put: nil.
+Smalltalk at: #best_name put: nil.
+Smalltalk at: #grouped put: nil.
+Smalltalk at: #grouped_base put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+Smalltalk at: #worst put: nil.
+Smalltalk at: #worst_name put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q44_simplified
+    ((result = Dictionary from: {'best_performing' -> 'ItemA'. 'worst_performing' -> 'ItemB'})) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__avg: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_item_sk' -> 1. 'ss_store_sk' -> 1. 'ss_net_profit' -> 5.000000}) with: (Dictionary from: {'ss_item_sk' -> 1. 'ss_store_sk' -> 1. 'ss_net_profit' -> 5.000000}) with: (Dictionary from: {'ss_item_sk' -> 2. 'ss_store_sk' -> 1. 'ss_net_profit' -> (1.000000 negated)}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_product_name' -> 'ItemA'}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_product_name' -> 'ItemB'}).
+grouped_base := (((| rows groups |
+rows := OrderedCollection new.
+(store_sales) do: [:ss |
+    rows add: ss.
+]
+groups := (Main _group_by: rows keyFn: [:ss | ss at: 'ss_item_sk']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'item_sk' -> g at: 'key'. 'avg_profit' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_net_profit'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows))).
+grouped := grouped_base.
+best := first value: ((| res |
+res := OrderedCollection new.
+(grouped) do: [:x |
+    res add: { (x at: 'avg_profit' negated) . x }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+worst := first value: ((| res |
+res := OrderedCollection new.
+(grouped) do: [:x |
+    res add: { x at: 'avg_profit' . x }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+best_name := first value: ((| res |
+res := OrderedCollection new.
+((item) select: [:i | (i at: 'i_item_sk' = best at: 'item_sk')]) do: [:i |
+    res add: i at: 'i_product_name'.
+]
+res := res asArray.
+res)).
+worst_name := first value: ((| res |
+res := OrderedCollection new.
+((item) select: [:i | (i at: 'i_item_sk' = worst at: 'item_sk')]) do: [:i |
+    res add: i at: 'i_product_name'.
+]
+res := res asArray.
+res)).
+result := Dictionary from: {'best_performing' -> best_name. 'worst_performing' -> worst_name}.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q44_simplified.

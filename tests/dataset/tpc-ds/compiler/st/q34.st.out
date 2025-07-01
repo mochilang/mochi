@@ -1,0 +1,94 @@
+Smalltalk at: #customer put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #dn put: nil.
+Smalltalk at: #household_demographics put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q34_simplified
+    ((result = Array with: (Dictionary from: {'c_last_name' -> 'Smith'. 'c_first_name' -> 'John'. 'c_salutation' -> 'Mr.'. 'c_preferred_cust_flag' -> 'Y'. 'ss_ticket_number' -> 1. 'cnt' -> 16}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__count: v
+    (v respondsTo: #size) ifTrue: [ ^ v size ]
+    ^ self error: 'count() expects collection'
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 1. 'ss_customer_sk' -> 1. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 1}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}) with: (Dictionary from: {'ss_ticket_number' -> 2. 'ss_customer_sk' -> 2. 'ss_sold_date_sk' -> 1. 'ss_store_sk' -> 1. 'ss_hdemo_sk' -> 2}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_dom' -> 2. 'd_year' -> 2000}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1. 's_county' -> 'A'}).
+household_demographics := Array with: (Dictionary from: {'hd_demo_sk' -> 1. 'hd_buy_potential' -> '>10000'. 'hd_vehicle_count' -> 2. 'hd_dep_count' -> 3}) with: (Dictionary from: {'hd_demo_sk' -> 2. 'hd_buy_potential' -> '>10000'. 'hd_vehicle_count' -> 2. 'hd_dep_count' -> 1}).
+customer := Array with: (Dictionary from: {'c_customer_sk' -> 1. 'c_last_name' -> 'Smith'. 'c_first_name' -> 'John'. 'c_salutation' -> 'Mr.'. 'c_preferred_cust_flag' -> 'Y'}) with: (Dictionary from: {'c_customer_sk' -> 2. 'c_last_name' -> 'Jones'. 'c_first_name' -> 'Alice'. 'c_salutation' -> 'Ms.'. 'c_preferred_cust_flag' -> 'N'}).
+dn := ((| rows groups |
+rows := OrderedCollection new.
+(store_sales) do: [:ss |
+    (((((((((((((((d at: 'd_dom' >= 1) and: [d at: 'd_dom']) <= 3)) and: [hd at: 'hd_buy_potential']) = '>10000') and: [hd at: 'hd_vehicle_count']) > 0) and: [((hd at: 'hd_dep_count' / hd at: 'hd_vehicle_count'))]) > 1.200000) and: [d at: 'd_year']) = 2000) and: [s at: 's_county']) = 'A')) ifTrue: [ rows add: ss ].
+]
+groups := (Main _group_by: rows keyFn: [:ss | Dictionary from: {'ticket' -> ss at: 'ss_ticket_number'. 'cust' -> ss at: 'ss_customer_sk'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'ss_ticket_number' -> g at: 'key' at: 'ticket'. 'ss_customer_sk' -> g at: 'key' at: 'cust'. 'cnt' -> (Main __count: g)}.
+]
+rows := rows asArray.
+rows)).
+result := ((| res |
+res := OrderedCollection new.
+((dn) select: [:dn1 | ((((dn1 at: 'cnt' >= 15) and: [dn1 at: 'cnt']) <= 20) and: [(dn1 at: 'ss_customer_sk' = c at: 'c_customer_sk')])]) do: [:dn1 |
+    (customer) do: [:c |
+        res add: { c at: 'c_last_name' . Dictionary from: {'c_last_name' -> c at: 'c_last_name'. 'c_first_name' -> c at: 'c_first_name'. 'c_salutation' -> c at: 'c_salutation'. 'c_preferred_cust_flag' -> c at: 'c_preferred_cust_flag'. 'ss_ticket_number' -> dn1 at: 'ss_ticket_number'. 'cnt' -> dn1 at: 'cnt'} }.
+    ]
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q34_simplified.

@@ -1,0 +1,127 @@
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #grouped put: nil.
+Smalltalk at: #inventory put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #monthly put: nil.
+Smalltalk at: #summary put: nil.
+Smalltalk at: #warehouse put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q39_simplified
+    ((summary = Array with: (Dictionary from: {'w_warehouse_sk' -> 1. 'i_item_sk' -> 1. 'cov' -> 1.539601}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__avg: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
+!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+inventory := Array with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_warehouse_sk' -> 1. 'inv_date_sk' -> 1. 'inv_quantity_on_hand' -> 10}) with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_warehouse_sk' -> 1. 'inv_date_sk' -> 2. 'inv_quantity_on_hand' -> 10}) with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_warehouse_sk' -> 1. 'inv_date_sk' -> 3. 'inv_quantity_on_hand' -> 250}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1}).
+warehouse := Array with: (Dictionary from: {'w_warehouse_sk' -> 1. 'w_warehouse_name' -> 'W1'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_year' -> 2000. 'd_moy' -> 1}) with: (Dictionary from: {'d_date_sk' -> 2. 'd_year' -> 2000. 'd_moy' -> 2}) with: (Dictionary from: {'d_date_sk' -> 3. 'd_year' -> 2000. 'd_moy' -> 3}).
+monthly := ((| rows groups |
+rows := OrderedCollection new.
+(inventory) do: [:inv |
+    ((d at: 'd_year' = 2000)) ifTrue: [ rows add: inv ].
+]
+groups := (Main _group_by: rows keyFn: [:inv | Dictionary from: {'w' -> w at: 'w_warehouse_sk'. 'i' -> i at: 'i_item_sk'. 'month' -> d at: 'd_moy'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'w' -> g at: 'key' at: 'w'. 'i' -> g at: 'key' at: 'i'. 'qty' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'inv_quantity_on_hand'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+grouped := Dictionary new.
+(monthly) do: [:m |
+    key := (Dictionary from: {'w' -> m at: 'w'. 'i' -> m at: 'i'} printString).
+    ((grouped includesKey: key)) ifTrue: [
+        g := (grouped at: key).
+        grouped at: key put: Dictionary from: {'w' -> g at: 'w'. 'i' -> g at: 'i'. 'qtys' -> (g at: 'qtys' copyWith: m at: 'qty')}.
+    ] ifFalse: [
+        grouped at: key put: Dictionary from: {'w' -> m at: 'w'. 'i' -> m at: 'i'. 'qtys' -> Array with: (m at: 'qty')}.
+    ]
+    .
+]
+.
+summary := Array new.
+(values value: grouped) do: [:g |
+    mean := (Main __avg: g at: 'qtys').
+    sumsq := 0.000000.
+    (g at: 'qtys') do: [:q |
+        sumsq := ((sumsq + ((q - mean))) * ((q - mean))).
+    ]
+    .
+    variance := (sumsq / (((g at: 'qtys') size - 1))).
+    cov := ((math at: 'sqrt' value: variance) / mean).
+    ((cov > 1.500000)) ifTrue: [
+        summary := (summary copyWith: Dictionary from: {'w_warehouse_sk' -> g at: 'w'. 'i_item_sk' -> g at: 'i'. 'cov' -> cov}).
+    ]
+    .
+]
+.
+(summary toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q39_simplified.

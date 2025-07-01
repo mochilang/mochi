@@ -1,0 +1,36 @@
+Smalltalk at: #item put: nil.
+Smalltalk at: #lower put: nil.
+Smalltalk at: #result put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q41_simplified
+    ((result = Array with: ('Blue Shirt') with: ('Red Dress'))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!Main class methodsFor: 'runtime'!
+__count: v
+    (v respondsTo: #size) ifTrue: [ ^ v size ]
+    ^ self error: 'count() expects collection'
+!
+!!
+item := Array with: (Dictionary from: {'product_name' -> 'Blue Shirt'. 'manufact_id' -> 100. 'manufact' -> 1. 'category' -> 'Women'. 'color' -> 'blue'. 'units' -> 'pack'. 'size' -> 'M'}) with: (Dictionary from: {'product_name' -> 'Red Dress'. 'manufact_id' -> 120. 'manufact' -> 1. 'category' -> 'Women'. 'color' -> 'red'. 'units' -> 'pack'. 'size' -> 'M'}) with: (Dictionary from: {'product_name' -> 'Pants'. 'manufact_id' -> 200. 'manufact' -> 2. 'category' -> 'Men'. 'color' -> 'black'. 'units' -> 'pair'. 'size' -> 'L'}).
+lower := 100.
+result := ((| res |
+res := OrderedCollection new.
+((item) select: [:i1 | ((((((i1 at: 'manufact_id' >= lower) and: [i1 at: 'manufact_id']) <= lower) + 40) and: [(Main __count: ((| res |
+res := OrderedCollection new.
+((item) select: [:i2 | (((i2 at: 'manufact' = i1 at: 'manufact') and: [i2 at: 'category']) = i1 at: 'category')]) do: [:i2 |
+    res add: i2.
+]
+res := res asArray.
+res)))]) > 1)]) do: [:i1 |
+    res add: { i1 at: 'product_name' . i1 at: 'product_name' }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q41_simplified.

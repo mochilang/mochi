@@ -1,0 +1,37 @@
+Smalltalk at: #orderby put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #v2 put: nil.
+Smalltalk at: #year put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'mochi'!
+abs: x
+    ((x >= 0.000000)) ifTrue: [
+        x.
+    ] ifFalse: [
+        (x negated).
+    ]
+    .
+!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q47_simplified
+    ((result = Array with: (Dictionary from: {'d_year' -> 2019. 'item' -> 'C'. 'avg_monthly_sales' -> 50.000000. 'sum_sales' -> 60.000000}) with: (Dictionary from: {'d_year' -> 2020. 'item' -> 'A'. 'avg_monthly_sales' -> 100.000000. 'sum_sales' -> 120.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+v2 := Array with: (Dictionary from: {'d_year' -> 2020. 'item' -> 'A'. 'avg_monthly_sales' -> 100.000000. 'sum_sales' -> 120.000000}) with: (Dictionary from: {'d_year' -> 2020. 'item' -> 'B'. 'avg_monthly_sales' -> 80.000000. 'sum_sales' -> 70.000000}) with: (Dictionary from: {'d_year' -> 2019. 'item' -> 'C'. 'avg_monthly_sales' -> 50.000000. 'sum_sales' -> 60.000000}).
+year := 2020.
+orderby := 'item'.
+result := ((| res |
+res := OrderedCollection new.
+((v2) select: [:v | ((((((v at: 'd_year' = year) and: [v at: 'avg_monthly_sales']) > 0) and: [(Main abs: ((v at: 'sum_sales' - v at: 'avg_monthly_sales')))]) / v at: 'avg_monthly_sales') > 0.100000)]) do: [:v |
+    res add: { Array with: ((v at: 'sum_sales' - v at: 'avg_monthly_sales')) with: (v at: 'item') . v }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q47_simplified.

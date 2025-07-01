@@ -1,0 +1,115 @@
+Smalltalk at: #catalog_returns put: nil.
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #records put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #sales_date put: nil.
+Smalltalk at: #warehouse put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q40_simplified
+    ((result = Array with: (Dictionary from: {'w_state' -> 'CA'. 'i_item_id' -> 'I1'. 'sales_before' -> 100.000000. 'sales_after' -> 0.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+catalog_sales := Array with: (Dictionary from: {'order' -> 1. 'item_sk' -> 1. 'warehouse_sk' -> 1. 'date_sk' -> 1. 'price' -> 100.000000}) with: (Dictionary from: {'order' -> 2. 'item_sk' -> 1. 'warehouse_sk' -> 1. 'date_sk' -> 2. 'price' -> 150.000000}).
+catalog_returns := Array with: (Dictionary from: {'order' -> 2. 'item_sk' -> 1. 'refunded' -> 150.000000}).
+item := Array with: (Dictionary from: {'item_sk' -> 1. 'item_id' -> 'I1'. 'current_price' -> 1.200000}).
+warehouse := Array with: (Dictionary from: {'warehouse_sk' -> 1. 'state' -> 'CA'}).
+date_dim := Array with: (Dictionary from: {'date_sk' -> 1. 'date' -> '2020-01-10'}) with: (Dictionary from: {'date_sk' -> 2. 'date' -> '2020-01-20'}).
+sales_date := '2020-01-15'.
+records := ((| res |
+res := OrderedCollection new.
+((catalog_sales) select: [:cs | (((((((i at: 'current_price' >= 0.990000) and: [i at: 'current_price']) <= 1.490000) and: [(((cs at: 'order' = cr at: 'order') and: [cs at: 'item_sk']) = cr at: 'item_sk')]) and: [(cs at: 'warehouse_sk' = w at: 'warehouse_sk')]) and: [(cs at: 'item_sk' = i at: 'item_sk')]) and: [(cs at: 'date_sk' = d at: 'date_sk')])]) do: [:cs |
+    (catalog_returns) do: [:cr |
+        (warehouse) do: [:w |
+            (item) do: [:i |
+                (date_dim) do: [:d |
+                    res add: Dictionary from: {'w_state' -> w at: 'state'. 'i_item_id' -> i at: 'item_id'. 'sold_date' -> d at: 'date'. 'net' -> (cs at: 'price' - ((((cr = nil)) ifTrue: [0.000000] ifFalse: [cr at: 'refunded'])))}.
+                ]
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res)).
+result := ((| rows groups |
+rows := OrderedCollection new.
+(records) do: [:r |
+    rows add: r.
+]
+groups := (Main _group_by: rows keyFn: [:r | Dictionary from: {'w_state' -> r at: 'w_state'. 'i_item_id' -> r at: 'i_item_id'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'w_state' -> g at: 'key' at: 'w_state'. 'i_item_id' -> g at: 'key' at: 'i_item_id'. 'sales_before' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: (((x at: 'sold_date' < sales_date)) ifTrue: [x at: 'net'] ifFalse: [0.000000]).
+]
+res := res asArray.
+res))). 'sales_after' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: (((x at: 'sold_date' >= sales_date)) ifTrue: [x at: 'net'] ifFalse: [0.000000]).
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q40_simplified.

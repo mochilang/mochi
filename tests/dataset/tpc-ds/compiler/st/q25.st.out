@@ -1,0 +1,159 @@
+Smalltalk at: #catalog_sales put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #store_returns put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newStoreSale: ss_sold_date_sk ss_item_sk: ss_item_sk ss_store_sk: ss_store_sk ss_customer_sk: ss_customer_sk ss_net_profit: ss_net_profit ss_ticket_number: ss_ticket_number | dict |
+    dict := Dictionary new.
+    dict at: 'ss_sold_date_sk' put: ss_sold_date_sk.
+    dict at: 'ss_item_sk' put: ss_item_sk.
+    dict at: 'ss_store_sk' put: ss_store_sk.
+    dict at: 'ss_customer_sk' put: ss_customer_sk.
+    dict at: 'ss_net_profit' put: ss_net_profit.
+    dict at: 'ss_ticket_number' put: ss_ticket_number.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newStoreReturn: sr_returned_date_sk sr_item_sk: sr_item_sk sr_customer_sk: sr_customer_sk sr_ticket_number: sr_ticket_number sr_net_loss: sr_net_loss | dict |
+    dict := Dictionary new.
+    dict at: 'sr_returned_date_sk' put: sr_returned_date_sk.
+    dict at: 'sr_item_sk' put: sr_item_sk.
+    dict at: 'sr_customer_sk' put: sr_customer_sk.
+    dict at: 'sr_ticket_number' put: sr_ticket_number.
+    dict at: 'sr_net_loss' put: sr_net_loss.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newCatalogSale: cs_sold_date_sk cs_item_sk: cs_item_sk cs_bill_customer_sk: cs_bill_customer_sk cs_net_profit: cs_net_profit | dict |
+    dict := Dictionary new.
+    dict at: 'cs_sold_date_sk' put: cs_sold_date_sk.
+    dict at: 'cs_item_sk' put: cs_item_sk.
+    dict at: 'cs_bill_customer_sk' put: cs_bill_customer_sk.
+    dict at: 'cs_net_profit' put: cs_net_profit.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_moy: d_moy d_year: d_year | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_moy' put: d_moy.
+    dict at: 'd_year' put: d_year.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newStore: s_store_sk s_store_id: s_store_id s_store_name: s_store_name | dict |
+    dict := Dictionary new.
+    dict at: 's_store_sk' put: s_store_sk.
+    dict at: 's_store_id' put: s_store_id.
+    dict at: 's_store_name' put: s_store_name.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newItem: i_item_sk i_item_id: i_item_id i_item_desc: i_item_desc | dict |
+    dict := Dictionary new.
+    dict at: 'i_item_sk' put: i_item_sk.
+    dict at: 'i_item_id' put: i_item_id.
+    dict at: 'i_item_desc' put: i_item_desc.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q25_aggregated_profit
+    ((result = Array with: (Dictionary from: {'i_item_id' -> 'ITEM1'. 'i_item_desc' -> 'Desc1'. 's_store_id' -> 'S1'. 's_store_name' -> 'Store1'. 'store_sales_profit' -> 50.000000. 'store_returns_loss' -> 10.000000. 'catalog_sales_profit' -> 30.000000}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_sold_date_sk' -> 1. 'ss_item_sk' -> 1. 'ss_store_sk' -> 1. 'ss_customer_sk' -> 1. 'ss_net_profit' -> 50.000000. 'ss_ticket_number' -> 1}) with: (Dictionary from: {'ss_sold_date_sk' -> 1. 'ss_item_sk' -> 2. 'ss_store_sk' -> 1. 'ss_customer_sk' -> 2. 'ss_net_profit' -> 20.000000. 'ss_ticket_number' -> 2}).
+store_returns := Array with: (Dictionary from: {'sr_returned_date_sk' -> 2. 'sr_item_sk' -> 1. 'sr_customer_sk' -> 1. 'sr_ticket_number' -> 1. 'sr_net_loss' -> 10.000000}) with: (Dictionary from: {'sr_returned_date_sk' -> 2. 'sr_item_sk' -> 2. 'sr_customer_sk' -> 2. 'sr_ticket_number' -> 2. 'sr_net_loss' -> 5.000000}).
+catalog_sales := Array with: (Dictionary from: {'cs_sold_date_sk' -> 3. 'cs_item_sk' -> 1. 'cs_bill_customer_sk' -> 1. 'cs_net_profit' -> 30.000000}) with: (Dictionary from: {'cs_sold_date_sk' -> 3. 'cs_item_sk' -> 2. 'cs_bill_customer_sk' -> 2. 'cs_net_profit' -> 15.000000}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_moy' -> 4. 'd_year' -> 2000}) with: (Dictionary from: {'d_date_sk' -> 2. 'd_moy' -> 5. 'd_year' -> 2000}) with: (Dictionary from: {'d_date_sk' -> 3. 'd_moy' -> 6. 'd_year' -> 2000}).
+store := Array with: (Dictionary from: {'s_store_sk' -> 1. 's_store_id' -> 'S1'. 's_store_name' -> 'Store1'}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_item_id' -> 'ITEM1'. 'i_item_desc' -> 'Desc1'}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_item_id' -> 'ITEM2'. 'i_item_desc' -> 'Desc2'}).
+result := ((| rows groups |
+rows := OrderedCollection new.
+(store_sales) do: [:ss |
+    ((((((((((((d1 at: 'd_moy' = 4) and: [d1 at: 'd_year']) = 2000) and: [d2 at: 'd_moy']) >= 4) and: [d2 at: 'd_moy']) <= 10) and: [d3 at: 'd_moy']) >= 4) and: [d3 at: 'd_moy']) <= 10)) ifTrue: [ rows add: ss ].
+]
+groups := (Main _group_by: rows keyFn: [:ss | Dictionary from: {'item_id' -> i at: 'i_item_id'. 'item_desc' -> i at: 'i_item_desc'. 's_store_id' -> s at: 's_store_id'. 's_store_name' -> s at: 's_store_name'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'i_item_id' -> g at: 'key' at: 'item_id'. 'i_item_desc' -> g at: 'key' at: 'item_desc'. 's_store_id' -> g at: 'key' at: 's_store_id'. 's_store_name' -> g at: 'key' at: 's_store_name'. 'store_sales_profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'ss_net_profit'.
+]
+res := res asArray.
+res))). 'store_returns_loss' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'sr_net_loss'.
+]
+res := res asArray.
+res))). 'catalog_sales_profit' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'cs_net_profit'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q25_aggregated_profit.

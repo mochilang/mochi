@@ -1,0 +1,47 @@
+Smalltalk at: #catalog put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store put: nil.
+Smalltalk at: #tmp put: nil.
+Smalltalk at: #web put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q49_simplified
+    ((result = Array with: (Dictionary from: {'channel' -> 'catalog'. 'item' -> 'A'. 'return_ratio' -> 0.300000. 'return_rank' -> 1. 'currency_rank' -> 1}) with: (Dictionary from: {'channel' -> 'store'. 'item' -> 'A'. 'return_ratio' -> 0.250000. 'return_rank' -> 1. 'currency_rank' -> 1}) with: (Dictionary from: {'channel' -> 'web'. 'item' -> 'A'. 'return_ratio' -> 0.200000. 'return_rank' -> 1. 'currency_rank' -> 1}) with: (Dictionary from: {'channel' -> 'web'. 'item' -> 'B'. 'return_ratio' -> 0.500000. 'return_rank' -> 2. 'currency_rank' -> 2}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+web := Array with: (Dictionary from: {'item' -> 'A'. 'return_ratio' -> 0.200000. 'currency_ratio' -> 0.300000. 'return_rank' -> 1. 'currency_rank' -> 1}) with: (Dictionary from: {'item' -> 'B'. 'return_ratio' -> 0.500000. 'currency_ratio' -> 0.600000. 'return_rank' -> 2. 'currency_rank' -> 2}).
+catalog := Array with: (Dictionary from: {'item' -> 'A'. 'return_ratio' -> 0.300000. 'currency_ratio' -> 0.400000. 'return_rank' -> 1. 'currency_rank' -> 1}).
+store := Array with: (Dictionary from: {'item' -> 'A'. 'return_ratio' -> 0.250000. 'currency_ratio' -> 0.350000. 'return_rank' -> 1. 'currency_rank' -> 1}).
+tmp := (concat value: ((| res |
+res := OrderedCollection new.
+((web) select: [:w | (((w at: 'return_rank' <= 10) or: [w at: 'currency_rank']) <= 10)]) do: [:w |
+    res add: Dictionary from: {'channel' -> 'web'. 'item' -> w at: 'item'. 'return_ratio' -> w at: 'return_ratio'. 'return_rank' -> w at: 'return_rank'. 'currency_rank' -> w at: 'currency_rank'}.
+]
+res := res asArray.
+res)) value: ((| res |
+res := OrderedCollection new.
+((catalog) select: [:c | (((c at: 'return_rank' <= 10) or: [c at: 'currency_rank']) <= 10)]) do: [:c |
+    res add: Dictionary from: {'channel' -> 'catalog'. 'item' -> c at: 'item'. 'return_ratio' -> c at: 'return_ratio'. 'return_rank' -> c at: 'return_rank'. 'currency_rank' -> c at: 'currency_rank'}.
+]
+res := res asArray.
+res)) value: ((| res |
+res := OrderedCollection new.
+((store) select: [:s | (((s at: 'return_rank' <= 10) or: [s at: 'currency_rank']) <= 10)]) do: [:s |
+    res add: Dictionary from: {'channel' -> 'store'. 'item' -> s at: 'item'. 'return_ratio' -> s at: 'return_ratio'. 'return_rank' -> s at: 'return_rank'. 'currency_rank' -> s at: 'currency_rank'}.
+]
+res := res asArray.
+res))).
+result := ((| res |
+res := OrderedCollection new.
+(tmp) do: [:r |
+    res add: { Array with: (r at: 'channel') with: (r at: 'return_rank') with: (r at: 'currency_rank') with: (r at: 'item') . r }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q49_simplified.

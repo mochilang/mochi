@@ -1,0 +1,162 @@
+Smalltalk at: #after put: nil.
+Smalltalk at: #before put: nil.
+Smalltalk at: #date_dim put: nil.
+Smalltalk at: #inventory put: nil.
+Smalltalk at: #item put: nil.
+Smalltalk at: #joined put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #warehouse put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newInventory: inv_item_sk inv_warehouse_sk: inv_warehouse_sk inv_date_sk: inv_date_sk inv_quantity_on_hand: inv_quantity_on_hand | dict |
+    dict := Dictionary new.
+    dict at: 'inv_item_sk' put: inv_item_sk.
+    dict at: 'inv_warehouse_sk' put: inv_warehouse_sk.
+    dict at: 'inv_date_sk' put: inv_date_sk.
+    dict at: 'inv_quantity_on_hand' put: inv_quantity_on_hand.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newWarehouse: w_warehouse_sk w_warehouse_name: w_warehouse_name | dict |
+    dict := Dictionary new.
+    dict at: 'w_warehouse_sk' put: w_warehouse_sk.
+    dict at: 'w_warehouse_name' put: w_warehouse_name.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newItem: i_item_sk i_item_id: i_item_id | dict |
+    dict := Dictionary new.
+    dict at: 'i_item_sk' put: i_item_sk.
+    dict at: 'i_item_id' put: i_item_id.
+    ^ dict
+!
+!Main class methodsFor: 'types'!
+newDateDim: d_date_sk d_date: d_date | dict |
+    dict := Dictionary new.
+    dict at: 'd_date_sk' put: d_date_sk.
+    dict at: 'd_date' put: d_date.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q21_inventory_ratio
+    ((result = Array with: (Dictionary from: {'w_warehouse_name' -> 'Main'. 'i_item_id' -> 'ITEM1'. 'inv_before' -> 30. 'inv_after' -> 40}))) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__sum: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'sum() expects collection' ]
+    | s |
+    s := 0.
+    v do: [:it | s := s + it].
+    ^ s
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+inventory := Array with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_warehouse_sk' -> 1. 'inv_date_sk' -> 1. 'inv_quantity_on_hand' -> 30}) with: (Dictionary from: {'inv_item_sk' -> 1. 'inv_warehouse_sk' -> 1. 'inv_date_sk' -> 2. 'inv_quantity_on_hand' -> 40}) with: (Dictionary from: {'inv_item_sk' -> 2. 'inv_warehouse_sk' -> 2. 'inv_date_sk' -> 1. 'inv_quantity_on_hand' -> 20}) with: (Dictionary from: {'inv_item_sk' -> 2. 'inv_warehouse_sk' -> 2. 'inv_date_sk' -> 2. 'inv_quantity_on_hand' -> 20}).
+warehouse := Array with: (Dictionary from: {'w_warehouse_sk' -> 1. 'w_warehouse_name' -> 'Main'}) with: (Dictionary from: {'w_warehouse_sk' -> 2. 'w_warehouse_name' -> 'Backup'}).
+item := Array with: (Dictionary from: {'i_item_sk' -> 1. 'i_item_id' -> 'ITEM1'}) with: (Dictionary from: {'i_item_sk' -> 2. 'i_item_id' -> 'ITEM2'}).
+date_dim := Array with: (Dictionary from: {'d_date_sk' -> 1. 'd_date' -> '2000-03-01'}) with: (Dictionary from: {'d_date_sk' -> 2. 'd_date' -> '2000-03-20'}).
+before := ((| rows groups |
+rows := OrderedCollection new.
+(inventory) do: [:inv |
+    ((d at: 'd_date' < '2000-03-15')) ifTrue: [ rows add: inv ].
+]
+groups := (Main _group_by: rows keyFn: [:inv | Dictionary from: {'w' -> inv at: 'inv_warehouse_sk'. 'i' -> inv at: 'inv_item_sk'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'w' -> g at: 'key' at: 'w'. 'i' -> g at: 'key' at: 'i'. 'qty' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'inv_quantity_on_hand'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+after := ((| rows groups |
+rows := OrderedCollection new.
+(inventory) do: [:inv |
+    ((d at: 'd_date' >= '2000-03-15')) ifTrue: [ rows add: inv ].
+]
+groups := (Main _group_by: rows keyFn: [:inv | Dictionary from: {'w' -> inv at: 'inv_warehouse_sk'. 'i' -> inv at: 'inv_item_sk'}]).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: Dictionary from: {'w' -> g at: 'key' at: 'w'. 'i' -> g at: 'key' at: 'i'. 'qty' -> (Main __sum: ((| res |
+res := OrderedCollection new.
+(g) do: [:x |
+    res add: x at: 'inv_quantity_on_hand'.
+]
+res := res asArray.
+res)))}.
+]
+rows := rows asArray.
+rows)).
+joined := ((| res |
+res := OrderedCollection new.
+((before) select: [:b | (((((b at: 'w' = a at: 'w') and: [b at: 'i']) = a at: 'i') and: [(w at: 'w_warehouse_sk' = b at: 'w')]) and: [(it at: 'i_item_sk' = b at: 'i')])]) do: [:b |
+    (after) do: [:a |
+        (warehouse) do: [:w |
+            (item) do: [:it |
+                res add: Dictionary from: {'w_name' -> w at: 'w_warehouse_name'. 'i_id' -> it at: 'i_item_id'. 'before_qty' -> b at: 'qty'. 'after_qty' -> a at: 'qty'. 'ratio' -> (a at: 'qty' / b at: 'qty')}.
+            ]
+        ]
+    ]
+]
+res := res asArray.
+res)).
+result := ((| res |
+res := OrderedCollection new.
+((joined) select: [:r | (((r at: 'ratio' >= ((2.000000 / 3.000000))) and: [r at: 'ratio']) <= ((3.000000 / 2.000000)))]) do: [:r |
+    res add: { Array with: (r at: 'w_name') with: (r at: 'i_id') . Dictionary from: {'w_warehouse_name' -> r at: 'w_name'. 'i_item_id' -> r at: 'i_id'. 'inv_before' -> r at: 'before_qty'. 'inv_after' -> r at: 'after_qty'} }.
+]
+res := res asArray.
+res := (SortedCollection sortBlock: [:a :b | a first <= b first ]) withAll: res; asArray.
+res := res collect: [:p | p second].
+res)).
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q21_inventory_ratio.

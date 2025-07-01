@@ -1,0 +1,130 @@
+Smalltalk at: #bucket1 put: nil.
+Smalltalk at: #bucket2 put: nil.
+Smalltalk at: #result put: nil.
+Smalltalk at: #store_sales put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newStoreSale: ss_quantity ss_list_price: ss_list_price ss_coupon_amt: ss_coupon_amt ss_wholesale_cost: ss_wholesale_cost | dict |
+    dict := Dictionary new.
+    dict at: 'ss_quantity' put: ss_quantity.
+    dict at: 'ss_list_price' put: ss_list_price.
+    dict at: 'ss_coupon_amt' put: ss_coupon_amt.
+    dict at: 'ss_wholesale_cost' put: ss_wholesale_cost.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_TPCDS_Q28_buckets
+    ((result = Dictionary from: {'B1_LP' -> 100.000000. 'B1_CNT' -> 1. 'B1_CNTD' -> 1. 'B2_LP' -> 80.000000. 'B2_CNT' -> 1. 'B2_CNTD' -> 1})) ifFalse: [ self error: 'expect failed' ]
+!
+
+Object subclass: #_Group instanceVariableNames: 'key items' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!_Group class methodsFor: 'instance creation'!
+key: k | g |
+    g := self new.
+    g key: k.
+    g initialize.
+    ^ g
+!
+!_Group methodsFor: 'initialization'!
+initialize
+    items := OrderedCollection new.
+    ^ self
+!
+!_Group methodsFor: 'accessing'!
+key
+    ^ key
+!
+key: k
+    key := k
+!
+add: it
+    items add: it
+!
+do: blk
+    items do: blk
+!
+size
+    ^ items size
+!
+!Main class methodsFor: 'runtime'!
+__count: v
+    (v respondsTo: #size) ifTrue: [ ^ v size ]
+    ^ self error: 'count() expects collection'
+!
+__avg: v
+    (v respondsTo: #do:) ifFalse: [ ^ self error: 'avg() expects collection' ]
+    v size = 0 ifTrue: [ ^ 0 ]
+    | sum |
+    sum := 0.
+    v do: [:it | sum := sum + it].
+    ^ sum / v size
+!
+_group_by: src keyFn: blk
+    | groups order |
+    groups := Dictionary new.
+    order := OrderedCollection new.
+    src do: [:it |
+        | key ks g |
+        key := blk value: it.
+        ks := key printString.
+        g := groups at: ks ifAbsentPut: [ |_g | _g := _Group key: key. order add: ks. groups at: ks put: _g. _g ].
+        g add: it.
+    ]
+    ^ order collect: [:k | groups at: k ]
+!
+!!
+store_sales := Array with: (Dictionary from: {'ss_quantity' -> 3. 'ss_list_price' -> 100.000000. 'ss_coupon_amt' -> 50.000000. 'ss_wholesale_cost' -> 30.000000}) with: (Dictionary from: {'ss_quantity' -> 8. 'ss_list_price' -> 80.000000. 'ss_coupon_amt' -> 10.000000. 'ss_wholesale_cost' -> 20.000000}) with: (Dictionary from: {'ss_quantity' -> 12. 'ss_list_price' -> 60.000000. 'ss_coupon_amt' -> 5.000000. 'ss_wholesale_cost' -> 15.000000}).
+bucket1 := ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | ((((ss at: 'ss_quantity' >= 0) and: [ss at: 'ss_quantity']) <= 5) and: [(((((((ss at: 'ss_list_price' >= 0) and: [ss at: 'ss_list_price']) <= 110)) or: [((((ss at: 'ss_coupon_amt' >= 0) and: [ss at: 'ss_coupon_amt']) <= 1000))]) or: [((((ss at: 'ss_wholesale_cost' >= 0) and: [ss at: 'ss_wholesale_cost']) <= 50))]))])]) do: [:ss |
+    res add: ss.
+]
+res := res asArray.
+res)).
+bucket2 := ((| res |
+res := OrderedCollection new.
+((store_sales) select: [:ss | ((((ss at: 'ss_quantity' >= 6) and: [ss at: 'ss_quantity']) <= 10) and: [(((((((ss at: 'ss_list_price' >= 0) and: [ss at: 'ss_list_price']) <= 110)) or: [((((ss at: 'ss_coupon_amt' >= 0) and: [ss at: 'ss_coupon_amt']) <= 1000))]) or: [((((ss at: 'ss_wholesale_cost' >= 0) and: [ss at: 'ss_wholesale_cost']) <= 50))]))])]) do: [:ss |
+    res add: ss.
+]
+res := res asArray.
+res)).
+result := Dictionary from: {'B1_LP' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(bucket1) do: [:x |
+    res add: x at: 'ss_list_price'.
+]
+res := res asArray.
+res))). 'B1_CNT' -> (Main __count: bucket1). 'B1_CNTD' -> (Main __count: ((| rows groups |
+rows := OrderedCollection new.
+(bucket1) do: [:x |
+    rows add: x.
+]
+groups := (Main _group_by: rows keyFn: [:x | x at: 'ss_list_price']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: g at: 'key'.
+]
+rows := rows asArray.
+rows))). 'B2_LP' -> (Main __avg: ((| res |
+res := OrderedCollection new.
+(bucket2) do: [:x |
+    res add: x at: 'ss_list_price'.
+]
+res := res asArray.
+res))). 'B2_CNT' -> (Main __count: bucket2). 'B2_CNTD' -> (Main __count: ((| rows groups |
+rows := OrderedCollection new.
+(bucket2) do: [:x |
+    rows add: x.
+]
+groups := (Main _group_by: rows keyFn: [:x | x at: 'ss_list_price']).
+rows := OrderedCollection new.
+(groups) do: [:g |
+    rows add: g at: 'key'.
+]
+rows := rows asArray.
+rows)))}.
+(result toJSON) displayOn: Transcript. Transcript cr.
+Main test_TPCDS_Q28_buckets.
