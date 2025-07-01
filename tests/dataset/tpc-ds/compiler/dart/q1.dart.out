@@ -1,0 +1,168 @@
+import 'dart:io';
+import 'dart:convert';
+
+void test_TPCDS_Q1_empty() {
+  if (!((result.length == 0))) { throw Exception('expect failed'); }
+}
+
+void main() {
+  int failures = 0;
+  List store_returns = [];
+  List date_dim = [];
+  List store = [];
+  List customer = [];
+  List<Map<String, dynamic>> customer_total_return = (() {
+  var groups = <String,_Group>{};
+  var order = <String>[];
+  for (var sr in store_returns) {
+    for (var d in date_dim) {
+      if (!(_equal(sr.sr_returned_date_sk, d.d_date_sk))) {
+        continue;
+      }
+      if (!(_equal(d.d_year, 1998))) {
+        continue;
+      }
+      var key = {"customer_sk": sr.sr_customer_sk, "store_sk": sr.sr_store_sk};
+      var ks = key.toString();
+      var g = groups[ks];
+      if (g == null) {
+        g = _Group(key);
+        groups[ks] = g;
+        order.add(ks);
+      }
+      g.Items.add(sr);
+    }
+  }
+  var items = [for (var k in order) groups[k]!];
+  var _res = [];
+  for (var g in items) {
+    _res.add({"ctr_customer_sk": g.key.customer_sk, "ctr_store_sk": g.key.store_sk, "ctr_total_return": _sum((() {
+  var _res = [];
+  for (var x in g) {
+    _res.add(x.sr_return_amt);
+  }
+  return _res;
+})())});
+  }
+  return _res;
+})();
+  List<Map<String, dynamic>> result = (() {
+  var _res = [];
+  for (var ctr1 in customer_total_return) {
+    for (var s in store) {
+      if (!(_equal(ctr1.ctr_store_sk, s.s_store_sk))) {
+        continue;
+      }
+      for (var c in customer) {
+        if (!(_equal(ctr1.ctr_customer_sk, c.c_customer_sk))) {
+          continue;
+        }
+        if (!(((ctr1.ctr_total_return > (_avg((() {
+  var _res = [];
+  for (var ctr2 in customer_total_return) {
+    if (!(_equal(ctr1.ctr_store_sk, ctr2.ctr_store_sk))) {
+      continue;
+    }
+    _res.add(ctr2.ctr_total_return);
+  }
+  return _res;
+})()) * 1.2)) && _equal(s.s_state, "TN")))) {
+          continue;
+        }
+        _res.add({"c_customer_id": c.c_customer_id});
+      }
+    }
+  }
+  var items = List.from(_res);
+  items.sort((ctr1A, ctr1B) {
+    var ctr1 = ctr1A;
+    var keyA = c.c_customer_id;
+    ctr1 = ctr1B;
+    var keyB = c.c_customer_id;
+    return Comparable.compare(keyA, keyB);
+  });
+  _res = items;
+  return _res;
+})();
+  _json(result);
+  if (!_runTest("TPCDS Q1 empty", test_TPCDS_Q1_empty)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+class _Group {
+    dynamic key;
+    List<dynamic> Items = [];
+    _Group(this.key);
+    int count() => _count(this);
+    double sum() => _sum(this);
+    double avg() => _avg(this);
+}
+
+double _avg(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var s = 0.0;
+    for (var n in list) s += (n as num).toDouble();
+    return s / list.length;
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
+double _sum(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else if (v is _Group) list = v.Items;
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var s = 0.0;
+    for (var n in list) s += (n as num).toDouble();
+    return s;
+}
+
+
