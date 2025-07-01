@@ -1,8 +1,13 @@
-let store_sales = []
-let customer_demographics = []
-let date_dim = []
-let item = []
-let promotion = []
+let store_sales = [
+  { ss_cdemo_sk: 1, ss_sold_date_sk: 1, ss_item_sk: 1, ss_promo_sk: 1,
+    ss_quantity: 5, ss_list_price: 10.0, ss_coupon_amt: 2.0, ss_sales_price: 8.0 }
+]
+let customer_demographics = [
+  { cd_demo_sk: 1, cd_gender: "M", cd_marital_status: "S", cd_education_status: "College" }
+]
+let date_dim = [ { d_date_sk: 1, d_year: 1998 } ]
+let item = [ { i_item_sk: 1, i_item_id: "I1" } ]
+let promotion = [ { p_promo_sk: 1, p_channel_email: "N", p_channel_event: "Y" } ]
 
 let result =
   from ss in store_sales
@@ -26,6 +31,8 @@ let result =
   }
 json(result)
 
-test "TPCDS Q7 empty" {
-  expect len(result) == 0
+test "TPCDS Q7 result" {
+  expect result == [
+    { i_item_id: "I1", agg1: 5.0, agg2: 10.0, agg3: 2.0, agg4: 8.0 }
+  ]
 }

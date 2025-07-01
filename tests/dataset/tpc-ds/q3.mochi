@@ -1,6 +1,12 @@
-let date_dim = []
-let store_sales = []
-let item = []
+let date_dim = [ { d_date_sk: 1, d_year: 1998, d_moy: 12 } ]
+let store_sales = [
+  { ss_sold_date_sk: 1, ss_item_sk: 1, ss_ext_sales_price: 10.0 },
+  { ss_sold_date_sk: 1, ss_item_sk: 2, ss_ext_sales_price: 20.0 },
+]
+let item = [
+  { i_item_sk: 1, i_manufact_id: 100, i_brand_id: 1, i_brand: "Brand1" },
+  { i_item_sk: 2, i_manufact_id: 100, i_brand_id: 2, i_brand: "Brand2" },
+]
 
 let result =
   from dt in date_dim
@@ -9,17 +15,20 @@ let result =
   where i.i_manufact_id == 100 && dt.d_moy == 12
   group by { d_year: dt.d_year, brand_id: i.i_brand_id, brand: i.i_brand } into g
   sort by [g.key.d_year,
-           -sum(from x in g select x.ss.ss_ext_sales_price),
+           -sum(from x in g select x.ss_ext_sales_price),
            g.key.brand_id]
   select {
     d_year: g.key.d_year,
     brand_id: g.key.brand_id,
     brand: g.key.brand,
-    sum_agg: sum(from x in g select x.ss.ss_ext_sales_price)
+    sum_agg: sum(from x in g select x.ss_ext_sales_price)
   }
 
 json(result)
 
-test "TPCDS Q3 empty" {
-  expect len(result) == 0
+test "TPCDS Q3 result" {
+  expect result == [
+    { d_year: 1998, brand_id: 1, brand: "Brand1", sum_agg: 10.0 },
+    { d_year: 1998, brand_id: 2, brand: "Brand2", sum_agg: 20.0 },
+  ]
 }
