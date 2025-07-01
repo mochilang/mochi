@@ -637,7 +637,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (exprRes, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (exprRes, error) {
 	if q.Group != nil {
-		if len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		if len(q.Froms) == 0 {
 			if len(q.Joins) == 0 {
 				return c.compileGroupedQueryExpr(q)
 			}
@@ -986,6 +986,28 @@ func (c *Compiler) compileGroupedQueryWithJoins(q *parser.QueryExpr) (exprRes, e
 		c.env = origEnv
 		return exprRes{}, err
 	}
+	var sortRes, skipRes, takeRes exprRes
+	if q.Sort != nil {
+		sortRes, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = origEnv
+			return exprRes{}, err
+		}
+	}
+	if q.Skip != nil {
+		skipRes, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = origEnv
+			return exprRes{}, err
+		}
+	}
+	if q.Take != nil {
+		takeRes, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = origEnv
+			return exprRes{}, err
+		}
+	}
 	c.env = origEnv
 
 	resultVar := c.newVar()
@@ -993,12 +1015,54 @@ func (c *Compiler) compileGroupedQueryWithJoins(q *parser.QueryExpr) (exprRes, e
 	for _, line := range selRes.code {
 		parts = append(parts, strings.TrimSuffix(line, ","))
 	}
-	parts = append(parts, fmt.Sprintf("%s = %s", resultVar, selRes.val))
-	goal = strings.Join(parts, ", ")
-	outVar := c.newVar()
-	code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", resultVar, goal, outVar))
+	if q.Sort == nil {
+		parts = append(parts, fmt.Sprintf("%s = %s", resultVar, selRes.val))
+		goal = strings.Join(parts, ", ")
+		outVar := c.newVar()
+		code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", resultVar, goal, outVar))
+		resultVar = outVar
+	} else {
+		keyVar := c.newVar()
+		for _, line := range sortRes.code {
+			parts = append(parts, strings.TrimSuffix(line, ","))
+		}
+		parts = append(parts, fmt.Sprintf("%s = %s", keyVar, sortRes.val))
+		parts = append(parts, fmt.Sprintf("%s = %s", resultVar, selRes.val))
+		goal = strings.Join(parts, ", ")
+		pairsVar := c.newVar()
+		sortedVar := c.newVar()
+		itemsVar := c.newVar()
+		code = append(code, fmt.Sprintf("findall(%s-%s, (%s), %s),", keyVar, resultVar, goal, pairsVar))
+		code = append(code, fmt.Sprintf("keysort(%s, %s),", pairsVar, sortedVar))
+		code = append(code, fmt.Sprintf("findall(V, member(_-V, %s), %s),", sortedVar, itemsVar))
+		resultVar = itemsVar
+	}
 
-	return exprRes{code: code, val: outVar}, nil
+	if q.Skip != nil || q.Take != nil {
+		for _, line := range skipRes.code {
+			code = append(code, line)
+		}
+		for _, line := range takeRes.code {
+			code = append(code, line)
+		}
+		lenVar := c.newVar()
+		code = append(code, fmt.Sprintf("length(%s, %s),", resultVar, lenVar))
+		startVar := "0"
+		if q.Skip != nil {
+			startVar = skipRes.val
+		}
+		endVar := lenVar
+		if q.Take != nil {
+			endVar = c.newVar()
+			code = append(code, fmt.Sprintf("%s is %s + %s,", endVar, startVar, takeRes.val))
+		}
+		finalVar := c.newVar()
+		c.use("slice")
+		code = append(code, fmt.Sprintf("slice(%s, %s, %s, %s),", resultVar, startVar, endVar, finalVar))
+		resultVar = finalVar
+	}
+
+	return exprRes{code: code, val: resultVar}, nil
 }
 
 func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (exprRes, error) {
@@ -1040,6 +1104,28 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (exprRes, error)
 		c.env = origEnv
 		return exprRes{}, err
 	}
+	var sortRes, skipRes, takeRes exprRes
+	if q.Sort != nil {
+		sortRes, err = c.compileExpr(q.Sort)
+		if err != nil {
+			c.env = origEnv
+			return exprRes{}, err
+		}
+	}
+	if q.Skip != nil {
+		skipRes, err = c.compileExpr(q.Skip)
+		if err != nil {
+			c.env = origEnv
+			return exprRes{}, err
+		}
+	}
+	if q.Take != nil {
+		takeRes, err = c.compileExpr(q.Take)
+		if err != nil {
+			c.env = origEnv
+			return exprRes{}, err
+		}
+	}
 	c.env = origEnv
 
 	listVar := c.newVar()
@@ -1063,12 +1149,54 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (exprRes, error)
 	for _, line := range selRes.code {
 		parts = append(parts, strings.TrimSuffix(line, ","))
 	}
-	parts = append(parts, fmt.Sprintf("%s = %s", resultVar, selRes.val))
-	goal := strings.Join(parts, ", ")
-	outVar := c.newVar()
-	code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", resultVar, goal, outVar))
+	if q.Sort == nil {
+		parts = append(parts, fmt.Sprintf("%s = %s", resultVar, selRes.val))
+		goal := strings.Join(parts, ", ")
+		outVar := c.newVar()
+		code = append(code, fmt.Sprintf("findall(%s, (%s), %s),", resultVar, goal, outVar))
+		resultVar = outVar
+	} else {
+		keyVar := c.newVar()
+		for _, line := range sortRes.code {
+			parts = append(parts, strings.TrimSuffix(line, ","))
+		}
+		parts = append(parts, fmt.Sprintf("%s = %s", keyVar, sortRes.val))
+		parts = append(parts, fmt.Sprintf("%s = %s", resultVar, selRes.val))
+		goal := strings.Join(parts, ", ")
+		pairsVar := c.newVar()
+		sortedVar := c.newVar()
+		itemsVar := c.newVar()
+		code = append(code, fmt.Sprintf("findall(%s-%s, (%s), %s),", keyVar, resultVar, goal, pairsVar))
+		code = append(code, fmt.Sprintf("keysort(%s, %s),", pairsVar, sortedVar))
+		code = append(code, fmt.Sprintf("findall(V, member(_-V, %s), %s),", sortedVar, itemsVar))
+		resultVar = itemsVar
+	}
 
-	return exprRes{code: code, val: outVar}, nil
+	if q.Skip != nil || q.Take != nil {
+		for _, line := range skipRes.code {
+			code = append(code, line)
+		}
+		for _, line := range takeRes.code {
+			code = append(code, line)
+		}
+		lenVar := c.newVar()
+		code = append(code, fmt.Sprintf("length(%s, %s),", resultVar, lenVar))
+		startVar := "0"
+		if q.Skip != nil {
+			startVar = skipRes.val
+		}
+		endVar := lenVar
+		if q.Take != nil {
+			endVar = c.newVar()
+			code = append(code, fmt.Sprintf("%s is %s + %s,", endVar, startVar, takeRes.val))
+		}
+		finalVar := c.newVar()
+		c.use("slice")
+		code = append(code, fmt.Sprintf("slice(%s, %s, %s, %s),", resultVar, startVar, endVar, finalVar))
+		resultVar = finalVar
+	}
+
+	return exprRes{code: code, val: resultVar}, nil
 }
 
 func (c *Compiler) compileLogicQuery(q *parser.LogicQueryExpr) (exprRes, error) {
