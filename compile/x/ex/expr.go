@@ -297,6 +297,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case "count":
 					c.use("_count")
 					res = fmt.Sprintf("_count(%s)", argStr)
+				case "exists":
+					c.use("_exists")
+					res = fmt.Sprintf("_exists(%s)", argStr)
 				case "avg":
 					c.use("_avg")
 					res = fmt.Sprintf("_avg(%s)", argStr)
@@ -434,6 +437,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "count":
 			c.use("_count")
 			return fmt.Sprintf("_count(%s)", argStr), nil
+		case "exists":
+			c.use("_exists")
+			return fmt.Sprintf("_exists(%s)", argStr), nil
 		case "sum":
 			c.use("_sum")
 			return fmt.Sprintf("_sum(%s)", argStr), nil

@@ -9,6 +9,8 @@ const (
 
 	helperAvg = "defp _avg(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v[:items]\n    is_list(v) -> v\n    true -> raise \"avg() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    Enum.sum(list) / Enum.count(list)\n  end\nend\n"
 
+	helperExists = "defp _exists(v) do\n  cond do\n    is_list(v) -> length(v) > 0\n    is_map(v) and Map.has_key?(v, :items) -> length(v[:items]) > 0\n    is_map(v) -> map_size(v) > 0\n    is_binary(v) -> String.length(v) > 0\n    true -> raise \"exists expects list, map or string\"\n  end\nend\n"
+
 	helperJson = `defp _escape_json(<<>>), do: ""
 defp _escape_json(<<"\\", rest::binary>>), do: "\\\\" <> _escape_json(rest)
 defp _escape_json(<<"\"", rest::binary>>), do: "\\\"" <> _escape_json(rest)
@@ -36,7 +38,7 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperGroup = "defmodule Group do\n  defstruct key: nil, items: []\nend\n"
 
-	helperGroupBy = "defp _group_by(src, keyfn) do\n  {groups, order} = Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->\n    key = keyfn.(it)\n    ks = to_string(key)\n    {groups, order} = if Map.has_key?(groups, ks) do\n      {groups, order}\n    else\n      {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}\n    end\n    groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [it]} end)\n    {groups, order}\n  end)\n  Enum.map(order, fn k -> groups[k] end)\nend\n"
+	helperGroupBy = "defp _group_by(src, keyfn) do\n  {groups, order} = Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->\n    key = keyfn.(it)\n    ks = :erlang.phash2(key)\n    {groups, order} = if Map.has_key?(groups, ks) do\n      {groups, order}\n    else\n      {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}\n    end\n    groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [it]} end)\n    {groups, order}\n  end)\n  Enum.map(order, fn k -> groups[k] end)\nend\n"
 
 	helperParseCSV = "defp _parse_csv(text, header, delim) do\n  lines = text |> String.trim() |> String.split(~r/\\r?\\n/, trim: true)\n  if lines == [] do\n    []\n  else\n    {headers, start} = if header do\n      {String.split(hd(lines), delim), 1}\n    else\n      cols = String.split(hd(lines), delim)\n      {Enum.map(0..length(cols)-1, fn i -> \"c\" <> Integer.to_string(i) end), 0}\n    end\n    Enum.drop(lines, start)\n    |> Enum.map(fn line ->\n      parts = String.split(line, delim)\n      Enum.with_index(headers)\n      |> Enum.reduce(%{}, fn {h,i}, acc ->\n        val = if i < length(parts), do: Enum.at(parts, i), else: \"\"\n        value = case Integer.parse(val) do\n          {int, \"\"} -> int\n          _ -> case Float.parse(val) do\n            {f, \"\"} -> f\n            _ -> val\n          end\n        end\n        Map.put(acc, h, value)\n      end)\n    end)\n  end\nend\n"
 
@@ -142,6 +144,7 @@ var helperMap = map[string]string{
 	"_count":        helperCount,
 	"_sum":          helperSum,
 	"_avg":          helperAvg,
+	"_exists":       helperExists,
 	"_min":          helperMin,
 	"_max":          helperMax,
 	"_reverse":      helperReverse,

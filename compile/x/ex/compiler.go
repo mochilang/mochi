@@ -30,6 +30,9 @@ var exReserved = map[string]bool{
 }
 
 func sanitizeName(name string) string {
+	if name == "_" {
+		return "v"
+	}
 	if exReserved[name] {
 		return name + "_"
 	}
@@ -355,7 +358,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 
 	if len(mutated) == 0 {
-		c.writeln(fmt.Sprintf("for %s <- %s do", name, srcExpr))
+		c.writeln(fmt.Sprintf("for %s <- %s do", sanitizeName(name), srcExpr))
 		c.indent++
 		for _, s := range stmt.Body {
 			if err := c.compileStmt(s); err != nil {
@@ -368,7 +371,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	}
 
 	tuple := strings.Join(mutated, ", ")
-	c.writeln(fmt.Sprintf("{%s} = Enum.reduce(%s, {%s}, fn %s, {%s} ->", tuple, srcExpr, tuple, name, tuple))
+	c.writeln(fmt.Sprintf("{%s} = Enum.reduce(%s, {%s}, fn %s, {%s} ->", tuple, srcExpr, tuple, sanitizeName(name), tuple))
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -439,6 +442,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
+	}
+	if t := c.inferExprType(q.Source); t != nil {
+		if _, ok := t.(types.GroupType); ok {
+			src += ".items"
+		}
 	}
 	orig := c.env
 	child := types.NewEnv(c.env)
@@ -750,7 +758,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			parts = append(parts, fmt.Sprintf("%s <- %s", f.Var, fs))
+			parts = append(parts, fmt.Sprintf("%s <- %s", sanitizeName(f.Var), fs))
 		}
 		joinConds := []string{}
 		for _, j := range q.Joins {
@@ -761,7 +769,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, js))
+			parts = append(parts, fmt.Sprintf("%s <- %s", sanitizeName(j.Var), js))
 			onExpr, err := c.compileExpr(j.On)
 			if err != nil {
 				return "", err
@@ -785,7 +793,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		var b strings.Builder
 		b.WriteString("for ")
-		b.WriteString(q.Var)
+		b.WriteString(sanitizeName(q.Var))
 		b.WriteString(" <- ")
 		b.WriteString(src)
 		for _, p := range parts {
@@ -830,7 +838,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	var b strings.Builder
 	b.WriteString("for ")
-	b.WriteString(q.Var)
+	b.WriteString(sanitizeName(q.Var))
 	b.WriteString(" <- ")
 	b.WriteString(items)
 	if cond != "" {
