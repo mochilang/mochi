@@ -37,8 +37,10 @@ const (
 // smallJoinThreshold controls when the compiler falls back to a simple
 // nested loop join instead of emitting a hash join. When both join
 // sources are constant lists smaller than this size, nested loops tend
-// to be faster due to lower allocation overhead.
-const smallJoinThreshold = 0
+// to be faster due to lower allocation overhead. Increasing this
+// threshold avoids hash joins for the relatively small datasets used in
+// the JOB benchmark queries which improves compatibility with the VM.
+const smallJoinThreshold = 16
 
 // Op defines a VM instruction opcode.
 type Op uint8
