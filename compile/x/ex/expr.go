@@ -452,6 +452,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "max":
 			c.use("_max")
 			return fmt.Sprintf("_max(%s)", argStr), nil
+		case "first":
+			c.use("_first")
+			return fmt.Sprintf("_first(%s)", argStr), nil
 		case "reverse":
 			c.use("_reverse")
 			return fmt.Sprintf("_reverse(%s)", argStr), nil
@@ -471,6 +474,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			c.use("_slice_string")
 			return fmt.Sprintf("_slice_string(%s, %s, %s)", args[0], args[1], args[2]), nil
+		case "lower":
+			if len(args) != 1 {
+				return "", fmt.Errorf("lower expects 1 arg")
+			}
+			return fmt.Sprintf("String.downcase(to_string(%s))", args[0]), nil
 		case "str":
 			return fmt.Sprintf("to_string(%s)", argStr), nil
 		case "input":
