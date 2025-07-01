@@ -1,0 +1,71 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+avg(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), avg_list(Items, R).
+avg(V, R) :-
+    is_list(V), !, avg_list(V, R).
+avg(_, _) :- throw(error('avg expects list or group')).
+avg_list([], 0).
+avg_list(L, R) :- sum_list(L, S), length(L, N), N > 0, R is S / N.
+
+
+sum(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), sum_list(Items, R).
+sum(V, R) :-
+    is_list(V), !, sum_list(V, R).
+sum(_, _) :- throw(error('sum expects list or group')).
+
+
+expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
+
+
+group_insert(Key, Item, [], [_{key:Key, 'Items':[Item]}]).
+group_insert(Key, Item, [G|Gs], [NG|Gs]) :- get_dict(key, G, Key), !, get_dict('Items', G, Items), append(Items, [Item], NItems), put_dict('Items', G, NItems, NG).
+group_insert(Key, Item, [G|Gs], [G|Rs]) :- group_insert(Key, Item, Gs, Rs).
+group_pairs([], Acc, Res) :- reverse(Acc, Res).
+group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).
+group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).
+
+
+:- use_module(library(http/json)).
+json(V) :- json_write_dict(current_output, V), nl.
+
+
+        p__lambda0(Sr, Res) :-
+        get_dict(sr_customer_sk, Sr, _V8),
+        get_dict(sr_store_sk, Sr, _V9),
+        dict_create(_V10, map, [customer_sk-_V8, store_sk-_V9]),
+        Res = _V10.
+
+test_p_tpcds_q1_empty :-
+    length(Result, _V0),
+    expect(_V0 = 0)    ,
+    true.
+
+    main :-
+    Store_returns = [],
+    Date_dim = [],
+    Store = [],
+    Customer = [],
+    to_list(Store_returns, _V2),
+    to_list(Date_dim, _V5),
+    findall(_V6, (member(Sr, _V2), member(D, _V5), get_dict(sr_returned_date_sk, Sr, _V3), get_dict(d_date_sk, D, _V4), _V3 = _V4, get_dict(d_year, D, _V1), _V1 = 1998, _V6 = Sr), _V7),
+    group_by(_V7, p__lambda0, _V21),
+    findall(_V22, (member(G, _V21), get_dict(key, G, _V11), get_dict(customer_sk, _V11, _V12), get_dict(key, G, _V13), get_dict(store_sk, _V13, _V14), to_list(G, _V16), findall(_V17, (member(X, _V16), get_dict(sr_return_amt, X, _V15), _V17 = _V15), _V18), sum(_V18, _V19), dict_create(_V20, map, [ctr_customer_sk-_V12, ctr_store_sk-_V14, ctr_total_return-_V19]), _V22 = _V20), _V23),
+    Customer_total_return = _V23,
+    to_list(Customer_total_return, _V37),
+    to_list(Store, _V40),
+    to_list(Customer, _V43),
+    findall(_V45-_V44, (member(Ctr1, _V37), member(S, _V40), get_dict(ctr_store_sk, Ctr1, _V38), get_dict(s_store_sk, S, _V39), _V38 = _V39, member(C, _V43), get_dict(ctr_customer_sk, Ctr1, _V41), get_dict(c_customer_sk, C, _V42), _V41 = _V42, get_dict(ctr_total_return, Ctr1, _V26), to_list(Customer_total_return, _V30), findall(_V31, (member(Ctr2, _V30), get_dict(ctr_store_sk, Ctr1, _V28), get_dict(ctr_store_sk, Ctr2, _V29), _V28 = _V29, get_dict(ctr_total_return, Ctr2, _V27), _V31 = _V27), _V32), avg(_V32, _V33), _V35 is _V33 * 1.2, get_dict(s_state, S, _V34), (_V26 > _V35, _V34 = "TN"), get_dict(c_customer_id, C, _V24), dict_create(_V25, map, [c_customer_id-_V24]), get_dict(c_customer_id, C, _V36), _V45 = _V36, _V44 = _V25), _V46),
+    keysort(_V46, _V47),
+    findall(V, member(_-V, _V47), _V48),
+    Result = _V48,
+    json(Result),
+    test_p_tpcds_q1_empty
+    .
+:- initialization(main, main).
