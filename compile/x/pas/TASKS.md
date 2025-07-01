@@ -11,7 +11,7 @@ support for complex record field accesses.
 
 ## TPCDS dataset
 
-Queries `q1` through `q9` from the TPCDS suite now compile. The generated
+Queries `q1` through `q19` from the TPCDS suite now compile. The generated
 sources are stored under `tests/dataset/tpc-ds/compiler/pas` and executed as
 part of the slow test suite when `fpc` is available.
 
