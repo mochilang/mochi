@@ -18,3 +18,7 @@ query 2 has now been added.
 The Racket compiler can now build and execute TPC-H query 2. Query 1
 compiles but the generated Racket source fails to run due to a syntax
 error around the aggregation code.
+
+Support for the first TPC-DS query has been prototyped. The generated
+code lives under `tests/dataset/tpc-ds/compiler/rkt` alongside the
+expected runtime output.
