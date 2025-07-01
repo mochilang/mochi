@@ -1,0 +1,2 @@
+[{"ca_state":"CA","cd_dep_college_count":0,"cd_dep_count":1,"cd_dep_employed_count":1,"cd_gender":"M","cd_marital_status":"S","cnt":1}]
+   test TPCDS Q35 simplified           ... ok (6.0µs)

@@ -1,0 +1,363 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q35_simplified() {
+	expect(_equal(groups, []map[string]any{map[string]any{
+		"ca_state":              "CA",
+		"cd_gender":             "M",
+		"cd_marital_status":     "S",
+		"cd_dep_count":          1,
+		"cd_dep_employed_count": 1,
+		"cd_dep_college_count":  0,
+		"cnt":                   1,
+	}}))
+}
+
+type CustomerItem struct {
+	C_customer_sk      int `json:"c_customer_sk"`
+	C_current_addr_sk  int `json:"c_current_addr_sk"`
+	C_current_cdemo_sk int `json:"c_current_cdemo_sk"`
+}
+
+var customer []CustomerItem
+
+type Customer_addressItem struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_state      string `json:"ca_state"`
+}
+
+var customer_address []Customer_addressItem
+
+type Customer_demographicsItem struct {
+	Cd_demo_sk            int    `json:"cd_demo_sk"`
+	Cd_gender             string `json:"cd_gender"`
+	Cd_marital_status     string `json:"cd_marital_status"`
+	Cd_dep_count          int    `json:"cd_dep_count"`
+	Cd_dep_employed_count int    `json:"cd_dep_employed_count"`
+	Cd_dep_college_count  int    `json:"cd_dep_college_count"`
+}
+
+var customer_demographics []Customer_demographicsItem
+
+type Store_salesItem struct {
+	Ss_customer_sk  int `json:"ss_customer_sk"`
+	Ss_sold_date_sk int `json:"ss_sold_date_sk"`
+}
+
+var store_sales []Store_salesItem
+
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+	D_qoy     int `json:"d_qoy"`
+}
+
+var date_dim []Date_dimItem
+var purchased []int
+var groups []map[string]any
+
+func main() {
+	failures := 0
+	customer = _cast[[]CustomerItem]([]CustomerItem{CustomerItem{
+		C_customer_sk:      1,
+		C_current_addr_sk:  1,
+		C_current_cdemo_sk: 1,
+	}, CustomerItem{
+		C_customer_sk:      2,
+		C_current_addr_sk:  2,
+		C_current_cdemo_sk: 2,
+	}})
+	customer_address = _cast[[]Customer_addressItem]([]Customer_addressItem{Customer_addressItem{
+		Ca_address_sk: 1,
+		Ca_state:      "CA",
+	}, Customer_addressItem{
+		Ca_address_sk: 2,
+		Ca_state:      "NY",
+	}})
+	customer_demographics = _cast[[]Customer_demographicsItem]([]Customer_demographicsItem{Customer_demographicsItem{
+		Cd_demo_sk:            1,
+		Cd_gender:             "M",
+		Cd_marital_status:     "S",
+		Cd_dep_count:          1,
+		Cd_dep_employed_count: 1,
+		Cd_dep_college_count:  0,
+	}, Customer_demographicsItem{
+		Cd_demo_sk:            2,
+		Cd_gender:             "F",
+		Cd_marital_status:     "M",
+		Cd_dep_count:          2,
+		Cd_dep_employed_count: 1,
+		Cd_dep_college_count:  1,
+	}})
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_customer_sk:  1,
+		Ss_sold_date_sk: 1,
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_year:    2000,
+		D_qoy:     1,
+	}})
+	purchased = func() []int {
+		_res := []int{}
+		for _, ss := range store_sales {
+			for _, d := range date_dim {
+				if !(ss.Ss_sold_date_sk == d.D_date_sk) {
+					continue
+				}
+				if (d.D_year == 2000) && (d.D_qoy < 4) {
+					if (d.D_year == 2000) && (d.D_qoy < 4) {
+						_res = append(_res, ss.Ss_customer_sk)
+					}
+				}
+			}
+		}
+		return _res
+	}()
+	groups = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, c := range customer {
+			for _, ca := range customer_address {
+				if !(c.C_current_addr_sk == ca.Ca_address_sk) {
+					continue
+				}
+				for _, cd := range customer_demographics {
+					if !(c.C_current_cdemo_sk == cd.Cd_demo_sk) {
+						continue
+					}
+					if _contains[int](purchased, c.C_customer_sk) {
+						key := map[string]any{
+							"state":   ca.Ca_state,
+							"gender":  cd.Cd_gender,
+							"marital": cd.Cd_marital_status,
+							"dep":     cd.Cd_dep_count,
+							"emp":     cd.Cd_dep_employed_count,
+							"col":     cd.Cd_dep_college_count,
+						}
+						ks := fmt.Sprint(key)
+						g, ok := groups[ks]
+						if !ok {
+							g = &data.Group{Key: key}
+							groups[ks] = g
+							order = append(order, ks)
+						}
+						g.Items = append(g.Items, c)
+					}
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"ca_state":              _cast[map[string]any](g.Key)["state"],
+				"cd_gender":             _cast[map[string]any](g.Key)["gender"],
+				"cd_marital_status":     _cast[map[string]any](g.Key)["marital"],
+				"cd_dep_count":          _cast[map[string]any](g.Key)["dep"],
+				"cd_dep_employed_count": _cast[map[string]any](g.Key)["emp"],
+				"cd_dep_college_count":  _cast[map[string]any](g.Key)["col"],
+				"cnt":                   _count(g),
+			})
+		}
+		return _res
+	}()
+	func() { b, _ := json.Marshal(groups); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q35 simplified")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q35_simplified()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _contains[T comparable](s []T, v T) bool {
+	for _, x := range s {
+		if x == v {
+			return true
+		}
+	}
+	return false
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}

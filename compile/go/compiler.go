@@ -2369,7 +2369,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var sortExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExprHint(q.Sort, types.ListType{Elem: types.AnyType{}})
+		sortExpr, err = c.compileExpr(q.Sort)
 		if err != nil {
 			c.env = original
 			return "", err
