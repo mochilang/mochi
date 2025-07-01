@@ -740,7 +740,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return "false", nil
 		}
+		if p.Lit.Null {
+			return "Default::default()", nil
+		}
 		return "0", nil
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			name := sanitizeName(p.Selector.Root)
@@ -972,6 +977,32 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 	c.use("_save")
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "Default::default()"
+	}
+	return fmt.Sprintf("if %s { %s } else { %s }", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {

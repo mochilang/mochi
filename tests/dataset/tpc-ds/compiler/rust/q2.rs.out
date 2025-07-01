@@ -1,0 +1,119 @@
+fn test_TPCDS_Q2_empty() {
+    expect(result.len() as i64 == 0);
+}
+
+fn main() {
+    let mut web_sales = vec![];
+    let mut catalog_sales = vec![];
+    let mut date_dim = vec![];
+    let mut wscs = _union(&({
+    let mut _res = Vec::new();
+    for ws in web_sales {
+        _res.push(std::collections::HashMap::from([("sold_date_sk".to_string(), _map_get(&ws, &"ws_sold_date_sk".to_string())), ("sales_price".to_string(), _map_get(&ws, &"ws_ext_sales_price".to_string())), ("day".to_string(), _map_get(&ws, &"ws_sold_date_name".to_string()))]));
+    }
+    _res
+}), &({
+    let mut _res = Vec::new();
+    for cs in catalog_sales {
+        _res.push(std::collections::HashMap::from([("sold_date_sk".to_string(), _map_get(&cs, &"cs_sold_date_sk".to_string())), ("sales_price".to_string(), _map_get(&cs, &"cs_ext_sales_price".to_string())), ("day".to_string(), _map_get(&cs, &"cs_sold_date_name".to_string()))]));
+    }
+    _res
+}));
+    let mut wswscs = {
+    #[derive(Clone, Debug)]
+    struct Group { key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>, items: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> }
+    let mut groups: std::collections::HashMap<String, Group> = std::collections::HashMap::new();
+    let mut order: Vec<String> = Vec::new();
+    for w in wscs.clone() {
+        for d in date_dim.clone() {
+            if !(_map_get(&w, &"sold_date_sk".to_string()) == _map_get(&d, &"d_date_sk".to_string())) { continue; }
+            let key: std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>> = std::collections::HashMap::from([("week_seq".to_string(), _map_get(&d, &"d_week_seq".to_string()))]);
+            let ks = format!("{:?}", key.clone());
+            if !groups.contains_key(&ks) {
+                groups.insert(ks.clone(), Group{ key: key.clone(), items: Vec::new() });
+                order.push(ks.clone());
+            }
+            groups.get_mut(&ks).unwrap().items.push(w.clone());
+        }
+    }
+    let mut _res: Vec<std::collections::HashMap<String, std::boxed::Box<dyn std::any::Any>>> = Vec::new();
+    for ks in order {
+        let g = groups.get(&ks).unwrap().clone();
+        _res.push(std::collections::HashMap::from([("d_week_seq".to_string(), _map_get(&_map_get(&g, &"key".to_string()), &"week_seq".to_string())), ("sun_sales".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        if !(_map_get(&x, &"day".to_string()) == "Sunday") { continue; }
+        _res.push(_map_get(&x, &"sales_price".to_string()));
+    }
+    _res
+})), ("mon_sales".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        if !(_map_get(&x, &"day".to_string()) == "Monday") { continue; }
+        _res.push(_map_get(&x, &"sales_price".to_string()));
+    }
+    _res
+})), ("tue_sales".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        if !(_map_get(&x, &"day".to_string()) == "Tuesday") { continue; }
+        _res.push(_map_get(&x, &"sales_price".to_string()));
+    }
+    _res
+})), ("wed_sales".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        if !(_map_get(&x, &"day".to_string()) == "Wednesday") { continue; }
+        _res.push(_map_get(&x, &"sales_price".to_string()));
+    }
+    _res
+})), ("thu_sales".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        if !(_map_get(&x, &"day".to_string()) == "Thursday") { continue; }
+        _res.push(_map_get(&x, &"sales_price".to_string()));
+    }
+    _res
+})), ("fri_sales".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        if !(_map_get(&x, &"day".to_string()) == "Friday") { continue; }
+        _res.push(_map_get(&x, &"sales_price".to_string()));
+    }
+    _res
+})), ("sat_sales".to_string(), _sum(&{
+    let mut _res = Vec::new();
+    for x in g {
+        if !(_map_get(&x, &"day".to_string()) == "Saturday") { continue; }
+        _res.push(_map_get(&x, &"sales_price".to_string()));
+    }
+    _res
+}))]));
+    }
+    _res
+}
+;
+    let mut result = vec![];
+    json(result);
+    test_TPCDS_Q2_empty();
+}
+
+fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {
+    m.get(k).unwrap().clone()
+}
+fn _sum<T: Into<f64> + Copy>(v: &[T]) -> f64 {
+    if v.is_empty() { return 0.0 }
+    let mut sum = 0.0;
+    for &it in v { sum += Into::<f64>::into(it); }
+    sum
+}
+fn _union<T: PartialEq + Clone>(a: &[T], b: &[T]) -> Vec<T> {
+    let mut res = a.to_vec();
+    for it in b {
+        if !res.contains(it) { res.push(it.clone()); }
+    }
+    res
+}
+fn expect(cond: bool) {
+    if !cond { panic!("expect failed"); }
+}
