@@ -1,5 +1,24 @@
 # 📦 CHANGELOG.md
 
+## [0.10.9] – 2025-07-01T08:26:11+07:00
+
+### Added
+
+* `strings.ToUpper` and `strings.ToLower` builtins
+* JOB dataset queries with full TPC-DS coverage
+* VM query fuzz tests and compiler checks
+
+### Changed
+
+* Map sorting via `keys` with null-safe handling
+* Recursion limit and optimized loop indexing
+* Benchmarks and IR outputs refreshed
+
+### Fixed
+
+* Boolean short-circuit and substring folding
+* Extra argument checks and float formatting
+
 ## [0.10.8] – 2025-06-30
 
 ### Added
