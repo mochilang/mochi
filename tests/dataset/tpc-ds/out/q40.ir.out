@@ -1,8 +1,8 @@
-func main (regs=249)
+func main (regs=248)
   // let catalog_sales = [
-  Const        r0, [{"date_sk": 1, "item_sk": 1, "order": 1, "price": 100, "warehouse_sk": 1}, {"date_sk": 2, "item_sk": 1, "order": 2, "price": 150, "warehouse_sk": 1}]
+  Const        r0, [{"date_sk": 1, "item_sk": 1, "order": 1, "price": 100.0, "warehouse_sk": 1}, {"date_sk": 2, "item_sk": 1, "order": 2, "price": 150.0, "warehouse_sk": 1}]
   // let catalog_returns = [
-  Const        r1, [{"item_sk": 1, "order": 2, "refunded": 150}]
+  Const        r1, [{"item_sk": 1, "order": 2, "refunded": 150.0}]
   // let item = [
   Const        r2, [{"current_price": 1.2, "item_id": "I1", "item_sk": 1}]
   // let warehouse = [
@@ -129,7 +129,7 @@ L7:
   Index        r83, r23, r15
   Const        r84, nil
   Equal        r85, r31, r84
-  Const        r86, 0
+  Const        r86, 0.0
   Index        r87, r31, r16
   Select       88,85,86,87
   Sub          r89, r83, r88
@@ -304,119 +304,118 @@ L23:
   In           r176, r175, r160
   JumpIfTrue   r176, L22
   // from r in records
-  Const        r177, []
-  Const        r178, "__group__"
-  Const        r179, true
+  Const        r177, "__group__"
+  Const        r178, true
   // group by { w_state: r.w_state, i_item_id: r.i_item_id } into g
-  Move         r180, r174
+  Move         r179, r174
   // from r in records
-  Const        r181, "items"
-  Move         r182, r177
-  Const        r183, "count"
+  Const        r180, "items"
+  Move         r181, r162
+  Const        r182, "count"
+  Move         r183, r177
   Move         r184, r178
-  Move         r185, r179
-  Move         r186, r154
+  Move         r185, r154
+  Move         r186, r179
   Move         r187, r180
   Move         r188, r181
   Move         r189, r182
-  Move         r190, r183
-  Move         r191, r20
-  MakeMap      r192, 4, r184
-  SetIndex     r160, r175, r192
-  Append       r193, r161, r192
-  Move         r161, r193
+  Move         r190, r20
+  MakeMap      r191, 4, r183
+  SetIndex     r160, r175, r191
+  Append       r192, r161, r191
+  Move         r161, r192
 L22:
-  Index        r194, r160, r175
-  Index        r195, r194, r181
-  Append       r196, r195, r164
-  SetIndex     r194, r181, r196
-  Index        r197, r194, r183
-  AddInt       r198, r197, r100
-  SetIndex     r194, r183, r198
+  Index        r193, r160, r175
+  Index        r194, r193, r180
+  Append       r195, r194, r164
+  SetIndex     r193, r180, r195
+  Index        r196, r193, r182
+  AddInt       r197, r196, r100
+  SetIndex     r193, r182, r197
   AddInt       r159, r159, r100
   Jump         L23
 L21:
-  Move         r199, r20
-  Len          r200, r161
+  Move         r198, r20
+  Len          r199, r161
 L29:
-  LessInt      r201, r199, r200
-  JumpIfFalse  r201, L24
-  Index        r202, r161, r199
-  Move         r203, r202
+  LessInt      r200, r198, r199
+  JumpIfFalse  r200, L24
+  Index        r201, r161, r198
+  Move         r202, r201
   // w_state: g.key.w_state,
-  Const        r204, "w_state"
-  Index        r205, r203, r154
-  Index        r206, r205, r8
+  Const        r203, "w_state"
+  Index        r204, r202, r154
+  Index        r205, r204, r8
   // i_item_id: g.key.i_item_id,
-  Const        r207, "i_item_id"
-  Index        r208, r203, r154
-  Index        r209, r208, r10
+  Const        r206, "i_item_id"
+  Index        r207, r202, r154
+  Index        r208, r207, r10
   // sales_before: sum(from x in g select if x.sold_date < sales_date { x.net } else { 0.0 }),
-  Const        r210, "sales_before"
-  Const        r211, []
-  IterPrep     r212, r203
-  Len          r213, r212
-  Move         r214, r20
+  Const        r209, "sales_before"
+  Const        r210, []
+  IterPrep     r211, r202
+  Len          r212, r211
+  Move         r213, r20
 L26:
-  LessInt      r215, r214, r213
-  JumpIfFalse  r215, L25
-  Index        r216, r212, r214
-  Move         r217, r216
-  Index        r218, r217, r12
-  Less         r219, r218, r5
-  Index        r220, r217, r14
-  Select       221,219,220,86
-  Append       r222, r211, r221
-  Move         r211, r222
-  AddInt       r214, r214, r100
+  LessInt      r214, r213, r212
+  JumpIfFalse  r214, L25
+  Index        r215, r211, r213
+  Move         r216, r215
+  Index        r217, r216, r12
+  Less         r218, r217, r5
+  Index        r219, r216, r14
+  Select       220,218,219,86
+  Append       r221, r210, r220
+  Move         r210, r221
+  AddInt       r213, r213, r100
   Jump         L26
 L25:
-  Sum          r223, r211
+  Sum          r222, r210
   // sales_after: sum(from x in g select if x.sold_date >= sales_date { x.net } else { 0.0 })
-  Const        r224, "sales_after"
-  Const        r225, []
-  IterPrep     r226, r203
-  Len          r227, r226
-  Move         r228, r20
+  Const        r223, "sales_after"
+  Const        r224, []
+  IterPrep     r225, r202
+  Len          r226, r225
+  Move         r227, r20
 L28:
-  LessInt      r229, r228, r227
-  JumpIfFalse  r229, L27
-  Index        r230, r226, r228
-  Move         r217, r230
-  Index        r231, r217, r12
-  LessEq       r232, r5, r231
-  Index        r233, r217, r14
-  Select       234,232,233,86
-  Append       r235, r225, r234
-  Move         r225, r235
-  AddInt       r228, r228, r100
+  LessInt      r228, r227, r226
+  JumpIfFalse  r228, L27
+  Index        r229, r225, r227
+  Move         r216, r229
+  Index        r230, r216, r12
+  LessEq       r231, r5, r230
+  Index        r232, r216, r14
+  Select       233,231,232,86
+  Append       r234, r224, r233
+  Move         r224, r234
+  AddInt       r227, r227, r100
   Jump         L28
 L27:
-  Sum          r236, r225
+  Sum          r235, r224
   // w_state: g.key.w_state,
-  Move         r237, r204
-  Move         r238, r206
+  Move         r236, r203
+  Move         r237, r205
   // i_item_id: g.key.i_item_id,
-  Move         r239, r207
-  Move         r240, r209
+  Move         r238, r206
+  Move         r239, r208
   // sales_before: sum(from x in g select if x.sold_date < sales_date { x.net } else { 0.0 }),
-  Move         r241, r210
-  Move         r242, r223
+  Move         r240, r209
+  Move         r241, r222
   // sales_after: sum(from x in g select if x.sold_date >= sales_date { x.net } else { 0.0 })
-  Move         r243, r224
-  Move         r244, r236
+  Move         r242, r223
+  Move         r243, r235
   // select {
-  MakeMap      r245, 4, r237
+  MakeMap      r244, 4, r236
   // from r in records
-  Append       r246, r153, r245
-  Move         r153, r246
-  AddInt       r199, r199, r100
+  Append       r245, r153, r244
+  Move         r153, r245
+  AddInt       r198, r198, r100
   Jump         L29
 L24:
   // json(result)
   JSON         r153
   // expect result == [
-  Const        r247, [{"i_item_id": "I1", "sales_after": 0, "sales_before": 100, "w_state": "CA"}]
-  Equal        r248, r153, r247
-  Expect       r248
+  Const        r246, [{"i_item_id": "I1", "sales_after": 0.0, "sales_before": 100.0, "w_state": "CA"}]
+  Equal        r247, r153, r246
+  Expect       r247
   Return       r0

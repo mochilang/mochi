@@ -1,6 +1,6 @@
-func main (regs=281)
+func main (regs=278)
   // let store_sales = [
-  Const        r0, [{"ss_addr_sk": 1, "ss_coupon_amt": 5, "ss_customer_sk": 1, "ss_hdemo_sk": 1, "ss_net_profit": 20, "ss_sold_date_sk": 1, "ss_store_sk": 1, "ss_ticket_number": 1}]
+  Const        r0, [{"ss_addr_sk": 1, "ss_coupon_amt": 5.0, "ss_customer_sk": 1, "ss_hdemo_sk": 1, "ss_net_profit": 20.0, "ss_sold_date_sk": 1, "ss_store_sk": 1, "ss_ticket_number": 1}]
   // let date_dim = [ { d_date_sk: 1, d_dow: 6, d_year: 2020 } ]
   Const        r1, [{"d_date_sk": 1, "d_dow": 6, "d_year": 2020}]
   // let store = [ { s_store_sk: 1, s_city: "CityA" } ]
@@ -47,7 +47,7 @@ func main (regs=281)
   IterPrep     r29, r0
   Len          r30, r29
   Const        r31, 0
-L15:
+L13:
   LessInt      r32, r31, r30
   JumpIfFalse  r32, L0
   Index        r33, r29, r31
@@ -56,7 +56,7 @@ L15:
   IterPrep     r35, r1
   Len          r36, r35
   Const        r37, 0
-L14:
+L12:
   LessInt      r38, r37, r36
   JumpIfFalse  r38, L1
   Index        r39, r35, r37
@@ -71,7 +71,7 @@ L14:
   IterPrep     r46, r2
   Len          r47, r46
   Const        r48, 0
-L13:
+L11:
   LessInt      r49, r48, r47
   JumpIfFalse  r49, L2
   Index        r50, r46, r48
@@ -86,7 +86,7 @@ L13:
   IterPrep     r57, r3
   Len          r58, r57
   Const        r59, 0
-L12:
+L10:
   LessInt      r60, r59, r58
   JumpIfFalse  r60, L3
   Index        r61, r57, r59
@@ -101,7 +101,7 @@ L12:
   IterPrep     r68, r4
   Len          r69, r68
   Const        r70, 0
-L11:
+L9:
   LessInt      r71, r70, r69
   JumpIfFalse  r71, L4
   Index        r72, r68, r70
@@ -134,29 +134,27 @@ L6:
   Move         r92, r83
   JumpIfFalse  r92, L7
   Move         r92, r86
-L7:
   // d.d_dow in [6,0] && d.d_year == year && s.s_city in cities
-  Move         r93, r92
-  JumpIfFalse  r93, L8
-  Move         r93, r88
-L8:
-  Move         r94, r93
-  JumpIfFalse  r94, L9
-  Move         r94, r91
-L9:
+  JumpIfFalse  r92, L7
+  Move         r92, r88
+  JumpIfFalse  r92, L7
+  Move         r92, r91
+L7:
   // where (hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) &&
-  JumpIfFalse  r94, L5
+  JumpIfFalse  r92, L5
   // from ss in store_sales
-  Move         r95, r34
-  Const        r96, "d"
-  Move         r97, r40
-  Const        r98, "s"
-  Move         r99, r51
-  Const        r100, "hd"
-  Move         r101, r62
-  Const        r102, "ca"
-  Move         r103, r73
-  Move         r104, r22
+  Move         r93, r34
+  Const        r94, "d"
+  Move         r95, r40
+  Const        r96, "s"
+  Move         r97, r51
+  Const        r98, "hd"
+  Move         r99, r62
+  Const        r100, "ca"
+  Move         r101, r73
+  Move         r102, r22
+  Move         r103, r93
+  Move         r104, r94
   Move         r105, r95
   Move         r106, r96
   Move         r107, r97
@@ -164,210 +162,210 @@ L9:
   Move         r109, r99
   Move         r110, r100
   Move         r111, r101
-  Move         r112, r102
-  Move         r113, r103
-  MakeMap      r114, 5, r104
+  MakeMap      r112, 5, r102
   // group by { ss_ticket_number: ss.ss_ticket_number, ss_customer_sk: ss.ss_customer_sk, ca_city: ca.ca_city } into g
-  Const        r115, "ss_ticket_number"
-  Index        r116, r34, r11
-  Const        r117, "ss_customer_sk"
-  Index        r118, r34, r12
-  Const        r119, "ca_city"
-  Index        r120, r73, r13
+  Const        r113, "ss_ticket_number"
+  Index        r114, r34, r11
+  Const        r115, "ss_customer_sk"
+  Index        r116, r34, r12
+  Const        r117, "ca_city"
+  Index        r118, r73, r13
+  Move         r119, r113
+  Move         r120, r114
   Move         r121, r115
   Move         r122, r116
   Move         r123, r117
   Move         r124, r118
-  Move         r125, r119
-  Move         r126, r120
-  MakeMap      r127, 3, r121
-  Str          r128, r127
-  In           r129, r128, r26
-  JumpIfTrue   r129, L10
+  MakeMap      r125, 3, r119
+  Str          r126, r125
+  In           r127, r126, r26
+  JumpIfTrue   r127, L8
   // from ss in store_sales
-  Const        r130, []
-  Const        r131, "__group__"
-  Const        r132, true
+  Const        r128, "__group__"
+  Const        r129, true
   // group by { ss_ticket_number: ss.ss_ticket_number, ss_customer_sk: ss.ss_customer_sk, ca_city: ca.ca_city } into g
-  Move         r133, r127
+  Move         r130, r125
   // from ss in store_sales
-  Const        r134, "items"
-  Move         r135, r130
-  Const        r136, "count"
-  Move         r137, r131
-  Move         r138, r132
-  Move         r139, r19
+  Const        r131, "items"
+  Move         r132, r28
+  Const        r133, "count"
+  Move         r134, r128
+  Move         r135, r129
+  Move         r136, r19
+  Move         r137, r130
+  Move         r138, r131
+  Move         r139, r132
   Move         r140, r133
-  Move         r141, r134
-  Move         r142, r135
-  Move         r143, r136
-  Move         r144, r7
-  MakeMap      r145, 4, r137
-  SetIndex     r26, r128, r145
-  Append       r146, r27, r145
-  Move         r27, r146
-L10:
-  Index        r147, r26, r128
-  Index        r148, r147, r134
-  Append       r149, r148, r114
-  SetIndex     r147, r134, r149
-  Index        r150, r147, r136
-  Const        r151, 1
-  AddInt       r152, r150, r151
-  SetIndex     r147, r136, r152
+  Move         r141, r7
+  MakeMap      r142, 4, r134
+  SetIndex     r26, r126, r142
+  Append       r143, r27, r142
+  Move         r27, r143
+L8:
+  Index        r144, r26, r126
+  Index        r145, r144, r131
+  Append       r146, r145, r112
+  SetIndex     r144, r131, r146
+  Index        r147, r144, r133
+  Const        r148, 1
+  AddInt       r149, r147, r148
+  SetIndex     r144, r133, r149
 L5:
   // join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk
-  AddInt       r70, r70, r151
-  Jump         L11
+  AddInt       r70, r70, r148
+  Jump         L9
 L4:
   // join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk
-  AddInt       r59, r59, r151
-  Jump         L12
+  AddInt       r59, r59, r148
+  Jump         L10
 L3:
   // join s in store on ss.ss_store_sk == s.s_store_sk
-  AddInt       r48, r48, r151
-  Jump         L13
+  AddInt       r48, r48, r148
+  Jump         L11
 L2:
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
-  AddInt       r37, r37, r151
-  Jump         L14
+  AddInt       r37, r37, r148
+  Jump         L12
 L1:
   // from ss in store_sales
-  AddInt       r31, r31, r151
-  Jump         L15
+  AddInt       r31, r31, r148
+  Jump         L13
 L0:
-  Move         r153, r7
-  Len          r154, r27
-L21:
-  LessInt      r155, r153, r154
-  JumpIfFalse  r155, L16
-  Index        r156, r27, r153
-  Move         r157, r156
+  Move         r150, r7
+  Len          r151, r27
+L19:
+  LessInt      r152, r150, r151
+  JumpIfFalse  r152, L14
+  Index        r153, r27, r150
+  Move         r154, r153
   // select { ss_ticket_number: g.key.ss_ticket_number, ss_customer_sk: g.key.ss_customer_sk, bought_city: g.key.ca_city, amt: sum(from x in g select x.ss.ss_coupon_amt), profit: sum(from x in g select x.ss.ss_net_profit) }
-  Const        r158, "ss_ticket_number"
-  Index        r159, r157, r19
-  Index        r160, r159, r11
-  Const        r161, "ss_customer_sk"
-  Index        r162, r157, r19
-  Index        r163, r162, r12
-  Const        r164, "bought_city"
-  Index        r165, r157, r19
-  Index        r166, r165, r13
-  Const        r167, "amt"
-  Const        r168, []
-  IterPrep     r169, r157
-  Len          r170, r169
-  Move         r171, r7
+  Const        r155, "ss_ticket_number"
+  Index        r156, r154, r19
+  Index        r157, r156, r11
+  Const        r158, "ss_customer_sk"
+  Index        r159, r154, r19
+  Index        r160, r159, r12
+  Const        r161, "bought_city"
+  Index        r162, r154, r19
+  Index        r163, r162, r13
+  Const        r164, "amt"
+  Const        r165, []
+  IterPrep     r166, r154
+  Len          r167, r166
+  Move         r168, r7
+L16:
+  LessInt      r169, r168, r167
+  JumpIfFalse  r169, L15
+  Index        r170, r166, r168
+  Move         r171, r170
+  Index        r172, r171, r22
+  Index        r173, r172, r23
+  Append       r174, r165, r173
+  Move         r165, r174
+  AddInt       r168, r168, r148
+  Jump         L16
+L15:
+  Sum          r175, r165
+  Const        r176, "profit"
+  Const        r177, []
+  IterPrep     r178, r154
+  Len          r179, r178
+  Move         r180, r7
 L18:
-  LessInt      r172, r171, r170
-  JumpIfFalse  r172, L17
-  Index        r173, r169, r171
-  Move         r174, r173
-  Index        r175, r174, r22
-  Index        r176, r175, r23
-  Append       r177, r168, r176
-  Move         r168, r177
-  AddInt       r171, r171, r151
+  LessInt      r181, r180, r179
+  JumpIfFalse  r181, L17
+  Index        r182, r178, r180
+  Move         r171, r182
+  Index        r183, r171, r22
+  Index        r184, r183, r25
+  Append       r185, r177, r184
+  Move         r177, r185
+  AddInt       r180, r180, r148
   Jump         L18
 L17:
-  Sum          r178, r168
-  Const        r179, "profit"
-  Const        r180, []
-  IterPrep     r181, r157
-  Len          r182, r181
-  Move         r183, r7
-L20:
-  LessInt      r184, r183, r182
-  JumpIfFalse  r184, L19
-  Index        r185, r181, r183
-  Move         r174, r185
-  Index        r186, r174, r22
-  Index        r187, r186, r25
-  Append       r188, r180, r187
-  Move         r180, r188
-  AddInt       r183, r183, r151
-  Jump         L20
-L19:
-  Sum          r189, r180
-  Move         r190, r158
-  Move         r191, r160
-  Move         r192, r161
-  Move         r193, r163
-  Move         r194, r164
-  Move         r195, r166
-  Move         r196, r167
-  Move         r197, r178
-  Move         r198, r179
-  Move         r199, r189
-  MakeMap      r200, 5, r190
+  Sum          r186, r177
+  Move         r187, r155
+  Move         r188, r157
+  Move         r189, r158
+  Move         r190, r160
+  Move         r191, r161
+  Move         r192, r163
+  Move         r193, r164
+  Move         r194, r175
+  Move         r195, r176
+  Move         r196, r186
+  MakeMap      r197, 5, r187
   // from ss in store_sales
-  Append       r201, r10, r200
-  Move         r10, r201
-  AddInt       r153, r153, r151
-  Jump         L21
-L16:
+  Append       r198, r10, r197
+  Move         r10, r198
+  AddInt       r150, r150, r148
+  Jump         L19
+L14:
   // from dnrec in dn
-  Const        r202, []
+  Const        r199, []
   // select { c_last_name: c.c_last_name, c_first_name: c.c_first_name, ca_city: current_addr.ca_city, bought_city: dnrec.bought_city, ss_ticket_number: dnrec.ss_ticket_number, amt: dnrec.amt, profit: dnrec.profit }
-  Const        r203, "c_last_name"
-  Const        r204, "c_first_name"
+  Const        r200, "c_last_name"
+  Const        r201, "c_first_name"
   // from dnrec in dn
-  IterPrep     r205, r10
-  Len          r206, r205
-  Move         r207, r7
-L28:
-  LessInt      r208, r207, r206
-  JumpIfFalse  r208, L22
-  Index        r209, r205, r207
-  Move         r210, r209
-  // join c in customer on dnrec.ss_customer_sk == c.c_customer_sk
-  IterPrep     r211, r5
-  Len          r212, r211
-  Const        r213, "c_customer_sk"
-  Move         r214, r7
-L27:
-  LessInt      r215, r214, r212
-  JumpIfFalse  r215, L23
-  Index        r216, r211, r214
-  Move         r217, r216
-  Index        r218, r210, r12
-  Index        r219, r217, r213
-  Equal        r220, r218, r219
-  JumpIfFalse  r220, L24
-  // join current_addr in customer_address on c.c_current_addr_sk == current_addr.ca_address_sk
-  IterPrep     r221, r4
-  Len          r222, r221
-  Const        r223, "c_current_addr_sk"
-  Move         r224, r7
+  IterPrep     r202, r10
+  Len          r203, r202
+  Move         r204, r7
 L26:
-  LessInt      r225, r224, r222
-  JumpIfFalse  r225, L24
-  Index        r226, r221, r224
-  Move         r227, r226
-  Index        r228, r217, r223
-  Index        r229, r227, r76
-  Equal        r230, r228, r229
-  JumpIfFalse  r230, L25
+  LessInt      r205, r204, r203
+  JumpIfFalse  r205, L20
+  Index        r206, r202, r204
+  Move         r207, r206
+  // join c in customer on dnrec.ss_customer_sk == c.c_customer_sk
+  IterPrep     r208, r5
+  Len          r209, r208
+  Const        r210, "c_customer_sk"
+  Move         r211, r7
+L25:
+  LessInt      r212, r211, r209
+  JumpIfFalse  r212, L21
+  Index        r213, r208, r211
+  Move         r214, r213
+  Index        r215, r207, r12
+  Index        r216, r214, r210
+  Equal        r217, r215, r216
+  JumpIfFalse  r217, L22
+  // join current_addr in customer_address on c.c_current_addr_sk == current_addr.ca_address_sk
+  IterPrep     r218, r4
+  Len          r219, r218
+  Const        r220, "c_current_addr_sk"
+  Move         r221, r7
+L24:
+  LessInt      r222, r221, r219
+  JumpIfFalse  r222, L22
+  Index        r223, r218, r221
+  Move         r224, r223
+  Index        r225, r214, r220
+  Index        r226, r224, r76
+  Equal        r227, r225, r226
+  JumpIfFalse  r227, L23
   // where current_addr.ca_city != dnrec.bought_city
-  Index        r231, r227, r13
-  Index        r232, r210, r20
-  NotEqual     r233, r231, r232
-  JumpIfFalse  r233, L25
+  Index        r228, r224, r13
+  Index        r229, r207, r20
+  NotEqual     r230, r228, r229
+  JumpIfFalse  r230, L23
   // select { c_last_name: c.c_last_name, c_first_name: c.c_first_name, ca_city: current_addr.ca_city, bought_city: dnrec.bought_city, ss_ticket_number: dnrec.ss_ticket_number, amt: dnrec.amt, profit: dnrec.profit }
-  Const        r234, "c_last_name"
-  Index        r235, r217, r203
-  Const        r236, "c_first_name"
-  Index        r237, r217, r204
-  Const        r238, "ca_city"
-  Index        r239, r227, r13
-  Const        r240, "bought_city"
-  Index        r241, r210, r20
-  Const        r242, "ss_ticket_number"
-  Index        r243, r210, r11
-  Const        r244, "amt"
-  Index        r245, r210, r21
-  Const        r246, "profit"
-  Index        r247, r210, r24
+  Const        r231, "c_last_name"
+  Index        r232, r214, r200
+  Const        r233, "c_first_name"
+  Index        r234, r214, r201
+  Const        r235, "ca_city"
+  Index        r236, r224, r13
+  Const        r237, "bought_city"
+  Index        r238, r207, r20
+  Const        r239, "ss_ticket_number"
+  Index        r240, r207, r11
+  Const        r241, "amt"
+  Index        r242, r207, r21
+  Const        r243, "profit"
+  Index        r244, r207, r24
+  Move         r245, r231
+  Move         r246, r232
+  Move         r247, r233
   Move         r248, r234
   Move         r249, r235
   Move         r250, r236
@@ -379,49 +377,46 @@ L26:
   Move         r256, r242
   Move         r257, r243
   Move         r258, r244
-  Move         r259, r245
-  Move         r260, r246
-  Move         r261, r247
-  MakeMap      r262, 7, r248
+  MakeMap      r259, 7, r245
   // sort by [c.c_last_name, c.c_first_name, current_addr.ca_city, dnrec.bought_city, dnrec.ss_ticket_number]
-  Index        r263, r217, r203
-  Move         r264, r263
-  Index        r265, r217, r204
-  Move         r266, r265
-  Index        r267, r227, r13
-  Move         r268, r267
-  Index        r269, r210, r20
-  Move         r270, r269
-  Index        r271, r210, r11
-  Move         r272, r271
-  MakeList     r273, 5, r264
-  Move         r274, r273
+  Index        r260, r214, r200
+  Move         r261, r260
+  Index        r262, r214, r201
+  Move         r263, r262
+  Index        r264, r224, r13
+  Move         r265, r264
+  Index        r266, r207, r20
+  Move         r267, r266
+  Index        r268, r207, r11
+  Move         r269, r268
+  MakeList     r270, 5, r261
+  Move         r271, r270
   // from dnrec in dn
-  Move         r275, r262
-  MakeList     r276, 2, r274
-  Append       r277, r202, r276
-  Move         r202, r277
-L25:
-  // join current_addr in customer_address on c.c_current_addr_sk == current_addr.ca_address_sk
-  Add          r224, r224, r151
-  Jump         L26
-L24:
-  // join c in customer on dnrec.ss_customer_sk == c.c_customer_sk
-  Add          r214, r214, r151
-  Jump         L27
+  Move         r272, r259
+  MakeList     r273, 2, r271
+  Append       r274, r199, r273
+  Move         r199, r274
 L23:
-  // from dnrec in dn
-  AddInt       r207, r207, r151
-  Jump         L28
+  // join current_addr in customer_address on c.c_current_addr_sk == current_addr.ca_address_sk
+  Add          r221, r221, r148
+  Jump         L24
 L22:
-  // sort by [c.c_last_name, c.c_first_name, current_addr.ca_city, dnrec.bought_city, dnrec.ss_ticket_number]
-  Sort         r278, r202
+  // join c in customer on dnrec.ss_customer_sk == c.c_customer_sk
+  Add          r211, r211, r148
+  Jump         L25
+L21:
   // from dnrec in dn
-  Move         r202, r278
+  AddInt       r204, r204, r148
+  Jump         L26
+L20:
+  // sort by [c.c_last_name, c.c_first_name, current_addr.ca_city, dnrec.bought_city, dnrec.ss_ticket_number]
+  Sort         r275, r199
+  // from dnrec in dn
+  Move         r199, r275
   // json(result)
-  JSON         r202
+  JSON         r199
   // expect result == [
-  Const        r279, [{"amt": 5, "bought_city": "Portland", "c_first_name": "John", "c_last_name": "Doe", "ca_city": "Seattle", "profit": 20, "ss_ticket_number": 1}]
-  Equal        r280, r202, r279
-  Expect       r280
+  Const        r276, [{"amt": 5.0, "bought_city": "Portland", "c_first_name": "John", "c_last_name": "Doe", "ca_city": "Seattle", "profit": 20.0, "ss_ticket_number": 1}]
+  Equal        r277, r199, r276
+  Expect       r277
   Return       r0

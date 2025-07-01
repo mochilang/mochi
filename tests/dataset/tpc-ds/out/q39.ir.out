@@ -208,7 +208,7 @@ L11:
   Jump         L13
 L10:
   // var grouped: map<string, map<string, any>> = {}
-  Const        r141, {"map[i:1 w:1]": {"i": 1, "qtys": [10, 10, 250], "w": 1}}
+  Const        r141, {}
   Move         r142, r141
   // for m in monthly {
   IterPrep     r143, r4

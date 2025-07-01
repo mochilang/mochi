@@ -1,4 +1,4 @@
-func main (regs=49)
+func main (regs=48)
   // let item = [
   Const        r0, [{"category": "Women", "color": "blue", "manufact": 1, "manufact_id": 100, "product_name": "Blue Shirt", "size": "M", "units": "pack"}, {"category": "Women", "color": "red", "manufact": 1, "manufact_id": 120, "product_name": "Red Dress", "size": "M", "units": "pack"}, {"category": "Men", "color": "black", "manufact": 2, "manufact_id": 200, "product_name": "Pants", "size": "L", "units": "pair"}]
   // let lower = 100
@@ -17,7 +17,7 @@ func main (regs=49)
   Len          r8, r7
   Const        r10, 0
   Move         r9, r10
-L8:
+L7:
   LessInt      r11, r9, r8
   JumpIfFalse  r11, L0
   Index        r12, r7, r9
@@ -63,34 +63,32 @@ L1:
   Move         r38, r17
   JumpIfFalse  r38, L5
   Move         r38, r19
+  JumpIfFalse  r38, L5
+  Move         r38, r37
 L5:
-  Move         r39, r38
-  JumpIfFalse  r39, L6
-  Move         r39, r37
-L6:
-  JumpIfFalse  r39, L7
+  JumpIfFalse  r38, L6
   // select i1.product_name
-  Index        r40, r13, r6
+  Index        r39, r13, r6
   // order by i1.product_name
-  Index        r41, r13, r6
-  Move         r42, r41
+  Index        r40, r13, r6
+  Move         r41, r40
   // from i1 in item
-  Move         r43, r40
-  MakeList     r44, 2, r42
-  Append       r45, r2, r44
-  Move         r2, r45
-L7:
+  Move         r42, r39
+  MakeList     r43, 2, r41
+  Append       r44, r2, r43
+  Move         r2, r44
+L6:
   AddInt       r9, r9, r35
-  Jump         L8
+  Jump         L7
 L0:
   // order by i1.product_name
-  Sort         r46, r2
+  Sort         r45, r2
   // from i1 in item
-  Move         r2, r46
+  Move         r2, r45
   // json(result)
   JSON         r2
   // expect result == ["Blue Shirt", "Red Dress"]
-  Const        r47, ["Blue Shirt", "Red Dress"]
-  Equal        r48, r2, r47
-  Expect       r48
+  Const        r46, ["Blue Shirt", "Red Dress"]
+  Equal        r47, r2, r46
+  Expect       r47
   Return       r0
