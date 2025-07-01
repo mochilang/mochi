@@ -252,6 +252,13 @@ const (
 		"    return out\n" +
 		"end\n"
 
+	helperValues = "function __values(m)\n" +
+		"    if type(m) ~= 'table' then error('values() expects map') end\n" +
+		"    local out = {}\n" +
+		"    for _, v in pairs(m) do out[#out+1] = v end\n" +
+		"    return out\n" +
+		"end\n"
+
 	helperReduce = "function __reduce(src, fn, acc)\n" +
 		"    for _, it in ipairs(src) do\n" +
 		"        acc = fn(acc, it)\n" +
@@ -811,6 +818,7 @@ var helperMap = map[string]string{
 	"max":            helperMax,
 	"concat":         helperConcat,
 	"append":         helperAppend,
+	"values":         helperValues,
 	"reduce":         helperReduce,
 	"json":           helperJson,
 	"eval":           helperEval,

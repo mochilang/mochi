@@ -102,6 +102,17 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 				c.writeln(fmt.Sprintf("local %s = { ToUpper = string.upper }", alias))
 				return nil
 			}
+		} else if *im.Lang == "python" {
+			alias := im.As
+			if alias == "" {
+				alias = parser.AliasFromPath(im.Path)
+			}
+			alias = sanitizeName(alias)
+			path := strings.Trim(im.Path, "\"")
+			if path == "math" {
+				c.writeln(fmt.Sprintf("local %s = math", alias))
+				return nil
+			}
 		}
 		return fmt.Errorf("unsupported import language: %s", *im.Lang)
 	}
