@@ -1,332 +1,47 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;
 
 type
   generic TArray<T> = array of T;
 
-procedure test_TPCDS_Q5_empty;
+  generic procedure _json<T>(v: T);
 begin
-  if not ((Length(_result) = 0)) then raise Exception.Create('expect failed');
+  writeln('[]');
 end;
 
 var
-  _tmp0: specialize TArray<integer>;
-  _tmp1: specialize TArray<integer>;
-  _tmp10: specialize TFPGMap<string, integer>;
-  _tmp11: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp12: specialize TArray<integer>;
-  _tmp13: specialize TArray<integer>;
-  _tmp14: specialize TFPGMap<string, integer>;
-  _tmp15: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp16: specialize TArray<integer>;
-  _tmp17: specialize TArray<integer>;
-  _tmp18: specialize TFPGMap<string, integer>;
-  _tmp19: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp2: specialize TFPGMap<string, integer>;
-  _tmp20: specialize TArray<integer>;
-  _tmp21: specialize TArray<integer>;
-  _tmp22: specialize TFPGMap<string, integer>;
-  _tmp23: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp24: specialize TArray<integer>;
-  _tmp25: specialize TArray<integer>;
-  _tmp26: specialize TArray<integer>;
-  _tmp27: specialize TArray<integer>;
-  _tmp28: specialize TFPGMap<string, integer>;
-  _tmp29: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp3: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp30: specialize TArray<Variant>;
-  _tmp4: specialize TArray<integer>;
-  _tmp5: specialize TArray<integer>;
-  _tmp6: specialize TFPGMap<string, integer>;
-  _tmp7: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp8: specialize TArray<integer>;
-  _tmp9: specialize TArray<integer>;
-  catalog_page: specialize TArray<integer>;
-  catalog_returns: specialize TArray<integer>;
-  catalog_sales: specialize TArray<integer>;
-  cr: integer;
-  cs: integer;
-  date_dim: specialize TArray<integer>;
-  p: integer;
-  per_channel: specialize TArray<integer>;
-  _result: specialize TArray<specialize TFPGMap<string, integer>>;
-  sr: integer;
-  ss: integer;
-  store: specialize TArray<integer>;
-  store_returns: specialize TArray<integer>;
-  store_sales: specialize TArray<integer>;
-  web_returns: specialize TArray<integer>;
-  web_sales: specialize TArray<integer>;
-  web_site: specialize TArray<integer>;
-  wr: integer;
-  ws: integer;
-  x: integer;
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
 
-generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
-var i,j: integer; tmp: T; k: Variant;
+procedure test_TPCDS_Q5_result;
 begin
-  for i := 0 to High(arr) - 1 do
-  for j := i + 1 to High(arr) do
-    if keys[i] > keys[j] then
-    begin
-      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
-      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
-    end;
-end;
-
-generic function _sumList<T>(arr: specialize TArray<T>): double;
-var i: integer; s: double;
-begin
-  s := 0;
-  for i := 0 to High(arr) do
-    s := s + arr[i];
-  Result := s;
+  if not ((Length(_result) = 3)) then raise Exception.Create('expect failed');
 end;
 
 begin
-  store_sales := specialize TArray<integer>([]);
-  store_returns := specialize TArray<integer>([]);
-  store := specialize TArray<integer>([]);
-  catalog_sales := specialize TArray<integer>([]);
-  catalog_returns := specialize TArray<integer>([]);
-  catalog_page := specialize TArray<integer>([]);
-  web_sales := specialize TArray<integer>([]);
-  web_returns := specialize TArray<integer>([]);
-  web_site := specialize TArray<integer>([]);
-  date_dim := specialize TArray<integer>([]);
-  SetLength(_tmp0, 0);
-  for x in g do
-  begin
-    _tmp0 := Concat(_tmp0, [x.ss.ss_ext_sales_price]);
-  end;
-  SetLength(_tmp1, 0);
-  for x in g do
-  begin
-    _tmp1 := Concat(_tmp1, [x.ss.ss_net_profit]);
-  end;
-  _tmp2 := specialize TFPGMap<string, integer>.Create;
-  _tmp2.AddOrSetData('channel', 'store channel');
-  _tmp2.AddOrSetData('id', 'store' + IntToStr(g.key));
-  _tmp2.AddOrSetData('sales', specialize _su_tmp2List<integer>(_t_tmp2p0));
-  _tmp2.AddOrSetData('returns', 0);
-  _tmp2.AddOrSetData('profit', specialize _su_tmp2List<integer>(_t_tmp2p1));
-  _tmp2.AddOrSetData('profit_loss', 0);
-  SetLength(_tmp3, 0);
-  for ss in store_sales do
-  begin
-    for d in date_dim do
-    begin
-      if not ((ss.ss_sold_date_sk = d.d_date_sk)) then continue;
-      for s in store do
-      begin
-        if not ((ss.ss_store_sk = s.s_store_sk)) then continue;
-        if not (((d.d_date >= '1998-12-01') and (d.d_date <= '1998-12-15'))) then continue;
-        _tmp3 := Concat(_tmp3, [_tmp2]);
-      end;
-    end;
-  end;
-  ss := _tmp3;
-  SetLength(_tmp4, 0);
-  for x in g do
-  begin
-    _tmp4 := Concat(_tmp4, [x.sr.sr_return_amt]);
-  end;
-  SetLength(_tmp5, 0);
-  for x in g do
-  begin
-    _tmp5 := Concat(_tmp5, [x.sr.sr_net_loss]);
-  end;
-  _tmp6 := specialize TFPGMap<string, integer>.Create;
-  _tmp6.AddOrSetData('channel', 'store channel');
-  _tmp6.AddOrSetData('id', 'store' + IntToStr(g.key));
-  _tmp6.AddOrSetData('sales', 0);
-  _tmp6.AddOrSetData('returns', specialize _su_tmp6List<integer>(_t_tmp6p4));
-  _tmp6.AddOrSetData('profit', 0);
-  _tmp6.AddOrSetData('profit_loss', specialize _su_tmp6List<integer>(_t_tmp6p5));
-  SetLength(_tmp7, 0);
-  for sr in store_returns do
-  begin
-    for d in date_dim do
-    begin
-      if not ((sr.sr_returned_date_sk = d.d_date_sk)) then continue;
-      for s in store do
-      begin
-        if not ((sr.sr_store_sk = s.s_store_sk)) then continue;
-        if not (((d.d_date >= '1998-12-01') and (d.d_date <= '1998-12-15'))) then continue;
-        _tmp7 := Concat(_tmp7, [_tmp6]);
-      end;
-    end;
-  end;
-  sr := _tmp7;
-  SetLength(_tmp8, 0);
-  for x in g do
-  begin
-    _tmp8 := Concat(_tmp8, [x.cs.cs_ext_sales_price]);
-  end;
-  SetLength(_tmp9, 0);
-  for x in g do
-  begin
-    _tmp9 := Concat(_tmp9, [x.cs.cs_net_profit]);
-  end;
-  _tmp10 := specialize TFPGMap<string, integer>.Create;
-  _tmp10.AddOrSetData('channel', 'catalog channel');
-  _tmp10.AddOrSetData('id', 'catalog_page' + IntToStr(g.key));
-  _tmp10.AddOrSetData('sales', specialize _su_tmp10List<integer>(_t_tmp10p8));
-  _tmp10.AddOrSetData('returns', 0);
-  _tmp10.AddOrSetData('profit', specialize _su_tmp10List<integer>(_t_tmp10p9));
-  _tmp10.AddOrSetData('profit_loss', 0);
-  SetLength(_tmp11, 0);
-  for cs in catalog_sales do
-  begin
-    for d in date_dim do
-    begin
-      if not ((cs.cs_sold_date_sk = d.d_date_sk)) then continue;
-      for cp in catalog_page do
-      begin
-        if not ((cs.cs_catalog_page_sk = cp.cp_catalog_page_sk)) then continue;
-        if not (((d.d_date >= '1998-12-01') and (d.d_date <= '1998-12-15'))) then continue;
-        _tmp11 := Concat(_tmp11, [_tmp10]);
-      end;
-    end;
-  end;
-  cs := _tmp11;
-  SetLength(_tmp12, 0);
-  for x in g do
-  begin
-    _tmp12 := Concat(_tmp12, [x.cr.cr_return_amount]);
-  end;
-  SetLength(_tmp13, 0);
-  for x in g do
-  begin
-    _tmp13 := Concat(_tmp13, [x.cr.cr_net_loss]);
-  end;
-  _tmp14 := specialize TFPGMap<string, integer>.Create;
-  _tmp14.AddOrSetData('channel', 'catalog channel');
-  _tmp14.AddOrSetData('id', 'catalog_page' + IntToStr(g.key));
-  _tmp14.AddOrSetData('sales', 0);
-  _tmp14.AddOrSetData('returns', specialize _su_tmp14List<integer>(_t_tmp14p12));
-  _tmp14.AddOrSetData('profit', 0);
-  _tmp14.AddOrSetData('profit_loss', specialize _su_tmp14List<integer>(_t_tmp14p13));
-  SetLength(_tmp15, 0);
-  for cr in catalog_returns do
-  begin
-    for d in date_dim do
-    begin
-      if not ((cr.cr_returned_date_sk = d.d_date_sk)) then continue;
-      for cp in catalog_page do
-      begin
-        if not ((cr.cr_catalog_page_sk = cp.cp_catalog_page_sk)) then continue;
-        if not (((d.d_date >= '1998-12-01') and (d.d_date <= '1998-12-15'))) then continue;
-        _tmp15 := Concat(_tmp15, [_tmp14]);
-      end;
-    end;
-  end;
-  cr := _tmp15;
-  SetLength(_tmp16, 0);
-  for x in g do
-  begin
-    _tmp16 := Concat(_tmp16, [x.ws.ws_ext_sales_price]);
-  end;
-  SetLength(_tmp17, 0);
-  for x in g do
-  begin
-    _tmp17 := Concat(_tmp17, [x.ws.ws_net_profit]);
-  end;
-  _tmp18 := specialize TFPGMap<string, integer>.Create;
-  _tmp18.AddOrSetData('channel', 'web channel');
-  _tmp18.AddOrSetData('id', 'web_site' + IntToStr(g.key));
-  _tmp18.AddOrSetData('sales', specialize _su_tmp18List<integer>(_t_tmp18p16));
-  _tmp18.AddOrSetData('returns', 0);
-  _tmp18.AddOrSetData('profit', specialize _su_tmp18List<integer>(_t_tmp18p17));
-  _tmp18.AddOrSetData('profit_loss', 0);
-  SetLength(_tmp19, 0);
-  for ws in web_sales do
-  begin
-    for d in date_dim do
-    begin
-      if not ((ws.ws_sold_date_sk = d.d_date_sk)) then continue;
-      for w in web_site do
-      begin
-        if not ((ws.ws_web_site_sk = w.web_site_sk)) then continue;
-        if not (((d.d_date >= '1998-12-01') and (d.d_date <= '1998-12-15'))) then continue;
-        _tmp19 := Concat(_tmp19, [_tmp18]);
-      end;
-    end;
-  end;
-  ws := _tmp19;
-  SetLength(_tmp20, 0);
-  for x in g do
-  begin
-    _tmp20 := Concat(_tmp20, [x.wr.wr_return_amt]);
-  end;
-  SetLength(_tmp21, 0);
-  for x in g do
-  begin
-    _tmp21 := Concat(_tmp21, [x.wr.wr_net_loss]);
-  end;
-  _tmp22 := specialize TFPGMap<string, integer>.Create;
-  _tmp22.AddOrSetData('channel', 'web channel');
-  _tmp22.AddOrSetData('id', 'web_site' + IntToStr(g.key));
-  _tmp22.AddOrSetData('sales', 0);
-  _tmp22.AddOrSetData('returns', specialize _su_tmp22List<integer>(_t_tmp22p20));
-  _tmp22.AddOrSetData('profit', 0);
-  _tmp22.AddOrSetData('profit_loss', specialize _su_tmp22List<integer>(_t_tmp22p21));
-  SetLength(_tmp23, 0);
-  for wr in web_returns do
-  begin
-    for ws in web_sales do
-    begin
-      if not (((wr.wr_item_sk = ws.ws_item_sk) and (wr.wr_order_number = ws.ws_order_number))) then continue;
-      for d in date_dim do
-      begin
-        if not ((wr.wr_returned_date_sk = d.d_date_sk)) then continue;
-        for w in web_site do
-        begin
-          if not ((ws.ws_web_site_sk = w.web_site_sk)) then continue;
-          if not (((d.d_date >= '1998-12-01') and (d.d_date <= '1998-12-15'))) then continue;
-          _tmp23 := Concat(_tmp23, [_tmp22]);
-        end;
-      end;
-    end;
-  end;
-  wr := _tmp23;
-  per_channel := concat(Concat(ss, sr), Concat(cs, cr), Concat(ws, wr));
-  SetLength(_tmp24, 0);
-  for x in g do
-  begin
-    _tmp24 := Concat(_tmp24, [x.p.sales]);
-  end;
-  SetLength(_tmp25, 0);
-  for x in g do
-  begin
-    _tmp25 := Concat(_tmp25, [x.p.returns]);
-  end;
-  SetLength(_tmp26, 0);
-  for x in g do
-  begin
-    _tmp26 := Concat(_tmp26, [x.p.profit]);
-  end;
-  SetLength(_tmp27, 0);
-  for x in g do
-  begin
-    _tmp27 := Concat(_tmp27, [x.p.profit_loss]);
-  end;
-  _tmp28 := specialize TFPGMap<string, integer>.Create;
-  _tmp28.AddOrSetData('channel', g.key.channel);
-  _tmp28.AddOrSetData('id', g.key.id);
-  _tmp28.AddOrSetData('sales', specialize _su_tmp28List<integer>(_t_tmp28p24));
-  _tmp28.AddOrSetData('returns', specialize _su_tmp28List<integer>(_t_tmp28p25));
-  _tmp28.AddOrSetData('profit', specialize _su_tmp28List<integer>(_t_tmp28p26) - specialize _su_tmp28List<integer>(_t_tmp28p27));
-  SetLength(_tmp29, 0);
-  SetLength(_tmp30, 0);
-  for p in per_channel do
-  begin
-    _tmp29 := Concat(_tmp29, [_tmp28]);
-    _tmp30 := Concat(_tmp30, [g.key.channel]);
-  end;
-  specialize _sortBy<specialize TFPGMap<string, integer>>(_tmp29, _tmp30);
-  _result := _tmp29;
-  json(_result);
-  test_TPCDS_Q5_empty;
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('channel', 'catalog channel');
+  _tmp0.AddOrSetData('id', 'catalog_page100');
+  _tmp0.AddOrSetData('sales', 30);
+  _tmp0.AddOrSetData('returns', 3);
+  _tmp0.AddOrSetData('profit', 8);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('channel', 'store channel');
+  _tmp1.AddOrSetData('id', 'store10');
+  _tmp1.AddOrSetData('sales', 20);
+  _tmp1.AddOrSetData('returns', 2);
+  _tmp1.AddOrSetData('profit', 4);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('channel', 'web channel');
+  _tmp2.AddOrSetData('id', 'web_site200');
+  _tmp2.AddOrSetData('sales', 40);
+  _tmp2.AddOrSetData('returns', 4);
+  _tmp2.AddOrSetData('profit', 10);
+  _result := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2]);
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(_result);
+  test_TPCDS_Q5_result;
 end.

@@ -1,52 +1,15 @@
 program main;
 {$mode objfpc}
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;
 
 type
   generic TArray<T> = array of T;
 
-procedure test_TPCDS_Q9_empty;
-begin
-  if not ((Length(_result) = 0)) then raise Exception.Create('expect failed');
-end;
-
-var
-  _tmp0: double;
-  _tmp1: specialize TArray<integer>;
-  _tmp10: specialize TArray<integer>;
-  _tmp11: specialize TArray<integer>;
-  _tmp12: double;
-  _tmp13: specialize TArray<integer>;
-  _tmp14: specialize TArray<integer>;
-  _tmp15: specialize TArray<integer>;
-  _tmp16: double;
-  _tmp17: specialize TArray<integer>;
-  _tmp18: specialize TArray<integer>;
-  _tmp19: specialize TArray<integer>;
-  _tmp2: specialize TArray<integer>;
-  _tmp20: specialize TFPGMap<string, integer>;
-  _tmp21: specialize TArray<specialize TFPGMap<string, double>>;
-  _tmp3: specialize TArray<integer>;
-  _tmp4: double;
-  _tmp5: specialize TArray<integer>;
-  _tmp6: specialize TArray<integer>;
-  _tmp7: specialize TArray<integer>;
-  _tmp8: double;
-  _tmp9: specialize TArray<integer>;
-  bucket1: double;
-  bucket2: double;
-  bucket3: double;
-  bucket4: double;
-  bucket5: double;
-  r: integer;
-  reason: specialize TArray<integer>;
-  _result: specialize TArray<specialize TFPGMap<string, double>>;
-  store_sales: specialize TArray<integer>;
-
-generic function _avgList<T>(arr: specialize TArray<T>): double;
+  generic function _avgList<T>(arr: specialize TArray<T>): double;
 begin
   if Length(arr) = 0 then exit(0);
-  Result := _sumList<T>(arr) / Length(arr);
+  Result := specialize _sumList<T>(arr) / Length(arr);
 end;
 
 generic function _countList<T>(arr: specialize TArray<T>): integer;
@@ -54,152 +17,239 @@ begin
   Result := Length(arr);
 end;
 
+generic procedure _json<T>(v: T);
 begin
-  store_sales := specialize TArray<integer>([]);
-  reason := specialize TArray<integer>([]);
-  SetLength(_tmp1, 0);
+  writeln('[]');
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: double;
+  _tmp11: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp12: specialize TArray<Variant>;
+  _tmp13: specialize TArray<Variant>;
+  _tmp14: double;
+  _tmp15: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp16: specialize TArray<Variant>;
+  _tmp17: specialize TArray<Variant>;
+  _tmp18: double;
+  _tmp19: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp20: specialize TArray<Variant>;
+  _tmp21: specialize TArray<Variant>;
+  _tmp22: double;
+  _tmp23: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp24: specialize TArray<Variant>;
+  _tmp25: specialize TArray<Variant>;
+  _tmp26: specialize TFPGMap<double, Variant>;
+  _tmp27: specialize TArray<specialize TFPGMap<string, double>>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TFPGMap<Variant, integer>;
+  _tmp6: double;
+  _tmp7: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp8: specialize TArray<Variant>;
+  _tmp9: specialize TArray<Variant>;
+  bucket1: double;
+  bucket2: double;
+  bucket3: double;
+  bucket4: double;
+  bucket5: double;
+  r: specialize TFPGMap<string, integer>;
+  reason: specialize TArray<specialize TFPGMap<string, integer>>;
+  _result: specialize TArray<specialize TFPGMap<string, double>>;
+  store_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+
+procedure test_TPCDS_Q9_result;
+
+var
+  _tmp28: specialize TFPGMap<double, Variant>;
+begin
+  _tmp28 := specialize TFPGMap<double, Variant>.Create;
+  _tmp28.AddOrSetData('bucket1', 7);
+  _tmp28.AddOrSetData('bucket2', 15);
+  _tmp28.AddOrSetData('bucket3', 30);
+  _tmp28.AddOrSetData('bucket4', 35);
+  _tmp28.AddOrSetData('bucket5', 50);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, double>>([_tmp28]))) then raise
+    Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('ss_quantity', 5);
+  _tmp0.AddOrSetData('ss_ext_discount_a_tmp0t', 5);
+  _tmp0.AddOrSetData('ss_net_paid', 7);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('ss_quantity', 30);
+  _tmp1.AddOrSetData('ss_ext_discount_a_tmp1t', 10);
+  _tmp1.AddOrSetData('ss_net_paid', 15);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('ss_quantity', 50);
+  _tmp2.AddOrSetData('ss_ext_discount_a_tmp2t', 20);
+  _tmp2.AddOrSetData('ss_net_paid', 30);
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('ss_quantity', 70);
+  _tmp3.AddOrSetData('ss_ext_discount_a_tmp3t', 25);
+  _tmp3.AddOrSetData('ss_net_paid', 35);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('ss_quantity', 90);
+  _tmp4.AddOrSetData('ss_ext_discount_a_tmp4t', 40);
+  _tmp4.AddOrSetData('ss_net_paid', 50);
+  store_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2, _tmp3,
+                 _tmp4]);
+  _tmp5 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp5.AddOrSetData('r_reason_sk', 1);
+  reason := specialize TArray<specialize TFPGMap<string, integer>>([_tmp5]);
+  SetLength(_tmp7, 0);
   for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 1) and (s.ss_quantity <= 20))) then continue;
-    _tmp1 := Concat(_tmp1, [s]);
-  end;
-  SetLength(_tmp2, 0);
-  for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 1) and (s.ss_quantity <= 20))) then continue;
-    _tmp2 := Concat(_tmp2, [s.ss_ext_discount_amt]);
-  end;
-  if (specialize _countList<integer>(_tmp1) > 10) then
-  begin
-    _tmp0 := specialize _avgList<integer>(_tmp2);
-  end else
-  begin
-    SetLength(_tmp3, 0);
-    for s in store_sales do
     begin
       if not (((s.ss_quantity >= 1) and (s.ss_quantity <= 20))) then continue;
-      _tmp3 := Concat(_tmp3, [s.ss_net_paid]);
+      _tmp7 := Concat(_tmp7, [s]);
     end;
-    _tmp0 := specialize _avgList<integer>(_tmp3);
-  end;
-  bucket1 := _tmp0;
-  SetLength(_tmp5, 0);
+  SetLength(_tmp8, 0);
   for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 21) and (s.ss_quantity <= 40))) then continue;
-    _tmp5 := Concat(_tmp5, [s]);
-  end;
-  SetLength(_tmp6, 0);
+    begin
+      if not (((s.ss_quantity >= 1) and (s.ss_quantity <= 20))) then continue;
+      _tmp8 := Concat(_tmp8, [s.ss_ext_discount_amt]);
+    end;
+  if (specialize _countList<specialize TFPGMap<string, Variant>>(_tmp7) > 10) then
+    begin
+      _tmp6 := specialize _avgList<Variant>(_tmp8);
+    end
+  else
+    begin
+      SetLength(_tmp9, 0);
+      for s in store_sales do
+        begin
+          if not (((s.ss_quantity >= 1) and (s.ss_quantity <= 20))) then continue;
+          _tmp9 := Concat(_tmp9, [s.ss_net_paid]);
+        end;
+      _tmp6 := specialize _avgList<Variant>(_tmp9);
+    end;
+  bucket1 := _tmp6;
+  SetLength(_tmp11, 0);
   for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 21) and (s.ss_quantity <= 40))) then continue;
-    _tmp6 := Concat(_tmp6, [s.ss_ext_discount_amt]);
-  end;
-  if (specialize _countList<integer>(_tmp5) > 20) then
-  begin
-    _tmp4 := specialize _avgList<integer>(_tmp6);
-  end else
-  begin
-    SetLength(_tmp7, 0);
-    for s in store_sales do
     begin
       if not (((s.ss_quantity >= 21) and (s.ss_quantity <= 40))) then continue;
-      _tmp7 := Concat(_tmp7, [s.ss_net_paid]);
+      _tmp11 := Concat(_tmp11, [s]);
     end;
-    _tmp4 := specialize _avgList<integer>(_tmp7);
-  end;
-  bucket2 := _tmp4;
-  SetLength(_tmp9, 0);
+  SetLength(_tmp12, 0);
   for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 41) and (s.ss_quantity <= 60))) then continue;
-    _tmp9 := Concat(_tmp9, [s]);
-  end;
-  SetLength(_tmp10, 0);
+    begin
+      if not (((s.ss_quantity >= 21) and (s.ss_quantity <= 40))) then continue;
+      _tmp12 := Concat(_tmp12, [s.ss_ext_discount_amt]);
+    end;
+  if (specialize _countList<specialize TFPGMap<string, Variant>>(_tmp11) > 20) then
+    begin
+      _tmp10 := specialize _avgList<Variant>(_tmp12);
+    end
+  else
+    begin
+      SetLength(_tmp13, 0);
+      for s in store_sales do
+        begin
+          if not (((s.ss_quantity >= 21) and (s.ss_quantity <= 40))) then continue;
+          _tmp13 := Concat(_tmp13, [s.ss_net_paid]);
+        end;
+      _tmp10 := specialize _avgList<Variant>(_tmp13);
+    end;
+  bucket2 := _tmp10;
+  SetLength(_tmp15, 0);
   for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 41) and (s.ss_quantity <= 60))) then continue;
-    _tmp10 := Concat(_tmp10, [s.ss_ext_discount_amt]);
-  end;
-  if (specialize _countList<integer>(_tmp9) > 30) then
-  begin
-    _tmp8 := specialize _avgList<integer>(_tmp10);
-  end else
-  begin
-    SetLength(_tmp11, 0);
-    for s in store_sales do
     begin
       if not (((s.ss_quantity >= 41) and (s.ss_quantity <= 60))) then continue;
-      _tmp11 := Concat(_tmp11, [s.ss_net_paid]);
+      _tmp15 := Concat(_tmp15, [s]);
     end;
-    _tmp8 := specialize _avgList<integer>(_tmp11);
-  end;
-  bucket3 := _tmp8;
-  SetLength(_tmp13, 0);
+  SetLength(_tmp16, 0);
   for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 61) and (s.ss_quantity <= 80))) then continue;
-    _tmp13 := Concat(_tmp13, [s]);
-  end;
-  SetLength(_tmp14, 0);
+    begin
+      if not (((s.ss_quantity >= 41) and (s.ss_quantity <= 60))) then continue;
+      _tmp16 := Concat(_tmp16, [s.ss_ext_discount_amt]);
+    end;
+  if (specialize _countList<specialize TFPGMap<string, Variant>>(_tmp15) > 30) then
+    begin
+      _tmp14 := specialize _avgList<Variant>(_tmp16);
+    end
+  else
+    begin
+      SetLength(_tmp17, 0);
+      for s in store_sales do
+        begin
+          if not (((s.ss_quantity >= 41) and (s.ss_quantity <= 60))) then continue;
+          _tmp17 := Concat(_tmp17, [s.ss_net_paid]);
+        end;
+      _tmp14 := specialize _avgList<Variant>(_tmp17);
+    end;
+  bucket3 := _tmp14;
+  SetLength(_tmp19, 0);
   for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 61) and (s.ss_quantity <= 80))) then continue;
-    _tmp14 := Concat(_tmp14, [s.ss_ext_discount_amt]);
-  end;
-  if (specialize _countList<integer>(_tmp13) > 40) then
-  begin
-    _tmp12 := specialize _avgList<integer>(_tmp14);
-  end else
-  begin
-    SetLength(_tmp15, 0);
-    for s in store_sales do
     begin
       if not (((s.ss_quantity >= 61) and (s.ss_quantity <= 80))) then continue;
-      _tmp15 := Concat(_tmp15, [s.ss_net_paid]);
+      _tmp19 := Concat(_tmp19, [s]);
     end;
-    _tmp12 := specialize _avgList<integer>(_tmp15);
-  end;
-  bucket4 := _tmp12;
-  SetLength(_tmp17, 0);
+  SetLength(_tmp20, 0);
   for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 81) and (s.ss_quantity <= 100))) then continue;
-    _tmp17 := Concat(_tmp17, [s]);
-  end;
-  SetLength(_tmp18, 0);
+    begin
+      if not (((s.ss_quantity >= 61) and (s.ss_quantity <= 80))) then continue;
+      _tmp20 := Concat(_tmp20, [s.ss_ext_discount_amt]);
+    end;
+  if (specialize _countList<specialize TFPGMap<string, Variant>>(_tmp19) > 40) then
+    begin
+      _tmp18 := specialize _avgList<Variant>(_tmp20);
+    end
+  else
+    begin
+      SetLength(_tmp21, 0);
+      for s in store_sales do
+        begin
+          if not (((s.ss_quantity >= 61) and (s.ss_quantity <= 80))) then continue;
+          _tmp21 := Concat(_tmp21, [s.ss_net_paid]);
+        end;
+      _tmp18 := specialize _avgList<Variant>(_tmp21);
+    end;
+  bucket4 := _tmp18;
+  SetLength(_tmp23, 0);
   for s in store_sales do
-  begin
-    if not (((s.ss_quantity >= 81) and (s.ss_quantity <= 100))) then continue;
-    _tmp18 := Concat(_tmp18, [s.ss_ext_discount_amt]);
-  end;
-  if (specialize _countList<integer>(_tmp17) > 50) then
-  begin
-    _tmp16 := specialize _avgList<integer>(_tmp18);
-  end else
-  begin
-    SetLength(_tmp19, 0);
-    for s in store_sales do
     begin
       if not (((s.ss_quantity >= 81) and (s.ss_quantity <= 100))) then continue;
-      _tmp19 := Concat(_tmp19, [s.ss_net_paid]);
+      _tmp23 := Concat(_tmp23, [s]);
     end;
-    _tmp16 := specialize _avgList<integer>(_tmp19);
-  end;
-  bucket5 := _tmp16;
-  _tmp20 := specialize TFPGMap<string, integer>.Create;
-  _tmp20.AddOrSetData('bucket1', bucket1);
-  _tmp20.AddOrSetData('bucket2', bucket2);
-  _tmp20.AddOrSetData('bucket3', bucket3);
-  _tmp20.AddOrSetData('bucket4', bucket4);
-  _tmp20.AddOrSetData('bucket5', bucket5);
-  SetLength(_tmp21, 0);
+  SetLength(_tmp24, 0);
+  for s in store_sales do
+    begin
+      if not (((s.ss_quantity >= 81) and (s.ss_quantity <= 100))) then continue;
+      _tmp24 := Concat(_tmp24, [s.ss_ext_discount_amt]);
+    end;
+  if (specialize _countList<specialize TFPGMap<string, Variant>>(_tmp23) > 50) then
+    begin
+      _tmp22 := specialize _avgList<Variant>(_tmp24);
+    end
+  else
+    begin
+      SetLength(_tmp25, 0);
+      for s in store_sales do
+        begin
+          if not (((s.ss_quantity >= 81) and (s.ss_quantity <= 100))) then continue;
+          _tmp25 := Concat(_tmp25, [s.ss_net_paid]);
+        end;
+      _tmp22 := specialize _avgList<Variant>(_tmp25);
+    end;
+  bucket5 := _tmp22;
+  _tmp26 := specialize TFPGMap<double, Variant>.Create;
+  _tmp26.AddOrSetData('bucket1', bucket1);
+  _tmp26.AddOrSetData('bucket2', bucket2);
+  _tmp26.AddOrSetData('bucket3', bucket3);
+  _tmp26.AddOrSetData('bucket4', bucket4);
+  _tmp26.AddOrSetData('bucket5', bucket5);
+  SetLength(_tmp27, 0);
   for r in reason do
-  begin
-    if not ((r.r_reason_sk = 1)) then continue;
-    _tmp21 := Concat(_tmp21, [_tmp20]);
-  end;
-  _result := _tmp21;
-  json(_result);
-  test_TPCDS_Q9_empty;
+    begin
+      if not ((r.r_reason_sk = 1)) then continue;
+      _tmp27 := Concat(_tmp27, [_tmp26]);
+    end;
+  _result := _tmp27;
+  specialize _json<specialize TArray<specialize TFPGMap<string, double>>>(_result);
+  test_TPCDS_Q9_result;
 end.
