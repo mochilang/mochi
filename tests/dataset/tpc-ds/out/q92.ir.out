@@ -1,6 +1,6 @@
 func main (regs=32)
   // let web_sales = [
-  Const        r0, [{"ws_ext_discount_amt": 1, "ws_item_sk": 1, "ws_sold_date_sk": 1}, {"ws_ext_discount_amt": 1, "ws_item_sk": 1, "ws_sold_date_sk": 1}, {"ws_ext_discount_amt": 2, "ws_item_sk": 1, "ws_sold_date_sk": 1}]
+  Const        r0, [{"ws_ext_discount_amt": 1.0, "ws_item_sk": 1, "ws_sold_date_sk": 1}, {"ws_ext_discount_amt": 1.0, "ws_item_sk": 1, "ws_sold_date_sk": 1}, {"ws_ext_discount_amt": 2.0, "ws_item_sk": 1, "ws_sold_date_sk": 1}]
   // let item = [{i_item_sk: 1, i_manufact_id: 1}]
   Const        r1, [{"i_item_sk": 1, "i_manufact_id": 1}]
   // let date_dim = [{d_date_sk: 1, d_date: "2000-01-02"}]
@@ -46,12 +46,12 @@ L2:
   Const        r25, 1.3
   MulFloat     r26, r24, r25
   LessFloat    r27, r26, r15
-  Const        r28, 0
+  Const        r28, 0.0
   Select       29,27,15,28
   // json(result)
   JSON         r29
   // expect result == 4.0
-  Const        r30, 4
+  Const        r30, 4.0
   EqualFloat   r31, r29, r30
   Expect       r31
   Return       r0

@@ -3554,10 +3554,8 @@ func (fc *funcCompiler) compileJoinQuery(q *parser.QueryExpr, dst int) {
 				fc.compileHashOuterJoin(q, dst, lk, rk)
 				return
 			}
-		} else {
-			fc.compileJoinQueryRight(q, dst)
-			return
 		}
+		// fall back to the nested loop implementation below
 	}
 
 	leftReg := fc.compileExpr(q.Source)

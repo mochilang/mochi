@@ -1,4 +1,4 @@
-func main (regs=68)
+func main (regs=66)
   // let store_sales = [
   Const        r0, [{"ss_hdemo_sk": 1, "ss_sold_time_sk": 1, "ss_store_sk": 1}, {"ss_hdemo_sk": 1, "ss_sold_time_sk": 1, "ss_store_sk": 1}, {"ss_hdemo_sk": 1, "ss_sold_time_sk": 2, "ss_store_sk": 1}]
   // let household_demographics = [{hd_demo_sk: 1, hd_dep_count: 3}]
@@ -20,7 +20,7 @@ func main (regs=68)
   Len          r10, r9
   Const        r12, 0
   Move         r11, r12
-L11:
+L9:
   LessInt      r13, r11, r10
   JumpIfFalse  r13, L0
   Index        r14, r9, r11
@@ -31,7 +31,7 @@ L11:
   Const        r18, "ss_hdemo_sk"
   Const        r19, "hd_demo_sk"
   Move         r20, r12
-L10:
+L8:
   LessInt      r21, r20, r17
   JumpIfFalse  r21, L1
   Index        r22, r16, r20
@@ -46,7 +46,7 @@ L10:
   Const        r29, "ss_sold_time_sk"
   Const        r30, "t_time_sk"
   Move         r31, r12
-L9:
+L7:
   LessInt      r32, r31, r28
   JumpIfFalse  r32, L2
   Index        r33, r27, r31
@@ -61,7 +61,7 @@ L9:
   Const        r40, "ss_store_sk"
   Const        r41, "s_store_sk"
   Move         r42, r12
-L8:
+L6:
   LessInt      r43, r42, r39
   JumpIfFalse  r43, L3
   Index        r44, r38, r42
@@ -88,43 +88,39 @@ L8:
   Move         r61, r54
   JumpIfFalse  r61, L5
   Move         r61, r52
-L5:
-  Move         r62, r61
-  JumpIfFalse  r62, L6
-  Move         r62, r57
-L6:
+  JumpIfFalse  r61, L5
+  Move         r61, r57
   // hd.hd_dep_count == 3 && s.s_store_name == "ese"
-  Move         r63, r62
-  JumpIfFalse  r63, L7
-  Move         r63, r60
-L7:
+  JumpIfFalse  r61, L5
+  Move         r61, r60
+L5:
   // where t.t_hour == 20 && t.t_minute >= 30 &&
-  JumpIfFalse  r63, L4
+  JumpIfFalse  r61, L4
   // count(from ss in store_sales
-  Append       r64, r4, r15
-  Move         r4, r64
+  Append       r62, r4, r15
+  Move         r4, r62
 L4:
   // join s in store on ss.ss_store_sk == s.s_store_sk
-  Const        r65, 1
-  Add          r42, r42, r65
-  Jump         L8
+  Const        r63, 1
+  Add          r42, r42, r63
+  Jump         L6
 L3:
   // join t in time_dim on ss.ss_sold_time_sk == t.t_time_sk
-  Add          r31, r31, r65
-  Jump         L9
+  Add          r31, r31, r63
+  Jump         L7
 L2:
   // join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk
-  Add          r20, r20, r65
-  Jump         L10
+  Add          r20, r20, r63
+  Jump         L8
 L1:
   // count(from ss in store_sales
-  AddInt       r11, r11, r65
-  Jump         L11
+  AddInt       r11, r11, r63
+  Jump         L9
 L0:
-  Count        r66, r4
+  Count        r64, r4
   // json(result)
-  JSON         r66
+  JSON         r64
   // expect result == 3
-  EqualInt     r67, r66, r56
-  Expect       r67
+  EqualInt     r65, r64, r56
+  Expect       r65
   Return       r0

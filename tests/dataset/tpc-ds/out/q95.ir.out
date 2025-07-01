@@ -1,6 +1,6 @@
-func main (regs=152)
+func main (regs=150)
   // let web_sales = [
-  Const        r0, [{"ws_ext_ship_cost": 2, "ws_net_profit": 5, "ws_order_number": 1, "ws_ship_addr_sk": 1, "ws_ship_date_sk": 1, "ws_warehouse_sk": 1, "ws_web_site_sk": 1}, {"ws_ext_ship_cost": 0, "ws_net_profit": 0, "ws_order_number": 1, "ws_ship_addr_sk": 1, "ws_ship_date_sk": 1, "ws_warehouse_sk": 2, "ws_web_site_sk": 1}]
+  Const        r0, [{"ws_ext_ship_cost": 2.0, "ws_net_profit": 5.0, "ws_order_number": 1, "ws_ship_addr_sk": 1, "ws_ship_date_sk": 1, "ws_warehouse_sk": 1, "ws_web_site_sk": 1}, {"ws_ext_ship_cost": 0.0, "ws_net_profit": 0.0, "ws_order_number": 1, "ws_ship_addr_sk": 1, "ws_ship_date_sk": 1, "ws_warehouse_sk": 2, "ws_web_site_sk": 1}]
   // let web_returns = [{wr_order_number: 1}]
   Const        r1, [{"wr_order_number": 1}]
   // let date_dim = [{d_date_sk: 1, d_date: "2001-02-01"}]
@@ -75,7 +75,7 @@ L0:
   IterPrep     r39, r0
   Len          r40, r39
   Move         r41, r11
-L21:
+L19:
   LessInt      r42, r41, r40
   JumpIfFalse  r42, L6
   Index        r43, r39, r41
@@ -86,7 +86,7 @@ L21:
   Const        r47, "ws_ship_date_sk"
   Const        r48, "d_date_sk"
   Move         r49, r11
-L20:
+L18:
   LessInt      r50, r49, r46
   JumpIfFalse  r50, L7
   Index        r51, r45, r49
@@ -101,7 +101,7 @@ L20:
   Const        r58, "ws_ship_addr_sk"
   Const        r59, "ca_address_sk"
   Move         r60, r11
-L19:
+L17:
   LessInt      r61, r60, r57
   JumpIfFalse  r61, L8
   Index        r62, r56, r60
@@ -116,7 +116,7 @@ L19:
   Const        r69, "ws_web_site_sk"
   Const        r70, "web_site_sk"
   Move         r71, r11
-L18:
+L16:
   LessInt      r72, r71, r68
   JumpIfFalse  r72, L9
   Index        r73, r67, r71
@@ -172,112 +172,108 @@ L13:
   Move         r106, r80
   JumpIfFalse  r106, L15
   Move         r106, r83
-L15:
-  Move         r107, r106
-  JumpIfFalse  r107, L16
-  Move         r107, r94
-L16:
+  JumpIfFalse  r106, L15
+  Move         r106, r94
   // ws.ws_order_number in (from x in ws_wh select x.ws_order_number) &&
-  Move         r108, r107
-  JumpIfFalse  r108, L17
-  Move         r108, r105
-L17:
+  JumpIfFalse  r106, L15
+  Move         r106, r105
+L15:
   // where ca.ca_state == "CA" && w.web_company_name == "pri" &&
-  JumpIfFalse  r108, L10
+  JumpIfFalse  r106, L10
   // from ws in web_sales
-  Append       r109, r35, r44
-  Move         r35, r109
+  Append       r107, r35, r44
+  Move         r35, r107
 L10:
   // join w in web_site on ws.ws_web_site_sk == w.web_site_sk
   Add          r71, r71, r34
-  Jump         L18
+  Jump         L16
 L9:
   // join ca in customer_address on ws.ws_ship_addr_sk == ca.ca_address_sk
   Add          r60, r60, r34
-  Jump         L19
+  Jump         L17
 L8:
   // join d in date_dim on ws.ws_ship_date_sk == d.d_date_sk
   Add          r49, r49, r34
-  Jump         L20
+  Jump         L18
 L7:
   // from ws in web_sales
   AddInt       r41, r41, r34
-  Jump         L21
+  Jump         L19
 L6:
   // order_count: len(distinct(from x in filtered select x.ws_order_number)),
-  Const        r110, "order_count"
-  Const        r111, []
-  IterPrep     r112, r35
-  Len          r113, r112
-  Move         r114, r11
+  Const        r108, "order_count"
+  Const        r109, []
+  IterPrep     r110, r35
+  Len          r111, r110
+  Move         r112, r11
+L21:
+  LessInt      r113, r112, r111
+  JumpIfFalse  r113, L20
+  Index        r114, r110, r112
+  Move         r91, r114
+  Index        r115, r91, r6
+  Append       r116, r109, r115
+  Move         r109, r116
+  AddInt       r112, r112, r34
+  Jump         L21
+L20:
+  Distinct     117,109,0,0
+  Len          r118, r117
+  // total_shipping_cost: sum(from x in filtered select x.ws_ext_ship_cost),
+  Const        r119, "total_shipping_cost"
+  Const        r120, []
+  Const        r121, "ws_ext_ship_cost"
+  IterPrep     r122, r35
+  Len          r123, r122
+  Move         r124, r11
 L23:
-  LessInt      r115, r114, r113
-  JumpIfFalse  r115, L22
-  Index        r116, r112, r114
-  Move         r91, r116
-  Index        r117, r91, r6
-  Append       r118, r111, r117
-  Move         r111, r118
-  AddInt       r114, r114, r34
+  LessInt      r125, r124, r123
+  JumpIfFalse  r125, L22
+  Index        r126, r122, r124
+  Move         r91, r126
+  Index        r127, r91, r121
+  Append       r128, r120, r127
+  Move         r120, r128
+  AddInt       r124, r124, r34
   Jump         L23
 L22:
-  Distinct     119,111,0,0
-  Len          r120, r119
-  // total_shipping_cost: sum(from x in filtered select x.ws_ext_ship_cost),
-  Const        r121, "total_shipping_cost"
-  Const        r122, []
-  Const        r123, "ws_ext_ship_cost"
-  IterPrep     r124, r35
-  Len          r125, r124
-  Move         r126, r11
+  Sum          r129, r120
+  // total_net_profit: sum(from x in filtered select x.ws_net_profit)
+  Const        r130, "total_net_profit"
+  Const        r131, []
+  Const        r132, "ws_net_profit"
+  IterPrep     r133, r35
+  Len          r134, r133
+  Move         r135, r11
 L25:
-  LessInt      r127, r126, r125
-  JumpIfFalse  r127, L24
-  Index        r128, r124, r126
-  Move         r91, r128
-  Index        r129, r91, r123
-  Append       r130, r122, r129
-  Move         r122, r130
-  AddInt       r126, r126, r34
+  LessInt      r136, r135, r134
+  JumpIfFalse  r136, L24
+  Index        r137, r133, r135
+  Move         r91, r137
+  Index        r138, r91, r132
+  Append       r139, r131, r138
+  Move         r131, r139
+  AddInt       r135, r135, r34
   Jump         L25
 L24:
-  Sum          r131, r122
-  // total_net_profit: sum(from x in filtered select x.ws_net_profit)
-  Const        r132, "total_net_profit"
-  Const        r133, []
-  Const        r134, "ws_net_profit"
-  IterPrep     r135, r35
-  Len          r136, r135
-  Move         r137, r11
-L27:
-  LessInt      r138, r137, r136
-  JumpIfFalse  r138, L26
-  Index        r139, r135, r137
-  Move         r91, r139
-  Index        r140, r91, r134
-  Append       r141, r133, r140
-  Move         r133, r141
-  AddInt       r137, r137, r34
-  Jump         L27
-L26:
-  Sum          r142, r133
+  Sum          r140, r131
   // order_count: len(distinct(from x in filtered select x.ws_order_number)),
-  Move         r143, r110
-  Move         r144, r120
+  Move         r141, r108
+  Move         r142, r118
   // total_shipping_cost: sum(from x in filtered select x.ws_ext_ship_cost),
-  Move         r145, r121
-  Move         r146, r131
+  Move         r143, r119
+  Move         r144, r129
   // total_net_profit: sum(from x in filtered select x.ws_net_profit)
-  Move         r147, r132
-  Move         r148, r142
+  Move         r145, r130
+  Move         r146, r140
   // let result = {
-  MakeMap      r149, 3, r143
+  MakeMap      r147, 3, r141
   // json(result)
-  JSON         r149
+  JSON         r147
   // expect result == {order_count: 1, total_shipping_cost: 2.0, total_net_profit: 5.0}
-  Const        r150, {"order_count": 1, "total_net_profit": 5, "total_shipping_cost": 2}
-  Equal        r151, r149, r150
-  Expect       r151
+  Const        r148, {"order_count": 1, "total_net_profit": 5.0, "total_shipping_cost": 2.0}
+  Equal        r149, r147, r148
+  Expect       r149
   Return       r0
 
   // fun distinct(xs: list<any>): list<any> {
@@ -290,7 +286,7 @@ func distinct (regs=14)
   Len          r4, r3
   Const        r5, 0
 L2:
-  Less         r6, r5, r4
+  LessInt      r6, r5, r4
   JumpIfFalse  r6, L0
   Index        r7, r3, r5
   Move         r8, r7
@@ -303,7 +299,7 @@ L2:
 L1:
   // for x in xs {
   Const        r12, 1
-  Add          r13, r5, r12
+  AddInt       r13, r5, r12
   Move         r5, r13
   Jump         L2
 L0:

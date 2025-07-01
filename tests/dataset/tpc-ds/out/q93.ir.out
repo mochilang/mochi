@@ -1,6 +1,6 @@
-func main (regs=163)
+func main (regs=162)
   // let store_sales = [
-  Const        r0, [{"ss_customer_sk": 1, "ss_item_sk": 1, "ss_quantity": 5, "ss_sales_price": 10, "ss_ticket_number": 1}, {"ss_customer_sk": 2, "ss_item_sk": 1, "ss_quantity": 3, "ss_sales_price": 20, "ss_ticket_number": 2}]
+  Const        r0, [{"ss_customer_sk": 1, "ss_item_sk": 1, "ss_quantity": 5, "ss_sales_price": 10.0, "ss_ticket_number": 1}, {"ss_customer_sk": 2, "ss_item_sk": 1, "ss_quantity": 3, "ss_sales_price": 20.0, "ss_ticket_number": 2}]
   // let store_returns = [
   Const        r1, [{"sr_item_sk": 1, "sr_reason_sk": 1, "sr_return_quantity": 1, "sr_ticket_number": 1}]
   // let reason = [{r_reason_sk: 1, r_reason_desc: "ReasonA"}]
@@ -187,80 +187,79 @@ L13:
   In           r114, r113, r106
   JumpIfTrue   r114, L12
   // from x in t
-  Const        r115, []
-  Const        r116, "__group__"
-  Const        r117, true
+  Const        r115, "__group__"
+  Const        r116, true
   // group by x.ss_customer_sk into g
-  Move         r118, r112
+  Move         r117, r112
   // from x in t
-  Const        r119, "items"
-  Move         r120, r115
-  Const        r121, "count"
+  Const        r118, "items"
+  Move         r119, r108
+  Const        r120, "count"
+  Move         r121, r115
   Move         r122, r116
-  Move         r123, r117
-  Move         r124, r101
+  Move         r123, r101
+  Move         r124, r117
   Move         r125, r118
   Move         r126, r119
   Move         r127, r120
-  Move         r128, r121
-  Move         r129, r13
-  MakeMap      r130, 4, r122
-  SetIndex     r106, r113, r130
-  Append       r131, r107, r130
-  Move         r107, r131
+  Move         r128, r13
+  MakeMap      r129, 4, r121
+  SetIndex     r106, r113, r129
+  Append       r130, r107, r129
+  Move         r107, r130
 L12:
-  Index        r132, r106, r113
-  Index        r133, r132, r119
-  Append       r134, r133, r110
-  SetIndex     r132, r119, r134
-  Index        r135, r132, r121
-  AddInt       r136, r135, r69
-  SetIndex     r132, r121, r136
+  Index        r131, r106, r113
+  Index        r132, r131, r118
+  Append       r133, r132, r110
+  SetIndex     r131, r118, r133
+  Index        r134, r131, r120
+  AddInt       r135, r134, r69
+  SetIndex     r131, r120, r135
   AddInt       r105, r105, r69
   Jump         L13
 L11:
-  Move         r137, r13
-  Len          r138, r107
+  Move         r136, r13
+  Len          r137, r107
 L17:
-  LessInt      r139, r137, r138
-  JumpIfFalse  r139, L14
-  Index        r140, r107, r137
-  Move         r141, r140
+  LessInt      r138, r136, r137
+  JumpIfFalse  r138, L14
+  Index        r139, r107, r136
+  Move         r140, r139
   // select {ss_customer_sk: g.key, sumsales: sum(from y in g select y.act_sales)}
-  Const        r142, "ss_customer_sk"
-  Index        r143, r141, r101
-  Const        r144, "sumsales"
-  Const        r145, []
-  IterPrep     r146, r141
-  Len          r147, r146
-  Move         r148, r13
+  Const        r141, "ss_customer_sk"
+  Index        r142, r140, r101
+  Const        r143, "sumsales"
+  Const        r144, []
+  IterPrep     r145, r140
+  Len          r146, r145
+  Move         r147, r13
 L16:
-  LessInt      r149, r148, r147
-  JumpIfFalse  r149, L15
-  Index        r150, r146, r148
-  Move         r151, r150
-  Index        r152, r151, r6
-  Append       r153, r145, r152
-  Move         r145, r153
-  AddInt       r148, r148, r69
+  LessInt      r148, r147, r146
+  JumpIfFalse  r148, L15
+  Index        r149, r145, r147
+  Move         r150, r149
+  Index        r151, r150, r6
+  Append       r152, r144, r151
+  Move         r144, r152
+  AddInt       r147, r147, r69
   Jump         L16
 L15:
-  Sum          r154, r145
+  Sum          r153, r144
+  Move         r154, r141
   Move         r155, r142
   Move         r156, r143
-  Move         r157, r144
-  Move         r158, r154
-  MakeMap      r159, 2, r155
+  Move         r157, r153
+  MakeMap      r158, 2, r154
   // from x in t
-  Append       r160, r100, r159
-  Move         r100, r160
-  AddInt       r137, r137, r69
+  Append       r159, r100, r158
+  Move         r100, r159
+  AddInt       r136, r136, r69
   Jump         L17
 L14:
   // json(result)
   JSON         r100
   // expect result == [
-  Const        r161, [{"ss_customer_sk": 1, "sumsales": 40}]
-  Equal        r162, r100, r161
-  Expect       r162
+  Const        r160, [{"ss_customer_sk": 1, "sumsales": 40.0}]
+  Equal        r161, r100, r160
+  Expect       r161
   Return       r0
