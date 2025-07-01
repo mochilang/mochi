@@ -178,6 +178,26 @@ const (
   let dt = new System.Data.DataTable()
   dt.Compute(code, "")`
 
+	helperSliceString = `let _slice_string (s: string) (i: int) (j: int) : string =
+  let mutable start = i
+  let mutable stop = j
+  let n = s.Length
+  if start < 0 then start <- start + n
+  if stop < 0 then stop <- stop + n
+  if start < 0 then start <- 0
+  if stop > n then stop <- n
+  if stop < start then stop <- start
+  s.Substring(start, stop - start)`
+
+	helperReverseArray = `let _reverse_array (xs: 'T[]) : 'T[] =
+  Array.rev xs`
+
+	helperReverseString = `let _reverse_string (s: string) : string =
+  s.ToCharArray() |> Array.rev |> System.String`
+
+	helperConcat = `let _concat (a: 'T[]) (b: 'T[]) : 'T[] =
+  Array.append a b`
+
 	helperUnionAll = `let _union_all (a: 'T[]) (b: 'T[]) : 'T[] =
   Array.append a b`
 
@@ -256,24 +276,28 @@ let _extern_get (name: string) : obj =
 )
 
 var helperMap = map[string]string{
-	"_load":         helperLoad,
-	"_save":         helperSave,
-	"_run_test":     helperRunTest,
-	"_input":        helperInput,
-	"_fetch":        helperFetch,
-	"_fetch_json":   helperFetchTyped,
-	"_cast":         helperCast,
-	"_eval":         helperEval,
-	"_genText":      helperGenText,
-	"_genEmbed":     helperGenEmbed,
-	"_genStruct":    helperGenStruct,
-	"_json_helpers": helperToJson,
-	"_extern":       helperExtern,
-	"_union_all":    helperUnionAll,
-	"_union":        helperUnion,
-	"_except":       helperExcept,
-	"_intersect":    helperIntersect,
-	"_seq_helpers":  helperSeq,
-	"_Group":        helperGroup,
-	"_group_by":     helperGroupBy,
+	"_load":           helperLoad,
+	"_save":           helperSave,
+	"_run_test":       helperRunTest,
+	"_input":          helperInput,
+	"_fetch":          helperFetch,
+	"_fetch_json":     helperFetchTyped,
+	"_cast":           helperCast,
+	"_eval":           helperEval,
+	"_slice_string":   helperSliceString,
+	"_reverse_array":  helperReverseArray,
+	"_reverse_string": helperReverseString,
+	"_concat":         helperConcat,
+	"_genText":        helperGenText,
+	"_genEmbed":       helperGenEmbed,
+	"_genStruct":      helperGenStruct,
+	"_json_helpers":   helperToJson,
+	"_extern":         helperExtern,
+	"_union_all":      helperUnionAll,
+	"_union":          helperUnion,
+	"_except":         helperExcept,
+	"_intersect":      helperIntersect,
+	"_seq_helpers":    helperSeq,
+	"_Group":          helperGroup,
+	"_group_by":       helperGroupBy,
 }
