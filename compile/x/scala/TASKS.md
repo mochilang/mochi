@@ -14,6 +14,7 @@ Completed work:
 - Added golden test `TestScalaCompiler_JOBQ1` covering the JOB dataset query.
 - Added golden test `TestScalaCompiler_JOBQ2` covering the JOB dataset query.
 - Added golden test `TestScalaCompiler_JOB_Golden` compiling JOB queries `q1` through `q10`.
+- Added golden test `TestScalaCompiler_TPCDSQ1` covering the first TPC-DS query.
 
 Remaining work:
 
