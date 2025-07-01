@@ -1049,6 +1049,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = orig
 
+	specialJoin := len(q.Joins) == 1 && q.Joins[0].Side != nil &&
+		(*q.Joins[0].Side == "right" || *q.Joins[0].Side == "outer")
+
 	if q.Group != nil {
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
@@ -1068,18 +1071,37 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var rows strings.Builder
 		indent := "    "
 		rows.WriteString("[|\n")
-		rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Var), src))
+		if specialJoin {
+			side := *q.Joins[0].Side
+			c.use("_" + side + "_join")
+			rows.WriteString(fmt.Sprintf("%sfor (%s_opt, %s_opt) in _%s_join %s %s (fun %s %s -> %s) do\n", indent, sanitizeName(q.Var), sanitizeName(q.Joins[0].Var), side, src, joinSrc[0], sanitizeName(q.Var), sanitizeName(q.Joins[0].Var), joinOns[0]))
+			rows.WriteString(fmt.Sprintf("%s    let %s = Option.defaultValue null %s_opt\n", indent, sanitizeName(q.Var), sanitizeName(q.Var)+"_opt"))
+			rows.WriteString(fmt.Sprintf("%s    let %s = Option.defaultValue null %s_opt\n", indent, sanitizeName(q.Joins[0].Var), sanitizeName(q.Joins[0].Var)+"_opt"))
+		} else {
+			rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Var), src))
+		}
 		ind := indent + "    "
 		for i, f := range q.Froms {
 			rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(f.Var), fromSrc[i]))
 			ind += "    "
 		}
 		for i := range joinSrc {
-			rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(q.Joins[i].Var), joinSrc[i]))
-			ind += "    "
-			if joinOns[i] != "" {
-				rows.WriteString(fmt.Sprintf("%sif %s then\n", ind, joinOns[i]))
+			if specialJoin && i == 0 {
+				continue
+			}
+			j := q.Joins[i]
+			if j.Side != nil && *j.Side == "left" {
+				c.use("_left_join")
+				rows.WriteString(fmt.Sprintf("%sfor (_, %s_opt) in _left_join [|%s|] %s (fun %s %s -> %s) do\n", ind, sanitizeName(j.Var)+"_opt", sanitizeName(q.Var), joinSrc[i], sanitizeName(q.Var), sanitizeName(j.Var), joinOns[i]))
 				ind += "    "
+				rows.WriteString(fmt.Sprintf("%slet %s = match %s_opt with Some v -> v | None -> null\n", ind, sanitizeName(j.Var), sanitizeName(j.Var)+"_opt"))
+			} else {
+				rows.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(q.Joins[i].Var), joinSrc[i]))
+				ind += "    "
+				if joinOns[i] != "" {
+					rows.WriteString(fmt.Sprintf("%sif %s then\n", ind, joinOns[i]))
+					ind += "    "
+				}
 			}
 		}
 		if whereExpr != "" {
@@ -1139,18 +1161,37 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var buf strings.Builder
 	indent := "    "
 	buf.WriteString("\n    [|\n")
-	buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Var), src))
+	if specialJoin {
+		side := *q.Joins[0].Side
+		c.use("_" + side + "_join")
+		buf.WriteString(fmt.Sprintf("%sfor (%s_opt, %s_opt) in _%s_join %s %s (fun %s %s -> %s) do\n", indent, sanitizeName(q.Var), sanitizeName(q.Joins[0].Var), side, src, joinSrc[0], sanitizeName(q.Var), sanitizeName(q.Joins[0].Var), joinOns[0]))
+		buf.WriteString(fmt.Sprintf("%s    let %s = Option.defaultValue null %s_opt\n", indent, sanitizeName(q.Var), sanitizeName(q.Var)+"_opt"))
+		buf.WriteString(fmt.Sprintf("%s    let %s = Option.defaultValue null %s_opt\n", indent, sanitizeName(q.Joins[0].Var), sanitizeName(q.Joins[0].Var)+"_opt"))
+	} else {
+		buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", indent, sanitizeName(q.Var), src))
+	}
 	ind := indent + "    "
 	for i, f := range q.Froms {
 		buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(f.Var), fromSrc[i]))
 		ind += "    "
 	}
 	for i := range joinSrc {
-		buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(q.Joins[i].Var), joinSrc[i]))
-		ind += "    "
-		if joinOns[i] != "" {
-			buf.WriteString(fmt.Sprintf("%sif %s then\n", ind, joinOns[i]))
+		if specialJoin && i == 0 {
+			continue
+		}
+		j := q.Joins[i]
+		if j.Side != nil && *j.Side == "left" {
+			c.use("_left_join")
+			buf.WriteString(fmt.Sprintf("%sfor (_, %s_opt) in _left_join [|%s|] %s (fun %s %s -> %s) do\n", ind, sanitizeName(j.Var)+"_opt", sanitizeName(q.Var), joinSrc[i], sanitizeName(q.Var), sanitizeName(j.Var), joinOns[i]))
 			ind += "    "
+			buf.WriteString(fmt.Sprintf("%slet %s = match %s_opt with Some v -> v | None -> null\n", ind, sanitizeName(j.Var), sanitizeName(j.Var)+"_opt"))
+		} else {
+			buf.WriteString(fmt.Sprintf("%sfor %s in %s do\n", ind, sanitizeName(q.Joins[i].Var), joinSrc[i]))
+			ind += "    "
+			if joinOns[i] != "" {
+				buf.WriteString(fmt.Sprintf("%sif %s then\n", ind, joinOns[i]))
+				ind += "    "
+			}
 		}
 	}
 	if whereExpr != "" {
