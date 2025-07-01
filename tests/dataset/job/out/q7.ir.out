@@ -1,14 +1,17 @@
-func main (regs=456)
+func main (regs=49)
   // let aka_name = [
   Const        r0, [{"name": "Anna Mae", "person_id": 1}, {"name": "Chris", "person_id": 2}]
   // let cast_info = [
   Const        r1, [{"movie_id": 10, "person_id": 1}, {"movie_id": 20, "person_id": 2}]
+L18:
   // let info_type = [
   Const        r2, [{"id": 1, "info": "mini biography"}, {"id": 2, "info": "trivia"}]
   // let link_type = [
   Const        r3, [{"id": 1, "link": "features"}, {"id": 2, "link": "references"}]
+L16:
   // let movie_link = [
   Const        r4, [{"link_type_id": 1, "linked_movie_id": 10}, {"link_type_id": 2, "linked_movie_id": 20}]
+L20:
   // let name = [
   Const        r5, [{"gender": "m", "id": 1, "name": "Alan Brown", "name_pcode_cf": "B"}, {"gender": "f", "id": 2, "name": "Zoe", "name_pcode_cf": "Z"}]
   // let person_info = [
@@ -21,666 +24,340 @@ func main (regs=456)
   Const        r9, "name"
   Const        r10, "contains"
   // it.info == "mini biography" &&
-  Const        r11, "info"
-  // lt.link == "features" &&
-  Const        r12, "link"
-  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Const        r13, "name_pcode_cf"
-  Const        r14, "name_pcode_cf"
-  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Const        r15, "gender"
-  Const        r16, "gender"
-  Const        r17, "name"
-  Const        r18, "starts_with"
-  // pi.note == "Volker Boehm" &&
-  Const        r19, "note"
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Const        r20, "production_year"
-  Const        r21, "production_year"
-  // pi.person_id == an.person_id &&
-  Const        r22, "person_id"
-  Const        r23, "person_id"
-  // pi.person_id == ci.person_id &&
-  Const        r24, "person_id"
-  Const        r25, "person_id"
-  // an.person_id == ci.person_id &&
-  Const        r26, "person_id"
-  Const        r27, "person_id"
-  // ci.movie_id == ml.linked_movie_id
-  Const        r28, "movie_id"
-  Const        r29, "linked_movie_id"
-  // select { person_name: n.name, movie_title: t.title }
-  Const        r30, "person_name"
-  Const        r31, "name"
-  Const        r32, "movie_title"
-  Const        r33, "title"
-  // from an in aka_name
-  IterPrep     r34, r0
-  Len          r35, r34
-  Const        r36, 0
-L29:
-  LessInt      r38, r36, r35
-  JumpIfFalse  r38, L0
-  Index        r40, r34, r36
-  // join n in name on n.id == an.person_id
-  IterPrep     r41, r5
-  Len          r42, r41
-  Const        r43, "id"
-  Const        r44, "person_id"
-  // an.name.contains("a") &&
-  Const        r45, "name"
-  Const        r46, "contains"
-  // it.info == "mini biography" &&
-  Const        r47, "info"
-  // lt.link == "features" &&
-  Const        r48, "link"
-  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Const        r49, "name_pcode_cf"
-  Const        r50, "name_pcode_cf"
-  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Const        r51, "gender"
-  Const        r52, "gender"
-  Const        r53, "name"
-  Const        r54, "starts_with"
-  // pi.note == "Volker Boehm" &&
-  Const        r55, "note"
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Const        r56, "production_year"
-  Const        r57, "production_year"
-  // pi.person_id == an.person_id &&
-  Const        r58, "person_id"
-  Const        r59, "person_id"
-  // pi.person_id == ci.person_id &&
-  Const        r60, "person_id"
-  Const        r61, "person_id"
-  // an.person_id == ci.person_id &&
-  Const        r62, "person_id"
-  Const        r63, "person_id"
-  // ci.movie_id == ml.linked_movie_id
-  Const        r64, "movie_id"
-  Const        r65, "linked_movie_id"
-  // select { person_name: n.name, movie_title: t.title }
-  Const        r66, "person_name"
-  Const        r67, "name"
-  Const        r68, "movie_title"
-  Const        r69, "title"
-  // join n in name on n.id == an.person_id
-  Const        r70, 0
-L28:
-  LessInt      r72, r70, r42
-  JumpIfFalse  r72, L1
-  Index        r74, r41, r70
-  Const        r75, "id"
-  Index        r76, r74, r75
-  Const        r77, "person_id"
-  Index        r78, r40, r77
-  Equal        r79, r76, r78
-  JumpIfFalse  r79, L2
-  // join pi in person_info on pi.person_id == an.person_id
-  IterPrep     r80, r6
-  Len          r81, r80
-  Const        r82, "person_id"
-  Const        r83, "person_id"
-  // an.name.contains("a") &&
-  Const        r84, "name"
-  Const        r85, "contains"
-  // it.info == "mini biography" &&
-  Const        r86, "info"
-  // lt.link == "features" &&
-  Const        r87, "link"
-  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Const        r88, "name_pcode_cf"
-  Const        r89, "name_pcode_cf"
-  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Const        r90, "gender"
-  Const        r91, "gender"
-  Const        r92, "name"
-  Const        r93, "starts_with"
-  // pi.note == "Volker Boehm" &&
-  Const        r94, "note"
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Const        r95, "production_year"
-  Const        r96, "production_year"
-  // pi.person_id == an.person_id &&
-  Const        r97, "person_id"
-  Const        r98, "person_id"
-  // pi.person_id == ci.person_id &&
-  Const        r99, "person_id"
-  Const        r100, "person_id"
-  // an.person_id == ci.person_id &&
-  Const        r101, "person_id"
-  Const        r102, "person_id"
-  // ci.movie_id == ml.linked_movie_id
-  Const        r103, "movie_id"
-  Const        r104, "linked_movie_id"
-  // select { person_name: n.name, movie_title: t.title }
-  Const        r105, "person_name"
-  Const        r106, "name"
-  Const        r107, "movie_title"
-  Const        r108, "title"
-  // join pi in person_info on pi.person_id == an.person_id
-  Const        r109, 0
-L27:
-  LessInt      r111, r109, r81
-  JumpIfFalse  r111, L2
-  Index        r113, r80, r109
-  Const        r114, "person_id"
-  Index        r115, r113, r114
-  Const        r116, "person_id"
-  Index        r117, r40, r116
-  Equal        r118, r115, r117
-  JumpIfFalse  r118, L3
-  // join it in info_type on it.id == pi.info_type_id
-  IterPrep     r119, r2
-  Len          r120, r119
-  Const        r121, "id"
-  Const        r122, "info_type_id"
-  // an.name.contains("a") &&
-  Const        r123, "name"
-  Const        r124, "contains"
-  // it.info == "mini biography" &&
-  Const        r125, "info"
-  // lt.link == "features" &&
-  Const        r126, "link"
-  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Const        r127, "name_pcode_cf"
-  Const        r128, "name_pcode_cf"
-  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Const        r129, "gender"
-  Const        r130, "gender"
-  Const        r131, "name"
-  Const        r132, "starts_with"
-  // pi.note == "Volker Boehm" &&
-  Const        r133, "note"
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Const        r134, "production_year"
-  Const        r135, "production_year"
-  // pi.person_id == an.person_id &&
-  Const        r136, "person_id"
-  Const        r137, "person_id"
-  // pi.person_id == ci.person_id &&
-  Const        r138, "person_id"
-  Const        r139, "person_id"
-  // an.person_id == ci.person_id &&
-  Const        r140, "person_id"
-  Const        r141, "person_id"
-  // ci.movie_id == ml.linked_movie_id
-  Const        r142, "movie_id"
-  Const        r143, "linked_movie_id"
-  // select { person_name: n.name, movie_title: t.title }
-  Const        r144, "person_name"
-  Const        r145, "name"
-  Const        r146, "movie_title"
-  Const        r147, "title"
-  // join it in info_type on it.id == pi.info_type_id
-  Const        r148, 0
-L26:
-  LessInt      r150, r148, r120
-  JumpIfFalse  r150, L3
-  Index        r152, r119, r148
-  Const        r153, "id"
-  Index        r154, r152, r153
-  Const        r155, "info_type_id"
-  Index        r156, r113, r155
-  Equal        r157, r154, r156
-  JumpIfFalse  r157, L4
-  // join ci in cast_info on ci.person_id == n.id
-  IterPrep     r158, r1
-  Len          r159, r158
-  Const        r160, "person_id"
-  Const        r161, "id"
-  // an.name.contains("a") &&
-  Const        r162, "name"
-  Const        r163, "contains"
-  // it.info == "mini biography" &&
-  Const        r164, "info"
-  // lt.link == "features" &&
-  Const        r165, "link"
-  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Const        r166, "name_pcode_cf"
-  Const        r167, "name_pcode_cf"
-  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Const        r168, "gender"
-  Const        r169, "gender"
-  Const        r170, "name"
-  Const        r171, "starts_with"
-  // pi.note == "Volker Boehm" &&
-  Const        r172, "note"
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Const        r173, "production_year"
-  Const        r174, "production_year"
-  // pi.person_id == an.person_id &&
-  Const        r175, "person_id"
-  Const        r176, "person_id"
-  // pi.person_id == ci.person_id &&
-  Const        r177, "person_id"
-  Const        r178, "person_id"
-  // an.person_id == ci.person_id &&
-  Const        r179, "person_id"
-  Const        r180, "person_id"
-  // ci.movie_id == ml.linked_movie_id
-  Const        r181, "movie_id"
-  Const        r182, "linked_movie_id"
-  // select { person_name: n.name, movie_title: t.title }
-  Const        r183, "person_name"
-  Const        r184, "name"
-  Const        r185, "movie_title"
-  Const        r186, "title"
-  // join ci in cast_info on ci.person_id == n.id
-  Const        r187, 0
-L25:
-  LessInt      r189, r187, r159
-  JumpIfFalse  r189, L4
-  Index        r191, r158, r187
-  Const        r192, "person_id"
-  Index        r193, r191, r192
-  Const        r194, "id"
-  Index        r195, r74, r194
-  Equal        r196, r193, r195
-  JumpIfFalse  r196, L5
-  // join t in title on t.id == ci.movie_id
-  IterPrep     r197, r7
-  Len          r198, r197
-  Const        r199, "id"
-  Const        r200, "movie_id"
-  // an.name.contains("a") &&
-  Const        r201, "name"
-  Const        r202, "contains"
-  // it.info == "mini biography" &&
-  Const        r203, "info"
-  // lt.link == "features" &&
-  Const        r204, "link"
-  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Const        r205, "name_pcode_cf"
-  Const        r206, "name_pcode_cf"
-  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Const        r207, "gender"
-  Const        r208, "gender"
-  Const        r209, "name"
-  Const        r210, "starts_with"
-  // pi.note == "Volker Boehm" &&
-  Const        r211, "note"
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Const        r212, "production_year"
-  Const        r213, "production_year"
-  // pi.person_id == an.person_id &&
-  Const        r214, "person_id"
-  Const        r215, "person_id"
-  // pi.person_id == ci.person_id &&
-  Const        r216, "person_id"
-  Const        r217, "person_id"
-  // an.person_id == ci.person_id &&
-  Const        r218, "person_id"
-  Const        r219, "person_id"
-  // ci.movie_id == ml.linked_movie_id
-  Const        r220, "movie_id"
-  Const        r221, "linked_movie_id"
-  // select { person_name: n.name, movie_title: t.title }
-  Const        r222, "person_name"
-  Const        r223, "name"
-  Const        r224, "movie_title"
-  Const        r225, "title"
-  // join t in title on t.id == ci.movie_id
-  Const        r226, 0
-L24:
-  LessInt      r228, r226, r198
-  JumpIfFalse  r228, L5
-  Index        r230, r197, r226
-  Const        r231, "id"
-  Index        r232, r230, r231
-  Const        r233, "movie_id"
-  Index        r234, r191, r233
-  Equal        r235, r232, r234
-  JumpIfFalse  r235, L6
-  // join ml in movie_link on ml.linked_movie_id == t.id
-  IterPrep     r236, r4
-  Len          r237, r236
-  Const        r238, "linked_movie_id"
-  Const        r239, "id"
-  // an.name.contains("a") &&
-  Const        r240, "name"
-  Const        r241, "contains"
-  // it.info == "mini biography" &&
-  Const        r242, "info"
-  // lt.link == "features" &&
-  Const        r243, "link"
-  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Const        r244, "name_pcode_cf"
-  Const        r245, "name_pcode_cf"
-  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Const        r246, "gender"
-  Const        r247, "gender"
-  Const        r248, "name"
-  Const        r249, "starts_with"
-  // pi.note == "Volker Boehm" &&
-  Const        r250, "note"
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Const        r251, "production_year"
-  Const        r252, "production_year"
-  // pi.person_id == an.person_id &&
-  Const        r253, "person_id"
-  Const        r254, "person_id"
-  // pi.person_id == ci.person_id &&
-  Const        r255, "person_id"
-  Const        r256, "person_id"
-  // an.person_id == ci.person_id &&
-  Const        r257, "person_id"
-  Const        r258, "person_id"
-  // ci.movie_id == ml.linked_movie_id
-  Const        r259, "movie_id"
-  Const        r260, "linked_movie_id"
-  // select { person_name: n.name, movie_title: t.title }
-  Const        r261, "person_name"
-  Const        r262, "name"
-  Const        r263, "movie_title"
-  Const        r264, "title"
-  // join ml in movie_link on ml.linked_movie_id == t.id
-  Const        r265, 0
-L23:
-  LessInt      r267, r265, r237
-  JumpIfFalse  r267, L6
-  Index        r269, r236, r265
-  Const        r270, "linked_movie_id"
-  Index        r271, r269, r270
-  Const        r272, "id"
-  Index        r273, r230, r272
-  Equal        r274, r271, r273
-  JumpIfFalse  r274, L7
-  // join lt in link_type on lt.id == ml.link_type_id
-  IterPrep     r275, r3
-  Len          r276, r275
-  Const        r277, "id"
-  Const        r278, "link_type_id"
-  // an.name.contains("a") &&
-  Const        r279, "name"
-  Const        r280, "contains"
-  // it.info == "mini biography" &&
-  Const        r281, "info"
-  // lt.link == "features" &&
-  Const        r282, "link"
-  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Const        r283, "name_pcode_cf"
-  Const        r284, "name_pcode_cf"
-  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Const        r285, "gender"
-  Const        r286, "gender"
-  Const        r287, "name"
-  Const        r288, "starts_with"
-  // pi.note == "Volker Boehm" &&
-  Const        r289, "note"
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Const        r290, "production_year"
-  Const        r291, "production_year"
-  // pi.person_id == an.person_id &&
-  Const        r292, "person_id"
-  Const        r293, "person_id"
-  // pi.person_id == ci.person_id &&
-  Const        r294, "person_id"
-  Const        r295, "person_id"
-  // an.person_id == ci.person_id &&
-  Const        r296, "person_id"
-  Const        r297, "person_id"
-  // ci.movie_id == ml.linked_movie_id
-  Const        r298, "movie_id"
-  Const        r299, "linked_movie_id"
-  // select { person_name: n.name, movie_title: t.title }
-  Const        r300, "person_name"
-  Const        r301, "name"
-  Const        r302, "movie_title"
-  Const        r303, "title"
-  // join lt in link_type on lt.id == ml.link_type_id
-  Const        r304, 0
-L22:
-  LessInt      r306, r304, r276
-  JumpIfFalse  r306, L7
-  Index        r308, r275, r304
-  Const        r309, "id"
-  Index        r310, r308, r309
-  Const        r311, "link_type_id"
-  Index        r312, r269, r311
-  Equal        r313, r310, r312
-  JumpIfFalse  r313, L8
-  Const        r314, "name"
-  Index        r315, r40, r314
-  // an.name.contains("a") &&
-  Const        r316, "a"
-  In           r317, r316, r315
-  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Const        r318, "name_pcode_cf"
-  Index        r319, r74, r318
-  Const        r320, "A"
-  LessEq       r321, r320, r319
-  Const        r322, "name_pcode_cf"
-  Index        r323, r74, r322
-  Const        r324, "F"
-  LessEq       r325, r323, r324
-  // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Const        r326, "production_year"
-  Index        r327, r230, r326
-  Const        r328, 1980
-  LessEq       r329, r328, r327
-  Const        r330, "production_year"
-  Index        r331, r230, r330
-  Const        r332, 1995
-  LessEq       r333, r331, r332
-  // it.info == "mini biography" &&
-  Const        r334, "info"
-  Index        r335, r152, r334
-  Const        r336, "mini biography"
-  Equal        r337, r335, r336
-  // lt.link == "features" &&
-  Const        r338, "link"
-  Index        r339, r308, r338
-  Const        r340, "features"
-  Equal        r341, r339, r340
-  // pi.note == "Volker Boehm" &&
-  Const        r342, "note"
-  Index        r343, r113, r342
-  Const        r344, "Volker Boehm"
-  Equal        r345, r343, r344
-  // pi.person_id == an.person_id &&
-  Const        r346, "person_id"
-  Index        r347, r113, r346
-  Const        r348, "person_id"
-  Index        r349, r40, r348
-  Equal        r350, r347, r349
-  // pi.person_id == ci.person_id &&
-  Const        r351, "person_id"
-  Index        r352, r113, r351
-  Const        r353, "person_id"
-  Index        r354, r191, r353
-  Equal        r355, r352, r354
-  // an.person_id == ci.person_id &&
-  Const        r356, "person_id"
-  Index        r357, r40, r356
-  Const        r358, "person_id"
-  Index        r359, r191, r358
-  Equal        r360, r357, r359
-  // ci.movie_id == ml.linked_movie_id
-  Const        r361, "movie_id"
-  Index        r362, r191, r361
-  Const        r363, "linked_movie_id"
-  Index        r364, r269, r363
-  Equal        r365, r362, r364
-  // an.name.contains("a") &&
-  Move         r366, r317
-  JumpIfFalse  r366, L9
-L9:
-  // it.info == "mini biography" &&
-  Move         r367, r337
-  JumpIfFalse  r367, L10
-L10:
-  // lt.link == "features" &&
-  Move         r368, r341
-  JumpIfFalse  r368, L11
+  Const        r10, "info"
 L11:
+  // lt.link == "features" &&
+  Const        r11, "link"
   // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
-  Move         r369, r321
-  JumpIfFalse  r369, L12
-L12:
-  Move         r370, r325
-  JumpIfFalse  r370, L13
+  Const        r12, "name_pcode_cf"
   // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
-  Const        r371, "gender"
-  Index        r372, r74, r371
-  Const        r373, "m"
-  Equal        r375, r372, r373
-  JumpIfTrue   r375, L13
-  Const        r376, "gender"
-  Index        r377, r74, r376
-  Const        r378, "f"
-  Equal        r380, r377, r378
-  JumpIfFalse  r380, L13
-  Const        r381, "name"
-  Index        r382, r74, r381
-  Const        r383, "B"
-  Const        r384, 0
-  Const        r385, 1
-  Len          r386, r382
-  LessEq       r387, r385, r386
-  JumpIfFalse  r387, L14
-  Slice        r389, r382, r384, r385
-  Equal        r388, r389, r383
-  Jump         L13
-L14:
-  Const        r380, false
-L13:
-  Move         r391, r380
-  JumpIfFalse  r391, L15
-L15:
+  Const        r13, "gender"
+  Const        r14, "starts_with"
   // pi.note == "Volker Boehm" &&
-  Move         r392, r345
-  JumpIfFalse  r392, L16
-L16:
+  Const        r14, "note"
   // t.production_year >= 1980 && t.production_year <= 1995 &&
-  Move         r393, r329
-  JumpIfFalse  r393, L17
-L17:
-  Move         r394, r333
-  JumpIfFalse  r394, L18
-L18:
+  Const        r15, "production_year"
+L12:
   // pi.person_id == an.person_id &&
-  Move         r395, r350
-  JumpIfFalse  r395, L19
-L19:
-  // pi.person_id == ci.person_id &&
-  Move         r396, r355
-  JumpIfFalse  r396, L20
-L20:
-  // an.person_id == ci.person_id &&
-  Move         r397, r360
-  JumpIfFalse  r397, L21
-  Move         r397, r365
-L21:
-  // where (
-  JumpIfFalse  r397, L8
+  Const        r16, "person_id"
+  // ci.movie_id == ml.linked_movie_id
+  Const        r17, "movie_id"
+  Const        r18, "linked_movie_id"
   // select { person_name: n.name, movie_title: t.title }
-  Const        r398, "person_name"
-  Const        r399, "name"
-  Index        r400, r74, r399
-  Const        r401, "movie_title"
-  Const        r402, "title"
-  Index        r403, r230, r402
-  Move         r404, r398
-  Move         r405, r400
-  Move         r406, r401
-  Move         r407, r403
-  MakeMap      r408, 2, r404
+  Const        r19, "person_name"
+  Const        r20, "movie_title"
+L19:
+  Const        r21, "title"
   // from an in aka_name
-  Append       r8, r8, r408
+  IterPrep     r22, r0
+  Len          r23, r22
+L21:
+  Const        r24, 0
+L14:
+  Move         r25, r24
+  LessInt      r26, r25, r23
+  JumpIfFalse  r26, L0
+  Index        r23, r22, r25
+  Move         r22, r23
+L17:
+  // join n in name on n.id == an.person_id
+  IterPrep     r23, r5
+  Len          r5, r23
+  Const        r27, "id"
+  Move         r28, r24
+  LessInt      r29, r28, r5
+  JumpIfFalse  r29, L1
+  Index        r5, r23, r28
+L15:
+  Move         r29, r5
+L13:
+  Index        r23, r29, r27
+  Index        r30, r22, r16
+  Equal        r31, r23, r30
+L10:
+  JumpIfFalse  r31, L2
+  // join pi in person_info on pi.person_id == an.person_id
+  IterPrep     r23, r6
+  Len          r30, r23
+  Move         r31, r24
+  LessInt      r6, r31, r30
+  JumpIfFalse  r6, L2
+  Index        r30, r23, r31
+  Move         r6, r30
+  Index        r23, r6, r16
+  Index        r30, r22, r16
+  Equal        r32, r23, r30
+  JumpIfFalse  r32, L3
+  // join it in info_type on it.id == pi.info_type_id
+  IterPrep     r30, r2
+  Len          r32, r30
+  Const        r2, "info_type_id"
+  Move         r33, r24
+  LessInt      r34, r33, r32
+  JumpIfFalse  r34, L3
+  Index        r32, r30, r33
+  Move         r34, r32
+  Index        r30, r34, r27
+  Index        r32, r6, r2
+  Equal        r2, r30, r32
+  JumpIfFalse  r2, L4
+  // join ci in cast_info on ci.person_id == n.id
+  IterPrep     r30, r1
+  Len          r32, r30
+  Move         r1, r24
+  LessInt      r35, r1, r32
+  JumpIfFalse  r35, L4
+  Index        r32, r30, r1
+  Move         r35, r32
+  Index        r30, r35, r16
+  Index        r32, r29, r27
+  Equal        r36, r30, r32
+  JumpIfFalse  r36, L5
+  // join t in title on t.id == ci.movie_id
+  IterPrep     r30, r7
+  Len          r32, r30
+  Move         r36, r24
+  LessInt      r7, r36, r32
+  JumpIfFalse  r7, L5
+  Index        r7, r30, r36
+  Move         r30, r7
+  Index        r7, r30, r27
+  Index        r37, r35, r17
+  Equal        r38, r7, r37
+  JumpIfFalse  r38, L6
+  // join ml in movie_link on ml.linked_movie_id == t.id
+  IterPrep     r7, r4
+  Len          r37, r7
+  Move         r38, r24
+  LessInt      r4, r38, r37
+  JumpIfFalse  r4, L6
+  Index        r37, r7, r38
+  Move         r7, r37
+  Index        r37, r7, r18
+  Index        r39, r30, r27
+  Equal        r40, r37, r39
+  JumpIfFalse  r40, L7
+  // join lt in link_type on lt.id == ml.link_type_id
+  IterPrep     r37, r3
+  Len          r39, r37
+  Const        r40, "link_type_id"
+  Move         r3, r24
+  LessInt      r41, r3, r39
+  JumpIfFalse  r41, L7
+  Index        r39, r37, r3
+  Move         r41, r39
+  Index        r37, r41, r27
+  Index        r27, r7, r40
+  Equal        r40, r37, r27
+  JumpIfFalse  r40, L8
+  Index        r37, r22, r9
+  // an.name.contains("a") &&
+  Const        r27, "a"
+  In           r40, r27, r37
+  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
+  Index        r37, r29, r12
+  Const        r27, "A"
+  LessEq       r42, r27, r37
+  Index        r37, r29, r12
+  Const        r27, "F"
+  LessEq       r12, r37, r27
+  // t.production_year >= 1980 && t.production_year <= 1995 &&
+  Index        r37, r30, r15
+  Const        r43, 1980
+  LessEq       r44, r43, r37
+  Index        r37, r30, r15
+  Const        r43, 1995
+  LessEq       r15, r37, r43
+  // it.info == "mini biography" &&
+  Index        r37, r34, r10
+  Const        r43, "mini biography"
+  Equal        r10, r37, r43
+  // lt.link == "features" &&
+  Index        r34, r41, r11
+  Const        r37, "features"
+  Equal        r43, r34, r37
+  // pi.note == "Volker Boehm" &&
+  Index        r11, r6, r14
+  Const        r41, "Volker Boehm"
+  Equal        r34, r11, r41
+  // pi.person_id == an.person_id &&
+  Index        r37, r6, r16
+  Index        r14, r22, r16
+  Equal        r11, r37, r14
+  // pi.person_id == ci.person_id &&
+  Index        r41, r6, r16
+  Index        r37, r35, r16
+  Equal        r14, r41, r37
+  // an.person_id == ci.person_id &&
+  Index        r6, r22, r16
+  Index        r41, r35, r16
+  Equal        r37, r6, r41
+  // ci.movie_id == ml.linked_movie_id
+  Index        r22, r35, r17
+  Index        r16, r7, r18
+  Equal        r6, r22, r16
+  // an.name.contains("a") &&
+  Move         r41, r40
+  JumpIfFalse  r41, L9
+  Move         r41, r10
+  // it.info == "mini biography" &&
+  JumpIfFalse  r41, L9
+  Move         r41, r43
+  // lt.link == "features" &&
+  JumpIfFalse  r41, L9
+  Move         r41, r42
+  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
+  JumpIfFalse  r41, L9
+  Move         r41, r12
+  JumpIfFalse  r41, L9
+  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
+  Index        r17, r29, r13
+  Const        r35, "m"
+  Equal        r18, r17, r35
+  Move         r7, r18
+  JumpIfTrue   r7, L10
+  Index        r22, r29, r13
+  Const        r16, "f"
+  Equal        r40, r22, r16
+  Move         r42, r40
+  JumpIfFalse  r42, L11
+  Index        r12, r29, r9
+  Const        r10, "B"
+  Const        r43, 0
+  Const        r17, 1
+  Len          r35, r12
+  LessEq       r18, r17, r35
+  JumpIfFalse  r18, L12
+  Slice        r13, r12, r43, r17
+  Equal        r22, r13, r10
+  Move         r16, r22
+  Jump         L13
+  Const        r16, false
+  Move         r42, r16
+  Move         r7, r42
+  // n.name_pcode_cf >= "A" && n.name_pcode_cf <= "F" &&
+  Move         r41, r7
+  // (n.gender == "m" || (n.gender == "f" && n.name.starts_with("B"))) &&
+  JumpIfFalse  r41, L9
+  Move         r41, r34
+  // pi.note == "Volker Boehm" &&
+  JumpIfFalse  r41, L9
+  Move         r41, r44
+  // t.production_year >= 1980 && t.production_year <= 1995 &&
+  JumpIfFalse  r41, L9
+  Move         r41, r15
+  JumpIfFalse  r41, L9
+  Move         r41, r11
+  // pi.person_id == an.person_id &&
+  JumpIfFalse  r41, L9
+  Move         r41, r14
+  // pi.person_id == ci.person_id &&
+  JumpIfFalse  r41, L9
+  Move         r41, r37
+  // an.person_id == ci.person_id &&
+  JumpIfFalse  r41, L9
+  Move         r41, r6
+L9:
+  // where (
+  JumpIfFalse  r41, L8
+  // select { person_name: n.name, movie_title: t.title }
+  Const        r35, "person_name"
+  Index        r18, r29, r9
+  Const        r12, "movie_title"
+  Index        r43, r30, r21
+  Move         r45, r35
+  Move         r46, r18
+  Move         r47, r12
+  Move         r48, r43
+  MakeMap      r17, 2, r45
+  // from an in aka_name
+  Append       r10, r8, r17
+  Move         r8, r10
 L8:
   // join lt in link_type on lt.id == ml.link_type_id
-  Const        r410, 1
-  Add          r304, r304, r410
-  Jump         L22
+  Const        r13, 1
+  Add          r3, r3, r13
+  Jump         L14
 L7:
   // join ml in movie_link on ml.linked_movie_id == t.id
-  Const        r411, 1
-  Add          r265, r265, r411
-  Jump         L23
+  Add          r38, r38, r13
+  Jump         L15
 L6:
   // join t in title on t.id == ci.movie_id
-  Const        r412, 1
-  Add          r226, r226, r412
-  Jump         L24
+  Add          r36, r36, r13
+  Jump         L16
 L5:
   // join ci in cast_info on ci.person_id == n.id
-  Const        r413, 1
-  Add          r187, r187, r413
-  Jump         L25
+  Add          r1, r1, r13
+  Jump         L17
 L4:
   // join it in info_type on it.id == pi.info_type_id
-  Const        r414, 1
-  Add          r148, r148, r414
-  Jump         L26
+  Add          r33, r33, r13
+  Jump         L18
 L3:
   // join pi in person_info on pi.person_id == an.person_id
-  Const        r415, 1
-  Add          r109, r109, r415
-  Jump         L27
+  Add          r31, r31, r13
+  Jump         L19
 L2:
   // join n in name on n.id == an.person_id
-  Const        r416, 1
-  Add          r70, r70, r416
-  Jump         L28
+  Add          r28, r28, r13
+  Jump         L20
 L1:
   // from an in aka_name
-  Const        r417, 1
-  AddInt       r36, r36, r417
-  Jump         L29
+  AddInt       r25, r25, r13
+  Jump         L21
 L0:
   // of_person: min(from r in rows select r.person_name),
-  Const        r418, "of_person"
-  Const        r419, []
-  Const        r420, "person_name"
-  IterPrep     r421, r8
-  Len          r422, r421
-  Const        r423, 0
-L31:
-  LessInt      r425, r423, r422
-  JumpIfFalse  r425, L30
-  Index        r427, r421, r423
-  Const        r428, "person_name"
-  Index        r429, r427, r428
-  Append       r419, r419, r429
-  Const        r431, 1
-  AddInt       r423, r423, r431
-  Jump         L31
-L30:
-  Min          r432, r419
+  Const        r22, "of_person"
+  Const        r44, []
+  IterPrep     r15, r8
+  Len          r34, r15
+  Move         r11, r24
+L23:
+  LessInt      r14, r11, r34
+  JumpIfFalse  r14, L22
+  Index        r37, r15, r11
+  Move         r6, r37
+  Index        r41, r6, r19
+  Append       r7, r44, r41
+  Move         r44, r7
+  AddInt       r11, r11, r13
+  Jump         L23
+L22:
+  Min          r42, r44
   // biography_movie: min(from r in rows select r.movie_title)
-  Const        r433, "biography_movie"
-  Const        r434, []
-  Const        r435, "movie_title"
-  IterPrep     r436, r8
-  Len          r437, r436
-  Const        r438, 0
-L33:
-  LessInt      r440, r438, r437
-  JumpIfFalse  r440, L32
-  Index        r427, r436, r438
-  Const        r442, "movie_title"
-  Index        r443, r427, r442
-  Append       r434, r434, r443
-  Const        r445, 1
-  AddInt       r438, r438, r445
-  Jump         L33
-L32:
-  Min          r446, r434
+  Const        r16, "biography_movie"
+  Const        r9, []
+  IterPrep     r29, r8
+  Len          r21, r29
+  Move         r30, r24
+L25:
+  LessInt      r35, r30, r21
+  JumpIfFalse  r35, L24
+  Index        r18, r29, r30
+  Move         r6, r18
+  Index        r40, r6, r20
+  Append       r12, r9, r40
+  Move         r9, r12
+  AddInt       r30, r30, r13
+  Jump         L25
+L24:
+  Min          r43, r9
   // of_person: min(from r in rows select r.person_name),
-  Move         r447, r418
-  Move         r448, r432
+  Move         r45, r22
+  Move         r46, r42
   // biography_movie: min(from r in rows select r.movie_title)
-  Move         r449, r433
-  Move         r450, r446
+  Move         r47, r16
+  Move         r48, r43
   // {
-  MakeMap      r452, 2, r447
+  MakeMap      r17, 2, r45
+  Move         r10, r17
   // let result = [
-  MakeList     r453, 1, r452
+  MakeList     r25, 1, r10
   // json(result)
-  JSON         r453
+  JSON         r25
   // expect result == [
-  Const        r454, [{"biography_movie": "Feature Film", "of_person": "Alan Brown"}]
-  Equal        r455, r453, r454
-  Expect       r455
+  Const        r26, [{"biography_movie": "Feature Film", "of_person": "Alan Brown"}]
+  Equal        r28, r25, r26
+  Expect       r28
   Return       r0
