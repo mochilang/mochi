@@ -1,89 +1,85 @@
 public class Main {
-    static class Inventory {
-        int inv_item_sk;
-        int inv_date_sk;
-        int inv_quantity_on_hand;
-        
-        Inventory(int inv_item_sk, int inv_date_sk, int inv_quantity_on_hand) {
-            this.inv_item_sk = inv_item_sk;
-            this.inv_date_sk = inv_date_sk;
-            this.inv_quantity_on_hand = inv_quantity_on_hand;
-        }
-        
-        Inventory() {}
+    static void test_TPCDS_Q31_simplified() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("ca_county", "A", "d_year", 2000, "web_q1_q2_increase", 1.5, "store_q1_q2_increase", 1.2, "web_q2_q3_increase", 1.6666666666666667, "store_q2_q3_increase", 1.3333333333333333))}));
     }
     
-    static class DateDim {
-        int d_date_sk;
-        int d_month_seq;
-        
-        DateDim(int d_date_sk, int d_month_seq) {
-            this.d_date_sk = d_date_sk;
-            this.d_month_seq = d_month_seq;
-        }
-        
-        DateDim() {}
-    }
+    static Object[] store_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ca_county", "A", "d_qoy", 1, "d_year", 2000, "ss_ext_sales_price", 100)), new java.util.HashMap<>(java.util.Map.of("ca_county", "A", "d_qoy", 2, "d_year", 2000, "ss_ext_sales_price", 120)), new java.util.HashMap<>(java.util.Map.of("ca_county", "A", "d_qoy", 3, "d_year", 2000, "ss_ext_sales_price", 160)), new java.util.HashMap<>(java.util.Map.of("ca_county", "B", "d_qoy", 1, "d_year", 2000, "ss_ext_sales_price", 80)), new java.util.HashMap<>(java.util.Map.of("ca_county", "B", "d_qoy", 2, "d_year", 2000, "ss_ext_sales_price", 90)), new java.util.HashMap<>(java.util.Map.of("ca_county", "B", "d_qoy", 3, "d_year", 2000, "ss_ext_sales_price", 100))};
     
-    static class Item {
-        int i_item_sk;
-        String i_product_name;
-        String i_brand;
-        String i_class;
-        String i_category;
-        
-        Item(int i_item_sk, String i_product_name, String i_brand, String i_class, String i_category) {
-            this.i_item_sk = i_item_sk;
-            this.i_product_name = i_product_name;
-            this.i_brand = i_brand;
-            this.i_class = i_class;
-            this.i_category = i_category;
-        }
-        
-        Item() {}
-    }
+    static Object[] web_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ca_county", "A", "d_qoy", 1, "d_year", 2000, "ws_ext_sales_price", 100)), new java.util.HashMap<>(java.util.Map.of("ca_county", "A", "d_qoy", 2, "d_year", 2000, "ws_ext_sales_price", 150)), new java.util.HashMap<>(java.util.Map.of("ca_county", "A", "d_qoy", 3, "d_year", 2000, "ws_ext_sales_price", 250)), new java.util.HashMap<>(java.util.Map.of("ca_county", "B", "d_qoy", 1, "d_year", 2000, "ws_ext_sales_price", 80)), new java.util.HashMap<>(java.util.Map.of("ca_county", "B", "d_qoy", 2, "d_year", 2000, "ws_ext_sales_price", 90)), new java.util.HashMap<>(java.util.Map.of("ca_county", "B", "d_qoy", 3, "d_year", 2000, "ws_ext_sales_price", 95))};
     
-    static void test_TPCDS_Q22_average_inventory() {
-        expect((qoh == new Object[]{new java.util.HashMap<>(java.util.Map.of("i_product_name", "Prod1", "i_brand", "Brand1", "i_class", "Class1", "i_category", "Cat1", "qoh", 15)), new java.util.HashMap<>(java.util.Map.of("i_product_name", "Prod2", "i_brand", "Brand2", "i_class", "Class2", "i_category", "Cat2", "qoh", 50))}));
-    }
+    static Object[] counties = new String[]{"A", "B"};
     
-    static Object[] inventory = new Object[]{new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 1, "inv_quantity_on_hand", 10)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 2, "inv_quantity_on_hand", 20)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 3, "inv_quantity_on_hand", 10)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 4, "inv_quantity_on_hand", 20)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 2, "inv_date_sk", 1, "inv_quantity_on_hand", 50))};
-    
-    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_month_seq", 0)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 2, "d_month_seq", 1)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 3, "d_month_seq", 2)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 4, "d_month_seq", 3))};
-    
-    static Object[] item = new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_sk", 1, "i_product_name", "Prod1", "i_brand", "Brand1", "i_class", "Class1", "i_category", "Cat1")), new java.util.HashMap<>(java.util.Map.of("i_item_sk", 2, "i_product_name", "Prod2", "i_brand", "Brand2", "i_class", "Class2", "i_category", "Cat2"))};
-    
-    static Object[] qoh = (new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(inventory);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object inv = a[0]; Object d = a[1]; return (inv.get("inv_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(item), (Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return (inv.get("inv_item_sk") == i.get("i_item_sk")); }, false, false)
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return new java.util.HashMap<>(java.util.Map.of("i_product_name", g.get("key").product_name, "i_brand", g.get("key").brand, "i_class", g.get("key").class, "i_category", g.get("key").category, "qoh", _avg((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("inv_quantity_on_hand"); }, null, null, -1, -1));
-    }
-}).get()))); }, (Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return ((d.get("d_month_seq") >= 0) && (d.get("d_month_seq") <= 11)); }, null, -1, -1));
-    }
-}).get();
+    static Object[] result = new Object[]{};
     
     public static void main(String[] args) {
-        test_TPCDS_Q22_average_inventory();
-        _json(qoh);
+        test_TPCDS_Q31_simplified();
+        for (var county : counties) {
+            double ss1 = _sum((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(store_sales);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object s = a[0]; return s.get("ss_ext_sales_price"); }, (Object[] a) -> { Object s = a[0]; return ((s.get("ca_county") == county) && (s.get("d_qoy") == 1)); }, null, -1, -1));
+    }
+}).get());
+            double ss2 = _sum((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(store_sales);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object s = a[0]; return s.get("ss_ext_sales_price"); }, (Object[] a) -> { Object s = a[0]; return ((s.get("ca_county") == county) && (s.get("d_qoy") == 2)); }, null, -1, -1));
+    }
+}).get());
+            double ss3 = _sum((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(store_sales);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object s = a[0]; return s.get("ss_ext_sales_price"); }, (Object[] a) -> { Object s = a[0]; return ((s.get("ca_county") == county) && (s.get("d_qoy") == 3)); }, null, -1, -1));
+    }
+}).get());
+            double ws1 = _sum((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(web_sales);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object w = a[0]; return w.get("ws_ext_sales_price"); }, (Object[] a) -> { Object w = a[0]; return ((w.get("ca_county") == county) && (w.get("d_qoy") == 1)); }, null, -1, -1));
+    }
+}).get());
+            double ws2 = _sum((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(web_sales);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object w = a[0]; return w.get("ws_ext_sales_price"); }, (Object[] a) -> { Object w = a[0]; return ((w.get("ca_county") == county) && (w.get("d_qoy") == 2)); }, null, -1, -1));
+    }
+}).get());
+            double ws3 = _sum((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(web_sales);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object w = a[0]; return w.get("ws_ext_sales_price"); }, (Object[] a) -> { Object w = a[0]; return ((w.get("ca_county") == county) && (w.get("d_qoy") == 3)); }, null, -1, -1));
+    }
+}).get());
+            double web_g1 = (ws2 / ws1);
+            double store_g1 = (ss2 / ss1);
+            double web_g2 = (ws3 / ws2);
+            double store_g2 = (ss3 / ss2);
+            if (((web_g1 > store_g1) && (web_g2 > store_g2))) {
+                result = append.apply(result, new java.util.HashMap<>(java.util.Map.of("ca_county", county, "d_year", 2000, "web_q1_q2_increase", web_g1, "store_q1_q2_increase", store_g1, "web_q2_q3_increase", web_g2, "store_q2_q3_increase", store_g2)));
+            }
+        }
+        _json(result);
     }
     
-    static double _avg(Object v) {
+    static double _sum(Object v) {
         java.util.List<Object> items = (v instanceof _Group) ? ((_Group)v).Items : _toList(v);
-        if (items.isEmpty()) return 0;
         double sum = 0;
         for (Object it : items) {
-            if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException("avg() expects numbers");
+            if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException("sum() expects numbers");
         }
-        return sum / items.size();
+        return sum;
     }
     
     static void expect(boolean cond) {

@@ -1,79 +1,74 @@
 public class Main {
-    static class Inventory {
-        int inv_item_sk;
-        int inv_date_sk;
-        int inv_quantity_on_hand;
-        
-        Inventory(int inv_item_sk, int inv_date_sk, int inv_quantity_on_hand) {
-            this.inv_item_sk = inv_item_sk;
-            this.inv_date_sk = inv_date_sk;
-            this.inv_quantity_on_hand = inv_quantity_on_hand;
-        }
-        
-        Inventory() {}
+    static void test_TPCDS_Q44_simplified() {
+        expect((result == new java.util.HashMap<>(java.util.Map.of("best_performing", "ItemA", "worst_performing", "ItemB"))));
     }
     
-    static class DateDim {
-        int d_date_sk;
-        int d_month_seq;
-        
-        DateDim(int d_date_sk, int d_month_seq) {
-            this.d_date_sk = d_date_sk;
-            this.d_month_seq = d_month_seq;
-        }
-        
-        DateDim() {}
-    }
+    static Object[] store_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ss_item_sk", 1, "ss_store_sk", 1, "ss_net_profit", 5)), new java.util.HashMap<>(java.util.Map.of("ss_item_sk", 1, "ss_store_sk", 1, "ss_net_profit", 5)), new java.util.HashMap<>(java.util.Map.of("ss_item_sk", 2, "ss_store_sk", 1, "ss_net_profit", (-1)))};
     
-    static class Item {
-        int i_item_sk;
-        String i_product_name;
-        String i_brand;
-        String i_class;
-        String i_category;
-        
-        Item(int i_item_sk, String i_product_name, String i_brand, String i_class, String i_category) {
-            this.i_item_sk = i_item_sk;
-            this.i_product_name = i_product_name;
-            this.i_brand = i_brand;
-            this.i_class = i_class;
-            this.i_category = i_category;
-        }
-        
-        Item() {}
-    }
+    static Object[] item = new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_sk", 1, "i_product_name", "ItemA")), new java.util.HashMap<>(java.util.Map.of("i_item_sk", 2, "i_product_name", "ItemB"))};
     
-    static void test_TPCDS_Q22_average_inventory() {
-        expect((qoh == new Object[]{new java.util.HashMap<>(java.util.Map.of("i_product_name", "Prod1", "i_brand", "Brand1", "i_class", "Class1", "i_category", "Cat1", "qoh", 15)), new java.util.HashMap<>(java.util.Map.of("i_product_name", "Prod2", "i_brand", "Brand2", "i_class", "Class2", "i_category", "Cat2", "qoh", 50))}));
-    }
-    
-    static Object[] inventory = new Object[]{new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 1, "inv_quantity_on_hand", 10)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 2, "inv_quantity_on_hand", 20)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 3, "inv_quantity_on_hand", 10)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 4, "inv_quantity_on_hand", 20)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 2, "inv_date_sk", 1, "inv_quantity_on_hand", 50))};
-    
-    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_month_seq", 0)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 2, "d_month_seq", 1)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 3, "d_month_seq", 2)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 4, "d_month_seq", 3))};
-    
-    static Object[] item = new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_sk", 1, "i_product_name", "Prod1", "i_brand", "Brand1", "i_class", "Class1", "i_category", "Cat1")), new java.util.HashMap<>(java.util.Map.of("i_item_sk", 2, "i_product_name", "Prod2", "i_brand", "Brand2", "i_class", "Class2", "i_category", "Cat2"))};
-    
-    static Object[] qoh = (new java.util.function.Supplier<java.util.List<Object>>() {
+    static Object[] grouped_base = (new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(inventory);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object inv = a[0]; Object d = a[1]; return (inv.get("inv_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(item), (Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return (inv.get("inv_item_sk") == i.get("i_item_sk")); }, false, false)
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return new java.util.HashMap<>(java.util.Map.of("i_product_name", g.get("key").product_name, "i_brand", g.get("key").brand, "i_class", g.get("key").class, "i_category", g.get("key").category, "qoh", _avg((new java.util.function.Supplier<java.util.List<Object>>() {
+        java.util.List<Object> _src = _toList(store_sales);
+        java.util.List<_Group> _grps = _group_by(_src, ss -> ss.get("ss_item_sk"));
+        java.util.List<Object> _res = new java.util.ArrayList<>();
+        for (_Group g : _grps) {
+            _res.add(new java.util.HashMap<>(java.util.Map.of("item_sk", g.get("key"), "avg_profit", _avg((new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
         java.util.List<Object> _src = _toList(g);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("inv_quantity_on_hand"); }, null, null, -1, -1));
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss_net_profit"); }, null, null, -1, -1));
     }
-}).get()))); }, (Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return ((d.get("d_month_seq") >= 0) && (d.get("d_month_seq") <= 11)); }, null, -1, -1));
+}).get()))));
+        }
+        return _res;
     }
 }).get();
     
+    static Object[] grouped = grouped_base;
+    
+    static Object best = first.apply((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(grouped);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x; }, null, (Object[] a) -> { Object x = a[0]; return (-x.get("avg_profit")); }, -1, -1));
+    }
+}).get());
+    
+    static Object worst = first.apply((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(grouped);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x; }, null, (Object[] a) -> { Object x = a[0]; return x.get("avg_profit"); }, -1, -1));
+    }
+}).get());
+    
+    static Object best_name = first.apply((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(item);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object i = a[0]; return i.get("i_product_name"); }, (Object[] a) -> { Object i = a[0]; return (i.get("i_item_sk") == best.get("item_sk")); }, null, -1, -1));
+    }
+}).get());
+    
+    static Object worst_name = first.apply((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(item);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object i = a[0]; return i.get("i_product_name"); }, (Object[] a) -> { Object i = a[0]; return (i.get("i_item_sk") == worst.get("item_sk")); }, null, -1, -1));
+    }
+}).get());
+    
+    static java.util.Map<String, Object> result = new java.util.HashMap<>(java.util.Map.of("best_performing", best_name, "worst_performing", worst_name));
+    
     public static void main(String[] args) {
-        test_TPCDS_Q22_average_inventory();
-        _json(qoh);
+        test_TPCDS_Q44_simplified();
+        _json(result);
     }
     
     static double _avg(Object v) {
@@ -206,5 +201,24 @@ public class Main {
         java.util.List<Object> res = new java.util.ArrayList<>();
         for (java.util.List<Object> r : items) res.add(opts.selectFn.apply(r.toArray(new Object[0])));
         return res;
+    }
+    
+    static class _Group {
+        Object key;
+        java.util.List<Object> Items = new java.util.ArrayList<>();
+        _Group(Object k) { key = k; }
+        int length() { return Items.size(); }
+    }
+    
+    static java.util.List<_Group> _group_by(java.util.List<Object> src, java.util.function.Function<Object,Object> keyfn) {
+        java.util.Map<String,_Group> groups = new java.util.LinkedHashMap<>();
+        for (Object it : src) {
+            Object key = keyfn.apply(it);
+            String ks = String.valueOf(key);
+            _Group g = groups.get(ks);
+            if (g == null) { g = new _Group(key); groups.put(ks, g); }
+            g.Items.add(it);
+        }
+        return new java.util.ArrayList<>(groups.values());
     }
 }
