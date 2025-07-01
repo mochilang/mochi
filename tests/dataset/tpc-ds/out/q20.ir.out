@@ -447,7 +447,7 @@ L20:
   // json(result)
   JSON         r215
   // expect result == [
-  Const        r278, [{"i_category": "A", "i_class": "X", "i_current_price": 10.0, "i_item_desc": "Item One", "i_item_id": "ITEM1", "itemrevenue": 300.0, "revenueratio": 66.66666666666666}, {"i_category": "A", "i_class": "X", "i_current_price": 20.0, "i_item_desc": "Item Two", "i_item_id": "ITEM2", "itemrevenue": 150.0, "revenueratio": 33.33333333333333}]
+  Const        r278, [{"i_category": "A", "i_class": "X", "i_current_price": 10.0, "i_item_desc": "Item One", "i_item_id": "ITEM1", "itemrevenue": 600.0, "revenueratio": 66.66666666666667}, {"i_category": "A", "i_class": "X", "i_current_price": 20.0, "i_item_desc": "Item Two", "i_item_id": "ITEM2", "itemrevenue": 300.0, "revenueratio": 33.333333333333336}]
   Equal        r279, r215, r278
   Expect       r279
   Return       r0
