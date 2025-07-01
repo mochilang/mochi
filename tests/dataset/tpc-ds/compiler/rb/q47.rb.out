@@ -1,0 +1,26 @@
+require "ostruct"
+
+def _json(v)
+  require "json"
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end
+
+def abs(x)
+  if x >= 0.0
+    x
+  else
+    -x
+  end
+end
+
+v2 = [OpenStruct.new(d_year: 2020, item: "A", avg_monthly_sales: 100.0, sum_sales: 120.0), OpenStruct.new(d_year: 2020, item: "B", avg_monthly_sales: 80.0, sum_sales: 70.0), OpenStruct.new(d_year: 2019, item: "C", avg_monthly_sales: 50.0, sum_sales: 60.0)]
+year = 2020
+result = ((v2.select { |v| (v.d_year == year) && (v.avg_monthly_sales > 0) && ((abs(v.sum_sales - v.avg_monthly_sales) / v.avg_monthly_sales) > 0.1) }).sort_by { |v| [(v.sum_sales - v.avg_monthly_sales), v.item] }).map { |v| v }
+_json(result)
+raise "expect failed" unless result == [OpenStruct.new(d_year: 2019, item: "C", avg_monthly_sales: 50.0, sum_sales: 60.0), OpenStruct.new(d_year: 2020, item: "A", avg_monthly_sales: 100.0, sum_sales: 120.0)]
