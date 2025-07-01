@@ -62,14 +62,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileEmit(s.Emit)
 	case s.Agent != nil:
 		return c.compileAgentDecl(s.Agent)
-	case s.Import != nil:
-		if s.Import.Lang == nil {
-			return c.compilePackageImport(s.Import)
-		}
-		if *s.Import.Lang != "python" {
-			return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
-		}
-		return nil
+       case s.Import != nil:
+               if s.Import.Lang == nil {
+                       return c.compilePackageImport(s.Import)
+               }
+               if *s.Import.Lang == "go" && strings.Trim(s.Import.Path, "\"") == "strings" {
+                       // no-op, handled by special cases in call compilation
+                       return nil
+               }
+               if *s.Import.Lang != "python" {
+                       return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
+               }
+               return nil
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
 		// extern declarations have no runtime effect when compiling to Python
 		return nil
