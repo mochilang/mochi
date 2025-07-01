@@ -294,6 +294,8 @@ var helperIntersect = "def _intersect(a, b):\n" +
 	"    return res\n"
 
 var helperGet = "def _get(obj, name):\n" +
+	"    if obj is None:\n" +
+	"        return None\n" +
 	"    if isinstance(obj, dict):\n" +
 	"        if name in obj:\n" +
 	"            return obj[name]\n" +

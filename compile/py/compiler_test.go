@@ -272,9 +272,9 @@ func TestPyCompiler_TPCDSQueries(t *testing.T) {
 	}
 	root := findRepoRoot(t)
 	queries := []string{}
-       for i := 1; i <= 49; i++ {
-               queries = append(queries, fmt.Sprintf("q%d", i))
-       }
+	for i := 1; i <= 99; i++ {
+		queries = append(queries, fmt.Sprintf("q%d", i))
+	}
 	for _, q := range queries {
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")

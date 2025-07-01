@@ -18,9 +18,9 @@ let csci = from cs in catalog_sales group by {customer_sk: cs.cs_bill_customer_s
 let joined =
   from s in ssci outer join c in csci on s.customer_sk == c.customer_sk && s.item_sk == c.item_sk
   select {
-    store_only: if s.customer_sk != null && c.customer_sk == null {1} else {0},
-    catalog_only: if s.customer_sk == null && c.customer_sk != null {1} else {0},
-    both: if s.customer_sk != null && c.customer_sk != null {1} else {0}
+    store_only: if s.customer_sk != null && (c == null || c.customer_sk == null) {1} else {0},
+    catalog_only: if (s == null || s.customer_sk == null) && c != null && c.customer_sk != null {1} else {0},
+    both: if s.customer_sk != null && c != null && c.customer_sk != null {1} else {0}
   }
 
 let result = {
