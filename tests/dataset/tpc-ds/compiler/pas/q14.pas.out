@@ -1,0 +1,207 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+type StoreSale = record
+  ss_item_sk: integer;
+  ss_list_price: double;
+  ss_quantity: integer;
+  ss_sold_date_sk: integer;
+end;
+
+type CatalogSale = record
+  cs_item_sk: integer;
+  cs_list_price: double;
+  cs_quantity: integer;
+  cs_sold_date_sk: integer;
+end;
+
+type WebSale = record
+  ws_item_sk: integer;
+  ws_list_price: double;
+  ws_quantity: integer;
+  ws_sold_date_sk: integer;
+end;
+
+type Item = record
+  i_item_sk: integer;
+  i_brand_id: integer;
+  i_class_id: integer;
+  i_category_id: integer;
+end;
+
+type DateDim = record
+  d_date_sk: integer;
+  d_year: integer;
+  d_moy: integer;
+end;
+
+procedure test_TPCDS_Q14_cross_channel;
+
+var
+  _tmp0: specialize TFPGMap<string, integer>;
+begin
+  _tmp0 := specialize TFPGMap<string, integer>.Create;
+  _tmp0.AddOrSetData('channel', 'store');
+  _tmp0.AddOrSetData('i_brand_id', 1);
+  _tmp0.AddOrSetData('i_class_id', 1);
+  _tmp0.AddOrSetData('i_category_id', 1);
+  _tmp0.AddOrSetData('sales', 60);
+  _tmp0.AddOrSetData('nu_tmp0ber_sales', 1);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, integer>>([_tmp0]))) then raise
+    Exception.Create('expect failed');
+end;
+
+var
+  _: integer;
+  _tmp1: specialize TFPGMap<string, integer>;
+  _tmp10: specialize TArray<integer>;
+  _tmp11: specialize TFPGMap<string, integer>;
+  _tmp12: specialize TArray<integer>;
+  _tmp13: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp14: specialize TFPGMap<string, integer>;
+  _tmp15: specialize TArray<specialize TFPGMap<string, integer>>;
+  _tmp2: specialize TFPGMap<string, integer>;
+  _tmp3: specialize TFPGMap<string, integer>;
+  _tmp4: specialize TFPGMap<string, integer>;
+  _tmp5: specialize TFPGMap<string, integer>;
+  _tmp6: specialize TFPGMap<string, integer>;
+  _tmp7: specialize TFPGMap<string, integer>;
+  _tmp8: specialize TFPGMap<string, integer>;
+  _tmp9: specialize TArray<integer>;
+  avg_sales: double;
+  catalog_sales: specialize TArray<specialize TFPGMap<string, integer>>;
+  ci: specialize TFPGMap<string, integer>;
+  cross_items: specialize TArray<specialize TFPGMap<string, integer>>;
+  date_dim: specialize TArray<specialize TFPGMap<string, integer>>;
+  item: specialize TArray<specialize TFPGMap<string, integer>>;
+  r: specialize TFPGMap<string, integer>;
+  _result: specialize TArray<specialize TFPGMap<string, integer>>;
+  ss: specialize TFPGMap<string, integer>;
+  store_filtered: specialize TArray<specialize TFPGMap<string, integer>>;
+  store_sales: specialize TArray<specialize TFPGMap<string, integer>>;
+  web_sales: specialize TArray<specialize TFPGMap<string, integer>>;
+  x: integer;
+
+  generic function _avgList<T>(arr: specialize TArray<T>): double;
+begin
+  if Length(arr) = 0 then exit(0);
+  Result := specialize _sumList<T>(arr) / Length(arr);
+end;
+
+generic function _countList<T>(arr: specialize TArray<T>): integer;
+begin
+  Result := Length(arr);
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic function _sumList<T>(arr: specialize TArray<T>): double;
+
+var i: integer;
+  s: double;
+begin
+  s := 0;
+  for i := 0 to High(arr) do
+    s := s + arr[i];
+  Result := s;
+end;
+
+begin
+  _tmp1 := specialize TFPGMap<string, integer>.Create;
+  _tmp1.AddOrSetData('ss_ite_tmp1_sk', 1);
+  _tmp1.AddOrSetData('ss_list_price', 10);
+  _tmp1.AddOrSetData('ss_quantity', 2);
+  _tmp1.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp2 := specialize TFPGMap<string, integer>.Create;
+  _tmp2.AddOrSetData('ss_ite_tmp2_sk', 1);
+  _tmp2.AddOrSetData('ss_list_price', 20);
+  _tmp2.AddOrSetData('ss_quantity', 3);
+  _tmp2.AddOrSetData('ss_sold_date_sk', 2);
+  store_sales := specialize TArray<specialize TFPGMap<string, integer>>([_tmp1, _tmp2]);
+  _tmp3 := specialize TFPGMap<string, integer>.Create;
+  _tmp3.AddOrSetData('cs_ite_tmp3_sk', 1);
+  _tmp3.AddOrSetData('cs_list_price', 10);
+  _tmp3.AddOrSetData('cs_quantity', 2);
+  _tmp3.AddOrSetData('cs_sold_date_sk', 1);
+  catalog_sales := specialize TArray<specialize TFPGMap<string, integer>>([_tmp3]);
+  _tmp4 := specialize TFPGMap<string, integer>.Create;
+  _tmp4.AddOrSetData('ws_ite_tmp4_sk', 1);
+  _tmp4.AddOrSetData('ws_list_price', 30);
+  _tmp4.AddOrSetData('ws_quantity', 1);
+  _tmp4.AddOrSetData('ws_sold_date_sk', 1);
+  web_sales := specialize TArray<specialize TFPGMap<string, integer>>([_tmp4]);
+  _tmp5 := specialize TFPGMap<string, integer>.Create;
+  _tmp5.AddOrSetData('i_ite_tmp5_sk', 1);
+  _tmp5.AddOrSetData('i_brand_id', 1);
+  _tmp5.AddOrSetData('i_class_id', 1);
+  _tmp5.AddOrSetData('i_category_id', 1);
+  item := specialize TArray<specialize TFPGMap<string, integer>>([_tmp5]);
+  _tmp6 := specialize TFPGMap<string, integer>.Create;
+  _tmp6.AddOrSetData('d_date_sk', 1);
+  _tmp6.AddOrSetData('d_year', 2000);
+  _tmp6.AddOrSetData('d__tmp6oy', 12);
+  _tmp7 := specialize TFPGMap<string, integer>.Create;
+  _tmp7.AddOrSetData('d_date_sk', 2);
+  _tmp7.AddOrSetData('d_year', 2002);
+  _tmp7.AddOrSetData('d__tmp7oy', 11);
+  date_dim := specialize TArray<specialize TFPGMap<string, integer>>([_tmp6, _tmp7]);
+  _tmp8 := specialize TFPGMap<string, integer>.Create;
+  _tmp8.AddOrSetData('ss_ite_tmp8_sk', 1);
+  cross_items := specialize TArray<specialize TFPGMap<string, integer>>([_tmp8]);
+  avg_sales := specialize _avgList<double>(specialize TArray<double>([20, 20, 30]));
+  SetLength(_tmp9, 0);
+  for x in g do
+    begin
+      _tmp9 := Concat(_tmp9, [x.ss_quantity * x.ss_list_price]);
+    end;
+  SetLength(_tmp10, 0);
+  for _ in g do
+    begin
+      _tmp10 := Concat(_tmp10, [_]);
+    end;
+  _tmp11 := specialize TFPGMap<string, integer>.Create;
+  _tmp11.AddOrSetData('channel', 'store');
+  _tmp11.AddOrSetData('sales', specialize _su_tmp11List<integer>(_t_tmp11p9));
+  _tmp11.AddOrSetData('nu_tmp11ber_sales', specialize _countList<integer>(_t_tmp11p10));
+  SetLength(_tmp12, 0);
+  for ci in cross_items do
+    begin
+      _tmp12 := Concat(_tmp12, [ci.ss_item_sk]);
+    end;
+  SetLength(_tmp13, 0);
+  for ss in store_sales do
+    begin
+      for d in date_dim do
+        begin
+          if not ((((ss.ss_sold_date_sk = d.d_date_sk) and (d.d_year = 2002)) and (d.d_moy = 11)))
+            then continue;
+          if not ((ss.ss_item_sk in _tmp12)) then continue;
+          _tmp13 := Concat(_tmp13, [_tmp11]);
+        end;
+    end;
+  store_filtered := _tmp13;
+  _tmp14 := specialize TFPGMap<string, integer>.Create;
+  _tmp14.AddOrSetData('channel', r.channel);
+  _tmp14.AddOrSetData('i_brand_id', 1);
+  _tmp14.AddOrSetData('i_class_id', 1);
+  _tmp14.AddOrSetData('i_category_id', 1);
+  _tmp14.AddOrSetData('sales', r.sales);
+  _tmp14.AddOrSetData('nu_tmp14ber_sales', r.nu_tmp14ber_sales);
+  SetLength(_tmp15, 0);
+  for r in store_filtered do
+    begin
+      if not ((r.sales > avg_sales)) then continue;
+      _tmp15 := Concat(_tmp15, [_tmp14]);
+    end;
+  _result := _tmp15;
+  specialize _json<specialize TArray<specialize TFPGMap<string, integer>>>(_result);
+  test_TPCDS_Q14_cross_channel;
+end.
