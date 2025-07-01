@@ -896,9 +896,6 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	c.useLinq = true
-	if len(q.Joins) > 0 && q.Group != nil {
-		return "", fmt.Errorf("unsupported query expression")
-	}
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -1054,6 +1051,124 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			joinOns[i] = onExpr
 		}
 		c.env = child
+
+		if q.Group != nil {
+			keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			genv := types.NewEnv(child)
+			genv.SetVar(q.Group.Name, types.AnyType{}, true)
+			c.env = genv
+			valExpr, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			var sortGroup string
+			if q.Sort != nil {
+				sortGroup, err = c.compileExpr(q.Sort)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			if q.Skip != nil {
+				skipExpr, err = c.compileExpr(q.Skip)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			if q.Take != nil {
+				takeExpr, err = c.compileExpr(q.Take)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			c.env = orig
+
+			var buf strings.Builder
+			buf.WriteString(fmt.Sprintf("new Func<List<%s>>(() => {\n", resultType))
+			buf.WriteString("\tvar groups = new Dictionary<string, _Group>();\n")
+			buf.WriteString("\tvar order = new List<string>();\n")
+			buf.WriteString(fmt.Sprintf("\tforeach (var %s in %s) {\n", v, src))
+			indent := "\t\t"
+			if flt, ok := aliasFilters[v]; ok {
+				for _, fcond := range flt {
+					buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", fcond))
+				}
+			}
+			for i, f := range q.Froms {
+				buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(f.Var), fromSrcs[i]))
+				indent += "\t"
+				if flt, ok := aliasFilters[sanitizeName(f.Var)]; ok {
+					for _, fcond := range flt {
+						buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", fcond))
+					}
+				}
+			}
+			for i := range q.Joins {
+				buf.WriteString(fmt.Sprintf(indent+"foreach (var %s in %s) {\n", sanitizeName(q.Joins[i].Var), joinSrcs[i]))
+				indent += "\t"
+				buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", joinOns[i]))
+				if flt, ok := aliasFilters[sanitizeName(q.Joins[i].Var)]; ok {
+					for _, fcond := range flt {
+						buf.WriteString(fmt.Sprintf(indent+"if (!(%s)) continue;\n", fcond))
+					}
+				}
+			}
+			if cond != "" {
+				buf.WriteString(fmt.Sprintf(indent+"if (%s) {\n", cond))
+				indent += "\t"
+			}
+			buf.WriteString(fmt.Sprintf(indent+"var key = %s;\n", keyExpr))
+			buf.WriteString(indent + "var ks = Convert.ToString(key);\n")
+			buf.WriteString(indent + "if (!groups.TryGetValue(ks, out var g)) {\n")
+			buf.WriteString(indent + "\tg = new _Group(key);\n")
+			buf.WriteString(indent + "\tgroups[ks] = g;\n")
+			buf.WriteString(indent + "\torder.Add(ks);\n")
+			buf.WriteString(indent + "}\n")
+			buf.WriteString(fmt.Sprintf(indent+"g.Items.Add(%s);\n", v))
+			if cond != "" {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
+			for i := len(q.Joins) - 1; i >= 0; i-- {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
+			for i := len(q.Froms) - 1; i >= 0; i-- {
+				indent = indent[:len(indent)-1]
+				buf.WriteString(indent + "}\n")
+			}
+			indent = indent[:len(indent)-1]
+			buf.WriteString(indent + "}\n")
+
+			buf.WriteString("\tvar items = new List<_Group>();\n")
+			buf.WriteString("\tforeach (var ks in order) items.Add(groups[ks]);\n")
+			if sortGroup != "" {
+				buf.WriteString(fmt.Sprintf("\titems = items.OrderBy(%s => %s).ToList();\n", sanitizeName(q.Group.Name), sortGroup))
+			}
+			if skipExpr != "" {
+				buf.WriteString(fmt.Sprintf("\titems = items.Skip(%s).ToList();\n", skipExpr))
+			}
+			if takeExpr != "" {
+				buf.WriteString(fmt.Sprintf("\titems = items.Take(%s).ToList();\n", takeExpr))
+			}
+			buf.WriteString(fmt.Sprintf("\tvar _res = new List<%s>();\n", resultType))
+			buf.WriteString(fmt.Sprintf("\tforeach (var %s in items) {\n", sanitizeName(q.Group.Name)))
+			buf.WriteString(fmt.Sprintf("\t\t_res.Add(%s);\n", valExpr))
+			buf.WriteString("\t}\n")
+			buf.WriteString("\treturn _res;\n")
+			buf.WriteString("})()")
+			c.use("_group")
+			return buf.String(), nil
+		}
+
+		// existing join-only implementation
 		sel, err = c.compileExpr(q.Select)
 		if err != nil {
 			c.env = orig
