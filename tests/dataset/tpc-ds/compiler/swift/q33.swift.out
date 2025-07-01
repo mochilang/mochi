@@ -1,0 +1,167 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _concat<T>(_ a: [T], _ b: [T]) -> [T] {
+  var res: [T] = []
+  res.reserveCapacity(a.count + b.count)
+  res.append(contentsOf: a)
+  res.append(contentsOf: b)
+  return res
+}
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q33_simplified() {
+  expect(
+    result == [["i_manufact_id": 1, "total_sales": 150], ["i_manufact_id": 2, "total_sales": 50]])
+}
+
+let item = [
+  ["i_item_sk": 1, "i_manufact_id": 1, "i_category": "Books"],
+  ["i_item_sk": 2, "i_manufact_id": 2, "i_category": "Books"],
+]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_year": 2000, "d_moy": 1]]
+let customer_address: [[String: Int]] = [
+  ["ca_address_sk": 1, "ca_gmt_offset": -5], ["ca_address_sk": 2, "ca_gmt_offset": -5],
+]
+let store_sales = [
+  ["ss_item_sk": 1, "ss_ext_sales_price": 100, "ss_sold_date_sk": 1, "ss_addr_sk": 1],
+  ["ss_item_sk": 2, "ss_ext_sales_price": 50, "ss_sold_date_sk": 1, "ss_addr_sk": 2],
+]
+let catalog_sales = [
+  ["cs_item_sk": 1, "cs_ext_sales_price": 20, "cs_sold_date_sk": 1, "cs_bill_addr_sk": 1]
+]
+let web_sales = [
+  ["ws_item_sk": 1, "ws_ext_sales_price": 30, "ws_sold_date_sk": 1, "ws_bill_addr_sk": 1]
+]
+let month = 1
+let year = 2000
+let union_sales = _concat(
+  _concat(
+    ({
+      var _res: [[String: Any]] = []
+      for ss in store_sales {
+        for d in date_dim {
+          if !(ss["ss_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+          for ca in customer_address {
+            if !(ss["ss_addr_sk"]! == ca["ca_address_sk"]!) { continue }
+            for i in item {
+              if !(ss["ss_item_sk"]! == i["i_item_sk"]!) { continue }
+              if i["i_category"]! == "Books" && d["d_year"]! == year && d["d_moy"]! == month
+                && ca["ca_gmt_offset"]! == (-5)
+              {
+                _res.append(["manu": i["i_manufact_id"]!, "price": ss["ss_ext_sales_price"]!])
+              }
+            }
+          }
+        }
+      }
+      var _items = _res
+      return _items
+    }()),
+    ({
+      var _res: [[String: Any]] = []
+      for cs in catalog_sales {
+        for d in date_dim {
+          if !(cs["cs_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+          for ca in customer_address {
+            if !(cs["cs_bill_addr_sk"]! == ca["ca_address_sk"]!) { continue }
+            for i in item {
+              if !(cs["cs_item_sk"]! == i["i_item_sk"]!) { continue }
+              if i["i_category"]! == "Books" && d["d_year"]! == year && d["d_moy"]! == month
+                && ca["ca_gmt_offset"]! == (-5)
+              {
+                _res.append(["manu": i["i_manufact_id"]!, "price": cs["cs_ext_sales_price"]!])
+              }
+            }
+          }
+        }
+      }
+      var _items = _res
+      return _items
+    }())),
+  ({
+    var _res: [[String: Any]] = []
+    for ws in web_sales {
+      for d in date_dim {
+        if !(ws["ws_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+        for ca in customer_address {
+          if !(ws["ws_bill_addr_sk"]! == ca["ca_address_sk"]!) { continue }
+          for i in item {
+            if !(ws["ws_item_sk"]! == i["i_item_sk"]!) { continue }
+            if i["i_category"]! == "Books" && d["d_year"]! == year && d["d_moy"]! == month
+              && ca["ca_gmt_offset"]! == (-5)
+            {
+              _res.append(["manu": i["i_manufact_id"]!, "price": ws["ws_ext_sales_price"]!])
+            }
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }()))
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for s in union_sales {
+      _pairs.append(
+        (
+          item: [
+            "i_manufact_id": g.key,
+            "total_sales": _sum(
+              ({
+                var _res: [Any] = []
+                for x in g {
+                  _res.append(x.price)
+                }
+                var _items = _res
+                return _items
+              }()).map { Double($0) }),
+          ],
+          key: -_sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.price)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) })
+        ))
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q33_simplified()
+}
+main()

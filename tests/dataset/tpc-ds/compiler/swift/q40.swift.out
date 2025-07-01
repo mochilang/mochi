@@ -1,0 +1,122 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+class _Group {
+  var key: Any
+  var Items: [Any] = []
+  init(_ k: Any) { self.key = k }
+}
+
+func _group_by(_ src: [Any], _ keyfn: (Any) -> Any) -> [_Group] {
+  func keyStr(_ v: Any) -> String {
+    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
+      let s = String(data: data, encoding: .utf8)
+    {
+      return s
+    }
+    return String(describing: v)
+  }
+  var groups: [String: _Group] = [:]
+  var order: [String] = []
+  for it in src {
+    let key = keyfn(it)
+    let ks = keyStr(key)
+    if groups[ks] == nil {
+      groups[ks] = _Group(key)
+      order.append(ks)
+    }
+    groups[ks]!.Items.append(it)
+  }
+  return order.compactMap { groups[$0] }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q40_simplified() {
+  expect(result == [["w_state": "CA", "i_item_id": "I1", "sales_before": 100, "sales_after": 0]])
+}
+
+let catalog_sales = [
+  ["order": 1, "item_sk": 1, "warehouse_sk": 1, "date_sk": 1, "price": 100],
+  ["order": 2, "item_sk": 1, "warehouse_sk": 1, "date_sk": 2, "price": 150],
+]
+let catalog_returns = [["order": 2, "item_sk": 1, "refunded": 150]]
+let item = [["item_sk": 1, "item_id": "I1", "current_price": 1.2]]
+let warehouse = [["warehouse_sk": 1, "state": "CA"]]
+let date_dim = [["date_sk": 1, "date": "2020-01-10"], ["date_sk": 2, "date": "2020-01-20"]]
+let sales_date = "2020-01-15"
+let records =
+  ({
+    var _res: [[String: Any]] = []
+    for cs in catalog_sales {
+      for cr in catalog_returns {
+        if !(cs["order"]! == cr["order"]! && cs["item_sk"]! == cr["item_sk"]!) { continue }
+        for w in warehouse {
+          if !(cs["warehouse_sk"]! == w["warehouse_sk"]!) { continue }
+          for i in item {
+            if !(cs["item_sk"]! == i["item_sk"]!) { continue }
+            if !(i["current_price"]! >= 0.99 && i["current_price"]! <= 1.49) { continue }
+            for d in date_dim {
+              if !(cs["date_sk"]! == d["date_sk"]!) { continue }
+              _res.append([
+                "w_state": w["state"]!, "i_item_id": i["item_id"]!, "sold_date": d["date"]!,
+                "net": cs["price"]! - ((cr == nil ? 0 : cr["refunded"]!)),
+              ])
+            }
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let result = _group_by(
+  records.map { $0 as Any }, { r in ["w_state": r["w_state"]!, "i_item_id": r["i_item_id"]!] }
+).map { g in
+  [
+    "w_state": g.key.w_state, "i_item_id": g.key.i_item_id,
+    "sales_before": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append((x.sold_date < sales_date ? x.net : 0))
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "sales_after": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append((x.sold_date >= sales_date ? x.net : 0))
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+  ]
+}
+func main() {
+  _json(result)
+  test_TPCDS_Q40_simplified()
+}
+main()

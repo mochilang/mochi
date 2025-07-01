@@ -857,6 +857,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("lower expects 1 arg")
 			}
 			return fmt.Sprintf("%s.lowercased()", args[0]), nil
+		case "concat":
+			if len(args) < 2 {
+				return "", fmt.Errorf("concat expects at least 2 args")
+			}
+			c.use("_concat")
+			expr := args[0]
+			for i := 1; i < len(args); i++ {
+				expr = fmt.Sprintf("_concat(%s, %s)", expr, args[i])
+			}
+			return expr, nil
 		case "avg":
 			if len(args) != 1 {
 				return "", fmt.Errorf("avg expects 1 arg")
