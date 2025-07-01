@@ -1021,9 +1021,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag == ValueMap {
 				if flag, ok := lst.Map["__group__"]; ok && flag.Tag == ValueBool && flag.Bool {
 					items := lst.Map["items"]
-					items.List = append(items.List, fr.regs[ins.C])
-					lst.Map["items"] = items
-					lst.Map["count"] = Value{Tag: ValueInt, Int: len(items.List)}
+					newItems := append(append([]Value(nil), items.List...), fr.regs[ins.C])
+					lst.Map["items"] = Value{Tag: ValueList, List: newItems}
+					lst.Map["count"] = Value{Tag: ValueInt, Int: len(newItems)}
 					fr.regs[ins.A] = lst
 					break
 				}
