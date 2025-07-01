@@ -45,10 +45,12 @@ type Compiler struct {
 	needsFetchJSON    bool
 	needsExpect       bool
 	tests             []string
+	globals           map[string]bool
+	labelCount        int
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, imports: map[string]string{}, structs: map[string]bool{}, tests: []string{}}
+	return &Compiler{env: env, imports: map[string]string{}, structs: map[string]bool{}, tests: []string{}, globals: map[string]bool{}}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -76,6 +78,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
+	if err := c.compileGlobalDecls(prog); err != nil {
+		return nil, err
+	}
 	// compile functions and test blocks next
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
@@ -97,8 +102,30 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Fun != nil || s.Test != nil || s.Type != nil {
 			continue
 		}
-		if err := c.compileStmt(s, false); err != nil {
-			return nil, err
+		if s.Let != nil && c.globals[sanitizeName(s.Let.Name)] {
+			val := "0"
+			if s.Let.Value != nil {
+				v, err := c.compileExpr(s.Let.Value, false)
+				if err != nil {
+					return nil, err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(s.Let.Name), val))
+		} else if s.Var != nil && c.globals[sanitizeName(s.Var.Name)] {
+			val := "0"
+			if s.Var.Value != nil {
+				v, err := c.compileExpr(s.Var.Value, false)
+				if err != nil {
+					return nil, err
+				}
+				val = v
+			}
+			c.writeln(fmt.Sprintf("%s = %s;", sanitizeName(s.Var.Name), val))
+		} else {
+			if err := c.compileStmt(s, false); err != nil {
+				return nil, err
+			}
 		}
 	}
 	for _, name := range c.tests {
@@ -239,6 +266,47 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("};")
+	return nil
+}
+
+func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
+	for _, s := range prog.Statements {
+		switch {
+		case s.Let != nil:
+			name := sanitizeName(s.Let.Name)
+			var typ types.Type = types.AnyType{}
+			if c.env != nil {
+				if s.Let.Type != nil {
+					typ = c.resolveTypeRef(s.Let.Type)
+				} else if s.Let.Value != nil {
+					typ = c.inferExprType(s.Let.Value)
+				} else if old, err := c.env.GetVar(s.Let.Name); err == nil {
+					typ = old
+				}
+				c.env.SetVar(s.Let.Name, typ, false)
+			}
+			c.globals[name] = true
+			c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+		case s.Var != nil:
+			name := sanitizeName(s.Var.Name)
+			var typ types.Type = types.AnyType{}
+			if c.env != nil {
+				if s.Var.Type != nil {
+					typ = c.resolveTypeRef(s.Var.Type)
+				} else if s.Var.Value != nil {
+					typ = c.inferExprType(s.Var.Value)
+				} else if old, err := c.env.GetVar(s.Var.Name); err == nil {
+					typ = old
+				}
+				c.env.SetVar(s.Var.Name, typ, true)
+			}
+			c.globals[name] = true
+			c.writeln(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)))
+		}
+	}
+	if len(c.globals) > 0 {
+		c.writeln("")
+	}
 	return nil
 }
 
@@ -588,9 +656,6 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
-		if q.Sort != nil || q.Skip != nil || q.Take != nil {
-			return "", fmt.Errorf("unsupported query features")
-		}
 
 		src, err := c.compileExpr(q.Source, false)
 		if err != nil {
@@ -672,7 +737,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		idxMap := c.newTmp()
 		var b strings.Builder
 		c.needsEqual = true
-		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator); ")
+		lbl := c.newLabel()
+		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator); ")
 		b.WriteString("var " + idxMap + " = std.AutoHashMap(" + keyType + ", usize).init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
 		for i, fs := range fromSrcs {
@@ -700,12 +766,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		resVar := c.newTmp()
 		b.WriteString(" var " + resVar + " = std.ArrayList(" + resElem + ").init(std.heap.page_allocator);")
 		b.WriteString("for (" + tmp + ".items) |" + sanitizeName(q.Group.Name) + "| { " + resVar + ".append(" + sel + ") catch unreachable; }")
-		b.WriteString(" break :blk " + resVar + ".toOwnedSlice() catch unreachable; }")
+		b.WriteString(" break :" + lbl + " " + resVar + ".toOwnedSlice() catch unreachable; }")
 		return b.String(), nil
 	}
 
 	if len(q.Froms) > 0 || len(q.Joins) > 0 {
-		if q.Sort != nil || q.Skip != nil || q.Take != nil || q.Group != nil {
+		if q.Group != nil {
 			return "", fmt.Errorf("unsupported query features")
 		}
 
@@ -774,7 +840,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		tmp := c.newTmp()
 		var b strings.Builder
 		elem := strings.TrimPrefix(resType, "[]const ")
-		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
+		lbl := c.newLabel()
+		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
 		for i, fs := range fromSrcs {
 			b.WriteString(" for (" + fs + ") |" + sanitizeName(q.Froms[i].Var) + "| {")
@@ -795,8 +862,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(" }")
 		resVar := c.newTmp()
-		b.WriteString(" var " + resVar + " = " + tmp + ".toOwnedSlice() catch unreachable;")
-		b.WriteString(" break :blk " + resVar + "; }")
+		b.WriteString(" const " + resVar + " = " + tmp + ".toOwnedSlice() catch unreachable;")
+		b.WriteString(" break :" + lbl + " " + resVar + "; }")
 		return b.String(), nil
 	}
 
@@ -856,10 +923,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	tmp := c.newTmp()
 	var b strings.Builder
 	elem := strings.TrimPrefix(resType, "[]const ")
+	lbl := c.newLabel()
 	if sortExpr != "" {
 		keyType := zigTypeOf(c.inferExprType(q.Sort))
 		pairType := "struct { item: " + elem + ", key: " + keyType + " }"
-		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + pairType + ").init(std.heap.page_allocator); ")
+		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + pairType + ").init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
 		if cond != "" {
 			b.WriteString(" if (!(" + cond + ")) continue;")
@@ -877,7 +945,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("for (" + tmp + ".items) |p| { " + listTmp + ".append(p.item) catch unreachable; }")
 		tmp = listTmp
 	} else {
-		b.WriteString("blk: { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
+		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
 		if cond != "" {
 			b.WriteString(" if (!(" + cond + ")) continue;")
@@ -885,7 +953,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
 	}
 	resVar := c.newTmp()
-	b.WriteString(" var " + resVar + " = " + tmp + ".toOwnedSlice() catch unreachable;")
+	b.WriteString(" const " + resVar + " = " + tmp + ".toOwnedSlice() catch unreachable;")
 	if skipExpr != "" || takeExpr != "" {
 		c.needsSlice = true
 		start := "0"
@@ -902,7 +970,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(" " + resVar + " = _slice_list(" + elem + ", " + resVar + ", " + start + ", " + end + ", 1);")
 	}
-	b.WriteString(" break :blk " + resVar + "; }")
+	b.WriteString(" break :" + lbl + " " + resVar + "; }")
 	return b.String(), nil
 }
 
@@ -1558,7 +1626,8 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		}
 	}
 	var b strings.Builder
-	b.WriteString("blk: { var m = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
+	lbl := c.newLabel()
+	b.WriteString(lbl + ": { var m = std.AutoHashMap(" + keyType + ", " + valType + ").init(std.heap.page_allocator); ")
 	for _, it := range m.Items {
 		k, err := c.compileExpr(it.Key, false)
 		if err != nil {
@@ -1570,7 +1639,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 		}
 		b.WriteString("m.put(" + k + ", " + v + ") catch unreachable; ")
 	}
-	b.WriteString("break :blk m; }")
+	b.WriteString("break :" + lbl + " m; }")
 	return b.String(), nil
 }
 

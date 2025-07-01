@@ -1,0 +1,51 @@
+const std = @import("std");
+
+fn expect(cond: bool) void {
+    if (!cond) @panic("expect failed");
+}
+
+fn _avg_int(v: []const i32) f64 {
+    if (v.len == 0) return 0;
+    var sum: f64 = 0;
+    for (v) |it| { sum += @floatFromInt(it); }
+    return sum / @as(f64, @floatFromInt(v.len));
+}
+
+fn _json(v: anytype) void {
+    var buf = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer buf.deinit();
+    std.json.stringify(v, .{}, buf.writer()) catch unreachable;
+    std.debug.print("{s}\n", .{buf.items});
+}
+
+fn _equal(a: anytype, b: anytype) bool {
+    if (@TypeOf(a) != @TypeOf(b)) return false;
+    return switch (@typeInfo(@TypeOf(a))) {
+        .Struct, .Union, .Array, .Vector, .Pointer, .Slice => std.meta.eql(a, b),
+        else => a == b,
+    };
+}
+
+var customer_address: []const i32 = undefined;
+var customer: []const i32 = undefined;
+var store_sales: []const i32 = undefined;
+var date_dim: []const i32 = undefined;
+var item: []const i32 = undefined;
+var target_month_seq: i32 = undefined;
+var result: []const std.AutoHashMap([]const u8, i32) = undefined;
+
+fn test_TPCDS_Q6_empty() void {
+    expect(((result).len == @as(i32,@intCast(0))));
+}
+
+pub fn main() void {
+    customer_address = &[_]i32{};
+    customer = &[_]i32{};
+    store_sales = &[_]i32{};
+    date_dim = &[_]i32{};
+    item = &[_]i32{};
+    target_month_seq = max(blk0: { var _tmp0 = std.ArrayList(i32).init(std.heap.page_allocator); for (date_dim) |d| { if (!(((d.d_year == @as(i32,@intCast(1999))) and (d.d_moy == @as(i32,@intCast(5)))))) continue; _tmp0.append(d.d_month_seq) catch unreachable; } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; });
+    result = blk3: { var _tmp4 = std.ArrayList(struct { key: i32, Items: std.ArrayList(i32) }).init(std.heap.page_allocator); var _tmp5 = std.AutoHashMap(i32, usize).init(std.heap.page_allocator); for (customer_address) |a| { for (customer) |c| { if (!((a.ca_address_sk == c.c_current_addr_sk))) continue; for (store_sales) |s| { if (!((c.c_customer_sk == s.ss_customer_sk))) continue; for (date_dim) |d| { if (!((s.ss_sold_date_sk == d.d_date_sk))) continue; for (item) |i| { if (!((s.ss_item_sk == i.i_item_sk))) continue; if (!(((d.d_month_seq == target_month_seq) and (i.i_current_price > (1.2 * _avg_int(blk2: { var _tmp2 = std.ArrayList(i32).init(std.heap.page_allocator); for (item) |j| { if (!((j.i_category == i.i_category))) continue; _tmp2.append(j.i_current_price) catch unreachable; } const _tmp3 = _tmp2.toOwnedSlice() catch unreachable; break :blk2 _tmp3; })))))) continue; const _tmp6 = a.ca_state; if (_tmp5.get(_tmp6)) |idx| { _tmp4.items[idx].Items.append(a) catch unreachable; } else { var g = struct { key: i32, Items: std.ArrayList(i32) }{ .key = _tmp6, .Items = std.ArrayList(i32).init(std.heap.page_allocator) }; g.Items.append(a) catch unreachable; _tmp4.append(g) catch unreachable; _tmp5.put(_tmp6, _tmp4.items.len - 1) catch unreachable; } } } } } } var _tmp7 = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator);for (_tmp4.items) |g| { _tmp7.append(blk1: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("state", g.key) catch unreachable; m.put("cnt", (g.Items.len)) catch unreachable; break :blk1 m; }) catch unreachable; } break :blk3 _tmp7.toOwnedSlice() catch unreachable; };
+    _json(result);
+    test_TPCDS_Q6_empty();
+}

@@ -1,0 +1,35 @@
+const std = @import("std");
+
+fn expect(cond: bool) void {
+    if (!cond) @panic("expect failed");
+}
+
+fn _json(v: anytype) void {
+    var buf = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer buf.deinit();
+    std.json.stringify(v, .{}, buf.writer()) catch unreachable;
+    std.debug.print("{s}\n", .{buf.items});
+}
+
+var store_sales: []const i32 = undefined;
+var date_dim: []const i32 = undefined;
+var store: []const i32 = undefined;
+var customer_address: []const i32 = undefined;
+var customer: []const i32 = undefined;
+var result: []const i32 = undefined;
+
+fn test_TPCDS_Q8_empty() void {
+    expect(((result).len == @as(i32,@intCast(0))));
+}
+
+pub fn main() void {
+    store_sales = &[_]i32{};
+    date_dim = &[_]i32{};
+    store = &[_]i32{};
+    customer_address = &[_]i32{};
+    customer = &[_]i32{};
+    reverse(substr("zip", @as(i32,@intCast(0)), @as(i32,@intCast(2))));
+    result = &[_]i32{};
+    _json(result);
+    test_TPCDS_Q8_empty();
+}
