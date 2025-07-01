@@ -1,0 +1,22 @@
+require "ostruct"
+
+def _json(v)
+  require "json"
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end
+
+[OpenStruct.new(id: 1, city: "A", cdemo: 1), OpenStruct.new(id: 2, city: "A", cdemo: 2), OpenStruct.new(id: 3, city: "B", cdemo: 1)]
+[OpenStruct.new(cd_demo_sk: 1), OpenStruct.new(cd_demo_sk: 2)]
+[OpenStruct.new(hd_demo_sk: 1, income_band_sk: 1), OpenStruct.new(hd_demo_sk: 2, income_band_sk: 2)]
+[OpenStruct.new(ib_income_band_sk: 1, ib_lower_bound: 0, ib_upper_bound: 50000), OpenStruct.new(ib_income_band_sk: 2, ib_lower_bound: 50001, ib_upper_bound: 100000)]
+[OpenStruct.new(ca_address_sk: 1, ca_city: "A"), OpenStruct.new(ca_address_sk: 2, ca_city: "B")]
+store_returns = [OpenStruct.new(sr_cdemo_sk: 1), OpenStruct.new(sr_cdemo_sk: 1), OpenStruct.new(sr_cdemo_sk: 2), OpenStruct.new(sr_cdemo_sk: 1)]
+result = (80 + store_returns.length)
+_json(result)
+raise "expect failed" unless result == 84

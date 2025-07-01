@@ -1,0 +1,32 @@
+require "ostruct"
+
+def _first(v)
+  list = nil
+  if v.respond_to?(:Items)
+    list = v.Items
+  elsif v.is_a?(Array)
+    list = v
+  elsif v.respond_to?(:to_a)
+    list = v.to_a
+  end
+  return nil if !list || list.empty?
+  list[0]
+end
+
+def _json(v)
+  require "json"
+  obj = v
+  if v.is_a?(Array)
+    obj = v.map { |it| it.respond_to?(:to_h) ? it.to_h : it }
+  elsif v.respond_to?(:to_h)
+    obj = v.to_h
+  end
+  puts(JSON.generate(obj))
+end
+
+t = [OpenStruct.new(id: 1, val: 52)]
+"ignore".downcase
+vals = t.map { |r| r.val }
+result = _first(vals)
+_json(result)
+raise "expect failed" unless result == 52
