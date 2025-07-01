@@ -1121,6 +1121,22 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		}
 		c.needGroup = true
 		return fmt.Sprintf("(_sum %s)", args[0]), nil
+	case "substr":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substr expects 3 args")
+		}
+		c.needSlice = true
+		return fmt.Sprintf("(_slice %s %s %s)", args[0], args[1], args[2]), nil
+	case "reverse":
+		if len(args) != 1 {
+			return "", fmt.Errorf("reverse expects 1 arg")
+		}
+		root := rootNameExpr(call.Args[0])
+		if c.varType(root) == "string" || c.isStringExpr(call.Args[0]) {
+			c.needStringLib = true
+			return fmt.Sprintf("(list->string (reverse (string->list %s)))", args[0]), nil
+		}
+		return fmt.Sprintf("(reverse %s)", args[0]), nil
 	case "push":
 		if len(args) != 2 {
 			return "", fmt.Errorf("push expects 2 args")
