@@ -1,14 +1,14 @@
-func main (regs=302)
+func main (regs=301)
   // let date_dim = [
   Const        r0, [{"d_date_sk": 1, "d_qoy": 1, "d_year": 1998}]
   // let item = [
   Const        r1, [{"i_category": "CatA", "i_item_sk": 1}, {"i_category": "CatB", "i_item_sk": 2}, {"i_category": "CatC", "i_item_sk": 3}]
   // let store_sales = [
-  Const        r2, [{"ss_customer_sk": nil, "ss_ext_sales_price": 10, "ss_item_sk": 1, "ss_sold_date_sk": 1}]
+  Const        r2, [{"ss_customer_sk": nil, "ss_ext_sales_price": 10.0, "ss_item_sk": 1, "ss_sold_date_sk": 1}]
   // let web_sales = [
-  Const        r3, [{"ws_bill_customer_sk": nil, "ws_ext_sales_price": 15, "ws_item_sk": 2, "ws_sold_date_sk": 1}]
+  Const        r3, [{"ws_bill_customer_sk": nil, "ws_ext_sales_price": 15.0, "ws_item_sk": 2, "ws_sold_date_sk": 1}]
   // let catalog_sales = [
-  Const        r4, [{"cs_bill_customer_sk": nil, "cs_ext_sales_price": 20, "cs_item_sk": 3, "cs_sold_date_sk": 1}]
+  Const        r4, [{"cs_bill_customer_sk": nil, "cs_ext_sales_price": 20.0, "cs_item_sk": 3, "cs_sold_date_sk": 1}]
   // from ss in store_sales
   Const        r5, []
   // where ss.ss_customer_sk == null
@@ -337,131 +337,129 @@ L23:
   In           r221, r220, r193
   JumpIfTrue   r221, L22
   // from r in all_rows
-  Const        r222, []
-  Const        r223, "__group__"
-  Const        r224, true
+  Const        r222, "__group__"
+  Const        r223, true
   // group by { channel: r.channel, col_name: r.col_name, d_year: r.d_year, d_qoy: r.d_qoy, i_category: r.i_category } into g
-  Move         r225, r219
+  Move         r224, r219
   // from r in all_rows
-  Const        r226, "items"
-  Move         r227, r222
-  Const        r228, "count"
+  Const        r225, "items"
+  Move         r226, r195
+  Const        r227, "count"
+  Move         r228, r222
   Move         r229, r223
-  Move         r230, r224
-  Move         r231, r186
+  Move         r230, r186
+  Move         r231, r224
   Move         r232, r225
   Move         r233, r226
   Move         r234, r227
-  Move         r235, r228
-  Move         r236, r17
-  MakeMap      r237, 4, r229
-  SetIndex     r193, r220, r237
-  Append       r238, r194, r237
-  Move         r194, r238
+  Move         r235, r17
+  MakeMap      r236, 4, r228
+  SetIndex     r193, r220, r236
+  Append       r237, r194, r236
+  Move         r194, r237
 L22:
-  Index        r239, r193, r220
-  Index        r240, r239, r226
-  Append       r241, r240, r197
-  SetIndex     r239, r226, r241
-  Index        r242, r239, r228
-  AddInt       r243, r242, r72
-  SetIndex     r239, r228, r243
+  Index        r238, r193, r220
+  Index        r239, r238, r225
+  Append       r240, r239, r197
+  SetIndex     r238, r225, r240
+  Index        r241, r238, r227
+  AddInt       r242, r241, r72
+  SetIndex     r238, r227, r242
   AddInt       r192, r192, r72
   Jump         L23
 L21:
-  Move         r244, r17
-  Len          r245, r194
+  Move         r243, r17
+  Len          r244, r194
 L27:
-  LessInt      r246, r244, r245
-  JumpIfFalse  r246, L24
-  Index        r247, r194, r244
-  Move         r248, r247
+  LessInt      r245, r243, r244
+  JumpIfFalse  r245, L24
+  Index        r246, r194, r243
+  Move         r247, r246
   // channel: g.key.channel,
-  Const        r249, "channel"
-  Index        r250, r248, r186
-  Index        r251, r250, r7
+  Const        r248, "channel"
+  Index        r249, r247, r186
+  Index        r250, r249, r7
   // col_name: g.key.col_name,
-  Const        r252, "col_name"
-  Index        r253, r248, r186
-  Index        r254, r253, r8
+  Const        r251, "col_name"
+  Index        r252, r247, r186
+  Index        r253, r252, r8
   // d_year: g.key.d_year,
-  Const        r255, "d_year"
-  Index        r256, r248, r186
-  Index        r257, r256, r9
+  Const        r254, "d_year"
+  Index        r255, r247, r186
+  Index        r256, r255, r9
   // d_qoy: g.key.d_qoy,
-  Const        r258, "d_qoy"
-  Index        r259, r248, r186
-  Index        r260, r259, r10
+  Const        r257, "d_qoy"
+  Index        r258, r247, r186
+  Index        r259, r258, r10
   // i_category: g.key.i_category,
-  Const        r261, "i_category"
-  Index        r262, r248, r186
-  Index        r263, r262, r11
+  Const        r260, "i_category"
+  Index        r261, r247, r186
+  Index        r262, r261, r11
   // sales_cnt: count(g),
-  Const        r264, "sales_cnt"
-  Index        r265, r248, r228
+  Const        r263, "sales_cnt"
+  Index        r264, r247, r227
   // sales_amt: sum(from x in g select x.r.ext_sales_price)
-  Const        r266, "sales_amt"
-  Const        r267, []
-  IterPrep     r268, r248
-  Len          r269, r268
-  Move         r270, r17
+  Const        r265, "sales_amt"
+  Const        r266, []
+  IterPrep     r267, r247
+  Len          r268, r267
+  Move         r269, r17
 L26:
-  LessInt      r271, r270, r269
-  JumpIfFalse  r271, L25
-  Index        r272, r268, r270
-  Move         r273, r272
-  Index        r274, r273, r189
-  Index        r275, r274, r12
-  Append       r276, r267, r275
-  Move         r267, r276
-  AddInt       r270, r270, r72
+  LessInt      r270, r269, r268
+  JumpIfFalse  r270, L25
+  Index        r271, r267, r269
+  Move         r272, r271
+  Index        r273, r272, r189
+  Index        r274, r273, r12
+  Append       r275, r266, r274
+  Move         r266, r275
+  AddInt       r269, r269, r72
   Jump         L26
 L25:
-  Sum          r277, r267
+  Sum          r276, r266
   // channel: g.key.channel,
-  Move         r278, r249
-  Move         r279, r251
+  Move         r277, r248
+  Move         r278, r250
   // col_name: g.key.col_name,
-  Move         r280, r252
-  Move         r281, r254
+  Move         r279, r251
+  Move         r280, r253
   // d_year: g.key.d_year,
-  Move         r282, r255
-  Move         r283, r257
+  Move         r281, r254
+  Move         r282, r256
   // d_qoy: g.key.d_qoy,
-  Move         r284, r258
-  Move         r285, r260
+  Move         r283, r257
+  Move         r284, r259
   // i_category: g.key.i_category,
-  Move         r286, r261
-  Move         r287, r263
+  Move         r285, r260
+  Move         r286, r262
   // sales_cnt: count(g),
+  Move         r287, r263
   Move         r288, r264
-  Move         r289, r265
   // sales_amt: sum(from x in g select x.r.ext_sales_price)
-  Move         r290, r266
-  Move         r291, r277
+  Move         r289, r265
+  Move         r290, r276
   // select {
-  MakeMap      r292, 7, r278
+  MakeMap      r291, 7, r277
   // sort by g.key.channel
-  Index        r293, r248, r186
-  Index        r294, r293, r7
-  Move         r295, r294
+  Index        r292, r247, r186
+  Index        r293, r292, r7
+  Move         r294, r293
   // from r in all_rows
-  Move         r296, r292
-  MakeList     r297, 2, r295
-  Append       r298, r185, r297
-  Move         r185, r298
-  AddInt       r244, r244, r72
+  Move         r295, r291
+  MakeList     r296, 2, r294
+  Append       r297, r185, r296
+  Move         r185, r297
+  AddInt       r243, r243, r72
   Jump         L27
 L24:
   // sort by g.key.channel
-  Sort         r299, r185
+  Sort         r298, r185
   // from r in all_rows
-  Move         r185, r299
+  Move         r185, r298
   // json(result)
   JSON         r185
   // expect result == [
-  Const        r300, [{"channel": "store", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatA", "sales_amt": 10, "sales_cnt": 1}, {"channel": "web", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatB", "sales_amt": 15, "sales_cnt": 1}, {"channel": "catalog", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatC", "sales_amt": 20, "sales_cnt": 1}]
-  Equal        r301, r185, r300
-  Expect       r301
+  Const        r299, [{"channel": "store", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatA", "sales_amt": 10.0, "sales_cnt": 1}, {"channel": "web", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatB", "sales_amt": 15.0, "sales_cnt": 1}, {"channel": "catalog", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatC", "sales_amt": 20.0, "sales_cnt": 1}]
+  Equal        r300, r185, r299
+  Expect       r300
   Return       r0
-
