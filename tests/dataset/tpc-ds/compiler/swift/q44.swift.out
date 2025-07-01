@@ -1,0 +1,146 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+class _Group {
+  var key: Any
+  var Items: [Any] = []
+  init(_ k: Any) { self.key = k }
+}
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+
+func _group_by(_ src: [Any], _ keyfn: (Any) -> Any) -> [_Group] {
+  func keyStr(_ v: Any) -> String {
+    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
+      let s = String(data: data, encoding: .utf8)
+    {
+      return s
+    }
+    return String(describing: v)
+  }
+  var groups: [String: _Group] = [:]
+  var order: [String] = []
+  for it in src {
+    let key = keyfn(it)
+    let ks = keyStr(key)
+    if groups[ks] == nil {
+      groups[ks] = _Group(key)
+      order.append(ks)
+    }
+    groups[ks]!.Items.append(it)
+  }
+  return order.compactMap { groups[$0] }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q44_simplified() {
+  expect(result == ["best_performing": "ItemA", "worst_performing": "ItemB"])
+}
+
+let store_sales = [
+  ["ss_item_sk": 1, "ss_store_sk": 1, "ss_net_profit": 5],
+  ["ss_item_sk": 1, "ss_store_sk": 1, "ss_net_profit": 5],
+  ["ss_item_sk": 2, "ss_store_sk": 1, "ss_net_profit": -1],
+]
+let item = [
+  ["i_item_sk": 1, "i_product_name": "ItemA"], ["i_item_sk": 2, "i_product_name": "ItemB"],
+]
+let grouped_base =
+  (_group_by(store_sales.map { $0 as Any }, { ss in ss["ss_item_sk"]! }).map { g in
+    [
+      "item_sk": g.key,
+      "avg_profit": _avg(
+        ({
+          var _res: [Any] = []
+          for x in g {
+            _res.append(x.ss_net_profit)
+          }
+          var _items = _res
+          return _items
+        }()).map { Double($0) }),
+    ]
+  })
+let grouped = grouped_base
+let best = first(
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for x in grouped {
+      _pairs.append((item: x, key: -x["avg_profit"]!))
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }()))
+let worst = first(
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for x in grouped {
+      _pairs.append((item: x, key: x["avg_profit"]!))
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }()))
+let best_name = first(
+  ({
+    var _res: [Any] = []
+    for i in item {
+      if i["i_item_sk"]! == best.item_sk {
+        _res.append(i["i_product_name"]!)
+      }
+    }
+    var _items = _res
+    return _items
+  }()))
+let worst_name = first(
+  ({
+    var _res: [Any] = []
+    for i in item {
+      if i["i_item_sk"]! == worst.item_sk {
+        _res.append(i["i_product_name"]!)
+      }
+    }
+    var _items = _res
+    return _items
+  }()))
+let result = ["best_performing": best_name, "worst_performing": worst_name]
+func main() {
+  _json(result)
+  test_TPCDS_Q44_simplified()
+}
+main()

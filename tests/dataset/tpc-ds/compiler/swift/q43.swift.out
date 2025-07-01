@@ -1,0 +1,181 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+class _Group {
+  var key: Any
+  var Items: [Any] = []
+  init(_ k: Any) { self.key = k }
+}
+
+func _group_by(_ src: [Any], _ keyfn: (Any) -> Any) -> [_Group] {
+  func keyStr(_ v: Any) -> String {
+    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
+      let s = String(data: data, encoding: .utf8)
+    {
+      return s
+    }
+    return String(describing: v)
+  }
+  var groups: [String: _Group] = [:]
+  var order: [String] = []
+  for it in src {
+    let key = keyfn(it)
+    let ks = keyStr(key)
+    if groups[ks] == nil {
+      groups[ks] = _Group(key)
+      order.append(ks)
+    }
+    groups[ks]!.Items.append(it)
+  }
+  return order.compactMap { groups[$0] }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q43_simplified() {
+  expect(
+    result == [
+      [
+        "s_store_name": "Main", "s_store_id": "S1", "sun_sales": 10, "mon_sales": 20,
+        "tue_sales": 30, "wed_sales": 40, "thu_sales": 50, "fri_sales": 60, "sat_sales": 70,
+      ]
+    ])
+}
+
+let date_dim = [
+  ["date_sk": 1, "d_day_name": "Sunday", "d_year": 2020],
+  ["date_sk": 2, "d_day_name": "Monday", "d_year": 2020],
+  ["date_sk": 3, "d_day_name": "Tuesday", "d_year": 2020],
+  ["date_sk": 4, "d_day_name": "Wednesday", "d_year": 2020],
+  ["date_sk": 5, "d_day_name": "Thursday", "d_year": 2020],
+  ["date_sk": 6, "d_day_name": "Friday", "d_year": 2020],
+  ["date_sk": 7, "d_day_name": "Saturday", "d_year": 2020],
+]
+let store = [["store_sk": 1, "store_id": "S1", "store_name": "Main", "gmt_offset": 0]]
+let store_sales = [
+  ["sold_date_sk": 1, "store_sk": 1, "sales_price": 10],
+  ["sold_date_sk": 2, "store_sk": 1, "sales_price": 20],
+  ["sold_date_sk": 3, "store_sk": 1, "sales_price": 30],
+  ["sold_date_sk": 4, "store_sk": 1, "sales_price": 40],
+  ["sold_date_sk": 5, "store_sk": 1, "sales_price": 50],
+  ["sold_date_sk": 6, "store_sk": 1, "sales_price": 60],
+  ["sold_date_sk": 7, "store_sk": 1, "sales_price": 70],
+]
+let year = 2020
+let gmt = 0
+let records =
+  ({
+    var _res: [[String: Any]] = []
+    for d in date_dim {
+      for ss in store_sales {
+        if !(ss["sold_date_sk"]! == d["date_sk"]!) { continue }
+        for s in store {
+          if !(ss["store_sk"]! == s["store_sk"]!) { continue }
+          if s["gmt_offset"]! == gmt && d["d_year"]! == year {
+            _res.append([
+              "d_day_name": d["d_day_name"]!, "s_store_name": s["store_name"]!,
+              "s_store_id": s["store_id"]!, "price": ss["sales_price"]!,
+            ])
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let base = _group_by(
+  records.map { $0 as Any }, { r in ["name": r["s_store_name"]!, "id": r["s_store_id"]!] }
+).map { g in
+  [
+    "s_store_name": g.key.name, "s_store_id": g.key.id,
+    "sun_sales": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append((x.d_day_name == "Sunday" ? x.price : 0))
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "mon_sales": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append((x.d_day_name == "Monday" ? x.price : 0))
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "tue_sales": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append((x.d_day_name == "Tuesday" ? x.price : 0))
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "wed_sales": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append((x.d_day_name == "Wednesday" ? x.price : 0))
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "thu_sales": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append((x.d_day_name == "Thursday" ? x.price : 0))
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "fri_sales": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append((x.d_day_name == "Friday" ? x.price : 0))
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+    "sat_sales": _sum(
+      ({
+        var _res: [Any] = []
+        for x in g {
+          _res.append((x.d_day_name == "Saturday" ? x.price : 0))
+        }
+        var _items = _res
+        return _items
+      }()).map { Double($0) }),
+  ]
+}
+let result = base
+func main() {
+  _json(result)
+  test_TPCDS_Q43_simplified()
+}
+main()

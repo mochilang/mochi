@@ -121,6 +121,13 @@ func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
     for it in a { if b.contains(it) && !res.contains(it) { res.append(it) } }
     return res
 }`
+	helperConcat = `func _concat<T>(_ a: [T], _ b: [T]) -> [T] {
+    var res: [T] = []
+    res.reserveCapacity(a.count + b.count)
+    res.append(contentsOf: a)
+    res.append(contentsOf: b)
+    return res
+}`
 	helperCast = `func _cast<T: Decodable>(_ type: T.Type, _ v: Any) -> T {
     if let tv = v as? T { return tv }
     if let data = try? JSONSerialization.data(withJSONObject: v),
@@ -331,6 +338,7 @@ var helperMap = map[string]string{
 	"_index":       helperIndex,
 	"_slice":       helperSlice,
 	"_sliceString": helperSliceString,
+	"_concat":      helperConcat,
 	"_union_all":   helperUnionAll,
 	"_union":       helperUnion,
 	"_except":      helperExcept,

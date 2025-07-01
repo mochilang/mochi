@@ -1,0 +1,114 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+struct Inventory {
+  var inv_item_sk: Int
+  var inv_date_sk: Int
+  var inv_quantity_on_hand: Int
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_month_seq: Int
+}
+
+struct Item {
+  var i_item_sk: Int
+  var i_product_name: String
+  var i_brand: String
+  var i_class: String
+  var i_category: String
+}
+
+func test_TPCDS_Q22_average_inventory() {
+  expect(
+    qoh == [
+      [
+        "i_product_name": "Prod1", "i_brand": "Brand1", "i_class": "Class1", "i_category": "Cat1",
+        "qoh": 15,
+      ],
+      [
+        "i_product_name": "Prod2", "i_brand": "Brand2", "i_class": "Class2", "i_category": "Cat2",
+        "qoh": 50,
+      ],
+    ])
+}
+
+let inventory: [[String: Int]] = [
+  ["inv_item_sk": 1, "inv_date_sk": 1, "inv_quantity_on_hand": 10],
+  ["inv_item_sk": 1, "inv_date_sk": 2, "inv_quantity_on_hand": 20],
+  ["inv_item_sk": 1, "inv_date_sk": 3, "inv_quantity_on_hand": 10],
+  ["inv_item_sk": 1, "inv_date_sk": 4, "inv_quantity_on_hand": 20],
+  ["inv_item_sk": 2, "inv_date_sk": 1, "inv_quantity_on_hand": 50],
+]
+let date_dim: [[String: Int]] = [
+  ["d_date_sk": 1, "d_month_seq": 0], ["d_date_sk": 2, "d_month_seq": 1],
+  ["d_date_sk": 3, "d_month_seq": 2], ["d_date_sk": 4, "d_month_seq": 3],
+]
+let item = [
+  [
+    "i_item_sk": 1, "i_product_name": "Prod1", "i_brand": "Brand1", "i_class": "Class1",
+    "i_category": "Cat1",
+  ],
+  [
+    "i_item_sk": 2, "i_product_name": "Prod2", "i_brand": "Brand2", "i_class": "Class2",
+    "i_category": "Cat2",
+  ],
+]
+let qoh =
+  ({
+    var _res: [[String: Any]] = []
+    for inv in inventory {
+      for d in date_dim {
+        if !(inv["inv_date_sk"]! == d["d_date_sk"]!) { continue }
+        if !(d["d_month_seq"]! >= 0 && d["d_month_seq"]! <= 11) { continue }
+        for i in item {
+          if !(inv["inv_item_sk"]! == i["i_item_sk"]!) { continue }
+          _res.append([
+            "i_product_name": g.key.product_name, "i_brand": g.key.brand, "i_class": g.key.class,
+            "i_category": g.key.category,
+            "qoh": _avg(
+              ({
+                var _res: [Any] = []
+                for x in g {
+                  _res.append(x.inv_quantity_on_hand)
+                }
+                var _items = _res
+                return _items
+              }()).map { Double($0) }),
+          ])
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+func main() {
+  _json(qoh)
+  test_TPCDS_Q22_average_inventory()
+}
+main()

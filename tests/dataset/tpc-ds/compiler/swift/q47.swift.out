@@ -1,0 +1,65 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func abs(_ x: Double) -> Double {
+  let x = x
+
+  if x >= 0 {
+    x
+  } else {
+    -x
+  }
+}
+
+func test_TPCDS_Q47_simplified() {
+  expect(
+    result == [
+      ["d_year": 2019, "item": "C", "avg_monthly_sales": 50, "sum_sales": 60],
+      ["d_year": 2020, "item": "A", "avg_monthly_sales": 100, "sum_sales": 120],
+    ])
+}
+
+let v2 = [
+  ["d_year": 2020, "item": "A", "avg_monthly_sales": 100, "sum_sales": 120],
+  ["d_year": 2020, "item": "B", "avg_monthly_sales": 80, "sum_sales": 70],
+  ["d_year": 2019, "item": "C", "avg_monthly_sales": 50, "sum_sales": 60],
+]
+let year = 2020
+let orderby = "item"
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for v in v2 {
+      if v["d_year"]! == year && v["avg_monthly_sales"]! > 0
+        && abs(v["sum_sales"]! - v["avg_monthly_sales"]!) / v["avg_monthly_sales"]! > 0.1
+      {
+        _pairs.append((item: v, key: [v["sum_sales"]! - v["avg_monthly_sales"]!, v["item"]!]))
+      }
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q47_simplified()
+}
+main()

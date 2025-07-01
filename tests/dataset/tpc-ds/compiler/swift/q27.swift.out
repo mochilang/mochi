@@ -1,0 +1,165 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  if arr.isEmpty { return 0 }
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum / Double(arr.count)
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+struct StoreSale {
+  var ss_item_sk: Int
+  var ss_store_sk: Int
+  var ss_cdemo_sk: Int
+  var ss_sold_date_sk: Int
+  var ss_quantity: Int
+  var ss_list_price: Double
+  var ss_coupon_amt: Double
+  var ss_sales_price: Double
+}
+
+struct CustomerDemo {
+  var cd_demo_sk: Int
+  var cd_gender: String
+  var cd_marital_status: String
+  var cd_education_status: String
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_year: Int
+}
+
+struct Store {
+  var s_store_sk: Int
+  var s_state: String
+}
+
+struct Item {
+  var i_item_sk: Int
+  var i_item_id: String
+}
+
+func test_TPCDS_Q27_averages_by_state() {
+  expect(
+    result == [
+      ["i_item_id": "ITEM1", "s_state": "CA", "agg1": 5, "agg2": 100, "agg3": 10, "agg4": 90]
+    ])
+}
+
+let store_sales = [
+  [
+    "ss_item_sk": 1, "ss_store_sk": 1, "ss_cdemo_sk": 1, "ss_sold_date_sk": 1, "ss_quantity": 5,
+    "ss_list_price": 100, "ss_coupon_amt": 10, "ss_sales_price": 90,
+  ],
+  [
+    "ss_item_sk": 2, "ss_store_sk": 2, "ss_cdemo_sk": 2, "ss_sold_date_sk": 1, "ss_quantity": 2,
+    "ss_list_price": 50, "ss_coupon_amt": 5, "ss_sales_price": 45,
+  ],
+]
+let customer_demographics = [
+  ["cd_demo_sk": 1, "cd_gender": "F", "cd_marital_status": "M", "cd_education_status": "College"],
+  ["cd_demo_sk": 2, "cd_gender": "M", "cd_marital_status": "S", "cd_education_status": "College"],
+]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_year": 2000]]
+let store = [["s_store_sk": 1, "s_state": "CA"], ["s_store_sk": 2, "s_state": "TX"]]
+let item = [["i_item_sk": 1, "i_item_id": "ITEM1"], ["i_item_sk": 2, "i_item_id": "ITEM2"]]
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for ss in store_sales {
+      for cd in customer_demographics {
+        if !(ss["ss_cdemo_sk"]! == cd["cd_demo_sk"]!) { continue }
+        for d in date_dim {
+          if !(ss["ss_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+          for s in store {
+            if !(ss["ss_store_sk"]! == s["s_store_sk"]!) { continue }
+            if !(["CA"].contains(
+              cd["cd_gender"]! == "F" && cd["cd_marital_status"]! == "M"
+                && cd["cd_education_status"]! == "College" && d["d_year"]! == 2000 && s["s_state"]!))
+            {
+              continue
+            }
+            for i in item {
+              if !(ss["ss_item_sk"]! == i["i_item_sk"]!) { continue }
+              _pairs.append(
+                (
+                  item: [
+                    "i_item_id": g.key.item_id, "s_state": g.key.state,
+                    "agg1": _avg(
+                      ({
+                        var _res: [Any] = []
+                        for x in g {
+                          _res.append(x.ss_quantity)
+                        }
+                        var _items = _res
+                        return _items
+                      }()).map { Double($0) }),
+                    "agg2": _avg(
+                      ({
+                        var _res: [Any] = []
+                        for x in g {
+                          _res.append(x.ss_list_price)
+                        }
+                        var _items = _res
+                        return _items
+                      }()).map { Double($0) }),
+                    "agg3": _avg(
+                      ({
+                        var _res: [Any] = []
+                        for x in g {
+                          _res.append(x.ss_coupon_amt)
+                        }
+                        var _items = _res
+                        return _items
+                      }()).map { Double($0) }),
+                    "agg4": _avg(
+                      ({
+                        var _res: [Any] = []
+                        for x in g {
+                          _res.append(x.ss_sales_price)
+                        }
+                        var _items = _res
+                        return _items
+                      }()).map { Double($0) }),
+                  ], key: [g.key.item_id, g.key.state]
+                ))
+            }
+          }
+        }
+      }
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q27_averages_by_state()
+}
+main()

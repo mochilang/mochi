@@ -1,0 +1,166 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+struct Inventory {
+  var inv_item_sk: Int
+  var inv_warehouse_sk: Int
+  var inv_date_sk: Int
+  var inv_quantity_on_hand: Int
+}
+
+struct Warehouse {
+  var w_warehouse_sk: Int
+  var w_warehouse_name: String
+}
+
+struct Item {
+  var i_item_sk: Int
+  var i_item_id: String
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_date: String
+}
+
+func test_TPCDS_Q21_inventory_ratio() {
+  expect(
+    result == [
+      ["w_warehouse_name": "Main", "i_item_id": "ITEM1", "inv_before": 30, "inv_after": 40]
+    ])
+}
+
+let inventory: [[String: Int]] = [
+  ["inv_item_sk": 1, "inv_warehouse_sk": 1, "inv_date_sk": 1, "inv_quantity_on_hand": 30],
+  ["inv_item_sk": 1, "inv_warehouse_sk": 1, "inv_date_sk": 2, "inv_quantity_on_hand": 40],
+  ["inv_item_sk": 2, "inv_warehouse_sk": 2, "inv_date_sk": 1, "inv_quantity_on_hand": 20],
+  ["inv_item_sk": 2, "inv_warehouse_sk": 2, "inv_date_sk": 2, "inv_quantity_on_hand": 20],
+]
+let warehouse = [
+  ["w_warehouse_sk": 1, "w_warehouse_name": "Main"],
+  ["w_warehouse_sk": 2, "w_warehouse_name": "Backup"],
+]
+let item = [["i_item_sk": 1, "i_item_id": "ITEM1"], ["i_item_sk": 2, "i_item_id": "ITEM2"]]
+let date_dim = [
+  ["d_date_sk": 1, "d_date": "2000-03-01"], ["d_date_sk": 2, "d_date": "2000-03-20"],
+]
+let before =
+  ({
+    var _res: [[String: Any]] = []
+    for inv in inventory {
+      for d in date_dim {
+        if !(inv["inv_date_sk"]! == d["d_date_sk"]!) { continue }
+        if !(d["d_date"]! < "2000-03-15") { continue }
+        _res.append([
+          "w": g.key.w, "i": g.key.i,
+          "qty": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.inv_quantity_on_hand)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+        ])
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let after =
+  ({
+    var _res: [[String: Any]] = []
+    for inv in inventory {
+      for d in date_dim {
+        if !(inv["inv_date_sk"]! == d["d_date_sk"]!) { continue }
+        if !(d["d_date"]! >= "2000-03-15") { continue }
+        _res.append([
+          "w": g.key.w, "i": g.key.i,
+          "qty": _sum(
+            ({
+              var _res: [Any] = []
+              for x in g {
+                _res.append(x.inv_quantity_on_hand)
+              }
+              var _items = _res
+              return _items
+            }()).map { Double($0) }),
+        ])
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let joined =
+  ({
+    var _res: [[String: Any]] = []
+    for b in before {
+      for a in after {
+        if !(b["w"]! == a["w"]! && b["i"]! == a["i"]!) { continue }
+        for w in warehouse {
+          if !(w["w_warehouse_sk"]! == b["w"]!) { continue }
+          for it in item {
+            if !(it["i_item_sk"]! == b["i"]!) { continue }
+            _res.append([
+              "w_name": w["w_warehouse_name"]!, "i_id": it["i_item_id"]!, "before_qty": b["qty"]!,
+              "after_qty": a["qty"]!, "ratio": a["qty"]! / b["qty"]!,
+            ])
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for r in joined {
+      if !(r["ratio"]! >= (2 / 3) && r["ratio"]! <= (3 / 2)) { continue }
+      _pairs.append(
+        (
+          item: [
+            "w_warehouse_name": r["w_name"]!, "i_item_id": r["i_id"]!,
+            "inv_before": r["before_qty"]!, "inv_after": r["after_qty"]!,
+          ], key: [r["w_name"]!, r["i_id"]!]
+        ))
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q21_inventory_ratio()
+}
+main()

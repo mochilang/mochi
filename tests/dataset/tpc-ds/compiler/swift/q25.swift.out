@@ -1,0 +1,188 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+struct StoreSale {
+  var ss_sold_date_sk: Int
+  var ss_item_sk: Int
+  var ss_store_sk: Int
+  var ss_customer_sk: Int
+  var ss_net_profit: Double
+  var ss_ticket_number: Int
+}
+
+struct StoreReturn {
+  var sr_returned_date_sk: Int
+  var sr_item_sk: Int
+  var sr_customer_sk: Int
+  var sr_ticket_number: Int
+  var sr_net_loss: Double
+}
+
+struct CatalogSale {
+  var cs_sold_date_sk: Int
+  var cs_item_sk: Int
+  var cs_bill_customer_sk: Int
+  var cs_net_profit: Double
+}
+
+struct DateDim {
+  var d_date_sk: Int
+  var d_moy: Int
+  var d_year: Int
+}
+
+struct Store {
+  var s_store_sk: Int
+  var s_store_id: String
+  var s_store_name: String
+}
+
+struct Item {
+  var i_item_sk: Int
+  var i_item_id: String
+  var i_item_desc: String
+}
+
+func test_TPCDS_Q25_aggregated_profit() {
+  expect(
+    result == [
+      [
+        "i_item_id": "ITEM1", "i_item_desc": "Desc1", "s_store_id": "S1", "s_store_name": "Store1",
+        "store_sales_profit": 50, "store_returns_loss": 10, "catalog_sales_profit": 30,
+      ]
+    ])
+}
+
+let store_sales = [
+  [
+    "ss_sold_date_sk": 1, "ss_item_sk": 1, "ss_store_sk": 1, "ss_customer_sk": 1,
+    "ss_net_profit": 50, "ss_ticket_number": 1,
+  ],
+  [
+    "ss_sold_date_sk": 1, "ss_item_sk": 2, "ss_store_sk": 1, "ss_customer_sk": 2,
+    "ss_net_profit": 20, "ss_ticket_number": 2,
+  ],
+]
+let store_returns = [
+  [
+    "sr_returned_date_sk": 2, "sr_item_sk": 1, "sr_customer_sk": 1, "sr_ticket_number": 1,
+    "sr_net_loss": 10,
+  ],
+  [
+    "sr_returned_date_sk": 2, "sr_item_sk": 2, "sr_customer_sk": 2, "sr_ticket_number": 2,
+    "sr_net_loss": 5,
+  ],
+]
+let catalog_sales = [
+  ["cs_sold_date_sk": 3, "cs_item_sk": 1, "cs_bill_customer_sk": 1, "cs_net_profit": 30],
+  ["cs_sold_date_sk": 3, "cs_item_sk": 2, "cs_bill_customer_sk": 2, "cs_net_profit": 15],
+]
+let date_dim: [[String: Int]] = [
+  ["d_date_sk": 1, "d_moy": 4, "d_year": 2000], ["d_date_sk": 2, "d_moy": 5, "d_year": 2000],
+  ["d_date_sk": 3, "d_moy": 6, "d_year": 2000],
+]
+let store = [["s_store_sk": 1, "s_store_id": "S1", "s_store_name": "Store1"]]
+let item = [
+  ["i_item_sk": 1, "i_item_id": "ITEM1", "i_item_desc": "Desc1"],
+  ["i_item_sk": 2, "i_item_id": "ITEM2", "i_item_desc": "Desc2"],
+]
+let result =
+  ({
+    var _res: [[String: Any]] = []
+    for ss in store_sales {
+      for sr in store_returns {
+        if !(ss["ss_ticket_number"]! == sr["sr_ticket_number"]!
+          && ss["ss_item_sk"]! == sr["sr_item_sk"]!)
+        {
+          continue
+        }
+        for cs in catalog_sales {
+          if !(sr["sr_customer_sk"]! == cs["cs_bill_customer_sk"]!
+            && sr["sr_item_sk"]! == cs["cs_item_sk"]!)
+          {
+            continue
+          }
+          for d1 in date_dim {
+            if !(d1["d_date_sk"]! == ss["ss_sold_date_sk"]!) { continue }
+            for d2 in date_dim {
+              if !(d2["d_date_sk"]! == sr["sr_returned_date_sk"]!) { continue }
+              for d3 in date_dim {
+                if !(d3["d_date_sk"]! == cs["cs_sold_date_sk"]!) { continue }
+                if !(d1["d_moy"]! == 4 && d1["d_year"]! == 2000 && d2["d_moy"]! >= 4
+                  && d2["d_moy"]! <= 10 && d3["d_moy"]! >= 4 && d3["d_moy"]! <= 10)
+                {
+                  continue
+                }
+                for s in store {
+                  if !(s["s_store_sk"]! == ss["ss_store_sk"]!) { continue }
+                  for i in item {
+                    if !(i["i_item_sk"]! == ss["ss_item_sk"]!) { continue }
+                    _res.append([
+                      "i_item_id": g.key.item_id, "i_item_desc": g.key.item_desc,
+                      "s_store_id": g.key.s_store_id, "s_store_name": g.key.s_store_name,
+                      "store_sales_profit": _sum(
+                        ({
+                          var _res: [Any] = []
+                          for x in g {
+                            _res.append(x.ss_net_profit)
+                          }
+                          var _items = _res
+                          return _items
+                        }()).map { Double($0) }),
+                      "store_returns_loss": _sum(
+                        ({
+                          var _res: [Any] = []
+                          for x in g {
+                            _res.append(x.sr_net_loss)
+                          }
+                          var _items = _res
+                          return _items
+                        }()).map { Double($0) }),
+                      "catalog_sales_profit": _sum(
+                        ({
+                          var _res: [Any] = []
+                          for x in g {
+                            _res.append(x.cs_net_profit)
+                          }
+                          var _items = _res
+                          return _items
+                        }()).map { Double($0) }),
+                    ])
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q25_aggregated_profit()
+}
+main()

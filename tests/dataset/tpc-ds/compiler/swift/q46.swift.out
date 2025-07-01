@@ -1,0 +1,146 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q46_simplified() {
+  expect(
+    result == [
+      [
+        "c_last_name": "Doe", "c_first_name": "John", "ca_city": "Seattle",
+        "bought_city": "Portland", "ss_ticket_number": 1, "amt": 5, "profit": 20,
+      ]
+    ])
+}
+
+let store_sales = [
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_addr_sk": 1, "ss_hdemo_sk": 1, "ss_store_sk": 1,
+    "ss_sold_date_sk": 1, "ss_coupon_amt": 5, "ss_net_profit": 20,
+  ]
+]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_dow": 6, "d_year": 2020]]
+let store = [["s_store_sk": 1, "s_city": "CityA"]]
+let household_demographics: [[String: Int]] = [
+  ["hd_demo_sk": 1, "hd_dep_count": 2, "hd_vehicle_count": 0]
+]
+let customer_address = [
+  ["ca_address_sk": 1, "ca_city": "Portland"], ["ca_address_sk": 2, "ca_city": "Seattle"],
+]
+let customer = [
+  ["c_customer_sk": 1, "c_last_name": "Doe", "c_first_name": "John", "c_current_addr_sk": 2]
+]
+let depcnt = 2
+let vehcnt = 0
+let year = 2020
+let cities: [String] = ["CityA"]
+let dn =
+  ({
+    var _res: [[String: Any]] = []
+    for ss in store_sales {
+      for d in date_dim {
+        if !(ss["ss_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+        for s in store {
+          if !(ss["ss_store_sk"]! == s["s_store_sk"]!) { continue }
+          for hd in household_demographics {
+            if !(ss["ss_hdemo_sk"]! == hd["hd_demo_sk"]!) { continue }
+            for ca in customer_address {
+              if !(ss["ss_addr_sk"]! == ca["ca_address_sk"]!) { continue }
+              if cities.contains(
+                [6, 0].contains(
+                  (hd["hd_dep_count"]! == depcnt || hd["hd_vehicle_count"]! == vehcnt)
+                    && d["d_dow"]!) && d["d_year"]! == year && s["s_city"]!)
+              {
+                _res.append([
+                  "ss_ticket_number": g.key.ss_ticket_number,
+                  "ss_customer_sk": g.key.ss_customer_sk, "bought_city": g.key.ca_city,
+                  "amt": _sum(
+                    ({
+                      var _res: [Any] = []
+                      for x in g {
+                        _res.append(x.ss.ss_coupon_amt)
+                      }
+                      var _items = _res
+                      return _items
+                    }()).map { Double($0) }),
+                  "profit": _sum(
+                    ({
+                      var _res: [Any] = []
+                      for x in g {
+                        _res.append(x.ss.ss_net_profit)
+                      }
+                      var _items = _res
+                      return _items
+                    }()).map { Double($0) }),
+                ])
+              }
+            }
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let base =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for dnrec in dn {
+      for c in customer {
+        if !(dnrec["ss_customer_sk"]! == c["c_customer_sk"]!) { continue }
+        for current_addr in customer_address {
+          if !(c["c_current_addr_sk"]! == current_addr["ca_address_sk"]!) { continue }
+          if !(current_addr["ca_city"]! != dnrec["bought_city"]!) { continue }
+          _pairs.append(
+            (
+              item: [
+                "c_last_name": c["c_last_name"]!, "c_first_name": c["c_first_name"]!,
+                "ca_city": current_addr["ca_city"]!, "bought_city": dnrec["bought_city"]!,
+                "ss_ticket_number": dnrec["ss_ticket_number"]!, "amt": dnrec["amt"]!,
+                "profit": dnrec["profit"]!,
+              ],
+              key: [
+                c["c_last_name"]!, c["c_first_name"]!, current_addr["ca_city"]!,
+                dnrec["bought_city"]!, dnrec["ss_ticket_number"]!,
+              ]
+            ))
+        }
+      }
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+let result = base
+func main() {
+  _json(result)
+  test_TPCDS_Q46_simplified()
+}
+main()

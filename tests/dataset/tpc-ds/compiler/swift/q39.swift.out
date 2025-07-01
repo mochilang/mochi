@@ -1,0 +1,97 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+    if arr.isEmpty { return 0 }
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+    if arr.isEmpty { return 0 }
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum / Double(arr.count)
+}
+
+func _json(_ v: Any) {
+    if let d = try? JSONSerialization.data(withJSONObject: v, options: []), let s = String(data: d, encoding: .utf8) {
+        print(s)
+    }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum
+}
+
+func test_TPCDS_Q39_simplified() {
+  expect(summary == [["w_warehouse_sk": 1, "i_item_sk": 1, "cov": 1.539600717839002]])
+}
+
+let inventory: [[String: Int]] = [["inv_item_sk": 1, "inv_warehouse_sk": 1, "inv_date_sk": 1, "inv_quantity_on_hand": 10], ["inv_item_sk": 1, "inv_warehouse_sk": 1, "inv_date_sk": 2, "inv_quantity_on_hand": 10], ["inv_item_sk": 1, "inv_warehouse_sk": 1, "inv_date_sk": 3, "inv_quantity_on_hand": 250]]
+let item: [[String: Int]] = [["i_item_sk": 1]]
+let warehouse = [["w_warehouse_sk": 1, "w_warehouse_name": "W1"]]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_year": 2000, "d_moy": 1], ["d_date_sk": 2, "d_year": 2000, "d_moy": 2], ["d_date_sk": 3, "d_year": 2000, "d_moy": 3]]
+let monthly = ({
+  var _res: [[String: Any]] = []
+  for inv in inventory {
+    for d in date_dim {
+      if !(inv["inv_date_sk"]! == d["d_date_sk"]!) { continue }
+      if !(d["d_year"]! == 2000) { continue }
+      for i in item {
+        if !(inv["inv_item_sk"]! == i["i_item_sk"]!) { continue }
+        for w in warehouse {
+          if !(inv["inv_warehouse_sk"]! == w["w_warehouse_sk"]!) { continue }
+          _res.append(["w": g.key.w, "i": g.key.i, "qty": _sum(({
+  var _res: [Any] = []
+  for x in g {
+    _res.append(x.inv_quantity_on_hand)
+  }
+  var _items = _res
+  return _items
+}()).map { Double($0) })])
+        }
+      }
+    }
+  }
+  var _items = _res
+  return _items
+}())
+var grouped: [String: [String: any]] = [:]
+var summary: [Any] = []
+func main() {
+  for m in monthly {
+    let key = String(["w": m["w"]!, "i": m["i"]!])
+    if grouped[key] != nil {
+      let g = grouped[key]!
+      grouped[key] = ["w": g["w"]!, "i": g["i"]!, "qtys": append(g["qtys"]!, m["qty"]!)]
+    } else {
+      grouped[key] = ["w": m["w"]!, "i": m["i"]!, "qtys": [m["qty"]!]]
+    }
+  }
+  for g in values(grouped) {
+    let mean = _avg(g.qtys.map { Double($0) })
+    var sumsq = 0
+    for q in g.qtys {
+      sumsq = sumsq + (q - mean) * (q - mean)
+    }
+    let variance = sumsq / (g.qtys.count - 1)
+    let cov = math.sqrt(variance) / mean
+    if cov > 1.5 {
+      summary = append(summary, ["w_warehouse_sk": g.w, "i_item_sk": g.i, "cov": cov])
+    }
+  }
+  _json(summary)
+  test_TPCDS_Q39_simplified()
+}
+main()

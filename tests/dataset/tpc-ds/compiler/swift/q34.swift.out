@@ -1,0 +1,207 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q34_simplified() {
+  expect(
+    result == [
+      [
+        "c_last_name": "Smith", "c_first_name": "John", "c_salutation": "Mr.",
+        "c_preferred_cust_flag": "Y", "ss_ticket_number": 1, "cnt": 16,
+      ]
+    ])
+}
+
+let store_sales: [[String: Int]] = [
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 1, "ss_customer_sk": 1, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 1,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+  [
+    "ss_ticket_number": 2, "ss_customer_sk": 2, "ss_sold_date_sk": 1, "ss_store_sk": 1,
+    "ss_hdemo_sk": 2,
+  ],
+]
+let date_dim: [[String: Int]] = [["d_date_sk": 1, "d_dom": 2, "d_year": 2000]]
+let store = [["s_store_sk": 1, "s_county": "A"]]
+let household_demographics = [
+  ["hd_demo_sk": 1, "hd_buy_potential": ">10000", "hd_vehicle_count": 2, "hd_dep_count": 3],
+  ["hd_demo_sk": 2, "hd_buy_potential": ">10000", "hd_vehicle_count": 2, "hd_dep_count": 1],
+]
+let customer = [
+  [
+    "c_customer_sk": 1, "c_last_name": "Smith", "c_first_name": "John", "c_salutation": "Mr.",
+    "c_preferred_cust_flag": "Y",
+  ],
+  [
+    "c_customer_sk": 2, "c_last_name": "Jones", "c_first_name": "Alice", "c_salutation": "Ms.",
+    "c_preferred_cust_flag": "N",
+  ],
+]
+let dn =
+  ({
+    var _res: [[String: Any]] = []
+    for ss in store_sales {
+      for d in date_dim {
+        if !(ss["ss_sold_date_sk"]! == d["d_date_sk"]!) { continue }
+        for s in store {
+          if !(ss["ss_store_sk"]! == s["s_store_sk"]!) { continue }
+          for hd in household_demographics {
+            if !(ss["ss_hdemo_sk"]! == hd["hd_demo_sk"]!) { continue }
+            if !((d["d_dom"]! >= 1 && d["d_dom"]! <= 3) && hd["hd_buy_potential"]! == ">10000"
+              && hd["hd_vehicle_count"]! > 0
+              && (hd["hd_dep_count"]! / hd["hd_vehicle_count"]!) > 1.2 && d["d_year"]! == 2000
+              && s["s_county"]! == "A")
+            {
+              continue
+            }
+            _res.append([
+              "ss_ticket_number": g.key.ticket, "ss_customer_sk": g.key.cust, "cnt": g.count,
+            ])
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let result =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for dn1 in dn {
+      if !(dn1["cnt"]! >= 15 && dn1["cnt"]! <= 20) { continue }
+      for c in customer {
+        if !(dn1["ss_customer_sk"]! == c["c_customer_sk"]!) { continue }
+        _pairs.append(
+          (
+            item: [
+              "c_last_name": c["c_last_name"]!, "c_first_name": c["c_first_name"]!,
+              "c_salutation": c["c_salutation"]!,
+              "c_preferred_cust_flag": c["c_preferred_cust_flag"]!,
+              "ss_ticket_number": dn1["ss_ticket_number"]!, "cnt": dn1["cnt"]!,
+            ], key: c["c_last_name"]!
+          ))
+      }
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+func main() {
+  _json(result)
+  test_TPCDS_Q34_simplified()
+}
+main()

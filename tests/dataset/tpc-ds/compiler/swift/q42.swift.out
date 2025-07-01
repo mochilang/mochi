@@ -1,0 +1,116 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+  var sum = 0.0
+  for v in arr { sum += Double(v) }
+  return sum
+}
+
+func test_TPCDS_Q42_simplified() {
+  expect(
+    result == [
+      ["d_year": 2020, "i_category_id": 200, "i_category": "CatB", "sum_ss_ext_sales_price": 20],
+      ["d_year": 2020, "i_category_id": 100, "i_category": "CatA", "sum_ss_ext_sales_price": 10],
+    ])
+}
+
+let store_sales = [
+  ["sold_date_sk": 1, "item_sk": 1, "ext_sales_price": 10],
+  ["sold_date_sk": 1, "item_sk": 2, "ext_sales_price": 20],
+  ["sold_date_sk": 2, "item_sk": 1, "ext_sales_price": 15],
+]
+let item = [
+  ["i_item_sk": 1, "i_manager_id": 1, "i_category_id": 100, "i_category": "CatA"],
+  ["i_item_sk": 2, "i_manager_id": 2, "i_category_id": 200, "i_category": "CatB"],
+]
+let date_dim: [[String: Int]] = [
+  ["d_date_sk": 1, "d_year": 2020, "d_moy": 5], ["d_date_sk": 2, "d_year": 2021, "d_moy": 5],
+]
+let month = 5
+let year = 2020
+let records: [[String: Int]] =
+  ({
+    var _res: [[String: Any]] = []
+    for dt in date_dim {
+      for ss in store_sales {
+        if !(ss["sold_date_sk"]! == dt["d_date_sk"]!) { continue }
+        for it in item {
+          if !(ss["item_sk"]! == it["i_item_sk"]!) { continue }
+          if it["i_manager_id"]! == 1 && dt["d_moy"]! == month && dt["d_year"]! == year {
+            _res.append([
+              "d_year": dt["d_year"]!, "i_category_id": it["i_category_id"]!,
+              "i_category": it["i_category"]!, "price": ss["ext_sales_price"]!,
+            ])
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }())
+let base =
+  ({
+    var _pairs: [(item: [String: Any], key: Any)] = []
+    for r in records {
+      _pairs.append(
+        (
+          item: [
+            "d_year": g.key.d_year, "i_category_id": g.key.i_category_id,
+            "i_category": g.key.i_category,
+            "sum_ss_ext_sales_price": _sum(
+              ({
+                var _res: [Any] = []
+                for x in g {
+                  _res.append(x.price)
+                }
+                var _items = _res
+                return _items
+              }()).map { Double($0) }),
+          ],
+          key: [
+            -_sum(
+              ({
+                var _res: [Any] = []
+                for x in g {
+                  _res.append(x.price)
+                }
+                var _items = _res
+                return _items
+              }()).map { Double($0) }), g.key.d_year, g.key.i_category_id, g.key.i_category,
+          ]
+        ))
+    }
+    _pairs.sort { a, b in
+      if let ai = a.key as? Int, let bi = b.key as? Int { return ai < bi }
+      if let af = a.key as? Double, let bf = b.key as? Double { return af < bf }
+      if let ai = a.key as? Int, let bf = b.key as? Double { return Double(ai) < bf }
+      if let af = a.key as? Double, let bi = b.key as? Int { return af < Double(bi) }
+      if let sa = a.key as? String, let sb = b.key as? String { return sa < sb }
+      return String(describing: a.key) < String(describing: b.key)
+    }
+    var _items = _pairs.map { $0.item }
+    return _items
+  }())
+let result = base
+func main() {
+  _json(result)
+  test_TPCDS_Q42_simplified()
+}
+main()
