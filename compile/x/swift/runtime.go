@@ -101,6 +101,46 @@ func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
     return isFloat ? m : Int(m)
 }
 `
+
+	helperNum = `func _num(_ v: Any) -> Double {
+    if let i = v as? Int { return Double(i) }
+    if let d = v as? Double { return d }
+    if let s = v as? String, let dv = Double(s) { return dv }
+    return 0
+}`
+
+	helperAnyEq = `func _any_eq(_ a: Any, _ b: Any) -> Bool {
+    switch (a, b) {
+    case let (ai as Int, bi as Int): return ai == bi
+    case let (af as Double, bf as Double): return af == bf
+    case let (ai as Int, bf as Double): return Double(ai) == bf
+    case let (af as Double, bi as Int): return af == Double(bi)
+    case let (sa as String, sb as String): return sa == sb
+    case let (ba as Bool, bb as Bool): return ba == bb
+    default: return String(describing: a) == String(describing: b)
+    }
+}`
+
+	helperAnyLT = `func _any_lt(_ a: Any, _ b: Any) -> Bool {
+    if let ai = a as? Int, let bi = b as? Int { return ai < bi }
+    if let af = a as? Double, let bf = b as? Double { return af < bf }
+    if let ai = a as? Int, let bf = b as? Double { return Double(ai) < bf }
+    if let af = a as? Double, let bi = b as? Int { return af < Double(bi) }
+    if let sa = a as? String, let sb = b as? String { return sa < sb }
+    return String(describing: a) < String(describing: b)
+}`
+
+	helperAnyLE = `func _any_le(_ a: Any, _ b: Any) -> Bool {
+    return _any_lt(a, b) || _any_eq(a, b)
+}`
+
+	helperAnyGT = `func _any_gt(_ a: Any, _ b: Any) -> Bool {
+    return !_any_le(a, b)
+}`
+
+	helperAnyGE = `func _any_ge(_ a: Any, _ b: Any) -> Bool {
+    return !_any_lt(a, b)
+}`
 	helperUnionAll = `func _union_all<T>(_ a: [T], _ b: [T]) -> [T] {
     var res = a
     res.append(contentsOf: b)
@@ -334,6 +374,12 @@ var helperMap = map[string]string{
 	"_avg":         helperAvg,
 	"_sum":         helperSum,
 	"_min":         helperMin,
+	"_num":         helperNum,
+	"_any_eq":      helperAnyEq,
+	"_any_lt":      helperAnyLT,
+	"_any_le":      helperAnyLE,
+	"_any_gt":      helperAnyGT,
+	"_any_ge":      helperAnyGE,
 	"_indexString": helperIndexString,
 	"_index":       helperIndex,
 	"_slice":       helperSlice,

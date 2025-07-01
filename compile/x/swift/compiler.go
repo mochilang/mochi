@@ -597,12 +597,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	exprIsString := c.isStringUnary(b.Left)
+	exprType := c.inferExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}})
 	for _, op := range b.Right {
 		rhs, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
 		rhsIsString := c.isStringPostfix(op.Right)
+		rhsType := c.inferExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}})
 		if op.Op == "+" && (exprIsString || rhsIsString) {
 			if !exprIsString {
 				expr = fmt.Sprintf("String(%s)", expr)
@@ -612,6 +614,43 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			}
 			expr = fmt.Sprintf("%s + %s", expr, rhs)
 			exprIsString = true
+			continue
+		}
+		if (op.Op == "==" || op.Op == "!=") && (containsAny(exprType) || containsAny(rhsType)) {
+			c.use("_any_eq")
+			cmp := fmt.Sprintf("_any_eq(%s, %s)", expr, rhs)
+			if op.Op == "!=" {
+				expr = "!" + cmp
+			} else {
+				expr = cmp
+			}
+			exprType = types.BoolType{}
+			exprIsString = false
+			continue
+		}
+		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") && (containsAny(exprType) || containsAny(rhsType)) {
+			fn := ""
+			switch op.Op {
+			case "<":
+				fn = "_any_lt"
+			case "<=":
+				fn = "_any_le"
+			case ">":
+				fn = "_any_gt"
+			case ">=":
+				fn = "_any_ge"
+			}
+			c.use(fn)
+			expr = fmt.Sprintf("%s(%s, %s)", fn, expr, rhs)
+			exprType = types.BoolType{}
+			exprIsString = false
+			continue
+		}
+		if (op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/") && (containsAny(exprType) || containsAny(rhsType)) {
+			c.use("_num")
+			expr = fmt.Sprintf("_num(%s) %s _num(%s)", expr, op.Op, rhs)
+			exprType = types.FloatType{}
+			exprIsString = false
 			continue
 		}
 		if op.Op == "in" {
@@ -634,6 +673,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		} else {
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, rhs)
 		}
+		exprType = types.AnyType{}
 		exprIsString = false
 	}
 	return expr, nil
