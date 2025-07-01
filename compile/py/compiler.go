@@ -317,7 +317,11 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		}
 		operands = append(operands, r)
 		typesList = append(typesList, c.inferPostfixType(part.Right))
-		ops = append(ops, part.Op)
+		op := part.Op
+		if op == "union" && part.All {
+			op = "union_all"
+		}
+		ops = append(ops, op)
 	}
 
 	levels := [][]string{
