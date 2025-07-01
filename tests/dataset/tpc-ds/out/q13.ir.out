@@ -1,32 +1,341 @@
-func main (regs=17)
-  // let t = [{id: 0, val: 0}, {id: 1, val: 13}]
-  Const        r0, [{"id": 0, "val": 0}, {"id": 1, "val": 13}]
-  // let vals = from r in t select r.val
-  Const        r1, []
-  Const        r2, "val"
-  IterPrep     r3, r0
-  Len          r4, r3
-  Const        r6, 0
-  Move         r5, r6
+func main (regs=199)
+  // let store_sales = [
+  Const        r0, [{"ss_addr_sk": 1, "ss_cdemo_sk": 1, "ss_ext_sales_price": 100.0, "ss_ext_wholesale_cost": 50.0, "ss_hdemo_sk": 1, "ss_net_profit": 150.0, "ss_quantity": 10, "ss_sales_price": 120.0, "ss_sold_date_sk": 1, "ss_store_sk": 1}]
+  // let store = [ { s_store_sk: 1, s_state: "CA" } ]
+  Const        r1, [{"s_state": "CA", "s_store_sk": 1}]
+  // let customer_demographics = [ { cd_demo_sk: 1, cd_marital_status: "M1", cd_education_status: "ES1" } ]
+  Const        r2, [{"cd_demo_sk": 1, "cd_education_status": "ES1", "cd_marital_status": "M1"}]
+  // let household_demographics = [ { hd_demo_sk: 1, hd_dep_count: 3 } ]
+  Const        r3, [{"hd_demo_sk": 1, "hd_dep_count": 3}]
+  // let customer_address = [ { ca_address_sk: 1, ca_country: "United States", ca_state: "CA" } ]
+  Const        r4, [{"ca_address_sk": 1, "ca_country": "United States", "ca_state": "CA"}]
+  // let date_dim = [ { d_date_sk: 1, d_year: 2001 } ]
+  Const        r5, [{"d_date_sk": 1, "d_year": 2001}]
+  // from ss in store_sales
+  Const        r6, []
+  IterPrep     r7, r0
+  Len          r8, r7
+  Const        r10, 0
+  Move         r9, r10
+L16:
+  LessInt      r11, r9, r8
+  JumpIfFalse  r11, L0
+  Index        r12, r7, r9
+  Move         r13, r12
+  // join s in store on ss.ss_store_sk == s.s_store_sk
+  IterPrep     r14, r1
+  Len          r15, r14
+  Const        r16, "ss_store_sk"
+  Const        r17, "s_store_sk"
+  Move         r18, r10
+L15:
+  LessInt      r19, r18, r15
+  JumpIfFalse  r19, L1
+  Index        r20, r14, r18
+  Move         r21, r20
+  Index        r22, r13, r16
+  Index        r23, r21, r17
+  Equal        r24, r22, r23
+  JumpIfFalse  r24, L2
+  // join cd in customer_demographics on ss.ss_cdemo_sk == cd.cd_demo_sk && cd.cd_marital_status == "M1" && cd.cd_education_status == "ES1"
+  IterPrep     r25, r2
+  Len          r26, r25
+  Const        r27, "ss_cdemo_sk"
+  Const        r28, "cd_demo_sk"
+  Const        r29, "cd_marital_status"
+  Const        r30, "cd_education_status"
+  Move         r31, r10
+L14:
+  LessInt      r32, r31, r26
+  JumpIfFalse  r32, L2
+  Index        r33, r25, r31
+  Move         r34, r33
+  Index        r35, r13, r27
+  Index        r36, r34, r28
+  Equal        r37, r35, r36
+  Index        r38, r34, r29
+  Const        r39, "M1"
+  Equal        r40, r38, r39
+  Index        r41, r34, r30
+  Const        r42, "ES1"
+  Equal        r43, r41, r42
+  Move         r44, r37
+  JumpIfFalse  r44, L3
+  Move         r44, r40
+  JumpIfFalse  r44, L3
+  Move         r44, r43
+L3:
+  JumpIfFalse  r44, L4
+  // join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk && hd.hd_dep_count == 3
+  IterPrep     r45, r3
+  Len          r46, r45
+  Const        r47, "ss_hdemo_sk"
+  Const        r48, "hd_demo_sk"
+  Const        r49, "hd_dep_count"
+  Move         r50, r10
+L13:
+  LessInt      r51, r50, r46
+  JumpIfFalse  r51, L4
+  Index        r52, r45, r50
+  Move         r53, r52
+  Index        r54, r13, r47
+  Index        r55, r53, r48
+  Equal        r56, r54, r55
+  Index        r57, r53, r49
+  Const        r58, 3
+  Equal        r59, r57, r58
+  Move         r60, r56
+  JumpIfFalse  r60, L5
+  Move         r60, r59
+L5:
+  JumpIfFalse  r60, L6
+  // join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk && ca.ca_country == "United States" && ca.ca_state == "CA"
+  IterPrep     r61, r4
+  Len          r62, r61
+  Const        r63, "ss_addr_sk"
+  Const        r64, "ca_address_sk"
+  Const        r65, "ca_country"
+  Const        r66, "ca_state"
+  Move         r67, r10
+L12:
+  LessInt      r68, r67, r62
+  JumpIfFalse  r68, L6
+  Index        r69, r61, r67
+  Move         r70, r69
+  Index        r71, r13, r63
+  Index        r72, r70, r64
+  Equal        r73, r71, r72
+  Index        r74, r70, r65
+  Const        r75, "United States"
+  Equal        r76, r74, r75
+  Index        r77, r70, r66
+  Const        r78, "CA"
+  Equal        r79, r77, r78
+  Move         r80, r73
+  JumpIfFalse  r80, L7
+  Move         r80, r76
+  JumpIfFalse  r80, L7
+  Move         r80, r79
+L7:
+  JumpIfFalse  r80, L8
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk && d.d_year == 2001
+  IterPrep     r81, r5
+  Len          r82, r81
+  Const        r83, "ss_sold_date_sk"
+  Const        r84, "d_date_sk"
+  Const        r85, "d_year"
+  Move         r86, r10
+L11:
+  LessInt      r87, r86, r82
+  JumpIfFalse  r87, L8
+  Index        r88, r81, r86
+  Move         r89, r88
+  Index        r90, r13, r83
+  Index        r91, r89, r84
+  Equal        r92, r90, r91
+  Index        r93, r89, r85
+  Const        r94, 2001
+  Equal        r95, r93, r94
+  Move         r96, r92
+  JumpIfFalse  r96, L9
+  Move         r96, r95
+L9:
+  JumpIfFalse  r96, L10
+  // from ss in store_sales
+  Append       r97, r6, r13
+  Move         r6, r97
+L10:
+  // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk && d.d_year == 2001
+  Const        r98, 1
+  Add          r86, r86, r98
+  Jump         L11
+L8:
+  // join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk && ca.ca_country == "United States" && ca.ca_state == "CA"
+  Add          r67, r67, r98
+  Jump         L12
+L6:
+  // join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk && hd.hd_dep_count == 3
+  Add          r50, r50, r98
+  Jump         L13
+L4:
+  // join cd in customer_demographics on ss.ss_cdemo_sk == cd.cd_demo_sk && cd.cd_marital_status == "M1" && cd.cd_education_status == "ES1"
+  Add          r31, r31, r98
+  Jump         L14
+L2:
+  // join s in store on ss.ss_store_sk == s.s_store_sk
+  Add          r18, r18, r98
+  Jump         L15
 L1:
-  LessInt      r7, r5, r4
-  JumpIfFalse  r7, L0
-  Index        r8, r3, r5
-  Move         r9, r8
-  Index        r10, r9, r2
-  Append       r11, r1, r10
-  Move         r1, r11
-  Const        r12, 1
-  AddInt       r5, r5, r12
-  Jump         L1
+  // from ss in store_sales
+  AddInt       r9, r9, r98
+  Jump         L16
 L0:
-  // let result = first(reverse(vals))
-  Reverse      r13, r1
-  First        r14, r13
+  // from r in filtered
+  Const        r99, []
+  // avg_ss_quantity: avg(from x in g select x.ss_quantity),
+  Const        r100, "avg_ss_quantity"
+  Const        r101, "ss_quantity"
+  // avg_ss_ext_sales_price: avg(from x in g select x.ss_ext_sales_price),
+  Const        r102, "avg_ss_ext_sales_price"
+  Const        r103, "ss_ext_sales_price"
+  // avg_ss_ext_wholesale_cost: avg(from x in g select x.ss_ext_wholesale_cost),
+  Const        r104, "avg_ss_ext_wholesale_cost"
+  Const        r105, "ss_ext_wholesale_cost"
+  // sum_ss_ext_wholesale_cost: sum(from x in g select x.ss_ext_wholesale_cost)
+  Const        r106, "sum_ss_ext_wholesale_cost"
+  // from r in filtered
+  IterPrep     r107, r6
+  Len          r108, r107
+  Const        r109, 0
+  MakeMap      r110, 0, r0
+  Const        r112, []
+  Move         r111, r112
+L19:
+  LessInt      r113, r109, r108
+  JumpIfFalse  r113, L17
+  Index        r114, r107, r109
+  Move         r115, r114
+  // group by {} into g
+  Const        r116, {}
+  Const        r117, "map[]"
+  In           r118, r117, r110
+  JumpIfTrue   r118, L18
+  // from r in filtered
+  Const        r119, "__group__"
+  Const        r120, true
+  Const        r121, "key"
+  // group by {} into g
+  Move         r122, r116
+  // from r in filtered
+  Const        r123, "items"
+  Move         r124, r112
+  Const        r125, "count"
+  Move         r126, r119
+  Move         r127, r120
+  Move         r128, r121
+  Move         r129, r122
+  Move         r130, r123
+  Move         r131, r124
+  Move         r132, r125
+  Move         r133, r10
+  MakeMap      r134, 4, r126
+  SetIndex     r110, r117, r134
+  Append       r135, r111, r134
+  Move         r111, r135
+L18:
+  Index        r136, r110, r117
+  Index        r137, r136, r123
+  Append       r138, r137, r114
+  SetIndex     r136, r123, r138
+  Index        r139, r136, r125
+  AddInt       r140, r139, r98
+  SetIndex     r136, r125, r140
+  AddInt       r109, r109, r98
+  Jump         L19
+L17:
+  Move         r141, r10
+  Len          r142, r111
+L29:
+  LessInt      r143, r141, r142
+  JumpIfFalse  r143, L20
+  Index        r144, r111, r141
+  Move         r145, r144
+  // avg_ss_quantity: avg(from x in g select x.ss_quantity),
+  Const        r146, "avg_ss_quantity"
+  Const        r147, []
+  IterPrep     r148, r145
+  Len          r149, r148
+  Move         r150, r10
+L22:
+  LessInt      r151, r150, r149
+  JumpIfFalse  r151, L21
+  Index        r152, r148, r150
+  Move         r153, r152
+  Index        r154, r153, r101
+  Append       r155, r147, r154
+  Move         r147, r155
+  AddInt       r150, r150, r98
+  Jump         L22
+L21:
+  Avg          r156, r147
+  // avg_ss_ext_sales_price: avg(from x in g select x.ss_ext_sales_price),
+  Const        r157, "avg_ss_ext_sales_price"
+  Const        r158, []
+  IterPrep     r159, r145
+  Len          r160, r159
+  Move         r161, r10
+L24:
+  LessInt      r162, r161, r160
+  JumpIfFalse  r162, L23
+  Index        r163, r159, r161
+  Move         r153, r163
+  Index        r164, r153, r103
+  Append       r165, r158, r164
+  Move         r158, r165
+  AddInt       r161, r161, r98
+  Jump         L24
+L23:
+  Avg          r166, r158
+  // avg_ss_ext_wholesale_cost: avg(from x in g select x.ss_ext_wholesale_cost),
+  Const        r167, "avg_ss_ext_wholesale_cost"
+  Const        r168, []
+  IterPrep     r169, r145
+  Len          r170, r169
+  Move         r171, r10
+L26:
+  LessInt      r172, r171, r170
+  JumpIfFalse  r172, L25
+  Index        r173, r169, r171
+  Move         r153, r173
+  Index        r174, r153, r105
+  Append       r175, r168, r174
+  Move         r168, r175
+  AddInt       r171, r171, r98
+  Jump         L26
+L25:
+  Avg          r176, r168
+  // sum_ss_ext_wholesale_cost: sum(from x in g select x.ss_ext_wholesale_cost)
+  Const        r177, "sum_ss_ext_wholesale_cost"
+  Const        r178, []
+  IterPrep     r179, r145
+  Len          r180, r179
+  Move         r181, r10
+L28:
+  LessInt      r182, r181, r180
+  JumpIfFalse  r182, L27
+  Index        r183, r179, r181
+  Move         r153, r183
+  Index        r184, r153, r105
+  Append       r185, r178, r184
+  Move         r178, r185
+  AddInt       r181, r181, r98
+  Jump         L28
+L27:
+  Sum          r186, r178
+  // avg_ss_quantity: avg(from x in g select x.ss_quantity),
+  Move         r187, r146
+  Move         r188, r156
+  // avg_ss_ext_sales_price: avg(from x in g select x.ss_ext_sales_price),
+  Move         r189, r157
+  Move         r190, r166
+  // avg_ss_ext_wholesale_cost: avg(from x in g select x.ss_ext_wholesale_cost),
+  Move         r191, r167
+  Move         r192, r176
+  // sum_ss_ext_wholesale_cost: sum(from x in g select x.ss_ext_wholesale_cost)
+  Move         r193, r177
+  Move         r194, r186
+  // select {
+  MakeMap      r195, 4, r187
+  // from r in filtered
+  Append       r196, r99, r195
+  Move         r99, r196
+  AddInt       r141, r141, r98
+  Jump         L29
+L20:
   // json(result)
-  JSON         r14
-  // expect result == 13
-  Const        r15, 13
-  Equal        r16, r14, r15
-  Expect       r16
+  JSON         r99
+  // expect result == [ { avg_ss_quantity: 10.0, avg_ss_ext_sales_price: 100.0, avg_ss_ext_wholesale_cost: 50.0, sum_ss_ext_wholesale_cost: 50.0 } ]
+  Const        r197, [{"avg_ss_ext_sales_price": 100.0, "avg_ss_ext_wholesale_cost": 50.0, "avg_ss_quantity": 10.0, "sum_ss_ext_wholesale_cost": 50.0}]
+  Equal        r198, r99, r197
+  Expect       r198
   Return       r0

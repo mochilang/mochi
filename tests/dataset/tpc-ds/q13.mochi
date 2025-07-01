@@ -1,8 +1,55 @@
-let t = [{id: 0, val: 0}, {id: 1, val: 13}]
-let vals = from r in t select r.val
-let result = first(reverse(vals))
+// Average sales metrics for customers meeting demographic filters
+
+type StoreSale { ss_store_sk: int, ss_sold_date_sk: int, ss_hdemo_sk: int, ss_cdemo_sk: int,
+  ss_addr_sk: int, ss_sales_price: float, ss_net_profit: float,
+  ss_quantity: int, ss_ext_sales_price: float, ss_ext_wholesale_cost: float }
+type Store { s_store_sk: int, s_state: string }
+type CustomerDemographics { cd_demo_sk: int, cd_marital_status: string, cd_education_status: string }
+type HouseholdDemographics { hd_demo_sk: int, hd_dep_count: int }
+type CustomerAddress { ca_address_sk: int, ca_country: string, ca_state: string }
+type DateDim { d_date_sk: int, d_year: int }
+
+let store_sales = [
+  {
+    ss_store_sk: 1,
+    ss_sold_date_sk: 1,
+    ss_hdemo_sk: 1,
+    ss_cdemo_sk: 1,
+    ss_addr_sk: 1,
+    ss_sales_price: 120.0,
+    ss_net_profit: 150.0,
+    ss_quantity: 10,
+    ss_ext_sales_price: 100.0,
+    ss_ext_wholesale_cost: 50.0
+  }
+]
+let store = [ { s_store_sk: 1, s_state: "CA" } ]
+let customer_demographics = [ { cd_demo_sk: 1, cd_marital_status: "M1", cd_education_status: "ES1" } ]
+let household_demographics = [ { hd_demo_sk: 1, hd_dep_count: 3 } ]
+let customer_address = [ { ca_address_sk: 1, ca_country: "United States", ca_state: "CA" } ]
+let date_dim = [ { d_date_sk: 1, d_year: 2001 } ]
+
+let filtered =
+  from ss in store_sales
+  join s in store on ss.ss_store_sk == s.s_store_sk
+  join cd in customer_demographics on ss.ss_cdemo_sk == cd.cd_demo_sk && cd.cd_marital_status == "M1" && cd.cd_education_status == "ES1"
+  join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk && hd.hd_dep_count == 3
+  join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk && ca.ca_country == "United States" && ca.ca_state == "CA"
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk && d.d_year == 2001
+  select ss
+
+let result =
+  from r in filtered
+  group by {} into g
+  select {
+    avg_ss_quantity: avg(from x in g select x.ss_quantity),
+    avg_ss_ext_sales_price: avg(from x in g select x.ss_ext_sales_price),
+    avg_ss_ext_wholesale_cost: avg(from x in g select x.ss_ext_wholesale_cost),
+    sum_ss_ext_wholesale_cost: sum(from x in g select x.ss_ext_wholesale_cost)
+  }
+
 json(result)
 
-test "TPCDS Q13 first" {
-  expect result == 13
+test "TPCDS Q13 averages" {
+  expect result == [ { avg_ss_quantity: 10.0, avg_ss_ext_sales_price: 100.0, avg_ss_ext_wholesale_cost: 50.0, sum_ss_ext_wholesale_cost: 50.0 } ]
 }

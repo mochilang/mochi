@@ -1,32 +1,251 @@
-func main (regs=17)
-  // let t = [{id: 0, val: 0}, {id: 1, val: 15}]
-  Const        r0, [{"id": 0, "val": 0}, {"id": 1, "val": 15}]
-  // let vals = from r in t select r.val
-  Const        r1, []
-  Const        r2, "val"
-  IterPrep     r3, r0
-  Len          r4, r3
-  Const        r6, 0
-  Move         r5, r6
+func main (regs=153)
+  // let catalog_sales = [ { cs_bill_customer_sk: 1, cs_sales_price: 600.0, cs_sold_date_sk: 1 } ]
+  Const        r0, [{"cs_bill_customer_sk": 1, "cs_sales_price": 600.0, "cs_sold_date_sk": 1}]
+  // let customer = [ { c_customer_sk: 1, c_current_addr_sk: 1 } ]
+  Const        r1, [{"c_current_addr_sk": 1, "c_customer_sk": 1}]
+  // let customer_address = [ { ca_address_sk: 1, ca_zip: "85669", ca_state: "CA" } ]
+  Const        r2, [{"ca_address_sk": 1, "ca_state": "CA", "ca_zip": "85669"}]
+  // let date_dim = [ { d_date_sk: 1, d_qoy: 1, d_year: 2000 } ]
+  Const        r3, [{"d_date_sk": 1, "d_qoy": 1, "d_year": 2000}]
+  // from cs in catalog_sales
+  Const        r4, []
+  // group by { zip: ca.ca_zip } into g
+  Const        r5, "zip"
+  Const        r6, "ca_zip"
+  // ca.ca_state in ["CA","WA","GA"] ||
+  Const        r7, "ca_state"
+  // cs.cs_sales_price > 500) &&
+  Const        r8, "cs_sales_price"
+  // d.d_qoy == 1 && d.d_year == 2000
+  Const        r9, "d_qoy"
+  Const        r10, "d_year"
+  // select { ca_zip: g.key.zip, sum_sales: sum(from x in g select x.cs_sales_price) }
+  Const        r11, "key"
+  Const        r12, "sum_sales"
+  // from cs in catalog_sales
+  MakeMap      r13, 0, r0
+  Const        r15, []
+  Move         r14, r15
+  IterPrep     r16, r0
+  Len          r17, r16
+  Const        r18, 0
+L11:
+  LessInt      r19, r18, r17
+  JumpIfFalse  r19, L0
+  Index        r20, r16, r18
+  Move         r21, r20
+  // join c in customer on cs.cs_bill_customer_sk == c.c_customer_sk
+  IterPrep     r22, r1
+  Len          r23, r22
+  Const        r24, 0
+L10:
+  LessInt      r25, r24, r23
+  JumpIfFalse  r25, L1
+  Index        r26, r22, r24
+  Move         r27, r26
+  Const        r28, "cs_bill_customer_sk"
+  Index        r29, r21, r28
+  Const        r30, "c_customer_sk"
+  Index        r31, r27, r30
+  Equal        r32, r29, r31
+  JumpIfFalse  r32, L2
+  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  IterPrep     r33, r2
+  Len          r34, r33
+  Const        r35, 0
+L9:
+  LessInt      r36, r35, r34
+  JumpIfFalse  r36, L2
+  Index        r37, r33, r35
+  Move         r38, r37
+  Const        r39, "c_current_addr_sk"
+  Index        r40, r27, r39
+  Const        r41, "ca_address_sk"
+  Index        r42, r38, r41
+  Equal        r43, r40, r42
+  JumpIfFalse  r43, L3
+  // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+  IterPrep     r44, r3
+  Len          r45, r44
+  Const        r46, 0
+L8:
+  LessInt      r47, r46, r45
+  JumpIfFalse  r47, L3
+  Index        r48, r44, r46
+  Move         r49, r48
+  Const        r50, "cs_sold_date_sk"
+  Index        r51, r21, r50
+  Const        r52, "d_date_sk"
+  Index        r53, r49, r52
+  Equal        r54, r51, r53
+  JumpIfFalse  r54, L4
+  // where (substr(ca.ca_zip,0,5) in ["85669","86197","88274","83405","86475","85392","85460","80348","81792"] ||
+  Index        r55, r38, r6
+  Const        r56, 0
+  Const        r57, 5
+  Slice        r58, r55, r56, r57
+  // cs.cs_sales_price > 500) &&
+  Index        r59, r21, r8
+  Const        r60, 500
+  Less         r61, r60, r59
+  // where (substr(ca.ca_zip,0,5) in ["85669","86197","88274","83405","86475","85392","85460","80348","81792"] ||
+  Const        r62, ["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"]
+  In           r63, r58, r62
+  // ca.ca_state in ["CA","WA","GA"] ||
+  Index        r64, r38, r7
+  Const        r65, ["CA", "WA", "GA"]
+  In           r66, r64, r65
+  // where (substr(ca.ca_zip,0,5) in ["85669","86197","88274","83405","86475","85392","85460","80348","81792"] ||
+  Move         r67, r63
+  JumpIfTrue   r67, L5
+  Move         r67, r66
+  // ca.ca_state in ["CA","WA","GA"] ||
+  JumpIfTrue   r67, L5
+  Move         r67, r61
+L5:
+  // d.d_qoy == 1 && d.d_year == 2000
+  Index        r68, r49, r9
+  Const        r69, 1
+  Equal        r70, r68, r69
+  Index        r71, r49, r10
+  Const        r72, 2000
+  Equal        r73, r71, r72
+  // cs.cs_sales_price > 500) &&
+  Move         r74, r67
+  JumpIfFalse  r74, L6
+  Move         r74, r70
+  // d.d_qoy == 1 && d.d_year == 2000
+  JumpIfFalse  r74, L6
+  Move         r74, r73
+L6:
+  // where (substr(ca.ca_zip,0,5) in ["85669","86197","88274","83405","86475","85392","85460","80348","81792"] ||
+  JumpIfFalse  r74, L4
+  // from cs in catalog_sales
+  Const        r75, "cs"
+  Move         r76, r21
+  Const        r77, "c"
+  Move         r78, r27
+  Const        r79, "ca"
+  Move         r80, r38
+  Const        r81, "d"
+  Move         r82, r49
+  Move         r83, r75
+  Move         r84, r76
+  Move         r85, r77
+  Move         r86, r78
+  Move         r87, r79
+  Move         r88, r80
+  Move         r89, r81
+  Move         r90, r82
+  MakeMap      r91, 4, r83
+  // group by { zip: ca.ca_zip } into g
+  Const        r92, "zip"
+  Index        r93, r38, r6
+  Move         r94, r92
+  Move         r95, r93
+  MakeMap      r96, 1, r94
+  Str          r97, r96
+  In           r98, r97, r13
+  JumpIfTrue   r98, L7
+  // from cs in catalog_sales
+  Const        r99, "__group__"
+  Const        r100, true
+  // group by { zip: ca.ca_zip } into g
+  Move         r101, r96
+  // from cs in catalog_sales
+  Const        r102, "items"
+  Move         r103, r15
+  Const        r104, "count"
+  Move         r105, r99
+  Move         r106, r100
+  Move         r107, r11
+  Move         r108, r101
+  Move         r109, r102
+  Move         r110, r103
+  Move         r111, r104
+  Move         r112, r56
+  MakeMap      r113, 4, r105
+  SetIndex     r13, r97, r113
+  Append       r114, r14, r113
+  Move         r14, r114
+L7:
+  Index        r115, r13, r97
+  Index        r116, r115, r102
+  Append       r117, r116, r91
+  SetIndex     r115, r102, r117
+  Index        r118, r115, r104
+  AddInt       r119, r118, r69
+  SetIndex     r115, r104, r119
+L4:
+  // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+  AddInt       r46, r46, r69
+  Jump         L8
+L3:
+  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  AddInt       r35, r35, r69
+  Jump         L9
+L2:
+  // join c in customer on cs.cs_bill_customer_sk == c.c_customer_sk
+  AddInt       r24, r24, r69
+  Jump         L10
 L1:
-  LessInt      r7, r5, r4
-  JumpIfFalse  r7, L0
-  Index        r8, r3, r5
-  Move         r9, r8
-  Index        r10, r9, r2
-  Append       r11, r1, r10
-  Move         r1, r11
-  Const        r12, 1
-  AddInt       r5, r5, r12
-  Jump         L1
+  // from cs in catalog_sales
+  AddInt       r18, r18, r69
+  Jump         L11
 L0:
-  // let result = first(reverse(vals))
-  Reverse      r13, r1
-  First        r14, r13
-  // json(result)
-  JSON         r14
-  // expect result == 15
-  Const        r15, 15
-  Equal        r16, r14, r15
-  Expect       r16
+  Move         r120, r56
+  Len          r121, r14
+L15:
+  LessInt      r122, r120, r121
+  JumpIfFalse  r122, L12
+  Index        r123, r14, r120
+  Move         r124, r123
+  // select { ca_zip: g.key.zip, sum_sales: sum(from x in g select x.cs_sales_price) }
+  Const        r125, "ca_zip"
+  Index        r126, r124, r11
+  Index        r127, r126, r5
+  Const        r128, "sum_sales"
+  Const        r129, []
+  IterPrep     r130, r124
+  Len          r131, r130
+  Move         r132, r56
+L14:
+  LessInt      r133, r132, r131
+  JumpIfFalse  r133, L13
+  Index        r134, r130, r132
+  Move         r135, r134
+  Index        r136, r135, r8
+  Append       r137, r129, r136
+  Move         r129, r137
+  AddInt       r132, r132, r69
+  Jump         L14
+L13:
+  Sum          r138, r129
+  Move         r139, r125
+  Move         r140, r127
+  Move         r141, r128
+  Move         r142, r138
+  MakeMap      r143, 2, r139
+  // sort by g.key.zip
+  Index        r144, r124, r11
+  Index        r145, r144, r5
+  Move         r146, r145
+  // from cs in catalog_sales
+  Move         r147, r143
+  MakeList     r148, 2, r146
+  Append       r149, r4, r148
+  Move         r4, r149
+  AddInt       r120, r120, r69
+  Jump         L15
+L12:
+  // sort by g.key.zip
+  Sort         r150, r4
+  // from cs in catalog_sales
+  Move         r4, r150
+  // json(filtered)
+  JSON         r4
+  // expect filtered == [ { ca_zip: "85669", sum_sales: 600.0 } ]
+  Const        r151, [{"ca_zip": "85669", "sum_sales": 600.0}]
+  Equal        r152, r4, r151
+  Expect       r152
   Return       r0

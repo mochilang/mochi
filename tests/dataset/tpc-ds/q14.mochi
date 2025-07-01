@@ -1,8 +1,41 @@
-let t = [{id: 0, val: 0}, {id: 1, val: 14}]
-let vals = from r in t select r.val
-let result = first(reverse(vals))
+// Cross channel item sales exceeding the average
+
+type StoreSale { ss_item_sk: int, ss_list_price: float, ss_quantity: int, ss_sold_date_sk: int }
+type CatalogSale { cs_item_sk: int, cs_list_price: float, cs_quantity: int, cs_sold_date_sk: int }
+type WebSale { ws_item_sk: int, ws_list_price: float, ws_quantity: int, ws_sold_date_sk: int }
+type Item { i_item_sk: int, i_brand_id: int, i_class_id: int, i_category_id: int }
+type DateDim { d_date_sk: int, d_year: int, d_moy: int }
+
+let store_sales = [
+  { ss_item_sk: 1, ss_list_price: 10.0, ss_quantity: 2, ss_sold_date_sk: 1 },
+  { ss_item_sk: 1, ss_list_price: 20.0, ss_quantity: 3, ss_sold_date_sk: 2 }
+]
+let catalog_sales = [ { cs_item_sk: 1, cs_list_price: 10.0, cs_quantity: 2, cs_sold_date_sk: 1 } ]
+let web_sales = [ { ws_item_sk: 1, ws_list_price: 30.0, ws_quantity: 1, ws_sold_date_sk: 1 } ]
+let item = [ { i_item_sk: 1, i_brand_id: 1, i_class_id: 1, i_category_id: 1 } ]
+let date_dim = [ { d_date_sk: 1, d_year: 2000, d_moy: 12 }, { d_date_sk: 2, d_year: 2002, d_moy: 11 } ]
+
+let cross_items = [ { ss_item_sk: 1 } ]
+
+let avg_sales =
+  avg(
+    [ 20.0, 20.0, 30.0 ]
+  )
+
+let store_filtered =
+  from ss in store_sales
+  join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk && d.d_year == 2002 && d.d_moy == 11
+  where ss.ss_item_sk in (from ci in cross_items select ci.ss_item_sk)
+  group by { brand_id: 1, class_id: 1, category_id: 1 } into g
+  select { channel: "store", sales: sum(from x in g select x.ss_quantity * x.ss_list_price), number_sales: count(from _ in g select _) }
+
+let result =
+  from r in store_filtered
+  where r.sales > avg_sales
+  select { channel: r.channel, i_brand_id: 1, i_class_id: 1, i_category_id: 1, sales: r.sales, number_sales: r.number_sales }
+
 json(result)
 
-test "TPCDS Q14 first" {
-  expect result == 14
+test "TPCDS Q14 cross channel" {
+  expect result == [ { channel: "store", i_brand_id: 1, i_class_id: 1, i_category_id: 1, sales: 60.0, number_sales: 1 } ]
 }
