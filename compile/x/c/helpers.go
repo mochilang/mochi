@@ -106,6 +106,15 @@ func isListListIntType(t types.Type) bool {
 	return false
 }
 
+func isListIntType(t types.Type) bool {
+	if lt, ok := t.(types.ListType); ok {
+		if _, ok := lt.Elem.(types.IntType); ok {
+			return true
+		}
+	}
+	return false
+}
+
 func isListStringType(t types.Type) bool {
 	if lt, ok := t.(types.ListType); ok {
 		if _, ok2 := lt.Elem.(types.StringType); ok2 {

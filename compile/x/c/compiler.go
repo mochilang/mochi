@@ -759,6 +759,10 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
 				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else if isListIntType(t) {
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
 				val := c.newTemp()
@@ -840,6 +844,10 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				c.need(needListListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
+				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			} else if isListIntType(t) {
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", val))
 				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)

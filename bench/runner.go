@@ -85,9 +85,7 @@ func Benchmarks(tempDir, mochiBin string) []Bench {
 			{Lang: "mochi_vm", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 			{Lang: "mochi_go", Path: path, Suffix: suffix, Command: []string{"go", "run"}},
 		}
-		if name != "matrix_mul" {
-			templates = append(templates, Template{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil})
-		}
+		templates = append(templates, Template{Lang: "mochi_c", Path: path, Suffix: suffix, Command: nil})
 		templates = append(templates, Template{Lang: "mochi_py", Path: path, Suffix: suffix, Command: []string{"python3"}})
 		// Temporarily disable PyPy and Cython benchmarks
 		// templates = append(templates, Template{Lang: "mochi_pypy", Path: path, Suffix: suffix, Command: []string{"pypy3"}})
@@ -643,7 +641,7 @@ func GenerateOutputs(outDir string) error {
 				return err
 			}
 
-			if category != "join" && name != "matrix_mul" {
+			if category != "join" {
 				cOut := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.out", category, name, n))
 				bin := filepath.Join(outDir, fmt.Sprintf("%s_%s_%d.c.bin", category, name, n))
 				if err := compileToC(tmp, cOut, bin); err != nil {

@@ -10,14 +10,14 @@ func main (regs=58)
   Const        r4, 0
   Move         r5, r4
 L3:
-  Less         r6, r5, r0
+  LessInt      r6, r5, r0
   JumpIfFalse  r6, L0
   // var row: list<int> = []
   Move         r7, r2
   // for j in 0..size {
   Move         r8, r4
 L2:
-  Less         r9, r8, r0
+  LessInt      r9, r8, r0
   JumpIfFalse  r9, L1
   // row = row + [i + j]
   AddInt       r10, r5, r8
@@ -27,7 +27,7 @@ L2:
   Move         r7, r13
   // for j in 0..size {
   Const        r14, 1
-  Add          r15, r8, r14
+  AddInt       r15, r8, r14
   Move         r8, r15
   Jump         L2
 L1:
@@ -38,7 +38,7 @@ L1:
   Move         r3, r18
   // for i in 0..size {
   Const        r19, 1
-  Add          r20, r5, r19
+  AddInt       r20, r5, r19
   Move         r5, r20
   Jump         L3
 L0:
@@ -47,14 +47,14 @@ L0:
   // for i in 0..size {
   Move         r5, r4
 L7:
-  Less         r22, r5, r0
+  LessInt      r22, r5, r0
   JumpIfFalse  r22, L4
   // var row: list<int> = []
   Move         r23, r2
   // for j in 0..size {
   Move         r24, r4
 L6:
-  Less         r25, r24, r0
+  LessInt      r25, r24, r0
   JumpIfFalse  r25, L5
   // row = row + [i * j]
   MulInt       r26, r5, r24
@@ -64,7 +64,7 @@ L6:
   Move         r23, r29
   // for j in 0..size {
   Const        r30, 1
-  Add          r31, r24, r30
+  AddInt       r31, r24, r30
   Move         r24, r31
   Jump         L6
 L5:
@@ -75,7 +75,7 @@ L5:
   Move         r21, r34
   // for i in 0..size {
   Const        r35, 1
-  Add          r36, r5, r35
+  AddInt       r36, r5, r35
   Move         r5, r36
   Jump         L7
 L4:
@@ -86,7 +86,7 @@ L4:
   // for i in 0..repeat {
   Move         r5, r4
 L9:
-  Less         r39, r5, r1
+  LessInt      r39, r5, r1
   JumpIfFalse  r39, L8
   // last = matmul(a, b)
   Move         r40, r3
@@ -95,7 +95,7 @@ L9:
   Move         r37, r42
   // for i in 0..repeat {
   Const        r43, 1
-  Add          r44, r5, r43
+  AddInt       r44, r5, r43
   Move         r5, r44
   Jump         L9
 L8:
@@ -138,21 +138,21 @@ func matmul (regs=35)
   // for i in 0..n {
   Move         r9, r3
 L5:
-  Less         r10, r9, r2
+  LessInt      r10, r9, r2
   JumpIfFalse  r10, L0
   // var row: list<int> = []
   Move         r11, r7
   // for j in 0..m {
   Move         r12, r3
 L4:
-  Less         r13, r12, r5
+  LessInt      r13, r12, r5
   JumpIfFalse  r13, L1
   // var sum: int = 0
   Move         r14, r3
   // for k in 0..p {
   Move         r15, r3
 L3:
-  Less         r16, r15, r6
+  LessInt      r16, r15, r6
   JumpIfFalse  r16, L2
   // sum = sum + a[i][k] * b[k][j]
   Index        r17, r0, r9
@@ -164,7 +164,7 @@ L3:
   Move         r14, r22
   // for k in 0..p {
   Const        r23, 1
-  Add          r24, r15, r23
+  AddInt       r24, r15, r23
   Move         r15, r24
   Jump         L3
 L2:
@@ -175,7 +175,7 @@ L2:
   Move         r11, r27
   // for j in 0..m {
   Const        r28, 1
-  Add          r29, r12, r28
+  AddInt       r29, r12, r28
   Move         r12, r29
   Jump         L4
 L1:
@@ -186,7 +186,7 @@ L1:
   Move         r8, r32
   // for i in 0..n {
   Const        r33, 1
-  Add          r34, r9, r33
+  AddInt       r34, r9, r33
   Move         r9, r34
   Jump         L5
 L0:
