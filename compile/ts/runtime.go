@@ -321,7 +321,9 @@ const (
 		"        for (let ri = 0; ri < j.items.length; ri++) {\n" +
 		"          const right = j.items[ri];\n" +
 		"          let keep = true;\n" +
-		"          if (j.on) keep = j.on(...left, right);\n" +
+		"          if (left.some((v: any) => v === null) || right === null) {\n" +
+		"            keep = false;\n" +
+		"          } else if (j.on) { keep = j.on(...left, right); }\n" +
 		"          if (!keep) continue;\n" +
 		"          m = true; matched[ri] = true;\n" +
 		"          joined.push([...left, right]);\n" +
@@ -339,7 +341,9 @@ const (
 		"        let m = false;\n" +
 		"        for (const left of items) {\n" +
 		"          let keep = true;\n" +
-		"          if (j.on) keep = j.on(...left, right);\n" +
+		"          if (left.some((v: any) => v === null) || right === null) {\n" +
+		"            keep = false;\n" +
+		"          } else if (j.on) { keep = j.on(...left, right); }\n" +
 		"          if (!keep) continue;\n" +
 		"          m = true; joined.push([...left, right]);\n" +
 		"        }\n" +
@@ -353,7 +357,9 @@ const (
 		"        let m = false;\n" +
 		"        for (const right of j.items) {\n" +
 		"          let keep = true;\n" +
-		"          if (j.on) keep = j.on(...left, right);\n" +
+		"          if (left.some((v: any) => v === null) || right === null) {\n" +
+		"            keep = false;\n" +
+		"          } else if (j.on) { keep = j.on(...left, right); }\n" +
 		"          if (!keep) continue;\n" +
 		"          m = true; joined.push([...left, right]);\n" +
 		"        }\n" +
