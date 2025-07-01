@@ -1470,6 +1470,10 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		} else {
 			if isAny(leftType) || isAny(rightType) {
 				switch {
+				case isAny(leftType) && isAny(rightType):
+					c.use("_cast")
+					left = fmt.Sprintf("_cast[float64](%s)", left)
+					right = fmt.Sprintf("_cast[float64](%s)", right)
 				case isAny(leftType) && isString(rightType):
 					c.use("_cast")
 					left = fmt.Sprintf("_cast[string](%s)", left)
@@ -2024,6 +2028,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
+
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
 
@@ -2202,6 +2209,77 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	return fmt.Sprintf("_save(%s, %s, %s)", src, path, opts), nil
 }
 
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{If: ie}}}}}
+	retT := c.inferExprType(expr)
+	retType := goType(retT)
+	if retType == "" {
+		retType = "any"
+	}
+
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	thenType := c.inferExprType(ie.Then)
+	if retType != "any" && !equalTypes(retT, thenType) {
+		c.use("_cast")
+		thenExpr = fmt.Sprintf("_cast[%s](%s)", retType, thenExpr)
+	} else if retType == "[]any" {
+		if lt, ok := thenType.(types.ListType); ok && !isAny(lt.Elem) {
+			c.use("_toAnySlice")
+			thenExpr = fmt.Sprintf("_toAnySlice(%s)", thenExpr)
+		}
+	}
+
+	var elseExpr string
+	var elseType types.Type = types.AnyType{}
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+		elseType = types.IfExprType(ie.ElseIf, c.env)
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+		elseType = c.inferExprType(ie.Else)
+	}
+	if err != nil {
+		return "", err
+	}
+	if elseExpr != "" {
+		if retType != "any" && !equalTypes(retT, elseType) {
+			c.use("_cast")
+			elseExpr = fmt.Sprintf("_cast[%s](%s)", retType, elseExpr)
+		} else if retType == "[]any" {
+			if lt, ok := elseType.(types.ListType); ok && !isAny(lt.Elem) {
+				c.use("_toAnySlice")
+				elseExpr = fmt.Sprintf("_toAnySlice(%s)", elseExpr)
+			}
+		}
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString("func() " + retType + " {\n")
+	buf.WriteString("\tif " + cond + " {\n")
+	buf.WriteString("\t\treturn " + thenExpr + "\n")
+	if elseExpr != "" {
+		buf.WriteString("\t} else {\n")
+		buf.WriteString("\t\treturn " + elseExpr + "\n")
+		buf.WriteString("\t}\n")
+	} else {
+		buf.WriteString("\t}\n")
+		if retType == "any" {
+			buf.WriteString("\treturn nil\n")
+		} else {
+			buf.WriteString(fmt.Sprintf("\tvar _zero %s\n\treturn _zero\n", retType))
+		}
+	}
+	buf.WriteString("}()")
+	return buf.String(), nil
+}
+
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -2291,7 +2369,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var sortExpr string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
+		sortExpr, err = c.compileExprHint(q.Sort, types.ListType{Elem: types.AnyType{}})
 		if err != nil {
 			c.env = original
 			return "", err
@@ -2478,7 +2556,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			buf.WriteString("\tpairs := make([]pair, len(items))\n")
 			buf.WriteString("\tfor idx, it := range items {\n")
 			buf.WriteString(fmt.Sprintf("\t\t%s := it\n", sanitizeName(q.Group.Name)))
-			buf.WriteString(fmt.Sprintf("\t\tpairs[idx] = pair{item: it, key: %s}\n", sortExpr))
+			if _, ok := c.inferExprType(q.Sort).(types.ListType); ok {
+				c.use("_toAnySlice")
+				buf.WriteString(fmt.Sprintf("\t\tpairs[idx] = pair{item: it, key: _toAnySlice(%s)}\n", sortExpr))
+			} else {
+				buf.WriteString(fmt.Sprintf("\t\tpairs[idx] = pair{item: it, key: %s}\n", sortExpr))
+			}
 			buf.WriteString("\t}\n")
 			buf.WriteString("\tsort.Slice(pairs, func(i, j int) bool {\n")
 			buf.WriteString("\t\ta, b := pairs[i].key, pairs[j].key\n")
@@ -2986,6 +3069,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 			return "true", nil
 		}
 		return "false", nil
+	case l.Null:
+		return "nil", nil
 	default:
 		return "nil", fmt.Errorf("invalid literal")
 	}
@@ -3334,6 +3419,47 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["mochi/runtime/data"] = true
 		c.use("_max")
 		return fmt.Sprintf("_max(%s)", argStr), nil
+	case "substr":
+		if len(call.Args) != 3 {
+			return "", fmt.Errorf("substr expects 3 args")
+		}
+		c.use("_sliceString")
+		return fmt.Sprintf("_sliceString(%s)", argStr), nil
+	case "reverse":
+		if len(call.Args) != 1 {
+			return "", fmt.Errorf("reverse expects 1 arg")
+		}
+		at := c.inferExprType(call.Args[0])
+		if isString(at) {
+			c.use("_reverseString")
+			return fmt.Sprintf("_reverseString(%s)", args[0]), nil
+		}
+		if lt, ok := at.(types.ListType); ok {
+			c.use("_reverseSlice")
+			return fmt.Sprintf("_reverseSlice[%s](%s)", goType(lt.Elem), args[0]), nil
+		}
+		return "", fmt.Errorf("reverse expects string or list")
+	case "concat":
+		if len(call.Args) < 2 {
+			return "", fmt.Errorf("concat expects at least 2 args")
+		}
+		at := c.inferExprType(call.Args[0])
+		lt, ok := at.(types.ListType)
+		if !ok {
+			return "", fmt.Errorf("concat expects lists")
+		}
+		elemGo := goType(lt.Elem)
+		for i := range args {
+			c.use("_toAnySlice")
+			args[i] = fmt.Sprintf("_toAnySlice(%s)", args[i])
+		}
+		elemGo = "any"
+		c.use("_concat")
+		expr := args[0]
+		for i := 1; i < len(args); i++ {
+			expr = fmt.Sprintf("_concat[%s](%s, %s)", elemGo, expr, args[i])
+		}
+		return expr, nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":
