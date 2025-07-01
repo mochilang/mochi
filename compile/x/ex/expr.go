@@ -105,19 +105,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				}
 			case "union_all":
 				c.use("_union_all")
-				expr = fmt.Sprintf("_union_all(%s, %s)", l.expr, r.expr)
+				expr = fmt.Sprintf("_union_all((%s), (%s))", l.expr, r.expr)
 				isList = true
 			case "union":
 				c.use("_union")
-				expr = fmt.Sprintf("_union(%s, %s)", l.expr, r.expr)
+				expr = fmt.Sprintf("_union((%s), (%s))", l.expr, r.expr)
 				isList = true
 			case "except":
 				c.use("_except")
-				expr = fmt.Sprintf("_except(%s, %s)", l.expr, r.expr)
+				expr = fmt.Sprintf("_except((%s), (%s))", l.expr, r.expr)
 				isList = true
 			case "intersect":
 				c.use("_intersect")
-				expr = fmt.Sprintf("_intersect(%s, %s)", l.expr, r.expr)
+				expr = fmt.Sprintf("_intersect((%s), (%s))", l.expr, r.expr)
 				isList = true
 			default:
 				return "", fmt.Errorf("unsupported operator %s", op)
@@ -354,6 +354,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			return "false", nil
 		}
+		if p.Lit.Null {
+			return "nil", nil
+		}
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
@@ -440,6 +443,28 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		case "min":
 			c.use("_min")
 			return fmt.Sprintf("_min(%s)", argStr), nil
+		case "max":
+			c.use("_max")
+			return fmt.Sprintf("_max(%s)", argStr), nil
+		case "reverse":
+			c.use("_reverse")
+			return fmt.Sprintf("_reverse(%s)", argStr), nil
+		case "concat":
+			if len(args) < 2 {
+				return "", fmt.Errorf("concat expects at least 2 args")
+			}
+			c.use("_concat")
+			expr := args[0]
+			for i := 1; i < len(args); i++ {
+				expr = fmt.Sprintf("_concat(%s, %s)", expr, args[i])
+			}
+			return expr, nil
+		case "substr":
+			if len(args) != 3 {
+				return "", fmt.Errorf("substr expects 3 args")
+			}
+			c.use("_slice_string")
+			return fmt.Sprintf("_slice_string(%s, %s, %s)", args[0], args[1], args[2]), nil
 		case "str":
 			return fmt.Sprintf("to_string(%s)", argStr), nil
 		case "input":
@@ -477,6 +502,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileMatchExpr(p.Match)
 	case p.Generate != nil:
 		return c.compileGenerateExpr(p.Generate)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }

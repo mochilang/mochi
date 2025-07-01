@@ -28,6 +28,12 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperMin = "defp _min(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v[:items]\n    is_list(v) -> v\n    true -> raise \"min() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    hd = hd(list)\n    Enum.reduce(tl(list), hd, fn it, acc ->\n      cond do\n        is_binary(acc) and is_binary(it) -> if it < acc, do: it, else: acc\n        true -> if Kernel.<(it, acc), do: it, else: acc\n      end\n    end)\n  end\nend\n"
 
+	helperMax = "defp _max(v) do\n  list = cond do\n    is_map(v) and Map.has_key?(v, :items) -> v[:items]\n    is_list(v) -> v\n    true -> raise \"max() expects list or group\"\n  end\n  if Enum.count(list) == 0 do\n    0\n  else\n    hd = hd(list)\n    Enum.reduce(tl(list), hd, fn it, acc ->\n      cond do\n        is_binary(acc) and is_binary(it) -> if it > acc, do: it, else: acc\n        true -> if Kernel.>(it, acc), do: it, else: acc\n      end\n    end)\n  end\nend\n"
+
+	helperReverse = "defp _reverse(v) do\n  cond do\n    is_list(v) -> Enum.reverse(v)\n    is_binary(v) -> String.graphemes(v) |> Enum.reverse() |> Enum.join()\n    true -> raise \"reverse expects list or string\"\n  end\nend\n"
+
+	helperConcat = "defp _concat(a, b) do\n  if is_list(a) and is_list(b) do\n    a ++ b\n  else\n    raise \"concat expects lists\"\n  end\nend\n"
+
 	helperGroup = "defmodule Group do\n  defstruct key: nil, items: []\nend\n"
 
 	helperGroupBy = "defp _group_by(src, keyfn) do\n  {groups, order} = Enum.reduce(src, {%{}, []}, fn it, {groups, order} ->\n    key = keyfn.(it)\n    ks = to_string(key)\n    {groups, order} = if Map.has_key?(groups, ks) do\n      {groups, order}\n    else\n      {Map.put(groups, ks, %Group{key: key}), order ++ [ks]}\n    end\n    groups = Map.update!(groups, ks, fn g -> %{g | items: g.items ++ [it]} end)\n    {groups, order}\n  end)\n  Enum.map(order, fn k -> groups[k] end)\nend\n"
@@ -137,6 +143,9 @@ var helperMap = map[string]string{
 	"_sum":          helperSum,
 	"_avg":          helperAvg,
 	"_min":          helperMin,
+	"_max":          helperMax,
+	"_reverse":      helperReverse,
+	"_concat":       helperConcat,
 	"_json":         helperJson,
 	"_group":        helperGroup,
 	"_group_by":     helperGroupBy,

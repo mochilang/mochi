@@ -931,6 +931,41 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return b.String(), nil
 }
 
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "nil"
+	}
+	var b strings.Builder
+	b.WriteString("(fn ->\n")
+	b.WriteString("\tif " + cond + " do\n")
+	b.WriteString("\t\t" + thenExpr + "\n")
+	if elseExpr != "" {
+		b.WriteString("\telse\n")
+		b.WriteString("\t\t" + elseExpr + "\n")
+	}
+	b.WriteString("\tend\nend).()")
+	return b.String(), nil
+}
+
 func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 	var prompt, text, model string
 	params := []string{}
