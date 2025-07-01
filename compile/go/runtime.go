@@ -222,6 +222,39 @@ const (
 		"    }\n" +
 		"}\n"
 
+	helperFirst = "func _first(v any) any {\n" +
+		"    if g, ok := v.(*data.Group); ok {\n" +
+		"        if len(g.Items) == 0 { return nil }\n" +
+		"        return g.Items[0]\n" +
+		"    }\n" +
+		"    switch s := v.(type) {\n" +
+		"    case []any:\n" +
+		"        if len(s) == 0 { return nil }\n" +
+		"        return s[0]\n" +
+		"    case []int:\n" +
+		"        if len(s) == 0 { return 0 }\n" +
+		"        return s[0]\n" +
+		"    case []float64:\n" +
+		"        if len(s) == 0 { return 0.0 }\n" +
+		"        return s[0]\n" +
+		"    case []string:\n" +
+		"        if len(s) == 0 { return \"\" }\n" +
+		"        return s[0]\n" +
+		"    case []bool:\n" +
+		"        if len(s) == 0 { return false }\n" +
+		"        return s[0]\n" +
+		"    default:\n" +
+		"        rv := reflect.ValueOf(v)\n" +
+		"        if rv.Kind() == reflect.Slice && rv.Len() > 0 {\n" +
+		"            return rv.Index(0).Interface()\n" +
+		"        }\n" +
+		"        if rv.Kind() == reflect.Array && rv.Len() > 0 {\n" +
+		"            return rv.Index(0).Interface()\n" +
+		"        }\n" +
+		"    }\n" +
+		"    return nil\n" +
+		"}\n"
+
 	helperInput = "func _input() string {\n" +
 		"    var s string\n" +
 		"    fmt.Scanln(&s)\n" +
@@ -687,6 +720,7 @@ var helperMap = map[string]string{
 	"_sum":           helperSum,
 	"_min":           helperMin,
 	"_max":           helperMax,
+	"_first":         helperFirst,
 	"_input":         helperInput,
 	"_genText":       helperGenText,
 	"_genEmbed":      helperGenEmbed,

@@ -3419,6 +3419,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["mochi/runtime/data"] = true
 		c.use("_max")
 		return fmt.Sprintf("_max(%s)", argStr), nil
+	case "first":
+		c.imports["mochi/runtime/data"] = true
+		c.imports["reflect"] = true
+		c.use("_first")
+		if len(call.Args) == 1 {
+			at := c.inferExprType(call.Args[0])
+			if lt, ok := at.(types.ListType); ok && !isAny(lt.Elem) {
+				c.use("_toAnySlice")
+				argStr = fmt.Sprintf("_toAnySlice(%s)", args[0])
+			}
+		}
+		return fmt.Sprintf("_first(%s)", argStr), nil
 	case "substr":
 		if len(call.Args) != 3 {
 			return "", fmt.Errorf("substr expects 3 args")
