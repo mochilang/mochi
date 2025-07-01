@@ -11,3 +11,4 @@ func main (regs=4)
   Const        r3, true
   Expect       r3
   Return       r0
+

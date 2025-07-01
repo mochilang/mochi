@@ -22,3 +22,4 @@ func main (regs=11)
   Const        r10, true
   Expect       r10
   Return       r0
+

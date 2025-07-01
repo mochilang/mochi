@@ -28,3 +28,4 @@ L0:
   EqualFloat   r15, r13, r14
   Expect       r15
   Return       r0
+

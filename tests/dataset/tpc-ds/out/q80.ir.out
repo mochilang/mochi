@@ -77,3 +77,4 @@ L4:
   EqualFloat   r46, r44, r45
   Expect       r46
   Return       r0
+
