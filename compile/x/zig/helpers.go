@@ -103,6 +103,12 @@ func (c *Compiler) newTmp() string {
 	return name
 }
 
+func (c *Compiler) newLabel() string {
+	name := fmt.Sprintf("blk%d", c.labelCount)
+	c.labelCount++
+	return name
+}
+
 func indentBlock(s string, depth int) string {
 	if s == "" {
 		return s

@@ -1,0 +1,83 @@
+const std = @import("std");
+
+fn expect(cond: bool) void {
+    if (!cond) @panic("expect failed");
+}
+
+fn _sum_int(v: []const i32) i32 {
+    var sum: i32 = 0;
+    for (v) |it| { sum += it; }
+    return sum;
+}
+
+fn _contains(comptime T: type, v: []const T, item: T) bool {
+    for (v) |it| { if (std.meta.eql(it, item)) return true; }
+    return false;
+}
+
+fn _union_all(comptime T: type, a: []const T, b: []const T) []T {
+    var res = std.ArrayList(T).init(std.heap.page_allocator);
+    defer res.deinit();
+    for (a) |it| { res.append(it) catch unreachable; }
+    for (b) |it| { res.append(it) catch unreachable; }
+    return res.toOwnedSlice() catch unreachable;
+}
+
+fn _union(comptime T: type, a: []const T, b: []const T) []T {
+    var res = std.ArrayList(T).init(std.heap.page_allocator);
+    defer res.deinit();
+    for (a) |it| { res.append(it) catch unreachable; }
+    for (b) |it| { if (!_contains(T, res.items, it)) res.append(it) catch unreachable; }
+    return res.toOwnedSlice() catch unreachable;
+}
+
+fn _except(comptime T: type, a: []const T, b: []const T) []T {
+    var res = std.ArrayList(T).init(std.heap.page_allocator);
+    defer res.deinit();
+    for (a) |it| { if (!_contains(T, b, it)) res.append(it) catch unreachable; }
+    return res.toOwnedSlice() catch unreachable;
+}
+
+fn _intersect(comptime T: type, a: []const T, b: []const T) []T {
+    var res = std.ArrayList(T).init(std.heap.page_allocator);
+    defer res.deinit();
+    for (a) |it| { if (_contains(T, b, it) and !_contains(T, res.items, it)) res.append(it) catch unreachable; }
+    return res.toOwnedSlice() catch unreachable;
+}
+
+fn _json(v: anytype) void {
+    var buf = std.ArrayList(u8).init(std.heap.page_allocator);
+    defer buf.deinit();
+    std.json.stringify(v, .{}, buf.writer()) catch unreachable;
+    std.debug.print("{s}\n", .{buf.items});
+}
+
+fn _equal(a: anytype, b: anytype) bool {
+    if (@TypeOf(a) != @TypeOf(b)) return false;
+    return switch (@typeInfo(@TypeOf(a))) {
+        .Struct, .Union, .Array, .Vector, .Pointer, .Slice => std.meta.eql(a, b),
+        else => a == b,
+    };
+}
+
+var web_sales: []const i32 = undefined;
+var catalog_sales: []const i32 = undefined;
+var date_dim: []const i32 = undefined;
+var wscs: []const std.AutoHashMap([]const u8, i32) = undefined;
+var wswscs: []const std.AutoHashMap([]const u8, i32) = undefined;
+var result: []const i32 = undefined;
+
+fn test_TPCDS_Q2_empty() void {
+    expect(((result).len == @as(i32,@intCast(0))));
+}
+
+pub fn main() void {
+    web_sales = &[_]i32{};
+    catalog_sales = &[_]i32{};
+    date_dim = &[_]i32{};
+    wscs = _union_all(i32, (blk1: { var _tmp0 = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator); for (web_sales) |ws| { _tmp0.append(blk0: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("sold_date_sk", ws.ws_sold_date_sk) catch unreachable; m.put("sales_price", ws.ws_ext_sales_price) catch unreachable; m.put("day", ws.ws_sold_date_name) catch unreachable; break :blk0 m; }) catch unreachable; } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk1 _tmp1; }), (blk3: { var _tmp2 = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator); for (catalog_sales) |cs| { _tmp2.append(blk2: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("sold_date_sk", cs.cs_sold_date_sk) catch unreachable; m.put("sales_price", cs.cs_ext_sales_price) catch unreachable; m.put("day", cs.cs_sold_date_name) catch unreachable; break :blk2 m; }) catch unreachable; } const _tmp3 = _tmp2.toOwnedSlice() catch unreachable; break :blk3 _tmp3; }));
+    wswscs = blk13: { var _tmp18 = std.ArrayList(struct { key: std.AutoHashMap([]const u8, i32), Items: std.ArrayList(std.AutoHashMap([]const u8, i32)) }).init(std.heap.page_allocator); var _tmp19 = std.AutoHashMap(std.AutoHashMap([]const u8, i32), usize).init(std.heap.page_allocator); for (wscs) |w| { for (date_dim) |d| { if (!((w.sold_date_sk == d.d_date_sk))) continue; const _tmp20 = blk4: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("week_seq", d.d_week_seq) catch unreachable; break :blk4 m; }; if (_tmp19.get(_tmp20)) |idx| { _tmp18.items[idx].Items.append(w) catch unreachable; } else { var g = struct { key: std.AutoHashMap([]const u8, i32), Items: std.ArrayList(std.AutoHashMap([]const u8, i32)) }{ .key = _tmp20, .Items = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator) }; g.Items.append(w) catch unreachable; _tmp18.append(g) catch unreachable; _tmp19.put(_tmp20, _tmp18.items.len - 1) catch unreachable; } } } var _tmp21 = std.ArrayList(std.AutoHashMap([]const u8, i32)).init(std.heap.page_allocator);for (_tmp18.items) |g| { _tmp21.append(blk5: { var m = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); m.put("d_week_seq", g.key.week_seq) catch unreachable; m.put("sun_sales", _sum_int(blk6: { var _tmp4 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { if (!(std.mem.eql(u8, x.day, "Sunday"))) continue; _tmp4.append(x.sales_price) catch unreachable; } const _tmp5 = _tmp4.toOwnedSlice() catch unreachable; break :blk6 _tmp5; })) catch unreachable; m.put("mon_sales", _sum_int(blk7: { var _tmp6 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { if (!(std.mem.eql(u8, x.day, "Monday"))) continue; _tmp6.append(x.sales_price) catch unreachable; } const _tmp7 = _tmp6.toOwnedSlice() catch unreachable; break :blk7 _tmp7; })) catch unreachable; m.put("tue_sales", _sum_int(blk8: { var _tmp8 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { if (!(std.mem.eql(u8, x.day, "Tuesday"))) continue; _tmp8.append(x.sales_price) catch unreachable; } const _tmp9 = _tmp8.toOwnedSlice() catch unreachable; break :blk8 _tmp9; })) catch unreachable; m.put("wed_sales", _sum_int(blk9: { var _tmp10 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { if (!(std.mem.eql(u8, x.day, "Wednesday"))) continue; _tmp10.append(x.sales_price) catch unreachable; } const _tmp11 = _tmp10.toOwnedSlice() catch unreachable; break :blk9 _tmp11; })) catch unreachable; m.put("thu_sales", _sum_int(blk10: { var _tmp12 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { if (!(std.mem.eql(u8, x.day, "Thursday"))) continue; _tmp12.append(x.sales_price) catch unreachable; } const _tmp13 = _tmp12.toOwnedSlice() catch unreachable; break :blk10 _tmp13; })) catch unreachable; m.put("fri_sales", _sum_int(blk11: { var _tmp14 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { if (!(std.mem.eql(u8, x.day, "Friday"))) continue; _tmp14.append(x.sales_price) catch unreachable; } const _tmp15 = _tmp14.toOwnedSlice() catch unreachable; break :blk11 _tmp15; })) catch unreachable; m.put("sat_sales", _sum_int(blk12: { var _tmp16 = std.ArrayList(i32).init(std.heap.page_allocator); for (g) |x| { if (!(std.mem.eql(u8, x.day, "Saturday"))) continue; _tmp16.append(x.sales_price) catch unreachable; } const _tmp17 = _tmp16.toOwnedSlice() catch unreachable; break :blk12 _tmp17; })) catch unreachable; break :blk5 m; }) catch unreachable; } break :blk13 _tmp21.toOwnedSlice() catch unreachable; };
+    result = &[_]i32{};
+    _json(result);
+    test_TPCDS_Q2_empty();
+}
