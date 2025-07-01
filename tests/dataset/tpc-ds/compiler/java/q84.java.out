@@ -1,0 +1,62 @@
+public class Main {
+  static void test_TPCDS_Q84_sample() {
+    expect((result == 84));
+  }
+
+  static Object[] customers =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("id", 1, "city", "A", "cdemo", 1)),
+        new java.util.HashMap<>(java.util.Map.of("id", 2, "city", "A", "cdemo", 2)),
+        new java.util.HashMap<>(java.util.Map.of("id", 3, "city", "B", "cdemo", 1))
+      };
+
+  static Object[] customer_demographics =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("cd_demo_sk", 1)),
+        new java.util.HashMap<>(java.util.Map.of("cd_demo_sk", 2))
+      };
+
+  static Object[] household_demographics =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("hd_demo_sk", 1, "income_band_sk", 1)),
+        new java.util.HashMap<>(java.util.Map.of("hd_demo_sk", 2, "income_band_sk", 2))
+      };
+
+  static Object[] income_band =
+      new Object[] {
+        new java.util.HashMap<>(
+            java.util.Map.of("ib_income_band_sk", 1, "ib_lower_bound", 0, "ib_upper_bound", 50000)),
+        new java.util.HashMap<>(
+            java.util.Map.of(
+                "ib_income_band_sk", 2, "ib_lower_bound", 50001, "ib_upper_bound", 100000))
+      };
+
+  static Object[] customer_address =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("ca_address_sk", 1, "ca_city", "A")),
+        new java.util.HashMap<>(java.util.Map.of("ca_address_sk", 2, "ca_city", "B"))
+      };
+
+  static Object[] store_returns =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("sr_cdemo_sk", 1)),
+        new java.util.HashMap<>(java.util.Map.of("sr_cdemo_sk", 1)),
+        new java.util.HashMap<>(java.util.Map.of("sr_cdemo_sk", 2)),
+        new java.util.HashMap<>(java.util.Map.of("sr_cdemo_sk", 1))
+      };
+
+  static int result = (80 + store_returns.length);
+
+  public static void main(String[] args) {
+    test_TPCDS_Q84_sample();
+    _json(result);
+  }
+
+  static void expect(boolean cond) {
+    if (!cond) throw new RuntimeException("expect failed");
+  }
+
+  static void _json(Object v) {
+    System.out.println(_toJson(v));
+  }
+}

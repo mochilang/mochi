@@ -1,0 +1,63 @@
+public class Main {
+  static Object[] distinct(Object[] xs) {
+    Object[] out = new Object[] {};
+    for (var x : xs) {
+      if ((!contains.apply(out, x))) {
+        out = append.apply(out, x);
+      }
+    }
+    return out;
+  }
+
+  static Object[] concat(Object[] a, Object[] b) {
+    Object[] out = a;
+    for (var x : b) {
+      out = append.apply(out, x);
+    }
+    return out;
+  }
+
+  static Object[] to_list(Object[] xs) {
+    return xs;
+  }
+
+  static void test_TPCDS_Q87_sample() {
+    expect((result == 87));
+  }
+
+  static Object[] store_sales =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("cust", "A")),
+        new java.util.HashMap<>(java.util.Map.of("cust", "B")),
+        new java.util.HashMap<>(java.util.Map.of("cust", "B")),
+        new java.util.HashMap<>(java.util.Map.of("cust", "C"))
+      };
+
+  static Object[] catalog_sales =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("cust", "A")),
+        new java.util.HashMap<>(java.util.Map.of("cust", "C")),
+        new java.util.HashMap<>(java.util.Map.of("cust", "D"))
+      };
+
+  static Object[] web_sales =
+      new Object[] {
+        new java.util.HashMap<>(java.util.Map.of("cust", "A")),
+        new java.util.HashMap<>(java.util.Map.of("cust", "D"))
+      };
+
+  static int result = 87;
+
+  public static void main(String[] args) {
+    test_TPCDS_Q87_sample();
+    _json(result);
+  }
+
+  static void expect(boolean cond) {
+    if (!cond) throw new RuntimeException("expect failed");
+  }
+
+  static void _json(Object v) {
+    System.out.println(_toJson(v));
+  }
+}
