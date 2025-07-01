@@ -1552,6 +1552,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("%s.slice().reverse()", args[0]), nil
 		}
 		return fmt.Sprintf("[].concat(%s).reverse()", strings.Join(args, ", ")), nil
+	case "first":
+		if len(args) == 1 {
+			return fmt.Sprintf("(%s)[0]", args[0]), nil
+		}
+		return fmt.Sprintf("(%s)[0]", argStr), nil
 	case "now":
 		// performance.now() returns milliseconds as a float. Multiply
 		// by 1e6 so that `now()` is consistent with Go's UnixNano()
