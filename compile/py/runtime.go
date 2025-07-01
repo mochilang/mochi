@@ -247,6 +247,11 @@ var helperReverse = "def _reverse(obj):\n" +
 	"        return obj[::-1]\n" +
 	"    raise Exception('reverse expects list or string')\n"
 
+var helperFirst = "def _first(lst):\n" +
+	"    if not isinstance(lst, list):\n" +
+	"        raise Exception('first expects list')\n" +
+	"    return lst[0] if len(lst) > 0 else None\n"
+
 var helperUnionAll = "def _union_all(a, b):\n" +
 	"    return list(a) + list(b)\n"
 
@@ -400,6 +405,7 @@ var helperMap = map[string]string{
 	"_sum":        helperSum,
 	"_min":        helperMin,
 	"_max":        helperMax,
+	"_first":      helperFirst,
 	"_union_all":  helperUnionAll,
 	"_union":      helperUnion,
 	"_except":     helperExcept,
