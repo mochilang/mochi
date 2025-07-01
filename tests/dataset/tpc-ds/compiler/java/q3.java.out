@@ -1,13 +1,13 @@
 public class Main {
-    static void test_TPCDS_Q3_empty() {
-        expect((result.length == 0));
+    static void test_TPCDS_Q3_result() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("d_year", 1998, "brand_id", 1, "brand", "Brand1", "sum_agg", 10)), new java.util.HashMap<>(java.util.Map.of("d_year", 1998, "brand_id", 2, "brand", "Brand2", "sum_agg", 20))}));
     }
     
-    static Object[] date_dim = new Object[]{};
+    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_year", 1998, "d_moy", 12))};
     
-    static Object[] store_sales = new Object[]{};
+    static Object[] store_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ss_sold_date_sk", 1, "ss_item_sk", 1, "ss_ext_sales_price", 10)), new java.util.HashMap<>(java.util.Map.of("ss_sold_date_sk", 1, "ss_item_sk", 2, "ss_ext_sales_price", 20))};
     
-    static Object[] item = new Object[]{};
+    static Object[] item = new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_sk", 1, "i_manufact_id", 100, "i_brand_id", 1, "i_brand", "Brand1")), new java.util.HashMap<>(java.util.Map.of("i_item_sk", 2, "i_manufact_id", 100, "i_brand_id", 2, "i_brand", "Brand2"))};
     
     static Object[] result = (new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
@@ -21,21 +21,21 @@ public class Main {
         java.util.List<Object> _src = _toList(g);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss").ss_ext_sales_price; }, null, null, -1, -1));
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss_ext_sales_price"); }, null, null, -1, -1));
     }
 }).get()))); }, (Object[] a) -> { Object dt = a[0]; Object ss = a[1]; Object i = a[2]; return ((i.get("i_manufact_id") == 100) && (dt.get("d_moy") == 12)); }, (Object[] a) -> { Object dt = a[0]; Object ss = a[1]; Object i = a[2]; return new Object[]{g.get("key").d_year, (-_sum((new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
         java.util.List<Object> _src = _toList(g);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss").ss_ext_sales_price; }, null, null, -1, -1));
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss_ext_sales_price"); }, null, null, -1, -1));
     }
 }).get())), g.get("key").brand_id}; }, -1, -1));
     }
 }).get();
     
     public static void main(String[] args) {
-        test_TPCDS_Q3_empty();
+        test_TPCDS_Q3_result();
         _json(result);
     }
     
