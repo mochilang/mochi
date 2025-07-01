@@ -228,6 +228,18 @@ const (
 		"    end\n" +
 		"end\n"
 
+	helperFirst = "function __first(v)\n" +
+		"    if type(v) == 'table' then\n" +
+		"        if v.items ~= nil then\n" +
+		"            if #v.items == 0 then return nil end\n" +
+		"            return v.items[1]\n" +
+		"        end\n" +
+		"        if #v == 0 then return nil end\n" +
+		"        return v[1]\n" +
+		"    end\n" +
+		"    return nil\n" +
+		"end\n"
+
 	helperConcat = "function __concat(a, b)\n" +
 		"    local res = {}\n" +
 		"    if a then for i=1,#a do res[#res+1] = a[i] end end\n" +
@@ -816,6 +828,7 @@ var helperMap = map[string]string{
 	"sum":            helperSum,
 	"min":            helperMin,
 	"max":            helperMax,
+	"first":          helperFirst,
 	"concat":         helperConcat,
 	"append":         helperAppend,
 	"values":         helperValues,

@@ -313,7 +313,7 @@ function Item.new(o)
 end
 
 function test_TPCDS_Q22_average_inventory()
-    if not (__eq(qoh, {{["i_product_name"]="Prod1", ["i_brand"]="Brand1", ["i_class"]="Class1", ["i_category"]="Cat1", ["qoh"]=15.0}})) then error('expect failed') end
+    if not (__eq(qoh, {{["i_product_name"]="Prod1", ["i_brand"]="Brand1", ["i_class"]="Class1", ["i_category"]="Cat1", ["qoh"]=15.0}, {["i_product_name"]="Prod2", ["i_brand"]="Brand2", ["i_class"]="Class2", ["i_category"]="Cat2", ["qoh"]=50.0}})) then error('expect failed') end
 end
 
 inventory = {{["inv_item_sk"]=1, ["inv_date_sk"]=1, ["inv_quantity_on_hand"]=10}, {["inv_item_sk"]=1, ["inv_date_sk"]=2, ["inv_quantity_on_hand"]=20}, {["inv_item_sk"]=1, ["inv_date_sk"]=3, ["inv_quantity_on_hand"]=10}, {["inv_item_sk"]=1, ["inv_date_sk"]=4, ["inv_quantity_on_hand"]=20}, {["inv_item_sk"]=2, ["inv_date_sk"]=1, ["inv_quantity_on_hand"]=50}}

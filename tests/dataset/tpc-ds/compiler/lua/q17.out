@@ -1,2 +1,2 @@
-[{"catalog_sales_quantityave":5,"store_returns_quantitycount":1,"i_item_desc":"Item 1","store_sales_quantitystdev":0,"catalog_sales_quantitystdev":0,"catalog_sales_quantitycov":0,"i_item_id":"I1","store_sales_quantitycount":1,"store_sales_quantitycov":0,"catalog_sales_quantitycount":1,"store_sales_quantityave":10,"store_returns_quantitycov":0,"store_returns_quantityave":2,"store_returns_quantitystdev":0,"s_state":"CA"}]
-   test TPCDS Q17 stats ... ok (12.0µs)
+[{"store_sales_quantitystdev":0,"store_sales_quantitycov":0,"store_sales_quantitycount":1,"i_item_desc":"Item 1","store_returns_quantitycount":1,"store_returns_quantityave":2,"store_returns_quantitystdev":0,"catalog_sales_quantitystdev":0,"catalog_sales_quantitycount":1,"store_returns_quantitycov":0,"store_sales_quantityave":10,"catalog_sales_quantitycov":0,"catalog_sales_quantityave":5,"s_state":"CA","i_item_id":"I1"}]
+   test TPCDS Q17 stats ... ok (9.0µs)

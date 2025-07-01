@@ -365,6 +365,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "max":
 		c.helpers["max"] = true
 		return fmt.Sprintf("__max(%s)", argStr), nil
+	case "first":
+		if len(args) != 1 {
+			return "", fmt.Errorf("first expects 1 arg")
+		}
+		c.helpers["first"] = true
+		return fmt.Sprintf("__first(%s)", args[0]), nil
+	case "lower":
+		if len(args) != 1 {
+			return "", fmt.Errorf("lower expects 1 arg")
+		}
+		return fmt.Sprintf("string.lower(%s)", args[0]), nil
 	case "substr":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substr expects 3 args")
