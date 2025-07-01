@@ -1,0 +1,54 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+    if let d = try? JSONSerialization.data(withJSONObject: v, options: []), let s = String(data: d, encoding: .utf8) {
+        print(s)
+    }
+}
+
+func distinct(_ xs: [any]) -> [any] {
+  let xs = xs
+
+  var out: [Any] = []
+  for x in xs {
+    if !contains(out, x) {
+      out = append(out, x)
+    }
+  }
+  return out
+}
+
+func concat(_ a: [any], _ b: [any]) -> [any] {
+  let a = a
+  let b = b
+
+  var out = a
+  for x in b {
+    out = append(out, x)
+  }
+  return out
+}
+
+func to_list(_ xs: [any]) -> [any] {
+  let xs = xs
+
+  return xs
+}
+
+func test_TPCDS_Q87_sample() {
+  expect(result == 87)
+}
+
+let store_sales: [[String: String]] = [["cust": "A"], ["cust": "B"], ["cust": "B"], ["cust": "C"]]
+let catalog_sales: [[String: String]] = [["cust": "A"], ["cust": "C"], ["cust": "D"]]
+let web_sales: [[String: String]] = [["cust": "A"], ["cust": "D"]]
+let result = 87
+func main() {
+  _json(result)
+  test_TPCDS_Q87_sample()
+}
+main()

@@ -1,0 +1,37 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q82_sample() {
+  expect(result == 82)
+}
+
+let item: [[String: Int]] = [["id": 1], ["id": 2], ["id": 3]]
+let inventory: [[String: Int]] = [
+  ["item": 1, "qty": 20], ["item": 1, "qty": 22], ["item": 1, "qty": 5], ["item": 2, "qty": 30],
+  ["item": 2, "qty": 5], ["item": 3, "qty": 10],
+]
+let store_sales: [[String: Int]] = [["item": 1], ["item": 2]]
+let result = 0
+func main() {
+  for inv in inventory {
+    for s in store_sales {
+      if inv["item"]! == s["item"]! {
+        result = result + inv["qty"]!
+      }
+    }
+  }
+  _json(result)
+  test_TPCDS_Q82_sample()
+}
+main()

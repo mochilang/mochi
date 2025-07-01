@@ -1,0 +1,78 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+struct StoreSale {
+  var ss_sold_time_sk: Int
+  var ss_hdemo_sk: Int
+  var ss_store_sk: Int
+}
+
+struct HouseholdDemographics {
+  var hd_demo_sk: Int
+  var hd_dep_count: Int
+}
+
+struct TimeDim {
+  var t_time_sk: Int
+  var t_hour: Int
+  var t_minute: Int
+}
+
+struct Store {
+  var s_store_sk: Int
+  var s_store_name: String
+}
+
+func test_TPCDS_Q96_count() {
+  expect(result == 3)
+}
+
+let store_sales: [[String: Int]] = [
+  ["ss_sold_time_sk": 1, "ss_hdemo_sk": 1, "ss_store_sk": 1],
+  ["ss_sold_time_sk": 1, "ss_hdemo_sk": 1, "ss_store_sk": 1],
+  ["ss_sold_time_sk": 2, "ss_hdemo_sk": 1, "ss_store_sk": 1],
+]
+let household_demographics: [[String: Int]] = [["hd_demo_sk": 1, "hd_dep_count": 3]]
+let time_dim: [[String: Int]] = [
+  ["t_time_sk": 1, "t_hour": 20, "t_minute": 35], ["t_time_sk": 2, "t_hour": 20, "t_minute": 45],
+]
+let store = [["s_store_sk": 1, "s_store_name": "ese"]]
+let result =
+  ({
+    var _res: [[String: Int]] = []
+    for ss in store_sales {
+      for hd in household_demographics {
+        if !(ss["ss_hdemo_sk"]! == hd["hd_demo_sk"]!) { continue }
+        for t in time_dim {
+          if !(ss["ss_sold_time_sk"]! == t["t_time_sk"]!) { continue }
+          for s in store {
+            if !(ss["ss_store_sk"]! == s["s_store_sk"]!) { continue }
+            if !(t["t_hour"]! == 20 && t["t_minute"]! >= 30 && hd["hd_dep_count"]! == 3
+              && s["s_store_name"]! == "ese")
+            {
+              continue
+            }
+            _res.append(ss)
+          }
+        }
+      }
+    }
+    var _items = _res
+    return _items
+  }()).count
+func main() {
+  _json(result)
+  test_TPCDS_Q96_count()
+}
+main()

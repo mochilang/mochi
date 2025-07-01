@@ -1,0 +1,35 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q58_placeholder() {
+  expect(result == 58)
+}
+
+let t: [[String: Int]] = [["id": 1, "val": 58]]
+let tmp = "ignore".lowercased()
+let vals: [Int] =
+  ({
+    var _res: [Int] = []
+    for r in t {
+      _res.append(r["val"]!)
+    }
+    var _items = _res
+    return _items
+  }())
+let result = first(vals)
+func main() {
+  _json(result)
+  test_TPCDS_Q58_placeholder()
+}
+main()

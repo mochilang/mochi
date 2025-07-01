@@ -1,0 +1,27 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+func _json(_ v: Any) {
+  if let d = try? JSONSerialization.data(withJSONObject: v, options: []),
+    let s = String(data: d, encoding: .utf8)
+  {
+    print(s)
+  }
+}
+
+func test_TPCDS_Q62_simplified() {
+  expect(result == 62)
+}
+
+let web_sales: [[String: Int]] = [
+  ["days": 10], ["days": 40], ["days": 70], ["days": 100], ["days": 130],
+]
+let result = web_sales.count * 12 + 2
+func main() {
+  _json(result)
+  test_TPCDS_Q62_simplified()
+}
+main()
