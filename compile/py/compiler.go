@@ -572,6 +572,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
 
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
+
 	case p.Fetch != nil:
 		return c.compileFetchExpr(p.Fetch)
 
@@ -737,6 +740,28 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("_max(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("max(%s)", argStr), nil
+	case "concat":
+		if len(args) == 0 {
+			return "[]", nil
+		}
+		expr := args[0]
+		for _, a := range args[1:] {
+			c.use("_union_all")
+			expr = fmt.Sprintf("_union_all(%s, %s)", expr, a)
+		}
+		return expr, nil
+	case "substr", "substring":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substr expects 3 args")
+		}
+		c.use("_slice")
+		return fmt.Sprintf("_slice(%s, %s, %s)", args[0], args[1], args[2]), nil
+	case "reverse":
+		if len(args) != 1 {
+			return "", fmt.Errorf("reverse expects 1 arg")
+		}
+		c.use("_reverse")
+		return fmt.Sprintf("_reverse(%s)", args[0]), nil
 	case "eval":
 		return fmt.Sprintf("eval(%s)", argStr), nil
 	default:
@@ -1449,6 +1474,32 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return fmt.Sprintf("(lambda %s=%s: %s)()", tmp, target, expr), nil
 }
 
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "None"
+	}
+	return fmt.Sprintf("(%s if %s else %s)", thenExpr, cond, elseExpr), nil
+}
+
 func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
@@ -1462,6 +1513,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 			return "True", nil
 		}
 		return "False", nil
+	case l.Null:
+		return "None", nil
 	default:
 		return "None", fmt.Errorf("invalid literal")
 	}
