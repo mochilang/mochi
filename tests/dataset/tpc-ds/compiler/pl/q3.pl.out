@@ -1,0 +1,57 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+sum(V, R) :-
+    is_dict(V), !, get_dict('Items', V, Items), sum_list(Items, R).
+sum(V, R) :-
+    is_list(V), !, sum_list(V, R).
+sum(_, _) :- throw(error('sum expects list or group')).
+
+
+expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
+
+
+group_insert(Key, Item, [], [_{key:Key, 'Items':[Item]}]).
+group_insert(Key, Item, [G|Gs], [NG|Gs]) :- get_dict(key, G, Key), !, get_dict('Items', G, Items), append(Items, [Item], NItems), put_dict('Items', G, NItems, NG).
+group_insert(Key, Item, [G|Gs], [G|Rs]) :- group_insert(Key, Item, Gs, Rs).
+group_pairs([], Acc, Res) :- reverse(Acc, Res).
+group_pairs([K-V|T], Acc, Res) :- group_insert(K, V, Acc, Acc1), group_pairs(T, Acc1, Res).
+group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pairs), group_pairs(Pairs, [], Groups).
+
+
+:- use_module(library(http/json)).
+json(V) :- json_write_dict(current_output, V), nl.
+
+
+test_p_tpcds_q3_result :-
+    dict_create(_V0, map, [d_year-1998, brand_id-1, brand-"Brand1", sum_agg-10]),
+    dict_create(_V1, map, [d_year-1998, brand_id-2, brand-"Brand2", sum_agg-20]),
+    expect(Result = [_V0, _V1])    ,
+    true.
+
+    main :-
+    dict_create(_V2, map, [d_date_sk-1, d_year-1998, d_moy-12]),
+    Date_dim = [_V2],
+    dict_create(_V3, map, [ss_sold_date_sk-1, ss_item_sk-1, ss_ext_sales_price-10]),
+    dict_create(_V4, map, [ss_sold_date_sk-1, ss_item_sk-2, ss_ext_sales_price-20]),
+    Store_sales = [_V3, _V4],
+    dict_create(_V5, map, [i_item_sk-1, i_manufact_id-100, i_brand_id-1, i_brand-"Brand1"]),
+    dict_create(_V6, map, [i_item_sk-2, i_manufact_id-100, i_brand_id-2, i_brand-"Brand2"]),
+    Item = [_V5, _V6],
+    to_list(Date_dim, _V13),
+    to_list(Store_sales, _V16),
+    to_list(Item, _V19),
+    findall(_V21, (member(Dt, _V13), member(Ss, _V16), get_dict(d_date_sk, Dt, _V14), get_dict(ss_sold_date_sk, Ss, _V15), _V14 = _V15, member(I, _V19), get_dict(ss_item_sk, Ss, _V17), get_dict(i_item_sk, I, _V18), _V17 = _V18, get_dict(i_manufact_id, I, _V7), get_dict(d_moy, Dt, _V8), (_V7 = 100, _V8 = 12), get_dict(d_year, Dt, _V9), get_dict(i_brand_id, I, _V10), get_dict(i_brand, I, _V11), dict_create(_V12, map, [d_year-_V9, brand_id-_V10, brand-_V11]), _V20 = _V12, _V21 = _V20-Dt), _V22),
+    group_pairs(_V22, [], _V23),
+    findall(_V49-_V48, (member(G, _V23), get_dict(key, G, _V24), get_dict(d_year, _V24, _V25), get_dict(key, G, _V26), get_dict(brand_id, _V26, _V27), get_dict(key, G, _V28), get_dict(brand, _V28, _V29), get_dict('Items', G, _V30), to_list(_V30, _V32), findall(_V33, (member(X, _V32), get_dict(ss_ext_sales_price, X, _V31), _V33 = _V31), _V34), sum(_V34, _V35), dict_create(_V36, map, [d_year-_V25, brand_id-_V27, brand-_V29, sum_agg-_V35]), get_dict(key, G, _V37), get_dict(d_year, _V37, _V38), get_dict('Items', G, _V39), to_list(_V39, _V41), findall(_V42, (member(X, _V41), get_dict(ss_ext_sales_price, X, _V40), _V42 = _V40), _V43), sum(_V43, _V44), _V45 is -(_V44), get_dict(key, G, _V46), get_dict(brand_id, _V46, _V47), _V49 = [_V38, _V45, _V47], _V48 = _V36), _V50),
+    keysort(_V50, _V51),
+    findall(V, member(_-V, _V51), _V52),
+    Result = _V52,
+    json(Result),
+    test_p_tpcds_q3_result
+    .
+:- initialization(main, main).
