@@ -382,50 +382,51 @@ func TestGoCompiler_JOBQueries(t *testing.T) {
 
 func TestGoCompiler_TPCDSQueries(t *testing.T) {
 	root := findRepoRoot(t)
-	q := "q1"
-	t.Run(q, func(t *testing.T) {
-		src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
-		prog, err := parser.Parse(src)
-		if err != nil {
-			t.Fatalf("parse error: %v", err)
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			t.Fatalf("type error: %v", errs[0])
-		}
-		code, err := gocode.New(env).Compile(prog)
-		if err != nil {
-			t.Fatalf("compile error: %v", err)
-		}
-		codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "go", q+".go.out")
-		wantCode, err := os.ReadFile(codeWantPath)
-		if err != nil {
-			t.Fatalf("read golden: %v", err)
-		}
-		if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-			t.Errorf("generated code mismatch for %s.go.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
-		}
-		dir := t.TempDir()
-		file := filepath.Join(dir, "main.go")
-		if err := os.WriteFile(file, code, 0644); err != nil {
-			t.Fatalf("write error: %v", err)
-		}
-		cmd := exec.Command("go", "run", file)
-		cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
-		out, err := cmd.CombinedOutput()
-		if err != nil {
-			t.Fatalf("go run error: %v\n%s", err, out)
-		}
-		gotOut := bytes.TrimSpace(out)
-		outWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "go", q+".out")
-		wantOut, err := os.ReadFile(outWantPath)
-		if err != nil {
-			t.Fatalf("read golden: %v", err)
-		}
-		if !bytes.Equal(normalizeOutput(root, gotOut), normalizeOutput(root, bytes.TrimSpace(wantOut))) {
-			t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotOut, bytes.TrimSpace(wantOut))
-		}
-	})
+	for _, q := range []string{"q1", "q2"} {
+		t.Run(q, func(t *testing.T) {
+			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := gocode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "go", q+".go.out")
+			wantCode, err := os.ReadFile(codeWantPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+				t.Errorf("generated code mismatch for %s.go.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.go")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("go", "run", file)
+			cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("go run error: %v\n%s", err, out)
+			}
+			gotOut := bytes.TrimSpace(out)
+			outWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "go", q+".out")
+			wantOut, err := os.ReadFile(outWantPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(normalizeOutput(root, gotOut), normalizeOutput(root, bytes.TrimSpace(wantOut))) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotOut, bytes.TrimSpace(wantOut))
+			}
+		})
+	}
 }
 
 func findRepoRoot(t *testing.T) string {

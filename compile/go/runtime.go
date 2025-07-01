@@ -360,6 +360,51 @@ const (
 		"    return false\n" +
 		"}\n"
 
+	helperUnionAll = "func _union_all[T any](a, b []T) []T {\n" +
+		"    res := make([]T, 0, len(a)+len(b))\n" +
+		"    res = append(res, a...)\n" +
+		"    res = append(res, b...)\n" +
+		"    return res\n" +
+		"}\n"
+
+	helperUnion = "func _union[T any](a, b []T) []T {\n" +
+		"    res := append([]T{}, a...)\n" +
+		"    for _, it := range b {\n" +
+		"        found := false\n" +
+		"        for _, v := range res {\n" +
+		"            if _equal(v, it) { found = true; break }\n" +
+		"        }\n" +
+		"        if !found { res = append(res, it) }\n" +
+		"    }\n" +
+		"    return res\n" +
+		"}\n"
+
+	helperExcept = "func _except[T any](a, b []T) []T {\n" +
+		"    res := []T{}\n" +
+		"    for _, x := range a {\n" +
+		"        keep := true\n" +
+		"        for _, y := range b {\n" +
+		"            if _equal(x, y) { keep = false; break }\n" +
+		"        }\n" +
+		"        if keep { res = append(res, x) }\n" +
+		"    }\n" +
+		"    return res\n" +
+		"}\n"
+
+	helperIntersect = "func _intersect[T any](a, b []T) []T {\n" +
+		"    res := []T{}\n" +
+		"    for _, x := range a {\n" +
+		"        inB := false\n" +
+		"        for _, y := range b { if _equal(x, y) { inB = true; break } }\n" +
+		"        if inB {\n" +
+		"            exists := false\n" +
+		"            for _, r := range res { if _equal(x, r) { exists = true; break } }\n" +
+		"            if !exists { res = append(res, x) }\n" +
+		"        }\n" +
+		"    }\n" +
+		"    return res\n" +
+		"}\n"
+
 	helperCast = "func _cast[T any](v any) T {\n" +
 		"    if tv, ok := v.(T); ok { return tv }\n" +
 		"    var out T\n" +
@@ -628,6 +673,10 @@ var helperMap = map[string]string{
 	"_toAnySlice":    helperToAnySlice,
 	"_convSlice":     helperConvSlice,
 	"_contains":      helperContains,
+	"_union_all":     helperUnionAll,
+	"_union":         helperUnion,
+	"_except":        helperExcept,
+	"_intersect":     helperIntersect,
 	"_cast":          helperCast,
 	"_convertMapAny": helperConvertMapAny,
 	"_equal":         helperEqual,

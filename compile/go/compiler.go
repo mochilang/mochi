@@ -1535,6 +1535,50 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		default:
 			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
 		}
+	case "union_all":
+		if !isList(leftType) || !isList(rightType) {
+			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+		}
+		return c.compileBinaryOp(left, leftType, "+", right, rightType)
+	case "union", "except", "intersect":
+		if !isList(leftType) || !isList(rightType) {
+			return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
+		}
+		lt := leftType.(types.ListType)
+		rt := rightType.(types.ListType)
+		elemGo := "any"
+		if equalTypes(lt.Elem, rt.Elem) {
+			elemGo = goType(lt.Elem)
+			if goType(lt.Elem) != goType(rt.Elem) {
+				c.use("_convSlice")
+				right = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(rt.Elem), goType(lt.Elem), right)
+			}
+		} else {
+			c.use("_toAnySlice")
+			if !isAny(lt.Elem) {
+				left = fmt.Sprintf("_toAnySlice(%s)", left)
+			}
+			if !isAny(rt.Elem) {
+				right = fmt.Sprintf("_toAnySlice(%s)", right)
+			}
+			lt = types.ListType{Elem: types.AnyType{}}
+			elemGo = "any"
+			leftType = lt
+			rightType = lt
+		}
+		switch op {
+		case "union":
+			c.use("_union")
+			expr = fmt.Sprintf("_union[%s](%s, %s)", elemGo, left, right)
+		case "except":
+			c.use("_except")
+			expr = fmt.Sprintf("_except[%s](%s, %s)", elemGo, left, right)
+		case "intersect":
+			c.use("_intersect")
+			expr = fmt.Sprintf("_intersect[%s](%s, %s)", elemGo, left, right)
+		}
+		next = lt
+		return expr, next, nil
 	default:
 		return "", types.AnyType{}, fmt.Errorf("unsupported operator: %s", op)
 	}
