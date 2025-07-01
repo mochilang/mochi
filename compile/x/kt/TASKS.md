@@ -1,15 +1,18 @@
 # Kotlin Backend Tasks for TPCH Queries
 
-The Kotlin backend now supports running the TPCH Q1 example. Query Q2 compiles
-but cannot be executed in this environment because the `kotlinc` tool is not
-available.
+The Kotlin backend now supports running the TPCH `q1` example and the first nine
+TPC‑DS queries. Query `q2` from TPCH compiles but cannot be executed in this
+environment because the `kotlinc` tool is not available.
 
 Implemented features:
 - Grouping and query helpers via `_group_by` and `_query`.
 - Helper functions `_sum`, `_avg`, `_count` and `_json` for dataset processing.
-- Golden tests under `tests/dataset/tpc-h/compiler/kt` verify generated code
-    and runtime output.
- - Q2 needs golden runtime output recorded once `kotlinc` is available.
+- Golden tests under `tests/dataset/tpc-h/compiler/kt` verify generated code and
+  runtime output.
+- Golden tests under `tests/dataset/tpc-ds/compiler/kt` now cover queries
+  `q1` through `q9`.
+- `q2` from TPCH needs golden runtime output recorded once `kotlinc` is
+  available.
 
 ## TODO
 
