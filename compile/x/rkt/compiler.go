@@ -235,6 +235,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("    (if (= n 0) 0")
 	c.writeln("        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))")
 
+	// sum over numeric values
+	c.writeln("(define (sum x)")
+	c.writeln("  (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))))")
+
 	// minimum across numbers or strings
 	c.writeln("(define (min-list xs)")
 	c.writeln("  (cond [(null? xs) 0]")
@@ -1230,7 +1234,18 @@ func (c *Compiler) compileStructExpr(s *parser.StructLiteral) (string, error) {
 
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) (string, error) {
 	base := sanitizeName(sel.Root)
-	for _, field := range sel.Tail {
+	t, err := c.env.GetVar(sel.Root)
+	group := false
+	if err == nil {
+		if _, ok := t.(types.GroupType); ok {
+			group = true
+		}
+	}
+	for i, field := range sel.Tail {
+		if group && i == 0 && field == "key" {
+			base = fmt.Sprintf("(_Group-key %s)", base)
+			continue
+		}
 		base = fmt.Sprintf("(hash-ref %s %q)", base, sanitizeName(field))
 	}
 	return base, nil
@@ -1241,6 +1256,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		src, err := c.compileExpr(q.Source)
 		if err != nil {
 			return "", err
+		}
+		if id, ok := bareIdent(q.Source); ok {
+			if t, _ := c.env.GetVar(id); t != nil {
+				if _, ok := t.(types.GroupType); ok {
+					src = fmt.Sprintf("(_Group-Items %s)", sanitizeName(id))
+				}
+			}
 		}
 		orig := c.env
 		child := types.NewEnv(c.env)
@@ -1328,7 +1350,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if takeExpr != "" {
 			b.WriteString(fmt.Sprintf("    (set! _res (take _res %s))\n", takeExpr))
 		}
-		b.WriteString("    _res)")
+		b.WriteString("    _res))")
 		return b.String(), nil
 	}
 
@@ -1351,6 +1373,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				c.env = orig
 				return "", err
+			}
+			if id, ok := bareIdent(j.Src); ok {
+				if t, _ := c.env.GetVar(id); t != nil {
+					if _, ok := t.(types.GroupType); ok {
+						js = fmt.Sprintf("(_Group-Items %s)", sanitizeName(id))
+					}
+				}
 			}
 			joinSrcs[i] = js
 			on, err := c.compileExpr(j.On)
@@ -1447,7 +1476,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(indent + ")\n")
 		}
 		b.WriteString("  )\n")
-		b.WriteString("  (for/list ([ks order]) (hash-ref map ks)))]\n")
+		b.WriteString("  (for/list ([ks order]) (hash-ref map ks)))])\n")
 		b.WriteString("  (let ([_res '()])\n")
 		b.WriteString(fmt.Sprintf("    (for ([%s groups])\n", sanitizeName(q.Group.Name)))
 		if sortExpr != "" {
@@ -1470,7 +1499,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if takeExpr != "" {
 			b.WriteString(fmt.Sprintf("    (set! _res (take _res %s))\n", takeExpr))
 		}
-		b.WriteString("    _res)))")
+		b.WriteString("    _res))")
 		return b.String(), nil
 	}
 
@@ -1505,6 +1534,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			c.env = orig
 			return "", err
+		}
+		if id, ok := bareIdent(f.Src); ok {
+			if t, _ := c.env.GetVar(id); t != nil {
+				if _, ok := t.(types.GroupType); ok {
+					fs = fmt.Sprintf("(_Group-Items %s)", sanitizeName(id))
+				}
+			}
 		}
 		fromSrcs[i] = fs
 	}
