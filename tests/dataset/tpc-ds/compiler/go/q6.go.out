@@ -1,0 +1,473 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"sort"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q6_empty() {
+	expect((len(result) == 0))
+}
+
+var customer_address []any
+var customer []any
+var store_sales []any
+var date_dim []any
+var item []any
+var target_month_seq any
+var result []map[string]any
+
+func main() {
+	failures := 0
+	customer_address = []any{}
+	customer = []any{}
+	store_sales = []any{}
+	date_dim = []any{}
+	item = []any{}
+	target_month_seq = _max(func() []any {
+		_res := []any{}
+		for _, d := range date_dim {
+			if _equal(_cast[map[string]any](d)["d_year"], 1999) && _equal(_cast[map[string]any](d)["d_moy"], 5) {
+				if _equal(_cast[map[string]any](d)["d_year"], 1999) && _equal(_cast[map[string]any](d)["d_moy"], 5) {
+					_res = append(_res, _cast[map[string]any](d)["d_month_seq"])
+				}
+			}
+		}
+		return _res
+	}())
+	result = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, a := range customer_address {
+			for _, c := range customer {
+				if !(_equal(_cast[map[string]any](a)["ca_address_sk"], _cast[map[string]any](c)["c_current_addr_sk"])) {
+					continue
+				}
+				for _, s := range store_sales {
+					if !(_equal(_cast[map[string]any](c)["c_customer_sk"], _cast[map[string]any](s)["ss_customer_sk"])) {
+						continue
+					}
+					for _, d := range date_dim {
+						if !(_equal(_cast[map[string]any](s)["ss_sold_date_sk"], _cast[map[string]any](d)["d_date_sk"])) {
+							continue
+						}
+						for _, i := range item {
+							if !(_equal(_cast[map[string]any](s)["ss_item_sk"], _cast[map[string]any](i)["i_item_sk"])) {
+								continue
+							}
+							if _equal(_cast[map[string]any](d)["d_month_seq"], target_month_seq) && (_cast[float64](_cast[map[string]any](i)["i_current_price"]) > (1.2 * _avg(func() []any {
+								_res := []any{}
+								for _, j := range item {
+									if _equal(_cast[map[string]any](j)["i_category"], _cast[map[string]any](i)["i_category"]) {
+										if _equal(_cast[map[string]any](j)["i_category"], _cast[map[string]any](i)["i_category"]) {
+											_res = append(_res, _cast[map[string]any](j)["i_current_price"])
+										}
+									}
+								}
+								return _res
+							}()))) {
+								key := _cast[map[string]any](a)["ca_state"]
+								ks := fmt.Sprint(key)
+								g, ok := groups[ks]
+								if !ok {
+									g = &data.Group{Key: key}
+									groups[ks] = g
+									order = append(order, ks)
+								}
+								g.Items = append(g.Items, a)
+							}
+						}
+					}
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		type pair struct {
+			item *data.Group
+			key  any
+		}
+		pairs := make([]pair, len(items))
+		for idx, it := range items {
+			g := it
+			pairs[idx] = pair{item: it, key: _toAnySlice([]any{_count(g), g.Key})}
+		}
+		sort.Slice(pairs, func(i, j int) bool {
+			a, b := pairs[i].key, pairs[j].key
+			switch av := a.(type) {
+			case int:
+				switch bv := b.(type) {
+				case int:
+					return av < bv
+				case float64:
+					return float64(av) < bv
+				}
+			case float64:
+				switch bv := b.(type) {
+				case int:
+					return av < float64(bv)
+				case float64:
+					return av < bv
+				}
+			case string:
+				bs, _ := b.(string)
+				return av < bs
+			}
+			return fmt.Sprint(a) < fmt.Sprint(b)
+		})
+		for idx, p := range pairs {
+			items[idx] = p.item
+		}
+		items = _paginate[*data.Group](items, -1, 100)
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{"state": g.Key, "cnt": _count(g)})
+		}
+		return _res
+	}()
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q6 empty")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q6_empty()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _avg(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []bool:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		default:
+			panic("avg() expects list or group")
+		}
+	}
+	if len(items) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("avg() expects numbers")
+		}
+	}
+	return sum / float64(len(items))
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func _max(v any) any {
+	if g, ok := v.(*data.Group); ok {
+		v = g.Items
+	}
+	switch s := v.(type) {
+	case []int:
+		if len(s) == 0 {
+			return 0
+		}
+		m := s[0]
+		for _, n := range s[1:] {
+			if n > m {
+				m = n
+			}
+		}
+		return m
+	case []float64:
+		if len(s) == 0 {
+			return 0.0
+		}
+		m := s[0]
+		for _, n := range s[1:] {
+			if n > m {
+				m = n
+			}
+		}
+		return m
+	case []any:
+		if len(s) == 0 {
+			return 0
+		}
+		var m float64
+		var isFloat bool
+		switch n := s[0].(type) {
+		case int:
+			m = float64(n)
+		case int64:
+			m = float64(n)
+		case float64:
+			m = n
+			isFloat = true
+		default:
+			panic("max() expects numbers")
+		}
+		for _, it := range s[1:] {
+			switch v := it.(type) {
+			case int:
+				if float64(v) > m {
+					m = float64(v)
+				}
+			case int64:
+				if float64(v) > m {
+					m = float64(v)
+				}
+			case float64:
+				if v > m {
+					m = v
+				}
+				isFloat = true
+			default:
+				panic("max() expects numbers")
+			}
+		}
+		if isFloat {
+			return m
+		}
+		return int(m)
+	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Slice {
+			if rv.Len() == 0 {
+				return 0
+			}
+			m := rv.Index(0).Interface()
+			switch m.(type) {
+			case int, int64, float64:
+				items := make([]any, rv.Len())
+				for i := 0; i < rv.Len(); i++ {
+					items[i] = rv.Index(i).Interface()
+				}
+				return _max(items)
+			}
+		}
+		panic("max() expects list or group")
+	}
+}
+
+func _paginate[T any](src []T, skip, take int) []T {
+	if skip > 0 {
+		if skip < len(src) {
+			src = src[skip:]
+		} else {
+			return []T{}
+		}
+	}
+	if take >= 0 && take < len(src) {
+		src = src[:take]
+	}
+	return src
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}

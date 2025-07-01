@@ -379,6 +379,29 @@ const (
 		"    return res\n" +
 		"}\n"
 
+	helperConcat = "func _concat[T any](a, b []T) []T {\n" +
+		"    res := make([]T, 0, len(a)+len(b))\n" +
+		"    res = append(res, a...)\n" +
+		"    res = append(res, b...)\n" +
+		"    return res\n" +
+		"}\n"
+
+	helperReverseSlice = "func _reverseSlice[T any](s []T) []T {\n" +
+		"    out := append([]T{}, s...)\n" +
+		"    for i, j := 0, len(out)-1; i < j; i, j = i+1, j-1 {\n" +
+		"        out[i], out[j] = out[j], out[i]\n" +
+		"    }\n" +
+		"    return out\n" +
+		"}\n"
+
+	helperReverseString = "func _reverseString(s string) string {\n" +
+		"    r := []rune(s)\n" +
+		"    for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {\n" +
+		"        r[i], r[j] = r[j], r[i]\n" +
+		"    }\n" +
+		"    return string(r)\n" +
+		"}\n"
+
 	helperExcept = "func _except[T any](a, b []T) []T {\n" +
 		"    res := []T{}\n" +
 		"    for _, x := range a {\n" +
@@ -675,6 +698,9 @@ var helperMap = map[string]string{
 	"_contains":      helperContains,
 	"_union_all":     helperUnionAll,
 	"_union":         helperUnion,
+	"_concat":        helperConcat,
+	"_reverseSlice":  helperReverseSlice,
+	"_reverseString": helperReverseString,
 	"_except":        helperExcept,
 	"_intersect":     helperIntersect,
 	"_cast":          helperCast,

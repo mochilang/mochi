@@ -1,0 +1,701 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"sort"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q4_empty() {
+	expect((len(result) == 0))
+}
+
+var customer []any
+var store_sales []any
+var catalog_sales []any
+var web_sales []any
+var date_dim []any
+var year_total []map[string]any
+var result []map[string]any
+
+func main() {
+	failures := 0
+	customer = []any{}
+	store_sales = []any{}
+	catalog_sales = []any{}
+	web_sales = []any{}
+	date_dim = []any{}
+	year_total = _union[map[string]any](_union[map[string]any]((func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, c := range customer {
+			for _, s := range store_sales {
+				if !(_equal(_cast[map[string]any](c)["c_customer_sk"], _cast[map[string]any](s)["ss_customer_sk"])) {
+					continue
+				}
+				for _, d := range date_dim {
+					if !(_equal(_cast[map[string]any](s)["ss_sold_date_sk"], _cast[map[string]any](d)["d_date_sk"])) {
+						continue
+					}
+					key := map[string]any{
+						"id":    _cast[map[string]any](c)["c_customer_id"],
+						"first": _cast[map[string]any](c)["c_first_name"],
+						"last":  _cast[map[string]any](c)["c_last_name"],
+						"login": _cast[map[string]any](c)["c_login"],
+						"year":  _cast[map[string]any](d)["d_year"],
+					}
+					ks := fmt.Sprint(key)
+					g, ok := groups[ks]
+					if !ok {
+						g = &data.Group{Key: key}
+						groups[ks] = g
+						order = append(order, ks)
+					}
+					g.Items = append(g.Items, c)
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"customer_id":         _cast[map[string]any](g.Key)["id"],
+				"customer_first_name": _cast[map[string]any](g.Key)["first"],
+				"customer_last_name":  _cast[map[string]any](g.Key)["last"],
+				"customer_login":      _cast[map[string]any](g.Key)["login"],
+				"dyear":               _cast[map[string]any](g.Key)["year"],
+				"year_total": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, (_cast[float64]((_cast[float64]((_cast[float64]((_cast[float64](_cast[map[string]any](x)["ss_ext_list_price"]) - _cast[float64](_cast[map[string]any](x)["ss_ext_wholesale_cost"]))) - _cast[float64](_cast[map[string]any](x)["ss_ext_discount_amt"]))) + _cast[float64](_cast[map[string]any](x)["ss_ext_sales_price"]))) / _cast[float64](2)))
+					}
+					return _res
+				}()),
+				"sale_type": "s",
+			})
+		}
+		return _res
+	}()), (func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, c := range customer {
+			for _, cs := range catalog_sales {
+				if !(_equal(_cast[map[string]any](c)["c_customer_sk"], _cast[map[string]any](cs)["cs_bill_customer_sk"])) {
+					continue
+				}
+				for _, d := range date_dim {
+					if !(_equal(_cast[map[string]any](cs)["cs_sold_date_sk"], _cast[map[string]any](d)["d_date_sk"])) {
+						continue
+					}
+					key := map[string]any{
+						"id":    _cast[map[string]any](c)["c_customer_id"],
+						"first": _cast[map[string]any](c)["c_first_name"],
+						"last":  _cast[map[string]any](c)["c_last_name"],
+						"login": _cast[map[string]any](c)["c_login"],
+						"year":  _cast[map[string]any](d)["d_year"],
+					}
+					ks := fmt.Sprint(key)
+					g, ok := groups[ks]
+					if !ok {
+						g = &data.Group{Key: key}
+						groups[ks] = g
+						order = append(order, ks)
+					}
+					g.Items = append(g.Items, c)
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"customer_id":         _cast[map[string]any](g.Key)["id"],
+				"customer_first_name": _cast[map[string]any](g.Key)["first"],
+				"customer_last_name":  _cast[map[string]any](g.Key)["last"],
+				"customer_login":      _cast[map[string]any](g.Key)["login"],
+				"dyear":               _cast[map[string]any](g.Key)["year"],
+				"year_total": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, (_cast[float64]((_cast[float64]((_cast[float64]((_cast[float64](_cast[map[string]any](x)["cs_ext_list_price"]) - _cast[float64](_cast[map[string]any](x)["cs_ext_wholesale_cost"]))) - _cast[float64](_cast[map[string]any](x)["cs_ext_discount_amt"]))) + _cast[float64](_cast[map[string]any](x)["cs_ext_sales_price"]))) / _cast[float64](2)))
+					}
+					return _res
+				}()),
+				"sale_type": "c",
+			})
+		}
+		return _res
+	}())), (func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, c := range customer {
+			for _, ws := range web_sales {
+				if !(_equal(_cast[map[string]any](c)["c_customer_sk"], _cast[map[string]any](ws)["ws_bill_customer_sk"])) {
+					continue
+				}
+				for _, d := range date_dim {
+					if !(_equal(_cast[map[string]any](ws)["ws_sold_date_sk"], _cast[map[string]any](d)["d_date_sk"])) {
+						continue
+					}
+					key := map[string]any{
+						"id":    _cast[map[string]any](c)["c_customer_id"],
+						"first": _cast[map[string]any](c)["c_first_name"],
+						"last":  _cast[map[string]any](c)["c_last_name"],
+						"login": _cast[map[string]any](c)["c_login"],
+						"year":  _cast[map[string]any](d)["d_year"],
+					}
+					ks := fmt.Sprint(key)
+					g, ok := groups[ks]
+					if !ok {
+						g = &data.Group{Key: key}
+						groups[ks] = g
+						order = append(order, ks)
+					}
+					g.Items = append(g.Items, c)
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"customer_id":         _cast[map[string]any](g.Key)["id"],
+				"customer_first_name": _cast[map[string]any](g.Key)["first"],
+				"customer_last_name":  _cast[map[string]any](g.Key)["last"],
+				"customer_login":      _cast[map[string]any](g.Key)["login"],
+				"dyear":               _cast[map[string]any](g.Key)["year"],
+				"year_total": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, (_cast[float64]((_cast[float64]((_cast[float64]((_cast[float64](_cast[map[string]any](x)["ws_ext_list_price"]) - _cast[float64](_cast[map[string]any](x)["ws_ext_wholesale_cost"]))) - _cast[float64](_cast[map[string]any](x)["ws_ext_discount_amt"]))) + _cast[float64](_cast[map[string]any](x)["ws_ext_sales_price"]))) / _cast[float64](2)))
+					}
+					return _res
+				}()),
+				"sale_type": "w",
+			})
+		}
+		return _res
+	}()))
+	result = func() []map[string]any {
+		src := _toAnySlice(year_total)
+		resAny := _query(src, []_joinSpec{
+			{items: _toAnySlice(year_total), on: func(_a ...any) bool {
+				s1 := _cast[map[string]any](_a[0])
+				_ = s1
+				s2 := _cast[map[string]any](_a[1])
+				_ = s2
+				return _equal(s2["customer_id"], s1["customer_id"])
+			}},
+			{items: _toAnySlice(year_total), on: func(_a ...any) bool {
+				s1 := _cast[map[string]any](_a[0])
+				_ = s1
+				s2 := _cast[map[string]any](_a[1])
+				_ = s2
+				c1 := _cast[map[string]any](_a[2])
+				_ = c1
+				return _equal(c1["customer_id"], s1["customer_id"])
+			}},
+			{items: _toAnySlice(year_total), on: func(_a ...any) bool {
+				s1 := _cast[map[string]any](_a[0])
+				_ = s1
+				s2 := _cast[map[string]any](_a[1])
+				_ = s2
+				c1 := _cast[map[string]any](_a[2])
+				_ = c1
+				c2 := _cast[map[string]any](_a[3])
+				_ = c2
+				return _equal(c2["customer_id"], s1["customer_id"])
+			}},
+			{items: _toAnySlice(year_total), on: func(_a ...any) bool {
+				s1 := _cast[map[string]any](_a[0])
+				_ = s1
+				s2 := _cast[map[string]any](_a[1])
+				_ = s2
+				c1 := _cast[map[string]any](_a[2])
+				_ = c1
+				c2 := _cast[map[string]any](_a[3])
+				_ = c2
+				w1 := _cast[map[string]any](_a[4])
+				_ = w1
+				return _equal(w1["customer_id"], s1["customer_id"])
+			}},
+			{items: _toAnySlice(year_total), on: func(_a ...any) bool {
+				s1 := _cast[map[string]any](_a[0])
+				_ = s1
+				s2 := _cast[map[string]any](_a[1])
+				_ = s2
+				c1 := _cast[map[string]any](_a[2])
+				_ = c1
+				c2 := _cast[map[string]any](_a[3])
+				_ = c2
+				w1 := _cast[map[string]any](_a[4])
+				_ = w1
+				w2 := _cast[map[string]any](_a[5])
+				_ = w2
+				return _equal(w2["customer_id"], s1["customer_id"])
+			}},
+		}, _queryOpts{selectFn: func(_a ...any) any {
+			s1 := _cast[map[string]any](_a[0])
+			_ = s1
+			s2 := _cast[map[string]any](_a[1])
+			_ = s2
+			c1 := _cast[map[string]any](_a[2])
+			_ = c1
+			c2 := _cast[map[string]any](_a[3])
+			_ = c2
+			w1 := _cast[map[string]any](_a[4])
+			_ = w1
+			w2 := _cast[map[string]any](_a[5])
+			_ = w2
+			return map[string]any{
+				"customer_id":         s2["customer_id"],
+				"customer_first_name": s2["customer_first_name"],
+				"customer_last_name":  s2["customer_last_name"],
+				"customer_login":      s2["customer_login"],
+			}
+		}, where: func(_a ...any) bool {
+			s1 := _cast[map[string]any](_a[0])
+			_ = s1
+			s2 := _cast[map[string]any](_a[1])
+			_ = s2
+			c1 := _cast[map[string]any](_a[2])
+			_ = c1
+			c2 := _cast[map[string]any](_a[3])
+			_ = c2
+			w1 := _cast[map[string]any](_a[4])
+			_ = w1
+			w2 := _cast[map[string]any](_a[5])
+			_ = w2
+			return ((((((((((((((((_equal(s1["sale_type"], "s") && _equal(c1["sale_type"], "c")) && _equal(w1["sale_type"], "w")) && _equal(s2["sale_type"], "s")) && _equal(c2["sale_type"], "c")) && _equal(w2["sale_type"], "w")) && _equal(s1["dyear"], 2001)) && _equal(s2["dyear"], 2002)) && _equal(c1["dyear"], 2001)) && _equal(c2["dyear"], 2002)) && _equal(w1["dyear"], 2001)) && _equal(w2["dyear"], 2002)) && (_cast[int](s1["year_total"]) > 0)) && (_cast[int](c1["year_total"]) > 0)) && (_cast[int](w1["year_total"]) > 0)) && (_cast[float64]((func() any {
+				if _cast[int](c1["year_total"]) > 0 {
+					return (_cast[float64](c2["year_total"]) / _cast[float64](c1["year_total"]))
+				} else {
+					return nil
+				}
+			}())) > _cast[float64]((func() any {
+				if _cast[int](s1["year_total"]) > 0 {
+					return (_cast[float64](s2["year_total"]) / _cast[float64](s1["year_total"]))
+				} else {
+					return nil
+				}
+			}())))) && (_cast[float64]((func() any {
+				if _cast[int](c1["year_total"]) > 0 {
+					return (_cast[float64](c2["year_total"]) / _cast[float64](c1["year_total"]))
+				} else {
+					return nil
+				}
+			}())) > _cast[float64]((func() any {
+				if _cast[int](w1["year_total"]) > 0 {
+					return (_cast[float64](w2["year_total"]) / _cast[float64](w1["year_total"]))
+				} else {
+					return nil
+				}
+			}()))))
+		}, sortKey: func(_a ...any) any {
+			s1 := _cast[map[string]any](_a[0])
+			_ = s1
+			s2 := _cast[map[string]any](_a[1])
+			_ = s2
+			c1 := _cast[map[string]any](_a[2])
+			_ = c1
+			c2 := _cast[map[string]any](_a[3])
+			_ = c2
+			w1 := _cast[map[string]any](_a[4])
+			_ = w1
+			w2 := _cast[map[string]any](_a[5])
+			_ = w2
+			return []any{
+				s2["customer_id"],
+				s2["customer_first_name"],
+				s2["customer_last_name"],
+				s2["customer_login"],
+			}
+		}, skip: -1, take: -1})
+		out := make([]map[string]any, len(resAny))
+		for i, v := range resAny {
+			out[i] = _cast[map[string]any](v)
+		}
+		return out
+	}()
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q4 empty")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q4_empty()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+type _joinSpec struct {
+	items []any
+	on    func(...any) bool
+	left  bool
+	right bool
+}
+type _queryOpts struct {
+	selectFn func(...any) any
+	where    func(...any) bool
+	sortKey  func(...any) any
+	skip     int
+	take     int
+}
+
+func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
+	items := make([][]any, len(src))
+	for i, v := range src {
+		items[i] = []any{v}
+	}
+	for _, j := range joins {
+		joined := [][]any{}
+		if j.right && j.left {
+			matched := make([]bool, len(j.items))
+			for _, left := range items {
+				m := false
+				for ri, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					matched[ri] = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+			for ri, right := range j.items {
+				if !matched[ri] {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else if j.right {
+			for _, right := range j.items {
+				m := false
+				for _, left := range items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else {
+			for _, left := range items {
+				m := false
+				for _, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if j.left && !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+		}
+		items = joined
+	}
+	if opts.where != nil {
+		filtered := [][]any{}
+		for _, r := range items {
+			if opts.where(r...) {
+				filtered = append(filtered, r)
+			}
+		}
+		items = filtered
+	}
+	if opts.sortKey != nil {
+		type pair struct {
+			item []any
+			key  any
+		}
+		pairs := make([]pair, len(items))
+		for i, it := range items {
+			pairs[i] = pair{it, opts.sortKey(it...)}
+		}
+		sort.Slice(pairs, func(i, j int) bool {
+			a, b := pairs[i].key, pairs[j].key
+			switch av := a.(type) {
+			case int:
+				switch bv := b.(type) {
+				case int:
+					return av < bv
+				case float64:
+					return float64(av) < bv
+				}
+			case float64:
+				switch bv := b.(type) {
+				case int:
+					return av < float64(bv)
+				case float64:
+					return av < bv
+				}
+			case string:
+				bs, _ := b.(string)
+				return av < bs
+			}
+			return fmt.Sprint(a) < fmt.Sprint(b)
+		})
+		for i, p := range pairs {
+			items[i] = p.item
+		}
+	}
+	if opts.skip >= 0 {
+		if opts.skip < len(items) {
+			items = items[opts.skip:]
+		} else {
+			items = [][]any{}
+		}
+	}
+	if opts.take >= 0 {
+		if opts.take < len(items) {
+			items = items[:opts.take]
+		}
+	}
+	res := make([]any, len(items))
+	for i, r := range items {
+		res[i] = opts.selectFn(r...)
+	}
+	return res
+}
+
+func _sum(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string, []bool:
+			panic("sum() expects numbers")
+		default:
+			panic("sum() expects list or group")
+		}
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("sum() expects numbers")
+		}
+	}
+	return sum
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}
+
+func _union[T any](a, b []T) []T {
+	res := append([]T{}, a...)
+	for _, it := range b {
+		found := false
+		for _, v := range res {
+			if _equal(v, it) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			res = append(res, it)
+		}
+	}
+	return res
+}
