@@ -180,23 +180,27 @@ expect :: Bool -> IO ()
 expect True = pure ()
 expect False = error "expect failed"
 
-store_returns = [Map.fromList [("sr_returned_date_sk", VInt (1)), ("sr_customer_sk", VInt (1)), ("sr_store_sk", VInt (10)), ("sr_return_amt", VDouble (20.0))], Map.fromList [("sr_returned_date_sk", VInt (1)), ("sr_customer_sk", VInt (2)), ("sr_store_sk", VInt (10)), ("sr_return_amt", VDouble (50.0))]]
+web_sales = [Map.fromList [("ws_sold_date_sk", VInt (1)), ("ws_ext_sales_price", VDouble (5.0)), ("ws_sold_date_name", VString ("Sunday"))], Map.fromList [("ws_sold_date_sk", VInt (2)), ("ws_ext_sales_price", VDouble (5.0)), ("ws_sold_date_name", VString ("Monday"))], Map.fromList [("ws_sold_date_sk", VInt (8)), ("ws_ext_sales_price", VDouble (10.0)), ("ws_sold_date_name", VString ("Sunday"))], Map.fromList [("ws_sold_date_sk", VInt (9)), ("ws_ext_sales_price", VDouble (10.0)), ("ws_sold_date_name", VString ("Monday"))]]
 
-date_dim = [Map.fromList [("d_date_sk", 1), ("d_year", 1998)]]
+catalog_sales = [Map.fromList [("cs_sold_date_sk", VInt (1)), ("cs_ext_sales_price", VDouble (5.0)), ("cs_sold_date_name", VString ("Sunday"))], Map.fromList [("cs_sold_date_sk", VInt (2)), ("cs_ext_sales_price", VDouble (5.0)), ("cs_sold_date_name", VString ("Monday"))], Map.fromList [("cs_sold_date_sk", VInt (8)), ("cs_ext_sales_price", VDouble (10.0)), ("cs_sold_date_name", VString ("Sunday"))], Map.fromList [("cs_sold_date_sk", VInt (9)), ("cs_ext_sales_price", VDouble (10.0)), ("cs_sold_date_name", VString ("Monday"))]]
 
-store = [Map.fromList [("s_store_sk", VInt (10)), ("s_state", VString ("TN"))]]
+date_dim = [Map.fromList [("d_date_sk", VInt (1)), ("d_week_seq", VInt (1)), ("d_day_name", VString ("Sunday")), ("d_year", VInt (1998))], Map.fromList [("d_date_sk", VInt (2)), ("d_week_seq", VInt (1)), ("d_day_name", VString ("Monday")), ("d_year", VInt (1998))], Map.fromList [("d_date_sk", VInt (8)), ("d_week_seq", VInt (54)), ("d_day_name", VString ("Sunday")), ("d_year", VInt (1999))], Map.fromList [("d_date_sk", VInt (9)), ("d_week_seq", VInt (54)), ("d_day_name", VString ("Monday")), ("d_year", VInt (1999))]]
 
-customer = [Map.fromList [("c_customer_sk", VInt (1)), ("c_customer_id", VString ("C1"))], Map.fromList [("c_customer_sk", VInt (2)), ("c_customer_id", VString ("C2"))]]
+wscs = (([Map.fromList [("sold_date_sk", VString (fromMaybe (error "missing") (Map.lookup "ws_sold_date_sk" ws))), ("sales_price", VString (fromMaybe (error "missing") (Map.lookup "ws_ext_sales_price" ws))), ("day", VString (fromMaybe (error "missing") (Map.lookup "ws_sold_date_name" ws)))] | ws <- web_sales]) ++ ([Map.fromList [("sold_date_sk", VString (fromMaybe (error "missing") (Map.lookup "cs_sold_date_sk" cs))), ("sales_price", VString (fromMaybe (error "missing") (Map.lookup "cs_ext_sales_price" cs))), ("day", VString (fromMaybe (error "missing") (Map.lookup "cs_sold_date_name" cs)))] | cs <- catalog_sales]))
 
-customer_total_return = [Map.fromList [("ctr_customer_sk", VString (fromMaybe (error "missing") (Map.lookup "customer_sk" (key (g))))), ("ctr_store_sk", VString (fromMaybe (error "missing") (Map.lookup "store_sk" (key (g))))), ("ctr_total_return", VDouble (sum [fromMaybe (error "missing") (Map.lookup "sr_return_amt" (x)) | x <- g]))] | g <- _group_by [(sr, d) | sr <- store_returns, d <- date_dim, (((fromMaybe (error "missing") (Map.lookup "sr_returned_date_sk" (sr)) == fromMaybe (error "missing") (Map.lookup "d_date_sk" (d))) && fromMaybe (error "missing") (Map.lookup "d_year" (d))) == 1998)] (\(sr, d) -> Map.fromList [("customer_sk", VString (fromMaybe (error "missing") (Map.lookup "sr_customer_sk" sr))), ("store_sk", VString (fromMaybe (error "missing") (Map.lookup "sr_store_sk" sr)))]), let g = g]
+wswscs = [Map.fromList [("d_week_seq", VString (fromMaybe (error "missing") (Map.lookup "week_seq" (key (g))))), ("sun_sales", VDouble (sum [fromMaybe (error "missing") (Map.lookup "sales_price" (x)) | x <- filter (\x -> (fromMaybe (error "missing") (Map.lookup "day" (x)) == "Sunday")) g])), ("mon_sales", VDouble (sum [fromMaybe (error "missing") (Map.lookup "sales_price" (x)) | x <- filter (\x -> (fromMaybe (error "missing") (Map.lookup "day" (x)) == "Monday")) g])), ("tue_sales", VDouble (sum [fromMaybe (error "missing") (Map.lookup "sales_price" (x)) | x <- filter (\x -> (fromMaybe (error "missing") (Map.lookup "day" (x)) == "Tuesday")) g])), ("wed_sales", VDouble (sum [fromMaybe (error "missing") (Map.lookup "sales_price" (x)) | x <- filter (\x -> (fromMaybe (error "missing") (Map.lookup "day" (x)) == "Wednesday")) g])), ("thu_sales", VDouble (sum [fromMaybe (error "missing") (Map.lookup "sales_price" (x)) | x <- filter (\x -> (fromMaybe (error "missing") (Map.lookup "day" (x)) == "Thursday")) g])), ("fri_sales", VDouble (sum [fromMaybe (error "missing") (Map.lookup "sales_price" (x)) | x <- filter (\x -> (fromMaybe (error "missing") (Map.lookup "day" (x)) == "Friday")) g])), ("sat_sales", VDouble (sum [fromMaybe (error "missing") (Map.lookup "sales_price" (x)) | x <- filter (\x -> (fromMaybe (error "missing") (Map.lookup "day" (x)) == "Saturday")) g]))] | g <- _group_by [(w, d) | w <- wscs, d <- date_dim, (fromMaybe (error "missing") (Map.lookup "sold_date_sk" (w)) == fromMaybe (error "missing") (Map.lookup "d_date_sk" (d)))] (\(w, d) -> Map.fromList [("week_seq", VString (fromMaybe (error "missing") (Map.lookup "d_week_seq" d)))]), let g = g]
 
-result = map snd (List.sortOn fst [(fromMaybe (error "missing") (Map.lookup "c_customer_id" (c)), Map.fromList [("c_customer_id", VString (fromMaybe (error "missing") (Map.lookup "c_customer_id" c)))]) | ctr1 <- customer_total_return, s <- store, c <- customer, (fromMaybe (error "missing") (Map.lookup "ctr_store_sk" (ctr1)) == fromMaybe (error "missing") (Map.lookup "s_store_sk" (s))), (fromMaybe (error "missing") (Map.lookup "ctr_customer_sk" (ctr1)) == fromMaybe (error "missing") (Map.lookup "c_customer_sk" (c))), ((((fromMaybe (error "missing") (Map.lookup "ctr_total_return" ctr1) > avg [fromMaybe (error "missing") (Map.lookup "ctr_total_return" ctr2) | ctr2 <- filter (\ctr2 -> (fromMaybe (error "missing") (Map.lookup "ctr_store_sk" ctr1) == fromMaybe (error "missing") (Map.lookup "ctr_store_sk" ctr2))) customer_total_return]) * 1.2) && fromMaybe (error "missing") (Map.lookup "s_state" s)) == "TN")])
+year1 = [w | w <- filter (\w -> (fromMaybe (error "missing") (Map.lookup "d_week_seq" w) == 1)) wswscs]
 
-test_TPCDS_Q1_result :: IO ()
-test_TPCDS_Q1_result = do
-  expect ((result == [Map.fromList [("c_customer_id", "C2")]]))
+year2 = [w | w <- filter (\w -> (fromMaybe (error "missing") (Map.lookup "d_week_seq" w) == 54)) wswscs]
+
+result = [Map.fromList [("d_week_seq1", VString (fromMaybe (error "missing") (Map.lookup "d_week_seq" y))), ("sun_ratio", VString ((fromMaybe (error "missing") (Map.lookup "sun_sales" y) / fromMaybe (error "missing") (Map.lookup "sun_sales" z)))), ("mon_ratio", VString ((fromMaybe (error "missing") (Map.lookup "mon_sales" y) / fromMaybe (error "missing") (Map.lookup "mon_sales" z))))] | y <- year1, z <- year2, ((fromMaybe (error "missing") (Map.lookup "d_week_seq" (y)) == fromMaybe (error "missing") (Map.lookup "d_week_seq" (z))) - 53)]
+
+test_TPCDS_Q2_result :: IO ()
+test_TPCDS_Q2_result = do
+  expect ((result == [Map.fromList [("d_week_seq1", VInt (1)), ("sun_ratio", VDouble (0.5)), ("mon_ratio", VDouble (0.5))]]))
 
 main :: IO ()
 main = do
   _json result
-  test_TPCDS_Q1_result
+  test_TPCDS_Q2_result
