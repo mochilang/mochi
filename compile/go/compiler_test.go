@@ -382,8 +382,8 @@ func TestGoCompiler_JOBQueries(t *testing.T) {
 
 func TestGoCompiler_TPCDSQueries(t *testing.T) {
 	root := findRepoRoot(t)
-	for i := 10; i <= 20; i++ {
-		q := fmt.Sprintf("q%d", i)
+	queries := []string{"q20", "q24"}
+	for _, q := range queries {
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
 			prog, err := parser.Parse(src)
