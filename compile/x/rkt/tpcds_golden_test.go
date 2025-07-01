@@ -1,3 +1,5 @@
+//go:build slow
+
 package rktcode_test
 
 import (

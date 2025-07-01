@@ -1,4 +1,4 @@
-//go:build cosmo && libcosmo
+//go:build cosmo && libcosmo && slow
 
 package ccode_test
 
