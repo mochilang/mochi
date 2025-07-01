@@ -1,0 +1,368 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q81_sample() {
+	expect(_equal(result, 81.0))
+}
+
+type Catalog_returnsItem struct {
+	Cust  int     `json:"cust"`
+	State string  `json:"state"`
+	Amt   float64 `json:"amt"`
+}
+
+var catalog_returns []Catalog_returnsItem
+var avg_list []map[string]any
+var avg_state any
+var result_list []float64
+var result any
+
+func main() {
+	failures := 0
+	catalog_returns = _cast[[]Catalog_returnsItem]([]Catalog_returnsItem{
+		Catalog_returnsItem{
+			Cust:  1,
+			State: "CA",
+			Amt:   40.0,
+		},
+		Catalog_returnsItem{
+			Cust:  2,
+			State: "CA",
+			Amt:   50.0,
+		},
+		Catalog_returnsItem{
+			Cust:  3,
+			State: "CA",
+			Amt:   81.0,
+		},
+		Catalog_returnsItem{
+			Cust:  4,
+			State: "TX",
+			Amt:   30.0,
+		},
+		Catalog_returnsItem{
+			Cust:  5,
+			State: "TX",
+			Amt:   20.0,
+		},
+	})
+	avg_list = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, r := range catalog_returns {
+			key := r.State
+			ks := fmt.Sprint(key)
+			g, ok := groups[ks]
+			if !ok {
+				g = &data.Group{Key: key}
+				groups[ks] = g
+				order = append(order, ks)
+			}
+			g.Items = append(g.Items, r)
+		}
+		_res := []map[string]any{}
+		for _, ks := range order {
+			g := groups[ks]
+			_res = append(_res, map[string]any{"state": g.Key, "avg_amt": _avg(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, _cast[map[string]any](x)["amt"])
+				}
+				return _res
+			}())})
+		}
+		return _res
+	}()
+	avg_state = _first(_toAnySlice(_convSlice[map[string]any, any](func() []map[string]any {
+		_res := []map[string]any{}
+		for _, a := range avg_list {
+			if _equal(a["state"], "CA") {
+				if _equal(a["state"], "CA") {
+					_res = append(_res, a)
+				}
+			}
+		}
+		return _res
+	}())))
+	result_list = func() []float64 {
+		_res := []float64{}
+		for _, r := range catalog_returns {
+			if (r.State == "CA") && (r.Amt > (_cast[float64](_cast[map[string]any](avg_state)["avg_amt"]) * _cast[float64](1.2))) {
+				if (r.State == "CA") && (r.Amt > (_cast[float64](_cast[map[string]any](avg_state)["avg_amt"]) * _cast[float64](1.2))) {
+					_res = append(_res, r.Amt)
+				}
+			}
+		}
+		return _res
+	}()
+	result = _first(_toAnySlice(_convSlice[float64, any](result_list)))
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q81 sample")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q81_sample()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _avg(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []bool:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		default:
+			panic("avg() expects list or group")
+		}
+	}
+	if len(items) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("avg() expects numbers")
+		}
+	}
+	return sum / float64(len(items))
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convSlice[T any, U any](s []T) []U {
+	out := make([]U, len(s))
+	for i, v := range s {
+		out[i] = any(v).(U)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func _first(v any) any {
+	if g, ok := v.(*data.Group); ok {
+		if len(g.Items) == 0 {
+			return nil
+		}
+		return g.Items[0]
+	}
+	switch s := v.(type) {
+	case []any:
+		if len(s) == 0 {
+			return nil
+		}
+		return s[0]
+	case []int:
+		if len(s) == 0 {
+			return 0
+		}
+		return s[0]
+	case []float64:
+		if len(s) == 0 {
+			return 0.0
+		}
+		return s[0]
+	case []string:
+		if len(s) == 0 {
+			return ""
+		}
+		return s[0]
+	case []bool:
+		if len(s) == 0 {
+			return false
+		}
+		return s[0]
+	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Slice && rv.Len() > 0 {
+			return rv.Index(0).Interface()
+		}
+		if rv.Kind() == reflect.Array && rv.Len() > 0 {
+			return rv.Index(0).Interface()
+		}
+	}
+	return nil
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}

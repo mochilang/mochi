@@ -1,0 +1,216 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q84_sample() {
+	expect((result == 84))
+}
+
+type CustomersItem struct {
+	Id    int    `json:"id"`
+	City  string `json:"city"`
+	Cdemo int    `json:"cdemo"`
+}
+
+var customers []CustomersItem
+
+type Customer_demographicsItem struct {
+	Cd_demo_sk int `json:"cd_demo_sk"`
+}
+
+var customer_demographics []Customer_demographicsItem
+
+type Household_demographicsItem struct {
+	Hd_demo_sk     int `json:"hd_demo_sk"`
+	Income_band_sk int `json:"income_band_sk"`
+}
+
+var household_demographics []Household_demographicsItem
+
+type Income_bandItem struct {
+	Ib_income_band_sk int `json:"ib_income_band_sk"`
+	Ib_lower_bound    int `json:"ib_lower_bound"`
+	Ib_upper_bound    int `json:"ib_upper_bound"`
+}
+
+var income_band []Income_bandItem
+
+type Customer_addressItem struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_city       string `json:"ca_city"`
+}
+
+var customer_address []Customer_addressItem
+
+type Store_returnsItem struct {
+	Sr_cdemo_sk int `json:"sr_cdemo_sk"`
+}
+
+var store_returns []Store_returnsItem
+var result int
+
+func main() {
+	failures := 0
+	customers = _cast[[]CustomersItem]([]CustomersItem{CustomersItem{
+		Id:    1,
+		City:  "A",
+		Cdemo: 1,
+	}, CustomersItem{
+		Id:    2,
+		City:  "A",
+		Cdemo: 2,
+	}, CustomersItem{
+		Id:    3,
+		City:  "B",
+		Cdemo: 1,
+	}})
+	customer_demographics = _cast[[]Customer_demographicsItem]([]Customer_demographicsItem{Customer_demographicsItem{Cd_demo_sk: 1}, Customer_demographicsItem{Cd_demo_sk: 2}})
+	household_demographics = _cast[[]Household_demographicsItem]([]Household_demographicsItem{Household_demographicsItem{
+		Hd_demo_sk:     1,
+		Income_band_sk: 1,
+	}, Household_demographicsItem{
+		Hd_demo_sk:     2,
+		Income_band_sk: 2,
+	}})
+	income_band = _cast[[]Income_bandItem]([]Income_bandItem{Income_bandItem{
+		Ib_income_band_sk: 1,
+		Ib_lower_bound:    0,
+		Ib_upper_bound:    50000,
+	}, Income_bandItem{
+		Ib_income_band_sk: 2,
+		Ib_lower_bound:    50001,
+		Ib_upper_bound:    100000,
+	}})
+	customer_address = _cast[[]Customer_addressItem]([]Customer_addressItem{Customer_addressItem{
+		Ca_address_sk: 1,
+		Ca_city:       "A",
+	}, Customer_addressItem{
+		Ca_address_sk: 2,
+		Ca_city:       "B",
+	}})
+	store_returns = _cast[[]Store_returnsItem]([]Store_returnsItem{
+		Store_returnsItem{Sr_cdemo_sk: 1},
+		Store_returnsItem{Sr_cdemo_sk: 1},
+		Store_returnsItem{Sr_cdemo_sk: 2},
+		Store_returnsItem{Sr_cdemo_sk: 1},
+	})
+	result = (80 + len(store_returns))
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q84 sample")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q84_sample()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}

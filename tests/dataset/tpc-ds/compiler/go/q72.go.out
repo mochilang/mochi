@@ -1,0 +1,408 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q72_simplified() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"i_item_desc":      "ItemA",
+		"w_warehouse_name": "Main",
+		"d_week_seq":       10,
+		"no_promo":         1,
+		"promo":            0,
+		"total_cnt":        1,
+	}}))
+}
+
+type Catalog_salesItem struct {
+	Cs_item_sk       int `json:"cs_item_sk"`
+	Cs_order_number  int `json:"cs_order_number"`
+	Cs_quantity      int `json:"cs_quantity"`
+	Cs_sold_date_sk  int `json:"cs_sold_date_sk"`
+	Cs_ship_date_sk  int `json:"cs_ship_date_sk"`
+	Cs_bill_cdemo_sk int `json:"cs_bill_cdemo_sk"`
+	Cs_bill_hdemo_sk int `json:"cs_bill_hdemo_sk"`
+	Cs_promo_sk      any `json:"cs_promo_sk"`
+}
+
+var catalog_sales []Catalog_salesItem
+
+type InventoryItem struct {
+	Inv_item_sk          int `json:"inv_item_sk"`
+	Inv_warehouse_sk     int `json:"inv_warehouse_sk"`
+	Inv_date_sk          int `json:"inv_date_sk"`
+	Inv_quantity_on_hand int `json:"inv_quantity_on_hand"`
+}
+
+var inventory []InventoryItem
+
+type WarehouseItem struct {
+	W_warehouse_sk   int    `json:"w_warehouse_sk"`
+	W_warehouse_name string `json:"w_warehouse_name"`
+}
+
+var warehouse []WarehouseItem
+
+type ItemItem struct {
+	I_item_sk   int    `json:"i_item_sk"`
+	I_item_desc string `json:"i_item_desc"`
+}
+
+var item []ItemItem
+
+type Customer_demographicsItem struct {
+	Cd_demo_sk        int    `json:"cd_demo_sk"`
+	Cd_marital_status string `json:"cd_marital_status"`
+}
+
+var customer_demographics []Customer_demographicsItem
+
+type Household_demographicsItem struct {
+	Hd_demo_sk       int    `json:"hd_demo_sk"`
+	Hd_buy_potential string `json:"hd_buy_potential"`
+}
+
+var household_demographics []Household_demographicsItem
+
+type Date_dimItem struct {
+	D_date_sk  int `json:"d_date_sk"`
+	D_week_seq int `json:"d_week_seq"`
+	D_date     int `json:"d_date"`
+	D_year     int `json:"d_year"`
+}
+
+var date_dim []Date_dimItem
+var result []map[string]any
+
+func main() {
+	failures := 0
+	catalog_sales = _cast[[]Catalog_salesItem]([]Catalog_salesItem{Catalog_salesItem{
+		Cs_item_sk:       1,
+		Cs_order_number:  1,
+		Cs_quantity:      1,
+		Cs_sold_date_sk:  1,
+		Cs_ship_date_sk:  3,
+		Cs_bill_cdemo_sk: 1,
+		Cs_bill_hdemo_sk: 1,
+		Cs_promo_sk:      nil,
+	}})
+	inventory = _cast[[]InventoryItem]([]InventoryItem{InventoryItem{
+		Inv_item_sk:          1,
+		Inv_warehouse_sk:     1,
+		Inv_date_sk:          2,
+		Inv_quantity_on_hand: 0,
+	}})
+	warehouse = _cast[[]WarehouseItem]([]WarehouseItem{WarehouseItem{
+		W_warehouse_sk:   1,
+		W_warehouse_name: "Main",
+	}})
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
+		I_item_sk:   1,
+		I_item_desc: "ItemA",
+	}})
+	customer_demographics = _cast[[]Customer_demographicsItem]([]Customer_demographicsItem{Customer_demographicsItem{
+		Cd_demo_sk:        1,
+		Cd_marital_status: "M",
+	}})
+	household_demographics = _cast[[]Household_demographicsItem]([]Household_demographicsItem{Household_demographicsItem{
+		Hd_demo_sk:       1,
+		Hd_buy_potential: "5001-10000",
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk:  1,
+		D_week_seq: 10,
+		D_date:     1,
+		D_year:     2000,
+	}, Date_dimItem{
+		D_date_sk:  2,
+		D_week_seq: 10,
+		D_date:     1,
+		D_year:     2000,
+	}, Date_dimItem{
+		D_date_sk:  3,
+		D_week_seq: 10,
+		D_date:     7,
+		D_year:     2000,
+	}})
+	result = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, cs := range catalog_sales {
+			for _, inv := range inventory {
+				if !(inv.Inv_item_sk == cs.Cs_item_sk) {
+					continue
+				}
+				for _, w := range warehouse {
+					if !(w.W_warehouse_sk == inv.Inv_warehouse_sk) {
+						continue
+					}
+					for _, i := range item {
+						if !(i.I_item_sk == cs.Cs_item_sk) {
+							continue
+						}
+						for _, cd := range customer_demographics {
+							if !(cd.Cd_demo_sk == cs.Cs_bill_cdemo_sk) {
+								continue
+							}
+							for _, hd := range household_demographics {
+								if !(hd.Hd_demo_sk == cs.Cs_bill_hdemo_sk) {
+									continue
+								}
+								for _, d1 := range date_dim {
+									if !(d1.D_date_sk == cs.Cs_sold_date_sk) {
+										continue
+									}
+									for _, d2 := range date_dim {
+										if !(d2.D_date_sk == inv.Inv_date_sk) {
+											continue
+										}
+										for _, d3 := range date_dim {
+											if !(d3.D_date_sk == cs.Cs_ship_date_sk) {
+												continue
+											}
+											if (((((d1.D_week_seq == d2.D_week_seq) && (inv.Inv_quantity_on_hand < cs.Cs_quantity)) && (d3.D_date > (d1.D_date + 5))) && (hd.Hd_buy_potential == "5001-10000")) && (d1.D_year == 2000)) && (cd.Cd_marital_status == "M") {
+												key := map[string]any{
+													"item_desc": i.I_item_desc,
+													"warehouse": w.W_warehouse_name,
+													"week_seq":  d1.D_week_seq,
+												}
+												ks := fmt.Sprint(key)
+												g, ok := groups[ks]
+												if !ok {
+													g = &data.Group{Key: key}
+													groups[ks] = g
+													order = append(order, ks)
+												}
+												g.Items = append(g.Items, cs)
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"i_item_desc":      _cast[map[string]any](g.Key)["item_desc"],
+				"w_warehouse_name": _cast[map[string]any](g.Key)["warehouse"],
+				"d_week_seq":       _cast[map[string]any](g.Key)["week_seq"],
+				"no_promo": _count(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if _equal(_cast[map[string]any](x)["cs_promo_sk"], nil) {
+							if _equal(_cast[map[string]any](x)["cs_promo_sk"], nil) {
+								_res = append(_res, x)
+							}
+						}
+					}
+					return _res
+				}()),
+				"promo": _count(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if !_equal(_cast[map[string]any](x)["cs_promo_sk"], nil) {
+							if !_equal(_cast[map[string]any](x)["cs_promo_sk"], nil) {
+								_res = append(_res, x)
+							}
+						}
+					}
+					return _res
+				}()),
+				"total_cnt": _count(g),
+			})
+		}
+		return _res
+	}()
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q72 simplified")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q72_simplified()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}

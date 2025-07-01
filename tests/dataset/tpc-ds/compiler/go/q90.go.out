@@ -1,0 +1,287 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+type WebSale struct {
+	Ws_sold_time_sk  int `json:"ws_sold_time_sk"`
+	Ws_ship_hdemo_sk int `json:"ws_ship_hdemo_sk"`
+	Ws_web_page_sk   int `json:"ws_web_page_sk"`
+}
+
+func test_TPCDS_Q90_ratio() {
+	expect((result == 2.0))
+}
+
+type Web_salesItem struct {
+	Ws_sold_time_sk  int `json:"ws_sold_time_sk"`
+	Ws_ship_hdemo_sk int `json:"ws_ship_hdemo_sk"`
+	Ws_web_page_sk   int `json:"ws_web_page_sk"`
+}
+
+var web_sales []Web_salesItem
+
+type Household_demographicsItem struct {
+	Hd_demo_sk   int `json:"hd_demo_sk"`
+	Hd_dep_count int `json:"hd_dep_count"`
+}
+
+var household_demographics []Household_demographicsItem
+
+type Time_dimItem struct {
+	T_time_sk int `json:"t_time_sk"`
+	T_hour    int `json:"t_hour"`
+}
+
+var time_dim []Time_dimItem
+
+type Web_pageItem struct {
+	Wp_web_page_sk int `json:"wp_web_page_sk"`
+	Wp_char_count  int `json:"wp_char_count"`
+}
+
+var web_page []Web_pageItem
+var amc int
+var pmc int
+var result float64
+
+func main() {
+	failures := 0
+	web_sales = _cast[[]Web_salesItem]([]Web_salesItem{Web_salesItem{
+		Ws_sold_time_sk:  1,
+		Ws_ship_hdemo_sk: 1,
+		Ws_web_page_sk:   10,
+	}, Web_salesItem{
+		Ws_sold_time_sk:  1,
+		Ws_ship_hdemo_sk: 1,
+		Ws_web_page_sk:   10,
+	}, Web_salesItem{
+		Ws_sold_time_sk:  2,
+		Ws_ship_hdemo_sk: 1,
+		Ws_web_page_sk:   10,
+	}})
+	household_demographics = _cast[[]Household_demographicsItem]([]Household_demographicsItem{Household_demographicsItem{
+		Hd_demo_sk:   1,
+		Hd_dep_count: 2,
+	}})
+	time_dim = _cast[[]Time_dimItem]([]Time_dimItem{Time_dimItem{
+		T_time_sk: 1,
+		T_hour:    7,
+	}, Time_dimItem{
+		T_time_sk: 2,
+		T_hour:    14,
+	}})
+	web_page = _cast[[]Web_pageItem]([]Web_pageItem{Web_pageItem{
+		Wp_web_page_sk: 10,
+		Wp_char_count:  5100,
+	}})
+	amc = _count(_toAnySlice(func() []Web_salesItem {
+		_res := []Web_salesItem{}
+		for _, ws := range web_sales {
+			for _, hd := range household_demographics {
+				if !(ws.Ws_ship_hdemo_sk == hd.Hd_demo_sk) {
+					continue
+				}
+				for _, t := range time_dim {
+					if !(ws.Ws_sold_time_sk == t.T_time_sk) {
+						continue
+					}
+					for _, wp := range web_page {
+						if !(ws.Ws_web_page_sk == wp.Wp_web_page_sk) {
+							continue
+						}
+						if ((((t.T_hour >= 7) && (t.T_hour <= 8)) && (hd.Hd_dep_count == 2)) && (wp.Wp_char_count >= 5000)) && (wp.Wp_char_count <= 5200) {
+							if ((((t.T_hour >= 7) && (t.T_hour <= 8)) && (hd.Hd_dep_count == 2)) && (wp.Wp_char_count >= 5000)) && (wp.Wp_char_count <= 5200) {
+								_res = append(_res, ws)
+							}
+						}
+					}
+				}
+			}
+		}
+		return _res
+	}()))
+	pmc = _count(_toAnySlice(func() []Web_salesItem {
+		_res := []Web_salesItem{}
+		for _, ws := range web_sales {
+			for _, hd := range household_demographics {
+				if !(ws.Ws_ship_hdemo_sk == hd.Hd_demo_sk) {
+					continue
+				}
+				for _, t := range time_dim {
+					if !(ws.Ws_sold_time_sk == t.T_time_sk) {
+						continue
+					}
+					for _, wp := range web_page {
+						if !(ws.Ws_web_page_sk == wp.Wp_web_page_sk) {
+							continue
+						}
+						if ((((t.T_hour >= 14) && (t.T_hour <= 15)) && (hd.Hd_dep_count == 2)) && (wp.Wp_char_count >= 5000)) && (wp.Wp_char_count <= 5200) {
+							if ((((t.T_hour >= 14) && (t.T_hour <= 15)) && (hd.Hd_dep_count == 2)) && (wp.Wp_char_count >= 5000)) && (wp.Wp_char_count <= 5200) {
+								_res = append(_res, ws)
+							}
+						}
+					}
+				}
+			}
+		}
+		return _res
+	}()))
+	result = ((_cast[float64](amc)) / (_cast[float64](pmc)))
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q90 ratio")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q90_ratio()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}

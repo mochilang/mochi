@@ -1,0 +1,238 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q80_sample() {
+	expect((total_profit == 80.0))
+}
+
+type Store_salesItem struct {
+	Price float64 `json:"price"`
+	Ret   float64 `json:"ret"`
+}
+
+var store_sales []Store_salesItem
+
+type Catalog_salesItem struct {
+	Price float64 `json:"price"`
+	Ret   float64 `json:"ret"`
+}
+
+var catalog_sales []Catalog_salesItem
+
+type Web_salesItem struct {
+	Price float64 `json:"price"`
+	Ret   float64 `json:"ret"`
+}
+
+var web_sales []Web_salesItem
+var total_profit float64
+
+func main() {
+	failures := 0
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Price: 20.0,
+		Ret:   5.0,
+	}, Store_salesItem{
+		Price: 10.0,
+		Ret:   2.0,
+	}, Store_salesItem{
+		Price: 5.0,
+		Ret:   0.0,
+	}})
+	catalog_sales = _cast[[]Catalog_salesItem]([]Catalog_salesItem{Catalog_salesItem{
+		Price: 15.0,
+		Ret:   3.0,
+	}, Catalog_salesItem{
+		Price: 8.0,
+		Ret:   1.0,
+	}})
+	web_sales = _cast[[]Web_salesItem]([]Web_salesItem{Web_salesItem{
+		Price: 25.0,
+		Ret:   5.0,
+	}, Web_salesItem{
+		Price: 15.0,
+		Ret:   8.0,
+	}, Web_salesItem{
+		Price: 8.0,
+		Ret:   2.0,
+	}})
+	total_profit = ((_sum(func() []float64 {
+		_res := []float64{}
+		for _, s := range store_sales {
+			_res = append(_res, (s.Price - s.Ret))
+		}
+		return _res
+	}()) + _sum(func() []float64 {
+		_res := []float64{}
+		for _, c := range catalog_sales {
+			_res = append(_res, (c.Price - c.Ret))
+		}
+		return _res
+	}())) + _sum(func() []float64 {
+		_res := []float64{}
+		for _, w := range web_sales {
+			_res = append(_res, (w.Price - w.Ret))
+		}
+		return _res
+	}()))
+	func() { b, _ := json.Marshal(total_profit); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q80 sample")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q80_sample()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _sum(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string, []bool:
+			panic("sum() expects numbers")
+		default:
+			panic("sum() expects list or group")
+		}
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("sum() expects numbers")
+		}
+	}
+	return sum
+}

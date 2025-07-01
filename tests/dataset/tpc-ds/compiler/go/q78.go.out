@@ -1,0 +1,511 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"sort"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q78_simplified() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"ss_sold_year":              1998,
+		"ss_item_sk":                1,
+		"ss_customer_sk":            1,
+		"ratio":                     1.25,
+		"store_qty":                 10,
+		"store_wholesale_cost":      50.0,
+		"store_sales_price":         100.0,
+		"other_chan_qty":            8,
+		"other_chan_wholesale_cost": 40.0,
+		"other_chan_sales_price":    80.0,
+	}}))
+}
+
+type SsItem struct {
+	Ss_sold_year   int     `json:"ss_sold_year"`
+	Ss_item_sk     int     `json:"ss_item_sk"`
+	Ss_customer_sk int     `json:"ss_customer_sk"`
+	Ss_qty         int     `json:"ss_qty"`
+	Ss_wc          float64 `json:"ss_wc"`
+	Ss_sp          float64 `json:"ss_sp"`
+}
+
+var ss []SsItem
+
+type WsItem struct {
+	Ws_sold_year   int     `json:"ws_sold_year"`
+	Ws_item_sk     int     `json:"ws_item_sk"`
+	Ws_customer_sk int     `json:"ws_customer_sk"`
+	Ws_qty         int     `json:"ws_qty"`
+	Ws_wc          float64 `json:"ws_wc"`
+	Ws_sp          float64 `json:"ws_sp"`
+}
+
+var ws []WsItem
+
+type CsItem struct {
+	Cs_sold_year   int     `json:"cs_sold_year"`
+	Cs_item_sk     int     `json:"cs_item_sk"`
+	Cs_customer_sk int     `json:"cs_customer_sk"`
+	Cs_qty         int     `json:"cs_qty"`
+	Cs_wc          float64 `json:"cs_wc"`
+	Cs_sp          float64 `json:"cs_sp"`
+}
+
+var cs []CsItem
+var result []map[string]any
+
+func main() {
+	failures := 0
+	ss = _cast[[]SsItem]([]SsItem{SsItem{
+		Ss_sold_year:   1998,
+		Ss_item_sk:     1,
+		Ss_customer_sk: 1,
+		Ss_qty:         10,
+		Ss_wc:          50.0,
+		Ss_sp:          100.0,
+	}})
+	ws = _cast[[]WsItem]([]WsItem{WsItem{
+		Ws_sold_year:   1998,
+		Ws_item_sk:     1,
+		Ws_customer_sk: 1,
+		Ws_qty:         5,
+		Ws_wc:          25.0,
+		Ws_sp:          50.0,
+	}})
+	cs = _cast[[]CsItem]([]CsItem{CsItem{
+		Cs_sold_year:   1998,
+		Cs_item_sk:     1,
+		Cs_customer_sk: 1,
+		Cs_qty:         3,
+		Cs_wc:          15.0,
+		Cs_sp:          30.0,
+	}})
+	result = func() []map[string]any {
+		src := _toAnySlice(ss)
+		resAny := _query(src, []_joinSpec{
+			{items: _toAnySlice(ws), on: func(_a ...any) bool {
+				s := _cast[SsItem](_a[0])
+				_ = s
+				w := _cast[WsItem](_a[1])
+				_ = w
+				return (((w.Ws_sold_year == s.Ss_sold_year) && (w.Ws_item_sk == s.Ss_item_sk)) && (w.Ws_customer_sk == s.Ss_customer_sk))
+			}, left: true},
+			{items: _toAnySlice(cs), on: func(_a ...any) bool {
+				s := _cast[SsItem](_a[0])
+				_ = s
+				w := _cast[WsItem](_a[1])
+				_ = w
+				c := _cast[CsItem](_a[2])
+				_ = c
+				return (((c.Cs_sold_year == s.Ss_sold_year) && (c.Cs_item_sk == s.Ss_item_sk)) && (c.Cs_customer_sk == s.Ss_customer_sk))
+			}, left: true},
+		}, _queryOpts{selectFn: func(_a ...any) any {
+			s := _cast[SsItem](_a[0])
+			_ = s
+			w := _cast[WsItem](_a[1])
+			_ = w
+			c := _cast[CsItem](_a[2])
+			_ = c
+			return map[string]any{
+				"ss_sold_year":   s.Ss_sold_year,
+				"ss_item_sk":     s.Ss_item_sk,
+				"ss_customer_sk": s.Ss_customer_sk,
+				"ratio": (s.Ss_qty / ((func() int {
+					if _equal(w, nil) {
+						return 0
+					} else {
+						return w.Ws_qty
+					}
+				}()) + (func() int {
+					if _equal(c, nil) {
+						return 0
+					} else {
+						return c.Cs_qty
+					}
+				}()))),
+				"store_qty":            s.Ss_qty,
+				"store_wholesale_cost": s.Ss_wc,
+				"store_sales_price":    s.Ss_sp,
+				"other_chan_qty": ((func() int {
+					if _equal(w, nil) {
+						return 0
+					} else {
+						return w.Ws_qty
+					}
+				}()) + (func() int {
+					if _equal(c, nil) {
+						return 0
+					} else {
+						return c.Cs_qty
+					}
+				}())),
+				"other_chan_wholesale_cost": ((func() float64 {
+					if _equal(w, nil) {
+						return 0.0
+					} else {
+						return w.Ws_wc
+					}
+				}()) + (func() float64 {
+					if _equal(c, nil) {
+						return 0.0
+					} else {
+						return c.Cs_wc
+					}
+				}())),
+				"other_chan_sales_price": ((func() float64 {
+					if _equal(w, nil) {
+						return 0.0
+					} else {
+						return w.Ws_sp
+					}
+				}()) + (func() float64 {
+					if _equal(c, nil) {
+						return 0.0
+					} else {
+						return c.Cs_sp
+					}
+				}())),
+			}
+		}, where: func(_a ...any) bool {
+			s := _cast[SsItem](_a[0])
+			_ = s
+			w := _cast[WsItem](_a[1])
+			_ = w
+			c := _cast[CsItem](_a[2])
+			_ = c
+			return ((((func() int {
+				if _equal(w, nil) {
+					return 0
+				} else {
+					return w.Ws_qty
+				}
+			}()) > 0) || ((func() int {
+				if _equal(c, nil) {
+					return 0
+				} else {
+					return c.Cs_qty
+				}
+			}()) > 0)) && (s.Ss_sold_year == 1998))
+		}, skip: -1, take: -1})
+		out := make([]map[string]any, len(resAny))
+		for i, v := range resAny {
+			out[i] = _cast[map[string]any](v)
+		}
+		return out
+	}()
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q78 simplified")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q78_simplified()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+type _joinSpec struct {
+	items []any
+	on    func(...any) bool
+	left  bool
+	right bool
+}
+type _queryOpts struct {
+	selectFn func(...any) any
+	where    func(...any) bool
+	sortKey  func(...any) any
+	skip     int
+	take     int
+}
+
+func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
+	items := make([][]any, len(src))
+	for i, v := range src {
+		items[i] = []any{v}
+	}
+	for _, j := range joins {
+		joined := [][]any{}
+		if j.right && j.left {
+			matched := make([]bool, len(j.items))
+			for _, left := range items {
+				m := false
+				for ri, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					matched[ri] = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+			for ri, right := range j.items {
+				if !matched[ri] {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else if j.right {
+			for _, right := range j.items {
+				m := false
+				for _, left := range items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else {
+			for _, left := range items {
+				m := false
+				for _, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if j.left && !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+		}
+		items = joined
+	}
+	if opts.where != nil {
+		filtered := [][]any{}
+		for _, r := range items {
+			if opts.where(r...) {
+				filtered = append(filtered, r)
+			}
+		}
+		items = filtered
+	}
+	if opts.sortKey != nil {
+		type pair struct {
+			item []any
+			key  any
+		}
+		pairs := make([]pair, len(items))
+		for i, it := range items {
+			pairs[i] = pair{it, opts.sortKey(it...)}
+		}
+		sort.Slice(pairs, func(i, j int) bool {
+			a, b := pairs[i].key, pairs[j].key
+			switch av := a.(type) {
+			case int:
+				switch bv := b.(type) {
+				case int:
+					return av < bv
+				case float64:
+					return float64(av) < bv
+				}
+			case float64:
+				switch bv := b.(type) {
+				case int:
+					return av < float64(bv)
+				case float64:
+					return av < bv
+				}
+			case string:
+				bs, _ := b.(string)
+				return av < bs
+			}
+			return fmt.Sprint(a) < fmt.Sprint(b)
+		})
+		for i, p := range pairs {
+			items[i] = p.item
+		}
+	}
+	if opts.skip >= 0 {
+		if opts.skip < len(items) {
+			items = items[opts.skip:]
+		} else {
+			items = [][]any{}
+		}
+	}
+	if opts.take >= 0 {
+		if opts.take < len(items) {
+			items = items[:opts.take]
+		}
+	}
+	res := make([]any, len(items))
+	for i, r := range items {
+		res[i] = opts.selectFn(r...)
+	}
+	return res
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}

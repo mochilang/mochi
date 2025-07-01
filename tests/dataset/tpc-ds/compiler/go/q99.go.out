@@ -1,0 +1,433 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+type CatalogSale struct {
+	Cs_ship_date_sk   int `json:"cs_ship_date_sk"`
+	Cs_sold_date_sk   int `json:"cs_sold_date_sk"`
+	Cs_warehouse_sk   int `json:"cs_warehouse_sk"`
+	Cs_ship_mode_sk   int `json:"cs_ship_mode_sk"`
+	Cs_call_center_sk int `json:"cs_call_center_sk"`
+}
+
+type Warehouse struct {
+	W_warehouse_sk   int    `json:"w_warehouse_sk"`
+	W_warehouse_name string `json:"w_warehouse_name"`
+}
+
+type ShipMode struct {
+	Sm_ship_mode_sk int    `json:"sm_ship_mode_sk"`
+	Sm_type         string `json:"sm_type"`
+}
+
+type CallCenter struct {
+	Cc_call_center_sk int    `json:"cc_call_center_sk"`
+	Cc_name           string `json:"cc_name"`
+}
+
+func test_TPCDS_Q99_buckets() {
+	expect(_equal(grouped, []map[string]any{map[string]any{
+		"warehouse": "Warehouse1",
+		"sm_type":   "EXP",
+		"cc_name":   "CC1",
+		"d30":       1,
+		"d60":       1,
+		"d90":       1,
+		"d120":      1,
+		"dmore":     1,
+	}}))
+}
+
+type Catalog_salesItem struct {
+	Cs_ship_date_sk   int `json:"cs_ship_date_sk"`
+	Cs_sold_date_sk   int `json:"cs_sold_date_sk"`
+	Cs_warehouse_sk   int `json:"cs_warehouse_sk"`
+	Cs_ship_mode_sk   int `json:"cs_ship_mode_sk"`
+	Cs_call_center_sk int `json:"cs_call_center_sk"`
+}
+
+var catalog_sales []Catalog_salesItem
+
+type WarehouseItem struct {
+	W_warehouse_sk   int    `json:"w_warehouse_sk"`
+	W_warehouse_name string `json:"w_warehouse_name"`
+}
+
+var warehouse []WarehouseItem
+
+type Ship_modeItem struct {
+	Sm_ship_mode_sk int    `json:"sm_ship_mode_sk"`
+	Sm_type         string `json:"sm_type"`
+}
+
+var ship_mode []Ship_modeItem
+
+type Call_centerItem struct {
+	Cc_call_center_sk int    `json:"cc_call_center_sk"`
+	Cc_name           string `json:"cc_name"`
+}
+
+var call_center []Call_centerItem
+var grouped []map[string]any
+
+func main() {
+	failures := 0
+	catalog_sales = _cast[[]Catalog_salesItem]([]Catalog_salesItem{
+		Catalog_salesItem{
+			Cs_ship_date_sk:   31,
+			Cs_sold_date_sk:   1,
+			Cs_warehouse_sk:   1,
+			Cs_ship_mode_sk:   1,
+			Cs_call_center_sk: 1,
+		},
+		Catalog_salesItem{
+			Cs_ship_date_sk:   51,
+			Cs_sold_date_sk:   1,
+			Cs_warehouse_sk:   1,
+			Cs_ship_mode_sk:   1,
+			Cs_call_center_sk: 1,
+		},
+		Catalog_salesItem{
+			Cs_ship_date_sk:   71,
+			Cs_sold_date_sk:   1,
+			Cs_warehouse_sk:   1,
+			Cs_ship_mode_sk:   1,
+			Cs_call_center_sk: 1,
+		},
+		Catalog_salesItem{
+			Cs_ship_date_sk:   101,
+			Cs_sold_date_sk:   1,
+			Cs_warehouse_sk:   1,
+			Cs_ship_mode_sk:   1,
+			Cs_call_center_sk: 1,
+		},
+		Catalog_salesItem{
+			Cs_ship_date_sk:   131,
+			Cs_sold_date_sk:   1,
+			Cs_warehouse_sk:   1,
+			Cs_ship_mode_sk:   1,
+			Cs_call_center_sk: 1,
+		},
+	})
+	warehouse = _cast[[]WarehouseItem]([]WarehouseItem{WarehouseItem{
+		W_warehouse_sk:   1,
+		W_warehouse_name: "Warehouse1",
+	}})
+	ship_mode = _cast[[]Ship_modeItem]([]Ship_modeItem{Ship_modeItem{
+		Sm_ship_mode_sk: 1,
+		Sm_type:         "EXP",
+	}})
+	call_center = _cast[[]Call_centerItem]([]Call_centerItem{Call_centerItem{
+		Cc_call_center_sk: 1,
+		Cc_name:           "CC1",
+	}})
+	grouped = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, cs := range catalog_sales {
+			for _, w := range warehouse {
+				if !(cs.Cs_warehouse_sk == w.W_warehouse_sk) {
+					continue
+				}
+				for _, sm := range ship_mode {
+					if !(cs.Cs_ship_mode_sk == sm.Sm_ship_mode_sk) {
+						continue
+					}
+					for _, cc := range call_center {
+						if !(cs.Cs_call_center_sk == cc.Cc_call_center_sk) {
+							continue
+						}
+						key := map[string]string{
+							"warehouse": _sliceString(w.W_warehouse_name, 0, 20),
+							"sm_type":   sm.Sm_type,
+							"cc_name":   cc.Cc_name,
+						}
+						ks := fmt.Sprint(key)
+						g, ok := groups[ks]
+						if !ok {
+							g = &data.Group{Key: key}
+							groups[ks] = g
+							order = append(order, ks)
+						}
+						g.Items = append(g.Items, cs)
+					}
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"warehouse": _cast[map[string]any](g.Key)["warehouse"],
+				"sm_type":   _cast[map[string]any](g.Key)["sm_type"],
+				"cc_name":   _cast[map[string]any](g.Key)["cc_name"],
+				"d30": _count(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if (_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) <= 30 {
+							if (_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) <= 30 {
+								_res = append(_res, x)
+							}
+						}
+					}
+					return _res
+				}()),
+				"d60": _count(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) > 30) && ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) <= 60) {
+							if ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) > 30) && ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) <= 60) {
+								_res = append(_res, x)
+							}
+						}
+					}
+					return _res
+				}()),
+				"d90": _count(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) > 60) && ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) <= 90) {
+							if ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) > 60) && ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) <= 90) {
+								_res = append(_res, x)
+							}
+						}
+					}
+					return _res
+				}()),
+				"d120": _count(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) > 90) && ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) <= 120) {
+							if ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) > 90) && ((_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) <= 120) {
+								_res = append(_res, x)
+							}
+						}
+					}
+					return _res
+				}()),
+				"dmore": _count(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						if (_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) > 120 {
+							if (_cast[float64](_cast[map[string]any](x)["cs_ship_date_sk"]) - _cast[float64](_cast[map[string]any](x)["cs_sold_date_sk"])) > 120 {
+								_res = append(_res, x)
+							}
+						}
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
+	func() { b, _ := json.Marshal(grouped); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q99 buckets")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q99_buckets()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+func _sliceString(s string, i, j int) string {
+	start := i
+	end := j
+	n := len([]rune(s))
+	if start < 0 {
+		start += n
+	}
+	if end < 0 {
+		end += n
+	}
+	if start < 0 {
+		start = 0
+	}
+	if end > n {
+		end = n
+	}
+	if end < start {
+		end = start
+	}
+	return string([]rune(s)[start:end])
+}

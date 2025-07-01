@@ -1,0 +1,185 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q82_sample() {
+	expect((result == 82))
+}
+
+type ItemItem struct {
+	Id int `json:"id"`
+}
+
+var item []ItemItem
+
+type InventoryItem struct {
+	Item int `json:"item"`
+	Qty  int `json:"qty"`
+}
+
+var inventory []InventoryItem
+
+type Store_salesItem struct {
+	Item int `json:"item"`
+}
+
+var store_sales []Store_salesItem
+var result int
+
+func main() {
+	failures := 0
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{Id: 1}, ItemItem{Id: 2}, ItemItem{Id: 3}})
+	inventory = _cast[[]InventoryItem]([]InventoryItem{
+		InventoryItem{
+			Item: 1,
+			Qty:  20,
+		},
+		InventoryItem{
+			Item: 1,
+			Qty:  22,
+		},
+		InventoryItem{
+			Item: 1,
+			Qty:  5,
+		},
+		InventoryItem{
+			Item: 2,
+			Qty:  30,
+		},
+		InventoryItem{
+			Item: 2,
+			Qty:  5,
+		},
+		InventoryItem{
+			Item: 3,
+			Qty:  10,
+		},
+	})
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{Item: 1}, Store_salesItem{Item: 2}})
+	result = 0
+	for _, inv := range inventory {
+		for _, s := range store_sales {
+			if inv.Item == s.Item {
+				result = (result + inv.Qty)
+			}
+		}
+	}
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q82 sample")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q82_sample()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}

@@ -435,6 +435,16 @@ const (
 		"    return string(r)\n" +
 		"}\n"
 
+	helperLower = "func _lower(v any) string {\n" +
+		"    if s, ok := v.(string); ok { return strings.ToLower(s) }\n" +
+		"    return strings.ToLower(fmt.Sprint(v))\n" +
+		"}\n"
+
+	helperUpper = "func _upper(v any) string {\n" +
+		"    if s, ok := v.(string); ok { return strings.ToUpper(s) }\n" +
+		"    return strings.ToUpper(fmt.Sprint(v))\n" +
+		"}\n"
+
 	helperExcept = "func _except[T any](a, b []T) []T {\n" +
 		"    res := []T{}\n" +
 		"    for _, x := range a {\n" +
@@ -735,6 +745,8 @@ var helperMap = map[string]string{
 	"_concat":        helperConcat,
 	"_reverseSlice":  helperReverseSlice,
 	"_reverseString": helperReverseString,
+	"_lower":         helperLower,
+	"_upper":         helperUpper,
 	"_except":        helperExcept,
 	"_intersect":     helperIntersect,
 	"_cast":          helperCast,
@@ -757,6 +769,10 @@ func (c *Compiler) use(name string) {
 	if name == "_toMapSlice" {
 		c.imports["encoding/json"] = true
 		c.imports["reflect"] = true
+	}
+	if name == "_lower" || name == "_upper" {
+		c.imports["fmt"] = true
+		c.imports["strings"] = true
 	}
 }
 
