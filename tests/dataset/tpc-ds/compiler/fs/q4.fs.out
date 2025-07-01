@@ -1,0 +1,142 @@
+open System
+
+let customer_id = "customer_id"
+let customer_first_name = "customer_first_name"
+let customer_last_name = "customer_last_name"
+let customer_login = "customer_login"
+let dyear = "dyear"
+let year_total = "year_total"
+let sale_type = "sale_type"
+let id = "id"
+let first = "first"
+let last = "last"
+let login = "login"
+let year = "year"
+type _Group<'T>(key: obj) =
+  member val key = key with get, set
+  member val Items = System.Collections.Generic.List<'T>() with get
+  member this.size = this.Items.Count
+let _group_by (src: 'T list) (keyfn: 'T -> obj) : _Group<'T> list =
+  let groups = System.Collections.Generic.Dictionary<string,_Group<'T>>()
+  let order = System.Collections.Generic.List<string>()
+  for it in src do
+    let key = keyfn it
+    let ks = string key
+    let mutable g = Unchecked.defaultof<_Group<'T>>
+    if groups.TryGetValue(ks, &g) then ()
+    else
+      g <- _Group<'T>(key)
+      groups[ks] <- g
+      order.Add(ks)
+    g.Items.Add(it)
+  [ for ks in order -> groups[ks] ]
+let rec _to_json (v: obj) : string =
+  match v with
+  | null -> "null"
+  | :? string as s ->
+      "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
+  | :? bool
+  | :? int | :? int64
+  | :? double -> string v
+  | :? System.Collections.Generic.IDictionary<string,obj> as m ->
+      m
+      |> Seq.map (fun (KeyValue(k,v)) ->
+          "\"" + k.Replace("\"", "\\\"") + "\":" + _to_json v)
+      |> String.concat ","
+      |> fun s -> "{" + s + "}"
+  | :? System.Collections.IEnumerable as e ->
+      e
+      |> Seq.cast<obj>
+      |> Seq.map _to_json
+      |> String.concat ","
+      |> fun s -> "[" + s + "]"
+  | _ -> "\"" + v.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
+let _json (v: obj) : unit =
+  printfn "%s" (_to_json v)
+let _run_test (name: string) (f: unit -> unit) : bool =
+  printf "%s ... " name
+  try
+    f()
+    printfn "PASS"
+    true
+  with e ->
+    printfn "FAIL (%s)" e.Message
+    false
+let inline sum (xs: seq< ^T >) : ^T =
+  Seq.sum xs
+let inline avg (xs: seq< ^T >) : ^T =
+  Seq.average xs
+let inline _min (xs: seq< ^T >) : ^T when ^T : comparison =
+  Seq.min xs
+let inline _max (xs: seq< ^T >) : ^T when ^T : comparison =
+  Seq.max xs
+let count (xs: seq<'T>) : int =
+  Seq.length xs
+let _union_all (a: 'T[]) (b: 'T[]) : 'T[] =
+  Array.append a b
+
+let customer = [||]
+let store_sales = [||]
+let catalog_sales = [||]
+let web_sales = [||]
+let date_dim = [||]
+let year_total = _union_all _union_all ([| for g in _group_by [|
+    for c in customer do
+        for s in store_sales do
+            if (c.c_customer_sk = s.ss_customer_sk) then
+                for d in date_dim do
+                    if (s.ss_sold_date_sk = d.d_date_sk) then
+                        yield (c, s, d)
+|] (fun (c, s, d) -> Map.ofList [(id, c.c_customer_id); (first, c.c_first_name); (last, c.c_last_name); (login, c.c_login); (year, d.d_year)]) do let g = g yield Map.ofList [(customer_id, g.key.id); (customer_first_name, g.key.first); (customer_last_name, g.key.last); (customer_login, g.key.login); (dyear, g.key.year); (year_total, sum 
+    [|
+    for x in g do
+        yield ((((((x.ss_ext_list_price - x.ss_ext_wholesale_cost) - x.ss_ext_discount_amt)) + x.ss_ext_sales_price)) / 2)
+    |]); (sale_type, "s")] |]) ([| for g in _group_by [|
+    for c in customer do
+        for cs in catalog_sales do
+            if (c.c_customer_sk = cs.cs_bill_customer_sk) then
+                for d in date_dim do
+                    if (cs.cs_sold_date_sk = d.d_date_sk) then
+                        yield (c, cs, d)
+|] (fun (c, cs, d) -> Map.ofList [(id, c.c_customer_id); (first, c.c_first_name); (last, c.c_last_name); (login, c.c_login); (year, d.d_year)]) do let g = g yield Map.ofList [(customer_id, g.key.id); (customer_first_name, g.key.first); (customer_last_name, g.key.last); (customer_login, g.key.login); (dyear, g.key.year); (year_total, sum 
+    [|
+    for x in g do
+        yield ((((((x.cs_ext_list_price - x.cs_ext_wholesale_cost) - x.cs_ext_discount_amt)) + x.cs_ext_sales_price)) / 2)
+    |]); (sale_type, "c")] |]) ([| for g in _group_by [|
+    for c in customer do
+        for ws in web_sales do
+            if (c.c_customer_sk = ws.ws_bill_customer_sk) then
+                for d in date_dim do
+                    if (ws.ws_sold_date_sk = d.d_date_sk) then
+                        yield (c, ws, d)
+|] (fun (c, ws, d) -> Map.ofList [(id, c.c_customer_id); (first, c.c_first_name); (last, c.c_last_name); (login, c.c_login); (year, d.d_year)]) do let g = g yield Map.ofList [(customer_id, g.key.id); (customer_first_name, g.key.first); (customer_last_name, g.key.last); (customer_login, g.key.login); (dyear, g.key.year); (year_total, sum 
+    [|
+    for x in g do
+        yield ((((((x.ws_ext_list_price - x.ws_ext_wholesale_cost) - x.ws_ext_discount_amt)) + x.ws_ext_sales_price)) / 2)
+    |]); (sale_type, "w")] |])
+let result = 
+    [|
+    for s1 in year_total do
+        for s2 in year_total do
+            if (s2.customer_id = s1.customer_id) then
+                for c1 in year_total do
+                    if (c1.customer_id = s1.customer_id) then
+                        for c2 in year_total do
+                            if (c2.customer_id = s1.customer_id) then
+                                for w1 in year_total do
+                                    if (w1.customer_id = s1.customer_id) then
+                                        for w2 in year_total do
+                                            if (w2.customer_id = s1.customer_id) then
+                                                if (((((((((((((((((s1.sale_type = "s") && (c1.sale_type = "c")) && (w1.sale_type = "w")) && (s2.sale_type = "s")) && (c2.sale_type = "c")) && (w2.sale_type = "w")) && (s1.dyear = 2001)) && (s2.dyear = 2002)) && (c1.dyear = 2001)) && (c2.dyear = 2002)) && (w1.dyear = 2001)) && (w2.dyear = 2002)) && (s1.year_total > 0)) && (c1.year_total > 0)) && (w1.year_total > 0)) && (((if (c1.year_total > 0) then (c2.year_total / c1.year_total) else null)) > ((if (s1.year_total > 0) then (s2.year_total / s1.year_total) else null)))) && (((if (c1.year_total > 0) then (c2.year_total / c1.year_total) else null)) > ((if (w1.year_total > 0) then (w2.year_total / w1.year_total) else null)))) then
+                                                    yield ([|s2.customer_id; s2.customer_first_name; s2.customer_last_name; s2.customer_login|], Map.ofList [(customer_id, s2.customer_id); (customer_first_name, s2.customer_first_name); (customer_last_name, s2.customer_last_name); (customer_login, s2.customer_login)])
+    |]
+    |> Array.sortBy fst
+    |> Array.map snd
+ignore (_json result)
+let test_TPCDS_Q4_empty() =
+    if not ((result.Length = 0)) then failwith "expect failed"
+
+let mutable failures = 0
+if not (_run_test "TPCDS Q4 empty" test_TPCDS_Q4_empty) then failures <- failures + 1
+if failures > 0 then
+    printfn "\n[FAIL] %d test(s) failed." failures

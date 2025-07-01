@@ -884,6 +884,32 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	return buf.String(), nil
 }
 
+func (c *Compiler) compileIfExpr(ifst *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ifst.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ifst.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ifst.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ifst.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ifst.Else != nil {
+		elseExpr, err = c.compileExpr(ifst.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "()"
+	}
+	return fmt.Sprintf("(if %s then %s else %s)", cond, thenExpr, elseExpr), nil
+}
+
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	src, err := c.compileExpr(q.Source)
 	if err != nil {
@@ -916,10 +942,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		havingExpr := ""
+		if q.Group.Having != nil {
+			havingExpr, err = c.compileExpr(q.Group.Having)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		c.env = orig
 		c.use("_group_by")
 		c.use("_Group")
-		expr := fmt.Sprintf("_group_by %s (fun %s -> %s) |> List.map (fun %s -> %s)", src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name), valExpr)
+		expr := fmt.Sprintf("_group_by %s (fun %s -> %s)", src, sanitizeName(q.Var), keyExpr)
+		if havingExpr != "" {
+			expr += fmt.Sprintf(" |> List.filter (fun %s -> %s)", sanitizeName(q.Group.Name), havingExpr)
+		}
+		expr += fmt.Sprintf(" |> List.map (fun %s -> %s)", sanitizeName(q.Group.Name), valExpr)
 		return expr, nil
 	}
 	orig := c.env
@@ -1068,13 +1106,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 		}
+		havingExpr := ""
+		if q.Group.Having != nil {
+			havingExpr, err = c.compileExpr(q.Group.Having)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
 		c.env = orig
 		c.use("_group_by")
 		c.use("_Group")
 		groups := fmt.Sprintf("_group_by %s (fun %s -> %s)", groupRows, tuple, keyExpr)
-		expr := fmt.Sprintf("[| for g in %s do let %s = g yield %s |]", groups, sanitizeName(q.Group.Name), valExpr)
+		expr := fmt.Sprintf("[| for g in %s do let %s = g", groups, sanitizeName(q.Group.Name))
+		if havingExpr != "" {
+			expr += fmt.Sprintf(" if %s then", havingExpr)
+		}
 		if q.Sort != nil {
-			expr = fmt.Sprintf("[| for g in %s do let %s = g yield (%s, %s) |] |> Array.sortBy fst |> Array.map snd", groups, sanitizeName(q.Group.Name), sortExpr2, valExpr)
+			expr += fmt.Sprintf(" yield (%s, %s) |] |> Array.sortBy fst |> Array.map snd", sortExpr2, valExpr)
+		} else {
+			expr += fmt.Sprintf(" yield %s |]", valExpr)
 		}
 		if skipExpr != "" {
 			expr += fmt.Sprintf(" |> Array.skip %s", skipExpr)
@@ -1480,6 +1531,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "{ " + strings.Join(parts, "; ") + " }", nil
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Call != nil:
 		return c.compileCallExpr(p.Call)
 	case p.Load != nil:
@@ -1557,6 +1610,35 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.use("_seq_helpers")
 		return fmt.Sprintf("avg %s", args[0]), nil
+	case "substr":
+		if len(args) != 3 {
+			return "", fmt.Errorf("substr expects 3 args")
+		}
+		c.use("_slice_string")
+		return fmt.Sprintf("_slice_string %s %s %s", args[0], args[1], args[2]), nil
+	case "reverse":
+		if len(args) != 1 {
+			return "", fmt.Errorf("reverse expects 1 arg")
+		}
+		if c.isStringExpr(call.Args[0]) {
+			c.use("_reverse_string")
+			return fmt.Sprintf("_reverse_string %s", args[0]), nil
+		}
+		if c.isListExpr(call.Args[0]) {
+			c.use("_reverse_array")
+			return fmt.Sprintf("_reverse_array %s", args[0]), nil
+		}
+		return "", fmt.Errorf("reverse expects string or list")
+	case "concat":
+		if len(args) < 2 {
+			return "", fmt.Errorf("concat expects at least 2 args")
+		}
+		c.use("_concat")
+		expr := fmt.Sprintf("_concat %s %s", args[0], args[1])
+		for i := 2; i < len(args); i++ {
+			expr = fmt.Sprintf("_concat %s %s", expr, args[i])
+		}
+		return expr, nil
 	case "min":
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
@@ -1821,6 +1903,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 		return "false", nil
 	case l.Str != nil:
 		return strconv.Quote(*l.Str), nil
+	case l.Null:
+		return "null", nil
 	}
 	return "", fmt.Errorf("unknown literal")
 }
