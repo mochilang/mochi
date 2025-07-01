@@ -1,89 +1,99 @@
 public class Main {
-    static class Inventory {
-        int inv_item_sk;
-        int inv_date_sk;
-        int inv_quantity_on_hand;
-        
-        Inventory(int inv_item_sk, int inv_date_sk, int inv_quantity_on_hand) {
-            this.inv_item_sk = inv_item_sk;
-            this.inv_date_sk = inv_date_sk;
-            this.inv_quantity_on_hand = inv_quantity_on_hand;
-        }
-        
-        Inventory() {}
+    static void test_TPCDS_Q46_simplified() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("c_last_name", "Doe", "c_first_name", "John", "ca_city", "Seattle", "bought_city", "Portland", "ss_ticket_number", 1, "amt", 5, "profit", 20))}));
     }
     
-    static class DateDim {
-        int d_date_sk;
-        int d_month_seq;
-        
-        DateDim(int d_date_sk, int d_month_seq) {
-            this.d_date_sk = d_date_sk;
-            this.d_month_seq = d_month_seq;
-        }
-        
-        DateDim() {}
-    }
+    static Object[] store_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ss_ticket_number", 1, "ss_customer_sk", 1, "ss_addr_sk", 1, "ss_hdemo_sk", 1, "ss_store_sk", 1, "ss_sold_date_sk", 1, "ss_coupon_amt", 5, "ss_net_profit", 20))};
     
-    static class Item {
-        int i_item_sk;
-        String i_product_name;
-        String i_brand;
-        String i_class;
-        String i_category;
-        
-        Item(int i_item_sk, String i_product_name, String i_brand, String i_class, String i_category) {
-            this.i_item_sk = i_item_sk;
-            this.i_product_name = i_product_name;
-            this.i_brand = i_brand;
-            this.i_class = i_class;
-            this.i_category = i_category;
-        }
-        
-        Item() {}
-    }
+    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_dow", 6, "d_year", 2020))};
     
-    static void test_TPCDS_Q22_average_inventory() {
-        expect((qoh == new Object[]{new java.util.HashMap<>(java.util.Map.of("i_product_name", "Prod1", "i_brand", "Brand1", "i_class", "Class1", "i_category", "Cat1", "qoh", 15)), new java.util.HashMap<>(java.util.Map.of("i_product_name", "Prod2", "i_brand", "Brand2", "i_class", "Class2", "i_category", "Cat2", "qoh", 50))}));
-    }
+    static Object[] store = new Object[]{new java.util.HashMap<>(java.util.Map.of("s_store_sk", 1, "s_city", "CityA"))};
     
-    static Object[] inventory = new Object[]{new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 1, "inv_quantity_on_hand", 10)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 2, "inv_quantity_on_hand", 20)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 3, "inv_quantity_on_hand", 10)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 4, "inv_quantity_on_hand", 20)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 2, "inv_date_sk", 1, "inv_quantity_on_hand", 50))};
+    static Object[] household_demographics = new Object[]{new java.util.HashMap<>(java.util.Map.of("hd_demo_sk", 1, "hd_dep_count", 2, "hd_vehicle_count", 0))};
     
-    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_month_seq", 0)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 2, "d_month_seq", 1)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 3, "d_month_seq", 2)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 4, "d_month_seq", 3))};
+    static Object[] customer_address = new Object[]{new java.util.HashMap<>(java.util.Map.of("ca_address_sk", 1, "ca_city", "Portland")), new java.util.HashMap<>(java.util.Map.of("ca_address_sk", 2, "ca_city", "Seattle"))};
     
-    static Object[] item = new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_sk", 1, "i_product_name", "Prod1", "i_brand", "Brand1", "i_class", "Class1", "i_category", "Cat1")), new java.util.HashMap<>(java.util.Map.of("i_item_sk", 2, "i_product_name", "Prod2", "i_brand", "Brand2", "i_class", "Class2", "i_category", "Cat2"))};
+    static Object[] customer = new Object[]{new java.util.HashMap<>(java.util.Map.of("c_customer_sk", 1, "c_last_name", "Doe", "c_first_name", "John", "c_current_addr_sk", 2))};
     
-    static Object[] qoh = (new java.util.function.Supplier<java.util.List<Object>>() {
+    static int depcnt = 2;
+    
+    static int vehcnt = 0;
+    
+    static int year = 2020;
+    
+    static Object[] cities = new String[]{"CityA"};
+    
+    static Object[] dn = (new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(inventory);
+        java.util.List<Object> _src = _toList(store_sales);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object inv = a[0]; Object d = a[1]; return (inv.get("inv_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(item), (Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return (inv.get("inv_item_sk") == i.get("i_item_sk")); }, false, false)
+            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object ss = a[0]; Object d = a[1]; return (ss.get("ss_sold_date_sk") == d.get("d_date_sk")); }, false, false),
+            new _JoinSpec(_toList(store), (Object[] a) -> { Object ss = a[0]; Object d = a[1]; Object s = a[2]; return (ss.get("ss_store_sk") == s.get("s_store_sk")); }, false, false),
+            new _JoinSpec(_toList(household_demographics), (Object[] a) -> { Object ss = a[0]; Object d = a[1]; Object s = a[2]; Object hd = a[3]; return (ss.get("ss_hdemo_sk") == hd.get("hd_demo_sk")); }, false, false),
+            new _JoinSpec(_toList(customer_address), (Object[] a) -> { Object ss = a[0]; Object d = a[1]; Object s = a[2]; Object hd = a[3]; Object ca = a[4]; return (ss.get("ss_addr_sk") == ca.get("ca_address_sk")); }, false, false)
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return new java.util.HashMap<>(java.util.Map.of("i_product_name", g.get("key").product_name, "i_brand", g.get("key").brand, "i_class", g.get("key").class, "i_category", g.get("key").category, "qoh", _avg((new java.util.function.Supplier<java.util.List<Object>>() {
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object ss = a[0]; Object d = a[1]; Object s = a[2]; Object hd = a[3]; Object ca = a[4]; return new java.util.HashMap<>(java.util.Map.of("ss_ticket_number", g.get("key").ss_ticket_number, "ss_customer_sk", g.get("key").ss_customer_sk, "bought_city", g.get("key").ca_city, "amt", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
         java.util.List<Object> _src = _toList(g);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("inv_quantity_on_hand"); }, null, null, -1, -1));
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss").ss_coupon_amt; }, null, null, -1, -1));
     }
-}).get()))); }, (Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return ((d.get("d_month_seq") >= 0) && (d.get("d_month_seq") <= 11)); }, null, -1, -1));
+}).get()), "profit", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(g);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss").ss_net_profit; }, null, null, -1, -1));
+    }
+}).get()))); }, (Object[] a) -> { Object ss = a[0]; Object d = a[1]; Object s = a[2]; Object hd = a[3]; Object ca = a[4]; return (((((hd.get("hd_dep_count") == depcnt) || (hd.get("hd_vehicle_count") == vehcnt)) && _in(d.get("d_dow"), new int[]{6, 0})) && (d.get("d_year") == year)) && _in(s.get("s_city"), cities)); }, null, -1, -1));
     }
 }).get();
     
+    static Object[] base = (new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(dn);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+            new _JoinSpec(_toList(customer), (Object[] a) -> { Object dnrec = a[0]; Object c = a[1]; return (dnrec.get("ss_customer_sk") == c.get("c_customer_sk")); }, false, false),
+            new _JoinSpec(_toList(customer_address), (Object[] a) -> { Object dnrec = a[0]; Object c = a[1]; Object current_addr = a[2]; return (c.get("c_current_addr_sk") == current_addr.get("ca_address_sk")); }, false, false)
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object dnrec = a[0]; Object c = a[1]; Object current_addr = a[2]; return new java.util.HashMap<>(java.util.Map.of("c_last_name", c.get("c_last_name"), "c_first_name", c.get("c_first_name"), "ca_city", current_addr.get("ca_city"), "bought_city", dnrec.get("bought_city"), "ss_ticket_number", dnrec.get("ss_ticket_number"), "amt", dnrec.get("amt"), "profit", dnrec.get("profit"))); }, (Object[] a) -> { Object dnrec = a[0]; Object c = a[1]; Object current_addr = a[2]; return (current_addr.get("ca_city") != dnrec.get("bought_city")); }, (Object[] a) -> { Object dnrec = a[0]; Object c = a[1]; Object current_addr = a[2]; return new Object[]{c.get("c_last_name"), c.get("c_first_name"), current_addr.get("ca_city"), dnrec.get("bought_city"), dnrec.get("ss_ticket_number")}; }, -1, -1));
+    }
+}).get();
+    
+    static Object[] result = base;
+    
     public static void main(String[] args) {
-        test_TPCDS_Q22_average_inventory();
-        _json(qoh);
+        test_TPCDS_Q46_simplified();
+        _json(result);
     }
     
-    static double _avg(Object v) {
+    static double _sum(Object v) {
         java.util.List<Object> items = (v instanceof _Group) ? ((_Group)v).Items : _toList(v);
-        if (items.isEmpty()) return 0;
         double sum = 0;
         for (Object it : items) {
-            if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException("avg() expects numbers");
+            if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException("sum() expects numbers");
         }
-        return sum / items.size();
+        return sum;
+    }
+    
+    static boolean _in(Object item, Object col) {
+        if (col instanceof String s && item instanceof String sub) return s.contains(sub);
+        if (col instanceof java.util.Map<?,?> m) return m.containsKey(item);
+        if (col != null && col.getClass().isArray()) {
+            int n = java.lang.reflect.Array.getLength(col);
+            for (int i = 0; i < n; i++) {
+                if (java.util.Objects.equals(java.lang.reflect.Array.get(col, i), item)) return true;
+            }
+            return false;
+        }
+        if (col instanceof Iterable<?> it) {
+            for (Object v : it) {
+                if (java.util.Objects.equals(v, item)) return true;
+            }
+            return false;
+        }
+        return false;
     }
     
     static void expect(boolean cond) {

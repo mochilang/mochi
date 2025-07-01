@@ -1,89 +1,101 @@
 public class Main {
-    static class Inventory {
-        int inv_item_sk;
-        int inv_date_sk;
-        int inv_quantity_on_hand;
-        
-        Inventory(int inv_item_sk, int inv_date_sk, int inv_quantity_on_hand) {
-            this.inv_item_sk = inv_item_sk;
-            this.inv_date_sk = inv_date_sk;
-            this.inv_quantity_on_hand = inv_quantity_on_hand;
+    static Object[] distinct(Object[] xs) {
+        Object[] out = new Object[]{};
+        for (var x : xs) {
+            if ((!contains.apply(out, x))) {
+                out = append.apply(out, x);
+            }
         }
-        
-        Inventory() {}
+        return out;
     }
     
-    static class DateDim {
-        int d_date_sk;
-        int d_month_seq;
-        
-        DateDim(int d_date_sk, int d_month_seq) {
-            this.d_date_sk = d_date_sk;
-            this.d_month_seq = d_month_seq;
-        }
-        
-        DateDim() {}
+    static void test_TPCDS_Q38_simplified() {
+        expect((result == 1));
     }
     
-    static class Item {
-        int i_item_sk;
-        String i_product_name;
-        String i_brand;
-        String i_class;
-        String i_category;
-        
-        Item(int i_item_sk, String i_product_name, String i_brand, String i_class, String i_category) {
-            this.i_item_sk = i_item_sk;
-            this.i_product_name = i_product_name;
-            this.i_brand = i_brand;
-            this.i_class = i_class;
-            this.i_category = i_category;
-        }
-        
-        Item() {}
-    }
+    static Object[] customer = new Object[]{new java.util.HashMap<>(java.util.Map.of("c_customer_sk", 1, "c_last_name", "Smith", "c_first_name", "John")), new java.util.HashMap<>(java.util.Map.of("c_customer_sk", 2, "c_last_name", "Jones", "c_first_name", "Alice"))};
     
-    static void test_TPCDS_Q22_average_inventory() {
-        expect((qoh == new Object[]{new java.util.HashMap<>(java.util.Map.of("i_product_name", "Prod1", "i_brand", "Brand1", "i_class", "Class1", "i_category", "Cat1", "qoh", 15)), new java.util.HashMap<>(java.util.Map.of("i_product_name", "Prod2", "i_brand", "Brand2", "i_class", "Class2", "i_category", "Cat2", "qoh", 50))}));
-    }
+    static Object[] store_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ss_customer_sk", 1, "d_month_seq", 1200)), new java.util.HashMap<>(java.util.Map.of("ss_customer_sk", 2, "d_month_seq", 1205))};
     
-    static Object[] inventory = new Object[]{new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 1, "inv_quantity_on_hand", 10)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 2, "inv_quantity_on_hand", 20)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 3, "inv_quantity_on_hand", 10)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 1, "inv_date_sk", 4, "inv_quantity_on_hand", 20)), new java.util.HashMap<>(java.util.Map.of("inv_item_sk", 2, "inv_date_sk", 1, "inv_quantity_on_hand", 50))};
+    static Object[] catalog_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("cs_bill_customer_sk", 1, "d_month_seq", 1203))};
     
-    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_month_seq", 0)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 2, "d_month_seq", 1)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 3, "d_month_seq", 2)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 4, "d_month_seq", 3))};
+    static Object[] web_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ws_bill_customer_sk", 1, "d_month_seq", 1206))};
     
-    static Object[] item = new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_sk", 1, "i_product_name", "Prod1", "i_brand", "Brand1", "i_class", "Class1", "i_category", "Cat1")), new java.util.HashMap<>(java.util.Map.of("i_item_sk", 2, "i_product_name", "Prod2", "i_brand", "Brand2", "i_class", "Class2", "i_category", "Cat2"))};
-    
-    static Object[] qoh = (new java.util.function.Supplier<java.util.List<Object>>() {
+    static Object[] store_ids = distinct((new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(inventory);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object inv = a[0]; Object d = a[1]; return (inv.get("inv_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(item), (Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return (inv.get("inv_item_sk") == i.get("i_item_sk")); }, false, false)
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return new java.util.HashMap<>(java.util.Map.of("i_product_name", g.get("key").product_name, "i_brand", g.get("key").brand, "i_class", g.get("key").class, "i_category", g.get("key").category, "qoh", _avg((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
+        java.util.List<Object> _src = _toList(store_sales);
+        _src = _filter(_src, (Object s) -> { return ((s.get("d_month_seq") >= 1200) && (s.get("d_month_seq") <= 1211)); });
         java.util.List<_JoinSpec> _joins = java.util.List.of(
         );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("inv_quantity_on_hand"); }, null, null, -1, -1));
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object s = a[0]; return s.get("ss_customer_sk"); }, null, null, -1, -1));
     }
-}).get()))); }, (Object[] a) -> { Object inv = a[0]; Object d = a[1]; Object i = a[2]; return ((d.get("d_month_seq") >= 0) && (d.get("d_month_seq") <= 11)); }, null, -1, -1));
+}).get());
+    
+    static Object[] catalog_ids = distinct((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(catalog_sales);
+        _src = _filter(_src, (Object c) -> { return ((c.get("d_month_seq") >= 1200) && (c.get("d_month_seq") <= 1211)); });
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object c = a[0]; return c.get("cs_bill_customer_sk"); }, null, null, -1, -1));
     }
-}).get();
+}).get());
+    
+    static Object[] web_ids = distinct((new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(web_sales);
+        _src = _filter(_src, (Object w) -> { return ((w.get("d_month_seq") >= 1200) && (w.get("d_month_seq") <= 1211)); });
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object w = a[0]; return w.get("ws_bill_customer_sk"); }, null, null, -1, -1));
+    }
+}).get());
+    
+    static Object[] hot = _intersect(_intersect(store_ids, catalog_ids), web_ids);
+    
+    static int result = hot.length;
     
     public static void main(String[] args) {
-        test_TPCDS_Q22_average_inventory();
-        _json(qoh);
+        test_TPCDS_Q38_simplified();
+        _json(result);
     }
     
-    static double _avg(Object v) {
-        java.util.List<Object> items = (v instanceof _Group) ? ((_Group)v).Items : _toList(v);
-        if (items.isEmpty()) return 0;
-        double sum = 0;
-        for (Object it : items) {
-            if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException("avg() expects numbers");
+    static int[] _intersect(int[] a, int[] b) {
+        java.util.LinkedHashSet<Integer> set = new java.util.LinkedHashSet<>();
+        for (int v : a) if (java.util.Arrays.binarySearch(b, v) >= 0) set.add(v);
+        int[] res = new int[set.size()];
+        int i = 0;
+        for (int v : set) res[i++] = v;
+        return res;
+    }
+    
+    static double[] _intersect(double[] a, double[] b) {
+        java.util.LinkedHashSet<Double> set = new java.util.LinkedHashSet<>();
+        for (double v : a) if (java.util.Arrays.binarySearch(b, v) >= 0) set.add(v);
+        double[] res = new double[set.size()];
+        int i = 0;
+        for (double v : set) res[i++] = v;
+        return res;
+    }
+    
+    static boolean[] _intersect(boolean[] a, boolean[] b) {
+        java.util.LinkedHashSet<Boolean> set = new java.util.LinkedHashSet<>();
+        for (boolean v : a) {
+            for (boolean u : b) { if (u == v) { set.add(v); break; } }
         }
-        return sum / items.size();
+        boolean[] res = new boolean[set.size()];
+        int i = 0;
+        for (boolean v : set) res[i++] = v;
+        return res;
+    }
+    
+    static <T> T[] _intersect(T[] a, T[] b) {
+        java.util.LinkedHashSet<T> set = new java.util.LinkedHashSet<>();
+        for (T v : a) { for (T u : b) { if (java.util.Objects.equals(u, v)) { set.add(v); break; } } }
+        @SuppressWarnings("unchecked") T[] res = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), set.size());
+        int i = 0;
+        for (T v : set) res[i++] = v;
+        return res;
     }
     
     static void expect(boolean cond) {
@@ -99,6 +111,12 @@ public class Main {
         int n = java.lang.reflect.Array.getLength(v);
         java.util.List<Object> out = new java.util.ArrayList<>(n);
         for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));
+        return out;
+    }
+    
+    static java.util.List<Object> _filter(java.util.List<Object> src, java.util.function.Function<Object,Boolean> pred) {
+        java.util.List<Object> out = new java.util.ArrayList<>();
+        for (Object it : src) { if (pred.apply(it)) out.add(it); }
         return out;
     }
     
