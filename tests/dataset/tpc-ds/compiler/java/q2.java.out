@@ -1,13 +1,13 @@
 public class Main {
-    static void test_TPCDS_Q2_empty() {
-        expect((result.length == 0));
+    static void test_TPCDS_Q2_result() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("d_week_seq1", 1, "sun_ratio", 0.5, "mon_ratio", 0.5))}));
     }
     
-    static Object[] web_sales = new Object[]{};
+    static Object[] web_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ws_sold_date_sk", 1, "ws_ext_sales_price", 5, "ws_sold_date_name", "Sunday")), new java.util.HashMap<>(java.util.Map.of("ws_sold_date_sk", 2, "ws_ext_sales_price", 5, "ws_sold_date_name", "Monday")), new java.util.HashMap<>(java.util.Map.of("ws_sold_date_sk", 8, "ws_ext_sales_price", 10, "ws_sold_date_name", "Sunday")), new java.util.HashMap<>(java.util.Map.of("ws_sold_date_sk", 9, "ws_ext_sales_price", 10, "ws_sold_date_name", "Monday"))};
     
-    static Object[] catalog_sales = new Object[]{};
+    static Object[] catalog_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("cs_sold_date_sk", 1, "cs_ext_sales_price", 5, "cs_sold_date_name", "Sunday")), new java.util.HashMap<>(java.util.Map.of("cs_sold_date_sk", 2, "cs_ext_sales_price", 5, "cs_sold_date_name", "Monday")), new java.util.HashMap<>(java.util.Map.of("cs_sold_date_sk", 8, "cs_ext_sales_price", 10, "cs_sold_date_name", "Sunday")), new java.util.HashMap<>(java.util.Map.of("cs_sold_date_sk", 9, "cs_ext_sales_price", 10, "cs_sold_date_name", "Monday"))};
     
-    static Object[] date_dim = new Object[]{};
+    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_week_seq", 1, "d_day_name", "Sunday", "d_year", 1998)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 2, "d_week_seq", 1, "d_day_name", "Monday", "d_year", 1998)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 8, "d_week_seq", 54, "d_day_name", "Sunday", "d_year", 1999)), new java.util.HashMap<>(java.util.Map.of("d_date_sk", 9, "d_week_seq", 54, "d_day_name", "Monday", "d_year", 1999))};
     
     static Object[] wscs = _concat((new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
@@ -91,10 +91,38 @@ public class Main {
     }
 }).get();
     
-    static Object[] result = new Object[]{};
+    static Object[] year1 = (new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(wswscs);
+        _src = _filter(_src, (Object w) -> { return (w.get("d_week_seq") == 1); });
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object w = a[0]; return w; }, null, null, -1, -1));
+    }
+}).get();
+    
+    static Object[] year2 = (new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(wswscs);
+        _src = _filter(_src, (Object w) -> { return (w.get("d_week_seq") == 54); });
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object w = a[0]; return w; }, null, null, -1, -1));
+    }
+}).get();
+    
+    static Object[] result = (new java.util.function.Supplier<java.util.List<Object>>() {
+    public java.util.List<Object> get() {
+        java.util.List<Object> _src = _toList(year1);
+        java.util.List<_JoinSpec> _joins = java.util.List.of(
+            new _JoinSpec(_toList(year2), (Object[] a) -> { Object y = a[0]; Object z = a[1]; return (y.get("d_week_seq") == (z.get("d_week_seq") - 53)); }, false, false)
+        );
+        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object y = a[0]; Object z = a[1]; return new java.util.HashMap<>(java.util.Map.of("d_week_seq1", y.get("d_week_seq"), "sun_ratio", (y.get("sun_sales") / z.get("sun_sales")), "mon_ratio", (y.get("mon_sales") / z.get("mon_sales")))); }, null, null, -1, -1));
+    }
+}).get();
     
     public static void main(String[] args) {
-        test_TPCDS_Q2_empty();
+        test_TPCDS_Q2_result();
         _json(result);
     }
     

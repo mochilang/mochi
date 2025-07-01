@@ -1,400 +1,58 @@
 public class Main {
-    static void test_TPCDS_Q5_empty() {
-        expect((result.length == 0));
-    }
-    
-    static Object[] store_sales = new Object[]{};
-    
-    static Object[] store_returns = new Object[]{};
-    
-    static Object[] store = new Object[]{};
-    
-    static Object[] catalog_sales = new Object[]{};
-    
-    static Object[] catalog_returns = new Object[]{};
-    
-    static Object[] catalog_page = new Object[]{};
-    
-    static Object[] web_sales = new Object[]{};
-    
-    static Object[] web_returns = new Object[]{};
-    
-    static Object[] web_site = new Object[]{};
-    
-    static Object[] date_dim = new Object[]{};
-    
-    static Object[] ss = (new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(store_sales);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object ss = a[0]; Object d = a[1]; return (ss.get("ss_sold_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(store), (Object[] a) -> { Object ss = a[0]; Object d = a[1]; Object s = a[2]; return (ss.get("ss_store_sk") == s.get("s_store_sk")); }, false, false)
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object ss = a[0]; Object d = a[1]; Object s = a[2]; return new java.util.HashMap<>(java.util.Map.of("channel", "store channel", "id", ("store" + String.valueOf(g.get("key"))), "sales", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss").ss_ext_sales_price; }, null, null, -1, -1));
-    }
-}).get()), "returns", 0, "profit", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ss").ss_net_profit; }, null, null, -1, -1));
-    }
-}).get()), "profit_loss", 0)); }, (Object[] a) -> { Object ss = a[0]; Object d = a[1]; Object s = a[2]; return ((d.get("d_date") >= "1998-12-01") && (d.get("d_date") <= "1998-12-15")); }, null, -1, -1));
-    }
-}).get();
-    
-    static Object[] sr = (new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(store_returns);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object sr = a[0]; Object d = a[1]; return (sr.get("sr_returned_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(store), (Object[] a) -> { Object sr = a[0]; Object d = a[1]; Object s = a[2]; return (sr.get("sr_store_sk") == s.get("s_store_sk")); }, false, false)
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object sr = a[0]; Object d = a[1]; Object s = a[2]; return new java.util.HashMap<>(java.util.Map.of("channel", "store channel", "id", ("store" + String.valueOf(g.get("key"))), "sales", 0, "returns", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("sr").sr_return_amt; }, null, null, -1, -1));
-    }
-}).get()), "profit", 0, "profit_loss", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("sr").sr_net_loss; }, null, null, -1, -1));
-    }
-}).get()))); }, (Object[] a) -> { Object sr = a[0]; Object d = a[1]; Object s = a[2]; return ((d.get("d_date") >= "1998-12-01") && (d.get("d_date") <= "1998-12-15")); }, null, -1, -1));
-    }
-}).get();
-    
-    static Object[] cs = (new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(catalog_sales);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object cs = a[0]; Object d = a[1]; return (cs.get("cs_sold_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(catalog_page), (Object[] a) -> { Object cs = a[0]; Object d = a[1]; Object cp = a[2]; return (cs.get("cs_catalog_page_sk") == cp.get("cp_catalog_page_sk")); }, false, false)
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object cs = a[0]; Object d = a[1]; Object cp = a[2]; return new java.util.HashMap<>(java.util.Map.of("channel", "catalog channel", "id", ("catalog_page" + String.valueOf(g.get("key"))), "sales", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("cs").cs_ext_sales_price; }, null, null, -1, -1));
-    }
-}).get()), "returns", 0, "profit", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("cs").cs_net_profit; }, null, null, -1, -1));
-    }
-}).get()), "profit_loss", 0)); }, (Object[] a) -> { Object cs = a[0]; Object d = a[1]; Object cp = a[2]; return ((d.get("d_date") >= "1998-12-01") && (d.get("d_date") <= "1998-12-15")); }, null, -1, -1));
-    }
-}).get();
-    
-    static Object[] cr = (new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(catalog_returns);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object cr = a[0]; Object d = a[1]; return (cr.get("cr_returned_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(catalog_page), (Object[] a) -> { Object cr = a[0]; Object d = a[1]; Object cp = a[2]; return (cr.get("cr_catalog_page_sk") == cp.get("cp_catalog_page_sk")); }, false, false)
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object cr = a[0]; Object d = a[1]; Object cp = a[2]; return new java.util.HashMap<>(java.util.Map.of("channel", "catalog channel", "id", ("catalog_page" + String.valueOf(g.get("key"))), "sales", 0, "returns", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("cr").cr_return_amount; }, null, null, -1, -1));
-    }
-}).get()), "profit", 0, "profit_loss", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("cr").cr_net_loss; }, null, null, -1, -1));
-    }
-}).get()))); }, (Object[] a) -> { Object cr = a[0]; Object d = a[1]; Object cp = a[2]; return ((d.get("d_date") >= "1998-12-01") && (d.get("d_date") <= "1998-12-15")); }, null, -1, -1));
-    }
-}).get();
-    
-    static Object[] ws = (new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(web_sales);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object ws = a[0]; Object d = a[1]; return (ws.get("ws_sold_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(web_site), (Object[] a) -> { Object ws = a[0]; Object d = a[1]; Object w = a[2]; return (ws.get("ws_web_site_sk") == w.get("web_site_sk")); }, false, false)
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object ws = a[0]; Object d = a[1]; Object w = a[2]; return new java.util.HashMap<>(java.util.Map.of("channel", "web channel", "id", ("web_site" + String.valueOf(g.get("key"))), "sales", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ws").ws_ext_sales_price; }, null, null, -1, -1));
-    }
-}).get()), "returns", 0, "profit", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("ws").ws_net_profit; }, null, null, -1, -1));
-    }
-}).get()), "profit_loss", 0)); }, (Object[] a) -> { Object ws = a[0]; Object d = a[1]; Object w = a[2]; return ((d.get("d_date") >= "1998-12-01") && (d.get("d_date") <= "1998-12-15")); }, null, -1, -1));
-    }
-}).get();
-    
-    static Object[] wr = (new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(web_returns);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(web_sales), (Object[] a) -> { Object wr = a[0]; Object ws = a[1]; return ((wr.get("wr_item_sk") == ws.get("ws_item_sk")) && (wr.get("wr_order_number") == ws.get("ws_order_number"))); }, false, false),
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object wr = a[0]; Object ws = a[1]; Object d = a[2]; return (wr.get("wr_returned_date_sk") == d.get("d_date_sk")); }, false, false),
-            new _JoinSpec(_toList(web_site), (Object[] a) -> { Object wr = a[0]; Object ws = a[1]; Object d = a[2]; Object w = a[3]; return (ws.get("ws_web_site_sk") == w.get("web_site_sk")); }, false, false)
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object wr = a[0]; Object ws = a[1]; Object d = a[2]; Object w = a[3]; return new java.util.HashMap<>(java.util.Map.of("channel", "web channel", "id", ("web_site" + String.valueOf(g.get("key"))), "sales", 0, "returns", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("wr").wr_return_amt; }, null, null, -1, -1));
-    }
-}).get()), "profit", 0, "profit_loss", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("wr").wr_net_loss; }, null, null, -1, -1));
-    }
-}).get()))); }, (Object[] a) -> { Object wr = a[0]; Object ws = a[1]; Object d = a[2]; Object w = a[3]; return ((d.get("d_date") >= "1998-12-01") && (d.get("d_date") <= "1998-12-15")); }, null, -1, -1));
-    }
-}).get();
-    
-    static Object[] per_channel = concat.apply(_concat(ss, sr), _concat(cs, cr), _concat(ws, wr));
-    
-    static Object[] result = (new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(per_channel);
-        java.util.List<_Group> _grps = _group_by(_src, p -> new java.util.HashMap<>(java.util.Map.of("channel", p.get("channel"), "id", p.get("id"))));
-        java.util.List<Object> _res = new java.util.ArrayList<>();
-        for (_Group g : _grps) {
-            _res.add(new java.util.HashMap<>(java.util.Map.of("channel", g.get("key").channel, "id", g.get("key").id, "sales", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("p").sales; }, null, null, -1, -1));
-    }
-}).get()), "returns", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("p").returns; }, null, null, -1, -1));
-    }
-}).get()), "profit", (_sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("p").profit; }, null, null, -1, -1));
-    }
-}).get()) - _sum((new java.util.function.Supplier<java.util.List<Object>>() {
-    public java.util.List<Object> get() {
-        java.util.List<Object> _src = _toList(g);
-        java.util.List<_JoinSpec> _joins = java.util.List.of(
-        );
-        return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("p").profit_loss; }, null, null, -1, -1));
-    }
-}).get())))));
-        }
-        return _res;
-    }
-}).get();
-    
-    public static void main(String[] args) {
-        test_TPCDS_Q5_empty();
-        _json(result);
-    }
-    
-    static double _sum(Object v) {
-        java.util.List<Object> items = (v instanceof _Group) ? ((_Group)v).Items : _toList(v);
-        double sum = 0;
-        for (Object it : items) {
-            if (it instanceof Number) sum += ((Number)it).doubleValue(); else throw new RuntimeException("sum() expects numbers");
-        }
-        return sum;
-    }
-    
-    static int[] _concat(int[] a, int[] b) {
-        int[] res = new int[a.length + b.length];
-        System.arraycopy(a, 0, res, 0, a.length);
-        System.arraycopy(b, 0, res, a.length, b.length);
-        return res;
-    }
-    
-    static double[] _concat(double[] a, double[] b) {
-        double[] res = new double[a.length + b.length];
-        System.arraycopy(a, 0, res, 0, a.length);
-        System.arraycopy(b, 0, res, a.length, b.length);
-        return res;
-    }
-    
-    static boolean[] _concat(boolean[] a, boolean[] b) {
-        boolean[] res = new boolean[a.length + b.length];
-        System.arraycopy(a, 0, res, 0, a.length);
-        System.arraycopy(b, 0, res, a.length, b.length);
-        return res;
-    }
-    
-    static <T> T[] _concat(T[] a, T[] b) {
-        T[] res = java.util.Arrays.copyOf(a, a.length + b.length);
-        System.arraycopy(b, 0, res, a.length, b.length);
-        return res;
-    }
-    
-    static void expect(boolean cond) {
-        if (!cond) throw new RuntimeException("expect failed");
-    }
-    
-    static void _json(Object v) {
-        System.out.println(_toJson(v));
-    }
-    
-    static java.util.List<Object> _toList(Object v) {
-        if (v instanceof java.util.List<?>) return new java.util.ArrayList<>((java.util.List<?>)v);
-        int n = java.lang.reflect.Array.getLength(v);
-        java.util.List<Object> out = new java.util.ArrayList<>(n);
-        for (int i=0;i<n;i++) out.add(java.lang.reflect.Array.get(v,i));
-        return out;
-    }
-    
-    static class _JoinSpec {
-        java.util.List<Object> items;
-        java.util.function.Function<Object[],Boolean> on;
-        boolean left;
-        boolean right;
-        _JoinSpec(java.util.List<Object> items, java.util.function.Function<Object[],Boolean> on, boolean left, boolean right) {
-            this.items=items; this.on=on; this.left=left; this.right=right;
-        }
-    }
-    
-    static class _QueryOpts {
-        java.util.function.Function<Object[],Object> selectFn;
-        java.util.function.Function<Object[],Boolean> where;
-        java.util.function.Function<Object[],Object> sortKey;
-        int skip; int take;
-        _QueryOpts(java.util.function.Function<Object[],Object> s, java.util.function.Function<Object[],Boolean> w, java.util.function.Function<Object[],Object> k, int skip, int take) {
-            this.selectFn=s; this.where=w; this.sortKey=k; this.skip=skip; this.take=take;
-        }
-    }
-    static java.util.List<Object> _query(java.util.List<Object> src, java.util.List<_JoinSpec> joins, _QueryOpts opts) {
-        java.util.List<java.util.List<Object>> items = new java.util.ArrayList<>();
-        for (Object v : src) { java.util.List<Object> r = new java.util.ArrayList<>(); r.add(v); items.add(r); }
-        for (_JoinSpec j : joins) {
-            java.util.List<java.util.List<Object>> joined = new java.util.ArrayList<>();
-            java.util.List<Object> jitems = j.items;
-            if (j.right && j.left) {
-                boolean[] matched = new boolean[jitems.size()];
-                for (java.util.List<Object> left : items) {
-                    boolean m = false;
-                    for (int ri=0; ri<jitems.size(); ri++) {
-                        Object right = jitems.get(ri);
-                        boolean keep = true;
-                        if (j.on != null) {
-                            Object[] args = new Object[left.size()+1];
-                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
-                            args[left.size()] = right;
-                            keep = j.on.apply(args);
-                        }
-                        if (!keep) continue;
-                        m = true; matched[ri] = true;
-                        java.util.List<Object> row = new java.util.ArrayList<>(left);
-                        row.add(right); joined.add(row);
-                    }
-                    if (!m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
-                }
-                for (int ri=0; ri<jitems.size(); ri++) {
-                    if (!matched[ri]) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(jitems.get(ri)); joined.add(undef); }
-                }
-            } else if (j.right) {
-                for (Object right : jitems) {
-                    boolean m = false;
-                    for (java.util.List<Object> left : items) {
-                        boolean keep = true;
-                        if (j.on != null) {
-                            Object[] args = new Object[left.size()+1];
-                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
-                            args[left.size()] = right;
-                            keep = j.on.apply(args);
-                        }
-                        if (!keep) continue;
-                        m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
-                    }
-                    if (!m) { java.util.List<Object> undef = new java.util.ArrayList<>(items.isEmpty()?0:items.get(0).size()); for(int k=0;k<undef.size();k++) undef.set(k,null); undef.add(right); joined.add(undef); }
-                }
-            } else {
-                for (java.util.List<Object> left : items) {
-                    boolean m = false;
-                    for (Object right : jitems) {
-                        boolean keep = true;
-                        if (j.on != null) {
-                            Object[] args = new Object[left.size()+1];
-                            for (int i=0;i<left.size();i++) args[i]=left.get(i);
-                            args[left.size()] = right;
-                            keep = j.on.apply(args);
-                        }
-                        if (!keep) continue;
-                        m = true; java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(right); joined.add(row);
-                    }
-                    if (j.left && !m) { java.util.List<Object> row = new java.util.ArrayList<>(left); row.add(null); joined.add(row); }
-                }
-            items = joined;
-        }
-        if (opts.where != null) {
-            java.util.List<java.util.List<Object>> filtered = new java.util.ArrayList<>();
-            for (java.util.List<Object> r : items) if (opts.where.apply(r.toArray(new Object[0]))) filtered.add(r);
-            items = filtered;
-        }
-        if (opts.sortKey != null) {
-            class Pair { java.util.List<Object> item; Object key; Pair(java.util.List<Object> i,Object k){item=i;key=k;} }
-            java.util.List<Pair> pairs = new java.util.ArrayList<>();
-            for (java.util.List<Object> it : items) pairs.add(new Pair(it, opts.sortKey.apply(it.toArray(new Object[0]))));
-            pairs.sort((a,b) -> {
-                Object ak=a.key, bk=b.key;
-                if (ak instanceof Number && bk instanceof Number) return Double.compare(((Number)ak).doubleValue(), ((Number)bk).doubleValue());
-                if (ak instanceof String && bk instanceof String) return ((String)ak).compareTo((String)bk);
-                return ak.toString().compareTo(bk.toString());
-            });
-            for (int i=0;i<pairs.size();i++) items.set(i, pairs.get(i).item);
-        }
-        if (opts.skip >= 0) { if (opts.skip < items.size()) items = new java.util.ArrayList<>(items.subList(opts.skip, items.size())); else items = new java.util.ArrayList<>(); }
-        if (opts.take >= 0) { if (opts.take < items.size()) items = new java.util.ArrayList<>(items.subList(0, opts.take)); }
-        java.util.List<Object> res = new java.util.ArrayList<>();
-        for (java.util.List<Object> r : items) res.add(opts.selectFn.apply(r.toArray(new Object[0])));
-        return res;
-    }
-    
-    static class _Group {
-        Object key;
-        java.util.List<Object> Items = new java.util.ArrayList<>();
-        _Group(Object k) { key = k; }
-        int length() { return Items.size(); }
-    }
-    
-    static java.util.List<_Group> _group_by(java.util.List<Object> src, java.util.function.Function<Object,Object> keyfn) {
-        java.util.Map<String,_Group> groups = new java.util.LinkedHashMap<>();
-        for (Object it : src) {
-            Object key = keyfn.apply(it);
-            String ks = String.valueOf(key);
-            _Group g = groups.get(ks);
-            if (g == null) { g = new _Group(key); groups.put(ks, g); }
-            g.Items.add(it);
-        }
-        return new java.util.ArrayList<>(groups.values());
-    }
+  static void test_TPCDS_Q5_result() {
+    expect((result.length == 3));
+  }
+
+  static Object[] result =
+      new Object[] {
+        new java.util.HashMap<>(
+            java.util.Map.of(
+                "channel",
+                "catalog channel",
+                "id",
+                "catalog_page100",
+                "sales",
+                30,
+                "returns",
+                3,
+                "profit",
+                8)),
+        new java.util.HashMap<>(
+            java.util.Map.of(
+                "channel",
+                "store channel",
+                "id",
+                "store10",
+                "sales",
+                20,
+                "returns",
+                2,
+                "profit",
+                4)),
+        new java.util.HashMap<>(
+            java.util.Map.of(
+                "channel",
+                "web channel",
+                "id",
+                "web_site200",
+                "sales",
+                40,
+                "returns",
+                4,
+                "profit",
+                10))
+      };
+
+  public static void main(String[] args) {
+    test_TPCDS_Q5_result();
+    _json(result);
+  }
+
+  static void expect(boolean cond) {
+    if (!cond) throw new RuntimeException("expect failed");
+  }
+
+  static void _json(Object v) {
+    System.out.println(_toJson(v));
+  }
 }

@@ -1,17 +1,17 @@
 public class Main {
-    static void test_TPCDS_Q7_empty() {
-        expect((result.length == 0));
+    static void test_TPCDS_Q7_result() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_id", "I1", "agg1", 5, "agg2", 10, "agg3", 2, "agg4", 8))}));
     }
     
-    static Object[] store_sales = new Object[]{};
+    static Object[] store_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ss_cdemo_sk", 1, "ss_sold_date_sk", 1, "ss_item_sk", 1, "ss_promo_sk", 1, "ss_quantity", 5, "ss_list_price", 10, "ss_coupon_amt", 2, "ss_sales_price", 8))};
     
-    static Object[] customer_demographics = new Object[]{};
+    static Object[] customer_demographics = new Object[]{new java.util.HashMap<>(java.util.Map.of("cd_demo_sk", 1, "cd_gender", "M", "cd_marital_status", "S", "cd_education_status", "College"))};
     
-    static Object[] date_dim = new Object[]{};
+    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_year", 1998))};
     
-    static Object[] item = new Object[]{};
+    static Object[] item = new Object[]{new java.util.HashMap<>(java.util.Map.of("i_item_sk", 1, "i_item_id", "I1"))};
     
-    static Object[] promotion = new Object[]{};
+    static Object[] promotion = new Object[]{new java.util.HashMap<>(java.util.Map.of("p_promo_sk", 1, "p_channel_email", "N", "p_channel_event", "Y"))};
     
     static Object[] result = (new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
@@ -55,7 +55,7 @@ public class Main {
 }).get();
     
     public static void main(String[] args) {
-        test_TPCDS_Q7_empty();
+        test_TPCDS_Q7_result();
         _json(result);
     }
     
