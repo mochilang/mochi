@@ -8,6 +8,10 @@ golden tests cover `tpch_q1` and `tpch_q2` as well as simple `group_by` queries.
 Running the TPCH programs under `gst` still reports parse errors,
 so executing the compiled Smalltalk code remains TODO.
 
+The TPCDS suite has begun with query `q1`. The Smalltalk backend
+successfully compiles this program and golden output is stored under
+`tests/dataset/tpc-ds/compiler/st`.
+
 ## Pending JOB Queries
 
 Initial work towards running the JOB dataset defined global variables
