@@ -1,554 +1,556 @@
-func main (regs=268)
-  // let store_sales = []
-  Const        r0, []
+func main (regs=269)
+  // let store_sales = [
+  Const        r0, [{"ss_ext_discount_amt": 5.0, "ss_net_paid": 7.0, "ss_quantity": 5}, {"ss_ext_discount_amt": 10.0, "ss_net_paid": 15.0, "ss_quantity": 30}, {"ss_ext_discount_amt": 20.0, "ss_net_paid": 30.0, "ss_quantity": 50}, {"ss_ext_discount_amt": 25.0, "ss_net_paid": 35.0, "ss_quantity": 70}, {"ss_ext_discount_amt": 40.0, "ss_net_paid": 50.0, "ss_quantity": 90}]
+  // let reason = [ { r_reason_sk: 1 } ]
+  Const        r1, [{"r_reason_sk": 1}]
   // if count(from s in store_sales
-  Const        r1, []
+  Const        r2, []
   // where s.ss_quantity >= 1 && s.ss_quantity <= 20
-  Const        r2, "ss_quantity"
+  Const        r3, "ss_quantity"
   // if count(from s in store_sales
-  IterPrep     r3, r0
-  Len          r4, r3
-  Const        r6, 0
-  Move         r5, r6
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r7, 0
+  Move         r6, r7
 L3:
-  LessInt      r7, r5, r4
-  JumpIfFalse  r7, L0
-  Index        r8, r3, r5
-  Move         r9, r8
+  LessInt      r8, r6, r5
+  JumpIfFalse  r8, L0
+  Index        r9, r4, r6
+  Move         r10, r9
   // where s.ss_quantity >= 1 && s.ss_quantity <= 20
-  Index        r10, r9, r2
-  Const        r11, 1
-  LessEq       r12, r11, r10
-  Index        r13, r9, r2
-  Const        r14, 20
-  LessEq       r15, r13, r14
-  Move         r16, r12
-  JumpIfFalse  r16, L1
-  Move         r16, r15
+  Index        r11, r10, r3
+  Const        r12, 1
+  LessEq       r13, r12, r11
+  Index        r14, r10, r3
+  Const        r15, 20
+  LessEq       r16, r14, r15
+  Move         r17, r13
+  JumpIfFalse  r17, L1
+  Move         r17, r16
 L1:
-  JumpIfFalse  r16, L2
+  JumpIfFalse  r17, L2
   // if count(from s in store_sales
-  Append       r17, r1, r9
-  Move         r1, r17
+  Append       r18, r2, r10
+  Move         r2, r18
 L2:
-  AddInt       r5, r5, r11
+  AddInt       r6, r6, r12
   Jump         L3
 L0:
-  Count        r18, r1
+  Count        r19, r2
   // select s) > 10 {
-  Const        r19, 10
-  LessInt      r20, r19, r18
+  Const        r20, 10
+  LessInt      r21, r20, r19
   // avg(from s in store_sales
-  Const        r21, []
+  Const        r22, []
   // select s.ss_ext_discount_amt)
-  Const        r22, "ss_ext_discount_amt"
+  Const        r23, "ss_ext_discount_amt"
   // avg(from s in store_sales
-  IterPrep     r23, r0
-  Len          r24, r23
-  Move         r25, r6
+  IterPrep     r24, r0
+  Len          r25, r24
+  Move         r26, r7
 L7:
-  LessInt      r26, r25, r24
-  JumpIfFalse  r26, L4
-  Index        r27, r23, r25
-  Move         r9, r27
+  LessInt      r27, r26, r25
+  JumpIfFalse  r27, L4
+  Index        r28, r24, r26
+  Move         r10, r28
   // where s.ss_quantity >= 1 && s.ss_quantity <= 20
-  Index        r28, r9, r2
-  LessEq       r29, r11, r28
-  Index        r30, r9, r2
-  LessEq       r31, r30, r14
-  Move         r32, r29
-  JumpIfFalse  r32, L5
-  Move         r32, r31
+  Index        r29, r10, r3
+  LessEq       r30, r12, r29
+  Index        r31, r10, r3
+  LessEq       r32, r31, r15
+  Move         r33, r30
+  JumpIfFalse  r33, L5
+  Move         r33, r32
 L5:
-  JumpIfFalse  r32, L6
+  JumpIfFalse  r33, L6
   // select s.ss_ext_discount_amt)
-  Index        r33, r9, r22
+  Index        r34, r10, r23
   // avg(from s in store_sales
-  Append       r34, r21, r33
-  Move         r21, r34
+  Append       r35, r22, r34
+  Move         r22, r35
 L6:
-  AddInt       r25, r25, r11
+  AddInt       r26, r26, r12
   Jump         L7
 L4:
-  Avg          r35, r21
+  Avg          r36, r22
   // avg(from s in store_sales
-  Const        r36, []
+  Const        r37, []
   // select s.ss_net_paid)
-  Const        r37, "ss_net_paid"
+  Const        r38, "ss_net_paid"
   // avg(from s in store_sales
-  IterPrep     r38, r0
-  Len          r39, r38
-  Move         r40, r6
+  IterPrep     r39, r0
+  Len          r40, r39
+  Move         r41, r7
 L11:
-  LessInt      r41, r40, r39
-  JumpIfFalse  r41, L8
-  Index        r42, r38, r40
-  Move         r9, r42
+  LessInt      r42, r41, r40
+  JumpIfFalse  r42, L8
+  Index        r43, r39, r41
+  Move         r10, r43
   // where s.ss_quantity >= 1 && s.ss_quantity <= 20
-  Index        r43, r9, r2
-  LessEq       r44, r11, r43
-  Index        r45, r9, r2
-  LessEq       r46, r45, r14
-  Move         r47, r44
-  JumpIfFalse  r47, L9
-  Move         r47, r46
+  Index        r44, r10, r3
+  LessEq       r45, r12, r44
+  Index        r46, r10, r3
+  LessEq       r47, r46, r15
+  Move         r48, r45
+  JumpIfFalse  r48, L9
+  Move         r48, r47
 L9:
-  JumpIfFalse  r47, L10
+  JumpIfFalse  r48, L10
   // select s.ss_net_paid)
-  Index        r48, r9, r37
+  Index        r49, r10, r38
   // avg(from s in store_sales
-  Append       r49, r36, r48
-  Move         r36, r49
+  Append       r50, r37, r49
+  Move         r37, r50
 L10:
-  AddInt       r40, r40, r11
+  AddInt       r41, r41, r12
   Jump         L11
 L8:
-  Avg          r50, r36
+  Avg          r51, r37
   // if count(from s in store_sales
-  Select       51,20,35,50
+  Select       52,21,36,51
   // if count(from s in store_sales
-  Const        r52, []
-  IterPrep     r53, r0
-  Len          r54, r53
-  Move         r55, r6
+  Const        r53, []
+  IterPrep     r54, r0
+  Len          r55, r54
+  Move         r56, r7
 L15:
-  LessInt      r56, r55, r54
-  JumpIfFalse  r56, L12
-  Index        r57, r53, r55
-  Move         r9, r57
+  LessInt      r57, r56, r55
+  JumpIfFalse  r57, L12
+  Index        r58, r54, r56
+  Move         r10, r58
   // where s.ss_quantity >= 21 && s.ss_quantity <= 40
-  Index        r58, r9, r2
-  Const        r59, 21
-  LessEq       r60, r59, r58
-  Index        r61, r9, r2
-  Const        r62, 40
-  LessEq       r63, r61, r62
-  Move         r64, r60
-  JumpIfFalse  r64, L13
-  Move         r64, r63
+  Index        r59, r10, r3
+  Const        r60, 21
+  LessEq       r61, r60, r59
+  Index        r62, r10, r3
+  Const        r63, 40
+  LessEq       r64, r62, r63
+  Move         r65, r61
+  JumpIfFalse  r65, L13
+  Move         r65, r64
 L13:
-  JumpIfFalse  r64, L14
+  JumpIfFalse  r65, L14
   // if count(from s in store_sales
-  Append       r65, r52, r9
-  Move         r52, r65
+  Append       r66, r53, r10
+  Move         r53, r66
 L14:
-  AddInt       r55, r55, r11
+  AddInt       r56, r56, r12
   Jump         L15
 L12:
-  Count        r66, r52
+  Count        r67, r53
   // select s) > 20 {
-  LessInt      r67, r14, r66
+  LessInt      r68, r15, r67
   // avg(from s in store_sales
-  Const        r68, []
-  IterPrep     r69, r0
-  Len          r70, r69
-  Move         r71, r6
+  Const        r69, []
+  IterPrep     r70, r0
+  Len          r71, r70
+  Move         r72, r7
 L19:
-  LessInt      r72, r71, r70
-  JumpIfFalse  r72, L16
-  Index        r73, r69, r71
-  Move         r9, r73
+  LessInt      r73, r72, r71
+  JumpIfFalse  r73, L16
+  Index        r74, r70, r72
+  Move         r10, r74
   // where s.ss_quantity >= 21 && s.ss_quantity <= 40
-  Index        r74, r9, r2
-  LessEq       r75, r59, r74
-  Index        r76, r9, r2
-  LessEq       r77, r76, r62
-  Move         r78, r75
-  JumpIfFalse  r78, L17
-  Move         r78, r77
+  Index        r75, r10, r3
+  LessEq       r76, r60, r75
+  Index        r77, r10, r3
+  LessEq       r78, r77, r63
+  Move         r79, r76
+  JumpIfFalse  r79, L17
+  Move         r79, r78
 L17:
-  JumpIfFalse  r78, L18
+  JumpIfFalse  r79, L18
   // select s.ss_ext_discount_amt)
-  Index        r79, r9, r22
+  Index        r80, r10, r23
   // avg(from s in store_sales
-  Append       r80, r68, r79
-  Move         r68, r80
+  Append       r81, r69, r80
+  Move         r69, r81
 L18:
-  AddInt       r71, r71, r11
+  AddInt       r72, r72, r12
   Jump         L19
 L16:
-  Avg          r81, r68
+  Avg          r82, r69
   // avg(from s in store_sales
-  Const        r82, []
-  IterPrep     r83, r0
-  Len          r84, r83
-  Move         r85, r6
+  Const        r83, []
+  IterPrep     r84, r0
+  Len          r85, r84
+  Move         r86, r7
 L23:
-  LessInt      r86, r85, r84
-  JumpIfFalse  r86, L20
-  Index        r87, r83, r85
-  Move         r9, r87
+  LessInt      r87, r86, r85
+  JumpIfFalse  r87, L20
+  Index        r88, r84, r86
+  Move         r10, r88
   // where s.ss_quantity >= 21 && s.ss_quantity <= 40
-  Index        r88, r9, r2
-  LessEq       r89, r59, r88
-  Index        r90, r9, r2
-  LessEq       r91, r90, r62
-  Move         r92, r89
-  JumpIfFalse  r92, L21
-  Move         r92, r91
+  Index        r89, r10, r3
+  LessEq       r90, r60, r89
+  Index        r91, r10, r3
+  LessEq       r92, r91, r63
+  Move         r93, r90
+  JumpIfFalse  r93, L21
+  Move         r93, r92
 L21:
-  JumpIfFalse  r92, L22
+  JumpIfFalse  r93, L22
   // select s.ss_net_paid)
-  Index        r93, r9, r37
+  Index        r94, r10, r38
   // avg(from s in store_sales
-  Append       r94, r82, r93
-  Move         r82, r94
+  Append       r95, r83, r94
+  Move         r83, r95
 L22:
-  AddInt       r85, r85, r11
+  AddInt       r86, r86, r12
   Jump         L23
 L20:
-  Avg          r95, r82
+  Avg          r96, r83
   // if count(from s in store_sales
-  Select       96,67,81,95
+  Select       97,68,82,96
   // if count(from s in store_sales
-  Const        r97, []
-  IterPrep     r98, r0
-  Len          r99, r98
-  Move         r100, r6
+  Const        r98, []
+  IterPrep     r99, r0
+  Len          r100, r99
+  Move         r101, r7
 L27:
-  LessInt      r101, r100, r99
-  JumpIfFalse  r101, L24
-  Index        r102, r98, r100
-  Move         r9, r102
+  LessInt      r102, r101, r100
+  JumpIfFalse  r102, L24
+  Index        r103, r99, r101
+  Move         r10, r103
   // where s.ss_quantity >= 41 && s.ss_quantity <= 60
-  Index        r103, r9, r2
-  Const        r104, 41
-  LessEq       r105, r104, r103
-  Index        r106, r9, r2
-  Const        r107, 60
-  LessEq       r108, r106, r107
-  Move         r109, r105
-  JumpIfFalse  r109, L25
-  Move         r109, r108
+  Index        r104, r10, r3
+  Const        r105, 41
+  LessEq       r106, r105, r104
+  Index        r107, r10, r3
+  Const        r108, 60
+  LessEq       r109, r107, r108
+  Move         r110, r106
+  JumpIfFalse  r110, L25
+  Move         r110, r109
 L25:
-  JumpIfFalse  r109, L26
+  JumpIfFalse  r110, L26
   // if count(from s in store_sales
-  Append       r110, r97, r9
-  Move         r97, r110
+  Append       r111, r98, r10
+  Move         r98, r111
 L26:
-  AddInt       r100, r100, r11
+  AddInt       r101, r101, r12
   Jump         L27
 L24:
-  Count        r111, r97
+  Count        r112, r98
   // select s) > 30 {
-  Const        r112, 30
-  LessInt      r113, r112, r111
+  Const        r113, 30
+  LessInt      r114, r113, r112
   // avg(from s in store_sales
-  Const        r114, []
-  IterPrep     r115, r0
-  Len          r116, r115
-  Move         r117, r6
+  Const        r115, []
+  IterPrep     r116, r0
+  Len          r117, r116
+  Move         r118, r7
 L31:
-  LessInt      r118, r117, r116
-  JumpIfFalse  r118, L28
-  Index        r119, r115, r117
-  Move         r9, r119
+  LessInt      r119, r118, r117
+  JumpIfFalse  r119, L28
+  Index        r120, r116, r118
+  Move         r10, r120
   // where s.ss_quantity >= 41 && s.ss_quantity <= 60
-  Index        r120, r9, r2
-  LessEq       r121, r104, r120
-  Index        r122, r9, r2
-  LessEq       r123, r122, r107
-  Move         r124, r121
-  JumpIfFalse  r124, L29
-  Move         r124, r123
+  Index        r121, r10, r3
+  LessEq       r122, r105, r121
+  Index        r123, r10, r3
+  LessEq       r124, r123, r108
+  Move         r125, r122
+  JumpIfFalse  r125, L29
+  Move         r125, r124
 L29:
-  JumpIfFalse  r124, L30
+  JumpIfFalse  r125, L30
   // select s.ss_ext_discount_amt)
-  Index        r125, r9, r22
+  Index        r126, r10, r23
   // avg(from s in store_sales
-  Append       r126, r114, r125
-  Move         r114, r126
+  Append       r127, r115, r126
+  Move         r115, r127
 L30:
-  AddInt       r117, r117, r11
+  AddInt       r118, r118, r12
   Jump         L31
 L28:
-  Avg          r127, r114
+  Avg          r128, r115
   // avg(from s in store_sales
-  Const        r128, []
-  IterPrep     r129, r0
-  Len          r130, r129
-  Move         r131, r6
+  Const        r129, []
+  IterPrep     r130, r0
+  Len          r131, r130
+  Move         r132, r7
 L35:
-  LessInt      r132, r131, r130
-  JumpIfFalse  r132, L32
-  Index        r133, r129, r131
-  Move         r9, r133
+  LessInt      r133, r132, r131
+  JumpIfFalse  r133, L32
+  Index        r134, r130, r132
+  Move         r10, r134
   // where s.ss_quantity >= 41 && s.ss_quantity <= 60
-  Index        r134, r9, r2
-  LessEq       r135, r104, r134
-  Index        r136, r9, r2
-  LessEq       r137, r136, r107
-  Move         r138, r135
-  JumpIfFalse  r138, L33
-  Move         r138, r137
+  Index        r135, r10, r3
+  LessEq       r136, r105, r135
+  Index        r137, r10, r3
+  LessEq       r138, r137, r108
+  Move         r139, r136
+  JumpIfFalse  r139, L33
+  Move         r139, r138
 L33:
-  JumpIfFalse  r138, L34
+  JumpIfFalse  r139, L34
   // select s.ss_net_paid)
-  Index        r139, r9, r37
+  Index        r140, r10, r38
   // avg(from s in store_sales
-  Append       r140, r128, r139
-  Move         r128, r140
+  Append       r141, r129, r140
+  Move         r129, r141
 L34:
-  AddInt       r131, r131, r11
+  AddInt       r132, r132, r12
   Jump         L35
 L32:
-  Avg          r141, r128
+  Avg          r142, r129
   // if count(from s in store_sales
-  Select       142,113,127,141
+  Select       143,114,128,142
   // if count(from s in store_sales
-  Const        r143, []
-  IterPrep     r144, r0
-  Len          r145, r144
-  Move         r146, r6
+  Const        r144, []
+  IterPrep     r145, r0
+  Len          r146, r145
+  Move         r147, r7
 L39:
-  LessInt      r147, r146, r145
-  JumpIfFalse  r147, L36
-  Index        r148, r144, r146
-  Move         r9, r148
+  LessInt      r148, r147, r146
+  JumpIfFalse  r148, L36
+  Index        r149, r145, r147
+  Move         r10, r149
   // where s.ss_quantity >= 61 && s.ss_quantity <= 80
-  Index        r149, r9, r2
-  Const        r150, 61
-  LessEq       r151, r150, r149
-  Index        r152, r9, r2
-  Const        r153, 80
-  LessEq       r154, r152, r153
-  Move         r155, r151
-  JumpIfFalse  r155, L37
-  Move         r155, r154
+  Index        r150, r10, r3
+  Const        r151, 61
+  LessEq       r152, r151, r150
+  Index        r153, r10, r3
+  Const        r154, 80
+  LessEq       r155, r153, r154
+  Move         r156, r152
+  JumpIfFalse  r156, L37
+  Move         r156, r155
 L37:
-  JumpIfFalse  r155, L38
+  JumpIfFalse  r156, L38
   // if count(from s in store_sales
-  Append       r156, r143, r9
-  Move         r143, r156
+  Append       r157, r144, r10
+  Move         r144, r157
 L38:
-  AddInt       r146, r146, r11
+  AddInt       r147, r147, r12
   Jump         L39
 L36:
-  Count        r157, r143
+  Count        r158, r144
   // select s) > 40 {
-  LessInt      r158, r62, r157
+  LessInt      r159, r63, r158
   // avg(from s in store_sales
-  Const        r159, []
-  IterPrep     r160, r0
-  Len          r161, r160
-  Move         r162, r6
+  Const        r160, []
+  IterPrep     r161, r0
+  Len          r162, r161
+  Move         r163, r7
 L43:
-  LessInt      r163, r162, r161
-  JumpIfFalse  r163, L40
-  Index        r164, r160, r162
-  Move         r9, r164
+  LessInt      r164, r163, r162
+  JumpIfFalse  r164, L40
+  Index        r165, r161, r163
+  Move         r10, r165
   // where s.ss_quantity >= 61 && s.ss_quantity <= 80
-  Index        r165, r9, r2
-  LessEq       r166, r150, r165
-  Index        r167, r9, r2
-  LessEq       r168, r167, r153
-  Move         r169, r166
-  JumpIfFalse  r169, L41
-  Move         r169, r168
+  Index        r166, r10, r3
+  LessEq       r167, r151, r166
+  Index        r168, r10, r3
+  LessEq       r169, r168, r154
+  Move         r170, r167
+  JumpIfFalse  r170, L41
+  Move         r170, r169
 L41:
-  JumpIfFalse  r169, L42
+  JumpIfFalse  r170, L42
   // select s.ss_ext_discount_amt)
-  Index        r170, r9, r22
+  Index        r171, r10, r23
   // avg(from s in store_sales
-  Append       r171, r159, r170
-  Move         r159, r171
+  Append       r172, r160, r171
+  Move         r160, r172
 L42:
-  AddInt       r162, r162, r11
+  AddInt       r163, r163, r12
   Jump         L43
 L40:
-  Avg          r172, r159
+  Avg          r173, r160
   // avg(from s in store_sales
-  Const        r173, []
-  IterPrep     r174, r0
-  Len          r175, r174
-  Move         r176, r6
+  Const        r174, []
+  IterPrep     r175, r0
+  Len          r176, r175
+  Move         r177, r7
 L47:
-  LessInt      r177, r176, r175
-  JumpIfFalse  r177, L44
-  Index        r178, r174, r176
-  Move         r9, r178
+  LessInt      r178, r177, r176
+  JumpIfFalse  r178, L44
+  Index        r179, r175, r177
+  Move         r10, r179
   // where s.ss_quantity >= 61 && s.ss_quantity <= 80
-  Index        r179, r9, r2
-  LessEq       r180, r150, r179
-  Index        r181, r9, r2
-  LessEq       r182, r181, r153
-  Move         r183, r180
-  JumpIfFalse  r183, L45
-  Move         r183, r182
+  Index        r180, r10, r3
+  LessEq       r181, r151, r180
+  Index        r182, r10, r3
+  LessEq       r183, r182, r154
+  Move         r184, r181
+  JumpIfFalse  r184, L45
+  Move         r184, r183
 L45:
-  JumpIfFalse  r183, L46
+  JumpIfFalse  r184, L46
   // select s.ss_net_paid)
-  Index        r184, r9, r37
+  Index        r185, r10, r38
   // avg(from s in store_sales
-  Append       r185, r173, r184
-  Move         r173, r185
+  Append       r186, r174, r185
+  Move         r174, r186
 L46:
-  AddInt       r176, r176, r11
+  AddInt       r177, r177, r12
   Jump         L47
 L44:
-  Avg          r186, r173
+  Avg          r187, r174
   // if count(from s in store_sales
-  Select       187,158,172,186
+  Select       188,159,173,187
   // if count(from s in store_sales
-  Const        r188, []
-  IterPrep     r189, r0
-  Len          r190, r189
-  Move         r191, r6
+  Const        r189, []
+  IterPrep     r190, r0
+  Len          r191, r190
+  Move         r192, r7
 L51:
-  LessInt      r192, r191, r190
-  JumpIfFalse  r192, L48
-  Index        r193, r189, r191
-  Move         r9, r193
+  LessInt      r193, r192, r191
+  JumpIfFalse  r193, L48
+  Index        r194, r190, r192
+  Move         r10, r194
   // where s.ss_quantity >= 81 && s.ss_quantity <= 100
-  Index        r194, r9, r2
-  Const        r195, 81
-  LessEq       r196, r195, r194
-  Index        r197, r9, r2
-  Const        r198, 100
-  LessEq       r199, r197, r198
-  Move         r200, r196
-  JumpIfFalse  r200, L49
-  Move         r200, r199
+  Index        r195, r10, r3
+  Const        r196, 81
+  LessEq       r197, r196, r195
+  Index        r198, r10, r3
+  Const        r199, 100
+  LessEq       r200, r198, r199
+  Move         r201, r197
+  JumpIfFalse  r201, L49
+  Move         r201, r200
 L49:
-  JumpIfFalse  r200, L50
+  JumpIfFalse  r201, L50
   // if count(from s in store_sales
-  Append       r201, r188, r9
-  Move         r188, r201
+  Append       r202, r189, r10
+  Move         r189, r202
 L50:
-  AddInt       r191, r191, r11
+  AddInt       r192, r192, r12
   Jump         L51
 L48:
-  Count        r202, r188
+  Count        r203, r189
   // select s) > 50 {
-  Const        r203, 50
-  LessInt      r204, r203, r202
+  Const        r204, 50
+  LessInt      r205, r204, r203
   // avg(from s in store_sales
-  Const        r205, []
-  IterPrep     r206, r0
-  Len          r207, r206
-  Move         r208, r6
+  Const        r206, []
+  IterPrep     r207, r0
+  Len          r208, r207
+  Move         r209, r7
 L55:
-  LessInt      r209, r208, r207
-  JumpIfFalse  r209, L52
-  Index        r210, r206, r208
-  Move         r9, r210
+  LessInt      r210, r209, r208
+  JumpIfFalse  r210, L52
+  Index        r211, r207, r209
+  Move         r10, r211
   // where s.ss_quantity >= 81 && s.ss_quantity <= 100
-  Index        r211, r9, r2
-  LessEq       r212, r195, r211
-  Index        r213, r9, r2
-  LessEq       r214, r213, r198
-  Move         r215, r212
-  JumpIfFalse  r215, L53
-  Move         r215, r214
+  Index        r212, r10, r3
+  LessEq       r213, r196, r212
+  Index        r214, r10, r3
+  LessEq       r215, r214, r199
+  Move         r216, r213
+  JumpIfFalse  r216, L53
+  Move         r216, r215
 L53:
-  JumpIfFalse  r215, L54
+  JumpIfFalse  r216, L54
   // select s.ss_ext_discount_amt)
-  Index        r216, r9, r22
+  Index        r217, r10, r23
   // avg(from s in store_sales
-  Append       r217, r205, r216
-  Move         r205, r217
+  Append       r218, r206, r217
+  Move         r206, r218
 L54:
-  AddInt       r208, r208, r11
+  AddInt       r209, r209, r12
   Jump         L55
 L52:
-  Avg          r218, r205
+  Avg          r219, r206
   // avg(from s in store_sales
-  Const        r219, []
-  IterPrep     r220, r0
-  Len          r221, r220
-  Move         r222, r6
+  Const        r220, []
+  IterPrep     r221, r0
+  Len          r222, r221
+  Move         r223, r7
 L59:
-  LessInt      r223, r222, r221
-  JumpIfFalse  r223, L56
-  Index        r224, r220, r222
-  Move         r9, r224
+  LessInt      r224, r223, r222
+  JumpIfFalse  r224, L56
+  Index        r225, r221, r223
+  Move         r10, r225
   // where s.ss_quantity >= 81 && s.ss_quantity <= 100
-  Index        r225, r9, r2
-  LessEq       r226, r195, r225
-  Index        r227, r9, r2
-  LessEq       r228, r227, r198
-  Move         r229, r226
-  JumpIfFalse  r229, L57
-  Move         r229, r228
+  Index        r226, r10, r3
+  LessEq       r227, r196, r226
+  Index        r228, r10, r3
+  LessEq       r229, r228, r199
+  Move         r230, r227
+  JumpIfFalse  r230, L57
+  Move         r230, r229
 L57:
-  JumpIfFalse  r229, L58
+  JumpIfFalse  r230, L58
   // select s.ss_net_paid)
-  Index        r230, r9, r37
+  Index        r231, r10, r38
   // avg(from s in store_sales
-  Append       r231, r219, r230
-  Move         r219, r231
+  Append       r232, r220, r231
+  Move         r220, r232
 L58:
-  AddInt       r222, r222, r11
+  AddInt       r223, r223, r12
   Jump         L59
 L56:
-  Avg          r232, r219
+  Avg          r233, r220
   // if count(from s in store_sales
-  Select       233,204,218,232
+  Select       234,205,219,233
   // from r in reason
-  Const        r234, []
+  Const        r235, []
   // where r.r_reason_sk == 1
-  Const        r235, "r_reason_sk"
+  Const        r236, "r_reason_sk"
   // bucket1: bucket1,
-  Const        r236, "bucket1"
+  Const        r237, "bucket1"
   // bucket2: bucket2,
-  Const        r237, "bucket2"
+  Const        r238, "bucket2"
   // bucket3: bucket3,
-  Const        r238, "bucket3"
+  Const        r239, "bucket3"
   // bucket4: bucket4,
-  Const        r239, "bucket4"
+  Const        r240, "bucket4"
   // bucket5: bucket5
-  Const        r240, "bucket5"
+  Const        r241, "bucket5"
   // from r in reason
-  IterPrep     r241, r0
-  Len          r242, r241
-  Move         r243, r6
+  IterPrep     r242, r1
+  Len          r243, r242
+  Move         r244, r7
 L62:
-  LessInt      r244, r243, r242
-  JumpIfFalse  r244, L60
-  Index        r245, r241, r243
-  Move         r246, r245
+  LessInt      r245, r244, r243
+  JumpIfFalse  r245, L60
+  Index        r246, r242, r244
+  Move         r247, r246
   // where r.r_reason_sk == 1
-  Index        r247, r246, r235
-  Equal        r248, r247, r11
-  JumpIfFalse  r248, L61
+  Index        r248, r247, r236
+  Equal        r249, r248, r12
+  JumpIfFalse  r249, L61
   // bucket1: bucket1,
-  Const        r249, "bucket1"
+  Const        r250, "bucket1"
   // bucket2: bucket2,
-  Const        r250, "bucket2"
+  Const        r251, "bucket2"
   // bucket3: bucket3,
-  Const        r251, "bucket3"
+  Const        r252, "bucket3"
   // bucket4: bucket4,
-  Const        r252, "bucket4"
+  Const        r253, "bucket4"
   // bucket5: bucket5
-  Const        r253, "bucket5"
+  Const        r254, "bucket5"
   // bucket1: bucket1,
-  Move         r254, r249
-  Move         r255, r51
+  Move         r255, r250
+  Move         r256, r52
   // bucket2: bucket2,
-  Move         r256, r250
-  Move         r257, r96
+  Move         r257, r251
+  Move         r258, r97
   // bucket3: bucket3,
-  Move         r258, r251
-  Move         r259, r142
+  Move         r259, r252
+  Move         r260, r143
   // bucket4: bucket4,
-  Move         r260, r252
-  Move         r261, r187
+  Move         r261, r253
+  Move         r262, r188
   // bucket5: bucket5
-  Move         r262, r253
-  Move         r263, r233
+  Move         r263, r254
+  Move         r264, r234
   // select {
-  MakeMap      r264, 5, r254
+  MakeMap      r265, 5, r255
   // from r in reason
-  Append       r265, r234, r264
-  Move         r234, r265
+  Append       r266, r235, r265
+  Move         r235, r266
 L61:
-  AddInt       r243, r243, r11
+  AddInt       r244, r244, r12
   Jump         L62
 L60:
   // json(result)
-  JSON         r234
-  // expect len(result) == 0
-  Len          r266, r234
-  EqualInt     r267, r266, r6
-  Expect       r267
+  JSON         r235
+  // expect result == [
+  Const        r267, [{"bucket1": 7.0, "bucket2": 15.0, "bucket3": 30.0, "bucket4": 35.0, "bucket5": 50.0}]
+  Equal        r268, r235, r267
+  Expect       r268
   Return       r0

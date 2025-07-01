@@ -1,21 +1,21 @@
 public class Main {
-    static void test_TPCDS_Q1_empty() {
-        expect((result.length == 0));
+    static void test_TPCDS_Q1_result() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("c_customer_id", "C2"))}));
     }
     
-    static Object[] store_returns = new Object[]{};
+    static Object[] store_returns = new Object[]{new java.util.HashMap<>(java.util.Map.of("sr_returned_date_sk", 1, "sr_customer_sk", 1, "sr_store_sk", 10, "sr_return_amt", 20)), new java.util.HashMap<>(java.util.Map.of("sr_returned_date_sk", 1, "sr_customer_sk", 2, "sr_store_sk", 10, "sr_return_amt", 50))};
     
-    static Object[] date_dim = new Object[]{};
+    static Object[] date_dim = new Object[]{new java.util.HashMap<>(java.util.Map.of("d_date_sk", 1, "d_year", 1998))};
     
-    static Object[] store = new Object[]{};
+    static Object[] store = new Object[]{new java.util.HashMap<>(java.util.Map.of("s_store_sk", 10, "s_state", "TN"))};
     
-    static Object[] customer = new Object[]{};
+    static Object[] customer = new Object[]{new java.util.HashMap<>(java.util.Map.of("c_customer_sk", 1, "c_customer_id", "C1")), new java.util.HashMap<>(java.util.Map.of("c_customer_sk", 2, "c_customer_id", "C2"))};
     
     static Object[] customer_total_return = (new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
         java.util.List<Object> _src = _toList(store_returns);
         java.util.List<_JoinSpec> _joins = java.util.List.of(
-            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object sr = a[0]; Object d = a[1]; return (sr.get("sr_returned_date_sk") == d.get("d_date_sk")); }, false, false)
+            new _JoinSpec(_toList(date_dim), (Object[] a) -> { Object sr = a[0]; Object d = a[1]; return ((sr.get("sr_returned_date_sk") == d.get("d_date_sk")) && (d.get("d_year") == 1998)); }, false, false)
         );
         return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object sr = a[0]; Object d = a[1]; return new java.util.HashMap<>(java.util.Map.of("ctr_customer_sk", g.get("key").customer_sk, "ctr_store_sk", g.get("key").store_sk, "ctr_total_return", _sum((new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
@@ -24,7 +24,7 @@ public class Main {
         );
         return _query(_src, _joins, new _QueryOpts((Object[] a) -> { Object x = a[0]; return x.get("sr_return_amt"); }, null, null, -1, -1));
     }
-}).get()))); }, (Object[] a) -> { Object sr = a[0]; Object d = a[1]; return (d.get("d_year") == 1998); }, null, -1, -1));
+}).get()))); }, null, null, -1, -1));
     }
 }).get();
     
@@ -47,7 +47,7 @@ public class Main {
 }).get();
     
     public static void main(String[] args) {
-        test_TPCDS_Q1_empty();
+        test_TPCDS_Q1_result();
         _json(result);
     }
     

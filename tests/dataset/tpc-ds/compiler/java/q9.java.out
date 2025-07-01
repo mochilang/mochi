@@ -1,11 +1,11 @@
 public class Main {
-    static void test_TPCDS_Q9_empty() {
-        expect((result.length == 0));
+    static void test_TPCDS_Q9_result() {
+        expect((result == new Object[]{new java.util.HashMap<>(java.util.Map.of("bucket1", 7, "bucket2", 15, "bucket3", 30, "bucket4", 35, "bucket5", 50))}));
     }
     
-    static Object[] store_sales = new Object[]{};
+    static Object[] store_sales = new Object[]{new java.util.HashMap<>(java.util.Map.of("ss_quantity", 5, "ss_ext_discount_amt", 5, "ss_net_paid", 7)), new java.util.HashMap<>(java.util.Map.of("ss_quantity", 30, "ss_ext_discount_amt", 10, "ss_net_paid", 15)), new java.util.HashMap<>(java.util.Map.of("ss_quantity", 50, "ss_ext_discount_amt", 20, "ss_net_paid", 30)), new java.util.HashMap<>(java.util.Map.of("ss_quantity", 70, "ss_ext_discount_amt", 25, "ss_net_paid", 35)), new java.util.HashMap<>(java.util.Map.of("ss_quantity", 90, "ss_ext_discount_amt", 40, "ss_net_paid", 50))};
     
-    static Object[] reason = new Object[]{};
+    static Object[] reason = new Object[]{new java.util.HashMap<>(java.util.Map.of("r_reason_sk", 1))};
     
     static double bucket1 = ((_count((new java.util.function.Supplier<java.util.List<Object>>() {
     public java.util.List<Object> get() {
@@ -148,7 +148,7 @@ public class Main {
 }).get();
     
     public static void main(String[] args) {
-        test_TPCDS_Q9_empty();
+        test_TPCDS_Q9_result();
         _json(result);
     }
     
