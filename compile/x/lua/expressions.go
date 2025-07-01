@@ -434,7 +434,136 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if q.Group != nil {
-		return "", fmt.Errorf("unsupported query expression")
+		// Queries with joins and grouping are compiled using the helper
+		// query and group_by functions. Only the main iter variable is
+		// selected from the join results which matches the needs of the
+		// TPC-DS queries.
+		src, err := c.compileExpr(q.Source)
+		if err != nil {
+			return "", err
+		}
+		orig := c.env
+		child := types.NewEnv(c.env)
+		child.SetVar(q.Var, types.AnyType{}, true)
+		c.env = child
+
+		fromSrcs := make([]string, len(q.Froms))
+		for i, f := range q.Froms {
+			fs, err := c.compileExpr(f.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			fromSrcs[i] = fs
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+
+		joinSrcs := make([]string, len(q.Joins))
+		joinOns := make([]string, len(q.Joins))
+		joinSides := make([]string, len(q.Joins))
+		for i, j := range q.Joins {
+			js, err := c.compileExpr(j.Src)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			on, err := c.compileExpr(j.On)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			joinSrcs[i] = js
+			joinOns[i] = on
+			if j.Side != nil {
+				joinSides[i] = *j.Side
+			}
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
+
+		var whereExpr string
+		if q.Where != nil {
+			whereExpr, err = c.compileExpr(q.Where)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+		}
+
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		c.env = genv
+		valExpr, err := c.compileExpr(q.Select)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		c.env = orig
+
+		params := []string{sanitizeName(q.Var)}
+		for _, f := range q.Froms {
+			params = append(params, sanitizeName(f.Var))
+		}
+		paramCopy := append([]string(nil), params...)
+
+		joins := make([]string, 0, len(q.Froms)+len(q.Joins))
+		for _, fs := range fromSrcs {
+			joins = append(joins, fmt.Sprintf("{ items = %s }", fs))
+		}
+		for i, js := range joinSrcs {
+			onParams := append(paramCopy, sanitizeName(q.Joins[i].Var))
+			spec := fmt.Sprintf("{ items = %s, on = function(%s) return %s end", js, strings.Join(onParams, ", "), joinOns[i])
+			side := joinSides[i]
+			if side == "left" || side == "outer" {
+				spec += ", left = true"
+			}
+			if side == "right" || side == "outer" {
+				spec += ", right = true"
+			}
+			spec += " }"
+			joins = append(joins, spec)
+			paramCopy = append(paramCopy, sanitizeName(q.Joins[i].Var))
+		}
+
+		allParams := strings.Join(paramCopy, ", ")
+		selectFn := fmt.Sprintf("function(%s) return %s end", allParams, sanitizeName(q.Var))
+		var whereFn string
+		if whereExpr != "" {
+			whereFn = fmt.Sprintf("function(%s) return (%s) end", allParams, whereExpr)
+		}
+
+		var b strings.Builder
+		b.WriteString("(function()\n")
+		b.WriteString("\tlocal _src = " + src + "\n")
+		b.WriteString("\tlocal _rows = __query(_src, {\n")
+		for i, j := range joins {
+			b.WriteString("\t\t" + j)
+			if i != len(joins)-1 {
+				b.WriteString(",")
+			}
+			b.WriteString("\n")
+		}
+		b.WriteString("\t}, { selectFn = " + selectFn)
+		if whereFn != "" {
+			b.WriteString(", where = " + whereFn)
+		}
+		b.WriteString(" })\n")
+		b.WriteString(fmt.Sprintf("\tlocal _groups = __group_by(_rows, function(%s) return %s end)\n", sanitizeName(q.Var), keyExpr))
+		b.WriteString("\tlocal _res = {}\n")
+		b.WriteString(fmt.Sprintf("\tfor _, %s in ipairs(_groups) do\n", sanitizeName(q.Group.Name)))
+		b.WriteString(fmt.Sprintf("\t\t_res[#_res+1] = %s\n", valExpr))
+		b.WriteString("\tend\n")
+		b.WriteString("\treturn _res\n")
+		b.WriteString("end)()")
+		c.helpers["query"] = true
+		c.helpers["_Group"] = true
+		c.helpers["_group_by"] = true
+		return b.String(), nil
 	}
 
 	if len(q.Joins) > 0 {
