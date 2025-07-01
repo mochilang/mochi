@@ -30,7 +30,22 @@
                (else '())))
         (n 0))
     (set! n (length lst))
-    (if (= n 0) 0 (/ (_sum lst) n))))
+    (if (= n 0) 0 (/ (_sum lst) n)))
+
+(define (_max v)
+  (let ((lst (cond
+               ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))
+               ((list? v) v)
+               (else '())))
+        (m 0))
+    (when (not (null? lst))
+      (set! m (car lst))
+      (for-each (lambda (n)
+                  (when (> n m) (set! m n)))
+                (cdr lst)))
+    m))
+
+(define (_group_by src keyfn)
 
 (define (_group_by src keyfn)
   (let ((groups '()) (order '()))
