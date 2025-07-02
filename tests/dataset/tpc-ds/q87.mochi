@@ -1,44 +1,28 @@
 // Expanded sample data for TPC-DS Q87
 let store_sales = [
-  {cust: "A"},
-  {cust: "B"},
-  {cust: "B"},
-  {cust: "C"}
+  {cust: "A", price: 5.0},
+  {cust: "B", price: 30.0},
+  {cust: "C", price: 57.0}
 ]
-let catalog_sales = [
-  {cust: "A"},
-  {cust: "C"},
-  {cust: "D"}
-]
-let web_sales = [
-  {cust: "A"},
-  {cust: "D"}
-]
+let catalog_sales = [ {cust: "A"} ]
+let web_sales = []
 
-fun distinct(xs: list<any>): list<any> {
-  var out = []
-  for x in xs {
-    if !contains(out, x) {
-      out = append(out, x)
-    }
-  }
-  return out
-}
+let store_customers = from s in store_sales select s.cust
+let catalog_customers = from s in catalog_sales select s.cust
+let web_customers = from s in web_sales select s.cust
 
-fun concat(a: list<any>, b: list<any>): list<any> {
-  var out = a
-  for x in b {
-    out = append(out, x)
-  }
-  return out
-}
+let store_only =
+  from c in store_customers
+  where len(from x in catalog_customers where x == c select x) == 0 &&
+        len(from x in web_customers where x == c select x) == 0
+  select c
 
-fun to_list(xs: list<any>): list<any> { return xs }
-
-let result = 87
+let result = sum(from s in store_sales
+                 where len(from x in store_only where x == s.cust select x) > 0
+                 select s.price)
 
 json(result)
 
 test "TPCDS Q87 sample" {
-  expect result == 87
+  expect result == 87.0
 }
