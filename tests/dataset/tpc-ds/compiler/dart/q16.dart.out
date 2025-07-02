@@ -81,21 +81,21 @@ void main() {
   var order = <String>[];
   for (var cs1 in catalog_sales) {
     for (var d in date_dim) {
-      if (!(((_equal(cs1.cs_ship_date_sk, d.d_date_sk) && (d.d_date.compareTo("2000-03-01") >= 0)) && (d.d_date.compareTo("2000-04-30") <= 0)))) {
+      if (!(((_equal(cs1['cs_ship_date_sk'], d['d_date_sk']) && (d['d_date'].compareTo("2000-03-01") >= 0)) && (d['d_date'].compareTo("2000-04-30") <= 0)))) {
         continue;
       }
       for (var ca in customer_address) {
-        if (!((_equal(cs1.cs_ship_addr_sk, ca.ca_address_sk) && _equal(ca.ca_state, "CA")))) {
+        if (!((_equal(cs1['cs_ship_addr_sk'], ca['ca_address_sk']) && _equal(ca['ca_state'], "CA")))) {
           continue;
         }
         for (var cc in call_center) {
-          if (!((_equal(cs1.cs_call_center_sk, cc.cc_call_center_sk) && _equal(cc.cc_county, "CountyA")))) {
+          if (!((_equal(cs1['cs_call_center_sk'], cc['cc_call_center_sk']) && _equal(cc['cc_county'], "CountyA")))) {
             continue;
           }
           if (!((_exists((() {
   var _res = [];
   for (var cs2 in catalog_sales) {
-    if (!((_equal(cs1.cs_order_number, cs2.cs_order_number) && !_equal(cs1.cs_warehouse_sk, cs2.cs_warehouse_sk)))) {
+    if (!((_equal(cs1['cs_order_number'], cs2['cs_order_number']) && !_equal(cs1['cs_warehouse_sk'], cs2['cs_warehouse_sk'])))) {
       continue;
     }
     _res.add(cs2);
@@ -104,7 +104,7 @@ void main() {
 })()) && (_exists((() {
   var _res = [];
   for (var cr in catalog_returns) {
-    if (!(_equal(cs1.cs_order_number, cr.cr_order_number))) {
+    if (!(_equal(cs1['cs_order_number'], cr.cr_order_number))) {
       continue;
     }
     _res.add(cr);

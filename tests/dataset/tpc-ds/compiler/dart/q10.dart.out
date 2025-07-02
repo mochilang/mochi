@@ -77,21 +77,21 @@ void main() {
   var _res = [];
   for (var c in customer) {
     for (var ca in customer_address) {
-      if (!((_equal(c.c_current_addr_sk, ca.ca_address_sk) && _equal(ca.ca_county, "CountyA")))) {
+      if (!((_equal(c['c_current_addr_sk'], ca['ca_address_sk']) && _equal(ca['ca_county'], "CountyA")))) {
         continue;
       }
       for (var cd in customer_demographics) {
-        if (!(_equal(c.c_current_cdemo_sk, cd.cd_demo_sk))) {
+        if (!(_equal(c['c_current_cdemo_sk'], cd['cd_demo_sk']))) {
           continue;
         }
         if (!(_exists((() {
   var _res = [];
   for (var ss in store_sales) {
     for (var d in date_dim) {
-      if (!(_equal(ss.ss_sold_date_sk, d.d_date_sk))) {
+      if (!((ss['ss_sold_date_sk'] == d['d_date_sk']))) {
         continue;
       }
-      if (!((((_equal(ss.ss_customer_sk, c.c_customer_sk) && _equal(d.d_year, 2000)) && (d.d_moy >= 2)) && (d.d_moy <= 5)))) {
+      if (!(((((ss['ss_customer_sk'] == c['c_customer_sk']) && (d['d_year'] == 2000)) && (d['d_moy'] >= 2)) && (d['d_moy'] <= 5)))) {
         continue;
       }
       _res.add(ss);
@@ -107,7 +107,7 @@ void main() {
   }
   return _res;
 })();
-  List<Map<String, dynamic>> result = _group_by(active, (a) => {"gender": a.cd_gender, "marital": a.cd_marital_status, "education": a.cd_education_status, "purchase": a.cd_purchase_estimate, "credit": a.cd_credit_rating, "dep": a.cd_dep_count, "depemp": a.cd_dep_employed_count, "depcol": a.cd_dep_college_count}).map((g) => {"cd_gender": g.key.gender, "cd_marital_status": g.key.marital, "cd_education_status": g.key.education, "cnt1": _count((() {
+  List<Map<String, dynamic>> result = _group_by(active, (a) => {"gender": a['cd_gender'], "marital": a['cd_marital_status'], "education": a['cd_education_status'], "purchase": a['cd_purchase_estimate'], "credit": a['cd_credit_rating'], "dep": a['cd_dep_count'], "depemp": a['cd_dep_employed_count'], "depcol": a['cd_dep_college_count']}).map((g) => {"cd_gender": g.key.gender, "cd_marital_status": g.key.marital, "cd_education_status": g.key.education, "cnt1": _count((() {
   var _res = [];
   for (var _ in g) {
     _res.add(_);

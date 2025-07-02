@@ -87,34 +87,34 @@ void main() {
   var _res = [];
   for (var ss in store_sales) {
     for (var sr in store_returns) {
-      if (!(((_equal(ss.ss_customer_sk, sr.sr_customer_sk) && _equal(ss.ss_item_sk, sr.sr_item_sk)) && _equal(ss.ss_ticket_number, sr.sr_ticket_number)))) {
+      if (!((((ss['ss_customer_sk'] == sr['sr_customer_sk']) && (ss['ss_item_sk'] == sr['sr_item_sk'])) && (ss['ss_ticket_number'] == sr['sr_ticket_number'])))) {
         continue;
       }
       for (var cs in catalog_sales) {
-        if (!((_equal(sr.sr_customer_sk, cs.cs_bill_customer_sk) && _equal(sr.sr_item_sk, cs.cs_item_sk)))) {
+        if (!(((sr['sr_customer_sk'] == cs['cs_bill_customer_sk']) && (sr['sr_item_sk'] == cs['cs_item_sk'])))) {
           continue;
         }
         for (var d1 in date_dim) {
-          if (!((_equal(ss.ss_sold_date_sk, d1.d_date_sk) && _equal(d1.d_quarter_name, "1998Q1")))) {
+          if (!((_equal(ss['ss_sold_date_sk'], d1['d_date_sk']) && _equal(d1['d_quarter_name'], "1998Q1")))) {
             continue;
           }
           for (var d2 in date_dim) {
-            if (!((_equal(sr.sr_returned_date_sk, d2.d_date_sk) && (["1998Q1", "1998Q2", "1998Q3"].contains(d2.d_quarter_name))))) {
+            if (!((_equal(sr['sr_returned_date_sk'], d2['d_date_sk']) && (["1998Q1", "1998Q2", "1998Q3"].contains(d2['d_quarter_name']))))) {
               continue;
             }
             for (var d3 in date_dim) {
-              if (!((_equal(cs.cs_sold_date_sk, d3.d_date_sk) && (["1998Q1", "1998Q2", "1998Q3"].contains(d3.d_quarter_name))))) {
+              if (!((_equal(cs['cs_sold_date_sk'], d3['d_date_sk']) && (["1998Q1", "1998Q2", "1998Q3"].contains(d3['d_quarter_name']))))) {
                 continue;
               }
               for (var s in store) {
-                if (!(_equal(ss.ss_store_sk, s.s_store_sk))) {
+                if (!(_equal(ss['ss_store_sk'], s['s_store_sk']))) {
                   continue;
                 }
                 for (var i in item) {
-                  if (!(_equal(ss.ss_item_sk, i.i_item_sk))) {
+                  if (!(_equal(ss['ss_item_sk'], i['i_item_sk']))) {
                     continue;
                   }
-                  _res.add({"qty": ss.ss_quantity, "ret": sr.sr_return_quantity, "csq": cs.cs_quantity, "i_item_id": i.i_item_id, "i_item_desc": i.i_item_desc, "s_state": s.s_state});
+                  _res.add({"qty": ss['ss_quantity'], "ret": sr['sr_return_quantity'], "csq": cs['cs_quantity'], "i_item_id": i['i_item_id'], "i_item_desc": i['i_item_desc'], "s_state": s['s_state']});
                 }
               }
             }
@@ -125,7 +125,7 @@ void main() {
   }
   return _res;
 })();
-  List<Map<String, dynamic>> result = _group_by(joined, (j) => {"i_item_id": j.i_item_id, "i_item_desc": j.i_item_desc, "s_state": j.s_state}).map((g) => {"i_item_id": g.key.i_item_id, "i_item_desc": g.key.i_item_desc, "s_state": g.key.s_state, "store_sales_quantitycount": _count((() {
+  List<Map<String, dynamic>> result = _group_by(joined, (j) => {"i_item_id": j['i_item_id'], "i_item_desc": j['i_item_desc'], "s_state": j['s_state']}).map((g) => {"i_item_id": g.key.i_item_id, "i_item_desc": g.key.i_item_desc, "s_state": g.key.s_state, "store_sales_quantitycount": _count((() {
   var _res = [];
   for (var _ in g) {
     _res.add(_);

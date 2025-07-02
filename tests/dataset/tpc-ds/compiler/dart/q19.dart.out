@@ -86,26 +86,26 @@ void main() {
   var order = <String>[];
   for (var d in date_dim) {
     for (var ss in store_sales) {
-      if (!(_equal(ss.ss_sold_date_sk, d.d_date_sk))) {
+      if (!(_equal(ss['ss_sold_date_sk'], d['d_date_sk']))) {
         continue;
       }
       for (var i in item) {
-        if (!((_equal(ss.ss_item_sk, i.i_item_sk) && _equal(i.i_manager_id, 10)))) {
+        if (!((_equal(ss['ss_item_sk'], i['i_item_sk']) && _equal(i['i_manager_id'], 10)))) {
           continue;
         }
         for (var c in customer) {
-          if (!(_equal(ss.ss_customer_sk, c.c_customer_sk))) {
+          if (!(_equal(ss['ss_customer_sk'], c['c_customer_sk']))) {
             continue;
           }
           for (var ca in customer_address) {
-            if (!(_equal(c.c_current_addr_sk, ca.ca_address_sk))) {
+            if (!(_equal(c['c_current_addr_sk'], ca['ca_address_sk']))) {
               continue;
             }
             for (var s in store) {
-              if (!((_equal(ss.ss_store_sk, s.s_store_sk) && (substr(ca.ca_zip, 0, 5) != substr(s.s_zip, 0, 5))))) {
+              if (!((_equal(ss['ss_store_sk'], s['s_store_sk']) && (substr(ca['ca_zip'], 0, 5) != substr(s['s_zip'], 0, 5))))) {
                 continue;
               }
-              var key = {"brand": i.i_brand, "brand_id": i.i_brand_id, "man_id": i.i_manufact_id, "man": i.i_manufact};
+              var key = {"brand": i['i_brand'], "brand_id": i['i_brand_id'], "man_id": i['i_manufact_id'], "man": i['i_manufact']};
               var ks = key.toString();
               var g = groups[ks];
               if (g == null) {

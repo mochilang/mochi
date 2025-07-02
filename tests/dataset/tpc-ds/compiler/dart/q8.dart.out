@@ -19,25 +19,25 @@ void main() {
   var order = <String>[];
   for (var ss in store_sales) {
     for (var d in date_dim) {
-      if (!(((_equal(ss.ss_sold_date_sk, d.d_date_sk) && _equal(d.d_qoy, 1)) && _equal(d.d_year, 1998)))) {
+      if (!(((_equal(ss['ss_sold_date_sk'], d['d_date_sk']) && (d['d_qoy'] == 1)) && (d['d_year'] == 1998)))) {
         continue;
       }
       for (var s in store) {
-        if (!(_equal(ss.ss_store_sk, s.s_store_sk))) {
+        if (!(_equal(ss['ss_store_sk'], s['s_store_sk']))) {
           continue;
         }
         for (var ca in customer_address) {
-          if (!((substr(s.s_zip, 0, 2) == substr(ca.ca_zip, 0, 2)))) {
+          if (!((substr(s['s_zip'], 0, 2) == substr(ca['ca_zip'], 0, 2)))) {
             continue;
           }
           for (var c in customer) {
-            if (!((_equal(ca.ca_address_sk, c.c_current_addr_sk) && _equal(c.c_preferred_cust_flag, "Y")))) {
+            if (!((_equal(ca['ca_address_sk'], c['c_current_addr_sk']) && _equal(c['c_preferred_cust_flag'], "Y")))) {
               continue;
             }
-            if (!((zip_list.contains(substr(ca.ca_zip, 0, 5))))) {
+            if (!((zip_list.contains(substr(ca['ca_zip'], 0, 5))))) {
               continue;
             }
-            var key = s.s_store_name;
+            var key = s['s_store_name'];
             var ks = key.toString();
             var g = groups[ks];
             if (g == null) {

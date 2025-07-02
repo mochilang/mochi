@@ -59,21 +59,21 @@ void main() {
   var order = <String>[];
   for (var cs in catalog_sales) {
     for (var c in customer) {
-      if (!(_equal(cs.cs_bill_customer_sk, c.c_customer_sk))) {
+      if (!(_equal(cs['cs_bill_customer_sk'], c['c_customer_sk']))) {
         continue;
       }
       for (var ca in customer_address) {
-        if (!(_equal(c.c_current_addr_sk, ca.ca_address_sk))) {
+        if (!(_equal(c['c_current_addr_sk'], ca['ca_address_sk']))) {
           continue;
         }
         for (var d in date_dim) {
-          if (!(_equal(cs.cs_sold_date_sk, d.d_date_sk))) {
+          if (!(_equal(cs['cs_sold_date_sk'], d['d_date_sk']))) {
             continue;
           }
-          if (!(((((((["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"].contains(substr(ca.ca_zip, 0, 5))) || (["CA", "WA", "GA"].contains(ca.ca_state))) || (cs.cs_sales_price > 500))) && _equal(d.d_qoy, 1)) && _equal(d.d_year, 2000)))) {
+          if (!(((((((["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"].contains(substr(ca['ca_zip'], 0, 5))) || (["CA", "WA", "GA"].contains(ca['ca_state']))) || (cs['cs_sales_price'] > 500))) && (d['d_qoy'] == 1)) && (d['d_year'] == 2000)))) {
             continue;
           }
-          var key = {"zip": ca.ca_zip};
+          var key = {"zip": ca['ca_zip']};
           var ks = key.toString();
           var g = groups[ks];
           if (g == null) {

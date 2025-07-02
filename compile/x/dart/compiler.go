@@ -929,6 +929,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.If != nil:
+		return c.compileIfExpr(p.If)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1070,6 +1072,8 @@ func (c *Compiler) compileLiteral(lit *parser.Literal) (string, error) {
 			return "true", nil
 		}
 		return "false", nil
+	case lit.Null:
+		return "null", nil
 	}
 	return "", fmt.Errorf("unknown literal")
 }
@@ -1577,13 +1581,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 
+	// Setup a child environment so field access inside the query can be
+	// type-aware. Without this, map fields are accessed using dot syntax
+	// which fails to compile.
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := c.exprType(q.Source).(types.ListType); ok {
+		elemType = lt.Elem
+	}
+	child.SetVar(q.Var, elemType, true)
+	c.env = child
+	defer func() { c.env = origEnv }()
+
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
 		if err != nil {
+			c.env = origEnv
 			return "", err
 		}
 		fromSrcs[i] = fs
+		var fe types.Type = types.AnyType{}
+		if lt, ok := c.exprType(f.Src).(types.ListType); ok {
+			fe = lt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
 	}
 
 	joinSrcs := make([]string, len(q.Joins))
@@ -1593,13 +1616,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
-			return "", err
-		}
-		on, err := c.compileExpr(j.On)
-		if err != nil {
+			c.env = origEnv
 			return "", err
 		}
 		joinSrcs[i] = js
+		var je types.Type = types.AnyType{}
+		if lt, ok := c.exprType(j.Src).(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+	}
+	c.env = child
+	for i, j := range q.Joins {
+		on, err := c.compileExpr(j.On)
+		if err != nil {
+			c.env = origEnv
+			return "", err
+		}
 		joinOns[i] = on
 		if j.Side != nil {
 			joinSides[i] = *j.Side
@@ -2117,6 +2150,32 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 	}
 	c.use("_genText")
 	return fmt.Sprintf("_genText(%s, %s, %s)", prompt, model, paramStr), nil
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	var elseExpr string
+	if ie.ElseIf != nil {
+		elseExpr, err = c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+	} else if ie.Else != nil {
+		elseExpr, err = c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		elseExpr = "null"
+	}
+	return fmt.Sprintf("(%s ? %s : %s)", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {

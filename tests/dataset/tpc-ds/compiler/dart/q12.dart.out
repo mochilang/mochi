@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 class WebSale {
   int ws_item_sk;
@@ -50,17 +50,17 @@ void main() {
   var order = <String>[];
   for (var ws in web_sales) {
     for (var i in item) {
-      if (!(_equal(ws.ws_item_sk, i.i_item_sk))) {
+      if (!(_equal(ws['ws_item_sk'], i['i_item_sk']))) {
         continue;
       }
       for (var d in date_dim) {
-        if (!(_equal(ws.ws_sold_date_sk, d.d_date_sk))) {
+        if (!(_equal(ws['ws_sold_date_sk'], d['d_date_sk']))) {
           continue;
         }
-        if (!((((["A", "B", "C"].contains(i.i_category)) && (d.d_date.compareTo("2001-01-15") >= 0)) && (d.d_date.compareTo("2001-02-14") <= 0)))) {
+        if (!((((["A", "B", "C"].contains(i['i_category'])) && (d['d_date'].compareTo("2001-01-15") >= 0)) && (d['d_date'].compareTo("2001-02-14") <= 0)))) {
           continue;
         }
-        var key = {"id": i.i_item_id, "desc": i.i_item_desc, "cat": i.i_category, "_class": i.i_class, "price": i.i_current_price};
+        var key = {"id": i['i_item_id'], "desc": i['i_item_desc'], "cat": i['i_category'], "_class": i['i_class'], "price": i['i_current_price']};
         var ks = key.toString();
         var g = groups[ks];
         if (g == null) {
@@ -85,7 +85,7 @@ void main() {
   }
   return _res;
 })();
-  List<Map<String, dynamic>> class_totals = _group_by(filtered, (f) => f.i_class).map((g) => {"_class": g.key, "total": _sum((() {
+  List<Map<String, dynamic>> class_totals = _group_by(filtered, (f) => f['i_class']).map((g) => {"_class": g.key, "total": _sum((() {
   var _res = [];
   for (var x in g) {
     _res.add(x.itemrevenue);
@@ -96,18 +96,18 @@ void main() {
   var _res = [];
   for (var f in filtered) {
     for (var t in class_totals) {
-      if (!(_equal(f.i_class, t.class))) {
+      if (!(_equal(f['i_class'], t['_class']))) {
         continue;
       }
-      _res.add({"i_item_id": f.i_item_id, "i_item_desc": f.i_item_desc, "i_category": f.i_category, "i_class": f.i_class, "i_current_price": f.i_current_price, "itemrevenue": f.itemrevenue, "revenueratio": (((f.itemrevenue * 100)) ~/ t.total)});
+      _res.add({"i_item_id": f['i_item_id'], "i_item_desc": f['i_item_desc'], "i_category": f['i_category'], "i_class": f['i_class'], "i_current_price": f['i_current_price'], "itemrevenue": f['itemrevenue'], "revenueratio": (((f['itemrevenue'] * 100)) ~/ t['total'])});
     }
   }
   var items = List.from(_res);
   items.sort((fA, fB) {
     var f = fA;
-    var keyA = [f.i_category, f.i_class, f.i_item_id, f.i_item_desc];
+    var keyA = [f['i_category'], f['i_class'], f['i_item_id'], f['i_item_desc']];
     f = fB;
-    var keyB = [f.i_category, f.i_class, f.i_item_id, f.i_item_desc];
+    var keyB = [f['i_category'], f['i_class'], f['i_item_id'], f['i_item_desc']];
     return Comparable.compare(keyA, keyB);
   });
   _res = items;
