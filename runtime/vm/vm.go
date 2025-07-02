@@ -2301,6 +2301,8 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		return fc.compileWhile(s.While)
 	case s.For != nil:
 		return fc.compileFor(s.For)
+	case s.Update != nil:
+		return fc.compileUpdate(s.Update)
 	case s.Break != nil:
 		if l := len(fc.loops); l > 0 {
 			idx := len(fc.fn.Code)
@@ -2793,11 +2795,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			return dst
 		}
 		regs := make([]int, len(p.List.Elems))
+		for i := range p.List.Elems {
+			regs[i] = fc.newReg()
+		}
 		for i, e := range p.List.Elems {
 			r := fc.compileExpr(e)
-			reg := fc.newReg()
-			fc.emit(e.Pos, Instr{Op: OpMove, A: reg, B: r})
-			regs[i] = reg
+			fc.emit(e.Pos, Instr{Op: OpMove, A: regs[i], B: r})
 		}
 		dst := fc.newReg()
 		fc.emit(p.Pos, Instr{Op: OpMakeList, A: dst, B: len(regs), C: regs[0]})
@@ -3334,6 +3337,70 @@ func (fc *funcCompiler) compileFor(f *parser.ForStmt) error {
 		}
 		fc.loops = fc.loops[:len(fc.loops)-1]
 	}
+	return nil
+}
+
+func (fc *funcCompiler) compileUpdate(u *parser.UpdateStmt) error {
+	listReg, ok := fc.vars[u.Target]
+	if !ok {
+		listReg = fc.newReg()
+	}
+	length := fc.newReg()
+	fc.emit(u.Pos, Instr{Op: OpLen, A: length, B: listReg})
+	idx := fc.newReg()
+	fc.emit(u.Pos, Instr{Op: OpConst, A: idx, Val: Value{Tag: ValueInt, Int: 0}})
+	one := fc.constReg(u.Pos, Value{Tag: ValueInt, Int: 1})
+	loopStart := len(fc.fn.Code)
+	cond := fc.newReg()
+	fc.emit(u.Pos, Instr{Op: OpLessInt, A: cond, B: idx, C: length})
+	endJmp := len(fc.fn.Code)
+	fc.emit(u.Pos, Instr{Op: OpJumpIfFalse, A: cond})
+
+	item := fc.newReg()
+	fc.emit(u.Pos, Instr{Op: OpIndex, A: item, B: listReg, C: idx})
+
+	// load fields into scope
+	fc.pushScope()
+	if typ, err := fc.comp.env.GetVar(u.Target); err == nil {
+		if lt, ok := typ.(types.ListType); ok {
+			if st, ok := lt.Elem.(types.StructType); ok {
+				for _, f := range st.Order {
+					key := fc.constReg(u.Pos, Value{Tag: ValueStr, Str: f})
+					val := fc.newReg()
+					fc.emit(u.Pos, Instr{Op: OpIndex, A: val, B: item, C: key})
+					fc.vars[f] = val
+				}
+			}
+		}
+	}
+
+	skip := -1
+	if u.Where != nil {
+		condReg := fc.compileExpr(u.Where)
+		skip = len(fc.fn.Code)
+		fc.emit(u.Where.Pos, Instr{Op: OpJumpIfFalse, A: condReg})
+	}
+
+	for _, it := range u.Set.Items {
+		keyStr, _ := identName(it.Key)
+		key := fc.constReg(it.Pos, Value{Tag: ValueStr, Str: keyStr})
+		val := fc.compileExpr(it.Value)
+		fc.emit(it.Pos, Instr{Op: OpSetIndex, A: item, B: key, C: val})
+	}
+
+	if u.Where != nil {
+		fc.fn.Code[skip].B = len(fc.fn.Code)
+	}
+
+	fc.popScope()
+
+	fc.emit(u.Pos, Instr{Op: OpSetIndex, A: listReg, B: idx, C: item})
+	tmp := fc.newReg()
+	fc.emit(u.Pos, Instr{Op: OpAddInt, A: tmp, B: idx, C: one})
+	fc.emit(u.Pos, Instr{Op: OpMove, A: idx, B: tmp})
+	fc.emit(u.Pos, Instr{Op: OpJump, A: loopStart})
+	end := len(fc.fn.Code)
+	fc.fn.Code[endJmp].B = end
 	return nil
 }
 

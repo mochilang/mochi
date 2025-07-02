@@ -827,6 +827,49 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 		env.SetVar(s.Fetch.Target, AnyType{}, false)
 		return nil
 
+	case s.Update != nil:
+		listType, err := env.GetVar(s.Update.Target)
+		if err != nil {
+			return errAssignUndeclared(s.Update.Pos, s.Update.Target)
+		}
+		lt, ok := listType.(ListType)
+		if !ok {
+			return errQuerySourceList(s.Update.Pos)
+		}
+		st, ok := lt.Elem.(StructType)
+		if !ok {
+			return fmt.Errorf("update element is not struct")
+		}
+		child := NewEnv(env)
+		for name, t := range st.Fields {
+			child.SetVar(name, t, true)
+		}
+		for _, item := range s.Update.Set.Items {
+			if key, ok := stringKey(item.Key); ok {
+				ft, ok2 := st.Fields[key]
+				if !ok2 {
+					return errUnknownField(item.Pos, key, st)
+				}
+				vt, err := checkExpr(item.Value, child)
+				if err != nil {
+					return err
+				}
+				if !unify(ft, vt, nil) {
+					return errTypeMismatch(item.Value.Pos, ft, vt)
+				}
+			}
+		}
+		if s.Update.Where != nil {
+			wt, err := checkExprWithExpected(s.Update.Where, child, BoolType{})
+			if err != nil {
+				return err
+			}
+			if !unify(wt, BoolType{}, nil) {
+				return errWhereBoolean(s.Update.Where.Pos)
+			}
+		}
+		return nil
+
 	case s.For != nil:
 		// Check the loop expression (either a collection or a range start)
 		sourceType, err := checkExprWithExpected(s.For.Source, env, nil)

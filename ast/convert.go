@@ -87,6 +87,15 @@ func FromStatement(s *parser.Statement) *Node {
 	case s.Continue != nil:
 		return &Node{Kind: "continue"}
 
+	case s.Update != nil:
+		n := &Node{Kind: "update", Value: s.Update.Target}
+		mapExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: s.Update.Set}}}}}
+		n.Children = append(n.Children, &Node{Kind: "set", Children: []*Node{FromExpr(mapExpr)}})
+		if s.Update.Where != nil {
+			n.Children = append(n.Children, &Node{Kind: "where", Children: []*Node{FromExpr(s.Update.Where)}})
+		}
+		return n
+
 	case s.Expr != nil:
 		return FromExpr(s.Expr.Expr)
 
