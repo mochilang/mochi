@@ -78,10 +78,12 @@ func RunMochi(src string) (string, error) {
 	}
 	var buf bytes.Buffer
 	m := vm.New(p, &buf)
-	if err := m.Run(); err != nil {
-		return "", err
+	runErr := m.Run()
+	out := strings.TrimSpace(buf.String())
+	if runErr != nil {
+		return out, runErr
 	}
-	return strings.TrimSpace(buf.String()), nil
+	return out, nil
 }
 
 // EvalCase executes the SQL query of c using DuckDB and returns the
@@ -248,10 +250,11 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 			}
 			if run {
 				out, err := RunMochi(code)
+				outPath := filepath.Join(testDir, c.Name+".out")
 				if err != nil {
-					return err
+					_ = os.WriteFile(strings.TrimSuffix(outPath, ".out")+".err", []byte(err.Error()+"\n"), 0o644)
 				}
-				if err := os.WriteFile(filepath.Join(testDir, c.Name+".out"), []byte(out+"\n"), 0o644); err != nil {
+				if err := os.WriteFile(outPath, []byte(out+"\n"), 0o644); err != nil {
 					return err
 				}
 			}
