@@ -156,7 +156,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// the value is stored as a string. This happens in a
 			// few SLT files and improves generated type accuracy.
 			v := strings.ToLower(val)
-			if v == "true" || v == "false" {
+			if v == "true" || v == "false" || v == "t" || v == "f" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
@@ -167,9 +167,6 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			if v == "0" || v == "1" {
 				if t == "" {
 					t = "int"
-				}
-				if v != "0" && v != "1" {
-					boolLike = false
 				}
 				continue
 			}
@@ -183,14 +180,20 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				} else {
 					return "any"
 				}
+				if v != "0" && v != "1" {
+					boolLike = false
+				}
 				// numeric string
 				continue
 			}
-			if _, err := strconv.ParseFloat(v, 64); err == nil {
+			if fv, err := strconv.ParseFloat(v, 64); err == nil {
 				if t == "" || t == "float" || t == "int" {
 					t = "float"
 				} else {
 					return "any"
+				}
+				if fv != 0 && fv != 1 {
+					boolLike = false
 				}
 				continue
 			}
@@ -236,11 +239,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			return "any"
 		}
 	}
+	if t == "float" && floatIsInt {
+		t = "int"
+	}
 	if t == "int" && boolLike {
 		return "bool"
-	}
-	if t == "float" && floatIsInt {
-		return "int"
 	}
 	if t == "" {
 		return "any"
@@ -616,21 +619,21 @@ func Generate(c Case) string {
 
 	tblNameStr := tblName.Name.String()
 
-        subExprs := collectSubqueries(sel)
-        subs := map[string]string{}
-        for i, s := range subExprs {
-                if strings.Contains(s, "row.") {
-                        // Correlated subqueries reference the current row and
-                        // must remain inline.
-                        continue
-                }
-                name := fmt.Sprintf("sub%d", i)
-                subs[s] = name
-                sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
-        }
-        if len(subs) > 0 {
-                sb.WriteString("\n")
-        }
+	subExprs := collectSubqueries(sel)
+	subs := map[string]string{}
+	for i, s := range subExprs {
+		if strings.Contains(s, "row.") {
+			// Correlated subqueries reference the current row and
+			// must remain inline.
+			continue
+		}
+		name := fmt.Sprintf("sub%d", i)
+		subs[s] = name
+		sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
+	}
+	if len(subs) > 0 {
+		sb.WriteString("\n")
+	}
 
 	// Handle SELECT count(*)
 	if len(sel.SelectExprs) == 1 {

@@ -226,12 +226,12 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, c-d, a+b*2+c*3+d*4 FROM t1 WHERE a>b ORDER BY 2,4,1,3 */
 let result = from row in t1
   where row.a > row.b
-  order by [(if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a + row.b * 2 + row.c * 3 + row.d * 4, count(from x in t1
+  order by [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.c - row.d]
+  select x), (row.c - row.d)]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.c - row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4]
+  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.c - row.d), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
 var flatResult = []
 for row in result {
   for x in row {

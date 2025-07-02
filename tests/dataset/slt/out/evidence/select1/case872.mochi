@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT a-b, c-d, b FROM t1 WHERE (e>a AND e<b) ORDER BY 3,1,2 */
 let result = from row in t1
   where ((row.e > row.a && row.e < row.b))
-  order by [row.b, row.a - row.b, row.c - row.d]
-  select [row.a - row.b, row.c - row.d, row.b]
+  order by [row.b, (row.a - row.b), (row.c - row.d)]
+  select [(row.a - row.b), (row.c - row.d), row.b]
 var flatResult = []
 for row in result {
   for x in row {
