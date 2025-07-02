@@ -123,30 +123,46 @@ func formatValue(v any) string {
 
 func detectColumnType(rows []map[string]any, name string) string {
 	t := ""
+	boolPossible := true
 	for _, row := range rows {
 		v := row[name]
 		if v == nil {
 			continue
 		}
-		switch v.(type) {
+		switch val := v.(type) {
 		case string:
-			if t == "" || t == "string" {
-				t = "string"
+			if val == "true" || val == "false" {
+				if t == "" || t == "bool" {
+					t = "bool"
+				} else {
+					return "any"
+				}
 			} else {
-				return "any"
+				boolPossible = false
+				if t == "" || t == "string" {
+					t = "string"
+				} else {
+					return "any"
+				}
 			}
 		case float64:
+			boolPossible = false
 			if t == "" || t == "float" || t == "int" {
 				t = "float"
 			} else {
 				return "any"
 			}
 		case int:
+			if val != 0 && val != 1 {
+				boolPossible = false
+			}
 			if t == "" {
 				t = "int"
 			} else if t != "int" {
 				if t == "float" {
 					// keep float
+				} else if t == "bool" && (val == 0 || val == 1) {
+					// remain boolPossible
 				} else {
 					return "any"
 				}
@@ -160,6 +176,9 @@ func detectColumnType(rows []map[string]any, name string) string {
 		default:
 			return "any"
 		}
+	}
+	if t == "int" && boolPossible {
+		return "bool"
 	}
 	if t == "" {
 		return "any"
