@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT abs(a), abs(b-c), c, a-b, c-d, a+b*2+c*3+d*4, b FROM t1 ORDER BY 2,6,7,4,1,5,3 */
 let result = from row in t1
-  order by [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.a + row.b * 2 + row.c * 3 + row.d * 4, row.b, row.a - row.b, (if row.a < 0 { -(row.a) } else { row.a }), row.c - row.d, row.c]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.c, row.a - row.b, row.c - row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.b]
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.b, (row.a - row.b), (if row.a < 0 { -(row.a) } else { row.a }), (row.c - row.d), row.c]
+  select [(if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c, (row.a - row.b), (row.c - row.d), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.b]
 var flatResult = []
 for row in result {
   for x in row {
