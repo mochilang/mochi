@@ -228,15 +228,16 @@ let result = from row in t1
   where (((row.e > row.c || row.e < row.d)) && row.b > row.c)
   order by [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.d]
   select [row.d, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case594" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [122, 1, 154, 1, 169, 1, 233, 1, 238, 1, 136, 2, 140, 2, 248, 2, 156, 3, 196, 3, 217, 3, 226, 3, 128, 4]
 }
+

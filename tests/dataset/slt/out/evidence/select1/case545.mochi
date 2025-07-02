@@ -227,15 +227,16 @@ let t1 = [
 let result = from row in t1
   order by [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.c - row.d, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.d, row.a - row.b]
   select [row.c - row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.d, row.a - row.b, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case545" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1, 1014, 101, 4, 555, -2, 1067, 108, 2, 333, -1, 1130, 114, -1, 111, 3, 1172, 116, -3, 333, 1, 1226, 122, -3, 333, -3, 1272, 128, -2, 333, 1, 1325, 133, 1, 444, 1, 1371, 136, -1, 111, 1, 1411, 140, -1, 111, -1, 1472, 148, 4, 555, -4, 1521, 154, 2, 333, -1, 1564, 156, 1, 555, -3, 1622, 164, 3, 333, -3, 1676, 169, 1, 333, 1, 1714, 171, 4, 555, -2, 1769, 178, 4, 555, 1, 1828, 183, 1, 333, 2, 1861, 185, 2, 444, 3, 1918, 190, -3, 444, -1, 1964, 196, 1, 555, -1, 2019, 203, 1, 222, 1, 2069, 207, -1, 111, 2, 2125, 212, 2, 222, -2, 2165, 217, -2, 333, 2, 2226, 222, -3, 444, -1, 2264, 226, 1, 555, -2, 2323, 233, 2, 555, -3, 2368, 238, 3, 555, 3, 2419, 241, 3, 222, -1, 2476, 248, -4, 444]
 }
+

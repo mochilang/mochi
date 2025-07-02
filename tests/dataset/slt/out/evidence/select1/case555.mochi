@@ -232,15 +232,16 @@ let result = from row in t1
   select [(if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), (row.a + row.b + row.c + row.d + row.e) / 5, count(from x in t1
   where x.b < row.b
   select x), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.d]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case555" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [222, 117, 3, 1757, 1, 116, 222, 192, 18, 2878, 1, 190, 222, 222, 24, 3331, 1, 222, 111, 247, 29, 3706, 2, 248]
 }
+

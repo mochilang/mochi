@@ -228,15 +228,16 @@ let result = from row in t1
   where ((row.d > row.e || ((row.c <= row.d - 2 || row.c >= row.d + 2))) || ((row.e > row.c || row.e < row.d)))
   order by [row.c, row.c - row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2 + row.c * 3, (if row.a < 0 { -(row.a) } else { row.a })]
   select [row.c, row.a + row.b * 2 + row.c * 3, row.c - row.d, (if row.a < 0 { -(row.a) } else { row.a }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case541" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [102, 610, 1, 104, 1529, 106, 635, -2, 107, 1612, 113, 674, -1, 111, 1680, 119, 708, 3, 115, 1757, 123, 738, 1, 121, 1826, 125, 760, -3, 127, 1902, 134, 793, 1, 131, 1985, 137, 827, 1, 138, 2046, 141, 851, 1, 142, 2131, 147, 880, -1, 149, 2202, 150, 905, -4, 153, 2281, 155, 940, -1, 159, 2349, 161, 966, -3, 163, 2432, 166, 1000, -3, 168, 2501, 172, 1030, 1, 174, 2579, 176, 1057, -2, 179, 2654, 184, 1096, 1, 182, 2728, 187, 1121, 2, 188, 2806, 193, 1158, 3, 191, 2878, 195, 1180, -1, 199, 2949, 202, 1207, -1, 201, 3039, 208, 1241, 1, 205, 3114, 214, 1277, 2, 213, 3175, 215, 1297, -2, 216, 3260, 224, 1338, 2, 220, 3331, 225, 1360, -1, 229, 3399, 231, 1391, -2, 234, 3473, 235, 1416, -3, 239, 3553, 244, 1455, 3, 243, 3629, 247, 1484, -1, 245, 3706]
 }
+
