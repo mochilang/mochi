@@ -22,7 +22,7 @@ func TestPascalCompiler_TPCDS_Golden(t *testing.T) {
 		t.Skipf("fpc not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 29; i++ {
+	for i := 1; i <= 39; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
 		prog, err := parser.Parse(src)
