@@ -1,9 +1,21 @@
-let t = [{id: 1, val: 56}]
-let tmp = lower("ignore")
-let vals = from r in t select r.val
-let result = first(vals)
+// Total sales across channels
+let store_sales = [ {item: 1, price: 10.0} ]
+let catalog_sales = [ {item: 1, price: 20.0} ]
+let web_sales = [ {item: 1, price: 30.0} ]
+
+let ss = from s in store_sales group by s.item into g select {item: g.key, total: sum(from x in g select x.price)}
+let cs = from s in catalog_sales group by s.item into g select {item: g.key, total: sum(from x in g select x.price)}
+let ws = from s in web_sales group by s.item into g select {item: g.key, total: sum(from x in g select x.price)}
+
+let union = concat(ss, cs, ws)
+
+let result =
+  from u in union
+  group by u.item into g
+  select {i_item_id: g.key, total_sales: sum(from x in g select x.total)}
+
 json(result)
 
-test "TPCDS Q56 placeholder" {
-  expect result == 56
+test "TPCDS Q56 simplified" {
+  expect result == [{i_item_id: 1, total_sales: 60.0}]
 }

@@ -1,9 +1,33 @@
-let t = [{id: 1, val: 55}]
-let tmp = lower("ignore")
-let vals = from r in t select r.val
-let result = first(vals)
+// Brand sales by manager example
+let store_sales = [
+  {item: 1, sold_date: 1, price: 10.0},
+  {item: 2, sold_date: 1, price: 20.0},
+  {item: 3, sold_date: 1, price: 25.0}
+]
+let item = [
+  {i_item_sk: 1, i_brand_id: 10, i_manager_id: 1},
+  {i_item_sk: 2, i_brand_id: 20, i_manager_id: 1},
+  {i_item_sk: 3, i_brand_id: 10, i_manager_id: 1}
+]
+let date_dim = [ {d_date_sk: 1, d_year: 2001, d_moy: 11} ]
+
+let grouped =
+  from ss in store_sales
+  join i in item on ss.item == i.i_item_sk && i.i_manager_id == 1
+  join d in date_dim on ss.sold_date == d.d_date_sk
+  group by {brand_id: i.i_brand_id} into g
+  select {brand_id: g.key.brand_id, ext_price: sum(from x in g select x.price)}
+
+let result =
+  from g in grouped
+  sort by [-g.ext_price, g.brand_id]
+  select g
+
 json(result)
 
-test "TPCDS Q55 placeholder" {
-  expect result == 55
+test "TPCDS Q55 simplified" {
+  expect result == [
+    {brand_id: 10, ext_price: 35.0},
+    {brand_id: 20, ext_price: 20.0}
+  ]
 }
