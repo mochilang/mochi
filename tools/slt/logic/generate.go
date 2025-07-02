@@ -128,9 +128,15 @@ func detectColumnType(rows []map[string]any, name string) string {
 		if v == nil {
 			continue
 		}
-		switch v.(type) {
+		switch val := v.(type) {
 		case string:
-			if t == "" || t == "string" {
+			if val == "true" || val == "false" {
+				if t == "" || t == "bool" {
+					t = "bool"
+				} else {
+					return "any"
+				}
+			} else if t == "" || t == "string" {
 				t = "string"
 			} else {
 				return "any"
@@ -142,7 +148,9 @@ func detectColumnType(rows []map[string]any, name string) string {
 				return "any"
 			}
 		case int:
-			if t == "" {
+			if (val == 0 || val == 1) && (t == "" || t == "bool") {
+				t = "bool"
+			} else if t == "" {
 				t = "int"
 			} else if t != "int" {
 				if t == "float" {
@@ -298,6 +306,8 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 		op := v.Operator
 		if op == "=" {
 			op = "=="
+		} else if op == "<>" {
+			op = "!="
 		}
 		return fmt.Sprintf("%s %s %s", left, op, right)
 	case *sqlparser.AndExpr:
