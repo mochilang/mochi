@@ -186,13 +186,29 @@ func applyStatement(stmt string, tables map[string]*Table) error {
 			return fmt.Errorf("unknown table %s", tbl)
 		}
 		vals := s.Rows.(sqlparser.Values)
+		// Map tuple values to columns. If explicit column list is
+		// provided, use it. Otherwise fall back to table column order.
+		cols := t.Columns
+		if len(s.Columns) > 0 {
+			cols = make([]string, len(s.Columns))
+			for i, c := range s.Columns {
+				cols[i] = c.String()
+			}
+		}
 		for _, tuple := range vals {
 			row := make(map[string]any)
 			for i, expr := range tuple {
-				if i >= len(t.Columns) {
+				if i >= len(cols) {
 					continue
 				}
-				row[t.Columns[i]] = evalExpr(expr, nil, nil)
+				row[cols[i]] = evalExpr(expr, nil, nil)
+			}
+			// Ensure unspecified columns exist with nil values so
+			// subsequent operations see them.
+			for _, c := range t.Columns {
+				if _, ok := row[c]; !ok {
+					row[c] = nil
+				}
 			}
 			t.Rows = append(t.Rows, row)
 		}
