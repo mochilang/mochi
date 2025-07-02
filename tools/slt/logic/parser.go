@@ -18,10 +18,11 @@ type Table struct {
 
 // Case describes a single query together with the data state at that point.
 type Case struct {
-	Name   string
-	Tables map[string]*Table
-	Query  string
-	Expect []string
+	Name     string
+	Tables   map[string]*Table
+	Query    string
+	Expect   []string
+	Comments []string
 }
 
 // ParseFile parses a sqllogictest script and returns a Case for each query.
@@ -36,10 +37,14 @@ func ParseFile(path string) ([]Case, error) {
 	tables := make(map[string]*Table)
 	var cases []Case
 	count := 0
+	var comments []string
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		switch {
+		case strings.HasPrefix(line, "#"):
+			c := strings.TrimSpace(strings.TrimPrefix(line, "#"))
+			comments = append(comments, c)
 		case strings.HasPrefix(line, "statement ok"):
 			if !scanner.Scan() {
 				break
@@ -48,8 +53,10 @@ func ParseFile(path string) ([]Case, error) {
 			if err := applyStatement(stmt, tables); err != nil {
 				return nil, err
 			}
+			comments = nil
 		case strings.HasPrefix(line, "statement error"):
 			scanner.Scan() // skip statement line
+			comments = nil
 		case strings.HasPrefix(line, "query"):
 			if !scanner.Scan() {
 				break
@@ -71,11 +78,13 @@ func ParseFile(path string) ([]Case, error) {
 			}
 			count++
 			cases = append(cases, Case{
-				Name:   fmt.Sprintf("case%d", count),
-				Tables: cloneTables(tables),
-				Query:  q,
-				Expect: expect,
+				Name:     fmt.Sprintf("case%d", count),
+				Tables:   cloneTables(tables),
+				Query:    q,
+				Expect:   expect,
+				Comments: comments,
 			})
+			comments = nil
 		}
 	}
 	return cases, scanner.Err()
