@@ -228,15 +228,16 @@ let result = from row in t1
   where ((row.c <= row.d - 2 || row.c >= row.d + 2))
   order by [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.a + row.b * 2 + row.c * 3 + row.d * 4, (row.a + row.b + row.c + row.d + row.e) / 5]
   select [row.a + row.b * 2 + row.c * 3 + row.d * 4, (row.a + row.b + row.c + row.d + row.e) / 5, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case359" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1067, 107, 1, 1172, 117, 1, 1521, 152, 1, 1622, 162, 1, 1676, 167, 1, 1769, 177, 1, 1861, 187, 1, 1918, 192, 1, 2226, 222, 1, 2323, 232, 1, 2368, 237, 1, 2125, 212, 3, 2165, 217, 3, 1272, 127, 4, 2419, 242, 4]
 }
+

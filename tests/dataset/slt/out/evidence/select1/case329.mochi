@@ -227,15 +227,16 @@ let t1 = [
 let result = from row in t1
   order by [row.e, row.b, row.b - row.c]
   select [row.b, row.e, row.b - row.c]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case329" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [100, 103, -2, 105, 109, -1, 112, 110, -1, 118, 117, -1, 124, 120, 1, 129, 126, 4, 130, 132, -4, 139, 135, 2, 143, 144, 2, 145, 146, -2, 151, 152, 1, 158, 157, 3, 160, 162, -1, 167, 165, 1, 170, 173, -2, 175, 177, -1, 181, 180, -3, 186, 189, -1, 194, 192, 1, 198, 197, 3, 200, 204, -2, 206, 209, -2, 211, 210, -3, 218, 219, 3, 223, 221, -1, 228, 227, 3, 232, 230, 1, 236, 237, 1, 240, 242, -4, 249, 246, 2]
 }
+

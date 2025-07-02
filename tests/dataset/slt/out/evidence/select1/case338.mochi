@@ -228,15 +228,16 @@ let result = from row in t1
   where ((row.e > row.a && row.e < row.b))
   order by [(if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.a - row.b, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.d, row.a]
   select [row.a - row.b, row.a, row.d, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case338" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [-3, 115, 116, 333, 1, 1757, -3, 191, 190, 444, 1, 2878, -3, 220, 222, 444, 1, 3331, -4, 245, 248, 444, 2, 3706]
 }
+
