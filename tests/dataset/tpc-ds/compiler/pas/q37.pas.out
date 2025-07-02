@@ -1,0 +1,114 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+type
+  generic TArray<T> = array of T;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+var i,j: integer; tmp: T; k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+  for j := i + 1 to High(arr) do
+    if keys[i] > keys[j] then
+    begin
+      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
+      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
+    end;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp2: specialize TFPGMap<Variant, integer>;
+  _tmp3: specialize TFPGMap<Variant, integer>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TFPGMap<Variant, integer>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp7: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp8: specialize TArray<Variant>;
+  catalog_sales: specialize TArray<specialize TFPGMap<string, integer>>;
+  date_dim: specialize TArray<specialize TFPGMap<string, Variant>>;
+  i: specialize TFPGMap<string, Variant>;
+  inventory: specialize TArray<specialize TFPGMap<string, integer>>;
+  item: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+
+procedure test_TPCDS_Q37_simplified;
+var
+  _tmp9: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp9 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp9.AddOrSetData('i_item_id', 'I1');
+  _tmp9.AddOrSetData('i_item_desc', 'Item1');
+  _tmp9.AddOrSetData('i_current_price', 30);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp9]))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('i_item_sk', 1);
+  _tmp0.AddOrSetData('i_item_id', 'I1');
+  _tmp0.AddOrSetData('i_item_desc', 'Item1');
+  _tmp0.AddOrSetData('i_current_price', 30);
+  _tmp0.AddOrSetData('i_manufact_id', 800);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('i_item_sk', 2);
+  _tmp1.AddOrSetData('i_item_id', 'I2');
+  _tmp1.AddOrSetData('i_item_desc', 'Item2');
+  _tmp1.AddOrSetData('i_current_price', 60);
+  _tmp1.AddOrSetData('i_manufact_id', 801);
+  item := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1]);
+  _tmp2 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp2.AddOrSetData('inv_item_sk', 1);
+  _tmp2.AddOrSetData('inv_warehouse_sk', 1);
+  _tmp2.AddOrSetData('inv_date_sk', 1);
+  _tmp2.AddOrSetData('inv_quantity_on_hand', 200);
+  _tmp3 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp3.AddOrSetData('inv_item_sk', 2);
+  _tmp3.AddOrSetData('inv_warehouse_sk', 1);
+  _tmp3.AddOrSetData('inv_date_sk', 1);
+  _tmp3.AddOrSetData('inv_quantity_on_hand', 300);
+  inventory := specialize TArray<specialize TFPGMap<string, integer>>([_tmp2, _tmp3]);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('d_date_sk', 1);
+  _tmp4.AddOrSetData('d_date', '2000-01-15');
+  date_dim := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp4]);
+  _tmp5 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp5.AddOrSetData('cs_item_sk', 1);
+  _tmp5.AddOrSetData('cs_sold_date_sk', 1);
+  catalog_sales := specialize TArray<specialize TFPGMap<string, integer>>([_tmp5]);
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('i_item_id', g.key.id);
+  _tmp6.AddOrSetData('i_item_desc', g.key.desc);
+  _tmp6.AddOrSetData('i_current_price', g.key.price);
+  SetLength(_tmp7, 0);
+  SetLength(_tmp8, 0);
+  for i in item do
+  begin
+    for inv in inventory do
+    begin
+      if not ((i.i_item_sk = inv.inv_item_sk)) then continue;
+      for d in date_dim do
+      begin
+        if not ((inv.inv_date_sk = d.d_date_sk)) then continue;
+        for cs in catalog_sales do
+        begin
+          if not ((cs.cs_item_sk = i.i_item_sk)) then continue;
+          if not (((((((i.i_current_price >= 20) and (i.i_current_price <= 50)) and (i.i_manufact_id >= 800)) and (i.i_manufact_id <= 803)) and (inv.inv_quantity_on_hand >= 100)) and (inv.inv_quantity_on_hand <= 500))) then continue;
+          _tmp7 := Concat(_tmp7, [_tmp6]);
+          _tmp8 := Concat(_tmp8, [g.key.id]);
+        end;
+      end;
+    end;
+  end;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp7, _tmp8);
+  _result := _tmp7;
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(_result);
+  test_TPCDS_Q37_simplified;
+end.

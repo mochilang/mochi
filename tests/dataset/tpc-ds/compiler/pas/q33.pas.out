@@ -1,0 +1,220 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+type
+  generic TArray<T> = array of T;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+var i,j: integer; tmp: T; k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+  for j := i + 1 to High(arr) do
+    if keys[i] > keys[j] then
+    begin
+      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
+      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
+    end;
+end;
+
+generic function _sumList<T>(arr: specialize TArray<T>): double;
+var i: integer; s: double;
+begin
+  s := 0;
+  for i := 0 to High(arr) do
+    s := s + arr[i];
+  Result := s;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp11: specialize TFPGMap<Variant, Variant>;
+  _tmp12: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp13: specialize TFPGMap<Variant, Variant>;
+  _tmp14: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp15: specialize TFPGMap<Variant, Variant>;
+  _tmp16: specialize TArray<Variant>;
+  _tmp17: specialize TArray<Variant>;
+  _tmp18: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp19: specialize TArray<Variant>;
+  _tmp2: specialize TFPGMap<Variant, integer>;
+  _tmp3: specialize TFPGMap<Variant, integer>;
+  _tmp4: specialize TFPGMap<Variant, integer>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp7: specialize TFPGMap<Variant, Variant>;
+  _tmp8: specialize TFPGMap<Variant, Variant>;
+  _tmp9: specialize TFPGMap<Variant, Variant>;
+  catalog_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  cs: specialize TFPGMap<string, Variant>;
+  customer_address: specialize TArray<specialize TFPGMap<string, integer>>;
+  date_dim: specialize TArray<specialize TFPGMap<string, integer>>;
+  item: specialize TArray<specialize TFPGMap<string, Variant>>;
+  month: integer;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+  s: Variant;
+  ss: specialize TFPGMap<string, Variant>;
+  store_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  union_sales: specialize TArray<Variant>;
+  web_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  ws: specialize TFPGMap<string, Variant>;
+  x: integer;
+  year: integer;
+
+procedure test_TPCDS_Q33_simplified;
+var
+  _tmp20: specialize TFPGMap<Variant, Variant>;
+  _tmp21: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp20 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp20.AddOrSetData('i_manufact_id', 1);
+  _tmp20.AddOrSetData('total_sales', 150);
+  _tmp21 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp21.AddOrSetData('i_manufact_id', 2);
+  _tmp21.AddOrSetData('total_sales', 50);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp20, _tmp21]))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('i_item_sk', 1);
+  _tmp0.AddOrSetData('i_manufact_id', 1);
+  _tmp0.AddOrSetData('i_category', 'Books');
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('i_item_sk', 2);
+  _tmp1.AddOrSetData('i_manufact_id', 2);
+  _tmp1.AddOrSetData('i_category', 'Books');
+  item := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1]);
+  _tmp2 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp2.AddOrSetData('d_date_sk', 1);
+  _tmp2.AddOrSetData('d_year', 2000);
+  _tmp2.AddOrSetData('d_moy', 1);
+  date_dim := specialize TArray<specialize TFPGMap<string, integer>>([_tmp2]);
+  _tmp3 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp3.AddOrSetData('ca_address_sk', 1);
+  _tmp3.AddOrSetData('ca_gmt_offset', -5);
+  _tmp4 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp4.AddOrSetData('ca_address_sk', 2);
+  _tmp4.AddOrSetData('ca_gmt_offset', -5);
+  customer_address := specialize TArray<specialize TFPGMap<string, integer>>([_tmp3, _tmp4]);
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('ss_item_sk', 1);
+  _tmp5.AddOrSetData('ss_ext_sales_price', 100);
+  _tmp5.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp5.AddOrSetData('ss_addr_sk', 1);
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('ss_item_sk', 2);
+  _tmp6.AddOrSetData('ss_ext_sales_price', 50);
+  _tmp6.AddOrSetData('ss_sold_date_sk', 1);
+  _tmp6.AddOrSetData('ss_addr_sk', 2);
+  store_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp5, _tmp6]);
+  _tmp7 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp7.AddOrSetData('cs_item_sk', 1);
+  _tmp7.AddOrSetData('cs_ext_sales_price', 20);
+  _tmp7.AddOrSetData('cs_sold_date_sk', 1);
+  _tmp7.AddOrSetData('cs_bill_addr_sk', 1);
+  catalog_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp7]);
+  _tmp8 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp8.AddOrSetData('ws_item_sk', 1);
+  _tmp8.AddOrSetData('ws_ext_sales_price', 30);
+  _tmp8.AddOrSetData('ws_sold_date_sk', 1);
+  _tmp8.AddOrSetData('ws_bill_addr_sk', 1);
+  web_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp8]);
+  month := 1;
+  year := 2000;
+  _tmp9 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp9.AddOrSetData('manu', i.i_manufact_id);
+  _tmp9.AddOrSetData('price', ss.ss_ext_sales_price);
+  SetLength(_tmp10, 0);
+  for ss in store_sales do
+  begin
+    for d in date_dim do
+    begin
+      if not ((ss.ss_sold_date_sk = d.d_date_sk)) then continue;
+      for ca in customer_address do
+      begin
+        if not ((ss.ss_addr_sk = ca.ca_address_sk)) then continue;
+        for i in item do
+        begin
+          if not ((ss.ss_item_sk = i.i_item_sk)) then continue;
+          if not (((((i.i_category = 'Books') and (d.d_year = year)) and (d.d_moy = month)) and (ca.ca_gmt_offset = -5))) then continue;
+          _tmp10 := Concat(_tmp10, [_tmp9]);
+        end;
+      end;
+    end;
+  end;
+  _tmp11 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp11.AddOrSetData('manu', i.i_manufact_id);
+  _tmp11.AddOrSetData('price', cs.cs_ext_sales_price);
+  SetLength(_tmp12, 0);
+  for cs in catalog_sales do
+  begin
+    for d in date_dim do
+    begin
+      if not ((cs.cs_sold_date_sk = d.d_date_sk)) then continue;
+      for ca in customer_address do
+      begin
+        if not ((cs.cs_bill_addr_sk = ca.ca_address_sk)) then continue;
+        for i in item do
+        begin
+          if not ((cs.cs_item_sk = i.i_item_sk)) then continue;
+          if not (((((i.i_category = 'Books') and (d.d_year = year)) and (d.d_moy = month)) and (ca.ca_gmt_offset = -5))) then continue;
+          _tmp12 := Concat(_tmp12, [_tmp11]);
+        end;
+      end;
+    end;
+  end;
+  _tmp13 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp13.AddOrSetData('manu', i.i_manufact_id);
+  _tmp13.AddOrSetData('price', ws.ws_ext_sales_price);
+  SetLength(_tmp14, 0);
+  for ws in web_sales do
+  begin
+    for d in date_dim do
+    begin
+      if not ((ws.ws_sold_date_sk = d.d_date_sk)) then continue;
+      for ca in customer_address do
+      begin
+        if not ((ws.ws_bill_addr_sk = ca.ca_address_sk)) then continue;
+        for i in item do
+        begin
+          if not ((ws.ws_item_sk = i.i_item_sk)) then continue;
+          if not (((((i.i_category = 'Books') and (d.d_year = year)) and (d.d_moy = month)) and (ca.ca_gmt_offset = -5))) then continue;
+          _tmp14 := Concat(_tmp14, [_tmp13]);
+        end;
+      end;
+    end;
+  end;
+  union_sales := concat(_tmp10, _tmp12, _tmp14);
+  _tmp15 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp15.AddOrSetData('i_manufact_id', g.key);
+  SetLength(_tmp16, 0);
+  for x in g do
+  begin
+    _tmp16 := Concat(_tmp16, [x.price]);
+  end;
+  _tmp15.AddOrSetData('total_sales', specialize _sumList<Variant>(_tmp16));
+  SetLength(_tmp17, 0);
+  for x in g do
+  begin
+    _tmp17 := Concat(_tmp17, [x.price]);
+  end;
+  SetLength(_tmp18, 0);
+  SetLength(_tmp19, 0);
+  for s in union_sales do
+  begin
+    _tmp18 := Concat(_tmp18, [_tmp15]);
+    _tmp19 := Concat(_tmp19, [-specialize _sumList<Variant>(_tmp17)]);
+  end;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp18, _tmp19);
+  _result := _tmp18;
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(_result);
+  test_TPCDS_Q33_simplified;
+end.
