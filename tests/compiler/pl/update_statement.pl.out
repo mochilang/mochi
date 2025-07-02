@@ -1,0 +1,41 @@
+:- style_check(-singleton).
+to_list(Str, L) :-
+    string(Str), !,
+    string_chars(Str, L).
+to_list(L, L).
+
+
+set_item(Container, Key, Val, Out) :-
+    is_dict(Container), !, (string(Key) -> atom_string(A, Key) ; A = Key), put_dict(A, Container, Val, Out).
+set_item(List, Index, Val, Out) :-
+    nth0(Index, List, _, Rest),
+    nth0(Index, Out, Val, Rest).
+
+
+expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
+
+
+
+test_update_adult_status :-
+    dict_create(_V0, p_person, [name-"Alice", age-17, status-"minor"]),
+    dict_create(_V1, p_person, [name-"Bob", age-26, status-"adult"]),
+    dict_create(_V2, p_person, [name-"Charlie", age-19, status-"adult"]),
+    dict_create(_V3, p_person, [name-"Diana", age-16, status-"minor"]),
+    expect(People = [_V0, _V1, _V2, _V3])    ,
+    true.
+
+    main :-
+    dict_create(_V4, p_person, [name-"Alice", age-17, status-"minor"]),
+    dict_create(_V5, p_person, [name-"Bob", age-25, status-"unknown"]),
+    dict_create(_V6, p_person, [name-"Charlie", age-18, status-"unknown"]),
+    dict_create(_V7, p_person, [name-"Diana", age-16, status-"minor"]),
+    nb_setval(people, [_V4, _V5, _V6, _V7]),
+    nb_getval(people, _V8),
+    to_list(_V8, _V9),
+    findall(_V11, (member(_V10, _V9), get_dict(name, _V10, Name), get_dict(age, _V10, Age), get_dict(status, _V10, Status), (Age >= 18 -> set_item(_V10, status, "adult", _V13), _V14 is Age + 1, set_item(_V13, age, _V14, _V15), _V11 = _V15 ; _V11 = _V10)), _V12),
+    nb_setval(people, _V12),
+    write("ok"),
+    nl,
+    test_update_adult_status
+    .
+:- initialization(main, main).
