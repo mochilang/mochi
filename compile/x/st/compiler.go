@@ -391,6 +391,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileExpect(s.Expect)
 	case s.Assign != nil:
 		return c.compileAssign(s.Assign)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Fun != nil:
 		return c.compileFun(s.Fun)
 	case s.Expr != nil:
@@ -556,6 +558,78 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return nil
 	}
 	c.writeln(fmt.Sprintf("%s := %s.", a.Name, val))
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	var fields []string
+	if t, err := c.env.GetVar(u.Target); err == nil {
+		if lt, ok := t.(types.ListType); ok {
+			if st, ok := lt.Elem.(types.StructType); ok {
+				fields = st.Order
+			}
+		}
+	}
+
+	c.writeln(fmt.Sprintf("0 to: (%s size) - 1 do: [:idx |", u.Target))
+	c.indent++
+	c.writeln("| item |")
+	c.writeln(fmt.Sprintf("item := %s at: idx + 1.", u.Target))
+
+	orig := c.env
+	if len(fields) > 0 {
+		child := types.NewEnv(c.env)
+		for _, f := range fields {
+			c.writeln(fmt.Sprintf("%s := item at: '%s'.", f, f))
+			child.SetVar(f, types.AnyType{}, true)
+		}
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = orig
+			return err
+		}
+		c.writeln("(" + cond + ") ifTrue: [")
+		c.indent++
+	}
+
+	for _, it := range u.Set.Items {
+		keyStr, ok := simpleIdent(it.Key)
+		if ok {
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.env = orig
+				return err
+			}
+			c.writeln(fmt.Sprintf("item at: '%s' put: %s.", keyStr, val))
+		} else {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				c.env = orig
+				return err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.env = orig
+				return err
+			}
+			c.writeln(fmt.Sprintf("item at: %s put: %s.", k, v))
+		}
+	}
+
+	if u.Where != nil {
+		c.indent--
+		c.writeln("]")
+	}
+
+	c.writeln(fmt.Sprintf("%s at: idx + 1 put: item.", u.Target))
+	c.indent--
+	c.writeln("]")
+	c.writeln(".")
+	c.env = orig
 	return nil
 }
 
