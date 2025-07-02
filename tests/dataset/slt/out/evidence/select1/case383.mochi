@@ -224,11 +224,12 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3, c, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, b, b-c, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 ORDER BY 5,3,1,2,6,4 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  order by [row.b - row.c, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.a + row.b * 2 + row.c * 3, row.c, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.b]
-  select [row.a + row.b * 2 + row.c * 3, row.c, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.b, row.b - row.c, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) })]
+  order by [(row.b - row.c), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), ((row.a + (row.b * 2)) + (row.c * 3)), row.c, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.b]
+  select [((row.a + (row.b * 2)) + (row.c * 3)), row.c, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.b, (row.b - row.c), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
 var flatResult = []
 for row in result {
   for x in row {

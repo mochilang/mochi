@@ -225,11 +225,11 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE (c<=d-2 OR c>=d+2) OR c BETWEEN b-2 AND d+2 OR (a>b-2 AND a<b+2) ORDER BY 2,1 */
 let result = from row in t1
-  where ((((row.c <= row.d - 2 || row.c >= row.d + 2)) || (row.c >= row.b - 2 && row.c <= row.d + 2)) || ((row.a > row.b - 2 && row.a < row.b + 2)))
+  where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || (row.c >= (row.b - 2) && row.c <= (row.d + 2))) || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
   order by [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (row.a + row.b + row.c + row.d + row.e) / 5]
-  select [(row.a + row.b + row.c + row.d + row.e) / 5, count(from x in t1
+  select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
 var flatResult = []

@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT a+b*2+c*3+d*4, (a+b+c+d+e)/5, abs(b-c) FROM t1 WHERE (c<=d-2 OR c>=d+2) ORDER BY 3,1,2 */
 let result = from row in t1
-  where ((row.c <= row.d - 2 || row.c >= row.d + 2))
-  order by [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.a + row.b * 2 + row.c * 3 + row.d * 4, (row.a + row.b + row.c + row.d + row.e) / 5]
-  select [row.a + row.b * 2 + row.c * 3 + row.d * 4, (row.a + row.b + row.c + row.d + row.e) / 5, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c })]
+  where ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
 var flatResult = []
 for row in result {
   for x in row {

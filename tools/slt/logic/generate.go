@@ -243,6 +243,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		return "int"
 	}
 	if t == "" {
+		if boolLike {
+			return "bool"
+		}
 		return "any"
 	}
 	return t
@@ -616,21 +619,21 @@ func Generate(c Case) string {
 
 	tblNameStr := tblName.Name.String()
 
-        subExprs := collectSubqueries(sel)
-        subs := map[string]string{}
-        for i, s := range subExprs {
-                if strings.Contains(s, "row.") {
-                        // Correlated subqueries reference the current row and
-                        // must remain inline.
-                        continue
-                }
-                name := fmt.Sprintf("sub%d", i)
-                subs[s] = name
-                sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
-        }
-        if len(subs) > 0 {
-                sb.WriteString("\n")
-        }
+	subExprs := collectSubqueries(sel)
+	subs := map[string]string{}
+	for i, s := range subExprs {
+		if strings.Contains(s, "row.") {
+			// Correlated subqueries reference the current row and
+			// must remain inline.
+			continue
+		}
+		name := fmt.Sprintf("sub%d", i)
+		subs[s] = name
+		sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
+	}
+	if len(subs) > 0 {
+		sb.WriteString("\n")
+	}
 
 	// Handle SELECT count(*)
 	if len(sel.SelectExprs) == 1 {
