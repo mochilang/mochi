@@ -488,6 +488,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileIf(s.If)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -647,6 +649,64 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 			return err
 		}
 	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := sanitizeName(u.Target)
+	idx := c.newVar()
+	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.Length; %s++) {", idx, idx, list, idx))
+	c.indent++
+	item := c.newVar()
+	c.writeln(fmt.Sprintf("var %s = %s[%s];", item, list, idx))
+
+	var st types.StructType
+	origEnv := c.env
+	if c.env != nil {
+		if typ, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := typ.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = s
+				}
+			}
+		}
+	}
+	if st.Name != "" {
+		child := types.NewEnv(c.env)
+		for _, fn := range st.Order {
+			child.SetVar(fn, st.Fields[fn], true)
+			c.writeln(fmt.Sprintf("var %s = %s.%s;", sanitizeName(fn), item, sanitizeName(fn)))
+		}
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln("if (" + cond + ") {")
+		c.indent++
+	}
+	for _, it := range u.Set.Items {
+		key, _ := identName(it.Key)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s.%s = %s;", item, sanitizeName(key), val))
+	}
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+
+	c.env = origEnv
+	c.writeln(fmt.Sprintf("%s[%s] = %s;", list, idx, item))
 	c.indent--
 	c.writeln("}")
 	return nil
