@@ -232,15 +232,16 @@ let result = from row in t1
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), (if row.a < 0 { -(row.a) } else { row.a }), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.b - row.c]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case544" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [0, 333, 107, 1, -1, 0, 222, 111, 1, -1, 0, 222, 115, 1, -1, 0, 222, 121, 1, 1, 0, 222, 127, 4, 4, 0, 333, 131, 4, -4, 0, 222, 138, 2, 2, 0, 222, 142, 2, 2, 0, 444, 149, 2, -2, 0, 333, 153, 1, 1, 0, 333, 159, 3, 3, 0, 444, 163, 1, -1, 0, 333, 168, 1, 1, 0, 444, 179, 1, -1, 0, 333, 182, 3, -3, 0, 333, 188, 1, -1, 0, 222, 191, 1, 1, 0, 333, 199, 3, 3, 0, 333, 201, 2, -2, 0, 222, 205, 2, -2, 0, 333, 213, 3, -3, 0, 222, 216, 3, 3, 0, 222, 220, 1, -1, 0, 333, 229, 3, 3, 0, 333, 234, 1, 1, 0, 444, 239, 1, 1, 0, 444, 243, 4, -4, 0, 111, 245, 2, 2]
 }
+

@@ -1,5 +1,5 @@
 /*
-# line: 6412
+# line: 7176
 */
 
 type t1Row {
@@ -223,16 +223,11 @@ let t1 = [
   },
 ]
 
-/* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c-d, c, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, b, a+b*2+c*3 FROM t1 ORDER BY 4,2,1,3,5,6 */
+/* SELECT c, a+b*2+c*3+d*4 FROM t1 WHERE b>c AND (a>b-2 AND a<b+2) AND (e>a AND e<b) ORDER BY 2,1 */
 let result = from row in t1
-  order by [(if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.c - row.d, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), row.c, row.b, row.a + row.b * 2 + row.c * 3]
-  select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), row.c - row.d, row.c, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.b, row.a + row.b * 2 + row.c * 3]
+  where ((row.b > row.c && ((row.a > row.b - 2 && row.a < row.b + 2))) && ((row.e > row.a && row.e < row.b)))
+  order by [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.c]
+  select [row.c, row.a + row.b * 2 + row.c * 3 + row.d * 4]
 var flatResult = []
 for row in result {
   for x in row {
@@ -242,7 +237,7 @@ for row in result {
 for x in flatResult {
   print(x)
 }
-test "case520" {
-  expect flatResult == [0, -2, 176, 358, 175, 1057, 0, 1, 184, 364, 181, 1096, 0, 2, 187, 376, 186, 1121, 0, 3, 193, 382, 194, 1158, 0, -1, 195, 398, 198, 1180, 0, -1, 202, 402, 200, 1207, 0, 1, 208, 410, 206, 1241, 0, 2, 214, 426, 211, 1277, 0, -2, 215, 432, 218, 1297, 0, 2, 224, 440, 223, 1338, 0, -1, 225, 458, 228, 1360, 0, -2, 231, 468, 232, 1391, 0, -3, 235, 478, 236, 1416, 0, 3, 244, 486, 240, 1455, 0, -1, 247, 490, 249, 1484, 0, 1, 102, 1000, 100, 610, 0, -2, 106, 1050, 105, 635, 0, -1, 113, 1120, 112, 674, 0, 3, 119, 1180, 118, 708, 0, 1, 123, 1240, 124, 738, 0, -3, 125, 1290, 129, 760, 0, 1, 134, 1300, 130, 793, 0, 1, 137, 1390, 139, 827, 0, 1, 141, 1430, 143, 851, 0, -1, 147, 1450, 145, 880, 0, -4, 150, 1510, 151, 905, 0, -1, 155, 1580, 158, 940, 0, -3, 161, 1600, 160, 966, 0, -3, 166, 1670, 167, 1000, 0, 1, 172, 1700, 170, 1030]
+test "case585" {
+  expect flatResult == []
 }
 

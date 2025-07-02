@@ -228,15 +228,16 @@ let result = from row in t1
   where ((row.e > row.a && row.e < row.b))
   order by [(if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.e, row.a - row.b, row.b - row.c, row.c, row.c - row.d]
   select [row.a - row.b, row.c - row.d, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.b - row.c, row.e, row.c]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case540" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [-3, 3, 333, -1, 117, 119, -3, 3, 444, 1, 192, 193, -3, 2, 444, -1, 221, 224, -4, -1, 444, 2, 246, 247]
 }
+
