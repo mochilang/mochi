@@ -96,6 +96,9 @@ func Fetch(repo string, files []string, force bool) error {
 		if _, err := os.Stat(local); err == nil && !force {
 			continue
 		}
+		if err := os.MkdirAll(filepath.Dir(local), 0o755); err != nil {
+			return err
+		}
 		url := repo + "/" + f
 		if err := DownloadFile(url, local); err != nil {
 			return err

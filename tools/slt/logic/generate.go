@@ -38,10 +38,26 @@ func exprToMochi(e sqlparser.Expr) string {
 		}
 	case *sqlparser.ColName:
 		return fmt.Sprintf("row[\"%s\"]", v.Name.String())
+	case *sqlparser.UnaryExpr:
+		return fmt.Sprintf("%s%s", v.Operator, exprToMochi(v.Expr))
+	case *sqlparser.ConvertExpr:
+		return exprToMochi(v.Expr)
 	case *sqlparser.BinaryExpr:
 		l := exprToMochi(v.Left)
 		r := exprToMochi(v.Right)
+		if strings.EqualFold(v.Operator, "div") {
+			return fmt.Sprintf("int(%s / %s)", l, r)
+		}
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
+	case *sqlparser.FuncExpr:
+		name := strings.ToLower(v.Name.String())
+		if name == "count" {
+			return "1"
+		}
+		if len(v.Exprs) > 0 {
+			expr := v.Exprs[0].(*sqlparser.AliasedExpr).Expr
+			return exprToMochi(expr)
+		}
 	}
 	return "null"
 }
@@ -134,19 +150,47 @@ func Generate(c Case) string {
 	}
 
 	sb.WriteString(fmt.Sprintf("/* %s */\n", c.Query))
-	stmt, _ := sqlparser.Parse(c.Query)
-	sel := stmt.(*sqlparser.Select)
+	stmt, err := sqlparser.Parse(c.Query)
+	if err != nil {
+		sb.WriteString("/* unsupported query */\n")
+		return sb.String()
+	}
+	sel, ok := stmt.(*sqlparser.Select)
+	if !ok {
+		sb.WriteString("/* unsupported statement */\n")
+		return sb.String()
+	}
 	tblExpr := sel.From[0].(*sqlparser.AliasedTableExpr)
 	tblName := tblExpr.Expr.(sqlparser.TableName).Name.String()
-	cond := condToMochi(sel.Where)
-	sb.WriteString("let result = count(from row in " + tblName)
-	if cond != "" {
-		sb.WriteString("\n  where " + cond)
-	}
-	sb.WriteString("\n  select row)\n")
-	sb.WriteString("print(result)\n\n")
-	if len(c.Expect) > 0 {
-		sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
+	if strings.EqualFold(tblName, "dual") {
+		var names []string
+		for i, se := range sel.SelectExprs {
+			ae := se.(*sqlparser.AliasedExpr)
+			n := fmt.Sprintf("v%d", i)
+			names = append(names, n)
+			sb.WriteString(fmt.Sprintf("let %s = %s\n", n, exprToMochi(ae.Expr)))
+			sb.WriteString(fmt.Sprintf("print(%s)\n", n))
+		}
+		if len(c.Expect) > 0 {
+			sb.WriteString(fmt.Sprintf("\ntest \"%s\" {\n", c.Name))
+			for i, exp := range c.Expect {
+				if i < len(names) {
+					sb.WriteString(fmt.Sprintf("  expect %s == %s\n", names[i], exp))
+				}
+			}
+			sb.WriteString("}\n")
+		}
+	} else {
+		cond := condToMochi(sel.Where)
+		sb.WriteString("let result = count(from row in " + tblName)
+		if cond != "" {
+			sb.WriteString("\n  where " + cond)
+		}
+		sb.WriteString("\n  select row)\n")
+		sb.WriteString("print(result)\n\n")
+		if len(c.Expect) > 0 {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
+		}
 	}
 	return sb.String()
 }

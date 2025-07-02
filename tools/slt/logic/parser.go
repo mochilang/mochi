@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -57,6 +58,8 @@ func ParseFile(path string) ([]Case, error) {
 			comments = append(comments, line)
 		case strings.HasPrefix(line, "skip"):
 			comments = append(comments, line)
+		case strings.HasPrefix(line, "onlyif"):
+			comments = append(comments, line)
 		case strings.HasPrefix(line, "statement ok"):
 			if !scanner.Scan() {
 				break
@@ -91,12 +94,17 @@ func ParseFile(path string) ([]Case, error) {
 				}
 			}
 			var expect []string
+			hashRe := regexp.MustCompile(`^(\d+) values hashing to`)
 			for scanner.Scan() {
 				l := strings.TrimSpace(scanner.Text())
 				if l == "" {
 					break
 				}
-				expect = append(expect, l)
+				if m := hashRe.FindStringSubmatch(l); m != nil {
+					expect = append(expect, m[1])
+				} else {
+					expect = append(expect, l)
+				}
 			}
 			count++
 			cases = append(cases, Case{
