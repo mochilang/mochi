@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT a, a+b*2+c*3, a+b*2+c*3+d*4+e*5 FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR c>d ORDER BY 1,2,3 */
 let result = from row in t1
-  where ((row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) || row.c > row.d)
-  order by [row.a, row.a + row.b * 2 + row.c * 3, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5]
-  select [row.a, row.a + row.b * 2 + row.c * 3, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5]
+  where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || row.c > row.d)
+  order by [row.a, ((row.a + (row.b * 2)) + (row.c * 3)), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
+  select [row.a, ((row.a + (row.b * 2)) + (row.c * 3)), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
 var flatResult = []
 for row in result {
   for x in row {
