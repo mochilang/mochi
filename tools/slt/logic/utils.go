@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	_ "github.com/marcboeker/go-duckdb"
 	"mochi/parser"
@@ -78,7 +79,14 @@ func RunMochi(src string) (string, error) {
 	}
 	var buf bytes.Buffer
 	m := vm.New(p, &buf)
-	runErr := m.Run()
+	done := make(chan error, 1)
+	go func() { done <- m.Run() }()
+	var runErr error
+	select {
+	case runErr = <-done:
+	case <-time.After(5 * time.Second):
+		runErr = fmt.Errorf("timeout")
+	}
 	out := strings.TrimSpace(buf.String())
 	if runErr != nil {
 		return out, runErr
@@ -252,7 +260,7 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 				out, err := RunMochi(code)
 				outPath := filepath.Join(testDir, c.Name+".out")
 				if err != nil {
-					_ = os.WriteFile(strings.TrimSuffix(outPath, ".out")+".err", []byte(err.Error()+"\n"), 0o644)
+					_ = os.WriteFile(strings.TrimSuffix(outPath, ".out")+".error", []byte(err.Error()+"\n"), 0o644)
 				}
 				if err := os.WriteFile(outPath, []byte(out+"\n"), 0o644); err != nil {
 					return err
