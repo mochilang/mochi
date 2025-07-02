@@ -2,6 +2,7 @@ package logic
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -146,4 +147,50 @@ func GenerateFiles(files []string, outDir string, run bool) error {
 		}
 	}
 	return nil
+}
+
+// DiscoverTests returns all .test files in the given GitHub repository.
+// The repo parameter can be the owner/repo pair or a raw.githubusercontent URL.
+func DiscoverTests(repo string) ([]string, error) {
+	var url string
+	if strings.HasPrefix(repo, "http") && !strings.Contains(repo, "raw.githubusercontent.com") {
+		url = repo
+	} else {
+		if strings.HasPrefix(repo, "http") {
+			repo = strings.TrimPrefix(repo, "https://raw.githubusercontent.com/")
+			repo = strings.TrimPrefix(repo, "http://raw.githubusercontent.com/")
+			parts := strings.Split(repo, "/")
+			if len(parts) >= 2 {
+				repo = parts[0] + "/" + parts[1]
+			}
+		}
+		if !strings.Contains(repo, "/") {
+			return nil, fmt.Errorf("invalid repo: %s", repo)
+		}
+		url = fmt.Sprintf("https://api.github.com/repos/%s/git/trees/master?recursive=1", repo)
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("list tests: %s", resp.Status)
+	}
+	var data struct {
+		Tree []struct {
+			Path string `json:"path"`
+			Type string `json:"type"`
+		} `json:"tree"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		return nil, err
+	}
+	var files []string
+	for _, t := range data.Tree {
+		if t.Type == "blob" && strings.HasSuffix(t.Path, ".test") {
+			files = append(files, t.Path)
+		}
+	}
+	return files, nil
 }
