@@ -1,5 +1,5 @@
 /*
-# line: 518
+# line: 556
 */
 
 type t1Row {
@@ -223,13 +223,11 @@ let t1 = [
   },
 ]
 
-/* SELECT d, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, b, c, e FROM t1 WHERE b>c ORDER BY 1,2,4,3,5 */
+/* SELECT b, (a+b+c+d+e)/5, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, abs(b-c), b-c FROM t1 WHERE a>b ORDER BY 2,5,3,4,1 */
 let result = from row in t1
-  where row.b > row.c
-  order by [row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.c, row.b, row.e]
-  select [row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.b, row.c, row.e]
+  where row.a > row.b
+  order by [(row.a + row.b + row.c + row.d + row.e) / 5, row.b - row.c, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.b]
+  select [row.b, (row.a + row.b + row.c + row.d + row.e) / 5, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.b - row.c]
 var flatResult = []
 for row in result {
   for x in row {
@@ -240,6 +238,6 @@ for x in flatResult {
   print(x)
 }
 
-test "case33" {
-  expect flatResult == [101, 1020, 102, 100, 104, 111, 1140, 114, 112, 113, 115, 1190, 119, 117, 118, 133, 1340, 134, 131, 130, 142, 1410, 141, 140, 143, 148, 1490, 149, 146, 147, 165, 1690, 169, 168, 166, 189, 374, 188, 186, 185, 192, 380, 194, 193, 191, 206, 416, 209, 205, 207, 243, 484, 244, 240, 241, 249, 492, 248, 247, 245]
+test "case36" {
+  expect flatResult == [102, 102, 444, 2, 2, 106, 107, 222, 2, -2, 122, 122, 222, 2, -2, 136, 137, 222, 3, -3, 141, 142, 555, 1, 1, 150, 152, 444, 3, -3, 160, 162, 444, 3, -3, 170, 172, 222, 2, -2, 176, 177, 333, 3, -3, 180, 182, 222, 2, -2, 197, 197, 555, 1, -1, 210, 212, 555, 3, -3, 215, 217, 444, 1, -1, 221, 222, 444, 1, -1, 231, 232, 555, 1, -1, 236, 237, 444, 3, -3]
 }
