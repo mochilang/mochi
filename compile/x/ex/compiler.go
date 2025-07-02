@@ -223,6 +223,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("throw :break")
 	case s.Continue != nil:
 		c.writeln("throw :continue")
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Fun != nil:
 		return c.compileFunStmt(s.Fun)
 	default:
@@ -384,6 +386,77 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	for _, v := range mutated {
 		c.writeln(fmt.Sprintf("_ = %s", v))
 	}
+	return nil
+}
+
+func (c *Compiler) compileUpdate(stmt *parser.UpdateStmt) error {
+	name := sanitizeName(stmt.Target)
+
+	fields := []string{}
+	orig := c.env
+	child := types.NewEnv(c.env)
+	if c.env != nil {
+		if t, err := c.env.GetVar(stmt.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if st, ok := lt.Elem.(types.StructType); ok {
+					for _, f := range st.Order {
+						fields = append(fields, f)
+						child.SetVar(f, st.Fields[f], true)
+					}
+				}
+			}
+		}
+	}
+	c.env = child
+	var cond string
+	var err error
+	if stmt.Where != nil {
+		cond, err = c.compileExpr(stmt.Where)
+		if err != nil {
+			c.env = orig
+			return err
+		}
+	}
+	pairs := make([]string, len(stmt.Set.Items))
+	for i, it := range stmt.Set.Items {
+		key, ok := identName(it.Key)
+		if !ok {
+			c.env = orig
+			return fmt.Errorf("update key must be identifier")
+		}
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = orig
+			return err
+		}
+		pairs[i] = fmt.Sprintf("%s: %s", sanitizeName(key), val)
+	}
+	c.env = orig
+
+	c.writeln(fmt.Sprintf("%s = Enum.map(%s, fn it ->", name, name))
+	c.indent++
+	if len(fields) > 0 {
+		parts := make([]string, len(fields))
+		for i, f := range fields {
+			parts[i] = fmt.Sprintf("%s: %s", sanitizeName(f), sanitizeName(f))
+		}
+		c.writeln(fmt.Sprintf("%%{%s} = it", strings.Join(parts, ", ")))
+	}
+	if cond != "" {
+		c.writeln(fmt.Sprintf("if %s do", cond))
+		c.indent++
+	}
+	c.writeln(fmt.Sprintf("%%{it | %s}", strings.Join(pairs, ", ")))
+	if cond != "" {
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("it")
+		c.indent--
+		c.writeln("end")
+	}
+	c.indent--
+	c.writeln("end)")
 	return nil
 }
 
