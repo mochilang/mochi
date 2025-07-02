@@ -204,12 +204,20 @@ func simpleExpr(e sqlparser.Expr) bool {
 	case *sqlparser.Subquery:
 		return subqueryToMochi(v, "row") != "null"
 	case *sqlparser.CaseExpr:
-		if v.Expr != nil && !simpleExpr(v.Expr) {
-			return false
-		}
-		for _, w := range v.Whens {
-			if condExprToMochi(w.Cond) == "" || !simpleExpr(w.Val) {
+		if v.Expr != nil {
+			if !simpleExpr(v.Expr) {
 				return false
+			}
+			for _, w := range v.Whens {
+				if !simpleExpr(w.Cond) || !simpleExpr(w.Val) {
+					return false
+				}
+			}
+		} else {
+			for _, w := range v.Whens {
+				if condExprToMochi(w.Cond) == "" || !simpleExpr(w.Val) {
+					return false
+				}
 			}
 		}
 		if v.Else != nil && !simpleExpr(v.Else) {
@@ -350,7 +358,13 @@ func Generate(c Case) string {
 		if mutated[name] {
 			kw = "var"
 		}
-		sb.WriteString(fmt.Sprintf("%s %s = [\n", kw, name))
+		typeName := strings.Title(name) + "Row"
+		sb.WriteString(fmt.Sprintf("type %s {\n", typeName))
+		for _, col := range t.Columns {
+			sb.WriteString(fmt.Sprintf("  %s: int,\n", col))
+		}
+		sb.WriteString("}\n\n")
+		sb.WriteString(fmt.Sprintf("%s %s: list<%s> = [\n", kw, name, typeName))
 		for _, row := range t.Rows {
 			sb.WriteString("  {\n")
 			for _, col := range t.Columns {
