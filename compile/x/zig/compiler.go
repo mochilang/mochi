@@ -525,6 +525,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Expr != nil:
 		v, err := c.compileExpr(s.Expr.Expr, false)
 		if err != nil {
@@ -597,6 +599,112 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 			return err
 		}
 	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	target := sanitizeName(u.Target)
+	var elem types.Type = types.AnyType{}
+	if c.env != nil {
+		if tv, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := tv.(types.ListType); ok {
+				elem = lt.Elem
+			}
+		}
+	}
+	idx := c.newTmp()
+	c.writeln(fmt.Sprintf("for (0..%s.len) |%s| {", target, idx))
+	c.indent++
+	itemVar := c.newTmp()
+	itemType := zigTypeOf(elem)
+	if strings.HasPrefix(itemType, "[]const ") {
+		itemType = strings.TrimPrefix(itemType, "[]const ")
+	}
+	c.writeln(fmt.Sprintf("var %s: %s = %s[%s];", itemVar, itemType, target, idx))
+
+	prevEnv := c.env
+	if prevEnv != nil {
+		child := types.NewEnv(prevEnv)
+		if st, ok := elem.(types.StructType); ok {
+			for _, f := range st.Order {
+				ft := st.Fields[f]
+				typ := zigTypeOf(ft)
+				if strings.HasPrefix(typ, "[]const ") {
+					typ = strings.TrimPrefix(typ, "[]const ")
+				}
+				name := sanitizeName(f)
+				c.writeln(fmt.Sprintf("var %s: %s = %s.%s;", name, typ, itemVar, name))
+				child.SetVar(f, ft, true)
+			}
+		}
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where, false)
+		if err != nil {
+			if prevEnv != nil {
+				c.env = prevEnv
+			}
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (%s) {", cond))
+		c.indent++
+	}
+
+	if st, ok := elem.(types.StructType); ok {
+		for _, it := range u.Set.Items {
+			key, _ := identName(it.Key)
+			ft := st.Fields[key]
+			val, err := c.compileExpr(it.Value, false)
+			if err != nil {
+				if prevEnv != nil {
+					c.env = prevEnv
+				}
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s.%s = %s;", itemVar, sanitizeName(key), val))
+			_ = ft
+		}
+	} else {
+		for _, it := range u.Set.Items {
+			k, ok := simpleStringKey(it.Key)
+			keyExpr := ""
+			if ok {
+				keyExpr = fmt.Sprintf("\"%s\"", k)
+			} else {
+				ke, err := c.compileExpr(it.Key, false)
+				if err != nil {
+					if prevEnv != nil {
+						c.env = prevEnv
+					}
+					return err
+				}
+				keyExpr = ke
+			}
+			val, err := c.compileExpr(it.Value, false)
+			if err != nil {
+				if prevEnv != nil {
+					c.env = prevEnv
+				}
+				return err
+			}
+			c.writeln(fmt.Sprintf("_ = %s.put(%s, %s) catch unreachable;", itemVar, keyExpr, val))
+		}
+	}
+
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+
+	if prevEnv != nil {
+		c.env = prevEnv
+	}
+
+	c.writeln(fmt.Sprintf("%s[%s] = %s;", target, idx, itemVar))
 	c.indent--
 	c.writeln("}")
 	return nil
