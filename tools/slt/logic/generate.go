@@ -152,7 +152,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 		if name == "abs" && len(v.Exprs) == 1 {
 			arg := v.Exprs[0].(*sqlparser.AliasedExpr).Expr
 			ex := exprToMochiRow(arg, rowVar, outer)
-			return fmt.Sprintf("(if %s < 0 { -%s } else { %s })", ex, ex, ex)
+			return fmt.Sprintf("(if %s < 0 { -(%s) } else { %s })", ex, ex, ex)
 		}
 	case *sqlparser.Subquery:
 		return subqueryToMochi(v, rowVar)
@@ -498,7 +498,11 @@ func Generate(c Case) string {
 			}
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
-		sb.WriteString("let flatResult = from row in result\n  from x in row\n  select x\n")
+		sb.WriteString("var flatResult = []\n")
+		sb.WriteString("for row in result {\n")
+		sb.WriteString("  for x in row {\n")
+		sb.WriteString("    flatResult = append(flatResult, x)\n")
+		sb.WriteString("  }\n}\n")
 		sb.WriteString("for x in flatResult {\n  print(x)\n}\n\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))
