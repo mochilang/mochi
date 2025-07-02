@@ -189,6 +189,7 @@ type AssignStmt struct {
 	Pos   lexer.Position
 	Name  string     `parser:"@Ident"`
 	Index []*IndexOp `parser:"@@*"`
+	Field []*FieldOp `parser:"@@*"`
 	Value *Expr      `parser:"'=' @@"`
 }
 
