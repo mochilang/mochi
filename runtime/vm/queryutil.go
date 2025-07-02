@@ -27,6 +27,11 @@ func aggregateCall(e *parser.Expr) (Op, *parser.Expr, lexer.Position, bool) {
 			if len(call.Args) != 1 {
 				return 0, nil, lexer.Position{}, false
 			}
+			// Avoid treating calls like count(<query>) as aggregates
+			// since they may depend on the outer query row.
+			if isQueryExpr(call.Args[0]) {
+				return 0, nil, lexer.Position{}, false
+			}
 			switch call.Func {
 			case "sum":
 				return OpSum, call.Args[0], call.Pos, true
@@ -49,6 +54,35 @@ func aggregateCall(e *parser.Expr) (Op, *parser.Expr, lexer.Position, bool) {
 		return 0, nil, lexer.Position{}, false
 	}
 	return 0, nil, lexer.Position{}, false
+}
+
+func isQueryExpr(e *parser.Expr) bool {
+	for e != nil {
+		if e.Binary == nil || len(e.Binary.Right) != 0 {
+			return false
+		}
+		u := e.Binary.Left
+		if len(u.Ops) != 0 {
+			return false
+		}
+		p := u.Value
+		if p == nil || len(p.Ops) != 0 {
+			return false
+		}
+		prim := p.Target
+		if prim == nil {
+			return false
+		}
+		if prim.Query != nil || prim.LogicQuery != nil {
+			return true
+		}
+		if prim.Group != nil {
+			e = prim.Group
+			continue
+		}
+		return false
+	}
+	return false
 }
 
 // exprVars collects variable names referenced in expression e.
