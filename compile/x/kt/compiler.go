@@ -14,20 +14,21 @@ import (
 
 // Compiler translates a Mochi AST into Kotlin source code.
 type Compiler struct {
-	buf          bytes.Buffer
-	indent       int
-	env          *types.Env
-	mainStmts    []*parser.Statement
-	helpers      map[string]bool
-	packages     map[string]bool
-	structs      map[string]bool
-	models       bool
-	handlerCount int
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	mainStmts     []*parser.Statement
+	helpers       map[string]bool
+	packages      map[string]bool
+	structs       map[string]bool
+	models        bool
+	handlerCount  int
+	updateTargets map[string]bool
 }
 
 // New creates a new Kotlin compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), structs: make(map[string]bool), models: false, handlerCount: 0}
+	return &Compiler{env: env, helpers: make(map[string]bool), packages: make(map[string]bool), structs: make(map[string]bool), models: false, handlerCount: 0, updateTargets: make(map[string]bool)}
 }
 
 // Compile generates Kotlin code for prog.
@@ -35,6 +36,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if prog.Package != "" {
 		c.writeln("package " + sanitizeName(prog.Package))
 		c.writeln("")
+	}
+
+	for _, s := range prog.Statements {
+		if s.Update != nil {
+			c.updateTargets[s.Update.Target] = true
+		}
 	}
 
 	for _, s := range prog.Statements {
@@ -175,6 +182,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileExpect(s.Expect)
 	case s.Model != nil:
 		return c.compileModelDecl(s.Model)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Import != nil:
 		if s.Import.Lang == nil {
 			return c.compilePackageImport(s.Import)
@@ -201,6 +210,12 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	if stmt.Type != nil {
 		t := c.resolveTypeRef(stmt.Type)
 		typ := ktType(t)
+		if c.updateTargets[stmt.Name] {
+			if lt, ok := t.(types.ListType); ok {
+				typ = "MutableList<" + ktType(lt.Elem) + ">"
+				expr += ".toMutableList()"
+			}
+		}
 		if isFetchExpr(stmt.Value) {
 			c.use("_cast")
 			expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
@@ -208,6 +223,9 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		c.writeln(fmt.Sprintf("val %s: %s = %s", sanitizeName(stmt.Name), typ, expr))
 		c.env.SetVar(stmt.Name, t, false)
 	} else {
+		if c.updateTargets[stmt.Name] {
+			expr += ".toMutableList()"
+		}
 		c.writeln(fmt.Sprintf("val %s = %s", sanitizeName(stmt.Name), expr))
 	}
 	return nil
@@ -230,9 +248,18 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	if stmt.Type != nil {
 		t := c.resolveTypeRef(stmt.Type)
 		typ := ktType(t)
+		if c.updateTargets[stmt.Name] {
+			if lt, ok := t.(types.ListType); ok {
+				typ = "MutableList<" + ktType(lt.Elem) + ">"
+				value += ".toMutableList()"
+			}
+		}
 		c.writeln(fmt.Sprintf("var %s: %s = %s", sanitizeName(stmt.Name), typ, value))
 		c.env.SetVar(stmt.Name, t, true)
 	} else {
+		if c.updateTargets[stmt.Name] {
+			value += ".toMutableList()"
+		}
 		c.writeln(fmt.Sprintf("var %s = %s", sanitizeName(stmt.Name), value))
 	}
 	return nil
@@ -660,6 +687,61 @@ func (c *Compiler) compileEmit(e *parser.EmitStmt) error {
 	streamVar := "_" + sanitizeName(e.Stream) + "Stream"
 	c.writeln(fmt.Sprintf("%s.append(%s)", streamVar, lit))
 	c.use("_Stream")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	name := sanitizeName(u.Target)
+	c.writeln(fmt.Sprintf("for (i in 0 until %s.size) {", name))
+	c.indent++
+	c.writeln(fmt.Sprintf("var _item = %s[i]", name))
+
+	if t, err := c.env.GetVar(u.Target); err == nil {
+		if lt, ok := t.(types.ListType); ok {
+			if st, ok2 := lt.Elem.(types.StructType); ok2 {
+				child := types.NewEnv(c.env)
+				for _, f := range st.Order {
+					ft := st.Fields[f]
+					c.writeln(fmt.Sprintf("val %s = _item.%s", sanitizeName(f), sanitizeName(f)))
+					child.SetVar(f, ft, true)
+				}
+				orig := c.env
+				c.env = child
+				var cond string
+				var err error
+				if u.Where != nil {
+					cond, err = c.compileExpr(u.Where)
+					if err != nil {
+						c.env = orig
+						return err
+					}
+					c.writeln(fmt.Sprintf("if (%s) {", cond))
+					c.indent++
+				}
+				parts := make([]string, len(u.Set.Items))
+				for i, it := range u.Set.Items {
+					key, _ := identName(it.Key)
+					val, err := c.compileExpr(it.Value)
+					if err != nil {
+						c.env = orig
+						return err
+					}
+					parts[i] = fmt.Sprintf("%s = %s", sanitizeName(key), val)
+				}
+				if len(parts) > 0 {
+					c.writeln("_item = _item.copy(" + joinArgs(parts) + ")")
+				}
+				if u.Where != nil {
+					c.indent--
+					c.writeln("}")
+				}
+				c.env = orig
+			}
+		}
+	}
+	c.writeln(fmt.Sprintf("%s[i] = _item", name))
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 

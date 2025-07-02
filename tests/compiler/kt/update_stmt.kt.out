@@ -1,0 +1,24 @@
+data class Person(val name: String, val age: Int, val status: String)
+
+fun test_update_adult_status() {
+    check((people == listOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 26, status = "adult"), Person(name = "Charlie", age = 19, status = "adult"), Person(name = "Diana", age = 16, status = "minor"))))
+}
+
+fun main() {
+    val people: MutableList<Person> = listOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor")).toMutableList()
+    for (i in 0 until people.size) {
+        var _item = people[i]
+        val name = _item.name
+        val age = _item.age
+        val status = _item.status
+        if ((age >= 18)) {
+            _item = _item.copy(status = "adult", age = (age + 1))
+        }
+        people[i] = _item
+    }
+    println("ok")
+    test_update_adult_status()
+}
+
+
+
