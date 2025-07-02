@@ -1,0 +1,1 @@
+[{"CASE  WHEN ((c \u003e (SELECT avg(c) FROM t1))) THEN ((a * 2)) ELSE (b * 10) END":1000},{"CASE  WHEN ((c \u003e (SELECT avg(c) FROM t1))) THEN ((a * 2)) ELSE (b * 10) END":1180},{"CASE  WHEN ((c \u003e (SELECT avg(c) FROM t1))) THEN ((a * 2)) ELSE (b * 10) END":1240}]

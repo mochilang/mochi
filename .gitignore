@@ -239,6 +239,8 @@ out
 # Keep job golden files
 !tests/dataset/job/out
 !tests/dataset/job/out/*
+!tests/dataset/logic/out
+!tests/dataset/logic/out/*
 
 # Nuxt.js build / generate output
 .nuxt

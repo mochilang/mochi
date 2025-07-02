@@ -1,0 +1,1 @@
+[{"((a + (b * 2)) + (c * 3))":1000,"(c - d)":-3,"CASE  WHEN (((a + 1) = b)) THEN (111) WHEN (((a + 1) = c)) THEN (222) WHEN (((a + 1) = d)) THEN (333) WHEN (((a + 1) = e)) THEN (444) ELSE 555 END":333}]
