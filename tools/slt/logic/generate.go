@@ -166,7 +166,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 			for i := len(v.Whens) - 1; i >= 0; i-- {
 				cond := fmt.Sprintf("%s == %s", expr, exprToMochiRow(v.Whens[i].Cond, rowVar, outer))
 				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer)
-				out = fmt.Sprintf("(%s ? %s : %s)", cond, val, out)
+				out = fmt.Sprintf("(if %s { %s } else { %s })", cond, val, out)
 			}
 		} else {
 			for i := len(v.Whens) - 1; i >= 0; i-- {
@@ -175,7 +175,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 				if cond == "" {
 					return "null"
 				}
-				out = fmt.Sprintf("(%s ? %s : %s)", cond, val, out)
+				out = fmt.Sprintf("(if %s { %s } else { %s })", cond, val, out)
 			}
 		}
 		return out
@@ -433,7 +433,7 @@ func Generate(c Case) string {
 			sb.WriteString("\n  where " + cond)
 		}
 		if len(sel.OrderBy) == 1 {
-			sb.WriteString("\n  order by " + exprToMochi(sel.OrderBy[0].Expr))
+			sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}))
 		}
 		sb.WriteString("\n  select " + expr + "\n")
 		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
