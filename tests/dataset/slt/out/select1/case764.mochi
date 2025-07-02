@@ -224,16 +224,17 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, c-d FROM t1 WHERE a>b OR e+d BETWEEN a+b-10 AND c+130 ORDER BY 5,3,1,4,2 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  where (row.a > row.b || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130))
-  order by [row.c - row.d, row.b, count(from x in t1
+  where (row.a > row.b || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
+  order by [(row.c - row.d), row.b, count(from x in t1
   where x.b < row.b
-  select x), (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) })]
+  select x), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
   select [count(from x in t1
   where x.b < row.b
-  select x), (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.b, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.c - row.d]
+  select x), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.b, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.c - row.d)]
 var flatResult = []
 for row in result {
   for x in row {

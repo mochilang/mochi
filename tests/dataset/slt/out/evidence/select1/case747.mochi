@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT b-c, c FROM t1 ORDER BY 1,2 */
 let result = from row in t1
-  order by [row.b - row.c, row.c]
-  select [row.b - row.c, row.c]
+  order by [(row.b - row.c), row.c]
+  select [(row.b - row.c), row.c]
 var flatResult = []
 for row in result {
   for x in row {
