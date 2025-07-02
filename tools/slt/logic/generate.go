@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -141,6 +142,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 
 	// Fall back to inspecting row values.
 	t := ""
+	floatIsInt := true
 	for _, row := range rows {
 		v := row[name]
 		if v == nil {
@@ -188,8 +190,13 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				return "any"
 			}
 		case float64:
+			if val != math.Trunc(val) {
+				floatIsInt = false
+			}
 			if t == "" || t == "float" || t == "int" {
-				t = "float"
+				if t == "" {
+					t = "float"
+				}
 			} else {
 				return "any"
 			}
@@ -198,7 +205,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				t = "int"
 			} else if t != "int" {
 				if t == "float" {
-					// keep float
+					// allow ints in float column
 				} else {
 					return "any"
 				}
@@ -212,6 +219,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		default:
 			return "any"
 		}
+	}
+	if t == "float" && floatIsInt {
+		return "int"
 	}
 	if t == "" {
 		return "any"
