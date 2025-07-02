@@ -164,11 +164,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 				continue
 			}
-			if v == "0" || v == "1" {
+			if v == "0" || v == "1" || v == "0.0" || v == "1.0" {
 				if t == "" {
 					t = "int"
 				}
-				if v != "0" && v != "1" {
+				if v != "0" && v != "1" && v != "0.0" && v != "1.0" {
 					boolLike = false
 				}
 				continue

@@ -224,14 +224,15 @@ let t1 = [
 ]
 
 /* SELECT abs(b-c), c-d, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, a+b*2+c*3, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 AND d>e AND c BETWEEN b-2 AND d+2 ORDER BY 1,2,5,3,4 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  where (((row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) && row.d > row.e) && (row.c >= row.b - 2 && row.c <= row.d + 2))
-  order by [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.c - row.d, count(from x in t1
+  where ((((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) && row.d > row.e) && (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.c - row.d), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.a + row.b * 2 + row.c * 3]
-  select [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.c - row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.a + row.b * 2 + row.c * 3, count(from x in t1
+  select x), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), ((row.a + (row.b * 2)) + (row.c * 3))]
+  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.c - row.d), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
 var flatResult = []
