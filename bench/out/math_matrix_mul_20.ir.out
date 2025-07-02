@@ -20,9 +20,9 @@ L2:
   LessInt      r9, r8, r0
   JumpIfFalse  r9, L1
   // row = row + [i + j]
-  AddInt       r10, r5, r8
-  Move         r11, r10
-  MakeList     r12, 1, r11
+  AddInt       r11, r5, r8
+  Move         r10, r11
+  MakeList     r12, 1, r10
   Add          r13, r7, r12
   Move         r7, r13
   // for j in 0..size {
@@ -57,9 +57,9 @@ L6:
   LessInt      r25, r24, r0
   JumpIfFalse  r25, L5
   // row = row + [i * j]
-  MulInt       r26, r5, r24
-  Move         r27, r26
-  MakeList     r28, 1, r27
+  MulInt       r27, r5, r24
+  Move         r26, r27
+  MakeList     r28, 1, r26
   Add          r29, r23, r28
   Move         r23, r29
   // for j in 0..size {
