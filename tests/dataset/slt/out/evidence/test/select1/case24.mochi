@@ -215,7 +215,8 @@ let t1 = [
 let result = from row in t1
   where ((row["e"] + row["d"] >= row["a"] + row["b"] - 10 && row["e"] + row["d"] <= row["c"] + 130) && row["c"] > row["d"])
   order by 1
-  select (row["c"] > null ? row["a"] * 2 : row["b"] * 10)
+  select (row["c"] > avg(from x in t1
+  select x["c"]) ? row["a"] * 2 : row["b"] * 10)
 for x in result {
   print(x)
 }

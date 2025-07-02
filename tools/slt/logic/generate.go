@@ -8,6 +8,63 @@ import (
 	sqlparser "github.com/xwb1989/sqlparser"
 )
 
+func subqueryToMochi(sub *sqlparser.Subquery, outer string) string {
+	sel, ok := sub.Select.(*sqlparser.Select)
+	if !ok || sel == nil || len(sel.From) != 1 || len(sel.SelectExprs) != 1 {
+		return "null"
+	}
+	tblExpr, ok := sel.From[0].(*sqlparser.AliasedTableExpr)
+	if !ok {
+		return "null"
+	}
+	tblName, ok := tblExpr.Expr.(sqlparser.TableName)
+	if !ok {
+		return "null"
+	}
+	alias := tblExpr.As.String()
+	if alias == "" {
+		alias = "x"
+	}
+	ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr)
+	if !ok {
+		return "null"
+	}
+	if fn, ok := ae.Expr.(*sqlparser.FuncExpr); ok {
+		name := strings.ToLower(fn.Name.String())
+		if name == "count" && len(fn.Exprs) == 1 {
+			if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); ok {
+				cond := ""
+				if sel.Where != nil {
+					cond = condExprToMochiRow(sel.Where.Expr, alias)
+				}
+				var sb strings.Builder
+				sb.WriteString("count(from " + alias + " in " + tblName.Name.String())
+				if cond != "" {
+					sb.WriteString("\n  where " + cond)
+				}
+				sb.WriteString("\n  select " + alias + ")")
+				return sb.String()
+			}
+		} else if name == "avg" && len(fn.Exprs) == 1 {
+			if a, ok := fn.Exprs[0].(*sqlparser.AliasedExpr); ok {
+				val := exprToMochiRow(a.Expr, alias)
+				cond := ""
+				if sel.Where != nil {
+					cond = condExprToMochiRow(sel.Where.Expr, alias)
+				}
+				var sb strings.Builder
+				sb.WriteString("avg(from " + alias + " in " + tblName.Name.String())
+				if cond != "" {
+					sb.WriteString("\n  where " + cond)
+				}
+				sb.WriteString("\n  select " + val + ")")
+				return sb.String()
+			}
+		}
+	}
+	return "null"
+}
+
 // Format the value for Mochi source.
 func formatValue(v any) string {
 	switch t := v.(type) {
@@ -29,6 +86,10 @@ func formatValue(v any) string {
 }
 
 func exprToMochi(e sqlparser.Expr) string {
+	return exprToMochiRow(e, "row")
+}
+
+func exprToMochiRow(e sqlparser.Expr, rowVar string) string {
 	switch v := e.(type) {
 	case *sqlparser.SQLVal:
 		switch v.Type {
@@ -38,38 +99,40 @@ func exprToMochi(e sqlparser.Expr) string {
 			return string(v.Val)
 		}
 	case *sqlparser.ColName:
-		return fmt.Sprintf("row[\"%s\"]", v.Name.String())
+		return fmt.Sprintf("%s[\"%s\"]", rowVar, v.Name.String())
 	case *sqlparser.ParenExpr:
-		return "(" + exprToMochi(v.Expr) + ")"
+		return "(" + exprToMochiRow(v.Expr, rowVar) + ")"
 	case *sqlparser.UnaryExpr:
-		return fmt.Sprintf("%s%s", v.Operator, exprToMochi(v.Expr))
+		return fmt.Sprintf("%s%s", v.Operator, exprToMochiRow(v.Expr, rowVar))
 	case *sqlparser.BinaryExpr:
-		l := exprToMochi(v.Left)
-		r := exprToMochi(v.Right)
+		l := exprToMochiRow(v.Left, rowVar)
+		r := exprToMochiRow(v.Right, rowVar)
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
 	case *sqlparser.FuncExpr:
 		name := strings.ToLower(v.Name.String())
 		if name == "abs" && len(v.Exprs) == 1 {
 			arg := v.Exprs[0].(*sqlparser.AliasedExpr).Expr
-			return fmt.Sprintf("abs(%s)", exprToMochi(arg))
+			return fmt.Sprintf("abs(%s)", exprToMochiRow(arg, rowVar))
 		}
+	case *sqlparser.Subquery:
+		return subqueryToMochi(v, rowVar)
 	case *sqlparser.CaseExpr:
 		elseExpr := "null"
 		if v.Else != nil {
-			elseExpr = exprToMochi(v.Else)
+			elseExpr = exprToMochiRow(v.Else, rowVar)
 		}
 		out := elseExpr
 		if v.Expr != nil {
-			expr := exprToMochi(v.Expr)
+			expr := exprToMochiRow(v.Expr, rowVar)
 			for i := len(v.Whens) - 1; i >= 0; i-- {
-				cond := fmt.Sprintf("%s == %s", expr, exprToMochi(v.Whens[i].Cond))
-				val := exprToMochi(v.Whens[i].Val)
+				cond := fmt.Sprintf("%s == %s", expr, exprToMochiRow(v.Whens[i].Cond, rowVar))
+				val := exprToMochiRow(v.Whens[i].Val, rowVar)
 				out = fmt.Sprintf("(%s ? %s : %s)", cond, val, out)
 			}
 		} else {
 			for i := len(v.Whens) - 1; i >= 0; i-- {
-				cond := condExprToMochi(v.Whens[i].Cond)
-				val := exprToMochi(v.Whens[i].Val)
+				cond := condExprToMochiRow(v.Whens[i].Cond, rowVar)
+				val := exprToMochiRow(v.Whens[i].Val, rowVar)
 				if cond == "" {
 					return "null"
 				}
@@ -99,6 +162,8 @@ func simpleExpr(e sqlparser.Expr) bool {
 			}
 		}
 		return false
+	case *sqlparser.Subquery:
+		return subqueryToMochi(v, "row") != "null"
 	case *sqlparser.CaseExpr:
 		if v.Expr != nil && !simpleExpr(v.Expr) {
 			return false
@@ -121,37 +186,41 @@ func condToMochi(where *sqlparser.Where) string {
 	if where == nil {
 		return ""
 	}
-	return condExprToMochi(where.Expr)
+	return condExprToMochiRow(where.Expr, "row")
 }
 
 func condExprToMochi(e sqlparser.Expr) string {
+	return condExprToMochiRow(e, "row")
+}
+
+func condExprToMochiRow(e sqlparser.Expr, rowVar string) string {
 	switch v := e.(type) {
 	case *sqlparser.ComparisonExpr:
-		left := exprToMochi(v.Left)
-		right := exprToMochi(v.Right)
+		left := exprToMochiRow(v.Left, rowVar)
+		right := exprToMochiRow(v.Right, rowVar)
 		op := v.Operator
 		if op == "=" {
 			op = "=="
 		}
 		return fmt.Sprintf("%s %s %s", left, op, right)
 	case *sqlparser.AndExpr:
-		l := condExprToMochi(v.Left)
-		r := condExprToMochi(v.Right)
+		l := condExprToMochiRow(v.Left, rowVar)
+		r := condExprToMochiRow(v.Right, rowVar)
 		if l == "" || r == "" {
 			return ""
 		}
 		return fmt.Sprintf("(%s && %s)", l, r)
 	case *sqlparser.OrExpr:
-		l := condExprToMochi(v.Left)
-		r := condExprToMochi(v.Right)
+		l := condExprToMochiRow(v.Left, rowVar)
+		r := condExprToMochiRow(v.Right, rowVar)
 		if l == "" || r == "" {
 			return ""
 		}
 		return fmt.Sprintf("(%s || %s)", l, r)
 	case *sqlparser.RangeCond:
-		left := exprToMochi(v.Left)
-		from := exprToMochi(v.From)
-		to := exprToMochi(v.To)
+		left := exprToMochiRow(v.Left, rowVar)
+		from := exprToMochiRow(v.From, rowVar)
+		to := exprToMochiRow(v.To, rowVar)
 		switch strings.ToLower(v.Operator) {
 		case sqlparser.BetweenStr:
 			return fmt.Sprintf("(%s >= %s && %s <= %s)", left, from, left, to)
@@ -160,7 +229,7 @@ func condExprToMochi(e sqlparser.Expr) string {
 		}
 		return ""
 	case *sqlparser.ParenExpr:
-		inner := condExprToMochi(v.Expr)
+		inner := condExprToMochiRow(v.Expr, rowVar)
 		if inner == "" {
 			return ""
 		}
