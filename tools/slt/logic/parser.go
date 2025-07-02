@@ -14,6 +14,7 @@ import (
 // Table represents an in-memory table with ordered columns.
 type Table struct {
 	Columns []string
+	Types   []string
 	Rows    []map[string]any
 }
 
@@ -149,7 +150,7 @@ func ParseFile(path string) ([]Case, error) {
 func cloneTables(src map[string]*Table) map[string]*Table {
 	dst := make(map[string]*Table)
 	for name, t := range src {
-		nt := &Table{Columns: append([]string(nil), t.Columns...)}
+		nt := &Table{Columns: append([]string(nil), t.Columns...), Types: append([]string(nil), t.Types...)}
 		for _, row := range t.Rows {
 			nr := make(map[string]any)
 			for k, v := range row {
@@ -171,10 +172,12 @@ func applyStatement(stmt string, tables map[string]*Table) error {
 	case *sqlparser.DDL:
 		if strings.EqualFold(s.Action, "create") && s.TableSpec != nil {
 			cols := make([]string, len(s.TableSpec.Columns))
+			types := make([]string, len(s.TableSpec.Columns))
 			for i, c := range s.TableSpec.Columns {
 				cols[i] = c.Name.String()
+				types[i] = strings.ToLower(c.Type.Type)
 			}
-			tables[s.NewName.Name.String()] = &Table{Columns: cols}
+			tables[s.NewName.Name.String()] = &Table{Columns: cols, Types: types}
 		}
 	case *sqlparser.Insert:
 		tbl := s.Table.Name.String()

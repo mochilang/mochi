@@ -93,9 +93,34 @@ func EvalCase(c Case) ([]string, string, error) {
 		return nil, "", err
 	}
 	defer db.Close()
-	for name, t := range c.Tables {
-		cols := strings.Join(t.Columns, " INTEGER,") + " INTEGER"
-		if _, err := db.Exec(fmt.Sprintf("CREATE TABLE %s(%s)", name, cols)); err != nil {
+	state := cloneTables(c.Tables)
+	for _, stmt := range c.Updates {
+		if err := applyStatement(stmt, state); err != nil {
+			return nil, "", err
+		}
+	}
+	for name, t := range state {
+		cols := make([]string, len(t.Columns))
+		for i, col := range t.Columns {
+			typ := "INTEGER"
+			if len(t.Types) > i && t.Types[i] != "" {
+				tt := strings.ToLower(t.Types[i])
+				switch {
+				case strings.Contains(tt, "char"), strings.Contains(tt, "text"):
+					typ = "VARCHAR"
+				case strings.Contains(tt, "bool"):
+					typ = "BOOLEAN"
+				case strings.Contains(tt, "real"), strings.Contains(tt, "floa"), strings.Contains(tt, "doub"):
+					typ = "DOUBLE"
+				case strings.Contains(tt, "int"):
+					typ = "INTEGER"
+				default:
+					typ = "VARCHAR"
+				}
+			}
+			cols[i] = fmt.Sprintf("%s %s", col, typ)
+		}
+		if _, err := db.Exec(fmt.Sprintf("CREATE TABLE %s(%s)", name, strings.Join(cols, ","))); err != nil {
 			return nil, "", err
 		}
 		placeholders := make([]string, len(t.Columns))
@@ -111,11 +136,6 @@ func EvalCase(c Case) ([]string, string, error) {
 			if _, err := db.Exec(insertSQL, vals...); err != nil {
 				return nil, "", err
 			}
-		}
-	}
-	for _, stmt := range c.Updates {
-		if _, err := db.Exec(stmt); err != nil {
-			return nil, "", err
 		}
 	}
 	rows, err := db.Query(c.Query)
