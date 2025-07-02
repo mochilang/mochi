@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	sqlparser "github.com/xwb1989/sqlparser"
@@ -46,6 +47,36 @@ func exprToMochi(e sqlparser.Expr) string {
 		l := exprToMochi(v.Left)
 		r := exprToMochi(v.Right)
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
+	case *sqlparser.FuncExpr:
+		name := strings.ToLower(v.Name.String())
+		if name == "abs" && len(v.Exprs) == 1 {
+			arg := v.Exprs[0].(*sqlparser.AliasedExpr).Expr
+			return fmt.Sprintf("abs(%s)", exprToMochi(arg))
+		}
+	case *sqlparser.CaseExpr:
+		elseExpr := "null"
+		if v.Else != nil {
+			elseExpr = exprToMochi(v.Else)
+		}
+		out := elseExpr
+		if v.Expr != nil {
+			expr := exprToMochi(v.Expr)
+			for i := len(v.Whens) - 1; i >= 0; i-- {
+				cond := fmt.Sprintf("%s == %s", expr, exprToMochi(v.Whens[i].Cond))
+				val := exprToMochi(v.Whens[i].Val)
+				out = fmt.Sprintf("(%s ? %s : %s)", cond, val, out)
+			}
+		} else {
+			for i := len(v.Whens) - 1; i >= 0; i-- {
+				cond := condExprToMochi(v.Whens[i].Cond)
+				val := exprToMochi(v.Whens[i].Val)
+				if cond == "" {
+					return "null"
+				}
+				out = fmt.Sprintf("(%s ? %s : %s)", cond, val, out)
+			}
+		}
+		return out
 	}
 	return "null"
 }
@@ -60,6 +91,27 @@ func simpleExpr(e sqlparser.Expr) bool {
 		return simpleExpr(v.Left) && simpleExpr(v.Right)
 	case *sqlparser.UnaryExpr:
 		return simpleExpr(v.Expr)
+	case *sqlparser.FuncExpr:
+		name := strings.ToLower(v.Name.String())
+		if name == "abs" && len(v.Exprs) == 1 {
+			if ae, ok := v.Exprs[0].(*sqlparser.AliasedExpr); ok {
+				return simpleExpr(ae.Expr)
+			}
+		}
+		return false
+	case *sqlparser.CaseExpr:
+		if v.Expr != nil && !simpleExpr(v.Expr) {
+			return false
+		}
+		for _, w := range v.Whens {
+			if condExprToMochi(w.Cond) == "" || !simpleExpr(w.Val) {
+				return false
+			}
+		}
+		if v.Else != nil && !simpleExpr(v.Else) {
+			return false
+		}
+		return true
 	default:
 		return false
 	}
@@ -100,6 +152,16 @@ func condExprToMochi(e sqlparser.Expr) string {
 		return condExprToMochi(v.Expr)
 	}
 	return ""
+}
+
+func orderExprToMochi(e sqlparser.Expr, exprs []*sqlparser.AliasedExpr) string {
+	if val, ok := e.(*sqlparser.SQLVal); ok && val.Type == sqlparser.IntVal {
+		idx, err := strconv.Atoi(string(val.Val))
+		if err == nil && idx >= 1 && idx <= len(exprs) {
+			return exprToMochi(exprs[idx-1].Expr)
+		}
+	}
+	return exprToMochi(e)
 }
 
 func generateUpdate(stmt string) string {
@@ -241,6 +303,54 @@ func Generate(c Case) string {
 		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, formatExpectList(c.Expect)))
+		}
+		return sb.String()
+	}
+
+	// Support simple multi-column selects without subqueries or functions
+	if len(sel.SelectExprs) > 1 {
+		if len(c.Expect) == 0 {
+			return ""
+		}
+		aes := make([]*sqlparser.AliasedExpr, 0, len(sel.SelectExprs))
+		var exprs []string
+		for _, se := range sel.SelectExprs {
+			ae, ok := se.(*sqlparser.AliasedExpr)
+			if !ok || !simpleExpr(ae.Expr) {
+				return ""
+			}
+			aes = append(aes, ae)
+			exprs = append(exprs, exprToMochi(ae.Expr))
+		}
+		if sel.Where != nil && condExprToMochi(sel.Where.Expr) == "" {
+			return ""
+		}
+		for _, ob := range sel.OrderBy {
+			if !simpleExpr(ob.Expr) {
+				if val, ok := ob.Expr.(*sqlparser.SQLVal); !ok || val.Type != sqlparser.IntVal {
+					return ""
+				}
+			}
+		}
+		cond := condToMochi(sel.Where)
+		sb.WriteString("let result = from row in " + tblNameStr)
+		if cond != "" {
+			sb.WriteString("\n  where " + cond)
+		}
+		if len(sel.OrderBy) > 0 {
+			sb.WriteString("\n  order by ")
+			for i, ob := range sel.OrderBy {
+				if i > 0 {
+					sb.WriteString(", ")
+				}
+				sb.WriteString(orderExprToMochi(ob.Expr, aes))
+			}
+		}
+		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
+		sb.WriteString("let flatResult = from row in result\n  from x in row\n  select x\n")
+		sb.WriteString("for x in flatResult {\n  print(x)\n}\n\n")
+		if len(c.Expect) > 0 {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))
 		}
 		return sb.String()
 	}
