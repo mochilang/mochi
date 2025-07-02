@@ -498,8 +498,13 @@ func Generate(c Case) string {
 			}
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
-		sb.WriteString("let flatResult = from row in result\n  from x in row\n  select x\n")
-		sb.WriteString("for x in flatResult {\n  print(x)\n}\n\n")
+		sb.WriteString("var flatResult = []\n")
+		sb.WriteString("for row in result {\n")
+		sb.WriteString("  for x in row {\n")
+		sb.WriteString("    flatResult = append(flatResult, x)\n")
+		sb.WriteString("    print(x)\n")
+		sb.WriteString("  }\n")
+		sb.WriteString("}\n\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))
 		}
