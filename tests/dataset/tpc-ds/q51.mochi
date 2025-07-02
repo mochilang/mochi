@@ -1,9 +1,37 @@
-let t = [{id: 1, val: 51}]
-let tmp = lower("ignore")
-let vals = from r in t select r.val
-let result = first(vals)
+// Cumulative web vs store sales example
+let web_sales = [
+  {item: 1, date: 1, price: 30.0},
+  {item: 1, date: 2, price: 20.0}
+]
+let store_sales = [
+  {item: 1, date: 1, price: 5.0},
+  {item: 1, date: 2, price: 19.0}
+]
+let dms = 1
+
+fun cumulative(xs: list<{date:int, price:float}>): list<{date:int, cum:float}> {
+  var out = []
+  var acc = 0.0
+  for x in xs {
+    acc = acc + x.price
+    out = append(out, {date: x.date, cum: acc})
+  }
+  return out
+}
+
+let web_cum = cumulative(from w in web_sales sort by w.date select {date:w.date, price:w.price})
+let store_cum = cumulative(from s in store_sales sort by s.date select {date:s.date, price:s.price})
+
+let joined =
+  from w in web_cum
+  join s in store_cum on w.date == s.date
+  where w.cum > s.cum
+  select {item_sk: 1, d_date: w.date}
+
+let result = joined
+
 json(result)
 
-test "TPCDS Q51 placeholder" {
-  expect result == 51
+test "TPCDS Q51 simplified" {
+  expect result == [ {item_sk: 1, d_date: 1}, {item_sk: 1, d_date: 2} ]
 }

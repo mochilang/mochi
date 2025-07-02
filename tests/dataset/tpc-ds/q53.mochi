@@ -1,9 +1,33 @@
-let t = [{id: 1, val: 53}]
-let tmp = lower("ignore")
-let vals = from r in t select r.val
-let result = first(vals)
+// Manufacturer sales variance example
+let item = [
+  {i_item_sk: 1, i_manufact_id: 1},
+  {i_item_sk: 2, i_manufact_id: 2}
+]
+let store_sales = [
+  {item: 1, date: 1, price: 10.0},
+  {item: 1, date: 2, price: 10.0},
+  {item: 2, date: 1, price: 30.0},
+  {item: 2, date: 2, price: 23.0}
+]
+let date_dim = [
+  {d_date_sk: 1, d_month_seq: 1},
+  {d_date_sk: 2, d_month_seq: 2}
+]
+
+let grouped =
+  from ss in store_sales
+  join i in item on ss.item == i.i_item_sk
+  join d in date_dim on ss.date == d.d_date_sk
+  group by i.i_manufact_id into g
+  select {manu: g.key, sum_sales: sum(from x in g select x.price), avg_sales: avg(from x in g select x.price)}
+
+let result =
+  from g in grouped
+  where g.avg_sales > 0.0 && abs(g.sum_sales - g.avg_sales) / g.avg_sales > 0.1
+  select {i_manufact_id: g.manu, sum_sales: g.sum_sales}
+
 json(result)
 
-test "TPCDS Q53 placeholder" {
-  expect result == 53
+test "TPCDS Q53 simplified" {
+  expect result == [{i_manufact_id: 2, sum_sales: 53.0}]
 }

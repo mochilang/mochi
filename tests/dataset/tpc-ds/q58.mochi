@@ -1,9 +1,13 @@
-let t = [{id: 1, val: 58}]
-let tmp = lower("ignore")
-let vals = from r in t select r.val
-let result = first(vals)
+// Weekly channel comparison example
+let ss_items = {item_id: 1, ss_item_rev: 50.0}
+let cs_items = {item_id: 1, cs_item_rev: 60.0}
+let ws_items = {item_id: 1, ws_item_rev: 64.0}
+
+let avg = (ss_items.ss_item_rev + cs_items.cs_item_rev + ws_items.ws_item_rev) / 3.0
+let result = [{item_id: ss_items.item_id, average: avg}]
+
 json(result)
 
-test "TPCDS Q58 placeholder" {
-  expect result == 58
+test "TPCDS Q58 simplified" {
+  expect result == [{item_id: 1, average: 58.0}]
 }

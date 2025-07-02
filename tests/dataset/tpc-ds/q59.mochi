@@ -1,9 +1,16 @@
-let t = [{id: 1, val: 59}]
-let tmp = lower(59)
-let vals = from r in t select r.val
-let result = first(vals)
+// Weekly sales ratio example
+let sales_year1 = [ {week: 1, store: 1, amount: 100.0} ]
+let sales_year2 = [ {week: 53, store: 1, amount: 150.0} ]
+
+let join =
+  from y1 in sales_year1
+  join y2 in sales_year2 on y1.store == y2.store && y1.week == y2.week - 52
+  select {s_store_id1: y1.store, ratio: y2.amount / y1.amount}
+
+let result = join
+
 json(result)
 
-test "TPCDS Q59 placeholder" {
-  expect result == 59
+test "TPCDS Q59 simplified" {
+  expect result == [{s_store_id1: 1, ratio: 1.5}]
 }
