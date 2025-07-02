@@ -225,22 +225,23 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), abs(b-c), b-c, a+b*2+c*3 FROM t1 WHERE (e>c OR e<d) AND (c<=d-2 OR c>=d+2) AND c BETWEEN b-2 AND d+2 ORDER BY 2,5,4,6,3,1 */
 let result = from row in t1
-  where ((((row.e > row.c || row.e < row.d)) && ((row.c <= row.d - 2 || row.c >= row.d + 2))) && (row.c >= row.b - 2 && row.c <= row.d + 2))
-  order by [(if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.b - row.c, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.a + row.b * 2 + row.c * 3, count(from x in t1
+  where ((((row.e > row.c || row.e < row.d)) && ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))) && (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
+  order by [(if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.b - row.c), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (row.a + row.b + row.c + row.d + row.e) / 5]
-  select [(row.a + row.b + row.c + row.d + row.e) / 5, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
+  select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.b - row.c, row.a + row.b * 2 + row.c * 3]
+  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.b - row.c), ((row.a + (row.b * 2)) + (row.c * 3))]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case244" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [212, 222, 0, 3, -3, 1277, 107, 333, 0, 1, -1, 635, 162, 333, 0, 1, -1, 966, 152, 333, 0, 1, 1, 905, 167, 333, 0, 1, 1, 1000, 187, 444, 0, 1, -1, 1121, 222, 444, 0, 1, -1, 1338, 177, 555, 0, 1, -1, 1057, 232, 555, 0, 1, 1, 1391, 237, 555, 0, 1, 1, 1416]
 }
+
