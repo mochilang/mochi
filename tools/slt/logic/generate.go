@@ -92,6 +92,9 @@ func generateUpdate(stmt string) string {
 
 // Generate returns Mochi source code for the given Case.
 func Generate(c Case) string {
+	if c.Hash != "" {
+		return ""
+	}
 	var sb strings.Builder
 
 	if len(c.Comments) > 0 {
@@ -134,12 +137,42 @@ func Generate(c Case) string {
 	}
 
 	sb.WriteString(fmt.Sprintf("/* %s */\n", c.Query))
-	stmt, _ := sqlparser.Parse(c.Query)
-	sel := stmt.(*sqlparser.Select)
-	tblExpr := sel.From[0].(*sqlparser.AliasedTableExpr)
-	tblName := tblExpr.Expr.(sqlparser.TableName).Name.String()
+	stmt, err := sqlparser.Parse(c.Query)
+	if err != nil {
+		return ""
+	}
+	sel, ok := stmt.(*sqlparser.Select)
+	if !ok || len(sel.From) != 1 {
+		return ""
+	}
+	tblExpr, ok := sel.From[0].(*sqlparser.AliasedTableExpr)
+	if !ok {
+		return ""
+	}
+	tblName, ok := tblExpr.Expr.(sqlparser.TableName)
+	if !ok {
+		return ""
+	}
+
+	// Only support `SELECT count(*) FROM tbl WHERE ...` queries
+	if len(sel.SelectExprs) != 1 {
+		return ""
+	}
+	ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr)
+	if !ok {
+		return ""
+	}
+	fn, ok := ae.Expr.(*sqlparser.FuncExpr)
+	if !ok || !fn.Name.EqualString("count") || len(fn.Exprs) != 1 {
+		return ""
+	}
+	if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); !ok {
+		return ""
+	}
+
+	tblNameStr := tblName.Name.String()
 	cond := condToMochi(sel.Where)
-	sb.WriteString("let result = count(from row in " + tblName)
+	sb.WriteString("let result = count(from row in " + tblNameStr)
 	if cond != "" {
 		sb.WriteString("\n  where " + cond)
 	}
