@@ -48,7 +48,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
-	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser;")
+	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;")
 	c.writeln("")
 	c.writeln("type")
 	c.indent++
@@ -63,8 +63,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 					return nil, err
 				}
 			} else {
-				// Allow builtin foreign packages like strings
-				if strings.Trim(s.Import.Path, "\"") != "strings" {
+				// Allow builtin foreign packages like strings and math
+				p := strings.Trim(s.Import.Path, "\"")
+				if p != "strings" && p != "math" {
 					return nil, fmt.Errorf("foreign imports not supported")
 				}
 			}
@@ -294,14 +295,16 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.Agent != nil, s.Stream != nil, s.Model != nil, s.On != nil, s.Emit != nil:
 		return fmt.Errorf("agents and streams not supported")
 	case s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
-		return fmt.Errorf("foreign declarations not supported")
+		// Ignore foreign declarations like extern functions
+		return nil
 	case s.Fact != nil, s.Rule != nil:
 		return fmt.Errorf("logic programming constructs not supported")
 	case s.Import != nil:
 		if s.Import.Lang == nil {
 			return c.compilePackageImport(s.Import)
 		}
-		if strings.Trim(s.Import.Path, "\"") == "strings" {
+		p := strings.Trim(s.Import.Path, "\"")
+		if p == "strings" || p == "math" {
 			return nil
 		}
 		return fmt.Errorf("foreign imports not supported")
@@ -1005,7 +1008,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operators = append(operators, op)
 	}
 
-	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union_all"}}
+	levels := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union_all"}, {"intersect"}}
 
 	for _, level := range levels {
 		for i := 0; i < len(operators); {
@@ -1055,6 +1058,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					res = fmt.Sprintf("(%s or %s)", l, r)
 				case "union_all":
 					res = fmt.Sprintf("Concat(%s, %s)", l, r)
+					isList = true
+				case "intersect":
+					c.use("_intersect")
+					res = fmt.Sprintf("specialize _intersect<Variant>(%s, %s)", l, r)
 					isList = true
 				}
 				operands[i] = res
@@ -1345,6 +1352,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("strings.ToUpper expects 1 arg")
 			}
 			return fmt.Sprintf("UpperCase(%s)", args[0]), nil
+		case "math.sqrt":
+			if len(args) != 1 {
+				return "", fmt.Errorf("math.sqrt expects 1 argument")
+			}
+			return fmt.Sprintf("Sqrt(%s)", args[0]), nil
 		case "json":
 			if len(args) != 1 {
 				return "", fmt.Errorf("json expects 1 argument")
@@ -2209,6 +2221,38 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("SetLength(Result, Length(arr));")
 			c.writeln("for i := 0 to High(arr) do")
 			c.writeln("  Result[i] := arr[High(arr) - i];")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_intersect":
+			c.writeln("generic function _intersect<T>(a, b: specialize TArray<T>): specialize TArray<T>;")
+			c.writeln("var i,j,k: Integer; inB, exists: Boolean;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, 0);")
+			c.writeln("for i := 0 to High(a) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("inB := False;")
+			c.writeln("for j := 0 to High(b) do")
+			c.writeln("  if a[i] = b[j] then begin inB := True; Break; end;")
+			c.writeln("if inB then")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("exists := False;")
+			c.writeln("for k := 0 to High(Result) do")
+			c.writeln("  if a[i] = Result[k] then begin exists := True; Break; end;")
+			c.writeln("if not exists then")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, Length(Result)+1);")
+			c.writeln("Result[High(Result)] := a[i];")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")

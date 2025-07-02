@@ -1,0 +1,127 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+type
+  generic TArray<T> = array of T;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, integer>;
+  _tmp1: specialize TFPGMap<Variant, integer>;
+  _tmp10: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<Variant, integer>;
+  _tmp7: specialize TFPGMap<Variant, integer>;
+  _tmp8: specialize TArray<integer>;
+  _tmp9: specialize TFPGMap<Variant, Variant>;
+  c: specialize TFPGMap<string, integer>;
+  customer: specialize TArray<specialize TFPGMap<string, integer>>;
+  customer_address: specialize TArray<specialize TFPGMap<string, Variant>>;
+  customer_demographics: specialize TArray<specialize TFPGMap<string, Variant>>;
+  date_dim: specialize TArray<specialize TFPGMap<string, integer>>;
+  groups: specialize TArray<specialize TFPGMap<string, Variant>>;
+  purchased: specialize TArray<integer>;
+  ss: specialize TFPGMap<string, integer>;
+  store_sales: specialize TArray<specialize TFPGMap<string, integer>>;
+
+procedure test_TPCDS_Q35_simplified;
+var
+  _tmp11: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp11 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp11.AddOrSetData('ca_state', 'CA');
+  _tmp11.AddOrSetData('cd_gender', 'M');
+  _tmp11.AddOrSetData('cd_marital_status', 'S');
+  _tmp11.AddOrSetData('cd_dep_count', 1);
+  _tmp11.AddOrSetData('cd_dep_employed_count', 1);
+  _tmp11.AddOrSetData('cd_dep_college_count', 0);
+  _tmp11.AddOrSetData('cnt', 1);
+  if not ((groups = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp11]))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp0.AddOrSetData('c_customer_sk', 1);
+  _tmp0.AddOrSetData('c_current_addr_sk', 1);
+  _tmp0.AddOrSetData('c_current_cdemo_sk', 1);
+  _tmp1 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp1.AddOrSetData('c_customer_sk', 2);
+  _tmp1.AddOrSetData('c_current_addr_sk', 2);
+  _tmp1.AddOrSetData('c_current_cdemo_sk', 2);
+  customer := specialize TArray<specialize TFPGMap<string, integer>>([_tmp0, _tmp1]);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('ca_address_sk', 1);
+  _tmp2.AddOrSetData('ca_state', 'CA');
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('ca_address_sk', 2);
+  _tmp3.AddOrSetData('ca_state', 'NY');
+  customer_address := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp2, _tmp3]);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('cd_demo_sk', 1);
+  _tmp4.AddOrSetData('cd_gender', 'M');
+  _tmp4.AddOrSetData('cd_marital_status', 'S');
+  _tmp4.AddOrSetData('cd_dep_count', 1);
+  _tmp4.AddOrSetData('cd_dep_employed_count', 1);
+  _tmp4.AddOrSetData('cd_dep_college_count', 0);
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('cd_demo_sk', 2);
+  _tmp5.AddOrSetData('cd_gender', 'F');
+  _tmp5.AddOrSetData('cd_marital_status', 'M');
+  _tmp5.AddOrSetData('cd_dep_count', 2);
+  _tmp5.AddOrSetData('cd_dep_employed_count', 1);
+  _tmp5.AddOrSetData('cd_dep_college_count', 1);
+  customer_demographics := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp4, _tmp5]);
+  _tmp6 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp6.AddOrSetData('ss_customer_sk', 1);
+  _tmp6.AddOrSetData('ss_sold_date_sk', 1);
+  store_sales := specialize TArray<specialize TFPGMap<string, integer>>([_tmp6]);
+  _tmp7 := specialize TFPGMap<Variant, integer>.Create;
+  _tmp7.AddOrSetData('d_date_sk', 1);
+  _tmp7.AddOrSetData('d_year', 2000);
+  _tmp7.AddOrSetData('d_qoy', 1);
+  date_dim := specialize TArray<specialize TFPGMap<string, integer>>([_tmp7]);
+  SetLength(_tmp8, 0);
+  for ss in store_sales do
+  begin
+    for d in date_dim do
+    begin
+      if not ((ss.ss_sold_date_sk = d.d_date_sk)) then continue;
+      if not (((d.d_year = 2000) and (d.d_qoy < 4))) then continue;
+      _tmp8 := Concat(_tmp8, [ss.ss_customer_sk]);
+    end;
+  end;
+  purchased := _tmp8;
+  _tmp9 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp9.AddOrSetData('ca_state', g.key.state);
+  _tmp9.AddOrSetData('cd_gender', g.key.gender);
+  _tmp9.AddOrSetData('cd_marital_status', g.key.marital);
+  _tmp9.AddOrSetData('cd_dep_count', g.key.dep);
+  _tmp9.AddOrSetData('cd_dep_employed_count', g.key.emp);
+  _tmp9.AddOrSetData('cd_dep_college_count', g.key.col);
+  _tmp9.AddOrSetData('cnt', Length(g));
+  SetLength(_tmp10, 0);
+  for c in customer do
+  begin
+    for ca in customer_address do
+    begin
+      if not ((c.c_current_addr_sk = ca.ca_address_sk)) then continue;
+      for cd in customer_demographics do
+      begin
+        if not ((c.c_current_cdemo_sk = cd.cd_demo_sk)) then continue;
+        if not ((c.c_customer_sk in purchased)) then continue;
+        _tmp10 := Concat(_tmp10, [_tmp9]);
+      end;
+    end;
+  end;
+  groups := _tmp10;
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(groups);
+  test_TPCDS_Q35_simplified;
+end.

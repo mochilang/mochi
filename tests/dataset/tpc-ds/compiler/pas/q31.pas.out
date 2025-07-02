@@ -1,0 +1,201 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+type
+  generic TArray<T> = array of T;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic function _sumList<T>(arr: specialize TArray<T>): double;
+var i: integer; s: double;
+begin
+  s := 0;
+  for i := 0 to High(arr) do
+    s := s + arr[i];
+  Result := s;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TFPGMap<Variant, Variant>;
+  _tmp11: specialize TFPGMap<Variant, Variant>;
+  _tmp12: specialize TArray<Variant>;
+  _tmp13: specialize TArray<Variant>;
+  _tmp14: specialize TArray<Variant>;
+  _tmp15: specialize TArray<Variant>;
+  _tmp16: specialize TArray<Variant>;
+  _tmp17: specialize TArray<Variant>;
+  _tmp18: specialize TFPGMap<Variant, Variant>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp7: specialize TFPGMap<Variant, Variant>;
+  _tmp8: specialize TFPGMap<Variant, Variant>;
+  _tmp9: specialize TFPGMap<Variant, Variant>;
+  counties: specialize TArray<string>;
+  county: string;
+  _result: specialize TArray<Variant>;
+  s: specialize TFPGMap<string, Variant>;
+  ss1: double;
+  ss2: double;
+  ss3: double;
+  store_g1: Variant;
+  store_g2: Variant;
+  store_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  w: specialize TFPGMap<string, Variant>;
+  web_g1: Variant;
+  web_g2: Variant;
+  web_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  ws1: double;
+  ws2: double;
+  ws3: double;
+
+procedure test_TPCDS_Q31_simplified;
+var
+  _tmp19: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp19 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp19.AddOrSetData('ca_county', 'A');
+  _tmp19.AddOrSetData('d_year', 2000);
+  _tmp19.AddOrSetData('web_q1_q2_increase', 1.5);
+  _tmp19.AddOrSetData('store_q1_q2_increase', 1.2);
+  _tmp19.AddOrSetData('web_q2_q3_increase', 1.6666666666666667);
+  _tmp19.AddOrSetData('store_q2_q3_increase', 1.3333333333333333);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp19]))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('ca_county', 'A');
+  _tmp0.AddOrSetData('d_qoy', 1);
+  _tmp0.AddOrSetData('d_year', 2000);
+  _tmp0.AddOrSetData('ss_ext_sales_price', 100);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('ca_county', 'A');
+  _tmp1.AddOrSetData('d_qoy', 2);
+  _tmp1.AddOrSetData('d_year', 2000);
+  _tmp1.AddOrSetData('ss_ext_sales_price', 120);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('ca_county', 'A');
+  _tmp2.AddOrSetData('d_qoy', 3);
+  _tmp2.AddOrSetData('d_year', 2000);
+  _tmp2.AddOrSetData('ss_ext_sales_price', 160);
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('ca_county', 'B');
+  _tmp3.AddOrSetData('d_qoy', 1);
+  _tmp3.AddOrSetData('d_year', 2000);
+  _tmp3.AddOrSetData('ss_ext_sales_price', 80);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('ca_county', 'B');
+  _tmp4.AddOrSetData('d_qoy', 2);
+  _tmp4.AddOrSetData('d_year', 2000);
+  _tmp4.AddOrSetData('ss_ext_sales_price', 90);
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('ca_county', 'B');
+  _tmp5.AddOrSetData('d_qoy', 3);
+  _tmp5.AddOrSetData('d_year', 2000);
+  _tmp5.AddOrSetData('ss_ext_sales_price', 100);
+  store_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2, _tmp3, _tmp4, _tmp5]);
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('ca_county', 'A');
+  _tmp6.AddOrSetData('d_qoy', 1);
+  _tmp6.AddOrSetData('d_year', 2000);
+  _tmp6.AddOrSetData('ws_ext_sales_price', 100);
+  _tmp7 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp7.AddOrSetData('ca_county', 'A');
+  _tmp7.AddOrSetData('d_qoy', 2);
+  _tmp7.AddOrSetData('d_year', 2000);
+  _tmp7.AddOrSetData('ws_ext_sales_price', 150);
+  _tmp8 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp8.AddOrSetData('ca_county', 'A');
+  _tmp8.AddOrSetData('d_qoy', 3);
+  _tmp8.AddOrSetData('d_year', 2000);
+  _tmp8.AddOrSetData('ws_ext_sales_price', 250);
+  _tmp9 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp9.AddOrSetData('ca_county', 'B');
+  _tmp9.AddOrSetData('d_qoy', 1);
+  _tmp9.AddOrSetData('d_year', 2000);
+  _tmp9.AddOrSetData('ws_ext_sales_price', 80);
+  _tmp10 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp10.AddOrSetData('ca_county', 'B');
+  _tmp10.AddOrSetData('d_qoy', 2);
+  _tmp10.AddOrSetData('d_year', 2000);
+  _tmp10.AddOrSetData('ws_ext_sales_price', 90);
+  _tmp11 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp11.AddOrSetData('ca_county', 'B');
+  _tmp11.AddOrSetData('d_qoy', 3);
+  _tmp11.AddOrSetData('d_year', 2000);
+  _tmp11.AddOrSetData('ws_ext_sales_price', 95);
+  web_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp6, _tmp7, _tmp8, _tmp9, _tmp10, _tmp11]);
+  counties := specialize TArray<string>(['A', 'B']);
+  _result := specialize TArray<Variant>([]);
+  for county in counties do
+  begin
+    SetLength(_tmp12, 0);
+    for s in store_sales do
+    begin
+      if not (((s.ca_county = county) and (s.d_qoy = 1))) then continue;
+      _tmp12 := Concat(_tmp12, [s.ss_ext_sales_price]);
+    end;
+    ss1 := specialize _sumList<Variant>(_tmp12);
+    SetLength(_tmp13, 0);
+    for s in store_sales do
+    begin
+      if not (((s.ca_county = county) and (s.d_qoy = 2))) then continue;
+      _tmp13 := Concat(_tmp13, [s.ss_ext_sales_price]);
+    end;
+    ss2 := specialize _sumList<Variant>(_tmp13);
+    SetLength(_tmp14, 0);
+    for s in store_sales do
+    begin
+      if not (((s.ca_county = county) and (s.d_qoy = 3))) then continue;
+      _tmp14 := Concat(_tmp14, [s.ss_ext_sales_price]);
+    end;
+    ss3 := specialize _sumList<Variant>(_tmp14);
+    SetLength(_tmp15, 0);
+    for w in web_sales do
+    begin
+      if not (((w.ca_county = county) and (w.d_qoy = 1))) then continue;
+      _tmp15 := Concat(_tmp15, [w.ws_ext_sales_price]);
+    end;
+    ws1 := specialize _sumList<Variant>(_tmp15);
+    SetLength(_tmp16, 0);
+    for w in web_sales do
+    begin
+      if not (((w.ca_county = county) and (w.d_qoy = 2))) then continue;
+      _tmp16 := Concat(_tmp16, [w.ws_ext_sales_price]);
+    end;
+    ws2 := specialize _sumList<Variant>(_tmp16);
+    SetLength(_tmp17, 0);
+    for w in web_sales do
+    begin
+      if not (((w.ca_county = county) and (w.d_qoy = 3))) then continue;
+      _tmp17 := Concat(_tmp17, [w.ws_ext_sales_price]);
+    end;
+    ws3 := specialize _sumList<Variant>(_tmp17);
+    web_g1 := ws2 div ws1;
+    store_g1 := ss2 div ss1;
+    web_g2 := ws3 div ws2;
+    store_g2 := ss3 div ss2;
+    if ((web_g1 > store_g1) and (web_g2 > store_g2)) then
+    begin
+      _tmp18 := specialize TFPGMap<Variant, Variant>.Create;
+      _tmp18.AddOrSetData('ca_county', county);
+      _tmp18.AddOrSetData('d_year', 2000);
+      _tmp18.AddOrSetData('web_q1_q2_increase', web_g1);
+      _tmp18.AddOrSetData('store_q1_q2_increase', store_g1);
+      _tmp18.AddOrSetData('web_q2_q3_increase', web_g2);
+      _tmp18.AddOrSetData('store_q2_q3_increase', store_g2);
+      _result := append(_result, _tmp18);
+    end;
+  end;
+  specialize _json<specialize TArray<Variant>>(_result);
+  test_TPCDS_Q31_simplified;
+end.
