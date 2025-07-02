@@ -1,0 +1,37 @@
+case class Person(name: String, age: Int, status: String)
+
+object Main {
+    def test_update_adult_status(): Unit = {
+        expect((people == scala.collection.mutable.ArrayBuffer(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 26, status = "adult"), Person(name = "Charlie", age = 19, status = "adult"), Person(name = "Diana", age = 16, status = "minor"))))
+    }
+    
+    def main(args: Array[String]): Unit = {
+        val people: scala.collection.mutable.ArrayBuffer[Person] = scala.collection.mutable.ArrayBuffer(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor"))
+        var i1 = 0
+        while (i1 < people.length) {
+            var it2 = _indexList(people, i1)
+            val name: String = it2.name
+            val age: Int = it2.age
+            val status: String = it2.status
+            if ((age >= 18)) {
+                it2 = it2.copy(status = "adult", age = (age + 1))
+            }
+            people.update(i1, it2)
+            i1 = i1 + 1
+        }
+        println("ok")
+        test_update_adult_status()
+    }
+    def expect(cond: Boolean): Unit = {
+            if (!cond) throw new RuntimeException("expect failed")
+    }
+    
+    def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {
+            var idx = i
+            val n = arr.length
+            if (idx < 0) idx += n
+            if (idx < 0 || idx >= n) throw new RuntimeException("index out of range")
+            arr(idx)
+    }
+    
+}
