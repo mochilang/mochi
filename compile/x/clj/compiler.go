@@ -266,6 +266,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.writeln("(throw (ex-info \"break\" {}))")
 		return nil
@@ -572,6 +574,88 @@ func (c *Compiler) compileWhile(st *parser.WhileStmt) error {
 	c.writeln(")")
 	c.indent--
 	c.writeln(")")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	target := sanitizeName(u.Target)
+	item := c.newTemp()
+
+	origEnv := c.env
+	child := types.NewEnv(origEnv)
+	fields := []string{}
+	if origEnv != nil {
+		if t, err := origEnv.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if st, ok := lt.Elem.(types.StructType); ok {
+					for _, f := range st.Order {
+						child.SetVar(f, st.Fields[f], true)
+						fields = append(fields, f)
+					}
+				}
+			}
+		}
+	}
+	c.env = child
+
+	whereExpr := ""
+	var err error
+	if u.Where != nil {
+		whereExpr, err = c.compileExpr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+	}
+
+	expr := item
+	for _, it := range u.Set.Items {
+		keyStr, _ := identName(it.Key)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		expr = fmt.Sprintf("(assoc %s :%s %s)", expr, sanitizeName(keyStr), val)
+	}
+
+	if whereExpr != "" {
+		expr = fmt.Sprintf("(if %s %s %s)", whereExpr, expr, item)
+	}
+
+	c.writeln(fmt.Sprintf("(def %s", target))
+	c.indent++
+	c.writeln(fmt.Sprintf("(vec (map (fn [%s]", item))
+	c.indent++
+	if len(fields) > 0 {
+		c.writeIndent()
+		c.buf.WriteString("(let [")
+		for i, f := range fields {
+			if i > 0 {
+				c.buf.WriteString(" ")
+			}
+			sf := sanitizeName(f)
+			c.buf.WriteString(fmt.Sprintf("%s (:%s %s)", sf, sf, item))
+		}
+		c.buf.WriteString("]\n")
+		c.indent++
+	}
+	c.writeln(expr)
+	if len(fields) > 0 {
+		c.indent--
+		c.writeln(")")
+	}
+	c.indent--
+	c.writeln(fmt.Sprintf(") %s))", target))
+	c.indent--
+	c.writeln(")")
+
+	c.env = origEnv
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			c.env.SetVar(u.Target, t, true)
+		}
+	}
 	return nil
 }
 
