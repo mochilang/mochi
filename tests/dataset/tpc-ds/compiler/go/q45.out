@@ -1,0 +1,2 @@
+[{"ca_zip":"85669","sum_ws_sales_price":50},{"ca_zip":"99999","sum_ws_sales_price":30}]
+   test TPCDS Q45 simplified           ... ok (3.0µs)

@@ -1,0 +1,653 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"sort"
+	"strings"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+func test_TPCDS_Q46_simplified() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"c_last_name":      "Doe",
+		"c_first_name":     "John",
+		"ca_city":          "Seattle",
+		"bought_city":      "Portland",
+		"ss_ticket_number": 1,
+		"amt":              5.0,
+		"profit":           20.0,
+	}}))
+}
+
+type Store_salesItem struct {
+	Ss_ticket_number int     `json:"ss_ticket_number"`
+	Ss_customer_sk   int     `json:"ss_customer_sk"`
+	Ss_addr_sk       int     `json:"ss_addr_sk"`
+	Ss_hdemo_sk      int     `json:"ss_hdemo_sk"`
+	Ss_store_sk      int     `json:"ss_store_sk"`
+	Ss_sold_date_sk  int     `json:"ss_sold_date_sk"`
+	Ss_coupon_amt    float64 `json:"ss_coupon_amt"`
+	Ss_net_profit    float64 `json:"ss_net_profit"`
+}
+
+var store_sales []Store_salesItem
+
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_dow     int `json:"d_dow"`
+	D_year    int `json:"d_year"`
+}
+
+var date_dim []Date_dimItem
+
+type StoreItem struct {
+	S_store_sk int    `json:"s_store_sk"`
+	S_city     string `json:"s_city"`
+}
+
+var store []StoreItem
+
+type Household_demographicsItem struct {
+	Hd_demo_sk       int `json:"hd_demo_sk"`
+	Hd_dep_count     int `json:"hd_dep_count"`
+	Hd_vehicle_count int `json:"hd_vehicle_count"`
+}
+
+var household_demographics []Household_demographicsItem
+
+type Customer_addressItem struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_city       string `json:"ca_city"`
+}
+
+var customer_address []Customer_addressItem
+
+type CustomerItem struct {
+	C_customer_sk     int    `json:"c_customer_sk"`
+	C_last_name       string `json:"c_last_name"`
+	C_first_name      string `json:"c_first_name"`
+	C_current_addr_sk int    `json:"c_current_addr_sk"`
+}
+
+var customer []CustomerItem
+var depcnt int
+var vehcnt int
+var year int
+var cities []string
+var dn []map[string]any
+var base []map[string]any
+var result []map[string]any
+
+func main() {
+	failures := 0
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_ticket_number: 1,
+		Ss_customer_sk:   1,
+		Ss_addr_sk:       1,
+		Ss_hdemo_sk:      1,
+		Ss_store_sk:      1,
+		Ss_sold_date_sk:  1,
+		Ss_coupon_amt:    5.0,
+		Ss_net_profit:    20.0,
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_dow:     6,
+		D_year:    2020,
+	}})
+	store = _cast[[]StoreItem]([]StoreItem{StoreItem{
+		S_store_sk: 1,
+		S_city:     "CityA",
+	}})
+	household_demographics = _cast[[]Household_demographicsItem]([]Household_demographicsItem{Household_demographicsItem{
+		Hd_demo_sk:       1,
+		Hd_dep_count:     2,
+		Hd_vehicle_count: 0,
+	}})
+	customer_address = _cast[[]Customer_addressItem]([]Customer_addressItem{Customer_addressItem{
+		Ca_address_sk: 1,
+		Ca_city:       "Portland",
+	}, Customer_addressItem{
+		Ca_address_sk: 2,
+		Ca_city:       "Seattle",
+	}})
+	customer = _cast[[]CustomerItem]([]CustomerItem{CustomerItem{
+		C_customer_sk:     1,
+		C_last_name:       "Doe",
+		C_first_name:      "John",
+		C_current_addr_sk: 2,
+	}})
+	depcnt = 2
+	vehcnt = 0
+	year = 2020
+	cities = []string{"CityA"}
+	dn = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, ss := range store_sales {
+			for _, d := range date_dim {
+				if !(ss.Ss_sold_date_sk == d.D_date_sk) {
+					continue
+				}
+				for _, s := range store {
+					if !(ss.Ss_store_sk == s.S_store_sk) {
+						continue
+					}
+					for _, hd := range household_demographics {
+						if !(ss.Ss_hdemo_sk == hd.Hd_demo_sk) {
+							continue
+						}
+						for _, ca := range customer_address {
+							if !(ss.Ss_addr_sk == ca.Ca_address_sk) {
+								continue
+							}
+							if ((((hd.Hd_dep_count == depcnt) || (hd.Hd_vehicle_count == vehcnt)) && _contains([]int{6, 0}, d.D_dow)) && (d.D_year == year)) && _contains(cities, s.S_city) {
+								key := map[string]any{
+									"ss_ticket_number": ss.Ss_ticket_number,
+									"ss_customer_sk":   ss.Ss_customer_sk,
+									"ca_city":          ca.Ca_city,
+								}
+								ks := fmt.Sprint(key)
+								g, ok := groups[ks]
+								if !ok {
+									g = &data.Group{Key: key}
+									groups[ks] = g
+									order = append(order, ks)
+								}
+								_item := map[string]any{}
+								for k, v := range _cast[map[string]any](ss) {
+									_item[k] = v
+								}
+								_item["ss"] = ss
+								for k, v := range _cast[map[string]any](d) {
+									_item[k] = v
+								}
+								_item["d"] = d
+								for k, v := range _cast[map[string]any](s) {
+									_item[k] = v
+								}
+								_item["s"] = s
+								for k, v := range _cast[map[string]any](hd) {
+									_item[k] = v
+								}
+								_item["hd"] = hd
+								for k, v := range _cast[map[string]any](ca) {
+									_item[k] = v
+								}
+								_item["ca"] = ca
+								g.Items = append(g.Items, _item)
+							}
+						}
+					}
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"ss_ticket_number": _cast[map[string]any](g.Key)["ss_ticket_number"],
+				"ss_customer_sk":   _cast[map[string]any](g.Key)["ss_customer_sk"],
+				"bought_city":      _cast[map[string]any](g.Key)["ca_city"],
+				"amt": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](_cast[map[string]any](x)["ss"])["ss_coupon_amt"])
+					}
+					return _res
+				}()),
+				"profit": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](_cast[map[string]any](x)["ss"])["ss_net_profit"])
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
+	base = func() []map[string]any {
+		src := _toAnySlice(dn)
+		resAny := _query(src, []_joinSpec{
+			{items: _toAnySlice(customer), on: func(_a ...any) bool {
+				dnrec := _cast[map[string]any](_a[0])
+				_ = dnrec
+				c := _cast[CustomerItem](_a[1])
+				_ = c
+				return _equal(dnrec["ss_customer_sk"], c.C_customer_sk)
+			}},
+			{items: _toAnySlice(customer_address), on: func(_a ...any) bool {
+				dnrec := _cast[map[string]any](_a[0])
+				_ = dnrec
+				c := _cast[CustomerItem](_a[1])
+				_ = c
+				current_addr := _cast[Customer_addressItem](_a[2])
+				_ = current_addr
+				return (c.C_current_addr_sk == current_addr.Ca_address_sk)
+			}},
+		}, _queryOpts{selectFn: func(_a ...any) any {
+			dnrec := _cast[map[string]any](_a[0])
+			_ = dnrec
+			c := _cast[CustomerItem](_a[1])
+			_ = c
+			current_addr := _cast[Customer_addressItem](_a[2])
+			_ = current_addr
+			return map[string]any{
+				"c_last_name":      c.C_last_name,
+				"c_first_name":     c.C_first_name,
+				"ca_city":          current_addr.Ca_city,
+				"bought_city":      dnrec["bought_city"],
+				"ss_ticket_number": dnrec["ss_ticket_number"],
+				"amt":              dnrec["amt"],
+				"profit":           dnrec["profit"],
+			}
+		}, where: func(_a ...any) bool {
+			dnrec := _cast[map[string]any](_a[0])
+			_ = dnrec
+			c := _cast[CustomerItem](_a[1])
+			_ = c
+			current_addr := _cast[Customer_addressItem](_a[2])
+			_ = current_addr
+			return !_equal(current_addr.Ca_city, dnrec["bought_city"])
+		}, sortKey: func(_a ...any) any {
+			dnrec := _cast[map[string]any](_a[0])
+			_ = dnrec
+			c := _cast[CustomerItem](_a[1])
+			_ = c
+			current_addr := _cast[Customer_addressItem](_a[2])
+			_ = current_addr
+			return []any{
+				c.C_last_name,
+				c.C_first_name,
+				current_addr.Ca_city,
+				dnrec["bought_city"],
+				dnrec["ss_ticket_number"],
+			}
+		}, skip: -1, take: -1})
+		out := make([]map[string]any, len(resAny))
+		for i, v := range resAny {
+			out[i] = _cast[map[string]any](v)
+		}
+		return out
+	}()
+	result = base
+	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
+	{
+		printTestStart("TPCDS Q46 simplified")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_TPCDS_Q46_simplified()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _contains(c any, v any) bool {
+	switch s := c.(type) {
+	case string:
+		return strings.Contains(s, fmt.Sprint(v))
+	case map[string]any:
+		_, ok := s[fmt.Sprint(v)]
+		return ok
+	}
+	rv := reflect.ValueOf(c)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		for i := 0; i < rv.Len(); i++ {
+			if _equal(rv.Index(i).Interface(), v) {
+				return true
+			}
+		}
+		return false
+	}
+	return false
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+type _joinSpec struct {
+	items []any
+	on    func(...any) bool
+	left  bool
+	right bool
+}
+type _queryOpts struct {
+	selectFn func(...any) any
+	where    func(...any) bool
+	sortKey  func(...any) any
+	skip     int
+	take     int
+}
+
+func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
+	items := make([][]any, len(src))
+	for i, v := range src {
+		items[i] = []any{v}
+	}
+	for _, j := range joins {
+		joined := [][]any{}
+		if j.right && j.left {
+			matched := make([]bool, len(j.items))
+			for _, left := range items {
+				m := false
+				for ri, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					matched[ri] = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+			for ri, right := range j.items {
+				if !matched[ri] {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else if j.right {
+			for _, right := range j.items {
+				m := false
+				for _, left := range items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else {
+			for _, left := range items {
+				m := false
+				for _, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if j.left && !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+		}
+		items = joined
+	}
+	if opts.where != nil {
+		filtered := [][]any{}
+		for _, r := range items {
+			if opts.where(r...) {
+				filtered = append(filtered, r)
+			}
+		}
+		items = filtered
+	}
+	if opts.sortKey != nil {
+		type pair struct {
+			item []any
+			key  any
+		}
+		pairs := make([]pair, len(items))
+		for i, it := range items {
+			pairs[i] = pair{it, opts.sortKey(it...)}
+		}
+		sort.Slice(pairs, func(i, j int) bool {
+			a, b := pairs[i].key, pairs[j].key
+			switch av := a.(type) {
+			case int:
+				switch bv := b.(type) {
+				case int:
+					return av < bv
+				case float64:
+					return float64(av) < bv
+				}
+			case float64:
+				switch bv := b.(type) {
+				case int:
+					return av < float64(bv)
+				case float64:
+					return av < bv
+				}
+			case string:
+				bs, _ := b.(string)
+				return av < bs
+			}
+			return fmt.Sprint(a) < fmt.Sprint(b)
+		})
+		for i, p := range pairs {
+			items[i] = p.item
+		}
+	}
+	if opts.skip >= 0 {
+		if opts.skip < len(items) {
+			items = items[opts.skip:]
+		} else {
+			items = [][]any{}
+		}
+	}
+	if opts.take >= 0 {
+		if opts.take < len(items) {
+			items = items[:opts.take]
+		}
+	}
+	res := make([]any, len(items))
+	for i, r := range items {
+		res[i] = opts.selectFn(r...)
+	}
+	return res
+}
+
+func _sum(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string, []bool:
+			panic("sum() expects numbers")
+		default:
+			panic("sum() expects list or group")
+		}
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("sum() expects numbers")
+		}
+	}
+	return sum
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}
