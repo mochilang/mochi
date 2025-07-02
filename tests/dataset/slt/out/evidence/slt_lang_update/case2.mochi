@@ -27,15 +27,11 @@ var t1 = [
 ]
 
 /* UPDATE t1 SET x=1 WHERE y='unknown' */
-var i = 0
-while i < len(t1) {
-  var row = t1[i]
-  if row.y == "unknown" {
-    row.x = 1
-    t1[i] = row
-  }
-  i = i + 1
+update t1
+set {
+  x: 1,
 }
+where y == "unknown"
 
 /* SELECT count(*) FROM t1 WHERE x=1 */
 let result = count(from row in t1
