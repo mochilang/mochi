@@ -150,6 +150,7 @@ constructs:
  - Built-in string helpers `substr` and `reverse`
  - Dataset queries with `from`/`where`/`select`, joins, sorting and pagination
  - Simple `group by` queries without filters or joins
+ - Dataset updates using `update` with `set`/`where`
 - Package declarations and importing of local packages
 
 ## Unsupported features
