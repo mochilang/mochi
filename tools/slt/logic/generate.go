@@ -131,9 +131,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			switch {
 			case strings.Contains(typ, "int"):
 				return "int"
-			case strings.Contains(typ, "real"), strings.Contains(typ, "float"), strings.Contains(typ, "double"):
+			case strings.Contains(typ, "real"), strings.Contains(typ, "float"), strings.Contains(typ, "double"), strings.Contains(typ, "numeric"), strings.Contains(typ, "decimal"):
 				return "float"
-			case strings.Contains(typ, "bool"):
+			case strings.Contains(typ, "bool"), strings.Contains(typ, "bit"):
 				return "bool"
 			case strings.Contains(typ, "char"), strings.Contains(typ, "text"):
 				return "string"
@@ -155,8 +155,8 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// Attempt to infer numeric or boolean types when
 			// the value is stored as a string. This happens in a
 			// few SLT files and improves generated type accuracy.
-			v := strings.ToLower(val)
-			if v == "true" || v == "false" {
+			v := strings.ToLower(strings.TrimSpace(val))
+			if v == "true" || v == "false" || v == "t" || v == "f" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
@@ -616,21 +616,21 @@ func Generate(c Case) string {
 
 	tblNameStr := tblName.Name.String()
 
-        subExprs := collectSubqueries(sel)
-        subs := map[string]string{}
-        for i, s := range subExprs {
-                if strings.Contains(s, "row.") {
-                        // Correlated subqueries reference the current row and
-                        // must remain inline.
-                        continue
-                }
-                name := fmt.Sprintf("sub%d", i)
-                subs[s] = name
-                sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
-        }
-        if len(subs) > 0 {
-                sb.WriteString("\n")
-        }
+	subExprs := collectSubqueries(sel)
+	subs := map[string]string{}
+	for i, s := range subExprs {
+		if strings.Contains(s, "row.") {
+			// Correlated subqueries reference the current row and
+			// must remain inline.
+			continue
+		}
+		name := fmt.Sprintf("sub%d", i)
+		subs[s] = name
+		sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
+	}
+	if len(subs) > 0 {
+		sb.WriteString("\n")
+	}
 
 	// Handle SELECT count(*)
 	if len(sel.SelectExprs) == 1 {

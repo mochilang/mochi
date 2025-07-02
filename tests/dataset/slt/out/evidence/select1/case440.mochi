@@ -225,21 +225,22 @@ let t1 = [
 
 /* SELECT a+b*2+c*3+d*4+e*5, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), e FROM t1 ORDER BY 3,1,2 */
 let result = from row in t1
-  order by [row.e, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, count(from x in t1
+  order by [row.e, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
-  select [row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, count(from x in t1
+  select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), row.e]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case440" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1529, 0, 103, 1612, 0, 109, 1680, 0, 110, 1757, 0, 117, 1826, 0, 120, 1902, 0, 126, 1985, 0, 132, 2046, 0, 135, 2131, 0, 144, 2202, 0, 146, 2281, 0, 152, 2349, 0, 157, 2432, 0, 162, 2501, 0, 165, 2579, 0, 173, 2654, 0, 177, 2728, 0, 180, 2806, 0, 189, 2878, 0, 192, 2949, 0, 197, 3039, 0, 204, 3114, 0, 209, 3175, 0, 210, 3260, 0, 219, 3331, 0, 221, 3399, 0, 227, 3473, 0, 230, 3553, 0, 237, 3629, 0, 242, 3706, 0, 246]
 }
+
