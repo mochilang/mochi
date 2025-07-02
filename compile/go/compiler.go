@@ -268,6 +268,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -1135,6 +1137,99 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	if err := c.compileStmtList(stmt.Body); err != nil {
 		return err
 	}
+	c.indent--
+	c.writeIndent()
+	c.buf.WriteString("}\n")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	listVar := sanitizeName(u.Target)
+	idxVar := c.newVar()
+	itemVar := c.newVar()
+
+	var elemType types.Type = types.AnyType{}
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				elemType = lt.Elem
+			}
+		}
+	}
+
+	origEnv := c.env
+	child := types.NewEnv(c.env)
+
+	c.writeIndent()
+	c.buf.WriteString(fmt.Sprintf("for %s, %s := range %s {\n", idxVar, itemVar, listVar))
+	c.indent++
+
+	if st, ok := elemType.(types.StructType); ok {
+		c.compileStructType(st)
+		used := map[string]struct{}{}
+		if u.Where != nil {
+			collectIdents(u.Where, used)
+		}
+		for _, it := range u.Set.Items {
+			collectIdents(it.Value, used)
+		}
+		for _, f := range st.Order {
+			if _, ok := used[f]; !ok {
+				continue
+			}
+			fieldVar := sanitizeName(f)
+			c.writeln(fmt.Sprintf("%s := %s.%s", fieldVar, itemVar, exportName(sanitizeName(f))))
+			child.SetVar(f, st.Fields[f], true)
+		}
+	}
+
+	c.env = child
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeIndent()
+		c.buf.WriteString("if !(" + cond + ") {\n")
+		c.indent++
+		c.writeln("continue")
+		c.indent--
+		c.writeIndent()
+		c.buf.WriteString("}\n")
+	}
+
+	for _, it := range u.Set.Items {
+		if st, ok := elemType.(types.StructType); ok {
+			if key, ok2 := identName(it.Key); ok2 {
+				val, err := c.compileExprHint(it.Value, st.Fields[key])
+				if err != nil {
+					c.env = origEnv
+					return err
+				}
+				dest := fmt.Sprintf("%s.%s", itemVar, exportName(sanitizeName(key)))
+				c.writeln(fmt.Sprintf("%s = %s", dest, val))
+				continue
+			}
+		}
+
+		keyExpr, err := c.compileExpr(it.Key)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		valExpr, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s[%s] = %s", itemVar, keyExpr, valExpr))
+	}
+
+	c.writeln(fmt.Sprintf("%s[%s] = %s", listVar, idxVar, itemVar))
+
+	c.env = origEnv
 	c.indent--
 	c.writeIndent()
 	c.buf.WriteString("}\n")
