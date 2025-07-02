@@ -42,6 +42,20 @@ func exprToMochi(e sqlparser.Expr) string {
 		l := exprToMochi(v.Left)
 		r := exprToMochi(v.Right)
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
+	case *sqlparser.ComparisonExpr:
+		l := exprToMochi(v.Left)
+		r := exprToMochi(v.Right)
+		op := v.Operator
+		if op == "=" {
+			op = "=="
+		}
+		return fmt.Sprintf("%s %s %s", l, op, r)
+	case *sqlparser.AndExpr:
+		return fmt.Sprintf("(%s) && (%s)", exprToMochi(v.Left), exprToMochi(v.Right))
+	case *sqlparser.OrExpr:
+		return fmt.Sprintf("(%s) || (%s)", exprToMochi(v.Left), exprToMochi(v.Right))
+	case *sqlparser.ParenExpr:
+		return fmt.Sprintf("(%s)", exprToMochi(v.Expr))
 	}
 	return "null"
 }
@@ -50,17 +64,7 @@ func condToMochi(where *sqlparser.Where) string {
 	if where == nil {
 		return ""
 	}
-	cmp, ok := where.Expr.(*sqlparser.ComparisonExpr)
-	if !ok {
-		return ""
-	}
-	left := cmp.Left.(*sqlparser.ColName).Name.String()
-	right := exprToMochi(cmp.Right)
-	op := cmp.Operator
-	if op == "=" {
-		op = "=="
-	}
-	return fmt.Sprintf("row[\"%s\"] %s %s", left, op, right)
+	return exprToMochi(where.Expr)
 }
 
 func generateUpdate(stmt string) string {
@@ -92,9 +96,6 @@ func generateUpdate(stmt string) string {
 
 // Generate returns Mochi source code for the given Case.
 func Generate(c Case) string {
-	if c.Hash != "" {
-		return ""
-	}
 	var sb strings.Builder
 
 	if len(c.Comments) > 0 {
@@ -154,7 +155,6 @@ func Generate(c Case) string {
 		return ""
 	}
 
-	// Only support `SELECT count(*) FROM tbl WHERE ...` queries
 	if len(sel.SelectExprs) != 1 {
 		return ""
 	}
@@ -162,24 +162,45 @@ func Generate(c Case) string {
 	if !ok {
 		return ""
 	}
-	fn, ok := ae.Expr.(*sqlparser.FuncExpr)
-	if !ok || !fn.Name.EqualString("count") || len(fn.Exprs) != 1 {
-		return ""
-	}
-	if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); !ok {
-		return ""
-	}
 
 	tblNameStr := tblName.Name.String()
 	cond := condToMochi(sel.Where)
-	sb.WriteString("let result = count(from row in " + tblNameStr)
+
+	// Handle SELECT count(*)
+	if fn, ok := ae.Expr.(*sqlparser.FuncExpr); ok && fn.Name.EqualString("count") && len(fn.Exprs) == 1 {
+		if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); !ok {
+			return ""
+		}
+		sb.WriteString("let result = count(from row in " + tblNameStr)
+		if cond != "" {
+			sb.WriteString("\n  where " + cond)
+		}
+		sb.WriteString("\n  select row)\n")
+		sb.WriteString("print(result)\n\n")
+		if len(c.Expect) > 0 {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
+		}
+		return sb.String()
+	}
+
+	// Handle simple SELECT <column> ... ORDER BY 1
+	col, ok := ae.Expr.(*sqlparser.ColName)
+	if !ok || len(sel.OrderBy) != 1 {
+		return ""
+	}
+	orderExpr := exprToMochi(sel.OrderBy[0].Expr)
+	if v, ok := sel.OrderBy[0].Expr.(*sqlparser.SQLVal); ok && v.Type == sqlparser.IntVal && string(v.Val) == "1" {
+		orderExpr = exprToMochi(col)
+	}
+	if orderExpr == "" {
+		return ""
+	}
+	sb.WriteString("let result = from row in " + tblNameStr + "\n")
 	if cond != "" {
-		sb.WriteString("\n  where " + cond)
+		sb.WriteString("  where " + cond + "\n")
 	}
-	sb.WriteString("\n  select row)\n")
-	sb.WriteString("print(result)\n\n")
-	if len(c.Expect) > 0 {
-		sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
-	}
+	sb.WriteString("  sort by " + orderExpr + "\n")
+	sb.WriteString("  select " + exprToMochi(col) + "\n")
+	sb.WriteString("for item in result {\n  print(item)\n}\n\n")
 	return sb.String()
 }
