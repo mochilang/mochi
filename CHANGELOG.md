@@ -1,5 +1,27 @@
 # 📦 CHANGELOG.md
 
+## [0.10.11] – 2025-07-02T08:31:19+07:00
+
+### Added
+
+* Full TPC-DS query coverage with golden outputs across languages
+* `first` builtin for Ruby and Elixir
+* `exists` builtin for Python, TypeScript and Elixir with `append` support
+* Grouped sort operations in Prolog and Scheme
+* Join helpers for F# and null literal handling in Scheme
+
+### Changed
+
+* Updated TPC-DS IR outputs and dataset tests
+* Documentation updates for Pascal coverage
+* Additional golden files for C++, Go and Java compilers
+
+### Fixed
+
+* Query 39 variance calculation
+* Racket group query parentheses
+* Miscellaneous dataset example fixes
+
 ## [0.10.10] – 2025-07-01T18:41:01+07:00
 
 ### Added
