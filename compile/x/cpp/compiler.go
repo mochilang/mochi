@@ -476,11 +476,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		expr := c.compileExpr(s.Return.Value)
 		c.writeln(fmt.Sprintf("return %s;", expr))
 	case s.For != nil:
-		return c.compileFor(s.For)
+	return c.compileFor(s.For)
 	case s.While != nil:
-		return c.compileWhile(s.While)
+	return c.compileWhile(s.While)
+	case s.Update != nil:
+	return c.compileUpdate(s.Update)
 	case s.If != nil:
-		return c.compileIf(s.If)
+	return c.compileIf(s.If)
 	case s.Break != nil:
 		c.writeln("break;")
 	case s.Continue != nil:
@@ -580,6 +582,42 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+        list := u.Target
+        c.writeln(fmt.Sprintf("for (size_t _i = 0; _i < %s.size(); ++_i) {", list))
+        c.indent++
+        c.writeln(fmt.Sprintf("auto& _item = %s[_i];", list))
+        c.pushScope()
+        if typ, err := c.env.GetVar(u.Target); err == nil {
+                if lt, ok := typ.(types.ListType); ok {
+                        if st, ok := lt.Elem.(types.StructType); ok {
+                                for _, f := range st.Order {
+                                        c.writeln(fmt.Sprintf("auto %s = _item.%s;", f, f))
+                                        c.setVar(f, CppTypeRef(st.Fields[f]))
+                                }
+                        }
+                }
+        }
+        if u.Where != nil {
+                cond := c.compileExpr(u.Where)
+                c.writeln(fmt.Sprintf("if (%s) {", cond))
+                c.indent++
+        }
+        for _, it := range u.Set.Items {
+                key, _ := identName(it.Key)
+                val := c.compileExpr(it.Value)
+                c.writeln(fmt.Sprintf("_item.%s = %s;", key, val))
+        }
+        if u.Where != nil {
+                c.indent--
+                c.writeln("}")
+        }
+        c.popScope()
+        c.indent--
+        c.writeln("}")
+        return nil
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {

@@ -196,3 +196,22 @@ func convertFromString(typ, expr string) string {
 		return expr
 	}
 }
+
+// identName returns the identifier name if e is a simple variable reference.
+func identName(e *parser.Expr) (string, bool) {
+        if e == nil || len(e.Binary.Right) != 0 {
+                return "", false
+        }
+        u := e.Binary.Left
+        if len(u.Ops) != 0 {
+                return "", false
+        }
+        p := u.Value
+        if len(p.Ops) != 0 {
+                return "", false
+        }
+        if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+                return p.Target.Selector.Root, true
+        }
+        return "", false
+}
