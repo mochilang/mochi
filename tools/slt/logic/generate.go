@@ -144,6 +144,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	// Fall back to inspecting row values.
 	t := ""
 	floatIsInt := true
+	boolCandidate := true
 	for _, row := range rows {
 		v := row[name]
 		if v == nil {
@@ -174,6 +175,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 					return "any"
 				}
 				// numeric string
+				if v != "0" && v != "1" {
+					boolCandidate = false
+				}
 				continue
 			}
 			if _, err := strconv.ParseFloat(v, 64); err == nil {
@@ -181,6 +185,12 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 					t = "float"
 				} else {
 					return "any"
+				}
+				if v != "0" && v != "1" {
+					boolCandidate = false
+				} else if t == "int" {
+					// strings like "0.0" should not be considered bool
+					boolCandidate = false
 				}
 				continue
 			}
@@ -200,6 +210,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			} else {
 				return "any"
 			}
+			if val != 0 && val != 1 {
+				boolCandidate = false
+			}
 		case int:
 			if t == "" {
 				t = "int"
@@ -209,6 +222,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				} else {
 					return "any"
 				}
+			}
+			if val != 0 && val != 1 {
+				boolCandidate = false
 			}
 		case bool:
 			if t == "" || t == "bool" {
@@ -221,7 +237,13 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		}
 	}
 	if t == "float" && floatIsInt {
+		if boolCandidate {
+			return "bool"
+		}
 		return "int"
+	}
+	if t == "int" && boolCandidate {
+		return "bool"
 	}
 	if t == "" {
 		return "any"
