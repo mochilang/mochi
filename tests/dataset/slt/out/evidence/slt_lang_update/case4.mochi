@@ -1,0 +1,44 @@
+/*
+# EVIDENCE-OF: R-34751-18293 If a single column-name appears more than
+# once in the list of assignment expressions, all but the rightmost
+# occurrence is ignored.
+skipif mssql
+UPDATE t1 SET x=3, x=4, x=5
+skipif mssql
+*/
+
+var t1 = [
+  {
+    x: 4,
+    y: "unknown",
+  },
+  {
+    x: 4,
+    y: "false",
+  },
+  {
+    x: 4,
+    y: "NULL",
+  },
+]
+
+/* UPDATE t1 SET x=3, x=4, x=5 */
+var i = 0
+while i < len(t1) {
+  var row = t1[i]
+  row.x = 3
+  row.x = 4
+  row.x = 5
+  t1[i] = row
+  i = i + 1
+}
+
+/* SELECT count(*) FROM t1 WHERE x=3 */
+let result = count(from row in t1
+  where row.x == 3
+  select row)
+print(result)
+
+test "case4" {
+  expect result == 0
+}

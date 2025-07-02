@@ -27,6 +27,7 @@ type Case struct {
 	Query    string
 	Expect   []string
 	Comments []string
+	Updates  []string
 }
 
 // ParseFile parses a sqllogictest script and returns a Case for each query.
@@ -41,32 +42,43 @@ func ParseFile(path string) ([]Case, error) {
 	tables := make(map[string]*Table)
 	var cases []Case
 	count := 0
-	// comments collects both '#' lines and SQL statements until the next
-	// query, preserving their original order so they can be emitted as
-	// comments in the generated Mochi source.
+	// comments collects lines that precede a query so they can be reproduced
+	// verbatim in the generated Mochi program.
 	var comments []string
+	// updates holds UPDATE statements that should run just before the next
+	// query. They are applied to the in-memory tables only after the case is
+	// recorded so subsequent cases start from the correct state.
+	var updates []string
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 		switch {
 		case strings.HasPrefix(line, "#"):
-			c := strings.TrimSpace(strings.TrimPrefix(line, "#"))
-			comments = append(comments, c)
+			comments = append(comments, line)
+		case strings.HasPrefix(line, "skip"):
+			comments = append(comments, line)
 		case strings.HasPrefix(line, "statement ok"):
 			if !scanner.Scan() {
 				break
 			}
 			stmt := strings.TrimSpace(scanner.Text())
-			comments = append(comments, "SQL: "+stmt)
-			if err := applyStatement(stmt, tables); err != nil {
-				return nil, err
+			node, err := sqlparser.Parse(stmt)
+			if err == nil {
+				if _, ok := node.(*sqlparser.Update); ok {
+					updates = append(updates, stmt)
+				} else {
+					if err := applyStatement(stmt, tables); err != nil {
+						return nil, err
+					}
+				}
 			}
+			comments = append(comments, stmt)
 		case strings.HasPrefix(line, "statement error"):
 			if !scanner.Scan() {
 				break
 			}
 			stmt := strings.TrimSpace(scanner.Text())
-			comments = append(comments, "SQL: "+stmt)
+			comments = append(comments, stmt)
 		case strings.HasPrefix(line, "query"):
 			if !scanner.Scan() {
 				break
@@ -93,8 +105,16 @@ func ParseFile(path string) ([]Case, error) {
 				Query:    q,
 				Expect:   expect,
 				Comments: comments,
+				Updates:  append([]string(nil), updates...),
 			})
+			// apply pending updates so the next case sees them
+			for _, u := range updates {
+				if err := applyStatement(u, tables); err != nil {
+					return nil, err
+				}
+			}
 			comments = nil
+			updates = nil
 		}
 	}
 	return cases, scanner.Err()

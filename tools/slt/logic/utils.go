@@ -113,7 +113,7 @@ func GenerateFiles(files []string, outDir string, run bool) error {
 	}
 	dir := filepath.Join(root, "tests/dataset/slt")
 	if outDir == "" {
-		outDir = filepath.Join(dir, "out")
+		outDir = filepath.Join(dir, "out", "evidence")
 	}
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return err
@@ -124,7 +124,7 @@ func GenerateFiles(files []string, outDir string, run bool) error {
 		if err != nil {
 			return err
 		}
-		testDir := filepath.Join(outDir, strings.TrimSuffix(filepath.Base(f), ".test"))
+		testDir := filepath.Join(outDir, strings.TrimSuffix(f, ".test"))
 		if err := os.MkdirAll(testDir, 0o755); err != nil {
 			return err
 		}
