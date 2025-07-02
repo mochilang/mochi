@@ -134,17 +134,73 @@ template <> inline string _cast<string>(any v) {
 }
 
 int main() {
-  vector<any> customer = vector<any>{};
-  vector<any> store_sales = vector<any>{};
-  vector<any> catalog_sales = vector<any>{};
-  vector<any> web_sales = vector<any>{};
-  vector<any> date_dim = vector<any>{};
+  vector<unordered_map<string, any>> customer =
+      vector<unordered_map<string, any>>{unordered_map<string, any>{
+          {string("c_customer_sk"), any(1)},
+          {string("c_customer_id"), any(string("C1"))},
+          {string("c_first_name"), any(string("Alice"))},
+          {string("c_last_name"), any(string("A"))},
+          {string("c_login"), any(string("alice"))}}};
+  vector<unordered_map<string, any>> store_sales =
+      vector<unordered_map<string, any>>{
+          unordered_map<string, any>{
+              {string("ss_customer_sk"), any(1)},
+              {string("ss_sold_date_sk"), any(1)},
+              {string("ss_ext_list_price"), any(10.0)},
+              {string("ss_ext_wholesale_cost"), any(5.0)},
+              {string("ss_ext_discount_amt"), any(0.0)},
+              {string("ss_ext_sales_price"), any(10.0)}},
+          unordered_map<string, any>{
+              {string("ss_customer_sk"), any(1)},
+              {string("ss_sold_date_sk"), any(2)},
+              {string("ss_ext_list_price"), any(20.0)},
+              {string("ss_ext_wholesale_cost"), any(5.0)},
+              {string("ss_ext_discount_amt"), any(0.0)},
+              {string("ss_ext_sales_price"), any(20.0)}}};
+  vector<unordered_map<string, any>> catalog_sales =
+      vector<unordered_map<string, any>>{
+          unordered_map<string, any>{
+              {string("cs_bill_customer_sk"), any(1)},
+              {string("cs_sold_date_sk"), any(1)},
+              {string("cs_ext_list_price"), any(10.0)},
+              {string("cs_ext_wholesale_cost"), any(2.0)},
+              {string("cs_ext_discount_amt"), any(0.0)},
+              {string("cs_ext_sales_price"), any(10.0)}},
+          unordered_map<string, any>{
+              {string("cs_bill_customer_sk"), any(1)},
+              {string("cs_sold_date_sk"), any(2)},
+              {string("cs_ext_list_price"), any(30.0)},
+              {string("cs_ext_wholesale_cost"), any(2.0)},
+              {string("cs_ext_discount_amt"), any(0.0)},
+              {string("cs_ext_sales_price"), any(30.0)}}};
+  vector<unordered_map<string, any>> web_sales =
+      vector<unordered_map<string, any>>{
+          unordered_map<string, any>{
+              {string("ws_bill_customer_sk"), any(1)},
+              {string("ws_sold_date_sk"), any(1)},
+              {string("ws_ext_list_price"), any(10.0)},
+              {string("ws_ext_wholesale_cost"), any(5.0)},
+              {string("ws_ext_discount_amt"), any(0.0)},
+              {string("ws_ext_sales_price"), any(10.0)}},
+          unordered_map<string, any>{
+              {string("ws_bill_customer_sk"), any(1)},
+              {string("ws_sold_date_sk"), any(2)},
+              {string("ws_ext_list_price"), any(12.0)},
+              {string("ws_ext_wholesale_cost"), any(5.0)},
+              {string("ws_ext_discount_amt"), any(0.0)},
+              {string("ws_ext_sales_price"), any(12.0)}}};
+  vector<unordered_map<string, int>> date_dim =
+      vector<unordered_map<string, int>>{
+          unordered_map<string, int>{{string("d_date_sk"), 1},
+                                     {string("d_year"), 2001}},
+          unordered_map<string, int>{{string("d_date_sk"), 2},
+                                     {string("d_year"), 2002}}};
   struct GroupKey0 {
-    any id;
-    any first;
-    any last;
-    any login;
-    any year;
+    unordered_map<string, any> id;
+    unordered_map<string, any> first;
+    unordered_map<string, any> last;
+    unordered_map<string, any> login;
+    unordered_map<string, int> year;
   };
   inline bool operator==(const GroupKey0 &a, const GroupKey0 &b) {
     return a.id == b.id && a.first == b.first && a.last == b.last &&
@@ -165,11 +221,11 @@ int main() {
   } // namespace std
 
   struct GroupKey1 {
-    any id;
-    any first;
-    any last;
-    any login;
-    any year;
+    unordered_map<string, any> id;
+    unordered_map<string, any> first;
+    unordered_map<string, any> last;
+    unordered_map<string, any> login;
+    unordered_map<string, int> year;
   };
   inline bool operator==(const GroupKey1 &a, const GroupKey1 &b) {
     return a.id == b.id && a.first == b.first && a.last == b.last &&
@@ -190,11 +246,11 @@ int main() {
   } // namespace std
 
   struct GroupKey2 {
-    any id;
-    any first;
-    any last;
-    any login;
-    any year;
+    unordered_map<string, any> id;
+    unordered_map<string, any> first;
+    unordered_map<string, any> last;
+    unordered_map<string, any> login;
+    unordered_map<string, int> year;
   };
   inline bool operator==(const GroupKey2 &a, const GroupKey2 &b) {
     return a.id == b.id && a.first == b.first && a.last == b.last &&
@@ -217,7 +273,7 @@ int main() {
   auto year_total = _union_all(
       _union_all(
           (([&]() -> vector<unordered_map<string, any>> {
-            using ElemT = any;
+            using ElemT = unordered_map<string, any>;
             using KeyT = GroupKey0;
             struct Group {
               KeyT Key;
@@ -227,20 +283,14 @@ int main() {
             vector<KeyT> order;
             for (auto &c : customer) {
               for (auto &s : store_sales) {
-                if (!(_cast<unordered_map<string, any>>(c)["c_customer_sk"] ==
-                      _cast<unordered_map<string, any>>(s)["ss_customer_sk"]))
+                if (!(c["c_customer_sk"] == s["ss_customer_sk"]))
                   continue;
                 for (auto &d : date_dim) {
-                  if (!(_cast<unordered_map<string, any>>(
-                            s)["ss_sold_date_sk"] ==
-                        _cast<unordered_map<string, any>>(d)["d_date_sk"]))
+                  if (!(s["ss_sold_date_sk"] == d["d_date_sk"]))
                     continue;
-                  KeyT _k = GroupKey0{
-                      _cast<unordered_map<string, any>>(c)["c_customer_id"],
-                      _cast<unordered_map<string, any>>(c)["c_first_name"],
-                      _cast<unordered_map<string, any>>(c)["c_last_name"],
-                      _cast<unordered_map<string, any>>(c)["c_login"],
-                      _cast<unordered_map<string, any>>(d)["d_year"]};
+                  KeyT _k =
+                      GroupKey0{c["c_customer_id"], c["c_first_name"],
+                                c["c_last_name"], c["c_login"], d["d_year"]};
                   if (!groups.count(_k)) {
                     groups[_k] = Group{_k, {}};
                     order.push_back(_k);
@@ -280,7 +330,7 @@ int main() {
             return _res;
           })()),
           (([&]() -> vector<unordered_map<string, any>> {
-            using ElemT = any;
+            using ElemT = unordered_map<string, any>;
             using KeyT = GroupKey1;
             struct Group {
               KeyT Key;
@@ -290,21 +340,14 @@ int main() {
             vector<KeyT> order;
             for (auto &c : customer) {
               for (auto &cs : catalog_sales) {
-                if (!(_cast<unordered_map<string, any>>(c)["c_customer_sk"] ==
-                      _cast<unordered_map<string, any>>(
-                          cs)["cs_bill_customer_sk"]))
+                if (!(c["c_customer_sk"] == cs["cs_bill_customer_sk"]))
                   continue;
                 for (auto &d : date_dim) {
-                  if (!(_cast<unordered_map<string, any>>(
-                            cs)["cs_sold_date_sk"] ==
-                        _cast<unordered_map<string, any>>(d)["d_date_sk"]))
+                  if (!(cs["cs_sold_date_sk"] == d["d_date_sk"]))
                     continue;
-                  KeyT _k = GroupKey1{
-                      _cast<unordered_map<string, any>>(c)["c_customer_id"],
-                      _cast<unordered_map<string, any>>(c)["c_first_name"],
-                      _cast<unordered_map<string, any>>(c)["c_last_name"],
-                      _cast<unordered_map<string, any>>(c)["c_login"],
-                      _cast<unordered_map<string, any>>(d)["d_year"]};
+                  KeyT _k =
+                      GroupKey1{c["c_customer_id"], c["c_first_name"],
+                                c["c_last_name"], c["c_login"], d["d_year"]};
                   if (!groups.count(_k)) {
                     groups[_k] = Group{_k, {}};
                     order.push_back(_k);
@@ -344,7 +387,7 @@ int main() {
             return _res;
           })())),
       (([&]() -> vector<unordered_map<string, any>> {
-        using ElemT = any;
+        using ElemT = unordered_map<string, any>;
         using KeyT = GroupKey2;
         struct Group {
           KeyT Key;
@@ -354,19 +397,13 @@ int main() {
         vector<KeyT> order;
         for (auto &c : customer) {
           for (auto &ws : web_sales) {
-            if (!(_cast<unordered_map<string, any>>(c)["c_customer_sk"] ==
-                  _cast<unordered_map<string, any>>(ws)["ws_bill_customer_sk"]))
+            if (!(c["c_customer_sk"] == ws["ws_bill_customer_sk"]))
               continue;
             for (auto &d : date_dim) {
-              if (!(_cast<unordered_map<string, any>>(ws)["ws_sold_date_sk"] ==
-                    _cast<unordered_map<string, any>>(d)["d_date_sk"]))
+              if (!(ws["ws_sold_date_sk"] == d["d_date_sk"]))
                 continue;
-              KeyT _k = GroupKey2{
-                  _cast<unordered_map<string, any>>(c)["c_customer_id"],
-                  _cast<unordered_map<string, any>>(c)["c_first_name"],
-                  _cast<unordered_map<string, any>>(c)["c_last_name"],
-                  _cast<unordered_map<string, any>>(c)["c_login"],
-                  _cast<unordered_map<string, any>>(d)["d_year"]};
+              KeyT _k = GroupKey2{c["c_customer_id"], c["c_first_name"],
+                                  c["c_last_name"], c["c_login"], d["d_year"]};
               if (!groups.count(_k)) {
                 groups[_k] = Group{_k, {}};
                 order.push_back(_k);
@@ -483,12 +520,17 @@ int main() {
         return _res;
       })();
   _json(result);
-  auto test_TPCDS_Q4_empty = [&]() {
-    if (!(result.size() == 0)) {
+  auto test_TPCDS_Q4_result = [&]() {
+    if (!(result ==
+          vector<unordered_map<string, string>>{unordered_map<string, string>{
+              {string("customer_id"), string("C1")},
+              {string("customer_first_name"), string("Alice")},
+              {string("customer_last_name"), string("A")},
+              {string("customer_login"), string("alice")}}})) {
       std::cerr << "expect failed\n";
       exit(1);
     }
   };
-  test_TPCDS_Q4_empty();
+  test_TPCDS_Q4_result();
   return 0;
 }

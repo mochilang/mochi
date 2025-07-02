@@ -88,212 +88,167 @@ template <typename T> string _to_json(const T &v) {
 }
 template <typename T> void _json(const T &v) { cout << _to_json(v) << endl; }
 
-template <typename T> T _cast(any v);
-template <> inline int _cast<int>(any v) {
-  if (v.type() == typeid(int))
-    return any_cast<int>(v);
-  if (v.type() == typeid(double))
-    return int(any_cast<double>(v));
-  if (v.type() == typeid(string))
-    return stoi(any_cast<string>(v));
-  return 0;
-}
-template <> inline double _cast<double>(any v) {
-  if (v.type() == typeid(double))
-    return any_cast<double>(v);
-  if (v.type() == typeid(int))
-    return double(any_cast<int>(v));
-  if (v.type() == typeid(string))
-    return stod(any_cast<string>(v));
-  return 0.0;
-}
-template <> inline bool _cast<bool>(any v) {
-  if (v.type() == typeid(bool))
-    return any_cast<bool>(v);
-  if (v.type() == typeid(string))
-    return any_cast<string>(v) == "true";
-  if (v.type() == typeid(int))
-    return any_cast<int>(v) != 0;
-  return false;
-}
-template <> inline string _cast<string>(any v) {
-  if (v.type() == typeid(string))
-    return any_cast<string>(v);
-  if (v.type() == typeid(int))
-    return to_string(any_cast<int>(v));
-  if (v.type() == typeid(double)) {
-    stringstream ss;
-    ss << any_cast<double>(v);
-    return ss.str();
-  }
-  if (v.type() == typeid(bool))
-    return any_cast<bool>(v) ? "true" : "false";
-  return "";
-}
-
 int main() {
-  vector<any> store_sales = vector<any>{};
-  vector<any> reason = vector<any>{};
+  vector<unordered_map<string, any>> store_sales =
+      vector<unordered_map<string, any>>{
+          unordered_map<string, any>{{string("ss_quantity"), any(5)},
+                                     {string("ss_ext_discount_amt"), any(5.0)},
+                                     {string("ss_net_paid"), any(7.0)}},
+          unordered_map<string, any>{{string("ss_quantity"), any(30)},
+                                     {string("ss_ext_discount_amt"), any(10.0)},
+                                     {string("ss_net_paid"), any(15.0)}},
+          unordered_map<string, any>{{string("ss_quantity"), any(50)},
+                                     {string("ss_ext_discount_amt"), any(20.0)},
+                                     {string("ss_net_paid"), any(30.0)}},
+          unordered_map<string, any>{{string("ss_quantity"), any(70)},
+                                     {string("ss_ext_discount_amt"), any(25.0)},
+                                     {string("ss_net_paid"), any(35.0)}},
+          unordered_map<string, any>{{string("ss_quantity"), any(90)},
+                                     {string("ss_ext_discount_amt"), any(40.0)},
+                                     {string("ss_net_paid"), any(50.0)}}};
+  vector<unordered_map<string, int>> reason =
+      vector<unordered_map<string, int>>{
+          unordered_map<string, int>{{string("r_reason_sk"), 1}}};
   auto bucket1 = ([&]() {
-    if (_count(([&]() -> vector<any> {
-          vector<any> _res;
+    if (_count(([&]() -> vector<unordered_map<string, any>> {
+          vector<unordered_map<string, any>> _res;
           for (auto &s : store_sales) {
-            if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 1 &&
-                _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 20) {
+            if (s["ss_quantity"] >= 1 && s["ss_quantity"] <= 20) {
               _res.push_back(s);
             }
           }
           return _res;
         })()) > 10)
-      return _avg(([&]() -> vector<any> {
-        vector<any> _res;
+      return _avg(([&]() -> vector<unordered_map<string, any>> {
+        vector<unordered_map<string, any>> _res;
         for (auto &s : store_sales) {
-          if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 1 &&
-              _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 20) {
-            _res.push_back(
-                _cast<unordered_map<string, any>>(s)["ss_ext_discount_amt"]);
+          if (s["ss_quantity"] >= 1 && s["ss_quantity"] <= 20) {
+            _res.push_back(s["ss_ext_discount_amt"]);
           }
         }
         return _res;
       })());
-    return _avg(([&]() -> vector<any> {
-      vector<any> _res;
+    return _avg(([&]() -> vector<unordered_map<string, any>> {
+      vector<unordered_map<string, any>> _res;
       for (auto &s : store_sales) {
-        if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 1 &&
-            _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 20) {
-          _res.push_back(_cast<unordered_map<string, any>>(s)["ss_net_paid"]);
+        if (s["ss_quantity"] >= 1 && s["ss_quantity"] <= 20) {
+          _res.push_back(s["ss_net_paid"]);
         }
       }
       return _res;
     })());
   })();
   auto bucket2 = ([&]() {
-    if (_count(([&]() -> vector<any> {
-          vector<any> _res;
+    if (_count(([&]() -> vector<unordered_map<string, any>> {
+          vector<unordered_map<string, any>> _res;
           for (auto &s : store_sales) {
-            if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 21 &&
-                _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 40) {
+            if (s["ss_quantity"] >= 21 && s["ss_quantity"] <= 40) {
               _res.push_back(s);
             }
           }
           return _res;
         })()) > 20)
-      return _avg(([&]() -> vector<any> {
-        vector<any> _res;
+      return _avg(([&]() -> vector<unordered_map<string, any>> {
+        vector<unordered_map<string, any>> _res;
         for (auto &s : store_sales) {
-          if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 21 &&
-              _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 40) {
-            _res.push_back(
-                _cast<unordered_map<string, any>>(s)["ss_ext_discount_amt"]);
+          if (s["ss_quantity"] >= 21 && s["ss_quantity"] <= 40) {
+            _res.push_back(s["ss_ext_discount_amt"]);
           }
         }
         return _res;
       })());
-    return _avg(([&]() -> vector<any> {
-      vector<any> _res;
+    return _avg(([&]() -> vector<unordered_map<string, any>> {
+      vector<unordered_map<string, any>> _res;
       for (auto &s : store_sales) {
-        if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 21 &&
-            _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 40) {
-          _res.push_back(_cast<unordered_map<string, any>>(s)["ss_net_paid"]);
+        if (s["ss_quantity"] >= 21 && s["ss_quantity"] <= 40) {
+          _res.push_back(s["ss_net_paid"]);
         }
       }
       return _res;
     })());
   })();
   auto bucket3 = ([&]() {
-    if (_count(([&]() -> vector<any> {
-          vector<any> _res;
+    if (_count(([&]() -> vector<unordered_map<string, any>> {
+          vector<unordered_map<string, any>> _res;
           for (auto &s : store_sales) {
-            if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 41 &&
-                _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 60) {
+            if (s["ss_quantity"] >= 41 && s["ss_quantity"] <= 60) {
               _res.push_back(s);
             }
           }
           return _res;
         })()) > 30)
-      return _avg(([&]() -> vector<any> {
-        vector<any> _res;
+      return _avg(([&]() -> vector<unordered_map<string, any>> {
+        vector<unordered_map<string, any>> _res;
         for (auto &s : store_sales) {
-          if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 41 &&
-              _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 60) {
-            _res.push_back(
-                _cast<unordered_map<string, any>>(s)["ss_ext_discount_amt"]);
+          if (s["ss_quantity"] >= 41 && s["ss_quantity"] <= 60) {
+            _res.push_back(s["ss_ext_discount_amt"]);
           }
         }
         return _res;
       })());
-    return _avg(([&]() -> vector<any> {
-      vector<any> _res;
+    return _avg(([&]() -> vector<unordered_map<string, any>> {
+      vector<unordered_map<string, any>> _res;
       for (auto &s : store_sales) {
-        if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 41 &&
-            _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 60) {
-          _res.push_back(_cast<unordered_map<string, any>>(s)["ss_net_paid"]);
+        if (s["ss_quantity"] >= 41 && s["ss_quantity"] <= 60) {
+          _res.push_back(s["ss_net_paid"]);
         }
       }
       return _res;
     })());
   })();
   auto bucket4 = ([&]() {
-    if (_count(([&]() -> vector<any> {
-          vector<any> _res;
+    if (_count(([&]() -> vector<unordered_map<string, any>> {
+          vector<unordered_map<string, any>> _res;
           for (auto &s : store_sales) {
-            if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 61 &&
-                _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 80) {
+            if (s["ss_quantity"] >= 61 && s["ss_quantity"] <= 80) {
               _res.push_back(s);
             }
           }
           return _res;
         })()) > 40)
-      return _avg(([&]() -> vector<any> {
-        vector<any> _res;
+      return _avg(([&]() -> vector<unordered_map<string, any>> {
+        vector<unordered_map<string, any>> _res;
         for (auto &s : store_sales) {
-          if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 61 &&
-              _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 80) {
-            _res.push_back(
-                _cast<unordered_map<string, any>>(s)["ss_ext_discount_amt"]);
+          if (s["ss_quantity"] >= 61 && s["ss_quantity"] <= 80) {
+            _res.push_back(s["ss_ext_discount_amt"]);
           }
         }
         return _res;
       })());
-    return _avg(([&]() -> vector<any> {
-      vector<any> _res;
+    return _avg(([&]() -> vector<unordered_map<string, any>> {
+      vector<unordered_map<string, any>> _res;
       for (auto &s : store_sales) {
-        if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 61 &&
-            _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 80) {
-          _res.push_back(_cast<unordered_map<string, any>>(s)["ss_net_paid"]);
+        if (s["ss_quantity"] >= 61 && s["ss_quantity"] <= 80) {
+          _res.push_back(s["ss_net_paid"]);
         }
       }
       return _res;
     })());
   })();
   auto bucket5 = ([&]() {
-    if (_count(([&]() -> vector<any> {
-          vector<any> _res;
+    if (_count(([&]() -> vector<unordered_map<string, any>> {
+          vector<unordered_map<string, any>> _res;
           for (auto &s : store_sales) {
-            if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 81 &&
-                _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 100) {
+            if (s["ss_quantity"] >= 81 && s["ss_quantity"] <= 100) {
               _res.push_back(s);
             }
           }
           return _res;
         })()) > 50)
-      return _avg(([&]() -> vector<any> {
-        vector<any> _res;
+      return _avg(([&]() -> vector<unordered_map<string, any>> {
+        vector<unordered_map<string, any>> _res;
         for (auto &s : store_sales) {
-          if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 81 &&
-              _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 100) {
-            _res.push_back(
-                _cast<unordered_map<string, any>>(s)["ss_ext_discount_amt"]);
+          if (s["ss_quantity"] >= 81 && s["ss_quantity"] <= 100) {
+            _res.push_back(s["ss_ext_discount_amt"]);
           }
         }
         return _res;
       })());
-    return _avg(([&]() -> vector<any> {
-      vector<any> _res;
+    return _avg(([&]() -> vector<unordered_map<string, any>> {
+      vector<unordered_map<string, any>> _res;
       for (auto &s : store_sales) {
-        if (_cast<unordered_map<string, any>>(s)["ss_quantity"] >= 81 &&
-            _cast<unordered_map<string, any>>(s)["ss_quantity"] <= 100) {
-          _res.push_back(_cast<unordered_map<string, any>>(s)["ss_net_paid"]);
+        if (s["ss_quantity"] >= 81 && s["ss_quantity"] <= 100) {
+          _res.push_back(s["ss_net_paid"]);
         }
       }
       return _res;
@@ -302,7 +257,7 @@ int main() {
   auto result = ([&]() -> vector<unordered_map<double, double>> {
     vector<unordered_map<double, double>> _res;
     for (auto &r : reason) {
-      if (_cast<unordered_map<string, any>>(r)["r_reason_sk"] == 1) {
+      if (r["r_reason_sk"] == 1) {
         _res.push_back(
             unordered_map<double, double>{{string("bucket1"), bucket1},
                                           {string("bucket2"), bucket2},
@@ -314,12 +269,18 @@ int main() {
     return _res;
   })();
   _json(result);
-  auto test_TPCDS_Q9_empty = [&]() {
-    if (!(result.size() == 0)) {
+  auto test_TPCDS_Q9_result = [&]() {
+    if (!(result ==
+          vector<unordered_map<double, double>>{
+              unordered_map<double, double>{{string("bucket1"), 7.0},
+                                            {string("bucket2"), 15.0},
+                                            {string("bucket3"), 30.0},
+                                            {string("bucket4"), 35.0},
+                                            {string("bucket5"), 50.0}}})) {
       std::cerr << "expect failed\n";
       exit(1);
     }
   };
-  test_TPCDS_Q9_empty();
+  test_TPCDS_Q9_result();
   return 0;
 }

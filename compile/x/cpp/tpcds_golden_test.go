@@ -22,7 +22,7 @@ func TestCPPCompiler_TPCDS_Golden(t *testing.T) {
 		t.Skipf("C++ compiler not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 9; i++ {
+	for i := 1; i <= 49; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
 		prog, err := parser.Parse(src)
