@@ -6,7 +6,6 @@ import (
 	"mochi/runtime/data"
 	"reflect"
 	"sort"
-	"strings"
 	"time"
 )
 
@@ -41,19 +40,21 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-type CatalogSale struct {
-	Cs_item_sk         int     `json:"cs_item_sk"`
-	Cs_sold_date_sk    int     `json:"cs_sold_date_sk"`
-	Cs_ext_sales_price float64 `json:"cs_ext_sales_price"`
+type Inventory struct {
+	Inv_item_sk          int `json:"inv_item_sk"`
+	Inv_warehouse_sk     int `json:"inv_warehouse_sk"`
+	Inv_date_sk          int `json:"inv_date_sk"`
+	Inv_quantity_on_hand int `json:"inv_quantity_on_hand"`
+}
+
+type Warehouse struct {
+	W_warehouse_sk   int    `json:"w_warehouse_sk"`
+	W_warehouse_name string `json:"w_warehouse_name"`
 }
 
 type Item struct {
-	I_item_sk       int     `json:"i_item_sk"`
-	I_item_id       string  `json:"i_item_id"`
-	I_item_desc     string  `json:"i_item_desc"`
-	I_category      string  `json:"i_category"`
-	I_class         string  `json:"i_class"`
-	I_current_price float64 `json:"i_current_price"`
+	I_item_sk int    `json:"i_item_sk"`
+	I_item_id string `json:"i_item_id"`
 }
 
 type DateDim struct {
@@ -61,41 +62,34 @@ type DateDim struct {
 	D_date    string `json:"d_date"`
 }
 
-func test_TPCDS_Q20_revenue_ratio() {
+func test_TPCDS_Q21_inventory_ratio() {
 	expect(_equal(result, []map[string]any{map[string]any{
-		"i_item_id":       "ITEM1",
-		"i_item_desc":     "Item One",
-		"i_category":      "A",
-		"i_class":         "X",
-		"i_current_price": 10.0,
-		"itemrevenue":     600.0,
-		"revenueratio":    66.66666666666667,
-	}, map[string]any{
-		"i_item_id":       "ITEM2",
-		"i_item_desc":     "Item Two",
-		"i_category":      "A",
-		"i_class":         "X",
-		"i_current_price": 20.0,
-		"itemrevenue":     300.0,
-		"revenueratio":    33.333333333333336,
+		"w_warehouse_name": "Main",
+		"i_item_id":        "ITEM1",
+		"inv_before":       30,
+		"inv_after":        40,
 	}}))
 }
 
-type Catalog_salesItem struct {
-	Cs_item_sk         int     `json:"cs_item_sk"`
-	Cs_sold_date_sk    int     `json:"cs_sold_date_sk"`
-	Cs_ext_sales_price float64 `json:"cs_ext_sales_price"`
+type InventoryItem struct {
+	Inv_item_sk          int `json:"inv_item_sk"`
+	Inv_warehouse_sk     int `json:"inv_warehouse_sk"`
+	Inv_date_sk          int `json:"inv_date_sk"`
+	Inv_quantity_on_hand int `json:"inv_quantity_on_hand"`
 }
 
-var catalog_sales []Catalog_salesItem
+var inventory []InventoryItem
+
+type WarehouseItem struct {
+	W_warehouse_sk   int    `json:"w_warehouse_sk"`
+	W_warehouse_name string `json:"w_warehouse_name"`
+}
+
+var warehouse []WarehouseItem
 
 type ItemItem struct {
-	I_item_sk       int     `json:"i_item_sk"`
-	I_item_id       string  `json:"i_item_id"`
-	I_item_desc     string  `json:"i_item_desc"`
-	I_category      string  `json:"i_category"`
-	I_class         string  `json:"i_class"`
-	I_current_price float64 `json:"i_current_price"`
+	I_item_sk int    `json:"i_item_sk"`
+	I_item_id string `json:"i_item_id"`
 }
 
 var item []ItemItem
@@ -106,115 +100,87 @@ type Date_dimItem struct {
 }
 
 var date_dim []Date_dimItem
-var filtered []map[string]any
-var class_totals []map[string]any
+var before []map[string]any
+var after []map[string]any
+var joined []map[string]any
 var result []map[string]any
 
 func main() {
 	failures := 0
-	catalog_sales = _cast[[]Catalog_salesItem]([]Catalog_salesItem{
-		Catalog_salesItem{
-			Cs_item_sk:         1,
-			Cs_sold_date_sk:    1,
-			Cs_ext_sales_price: 100.0,
+	inventory = _cast[[]InventoryItem]([]InventoryItem{
+		InventoryItem{
+			Inv_item_sk:          1,
+			Inv_warehouse_sk:     1,
+			Inv_date_sk:          1,
+			Inv_quantity_on_hand: 30,
 		},
-		Catalog_salesItem{
-			Cs_item_sk:         1,
-			Cs_sold_date_sk:    1,
-			Cs_ext_sales_price: 200.0,
+		InventoryItem{
+			Inv_item_sk:          1,
+			Inv_warehouse_sk:     1,
+			Inv_date_sk:          2,
+			Inv_quantity_on_hand: 40,
 		},
-		Catalog_salesItem{
-			Cs_item_sk:         2,
-			Cs_sold_date_sk:    1,
-			Cs_ext_sales_price: 150.0,
+		InventoryItem{
+			Inv_item_sk:          2,
+			Inv_warehouse_sk:     2,
+			Inv_date_sk:          1,
+			Inv_quantity_on_hand: 20,
 		},
-		Catalog_salesItem{
-			Cs_item_sk:         1,
-			Cs_sold_date_sk:    2,
-			Cs_ext_sales_price: 300.0,
-		},
-		Catalog_salesItem{
-			Cs_item_sk:         2,
-			Cs_sold_date_sk:    2,
-			Cs_ext_sales_price: 150.0,
-		},
-		Catalog_salesItem{
-			Cs_item_sk:         3,
-			Cs_sold_date_sk:    1,
-			Cs_ext_sales_price: 50.0,
+		InventoryItem{
+			Inv_item_sk:          2,
+			Inv_warehouse_sk:     2,
+			Inv_date_sk:          2,
+			Inv_quantity_on_hand: 20,
 		},
 	})
+	warehouse = _cast[[]WarehouseItem]([]WarehouseItem{WarehouseItem{
+		W_warehouse_sk:   1,
+		W_warehouse_name: "Main",
+	}, WarehouseItem{
+		W_warehouse_sk:   2,
+		W_warehouse_name: "Backup",
+	}})
 	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
-		I_item_sk:       1,
-		I_item_id:       "ITEM1",
-		I_item_desc:     "Item One",
-		I_category:      "A",
-		I_class:         "X",
-		I_current_price: 10.0,
+		I_item_sk: 1,
+		I_item_id: "ITEM1",
 	}, ItemItem{
-		I_item_sk:       2,
-		I_item_id:       "ITEM2",
-		I_item_desc:     "Item Two",
-		I_category:      "A",
-		I_class:         "X",
-		I_current_price: 20.0,
-	}, ItemItem{
-		I_item_sk:       3,
-		I_item_id:       "ITEM3",
-		I_item_desc:     "Item Three",
-		I_category:      "D",
-		I_class:         "Y",
-		I_current_price: 15.0,
+		I_item_sk: 2,
+		I_item_id: "ITEM2",
 	}})
 	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
 		D_date_sk: 1,
-		D_date:    "2000-02-10",
+		D_date:    "2000-03-01",
 	}, Date_dimItem{
 		D_date_sk: 2,
-		D_date:    "2000-02-20",
+		D_date:    "2000-03-20",
 	}})
-	filtered = func() []map[string]any {
+	before = func() []map[string]any {
 		groups := map[string]*data.Group{}
 		order := []string{}
-		for _, cs := range catalog_sales {
-			for _, i := range item {
-				if !(cs.Cs_item_sk == i.I_item_sk) {
+		for _, inv := range inventory {
+			for _, d := range date_dim {
+				if !(inv.Inv_date_sk == d.D_date_sk) {
 					continue
 				}
-				for _, d := range date_dim {
-					if !(cs.Cs_sold_date_sk == d.D_date_sk) {
-						continue
+				if d.D_date < "2000-03-15" {
+					key := map[string]int{"w": inv.Inv_warehouse_sk, "i": inv.Inv_item_sk}
+					ks := fmt.Sprint(key)
+					g, ok := groups[ks]
+					if !ok {
+						g = &data.Group{Key: key}
+						groups[ks] = g
+						order = append(order, ks)
 					}
-					if (_contains([]string{"A", "B", "C"}, i.I_category) && (d.D_date >= "2000-02-01")) && (d.D_date <= "2000-03-02") {
-						key := map[string]any{
-							"id":    i.I_item_id,
-							"desc":  i.I_item_desc,
-							"cat":   i.I_category,
-							"class": i.I_class,
-							"price": i.I_current_price,
-						}
-						ks := fmt.Sprint(key)
-						g, ok := groups[ks]
-						if !ok {
-							g = &data.Group{Key: key}
-							groups[ks] = g
-							order = append(order, ks)
-						}
-						_item := map[string]any{}
-						for k, v := range _cast[map[string]any](cs) {
-							_item[k] = v
-						}
-						_item["cs"] = cs
-						for k, v := range _cast[map[string]any](i) {
-							_item[k] = v
-						}
-						_item["i"] = i
-						for k, v := range _cast[map[string]any](d) {
-							_item[k] = v
-						}
-						_item["d"] = d
-						g.Items = append(g.Items, _item)
+					_item := map[string]any{}
+					for k, v := range _cast[map[string]any](inv) {
+						_item[k] = v
 					}
+					_item["inv"] = inv
+					for k, v := range _cast[map[string]any](d) {
+						_item[k] = v
+					}
+					_item["d"] = d
+					g.Items = append(g.Items, _item)
 				}
 			}
 		}
@@ -225,15 +191,12 @@ func main() {
 		_res := []map[string]any{}
 		for _, g := range items {
 			_res = append(_res, map[string]any{
-				"i_item_id":       _cast[map[string]any](g.Key)["id"],
-				"i_item_desc":     _cast[map[string]any](g.Key)["desc"],
-				"i_category":      _cast[map[string]any](g.Key)["cat"],
-				"i_class":         _cast[map[string]any](g.Key)["class"],
-				"i_current_price": _cast[map[string]any](g.Key)["price"],
-				"itemrevenue": _sum(func() []any {
+				"w": _cast[map[string]any](g.Key)["w"],
+				"i": _cast[map[string]any](g.Key)["i"],
+				"qty": _sum(func() []any {
 					_res := []any{}
 					for _, x := range g.Items {
-						_res = append(_res, _cast[map[string]any](x)["cs_ext_sales_price"])
+						_res = append(_res, _cast[map[string]any](x)["inv_quantity_on_hand"])
 					}
 					return _res
 				}()),
@@ -241,69 +204,100 @@ func main() {
 		}
 		return _res
 	}()
-	class_totals = func() []map[string]any {
+	after = func() []map[string]any {
 		groups := map[string]*data.Group{}
 		order := []string{}
-		for _, f := range filtered {
-			key := f["i_class"]
-			ks := fmt.Sprint(key)
-			g, ok := groups[ks]
-			if !ok {
-				g = &data.Group{Key: key}
-				groups[ks] = g
-				order = append(order, ks)
+		for _, inv := range inventory {
+			for _, d := range date_dim {
+				if !(inv.Inv_date_sk == d.D_date_sk) {
+					continue
+				}
+				if d.D_date >= "2000-03-15" {
+					key := map[string]int{"w": inv.Inv_warehouse_sk, "i": inv.Inv_item_sk}
+					ks := fmt.Sprint(key)
+					g, ok := groups[ks]
+					if !ok {
+						g = &data.Group{Key: key}
+						groups[ks] = g
+						order = append(order, ks)
+					}
+					_item := map[string]any{}
+					for k, v := range _cast[map[string]any](inv) {
+						_item[k] = v
+					}
+					_item["inv"] = inv
+					for k, v := range _cast[map[string]any](d) {
+						_item[k] = v
+					}
+					_item["d"] = d
+					g.Items = append(g.Items, _item)
+				}
 			}
-			g.Items = append(g.Items, f)
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
 		}
 		_res := []map[string]any{}
-		for _, ks := range order {
-			g := groups[ks]
-			_res = append(_res, map[string]any{"class": g.Key, "total": _sum(func() []any {
-				_res := []any{}
-				for _, x := range g.Items {
-					_res = append(_res, _cast[map[string]any](x)["itemrevenue"])
+		for _, g := range items {
+			_res = append(_res, map[string]any{
+				"w": _cast[map[string]any](g.Key)["w"],
+				"i": _cast[map[string]any](g.Key)["i"],
+				"qty": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["inv_quantity_on_hand"])
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
+	joined = func() []map[string]any {
+		_res := []map[string]any{}
+		for _, b := range before {
+			for _, a := range after {
+				if !(_equal(b["w"], a["w"]) && _equal(b["i"], a["i"])) {
+					continue
 				}
-				return _res
-			}())})
+				for _, w := range warehouse {
+					if !(_equal(w.W_warehouse_sk, b["w"])) {
+						continue
+					}
+					for _, it := range item {
+						if !(_equal(it.I_item_sk, b["i"])) {
+							continue
+						}
+						_res = append(_res, map[string]any{
+							"w_name":     w.W_warehouse_name,
+							"i_id":       it.I_item_id,
+							"before_qty": b["qty"],
+							"after_qty":  a["qty"],
+							"ratio":      (_cast[float64](a["qty"]) / _cast[float64](b["qty"])),
+						})
+					}
+				}
+			}
 		}
 		return _res
 	}()
 	result = func() []map[string]any {
-		src := _toAnySlice(filtered)
-		resAny := _query(src, []_joinSpec{
-			{items: _toAnySlice(class_totals), on: func(_a ...any) bool {
-				f := _cast[map[string]any](_a[0])
-				_ = f
-				t := _cast[map[string]any](_a[1])
-				_ = t
-				return _equal(f["i_class"], t["class"])
-			}},
-		}, _queryOpts{selectFn: func(_a ...any) any {
-			f := _cast[map[string]any](_a[0])
-			_ = f
-			t := _cast[map[string]any](_a[1])
-			_ = t
+		src := _toAnySlice(joined)
+		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
+			r := _cast[map[string]any](_a[0])
+			_ = r
 			return map[string]any{
-				"i_item_id":       f["i_item_id"],
-				"i_item_desc":     f["i_item_desc"],
-				"i_category":      f["i_category"],
-				"i_class":         f["i_class"],
-				"i_current_price": f["i_current_price"],
-				"itemrevenue":     f["itemrevenue"],
-				"revenueratio":    (_cast[float64]((_cast[float64](f["itemrevenue"]) * _cast[float64](100.0))) / _cast[float64](t["total"])),
+				"w_warehouse_name": r["w_name"],
+				"i_item_id":        r["i_id"],
+				"inv_before":       r["before_qty"],
+				"inv_after":        r["after_qty"],
 			}
-		}, sortKey: func(_a ...any) any {
-			f := _cast[map[string]any](_a[0])
-			_ = f
-			t := _cast[map[string]any](_a[1])
-			_ = t
-			return []any{
-				f["i_category"],
-				f["i_class"],
-				f["i_item_id"],
-				f["i_item_desc"],
-			}
-		}, skip: -1, take: -1})
+		}, where: func(_a ...any) bool {
+			r := _cast[map[string]any](_a[0])
+			_ = r
+			return ((_cast[float64](r["ratio"]) >= (2.0 / 3.0)) && (_cast[float64](r["ratio"]) <= (3.0 / 2.0)))
+		}, sortKey: func(_a ...any) any { r := _cast[map[string]any](_a[0]); _ = r; return []any{r["w_name"], r["i_id"]} }, skip: -1, take: -1})
 		out := make([]map[string]any, len(resAny))
 		for i, v := range resAny {
 			out[i] = _cast[map[string]any](v)
@@ -312,7 +306,7 @@ func main() {
 	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q20 revenue ratio")
+		printTestStart("TPCDS Q21 inventory ratio")
 		start := time.Now()
 		var failed error
 		func() {
@@ -321,7 +315,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q20_revenue_ratio()
+			test_TPCDS_Q21_inventory_ratio()
 		}()
 		if failed != nil {
 			failures++
@@ -380,26 +374,6 @@ func _cast[T any](v any) T {
 		panic(err)
 	}
 	return out
-}
-
-func _contains(c any, v any) bool {
-	switch s := c.(type) {
-	case string:
-		return strings.Contains(s, fmt.Sprint(v))
-	case map[string]any:
-		_, ok := s[fmt.Sprint(v)]
-		return ok
-	}
-	rv := reflect.ValueOf(c)
-	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
-		for i := 0; i < rv.Len(); i++ {
-			if _equal(rv.Index(i).Interface(), v) {
-				return true
-			}
-		}
-		return false
-	}
-	return false
 }
 
 func _convertMapAny(m map[any]any) map[string]any {

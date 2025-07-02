@@ -1,2 +1,2 @@
 [{"c_first_name":"Ann","c_last_name":"Smith","paid":100,"s_store_name":"Store1"}]
-   test TPCDS Q24 customer net paid    ... ok (4.0µs)
+   test TPCDS Q24 customer net paid    ... ok (3.0µs)

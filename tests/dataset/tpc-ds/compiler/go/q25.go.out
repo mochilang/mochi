@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
-	"strings"
 	"time"
 )
 
@@ -41,27 +40,27 @@ func printTestFail(err error, d time.Duration) {
 }
 
 type StoreSale struct {
-	Ss_sold_date_sk  int `json:"ss_sold_date_sk"`
-	Ss_item_sk       int `json:"ss_item_sk"`
-	Ss_store_sk      int `json:"ss_store_sk"`
-	Ss_customer_sk   int `json:"ss_customer_sk"`
-	Ss_quantity      int `json:"ss_quantity"`
-	Ss_ticket_number int `json:"ss_ticket_number"`
+	Ss_sold_date_sk  int     `json:"ss_sold_date_sk"`
+	Ss_item_sk       int     `json:"ss_item_sk"`
+	Ss_store_sk      int     `json:"ss_store_sk"`
+	Ss_customer_sk   int     `json:"ss_customer_sk"`
+	Ss_net_profit    float64 `json:"ss_net_profit"`
+	Ss_ticket_number int     `json:"ss_ticket_number"`
 }
 
 type StoreReturn struct {
-	Sr_returned_date_sk int `json:"sr_returned_date_sk"`
-	Sr_item_sk          int `json:"sr_item_sk"`
-	Sr_customer_sk      int `json:"sr_customer_sk"`
-	Sr_ticket_number    int `json:"sr_ticket_number"`
-	Sr_return_quantity  int `json:"sr_return_quantity"`
+	Sr_returned_date_sk int     `json:"sr_returned_date_sk"`
+	Sr_item_sk          int     `json:"sr_item_sk"`
+	Sr_customer_sk      int     `json:"sr_customer_sk"`
+	Sr_ticket_number    int     `json:"sr_ticket_number"`
+	Sr_net_loss         float64 `json:"sr_net_loss"`
 }
 
 type CatalogSale struct {
-	Cs_sold_date_sk     int `json:"cs_sold_date_sk"`
-	Cs_item_sk          int `json:"cs_item_sk"`
-	Cs_bill_customer_sk int `json:"cs_bill_customer_sk"`
-	Cs_quantity         int `json:"cs_quantity"`
+	Cs_sold_date_sk     int     `json:"cs_sold_date_sk"`
+	Cs_item_sk          int     `json:"cs_item_sk"`
+	Cs_bill_customer_sk int     `json:"cs_bill_customer_sk"`
+	Cs_net_profit       float64 `json:"cs_net_profit"`
 }
 
 type DateDim struct {
@@ -82,44 +81,44 @@ type Item struct {
 	I_item_desc string `json:"i_item_desc"`
 }
 
-func test_TPCDS_Q29_quantity_summary() {
+func test_TPCDS_Q25_aggregated_profit() {
 	expect(_equal(result, []map[string]any{map[string]any{
-		"i_item_id":              "ITEM1",
-		"i_item_desc":            "Desc1",
-		"s_store_id":             "S1",
-		"s_store_name":           "Store1",
-		"store_sales_quantity":   10,
-		"store_returns_quantity": 2,
-		"catalog_sales_quantity": 5,
+		"i_item_id":            "ITEM1",
+		"i_item_desc":          "Desc1",
+		"s_store_id":           "S1",
+		"s_store_name":         "Store1",
+		"store_sales_profit":   50.0,
+		"store_returns_loss":   10.0,
+		"catalog_sales_profit": 30.0,
 	}}))
 }
 
 type Store_salesItem struct {
-	Ss_sold_date_sk  int `json:"ss_sold_date_sk"`
-	Ss_item_sk       int `json:"ss_item_sk"`
-	Ss_store_sk      int `json:"ss_store_sk"`
-	Ss_customer_sk   int `json:"ss_customer_sk"`
-	Ss_quantity      int `json:"ss_quantity"`
-	Ss_ticket_number int `json:"ss_ticket_number"`
+	Ss_sold_date_sk  int     `json:"ss_sold_date_sk"`
+	Ss_item_sk       int     `json:"ss_item_sk"`
+	Ss_store_sk      int     `json:"ss_store_sk"`
+	Ss_customer_sk   int     `json:"ss_customer_sk"`
+	Ss_net_profit    float64 `json:"ss_net_profit"`
+	Ss_ticket_number int     `json:"ss_ticket_number"`
 }
 
 var store_sales []Store_salesItem
 
 type Store_returnsItem struct {
-	Sr_returned_date_sk int `json:"sr_returned_date_sk"`
-	Sr_item_sk          int `json:"sr_item_sk"`
-	Sr_customer_sk      int `json:"sr_customer_sk"`
-	Sr_ticket_number    int `json:"sr_ticket_number"`
-	Sr_return_quantity  int `json:"sr_return_quantity"`
+	Sr_returned_date_sk int     `json:"sr_returned_date_sk"`
+	Sr_item_sk          int     `json:"sr_item_sk"`
+	Sr_customer_sk      int     `json:"sr_customer_sk"`
+	Sr_ticket_number    int     `json:"sr_ticket_number"`
+	Sr_net_loss         float64 `json:"sr_net_loss"`
 }
 
 var store_returns []Store_returnsItem
 
 type Catalog_salesItem struct {
-	Cs_sold_date_sk     int `json:"cs_sold_date_sk"`
-	Cs_item_sk          int `json:"cs_item_sk"`
-	Cs_bill_customer_sk int `json:"cs_bill_customer_sk"`
-	Cs_quantity         int `json:"cs_quantity"`
+	Cs_sold_date_sk     int     `json:"cs_sold_date_sk"`
+	Cs_item_sk          int     `json:"cs_item_sk"`
+	Cs_bill_customer_sk int     `json:"cs_bill_customer_sk"`
+	Cs_net_profit       float64 `json:"cs_net_profit"`
 }
 
 var catalog_sales []Catalog_salesItem
@@ -147,7 +146,6 @@ type ItemItem struct {
 }
 
 var item []ItemItem
-var base []map[string]any
 var result []map[string]any
 
 func main() {
@@ -157,33 +155,51 @@ func main() {
 		Ss_item_sk:       1,
 		Ss_store_sk:      1,
 		Ss_customer_sk:   1,
-		Ss_quantity:      10,
+		Ss_net_profit:    50.0,
 		Ss_ticket_number: 1,
+	}, Store_salesItem{
+		Ss_sold_date_sk:  1,
+		Ss_item_sk:       2,
+		Ss_store_sk:      1,
+		Ss_customer_sk:   2,
+		Ss_net_profit:    20.0,
+		Ss_ticket_number: 2,
 	}})
 	store_returns = _cast[[]Store_returnsItem]([]Store_returnsItem{Store_returnsItem{
 		Sr_returned_date_sk: 2,
 		Sr_item_sk:          1,
 		Sr_customer_sk:      1,
 		Sr_ticket_number:    1,
-		Sr_return_quantity:  2,
+		Sr_net_loss:         10.0,
+	}, Store_returnsItem{
+		Sr_returned_date_sk: 2,
+		Sr_item_sk:          2,
+		Sr_customer_sk:      2,
+		Sr_ticket_number:    2,
+		Sr_net_loss:         5.0,
 	}})
 	catalog_sales = _cast[[]Catalog_salesItem]([]Catalog_salesItem{Catalog_salesItem{
 		Cs_sold_date_sk:     3,
 		Cs_item_sk:          1,
 		Cs_bill_customer_sk: 1,
-		Cs_quantity:         5,
+		Cs_net_profit:       30.0,
+	}, Catalog_salesItem{
+		Cs_sold_date_sk:     3,
+		Cs_item_sk:          2,
+		Cs_bill_customer_sk: 2,
+		Cs_net_profit:       15.0,
 	}})
 	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
 		D_date_sk: 1,
 		D_moy:     4,
-		D_year:    1999,
+		D_year:    2000,
 	}, Date_dimItem{
 		D_date_sk: 2,
 		D_moy:     5,
-		D_year:    1999,
+		D_year:    2000,
 	}, Date_dimItem{
 		D_date_sk: 3,
-		D_moy:     5,
+		D_moy:     6,
 		D_year:    2000,
 	}})
 	store = _cast[[]StoreItem]([]StoreItem{StoreItem{
@@ -195,9 +211,14 @@ func main() {
 		I_item_sk:   1,
 		I_item_id:   "ITEM1",
 		I_item_desc: "Desc1",
+	}, ItemItem{
+		I_item_sk:   2,
+		I_item_id:   "ITEM2",
+		I_item_desc: "Desc2",
 	}})
-	base = func() []map[string]any {
-		_res := []map[string]any{}
+	result = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
 		for _, ss := range store_sales {
 			for _, sr := range store_returns {
 				if !((ss.Ss_ticket_number == sr.Sr_ticket_number) && (ss.Ss_item_sk == sr.Sr_item_sk)) {
@@ -219,24 +240,62 @@ func main() {
 								if !(d3.D_date_sk == cs.Cs_sold_date_sk) {
 									continue
 								}
-								if ((((d1.D_moy == 4) && (d1.D_year == 1999)) && (d2.D_moy >= 4)) && (d2.D_moy <= 7)) && _contains([]int{1999, 2000, 2001}, d3.D_year) {
-									for _, s := range store {
-										if !(s.S_store_sk == ss.Ss_store_sk) {
+								for _, s := range store {
+									if !(s.S_store_sk == ss.Ss_store_sk) {
+										continue
+									}
+									for _, i := range item {
+										if !(i.I_item_sk == ss.Ss_item_sk) {
 											continue
 										}
-										for _, i := range item {
-											if !(i.I_item_sk == ss.Ss_item_sk) {
-												continue
+										if (((((d1.D_moy == 4) && (d1.D_year == 2000)) && (d2.D_moy >= 4)) && (d2.D_moy <= 10)) && (d3.D_moy >= 4)) && (d3.D_moy <= 10) {
+											key := map[string]string{
+												"item_id":      i.I_item_id,
+												"item_desc":    i.I_item_desc,
+												"s_store_id":   s.S_store_id,
+												"s_store_name": s.S_store_name,
 											}
-											_res = append(_res, map[string]any{
-												"ss_quantity":        ss.Ss_quantity,
-												"sr_return_quantity": sr.Sr_return_quantity,
-												"cs_quantity":        cs.Cs_quantity,
-												"i_item_id":          i.I_item_id,
-												"i_item_desc":        i.I_item_desc,
-												"s_store_id":         s.S_store_id,
-												"s_store_name":       s.S_store_name,
-											})
+											ks := fmt.Sprint(key)
+											g, ok := groups[ks]
+											if !ok {
+												g = &data.Group{Key: key}
+												groups[ks] = g
+												order = append(order, ks)
+											}
+											_item := map[string]any{}
+											for k, v := range _cast[map[string]any](ss) {
+												_item[k] = v
+											}
+											_item["ss"] = ss
+											for k, v := range _cast[map[string]any](sr) {
+												_item[k] = v
+											}
+											_item["sr"] = sr
+											for k, v := range _cast[map[string]any](cs) {
+												_item[k] = v
+											}
+											_item["cs"] = cs
+											for k, v := range _cast[map[string]any](d1) {
+												_item[k] = v
+											}
+											_item["d1"] = d1
+											for k, v := range _cast[map[string]any](d2) {
+												_item[k] = v
+											}
+											_item["d2"] = d2
+											for k, v := range _cast[map[string]any](d3) {
+												_item[k] = v
+											}
+											_item["d3"] = d3
+											for k, v := range _cast[map[string]any](s) {
+												_item[k] = v
+											}
+											_item["s"] = s
+											for k, v := range _cast[map[string]any](i) {
+												_item[k] = v
+											}
+											_item["i"] = i
+											g.Items = append(g.Items, _item)
 										}
 									}
 								}
@@ -246,53 +305,35 @@ func main() {
 				}
 			}
 		}
-		return _res
-	}()
-	result = func() []map[string]any {
-		groups := map[string]*data.Group{}
-		order := []string{}
-		for _, b := range base {
-			key := map[string]any{
-				"item_id":      b["i_item_id"],
-				"item_desc":    b["i_item_desc"],
-				"s_store_id":   b["s_store_id"],
-				"s_store_name": b["s_store_name"],
-			}
-			ks := fmt.Sprint(key)
-			g, ok := groups[ks]
-			if !ok {
-				g = &data.Group{Key: key}
-				groups[ks] = g
-				order = append(order, ks)
-			}
-			g.Items = append(g.Items, b)
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
 		}
 		_res := []map[string]any{}
-		for _, ks := range order {
-			g := groups[ks]
+		for _, g := range items {
 			_res = append(_res, map[string]any{
 				"i_item_id":    _cast[map[string]any](g.Key)["item_id"],
 				"i_item_desc":  _cast[map[string]any](g.Key)["item_desc"],
 				"s_store_id":   _cast[map[string]any](g.Key)["s_store_id"],
 				"s_store_name": _cast[map[string]any](g.Key)["s_store_name"],
-				"store_sales_quantity": _sum(func() []any {
+				"store_sales_profit": _sum(func() []any {
 					_res := []any{}
 					for _, x := range g.Items {
-						_res = append(_res, _cast[map[string]any](x)["ss_quantity"])
+						_res = append(_res, _cast[map[string]any](x)["ss_net_profit"])
 					}
 					return _res
 				}()),
-				"store_returns_quantity": _sum(func() []any {
+				"store_returns_loss": _sum(func() []any {
 					_res := []any{}
 					for _, x := range g.Items {
-						_res = append(_res, _cast[map[string]any](x)["sr_return_quantity"])
+						_res = append(_res, _cast[map[string]any](x)["sr_net_loss"])
 					}
 					return _res
 				}()),
-				"catalog_sales_quantity": _sum(func() []any {
+				"catalog_sales_profit": _sum(func() []any {
 					_res := []any{}
 					for _, x := range g.Items {
-						_res = append(_res, _cast[map[string]any](x)["cs_quantity"])
+						_res = append(_res, _cast[map[string]any](x)["cs_net_profit"])
 					}
 					return _res
 				}()),
@@ -302,7 +343,7 @@ func main() {
 	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q29 quantity summary")
+		printTestStart("TPCDS Q25 aggregated profit")
 		start := time.Now()
 		var failed error
 		func() {
@@ -311,7 +352,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q29_quantity_summary()
+			test_TPCDS_Q25_aggregated_profit()
 		}()
 		if failed != nil {
 			failures++
@@ -370,26 +411,6 @@ func _cast[T any](v any) T {
 		panic(err)
 	}
 	return out
-}
-
-func _contains(c any, v any) bool {
-	switch s := c.(type) {
-	case string:
-		return strings.Contains(s, fmt.Sprint(v))
-	case map[string]any:
-		_, ok := s[fmt.Sprint(v)]
-		return ok
-	}
-	rv := reflect.ValueOf(c)
-	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
-		for i := 0; i < rv.Len(); i++ {
-			if _equal(rv.Index(i).Interface(), v) {
-				return true
-			}
-		}
-		return false
-	}
-	return false
 }
 
 func _convertMapAny(m map[any]any) map[string]any {

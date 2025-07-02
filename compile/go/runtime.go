@@ -807,6 +807,7 @@ func (c *Compiler) use(name string) {
 		c.imports["fmt"] = true
 		c.imports["strings"] = true
 		c.imports["reflect"] = true
+		c.helpers["_equal"] = true
 	}
 }
 
