@@ -259,8 +259,12 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 			if run {
 				out, err := RunMochi(code)
 				outPath := filepath.Join(testDir, c.Name+".out")
+				errPath := strings.TrimSuffix(outPath, ".out") + ".error"
 				if err != nil {
-					_ = os.WriteFile(strings.TrimSuffix(outPath, ".out")+".error", []byte(err.Error()+"\n"), 0o644)
+					_ = os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644)
+				} else {
+					_ = os.Remove(errPath)
+					_ = os.Remove(strings.TrimSuffix(outPath, ".out") + ".err")
 				}
 				if err := os.WriteFile(outPath, []byte(out+"\n"), 0o644); err != nil {
 					return err
