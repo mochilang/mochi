@@ -144,6 +144,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	// Fall back to inspecting row values.
 	t := ""
 	floatIsInt := true
+	boolLike := true
 	for _, row := range rows {
 		v := row[name]
 		if v == nil {
@@ -160,6 +161,15 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 					t = "bool"
 				} else {
 					return "any"
+				}
+				continue
+			}
+			if v == "0" || v == "1" {
+				if t == "" {
+					t = "int"
+				}
+				if v != "0" && v != "1" {
+					boolLike = false
 				}
 				continue
 			}
@@ -193,6 +203,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			if val != math.Trunc(val) {
 				floatIsInt = false
 			}
+			if val != 0 && val != 1 {
+				boolLike = false
+			}
 			if t == "" || t == "float" || t == "int" {
 				if t == "" {
 					t = "float"
@@ -201,6 +214,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				return "any"
 			}
 		case int:
+			if val != 0 && val != 1 {
+				boolLike = false
+			}
 			if t == "" {
 				t = "int"
 			} else if t != "int" {
@@ -219,6 +235,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		default:
 			return "any"
 		}
+	}
+	if t == "int" && boolLike {
+		return "bool"
 	}
 	if t == "float" && floatIsInt {
 		return "int"
