@@ -32,6 +32,9 @@ go run ./cmd/mochi-slt gen --cases case5-case6 --files select1.test --run
 # Generate and run cases 70-79 from select1.test
 go run ./cmd/mochi-slt gen --cases case70-case79 --files select1.test --run
 
+# Generate and run cases 32-33 from select1.test
+go run ./cmd/mochi-slt gen --cases case32-case33 --files select1.test --run
+
 # Inspect available test cases in a file
 go run ./cmd/mochi-slt list --file evidence/slt_lang_update.test
 ```
