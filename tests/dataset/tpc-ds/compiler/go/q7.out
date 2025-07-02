@@ -1,2 +1,2 @@
-[]
-   test TPCDS Q7 empty                 ... ok (390ns)
+[{"agg1":5,"agg2":10,"agg3":2,"agg4":8,"i_item_id":"I1"}]
+   test TPCDS Q7 result                ... ok (6.0µs)
