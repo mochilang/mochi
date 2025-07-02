@@ -547,6 +547,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.buf.WriteString("throw(mochi_break)")
 		return nil
@@ -774,6 +776,101 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	}
 
 	c.writeln("{" + strings.Join(resultNames, ", ") + "} = " + loopVar + "(" + strings.Join(params, ", ") + ")")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := c.current(u.Target)
+	result := c.newName(u.Target)
+	iter := c.newName("item")
+
+	origEnv := c.env
+	savedVars := copyMap(c.vars)
+
+	record := ""
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if st, ok := lt.Elem.(types.StructType); ok {
+					record = sanitizeName(st.Name)
+					child := types.NewEnv(c.env)
+					for name, ft := range st.Fields {
+						child.SetVar(name, ft, true)
+						c.vars[name] = fmt.Sprintf("%s#%s.%s", iter, record, sanitizeName(name))
+					}
+					c.env = child
+				}
+			}
+		}
+	}
+
+	var where string
+	if u.Where != nil {
+		w, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			c.vars = savedVars
+			return err
+		}
+		where = w
+	}
+
+	var updated string
+	if record != "" {
+		parts := make([]string, len(u.Set.Items))
+		for i, it := range u.Set.Items {
+			key, _ := identName(it.Key)
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.env = origEnv
+				c.vars = savedVars
+				return err
+			}
+			parts[i] = fmt.Sprintf("%s=%s", sanitizeName(key), val)
+		}
+		if len(parts) > 0 {
+			updated = fmt.Sprintf("%s#%s{%s}", iter, record, strings.Join(parts, ", "))
+		} else {
+			updated = iter
+		}
+	} else {
+		expr := iter
+		for _, it := range u.Set.Items {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				c.env = origEnv
+				c.vars = savedVars
+				return err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.env = origEnv
+				c.vars = savedVars
+				return err
+			}
+			expr = fmt.Sprintf("maps:put(%s, %s, %s)", k, v, expr)
+		}
+		updated = expr
+	}
+
+	if where != "" {
+		updated = fmt.Sprintf("(case %s of true -> %s; _ -> %s end)", where, updated, iter)
+	}
+
+	c.env = origEnv
+	c.vars = savedVars
+
+	comp := fmt.Sprintf("[ %s || %s <- %s ]", updated, iter, list)
+	c.buf.WriteString(fmt.Sprintf("%s = %s", result, comp))
+
+	if c.env != nil {
+		typ, err := c.env.GetVar(u.Target)
+		if err != nil {
+			typ = types.AnyType{}
+		}
+		mutable, _ := c.env.IsMutable(u.Target)
+		c.env.SetVar(u.Target, typ, mutable)
+	}
 	return nil
 }
 
