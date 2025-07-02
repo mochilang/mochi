@@ -1,0 +1,37 @@
+open System
+
+let _run_test (name: string) (f: unit -> unit) : bool =
+  printf "%s ... " name
+  try
+    f()
+    printfn "PASS"
+    true
+  with e ->
+    printfn "FAIL (%s)" e.Message
+    false
+
+type Person =
+    {
+        name: string;
+        age: int;
+        status: string
+    }
+
+let people: Person[] = [|{ name = "Alice"; age = 17; status = "minor" }; { name = "Bob"; age = 25; status = "unknown" }; { name = "Charlie"; age = 18; status = "unknown" }; { name = "Diana"; age = 16; status = "minor" }|]
+for i = 0 to people.Length - 1 do
+    let mutable item = people.[i]
+    let name = item.name
+    let age = item.age
+    let status = item.status
+    if (age >= 18) then
+        item <- { item with status = "adult"; age = (age + 1) }
+    people.[i] <- item
+let test_update_adult_status() =
+    if not ((people = [|{ name = "Alice"; age = 17; status = "minor" }; { name = "Bob"; age = 26; status = "adult" }; { name = "Charlie"; age = 19; status = "adult" }; { name = "Diana"; age = 16; status = "minor" }|])) then failwith "expect failed"
+
+ignore (printfn "%A" ("ok"))
+let mutable failures = 0
+if not (_run_test "update adult status" test_update_adult_status) then failures <- failures + 1
+if failures > 0 then
+    printfn "\n[FAIL] %d test(s) failed." failures
+

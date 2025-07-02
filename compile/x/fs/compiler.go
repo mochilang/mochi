@@ -30,6 +30,7 @@ type Compiler struct {
 	tests       []testInfo
 	packages    map[string]bool
 	fields      map[string]bool
+	seenTypes   map[string]bool
 }
 
 type loopCtx struct {
@@ -89,7 +90,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, locals: make(map[string]bool), helpers: make(map[string]bool), packages: make(map[string]bool), fields: make(map[string]bool)}
+	return &Compiler{env: env, locals: make(map[string]bool), helpers: make(map[string]bool), packages: make(map[string]bool), fields: make(map[string]bool), seenTypes: make(map[string]bool)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -261,6 +262,9 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 
 func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 	name := sanitizeName(td.Name)
+	if c.seenTypes[name] {
+		return nil
+	}
 	if len(td.Variants) > 0 {
 		c.writeln(fmt.Sprintf("type %s =", name))
 		c.indent++
@@ -276,6 +280,7 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 			}
 		}
 		c.indent--
+		c.seenTypes[name] = true
 		return nil
 	}
 	fields := []*parser.TypeField{}
@@ -307,6 +312,7 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 		c.writeln("")
 	}
 	c.indent--
+	c.seenTypes[name] = true
 	if c.env != nil {
 		st := types.StructType{Name: td.Name, Fields: map[string]types.Type{}, Order: []string{}, Methods: map[string]types.Method{}}
 		for _, f := range fields {
@@ -634,6 +640,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return fmt.Errorf("continue not in loop")
 		}
 		c.writeln(fmt.Sprintf("raise (%s)", c.loops[len(c.loops)-1].cont))
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	default:
@@ -822,6 +830,75 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 		c.indent--
 		c.writeln(fmt.Sprintf("with BreakException n when n = %s -> ()", id))
 	}
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	name := sanitizeName(u.Target)
+	var st *types.StructType
+	if c.env != nil {
+		if typ, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := typ.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = &s
+				}
+			}
+		}
+	}
+	if st == nil {
+		return fmt.Errorf("update: unsupported element type")
+	}
+
+	c.writeln(fmt.Sprintf("for i = 0 to %s.Length - 1 do", name))
+	c.indent++
+	c.writeln(fmt.Sprintf("let mutable item = %s.[i]", name))
+
+	origEnv := c.env
+	if st != nil {
+		child := types.NewEnv(c.env)
+		for _, f := range st.Order {
+			c.writeln(fmt.Sprintf("let %s = item.%s", sanitizeName(f), sanitizeName(f)))
+			child.SetVar(f, st.Fields[f], true)
+		}
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("if %s then", cond))
+		c.indent++
+	}
+
+	parts := make([]string, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		key, ok := identOfExpr(it.Key)
+		if !ok {
+			c.env = origEnv
+			return fmt.Errorf("unsupported update key")
+		}
+		parts[i] = fmt.Sprintf("%s = %s", sanitizeName(key), val)
+	}
+	c.writeln(fmt.Sprintf("item <- { item with %s }", strings.Join(parts, "; ")))
+
+	if u.Where != nil {
+		c.indent--
+	}
+
+	if st != nil {
+		c.env = origEnv
+	}
+
+	c.writeln(fmt.Sprintf("%s.[i] <- item", name))
+	c.indent--
 	return nil
 }
 
