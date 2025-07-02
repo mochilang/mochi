@@ -24,16 +24,18 @@ type Compiler struct {
 	packages     map[string]bool
 	helpers      map[string]bool
 	lambdas      []string
+	replacements map[string]string
 }
 
 // New creates a new Pascal compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:      env,
-		tempVars: make(map[string]string),
-		packages: make(map[string]bool),
-		helpers:  make(map[string]bool),
-		lambdas:  []string{},
+		env:          env,
+		tempVars:     make(map[string]string),
+		packages:     make(map[string]bool),
+		helpers:      make(map[string]bool),
+		lambdas:      []string{},
+		replacements: make(map[string]string),
 	}
 }
 
@@ -42,13 +44,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.tempVars = make(map[string]string)
 	c.lambdas = nil
+	c.replacements = make(map[string]string)
 	name := "main"
 	if prog.Package != "" {
 		name = sanitizeName(prog.Package)
 	}
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
-	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;")
+	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;")
 	c.writeln("")
 	c.writeln("type")
 	c.indent++
@@ -292,6 +295,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Agent != nil, s.Stream != nil, s.Model != nil, s.On != nil, s.Emit != nil:
 		return fmt.Errorf("agents and streams not supported")
 	case s.ExternType != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil:
@@ -530,6 +535,8 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	// Use a fresh temp var set for each function
 	prevTemps := c.tempVars
 	c.tempVars = make(map[string]string)
+	prevRepl := c.replacements
+	c.replacements = make(map[string]string)
 
 	name := sanitizeName(fun.Name)
 	params := make([]string, len(fun.Params))
@@ -602,6 +609,7 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 	// restore temp vars for outer scope
 	c.tempVars = prevTemps
 	c.varTypes = nil
+	c.replacements = prevRepl
 	return nil
 }
 
@@ -1202,6 +1210,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		if rep, ok := c.replacements[name]; ok && len(p.Selector.Tail) == 0 {
+			return rep, nil
+		}
 		if c.packages != nil {
 			if c.packages[name] {
 				parts := make([]string, len(p.Selector.Tail))
@@ -1812,6 +1823,69 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	}
 }
 
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := sanitizeName(u.Target)
+	idx := c.newVar()
+	var elem types.Type = types.AnyType{}
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				elem = lt.Elem
+			}
+		}
+	}
+	elemType := typeString(elem)
+	item := c.newTypedVar(elemType)
+
+	c.writeln(fmt.Sprintf("for %s := 0 to High(%s) do", idx, list))
+	c.writeln("begin")
+	c.indent++
+	c.writeln(fmt.Sprintf("%s := %s[%s];", item, list, idx))
+
+	orig := c.env
+	prevRepl := c.replacements
+	c.replacements = make(map[string]string)
+	if st, ok := elem.(types.StructType); ok {
+		child := types.NewEnv(c.env)
+		for n, t := range st.Fields {
+			child.SetVar(n, t, true)
+			c.replacements[n] = fmt.Sprintf("%s.%s", item, sanitizeName(n))
+		}
+		c.env = child
+	}
+	cond := "True"
+	if u.Where != nil {
+		cs, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = orig
+			return err
+		}
+		cond = cs
+	}
+	c.writeln("if " + cond + " then")
+	c.writeln("begin")
+	c.indent++
+	for _, it := range u.Set.Items {
+		if key, ok := stringKey(it.Key); ok {
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.env = orig
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s.%s := %s;", item, sanitizeName(key), val))
+		}
+	}
+	c.indent--
+	c.writeln("end;")
+	c.env = orig
+	c.replacements = prevRepl
+
+	c.writeln(fmt.Sprintf("%s[%s] := %s;", list, idx, item))
+	c.indent--
+	c.writeln("end;")
+	return nil
+}
+
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	expr, err := c.compileExpr(e.Value)
 	if err != nil {
@@ -1824,6 +1898,8 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	prevTemps := c.tempVars
 	c.tempVars = make(map[string]string)
+	prevRepl := c.replacements
+	c.replacements = make(map[string]string)
 
 	name := "test_" + sanitizeName(t.Name)
 
@@ -1874,6 +1950,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	c.writeln("end;")
 
 	c.tempVars = prevTemps
+	c.replacements = prevRepl
 	return nil
 }
 

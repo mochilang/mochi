@@ -395,3 +395,25 @@ func selectorName(e *parser.Expr) (string, bool) {
 	}
 	return post.Target.Selector.Root, true
 }
+
+// stringKey returns the literal or selector name if e is a simple map key.
+func stringKey(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
+}
