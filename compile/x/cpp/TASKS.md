@@ -12,6 +12,10 @@ exercise the C++ backend. The generated code is compared against the
 `tests/dataset/job/compiler/cpp` directory and each program is compiled
 and executed. Runtime output is validated for the first ten queries.
 
+The TPC-DS suite has been expanded. Compilation now attempts queries
+`q1` through `q49` and golden tests cover any that successfully build
+and run under `tests/dataset/tpc-ds/compiler/cpp`.
+
 Some generated programs still rely on `auto` in template parameters which
 prevents successful compilation with `g++`. Remaining work includes
 emitting concrete types for map and vector values so that all JOB queries

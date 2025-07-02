@@ -6,6 +6,30 @@ template <typename T> inline void _hash_combine(size_t &seed, const T &v) {
   seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+template <typename Src, typename KeyFunc>
+auto _group_by(const Src &src, KeyFunc keyfn) {
+  using ElemT = typename std::decay<decltype(*std::begin(src))>::type;
+  using KeyT = decltype(keyfn(*std::begin(src)));
+  struct _Group {
+    KeyT Key;
+    vector<ElemT> Items;
+  };
+  unordered_map<KeyT, _Group> groups;
+  vector<KeyT> order;
+  for (const auto &it : src) {
+    KeyT k = keyfn(it);
+    if (!groups.count(k)) {
+      groups[k] = _Group{k, {}};
+      order.push_back(k);
+    }
+    groups[k].Items.push_back(it);
+  }
+  vector<_Group> res;
+  for (const auto &k : order)
+    res.push_back(groups[k]);
+  return res;
+}
+
 template <typename T> auto _sum(const T &v) -> decltype(v.size(), double{}) {
   double _s = 0;
   for (const auto &it : v)
@@ -139,43 +163,59 @@ template <> inline string _cast<string>(any v) {
 }
 
 int main() {
-  vector<unordered_map<string, any>> store_returns =
+  vector<unordered_map<string, any>> web_returns =
       vector<unordered_map<string, any>>{
-          unordered_map<string, any>{{string("sr_returned_date_sk"), any(1)},
-                                     {string("sr_customer_sk"), any(1)},
-                                     {string("sr_store_sk"), any(10)},
-                                     {string("sr_return_amt"), any(20.0)}},
-          unordered_map<string, any>{{string("sr_returned_date_sk"), any(1)},
-                                     {string("sr_customer_sk"), any(2)},
-                                     {string("sr_store_sk"), any(10)},
-                                     {string("sr_return_amt"), any(50.0)}}};
+          unordered_map<string, any>{
+              {string("wr_returning_customer_sk"), any(1)},
+              {string("wr_returned_date_sk"), any(1)},
+              {string("wr_return_amt"), any(100.0)},
+              {string("wr_returning_addr_sk"), any(1)}},
+          unordered_map<string, any>{
+              {string("wr_returning_customer_sk"), any(2)},
+              {string("wr_returned_date_sk"), any(1)},
+              {string("wr_return_amt"), any(30.0)},
+              {string("wr_returning_addr_sk"), any(2)}},
+          unordered_map<string, any>{
+              {string("wr_returning_customer_sk"), any(1)},
+              {string("wr_returned_date_sk"), any(1)},
+              {string("wr_return_amt"), any(50.0)},
+              {string("wr_returning_addr_sk"), any(1)}}};
   vector<unordered_map<string, int>> date_dim =
       vector<unordered_map<string, int>>{unordered_map<string, int>{
-          {string("d_date_sk"), 1}, {string("d_year"), 1998}}};
-  vector<unordered_map<string, any>> store = vector<unordered_map<string, any>>{
-      unordered_map<string, any>{{string("s_store_sk"), any(10)},
-                                 {string("s_state"), any(string("TN"))}}};
+          {string("d_date_sk"), 1}, {string("d_year"), 2000}}};
+  vector<unordered_map<string, any>> customer_address =
+      vector<unordered_map<string, any>>{
+          unordered_map<string, any>{{string("ca_address_sk"), any(1)},
+                                     {string("ca_state"), any(string("CA"))}},
+          unordered_map<string, any>{{string("ca_address_sk"), any(2)},
+                                     {string("ca_state"), any(string("CA"))}}};
   vector<unordered_map<string, any>> customer =
       vector<unordered_map<string, any>>{
           unordered_map<string, any>{
               {string("c_customer_sk"), any(1)},
-              {string("c_customer_id"), any(string("C1"))}},
+              {string("c_customer_id"), any(string("C1"))},
+              {string("c_first_name"), any(string("John"))},
+              {string("c_last_name"), any(string("Doe"))},
+              {string("c_current_addr_sk"), any(1)}},
           unordered_map<string, any>{
               {string("c_customer_sk"), any(2)},
-              {string("c_customer_id"), any(string("C2"))}}};
+              {string("c_customer_id"), any(string("C2"))},
+              {string("c_first_name"), any(string("Jane"))},
+              {string("c_last_name"), any(string("Smith"))},
+              {string("c_current_addr_sk"), any(2)}}};
   struct GroupKey0 {
-    unordered_map<string, any> customer_sk;
-    unordered_map<string, any> store_sk;
+    unordered_map<string, any> cust;
+    unordered_map<string, any> state;
   };
   inline bool operator==(const GroupKey0 &a, const GroupKey0 &b) {
-    return a.customer_sk == b.customer_sk && a.store_sk == b.store_sk;
+    return a.cust == b.cust && a.state == b.state;
   }
   namespace std {
   template <> struct hash<GroupKey0> {
     size_t operator()(const GroupKey0 &k) const noexcept {
       size_t h = 0;
-      _hash_combine(h, k.customer_sk);
-      _hash_combine(h, k.store_sk);
+      _hash_combine(h, k.cust);
+      _hash_combine(h, k.state);
       return h;
     }
   };
@@ -190,17 +230,22 @@ int main() {
     };
     unordered_map<KeyT, Group> groups;
     vector<KeyT> order;
-    for (auto &sr : store_returns) {
+    for (auto &wr : web_returns) {
       for (auto &d : date_dim) {
-        if (!(sr["sr_returned_date_sk"] == d["d_date_sk"] &&
-              d["d_year"] == 1998))
+        if (!(wr["wr_returned_date_sk"] == d["d_date_sk"]))
           continue;
-        KeyT _k = GroupKey0{sr["sr_customer_sk"], sr["sr_store_sk"]};
-        if (!groups.count(_k)) {
-          groups[_k] = Group{_k, {}};
-          order.push_back(_k);
+        for (auto &ca : customer_address) {
+          if (!(wr["wr_returning_addr_sk"] == ca["ca_address_sk"]))
+            continue;
+          if (d["d_year"] == 2000 && ca["ca_state"] == string("CA")) {
+            KeyT _k = GroupKey0{wr["wr_returning_customer_sk"], ca["ca_state"]};
+            if (!groups.count(_k)) {
+              groups[_k] = Group{_k, {}};
+              order.push_back(_k);
+            }
+            groups[_k].Items.push_back(wr);
+          }
         }
-        groups[_k].Items.push_back(sr);
       }
     }
     vector<Group *> items;
@@ -209,13 +254,31 @@ int main() {
     vector<unordered_map<string, any>> _res;
     for (auto *g : items) {
       _res.push_back(unordered_map<string, any>{
-          {string("ctr_customer_sk"), any(g.key.customer_sk)},
-          {string("ctr_store_sk"), any(g.key.store_sk)},
+          {string("ctr_customer_sk"), any(g.key.cust)},
+          {string("ctr_state"), any(g.key.state)},
           {string("ctr_total_return"), any(_sum(([&]() -> vector<any> {
              vector<any> _res;
              for (auto &x : g) {
                _res.push_back(
-                   _cast<unordered_map<string, any>>(x)["sr_return_amt"]);
+                   _cast<unordered_map<string, any>>(x)["wr_return_amt"]);
+             }
+             return _res;
+           })()))}});
+    }
+    return _res;
+  })();
+  auto avg_by_state = ([&]() -> vector<unordered_map<string, any>> {
+    auto _src = customer_total_return;
+    auto _groups = _group_by(_src, [&](auto &ctr) { return ctr["ctr_state"]; });
+    vector<unordered_map<string, any>> _res;
+    for (auto &g : _groups) {
+      _res.push_back(unordered_map<string, any>{
+          {string("state"), any(g.key)},
+          {string("avg_return"), any(_avg(([&]() -> vector<any> {
+             vector<any> _res;
+             for (auto &x : g) {
+               _res.push_back(
+                   _cast<unordered_map<string, any>>(x)["ctr_total_return"]);
              }
              return _res;
            })()))}});
@@ -224,54 +287,39 @@ int main() {
   })();
   auto result =
       ([&]() -> vector<unordered_map<string, unordered_map<string, any>>> {
-        vector<pair<unordered_map<string, unordered_map<string, any>>,
-                    unordered_map<string, unordered_map<string, any>>>>
-            _tmp;
-        for (auto &ctr1 : customer_total_return) {
-          for (auto &s : store) {
-            if (!(ctr1["ctr_store_sk"] == s["s_store_sk"]))
+        vector<unordered_map<string, unordered_map<string, any>>> _res;
+        for (auto &ctr : customer_total_return) {
+          for (auto &avg : avg_by_state) {
+            if (!(ctr["ctr_state"] == avg["state"]))
               continue;
             for (auto &c : customer) {
-              if (!(ctr1["ctr_customer_sk"] == c["c_customer_sk"]))
+              if (!(ctr["ctr_customer_sk"] == c["c_customer_sk"]))
                 continue;
-              if (ctr1["ctr_total_return"] >
-                      _avg(([&]() -> vector<unordered_map<string, any>> {
-                        vector<unordered_map<string, any>> _res;
-                        for (auto &ctr2 : customer_total_return) {
-                          if (ctr1["ctr_store_sk"] == ctr2["ctr_store_sk"]) {
-                            _res.push_back(ctr2["ctr_total_return"]);
-                          }
-                        }
-                        return _res;
-                      })()) *
-                          1.2 &&
-                  s["s_state"] == string("TN")) {
-                _tmp.push_back(
-                    {c["c_customer_id"],
-                     unordered_map<string, unordered_map<string, any>>{
-                         {string("c_customer_id"), c["c_customer_id"]}}});
+              if (ctr["ctr_total_return"] > avg["avg_return"] * 1.2) {
+                _res.push_back(
+                    unordered_map<string, unordered_map<string, any>>{
+                        {string("c_customer_id"), c["c_customer_id"]},
+                        {string("c_first_name"), c["c_first_name"]},
+                        {string("c_last_name"), c["c_last_name"]},
+                        {string("ctr_total_return"), ctr["ctr_total_return"]}});
               }
             }
           }
         }
-        std::sort(_tmp.begin(), _tmp.end(), [](const auto &a, const auto &b) {
-          return a.first < b.first;
-        });
-        vector<unordered_map<string, unordered_map<string, any>>> _res;
-        _res.reserve(_tmp.size());
-        for (auto &_it : _tmp)
-          _res.push_back(_it.second);
         return _res;
       })();
   _json(result);
-  auto test_TPCDS_Q1_result = [&]() {
+  auto test_TPCDS_Q30_simplified = [&]() {
     if (!(result ==
-          vector<unordered_map<string, string>>{unordered_map<string, string>{
-              {string("c_customer_id"), string("C2")}}})) {
+          vector<unordered_map<string, any>>{unordered_map<string, any>{
+              {string("c_customer_id"), any(string("C1"))},
+              {string("c_first_name"), any(string("John"))},
+              {string("c_last_name"), any(string("Doe"))},
+              {string("ctr_total_return"), any(150.0)}}})) {
       std::cerr << "expect failed\n";
       exit(1);
     }
   };
-  test_TPCDS_Q1_result();
+  test_TPCDS_Q30_simplified();
   return 0;
 }

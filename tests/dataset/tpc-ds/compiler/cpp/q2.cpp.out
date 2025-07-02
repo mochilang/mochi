@@ -134,38 +134,83 @@ template <> inline string _cast<string>(any v) {
 }
 
 int main() {
-  vector<any> web_sales = vector<any>{};
-  vector<any> catalog_sales = vector<any>{};
-  vector<any> date_dim = vector<any>{};
+  vector<unordered_map<string, any>> web_sales =
+      vector<unordered_map<string, any>>{
+          unordered_map<string, any>{
+              {string("ws_sold_date_sk"), any(1)},
+              {string("ws_ext_sales_price"), any(5.0)},
+              {string("ws_sold_date_name"), any(string("Sunday"))}},
+          unordered_map<string, any>{
+              {string("ws_sold_date_sk"), any(2)},
+              {string("ws_ext_sales_price"), any(5.0)},
+              {string("ws_sold_date_name"), any(string("Monday"))}},
+          unordered_map<string, any>{
+              {string("ws_sold_date_sk"), any(8)},
+              {string("ws_ext_sales_price"), any(10.0)},
+              {string("ws_sold_date_name"), any(string("Sunday"))}},
+          unordered_map<string, any>{
+              {string("ws_sold_date_sk"), any(9)},
+              {string("ws_ext_sales_price"), any(10.0)},
+              {string("ws_sold_date_name"), any(string("Monday"))}}};
+  vector<unordered_map<string, any>> catalog_sales =
+      vector<unordered_map<string, any>>{
+          unordered_map<string, any>{
+              {string("cs_sold_date_sk"), any(1)},
+              {string("cs_ext_sales_price"), any(5.0)},
+              {string("cs_sold_date_name"), any(string("Sunday"))}},
+          unordered_map<string, any>{
+              {string("cs_sold_date_sk"), any(2)},
+              {string("cs_ext_sales_price"), any(5.0)},
+              {string("cs_sold_date_name"), any(string("Monday"))}},
+          unordered_map<string, any>{
+              {string("cs_sold_date_sk"), any(8)},
+              {string("cs_ext_sales_price"), any(10.0)},
+              {string("cs_sold_date_name"), any(string("Sunday"))}},
+          unordered_map<string, any>{
+              {string("cs_sold_date_sk"), any(9)},
+              {string("cs_ext_sales_price"), any(10.0)},
+              {string("cs_sold_date_name"), any(string("Monday"))}}};
+  vector<unordered_map<string, any>> date_dim = vector<
+      unordered_map<string, any>>{
+      unordered_map<string, any>{{string("d_date_sk"), any(1)},
+                                 {string("d_week_seq"), any(1)},
+                                 {string("d_day_name"), any(string("Sunday"))},
+                                 {string("d_year"), any(1998)}},
+      unordered_map<string, any>{{string("d_date_sk"), any(2)},
+                                 {string("d_week_seq"), any(1)},
+                                 {string("d_day_name"), any(string("Monday"))},
+                                 {string("d_year"), any(1998)}},
+      unordered_map<string, any>{{string("d_date_sk"), any(8)},
+                                 {string("d_week_seq"), any(54)},
+                                 {string("d_day_name"), any(string("Sunday"))},
+                                 {string("d_year"), any(1999)}},
+      unordered_map<string, any>{{string("d_date_sk"), any(9)},
+                                 {string("d_week_seq"), any(54)},
+                                 {string("d_day_name"), any(string("Monday"))},
+                                 {string("d_year"), any(1999)}}};
   auto wscs = _union_all(
-      (([&]() -> vector<unordered_map<string, any>> {
-        vector<unordered_map<string, any>> _res;
+      (([&]() -> vector<unordered_map<string, unordered_map<string, any>>> {
+        vector<unordered_map<string, unordered_map<string, any>>> _res;
         for (auto &ws : web_sales) {
-          _res.push_back(unordered_map<string, any>{
-              {string("sold_date_sk"),
-               _cast<unordered_map<string, any>>(ws)["ws_sold_date_sk"]},
-              {string("sales_price"),
-               _cast<unordered_map<string, any>>(ws)["ws_ext_sales_price"]},
-              {string("day"),
-               _cast<unordered_map<string, any>>(ws)["ws_sold_date_name"]}});
+          _res.push_back(unordered_map<string, unordered_map<string, any>>{
+              {string("sold_date_sk"), ws["ws_sold_date_sk"]},
+              {string("sales_price"), ws["ws_ext_sales_price"]},
+              {string("day"), ws["ws_sold_date_name"]}});
         }
         return _res;
       })()),
-      (([&]() -> vector<unordered_map<string, any>> {
-        vector<unordered_map<string, any>> _res;
+      (([&]() -> vector<unordered_map<string, unordered_map<string, any>>> {
+        vector<unordered_map<string, unordered_map<string, any>>> _res;
         for (auto &cs : catalog_sales) {
-          _res.push_back(unordered_map<string, any>{
-              {string("sold_date_sk"),
-               _cast<unordered_map<string, any>>(cs)["cs_sold_date_sk"]},
-              {string("sales_price"),
-               _cast<unordered_map<string, any>>(cs)["cs_ext_sales_price"]},
-              {string("day"),
-               _cast<unordered_map<string, any>>(cs)["cs_sold_date_name"]}});
+          _res.push_back(unordered_map<string, unordered_map<string, any>>{
+              {string("sold_date_sk"), cs["cs_sold_date_sk"]},
+              {string("sales_price"), cs["cs_ext_sales_price"]},
+              {string("day"), cs["cs_sold_date_name"]}});
         }
         return _res;
       })()));
   struct GroupKey0 {
-    any week_seq;
+    unordered_map<string, any> week_seq;
   };
   inline bool operator==(const GroupKey0 &a, const GroupKey0 &b) {
     return a.week_seq == b.week_seq;
@@ -191,10 +236,9 @@ int main() {
     vector<KeyT> order;
     for (auto &w : wscs) {
       for (auto &d : date_dim) {
-        if (!(w["sold_date_sk"] ==
-              _cast<unordered_map<string, any>>(d)["d_date_sk"]))
+        if (!(w["sold_date_sk"] == d["d_date_sk"]))
           continue;
-        KeyT _k = GroupKey0{_cast<unordered_map<string, any>>(d)["d_week_seq"]};
+        KeyT _k = GroupKey0{d["d_week_seq"]};
         if (!groups.count(_k)) {
           groups[_k] = Group{_k, {}};
           order.push_back(_k);
@@ -289,14 +333,50 @@ int main() {
     }
     return _res;
   })();
-  vector<any> result = vector<any>{};
+  auto year1 = ([&]() -> vector<unordered_map<string, any>> {
+    vector<unordered_map<string, any>> _res;
+    for (auto &w : wswscs) {
+      if (w["d_week_seq"] == 1) {
+        _res.push_back(w);
+      }
+    }
+    return _res;
+  })();
+  auto year2 = ([&]() -> vector<unordered_map<string, any>> {
+    vector<unordered_map<string, any>> _res;
+    for (auto &w : wswscs) {
+      if (w["d_week_seq"] == 54) {
+        _res.push_back(w);
+      }
+    }
+    return _res;
+  })();
+  auto result =
+      ([&]() -> vector<unordered_map<string, unordered_map<string, any>>> {
+        vector<unordered_map<string, unordered_map<string, any>>> _res;
+        for (auto &y : year1) {
+          for (auto &z : year2) {
+            if (!(y["d_week_seq"] == z["d_week_seq"] - 53))
+              continue;
+            _res.push_back(unordered_map<string, unordered_map<string, any>>{
+                {string("d_week_seq1"), y["d_week_seq"]},
+                {string("sun_ratio"), y["sun_sales"] / z["sun_sales"]},
+                {string("mon_ratio"), y["mon_sales"] / z["mon_sales"]}});
+          }
+        }
+        return _res;
+      })();
   _json(result);
-  auto test_TPCDS_Q2_empty = [&]() {
-    if (!(result.size() == 0)) {
+  auto test_TPCDS_Q2_result = [&]() {
+    if (!(result ==
+          vector<unordered_map<string, any>>{
+              unordered_map<string, any>{{string("d_week_seq1"), any(1)},
+                                         {string("sun_ratio"), any(0.5)},
+                                         {string("mon_ratio"), any(0.5)}}})) {
       std::cerr << "expect failed\n";
       exit(1);
     }
   };
-  test_TPCDS_Q2_empty();
+  test_TPCDS_Q2_result();
   return 0;
 }

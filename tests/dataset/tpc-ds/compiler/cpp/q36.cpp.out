@@ -127,52 +127,62 @@ template <> inline string _cast<string>(any v) {
 }
 
 int main() {
-  vector<unordered_map<string, int>> date_dim =
-      vector<unordered_map<string, int>>{
-          unordered_map<string, int>{{string("d_date_sk"), 1},
-                                     {string("d_year"), 1998},
-                                     {string("d_moy"), 12}}};
   vector<unordered_map<string, any>> store_sales =
       vector<unordered_map<string, any>>{
-          unordered_map<string, any>{{string("ss_sold_date_sk"), any(1)},
-                                     {string("ss_item_sk"), any(1)},
-                                     {string("ss_ext_sales_price"), any(10.0)}},
-          unordered_map<string, any>{
-              {string("ss_sold_date_sk"), any(1)},
-              {string("ss_item_sk"), any(2)},
-              {string("ss_ext_sales_price"), any(20.0)}}};
+          unordered_map<string, any>{{string("ss_item_sk"), any(1)},
+                                     {string("ss_store_sk"), any(1)},
+                                     {string("ss_sold_date_sk"), any(1)},
+                                     {string("ss_ext_sales_price"), any(100.0)},
+                                     {string("ss_net_profit"), any(20.0)}},
+          unordered_map<string, any>{{string("ss_item_sk"), any(2)},
+                                     {string("ss_store_sk"), any(1)},
+                                     {string("ss_sold_date_sk"), any(1)},
+                                     {string("ss_ext_sales_price"), any(200.0)},
+                                     {string("ss_net_profit"), any(50.0)}},
+          unordered_map<string, any>{{string("ss_item_sk"), any(3)},
+                                     {string("ss_store_sk"), any(2)},
+                                     {string("ss_sold_date_sk"), any(1)},
+                                     {string("ss_ext_sales_price"), any(150.0)},
+                                     {string("ss_net_profit"), any(30.0)}}};
   vector<unordered_map<string, any>> item = vector<unordered_map<string, any>>{
       unordered_map<string, any>{{string("i_item_sk"), any(1)},
-                                 {string("i_manufact_id"), any(100)},
-                                 {string("i_brand_id"), any(1)},
-                                 {string("i_brand"), any(string("Brand1"))}},
+                                 {string("i_category"), any(string("Books"))},
+                                 {string("i_class"), any(string("C1"))}},
       unordered_map<string, any>{{string("i_item_sk"), any(2)},
-                                 {string("i_manufact_id"), any(100)},
-                                 {string("i_brand_id"), any(2)},
-                                 {string("i_brand"), any(string("Brand2"))}}};
+                                 {string("i_category"), any(string("Books"))},
+                                 {string("i_class"), any(string("C2"))}},
+      unordered_map<string, any>{
+          {string("i_item_sk"), any(3)},
+          {string("i_category"), any(string("Electronics"))},
+          {string("i_class"), any(string("C3"))}}};
+  vector<unordered_map<string, any>> store = vector<unordered_map<string, any>>{
+      unordered_map<string, any>{{string("s_store_sk"), any(1)},
+                                 {string("s_state"), any(string("A"))}},
+      unordered_map<string, any>{{string("s_store_sk"), any(2)},
+                                 {string("s_state"), any(string("B"))}}};
+  vector<unordered_map<string, int>> date_dim =
+      vector<unordered_map<string, int>>{unordered_map<string, int>{
+          {string("d_date_sk"), 1}, {string("d_year"), 2000}}};
   struct GroupKey0 {
-    unordered_map<string, int> d_year;
-    unordered_map<string, any> brand_id;
-    unordered_map<string, any> brand;
+    unordered_map<string, any> category;
+    unordered_map<string, any> class;
   };
   inline bool operator==(const GroupKey0 &a, const GroupKey0 &b) {
-    return a.d_year == b.d_year && a.brand_id == b.brand_id &&
-           a.brand == b.brand;
+    return a.category == b.category && a.class == b.class;
   }
   namespace std {
   template <> struct hash<GroupKey0> {
     size_t operator()(const GroupKey0 &k) const noexcept {
       size_t h = 0;
-      _hash_combine(h, k.d_year);
-      _hash_combine(h, k.brand_id);
-      _hash_combine(h, k.brand);
+      _hash_combine(h, k.category);
+      _hash_combine(h, k.class);
       return h;
     }
   };
   } // namespace std
 
   auto result = ([&]() -> vector<unordered_map<string, any>> {
-    using ElemT = unordered_map<string, int>;
+    using ElemT = unordered_map<string, any>;
     using KeyT = GroupKey0;
     struct Group {
       KeyT Key;
@@ -180,20 +190,25 @@ int main() {
     };
     unordered_map<KeyT, Group> groups;
     vector<KeyT> order;
-    for (auto &dt : date_dim) {
-      for (auto &ss : store_sales) {
-        if (!(dt["d_date_sk"] == ss["ss_sold_date_sk"]))
+    for (auto &ss : store_sales) {
+      for (auto &d : date_dim) {
+        if (!(ss["ss_sold_date_sk"] == d["d_date_sk"]))
           continue;
         for (auto &i : item) {
           if (!(ss["ss_item_sk"] == i["i_item_sk"]))
             continue;
-          if (i["i_manufact_id"] == 100 && dt["d_moy"] == 12) {
-            KeyT _k = GroupKey0{dt["d_year"], i["i_brand_id"], i["i_brand"]};
-            if (!groups.count(_k)) {
-              groups[_k] = Group{_k, {}};
-              order.push_back(_k);
+          for (auto &s : store) {
+            if (!(ss["ss_store_sk"] == s["s_store_sk"]))
+              continue;
+            if (d["d_year"] == 2000 &&
+                (s["s_state"] == string("A") || s["s_state"] == string("B"))) {
+              KeyT _k = GroupKey0{i["i_category"], i["i_class"]};
+              if (!groups.count(_k)) {
+                groups[_k] = Group{_k, {}};
+                order.push_back(_k);
+              }
+              groups[_k].Items.push_back(ss);
             }
-            groups[_k].Items.push_back(dt);
           }
         }
       }
@@ -203,17 +218,7 @@ int main() {
       items.push_back(&groups[_k]);
     vector<pair<vector<Group *>, Group *>> _tmp;
     for (auto *g : items) {
-      _tmp.push_back(
-          {vector<Group *>{g.key.d_year, -_sum(([&]() -> vector<any> {
-                             vector<any> _res;
-                             for (auto &x : g) {
-                               _res.push_back(_cast<unordered_map<string, any>>(
-                                   x)["ss_ext_sales_price"]);
-                             }
-                             return _res;
-                           })()),
-                           g.key.brand_id},
-           g});
+      _tmp.push_back({vector<Group *>{g.key.category, g.key.class}, g});
     }
     std::sort(_tmp.begin(), _tmp.end(),
               [](const auto &a, const auto &b) { return a.first < b.first; });
@@ -222,37 +227,47 @@ int main() {
     vector<unordered_map<string, any>> _res;
     for (auto *g : items) {
       _res.push_back(unordered_map<string, any>{
-          {string("d_year"), any(g.key.d_year)},
-          {string("brand_id"), any(g.key.brand_id)},
-          {string("brand"), any(g.key.brand)},
-          {string("sum_agg"), any(_sum(([&]() -> vector<any> {
-             vector<any> _res;
-             for (auto &x : g) {
-               _res.push_back(
-                   _cast<unordered_map<string, any>>(x)["ss_ext_sales_price"]);
-             }
-             return _res;
-           })()))}});
+          {string("i_category"), any(g.key.category)},
+          {string("i_class"), any(g.key.class)},
+          {string("gross_margin"),
+           any(_sum(([&]() -> vector<any> {
+                 vector<any> _res;
+                 for (auto &x : g) {
+                   _res.push_back(
+                       _cast<unordered_map<string, any>>(x)["ss_net_profit"]);
+                 }
+                 return _res;
+               })()) /
+               _sum(([&]() -> vector<any> {
+                 vector<any> _res;
+                 for (auto &x : g) {
+                   _res.push_back(_cast<unordered_map<string, any>>(
+                       x)["ss_ext_sales_price"]);
+                 }
+                 return _res;
+               })()))}});
     }
     return _res;
   })();
   _json(result);
-  auto test_TPCDS_Q3_result = [&]() {
+  auto test_TPCDS_Q36_simplified = [&]() {
     if (!(result == vector<unordered_map<string, any>>{
                         unordered_map<string, any>{
-                            {string("d_year"), any(1998)},
-                            {string("brand_id"), any(1)},
-                            {string("brand"), any(string("Brand1"))},
-                            {string("sum_agg"), any(10.0)}},
+                            {string("i_category"), any(string("Books"))},
+                            {string("i_class"), any(string("C1"))},
+                            {string("gross_margin"), any(0.2)}},
                         unordered_map<string, any>{
-                            {string("d_year"), any(1998)},
-                            {string("brand_id"), any(2)},
-                            {string("brand"), any(string("Brand2"))},
-                            {string("sum_agg"), any(20.0)}}})) {
+                            {string("i_category"), any(string("Books"))},
+                            {string("i_class"), any(string("C2"))},
+                            {string("gross_margin"), any(0.25)}},
+                        unordered_map<string, any>{
+                            {string("i_category"), any(string("Electronics"))},
+                            {string("i_class"), any(string("C3"))},
+                            {string("gross_margin"), any(0.2)}}})) {
       std::cerr << "expect failed\n";
       exit(1);
     }
   };
-  test_TPCDS_Q3_result();
+  test_TPCDS_Q36_simplified();
   return 0;
 }
