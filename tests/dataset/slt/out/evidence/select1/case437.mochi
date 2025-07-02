@@ -225,17 +225,18 @@ let t1 = [
 
 /* SELECT b, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, d FROM t1 ORDER BY 3,2,1 */
 let result = from row in t1
-  order by [row.d, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.b]
-  select [row.b, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.d]
+  order by [row.d, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.b]
+  select [row.b, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.d]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case437" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [100, 444, 101, 105, 333, 108, 112, 222, 114, 118, 222, 116, 124, 222, 122, 129, 222, 128, 130, 333, 133, 139, 222, 136, 143, 222, 140, 145, 444, 148, 151, 333, 154, 158, 333, 156, 160, 444, 164, 167, 333, 169, 170, 444, 171, 175, 444, 178, 181, 333, 183, 186, 333, 185, 194, 222, 190, 198, 333, 196, 200, 333, 203, 206, 222, 207, 211, 333, 212, 218, 222, 217, 223, 222, 222, 228, 333, 226, 232, 333, 233, 236, 444, 238, 240, 444, 241, 249, 111, 248]
 }
+

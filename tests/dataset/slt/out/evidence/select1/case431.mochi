@@ -225,21 +225,22 @@ let t1 = [
 
 /* SELECT a+b*2+c*3+d*4, abs(b-c), (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 ORDER BY 2,4,3,1 */
 let result = from row in t1
-  order by [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), count(from x in t1
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), count(from x in t1
   where x.b < row.b
-  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4]
-  select [row.a + row.b * 2 + row.c * 3 + row.d * 4, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), count(from x in t1
+  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), count(from x in t1
   where x.b < row.b
-  select x), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) })]
+  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case431" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1130, 1, 2, 222, 1172, 1, 3, 222, 1226, 1, 4, 222, 1918, 1, 18, 222, 2226, 1, 24, 222, 1067, 1, 1, 333, 1521, 1, 10, 333, 1676, 1, 13, 333, 1861, 1, 17, 333, 2323, 1, 26, 333, 1622, 1, 12, 444, 1769, 1, 15, 444, 2368, 1, 27, 444, 2476, 2, 29, 111, 1371, 2, 7, 222, 1411, 2, 8, 222, 2069, 2, 21, 222, 2019, 2, 20, 333, 1014, 2, 0, 444, 1472, 2, 9, 444, 1714, 2, 14, 444, 2165, 3, 23, 222, 1564, 3, 11, 333, 1828, 3, 16, 333, 1964, 3, 19, 333, 2125, 3, 22, 333, 2264, 3, 25, 333, 1272, 4, 5, 222, 1325, 4, 6, 333, 2419, 4, 28, 444]
 }
+

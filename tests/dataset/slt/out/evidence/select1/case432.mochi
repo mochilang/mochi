@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT abs(a) FROM t1 WHERE (e>c OR e<d) OR (c<=d-2 OR c>=d+2) ORDER BY 1 */
 let result = from row in t1
-  where (((row.e > row.c || row.e < row.d)) || ((row.c <= row.d - 2 || row.c >= row.d + 2)))
+  where (((row.e > row.c || row.e < row.d)) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
   order by (if row.a < 0 { -(row.a) } else { row.a })
   select (if row.a < 0 { -(row.a) } else { row.a })
 for x in result {

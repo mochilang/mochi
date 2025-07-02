@@ -226,17 +226,18 @@ let t1 = [
 /* SELECT a+b*2+c*3+d*4+e*5, a-b, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, c, e FROM t1 WHERE d>e ORDER BY 2,5,1,4,3 */
 let result = from row in t1
   where row.d > row.e
-  order by [row.a - row.b, row.e, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.c, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) })]
-  select [row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a - row.b, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.c, row.e]
+  order by [(row.a - row.b), row.e, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.c, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+  select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a - row.b), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.c, row.e]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case484" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [3706, -4, 111, 247, 246, 1826, -3, 222, 123, 120, 3331, -3, 222, 224, 221, 1902, -2, 222, 125, 126, 1680, -1, 222, 113, 110, 2046, -1, 222, 137, 135, 1985, 1, 333, 134, 132, 2501, 1, 333, 166, 165, 2728, 1, 333, 184, 180, 2281, 2, 333, 150, 152, 3175, 2, 333, 214, 210, 3473, 2, 333, 231, 230, 2432, 3, 444, 161, 162, 3553, 3, 444, 235, 237, 2202, 4, 444, 147, 146, 2654, 4, 444, 176, 177]
 }
+
