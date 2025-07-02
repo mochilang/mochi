@@ -7074,28 +7074,26 @@ func clampSlice(n, start, end int) (int, int) {
 }
 
 func toFloat(v Value) float64 {
-	switch v.Tag {
-	case ValueFloat:
-		return v.Float
-	case ValueBool:
-		if v.Bool {
-			return 1
-		}
-		return 0
-	case ValueStr:
-		if f, err := strconv.ParseFloat(v.Str, 64); err == nil {
-			return f
-		}
-	}
-	if v.Tag == ValueStr {
-		if f, err := strconv.ParseFloat(v.Str, 64); err == nil {
-			return f
-		}
-	}
-	if v.Tag == ValueNull {
-		return 0
-	}
-	return float64(v.Int)
+        switch v.Tag {
+        case ValueFloat:
+                return v.Float
+        case ValueInt:
+                return float64(v.Int)
+        case ValueBool:
+                if v.Bool {
+                        return 1
+                }
+                return 0
+        case ValueStr:
+                if f, err := strconv.ParseFloat(v.Str, 64); err == nil {
+                        return f
+                }
+                return 0
+        case ValueNull:
+                return 0
+        default:
+                return 0
+        }
 }
 
 func toInt(v Value) int {
