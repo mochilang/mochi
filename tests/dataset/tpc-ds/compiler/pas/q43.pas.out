@@ -1,0 +1,315 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+type
+  generic TArray<T> = array of T;
+
+generic _Group<T> = record
+  Key: Variant;
+  Items: specialize TArray<T>;
+end;
+
+generic function _group_by<T>(src: specialize TArray<T>; keyfn: function(it: T): Variant): specialize TArray<specialize _Group<T>>;
+var i,j,idx: Integer; key: Variant; ks: string;
+begin
+  SetLength(Result, 0);
+  for i := 0 to High(src) do
+  begin
+    key := keyfn(src[i]);
+    ks := VarToStr(key);
+    idx := -1;
+    for j := 0 to High(Result) do
+      if VarToStr(Result[j].Key) = ks then begin idx := j; Break; end;
+    if idx = -1 then
+    begin
+      idx := Length(Result);
+      SetLength(Result, idx + 1);
+      Result[idx].Key := key;
+      SetLength(Result[idx].Items, 0);
+    end;
+    SetLength(Result[idx].Items, Length(Result[idx].Items)+1);
+    Result[idx].Items[High(Result[idx].Items)] := src[i];
+  end;
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic function _sumList<T>(arr: specialize TArray<T>): double;
+var i: integer; s: double;
+begin
+  s := 0;
+  for i := 0 to High(arr) do
+    s := s + arr[i];
+  Result := s;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TFPGMap<Variant, Variant>;
+  _tmp11: specialize TFPGMap<Variant, Variant>;
+  _tmp12: specialize TFPGMap<Variant, Variant>;
+  _tmp13: specialize TFPGMap<Variant, Variant>;
+  _tmp14: specialize TFPGMap<Variant, Variant>;
+  _tmp15: specialize TFPGMap<Variant, Variant>;
+  _tmp16: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp17: specialize TFPGMap<Variant, Variant>;
+  _tmp18: specialize TFPGMap<Variant, Variant>;
+  _tmp19: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp20: specialize TArray<Variant>;
+  _tmp21: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp22: specialize TArray<Variant>;
+  _tmp23: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp24: specialize TArray<Variant>;
+  _tmp25: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp26: specialize TArray<Variant>;
+  _tmp27: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp28: specialize TArray<Variant>;
+  _tmp29: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp30: specialize TArray<Variant>;
+  _tmp31: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp32: specialize TArray<Variant>;
+  _tmp33: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp34: specialize TArray<specialize _Group<specialize TFPGMap<string, Variant>>>;
+  _tmp35: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp7: specialize TFPGMap<Variant, Variant>;
+  _tmp8: specialize TFPGMap<Variant, Variant>;
+  _tmp9: specialize TFPGMap<Variant, Variant>;
+  base: specialize TArray<specialize TFPGMap<string, Variant>>;
+  d: specialize TFPGMap<string, Variant>;
+  date_dim: specialize TArray<specialize TFPGMap<string, Variant>>;
+  gmt: integer;
+  r: specialize TFPGMap<string, Variant>;
+  records: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+  store: specialize TArray<specialize TFPGMap<string, Variant>>;
+  store_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  x: integer;
+  year: integer;
+
+procedure test_TPCDS_Q43_simplified;
+var
+  _tmp36: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp36 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp36.AddOrSetData('s_store_name', 'Main');
+  _tmp36.AddOrSetData('s_store_id', 'S1');
+  _tmp36.AddOrSetData('sun_sales', 10);
+  _tmp36.AddOrSetData('mon_sales', 20);
+  _tmp36.AddOrSetData('tue_sales', 30);
+  _tmp36.AddOrSetData('wed_sales', 40);
+  _tmp36.AddOrSetData('thu_sales', 50);
+  _tmp36.AddOrSetData('fri_sales', 60);
+  _tmp36.AddOrSetData('sat_sales', 70);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp36]))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('date_sk', 1);
+  _tmp0.AddOrSetData('d_day_name', 'Sunday');
+  _tmp0.AddOrSetData('d_year', 2020);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('date_sk', 2);
+  _tmp1.AddOrSetData('d_day_name', 'Monday');
+  _tmp1.AddOrSetData('d_year', 2020);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('date_sk', 3);
+  _tmp2.AddOrSetData('d_day_name', 'Tuesday');
+  _tmp2.AddOrSetData('d_year', 2020);
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('date_sk', 4);
+  _tmp3.AddOrSetData('d_day_name', 'Wednesday');
+  _tmp3.AddOrSetData('d_year', 2020);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('date_sk', 5);
+  _tmp4.AddOrSetData('d_day_name', 'Thursday');
+  _tmp4.AddOrSetData('d_year', 2020);
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('date_sk', 6);
+  _tmp5.AddOrSetData('d_day_name', 'Friday');
+  _tmp5.AddOrSetData('d_year', 2020);
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('date_sk', 7);
+  _tmp6.AddOrSetData('d_day_name', 'Saturday');
+  _tmp6.AddOrSetData('d_year', 2020);
+  date_dim := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2, _tmp3, _tmp4, _tmp5, _tmp6]);
+  _tmp7 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp7.AddOrSetData('store_sk', 1);
+  _tmp7.AddOrSetData('store_id', 'S1');
+  _tmp7.AddOrSetData('store_name', 'Main');
+  _tmp7.AddOrSetData('gmt_offset', 0);
+  store := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp7]);
+  _tmp8 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp8.AddOrSetData('sold_date_sk', 1);
+  _tmp8.AddOrSetData('store_sk', 1);
+  _tmp8.AddOrSetData('sales_price', 10);
+  _tmp9 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp9.AddOrSetData('sold_date_sk', 2);
+  _tmp9.AddOrSetData('store_sk', 1);
+  _tmp9.AddOrSetData('sales_price', 20);
+  _tmp10 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp10.AddOrSetData('sold_date_sk', 3);
+  _tmp10.AddOrSetData('store_sk', 1);
+  _tmp10.AddOrSetData('sales_price', 30);
+  _tmp11 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp11.AddOrSetData('sold_date_sk', 4);
+  _tmp11.AddOrSetData('store_sk', 1);
+  _tmp11.AddOrSetData('sales_price', 40);
+  _tmp12 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp12.AddOrSetData('sold_date_sk', 5);
+  _tmp12.AddOrSetData('store_sk', 1);
+  _tmp12.AddOrSetData('sales_price', 50);
+  _tmp13 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp13.AddOrSetData('sold_date_sk', 6);
+  _tmp13.AddOrSetData('store_sk', 1);
+  _tmp13.AddOrSetData('sales_price', 60);
+  _tmp14 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp14.AddOrSetData('sold_date_sk', 7);
+  _tmp14.AddOrSetData('store_sk', 1);
+  _tmp14.AddOrSetData('sales_price', 70);
+  store_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp8, _tmp9, _tmp10, _tmp11, _tmp12, _tmp13, _tmp14]);
+  year := 2020;
+  gmt := 0;
+  _tmp15 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp15.AddOrSetData('d_day_name', d.d_day_name);
+  _tmp15.AddOrSetData('s_store_name', s.store_name);
+  _tmp15.AddOrSetData('s_store_id', s.store_id);
+  _tmp15.AddOrSetData('price', ss.sales_price);
+  SetLength(_tmp16, 0);
+  for d in date_dim do
+  begin
+    for ss in store_sales do
+    begin
+      if not ((ss.sold_date_sk = d.date_sk)) then continue;
+      for s in store do
+      begin
+        if not ((ss.store_sk = s.store_sk)) then continue;
+        if not (((s.gmt_offset = gmt) and (d.d_year = year))) then continue;
+        _tmp16 := Concat(_tmp16, [_tmp15]);
+      end;
+    end;
+  end;
+  records := _tmp16;
+  _tmp17 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp17.AddOrSetData('name', r.s_store_name);
+  _tmp17.AddOrSetData('id', r.s_store_id);
+  _tmp18 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp18.AddOrSetData('s_store_name', g.key.name);
+  _tmp18.AddOrSetData('s_store_id', g.key.id);
+  if (x.d_day_name = 'Sunday') then
+  begin
+    _tmp19 := x.price;
+  end else
+  begin
+    _tmp19 := 0;
+  end;
+  SetLength(_tmp20, 0);
+  for x in g do
+  begin
+    _tmp20 := Concat(_tmp20, [_tmp19]);
+  end;
+  _tmp18.AddOrSetData('sun_sales', specialize _sumList<Variant>(_tmp20));
+  if (x.d_day_name = 'Monday') then
+  begin
+    _tmp21 := x.price;
+  end else
+  begin
+    _tmp21 := 0;
+  end;
+  SetLength(_tmp22, 0);
+  for x in g do
+  begin
+    _tmp22 := Concat(_tmp22, [_tmp21]);
+  end;
+  _tmp18.AddOrSetData('mon_sales', specialize _sumList<Variant>(_tmp22));
+  if (x.d_day_name = 'Tuesday') then
+  begin
+    _tmp23 := x.price;
+  end else
+  begin
+    _tmp23 := 0;
+  end;
+  SetLength(_tmp24, 0);
+  for x in g do
+  begin
+    _tmp24 := Concat(_tmp24, [_tmp23]);
+  end;
+  _tmp18.AddOrSetData('tue_sales', specialize _sumList<Variant>(_tmp24));
+  if (x.d_day_name = 'Wednesday') then
+  begin
+    _tmp25 := x.price;
+  end else
+  begin
+    _tmp25 := 0;
+  end;
+  SetLength(_tmp26, 0);
+  for x in g do
+  begin
+    _tmp26 := Concat(_tmp26, [_tmp25]);
+  end;
+  _tmp18.AddOrSetData('wed_sales', specialize _sumList<Variant>(_tmp26));
+  if (x.d_day_name = 'Thursday') then
+  begin
+    _tmp27 := x.price;
+  end else
+  begin
+    _tmp27 := 0;
+  end;
+  SetLength(_tmp28, 0);
+  for x in g do
+  begin
+    _tmp28 := Concat(_tmp28, [_tmp27]);
+  end;
+  _tmp18.AddOrSetData('thu_sales', specialize _sumList<Variant>(_tmp28));
+  if (x.d_day_name = 'Friday') then
+  begin
+    _tmp29 := x.price;
+  end else
+  begin
+    _tmp29 := 0;
+  end;
+  SetLength(_tmp30, 0);
+  for x in g do
+  begin
+    _tmp30 := Concat(_tmp30, [_tmp29]);
+  end;
+  _tmp18.AddOrSetData('fri_sales', specialize _sumList<Variant>(_tmp30));
+  if (x.d_day_name = 'Saturday') then
+  begin
+    _tmp31 := x.price;
+  end else
+  begin
+    _tmp31 := 0;
+  end;
+  SetLength(_tmp32, 0);
+  for x in g do
+  begin
+    _tmp32 := Concat(_tmp32, [_tmp31]);
+  end;
+  _tmp18.AddOrSetData('sat_sales', specialize _sumList<Variant>(_tmp32));
+  SetLength(_tmp33, 0);
+  for r in records do
+  begin
+    _tmp33 := Concat(_tmp33, [r]);
+  end;
+  _tmp34 := specialize _group_by<specialize TFPGMap<string, Variant>>(_tmp33, function(r: specialize TFPGMap<string, Variant>): Variant begin Result := _tmp17 end);
+  SetLength(_tmp35, 0);
+  for g in _tmp34 do
+  begin
+    _tmp35 := Concat(_tmp35, [_tmp18]);
+  end;
+  base := _tmp35;
+  _result := base;
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(_result);
+  test_TPCDS_Q43_simplified;
+end.

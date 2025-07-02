@@ -1,0 +1,93 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+type
+  generic TArray<T> = array of T;
+
+generic function _countList<T>(arr: specialize TArray<T>): integer;
+begin
+  Result := Length(arr);
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+var i,j: integer; tmp: T; k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+  for j := i + 1 to High(arr) do
+    if keys[i] > keys[j] then
+    begin
+      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
+      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
+    end;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp4: specialize TArray<Variant>;
+  _tmp5: specialize TArray<Variant>;
+  i1: specialize TFPGMap<string, Variant>;
+  i2: specialize TFPGMap<string, Variant>;
+  item: specialize TArray<specialize TFPGMap<string, Variant>>;
+  lower: integer;
+  _result: specialize TArray<Variant>;
+
+procedure test_TPCDS_Q41_simplified;
+begin
+  if not ((_result = specialize TArray<string>(['Blue Shirt', 'Red Dress']))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('product_name', 'Blue Shirt');
+  _tmp0.AddOrSetData('manufact_id', 100);
+  _tmp0.AddOrSetData('manufact', 1);
+  _tmp0.AddOrSetData('category', 'Women');
+  _tmp0.AddOrSetData('color', 'blue');
+  _tmp0.AddOrSetData('units', 'pack');
+  _tmp0.AddOrSetData('size', 'M');
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('product_name', 'Red Dress');
+  _tmp1.AddOrSetData('manufact_id', 120);
+  _tmp1.AddOrSetData('manufact', 1);
+  _tmp1.AddOrSetData('category', 'Women');
+  _tmp1.AddOrSetData('color', 'red');
+  _tmp1.AddOrSetData('units', 'pack');
+  _tmp1.AddOrSetData('size', 'M');
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('product_name', 'Pants');
+  _tmp2.AddOrSetData('manufact_id', 200);
+  _tmp2.AddOrSetData('manufact', 2);
+  _tmp2.AddOrSetData('category', 'Men');
+  _tmp2.AddOrSetData('color', 'black');
+  _tmp2.AddOrSetData('units', 'pair');
+  _tmp2.AddOrSetData('size', 'L');
+  item := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2]);
+  lower := 100;
+  SetLength(_tmp3, 0);
+  for i2 in item do
+  begin
+    if not (((i2.manufact = i1.manufact) and (i2.category = i1.category))) then continue;
+    _tmp3 := Concat(_tmp3, [i2]);
+  end;
+  SetLength(_tmp4, 0);
+  SetLength(_tmp5, 0);
+  for i1 in item do
+  begin
+    if not ((((i1.manufact_id >= lower) and (i1.manufact_id <= lower + 40)) and (specialize _countList<specialize TFPGMap<string, Variant>>(_tmp3) > 1))) then continue;
+    _tmp4 := Concat(_tmp4, [i1.product_name]);
+    _tmp5 := Concat(_tmp5, [i1.product_name]);
+  end;
+  specialize _sortBy<Variant>(_tmp4, _tmp5);
+  _result := _tmp4;
+  specialize _json<specialize TArray<Variant>>(_result);
+  test_TPCDS_Q41_simplified;
+end.

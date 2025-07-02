@@ -1307,6 +1307,33 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("trim expects 1 argument")
 			}
 			return fmt.Sprintf("Trim(%s)", args[0]), nil
+		case "concat":
+			if len(args) < 2 {
+				return "", fmt.Errorf("concat expects at least 2 args")
+			}
+			expr := fmt.Sprintf("Concat(%s, %s)", args[0], args[1])
+			for i := 2; i < len(args); i++ {
+				expr = fmt.Sprintf("Concat(%s, %s)", expr, args[i])
+			}
+			return expr, nil
+		case "first":
+			if len(args) != 1 {
+				return "", fmt.Errorf("first expects 1 argument")
+			}
+			t := types.TypeOfExpr(p.Call.Args[0], c.env)
+			switch tt := t.(type) {
+			case types.ListType:
+				elem := typeString(tt.Elem)
+				c.use("_first")
+				return fmt.Sprintf("specialize _first<%s>(%s)", elem, args[0]), nil
+			case types.GroupType:
+				elem := typeString(tt.Elem)
+				c.use("_first")
+				return fmt.Sprintf("specialize _first<%s>(%s.Items)", elem, args[0]), nil
+			default:
+				c.use("_first")
+				return fmt.Sprintf("specialize _first<Variant>(%s)", args[0]), nil
+			}
 		case "contains":
 			if len(args) != 2 {
 				return "", fmt.Errorf("contains expects 2 arguments")
@@ -2224,6 +2251,20 @@ func (c *Compiler) emitHelpers() {
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
+		case "_concat":
+			c.writeln("generic function _concat<T>(a, b: specialize TArray<T>): specialize TArray<T>;")
+			c.writeln("var i,n: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, Length(a) + Length(b));")
+			c.writeln("for i := 0 to High(a) do")
+			c.writeln("  Result[i] := a[i];")
+			c.writeln("n := Length(a);")
+			c.writeln("for i := 0 to High(b) do")
+			c.writeln("  Result[n + i] := b[i];")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
 		case "_intersect":
 			c.writeln("generic function _intersect<T>(a, b: specialize TArray<T>): specialize TArray<T>;")
 			c.writeln("var i,j,k: Integer; inB, exists: Boolean;")
@@ -2292,6 +2333,15 @@ func (c *Compiler) emitHelpers() {
 			c.indent++
 			c.writeln("if Length(arr) = 0 then exit(0);")
 			c.writeln("Result := specialize _sumList<T>(arr) / Length(arr);")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_first":
+			c.writeln("generic function _first<T>(arr: specialize TArray<T>): T;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("if Length(arr) = 0 then exit(Default(T));")
+			c.writeln("Result := arr[0];")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")

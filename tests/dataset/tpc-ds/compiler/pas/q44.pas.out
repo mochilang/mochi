@@ -1,0 +1,186 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+type
+  generic TArray<T> = array of T;
+
+generic _Group<T> = record
+  Key: Variant;
+  Items: specialize TArray<T>;
+end;
+
+generic function _avgList<T>(arr: specialize TArray<T>): double;
+begin
+  if Length(arr) = 0 then exit(0);
+  Result := specialize _sumList<T>(arr) / Length(arr);
+end;
+
+generic function _first<T>(arr: specialize TArray<T>): T;
+begin
+  if Length(arr) = 0 then exit(Default(T));
+  Result := arr[0];
+end;
+
+generic function _group_by<T>(src: specialize TArray<T>; keyfn: function(it: T): Variant): specialize TArray<specialize _Group<T>>;
+var i,j,idx: Integer; key: Variant; ks: string;
+begin
+  SetLength(Result, 0);
+  for i := 0 to High(src) do
+  begin
+    key := keyfn(src[i]);
+    ks := VarToStr(key);
+    idx := -1;
+    for j := 0 to High(Result) do
+      if VarToStr(Result[j].Key) = ks then begin idx := j; Break; end;
+    if idx = -1 then
+    begin
+      idx := Length(Result);
+      SetLength(Result, idx + 1);
+      Result[idx].Key := key;
+      SetLength(Result[idx].Items, 0);
+    end;
+    SetLength(Result[idx].Items, Length(Result[idx].Items)+1);
+    Result[idx].Items[High(Result[idx].Items)] := src[i];
+  end;
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+var i,j: integer; tmp: T; k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+  for j := i + 1 to High(arr) do
+    if keys[i] > keys[j] then
+    begin
+      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
+      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
+    end;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp11: specialize TArray<Variant>;
+  _tmp12: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp13: specialize TArray<Variant>;
+  _tmp14: specialize TArray<Variant>;
+  _tmp15: specialize TArray<Variant>;
+  _tmp16: specialize TFPGMap<Variant, Variant>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TArray<Variant>;
+  _tmp7: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp8: specialize TArray<specialize _Group<specialize TFPGMap<string, Variant>>>;
+  _tmp9: specialize TArray<specialize TFPGMap<string, Variant>>;
+  best: Variant;
+  best_name: Variant;
+  grouped: specialize TArray<specialize TFPGMap<string, Variant>>;
+  grouped_base: specialize TArray<specialize TFPGMap<string, Variant>>;
+  i: specialize TFPGMap<string, Variant>;
+  item: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _result: specialize TFPGMap<string, Variant>;
+  ss: specialize TFPGMap<string, Variant>;
+  store_sales: specialize TArray<specialize TFPGMap<string, Variant>>;
+  worst: Variant;
+  worst_name: Variant;
+  x: specialize TFPGMap<string, Variant>;
+
+procedure test_TPCDS_Q44_simplified;
+var
+  _tmp17: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp17 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp17.AddOrSetData('best_performing', 'ItemA');
+  _tmp17.AddOrSetData('worst_performing', 'ItemB');
+  if not ((_result = _tmp17)) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('ss_item_sk', 1);
+  _tmp0.AddOrSetData('ss_store_sk', 1);
+  _tmp0.AddOrSetData('ss_net_profit', 5);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('ss_item_sk', 1);
+  _tmp1.AddOrSetData('ss_store_sk', 1);
+  _tmp1.AddOrSetData('ss_net_profit', 5);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('ss_item_sk', 2);
+  _tmp2.AddOrSetData('ss_store_sk', 1);
+  _tmp2.AddOrSetData('ss_net_profit', -1);
+  store_sales := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2]);
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('i_item_sk', 1);
+  _tmp3.AddOrSetData('i_product_name', 'ItemA');
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('i_item_sk', 2);
+  _tmp4.AddOrSetData('i_product_name', 'ItemB');
+  item := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp3, _tmp4]);
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('item_sk', g.key);
+  SetLength(_tmp6, 0);
+  for x in g do
+  begin
+    _tmp6 := Concat(_tmp6, [x.ss_net_profit]);
+  end;
+  _tmp5.AddOrSetData('avg_profit', specialize _avgList<Variant>(_tmp6));
+  SetLength(_tmp7, 0);
+  for ss in store_sales do
+  begin
+    _tmp7 := Concat(_tmp7, [ss]);
+  end;
+  _tmp8 := specialize _group_by<specialize TFPGMap<string, Variant>>(_tmp7, function(ss: specialize TFPGMap<string, Variant>): Variant begin Result := ss.ss_item_sk end);
+  SetLength(_tmp9, 0);
+  for g in _tmp8 do
+  begin
+    _tmp9 := Concat(_tmp9, [_tmp5]);
+  end;
+  grouped_base := _tmp9;
+  grouped := grouped_base;
+  SetLength(_tmp10, 0);
+  SetLength(_tmp11, 0);
+  for x in grouped do
+  begin
+    _tmp10 := Concat(_tmp10, [x]);
+    _tmp11 := Concat(_tmp11, [-x.avg_profit]);
+  end;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp10, _tmp11);
+  best := specialize _first<specialize TFPGMap<string, Variant>>(_tmp10);
+  SetLength(_tmp12, 0);
+  SetLength(_tmp13, 0);
+  for x in grouped do
+  begin
+    _tmp12 := Concat(_tmp12, [x]);
+    _tmp13 := Concat(_tmp13, [x.avg_profit]);
+  end;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp12, _tmp13);
+  worst := specialize _first<specialize TFPGMap<string, Variant>>(_tmp12);
+  SetLength(_tmp14, 0);
+  for i in item do
+  begin
+    if not ((i.i_item_sk = best.item_sk)) then continue;
+    _tmp14 := Concat(_tmp14, [i.i_product_name]);
+  end;
+  best_name := specialize _first<Variant>(_tmp14);
+  SetLength(_tmp15, 0);
+  for i in item do
+  begin
+    if not ((i.i_item_sk = worst.item_sk)) then continue;
+    _tmp15 := Concat(_tmp15, [i.i_product_name]);
+  end;
+  worst_name := specialize _first<Variant>(_tmp15);
+  _tmp16 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp16.AddOrSetData('best_performing', best_name);
+  _tmp16.AddOrSetData('worst_performing', worst_name);
+  _result := _tmp16;
+  specialize _json<specialize TFPGMap<string, Variant>>(_result);
+  test_TPCDS_Q44_simplified;
+end.

@@ -1,0 +1,97 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+type
+  generic TArray<T> = array of T;
+
+function abs(x: double): double;
+begin
+  if (x >= 0) then
+  begin
+    x;
+  end else
+  begin
+    -x;
+  end;
+end;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+var i,j: integer; tmp: T; k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+  for j := i + 1 to High(arr) do
+    if keys[i] > keys[j] then
+    begin
+      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
+      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
+    end;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp4: specialize TArray<Variant>;
+  orderby: string;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+  v: specialize TFPGMap<string, Variant>;
+  v2: specialize TArray<specialize TFPGMap<string, Variant>>;
+  year: integer;
+
+procedure test_TPCDS_Q47_simplified;
+var
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('d_year', 2019);
+  _tmp5.AddOrSetData('item', 'C');
+  _tmp5.AddOrSetData('avg_monthly_sales', 50);
+  _tmp5.AddOrSetData('sum_sales', 60);
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('d_year', 2020);
+  _tmp6.AddOrSetData('item', 'A');
+  _tmp6.AddOrSetData('avg_monthly_sales', 100);
+  _tmp6.AddOrSetData('sum_sales', 120);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp5, _tmp6]))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('d_year', 2020);
+  _tmp0.AddOrSetData('item', 'A');
+  _tmp0.AddOrSetData('avg_monthly_sales', 100);
+  _tmp0.AddOrSetData('sum_sales', 120);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('d_year', 2020);
+  _tmp1.AddOrSetData('item', 'B');
+  _tmp1.AddOrSetData('avg_monthly_sales', 80);
+  _tmp1.AddOrSetData('sum_sales', 70);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('d_year', 2019);
+  _tmp2.AddOrSetData('item', 'C');
+  _tmp2.AddOrSetData('avg_monthly_sales', 50);
+  _tmp2.AddOrSetData('sum_sales', 60);
+  v2 := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2]);
+  year := 2020;
+  orderby := 'item';
+  SetLength(_tmp3, 0);
+  SetLength(_tmp4, 0);
+  for v in v2 do
+  begin
+    if not ((((v.d_year = year) and (v.avg_monthly_sales > 0)) and (abs(v.sum_sales - v.avg_monthly_sales) / v.avg_monthly_sales > 0.1))) then continue;
+    _tmp3 := Concat(_tmp3, [v]);
+    _tmp4 := Concat(_tmp4, [specialize TArray<specialize TFPGMap<string, Variant>>([v.sum_sales - v.avg_monthly_sales, v.item])]);
+  end;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp3, _tmp4);
+  _result := _tmp3;
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(_result);
+  test_TPCDS_Q47_simplified;
+end.
