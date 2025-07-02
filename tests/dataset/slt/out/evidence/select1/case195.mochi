@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT a+b*2, c-d, d-e, abs(a), a-b, c, b FROM t1 WHERE a>b ORDER BY 3,2,1,4,7,5,6 */
 let result = from row in t1
   where row.a > row.b
-  order by [row.d - row.e, row.c - row.d, row.a + row.b * 2, (if row.a < 0 { -(row.a) } else { row.a }), row.b, row.a - row.b, row.c]
-  select [row.a + row.b * 2, row.c - row.d, row.d - row.e, (if row.a < 0 { -(row.a) } else { row.a }), row.a - row.b, row.c, row.b]
+  order by [(row.d - row.e), (row.c - row.d), (row.a + (row.b * 2)), (if row.a < 0 { -(row.a) } else { row.a }), row.b, (row.a - row.b), row.c]
+  select [(row.a + (row.b * 2)), (row.c - row.d), (row.d - row.e), (if row.a < 0 { -(row.a) } else { row.a }), (row.a - row.b), row.c, row.b]
 var flatResult = []
 for row in result {
   for x in row {

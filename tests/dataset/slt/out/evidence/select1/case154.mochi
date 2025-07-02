@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT abs(b-c), b, e FROM t1 WHERE a>b ORDER BY 1,3,2 */
 let result = from row in t1
   where row.a > row.b
-  order by [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.e, row.b]
-  select [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.b, row.e]
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.e, row.b]
+  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.b, row.e]
 var flatResult = []
 for row in result {
   for x in row {
