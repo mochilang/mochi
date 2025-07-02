@@ -185,14 +185,24 @@ func applyStatement(stmt string, tables map[string]*Table) error {
 		if t == nil {
 			return fmt.Errorf("unknown table %s", tbl)
 		}
+		cols := t.Columns
+		if len(s.Columns) > 0 {
+			cols = make([]string, len(s.Columns))
+			for i, c := range s.Columns {
+				cols[i] = c.String()
+			}
+		}
 		vals := s.Rows.(sqlparser.Values)
 		for _, tuple := range vals {
 			row := make(map[string]any)
+			for _, c := range t.Columns {
+				row[c] = nil
+			}
 			for i, expr := range tuple {
-				if i >= len(t.Columns) {
+				if i >= len(cols) {
 					continue
 				}
-				row[t.Columns[i]] = evalExpr(expr, nil, nil)
+				row[cols[i]] = evalExpr(expr, nil, nil)
 			}
 			t.Rows = append(t.Rows, row)
 		}

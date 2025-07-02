@@ -1,0 +1,23 @@
+[31;1mtype error:[0;22m
+   1. [31;1merror[T022][0;22m: cannot iterate over type int
+  --> tests/dataset/slt/out/evidence/select1/case8.mochi:235:1
+
+[90m235[0m | for x in result {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Only `list<T>`, `map<K,V>`, or integer ranges are allowed in `for ... in ...` loops.
+   2. [31;1merror[T013][0;22m: incompatible types in comparison
+  --> tests/dataset/slt/out/evidence/select1/case8.mochi:240:17
+
+[90m240[0m |   expect result == [0, 2, 3, 4, 6, 7, 8, 11, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 25, 28]
+    | [31;1m                ^[0;22m
+
+[33mhelp:[0m
+  Use comparable types like numbers or strings with `<`, `>`.
+          
+   ERROR  
+          
+  Aborted due to type errors.                                                                                         
+
+exit status 1
