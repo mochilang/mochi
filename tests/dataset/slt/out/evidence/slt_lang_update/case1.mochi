@@ -1,4 +1,5 @@
 /*
+# line: 48
 CREATE TABLE t1( x INTEGER, y VARCHAR(8) )
 INSERT INTO t1 VALUES(1,'true')
 INSERT INTO t1 VALUES(0,'false')
@@ -38,8 +39,8 @@ var t1 = [
 var i = 0
 while i < len(t1) {
   var row = t1[i]
-  if row.x > 0 {
-    row.x = 1
+  if row["x"] > 0 {
+    row["x"] = 1
     t1[i] = row
   }
   i = i + 1
@@ -49,8 +50,8 @@ while i < len(t1) {
 var i = 0
 while i < len(t1) {
   var row = t1[i]
-  if row.x > 0 {
-    row.x = 2
+  if row["x"] > 0 {
+    row["x"] = 2
     t1[i] = row
   }
   i = i + 1
@@ -60,8 +61,8 @@ while i < len(t1) {
 var i = 0
 while i < len(t1) {
   var row = t1[i]
-  if row.x > 0 {
-    row.y = "true"
+  if row["x"] > 0 {
+    row["y"] = "true"
     t1[i] = row
   }
   i = i + 1
@@ -71,8 +72,8 @@ while i < len(t1) {
 var i = 0
 while i < len(t1) {
   var row = t1[i]
-  if row.x > 0 {
-    row.y = "unknown"
+  if row["x"] > 0 {
+    row["y"] = "unknown"
     t1[i] = row
   }
   i = i + 1
@@ -82,14 +83,14 @@ while i < len(t1) {
 var i = 0
 while i < len(t1) {
   var row = t1[i]
-  row.x = 3
+  row["x"] = 3
   t1[i] = row
   i = i + 1
 }
 
 /* SELECT count(*) FROM t1 WHERE x=3 */
 let result = count(from row in t1
-  where row.x == 3
+  where row["x"] == 3
   select row)
 print(result)
 
