@@ -228,15 +228,16 @@ let result = from row in t1
   where ((row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) || (row.d < 110 || row.d > 150))
   order by [row.c, row.a + row.b * 2, row.e]
   select [row.c, row.a + row.b * 2, row.e]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case184" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [102, 304, 103, 106, 317, 109, 113, 335, 110, 119, 351, 117, 123, 369, 120, 125, 385, 126, 150, 455, 152, 155, 475, 157, 161, 483, 162, 166, 502, 165, 172, 514, 173, 176, 529, 177, 184, 544, 180, 187, 560, 189, 193, 579, 192, 195, 595, 197, 202, 601, 204, 208, 617, 209, 214, 635, 210, 215, 652, 219, 224, 666, 221, 225, 685, 227, 231, 698, 230, 235, 711, 237, 244, 723, 242, 247, 743, 246]
 }
+

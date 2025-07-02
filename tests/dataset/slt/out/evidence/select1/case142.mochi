@@ -230,15 +230,16 @@ let result = from row in t1
   select x.c) { row.a * 2 } else { row.b * 10 }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.b - row.c]
   select [row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.b - row.c, (if row.c > avg(from x in t1
   select x.c) { row.a * 2 } else { row.b * 10 })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case142" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [2654, -1, 358, 2728, -3, 364, 2806, -1, 376, 2949, 3, 398, 3039, -2, 402, 3175, -3, 426, 3399, 3, 458, 3473, 1, 468, 3553, 1, 478, 3629, -4, 486, 1529, -2, 1000, 1612, -1, 1050, 1985, -4, 1300, 2202, -2, 1450, 2281, 1, 1510, 2349, 3, 1580, 2432, -1, 1600, 2501, 1, 1670, 2579, -2, 1700]
 }
+

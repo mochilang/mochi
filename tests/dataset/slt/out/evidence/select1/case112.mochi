@@ -232,15 +232,16 @@ let result = from row in t1
   select [(row.a + row.b + row.c + row.d + row.e) / 5, row.a + row.b * 2, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case112" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [102, 304, 0, 107, 317, 0, 112, 335, 0, 122, 369, 0, 127, 385, 0, 132, 391, 0, 137, 416, 0, 142, 428, 0, 147, 439, 0, 152, 455, 0, 157, 475, 0, 162, 483, 0, 167, 502, 0, 172, 514, 0, 177, 529, 0, 182, 544, 0, 187, 560, 0, 192, 579, 0, 197, 595, 0, 202, 601, 0, 207, 617, 0, 212, 635, 0, 217, 652, 0, 222, 666, 0, 227, 685, 0, 232, 698, 0, 237, 711, 0, 247, 743, 0]
 }
+

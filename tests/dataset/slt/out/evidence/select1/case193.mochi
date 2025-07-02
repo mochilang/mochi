@@ -228,15 +228,16 @@ let result = from row in t1
   where ((((row.e > row.c || row.e < row.d)) || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)) || row.a > row.b)
   order by [(if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.d, row.b]
   select [row.b, row.d, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case193" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [112, 114, 111, 139, 136, 111, 143, 140, 111, 206, 207, 111, 200, 203, 222, 211, 212, 222, 240, 241, 222, 105, 108, 333, 118, 116, 333, 124, 122, 333, 129, 128, 333, 151, 154, 333, 160, 164, 333, 167, 169, 333, 181, 183, 333, 218, 217, 333, 130, 133, 444, 186, 185, 444, 223, 222, 444, 249, 248, 444, 100, 101, 555, 145, 148, 555, 158, 156, 555, 170, 171, 555, 175, 178, 555, 198, 196, 555, 228, 226, 555, 232, 233, 555, 236, 238, 555]
 }
+

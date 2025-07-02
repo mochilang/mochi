@@ -232,15 +232,16 @@ let result = from row in t1
   select x.c) { row.a * 2 } else { row.b * 10 }), row.a + row.b * 2, row.b - row.c]
   select [(if row.c > avg(from x in t1
   select x.c) { row.a * 2 } else { row.b * 10 }), row.b - row.c, row.a + row.b * 2]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case138" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [358, -1, 529, 364, -3, 544, 376, -1, 560, 382, 1, 579, 398, 3, 595, 402, -2, 601, 410, -2, 617, 426, -3, 635, 432, 3, 652, 440, -1, 666, 458, 3, 685, 468, 1, 698, 478, 1, 711, 486, -4, 723, 490, 2, 743, 1050, -1, 317, 1120, -1, 335, 1180, -1, 351, 1240, 1, 369, 1290, 4, 385, 1300, -4, 391, 1390, 2, 416, 1430, 2, 428, 1450, -2, 439, 1510, 1, 455, 1580, 3, 475, 1600, -1, 483, 1670, 1, 502, 1700, -2, 514]
 }
+
