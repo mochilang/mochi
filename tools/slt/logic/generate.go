@@ -466,7 +466,7 @@ func collectSubqueriesExpr(e sqlparser.Expr, subs map[string]struct{}) {
 	switch v := e.(type) {
 	case *sqlparser.Subquery:
 		expr := subqueryToMochi(v, "row")
-		if expr != "null" {
+		if expr != "null" && !strings.Contains(expr, "row.") {
 			subs[expr] = struct{}{}
 		}
 	case *sqlparser.ParenExpr:
