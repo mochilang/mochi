@@ -1,5 +1,5 @@
 /*
-# line: 491
+# line: 475
 */
 
 type t1Row {
@@ -223,10 +223,15 @@ let t1 = [
   },
 ]
 
-/* SELECT d, a+b*2+c*3+d*4+e*5, a+b*2+c*3, c-d, (a+b+c+d+e)/5, a-b FROM t1 ORDER BY 3,4,2,6,5,1 */
+/* SELECT CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b, a+b*2, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 WHERE a>b OR c BETWEEN b-2 AND d+2 OR c>d ORDER BY 3,2,1,4,5 */
 let result = from row in t1
-  order by [row.a + row.b * 2 + row.c * 3, row.c - row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a - row.b, (row.a + row.b + row.c + row.d + row.e) / 5, row.d]
-  select [row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2 + row.c * 3, row.c - row.d, (row.a + row.b + row.c + row.d + row.e) / 5, row.a - row.b]
+  where ((row.a > row.b || (row.c >= row.b - 2 && row.c <= row.d + 2)) || row.c > row.d)
+  order by [row.a + row.b * 2, row.b, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
+  where x.b < row.b
+  select x), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) })]
+  select [(if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.b, row.a + row.b * 2, count(from x in t1
+  where x.b < row.b
+  select x), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) })]
 var flatResult = []
 for row in result {
   for x in row {
@@ -237,6 +242,6 @@ for x in flatResult {
   print(x)
 }
 
-test "case31" {
-  expect flatResult == [101, 1529, 610, 1, 102, 4, 108, 1612, 635, -2, 107, 2, 114, 1680, 674, -1, 112, -1, 116, 1757, 708, 3, 117, -3, 122, 1826, 738, 1, 122, -3, 128, 1902, 760, -3, 127, -2, 133, 1985, 793, 1, 132, 1, 136, 2046, 827, 1, 137, -1, 140, 2131, 851, 1, 142, -1, 148, 2202, 880, -1, 147, 4, 154, 2281, 905, -4, 152, 2, 156, 2349, 940, -1, 157, 1, 164, 2432, 966, -3, 162, 3, 169, 2501, 1000, -3, 167, 1, 171, 2579, 1030, 1, 172, 4, 178, 2654, 1057, -2, 177, 4, 183, 2728, 1096, 1, 182, 1, 185, 2806, 1121, 2, 187, 2, 190, 2878, 1158, 3, 192, -3, 196, 2949, 1180, -1, 197, 1, 203, 3039, 1207, -1, 202, 1, 207, 3114, 1241, 1, 207, -1, 212, 3175, 1277, 2, 212, 2, 217, 3260, 1297, -2, 217, -2, 222, 3331, 1338, 2, 222, -3, 226, 3399, 1360, -1, 227, 1, 233, 3473, 1391, -2, 232, 2, 238, 3553, 1416, -3, 237, 3, 241, 3629, 1455, 3, 242, 3, 248, 3706, 1484, -1, 247, -4]
+test "case30" {
+  expect flatResult == [555, 100, 304, 0, 444, 333, 105, 317, 1, 333, 111, 112, 335, 2, 222, 333, 118, 351, 3, 222, 333, 124, 369, 4, 222, 444, 130, 391, 6, 333, 111, 139, 416, 7, 222, 111, 143, 428, 8, 222, 555, 145, 439, 9, 444, 333, 151, 455, 10, 333, 555, 158, 475, 11, 333, 333, 160, 483, 12, 444, 333, 167, 502, 13, 333, 555, 170, 514, 14, 444, 555, 175, 529, 15, 444, 333, 181, 544, 16, 333, 444, 186, 560, 17, 333, 444, 194, 579, 18, 222, 555, 198, 595, 19, 333, 222, 200, 601, 20, 333, 111, 206, 617, 21, 222, 222, 211, 635, 22, 333, 444, 223, 666, 24, 222, 555, 228, 685, 25, 333, 555, 232, 698, 26, 333, 555, 236, 711, 27, 444, 222, 240, 723, 28, 444, 444, 249, 743, 29, 111]
 }
