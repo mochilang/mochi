@@ -533,6 +533,8 @@ func (c *Compiler) compileStmt(s *parser.Statement, ex string) error {
 			return fmt.Errorf("continue not in loop")
 		}
 		c.writeln(fmt.Sprintf("raise (%s)", c.loops[len(c.loops)-1].cont))
+	case s.Update != nil:
+		return c.compileUpdate(s.Update, ex)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect, ex)
 	case s.Expr != nil:
@@ -788,6 +790,84 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt, ex string) error {
 	return nil
 }
 
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt, ex string) error {
+	name := sanitizeName(u.Target)
+
+	var st types.StructType
+	if c.env != nil {
+		if typ, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := typ.(types.ListType); ok {
+				if s, ok2 := lt.Elem.(types.StructType); ok2 {
+					st = s
+				}
+			}
+		}
+	}
+
+	child := types.NewEnv(c.env)
+	if st.Name != "" {
+		for _, fn := range st.Order {
+			child.SetVar(fn, st.Fields[fn], true)
+		}
+	}
+	orig := c.env
+	c.env = child
+
+	var cond string
+	var err error
+	if u.Where != nil {
+		cond, err = c.compileExpr(u.Where)
+		if err != nil {
+			c.env = orig
+			return err
+		}
+	}
+
+	pairs := make([]string, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		key, ok := simpleIdent(it.Key)
+		if !ok {
+			c.env = orig
+			return fmt.Errorf("update key must be identifier")
+		}
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = orig
+			return err
+		}
+		pairs[i] = fmt.Sprintf("%s = %s", sanitizeName(key), val)
+	}
+
+	c.writeln(fmt.Sprintf("let %s = List.map (fun _item ->", name))
+	c.indent++
+	if st.Name != "" {
+		for _, fn := range st.Order {
+			c.writeln(fmt.Sprintf("let %s = _item.%s in", sanitizeName(fn), sanitizeName(fn)))
+		}
+	}
+	if cond != "" {
+		c.writeln(fmt.Sprintf("if %s then", cond))
+		c.indent++
+		c.writeln(fmt.Sprintf("{ _item with %s }", strings.Join(pairs, "; ")))
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("_item")
+		c.indent--
+	} else {
+		c.writeln(fmt.Sprintf("{ _item with %s }", strings.Join(pairs, "; ")))
+	}
+	c.indent--
+	if ex == "" {
+		c.writeln(fmt.Sprintf(") %s;;", name))
+	} else {
+		c.writeln(fmt.Sprintf(") %s in", name))
+	}
+
+	c.env = orig
+	return nil
+}
+
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("let %s () =", name))
@@ -1010,6 +1090,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		b.WriteString("tbl)")
 		return b.String(), nil
+	case p.Struct != nil:
+		if st, ok := c.env.GetStruct(p.Struct.Name); ok {
+			c.compileStructType(st)
+		}
+		parts := make([]string, len(p.Struct.Fields))
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s = %s", sanitizeName(f.Name), v)
+		}
+		return "{ " + strings.Join(parts, "; ") + " }", nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
 		if c.groupVars[name] && len(p.Selector.Tail) == 0 {
