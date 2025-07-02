@@ -1,3 +1,10 @@
+// EVIDENCE-OF: R-34751-18293 If a single column-name appears more than
+// once in the list of assignment expressions, all but the rightmost
+// occurrence is ignored.
+// SQL: UPDATE t1 SET x=3, x=4, x=5
+
+// SQL: SELECT count(*) FROM t1 WHERE x=3
+
 let t1 = [
   {
     x: 5,

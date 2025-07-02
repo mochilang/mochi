@@ -1,3 +1,7 @@
+// SQL: UPDATE t1 SET x=2
+
+// SQL: SELECT count(*) FROM t1 WHERE y='unknown'
+
 let t1 = [
   {
     x: 2,

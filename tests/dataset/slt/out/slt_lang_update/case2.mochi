@@ -1,3 +1,10 @@
+// EVIDENCE-OF: R-42117-40023 Otherwise, the UPDATE affects only those
+// rows for which the result of evaluating the WHERE clause expression as
+// a boolean expression is true.
+// SQL: UPDATE t1 SET x=1 WHERE y='unknown'
+
+// SQL: SELECT count(*) FROM t1 WHERE x=1
+
 let t1 = [
   {
     x: 1,
