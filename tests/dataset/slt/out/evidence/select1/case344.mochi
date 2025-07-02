@@ -1,5 +1,5 @@
 /*
-# line: 4960
+# line: 4327
 */
 
 type t1Row {
@@ -223,15 +223,11 @@ let t1 = [
   },
 ]
 
-/* SELECT abs(b-c), c, b, (a+b+c+d+e)/5, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d FROM t1 WHERE d>e ORDER BY 6,5,3,1,2,4 */
+/* SELECT a+b*2, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a-b, d-e, a+b*2+c*3 FROM t1 WHERE (a>b-2 AND a<b+2) AND e+d BETWEEN a+b-10 AND c+130 AND (c<=d-2 OR c>=d+2) ORDER BY 3,2,5,4,1 */
 let result = from row in t1
-  where row.d > row.e
-  order by [row.d, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), row.b, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.c, (row.a + row.b + row.c + row.d + row.e) / 5]
-  select [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.c, row.b, (row.a + row.b + row.c + row.d + row.e) / 5, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), row.d]
+  where ((((row.a > row.b - 2 && row.a < row.b + 2)) && (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)) && ((row.c <= row.d - 2 || row.c >= row.d + 2)))
+  order by [row.a - row.b, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a + row.b * 2 + row.c * 3, row.d - row.e, row.a + row.b * 2]
+  select [row.a + row.b * 2, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a - row.b, row.d - row.e, row.a + row.b * 2 + row.c * 3]
 var flatResult = []
 for row in result {
   for x in row {
@@ -241,7 +237,7 @@ for row in result {
 for x in flatResult {
   print(x)
 }
-test "case399" {
-  expect flatResult == [1, 113, 112, 112, 0, 114, 1, 123, 124, 122, 0, 122, 4, 125, 129, 127, 0, 128, 4, 134, 130, 132, 0, 133, 2, 137, 139, 137, 0, 136, 2, 147, 145, 147, 0, 148, 1, 150, 151, 152, 0, 154, 1, 161, 160, 162, 0, 164, 1, 166, 167, 167, 0, 169, 1, 176, 175, 177, 0, 178, 3, 184, 181, 182, 0, 183, 3, 214, 211, 212, 0, 212, 1, 224, 223, 222, 0, 222, 1, 231, 232, 232, 0, 233, 1, 235, 236, 237, 0, 238, 2, 247, 249, 247, 0, 248]
+test "case344" {
+  expect flatResult == []
 }
 

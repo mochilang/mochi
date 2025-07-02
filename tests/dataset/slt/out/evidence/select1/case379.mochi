@@ -236,15 +236,16 @@ let result = from row in t1
   select x), row.b - row.c, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, count(from x in t1
   where x.b < row.b
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case379" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [112, 111, 0, -1, 1680, 2, 132, 131, 0, -4, 1985, 6, 137, 138, 0, 2, 2046, 7, 142, 142, 0, 2, 2131, 8, 157, 159, 0, 3, 2349, 11, 167, 168, 0, 1, 2501, 13, 182, 182, 0, -3, 2728, 16, 197, 199, 0, 3, 2949, 19, 202, 201, 0, -2, 3039, 20, 207, 205, 0, -2, 3114, 21, 227, 229, 0, 3, 3399, 25]
 }
+

@@ -234,15 +234,16 @@ let result = from row in t1
   select x.c) { row.a * 2 } else { row.b * 10 }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case396" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [333, 364, 0, 444, 376, 0, 444, 382, 0, 111, 410, 0, 222, 426, 0, 444, 440, 0, 222, 486, 0, 555, 1000, 0, 333, 1180, 0, 333, 1240, 0, 444, 1300, 0, 111, 1390, 0, 111, 1430, 0, 555, 1700, 0]
 }
+

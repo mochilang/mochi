@@ -231,15 +231,16 @@ let result = from row in t1
   select [row.a, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case390" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [107, 0, 1, 111, 0, 1, 115, 0, 1, 121, 0, 1, 153, 0, 1, 163, 0, 1, 168, 0, 1, 179, 0, 1, 188, 0, 1, 191, 0, 1, 220, 0, 1, 234, 0, 1, 239, 0, 1, 104, 0, 2, 138, 0, 2, 142, 0, 2, 149, 0, 2, 174, 0, 2, 201, 0, 2, 205, 0, 2, 245, 0, 2, 159, 0, 3, 182, 0, 3, 199, 0, 3, 213, 0, 3, 216, 0, 3, 229, 0, 3, 127, 0, 4, 131, 0, 4, 243, 0, 4]
 }
+
