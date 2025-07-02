@@ -1094,9 +1094,10 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) string {
 	return name
 }
 
-// compileQueryExpr generates C code for simple dataset queries. It now
-// supports optional `sort by`, `skip` and `take` clauses in addition to basic
-// `from`/`where`/`select`. Joins and grouping remain unimplemented.
+// compileQueryExpr generates C code for basic dataset queries.
+// It supports optional `sort by`, `skip` and `take` clauses as well as
+// additional `from` and `join` sources. Grouping beyond the special
+// `_group_by_int` case remains unimplemented.
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		if name, ok := identName(q.Group.Exprs[0]); ok && name == q.Var {
@@ -1144,8 +1145,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			}
 		}
 	}
-	// only handle simple queries without joins or grouping
-	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
+	// general grouping is not yet implemented
+	if q.Group != nil {
 		return "0"
 	}
 
@@ -1160,8 +1161,45 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	elemC := cTypeFromType(elemType)
 	oldEnv := c.env
 	if c.env != nil {
-		c.env = types.NewEnv(c.env)
-		c.env.SetVar(q.Var, elemType, true)
+		env := types.NewEnv(c.env)
+		env.SetVar(q.Var, elemType, true)
+		for _, f := range q.Froms {
+			ft := c.exprType(f.Src)
+			if lt2, ok := ft.(types.ListType); ok {
+				env.SetVar(f.Var, lt2.Elem, true)
+			} else {
+				env.SetVar(f.Var, types.IntType{}, true)
+			}
+		}
+		for _, j := range q.Joins {
+			jt := c.exprType(j.Src)
+			if lt2, ok := jt.(types.ListType); ok {
+				env.SetVar(j.Var, lt2.Elem, true)
+			} else {
+				env.SetVar(j.Var, types.IntType{}, true)
+			}
+		}
+		c.env = env
+	}
+
+	fromSrcs := make([]string, len(q.Froms))
+	fromTypes := make([]types.Type, len(q.Froms))
+	for i, f := range q.Froms {
+		fromSrcs[i] = c.compileExpr(f.Src)
+		fromTypes[i] = c.exprType(f.Src)
+	}
+
+	joinSrcs := make([]string, len(q.Joins))
+	joinTypes := make([]types.Type, len(q.Joins))
+	joinOns := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		joinSrcs[i] = c.compileExpr(j.Src)
+		joinTypes[i] = c.exprType(j.Src)
+		if j.On != nil {
+			joinOns[i] = c.compileExpr(j.On)
+		} else {
+			joinOns[i] = "1"
+		}
 	}
 	var cond string
 	if q.Where != nil {
@@ -1207,6 +1245,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	res := c.newTemp()
 	idx := c.newTemp()
 	iter := c.newTemp()
+	capVar := c.newTemp()
 	var keyArr string
 	keyType := ""
 	if sortExpr != "" {
@@ -1215,7 +1254,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			keyType = "int"
 		}
 	}
-	c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, res, listC, src))
+	c.writeln(fmt.Sprintf("int %s = %s.len;", capVar, src))
+	for _, fs := range fromSrcs {
+		c.writeln(fmt.Sprintf("%s *= %s.len;", capVar, fs))
+	}
+	for _, js := range joinSrcs {
+		c.writeln(fmt.Sprintf("%s *= %s.len;", capVar, js))
+	}
+	c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, capVar))
 	if keyType != "" {
 		keyArr = c.newTemp()
 		c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, src))
@@ -1236,6 +1282,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src, iter))
 	c.indent++
 	c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, sanitizeName(q.Var), src, iter))
+	// nested from sources
+	for i, fs := range fromSrcs {
+		fIter := c.newTemp()
+		ft, _ := fromTypes[i].(types.ListType)
+		fElemC := cTypeFromType(ft.Elem)
+		c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", fIter, fIter, fs, fIter))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", fElemC, sanitizeName(q.Froms[i].Var), fs, fIter))
+	}
+	for i, js := range joinSrcs {
+		jIter := c.newTemp()
+		jt, _ := joinTypes[i].(types.ListType)
+		jElemC := cTypeFromType(jt.Elem)
+		c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", jIter, jIter, js, jIter))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", jElemC, sanitizeName(q.Joins[i].Var), js, jIter))
+		on := joinOns[i]
+		c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", on))
+	}
 	if cond != "" {
 		c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 	}
@@ -1249,6 +1314,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		c.writeln(fmt.Sprintf("%s[%s] = %s;", keyArr, idx, sortExpr))
 	}
 	c.writeln(fmt.Sprintf("%s++;", idx))
+	for i := 0; i < len(q.Joins); i++ {
+		c.indent--
+		c.writeln("}")
+	}
+	for i := 0; i < len(q.Froms); i++ {
+		c.indent--
+		c.writeln("}")
+	}
 	c.indent--
 	c.writeln("}")
 	c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
