@@ -214,8 +214,10 @@ let t1 = [
 /* SELECT CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, abs(a) FROM t1 WHERE c>d AND b>c ORDER BY 2,1 */
 let result = from row in t1
   where (row["c"] > row["d"] && row["b"] > row["c"])
-  order by abs(row["a"]), (row["c"] > null ? row["a"] * 2 : row["b"] * 10)
-  select [(row["c"] > null ? row["a"] * 2 : row["b"] * 10), abs(row["a"])]
+  order by abs(row["a"]), (row["c"] > avg(from x in t1
+  select x["c"]) ? row["a"] * 2 : row["b"] * 10)
+  select [(row["c"] > avg(from x in t1
+  select x["c"]) ? row["a"] * 2 : row["b"] * 10), abs(row["a"])]
 let flatResult = from row in result
   from x in row
   select x
