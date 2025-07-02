@@ -37,6 +37,7 @@ let totals =
 let result =
   from g in grouped
   join t in totals on g.i_class == t.class
+  sort by [g.i_category, g.i_class, g.i_item_id]
   select {
     i_item_id: g.i_item_id,
     i_item_desc: g.i_item_desc,
