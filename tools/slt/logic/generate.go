@@ -128,8 +128,42 @@ func detectColumnType(rows []map[string]any, name string) string {
 		if v == nil {
 			continue
 		}
-		switch v.(type) {
+		switch val := v.(type) {
 		case string:
+			// Attempt to infer numeric or boolean types when
+			// the value is stored as a string. This happens in a
+			// few SLT files and improves generated type accuracy.
+			if val == "true" || val == "false" {
+				if t == "" || t == "bool" {
+					t = "bool"
+				} else {
+					return "any"
+				}
+				continue
+			}
+			if i, err := strconv.Atoi(val); err == nil {
+				if t == "" {
+					t = "int"
+				} else if t == "int" {
+					// keep int
+				} else if t == "float" {
+					// keep float
+				} else {
+					return "any"
+				}
+				if i != 0 {
+					// numeric string, continue
+				}
+				continue
+			}
+			if _, err := strconv.ParseFloat(val, 64); err == nil {
+				if t == "" || t == "float" || t == "int" {
+					t = "float"
+				} else {
+					return "any"
+				}
+				continue
+			}
 			if t == "" || t == "string" {
 				t = "string"
 			} else {
