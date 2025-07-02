@@ -148,8 +148,23 @@ func condExprToMochi(e sqlparser.Expr) string {
 			return ""
 		}
 		return fmt.Sprintf("(%s || %s)", l, r)
+	case *sqlparser.RangeCond:
+		left := exprToMochi(v.Left)
+		from := exprToMochi(v.From)
+		to := exprToMochi(v.To)
+		switch strings.ToLower(v.Operator) {
+		case sqlparser.BetweenStr:
+			return fmt.Sprintf("(%s >= %s && %s <= %s)", left, from, left, to)
+		case sqlparser.NotBetweenStr:
+			return fmt.Sprintf("(%s < %s || %s > %s)", left, from, left, to)
+		}
+		return ""
 	case *sqlparser.ParenExpr:
-		return condExprToMochi(v.Expr)
+		inner := condExprToMochi(v.Expr)
+		if inner == "" {
+			return ""
+		}
+		return "(" + inner + ")"
 	}
 	return ""
 }

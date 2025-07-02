@@ -213,7 +213,7 @@ let t1 = [
 
 /* SELECT c, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 WHERE (e>a AND e<b) AND b>c AND (c<=d-2 OR c>=d+2) ORDER BY 1,2 */
 let result = from row in t1
-  where (((row["e"] > row["a"] && row["e"] < row["b"]) && row["b"] > row["c"]) && (row["c"] <= row["d"] - 2 || row["c"] >= row["d"] + 2))
+  where ((((row["e"] > row["a"] && row["e"] < row["b"])) && row["b"] > row["c"]) && ((row["c"] <= row["d"] - 2 || row["c"] >= row["d"] + 2)))
   order by row["c"], (row["a"] < row["b"] - 3 ? 111 : (row["a"] <= row["b"] ? 222 : (row["a"] < row["b"] + 3 ? 333 : 444)))
   select [row["c"], (row["a"] < row["b"] - 3 ? 111 : (row["a"] <= row["b"] ? 222 : (row["a"] < row["b"] + 3 ? 333 : 444)))]
 let flatResult = from row in result

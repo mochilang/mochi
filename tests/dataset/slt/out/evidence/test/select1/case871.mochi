@@ -211,12 +211,18 @@ let t1 = [
   },
 ]
 
-/* SELECT abs(b-c) FROM t1 WHERE (c<=d-2 OR c>=d+2) AND c>d AND (a>b-2 AND a<b+2) ORDER BY 1 */
+/* SELECT b-c, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END FROM t1 WHERE (e>a AND e<b) AND c BETWEEN b-2 AND d+2 AND d>e ORDER BY 1,2 */
 let result = from row in t1
-  where ((((row["c"] <= row["d"] - 2 || row["c"] >= row["d"] + 2)) && row["c"] > row["d"]) && ((row["a"] > row["b"] - 2 && row["a"] < row["b"] + 2)))
-  order by 1
-  select abs(row["b"] - row["c"])
-for x in result {
+  where ((((row["e"] > row["a"] && row["e"] < row["b"])) && (row["c"] >= row["b"] - 2 && row["c"] <= row["d"] + 2)) && row["d"] > row["e"])
+  order by row["b"] - row["c"], (row["c"] > null ? row["a"] * 2 : row["b"] * 10)
+  select [row["b"] - row["c"], (row["c"] > null ? row["a"] * 2 : row["b"] * 10)]
+let flatResult = from row in result
+  from x in row
+  select x
+for x in flatResult {
   print(x)
 }
 
+test "case871" {
+  expect flatResult == [-1, 440, 2, 490]
+}
