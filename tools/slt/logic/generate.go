@@ -168,12 +168,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				if t == "" {
 					t = "int"
 				}
-				if v != "0" && v != "1" {
-					boolLike = false
-				}
 				continue
 			}
-			if _, err := strconv.Atoi(v); err == nil {
+			if iv, err := strconv.Atoi(v); err == nil {
 				if t == "" {
 					t = "int"
 				} else if t == "int" {
@@ -182,6 +179,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 					// keep float
 				} else {
 					return "any"
+				}
+				if iv != 0 && iv != 1 {
+					boolLike = false
 				}
 				// numeric string
 				continue
@@ -616,21 +616,21 @@ func Generate(c Case) string {
 
 	tblNameStr := tblName.Name.String()
 
-        subExprs := collectSubqueries(sel)
-        subs := map[string]string{}
-        for i, s := range subExprs {
-                if strings.Contains(s, "row.") {
-                        // Correlated subqueries reference the current row and
-                        // must remain inline.
-                        continue
-                }
-                name := fmt.Sprintf("sub%d", i)
-                subs[s] = name
-                sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
-        }
-        if len(subs) > 0 {
-                sb.WriteString("\n")
-        }
+	subExprs := collectSubqueries(sel)
+	subs := map[string]string{}
+	for i, s := range subExprs {
+		if strings.Contains(s, "row.") {
+			// Correlated subqueries reference the current row and
+			// must remain inline.
+			continue
+		}
+		name := fmt.Sprintf("sub%d", i)
+		subs[s] = name
+		sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
+	}
+	if len(subs) > 0 {
+		sb.WriteString("\n")
+	}
 
 	// Handle SELECT count(*)
 	if len(sel.SelectExprs) == 1 {
