@@ -40,37 +40,90 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q3_empty() {
-	expect((len(result) == 0))
+func test_TPCDS_Q3_result() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"d_year":   1998,
+		"brand_id": 1,
+		"brand":    "Brand1",
+		"sum_agg":  10.0,
+	}, map[string]any{
+		"d_year":   1998,
+		"brand_id": 2,
+		"brand":    "Brand2",
+		"sum_agg":  20.0,
+	}}))
 }
 
-var date_dim []any
-var store_sales []any
-var item []any
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+	D_moy     int `json:"d_moy"`
+}
+
+var date_dim []Date_dimItem
+
+type Store_salesItem struct {
+	Ss_sold_date_sk    int     `json:"ss_sold_date_sk"`
+	Ss_item_sk         int     `json:"ss_item_sk"`
+	Ss_ext_sales_price float64 `json:"ss_ext_sales_price"`
+}
+
+var store_sales []Store_salesItem
+
+type ItemItem struct {
+	I_item_sk     int    `json:"i_item_sk"`
+	I_manufact_id int    `json:"i_manufact_id"`
+	I_brand_id    int    `json:"i_brand_id"`
+	I_brand       string `json:"i_brand"`
+}
+
+var item []ItemItem
 var result []map[string]any
 
 func main() {
 	failures := 0
-	date_dim = []any{}
-	store_sales = []any{}
-	item = []any{}
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_year:    1998,
+		D_moy:     12,
+	}})
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_sold_date_sk:    1,
+		Ss_item_sk:         1,
+		Ss_ext_sales_price: 10.0,
+	}, Store_salesItem{
+		Ss_sold_date_sk:    1,
+		Ss_item_sk:         2,
+		Ss_ext_sales_price: 20.0,
+	}})
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
+		I_item_sk:     1,
+		I_manufact_id: 100,
+		I_brand_id:    1,
+		I_brand:       "Brand1",
+	}, ItemItem{
+		I_item_sk:     2,
+		I_manufact_id: 100,
+		I_brand_id:    2,
+		I_brand:       "Brand2",
+	}})
 	result = func() []map[string]any {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, dt := range date_dim {
 			for _, ss := range store_sales {
-				if !(_equal(_cast[map[string]any](dt)["d_date_sk"], _cast[map[string]any](ss)["ss_sold_date_sk"])) {
+				if !(dt.D_date_sk == ss.Ss_sold_date_sk) {
 					continue
 				}
 				for _, i := range item {
-					if !(_equal(_cast[map[string]any](ss)["ss_item_sk"], _cast[map[string]any](i)["i_item_sk"])) {
+					if !(ss.Ss_item_sk == i.I_item_sk) {
 						continue
 					}
-					if _equal(_cast[map[string]any](i)["i_manufact_id"], 100) && _equal(_cast[map[string]any](dt)["d_moy"], 12) {
+					if (i.I_manufact_id == 100) && (dt.D_moy == 12) {
 						key := map[string]any{
-							"d_year":   _cast[map[string]any](dt)["d_year"],
-							"brand_id": _cast[map[string]any](i)["i_brand_id"],
-							"brand":    _cast[map[string]any](i)["i_brand"],
+							"d_year":   dt.D_year,
+							"brand_id": i.I_brand_id,
+							"brand":    i.I_brand,
 						}
 						ks := fmt.Sprint(key)
 						g, ok := groups[ks]
@@ -79,7 +132,20 @@ func main() {
 							groups[ks] = g
 							order = append(order, ks)
 						}
-						g.Items = append(g.Items, dt)
+						_item := map[string]any{}
+						for k, v := range _cast[map[string]any](dt) {
+							_item[k] = v
+						}
+						_item["dt"] = dt
+						for k, v := range _cast[map[string]any](ss) {
+							_item[k] = v
+						}
+						_item["ss"] = ss
+						for k, v := range _cast[map[string]any](i) {
+							_item[k] = v
+						}
+						_item["i"] = i
+						g.Items = append(g.Items, _item)
 					}
 				}
 			}
@@ -98,7 +164,7 @@ func main() {
 			pairs[idx] = pair{item: it, key: _toAnySlice([]any{_cast[map[string]any](g.Key)["d_year"], -_sum(func() []any {
 				_res := []any{}
 				for _, x := range g.Items {
-					_res = append(_res, _cast[map[string]any](_cast[map[string]any](x)["ss"])["ss_ext_sales_price"])
+					_res = append(_res, _cast[map[string]any](x)["ss_ext_sales_price"])
 				}
 				return _res
 			}()), _cast[map[string]any](g.Key)["brand_id"]})}
@@ -138,7 +204,7 @@ func main() {
 				"sum_agg": _sum(func() []any {
 					_res := []any{}
 					for _, x := range g.Items {
-						_res = append(_res, _cast[map[string]any](_cast[map[string]any](x)["ss"])["ss_ext_sales_price"])
+						_res = append(_res, _cast[map[string]any](x)["ss_ext_sales_price"])
 					}
 					return _res
 				}()),
@@ -148,7 +214,7 @@ func main() {
 	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q3 empty")
+		printTestStart("TPCDS Q3 result")
 		start := time.Now()
 		var failed error
 		func() {
@@ -157,7 +223,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q3_empty()
+			test_TPCDS_Q3_result()
 		}()
 		if failed != nil {
 			failures++

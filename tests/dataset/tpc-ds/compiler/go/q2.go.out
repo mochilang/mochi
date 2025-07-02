@@ -39,29 +39,123 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q2_empty() {
-	expect((len(result) == 0))
+func test_TPCDS_Q2_result() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"d_week_seq1": 1,
+		"sun_ratio":   0.5,
+		"mon_ratio":   0.5,
+	}}))
 }
 
-var web_sales []any
-var catalog_sales []any
-var date_dim []any
+type Web_salesItem struct {
+	Ws_sold_date_sk    int     `json:"ws_sold_date_sk"`
+	Ws_ext_sales_price float64 `json:"ws_ext_sales_price"`
+	Ws_sold_date_name  string  `json:"ws_sold_date_name"`
+}
+
+var web_sales []Web_salesItem
+
+type Catalog_salesItem struct {
+	Cs_sold_date_sk    int     `json:"cs_sold_date_sk"`
+	Cs_ext_sales_price float64 `json:"cs_ext_sales_price"`
+	Cs_sold_date_name  string  `json:"cs_sold_date_name"`
+}
+
+var catalog_sales []Catalog_salesItem
+
+type Date_dimItem struct {
+	D_date_sk  int    `json:"d_date_sk"`
+	D_week_seq int    `json:"d_week_seq"`
+	D_day_name string `json:"d_day_name"`
+	D_year     int    `json:"d_year"`
+}
+
+var date_dim []Date_dimItem
 var wscs []map[string]any
 var wswscs []map[string]any
-var result []any
+var year1 []map[string]any
+var year2 []map[string]any
+var result []map[string]any
 
 func main() {
 	failures := 0
-	web_sales = []any{}
-	catalog_sales = []any{}
-	date_dim = []any{}
+	web_sales = _cast[[]Web_salesItem]([]Web_salesItem{
+		Web_salesItem{
+			Ws_sold_date_sk:    1,
+			Ws_ext_sales_price: 5.0,
+			Ws_sold_date_name:  "Sunday",
+		},
+		Web_salesItem{
+			Ws_sold_date_sk:    2,
+			Ws_ext_sales_price: 5.0,
+			Ws_sold_date_name:  "Monday",
+		},
+		Web_salesItem{
+			Ws_sold_date_sk:    8,
+			Ws_ext_sales_price: 10.0,
+			Ws_sold_date_name:  "Sunday",
+		},
+		Web_salesItem{
+			Ws_sold_date_sk:    9,
+			Ws_ext_sales_price: 10.0,
+			Ws_sold_date_name:  "Monday",
+		},
+	})
+	catalog_sales = _cast[[]Catalog_salesItem]([]Catalog_salesItem{
+		Catalog_salesItem{
+			Cs_sold_date_sk:    1,
+			Cs_ext_sales_price: 5.0,
+			Cs_sold_date_name:  "Sunday",
+		},
+		Catalog_salesItem{
+			Cs_sold_date_sk:    2,
+			Cs_ext_sales_price: 5.0,
+			Cs_sold_date_name:  "Monday",
+		},
+		Catalog_salesItem{
+			Cs_sold_date_sk:    8,
+			Cs_ext_sales_price: 10.0,
+			Cs_sold_date_name:  "Sunday",
+		},
+		Catalog_salesItem{
+			Cs_sold_date_sk:    9,
+			Cs_ext_sales_price: 10.0,
+			Cs_sold_date_name:  "Monday",
+		},
+	})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{
+		Date_dimItem{
+			D_date_sk:  1,
+			D_week_seq: 1,
+			D_day_name: "Sunday",
+			D_year:     1998,
+		},
+		Date_dimItem{
+			D_date_sk:  2,
+			D_week_seq: 1,
+			D_day_name: "Monday",
+			D_year:     1998,
+		},
+		Date_dimItem{
+			D_date_sk:  8,
+			D_week_seq: 54,
+			D_day_name: "Sunday",
+			D_year:     1999,
+		},
+		Date_dimItem{
+			D_date_sk:  9,
+			D_week_seq: 54,
+			D_day_name: "Monday",
+			D_year:     1999,
+		},
+	})
 	wscs = _union[map[string]any]((func() []map[string]any {
 		_res := []map[string]any{}
 		for _, ws := range web_sales {
 			_res = append(_res, map[string]any{
-				"sold_date_sk": _cast[map[string]any](ws)["ws_sold_date_sk"],
-				"sales_price":  _cast[map[string]any](ws)["ws_ext_sales_price"],
-				"day":          _cast[map[string]any](ws)["ws_sold_date_name"],
+				"sold_date_sk": ws.Ws_sold_date_sk,
+				"sales_price":  ws.Ws_ext_sales_price,
+				"day":          ws.Ws_sold_date_name,
 			})
 		}
 		return _res
@@ -69,9 +163,9 @@ func main() {
 		_res := []map[string]any{}
 		for _, cs := range catalog_sales {
 			_res = append(_res, map[string]any{
-				"sold_date_sk": _cast[map[string]any](cs)["cs_sold_date_sk"],
-				"sales_price":  _cast[map[string]any](cs)["cs_ext_sales_price"],
-				"day":          _cast[map[string]any](cs)["cs_sold_date_name"],
+				"sold_date_sk": cs.Cs_sold_date_sk,
+				"sales_price":  cs.Cs_ext_sales_price,
+				"day":          cs.Cs_sold_date_name,
 			})
 		}
 		return _res
@@ -81,10 +175,10 @@ func main() {
 		order := []string{}
 		for _, w := range wscs {
 			for _, d := range date_dim {
-				if !(_equal(w["sold_date_sk"], _cast[map[string]any](d)["d_date_sk"])) {
+				if !(_equal(w["sold_date_sk"], d.D_date_sk)) {
 					continue
 				}
-				key := map[string]any{"week_seq": _cast[map[string]any](d)["d_week_seq"]}
+				key := map[string]int{"week_seq": d.D_week_seq}
 				ks := fmt.Sprint(key)
 				g, ok := groups[ks]
 				if !ok {
@@ -92,7 +186,16 @@ func main() {
 					groups[ks] = g
 					order = append(order, ks)
 				}
-				g.Items = append(g.Items, w)
+				_item := map[string]any{}
+				for k, v := range _cast[map[string]any](w) {
+					_item[k] = v
+				}
+				_item["w"] = w
+				for k, v := range _cast[map[string]any](d) {
+					_item[k] = v
+				}
+				_item["d"] = d
+				g.Items = append(g.Items, _item)
 			}
 		}
 		items := []*data.Group{}
@@ -184,10 +287,47 @@ func main() {
 		}
 		return _res
 	}()
-	result = []any{}
+	year1 = func() []map[string]any {
+		_res := []map[string]any{}
+		for _, w := range wswscs {
+			if _equal(w["d_week_seq"], 1) {
+				if _equal(w["d_week_seq"], 1) {
+					_res = append(_res, w)
+				}
+			}
+		}
+		return _res
+	}()
+	year2 = func() []map[string]any {
+		_res := []map[string]any{}
+		for _, w := range wswscs {
+			if _equal(w["d_week_seq"], 54) {
+				if _equal(w["d_week_seq"], 54) {
+					_res = append(_res, w)
+				}
+			}
+		}
+		return _res
+	}()
+	result = func() []map[string]any {
+		_res := []map[string]any{}
+		for _, y := range year1 {
+			for _, z := range year2 {
+				if !(_equal(y["d_week_seq"], (_cast[float64](z["d_week_seq"]) - _cast[float64](53)))) {
+					continue
+				}
+				_res = append(_res, map[string]any{
+					"d_week_seq1": y["d_week_seq"],
+					"sun_ratio":   (_cast[float64](y["sun_sales"]) / _cast[float64](z["sun_sales"])),
+					"mon_ratio":   (_cast[float64](y["mon_sales"]) / _cast[float64](z["mon_sales"])),
+				})
+			}
+		}
+		return _res
+	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q2 empty")
+		printTestStart("TPCDS Q2 result")
 		start := time.Now()
 		var failed error
 		func() {
@@ -196,7 +336,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q2_empty()
+			test_TPCDS_Q2_result()
 		}()
 		if failed != nil {
 			failures++

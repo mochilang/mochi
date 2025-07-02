@@ -1,2 +1,2 @@
-[]
-   test TPCDS Q3 empty                 ... ok (400ns)
+[{"brand":"Brand1","brand_id":1,"d_year":1998,"sum_agg":10},{"brand":"Brand2","brand_id":2,"d_year":1998,"sum_agg":20}]
+   test TPCDS Q3 result                ... ok (5.0µs)

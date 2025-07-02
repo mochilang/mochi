@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"sort"
 	"time"
 )
 
@@ -37,29 +40,190 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q8_empty() {
-	expect((len(result) == 0))
+func test_TPCDS_Q8_result() {
+	expect(_equal(result, []map[string]any{map[string]any{"s_store_name": "Store1", "net_profit": 10.0}}))
 }
 
-var store_sales []any
-var date_dim []any
-var store []any
-var customer_address []any
-var customer []any
-var result []any
+type Store_salesItem struct {
+	Ss_store_sk     int     `json:"ss_store_sk"`
+	Ss_sold_date_sk int     `json:"ss_sold_date_sk"`
+	Ss_net_profit   float64 `json:"ss_net_profit"`
+}
+
+var store_sales []Store_salesItem
+
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_qoy     int `json:"d_qoy"`
+	D_year    int `json:"d_year"`
+}
+
+var date_dim []Date_dimItem
+
+type StoreItem struct {
+	S_store_sk   int    `json:"s_store_sk"`
+	S_store_name string `json:"s_store_name"`
+	S_zip        string `json:"s_zip"`
+}
+
+var store []StoreItem
+
+type Customer_addressItem struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_zip        string `json:"ca_zip"`
+}
+
+var customer_address []Customer_addressItem
+
+type CustomerItem struct {
+	C_customer_sk         int    `json:"c_customer_sk"`
+	C_current_addr_sk     int    `json:"c_current_addr_sk"`
+	C_preferred_cust_flag string `json:"c_preferred_cust_flag"`
+}
+
+var customer []CustomerItem
+var zip_list []string
+var result []map[string]any
 
 func main() {
 	failures := 0
-	store_sales = []any{}
-	date_dim = []any{}
-	store = []any{}
-	customer_address = []any{}
-	customer = []any{}
-	result = []any{}
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_store_sk:     1,
+		Ss_sold_date_sk: 1,
+		Ss_net_profit:   10.0,
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_qoy:     1,
+		D_year:    1998,
+	}})
+	store = _cast[[]StoreItem]([]StoreItem{StoreItem{
+		S_store_sk:   1,
+		S_store_name: "Store1",
+		S_zip:        "12345",
+	}})
+	customer_address = _cast[[]Customer_addressItem]([]Customer_addressItem{Customer_addressItem{
+		Ca_address_sk: 1,
+		Ca_zip:        "12345",
+	}})
+	customer = _cast[[]CustomerItem]([]CustomerItem{CustomerItem{
+		C_customer_sk:         1,
+		C_current_addr_sk:     1,
+		C_preferred_cust_flag: "Y",
+	}})
+	zip_list = []string{"12345"}
+	result = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, ss := range store_sales {
+			for _, d := range date_dim {
+				if !(((ss.Ss_sold_date_sk == d.D_date_sk) && (d.D_qoy == 1)) && (d.D_year == 1998)) {
+					continue
+				}
+				for _, s := range store {
+					if !(ss.Ss_store_sk == s.S_store_sk) {
+						continue
+					}
+					for _, ca := range customer_address {
+						if !(_sliceString(s.S_zip, 0, 2) == _sliceString(ca.Ca_zip, 0, 2)) {
+							continue
+						}
+						for _, c := range customer {
+							if !((ca.Ca_address_sk == c.C_current_addr_sk) && (c.C_preferred_cust_flag == "Y")) {
+								continue
+							}
+							if _contains[string](zip_list, _sliceString(ca.Ca_zip, 0, 5)) {
+								key := s.S_store_name
+								ks := fmt.Sprint(key)
+								g, ok := groups[ks]
+								if !ok {
+									g = &data.Group{Key: key}
+									groups[ks] = g
+									order = append(order, ks)
+								}
+								_item := map[string]any{}
+								for k, v := range _cast[map[string]any](ss) {
+									_item[k] = v
+								}
+								_item["ss"] = ss
+								for k, v := range _cast[map[string]any](d) {
+									_item[k] = v
+								}
+								_item["d"] = d
+								for k, v := range _cast[map[string]any](s) {
+									_item[k] = v
+								}
+								_item["s"] = s
+								for k, v := range _cast[map[string]any](ca) {
+									_item[k] = v
+								}
+								_item["ca"] = ca
+								for k, v := range _cast[map[string]any](c) {
+									_item[k] = v
+								}
+								_item["c"] = c
+								g.Items = append(g.Items, _item)
+							}
+						}
+					}
+				}
+			}
+		}
+		items := []*data.Group{}
+		for _, ks := range order {
+			items = append(items, groups[ks])
+		}
+		type pair struct {
+			item *data.Group
+			key  any
+		}
+		pairs := make([]pair, len(items))
+		for idx, it := range items {
+			g := it
+			pairs[idx] = pair{item: it, key: g.Key}
+		}
+		sort.Slice(pairs, func(i, j int) bool {
+			a, b := pairs[i].key, pairs[j].key
+			switch av := a.(type) {
+			case int:
+				switch bv := b.(type) {
+				case int:
+					return av < bv
+				case float64:
+					return float64(av) < bv
+				}
+			case float64:
+				switch bv := b.(type) {
+				case int:
+					return av < float64(bv)
+				case float64:
+					return av < bv
+				}
+			case string:
+				bs, _ := b.(string)
+				return av < bs
+			}
+			return fmt.Sprint(a) < fmt.Sprint(b)
+		})
+		for idx, p := range pairs {
+			items[idx] = p.item
+		}
+		_res := []map[string]any{}
+		for _, g := range items {
+			_res = append(_res, map[string]any{"s_store_name": g.Key, "net_profit": _sum(func() []any {
+				_res := []any{}
+				for _, x := range g.Items {
+					_res = append(_res, _cast[map[string]any](_cast[map[string]any](x)["ss"])["ss_net_profit"])
+				}
+				return _res
+			}())})
+		}
+		return _res
+	}()
 	_reverseString("zi")
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q8 empty")
+		printTestStart("TPCDS Q8 result")
 		start := time.Now()
 		var failed error
 		func() {
@@ -68,7 +232,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q8_empty()
+			test_TPCDS_Q8_result()
 		}()
 		if failed != nil {
 			failures++
@@ -82,10 +246,177 @@ func main() {
 	}
 }
 
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _contains[T comparable](s []T, v T) bool {
+	for _, x := range s {
+		if x == v {
+			return true
+		}
+	}
+	return false
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
 func _reverseString(s string) string {
 	r := []rune(s)
 	for i, j := 0, len(r)-1; i < j; i, j = i+1, j-1 {
 		r[i], r[j] = r[j], r[i]
 	}
 	return string(r)
+}
+
+func _sliceString(s string, i, j int) string {
+	start := i
+	end := j
+	n := len([]rune(s))
+	if start < 0 {
+		start += n
+	}
+	if end < 0 {
+		end += n
+	}
+	if start < 0 {
+		start = 0
+	}
+	if end > n {
+		end = n
+	}
+	if end < start {
+		end = start
+	}
+	return string([]rune(s)[start:end])
+}
+
+func _sum(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string, []bool:
+			panic("sum() expects numbers")
+		default:
+			panic("sum() expects list or group")
+		}
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("sum() expects numbers")
+		}
+	}
+	return sum
 }
