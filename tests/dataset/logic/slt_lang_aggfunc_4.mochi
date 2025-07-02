@@ -1,0 +1,22 @@
+fun distinct(xs: list<any>): list<any> {
+  let out = []
+  for x in xs {
+    if !out.contains(x) {
+      out = append(out, x)
+    }
+  }
+  out
+}
+
+let t1 = [
+  {x: 1, y: "true"},
+  {x: 0, y: "false"},
+  {x: null, y: "NULL"},
+]
+
+let result = min(distinct(from r in t1 where r.x != null select r.x))
+print(result)
+
+test "min" {
+  expect result == 0
+}

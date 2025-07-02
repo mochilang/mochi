@@ -1,0 +1,64 @@
+func main (regs=19)
+  // let t1 = [
+  Const        r0, [{"x": 1, "y": true}, {"x": 0, "y": false}, {"x": nil, "y": "NULL"}]
+  // let result = min(distinct(from r in t1 where r.x != null select r.x))
+  Const        r1, []
+  Const        r2, "x"
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r6, 0
+  Move         r5, r6
+L2:
+  LessInt      r7, r5, r4
+  JumpIfFalse  r7, L0
+  Index        r8, r3, r5
+  Move         r9, r8
+  Index        r10, r9, r2
+  Const        r11, nil
+  NotEqual     r12, r10, r11
+  JumpIfFalse  r12, L1
+  Index        r13, r9, r2
+  Append       r14, r1, r13
+  Move         r1, r14
+L1:
+  Const        r15, 1
+  AddInt       r5, r5, r15
+  Jump         L2
+L0:
+  Distinct     16,1,0,0
+  Min          r17, r16
+  // print(result)
+  Print        r17
+  // expect result == 0
+  Equal        r18, r17, r6
+  Expect       r18
+  Return       r0
+
+  // fun distinct(xs: list<any>): list<any> {
+func distinct (regs=13)
+  // let out = []
+  Const        r1, []
+  // for x in xs {
+  IterPrep     r2, r0
+  Len          r3, r2
+  Const        r4, 0
+L2:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  // if !out.contains(x) {
+  In           r8, r7, r1
+  Not          r9, r8
+  JumpIfFalse  r9, L1
+  // out = append(out, x)
+  Append       r10, r1, r7
+  Move         r1, r10
+L1:
+  // for x in xs {
+  Const        r11, 1
+  AddInt       r12, r4, r11
+  Move         r4, r12
+  Jump         L2
+L0:
+  Return       r0
