@@ -38,6 +38,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileExpect(s.Expect)
 	case s.Fun != nil:
 		return c.compileFunStmt(s.Fun)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -321,6 +323,111 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 			return err
 		}
 	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	target := sanitizeName(u.Target)
+	var elem types.Type = types.AnyType{}
+	if c.env != nil {
+		if tv, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := tv.(types.ListType); ok {
+				elem = lt.Elem
+			}
+		}
+	}
+	idx := c.newVar()
+	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.length; %s++) {", idx, idx, target, idx))
+	c.indent++
+	itemVar := c.newVar()
+	typStr := c.javaType(elem)
+	if typStr == "" {
+		typStr = "var"
+	}
+	c.writeln(fmt.Sprintf("%s %s = %s[%s];", typStr, itemVar, target, idx))
+
+	prevEnv := c.env
+	if prevEnv != nil {
+		child := types.NewEnv(prevEnv)
+		if st, ok := elem.(types.StructType); ok {
+			for _, f := range st.Order {
+				ft := st.Fields[f]
+				typ := c.javaType(ft)
+				if typ == "" {
+					typ = "var"
+				}
+				name := sanitizeName(f)
+				c.writeln(fmt.Sprintf("%s %s = %s.%s;", typ, name, itemVar, name))
+				child.SetVar(f, ft, true)
+			}
+		}
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			if prevEnv != nil {
+				c.env = prevEnv
+			}
+			return err
+		}
+		c.writeln("if (" + cond + ") {")
+		c.indent++
+	}
+
+	if st, ok := elem.(types.StructType); ok {
+		for _, it := range u.Set.Items {
+			key, _ := identName(it.Key)
+			ft := st.Fields[key]
+			val, err := c.compileExprHint(it.Value, ft)
+			if err != nil {
+				if prevEnv != nil {
+					c.env = prevEnv
+				}
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s.%s = %s;", itemVar, sanitizeName(key), val))
+		}
+	} else {
+		for _, it := range u.Set.Items {
+			k, ok := simpleStringKey(it.Key)
+			keyExpr := ""
+			if ok {
+				keyExpr = fmt.Sprintf("\"%s\"", k)
+			} else {
+				ke, err := c.compileExpr(it.Key)
+				if err != nil {
+					if prevEnv != nil {
+						c.env = prevEnv
+					}
+					return err
+				}
+				keyExpr = ke
+			}
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				if prevEnv != nil {
+					c.env = prevEnv
+				}
+				return err
+			}
+			c.writeln(fmt.Sprintf("((java.util.Map<String,Object>)%s).put(%s, %s);", itemVar, keyExpr, val))
+		}
+	}
+
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+
+	if prevEnv != nil {
+		c.env = prevEnv
+	}
+
+	c.writeln(fmt.Sprintf("%s[%s] = %s;", target, idx, itemVar))
 	c.indent--
 	c.writeln("}")
 	return nil

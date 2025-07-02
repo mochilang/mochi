@@ -1,0 +1,54 @@
+public class Main {
+  static class Person {
+    String name;
+    int age;
+    String status;
+
+    Person(String name, int age, String status) {
+      this.name = name;
+      this.age = age;
+      this.status = status;
+    }
+
+    Person() {}
+  }
+
+  static void test_update_adult_status() {
+    expect(
+        (people
+            == new Person[] {
+              new Person("Alice", 17, "minor"),
+              new Person("Bob", 26, "adult"),
+              new Person("Charlie", 19, "adult"),
+              new Person("Diana", 16, "minor")
+            }));
+  }
+
+  static Object[] people =
+      new Person[] {
+        new Person("Alice", 17, "minor"),
+        new Person("Bob", 25, "unknown"),
+        new Person("Charlie", 18, "unknown"),
+        new Person("Diana", 16, "minor")
+      };
+
+  public static void main(String[] args) {
+    test_update_adult_status();
+    for (int _tmp0 = 0; _tmp0 < people.length; _tmp0++) {
+      Person _tmp1 = people[_tmp0];
+      String name = _tmp1.name;
+      int age = _tmp1.age;
+      String status = _tmp1.status;
+      if ((age >= 18)) {
+        _tmp1.status = "adult";
+        _tmp1.age = (age + 1);
+      }
+      people[_tmp0] = _tmp1;
+    }
+    System.out.println("ok");
+  }
+
+  static void expect(boolean cond) {
+    if (!cond) throw new RuntimeException("expect failed");
+  }
+}
