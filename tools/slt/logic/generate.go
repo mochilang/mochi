@@ -36,6 +36,8 @@ func Generate(c Case) string {
 	if len(c.Comments) > 0 {
 		sb.WriteString("\n")
 	}
+	sb.WriteString("// SQL: " + c.Query + "\n")
+	sb.WriteString("\n")
 	for name, t := range c.Tables {
 		sb.WriteString(fmt.Sprintf("let %s = [\n", name))
 		for _, row := range t.Rows {

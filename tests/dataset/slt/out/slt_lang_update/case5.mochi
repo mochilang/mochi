@@ -1,3 +1,5 @@
+// SQL: SELECT count(*) FROM t1 WHERE x=4
+
 let t1 = [
   {
     x: 5,

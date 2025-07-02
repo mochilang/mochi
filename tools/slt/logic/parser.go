@@ -17,6 +17,10 @@ type Table struct {
 }
 
 // Case describes a single query together with the data state at that point.
+// Case describes a single query together with the data state at that point.
+// Comments contains the literal comments and SQL statements that appeared in
+// the test file leading up to the query. They are reproduced in the generated
+// Mochi program as comments so that the origin of each case is visible.
 type Case struct {
 	Name     string
 	Tables   map[string]*Table
@@ -37,6 +41,9 @@ func ParseFile(path string) ([]Case, error) {
 	tables := make(map[string]*Table)
 	var cases []Case
 	count := 0
+	// comments collects both '#' lines and SQL statements until the next
+	// query, preserving their original order so they can be emitted as
+	// comments in the generated Mochi source.
 	var comments []string
 
 	for scanner.Scan() {
@@ -50,13 +57,16 @@ func ParseFile(path string) ([]Case, error) {
 				break
 			}
 			stmt := strings.TrimSpace(scanner.Text())
+			comments = append(comments, "SQL: "+stmt)
 			if err := applyStatement(stmt, tables); err != nil {
 				return nil, err
 			}
-			comments = nil
 		case strings.HasPrefix(line, "statement error"):
-			scanner.Scan() // skip statement line
-			comments = nil
+			if !scanner.Scan() {
+				break
+			}
+			stmt := strings.TrimSpace(scanner.Text())
+			comments = append(comments, "SQL: "+stmt)
 		case strings.HasPrefix(line, "query"):
 			if !scanner.Scan() {
 				break

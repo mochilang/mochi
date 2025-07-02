@@ -1,3 +1,8 @@
+// EVIDENCE-OF: R-40472-60438 Columns that do not appear in the list of
+// assignments are left unmodified.
+
+// SQL: SELECT count(*) FROM t1 WHERE y='unknown'
+
 let t1 = [
   {
     x: 5,
