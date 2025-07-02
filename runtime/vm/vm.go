@@ -3545,21 +3545,22 @@ func (fc *funcCompiler) compileQueryFull(q *parser.QueryExpr, dst int, level int
 func (fc *funcCompiler) compileJoins(q *parser.QueryExpr, dst int, idx int) {
 	if idx >= len(q.Joins) {
 		appendVal := func() {
-			val := fc.compileExpr(q.Select)
 			if q.Sort != nil {
-				key := fc.compileExpr(q.Sort)
 				kreg := fc.newReg()
+				key := fc.compileExpr(q.Sort)
 				fc.emit(q.Sort.Pos, Instr{Op: OpMove, A: kreg, B: key})
 				vreg := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: val})
+				vtmp := fc.compileExpr(q.Select)
+				fc.emit(q.Pos, Instr{Op: OpMove, A: vreg, B: vtmp})
 				pair := fc.newReg()
 				fc.emit(q.Pos, Instr{Op: OpMakeList, A: pair, B: 2, C: kreg})
 				tmp := fc.newReg()
 				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: pair})
 				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
 			} else {
+				vtmp := fc.compileExpr(q.Select)
 				tmp := fc.newReg()
-				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: val})
+				fc.emit(q.Pos, Instr{Op: OpAppend, A: tmp, B: dst, C: vtmp})
 				fc.emit(q.Pos, Instr{Op: OpMove, A: dst, B: tmp})
 			}
 		}
