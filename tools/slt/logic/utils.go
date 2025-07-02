@@ -2,6 +2,8 @@ package logic
 
 import (
 	"bytes"
+	"crypto/md5"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	_ "github.com/marcboeker/go-duckdb"
 	"mochi/parser"
 	mod "mochi/runtime/mod"
 	"mochi/runtime/vm"
@@ -81,6 +84,74 @@ func RunMochi(src string) (string, error) {
 	return strings.TrimSpace(buf.String()), nil
 }
 
+// EvalCase executes the SQL query of c using DuckDB and returns the
+// flattened result values as strings. Updates stored in c.Updates are
+// applied before running the query.
+func EvalCase(c Case) ([]string, string, error) {
+	db, err := sql.Open("duckdb", "")
+	if err != nil {
+		return nil, "", err
+	}
+	defer db.Close()
+	for name, t := range c.Tables {
+		cols := strings.Join(t.Columns, " INTEGER,") + " INTEGER"
+		if _, err := db.Exec(fmt.Sprintf("CREATE TABLE %s(%s)", name, cols)); err != nil {
+			return nil, "", err
+		}
+		placeholders := make([]string, len(t.Columns))
+		for i := range placeholders {
+			placeholders[i] = "?"
+		}
+		insertSQL := fmt.Sprintf("INSERT INTO %s VALUES(%s)", name, strings.Join(placeholders, ","))
+		for _, row := range t.Rows {
+			vals := make([]any, len(t.Columns))
+			for i, col := range t.Columns {
+				vals[i] = row[col]
+			}
+			if _, err := db.Exec(insertSQL, vals...); err != nil {
+				return nil, "", err
+			}
+		}
+	}
+	for _, stmt := range c.Updates {
+		if _, err := db.Exec(stmt); err != nil {
+			return nil, "", err
+		}
+	}
+	rows, err := db.Query(c.Query)
+	if err != nil {
+		return nil, "", err
+	}
+	defer rows.Close()
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, "", err
+	}
+	var flat []string
+	var buf bytes.Buffer
+	for rows.Next() {
+		vals := make([]any, len(cols))
+		ptrs := make([]any, len(cols))
+		for i := range vals {
+			ptrs[i] = &vals[i]
+		}
+		if err := rows.Scan(ptrs...); err != nil {
+			return nil, "", err
+		}
+		for i, v := range vals {
+			s := fmt.Sprint(v)
+			flat = append(flat, s)
+			if i > 0 {
+				buf.WriteByte(' ')
+			}
+			buf.WriteString(s)
+		}
+		buf.WriteByte('\n')
+	}
+	hash := fmt.Sprintf("%x", md5.Sum(buf.Bytes()))
+	return flat, hash, nil
+}
+
 // Fetch downloads SQLLogicTest files into the dataset directory.
 func Fetch(repo string, files []string, force bool) error {
 	root, err := FindRepoRoot()
@@ -134,6 +205,14 @@ func GenerateFiles(files []string, outDir string, run bool) error {
 			return err
 		}
 		for _, c := range cases {
+			if c.Hash != "" {
+				exp, _, err := EvalCase(c)
+				if err != nil {
+					return err
+				}
+				c.Expect = exp
+				c.Hash = ""
+			}
 			code := Generate(c)
 			if code == "" {
 				continue
