@@ -1,0 +1,35 @@
+(program
+  (type Person
+    (field name (type string))
+    (field age (type int))
+    (field status (type string))
+  )
+  (let people
+    (list
+      (map
+        (entry (selector name) (string Bob))
+        (entry (selector age) (int 25))
+        (entry (selector status) (string unknown))
+      )
+      (map
+        (entry (selector name) (string Charlie))
+        (entry (selector age) (int 18))
+        (entry (selector status) (string unknown))
+      )
+    )
+  )
+  (update people
+    (set
+      (map
+        (entry (selector status) (string adult))
+        (entry
+          (selector age)
+          (binary + (selector age) (int 1))
+        )
+      )
+    )
+    (where
+      (binary >= (selector age) (int 18))
+    )
+  )
+)

@@ -1,0 +1,14 @@
+type Person {
+  name: string
+  age: int
+  status: string
+}
+
+let people = [
+  { name: "Bob", age: 25, status: "unknown" },
+  { name: "Charlie", age: 18, status: "unknown" }
+]
+
+update people
+set { status: "adult", age: age + 1 }
+where age >= 18
