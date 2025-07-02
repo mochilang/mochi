@@ -225,26 +225,27 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), abs(a), d, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, a, a+b*2 FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND (a>b-2 AND a<b+2) ORDER BY 5,6,3,1,2,4,7 */
 let result = from row in t1
-  where ((row.d < 110 || row.d > 150) && ((row.a > row.b - 2 && row.a < row.b + 2)))
-  order by [(if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.a, (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
+  where ((row.d < 110 || row.d > 150) && ((row.a > (row.b - 2) && row.a < (row.b + 2))))
+  order by [(if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.a, (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), count(from x in t1
   where x.b < row.b
-  select x), row.d, row.a + row.b * 2]
+  select x), row.d, (row.a + (row.b * 2))]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), count(from x in t1
   where x.b < row.b
-  select x), (if row.a < 0 { -(row.a) } else { row.a }), row.d, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.a, row.a + row.b * 2]
+  select x), (if row.a < 0 { -(row.a) } else { row.a }), row.d, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.a, (row.a + (row.b * 2))]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case218" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [0, 21, 205, 207, 111, 205, 617, 0, 20, 201, 203, 222, 201, 601, 0, 13, 168, 169, 333, 168, 502, 0, 16, 182, 183, 333, 182, 544, 0, 11, 159, 156, 555, 159, 475, 0, 19, 199, 196, 555, 199, 595, 0, 25, 229, 226, 555, 229, 685]
 }
+
