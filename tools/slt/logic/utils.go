@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	_ "github.com/marcboeker/go-duckdb"
@@ -181,7 +182,12 @@ func Fetch(repo string, files []string, force bool) error {
 // Generate reads SLT files and converts them into Mochi programs.
 // If run is true, the generated program is executed and the output
 // stored next to the source with a .out extension.
-func GenerateFiles(files []string, outDir string, run bool) error {
+// GenerateFiles reads SLT files and converts them into Mochi programs.
+// If run is true, the generated program is executed and the output is stored
+// next to the source with a .out extension.
+// Only cases with a number between from and to (inclusive) are generated when
+// from or to are greater than zero. A to value of zero means no upper limit.
+func GenerateFiles(files []string, outDir string, run bool, from, to int) error {
 	root, err := FindRepoRoot()
 	if err != nil {
 		return err
@@ -205,6 +211,13 @@ func GenerateFiles(files []string, outDir string, run bool) error {
 			return err
 		}
 		for _, c := range cases {
+			num, _ := strconv.Atoi(strings.TrimPrefix(c.Name, "case"))
+			if num < from {
+				continue
+			}
+			if to > 0 && num > to {
+				continue
+			}
 			if c.Hash != "" {
 				exp, _, err := EvalCase(c)
 				if err != nil {

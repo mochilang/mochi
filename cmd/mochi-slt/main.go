@@ -43,6 +43,8 @@ func genCmd() *cobra.Command {
 	var outDir string
 	var run bool
 	var fileList []string
+	var from int
+	var to int
 	cmd := &cobra.Command{
 		Use:   "gen",
 		Short: "Generate Mochi tests from SLT files",
@@ -50,12 +52,14 @@ func genCmd() *cobra.Command {
 			if len(fileList) > 0 {
 				files = fileList
 			}
-			return logic.GenerateFiles(files, outDir, run)
+			return logic.GenerateFiles(files, outDir, run, from, to)
 		},
 	}
 	cmd.Flags().StringSliceVarP(&fileList, "files", "f", files, "SLT files to generate")
 	cmd.Flags().StringVarP(&outDir, "out", "o", "", "output directory")
 	cmd.Flags().BoolVar(&run, "run", true, "run Mochi programs after generating")
+	cmd.Flags().IntVar(&from, "from", 1, "first case number to generate")
+	cmd.Flags().IntVar(&to, "to", 0, "last case number to generate (0 means no limit)")
 	return cmd
 }
 

@@ -118,6 +118,22 @@ func formatValue(v any) string {
 	}
 }
 
+func inferColumnType(t *Table, col string) string {
+	typ := "int"
+	for _, row := range t.Rows {
+		v := row[col]
+		switch v.(type) {
+		case string:
+			return "string"
+		case float64:
+			typ = "float"
+		case nil:
+			continue
+		}
+	}
+	return typ
+}
+
 func exprToMochi(e sqlparser.Expr) string {
 	return exprToMochiRow(e, "row", "")
 }
@@ -353,7 +369,8 @@ func Generate(c Case) string {
 		typeName := name + "Row"
 		sb.WriteString(fmt.Sprintf("type %s {\n", typeName))
 		for _, col := range t.Columns {
-			sb.WriteString(fmt.Sprintf("  %s: int\n", col))
+			typ := inferColumnType(t, col)
+			sb.WriteString(fmt.Sprintf("  %s: %s\n", col, typ))
 		}
 		sb.WriteString("}\n\n")
 
@@ -474,12 +491,17 @@ func Generate(c Case) string {
 			sb.WriteString("\n  where " + cond)
 		}
 		if len(sel.OrderBy) > 0 {
-			sb.WriteString("\n  order by ")
-			for i, ob := range sel.OrderBy {
-				if i > 0 {
-					sb.WriteString(", ")
+			if len(sel.OrderBy) == 1 {
+				sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, aes))
+			} else {
+				sb.WriteString("\n  order by [")
+				for i, ob := range sel.OrderBy {
+					if i > 0 {
+						sb.WriteString(", ")
+					}
+					sb.WriteString(orderExprToMochi(ob.Expr, aes))
 				}
-				sb.WriteString(orderExprToMochi(ob.Expr, aes))
+				sb.WriteString("]")
 			}
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
