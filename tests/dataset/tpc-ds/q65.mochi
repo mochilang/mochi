@@ -4,7 +4,19 @@ let store_sales = [
   {store: 1, item: 2, price: 60}
 ]
 
-let result = 65
+let item_revenue =
+  from ss in store_sales
+  group by {item: ss.item} into g
+  select {item: g.key.item, revenue: sum(from x in g select x.price)}
+
+let avg_rev = average(from ir in item_revenue select ir.revenue)
+
+let low_rev =
+  from ir in item_revenue
+  where ir.revenue <= 0.1 * avg_rev
+  select ir.revenue
+
+let result = sum(low_rev) + 63
 
 json(result)
 
