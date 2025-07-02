@@ -232,15 +232,16 @@ let result = from row in t1
   select [row.a, count(from x in t1
   where x.b < row.b
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case287" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [115, 3, 191, 18, 220, 24, 245, 29]
 }
+
