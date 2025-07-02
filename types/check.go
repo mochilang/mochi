@@ -2203,12 +2203,44 @@ func aggregateCallName(e *parser.Expr) (string, *parser.Expr, bool) {
 	if len(call.Args) != 1 {
 		return "", nil, false
 	}
+	if isQueryExpr(call.Args[0]) {
+		return "", nil, false
+	}
 	switch call.Func {
 	case "sum", "avg", "min", "max", "count":
 		return call.Func, call.Args[0], true
 	default:
 		return "", nil, false
 	}
+}
+
+func isQueryExpr(e *parser.Expr) bool {
+	for e != nil {
+		if e.Binary == nil || len(e.Binary.Right) != 0 {
+			return false
+		}
+		u := e.Binary.Left
+		if len(u.Ops) != 0 {
+			return false
+		}
+		p := u.Value
+		if p == nil || len(p.Ops) != 0 {
+			return false
+		}
+		prim := p.Target
+		if prim == nil {
+			return false
+		}
+		if prim.Query != nil || prim.LogicQuery != nil {
+			return true
+		}
+		if prim.Group != nil {
+			e = prim.Group
+			continue
+		}
+		return false
+	}
+	return false
 }
 
 func isNumeric(t Type) bool {
