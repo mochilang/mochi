@@ -128,7 +128,7 @@ func detectColumnType(rows []map[string]any, name string) string {
 		if v == nil {
 			continue
 		}
-		switch v.(type) {
+		switch vv := v.(type) {
 		case string:
 			if t == "" || t == "string" {
 				t = "string"
@@ -136,10 +136,18 @@ func detectColumnType(rows []map[string]any, name string) string {
 				return "any"
 			}
 		case float64:
-			if t == "" || t == "float" || t == "int" {
-				t = "float"
+			if vv == float64(int(vv)) && t != "float" {
+				if t == "" || t == "int" {
+					t = "int"
+				} else {
+					return "any"
+				}
 			} else {
-				return "any"
+				if t == "" || t == "float" || t == "int" {
+					t = "float"
+				} else {
+					return "any"
+				}
 			}
 		case int:
 			if t == "" {
