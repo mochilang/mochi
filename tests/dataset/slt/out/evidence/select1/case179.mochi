@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT a, abs(a), d, (a+b+c+d+e)/5, c-d FROM t1 WHERE d>e AND (e>c OR e<d) ORDER BY 2,1,3,5,4 */
 let result = from row in t1
   where (row.d > row.e && ((row.e > row.c || row.e < row.d)))
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), row.a, row.d, row.c - row.d, (row.a + row.b + row.c + row.d + row.e) / 5]
-  select [row.a, (if row.a < 0 { -(row.a) } else { row.a }), row.d, (row.a + row.b + row.c + row.d + row.e) / 5, row.c - row.d]
+  order by [(if row.a < 0 { -(row.a) } else { row.a }), row.a, row.d, (row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  select [row.a, (if row.a < 0 { -(row.a) } else { row.a }), row.d, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.c - row.d)]
 var flatResult = []
 for row in result {
   for x in row {

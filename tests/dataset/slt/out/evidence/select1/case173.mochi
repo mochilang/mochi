@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT a+b*2+c*3, e, a-b FROM t1 WHERE c BETWEEN b-2 AND d+2 AND b>c ORDER BY 1,3,2 */
 let result = from row in t1
-  where ((row.c >= row.b - 2 && row.c <= row.d + 2) && row.b > row.c)
-  order by [row.a + row.b * 2 + row.c * 3, row.a - row.b, row.e]
-  select [row.a + row.b * 2 + row.c * 3, row.e, row.a - row.b]
+  where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) && row.b > row.c)
+  order by [((row.a + (row.b * 2)) + (row.c * 3)), (row.a - row.b), row.e]
+  select [((row.a + (row.b * 2)) + (row.c * 3)), row.e, (row.a - row.b)]
 var flatResult = []
 for row in result {
   for x in row {
