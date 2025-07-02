@@ -27,12 +27,14 @@ let t =
 let result =
   from x in t
   group by x.ss_customer_sk into g
+  sort by [sum(from y in g select y.act_sales), g.key]
   select {ss_customer_sk: g.key, sumsales: sum(from y in g select y.act_sales)}
 
 json(result)
 
 test "TPCDS Q93 active sales" {
   expect result == [
-    {ss_customer_sk: 1, sumsales: 40.0}
+    {ss_customer_sk: 1, sumsales: 40.0},
+    {ss_customer_sk: 2, sumsales: 60.0}
   ]
 }
