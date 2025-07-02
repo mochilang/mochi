@@ -1,5 +1,5 @@
 /*
-# line: 543
+# line: 503
 */
 
 type t1Row {
@@ -223,15 +223,15 @@ let t1 = [
   },
 ]
 
-/* SELECT (a+b+c+d+e)/5, a+b*2, c-d, a, e, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE b>c ORDER BY 2,6,5,4,3,1 */
+/* SELECT CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, a+b*2+c*3+d*4+e*5, (a+b+c+d+e)/5, abs(b-c), abs(a), (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3 FROM t1 WHERE c BETWEEN b-2 AND d+2 ORDER BY 7,2,5,1,3,6,4 */
 let result = from row in t1
-  where row.b > row.c
-  order by [(row.a + (row.b * 2)), count(from x in t1
-  where x.b < row.b
-  select x), row.e, row.a, (row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
-  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a + (row.b * 2)), (row.c - row.d), row.a, row.e, count(from x in t1
-  where x.b < row.b
-  select x)]
+  where (row.c >= (row.b - 2) && row.c <= (row.d + 2))
+  order by [((row.a + (row.b * 2)) + (row.c * 3)), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if row.a < 0 { -(row.a) } else { row.a }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+  select [(if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x), ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
 for row in result {
   for x in row {
@@ -242,6 +242,6 @@ for x in flatResult {
   print(x)
 }
 
-test "case35" {
-  expect flatResult == [102, 307, -1, 103, 104, 0, 112, 338, 1, 110, 113, 2, 117, 354, 2, 116, 118, 3, 132, 400, -2, 132, 130, 6, 142, 426, -2, 144, 143, 8, 147, 443, -2, 145, 147, 9, 167, 505, 3, 167, 166, 13, 187, 563, -3, 187, 185, 17, 192, 578, 1, 190, 191, 18, 207, 626, -1, 208, 207, 21, 242, 730, -3, 242, 241, 28, 247, 742, -2, 246, 245, 29]
+test "case32" {
+  expect flatResult == [444, 1531, 102, 2, 103, 0, 607, 222, 1604, 107, 2, 107, 0, 643, 333, 1683, 112, 2, 110, 0, 674, 222, 1755, 117, 2, 116, 0, 705, 555, 2129, 142, 1, 144, 0, 846, 444, 2286, 152, 3, 151, 0, 910, 444, 2436, 162, 3, 161, 0, 970, 222, 2589, 172, 2, 171, 0, 1027, 333, 2653, 177, 3, 177, 0, 1066, 222, 2739, 182, 2, 181, 0, 1087, 111, 2802, 187, 2, 187, 0, 1121, 444, 2880, 192, 1, 190, 0, 1157, 555, 2946, 197, 1, 199, 0, 1187, 333, 3037, 202, 1, 200, 0, 1213, 555, 3176, 212, 3, 214, 0, 1273, 444, 3259, 217, 1, 218, 0, 1296, 444, 3331, 222, 1, 223, 0, 1331, 111, 3405, 227, 1, 226, 0, 1364, 555, 3477, 232, 1, 234, 0, 1392, 222, 3704, 247, 1, 246, 0, 1483]
 }

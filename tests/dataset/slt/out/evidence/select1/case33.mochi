@@ -227,9 +227,9 @@ let t1 = [
 let result = from row in t1
   where row.b > row.c
   order by [row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.c, row.b, row.e]
+  select x.c) { (row.a * 2) } else { (row.b * 10) }), row.c, row.b, row.e]
   select [row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.b, row.c, row.e]
+  select x.c) { (row.a * 2) } else { (row.b * 10) }), row.b, row.c, row.e]
 var flatResult = []
 for row in result {
   for x in row {
