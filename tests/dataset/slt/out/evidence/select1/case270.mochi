@@ -228,15 +228,16 @@ let result = from row in t1
   where ((row.c <= row.d - 2 || row.c >= row.d + 2))
   order by [(row.a + row.b + row.c + row.d + row.e) / 5, row.c]
   select [(row.a + row.b + row.c + row.d + row.e) / 5, row.c]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case270" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [107, 106, 117, 119, 127, 125, 152, 150, 162, 161, 167, 166, 177, 176, 187, 187, 192, 193, 212, 214, 217, 215, 222, 224, 232, 231, 237, 235, 242, 244]
 }
+
