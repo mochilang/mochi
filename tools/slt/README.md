@@ -11,7 +11,8 @@ file with an optional expected output next to it.
 tests/
   dataset/slt/
     evidence/    # downloaded `.test` files
-    out/         # generated Mochi programs and their outputs
+    out/
+      evidence/  # generated Mochi programs and outputs
 ```
 
 ## Commands
@@ -23,7 +24,7 @@ tests/
 go run ./cmd/mochi-slt fetch --files evidence/slt_lang_update.test
 
 # Convert tests to Mochi programs and execute them
-go run ./cmd/mochi-slt gen --run --out tests/dataset/slt/out
+go run ./cmd/mochi-slt gen --run --out tests/dataset/slt/out/evidence
 
 # Inspect available test cases in a file
 go run ./cmd/mochi-slt list --file evidence/slt_lang_update.test

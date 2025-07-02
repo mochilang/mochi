@@ -1,0 +1,37 @@
+/*
+UPDATE t1 SET x=2
+*/
+
+var t1 = [
+  {
+    x: 5,
+    y: "unknown",
+  },
+  {
+    x: 5,
+    y: "false",
+  },
+  {
+    x: 5,
+    y: "NULL",
+  },
+]
+
+/* UPDATE t1 SET x=2 */
+var i = 0
+while i < len(t1) {
+  var row = t1[i]
+  row.x = 2
+  t1[i] = row
+  i = i + 1
+}
+
+/* SELECT count(*) FROM t1 WHERE y='unknown' */
+let result = count(from row in t1
+  where row.y == "unknown"
+  select row)
+print(result)
+
+test "case8" {
+  expect result == 1
+}

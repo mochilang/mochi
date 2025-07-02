@@ -1,0 +1,98 @@
+/*
+CREATE TABLE t1( x INTEGER, y VARCHAR(8) )
+INSERT INTO t1 VALUES(1,'true')
+INSERT INTO t1 VALUES(0,'false')
+INSERT INTO t1 VALUES(NULL,'NULL')
+CREATE INDEX t1i1 ON t1(x)
+# EVIDENCE-OF: R-38515-45264 An UPDATE statement is used to modify a
+# subset of the values stored in zero or more rows of the database table
+# identified by the qualified-table-name specified as part of the UPDATE
+# statement.
+UPDATE t1 SET x=1 WHERE x>0
+UPDATE t1 SET x=2 WHERE x>0
+UPDATE t1 SET y='true' WHERE x>0
+UPDATE t1 SET y='unknown' WHERE x>0
+UPDATE t1 SET z='foo'
+UPDATE t1 SET z='foo' WHERE x>0
+# TBD-EVIDENCE-OF: R-55869-30521 If the UPDATE statement does not have a
+# WHERE clause, all rows in the table are modified by the UPDATE.
+UPDATE t1 SET x=3
+*/
+
+var t1 = [
+  {
+    x: 1,
+    y: "true",
+  },
+  {
+    x: 0,
+    y: "false",
+  },
+  {
+    x: null,
+    y: "NULL",
+  },
+]
+
+/* UPDATE t1 SET x=1 WHERE x>0 */
+var i = 0
+while i < len(t1) {
+  var row = t1[i]
+  if row.x > 0 {
+    row.x = 1
+    t1[i] = row
+  }
+  i = i + 1
+}
+
+/* UPDATE t1 SET x=2 WHERE x>0 */
+var i = 0
+while i < len(t1) {
+  var row = t1[i]
+  if row.x > 0 {
+    row.x = 2
+    t1[i] = row
+  }
+  i = i + 1
+}
+
+/* UPDATE t1 SET y='true' WHERE x>0 */
+var i = 0
+while i < len(t1) {
+  var row = t1[i]
+  if row.x > 0 {
+    row.y = "true"
+    t1[i] = row
+  }
+  i = i + 1
+}
+
+/* UPDATE t1 SET y='unknown' WHERE x>0 */
+var i = 0
+while i < len(t1) {
+  var row = t1[i]
+  if row.x > 0 {
+    row.y = "unknown"
+    t1[i] = row
+  }
+  i = i + 1
+}
+
+/* UPDATE t1 SET x=3 */
+var i = 0
+while i < len(t1) {
+  var row = t1[i]
+  row.x = 3
+  t1[i] = row
+  i = i + 1
+}
+
+/* SELECT count(*) FROM t1 WHERE x=3 */
+let result = count(from row in t1
+  where row.x == 3
+  select row)
+print(result)
+
+test "case1" {
+  expect result == 3
+}

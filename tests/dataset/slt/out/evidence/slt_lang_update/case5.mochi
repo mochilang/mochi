@@ -1,4 +1,6 @@
-// SQL: SELECT count(*) FROM t1 WHERE x=4
+/*
+skipif mssql
+*/
 
 let t1 = [
   {
@@ -15,6 +17,7 @@ let t1 = [
   },
 ]
 
+/* SELECT count(*) FROM t1 WHERE x=4 */
 let result = count(from row in t1
   where row.x == 4
   select row)
