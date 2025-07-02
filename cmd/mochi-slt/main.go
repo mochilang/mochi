@@ -49,12 +49,20 @@ func genCmd() *cobra.Command {
 	var start int
 	var end int
 	var caseRange string
+	var singleCase string
 	cmd := &cobra.Command{
 		Use:   "gen",
 		Short: "Generate Mochi tests from SLT files",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(fileList) > 0 {
 				files = fileList
+			}
+			if singleCase != "" {
+				s := strings.TrimPrefix(singleCase, "case")
+				if v, err := strconv.Atoi(s); err == nil {
+					start = v
+					end = v
+				}
 			}
 			if caseRange != "" {
 				parts := strings.Split(caseRange, "-")
@@ -74,7 +82,11 @@ func genCmd() *cobra.Command {
 					}
 				}
 			}
-			return logic.GenerateFiles(files, outDir, run, start, end)
+			err := logic.GenerateFiles(files, outDir, run, start, end)
+			if err == nil && singleCase != "" && outDir != "" {
+				fmt.Fprintf(cmd.OutOrStdout(), "generated %s case %s\n", outDir, singleCase)
+			}
+			return err
 		},
 	}
 	cmd.Flags().StringSliceVarP(&fileList, "files", "f", files, "SLT files to generate")
@@ -83,6 +95,7 @@ func genCmd() *cobra.Command {
 	cmd.Flags().IntVar(&start, "start", 0, "first case to generate (1-indexed)")
 	cmd.Flags().IntVar(&end, "end", 0, "last case to generate (inclusive)")
 	cmd.Flags().StringVar(&caseRange, "cases", "", "case range, e.g. case5-case10")
+	cmd.Flags().StringVar(&singleCase, "case", "", "single case to generate")
 	return cmd
 }
 
