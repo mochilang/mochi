@@ -224,12 +224,13 @@ let t1 = [
 ]
 
 /* SELECT CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, c-d, e FROM t1 WHERE (e>a AND e<b) ORDER BY 2,3,1 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
   where ((row.e > row.a && row.e < row.b))
-  order by [row.c - row.d, row.e, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 })]
-  select [(if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.c - row.d, row.e]
+  order by [(row.c - row.d), row.e, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
+  select [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.c - row.d), row.e]
 var flatResult = []
 for row in result {
   for x in row {

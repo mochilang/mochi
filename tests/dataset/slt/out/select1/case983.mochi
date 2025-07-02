@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT d-e, c FROM t1 WHERE (e>a AND e<b) ORDER BY 1,2 */
 let result = from row in t1
   where ((row.e > row.a && row.e < row.b))
-  order by [row.d - row.e, row.c]
-  select [row.d - row.e, row.c]
+  order by [(row.d - row.e), row.c]
+  select [(row.d - row.e), row.c]
 var flatResult = []
 for row in result {
   for x in row {

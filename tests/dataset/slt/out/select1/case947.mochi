@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT e FROM t1 WHERE (e>c OR e<d) OR (c<=d-2 OR c>=d+2) OR (e>a AND e<b) ORDER BY 1 */
 let result = from row in t1
-  where ((((row.e > row.c || row.e < row.d)) || ((row.c <= row.d - 2 || row.c >= row.d + 2))) || ((row.e > row.a && row.e < row.b)))
+  where ((((row.e > row.c || row.e < row.d)) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))) || ((row.e > row.a && row.e < row.b)))
   order by row.e
   select row.e
 for x in result {

@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT a-b FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND (e>c OR e<d) AND a>b ORDER BY 1 */
 let result = from row in t1
   where (((row.d < 110 || row.d > 150) && ((row.e > row.c || row.e < row.d))) && row.a > row.b)
-  order by row.a - row.b
-  select row.a - row.b
+  order by (row.a - row.b)
+  select (row.a - row.b)
 for x in result {
   print(x)
 }

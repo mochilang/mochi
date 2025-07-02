@@ -224,15 +224,16 @@ let t1 = [
 ]
 
 /* SELECT (a+b+c+d+e)/5, d, a+b*2, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), b-c, c-d, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END FROM t1 ORDER BY 6,7,2,4,1,5,3 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  order by [row.c - row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.d, count(from x in t1
+  order by [(row.c - row.d), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.d, count(from x in t1
   where x.b < row.b
-  select x), (row.a + row.b + row.c + row.d + row.e) / 5, row.b - row.c, row.a + row.b * 2]
-  select [(row.a + row.b + row.c + row.d + row.e) / 5, row.d, row.a + row.b * 2, count(from x in t1
+  select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.b - row.c), (row.a + (row.b * 2))]
+  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d, (row.a + (row.b * 2)), count(from x in t1
   where x.b < row.b
-  select x), row.b - row.c, row.c - row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 })]
+  select x), (row.b - row.c), (row.c - row.d), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
 var flatResult = []
 for row in result {
   for x in row {
