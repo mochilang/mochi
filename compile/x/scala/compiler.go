@@ -329,6 +329,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Break != nil:
@@ -724,6 +726,82 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 	if c.env != nil {
 		c.env = oldEnv
 	}
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	target := sanitizeName(u.Target)
+	if alias, ok := c.paramAlias[u.Target]; ok {
+		target = alias
+	}
+
+	idx := c.newTemp("i")
+	c.writeln(fmt.Sprintf("var %s = 0", idx))
+	c.writeln(fmt.Sprintf("while (%s < %s.length) {", idx, target))
+	c.indent++
+
+	item := c.newTemp("it")
+	c.use("_indexList")
+	c.writeln(fmt.Sprintf("var %s = _indexList(%s, %s)", item, target, idx))
+
+	origEnv := c.env
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if st, ok := lt.Elem.(types.StructType); ok {
+					for _, f := range st.Order {
+						child.SetVar(f, st.Fields[f], true)
+						typ := scalaType(st.Fields[f])
+						if typ != "Any" {
+							c.writeln(fmt.Sprintf("val %s: %s = %s.%s", sanitizeName(f), typ, item, sanitizeName(f)))
+						} else {
+							c.writeln(fmt.Sprintf("val %s = %s.%s", sanitizeName(f), item, sanitizeName(f)))
+						}
+					}
+				}
+			}
+		}
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (%s) {", cond))
+		c.indent++
+	}
+
+	updates := make([]string, len(u.Set.Items))
+	for i, it := range u.Set.Items {
+		keyStr, _ := identName(it.Key)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		updates[i] = fmt.Sprintf("%s = %s", sanitizeName(keyStr), val)
+	}
+	if len(updates) > 0 {
+		c.writeln(fmt.Sprintf("%s = %s.copy(%s)", item, item, strings.Join(updates, ", ")))
+	}
+
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+
+	c.writeln(fmt.Sprintf("%s.update(%s, %s)", target, idx, item))
+	c.writeln(fmt.Sprintf("%s = %s + 1", idx, idx))
+
+	if c.env != nil {
+		c.env = origEnv
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -1585,6 +1663,12 @@ func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 			return types.BoolType{}
 		case "string":
 			return types.StringType{}
+		default:
+			if c.env != nil {
+				if st, ok := c.env.GetStruct(*t.Simple); ok {
+					return st
+				}
+			}
 		}
 	}
 	if t.Generic != nil {
@@ -1623,6 +1707,10 @@ func scalaType(t types.Type) string {
 		return "scala.collection.mutable.ArrayBuffer[" + scalaType(tt.Elem) + "]"
 	case types.MapType:
 		return "scala.collection.mutable.Map[" + scalaType(tt.Key) + ", " + scalaType(tt.Value) + "]"
+	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
+		return sanitizeName(tt.Name)
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
