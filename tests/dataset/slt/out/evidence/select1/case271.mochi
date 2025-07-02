@@ -234,15 +234,16 @@ let result = from row in t1
   select [row.a + row.b * 2 + row.c * 3, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a + row.b * 2, count(from x in t1
   where x.b < row.b
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case271" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [635, 1612, 1, 333, 317, 1, 674, 1680, 1, 222, 335, 2, 708, 1757, 1, 222, 351, 3, 738, 1826, 1, 222, 369, 4, 905, 2281, 1, 333, 455, 10, 966, 2432, 1, 444, 483, 12, 1000, 2501, 1, 333, 502, 13, 1057, 2654, 1, 444, 529, 15, 1121, 2806, 1, 333, 560, 17, 1158, 2878, 1, 222, 579, 18, 1338, 3331, 1, 222, 666, 24, 1391, 3473, 1, 333, 698, 26, 1416, 3553, 1, 444, 711, 27, 827, 2046, 2, 222, 416, 7, 851, 2131, 2, 222, 428, 8, 880, 2202, 2, 444, 439, 9, 1030, 2579, 2, 444, 514, 14, 1207, 3039, 2, 333, 601, 20, 1241, 3114, 2, 222, 617, 21, 1484, 3706, 2, 111, 743, 29, 940, 2349, 3, 333, 475, 11, 1096, 2728, 3, 333, 544, 16, 1180, 2949, 3, 333, 595, 19, 1277, 3175, 3, 333, 635, 22, 1297, 3260, 3, 222, 652, 23, 1360, 3399, 3, 333, 685, 25, 760, 1902, 4, 222, 385, 5, 793, 1985, 4, 333, 391, 6, 1455, 3629, 4, 444, 723, 28]
 }
+
