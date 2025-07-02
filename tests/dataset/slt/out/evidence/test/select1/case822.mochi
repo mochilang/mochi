@@ -211,12 +211,15 @@ let t1 = [
   },
 ]
 
-/* SELECT abs(b-c) FROM t1 WHERE (c<=d-2 OR c>=d+2) AND c>d AND (a>b-2 AND a<b+2) ORDER BY 1 */
+/* SELECT c FROM t1 WHERE d>e AND (a>b-2 AND a<b+2) AND c BETWEEN b-2 AND d+2 ORDER BY 1 */
 let result = from row in t1
-  where ((((row["c"] <= row["d"] - 2 || row["c"] >= row["d"] + 2)) && row["c"] > row["d"]) && ((row["a"] > row["b"] - 2 && row["a"] < row["b"] + 2)))
+  where ((row["d"] > row["e"] && ((row["a"] > row["b"] - 2 && row["a"] < row["b"] + 2))) && (row["c"] >= row["b"] - 2 && row["c"] <= row["d"] + 2))
   order by 1
-  select abs(row["b"] - row["c"])
+  select row["c"]
 for x in result {
   print(x)
 }
 
+test "case822" {
+  expect result == [113, 134, 137, 166, 184]
+}
