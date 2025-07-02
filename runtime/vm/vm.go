@@ -7219,6 +7219,12 @@ func valueLess(a, b Value) bool {
 			return a.Int < b.Int
 		case ValueFloat:
 			return float64(a.Int) < b.Float
+		case ValueBool:
+			bi := 0
+			if b.Bool {
+				bi = 1
+			}
+			return a.Int < bi
 		}
 	case ValueFloat:
 		switch b.Tag {
@@ -7226,6 +7232,12 @@ func valueLess(a, b Value) bool {
 			return a.Float < float64(b.Int)
 		case ValueFloat:
 			return a.Float < b.Float
+		case ValueBool:
+			bi := 0
+			if b.Bool {
+				bi = 1
+			}
+			return a.Float < float64(bi)
 		}
 	case ValueStr:
 		if b.Tag == ValueStr {
@@ -7234,6 +7246,20 @@ func valueLess(a, b Value) bool {
 	case ValueBool:
 		if b.Tag == ValueBool {
 			return !a.Bool && b.Bool
+		}
+		if b.Tag == ValueInt {
+			ai := 0
+			if a.Bool {
+				ai = 1
+			}
+			return ai < b.Int
+		}
+		if b.Tag == ValueFloat {
+			ai := 0
+			if a.Bool {
+				ai = 1
+			}
+			return float64(ai) < b.Float
 		}
 	case ValueList:
 		if b.Tag == ValueList {
