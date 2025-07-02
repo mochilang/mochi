@@ -1,2 +1,2 @@
-13
-   test TPCDS Q13 first                ... ok (1.0µs)
+[{"avg_ss_ext_sales_price":100,"avg_ss_ext_wholesale_cost":50,"avg_ss_quantity":10,"sum_ss_ext_wholesale_cost":50}]
+   test TPCDS Q13 averages             ... ok (3.0µs)

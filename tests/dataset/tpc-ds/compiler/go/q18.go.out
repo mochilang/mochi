@@ -39,39 +39,301 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q18_first() {
-	expect(_equal(result, 18))
+type CatalogSale struct {
+	Cs_quantity         int     `json:"cs_quantity"`
+	Cs_list_price       float64 `json:"cs_list_price"`
+	Cs_coupon_amt       float64 `json:"cs_coupon_amt"`
+	Cs_sales_price      float64 `json:"cs_sales_price"`
+	Cs_net_profit       float64 `json:"cs_net_profit"`
+	Cs_bill_cdemo_sk    int     `json:"cs_bill_cdemo_sk"`
+	Cs_bill_customer_sk int     `json:"cs_bill_customer_sk"`
+	Cs_sold_date_sk     int     `json:"cs_sold_date_sk"`
+	Cs_item_sk          int     `json:"cs_item_sk"`
 }
 
-type TItem struct {
-	Id  int `json:"id"`
-	Val int `json:"val"`
+type CustomerDemographics struct {
+	Cd_demo_sk          int    `json:"cd_demo_sk"`
+	Cd_gender           string `json:"cd_gender"`
+	Cd_education_status string `json:"cd_education_status"`
+	Cd_dep_count        int    `json:"cd_dep_count"`
 }
 
-var t []TItem
-var vals []int
-var result any
+type Customer struct {
+	C_customer_sk      int `json:"c_customer_sk"`
+	C_current_cdemo_sk int `json:"c_current_cdemo_sk"`
+	C_current_addr_sk  int `json:"c_current_addr_sk"`
+	C_birth_year       int `json:"c_birth_year"`
+	C_birth_month      int `json:"c_birth_month"`
+}
+
+type CustomerAddress struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_country    string `json:"ca_country"`
+	Ca_state      string `json:"ca_state"`
+	Ca_county     string `json:"ca_county"`
+}
+
+type DateDim struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+}
+
+type Item struct {
+	I_item_sk int    `json:"i_item_sk"`
+	I_item_id string `json:"i_item_id"`
+}
+
+func test_TPCDS_Q18_averages() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"i_item_id":  "I1",
+		"ca_country": "US",
+		"ca_state":   "CA",
+		"ca_county":  "County1",
+		"agg1":       1.0,
+		"agg2":       10.0,
+		"agg3":       1.0,
+		"agg4":       9.0,
+		"agg5":       2.0,
+		"agg6":       1980.0,
+		"agg7":       2.0,
+	}}))
+}
+
+type Catalog_salesItem struct {
+	Cs_quantity         int     `json:"cs_quantity"`
+	Cs_list_price       float64 `json:"cs_list_price"`
+	Cs_coupon_amt       float64 `json:"cs_coupon_amt"`
+	Cs_sales_price      float64 `json:"cs_sales_price"`
+	Cs_net_profit       float64 `json:"cs_net_profit"`
+	Cs_bill_cdemo_sk    int     `json:"cs_bill_cdemo_sk"`
+	Cs_bill_customer_sk int     `json:"cs_bill_customer_sk"`
+	Cs_sold_date_sk     int     `json:"cs_sold_date_sk"`
+	Cs_item_sk          int     `json:"cs_item_sk"`
+}
+
+var catalog_sales []Catalog_salesItem
+
+type Customer_demographicsItem struct {
+	Cd_demo_sk          int    `json:"cd_demo_sk"`
+	Cd_gender           string `json:"cd_gender"`
+	Cd_education_status string `json:"cd_education_status"`
+	Cd_dep_count        int    `json:"cd_dep_count"`
+}
+
+var customer_demographics []Customer_demographicsItem
+
+type CustomerItem struct {
+	C_customer_sk      int `json:"c_customer_sk"`
+	C_current_cdemo_sk int `json:"c_current_cdemo_sk"`
+	C_current_addr_sk  int `json:"c_current_addr_sk"`
+	C_birth_year       int `json:"c_birth_year"`
+	C_birth_month      int `json:"c_birth_month"`
+}
+
+var customer []CustomerItem
+
+type Customer_addressItem struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_country    string `json:"ca_country"`
+	Ca_state      string `json:"ca_state"`
+	Ca_county     string `json:"ca_county"`
+}
+
+var customer_address []Customer_addressItem
+
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+}
+
+var date_dim []Date_dimItem
+
+type ItemItem struct {
+	I_item_sk int    `json:"i_item_sk"`
+	I_item_id string `json:"i_item_id"`
+}
+
+var item []ItemItem
+var joined []map[string]any
+var result []map[string]any
 
 func main() {
 	failures := 0
-	t = _cast[[]TItem]([]TItem{TItem{
-		Id:  0,
-		Val: 0,
-	}, TItem{
-		Id:  1,
-		Val: 18,
+	catalog_sales = _cast[[]Catalog_salesItem]([]Catalog_salesItem{Catalog_salesItem{
+		Cs_quantity:         1,
+		Cs_list_price:       10.0,
+		Cs_coupon_amt:       1.0,
+		Cs_sales_price:      9.0,
+		Cs_net_profit:       2.0,
+		Cs_bill_cdemo_sk:    1,
+		Cs_bill_customer_sk: 1,
+		Cs_sold_date_sk:     1,
+		Cs_item_sk:          1,
 	}})
-	vals = func() []int {
-		_res := []int{}
-		for _, r := range t {
-			_res = append(_res, r.Val)
+	customer_demographics = _cast[[]Customer_demographicsItem]([]Customer_demographicsItem{Customer_demographicsItem{
+		Cd_demo_sk:          1,
+		Cd_gender:           "M",
+		Cd_education_status: "College",
+		Cd_dep_count:        2,
+	}, Customer_demographicsItem{
+		Cd_demo_sk:          2,
+		Cd_gender:           "F",
+		Cd_education_status: "College",
+		Cd_dep_count:        2,
+	}})
+	customer = _cast[[]CustomerItem]([]CustomerItem{CustomerItem{
+		C_customer_sk:      1,
+		C_current_cdemo_sk: 2,
+		C_current_addr_sk:  1,
+		C_birth_year:       1980,
+		C_birth_month:      1,
+	}})
+	customer_address = _cast[[]Customer_addressItem]([]Customer_addressItem{Customer_addressItem{
+		Ca_address_sk: 1,
+		Ca_country:    "US",
+		Ca_state:      "CA",
+		Ca_county:     "County1",
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_year:    1999,
+	}})
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
+		I_item_sk: 1,
+		I_item_id: "I1",
+	}})
+	joined = func() []map[string]any {
+		_res := []map[string]any{}
+		for _, cs := range catalog_sales {
+			for _, cd1 := range customer_demographics {
+				if !(((cs.Cs_bill_cdemo_sk == cd1.Cd_demo_sk) && (cd1.Cd_gender == "M")) && (cd1.Cd_education_status == "College")) {
+					continue
+				}
+				for _, c := range customer {
+					if !(cs.Cs_bill_customer_sk == c.C_customer_sk) {
+						continue
+					}
+					for _, cd2 := range customer_demographics {
+						if !(c.C_current_cdemo_sk == cd2.Cd_demo_sk) {
+							continue
+						}
+						for _, ca := range customer_address {
+							if !(c.C_current_addr_sk == ca.Ca_address_sk) {
+								continue
+							}
+							for _, d := range date_dim {
+								if !((cs.Cs_sold_date_sk == d.D_date_sk) && (d.D_year == 1999)) {
+									continue
+								}
+								for _, i := range item {
+									if !(cs.Cs_item_sk == i.I_item_sk) {
+										continue
+									}
+									_res = append(_res, map[string]any{
+										"i_item_id":  i.I_item_id,
+										"ca_country": ca.Ca_country,
+										"ca_state":   ca.Ca_state,
+										"ca_county":  ca.Ca_county,
+										"q":          cs.Cs_quantity,
+										"lp":         cs.Cs_list_price,
+										"cp":         cs.Cs_coupon_amt,
+										"sp":         cs.Cs_sales_price,
+										"np":         cs.Cs_net_profit,
+										"by":         c.C_birth_year,
+										"dep":        cd1.Cd_dep_count,
+									})
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		return _res
 	}()
-	result = _first(_cast[[]any](_reverseSlice[int](vals)))
+	result = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, j := range joined {
+			key := map[string]any{
+				"i_item_id":  j["i_item_id"],
+				"ca_country": j["ca_country"],
+				"ca_state":   j["ca_state"],
+				"ca_county":  j["ca_county"],
+			}
+			ks := fmt.Sprint(key)
+			g, ok := groups[ks]
+			if !ok {
+				g = &data.Group{Key: key}
+				groups[ks] = g
+				order = append(order, ks)
+			}
+			g.Items = append(g.Items, j)
+		}
+		_res := []map[string]any{}
+		for _, ks := range order {
+			g := groups[ks]
+			_res = append(_res, map[string]any{
+				"i_item_id":  _cast[map[string]any](g.Key)["i_item_id"],
+				"ca_country": _cast[map[string]any](g.Key)["ca_country"],
+				"ca_state":   _cast[map[string]any](g.Key)["ca_state"],
+				"ca_county":  _cast[map[string]any](g.Key)["ca_county"],
+				"agg1": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["q"])
+					}
+					return _res
+				}()),
+				"agg2": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["lp"])
+					}
+					return _res
+				}()),
+				"agg3": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["cp"])
+					}
+					return _res
+				}()),
+				"agg4": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["sp"])
+					}
+					return _res
+				}()),
+				"agg5": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["np"])
+					}
+					return _res
+				}()),
+				"agg6": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["by"])
+					}
+					return _res
+				}()),
+				"agg7": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["dep"])
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q18 first")
+		printTestStart("TPCDS Q18 averages")
 		start := time.Now()
 		var failed error
 		func() {
@@ -80,7 +342,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q18_first()
+			test_TPCDS_Q18_averages()
 		}()
 		if failed != nil {
 			failures++
@@ -92,6 +354,57 @@ func main() {
 	if failures > 0 {
 		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
 	}
+}
+
+func _avg(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []bool:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		default:
+			panic("avg() expects list or group")
+		}
+	}
+	if len(items) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("avg() expects numbers")
+		}
+	}
+	return sum / float64(len(items))
 }
 
 func _cast[T any](v any) T {
@@ -188,57 +501,4 @@ func _equal(a, b any) bool {
 		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
 	}
 	return reflect.DeepEqual(a, b)
-}
-
-func _first(v any) any {
-	if g, ok := v.(*data.Group); ok {
-		if len(g.Items) == 0 {
-			return nil
-		}
-		return g.Items[0]
-	}
-	switch s := v.(type) {
-	case []any:
-		if len(s) == 0 {
-			return nil
-		}
-		return s[0]
-	case []int:
-		if len(s) == 0 {
-			return 0
-		}
-		return s[0]
-	case []float64:
-		if len(s) == 0 {
-			return 0.0
-		}
-		return s[0]
-	case []string:
-		if len(s) == 0 {
-			return ""
-		}
-		return s[0]
-	case []bool:
-		if len(s) == 0 {
-			return false
-		}
-		return s[0]
-	default:
-		rv := reflect.ValueOf(v)
-		if rv.Kind() == reflect.Slice && rv.Len() > 0 {
-			return rv.Index(0).Interface()
-		}
-		if rv.Kind() == reflect.Array && rv.Len() > 0 {
-			return rv.Index(0).Interface()
-		}
-	}
-	return nil
-}
-
-func _reverseSlice[T any](s []T) []T {
-	out := append([]T{}, s...)
-	for i, j := 0, len(out)-1; i < j; i, j = i+1, j-1 {
-		out[i], out[j] = out[j], out[i]
-	}
-	return out
 }

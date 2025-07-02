@@ -39,39 +39,230 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q13_first() {
-	expect(_equal(result, 13))
+type StoreSale struct {
+	Ss_store_sk           int     `json:"ss_store_sk"`
+	Ss_sold_date_sk       int     `json:"ss_sold_date_sk"`
+	Ss_hdemo_sk           int     `json:"ss_hdemo_sk"`
+	Ss_cdemo_sk           int     `json:"ss_cdemo_sk"`
+	Ss_addr_sk            int     `json:"ss_addr_sk"`
+	Ss_sales_price        float64 `json:"ss_sales_price"`
+	Ss_net_profit         float64 `json:"ss_net_profit"`
+	Ss_quantity           int     `json:"ss_quantity"`
+	Ss_ext_sales_price    float64 `json:"ss_ext_sales_price"`
+	Ss_ext_wholesale_cost float64 `json:"ss_ext_wholesale_cost"`
 }
 
-type TItem struct {
-	Id  int `json:"id"`
-	Val int `json:"val"`
+type Store struct {
+	S_store_sk int    `json:"s_store_sk"`
+	S_state    string `json:"s_state"`
 }
 
-var t []TItem
-var vals []int
-var result any
+type CustomerDemographics struct {
+	Cd_demo_sk          int    `json:"cd_demo_sk"`
+	Cd_marital_status   string `json:"cd_marital_status"`
+	Cd_education_status string `json:"cd_education_status"`
+}
+
+type HouseholdDemographics struct {
+	Hd_demo_sk   int `json:"hd_demo_sk"`
+	Hd_dep_count int `json:"hd_dep_count"`
+}
+
+type CustomerAddress struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_country    string `json:"ca_country"`
+	Ca_state      string `json:"ca_state"`
+}
+
+type DateDim struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+}
+
+func test_TPCDS_Q13_averages() {
+	expect(_equal(result, []map[string]float64{map[string]float64{
+		"avg_ss_quantity":           10.0,
+		"avg_ss_ext_sales_price":    100.0,
+		"avg_ss_ext_wholesale_cost": 50.0,
+		"sum_ss_ext_wholesale_cost": 50.0,
+	}}))
+}
+
+type Store_salesItem struct {
+	Ss_store_sk           int     `json:"ss_store_sk"`
+	Ss_sold_date_sk       int     `json:"ss_sold_date_sk"`
+	Ss_hdemo_sk           int     `json:"ss_hdemo_sk"`
+	Ss_cdemo_sk           int     `json:"ss_cdemo_sk"`
+	Ss_addr_sk            int     `json:"ss_addr_sk"`
+	Ss_sales_price        float64 `json:"ss_sales_price"`
+	Ss_net_profit         float64 `json:"ss_net_profit"`
+	Ss_quantity           int     `json:"ss_quantity"`
+	Ss_ext_sales_price    float64 `json:"ss_ext_sales_price"`
+	Ss_ext_wholesale_cost float64 `json:"ss_ext_wholesale_cost"`
+}
+
+var store_sales []Store_salesItem
+
+type StoreItem struct {
+	S_store_sk int    `json:"s_store_sk"`
+	S_state    string `json:"s_state"`
+}
+
+var store []StoreItem
+
+type Customer_demographicsItem struct {
+	Cd_demo_sk          int    `json:"cd_demo_sk"`
+	Cd_marital_status   string `json:"cd_marital_status"`
+	Cd_education_status string `json:"cd_education_status"`
+}
+
+var customer_demographics []Customer_demographicsItem
+
+type Household_demographicsItem struct {
+	Hd_demo_sk   int `json:"hd_demo_sk"`
+	Hd_dep_count int `json:"hd_dep_count"`
+}
+
+var household_demographics []Household_demographicsItem
+
+type Customer_addressItem struct {
+	Ca_address_sk int    `json:"ca_address_sk"`
+	Ca_country    string `json:"ca_country"`
+	Ca_state      string `json:"ca_state"`
+}
+
+var customer_address []Customer_addressItem
+
+type Date_dimItem struct {
+	D_date_sk int `json:"d_date_sk"`
+	D_year    int `json:"d_year"`
+}
+
+var date_dim []Date_dimItem
+var filtered []Store_salesItem
+var result []map[string]float64
 
 func main() {
 	failures := 0
-	t = _cast[[]TItem]([]TItem{TItem{
-		Id:  0,
-		Val: 0,
-	}, TItem{
-		Id:  1,
-		Val: 13,
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_store_sk:           1,
+		Ss_sold_date_sk:       1,
+		Ss_hdemo_sk:           1,
+		Ss_cdemo_sk:           1,
+		Ss_addr_sk:            1,
+		Ss_sales_price:        120.0,
+		Ss_net_profit:         150.0,
+		Ss_quantity:           10,
+		Ss_ext_sales_price:    100.0,
+		Ss_ext_wholesale_cost: 50.0,
 	}})
-	vals = func() []int {
-		_res := []int{}
-		for _, r := range t {
-			_res = append(_res, r.Val)
+	store = _cast[[]StoreItem]([]StoreItem{StoreItem{
+		S_store_sk: 1,
+		S_state:    "CA",
+	}})
+	customer_demographics = _cast[[]Customer_demographicsItem]([]Customer_demographicsItem{Customer_demographicsItem{
+		Cd_demo_sk:          1,
+		Cd_marital_status:   "M1",
+		Cd_education_status: "ES1",
+	}})
+	household_demographics = _cast[[]Household_demographicsItem]([]Household_demographicsItem{Household_demographicsItem{
+		Hd_demo_sk:   1,
+		Hd_dep_count: 3,
+	}})
+	customer_address = _cast[[]Customer_addressItem]([]Customer_addressItem{Customer_addressItem{
+		Ca_address_sk: 1,
+		Ca_country:    "United States",
+		Ca_state:      "CA",
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk: 1,
+		D_year:    2001,
+	}})
+	filtered = func() []Store_salesItem {
+		_res := []Store_salesItem{}
+		for _, ss := range store_sales {
+			for _, s := range store {
+				if !(ss.Ss_store_sk == s.S_store_sk) {
+					continue
+				}
+				for _, cd := range customer_demographics {
+					if !(((ss.Ss_cdemo_sk == cd.Cd_demo_sk) && (cd.Cd_marital_status == "M1")) && (cd.Cd_education_status == "ES1")) {
+						continue
+					}
+					for _, hd := range household_demographics {
+						if !((ss.Ss_hdemo_sk == hd.Hd_demo_sk) && (hd.Hd_dep_count == 3)) {
+							continue
+						}
+						for _, ca := range customer_address {
+							if !(((ss.Ss_addr_sk == ca.Ca_address_sk) && (ca.Ca_country == "United States")) && (ca.Ca_state == "CA")) {
+								continue
+							}
+							for _, d := range date_dim {
+								if !((ss.Ss_sold_date_sk == d.D_date_sk) && (d.D_year == 2001)) {
+									continue
+								}
+								_res = append(_res, ss)
+							}
+						}
+					}
+				}
+			}
 		}
 		return _res
 	}()
-	result = _first(_cast[[]any](_reverseSlice[int](vals)))
+	result = func() []map[string]float64 {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, r := range filtered {
+			key := map[any]any{}
+			ks := fmt.Sprint(key)
+			g, ok := groups[ks]
+			if !ok {
+				g = &data.Group{Key: key}
+				groups[ks] = g
+				order = append(order, ks)
+			}
+			g.Items = append(g.Items, r)
+		}
+		_res := []map[string]float64{}
+		for _, ks := range order {
+			g := groups[ks]
+			_res = append(_res, map[string]float64{
+				"avg_ss_quantity": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["ss_quantity"])
+					}
+					return _res
+				}()),
+				"avg_ss_ext_sales_price": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["ss_ext_sales_price"])
+					}
+					return _res
+				}()),
+				"avg_ss_ext_wholesale_cost": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["ss_ext_wholesale_cost"])
+					}
+					return _res
+				}()),
+				"sum_ss_ext_wholesale_cost": _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["ss_ext_wholesale_cost"])
+					}
+					return _res
+				}()),
+			})
+		}
+		return _res
+	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q13 first")
+		printTestStart("TPCDS Q13 averages")
 		start := time.Now()
 		var failed error
 		func() {
@@ -80,7 +271,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q13_first()
+			test_TPCDS_Q13_averages()
 		}()
 		if failed != nil {
 			failures++
@@ -92,6 +283,57 @@ func main() {
 	if failures > 0 {
 		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
 	}
+}
+
+func _avg(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []bool:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		default:
+			panic("avg() expects list or group")
+		}
+	}
+	if len(items) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("avg() expects numbers")
+		}
+	}
+	return sum / float64(len(items))
 }
 
 func _cast[T any](v any) T {
@@ -190,55 +432,42 @@ func _equal(a, b any) bool {
 	return reflect.DeepEqual(a, b)
 }
 
-func _first(v any) any {
+func _sum(v any) float64 {
+	var items []any
 	if g, ok := v.(*data.Group); ok {
-		if len(g.Items) == 0 {
-			return nil
-		}
-		return g.Items[0]
-	}
-	switch s := v.(type) {
-	case []any:
-		if len(s) == 0 {
-			return nil
-		}
-		return s[0]
-	case []int:
-		if len(s) == 0 {
-			return 0
-		}
-		return s[0]
-	case []float64:
-		if len(s) == 0 {
-			return 0.0
-		}
-		return s[0]
-	case []string:
-		if len(s) == 0 {
-			return ""
-		}
-		return s[0]
-	case []bool:
-		if len(s) == 0 {
-			return false
-		}
-		return s[0]
-	default:
-		rv := reflect.ValueOf(v)
-		if rv.Kind() == reflect.Slice && rv.Len() > 0 {
-			return rv.Index(0).Interface()
-		}
-		if rv.Kind() == reflect.Array && rv.Len() > 0 {
-			return rv.Index(0).Interface()
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string, []bool:
+			panic("sum() expects numbers")
+		default:
+			panic("sum() expects list or group")
 		}
 	}
-	return nil
-}
-
-func _reverseSlice[T any](s []T) []T {
-	out := append([]T{}, s...)
-	for i, j := 0, len(out)-1; i < j; i, j = i+1, j-1 {
-		out[i], out[j] = out[j], out[i]
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("sum() expects numbers")
+		}
 	}
-	return out
+	return sum
 }

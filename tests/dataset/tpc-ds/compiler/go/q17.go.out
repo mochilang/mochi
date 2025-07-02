@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -39,39 +40,291 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_TPCDS_Q17_first() {
-	expect(_equal(result, 17))
+type StoreSale struct {
+	Ss_sold_date_sk  int `json:"ss_sold_date_sk"`
+	Ss_item_sk       int `json:"ss_item_sk"`
+	Ss_customer_sk   int `json:"ss_customer_sk"`
+	Ss_ticket_number int `json:"ss_ticket_number"`
+	Ss_quantity      int `json:"ss_quantity"`
+	Ss_store_sk      int `json:"ss_store_sk"`
 }
 
-type TItem struct {
-	Id  int `json:"id"`
-	Val int `json:"val"`
+type StoreReturn struct {
+	Sr_returned_date_sk int `json:"sr_returned_date_sk"`
+	Sr_customer_sk      int `json:"sr_customer_sk"`
+	Sr_item_sk          int `json:"sr_item_sk"`
+	Sr_ticket_number    int `json:"sr_ticket_number"`
+	Sr_return_quantity  int `json:"sr_return_quantity"`
 }
 
-var t []TItem
-var vals []int
-var result any
+type CatalogSale struct {
+	Cs_sold_date_sk     int `json:"cs_sold_date_sk"`
+	Cs_item_sk          int `json:"cs_item_sk"`
+	Cs_bill_customer_sk int `json:"cs_bill_customer_sk"`
+	Cs_quantity         int `json:"cs_quantity"`
+}
+
+type DateDim struct {
+	D_date_sk      int    `json:"d_date_sk"`
+	D_quarter_name string `json:"d_quarter_name"`
+}
+
+type Store struct {
+	S_store_sk int    `json:"s_store_sk"`
+	S_state    string `json:"s_state"`
+}
+
+type Item struct {
+	I_item_sk   int    `json:"i_item_sk"`
+	I_item_id   string `json:"i_item_id"`
+	I_item_desc string `json:"i_item_desc"`
+}
+
+func test_TPCDS_Q17_stats() {
+	expect(_equal(result, []map[string]any{map[string]any{
+		"i_item_id":                   "I1",
+		"i_item_desc":                 "Item 1",
+		"s_state":                     "CA",
+		"store_sales_quantitycount":   1,
+		"store_sales_quantityave":     10.0,
+		"store_sales_quantitystdev":   0.0,
+		"store_sales_quantitycov":     0.0,
+		"store_returns_quantitycount": 1,
+		"store_returns_quantityave":   2.0,
+		"store_returns_quantitystdev": 0.0,
+		"store_returns_quantitycov":   0.0,
+		"catalog_sales_quantitycount": 1,
+		"catalog_sales_quantityave":   5.0,
+		"catalog_sales_quantitystdev": 0.0,
+		"catalog_sales_quantitycov":   0.0,
+	}}))
+}
+
+type Store_salesItem struct {
+	Ss_sold_date_sk  int `json:"ss_sold_date_sk"`
+	Ss_item_sk       int `json:"ss_item_sk"`
+	Ss_customer_sk   int `json:"ss_customer_sk"`
+	Ss_ticket_number int `json:"ss_ticket_number"`
+	Ss_quantity      int `json:"ss_quantity"`
+	Ss_store_sk      int `json:"ss_store_sk"`
+}
+
+var store_sales []Store_salesItem
+
+type Store_returnsItem struct {
+	Sr_returned_date_sk int `json:"sr_returned_date_sk"`
+	Sr_customer_sk      int `json:"sr_customer_sk"`
+	Sr_item_sk          int `json:"sr_item_sk"`
+	Sr_ticket_number    int `json:"sr_ticket_number"`
+	Sr_return_quantity  int `json:"sr_return_quantity"`
+}
+
+var store_returns []Store_returnsItem
+
+type Catalog_salesItem struct {
+	Cs_sold_date_sk     int `json:"cs_sold_date_sk"`
+	Cs_item_sk          int `json:"cs_item_sk"`
+	Cs_bill_customer_sk int `json:"cs_bill_customer_sk"`
+	Cs_quantity         int `json:"cs_quantity"`
+}
+
+var catalog_sales []Catalog_salesItem
+
+type Date_dimItem struct {
+	D_date_sk      int    `json:"d_date_sk"`
+	D_quarter_name string `json:"d_quarter_name"`
+}
+
+var date_dim []Date_dimItem
+
+type StoreItem struct {
+	S_store_sk int    `json:"s_store_sk"`
+	S_state    string `json:"s_state"`
+}
+
+var store []StoreItem
+
+type ItemItem struct {
+	I_item_sk   int    `json:"i_item_sk"`
+	I_item_id   string `json:"i_item_id"`
+	I_item_desc string `json:"i_item_desc"`
+}
+
+var item []ItemItem
+var joined []map[string]any
+var result []map[string]any
 
 func main() {
 	failures := 0
-	t = _cast[[]TItem]([]TItem{TItem{
-		Id:  0,
-		Val: 0,
-	}, TItem{
-		Id:  1,
-		Val: 17,
+	store_sales = _cast[[]Store_salesItem]([]Store_salesItem{Store_salesItem{
+		Ss_sold_date_sk:  1,
+		Ss_item_sk:       1,
+		Ss_customer_sk:   1,
+		Ss_ticket_number: 1,
+		Ss_quantity:      10,
+		Ss_store_sk:      1,
 	}})
-	vals = func() []int {
-		_res := []int{}
-		for _, r := range t {
-			_res = append(_res, r.Val)
+	store_returns = _cast[[]Store_returnsItem]([]Store_returnsItem{Store_returnsItem{
+		Sr_returned_date_sk: 2,
+		Sr_customer_sk:      1,
+		Sr_item_sk:          1,
+		Sr_ticket_number:    1,
+		Sr_return_quantity:  2,
+	}})
+	catalog_sales = _cast[[]Catalog_salesItem]([]Catalog_salesItem{Catalog_salesItem{
+		Cs_sold_date_sk:     3,
+		Cs_item_sk:          1,
+		Cs_bill_customer_sk: 1,
+		Cs_quantity:         5,
+	}})
+	date_dim = _cast[[]Date_dimItem]([]Date_dimItem{Date_dimItem{
+		D_date_sk:      1,
+		D_quarter_name: "1998Q1",
+	}, Date_dimItem{
+		D_date_sk:      2,
+		D_quarter_name: "1998Q2",
+	}, Date_dimItem{
+		D_date_sk:      3,
+		D_quarter_name: "1998Q3",
+	}})
+	store = _cast[[]StoreItem]([]StoreItem{StoreItem{
+		S_store_sk: 1,
+		S_state:    "CA",
+	}})
+	item = _cast[[]ItemItem]([]ItemItem{ItemItem{
+		I_item_sk:   1,
+		I_item_id:   "I1",
+		I_item_desc: "Item 1",
+	}})
+	joined = func() []map[string]any {
+		_res := []map[string]any{}
+		for _, ss := range store_sales {
+			for _, sr := range store_returns {
+				if !(((ss.Ss_customer_sk == sr.Sr_customer_sk) && (ss.Ss_item_sk == sr.Sr_item_sk)) && (ss.Ss_ticket_number == sr.Sr_ticket_number)) {
+					continue
+				}
+				for _, cs := range catalog_sales {
+					if !((sr.Sr_customer_sk == cs.Cs_bill_customer_sk) && (sr.Sr_item_sk == cs.Cs_item_sk)) {
+						continue
+					}
+					for _, d1 := range date_dim {
+						if !((ss.Ss_sold_date_sk == d1.D_date_sk) && (d1.D_quarter_name == "1998Q1")) {
+							continue
+						}
+						for _, d2 := range date_dim {
+							if !((sr.Sr_returned_date_sk == d2.D_date_sk) && _contains([]string{"1998Q1", "1998Q2", "1998Q3"}, d2.D_quarter_name)) {
+								continue
+							}
+							for _, d3 := range date_dim {
+								if !((cs.Cs_sold_date_sk == d3.D_date_sk) && _contains([]string{"1998Q1", "1998Q2", "1998Q3"}, d3.D_quarter_name)) {
+									continue
+								}
+								for _, s := range store {
+									if !(ss.Ss_store_sk == s.S_store_sk) {
+										continue
+									}
+									for _, i := range item {
+										if !(ss.Ss_item_sk == i.I_item_sk) {
+											continue
+										}
+										_res = append(_res, map[string]any{
+											"qty":         ss.Ss_quantity,
+											"ret":         sr.Sr_return_quantity,
+											"csq":         cs.Cs_quantity,
+											"i_item_id":   i.I_item_id,
+											"i_item_desc": i.I_item_desc,
+											"s_state":     s.S_state,
+										})
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		return _res
 	}()
-	result = _first(_cast[[]any](_reverseSlice[int](vals)))
+	result = func() []map[string]any {
+		groups := map[string]*data.Group{}
+		order := []string{}
+		for _, j := range joined {
+			key := map[string]any{
+				"i_item_id":   j["i_item_id"],
+				"i_item_desc": j["i_item_desc"],
+				"s_state":     j["s_state"],
+			}
+			ks := fmt.Sprint(key)
+			g, ok := groups[ks]
+			if !ok {
+				g = &data.Group{Key: key}
+				groups[ks] = g
+				order = append(order, ks)
+			}
+			g.Items = append(g.Items, j)
+		}
+		_res := []map[string]any{}
+		for _, ks := range order {
+			g := groups[ks]
+			_res = append(_res, map[string]any{
+				"i_item_id":   _cast[map[string]any](g.Key)["i_item_id"],
+				"i_item_desc": _cast[map[string]any](g.Key)["i_item_desc"],
+				"s_state":     _cast[map[string]any](g.Key)["s_state"],
+				"store_sales_quantitycount": _count(func() []any {
+					_res := []any{}
+					for _, v := range g.Items {
+						_res = append(_res, v)
+					}
+					return _res
+				}()),
+				"store_sales_quantityave": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["qty"])
+					}
+					return _res
+				}()),
+				"store_sales_quantitystdev": 0.0,
+				"store_sales_quantitycov":   0.0,
+				"store_returns_quantitycount": _count(func() []any {
+					_res := []any{}
+					for _, v := range g.Items {
+						_res = append(_res, v)
+					}
+					return _res
+				}()),
+				"store_returns_quantityave": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["ret"])
+					}
+					return _res
+				}()),
+				"store_returns_quantitystdev": 0.0,
+				"store_returns_quantitycov":   0.0,
+				"catalog_sales_quantitycount": _count(func() []any {
+					_res := []any{}
+					for _, v := range g.Items {
+						_res = append(_res, v)
+					}
+					return _res
+				}()),
+				"catalog_sales_quantityave": _avg(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["csq"])
+					}
+					return _res
+				}()),
+				"catalog_sales_quantitystdev": 0.0,
+				"catalog_sales_quantitycov":   0.0,
+			})
+		}
+		return _res
+	}()
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("TPCDS Q17 first")
+		printTestStart("TPCDS Q17 stats")
 		start := time.Now()
 		var failed error
 		func() {
@@ -80,7 +333,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_TPCDS_Q17_first()
+			test_TPCDS_Q17_stats()
 		}()
 		if failed != nil {
 			failures++
@@ -92,6 +345,57 @@ func main() {
 	if failures > 0 {
 		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
 	}
+}
+
+func _avg(v any) float64 {
+	var items []any
+	if g, ok := v.(*data.Group); ok {
+		items = g.Items
+	} else {
+		switch s := v.(type) {
+		case []any:
+			items = s
+		case []int:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []float64:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []string:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		case []bool:
+			items = make([]any, len(s))
+			for i, v := range s {
+				items[i] = v
+			}
+		default:
+			panic("avg() expects list or group")
+		}
+	}
+	if len(items) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, it := range items {
+		switch n := it.(type) {
+		case int:
+			sum += float64(n)
+		case int64:
+			sum += float64(n)
+		case float64:
+			sum += n
+		default:
+			panic("avg() expects numbers")
+		}
+	}
+	return sum / float64(len(items))
 }
 
 func _cast[T any](v any) T {
@@ -141,6 +445,26 @@ func _cast[T any](v any) T {
 	return out
 }
 
+func _contains(c any, v any) bool {
+	switch s := c.(type) {
+	case string:
+		return strings.Contains(s, fmt.Sprint(v))
+	case map[string]any:
+		_, ok := s[fmt.Sprint(v)]
+		return ok
+	}
+	rv := reflect.ValueOf(c)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		for i := 0; i < rv.Len(); i++ {
+			if _equal(rv.Index(i).Interface(), v) {
+				return true
+			}
+		}
+		return false
+	}
+	return false
+}
+
 func _convertMapAny(m map[any]any) map[string]any {
 	out := make(map[string]any, len(m))
 	for k, v := range m {
@@ -152,6 +476,35 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
 }
 
 func _equal(a, b any) bool {
@@ -188,57 +541,4 @@ func _equal(a, b any) bool {
 		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
 	}
 	return reflect.DeepEqual(a, b)
-}
-
-func _first(v any) any {
-	if g, ok := v.(*data.Group); ok {
-		if len(g.Items) == 0 {
-			return nil
-		}
-		return g.Items[0]
-	}
-	switch s := v.(type) {
-	case []any:
-		if len(s) == 0 {
-			return nil
-		}
-		return s[0]
-	case []int:
-		if len(s) == 0 {
-			return 0
-		}
-		return s[0]
-	case []float64:
-		if len(s) == 0 {
-			return 0.0
-		}
-		return s[0]
-	case []string:
-		if len(s) == 0 {
-			return ""
-		}
-		return s[0]
-	case []bool:
-		if len(s) == 0 {
-			return false
-		}
-		return s[0]
-	default:
-		rv := reflect.ValueOf(v)
-		if rv.Kind() == reflect.Slice && rv.Len() > 0 {
-			return rv.Index(0).Interface()
-		}
-		if rv.Kind() == reflect.Array && rv.Len() > 0 {
-			return rv.Index(0).Interface()
-		}
-	}
-	return nil
-}
-
-func _reverseSlice[T any](s []T) []T {
-	out := append([]T{}, s...)
-	for i, j := 0, len(out)-1; i < j; i, j = i+1, j-1 {
-		out[i], out[j] = out[j], out[i]
-	}
-	return out
 }
