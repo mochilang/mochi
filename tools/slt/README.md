@@ -23,8 +23,8 @@ tests/
 # Download `.test` scripts from GitHub (skips existing files)
 go run ./cmd/mochi-slt fetch --files evidence/slt_lang_update.test
 
-# Convert tests to Mochi programs and execute them
-go run ./cmd/mochi-slt gen --run --out tests/dataset/slt/out/evidence
+# Convert tests to Mochi programs and execute them (only first 10 cases)
+go run ./cmd/mochi-slt gen --run --limit 10 --out tests/dataset/slt/out/evidence
 
 # Inspect available test cases in a file
 go run ./cmd/mochi-slt list --file evidence/slt_lang_update.test

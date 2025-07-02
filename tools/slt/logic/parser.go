@@ -236,6 +236,40 @@ func evalExpr(expr sqlparser.Expr, row map[string]any, table *Table) any {
 				}
 			}
 		}
+	case *sqlparser.UnaryExpr:
+		val := evalExpr(v.Expr, row, table)
+		f, ok := toFloat(val)
+		if !ok {
+			return nil
+		}
+		switch v.Operator {
+		case "-":
+			if isInt(val) {
+				return int(-f)
+			}
+			return -f
+		case "+":
+			return val
+		}
+	case *sqlparser.ConvertExpr:
+		return evalExpr(v.Expr, row, table)
+	case *sqlparser.ParenExpr:
+		return evalExpr(v.Expr, row, table)
+	case *sqlparser.FuncExpr:
+		name := strings.ToLower(v.Name.String())
+		if name == "count" {
+			return 1
+		}
+		if len(v.Exprs) == 0 {
+			return nil
+		}
+		ae := v.Exprs[0].(*sqlparser.AliasedExpr)
+		val := evalExpr(ae.Expr, row, table)
+		switch name {
+		case "min", "max", "avg":
+			return val
+		}
+		return nil
 	}
 	return nil
 }

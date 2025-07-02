@@ -45,6 +45,9 @@ func DownloadFile(url, path string) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("download %s: %s", url, resp.Status)
 	}
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return err
+	}
 	f, err := os.Create(path)
 	if err != nil {
 		return err
@@ -107,7 +110,7 @@ func Fetch(repo string, files []string, force bool) error {
 // Generate reads SLT files and converts them into Mochi programs.
 // If run is true, the generated program is executed and the output
 // stored next to the source with a .out extension.
-func GenerateFiles(files []string, outDir string, run bool) error {
+func GenerateFiles(files []string, outDir string, run bool, limit int) error {
 	root, err := FindRepoRoot()
 	if err != nil {
 		return err
@@ -129,7 +132,10 @@ func GenerateFiles(files []string, outDir string, run bool) error {
 		if err := os.MkdirAll(testDir, 0o755); err != nil {
 			return err
 		}
-		for _, c := range cases {
+		for i, c := range cases {
+			if limit > 0 && i >= limit {
+				break
+			}
 			code := Generate(c)
 			srcPath := filepath.Join(testDir, c.Name+".mochi")
 			if err := os.WriteFile(srcPath, []byte(code), 0o644); err != nil {

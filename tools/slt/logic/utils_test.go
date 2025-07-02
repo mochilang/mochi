@@ -13,7 +13,7 @@ import (
 
 func TestGenerate(t *testing.T) {
 	outDir := t.TempDir()
-	err := GenerateFiles([]string{"evidence/slt_lang_update.test"}, outDir, true)
+	err := GenerateFiles([]string{"evidence/slt_lang_update.test"}, outDir, true, 1)
 	if err != nil {
 		t.Fatalf("generate failed: %v", err)
 	}

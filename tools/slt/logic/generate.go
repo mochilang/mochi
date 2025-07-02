@@ -134,10 +134,51 @@ func Generate(c Case) string {
 	}
 
 	sb.WriteString(fmt.Sprintf("/* %s */\n", c.Query))
-	stmt, _ := sqlparser.Parse(c.Query)
-	sel := stmt.(*sqlparser.Select)
-	tblExpr := sel.From[0].(*sqlparser.AliasedTableExpr)
-	tblName := tblExpr.Expr.(sqlparser.TableName).Name.String()
+	stmt, err := sqlparser.Parse(c.Query)
+	if err != nil {
+		return ""
+	}
+	sel, ok := stmt.(*sqlparser.Select)
+	if !ok {
+		return ""
+	}
+	tblName := ""
+	if len(sel.From) > 0 {
+		if tblExpr, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
+			if tbl, ok := tblExpr.Expr.(sqlparser.TableName); ok {
+				tblName = tbl.Name.String()
+			}
+		}
+	}
+
+	if tblName == "" || strings.EqualFold(tblName, "dual") {
+		var vars []string
+		for i, expr := range sel.SelectExprs {
+			ae := expr.(*sqlparser.AliasedExpr)
+			val := evalExpr(ae.Expr, nil, nil)
+			vname := fmt.Sprintf("result%d", i)
+			vars = append(vars, vname)
+			sb.WriteString(fmt.Sprintf("let %s = %s\n", vname, formatValue(val)))
+		}
+		for _, v := range vars {
+			sb.WriteString(fmt.Sprintf("print(%s)\n", v))
+		}
+		if len(c.Expect) > 0 {
+			sb.WriteString(fmt.Sprintf("\ntest \"%s\" {\n", c.Name))
+			for i, v := range vars {
+				if i < len(c.Expect) {
+					exp := c.Expect[i]
+					if strings.HasPrefix(exp, "-") || strings.HasPrefix(exp, "+") {
+						exp = "(" + exp + ")"
+					}
+					sb.WriteString(fmt.Sprintf("  expect %s == %s\n", v, exp))
+				}
+			}
+			sb.WriteString("}\n")
+		}
+		return sb.String()
+	}
+
 	cond := condToMochi(sel.Where)
 	sb.WriteString("let result = count(from row in " + tblName)
 	if cond != "" {
@@ -146,7 +187,11 @@ func Generate(c Case) string {
 	sb.WriteString("\n  select row)\n")
 	sb.WriteString("print(result)\n\n")
 	if len(c.Expect) > 0 {
-		sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
+		exp := c.Expect[0]
+		if strings.HasPrefix(exp, "-") || strings.HasPrefix(exp, "+") {
+			exp = "(" + exp + ")"
+		}
+		sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, exp))
 	}
 	return sb.String()
 }
