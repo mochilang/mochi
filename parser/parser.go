@@ -71,6 +71,7 @@ type Statement struct {
 	Break        *BreakStmt        `parser:"| @@"`
 	Continue     *ContinueStmt     `parser:"| @@"`
 	Fetch        *FetchStmt        `parser:"| @@"`
+	Update       *UpdateStmt       `parser:"| @@"`
 	Expr         *ExprStmt         `parser:"| @@"`
 }
 
@@ -220,6 +221,13 @@ type FetchStmt struct {
 	URL    *Expr  `parser:"'fetch' @@"`
 	Target string `parser:"'into' @Ident"`
 	With   *Expr  `parser:"[ 'with' @@ ]"`
+}
+
+type UpdateStmt struct {
+	Pos    lexer.Position
+	Target string      `parser:"'update' @Ident"`
+	Set    *MapLiteral `parser:"'set' @@"`
+	Where  *Expr       `parser:"[ 'where' @@ ]"`
 }
 
 type ExternTypeDecl struct {
