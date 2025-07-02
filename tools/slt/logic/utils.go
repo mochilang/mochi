@@ -212,14 +212,12 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 			if end > 0 && idx > end {
 				break
 			}
-			if c.Hash != "" {
-				exp, _, err := EvalCase(c)
-				if err != nil {
-					return err
-				}
-				c.Expect = exp
-				c.Hash = ""
+			exp, _, err := EvalCase(c)
+			if err != nil {
+				return err
 			}
+			c.Expect = exp
+			c.Hash = ""
 			code := Generate(c)
 			if code == "" {
 				continue
