@@ -225,12 +225,12 @@ let t1 = [
 
 /* SELECT b, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), a+b*2, abs(b-c), a+b*2+c*3, c-d, a FROM t1 ORDER BY 1,4,2,7,3,6,5 */
 let result = from row in t1
-  order by [row.b, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), count(from x in t1
+  order by [row.b, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), count(from x in t1
   where x.b < row.b
-  select x), row.a, row.a + row.b * 2, row.c - row.d, row.a + row.b * 2 + row.c * 3]
+  select x), row.a, (row.a + (row.b * 2)), (row.c - row.d), ((row.a + (row.b * 2)) + (row.c * 3))]
   select [row.b, count(from x in t1
   where x.b < row.b
-  select x), row.a + row.b * 2, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.a + row.b * 2 + row.c * 3, row.c - row.d, row.a]
+  select x), (row.a + (row.b * 2)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((row.a + (row.b * 2)) + (row.c * 3)), (row.c - row.d), row.a]
 var flatResult = []
 for row in result {
   for x in row {
