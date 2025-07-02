@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
@@ -45,12 +47,31 @@ func genCmd() *cobra.Command {
 	var fileList []string
 	var start int
 	var end int
+	var caseRange string
 	cmd := &cobra.Command{
 		Use:   "gen",
 		Short: "Generate Mochi tests from SLT files",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if len(fileList) > 0 {
 				files = fileList
+			}
+			if caseRange != "" {
+				parts := strings.Split(caseRange, "-")
+				if len(parts) >= 1 {
+					s := strings.TrimPrefix(parts[0], "case")
+					if v, err := strconv.Atoi(s); err == nil {
+						start = v
+						if end == 0 {
+							end = v
+						}
+					}
+				}
+				if len(parts) == 2 {
+					e := strings.TrimPrefix(parts[1], "case")
+					if v, err := strconv.Atoi(e); err == nil {
+						end = v
+					}
+				}
 			}
 			return logic.GenerateFiles(files, outDir, run, start, end)
 		},
@@ -60,6 +81,7 @@ func genCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&run, "run", true, "run Mochi programs after generating")
 	cmd.Flags().IntVar(&start, "start", 0, "first case to generate (1-indexed)")
 	cmd.Flags().IntVar(&end, "end", 0, "last case to generate (inclusive)")
+	cmd.Flags().StringVar(&caseRange, "cases", "", "case range, e.g. case5-case10")
 	return cmd
 }
 
