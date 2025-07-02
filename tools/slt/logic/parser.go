@@ -31,6 +31,7 @@ type Case struct {
 	HashRows int
 	Comments []string
 	Updates  []string
+	Line     int
 }
 
 // ParseFile parses a sqllogictest script and returns a Case for each query.
@@ -45,6 +46,7 @@ func ParseFile(path string) ([]Case, error) {
 	tables := make(map[string]*Table)
 	var cases []Case
 	count := 0
+	lineNo := 0
 	// comments collects lines that precede a query so they can be reproduced
 	// verbatim in the generated Mochi program.
 	var comments []string
@@ -54,6 +56,7 @@ func ParseFile(path string) ([]Case, error) {
 	var updates []string
 
 	for scanner.Scan() {
+		lineNo++
 		line := strings.TrimSpace(scanner.Text())
 		switch {
 		case strings.HasPrefix(line, "#"):
@@ -64,6 +67,7 @@ func ParseFile(path string) ([]Case, error) {
 			if !scanner.Scan() {
 				break
 			}
+			lineNo++
 			stmt := strings.TrimSpace(scanner.Text())
 			node, err := sqlparser.Parse(stmt)
 			if err == nil {
@@ -80,11 +84,14 @@ func ParseFile(path string) ([]Case, error) {
 			if !scanner.Scan() {
 				break
 			}
+			lineNo++
 			stmt := strings.TrimSpace(scanner.Text())
 			comments = append(comments, stmt)
 		case strings.HasPrefix(line, "query"):
+			startLine := lineNo
 			var parts []string
 			for scanner.Scan() {
+				lineNo++
 				l := scanner.Text()
 				if strings.TrimSpace(l) == "----" {
 					break
@@ -99,6 +106,7 @@ func ParseFile(path string) ([]Case, error) {
 			var hash string
 			var hashRows int
 			for scanner.Scan() {
+				lineNo++
 				l := strings.TrimSpace(scanner.Text())
 				if l == "" {
 					break
@@ -123,6 +131,7 @@ func ParseFile(path string) ([]Case, error) {
 				HashRows: hashRows,
 				Comments: comments,
 				Updates:  append([]string(nil), updates...),
+				Line:     startLine,
 			})
 			// apply pending updates so the next case sees them
 			for _, u := range updates {

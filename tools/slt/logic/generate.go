@@ -282,8 +282,11 @@ func Generate(c Case) string {
 	}
 	var sb strings.Builder
 
-	if len(c.Comments) > 0 {
+	if len(c.Comments) > 0 || c.Line > 0 {
 		sb.WriteString("/*\n")
+		if c.Line > 0 {
+			sb.WriteString(fmt.Sprintf("# line: %d\n", c.Line))
+		}
 		for _, line := range c.Comments {
 			sb.WriteString(line + "\n")
 		}

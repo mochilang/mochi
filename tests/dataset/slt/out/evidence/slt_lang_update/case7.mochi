@@ -1,4 +1,5 @@
 /*
+# line: 113
 # EVIDENCE-OF: R-40472-60438 Columns that do not appear in the list of
 # assignments are left unmodified.
 */
@@ -20,7 +21,7 @@ let t1 = [
 
 /* SELECT count(*) FROM t1 WHERE y='unknown' */
 let result = count(from row in t1
-  where row.y == "unknown"
+  where row["y"] == "unknown"
   select row)
 print(result)
 
