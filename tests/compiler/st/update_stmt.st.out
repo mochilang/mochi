@@ -1,0 +1,34 @@
+Smalltalk at: #people put: nil.
+
+Object subclass: #Main instanceVariableNames: '' classVariableNames: '' poolDictionaries: '' category: nil!
+
+!Main class methodsFor: 'types'!
+newPerson: name age: age status: status | dict |
+    dict := Dictionary new.
+    dict at: 'name' put: name.
+    dict at: 'age' put: age.
+    dict at: 'status' put: status.
+    ^ dict
+!
+!Main class methodsFor: 'tests'!
+test_update_adult_status
+    ((people = Array with: ((Main newPerson: 'Alice' age: 17 status: 'minor')) with: ((Main newPerson: 'Bob' age: 26 status: 'adult')) with: ((Main newPerson: 'Charlie' age: 19 status: 'adult')) with: ((Main newPerson: 'Diana' age: 16 status: 'minor')))) ifFalse: [ self error: 'expect failed' ]
+!
+
+!!
+people := Array with: ((Main newPerson: 'Alice' age: 17 status: 'minor')) with: ((Main newPerson: 'Bob' age: 25 status: 'unknown')) with: ((Main newPerson: 'Charlie' age: 18 status: 'unknown')) with: ((Main newPerson: 'Diana' age: 16 status: 'minor')).
+0 to: (people size) - 1 do: [:idx |
+    | item |
+    item := people at: idx + 1.
+    name := item at: 'name'.
+    age := item at: 'age'.
+    status := item at: 'status'.
+    ((age >= 18)) ifTrue: [
+        item at: 'status' put: 'adult'.
+        item at: 'age' put: (age + 1).
+    ]
+    people at: idx + 1 put: item.
+]
+.
+('ok') displayOn: Transcript. Transcript cr.
+Main test_update_adult_status.

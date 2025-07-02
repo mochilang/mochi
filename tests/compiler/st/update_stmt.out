@@ -1,0 +1,12 @@
+Object: BlockClosure new "<0x7f6680831fb0>" error: did not understand #people
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+BlockClosure(Object)>>doesNotUnderstand: #people (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (/tmp/TestSTCompiler_SubsetPrograms961368787/001/main.st:26)
+SmallInteger(Number)>>to:do: (Number.st:1010)
+UndefinedObject>>executeStatements (/tmp/TestSTCompiler_SubsetPrograms961368787/001/main.st:20)
+ok
+Object: false error: did not understand #with:with:with:with:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+False(Object)>>doesNotUnderstand: #with:with:with:with: (SysExcept.st:1448)
+Main class>>test_update_adult_status (/tmp/TestSTCompiler_SubsetPrograms961368787/001/main.st:15)
+UndefinedObject>>executeStatements (/tmp/TestSTCompiler_SubsetPrograms961368787/001/main.st:34)
