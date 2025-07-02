@@ -17,7 +17,7 @@ func TestGenerate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("generate failed: %v", err)
 	}
-	outPath := filepath.Join(outDir, "evidence", "slt_lang_update", "case1.out")
+	outPath := filepath.Join(outDir, "slt_lang_update", "case1.out")
 	data, err := os.ReadFile(outPath)
 	if err != nil {
 		t.Fatalf("read output: %v", err)

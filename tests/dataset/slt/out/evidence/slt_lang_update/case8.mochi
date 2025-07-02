@@ -3,16 +3,21 @@
 UPDATE t1 SET x=2
 */
 
+type t1Row {
+  x: int
+  y: string
+}
+
 var t1 = [
-  {
+  t1Row {
     x: 5,
     y: "unknown",
   },
-  {
+  t1Row {
     x: 5,
-    y: "false",
+    y: "false" + "",
   },
-  {
+  t1Row {
     x: 5,
     y: "NULL",
   },
@@ -22,14 +27,14 @@ var t1 = [
 var i = 0
 while i < len(t1) {
   var row = t1[i]
-  row["x"] = 2
+  row.x = 2
   t1[i] = row
   i = i + 1
 }
 
 /* SELECT count(*) FROM t1 WHERE y='unknown' */
 let result = count(from row in t1
-  where row["y"] == "unknown"
+  where row.y == "unknown"
   select row)
 print(result)
 

@@ -104,6 +104,9 @@ func formatValue(v any) string {
 	case nil:
 		return "null"
 	case string:
+		if t == "true" || t == "false" {
+			return fmt.Sprintf("\"%s\" + \"\"", t)
+		}
 		return fmt.Sprintf("\"%s\"", t)
 	case int:
 		return fmt.Sprintf("%d", t)
@@ -116,6 +119,52 @@ func formatValue(v any) string {
 	default:
 		return fmt.Sprintf("%v", t)
 	}
+}
+
+func detectColumnType(rows []map[string]any, name string) string {
+	t := ""
+	for _, row := range rows {
+		v := row[name]
+		if v == nil {
+			continue
+		}
+		switch v.(type) {
+		case string:
+			if t == "" || t == "string" {
+				t = "string"
+			} else {
+				return "any"
+			}
+		case float64:
+			if t == "" || t == "float" || t == "int" {
+				t = "float"
+			} else {
+				return "any"
+			}
+		case int:
+			if t == "" {
+				t = "int"
+			} else if t != "int" {
+				if t == "float" {
+					// keep float
+				} else {
+					return "any"
+				}
+			}
+		case bool:
+			if t == "" || t == "bool" {
+				t = "bool"
+			} else {
+				return "any"
+			}
+		default:
+			return "any"
+		}
+	}
+	if t == "" {
+		return "any"
+	}
+	return t
 }
 
 func exprToMochi(e sqlparser.Expr) string {
@@ -362,7 +411,8 @@ func Generate(c Case) string {
 		typeName := name + "Row"
 		sb.WriteString(fmt.Sprintf("type %s {\n", typeName))
 		for _, col := range t.Columns {
-			sb.WriteString(fmt.Sprintf("  %s: int\n", col))
+			ct := detectColumnType(t.Rows, col)
+			sb.WriteString(fmt.Sprintf("  %s: %s\n", col, ct))
 		}
 		sb.WriteString("}\n\n")
 

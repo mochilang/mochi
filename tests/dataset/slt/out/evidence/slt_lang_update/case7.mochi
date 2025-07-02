@@ -4,16 +4,21 @@
 # assignments are left unmodified.
 */
 
+type t1Row {
+  x: int
+  y: string
+}
+
 let t1 = [
-  {
+  t1Row {
     x: 5,
     y: "unknown",
   },
-  {
+  t1Row {
     x: 5,
-    y: "false",
+    y: "false" + "",
   },
-  {
+  t1Row {
     x: 5,
     y: "NULL",
   },
@@ -21,7 +26,7 @@ let t1 = [
 
 /* SELECT count(*) FROM t1 WHERE y='unknown' */
 let result = count(from row in t1
-  where row["y"] == "unknown"
+  where row.y == "unknown"
   select row)
 print(result)
 

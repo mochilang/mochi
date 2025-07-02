@@ -3,16 +3,21 @@
 skipif mssql
 */
 
+type t1Row {
+  x: int
+  y: string
+}
+
 let t1 = [
-  {
+  t1Row {
     x: 5,
     y: "unknown",
   },
-  {
+  t1Row {
     x: 5,
-    y: "false",
+    y: "false" + "",
   },
-  {
+  t1Row {
     x: 5,
     y: "NULL",
   },
@@ -20,7 +25,7 @@ let t1 = [
 
 /* SELECT count(*) FROM t1 WHERE x=5 */
 let result = count(from row in t1
-  where row["x"] == 5
+  where row.x == 5
   select row)
 print(result)
 
