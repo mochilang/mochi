@@ -216,6 +216,26 @@ func evalExpr(expr sqlparser.Expr, row map[string]any, table *Table) any {
 			f, _ := strconv.ParseFloat(string(v.Val), 64)
 			return f
 		}
+	case *sqlparser.ParenExpr:
+		return evalExpr(v.Expr, row, table)
+	case *sqlparser.UnaryExpr:
+		val := evalExpr(v.Expr, row, table)
+		f, ok := toFloat(val)
+		if !ok {
+			return nil
+		}
+		switch v.Operator {
+		case "-":
+			if isInt(val) {
+				return int(-f)
+			}
+			return -f
+		case "+":
+			if isInt(val) {
+				return int(f)
+			}
+			return f
+		}
 	case *sqlparser.NullVal:
 		return nil
 	case *sqlparser.ColName:
@@ -261,38 +281,66 @@ func matchWhere(row map[string]any, where *sqlparser.Where) bool {
 	if where == nil {
 		return true
 	}
-	cmp, ok := where.Expr.(*sqlparser.ComparisonExpr)
-	if !ok {
+	return matchCond(row, where.Expr)
+}
+
+func matchCond(row map[string]any, e sqlparser.Expr) bool {
+	switch v := e.(type) {
+	case *sqlparser.ComparisonExpr:
+		col := v.Left.(*sqlparser.ColName).Name.String()
+		rv := evalExpr(v.Right, row, nil)
+		lv := row[col]
+
+		lf, lok := toFloat(lv)
+		rf, rok := toFloat(rv)
+
+		switch v.Operator {
+		case "=", "==":
+			return equalValues(lv, rv)
+		case ">":
+			if lok && rok {
+				return lf > rf
+			}
+		case "<":
+			if lok && rok {
+				return lf < rf
+			}
+		case ">=":
+			if lok && rok {
+				return lf >= rf
+			}
+		case "<=":
+			if lok && rok {
+				return lf <= rf
+			}
+		}
+		return false
+	case *sqlparser.AndExpr:
+		return matchCond(row, v.Left) && matchCond(row, v.Right)
+	case *sqlparser.OrExpr:
+		return matchCond(row, v.Left) || matchCond(row, v.Right)
+	case *sqlparser.ParenExpr:
+		return matchCond(row, v.Expr)
+	case *sqlparser.RangeCond:
+		val := evalExpr(v.Left, row, nil)
+		from := evalExpr(v.From, row, nil)
+		to := evalExpr(v.To, row, nil)
+		lf, lok := toFloat(val)
+		ff, fok := toFloat(from)
+		tf, tok := toFloat(to)
+		if !lok || !fok || !tok {
+			return false
+		}
+		switch strings.ToLower(v.Operator) {
+		case sqlparser.BetweenStr:
+			return lf >= ff && lf <= tf
+		case sqlparser.NotBetweenStr:
+			return lf < ff || lf > tf
+		}
+		return false
+	default:
 		return false
 	}
-	col := cmp.Left.(*sqlparser.ColName).Name.String()
-	rv := evalExpr(cmp.Right, row, nil)
-	lv := row[col]
-
-	lf, lok := toFloat(lv)
-	rf, rok := toFloat(rv)
-
-	switch cmp.Operator {
-	case "=", "==":
-		return equalValues(lv, rv)
-	case ">":
-		if lok && rok {
-			return lf > rf
-		}
-	case "<":
-		if lok && rok {
-			return lf < rf
-		}
-	case ">=":
-		if lok && rok {
-			return lf >= rf
-		}
-	case "<=":
-		if lok && rok {
-			return lf <= rf
-		}
-	}
-	return false
 }
 
 func equalValues(a, b any) bool {

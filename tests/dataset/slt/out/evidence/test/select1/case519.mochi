@@ -211,18 +211,15 @@ let t1 = [
   },
 ]
 
-/* SELECT CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, abs(a) FROM t1 WHERE c>d AND b>c ORDER BY 2,1 */
+/* SELECT a+b*2+c*3+d*4 FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND c>d AND d>e ORDER BY 1 */
 let result = from row in t1
-  where (row["c"] > row["d"] && row["b"] > row["c"])
-  order by abs(row["a"]), (row["c"] > null ? row["a"] * 2 : row["b"] * 10)
-  select [(row["c"] > null ? row["a"] * 2 : row["b"] * 10), abs(row["a"])]
-let flatResult = from row in result
-  from x in row
-  select x
-for x in flatResult {
+  where (((row["d"] < 110 || row["d"] > 150) && row["c"] > row["d"]) && row["d"] > row["e"])
+  order by 1
+  select row["a"] + row["b"] * 2 + row["c"] * 3 + row["d"] * 4
+for x in result {
   print(x)
 }
 
-test "case586" {
-  expect flatResult == [1240, 121, 1390, 138, 1430, 142, 382, 191]
+test "case519" {
+  expect result == [1828, 2125, 2226]
 }

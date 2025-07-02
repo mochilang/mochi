@@ -37,6 +37,8 @@ func exprToMochi(e sqlparser.Expr) string {
 		case sqlparser.IntVal, sqlparser.FloatVal:
 			return string(v.Val)
 		}
+	case *sqlparser.NullVal:
+		return "null"
 	case *sqlparser.ColName:
 		return fmt.Sprintf("row[\"%s\"]", v.Name.String())
 	case *sqlparser.ParenExpr:
@@ -78,7 +80,7 @@ func exprToMochi(e sqlparser.Expr) string {
 		}
 		return out
 	}
-	return "null"
+	return ""
 }
 
 func simpleExpr(e sqlparser.Expr) bool {
@@ -99,6 +101,8 @@ func simpleExpr(e sqlparser.Expr) bool {
 			}
 		}
 		return false
+	case *sqlparser.RangeCond:
+		return simpleExpr(v.Left) && simpleExpr(v.From) && simpleExpr(v.To)
 	case *sqlparser.CaseExpr:
 		if v.Expr != nil && !simpleExpr(v.Expr) {
 			return false
@@ -129,11 +133,28 @@ func condExprToMochi(e sqlparser.Expr) string {
 	case *sqlparser.ComparisonExpr:
 		left := exprToMochi(v.Left)
 		right := exprToMochi(v.Right)
+		if left == "" || right == "" {
+			return ""
+		}
 		op := v.Operator
 		if op == "=" {
 			op = "=="
 		}
 		return fmt.Sprintf("%s %s %s", left, op, right)
+	case *sqlparser.RangeCond:
+		left := exprToMochi(v.Left)
+		from := exprToMochi(v.From)
+		to := exprToMochi(v.To)
+		if left == "" || from == "" || to == "" {
+			return ""
+		}
+		switch strings.ToLower(v.Operator) {
+		case sqlparser.BetweenStr:
+			return fmt.Sprintf("(%s >= %s && %s <= %s)", left, from, left, to)
+		case sqlparser.NotBetweenStr:
+			return fmt.Sprintf("(%s < %s || %s > %s)", left, from, left, to)
+		}
+		return ""
 	case *sqlparser.AndExpr:
 		l := condExprToMochi(v.Left)
 		r := condExprToMochi(v.Right)
