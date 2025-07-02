@@ -1,2 +1,2 @@
-11
-   test TPCDS Q11 first                ... ok (1.0µs)
+[{"customer_first_name":"John","customer_id":"C1","customer_last_name":"Doe"}]
+   test TPCDS Q11 growth               ... ok (25.0µs)

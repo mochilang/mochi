@@ -57,6 +57,9 @@ var goReserved = map[string]bool{
 }
 
 func sanitizeName(name string) string {
+	if name == "_" {
+		return "v"
+	}
 	var b strings.Builder
 	for i, r := range name {
 		if r == '_' || ('0' <= r && r <= '9' && i > 0) || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z') {

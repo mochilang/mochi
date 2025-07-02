@@ -1538,7 +1538,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				itemExpr = fmt.Sprintf("_cast[%s](%s)", elemGo, left)
 			}
 			c.use("_contains")
-			expr = fmt.Sprintf("_contains[%s](%s, %s)", elemGo, right, itemExpr)
+			expr = fmt.Sprintf("_contains(%s, %s)", right, itemExpr)
 			next = types.BoolType{}
 		case types.StringType:
 			c.imports["strings"] = true
@@ -2507,9 +2507,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		indent := "\t\t"
 		for i := range q.Froms {
 			fvar := sanitizeName(q.Froms[i].Var)
+			loopVar := fvar
+			if fvar == "_" {
+				loopVar = "v"
+			}
 			fsrc := fromSrcs[i]
 			if fromDirect[i] {
-				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", fvar, fsrc))
+				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", loopVar, fsrc))
 			} else {
 				return "", fmt.Errorf("query from source must be list")
 			}
@@ -2517,9 +2521,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		for i := range q.Joins {
 			jvar := sanitizeName(q.Joins[i].Var)
+			loopVar := jvar
+			if jvar == "_" {
+				loopVar = "v"
+			}
 			jsrc := joinSrcs[i]
 			if joinDirect[i] {
-				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", jvar, jsrc))
+				buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", loopVar, jsrc))
 			} else {
 				return "", fmt.Errorf("join source must be list")
 			}
@@ -2770,7 +2778,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	indent := "\t"
 	step := 0
 	condOpened := false
-	buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", sanitizeName(q.Var), src))
+	vname := sanitizeName(q.Var)
+	loopVar := vname
+	if vname == "_" {
+		loopVar = "v"
+	}
+	buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", loopVar, src))
 	indent += "\t"
 	if cond != "" && condStep == step {
 		buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
@@ -2802,10 +2815,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if specialJoin {
 		jvar := sanitizeName(q.Joins[0].Var)
+		loopVar := jvar
+		if jvar == "_" {
+			loopVar = "v"
+		}
 		jsrc := joinSrcs[0]
 		buf.WriteString(indent + "matched := false\n")
 		if joinDirect[0] {
-			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", jvar, jsrc))
+			buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", loopVar, jsrc))
 		} else {
 			return "", fmt.Errorf("join source must be list")
 		}
@@ -3361,9 +3378,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	args := make([]string, len(call.Args))
 	var paramTypes []types.Type
-	if t, err := c.env.GetVar(call.Func); err == nil {
-		if ft, ok := t.(types.FuncType); ok {
-			paramTypes = ft.Params
+	if call.Func != "contains" {
+		if t, err := c.env.GetVar(call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				paramTypes = ft.Params
+			}
 		}
 	}
 	for i, a := range call.Args {
@@ -3411,6 +3430,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.imports["fmt"] = true
 		c.use("_input")
 		return "_input()", nil
+	case "contains":
+		if len(args) != 2 {
+			return "", fmt.Errorf("contains expects 2 args")
+		}
+		c.use("_contains")
+		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
 	case "count":
 		c.imports["mochi/runtime/data"] = true
 		c.imports["reflect"] = true
@@ -3423,6 +3448,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			}
 		}
 		return fmt.Sprintf("_count(%s)", argStr), nil
+	case "exists":
+		c.use("_exists")
+		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":
 		c.imports["mochi/runtime/data"] = true
 		c.use("_avg")

@@ -1,2 +1,2 @@
-15
-   test TPCDS Q15 first                ... ok (1.0µs)
+[{"ca_zip":"85669","sum_sales":600}]
+   test TPCDS Q15 zip                  ... ok (2.0µs)

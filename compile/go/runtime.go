@@ -43,6 +43,23 @@ const (
 		"    panic(\"count() expects list or group\")\n" +
 		"}\n"
 
+	helperExists = "func _exists(v any) bool {\n" +
+		"    if g, ok := v.(*data.Group); ok { return len(g.Items) > 0 }\n" +
+		"    switch s := v.(type) {\n" +
+		"    case []any: return len(s) > 0\n" +
+		"    case []int: return len(s) > 0\n" +
+		"    case []float64: return len(s) > 0\n" +
+		"    case []string: return len(s) > 0\n" +
+		"    case []bool: return len(s) > 0\n" +
+		"    case []map[string]any: return len(s) > 0\n" +
+		"    case map[string]any: return len(s) > 0\n" +
+		"    case string: return len([]rune(s)) > 0\n" +
+		"    }\n" +
+		"    rv := reflect.ValueOf(v)\n" +
+		"    if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array { return rv.Len() > 0 }\n" +
+		"    return false\n" +
+		"}\n"
+
 	helperAvg = "func _avg(v any) float64 {\n" +
 		"    var items []any\n" +
 		"    if g, ok := v.(*data.Group); ok { items = g.Items } else {\n" +
@@ -386,9 +403,20 @@ const (
 		"    return out\n" +
 		"}\n"
 
-	helperContains = "func _contains[T comparable](s []T, v T) bool {\n" +
-		"    for _, x := range s {\n" +
-		"        if x == v { return true }\n" +
+	helperContains = "func _contains(c any, v any) bool {\n" +
+		"    switch s := c.(type) {\n" +
+		"    case string:\n" +
+		"        return strings.Contains(s, fmt.Sprint(v))\n" +
+		"    case map[string]any:\n" +
+		"        _, ok := s[fmt.Sprint(v)]\n" +
+		"        return ok\n" +
+		"    }\n" +
+		"    rv := reflect.ValueOf(c)\n" +
+		"    if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {\n" +
+		"        for i := 0; i < rv.Len(); i++ {\n" +
+		"            if _equal(rv.Index(i).Interface(), v) { return true }\n" +
+		"        }\n" +
+		"        return false\n" +
 		"    }\n" +
 		"    return false\n" +
 		"}\n"
@@ -726,6 +754,7 @@ var helperMap = map[string]string{
 	"_indexString":   helperIndexString,
 	"_sliceString":   helperSliceString,
 	"_count":         helperCount,
+	"_exists":        helperExists,
 	"_avg":           helperAvg,
 	"_sum":           helperSum,
 	"_min":           helperMin,
@@ -773,6 +802,11 @@ func (c *Compiler) use(name string) {
 	if name == "_lower" || name == "_upper" {
 		c.imports["fmt"] = true
 		c.imports["strings"] = true
+	}
+	if name == "_contains" {
+		c.imports["fmt"] = true
+		c.imports["strings"] = true
+		c.imports["reflect"] = true
 	}
 }
 

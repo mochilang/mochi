@@ -1,2 +1,2 @@
-18
-   test TPCDS Q18 first                ... ok (1.0µs)
+[{"agg1":1,"agg2":10,"agg3":1,"agg4":9,"agg5":2,"agg6":1980,"agg7":2,"ca_country":"US","ca_county":"County1","ca_state":"CA","i_item_id":"I1"}]
+   test TPCDS Q18 averages             ... ok (31.0µs)

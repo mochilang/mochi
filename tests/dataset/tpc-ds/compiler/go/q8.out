@@ -1,2 +1,2 @@
 [{"net_profit":10,"s_store_name":"Store1"}]
-   test TPCDS Q8 result                ... ok (4.0µs)
+   test TPCDS Q8 result                ... ok (2.0µs)
