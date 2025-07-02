@@ -152,11 +152,12 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		}
 		switch val := v.(type) {
 		case string:
-			// Attempt to infer numeric or boolean types when
-			// the value is stored as a string. This happens in a
-			// few SLT files and improves generated type accuracy.
-			v := strings.ToLower(val)
-			if v == "true" || v == "false" || v == "t" || v == "f" {
+			// Attempt to infer numeric or boolean types when the
+			// value is stored as a string. Trim whitespace and
+			// normalize case for comparison.
+			sv := strings.TrimSpace(strings.ToLower(val))
+
+			if sv == "true" || sv == "false" || sv == "t" || sv == "f" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
@@ -164,16 +165,19 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 				continue
 			}
-			if v == "0" || v == "1" || v == "0.0" || v == "1.0" {
+
+			clean := strings.TrimPrefix(strings.TrimPrefix(sv, "+"), "-")
+			if clean == "0" || clean == "1" || clean == "0.0" || clean == "1.0" {
 				if t == "" {
 					t = "int"
 				}
-				if v != "0" && v != "1" && v != "0.0" && v != "1.0" {
+				if clean != "0" && clean != "1" && clean != "0.0" && clean != "1.0" {
 					boolLike = false
 				}
 				continue
 			}
-			if _, err := strconv.Atoi(strings.TrimPrefix(v, "+")); err == nil {
+
+			if _, err := strconv.Atoi(sv); err == nil {
 				if t == "" {
 					t = "int"
 				} else if t == "int" {
@@ -186,7 +190,8 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				// numeric string
 				continue
 			}
-			if _, err := strconv.ParseFloat(v, 64); err == nil {
+
+			if _, err := strconv.ParseFloat(sv, 64); err == nil {
 				if t == "" || t == "float" || t == "int" {
 					t = "float"
 				} else {
@@ -194,6 +199,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 				continue
 			}
+
 			if t == "" || t == "string" {
 				t = "string"
 			} else {
