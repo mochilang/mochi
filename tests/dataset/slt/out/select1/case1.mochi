@@ -256,9 +256,10 @@ let t1 = [
 
 /* SELECT CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END FROM t1 ORDER BY 1 */
 let result = from row in t1
-  order by 1
-  select (row.c > avg(from x in t1
-  select x.c) ? row.a * 2 : row.b * 10)
+  order by (if row.c > avg(from x in t1
+  select x.c) { row.a * 2 } else { row.b * 10 })
+  select (if row.c > avg(from x in t1
+  select x.c) { row.a * 2 } else { row.b * 10 })
 for x in result {
   print(x)
 }
