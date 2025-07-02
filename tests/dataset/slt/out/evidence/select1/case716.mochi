@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT a+b*2, abs(b-c), b-c, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 ORDER BY 3,2,1,4 */
 let result = from row in t1
-  order by [row.b - row.c, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.a + row.b * 2, count(from x in t1
+  order by [(row.b - row.c), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.a + (row.b * 2)), count(from x in t1
   where x.b < row.b
   select x)]
-  select [row.a + row.b * 2, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.b - row.c, count(from x in t1
+  select [(row.a + (row.b * 2)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.b - row.c), count(from x in t1
   where x.b < row.b
   select x)]
 var flatResult = []

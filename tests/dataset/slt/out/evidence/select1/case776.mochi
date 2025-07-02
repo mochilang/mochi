@@ -224,11 +224,12 @@ let t1 = [
 ]
 
 /* SELECT a-b, c, a+b*2+c*3, b, d, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, c-d FROM t1 ORDER BY 4,3,5,6,2,1,7 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  order by [row.b, row.a + row.b * 2 + row.c * 3, row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.c, row.a - row.b, row.c - row.d]
-  select [row.a - row.b, row.c, row.a + row.b * 2 + row.c * 3, row.b, row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.c - row.d]
+  order by [row.b, ((row.a + (row.b * 2)) + (row.c * 3)), row.d, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.c, (row.a - row.b), (row.c - row.d)]
+  select [(row.a - row.b), row.c, ((row.a + (row.b * 2)) + (row.c * 3)), row.b, row.d, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.c - row.d)]
 var flatResult = []
 for row in result {
   for x in row {

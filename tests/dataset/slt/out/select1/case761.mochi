@@ -224,12 +224,13 @@ let t1 = [
 ]
 
 /* SELECT abs(a), CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, c, e FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR (e>c OR e<d) ORDER BY 3,2,4,1 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  where ((row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) || ((row.e > row.c || row.e < row.d)))
-  order by [row.c, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.e, (if row.a < 0 { -(row.a) } else { row.a })]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.c, row.e]
+  where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || ((row.e > row.c || row.e < row.d)))
+  order by [row.c, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.e, (if row.a < 0 { -(row.a) } else { row.a })]
+  select [(if row.a < 0 { -(row.a) } else { row.a }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.c, row.e]
 var flatResult = []
 for row in result {
   for x in row {
