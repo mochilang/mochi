@@ -249,6 +249,9 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 				return fmt.Sprintf("%s.%s", outer, name)
 			}
 		}
+		if rowVar == "" {
+			return name
+		}
 		return fmt.Sprintf("%s.%s", rowVar, name)
 	case *sqlparser.ParenExpr:
 		return "(" + exprToMochiRow(v.Expr, rowVar, outer) + ")"
@@ -342,10 +345,14 @@ func simpleExpr(e sqlparser.Expr) bool {
 }
 
 func condToMochi(where *sqlparser.Where) string {
+	return condToMochiRowVar(where, "row")
+}
+
+func condToMochiRowVar(where *sqlparser.Where, rowVar string) string {
 	if where == nil {
 		return ""
 	}
-	return condExprToMochiRow(where.Expr, "row", "")
+	return condExprToMochiRow(where.Expr, rowVar, "")
 }
 
 func condExprToMochi(e sqlparser.Expr) string {
@@ -420,23 +427,22 @@ func generateUpdate(stmt string) string {
 	}
 	u := node.(*sqlparser.Update)
 	tbl := u.TableExprs[0].(*sqlparser.AliasedTableExpr).Expr.(sqlparser.TableName).Name.String()
-	cond := condToMochi(u.Where)
+	cond := condToMochiRowVar(u.Where, "")
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("var i = 0\nwhile i < len(%s) {\n", tbl))
-	sb.WriteString(fmt.Sprintf("  var row = %s[i]\n", tbl))
-	indent := "  "
+	sb.WriteString("update " + tbl + "\n")
+	sb.WriteString("set {\n")
+	for i, expr := range u.Exprs {
+		sb.WriteString(fmt.Sprintf("  %s: %s", expr.Name.Name.String(), exprToMochiRow(expr.Expr, "", "")))
+		if i < len(u.Exprs)-1 {
+			sb.WriteString(",")
+		}
+		sb.WriteString("\n")
+	}
+	sb.WriteString("}")
 	if cond != "" {
-		sb.WriteString(fmt.Sprintf("  if %s {\n", cond))
-		indent = "    "
+		sb.WriteString("\nwhere " + cond)
 	}
-	for _, expr := range u.Exprs {
-		sb.WriteString(fmt.Sprintf("%srow.%s = %s\n", indent, expr.Name.Name.String(), exprToMochi(expr.Expr)))
-	}
-	sb.WriteString(fmt.Sprintf("%s%s[i] = row\n", indent, tbl))
-	if cond != "" {
-		sb.WriteString("  }\n")
-	}
-	sb.WriteString("  i = i + 1\n}\n\n")
+	sb.WriteString("\n\n")
 	return sb.String()
 }
 

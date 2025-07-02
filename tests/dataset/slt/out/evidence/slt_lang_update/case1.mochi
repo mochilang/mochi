@@ -41,56 +41,37 @@ var t1 = [
 ]
 
 /* UPDATE t1 SET x=1 WHERE x>0 */
-var i = 0
-while i < len(t1) {
-  var row = t1[i]
-  if row.x > 0 {
-    row.x = 1
-    t1[i] = row
-  }
-  i = i + 1
+update t1
+set {
+  x: 1
 }
+where x > 0
 
 /* UPDATE t1 SET x=2 WHERE x>0 */
-var i = 0
-while i < len(t1) {
-  var row = t1[i]
-  if row.x > 0 {
-    row.x = 2
-    t1[i] = row
-  }
-  i = i + 1
+update t1
+set {
+  x: 2
 }
+where x > 0
 
 /* UPDATE t1 SET y='true' WHERE x>0 */
-var i = 0
-while i < len(t1) {
-  var row = t1[i]
-  if row.x > 0 {
-    row.y = "true"
-    t1[i] = row
-  }
-  i = i + 1
+update t1
+set {
+  y: "true"
 }
+where x > 0
 
 /* UPDATE t1 SET y='unknown' WHERE x>0 */
-var i = 0
-while i < len(t1) {
-  var row = t1[i]
-  if row.x > 0 {
-    row.y = "unknown"
-    t1[i] = row
-  }
-  i = i + 1
+update t1
+set {
+  y: "unknown"
 }
+where x > 0
 
 /* UPDATE t1 SET x=3 */
-var i = 0
-while i < len(t1) {
-  var row = t1[i]
-  row.x = 3
-  t1[i] = row
-  i = i + 1
+update t1
+set {
+  x: 3
 }
 
 /* SELECT count(*) FROM t1 WHERE x=3 */
