@@ -24,12 +24,9 @@ var t1 = [
 ]
 
 /* UPDATE t1 SET x=2 */
-var i = 0
-while i < len(t1) {
-  var row = t1[i]
-  row.x = 2
-  t1[i] = row
-  i = i + 1
+update t1
+set {
+  x: 2,
 }
 
 /* SELECT count(*) FROM t1 WHERE y='unknown' */

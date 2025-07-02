@@ -29,14 +29,11 @@ var t1 = [
 ]
 
 /* UPDATE t1 SET x=3, x=4, x=5 */
-var i = 0
-while i < len(t1) {
-  var row = t1[i]
-  row.x = 3
-  row.x = 4
-  row.x = 5
-  t1[i] = row
-  i = i + 1
+update t1
+set {
+  x: 3,
+  x: 4,
+  x: 5,
 }
 
 /* SELECT count(*) FROM t1 WHERE x=3 */

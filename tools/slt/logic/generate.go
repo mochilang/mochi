@@ -233,6 +233,11 @@ func exprToMochi(e sqlparser.Expr) string {
 	return exprToMochiRow(e, "row", "")
 }
 
+func exprToMochiBare(e sqlparser.Expr) string {
+	s := exprToMochiRow(e, "row", "")
+	return strings.ReplaceAll(s, "row.", "")
+}
+
 func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 	switch v := e.(type) {
 	case *sqlparser.SQLVal:
@@ -352,6 +357,18 @@ func condExprToMochi(e sqlparser.Expr) string {
 	return condExprToMochiRow(e, "row", "")
 }
 
+func condExprToMochiBare(e sqlparser.Expr) string {
+	s := condExprToMochiRow(e, "row", "")
+	return strings.ReplaceAll(s, "row.", "")
+}
+
+func condToMochiBare(where *sqlparser.Where) string {
+	if where == nil {
+		return ""
+	}
+	return condExprToMochiBare(where.Expr)
+}
+
 func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 	switch v := e.(type) {
 	case *sqlparser.ComparisonExpr:
@@ -420,23 +437,21 @@ func generateUpdate(stmt string) string {
 	}
 	u := node.(*sqlparser.Update)
 	tbl := u.TableExprs[0].(*sqlparser.AliasedTableExpr).Expr.(sqlparser.TableName).Name.String()
-	cond := condToMochi(u.Where)
+	cond := condToMochiBare(u.Where)
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("var i = 0\nwhile i < len(%s) {\n", tbl))
-	sb.WriteString(fmt.Sprintf("  var row = %s[i]\n", tbl))
-	indent := "  "
+	sb.WriteString("update " + tbl + "\n")
+	sb.WriteString("set {\n")
+	for i, expr := range u.Exprs {
+		if i > 0 {
+			sb.WriteString("\n")
+		}
+		sb.WriteString(fmt.Sprintf("  %s: %s,", expr.Name.Name.String(), exprToMochiBare(expr.Expr)))
+	}
+	sb.WriteString("\n}")
 	if cond != "" {
-		sb.WriteString(fmt.Sprintf("  if %s {\n", cond))
-		indent = "    "
+		sb.WriteString("\nwhere " + cond)
 	}
-	for _, expr := range u.Exprs {
-		sb.WriteString(fmt.Sprintf("%srow.%s = %s\n", indent, expr.Name.Name.String(), exprToMochi(expr.Expr)))
-	}
-	sb.WriteString(fmt.Sprintf("%s%s[i] = row\n", indent, tbl))
-	if cond != "" {
-		sb.WriteString("  }\n")
-	}
-	sb.WriteString("  i = i + 1\n}\n\n")
+	sb.WriteString("\n\n")
 	return sb.String()
 }
 
