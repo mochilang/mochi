@@ -257,7 +257,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 	case *sqlparser.BinaryExpr:
 		l := exprToMochiRow(v.Left, rowVar, outer)
 		r := exprToMochiRow(v.Right, rowVar, outer)
-		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
+		return fmt.Sprintf("(%s %s %s)", l, v.Operator, r)
 	case *sqlparser.FuncExpr:
 		name := strings.ToLower(v.Name.String())
 		if name == "abs" && len(v.Exprs) == 1 {
