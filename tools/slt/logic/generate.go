@@ -153,7 +153,8 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// Attempt to infer numeric or boolean types when
 			// the value is stored as a string. This happens in a
 			// few SLT files and improves generated type accuracy.
-			if val == "true" || val == "false" {
+			v := strings.ToLower(val)
+			if v == "true" || v == "false" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
@@ -161,7 +162,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 				continue
 			}
-			if _, err := strconv.Atoi(val); err == nil {
+			if _, err := strconv.Atoi(v); err == nil {
 				if t == "" {
 					t = "int"
 				} else if t == "int" {
@@ -174,7 +175,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				// numeric string
 				continue
 			}
-			if _, err := strconv.ParseFloat(val, 64); err == nil {
+			if _, err := strconv.ParseFloat(v, 64); err == nil {
 				if t == "" || t == "float" || t == "int" {
 					t = "float"
 				} else {
