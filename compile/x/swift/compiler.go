@@ -398,6 +398,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Break != nil:
@@ -581,6 +583,82 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	target := u.Target
+	c.writeln(fmt.Sprintf("for i in 0..<%s.count {", target))
+	c.indent++
+	c.writeln(fmt.Sprintf("var item = %s[i]", target))
+
+	oldEnv := c.env
+	oldLocals := c.locals
+	var st types.StructType
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if s, ok2 := lt.Elem.(types.StructType); ok2 {
+					st = s
+					child := types.NewEnv(c.env)
+					c.locals = map[string]types.Type{}
+					for name, ft := range s.Fields {
+						child.SetVar(name, ft, true)
+						c.locals[name] = ft
+						c.writeln(fmt.Sprintf("let %s = item.%s", name, name))
+					}
+					c.env = child
+				}
+			}
+		}
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = oldEnv
+			c.locals = oldLocals
+			return err
+		}
+		c.writeln(fmt.Sprintf("if !(%s) {", cond))
+		c.indent++
+		c.writeln("continue")
+		c.indent--
+		c.writeln("}")
+	}
+
+	for _, it := range u.Set.Items {
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = oldEnv
+			c.locals = oldLocals
+			return err
+		}
+		if _, ok := st.Fields[stringKeyName(it.Key)]; ok {
+			if key, ok2 := identName(it.Key); ok2 {
+				c.writeln(fmt.Sprintf("item.%s = %s", key, val))
+				continue
+			}
+		}
+		keyExpr, err := c.compileExpr(it.Key)
+		if err != nil {
+			c.env = oldEnv
+			c.locals = oldLocals
+			return err
+		}
+		if id, ok := identName(it.Key); ok {
+			keyExpr = strconv.Quote(id)
+		}
+		c.writeln(fmt.Sprintf("item[%s] = %s", keyExpr, val))
+	}
+
+	c.writeln(fmt.Sprintf("%s[i] = item", target))
+	if len(st.Fields) > 0 {
+		c.env = oldEnv
+		c.locals = oldLocals
+	}
+	c.indent--
+	c.writeln("}")
 	return nil
 }
 
@@ -846,7 +924,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("str expects 1 arg")
 			}
-			return fmt.Sprintf("String(%s)", args[0]), nil
+			return fmt.Sprintf("String(describing: %s)", args[0]), nil
 		case "upper":
 			if len(args) != 1 {
 				return "", fmt.Errorf("upper expects 1 arg")

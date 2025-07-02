@@ -82,6 +82,27 @@ func identName(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func stringKeyName(e *parser.Expr) string {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return ""
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str
+	}
+	return ""
+}
+
 func isUnderscoreExpr(e *parser.Expr) bool {
 	if e == nil || len(e.Binary.Right) != 0 {
 		return false

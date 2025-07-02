@@ -1,0 +1,45 @@
+import Foundation
+
+func expect(_ cond: Bool) {
+  if !cond { fatalError("expect failed") }
+}
+
+struct Person {
+  var name: String
+  var age: Int
+  var status: String
+}
+
+func test_update_adult_status() {
+  expect(
+    String(describing: people)
+      == String(describing: [
+        Person(name: "Alice", age: 17, status: "minor"),
+        Person(name: "Bob", age: 26, status: "adult"),
+        Person(name: "Charlie", age: 19, status: "adult"),
+        Person(name: "Diana", age: 16, status: "minor"),
+      ]))
+}
+
+var people: [Person] = [
+  Person(name: "Alice", age: 17, status: "minor"), Person(name: "Bob", age: 25, status: "unknown"),
+  Person(name: "Charlie", age: 18, status: "unknown"),
+  Person(name: "Diana", age: 16, status: "minor"),
+]
+func main() {
+  for i in 0..<people.count {
+    var item = people[i]
+    let name = item.name
+    let age = item.age
+    let status = item.status
+    if !(age >= 18) {
+      continue
+    }
+    item.status = "adult"
+    item.age = age + 1
+    people[i] = item
+  }
+  print("ok")
+  test_update_adult_status()
+}
+main()
