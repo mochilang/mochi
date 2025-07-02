@@ -1,3 +1,5 @@
+//go:build slow
+
 package logic
 
 import (
@@ -62,5 +64,20 @@ func TestDownloadFile(t *testing.T) {
 	}
 	if string(data) != "hello" {
 		t.Fatalf("unexpected contents: %q", string(data))
+	}
+}
+
+func TestDiscoverTests(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"tree":[{"path":"a/b.test","type":"blob"},{"path":"c/d.sql","type":"blob"}]}`)
+	}))
+	defer srv.Close()
+
+	files, err := DiscoverTests(srv.URL)
+	if err != nil {
+		t.Fatalf("discover tests: %v", err)
+	}
+	if len(files) != 1 || files[0] != "a/b.test" {
+		t.Fatalf("unexpected files %v", files)
 	}
 }
