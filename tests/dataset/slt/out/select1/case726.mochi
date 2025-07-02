@@ -1,3 +1,7 @@
+/*
+# line: 8850
+*/
+
 let t1 = [
   {
     a: 103,
@@ -215,10 +219,10 @@ let t1 = [
 let result = from row in t1
   where (((row["c"] >= row["b"] - 2 && row["c"] <= row["d"] + 2) && ((row["a"] > row["b"] - 2 && row["a"] < row["b"] + 2))) && (row["e"] + row["d"] >= row["a"] + row["b"] - 10 && row["e"] + row["d"] <= row["c"] + 130))
   order by (row["a"] < row["b"] - 3 ? 111 : (row["a"] <= row["b"] ? 222 : (row["a"] < row["b"] + 3 ? 333 : 444))), row["a"] - row["b"], row["e"], count(from x in t1
-  where x["b"] < x["b"]
+  where x["b"] < row["b"]
   select x), row["a"] + row["b"] * 2 + row["c"] * 3 + row["d"] * 4
   select [(row["a"] < row["b"] - 3 ? 111 : (row["a"] <= row["b"] ? 222 : (row["a"] < row["b"] + 3 ? 333 : 444))), row["a"] + row["b"] * 2 + row["c"] * 3 + row["d"] * 4, row["a"] - row["b"], row["e"], count(from x in t1
-  where x["b"] < x["b"]
+  where x["b"] < row["b"]
   select x)]
 let flatResult = from row in result
   from x in row

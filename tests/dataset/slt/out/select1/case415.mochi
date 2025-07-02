@@ -1,5 +1,5 @@
 /*
-# line: 7186
+# line: 5147
 */
 
 let t1 = [
@@ -215,13 +215,15 @@ let t1 = [
   },
 ]
 
-/* SELECT CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, abs(a) FROM t1 WHERE c>d AND b>c ORDER BY 2,1 */
+/* SELECT (a+b+c+d+e)/5, d, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, a+b*2+c*3+d*4, a, abs(a), a-b FROM t1 WHERE (a>b-2 AND a<b+2) AND EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) AND e+d BETWEEN a+b-10 AND c+130 ORDER BY 5,4,1,2,7,6,3 */
 let result = from row in t1
-  where (row["c"] > row["d"] && row["b"] > row["c"])
-  order by abs(row["a"]), (row["c"] > avg(from x in t1
+  where ((((row["a"] > row["b"] - 2 && row["a"] < row["b"] + 2)) && count(from x in t1
+  where x["b"] < row["b"]
+  select x) > 0) && (row["e"] + row["d"] >= row["a"] + row["b"] - 10 && row["e"] + row["d"] <= row["c"] + 130))
+  order by row["a"], row["a"] + row["b"] * 2 + row["c"] * 3 + row["d"] * 4, (row["a"] + row["b"] + row["c"] + row["d"] + row["e"]) / 5, row["d"], row["a"] - row["b"], abs(row["a"]), (row["c"] > avg(from x in t1
   select x["c"]) ? row["a"] * 2 : row["b"] * 10)
-  select [(row["c"] > avg(from x in t1
-  select x["c"]) ? row["a"] * 2 : row["b"] * 10), abs(row["a"])]
+  select [(row["a"] + row["b"] + row["c"] + row["d"] + row["e"]) / 5, row["d"], (row["c"] > avg(from x in t1
+  select x["c"]) ? row["a"] * 2 : row["b"] * 10), row["a"] + row["b"] * 2 + row["c"] * 3 + row["d"] * 4, row["a"], abs(row["a"]), row["a"] - row["b"]]
 let flatResult = from row in result
   from x in row
   select x
@@ -229,6 +231,6 @@ for x in flatResult {
   print(x)
 }
 
-test "case586" {
-  expect flatResult == [1240, 121, 1390, 138, 1430, 142, 382, 191]
+test "case415" {
+  expect flatResult == [112, 114, 1120, 1130, 111, 111, -1]
 }

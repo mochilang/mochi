@@ -1,3 +1,7 @@
+/*
+# line: 1458
+*/
+
 let t1 = [
   {
     a: 103,
@@ -216,10 +220,10 @@ let result = from row in t1
   where ((row["c"] > row["d"] && row["b"] > row["c"]) && (row["e"] + row["d"] >= row["a"] + row["b"] - 10 && row["e"] + row["d"] <= row["c"] + 130))
   order by (row["c"] > avg(from x in t1
   select x["c"]) ? row["a"] * 2 : row["b"] * 10), row["a"] + row["b"] * 2 + row["c"] * 3, count(from x in t1
-  where x["b"] < x["b"]
+  where x["b"] < row["b"]
   select x), row["b"] - row["c"]
   select [count(from x in t1
-  where x["b"] < x["b"]
+  where x["b"] < row["b"]
   select x), row["b"] - row["c"], (row["c"] > avg(from x in t1
   select x["c"]) ? row["a"] * 2 : row["b"] * 10), row["a"] + row["b"] * 2 + row["c"] * 3]
 let flatResult = from row in result

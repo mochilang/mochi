@@ -1,3 +1,7 @@
+/*
+# line: 8430
+*/
+
 let t1 = [
   {
     a: 103,
@@ -216,7 +220,7 @@ let result = from row in t1
   where ((((row["e"] > row["c"] || row["e"] < row["d"])) && (row["e"] + row["d"] >= row["a"] + row["b"] - 10 && row["e"] + row["d"] <= row["c"] + 130)) && row["d"] > row["e"])
   order by 1
   select count(from x in t1
-  where (x["c"] > x["c"] && x["d"] < x["d"])
+  where (x["c"] > row["c"] && x["d"] < row["d"])
   select x)
 for x in result {
   print(x)
