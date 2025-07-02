@@ -225,18 +225,19 @@ let t1 = [
 
 /* SELECT b, e FROM t1 WHERE (c<=d-2 OR c>=d+2) ORDER BY 2,1 */
 let result = from row in t1
-  where ((row.c <= row.d - 2 || row.c >= row.d + 2))
+  where ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))
   order by [row.e, row.b]
   select [row.b, row.e]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case57" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [105, 109, 118, 117, 129, 126, 151, 152, 160, 162, 167, 165, 175, 177, 186, 189, 194, 192, 211, 210, 218, 219, 223, 221, 232, 230, 236, 237, 240, 242]
 }
+

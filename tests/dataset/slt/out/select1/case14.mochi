@@ -226,17 +226,18 @@ let t1 = [
 /* SELECT a+b*2, a, a+b*2+c*3+d*4+e*5, (a+b+c+d+e)/5, e, c-d, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 WHERE a>b ORDER BY 5,4,6,2,1,7,3 */
 let result = from row in t1
   where row.a > row.b
-  order by [row.e, (row.a + row.b + row.c + row.d + row.e) / 5, row.c - row.d, row.a, row.a + row.b * 2, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5]
-  select [row.a + row.b * 2, row.a, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (row.a + row.b + row.c + row.d + row.e) / 5, row.e, row.c - row.d, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) })]
+  order by [row.e, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.c - row.d), row.a, (row.a + (row.b * 2)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
+  select [(row.a + (row.b * 2)), row.a, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.e, (row.c - row.d), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case14" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [304, 104, 1529, 102, 103, 1, 444, 317, 107, 1612, 107, 109, -2, 333, 391, 131, 1985, 132, 132, 1, 333, 439, 149, 2202, 147, 146, -1, 444, 455, 153, 2281, 152, 152, -4, 333, 475, 159, 2349, 157, 157, -1, 333, 483, 163, 2432, 162, 162, -3, 444, 502, 168, 2501, 167, 165, -3, 333, 514, 174, 2579, 172, 173, 1, 444, 529, 179, 2654, 177, 177, -2, 444, 544, 182, 2728, 182, 180, 1, 333, 560, 188, 2806, 187, 189, 2, 333, 595, 199, 2949, 197, 197, -1, 333, 601, 201, 3039, 202, 204, -1, 333, 635, 213, 3175, 212, 210, 2, 333, 685, 229, 3399, 227, 227, -1, 333, 698, 234, 3473, 232, 230, -2, 333, 711, 239, 3553, 237, 237, -3, 444, 723, 243, 3629, 242, 242, 3, 444]
 }
+

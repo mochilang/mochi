@@ -228,19 +228,20 @@ let result = from row in t1
   where row.d > row.e
   order by [count(from x in t1
   where x.b < row.b
-  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2]
-  select [(if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, count(from x in t1
+  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a + (row.b * 2))]
+  select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where x.b < row.b
-  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a + row.b * 2]
+  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.a + (row.b * 2))]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case51" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [222, 1680, 2, 1130, 335, 222, 1826, 4, 1226, 369, 222, 1902, 5, 1272, 385, 333, 1985, 6, 1325, 391, 222, 2046, 7, 1371, 416, 444, 2202, 9, 1472, 439, 333, 2281, 10, 1521, 455, 444, 2432, 12, 1622, 483, 333, 2501, 13, 1676, 502, 444, 2654, 15, 1769, 529, 333, 2728, 16, 1828, 544, 333, 3175, 22, 2125, 635, 222, 3331, 24, 2226, 666, 333, 3473, 26, 2323, 698, 444, 3553, 27, 2368, 711, 111, 3706, 29, 2476, 743]
 }
+

@@ -228,19 +228,20 @@ let result = from row in t1
   where row.b > row.c
   order by [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.a - row.b]
+  select x), (row.a - row.b)]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.a - row.b]
+  select x), (row.a - row.b)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case52" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [0, -4, 0, -3, 0, -3, 0, -2, 0, -2, 0, -1, 0, -1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 2, 0, 2, 0, 3]
 }
+

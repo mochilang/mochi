@@ -225,18 +225,19 @@ let t1 = [
 
 /* SELECT abs(b-c), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 WHERE (e>c OR e<d) OR b>c OR (a>b-2 AND a<b+2) ORDER BY 2,1 */
 let result = from row in t1
-  where ((((row.e > row.c || row.e < row.d)) || row.b > row.c) || ((row.a > row.b - 2 && row.a < row.b + 2)))
-  order by [(if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c })]
-  select [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) })]
+  where ((((row.e > row.c || row.e < row.d)) || row.b > row.c) || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
+  order by [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case59" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [2, 111, 1, 222, 1, 222, 1, 222, 1, 222, 2, 222, 2, 222, 2, 222, 3, 222, 4, 222, 1, 333, 1, 333, 1, 333, 1, 333, 1, 333, 2, 333, 3, 333, 3, 333, 3, 333, 3, 333, 3, 333, 4, 333, 1, 444, 1, 444, 1, 444, 2, 444, 2, 444, 2, 444]
 }
+

@@ -224,21 +224,23 @@ let t1 = [
 ]
 
 /* SELECT d, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, b, c, e FROM t1 WHERE b>c ORDER BY 1,2,4,3,5 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
   where row.b > row.c
-  order by [row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.c, row.b, row.e]
-  select [row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.b, row.c, row.e]
+  order by [row.d, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.c, row.b, row.e]
+  select [row.d, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.b, row.c, row.e]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case33" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [122, 1240, 124, 123, 120, 128, 1290, 129, 125, 126, 136, 1390, 139, 137, 135, 140, 1430, 143, 141, 144, 154, 1510, 151, 150, 152, 156, 1580, 158, 155, 157, 169, 1670, 167, 166, 165, 190, 382, 194, 193, 192, 196, 398, 198, 195, 197, 217, 432, 218, 215, 219, 226, 458, 228, 225, 227, 233, 468, 232, 231, 230, 238, 478, 236, 235, 237, 248, 490, 249, 247, 246]
 }
+

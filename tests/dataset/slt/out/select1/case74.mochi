@@ -225,17 +225,18 @@ let t1 = [
 
 /* SELECT abs(a), a+b*2+c*3+d*4+e*5, a, (a+b+c+d+e)/5 FROM t1 ORDER BY 4,3,2,1 */
 let result = from row in t1
-  order by [(row.a + row.b + row.c + row.d + row.e) / 5, row.a, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (if row.a < 0 { -(row.a) } else { row.a })]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a, (row.a + row.b + row.c + row.d + row.e) / 5]
+  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.a, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if row.a < 0 { -(row.a) } else { row.a })]
+  select [(if row.a < 0 { -(row.a) } else { row.a }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.a, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case74" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [104, 1529, 104, 102, 107, 1612, 107, 107, 111, 1680, 111, 112, 115, 1757, 115, 117, 121, 1826, 121, 122, 127, 1902, 127, 127, 131, 1985, 131, 132, 138, 2046, 138, 137, 142, 2131, 142, 142, 149, 2202, 149, 147, 153, 2281, 153, 152, 159, 2349, 159, 157, 163, 2432, 163, 162, 168, 2501, 168, 167, 174, 2579, 174, 172, 179, 2654, 179, 177, 182, 2728, 182, 182, 188, 2806, 188, 187, 191, 2878, 191, 192, 199, 2949, 199, 197, 201, 3039, 201, 202, 205, 3114, 205, 207, 213, 3175, 213, 212, 216, 3260, 216, 217, 220, 3331, 220, 222, 229, 3399, 229, 227, 234, 3473, 234, 232, 239, 3553, 239, 237, 243, 3629, 243, 242, 245, 3706, 245, 247]
 }
+

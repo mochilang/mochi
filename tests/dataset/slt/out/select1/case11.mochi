@@ -224,27 +224,29 @@ let t1 = [
 ]
 
 /* SELECT CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2+c*3, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c, b-c FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) OR a>b OR d NOT BETWEEN 110 AND 150 ORDER BY 5,3,6,1,2,4 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 || row.a > row.b) || (row.d < 110 || row.d > 150))
-  order by [row.c, row.a + row.b * 2 + row.c * 3, row.b - row.c, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), count(from x in t1
+  order by [row.c, ((row.a + (row.b * 2)) + (row.c * 3)), (row.b - row.c), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
-  select [(if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a + row.b * 2 + row.c * 3, count(from x in t1
+  select [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.c, row.b - row.c]
+  select x), row.c, (row.b - row.c)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case11" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1000, 444, 610, 0, 102, -2, 1050, 333, 635, 0, 106, -1, 1120, 222, 674, 0, 113, -1, 1180, 222, 708, 0, 119, -1, 1240, 222, 738, 0, 123, 1, 1290, 222, 760, 0, 125, 4, 1300, 333, 793, 0, 134, -4, 1390, 222, 827, 0, 137, 2, 1430, 222, 851, 0, 141, 2, 1450, 444, 880, 0, 147, -2, 1510, 333, 905, 0, 150, 1, 1580, 333, 940, 0, 155, 3, 1600, 444, 966, 0, 161, -1, 1670, 333, 1000, 0, 166, 1, 1700, 444, 1030, 0, 172, -2, 358, 444, 1057, 0, 176, -1, 364, 333, 1096, 0, 184, -3, 376, 333, 1121, 0, 187, -1, 382, 222, 1158, 0, 193, 1, 398, 333, 1180, 0, 195, 3, 402, 333, 1207, 0, 202, -2, 410, 222, 1241, 0, 208, -2, 426, 333, 1277, 0, 214, -3, 432, 222, 1297, 0, 215, 3, 440, 222, 1338, 0, 224, -1, 458, 333, 1360, 0, 225, 3, 468, 333, 1391, 0, 231, 1, 478, 444, 1416, 0, 235, 1, 486, 444, 1455, 0, 244, -4, 490, 111, 1484, 0, 247, 2]
 }
+

@@ -225,18 +225,19 @@ let t1 = [
 
 /* SELECT b, abs(a), a, c FROM t1 WHERE c BETWEEN b-2 AND d+2 OR (e>c OR e<d) OR b>c ORDER BY 4,3,2,1 */
 let result = from row in t1
-  where (((row.c >= row.b - 2 && row.c <= row.d + 2) || ((row.e > row.c || row.e < row.d))) || row.b > row.c)
+  where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || ((row.e > row.c || row.e < row.d))) || row.b > row.c)
   order by [row.c, row.a, (if row.a < 0 { -(row.a) } else { row.a }), row.b]
   select [row.b, (if row.a < 0 { -(row.a) } else { row.a }), row.a, row.c]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case77" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [100, 104, 104, 102, 105, 107, 107, 106, 112, 111, 111, 113, 124, 121, 121, 123, 129, 127, 127, 125, 130, 131, 131, 134, 139, 138, 138, 137, 143, 142, 142, 141, 145, 149, 149, 147, 151, 153, 153, 150, 158, 159, 159, 155, 160, 163, 163, 161, 167, 168, 168, 166, 170, 174, 174, 172, 175, 179, 179, 176, 181, 182, 182, 184, 186, 188, 188, 187, 194, 191, 191, 193, 198, 199, 199, 195, 200, 201, 201, 202, 206, 205, 205, 208, 211, 213, 213, 214, 218, 216, 216, 215, 223, 220, 220, 224, 228, 229, 229, 225, 232, 234, 234, 231, 236, 239, 239, 235, 249, 245, 245, 247]
 }
+

@@ -225,21 +225,22 @@ let t1 = [
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, c, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), b-c, b, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, a+b*2 FROM t1 ORDER BY 4,3,5,1,6,2,7 */
 let result = from row in t1
-  order by [row.b - row.c, count(from x in t1
+  order by [(row.b - row.c), count(from x in t1
   where x.b < row.b
-  select x), row.b, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.c, row.a + row.b * 2]
-  select [(if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.c, count(from x in t1
+  select x), row.b, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.c, (row.a + (row.b * 2))]
+  select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.c, count(from x in t1
   where x.b < row.b
-  select x), row.b - row.c, row.b, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.a + row.b * 2]
+  select x), (row.b - row.c), row.b, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.a + (row.b * 2))]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case19" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [333, 134, 6, -4, 130, 444, 391, 444, 244, 28, -4, 240, 222, 723, 333, 184, 16, -3, 181, 333, 544, 333, 214, 22, -3, 211, 222, 635, 444, 102, 0, -2, 100, 555, 304, 444, 147, 9, -2, 145, 555, 439, 444, 172, 14, -2, 170, 555, 514, 333, 202, 20, -2, 200, 222, 601, 222, 208, 21, -2, 206, 111, 617, 333, 106, 1, -1, 105, 333, 317, 222, 113, 2, -1, 112, 111, 335, 222, 119, 3, -1, 118, 333, 351, 444, 161, 12, -1, 160, 333, 483, 444, 176, 15, -1, 175, 555, 529, 333, 187, 17, -1, 186, 444, 560, 222, 224, 24, -1, 223, 444, 666, 222, 123, 4, 1, 124, 333, 369, 333, 150, 10, 1, 151, 333, 455, 333, 166, 13, 1, 167, 333, 502, 222, 193, 18, 1, 194, 444, 579, 333, 231, 26, 1, 232, 555, 698, 444, 235, 27, 1, 236, 555, 711, 222, 137, 7, 2, 139, 111, 416, 222, 141, 8, 2, 143, 111, 428, 111, 247, 29, 2, 249, 444, 743, 333, 155, 11, 3, 158, 555, 475, 333, 195, 19, 3, 198, 555, 595, 222, 215, 23, 3, 218, 333, 652, 333, 225, 25, 3, 228, 555, 685, 222, 125, 5, 4, 129, 333, 385]
 }
+

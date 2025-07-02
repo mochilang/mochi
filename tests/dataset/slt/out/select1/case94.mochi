@@ -228,21 +228,22 @@ let result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0
-  order by [row.a + row.b * 2 + row.c * 3 + row.d * 4, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.d - row.e, row.c, row.a + row.b * 2 + row.c * 3, row.a + row.b * 2, count(from x in t1
+  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.d - row.e), row.c, ((row.a + (row.b * 2)) + (row.c * 3)), (row.a + (row.b * 2)), count(from x in t1
   where x.b < row.b
   select x)]
-  select [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.c, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), count(from x in t1
+  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.c, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), count(from x in t1
   where x.b < row.b
-  select x), row.a + row.b * 2 + row.c * 3, row.a + row.b * 2, row.d - row.e]
+  select x), ((row.a + (row.b * 2)) + (row.c * 3)), (row.a + (row.b * 2)), (row.d - row.e)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case94" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1067, 106, 333, 1, 635, 317, -1, 1130, 113, 222, 2, 674, 335, 4, 1172, 119, 222, 3, 708, 351, -1, 1226, 123, 222, 4, 738, 369, 2, 1272, 125, 222, 5, 760, 385, 2, 1325, 134, 333, 6, 793, 391, 1, 1371, 137, 222, 7, 827, 416, 1, 1411, 141, 222, 8, 851, 428, -4, 1472, 147, 444, 9, 880, 439, 2, 1521, 150, 333, 10, 905, 455, 2, 1564, 155, 333, 11, 940, 475, -1, 1622, 161, 444, 12, 966, 483, 2, 1676, 166, 333, 13, 1000, 502, 4, 1714, 172, 444, 14, 1030, 514, -2, 1769, 176, 444, 15, 1057, 529, 1, 1828, 184, 333, 16, 1096, 544, 3, 1861, 187, 333, 17, 1121, 560, -4, 1918, 193, 222, 18, 1158, 579, -2, 1964, 195, 333, 19, 1180, 595, -1, 2019, 202, 333, 20, 1207, 601, -1, 2069, 208, 222, 21, 1241, 617, -2, 2125, 214, 333, 22, 1277, 635, 2, 2165, 215, 222, 23, 1297, 652, -2, 2226, 224, 222, 24, 1338, 666, 1, 2264, 225, 333, 25, 1360, 685, -1, 2323, 231, 333, 26, 1391, 698, 3, 2368, 235, 444, 27, 1416, 711, 1, 2419, 244, 444, 28, 1455, 723, -1, 2476, 247, 111, 29, 1484, 743, 2]
 }
+

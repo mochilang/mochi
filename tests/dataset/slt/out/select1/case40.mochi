@@ -230,19 +230,20 @@ let result = from row in t1
   select x) > 0)
   order by [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (row.a + row.b + row.c + row.d + row.e) / 5, row.e]
-  select [(row.a + row.b + row.c + row.d + row.e) / 5, row.e, count(from x in t1
+  select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.e]
+  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.e, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case40" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [102, 103, 0, 107, 109, 0, 112, 110, 0, 117, 117, 0, 122, 120, 0, 127, 126, 0, 132, 132, 0, 137, 135, 0, 142, 144, 0, 147, 146, 0, 152, 152, 0, 157, 157, 0, 162, 162, 0, 167, 165, 0, 172, 173, 0, 177, 177, 0, 182, 180, 0, 187, 189, 0, 192, 192, 0, 197, 197, 0, 202, 204, 0, 207, 209, 0, 212, 210, 0, 217, 219, 0, 222, 221, 0, 227, 227, 0, 232, 230, 0, 237, 237, 0, 242, 242, 0, 247, 246, 0]
 }
+

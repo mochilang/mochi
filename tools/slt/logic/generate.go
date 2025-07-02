@@ -156,7 +156,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// the value is stored as a string. This happens in a
 			// few SLT files and improves generated type accuracy.
 			v := strings.ToLower(val)
-			if v == "true" || v == "false" {
+			if v == "true" || v == "false" || v == "t" || v == "f" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
@@ -173,7 +173,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 				continue
 			}
-			if _, err := strconv.Atoi(v); err == nil {
+			if _, err := strconv.Atoi(strings.TrimPrefix(v, "+")); err == nil {
 				if t == "" {
 					t = "int"
 				} else if t == "int" {
@@ -616,21 +616,21 @@ func Generate(c Case) string {
 
 	tblNameStr := tblName.Name.String()
 
-        subExprs := collectSubqueries(sel)
-        subs := map[string]string{}
-        for i, s := range subExprs {
-                if strings.Contains(s, "row.") {
-                        // Correlated subqueries reference the current row and
-                        // must remain inline.
-                        continue
-                }
-                name := fmt.Sprintf("sub%d", i)
-                subs[s] = name
-                sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
-        }
-        if len(subs) > 0 {
-                sb.WriteString("\n")
-        }
+	subExprs := collectSubqueries(sel)
+	subs := map[string]string{}
+	for i, s := range subExprs {
+		if strings.Contains(s, "row.") {
+			// Correlated subqueries reference the current row and
+			// must remain inline.
+			continue
+		}
+		name := fmt.Sprintf("sub%d", i)
+		subs[s] = name
+		sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
+	}
+	if len(subs) > 0 {
+		sb.WriteString("\n")
+	}
 
 	// Handle SELECT count(*)
 	if len(sel.SelectExprs) == 1 {

@@ -230,19 +230,20 @@ let result = from row in t1
   select x) > 0 || row.c > row.d)
   order by [count(from x in t1
   where x.b < row.b
-  select x), (if row.a < 0 { -(row.a) } else { row.a }), row.a + row.b * 2 + row.c * 3 + row.d * 4, row.d - row.e]
-  select [row.d - row.e, count(from x in t1
+  select x), (if row.a < 0 { -(row.a) } else { row.a }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.d - row.e)]
+  select [(row.d - row.e), count(from x in t1
   where x.b < row.b
-  select x), (if row.a < 0 { -(row.a) } else { row.a }), row.a + row.b * 2 + row.c * 3 + row.d * 4]
+  select x), (if row.a < 0 { -(row.a) } else { row.a }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case49" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [-2, 0, 104, 1014, -1, 1, 107, 1067, 4, 2, 111, 1130, -1, 3, 115, 1172, 2, 4, 121, 1226, 2, 5, 127, 1272, 1, 6, 131, 1325, 1, 7, 138, 1371, -4, 8, 142, 1411, 2, 9, 149, 1472, 2, 10, 153, 1521, -1, 11, 159, 1564, 2, 12, 163, 1622, 4, 13, 168, 1676, -2, 14, 174, 1714, 1, 15, 179, 1769, 3, 16, 182, 1828, -4, 17, 188, 1861, -2, 18, 191, 1918, -1, 19, 199, 1964, -1, 20, 201, 2019, -2, 21, 205, 2069, 2, 22, 213, 2125, -2, 23, 216, 2165, 1, 24, 220, 2226, -1, 25, 229, 2264, 3, 26, 234, 2323, 1, 27, 239, 2368, -1, 28, 243, 2419, 2, 29, 245, 2476]
 }
+
