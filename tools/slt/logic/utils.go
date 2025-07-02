@@ -128,7 +128,8 @@ func GenerateFiles(files []string, outDir string, run bool) error {
 		if err != nil {
 			return err
 		}
-		testDir := filepath.Join(outDir, strings.TrimSuffix(f, ".test"))
+		base := filepath.Base(f)
+		testDir := filepath.Join(outDir, strings.TrimSuffix(base, ".test"))
 		if err := os.MkdirAll(testDir, 0o755); err != nil {
 			return err
 		}
