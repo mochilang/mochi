@@ -1,5 +1,5 @@
 /*
-# line: 7186
+# line: 6770
 */
 
 let t1 = [
@@ -215,20 +215,17 @@ let t1 = [
   },
 ]
 
-/* SELECT CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, abs(a) FROM t1 WHERE c>d AND b>c ORDER BY 2,1 */
+/* SELECT a-b FROM t1 WHERE (a>b-2 AND a<b+2) AND EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) AND c BETWEEN b-2 AND d+2 ORDER BY 1 */
 let result = from row in t1
-  where (row["c"] > row["d"] && row["b"] > row["c"])
-  order by abs(row["a"]), (row["c"] > avg(from x in t1
-  select x["c"]) ? row["a"] * 2 : row["b"] * 10)
-  select [(row["c"] > avg(from x in t1
-  select x["c"]) ? row["a"] * 2 : row["b"] * 10), abs(row["a"])]
-let flatResult = from row in result
-  from x in row
-  select x
-for x in flatResult {
+  where ((((row["a"] > row["b"] - 2 && row["a"] < row["b"] + 2)) && count(from x in t1
+  where x["b"] < row["b"]
+  select x) > 0) && (row["c"] >= row["b"] - 2 && row["c"] <= row["d"] + 2))
+  order by 1
+  select row["a"] - row["b"]
+for x in result {
   print(x)
 }
 
-test "case586" {
-  expect flatResult == [1240, 121, 1390, 138, 1430, 142, 382, 191]
+test "case551" {
+  expect result == [-1, -1, -1, -1, 1, 1, 1, 1]
 }

@@ -1,3 +1,7 @@
+/*
+# line: 4176
+*/
+
 let t1 = [
   {
     a: 103,
@@ -215,10 +219,10 @@ let t1 = [
 let result = from row in t1
   where ((((row["c"] <= row["d"] - 2 || row["c"] >= row["d"] + 2)) && ((row["e"] > row["c"] || row["e"] < row["d"]))) && row["c"] > row["d"])
   order by count(from x in t1
-  where (x["c"] > x["c"] && x["d"] < x["d"])
+  where (x["c"] > row["c"] && x["d"] < row["d"])
   select x), row["b"] - row["c"]
   select [row["b"] - row["c"], count(from x in t1
-  where (x["c"] > x["c"] && x["d"] < x["d"])
+  where (x["c"] > row["c"] && x["d"] < row["d"])
   select x)]
 let flatResult = from row in result
   from x in row

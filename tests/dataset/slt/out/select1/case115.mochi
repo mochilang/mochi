@@ -1,3 +1,7 @@
+/*
+# line: 1558
+*/
+
 let t1 = [
   {
     a: 103,
@@ -215,10 +219,10 @@ let t1 = [
 let result = from row in t1
   where ((((row["a"] > row["b"] - 2 && row["a"] < row["b"] + 2)) && ((row["e"] > row["c"] || row["e"] < row["d"]))) && ((row["c"] <= row["d"] - 2 || row["c"] >= row["d"] + 2)))
   order by row["a"] + row["b"] * 2 + row["c"] * 3, (row["a"] < row["b"] - 3 ? 111 : (row["a"] <= row["b"] ? 222 : (row["a"] < row["b"] + 3 ? 333 : 444))), count(from x in t1
-  where x["b"] < x["b"]
+  where x["b"] < row["b"]
   select x), row["c"] - row["d"], row["b"] - row["c"], (row["a"] + row["b"] + row["c"] + row["d"] + row["e"]) / 5, abs(row["b"] - row["c"])
   select [row["c"] - row["d"], count(from x in t1
-  where x["b"] < x["b"]
+  where x["b"] < row["b"]
   select x), row["b"] - row["c"], (row["a"] + row["b"] + row["c"] + row["d"] + row["e"]) / 5, abs(row["b"] - row["c"]), row["a"] + row["b"] * 2 + row["c"] * 3, (row["a"] < row["b"] - 3 ? 111 : (row["a"] <= row["b"] ? 222 : (row["a"] < row["b"] + 3 ? 333 : 444)))]
 let flatResult = from row in result
   from x in row
