@@ -152,7 +152,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 		if name == "abs" && len(v.Exprs) == 1 {
 			arg := v.Exprs[0].(*sqlparser.AliasedExpr).Expr
 			ex := exprToMochiRow(arg, rowVar, outer)
-			return fmt.Sprintf("(if %s < 0 { -%s } else { %s })", ex, ex, ex)
+			return fmt.Sprintf("(if %s < 0 { -(%s) } else { %s })", ex, ex, ex)
 		}
 	case *sqlparser.Subquery:
 		return subqueryToMochi(v, rowVar)

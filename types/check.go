@@ -2014,7 +2014,7 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	child.SetVar(q.Var, elemT, true)
 
 	for _, f := range q.Froms {
-		ft, err := checkExpr(f.Src, env)
+		ft, err := checkExpr(f.Src, child)
 		if err != nil {
 			return nil, err
 		}
