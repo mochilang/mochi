@@ -62,7 +62,7 @@ flycheck_*.el
 
 # Test binary, built with `go test -c`
 *.test
-!tests/dataset/slt/*.test
+!tests/dataset/slt/**/*.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 # *.out
