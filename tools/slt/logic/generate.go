@@ -502,11 +502,11 @@ func Generate(c Case) string {
 		return sb.String()
 	}
 
-	// Support simple multi-column selects without subqueries or functions
+	// Support simple multi-column selects without subqueries or functions.
+	// Previously cases with zero expected rows were skipped because
+	// c.Expect would be empty. Generate a test in that situation as well
+	// and expect an empty result list.
 	if len(sel.SelectExprs) > 1 {
-		if len(c.Expect) == 0 {
-			return ""
-		}
 		aes := make([]*sqlparser.AliasedExpr, 0, len(sel.SelectExprs))
 		var exprs []string
 		for _, se := range sel.SelectExprs {
@@ -548,24 +548,18 @@ func Generate(c Case) string {
 			}
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
+		sb.WriteString("var flatResult = []\n")
+		sb.WriteString("for row in result {\n")
+		sb.WriteString("  for x in row {\n")
+		sb.WriteString("    flatResult = append(flatResult, x)\n")
+		sb.WriteString("  }\n}\n")
+		sb.WriteString("for x in flatResult {\n  print(x)\n}\n")
 		if len(c.Expect) > 0 {
-			sb.WriteString(fmt.Sprintf("test \"%s\" {\n", c.Name))
-			sb.WriteString("  var flatResult = []\n")
-			sb.WriteString("  for row in result {\n")
-			sb.WriteString("    for x in row {\n")
-			sb.WriteString("      flatResult = append(flatResult, x)\n")
-			sb.WriteString("    }\n  }\n")
-			sb.WriteString("  for x in flatResult {\n    print(x)\n  }\n")
-			sb.WriteString(fmt.Sprintf("  expect flatResult == %s\n", formatExpectList(c.Expect)))
-			sb.WriteString("}\n")
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))
 		} else {
-			sb.WriteString("var flatResult = []\n")
-			sb.WriteString("for row in result {\n")
-			sb.WriteString("  for x in row {\n")
-			sb.WriteString("    flatResult = append(flatResult, x)\n")
-			sb.WriteString("  }\n}\n")
-			sb.WriteString("for x in flatResult {\n  print(x)\n}\n\n")
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == []\n}\n", c.Name))
 		}
+		sb.WriteString("\n")
 		return sb.String()
 	}
 
