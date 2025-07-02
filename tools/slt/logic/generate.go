@@ -135,10 +135,10 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 		name := v.Name.String()
 		if v.Qualifier.Name.String() != "" && v.Qualifier.Name.String() != rowVar {
 			if outer != "" {
-				return fmt.Sprintf("%s[\"%s\"]", outer, name)
+				return fmt.Sprintf("%s.%s", outer, name)
 			}
 		}
-		return fmt.Sprintf("%s[\"%s\"]", rowVar, name)
+		return fmt.Sprintf("%s.%s", rowVar, name)
 	case *sqlparser.ParenExpr:
 		return "(" + exprToMochiRow(v.Expr, rowVar, outer) + ")"
 	case *sqlparser.UnaryExpr:
@@ -310,7 +310,7 @@ func generateUpdate(stmt string) string {
 		indent = "    "
 	}
 	for _, expr := range u.Exprs {
-		sb.WriteString(fmt.Sprintf("%srow[\"%s\"] = %s\n", indent, expr.Name.Name.String(), exprToMochi(expr.Expr)))
+		sb.WriteString(fmt.Sprintf("%srow.%s = %s\n", indent, expr.Name.Name.String(), exprToMochi(expr.Expr)))
 	}
 	sb.WriteString(fmt.Sprintf("%s%s[i] = row\n", indent, tbl))
 	if cond != "" {
@@ -350,9 +350,16 @@ func Generate(c Case) string {
 		if mutated[name] {
 			kw = "var"
 		}
+		typeName := name + "Row"
+		sb.WriteString(fmt.Sprintf("type %s {\n", typeName))
+		for _, col := range t.Columns {
+			sb.WriteString(fmt.Sprintf("  %s: int\n", col))
+		}
+		sb.WriteString("}\n\n")
+
 		sb.WriteString(fmt.Sprintf("%s %s = [\n", kw, name))
 		for _, row := range t.Rows {
-			sb.WriteString("  {\n")
+			sb.WriteString(fmt.Sprintf("  %s {\n", typeName))
 			for _, col := range t.Columns {
 				sb.WriteString(fmt.Sprintf("    %s: %s,\n", col, formatValue(row[col])))
 			}
