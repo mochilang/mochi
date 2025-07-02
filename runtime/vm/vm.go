@@ -1490,6 +1490,8 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(items.List)}
 					break
 				}
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(lst.Map)}
+				break
 			}
 			return Value{}, fmt.Errorf("count expects list")
 		case OpExists:
