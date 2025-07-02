@@ -228,15 +228,16 @@ let result = from row in t1
   where (row.b > row.c && row.d > row.e)
   order by [row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (if row.a < 0 { -(row.a) } else { row.a }), row.e, row.c, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), (row.a + row.b + row.c + row.d + row.e) / 5]
   select [(row.a + row.b + row.c + row.d + row.e) / 5, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.c, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (if row.a < 0 { -(row.a) } else { row.a }), row.e]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case149" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [122, 1, 123, 1826, 121, 120, 127, 4, 125, 1902, 127, 126, 137, 2, 137, 2046, 138, 135, 152, 1, 150, 2281, 153, 152, 167, 1, 166, 2501, 168, 165, 232, 1, 231, 3473, 234, 230, 237, 1, 235, 3553, 239, 237, 247, 2, 247, 3706, 245, 246]
 }
+

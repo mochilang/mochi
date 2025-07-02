@@ -230,15 +230,16 @@ let result = from row in t1
   select x) > 0)
   order by [(if row.a < 0 { -(row.a) } else { row.a }), row.b]
   select [row.b, (if row.a < 0 { -(row.a) } else { row.a })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case121" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [100, 104, 105, 107, 112, 111, 118, 115, 124, 121, 129, 127, 130, 131, 139, 138, 143, 142, 145, 149, 151, 153, 158, 159, 160, 163, 167, 168, 170, 174, 175, 179, 181, 182, 186, 188, 194, 191, 198, 199, 200, 201, 206, 205, 211, 213, 218, 216, 223, 220, 228, 229, 232, 234, 236, 239, 240, 243, 249, 245]
 }
+

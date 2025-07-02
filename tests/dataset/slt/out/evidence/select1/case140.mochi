@@ -228,15 +228,16 @@ let result = from row in t1
   where row.b > row.c
   order by [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a + row.b * 2 + row.c * 3]
   select [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a + row.b * 2 + row.c * 3]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case140" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1226, 738, 1272, 760, 1371, 827, 1411, 851, 1521, 905, 1564, 940, 1676, 1000, 1918, 1158, 1964, 1180, 2165, 1297, 2264, 1360, 2323, 1391, 2368, 1416, 2476, 1484]
 }
+

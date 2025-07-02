@@ -228,15 +228,16 @@ let result = from row in t1
   where ((((row.c <= row.d - 2 || row.c >= row.d + 2)) || row.a > row.b) || row.b > row.c)
   order by [row.a, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2]
   select [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a, row.a + row.b * 2]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case164" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1014, 1529, 104, 304, 1067, 1612, 107, 317, 1172, 1757, 115, 351, 1226, 1826, 121, 369, 1272, 1902, 127, 385, 1325, 1985, 131, 391, 1371, 2046, 138, 416, 1411, 2131, 142, 428, 1472, 2202, 149, 439, 1521, 2281, 153, 455, 1564, 2349, 159, 475, 1622, 2432, 163, 483, 1676, 2501, 168, 502, 1714, 2579, 174, 514, 1769, 2654, 179, 529, 1828, 2728, 182, 544, 1861, 2806, 188, 560, 1918, 2878, 191, 579, 1964, 2949, 199, 595, 2019, 3039, 201, 601, 2125, 3175, 213, 635, 2165, 3260, 216, 652, 2226, 3331, 220, 666, 2264, 3399, 229, 685, 2323, 3473, 234, 698, 2368, 3553, 239, 711, 2419, 3629, 243, 723, 2476, 3706, 245, 743]
 }
+

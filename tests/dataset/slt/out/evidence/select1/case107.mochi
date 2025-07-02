@@ -234,15 +234,16 @@ let result = from row in t1
   where x.b < row.b
   select x), row.b - row.c, (if row.c > avg(from x in t1
   select x.c) { row.a * 2 } else { row.b * 10 }), row.a + row.b * 2 + row.c * 3]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case107" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [4, 1, 1240, 738]
 }
+
