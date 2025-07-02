@@ -1,0 +1,17 @@
+>>SOURCE FORMAT FREE
+IDENTIFICATION DIVISION.
+PROGRAM-ID. MAIN.
+
+DATA DIVISION.
+WORKING-STORAGE SECTION.
+01 PEOPLE PIC 9.
+
+PROCEDURE DIVISION.
+    *> unsupported update statement
+DISPLAY "-- TEST update adult status --"
+IF NOT (PEOPLE = 0)
+    DISPLAY "expect failed"
+    STOP RUN
+END-IF
+DISPLAY "-- END update adult status --"
+    STOP RUN.
