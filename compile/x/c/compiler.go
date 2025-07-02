@@ -672,6 +672,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln("break;")
 	case s.Continue != nil:
 		c.writeln("continue;")
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Import != nil:
 		// imports are ignored at code generation time
 		return nil
@@ -692,6 +694,23 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	var t types.Type
 	if stmt.Type != nil {
 		t = resolveTypeRef(stmt.Type, c.env)
+		if stmt.Value != nil {
+			if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+				if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
+					t = types.ListType{Elem: st}
+					if c.env != nil {
+						c.env.SetStruct(st.Name, st)
+					}
+					c.compileStructType(st)
+					c.compileStructListType(st)
+					for _, el := range ll.Elems {
+						if ml := el.Binary.Left.Value.Target.Map; ml != nil {
+							c.structLits[ml] = st
+						}
+					}
+				}
+			}
+		}
 	} else if stmt.Value != nil {
 		t = c.exprType(stmt.Value)
 		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
@@ -790,6 +809,23 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	var t types.Type
 	if stmt.Type != nil {
 		t = resolveTypeRef(stmt.Type, c.env)
+		if stmt.Value != nil {
+			if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+				if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
+					t = types.ListType{Elem: st}
+					if c.env != nil {
+						c.env.SetStruct(st.Name, st)
+					}
+					c.compileStructType(st)
+					c.compileStructListType(st)
+					for _, el := range ll.Elems {
+						if ml := el.Binary.Left.Value.Target.Map; ml != nil {
+							c.structLits[ml] = st
+						}
+					}
+				}
+			}
+		}
 	} else if stmt.Value != nil {
 		t = c.exprType(stmt.Value)
 		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
@@ -999,6 +1035,56 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 			return err
 		}
 	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := sanitizeName(u.Target)
+	var elemType types.Type
+	if c.env != nil {
+		if v, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := v.(types.ListType); ok {
+				elemType = lt.Elem
+			}
+		}
+	}
+	elemC := cTypeFromType(elemType)
+	if elemC == "" {
+		elemC = "int"
+	}
+	idx := c.newTemp()
+	c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, list, idx))
+	c.indent++
+	item := c.newTemp()
+	c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, item, list, idx))
+	oldStruct := c.currentStruct
+	if st, ok := elemType.(types.StructType); ok {
+		c.currentStruct = st.Name
+	}
+	var cond string
+	if u.Where != nil {
+		cond = c.compileExpr(u.Where)
+		cond = strings.ReplaceAll(cond, "self->", item+".")
+		c.writeln(fmt.Sprintf("if (%s) {", cond))
+		c.indent++
+	}
+	for _, it := range u.Set.Items {
+		key, _ := identName(it.Key)
+		if key == "" {
+			key, _ = types.SimpleStringKey(it.Key)
+		}
+		val := c.compileExpr(it.Value)
+		val = strings.ReplaceAll(val, "self->", item+".")
+		c.writeln(fmt.Sprintf("%s.%s = %s;", item, sanitizeName(key), val))
+	}
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+	c.writeln(fmt.Sprintf("%s.data[%s] = %s;", list, idx, item))
+	c.currentStruct = oldStruct
 	c.indent--
 	c.writeln("}")
 	return nil

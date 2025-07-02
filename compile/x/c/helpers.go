@@ -73,6 +73,9 @@ func cTypeFromType(t types.Type) string {
 		if elem == "_GroupInt" {
 			return "list_group_int"
 		}
+		if st, ok := tt.Elem.(types.StructType); ok {
+			return "list_" + sanitizeName(st.Name)
+		}
 	case types.MapType:
 		if _, ok := tt.Key.(types.IntType); ok {
 			if _, ok2 := tt.Value.(types.BoolType); ok2 {
