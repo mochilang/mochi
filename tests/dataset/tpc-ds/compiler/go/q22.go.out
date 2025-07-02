@@ -186,7 +186,20 @@ func main() {
 							groups[ks] = g
 							order = append(order, ks)
 						}
-						g.Items = append(g.Items, inv)
+						_item := map[string]any{}
+						for k, v := range _cast[map[string]any](inv) {
+							_item[k] = v
+						}
+						_item["inv"] = inv
+						for k, v := range _cast[map[string]any](d) {
+							_item[k] = v
+						}
+						_item["d"] = d
+						for k, v := range _cast[map[string]any](i) {
+							_item[k] = v
+						}
+						_item["i"] = i
+						g.Items = append(g.Items, _item)
 					}
 				}
 			}
