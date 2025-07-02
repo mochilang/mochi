@@ -322,9 +322,6 @@ func generateUpdate(stmt string) string {
 
 // Generate returns Mochi source code for the given Case.
 func Generate(c Case) string {
-	if c.Hash != "" {
-		return ""
-	}
 	var sb strings.Builder
 
 	if len(c.Comments) > 0 || c.Line > 0 {
