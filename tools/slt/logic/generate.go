@@ -121,7 +121,25 @@ func formatValue(v any) string {
 	}
 }
 
-func detectColumnType(rows []map[string]any, name string) string {
+func detectColumnType(rows []map[string]any, name string, declared []string, cols []string) string {
+	// First use declared type information if available.
+	for i, c := range cols {
+		if c == name && i < len(declared) {
+			typ := strings.ToLower(declared[i])
+			switch {
+			case strings.Contains(typ, "int"):
+				return "int"
+			case strings.Contains(typ, "real"), strings.Contains(typ, "float"), strings.Contains(typ, "double"):
+				return "float"
+			case strings.Contains(typ, "bool"):
+				return "bool"
+			case strings.Contains(typ, "char"), strings.Contains(typ, "text"):
+				return "string"
+			}
+		}
+	}
+
+	// Fall back to inspecting row values.
 	t := ""
 	for _, row := range rows {
 		v := row[name]
@@ -411,7 +429,7 @@ func Generate(c Case) string {
 		typeName := name + "Row"
 		sb.WriteString(fmt.Sprintf("type %s {\n", typeName))
 		for _, col := range t.Columns {
-			ct := detectColumnType(t.Rows, col)
+			ct := detectColumnType(t.Rows, col, t.Types, t.Columns)
 			sb.WriteString(fmt.Sprintf("  %s: %s\n", col, ct))
 		}
 		sb.WriteString("}\n\n")
