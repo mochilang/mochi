@@ -173,12 +173,28 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 				continue
 			}
-			if _, err := strconv.Atoi(strings.TrimPrefix(v, "+")); err == nil {
-				if t == "" {
-					t = "int"
-				} else if t == "int" {
-					// keep int
-				} else if t == "float" {
+                       vnum := strings.TrimSpace(v)
+                       // handle hexadecimal numbers
+                       if strings.HasPrefix(vnum, "0x") || strings.HasPrefix(vnum, "0X") {
+                               if _, err := strconv.ParseInt(vnum[2:], 16, 64); err == nil {
+                                       if t == "" {
+                                               t = "int"
+                                       } else if t != "int" {
+                                               if t == "float" {
+                                                       // keep float for mixed ints/floats
+                                               } else {
+                                                       return "any"
+                                               }
+                                       }
+                                       continue
+                               }
+                       }
+                       if _, err := strconv.Atoi(strings.TrimPrefix(strings.TrimPrefix(vnum, "+"), "-")); err == nil {
+                               if t == "" {
+                                       t = "int"
+                               } else if t == "int" {
+                                       // keep int
+                               } else if t == "float" {
 					// keep float
 				} else {
 					return "any"
@@ -186,14 +202,14 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				// numeric string
 				continue
 			}
-			if _, err := strconv.ParseFloat(v, 64); err == nil {
-				if t == "" || t == "float" || t == "int" {
-					t = "float"
-				} else {
-					return "any"
-				}
-				continue
-			}
+                       if _, err := strconv.ParseFloat(strings.TrimPrefix(strings.TrimPrefix(vnum, "+"), "-"), 64); err == nil {
+                               if t == "" || t == "float" || t == "int" {
+                                       t = "float"
+                               } else {
+                                       return "any"
+                               }
+                               continue
+                       }
 			if t == "" || t == "string" {
 				t = "string"
 			} else {
