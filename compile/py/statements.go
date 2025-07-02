@@ -42,6 +42,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileWhile(s.While)
 	case s.For != nil:
 		return c.compileFor(s.For)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Break != nil:
 		c.writeln("break")
 		return nil
@@ -62,18 +64,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileEmit(s.Emit)
 	case s.Agent != nil:
 		return c.compileAgentDecl(s.Agent)
-       case s.Import != nil:
-               if s.Import.Lang == nil {
-                       return c.compilePackageImport(s.Import)
-               }
-               if *s.Import.Lang == "go" && strings.Trim(s.Import.Path, "\"") == "strings" {
-                       // no-op, handled by special cases in call compilation
-                       return nil
-               }
-               if *s.Import.Lang != "python" {
-                       return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
-               }
-               return nil
+	case s.Import != nil:
+		if s.Import.Lang == nil {
+			return c.compilePackageImport(s.Import)
+		}
+		if *s.Import.Lang == "go" && strings.Trim(s.Import.Path, "\"") == "strings" {
+			// no-op, handled by special cases in call compilation
+			return nil
+		}
+		if *s.Import.Lang != "python" {
+			return fmt.Errorf("unsupported import language: %v", s.Import.Lang)
+		}
+		return nil
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
 		// extern declarations have no runtime effect when compiling to Python
 		return nil
@@ -630,6 +632,78 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := sanitizeName(u.Target)
+	idxVar := fmt.Sprintf("_i%d", c.tmpCount)
+	c.tmpCount++
+	itemVar := fmt.Sprintf("_it%d", c.tmpCount)
+	c.tmpCount++
+
+	c.writeIndent()
+	c.buf.WriteString(fmt.Sprintf("for %s, %s in enumerate(%s):\n", idxVar, itemVar, list))
+	c.indent++
+
+	var st types.StructType
+	if c.env != nil {
+		if t, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := t.(types.ListType); ok {
+				if s, ok := lt.Elem.(types.StructType); ok {
+					st = s
+				}
+			}
+		}
+	}
+
+	var orig *types.Env
+	if st.Name != "" {
+		child := types.NewEnv(c.env)
+		for _, f := range st.Order {
+			c.use("_get")
+			c.writeln(fmt.Sprintf("%s = _get(%s, %q)", sanitizeName(f), itemVar, sanitizeName(f)))
+			child.SetVar(f, st.Fields[f], true)
+		}
+		orig = c.env
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			if orig != nil {
+				c.env = orig
+			}
+			return err
+		}
+		c.writeIndent()
+		c.buf.WriteString(fmt.Sprintf("if %s:\n", cond))
+		c.indent++
+	}
+
+	for _, it := range u.Set.Items {
+		field, _ := identName(it.Key)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			if orig != nil {
+				c.env = orig
+			}
+			return err
+		}
+		c.writeln(fmt.Sprintf("setattr(%s, %q, %s)", itemVar, sanitizeName(field), val))
+	}
+
+	if u.Where != nil {
+		c.indent--
+	}
+
+	c.writeln(fmt.Sprintf("%s[%s] = %s", list, idxVar, itemVar))
+
+	if orig != nil {
+		c.env = orig
+	}
+
+	c.indent--
+	return nil
+}
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
 	c.imports["typing"] = "typing"
