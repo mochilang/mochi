@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT b FROM t1 WHERE (a>b-2 AND a<b+2) ORDER BY 1 */
 let result = from row in t1
-  where ((row.a > row.b - 2 && row.a < row.b + 2))
+  where ((row.a > (row.b - 2) && row.a < (row.b + 2)))
   order by row.b
   select row.b
 for x in result {

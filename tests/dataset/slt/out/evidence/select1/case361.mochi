@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT a-b FROM t1 WHERE c>d ORDER BY 1 */
 let result = from row in t1
   where row.c > row.d
-  order by row.a - row.b
-  select row.a - row.b
+  order by (row.a - row.b)
+  select (row.a - row.b)
 for x in result {
   print(x)
 }

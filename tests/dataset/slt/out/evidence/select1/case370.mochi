@@ -224,14 +224,15 @@ let t1 = [
 ]
 
 /* SELECT d-e, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE (a>b-2 AND a<b+2) ORDER BY 1,3,2 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  where ((row.a > row.b - 2 && row.a < row.b + 2))
-  order by [row.d - row.e, count(from x in t1
+  where ((row.a > (row.b - 2) && row.a < (row.b + 2)))
+  order by [(row.d - row.e), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 })]
-  select [row.d - row.e, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), count(from x in t1
+  select x), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
+  select [(row.d - row.e), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
 var flatResult = []

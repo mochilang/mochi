@@ -225,17 +225,17 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), abs(b-c), CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a-b, abs(a) FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR d>e OR c BETWEEN b-2 AND d+2 ORDER BY 4,1,5,6,3,2 */
 let result = from row in t1
-  where (((row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) || row.d > row.e) || (row.c >= row.b - 2 && row.c <= row.d + 2))
+  where ((((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || row.d > row.e) || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
   order by [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), count(from x in t1
   where x.b < row.b
-  select x), row.a - row.b, (if row.a < 0 { -(row.a) } else { row.a }), (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c })]
+  select x), (row.a - row.b), (if row.a < 0 { -(row.a) } else { row.a }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
   select [count(from x in t1
   where x.b < row.b
-  select x), (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
+  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.a - row.b, (if row.a < 0 { -(row.a) } else { row.a })]
+  select x), (row.a - row.b), (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []
 for row in result {
   for x in row {
