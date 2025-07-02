@@ -226,12 +226,12 @@ let t1 = [
 /* SELECT a-b, a+b*2, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d-e FROM t1 WHERE d>e OR (e>a AND e<b) ORDER BY 4,1,3,2 */
 let result = from row in t1
   where (row.d > row.e || ((row.e > row.a && row.e < row.b)))
-  order by [row.d - row.e, row.a - row.b, count(from x in t1
+  order by [(row.d - row.e), (row.a - row.b), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.a + row.b * 2]
-  select [row.a - row.b, row.a + row.b * 2, count(from x in t1
+  select x), (row.a + (row.b * 2))]
+  select [(row.a - row.b), (row.a + (row.b * 2)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.d - row.e]
+  select x), (row.d - row.e)]
 var flatResult = []
 for row in result {
   for x in row {

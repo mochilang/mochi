@@ -227,18 +227,19 @@ let t1 = [
 let result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
-  select x) > 0 || row.d > row.e) || (row.c >= row.b - 2 && row.c <= row.d + 2))
-  order by [row.d, (if row.a < 0 { -(row.a) } else { row.a }), row.a - row.b]
-  select [row.a - row.b, (if row.a < 0 { -(row.a) } else { row.a }), row.d]
+  select x) > 0 || row.d > row.e) || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
+  order by [row.d, (if row.a < 0 { -(row.a) } else { row.a }), (row.a - row.b)]
+  select [(row.a - row.b), (if row.a < 0 { -(row.a) } else { row.a }), row.d]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case84" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [4, 104, 101, 2, 107, 108, -1, 111, 114, -3, 115, 116, -3, 121, 122, -2, 127, 128, 1, 131, 133, -1, 138, 136, -1, 142, 140, 4, 149, 148, 2, 153, 154, 1, 159, 156, 3, 163, 164, 1, 168, 169, 4, 174, 171, 4, 179, 178, 1, 182, 183, 2, 188, 185, -3, 191, 190, 1, 199, 196, 1, 201, 203, -1, 205, 207, 2, 213, 212, -2, 216, 217, -3, 220, 222, 1, 229, 226, 2, 234, 233, 3, 239, 238, 3, 243, 241, -4, 245, 248]
 }
+

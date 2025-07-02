@@ -227,19 +227,20 @@ let t1 = [
 let result = from row in t1
   order by [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.a - row.b, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.b, row.e, row.a, row.d - row.e]
-  select [(if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.d - row.e, row.b, count(from x in t1
+  select x), (row.a - row.b), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.b, row.e, row.a, (row.d - row.e)]
+  select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.d - row.e), row.b, count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.a - row.b, row.a, row.e]
+  select x), (row.a - row.b), row.a, row.e]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case80" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [111, 2, 249, 0, -4, 245, 246, 222, -1, 118, 0, -3, 115, 117, 222, 2, 124, 0, -3, 121, 120, 222, -2, 194, 0, -3, 191, 192, 222, 1, 223, 0, -3, 220, 221, 222, 2, 129, 0, -2, 127, 126, 222, -2, 218, 0, -2, 216, 219, 222, 4, 112, 0, -1, 111, 110, 222, 1, 139, 0, -1, 138, 135, 222, -4, 143, 0, -1, 142, 144, 222, -2, 206, 0, -1, 205, 209, 333, 1, 130, 0, 1, 131, 132, 333, -1, 158, 0, 1, 159, 157, 333, 4, 167, 0, 1, 168, 165, 333, 3, 181, 0, 1, 182, 180, 333, -1, 198, 0, 1, 199, 197, 333, -1, 200, 0, 1, 201, 204, 333, -1, 228, 0, 1, 229, 227, 333, -1, 105, 0, 2, 107, 109, 333, 2, 151, 0, 2, 153, 152, 333, -4, 186, 0, 2, 188, 189, 333, 2, 211, 0, 2, 213, 210, 333, 3, 232, 0, 2, 234, 230, 444, 2, 160, 0, 3, 163, 162, 444, 1, 236, 0, 3, 239, 237, 444, -1, 240, 0, 3, 243, 242, 444, -2, 100, 0, 4, 104, 103, 444, 2, 145, 0, 4, 149, 146, 444, -2, 170, 0, 4, 174, 173, 444, 1, 175, 0, 4, 179, 177]
 }
+

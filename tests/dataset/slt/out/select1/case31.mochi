@@ -225,17 +225,18 @@ let t1 = [
 
 /* SELECT d, a+b*2+c*3+d*4+e*5, a+b*2+c*3, c-d, (a+b+c+d+e)/5, a-b FROM t1 ORDER BY 3,4,2,6,5,1 */
 let result = from row in t1
-  order by [row.a + row.b * 2 + row.c * 3, row.c - row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a - row.b, (row.a + row.b + row.c + row.d + row.e) / 5, row.d]
-  select [row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2 + row.c * 3, row.c - row.d, (row.a + row.b + row.c + row.d + row.e) / 5, row.a - row.b]
+  order by [((row.a + (row.b * 2)) + (row.c * 3)), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a - row.b), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d]
+  select [row.d, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((row.a + (row.b * 2)) + (row.c * 3)), (row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a - row.b)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case31" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [101, 1529, 610, 1, 102, 4, 108, 1612, 635, -2, 107, 2, 114, 1680, 674, -1, 112, -1, 116, 1757, 708, 3, 117, -3, 122, 1826, 738, 1, 122, -3, 128, 1902, 760, -3, 127, -2, 133, 1985, 793, 1, 132, 1, 136, 2046, 827, 1, 137, -1, 140, 2131, 851, 1, 142, -1, 148, 2202, 880, -1, 147, 4, 154, 2281, 905, -4, 152, 2, 156, 2349, 940, -1, 157, 1, 164, 2432, 966, -3, 162, 3, 169, 2501, 1000, -3, 167, 1, 171, 2579, 1030, 1, 172, 4, 178, 2654, 1057, -2, 177, 4, 183, 2728, 1096, 1, 182, 1, 185, 2806, 1121, 2, 187, 2, 190, 2878, 1158, 3, 192, -3, 196, 2949, 1180, -1, 197, 1, 203, 3039, 1207, -1, 202, 1, 207, 3114, 1241, 1, 207, -1, 212, 3175, 1277, 2, 212, 2, 217, 3260, 1297, -2, 217, -2, 222, 3331, 1338, 2, 222, -3, 226, 3399, 1360, -1, 227, 1, 233, 3473, 1391, -2, 232, 2, 238, 3553, 1416, -3, 237, 3, 241, 3629, 1455, 3, 242, 3, 248, 3706, 1484, -1, 247, -4]
 }
+

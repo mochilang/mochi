@@ -225,24 +225,25 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d, b-c, (a+b+c+d+e)/5, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, a-b FROM t1 WHERE c BETWEEN b-2 AND d+2 OR (e>c OR e<d) OR EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) ORDER BY 7,2,4,1,5,6,3 */
 let result = from row in t1
-  where (((row.c >= row.b - 2 && row.c <= row.d + 2) || ((row.e > row.c || row.e < row.d))) || count(from x in t1
+  where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || ((row.e > row.c || row.e < row.d))) || count(from x in t1
   where x.b < row.b
   select x) > 0)
-  order by [row.a - row.b, row.d, (row.a + row.b + row.c + row.d + row.e) / 5, count(from x in t1
+  order by [(row.a - row.b), row.d, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.b - row.c]
+  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.b - row.c)]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.d, row.b - row.c, (row.a + row.b + row.c + row.d + row.e) / 5, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.a - row.b]
+  select x), row.d, (row.b - row.c), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.a - row.b)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case64" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [0, 248, 2, 247, 111, 444, -4, 0, 116, -1, 117, 222, 333, -3, 0, 122, 1, 122, 222, 333, -3, 0, 190, 1, 192, 222, 444, -3, 0, 222, -1, 222, 222, 444, -3, 0, 128, 4, 127, 222, 333, -2, 0, 217, 3, 217, 222, 333, -2, 0, 114, -1, 112, 222, 111, -1, 0, 136, 2, 137, 222, 111, -1, 0, 140, 2, 142, 222, 111, -1, 0, 207, -2, 207, 222, 111, -1, 0, 133, -4, 132, 333, 444, 1, 0, 156, 3, 157, 333, 555, 1, 0, 169, 1, 167, 333, 333, 1, 0, 183, -3, 182, 333, 333, 1, 0, 196, 3, 197, 333, 555, 1, 0, 203, -2, 202, 333, 222, 1, 0, 226, 3, 227, 333, 555, 1, 0, 108, -1, 107, 333, 333, 2, 0, 154, 1, 152, 333, 333, 2, 0, 185, -1, 187, 333, 444, 2, 0, 212, -3, 212, 333, 222, 2, 0, 233, 1, 232, 333, 555, 2, 0, 164, -1, 162, 444, 333, 3, 0, 238, 1, 237, 444, 555, 3, 0, 241, -4, 242, 444, 222, 3, 0, 101, -2, 102, 444, 555, 4, 0, 148, -2, 147, 444, 555, 4, 0, 171, -2, 172, 444, 555, 4, 0, 178, -1, 177, 444, 555, 4]
 }
+

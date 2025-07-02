@@ -156,7 +156,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// the value is stored as a string. This happens in a
 			// few SLT files and improves generated type accuracy.
 			v := strings.ToLower(val)
-			if v == "true" || v == "false" {
+			if v == "true" || v == "false" || v == "t" || v == "f" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
@@ -173,7 +173,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 				continue
 			}
-			if _, err := strconv.Atoi(v); err == nil {
+			if _, err := strconv.Atoi(strings.TrimPrefix(v, "+")); err == nil {
 				if t == "" {
 					t = "int"
 				} else if t == "int" {

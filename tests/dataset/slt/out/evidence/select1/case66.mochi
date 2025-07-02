@@ -228,10 +228,10 @@ let result = from row in t1
   where ((row.e > row.a && row.e < row.b))
   order by [row.c, count(from x in t1
   where x.b < row.b
-  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.c - row.d]
-  select [row.c - row.d, count(from x in t1
+  select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.c - row.d)]
+  select [(row.c - row.d), count(from x in t1
   where x.b < row.b
-  select x), row.c, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5]
+  select x), row.c, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
 var flatResult = []
 for row in result {
   for x in row {

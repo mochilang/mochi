@@ -228,8 +228,8 @@ let result = from row in t1
   where ((row.c > row.d && row.a > row.b) && count(from x in t1
   where x.b < row.b
   select x) > 0)
-  order by [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.b]
-  select [row.b, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c })]
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.b]
+  select [row.b, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
 var flatResult = []
 for row in result {
   for x in row {

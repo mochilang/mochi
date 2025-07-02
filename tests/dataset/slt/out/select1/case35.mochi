@@ -226,21 +226,22 @@ let t1 = [
 /* SELECT (a+b+c+d+e)/5, a+b*2, c-d, a, e, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE b>c ORDER BY 2,6,5,4,3,1 */
 let result = from row in t1
   where row.b > row.c
-  order by [row.a + row.b * 2, count(from x in t1
+  order by [(row.a + (row.b * 2)), count(from x in t1
   where x.b < row.b
-  select x), row.e, row.a, row.c - row.d, (row.a + row.b + row.c + row.d + row.e) / 5]
-  select [(row.a + row.b + row.c + row.d + row.e) / 5, row.a + row.b * 2, row.c - row.d, row.a, row.e, count(from x in t1
+  select x), row.e, row.a, (row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a + (row.b * 2)), (row.c - row.d), row.a, row.e, count(from x in t1
   where x.b < row.b
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case35" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [122, 369, 1, 121, 120, 4, 127, 385, -3, 127, 126, 5, 137, 416, 1, 138, 135, 7, 142, 428, 1, 142, 144, 8, 152, 455, -4, 153, 152, 10, 157, 475, -1, 159, 157, 11, 167, 502, -3, 168, 165, 13, 192, 579, 3, 191, 192, 18, 197, 595, -1, 199, 197, 19, 217, 652, -2, 216, 219, 23, 227, 685, -1, 229, 227, 25, 232, 698, -2, 234, 230, 26, 237, 711, -3, 239, 237, 27, 247, 743, -1, 245, 246, 29]
 }
+

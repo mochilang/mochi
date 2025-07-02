@@ -225,22 +225,23 @@ let t1 = [
 
 /* SELECT c, a-b, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE c BETWEEN b-2 AND d+2 ORDER BY 1,2,3 */
 let result = from row in t1
-  where (row.c >= row.b - 2 && row.c <= row.d + 2)
-  order by [row.c, row.a - row.b, count(from x in t1
+  where (row.c >= (row.b - 2) && row.c <= (row.d + 2))
+  order by [row.c, (row.a - row.b), count(from x in t1
   where x.b < row.b
   select x)]
-  select [row.c, row.a - row.b, count(from x in t1
+  select [row.c, (row.a - row.b), count(from x in t1
   where x.b < row.b
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case16" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [102, 4, 0, 106, 2, 1, 113, -1, 2, 123, -3, 4, 134, 1, 6, 137, -1, 7, 141, -1, 8, 147, 4, 9, 150, 2, 10, 161, 3, 12, 166, 1, 13, 172, 4, 14, 176, 4, 15, 184, 1, 16, 187, 2, 17, 202, 1, 20, 208, -1, 21, 214, 2, 22, 224, -3, 24, 231, 2, 26, 235, 3, 27, 247, -4, 29]
 }
+
