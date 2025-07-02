@@ -6554,22 +6554,73 @@ func (fc *funcCompiler) evalConstExpr(e *parser.Expr) (Value, bool) {
 }
 
 func (fc *funcCompiler) evalConstBinary(b *parser.BinaryExpr) (Value, bool) {
+	if b == nil {
+		return Value{}, false
+	}
+	type operand struct {
+		val Value
+		ok  bool
+	}
+	operands := []operand{}
 	left, ok := fc.evalConstUnary(b.Left)
 	if !ok {
 		return Value{}, false
 	}
-	for _, op := range b.Right {
-		right, ok := fc.evalConstPostfix(op.Right)
+	operands = append(operands, operand{left, true})
+	ops := make([]*parser.BinaryOp, len(b.Right))
+	for i, part := range b.Right {
+		v, ok := fc.evalConstPostfix(part.Right)
 		if !ok {
 			return Value{}, false
 		}
-		if v, ok := applyBinaryConst(op.Op, left, right); ok {
-			left = v
-		} else {
-			return Value{}, false
+		operands = append(operands, operand{v, true})
+		ops[i] = part
+	}
+
+	levels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(list []string, op string) bool {
+		for _, s := range list {
+			if s == op {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range levels {
+		for i := 0; i < len(ops); {
+			op := ops[i].Op
+			if op == "union" && ops[i].All {
+				op = "union_all"
+			}
+			if contains(level, op) {
+				leftVal := operands[i].val
+				rightVal := operands[i+1].val
+				v, ok := applyBinaryConst(op, leftVal, rightVal)
+				if !ok {
+					return Value{}, false
+				}
+				operands[i] = operand{v, true}
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return left, true
+	if len(operands) != 1 {
+		return Value{}, false
+	}
+	return operands[0].val, true
 }
 
 func (fc *funcCompiler) evalConstUnary(u *parser.Unary) (Value, bool) {
