@@ -225,17 +225,18 @@ let t1 = [
 
 /* SELECT c-d, a-b, a+b*2+c*3+d*4, a+b*2+c*3+d*4+e*5, (a+b+c+d+e)/5 FROM t1 ORDER BY 3,2,4,5,1 */
 let result = from row in t1
-  order by [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a - row.b, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (row.a + row.b + row.c + row.d + row.e) / 5, row.c - row.d]
-  select [row.c - row.d, row.a - row.b, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (row.a + row.b + row.c + row.d + row.e) / 5]
+  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.a - row.b), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.c - row.d)]
+  select [(row.c - row.d), (row.a - row.b), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case438" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1, 4, 1014, 1529, 102, -2, 2, 1067, 1612, 107, -1, -1, 1130, 1680, 112, 3, -3, 1172, 1757, 117, 1, -3, 1226, 1826, 122, -3, -2, 1272, 1902, 127, 1, 1, 1325, 1985, 132, 1, -1, 1371, 2046, 137, 1, -1, 1411, 2131, 142, -1, 4, 1472, 2202, 147, -4, 2, 1521, 2281, 152, -1, 1, 1564, 2349, 157, -3, 3, 1622, 2432, 162, -3, 1, 1676, 2501, 167, 1, 4, 1714, 2579, 172, -2, 4, 1769, 2654, 177, 1, 1, 1828, 2728, 182, 2, 2, 1861, 2806, 187, 3, -3, 1918, 2878, 192, -1, 1, 1964, 2949, 197, -1, 1, 2019, 3039, 202, 1, -1, 2069, 3114, 207, 2, 2, 2125, 3175, 212, -2, -2, 2165, 3260, 217, 2, -3, 2226, 3331, 222, -1, 1, 2264, 3399, 227, -2, 2, 2323, 3473, 232, -3, 3, 2368, 3553, 237, 3, 3, 2419, 3629, 242, -1, -4, 2476, 3706, 247]
 }
+

@@ -224,24 +224,26 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4, c-d, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, a+b*2, b, b-c, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 ORDER BY 5,2,4,1,6,3,7 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  order by [row.b, row.c - row.d, row.a + row.b * 2, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.b - row.c, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), count(from x in t1
+  order by [row.b, (row.c - row.d), (row.a + (row.b * 2)), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.b - row.c), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
-  select [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.c - row.d, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.a + row.b * 2, row.b, row.b - row.c, count(from x in t1
+  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.c - row.d), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a + (row.b * 2)), row.b, (row.b - row.c), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case447" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1014, 1, 1000, 304, 100, -2, 0, 1067, -2, 1050, 317, 105, -1, 0, 1130, -1, 1120, 335, 112, -1, 0, 1172, 3, 1180, 351, 118, -1, 0, 1226, 1, 1240, 369, 124, 1, 0, 1272, -3, 1290, 385, 129, 4, 0, 1325, 1, 1300, 391, 130, -4, 0, 1371, 1, 1390, 416, 139, 2, 0, 1411, 1, 1430, 428, 143, 2, 0, 1472, -1, 1450, 439, 145, -2, 0, 1521, -4, 1510, 455, 151, 1, 0, 1564, -1, 1580, 475, 158, 3, 0, 1622, -3, 1600, 483, 160, -1, 0, 1676, -3, 1670, 502, 167, 1, 0, 1714, 1, 1700, 514, 170, -2, 0, 1769, -2, 358, 529, 175, -1, 0, 1828, 1, 364, 544, 181, -3, 0, 1861, 2, 376, 560, 186, -1, 0, 1918, 3, 382, 579, 194, 1, 0, 1964, -1, 398, 595, 198, 3, 0, 2019, -1, 402, 601, 200, -2, 0, 2069, 1, 410, 617, 206, -2, 0, 2125, 2, 426, 635, 211, -3, 0, 2165, -2, 432, 652, 218, 3, 0, 2226, 2, 440, 666, 223, -1, 0, 2264, -1, 458, 685, 228, 3, 0, 2323, -2, 468, 698, 232, 1, 0, 2368, -3, 478, 711, 236, 1, 0, 2419, 3, 486, 723, 240, -4, 0, 2476, -1, 490, 743, 249, 2, 0]
 }
+

@@ -225,18 +225,19 @@ let t1 = [
 
 /* SELECT a+b*2+c*3+d*4+e*5, abs(b-c), e, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, abs(a), a FROM t1 WHERE d>e AND b>c AND c BETWEEN b-2 AND d+2 ORDER BY 4,3,6,1,2,5 */
 let result = from row in t1
-  where ((row.d > row.e && row.b > row.c) && (row.c >= row.b - 2 && row.c <= row.d + 2))
-  order by [(if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.e, row.a, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), (if row.a < 0 { -(row.a) } else { row.a })]
-  select [row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.e, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), (if row.a < 0 { -(row.a) } else { row.a }), row.a]
+  where ((row.d > row.e && row.b > row.c) && (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
+  order by [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e, row.a, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < 0 { -(row.a) } else { row.a })]
+  select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.e, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if row.a < 0 { -(row.a) } else { row.a }), row.a]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case496" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [3706, 2, 246, 111, 245, 245, 1826, 1, 120, 222, 121, 121, 2046, 2, 135, 222, 138, 138, 2281, 1, 152, 333, 153, 153, 2501, 1, 165, 333, 168, 168, 3473, 1, 230, 333, 234, 234, 3553, 1, 237, 444, 239, 239]
 }
+

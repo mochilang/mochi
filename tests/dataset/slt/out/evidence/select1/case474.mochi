@@ -224,21 +224,23 @@ let t1 = [
 ]
 
 /* SELECT a-b, abs(a), CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END FROM t1 WHERE (e>c OR e<d) ORDER BY 3,2,4,1 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
   where ((row.e > row.c || row.e < row.d))
-  order by [(if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), (if row.a < 0 { -(row.a) } else { row.a }), (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.a - row.b]
-  select [row.a - row.b, (if row.a < 0 { -(row.a) } else { row.a }), (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 })]
+  order by [(if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (if row.a < 0 { -(row.a) } else { row.a }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a - row.b)]
+  select [(row.a - row.b), (if row.a < 0 { -(row.a) } else { row.a }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case474" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [-1, 111, 111, 1120, -1, 138, 111, 1390, -1, 142, 111, 1430, -1, 205, 111, 410, 1, 201, 222, 402, 2, 213, 222, 426, 2, 107, 333, 1050, -3, 121, 333, 1240, -2, 127, 333, 1290, 2, 153, 333, 1510, 3, 163, 333, 1600, 1, 168, 333, 1670, 1, 182, 333, 364, -2, 216, 333, 432, 1, 131, 444, 1300, 2, 188, 444, 376, -3, 220, 444, 440, -4, 245, 444, 490, 4, 104, 555, 1000, 4, 149, 555, 1450, 1, 159, 555, 1580, 4, 174, 555, 1700, 4, 179, 555, 358, 1, 199, 555, 398, 1, 229, 555, 458, 2, 234, 555, 468, 3, 239, 555, 478]
 }
+

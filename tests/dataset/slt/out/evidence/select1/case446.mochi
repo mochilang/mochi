@@ -225,18 +225,19 @@ let t1 = [
 
 /* SELECT a, c FROM t1 WHERE d>e OR b>c OR e+d BETWEEN a+b-10 AND c+130 ORDER BY 1,2 */
 let result = from row in t1
-  where ((row.d > row.e || row.b > row.c) || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130))
+  where ((row.d > row.e || row.b > row.c) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
   order by [row.a, row.c]
   select [row.a, row.c]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case446" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [104, 102, 107, 106, 111, 113, 115, 119, 121, 123, 127, 125, 131, 134, 138, 137, 142, 141, 149, 147, 153, 150, 159, 155, 163, 161, 168, 166, 179, 176, 182, 184, 191, 193, 199, 195, 213, 214, 216, 215, 220, 224, 229, 225, 234, 231, 239, 235, 245, 247]
 }
+

@@ -224,24 +224,26 @@ let t1 = [
 ]
 
 /* SELECT CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a FROM t1 ORDER BY 4,2,3,1 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
   order by [row.a, count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 })]
-  select [(if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), count(from x in t1
+  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
+  select [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a]
+  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.a]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case471" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1000, 0, 444, 104, 1050, 0, 333, 107, 1120, 0, 222, 111, 1180, 0, 222, 115, 1240, 0, 222, 121, 1290, 0, 222, 127, 1300, 0, 333, 131, 1390, 0, 222, 138, 1430, 0, 222, 142, 1450, 0, 444, 149, 1510, 0, 333, 153, 1580, 0, 333, 159, 1600, 0, 444, 163, 1670, 0, 333, 168, 1700, 0, 444, 174, 358, 0, 444, 179, 364, 0, 333, 182, 376, 0, 333, 188, 382, 0, 222, 191, 398, 0, 333, 199, 402, 0, 333, 201, 410, 0, 222, 205, 426, 0, 333, 213, 432, 0, 222, 216, 440, 0, 222, 220, 458, 0, 333, 229, 468, 0, 333, 234, 478, 0, 444, 239, 486, 0, 444, 243, 490, 0, 111, 245]
 }
+

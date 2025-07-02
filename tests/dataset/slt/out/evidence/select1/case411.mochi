@@ -226,17 +226,18 @@ let t1 = [
 /* SELECT e, a+b*2+c*3 FROM t1 WHERE (e>a AND e<b) OR b>c OR (e>c OR e<d) ORDER BY 2,1 */
 let result = from row in t1
   where ((((row.e > row.a && row.e < row.b)) || row.b > row.c) || ((row.e > row.c || row.e < row.d)))
-  order by [row.a + row.b * 2 + row.c * 3, row.e]
-  select [row.e, row.a + row.b * 2 + row.c * 3]
+  order by [((row.a + (row.b * 2)) + (row.c * 3)), row.e]
+  select [row.e, ((row.a + (row.b * 2)) + (row.c * 3))]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case411" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [103, 610, 109, 635, 110, 674, 117, 708, 120, 738, 126, 760, 132, 793, 135, 827, 144, 851, 146, 880, 152, 905, 157, 940, 162, 966, 165, 1000, 173, 1030, 177, 1057, 180, 1096, 189, 1121, 192, 1158, 197, 1180, 204, 1207, 209, 1241, 210, 1277, 219, 1297, 221, 1338, 227, 1360, 230, 1391, 237, 1416, 246, 1484]
 }
+

@@ -225,17 +225,18 @@ let t1 = [
 
 /* SELECT a, a+b*2+c*3+d*4, d FROM t1 ORDER BY 1,3,2 */
 let result = from row in t1
-  order by [row.a, row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4]
-  select [row.a, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.d]
+  order by [row.a, row.d, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+  select [row.a, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.d]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case459" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [104, 1014, 101, 107, 1067, 108, 111, 1130, 114, 115, 1172, 116, 121, 1226, 122, 127, 1272, 128, 131, 1325, 133, 138, 1371, 136, 142, 1411, 140, 149, 1472, 148, 153, 1521, 154, 159, 1564, 156, 163, 1622, 164, 168, 1676, 169, 174, 1714, 171, 179, 1769, 178, 182, 1828, 183, 188, 1861, 185, 191, 1918, 190, 199, 1964, 196, 201, 2019, 203, 205, 2069, 207, 213, 2125, 212, 216, 2165, 217, 220, 2226, 222, 229, 2264, 226, 234, 2323, 233, 239, 2368, 238, 243, 2419, 241, 245, 2476, 248]
 }
+

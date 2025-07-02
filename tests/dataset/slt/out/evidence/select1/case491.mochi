@@ -226,17 +226,18 @@ let t1 = [
 /* SELECT c-d, e, a+b*2, b, abs(a) FROM t1 WHERE d NOT BETWEEN 110 AND 150 OR (e>c OR e<d) ORDER BY 2,5,3,1,4 */
 let result = from row in t1
   where ((row.d < 110 || row.d > 150) || ((row.e > row.c || row.e < row.d)))
-  order by [row.e, (if row.a < 0 { -(row.a) } else { row.a }), row.a + row.b * 2, row.c - row.d, row.b]
-  select [row.c - row.d, row.e, row.a + row.b * 2, row.b, (if row.a < 0 { -(row.a) } else { row.a })]
+  order by [row.e, (if row.a < 0 { -(row.a) } else { row.a }), (row.a + (row.b * 2)), (row.c - row.d), row.b]
+  select [(row.c - row.d), row.e, (row.a + (row.b * 2)), row.b, (if row.a < 0 { -(row.a) } else { row.a })]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case491" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [1, 103, 304, 100, 104, -2, 109, 317, 105, 107, -1, 110, 335, 112, 111, 1, 120, 369, 124, 121, -3, 126, 385, 129, 127, 1, 132, 391, 130, 131, 1, 135, 416, 139, 138, 1, 144, 428, 143, 142, -1, 146, 439, 145, 149, -4, 152, 455, 151, 153, -1, 157, 475, 158, 159, -3, 162, 483, 160, 163, -3, 165, 502, 167, 168, 1, 173, 514, 170, 174, -2, 177, 529, 175, 179, 1, 180, 544, 181, 182, 2, 189, 560, 186, 188, 3, 192, 579, 194, 191, -1, 197, 595, 198, 199, -1, 204, 601, 200, 201, 1, 209, 617, 206, 205, 2, 210, 635, 211, 213, -2, 219, 652, 218, 216, 2, 221, 666, 223, 220, -1, 227, 685, 228, 229, -2, 230, 698, 232, 234, -3, 237, 711, 236, 239, 3, 242, 723, 240, 243, -1, 246, 743, 249, 245]
 }
+
