@@ -30,6 +30,12 @@ func formatValue(v any) string {
 // Generate returns Mochi source code for the given Case.
 func Generate(c Case) string {
 	var sb strings.Builder
+	for _, line := range c.Comments {
+		sb.WriteString("// " + line + "\n")
+	}
+	if len(c.Comments) > 0 {
+		sb.WriteString("\n")
+	}
 	for name, t := range c.Tables {
 		sb.WriteString(fmt.Sprintf("let %s = [\n", name))
 		for _, row := range t.Rows {

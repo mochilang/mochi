@@ -90,10 +90,16 @@ func runMochi(src string) (string, error) {
 }
 
 func fetchCmd() *cobra.Command {
-	return &cobra.Command{
+	var repo string
+	var force bool
+	var fileList []string
+	cmd := &cobra.Command{
 		Use:   "fetch",
 		Short: "Download SQLLogicTest files",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(fileList) > 0 {
+				files = fileList
+			}
 			root, err := findRepoRoot()
 			if err != nil {
 				return err
@@ -104,29 +110,42 @@ func fetchCmd() *cobra.Command {
 			}
 			for _, f := range files {
 				local := filepath.Join(dir, f)
-				if _, err := os.Stat(local); os.IsNotExist(err) {
-					url := "https://raw.githubusercontent.com/gregrahn/sqllogictest/master/" + f
-					if err := downloadFile(url, local); err != nil {
-						return err
-					}
+				if _, err := os.Stat(local); err == nil && !force {
+					continue
+				}
+				url := repo + "/" + f
+				if err := downloadFile(url, local); err != nil {
+					return err
 				}
 			}
 			return nil
 		},
 	}
+	cmd.Flags().StringSliceVarP(&fileList, "files", "f", files, "files to fetch")
+	cmd.Flags().StringVar(&repo, "repo", "https://raw.githubusercontent.com/gregrahn/sqllogictest/master", "base repository URL")
+	cmd.Flags().BoolVar(&force, "force", false, "force download even if file exists")
+	return cmd
 }
 
 func genCmd() *cobra.Command {
-	return &cobra.Command{
+	var outDir string
+	var run bool
+	var fileList []string
+	cmd := &cobra.Command{
 		Use:   "gen",
 		Short: "Generate Mochi tests from SLT files",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if len(fileList) > 0 {
+				files = fileList
+			}
 			root, err := findRepoRoot()
 			if err != nil {
 				return err
 			}
 			dir := filepath.Join(root, "tests/dataset/slt")
-			outDir := filepath.Join(dir, "out")
+			if outDir == "" {
+				outDir = filepath.Join(dir, "out")
+			}
 			if err := os.MkdirAll(outDir, 0o755); err != nil {
 				return err
 			}
@@ -146,18 +165,56 @@ func genCmd() *cobra.Command {
 					if err := os.WriteFile(srcPath, []byte(code), 0o644); err != nil {
 						return err
 					}
-					out, err := runMochi(code)
-					if err != nil {
-						return err
-					}
-					if err := os.WriteFile(filepath.Join(testDir, c.Name+".out"), []byte(out+"\n"), 0o644); err != nil {
-						return err
+					if run {
+						out, err := runMochi(code)
+						if err != nil {
+							return err
+						}
+						if err := os.WriteFile(filepath.Join(testDir, c.Name+".out"), []byte(out+"\n"), 0o644); err != nil {
+							return err
+						}
 					}
 				}
 			}
 			return nil
 		},
 	}
+	cmd.Flags().StringSliceVarP(&fileList, "files", "f", files, "SLT files to generate")
+	cmd.Flags().StringVarP(&outDir, "out", "o", "", "output directory")
+	cmd.Flags().BoolVar(&run, "run", true, "run Mochi programs after generating")
+	return cmd
+}
+
+func listCmd() *cobra.Command {
+	var file string
+	cmd := &cobra.Command{
+		Use:   "list",
+		Short: "List test cases in an SLT file",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			root, err := findRepoRoot()
+			if err != nil {
+				return err
+			}
+			dir := filepath.Join(root, "tests/dataset/slt")
+			if file == "" {
+				if len(files) > 0 {
+					file = files[0]
+				} else {
+					return fmt.Errorf("no file specified")
+				}
+			}
+			cases, err := logic.ParseFile(filepath.Join(dir, file))
+			if err != nil {
+				return err
+			}
+			for _, c := range cases {
+				fmt.Fprintln(cmd.OutOrStdout(), c.Name)
+			}
+			return nil
+		},
+	}
+	cmd.Flags().StringVarP(&file, "file", "f", "", "SLT file to inspect")
+	return cmd
 }
 
 func newRootCmd() *cobra.Command {
@@ -165,7 +222,7 @@ func newRootCmd() *cobra.Command {
 		Use:   "mochi-slt",
 		Short: "SQLLogicTest utilities",
 	}
-	cmd.AddCommand(fetchCmd(), genCmd())
+	cmd.AddCommand(fetchCmd(), genCmd(), listCmd())
 	return cmd
 }
 
