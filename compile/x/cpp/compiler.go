@@ -327,6 +327,38 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			}
 			c.indent--
 			c.writeln("};")
+			fields := []string{}
+			for _, m := range t.Members {
+				if m.Field != nil {
+					fields = append(fields, m.Field.Name)
+				}
+			}
+			if len(fields) > 0 {
+				eq := make([]string, len(fields))
+				for i, fn := range fields {
+					eq[i] = fmt.Sprintf("a.%s == b.%s", fn, fn)
+				}
+				c.writeln(fmt.Sprintf("inline bool operator==(const %s& a, const %s& b) { return %s; }", t.Name, t.Name, strings.Join(eq, " && ")))
+				c.helpers["hashCombine"] = true
+				c.writeln("namespace std {")
+				c.indent++
+				c.writeln(fmt.Sprintf("template<> struct hash<%s> {", t.Name))
+				c.indent++
+				c.writeln(fmt.Sprintf("size_t operator()(const %s& k) const noexcept {", t.Name))
+				c.indent++
+				c.writeln("size_t h = 0;")
+				for _, fn := range fields {
+					c.writeln(fmt.Sprintf("_hash_combine(h, k.%s);", fn))
+				}
+				c.writeln("return h;")
+				c.indent--
+				c.writeln("}")
+				c.indent--
+				c.writeln("};")
+				c.indent--
+				c.writeln("}")
+				c.writeln("")
+			}
 			if c.env != nil {
 				for _, f := range v.Fields {
 					if st, ok := c.resolveTypeRef(f.Type).(types.StructType); ok {
@@ -352,6 +384,38 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("};")
+	fields := []string{}
+	for _, m := range t.Members {
+		if m.Field != nil {
+			fields = append(fields, m.Field.Name)
+		}
+	}
+	if len(fields) > 0 {
+		eq := make([]string, len(fields))
+		for i, fn := range fields {
+			eq[i] = fmt.Sprintf("a.%s == b.%s", fn, fn)
+		}
+		c.writeln(fmt.Sprintf("inline bool operator==(const %s& a, const %s& b) { return %s; }", t.Name, t.Name, strings.Join(eq, " && ")))
+		c.helpers["hashCombine"] = true
+		c.writeln("namespace std {")
+		c.indent++
+		c.writeln(fmt.Sprintf("template<> struct hash<%s> {", t.Name))
+		c.indent++
+		c.writeln(fmt.Sprintf("size_t operator()(const %s& k) const noexcept {", t.Name))
+		c.indent++
+		c.writeln("size_t h = 0;")
+		for _, fn := range fields {
+			c.writeln(fmt.Sprintf("_hash_combine(h, k.%s);", fn))
+		}
+		c.writeln("return h;")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("};")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.env != nil {
 		for _, m := range t.Members {
 			if m.Field != nil {
@@ -476,13 +540,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		expr := c.compileExpr(s.Return.Value)
 		c.writeln(fmt.Sprintf("return %s;", expr))
 	case s.For != nil:
-	return c.compileFor(s.For)
+		return c.compileFor(s.For)
 	case s.While != nil:
-	return c.compileWhile(s.While)
+		return c.compileWhile(s.While)
 	case s.Update != nil:
-	return c.compileUpdate(s.Update)
+		return c.compileUpdate(s.Update)
 	case s.If != nil:
-	return c.compileIf(s.If)
+		return c.compileIf(s.If)
 	case s.Break != nil:
 		c.writeln("break;")
 	case s.Continue != nil:
@@ -585,39 +649,39 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 }
 
 func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
-        list := u.Target
-        c.writeln(fmt.Sprintf("for (size_t _i = 0; _i < %s.size(); ++_i) {", list))
-        c.indent++
-        c.writeln(fmt.Sprintf("auto& _item = %s[_i];", list))
-        c.pushScope()
-        if typ, err := c.env.GetVar(u.Target); err == nil {
-                if lt, ok := typ.(types.ListType); ok {
-                        if st, ok := lt.Elem.(types.StructType); ok {
-                                for _, f := range st.Order {
-                                        c.writeln(fmt.Sprintf("auto %s = _item.%s;", f, f))
-                                        c.setVar(f, CppTypeRef(st.Fields[f]))
-                                }
-                        }
-                }
-        }
-        if u.Where != nil {
-                cond := c.compileExpr(u.Where)
-                c.writeln(fmt.Sprintf("if (%s) {", cond))
-                c.indent++
-        }
-        for _, it := range u.Set.Items {
-                key, _ := identName(it.Key)
-                val := c.compileExpr(it.Value)
-                c.writeln(fmt.Sprintf("_item.%s = %s;", key, val))
-        }
-        if u.Where != nil {
-                c.indent--
-                c.writeln("}")
-        }
-        c.popScope()
-        c.indent--
-        c.writeln("}")
-        return nil
+	list := u.Target
+	c.writeln(fmt.Sprintf("for (size_t _i = 0; _i < %s.size(); ++_i) {", list))
+	c.indent++
+	c.writeln(fmt.Sprintf("auto& _item = %s[_i];", list))
+	c.pushScope()
+	if typ, err := c.env.GetVar(u.Target); err == nil {
+		if lt, ok := typ.(types.ListType); ok {
+			if st, ok := lt.Elem.(types.StructType); ok {
+				for _, f := range st.Order {
+					c.writeln(fmt.Sprintf("auto %s = _item.%s;", f, f))
+					c.setVar(f, CppTypeRef(st.Fields[f]))
+				}
+			}
+		}
+	}
+	if u.Where != nil {
+		cond := c.compileExpr(u.Where)
+		c.writeln(fmt.Sprintf("if (%s) {", cond))
+		c.indent++
+	}
+	for _, it := range u.Set.Items {
+		key, _ := identName(it.Key)
+		val := c.compileExpr(it.Value)
+		c.writeln(fmt.Sprintf("_item.%s = %s;", key, val))
+	}
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+	c.popScope()
+	c.indent--
+	c.writeln("}")
+	return nil
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
