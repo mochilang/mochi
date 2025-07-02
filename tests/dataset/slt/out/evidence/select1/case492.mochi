@@ -225,22 +225,23 @@ let t1 = [
 
 /* SELECT e, abs(a), c-d, a, c, a+b*2+c*3+d*4+e*5, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE c BETWEEN b-2 AND d+2 ORDER BY 2,7,6,5,3,1,4 */
 let result = from row in t1
-  where (row.c >= row.b - 2 && row.c <= row.d + 2)
+  where (row.c >= (row.b - 2) && row.c <= (row.d + 2))
   order by [(if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.c, row.c - row.d, row.e, row.a]
-  select [row.e, (if row.a < 0 { -(row.a) } else { row.a }), row.c - row.d, row.a, row.c, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, count(from x in t1
+  select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.c, (row.c - row.d), row.e, row.a]
+  select [row.e, (if row.a < 0 { -(row.a) } else { row.a }), (row.c - row.d), row.a, row.c, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case492" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [103, 104, 1, 104, 102, 1529, 0, 109, 107, -2, 107, 106, 1612, 0, 110, 111, -1, 111, 113, 1680, 0, 120, 121, 1, 121, 123, 1826, 0, 132, 131, 1, 131, 134, 1985, 0, 135, 138, 1, 138, 137, 2046, 0, 144, 142, 1, 142, 141, 2131, 0, 146, 149, -1, 149, 147, 2202, 0, 152, 153, -4, 153, 150, 2281, 0, 162, 163, -3, 163, 161, 2432, 0, 165, 168, -3, 168, 166, 2501, 0, 173, 174, 1, 174, 172, 2579, 0, 177, 179, -2, 179, 176, 2654, 0, 180, 182, 1, 182, 184, 2728, 0, 189, 188, 2, 188, 187, 2806, 0, 204, 201, -1, 201, 202, 3039, 0, 209, 205, 1, 205, 208, 3114, 0, 210, 213, 2, 213, 214, 3175, 0, 221, 220, 2, 220, 224, 3331, 0, 230, 234, -2, 234, 231, 3473, 0, 237, 239, -3, 239, 235, 3553, 0, 246, 245, -1, 245, 247, 3706, 0]
 }
+

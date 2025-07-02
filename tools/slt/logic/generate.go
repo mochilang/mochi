@@ -209,6 +209,10 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			if t == "" || t == "float" || t == "int" {
 				if t == "" {
 					t = "float"
+				} else if t == "int" && val != math.Trunc(val) {
+					// upgrade int columns to float when a
+					// non-integer value is seen
+					t = "float"
 				}
 			} else {
 				return "any"

@@ -225,18 +225,19 @@ let t1 = [
 
 /* SELECT abs(a), a+b*2+c*3, (a+b+c+d+e)/5, b-c FROM t1 WHERE (a>b-2 AND a<b+2) OR e+d BETWEEN a+b-10 AND c+130 ORDER BY 1,3,2,4 */
 let result = from row in t1
-  where (((row.a > row.b - 2 && row.a < row.b + 2)) || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130))
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), (row.a + row.b + row.c + row.d + row.e) / 5, row.a + row.b * 2 + row.c * 3, row.b - row.c]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), row.a + row.b * 2 + row.c * 3, (row.a + row.b + row.c + row.d + row.e) / 5, row.b - row.c]
+  where (((row.a > (row.b - 2) && row.a < (row.b + 2))) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
+  order by [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), ((row.a + (row.b * 2)) + (row.c * 3)), (row.b - row.c)]
+  select [(if row.a < 0 { -(row.a) } else { row.a }), ((row.a + (row.b * 2)) + (row.c * 3)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.b - row.c)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case427" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [104, 610, 102, -2, 107, 635, 107, -1, 111, 674, 112, -1, 115, 708, 117, -1, 121, 738, 122, 1, 127, 760, 127, 4, 131, 793, 132, -4, 138, 827, 137, 2, 142, 851, 142, 2, 159, 940, 157, 3, 168, 1000, 167, 1, 182, 1096, 182, -3, 199, 1180, 197, 3, 201, 1207, 202, -2, 205, 1241, 207, -2, 229, 1360, 227, 3]
 }
+
