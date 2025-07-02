@@ -100,12 +100,20 @@ func simpleExpr(e sqlparser.Expr) bool {
 		}
 		return false
 	case *sqlparser.CaseExpr:
-		if v.Expr != nil && !simpleExpr(v.Expr) {
-			return false
-		}
-		for _, w := range v.Whens {
-			if condExprToMochi(w.Cond) == "" || !simpleExpr(w.Val) {
+		if v.Expr != nil {
+			if !simpleExpr(v.Expr) {
 				return false
+			}
+			for _, w := range v.Whens {
+				if !simpleExpr(w.Cond) || !simpleExpr(w.Val) {
+					return false
+				}
+			}
+		} else {
+			for _, w := range v.Whens {
+				if condExprToMochi(w.Cond) == "" || !simpleExpr(w.Val) {
+					return false
+				}
 			}
 		}
 		if v.Else != nil && !simpleExpr(v.Else) {
@@ -140,16 +148,31 @@ func condExprToMochi(e sqlparser.Expr) string {
 		if l == "" || r == "" {
 			return ""
 		}
-		return fmt.Sprintf("(%s && %s)", l, r)
+		return fmt.Sprintf("(%s) && (%s)", l, r)
 	case *sqlparser.OrExpr:
 		l := condExprToMochi(v.Left)
 		r := condExprToMochi(v.Right)
 		if l == "" || r == "" {
 			return ""
 		}
-		return fmt.Sprintf("(%s || %s)", l, r)
+		return fmt.Sprintf("(%s) || (%s)", l, r)
+	case *sqlparser.RangeCond:
+		left := exprToMochi(v.Left)
+		from := exprToMochi(v.From)
+		to := exprToMochi(v.To)
+		switch strings.ToLower(v.Operator) {
+		case sqlparser.BetweenStr:
+			return fmt.Sprintf("(%s >= %s) && (%s <= %s)", left, from, left, to)
+		case sqlparser.NotBetweenStr:
+			return fmt.Sprintf("(%s < %s) || (%s > %s)", left, from, left, to)
+		}
+		return ""
 	case *sqlparser.ParenExpr:
-		return condExprToMochi(v.Expr)
+		inner := condExprToMochi(v.Expr)
+		if inner == "" {
+			return ""
+		}
+		return "(" + inner + ")"
 	}
 	return ""
 }
@@ -297,7 +320,7 @@ func Generate(c Case) string {
 			sb.WriteString("\n  where " + cond)
 		}
 		if len(sel.OrderBy) == 1 {
-			sb.WriteString("\n  order by " + exprToMochi(sel.OrderBy[0].Expr))
+			sb.WriteString("\n  sort by " + exprToMochi(sel.OrderBy[0].Expr))
 		}
 		sb.WriteString("\n  select " + expr + "\n")
 		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
@@ -338,12 +361,8 @@ func Generate(c Case) string {
 			sb.WriteString("\n  where " + cond)
 		}
 		if len(sel.OrderBy) > 0 {
-			sb.WriteString("\n  order by ")
-			for i, ob := range sel.OrderBy {
-				if i > 0 {
-					sb.WriteString(", ")
-				}
-				sb.WriteString(orderExprToMochi(ob.Expr, aes))
+			for i := len(sel.OrderBy) - 1; i >= 0; i-- {
+				sb.WriteString("\n  sort by " + orderExprToMochi(sel.OrderBy[i].Expr, aes))
 			}
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")

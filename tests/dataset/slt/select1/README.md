@@ -9,7 +9,6 @@ Unsupported numeric cases:
 - case102
 - case107
 - case115
-- case170
 - case221
 - case228
 - case285
@@ -19,7 +18,6 @@ Unsupported numeric cases:
 - case298
 - case321
 - case331
-- case348
 - case382
 - case405
 - case415
@@ -30,7 +28,6 @@ Unsupported numeric cases:
 - case519
 - case551
 - case576
-- case584
 - case603
 - case637
 - case691
@@ -58,6 +55,7 @@ Supported cases:
 - case123
 - case134
 - case171
+- case170
 - case451
 - case467
 - case477
@@ -65,6 +63,8 @@ Supported cases:
 - case586
 - case746
 - case807
+- case348
+- case584
 - case907
 - case924
 - case983
