@@ -691,6 +691,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileBreak()
 	case s.Continue != nil:
 		return c.compileContinue()
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	default:
