@@ -1,0 +1,158 @@
+program main;
+{$mode objfpc}
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, fpjsonrtti, jsonparser, Math;
+
+type
+  generic TArray<T> = array of T;
+
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+var i,j: integer; tmp: T; k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+  for j := i + 1 to High(arr) do
+    if keys[i] > keys[j] then
+    begin
+      tmp := arr[i]; arr[i] := arr[j]; arr[j] := tmp;
+      k := keys[i]; keys[i] := keys[j]; keys[j] := k;
+    end;
+end;
+
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TArray<Variant>;
+  _tmp11: specialize TArray<Variant>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp7: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp8: specialize TFPGMap<Variant, Variant>;
+  _tmp9: specialize TArray<specialize TFPGMap<string, Variant>>;
+  c: specialize TFPGMap<string, Variant>;
+  catalog: specialize TArray<specialize TFPGMap<string, Variant>>;
+  r: Variant;
+  _result: specialize TArray<Variant>;
+  s: specialize TFPGMap<string, Variant>;
+  store: specialize TArray<specialize TFPGMap<string, Variant>>;
+  tmp: specialize TArray<Variant>;
+  w: specialize TFPGMap<string, Variant>;
+  web: specialize TArray<specialize TFPGMap<string, Variant>>;
+
+procedure test_TPCDS_Q49_simplified;
+var
+  _tmp12: specialize TFPGMap<Variant, Variant>;
+  _tmp13: specialize TFPGMap<Variant, Variant>;
+  _tmp14: specialize TFPGMap<Variant, Variant>;
+  _tmp15: specialize TFPGMap<Variant, Variant>;
+begin
+  _tmp12 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp12.AddOrSetData('channel', 'catalog');
+  _tmp12.AddOrSetData('item', 'A');
+  _tmp12.AddOrSetData('return_ratio', 0.3);
+  _tmp12.AddOrSetData('return_rank', 1);
+  _tmp12.AddOrSetData('currency_rank', 1);
+  _tmp13 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp13.AddOrSetData('channel', 'store');
+  _tmp13.AddOrSetData('item', 'A');
+  _tmp13.AddOrSetData('return_ratio', 0.25);
+  _tmp13.AddOrSetData('return_rank', 1);
+  _tmp13.AddOrSetData('currency_rank', 1);
+  _tmp14 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp14.AddOrSetData('channel', 'web');
+  _tmp14.AddOrSetData('item', 'A');
+  _tmp14.AddOrSetData('return_ratio', 0.2);
+  _tmp14.AddOrSetData('return_rank', 1);
+  _tmp14.AddOrSetData('currency_rank', 1);
+  _tmp15 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp15.AddOrSetData('channel', 'web');
+  _tmp15.AddOrSetData('item', 'B');
+  _tmp15.AddOrSetData('return_ratio', 0.5);
+  _tmp15.AddOrSetData('return_rank', 2);
+  _tmp15.AddOrSetData('currency_rank', 2);
+  if not ((_result = specialize TArray<specialize TFPGMap<string, Variant>>([_tmp12, _tmp13, _tmp14, _tmp15]))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('item', 'A');
+  _tmp0.AddOrSetData('return_ratio', 0.2);
+  _tmp0.AddOrSetData('currency_ratio', 0.3);
+  _tmp0.AddOrSetData('return_rank', 1);
+  _tmp0.AddOrSetData('currency_rank', 1);
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('item', 'B');
+  _tmp1.AddOrSetData('return_ratio', 0.5);
+  _tmp1.AddOrSetData('currency_ratio', 0.6);
+  _tmp1.AddOrSetData('return_rank', 2);
+  _tmp1.AddOrSetData('currency_rank', 2);
+  web := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1]);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('item', 'A');
+  _tmp2.AddOrSetData('return_ratio', 0.3);
+  _tmp2.AddOrSetData('currency_ratio', 0.4);
+  _tmp2.AddOrSetData('return_rank', 1);
+  _tmp2.AddOrSetData('currency_rank', 1);
+  catalog := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp2]);
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('item', 'A');
+  _tmp3.AddOrSetData('return_ratio', 0.25);
+  _tmp3.AddOrSetData('currency_ratio', 0.35);
+  _tmp3.AddOrSetData('return_rank', 1);
+  _tmp3.AddOrSetData('currency_rank', 1);
+  store := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp3]);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('channel', 'web');
+  _tmp4.AddOrSetData('item', w.item);
+  _tmp4.AddOrSetData('return_ratio', w.return_ratio);
+  _tmp4.AddOrSetData('return_rank', w.return_rank);
+  _tmp4.AddOrSetData('currency_rank', w.currency_rank);
+  SetLength(_tmp5, 0);
+  for w in web do
+  begin
+    if not (((w.return_rank <= 10) or (w.currency_rank <= 10))) then continue;
+    _tmp5 := Concat(_tmp5, [_tmp4]);
+  end;
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('channel', 'catalog');
+  _tmp6.AddOrSetData('item', c.item);
+  _tmp6.AddOrSetData('return_ratio', c.return_ratio);
+  _tmp6.AddOrSetData('return_rank', c.return_rank);
+  _tmp6.AddOrSetData('currency_rank', c.currency_rank);
+  SetLength(_tmp7, 0);
+  for c in catalog do
+  begin
+    if not (((c.return_rank <= 10) or (c.currency_rank <= 10))) then continue;
+    _tmp7 := Concat(_tmp7, [_tmp6]);
+  end;
+  _tmp8 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp8.AddOrSetData('channel', 'store');
+  _tmp8.AddOrSetData('item', s.item);
+  _tmp8.AddOrSetData('return_ratio', s.return_ratio);
+  _tmp8.AddOrSetData('return_rank', s.return_rank);
+  _tmp8.AddOrSetData('currency_rank', s.currency_rank);
+  SetLength(_tmp9, 0);
+  for s in store do
+  begin
+    if not (((s.return_rank <= 10) or (s.currency_rank <= 10))) then continue;
+    _tmp9 := Concat(_tmp9, [_tmp8]);
+  end;
+  tmp := Concat(Concat(_tmp5, _tmp7), _tmp9);
+  SetLength(_tmp10, 0);
+  SetLength(_tmp11, 0);
+  for r in tmp do
+  begin
+    _tmp10 := Concat(_tmp10, [r]);
+    _tmp11 := Concat(_tmp11, [specialize TArray<Variant>([r.channel, r.return_rank, r.currency_rank, r.item])]);
+  end;
+  specialize _sortBy<Variant>(_tmp10, _tmp11);
+  _result := _tmp10;
+  specialize _json<specialize TArray<Variant>>(_result);
+  test_TPCDS_Q49_simplified;
+end.
