@@ -1228,12 +1228,12 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(fmt.Errorf("expect condition failed"), trace, ins.Line)
 			}
 		case OpSelect:
-			cond := fr.regs[ins.B]
-			if cond.Tag == ValueBool && cond.Bool {
-				fr.regs[ins.A] = fr.regs[ins.C]
-			} else {
-				fr.regs[ins.A] = fr.regs[ins.D]
-			}
+               cond := fr.regs[ins.B]
+               if cond.Truthy() {
+                       fr.regs[ins.A] = fr.regs[ins.C]
+               } else {
+                       fr.regs[ins.A] = fr.regs[ins.D]
+               }
 		case OpStr:
 			fr.regs[ins.A] = Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
 		case OpUpper:
