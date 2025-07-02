@@ -62,6 +62,7 @@ flycheck_*.el
 
 # Test binary, built with `go test -c`
 *.test
+!tests/dataset/logic/*.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 # *.out
@@ -239,6 +240,8 @@ out
 # Keep job golden files
 !tests/dataset/job/out
 !tests/dataset/job/out/*
+!tests/dataset/logic/out
+!tests/dataset/logic/out/*
 
 # Nuxt.js build / generate output
 .nuxt
