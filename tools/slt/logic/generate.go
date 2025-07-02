@@ -161,7 +161,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 				continue
 			}
-			if i, err := strconv.Atoi(val); err == nil {
+			if _, err := strconv.Atoi(val); err == nil {
 				if t == "" {
 					t = "int"
 				} else if t == "int" {
@@ -171,9 +171,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				} else {
 					return "any"
 				}
-				if i != 0 {
-					// numeric string, continue
-				}
+				// numeric string
 				continue
 			}
 			if _, err := strconv.ParseFloat(val, 64); err == nil {
