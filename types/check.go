@@ -809,6 +809,29 @@ func checkStmt(s *parser.Statement, env *Env, expectedReturn Type) error {
 				}
 			}
 		}
+		if len(s.Assign.Field) > 0 {
+			for _, fop := range s.Assign.Field {
+				field := fop.Name
+				switch lt := lhsType.(type) {
+				case StructType:
+					ft, ok := lt.Fields[field]
+					if !ok {
+						return errUnknownField(fop.Pos, field, lt)
+					}
+					lhsType = ft
+				case MapType:
+					if unify(lt.Key, StringType{}, nil) {
+						lhsType = lt.Value
+					} else {
+						return errNotStruct(fop.Pos, lt)
+					}
+				case AnyType:
+					lhsType = AnyType{}
+				default:
+					return errNotStruct(fop.Pos, lt)
+				}
+			}
+		}
 		if !unify(lhsType, rhsType, nil) {
 			return errCannotAssign(s.Assign.Pos, rhsType, s.Assign.Name, lhsType)
 		}

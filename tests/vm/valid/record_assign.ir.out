@@ -1,0 +1,27 @@
+func main (regs=11)
+  // var c = Counter { n: 0 }
+  Const        r0, 0
+  Const        r1, "__name"
+  Const        r2, "Counter"
+  Const        r3, "n"
+  Move         r4, r0
+  MakeMap      r5, 2, r1
+  Move         r6, r5
+  // inc(c)
+  Move         r7, r6
+  Call         r8, inc, r7
+  // print(c.n)
+  Const        r9, "n"
+  Index        r10, r6, r9
+  Print        r10
+  Return       r0
+
+  // fun inc(c: Counter) {
+func inc (regs=5)
+  // c.n = c.n + 1
+  Const        r1, "n"
+  Index        r2, r0, r1
+  Const        r3, 1
+  Add          r4, r2, r3
+  SetIndex     r0, r1, r4
+  Return       r0

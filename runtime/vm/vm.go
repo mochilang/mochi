@@ -2247,21 +2247,39 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		if !ok {
 			return fmt.Errorf("assignment to undeclared variable: %s", s.Assign.Name)
 		}
-		if len(s.Assign.Index) == 0 {
+		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			r := fc.compileExpr(s.Assign.Value)
 			fc.emit(s.Assign.Pos, Instr{Op: OpMove, A: reg, B: r})
 			fc.tags[reg] = fc.tags[r]
 		} else {
 			container := reg
-			for _, idxOp := range s.Assign.Index[:len(s.Assign.Index)-1] {
-				idx := fc.compileExpr(idxOp.Start)
-				dst := fc.newReg()
-				fc.emit(idxOp.Pos, Instr{Op: OpIndex, A: dst, B: container, C: idx})
-				container = dst
+			idxOps := s.Assign.Index
+			fieldOps := s.Assign.Field
+			for _, idxOp := range idxOps {
+				if idxOp != idxOps[len(idxOps)-1] || len(fieldOps) > 0 {
+					idx := fc.compileExpr(idxOp.Start)
+					dst := fc.newReg()
+					fc.emit(idxOp.Pos, Instr{Op: OpIndex, A: dst, B: container, C: idx})
+					container = dst
+				}
 			}
-			lastIdx := fc.compileExpr(s.Assign.Index[len(s.Assign.Index)-1].Start)
+			for i, fop := range fieldOps {
+				if i < len(fieldOps)-1 {
+					key := fc.constReg(fop.Pos, Value{Tag: ValueStr, Str: fop.Name})
+					dst := fc.newReg()
+					fc.emit(fop.Pos, Instr{Op: OpIndex, A: dst, B: container, C: key})
+					container = dst
+				}
+			}
 			val := fc.compileExpr(s.Assign.Value)
-			fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: container, B: lastIdx, C: val})
+			if len(fieldOps) > 0 {
+				lastField := fieldOps[len(fieldOps)-1]
+				key := fc.constReg(lastField.Pos, Value{Tag: ValueStr, Str: lastField.Name})
+				fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: container, B: key, C: val})
+			} else {
+				lastIdx := fc.compileExpr(idxOps[len(idxOps)-1].Start)
+				fc.emit(s.Assign.Pos, Instr{Op: OpSetIndex, A: container, B: lastIdx, C: val})
+			}
 		}
 		return nil
 	case s.Return != nil:
