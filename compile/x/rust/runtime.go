@@ -24,8 +24,32 @@ const (
 		"    chars[sidx as usize..eidx as usize].iter().collect()\n" +
 		"}\n"
 
-	helperMapGet = "fn _map_get<K: std::cmp::Eq + std::hash::Hash, V: Clone>(m: &std::collections::HashMap<K, V>, k: &K) -> V {\n" +
+	helperMapGet = "fn _map_get(m: &std::collections::HashMap<String, std::rc::Rc<dyn std::any::Any>>, k: &String) -> std::rc::Rc<dyn std::any::Any> {\n" +
 		"    m.get(k).unwrap().clone()\n" +
+		"}\n"
+
+	helperCastInt = "fn _cast_int(v: std::rc::Rc<dyn std::any::Any>) -> i64 {\n" +
+		"    if let Some(i) = v.downcast_ref::<i64>() { return *i; }\n" +
+		"    if let Some(i) = v.downcast_ref::<i32>() { return *i as i64; }\n" +
+		"    if let Some(f) = v.downcast_ref::<f64>() { return *f as i64; }\n" +
+		"    panic!(\"cast_int failed\");\n" +
+		"}\n"
+
+	helperCastFloat = "fn _cast_float(v: std::rc::Rc<dyn std::any::Any>) -> f64 {\n" +
+		"    if let Some(f) = v.downcast_ref::<f64>() { return *f; }\n" +
+		"    if let Some(i) = v.downcast_ref::<i64>() { return *i as f64; }\n" +
+		"    if let Some(i) = v.downcast_ref::<i32>() { return *i as f64; }\n" +
+		"    panic!(\"cast_float failed\");\n" +
+		"}\n"
+
+	helperCastString = "fn _cast_string(v: std::rc::Rc<dyn std::any::Any>) -> String {\n" +
+		"    if let Some(s) = v.downcast_ref::<String>() { return s.clone(); }\n" +
+		"    panic!(\"cast_string failed\");\n" +
+		"}\n"
+
+	helperCastBool = "fn _cast_bool(v: std::rc::Rc<dyn std::any::Any>) -> bool {\n" +
+		"    if let Some(b) = v.downcast_ref::<bool>() { return *b; }\n" +
+		"    panic!(\"cast_bool failed\");\n" +
 		"}\n"
 
 	helperCount = "fn _count<T>(v: &[T]) -> i32 {\n" +
@@ -152,6 +176,10 @@ var helperMap = map[string]string{
 	"_index_string": helperIndexString,
 	"_slice_string": helperSliceString,
 	"_map_get":      helperMapGet,
+	"_cast_int":     helperCastInt,
+	"_cast_float":   helperCastFloat,
+	"_cast_string":  helperCastString,
+	"_cast_bool":    helperCastBool,
 	"_count":        helperCount,
 	"_avg":          helperAvg,
 	"_sum":          helperSum,

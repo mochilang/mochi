@@ -332,8 +332,8 @@ func rustTypeFrom(t types.Type) string {
 	case types.GroupType:
 		return "Group<" + rustTypeFrom(tt.Elem) + ">"
 	case types.AnyType:
-		return "std::boxed::Box<dyn std::any::Any>"
+		return "std::rc::Rc<dyn std::any::Any>"
 	default:
-		return "std::boxed::Box<dyn std::any::Any>"
+		return "std::rc::Rc<dyn std::any::Any>"
 	}
 }

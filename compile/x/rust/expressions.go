@@ -699,6 +699,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("vec![%s]", strings.Join(elems, ", ")), nil
 	case p.Map != nil:
 		items := make([]string, len(p.Map.Items))
+		var valType types.Type = types.AnyType{}
+		if mt, ok := c.inferPrimaryType(&parser.Primary{Map: p.Map}).(types.MapType); ok {
+			valType = mt.Value
+		}
 		for i, it := range p.Map.Items {
 			kexpr, err := c.compileExpr(it.Key)
 			if err != nil {
@@ -714,6 +718,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			vexpr, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
+			}
+			if _, ok := valType.(types.AnyType); ok {
+				vexpr = fmt.Sprintf("std::rc::Rc::new(%s)", vexpr)
 			}
 			items[i] = fmt.Sprintf("(%s, %s)", kexpr, vexpr)
 		}
@@ -769,6 +776,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					typ = mt.Value
 				} else {
 					typ = types.AnyType{}
+				}
+				switch typ.(type) {
+				case types.IntType, types.Int64Type:
+					c.use("_cast_int")
+					expr = fmt.Sprintf("_cast_int(%s)", expr)
+				case types.FloatType:
+					c.use("_cast_float")
+					expr = fmt.Sprintf("_cast_float(%s)", expr)
+				case types.StringType:
+					c.use("_cast_string")
+					expr = fmt.Sprintf("_cast_string(%s)", expr)
+				case types.BoolType:
+					c.use("_cast_bool")
+					expr = fmt.Sprintf("_cast_bool(%s)", expr)
 				}
 			} else {
 				expr = fmt.Sprintf("%s.%s", expr, sanitizeName(tname))
@@ -917,7 +938,7 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 }
 
 func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
-	return c.compileFetchExprWithType(f, "std::boxed::Box<dyn std::any::Any>")
+	return c.compileFetchExprWithType(f, "std::rc::Rc<dyn std::any::Any>")
 }
 
 func (c *Compiler) compileFetchExprWithType(f *parser.FetchExpr, typ string) (string, error) {
