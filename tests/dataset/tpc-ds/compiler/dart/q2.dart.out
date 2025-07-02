@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 void test_TPCDS_Q2_result() {
   if (!(_equal(result, [{"d_week_seq1": 1, "sun_ratio": 0.5, "mon_ratio": 0.5}]))) { throw Exception('expect failed'); }
@@ -13,13 +13,13 @@ void main() {
   List<Map<String, dynamic>> wscs = _union(((() {
   var _res = [];
   for (var ws in web_sales) {
-    _res.add({"sold_date_sk": ws.ws_sold_date_sk, "sales_price": ws.ws_ext_sales_price, "day": ws.ws_sold_date_name});
+    _res.add({"sold_date_sk": ws['ws_sold_date_sk'], "sales_price": ws['ws_ext_sales_price'], "day": ws['ws_sold_date_name']});
   }
   return _res;
 })()), ((() {
   var _res = [];
   for (var cs in catalog_sales) {
-    _res.add({"sold_date_sk": cs.cs_sold_date_sk, "sales_price": cs.cs_ext_sales_price, "day": cs.cs_sold_date_name});
+    _res.add({"sold_date_sk": cs['cs_sold_date_sk'], "sales_price": cs['cs_ext_sales_price'], "day": cs['cs_sold_date_name']});
   }
   return _res;
 })()));
@@ -28,10 +28,10 @@ void main() {
   var order = <String>[];
   for (var w in wscs) {
     for (var d in date_dim) {
-      if (!(_equal(w.sold_date_sk, d.d_date_sk))) {
+      if (!(_equal(w['sold_date_sk'], d['d_date_sk']))) {
         continue;
       }
-      var key = {"week_seq": d.d_week_seq};
+      var key = {"week_seq": d['d_week_seq']};
       var ks = key.toString();
       var g = groups[ks];
       if (g == null) {
@@ -100,7 +100,7 @@ void main() {
 })();
   List<Map<String, dynamic>> year1 = (() {
   var _res = [];
-  var _src = (wswscs).where((w) => _equal(w.d_week_seq, 1)).toList();
+  var _src = (wswscs).where((w) => _equal(w['d_week_seq'], 1)).toList();
   for (var w in _src) {
     _res.add(w);
   }
@@ -108,7 +108,7 @@ void main() {
 })();
   List<Map<String, dynamic>> year2 = (() {
   var _res = [];
-  var _src = (wswscs).where((w) => _equal(w.d_week_seq, 54)).toList();
+  var _src = (wswscs).where((w) => _equal(w['d_week_seq'], 54)).toList();
   for (var w in _src) {
     _res.add(w);
   }
@@ -118,10 +118,10 @@ void main() {
   var _res = [];
   for (var y in year1) {
     for (var z in year2) {
-      if (!(_equal(y.d_week_seq, (z.d_week_seq - 53)))) {
+      if (!(_equal(y['d_week_seq'], (z['d_week_seq'] - 53)))) {
         continue;
       }
-      _res.add({"d_week_seq1": y.d_week_seq, "sun_ratio": (y.sun_sales ~/ z.sun_sales), "mon_ratio": (y.mon_sales ~/ z.mon_sales)});
+      _res.add({"d_week_seq1": y['d_week_seq'], "sun_ratio": (y['sun_sales'] ~/ z['sun_sales']), "mon_ratio": (y['mon_sales'] ~/ z['mon_sales'])});
     }
   }
   return _res;

@@ -91,30 +91,30 @@ void main() {
   var _res = [];
   for (var cs in catalog_sales) {
     for (var cd1 in customer_demographics) {
-      if (!(((_equal(cs.cs_bill_cdemo_sk, cd1.cd_demo_sk) && _equal(cd1.cd_gender, "M")) && _equal(cd1.cd_education_status, "College")))) {
+      if (!(((_equal(cs['cs_bill_cdemo_sk'], cd1['cd_demo_sk']) && _equal(cd1['cd_gender'], "M")) && _equal(cd1['cd_education_status'], "College")))) {
         continue;
       }
       for (var c in customer) {
-        if (!(_equal(cs.cs_bill_customer_sk, c.c_customer_sk))) {
+        if (!(_equal(cs['cs_bill_customer_sk'], c['c_customer_sk']))) {
           continue;
         }
         for (var cd2 in customer_demographics) {
-          if (!(_equal(c.c_current_cdemo_sk, cd2.cd_demo_sk))) {
+          if (!(_equal(c['c_current_cdemo_sk'], cd2['cd_demo_sk']))) {
             continue;
           }
           for (var ca in customer_address) {
-            if (!(_equal(c.c_current_addr_sk, ca.ca_address_sk))) {
+            if (!(_equal(c['c_current_addr_sk'], ca['ca_address_sk']))) {
               continue;
             }
             for (var d in date_dim) {
-              if (!((_equal(cs.cs_sold_date_sk, d.d_date_sk) && _equal(d.d_year, 1999)))) {
+              if (!((_equal(cs['cs_sold_date_sk'], d['d_date_sk']) && (d['d_year'] == 1999)))) {
                 continue;
               }
               for (var i in item) {
-                if (!(_equal(cs.cs_item_sk, i.i_item_sk))) {
+                if (!(_equal(cs['cs_item_sk'], i['i_item_sk']))) {
                   continue;
                 }
-                _res.add({"i_item_id": i.i_item_id, "ca_country": ca.ca_country, "ca_state": ca.ca_state, "ca_county": ca.ca_county, "q": cs.cs_quantity, "lp": cs.cs_list_price, "cp": cs.cs_coupon_amt, "sp": cs.cs_sales_price, "np": cs.cs_net_profit, "by": c.c_birth_year, "dep": cd1.cd_dep_count});
+                _res.add({"i_item_id": i['i_item_id'], "ca_country": ca['ca_country'], "ca_state": ca['ca_state'], "ca_county": ca['ca_county'], "q": cs['cs_quantity'], "lp": cs['cs_list_price'], "cp": cs['cs_coupon_amt'], "sp": cs['cs_sales_price'], "np": cs['cs_net_profit'], "by": c['c_birth_year'], "dep": cd1['cd_dep_count']});
               }
             }
           }
@@ -124,7 +124,7 @@ void main() {
   }
   return _res;
 })();
-  List<Map<String, dynamic>> result = _group_by(joined, (j) => {"i_item_id": j.i_item_id, "ca_country": j.ca_country, "ca_state": j.ca_state, "ca_county": j.ca_county}).map((g) => {"i_item_id": g.key.i_item_id, "ca_country": g.key.ca_country, "ca_state": g.key.ca_state, "ca_county": g.key.ca_county, "agg1": _avg((() {
+  List<Map<String, dynamic>> result = _group_by(joined, (j) => {"i_item_id": j['i_item_id'], "ca_country": j['ca_country'], "ca_state": j['ca_state'], "ca_county": j['ca_county']}).map((g) => {"i_item_id": g.key.i_item_id, "ca_country": g.key.ca_country, "ca_state": g.key.ca_state, "ca_county": g.key.ca_county, "agg1": _avg((() {
   var _res = [];
   for (var x in g) {
     _res.add(x.q);

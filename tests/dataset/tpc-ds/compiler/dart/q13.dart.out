@@ -87,23 +87,23 @@ void main() {
   var _res = [];
   for (var ss in store_sales) {
     for (var s in store) {
-      if (!(_equal(ss.ss_store_sk, s.s_store_sk))) {
+      if (!(_equal(ss['ss_store_sk'], s['s_store_sk']))) {
         continue;
       }
       for (var cd in customer_demographics) {
-        if (!(((_equal(ss.ss_cdemo_sk, cd.cd_demo_sk) && _equal(cd.cd_marital_status, "M1")) && _equal(cd.cd_education_status, "ES1")))) {
+        if (!(((_equal(ss['ss_cdemo_sk'], cd['cd_demo_sk']) && _equal(cd['cd_marital_status'], "M1")) && _equal(cd['cd_education_status'], "ES1")))) {
           continue;
         }
         for (var hd in household_demographics) {
-          if (!((_equal(ss.ss_hdemo_sk, hd.hd_demo_sk) && _equal(hd.hd_dep_count, 3)))) {
+          if (!((_equal(ss['ss_hdemo_sk'], hd['hd_demo_sk']) && (hd['hd_dep_count'] == 3)))) {
             continue;
           }
           for (var ca in customer_address) {
-            if (!(((_equal(ss.ss_addr_sk, ca.ca_address_sk) && _equal(ca.ca_country, "United States")) && _equal(ca.ca_state, "CA")))) {
+            if (!(((_equal(ss['ss_addr_sk'], ca['ca_address_sk']) && _equal(ca['ca_country'], "United States")) && _equal(ca['ca_state'], "CA")))) {
               continue;
             }
             for (var d in date_dim) {
-              if (!((_equal(ss.ss_sold_date_sk, d.d_date_sk) && _equal(d.d_year, 2001)))) {
+              if (!((_equal(ss['ss_sold_date_sk'], d['d_date_sk']) && (d['d_year'] == 2001)))) {
                 continue;
               }
               _res.add(ss);

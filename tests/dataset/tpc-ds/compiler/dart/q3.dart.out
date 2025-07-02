@@ -15,17 +15,17 @@ void main() {
   var order = <String>[];
   for (var dt in date_dim) {
     for (var ss in store_sales) {
-      if (!(_equal(dt.d_date_sk, ss.ss_sold_date_sk))) {
+      if (!(_equal(dt['d_date_sk'], ss['ss_sold_date_sk']))) {
         continue;
       }
       for (var i in item) {
-        if (!(_equal(ss.ss_item_sk, i.i_item_sk))) {
+        if (!(_equal(ss['ss_item_sk'], i['i_item_sk']))) {
           continue;
         }
-        if (!((_equal(i.i_manufact_id, 100) && _equal(dt.d_moy, 12)))) {
+        if (!((_equal(i['i_manufact_id'], 100) && (dt['d_moy'] == 12)))) {
           continue;
         }
-        var key = {"d_year": dt.d_year, "brand_id": i.i_brand_id, "brand": i.i_brand};
+        var key = {"d_year": dt['d_year'], "brand_id": i['i_brand_id'], "brand": i['i_brand']};
         var ks = key.toString();
         var g = groups[ks];
         if (g == null) {

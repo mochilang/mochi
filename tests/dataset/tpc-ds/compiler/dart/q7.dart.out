@@ -17,25 +17,25 @@ void main() {
   var order = <String>[];
   for (var ss in store_sales) {
     for (var cd in customer_demographics) {
-      if (!(_equal(ss.ss_cdemo_sk, cd.cd_demo_sk))) {
+      if (!(_equal(ss['ss_cdemo_sk'], cd['cd_demo_sk']))) {
         continue;
       }
       for (var d in date_dim) {
-        if (!(_equal(ss.ss_sold_date_sk, d.d_date_sk))) {
+        if (!(_equal(ss['ss_sold_date_sk'], d['d_date_sk']))) {
           continue;
         }
         for (var i in item) {
-          if (!(_equal(ss.ss_item_sk, i.i_item_sk))) {
+          if (!(_equal(ss['ss_item_sk'], i['i_item_sk']))) {
             continue;
           }
           for (var p in promotion) {
-            if (!(_equal(ss.ss_promo_sk, p.p_promo_sk))) {
+            if (!(_equal(ss['ss_promo_sk'], p['p_promo_sk']))) {
               continue;
             }
-            if (!(((((_equal(cd.cd_gender, "M") && _equal(cd.cd_marital_status, "S")) && _equal(cd.cd_education_status, "College")) && ((_equal(p.p_channel_email, "N") || _equal(p.p_channel_event, "N")))) && _equal(d.d_year, 1998)))) {
+            if (!(((((_equal(cd['cd_gender'], "M") && _equal(cd['cd_marital_status'], "S")) && _equal(cd['cd_education_status'], "College")) && ((_equal(p['p_channel_email'], "N") || _equal(p['p_channel_event'], "N")))) && (d['d_year'] == 1998)))) {
               continue;
             }
-            var key = {"i_item_id": i.i_item_id};
+            var key = {"i_item_id": i['i_item_id']};
             var ks = key.toString();
             var g = groups[ks];
             if (g == null) {

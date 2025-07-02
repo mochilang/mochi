@@ -78,16 +78,16 @@ void main() {
   var order = <String>[];
   for (var ss in store_sales) {
     for (var d in date_dim) {
-      if (!(((_equal(ss.ss_sold_date_sk, d.d_date_sk) && _equal(d.d_year, 2002)) && _equal(d.d_moy, 11)))) {
+      if (!(((_equal(ss['ss_sold_date_sk'], d['d_date_sk']) && (d['d_year'] == 2002)) && (d['d_moy'] == 11)))) {
         continue;
       }
       if (!((((() {
   var _res = [];
   for (var ci in cross_items) {
-    _res.add(ci.ss_item_sk);
+    _res.add(ci['ss_item_sk']);
   }
   return _res;
-})()).contains(ss.ss_item_sk)))) {
+})()).contains(ss['ss_item_sk'])))) {
         continue;
       }
       var key = {"brand_id": 1, "class_id": 1, "category_id": 1};
@@ -123,10 +123,10 @@ void main() {
   List<Map<String, dynamic>> result = (() {
   var _res = [];
   for (var r in store_filtered) {
-    if (!((r.sales > avg_sales))) {
+    if (!((r['sales'] > avg_sales))) {
       continue;
     }
-    _res.add({"channel": r.channel, "i_brand_id": 1, "i_class_id": 1, "i_category_id": 1, "sales": r.sales, "number_sales": r.number_sales});
+    _res.add({"channel": r['channel'], "i_brand_id": 1, "i_class_id": 1, "i_category_id": 1, "sales": r['sales'], "number_sales": r['number_sales']});
   }
   return _res;
 })();
