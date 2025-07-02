@@ -1480,6 +1480,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = anyToValue(res)
 		case OpCount:
 			lst := fr.regs[ins.B]
+			if lst.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				break
+			}
 			if lst.Tag == ValueList {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: len(lst.List)}
 				break
