@@ -172,6 +172,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.While != nil:
 		return c.compileWhile(s.While)
+	case s.Update != nil:
+		return c.compileUpdate(s.Update)
 	case s.If != nil:
 		return c.compileIf(s.If)
 	case s.Break != nil:
@@ -375,6 +377,64 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
 			return err
 		}
 	}
+	c.indent--
+	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
+	list := "$" + sanitizeName(u.Target)
+	if c.methodFields != nil && c.methodFields[u.Target] {
+		list = "$this->" + sanitizeName(u.Target)
+	}
+
+	fields := map[string]bool{}
+	if u.Where != nil {
+		for v := range exprVarSet(u.Where) {
+			fields[v] = true
+		}
+	}
+	for _, it := range u.Set.Items {
+		if k, ok := identName(it.Key); ok {
+			fields[k] = true
+		}
+		for v := range exprVarSet(it.Value) {
+			fields[v] = true
+		}
+	}
+
+	c.writeln(fmt.Sprintf("for ($_i = 0; $_i < count(%s); $_i++) {", list))
+	c.indent++
+	c.writeln(fmt.Sprintf("$_item = %s[$_i];", list))
+
+	for f := range fields {
+		c.writeln(fmt.Sprintf("$%s = is_array($_item) ? ($_item['%s'] ?? null) : $_item->%s;", sanitizeName(f), f, sanitizeName(f)))
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			return err
+		}
+		c.writeln("if (" + cond + ") {")
+		c.indent++
+	}
+
+	for _, it := range u.Set.Items {
+		key, _ := identName(it.Key)
+		val, err := c.compileExpr(it.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("if (is_array($_item)) { $_item['%s'] = %s; } else { $_item->%s = %s; }", key, val, sanitizeName(key), val))
+	}
+
+	if u.Where != nil {
+		c.indent--
+		c.writeln("}")
+	}
+
+	c.writeln(fmt.Sprintf("%s[$_i] = $_item;", list))
 	c.indent--
 	c.writeln("}")
 	return nil
