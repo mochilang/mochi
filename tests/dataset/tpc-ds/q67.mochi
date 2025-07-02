@@ -7,7 +7,12 @@ let reason = [
   {id: 2, name: "RETURN"}
 ]
 
-let result = 67
+let result =
+  from ss in store_sales
+  join r in reason on ss.reason == r.id
+  where r.name in ["PROMO", "RETURN"]
+  select ss.price
+  |> sum
 
 json(result)
 
