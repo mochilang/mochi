@@ -54,6 +54,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Fetch != nil:
 		return c.compileFetchStmt(s.Fetch)
+	case s.Update != nil:
+		return c.compileUpdateStmt(s.Update)
 	case s.Expr != nil:
 		expr, err := c.compileExpr(s.Expr.Expr)
 		if err != nil {
@@ -475,6 +477,78 @@ func (c *Compiler) compileFetchStmt(f *parser.FetchStmt) error {
 		prefix = ""
 	}
 	c.writeln(fmt.Sprintf("%s%s = %s", prefix, name, expr))
+	return nil
+}
+
+func (c *Compiler) compileUpdateStmt(u *parser.UpdateStmt) error {
+	list := sanitizeName(u.Target)
+	idx := fmt.Sprintf("_i%d", c.tmpCount)
+	item := fmt.Sprintf("_it%d", c.tmpCount)
+	c.tmpCount++
+
+	c.writeln(fmt.Sprintf("for %s = 1, #%s do", idx, list))
+	c.indent++
+	c.writeln(fmt.Sprintf("local %s = %s[%s]", item, list, idx))
+
+	origEnv := c.env
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		if typ, err := c.env.GetVar(u.Target); err == nil {
+			if lt, ok := typ.(types.ListType); ok {
+				if st, ok := lt.Elem.(types.StructType); ok {
+					for _, f := range st.Order {
+						fieldVar := sanitizeName(f)
+						c.writeln(fmt.Sprintf("local %s = %s[%q]", fieldVar, item, f))
+						child.SetVar(f, st.Fields[f], true)
+					}
+				}
+			}
+		}
+		c.env = child
+	}
+
+	if u.Where != nil {
+		cond, err := c.compileExpr(u.Where)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("if %s then", cond))
+		c.indent++
+	}
+
+	for _, it := range u.Set.Items {
+		if key, ok := simpleStringKey(it.Key); ok {
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.env = origEnv
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s[%q] = %s", item, key, val))
+		} else {
+			k, err := c.compileExpr(it.Key)
+			if err != nil {
+				c.env = origEnv
+				return err
+			}
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				c.env = origEnv
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s[%s] = %s", item, k, v))
+		}
+	}
+
+	if u.Where != nil {
+		c.indent--
+		c.writeln("end")
+	}
+
+	c.env = origEnv
+	c.writeln(fmt.Sprintf("%s[%s] = %s", list, idx, item))
+	c.indent--
+	c.writeln("end")
 	return nil
 }
 
