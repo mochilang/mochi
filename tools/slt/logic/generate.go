@@ -3,6 +3,7 @@ package logic
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -39,7 +40,7 @@ func subqueryToMochi(sub *sqlparser.Subquery, outer string) string {
 			if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); ok {
 				cond := ""
 				if sel.Where != nil {
-					cond = condExprToMochiRow(sel.Where.Expr, alias, outer)
+					cond = condExprToMochiRow(sel.Where.Expr, alias, outer, nil)
 				}
 				var sb strings.Builder
 				sb.WriteString("count(from " + alias + " in " + tblName.Name.String())
@@ -51,10 +52,10 @@ func subqueryToMochi(sub *sqlparser.Subquery, outer string) string {
 			}
 		} else if name == "avg" && len(fn.Exprs) == 1 {
 			if a, ok := fn.Exprs[0].(*sqlparser.AliasedExpr); ok {
-				val := exprToMochiRow(a.Expr, alias, outer)
+				val := exprToMochiRow(a.Expr, alias, outer, nil)
 				cond := ""
 				if sel.Where != nil {
-					cond = condExprToMochiRow(sel.Where.Expr, alias, outer)
+					cond = condExprToMochiRow(sel.Where.Expr, alias, outer, nil)
 				}
 				var sb strings.Builder
 				sb.WriteString("avg(from " + alias + " in " + tblName.Name.String())
@@ -88,7 +89,7 @@ func existsToMochi(sub *sqlparser.Subquery, outer string) string {
 	}
 	cond := ""
 	if sel.Where != nil {
-		cond = condExprToMochiRow(sel.Where.Expr, alias, outer)
+		cond = condExprToMochiRow(sel.Where.Expr, alias, outer, nil)
 	}
 	var sb strings.Builder
 	sb.WriteString("count(from " + alias + " in " + tblName.Name.String())
@@ -228,16 +229,16 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	return t
 }
 
-func exprToMochi(e sqlparser.Expr) string {
-	return exprToMochiRow(e, "row", "")
+func exprToMochi(e sqlparser.Expr, subs map[string]string) string {
+	return exprToMochiRow(e, "row", "", subs)
 }
 
 func exprToMochiBare(e sqlparser.Expr) string {
-	s := exprToMochiRow(e, "row", "")
+	s := exprToMochiRow(e, "row", "", nil)
 	return strings.ReplaceAll(s, "row.", "")
 }
 
-func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
+func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]string) string {
 	switch v := e.(type) {
 	case *sqlparser.SQLVal:
 		switch v.Type {
@@ -255,39 +256,45 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 		}
 		return fmt.Sprintf("%s.%s", rowVar, name)
 	case *sqlparser.ParenExpr:
-		return "(" + exprToMochiRow(v.Expr, rowVar, outer) + ")"
+		return "(" + exprToMochiRow(v.Expr, rowVar, outer, subs) + ")"
 	case *sqlparser.UnaryExpr:
-		return fmt.Sprintf("%s%s", v.Operator, exprToMochiRow(v.Expr, rowVar, outer))
+		return fmt.Sprintf("%s%s", v.Operator, exprToMochiRow(v.Expr, rowVar, outer, subs))
 	case *sqlparser.BinaryExpr:
-		l := exprToMochiRow(v.Left, rowVar, outer)
-		r := exprToMochiRow(v.Right, rowVar, outer)
+		l := exprToMochiRow(v.Left, rowVar, outer, subs)
+		r := exprToMochiRow(v.Right, rowVar, outer, subs)
 		return fmt.Sprintf("(%s %s %s)", l, v.Operator, r)
 	case *sqlparser.FuncExpr:
 		name := strings.ToLower(v.Name.String())
 		if name == "abs" && len(v.Exprs) == 1 {
 			arg := v.Exprs[0].(*sqlparser.AliasedExpr).Expr
-			ex := exprToMochiRow(arg, rowVar, outer)
+			ex := exprToMochiRow(arg, rowVar, outer, subs)
 			return fmt.Sprintf("(if %s < 0 { -(%s) } else { %s })", ex, ex, ex)
 		}
 	case *sqlparser.Subquery:
-		return subqueryToMochi(v, rowVar)
+		expr := subqueryToMochi(v, rowVar)
+		if subs != nil {
+			if name, ok := subs[expr]; ok {
+				return name
+			}
+		}
+		return expr
 	case *sqlparser.CaseExpr:
 		elseExpr := "null"
 		if v.Else != nil {
-			elseExpr = exprToMochiRow(v.Else, rowVar, outer)
+			elseExpr = exprToMochiRow(v.Else, rowVar, outer, subs)
 		}
 		out := elseExpr
 		if v.Expr != nil {
-			expr := exprToMochiRow(v.Expr, rowVar, outer)
+			expr := exprToMochiRow(v.Expr, rowVar, outer, subs)
 			for i := len(v.Whens) - 1; i >= 0; i-- {
-				cond := fmt.Sprintf("%s == %s", expr, exprToMochiRow(v.Whens[i].Cond, rowVar, outer))
-				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer)
+				cond := fmt.Sprintf("%s == %s", expr, exprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs))
+				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer, subs)
 				out = fmt.Sprintf("(if %s { %s } else { %s })", cond, val, out)
 			}
 		} else {
 			for i := len(v.Whens) - 1; i >= 0; i-- {
-				cond := condExprToMochiRow(v.Whens[i].Cond, rowVar, outer)
-				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer)
+				cond := condExprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs)
+				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer, subs)
 				if cond == "" {
 					return "null"
 				}
@@ -331,7 +338,7 @@ func simpleExpr(e sqlparser.Expr) bool {
 			}
 		} else {
 			for _, w := range v.Whens {
-				if condExprToMochi(w.Cond) == "" || !simpleExpr(w.Val) {
+				if condExprToMochi(w.Cond, nil) == "" || !simpleExpr(w.Val) {
 					return false
 				}
 			}
@@ -345,19 +352,19 @@ func simpleExpr(e sqlparser.Expr) bool {
 	}
 }
 
-func condToMochi(where *sqlparser.Where) string {
+func condToMochi(where *sqlparser.Where, subs map[string]string) string {
 	if where == nil {
 		return ""
 	}
-	return condExprToMochiRow(where.Expr, "row", "")
+	return condExprToMochiRow(where.Expr, "row", "", subs)
 }
 
-func condExprToMochi(e sqlparser.Expr) string {
-	return condExprToMochiRow(e, "row", "")
+func condExprToMochi(e sqlparser.Expr, subs map[string]string) string {
+	return condExprToMochiRow(e, "row", "", subs)
 }
 
 func condExprToMochiBare(e sqlparser.Expr) string {
-	s := condExprToMochiRow(e, "row", "")
+	s := condExprToMochiRow(e, "row", "", nil)
 	return strings.ReplaceAll(s, "row.", "")
 }
 
@@ -368,34 +375,34 @@ func condToMochiBare(where *sqlparser.Where) string {
 	return condExprToMochiBare(where.Expr)
 }
 
-func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
+func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]string) string {
 	switch v := e.(type) {
 	case *sqlparser.ComparisonExpr:
-		left := exprToMochiRow(v.Left, rowVar, outer)
-		right := exprToMochiRow(v.Right, rowVar, outer)
+		left := exprToMochiRow(v.Left, rowVar, outer, subs)
+		right := exprToMochiRow(v.Right, rowVar, outer, subs)
 		op := v.Operator
 		if op == "=" {
 			op = "=="
 		}
 		return fmt.Sprintf("%s %s %s", left, op, right)
 	case *sqlparser.AndExpr:
-		l := condExprToMochiRow(v.Left, rowVar, outer)
-		r := condExprToMochiRow(v.Right, rowVar, outer)
+		l := condExprToMochiRow(v.Left, rowVar, outer, subs)
+		r := condExprToMochiRow(v.Right, rowVar, outer, subs)
 		if l == "" || r == "" {
 			return ""
 		}
 		return fmt.Sprintf("(%s && %s)", l, r)
 	case *sqlparser.OrExpr:
-		l := condExprToMochiRow(v.Left, rowVar, outer)
-		r := condExprToMochiRow(v.Right, rowVar, outer)
+		l := condExprToMochiRow(v.Left, rowVar, outer, subs)
+		r := condExprToMochiRow(v.Right, rowVar, outer, subs)
 		if l == "" || r == "" {
 			return ""
 		}
 		return fmt.Sprintf("(%s || %s)", l, r)
 	case *sqlparser.RangeCond:
-		left := exprToMochiRow(v.Left, rowVar, outer)
-		from := exprToMochiRow(v.From, rowVar, outer)
-		to := exprToMochiRow(v.To, rowVar, outer)
+		left := exprToMochiRow(v.Left, rowVar, outer, subs)
+		from := exprToMochiRow(v.From, rowVar, outer, subs)
+		to := exprToMochiRow(v.To, rowVar, outer, subs)
 		switch strings.ToLower(v.Operator) {
 		case sqlparser.BetweenStr:
 			return fmt.Sprintf("(%s >= %s && %s <= %s)", left, from, left, to)
@@ -410,7 +417,7 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 		}
 		return e
 	case *sqlparser.ParenExpr:
-		inner := condExprToMochiRow(v.Expr, rowVar, outer)
+		inner := condExprToMochiRow(v.Expr, rowVar, outer, subs)
 		if inner == "" {
 			return ""
 		}
@@ -419,14 +426,76 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string) string {
 	return ""
 }
 
-func orderExprToMochi(e sqlparser.Expr, exprs []*sqlparser.AliasedExpr) string {
+func orderExprToMochi(e sqlparser.Expr, exprs []*sqlparser.AliasedExpr, subs map[string]string) string {
 	if val, ok := e.(*sqlparser.SQLVal); ok && val.Type == sqlparser.IntVal {
 		idx, err := strconv.Atoi(string(val.Val))
 		if err == nil && idx >= 1 && idx <= len(exprs) {
-			return exprToMochi(exprs[idx-1].Expr)
+			return exprToMochi(exprs[idx-1].Expr, subs)
 		}
 	}
-	return exprToMochi(e)
+	return exprToMochi(e, subs)
+}
+
+func collectSubqueriesExpr(e sqlparser.Expr, subs map[string]struct{}) {
+	switch v := e.(type) {
+	case *sqlparser.Subquery:
+		expr := subqueryToMochi(v, "row")
+		if expr != "null" {
+			subs[expr] = struct{}{}
+		}
+	case *sqlparser.ParenExpr:
+		collectSubqueriesExpr(v.Expr, subs)
+	case *sqlparser.UnaryExpr:
+		collectSubqueriesExpr(v.Expr, subs)
+	case *sqlparser.BinaryExpr:
+		collectSubqueriesExpr(v.Left, subs)
+		collectSubqueriesExpr(v.Right, subs)
+	case *sqlparser.ComparisonExpr:
+		collectSubqueriesExpr(v.Left, subs)
+		collectSubqueriesExpr(v.Right, subs)
+	case *sqlparser.RangeCond:
+		collectSubqueriesExpr(v.Left, subs)
+		collectSubqueriesExpr(v.From, subs)
+		collectSubqueriesExpr(v.To, subs)
+	case *sqlparser.FuncExpr:
+		for _, a := range v.Exprs {
+			if ae, ok := a.(*sqlparser.AliasedExpr); ok {
+				collectSubqueriesExpr(ae.Expr, subs)
+			}
+		}
+	case *sqlparser.CaseExpr:
+		if v.Expr != nil {
+			collectSubqueriesExpr(v.Expr, subs)
+		}
+		for _, w := range v.Whens {
+			collectSubqueriesExpr(w.Cond, subs)
+			collectSubqueriesExpr(w.Val, subs)
+		}
+		if v.Else != nil {
+			collectSubqueriesExpr(v.Else, subs)
+		}
+	}
+}
+
+func collectSubqueries(sel *sqlparser.Select) []string {
+	m := map[string]struct{}{}
+	for _, se := range sel.SelectExprs {
+		if ae, ok := se.(*sqlparser.AliasedExpr); ok {
+			collectSubqueriesExpr(ae.Expr, m)
+		}
+	}
+	if sel.Where != nil {
+		collectSubqueriesExpr(sel.Where.Expr, m)
+	}
+	for _, ob := range sel.OrderBy {
+		collectSubqueriesExpr(ob.Expr, m)
+	}
+	out := make([]string, 0, len(m))
+	for k := range m {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
 }
 
 func generateUpdate(stmt string) string {
@@ -528,12 +597,23 @@ func Generate(c Case) string {
 
 	tblNameStr := tblName.Name.String()
 
+	subExprs := collectSubqueries(sel)
+	subs := map[string]string{}
+	for i, s := range subExprs {
+		name := fmt.Sprintf("sub%d", i)
+		subs[s] = name
+		sb.WriteString(fmt.Sprintf("let %s = %s\n", name, s))
+	}
+	if len(subExprs) > 0 {
+		sb.WriteString("\n")
+	}
+
 	// Handle SELECT count(*)
 	if len(sel.SelectExprs) == 1 {
 		if ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr); ok {
 			if fn, ok := ae.Expr.(*sqlparser.FuncExpr); ok && fn.Name.EqualString("count") && len(fn.Exprs) == 1 {
 				if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); ok {
-					cond := condToMochi(sel.Where)
+					cond := condToMochi(sel.Where, subs)
 					sb.WriteString("let result = count(from row in " + tblNameStr)
 					if cond != "" {
 						sb.WriteString("\n  where " + cond)
@@ -555,20 +635,20 @@ func Generate(c Case) string {
 		if !ok || !simpleExpr(ae.Expr) {
 			return ""
 		}
-		if sel.Where != nil && condExprToMochi(sel.Where.Expr) == "" {
+		if sel.Where != nil && condExprToMochi(sel.Where.Expr, subs) == "" {
 			return ""
 		}
 		if len(sel.OrderBy) == 1 && !simpleExpr(sel.OrderBy[0].Expr) {
 			return ""
 		}
-		expr := exprToMochi(ae.Expr)
-		cond := condToMochi(sel.Where)
+		expr := exprToMochi(ae.Expr, subs)
+		cond := condToMochi(sel.Where, subs)
 		sb.WriteString("let result = from row in " + tblNameStr)
 		if cond != "" {
 			sb.WriteString("\n  where " + cond)
 		}
 		if len(sel.OrderBy) == 1 {
-			sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}))
+			sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}, subs))
 		}
 		sb.WriteString("\n  select " + expr + "\n")
 		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
@@ -591,9 +671,9 @@ func Generate(c Case) string {
 				return ""
 			}
 			aes = append(aes, ae)
-			exprs = append(exprs, exprToMochi(ae.Expr))
+			exprs = append(exprs, exprToMochi(ae.Expr, subs))
 		}
-		if sel.Where != nil && condExprToMochi(sel.Where.Expr) == "" {
+		if sel.Where != nil && condExprToMochi(sel.Where.Expr, subs) == "" {
 			return ""
 		}
 		for _, ob := range sel.OrderBy {
@@ -603,7 +683,7 @@ func Generate(c Case) string {
 				}
 			}
 		}
-		cond := condToMochi(sel.Where)
+		cond := condToMochi(sel.Where, subs)
 		sb.WriteString("let result = from row in " + tblNameStr)
 		if cond != "" {
 			sb.WriteString("\n  where " + cond)
@@ -611,14 +691,14 @@ func Generate(c Case) string {
 		if len(sel.OrderBy) > 0 {
 			sb.WriteString("\n  order by ")
 			if len(sel.OrderBy) == 1 {
-				sb.WriteString(orderExprToMochi(sel.OrderBy[0].Expr, aes))
+				sb.WriteString(orderExprToMochi(sel.OrderBy[0].Expr, aes, subs))
 			} else {
 				sb.WriteString("[")
 				for i, ob := range sel.OrderBy {
 					if i > 0 {
 						sb.WriteString(", ")
 					}
-					sb.WriteString(orderExprToMochi(ob.Expr, aes))
+					sb.WriteString(orderExprToMochi(ob.Expr, aes, subs))
 				}
 				sb.WriteString("]")
 			}
