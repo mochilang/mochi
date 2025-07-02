@@ -548,14 +548,23 @@ func Generate(c Case) string {
 			}
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
-		sb.WriteString("var flatResult = []\n")
-		sb.WriteString("for row in result {\n")
-		sb.WriteString("  for x in row {\n")
-		sb.WriteString("    flatResult = append(flatResult, x)\n")
-		sb.WriteString("  }\n}\n")
-		sb.WriteString("for x in flatResult {\n  print(x)\n}\n\n")
 		if len(c.Expect) > 0 {
-			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n", c.Name))
+			sb.WriteString("  var flatResult = []\n")
+			sb.WriteString("  for row in result {\n")
+			sb.WriteString("    for x in row {\n")
+			sb.WriteString("      flatResult = append(flatResult, x)\n")
+			sb.WriteString("    }\n  }\n")
+			sb.WriteString("  for x in flatResult {\n    print(x)\n  }\n")
+			sb.WriteString(fmt.Sprintf("  expect flatResult == %s\n", formatExpectList(c.Expect)))
+			sb.WriteString("}\n")
+		} else {
+			sb.WriteString("var flatResult = []\n")
+			sb.WriteString("for row in result {\n")
+			sb.WriteString("  for x in row {\n")
+			sb.WriteString("    flatResult = append(flatResult, x)\n")
+			sb.WriteString("  }\n}\n")
+			sb.WriteString("for x in flatResult {\n  print(x)\n}\n\n")
 		}
 		return sb.String()
 	}
