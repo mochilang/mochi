@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -26,6 +27,8 @@ type Case struct {
 	Tables   map[string]*Table
 	Query    string
 	Expect   []string
+	Hash     string
+	HashRows int
 	Comments []string
 	Updates  []string
 }
@@ -80,17 +83,21 @@ func ParseFile(path string) ([]Case, error) {
 			stmt := strings.TrimSpace(scanner.Text())
 			comments = append(comments, stmt)
 		case strings.HasPrefix(line, "query"):
-			if !scanner.Scan() {
-				break
-			}
-			q := strings.TrimSpace(scanner.Text())
-			// skip until ----
+			var parts []string
 			for scanner.Scan() {
-				if strings.TrimSpace(scanner.Text()) == "----" {
+				l := scanner.Text()
+				if strings.TrimSpace(l) == "----" {
 					break
 				}
+				parts = append(parts, strings.TrimSpace(l))
 			}
+			if len(parts) == 0 {
+				break
+			}
+			q := strings.Join(parts, " ")
 			var expect []string
+			var hash string
+			var hashRows int
 			for scanner.Scan() {
 				l := strings.TrimSpace(scanner.Text())
 				if l == "" {
@@ -98,12 +105,22 @@ func ParseFile(path string) ([]Case, error) {
 				}
 				expect = append(expect, l)
 			}
+			if len(expect) == 1 {
+				re := regexp.MustCompile(`^(\d+) values hashing to ([0-9a-f]+)$`)
+				if m := re.FindStringSubmatch(expect[0]); m != nil {
+					hashRows, _ = strconv.Atoi(m[1])
+					hash = m[2]
+					expect = nil
+				}
+			}
 			count++
 			cases = append(cases, Case{
 				Name:     fmt.Sprintf("case%d", count),
 				Tables:   cloneTables(tables),
 				Query:    q,
 				Expect:   expect,
+				Hash:     hash,
+				HashRows: hashRows,
 				Comments: comments,
 				Updates:  append([]string(nil), updates...),
 			})

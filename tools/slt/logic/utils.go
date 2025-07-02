@@ -96,6 +96,9 @@ func Fetch(repo string, files []string, force bool) error {
 		if _, err := os.Stat(local); err == nil && !force {
 			continue
 		}
+		if err := os.MkdirAll(filepath.Dir(local), 0o755); err != nil {
+			return err
+		}
 		url := repo + "/" + f
 		if err := DownloadFile(url, local); err != nil {
 			return err
@@ -131,6 +134,9 @@ func GenerateFiles(files []string, outDir string, run bool) error {
 		}
 		for _, c := range cases {
 			code := Generate(c)
+			if code == "" {
+				continue
+			}
 			srcPath := filepath.Join(testDir, c.Name+".mochi")
 			if err := os.WriteFile(srcPath, []byte(code), 0o644); err != nil {
 				return err

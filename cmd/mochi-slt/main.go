@@ -17,7 +17,7 @@ var (
 	gitCommit = ""
 )
 
-var files = []string{"evidence/slt_lang_update.test"}
+var files = []string{"evidence/slt_lang_update.test", "test/select1.test"}
 
 func fetchCmd() *cobra.Command {
 	var repo string
