@@ -1,0 +1,23 @@
+let t1 = [
+  {
+    x: 2,
+    y: "unknown",
+  },
+  {
+    x: 2,
+    y: "false",
+  },
+  {
+    x: 2,
+    y: "NULL",
+  },
+]
+
+let result = count(from row in t1
+  where row.y == "unknown"
+  select row)
+print(result)
+
+test "case8" {
+  expect result == 1
+}
