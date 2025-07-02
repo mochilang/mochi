@@ -225,18 +225,19 @@ let t1 = [
 
 /* SELECT c, d-e, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, a+b*2+c*3+d*4, e FROM t1 WHERE d NOT BETWEEN 110 AND 150 OR c BETWEEN b-2 AND d+2 OR (e>c OR e<d) ORDER BY 1,5,3,2,4 */
 let result = from row in t1
-  where (((row.d < 110 || row.d > 150) || (row.c >= row.b - 2 && row.c <= row.d + 2)) || ((row.e > row.c || row.e < row.d)))
-  order by [row.c, row.e, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.d - row.e, row.a + row.b * 2 + row.c * 3 + row.d * 4]
-  select [row.c, row.d - row.e, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.a + row.b * 2 + row.c * 3 + row.d * 4, row.e]
+  where (((row.d < 110 || row.d > 150) || (row.c >= (row.b - 2) && row.c <= (row.d + 2))) || ((row.e > row.c || row.e < row.d)))
+  order by [row.c, row.e, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.d - row.e), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+  select [row.c, (row.d - row.e), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.e]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
 test "case4" {
-  var flatResult = []
-  for row in result {
-    for x in row {
-      flatResult = append(flatResult, x)
-    }
-  }
-  for x in flatResult {
-    print(x)
-  }
   expect flatResult == [102, -2, 555, 1014, 103, 106, -1, 333, 1067, 109, 113, 4, 111, 1130, 110, 123, 2, 333, 1226, 120, 125, 2, 333, 1272, 126, 134, 1, 444, 1325, 132, 137, 1, 111, 1371, 135, 141, -4, 111, 1411, 144, 147, 2, 555, 1472, 146, 150, 2, 333, 1521, 152, 155, -1, 555, 1564, 157, 161, 2, 333, 1622, 162, 166, 4, 333, 1676, 165, 172, -2, 555, 1714, 173, 176, 1, 555, 1769, 177, 184, 3, 333, 1828, 180, 187, -4, 444, 1861, 189, 193, -2, 444, 1918, 192, 195, -1, 555, 1964, 197, 202, -1, 222, 2019, 204, 208, -2, 111, 2069, 209, 214, 2, 222, 2125, 210, 215, -2, 333, 2165, 219, 224, 1, 444, 2226, 221, 225, -1, 555, 2264, 227, 231, 3, 555, 2323, 230, 235, 1, 555, 2368, 237, 244, -1, 222, 2419, 242, 247, 2, 444, 2476, 246]
 }
+
