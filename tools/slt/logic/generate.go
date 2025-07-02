@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -123,12 +124,13 @@ func formatValue(v any) string {
 
 func detectColumnType(rows []map[string]any, name string) string {
 	t := ""
+	floatIsInt := true
 	for _, row := range rows {
 		v := row[name]
 		if v == nil {
 			continue
 		}
-		switch v.(type) {
+		switch val := v.(type) {
 		case string:
 			if t == "" || t == "string" {
 				t = "string"
@@ -136,8 +138,13 @@ func detectColumnType(rows []map[string]any, name string) string {
 				return "any"
 			}
 		case float64:
+			if val != math.Trunc(val) {
+				floatIsInt = false
+			}
 			if t == "" || t == "float" || t == "int" {
-				t = "float"
+				if t == "" {
+					t = "float"
+				}
 			} else {
 				return "any"
 			}
@@ -146,7 +153,7 @@ func detectColumnType(rows []map[string]any, name string) string {
 				t = "int"
 			} else if t != "int" {
 				if t == "float" {
-					// keep float
+					// allow ints in float column
 				} else {
 					return "any"
 				}
@@ -160,6 +167,9 @@ func detectColumnType(rows []map[string]any, name string) string {
 		default:
 			return "any"
 		}
+	}
+	if t == "float" && floatIsInt {
+		return "int"
 	}
 	if t == "" {
 		return "any"
