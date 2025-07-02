@@ -38,6 +38,10 @@ func exprToMochi(e sqlparser.Expr) string {
 		}
 	case *sqlparser.ColName:
 		return fmt.Sprintf("row[\"%s\"]", v.Name.String())
+	case *sqlparser.ParenExpr:
+		return "(" + exprToMochi(v.Expr) + ")"
+	case *sqlparser.UnaryExpr:
+		return fmt.Sprintf("%s%s", v.Operator, exprToMochi(v.Expr))
 	case *sqlparser.BinaryExpr:
 		l := exprToMochi(v.Left)
 		r := exprToMochi(v.Right)
@@ -46,21 +50,56 @@ func exprToMochi(e sqlparser.Expr) string {
 	return "null"
 }
 
+func simpleExpr(e sqlparser.Expr) bool {
+	switch v := e.(type) {
+	case *sqlparser.ColName, *sqlparser.SQLVal:
+		return true
+	case *sqlparser.ParenExpr:
+		return simpleExpr(v.Expr)
+	case *sqlparser.BinaryExpr:
+		return simpleExpr(v.Left) && simpleExpr(v.Right)
+	case *sqlparser.UnaryExpr:
+		return simpleExpr(v.Expr)
+	default:
+		return false
+	}
+}
+
 func condToMochi(where *sqlparser.Where) string {
 	if where == nil {
 		return ""
 	}
-	cmp, ok := where.Expr.(*sqlparser.ComparisonExpr)
-	if !ok {
-		return ""
+	return condExprToMochi(where.Expr)
+}
+
+func condExprToMochi(e sqlparser.Expr) string {
+	switch v := e.(type) {
+	case *sqlparser.ComparisonExpr:
+		left := exprToMochi(v.Left)
+		right := exprToMochi(v.Right)
+		op := v.Operator
+		if op == "=" {
+			op = "=="
+		}
+		return fmt.Sprintf("%s %s %s", left, op, right)
+	case *sqlparser.AndExpr:
+		l := condExprToMochi(v.Left)
+		r := condExprToMochi(v.Right)
+		if l == "" || r == "" {
+			return ""
+		}
+		return fmt.Sprintf("(%s && %s)", l, r)
+	case *sqlparser.OrExpr:
+		l := condExprToMochi(v.Left)
+		r := condExprToMochi(v.Right)
+		if l == "" || r == "" {
+			return ""
+		}
+		return fmt.Sprintf("(%s || %s)", l, r)
+	case *sqlparser.ParenExpr:
+		return condExprToMochi(v.Expr)
 	}
-	left := cmp.Left.(*sqlparser.ColName).Name.String()
-	right := exprToMochi(cmp.Right)
-	op := cmp.Operator
-	if op == "=" {
-		op = "=="
-	}
-	return fmt.Sprintf("row[\"%s\"] %s %s", left, op, right)
+	return ""
 }
 
 func generateUpdate(stmt string) string {
@@ -154,32 +193,70 @@ func Generate(c Case) string {
 		return ""
 	}
 
-	// Only support `SELECT count(*) FROM tbl WHERE ...` queries
-	if len(sel.SelectExprs) != 1 {
-		return ""
-	}
-	ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr)
-	if !ok {
-		return ""
-	}
-	fn, ok := ae.Expr.(*sqlparser.FuncExpr)
-	if !ok || !fn.Name.EqualString("count") || len(fn.Exprs) != 1 {
-		return ""
-	}
-	if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); !ok {
-		return ""
+	tblNameStr := tblName.Name.String()
+
+	// Handle SELECT count(*)
+	if len(sel.SelectExprs) == 1 {
+		if ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr); ok {
+			if fn, ok := ae.Expr.(*sqlparser.FuncExpr); ok && fn.Name.EqualString("count") && len(fn.Exprs) == 1 {
+				if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); ok {
+					cond := condToMochi(sel.Where)
+					sb.WriteString("let result = count(from row in " + tblNameStr)
+					if cond != "" {
+						sb.WriteString("\n  where " + cond)
+					}
+					sb.WriteString("\n  select row)\n")
+					sb.WriteString("print(result)\n\n")
+					if len(c.Expect) > 0 {
+						sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
+					}
+					return sb.String()
+				}
+			}
+		}
 	}
 
-	tblNameStr := tblName.Name.String()
-	cond := condToMochi(sel.Where)
-	sb.WriteString("let result = count(from row in " + tblNameStr)
-	if cond != "" {
-		sb.WriteString("\n  where " + cond)
+	// Support simple single-column selects
+	if len(sel.SelectExprs) == 1 && len(sel.OrderBy) <= 1 {
+		ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr)
+		if !ok || !simpleExpr(ae.Expr) {
+			return ""
+		}
+		if sel.Where != nil && condExprToMochi(sel.Where.Expr) == "" {
+			return ""
+		}
+		if len(sel.OrderBy) == 1 && !simpleExpr(sel.OrderBy[0].Expr) {
+			return ""
+		}
+		expr := exprToMochi(ae.Expr)
+		cond := condToMochi(sel.Where)
+		sb.WriteString("let result = from row in " + tblNameStr)
+		if cond != "" {
+			sb.WriteString("\n  where " + cond)
+		}
+		if len(sel.OrderBy) == 1 {
+			sb.WriteString("\n  order by " + exprToMochi(sel.OrderBy[0].Expr))
+		}
+		sb.WriteString("\n  select " + expr + "\n")
+		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
+		if len(c.Expect) > 0 {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, formatExpectList(c.Expect)))
+		}
+		return sb.String()
 	}
-	sb.WriteString("\n  select row)\n")
-	sb.WriteString("print(result)\n\n")
-	if len(c.Expect) > 0 {
-		sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
+
+	return ""
+}
+
+func formatExpectList(xs []string) string {
+	var sb strings.Builder
+	sb.WriteString("[")
+	for i, x := range xs {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(x)
 	}
+	sb.WriteString("]")
 	return sb.String()
 }

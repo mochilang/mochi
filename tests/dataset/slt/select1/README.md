@@ -6,9 +6,7 @@ Unsupported numeric cases:
 
 - case24
 - case44
-- case56
 - case65
-- case67
 - case76
 - case102
 - case107
@@ -68,5 +66,10 @@ Unsupported numeric cases:
 - case983
 - case989
 
-Supported cases: none
+Supported cases:
+
+- case56
+- case67
+- case123
+- case907
 
