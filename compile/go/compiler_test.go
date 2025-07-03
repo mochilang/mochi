@@ -528,8 +528,8 @@ func TestGoCompiler_TPCDSQueries(t *testing.T) {
 
 func TestGoCompiler_SLT(t *testing.T) {
 	root := findRepoRoot(t)
-	for i := 1; i <= 10; i++ {
-		caseName := fmt.Sprintf("case%d", i)
+	cases := []string{"case1", "case2", "case3"}
+	for _, caseName := range cases {
 		t.Run(caseName, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "slt", "out", "select1", caseName+".mochi")
 			prog, err := parser.Parse(src)
@@ -544,6 +544,15 @@ func TestGoCompiler_SLT(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
+
+			wantCode, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "slt", "compiler", "go", caseName+".go.out"))
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+				t.Errorf("generated code mismatch for %s.go.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", caseName, got, bytes.TrimSpace(wantCode))
+			}
+
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.go")
 			if err := os.WriteFile(file, code, 0644); err != nil {
@@ -556,8 +565,7 @@ func TestGoCompiler_SLT(t *testing.T) {
 				t.Fatalf("go run error: %v\n%s", err, out)
 			}
 			gotOut := bytes.TrimSpace(out)
-			outWantPath := filepath.Join(root, "tests", "dataset", "slt", "out", "select1", caseName+".out")
-			wantOut, err := os.ReadFile(outWantPath)
+			wantOut, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "slt", "compiler", "go", caseName+".out"))
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}

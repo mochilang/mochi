@@ -1,0 +1,583 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"mochi/runtime/data"
+	"reflect"
+	"sort"
+	"time"
+)
+
+func expect(cond bool) {
+	if !cond {
+		panic("expect failed")
+	}
+}
+
+func formatDuration(d time.Duration) string {
+	switch {
+	case d < time.Microsecond:
+		return fmt.Sprintf("%dns", d.Nanoseconds())
+	case d < time.Millisecond:
+		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
+	case d < time.Second:
+		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
+	default:
+		return fmt.Sprintf("%.2fs", d.Seconds())
+	}
+}
+
+func printTestStart(name string) {
+	fmt.Printf("   test %-30s ...", name)
+}
+
+func printTestPass(d time.Duration) {
+	fmt.Printf(" ok (%s)\n", formatDuration(d))
+}
+
+func printTestFail(err error, d time.Duration) {
+	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
+}
+
+type t1Row struct {
+	A int `json:"a"`
+	B int `json:"b"`
+	C int `json:"c"`
+	D int `json:"d"`
+	E int `json:"e"`
+}
+
+func test_case3() {
+	expect(_equal(flatResult, []int{
+		1680,
+		222,
+		1,
+		112,
+		674,
+		1826,
+		222,
+		1,
+		122,
+		738,
+		1902,
+		222,
+		4,
+		127,
+		760,
+		1985,
+		333,
+		4,
+		132,
+		793,
+		2046,
+		222,
+		2,
+		137,
+		827,
+		2202,
+		444,
+		2,
+		147,
+		880,
+		2281,
+		333,
+		1,
+		152,
+		905,
+		2432,
+		444,
+		1,
+		162,
+		966,
+		2501,
+		333,
+		1,
+		167,
+		1000,
+		2654,
+		444,
+		1,
+		177,
+		1057,
+		2728,
+		333,
+		3,
+		182,
+		1096,
+		3175,
+		333,
+		3,
+		212,
+		1277,
+		3331,
+		222,
+		1,
+		222,
+		1338,
+		3473,
+		333,
+		1,
+		232,
+		1391,
+		3553,
+		444,
+		1,
+		237,
+		1416,
+		3706,
+		111,
+		2,
+		247,
+		1484,
+	}))
+}
+
+var t1 []t1Row
+var result [][]int
+var flatResult []any
+
+func main() {
+	failures := 0
+	t1 = []t1Row{
+		t1Row{A: 104, B: 100, C: 102, D: 101, E: 103},
+		t1Row{A: 107, B: 105, C: 106, D: 108, E: 109},
+		t1Row{A: 111, B: 112, C: 113, D: 114, E: 110},
+		t1Row{A: 115, B: 118, C: 119, D: 116, E: 117},
+		t1Row{A: 121, B: 124, C: 123, D: 122, E: 120},
+		t1Row{A: 127, B: 129, C: 125, D: 128, E: 126},
+		t1Row{A: 131, B: 130, C: 134, D: 133, E: 132},
+		t1Row{A: 138, B: 139, C: 137, D: 136, E: 135},
+		t1Row{A: 142, B: 143, C: 141, D: 140, E: 144},
+		t1Row{A: 149, B: 145, C: 147, D: 148, E: 146},
+		t1Row{A: 153, B: 151, C: 150, D: 154, E: 152},
+		t1Row{A: 159, B: 158, C: 155, D: 156, E: 157},
+		t1Row{A: 163, B: 160, C: 161, D: 164, E: 162},
+		t1Row{A: 168, B: 167, C: 166, D: 169, E: 165},
+		t1Row{A: 174, B: 170, C: 172, D: 171, E: 173},
+		t1Row{A: 179, B: 175, C: 176, D: 178, E: 177},
+		t1Row{A: 182, B: 181, C: 184, D: 183, E: 180},
+		t1Row{A: 188, B: 186, C: 187, D: 185, E: 189},
+		t1Row{A: 191, B: 194, C: 193, D: 190, E: 192},
+		t1Row{A: 199, B: 198, C: 195, D: 196, E: 197},
+		t1Row{A: 201, B: 200, C: 202, D: 203, E: 204},
+		t1Row{A: 205, B: 206, C: 208, D: 207, E: 209},
+		t1Row{A: 213, B: 211, C: 214, D: 212, E: 210},
+		t1Row{A: 216, B: 218, C: 215, D: 217, E: 219},
+		t1Row{A: 220, B: 223, C: 224, D: 222, E: 221},
+		t1Row{A: 229, B: 228, C: 225, D: 226, E: 227},
+		t1Row{A: 234, B: 232, C: 231, D: 233, E: 230},
+		t1Row{A: 239, B: 236, C: 235, D: 238, E: 237},
+		t1Row{A: 243, B: 240, C: 244, D: 241, E: 242},
+		t1Row{A: 245, B: 249, C: 247, D: 248, E: 246},
+	}
+	result = func() [][]int {
+		src := _toAnySlice(t1)
+		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
+			row := _cast[t1Row](_a[0])
+			_ = row
+			return []int{
+				((((row.A + (row.B * 2)) + (row.C * 3)) + (row.D * 4)) + (row.E * 5)),
+				(func() int {
+					if row.A < (row.B - 3) {
+						return 111
+					} else {
+						return (func() int {
+							if row.A <= row.B {
+								return 222
+							} else {
+								return (func() int {
+									if row.A < (row.B + 3) {
+										return 333
+									} else {
+										return 444
+									}
+								}())
+							}
+						}())
+					}
+				}()),
+				(func() int {
+					if (row.B - row.C) < 0 {
+						return -(row.B - row.C)
+					} else {
+						return (row.B - row.C)
+					}
+				}()),
+				(((((row.A + row.B) + row.C) + row.D) + row.E) / 5),
+				((row.A + (row.B * 2)) + (row.C * 3)),
+			}
+		}, where: func(_a ...any) bool {
+			row := _cast[t1Row](_a[0])
+			_ = row
+			return ((((row.E > row.C) || (row.E < row.D)) && (row.D > row.E)) && (_count(_toAnySlice(func() []t1Row {
+				_res := []t1Row{}
+				for _, x := range t1 {
+					if x.B < row.B {
+						if x.B < row.B {
+							_res = append(_res, x)
+						}
+					}
+				}
+				return _res
+			}())) > 0))
+		}, sortKey: func(_a ...any) any {
+			row := _cast[t1Row](_a[0])
+			_ = row
+			return []int{
+				(((((row.A + row.B) + row.C) + row.D) + row.E) / 5),
+				(func() int {
+					if row.A < (row.B - 3) {
+						return 111
+					} else {
+						return (func() int {
+							if row.A <= row.B {
+								return 222
+							} else {
+								return (func() int {
+									if row.A < (row.B + 3) {
+										return 333
+									} else {
+										return 444
+									}
+								}())
+							}
+						}())
+					}
+				}()),
+				((((row.A + (row.B * 2)) + (row.C * 3)) + (row.D * 4)) + (row.E * 5)),
+				(func() int {
+					if (row.B - row.C) < 0 {
+						return -(row.B - row.C)
+					} else {
+						return (row.B - row.C)
+					}
+				}()),
+				((row.A + (row.B * 2)) + (row.C * 3)),
+			}
+		}, skip: -1, take: -1})
+		out := make([][]int, len(resAny))
+		for i, v := range resAny {
+			out[i] = _cast[[]int](v)
+		}
+		return out
+	}()
+	flatResult = []any{}
+	for _, row := range result {
+		for _, x := range row {
+			flatResult = append(flatResult, x)
+		}
+	}
+	for _, x := range flatResult {
+		fmt.Println(x)
+	}
+	{
+		printTestStart("case3")
+		start := time.Now()
+		var failed error
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					failed = fmt.Errorf("%v", r)
+				}
+			}()
+			test_case3()
+		}()
+		if failed != nil {
+			failures++
+			printTestFail(failed, time.Since(start))
+		} else {
+			printTestPass(time.Since(start))
+		}
+	}
+	if failures > 0 {
+		fmt.Printf("\n[FAIL] %d test(s) failed.\n", failures)
+	}
+}
+
+func _cast[T any](v any) T {
+	if tv, ok := v.(T); ok {
+		return tv
+	}
+	var out T
+	switch any(out).(type) {
+	case int:
+		switch vv := v.(type) {
+		case int:
+			return any(vv).(T)
+		case float64:
+			return any(int(vv)).(T)
+		case float32:
+			return any(int(vv)).(T)
+		}
+	case float64:
+		switch vv := v.(type) {
+		case int:
+			return any(float64(vv)).(T)
+		case float64:
+			return any(vv).(T)
+		case float32:
+			return any(float64(vv)).(T)
+		}
+	case float32:
+		switch vv := v.(type) {
+		case int:
+			return any(float32(vv)).(T)
+		case float64:
+			return any(float32(vv)).(T)
+		case float32:
+			return any(vv).(T)
+		}
+	}
+	if m, ok := v.(map[any]any); ok {
+		v = _convertMapAny(m)
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(data, &out); err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func _convertMapAny(m map[any]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		key := fmt.Sprint(k)
+		if sub, ok := v.(map[any]any); ok {
+			out[key] = _convertMapAny(sub)
+		} else {
+			out[key] = v
+		}
+	}
+	return out
+}
+
+func _count(v any) int {
+	if g, ok := v.(*data.Group); ok {
+		return len(g.Items)
+	}
+	switch s := v.(type) {
+	case []any:
+		return len(s)
+	case []int:
+		return len(s)
+	case []float64:
+		return len(s)
+	case []string:
+		return len(s)
+	case []bool:
+		return len(s)
+	case []map[string]any:
+		return len(s)
+	case map[string]any:
+		return len(s)
+	case string:
+		return len([]rune(s))
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+		return rv.Len()
+	}
+	panic("count() expects list or group")
+}
+
+func _equal(a, b any) bool {
+	av := reflect.ValueOf(a)
+	bv := reflect.ValueOf(b)
+	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for i := 0; i < av.Len(); i++ {
+			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
+		if av.Len() != bv.Len() {
+			return false
+		}
+		for _, k := range av.MapKeys() {
+			bvVal := bv.MapIndex(k)
+			if !bvVal.IsValid() {
+				return false
+			}
+			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
+				return false
+			}
+		}
+		return true
+	}
+	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
+		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
+		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
+	}
+	return reflect.DeepEqual(a, b)
+}
+
+type _joinSpec struct {
+	items []any
+	on    func(...any) bool
+	left  bool
+	right bool
+}
+type _queryOpts struct {
+	selectFn func(...any) any
+	where    func(...any) bool
+	sortKey  func(...any) any
+	skip     int
+	take     int
+}
+
+func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
+	items := make([][]any, len(src))
+	for i, v := range src {
+		items[i] = []any{v}
+	}
+	for _, j := range joins {
+		joined := [][]any{}
+		if j.right && j.left {
+			matched := make([]bool, len(j.items))
+			for _, left := range items {
+				m := false
+				for ri, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					matched[ri] = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+			for ri, right := range j.items {
+				if !matched[ri] {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else if j.right {
+			for _, right := range j.items {
+				m := false
+				for _, left := range items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if !m {
+					undef := make([]any, len(items[0]))
+					joined = append(joined, append(undef, right))
+				}
+			}
+		} else {
+			for _, left := range items {
+				m := false
+				for _, right := range j.items {
+					keep := true
+					if j.on != nil {
+						args := append(append([]any(nil), left...), right)
+						keep = j.on(args...)
+					}
+					if !keep {
+						continue
+					}
+					m = true
+					joined = append(joined, append(append([]any(nil), left...), right))
+				}
+				if j.left && !m {
+					joined = append(joined, append(append([]any(nil), left...), nil))
+				}
+			}
+		}
+		items = joined
+	}
+	if opts.where != nil {
+		filtered := [][]any{}
+		for _, r := range items {
+			if opts.where(r...) {
+				filtered = append(filtered, r)
+			}
+		}
+		items = filtered
+	}
+	if opts.sortKey != nil {
+		type pair struct {
+			item []any
+			key  any
+		}
+		pairs := make([]pair, len(items))
+		for i, it := range items {
+			pairs[i] = pair{it, opts.sortKey(it...)}
+		}
+		sort.Slice(pairs, func(i, j int) bool {
+			a, b := pairs[i].key, pairs[j].key
+			switch av := a.(type) {
+			case int:
+				switch bv := b.(type) {
+				case int:
+					return av < bv
+				case float64:
+					return float64(av) < bv
+				}
+			case float64:
+				switch bv := b.(type) {
+				case int:
+					return av < float64(bv)
+				case float64:
+					return av < bv
+				}
+			case string:
+				bs, _ := b.(string)
+				return av < bs
+			}
+			return fmt.Sprint(a) < fmt.Sprint(b)
+		})
+		for i, p := range pairs {
+			items[i] = p.item
+		}
+	}
+	if opts.skip >= 0 {
+		if opts.skip < len(items) {
+			items = items[opts.skip:]
+		} else {
+			items = [][]any{}
+		}
+	}
+	if opts.take >= 0 {
+		if opts.take < len(items) {
+			items = items[:opts.take]
+		}
+	}
+	res := make([]any, len(items))
+	for i, r := range items {
+		res[i] = opts.selectFn(r...)
+	}
+	return res
+}
+
+func _toAnySlice[T any](s []T) []any {
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
+	}
+	return out
+}
