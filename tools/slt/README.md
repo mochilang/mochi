@@ -26,6 +26,9 @@ go run ./cmd/mochi-slt fetch --files evidence/slt_lang_update.test,test/select1.
 # Convert tests to Mochi programs and execute them
 go run ./cmd/mochi-slt gen --run --out tests/dataset/slt/out
 
+# Generate at most 1000 cases from select3.test
+go run ./cmd/mochi-slt gen --files select3.test --max 1000 --run
+
 # Generate a specific range of cases
 go run ./cmd/mochi-slt gen --cases case5-case6 --files select1.test --run
 go run ./cmd/mochi-slt gen --cases case5-case6 --files select2.test --run

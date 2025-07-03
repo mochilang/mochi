@@ -48,6 +48,7 @@ func genCmd() *cobra.Command {
 	var fileList []string
 	var start int
 	var end int
+	var max int
 	var caseRange string
 	var singleCase string
 	cmd := &cobra.Command{
@@ -82,7 +83,7 @@ func genCmd() *cobra.Command {
 					}
 				}
 			}
-			err := logic.GenerateFiles(files, outDir, run, start, end)
+			err := logic.GenerateFiles(files, outDir, run, start, end, max)
 			if err == nil && singleCase != "" && outDir != "" {
 				fmt.Fprintf(cmd.OutOrStdout(), "generated %s case %s\n", outDir, singleCase)
 			}
@@ -96,6 +97,7 @@ func genCmd() *cobra.Command {
 	cmd.Flags().IntVar(&end, "end", 0, "last case to generate (inclusive)")
 	cmd.Flags().StringVar(&caseRange, "cases", "", "case range, e.g. case5-case10")
 	cmd.Flags().StringVar(&singleCase, "case", "", "single case to generate")
+	cmd.Flags().IntVar(&max, "max", 0, "maximum number of cases to generate")
 	return cmd
 }
 

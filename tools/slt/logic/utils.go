@@ -255,7 +255,7 @@ func Fetch(repo string, files []string, force bool) error {
 // Generate reads SLT files and converts them into Mochi programs.
 // If run is true, the generated program is executed and the output
 // stored next to the source with a .out extension.
-func GenerateFiles(files []string, outDir string, run bool, start, end int) error {
+func GenerateFiles(files []string, outDir string, run bool, start, end, max int) error {
 	root, err := FindRepoRoot()
 	if err != nil {
 		return err
@@ -278,12 +278,16 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 		if err := os.MkdirAll(testDir, 0o755); err != nil {
 			return err
 		}
+		generated := 0
 		for i, c := range cases {
 			idx := i + 1
 			if start > 0 && idx < start {
 				continue
 			}
 			if end > 0 && idx > end {
+				break
+			}
+			if max > 0 && generated >= max {
 				break
 			}
 			exp, _, err := EvalCase(c)
@@ -327,6 +331,7 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 					fmt.Printf("ran %s\n", srcPath)
 				}
 			}
+			generated++
 		}
 	}
 	return nil
