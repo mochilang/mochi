@@ -16,12 +16,17 @@ func main (regs=91)
   // n.name.contains("Downey") &&
   Const        r7, "name"
   Const        r8, "contains"
+  // n.name.contains("Robert") &&
+  Const        r7, "name"
+  Const        r8, "contains"
   // t.production_year > 2010
   Const        r9, "production_year"
   // movie_keyword: k.keyword,
   Const        r10, "movie_keyword"
+  Const        r6, "keyword"
   // actor_name: n.name,
   Const        r11, "actor_name"
+  Const        r7, "name"
   // marvel_movie: t.title
   Const        r12, "marvel_movie"
   Const        r13, "title"
@@ -30,6 +35,7 @@ func main (regs=91)
   Len          r15, r14
   Const        r17, 0
   Move         r16, r17
+L11:
   LessInt      r18, r16, r15
   JumpIfFalse  r18, L0
   Index        r19, r14, r16
@@ -38,29 +44,37 @@ func main (regs=91)
   IterPrep     r21, r2
   Len          r22, r21
   Const        r23, "movie_id"
+  Const        r23, "movie_id"
   // k.keyword == "marvel-cinematic-universe" &&
   Const        r6, "keyword"
   // n.name.contains("Downey") &&
+  Const        r7, "name"
+  Const        r8, "contains"
+  // n.name.contains("Robert") &&
   Const        r7, "name"
   Const        r8, "contains"
   // t.production_year > 2010
   Const        r9, "production_year"
   // movie_keyword: k.keyword,
   Const        r10, "movie_keyword"
+  Const        r6, "keyword"
   // actor_name: n.name,
   Const        r11, "actor_name"
+  Const        r7, "name"
   // marvel_movie: t.title
   Const        r12, "marvel_movie"
   Const        r13, "title"
   // join mk in movie_keyword on ci.movie_id == mk.movie_id
   Const        r17, 0
   Move         r24, r17
+L10:
   LessInt      r25, r24, r22
   JumpIfFalse  r25, L1
   Index        r26, r21, r24
   Move         r27, r26
   Const        r23, "movie_id"
   Index        r28, r20, r23
+  Const        r23, "movie_id"
   Index        r29, r27, r23
   Equal        r30, r28, r29
   JumpIfFalse  r30, L2
@@ -74,18 +88,24 @@ func main (regs=91)
   // n.name.contains("Downey") &&
   Const        r7, "name"
   Const        r8, "contains"
+  // n.name.contains("Robert") &&
+  Const        r7, "name"
+  Const        r8, "contains"
   // t.production_year > 2010
   Const        r9, "production_year"
   // movie_keyword: k.keyword,
   Const        r10, "movie_keyword"
+  Const        r6, "keyword"
   // actor_name: n.name,
   Const        r11, "actor_name"
+  Const        r7, "name"
   // marvel_movie: t.title
   Const        r12, "marvel_movie"
   Const        r13, "title"
   // join k in keyword on mk.keyword_id == k.id
   Const        r17, 0
   Move         r35, r17
+L9:
   LessInt      r36, r35, r32
   JumpIfFalse  r36, L2
   Index        r37, r31, r35
@@ -106,18 +126,24 @@ func main (regs=91)
   // n.name.contains("Downey") &&
   Const        r7, "name"
   Const        r8, "contains"
+  // n.name.contains("Robert") &&
+  Const        r7, "name"
+  Const        r8, "contains"
   // t.production_year > 2010
   Const        r9, "production_year"
   // movie_keyword: k.keyword,
   Const        r10, "movie_keyword"
+  Const        r6, "keyword"
   // actor_name: n.name,
   Const        r11, "actor_name"
+  Const        r7, "name"
   // marvel_movie: t.title
   Const        r12, "marvel_movie"
   Const        r13, "title"
   // join n in name on ci.person_id == n.id
   Const        r17, 0
   Move         r45, r17
+L8:
   LessInt      r46, r45, r43
   JumpIfFalse  r46, L3
   Index        r47, r42, r45
@@ -138,19 +164,24 @@ func main (regs=91)
   // n.name.contains("Downey") &&
   Const        r7, "name"
   Const        r8, "contains"
+  // n.name.contains("Robert") &&
+  Const        r7, "name"
+  Const        r8, "contains"
   // t.production_year > 2010
   Const        r9, "production_year"
-L8:
   // movie_keyword: k.keyword,
   Const        r10, "movie_keyword"
+  Const        r6, "keyword"
   // actor_name: n.name,
   Const        r11, "actor_name"
+  Const        r7, "name"
   // marvel_movie: t.title
   Const        r12, "marvel_movie"
   Const        r13, "title"
   // join t in title on ci.movie_id == t.id
   Const        r17, 0
   Move         r54, r17
+L7:
   LessInt      r55, r54, r53
   JumpIfFalse  r55, L4
   Index        r56, r52, r54
@@ -176,7 +207,6 @@ L8:
   JumpIfFalse  r67, L6
   Const        r7, "name"
   Index        r68, r48, r7
-L7:
   // n.name.contains("Downey") &&
   Const        r69, "Downey"
   In           r70, r69, r68
@@ -194,6 +224,7 @@ L7:
   // n.name.contains("Robert") &&
   JumpIfFalse  r67, L6
   Move         r67, r64
+L6:
   // k.keyword == "marvel-cinematic-universe" &&
   JumpIfFalse  r67, L5
   // movie_keyword: k.keyword,
@@ -222,12 +253,36 @@ L7:
   // from ci in cast_info
   Append       r87, r5, r86
   Move         r5, r87
+L5:
   // join t in title on ci.movie_id == t.id
   Const        r88, 1
   Add          r54, r54, r88
   Jump         L7
-L6:
+L4:
   // join n in name on ci.person_id == n.id
   Const        r88, 1
   Add          r45, r45, r88
   Jump         L8
+L3:
+  // join k in keyword on mk.keyword_id == k.id
+  Const        r88, 1
+  Add          r35, r35, r88
+  Jump         L9
+L2:
+  // join mk in movie_keyword on ci.movie_id == mk.movie_id
+  Const        r88, 1
+  Add          r24, r24, r88
+  Jump         L10
+L1:
+  // from ci in cast_info
+  Const        r88, 1
+  AddInt       r16, r16, r88
+  Jump         L11
+L0:
+  // json(result)
+  JSON         r5
+  // expect result == [
+  Const        r89, [{"actor_name": "Downey Robert Jr.", "marvel_movie": "Iron Man 3", "movie_keyword": "marvel-cinematic-universe"}]
+  Equal        r90, r5, r89
+  Expect       r90
+  Return       r0
