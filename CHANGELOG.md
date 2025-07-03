@@ -1,5 +1,11 @@
 # 📦 CHANGELOG.md
 
+## [0.10.13] – 2025-07-03T18:00:00+07:00
+
+### Added
+
+* SQL Logic Test generator covers select2 cases 1–1000
+
 ## [0.10.12] – 2025-07-03T10:13:46+07:00
 
 ### Added
