@@ -224,9 +224,8 @@ let t1 = [
 ]
 
 /* SELECT c, a-b FROM t1 WHERE a>b */
-let result = from row in t1
+var result = from row in t1
   where row.a > row.b
-  order by [row.c, (row.a - row.b)]
   select [row.c, (row.a - row.b)]
 var flatResult = []
 for row in result {
@@ -234,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case575" {
-  expect flatResult == [106, 2, 134, 1, 147, 4, 150, 2, 155, 1, 161, 3, 166, 1, 172, 4, 176, 4, 184, 1, 187, 2, 195, 1, 214, 2, 225, 1, 231, 2, null, 3, 244, 3]
+  expect flatResult == [1, 1, 1, 1, 1, 1, 106, 134, 147, 150, 155, 161, 166, 172, 176, 184, 187, 195, 2, 2, 2, 2, 2, 214, 225, 231, 244, 3, 3, 3, 4, 4, 4, null]
 }
 

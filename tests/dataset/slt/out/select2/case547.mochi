@@ -224,9 +224,8 @@ let t1 = [
 ]
 
 /* SELECT a+b*2, a-b FROM t1 WHERE a>b AND d>e AND (a>b-2 AND a<b+2) */
-let result = from row in t1
+var result = from row in t1
   where ((row.a > row.b && row.d > row.e) && ((row.a > (row.b - 2) && row.a < (row.b + 2))))
-  order by [(row.a + (row.b * 2)), (row.a - row.b)]
   select [(row.a + (row.b * 2)), (row.a - row.b)]
 var flatResult = []
 for row in result {
@@ -234,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case547" {
-  expect flatResult == [391, 1, 544, 1]
+  expect flatResult == [1, 1, 391, 544]
 }
 

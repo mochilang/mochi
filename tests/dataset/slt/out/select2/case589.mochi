@@ -224,10 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4+e*5, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3+d*4, e, d FROM t1 */
-let result = from row in t1
-  order by [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.e, row.d]
+var result = from row in t1
   select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.e, row.d]
@@ -237,10 +234,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case589" {
-  expect flatResult == [null, 0, null, null, 101, 1612, 0, 1067, 109, 108, null, 0, null, 110, 114, null, 0, null, 117, 116, null, 0, 1226, null, 122, 1902, 0, 1272, 126, 128, 1985, 0, 1325, 132, 133, 2046, 0, 1371, 135, 136, 2131, 0, 1411, 144, 140, null, 0, null, 146, null, null, 0, null, null, null, null, 0, null, 157, null, 2432, 0, 1622, 162, 164, null, 0, null, 165, null, 2579, 0, 1714, 173, 171, null, 0, null, 177, null, 2728, 0, 1828, 180, 183, 2806, 0, 1861, 189, 185, 2878, 0, 1918, 192, 190, 2949, 0, 1964, 197, 196, null, 0, null, 204, 203, null, 0, null, null, 207, 3175, 0, 2125, 210, 212, 3260, 0, 2165, 219, 217, 3331, 0, 2226, 221, 222, 3399, 0, 2264, 227, 226, 3473, 0, 2323, 230, 233, null, 0, null, 237, 238, null, 0, null, null, null, 3706, 0, 2476, 246, 248]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 101, 1067, 108, 109, 110, 114, 116, 117, 122, 1226, 126, 1272, 128, 132, 1325, 133, 135, 136, 1371, 140, 1411, 144, 146, 157, 1612, 162, 1622, 164, 165, 171, 1714, 173, 177, 180, 1828, 183, 185, 1861, 189, 190, 1902, 1918, 192, 196, 1964, 197, 1985, 203, 204, 2046, 207, 210, 212, 2125, 2131, 2165, 217, 219, 221, 222, 2226, 226, 2264, 227, 230, 2323, 233, 237, 238, 2432, 246, 2476, 248, 2579, 2728, 2806, 2878, 2949, 3175, 3260, 3331, 3399, 3473, 3706, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

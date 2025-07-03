@@ -224,11 +224,10 @@ let t1 = [
 ]
 
 /* SELECT abs(a), c, abs(b-c), b-c FROM t1 WHERE c BETWEEN b-2 AND d+2 OR c>d OR EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) */
-let result = from row in t1
+var result = from row in t1
   where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || row.c > row.d) || count(from x in t1
   where x.b < row.b
   select x) > 0)
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), row.c, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.b - row.c)]
   select [(if row.a < 0 { -(row.a) } else { row.a }), row.c, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.b - row.c)]
 var flatResult = []
 for row in result {
@@ -236,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case531" {
-  expect flatResult == [104, 102, null, null, 107, 106, 1, -1, null, 113, 1, -1, 115, 119, null, null, 121, 123, 1, 1, 127, 125, 4, 4, 131, 134, 4, -4, 138, 137, 2, 2, 142, 141, 2, 2, 149, 147, 2, -2, 153, 150, 1, 1, 159, 155, 3, 3, 163, 161, 1, -1, 168, 166, 1, 1, 174, 172, 2, -2, 179, 176, 1, -1, 182, 184, 3, -3, 188, 187, 1, -1, 191, 193, 1, 1, 199, 195, 3, 3, null, 208, 2, -2, 213, 214, 3, -3, 216, 215, 3, 3, 220, 224, 1, -1, 229, 225, 3, 3, 234, 231, 1, 1, 239, null, null, null, 243, 244, 4, -4, 245, 247, 2, 2]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -2, -2, -2, -3, -3, -4, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 102, 104, 106, 107, 113, 115, 119, 121, 123, 125, 127, 131, 134, 137, 138, 141, 142, 147, 149, 150, 153, 155, 159, 161, 163, 166, 168, 172, 174, 176, 179, 182, 184, 187, 188, 191, 193, 195, 199, 2, 2, 2, 2, 2, 2, 2, 2, 2, 208, 213, 214, 215, 216, 220, 224, 225, 229, 231, 234, 239, 243, 244, 245, 247, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, null, null, null, null, null, null, null, null, null]
 }
 
