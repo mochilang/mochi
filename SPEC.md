@@ -269,6 +269,14 @@ value conforms to the target type and returns the converted value.
 let todo = fetch "https://example.com/todo" as Todo
 ```
 
+#### If Expressions
+
+`if` can be used as an expression with a concise `then`/`else` form.
+
+```mochi
+let msg = if x > 0 then "positive" else "non-positive"
+```
+
 #### Match Expressions
 
 `match` evaluates patterns in order and yields the corresponding result. `_` matches any value.
@@ -613,8 +621,9 @@ Term         = Factor { ("+" | "-") Factor } .
 Factor       = Unary { ("*" | "/") Unary } .
 Unary        = { "-" | "!" } PostfixExpr .
 PostfixExpr  = Primary { CallOp | IndexOp | CastOp | FieldOp } .
-Primary      = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral | MapLiteral | MatchExpr | GenerateExpr | FetchExpr | LoadExpr | QueryExpr | Literal | Identifier | "(" Expression ")" .
+Primary      = FunExpr | CallExpr | SelectorExpr | StructLiteral | ListLiteral | MapLiteral | IfExpr | MatchExpr | GenerateExpr | FetchExpr | LoadExpr | QueryExpr | Literal | Identifier | "(" Expression ")" .
 FunExpr       = "fun" "(" [ ParamList ] ")" [ ":" TypeRef ] ("=>" Expression | Block) .
+IfExpr        = "if" Expression ("then" Expression | Block) [ "else" (IfExpr | Expression | Block) ] .
 CallExpr      = Identifier "(" [ Expression { "," Expression } ] ")" .
 SelectorExpr  = Identifier { "." Identifier } .
 ListLiteral   = "[" [ Expression { "," Expression } [ "," ] ] "]" .

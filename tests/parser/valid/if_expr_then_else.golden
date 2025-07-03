@@ -1,0 +1,10 @@
+(program
+  (let x (int 12))
+  (let msg
+    (if_expr
+      (binary > (selector x) (int 10))
+      (string yes)
+      (string no)
+    )
+  )
+)
