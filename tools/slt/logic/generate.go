@@ -343,29 +343,25 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			return "any"
 		}
 	}
-	if t == "float" && floatIsInt {
-		t = "int"
-	}
+        if t == "float" && floatIsInt {
+                t = "int"
+        }
 
-	if hasNull {
-		if t == "" {
-			return "any"
-		}
-		return t
-	}
+        if boolLike && (seenZero || seenOne || seenNegOne) {
+                // Treat integer columns that only contain boolean like values
+                // as booleans even when NULLs are present.
+                return "bool"
+        }
 
-	if t == "int" && boolLike && (seenZero || seenOne || seenNegOne) {
-		return "bool"
-	}
+        if t == "" {
+                if hasNull {
+                        return "any"
+                }
+                return "any"
+        }
 
-	if t == "" {
-		if boolLike && (seenZero || seenOne || seenNegOne) {
-			return "bool"
-		}
-		return "any"
-	}
-
-	return t
+        // Preserve the detected type when NULLs appear in the column.
+        return t
 }
 
 func exprToMochi(e sqlparser.Expr, subs map[string]string) string {

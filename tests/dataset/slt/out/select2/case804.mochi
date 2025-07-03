@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), c-d, (a+b+c+d+e)/5, abs(a) FROM t1 WHERE b IS NOT NULL AND (a>b-2 AND a<b+2) */
-let result = from row in t1
+var result = from row in t1
   where (row.b != null && ((row.a > (row.b - 2) && row.a < (row.b + 2))))
   select [count(from x in t1
   where x.b < row.b
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case804" {
-  expect flatResult == [4, 1, 132, 131, 5, 1, 137, 138, 6, 1, 142, 142, 9, null, null, 159, 11, null, null, 168, 14, 1, 182, 182, 17, -1, 197, 199, 22, -1, 227, 229]
+  expect flatResult == [-1, -1, 1, 1, 1, 1, 11, 131, 132, 137, 138, 14, 142, 142, 159, 168, 17, 182, 182, 197, 199, 22, 227, 229, 4, 5, 6, 9, null, null, null, null]
 }
 

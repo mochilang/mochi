@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, a-b, b-c, c-d, abs(b-c), (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) AND d>e AND a>b */
-let result = from row in t1
+var result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 && row.d > row.e) && row.a > row.b)
@@ -237,10 +237,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case850" {
-  expect flatResult == [444, 1, -4, 1, 4, 0, 333, 3, -1, -3, 1, 0, 333, 1, -3, 1, 3, 0, 222, 2, -3, 2, 3, 0, 555, 2, 1, -2, 1, 0, 555, 3, null, null, null, 0]
+  expect flatResult == [-1, -2, -3, -3, -3, -4, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 222, 3, 3, 3, 3, 333, 333, 4, 444, 555, 555, null, null, null]
 }
 
