@@ -236,3 +236,6 @@ for x in result {
   print(x)
 }
 
+test "case29" {
+  expect result == []
+}
