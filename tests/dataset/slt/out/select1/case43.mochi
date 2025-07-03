@@ -227,17 +227,17 @@ let t1 = [
 let result = from row in t1
   where (count(from x in t1
   where x.b < row.b
-  select x) > 0 || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
+  select x) > 0 || ((row.a > (row.b - 2.0) && row.a < (row.b + 2.0))))
   order by [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (row.a + (row.b * 2)), (row.d - row.e), count(from x in t1
+  select x), (row.a + (row.b + row.b)), (row.d - row.e), count(from x in t1
   where x.b < row.b
-  select x), row.b, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
-  select [(if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
+  select x), row.b, (if (row.a + 1.0) == row.b { 111.0 } else { (if (row.a + 1.0) == row.c { 222.0 } else { (if (row.a + 1.0) == row.d { 333.0 } else { (if (row.a + 1.0) == row.e { 444.0 } else { 555.0 }) }) }) })]
+  select [(if (row.a + 1.0) == row.b { 111.0 } else { (if (row.a + 1.0) == row.c { 222.0 } else { (if (row.a + 1.0) == row.d { 333.0 } else { (if (row.a + 1.0) == row.e { 444.0 } else { 555.0 }) }) }) }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.d - row.e), row.b, count(from x in t1
   where x.b < row.b
-  select x), (row.a + (row.b * 2))]
+  select x), (row.a + (row.b + row.b))]
 var flatResult = []
 for row in result {
   for x in row {

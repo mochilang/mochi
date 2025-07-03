@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT d-e, abs(a), b, c-d, a+b*2+c*3, abs(b-c), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 WHERE (e>c OR e<d) AND d>e AND c>d ORDER BY 1,3,7,5,2,6,4 */
 let result = from row in t1
   where ((((row.e > row.c || row.e < row.d)) && row.d > row.e) && row.c > row.d)
-  order by [(row.d - row.e), row.b, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.c - row.d)]
-  select [(row.d - row.e), (if row.a < 0 { -(row.a) } else { row.a }), row.b, (row.c - row.d), ((row.a + (row.b * 2)) + (row.c * 3)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+  order by [(row.d - row.e), row.b, (if row.a < (row.b - 3.0) { 111.0 } else { (if row.a <= row.b { 222.0 } else { (if row.a < (row.b + 3.0) { 333.0 } else { 444.0 }) }) }), ((row.a + (row.b + row.b)) + (row.c * 3.0)), (if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.c - row.d)]
+  select [(row.d - row.e), (if row.a < 0 { -(row.a) } else { row.a }), row.b, (row.c - row.d), ((row.a + (row.b + row.b)) + (row.c * 3.0)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < (row.b - 3.0) { 111.0 } else { (if row.a <= row.b { 222.0 } else { (if row.a < (row.b + 3.0) { 333.0 } else { 444.0 }) }) })]
 var flatResult = []
 for row in result {
   for x in row {

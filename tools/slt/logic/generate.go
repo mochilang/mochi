@@ -174,35 +174,27 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			}
 
 			clean := strings.TrimPrefix(strings.TrimPrefix(sv, "+"), "-")
-			if clean == "0" || clean == "1" || clean == "0.0" || clean == "1.0" {
-				if t == "" {
-					t = "int"
-				}
-				if clean != "0" && clean != "1" && clean != "0.0" && clean != "1.0" {
-					boolLike = false
-				}
-				continue
-			}
-
-			if _, err := strconv.Atoi(sv); err == nil {
-				if t == "" {
-					t = "int"
-				} else if t == "int" {
-					// keep int
-				} else if t == "float" {
-					// keep float
+			if f, err := strconv.ParseFloat(clean, 64); err == nil {
+				if f == math.Trunc(f) {
+					if t == "" {
+						t = "int"
+					}
+					if f != 0 && f != 1 {
+						boolLike = false
+					}
+					if strings.ContainsRune(clean, '.') {
+						floatIsInt = floatIsInt && f == math.Trunc(f)
+					}
 				} else {
-					return "any"
-				}
-				// numeric string
-				continue
-			}
-
-			if _, err := strconv.ParseFloat(sv, 64); err == nil {
-				if t == "" || t == "float" || t == "int" {
-					t = "float"
-				} else {
-					return "any"
+					if t == "" || t == "float" || t == "int" {
+						t = "float"
+					} else {
+						return "any"
+					}
+					if f != 0 && f != 1 {
+						boolLike = false
+					}
+					floatIsInt = false
 				}
 				continue
 			}
