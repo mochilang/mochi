@@ -173,7 +173,7 @@ func EvalCase(c Case) ([]string, string, error) {
 			return nil, "", err
 		}
 		for i, v := range vals {
-			s := fmt.Sprint(v)
+			s := formatValue(v)
 			flat = append(flat, s)
 			if i > 0 {
 				buf.WriteByte(' ')
@@ -261,8 +261,8 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 				return err
 			}
 			fmt.Printf("generated %s\n", srcPath)
-                       if run {
-                               out, err := RunMochi(code, 5*time.Second)
+			if run {
+				out, err := RunMochi(code, 5*time.Second)
 				outPath := filepath.Join(testDir, c.Name+".out")
 				errPath := strings.TrimSuffix(outPath, ".out") + ".error"
 				if err != nil {
