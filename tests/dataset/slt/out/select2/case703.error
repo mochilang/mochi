@@ -1,7 +1,7 @@
-expect condition failed at :241: expect flatResult == [174, 171, 182, 183, 188, 185, null, 207, 213, 212, 220, 222]
+expect condition failed at :240: expect flatResult == [171, 174, 182, 183, 185, 188, 207, 212, 213, 220, 222, null]
 call graph: main
 stack trace:
-  main at :241
-    expect flatResult == [174, 171, 182, 183, 188, 185, null, 207, 213, 212, 220, 222]
+  main at :240
+    expect flatResult == [171, 174, 182, 183, 185, 188, 207, 212, 213, 220, 222, null]
 
-got: [174, 171, 182, 183, 188, 185, 213, 212, 220, 222, null, 207]
+got: [174, 171, 182, 183, 188, 185, null, 207, 213, 212, 220, 222]

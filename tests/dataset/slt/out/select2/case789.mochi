@@ -228,7 +228,6 @@ let result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0
-  order by row.b
   select row.b
 for x in result {
   print(x)

@@ -226,7 +226,6 @@ let t1 = [
 /* SELECT d-e, c-d, a+b*2+c*3+d*4+e*5, a+b*2+c*3+d*4, a FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 */
 let result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
-  order by [(row.d - row.e), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.a]
   select [(row.d - row.e), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.a]
 var flatResult = []
 for row in result {
@@ -238,6 +237,6 @@ for x in flatResult {
   print(x)
 }
 test "case704" {
-  expect flatResult == [-1, -2, 1612, 1067, 107, 2, -3, 1902, 1272, 127]
+  expect flatResult == [-1, -2, -3, 1067, 107, 127, 1272, 1612, 1902, 2]
 }
 

@@ -226,12 +226,11 @@ let t1 = [
 /* SELECT e FROM t1 WHERE (c<=d-2 OR c>=d+2) OR b IS NOT NULL */
 let result = from row in t1
   where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || row.b != null)
-  order by row.e
   select row.e
 for x in result {
   print(x)
 }
 
 test "case720" {
-  expect result == [109, 110, 117, null, 126, 132, 135, 144, 146, null, 157, 162, 165, 173, 177, 180, 189, 192, 197, null, 210, 219, 221, 227, 230, 237, null, 246]
+  expect result == [109, 110, 117, 126, 132, 135, 144, 146, 157, 162, 165, 173, 177, 180, 189, 192, 197, 210, 219, 221, 227, 230, 237, 246, null, null, null, null]
 }

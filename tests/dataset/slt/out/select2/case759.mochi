@@ -228,7 +228,6 @@ let result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 && null != 0) && row.a == null)
-  order by (if row.a < 0 { -(row.a) } else { row.a })
   select (if row.a < 0 { -(row.a) } else { row.a })
 for x in result {
   print(x)

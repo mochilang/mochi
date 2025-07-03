@@ -226,9 +226,6 @@ let t1 = [
 /* SELECT a, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR (a>b-2 AND a<b+2) OR a>b */
 let result = from row in t1
   where ((((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || ((row.a > (row.b - 2) && row.a < (row.b + 2)))) || row.a > row.b)
-  order by [row.a, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x)]
   select [row.a, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
@@ -242,6 +239,6 @@ for x in flatResult {
   print(x)
 }
 test "case716" {
-  expect flatResult == [107, 0, 127, 0, 131, 0, 138, 0, 142, 0, 149, 0, 153, 0, 159, 0, 163, 0, 168, 0, 174, 0, 179, 0, 182, 0, 188, 0, 199, 0, 213, 0, 229, 0, 234, 0, 239, 0, 243, 0]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 107, 127, 131, 138, 142, 149, 153, 159, 163, 168, 174, 179, 182, 188, 199, 213, 229, 234, 239, 243]
 }
 

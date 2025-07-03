@@ -226,9 +226,6 @@ let t1 = [
 /* SELECT e, c-d, (a+b+c+d+e)/5, a+b*2, b, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND (a>b-2 AND a<b+2) */
 let result = from row in t1
   where ((row.d < 110 || row.d > 150) && ((row.a > (row.b - 2) && row.a < (row.b + 2))))
-  order by [row.e, (row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a + (row.b * 2)), row.b, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), row.c]
   select [row.e, (row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a + (row.b * 2)), row.b, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), row.c]
@@ -242,6 +239,6 @@ for x in flatResult {
   print(x)
 }
 test "case799" {
-  expect flatResult == [180, 1, 182, 544, 181, 0, 184, 197, -1, 197, 595, 198, 0, 195, 227, -1, 227, 685, 228, 0, 225]
+  expect flatResult == [-1, -1, 0, 0, 0, 1, 180, 181, 182, 184, 195, 197, 197, 198, 225, 227, 227, 228, 544, 595, 685]
 }
 

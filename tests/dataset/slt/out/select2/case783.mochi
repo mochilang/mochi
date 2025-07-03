@@ -225,9 +225,6 @@ let t1 = [
 
 /* SELECT c-d, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 */
 let result = from row in t1
-  order by [(row.c - row.d), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x)]
   select [(row.c - row.d), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
@@ -241,6 +238,6 @@ for x in flatResult {
   print(x)
 }
 test "case783" {
-  expect flatResult == [1, 0, -2, 0, -1, 0, 3, 0, 1, 0, -3, 0, 1, 0, 1, 0, 1, 0, null, 0, null, 0, null, 0, -3, 0, null, 0, 1, 0, null, 0, 1, 0, 2, 0, 3, 0, -1, 0, -1, 0, 1, 0, 2, 0, -2, 0, 2, 0, -1, 0, -2, 0, null, 0, null, 0, -1, 0]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -3, -3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, null, null, null, null, null, null, null]
 }
 

@@ -226,9 +226,6 @@ let t1 = [
 /* SELECT a+b*2, a-b, a+b*2+c*3+d*4, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR d NOT BETWEEN 110 AND 150 */
 let result = from row in t1
   where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || (row.d < 110 || row.d > 150))
-  order by [(row.a + (row.b * 2)), (row.a - row.b), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), count(from x in t1
-  where x.b < row.b
-  select x)]
   select [(row.a + (row.b * 2)), (row.a - row.b), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), count(from x in t1
   where x.b < row.b
   select x)]
@@ -242,6 +239,6 @@ for x in flatResult {
   print(x)
 }
 test "case761" {
-  expect flatResult == [null, null, null, 0, 317, 2, 1067, 0, 385, -2, 1272, 3, 483, 3, 1622, 10, 514, 4, 1714, 12, 544, 1, 1828, 14, 560, 2, 1861, 15, 579, -3, 1918, 16, 595, 1, 1964, 17, null, null, null, 0, null, null, null, 18, 635, 2, 2125, 19, 652, -2, 2165, 20, 666, -3, 2226, 21, 685, 1, 2264, 22, 698, 2, 2323, 23, 711, 3, null, 24, 743, -4, 2476, 26]
+  expect flatResult == [-2, -2, -3, -3, -4, 0, 0, 0, 1, 1, 1, 10, 1067, 12, 1272, 14, 15, 16, 1622, 17, 1714, 18, 1828, 1861, 19, 1918, 1964, 2, 2, 2, 2, 20, 21, 2125, 2165, 22, 2226, 2264, 23, 2323, 24, 2476, 26, 3, 3, 3, 317, 385, 4, 483, 514, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 743, null, null, null, null, null, null, null, null, null, null]
 }
 

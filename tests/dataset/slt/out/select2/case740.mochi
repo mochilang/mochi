@@ -225,7 +225,6 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, c, a+b*2 FROM t1 */
 let result = from row in t1
-  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, (row.a + (row.b * 2))]
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, (row.a + (row.b * 2))]
 var flatResult = []
 for row in result {
@@ -237,6 +236,6 @@ for x in flatResult {
   print(x)
 }
 test "case740" {
-  expect flatResult == [null, 102, null, 107, 106, 317, null, 113, null, null, 119, null, null, 123, 369, 127, 125, 385, 132, 134, 391, 137, 137, 416, 142, 141, 428, null, 147, 439, null, 150, 455, null, 155, 475, 162, 161, 483, null, 166, 502, 172, 172, 514, null, 176, 529, 182, 184, 544, 187, 187, 560, 192, 193, 579, 197, 195, 595, null, 202, null, null, 208, null, 212, 214, 635, 217, 215, 652, 222, 224, 666, 227, 225, 685, 232, 231, 698, null, null, 711, null, 244, 723, 247, 247, 743]
+  expect flatResult == [102, 106, 107, 113, 119, 123, 125, 127, 132, 134, 137, 137, 141, 142, 147, 150, 155, 161, 162, 166, 172, 172, 176, 182, 184, 187, 187, 192, 193, 195, 197, 202, 208, 212, 214, 215, 217, 222, 224, 225, 227, 231, 232, 244, 247, 247, 317, 369, 385, 391, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 
