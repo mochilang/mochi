@@ -225,6 +225,7 @@ let t1 = [
 
 /* SELECT c, a-b, a+b*2+c*3+d*4+e*5, e, abs(a) FROM t1 */
 let result = from row in t1
+  order by [row.c, (row.a - row.b), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.e, (if row.a < 0 { -(row.a) } else { row.a })]
   select [row.c, (row.a - row.b), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.e, (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []
 for row in result {
