@@ -2192,6 +2192,9 @@ func constKey(v Value) (string, bool) {
 func (fc *funcCompiler) constReg(pos lexer.Position, v Value) int {
 	if key, ok := constKey(v); ok {
 		if r, exists := fc.constRegs[key]; exists {
+			// Emit the constant again to guarantee initialization
+			// outside conditional blocks.
+			fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
 			return r
 		}
 		r := fc.newReg()
