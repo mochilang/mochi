@@ -351,7 +351,10 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		if t == "" {
 			return "any"
 		}
-		return "any"
+		// Preserve the inferred type when NULL values are present.
+		// This avoids degrading the column to the generic `any` type
+		// if all non-null values share the same concrete type.
+		return t
 	}
 
 	if t == "int" && boolLike && (seenZero || seenOne || seenNegOne) {

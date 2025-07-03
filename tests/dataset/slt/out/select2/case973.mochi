@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT abs(a) FROM t1 WHERE c>d */
 let result = from row in t1
   where row.c > row.d
+  order by (if row.a < 0 { -(row.a) } else { row.a })
   select (if row.a < 0 { -(row.a) } else { row.a })
 for x in result {
   print(x)

@@ -226,6 +226,9 @@ let t1 = [
 /* SELECT a+b*2, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), c-d, a+b*2+c*3+d*4+e*5 FROM t1 WHERE (c<=d-2 OR c>=d+2) OR c BETWEEN b-2 AND d+2 */
 let result = from row in t1
   where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
+  order by [(row.a + (row.b * 2)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
+  where x.b < row.b
+  select x), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
   select [(row.a + (row.b * 2)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
   where x.b < row.b
   select x), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
@@ -239,6 +242,6 @@ for x in flatResult {
   print(x)
 }
 test "case931" {
-  expect flatResult == [317, 333, 0, -2, 1612, 385, 333, 3, -3, 1902, 483, 333, 10, -3, 2432, 652, 333, 20, -2, 3260, 698, 555, 23, -2, 3473, null, 333, 0, 3, null, 560, 444, 15, 2, 2806, 579, 444, 16, 3, 2878, 635, 222, 19, 2, 3175, 666, 444, 21, 2, 3331, null, 555, 1, -1, null, 369, 333, 2, 1, null, 391, 444, 4, 1, 1985, 416, 111, 5, 1, 2046, 428, 111, 6, 1, 2131, 514, 555, 12, 1, 2579, 544, 333, 14, 1, 2728, null, 555, 18, 1, null, 743, 444, 26, -1, 3706]
+  expect flatResult == [317, 333, 0, -2, 1612, null, 555, 1, -1, null, null, 333, 0, 3, null, 369, 333, 2, 1, null, 385, 333, 3, -3, 1902, 391, 444, 4, 1, 1985, 416, 111, 5, 1, 2046, 428, 111, 6, 1, 2131, 483, 333, 10, -3, 2432, 514, 555, 12, 1, 2579, 544, 333, 14, 1, 2728, 560, 444, 15, 2, 2806, 579, 444, 16, 3, 2878, null, 555, 18, 1, null, 635, 222, 19, 2, 3175, 652, 333, 20, -2, 3260, 666, 444, 21, 2, 3331, 698, 555, 23, -2, 3473, 743, 444, 26, -1, 3706]
 }
 

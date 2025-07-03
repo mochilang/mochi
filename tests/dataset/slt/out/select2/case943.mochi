@@ -226,11 +226,12 @@ let t1 = [
 /* SELECT (a+b+c+d+e)/5 FROM t1 WHERE (e>c OR e<d) */
 let result = from row in t1
   where ((row.e > row.c || row.e < row.d))
+  order by ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)
   select ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)
 for x in result {
   print(x)
 }
 
 test "case943" {
-  expect result == [107, 127, 142, null, 162, 172, null, 187, 197, null, 217, 227, null, 132, 137, 182, 212, 222, 232, null, 247]
+  expect result == [107, null, 127, 132, 137, 142, null, 162, 172, null, 182, 187, 197, null, 212, 217, 222, 227, 232, null, 247]
 }

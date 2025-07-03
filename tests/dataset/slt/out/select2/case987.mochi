@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT abs(b-c), d-e, c-d, a+b*2+c*3+d*4+e*5, d FROM t1 WHERE coalesce(a,b,c,d,e)<>0 OR c>d OR d>e */
 let result = from row in t1
   where ((null != 0 || row.c > row.d) || row.d > row.e)
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.d - row.e), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.d]
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.d - row.e), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.d]
 var flatResult = []
 for row in result {

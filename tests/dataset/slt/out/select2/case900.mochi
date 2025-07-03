@@ -229,11 +229,12 @@ let sub0 = avg(from x in t1
 
 let result = from row in t1
   where ((((row.e > row.c || row.e < row.d)) || row.b > row.c) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
+  order by (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })
   select (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })
 for x in result {
   print(x)
 }
 
 test "case900" {
-  expect result == [1050, 1290, 1430, 1580, 1600, 1700, 358, 376, 398, 402, 432, 458, 1120, 1300, 1390, 364, 426, 440, 468, 2360, 490, 1240, 1510, 1670, 382]
+  expect result == [1050, 1120, 1240, 1290, 1300, 1390, 1430, 1510, 1580, 1600, 1670, 1700, 358, 364, 376, 382, 398, 402, 426, 432, 440, 458, 468, 2360, 490]
 }

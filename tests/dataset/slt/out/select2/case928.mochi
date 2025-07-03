@@ -231,6 +231,7 @@ let result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 && row.d > row.e) && row.c > row.d)
+  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
 var flatResult = []
 for row in result {

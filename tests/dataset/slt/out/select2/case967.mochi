@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT b-c FROM t1 WHERE (c<=d-2 OR c>=d+2) OR (e>a AND e<b) OR coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || ((row.e > row.a && row.e < row.b))) || null != 0)
+  order by (row.b - row.c)
   select (row.b - row.c)
 for x in result {
   print(x)

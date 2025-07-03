@@ -228,6 +228,7 @@ let result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 || ((row.e > row.a && row.e < row.b))) || (row.d < 110 || row.d > 150))
+  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
   select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
 var flatResult = []
 for row in result {
@@ -239,6 +240,6 @@ for x in flatResult {
   print(x)
 }
 test "case955" {
-  expect flatResult == [null, null, 1, 1226, null, 1, 1272, 127, 4, 1325, 132, 4, 1371, 137, 2, 1411, 142, 2, null, null, 2, null, null, 1, null, null, 3, 1622, 162, 1, null, null, 1, 1714, 172, 2, null, null, 1, 1828, 182, 3, 1861, 187, 1, 1918, 192, 1, 1964, 197, 3, null, null, 2, 2125, 212, 3, 2165, 217, 3, 2226, 222, 1, 2264, 227, 3, 2323, 232, 1, null, null, null, null, null, 4, 2476, 247, 2, null, null, null, 1067, 107, 1, null, null, null]
+  expect flatResult == [null, null, null, 1067, 107, 1, null, null, 1, 1226, null, 1, 1272, 127, 4, 1325, 132, 4, 1371, 137, 2, 1411, 142, 2, null, null, 2, null, null, 1, null, null, 3, 1622, 162, 1, null, null, 1, 1714, 172, 2, null, null, 1, 1828, 182, 3, 1861, 187, 1, 1918, 192, 1, 1964, 197, 3, null, null, null, null, null, 2, 2125, 212, 3, 2165, 217, 3, 2226, 222, 1, 2264, 227, 3, 2323, 232, 1, null, null, null, null, null, 4, 2476, 247, 2]
 }
 

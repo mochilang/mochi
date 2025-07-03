@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT a FROM t1 WHERE c>d */
 let result = from row in t1
   where row.c > row.d
+  order by row.a
   select row.a
 for x in result {
   print(x)

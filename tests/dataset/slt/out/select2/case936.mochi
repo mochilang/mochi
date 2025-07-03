@@ -226,6 +226,9 @@ let t1 = [
 /* SELECT c, a+b*2+c*3, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, b-c, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a-b, d FROM t1 WHERE (c<=d-2 OR c>=d+2) OR d NOT BETWEEN 110 AND 150 */
 let result = from row in t1
   where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || (row.d < 110 || row.d > 150))
+  order by [row.c, ((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.b - row.c), count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x), (row.a - row.b), row.d]
   select [row.c, ((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.b - row.c), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.a - row.b), row.d]
@@ -239,6 +242,6 @@ for x in flatResult {
   print(x)
 }
 test "case936" {
-  expect flatResult == [106, 635, 333, -1, 0, 2, 108, 125, 760, 222, 4, 0, -2, 128, 161, 966, 444, -1, 0, 3, 164, 215, 1297, 222, 3, 0, -2, 217, 231, 1391, 333, 1, 0, 2, 233, 119, null, 444, null, 0, null, 116, 187, 1121, 333, -1, 0, 2, 185, 193, 1158, 222, 1, 0, -3, 190, 214, 1277, 333, -3, 0, 2, 212, 224, 1338, 222, -1, 0, -3, 222, 102, null, 444, null, 0, null, 101, 172, 1030, 444, -2, 0, 4, 171, 184, 1096, 333, -3, 0, 1, 183, 195, 1180, 333, 3, 0, 1, 196, 202, null, 444, null, 0, null, 203, 208, null, 444, -2, 0, null, 207, 225, 1360, 333, 3, 0, 1, 226, null, null, 444, null, 0, 3, 238, 247, 1484, 111, 2, 0, -4, 248]
+  expect flatResult == [102, null, 444, null, 0, null, 101, 106, 635, 333, -1, 0, 2, 108, 119, null, 444, null, 0, null, 116, 125, 760, 222, 4, 0, -2, 128, 161, 966, 444, -1, 0, 3, 164, 172, 1030, 444, -2, 0, 4, 171, 184, 1096, 333, -3, 0, 1, 183, 187, 1121, 333, -1, 0, 2, 185, 193, 1158, 222, 1, 0, -3, 190, 195, 1180, 333, 3, 0, 1, 196, 202, null, 444, null, 0, null, 203, 208, null, 444, -2, 0, null, 207, 214, 1277, 333, -3, 0, 2, 212, 215, 1297, 222, 3, 0, -2, 217, 224, 1338, 222, -1, 0, -3, 222, 225, 1360, 333, 3, 0, 1, 226, 231, 1391, 333, 1, 0, 2, 233, null, null, 444, null, 0, 3, 238, 247, 1484, 111, 2, 0, -4, 248]
 }
 

@@ -225,6 +225,7 @@ let t1 = [
 
 /* SELECT d-e, d, a, a+b*2 FROM t1 */
 let result = from row in t1
+  order by [(row.d - row.e), row.d, row.a, (row.a + (row.b * 2))]
   select [(row.d - row.e), row.d, row.a, (row.a + (row.b * 2))]
 var flatResult = []
 for row in result {
