@@ -224,8 +224,8 @@ let t1 = [
 ]
 
 /* SELECT c, b-c, a+b*2+c*3 FROM t1 WHERE b>c AND coalesce(a,b,c,d,e)<>0 */
-let result = from row in t1
-  where (row.b > row.c && null != 0)
+var result = from row in t1
+  where (row.b > row.c && (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0)
   select [row.c, (row.b - row.c), ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
 for row in result {
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case848" {
-  expect flatResult == [123, 1, 738, 125, 4, 760, 137, 2, 827, 141, 2, 851, 150, 1, 905, 155, 3, 940, 166, 1, 1000, 193, 1, 1158, 195, 3, 1180, 215, 3, 1297, 225, 3, 1360, 231, 1, 1391, 247, 2, 1484]
+  expect flatResult == [1, 1, 1, 1, 1, 1000, 1158, 1180, 123, 125, 1297, 1360, 137, 1391, 141, 1484, 150, 155, 166, 193, 195, 2, 2, 2, 215, 225, 231, 247, 3, 3, 3, 3, 4, 738, 760, 827, 851, 905, 940]
 }
 

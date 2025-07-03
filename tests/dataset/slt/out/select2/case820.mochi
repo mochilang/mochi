@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT (a+b+c+d+e)/5, a+b*2+c*3 FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
 for row in result {
@@ -232,10 +232,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case820" {
-  expect flatResult == [null, null, 107, 635, null, null, null, null, null, 738, 127, 760, 132, 793, 137, 827, 142, 851, null, 880, null, 905, null, 940, 162, 966, null, 1000, 172, 1030, null, 1057, 182, 1096, 187, 1121, 192, 1158, 197, 1180, null, null, null, null, 212, 1277, 217, 1297, 222, 1338, 227, 1360, 232, 1391, null, null, null, 1455, 247, 1484]
+  expect flatResult == [1000, 1030, 1057, 107, 1096, 1121, 1158, 1180, 127, 1277, 1297, 132, 1338, 1360, 137, 1391, 142, 1455, 1484, 162, 172, 182, 187, 192, 197, 212, 217, 222, 227, 232, 247, 635, 738, 760, 793, 827, 851, 880, 905, 940, 966, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

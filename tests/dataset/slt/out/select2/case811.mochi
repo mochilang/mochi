@@ -227,8 +227,8 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
-  where (null != 0 || count(from x in t1
+var result = from row in t1
+  where ((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 || count(from x in t1
   where x.b < row.b
   select x) > 0)
   select [(if row.a < 0 { -(row.a) } else { row.a }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.c, row.e]
@@ -238,10 +238,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case811" {
-  expect flatResult == [104, null, 102, null, 107, 1050, 106, 109, null, 1120, 113, 110, 115, null, 119, 117, 121, 1240, 123, null, 127, 1290, 125, 126, 131, 1300, 134, 132, 138, 1390, 137, 135, 142, 1430, 141, 144, 149, 1450, 147, 146, 153, 1510, 150, null, 159, 1580, 155, 157, 163, 1600, 161, 162, 168, 1670, 166, 165, 174, 1700, 172, 173, 179, 358, 176, 177, 182, 364, 184, 180, 188, 376, 187, 189, 191, 382, 193, 192, 199, 398, 195, 197, 201, 402, 202, 204, null, null, 208, null, 213, 426, 214, 210, 216, 432, 215, 219, 220, 440, 224, 221, 229, 458, 225, 227, 234, 468, 231, 230, 239, 2360, null, 237, 243, 486, 244, null, 245, 490, 247, 246]
+  expect flatResult == [102, 104, 1050, 106, 107, 109, 110, 1120, 113, 115, 117, 119, 121, 123, 1240, 125, 126, 127, 1290, 1300, 131, 132, 134, 135, 137, 138, 1390, 141, 142, 1430, 144, 1450, 146, 147, 149, 150, 1510, 153, 155, 157, 1580, 159, 1600, 161, 162, 163, 165, 166, 1670, 168, 1700, 172, 173, 174, 176, 177, 179, 180, 182, 184, 187, 188, 189, 191, 192, 193, 195, 197, 199, 201, 202, 204, 208, 210, 213, 214, 215, 216, 219, 220, 221, 224, 225, 227, 229, 230, 231, 234, 2360, 237, 239, 243, 244, 245, 246, 247, 358, 364, 376, 382, 398, 402, 426, 432, 440, 458, 468, 486, 490, null, null, null, null, null, null, null, null, null, null, null]
 }
 

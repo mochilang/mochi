@@ -224,8 +224,8 @@ let t1 = [
 ]
 
 /* SELECT d, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE c BETWEEN b-2 AND d+2 OR coalesce(a,b,c,d,e)<>0 */
-let result = from row in t1
-  where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || null != 0)
+var result = from row in t1
+  where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0)
   select [row.d, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case841" {
-  expect flatResult == [101, 0, 108, 0, 114, 0, 116, 0, 122, 0, 128, 0, 133, 0, 136, 0, 140, 0, null, 0, null, 0, null, 0, 164, 0, null, 0, 171, 0, null, 0, 183, 0, 185, 0, 190, 0, 196, 0, 203, 0, 207, 0, 212, 0, 217, 0, 222, 0, 226, 0, 233, 0, 238, 0, null, 0, 248, 0]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 101, 108, 114, 116, 122, 128, 133, 136, 140, 164, 171, 183, 185, 190, 196, 203, 207, 212, 217, 222, 226, 233, 238, 248, null, null, null, null, null, null]
 }
 
