@@ -21,19 +21,24 @@ tests/
 
 ```bash
 # Download `.test` scripts from GitHub (skips existing files)
-go run ./cmd/mochi-slt fetch --files evidence/slt_lang_update.test,test/select1.test
+go run ./cmd/mochi-slt fetch --files evidence/slt_lang_update.test,test/select1.test,test/select2.test
 
 # Convert tests to Mochi programs and execute them
 go run ./cmd/mochi-slt gen --run --out tests/dataset/slt/out
 
 # Generate a specific range of cases
 go run ./cmd/mochi-slt gen --cases case5-case6 --files select1.test --run
+go run ./cmd/mochi-slt gen --cases case5-case6 --files select2.test --run
 
 # Generate and run cases 70-79 from select1.test
 go run ./cmd/mochi-slt gen --cases case70-case79 --files select1.test --run
+# Generate and run cases 70-79 from select2.test
+go run ./cmd/mochi-slt gen --cases case70-case79 --files select2.test --run
 
 # Generate and run cases 200-299 from select1.test
 go run ./cmd/mochi-slt gen --cases case200-case299 --files select1.test --run
+# Generate and run cases 200-299 from select2.test
+go run ./cmd/mochi-slt gen --cases case200-case299 --files select2.test --run
 
 # Inspect available test cases in a file
 go run ./cmd/mochi-slt list --file evidence/slt_lang_update.test
