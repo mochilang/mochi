@@ -27,18 +27,34 @@ func main (regs=238)
   Const        r13, "o_orderdate"
   // where substring(p.p_name, 0, len(prefix)) == prefix &&
   Const        r14, "p_name"
+  // o.o_orderdate >= start_date && o.o_orderdate <= end_date
+  Const        r13, "o_orderdate"
+  Const        r13, "o_orderdate"
   // nation: g.key.nation,
+  Const        r10, "nation"
   Const        r15, "key"
+  Const        r10, "nation"
+  // o_year: str(g.key.o_year),
+  Const        r12, "o_year"
+  Const        r15, "key"
+  Const        r12, "o_year"
   // profit:
   Const        r16, "profit"
   // select (x.l.l_extendedprice * (1 - x.l.l_discount)) -
   Const        r17, "l"
   Const        r18, "l_extendedprice"
+  Const        r17, "l"
   Const        r19, "l_discount"
   // (x.ps.ps_supplycost * x.l.l_quantity)
   Const        r20, "ps"
   Const        r21, "ps_supplycost"
+  Const        r17, "l"
   Const        r22, "l_quantity"
+  // sort by [ g.key.nation, -g.key.o_year ]
+  Const        r15, "key"
+  Const        r10, "nation"
+  Const        r15, "key"
+  Const        r12, "o_year"
   // from l in lineitem
   MakeMap      r23, 0, r0
   Const        r25, []
@@ -92,10 +108,12 @@ L12:
   Move         r59, r58
   Const        r60, "ps_partkey"
   Index        r61, r59, r60
+  Const        r40, "l_partkey"
   Index        r62, r31, r40
   Equal        r63, r61, r62
   Const        r64, "ps_suppkey"
   Index        r65, r59, r64
+  Const        r51, "l_suppkey"
   Index        r66, r31, r51
   Equal        r67, r65, r66
   Move         r68, r63
@@ -134,16 +152,22 @@ L10:
   Equal        r90, r87, r89
   JumpIfFalse  r90, L7
   // where substring(p.p_name, 0, len(prefix)) == prefix &&
+  Const        r14, "p_name"
   Index        r91, r37, r14
   Const        r92, 0
   Const        r93, 5
   Slice        r94, r91, r92, r93
   // o.o_orderdate >= start_date && o.o_orderdate <= end_date
+  Const        r13, "o_orderdate"
   Index        r95, r74, r13
+  Const        r7, "1995-01-01"
   LessEq       r96, r7, r95
+  Const        r13, "o_orderdate"
   Index        r97, r74, r13
+  Const        r8, "1996-12-31"
   LessEq       r98, r97, r8
   // where substring(p.p_name, 0, len(prefix)) == prefix &&
+  Const        r6, "green"
   Equal        r99, r94, r6
   Move         r100, r99
   JumpIfFalse  r100, L8
@@ -155,11 +179,13 @@ L8:
   // where substring(p.p_name, 0, len(prefix)) == prefix &&
   JumpIfFalse  r100, L7
   // from l in lineitem
+  Const        r17, "l"
   Move         r101, r31
   Const        r102, "p"
   Move         r103, r37
   Const        r104, "s"
   Move         r105, r48
+  Const        r20, "ps"
   Move         r106, r59
   Const        r107, "o"
   Move         r108, r74
@@ -180,10 +206,13 @@ L8:
   MakeMap      r123, 6, r111
   // nation: n.n_name,
   Const        r124, "nation"
+  Const        r11, "n_name"
   Index        r125, r85, r11
   // o_year: substring(o.o_orderdate, 0, 4) as int
   Const        r126, "o_year"
+  Const        r13, "o_orderdate"
   Index        r127, r74, r13
+  Const        r92, 0
   Const        r128, 4
   Slice        r129, r127, r92, r128
   Cast         r130, r129, int
@@ -199,14 +228,17 @@ L8:
   In           r137, r136, r23
   JumpIfTrue   r137, L9
   // from l in lineitem
+  Const        r25, []
   Const        r138, "__group__"
   Const        r139, true
+  Const        r15, "key"
   // group by {
   Move         r140, r135
   // from l in lineitem
   Const        r141, "items"
   Move         r142, r25
   Const        r143, "count"
+  Const        r92, 0
   Move         r144, r138
   Move         r145, r139
   Move         r146, r15
@@ -220,39 +252,48 @@ L8:
   Append       r153, r24, r152
   Move         r24, r153
 L9:
+  Const        r141, "items"
   Index        r154, r23, r136
   Index        r155, r154, r141
   Append       r156, r155, r123
   SetIndex     r154, r141, r156
+  Const        r143, "count"
   Index        r157, r154, r143
   Const        r158, 1
   AddInt       r159, r157, r158
   SetIndex     r154, r143, r159
 L7:
   // join n in nation on n.n_nationkey == s.s_nationkey
+  Const        r158, 1
   AddInt       r82, r82, r158
   Jump         L10
 L6:
   // join o in orders on o.o_orderkey == l.l_orderkey
+  Const        r158, 1
   AddInt       r71, r71, r158
   Jump         L11
 L5:
   // join ps in partsupp on ps.ps_partkey == l.l_partkey && ps.ps_suppkey == l.l_suppkey
+  Const        r158, 1
   AddInt       r56, r56, r158
   Jump         L12
 L3:
   // join s in supplier on s.s_suppkey == l.l_suppkey
+  Const        r158, 1
   AddInt       r45, r45, r158
   Jump         L13
 L2:
   // join p in part on p.p_partkey == l.l_partkey
+  Const        r158, 1
   AddInt       r34, r34, r158
   Jump         L14
 L1:
   // from l in lineitem
+  Const        r158, 1
   AddInt       r28, r28, r158
   Jump         L15
 L0:
+  Const        r92, 0
   Move         r160, r92
   Len          r161, r24
 L19:
@@ -262,19 +303,35 @@ L19:
   Move         r164, r163
   // nation: g.key.nation,
   Const        r165, "nation"
+  Const        r15, "key"
   Index        r166, r164, r15
+  Const        r10, "nation"
   Index        r167, r166, r10
   // o_year: str(g.key.o_year),
   Const        r168, "o_year"
+  Const        r15, "key"
   Index        r169, r164, r15
+  Const        r12, "o_year"
   Index        r170, r169, r12
   Str          r171, r170
   // profit:
   Const        r172, "profit"
   // from x in g
   Const        r173, []
+  // select (x.l.l_extendedprice * (1 - x.l.l_discount)) -
+  Const        r17, "l"
+  Const        r18, "l_extendedprice"
+  Const        r17, "l"
+  Const        r19, "l_discount"
+  // (x.ps.ps_supplycost * x.l.l_quantity)
+  Const        r20, "ps"
+  Const        r21, "ps_supplycost"
+  Const        r17, "l"
+  Const        r22, "l_quantity"
+  // from x in g
   IterPrep     r174, r164
   Len          r175, r174
+  Const        r92, 0
   Move         r176, r92
 L18:
   LessInt      r177, r176, r175
@@ -282,16 +339,25 @@ L18:
   Index        r178, r174, r176
   Move         r179, r178
   // select (x.l.l_extendedprice * (1 - x.l.l_discount)) -
+  Const        r17, "l"
   Index        r180, r179, r17
+  Const        r18, "l_extendedprice"
   Index        r181, r180, r18
+  Const        r158, 1
+  Const        r17, "l"
   Index        r182, r179, r17
+  Const        r19, "l_discount"
   Index        r183, r182, r19
   Sub          r184, r158, r183
   Mul          r185, r181, r184
   // (x.ps.ps_supplycost * x.l.l_quantity)
+  Const        r20, "ps"
   Index        r186, r179, r20
+  Const        r21, "ps_supplycost"
   Index        r187, r186, r21
+  Const        r17, "l"
   Index        r188, r179, r17
+  Const        r22, "l_quantity"
   Index        r189, r188, r22
   Mul          r190, r187, r189
   // select (x.l.l_extendedprice * (1 - x.l.l_discount)) -
@@ -299,6 +365,7 @@ L18:
   // from x in g
   Append       r192, r173, r191
   Move         r173, r192
+  Const        r158, 1
   AddInt       r176, r176, r158
   Jump         L18
 L17:
@@ -316,20 +383,25 @@ L17:
   // select {
   MakeMap      r200, 3, r194
   // sort by [ g.key.nation, -g.key.o_year ]
-  Index        r201, r164, r15
-  Index        r202, r201, r10
-  Move         r203, r202
-  Index        r204, r164, r15
-  Index        r205, r204, r12
-  Neg          r206, r205
-  Move         r207, r206
-  MakeList     r208, 2, r203
-  Move         r209, r208
+  Const        r15, "key"
+  Index        r205, r164, r15
+  Const        r10, "nation"
+  Index        r206, r205, r10
+  Move         r203, r206
+  Const        r15, "key"
+  Index        r207, r164, r15
+  Const        r12, "o_year"
+  Index        r208, r207, r12
+  Neg          r209, r208
+  Move         r204, r209
+  MakeList     r210, 2, r203
+  Move         r201, r210
   // from l in lineitem
-  Move         r210, r200
-  MakeList     r211, 2, r209
+  Move         r202, r200
+  MakeList     r211, 2, r201
   Append       r212, r9, r211
   Move         r9, r212
+  Const        r158, 1
   AddInt       r160, r160, r158
   Jump         L19
 L16:
@@ -344,33 +416,34 @@ L16:
   Const        r216, 0.9
   Const        r217, 900.0
   // let cost = 5 * 10.0          // 50
+  Const        r93, 5
   Const        r218, 10.0
-  Const        r219, 50.0
+  MulFloat     r219, r93, r218
   // nation: "BRAZIL",
-  Const        r220, "nation"
-  Const        r221, "BRAZIL"
+  Const        r221, "nation"
+  Const        r222, "BRAZIL"
   // o_year: "1995",
-  Const        r222, "o_year"
-  Const        r223, "1995"
+  Const        r223, "o_year"
+  Const        r224, "1995"
   // profit: revenue - cost   // 850
-  Const        r224, "profit"
-  Const        r225, 900.0
-  Const        r226, 50.0
-  Const        r227, 850.0
+  Const        r225, "profit"
+  Const        r226, 900.0
+  Const        r227, 50.0
+  Const        r228, 850.0
   // nation: "BRAZIL",
-  Move         r228, r220
   Move         r229, r221
-  // o_year: "1995",
   Move         r230, r222
+  // o_year: "1995",
   Move         r231, r223
-  // profit: revenue - cost   // 850
   Move         r232, r224
-  Move         r233, r227
+  // profit: revenue - cost   // 850
+  Move         r233, r225
+  Move         r234, r228
   // {
-  MakeMap      r234, 3, r228
-  Move         r235, r234
+  MakeMap      r235, 3, r229
+  Move         r220, r235
   // expect result == [
-  MakeList     r236, 1, r235
+  MakeList     r236, 1, r220
   Equal        r237, r9, r236
   Expect       r237
   Return       r0

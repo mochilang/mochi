@@ -37,21 +37,26 @@ L4:
   JumpIfFalse  r20, L1
   Index        r21, r6, r19
   Move         r22, r21
+  Const        r8, "p_partkey"
   Index        r23, r22, r8
+  Const        r9, "ps_partkey"
   Index        r24, r18, r9
   Equal        r25, r23, r24
   JumpIfFalse  r25, L2
   // p.p_brand == "Brand#12" &&
+  Const        r10, "p_brand"
   Index        r26, r22, r10
   Const        r27, "Brand#12"
   Equal        r28, r26, r27
   // p.p_size == 5
+  Const        r13, "p_size"
   Index        r29, r22, r13
   Const        r30, 5
   Equal        r31, r29, r30
   // p.p_brand == "Brand#12" &&
   Move         r32, r28
   JumpIfFalse  r32, L3
+  Const        r11, "p_type"
   Index        r33, r22, r11
   // p.p_type.contains("SMALL") &&
   Const        r34, "SMALL"
@@ -65,6 +70,7 @@ L3:
   // p.p_brand == "Brand#12" &&
   JumpIfFalse  r32, L2
   // select ps.ps_suppkey
+  Const        r14, "ps_suppkey"
   Index        r36, r18, r14
   // from ps in partsupp
   Append       r37, r3, r36
@@ -76,6 +82,7 @@ L2:
   Jump         L4
 L1:
   // from ps in partsupp
+  Const        r38, 1
   AddInt       r15, r15, r38
   Jump         L5
 L0:
@@ -84,10 +91,17 @@ L0:
   // where !(s.s_suppkey in excluded_suppliers) && (!s.s_comment.contains("Customer")) && (!s.s_comment.contains("Complaints"))
   Const        r40, "s_suppkey"
   Const        r41, "s_comment"
+  Const        r12, "contains"
+  Const        r41, "s_comment"
+  Const        r12, "contains"
   // s_name: s.s_name,
+  Const        r42, "s_name"
   Const        r42, "s_name"
   // s_address: s.s_address
   Const        r43, "s_address"
+  Const        r43, "s_address"
+  // order by s.s_name
+  Const        r42, "s_name"
   // from s in supplier
   IterPrep     r44, r0
   Len          r45, r44
@@ -99,17 +113,20 @@ L9:
   Index        r49, r44, r46
   Move         r50, r49
   // where !(s.s_suppkey in excluded_suppliers) && (!s.s_comment.contains("Customer")) && (!s.s_comment.contains("Complaints"))
+  Const        r40, "s_suppkey"
   Index        r51, r50, r40
   In           r52, r51, r3
   Not          r53, r52
   Move         r54, r53
   JumpIfFalse  r54, L7
+  Const        r41, "s_comment"
   Index        r55, r50, r41
   Const        r56, "Customer"
   In           r57, r56, r55
   Not          r58, r57
   Move         r54, r58
   JumpIfFalse  r54, L7
+  Const        r41, "s_comment"
   Index        r59, r50, r41
   Const        r60, "Complaints"
   In           r61, r60, r59
@@ -119,9 +136,11 @@ L7:
   JumpIfFalse  r54, L8
   // s_name: s.s_name,
   Const        r63, "s_name"
+  Const        r42, "s_name"
   Index        r64, r50, r42
   // s_address: s.s_address
   Const        r65, "s_address"
+  Const        r43, "s_address"
   Index        r66, r50, r43
   // s_name: s.s_name,
   Move         r67, r63
@@ -132,14 +151,16 @@ L7:
   // select {
   MakeMap      r71, 2, r67
   // order by s.s_name
-  Index        r72, r50, r42
-  Move         r73, r72
+  Const        r42, "s_name"
+  Index        r74, r50, r42
+  Move         r72, r74
   // from s in supplier
-  Move         r74, r71
-  MakeList     r75, 2, r73
+  Move         r73, r71
+  MakeList     r75, 2, r72
   Append       r76, r39, r75
   Move         r39, r76
 L8:
+  Const        r38, 1
   AddInt       r46, r46, r38
   Jump         L9
 L6:

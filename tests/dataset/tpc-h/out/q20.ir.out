@@ -20,8 +20,15 @@ func main (regs=185)
   Const        r10, "l_suppkey"
   // where l.l_shipdate >= "1994-01-01" && l.l_shipdate < "1995-01-01"
   Const        r11, "l_shipdate"
+  Const        r11, "l_shipdate"
   // partkey: g.key.partkey,
+  Const        r7, "partkey"
   Const        r12, "key"
+  Const        r7, "partkey"
+  // suppkey: g.key.suppkey,
+  Const        r9, "suppkey"
+  Const        r12, "key"
+  Const        r9, "suppkey"
   // qty: sum(from x in g select x.l_quantity)
   Const        r13, "qty"
   Const        r14, "l_quantity"
@@ -38,9 +45,11 @@ L4:
   Index        r22, r15, r17
   Move         r23, r22
   // where l.l_shipdate >= "1994-01-01" && l.l_shipdate < "1995-01-01"
+  Const        r11, "l_shipdate"
   Index        r24, r23, r11
   Const        r25, "1994-01-01"
   LessEq       r26, r25, r24
+  Const        r11, "l_shipdate"
   Index        r27, r23, r11
   Const        r28, "1995-01-01"
   Less         r29, r27, r28
@@ -51,8 +60,10 @@ L1:
   JumpIfFalse  r30, L2
   // group by { partkey: l.l_partkey, suppkey: l.l_suppkey } into g
   Const        r31, "partkey"
+  Const        r8, "l_partkey"
   Index        r32, r23, r8
   Const        r33, "suppkey"
+  Const        r10, "l_suppkey"
   Index        r34, r23, r10
   Move         r35, r31
   Move         r36, r32
@@ -63,8 +74,10 @@ L1:
   In           r41, r40, r18
   JumpIfTrue   r41, L3
   // from l in lineitem
+  Const        r20, []
   Const        r42, "__group__"
   Const        r43, true
+  Const        r12, "key"
   // group by { partkey: l.l_partkey, suppkey: l.l_suppkey } into g
   Move         r44, r39
   // from l in lineitem
@@ -85,18 +98,22 @@ L1:
   Append       r58, r19, r57
   Move         r19, r58
 L3:
+  Const        r45, "items"
   Index        r59, r18, r40
   Index        r60, r59, r45
   Append       r61, r60, r22
   SetIndex     r59, r45, r61
+  Const        r47, "count"
   Index        r62, r59, r47
   Const        r63, 1
   AddInt       r64, r62, r63
   SetIndex     r59, r47, r64
 L2:
+  Const        r63, 1
   AddInt       r17, r17, r63
   Jump         L4
 L0:
+  Const        r48, 0
   Move         r65, r48
   Len          r66, r19
 L8:
@@ -106,26 +123,34 @@ L8:
   Move         r69, r68
   // partkey: g.key.partkey,
   Const        r70, "partkey"
+  Const        r12, "key"
   Index        r71, r69, r12
+  Const        r7, "partkey"
   Index        r72, r71, r7
   // suppkey: g.key.suppkey,
   Const        r73, "suppkey"
+  Const        r12, "key"
   Index        r74, r69, r12
+  Const        r9, "suppkey"
   Index        r75, r74, r9
   // qty: sum(from x in g select x.l_quantity)
   Const        r76, "qty"
   Const        r77, []
+  Const        r14, "l_quantity"
   IterPrep     r78, r69
   Len          r79, r78
+  Const        r48, 0
   Move         r80, r48
 L7:
   LessInt      r81, r80, r79
   JumpIfFalse  r81, L6
   Index        r82, r78, r80
   Move         r83, r82
+  Const        r14, "l_quantity"
   Index        r84, r83, r14
   Append       r85, r77, r84
   Move         r77, r85
+  Const        r63, 1
   AddInt       r80, r80, r63
   Jump         L7
 L6:
@@ -144,6 +169,7 @@ L6:
   // from l in lineitem
   Append       r94, r6, r93
   Move         r6, r94
+  Const        r63, 1
   AddInt       r65, r65, r63
   Jump         L8
 L5:
@@ -152,11 +178,13 @@ L5:
   // where substring(p.p_name, 0, len(prefix)) == prefix && ps.ps_availqty > (0.5 * s.qty)
   Const        r96, "p_name"
   Const        r97, "ps_availqty"
+  Const        r13, "qty"
   // select ps.ps_suppkey
   Const        r98, "ps_suppkey"
   // from ps in partsupp
   IterPrep     r99, r3
   Len          r100, r99
+  Const        r48, 0
   Move         r101, r48
 L17:
   LessInt      r102, r101, r100
@@ -168,29 +196,55 @@ L17:
   Len          r106, r105
   Const        r107, "ps_partkey"
   Const        r108, "p_partkey"
+  // where substring(p.p_name, 0, len(prefix)) == prefix && ps.ps_availqty > (0.5 * s.qty)
+  Const        r96, "p_name"
+  Const        r97, "ps_availqty"
+  Const        r13, "qty"
+  // select ps.ps_suppkey
+  Const        r98, "ps_suppkey"
+  // join p in part on ps.ps_partkey == p.p_partkey
+  Const        r48, 0
   Move         r109, r48
 L16:
   LessInt      r110, r109, r106
   JumpIfFalse  r110, L10
   Index        r111, r105, r109
   Move         r112, r111
+  Const        r107, "ps_partkey"
   Index        r113, r104, r107
+  Const        r108, "p_partkey"
   Index        r114, r112, r108
   Equal        r115, r113, r114
   JumpIfFalse  r115, L11
   // join s in shipped_94 on ps.ps_partkey == s.partkey && ps.ps_suppkey == s.suppkey
   IterPrep     r116, r6
   Len          r117, r116
+  Const        r107, "ps_partkey"
+  Const        r7, "partkey"
+  Const        r98, "ps_suppkey"
+  Const        r9, "suppkey"
+  // where substring(p.p_name, 0, len(prefix)) == prefix && ps.ps_availqty > (0.5 * s.qty)
+  Const        r96, "p_name"
+  Const        r97, "ps_availqty"
+  Const        r13, "qty"
+  // select ps.ps_suppkey
+  Const        r98, "ps_suppkey"
+  // join s in shipped_94 on ps.ps_partkey == s.partkey && ps.ps_suppkey == s.suppkey
+  Const        r48, 0
   Move         r118, r48
 L15:
   LessInt      r119, r118, r117
   JumpIfFalse  r119, L11
   Index        r120, r116, r118
   Move         r121, r120
+  Const        r107, "ps_partkey"
   Index        r122, r104, r107
+  Const        r7, "partkey"
   Index        r123, r121, r7
   Equal        r124, r122, r123
+  Const        r98, "ps_suppkey"
   Index        r125, r104, r98
+  Const        r9, "suppkey"
   Index        r126, r121, r9
   Equal        r127, r125, r126
   Move         r128, r124
@@ -199,14 +253,19 @@ L15:
 L12:
   JumpIfFalse  r128, L13
   // where substring(p.p_name, 0, len(prefix)) == prefix && ps.ps_availqty > (0.5 * s.qty)
+  Const        r96, "p_name"
   Index        r129, r112, r96
+  Const        r48, 0
   Const        r130, 6
   Slice        r131, r129, r48, r130
+  Const        r97, "ps_availqty"
   Index        r132, r104, r97
   Const        r133, 0.5
+  Const        r13, "qty"
   Index        r134, r121, r13
   MulFloat     r135, r133, r134
   LessFloat    r136, r135, r132
+  Const        r5, "forest"
   Equal        r137, r131, r5
   Move         r138, r137
   JumpIfFalse  r138, L14
@@ -214,20 +273,24 @@ L12:
 L14:
   JumpIfFalse  r138, L13
   // select ps.ps_suppkey
+  Const        r98, "ps_suppkey"
   Index        r139, r104, r98
   // from ps in partsupp
   Append       r140, r95, r139
   Move         r95, r140
 L13:
   // join s in shipped_94 on ps.ps_partkey == s.partkey && ps.ps_suppkey == s.suppkey
+  Const        r63, 1
   Add          r118, r118, r63
   Jump         L15
 L11:
   // join p in part on ps.ps_partkey == p.p_partkey
+  Const        r63, 1
   Add          r109, r109, r63
   Jump         L16
 L10:
   // from ps in partsupp
+  Const        r63, 1
   AddInt       r101, r101, r63
   Jump         L17
 L9:
@@ -245,8 +308,12 @@ L9:
   Const        r149, "n_name"
   // s_name: s.s_name,
   Const        r150, "s_name"
+  Const        r150, "s_name"
   // s_address: s.s_address
   Const        r151, "s_address"
+  Const        r151, "s_address"
+  // order by s.s_name
+  Const        r150, "s_name"
   // from s in supplier
   Const        r152, 0
 L23:
@@ -261,13 +328,17 @@ L22:
   JumpIfFalse  r156, L19
   Index        r157, r144, r155
   Move         r158, r157
+  Const        r146, "n_nationkey"
   Index        r159, r158, r146
+  Const        r147, "s_nationkey"
   Index        r160, r121, r147
   Equal        r161, r159, r160
   JumpIfFalse  r161, L20
   // where s.s_suppkey in target_partkeys && n.n_name == "CANADA"
+  Const        r148, "s_suppkey"
   Index        r162, r121, r148
   In           r163, r162, r95
+  Const        r149, "n_name"
   Index        r164, r158, r149
   Const        r165, "CANADA"
   Equal        r166, r164, r165
@@ -278,9 +349,11 @@ L21:
   JumpIfFalse  r167, L20
   // s_name: s.s_name,
   Const        r168, "s_name"
+  Const        r150, "s_name"
   Index        r169, r121, r150
   // s_address: s.s_address
   Const        r170, "s_address"
+  Const        r151, "s_address"
   Index        r171, r121, r151
   // s_name: s.s_name,
   Move         r172, r168
@@ -291,19 +364,22 @@ L21:
   // select {
   MakeMap      r176, 2, r172
   // order by s.s_name
-  Index        r177, r121, r150
-  Move         r178, r177
+  Const        r150, "s_name"
+  Index        r179, r121, r150
+  Move         r177, r179
   // from s in supplier
-  Move         r179, r176
-  MakeList     r180, 2, r178
+  Move         r178, r176
+  MakeList     r180, 2, r177
   Append       r181, r141, r180
   Move         r141, r181
 L20:
   // join n in nation on n.n_nationkey == s.s_nationkey
+  Const        r63, 1
   AddInt       r155, r155, r63
   Jump         L22
 L19:
   // from s in supplier
+  Const        r63, 1
   AddInt       r152, r152, r63
   Jump         L23
 L18:
