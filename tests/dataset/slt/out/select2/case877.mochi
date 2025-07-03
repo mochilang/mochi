@@ -227,7 +227,7 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where ((row.b != null && ((row.e > row.c || row.e < row.d))) && row.c > row.d)
   select [(row.a - row.b), row.a, ((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < 0 { -(row.a) } else { row.a }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.b - row.c)]
 var flatResult = []
@@ -236,10 +236,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case877" {
-  expect flatResult == [1, 131, 793, 131, 1300, -4, -1, 138, 827, 138, 1390, 2, -1, 142, 851, 142, 1430, 2, 4, 174, 1030, 174, 1700, -2, 1, 182, 1096, 182, 364, -3, 2, 188, 1121, 188, 376, -1, 2, 213, 1277, 213, 426, -3, -3, 220, 1338, 220, 440, -1]
+  expect flatResult == [-1, -1, -1, -1, -2, -3, -3, -3, -4, 1, 1, 1030, 1096, 1121, 1277, 1300, 131, 131, 1338, 138, 138, 1390, 142, 142, 1430, 1700, 174, 174, 182, 182, 188, 188, 2, 2, 2, 2, 213, 213, 220, 220, 364, 376, 4, 426, 440, 793, 827, 851]
 }
 

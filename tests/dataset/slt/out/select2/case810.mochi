@@ -224,13 +224,16 @@ let t1 = [
 ]
 
 /* SELECT abs(a) FROM t1 WHERE c BETWEEN b-2 AND d+2 OR a IS NULL */
-let result = from row in t1
+var result = from row in t1
   where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || row.a == null)
   select (if row.a < 0 { -(row.a) } else { row.a })
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
 
 test "case810" {
-  expect result == [107, null, 121, 131, 138, 142, 163, 174, 182, 188, null, 213, 220, 234, 245]
+  expect result == [107, 121, 131, 138, 142, 163, 174, 182, 188, 213, 220, 234, 245, null, null]
 }

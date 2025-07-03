@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT b, d, b-c FROM t1 WHERE a IS NULL OR EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) */
-let result = from row in t1
+var result = from row in t1
   where (row.a == null || count(from x in t1
   where x.b < row.b
   select x) > 0)
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case857" {
-  expect flatResult == [112, 114, -1, 124, 122, 1, 129, 128, 4, 130, 133, -4, 139, 136, 2, 143, 140, 2, 145, null, -2, 151, null, 1, 158, null, 3, 160, 164, -1, 167, null, 1, 170, 171, -2, 175, null, -1, 181, 183, -3, 186, 185, -1, 194, 190, 1, 198, 196, 3, 206, 207, -2, 211, 212, -3, 218, 217, 3, 223, 222, -1, 228, 226, 3, 232, 233, 1, 236, 238, null, 240, null, -4, 249, 248, 2]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -3, -3, -4, -4, 1, 1, 1, 1, 1, 112, 114, 122, 124, 128, 129, 130, 133, 136, 139, 140, 143, 145, 151, 158, 160, 164, 167, 170, 171, 175, 181, 183, 185, 186, 190, 194, 196, 198, 2, 2, 2, 206, 207, 211, 212, 217, 218, 222, 223, 226, 228, 232, 233, 236, 238, 240, 248, 249, 3, 3, 3, 3, 4, null, null, null, null, null, null, null]
 }
 
