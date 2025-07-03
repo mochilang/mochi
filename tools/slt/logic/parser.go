@@ -250,6 +250,25 @@ func evalExpr(expr sqlparser.Expr, row map[string]any, table *Table) any {
 		if row != nil {
 			return row[v.Name.String()]
 		}
+	case *sqlparser.UnaryExpr:
+		val := evalExpr(v.Expr, row, table)
+		if f, ok := toFloat(val); ok {
+			switch v.Operator {
+			case "+":
+				if isInt(val) {
+					return int(f)
+				}
+				return f
+			case "-":
+				if isInt(val) {
+					return int(-f)
+				}
+				return -f
+			}
+		}
+		return nil
+	case *sqlparser.ParenExpr:
+		return evalExpr(v.Expr, row, table)
 	case *sqlparser.BinaryExpr:
 		l := evalExpr(v.Left, row, table)
 		r := evalExpr(v.Right, row, table)
