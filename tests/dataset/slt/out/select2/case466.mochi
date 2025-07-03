@@ -239,6 +239,6 @@ for x in flatResult {
   print(x)
 }
 test "case466" {
-  expect flatResult == [<nil>, <nil>, 119, 0, 2, 1861, 187, 0, -3, 1918, 193, 0, 2, 2125, 214, 0, -3, 2226, 224, 0]
+  expect flatResult == [null, null, 119, 0, 2, 1861, 187, 0, -3, 1918, 193, 0, 2, 2125, 214, 0, -3, 2226, 224, 0]
 }
 
