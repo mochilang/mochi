@@ -224,9 +224,11 @@ let t1 = [
 ]
 
 /* SELECT e, a+b*2, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2+c*3+d*4+e*5 FROM t1 */
-let result = from row in t1
-  order by [row.e, (row.a + (row.b * 2)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
+var result = from row in t1
   select [row.e, (row.a + (row.b * 2)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -237,6 +239,6 @@ for x in flatResult {
   print(x)
 }
 test "case572" {
-  expect flatResult == [null, null, 444, null, 109, 317, 333, 1612, 110, null, 444, null, 117, null, 444, null, null, 369, 222, null, 126, 385, 222, 1902, 132, 391, 333, 1985, 135, 416, 222, 2046, 144, 428, 222, 2131, 146, 439, 444, null, null, 455, 333, null, 157, 475, 333, null, 162, 483, 444, 2432, 165, 502, 333, null, 173, 514, 444, 2579, 177, 529, 444, null, 180, 544, 333, 2728, 189, 560, 333, 2806, 192, 579, 222, 2878, 197, 595, 333, 2949, 204, null, 444, null, null, null, 444, null, 210, 635, 333, 3175, 219, 652, 222, 3260, 221, 666, 222, 3331, 227, 685, 333, 3399, 230, 698, 333, 3473, 237, 711, 444, null, null, 723, 444, null, 246, 743, 111, 3706]
+  expect flatResult == [109, 110, 111, 117, 126, 132, 135, 144, 146, 157, 1612, 162, 165, 173, 177, 180, 189, 1902, 192, 197, 1985, 204, 2046, 210, 2131, 219, 221, 222, 222, 222, 222, 222, 222, 222, 227, 230, 237, 2432, 246, 2579, 2728, 2806, 2878, 2949, 317, 3175, 3260, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 3331, 3399, 3473, 369, 3706, 385, 391, 416, 428, 439, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

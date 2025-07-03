@@ -224,10 +224,12 @@ let t1 = [
 ]
 
 /* SELECT b-c, a+b*2+c*3+d*4, b, c-d, a+b*2+c*3 FROM t1 WHERE d>e AND c>d AND coalesce(a,b,c,d,e)<>0 */
-let result = from row in t1
-  where ((row.d > row.e && row.c > row.d) && null != 0)
-  order by [(row.b - row.c), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.b, (row.c - row.d), ((row.a + (row.b * 2)) + (row.c * 3))]
+var result = from row in t1
+  where ((row.d > row.e && row.c > row.d) && (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0)
   select [(row.b - row.c), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.b, (row.c - row.d), ((row.a + (row.b * 2)) + (row.c * 3))]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -238,6 +240,6 @@ for x in flatResult {
   print(x)
 }
 test "case553" {
-  expect flatResult == [-4, 1325, 130, 1, 793, 2, 1371, 139, 1, 827, -3, 1828, 181, 1, 1096, -3, 2125, 211, 2, 1277, -1, 2226, 223, 2, 1338]
+  expect flatResult == [-1, -3, -3, -4, 1, 1, 1, 1096, 1277, 130, 1325, 1338, 1371, 139, 181, 1828, 2, 2, 2, 211, 2125, 2226, 223, 793, 827]
 }
 

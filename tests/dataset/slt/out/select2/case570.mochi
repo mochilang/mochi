@@ -224,14 +224,14 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3+d*4 FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
-let result = from row in t1
-  where null != 0
-  order by [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+var result = from row in t1
+  where (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -242,6 +242,6 @@ for x in flatResult {
   print(x)
 }
 test "case570" {
-  expect flatResult == [0, null, 0, 1067, 0, null, 0, null, 0, 1226, 0, 1272, 0, 1325, 0, 1371, 0, 1411, 0, null, 0, null, 0, null, 0, 1622, 0, null, 0, 1714, 0, null, 0, 1828, 0, 1861, 0, 1918, 0, 1964, 0, null, 0, null, 0, 2125, 0, 2165, 0, 2226, 0, 2264, 0, 2323, 0, null, 0, null, 0, 2476]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1067, 1226, 1272, 1325, 1371, 1411, 1622, 1714, 1828, 1861, 1918, 1964, 2125, 2165, 2226, 2264, 2323, 2476, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

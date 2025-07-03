@@ -224,10 +224,12 @@ let t1 = [
 ]
 
 /* SELECT c-d, a+b*2, d-e FROM t1 WHERE c>d */
-let result = from row in t1
+var result = from row in t1
   where row.c > row.d
-  order by [(row.c - row.d), (row.a + (row.b * 2)), (row.d - row.e)]
   select [(row.c - row.d), (row.a + (row.b * 2)), (row.d - row.e)]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -238,6 +240,6 @@ for x in flatResult {
   print(x)
 }
 test "case582" {
-  expect flatResult == [1, null, null, 3, null, -1, 1, 369, null, 1, 391, 1, 1, 416, 1, 1, 428, -4, 1, 514, -2, 1, 544, 3, 2, 560, -4, 3, 579, -2, 1, null, null, 2, 635, 2, 2, 666, 1]
+  expect flatResult == [-1, -2, -2, -4, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 369, 391, 416, 428, 514, 544, 560, 579, 635, 666, null, null, null, null, null, null]
 }
 

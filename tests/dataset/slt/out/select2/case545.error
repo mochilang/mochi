@@ -1,0 +1,7 @@
+expect condition failed at :245: expect flatResult == [0, 0, 107, 127]
+call graph: main
+stack trace:
+  main at :245
+    expect flatResult == [0, 0, 107, 127]
+
+got: [0, 107, 0, 127]

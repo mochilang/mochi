@@ -224,9 +224,11 @@ let t1 = [
 ]
 
 /* SELECT c, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END FROM t1 */
-let result = from row in t1
-  order by [row.c, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
+var result = from row in t1
   select [row.c, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -237,6 +239,6 @@ for x in flatResult {
   print(x)
 }
 test "case552" {
-  expect flatResult == [102, 555, 106, 333, 113, 555, 119, 333, 123, 333, 125, 333, 134, 444, 137, 111, 141, 111, 147, 555, 150, 555, 155, 555, 161, 333, 166, 555, 172, 555, 176, 555, 184, 333, 187, 444, 193, 444, 195, 555, 202, 222, 208, 555, 214, 222, 215, 333, 224, 444, 225, 555, 231, 555, null, 555, 244, 222, 247, 444]
+  expect flatResult == [102, 106, 111, 111, 113, 119, 123, 125, 134, 137, 141, 147, 150, 155, 161, 166, 172, 176, 184, 187, 193, 195, 202, 208, 214, 215, 222, 222, 222, 224, 225, 231, 244, 247, 333, 333, 333, 333, 333, 333, 333, 444, 444, 444, 444, 444, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, null]
 }
 

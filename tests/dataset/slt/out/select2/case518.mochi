@@ -224,10 +224,12 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4+e*5, a+b*2+c*3+d*4, a+b*2+c*3 FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR (a>b-2 AND a<b+2) */
-let result = from row in t1
+var result = from row in t1
   where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
-  order by [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((row.a + (row.b * 2)) + (row.c * 3))]
   select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((row.a + (row.b * 2)) + (row.c * 3))]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -238,6 +240,6 @@ for x in flatResult {
   print(x)
 }
 test "case518" {
-  expect flatResult == [1612, 1067, 635, 1902, 1272, 760, 1985, 1325, 793, 2046, 1371, 827, 2131, 1411, 851, null, null, 940, null, null, 1000, 2728, 1828, 1096, 2949, 1964, 1180, 3399, 2264, 1360]
+  expect flatResult == [1000, 1067, 1096, 1180, 1272, 1325, 1360, 1371, 1411, 1612, 1828, 1902, 1964, 1985, 2046, 2131, 2264, 2728, 2949, 3399, 635, 760, 793, 827, 851, 940, null, null, null, null]
 }
 

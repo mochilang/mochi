@@ -224,10 +224,12 @@ let t1 = [
 ]
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, c, abs(a) FROM t1 WHERE coalesce(a,b,c,d,e)<>0 AND c>d AND (c<=d-2 OR c>=d+2) */
-let result = from row in t1
-  where ((null != 0 && row.c > row.d) && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
-  order by [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.c, (if row.a < 0 { -(row.a) } else { row.a })]
+var result = from row in t1
+  where (((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 && row.c > row.d) && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
   select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.c, (if row.a < 0 { -(row.a) } else { row.a })]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -238,6 +240,6 @@ for x in flatResult {
   print(x)
 }
 test "case532" {
-  expect flatResult == [444, 333, 119, 115, 333, 444, 187, 188, 222, 444, 193, 191, 333, 222, 214, 213, 222, 444, 224, 220]
+  expect flatResult == [115, 119, 187, 188, 191, 193, 213, 214, 220, 222, 222, 222, 224, 333, 333, 333, 444, 444, 444, 444]
 }
 

@@ -224,10 +224,12 @@ let t1 = [
 ]
 
 /* SELECT abs(b-c), d-e, a+b*2+c*3, a+b*2+c*3+d*4+e*5, a, b, abs(a) FROM t1 WHERE c>d */
-let result = from row in t1
+var result = from row in t1
   where row.c > row.d
-  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.d - row.e), ((row.a + (row.b * 2)) + (row.c * 3)), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.a, row.b, (if row.a < 0 { -(row.a) } else { row.a })]
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.d - row.e), ((row.a + (row.b * 2)) + (row.c * 3)), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.a, row.b, (if row.a < 0 { -(row.a) } else { row.a })]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -238,6 +240,6 @@ for x in flatResult {
   print(x)
 }
 test "case595" {
-  expect flatResult == [null, null, null, null, 104, null, 104, null, -1, null, null, 115, null, 115, 1, null, 738, null, 121, 124, 121, 4, 1, 793, 1985, 131, 130, 131, 2, 1, 827, 2046, 138, 139, 138, 2, -4, 851, 2131, 142, 143, 142, 2, -2, 1030, 2579, 174, 170, 174, 3, 3, 1096, 2728, 182, 181, 182, 1, -4, 1121, 2806, 188, 186, 188, 1, -2, 1158, 2878, 191, 194, 191, 2, null, null, null, null, 206, null, 3, 2, 1277, 3175, 213, 211, 213, 1, 1, 1338, 3331, 220, 223, 220]
+  expect flatResult == [-1, -2, -2, -4, -4, 1, 1, 1, 1, 1, 1, 1, 1030, 104, 104, 1096, 1121, 115, 115, 1158, 121, 121, 124, 1277, 130, 131, 131, 1338, 138, 138, 139, 142, 142, 143, 170, 174, 174, 181, 182, 182, 186, 188, 188, 191, 191, 194, 1985, 2, 2, 2, 2, 2, 2046, 206, 211, 213, 213, 2131, 220, 220, 223, 2579, 2728, 2806, 2878, 3, 3, 3, 3175, 3331, 4, 738, 793, 827, 851, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

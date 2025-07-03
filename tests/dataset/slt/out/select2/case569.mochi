@@ -224,13 +224,13 @@ let t1 = [
 ]
 
 /* SELECT (a+b+c+d+e)/5, b-c, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c-d FROM t1 */
-let result = from row in t1
-  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.b - row.c), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.c - row.d)]
+var result = from row in t1
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.b - row.c), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.c - row.d)]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -241,6 +241,6 @@ for x in flatResult {
   print(x)
 }
 test "case569" {
-  expect flatResult == [null, null, 0, 1, 107, -1, 0, -2, null, -1, 0, -1, null, null, 0, 3, null, 1, 0, 1, 127, 4, 0, -3, 132, -4, 0, 1, 137, 2, 0, 1, 142, 2, 0, 1, null, -2, 0, null, null, 1, 0, null, null, 3, 0, null, 162, -1, 0, -3, null, 1, 0, null, 172, -2, 0, 1, null, -1, 0, null, 182, -3, 0, 1, 187, -1, 0, 2, 192, 1, 0, 3, 197, 3, 0, -1, null, null, 0, -1, null, -2, 0, 1, 212, -3, 0, 2, 217, 3, 0, -2, 222, -1, 0, 2, 227, 3, 0, -1, 232, 1, 0, -2, null, null, 0, null, null, -4, 0, null, 247, 2, 0, -1]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2, -3, -3, -3, -3, -4, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 107, 127, 132, 137, 142, 162, 172, 182, 187, 192, 197, 2, 2, 2, 2, 2, 2, 212, 217, 222, 227, 232, 247, 3, 3, 3, 3, 3, 3, 4, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

@@ -224,10 +224,12 @@ let t1 = [
 ]
 
 /* SELECT e FROM t1 WHERE (e>a AND e<b) OR (e>c OR e<d) */
-let result = from row in t1
+var result = from row in t1
   where (((row.e > row.a && row.e < row.b)) || ((row.e > row.c || row.e < row.d)))
-  order by row.e
   select row.e
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }

@@ -224,10 +224,12 @@ let t1 = [
 ]
 
 /* SELECT a, a+b*2+c*3+d*4, d FROM t1 WHERE b IS NOT NULL */
-let result = from row in t1
+var result = from row in t1
   where row.b != null
-  order by [row.a, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.d]
   select [row.a, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.d]
+result = from x in result
+  order by str(x)
+  select x
 var flatResult = []
 for row in result {
   for x in row {
@@ -238,6 +240,6 @@ for x in flatResult {
   print(x)
 }
 test "case591" {
-  expect flatResult == [107, 1067, 108, null, null, 114, 121, 1226, 122, 127, 1272, 128, 131, 1325, 133, 138, 1371, 136, 142, 1411, 140, 149, null, null, 153, null, null, 159, null, null, 163, 1622, 164, 168, null, null, 174, 1714, 171, 179, null, null, 182, 1828, 183, 188, 1861, 185, 191, 1918, 190, 199, 1964, 196, null, null, 207, 213, 2125, 212, 216, 2165, 217, 220, 2226, 222, 229, 2264, 226, 234, 2323, 233, 239, null, 238, 243, null, null, 245, 2476, 248]
+  expect flatResult == [1067, 107, 108, 114, 121, 122, 1226, 127, 1272, 128, 131, 1325, 133, 136, 1371, 138, 140, 1411, 142, 149, 153, 159, 1622, 163, 164, 168, 171, 1714, 174, 179, 182, 1828, 183, 185, 1861, 188, 190, 191, 1918, 196, 1964, 199, 207, 212, 2125, 213, 216, 2165, 217, 220, 222, 2226, 226, 2264, 229, 2323, 233, 234, 238, 239, 243, 245, 2476, 248, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 
