@@ -226,9 +226,6 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), (a+b+c+d+e)/5 FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 */
 let result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
-  order by [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
@@ -238,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from v in flatResult
+  order by [(v == null), str(v)]
+  select v
 for x in flatResult {
   print(x)
 }
 test "case545" {
-  expect flatResult == [0, 107, 0, 127]
+  expect flatResult == [0, 0, 107, 127]
 }
 

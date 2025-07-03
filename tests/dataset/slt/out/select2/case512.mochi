@@ -228,7 +228,6 @@ let sub0 = avg(from x in t1
   select x.c)
 
 let result = from row in t1
-  order by [(row.a + (row.b * 2)), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
   select [(row.a + (row.b * 2)), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
 var flatResult = []
 for row in result {
@@ -236,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from v in flatResult
+  order by [(v == null), str(v)]
+  select v
 for x in flatResult {
   print(x)
 }
 test "case512" {
-  expect flatResult == [null, null, 555, 317, 1050, 333, null, 1120, 555, null, null, 333, 369, 1240, 333, 385, 1290, 333, 391, 1300, 444, 416, 1390, 111, 428, 1430, 111, 439, 1450, 555, 455, 1510, 555, 475, 1580, 555, 483, 1600, 333, 502, 1670, 555, 514, 1700, 555, 529, 358, 555, 544, 364, 333, 560, 376, 444, 579, 382, 444, 595, 398, 555, null, 402, 222, null, null, 555, 635, 426, 222, 652, 432, 333, 666, 440, 444, 685, 458, 555, 698, 468, 555, 711, 2360, 555, 723, 486, 222, 743, 490, 444]
+  expect flatResult == [1050, 111, 111, 1120, 1240, 1290, 1300, 1390, 1430, 1450, 1510, 1580, 1600, 1670, 1700, 222, 222, 222, 2360, 317, 333, 333, 333, 333, 333, 333, 333, 358, 364, 369, 376, 382, 385, 391, 398, 402, 416, 426, 428, 432, 439, 440, 444, 444, 444, 444, 444, 455, 458, 468, 475, 483, 486, 490, 502, 514, 529, 544, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null, null, null, null, null, null, null]
 }
 

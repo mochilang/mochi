@@ -226,12 +226,14 @@ let t1 = [
 /* SELECT e FROM t1 WHERE (e>a AND e<b) OR (e>c OR e<d) */
 let result = from row in t1
   where (((row.e > row.a && row.e < row.b)) || ((row.e > row.c || row.e < row.d)))
-  order by row.e
   select row.e
-for x in result {
+let resultSorted = from v in result
+  order by [(v == null), str(v)]
+  select v
+for x in resultSorted {
   print(x)
 }
 
 test "case523" {
-  expect result == [109, 110, 126, 132, 135, 144, 157, 162, 173, 177, 180, 189, 192, 197, 204, 210, 219, 221, 227, 230, 237, 246]
+  expect resultSorted == [109, 110, 126, 132, 135, 144, 157, 162, 173, 177, 180, 189, 192, 197, 204, 210, 219, 221, 227, 230, 237, 246]
 }

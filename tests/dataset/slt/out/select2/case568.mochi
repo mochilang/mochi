@@ -226,12 +226,14 @@ let t1 = [
 /* SELECT a+b*2+c*3 FROM t1 WHERE a IS NULL */
 let result = from row in t1
   where row.a == null
-  order by ((row.a + (row.b * 2)) + (row.c * 3))
   select ((row.a + (row.b * 2)) + (row.c * 3))
-for x in result {
+let resultSorted = from v in result
+  order by [(v == null), str(v)]
+  select v
+for x in resultSorted {
   print(x)
 }
 
 test "case568" {
-  expect result == [null, null]
+  expect resultSorted == [null, null]
 }

@@ -226,7 +226,6 @@ let t1 = [
 /* SELECT b, a-b FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND a>b AND d>e */
 let result = from row in t1
   where (((row.d < 110 || row.d > 150) && row.a > row.b) && row.d > row.e)
-  order by [row.b, (row.a - row.b)]
   select [row.b, (row.a - row.b)]
 var flatResult = []
 for row in result {
@@ -234,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from v in flatResult
+  order by [(v == null), str(v)]
+  select v
 for x in flatResult {
   print(x)
 }
 test "case513" {
-  expect flatResult == [160, 3, 181, 1, 211, 2, 232, 2, 236, 3]
+  expect flatResult == [1, 160, 181, 2, 2, 211, 232, 236, 3, 3]
 }
 
