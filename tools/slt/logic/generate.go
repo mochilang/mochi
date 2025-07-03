@@ -106,7 +106,8 @@ func formatValue(v any) string {
 	case nil:
 		return "null"
 	case string:
-		if t == "true" || t == "false" {
+		lower := strings.ToLower(t)
+		if lower == "true" || lower == "false" {
 			return fmt.Sprintf("\"%s\" + \"\"", t)
 		}
 		return fmt.Sprintf("\"%s\"", t)
@@ -236,6 +237,31 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 			} else if strings.HasPrefix(clean, "0b") || strings.HasPrefix(clean, "0B") {
 				if v, err := strconv.ParseInt(clean[2:], 2, 64); err == nil {
+					if neg {
+						v = -v
+					}
+					if v == 0 {
+						seenZero = true
+					} else if v == 1 {
+						seenOne = true
+					} else if v == -1 {
+						seenNegOne = true
+					} else {
+						boolLike = false
+					}
+					if t == "" {
+						t = "int"
+					} else if t != "int" {
+						if t == "float" {
+							// allow ints in float column
+						} else {
+							return "any"
+						}
+					}
+					continue
+				}
+			} else if strings.HasPrefix(clean, "0o") || strings.HasPrefix(clean, "0O") {
+				if v, err := strconv.ParseInt(clean[2:], 8, 64); err == nil {
 					if neg {
 						v = -v
 					}

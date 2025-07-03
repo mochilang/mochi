@@ -228,6 +228,9 @@ var result = from row in t1
   select [row.d, count(from x in t1
   where x.b < row.b
   select x), row.a, row.c, row.e, ((row.a + (row.b * 2)) + (row.c * 3))]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
