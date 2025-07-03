@@ -228,8 +228,8 @@ let sub0 = avg(from x in t1
   select x.c)
 
 var result = from row in t1
-  where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || row.a > row.b)
-  select [row.c, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
+  where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || (row.a != null && row.b != null && (row.a > row.b)))
+  select [row.c, (if (row.c != null && sub0 != null && (row.c > sub0)) { (row.a * 2) } else { (row.b * 10) })]
 var flatResult = []
 for row in result {
   for x in row {

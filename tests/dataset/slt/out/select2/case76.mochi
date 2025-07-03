@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT b, d, abs(a), abs(b-c), d-e FROM t1 WHERE (e>a AND e<b) OR e+d BETWEEN a+b-10 AND c+130 OR b IS NOT NULL */
 var result = from row in t1
-  where ((((row.e > row.a && row.e < row.b)) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) || row.b != null)
+  where (((((row.e != null && row.a != null && (row.e > row.a)) && (row.e != null && row.b != null && (row.e < row.b)))) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) || row.b != null)
   select [row.b, row.d, (if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.d - row.e)]
 var flatResult = []
 for row in result {

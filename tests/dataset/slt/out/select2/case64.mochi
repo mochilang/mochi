@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT a-b, abs(b-c), abs(a) FROM t1 WHERE a>b OR EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) OR d>e */
 var result = from row in t1
-  where ((row.a > row.b || count(from x in t1
-  where x.b < row.b
-  select x) > 0) || row.d > row.e)
+  where (((row.a != null && row.b != null && (row.a > row.b)) || count(from x in t1
+  where (x.b != null && row.b != null && (x.b < row.b))
+  select x) > 0) || (row.d != null && row.e != null && (row.d > row.e)))
   select [(row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []
 for row in result {

@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT b-c FROM t1 WHERE a IS NULL AND (e>c OR e<d) */
 var result = from row in t1
-  where (row.a == null && ((row.e > row.c || row.e < row.d)))
+  where (row.a == null && (((row.e != null && row.c != null && (row.e > row.c)) || (row.e != null && row.d != null && (row.e < row.d)))))
   select (row.b - row.c)
 result = from x in result
   order by str(x)

@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT e, a+b*2, c, b-c FROM t1 WHERE a>b */
 var result = from row in t1
-  where row.a > row.b
+  where (row.a != null && row.b != null && (row.a > row.b))
   select [row.e, (row.a + (row.b * 2)), row.c, (row.b - row.c)]
 var flatResult = []
 for row in result {

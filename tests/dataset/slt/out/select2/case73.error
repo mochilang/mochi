@@ -1,7 +1,0 @@
-expect condition failed at :243: expect flatResult == [-1, -2, 1, 110, 2, 4, 444, 444, 555, 555, null, null]
-call graph: main
-stack trace:
-  main at :243
-    expect flatResult == [-1, -2, 1, 110, 2, 4, 444, 444, 555, 555, null, null]
-
-got: [-1, -2, 1, 110, 2, 4, 444, 444, 444, 555, null, null]

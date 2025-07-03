@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT c, b-c, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3+d*4+e*5, a, (a+b+c+d+e)/5 FROM t1 WHERE b>c AND (e>a AND e<b) */
 var result = from row in t1
-  where (row.b > row.c && ((row.e > row.a && row.e < row.b)))
+  where ((row.b != null && row.c != null && (row.b > row.c)) && (((row.e != null && row.a != null && (row.e > row.a)) && (row.e != null && row.b != null && (row.e < row.b)))))
   select [row.c, (row.b - row.c), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where ((x.c != null && row.c != null && (x.c > row.c)) && (x.d != null && row.d != null && (x.d < row.d)))
   select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.a, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
 for row in result {

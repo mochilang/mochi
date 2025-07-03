@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT d, c-d, e FROM t1 WHERE d NOT BETWEEN 110 AND 150 OR (e>a AND e<b) OR a IS NULL */
 var result = from row in t1
-  where (((row.d < 110 || row.d > 150) || ((row.e > row.a && row.e < row.b))) || row.a == null)
+  where (((row.d < 110 || row.d > 150) || (((row.e != null && row.a != null && (row.e > row.a)) && (row.e != null && row.b != null && (row.e < row.b))))) || row.a == null)
   select [row.d, (row.c - row.d), row.e]
 var flatResult = []
 for row in result {

@@ -226,10 +226,10 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d-e, a+b*2+c*3+d*4+e*5 FROM t1 WHERE c BETWEEN b-2 AND d+2 AND EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) AND b IS NOT NULL */
 var result = from row in t1
   where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) && count(from x in t1
-  where x.b < row.b
+  where (x.b != null && row.b != null && (x.b < row.b))
   select x) > 0) && row.b != null)
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where ((x.c != null && row.c != null && (x.c > row.c)) && (x.d != null && row.d != null && (x.d < row.d)))
   select x), (row.d - row.e), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
 var flatResult = []
 for row in result {

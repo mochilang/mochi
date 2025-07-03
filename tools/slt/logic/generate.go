@@ -100,6 +100,19 @@ func existsToMochi(sub *sqlparser.Subquery, outer string) string {
 	return sb.String()
 }
 
+// cmpExpr returns a comparison expression with SQL NULL semantics.
+func cmpExpr(left, op, right string) string {
+	if op == "=" {
+		op = "=="
+	}
+	switch op {
+	case "==", "!=", "<", "<=", ">", ">=":
+		return fmt.Sprintf("(%s != null && %s != null && (%s %s %s))", left, right, left, op, right)
+	default:
+		return fmt.Sprintf("(%s %s %s)", left, op, right)
+	}
+}
+
 // Format the value for Mochi source.
 func formatValue(v any) string {
 	switch t := v.(type) {
@@ -465,7 +478,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		}
 		l := exprToMochiRow(v.Left, rowVar, outer, subs)
 		r := exprToMochiRow(v.Right, rowVar, outer, subs)
-		return fmt.Sprintf("(%s %s %s)", l, v.Operator, r)
+		return cmpExpr(l, v.Operator, r)
 	case *sqlparser.FuncExpr:
 		name := strings.ToLower(v.Name.String())
 		if name == "abs" && len(v.Exprs) == 1 {
@@ -498,7 +511,8 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		if v.Expr != nil {
 			expr := exprToMochiRow(v.Expr, rowVar, outer, subs)
 			for i := len(v.Whens) - 1; i >= 0; i-- {
-				cond := fmt.Sprintf("%s == %s", expr, exprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs))
+				right := exprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs)
+				cond := cmpExpr(expr, "=", right)
 				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer, subs)
 				out = fmt.Sprintf("(if %s { %s } else { %s })", cond, val, out)
 			}
@@ -617,10 +631,7 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 			}
 		}
 		right := exprToMochiRow(v.Right, rowVar, outer, subs)
-		if op == "=" {
-			op = "=="
-		}
-		return fmt.Sprintf("%s %s %s", left, op, right)
+		return cmpExpr(left, op, right)
 	case *sqlparser.AndExpr:
 		l := condExprToMochiRow(v.Left, rowVar, outer, subs)
 		r := condExprToMochiRow(v.Right, rowVar, outer, subs)
