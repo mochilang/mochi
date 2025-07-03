@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT a+b*2 FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR a>b ORDER BY 1 */
 let result = from row in t1
-  where (((row.e + row.d) >= ((row.a + row.b) - 10.0) && (row.e + row.d) <= (row.c + 130.0)) || row.a > row.b)
+  where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || row.a > row.b)
   order by (row.a + (row.b + row.b))
   select (row.a + (row.b + row.b))
 for x in result {

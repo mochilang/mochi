@@ -228,10 +228,10 @@ let result = from row in t1
   where row.a > row.b
   order by [count(from x in t1
   where x.b < row.b
-  select x), (if row.a < 0 { -(row.a) } else { row.a }), ((row.a + (row.b * 2)) + (row.c * 3)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c]
+  select x), (if row.a < 0 { -(row.a) } else { row.a }), ((row.a + (row.b + row.b)) + (row.c * 3)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c]
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
   where x.b < row.b
-  select x), (if row.a < 0 { -(row.a) } else { row.a }), row.c, ((row.a + (row.b * 2)) + (row.c * 3))]
+  select x), (if row.a < 0 { -(row.a) } else { row.a }), row.c, ((row.a + (row.b + row.b)) + (row.c * 3))]
 var flatResult = []
 for row in result {
   for x in row {

@@ -231,10 +231,10 @@ let result = from row in t1
   where (row.a > row.b || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
   order by [(row.c - row.d), row.b, count(from x in t1
   where x.b < row.b
-  select x), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
+  select x), (if row.c > sub0 { (row.a + row.a) } else { (row.b * 10) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
   select [count(from x in t1
   where x.b < row.b
-  select x), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.b, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.c - row.d)]
+  select x), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.b, (if row.c > sub0 { (row.a + row.a) } else { (row.b * 10) }), (row.c - row.d)]
 var flatResult = []
 for row in result {
   for x in row {

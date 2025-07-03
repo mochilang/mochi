@@ -227,10 +227,10 @@ let t1 = [
 let result = from row in t1
   order by [(row.b - row.c), count(from x in t1
   where x.b < row.b
-  select x), row.b, (if row.a < (row.b - 3.0) { 111.0 } else { (if row.a <= row.b { 222.0 } else { (if row.a < (row.b + 3.0) { 333.0 } else { 444.0 }) }) }), (if (row.a + 1.0) == row.b { 111.0 } else { (if (row.a + 1.0) == row.c { 222.0 } else { (if (row.a + 1.0) == row.d { 333.0 } else { (if (row.a + 1.0) == row.e { 444.0 } else { 555.0 }) }) }) }), row.c, (row.a + (row.b + row.b))]
-  select [(if row.a < (row.b - 3.0) { 111.0 } else { (if row.a <= row.b { 222.0 } else { (if row.a < (row.b + 3.0) { 333.0 } else { 444.0 }) }) }), row.c, count(from x in t1
+  select x), row.b, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.c, (row.a + (row.b + row.b))]
+  select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.c, count(from x in t1
   where x.b < row.b
-  select x), (row.b - row.c), row.b, (if (row.a + 1.0) == row.b { 111.0 } else { (if (row.a + 1.0) == row.c { 222.0 } else { (if (row.a + 1.0) == row.d { 333.0 } else { (if (row.a + 1.0) == row.e { 444.0 } else { 555.0 }) }) }) }), (row.a + (row.b + row.b))]
+  select x), (row.b - row.c), row.b, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.a + (row.b + row.b))]
 var flatResult = []
 for row in result {
   for x in row {

@@ -1,5 +1,0 @@
-error[T008]: type mismatch: expected int, got float
-  --> :235:503
-
-help:
-  Change the value to match the expected type.

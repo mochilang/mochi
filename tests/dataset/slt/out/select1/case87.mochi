@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT a+b*2, a+b*2+c*3+d*4+e*5, a-b, abs(b-c), c, b, e FROM t1 WHERE d>e ORDER BY 4,5,3,6,2,1,7 */
 let result = from row in t1
   where row.d > row.e
-  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c, (row.a - row.b), row.b, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a + (row.b * 2)), row.e]
-  select [(row.a + (row.b * 2)), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c, row.b, row.e]
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c, (row.a - row.b), row.b, ((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a + (row.b + row.b)), row.e]
+  select [(row.a + (row.b + row.b)), ((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c, row.b, row.e]
 var flatResult = []
 for row in result {
   for x in row {
