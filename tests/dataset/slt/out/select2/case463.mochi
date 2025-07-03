@@ -227,6 +227,9 @@ let t1 = [
 var result = from row in t1
   where ((row.b != null && row.c > row.d) && (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
   select [(row.a + (row.b * 2)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
