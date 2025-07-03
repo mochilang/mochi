@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, e, c-d, a+b*2+c*3, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a-b FROM t1 WHERE c BETWEEN b-2 AND d+2 OR coalesce(a,b,c,d,e)<>0 OR a IS NULL */
 var result = from row in t1
-  where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || null != 0) || row.a == null)
+  where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0) || row.a == null)
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.e, (row.c - row.d), ((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.a - row.b)]
 var flatResult = []
 for row in result {
