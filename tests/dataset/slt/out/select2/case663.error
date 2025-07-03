@@ -1,1 +1,7 @@
-expect condition failed
+expect condition failed at :234: expect result == [null, 1067, null, null, 1226, 1272, 1325, 1371, 1411, null, null, null, 1622, null, 1714, null, 1828, 1861, 1918, 1964, null, null, 2125, 2165, 2226, 2264, 2323, null, null, 2476]
+call graph: main
+stack trace:
+  main at :234
+    expect result == [null, 1067, null, null, 1226, 1272, 1325, 1371, 1411, null, null, null, 1622, null, 1714, null, 1828, 1861, 1918, 1964, null, null, 2125, 2165, 2226, 2264, 2323, null, null, 2476]
+
+got: [814, 1067, 1019, 936, 1226, 1272, 1325, 1371, 1411, 880, 905, 940, 1622, 1000, 1714, 1057, 1828, 1861, 1918, 1964, 1619, 1864, 2125, 2165, 2226, 2264, 2323, 1663, 1455, 2476]
