@@ -228,7 +228,6 @@ let result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 && row.b != null) && ((row.a > (row.b - 2) && row.a < (row.b + 2))))
-  order by [(row.a - row.b), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < 0 { -(row.a) } else { row.a })]
   select [(row.a - row.b), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []
 for row in result {
@@ -236,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from v in flatResult
+  order by [(v == null), str(v)]
+  select v
 for x in flatResult {
   print(x)
 }
 test "case544" {
-  expect flatResult == [1, 132, 131, -1, 137, 138, -1, 142, 142, 1, null, 159, 1, null, 168, 1, 182, 182, 1, 197, 199, 1, 227, 229]
+  expect flatResult == [-1, -1, 1, 1, 1, 1, 1, 1, 131, 132, 137, 138, 142, 142, 159, 168, 182, 182, 197, 199, 227, 229, null, null]
 }
 

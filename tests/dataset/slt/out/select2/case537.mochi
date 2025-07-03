@@ -226,12 +226,14 @@ let t1 = [
 /* SELECT d FROM t1 WHERE coalesce(a,b,c,d,e)<>0 AND d NOT BETWEEN 110 AND 150 */
 let result = from row in t1
   where (null != 0 && (row.d < 110 || row.d > 150))
-  order by row.d
   select row.d
-for x in result {
+let resultSorted = from v in result
+  order by [(v == null), str(v)]
+  select v
+for x in resultSorted {
   print(x)
 }
 
 test "case537" {
-  expect result == [101, 108, 164, 171, 183, 185, 190, 196, 203, 207, 212, 217, 222, 226, 233, 238, 248]
+  expect resultSorted == [101, 108, 164, 171, 183, 185, 190, 196, 203, 207, 212, 217, 222, 226, 233, 238, 248]
 }

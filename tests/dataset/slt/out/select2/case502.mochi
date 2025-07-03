@@ -226,12 +226,14 @@ let t1 = [
 /* SELECT e FROM t1 WHERE b>c */
 let result = from row in t1
   where row.b > row.c
-  order by row.e
   select row.e
-for x in result {
+let resultSorted = from v in result
+  order by [(v == null), str(v)]
+  select v
+for x in resultSorted {
   print(x)
 }
 
 test "case502" {
-  expect result == [null, 126, 135, 144, null, 157, 165, 192, 197, 219, 227, 230, 246]
+  expect resultSorted == [126, 135, 144, 157, 165, 192, 197, 219, 227, 230, 246, null, null]
 }

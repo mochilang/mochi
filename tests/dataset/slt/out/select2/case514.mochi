@@ -228,12 +228,14 @@ let result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0
-  order by row.b
   select row.b
-for x in result {
+let resultSorted = from v in result
+  order by [(v == null), str(v)]
+  select v
+for x in resultSorted {
   print(x)
 }
 
 test "case514" {
-  expect result == [112, 124, 129, 130, 139, 143, 145, 151, 158, 160, 167, 170, 175, 181, 186, 194, 198, 206, 211, 218, 223, 228, 232, 236, 240, 249]
+  expect resultSorted == [112, 124, 129, 130, 139, 143, 145, 151, 158, 160, 167, 170, 175, 181, 186, 194, 198, 206, 211, 218, 223, 228, 232, 236, 240, 249]
 }

@@ -225,12 +225,14 @@ let t1 = [
 
 /* SELECT a+b*2+c*3+d*4+e*5 FROM t1 */
 let result = from row in t1
-  order by ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))
   select ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))
-for x in result {
+let resultSorted = from v in result
+  order by [(v == null), str(v)]
+  select v
+for x in resultSorted {
   print(x)
 }
 
 test "case526" {
-  expect result == [null, 1612, null, null, null, 1902, 1985, 2046, 2131, null, null, null, 2432, null, 2579, null, 2728, 2806, 2878, 2949, null, null, 3175, 3260, 3331, 3399, 3473, null, null, 3706]
+  expect resultSorted == [1612, 1902, 1985, 2046, 2131, 2432, 2579, 2728, 2806, 2878, 2949, 3175, 3260, 3331, 3399, 3473, 3706, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }

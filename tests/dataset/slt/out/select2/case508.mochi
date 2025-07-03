@@ -226,9 +226,6 @@ let t1 = [
 /* SELECT b, (a+b+c+d+e)/5, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, d-e, a-b FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR (c<=d-2 OR c>=d+2) */
 let result = from row in t1
   where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
-  order by [row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), row.c, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.d - row.e), (row.a - row.b)]
   select [row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), row.c, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.d - row.e), (row.a - row.b)]
@@ -238,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from v in flatResult
+  order by [(v == null), str(v)]
+  select v
 for x in flatResult {
   print(x)
 }
 test "case508" {
-  expect flatResult == [105, 107, 0, 106, 333, -1, 2, null, null, 0, 119, 333, -1, null, 129, 127, 0, 125, 333, 2, -2, 160, 162, 0, 161, 333, 2, 3, 186, 187, 0, 187, 444, -4, 2, 194, 192, 0, 193, 444, -2, -3, 211, 212, 0, 214, 222, 2, 2, 218, 217, 0, 215, 333, -2, -2, 223, 222, 0, 224, 444, 1, -3, 232, 232, 0, 231, 555, 3, 2]
+  expect flatResult == [-1, -1, -2, -2, -2, -2, -3, -3, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 105, 106, 107, 119, 125, 127, 129, 160, 161, 162, 186, 187, 187, 192, 193, 194, 2, 2, 2, 2, 2, 2, 2, 211, 212, 214, 215, 217, 218, 222, 222, 223, 224, 231, 232, 232, 3, 3, 333, 333, 333, 333, 333, 444, 444, 444, 555, null, null, null]
 }
 

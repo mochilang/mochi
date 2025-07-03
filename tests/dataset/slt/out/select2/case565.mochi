@@ -229,7 +229,6 @@ let sub0 = avg(from x in t1
 
 let result = from row in t1
   where (((row.a > (row.b - 2) && row.a < (row.b + 2))) || row.c > row.d)
-  order by [row.a, (row.d - row.e), row.e, ((row.a + (row.b * 2)) + (row.c * 3)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
   select [row.a, (row.d - row.e), row.e, ((row.a + (row.b * 2)) + (row.c * 3)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
 var flatResult = []
 for row in result {
@@ -237,10 +236,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from v in flatResult
+  order by [(v == null), str(v)]
+  select v
 for x in flatResult {
   print(x)
 }
 test "case565" {
-  expect flatResult == [104, null, null, null, null, 102, null, 115, -1, 117, null, null, 119, null, 121, null, null, 738, 1, 123, 1240, 131, 1, 132, 793, 4, 134, 1300, 138, 1, 135, 827, 2, 137, 1390, 142, -4, 144, 851, 2, 141, 1430, 159, null, 157, 940, 3, 155, 1580, 168, null, 165, 1000, 1, 166, 1670, 174, -2, 173, 1030, 2, 172, 1700, 182, 3, 180, 1096, 3, 184, 364, 188, -4, 189, 1121, 1, 187, 376, 191, -2, 192, 1158, 1, 193, 382, 199, -1, 197, 1180, 3, 195, 398, null, null, null, null, 2, 208, null, 213, 2, 210, 1277, 3, 214, 426, 220, 1, 221, 1338, 1, 224, 440, 229, -1, 227, 1360, 3, 225, 458]
+  expect flatResult == [-1, -1, -1, -2, -2, -4, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1000, 102, 1030, 104, 1096, 1121, 115, 1158, 117, 1180, 119, 121, 123, 1240, 1277, 1300, 131, 132, 1338, 134, 135, 1360, 137, 138, 1390, 141, 142, 1430, 144, 155, 157, 1580, 159, 165, 166, 1670, 168, 1700, 172, 173, 174, 180, 182, 184, 187, 188, 189, 191, 192, 193, 195, 197, 199, 2, 2, 2, 2, 2, 208, 210, 213, 214, 220, 221, 224, 225, 227, 229, 3, 3, 3, 3, 3, 3, 364, 376, 382, 398, 4, 426, 440, 458, 738, 793, 827, 851, 940, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 
