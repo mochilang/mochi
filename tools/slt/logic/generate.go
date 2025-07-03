@@ -149,9 +149,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	seenZero := false
 	seenOne := false
 	seenNegOne := false
+	hasNull := false
 	for _, row := range rows {
 		v := row[name]
 		if v == nil {
+			hasNull = true
 			continue
 		}
 		switch val := v.(type) {
@@ -343,6 +345,13 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	}
 	if t == "float" && floatIsInt {
 		t = "int"
+	}
+
+	if hasNull {
+		if t == "" {
+			return "any"
+		}
+		return "any"
 	}
 
 	if t == "int" && boolLike && (seenZero || seenOne || seenNegOne) {

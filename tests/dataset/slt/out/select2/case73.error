@@ -4,4 +4,4 @@ stack trace:
   main at :240
     expect flatResult == [4, 555, -1, 110, 444, 1, null, 555, -2, null, 444, 2]
 
-got: [4, 555, -1, 110, 111, 1, null, 444, -2, null, 111, 2]
+got: [4, 555, -1, 110, 444, 1, null, 444, -2, null, 444, 2]
