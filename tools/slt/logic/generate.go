@@ -1,8 +1,10 @@
 package logic
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -111,6 +113,11 @@ func formatValue(v any) string {
 			return fmt.Sprintf("\"%s\" + \"\"", t)
 		}
 		return fmt.Sprintf("\"%s\"", t)
+	case bool:
+		if t {
+			return "true"
+		}
+		return "false"
 	case int:
 		return fmt.Sprintf("%d", t)
 	case int64:
@@ -424,6 +431,70 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				} else {
 					return "any"
 				}
+			}
+		case uint, uint8, uint16, uint32, uint64:
+			iv := reflect.ValueOf(val).Uint()
+			if iv == 0 {
+				seenZero = true
+			} else if iv == 1 {
+				seenOne = true
+			} else {
+				boolLike = false
+			}
+			if t == "bool" {
+				break
+			}
+			if t == "" {
+				t = "int"
+			} else if t != "int" {
+				if t == "float" {
+					// allow ints in float column
+				} else {
+					return "any"
+				}
+			}
+		case json.Number:
+			num := val
+			if i, err := num.Int64(); err == nil {
+				if i == 0 {
+					seenZero = true
+				} else if i == 1 {
+					seenOne = true
+				} else {
+					boolLike = false
+				}
+				if t == "" {
+					t = "int"
+				} else if t != "int" {
+					if t == "float" {
+						// allow ints in float column
+					} else {
+						return "any"
+					}
+				}
+				break
+			}
+			if f, err := num.Float64(); err == nil {
+				if f != math.Trunc(f) {
+					floatIsInt = false
+				}
+				if f == 0 {
+					seenZero = true
+				} else if f == 1 {
+					seenOne = true
+				} else {
+					boolLike = false
+				}
+				if t == "" || t == "float" || t == "int" {
+					if t == "" {
+						t = "float"
+					} else if t == "int" && f != math.Trunc(f) {
+						t = "float"
+					}
+				} else {
+					return "any"
+				}
+				break
 			}
 		case bool:
 			if t == "" || t == "bool" {
