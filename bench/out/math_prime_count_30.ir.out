@@ -9,14 +9,18 @@ func main (regs=30)
   // let start = now()
   Now          r4
   // for r in 0..repeat {
+  Const        r2, 0
+  Const        r1, 100
   Move         r5, r2
 L4:
   LessInt      r6, r5, r1
   JumpIfFalse  r6, L0
   // var count = 0
+  Const        r2, 0
   Move         r7, r2
   // for i in 2..n {
   Const        r8, 2
+  Const        r0, 30
   Move         r9, r8
 L3:
   LessInt      r10, r9, r0
@@ -75,6 +79,7 @@ func is_prime (regs=14)
   Return       r3
 L0:
   // for i in 2..(n - 1) {
+  Const        r1, 2
   Const        r4, 1
   Sub          r5, r0, r4
   Move         r6, r1
@@ -87,6 +92,7 @@ L3:
   Equal        r10, r8, r9
   JumpIfFalse  r10, L2
   // return false
+  Const        r3, false
   Return       r3
 L2:
   // for i in 2..(n - 1) {

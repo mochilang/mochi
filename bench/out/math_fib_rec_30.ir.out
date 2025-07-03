@@ -4,6 +4,7 @@ func main (regs=15)
   // let start = now()
   Now          r1
   // let result = fib(n)
+  Const        r0, 30
   Move         r2, r0
   Call         r3, fib, r2
   // let duration = (now() - start) / 1000
@@ -35,6 +36,7 @@ func fib (regs=11)
   Return       r0
 L0:
   // return fib(n - 1) + fib(n - 2)
+  Const        r1, 1
   Sub          r4, r0, r1
   Move         r3, r4
   Call         r5, fib, r3
