@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2, (a+b+c+d+e)/5 FROM t1 WHERE b IS NOT NULL AND c>d AND c BETWEEN b-2 AND d+2 */
-let result = from row in t1
+var result = from row in t1
   where ((row.b != null && row.c > row.d) && (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
   select [(row.a + (row.b * 2)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case463" {
-  expect flatResult == [369, null, 391, 132, 416, 137, 428, 142, 514, 172, 544, 182, 560, 187, null, null, 635, 212, 666, 222]
+  expect flatResult == [132, 137, 142, 172, 182, 187, 212, 222, 369, 391, 416, 428, 514, 544, 560, 635, 666, null, null, null]
 }
 

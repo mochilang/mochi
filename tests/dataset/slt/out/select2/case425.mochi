@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3, (a+b+c+d+e)/5 FROM t1 WHERE (e>a AND e<b) OR e+d BETWEEN a+b-10 AND c+130 */
-let result = from row in t1
+var result = from row in t1
   where (((row.e > row.a && row.e < row.b)) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
   select [((row.a + (row.b * 2)) + (row.c * 3)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case425" {
-  expect flatResult == [635, 107, 760, 127, 1158, 192, 1338, 222, 1484, 247]
+  expect flatResult == [107, 1158, 127, 1338, 1484, 192, 222, 247, 635, 760]
 }
 

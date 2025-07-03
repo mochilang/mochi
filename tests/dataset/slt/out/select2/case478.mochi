@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2+c*3+d*4+e*5 FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
 var flatResult = []
 for row in result {
@@ -232,10 +232,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case478" {
-  expect flatResult == [444, null, 333, 1612, 444, null, 444, null, 222, null, 222, 1902, 333, 1985, 222, 2046, 222, 2131, 444, null, 333, null, 333, null, 444, 2432, 333, null, 444, 2579, 444, null, 333, 2728, 333, 2806, 222, 2878, 333, 2949, 444, null, 444, null, 333, 3175, 222, 3260, 222, 3331, 333, 3399, 333, 3473, 444, null, 444, null, 111, 3706]
+  expect flatResult == [111, 1612, 1902, 1985, 2046, 2131, 222, 222, 222, 222, 222, 222, 222, 2432, 2579, 2728, 2806, 2878, 2949, 3175, 3260, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 3331, 3399, 3473, 3706, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

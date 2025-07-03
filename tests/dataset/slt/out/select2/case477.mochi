@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b, (a+b+c+d+e)/5, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), a-b, d FROM t1 WHERE b>c */
-let result = from row in t1
+var result = from row in t1
   where row.b > row.c
   select [row.a, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
   where x.b < row.b
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case477" {
-  expect flatResult == [121, 333, 124, null, 2, -3, 122, 127, 333, 129, 127, 3, -2, 128, 138, 111, 139, 137, 5, -1, 136, 142, 111, 143, 142, 6, -1, 140, 153, 555, 151, null, 8, 2, null, 159, 555, 158, null, 9, 1, null, 168, 555, 167, null, 11, 1, null, 191, 444, 194, 192, 16, -3, 190, 199, 555, 198, 197, 17, 1, 196, 216, 333, 218, 217, 20, -2, 217, 229, 555, 228, 227, 22, 1, 226, 234, 555, 232, 232, 23, 2, 233, 245, 444, 249, 247, 26, -4, 248]
+  expect flatResult == [-1, -1, -2, -2, -3, -3, -4, 1, 1, 1, 1, 11, 111, 111, 121, 122, 124, 127, 127, 128, 129, 136, 137, 138, 139, 140, 142, 142, 143, 151, 153, 158, 159, 16, 167, 168, 17, 190, 191, 192, 194, 196, 197, 198, 199, 2, 2, 2, 20, 216, 217, 217, 218, 22, 226, 227, 228, 229, 23, 232, 232, 233, 234, 245, 247, 248, 249, 26, 3, 333, 333, 333, 444, 444, 5, 555, 555, 555, 555, 555, 555, 6, 8, 9, null, null, null, null, null, null, null]
 }
 
