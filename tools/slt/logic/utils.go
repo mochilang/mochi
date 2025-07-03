@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -169,8 +170,7 @@ func EvalCase(c Case) ([]string, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-	var flat []string
-	var buf bytes.Buffer
+	var rowsData [][]string
 	for rows.Next() {
 		vals := make([]any, len(cols))
 		ptrs := make([]any, len(cols))
@@ -180,13 +180,39 @@ func EvalCase(c Case) ([]string, string, error) {
 		if err := rows.Scan(ptrs...); err != nil {
 			return nil, "", err
 		}
+		row := make([]string, len(cols))
 		for i, v := range vals {
-			var s string
 			if v == nil {
-				s = "null"
+				row[i] = "null"
 			} else {
-				s = fmt.Sprint(v)
+				row[i] = fmt.Sprint(v)
 			}
+		}
+		rowsData = append(rowsData, row)
+	}
+	if c.Rowsort {
+		sort.Slice(rowsData, func(i, j int) bool {
+			a := rowsData[i]
+			b := rowsData[j]
+			for k := range a {
+				if a[k] == b[k] {
+					continue
+				}
+				if a[k] == "null" {
+					return false
+				}
+				if b[k] == "null" {
+					return true
+				}
+				return a[k] < b[k]
+			}
+			return false
+		})
+	}
+	var flat []string
+	var buf bytes.Buffer
+	for _, row := range rowsData {
+		for i, s := range row {
 			flat = append(flat, s)
 			if i > 0 {
 				buf.WriteByte(' ')

@@ -225,10 +225,13 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d-e FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR (a>b-2 AND a<b+2) */
 let result = from row in t1
-  where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
+  where (((if row.e == null || row.d == null { null } else { (row.e + row.d) }) != null && (if (if row.a == null || row.b == null { null } else { (row.a + row.b) }) == null || 10 == null { null } else { ((if row.a == null || row.b == null { null } else { (row.a + row.b) }) - 10) }) != null && (if row.c == null || 130 == null { null } else { (row.c + 130) }) != null && (if row.e == null || row.d == null { null } else { (row.e + row.d) }) >= (if (if row.a == null || row.b == null { null } else { (row.a + row.b) }) == null || 10 == null { null } else { ((if row.a == null || row.b == null { null } else { (row.a + row.b) }) - 10) }) && (if row.e == null || row.d == null { null } else { (row.e + row.d) }) <= (if row.c == null || 130 == null { null } else { (row.c + 130) })) || (((row.a != null && (if row.b == null || 2 == null { null } else { (row.b - 2) }) != null && row.a > (if row.b == null || 2 == null { null } else { (row.b - 2) })) && (row.a != null && (if row.b == null || 2 == null { null } else { (row.b + 2) }) != null && row.a < (if row.b == null || 2 == null { null } else { (row.b + 2) })))))
+  order by [count(from x in t1
+  where ((x.c != null && row.c != null && x.c > row.c) && (x.d != null && row.d != null && x.d < row.d))
+  select x), (if row.d == null || row.e == null { null } else { (row.d - row.e) })]
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.d - row.e)]
+  where ((x.c != null && row.c != null && x.c > row.c) && (x.d != null && row.d != null && x.d < row.d))
+  select x), (if row.d == null || row.e == null { null } else { (row.d - row.e) })]
 var flatResult = []
 for row in result {
   for x in row {
@@ -239,6 +242,6 @@ for x in flatResult {
   print(x)
 }
 test "case5" {
-  expect flatResult == [0, 1, 0, 1, 0, -4, 0, null, 0, null, 0, 3, 0, -1, 0, -1, 0, 2, 0, -1]
+  expect flatResult == [0, -1, 0, -1, 0, -1, 0, -4, 0, 1, 0, 1, 0, 2, 0, 3, 0, null, 0, null]
 }
 

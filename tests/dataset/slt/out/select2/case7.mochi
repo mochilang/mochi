@@ -225,11 +225,12 @@ let t1 = [
 
 /* SELECT abs(b-c) FROM t1 */
 let result = from row in t1
-  select (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })
+  order by (if (if row.b == null || row.c == null { null } else { (row.b - row.c) }) == null { null } else if (if row.b == null || row.c == null { null } else { (row.b - row.c) }) < 0 { -((if row.b == null || row.c == null { null } else { (row.b - row.c) })) } else { (if row.b == null || row.c == null { null } else { (row.b - row.c) }) })
+  select (if (if row.b == null || row.c == null { null } else { (row.b - row.c) }) == null { null } else if (if row.b == null || row.c == null { null } else { (row.b - row.c) }) < 0 { -((if row.b == null || row.c == null { null } else { (row.b - row.c) })) } else { (if row.b == null || row.c == null { null } else { (row.b - row.c) }) })
 for x in result {
   print(x)
 }
 
 test "case7" {
-  expect result == [null, 1, 1, null, 1, 4, 4, 2, 2, 2, 1, 3, 1, 1, 2, 1, 3, 1, 1, 3, null, 2, 3, 3, 1, 3, 1, null, 4, 2]
+  expect result == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, null, null, null, null]
 }

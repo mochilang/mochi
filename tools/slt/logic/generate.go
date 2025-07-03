@@ -422,7 +422,11 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 	case *sqlparser.ParenExpr:
 		return "(" + exprToMochiRow(v.Expr, rowVar, outer, subs) + ")"
 	case *sqlparser.UnaryExpr:
-		return fmt.Sprintf("%s%s", v.Operator, exprToMochiRow(v.Expr, rowVar, outer, subs))
+		ex := exprToMochiRow(v.Expr, rowVar, outer, subs)
+		if v.Operator == "+" || v.Operator == "-" {
+			return fmt.Sprintf("(if %s == null { null } else { %s%s })", ex, v.Operator, ex)
+		}
+		return fmt.Sprintf("%s%s", v.Operator, ex)
 	case *sqlparser.BinaryExpr:
 		// Simplify repeated addition of the same column expression
 		// into a multiplication.  SQLLogicTest queries often use
@@ -438,13 +442,25 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		}
 		l := exprToMochiRow(v.Left, rowVar, outer, subs)
 		r := exprToMochiRow(v.Right, rowVar, outer, subs)
-		return fmt.Sprintf("(%s %s %s)", l, v.Operator, r)
+		switch v.Operator {
+		case "+", "-", "*", "/":
+			return fmt.Sprintf("(if %s == null || %s == null { null } else { (%s %s %s) })", l, r, l, v.Operator, r)
+		default:
+			return fmt.Sprintf("(%s %s %s)", l, v.Operator, r)
+		}
 	case *sqlparser.FuncExpr:
 		name := strings.ToLower(v.Name.String())
 		if name == "abs" && len(v.Exprs) == 1 {
 			arg := v.Exprs[0].(*sqlparser.AliasedExpr).Expr
 			ex := exprToMochiRow(arg, rowVar, outer, subs)
-			return fmt.Sprintf("(if %s < 0 { -(%s) } else { %s })", ex, ex, ex)
+			return fmt.Sprintf("(if %s == null { null } else if %s < 0 { -(%s) } else { %s })", ex, ex, ex, ex)
+		} else if name == "coalesce" && len(v.Exprs) >= 1 {
+			out := "null"
+			for i := len(v.Exprs) - 1; i >= 0; i-- {
+				ex := exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
+				out = fmt.Sprintf("(if %s != null { %s } else { %s })", ex, ex, out)
+			}
+			return out
 		}
 	case *sqlparser.Subquery:
 		expr := subqueryToMochi(v, rowVar)
@@ -574,7 +590,8 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 		if op == "=" {
 			op = "=="
 		}
-		return fmt.Sprintf("%s %s %s", left, op, right)
+		cmp := fmt.Sprintf("%s %s %s", left, op, right)
+		return fmt.Sprintf("(%s != null && %s != null && %s)", left, right, cmp)
 	case *sqlparser.AndExpr:
 		l := condExprToMochiRow(v.Left, rowVar, outer, subs)
 		r := condExprToMochiRow(v.Right, rowVar, outer, subs)
@@ -595,9 +612,9 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 		to := exprToMochiRow(v.To, rowVar, outer, subs)
 		switch strings.ToLower(v.Operator) {
 		case sqlparser.BetweenStr:
-			return fmt.Sprintf("(%s >= %s && %s <= %s)", left, from, left, to)
+			return fmt.Sprintf("(%s != null && %s != null && %s != null && %s >= %s && %s <= %s)", left, from, to, left, from, left, to)
 		case sqlparser.NotBetweenStr:
-			return fmt.Sprintf("(%s < %s || %s > %s)", left, from, left, to)
+			return fmt.Sprintf("(%s != null && %s != null && %s != null && (%s < %s || %s > %s))", left, from, to, left, from, left, to)
 		}
 		return ""
 	case *sqlparser.ExistsExpr:
@@ -844,6 +861,8 @@ func Generate(c Case) string {
 		}
 		if len(sel.OrderBy) == 1 {
 			sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}, subs))
+		} else if c.Rowsort {
+			sb.WriteString("\n  order by " + expr)
 		}
 		sb.WriteString("\n  select " + expr + "\n")
 		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
@@ -899,6 +918,8 @@ func Generate(c Case) string {
 				}
 				sb.WriteString("]")
 			}
+		} else if c.Rowsort {
+			sb.WriteString("\n  order by [" + strings.Join(exprs, ", ") + "]")
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
 		sb.WriteString("var flatResult = []\n")
