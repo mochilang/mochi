@@ -9,11 +9,14 @@ func main (regs=21)
   // let start = now()
   Now          r4
   // for i in 0..repeat {
+  Const        r2, 0
+  Const        r1, 1000
   Move         r5, r2
 L1:
   LessInt      r6, r5, r1
   JumpIfFalse  r6, L0
   // last = mul(n)
+  Const        r0, 30
   Move         r7, r0
   Call         r8, mul, r7
   Move         r3, r8
@@ -26,6 +29,7 @@ L0:
   // let duration = (now() - start) / 1000
   Now          r11
   SubInt       r12, r11, r4
+  Const        r1, 1000
   DivInt       r13, r12, r1
   // "duration_us": duration,
   Const        r14, "duration_us"
@@ -48,6 +52,7 @@ func mul (regs=8)
   Const        r1, 1
   Move         r2, r1
   // for i in 1..n {
+  Const        r1, 1
   Move         r3, r1
 L1:
   LessInt      r4, r3, r0
