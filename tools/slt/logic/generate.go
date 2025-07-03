@@ -967,6 +967,11 @@ func Generate(c Case) string {
 			}
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
+		if c.RowSort {
+			sb.WriteString("result = from row in result\n")
+			sb.WriteString("  order by join(from v in row select str(v), \" \" )\n")
+			sb.WriteString("  select row\n")
+		}
 		sb.WriteString("var flatResult = []\n")
 		sb.WriteString("for row in result {\n")
 		sb.WriteString("  for x in row {\n")
