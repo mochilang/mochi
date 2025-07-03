@@ -1,6 +1,6 @@
 4
 6
-563
+null
 111
 1
 555
@@ -22,6 +22,3 @@
 111
 2
 444
-call graph: main
-stack trace:
-  main:244

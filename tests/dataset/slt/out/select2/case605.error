@@ -4,4 +4,4 @@ stack trace:
   main at :235
     expect result == [null, -2, 3, -4, -2, null, 2, 1]
 
-got: [101, -146, 0, -157, -165, -2, -177, 3, -4, -2, 207, 2, 1, 0]
+got: [null, null, null, null, null, -2, null, 3, -4, -2, null, 2, 1, null]

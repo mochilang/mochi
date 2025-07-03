@@ -1,15 +1,15 @@
-<nil>
+null
 6
 104
-61
+null
 110
 6
-<nil>
-89
-<nil>
+null
+null
+null
 6
 121
-98
+null
 126
 6
 127
@@ -30,10 +30,10 @@
 1
 182
 182
-<nil>
+null
 1
-<nil>
-124
+null
+null
 210
 1
 213
@@ -49,11 +49,8 @@
 237
 28
 239
-190
+null
 246
 0
 245
 247
-call graph: main
-stack trace:
-  main:242

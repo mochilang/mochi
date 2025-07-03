@@ -28,7 +28,7 @@
 376
 186
 185
-0
+null
 206
 207
 426
@@ -43,6 +43,3 @@
 490
 249
 248
-call graph: main
-stack trace:
-  main:245
