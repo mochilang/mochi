@@ -224,12 +224,13 @@ let t1 = [
 ]
 
 /* SELECT b-c, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, e, a+b*2, abs(b-c) FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR c>d OR (a>b-2 AND a<b+2) ORDER BY 1,5,3,2,4 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  where (((row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) || row.c > row.d) || ((row.a > row.b - 2 && row.a < row.b + 2)))
-  order by [row.b - row.c, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.e, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.a + row.b * 2]
-  select [row.b - row.c, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.e, row.a + row.b * 2, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c })]
+  where ((((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || row.c > row.d) || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
+  order by [(row.b - row.c), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.e, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a + (row.b * 2))]
+  select [(row.b - row.c), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.e, (row.a + (row.b * 2)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
 var flatResult = []
 for row in result {
   for x in row {
