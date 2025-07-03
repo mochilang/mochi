@@ -27,28 +27,20 @@ func main (regs=238)
   Const        r12, []
   // where (cct1.kind in ["cast", "crew"]) &&
   Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
-  Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -60,7 +52,6 @@ func main (regs=238)
   Len          r26, r25
   Const        r28, 0
   Move         r27, r28
-L25:
   LessInt      r29, r27, r26
   JumpIfFalse  r29, L0
   Index        r30, r25, r27
@@ -72,28 +63,20 @@ L25:
   Const        r35, "subject_id"
   // where (cct1.kind in ["cast", "crew"]) &&
   Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
-  Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -103,7 +86,6 @@ L25:
   // join cct1 in comp_cast_type on cct1.id == cc.subject_id
   Const        r28, 0
   Move         r36, r28
-L24:
   LessInt      r37, r36, r33
   JumpIfFalse  r37, L1
   Index        r38, r32, r36
@@ -121,28 +103,20 @@ L24:
   Const        r45, "status_id"
   // where (cct1.kind in ["cast", "crew"]) &&
   Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
-  Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -152,7 +126,6 @@ L24:
   // join cct2 in comp_cast_type on cct2.id == cc.status_id
   Const        r28, 0
   Move         r46, r28
-L23:
   LessInt      r47, r46, r44
   JumpIfFalse  r47, L2
   Index        r48, r43, r46
@@ -167,31 +140,22 @@ L23:
   IterPrep     r53, r2
   Len          r54, r53
   Const        r55, "movie_id"
-  Const        r55, "movie_id"
   // where (cct1.kind in ["cast", "crew"]) &&
-  Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
   Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -201,14 +165,12 @@ L23:
   // join ci in cast_info on ci.movie_id == cc.movie_id
   Const        r28, 0
   Move         r56, r28
-L22:
   LessInt      r57, r56, r54
   JumpIfFalse  r57, L3
   Index        r58, r53, r56
   Move         r59, r58
   Const        r55, "movie_id"
   Index        r60, r59, r55
-  Const        r55, "movie_id"
   Index        r61, r31, r55
   Equal        r62, r60, r61
   JumpIfFalse  r62, L4
@@ -216,31 +178,22 @@ L22:
   IterPrep     r63, r5
   Len          r64, r63
   Const        r55, "movie_id"
-  Const        r55, "movie_id"
   // where (cct1.kind in ["cast", "crew"]) &&
-  Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
   Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -250,14 +203,12 @@ L22:
   // join mi in movie_info on mi.movie_id == cc.movie_id
   Const        r28, 0
   Move         r65, r28
-L21:
   LessInt      r66, r65, r64
   JumpIfFalse  r66, L4
   Index        r67, r63, r65
   Move         r68, r67
   Const        r55, "movie_id"
   Index        r69, r68, r55
-  Const        r55, "movie_id"
   Index        r70, r31, r55
   Equal        r71, r69, r70
   JumpIfFalse  r71, L5
@@ -265,31 +216,22 @@ L21:
   IterPrep     r72, r6
   Len          r73, r72
   Const        r55, "movie_id"
-  Const        r55, "movie_id"
   // where (cct1.kind in ["cast", "crew"]) &&
-  Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
   Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -299,14 +241,12 @@ L21:
   // join mi_idx in movie_info_idx on mi_idx.movie_id == cc.movie_id
   Const        r28, 0
   Move         r74, r28
-L20:
   LessInt      r75, r74, r73
   JumpIfFalse  r75, L5
   Index        r76, r72, r74
   Move         r77, r76
   Const        r55, "movie_id"
   Index        r78, r77, r55
-  Const        r55, "movie_id"
   Index        r79, r31, r55
   Equal        r80, r78, r79
   JumpIfFalse  r80, L6
@@ -314,31 +254,22 @@ L20:
   IterPrep     r81, r7
   Len          r82, r81
   Const        r55, "movie_id"
-  Const        r55, "movie_id"
   // where (cct1.kind in ["cast", "crew"]) &&
-  Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
   Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -348,14 +279,12 @@ L20:
   // join mk in movie_keyword on mk.movie_id == cc.movie_id
   Const        r28, 0
   Move         r83, r28
-L19:
   LessInt      r84, r83, r82
   JumpIfFalse  r84, L6
   Index        r85, r81, r83
   Move         r86, r85
   Const        r55, "movie_id"
   Index        r87, r86, r55
-  Const        r55, "movie_id"
   Index        r88, r31, r55
   Equal        r89, r87, r88
   JumpIfFalse  r89, L7
@@ -366,28 +295,20 @@ L19:
   Const        r92, "info_type_id"
   // where (cct1.kind in ["cast", "crew"]) &&
   Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
-  Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -397,7 +318,6 @@ L19:
   // join it1 in info_type on it1.id == mi.info_type_id
   Const        r28, 0
   Move         r93, r28
-L18:
   LessInt      r94, r93, r91
   JumpIfFalse  r94, L7
   Index        r95, r90, r93
@@ -415,28 +335,20 @@ L18:
   Const        r92, "info_type_id"
   // where (cct1.kind in ["cast", "crew"]) &&
   Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
-  Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -446,7 +358,6 @@ L18:
   // join it2 in info_type on it2.id == mi_idx.info_type_id
   Const        r28, 0
   Move         r102, r28
-L17:
   LessInt      r103, r102, r101
   JumpIfFalse  r103, L8
   Index        r104, r100, r102
@@ -464,28 +375,20 @@ L17:
   Const        r111, "keyword_id"
   // where (cct1.kind in ["cast", "crew"]) &&
   Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
-  Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -495,7 +398,6 @@ L17:
   // join k in keyword on k.id == mk.keyword_id
   Const        r28, 0
   Move         r112, r28
-L16:
   LessInt      r113, r112, r110
   JumpIfFalse  r113, L9
   Index        r114, r109, r112
@@ -513,28 +415,20 @@ L16:
   Const        r121, "person_id"
   // where (cct1.kind in ["cast", "crew"]) &&
   Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
-  Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -544,7 +438,6 @@ L16:
   // join n in name on n.id == ci.person_id
   Const        r28, 0
   Move         r122, r28
-L15:
   LessInt      r123, r122, r120
   JumpIfFalse  r123, L10
   Index        r124, r119, r122
@@ -562,28 +455,20 @@ L15:
   Const        r55, "movie_id"
   // where (cct1.kind in ["cast", "crew"]) &&
   Const        r13, "kind"
-  // cct2.kind == "complete+verified" &&
-  Const        r13, "kind"
   // (ci.note in writer_notes) &&
   Const        r14, "note"
   // it1.info == "genres" &&
   Const        r15, "info"
-  // it2.info == "votes" &&
-  Const        r15, "info"
   // (k.keyword in violent_keywords) &&
   Const        r16, "keyword"
-  // (mi.info in ["Horror", "Thriller"]) &&
-  Const        r15, "info"
   // n.gender == "m" &&
   Const        r17, "gender"
   // t.production_year > 2000
   Const        r18, "production_year"
   // budget: mi.info,
   Const        r19, "budget"
-  Const        r15, "info"
   // votes: mi_idx.info,
   Const        r20, "votes"
-  Const        r15, "info"
   // writer: n.name,
   Const        r21, "writer"
   Const        r22, "name"
@@ -593,7 +478,6 @@ L15:
   // join t in title on t.id == cc.movie_id
   Const        r28, 0
   Move         r131, r28
-L14:
   LessInt      r132, r131, r130
   JumpIfFalse  r132, L11
   Index        r133, r129, r131
@@ -615,7 +499,6 @@ L14:
   Const        r142, 2000
   Less         r143, r142, r141
   // cct2.kind == "complete+verified" &&
-  Const        r13, "kind"
   Index        r144, r49, r13
   Const        r145, "complete+verified"
   Equal        r146, r144, r145
@@ -625,7 +508,6 @@ L14:
   Const        r148, "genres"
   Equal        r149, r147, r148
   // it2.info == "votes" &&
-  Const        r15, "info"
   Index        r150, r105, r15
   Const        r20, "votes"
   Equal        r151, r150, r20
@@ -677,7 +559,6 @@ L14:
   // n.gender == "m" &&
   JumpIfFalse  r155, L13
   Move         r155, r143
-L13:
   // where (cct1.kind in ["cast", "crew"]) &&
   JumpIfFalse  r155, L12
   // budget: mi.info,
@@ -686,10 +567,10 @@ L13:
   Index        r166, r68, r15
   // votes: mi_idx.info,
   Const        r167, "votes"
-  Const        r15, "info"
   Index        r168, r77, r15
   // writer: n.name,
   Const        r169, "writer"
+L14:
   Const        r22, "name"
   Index        r170, r125, r22
   // movie: t.title
@@ -713,158 +594,75 @@ L13:
   // from cc in complete_cast
   Append       r182, r12, r181
   Move         r12, r182
-L12:
   // join t in title on t.id == cc.movie_id
   Const        r183, 1
   Add          r131, r131, r183
   Jump         L14
-L11:
-  // join n in name on n.id == ci.person_id
-  Const        r183, 1
-  Add          r122, r122, r183
-  Jump         L15
-L10:
-  // join k in keyword on k.id == mk.keyword_id
-  Const        r183, 1
-  Add          r112, r112, r183
-  Jump         L16
-L9:
-  // join it2 in info_type on it2.id == mi_idx.info_type_id
-  Const        r183, 1
-  Add          r102, r102, r183
-  Jump         L17
-L8:
-  // join it1 in info_type on it1.id == mi.info_type_id
-  Const        r183, 1
-  Add          r93, r93, r183
-  Jump         L18
-L7:
-  // join mk in movie_keyword on mk.movie_id == cc.movie_id
-  Const        r183, 1
-  Add          r83, r83, r183
-  Jump         L19
-L6:
-  // join mi_idx in movie_info_idx on mi_idx.movie_id == cc.movie_id
-  Const        r183, 1
-  Add          r74, r74, r183
-  Jump         L20
-L5:
-  // join mi in movie_info on mi.movie_id == cc.movie_id
-  Const        r183, 1
-  Add          r65, r65, r183
-  Jump         L21
-L4:
-  // join ci in cast_info on ci.movie_id == cc.movie_id
-  Const        r183, 1
-  Add          r56, r56, r183
-  Jump         L22
-L3:
-  // join cct2 in comp_cast_type on cct2.id == cc.status_id
-  Const        r183, 1
-  Add          r46, r46, r183
-  Jump         L23
-L2:
-  // join cct1 in comp_cast_type on cct1.id == cc.subject_id
-  Const        r183, 1
-  Add          r36, r36, r183
-  Jump         L24
-L1:
-  // from cc in complete_cast
-  Const        r183, 1
-  AddInt       r27, r27, r183
-  Jump         L25
-L0:
+L13:
   // movie_budget: min(from x in matches select x.budget),
-  Const        r185, "movie_budget"
-  Const        r186, []
-  Const        r19, "budget"
-  IterPrep     r187, r12
-  Len          r188, r187
-  Const        r28, 0
-  Move         r189, r28
-L27:
-  LessInt      r190, r189, r188
-  JumpIfFalse  r190, L26
-  Index        r191, r187, r189
-  Move         r192, r191
   Const        r19, "budget"
   Index        r193, r192, r19
   Append       r194, r186, r193
   Move         r186, r194
   Const        r183, 1
   AddInt       r189, r189, r183
-  Jump         L27
-L26:
-  Min          r195, r186
+  Jump         L15
+L12:
   // movie_votes: min(from x in matches select x.votes),
-  Const        r196, "movie_votes"
-  Const        r197, []
-  Const        r20, "votes"
-  IterPrep     r198, r12
-  Len          r199, r198
-  Const        r28, 0
-  Move         r200, r28
-L29:
-  LessInt      r201, r200, r199
-  JumpIfFalse  r201, L28
-  Index        r202, r198, r200
-  Move         r192, r202
-  Const        r20, "votes"
-  Index        r203, r192, r20
-  Append       r204, r197, r203
-  Move         r197, r204
-  Const        r183, 1
   AddInt       r200, r200, r183
-  Jump         L29
-L28:
-  Min          r205, r197
+  Jump         L16
+L11:
   // writer: min(from x in matches select x.writer),
   Const        r206, "writer"
   Const        r207, []
   Const        r21, "writer"
+L10:
   IterPrep     r208, r12
   Len          r209, r208
   Const        r28, 0
+L9:
   Move         r210, r28
-L31:
   LessInt      r211, r210, r209
-  JumpIfFalse  r211, L30
+  JumpIfFalse  r211, L17
+L8:
   Index        r212, r208, r210
   Move         r192, r212
   Const        r21, "writer"
+L7:
   Index        r213, r192, r21
   Append       r214, r207, r213
   Move         r207, r214
+L6:
   Const        r183, 1
   AddInt       r210, r210, r183
-  Jump         L31
-L30:
+  Jump         L18
+L5:
   Min          r215, r207
   // complete_violent_movie: min(from x in matches select x.movie)
   Const        r216, "complete_violent_movie"
   Const        r217, []
+L4:
   Const        r23, "movie"
   IterPrep     r218, r12
   Len          r219, r218
+L3:
   Const        r28, 0
   Move         r220, r28
-L33:
   LessInt      r221, r220, r219
-  JumpIfFalse  r221, L32
+L2:
+  JumpIfFalse  r221, L19
   Index        r222, r218, r220
   Move         r192, r222
+L1:
   Const        r23, "movie"
   Index        r223, r192, r23
   Append       r224, r217, r223
+L0:
   Move         r217, r224
   Const        r183, 1
   AddInt       r220, r220, r183
-  Jump         L33
-L32:
-  Min          r225, r217
-  // movie_budget: min(from x in matches select x.budget),
-  Move         r226, r185
-  Move         r227, r195
+  Jump         L20
+L15:
   // movie_votes: min(from x in matches select x.votes),
   Move         r228, r196
   Move         r229, r205
