@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a, b, abs(b-c), e, a+b*2, d-e, (a+b+c+d+e)/5 FROM t1 WHERE b>c AND c>d ORDER BY 6,1,7,2,5,4,3 */
-let result = from row in t1
+var result = from row in t1
   where (row.b > row.c && row.c > row.d)
   order by [(row.d - row.e), row.a, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.b, (row.a + (row.b * 2)), row.e, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
   select [row.a, row.b, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.e, (row.a + (row.b * 2)), (row.d - row.e), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]

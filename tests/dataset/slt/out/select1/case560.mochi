@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a-b, a+b*2 FROM t1 WHERE b>c OR c>d ORDER BY 2,1 */
-let result = from row in t1
+var result = from row in t1
   where (row.b > row.c || row.c > row.d)
   order by [(row.a + (row.b * 2)), (row.a - row.b)]
   select [(row.a - row.b), (row.a + (row.b * 2))]

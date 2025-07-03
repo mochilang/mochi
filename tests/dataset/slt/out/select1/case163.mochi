@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT abs(b-c), c-d FROM t1 ORDER BY 1,2 */
-let result = from row in t1
+var result = from row in t1
   order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.c - row.d)]
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.c - row.d)]
 var flatResult = []

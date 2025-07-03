@@ -227,7 +227,7 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where ((((row.e > row.c || row.e < row.d)) && row.d > row.e) && count(from x in t1
   where x.b < row.b
   select x) > 0)

@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3, d-e, b, a, c, a+b*2 FROM t1 WHERE (c<=d-2 OR c>=d+2) OR (e>a AND e<b) OR d>e ORDER BY 5,6,3,7,2,1,4 */
-let result = from row in t1
+var result = from row in t1
   where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || ((row.e > row.a && row.e < row.b))) || row.d > row.e)
   order by [row.a, row.c, (row.d - row.e), (row.a + (row.b * 2)), ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
   where (x.c > row.c && x.d < row.d)

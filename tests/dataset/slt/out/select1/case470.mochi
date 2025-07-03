@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT abs(b-c) FROM t1 WHERE c>d AND d NOT BETWEEN 110 AND 150 AND a>b ORDER BY 1 */
-let result = from row in t1
+var result = from row in t1
   where ((row.c > row.d && (row.d < 110 || row.d > 150)) && row.a > row.b)
   order by (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })
   select (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })

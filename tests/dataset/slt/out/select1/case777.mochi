@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a, d-e, c, a+b*2, e FROM t1 WHERE a>b OR c>d OR (c<=d-2 OR c>=d+2) ORDER BY 2,3,5,4,1 */
-let result = from row in t1
+var result = from row in t1
   where ((row.a > row.b || row.c > row.d) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
   order by [(row.d - row.e), row.c, row.e, (row.a + (row.b * 2)), row.a]
   select [row.a, (row.d - row.e), row.c, (row.a + (row.b * 2)), row.e]

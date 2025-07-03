@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT c-d FROM t1 WHERE d NOT BETWEEN 110 AND 150 OR d>e ORDER BY 1 */
-let result = from row in t1
+var result = from row in t1
   where ((row.d < 110 || row.d > 150) || row.d > row.e)
   order by (row.c - row.d)
   select (row.c - row.d)

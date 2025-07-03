@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT abs(a), d-e FROM t1 ORDER BY 1,2 */
-let result = from row in t1
+var result = from row in t1
   order by [(if row.a < 0 { -(row.a) } else { row.a }), (row.d - row.e)]
   select [(if row.a < 0 { -(row.a) } else { row.a }), (row.d - row.e)]
 var flatResult = []
