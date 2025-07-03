@@ -1,0 +1,249 @@
+/*
+# line: 3456
+*/
+
+type t1Row {
+  a: int
+  b: int
+  c: int
+  d: int
+  e: int
+}
+
+let t1 = [
+  t1Row {
+    a: 104,
+    b: null,
+    c: 102,
+    d: 101,
+    e: null,
+  },
+  t1Row {
+    a: 107,
+    b: 105,
+    c: 106,
+    d: 108,
+    e: 109,
+  },
+  t1Row {
+    a: null,
+    b: 112,
+    c: 113,
+    d: 114,
+    e: 110,
+  },
+  t1Row {
+    a: 115,
+    b: null,
+    c: 119,
+    d: 116,
+    e: 117,
+  },
+  t1Row {
+    a: 121,
+    b: 124,
+    c: 123,
+    d: 122,
+    e: null,
+  },
+  t1Row {
+    a: 127,
+    b: 129,
+    c: 125,
+    d: 128,
+    e: 126,
+  },
+  t1Row {
+    a: 131,
+    b: 130,
+    c: 134,
+    d: 133,
+    e: 132,
+  },
+  t1Row {
+    a: 138,
+    b: 139,
+    c: 137,
+    d: 136,
+    e: 135,
+  },
+  t1Row {
+    a: 142,
+    b: 143,
+    c: 141,
+    d: 140,
+    e: 144,
+  },
+  t1Row {
+    a: 149,
+    b: 145,
+    c: 147,
+    d: null,
+    e: 146,
+  },
+  t1Row {
+    a: 153,
+    b: 151,
+    c: 150,
+    d: null,
+    e: null,
+  },
+  t1Row {
+    a: 159,
+    b: 158,
+    c: 155,
+    d: null,
+    e: 157,
+  },
+  t1Row {
+    a: 163,
+    b: 160,
+    c: 161,
+    d: 164,
+    e: 162,
+  },
+  t1Row {
+    a: 168,
+    b: 167,
+    c: 166,
+    d: null,
+    e: 165,
+  },
+  t1Row {
+    a: 174,
+    b: 170,
+    c: 172,
+    d: 171,
+    e: 173,
+  },
+  t1Row {
+    a: 179,
+    b: 175,
+    c: 176,
+    d: null,
+    e: 177,
+  },
+  t1Row {
+    a: 182,
+    b: 181,
+    c: 184,
+    d: 183,
+    e: 180,
+  },
+  t1Row {
+    a: 188,
+    b: 186,
+    c: 187,
+    d: 185,
+    e: 189,
+  },
+  t1Row {
+    a: 191,
+    b: 194,
+    c: 193,
+    d: 190,
+    e: 192,
+  },
+  t1Row {
+    a: 199,
+    b: 198,
+    c: 195,
+    d: 196,
+    e: 197,
+  },
+  t1Row {
+    a: 201,
+    b: null,
+    c: 202,
+    d: 203,
+    e: 204,
+  },
+  t1Row {
+    a: null,
+    b: 206,
+    c: 208,
+    d: 207,
+    e: null,
+  },
+  t1Row {
+    a: 213,
+    b: 211,
+    c: 214,
+    d: 212,
+    e: 210,
+  },
+  t1Row {
+    a: 216,
+    b: 218,
+    c: 215,
+    d: 217,
+    e: 219,
+  },
+  t1Row {
+    a: 220,
+    b: 223,
+    c: 224,
+    d: 222,
+    e: 221,
+  },
+  t1Row {
+    a: 229,
+    b: 228,
+    c: 225,
+    d: 226,
+    e: 227,
+  },
+  t1Row {
+    a: 234,
+    b: 232,
+    c: 231,
+    d: 233,
+    e: 230,
+  },
+  t1Row {
+    a: 239,
+    b: 236,
+    c: null,
+    d: 238,
+    e: 237,
+  },
+  t1Row {
+    a: 243,
+    b: 240,
+    c: 244,
+    d: null,
+    e: null,
+  },
+  t1Row {
+    a: 245,
+    b: 249,
+    c: 247,
+    d: 248,
+    e: 246,
+  },
+]
+
+/* SELECT a-b, d-e, b-c, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, a+b*2+c*3+d*4, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) */
+let sub0 = avg(from x in t1
+  select x.c)
+
+let result = from row in t1
+  where count(from x in t1
+  where x.b < row.b
+  select x) > 0
+  select [(row.a - row.b), (row.d - row.e), (row.b - row.c), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
+test "case303" {
+  expect flatResult == [3, 1, null, 2360, null, 0, -4, 2, 2, 490, 2476, 0, -3, -2, 1, 382, 1918, 0, -1, -4, 2, 1430, 1411, 0, 3, 2, -1, 1600, 1622, 0, 1, -1, 3, 398, 1964, 0, -3, null, 1, 1240, 1226, 0, 4, -2, -2, 1700, 1714, 0, 1, 1, -4, 1300, 1325, 0, -1, 1, 2, 1390, 1371, 0, 1, null, 1, 1670, null, 0, -2, 2, 4, 1290, 1272, 0, 4, null, -2, 1450, null, 0, 1, -1, 3, 458, 2264, 0, 1, null, 3, 1580, null, 0, 1, 3, -3, 364, 1828, 0, 4, null, -1, 358, null, 0, 3, null, -4, 486, null, 0, null, 4, -1, 1120, null, 0, 2, 2, -3, 426, 2125, 0, null, null, -2, null, null, 0, 2, 3, 1, 468, 2323, 0, 2, null, 1, 1510, null, 0, 2, -4, -1, 376, 1861, 0, -3, 1, -1, 440, 2226, 0, -2, -2, 3, 432, 2165, 0]
+}
+
