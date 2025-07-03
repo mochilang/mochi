@@ -198,7 +198,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			}
 
 			if sv == "true" || sv == "t" || sv == "yes" || sv == "y" || sv == "on" {
-				if t == "" || t == "bool" {
+				if t == "" || t == "bool" || t == "int" || t == "float" {
 					t = "bool"
 				} else {
 					return "any"
@@ -207,7 +207,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				continue
 			}
 			if sv == "false" || sv == "f" || sv == "no" || sv == "n" || sv == "off" {
-				if t == "" || t == "bool" {
+				if t == "" || t == "bool" || t == "int" || t == "float" {
 					t = "bool"
 				} else {
 					return "any"
