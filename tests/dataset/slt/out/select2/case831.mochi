@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT d-e, a+b*2+c*3+d*4 FROM t1 WHERE (c<=d-2 OR c>=d+2) OR (e>c OR e<d) OR b>c */
 let result = from row in t1
   where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || ((row.e > row.c || row.e < row.d))) || row.b > row.c)
+  order by [(row.d - row.e), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
   select [(row.d - row.e), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
 var flatResult = []
 for row in result {

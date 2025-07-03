@@ -225,6 +225,7 @@ let t1 = [
 
 /* SELECT abs(b-c) FROM t1 */
 let result = from row in t1
+  order by (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })
   select (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })
 for x in result {
   print(x)

@@ -351,7 +351,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		if t == "" {
 			return "any"
 		}
-		return "any"
+		// Preserve the detected type even when NULL values are present.
+		// This avoids degrading numeric columns with occasional NULLs
+		// to the overly permissive `any` type which can lead to
+		// incorrect code generation.
+		return t
 	}
 
 	if t == "int" && boolLike && (seenZero || seenOne || seenNegOne) {

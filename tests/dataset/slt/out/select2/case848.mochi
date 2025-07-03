@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT c, b-c, a+b*2+c*3 FROM t1 WHERE b>c AND coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where (row.b > row.c && null != 0)
+  order by [row.c, (row.b - row.c), ((row.a + (row.b * 2)) + (row.c * 3))]
   select [row.c, (row.b - row.c), ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
 for row in result {

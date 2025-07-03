@@ -226,6 +226,9 @@ let t1 = [
 /* SELECT d, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE c BETWEEN b-2 AND d+2 OR coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || null != 0)
+  order by [row.d, count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x)]
   select [row.d, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]

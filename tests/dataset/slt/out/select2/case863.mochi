@@ -225,6 +225,7 @@ let t1 = [
 
 /* SELECT a FROM t1 */
 let result = from row in t1
+  order by row.a
   select row.a
 for x in result {
   print(x)
