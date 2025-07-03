@@ -168,21 +168,53 @@ func inferCppPrimaryType(env *types.Env, lookup CppVarLookup, p *parser.Primary)
 			valType = "any"
 		}
 		return "unordered_map<" + keyType + ", " + valType + ">"
+	case p.If != nil:
+		thenT := InferCppExprType(p.If.Then, env, lookup)
+		elseT := ""
+		if p.If.ElseIf != nil {
+			elseExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{If: p.If.ElseIf}}}}}
+			elseT = InferCppExprType(elseExpr, env, lookup)
+		} else if p.If.Else != nil {
+			elseT = InferCppExprType(p.If.Else, env, lookup)
+		}
+		if thenT == elseT || elseT == "" {
+			return thenT
+		}
+		return "any"
 	case p.Selector != nil:
+		typ := ""
 		if lookup != nil {
 			if t, ok := lookup(p.Selector.Root); ok {
-				return t
+				typ = t
 			}
 		}
-		if env != nil {
-			if typ, err := env.GetVar(p.Selector.Root); err == nil {
-				if st, ok := typ.(types.StructType); ok {
-					ft := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]
-					return CppTypeRef(ft)
+		if typ == "" && env != nil {
+			if v, err := env.GetVar(p.Selector.Root); err == nil {
+				typ = CppTypeRef(v)
+			}
+		}
+		if typ == "" {
+			return ""
+		}
+		if len(p.Selector.Tail) > 0 {
+			if env != nil {
+				if st, ok := env.GetStruct(typ); ok {
+					if ft, ok := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]; ok {
+						typ = CppTypeRef(ft)
+					} else {
+						typ = "any"
+					}
+				} else if strings.HasPrefix(typ, "unordered_map<") {
+					inside := strings.TrimSuffix(strings.TrimPrefix(typ, "unordered_map<"), ">")
+					if parts := strings.SplitN(inside, ",", 2); len(parts) == 2 {
+						typ = strings.TrimSpace(parts[1])
+					} else {
+						typ = "any"
+					}
 				}
-				return CppTypeRef(typ)
 			}
 		}
+		return typ
 	}
 	return ""
 }
