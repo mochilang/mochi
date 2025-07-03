@@ -73,7 +73,7 @@ func RunMochi(src string, timeout time.Duration) (string, error) {
 		modRoot = "."
 	}
 	os.Setenv("MOCHI_ROOT", modRoot)
-	p, err := vm.Compile(prog, env)
+	p, err := vm.CompileWithSource(prog, env, src)
 	if err != nil {
 		return "", err
 	}
@@ -93,6 +93,14 @@ func RunMochi(src string, timeout time.Duration) (string, error) {
 	}
 	out := strings.TrimSpace(buf.String())
 	if runErr != nil {
+		if idx := strings.Index(out, "call graph:"); idx >= 0 {
+			out = strings.TrimSpace(out[:idx])
+		}
+	}
+	if runErr != nil {
+		if vmErr, ok := runErr.(*vm.VMError); ok {
+			return out, fmt.Errorf("%s", vmErr.Format(p))
+		}
 		return out, runErr
 	}
 	return out, nil
@@ -271,7 +279,14 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 				outPath := filepath.Join(testDir, c.Name+".out")
 				errPath := strings.TrimSuffix(outPath, ".out") + ".error"
 				if err != nil {
-					_ = os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644)
+					msg := err.Error()
+					if out != "" {
+						lines := strings.Split(strings.TrimSpace(out), "\n")
+						if len(lines) > 0 {
+							msg += "\ngot: [" + strings.Join(lines, ", ") + "]"
+						}
+					}
+					_ = os.WriteFile(errPath, []byte(msg+"\n"), 0o644)
 				} else {
 					_ = os.Remove(errPath)
 					_ = os.Remove(strings.TrimSuffix(outPath, ".out") + ".err")
