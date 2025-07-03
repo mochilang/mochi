@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT a, c-d, abs(a) FROM t1 WHERE d>e */
 let result = from row in t1
   where row.d > row.e
+  order by [row.a, (row.c - row.d), (if row.a < 0 { -(row.a) } else { row.a })]
   select [row.a, (row.c - row.d), (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []
 for row in result {

@@ -228,6 +228,7 @@ let result = from row in t1
   where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || row.c > row.d) || count(from x in t1
   where x.b < row.b
   select x) > 0)
+  order by [(if row.a < 0 { -(row.a) } else { row.a }), row.c, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.b - row.c)]
   select [(if row.a < 0 { -(row.a) } else { row.a }), row.c, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.b - row.c)]
 var flatResult = []
 for row in result {

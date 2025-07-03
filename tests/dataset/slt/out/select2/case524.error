@@ -1,7 +1,0 @@
-expect condition failed at :240: expect flatResult == [1612, 2, 1902, -2]
-call graph: main
-stack trace:
-  main at :240
-    expect flatResult == [1612, 2, 1902, -2]
-
-got: [814, 104, 1612, 2, 1569, -112, 1521, 115, 1902, -2, 1864, -206]
