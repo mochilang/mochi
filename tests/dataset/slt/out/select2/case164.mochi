@@ -224,20 +224,26 @@ let t1 = [
 ]
 
 /* SELECT abs(b-c), b-c, a+b*2, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), abs(a) FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.b - row.c), (row.a + (row.b * 2)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (if row.a < 0 { -(row.a) } else { row.a })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case164" {
-  expect flatResult == [null, null, null, 0, 104, 1, -1, 317, 0, 107, 1, -1, null, 0, null, null, null, null, 0, 115, 1, 1, 369, 0, 121, 4, 4, 385, 0, 127, 4, -4, 391, 0, 131, 2, 2, 416, 0, 138, 2, 2, 428, 0, 142, 2, -2, 439, 0, 149, 1, 1, 455, 0, 153, 3, 3, 475, 0, 159, 1, -1, 483, 0, 163, 1, 1, 502, 0, 168, 2, -2, 514, 0, 174, 1, -1, 529, 0, 179, 3, -3, 544, 0, 182, 1, -1, 560, 0, 188, 1, 1, 579, 0, 191, 3, 3, 595, 0, 199, null, null, null, 0, 201, 2, -2, null, 0, null, 3, -3, 635, 0, 213, 3, 3, 652, 0, 216, 1, -1, 666, 0, 220, 3, 3, 685, 0, 229, 1, 1, 698, 0, 234, null, null, 711, 0, 239, 4, -4, 723, 0, 243, 2, 2, 743, 0, 245]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -2, -2, -2, -3, -3, -4, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 104, 107, 115, 121, 127, 131, 138, 142, 149, 153, 159, 163, 168, 174, 179, 182, 188, 191, 199, 2, 2, 2, 2, 2, 2, 2, 2, 2, 201, 213, 216, 220, 229, 234, 239, 243, 245, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 317, 369, 385, 391, 4, 4, 4, 4, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

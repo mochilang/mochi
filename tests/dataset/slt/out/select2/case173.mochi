@@ -224,13 +224,16 @@ let t1 = [
 ]
 
 /* SELECT c FROM t1 WHERE b>c OR b IS NOT NULL OR (e>c OR e<d) */
-let result = from row in t1
+var result = from row in t1
   where ((row.b > row.c || row.b != null) || ((row.e > row.c || row.e < row.d)))
   select row.c
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
 
 test "case173" {
-  expect result == [106, 113, 123, 125, 134, 137, 141, 147, 150, 155, 161, 166, 172, 176, 184, 187, 193, 195, 208, 214, 215, 224, 225, 231, null, 244, 247, 202]
+  expect result == [106, 113, 123, 125, 134, 137, 141, 147, 150, 155, 161, 166, 172, 176, 184, 187, 193, 195, 202, 208, 214, 215, 224, 225, 231, 244, 247, null]
 }

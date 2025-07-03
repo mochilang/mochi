@@ -224,13 +224,16 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3 FROM t1 WHERE coalesce(a,b,c,d,e)<>0 AND d>e */
-let result = from row in t1
-  where (null != 0 && row.d > row.e)
+var result = from row in t1
+  where ((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 && row.d > row.e)
   select ((row.a + (row.b * 2)) + (row.c * 3))
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
 
 test "case182" {
-  expect result == [null, 760, 793, 827, 966, 1096, 1277, 1338, 1391, null, 1484]
+  expect result == [1096, 1277, 1338, 1391, 1484, 760, 793, 827, 966, null, null]
 }

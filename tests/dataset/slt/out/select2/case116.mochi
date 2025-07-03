@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4+e*5, a+b*2, d, a+b*2+c*3+d*4, a-b, b-c, a FROM t1 WHERE b>c OR a IS NULL */
-let result = from row in t1
+var result = from row in t1
   where (row.b > row.c || row.a == null)
   select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a + (row.b * 2)), row.d, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.a - row.b), (row.b - row.c), row.a]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case116" {
-  expect flatResult == [null, null, 114, null, null, -1, null, null, null, 207, null, null, -2, null, null, 369, 122, 1226, -3, 1, 121, 1902, 385, 128, 1272, -2, 4, 127, 2046, 416, 136, 1371, -1, 2, 138, 2131, 428, 140, 1411, -1, 2, 142, null, 455, null, null, 2, 1, 153, null, 475, null, null, 1, 3, 159, null, 502, null, null, 1, 1, 168, 2878, 579, 190, 1918, -3, 1, 191, 2949, 595, 196, 1964, 1, 3, 199, 3260, 652, 217, 2165, -2, 3, 216, 3399, 685, 226, 2264, 1, 3, 229, 3473, 698, 233, 2323, 2, 1, 234, 3706, 743, 248, 2476, -4, 2, 245]
+  expect flatResult == [-1, -1, -1, -2, -2, -2, -3, -3, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 114, 121, 122, 1226, 127, 1272, 128, 136, 1371, 138, 140, 1411, 142, 153, 159, 168, 190, 1902, 191, 1918, 196, 1964, 199, 2, 2, 2, 2, 2, 2046, 207, 2131, 216, 2165, 217, 226, 2264, 229, 2323, 233, 234, 245, 2476, 248, 2878, 2949, 3, 3, 3, 3, 3260, 3399, 3473, 369, 3706, 385, 4, 416, 428, 455, 475, 502, 579, 595, 652, 685, 698, 743, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

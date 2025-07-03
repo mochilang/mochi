@@ -224,21 +224,27 @@ let t1 = [
 ]
 
 /* SELECT a, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d-e FROM t1 WHERE a>b */
-let result = from row in t1
+var result = from row in t1
   where row.a > row.b
   select [row.a, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.d - row.e)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case146" {
-  expect flatResult == [107, 0, -1, 131, 0, 1, 149, 0, null, 153, 0, null, 159, 0, null, 163, 0, 2, 168, 0, null, 174, 0, -2, 179, 0, null, 182, 0, 3, 188, 0, -4, 199, 0, -1, 213, 0, 2, 229, 0, -1, 234, 0, 3, 239, 0, 1, 243, 0, null]
+  expect flatResult == [-1, -1, -1, -2, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 107, 131, 149, 153, 159, 163, 168, 174, 179, 182, 188, 199, 2, 2, 213, 229, 234, 239, 243, 3, 3, null, null, null, null, null, null]
 }
 

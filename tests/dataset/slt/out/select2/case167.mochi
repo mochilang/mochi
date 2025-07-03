@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT abs(b-c), b, e FROM t1 WHERE (a>b-2 AND a<b+2) */
-let result = from row in t1
+var result = from row in t1
   where ((row.a > (row.b - 2) && row.a < (row.b + 2)))
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.b, row.e]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case167" {
-  expect flatResult == [4, 130, 132, 2, 139, 135, 2, 143, 144, 3, 158, 157, 1, 167, 165, 3, 181, 180, 3, 198, 197, 3, 228, 227]
+  expect flatResult == [1, 130, 132, 135, 139, 143, 144, 157, 158, 165, 167, 180, 181, 197, 198, 2, 2, 227, 228, 3, 3, 3, 3, 4]
 }
 

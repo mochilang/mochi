@@ -224,21 +224,27 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2 FROM t1 WHERE b>c */
-let result = from row in t1
+var result = from row in t1
   where row.b > row.c
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.a + (row.b * 2))]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case106" {
-  expect flatResult == [0, 369, 0, 385, 0, 416, 0, 428, 0, 455, 0, 475, 0, 502, 0, 579, 0, 595, 0, 652, 0, 685, 0, 698, 0, 743]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 369, 385, 416, 428, 455, 475, 502, 579, 595, 652, 685, 698, 743]
 }
 

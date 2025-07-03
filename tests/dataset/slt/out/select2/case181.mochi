@@ -224,20 +224,26 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3+d*4+e*5 FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case181" {
-  expect flatResult == [0, null, 0, 1612, 0, null, 0, null, 0, null, 0, 1902, 0, 1985, 0, 2046, 0, 2131, 0, null, 0, null, 0, null, 0, 2432, 0, null, 0, 2579, 0, null, 0, 2728, 0, 2806, 0, 2878, 0, 2949, 0, null, 0, null, 0, 3175, 0, 3260, 0, 3331, 0, 3399, 0, 3473, 0, null, 0, null, 0, 3706]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1612, 1902, 1985, 2046, 2131, 2432, 2579, 2728, 2806, 2878, 2949, 3175, 3260, 3331, 3399, 3473, 3706, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

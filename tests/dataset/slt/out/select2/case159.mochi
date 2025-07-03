@@ -224,13 +224,16 @@ let t1 = [
 ]
 
 /* SELECT d FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR b>c OR c>d */
-let result = from row in t1
+var result = from row in t1
   where ((((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || row.b > row.c) || row.c > row.d)
   select row.d
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
 
 test "case159" {
-  expect result == [122, 128, 136, 140, null, null, null, 190, 196, 217, 226, 233, 248, 101, 116, 133, 171, 183, 185, 207, 212, 222, 108]
+  expect result == [101, 108, 116, 122, 128, 133, 136, 140, 171, 183, 185, 190, 196, 207, 212, 217, 222, 226, 233, 248, null, null, null]
 }
