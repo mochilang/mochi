@@ -224,15 +224,21 @@ let t1 = [
 ]
 
 /* SELECT b, d-e, (a+b+c+d+e)/5, d, a FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 */
-let result = from row in t1
+var result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
   select [row.b, (row.d - row.e), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d, row.a]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }

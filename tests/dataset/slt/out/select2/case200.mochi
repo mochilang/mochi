@@ -224,8 +224,11 @@ let t1 = [
 ]
 
 /* SELECT a FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select row.a
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
