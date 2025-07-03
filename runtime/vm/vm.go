@@ -526,6 +526,20 @@ func (e *VMError) Error() string {
 	return e.Err.Error()
 }
 
+// Format returns a detailed representation of the VM error including the call
+// graph and annotated stack trace when program information is available.
+func (e *VMError) Format(prog *Program) string {
+	var b strings.Builder
+	b.WriteString(e.Err.Error())
+	if prog != nil {
+		b.WriteString("\ncall graph: ")
+		b.WriteString(e.callGraph())
+		b.WriteString("\nstack trace:\n")
+		b.WriteString(e.stackTrace(prog))
+	}
+	return b.String()
+}
+
 func (e *VMError) callGraph() string {
 	names := make([]string, len(e.Stack))
 	for i, f := range e.Stack {
@@ -1225,7 +1239,15 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpExpect:
 			val := fr.regs[ins.A]
 			if val.Tag != ValueBool || !val.Bool {
-				return Value{}, m.newError(fmt.Errorf("expect condition failed"), trace, ins.Line)
+				src := ""
+				if ins.Line > 0 && ins.Line <= len(m.prog.Source) {
+					src = strings.TrimSpace(m.prog.Source[ins.Line-1])
+				}
+				msg := "expect condition failed"
+				if src != "" {
+					msg = fmt.Sprintf("expect condition failed at %s:%d: %s", m.prog.File, ins.Line, src)
+				}
+				return Value{}, m.newError(fmt.Errorf("%s", msg), trace, ins.Line)
 			}
 		case OpSelect:
 			cond := fr.regs[ins.B]
@@ -6912,9 +6934,9 @@ func valueToAny(v Value) any {
 			m[k] = valueToAny(x)
 		}
 		return m
-       default:
-               return "null"
-       }
+	default:
+		return "null"
+	}
 }
 
 func anyToValue(v any) Value {
