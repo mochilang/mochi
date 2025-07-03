@@ -15,12 +15,8 @@ func main (regs=330)
   Const        r6, []
   // select { i_item_id: i.i_item_id, ca_country: ca.ca_country, ca_state: ca.ca_state, ca_county: ca.ca_county,
   Const        r7, "i_item_id"
-  Const        r7, "i_item_id"
-  Const        r8, "ca_country"
   Const        r8, "ca_country"
   Const        r9, "ca_state"
-  Const        r9, "ca_state"
-  Const        r10, "ca_county"
   Const        r10, "ca_county"
   // q: cs.cs_quantity, lp: cs.cs_list_price, cp: cs.cs_coupon_amt, sp: cs.cs_sales_price, np: cs.cs_net_profit, by: c.c_birth_year, dep: cd1.cd_dep_count }
   Const        r11, "q"
@@ -42,7 +38,6 @@ func main (regs=330)
   Len          r26, r25
   Const        r28, 0
   Move         r27, r28
-L16:
   LessInt      r29, r27, r26
   JumpIfFalse  r29, L0
   Index        r30, r25, r27
@@ -56,12 +51,8 @@ L16:
   Const        r37, "cd_education_status"
   // select { i_item_id: i.i_item_id, ca_country: ca.ca_country, ca_state: ca.ca_state, ca_county: ca.ca_county,
   Const        r7, "i_item_id"
-  Const        r7, "i_item_id"
-  Const        r8, "ca_country"
   Const        r8, "ca_country"
   Const        r9, "ca_state"
-  Const        r9, "ca_state"
-  Const        r10, "ca_county"
   Const        r10, "ca_county"
   // q: cs.cs_quantity, lp: cs.cs_list_price, cp: cs.cs_coupon_amt, sp: cs.cs_sales_price, np: cs.cs_net_profit, by: c.c_birth_year, dep: cd1.cd_dep_count }
   Const        r11, "q"
@@ -81,7 +72,6 @@ L16:
   // join cd1 in customer_demographics on cs.cs_bill_cdemo_sk == cd1.cd_demo_sk && cd1.cd_gender == "M" && cd1.cd_education_status == "College"
   Const        r28, 0
   Move         r38, r28
-L15:
   LessInt      r39, r38, r33
   JumpIfFalse  r39, L1
   Index        r40, r32, r38
@@ -104,7 +94,6 @@ L15:
   Move         r51, r47
   JumpIfFalse  r51, L2
   Move         r51, r50
-L2:
   JumpIfFalse  r51, L3
   // join c in customer on cs.cs_bill_customer_sk == c.c_customer_sk
   IterPrep     r52, r2
@@ -113,12 +102,9 @@ L2:
   Const        r55, "c_customer_sk"
   // select { i_item_id: i.i_item_id, ca_country: ca.ca_country, ca_state: ca.ca_state, ca_county: ca.ca_county,
   Const        r7, "i_item_id"
-  Const        r7, "i_item_id"
-  Const        r8, "ca_country"
   Const        r8, "ca_country"
   Const        r9, "ca_state"
-  Const        r9, "ca_state"
-  Const        r10, "ca_county"
+L2:
   Const        r10, "ca_county"
   // q: cs.cs_quantity, lp: cs.cs_list_price, cp: cs.cs_coupon_amt, sp: cs.cs_sales_price, np: cs.cs_net_profit, by: c.c_birth_year, dep: cd1.cd_dep_count }
   Const        r11, "q"
@@ -138,7 +124,6 @@ L2:
   // join c in customer on cs.cs_bill_customer_sk == c.c_customer_sk
   Const        r28, 0
   Move         r56, r28
-L14:
   LessInt      r57, r56, r53
   JumpIfFalse  r57, L3
   Index        r58, r52, r56
@@ -156,12 +141,8 @@ L14:
   Const        r35, "cd_demo_sk"
   // select { i_item_id: i.i_item_id, ca_country: ca.ca_country, ca_state: ca.ca_state, ca_county: ca.ca_county,
   Const        r7, "i_item_id"
-  Const        r7, "i_item_id"
-  Const        r8, "ca_country"
   Const        r8, "ca_country"
   Const        r9, "ca_state"
-  Const        r9, "ca_state"
-  Const        r10, "ca_county"
   Const        r10, "ca_county"
   // q: cs.cs_quantity, lp: cs.cs_list_price, cp: cs.cs_coupon_amt, sp: cs.cs_sales_price, np: cs.cs_net_profit, by: c.c_birth_year, dep: cd1.cd_dep_count }
   Const        r11, "q"
@@ -181,7 +162,6 @@ L14:
   // join cd2 in customer_demographics on c.c_current_cdemo_sk == cd2.cd_demo_sk
   Const        r28, 0
   Move         r66, r28
-L13:
   LessInt      r67, r66, r64
   JumpIfFalse  r67, L4
   Index        r68, r63, r66
@@ -199,12 +179,8 @@ L13:
   Const        r76, "ca_address_sk"
   // select { i_item_id: i.i_item_id, ca_country: ca.ca_country, ca_state: ca.ca_state, ca_county: ca.ca_county,
   Const        r7, "i_item_id"
-  Const        r7, "i_item_id"
-  Const        r8, "ca_country"
   Const        r8, "ca_country"
   Const        r9, "ca_state"
-  Const        r9, "ca_state"
-  Const        r10, "ca_county"
   Const        r10, "ca_county"
   // q: cs.cs_quantity, lp: cs.cs_list_price, cp: cs.cs_coupon_amt, sp: cs.cs_sales_price, np: cs.cs_net_profit, by: c.c_birth_year, dep: cd1.cd_dep_count }
   Const        r11, "q"
@@ -224,7 +200,6 @@ L13:
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
   Const        r28, 0
   Move         r77, r28
-L12:
   LessInt      r78, r77, r74
   JumpIfFalse  r78, L5
   Index        r79, r73, r77
@@ -243,12 +218,8 @@ L12:
   Const        r88, "d_year"
   // select { i_item_id: i.i_item_id, ca_country: ca.ca_country, ca_state: ca.ca_state, ca_county: ca.ca_county,
   Const        r7, "i_item_id"
-  Const        r7, "i_item_id"
-  Const        r8, "ca_country"
   Const        r8, "ca_country"
   Const        r9, "ca_state"
-  Const        r9, "ca_state"
-  Const        r10, "ca_county"
   Const        r10, "ca_county"
   // q: cs.cs_quantity, lp: cs.cs_list_price, cp: cs.cs_coupon_amt, sp: cs.cs_sales_price, np: cs.cs_net_profit, by: c.c_birth_year, dep: cd1.cd_dep_count }
   Const        r11, "q"
@@ -268,7 +239,6 @@ L12:
   // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk && d.d_year == 1999
   Const        r28, 0
   Move         r89, r28
-L11:
   LessInt      r90, r89, r85
   JumpIfFalse  r90, L6
   Index        r91, r84, r89
@@ -285,7 +255,6 @@ L11:
   Move         r99, r95
   JumpIfFalse  r99, L7
   Move         r99, r98
-L7:
   JumpIfFalse  r99, L8
   // join i in item on cs.cs_item_sk == i.i_item_sk
   IterPrep     r100, r5
@@ -294,12 +263,8 @@ L7:
   Const        r103, "i_item_sk"
   // select { i_item_id: i.i_item_id, ca_country: ca.ca_country, ca_state: ca.ca_state, ca_county: ca.ca_county,
   Const        r7, "i_item_id"
-  Const        r7, "i_item_id"
-  Const        r8, "ca_country"
   Const        r8, "ca_country"
   Const        r9, "ca_state"
-  Const        r9, "ca_state"
-  Const        r10, "ca_county"
   Const        r10, "ca_county"
   // q: cs.cs_quantity, lp: cs.cs_list_price, cp: cs.cs_coupon_amt, sp: cs.cs_sales_price, np: cs.cs_net_profit, by: c.c_birth_year, dep: cd1.cd_dep_count }
   Const        r11, "q"
@@ -318,8 +283,8 @@ L7:
   Const        r24, "cd_dep_count"
   // join i in item on cs.cs_item_sk == i.i_item_sk
   Const        r28, 0
+L7:
   Move         r104, r28
-L10:
   LessInt      r105, r104, r101
   JumpIfFalse  r105, L8
   Index        r106, r100, r104
@@ -350,6 +315,7 @@ L10:
   Const        r121, "lp"
   Const        r14, "cs_list_price"
   Index        r122, r31, r14
+L10:
   Const        r123, "cp"
   Const        r16, "cs_coupon_amt"
   Index        r124, r31, r16
@@ -394,100 +360,47 @@ L10:
   // from cs in catalog_sales
   Append       r156, r6, r155
   Move         r6, r156
-L9:
   // join i in item on cs.cs_item_sk == i.i_item_sk
   Const        r157, 1
   Add          r104, r104, r157
   Jump         L10
-L8:
-  // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk && d.d_year == 1999
-  Const        r157, 1
-  Add          r89, r89, r157
-  Jump         L11
-L6:
-  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
-  Const        r157, 1
-  Add          r77, r77, r157
-  Jump         L12
-L5:
-  // join cd2 in customer_demographics on c.c_current_cdemo_sk == cd2.cd_demo_sk
-  Const        r157, 1
-  Add          r66, r66, r157
-  Jump         L13
-L4:
-  // join c in customer on cs.cs_bill_customer_sk == c.c_customer_sk
-  Const        r157, 1
-  Add          r56, r56, r157
-  Jump         L14
-L3:
-  // join cd1 in customer_demographics on cs.cs_bill_cdemo_sk == cd1.cd_demo_sk && cd1.cd_gender == "M" && cd1.cd_education_status == "College"
-  Const        r157, 1
-  Add          r38, r38, r157
-  Jump         L15
-L1:
-  // from cs in catalog_sales
-  Const        r157, 1
-  AddInt       r27, r27, r157
-  Jump         L16
-L0:
-  // from j in joined
-  Const        r158, []
-  // group by { i_item_id: j.i_item_id, ca_country: j.ca_country, ca_state: j.ca_state, ca_county: j.ca_county } into g
-  Const        r7, "i_item_id"
-  Const        r7, "i_item_id"
-  Const        r8, "ca_country"
-  Const        r8, "ca_country"
-  Const        r9, "ca_state"
-  Const        r9, "ca_state"
-  Const        r10, "ca_county"
-  Const        r10, "ca_county"
-  // i_item_id: g.key.i_item_id,
-  Const        r7, "i_item_id"
-  Const        r159, "key"
-  Const        r7, "i_item_id"
-  // ca_country: g.key.ca_country,
-  Const        r8, "ca_country"
-  Const        r159, "key"
-  Const        r8, "ca_country"
-  // ca_state: g.key.ca_state,
-  Const        r9, "ca_state"
-  Const        r159, "key"
-  Const        r9, "ca_state"
-  // ca_county: g.key.ca_county,
-  Const        r10, "ca_county"
-  Const        r159, "key"
-  Const        r10, "ca_county"
+L9:
   // agg1: avg(from x in g select x.q),
-  Const        r160, "agg1"
   Const        r11, "q"
   // agg2: avg(from x in g select x.lp),
   Const        r161, "agg2"
   Const        r13, "lp"
+L8:
   // agg3: avg(from x in g select x.cp),
   Const        r162, "agg3"
   Const        r15, "cp"
   // agg4: avg(from x in g select x.sp),
   Const        r163, "agg4"
+L6:
   Const        r17, "sp"
   // agg5: avg(from x in g select x.np),
   Const        r164, "agg5"
   Const        r19, "np"
+L5:
   // agg6: avg(from x in g select x.by),
   Const        r165, "agg6"
   Const        r21, "by"
   // agg7: avg(from x in g select x.dep)
   Const        r166, "agg7"
+L4:
   Const        r23, "dep"
   // from j in joined
   IterPrep     r167, r6
   Len          r168, r167
+L3:
   Const        r169, 0
   MakeMap      r170, 0, r0
   Const        r172, []
+L1:
   Move         r171, r172
-L19:
   LessInt      r173, r169, r168
-  JumpIfFalse  r173, L17
+  JumpIfFalse  r173, L11
+L0:
   Index        r174, r167, r169
   Move         r175, r174
   // group by { i_item_id: j.i_item_id, ca_country: j.ca_country, ca_state: j.ca_state, ca_county: j.ca_county } into g
@@ -514,7 +427,7 @@ L19:
   MakeMap      r192, 4, r184
   Str          r193, r192
   In           r194, r193, r170
-  JumpIfTrue   r194, L18
+  JumpIfTrue   r194, L12
   // from j in joined
   Const        r172, []
   Const        r195, "__group__"
@@ -533,70 +446,25 @@ L19:
   Move         r204, r197
   Move         r205, r198
   Move         r206, r199
+L13:
   Move         r207, r200
   Move         r208, r28
   MakeMap      r209, 4, r201
   SetIndex     r170, r193, r209
   Append       r210, r171, r209
   Move         r171, r210
-L18:
-  Const        r198, "items"
   Index        r211, r170, r193
   Index        r212, r211, r198
   Append       r213, r212, r174
   SetIndex     r211, r198, r213
-  Const        r200, "count"
   Index        r214, r211, r200
   Const        r157, 1
   AddInt       r215, r214, r157
   SetIndex     r211, r200, r215
-  Const        r157, 1
   AddInt       r169, r169, r157
-  Jump         L19
-L17:
-  Const        r28, 0
-  Move         r216, r28
-  Len          r217, r171
-L35:
-  LessInt      r218, r216, r217
-  JumpIfFalse  r218, L20
-  Index        r219, r171, r216
-  Move         r220, r219
-  // i_item_id: g.key.i_item_id,
-  Const        r221, "i_item_id"
-  Const        r159, "key"
-  Index        r222, r220, r159
-  Const        r7, "i_item_id"
-  Index        r223, r222, r7
-  // ca_country: g.key.ca_country,
-  Const        r224, "ca_country"
-  Const        r159, "key"
-  Index        r225, r220, r159
-  Const        r8, "ca_country"
-  Index        r226, r225, r8
-  // ca_state: g.key.ca_state,
-  Const        r227, "ca_state"
-  Const        r159, "key"
-  Index        r228, r220, r159
-  Const        r9, "ca_state"
-  Index        r229, r228, r9
-  // ca_county: g.key.ca_county,
-  Const        r230, "ca_county"
-  Const        r159, "key"
-  Index        r231, r220, r159
-  Const        r10, "ca_county"
-  Index        r232, r231, r10
+  Jump         L13
+L12:
   // agg1: avg(from x in g select x.q),
-  Const        r233, "agg1"
-  Const        r234, []
-  Const        r11, "q"
-  IterPrep     r235, r220
-  Len          r236, r235
-  Const        r28, 0
-  Move         r237, r28
-L22:
-  LessInt      r238, r237, r236
-  JumpIfFalse  r238, L21
   Index        r239, r235, r237
   Move         r240, r239
   Const        r11, "q"
@@ -605,20 +473,16 @@ L22:
   Move         r234, r242
   Const        r157, 1
   AddInt       r237, r237, r157
-  Jump         L22
-L21:
-  Avg          r243, r234
+  Jump         L14
+L11:
   // agg2: avg(from x in g select x.lp),
-  Const        r244, "agg2"
-  Const        r245, []
-  Const        r13, "lp"
   IterPrep     r246, r220
   Len          r247, r246
   Const        r28, 0
+L23:
   Move         r248, r28
-L24:
   LessInt      r249, r248, r247
-  JumpIfFalse  r249, L23
+  JumpIfFalse  r249, L15
   Index        r250, r246, r248
   Move         r240, r250
   Const        r13, "lp"
@@ -627,30 +491,9 @@ L24:
   Move         r245, r252
   Const        r157, 1
   AddInt       r248, r248, r157
-  Jump         L24
-L23:
-  Avg          r253, r245
+  Jump         L16
+L14:
   // agg3: avg(from x in g select x.cp),
-  Const        r254, "agg3"
-  Const        r255, []
-  Const        r15, "cp"
-  IterPrep     r256, r220
-  Len          r257, r256
-  Const        r28, 0
-  Move         r258, r28
-L26:
-  LessInt      r259, r258, r257
-  JumpIfFalse  r259, L25
-  Index        r260, r256, r258
-  Move         r240, r260
-  Const        r15, "cp"
-  Index        r261, r240, r15
-  Append       r262, r255, r261
-  Move         r255, r262
-  Const        r157, 1
-  AddInt       r258, r258, r157
-  Jump         L26
-L25:
   Avg          r263, r255
   // agg4: avg(from x in g select x.sp),
   Const        r264, "agg4"
@@ -660,9 +503,8 @@ L25:
   Len          r267, r266
   Const        r28, 0
   Move         r268, r28
-L28:
   LessInt      r269, r268, r267
-  JumpIfFalse  r269, L27
+  JumpIfFalse  r269, L17
   Index        r270, r266, r268
   Move         r240, r270
   Const        r17, "sp"
@@ -671,8 +513,8 @@ L28:
   Move         r265, r272
   Const        r157, 1
   AddInt       r268, r268, r157
-  Jump         L28
-L27:
+  Jump         L18
+L16:
   Avg          r273, r265
   // agg5: avg(from x in g select x.np),
   Const        r274, "agg5"
@@ -682,10 +524,10 @@ L27:
   Len          r277, r276
   Const        r28, 0
   Move         r278, r28
-L30:
   LessInt      r279, r278, r277
-  JumpIfFalse  r279, L29
+  JumpIfFalse  r279, L19
   Index        r280, r276, r278
+L15:
   Move         r240, r280
   Const        r19, "np"
   Index        r281, r240, r19
@@ -693,30 +535,9 @@ L30:
   Move         r275, r282
   Const        r157, 1
   AddInt       r278, r278, r157
-  Jump         L30
-L29:
-  Avg          r283, r275
+  Jump         L20
+L18:
   // agg6: avg(from x in g select x.by),
-  Const        r284, "agg6"
-  Const        r285, []
-  Const        r21, "by"
-  IterPrep     r286, r220
-  Len          r287, r286
-  Const        r28, 0
-  Move         r288, r28
-L32:
-  LessInt      r289, r288, r287
-  JumpIfFalse  r289, L31
-  Index        r290, r286, r288
-  Move         r240, r290
-  Const        r21, "by"
-  Index        r291, r240, r21
-  Append       r292, r285, r291
-  Move         r285, r292
-  Const        r157, 1
-  AddInt       r288, r288, r157
-  Jump         L32
-L31:
   Avg          r293, r285
   // agg7: avg(from x in g select x.dep)
   Const        r294, "agg7"
@@ -726,10 +547,10 @@ L31:
   Len          r297, r296
   Const        r28, 0
   Move         r298, r28
-L34:
   LessInt      r299, r298, r297
-  JumpIfFalse  r299, L33
+  JumpIfFalse  r299, L21
   Index        r300, r296, r298
+L17:
   Move         r240, r300
   Const        r23, "dep"
   Index        r301, r240, r23
@@ -737,8 +558,8 @@ L34:
   Move         r295, r302
   Const        r157, 1
   AddInt       r298, r298, r157
-  Jump         L34
-L33:
+  Jump         L22
+L20:
   Avg          r303, r295
   // i_item_id: g.key.i_item_id,
   Move         r304, r221
@@ -755,6 +576,7 @@ L33:
   // agg1: avg(from x in g select x.q),
   Move         r312, r233
   Move         r313, r243
+L19:
   // agg2: avg(from x in g select x.lp),
   Move         r314, r244
   Move         r315, r253
@@ -780,12 +602,4 @@ L33:
   Move         r158, r327
   Const        r157, 1
   AddInt       r216, r216, r157
-  Jump         L35
-L20:
-  // json(result)
-  JSON         r158
-  // expect result == [ { i_item_id: "I1", ca_country: "US", ca_state: "CA", ca_county: "County1",
-  Const        r328, [{"agg1": 1.0, "agg2": 10.0, "agg3": 1.0, "agg4": 9.0, "agg5": 2.0, "agg6": 1980.0, "agg7": 2.0, "ca_country": "US", "ca_county": "County1", "ca_state": "CA", "i_item_id": "I1"}]
-  Equal        r329, r158, r328
-  Expect       r329
-  Return       r0
+  Jump         L23

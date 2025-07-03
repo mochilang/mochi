@@ -120,7 +120,6 @@ L9:
   // let growth_ok = ws98 > 0 && ss98 > 0 && (ws99 / ws98) > (ss99 / ss98)
   Const        r9, 0
   Less         r57, r9, r45
-  Const        r9, 0
   Less         r58, r9, r19
   Div          r59, r56, r45
   Div          r60, r31, r19
@@ -130,9 +129,9 @@ L9:
   Move         r62, r58
   JumpIfFalse  r62, L12
   Move         r62, r61
-L12:
   // let result = if growth_ok { [ { customer_id: "C1", customer_first_name: "John", customer_last_name: "Doe" } ] } else { [] }
   Const        r63, [{"customer_first_name": "John", "customer_id": "C1", "customer_last_name": "Doe"}]
+L12:
   Const        r64, []
   Select       65,62,63,64
   // json(result)

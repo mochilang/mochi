@@ -23,7 +23,7 @@ func main (regs=220)
   Len          r12, r11
   Const        r14, 0
   Move         r13, r14
-L12:
+L4:
   LessInt      r15, r13, r12
   JumpIfFalse  r15, L0
   Index        r16, r11, r13
@@ -32,10 +32,7 @@ L12:
   IterPrep     r18, r1
   Len          r19, r18
   Const        r20, "ticket"
-  Const        r20, "ticket"
   Const        r21, "item"
-  Const        r21, "item"
-  Const        r22, "customer"
   Const        r22, "customer"
   // select {s: s, diff: sr.returned - ss.sold}
   Const        r7, "s"
@@ -45,24 +42,21 @@ L12:
   // join sr in store_returns on ss.ticket == sr.ticket && ss.item == sr.item && ss.customer == sr.customer
   Const        r14, 0
   Move         r23, r14
-L11:
   LessInt      r24, r23, r19
   JumpIfFalse  r24, L1
   Index        r25, r18, r23
+L6:
   Move         r26, r25
   Const        r20, "ticket"
   Index        r27, r17, r20
-  Const        r20, "ticket"
   Index        r28, r26, r20
   Equal        r29, r27, r28
   Const        r21, "item"
   Index        r30, r17, r21
-  Const        r21, "item"
   Index        r31, r26, r21
   Equal        r32, r30, r31
   Const        r22, "customer"
   Index        r33, r17, r22
-  Const        r22, "customer"
   Index        r34, r26, r22
   Equal        r35, r33, r34
   Move         r36, r29
@@ -70,7 +64,6 @@ L11:
   Move         r36, r32
   JumpIfFalse  r36, L2
   Move         r36, r35
-L2:
   JumpIfFalse  r36, L3
   // join d1 in date_dim on ss.sold == d1.d_date_sk
   IterPrep     r37, r2
@@ -79,13 +72,12 @@ L2:
   Const        r39, "d_date_sk"
   // select {s: s, diff: sr.returned - ss.sold}
   Const        r7, "s"
+L2:
   Const        r8, "diff"
   Const        r9, "returned"
-  Const        r10, "sold"
   // join d1 in date_dim on ss.sold == d1.d_date_sk
   Const        r14, 0
   Move         r40, r14
-L10:
   LessInt      r41, r40, r38
   JumpIfFalse  r41, L3
   Index        r42, r37, r40
@@ -93,6 +85,7 @@ L10:
   Const        r10, "sold"
   Index        r44, r17, r10
   Const        r39, "d_date_sk"
+L7:
   Index        r45, r43, r39
   Equal        r46, r44, r45
   JumpIfFalse  r46, L4
@@ -106,12 +99,10 @@ L10:
   // select {s: s, diff: sr.returned - ss.sold}
   Const        r7, "s"
   Const        r8, "diff"
-  Const        r9, "returned"
   Const        r10, "sold"
   // join d2 in date_dim on sr.returned == d2.d_date_sk && d2.d_year == year && d2.d_moy == month
   Const        r14, 0
   Move         r51, r14
-L9:
   LessInt      r52, r51, r48
   JumpIfFalse  r52, L4
   Index        r53, r47, r51
@@ -134,7 +125,6 @@ L9:
   Move         r62, r59
   JumpIfFalse  r62, L5
   Move         r62, r61
-L5:
   JumpIfFalse  r62, L6
   // join s in store on ss.store == s.s_store_sk
   IterPrep     r63, r3
@@ -145,11 +135,11 @@ L5:
   Const        r7, "s"
   Const        r8, "diff"
   Const        r9, "returned"
+L5:
   Const        r10, "sold"
   // join s in store on ss.store == s.s_store_sk
   Const        r14, 0
   Move         r67, r14
-L8:
   LessInt      r68, r67, r64
   JumpIfFalse  r68, L6
   Index        r69, r63, r67
@@ -158,6 +148,7 @@ L8:
   Index        r71, r17, r65
   Const        r66, "s_store_sk"
   Index        r72, r70, r66
+L8:
   Equal        r73, r71, r72
   JumpIfFalse  r73, L7
   // select {s: s, diff: sr.returned - ss.sold}
@@ -176,58 +167,27 @@ L8:
   // from ss in store_sales
   Append       r84, r6, r83
   Move         r6, r84
-L7:
   // join s in store on ss.store == s.s_store_sk
   Const        r85, 1
   Add          r67, r67, r85
   Jump         L8
-L6:
-  // join d2 in date_dim on sr.returned == d2.d_date_sk && d2.d_year == year && d2.d_moy == month
-  Const        r85, 1
-  Add          r51, r51, r85
-  Jump         L9
-L4:
-  // join d1 in date_dim on ss.sold == d1.d_date_sk
-  Const        r85, 1
-  Add          r40, r40, r85
-  Jump         L10
 L3:
-  // join sr in store_returns on ss.ticket == sr.ticket && ss.item == sr.item && ss.customer == sr.customer
-  Const        r85, 1
-  Add          r23, r23, r85
-  Jump         L11
-L1:
-  // from ss in store_sales
-  Const        r85, 1
-  AddInt       r13, r13, r85
-  Jump         L12
-L0:
-  // from j in joined
-  Const        r86, []
-  // group by j.s into g
-  Const        r7, "s"
   // s_store_name: g.key.s_store_name,
   Const        r87, "s_store_name"
   Const        r88, "key"
-  Const        r87, "s_store_name"
   // d30: count(from x in g where x.diff <= 30 select 1),
   Const        r89, "d30"
+L1:
   Const        r8, "diff"
   // d31_60: count(from x in g where x.diff > 30 && x.diff <= 60 select 1),
   Const        r90, "d31_60"
-  Const        r8, "diff"
-  Const        r8, "diff"
   // d61_90: count(from x in g where x.diff > 60 && x.diff <= 90 select 1),
   Const        r91, "d61_90"
-  Const        r8, "diff"
-  Const        r8, "diff"
+L0:
   // d91_120: count(from x in g where x.diff > 90 && x.diff <= 120 select 1),
   Const        r92, "d91_120"
-  Const        r8, "diff"
-  Const        r8, "diff"
   // d_gt_120: count(from x in g where x.diff > 120 select 1)
   Const        r93, "d_gt_120"
-  Const        r8, "diff"
   // from j in joined
   IterPrep     r94, r6
   Len          r95, r94
@@ -235,9 +195,8 @@ L0:
   MakeMap      r97, 0, r0
   Const        r99, []
   Move         r98, r99
-L15:
   LessInt      r100, r96, r95
-  JumpIfFalse  r100, L13
+  JumpIfFalse  r100, L9
   Index        r101, r94, r96
   Move         r102, r101
   // group by j.s into g
@@ -245,7 +204,7 @@ L15:
   Index        r103, r102, r7
   Str          r104, r103
   In           r105, r104, r97
-  JumpIfTrue   r105, L14
+  JumpIfTrue   r105, L10
   // from j in joined
   Const        r99, []
   Const        r106, "__group__"
@@ -256,6 +215,7 @@ L15:
   // from j in joined
   Const        r109, "items"
   Move         r110, r99
+L11:
   Const        r111, "count"
   Const        r14, 0
   Move         r112, r106
@@ -270,28 +230,17 @@ L15:
   SetIndex     r97, r104, r120
   Append       r121, r98, r120
   Move         r98, r121
-L14:
-  Const        r109, "items"
   Index        r122, r97, r104
   Index        r123, r122, r109
   Append       r124, r123, r101
   SetIndex     r122, r109, r124
-  Const        r111, "count"
   Index        r125, r122, r111
   Const        r85, 1
   AddInt       r126, r125, r85
   SetIndex     r122, r111, r126
-  Const        r85, 1
   AddInt       r96, r96, r85
-  Jump         L15
-L13:
-  Const        r14, 0
-  Move         r127, r14
-  Len          r128, r98
-L35:
-  LessInt      r129, r127, r128
-  JumpIfFalse  r129, L16
-  Index        r130, r98, r127
+  Jump         L11
+L10:
   Move         r131, r130
   // s_store_name: g.key.s_store_name,
   Const        r132, "s_store_name"
@@ -307,169 +256,132 @@ L35:
   Len          r138, r137
   Const        r14, 0
   Move         r139, r14
-L19:
+L9:
   LessInt      r140, r139, r138
-  JumpIfFalse  r140, L17
+  JumpIfFalse  r140, L12
   Index        r141, r137, r139
+L26:
   Move         r142, r141
   Const        r8, "diff"
   Index        r143, r142, r8
   Const        r144, 30
   LessEq       r145, r143, r144
-  JumpIfFalse  r145, L18
+  JumpIfFalse  r145, L13
   Const        r85, 1
   Append       r146, r136, r85
   Move         r136, r146
-L18:
-  Const        r85, 1
   AddInt       r139, r139, r85
-  Jump         L19
-L17:
-  Count        r147, r136
   // d31_60: count(from x in g where x.diff > 30 && x.diff <= 60 select 1),
-  Const        r148, "d31_60"
-  Const        r149, []
-  Const        r8, "diff"
-  Const        r8, "diff"
-  IterPrep     r150, r131
   Len          r151, r150
   Const        r14, 0
   Move         r152, r14
-L23:
   LessInt      r153, r152, r151
-  JumpIfFalse  r153, L20
+  JumpIfFalse  r153, L14
   Index        r154, r150, r152
   Move         r142, r154
   Const        r8, "diff"
   Index        r155, r142, r8
   Const        r144, 30
   Less         r156, r144, r155
-  Const        r8, "diff"
   Index        r157, r142, r8
+L13:
   Const        r158, 60
   LessEq       r159, r157, r158
   Move         r160, r156
-  JumpIfFalse  r160, L21
+L12:
+  JumpIfFalse  r160, L15
   Move         r160, r159
-L21:
-  JumpIfFalse  r160, L22
+  JumpIfFalse  r160, L16
   Const        r85, 1
   Append       r161, r149, r85
   Move         r149, r161
-L22:
-  Const        r85, 1
   AddInt       r152, r152, r85
-  Jump         L23
-L20:
-  Count        r162, r149
   // d61_90: count(from x in g where x.diff > 60 && x.diff <= 90 select 1),
   Const        r163, "d61_90"
   Const        r164, []
-  Const        r8, "diff"
   Const        r8, "diff"
   IterPrep     r165, r131
   Len          r166, r165
   Const        r14, 0
   Move         r167, r14
-L27:
   LessInt      r168, r167, r166
-  JumpIfFalse  r168, L24
+  JumpIfFalse  r168, L17
   Index        r169, r165, r167
   Move         r142, r169
   Const        r8, "diff"
   Index        r170, r142, r8
   Const        r158, 60
   Less         r171, r158, r170
-  Const        r8, "diff"
+L15:
   Index        r172, r142, r8
   Const        r173, 90
   LessEq       r174, r172, r173
   Move         r175, r171
-  JumpIfFalse  r175, L25
+L16:
+  JumpIfFalse  r175, L18
   Move         r175, r174
-L25:
-  JumpIfFalse  r175, L26
+  JumpIfFalse  r175, L19
+L14:
   Const        r85, 1
   Append       r176, r164, r85
   Move         r164, r176
-L26:
-  Const        r85, 1
   AddInt       r167, r167, r85
-  Jump         L27
-L24:
-  Count        r177, r164
   // d91_120: count(from x in g where x.diff > 90 && x.diff <= 120 select 1),
-  Const        r178, "d91_120"
-  Const        r179, []
-  Const        r8, "diff"
-  Const        r8, "diff"
   IterPrep     r180, r131
   Len          r181, r180
   Const        r14, 0
   Move         r182, r14
-L31:
   LessInt      r183, r182, r181
-  JumpIfFalse  r183, L28
+  JumpIfFalse  r183, L20
   Index        r184, r180, r182
   Move         r142, r184
   Const        r8, "diff"
   Index        r185, r142, r8
   Const        r173, 90
   Less         r186, r173, r185
-  Const        r8, "diff"
   Index        r187, r142, r8
   Const        r188, 120
   LessEq       r189, r187, r188
+L18:
   Move         r190, r186
-  JumpIfFalse  r190, L29
+  JumpIfFalse  r190, L21
   Move         r190, r189
-L29:
-  JumpIfFalse  r190, L30
+  JumpIfFalse  r190, L22
+L19:
   Const        r85, 1
   Append       r191, r179, r85
   Move         r179, r191
-L30:
-  Const        r85, 1
+L17:
   AddInt       r182, r182, r85
-  Jump         L31
-L28:
-  Count        r192, r179
   // d_gt_120: count(from x in g where x.diff > 120 select 1)
-  Const        r193, "d_gt_120"
-  Const        r194, []
-  Const        r8, "diff"
-  IterPrep     r195, r131
-  Len          r196, r195
-  Const        r14, 0
   Move         r197, r14
-L34:
   LessInt      r198, r197, r196
-  JumpIfFalse  r198, L32
+  JumpIfFalse  r198, L23
   Index        r199, r195, r197
   Move         r142, r199
   Const        r8, "diff"
   Index        r200, r142, r8
   Const        r188, 120
   Less         r201, r188, r200
-  JumpIfFalse  r201, L33
+  JumpIfFalse  r201, L24
   Const        r85, 1
   Append       r202, r194, r85
   Move         r194, r202
-L33:
-  Const        r85, 1
   AddInt       r197, r197, r85
-  Jump         L34
-L32:
+  Jump         L25
+L21:
   Count        r203, r194
   // s_store_name: g.key.s_store_name,
   Move         r204, r132
   Move         r205, r134
   // d30: count(from x in g where x.diff <= 30 select 1),
   Move         r206, r135
+L22:
   Move         r207, r147
   // d31_60: count(from x in g where x.diff > 30 && x.diff <= 60 select 1),
   Move         r208, r148
   Move         r209, r162
+L20:
   // d61_90: count(from x in g where x.diff > 60 && x.diff <= 90 select 1),
   Move         r210, r163
   Move         r211, r177
@@ -483,15 +395,8 @@ L32:
   MakeMap      r216, 6, r204
   // from j in joined
   Append       r217, r86, r216
+L25:
   Move         r86, r217
   Const        r85, 1
   AddInt       r127, r127, r85
-  Jump         L35
-L16:
-  // json(result)
-  JSON         r86
-  // expect result == [
-  Const        r218, [{"d30": 1, "d31_60": 1, "d61_90": 1, "d91_120": 1, "d_gt_120": 1, "s_store_name": "Main"}]
-  Equal        r219, r86, r218
-  Expect       r219
-  Return       r0
+  Jump         L26

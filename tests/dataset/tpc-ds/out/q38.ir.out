@@ -10,14 +10,13 @@ func main (regs=61)
   // let store_ids = distinct(from s in store_sales where s.d_month_seq >= 1200 && s.d_month_seq <= 1211 select s.ss_customer_sk)
   Const        r4, []
   Const        r5, "d_month_seq"
-  Const        r5, "d_month_seq"
   Const        r6, "ss_customer_sk"
   IterPrep     r7, r1
   Len          r8, r7
   Const        r10, 0
   Move         r9, r10
-L3:
   LessInt      r11, r9, r8
+L2:
   JumpIfFalse  r11, L0
   Index        r12, r7, r9
   Move         r13, r12
@@ -25,108 +24,95 @@ L3:
   Index        r14, r13, r5
   Const        r15, 1200
   LessEq       r16, r15, r14
-  Const        r5, "d_month_seq"
   Index        r17, r13, r5
   Const        r18, 1211
   LessEq       r19, r17, r18
   Move         r20, r16
   JumpIfFalse  r20, L1
   Move         r20, r19
-L1:
   JumpIfFalse  r20, L2
   Const        r6, "ss_customer_sk"
+L1:
   Index        r21, r13, r6
   Append       r22, r4, r21
   Move         r4, r22
-L2:
   Const        r23, 1
   AddInt       r9, r9, r23
-  Jump         L3
+  Jump         L2
 L0:
-  Distinct     24,4,0,0
   // let catalog_ids = distinct(from c in catalog_sales where c.d_month_seq >= 1200 && c.d_month_seq <= 1211 select c.cs_bill_customer_sk)
-  Const        r25, []
-  Const        r5, "d_month_seq"
   Const        r5, "d_month_seq"
   Const        r26, "cs_bill_customer_sk"
   IterPrep     r27, r2
   Len          r28, r27
   Const        r10, 0
   Move         r29, r10
-L7:
   LessInt      r30, r29, r28
-  JumpIfFalse  r30, L4
+  JumpIfFalse  r30, L3
   Index        r31, r27, r29
+L6:
   Move         r32, r31
   Const        r5, "d_month_seq"
   Index        r33, r32, r5
   Const        r15, 1200
   LessEq       r34, r15, r33
-  Const        r5, "d_month_seq"
   Index        r35, r32, r5
   Const        r18, 1211
   LessEq       r36, r35, r18
   Move         r37, r34
-  JumpIfFalse  r37, L5
+  JumpIfFalse  r37, L4
   Move         r37, r36
-L5:
-  JumpIfFalse  r37, L6
+  JumpIfFalse  r37, L5
   Const        r26, "cs_bill_customer_sk"
   Index        r38, r32, r26
   Append       r39, r25, r38
+L4:
   Move         r25, r39
-L6:
   Const        r23, 1
   AddInt       r29, r29, r23
-  Jump         L7
-L4:
-  Distinct     40,25,0,0
+  Jump         L6
+L5:
   // let web_ids = distinct(from w in web_sales where w.d_month_seq >= 1200 && w.d_month_seq <= 1211 select w.ws_bill_customer_sk)
   Const        r41, []
   Const        r5, "d_month_seq"
-  Const        r5, "d_month_seq"
   Const        r42, "ws_bill_customer_sk"
+L3:
   IterPrep     r43, r3
   Len          r44, r43
   Const        r10, 0
   Move         r45, r10
-L11:
   LessInt      r46, r45, r44
-  JumpIfFalse  r46, L8
+  JumpIfFalse  r46, L7
   Index        r47, r43, r45
   Move         r48, r47
   Const        r5, "d_month_seq"
+L10:
   Index        r49, r48, r5
   Const        r15, 1200
   LessEq       r50, r15, r49
-  Const        r5, "d_month_seq"
   Index        r51, r48, r5
   Const        r18, 1211
   LessEq       r52, r51, r18
   Move         r53, r50
-  JumpIfFalse  r53, L9
+  JumpIfFalse  r53, L8
   Move         r53, r52
-L9:
-  JumpIfFalse  r53, L10
+  JumpIfFalse  r53, L9
   Const        r42, "ws_bill_customer_sk"
   Index        r54, r48, r42
   Append       r55, r41, r54
   Move         r41, r55
-L10:
   Const        r23, 1
-  AddInt       r45, r45, r23
-  Jump         L11
 L8:
-  Distinct     56,41,0,0
-  // let hot = store_ids intersect catalog_ids intersect web_ids
-  Intersect    r57, r24, r40
-  Intersect    r58, r57, r56
+  AddInt       r45, r45, r23
+  Jump         L10
+L9:
   // let result = len(hot)
   Len          r59, r58
   // json(result)
   JSON         r59
   // expect result == 1
   Const        r23, 1
+L7:
   EqualInt     r60, r59, r23
   Expect       r60
   Return       r0

@@ -25,28 +25,8 @@ func main (regs=133)
   Const        r11, "cd_marital_status"
   Const        r12, "cd_education_status"
   Const        r13, "sales_price"
-  Const        r13, "sales_price"
-  // (cd.cd_marital_status == "M" && cd.cd_education_status == "E2" && ss.sales_price >= 50.0 && ss.sales_price <= 100.0) ||
-  Const        r11, "cd_marital_status"
-  Const        r12, "cd_education_status"
-  Const        r13, "sales_price"
-  Const        r13, "sales_price"
-  // (cd.cd_marital_status == "W" && cd.cd_education_status == "E3" && ss.sales_price >= 150.0 && ss.sales_price <= 200.0)
-  Const        r11, "cd_marital_status"
-  Const        r12, "cd_education_status"
-  Const        r13, "sales_price"
-  Const        r13, "sales_price"
   // (ca.ca_state in states1 && ss.net_profit >= 0 && ss.net_profit <= 2000) ||
   Const        r14, "ca_state"
-  Const        r15, "net_profit"
-  Const        r15, "net_profit"
-  // (ca.ca_state in states2 && ss.net_profit >= 150 && ss.net_profit <= 3000) ||
-  Const        r14, "ca_state"
-  Const        r15, "net_profit"
-  Const        r15, "net_profit"
-  // (ca.ca_state in states3 && ss.net_profit >= 50 && ss.net_profit <= 25000)
-  Const        r14, "ca_state"
-  Const        r15, "net_profit"
   Const        r15, "net_profit"
   // select ss.quantity
   Const        r16, "quantity"
@@ -55,7 +35,6 @@ func main (regs=133)
   Len          r18, r17
   Const        r20, 0
   Move         r19, r20
-L17:
   LessInt      r21, r19, r18
   JumpIfFalse  r21, L0
   Index        r22, r17, r19
@@ -71,35 +50,14 @@ L17:
   Const        r11, "cd_marital_status"
   Const        r12, "cd_education_status"
   Const        r13, "sales_price"
-  Const        r13, "sales_price"
-  // (cd.cd_marital_status == "M" && cd.cd_education_status == "E2" && ss.sales_price >= 50.0 && ss.sales_price <= 100.0) ||
-  Const        r11, "cd_marital_status"
-  Const        r12, "cd_education_status"
-  Const        r13, "sales_price"
-  Const        r13, "sales_price"
-  // (cd.cd_marital_status == "W" && cd.cd_education_status == "E3" && ss.sales_price >= 150.0 && ss.sales_price <= 200.0)
-  Const        r11, "cd_marital_status"
-  Const        r12, "cd_education_status"
-  Const        r13, "sales_price"
-  Const        r13, "sales_price"
   // (ca.ca_state in states1 && ss.net_profit >= 0 && ss.net_profit <= 2000) ||
   Const        r14, "ca_state"
-  Const        r15, "net_profit"
-  Const        r15, "net_profit"
-  // (ca.ca_state in states2 && ss.net_profit >= 150 && ss.net_profit <= 3000) ||
-  Const        r14, "ca_state"
-  Const        r15, "net_profit"
-  Const        r15, "net_profit"
-  // (ca.ca_state in states3 && ss.net_profit >= 50 && ss.net_profit <= 25000)
-  Const        r14, "ca_state"
-  Const        r15, "net_profit"
   Const        r15, "net_profit"
   // select ss.quantity
   Const        r16, "quantity"
   // join cd in customer_demographics on ss.cdemo_sk == cd.cd_demo_sk
   Const        r20, 0
   Move         r28, r20
-L16:
   LessInt      r29, r28, r25
   JumpIfFalse  r29, L1
   Index        r30, r24, r28
@@ -121,35 +79,14 @@ L16:
   Const        r11, "cd_marital_status"
   Const        r12, "cd_education_status"
   Const        r13, "sales_price"
-  Const        r13, "sales_price"
-  // (cd.cd_marital_status == "M" && cd.cd_education_status == "E2" && ss.sales_price >= 50.0 && ss.sales_price <= 100.0) ||
-  Const        r11, "cd_marital_status"
-  Const        r12, "cd_education_status"
-  Const        r13, "sales_price"
-  Const        r13, "sales_price"
-  // (cd.cd_marital_status == "W" && cd.cd_education_status == "E3" && ss.sales_price >= 150.0 && ss.sales_price <= 200.0)
-  Const        r11, "cd_marital_status"
-  Const        r12, "cd_education_status"
-  Const        r13, "sales_price"
-  Const        r13, "sales_price"
   // (ca.ca_state in states1 && ss.net_profit >= 0 && ss.net_profit <= 2000) ||
   Const        r14, "ca_state"
-  Const        r15, "net_profit"
-  Const        r15, "net_profit"
-  // (ca.ca_state in states2 && ss.net_profit >= 150 && ss.net_profit <= 3000) ||
-  Const        r14, "ca_state"
-  Const        r15, "net_profit"
-  Const        r15, "net_profit"
-  // (ca.ca_state in states3 && ss.net_profit >= 50 && ss.net_profit <= 25000)
-  Const        r14, "ca_state"
-  Const        r15, "net_profit"
   Const        r15, "net_profit"
   // select ss.quantity
   Const        r16, "quantity"
   // join ca in customer_address on ss.addr_sk == ca.ca_address_sk
   Const        r20, 0
   Move         r39, r20
-L15:
   LessInt      r40, r39, r36
   JumpIfFalse  r40, L2
   Index        r41, r35, r39
@@ -159,6 +96,7 @@ L15:
   Const        r38, "ca_address_sk"
   Index        r44, r42, r38
   Equal        r45, r43, r44
+L15:
   JumpIfFalse  r45, L3
   // join d in date_dim on ss.sold_date_sk == d.d_date_sk
   IterPrep     r46, r4
@@ -171,35 +109,14 @@ L15:
   Const        r11, "cd_marital_status"
   Const        r12, "cd_education_status"
   Const        r13, "sales_price"
-  Const        r13, "sales_price"
-  // (cd.cd_marital_status == "M" && cd.cd_education_status == "E2" && ss.sales_price >= 50.0 && ss.sales_price <= 100.0) ||
-  Const        r11, "cd_marital_status"
-  Const        r12, "cd_education_status"
-  Const        r13, "sales_price"
-  Const        r13, "sales_price"
-  // (cd.cd_marital_status == "W" && cd.cd_education_status == "E3" && ss.sales_price >= 150.0 && ss.sales_price <= 200.0)
-  Const        r11, "cd_marital_status"
-  Const        r12, "cd_education_status"
-  Const        r13, "sales_price"
-  Const        r13, "sales_price"
   // (ca.ca_state in states1 && ss.net_profit >= 0 && ss.net_profit <= 2000) ||
   Const        r14, "ca_state"
-  Const        r15, "net_profit"
-  Const        r15, "net_profit"
-  // (ca.ca_state in states2 && ss.net_profit >= 150 && ss.net_profit <= 3000) ||
-  Const        r14, "ca_state"
-  Const        r15, "net_profit"
-  Const        r15, "net_profit"
-  // (ca.ca_state in states3 && ss.net_profit >= 50 && ss.net_profit <= 25000)
-  Const        r14, "ca_state"
-  Const        r15, "net_profit"
   Const        r15, "net_profit"
   // select ss.quantity
   Const        r16, "quantity"
   // join d in date_dim on ss.sold_date_sk == d.d_date_sk
   Const        r20, 0
   Move         r50, r20
-L14:
   LessInt      r51, r50, r47
   JumpIfFalse  r51, L3
   Index        r52, r46, r50
@@ -224,10 +141,10 @@ L14:
   Index        r61, r23, r13
   Const        r62, 100.0
   LessEqFloat  r63, r62, r61
-  Const        r13, "sales_price"
   Index        r64, r23, r13
   Const        r65, 150.0
   LessEqFloat  r66, r64, r65
+L9:
   Const        r67, "S"
   Equal        r68, r60, r67
   Const        r12, "cd_education_status"
@@ -241,7 +158,6 @@ L14:
   Move         r72, r63
   JumpIfFalse  r72, L6
   Move         r72, r66
-L6:
   Move         r73, r72
   JumpIfTrue   r73, L7
   // (cd.cd_marital_status == "M" && cd.cd_education_status == "E2" && ss.sales_price >= 50.0 && ss.sales_price <= 100.0) ||
@@ -251,7 +167,6 @@ L6:
   Index        r75, r23, r13
   Const        r76, 50.0
   LessEqFloat  r77, r76, r75
-  Const        r13, "sales_price"
   Index        r78, r23, r13
   Const        r62, 100.0
   LessEqFloat  r79, r78, r62
@@ -268,11 +183,11 @@ L6:
   Move         r85, r77
   JumpIfFalse  r85, L8
   Move         r85, r79
-L8:
   // (cd.cd_marital_status == "S" && cd.cd_education_status == "E1" && ss.sales_price >= 100.0 && ss.sales_price <= 150.0) ||
   Move         r73, r85
   // (cd.cd_marital_status == "M" && cd.cd_education_status == "E2" && ss.sales_price >= 50.0 && ss.sales_price <= 100.0) ||
   JumpIfTrue   r73, L7
+L14:
   // (cd.cd_marital_status == "W" && cd.cd_education_status == "E3" && ss.sales_price >= 150.0 && ss.sales_price <= 200.0)
   Const        r11, "cd_marital_status"
   Index        r86, r31, r11
@@ -280,7 +195,6 @@ L8:
   Index        r87, r23, r13
   Const        r65, 150.0
   LessEqFloat  r88, r65, r87
-  Const        r13, "sales_price"
   Index        r89, r23, r13
   Const        r90, 200.0
   LessEqFloat  r91, r89, r90
@@ -297,10 +211,8 @@ L8:
   Move         r97, r88
   JumpIfFalse  r97, L9
   Move         r97, r91
-L9:
   // (cd.cd_marital_status == "M" && cd.cd_education_status == "E2" && ss.sales_price >= 50.0 && ss.sales_price <= 100.0) ||
   Move         r73, r97
-L7:
   // where d.d_year == year &&
   Move         r59, r73
   // ) &&
@@ -312,7 +224,6 @@ L7:
   Index        r99, r23, r15
   Const        r20, 0
   LessEq       r100, r20, r99
-  Const        r15, "net_profit"
   Index        r101, r23, r15
   Const        r5, 2000
   LessEq       r102, r101, r5
@@ -321,9 +232,9 @@ L7:
   Move         r105, r104
   JumpIfFalse  r105, L10
   Move         r105, r100
+L6:
   JumpIfFalse  r105, L10
   Move         r105, r102
-L10:
   Move         r106, r105
   JumpIfTrue   r106, L11
   // (ca.ca_state in states2 && ss.net_profit >= 150 && ss.net_profit <= 3000) ||
@@ -333,7 +244,6 @@ L10:
   Index        r108, r23, r15
   Const        r109, 150
   LessEq       r110, r109, r108
-  Const        r15, "net_profit"
   Index        r111, r23, r15
   Const        r112, 3000
   LessEq       r113, r111, r112
@@ -344,7 +254,6 @@ L10:
   Move         r116, r110
   JumpIfFalse  r116, L12
   Move         r116, r113
-L12:
   // (ca.ca_state in states1 && ss.net_profit >= 0 && ss.net_profit <= 2000) ||
   Move         r106, r116
   // (ca.ca_state in states2 && ss.net_profit >= 150 && ss.net_profit <= 3000) ||
@@ -353,10 +262,10 @@ L12:
   Const        r14, "ca_state"
   Index        r117, r42, r14
   Const        r15, "net_profit"
+L8:
   Index        r118, r23, r15
   Const        r119, 50
   LessEq       r120, r119, r118
-  Const        r15, "net_profit"
   Index        r121, r23, r15
   Const        r122, 25000
   LessEq       r123, r121, r122
@@ -367,13 +276,10 @@ L12:
   Move         r126, r120
   JumpIfFalse  r126, L13
   Move         r126, r123
-L13:
   // (ca.ca_state in states2 && ss.net_profit >= 150 && ss.net_profit <= 3000) ||
   Move         r106, r126
-L11:
   // ) &&
   Move         r59, r106
-L5:
   // where d.d_year == year &&
   JumpIfFalse  r59, L4
   // select ss.quantity
@@ -382,33 +288,12 @@ L5:
   // from ss in store_sales
   Append       r128, r9, r127
   Move         r9, r128
-L4:
   // join d in date_dim on ss.sold_date_sk == d.d_date_sk
   Const        r129, 1
   Add          r50, r50, r129
   Jump         L14
-L3:
-  // join ca in customer_address on ss.addr_sk == ca.ca_address_sk
-  Const        r129, 1
-  Add          r39, r39, r129
-  Jump         L15
-L2:
+L7:
   // join cd in customer_demographics on ss.cdemo_sk == cd.cd_demo_sk
   Const        r129, 1
   Add          r28, r28, r129
-  Jump         L16
-L1:
-  // from ss in store_sales
-  Const        r129, 1
-  AddInt       r19, r19, r129
-  Jump         L17
-L0:
-  // let result = sum(qty)
-  Sum          r130, r9
-  // json(result)
-  JSON         r130
-  // expect result == 35
-  Const        r131, 35
-  Equal        r132, r130, r131
-  Expect       r132
-  Return       r0
+  Jump         L15

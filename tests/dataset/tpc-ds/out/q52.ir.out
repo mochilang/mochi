@@ -15,12 +15,7 @@ func main (regs=159)
   Const        r8, "brand"
   Const        r9, "i_brand"
   // select {d_year: g.key.year, brand_id: g.key.brand_id, ext_price: sum(from x in g select x.price)}
-  Const        r5, "d_year"
   Const        r10, "key"
-  Const        r4, "year"
-  Const        r6, "brand_id"
-  Const        r10, "key"
-  Const        r6, "brand_id"
   Const        r11, "ext_price"
   Const        r12, "price"
   // from ss in store_sales
@@ -30,16 +25,15 @@ func main (regs=159)
   IterPrep     r16, r0
   Len          r17, r16
   Const        r18, 0
-L9:
   LessInt      r19, r18, r17
   JumpIfFalse  r19, L0
   Index        r20, r16, r18
   Move         r21, r20
   // join i in item on ss.item == i.i_item_sk && i.i_manager_id == 1
   IterPrep     r22, r1
+L5:
   Len          r23, r22
   Const        r24, 0
-L8:
   LessInt      r25, r24, r23
   JumpIfFalse  r25, L1
   Index        r26, r22, r24
@@ -56,18 +50,18 @@ L8:
   Move         r37, r32
   JumpIfFalse  r37, L2
   Move         r37, r36
-L2:
   JumpIfFalse  r37, L3
   // join d in date_dim on ss.sold_date == d.d_date_sk && d.d_year == 2001 && d.d_moy == 11
   IterPrep     r38, r2
   Len          r39, r38
   Const        r40, 0
-L7:
   LessInt      r41, r40, r39
+L2:
   JumpIfFalse  r41, L3
   Index        r42, r38, r40
   Move         r43, r42
   Const        r44, "sold_date"
+L7:
   Index        r45, r21, r44
   Const        r46, "d_date_sk"
   Index        r47, r43, r46
@@ -85,13 +79,13 @@ L7:
   Move         r56, r51
   JumpIfFalse  r56, L4
   Move         r56, r55
-L4:
   JumpIfFalse  r56, L5
   // from ss in store_sales
   Const        r57, "ss"
   Move         r58, r21
   Const        r59, "i"
   Move         r60, r27
+L4:
   Const        r61, "d"
   Move         r62, r43
   Move         r63, r57
@@ -145,49 +139,35 @@ L4:
   SetIndex     r13, r83, r100
   Append       r101, r14, r100
   Move         r14, r101
-L6:
-  Const        r88, "items"
   Index        r102, r13, r83
   Index        r103, r102, r88
   Append       r104, r103, r69
   SetIndex     r102, r88, r104
-  Const        r90, "count"
   Index        r105, r102, r90
+L6:
   Const        r35, 1
   AddInt       r106, r105, r35
   SetIndex     r102, r90, r106
-L5:
   // join d in date_dim on ss.sold_date == d.d_date_sk && d.d_year == 2001 && d.d_moy == 11
-  Const        r35, 1
   AddInt       r40, r40, r35
   Jump         L7
 L3:
-  // join i in item on ss.item == i.i_item_sk && i.i_manager_id == 1
-  Const        r35, 1
-  AddInt       r24, r24, r35
-  Jump         L8
-L1:
   // from ss in store_sales
-  Const        r35, 1
-  AddInt       r18, r18, r35
-  Jump         L9
-L0:
-  Const        r91, 0
-  Move         r107, r91
   Len          r108, r14
-L13:
   LessInt      r109, r107, r108
-  JumpIfFalse  r109, L10
+  JumpIfFalse  r109, L8
+L1:
   Index        r110, r14, r107
   Move         r111, r110
   // select {d_year: g.key.year, brand_id: g.key.brand_id, ext_price: sum(from x in g select x.price)}
   Const        r112, "d_year"
+L0:
   Const        r10, "key"
   Index        r113, r111, r10
   Const        r4, "year"
+L11:
   Index        r114, r113, r4
   Const        r115, "brand_id"
-  Const        r10, "key"
   Index        r116, r111, r10
   Const        r6, "brand_id"
   Index        r117, r116, r6
@@ -198,9 +178,8 @@ L13:
   Len          r121, r120
   Const        r91, 0
   Move         r122, r91
-L12:
   LessInt      r123, r122, r121
-  JumpIfFalse  r123, L11
+  JumpIfFalse  r123, L9
   Index        r124, r120, r122
   Move         r125, r124
   Const        r12, "price"
@@ -208,38 +187,18 @@ L12:
   Append       r127, r119, r126
   Move         r119, r127
   Const        r35, 1
+L10:
   AddInt       r122, r122, r35
-  Jump         L12
-L11:
-  Sum          r128, r119
-  Move         r129, r112
-  Move         r130, r114
-  Move         r131, r115
-  Move         r132, r117
-  Move         r133, r118
-  Move         r134, r128
-  MakeMap      r135, 3, r129
+  Jump         L10
+L9:
   // from ss in store_sales
-  Append       r136, r3, r135
   Move         r3, r136
   Const        r35, 1
   AddInt       r107, r107, r35
-  Jump         L13
-L10:
+  Jump         L11
+L8:
   // from r in filtered
-  Const        r137, []
-  // sort by [r.d_year, -r.ext_price, r.brand_id]
-  Const        r5, "d_year"
-  Const        r11, "ext_price"
-  Const        r6, "brand_id"
-  // from r in filtered
-  IterPrep     r138, r3
-  Len          r139, r138
-  Const        r91, 0
-  Move         r140, r91
-L15:
-  LessInt      r141, r140, r139
-  JumpIfFalse  r141, L14
+  JumpIfFalse  r141, L12
   Index        r142, r138, r140
   Move         r143, r142
   // sort by [r.d_year, -r.ext_price, r.brand_id]
@@ -248,6 +207,7 @@ L15:
   Move         r146, r149
   Const        r11, "ext_price"
   Index        r150, r143, r11
+L13:
   Neg          r151, r150
   Move         r147, r151
   Const        r6, "brand_id"
@@ -262,16 +222,4 @@ L15:
   Move         r137, r155
   Const        r35, 1
   AddInt       r140, r140, r35
-  Jump         L15
-L14:
-  // sort by [r.d_year, -r.ext_price, r.brand_id]
-  Sort         r156, r137
-  // from r in filtered
-  Move         r137, r156
-  // json(result)
-  JSON         r137
-  // expect result == [
-  Const        r157, [{"brand_id": 1, "d_year": 2001, "ext_price": 30.0}, {"brand_id": 2, "d_year": 2001, "ext_price": 22.0}]
-  Equal        r158, r137, r157
-  Expect       r158
-  Return       r0
+  Jump         L13

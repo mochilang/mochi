@@ -18,7 +18,6 @@ func main (regs=351)
   Const        r10, "d_date_sk"
   Const        r11, "ss_sold_date_sk"
   Const        r12, "d_year"
-  Const        r12, "d_year"
   Const        r13, "i_item_sk"
   Const        r14, "ss_item_sk"
   Const        r15, "quantity"
@@ -26,14 +25,14 @@ func main (regs=351)
   Const        r17, "amount"
   Const        r18, "ss_sales_price"
   Const        r19, 0
-L4:
   LessInt      r20, r19, r7
+L4:
   JumpIfFalse  r20, L0
   Index        r21, r6, r19
   Move         r22, r21
   Const        r23, 0
-L3:
   LessInt      r24, r23, r9
+L3:
   JumpIfFalse  r24, L1
   Index        r25, r8, r23
   Move         r26, r25
@@ -66,24 +65,21 @@ L3:
   MakeMap      r46, 4, r38
   Append       r47, r5, r46
   Move         r5, r47
-L2:
   Const        r48, 1
+L2:
   AddInt       r23, r23, r48
   Jump         L3
 L1:
-  Const        r48, 1
   AddInt       r19, r19, r48
   Jump         L4
 L0:
   // from ws in web_sales join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk select { d_year: d.d_year, i_item_sk: ws.ws_item_sk, quantity: ws.ws_quantity, amount: ws.ws_sales_price },
-  Const        r49, []
   IterPrep     r50, r2
   Len          r51, r50
   IterPrep     r52, r0
   Len          r53, r52
   Const        r10, "d_date_sk"
   Const        r54, "ws_sold_date_sk"
-  Const        r12, "d_year"
   Const        r12, "d_year"
   Const        r13, "i_item_sk"
   Const        r55, "ws_item_sk"
@@ -92,15 +88,15 @@ L0:
   Const        r17, "amount"
   Const        r57, "ws_sales_price"
   Const        r58, 0
-L9:
   LessInt      r59, r58, r51
   JumpIfFalse  r59, L5
+L6:
   Index        r60, r50, r58
   Move         r61, r60
   Const        r62, 0
-L8:
   LessInt      r63, r62, r53
   JumpIfFalse  r63, L6
+L7:
   Index        r64, r52, r62
   Move         r26, r64
   Const        r10, "d_date_sk"
@@ -132,26 +128,17 @@ L8:
   MakeMap      r84, 4, r76
   Append       r85, r49, r84
   Move         r49, r85
-L7:
   Const        r48, 1
   AddInt       r62, r62, r48
-  Jump         L8
-L6:
-  Const        r48, 1
-  AddInt       r58, r58, r48
-  Jump         L9
+  Jump         L7
 L5:
-  // concat(
-  UnionAll     r86, r5, r49
   // from cs in catalog_sales join d in date_dim on d.d_date_sk == cs.cs_sold_date_sk select { d_year: d.d_year, i_item_sk: cs.cs_item_sk, quantity: cs.cs_quantity, amount: cs.cs_sales_price }
-  Const        r87, []
   IterPrep     r88, r3
   Len          r89, r88
   IterPrep     r90, r0
   Len          r91, r90
   Const        r10, "d_date_sk"
   Const        r92, "cs_sold_date_sk"
-  Const        r12, "d_year"
   Const        r12, "d_year"
   Const        r13, "i_item_sk"
   Const        r93, "cs_item_sk"
@@ -160,23 +147,23 @@ L5:
   Const        r17, "amount"
   Const        r95, "cs_sales_price"
   Const        r96, 0
-L14:
   LessInt      r97, r96, r89
-  JumpIfFalse  r97, L10
+  JumpIfFalse  r97, L8
   Index        r98, r88, r96
+L12:
   Move         r99, r98
   Const        r100, 0
-L13:
   LessInt      r101, r100, r91
-  JumpIfFalse  r101, L11
+  JumpIfFalse  r101, L9
   Index        r102, r90, r100
+L11:
   Move         r26, r102
   Const        r10, "d_date_sk"
   Index        r103, r26, r10
   Const        r92, "cs_sold_date_sk"
   Index        r104, r99, r92
   Equal        r105, r103, r104
-  JumpIfFalse  r105, L12
+  JumpIfFalse  r105, L10
   Const        r106, "d_year"
   Const        r12, "d_year"
   Index        r107, r26, r12
@@ -200,21 +187,21 @@ L13:
   MakeMap      r122, 4, r114
   Append       r123, r87, r122
   Move         r87, r123
-L12:
   Const        r48, 1
   AddInt       r100, r100, r48
-  Jump         L13
-L11:
+  Jump         L11
+L10:
   Const        r48, 1
   AddInt       r96, r96, r48
-  Jump         L14
-L10:
+  Jump         L12
+L9:
   // concat(
   UnionAll     r124, r86, r87
   // from sd in sales_detail
   Const        r125, []
   // group by { year: sd.d_year, brand_id: i.i_brand_id, class_id: i.i_class_id, category_id: i.i_category_id, manuf_id: i.i_manufact_id } into g
   Const        r126, "year"
+L8:
   Const        r12, "d_year"
   Const        r127, "brand_id"
   Const        r128, "i_brand_id"
@@ -227,32 +214,13 @@ L10:
   // where i.i_category == "Electronics"
   Const        r135, "i_category"
   // d_year: g.key.year,
-  Const        r12, "d_year"
   Const        r136, "key"
-  Const        r126, "year"
-  // i_brand_id: g.key.brand_id,
-  Const        r128, "i_brand_id"
-  Const        r136, "key"
-  Const        r127, "brand_id"
-  // i_class_id: g.key.class_id,
-  Const        r130, "i_class_id"
-  Const        r136, "key"
-  Const        r129, "class_id"
-  // i_category_id: g.key.category_id,
-  Const        r132, "i_category_id"
-  Const        r136, "key"
-  Const        r131, "category_id"
-  // i_manufact_id: g.key.manuf_id,
-  Const        r134, "i_manufact_id"
-  Const        r136, "key"
-  Const        r133, "manuf_id"
   // sales_cnt: sum(from x in g select x.sd.quantity),
   Const        r137, "sales_cnt"
   Const        r138, "sd"
   Const        r15, "quantity"
   // sales_amt: sum(from x in g select x.sd.amount)
   Const        r139, "sales_amt"
-  Const        r138, "sd"
   Const        r17, "amount"
   // from sd in sales_detail
   MakeMap      r140, 0, r0
@@ -261,37 +229,35 @@ L10:
   IterPrep     r143, r124
   Len          r144, r143
   Const        r145, 0
-L20:
   LessInt      r146, r145, r144
-  JumpIfFalse  r146, L15
+  JumpIfFalse  r146, L13
   Index        r147, r143, r145
   Move         r148, r147
   // join i in item on i.i_item_sk == sd.i_item_sk
   IterPrep     r149, r4
   Len          r150, r149
   Const        r151, 0
-L19:
   LessInt      r152, r151, r150
-  JumpIfFalse  r152, L16
+  JumpIfFalse  r152, L14
   Index        r153, r149, r151
   Move         r154, r153
   Const        r13, "i_item_sk"
   Index        r155, r154, r13
-  Const        r13, "i_item_sk"
   Index        r156, r148, r13
   Equal        r157, r155, r156
-  JumpIfFalse  r157, L17
+  JumpIfFalse  r157, L15
   // where i.i_category == "Electronics"
   Const        r135, "i_category"
   Index        r158, r154, r135
   Const        r159, "Electronics"
   Equal        r160, r158, r159
-  JumpIfFalse  r160, L17
+  JumpIfFalse  r160, L15
   // from sd in sales_detail
   Const        r138, "sd"
   Move         r161, r148
   Const        r162, "i"
   Move         r163, r154
+L17:
   Move         r164, r138
   Move         r165, r161
   Move         r166, r162
@@ -326,7 +292,7 @@ L19:
   MakeMap      r189, 5, r179
   Str          r190, r189
   In           r191, r190, r140
-  JumpIfTrue   r191, L18
+  JumpIfTrue   r191, L16
   // from sd in sales_detail
   Const        r142, []
   Const        r192, "__group__"
@@ -351,35 +317,19 @@ L19:
   SetIndex     r140, r190, r207
   Append       r208, r141, r207
   Move         r141, r208
-L18:
-  Const        r195, "items"
   Index        r209, r140, r190
   Index        r210, r209, r195
   Append       r211, r210, r168
   SetIndex     r209, r195, r211
-  Const        r197, "count"
   Index        r212, r209, r197
   Const        r48, 1
   AddInt       r213, r212, r48
   SetIndex     r209, r197, r213
-L17:
   // join i in item on i.i_item_sk == sd.i_item_sk
-  Const        r48, 1
   AddInt       r151, r151, r48
-  Jump         L19
+  Jump         L17
 L16:
   // from sd in sales_detail
-  Const        r48, 1
-  AddInt       r145, r145, r48
-  Jump         L20
-L15:
-  Const        r198, 0
-  Move         r214, r198
-  Len          r215, r141
-L26:
-  LessInt      r216, r214, r215
-  JumpIfFalse  r216, L21
-  Index        r217, r141, r214
   Move         r218, r217
   // d_year: g.key.year,
   Const        r219, "d_year"
@@ -389,25 +339,25 @@ L26:
   Index        r221, r220, r126
   // i_brand_id: g.key.brand_id,
   Const        r222, "i_brand_id"
-  Const        r136, "key"
   Index        r223, r218, r136
   Const        r127, "brand_id"
   Index        r224, r223, r127
+L15:
   // i_class_id: g.key.class_id,
   Const        r225, "i_class_id"
-  Const        r136, "key"
   Index        r226, r218, r136
   Const        r129, "class_id"
+L14:
   Index        r227, r226, r129
   // i_category_id: g.key.category_id,
   Const        r228, "i_category_id"
-  Const        r136, "key"
   Index        r229, r218, r136
+L13:
   Const        r131, "category_id"
   Index        r230, r229, r131
   // i_manufact_id: g.key.manuf_id,
   Const        r231, "i_manufact_id"
-  Const        r136, "key"
+L20:
   Index        r232, r218, r136
   Const        r133, "manuf_id"
   Index        r233, r232, r133
@@ -420,9 +370,8 @@ L26:
   Len          r237, r236
   Const        r198, 0
   Move         r238, r198
-L23:
   LessInt      r239, r238, r237
-  JumpIfFalse  r239, L22
+  JumpIfFalse  r239, L18
   Index        r240, r236, r238
   Move         r241, r240
   Const        r138, "sd"
@@ -433,23 +382,7 @@ L23:
   Move         r235, r244
   Const        r48, 1
   AddInt       r238, r238, r48
-  Jump         L23
-L22:
-  Sum          r245, r235
   // sales_amt: sum(from x in g select x.sd.amount)
-  Const        r246, "sales_amt"
-  Const        r247, []
-  Const        r138, "sd"
-  Const        r17, "amount"
-  IterPrep     r248, r218
-  Len          r249, r248
-  Const        r198, 0
-  Move         r250, r198
-L25:
-  LessInt      r251, r250, r249
-  JumpIfFalse  r251, L24
-  Index        r252, r248, r250
-  Move         r241, r252
   Const        r138, "sd"
   Index        r253, r241, r138
   Const        r17, "amount"
@@ -458,14 +391,9 @@ L25:
   Move         r247, r255
   Const        r48, 1
   AddInt       r250, r250, r48
-  Jump         L25
-L24:
-  Sum          r256, r247
-  // d_year: g.key.year,
-  Move         r257, r219
-  Move         r258, r221
+  Jump         L19
+L18:
   // i_brand_id: g.key.brand_id,
-  Move         r259, r222
   Move         r260, r224
   // i_class_id: g.key.class_id,
   Move         r261, r225
@@ -479,6 +407,7 @@ L24:
   // sales_cnt: sum(from x in g select x.sd.quantity),
   Move         r267, r234
   Move         r268, r245
+L19:
   // sales_amt: sum(from x in g select x.sd.amount)
   Move         r269, r246
   Move         r270, r256
@@ -489,154 +418,4 @@ L24:
   Move         r125, r272
   Const        r48, 1
   AddInt       r214, r214, r48
-  Jump         L26
-L21:
-  // let prev_yr = first(from a in all_sales where a.d_year == 2000 select a)
-  Const        r273, []
-  Const        r12, "d_year"
-  IterPrep     r274, r125
-  Len          r275, r274
-  Const        r198, 0
-  Move         r276, r198
-L29:
-  LessInt      r277, r276, r275
-  JumpIfFalse  r277, L27
-  Index        r278, r274, r276
-  Move         r279, r278
-  Const        r12, "d_year"
-  Index        r280, r279, r12
-  Const        r281, 2000
-  Equal        r282, r280, r281
-  JumpIfFalse  r282, L28
-  Append       r283, r273, r279
-  Move         r273, r283
-L28:
-  Const        r48, 1
-  AddInt       r276, r276, r48
-  Jump         L29
-L27:
-  First        r284, r273
-  // let curr_yr = first(from a in all_sales where a.d_year == 2001 select a)
-  Const        r285, []
-  Const        r12, "d_year"
-  IterPrep     r286, r125
-  Len          r287, r286
-  Const        r198, 0
-  Move         r288, r198
-L32:
-  LessInt      r289, r288, r287
-  JumpIfFalse  r289, L30
-  Index        r290, r286, r288
-  Move         r279, r290
-  Const        r12, "d_year"
-  Index        r291, r279, r12
-  Const        r292, 2001
-  Equal        r293, r291, r292
-  JumpIfFalse  r293, L31
-  Append       r294, r285, r279
-  Move         r285, r294
-L31:
-  Const        r48, 1
-  AddInt       r288, r288, r48
-  Jump         L32
-L30:
-  First        r295, r285
-  // if (curr_yr.sales_cnt / prev_yr.sales_cnt) < 0.9 {
-  Const        r137, "sales_cnt"
-  Index        r296, r295, r137
-  Const        r137, "sales_cnt"
-  Index        r297, r284, r137
-  Div          r298, r296, r297
-  Const        r299, 0.9
-  LessFloat    r300, r298, r299
-  // prev_year: prev_yr.d_year,
-  Const        r302, "prev_year"
-  Const        r12, "d_year"
-  Index        r303, r284, r12
-  // year: curr_yr.d_year,
-  Const        r304, "year"
-  Const        r12, "d_year"
-  Index        r305, r295, r12
-  // i_brand_id: curr_yr.i_brand_id,
-  Const        r306, "i_brand_id"
-  Const        r128, "i_brand_id"
-  Index        r307, r295, r128
-  // i_class_id: curr_yr.i_class_id,
-  Const        r308, "i_class_id"
-  Const        r130, "i_class_id"
-  Index        r309, r295, r130
-  // i_category_id: curr_yr.i_category_id,
-  Const        r310, "i_category_id"
-  Const        r132, "i_category_id"
-  Index        r311, r295, r132
-  // i_manufact_id: curr_yr.i_manufact_id,
-  Const        r312, "i_manufact_id"
-  Const        r134, "i_manufact_id"
-  Index        r313, r295, r134
-  // prev_yr_cnt: prev_yr.sales_cnt,
-  Const        r314, "prev_yr_cnt"
-  Const        r137, "sales_cnt"
-  Index        r315, r284, r137
-  // curr_yr_cnt: curr_yr.sales_cnt,
-  Const        r316, "curr_yr_cnt"
-  Const        r137, "sales_cnt"
-  Index        r317, r295, r137
-  // sales_cnt_diff: curr_yr.sales_cnt - prev_yr.sales_cnt,
-  Const        r318, "sales_cnt_diff"
-  Const        r137, "sales_cnt"
-  Index        r319, r295, r137
-  Const        r137, "sales_cnt"
-  Index        r320, r284, r137
-  Sub          r321, r319, r320
-  // sales_amt_diff: curr_yr.sales_amt - prev_yr.sales_amt
-  Const        r322, "sales_amt_diff"
-  Const        r139, "sales_amt"
-  Index        r323, r295, r139
-  Const        r139, "sales_amt"
-  Index        r324, r284, r139
-  Sub          r325, r323, r324
-  // prev_year: prev_yr.d_year,
-  Move         r326, r302
-  Move         r327, r303
-  // year: curr_yr.d_year,
-  Move         r328, r304
-  Move         r329, r305
-  // i_brand_id: curr_yr.i_brand_id,
-  Move         r330, r306
-  Move         r331, r307
-  // i_class_id: curr_yr.i_class_id,
-  Move         r332, r308
-  Move         r333, r309
-  // i_category_id: curr_yr.i_category_id,
-  Move         r334, r310
-  Move         r335, r311
-  // i_manufact_id: curr_yr.i_manufact_id,
-  Move         r336, r312
-  Move         r337, r313
-  // prev_yr_cnt: prev_yr.sales_cnt,
-  Move         r338, r314
-  Move         r339, r315
-  // curr_yr_cnt: curr_yr.sales_cnt,
-  Move         r340, r316
-  Move         r341, r317
-  // sales_cnt_diff: curr_yr.sales_cnt - prev_yr.sales_cnt,
-  Move         r342, r318
-  Move         r343, r321
-  // sales_amt_diff: curr_yr.sales_amt - prev_yr.sales_amt
-  Move         r344, r322
-  Move         r345, r325
-  // [{
-  MakeMap      r346, 10, r326
-  Move         r301, r346
-  MakeList     r347, 1, r301
-  // []
-  Const        r142, []
-  // if (curr_yr.sales_cnt / prev_yr.sales_cnt) < 0.9 {
-  Select       348,300,347,142
-  // json(result)
-  JSON         r348
-  // expect result == [
-  Const        r349, [{"curr_yr_cnt": 80, "i_brand_id": 1, "i_category_id": 3, "i_class_id": 2, "i_manufact_id": 4, "prev_year": 2000, "prev_yr_cnt": 100, "sales_amt_diff": -200.0, "sales_cnt_diff": -20, "year": 2001}]
-  Equal        r350, r348, r349
-  Expect       r350
-  Return       r0
+  Jump         L20

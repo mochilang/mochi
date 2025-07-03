@@ -56,27 +56,21 @@ L2:
   Append       r36, r12, r35
   Move         r12, r36
 L1:
-  Const        r23, "items"
   Index        r37, r11, r18
   Index        r38, r37, r23
   Append       r39, r38, r15
   SetIndex     r37, r23, r39
-  Const        r25, "count"
   Index        r40, r37, r25
   Const        r41, 1
   AddInt       r42, r40, r41
   SetIndex     r37, r25, r42
-  Const        r41, 1
   AddInt       r10, r10, r41
   Jump         L2
 L0:
-  Const        r26, 0
-  Move         r43, r26
-  Len          r44, r12
-L6:
   LessInt      r45, r43, r44
   JumpIfFalse  r45, L3
   Index        r46, r12, r43
+L6:
   Move         r47, r46
   // select { item_sk: g.key,
   Const        r48, "item_sk"
@@ -90,10 +84,10 @@ L6:
   Len          r53, r52
   Const        r26, 0
   Move         r54, r26
-L5:
   LessInt      r55, r54, r53
   JumpIfFalse  r55, L4
   Index        r56, r52, r54
+L5:
   Move         r57, r56
   Const        r7, "ss_net_profit"
   Index        r58, r57, r7
@@ -103,11 +97,6 @@ L5:
   AddInt       r54, r54, r41
   Jump         L5
 L4:
-  Avg          r60, r51
-  // select { item_sk: g.key,
-  Move         r61, r48
-  Move         r62, r49
-  // avg_profit: avg(from x in g select x.ss_net_profit) }
   Move         r63, r50
   Move         r64, r60
   // select { item_sk: g.key,
@@ -120,16 +109,13 @@ L4:
   Jump         L6
 L3:
   // let best = first(from x in grouped sort by -x.avg_profit select x)
-  Const        r67, []
-  Const        r6, "avg_profit"
-  IterPrep     r68, r2
   Len          r69, r68
   Const        r26, 0
   Move         r70, r26
-L8:
   LessInt      r71, r70, r69
   JumpIfFalse  r71, L7
   Index        r72, r68, r70
+L8:
   Move         r57, r72
   Const        r6, "avg_profit"
   Index        r75, r57, r6
@@ -143,9 +129,6 @@ L8:
   AddInt       r70, r70, r41
   Jump         L8
 L7:
-  Sort         r79, r67
-  Move         r67, r79
-  First        r80, r67
   // let worst = first(from x in grouped sort by x.avg_profit select x)
   Const        r81, []
   Const        r6, "avg_profit"
@@ -153,10 +136,10 @@ L7:
   Len          r83, r82
   Const        r26, 0
   Move         r84, r26
-L10:
   LessInt      r85, r84, r83
   JumpIfFalse  r85, L9
   Index        r86, r82, r84
+L10:
   Move         r57, r86
   Const        r6, "avg_profit"
   Index        r89, r57, r6
@@ -169,9 +152,6 @@ L10:
   AddInt       r84, r84, r41
   Jump         L10
 L9:
-  Sort         r92, r81
-  Move         r81, r92
-  First        r93, r81
   // let best_name = first(from i in item where i.i_item_sk == best.item_sk select i.i_product_name)
   Const        r94, []
   Const        r95, "i_item_sk"
@@ -181,10 +161,10 @@ L9:
   Len          r98, r97
   Const        r26, 0
   Move         r99, r26
-L13:
   LessInt      r100, r99, r98
   JumpIfFalse  r100, L11
   Index        r101, r97, r99
+L13:
   Move         r102, r101
   Const        r95, "i_item_sk"
   Index        r103, r102, r95
@@ -196,25 +176,25 @@ L13:
   Index        r106, r102, r96
   Append       r107, r94, r106
   Move         r94, r107
-L12:
   Const        r41, 1
   AddInt       r99, r99, r41
   Jump         L13
-L11:
+L12:
   First        r108, r94
   // let worst_name = first(from i in item where i.i_item_sk == worst.item_sk select i.i_product_name)
   Const        r109, []
   Const        r95, "i_item_sk"
+L11:
   Const        r4, "item_sk"
   Const        r96, "i_product_name"
   IterPrep     r110, r1
   Len          r111, r110
   Const        r26, 0
   Move         r112, r26
-L16:
   LessInt      r113, r112, r111
   JumpIfFalse  r113, L14
   Index        r114, r110, r112
+L16:
   Move         r102, r114
   Const        r95, "i_item_sk"
   Index        r115, r102, r95
@@ -226,15 +206,15 @@ L16:
   Index        r118, r102, r96
   Append       r119, r109, r118
   Move         r109, r119
-L15:
   Const        r41, 1
   AddInt       r112, r112, r41
   Jump         L16
-L14:
+L15:
   First        r120, r109
   // let result = { best_performing: best_name, worst_performing: worst_name }
   Const        r121, "best_performing"
   Const        r122, "worst_performing"
+L14:
   Move         r123, r121
   Move         r124, r108
   Move         r125, r122

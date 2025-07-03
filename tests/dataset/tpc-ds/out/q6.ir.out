@@ -63,15 +63,10 @@ L0:
   Const        r29, "i_current_price"
   // where j.i_category == i.i_category
   Const        r30, "i_category"
-  Const        r30, "i_category"
-  // select j.i_current_price
-  Const        r29, "i_current_price"
   // select { state: g.key, cnt: count(g) }
   Const        r31, "state"
   Const        r32, "key"
   Const        r33, "cnt"
-  // sort by [count(g), g.key]
-  Const        r32, "key"
   // from a in customer_address
   MakeMap      r34, 0, r0
   Const        r36, []
@@ -79,19 +74,19 @@ L0:
   IterPrep     r37, r0
   Len          r38, r37
   Const        r39, 0
-L19:
   LessInt      r40, r39, r38
   JumpIfFalse  r40, L4
   Index        r41, r37, r39
+L7:
   Move         r42, r41
   // join c in customer on a.ca_address_sk == c.c_current_addr_sk
   IterPrep     r43, r1
   Len          r44, r43
   Const        r45, 0
-L18:
   LessInt      r46, r45, r44
   JumpIfFalse  r46, L5
   Index        r47, r43, r45
+L8:
   Move         r48, r47
   Const        r49, "ca_address_sk"
   Index        r50, r42, r49
@@ -103,10 +98,10 @@ L18:
   IterPrep     r54, r2
   Len          r55, r54
   Const        r56, 0
-L17:
   LessInt      r57, r56, r55
   JumpIfFalse  r57, L6
   Index        r58, r54, r56
+L9:
   Move         r59, r58
   Const        r60, "c_customer_sk"
   Index        r61, r48, r60
@@ -118,7 +113,6 @@ L17:
   IterPrep     r65, r3
   Len          r66, r65
   Const        r67, 0
-L16:
   LessInt      r68, r67, r66
   JumpIfFalse  r68, L7
   Index        r69, r65, r67
@@ -133,10 +127,10 @@ L16:
   IterPrep     r75, r4
   Len          r76, r75
   Const        r77, 0
-L15:
   LessInt      r78, r77, r76
   JumpIfFalse  r78, L8
   Index        r79, r75, r77
+L15:
   Move         r80, r79
   Const        r81, "ss_item_sk"
   Index        r82, r59, r81
@@ -153,7 +147,6 @@ L15:
   Const        r88, []
   // where j.i_category == i.i_category
   Const        r30, "i_category"
-  Const        r30, "i_category"
   // select j.i_current_price
   Const        r29, "i_current_price"
   // from j in item
@@ -161,15 +154,14 @@ L15:
   Len          r90, r89
   Const        r12, 0
   Move         r91, r12
-L12:
   LessInt      r92, r91, r90
   JumpIfFalse  r92, L10
   Index        r93, r89, r91
   Move         r94, r93
+L12:
   // where j.i_category == i.i_category
   Const        r30, "i_category"
   Index        r95, r94, r30
-  Const        r30, "i_category"
   Index        r96, r80, r30
   Equal        r97, r95, r96
   JumpIfFalse  r97, L11
@@ -179,29 +171,27 @@ L12:
   // from j in item
   Append       r99, r88, r98
   Move         r88, r99
-L11:
   Const        r25, 1
   AddInt       r91, r91, r25
   Jump         L12
-L10:
+L11:
   // i.i_current_price > 1.2 * avg(
-  Avg          r100, r88
-  MulFloat     r101, r87, r100
   Const        r29, "i_current_price"
   Index        r102, r80, r29
   LessFloat    r103, r101, r102
+L10:
   // where d.d_month_seq == target_month_seq &&
   Equal        r104, r86, r26
   Move         r105, r104
   JumpIfFalse  r105, L13
   Move         r105, r103
-L13:
   JumpIfFalse  r105, L9
   // from a in customer_address
   Const        r106, "a"
   Move         r107, r42
   Const        r108, "c"
   Move         r109, r48
+L13:
   Const        r110, "s"
   Move         r111, r59
   Const        r112, "d"
@@ -249,57 +239,34 @@ L13:
   SetIndex     r34, r128, r144
   Append       r145, r35, r144
   Move         r35, r145
-L14:
-  Const        r133, "items"
   Index        r146, r34, r128
   Index        r147, r146, r133
   Append       r148, r147, r126
   SetIndex     r146, r133, r148
-  Const        r135, "count"
   Index        r149, r146, r135
+L14:
   Const        r25, 1
   AddInt       r150, r149, r25
   SetIndex     r146, r135, r150
-L9:
   // join i in item on s.ss_item_sk == i.i_item_sk
-  Const        r25, 1
   AddInt       r77, r77, r25
   Jump         L15
-L8:
-  // join d in date_dim on s.ss_sold_date_sk == d.d_date_sk
-  Const        r25, 1
-  AddInt       r67, r67, r25
-  Jump         L16
-L7:
-  // join s in store_sales on c.c_customer_sk == s.ss_customer_sk
-  Const        r25, 1
-  AddInt       r56, r56, r25
-  Jump         L17
 L6:
-  // join c in customer on a.ca_address_sk == c.c_current_addr_sk
-  Const        r25, 1
-  AddInt       r45, r45, r25
-  Jump         L18
-L5:
   // from a in customer_address
-  Const        r25, 1
-  AddInt       r39, r39, r25
-  Jump         L19
-L4:
-  Const        r12, 0
-  Move         r151, r12
   Len          r152, r35
-L21:
   LessInt      r153, r151, r152
-  JumpIfFalse  r153, L20
+  JumpIfFalse  r153, L16
+L5:
   Index        r154, r35, r151
   Move         r155, r154
   // having count(g) >= 10
   Const        r135, "count"
+L4:
   Index        r156, r155, r135
   Const        r157, 10
   LessEq       r158, r157, r156
-  JumpIfFalse  r158, L20
+L17:
+  JumpIfFalse  r158, L16
   // select { state: g.key, cnt: count(g) }
   Const        r159, "state"
   Const        r32, "key"
@@ -313,10 +280,8 @@ L21:
   Move         r166, r162
   MakeMap      r167, 2, r163
   // sort by [count(g), g.key]
-  Const        r135, "count"
   Index        r172, r155, r135
   Move         r170, r172
-  Const        r32, "key"
   Index        r173, r155, r32
   Move         r171, r173
   MakeList     r174, 2, r170
@@ -328,22 +293,6 @@ L21:
   Move         r27, r176
   Const        r25, 1
   AddInt       r151, r151, r25
-  Jump         L21
-L20:
-  // sort by [count(g), g.key]
-  Sort         r177, r27
-  // from a in customer_address
-  Move         r27, r177
-  Const        r178, 0
-  // take 100
-  Const        r179, 100
-  // from a in customer_address
-  Slice        r180, r27, r178, r179
-  Move         r27, r180
-  // json(result)
-  JSON         r27
-  // expect result == [ { state: "CA", cnt: 10 } ]
-  Const        r181, [{"cnt": 10, "state": "CA"}]
-  Equal        r182, r27, r181
-  Expect       r182
+  Jump         L17
+L16:
   Return       r0

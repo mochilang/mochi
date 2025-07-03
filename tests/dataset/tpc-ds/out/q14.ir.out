@@ -21,7 +21,6 @@ func main (regs=168)
   Const        r10, "category_id"
   // where ss.ss_item_sk in (from ci in cross_items select ci.ss_item_sk)
   Const        r11, "ss_item_sk"
-  Const        r11, "ss_item_sk"
   // select { channel: "store", sales: sum(from x in g select x.ss_quantity * x.ss_list_price), number_sales: count(from _ in g select _) }
   Const        r12, "channel"
   Const        r13, "sales"
@@ -35,8 +34,8 @@ func main (regs=168)
   IterPrep     r20, r0
   Len          r21, r20
   Const        r22, 0
-L8:
   LessInt      r23, r22, r21
+L3:
   JumpIfFalse  r23, L0
   Index        r24, r20, r22
   Move         r25, r24
@@ -44,8 +43,8 @@ L8:
   IterPrep     r26, r4
   Len          r27, r26
   Const        r28, 0
-L7:
   LessInt      r29, r28, r27
+L7:
   JumpIfFalse  r29, L1
   Index        r30, r26, r28
   Move         r31, r30
@@ -67,20 +66,19 @@ L7:
   Move         r45, r40
   JumpIfFalse  r45, L2
   Move         r45, r44
-L2:
   JumpIfFalse  r45, L3
+L2:
   // where ss.ss_item_sk in (from ci in cross_items select ci.ss_item_sk)
   Const        r11, "ss_item_sk"
   Index        r46, r25, r11
   Const        r47, []
-  Const        r11, "ss_item_sk"
   IterPrep     r48, r5
   Len          r49, r48
   Const        r51, 0
   Move         r50, r51
-L5:
   LessInt      r52, r50, r49
   JumpIfFalse  r52, L4
+L5:
   Index        r53, r48, r50
   Move         r54, r53
   Const        r11, "ss_item_sk"
@@ -91,8 +89,6 @@ L5:
   AddInt       r50, r50, r57
   Jump         L5
 L4:
-  In           r58, r46, r47
-  JumpIfFalse  r58, L3
   // from ss in store_sales
   Const        r59, "ss"
   Move         r60, r25
@@ -132,38 +128,29 @@ L4:
   SetIndex     r17, r69, r86
   Append       r87, r18, r86
   Move         r18, r87
-L6:
-  Const        r75, "items"
   Index        r88, r17, r69
   Index        r89, r88, r75
+L6:
   Append       r90, r89, r67
   SetIndex     r88, r75, r90
-  Const        r77, "count"
   Index        r91, r88, r77
   Const        r57, 1
   AddInt       r92, r91, r57
   SetIndex     r88, r77, r92
-L3:
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk && d.d_year == 2002 && d.d_moy == 11
-  Const        r57, 1
   AddInt       r28, r28, r57
   Jump         L7
 L1:
   // from ss in store_sales
-  Const        r57, 1
-  AddInt       r22, r22, r57
-  Jump         L8
-L0:
-  Const        r51, 0
-  Move         r93, r51
   Len          r94, r18
-L14:
   LessInt      r95, r93, r94
-  JumpIfFalse  r95, L9
+  JumpIfFalse  r95, L8
+L0:
   Index        r96, r18, r93
   Move         r97, r96
   // select { channel: "store", sales: sum(from x in g select x.ss_quantity * x.ss_list_price), number_sales: count(from _ in g select _) }
   Const        r98, "channel"
+L13:
   Const        r99, "store"
   Const        r100, "sales"
   Const        r101, []
@@ -173,12 +160,12 @@ L14:
   Len          r103, r102
   Const        r51, 0
   Move         r104, r51
-L11:
   LessInt      r105, r104, r103
-  JumpIfFalse  r105, L10
+  JumpIfFalse  r105, L9
   Index        r106, r102, r104
   Move         r107, r106
   Const        r14, "ss_quantity"
+L10:
   Index        r108, r107, r14
   Const        r15, "ss_list_price"
   Index        r109, r107, r15
@@ -187,31 +174,21 @@ L11:
   Move         r101, r111
   Const        r57, 1
   AddInt       r104, r104, r57
-  Jump         L11
-L10:
-  Sum          r112, r101
-  Const        r113, "number_sales"
-  Const        r114, []
-  IterPrep     r115, r97
-  Len          r116, r115
+  Jump         L10
+L9:
   Const        r51, 0
   Move         r117, r51
-L13:
   LessInt      r118, r117, r116
-  JumpIfFalse  r118, L12
+  JumpIfFalse  r118, L11
   Index        r119, r115, r117
   Move         r120, r119
   Append       r121, r114, r120
+L12:
   Move         r114, r121
   Const        r57, 1
   AddInt       r117, r117, r57
-  Jump         L13
-L12:
-  Count        r122, r114
-  Move         r123, r98
-  Move         r124, r99
-  Move         r125, r100
-  Move         r126, r112
+  Jump         L12
+L11:
   Move         r127, r113
   Move         r128, r122
   MakeMap      r129, 3, r123
@@ -220,30 +197,18 @@ L12:
   Move         r7, r130
   Const        r57, 1
   AddInt       r93, r93, r57
-  Jump         L14
-L9:
-  // from r in store_filtered
-  Const        r131, []
-  // where r.sales > avg_sales
-  Const        r13, "sales"
+  Jump         L13
+L8:
   // select { channel: r.channel, i_brand_id: 1, i_class_id: 1, i_category_id: 1, sales: r.sales, number_sales: r.number_sales }
-  Const        r12, "channel"
-  Const        r12, "channel"
-  Const        r132, "i_brand_id"
-  Const        r133, "i_class_id"
   Const        r134, "i_category_id"
-  Const        r13, "sales"
-  Const        r13, "sales"
-  Const        r16, "number_sales"
   Const        r16, "number_sales"
   // from r in store_filtered
   IterPrep     r135, r7
   Len          r136, r135
   Const        r51, 0
   Move         r137, r51
-L17:
   LessInt      r138, r137, r136
-  JumpIfFalse  r138, L15
+  JumpIfFalse  r138, L14
   Index        r139, r135, r137
   Move         r140, r139
   // where r.sales > avg_sales
@@ -251,7 +216,8 @@ L17:
   Index        r141, r140, r13
   Const        r6, 23.333333333333332
   LessFloat    r142, r6, r141
-  JumpIfFalse  r142, L16
+  JumpIfFalse  r142, L15
+L16:
   // select { channel: r.channel, i_brand_id: 1, i_class_id: 1, i_category_id: 1, sales: r.sales, number_sales: r.number_sales }
   Const        r143, "channel"
   Const        r12, "channel"
@@ -259,9 +225,7 @@ L17:
   Const        r145, "i_brand_id"
   Const        r57, 1
   Const        r146, "i_class_id"
-  Const        r57, 1
   Const        r147, "i_category_id"
-  Const        r57, 1
   Const        r148, "sales"
   Const        r13, "sales"
   Index        r149, r140, r13
@@ -284,15 +248,5 @@ L17:
   // from r in store_filtered
   Append       r165, r131, r164
   Move         r131, r165
-L16:
-  Const        r57, 1
   AddInt       r137, r137, r57
-  Jump         L17
-L15:
-  // json(result)
-  JSON         r131
-  // expect result == [ { channel: "store", i_brand_id: 1, i_class_id: 1, i_category_id: 1, sales: 60.0, number_sales: 1 } ]
-  Const        r166, [{"channel": "store", "i_brand_id": 1, "i_category_id": 1, "i_class_id": 1, "number_sales": 1, "sales": 60.0}]
-  Equal        r167, r131, r166
-  Expect       r167
-  Return       r0
+  Jump         L16

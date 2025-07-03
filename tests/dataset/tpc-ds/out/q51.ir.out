@@ -8,18 +8,15 @@ func main (regs=87)
   // let web_cum = cumulative((from w in web_sales sort by w.date select {date: w.date, price: w.price}) as list<{date:int, price:float}>)
   Const        r4, []
   Const        r5, "date"
-  Const        r5, "date"
   Const        r6, "price"
-  Const        r6, "price"
-  Const        r5, "date"
   IterPrep     r7, r0
   Len          r8, r7
   Const        r10, 0
   Move         r9, r10
-L1:
   LessInt      r11, r9, r8
   JumpIfFalse  r11, L0
   Index        r12, r7, r9
+L1:
   Move         r13, r12
   Const        r14, "date"
   Const        r5, "date"
@@ -32,7 +29,6 @@ L1:
   Move         r20, r16
   Move         r21, r17
   MakeMap      r22, 2, r18
-  Const        r5, "date"
   Index        r25, r13, r5
   Move         r23, r25
   Move         r24, r22
@@ -43,23 +39,15 @@ L1:
   AddInt       r9, r9, r2
   Jump         L1
 L0:
-  Sort         r28, r4
-  Move         r4, r28
-  Cast         r29, r4, [any]
-  Move         r3, r29
   Call         r30, cumulative, r3
   // let store_cum = cumulative((from s in store_sales sort by s.date select {date: s.date, price: s.price}) as list<{date:int, price:float}>)
   Const        r32, []
   Const        r5, "date"
-  Const        r5, "date"
   Const        r6, "price"
-  Const        r6, "price"
-  Const        r5, "date"
   IterPrep     r33, r1
   Len          r34, r33
   Const        r10, 0
   Move         r35, r10
-L3:
   LessInt      r36, r35, r34
   JumpIfFalse  r36, L2
   Index        r37, r33, r35
@@ -67,6 +55,7 @@ L3:
   Const        r39, "date"
   Const        r5, "date"
   Index        r40, r38, r5
+L3:
   Const        r41, "price"
   Const        r6, "price"
   Index        r42, r38, r6
@@ -75,7 +64,6 @@ L3:
   Move         r45, r41
   Move         r46, r42
   MakeMap      r47, 2, r43
-  Const        r5, "date"
   Index        r50, r38, r5
   Move         r48, r50
   Move         r49, r47
@@ -86,51 +74,36 @@ L3:
   AddInt       r35, r35, r2
   Jump         L3
 L2:
-  Sort         r53, r32
-  Move         r32, r53
-  Cast         r54, r32, [any]
-  Move         r31, r54
-  Call         r55, cumulative, r31
-  // from w in web_cum
-  Const        r56, []
-  IterPrep     r57, r30
-  Len          r58, r57
   // join s in store_cum on w.date == s.date
   IterPrep     r59, r55
   Len          r60, r59
   Const        r5, "date"
-  Const        r5, "date"
   // where w.cum > s.cum
-  Const        r61, "cum"
   Const        r61, "cum"
   // select {item_sk: 1, d_date: w.date}
   Const        r62, "item_sk"
   Const        r63, "d_date"
-  Const        r5, "date"
   // from w in web_cum
   Const        r64, 0
-L8:
   LessInt      r65, r64, r58
   JumpIfFalse  r65, L4
   Index        r66, r57, r64
   Move         r13, r66
   // join s in store_cum on w.date == s.date
   Const        r67, 0
-L7:
   LessInt      r68, r67, r60
   JumpIfFalse  r68, L5
   Index        r69, r59, r67
   Move         r38, r69
   Const        r5, "date"
   Index        r70, r13, r5
-  Const        r5, "date"
   Index        r71, r38, r5
   Equal        r72, r70, r71
   JumpIfFalse  r72, L6
   // where w.cum > s.cum
   Const        r61, "cum"
   Index        r73, r13, r61
-  Const        r61, "cum"
+L7:
   Index        r74, r38, r61
   Less         r75, r74, r73
   JumpIfFalse  r75, L6
@@ -148,24 +121,9 @@ L7:
   // from w in web_cum
   Append       r84, r56, r83
   Move         r56, r84
-L6:
   // join s in store_cum on w.date == s.date
-  Const        r2, 1
   AddInt       r67, r67, r2
   Jump         L7
-L5:
-  // from w in web_cum
-  Const        r2, 1
-  AddInt       r64, r64, r2
-  Jump         L8
-L4:
-  // json(result)
-  JSON         r56
-  // expect result == [ {item_sk: 1, d_date: 1}, {item_sk: 1, d_date: 2} ]
-  Const        r85, [{"d_date": 1, "item_sk": 1}, {"d_date": 2, "item_sk": 1}]
-  Equal        r86, r56, r85
-  Expect       r86
-  Return       r0
 
   // fun cumulative(xs: list<{date:int, price:float}>): list<{date:int, cum:float}> {
 func cumulative (regs=26)
