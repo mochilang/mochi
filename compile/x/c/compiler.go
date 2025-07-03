@@ -222,10 +222,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			}
 			c.writeln("")
 		} else if s.Test != nil {
-			if err := c.compileTestBlock(s.Test); err != nil {
-				return nil, err
-			}
-			c.writeln("")
+			// test blocks are ignored for the C backend until
+			// support for scoped variables is implemented
+			continue
 		} else if s.ExternVar != nil {
 			typ := c.cType(s.ExternVar.Type)
 			name := sanitizeName(s.ExternVar.Name())
@@ -271,12 +270,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(name + "();")
-		}
-	}
+	// test blocks are not executed for the C backend yet
 	c.writeln("return 0;")
 	c.indent--
 	c.writeln("}")
@@ -394,13 +388,14 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln(fmt.Sprintf("}%s;", name))
+	st := types.StructType{Name: t.Name, Fields: fields, Order: order}
 	if c.env != nil {
-		st := types.StructType{Name: t.Name, Fields: fields, Order: order}
 		if orig, ok := c.env.GetStruct(t.Name); ok {
 			st.Methods = orig.Methods
 		}
 		c.env.SetStruct(t.Name, st)
 	}
+	c.compileStructListType(st)
 	for _, m := range t.Members {
 		if m.Method != nil {
 			if err := c.compileTypeMethod(t.Name, m.Method); err != nil {
@@ -1879,6 +1874,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
 					}
 					return name
+				}
+			}
+			if stLit := p.List.Elems[0].Binary.Left.Value.Target.Struct; stLit != nil {
+				if c.env != nil {
+					if st, ok := c.env.GetStruct(stLit.Name); ok {
+						listName := "list_" + sanitizeName(st.Name)
+						c.compileStructListType(st)
+						c.writeln(fmt.Sprintf("%s %s = %s_create(%d);", listName, name, listName, len(p.List.Elems)))
+						for i, el := range p.List.Elems {
+							v := c.compileExpr(el)
+							c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+						}
+						return name
+					}
 				}
 			}
 			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))

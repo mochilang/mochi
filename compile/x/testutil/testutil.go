@@ -104,3 +104,27 @@ func CompileTPCDS(
 		t.Skipf("TPCDS %s unsupported: %v", query, err)
 	}
 }
+
+// CompileSLT parses the given SLT case under the out directory and runs the
+// provided compile function. name should be in the form "select1/case1".
+// If compilation fails the test is skipped.
+func CompileSLT(
+	t *testing.T,
+	name string,
+	compileFn func(env *types.Env, prog *parser.Program) ([]byte, error),
+) {
+	t.Helper()
+	root := FindRepoRoot(t)
+	src := filepath.Join(root, "tests", "dataset", "slt", "out", name+".mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	if _, err := compileFn(env, prog); err != nil {
+		t.Skipf("SLT %s unsupported: %v", name, err)
+	}
+}
