@@ -17,7 +17,6 @@ func main (regs=72)
   Const        r7, "keyword"
   // mc.movie_id == mk.movie_id
   Const        r8, "movie_id"
-  Const        r8, "movie_id"
   // select t.title
   Const        r9, "title"
   // from cn in company_name
@@ -25,8 +24,8 @@ func main (regs=72)
   Len          r11, r10
   Const        r13, 0
   Move         r12, r13
-L11:
   LessInt      r14, r12, r11
+L3:
   JumpIfFalse  r14, L0
   Index        r15, r10, r12
   Move         r16, r15
@@ -41,15 +40,14 @@ L11:
   Const        r7, "keyword"
   // mc.movie_id == mk.movie_id
   Const        r8, "movie_id"
-  Const        r8, "movie_id"
   // select t.title
   Const        r9, "title"
   // join mc in movie_companies on mc.company_id == cn.id
   Const        r13, 0
   Move         r21, r13
-L10:
   LessInt      r22, r21, r18
   JumpIfFalse  r22, L1
+L4:
   Index        r23, r17, r21
   Move         r24, r23
   Const        r19, "company_id"
@@ -67,19 +65,16 @@ L10:
   Const        r6, "country_code"
   // k.keyword == "character-name-in-title" &&
   Const        r7, "keyword"
-  // mc.movie_id == mk.movie_id
-  Const        r8, "movie_id"
-  Const        r8, "movie_id"
   // select t.title
   Const        r9, "title"
   // join t in title on mc.movie_id == t.id
   Const        r13, 0
   Move         r30, r13
-L9:
   LessInt      r31, r30, r29
   JumpIfFalse  r31, L2
   Index        r32, r28, r30
   Move         r33, r32
+L5:
   Const        r8, "movie_id"
   Index        r34, r24, r8
   Const        r20, "id"
@@ -95,21 +90,18 @@ L9:
   Const        r6, "country_code"
   // k.keyword == "character-name-in-title" &&
   Const        r7, "keyword"
-  // mc.movie_id == mk.movie_id
-  Const        r8, "movie_id"
-  Const        r8, "movie_id"
   // select t.title
   Const        r9, "title"
   // join mk in movie_keyword on mk.movie_id == t.id
   Const        r13, 0
   Move         r39, r13
-L8:
   LessInt      r40, r39, r38
   JumpIfFalse  r40, L3
   Index        r41, r37, r39
   Move         r42, r41
   Const        r8, "movie_id"
   Index        r43, r42, r8
+L8:
   Const        r20, "id"
   Index        r44, r33, r20
   Equal        r45, r43, r44
@@ -125,13 +117,11 @@ L8:
   Const        r7, "keyword"
   // mc.movie_id == mk.movie_id
   Const        r8, "movie_id"
-  Const        r8, "movie_id"
   // select t.title
   Const        r9, "title"
   // join k in keyword on mk.keyword_id == k.id
   Const        r13, 0
   Move         r49, r13
-L7:
   LessInt      r50, r49, r47
   JumpIfFalse  r50, L4
   Index        r51, r46, r49
@@ -139,6 +129,7 @@ L7:
   Const        r48, "keyword_id"
   Index        r53, r42, r48
   Const        r20, "id"
+L7:
   Index        r54, r52, r20
   Equal        r55, r53, r54
   JumpIfFalse  r55, L5
@@ -155,7 +146,6 @@ L7:
   // mc.movie_id == mk.movie_id
   Const        r8, "movie_id"
   Index        r62, r24, r8
-  Const        r8, "movie_id"
   Index        r63, r42, r8
   Equal        r64, r62, r63
   // where cn.country_code == "[de]" &&
@@ -165,7 +155,6 @@ L7:
   // k.keyword == "character-name-in-title" &&
   JumpIfFalse  r65, L6
   Move         r65, r64
-L6:
   // where cn.country_code == "[de]" &&
   JumpIfFalse  r65, L5
   // select t.title
@@ -174,38 +163,19 @@ L6:
   // from cn in company_name
   Append       r67, r5, r66
   Move         r5, r67
-L5:
   // join k in keyword on mk.keyword_id == k.id
   Const        r68, 1
   Add          r49, r49, r68
   Jump         L7
-L4:
+L6:
   // join mk in movie_keyword on mk.movie_id == t.id
   Const        r68, 1
   Add          r39, r39, r68
   Jump         L8
-L3:
-  // join t in title on mc.movie_id == t.id
-  Const        r68, 1
-  Add          r30, r30, r68
-  Jump         L9
 L2:
-  // join mc in movie_companies on mc.company_id == cn.id
-  Const        r68, 1
-  Add          r21, r21, r68
-  Jump         L10
-L1:
-  // from cn in company_name
-  Const        r68, 1
-  AddInt       r12, r12, r68
-  Jump         L11
-L0:
-  // let result = min(titles)
-  Min          r69, r5
-  // json(result)
-  JSON         r69
   // expect result == "Der Film"
   Const        r70, "Der Film"
   Equal        r71, r69, r70
   Expect       r71
+L1:
   Return       r0
