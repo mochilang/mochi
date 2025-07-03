@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT b-c, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, a, a+b*2, a+b*2+c*3, e FROM t1 WHERE (e>c OR e<d) OR c BETWEEN b-2 AND d+2 ORDER BY 1,5,2,4,6,3 */
 let result = from row in t1
   where (((row.e > row.c || row.e < row.d)) || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
-  order by [(row.b - row.c), ((row.a + (row.b + row.b)) + (row.c * 3)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.a + (row.b + row.b)), row.e, row.a]
-  select [(row.b - row.c), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.a, (row.a + (row.b + row.b)), ((row.a + (row.b + row.b)) + (row.c * 3)), row.e]
+  order by [(row.b - row.c), ((row.a + (row.b * 2)) + (row.c * 3)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.a + (row.b * 2)), row.e, row.a]
+  select [(row.b - row.c), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.a, (row.a + (row.b * 2)), ((row.a + (row.b * 2)) + (row.c * 3)), row.e]
 var flatResult = []
 for row in result {
   for x in row {
