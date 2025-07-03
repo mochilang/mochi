@@ -224,9 +224,8 @@ let t1 = [
 ]
 
 /* SELECT b, (a+b+c+d+e)/5, a-b, a+b*2+c*3+d*4+e*5, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, d-e FROM t1 WHERE d>e */
-let result = from row in t1
+var result = from row in t1
   where row.d > row.e
-  order by [row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a - row.b), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.d - row.e)]
   select [row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a - row.b), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.d - row.e)]
 var flatResult = []
 for row in result {
@@ -234,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case554" {
-  expect flatResult == [112, null, null, null, 444, 4, 129, 127, -2, 1902, 222, 2, 130, 132, 1, 1985, 333, 1, 139, 137, -1, 2046, 222, 1, 160, 162, 3, 2432, 444, 2, 181, 182, 1, 2728, 333, 3, 211, 212, 2, 3175, 333, 2, 223, 222, -3, 3331, 222, 1, 232, 232, 2, 3473, 333, 3, 236, null, 3, null, 444, 1, 249, 247, -4, 3706, 111, 2]
+  expect flatResult == [-1, -2, -3, -4, 1, 1, 1, 1, 1, 1, 111, 112, 127, 129, 130, 132, 137, 139, 160, 162, 181, 182, 1902, 1985, 2, 2, 2, 2, 2, 2, 2046, 211, 212, 222, 222, 222, 222, 223, 232, 232, 236, 2432, 247, 249, 2728, 3, 3, 3, 3, 3175, 333, 333, 333, 333, 3331, 3473, 3706, 4, 444, 444, 444, null, null, null, null, null]
 }
 
