@@ -154,8 +154,15 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		case string:
 			// Attempt to infer numeric or boolean types when the
 			// value is stored as a string. Trim whitespace and
-			// normalize case for comparison.
+			// normalize case for comparison. Treat the literal
+			// string "null" as a NULL value.
 			sv := strings.TrimSpace(strings.ToLower(val))
+			if sv == "null" {
+				continue
+			}
+
+			// Allow comma separators in numbers.
+			sv = strings.ReplaceAll(sv, ",", "")
 
 			if sv == "true" || sv == "false" || sv == "t" || sv == "f" {
 				if t == "" || t == "bool" {
