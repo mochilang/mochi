@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR (e>a AND e<b) ORDER BY 1 */
-let result = from row in t1
+var result = from row in t1
   where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || ((row.e > row.a && row.e < row.b)))
   order by row.d
   select row.d

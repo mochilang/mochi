@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, d, a+b*2+c*3+d*4, a+b*2+c*3 FROM t1 WHERE d>e OR c BETWEEN b-2 AND d+2 ORDER BY 1,4,3,2 */
-let result = from row in t1
+var result = from row in t1
   where (row.d > row.e || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
   order by [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((row.a + (row.b * 2)) + (row.c * 3)), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.d]
   select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.d, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((row.a + (row.b * 2)) + (row.c * 3))]

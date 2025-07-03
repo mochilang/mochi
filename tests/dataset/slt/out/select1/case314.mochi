@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT abs(a) FROM t1 WHERE a>b ORDER BY 1 */
-let result = from row in t1
+var result = from row in t1
   where row.a > row.b
   order by (if row.a < 0 { -(row.a) } else { row.a })
   select (if row.a < 0 { -(row.a) } else { row.a })

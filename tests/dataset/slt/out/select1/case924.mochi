@@ -227,7 +227,7 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where ((row.a > row.b && row.c > row.d) && row.d > row.e)
   order by (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })
   select (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })
