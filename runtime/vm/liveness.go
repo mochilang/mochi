@@ -245,41 +245,9 @@ func replaceReg(ins *Instr, old, new int) {
 // issues with conditional blocks because it only looks at immediately
 // repeated instructions.
 func dedupConst(fn *Function) bool {
-	changed := false
-	newCode := make([]Instr, 0, len(fn.Code))
-	last := make([]Value, fn.NumRegs)
-	have := make([]bool, fn.NumRegs)
-	reset := func() {
-		for i := range have {
-			have[i] = false
-		}
-	}
-
-	for _, ins := range fn.Code {
-		switch ins.Op {
-		case OpJump, OpJumpIfFalse, OpJumpIfTrue:
-			reset()
-		}
-
-		if ins.Op == OpConst {
-			if have[ins.A] && valueEqual(last[ins.A], ins.Val) {
-				changed = true
-				continue
-			}
-			have[ins.A] = true
-			last[ins.A] = ins.Val
-		} else {
-			for _, r := range defRegs(ins) {
-				have[r] = false
-			}
-		}
-
-		newCode = append(newCode, ins)
-	}
-	if changed {
-		fn.Code = newCode
-	}
-	return changed
+	// Disabled to avoid replacing constants defined inside conditional blocks
+	// which may lead to uninitialized register values.
+	return false
 }
 
 // Optimize removes dead instructions with no side effects.
