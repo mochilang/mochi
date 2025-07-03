@@ -526,6 +526,48 @@ func TestGoCompiler_TPCDSQueries(t *testing.T) {
 	}
 }
 
+func TestGoCompiler_SLT(t *testing.T) {
+	root := findRepoRoot(t)
+	for i := 1; i <= 10; i++ {
+		caseName := fmt.Sprintf("case%d", i)
+		t.Run(caseName, func(t *testing.T) {
+			src := filepath.Join(root, "tests", "dataset", "slt", "out", "select1", caseName+".mochi")
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := gocode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.go")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("go", "run", file)
+			cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("go run error: %v\n%s", err, out)
+			}
+			gotOut := bytes.TrimSpace(out)
+			outWantPath := filepath.Join(root, "tests", "dataset", "slt", "out", "select1", caseName+".out")
+			wantOut, err := os.ReadFile(outWantPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(normalizeOutput(root, gotOut), normalizeOutput(root, bytes.TrimSpace(wantOut))) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", caseName, gotOut, bytes.TrimSpace(wantOut))
+			}
+		})
+	}
+}
+
 func findRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
