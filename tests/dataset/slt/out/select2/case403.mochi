@@ -228,6 +228,7 @@ let result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0
+  order by [row.a, (row.a - row.b)]
   select [row.a, (row.a - row.b)]
 var flatResult = []
 for row in result {
@@ -239,6 +240,6 @@ for x in flatResult {
   print(x)
 }
 test "case403" {
-  expect flatResult == [239, 3, 245, -4, 191, -3, 142, -1, 163, 3, 199, 1, 121, -3, 174, 4, 131, 1, 138, -1, 168, 1, 127, -2, 149, 4, 229, 1, 159, 1, 182, 1, 179, 4, 243, 3, null, null, 213, 2, null, null, 234, 2, 153, 2, 188, 2, 220, -3, 216, -2]
+  expect flatResult == [null, null, 121, -3, 127, -2, 131, 1, 138, -1, 142, -1, 149, 4, 153, 2, 159, 1, 163, 3, 168, 1, 174, 4, 179, 4, 182, 1, 188, 2, 191, -3, 199, 1, null, null, 213, 2, 216, -2, 220, -3, 229, 1, 234, 2, 239, 3, 243, 3, 245, -4]
 }
 

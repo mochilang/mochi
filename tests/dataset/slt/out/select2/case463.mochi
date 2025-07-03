@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT a+b*2, (a+b+c+d+e)/5 FROM t1 WHERE b IS NOT NULL AND c>d AND c BETWEEN b-2 AND d+2 */
 let result = from row in t1
   where ((row.b != null && row.c > row.d) && (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
+  order by [(row.a + (row.b * 2)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
   select [(row.a + (row.b * 2)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
 for row in result {

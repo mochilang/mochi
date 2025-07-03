@@ -225,6 +225,7 @@ let t1 = [
 
 /* SELECT c-d, abs(a) FROM t1 */
 let result = from row in t1
+  order by [(row.c - row.d), (if row.a < 0 { -(row.a) } else { row.a })]
   select [(row.c - row.d), (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []
 for row in result {

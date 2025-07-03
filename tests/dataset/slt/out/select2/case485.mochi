@@ -226,6 +226,11 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), b-c, a, abs(a) FROM t1 WHERE c BETWEEN b-2 AND d+2 OR e+d BETWEEN a+b-10 AND c+130 OR d>e */
 let result = from row in t1
   where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) || row.d > row.e)
+  order by [count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x), (row.a + (row.b * 2)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
+  where x.b < row.b
+  select x), (row.b - row.c), row.a, (if row.a < 0 { -(row.a) } else { row.a })]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.a + (row.b * 2)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
@@ -241,6 +246,6 @@ for x in flatResult {
   print(x)
 }
 test "case485" {
-  expect flatResult == [0, null, 555, 1, -1, null, null, 0, 385, 333, 3, 4, 127, 127, 0, 391, 444, 4, -4, 131, 131, 0, 416, 111, 5, 2, 138, 138, 0, 483, 333, 10, -1, 163, 163, 0, 544, 333, 14, -3, 182, 182, 0, 635, 222, 19, -3, 213, 213, 0, 666, 444, 21, -1, 220, 220, 0, 698, 555, 23, 1, 234, 234, 0, 711, 555, 24, null, 239, 239, 0, 743, 444, 26, 2, 245, 245, 0, 317, 333, 0, -1, 107, 107, 0, 369, 333, 2, 1, 121, 121, 0, 428, 111, 6, 2, 142, 142, 0, 514, 555, 12, -2, 174, 174, 0, 560, 444, 15, -1, 188, 188, 0, null, 555, 18, -2, null, null]
+  expect flatResult == [0, 317, 333, 0, -1, 107, 107, 0, null, 555, 1, -1, null, null, 0, 369, 333, 2, 1, 121, 121, 0, 385, 333, 3, 4, 127, 127, 0, 391, 444, 4, -4, 131, 131, 0, 416, 111, 5, 2, 138, 138, 0, 428, 111, 6, 2, 142, 142, 0, 483, 333, 10, -1, 163, 163, 0, 514, 555, 12, -2, 174, 174, 0, 544, 333, 14, -3, 182, 182, 0, 560, 444, 15, -1, 188, 188, 0, null, 555, 18, -2, null, null, 0, 635, 222, 19, -3, 213, 213, 0, 666, 444, 21, -1, 220, 220, 0, 698, 555, 23, 1, 234, 234, 0, 711, 555, 24, null, 239, 239, 0, 743, 444, 26, 2, 245, 245]
 }
 

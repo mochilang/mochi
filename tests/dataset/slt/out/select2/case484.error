@@ -1,7 +1,7 @@
-expect condition failed at :235: expect result == [-2, 1, null, null, null, -3, null, 1, null, 1, 2, -1, 2, -1, -2, null, null]
+expect condition failed at :236: expect result == [-2, 1, null, null, null, -3, null, 1, null, 1, 2, -1, 2, -1, -2, null, null]
 call graph: main
 stack trace:
-  main at :235
+  main at :236
     expect result == [-2, 1, null, null, null, -3, null, 1, null, 1, 2, -1, 2, -1, -2, null, null]
 
-got: [-2, 1, 147, 150, 155, -3, 166, 1, 176, 1, 2, -1, 2, -1, -2, -238, 244]
+got: [-2, 1, null, null, null, -3, null, 1, null, -2, -1, -1, 1, 2, 2, null, null]

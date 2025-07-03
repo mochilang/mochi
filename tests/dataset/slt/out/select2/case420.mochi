@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT a+b*2, e FROM t1 WHERE (c<=d-2 OR c>=d+2) OR d NOT BETWEEN 110 AND 150 */
 let result = from row in t1
   where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || (row.d < 110 || row.d > 150))
+  order by [(row.a + (row.b * 2)), row.e]
   select [(row.a + (row.b * 2)), row.e]
 var flatResult = []
 for row in result {
@@ -237,6 +238,6 @@ for x in flatResult {
   print(x)
 }
 test "case420" {
-  expect flatResult == [317, 109, 385, 126, 483, 162, 652, 219, 698, 230, null, 117, 560, 189, 579, 192, 635, 210, 666, 221, null, null, 514, 173, 544, 180, 595, 197, null, 204, null, null, 685, 227, 711, 237, 743, 246]
+  expect flatResult == [null, null, 317, 109, null, 117, 385, 126, 483, 162, 514, 173, 544, 180, 560, 189, 579, 192, 595, 197, null, 204, null, null, 635, 210, 652, 219, 666, 221, 685, 227, 698, 230, 711, 237, 743, 246]
 }
 

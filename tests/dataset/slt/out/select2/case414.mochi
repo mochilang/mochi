@@ -228,6 +228,7 @@ let result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0
+  order by [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.d - row.e), row.a, ((row.a + (row.b * 2)) + (row.c * 3))]
   select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.d - row.e), row.a, ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
 for row in result {
@@ -239,6 +240,6 @@ for x in flatResult {
   print(x)
 }
 test "case414" {
-  expect flatResult == [444, null, 1, 239, null, 111, 247, 2, 245, 1484, 222, 192, -2, 191, 1158, 222, 142, -4, 142, 851, 444, 162, 2, 163, 966, 333, 197, -1, 199, 1180, 222, null, null, 121, 738, 444, 172, -2, 174, 1030, 333, 132, 1, 131, 793, 222, 137, 1, 138, 827, 333, null, null, 168, 1000, 222, 127, 2, 127, 760, 444, null, null, 149, 880, 333, 227, -1, 229, 1360, 333, null, null, 159, 940, 333, 182, 3, 182, 1096, 444, null, null, 179, 1057, 444, null, null, 243, 1455, 444, null, 4, null, null, 333, 212, 2, 213, 1277, 444, null, null, null, null, 333, 232, 3, 234, 1391, 333, null, null, 153, 905, 333, 187, -4, 188, 1121, 222, 222, 1, 220, 1338, 222, 217, -2, 216, 1297]
+  expect flatResult == [444, null, 4, null, null, 222, null, null, 121, 738, 222, 127, 2, 127, 760, 333, 132, 1, 131, 793, 222, 137, 1, 138, 827, 222, 142, -4, 142, 851, 444, null, null, 149, 880, 333, null, null, 153, 905, 333, null, null, 159, 940, 444, 162, 2, 163, 966, 333, null, null, 168, 1000, 444, 172, -2, 174, 1030, 444, null, null, 179, 1057, 333, 182, 3, 182, 1096, 333, 187, -4, 188, 1121, 222, 192, -2, 191, 1158, 333, 197, -1, 199, 1180, 444, null, null, null, null, 333, 212, 2, 213, 1277, 222, 217, -2, 216, 1297, 222, 222, 1, 220, 1338, 333, 227, -1, 229, 1360, 333, 232, 3, 234, 1391, 444, null, 1, 239, null, 444, null, null, 243, 1455, 111, 247, 2, 245, 1484]
 }
 

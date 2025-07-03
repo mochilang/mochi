@@ -226,11 +226,12 @@ let t1 = [
 /* SELECT d-e FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR (c<=d-2 OR c>=d+2) */
 let result = from row in t1
   where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
+  order by (row.d - row.e)
   select (row.d - row.e)
 for x in result {
   print(x)
 }
 
 test "case460" {
-  expect result == [-1, 2, 2, -2, 3, -1, -4, -2, 2, 1]
+  expect result == [-1, -1, 2, 2, -4, -2, 2, -2, 1, 3]
 }

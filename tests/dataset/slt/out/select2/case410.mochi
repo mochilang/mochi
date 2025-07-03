@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT e, a-b, b-c, b, (a+b+c+d+e)/5 FROM t1 WHERE a>b */
 let result = from row in t1
   where row.a > row.b
+  order by [row.e, (row.a - row.b), (row.b - row.c), row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
   select [row.e, (row.a - row.b), (row.b - row.c), row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
 for row in result {

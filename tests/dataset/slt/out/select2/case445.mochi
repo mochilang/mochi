@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT b-c, a-b, d-e FROM t1 WHERE b IS NOT NULL AND (e>a AND e<b) AND (c<=d-2 OR c>=d+2) */
 let result = from row in t1
   where ((row.b != null && ((row.e > row.a && row.e < row.b))) && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
+  order by [(row.b - row.c), (row.a - row.b), (row.d - row.e)]
   select [(row.b - row.c), (row.a - row.b), (row.d - row.e)]
 var flatResult = []
 for row in result {

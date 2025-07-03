@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT a+b*2, c, (a+b+c+d+e)/5 FROM t1 WHERE a>b OR b>c */
 let result = from row in t1
   where (row.a > row.b || row.b > row.c)
+  order by [(row.a + (row.b * 2)), row.c, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
   select [(row.a + (row.b * 2)), row.c, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
 for row in result {
@@ -237,6 +238,6 @@ for x in flatResult {
   print(x)
 }
 test "case449" {
-  expect flatResult == [317, 106, 107, 391, 134, 132, 439, 147, null, 455, 150, null, 475, 155, null, 483, 161, 162, 502, 166, null, 514, 172, 172, 529, 176, null, 544, 184, 182, 560, 187, 187, 595, 195, 197, 635, 214, 212, 685, 225, 227, 698, 231, 232, 711, null, null, 723, 244, null, 369, 123, null, 385, 125, 127, 416, 137, 137, 428, 141, 142, 579, 193, 192, 652, 215, 217, 743, 247, 247]
+  expect flatResult == [317, 106, 107, 369, 123, null, 385, 125, 127, 391, 134, 132, 416, 137, 137, 428, 141, 142, 439, 147, null, 455, 150, null, 475, 155, null, 483, 161, 162, 502, 166, null, 514, 172, 172, 529, 176, null, 544, 184, 182, 560, 187, 187, 579, 193, 192, 595, 195, 197, 635, 214, 212, 652, 215, 217, 685, 225, 227, 698, 231, 232, 711, null, null, 723, 244, null, 743, 247, 247]
 }
 
