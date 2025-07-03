@@ -370,6 +370,12 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: AnyType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("coalesce", FuncType{
+		Params:   []Type{AnyType{}},
+		Return:   AnyType{},
+		Pure:     true,
+		Variadic: true,
+	}, false)
 	env.SetVar("push", FuncType{
 		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
 		Return: ListType{Elem: AnyType{}},
@@ -2013,11 +2019,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	child := NewEnv(env)
 	child.SetVar(q.Var, elemT, true)
 
-       for _, f := range q.Froms {
-               ft, err := checkExpr(f.Src, child)
-               if err != nil {
-                       return nil, err
-               }
+	for _, f := range q.Froms {
+		ft, err := checkExpr(f.Src, child)
+		if err != nil {
+			return nil, err
+		}
 		var fe Type
 		switch t := ft.(type) {
 		case ListType:
@@ -2030,11 +2036,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		child.SetVar(f.Var, fe, true)
 	}
 
-       for _, j := range q.Joins {
-               jt, err := checkExpr(j.Src, child)
-               if err != nil {
-                       return nil, err
-               }
+	for _, j := range q.Joins {
+		jt, err := checkExpr(j.Src, child)
+		if err != nil {
+			return nil, err
+		}
 		var je Type
 		switch t := jt.(type) {
 		case ListType:
