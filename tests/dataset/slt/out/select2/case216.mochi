@@ -225,6 +225,9 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, abs(a), (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3+d*4+e*5 FROM t1 */
 let result = from row in t1
+  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
@@ -238,6 +241,6 @@ for x in flatResult {
   print(x)
 }
 test "case216" {
-  expect flatResult == [null, 104, 0, null, 107, 107, 0, 1612, null, null, 0, null, null, 115, 0, null, null, 121, 0, null, 127, 127, 0, 1902, 132, 131, 0, 1985, 137, 138, 0, 2046, 142, 142, 0, 2131, null, 149, 0, null, null, 153, 0, null, null, 159, 0, null, 162, 163, 0, 2432, null, 168, 0, null, 172, 174, 0, 2579, null, 179, 0, null, 182, 182, 0, 2728, 187, 188, 0, 2806, 192, 191, 0, 2878, 197, 199, 0, 2949, null, 201, 0, null, null, null, 0, null, 212, 213, 0, 3175, 217, 216, 0, 3260, 222, 220, 0, 3331, 227, 229, 0, 3399, 232, 234, 0, 3473, null, 239, 0, null, null, 243, 0, null, 247, 245, 0, 3706]
+  expect flatResult == [107, 107, 0, 1612, 127, 127, 0, 1902, 132, 131, 0, 1985, 137, 138, 0, 2046, 142, 142, 0, 2131, 162, 163, 0, 2432, 172, 174, 0, 2579, 182, 182, 0, 2728, 187, 188, 0, 2806, 192, 191, 0, 2878, 197, 199, 0, 2949, 212, 213, 0, 3175, 217, 216, 0, 3260, 222, 220, 0, 3331, 227, 229, 0, 3399, 232, 234, 0, 3473, 247, 245, 0, 3706, null, 104, 0, null, null, 115, 0, null, null, 121, 0, null, null, 149, 0, null, null, 153, 0, null, null, 159, 0, null, null, 168, 0, null, null, 179, 0, null, null, 201, 0, null, null, 239, 0, null, null, 243, 0, null, null, null, 0, null, null, null, 0, null]
 }
 

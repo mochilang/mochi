@@ -226,11 +226,12 @@ let t1 = [
 /* SELECT abs(a) FROM t1 WHERE (e>c OR e<d) AND d>e */
 let result = from row in t1
   where (((row.e > row.c || row.e < row.d)) && row.d > row.e)
+  order by (if row.a < 0 { -(row.a) } else { row.a })
   select (if row.a < 0 { -(row.a) } else { row.a })
 for x in result {
   print(x)
 }
 
 test "case232" {
-  expect result == [127, 163, null, 131, 138, 182, 213, 220, 234, 239, 245]
+  expect result == [127, 131, 138, 163, 182, 213, 220, 234, 239, 245, null]
 }

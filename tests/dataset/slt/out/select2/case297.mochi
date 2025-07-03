@@ -226,6 +226,9 @@ let t1 = [
 /* SELECT (a+b+c+d+e)/5, a, a+b*2+c*3, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), abs(b-c), d FROM t1 WHERE coalesce(a,b,c,d,e)<>0 AND (e>c OR e<d) */
 let result = from row in t1
   where (null != 0 && ((row.e > row.c || row.e < row.d)))
+  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.a, ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d]
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.a, ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d]
@@ -239,6 +242,6 @@ for x in flatResult {
   print(x)
 }
 test "case297" {
-  expect flatResult == [107, 107, 635, 0, 1, 108, 127, 127, 760, 0, 4, 128, 142, 142, 851, 0, 2, 140, null, 159, 940, 0, 3, null, 162, 163, 966, 0, 1, 164, 172, 174, 1030, 0, 2, 171, null, 179, 1057, 0, 1, null, 187, 188, 1121, 0, 1, 185, 197, 199, 1180, 0, 3, 196, null, 201, null, 0, null, 203, 217, 216, 1297, 0, 3, 217, 227, 229, 1360, 0, 3, 226, null, null, null, 0, 1, 114, 132, 131, 793, 0, 4, 133, 137, 138, 827, 0, 2, 136, 182, 182, 1096, 0, 3, 183, 212, 213, 1277, 0, 3, 212, 222, 220, 1338, 0, 1, 222, 232, 234, 1391, 0, 1, 233, null, 239, null, 0, null, 238, 247, 245, 1484, 0, 2, 248]
+  expect flatResult == [107, 107, 635, 0, 1, 108, 127, 127, 760, 0, 4, 128, 132, 131, 793, 0, 4, 133, 137, 138, 827, 0, 2, 136, 142, 142, 851, 0, 2, 140, 162, 163, 966, 0, 1, 164, 172, 174, 1030, 0, 2, 171, 182, 182, 1096, 0, 3, 183, 187, 188, 1121, 0, 1, 185, 197, 199, 1180, 0, 3, 196, 212, 213, 1277, 0, 3, 212, 217, 216, 1297, 0, 3, 217, 222, 220, 1338, 0, 1, 222, 227, 229, 1360, 0, 3, 226, 232, 234, 1391, 0, 1, 233, 247, 245, 1484, 0, 2, 248, null, 159, 940, 0, 3, null, null, 179, 1057, 0, 1, null, null, 201, null, 0, null, 203, null, 239, null, 0, null, 238, null, null, null, 0, 1, 114]
 }
 

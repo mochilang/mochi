@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT a, a+b*2+c*3, d-e FROM t1 WHERE d>e AND b IS NOT NULL */
 let result = from row in t1
   where (row.d > row.e && row.b != null)
+  order by [row.a, ((row.a + (row.b * 2)) + (row.c * 3)), (row.d - row.e)]
   select [row.a, ((row.a + (row.b * 2)) + (row.c * 3)), (row.d - row.e)]
 var flatResult = []
 for row in result {
@@ -237,6 +238,6 @@ for x in flatResult {
   print(x)
 }
 test "case254" {
-  expect flatResult == [null, null, 4, 127, 760, 2, 131, 793, 1, 138, 827, 1, 163, 966, 2, 182, 1096, 3, 213, 1277, 2, 220, 1338, 1, 234, 1391, 3, 239, null, 1, 245, 1484, 2]
+  expect flatResult == [127, 760, 2, 131, 793, 1, 138, 827, 1, 163, 966, 2, 182, 1096, 3, 213, 1277, 2, 220, 1338, 1, 234, 1391, 3, 239, null, 1, 245, 1484, 2, null, null, 4]
 }
 

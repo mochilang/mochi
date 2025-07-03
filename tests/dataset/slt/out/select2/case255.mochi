@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT b, d-e, (a+b+c+d+e)/5, d, a FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 */
 let result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
+  order by [row.b, (row.d - row.e), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d, row.a]
   select [row.b, (row.d - row.e), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d, row.a]
 var flatResult = []
 for row in result {

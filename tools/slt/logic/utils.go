@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -176,8 +177,7 @@ func EvalCase(c Case) ([]string, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-	var flat []string
-	var buf bytes.Buffer
+	var rowsData [][]string
 	for rows.Next() {
 		vals := make([]any, len(cols))
 		ptrs := make([]any, len(cols))
@@ -187,13 +187,27 @@ func EvalCase(c Case) ([]string, string, error) {
 		if err := rows.Scan(ptrs...); err != nil {
 			return nil, "", err
 		}
+		rowStrings := make([]string, len(cols))
 		for i, v := range vals {
-			var s string
 			if v == nil {
-				s = "null"
+				rowStrings[i] = "null"
 			} else {
-				s = fmt.Sprint(v)
+				rowStrings[i] = fmt.Sprint(v)
 			}
+		}
+		rowsData = append(rowsData, rowStrings)
+	}
+
+	if c.RowSort {
+		sort.Slice(rowsData, func(i, j int) bool {
+			return strings.Join(rowsData[i], " ") < strings.Join(rowsData[j], " ")
+		})
+	}
+
+	var flat []string
+	var buf bytes.Buffer
+	for _, rowStrings := range rowsData {
+		for i, s := range rowStrings {
 			flat = append(flat, s)
 			if i > 0 {
 				buf.WriteByte(' ')
@@ -202,6 +216,7 @@ func EvalCase(c Case) ([]string, string, error) {
 		}
 		buf.WriteByte('\n')
 	}
+
 	hash := fmt.Sprintf("%x", md5.Sum(buf.Bytes()))
 	return flat, hash, nil
 }

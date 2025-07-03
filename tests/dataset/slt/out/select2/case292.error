@@ -1,7 +1,7 @@
-expect condition failed at :235: expect result == [-3, -3, -4]
+expect condition failed at :236: expect result == [-3, -3, -4]
 call graph: main
 stack trace:
-  main at :235
+  main at :236
     expect result == [-3, -3, -4]
 
-got: [-112, -3, -3, -4]
+got: [-4, -3, -3]

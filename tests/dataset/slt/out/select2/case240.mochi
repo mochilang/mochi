@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT d-e FROM t1 WHERE (e>a AND e<b) */
 let result = from row in t1
   where ((row.e > row.a && row.e < row.b))
+  order by (row.d - row.e)
   select (row.d - row.e)
 for x in result {
   print(x)

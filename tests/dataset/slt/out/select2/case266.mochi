@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, e FROM t1 WHERE c BETWEEN b-2 AND d+2 */
 let result = from row in t1
   where (row.c >= (row.b - 2) && row.c <= (row.d + 2))
+  order by [(if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e]
   select [(if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e]
 var flatResult = []
 for row in result {
@@ -237,6 +238,6 @@ for x in flatResult {
   print(x)
 }
 test "case266" {
-  expect flatResult == [333, 333, 109, 555, 444, 110, 333, 222, null, 444, 333, 132, 111, 222, 135, 111, 222, 144, 333, 444, 162, 555, 444, 173, 333, 333, 180, 444, 333, 189, 555, 444, null, 222, 333, 210, 444, 222, 221, 555, 333, 230, 444, 111, 246]
+  expect flatResult == [111, 222, 135, 111, 222, 144, 222, 333, 210, 333, 222, null, 333, 333, 109, 333, 333, 180, 333, 444, 162, 444, 111, 246, 444, 222, 221, 444, 333, 132, 444, 333, 189, 555, 333, 230, 555, 444, 110, 555, 444, 173, 555, 444, null]
 }
 

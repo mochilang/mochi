@@ -226,6 +226,11 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d FROM t1 WHERE d>e OR (e>c OR e<d) OR coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where ((row.d > row.e || ((row.e > row.c || row.e < row.d))) || null != 0)
+  order by [count(from x in t1
+  where x.b < row.b
+  select x), count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x), row.d]
   select [count(from x in t1
   where x.b < row.b
   select x), count(from x in t1
@@ -241,6 +246,6 @@ for x in flatResult {
   print(x)
 }
 test "case291" {
-  expect flatResult == [0, 0, 101, 0, 0, 108, 1, 0, 114, 0, 0, 116, 2, 0, 122, 3, 0, 128, 4, 0, 133, 5, 0, 136, 6, 0, 140, 7, 0, null, 8, 0, null, 9, 0, null, 10, 0, 164, 11, 0, null, 12, 0, 171, 13, 0, null, 14, 0, 183, 15, 0, 185, 16, 0, 190, 17, 0, 196, 0, 0, 203, 18, 0, 207, 19, 0, 212, 20, 0, 217, 21, 0, 222, 22, 0, 226, 23, 0, 233, 24, 0, 238, 25, 0, null, 26, 0, 248]
+  expect flatResult == [0, 0, 101, 0, 0, 108, 0, 0, 116, 0, 0, 203, 1, 0, 114, 10, 0, 164, 11, 0, null, 12, 0, 171, 13, 0, null, 14, 0, 183, 15, 0, 185, 16, 0, 190, 17, 0, 196, 18, 0, 207, 19, 0, 212, 2, 0, 122, 20, 0, 217, 21, 0, 222, 22, 0, 226, 23, 0, 233, 24, 0, 238, 25, 0, null, 26, 0, 248, 3, 0, 128, 4, 0, 133, 5, 0, 136, 6, 0, 140, 7, 0, null, 8, 0, null, 9, 0, null]
 }
 

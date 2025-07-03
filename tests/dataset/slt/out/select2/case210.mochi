@@ -226,6 +226,9 @@ let t1 = [
 /* SELECT d, abs(a), (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE a IS NULL AND a>b */
 let result = from row in t1
   where (row.a == null && row.a > row.b)
+  order by [row.d, (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
+  where x.b < row.b
+  select x)]
   select [row.d, (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
   where x.b < row.b
   select x)]

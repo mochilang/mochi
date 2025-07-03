@@ -226,6 +226,9 @@ let t1 = [
 /* SELECT d, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where null != 0
+  order by [row.d, count(from x in t1
+  where x.b < row.b
+  select x)]
   select [row.d, count(from x in t1
   where x.b < row.b
   select x)]
@@ -239,6 +242,6 @@ for x in flatResult {
   print(x)
 }
 test "case253" {
-  expect flatResult == [101, 0, 108, 0, 114, 1, 116, 0, 122, 2, 128, 3, 133, 4, 136, 5, 140, 6, null, 7, null, 8, null, 9, 164, 10, null, 11, 171, 12, null, 13, 183, 14, 185, 15, 190, 16, 196, 17, 203, 0, 207, 18, 212, 19, 217, 20, 222, 21, 226, 22, 233, 23, 238, 24, null, 25, 248, 26]
+  expect flatResult == [101, 0, 108, 0, 114, 1, 116, 0, 122, 2, 128, 3, 133, 4, 136, 5, 140, 6, 164, 10, 171, 12, 183, 14, 185, 15, 190, 16, 196, 17, 203, 0, 207, 18, 212, 19, 217, 20, 222, 21, 226, 22, 233, 23, 238, 24, 248, 26, null, 11, null, 13, null, 25, null, 7, null, 8, null, 9]
 }
 

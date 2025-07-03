@@ -225,6 +225,7 @@ let t1 = [
 
 /* SELECT a+b*2+c*3+d*4, abs(b-c), d-e, abs(a), a, e, c-d FROM t1 */
 let result = from row in t1
+  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.d - row.e), (if row.a < 0 { -(row.a) } else { row.a }), row.a, row.e, (row.c - row.d)]
   select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.d - row.e), (if row.a < 0 { -(row.a) } else { row.a }), row.a, row.e, (row.c - row.d)]
 var flatResult = []
 for row in result {
@@ -236,6 +237,6 @@ for x in flatResult {
   print(x)
 }
 test "case234" {
-  expect flatResult == [null, null, null, 104, 104, null, 1, 1067, 1, -1, 107, 107, 109, -2, null, 1, 4, null, null, 110, -1, null, null, -1, 115, 115, 117, 3, 1226, 1, null, 121, 121, null, 1, 1272, 4, 2, 127, 127, 126, -3, 1325, 4, 1, 131, 131, 132, 1, 1371, 2, 1, 138, 138, 135, 1, 1411, 2, -4, 142, 142, 144, 1, null, 2, null, 149, 149, 146, null, null, 1, null, 153, 153, null, null, null, 3, null, 159, 159, 157, null, 1622, 1, 2, 163, 163, 162, -3, null, 1, null, 168, 168, 165, null, 1714, 2, -2, 174, 174, 173, 1, null, 1, null, 179, 179, 177, null, 1828, 3, 3, 182, 182, 180, 1, 1861, 1, -4, 188, 188, 189, 2, 1918, 1, -2, 191, 191, 192, 3, 1964, 3, -1, 199, 199, 197, -1, null, null, -1, 201, 201, 204, -1, null, 2, null, null, null, null, 1, 2125, 3, 2, 213, 213, 210, 2, 2165, 3, -2, 216, 216, 219, -2, 2226, 1, 1, 220, 220, 221, 2, 2264, 3, -1, 229, 229, 227, -1, 2323, 1, 3, 234, 234, 230, -2, null, null, 1, 239, 239, 237, null, null, 4, null, 243, 243, null, null, 2476, 2, 2, 245, 245, 246, -1]
+  expect flatResult == [1067, 1, -1, 107, 107, 109, -2, 1226, 1, null, 121, 121, null, 1, 1272, 4, 2, 127, 127, 126, -3, 1325, 4, 1, 131, 131, 132, 1, 1371, 2, 1, 138, 138, 135, 1, 1411, 2, -4, 142, 142, 144, 1, 1622, 1, 2, 163, 163, 162, -3, 1714, 2, -2, 174, 174, 173, 1, 1828, 3, 3, 182, 182, 180, 1, 1861, 1, -4, 188, 188, 189, 2, 1918, 1, -2, 191, 191, 192, 3, 1964, 3, -1, 199, 199, 197, -1, 2125, 3, 2, 213, 213, 210, 2, 2165, 3, -2, 216, 216, 219, -2, 2226, 1, 1, 220, 220, 221, 2, 2264, 3, -1, 229, 229, 227, -1, 2323, 1, 3, 234, 234, 230, -2, 2476, 2, 2, 245, 245, 246, -1, null, 1, 4, null, null, 110, -1, null, 1, null, 153, 153, null, null, null, 1, null, 168, 168, 165, null, null, 1, null, 179, 179, 177, null, null, 2, null, 149, 149, 146, null, null, 2, null, null, null, null, 1, null, 3, null, 159, 159, 157, null, null, 4, null, 243, 243, null, null, null, null, -1, 115, 115, 117, 3, null, null, -1, 201, 201, 204, -1, null, null, 1, 239, 239, 237, null, null, null, null, 104, 104, null, 1]
 }
 
