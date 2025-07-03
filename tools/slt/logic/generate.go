@@ -281,11 +281,11 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		case sqlparser.StrVal:
 			return fmt.Sprintf("\"%s\"", string(v.Val))
 		case sqlparser.IntVal:
-			s := string(v.Val)
-			if !strings.ContainsRune(s, '.') {
-				s += ".0"
-			}
-			return s
+			// Preserve integer constants without adding a decimal
+			// suffix. Emitting integers avoids type mismatches in
+			// generated programs that mix integer columns with
+			// constant values.
+			return string(v.Val)
 		case sqlparser.FloatVal:
 			return string(v.Val)
 		}
