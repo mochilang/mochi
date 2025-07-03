@@ -232,6 +232,9 @@ var result = from row in t1
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.b - row.c), (row.c - row.d), ((row.a + (row.b * 2)) + (row.c * 3)), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
