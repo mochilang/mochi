@@ -19,8 +19,8 @@ fun cumulative(xs: list<{date:int, price:float}>): list<{date:int, cum:float}> {
   return out
 }
 
-let web_cum = cumulative(from w in web_sales sort by w.date select {date:w.date, price:w.price})
-let store_cum = cumulative(from s in store_sales sort by s.date select {date:s.date, price:s.price})
+let web_cum = cumulative((from w in web_sales sort by w.date select {date: w.date, price: w.price}) as list<{date:int, price:float}>)
+let store_cum = cumulative((from s in store_sales sort by s.date select {date: s.date, price: s.price}) as list<{date:int, price:float}>)
 
 let joined =
   from w in web_cum

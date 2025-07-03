@@ -20,10 +20,13 @@ func main (regs=165)
   // where substr(ca.ca_zip, 0, 5) in zip_list
   Const        r9, "ca_zip"
   // select { s_store_name: g.key, net_profit: sum(from x in g select x.ss.ss_net_profit) }
+  Const        r8, "s_store_name"
   Const        r10, "key"
   Const        r11, "net_profit"
   Const        r12, "ss"
   Const        r13, "ss_net_profit"
+  // sort by g.key
+  Const        r10, "key"
   // from ss in store_sales
   MakeMap      r14, 0, r0
   Const        r16, []
@@ -94,7 +97,10 @@ L10:
   Const        r62, 0
   Const        r63, 2
   Slice        r64, r61, r62, r63
+  Const        r9, "ca_zip"
   Index        r65, r59, r9
+  Const        r62, 0
+  Const        r63, 2
   Slice        r66, r65, r62, r63
   Equal        r67, r64, r66
   JumpIfFalse  r67, L5
@@ -122,13 +128,16 @@ L9:
 L6:
   JumpIfFalse  r83, L7
   // where substr(ca.ca_zip, 0, 5) in zip_list
+  Const        r9, "ca_zip"
   Index        r84, r59, r9
+  Const        r62, 0
   Const        r85, 5
   Slice        r86, r84, r62, r85
   Const        r87, ["12345"]
   In           r88, r86, r87
   JumpIfFalse  r88, L7
   // from ss in store_sales
+  Const        r12, "ss"
   Move         r89, r22
   Const        r90, "d"
   Move         r91, r28
@@ -150,19 +159,23 @@ L6:
   Move         r107, r97
   MakeMap      r108, 5, r98
   // group by s.s_store_name into g
+  Const        r8, "s_store_name"
   Index        r109, r48, r8
   Str          r110, r109
   In           r111, r110, r14
   JumpIfTrue   r111, L8
   // from ss in store_sales
+  Const        r16, []
   Const        r112, "__group__"
   Const        r113, true
+  Const        r10, "key"
   // group by s.s_store_name into g
   Move         r114, r109
   // from ss in store_sales
   Const        r115, "items"
   Move         r116, r16
   Const        r117, "count"
+  Const        r62, 0
   Move         r118, r112
   Move         r119, r113
   Move         r120, r10
@@ -176,34 +189,43 @@ L6:
   Append       r127, r15, r126
   Move         r15, r127
 L8:
+  Const        r115, "items"
   Index        r128, r14, r110
   Index        r129, r128, r115
   Append       r130, r129, r108
   SetIndex     r128, r115, r130
+  Const        r117, "count"
   Index        r131, r128, r117
+  Const        r36, 1
   AddInt       r132, r131, r36
   SetIndex     r128, r117, r132
 L7:
   // join c in customer on ca.ca_address_sk == c.c_current_addr_sk && c.c_preferred_cust_flag == "Y"
+  Const        r36, 1
   AddInt       r70, r70, r36
   Jump         L9
 L5:
   // join ca in customer_address on substr(s.s_zip, 0, 2) == substr(ca.ca_zip, 0, 2)
+  Const        r36, 1
   AddInt       r56, r56, r36
   Jump         L10
 L4:
   // join s in store on ss.ss_store_sk == s.s_store_sk
+  Const        r36, 1
   AddInt       r45, r45, r36
   Jump         L11
 L3:
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk && d.d_qoy == 1 && d.d_year == 1998
+  Const        r36, 1
   AddInt       r25, r25, r36
   Jump         L12
 L1:
   // from ss in store_sales
+  Const        r36, 1
   AddInt       r19, r19, r36
   Jump         L13
 L0:
+  Const        r62, 0
   Move         r133, r62
   Len          r134, r15
 L17:
@@ -213,21 +235,28 @@ L17:
   Move         r137, r136
   // select { s_store_name: g.key, net_profit: sum(from x in g select x.ss.ss_net_profit) }
   Const        r138, "s_store_name"
+  Const        r10, "key"
   Index        r139, r137, r10
   Const        r140, "net_profit"
   Const        r141, []
+  Const        r12, "ss"
+  Const        r13, "ss_net_profit"
   IterPrep     r142, r137
   Len          r143, r142
+  Const        r62, 0
   Move         r144, r62
 L16:
   LessInt      r145, r144, r143
   JumpIfFalse  r145, L15
   Index        r146, r142, r144
   Move         r147, r146
+  Const        r12, "ss"
   Index        r148, r147, r12
+  Const        r13, "ss_net_profit"
   Index        r149, r148, r13
   Append       r150, r141, r149
   Move         r141, r150
+  Const        r36, 1
   AddInt       r144, r144, r36
   Jump         L16
 L15:
@@ -238,13 +267,15 @@ L15:
   Move         r155, r151
   MakeMap      r156, 2, r152
   // sort by g.key
-  Index        r157, r137, r10
-  Move         r158, r157
+  Const        r10, "key"
+  Index        r159, r137, r10
+  Move         r157, r159
   // from ss in store_sales
-  Move         r159, r156
-  MakeList     r160, 2, r158
+  Move         r158, r156
+  MakeList     r160, 2, r157
   Append       r161, r7, r160
   Move         r7, r161
+  Const        r36, 1
   AddInt       r133, r133, r36
   Jump         L17
 L14:

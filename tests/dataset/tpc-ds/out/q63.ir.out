@@ -5,8 +5,11 @@ func main (regs=81)
   Const        r1, []
   // group by {mgr: s.mgr} into g
   Const        r2, "mgr"
+  Const        r2, "mgr"
   // select {mgr: g.key.mgr, sum_sales: sum(from x in g select x.amount)}
+  Const        r2, "mgr"
   Const        r3, "key"
+  Const        r2, "mgr"
   Const        r4, "sum_sales"
   Const        r5, "amount"
   // from s in sales
@@ -23,6 +26,7 @@ L2:
   Move         r14, r13
   // group by {mgr: s.mgr} into g
   Const        r15, "mgr"
+  Const        r2, "mgr"
   Index        r16, r14, r2
   Move         r17, r15
   Move         r18, r16
@@ -31,8 +35,10 @@ L2:
   In           r21, r20, r9
   JumpIfTrue   r21, L1
   // from s in sales
+  Const        r11, []
   Const        r22, "__group__"
   Const        r23, true
+  Const        r3, "key"
   // group by {mgr: s.mgr} into g
   Move         r24, r19
   // from s in sales
@@ -53,17 +59,21 @@ L2:
   Append       r38, r10, r37
   Move         r10, r38
 L1:
+  Const        r25, "items"
   Index        r39, r9, r20
   Index        r40, r39, r25
   Append       r41, r40, r13
   SetIndex     r39, r25, r41
+  Const        r27, "count"
   Index        r42, r39, r27
   Const        r43, 1
   AddInt       r44, r42, r43
   SetIndex     r39, r27, r44
+  Const        r43, 1
   AddInt       r8, r8, r43
   Jump         L2
 L0:
+  Const        r28, 0
   Move         r45, r28
   Len          r46, r10
 L6:
@@ -73,21 +83,27 @@ L6:
   Move         r49, r48
   // select {mgr: g.key.mgr, sum_sales: sum(from x in g select x.amount)}
   Const        r50, "mgr"
+  Const        r3, "key"
   Index        r51, r49, r3
+  Const        r2, "mgr"
   Index        r52, r51, r2
   Const        r53, "sum_sales"
   Const        r54, []
+  Const        r5, "amount"
   IterPrep     r55, r49
   Len          r56, r55
+  Const        r28, 0
   Move         r57, r28
 L5:
   LessInt      r58, r57, r56
   JumpIfFalse  r58, L4
   Index        r59, r55, r57
   Move         r60, r59
+  Const        r5, "amount"
   Index        r61, r60, r5
   Append       r62, r54, r61
   Move         r54, r62
+  Const        r43, 1
   AddInt       r57, r57, r43
   Jump         L5
 L4:
@@ -100,22 +116,27 @@ L4:
   // from s in sales
   Append       r69, r1, r68
   Move         r1, r69
+  Const        r43, 1
   AddInt       r45, r45, r43
   Jump         L6
 L3:
   // let result = sum(from x in by_mgr select x.sum_sales)
   Const        r70, []
+  Const        r4, "sum_sales"
   IterPrep     r71, r1
   Len          r72, r71
+  Const        r28, 0
   Move         r73, r28
 L8:
   LessInt      r74, r73, r72
   JumpIfFalse  r74, L7
   Index        r75, r71, r73
   Move         r60, r75
+  Const        r4, "sum_sales"
   Index        r76, r60, r4
   Append       r77, r70, r76
   Move         r70, r77
+  Const        r43, 1
   AddInt       r73, r73, r43
   Jump         L8
 L7:

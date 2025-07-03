@@ -18,13 +18,20 @@ func main (regs=216)
   Const        r9, "ss_customer_sk"
   // where (d.d_dom >= 1 && d.d_dom <= 3) && hd.hd_buy_potential == ">10000" && hd.hd_vehicle_count > 0 && (hd.hd_dep_count / hd.hd_vehicle_count) > 1.2 && d.d_year == 2000 && s.s_county == "A"
   Const        r10, "d_dom"
+  Const        r10, "d_dom"
   Const        r11, "hd_buy_potential"
   Const        r12, "hd_vehicle_count"
   Const        r13, "hd_dep_count"
+  Const        r12, "hd_vehicle_count"
   Const        r14, "d_year"
   Const        r15, "s_county"
   // select {ss_ticket_number: g.key.ticket, ss_customer_sk: g.key.cust, cnt: count(g)}
+  Const        r7, "ss_ticket_number"
   Const        r16, "key"
+  Const        r6, "ticket"
+  Const        r9, "ss_customer_sk"
+  Const        r16, "key"
+  Const        r8, "cust"
   Const        r17, "cnt"
   // from ss in store_sales
   MakeMap      r18, 0, r0
@@ -84,9 +91,11 @@ L8:
   Equal        r59, r56, r58
   JumpIfFalse  r59, L4
   // where (d.d_dom >= 1 && d.d_dom <= 3) && hd.hd_buy_potential == ">10000" && hd.hd_vehicle_count > 0 && (hd.hd_dep_count / hd.hd_vehicle_count) > 1.2 && d.d_year == 2000 && s.s_county == "A"
+  Const        r10, "d_dom"
   Index        r60, r32, r10
   Const        r61, 1
   LessEq       r62, r61, r60
+  Const        r10, "d_dom"
   Index        r63, r32, r10
   Const        r64, 3
   LessEq       r65, r63, r64
@@ -94,20 +103,26 @@ L8:
   JumpIfFalse  r66, L5
   Move         r66, r65
 L5:
+  Const        r12, "hd_vehicle_count"
   Index        r67, r54, r12
   Const        r68, 0
   Less         r69, r68, r67
+  Const        r13, "hd_dep_count"
   Index        r70, r54, r13
+  Const        r12, "hd_vehicle_count"
   Index        r71, r54, r12
   Div          r72, r70, r71
   Const        r73, 1.2
   LessFloat    r74, r73, r72
+  Const        r11, "hd_buy_potential"
   Index        r75, r54, r11
   Const        r76, ">10000"
   Equal        r77, r75, r76
+  Const        r14, "d_year"
   Index        r78, r32, r14
   Const        r79, 2000
   Equal        r80, r78, r79
+  Const        r15, "s_county"
   Index        r81, r43, r15
   Const        r82, "A"
   Equal        r83, r81, r82
@@ -144,8 +159,10 @@ L6:
   MakeMap      r101, 4, r93
   // group by {ticket: ss.ss_ticket_number, cust: ss.ss_customer_sk} into g
   Const        r102, "ticket"
+  Const        r7, "ss_ticket_number"
   Index        r103, r26, r7
   Const        r104, "cust"
+  Const        r9, "ss_customer_sk"
   Index        r105, r26, r9
   Move         r106, r102
   Move         r107, r103
@@ -156,14 +173,17 @@ L6:
   In           r112, r111, r18
   JumpIfTrue   r112, L7
   // from ss in store_sales
+  Const        r20, []
   Const        r113, "__group__"
   Const        r114, true
+  Const        r16, "key"
   // group by {ticket: ss.ss_ticket_number, cust: ss.ss_customer_sk} into g
   Move         r115, r110
   // from ss in store_sales
   Const        r116, "items"
   Move         r117, r20
   Const        r118, "count"
+  Const        r68, 0
   Move         r119, r113
   Move         r120, r114
   Move         r121, r16
@@ -177,30 +197,38 @@ L6:
   Append       r128, r19, r127
   Move         r19, r128
 L7:
+  Const        r116, "items"
   Index        r129, r18, r111
   Index        r130, r129, r116
   Append       r131, r130, r101
   SetIndex     r129, r116, r131
+  Const        r118, "count"
   Index        r132, r129, r118
+  Const        r61, 1
   AddInt       r133, r132, r61
   SetIndex     r129, r118, r133
 L4:
   // join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk
+  Const        r61, 1
   AddInt       r51, r51, r61
   Jump         L8
 L3:
   // join s in store on ss.ss_store_sk == s.s_store_sk
+  Const        r61, 1
   AddInt       r40, r40, r61
   Jump         L9
 L2:
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r61, 1
   AddInt       r29, r29, r61
   Jump         L10
 L1:
   // from ss in store_sales
+  Const        r61, 1
   AddInt       r23, r23, r61
   Jump         L11
 L0:
+  Const        r68, 0
   Move         r134, r68
   Len          r135, r19
 L13:
@@ -210,12 +238,17 @@ L13:
   Move         r138, r137
   // select {ss_ticket_number: g.key.ticket, ss_customer_sk: g.key.cust, cnt: count(g)}
   Const        r139, "ss_ticket_number"
+  Const        r16, "key"
   Index        r140, r138, r16
+  Const        r6, "ticket"
   Index        r141, r140, r6
   Const        r142, "ss_customer_sk"
+  Const        r16, "key"
   Index        r143, r138, r16
+  Const        r8, "cust"
   Index        r144, r143, r8
   Const        r145, "cnt"
+  Const        r118, "count"
   Index        r146, r138, r118
   Move         r147, r139
   Move         r148, r141
@@ -227,6 +260,7 @@ L13:
   // from ss in store_sales
   Append       r154, r5, r153
   Move         r5, r154
+  Const        r61, 1
   AddInt       r134, r134, r61
   Jump         L13
 L12:
@@ -237,12 +271,26 @@ L12:
   // join c in customer on dn1.ss_customer_sk == c.c_customer_sk
   IterPrep     r158, r4
   Len          r159, r158
+  Const        r9, "ss_customer_sk"
   Const        r160, "c_customer_sk"
+  // where dn1.cnt >= 15 && dn1.cnt <= 20
+  Const        r17, "cnt"
+  Const        r17, "cnt"
   // select {c_last_name: c.c_last_name, c_first_name: c.c_first_name, c_salutation: c.c_salutation, c_preferred_cust_flag: c.c_preferred_cust_flag, ss_ticket_number: dn1.ss_ticket_number, cnt: dn1.cnt}
   Const        r161, "c_last_name"
+  Const        r161, "c_last_name"
+  Const        r162, "c_first_name"
   Const        r162, "c_first_name"
   Const        r163, "c_salutation"
+  Const        r163, "c_salutation"
   Const        r164, "c_preferred_cust_flag"
+  Const        r164, "c_preferred_cust_flag"
+  Const        r7, "ss_ticket_number"
+  Const        r7, "ss_ticket_number"
+  Const        r17, "cnt"
+  Const        r17, "cnt"
+  // sort by c.c_last_name
+  Const        r161, "c_last_name"
   // from dn1 in dn
   Const        r165, 0
 L19:
@@ -257,14 +305,18 @@ L18:
   JumpIfFalse  r170, L15
   Index        r171, r158, r169
   Move         r172, r171
+  Const        r9, "ss_customer_sk"
   Index        r173, r168, r9
+  Const        r160, "c_customer_sk"
   Index        r174, r172, r160
   Equal        r175, r173, r174
   JumpIfFalse  r175, L16
   // where dn1.cnt >= 15 && dn1.cnt <= 20
+  Const        r17, "cnt"
   Index        r176, r168, r17
   Const        r177, 15
   LessEq       r178, r177, r176
+  Const        r17, "cnt"
   Index        r179, r168, r17
   Const        r180, 20
   LessEq       r181, r179, r180
@@ -275,16 +327,22 @@ L17:
   JumpIfFalse  r182, L16
   // select {c_last_name: c.c_last_name, c_first_name: c.c_first_name, c_salutation: c.c_salutation, c_preferred_cust_flag: c.c_preferred_cust_flag, ss_ticket_number: dn1.ss_ticket_number, cnt: dn1.cnt}
   Const        r183, "c_last_name"
+  Const        r161, "c_last_name"
   Index        r184, r172, r161
   Const        r185, "c_first_name"
+  Const        r162, "c_first_name"
   Index        r186, r172, r162
   Const        r187, "c_salutation"
+  Const        r163, "c_salutation"
   Index        r188, r172, r163
   Const        r189, "c_preferred_cust_flag"
+  Const        r164, "c_preferred_cust_flag"
   Index        r190, r172, r164
   Const        r191, "ss_ticket_number"
+  Const        r7, "ss_ticket_number"
   Index        r192, r168, r7
   Const        r193, "cnt"
+  Const        r17, "cnt"
   Index        r194, r168, r17
   Move         r195, r183
   Move         r196, r184
@@ -300,19 +358,22 @@ L17:
   Move         r206, r194
   MakeMap      r207, 6, r195
   // sort by c.c_last_name
-  Index        r208, r172, r161
-  Move         r209, r208
+  Const        r161, "c_last_name"
+  Index        r210, r172, r161
+  Move         r208, r210
   // from dn1 in dn
-  Move         r210, r207
-  MakeList     r211, 2, r209
+  Move         r209, r207
+  MakeList     r211, 2, r208
   Append       r212, r155, r211
   Move         r155, r212
 L16:
   // join c in customer on dn1.ss_customer_sk == c.c_customer_sk
+  Const        r61, 1
   AddInt       r169, r169, r61
   Jump         L18
 L15:
   // from dn1 in dn
+  Const        r61, 1
   AddInt       r165, r165, r61
   Jump         L19
 L14:

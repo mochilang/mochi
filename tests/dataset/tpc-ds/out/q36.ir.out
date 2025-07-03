@@ -17,12 +17,24 @@ func main (regs=172)
   // where d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")
   Const        r9, "d_year"
   Const        r10, "s_state"
+  Const        r10, "s_state"
   // i_category: g.key.category,
+  Const        r6, "i_category"
   Const        r11, "key"
+  Const        r5, "category"
+  // i_class: g.key.class,
+  Const        r8, "i_class"
+  Const        r11, "key"
+  Const        r7, "class"
   // gross_margin: sum(from x in g select x.ss_net_profit) / sum(from x in g select x.ss_ext_sales_price)
   Const        r12, "gross_margin"
   Const        r13, "ss_net_profit"
   Const        r14, "ss_ext_sales_price"
+  // sort by [g.key.category, g.key.class]
+  Const        r11, "key"
+  Const        r5, "category"
+  Const        r11, "key"
+  Const        r7, "class"
   // from ss in store_sales
   MakeMap      r15, 0, r0
   Const        r17, []
@@ -81,14 +93,17 @@ L8:
   Equal        r56, r53, r55
   JumpIfFalse  r56, L4
   // where d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")
+  Const        r9, "d_year"
   Index        r57, r29, r9
   Const        r58, 2000
   Equal        r59, r57, r58
   Move         r60, r59
   JumpIfFalse  r60, L5
+  Const        r10, "s_state"
   Index        r61, r51, r10
   Const        r62, "A"
   Equal        r63, r61, r62
+  Const        r10, "s_state"
   Index        r64, r51, r10
   Const        r65, "B"
   Equal        r66, r64, r65
@@ -119,8 +134,10 @@ L5:
   MakeMap      r84, 4, r76
   // group by {category: i.i_category, class: i.i_class} into g
   Const        r85, "category"
+  Const        r6, "i_category"
   Index        r86, r40, r6
   Const        r87, "class"
+  Const        r8, "i_class"
   Index        r88, r40, r8
   Move         r89, r85
   Move         r90, r86
@@ -131,8 +148,10 @@ L5:
   In           r95, r94, r15
   JumpIfTrue   r95, L7
   // from ss in store_sales
+  Const        r17, []
   Const        r96, "__group__"
   Const        r97, true
+  Const        r11, "key"
   // group by {category: i.i_category, class: i.i_class} into g
   Move         r98, r93
   // from ss in store_sales
@@ -153,31 +172,38 @@ L5:
   Append       r112, r16, r111
   Move         r16, r112
 L7:
+  Const        r99, "items"
   Index        r113, r15, r94
   Index        r114, r113, r99
   Append       r115, r114, r84
   SetIndex     r113, r99, r115
+  Const        r101, "count"
   Index        r116, r113, r101
   Const        r117, 1
   AddInt       r118, r116, r117
   SetIndex     r113, r101, r118
 L4:
   // join s in store on ss.ss_store_sk == s.s_store_sk
+  Const        r117, 1
   AddInt       r48, r48, r117
   Jump         L8
 L3:
   // join i in item on ss.ss_item_sk == i.i_item_sk
+  Const        r117, 1
   AddInt       r37, r37, r117
   Jump         L9
 L2:
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r117, 1
   AddInt       r26, r26, r117
   Jump         L10
 L1:
   // from ss in store_sales
+  Const        r117, 1
   AddInt       r20, r20, r117
   Jump         L11
 L0:
+  Const        r102, 0
   Move         r119, r102
   Len          r120, r16
 L17:
@@ -187,42 +213,54 @@ L17:
   Move         r123, r122
   // i_category: g.key.category,
   Const        r124, "i_category"
+  Const        r11, "key"
   Index        r125, r123, r11
+  Const        r5, "category"
   Index        r126, r125, r5
   // i_class: g.key.class,
   Const        r127, "i_class"
+  Const        r11, "key"
   Index        r128, r123, r11
+  Const        r7, "class"
   Index        r129, r128, r7
   // gross_margin: sum(from x in g select x.ss_net_profit) / sum(from x in g select x.ss_ext_sales_price)
   Const        r130, "gross_margin"
   Const        r131, []
+  Const        r13, "ss_net_profit"
   IterPrep     r132, r123
   Len          r133, r132
+  Const        r102, 0
   Move         r134, r102
 L14:
   LessInt      r135, r134, r133
   JumpIfFalse  r135, L13
   Index        r136, r132, r134
   Move         r137, r136
+  Const        r13, "ss_net_profit"
   Index        r138, r137, r13
   Append       r139, r131, r138
   Move         r131, r139
+  Const        r117, 1
   AddInt       r134, r134, r117
   Jump         L14
 L13:
   Sum          r140, r131
   Const        r141, []
+  Const        r14, "ss_ext_sales_price"
   IterPrep     r142, r123
   Len          r143, r142
+  Const        r102, 0
   Move         r144, r102
 L16:
   LessInt      r145, r144, r143
   JumpIfFalse  r145, L15
   Index        r146, r142, r144
   Move         r137, r146
+  Const        r14, "ss_ext_sales_price"
   Index        r147, r137, r14
   Append       r148, r141, r147
   Move         r141, r148
+  Const        r117, 1
   AddInt       r144, r144, r117
   Jump         L16
 L15:
@@ -240,19 +278,24 @@ L15:
   // select {
   MakeMap      r157, 3, r151
   // sort by [g.key.category, g.key.class]
-  Index        r158, r123, r11
-  Index        r159, r158, r5
-  Move         r160, r159
-  Index        r161, r123, r11
-  Index        r162, r161, r7
-  Move         r163, r162
-  MakeList     r164, 2, r160
-  Move         r165, r164
+  Const        r11, "key"
+  Index        r162, r123, r11
+  Const        r5, "category"
+  Index        r163, r162, r5
+  Move         r160, r163
+  Const        r11, "key"
+  Index        r164, r123, r11
+  Const        r7, "class"
+  Index        r165, r164, r7
+  Move         r161, r165
+  MakeList     r166, 2, r160
+  Move         r158, r166
   // from ss in store_sales
-  Move         r166, r157
-  MakeList     r167, 2, r165
+  Move         r159, r157
+  MakeList     r167, 2, r158
   Append       r168, r4, r167
   Move         r4, r168
+  Const        r117, 1
   AddInt       r119, r119, r117
   Jump         L17
 L12:

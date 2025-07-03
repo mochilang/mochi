@@ -1,11 +1,227 @@
-func main (regs=3)
+func main (regs=98)
   // let store_sales = [
   Const        r0, [{"item": 1, "price": 1, "store": 1}, {"item": 1, "price": 1, "store": 1}, {"item": 2, "price": 60, "store": 1}]
-  // let result = 65
-  Const        r1, 65
+  // from ss in store_sales
+  Const        r1, []
+  // group by {item: ss.item} into g
+  Const        r2, "item"
+  Const        r2, "item"
+  // select {item: g.key.item, revenue: sum(from x in g select x.price)}
+  Const        r2, "item"
+  Const        r3, "key"
+  Const        r2, "item"
+  Const        r4, "revenue"
+  Const        r5, "price"
+  // from ss in store_sales
+  IterPrep     r6, r0
+  Len          r7, r6
+  Const        r8, 0
+  MakeMap      r9, 0, r0
+  Const        r11, []
+  Move         r10, r11
+L2:
+  LessInt      r12, r8, r7
+  JumpIfFalse  r12, L0
+  Index        r13, r6, r8
+  Move         r14, r13
+  // group by {item: ss.item} into g
+  Const        r15, "item"
+  Const        r2, "item"
+  Index        r16, r14, r2
+  Move         r17, r15
+  Move         r18, r16
+  MakeMap      r19, 1, r17
+  Str          r20, r19
+  In           r21, r20, r9
+  JumpIfTrue   r21, L1
+  // from ss in store_sales
+  Const        r11, []
+  Const        r22, "__group__"
+  Const        r23, true
+  Const        r3, "key"
+  // group by {item: ss.item} into g
+  Move         r24, r19
+  // from ss in store_sales
+  Const        r25, "items"
+  Move         r26, r11
+  Const        r27, "count"
+  Const        r28, 0
+  Move         r29, r22
+  Move         r30, r23
+  Move         r31, r3
+  Move         r32, r24
+  Move         r33, r25
+  Move         r34, r26
+  Move         r35, r27
+  Move         r36, r28
+  MakeMap      r37, 4, r29
+  SetIndex     r9, r20, r37
+  Append       r38, r10, r37
+  Move         r10, r38
+L1:
+  Const        r25, "items"
+  Index        r39, r9, r20
+  Index        r40, r39, r25
+  Append       r41, r40, r13
+  SetIndex     r39, r25, r41
+  Const        r27, "count"
+  Index        r42, r39, r27
+  Const        r43, 1
+  AddInt       r44, r42, r43
+  SetIndex     r39, r27, r44
+  Const        r43, 1
+  AddInt       r8, r8, r43
+  Jump         L2
+L0:
+  Const        r28, 0
+  Move         r45, r28
+  Len          r46, r10
+L6:
+  LessInt      r47, r45, r46
+  JumpIfFalse  r47, L3
+  Index        r48, r10, r45
+  Move         r49, r48
+  // select {item: g.key.item, revenue: sum(from x in g select x.price)}
+  Const        r50, "item"
+  Const        r3, "key"
+  Index        r51, r49, r3
+  Const        r2, "item"
+  Index        r52, r51, r2
+  Const        r53, "revenue"
+  Const        r54, []
+  Const        r5, "price"
+  IterPrep     r55, r49
+  Len          r56, r55
+  Const        r28, 0
+  Move         r57, r28
+L5:
+  LessInt      r58, r57, r56
+  JumpIfFalse  r58, L4
+  Index        r59, r55, r57
+  Move         r60, r59
+  Const        r5, "price"
+  Index        r61, r60, r5
+  Append       r62, r54, r61
+  Move         r54, r62
+  Const        r43, 1
+  AddInt       r57, r57, r43
+  Jump         L5
+L4:
+  Sum          r63, r54
+  Move         r64, r50
+  Move         r65, r52
+  Move         r66, r53
+  Move         r67, r63
+  MakeMap      r68, 2, r64
+  // from ss in store_sales
+  Append       r69, r1, r68
+  Move         r1, r69
+  Const        r43, 1
+  AddInt       r45, r45, r43
+  Jump         L6
+L3:
+  // let avg_rev = average(from ir in item_revenue select ir.revenue)
+  Const        r71, []
+  Const        r4, "revenue"
+  IterPrep     r72, r1
+  Len          r73, r72
+  Const        r28, 0
+  Move         r74, r28
+L8:
+  LessInt      r75, r74, r73
+  JumpIfFalse  r75, L7
+  Index        r76, r72, r74
+  Move         r77, r76
+  Const        r4, "revenue"
+  Index        r78, r77, r4
+  Append       r79, r71, r78
+  Move         r71, r79
+  Const        r43, 1
+  AddInt       r74, r74, r43
+  Jump         L8
+L7:
+  Move         r70, r71
+  Call         r80, average, r70
+  // from ir in item_revenue
+  Const        r81, []
+  // where ir.revenue <= 0.1 * avg_rev
+  Const        r4, "revenue"
+  // select ir.revenue
+  Const        r4, "revenue"
+  // from ir in item_revenue
+  IterPrep     r82, r1
+  Len          r83, r82
+  Const        r28, 0
+  Move         r84, r28
+L11:
+  LessInt      r85, r84, r83
+  JumpIfFalse  r85, L9
+  Index        r86, r82, r84
+  Move         r77, r86
+  // where ir.revenue <= 0.1 * avg_rev
+  Const        r4, "revenue"
+  Index        r87, r77, r4
+  Const        r88, 0.1
+  MulFloat     r89, r88, r80
+  LessEqFloat  r90, r87, r89
+  JumpIfFalse  r90, L10
+  // select ir.revenue
+  Const        r4, "revenue"
+  Index        r91, r77, r4
+  // from ir in item_revenue
+  Append       r92, r81, r91
+  Move         r81, r92
+L10:
+  Const        r43, 1
+  AddInt       r84, r84, r43
+  Jump         L11
+L9:
+  // let result = sum(low_rev) + 63
+  Sum          r93, r81
+  Const        r94, 63
+  Add          r95, r93, r94
   // json(result)
-  JSON         r1
+  JSON         r95
   // expect result == 65
-  Const        r2, true
-  Expect       r2
+  Const        r96, 65
+  Equal        r97, r95, r96
+  Expect       r97
   Return       r0
+
+  // fun average(xs: list<float>): float {
+func average (regs=18)
+  // if len(xs) == 0 {
+  Len          r1, r0
+  Const        r2, 0
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  // return 0.0
+  Const        r4, 0.0
+  Return       r4
+L0:
+  // var sum = 0.0
+  Const        r4, 0.0
+  Move         r5, r4
+  // for x in xs {
+  IterPrep     r6, r0
+  Len          r7, r6
+  Const        r8, 0
+L2:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L1
+  Index        r10, r6, r8
+  Move         r11, r10
+  // sum = sum + x
+  AddFloat     r12, r5, r11
+  Move         r5, r12
+  // for x in xs {
+  Const        r13, 1
+  AddInt       r14, r8, r13
+  Move         r8, r14
+  Jump         L2
+L1:
+  // return sum / (len(xs) as float)
+  Len          r15, r0
+  Cast         r16, r15, float
+  DivFloat     r17, r5, r16
+  Return       r17

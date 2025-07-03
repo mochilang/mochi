@@ -17,7 +17,7 @@ let store_sales = [
   {item: 2}
 ]
 
-let result = 0
+var result = 0
 for inv in inventory {
   for s in store_sales {
     if inv.item == s.item {

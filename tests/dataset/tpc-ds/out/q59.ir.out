@@ -1,33 +1,89 @@
-func main (regs=17)
-  // let t = [{id: 1, val: 59}]
-  Const        r0, [{"id": 1, "val": 59}]
-  // let tmp = lower(59)
-  Const        r1, "59"
-  // let vals = from r in t select r.val
+func main (regs=44)
+  // let sales_year1 = [ {week: 1, store: 1, amount: 100.0} ]
+  Const        r0, [{"amount": 100.0, "store": 1, "week": 1}]
+  // let sales_year2 = [ {week: 53, store: 1, amount: 150.0} ]
+  Const        r1, [{"amount": 150.0, "store": 1, "week": 53}]
+  // from y1 in sales_year1
   Const        r2, []
-  Const        r3, "val"
-  IterPrep     r4, r0
-  Len          r5, r4
-  Const        r7, 0
-  Move         r6, r7
+  IterPrep     r3, r0
+  Len          r4, r3
+  // join y2 in sales_year2 on y1.store == y2.store && y1.week == y2.week - 52
+  IterPrep     r5, r1
+  Len          r6, r5
+  Const        r7, "store"
+  Const        r7, "store"
+  Const        r8, "week"
+  Const        r8, "week"
+  // select {s_store_id1: y1.store, ratio: y2.amount / y1.amount}
+  Const        r9, "s_store_id1"
+  Const        r7, "store"
+  Const        r10, "ratio"
+  Const        r11, "amount"
+  Const        r11, "amount"
+  // from y1 in sales_year1
+  Const        r12, 0
+L5:
+  LessInt      r13, r12, r4
+  JumpIfFalse  r13, L0
+  Index        r14, r3, r12
+  Move         r15, r14
+  // join y2 in sales_year2 on y1.store == y2.store && y1.week == y2.week - 52
+  Const        r16, 0
+L4:
+  LessInt      r17, r16, r6
+  JumpIfFalse  r17, L1
+  Index        r18, r5, r16
+  Move         r19, r18
+  Const        r7, "store"
+  Index        r20, r15, r7
+  Const        r8, "week"
+  Index        r21, r19, r8
+  Const        r22, 52
+  Sub          r23, r21, r22
+  Const        r7, "store"
+  Index        r24, r19, r7
+  Equal        r25, r20, r24
+  Const        r8, "week"
+  Index        r26, r15, r8
+  Equal        r27, r26, r23
+  Move         r28, r25
+  JumpIfFalse  r28, L2
+  Move         r28, r27
+L2:
+  JumpIfFalse  r28, L3
+  // select {s_store_id1: y1.store, ratio: y2.amount / y1.amount}
+  Const        r29, "s_store_id1"
+  Const        r7, "store"
+  Index        r30, r15, r7
+  Const        r31, "ratio"
+  Const        r11, "amount"
+  Index        r32, r19, r11
+  Const        r11, "amount"
+  Index        r33, r15, r11
+  Div          r34, r32, r33
+  Move         r35, r29
+  Move         r36, r30
+  Move         r37, r31
+  Move         r38, r34
+  MakeMap      r39, 2, r35
+  // from y1 in sales_year1
+  Append       r40, r2, r39
+  Move         r2, r40
+L3:
+  // join y2 in sales_year2 on y1.store == y2.store && y1.week == y2.week - 52
+  Const        r41, 1
+  AddInt       r16, r16, r41
+  Jump         L4
 L1:
-  LessInt      r8, r6, r5
-  JumpIfFalse  r8, L0
-  Index        r9, r4, r6
-  Move         r10, r9
-  Index        r11, r10, r3
-  Append       r12, r2, r11
-  Move         r2, r12
-  Const        r13, 1
-  AddInt       r6, r6, r13
-  Jump         L1
+  // from y1 in sales_year1
+  Const        r41, 1
+  AddInt       r12, r12, r41
+  Jump         L5
 L0:
-  // let result = first(vals)
-  First        r14, r2
   // json(result)
-  JSON         r14
-  // expect result == 59
-  Const        r15, 59
-  Equal        r16, r14, r15
-  Expect       r16
+  JSON         r2
+  // expect result == [{s_store_id1: 1, ratio: 1.5}]
+  Const        r42, [{"ratio": 1.5, "s_store_id1": 1}]
+  Equal        r43, r2, r42
+  Expect       r43
   Return       r0

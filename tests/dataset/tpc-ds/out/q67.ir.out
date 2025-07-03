@@ -1,13 +1,70 @@
-func main (regs=4)
+func main (regs=31)
   // let store_sales = [
   Const        r0, [{"price": 40, "reason": 1}, {"price": 27, "reason": 2}]
   // let reason = [
   Const        r1, [{"id": 1, "name": "PROMO"}, {"id": 2, "name": "RETURN"}]
-  // let result = 67
-  Const        r2, 67
+  // from ss in store_sales
+  Const        r2, []
+  IterPrep     r3, r0
+  Len          r4, r3
+  // join r in reason on ss.reason == r.id
+  IterPrep     r5, r1
+  Len          r6, r5
+  Const        r7, "reason"
+  Const        r8, "id"
+  // where r.name in ["PROMO", "RETURN"]
+  Const        r9, "name"
+  // select ss.price
+  Const        r10, "price"
+  // from ss in store_sales
+  Const        r11, 0
+L4:
+  LessInt      r12, r11, r4
+  JumpIfFalse  r12, L0
+  Index        r13, r3, r11
+  Move         r14, r13
+  // join r in reason on ss.reason == r.id
+  Const        r15, 0
+L3:
+  LessInt      r16, r15, r6
+  JumpIfFalse  r16, L1
+  Index        r17, r5, r15
+  Move         r18, r17
+  Const        r7, "reason"
+  Index        r19, r14, r7
+  Const        r8, "id"
+  Index        r20, r18, r8
+  Equal        r21, r19, r20
+  JumpIfFalse  r21, L2
+  // where r.name in ["PROMO", "RETURN"]
+  Const        r9, "name"
+  Index        r22, r18, r9
+  Const        r23, ["PROMO", "RETURN"]
+  In           r24, r22, r23
+  JumpIfFalse  r24, L2
+  // select ss.price
+  Const        r10, "price"
+  Index        r25, r14, r10
+  // from ss in store_sales
+  Append       r26, r2, r25
+  Move         r2, r26
+L2:
+  // join r in reason on ss.reason == r.id
+  Const        r27, 1
+  AddInt       r15, r15, r27
+  Jump         L3
+L1:
+  // from ss in store_sales
+  Const        r27, 1
+  AddInt       r11, r11, r27
+  Jump         L4
+L0:
+  // let result = sum(
+  Sum          r28, r2
   // json(result)
-  JSON         r2
+  JSON         r28
   // expect result == 67
-  Const        r3, true
-  Expect       r3
+  Const        r29, 67
+  Equal        r30, r28, r29
+  Expect       r30
   Return       r0

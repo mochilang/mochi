@@ -19,9 +19,11 @@ L3:
   Index        r10, r5, r7
   Move         r11, r10
   // where ws.cat == "A" && ws.class == "B"
+  Const        r2, "cat"
   Index        r12, r11, r2
   Const        r13, "A"
   Equal        r14, r12, r13
+  Const        r3, "class"
   Index        r15, r11, r3
   Const        r16, "B"
   Equal        r17, r15, r16
@@ -31,6 +33,7 @@ L3:
 L1:
   JumpIfFalse  r18, L2
   // select ws.net)
+  Const        r4, "net"
   Index        r19, r11, r4
   // sum(from ws in web_sales
   Append       r20, r1, r19

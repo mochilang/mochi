@@ -13,11 +13,15 @@ func main (regs=195)
   Const        r5, []
   // where cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk
   Const        r6, "cs_order_number"
+  Const        r6, "cs_order_number"
+  Const        r7, "cs_warehouse_sk"
   Const        r7, "cs_warehouse_sk"
   // exists(from cr in catalog_returns where cs1.cs_order_number == cr.cr_order_number select cr) == false
+  Const        r6, "cs_order_number"
   Const        r8, "cr_order_number"
   // order_count: len(distinct(from x in g select x.cs_order_number)),
   Const        r9, "order_count"
+  Const        r6, "cs_order_number"
   // total_shipping_cost: sum(from x in g select x.cs_ext_ship_cost),
   Const        r10, "total_shipping_cost"
   Const        r11, "cs_ext_ship_cost"
@@ -26,6 +30,7 @@ func main (regs=195)
   Const        r13, "cs_net_profit"
   // from cs1 in catalog_sales
   MakeMap      r14, 0, r0
+  Const        r4, []
   Move         r15, r4
   IterPrep     r16, r0
   Len          r17, r16
@@ -50,6 +55,7 @@ L19:
   Index        r31, r27, r30
   Const        r32, "2000-03-01"
   LessEq       r33, r32, r31
+  Const        r30, "d_date"
   Index        r34, r27, r30
   Const        r35, "2000-04-30"
   LessEq       r36, r34, r35
@@ -111,6 +117,12 @@ L6:
   JumpIfFalse  r72, L7
   // from cs2 in catalog_sales
   Const        r73, []
+  // where cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk
+  Const        r6, "cs_order_number"
+  Const        r6, "cs_order_number"
+  Const        r7, "cs_warehouse_sk"
+  Const        r7, "cs_warehouse_sk"
+  // from cs2 in catalog_sales
   IterPrep     r74, r0
   Len          r75, r74
   Const        r77, 0
@@ -121,10 +133,14 @@ L11:
   Index        r79, r74, r76
   Move         r80, r79
   // where cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk
+  Const        r6, "cs_order_number"
   Index        r81, r21, r6
+  Const        r6, "cs_order_number"
   Index        r82, r80, r6
   Equal        r83, r81, r82
+  Const        r7, "cs_warehouse_sk"
   Index        r84, r21, r7
+  Const        r7, "cs_warehouse_sk"
   Index        r85, r80, r7
   NotEqual     r86, r84, r85
   Move         r87, r83
@@ -144,21 +160,28 @@ L8:
   Exists       r90, r73
   // exists(from cr in catalog_returns where cs1.cs_order_number == cr.cr_order_number select cr) == false
   Const        r91, []
+  Const        r6, "cs_order_number"
+  Const        r8, "cr_order_number"
+  Const        r4, []
   IterPrep     r92, r4
   Len          r93, r92
+  Const        r77, 0
   Move         r94, r77
 L14:
   LessInt      r95, r94, r93
   JumpIfFalse  r95, L12
   Index        r96, r92, r94
   Move         r97, r96
+  Const        r6, "cs_order_number"
   Index        r98, r21, r6
+  Const        r8, "cr_order_number"
   Index        r99, r97, r8
   Equal        r100, r98, r99
   JumpIfFalse  r100, L13
   Append       r101, r91, r97
   Move         r91, r101
 L13:
+  Const        r89, 1
   AddInt       r94, r94, r89
   Jump         L14
 L12:
@@ -196,6 +219,7 @@ L15:
   In           r125, r124, r14
   JumpIfTrue   r125, L16
   // from cs1 in catalog_sales
+  Const        r4, []
   Const        r126, "__group__"
   Const        r127, true
   Const        r128, "key"
@@ -205,6 +229,7 @@ L15:
   Const        r130, "items"
   Move         r131, r4
   Const        r132, "count"
+  Const        r77, 0
   Move         r133, r126
   Move         r134, r127
   Move         r135, r128
@@ -218,30 +243,38 @@ L15:
   Append       r142, r15, r141
   Move         r15, r142
 L16:
+  Const        r130, "items"
   Index        r143, r14, r124
   Index        r144, r143, r130
   Append       r145, r144, r122
   SetIndex     r143, r130, r145
+  Const        r132, "count"
   Index        r146, r143, r132
+  Const        r89, 1
   AddInt       r147, r146, r89
   SetIndex     r143, r132, r147
 L7:
   // join cc in call_center on cs1.cs_call_center_sk == cc.cc_call_center_sk && cc.cc_county == "CountyA"
+  Const        r89, 1
   AddInt       r59, r59, r89
   Jump         L17
 L5:
   // join ca in customer_address on cs1.cs_ship_addr_sk == ca.ca_address_sk && ca.ca_state == "CA"
+  Const        r89, 1
   AddInt       r43, r43, r89
   Jump         L18
 L3:
   // join d in date_dim on cs1.cs_ship_date_sk == d.d_date_sk && d.d_date >= "2000-03-01" && d.d_date <= "2000-04-30"
+  Const        r89, 1
   AddInt       r24, r24, r89
   Jump         L19
 L1:
   // from cs1 in catalog_sales
+  Const        r89, 1
   AddInt       r18, r18, r89
   Jump         L20
 L0:
+  Const        r77, 0
   Move         r148, r77
   Len          r149, r15
 L28:
@@ -252,17 +285,21 @@ L28:
   // order_count: len(distinct(from x in g select x.cs_order_number)),
   Const        r153, "order_count"
   Const        r154, []
+  Const        r6, "cs_order_number"
   IterPrep     r155, r152
   Len          r156, r155
+  Const        r77, 0
   Move         r157, r77
 L23:
   LessInt      r158, r157, r156
   JumpIfFalse  r158, L22
   Index        r159, r155, r157
   Move         r160, r159
+  Const        r6, "cs_order_number"
   Index        r161, r160, r6
   Append       r162, r154, r161
   Move         r154, r162
+  Const        r89, 1
   AddInt       r157, r157, r89
   Jump         L23
 L22:
@@ -271,17 +308,21 @@ L22:
   // total_shipping_cost: sum(from x in g select x.cs_ext_ship_cost),
   Const        r165, "total_shipping_cost"
   Const        r166, []
+  Const        r11, "cs_ext_ship_cost"
   IterPrep     r167, r152
   Len          r168, r167
+  Const        r77, 0
   Move         r169, r77
 L25:
   LessInt      r170, r169, r168
   JumpIfFalse  r170, L24
   Index        r171, r167, r169
   Move         r160, r171
+  Const        r11, "cs_ext_ship_cost"
   Index        r172, r160, r11
   Append       r173, r166, r172
   Move         r166, r173
+  Const        r89, 1
   AddInt       r169, r169, r89
   Jump         L25
 L24:
@@ -289,17 +330,21 @@ L24:
   // total_net_profit: sum(from x in g select x.cs_net_profit)
   Const        r175, "total_net_profit"
   Const        r176, []
+  Const        r13, "cs_net_profit"
   IterPrep     r177, r152
   Len          r178, r177
+  Const        r77, 0
   Move         r179, r77
 L27:
   LessInt      r180, r179, r178
   JumpIfFalse  r180, L26
   Index        r181, r177, r179
   Move         r160, r181
+  Const        r13, "cs_net_profit"
   Index        r182, r160, r13
   Append       r183, r176, r182
   Move         r176, r183
+  Const        r89, 1
   AddInt       r179, r179, r89
   Jump         L27
 L26:
@@ -318,6 +363,7 @@ L26:
   // from cs1 in catalog_sales
   Append       r192, r5, r191
   Move         r5, r192
+  Const        r89, 1
   AddInt       r148, r148, r89
   Jump         L28
 L21:

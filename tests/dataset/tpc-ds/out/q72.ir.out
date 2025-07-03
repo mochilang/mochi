@@ -22,10 +22,14 @@ func main (regs=271)
   Const        r11, "w_warehouse_name"
   Const        r12, "week_seq"
   Const        r13, "d_week_seq"
+  // where d1.d_week_seq == d2.d_week_seq &&
+  Const        r13, "d_week_seq"
+  Const        r13, "d_week_seq"
   // inv.inv_quantity_on_hand < cs.cs_quantity &&
   Const        r14, "inv_quantity_on_hand"
   Const        r15, "cs_quantity"
   // d3.d_date > d1.d_date + 5 &&
+  Const        r16, "d_date"
   Const        r16, "d_date"
   // hd.hd_buy_potential == "5001-10000" &&
   Const        r17, "hd_buy_potential"
@@ -34,12 +38,23 @@ func main (regs=271)
   // cd.cd_marital_status == "M"
   Const        r19, "cd_marital_status"
   // i_item_desc: g.key.item_desc,
+  Const        r9, "i_item_desc"
   Const        r20, "key"
+  Const        r8, "item_desc"
+  // w_warehouse_name: g.key.warehouse,
+  Const        r11, "w_warehouse_name"
+  Const        r20, "key"
+  Const        r10, "warehouse"
+  // d_week_seq: g.key.week_seq,
+  Const        r13, "d_week_seq"
+  Const        r20, "key"
+  Const        r12, "week_seq"
   // no_promo: count(from x in g where x.cs_promo_sk == null select x),
   Const        r21, "no_promo"
   Const        r22, "cs_promo_sk"
   // promo: count(from x in g where x.cs_promo_sk != null select x),
   Const        r23, "promo"
+  Const        r22, "cs_promo_sk"
   // total_cnt: count(g)
   Const        r24, "total_cnt"
   // from cs in catalog_sales
@@ -95,6 +110,7 @@ L17:
   Move         r61, r60
   Const        r62, "i_item_sk"
   Index        r63, r61, r62
+  Const        r42, "cs_item_sk"
   Index        r64, r33, r42
   Equal        r65, r63, r64
   JumpIfFalse  r65, L4
@@ -152,6 +168,7 @@ L13:
   JumpIfFalse  r102, L7
   Index        r103, r99, r101
   Move         r104, r103
+  Const        r94, "d_date_sk"
   Index        r105, r104, r94
   Const        r106, "inv_date_sk"
   Index        r107, r39, r106
@@ -166,36 +183,46 @@ L12:
   JumpIfFalse  r112, L8
   Index        r113, r109, r111
   Move         r114, r113
+  Const        r94, "d_date_sk"
   Index        r115, r114, r94
   Const        r116, "cs_ship_date_sk"
   Index        r117, r33, r116
   Equal        r118, r115, r117
   JumpIfFalse  r118, L9
   // where d1.d_week_seq == d2.d_week_seq &&
+  Const        r13, "d_week_seq"
   Index        r119, r93, r13
   // d3.d_date > d1.d_date + 5 &&
+  Const        r16, "d_date"
   Index        r120, r93, r16
   Const        r121, 5
   Add          r122, r120, r121
   // inv.inv_quantity_on_hand < cs.cs_quantity &&
+  Const        r14, "inv_quantity_on_hand"
   Index        r123, r39, r14
+  Const        r15, "cs_quantity"
   Index        r124, r33, r15
   Less         r125, r123, r124
   // d3.d_date > d1.d_date + 5 &&
+  Const        r16, "d_date"
   Index        r126, r114, r16
   Less         r127, r122, r126
   // where d1.d_week_seq == d2.d_week_seq &&
+  Const        r13, "d_week_seq"
   Index        r128, r104, r13
   Equal        r129, r119, r128
   // hd.hd_buy_potential == "5001-10000" &&
+  Const        r17, "hd_buy_potential"
   Index        r130, r82, r17
   Const        r131, "5001-10000"
   Equal        r132, r130, r131
   // d1.d_year == 2000 &&
+  Const        r18, "d_year"
   Index        r133, r93, r18
   Const        r134, 2000
   Equal        r135, r133, r134
   // cd.cd_marital_status == "M"
+  Const        r19, "cd_marital_status"
   Index        r136, r71, r19
   Const        r137, "M"
   Equal        r138, r136, r137
@@ -258,10 +285,13 @@ L10:
   MakeMap      r176, 9, r158
   // group by { item_desc: i.i_item_desc, warehouse: w.w_warehouse_name, week_seq: d1.d_week_seq } into g
   Const        r177, "item_desc"
+  Const        r9, "i_item_desc"
   Index        r178, r61, r9
   Const        r179, "warehouse"
+  Const        r11, "w_warehouse_name"
   Index        r180, r50, r11
   Const        r181, "week_seq"
+  Const        r13, "d_week_seq"
   Index        r182, r93, r13
   Move         r183, r177
   Move         r184, r178
@@ -274,8 +304,10 @@ L10:
   In           r191, r190, r25
   JumpIfTrue   r191, L11
   // from cs in catalog_sales
+  Const        r27, []
   Const        r192, "__group__"
   Const        r193, true
+  Const        r20, "key"
   // group by { item_desc: i.i_item_desc, warehouse: w.w_warehouse_name, week_seq: d1.d_week_seq } into g
   Move         r194, r189
   // from cs in catalog_sales
@@ -296,51 +328,63 @@ L10:
   Append       r208, r26, r207
   Move         r26, r208
 L11:
+  Const        r195, "items"
   Index        r209, r25, r190
   Index        r210, r209, r195
   Append       r211, r210, r176
   SetIndex     r209, r195, r211
+  Const        r197, "count"
   Index        r212, r209, r197
   Const        r213, 1
   AddInt       r214, r212, r213
   SetIndex     r209, r197, r214
 L9:
   // join d3 in date_dim on d3.d_date_sk == cs.cs_ship_date_sk
+  Const        r213, 1
   AddInt       r111, r111, r213
   Jump         L12
 L8:
   // join d2 in date_dim on d2.d_date_sk == inv.inv_date_sk
+  Const        r213, 1
   AddInt       r101, r101, r213
   Jump         L13
 L7:
   // join d1 in date_dim on d1.d_date_sk == cs.cs_sold_date_sk
+  Const        r213, 1
   AddInt       r90, r90, r213
   Jump         L14
 L6:
   // join hd in household_demographics on hd.hd_demo_sk == cs.cs_bill_hdemo_sk
+  Const        r213, 1
   AddInt       r79, r79, r213
   Jump         L15
 L5:
   // join cd in customer_demographics on cd.cd_demo_sk == cs.cs_bill_cdemo_sk
+  Const        r213, 1
   AddInt       r68, r68, r213
   Jump         L16
 L4:
   // join i in item on i.i_item_sk == cs.cs_item_sk
+  Const        r213, 1
   AddInt       r58, r58, r213
   Jump         L17
 L3:
   // join w in warehouse on w.w_warehouse_sk == inv.inv_warehouse_sk
+  Const        r213, 1
   AddInt       r47, r47, r213
   Jump         L18
 L2:
   // join inv in inventory on inv.inv_item_sk == cs.cs_item_sk
+  Const        r213, 1
   AddInt       r36, r36, r213
   Jump         L19
 L1:
   // from cs in catalog_sales
+  Const        r213, 1
   AddInt       r30, r30, r213
   Jump         L20
 L0:
+  Const        r198, 0
   Move         r215, r198
   Len          r216, r26
 L28:
@@ -350,27 +394,36 @@ L28:
   Move         r219, r218
   // i_item_desc: g.key.item_desc,
   Const        r220, "i_item_desc"
+  Const        r20, "key"
   Index        r221, r219, r20
+  Const        r8, "item_desc"
   Index        r222, r221, r8
   // w_warehouse_name: g.key.warehouse,
   Const        r223, "w_warehouse_name"
+  Const        r20, "key"
   Index        r224, r219, r20
+  Const        r10, "warehouse"
   Index        r225, r224, r10
   // d_week_seq: g.key.week_seq,
   Const        r226, "d_week_seq"
+  Const        r20, "key"
   Index        r227, r219, r20
+  Const        r12, "week_seq"
   Index        r228, r227, r12
   // no_promo: count(from x in g where x.cs_promo_sk == null select x),
   Const        r229, "no_promo"
   Const        r230, []
+  Const        r22, "cs_promo_sk"
   IterPrep     r231, r219
   Len          r232, r231
+  Const        r198, 0
   Move         r233, r198
 L24:
   LessInt      r234, r233, r232
   JumpIfFalse  r234, L22
   Index        r235, r231, r233
   Move         r236, r235
+  Const        r22, "cs_promo_sk"
   Index        r237, r236, r22
   Const        r238, nil
   Equal        r239, r237, r238
@@ -378,6 +431,7 @@ L24:
   Append       r240, r230, r236
   Move         r230, r240
 L23:
+  Const        r213, 1
   AddInt       r233, r233, r213
   Jump         L24
 L22:
@@ -385,26 +439,32 @@ L22:
   // promo: count(from x in g where x.cs_promo_sk != null select x),
   Const        r242, "promo"
   Const        r243, []
+  Const        r22, "cs_promo_sk"
   IterPrep     r244, r219
   Len          r245, r244
+  Const        r198, 0
   Move         r246, r198
 L27:
   LessInt      r247, r246, r245
   JumpIfFalse  r247, L25
   Index        r248, r244, r246
   Move         r236, r248
+  Const        r22, "cs_promo_sk"
   Index        r249, r236, r22
+  Const        r238, nil
   NotEqual     r250, r249, r238
   JumpIfFalse  r250, L26
   Append       r251, r243, r236
   Move         r243, r251
 L26:
+  Const        r213, 1
   AddInt       r246, r246, r213
   Jump         L27
 L25:
   Count        r252, r243
   // total_cnt: count(g)
   Const        r253, "total_cnt"
+  Const        r197, "count"
   Index        r254, r219, r197
   // i_item_desc: g.key.item_desc,
   Move         r255, r220
@@ -429,6 +489,7 @@ L25:
   // from cs in catalog_sales
   Append       r268, r7, r267
   Move         r7, r268
+  Const        r213, 1
   AddInt       r215, r215, r213
   Jump         L28
 L21:

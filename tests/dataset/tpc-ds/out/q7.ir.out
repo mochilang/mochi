@@ -13,6 +13,7 @@ func main (regs=218)
   Const        r5, []
   // group by { i_item_id: i.i_item_id } into g
   Const        r6, "i_item_id"
+  Const        r6, "i_item_id"
   // where cd.cd_gender == "M" &&
   Const        r7, "cd_gender"
   // cd.cd_marital_status == "S" &&
@@ -25,20 +26,28 @@ func main (regs=218)
   // d.d_year == 1998
   Const        r12, "d_year"
   // i_item_id: g.key.i_item_id,
+  Const        r6, "i_item_id"
   Const        r13, "key"
+  Const        r6, "i_item_id"
   // agg1: avg(from x in g select x.ss.ss_quantity),
   Const        r14, "agg1"
   Const        r15, "ss"
   Const        r16, "ss_quantity"
   // agg2: avg(from x in g select x.ss.ss_list_price),
   Const        r17, "agg2"
+  Const        r15, "ss"
   Const        r18, "ss_list_price"
   // agg3: avg(from x in g select x.ss.ss_coupon_amt),
   Const        r19, "agg3"
+  Const        r15, "ss"
   Const        r20, "ss_coupon_amt"
   // agg4: avg(from x in g select x.ss.ss_sales_price)
   Const        r21, "agg4"
+  Const        r15, "ss"
   Const        r22, "ss_sales_price"
+  // sort by g.key.i_item_id
+  Const        r13, "key"
+  Const        r6, "i_item_id"
   // from ss in store_sales
   MakeMap      r23, 0, r0
   Const        r25, []
@@ -112,18 +121,22 @@ L9:
   Equal        r75, r72, r74
   JumpIfFalse  r75, L5
   // where cd.cd_gender == "M" &&
+  Const        r7, "cd_gender"
   Index        r76, r37, r7
   Const        r77, "M"
   Equal        r78, r76, r77
   // cd.cd_marital_status == "S" &&
+  Const        r8, "cd_marital_status"
   Index        r79, r37, r8
   Const        r80, "S"
   Equal        r81, r79, r80
   // cd.cd_education_status == "College" &&
+  Const        r9, "cd_education_status"
   Index        r82, r37, r9
   Const        r83, "College"
   Equal        r84, r82, r83
   // d.d_year == 1998
+  Const        r12, "d_year"
   Index        r85, r48, r12
   Const        r86, 1998
   Equal        r87, r85, r86
@@ -137,10 +150,13 @@ L9:
   // cd.cd_education_status == "College" &&
   JumpIfFalse  r88, L6
   // (p.p_channel_email == "N" || p.p_channel_event == "N") &&
+  Const        r10, "p_channel_email"
   Index        r89, r70, r10
   Const        r90, "N"
   Equal        r91, r89, r90
+  Const        r11, "p_channel_event"
   Index        r92, r70, r11
+  Const        r90, "N"
   Equal        r93, r92, r90
   Move         r94, r91
   JumpIfTrue   r94, L7
@@ -155,6 +171,7 @@ L6:
   // where cd.cd_gender == "M" &&
   JumpIfFalse  r88, L5
   // from ss in store_sales
+  Const        r15, "ss"
   Move         r95, r31
   Const        r96, "cd"
   Move         r97, r37
@@ -177,6 +194,7 @@ L6:
   MakeMap      r114, 5, r104
   // group by { i_item_id: i.i_item_id } into g
   Const        r115, "i_item_id"
+  Const        r6, "i_item_id"
   Index        r116, r59, r6
   Move         r117, r115
   Move         r118, r116
@@ -185,8 +203,10 @@ L6:
   In           r121, r120, r23
   JumpIfTrue   r121, L8
   // from ss in store_sales
+  Const        r25, []
   Const        r122, "__group__"
   Const        r123, true
+  Const        r13, "key"
   // group by { i_item_id: i.i_item_id } into g
   Move         r124, r119
   // from ss in store_sales
@@ -207,35 +227,43 @@ L6:
   Append       r138, r24, r137
   Move         r24, r138
 L8:
+  Const        r125, "items"
   Index        r139, r23, r120
   Index        r140, r139, r125
   Append       r141, r140, r114
   SetIndex     r139, r125, r141
+  Const        r127, "count"
   Index        r142, r139, r127
   Const        r143, 1
   AddInt       r144, r142, r143
   SetIndex     r139, r127, r144
 L5:
   // join p in promotion on ss.ss_promo_sk == p.p_promo_sk
+  Const        r143, 1
   AddInt       r67, r67, r143
   Jump         L9
 L4:
   // join i in item on ss.ss_item_sk == i.i_item_sk
+  Const        r143, 1
   AddInt       r56, r56, r143
   Jump         L10
 L3:
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r143, 1
   AddInt       r45, r45, r143
   Jump         L11
 L2:
   // join cd in customer_demographics on ss.ss_cdemo_sk == cd.cd_demo_sk
+  Const        r143, 1
   AddInt       r34, r34, r143
   Jump         L12
 L1:
   // from ss in store_sales
+  Const        r143, 1
   AddInt       r28, r28, r143
   Jump         L13
 L0:
+  Const        r128, 0
   Move         r145, r128
   Len          r146, r24
 L23:
@@ -245,23 +273,31 @@ L23:
   Move         r149, r148
   // i_item_id: g.key.i_item_id,
   Const        r150, "i_item_id"
+  Const        r13, "key"
   Index        r151, r149, r13
+  Const        r6, "i_item_id"
   Index        r152, r151, r6
   // agg1: avg(from x in g select x.ss.ss_quantity),
   Const        r153, "agg1"
   Const        r154, []
+  Const        r15, "ss"
+  Const        r16, "ss_quantity"
   IterPrep     r155, r149
   Len          r156, r155
+  Const        r128, 0
   Move         r157, r128
 L16:
   LessInt      r158, r157, r156
   JumpIfFalse  r158, L15
   Index        r159, r155, r157
   Move         r160, r159
+  Const        r15, "ss"
   Index        r161, r160, r15
+  Const        r16, "ss_quantity"
   Index        r162, r161, r16
   Append       r163, r154, r162
   Move         r154, r163
+  Const        r143, 1
   AddInt       r157, r157, r143
   Jump         L16
 L15:
@@ -269,18 +305,24 @@ L15:
   // agg2: avg(from x in g select x.ss.ss_list_price),
   Const        r165, "agg2"
   Const        r166, []
+  Const        r15, "ss"
+  Const        r18, "ss_list_price"
   IterPrep     r167, r149
   Len          r168, r167
+  Const        r128, 0
   Move         r169, r128
 L18:
   LessInt      r170, r169, r168
   JumpIfFalse  r170, L17
   Index        r171, r167, r169
   Move         r160, r171
+  Const        r15, "ss"
   Index        r172, r160, r15
+  Const        r18, "ss_list_price"
   Index        r173, r172, r18
   Append       r174, r166, r173
   Move         r166, r174
+  Const        r143, 1
   AddInt       r169, r169, r143
   Jump         L18
 L17:
@@ -288,18 +330,24 @@ L17:
   // agg3: avg(from x in g select x.ss.ss_coupon_amt),
   Const        r176, "agg3"
   Const        r177, []
+  Const        r15, "ss"
+  Const        r20, "ss_coupon_amt"
   IterPrep     r178, r149
   Len          r179, r178
+  Const        r128, 0
   Move         r180, r128
 L20:
   LessInt      r181, r180, r179
   JumpIfFalse  r181, L19
   Index        r182, r178, r180
   Move         r160, r182
+  Const        r15, "ss"
   Index        r183, r160, r15
+  Const        r20, "ss_coupon_amt"
   Index        r184, r183, r20
   Append       r185, r177, r184
   Move         r177, r185
+  Const        r143, 1
   AddInt       r180, r180, r143
   Jump         L20
 L19:
@@ -307,18 +355,24 @@ L19:
   // agg4: avg(from x in g select x.ss.ss_sales_price)
   Const        r187, "agg4"
   Const        r188, []
+  Const        r15, "ss"
+  Const        r22, "ss_sales_price"
   IterPrep     r189, r149
   Len          r190, r189
+  Const        r128, 0
   Move         r191, r128
 L22:
   LessInt      r192, r191, r190
   JumpIfFalse  r192, L21
   Index        r193, r189, r191
   Move         r160, r193
+  Const        r15, "ss"
   Index        r194, r160, r15
+  Const        r22, "ss_sales_price"
   Index        r195, r194, r22
   Append       r196, r188, r195
   Move         r188, r196
+  Const        r143, 1
   AddInt       r191, r191, r143
   Jump         L22
 L21:
@@ -341,14 +395,17 @@ L21:
   // select {
   MakeMap      r208, 5, r198
   // sort by g.key.i_item_id
-  Index        r209, r149, r13
-  Index        r210, r209, r6
-  Move         r211, r210
+  Const        r13, "key"
+  Index        r211, r149, r13
+  Const        r6, "i_item_id"
+  Index        r212, r211, r6
+  Move         r209, r212
   // from ss in store_sales
-  Move         r212, r208
-  MakeList     r213, 2, r211
+  Move         r210, r208
+  MakeList     r213, 2, r209
   Append       r214, r5, r213
   Move         r5, r214
+  Const        r143, 1
   AddInt       r145, r145, r143
   Jump         L23
 L14:

@@ -1,58 +1,60 @@
-func main (regs=29)
+func main (regs=30)
   // let item = [
   Const        r0, [{"id": 1}, {"id": 2}, {"id": 3}]
   // let inventory = [
   Const        r1, [{"item": 1, "qty": 20}, {"item": 1, "qty": 22}, {"item": 1, "qty": 5}, {"item": 2, "qty": 30}, {"item": 2, "qty": 5}, {"item": 3, "qty": 10}]
   // let store_sales = [
   Const        r2, [{"item": 1}, {"item": 2}]
-  // let result = 0
+  // var result = 0
   Const        r3, 0
+  Move         r4, r3
   // for inv in inventory {
-  IterPrep     r4, r1
-  Len          r5, r4
-  Const        r6, 0
+  IterPrep     r5, r1
+  Len          r6, r5
+  Const        r7, 0
 L4:
-  LessInt      r7, r6, r5
-  JumpIfFalse  r7, L0
-  Index        r8, r4, r6
-  Move         r9, r8
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L0
+  Index        r9, r5, r7
+  Move         r10, r9
   // for s in store_sales {
-  IterPrep     r10, r2
-  Len          r11, r10
-  Const        r12, 0
+  IterPrep     r11, r2
+  Len          r12, r11
+  Const        r13, 0
 L3:
-  LessInt      r13, r12, r11
-  JumpIfFalse  r13, L1
-  Index        r14, r10, r12
-  Move         r15, r14
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L1
+  Index        r15, r11, r13
+  Move         r16, r15
   // if inv.item == s.item {
-  Const        r16, "item"
-  Index        r17, r9, r16
-  Index        r18, r15, r16
-  Equal        r19, r17, r18
-  JumpIfFalse  r19, L2
+  Const        r17, "item"
+  Index        r18, r10, r17
+  Const        r17, "item"
+  Index        r19, r16, r17
+  Equal        r20, r18, r19
+  JumpIfFalse  r20, L2
   // result = result + inv.qty
-  Const        r20, "qty"
-  Index        r21, r9, r20
-  Add          r22, r3, r21
-  Move         r3, r22
+  Const        r21, "qty"
+  Index        r22, r10, r21
+  Add          r23, r4, r22
+  Move         r4, r23
 L2:
   // for s in store_sales {
-  Const        r23, 1
-  AddInt       r24, r12, r23
-  Move         r12, r24
+  Const        r24, 1
+  AddInt       r25, r13, r24
+  Move         r13, r25
   Jump         L3
 L1:
   // for inv in inventory {
-  Const        r25, 1
-  AddInt       r26, r6, r25
-  Move         r6, r26
+  Const        r26, 1
+  AddInt       r27, r7, r26
+  Move         r7, r27
   Jump         L4
 L0:
   // json(result)
-  JSON         r3
+  JSON         r4
   // expect result == 82
-  Const        r27, 82
-  Equal        r28, r3, r27
-  Expect       r28
+  Const        r28, 82
+  Equal        r29, r4, r28
+  Expect       r29
   Return       r0

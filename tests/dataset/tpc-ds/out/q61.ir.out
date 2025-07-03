@@ -14,8 +14,10 @@ L2:
   JumpIfFalse  r8, L0
   Index        r9, r4, r6
   Move         r10, r9
+  Const        r2, "promo"
   Index        r11, r10, r2
   JumpIfFalse  r11, L1
+  Const        r3, "price"
   Index        r12, r10, r3
   Append       r13, r1, r12
   Move         r1, r13
@@ -27,17 +29,21 @@ L0:
   Sum          r15, r1
   // let total = sum(from s in sales select s.price)
   Const        r16, []
+  Const        r3, "price"
   IterPrep     r17, r0
   Len          r18, r17
+  Const        r7, 0
   Move         r19, r7
 L4:
   LessInt      r20, r19, r18
   JumpIfFalse  r20, L3
   Index        r21, r17, r19
   Move         r10, r21
+  Const        r3, "price"
   Index        r22, r10, r3
   Append       r23, r16, r22
   Move         r16, r23
+  Const        r14, 1
   AddInt       r19, r19, r14
   Jump         L4
 L3:

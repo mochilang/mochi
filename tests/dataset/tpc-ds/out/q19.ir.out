@@ -26,9 +26,23 @@ func main (regs=222)
   Const        r15, "d_moy"
   Const        r16, "d_year"
   // select { i_brand: g.key.brand, i_brand_id: g.key.brand_id, i_manufact_id: g.key.man_id, i_manufact: g.key.man, ext_price: sum(from x in g select x.ss_ext_sales_price) }
+  Const        r8, "i_brand"
   Const        r17, "key"
+  Const        r7, "brand"
+  Const        r10, "i_brand_id"
+  Const        r17, "key"
+  Const        r9, "brand_id"
+  Const        r12, "i_manufact_id"
+  Const        r17, "key"
+  Const        r11, "man_id"
+  Const        r14, "i_manufact"
+  Const        r17, "key"
+  Const        r13, "man"
   Const        r18, "ext_price"
   Const        r19, "ss_ext_sales_price"
+  // sort by [g.key.brand]
+  Const        r17, "key"
+  Const        r7, "brand"
   // from d in date_dim
   MakeMap      r20, 0, r0
   Const        r22, []
@@ -130,6 +144,8 @@ L11:
   Slice        r93, r90, r91, r92
   Const        r94, "s_zip"
   Index        r95, r83, r94
+  Const        r91, 0
+  Const        r92, 5
   Slice        r96, r95, r91, r92
   NotEqual     r97, r93, r96
   Move         r98, r88
@@ -138,9 +154,11 @@ L11:
 L7:
   JumpIfFalse  r98, L8
   // where d.d_moy == 11 && d.d_year == 1999
+  Const        r15, "d_moy"
   Index        r99, r28, r15
   Const        r100, 11
   Equal        r101, r99, r100
+  Const        r16, "d_year"
   Index        r102, r28, r16
   Const        r103, 1999
   Equal        r104, r102, r103
@@ -177,12 +195,16 @@ L9:
   MakeMap      r130, 6, r118
   // group by { brand: i.i_brand, brand_id: i.i_brand_id, man_id: i.i_manufact_id, man: i.i_manufact } into g
   Const        r131, "brand"
+  Const        r8, "i_brand"
   Index        r132, r45, r8
   Const        r133, "brand_id"
+  Const        r10, "i_brand_id"
   Index        r134, r45, r10
   Const        r135, "man_id"
+  Const        r12, "i_manufact_id"
   Index        r136, r45, r12
   Const        r137, "man"
+  Const        r14, "i_manufact"
   Index        r138, r45, r14
   Move         r139, r131
   Move         r140, r132
@@ -197,14 +219,17 @@ L9:
   In           r149, r148, r20
   JumpIfTrue   r149, L10
   // from d in date_dim
+  Const        r22, []
   Const        r150, "__group__"
   Const        r151, true
+  Const        r17, "key"
   // group by { brand: i.i_brand, brand_id: i.i_brand_id, man_id: i.i_manufact_id, man: i.i_manufact } into g
   Move         r152, r147
   // from d in date_dim
   Const        r153, "items"
   Move         r154, r22
   Const        r155, "count"
+  Const        r91, 0
   Move         r156, r150
   Move         r157, r151
   Move         r158, r17
@@ -218,39 +243,48 @@ L9:
   Append       r165, r21, r164
   Move         r21, r165
 L10:
+  Const        r153, "items"
   Index        r166, r20, r148
   Index        r167, r166, r153
   Append       r168, r167, r130
   SetIndex     r166, r153, r168
+  Const        r155, "count"
   Index        r169, r166, r155
   Const        r170, 1
   AddInt       r171, r169, r170
   SetIndex     r166, r155, r171
 L8:
   // join s in store on ss.ss_store_sk == s.s_store_sk && substr(ca.ca_zip,0,5) != substr(s.s_zip,0,5)
+  Const        r170, 1
   AddInt       r80, r80, r170
   Jump         L11
 L6:
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  Const        r170, 1
   AddInt       r69, r69, r170
   Jump         L12
 L5:
   // join c in customer on ss.ss_customer_sk == c.c_customer_sk
+  Const        r170, 1
   AddInt       r58, r58, r170
   Jump         L13
 L4:
   // join i in item on ss.ss_item_sk == i.i_item_sk && i.i_manager_id == 10
+  Const        r170, 1
   AddInt       r42, r42, r170
   Jump         L14
 L2:
   // join ss in store_sales on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r170, 1
   AddInt       r31, r31, r170
   Jump         L15
 L1:
   // from d in date_dim
+  Const        r170, 1
   AddInt       r25, r25, r170
   Jump         L16
 L0:
+  Const        r91, 0
   Move         r172, r91
   Len          r173, r21
 L20:
@@ -260,30 +294,42 @@ L20:
   Move         r176, r175
   // select { i_brand: g.key.brand, i_brand_id: g.key.brand_id, i_manufact_id: g.key.man_id, i_manufact: g.key.man, ext_price: sum(from x in g select x.ss_ext_sales_price) }
   Const        r177, "i_brand"
+  Const        r17, "key"
   Index        r178, r176, r17
+  Const        r7, "brand"
   Index        r179, r178, r7
   Const        r180, "i_brand_id"
+  Const        r17, "key"
   Index        r181, r176, r17
+  Const        r9, "brand_id"
   Index        r182, r181, r9
   Const        r183, "i_manufact_id"
+  Const        r17, "key"
   Index        r184, r176, r17
+  Const        r11, "man_id"
   Index        r185, r184, r11
   Const        r186, "i_manufact"
+  Const        r17, "key"
   Index        r187, r176, r17
+  Const        r13, "man"
   Index        r188, r187, r13
   Const        r189, "ext_price"
   Const        r190, []
+  Const        r19, "ss_ext_sales_price"
   IterPrep     r191, r176
   Len          r192, r191
+  Const        r91, 0
   Move         r193, r91
 L19:
   LessInt      r194, r193, r192
   JumpIfFalse  r194, L18
   Index        r195, r191, r193
   Move         r196, r195
+  Const        r19, "ss_ext_sales_price"
   Index        r197, r196, r19
   Append       r198, r190, r197
   Move         r190, r198
+  Const        r170, 1
   AddInt       r193, r193, r170
   Jump         L19
 L18:
@@ -300,16 +346,19 @@ L18:
   Move         r209, r199
   MakeMap      r210, 5, r200
   // sort by [g.key.brand]
-  Index        r211, r176, r17
-  Index        r212, r211, r7
-  Move         r213, r212
-  MakeList     r214, 1, r213
-  Move         r215, r214
+  Const        r17, "key"
+  Index        r214, r176, r17
+  Const        r7, "brand"
+  Index        r215, r214, r7
+  Move         r213, r215
+  MakeList     r216, 1, r213
+  Move         r211, r216
   // from d in date_dim
-  Move         r216, r210
-  MakeList     r217, 2, r215
+  Move         r212, r210
+  MakeList     r217, 2, r211
   Append       r218, r6, r217
   Move         r6, r218
+  Const        r170, 1
   AddInt       r172, r172, r170
   Jump         L20
 L17:

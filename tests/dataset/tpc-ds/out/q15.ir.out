@@ -12,6 +12,8 @@ func main (regs=153)
   // group by { zip: ca.ca_zip } into g
   Const        r5, "zip"
   Const        r6, "ca_zip"
+  // where (substr(ca.ca_zip,0,5) in ["85669","86197","88274","83405","86475","85392","85460","80348","81792"] ||
+  Const        r6, "ca_zip"
   // ca.ca_state in ["CA","WA","GA"] ||
   Const        r7, "ca_state"
   // cs.cs_sales_price > 500) &&
@@ -20,8 +22,14 @@ func main (regs=153)
   Const        r9, "d_qoy"
   Const        r10, "d_year"
   // select { ca_zip: g.key.zip, sum_sales: sum(from x in g select x.cs_sales_price) }
+  Const        r6, "ca_zip"
   Const        r11, "key"
+  Const        r5, "zip"
   Const        r12, "sum_sales"
+  Const        r8, "cs_sales_price"
+  // sort by g.key.zip
+  Const        r11, "key"
+  Const        r5, "zip"
   // from cs in catalog_sales
   MakeMap      r13, 0, r0
   Const        r15, []
@@ -80,11 +88,13 @@ L8:
   Equal        r54, r51, r53
   JumpIfFalse  r54, L4
   // where (substr(ca.ca_zip,0,5) in ["85669","86197","88274","83405","86475","85392","85460","80348","81792"] ||
+  Const        r6, "ca_zip"
   Index        r55, r38, r6
   Const        r56, 0
   Const        r57, 5
   Slice        r58, r55, r56, r57
   // cs.cs_sales_price > 500) &&
+  Const        r8, "cs_sales_price"
   Index        r59, r21, r8
   Const        r60, 500
   Less         r61, r60, r59
@@ -92,6 +102,7 @@ L8:
   Const        r62, ["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"]
   In           r63, r58, r62
   // ca.ca_state in ["CA","WA","GA"] ||
+  Const        r7, "ca_state"
   Index        r64, r38, r7
   Const        r65, ["CA", "WA", "GA"]
   In           r66, r64, r65
@@ -104,9 +115,11 @@ L8:
   Move         r67, r61
 L5:
   // d.d_qoy == 1 && d.d_year == 2000
+  Const        r9, "d_qoy"
   Index        r68, r49, r9
   Const        r69, 1
   Equal        r70, r68, r69
+  Const        r10, "d_year"
   Index        r71, r49, r10
   Const        r72, 2000
   Equal        r73, r71, r72
@@ -140,6 +153,7 @@ L6:
   MakeMap      r91, 4, r83
   // group by { zip: ca.ca_zip } into g
   Const        r92, "zip"
+  Const        r6, "ca_zip"
   Index        r93, r38, r6
   Move         r94, r92
   Move         r95, r93
@@ -148,14 +162,17 @@ L6:
   In           r98, r97, r13
   JumpIfTrue   r98, L7
   // from cs in catalog_sales
+  Const        r15, []
   Const        r99, "__group__"
   Const        r100, true
+  Const        r11, "key"
   // group by { zip: ca.ca_zip } into g
   Move         r101, r96
   // from cs in catalog_sales
   Const        r102, "items"
   Move         r103, r15
   Const        r104, "count"
+  Const        r56, 0
   Move         r105, r99
   Move         r106, r100
   Move         r107, r11
@@ -169,30 +186,38 @@ L6:
   Append       r114, r14, r113
   Move         r14, r114
 L7:
+  Const        r102, "items"
   Index        r115, r13, r97
   Index        r116, r115, r102
   Append       r117, r116, r91
   SetIndex     r115, r102, r117
+  Const        r104, "count"
   Index        r118, r115, r104
+  Const        r69, 1
   AddInt       r119, r118, r69
   SetIndex     r115, r104, r119
 L4:
   // join d in date_dim on cs.cs_sold_date_sk == d.d_date_sk
+  Const        r69, 1
   AddInt       r46, r46, r69
   Jump         L8
 L3:
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  Const        r69, 1
   AddInt       r35, r35, r69
   Jump         L9
 L2:
   // join c in customer on cs.cs_bill_customer_sk == c.c_customer_sk
+  Const        r69, 1
   AddInt       r24, r24, r69
   Jump         L10
 L1:
   // from cs in catalog_sales
+  Const        r69, 1
   AddInt       r18, r18, r69
   Jump         L11
 L0:
+  Const        r56, 0
   Move         r120, r56
   Len          r121, r14
 L15:
@@ -202,21 +227,27 @@ L15:
   Move         r124, r123
   // select { ca_zip: g.key.zip, sum_sales: sum(from x in g select x.cs_sales_price) }
   Const        r125, "ca_zip"
+  Const        r11, "key"
   Index        r126, r124, r11
+  Const        r5, "zip"
   Index        r127, r126, r5
   Const        r128, "sum_sales"
   Const        r129, []
+  Const        r8, "cs_sales_price"
   IterPrep     r130, r124
   Len          r131, r130
+  Const        r56, 0
   Move         r132, r56
 L14:
   LessInt      r133, r132, r131
   JumpIfFalse  r133, L13
   Index        r134, r130, r132
   Move         r135, r134
+  Const        r8, "cs_sales_price"
   Index        r136, r135, r8
   Append       r137, r129, r136
   Move         r129, r137
+  Const        r69, 1
   AddInt       r132, r132, r69
   Jump         L14
 L13:
@@ -227,14 +258,17 @@ L13:
   Move         r142, r138
   MakeMap      r143, 2, r139
   // sort by g.key.zip
-  Index        r144, r124, r11
-  Index        r145, r144, r5
-  Move         r146, r145
+  Const        r11, "key"
+  Index        r146, r124, r11
+  Const        r5, "zip"
+  Index        r147, r146, r5
+  Move         r144, r147
   // from cs in catalog_sales
-  Move         r147, r143
-  MakeList     r148, 2, r146
+  Move         r145, r143
+  MakeList     r148, 2, r144
   Append       r149, r4, r148
   Move         r4, r149
+  Const        r69, 1
   AddInt       r120, r120, r69
   Jump         L15
 L12:

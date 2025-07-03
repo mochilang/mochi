@@ -5,9 +5,13 @@ func main (regs=189)
   Const        r1, []
   // where ss.ss_quantity >= 0 && ss.ss_quantity <= 5
   Const        r2, "ss_quantity"
+  Const        r2, "ss_quantity"
   // && ((ss.ss_list_price >= 0 && ss.ss_list_price <= 110) || (ss.ss_coupon_amt >= 0 && ss.ss_coupon_amt <= 1000) || (ss.ss_wholesale_cost >= 0 && ss.ss_wholesale_cost <= 50))
   Const        r3, "ss_list_price"
+  Const        r3, "ss_list_price"
   Const        r4, "ss_coupon_amt"
+  Const        r4, "ss_coupon_amt"
+  Const        r5, "ss_wholesale_cost"
   Const        r5, "ss_wholesale_cost"
   // from ss in store_sales
   IterPrep     r6, r0
@@ -20,8 +24,11 @@ L7:
   Index        r11, r6, r8
   Move         r12, r11
   // where ss.ss_quantity >= 0 && ss.ss_quantity <= 5
+  Const        r2, "ss_quantity"
   Index        r13, r12, r2
+  Const        r9, 0
   LessEq       r14, r9, r13
+  Const        r2, "ss_quantity"
   Index        r15, r12, r2
   Const        r16, 5
   LessEq       r17, r15, r16
@@ -30,8 +37,11 @@ L7:
   Move         r18, r17
   // && ((ss.ss_list_price >= 0 && ss.ss_list_price <= 110) || (ss.ss_coupon_amt >= 0 && ss.ss_coupon_amt <= 1000) || (ss.ss_wholesale_cost >= 0 && ss.ss_wholesale_cost <= 50))
   JumpIfFalse  r18, L1
+  Const        r3, "ss_list_price"
   Index        r19, r12, r3
+  Const        r9, 0
   LessEq       r20, r9, r19
+  Const        r3, "ss_list_price"
   Index        r21, r12, r3
   Const        r22, 110
   LessEq       r23, r21, r22
@@ -41,8 +51,11 @@ L7:
 L2:
   Move         r25, r24
   JumpIfTrue   r25, L3
+  Const        r4, "ss_coupon_amt"
   Index        r26, r12, r4
+  Const        r9, 0
   LessEq       r27, r9, r26
+  Const        r4, "ss_coupon_amt"
   Index        r28, r12, r4
   Const        r29, 1000
   LessEq       r30, r28, r29
@@ -52,8 +65,11 @@ L2:
 L4:
   Move         r25, r31
   JumpIfTrue   r25, L3
+  Const        r5, "ss_wholesale_cost"
   Index        r32, r12, r5
+  Const        r9, 0
   LessEq       r33, r9, r32
+  Const        r5, "ss_wholesale_cost"
   Index        r34, r12, r5
   Const        r35, 50
   LessEq       r36, r34, r35
@@ -77,8 +93,20 @@ L6:
 L0:
   // from ss in store_sales
   Const        r40, []
+  // where ss.ss_quantity >= 6 && ss.ss_quantity <= 10
+  Const        r2, "ss_quantity"
+  Const        r2, "ss_quantity"
+  // && ((ss.ss_list_price >= 0 && ss.ss_list_price <= 110) || (ss.ss_coupon_amt >= 0 && ss.ss_coupon_amt <= 1000) || (ss.ss_wholesale_cost >= 0 && ss.ss_wholesale_cost <= 50))
+  Const        r3, "ss_list_price"
+  Const        r3, "ss_list_price"
+  Const        r4, "ss_coupon_amt"
+  Const        r4, "ss_coupon_amt"
+  Const        r5, "ss_wholesale_cost"
+  Const        r5, "ss_wholesale_cost"
+  // from ss in store_sales
   IterPrep     r41, r0
   Len          r42, r41
+  Const        r9, 0
   Move         r43, r9
 L15:
   LessInt      r44, r43, r42
@@ -86,9 +114,11 @@ L15:
   Index        r45, r41, r43
   Move         r12, r45
   // where ss.ss_quantity >= 6 && ss.ss_quantity <= 10
+  Const        r2, "ss_quantity"
   Index        r46, r12, r2
   Const        r47, 6
   LessEq       r48, r47, r46
+  Const        r2, "ss_quantity"
   Index        r49, r12, r2
   Const        r50, 10
   LessEq       r51, r49, r50
@@ -97,9 +127,13 @@ L15:
   Move         r52, r51
   // && ((ss.ss_list_price >= 0 && ss.ss_list_price <= 110) || (ss.ss_coupon_amt >= 0 && ss.ss_coupon_amt <= 1000) || (ss.ss_wholesale_cost >= 0 && ss.ss_wholesale_cost <= 50))
   JumpIfFalse  r52, L9
+  Const        r3, "ss_list_price"
   Index        r53, r12, r3
+  Const        r9, 0
   LessEq       r54, r9, r53
+  Const        r3, "ss_list_price"
   Index        r55, r12, r3
+  Const        r22, 110
   LessEq       r56, r55, r22
   Move         r57, r54
   JumpIfFalse  r57, L10
@@ -107,9 +141,13 @@ L15:
 L10:
   Move         r58, r57
   JumpIfTrue   r58, L11
+  Const        r4, "ss_coupon_amt"
   Index        r59, r12, r4
+  Const        r9, 0
   LessEq       r60, r9, r59
+  Const        r4, "ss_coupon_amt"
   Index        r61, r12, r4
+  Const        r29, 1000
   LessEq       r62, r61, r29
   Move         r63, r60
   JumpIfFalse  r63, L12
@@ -117,9 +155,13 @@ L10:
 L12:
   Move         r58, r63
   JumpIfTrue   r58, L11
+  Const        r5, "ss_wholesale_cost"
   Index        r64, r12, r5
+  Const        r9, 0
   LessEq       r65, r9, r64
+  Const        r5, "ss_wholesale_cost"
   Index        r66, r12, r5
+  Const        r35, 50
   LessEq       r67, r66, r35
   Move         r68, r65
   JumpIfFalse  r68, L13
@@ -135,23 +177,28 @@ L9:
   Append       r69, r40, r12
   Move         r40, r69
 L14:
+  Const        r39, 1
   AddInt       r43, r43, r39
   Jump         L15
 L8:
   // B1_LP: avg(from x in bucket1 select x.ss_list_price),
   Const        r70, "B1_LP"
   Const        r71, []
+  Const        r3, "ss_list_price"
   IterPrep     r72, r1
   Len          r73, r72
+  Const        r9, 0
   Move         r74, r9
 L17:
   LessInt      r75, r74, r73
   JumpIfFalse  r75, L16
   Index        r76, r72, r74
   Move         r77, r76
+  Const        r3, "ss_list_price"
   Index        r78, r77, r3
   Append       r79, r71, r78
   Move         r71, r79
+  Const        r39, 1
   AddInt       r74, r74, r39
   Jump         L17
 L16:
@@ -162,6 +209,7 @@ L16:
   // B1_CNTD: count(from x in bucket1 group by x.ss_list_price into g select g.key),
   Const        r83, "B1_CNTD"
   Const        r84, []
+  Const        r3, "ss_list_price"
   Const        r85, "key"
   IterPrep     r86, r1
   Len          r87, r86
@@ -174,16 +222,20 @@ L20:
   JumpIfFalse  r92, L18
   Index        r93, r86, r88
   Move         r77, r93
+  Const        r3, "ss_list_price"
   Index        r94, r77, r3
   Str          r95, r94
   In           r96, r95, r89
   JumpIfTrue   r96, L19
+  Const        r91, []
   Const        r97, "__group__"
   Const        r98, true
+  Const        r85, "key"
   Move         r99, r94
   Const        r100, "items"
   Move         r101, r91
   Const        r102, "count"
+  Const        r9, 0
   Move         r103, r97
   Move         r104, r98
   Move         r105, r85
@@ -197,16 +249,21 @@ L20:
   Append       r112, r90, r111
   Move         r90, r112
 L19:
+  Const        r100, "items"
   Index        r113, r89, r95
   Index        r114, r113, r100
   Append       r115, r114, r93
   SetIndex     r113, r100, r115
+  Const        r102, "count"
   Index        r116, r113, r102
+  Const        r39, 1
   AddInt       r117, r116, r39
   SetIndex     r113, r102, r117
+  Const        r39, 1
   AddInt       r88, r88, r39
   Jump         L20
 L18:
+  Const        r9, 0
   Move         r118, r9
   Len          r119, r90
 L22:
@@ -214,9 +271,11 @@ L22:
   JumpIfFalse  r120, L21
   Index        r121, r90, r118
   Move         r122, r121
+  Const        r85, "key"
   Index        r123, r122, r85
   Append       r124, r84, r123
   Move         r84, r124
+  Const        r39, 1
   AddInt       r118, r118, r39
   Jump         L22
 L21:
@@ -224,17 +283,21 @@ L21:
   // B2_LP: avg(from x in bucket2 select x.ss_list_price),
   Const        r126, "B2_LP"
   Const        r127, []
+  Const        r3, "ss_list_price"
   IterPrep     r128, r40
   Len          r129, r128
+  Const        r9, 0
   Move         r130, r9
 L24:
   LessInt      r131, r130, r129
   JumpIfFalse  r131, L23
   Index        r132, r128, r130
   Move         r77, r132
+  Const        r3, "ss_list_price"
   Index        r133, r77, r3
   Append       r134, r127, r133
   Move         r127, r134
+  Const        r39, 1
   AddInt       r130, r130, r39
   Jump         L24
 L23:
@@ -245,22 +308,33 @@ L23:
   // B2_CNTD: count(from x in bucket2 group by x.ss_list_price into g select g.key)
   Const        r138, "B2_CNTD"
   Const        r139, []
+  Const        r3, "ss_list_price"
+  Const        r85, "key"
   IterPrep     r140, r40
   Len          r141, r140
   Const        r142, 0
   MakeMap      r143, 0, r0
+  Const        r91, []
   Move         r144, r91
 L27:
   LessInt      r145, r142, r141
   JumpIfFalse  r145, L25
   Index        r146, r140, r142
   Move         r77, r146
+  Const        r3, "ss_list_price"
   Index        r147, r77, r3
   Str          r148, r147
   In           r149, r148, r143
   JumpIfTrue   r149, L26
+  Const        r91, []
+  Const        r97, "__group__"
+  Const        r98, true
+  Const        r85, "key"
   Move         r150, r147
+  Const        r100, "items"
   Move         r151, r91
+  Const        r102, "count"
+  Const        r9, 0
   Move         r152, r97
   Move         r153, r98
   Move         r154, r85
@@ -274,16 +348,21 @@ L27:
   Append       r161, r144, r160
   Move         r144, r161
 L26:
+  Const        r100, "items"
   Index        r162, r143, r148
   Index        r163, r162, r100
   Append       r164, r163, r146
   SetIndex     r162, r100, r164
+  Const        r102, "count"
   Index        r165, r162, r102
+  Const        r39, 1
   AddInt       r166, r165, r39
   SetIndex     r162, r102, r166
+  Const        r39, 1
   AddInt       r142, r142, r39
   Jump         L27
 L25:
+  Const        r9, 0
   Move         r167, r9
   Len          r168, r144
 L29:
@@ -291,9 +370,11 @@ L29:
   JumpIfFalse  r169, L28
   Index        r170, r144, r167
   Move         r122, r170
+  Const        r85, "key"
   Index        r171, r122, r85
   Append       r172, r139, r171
   Move         r139, r172
+  Const        r39, 1
   AddInt       r167, r167, r39
   Jump         L29
 L28:
