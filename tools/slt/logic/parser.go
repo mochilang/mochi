@@ -246,6 +246,9 @@ func evalExpr(expr sqlparser.Expr, row map[string]any, table *Table) any {
 			if s == "false" {
 				return false
 			}
+			if s == "null" || s == "nil" {
+				return nil
+			}
 			return string(v.Val)
 		case sqlparser.IntVal:
 			n, _ := strconv.Atoi(string(v.Val))

@@ -224,15 +224,21 @@ let t1 = [
 ]
 
 /* SELECT abs(b-c), a+b*2+c*3+d*4, e, b-c FROM t1 WHERE a IS NULL OR coalesce(a,b,c,d,e)<>0 OR b>c */
-let result = from row in t1
+var result = from row in t1
   where ((row.a == null || (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0) || row.b > row.c)
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.e, (row.b - row.c)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
