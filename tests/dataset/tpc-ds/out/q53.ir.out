@@ -15,6 +15,7 @@ func main (regs=147)
   Const        r7, "sum_sales"
   Const        r8, "price"
   Const        r9, "avg_sales"
+  Const        r8, "price"
   // from ss in store_sales
   MakeMap      r10, 0, r0
   Const        r12, []
@@ -22,8 +23,8 @@ func main (regs=147)
   IterPrep     r13, r1
   Len          r14, r13
   Const        r15, 0
-  LessInt      r16, r15, r14
 L7:
+  LessInt      r16, r15, r14
   JumpIfFalse  r16, L0
   Index        r17, r13, r15
   Move         r18, r17
@@ -31,8 +32,8 @@ L7:
   IterPrep     r19, r0
   Len          r20, r19
   Const        r21, 0
-  LessInt      r22, r21, r20
 L6:
+  LessInt      r22, r21, r20
   JumpIfFalse  r22, L1
   Index        r23, r19, r21
   Move         r24, r23
@@ -46,8 +47,8 @@ L6:
   IterPrep     r30, r2
   Len          r31, r30
   Const        r32, 0
-  LessInt      r33, r32, r31
 L5:
+  LessInt      r33, r32, r31
   JumpIfFalse  r33, L2
   Index        r34, r30, r32
   Move         r35, r34
@@ -101,35 +102,41 @@ L5:
   SetIndex     r10, r55, r72
   Append       r73, r11, r72
   Move         r11, r73
-  Index        r74, r10, r55
 L4:
+  Const        r60, "items"
+  Index        r74, r10, r55
   Index        r75, r74, r60
   Append       r76, r75, r53
   SetIndex     r74, r60, r76
+  Const        r62, "count"
   Index        r77, r74, r62
   Const        r78, 1
   AddInt       r79, r77, r78
   SetIndex     r74, r62, r79
+L3:
   // join d in date_dim on ss.date == d.d_date_sk
+  Const        r78, 1
   AddInt       r32, r32, r78
   Jump         L5
-L3:
+L2:
   // join i in item on ss.item == i.i_item_sk
+  Const        r78, 1
   AddInt       r21, r21, r78
   Jump         L6
-L2:
+L1:
   // from ss in store_sales
+  Const        r78, 1
   AddInt       r15, r15, r78
   Jump         L7
-L1:
+L0:
+  Const        r63, 0
   Move         r80, r63
   Len          r81, r11
+L13:
   LessInt      r82, r80, r81
-L0:
   JumpIfFalse  r82, L8
   Index        r83, r11, r80
   Move         r84, r83
-L13:
   // select {manu: g.key, sum_sales: sum(from x in g select x.price), avg_sales: avg(from x in g select x.price)}
   Const        r85, "manu"
   Const        r6, "key"
@@ -141,11 +148,11 @@ L13:
   Len          r90, r89
   Const        r63, 0
   Move         r91, r63
+L10:
   LessInt      r92, r91, r90
   JumpIfFalse  r92, L9
   Index        r93, r89, r91
   Move         r94, r93
-L10:
   Const        r8, "price"
   Index        r95, r94, r8
   Append       r96, r88, r95
@@ -154,15 +161,19 @@ L10:
   AddInt       r91, r91, r78
   Jump         L10
 L9:
+  Sum          r97, r88
+  Const        r98, "avg_sales"
+  Const        r99, []
+  Const        r8, "price"
   IterPrep     r100, r84
   Len          r101, r100
   Const        r63, 0
   Move         r102, r63
+L12:
   LessInt      r103, r102, r101
   JumpIfFalse  r103, L11
   Index        r104, r100, r102
   Move         r94, r104
-L12:
   Const        r8, "price"
   Index        r105, r94, r8
   Append       r106, r99, r105
@@ -171,6 +182,10 @@ L12:
   AddInt       r102, r102, r78
   Jump         L12
 L11:
+  Avg          r107, r99
+  Move         r108, r85
+  Move         r109, r86
+  Move         r110, r87
   Move         r111, r97
   Move         r112, r98
   Move         r113, r107
@@ -182,13 +197,24 @@ L11:
   AddInt       r80, r80, r78
   Jump         L13
 L8:
+  // from g in grouped
+  Const        r116, []
+  // where g.avg_sales > 0.0 && abs(g.sum_sales - g.avg_sales) / g.avg_sales > 0.1
+  Const        r9, "avg_sales"
+  Const        r7, "sum_sales"
+  Const        r9, "avg_sales"
+  Const        r9, "avg_sales"
   // select {i_manufact_id: g.manu, sum_sales: g.sum_sales}
+  Const        r4, "i_manufact_id"
   Const        r5, "manu"
+  Const        r7, "sum_sales"
+  Const        r7, "sum_sales"
   // from g in grouped
   IterPrep     r117, r3
   Len          r118, r117
   Const        r63, 0
   Move         r119, r63
+L17:
   LessInt      r120, r119, r118
   JumpIfFalse  r120, L14
   Index        r121, r117, r119
@@ -198,11 +224,12 @@ L8:
   Index        r122, r84, r9
   Const        r7, "sum_sales"
   Index        r124, r84, r7
-L17:
+  Const        r9, "avg_sales"
   Index        r125, r84, r9
   Sub          r126, r124, r125
   Move         r123, r126
   Call         r127, abs, r123
+  Const        r9, "avg_sales"
   Index        r128, r84, r9
   Div          r129, r127, r128
   Const        r130, 0.0
@@ -212,6 +239,7 @@ L17:
   Move         r134, r131
   JumpIfFalse  r134, L15
   Move         r134, r133
+L15:
   JumpIfFalse  r134, L16
   // select {i_manufact_id: g.manu, sum_sales: g.sum_sales}
   Const        r135, "i_manufact_id"
@@ -223,15 +251,23 @@ L17:
   Move         r139, r135
   Move         r140, r136
   Move         r141, r137
-L15:
   Move         r142, r138
   MakeMap      r143, 2, r139
   // from g in grouped
   Append       r144, r116, r143
   Move         r116, r144
+L16:
   Const        r78, 1
   AddInt       r119, r119, r78
   Jump         L17
+L14:
+  // json(result)
+  JSON         r116
+  // expect result == [
+  Const        r145, [{"i_manufact_id": 1, "sum_sales": 20.0}, {"i_manufact_id": 2, "sum_sales": 53.0}]
+  Equal        r146, r116, r145
+  Expect       r146
+  Return       r0
 
   // fun abs(x: float): float {
 func abs (regs=4)

@@ -13,12 +13,19 @@ func main (regs=138)
   // select { channel: "web", item: w.item, return_ratio: w.return_ratio, return_rank: w.return_rank, currency_rank: w.currency_rank },
   Const        r6, "channel"
   Const        r7, "item"
+  Const        r7, "item"
   Const        r8, "return_ratio"
+  Const        r8, "return_ratio"
+  Const        r4, "return_rank"
+  Const        r4, "return_rank"
+  Const        r5, "currency_rank"
+  Const        r5, "currency_rank"
   // from w in web
   IterPrep     r9, r0
   Len          r10, r9
   Const        r12, 0
   Move         r11, r12
+L3:
   LessInt      r13, r11, r10
   JumpIfFalse  r13, L0
   Index        r14, r9, r11
@@ -26,15 +33,16 @@ func main (regs=138)
   // where w.return_rank <= 10 || w.currency_rank <= 10
   Const        r4, "return_rank"
   Index        r16, r15, r4
-L3:
   Const        r17, 10
   LessEq       r18, r16, r17
   Const        r5, "currency_rank"
   Index        r19, r15, r5
+  Const        r17, 10
   LessEq       r20, r19, r17
   Move         r21, r18
   JumpIfTrue   r21, L1
   Move         r21, r20
+L1:
   JumpIfFalse  r21, L2
   // select { channel: "web", item: w.item, return_ratio: w.return_ratio, return_rank: w.return_rank, currency_rank: w.currency_rank },
   Const        r22, "channel"
@@ -43,7 +51,6 @@ L3:
   Const        r7, "item"
   Index        r25, r15, r7
   Const        r26, "return_ratio"
-L1:
   Const        r8, "return_ratio"
   Index        r27, r15, r8
   Const        r28, "return_rank"
@@ -66,19 +73,32 @@ L1:
   // from w in web
   Append       r43, r3, r42
   Move         r3, r43
+L2:
   Const        r44, 1
   AddInt       r11, r11, r44
   Jump         L3
-L2:
+L0:
+  // from c in catalog
+  Const        r45, []
+  // where c.return_rank <= 10 || c.currency_rank <= 10
+  Const        r4, "return_rank"
+  Const        r5, "currency_rank"
   // select { channel: "catalog", item: c.item, return_ratio: c.return_ratio, return_rank: c.return_rank, currency_rank: c.currency_rank },
+  Const        r6, "channel"
+  Const        r7, "item"
   Const        r7, "item"
   Const        r8, "return_ratio"
+  Const        r8, "return_ratio"
+  Const        r4, "return_rank"
+  Const        r4, "return_rank"
+  Const        r5, "currency_rank"
+  Const        r5, "currency_rank"
   // from c in catalog
   IterPrep     r46, r1
-L0:
   Len          r47, r46
   Const        r12, 0
   Move         r48, r12
+L7:
   LessInt      r49, r48, r47
   JumpIfFalse  r49, L4
   Index        r50, r46, r48
@@ -90,11 +110,12 @@ L0:
   LessEq       r53, r52, r17
   Const        r5, "currency_rank"
   Index        r54, r51, r5
+  Const        r17, 10
   LessEq       r55, r54, r17
   Move         r56, r53
   JumpIfTrue   r56, L5
-L7:
   Move         r56, r55
+L5:
   JumpIfFalse  r56, L6
   // select { channel: "catalog", item: c.item, return_ratio: c.return_ratio, return_rank: c.return_rank, currency_rank: c.currency_rank },
   Const        r57, "channel"
@@ -110,7 +131,6 @@ L7:
   Index        r64, r51, r4
   Const        r65, "currency_rank"
   Const        r5, "currency_rank"
-L5:
   Index        r66, r51, r5
   Move         r67, r57
   Move         r68, r58
@@ -126,15 +146,37 @@ L5:
   // from c in catalog
   Append       r78, r45, r77
   Move         r45, r78
+L6:
   Const        r44, 1
   AddInt       r48, r48, r44
   Jump         L7
-L6:
+L4:
+  // concat(
+  UnionAll     r79, r3, r45
   // from s in store
+  Const        r80, []
+  // where s.return_rank <= 10 || s.currency_rank <= 10
+  Const        r4, "return_rank"
+  Const        r5, "currency_rank"
+  // select { channel: "store", item: s.item, return_ratio: s.return_ratio, return_rank: s.return_rank, currency_rank: s.currency_rank }
+  Const        r6, "channel"
+  Const        r7, "item"
+  Const        r7, "item"
+  Const        r8, "return_ratio"
+  Const        r8, "return_ratio"
+  Const        r4, "return_rank"
+  Const        r4, "return_rank"
+  Const        r5, "currency_rank"
+  Const        r5, "currency_rank"
+  // from s in store
+  IterPrep     r81, r2
+  Len          r82, r81
+  Const        r12, 0
+  Move         r83, r12
+L11:
   LessInt      r84, r83, r82
   JumpIfFalse  r84, L8
   Index        r85, r81, r83
-L4:
   Move         r86, r85
   // where s.return_rank <= 10 || s.currency_rank <= 10
   Const        r4, "return_rank"
@@ -143,10 +185,12 @@ L4:
   LessEq       r88, r87, r17
   Const        r5, "currency_rank"
   Index        r89, r86, r5
+  Const        r17, 10
   LessEq       r90, r89, r17
   Move         r91, r88
   JumpIfTrue   r91, L9
   Move         r91, r90
+L9:
   JumpIfFalse  r91, L10
   // select { channel: "store", item: s.item, return_ratio: s.return_ratio, return_rank: s.return_rank, currency_rank: s.currency_rank }
   Const        r92, "channel"
@@ -154,7 +198,6 @@ L4:
   Const        r94, "item"
   Const        r7, "item"
   Index        r95, r86, r7
-L11:
   Const        r96, "return_ratio"
   Const        r8, "return_ratio"
   Index        r97, r86, r8
@@ -170,7 +213,6 @@ L11:
   Move         r105, r95
   Move         r106, r96
   Move         r107, r97
-L9:
   Move         r108, r98
   Move         r109, r99
   Move         r110, r100
@@ -179,15 +221,38 @@ L9:
   // from s in store
   Append       r113, r80, r112
   Move         r80, r113
+L10:
   Const        r44, 1
   AddInt       r83, r83, r44
   Jump         L11
-L10:
+L8:
+  // concat(
+  UnionAll     r114, r79, r80
+  // from r in tmp
+  Const        r115, []
   // sort by [r.channel, r.return_rank, r.currency_rank, r.item]
+  Const        r6, "channel"
+  Const        r4, "return_rank"
+  Const        r5, "currency_rank"
+  Const        r7, "item"
+  // from r in tmp
+  IterPrep     r116, r114
+  Len          r117, r116
+  Const        r12, 0
+  Move         r118, r12
+L13:
+  LessInt      r119, r118, r117
+  JumpIfFalse  r119, L12
+  Index        r120, r116, r118
+  Move         r121, r120
+  // sort by [r.channel, r.return_rank, r.currency_rank, r.item]
+  Const        r6, "channel"
+  Index        r128, r121, r6
+  Move         r124, r128
+  Const        r4, "return_rank"
   Index        r129, r121, r4
   Move         r125, r129
   Const        r5, "currency_rank"
-L8:
   Index        r130, r121, r5
   Move         r126, r130
   Const        r7, "item"
@@ -199,8 +264,19 @@ L8:
   Move         r123, r121
   MakeList     r133, 2, r122
   Append       r134, r115, r133
-L12:
   Move         r115, r134
   Const        r44, 1
   AddInt       r118, r118, r44
-  Jump         L12
+  Jump         L13
+L12:
+  // sort by [r.channel, r.return_rank, r.currency_rank, r.item]
+  Sort         r135, r115
+  // from r in tmp
+  Move         r115, r135
+  // json(result)
+  JSON         r115
+  // expect result == [
+  Const        r136, [{"channel": "catalog", "currency_rank": 1, "item": "A", "return_rank": 1, "return_ratio": 0.3}, {"channel": "store", "currency_rank": 1, "item": "A", "return_rank": 1, "return_ratio": 0.25}, {"channel": "web", "currency_rank": 1, "item": "A", "return_rank": 1, "return_ratio": 0.2}, {"channel": "web", "currency_rank": 2, "item": "B", "return_rank": 2, "return_ratio": 0.5}]
+  Equal        r137, r115, r136
+  Expect       r137
+  Return       r0

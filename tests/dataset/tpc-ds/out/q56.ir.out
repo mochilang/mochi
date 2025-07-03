@@ -8,6 +8,7 @@ func main (regs=224)
   // let ss = from s in store_sales group by s.item into g select {item: g.key, total: sum(from x in g select x.price)}
   Const        r3, []
   Const        r4, "item"
+  Const        r4, "item"
   Const        r5, "key"
   Const        r6, "total"
   Const        r7, "price"
@@ -17,8 +18,8 @@ func main (regs=224)
   MakeMap      r11, 0, r0
   Const        r13, []
   Move         r12, r13
-  LessInt      r14, r10, r9
 L2:
+  LessInt      r14, r10, r9
   JumpIfFalse  r14, L0
   Index        r15, r8, r10
   Move         r16, r15
@@ -48,22 +49,29 @@ L2:
   SetIndex     r11, r18, r35
   Append       r36, r12, r35
   Move         r12, r36
-  Index        r37, r11, r18
 L1:
+  Const        r23, "items"
+  Index        r37, r11, r18
   Index        r38, r37, r23
   Append       r39, r38, r15
   SetIndex     r37, r23, r39
+  Const        r25, "count"
   Index        r40, r37, r25
   Const        r41, 1
   AddInt       r42, r40, r41
   SetIndex     r37, r25, r42
+  Const        r41, 1
   AddInt       r10, r10, r41
   Jump         L2
 L0:
+  Const        r26, 0
+  Move         r43, r26
+  Len          r44, r12
+L6:
+  LessInt      r45, r43, r44
   JumpIfFalse  r45, L3
   Index        r46, r12, r43
   Move         r47, r46
-L6:
   Const        r48, "item"
   Const        r5, "key"
   Index        r49, r47, r5
@@ -74,11 +82,11 @@ L6:
   Len          r53, r52
   Const        r26, 0
   Move         r54, r26
+L5:
   LessInt      r55, r54, r53
   JumpIfFalse  r55, L4
   Index        r56, r52, r54
   Move         r57, r56
-L5:
   Const        r7, "price"
   Index        r58, r57, r7
   Append       r59, r51, r58
@@ -87,6 +95,10 @@ L5:
   AddInt       r54, r54, r41
   Jump         L5
 L4:
+  Sum          r60, r51
+  Move         r61, r48
+  Move         r62, r49
+  Move         r63, r50
   Move         r64, r60
   MakeMap      r65, 2, r61
   Append       r66, r3, r65
@@ -96,6 +108,11 @@ L4:
   Jump         L6
 L3:
   // let cs = from s in catalog_sales group by s.item into g select {item: g.key, total: sum(from x in g select x.price)}
+  Const        r67, []
+  Const        r4, "item"
+  Const        r4, "item"
+  Const        r5, "key"
+  Const        r6, "total"
   Const        r7, "price"
   IterPrep     r68, r1
   Len          r69, r68
@@ -103,12 +120,12 @@ L3:
   MakeMap      r71, 0, r0
   Const        r13, []
   Move         r72, r13
+L9:
   LessInt      r73, r70, r69
   JumpIfFalse  r73, L7
   Index        r74, r68, r70
   Move         r16, r74
   Const        r4, "item"
-L9:
   Index        r75, r16, r4
   Str          r76, r75
   In           r77, r76, r71
@@ -134,41 +151,284 @@ L9:
   SetIndex     r71, r76, r88
   Append       r89, r72, r88
   Move         r72, r89
+L8:
+  Const        r23, "items"
   Index        r90, r71, r76
   Index        r91, r90, r23
   Append       r92, r91, r74
   SetIndex     r90, r23, r92
+  Const        r25, "count"
   Index        r93, r90, r25
-L8:
   Const        r41, 1
   AddInt       r94, r93, r41
   SetIndex     r90, r25, r94
+  Const        r41, 1
   AddInt       r70, r70, r41
   Jump         L9
 L7:
+  Const        r26, 0
+  Move         r95, r26
+  Len          r96, r72
+L13:
+  LessInt      r97, r95, r96
+  JumpIfFalse  r97, L10
+  Index        r98, r72, r95
+  Move         r47, r98
+  Const        r99, "item"
   Const        r5, "key"
   Index        r100, r47, r5
   Const        r101, "total"
-L12:
   Const        r102, []
   Const        r7, "price"
   IterPrep     r103, r47
   Len          r104, r103
   Const        r26, 0
   Move         r105, r26
+L12:
   LessInt      r106, r105, r104
-  JumpIfFalse  r106, L10
+  JumpIfFalse  r106, L11
   Index        r107, r103, r105
   Move         r57, r107
   Const        r7, "price"
   Index        r108, r57, r7
   Append       r109, r102, r108
   Move         r102, r109
-L11:
   Const        r41, 1
   AddInt       r105, r105, r41
-  Jump         L11
-L10:
+  Jump         L12
+L11:
+  Sum          r110, r102
+  Move         r111, r99
+  Move         r112, r100
+  Move         r113, r101
+  Move         r114, r110
+  MakeMap      r115, 2, r111
+  Append       r116, r67, r115
+  Move         r67, r116
   Const        r41, 1
   AddInt       r95, r95, r41
-  Jump         L12
+  Jump         L13
+L10:
+  // let ws = from s in web_sales group by s.item into g select {item: g.key, total: sum(from x in g select x.price)}
+  Const        r117, []
+  Const        r4, "item"
+  Const        r4, "item"
+  Const        r5, "key"
+  Const        r6, "total"
+  Const        r7, "price"
+  IterPrep     r118, r2
+  Len          r119, r118
+  Const        r120, 0
+  MakeMap      r121, 0, r0
+  Const        r13, []
+  Move         r122, r13
+L16:
+  LessInt      r123, r120, r119
+  JumpIfFalse  r123, L14
+  Index        r124, r118, r120
+  Move         r16, r124
+  Const        r4, "item"
+  Index        r125, r16, r4
+  Str          r126, r125
+  In           r127, r126, r121
+  JumpIfTrue   r127, L15
+  Const        r13, []
+  Const        r20, "__group__"
+  Const        r21, true
+  Const        r5, "key"
+  Move         r128, r125
+  Const        r23, "items"
+  Move         r129, r13
+  Const        r25, "count"
+  Const        r26, 0
+  Move         r130, r20
+  Move         r131, r21
+  Move         r132, r5
+  Move         r133, r128
+  Move         r134, r23
+  Move         r135, r129
+  Move         r136, r25
+  Move         r137, r26
+  MakeMap      r138, 4, r130
+  SetIndex     r121, r126, r138
+  Append       r139, r122, r138
+  Move         r122, r139
+L15:
+  Const        r23, "items"
+  Index        r140, r121, r126
+  Index        r141, r140, r23
+  Append       r142, r141, r124
+  SetIndex     r140, r23, r142
+  Const        r25, "count"
+  Index        r143, r140, r25
+  Const        r41, 1
+  AddInt       r144, r143, r41
+  SetIndex     r140, r25, r144
+  Const        r41, 1
+  AddInt       r120, r120, r41
+  Jump         L16
+L14:
+  Const        r26, 0
+  Move         r145, r26
+  Len          r146, r122
+L20:
+  LessInt      r147, r145, r146
+  JumpIfFalse  r147, L17
+  Index        r148, r122, r145
+  Move         r47, r148
+  Const        r149, "item"
+  Const        r5, "key"
+  Index        r150, r47, r5
+  Const        r151, "total"
+  Const        r152, []
+  Const        r7, "price"
+  IterPrep     r153, r47
+  Len          r154, r153
+  Const        r26, 0
+  Move         r155, r26
+L19:
+  LessInt      r156, r155, r154
+  JumpIfFalse  r156, L18
+  Index        r157, r153, r155
+  Move         r57, r157
+  Const        r7, "price"
+  Index        r158, r57, r7
+  Append       r159, r152, r158
+  Move         r152, r159
+  Const        r41, 1
+  AddInt       r155, r155, r41
+  Jump         L19
+L18:
+  Sum          r160, r152
+  Move         r161, r149
+  Move         r162, r150
+  Move         r163, r151
+  Move         r164, r160
+  MakeMap      r165, 2, r161
+  Append       r166, r117, r165
+  Move         r117, r166
+  Const        r41, 1
+  AddInt       r145, r145, r41
+  Jump         L20
+L17:
+  // let union = concat(ss, cs, ws)
+  UnionAll     r167, r3, r67
+  UnionAll     r168, r167, r117
+  // from u in union
+  Const        r169, []
+  // group by u.item into g
+  Const        r4, "item"
+  // select {i_item_id: g.key, total_sales: sum(from x in g select x.total)}
+  Const        r170, "i_item_id"
+  Const        r5, "key"
+  Const        r171, "total_sales"
+  Const        r6, "total"
+  // from u in union
+  IterPrep     r172, r168
+  Len          r173, r172
+  Const        r174, 0
+  MakeMap      r175, 0, r0
+  Const        r13, []
+  Move         r176, r13
+L23:
+  LessInt      r177, r174, r173
+  JumpIfFalse  r177, L21
+  Index        r178, r172, r174
+  Move         r179, r178
+  // group by u.item into g
+  Const        r4, "item"
+  Index        r180, r179, r4
+  Str          r181, r180
+  In           r182, r181, r175
+  JumpIfTrue   r182, L22
+  // from u in union
+  Const        r13, []
+  Const        r20, "__group__"
+  Const        r21, true
+  Const        r5, "key"
+  // group by u.item into g
+  Move         r183, r180
+  // from u in union
+  Const        r23, "items"
+  Move         r184, r13
+  Const        r25, "count"
+  Const        r26, 0
+  Move         r185, r20
+  Move         r186, r21
+  Move         r187, r5
+  Move         r188, r183
+  Move         r189, r23
+  Move         r190, r184
+  Move         r191, r25
+  Move         r192, r26
+  MakeMap      r193, 4, r185
+  SetIndex     r175, r181, r193
+  Append       r194, r176, r193
+  Move         r176, r194
+L22:
+  Const        r23, "items"
+  Index        r195, r175, r181
+  Index        r196, r195, r23
+  Append       r197, r196, r178
+  SetIndex     r195, r23, r197
+  Const        r25, "count"
+  Index        r198, r195, r25
+  Const        r41, 1
+  AddInt       r199, r198, r41
+  SetIndex     r195, r25, r199
+  Const        r41, 1
+  AddInt       r174, r174, r41
+  Jump         L23
+L21:
+  Const        r26, 0
+  Move         r200, r26
+  Len          r201, r176
+L27:
+  LessInt      r202, r200, r201
+  JumpIfFalse  r202, L24
+  Index        r203, r176, r200
+  Move         r47, r203
+  // select {i_item_id: g.key, total_sales: sum(from x in g select x.total)}
+  Const        r204, "i_item_id"
+  Const        r5, "key"
+  Index        r205, r47, r5
+  Const        r206, "total_sales"
+  Const        r207, []
+  Const        r6, "total"
+  IterPrep     r208, r47
+  Len          r209, r208
+  Const        r26, 0
+  Move         r210, r26
+L26:
+  LessInt      r211, r210, r209
+  JumpIfFalse  r211, L25
+  Index        r212, r208, r210
+  Move         r57, r212
+  Const        r6, "total"
+  Index        r213, r57, r6
+  Append       r214, r207, r213
+  Move         r207, r214
+  Const        r41, 1
+  AddInt       r210, r210, r41
+  Jump         L26
+L25:
+  Sum          r215, r207
+  Move         r216, r204
+  Move         r217, r205
+  Move         r218, r206
+  Move         r219, r215
+  MakeMap      r220, 2, r216
+  // from u in union
+  Append       r221, r169, r220
+  Move         r169, r221
+  Const        r41, 1
+  AddInt       r200, r200, r41
+  Jump         L27
+L24:
+  // json(result)
+  JSON         r169
+  // expect result == [{i_item_id: 1, total_sales: 60.0}]
+  Const        r222, [{"i_item_id": 1, "total_sales": 60.0}]
+  Equal        r223, r169, r222
+  Expect       r223
+  Return       r0
