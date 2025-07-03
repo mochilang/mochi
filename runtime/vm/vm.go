@@ -6912,9 +6912,9 @@ func valueToAny(v Value) any {
 			m[k] = valueToAny(x)
 		}
 		return m
-	default:
-		return nil
-	}
+       default:
+               return "null"
+       }
 }
 
 func anyToValue(v any) Value {
