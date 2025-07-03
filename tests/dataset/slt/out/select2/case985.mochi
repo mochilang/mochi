@@ -227,8 +227,9 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where ((row.d < 110 || row.d > 150) || row.b > row.c)
+  order by [row.e, (row.b - row.c), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < 0 { -(row.a) } else { row.a })]
   select [row.e, (row.b - row.c), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []
 for row in result {
@@ -236,10 +237,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case985" {
-  expect flatResult == [null, 1, 333, 1240, -3, 1, 121, 126, 4, 333, 1290, -2, 4, 127, 135, 2, 111, 1390, -1, 2, 138, 144, 2, 111, 1430, -1, 2, 142, null, 1, 555, 1510, 2, 1, 153, 157, 3, 555, 1580, 1, 3, 159, 165, 1, 555, 1670, 1, 1, 168, 192, 1, 444, 382, -3, 1, 191, 197, 3, 555, 398, 1, 3, 199, 219, 3, 333, 432, -2, 3, 216, 227, 3, 555, 458, 1, 3, 229, 230, 1, 555, 468, 2, 1, 234, 246, 2, 444, 490, -4, 2, 245, null, null, 555, null, null, null, 104, 109, -1, 333, 1050, 2, 1, 107, 162, -1, 333, 1600, 3, 1, 163, 173, -2, 555, 1700, 4, 2, 174, 180, -3, 333, 364, 1, 3, 182, 189, -1, 444, 376, 2, 1, 188, 204, null, 222, 402, null, null, 201, null, -2, 555, null, null, 2, null, 210, -3, 222, 426, 2, 3, 213, 221, -1, 444, 440, -3, 1, 220, 237, null, 555, 2360, 3, null, 239]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -3, -3, -3, -3, -3, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 104, 1050, 107, 109, 111, 111, 121, 1240, 126, 127, 1290, 135, 138, 1390, 142, 1430, 144, 1510, 153, 157, 1580, 159, 1600, 162, 163, 165, 1670, 168, 1700, 173, 174, 180, 182, 188, 189, 191, 192, 197, 199, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 201, 204, 210, 213, 216, 219, 220, 221, 222, 222, 227, 229, 230, 234, 2360, 237, 239, 245, 246, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 333, 333, 333, 333, 333, 333, 364, 376, 382, 398, 4, 4, 4, 402, 426, 432, 440, 444, 444, 444, 444, 458, 468, 490, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

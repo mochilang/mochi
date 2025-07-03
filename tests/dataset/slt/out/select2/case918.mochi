@@ -224,8 +224,11 @@ let t1 = [
 ]
 
 /* SELECT abs(a), c, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE (e>c OR e<d) OR c>d */
-let result = from row in t1
+var result = from row in t1
   where (((row.e > row.c || row.e < row.d)) || row.c > row.d)
+  order by [(if row.a < 0 { -(row.a) } else { row.a }), row.c, count(from x in t1
+  where x.b < row.b
+  select x)]
   select [(if row.a < 0 { -(row.a) } else { row.a }), row.c, count(from x in t1
   where x.b < row.b
   select x)]
@@ -235,10 +238,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case918" {
-  expect flatResult == [107, 106, 0, 127, 125, 3, 142, 141, 6, 159, 155, 9, 163, 161, 10, 174, 172, 12, 179, 176, 13, 188, 187, 15, 199, 195, 17, 201, 202, 0, 216, 215, 20, 229, 225, 22, null, 113, 1, 131, 134, 4, 138, 137, 5, 182, 184, 14, 213, 214, 19, 220, 224, 21, 234, 231, 23, 239, null, 24, 245, 247, 26, 104, 102, 0, 115, 119, 0, 121, 123, 2, 191, 193, 16, null, 208, 18]
+  expect flatResult == [0, 0, 0, 0, 1, 10, 102, 104, 106, 107, 113, 115, 119, 12, 121, 123, 125, 127, 13, 131, 134, 137, 138, 14, 141, 142, 15, 155, 159, 16, 161, 163, 17, 172, 174, 176, 179, 18, 182, 184, 187, 188, 19, 191, 193, 195, 199, 2, 20, 201, 202, 208, 21, 213, 214, 215, 216, 22, 220, 224, 225, 229, 23, 231, 234, 239, 24, 245, 247, 26, 3, 4, 5, 6, 9, null, null, null]
 }
 

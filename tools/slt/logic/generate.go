@@ -864,14 +864,23 @@ func Generate(c Case) string {
 		}
 		expr := exprToMochi(ae.Expr, subs)
 		cond := condToMochi(sel.Where, subs)
-		sb.WriteString("let result = from row in " + tblNameStr)
+		kw := "let"
+		if c.RowSort {
+			kw = "var"
+		}
+		sb.WriteString(kw + " result = from row in " + tblNameStr)
 		if cond != "" {
 			sb.WriteString("\n  where " + cond)
 		}
 		if len(sel.OrderBy) == 1 {
 			sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}, subs))
+		} else if c.RowSort {
+			sb.WriteString("\n  order by " + expr)
 		}
 		sb.WriteString("\n  select " + expr + "\n")
+		if c.RowSort && len(sel.OrderBy) == 0 {
+			sb.WriteString("result = from x in result\n  sort by str(x)\n  select x\n")
+		}
 		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, formatExpectList(c.Expect)))
@@ -907,7 +916,11 @@ func Generate(c Case) string {
 			}
 		}
 		cond := condToMochi(sel.Where, subs)
-		sb.WriteString("let result = from row in " + tblNameStr)
+		kw := "let"
+		if c.RowSort {
+			kw = "var"
+		}
+		sb.WriteString(kw + " result = from row in " + tblNameStr)
 		if cond != "" {
 			sb.WriteString("\n  where " + cond)
 		}
@@ -925,6 +938,8 @@ func Generate(c Case) string {
 				}
 				sb.WriteString("]")
 			}
+		} else if c.RowSort {
+			sb.WriteString("\n  order by [" + strings.Join(exprs, ", ") + "]")
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
 		sb.WriteString("var flatResult = []\n")
@@ -932,6 +947,9 @@ func Generate(c Case) string {
 		sb.WriteString("  for x in row {\n")
 		sb.WriteString("    flatResult = append(flatResult, x)\n")
 		sb.WriteString("  }\n}\n")
+		if c.RowSort && len(sel.OrderBy) == 0 {
+			sb.WriteString("flatResult = from x in flatResult\n  sort by str(x)\n  select x\n")
+		}
 		sb.WriteString("for x in flatResult {\n  print(x)\n}\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))

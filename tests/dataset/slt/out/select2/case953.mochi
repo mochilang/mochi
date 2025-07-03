@@ -224,10 +224,13 @@ let t1 = [
 ]
 
 /* SELECT c-d, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), a+b*2+c*3+d*4+e*5, d FROM t1 WHERE (a>b-2 AND a<b+2) OR EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) OR b>c */
-let result = from row in t1
+var result = from row in t1
   where ((((row.a > (row.b - 2) && row.a < (row.b + 2))) || count(from x in t1
   where x.b < row.b
   select x) > 0) || row.b > row.c)
+  order by [(row.c - row.d), count(from x in t1
+  where x.b < row.b
+  select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.d]
   select [(row.c - row.d), count(from x in t1
   where x.b < row.b
   select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.d]
@@ -237,10 +240,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case953" {
-  expect flatResult == [-1, 1, null, 114, 1, 2, null, 122, -3, 3, 1902, 128, 1, 4, 1985, 133, 1, 5, 2046, 136, 1, 6, 2131, 140, null, 7, null, null, null, 8, null, null, null, 9, null, null, -3, 10, 2432, 164, null, 11, null, null, 1, 12, 2579, 171, null, 13, null, null, 1, 14, 2728, 183, 2, 15, 2806, 185, 3, 16, 2878, 190, -1, 17, 2949, 196, 1, 18, null, 207, 2, 19, 3175, 212, -2, 20, 3260, 217, 2, 21, 3331, 222, -1, 22, 3399, 226, -2, 23, 3473, 233, null, 24, null, 238, null, 25, null, null, -1, 26, 3706, 248]
+  expect flatResult == [-1, -1, -1, -1, -2, -2, -3, -3, 1, 1, 1, 1, 1, 1, 1, 1, 10, 11, 114, 12, 122, 128, 13, 133, 136, 14, 140, 15, 16, 164, 17, 171, 18, 183, 185, 19, 190, 1902, 196, 1985, 2, 2, 2, 2, 20, 2046, 207, 21, 212, 2131, 217, 22, 222, 226, 23, 233, 238, 24, 2432, 248, 25, 2579, 26, 2728, 2806, 2878, 2949, 3, 3, 3175, 3260, 3331, 3399, 3473, 3706, 4, 5, 6, 7, 8, 9, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

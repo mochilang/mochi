@@ -224,8 +224,9 @@ let t1 = [
 ]
 
 /* SELECT b, a, a+b*2+c*3+d*4, (a+b+c+d+e)/5 FROM t1 WHERE b>c AND (a>b-2 AND a<b+2) AND e+d BETWEEN a+b-10 AND c+130 */
-let result = from row in t1
+var result = from row in t1
   where ((row.b > row.c && ((row.a > (row.b - 2) && row.a < (row.b + 2)))) && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
+  order by [row.b, row.a, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
   select [row.b, row.a, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
 for row in result {
@@ -233,6 +234,9 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
