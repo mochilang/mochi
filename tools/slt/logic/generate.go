@@ -169,9 +169,10 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				continue
 			}
 
-			// Allow comma and underscore separators in numbers.
+			// Allow common separators in numeric strings.
 			sv = strings.ReplaceAll(sv, ",", "")
 			sv = strings.ReplaceAll(sv, "_", "")
+			sv = strings.ReplaceAll(sv, "'", "")
 
 			if sv == "true" || sv == "t" || sv == "yes" || sv == "y" || sv == "on" {
 				if t == "" || t == "bool" {
@@ -193,7 +194,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			}
 
 			clean := strings.TrimPrefix(strings.TrimPrefix(sv, "+"), "-")
-			// Support hexadecimal and binary integer literals.
+			// Support hexadecimal, binary and octal integer literals.
 			if strings.HasPrefix(clean, "0x") || strings.HasPrefix(clean, "0X") {
 				if v, err := strconv.ParseInt(clean[2:], 16, 64); err == nil {
 					if v == 0 {
@@ -234,8 +235,29 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 					}
 					continue
 				}
+			} else if strings.HasPrefix(clean, "0o") || strings.HasPrefix(clean, "0O") {
+				if v, err := strconv.ParseInt(clean[2:], 8, 64); err == nil {
+					if v == 0 {
+						seenZero = true
+					} else if v == 1 {
+						seenOne = true
+					} else {
+						boolLike = false
+					}
+					if t == "" {
+						t = "int"
+					} else if t != "int" {
+						if t == "float" {
+							// allow ints in float column
+						} else {
+							return "any"
+						}
+					}
+					continue
+				}
 			}
-			if f, err := strconv.ParseFloat(clean, 64); err == nil {
+			trimmed := strings.TrimSuffix(clean, ".")
+			if f, err := strconv.ParseFloat(trimmed, 64); err == nil {
 				if f == math.Trunc(f) {
 					if t == "" {
 						t = "int"
@@ -885,18 +907,18 @@ func Generate(c Case) string {
 		}
 		expr := exprToMochi(ae.Expr, subs)
 		cond := condToMochi(sel.Where, subs)
-                sb.WriteString("var result = from row in " + tblNameStr)
+		sb.WriteString("var result = from row in " + tblNameStr)
 		if cond != "" {
 			sb.WriteString("\n  where " + cond)
 		}
 		if len(sel.OrderBy) == 1 {
 			sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}, subs))
 		}
-                sb.WriteString("\n  select " + expr + "\n")
-                if c.RowSort {
-                        sb.WriteString("result = from x in result\n  order by str(x)\n  select x\n")
-                }
-                sb.WriteString("for x in result {\n  print(x)\n}\n\n")
+		sb.WriteString("\n  select " + expr + "\n")
+		if c.RowSort {
+			sb.WriteString("result = from x in result\n  order by str(x)\n  select x\n")
+		}
+		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, formatExpectList(c.Expect)))
 		} else {
@@ -931,7 +953,7 @@ func Generate(c Case) string {
 			}
 		}
 		cond := condToMochi(sel.Where, subs)
-                sb.WriteString("var result = from row in " + tblNameStr)
+		sb.WriteString("var result = from row in " + tblNameStr)
 		if cond != "" {
 			sb.WriteString("\n  where " + cond)
 		}
@@ -951,15 +973,15 @@ func Generate(c Case) string {
 			}
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
-                sb.WriteString("var flatResult = []\n")
-                sb.WriteString("for row in result {\n")
-                sb.WriteString("  for x in row {\n")
-                sb.WriteString("    flatResult = append(flatResult, x)\n")
-                sb.WriteString("  }\n}\n")
-                if c.RowSort {
-                        sb.WriteString("flatResult = from x in flatResult\n  order by str(x)\n  select x\n")
-                }
-               sb.WriteString("for x in flatResult {\n  print(x)\n}\n")
+		sb.WriteString("var flatResult = []\n")
+		sb.WriteString("for row in result {\n")
+		sb.WriteString("  for x in row {\n")
+		sb.WriteString("    flatResult = append(flatResult, x)\n")
+		sb.WriteString("  }\n}\n")
+		if c.RowSort {
+			sb.WriteString("flatResult = from x in flatResult\n  order by str(x)\n  select x\n")
+		}
+		sb.WriteString("for x in flatResult {\n  print(x)\n}\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))
 		} else {
