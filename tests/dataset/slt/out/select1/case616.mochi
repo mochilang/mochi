@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT abs(a), abs(b-c), d, a+b*2+c*3+d*4 FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 ORDER BY 2,3,4,1 */
 let result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
-  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d, (((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)), (if row.a < 0 { -(row.a) } else { row.a })]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d, (((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4))]
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.a < 0 { -(row.a) } else { row.a })]
+  select [(if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
 var flatResult = []
 for row in result {
   for x in row {
