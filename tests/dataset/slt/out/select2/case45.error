@@ -1,7 +1,7 @@
-expect condition failed at :243: expect flatResult == [-1, null, 1120, null, 555, -2, null, null, null, 555]
+expect condition failed at :246: expect flatResult == [-1, -2, 1120, 555, 555, null, null, null, null, null]
 call graph: main
 stack trace:
-  main at :243
-    expect flatResult == [-1, null, 1120, null, 555, -2, null, null, null, 555]
+  main at :246
+    expect flatResult == [-1, -2, 1120, 555, 555, null, null, null, null, null]
 
-got: [-1, null, 1120, null, 555, -2, null, null, null, 444]
+got: [-1, -2, 1120, 444, 555, null, null, null, null, null]

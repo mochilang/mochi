@@ -224,8 +224,8 @@ let t1 = [
 ]
 
 /* SELECT a-b, a+b*2+c*3+d*4+e*5, b, abs(a), a FROM t1 WHERE b>c AND coalesce(a,b,c,d,e)<>0 AND (e>a AND e<b) */
-let result = from row in t1
-  where ((row.b > row.c && null != 0) && ((row.e > row.a && row.e < row.b)))
+var result = from row in t1
+  where ((row.b > row.c && (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0) && ((row.e > row.a && row.e < row.b)))
   select [(row.a - row.b), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.b, (if row.a < 0 { -(row.a) } else { row.a }), row.a]
 var flatResult = []
 for row in result {
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case26" {
-  expect flatResult == [-3, 2878, 194, 191, 191, -4, 3706, 249, 245, 245]
+  expect flatResult == [-3, -4, 191, 191, 194, 245, 245, 249, 2878, 3706]
 }
 
