@@ -227,19 +227,25 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
-  where ((null != 0 && (row.d < 110 || row.d > 150)) && row.b != null)
+var result = from row in t1
+  where (((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 && (row.d < 110 || row.d > 150)) && row.b != null)
   select [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.a, (if row.a < 0 { -(row.a) } else { row.a }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case619" {
-  expect flatResult == [1050, 107, 107, 333, 1600, 163, 163, 444, 1700, 174, 174, 444, 364, 182, 182, 333, 376, 188, 188, 333, 382, 191, 191, 222, 398, 199, 199, 333, null, null, null, 444, 426, 213, 213, 333, 432, 216, 216, 222, 440, 220, 220, 222, 458, 229, 229, 333, 468, 234, 234, 333, 2360, 239, 239, 444, 490, 245, 245, 111]
+  expect flatResult == [1050, 107, 107, 111, 1600, 163, 163, 1700, 174, 174, 182, 182, 188, 188, 191, 191, 199, 199, 213, 213, 216, 216, 220, 220, 222, 222, 222, 229, 229, 234, 234, 2360, 239, 239, 245, 245, 333, 333, 333, 333, 333, 333, 333, 364, 376, 382, 398, 426, 432, 440, 444, 444, 444, 444, 458, 468, 490, null, null, null]
 }
 

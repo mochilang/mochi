@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4+e*5, e FROM t1 WHERE (e>a AND e<b) AND (e>c OR e<d) */
-let result = from row in t1
+var result = from row in t1
   where (((row.e > row.a && row.e < row.b)) && ((row.e > row.c || row.e < row.d)))
   select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.e]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case690" {
-  expect flatResult == [3331, 221, 3706, 246]
+  expect flatResult == [221, 246, 3331, 3706]
 }
 

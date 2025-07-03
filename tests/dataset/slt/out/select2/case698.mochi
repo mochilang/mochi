@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT d-e, b FROM t1 WHERE a>b */
-let result = from row in t1
+var result = from row in t1
   where row.a > row.b
   select [(row.d - row.e), row.b]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case698" {
-  expect flatResult == [-1, 105, 1, 130, null, 145, null, 151, null, 158, 2, 160, null, 167, -2, 170, null, 175, 3, 181, -4, 186, -1, 198, 2, 211, -1, 228, 3, 232, 1, 236, null, 240]
+  expect flatResult == [-1, -1, -1, -2, -4, 1, 1, 105, 130, 145, 151, 158, 160, 167, 170, 175, 181, 186, 198, 2, 2, 211, 228, 232, 236, 240, 3, 3, null, null, null, null, null, null]
 }
 

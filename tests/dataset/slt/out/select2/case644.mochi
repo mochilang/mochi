@@ -224,21 +224,27 @@ let t1 = [
 ]
 
 /* SELECT e, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a, (a+b+c+d+e)/5 FROM t1 WHERE d>e */
-let result = from row in t1
+var result = from row in t1
   where row.d > row.e
   select [row.e, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), row.a, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case644" {
-  expect flatResult == [110, 0, null, null, 126, 0, 127, 127, 132, 0, 131, 132, 135, 0, 138, 137, 162, 0, 163, 162, 180, 0, 182, 182, 210, 0, 213, 212, 221, 0, 220, 222, 230, 0, 234, 232, 237, 0, 239, null, 246, 0, 245, 247]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 110, 126, 127, 127, 131, 132, 132, 135, 137, 138, 162, 162, 163, 180, 182, 182, 210, 212, 213, 220, 221, 222, 230, 232, 234, 237, 239, 245, 246, 247, null, null, null]
 }
 

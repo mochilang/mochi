@@ -227,21 +227,27 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where ((row.a > row.b || row.b > row.c) || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
   select [(row.d - row.e), count(from x in t1
   where x.b < row.b
   select x), (row.a - row.b), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.b, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case699" {
-  expect flatResult == [-1, 0, 2, 1050, 105, 1612, 4, 1, null, 1120, 112, null, null, 2, -3, 1240, 124, null, 2, 3, -2, 1290, 129, 1902, 1, 4, 1, 1300, 130, 1985, 1, 5, -1, 1390, 139, 2046, -4, 6, -1, 1430, 143, 2131, null, 7, 4, 1450, 145, null, null, 8, 2, 1510, 151, null, null, 9, 1, 1580, 158, null, 2, 10, 3, 1600, 160, 2432, null, 11, 1, 1670, 167, null, -2, 12, 4, 1700, 170, 2579, null, 13, 4, 358, 175, null, 3, 14, 1, 364, 181, 2728, -4, 15, 2, 376, 186, 2806, -2, 16, -3, 382, 194, 2878, -1, 17, 1, 398, 198, 2949, null, 18, null, null, 206, null, 2, 19, 2, 426, 211, 3175, -2, 20, -2, 432, 218, 3260, 1, 21, -3, 440, 223, 3331, -1, 22, 1, 458, 228, 3399, 3, 23, 2, 468, 232, 3473, 1, 24, 3, 2360, 236, null, null, 25, 3, 486, 240, null, 2, 26, -4, 490, 249, 3706]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -3, -3, -3, -4, -4, -4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 105, 1050, 11, 112, 1120, 12, 124, 1240, 129, 1290, 13, 130, 1300, 139, 1390, 14, 143, 1430, 145, 1450, 15, 151, 1510, 158, 1580, 16, 160, 1600, 1612, 167, 1670, 17, 170, 1700, 175, 18, 181, 186, 19, 1902, 194, 198, 1985, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 20, 2046, 206, 21, 211, 2131, 218, 22, 223, 228, 23, 232, 236, 2360, 24, 240, 2432, 249, 25, 2579, 26, 2728, 2806, 2878, 2949, 3, 3, 3, 3, 3, 3, 3175, 3260, 3331, 3399, 3473, 358, 364, 3706, 376, 382, 398, 4, 4, 4, 4, 4, 426, 432, 440, 458, 468, 486, 490, 5, 6, 7, 8, 9, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

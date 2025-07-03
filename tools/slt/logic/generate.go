@@ -163,9 +163,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// Attempt to infer numeric or boolean types when the
 			// value is stored as a string. Trim whitespace and
 			// normalize case for comparison. Treat the literal
-			// string "null" as a NULL value.
+			// string "null" or "nil" as a NULL value.
 			sv := strings.TrimSpace(strings.ToLower(val))
-			if sv == "null" {
+			if sv == "null" || sv == "nil" {
 				continue
 			}
 
