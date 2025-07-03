@@ -110,6 +110,11 @@ func formatValue(v any) string {
 			return fmt.Sprintf("\"%s\" + \"\"", t)
 		}
 		return fmt.Sprintf("\"%s\"", t)
+	case bool:
+		if t {
+			return "true"
+		}
+		return "false"
 	case int:
 		return fmt.Sprintf("%d", t)
 	case float64:
@@ -166,7 +171,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			sv = strings.ReplaceAll(sv, ",", "")
 			sv = strings.ReplaceAll(sv, "_", "")
 
-			if sv == "true" || sv == "t" || sv == "yes" || sv == "on" {
+			if sv == "true" || sv == "t" || sv == "yes" || sv == "on" || sv == "y" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
@@ -175,7 +180,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				seenOne = true
 				continue
 			}
-			if sv == "false" || sv == "f" || sv == "no" || sv == "off" {
+			if sv == "false" || sv == "f" || sv == "no" || sv == "off" || sv == "n" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
