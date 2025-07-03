@@ -224,13 +224,18 @@ let t1 = [
 ]
 
 /* SELECT abs(a) FROM t1 WHERE c>d */
-let result = from row in t1
+var result = from row in t1
   where row.c > row.d
   select (if row.a < 0 { -(row.a) } else { row.a })
+let pairs = from v in result
+  select [if v == null { "~" } else { str(v) }, v]
+result = from p in pairs
+  order by p[0]
+  select p[1]
 for x in result {
   print(x)
 }
 
 test "case973" {
-  expect result == [104, 115, 121, 131, 138, 142, 174, 182, 188, 191, null, 213, 220]
+  expect result == [104, 115, 121, 131, 138, 142, 174, 182, 188, 191, 213, 220, null]
 }

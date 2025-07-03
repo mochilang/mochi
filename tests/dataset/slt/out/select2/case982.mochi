@@ -232,10 +232,15 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+let pairs = from v in flatResult
+  select [if v == null { "~" } else { str(v) }, v]
+flatResult = from p in pairs
+  order by p[0]
+  select p[1]
 for x in flatResult {
   print(x)
 }
 test "case982" {
-  expect flatResult == [null, null, null, null, 105, -1, 317, -1, 112, 4, null, -1, null, -1, null, null, 124, null, 369, 1, 129, 2, 385, 4, 130, 1, 391, -4, 139, 1, 416, 2, 143, -4, 428, 2, 145, null, 439, -2, 151, null, 455, 1, 158, null, 475, 3, 160, 2, 483, -1, 167, null, 502, 1, 170, -2, 514, -2, 175, null, 529, -1, 181, 3, 544, -3, 186, -4, 560, -1, 194, -2, 579, 1, 198, -1, 595, 3, null, -1, null, null, 206, null, null, -2, 211, 2, 635, -3, 218, -2, 652, 3, 223, 1, 666, -1, 228, -1, 685, 3, 232, 3, 698, 1, 236, 1, 711, null, 240, null, 723, -4, 249, 2, 743, 2]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2, -3, -3, -4, -4, -4, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 105, 112, 124, 129, 130, 139, 143, 145, 151, 158, 160, 167, 170, 175, 181, 186, 194, 198, 2, 2, 2, 2, 2, 2, 2, 206, 211, 218, 223, 228, 232, 236, 240, 249, 3, 3, 3, 3, 3, 3, 317, 369, 385, 391, 4, 4, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

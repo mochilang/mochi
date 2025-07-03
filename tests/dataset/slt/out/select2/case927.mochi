@@ -224,9 +224,14 @@ let t1 = [
 ]
 
 /* SELECT c FROM t1 WHERE (e>a AND e<b) */
-let result = from row in t1
+var result = from row in t1
   where ((row.e > row.a && row.e < row.b))
   select row.c
+let pairs = from v in result
+  select [if v == null { "~" } else { str(v) }, v]
+result = from p in pairs
+  order by p[0]
+  select p[1]
 for x in result {
   print(x)
 }
