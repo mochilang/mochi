@@ -36,6 +36,7 @@ func main (regs=151)
   Len          r17, r16
   Const        r19, 0
   Move         r18, r19
+L22:
   LessInt      r20, r18, r17
   JumpIfFalse  r20, L0
   Index        r21, r16, r18
@@ -45,58 +46,27 @@ func main (regs=151)
   Len          r24, r23
   Const        r25, "id"
   Const        r26, "subject_id"
-  // where cct1.kind == "cast" &&
-  Const        r10, "kind"
-  // cct2.kind.contains("complete") &&
-  Const        r11, "contains"
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r12, "name"
-  // k.keyword in [
-  Const        r13, "keyword"
-  // t.production_year > 1950
-  Const        r14, "production_year"
-  // select t.title
-  Const        r15, "title"
-  // join cct1 in comp_cast_type on cct1.id == cc.subject_id
-  Const        r19, 0
   Move         r27, r19
+L21:
   LessInt      r28, r27, r24
   JumpIfFalse  r28, L1
   Index        r29, r23, r27
   Move         r30, r29
-  Const        r25, "id"
   Index        r31, r30, r25
-  Const        r26, "subject_id"
   Index        r32, r22, r26
   Equal        r33, r31, r32
   JumpIfFalse  r33, L2
   // join cct2 in comp_cast_type on cct2.id == cc.status_id
   IterPrep     r34, r0
   Len          r35, r34
-  Const        r25, "id"
   Const        r36, "status_id"
-  // where cct1.kind == "cast" &&
-  Const        r10, "kind"
-  // cct2.kind.contains("complete") &&
-  Const        r11, "contains"
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r12, "name"
-  // k.keyword in [
-  Const        r13, "keyword"
-  // t.production_year > 1950
-  Const        r14, "production_year"
-  // select t.title
-  Const        r15, "title"
-  // join cct2 in comp_cast_type on cct2.id == cc.status_id
-  Const        r19, 0
   Move         r37, r19
+L20:
   LessInt      r38, r37, r35
   JumpIfFalse  r38, L2
   Index        r39, r34, r37
   Move         r40, r39
-  Const        r25, "id"
   Index        r41, r40, r25
-  Const        r36, "status_id"
   Index        r42, r22, r36
   Equal        r43, r41, r42
   JumpIfFalse  r43, L3
@@ -104,26 +74,12 @@ func main (regs=151)
   IterPrep     r44, r4
   Len          r45, r44
   Const        r46, "movie_id"
-  // where cct1.kind == "cast" &&
-  Const        r10, "kind"
-  // cct2.kind.contains("complete") &&
-  Const        r11, "contains"
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r12, "name"
-  // k.keyword in [
-  Const        r13, "keyword"
-  // t.production_year > 1950
-  Const        r14, "production_year"
-  // select t.title
-  Const        r15, "title"
-  // join ci in cast_info on ci.movie_id == cc.movie_id
-  Const        r19, 0
   Move         r47, r19
+L19:
   LessInt      r48, r47, r45
   JumpIfFalse  r48, L3
   Index        r49, r44, r47
   Move         r50, r49
-  Const        r46, "movie_id"
   Index        r51, r50, r46
   Index        r52, r22, r46
   Equal        r53, r51, r52
@@ -131,87 +87,40 @@ func main (regs=151)
   // join chn in char_name on chn.id == ci.person_role_id
   IterPrep     r54, r1
   Len          r55, r54
-  Const        r25, "id"
   Const        r56, "person_role_id"
-  // where cct1.kind == "cast" &&
-  Const        r10, "kind"
-  // cct2.kind.contains("complete") &&
-  Const        r11, "contains"
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r12, "name"
-  // k.keyword in [
-  Const        r13, "keyword"
-  // t.production_year > 1950
-  Const        r14, "production_year"
-  // select t.title
-  Const        r15, "title"
-  // join chn in char_name on chn.id == ci.person_role_id
-  Const        r19, 0
   Move         r57, r19
+L18:
   LessInt      r58, r57, r55
   JumpIfFalse  r58, L4
   Index        r59, r54, r57
   Move         r60, r59
-  Const        r25, "id"
   Index        r61, r60, r25
-  Const        r56, "person_role_id"
   Index        r62, r50, r56
   Equal        r63, r61, r62
   JumpIfFalse  r63, L5
   // join n in name on n.id == ci.person_id
   IterPrep     r64, r3
   Len          r65, r64
-  Const        r25, "id"
   Const        r66, "person_id"
-  // where cct1.kind == "cast" &&
-  Const        r10, "kind"
-  // cct2.kind.contains("complete") &&
-  Const        r11, "contains"
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r12, "name"
-  // k.keyword in [
-  Const        r13, "keyword"
-  // t.production_year > 1950
-  Const        r14, "production_year"
-  // select t.title
-  Const        r15, "title"
-  // join n in name on n.id == ci.person_id
-  Const        r19, 0
   Move         r67, r19
+L17:
   LessInt      r68, r67, r65
   JumpIfFalse  r68, L5
   Index        r69, r64, r67
   Move         r70, r69
-  Const        r25, "id"
   Index        r71, r70, r25
-  Const        r66, "person_id"
   Index        r72, r50, r66
   Equal        r73, r71, r72
   JumpIfFalse  r73, L6
   // join mk in movie_keyword on mk.movie_id == cc.movie_id
   IterPrep     r74, r6
   Len          r75, r74
-  Const        r46, "movie_id"
-  // where cct1.kind == "cast" &&
-  Const        r10, "kind"
-  // cct2.kind.contains("complete") &&
-  Const        r11, "contains"
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r12, "name"
-  // k.keyword in [
-  Const        r13, "keyword"
-  // t.production_year > 1950
-  Const        r14, "production_year"
-  // select t.title
-  Const        r15, "title"
-  // join mk in movie_keyword on mk.movie_id == cc.movie_id
-  Const        r19, 0
   Move         r76, r19
+L16:
   LessInt      r77, r76, r75
   JumpIfFalse  r77, L6
   Index        r78, r74, r76
   Move         r79, r78
-  Const        r46, "movie_id"
   Index        r80, r79, r46
   Index        r81, r22, r46
   Equal        r82, r80, r81
@@ -219,99 +128,47 @@ func main (regs=151)
   // join k in keyword on k.id == mk.keyword_id
   IterPrep     r83, r5
   Len          r84, r83
-  Const        r25, "id"
   Const        r85, "keyword_id"
-  // where cct1.kind == "cast" &&
-  Const        r10, "kind"
-  // cct2.kind.contains("complete") &&
-  Const        r11, "contains"
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r12, "name"
-  // k.keyword in [
-  Const        r13, "keyword"
-  // t.production_year > 1950
-  Const        r14, "production_year"
-  // select t.title
-  Const        r15, "title"
-  // join k in keyword on k.id == mk.keyword_id
-  Const        r19, 0
   Move         r86, r19
+L15:
   LessInt      r87, r86, r84
   JumpIfFalse  r87, L7
   Index        r88, r83, r86
   Move         r89, r88
-  Const        r25, "id"
   Index        r90, r89, r25
-  Const        r85, "keyword_id"
   Index        r91, r79, r85
   Equal        r92, r90, r91
   JumpIfFalse  r92, L8
   // join t in title on t.id == cc.movie_id
   IterPrep     r93, r8
   Len          r94, r93
-  Const        r25, "id"
-  Const        r46, "movie_id"
-  // where cct1.kind == "cast" &&
-  Const        r10, "kind"
-  // cct2.kind.contains("complete") &&
-  Const        r11, "contains"
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r12, "name"
-  // k.keyword in [
-  Const        r13, "keyword"
-  // t.production_year > 1950
-  Const        r14, "production_year"
-  // select t.title
-  Const        r15, "title"
-  // join t in title on t.id == cc.movie_id
-  Const        r19, 0
   Move         r95, r19
+L14:
   LessInt      r96, r95, r94
   JumpIfFalse  r96, L8
   Index        r97, r93, r95
   Move         r98, r97
-  Const        r25, "id"
   Index        r99, r98, r25
-  Const        r46, "movie_id"
   Index        r100, r22, r46
   Equal        r101, r99, r100
-L13:
   JumpIfFalse  r101, L9
   // join kt in kind_type on kt.id == t.kind_id
   IterPrep     r102, r7
   Len          r103, r102
-  Const        r25, "id"
   Const        r104, "kind_id"
-  // where cct1.kind == "cast" &&
-  Const        r10, "kind"
-  // cct2.kind.contains("complete") &&
-  Const        r11, "contains"
-  // (!chn.name.contains("Sherlock")) &&
-  Const        r12, "name"
-  // k.keyword in [
-  Const        r13, "keyword"
-  // t.production_year > 1950
-  Const        r14, "production_year"
-  // select t.title
-  Const        r15, "title"
-  // join kt in kind_type on kt.id == t.kind_id
-  Const        r19, 0
   Move         r105, r19
+L13:
   LessInt      r106, r105, r103
   JumpIfFalse  r106, L9
   Index        r107, r102, r105
   Move         r108, r107
-  Const        r25, "id"
   Index        r109, r108, r25
-  Const        r104, "kind_id"
   Index        r110, r98, r104
   Equal        r111, r109, r110
   JumpIfFalse  r111, L10
   // where cct1.kind == "cast" &&
-  Const        r10, "kind"
   Index        r112, r30, r10
   // t.production_year > 1950
-  Const        r14, "production_year"
   Index        r113, r98, r14
   Const        r114, 1950
   Less         r115, r114, r113
@@ -319,7 +176,6 @@ L13:
   Const        r116, "cast"
   Equal        r117, r112, r116
   // k.keyword in [
-  Const        r13, "keyword"
   Index        r118, r89, r13
   Const        r119, ["superhero", "sequel", "second-part", "marvel-comics", "based-on-comic", "tv-special", "fight", "violence"]
   In           r120, r118, r119
@@ -330,7 +186,6 @@ L13:
   // where cct1.kind == "cast" &&
   Move         r124, r117
   JumpIfFalse  r124, L11
-  Const        r10, "kind"
   Index        r125, r40, r10
   // cct2.kind.contains("complete") &&
   Const        r126, "complete"
@@ -339,7 +194,6 @@ L13:
   Move         r124, r127
   // cct2.kind.contains("complete") &&
   JumpIfFalse  r124, L11
-  Const        r12, "name"
   Index        r128, r60, r12
   // (!chn.name.contains("Sherlock")) &&
   Const        r129, "Sherlock"
@@ -349,18 +203,17 @@ L13:
   Move         r124, r131
   // (!chn.name.contains("Sherlock")) &&
   JumpIfFalse  r124, L11
-  Const        r12, "name"
   Index        r132, r60, r12
   // (chn.name.contains("Tony Stark") || chn.name.contains("Iron Man")) &&
   Const        r133, "Tony Stark"
   In           r134, r133, r132
   Move         r135, r134
   JumpIfTrue   r135, L12
-  Const        r12, "name"
   Index        r136, r60, r12
   Const        r137, "Iron Man"
   In           r138, r137, r136
   Move         r135, r138
+L12:
   // (!chn.name.contains("Sherlock")) &&
   Move         r124, r135
   // (chn.name.contains("Tony Stark") || chn.name.contains("Iron Man")) &&
@@ -372,15 +225,68 @@ L13:
   // kt.kind == "movie" &&
   JumpIfFalse  r124, L11
   Move         r124, r115
+L11:
   // where cct1.kind == "cast" &&
   JumpIfFalse  r124, L10
   // select t.title
-  Const        r15, "title"
   Index        r139, r98, r15
   // from cc in complete_cast
   Append       r140, r9, r139
   Move         r9, r140
+L10:
   // join kt in kind_type on kt.id == t.kind_id
   Const        r141, 1
   Add          r105, r105, r141
   Jump         L13
+L9:
+  // join t in title on t.id == cc.movie_id
+  Add          r95, r95, r141
+  Jump         L14
+L8:
+  // join k in keyword on k.id == mk.keyword_id
+  Add          r86, r86, r141
+  Jump         L15
+L7:
+  // join mk in movie_keyword on mk.movie_id == cc.movie_id
+  Add          r76, r76, r141
+  Jump         L16
+L6:
+  // join n in name on n.id == ci.person_id
+  Add          r67, r67, r141
+  Jump         L17
+L5:
+  // join chn in char_name on chn.id == ci.person_role_id
+  Add          r57, r57, r141
+  Jump         L18
+L4:
+  // join ci in cast_info on ci.movie_id == cc.movie_id
+  Add          r47, r47, r141
+  Jump         L19
+L3:
+  // join cct2 in comp_cast_type on cct2.id == cc.status_id
+  Add          r37, r37, r141
+  Jump         L20
+L2:
+  // join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  Add          r27, r27, r141
+  Jump         L21
+L1:
+  // from cc in complete_cast
+  AddInt       r18, r18, r141
+  Jump         L22
+L0:
+  // let result = [ { complete_downey_ironman_movie: min(matches) } ]
+  Const        r142, "complete_downey_ironman_movie"
+  Min          r143, r9
+  Move         r144, r142
+  Move         r145, r143
+  MakeMap      r146, 1, r144
+  Move         r147, r146
+  MakeList     r148, 1, r147
+  // json(result)
+  JSON         r148
+  // expect result == [ { complete_downey_ironman_movie: "Iron Man" } ]
+  Const        r149, [{"complete_downey_ironman_movie": "Iron Man"}]
+  Equal        r150, r148, r149
+  Expect       r150
+  Return       r0
