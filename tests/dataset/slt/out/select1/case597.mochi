@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT c FROM t1 WHERE b>c ORDER BY 1 */
-let result = from row in t1
+var result = from row in t1
   where row.b > row.c
   order by row.c
   select row.c

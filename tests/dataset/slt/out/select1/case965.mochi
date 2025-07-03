@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a, (a+b+c+d+e)/5, c FROM t1 WHERE a>b OR c BETWEEN b-2 AND d+2 OR (e>c OR e<d) ORDER BY 1,2,3 */
-let result = from row in t1
+var result = from row in t1
   where ((row.a > row.b || (row.c >= (row.b - 2) && row.c <= (row.d + 2))) || ((row.e > row.c || row.e < row.d)))
   order by [row.a, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c]
   select [row.a, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c]

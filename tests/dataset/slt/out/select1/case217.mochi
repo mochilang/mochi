@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d FROM t1 WHERE (e>a AND e<b) OR (e>c OR e<d) ORDER BY 1 */
-let result = from row in t1
+var result = from row in t1
   where (((row.e > row.a && row.e < row.b)) || ((row.e > row.c || row.e < row.d)))
   order by row.d
   select row.d

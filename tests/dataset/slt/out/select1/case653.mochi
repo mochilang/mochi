@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3, d, a, a+b*2+c*3+d*4, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 ORDER BY 2,3,5,1,4 */
-let result = from row in t1
+var result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
   order by [row.d, row.a, count(from x in t1
   where (x.c > row.c && x.d < row.d)

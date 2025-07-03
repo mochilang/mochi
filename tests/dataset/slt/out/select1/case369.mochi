@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d-e, b-c, a-b, a+b*2+c*3+d*4, abs(a) FROM t1 ORDER BY 1,5,3,4,2 */
-let result = from row in t1
+var result = from row in t1
   order by [(row.d - row.e), (if row.a < 0 { -(row.a) } else { row.a }), (row.a - row.b), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.b - row.c)]
   select [(row.d - row.e), (row.b - row.c), (row.a - row.b), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []

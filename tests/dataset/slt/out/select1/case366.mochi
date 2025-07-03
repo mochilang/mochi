@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d, c FROM t1 ORDER BY 2,1 */
-let result = from row in t1
+var result = from row in t1
   order by [row.c, row.d]
   select [row.d, row.c]
 var flatResult = []

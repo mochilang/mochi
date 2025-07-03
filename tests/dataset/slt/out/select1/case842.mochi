@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT c-d, d, e FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) AND d NOT BETWEEN 110 AND 150 ORDER BY 1,2,3 */
-let result = from row in t1
+var result = from row in t1
   where (count(from x in t1
   where x.b < row.b
   select x) > 0 && (row.d < 110 || row.d > 150))
