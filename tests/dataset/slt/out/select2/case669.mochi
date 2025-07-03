@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, (a+b+c+d+e)/5 FROM t1 WHERE b>c */
-let result = from row in t1
+var result = from row in t1
   where row.b > row.c
   select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case669" {
-  expect flatResult == [222, null, 222, 127, 222, 137, 222, 142, 333, null, 333, null, 333, null, 222, 192, 333, 197, 222, 217, 333, 227, 333, 232, 111, 247]
+  expect flatResult == [111, 127, 137, 142, 192, 197, 217, 222, 222, 222, 222, 222, 222, 227, 232, 247, 333, 333, 333, 333, 333, 333, null, null, null, null]
 }
 

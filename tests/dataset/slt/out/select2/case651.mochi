@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a, c FROM t1 WHERE d>e AND b>c */
-let result = from row in t1
+var result = from row in t1
   where (row.d > row.e && row.b > row.c)
   select [row.a, row.c]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case651" {
-  expect flatResult == [127, 125, 138, 137, 234, 231, 245, 247]
+  expect flatResult == [125, 127, 137, 138, 231, 234, 245, 247]
 }
 

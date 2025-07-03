@@ -224,13 +224,16 @@ let t1 = [
 ]
 
 /* SELECT d-e FROM t1 WHERE c>d AND d NOT BETWEEN 110 AND 150 */
-let result = from row in t1
+var result = from row in t1
   where (row.c > row.d && (row.d < 110 || row.d > 150))
   select (row.d - row.e)
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
 
 test "case605" {
-  expect result == [null, -2, 3, -4, -2, null, 2, 1]
+  expect result == [-2, -2, -4, 1, 2, 3, null, null]
 }

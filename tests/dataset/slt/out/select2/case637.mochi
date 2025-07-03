@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3 FROM t1 WHERE a IS NULL OR (c<=d-2 OR c>=d+2) OR (e>a AND e<b) */
-let result = from row in t1
+var result = from row in t1
   where ((row.a == null || ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))) || ((row.e > row.a && row.e < row.b)))
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case637" {
-  expect flatResult == [0, 635, 0, null, 0, null, 0, 760, 0, 966, 0, 1121, 0, 1158, 0, null, 0, 1277, 0, 1297, 0, 1338, 0, 1391, 0, 1484]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1121, 1158, 1277, 1297, 1338, 1391, 1484, 635, 760, 966, null, null, null]
 }
 
