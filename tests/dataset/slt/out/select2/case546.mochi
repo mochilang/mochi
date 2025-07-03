@@ -224,11 +224,8 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4, a+b*2+c*3, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), abs(b-c), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 WHERE b IS NOT NULL */
-let result = from row in t1
+var result = from row in t1
   where row.b != null
-  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
   select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
@@ -238,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case546" {
-  expect flatResult == [1067, 635, 0, 1, 333, null, null, 0, 1, 444, 1226, 738, 0, 1, 222, 1272, 760, 0, 4, 222, 1325, 793, 0, 4, 333, 1371, 827, 0, 2, 222, 1411, 851, 0, 2, 222, null, 880, 0, 2, 444, null, 905, 0, 1, 333, null, 940, 0, 3, 333, 1622, 966, 0, 1, 444, null, 1000, 0, 1, 333, 1714, 1030, 0, 2, 444, null, 1057, 0, 1, 444, 1828, 1096, 0, 3, 333, 1861, 1121, 0, 1, 333, 1918, 1158, 0, 1, 222, 1964, 1180, 0, 3, 333, null, null, 0, 2, 444, 2125, 1277, 0, 3, 333, 2165, 1297, 0, 3, 222, 2226, 1338, 0, 1, 222, 2264, 1360, 0, 3, 333, 2323, 1391, 0, 1, 333, null, null, 0, null, 444, null, 1455, 0, 4, 444, 2476, 1484, 0, 2, 111]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1000, 1030, 1057, 1067, 1096, 111, 1121, 1158, 1180, 1226, 1272, 1277, 1297, 1325, 1338, 1360, 1371, 1391, 1411, 1455, 1484, 1622, 1714, 1828, 1861, 1918, 1964, 2, 2, 2, 2, 2, 2, 2125, 2165, 222, 222, 222, 222, 222, 222, 222, 2226, 2264, 2323, 2476, 3, 3, 3, 3, 3, 3, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 4, 4, 4, 444, 444, 444, 444, 444, 444, 444, 444, 635, 738, 760, 793, 827, 851, 880, 905, 940, 966, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

@@ -227,13 +227,8 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
-  order by [row.e, (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
-  where x.b < row.b
-  select x), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.a, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
   select [row.e, (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
   where x.b < row.b
   select x), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.a, count(from x in t1
@@ -245,10 +240,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case593" {
-  expect flatResult == [109, 107, 0, 1050, 107, 0, 333, 110, null, 1, 1120, null, 0, 444, 117, 115, 0, null, 115, 0, 444, null, 121, 2, 1240, 121, 0, 222, 126, 127, 3, 1290, 127, 0, 222, 132, 131, 4, 1300, 131, 0, 333, 135, 138, 5, 1390, 138, 0, 222, 144, 142, 6, 1430, 142, 0, 222, 162, 163, 10, 1600, 163, 0, 444, 173, 174, 12, 1700, 174, 0, 444, 180, 182, 14, 364, 182, 0, 333, 189, 188, 15, 376, 188, 0, 333, 192, 191, 16, 382, 191, 0, 222, null, null, 18, null, null, 0, 444, 210, 213, 19, 426, 213, 0, 333, 219, 216, 20, 432, 216, 0, 222, 221, 220, 21, 440, 220, 0, 222, 230, 234, 23, 468, 234, 0, 333, 246, 245, 26, 490, 245, 0, 111]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 10, 1050, 107, 107, 109, 110, 111, 1120, 115, 115, 117, 12, 121, 121, 1240, 126, 127, 127, 1290, 1300, 131, 131, 132, 135, 138, 138, 1390, 14, 142, 142, 1430, 144, 15, 16, 1600, 162, 163, 163, 1700, 173, 174, 174, 18, 180, 182, 182, 188, 188, 189, 19, 191, 191, 192, 2, 20, 21, 210, 213, 213, 216, 216, 219, 220, 220, 221, 222, 222, 222, 222, 222, 222, 222, 23, 230, 234, 234, 245, 245, 246, 26, 3, 333, 333, 333, 333, 333, 333, 364, 376, 382, 4, 426, 432, 440, 444, 444, 444, 444, 444, 468, 490, 5, 6, null, null, null, null, null, null, null, null]
 }
 
