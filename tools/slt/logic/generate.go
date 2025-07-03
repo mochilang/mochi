@@ -134,7 +134,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				return "float"
 			case strings.Contains(typ, "bool"), strings.Contains(typ, "bit"):
 				return "bool"
-			case strings.Contains(typ, "char"), strings.Contains(typ, "text"):
+			case strings.Contains(typ, "char"), strings.Contains(typ, "text"),
+				strings.Contains(typ, "clob"), strings.Contains(typ, "string"),
+				strings.Contains(typ, "varchar"), strings.Contains(typ, "varying"):
 				return "string"
 			}
 		}
