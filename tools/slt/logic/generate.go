@@ -600,6 +600,23 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 			return fmt.Sprintf("(%s < %s || %s > %s)", left, from, left, to)
 		}
 		return ""
+	case *sqlparser.IsExpr:
+		left := exprToMochiRow(v.Expr, rowVar, outer, subs)
+		switch strings.ToLower(v.Operator) {
+		case sqlparser.IsNullStr:
+			return fmt.Sprintf("%s == null", left)
+		case sqlparser.IsNotNullStr:
+			return fmt.Sprintf("%s != null", left)
+		case sqlparser.IsTrueStr:
+			return fmt.Sprintf("%s == true", left)
+		case sqlparser.IsNotTrueStr:
+			return fmt.Sprintf("%s != true", left)
+		case sqlparser.IsFalseStr:
+			return fmt.Sprintf("%s == false", left)
+		case sqlparser.IsNotFalseStr:
+			return fmt.Sprintf("%s != false", left)
+		}
+		return ""
 	case *sqlparser.ExistsExpr:
 		e := existsToMochi(v.Subquery, rowVar)
 		if e == "" {
