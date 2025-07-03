@@ -24,9 +24,6 @@
 224
 225
 231
-<nil>
+null
 244
 247
-call graph: main
-stack trace:
-  main:235

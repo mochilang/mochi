@@ -40,7 +40,7 @@
 201
 202
 0
-<nil>
+null
 2
 21
 213
@@ -67,6 +67,3 @@
 245
 2
 29
-call graph: main
-stack trace:
-  main:242

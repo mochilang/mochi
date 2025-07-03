@@ -47,13 +47,10 @@
 333
 698
 711
-<nil>
+null
 444
 711
 1484
 247
 111
 743
-call graph: main
-stack trace:
-  main:240
