@@ -224,21 +224,27 @@ let t1 = [
 ]
 
 /* SELECT d, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END FROM t1 WHERE b>c OR EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) */
-let result = from row in t1
+var result = from row in t1
   where (row.b > row.c || count(from x in t1
   where x.b < row.b
   select x) > 0)
-  select [row.d, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
+  select [row.d, (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case194" {
-  expect flatResult == [114, 555, 122, 333, 128, 333, 133, 444, 136, 111, 140, 111, null, 555, null, 555, null, 555, 164, 333, null, 555, 171, 555, null, 555, 183, 333, 185, 444, 190, 444, 196, 555, 207, 555, 212, 222, 217, 333, 222, 444, 226, 555, 233, 555, 238, 555, null, 222, 248, 444]
+  expect flatResult == [111, 111, 114, 122, 128, 133, 136, 140, 164, 171, 183, 185, 190, 196, 207, 212, 217, 222, 222, 222, 226, 233, 238, 248, 333, 333, 333, 333, 333, 444, 444, 444, 444, 444, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, null, null, null, null, null, null]
 }
 

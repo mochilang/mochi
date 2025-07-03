@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3, c, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2 FROM t1 WHERE d>e */
-let result = from row in t1
+var result = from row in t1
   where row.d > row.e
   select [((row.a + (row.b * 2)) + (row.c * 3)), row.c, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.a + (row.b * 2))]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case158" {
-  expect flatResult == [null, 113, 444, null, 760, 125, 222, 385, 793, 134, 333, 391, 827, 137, 222, 416, 966, 161, 444, 483, 1096, 184, 333, 544, 1277, 214, 333, 635, 1338, 224, 222, 666, 1391, 231, 333, 698, null, null, 444, 711, 1484, 247, 111, 743]
+  expect flatResult == [1096, 111, 113, 125, 1277, 1338, 134, 137, 1391, 1484, 161, 184, 214, 222, 222, 222, 224, 231, 247, 333, 333, 333, 333, 385, 391, 416, 444, 444, 444, 483, 544, 635, 666, 698, 711, 743, 760, 793, 827, 966, null, null, null, null]
 }
 

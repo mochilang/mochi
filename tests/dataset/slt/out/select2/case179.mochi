@@ -224,20 +224,26 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), abs(a), a+b*2, a FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (if row.a < 0 { -(row.a) } else { row.a }), (row.a + (row.b * 2)), row.a]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case179" {
-  expect flatResult == [0, 104, null, 104, 0, 107, 317, 107, 0, null, null, null, 0, 115, null, 115, 0, 121, 369, 121, 0, 127, 385, 127, 0, 131, 391, 131, 0, 138, 416, 138, 0, 142, 428, 142, 0, 149, 439, 149, 0, 153, 455, 153, 0, 159, 475, 159, 0, 163, 483, 163, 0, 168, 502, 168, 0, 174, 514, 174, 0, 179, 529, 179, 0, 182, 544, 182, 0, 188, 560, 188, 0, 191, 579, 191, 0, 199, 595, 199, 0, 201, null, 201, 0, null, null, null, 0, 213, 635, 213, 0, 216, 652, 216, 0, 220, 666, 220, 0, 229, 685, 229, 0, 234, 698, 234, 0, 239, 711, 239, 0, 243, 723, 243, 0, 245, 743, 245]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 104, 104, 107, 107, 115, 115, 121, 121, 127, 127, 131, 131, 138, 138, 142, 142, 149, 149, 153, 153, 159, 159, 163, 163, 168, 168, 174, 174, 179, 179, 182, 182, 188, 188, 191, 191, 199, 199, 201, 201, 213, 213, 216, 216, 220, 220, 229, 229, 234, 234, 239, 239, 243, 243, 245, 245, 317, 369, 385, 391, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null, null, null, null, null, null, null, null]
 }
 

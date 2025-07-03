@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT abs(a), (a+b+c+d+e)/5, a+b*2, c, b, d FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 AND (c<=d-2 OR c>=d+2) */
-let result = from row in t1
+var result = from row in t1
   where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
   select [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a + (row.b * 2)), row.c, row.b, row.d]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case139" {
-  expect flatResult == [107, 107, 317, 106, 105, 108, 127, 127, 385, 125, 129, 128]
+  expect flatResult == [105, 106, 107, 107, 108, 125, 127, 127, 128, 129, 317, 385]
 }
 

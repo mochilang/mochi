@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT a+b*2, a+b*2+c*3+d*4 FROM t1 WHERE d NOT BETWEEN 110 AND 150 OR b>c OR (a>b-2 AND a<b+2) */
-let result = from row in t1
+var result = from row in t1
   where (((row.d < 110 || row.d > 150) || row.b > row.c) || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
   select [(row.a + (row.b * 2)), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case105" {
-  expect flatResult == [369, 1226, 385, 1272, 416, 1371, 428, 1411, 455, null, 475, null, 502, null, 579, 1918, 595, 1964, 652, 2165, 685, 2264, 698, 2323, 743, 2476, null, null, 317, 1067, 483, 1622, 514, 1714, 544, 1828, 560, 1861, null, null, null, null, 635, 2125, 666, 2226, 711, null, 391, 1325]
+  expect flatResult == [1067, 1226, 1272, 1325, 1371, 1411, 1622, 1714, 1828, 1861, 1918, 1964, 2125, 2165, 2226, 2264, 2323, 2476, 317, 369, 385, 391, 416, 428, 455, 475, 483, 502, 514, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 743, null, null, null, null, null, null, null, null, null, null]
 }
 

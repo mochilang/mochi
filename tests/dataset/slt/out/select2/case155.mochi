@@ -227,19 +227,25 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where ((row.e > row.c || row.e < row.d))
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.c - row.d), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.a, row.c]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case155" {
-  expect flatResult == [107, -2, 333, 1050, 107, 106, 127, -3, 222, 1290, 127, 125, 142, 1, 222, 1430, 142, 141, null, null, 333, 1580, 159, 155, 162, -3, 444, 1600, 163, 161, 172, 1, 444, 1700, 174, 172, null, null, 444, 358, 179, 176, 187, 2, 333, 376, 188, 187, 197, -1, 333, 398, 199, 195, null, -1, 444, 402, 201, 202, 217, -2, 222, 432, 216, 215, 227, -1, 333, 458, 229, 225, null, -1, 444, 1120, null, 113, 132, 1, 333, 1300, 131, 134, 137, 1, 222, 1390, 138, 137, 182, 1, 333, 364, 182, 184, 212, 2, 333, 426, 213, 214, 222, 2, 222, 440, 220, 224, 232, -2, 333, 468, 234, 231, null, null, 444, 2360, 239, null, 247, -1, 111, 490, 245, 247]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -3, -3, 1, 1, 1, 1, 1, 1050, 106, 107, 107, 111, 1120, 113, 125, 127, 127, 1290, 1300, 131, 132, 134, 137, 137, 138, 1390, 141, 142, 142, 1430, 155, 1580, 159, 1600, 161, 162, 163, 1700, 172, 172, 174, 176, 179, 182, 182, 184, 187, 187, 188, 195, 197, 199, 2, 2, 2, 201, 202, 212, 213, 214, 215, 216, 217, 220, 222, 222, 222, 222, 222, 222, 224, 225, 227, 229, 231, 232, 234, 2360, 239, 245, 247, 247, 333, 333, 333, 333, 333, 333, 333, 333, 333, 358, 364, 376, 398, 402, 426, 432, 440, 444, 444, 444, 444, 444, 444, 458, 468, 490, null, null, null, null, null, null, null, null, null, null]
 }
 

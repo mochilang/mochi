@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT abs(a), a+b*2+c*3, c-d FROM t1 WHERE (c<=d-2 OR c>=d+2) AND b IS NOT NULL AND c>d */
-let result = from row in t1
+var result = from row in t1
   where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && row.b != null) && row.c > row.d)
   select [(if row.a < 0 { -(row.a) } else { row.a }), ((row.a + (row.b * 2)) + (row.c * 3)), (row.c - row.d)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case145" {
-  expect flatResult == [188, 1121, 2, 191, 1158, 3, 213, 1277, 2, 220, 1338, 2]
+  expect flatResult == [1121, 1158, 1277, 1338, 188, 191, 2, 2, 2, 213, 220, 3]
 }
 

@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT b-c, abs(a) FROM t1 WHERE b IS NOT NULL OR e+d BETWEEN a+b-10 AND c+130 OR c BETWEEN b-2 AND d+2 */
-let result = from row in t1
+var result = from row in t1
   where ((row.b != null || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
   select [(row.b - row.c), (if row.a < 0 { -(row.a) } else { row.a })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case119" {
-  expect flatResult == [-1, 107, -1, null, 1, 121, 4, 127, -4, 131, 2, 138, 2, 142, -2, 149, 1, 153, 3, 159, -1, 163, 1, 168, -2, 174, -1, 179, -3, 182, -1, 188, 1, 191, 3, 199, -2, null, -3, 213, 3, 216, -1, 220, 3, 229, 1, 234, null, 239, -4, 243, 2, 245]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -2, -2, -2, -3, -3, -4, -4, 1, 1, 1, 1, 1, 107, 121, 127, 131, 138, 142, 149, 153, 159, 163, 168, 174, 179, 182, 188, 191, 199, 2, 2, 2, 213, 216, 220, 229, 234, 239, 243, 245, 3, 3, 3, 3, 4, null, null, null]
 }
 

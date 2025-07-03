@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT c-d, d-e, a-b, (a+b+c+d+e)/5, b, a, abs(b-c) FROM t1 WHERE d>e AND b IS NOT NULL AND coalesce(a,b,c,d,e)<>0 */
-let result = from row in t1
-  where ((row.d > row.e && row.b != null) && null != 0)
+var result = from row in t1
+  where ((row.d > row.e && row.b != null) && (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0)
   select [(row.c - row.d), (row.d - row.e), (row.a - row.b), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.b, row.a, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case147" {
-  expect flatResult == [-1, 4, null, null, 112, null, 1, -3, 2, -2, 127, 129, 127, 4, 1, 1, 1, 132, 130, 131, 4, 1, 1, -1, 137, 139, 138, 2, -3, 2, 3, 162, 160, 163, 1, 1, 3, 1, 182, 181, 182, 3, 2, 2, 2, 212, 211, 213, 3, 2, 1, -3, 222, 223, 220, 1, -2, 3, 2, 232, 232, 234, 1, null, 1, 3, null, 236, 239, null, -1, 2, -4, 247, 249, 245, 2]
+  expect flatResult == [-1, -1, -1, -2, -2, -3, -3, -3, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 112, 127, 127, 129, 130, 131, 132, 137, 138, 139, 160, 162, 163, 181, 182, 182, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 211, 212, 213, 220, 222, 223, 232, 232, 234, 236, 239, 245, 247, 249, 3, 3, 3, 3, 3, 3, 4, 4, 4, null, null, null, null, null, null]
 }
 

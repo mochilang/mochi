@@ -227,23 +227,29 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where (((row.e > row.c || row.e < row.d)) || row.b != null)
-  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
+  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
   where x.b < row.b
   select x), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case172" {
-  expect flatResult == [1067, 1, 333, 0, 635, 0, 1050, null, 1, 555, 0, null, 1, 1120, 1226, 1, 333, 0, 738, 2, 1240, 1272, 4, 333, 0, 760, 3, 1290, 1325, 4, 444, 0, 793, 4, 1300, 1371, 2, 111, 0, 827, 5, 1390, 1411, 2, 111, 0, 851, 6, 1430, null, 2, 555, 0, 880, 7, 1450, null, 1, 555, 0, 905, 8, 1510, null, 3, 555, 0, 940, 9, 1580, 1622, 1, 333, 0, 966, 10, 1600, null, 1, 555, 0, 1000, 11, 1670, 1714, 2, 555, 0, 1030, 12, 1700, null, 1, 555, 0, 1057, 13, 358, 1828, 3, 333, 0, 1096, 14, 364, 1861, 1, 444, 0, 1121, 15, 376, 1918, 1, 444, 0, 1158, 16, 382, 1964, 3, 555, 0, 1180, 17, 398, null, 2, 555, 0, null, 18, null, 2125, 3, 222, 0, 1277, 19, 426, 2165, 3, 333, 0, 1297, 20, 432, 2226, 1, 444, 0, 1338, 21, 440, 2264, 3, 555, 0, 1360, 22, 458, 2323, 1, 555, 0, 1391, 23, 468, null, null, 555, 0, null, 24, 2360, null, 4, 222, 0, 1455, 25, 486, 2476, 2, 444, 0, 1484, 26, 490, null, null, 222, 0, null, 0, 402]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 1000, 1030, 1050, 1057, 1067, 1096, 11, 111, 111, 1120, 1121, 1158, 1180, 12, 1226, 1240, 1272, 1277, 1290, 1297, 13, 1300, 1325, 1338, 1360, 1371, 1390, 1391, 14, 1411, 1430, 1450, 1455, 1484, 15, 1510, 1580, 16, 1600, 1622, 1670, 17, 1700, 1714, 18, 1828, 1861, 19, 1918, 1964, 2, 2, 2, 2, 2, 2, 2, 20, 21, 2125, 2165, 22, 222, 222, 222, 2226, 2264, 23, 2323, 2360, 24, 2476, 25, 26, 3, 3, 3, 3, 3, 3, 3, 333, 333, 333, 333, 333, 333, 358, 364, 376, 382, 398, 4, 4, 4, 4, 402, 426, 432, 440, 444, 444, 444, 444, 444, 458, 468, 486, 490, 5, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 6, 635, 7, 738, 760, 793, 8, 827, 851, 880, 9, 905, 940, 966, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

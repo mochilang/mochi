@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT (a+b+c+d+e)/5, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b FROM t1 WHERE a>b */
-let result = from row in t1
+var result = from row in t1
   where row.a > row.b
-  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.b]
+  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), row.b]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case151" {
-  expect flatResult == [107, 333, 105, 132, 444, 130, null, 555, 145, null, 555, 151, null, 555, 158, 162, 333, 160, null, 555, 167, 172, 555, 170, null, 555, 175, 182, 333, 181, 187, 444, 186, 197, 555, 198, 212, 222, 211, 227, 555, 228, 232, 555, 232, null, 555, 236, null, 222, 240]
+  expect flatResult == [105, 107, 130, 132, 145, 151, 158, 160, 162, 167, 170, 172, 175, 181, 182, 186, 187, 197, 198, 211, 212, 222, 222, 227, 228, 232, 232, 236, 240, 333, 333, 333, 444, 444, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, null, null, null, null, null, null, null]
 }
 

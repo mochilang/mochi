@@ -224,21 +224,27 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4+e*5, d-e, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), a-b, abs(b-c), d FROM t1 WHERE (c<=d-2 OR c>=d+2) OR e+d BETWEEN a+b-10 AND c+130 OR a>b */
-let result = from row in t1
+var result = from row in t1
   where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) || row.a > row.b)
   select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.d - row.e), count(from x in t1
   where x.b < row.b
   select x), (row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case121" {
-  expect flatResult == [1612, -1, 0, 2, 1, 108, 1985, 1, 4, 1, 4, 133, null, null, 7, 4, 2, null, null, null, 8, 2, 1, null, null, null, 9, 1, 3, null, 2432, 2, 10, 3, 1, 164, null, null, 11, 1, 1, null, 2579, -2, 12, 4, 2, 171, null, null, 13, 4, 1, null, 2728, 3, 14, 1, 3, 183, 2806, -4, 15, 2, 1, 185, 2949, -1, 17, 1, 3, 196, 3175, 2, 19, 2, 3, 212, 3399, -1, 22, 1, 3, 226, 3473, 3, 23, 2, 1, 233, null, 1, 24, 3, null, 238, null, null, 25, 3, 4, null, 1902, 2, 3, -2, 4, 128, 3260, -2, 20, -2, 3, 217, null, -1, 0, null, null, 116, 2878, -2, 16, -3, 1, 190, 3331, 1, 21, -3, 1, 222]
+  expect flatResult == [-1, -1, -1, -1, -2, -2, -2, -2, -2, -3, -3, -4, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 108, 11, 116, 12, 128, 13, 133, 14, 15, 16, 1612, 164, 17, 171, 183, 185, 19, 190, 1902, 196, 1985, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 20, 21, 212, 217, 22, 222, 226, 23, 233, 238, 24, 2432, 25, 2579, 2728, 2806, 2878, 2949, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3175, 3260, 3331, 3399, 3473, 4, 4, 4, 4, 4, 4, 4, 7, 8, 9, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

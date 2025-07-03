@@ -224,21 +224,27 @@ let t1 = [
 ]
 
 /* SELECT b, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2+c*3+d*4+e*5, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2 FROM t1 WHERE a>b */
-let result = from row in t1
+var result = from row in t1
   where row.a > row.b
-  select [row.b, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
+  select [row.b, (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.a + (row.b * 2))]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case150" {
-  expect flatResult == [105, 333, 333, 1612, 0, 317, 130, 444, 333, 1985, 0, 391, 145, 555, 444, null, 0, 439, 151, 555, 333, null, 0, 455, 158, 555, 333, null, 0, 475, 160, 333, 444, 2432, 0, 483, 167, 555, 333, null, 0, 502, 170, 555, 444, 2579, 0, 514, 175, 555, 444, null, 0, 529, 181, 333, 333, 2728, 0, 544, 186, 444, 333, 2806, 0, 560, 198, 555, 333, 2949, 0, 595, 211, 222, 333, 3175, 0, 635, 228, 555, 333, 3399, 0, 685, 232, 555, 333, 3473, 0, 698, 236, 555, 444, null, 0, 711, 240, 222, 444, null, 0, 723]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 130, 145, 151, 158, 160, 1612, 167, 170, 175, 181, 186, 198, 1985, 211, 222, 222, 228, 232, 236, 240, 2432, 2579, 2728, 2806, 2949, 317, 3175, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 3399, 3473, 391, 439, 444, 444, 444, 444, 444, 444, 444, 444, 455, 475, 483, 502, 514, 529, 544, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 560, 595, 635, 685, 698, 711, 723, null, null, null, null, null, null, null]
 }
 

@@ -224,20 +224,26 @@ let t1 = [
 ]
 
 /* SELECT a, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), abs(a), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [row.a, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (if row.a < 0 { -(row.a) } else { row.a }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case188" {
-  expect flatResult == [104, 0, 104, 444, 107, 0, 107, 333, null, 0, null, 444, 115, 0, 115, 444, 121, 0, 121, 222, 127, 0, 127, 222, 131, 0, 131, 333, 138, 0, 138, 222, 142, 0, 142, 222, 149, 0, 149, 444, 153, 0, 153, 333, 159, 0, 159, 333, 163, 0, 163, 444, 168, 0, 168, 333, 174, 0, 174, 444, 179, 0, 179, 444, 182, 0, 182, 333, 188, 0, 188, 333, 191, 0, 191, 222, 199, 0, 199, 333, 201, 0, 201, 444, null, 0, null, 444, 213, 0, 213, 333, 216, 0, 216, 222, 220, 0, 220, 222, 229, 0, 229, 333, 234, 0, 234, 333, 239, 0, 239, 444, 243, 0, 243, 444, 245, 0, 245, 111]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 104, 104, 107, 107, 111, 115, 115, 121, 121, 127, 127, 131, 131, 138, 138, 142, 142, 149, 149, 153, 153, 159, 159, 163, 163, 168, 168, 174, 174, 179, 179, 182, 182, 188, 188, 191, 191, 199, 199, 201, 201, 213, 213, 216, 216, 220, 220, 222, 222, 222, 222, 222, 222, 222, 229, 229, 234, 234, 239, 239, 243, 243, 245, 245, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, null, null, null, null]
 }
 

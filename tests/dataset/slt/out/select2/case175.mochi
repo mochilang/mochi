@@ -224,21 +224,27 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4+e*5, d, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3+d*4, c, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 WHERE a IS NULL */
-let result = from row in t1
+var result = from row in t1
   where row.a == null
   select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.d, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.c, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case175" {
-  expect flatResult == [null, 114, 0, null, 113, 444, null, 207, 0, null, 208, 444]
+  expect flatResult == [0, 0, 113, 114, 207, 208, 444, 444, null, null, null, null]
 }
 

@@ -227,21 +227,27 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || row.a > row.b) || row.b != null)
   select [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a - row.b), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case114" {
-  expect flatResult == [1050, 2, 0, 107, 106, 1120, null, 0, null, 113, 1240, -3, 0, null, 123, 1290, -2, 0, 127, 125, 1300, 1, 0, 132, 134, 1390, -1, 0, 137, 137, 1430, -1, 0, 142, 141, 1450, 4, 0, null, 147, 1510, 2, 0, null, 150, 1580, 1, 0, null, 155, 1600, 3, 0, 162, 161, 1670, 1, 0, null, 166, 1700, 4, 0, 172, 172, 358, 4, 0, null, 176, 364, 1, 0, 182, 184, 376, 2, 0, 187, 187, 382, -3, 0, 192, 193, 398, 1, 0, 197, 195, null, null, 0, null, 208, 426, 2, 0, 212, 214, 432, -2, 0, 217, 215, 440, -3, 0, 222, 224, 458, 1, 0, 227, 225, 468, 2, 0, 232, 231, 2360, 3, 0, null, null, 486, 3, 0, null, 244, 490, -4, 0, 247, 247]
+  expect flatResult == [-1, -1, -2, -2, -3, -3, -3, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1050, 106, 107, 1120, 113, 123, 1240, 125, 127, 1290, 1300, 132, 134, 137, 137, 1390, 141, 142, 1430, 1450, 147, 150, 1510, 155, 1580, 1600, 161, 162, 166, 1670, 1700, 172, 172, 176, 182, 184, 187, 187, 192, 193, 195, 197, 2, 2, 2, 2, 2, 208, 212, 214, 215, 217, 222, 224, 225, 227, 231, 232, 2360, 244, 247, 247, 3, 3, 3, 358, 364, 376, 382, 398, 4, 4, 4, 426, 432, 440, 458, 468, 486, 490, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

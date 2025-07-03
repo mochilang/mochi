@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT d-e, abs(b-c), a+b*2+c*3, a+b*2, a-b FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
-let result = from row in t1
-  where null != 0
+var result = from row in t1
+  where (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0
   select [(row.d - row.e), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((row.a + (row.b * 2)) + (row.c * 3)), (row.a + (row.b * 2)), (row.a - row.b)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case123" {
-  expect flatResult == [null, null, null, null, null, -1, 1, 635, 317, 2, 4, 1, null, null, null, -1, null, null, null, null, null, 1, 738, 369, -3, 2, 4, 760, 385, -2, 1, 4, 793, 391, 1, 1, 2, 827, 416, -1, -4, 2, 851, 428, -1, null, 2, 880, 439, 4, null, 1, 905, 455, 2, null, 3, 940, 475, 1, 2, 1, 966, 483, 3, null, 1, 1000, 502, 1, -2, 2, 1030, 514, 4, null, 1, 1057, 529, 4, 3, 3, 1096, 544, 1, -4, 1, 1121, 560, 2, -2, 1, 1158, 579, -3, -1, 3, 1180, 595, 1, -1, null, null, null, null, null, 2, null, null, null, 2, 3, 1277, 635, 2, -2, 3, 1297, 652, -2, 1, 1, 1338, 666, -3, -1, 3, 1360, 685, 1, 3, 1, 1391, 698, 2, 1, null, null, 711, 3, null, 4, 1455, 723, 3, 2, 2, 1484, 743, -4]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -3, -3, -3, -4, -4, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1000, 1030, 1057, 1096, 1121, 1158, 1180, 1277, 1297, 1338, 1360, 1391, 1455, 1484, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 317, 369, 385, 391, 4, 4, 4, 4, 4, 4, 4, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 635, 652, 666, 685, 698, 711, 723, 738, 743, 760, 793, 827, 851, 880, 905, 940, 966, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

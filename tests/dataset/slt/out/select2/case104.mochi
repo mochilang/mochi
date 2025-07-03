@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT abs(b-c), a+b*2+c*3+d*4, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2+c*3, c, e, d FROM t1 WHERE a>b OR (e>c OR e<d) OR b IS NOT NULL */
-let result = from row in t1
+var result = from row in t1
   where ((row.a > row.b || ((row.e > row.c || row.e < row.d))) || row.b != null)
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((row.a + (row.b * 2)) + (row.c * 3)), row.c, row.e, row.d]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case104" {
-  expect flatResult == [1, 1067, 333, 635, 106, 109, 108, 1, null, 444, null, 113, 110, 114, 1, 1226, 222, 738, 123, null, 122, 4, 1272, 222, 760, 125, 126, 128, 4, 1325, 333, 793, 134, 132, 133, 2, 1371, 222, 827, 137, 135, 136, 2, 1411, 222, 851, 141, 144, 140, 2, null, 444, 880, 147, 146, null, 1, null, 333, 905, 150, null, null, 3, null, 333, 940, 155, 157, null, 1, 1622, 444, 966, 161, 162, 164, 1, null, 333, 1000, 166, 165, null, 2, 1714, 444, 1030, 172, 173, 171, 1, null, 444, 1057, 176, 177, null, 3, 1828, 333, 1096, 184, 180, 183, 1, 1861, 333, 1121, 187, 189, 185, 1, 1918, 222, 1158, 193, 192, 190, 3, 1964, 333, 1180, 195, 197, 196, 2, null, 444, null, 208, null, 207, 3, 2125, 333, 1277, 214, 210, 212, 3, 2165, 222, 1297, 215, 219, 217, 1, 2226, 222, 1338, 224, 221, 222, 3, 2264, 333, 1360, 225, 227, 226, 1, 2323, 333, 1391, 231, 230, 233, null, null, 444, null, null, 237, 238, 4, null, 444, 1455, 244, null, null, 2, 2476, 111, 1484, 247, 246, 248, null, null, 444, null, 202, 204, 203]
+  expect flatResult == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1000, 1030, 1057, 106, 1067, 108, 109, 1096, 110, 111, 1121, 113, 114, 1158, 1180, 122, 1226, 123, 125, 126, 1272, 1277, 128, 1297, 132, 1325, 133, 1338, 134, 135, 136, 1360, 137, 1371, 1391, 140, 141, 1411, 144, 1455, 146, 147, 1484, 150, 155, 157, 161, 162, 1622, 164, 165, 166, 171, 1714, 172, 173, 176, 177, 180, 1828, 183, 184, 185, 1861, 187, 189, 190, 1918, 192, 193, 195, 196, 1964, 197, 2, 2, 2, 2, 2, 2, 202, 203, 204, 207, 208, 210, 212, 2125, 214, 215, 2165, 217, 219, 221, 222, 222, 222, 222, 222, 222, 222, 222, 2226, 224, 225, 226, 2264, 227, 230, 231, 2323, 233, 237, 238, 244, 246, 247, 2476, 248, 3, 3, 3, 3, 3, 3, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 4, 4, 4, 444, 444, 444, 444, 444, 444, 444, 444, 444, 635, 738, 760, 793, 827, 851, 880, 905, 940, 966, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

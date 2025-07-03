@@ -372,7 +372,10 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		return t
 	}
 
-	if t == "int" && boolLike && (seenZero || seenOne || seenNegOne) {
+	if (t == "int" || t == "float") && boolLike && (seenZero || seenOne || seenNegOne) {
+		// Columns that only contain 0/1 values are best represented as
+		// booleans.  Handle both integer and floating point values so
+		// that strings like "0.0" are recognized as bools.
 		return "bool"
 	}
 

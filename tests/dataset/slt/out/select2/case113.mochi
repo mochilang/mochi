@@ -224,21 +224,27 @@ let t1 = [
 ]
 
 /* SELECT abs(a), abs(b-c), (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE d NOT BETWEEN 110 AND 150 */
-let result = from row in t1
+var result = from row in t1
   where (row.d < 110 || row.d > 150)
   select [(if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), count(from x in t1
   where x.b < row.b
   select x)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case113" {
-  expect flatResult == [104, null, 0, 107, 1, 0, 163, 1, 10, 174, 2, 12, 182, 3, 14, 188, 1, 15, 191, 1, 16, 199, 3, 17, 201, null, 0, null, 2, 18, 213, 3, 19, 216, 3, 20, 220, 1, 21, 229, 3, 22, 234, 1, 23, 239, null, 24, 245, 2, 26]
+  expect flatResult == [0, 0, 0, 1, 1, 1, 1, 1, 1, 10, 104, 107, 12, 14, 15, 16, 163, 17, 174, 18, 182, 188, 19, 191, 199, 2, 2, 2, 20, 201, 21, 213, 216, 22, 220, 229, 23, 234, 239, 24, 245, 26, 3, 3, 3, 3, 3, null, null, null, null]
 }
 
