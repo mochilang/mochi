@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3, c, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) AND c BETWEEN b-2 AND d+2 AND (c<=d-2 OR c>=d+2) */
-let result = from row in t1
+var result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 && (row.c >= (row.b - 2) && row.c <= (row.d + 2))) && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
@@ -233,12 +233,18 @@ let result = from row in t1
   select x), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }

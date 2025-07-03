@@ -224,16 +224,22 @@ let t1 = [
 ]
 
 /* SELECT a+b*2, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a-b, c, (a+b+c+d+e)/5, a+b*2+c*3+d*4+e*5, abs(b-c) FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [(row.a + (row.b * 2)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.a - row.b), row.c, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
