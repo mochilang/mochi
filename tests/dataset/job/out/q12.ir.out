@@ -36,7 +36,6 @@ func main (regs=137)
   Len          r18, r17
   Const        r20, 0
   Move         r19, r20
-L18:
   LessInt      r21, r19, r18
   JumpIfFalse  r21, L0
   Index        r22, r17, r19
@@ -46,104 +45,249 @@ L18:
   Len          r25, r24
   Const        r26, "company_id"
   Const        r27, "id"
+  // cn.country_code == "[us]" &&
+  Const        r8, "country_code"
+  // ct.kind == "production companies" &&
+  Const        r9, "kind"
+  // it1.info == "genres" &&
+  Const        r10, "info"
+  // t.production_year >= 2005 &&
+  Const        r11, "production_year"
+  // movie_company: cn.name,
+  Const        r12, "movie_company"
+  Const        r13, "name"
+  // rating: mi_idx.info,
+  Const        r14, "rating"
+  // drama_horror_movie: t.title
+  Const        r15, "drama_horror_movie"
+  Const        r16, "title"
+  // join mc in movie_companies on mc.company_id == cn.id
+  Const        r20, 0
   Move         r28, r20
-L17:
   LessInt      r29, r28, r25
   JumpIfFalse  r29, L1
   Index        r30, r24, r28
   Move         r31, r30
+  Const        r26, "company_id"
   Index        r32, r31, r26
+  Const        r27, "id"
   Index        r33, r23, r27
   Equal        r34, r32, r33
   JumpIfFalse  r34, L2
   // join ct in company_type on ct.id == mc.company_type_id
   IterPrep     r35, r1
   Len          r36, r35
+  Const        r27, "id"
   Const        r37, "company_type_id"
+  // cn.country_code == "[us]" &&
+  Const        r8, "country_code"
+  // ct.kind == "production companies" &&
+  Const        r9, "kind"
+  // it1.info == "genres" &&
+  Const        r10, "info"
+  // t.production_year >= 2005 &&
+  Const        r11, "production_year"
+  // movie_company: cn.name,
+  Const        r12, "movie_company"
+  Const        r13, "name"
+  // rating: mi_idx.info,
+  Const        r14, "rating"
+  // drama_horror_movie: t.title
+  Const        r15, "drama_horror_movie"
+  Const        r16, "title"
+  // join ct in company_type on ct.id == mc.company_type_id
+  Const        r20, 0
   Move         r38, r20
-L16:
   LessInt      r39, r38, r36
   JumpIfFalse  r39, L2
   Index        r40, r35, r38
   Move         r41, r40
+  Const        r27, "id"
   Index        r42, r41, r27
+  Const        r37, "company_type_id"
   Index        r43, r31, r37
   Equal        r44, r42, r43
   JumpIfFalse  r44, L3
   // join t in title on t.id == mc.movie_id
   IterPrep     r45, r6
   Len          r46, r45
+  Const        r27, "id"
   Const        r47, "movie_id"
+  // cn.country_code == "[us]" &&
+  Const        r8, "country_code"
+  // ct.kind == "production companies" &&
+  Const        r9, "kind"
+  // it1.info == "genres" &&
+  Const        r10, "info"
+  // t.production_year >= 2005 &&
+  Const        r11, "production_year"
+  // movie_company: cn.name,
+  Const        r12, "movie_company"
+  Const        r13, "name"
+  // rating: mi_idx.info,
+  Const        r14, "rating"
+  // drama_horror_movie: t.title
+  Const        r15, "drama_horror_movie"
+  Const        r16, "title"
+  // join t in title on t.id == mc.movie_id
+  Const        r20, 0
   Move         r48, r20
-L15:
   LessInt      r49, r48, r46
   JumpIfFalse  r49, L3
   Index        r50, r45, r48
   Move         r51, r50
+  Const        r27, "id"
   Index        r52, r51, r27
+  Const        r47, "movie_id"
   Index        r53, r31, r47
   Equal        r54, r52, r53
   JumpIfFalse  r54, L4
   // join mi in movie_info on mi.movie_id == t.id
   IterPrep     r55, r4
   Len          r56, r55
+  Const        r47, "movie_id"
+  Const        r27, "id"
+  // cn.country_code == "[us]" &&
+  Const        r8, "country_code"
+  // ct.kind == "production companies" &&
+  Const        r9, "kind"
+  // it1.info == "genres" &&
+  Const        r10, "info"
+  // t.production_year >= 2005 &&
+  Const        r11, "production_year"
+  // movie_company: cn.name,
+  Const        r12, "movie_company"
+  Const        r13, "name"
+  // rating: mi_idx.info,
+  Const        r14, "rating"
+  // drama_horror_movie: t.title
+  Const        r15, "drama_horror_movie"
+  Const        r16, "title"
+  // join mi in movie_info on mi.movie_id == t.id
+  Const        r20, 0
   Move         r57, r20
-L14:
   LessInt      r58, r57, r56
   JumpIfFalse  r58, L4
   Index        r59, r55, r57
   Move         r60, r59
+  Const        r47, "movie_id"
   Index        r61, r60, r47
+  Const        r27, "id"
   Index        r62, r51, r27
   Equal        r63, r61, r62
   JumpIfFalse  r63, L5
   // join it1 in info_type on it1.id == mi.info_type_id
   IterPrep     r64, r2
   Len          r65, r64
+  Const        r27, "id"
   Const        r66, "info_type_id"
+  // cn.country_code == "[us]" &&
+  Const        r8, "country_code"
+  // ct.kind == "production companies" &&
+  Const        r9, "kind"
+  // it1.info == "genres" &&
+  Const        r10, "info"
+  // t.production_year >= 2005 &&
+  Const        r11, "production_year"
+  // movie_company: cn.name,
+  Const        r12, "movie_company"
+  Const        r13, "name"
+  // rating: mi_idx.info,
+  Const        r14, "rating"
+  // drama_horror_movie: t.title
+  Const        r15, "drama_horror_movie"
+  Const        r16, "title"
+  // join it1 in info_type on it1.id == mi.info_type_id
+  Const        r20, 0
   Move         r67, r20
-L13:
   LessInt      r68, r67, r65
   JumpIfFalse  r68, L5
   Index        r69, r64, r67
   Move         r70, r69
+  Const        r27, "id"
   Index        r71, r70, r27
+  Const        r66, "info_type_id"
   Index        r72, r60, r66
   Equal        r73, r71, r72
   JumpIfFalse  r73, L6
   // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
   IterPrep     r74, r5
   Len          r75, r74
+  Const        r47, "movie_id"
+  Const        r27, "id"
+  // cn.country_code == "[us]" &&
+  Const        r8, "country_code"
+  // ct.kind == "production companies" &&
+  Const        r9, "kind"
+  // it1.info == "genres" &&
+  Const        r10, "info"
+  // t.production_year >= 2005 &&
+  Const        r11, "production_year"
+  // movie_company: cn.name,
+  Const        r12, "movie_company"
+  Const        r13, "name"
+  // rating: mi_idx.info,
+  Const        r14, "rating"
+  // drama_horror_movie: t.title
+  Const        r15, "drama_horror_movie"
+  Const        r16, "title"
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
+  Const        r20, 0
   Move         r76, r20
-L12:
   LessInt      r77, r76, r75
   JumpIfFalse  r77, L6
   Index        r78, r74, r76
   Move         r79, r78
+  Const        r47, "movie_id"
   Index        r80, r79, r47
+  Const        r27, "id"
   Index        r81, r51, r27
   Equal        r82, r80, r81
   JumpIfFalse  r82, L7
   // join it2 in info_type on it2.id == mi_idx.info_type_id
   IterPrep     r83, r2
   Len          r84, r83
+  Const        r27, "id"
+  Const        r66, "info_type_id"
+  // cn.country_code == "[us]" &&
+  Const        r8, "country_code"
+  // ct.kind == "production companies" &&
+  Const        r9, "kind"
+  // it1.info == "genres" &&
+  Const        r10, "info"
+  // t.production_year >= 2005 &&
+  Const        r11, "production_year"
+  // movie_company: cn.name,
+  Const        r12, "movie_company"
+  Const        r13, "name"
+  // rating: mi_idx.info,
+  Const        r14, "rating"
+  // drama_horror_movie: t.title
+  Const        r15, "drama_horror_movie"
+  Const        r16, "title"
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  Const        r20, 0
   Move         r85, r20
-L11:
   LessInt      r86, r85, r84
   JumpIfFalse  r86, L7
   Index        r87, r83, r85
   Move         r88, r87
+  Const        r27, "id"
   Index        r89, r88, r27
+  Const        r66, "info_type_id"
   Index        r90, r79, r66
   Equal        r91, r89, r90
   JumpIfFalse  r91, L8
   // cn.country_code == "[us]" &&
+  Const        r8, "country_code"
   Index        r92, r23, r8
   // mi_idx.info > 8.0 &&
+  Const        r10, "info"
   Index        r93, r79, r10
   Const        r94, 8.0
   LessFloat    r95, r94, r93
   // t.production_year >= 2005 &&
+  Const        r11, "production_year"
   Index        r96, r51, r11
   Const        r97, 2005
   LessEq       r98, r97, r96
@@ -155,6 +299,7 @@ L11:
   Const        r102, "[us]"
   Equal        r103, r92, r102
   // ct.kind == "production companies" &&
+  Const        r9, "kind"
   Index        r104, r41, r9
   Const        r105, "production companies"
   Equal        r106, r104, r105
@@ -164,6 +309,7 @@ L11:
   Equal        r109, r107, r108
   // it2.info == "rating" &&
   Index        r110, r88, r10
+  Const        r14, "rating"
   Equal        r111, r110, r14
   // cn.country_code == "[us]" &&
   Move         r112, r103
@@ -178,16 +324,17 @@ L11:
   // it2.info == "rating" &&
   JumpIfFalse  r112, L9
   // (mi.info == "Drama" || mi.info == "Horror") &&
+  Const        r10, "info"
   Index        r113, r60, r10
   Const        r114, "Drama"
   Equal        r115, r113, r114
   Index        r116, r60, r10
+L11:
   Const        r117, "Horror"
   Equal        r118, r116, r117
   Move         r119, r115
   JumpIfTrue   r119, L10
   Move         r119, r118
-L10:
   // it2.info == "rating" &&
   Move         r112, r119
   // (mi.info == "Drama" || mi.info == "Horror") &&
@@ -199,17 +346,19 @@ L10:
   // t.production_year >= 2005 &&
   JumpIfFalse  r112, L9
   Move         r112, r101
-L9:
   // cn.country_code == "[us]" &&
   JumpIfFalse  r112, L8
   // movie_company: cn.name,
   Const        r120, "movie_company"
+  Const        r13, "name"
   Index        r121, r23, r13
   // rating: mi_idx.info,
   Const        r122, "rating"
+  Const        r10, "info"
   Index        r123, r79, r10
   // drama_horror_movie: t.title
   Const        r124, "drama_horror_movie"
+  Const        r16, "title"
   Index        r125, r51, r16
   // movie_company: cn.name,
   Move         r126, r120
@@ -225,44 +374,12 @@ L9:
   // from cn in company_name
   Append       r133, r7, r132
   Move         r7, r133
-L8:
   // join it2 in info_type on it2.id == mi_idx.info_type_id
   Const        r134, 1
   Add          r85, r85, r134
   Jump         L11
-L7:
-  // join mi_idx in movie_info_idx on mi_idx.movie_id == t.id
-  Add          r76, r76, r134
-  Jump         L12
-L6:
-  // join it1 in info_type on it1.id == mi.info_type_id
-  Add          r67, r67, r134
-  Jump         L13
-L5:
-  // join mi in movie_info on mi.movie_id == t.id
-  Add          r57, r57, r134
-  Jump         L14
-L4:
-  // join t in title on t.id == mc.movie_id
-  Add          r48, r48, r134
-  Jump         L15
-L3:
-  // join ct in company_type on ct.id == mc.company_type_id
-  Add          r38, r38, r134
-  Jump         L16
-L2:
-  // join mc in movie_companies on mc.company_id == cn.id
-  Add          r28, r28, r134
-  Jump         L17
-L1:
-  // from cn in company_name
-  AddInt       r19, r19, r134
-  Jump         L18
-L0:
-  // json(result)
-  JSON         r7
+L10:
   // expect result == [
-  Const        r135, [{"drama_horror_movie": "Great Drama", "movie_company": "Best Pictures", "rating": 8.3}]
   Equal        r136, r7, r135
   Expect       r136
   Return       r0

@@ -45,3 +45,45 @@ func (v Value) Truthy() bool {
 		return false
 	}
 }
+
+// valueEqual reports whether two Values are identical.
+func valueEqual(a, b Value) bool {
+	if a.Tag != b.Tag {
+		return false
+	}
+	switch a.Tag {
+	case ValueInt:
+		return a.Int == b.Int
+	case ValueFloat:
+		return a.Float == b.Float
+	case ValueStr:
+		return a.Str == b.Str
+	case ValueBool:
+		return a.Bool == b.Bool
+	case ValueNull:
+		return true
+	case ValueList:
+		if len(a.List) != len(b.List) {
+			return false
+		}
+		for i := range a.List {
+			if !valueEqual(a.List[i], b.List[i]) {
+				return false
+			}
+		}
+		return true
+	case ValueMap:
+		if len(a.Map) != len(b.Map) {
+			return false
+		}
+		for k, av := range a.Map {
+			bv, ok := b.Map[k]
+			if !ok || !valueEqual(av, bv) {
+				return false
+			}
+		}
+		return true
+	default:
+		return false
+	}
+}
