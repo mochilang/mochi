@@ -176,6 +176,15 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			}
 
 			clean := strings.TrimPrefix(strings.TrimPrefix(sv, "+"), "-")
+			if _, err := strconv.ParseInt(clean, 10, 64); err == nil {
+				if t == "" {
+					t = "int"
+				}
+				if clean != "0" && clean != "1" {
+					boolLike = false
+				}
+				continue
+			}
 			if f, err := strconv.ParseFloat(clean, 64); err == nil {
 				if f == math.Trunc(f) {
 					if t == "" {
