@@ -231,8 +231,8 @@ let result = from row in t1
   where (count(from x in t1
   where x.b < row.b
   select x) > 0 || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
-  order by [(if row.c > sub0 { (row.a + row.a) } else { (row.b * 10) }), (row.a + (row.b + row.b)), (if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
-  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.c > sub0 { (row.a + row.a) } else { (row.b * 10) }), (if row.a < 0 { -(row.a) } else { row.a }), (row.a + (row.b + row.b))]
+  order by [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a + (row.b * 2)), (if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (if row.a < 0 { -(row.a) } else { row.a }), (row.a + (row.b * 2))]
 var flatResult = []
 for row in result {
   for x in row {
