@@ -444,18 +444,26 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		t = "int"
 	}
 
+	// Prefer boolean when the column only contains 0/1 values even if NULLs
+	// are present. The previous logic returned the numeric type whenever a
+	// NULL was seen which caused some boolean columns to be inferred as
+	// integers. Check for the numeric boolean case first so NULLs don't
+	// override the more specific bool inference.
+	if (t == "int" || t == "float") && boolLike && (seenZero || seenOne || seenNegOne) {
+		// Columns that only contain 0/1 values are best represented as
+		// booleans. Handle both integer and floating point values so
+		// that strings like "0.0" are recognized as bools.
+		return "bool"
+	}
+
 	if hasNull {
 		if t == "" {
+			if boolLike && (seenZero || seenOne || seenNegOne) {
+				return "bool"
+			}
 			return "any"
 		}
 		return t
-	}
-
-	if (t == "int" || t == "float") && boolLike && (seenZero || seenOne || seenNegOne) {
-		// Columns that only contain 0/1 values are best represented as
-		// booleans.  Handle both integer and floating point values so
-		// that strings like "0.0" are recognized as bools.
-		return "bool"
 	}
 
 	if t == "" {
