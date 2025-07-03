@@ -256,6 +256,7 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 			if err := os.WriteFile(srcPath, []byte(code), 0o644); err != nil {
 				return err
 			}
+			fmt.Printf("generated %s\n", srcPath)
 			if run {
 				out, err := RunMochi(code)
 				outPath := filepath.Join(testDir, c.Name+".out")
@@ -268,6 +269,11 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 				}
 				if err := os.WriteFile(outPath, []byte(out+"\n"), 0o644); err != nil {
 					return err
+				}
+				if err != nil {
+					fmt.Printf("FAILED %s: %v\n", srcPath, err)
+				} else {
+					fmt.Printf("ran %s\n", srcPath)
 				}
 			}
 		}
