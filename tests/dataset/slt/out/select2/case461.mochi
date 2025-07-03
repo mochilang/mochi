@@ -224,9 +224,12 @@ let t1 = [
 ]
 
 /* SELECT (a+b+c+d+e)/5 FROM t1 WHERE coalesce(a,b,c,d,e)<>0 AND (e>a AND e<b) AND b IS NOT NULL */
-let result = from row in t1
-  where ((null != 0 && ((row.e > row.a && row.e < row.b))) && row.b != null)
+var result = from row in t1
+  where (((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 && ((row.e > row.a && row.e < row.b))) && row.b != null)
   select ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }

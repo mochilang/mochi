@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d-e, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2+c*3+d*4 FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [(row.d - row.e), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
 var flatResult = []
 for row in result {
@@ -232,10 +232,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case409" {
-  expect flatResult == [null, 444, null, -1, 333, 1067, 4, 444, null, -1, 444, null, null, 222, 1226, 2, 222, 1272, 1, 333, 1325, 1, 222, 1371, -4, 222, 1411, null, 444, null, null, 333, null, null, 333, null, 2, 444, 1622, null, 333, null, -2, 444, 1714, null, 444, null, 3, 333, 1828, -4, 333, 1861, -2, 222, 1918, -1, 333, 1964, -1, 444, null, null, 444, null, 2, 333, 2125, -2, 222, 2165, 1, 222, 2226, -1, 333, 2264, 3, 333, 2323, 1, 444, null, null, 444, null, 2, 111, 2476]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -4, -4, 1, 1, 1, 1, 1067, 111, 1226, 1272, 1325, 1371, 1411, 1622, 1714, 1828, 1861, 1918, 1964, 2, 2, 2, 2, 2125, 2165, 222, 222, 222, 222, 222, 222, 222, 2226, 2264, 2323, 2476, 3, 3, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 4, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

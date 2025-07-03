@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT b, (a+b+c+d+e)/5 FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 */
-let result = from row in t1
+var result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
   select [row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case469" {
-  expect flatResult == [105, 107, 129, 127]
+  expect flatResult == [105, 107, 127, 129]
 }
 

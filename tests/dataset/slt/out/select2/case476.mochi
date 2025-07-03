@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d-e, a+b*2+c*3+d*4+e*5, b-c, a, d, b FROM t1 WHERE b IS NOT NULL OR d NOT BETWEEN 110 AND 150 */
-let result = from row in t1
+var result = from row in t1
   where (row.b != null || (row.d < 110 || row.d > 150))
   select [(row.d - row.e), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.b - row.c), row.a, row.d, row.b]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case476" {
-  expect flatResult == [null, null, null, 104, 101, null, -1, 1612, -1, 107, 108, 105, 4, null, -1, null, 114, 112, null, null, 1, 121, 122, 124, 2, 1902, 4, 127, 128, 129, 1, 1985, -4, 131, 133, 130, 1, 2046, 2, 138, 136, 139, -4, 2131, 2, 142, 140, 143, null, null, -2, 149, null, 145, null, null, 1, 153, null, 151, null, null, 3, 159, null, 158, 2, 2432, -1, 163, 164, 160, null, null, 1, 168, null, 167, -2, 2579, -2, 174, 171, 170, null, null, -1, 179, null, 175, 3, 2728, -3, 182, 183, 181, -4, 2806, -1, 188, 185, 186, -2, 2878, 1, 191, 190, 194, -1, 2949, 3, 199, 196, 198, -1, null, null, 201, 203, null, null, null, -2, null, 207, 206, 2, 3175, -3, 213, 212, 211, -2, 3260, 3, 216, 217, 218, 1, 3331, -1, 220, 222, 223, -1, 3399, 3, 229, 226, 228, 3, 3473, 1, 234, 233, 232, 1, null, null, 239, 238, 236, null, null, -4, 243, null, 240, 2, 3706, 2, 245, 248, 249]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2, -3, -3, -4, -4, -4, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 101, 104, 105, 107, 108, 112, 114, 121, 122, 124, 127, 128, 129, 130, 131, 133, 136, 138, 139, 140, 142, 143, 145, 149, 151, 153, 158, 159, 160, 1612, 163, 164, 167, 168, 170, 171, 174, 175, 179, 181, 182, 183, 185, 186, 188, 190, 1902, 191, 194, 196, 198, 1985, 199, 2, 2, 2, 2, 2, 2, 2, 201, 203, 2046, 206, 207, 211, 212, 213, 2131, 216, 217, 218, 220, 222, 223, 226, 228, 229, 232, 233, 234, 236, 238, 239, 240, 243, 2432, 245, 248, 249, 2579, 2728, 2806, 2878, 2949, 3, 3, 3, 3, 3, 3, 3175, 3260, 3331, 3399, 3473, 3706, 4, 4, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

@@ -224,8 +224,8 @@ let t1 = [
 ]
 
 /* SELECT b-c, a+b*2+c*3+d*4 FROM t1 WHERE coalesce(a,b,c,d,e)<>0 OR (e>c OR e<d) OR a IS NULL */
-let result = from row in t1
-  where ((null != 0 || ((row.e > row.c || row.e < row.d))) || row.a == null)
+var result = from row in t1
+  where (((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 || ((row.e > row.c || row.e < row.d))) || row.a == null)
   select [(row.b - row.c), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
 var flatResult = []
 for row in result {
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case455" {
-  expect flatResult == [null, null, -1, 1067, -1, null, null, null, 1, 1226, 4, 1272, -4, 1325, 2, 1371, 2, 1411, -2, null, 1, null, 3, null, -1, 1622, 1, null, -2, 1714, -1, null, -3, 1828, -1, 1861, 1, 1918, 3, 1964, null, null, -2, null, -3, 2125, 3, 2165, -1, 2226, 3, 2264, 1, 2323, null, null, -4, null, 2, 2476]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -2, -2, -2, -3, -3, -4, -4, 1, 1, 1, 1, 1, 1067, 1226, 1272, 1325, 1371, 1411, 1622, 1714, 1828, 1861, 1918, 1964, 2, 2, 2, 2125, 2165, 2226, 2264, 2323, 2476, 3, 3, 3, 3, 4, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

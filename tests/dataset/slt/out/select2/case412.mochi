@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2, abs(a) FROM t1 WHERE d NOT BETWEEN 110 AND 150 */
-let result = from row in t1
+var result = from row in t1
   where (row.d < 110 || row.d > 150)
   select [(row.a + (row.b * 2)), (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case412" {
-  expect flatResult == [null, 104, 317, 107, 483, 163, 514, 174, 544, 182, 560, 188, 579, 191, 595, 199, null, 201, null, null, 635, 213, 652, 216, 666, 220, 685, 229, 698, 234, 711, 239, 743, 245]
+  expect flatResult == [104, 107, 163, 174, 182, 188, 191, 199, 201, 213, 216, 220, 229, 234, 239, 245, 317, 483, 514, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 743, null, null, null, null]
 }
 

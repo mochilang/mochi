@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2, abs(a), b, c, d, a+b*2+c*3 FROM t1 WHERE (c<=d-2 OR c>=d+2) AND c BETWEEN b-2 AND d+2 AND b IS NOT NULL */
-let result = from row in t1
+var result = from row in t1
   where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && (row.c >= (row.b - 2) && row.c <= (row.d + 2))) && row.b != null)
   select [(row.a + (row.b * 2)), (if row.a < 0 { -(row.a) } else { row.a }), row.b, row.c, row.d, ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case408" {
-  expect flatResult == [317, 107, 105, 106, 108, 635, 483, 163, 160, 161, 164, 966, 560, 188, 186, 187, 185, 1121, 635, 213, 211, 214, 212, 1277, 666, 220, 223, 224, 222, 1338, 698, 234, 232, 231, 233, 1391]
+  expect flatResult == [105, 106, 107, 108, 1121, 1277, 1338, 1391, 160, 161, 163, 164, 185, 186, 187, 188, 211, 212, 213, 214, 220, 222, 223, 224, 231, 232, 233, 234, 317, 483, 560, 635, 635, 666, 698, 966]
 }
 

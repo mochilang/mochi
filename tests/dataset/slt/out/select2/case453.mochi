@@ -224,8 +224,8 @@ let t1 = [
 ]
 
 /* SELECT abs(b-c), CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), a+b*2+c*3+d*4, b-c, d, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE (e>c OR e<d) AND coalesce(a,b,c,d,e)<>0 AND e+d BETWEEN a+b-10 AND c+130 */
-let result = from row in t1
-  where ((((row.e > row.c || row.e < row.d)) && null != 0) && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
+var result = from row in t1
+  where ((((row.e > row.c || row.e < row.d)) && (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0) && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
   where x.b < row.b
   select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.b - row.c), row.d, count(from x in t1
@@ -237,10 +237,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case453" {
-  expect flatResult == [1, 333, 0, 1067, -1, 108, 0, 4, 333, 3, 1272, 4, 128, 0]
+  expect flatResult == [-1, 0, 0, 0, 1, 1067, 108, 1272, 128, 3, 333, 333, 4, 4]
 }
 

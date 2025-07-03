@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT b-c, c, a-b, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c-d, abs(a) FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [(row.b - row.c), row.c, (row.a - row.b), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.c - row.d), (if row.a < 0 { -(row.a) } else { row.a })]
@@ -234,10 +234,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case428" {
-  expect flatResult == [null, 102, null, 0, 1, 104, -1, 106, 2, 0, -2, 107, -1, 113, null, 0, -1, null, null, 119, null, 0, 3, 115, 1, 123, -3, 0, 1, 121, 4, 125, -2, 0, -3, 127, -4, 134, 1, 0, 1, 131, 2, 137, -1, 0, 1, 138, 2, 141, -1, 0, 1, 142, -2, 147, 4, 0, null, 149, 1, 150, 2, 0, null, 153, 3, 155, 1, 0, null, 159, -1, 161, 3, 0, -3, 163, 1, 166, 1, 0, null, 168, -2, 172, 4, 0, 1, 174, -1, 176, 4, 0, null, 179, -3, 184, 1, 0, 1, 182, -1, 187, 2, 0, 2, 188, 1, 193, -3, 0, 3, 191, 3, 195, 1, 0, -1, 199, null, 202, null, 0, -1, 201, -2, 208, null, 0, 1, null, -3, 214, 2, 0, 2, 213, 3, 215, -2, 0, -2, 216, -1, 224, -3, 0, 2, 220, 3, 225, 1, 0, -1, 229, 1, 231, 2, 0, -2, 234, null, null, 3, 0, null, 239, -4, 244, 3, 0, null, 243, 2, 247, -4, 0, -1, 245]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2, -2, -2, -3, -3, -3, -3, -3, -3, -3, -4, -4, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 102, 104, 106, 107, 113, 115, 119, 121, 123, 125, 127, 131, 134, 137, 138, 141, 142, 147, 149, 150, 153, 155, 159, 161, 163, 166, 168, 172, 174, 176, 179, 182, 184, 187, 188, 191, 193, 195, 199, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 201, 202, 208, 213, 214, 215, 216, 220, 224, 225, 229, 231, 234, 239, 243, 244, 245, 247, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 
