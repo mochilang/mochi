@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT b-c, abs(b-c), a-b FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
-  where null != 0
+  where (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0
   select [(row.b - row.c), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.a - row.b)]
 var flatResult = []
 for row in result {
@@ -237,6 +237,6 @@ for x in flatResult {
   print(x)
 }
 test "case390" {
-  expect flatResult == [null, null, null, -1, 1, 2, -1, 1, null, null, null, null, 1, 1, -3, 4, 4, -2, -4, 4, 1, 2, 2, -1, 2, 2, -1, -2, 2, 4, 1, 1, 2, 3, 3, 1, -1, 1, 3, 1, 1, 1, -2, 2, 4, -1, 1, 4, -3, 3, 1, -1, 1, 2, 1, 1, -3, 3, 3, 1, null, null, null, -2, 2, null, -3, 3, 2, 3, 3, -2, -1, 1, -3, 3, 3, 1, 1, 1, 2, null, null, 3, -4, 4, 3, 2, 2, -4]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -3, -3, -3, -3, -3, -4, -4, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT abs(a), d, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, e FROM t1 WHERE (a>b-2 AND a<b+2) OR coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
-  where (((row.a > (row.b - 2) && row.a < (row.b + 2))) || null != 0)
+  where (((row.a > (row.b - 2) && row.a < (row.b + 2))) || (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0)
   select [(if row.a < 0 { -(row.a) } else { row.a }), row.d, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e]
 var flatResult = []
 for row in result {
@@ -237,6 +237,6 @@ for x in flatResult {
   print(x)
 }
 test "case313" {
-  expect flatResult == [104, 101, 444, null, 107, 108, 333, 109, null, 114, 444, 110, 115, 116, 444, 117, 121, 122, 222, null, 127, 128, 222, 126, 131, 133, 333, 132, 138, 136, 222, 135, 142, 140, 222, 144, 149, null, 444, 146, 153, null, 333, null, 159, null, 333, 157, 163, 164, 444, 162, 168, null, 333, 165, 174, 171, 444, 173, 179, null, 444, 177, 182, 183, 333, 180, 188, 185, 333, 189, 191, 190, 222, 192, 199, 196, 333, 197, 201, 203, 444, 204, null, 207, 444, null, 213, 212, 333, 210, 216, 217, 222, 219, 220, 222, 222, 221, 229, 226, 333, 227, 234, 233, 333, 230, 239, 238, 444, 237, 243, null, 444, null, 245, 248, 111, 246]
+  expect flatResult == [101, 104, 107, 108, 109, 110, 111, 114, 115, 116, 117, 121, 122, 126, 127, 128, 131, 132, 133, 135, 136, 138, 140, 142, 144, 146, 149, 153, 157, 159, 162, 163, 164, 165, 168, 171, 173, 174, 177, 179, 180, 182, 183, 185, 188, 189, 190, 191, 192, 196, 197, 199, 201, 203, 204, 207, 210, 212, 213, 216, 217, 219, 220, 221, 222, 222, 222, 222, 222, 222, 222, 222, 226, 227, 229, 230, 233, 234, 237, 238, 239, 243, 245, 246, 248, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, e, a+b*2+c*3+d*4+e*5 FROM t1 WHERE d>e OR e+d BETWEEN a+b-10 AND c+130 OR coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
-  where ((row.d > row.e || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) || null != 0)
+  where ((row.d > row.e || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) || (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0)
   select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
 var flatResult = []
 for row in result {
@@ -237,6 +237,6 @@ for x in flatResult {
   print(x)
 }
 test "case356" {
-  expect flatResult == [444, null, null, 333, 109, 1612, 444, 110, null, 444, 117, null, 222, null, null, 222, 126, 1902, 333, 132, 1985, 222, 135, 2046, 222, 144, 2131, 444, 146, null, 333, null, null, 333, 157, null, 444, 162, 2432, 333, 165, null, 444, 173, 2579, 444, 177, null, 333, 180, 2728, 333, 189, 2806, 222, 192, 2878, 333, 197, 2949, 444, 204, null, 444, null, null, 333, 210, 3175, 222, 219, 3260, 222, 221, 3331, 333, 227, 3399, 333, 230, 3473, 444, 237, null, 444, null, null, 111, 246, 3706]
+  expect flatResult == [109, 110, 111, 117, 126, 132, 135, 144, 146, 157, 1612, 162, 165, 173, 177, 180, 189, 1902, 192, 197, 1985, 204, 2046, 210, 2131, 219, 221, 222, 222, 222, 222, 222, 222, 222, 227, 230, 237, 2432, 246, 2579, 2728, 2806, 2878, 2949, 3175, 3260, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 3331, 3399, 3473, 3706, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

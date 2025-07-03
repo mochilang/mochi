@@ -237,6 +237,6 @@ for x in flatResult {
   print(x)
 }
 test "case330" {
-  expect flatResult == [555, 1, 555, 2]
+  expect flatResult == [1, 2, 555, 555]
 }
 
