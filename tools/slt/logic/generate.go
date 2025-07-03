@@ -113,6 +113,9 @@ func formatValue(v any) string {
 	case int:
 		return fmt.Sprintf("%d", t)
 	case float64:
+		if t == math.Trunc(t) {
+			return fmt.Sprintf("%d", int64(t))
+		}
 		s := fmt.Sprintf("%g", t)
 		if !strings.ContainsRune(s, '.') {
 			s += ".0"
