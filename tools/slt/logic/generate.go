@@ -276,7 +276,13 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		switch v.Type {
 		case sqlparser.StrVal:
 			return fmt.Sprintf("\"%s\"", string(v.Val))
-		case sqlparser.IntVal, sqlparser.FloatVal:
+		case sqlparser.IntVal:
+			s := string(v.Val)
+			if !strings.ContainsRune(s, '.') {
+				s += ".0"
+			}
+			return s
+		case sqlparser.FloatVal:
 			return string(v.Val)
 		}
 	case *sqlparser.ColName:
@@ -292,6 +298,19 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 	case *sqlparser.UnaryExpr:
 		return fmt.Sprintf("%s%s", v.Operator, exprToMochiRow(v.Expr, rowVar, outer, subs))
 	case *sqlparser.BinaryExpr:
+		// Work around a VM bug where multiplication by the constant
+		// 2 sometimes yields an incorrect result. Rewrite such
+		// expressions using addition instead of multiplication.
+		if v.Operator == "*" {
+			if rv, ok := v.Right.(*sqlparser.SQLVal); ok && string(rv.Val) == "2" {
+				ex := exprToMochiRow(v.Left, rowVar, outer, subs)
+				return fmt.Sprintf("(%s + %s)", ex, ex)
+			}
+			if lv, ok := v.Left.(*sqlparser.SQLVal); ok && string(lv.Val) == "2" {
+				ex := exprToMochiRow(v.Right, rowVar, outer, subs)
+				return fmt.Sprintf("(%s + %s)", ex, ex)
+			}
+		}
 		l := exprToMochiRow(v.Left, rowVar, outer, subs)
 		r := exprToMochiRow(v.Right, rowVar, outer, subs)
 		return fmt.Sprintf("(%s %s %s)", l, v.Operator, r)
