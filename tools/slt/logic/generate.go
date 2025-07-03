@@ -455,6 +455,14 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 			ex := exprToMochiRow(arg, rowVar, outer, subs)
 			return fmt.Sprintf("(if %s < 0 { -(%s) } else { %s })", ex, ex, ex)
 		}
+		if name == "coalesce" && len(v.Exprs) > 0 {
+			out := exprToMochiRow(v.Exprs[len(v.Exprs)-1].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
+			for i := len(v.Exprs) - 2; i >= 0; i-- {
+				arg := exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
+				out = fmt.Sprintf("(if %s != null { %s } else { %s })", arg, arg, out)
+			}
+			return out
+		}
 	case *sqlparser.Subquery:
 		expr := subqueryToMochi(v, rowVar)
 		if subs != nil {
@@ -507,6 +515,17 @@ func simpleExpr(e sqlparser.Expr) bool {
 			if ae, ok := v.Exprs[0].(*sqlparser.AliasedExpr); ok {
 				return simpleExpr(ae.Expr)
 			}
+		} else if name == "coalesce" && len(v.Exprs) > 0 {
+			for _, ex := range v.Exprs {
+				if ae, ok := ex.(*sqlparser.AliasedExpr); ok {
+					if !simpleExpr(ae.Expr) {
+						return false
+					}
+				} else {
+					return false
+				}
+			}
+			return true
 		}
 		return false
 	case *sqlparser.Subquery:
