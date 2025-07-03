@@ -224,13 +224,16 @@ let t1 = [
 ]
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 WHERE (a>b-2 AND a<b+2) OR (e>a AND e<b) */
-let result = from row in t1
+var result = from row in t1
   where (((row.a > (row.b - 2) && row.a < (row.b + 2))) || ((row.e > row.a && row.e < row.b)))
   select (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })
+result = from x in result
+  sort by [if x == null { 1 } else { 0 }, str(x)]
+  select x
 for x in result {
   print(x)
 }
 
 test "case82" {
-  expect result == [222, 222, 111, 222, 333, 333, 333, 333, 333, 333, 222]
+  expect result == [111, 222, 222, 222, 222, 333, 333, 333, 333, 333, 333]
 }

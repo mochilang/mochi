@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by [if x == null { 1 } else { 0 }, str(x)]
+  select x
 for x in flatResult {
   print(x)
 }
 test "case85" {
-  expect flatResult == [-4, 333, 1325, 2, 222, 1371, 2, 222, 1411, 3, 333, null, 1, 333, null, -3, 333, 1828, 3, 333, 1964, 3, 333, 2264]
+  expect flatResult == [-3, -4, 1, 1325, 1371, 1411, 1828, 1964, 2, 2, 222, 222, 2264, 3, 3, 3, 333, 333, 333, 333, 333, 333, null, null]
 }
 

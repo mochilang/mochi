@@ -232,10 +232,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by [if x == null { 1 } else { 0 }, str(x)]
+  select x
 for x in flatResult {
   print(x)
 }
 test "case75" {
-  expect flatResult == [null, 555, null, 1067, 333, -1, null, 555, -1, null, 333, null, 1226, 333, 1, 1272, 333, 4, 1325, 444, -4, 1371, 111, 2, 1411, 111, 2, null, 555, -2, null, 555, 1, null, 555, 3, 1622, 333, -1, null, 555, 1, 1714, 555, -2, null, 555, -1, 1828, 333, -3, 1861, 444, -1, 1918, 444, 1, 1964, 555, 3, null, 222, null, null, 555, -2, 2125, 222, -3, 2165, 333, 3, 2226, 444, -1, 2264, 555, 3, 2323, 555, 1, null, 555, null, null, 222, -4, 2476, 444, 2]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -2, -2, -2, -3, -3, -4, -4, 1, 1, 1, 1, 1, 1067, 111, 111, 1226, 1272, 1325, 1371, 1411, 1622, 1714, 1828, 1861, 1918, 1964, 2, 2, 2, 2125, 2165, 222, 222, 222, 2226, 2264, 2323, 2476, 3, 3, 3, 3, 333, 333, 333, 333, 333, 333, 333, 4, 444, 444, 444, 444, 444, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

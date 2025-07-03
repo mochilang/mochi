@@ -864,7 +864,11 @@ func Generate(c Case) string {
 		}
 		expr := exprToMochi(ae.Expr, subs)
 		cond := condToMochi(sel.Where, subs)
-		sb.WriteString("let result = from row in " + tblNameStr)
+		if c.RowSort {
+			sb.WriteString("var result = from row in " + tblNameStr)
+		} else {
+			sb.WriteString("let result = from row in " + tblNameStr)
+		}
 		if cond != "" {
 			sb.WriteString("\n  where " + cond)
 		}
@@ -872,6 +876,9 @@ func Generate(c Case) string {
 			sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}, subs))
 		}
 		sb.WriteString("\n  select " + expr + "\n")
+		if c.RowSort {
+			sb.WriteString("result = from x in result\n  sort by [if x == null { 1 } else { 0 }, str(x)]\n  select x\n")
+		}
 		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, formatExpectList(c.Expect)))
@@ -932,6 +939,9 @@ func Generate(c Case) string {
 		sb.WriteString("  for x in row {\n")
 		sb.WriteString("    flatResult = append(flatResult, x)\n")
 		sb.WriteString("  }\n}\n")
+		if c.RowSort {
+			sb.WriteString("flatResult = from x in flatResult\n  sort by [if x == null { 1 } else { 0 }, str(x)]\n  select x\n")
+		}
 		sb.WriteString("for x in flatResult {\n  print(x)\n}\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))

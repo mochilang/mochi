@@ -227,13 +227,16 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where (row.a > row.b && null != 0)
   select (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })
+result = from x in result
+  sort by [if x == null { 1 } else { 0 }, str(x)]
+  select x
 for x in result {
   print(x)
 }
 
 test "case71" {
-  expect result == [1050, 1300, 1450, 1510, 1580, 1600, 1670, 1700, 358, 364, 376, 398, 426, 458, 468, 2360, 486]
+  expect result == [1050, 1300, 1450, 1510, 1580, 1600, 1670, 1700, 2360, 358, 364, 376, 398, 426, 458, 468, 486]
 }
