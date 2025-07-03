@@ -20,7 +20,7 @@ var (
 )
 
 // Default set of SLT files bundled with the repository.
-var files = []string{"evidence/slt_lang_update.test", "select1.test", "select2.test"}
+var files = []string{"evidence/slt_lang_update.test", "select1.test", "select2.test", "select3.test"}
 
 func fetchCmd() *cobra.Command {
 	var repo string
