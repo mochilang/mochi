@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT b, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, abs(b-c), a+b*2+c*3 FROM t1 WHERE (c<=d-2 OR c>=d+2) OR coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || null != 0)
+  order by [row.b, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((row.a + (row.b * 2)) + (row.c * 3))]
   select [row.b, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
 for row in result {
@@ -237,6 +238,6 @@ for x in flatResult {
   print(x)
 }
 test "case881" {
-  expect flatResult == [null, 444, null, null, 105, 333, 1, 635, 112, 444, 1, null, null, 444, null, null, 124, 222, 1, 738, 129, 222, 4, 760, 130, 333, 4, 793, 139, 222, 2, 827, 143, 222, 2, 851, 145, 444, 2, 880, 151, 333, 1, 905, 158, 333, 3, 940, 160, 444, 1, 966, 167, 333, 1, 1000, 170, 444, 2, 1030, 175, 444, 1, 1057, 181, 333, 3, 1096, 186, 333, 1, 1121, 194, 222, 1, 1158, 198, 333, 3, 1180, null, 444, null, null, 206, 444, 2, null, 211, 333, 3, 1277, 218, 222, 3, 1297, 223, 222, 1, 1338, 228, 333, 3, 1360, 232, 333, 1, 1391, 236, 444, null, null, 240, 444, 4, 1455, 249, 111, 2, 1484]
+  expect flatResult == [105, 333, 1, 635, 112, 444, 1, null, 124, 222, 1, 738, 129, 222, 4, 760, 130, 333, 4, 793, 139, 222, 2, 827, 143, 222, 2, 851, 145, 444, 2, 880, 151, 333, 1, 905, 158, 333, 3, 940, 160, 444, 1, 966, 167, 333, 1, 1000, 170, 444, 2, 1030, 175, 444, 1, 1057, 181, 333, 3, 1096, 186, 333, 1, 1121, 194, 222, 1, 1158, 198, 333, 3, 1180, 206, 444, 2, null, 211, 333, 3, 1277, 218, 222, 3, 1297, 223, 222, 1, 1338, 228, 333, 3, 1360, 232, 333, 1, 1391, 236, 444, null, null, 240, 444, 4, 1455, 249, 111, 2, 1484, null, 444, null, null, null, 444, null, null, null, 444, null, null]
 }
 

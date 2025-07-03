@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT abs(b-c), d, a+b*2+c*3+d*4+e*5, b, a FROM t1 WHERE (c<=d-2 OR c>=d+2) */
 let result = from row in t1
   where ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.b, row.a]
   select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.b, row.a]
 var flatResult = []
 for row in result {
@@ -237,6 +238,6 @@ for x in flatResult {
   print(x)
 }
 test "case818" {
-  expect flatResult == [1, 108, 1612, 105, 107, 4, 128, 1902, 129, 127, 1, 164, 2432, 160, 163, 3, 217, 3260, 218, 216, 1, 233, 3473, 232, 234, null, 116, null, null, 115, 1, 185, 2806, 186, 188, 1, 190, 2878, 194, 191, 3, 212, 3175, 211, 213, 1, 222, 3331, 223, 220]
+  expect flatResult == [1, 108, 1612, 105, 107, 1, 164, 2432, 160, 163, 1, 185, 2806, 186, 188, 1, 190, 2878, 194, 191, 1, 222, 3331, 223, 220, 1, 233, 3473, 232, 234, 3, 212, 3175, 211, 213, 3, 217, 3260, 218, 216, 4, 128, 1902, 129, 127, null, 116, null, null, 115]
 }
 

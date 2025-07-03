@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -164,7 +165,17 @@ func EvalCase(c Case) ([]string, string, error) {
 	q := c.Query
 	if node, err := sqlparser.Parse(q); err == nil {
 		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 {
-			q = strings.TrimSpace(q) + " ORDER BY rowid"
+			if c.RowSort {
+				var parts []string
+				for i := 1; i <= len(sel.SelectExprs); i++ {
+					parts = append(parts, strconv.Itoa(i))
+				}
+				if len(parts) > 0 {
+					q = strings.TrimSpace(q) + " ORDER BY " + strings.Join(parts, ",")
+				}
+			} else {
+				q = strings.TrimSpace(q) + " ORDER BY rowid"
+			}
 		}
 	}
 	rows, err := db.Query(q)

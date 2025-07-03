@@ -226,11 +226,12 @@ let t1 = [
 /* SELECT a-b FROM t1 WHERE a>b AND c BETWEEN b-2 AND d+2 AND (e>c OR e<d) */
 let result = from row in t1
   where ((row.a > row.b && (row.c >= (row.b - 2) && row.c <= (row.d + 2))) && ((row.e > row.c || row.e < row.d)))
+  order by (row.a - row.b)
   select (row.a - row.b)
 for x in result {
   print(x)
 }
 
 test "case854" {
-  expect result == [2, 3, 4, 2, 1, 1, 2, 2]
+  expect result == [1, 1, 2, 2, 2, 2, 3, 4]
 }

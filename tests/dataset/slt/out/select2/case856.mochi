@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT a+b*2+c*3+d*4, e, a+b*2+c*3 FROM t1 WHERE a>b */
 let result = from row in t1
   where row.a > row.b
+  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.e, ((row.a + (row.b * 2)) + (row.c * 3))]
   select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.e, ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
 for row in result {
@@ -237,6 +238,6 @@ for x in flatResult {
   print(x)
 }
 test "case856" {
-  expect flatResult == [1067, 109, 635, 1325, 132, 793, null, 146, 880, null, null, 905, null, 157, 940, 1622, 162, 966, null, 165, 1000, 1714, 173, 1030, null, 177, 1057, 1828, 180, 1096, 1861, 189, 1121, 1964, 197, 1180, 2125, 210, 1277, 2264, 227, 1360, 2323, 230, 1391, null, 237, null, null, null, 1455]
+  expect flatResult == [1067, 109, 635, 1325, 132, 793, 1622, 162, 966, 1714, 173, 1030, 1828, 180, 1096, 1861, 189, 1121, 1964, 197, 1180, 2125, 210, 1277, 2264, 227, 1360, 2323, 230, 1391, null, 146, 880, null, 157, 940, null, 165, 1000, null, 177, 1057, null, 237, null, null, null, 905, null, null, 1455]
 }
 

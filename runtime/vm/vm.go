@@ -7335,10 +7335,14 @@ func pairVal(v Value) Value {
 }
 
 func valueLess(a, b Value) bool {
-	if a.Tag == ValueNull || b.Tag == ValueNull {
-		// SQL semantics treat comparisons with NULL as unknown. For the
-		// purposes of boolean conditions this evaluates to false.
+	if a.Tag == ValueNull && b.Tag == ValueNull {
 		return false
+	}
+	if a.Tag == ValueNull {
+		return false
+	}
+	if b.Tag == ValueNull {
+		return true
 	}
 	switch a.Tag {
 	case ValueInt:

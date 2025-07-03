@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT abs(a), (a+b+c+d+e)/5, c, d-e, a+b*2, e, b FROM t1 WHERE a>b */
 let result = from row in t1
   where row.a > row.b
+  order by [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, (row.d - row.e), (row.a + (row.b * 2)), row.e, row.b]
   select [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, (row.d - row.e), (row.a + (row.b * 2)), row.e, row.b]
 var flatResult = []
 for row in result {

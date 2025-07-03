@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT b-c FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 */
 let result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
+  order by (row.b - row.c)
   select (row.b - row.c)
 for x in result {
   print(x)

@@ -226,11 +226,12 @@ let t1 = [
 /* SELECT a+b*2+c*3+d*4+e*5 FROM t1 WHERE a>b */
 let result = from row in t1
   where row.a > row.b
+  order by ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))
   select ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))
 for x in result {
   print(x)
 }
 
 test "case846" {
-  expect result == [1612, 1985, null, null, null, 2432, null, 2579, null, 2728, 2806, 2949, 3175, 3399, 3473, null, null]
+  expect result == [1612, 1985, 2432, 2579, 2728, 2806, 2949, 3175, 3399, 3473, null, null, null, null, null, null, null]
 }
