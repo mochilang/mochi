@@ -163,7 +163,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// Attempt to infer numeric or boolean types when the
 			// value is stored as a string. Trim whitespace and
 			// normalize case for comparison. Treat the literal
-			// string "null" or "nil" as a NULL value.
+			// string "null" or "nil" as a NULL value. Handle
+			// special floating point values like "infinity" and
+			// "nan" which DuckDB may return.
 			sv := strings.TrimSpace(strings.ToLower(val))
 			if sv == "null" || sv == "nil" {
 				continue
@@ -189,6 +191,37 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 					return "any"
 				}
 				seenZero = true
+				continue
+			}
+
+			if sv == "inf" || sv == "+inf" || sv == "infinity" || sv == "+infinity" {
+				if t == "" || t == "float" || t == "int" {
+					t = "float"
+				} else {
+					return "any"
+				}
+				boolLike = false
+				seenOne = false
+				seenZero = false
+				continue
+			}
+			if sv == "-inf" || sv == "-infinity" {
+				if t == "" || t == "float" || t == "int" {
+					t = "float"
+				} else {
+					return "any"
+				}
+				boolLike = false
+				seenNegOne = false
+				continue
+			}
+			if sv == "nan" {
+				if t == "" || t == "float" || t == "int" {
+					t = "float"
+				} else {
+					return "any"
+				}
+				boolLike = false
 				continue
 			}
 
