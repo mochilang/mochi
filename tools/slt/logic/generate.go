@@ -112,6 +112,8 @@ func formatValue(v any) string {
 		return fmt.Sprintf("\"%s\"", t)
 	case int:
 		return fmt.Sprintf("%d", t)
+	case int64:
+		return fmt.Sprintf("%d", t)
 	case float64:
 		if t == math.Trunc(t) {
 			return fmt.Sprintf("%.0f", t)

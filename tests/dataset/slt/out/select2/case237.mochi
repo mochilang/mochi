@@ -236,6 +236,6 @@ for x in flatResult {
   print(x)
 }
 test "case237" {
-  expect flatResult == [null, null, null, null, 635, -1, 107, 1612, null, 4, null, null, null, -1, null, null, 738, null, null, null, 760, 2, 127, 1902, 793, 1, 132, 1985, 827, 1, 137, 2046, 851, -4, 142, 2131, 880, null, null, null, 905, null, null, null, 940, null, null, null, 966, 2, 162, 2432, 1000, null, null, null, 1030, -2, 172, 2579, 1057, null, null, null, 1096, 3, 182, 2728, 1121, -4, 187, 2806, 1158, -2, 192, 2878, 1180, -1, 197, 2949, null, -1, null, null, null, null, null, null, 1277, 2, 212, 3175, 1297, -2, 217, 3260, 1338, 1, 222, 3331, 1360, -1, 227, 3399, 1391, 3, 232, 3473, null, 1, null, null, 1455, null, null, null, 1484, 2, 247, 3706]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -4, -4, 1, 1, 1, 1, 1000, 1030, 1057, 107, 1096, 1121, 1158, 1180, 127, 1277, 1297, 132, 1338, 1360, 137, 1391, 142, 1455, 1484, 1612, 162, 172, 182, 187, 1902, 192, 197, 1985, 2, 2, 2, 2, 2046, 212, 2131, 217, 222, 227, 232, 2432, 247, 2579, 2728, 2806, 2878, 2949, 3, 3, 3175, 3260, 3331, 3399, 3473, 3706, 4, 635, 738, 760, 793, 827, 851, 880, 905, 940, 966, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 
