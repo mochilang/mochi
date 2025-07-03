@@ -12,6 +12,8 @@ func main (regs=100)
   Const        r5, "c_custkey"
   // (!("special" in o.o_comment)) &&
   Const        r6, "o_comment"
+  // (!("requests" in o.o_comment))
+  Const        r6, "o_comment"
   // from c in customer
   IterPrep     r7, r0
   Len          r8, r7
@@ -26,8 +28,17 @@ L5:
   Const        r14, "c_count"
   // from o in orders
   Const        r15, []
+  // o.o_custkey == c.c_custkey &&
+  Const        r4, "o_custkey"
+  Const        r5, "c_custkey"
+  // (!("special" in o.o_comment)) &&
+  Const        r6, "o_comment"
+  // (!("requests" in o.o_comment))
+  Const        r6, "o_comment"
+  // from o in orders
   IterPrep     r16, r1
   Len          r17, r16
+  Const        r10, 0
   Move         r18, r10
 L4:
   LessInt      r19, r18, r17
@@ -35,13 +46,16 @@ L4:
   Index        r20, r16, r18
   Move         r21, r20
   // o.o_custkey == c.c_custkey &&
+  Const        r4, "o_custkey"
   Index        r22, r21, r4
+  Const        r5, "c_custkey"
   Index        r23, r13, r5
   Equal        r24, r22, r23
   Move         r25, r24
   JumpIfFalse  r25, L2
   // (!("special" in o.o_comment)) &&
   Const        r26, "special"
+  Const        r6, "o_comment"
   Index        r27, r21, r6
   In           r28, r26, r27
   Not          r29, r28
@@ -51,6 +65,7 @@ L4:
   JumpIfFalse  r25, L2
   // (!("requests" in o.o_comment))
   Const        r30, "requests"
+  Const        r6, "o_comment"
   Index        r31, r21, r6
   In           r32, r30, r31
   Not          r33, r32
@@ -76,14 +91,20 @@ L1:
   // from c in customer
   Append       r40, r2, r39
   Move         r2, r40
+  Const        r35, 1
   AddInt       r9, r9, r35
   Jump         L5
 L0:
   // from x in per_customer
   Const        r41, []
+  // group by x.c_count into g
+  Const        r3, "c_count"
   // select { c_count: g.key, custdist: count(g) }
+  Const        r3, "c_count"
   Const        r42, "key"
   Const        r43, "custdist"
+  // sort by -g.key
+  Const        r42, "key"
   // from x in per_customer
   IterPrep     r44, r2
   Len          r45, r44
@@ -97,19 +118,23 @@ L8:
   Index        r51, r44, r46
   Move         r52, r51
   // group by x.c_count into g
+  Const        r3, "c_count"
   Index        r53, r52, r3
   Str          r54, r53
   In           r55, r54, r47
   JumpIfTrue   r55, L7
   // from x in per_customer
+  Const        r49, []
   Const        r56, "__group__"
   Const        r57, true
+  Const        r42, "key"
   // group by x.c_count into g
   Move         r58, r53
   // from x in per_customer
   Const        r59, "items"
   Move         r60, r49
   Const        r61, "count"
+  Const        r10, 0
   Move         r62, r56
   Move         r63, r57
   Move         r64, r42
@@ -123,16 +148,21 @@ L8:
   Append       r71, r48, r70
   Move         r48, r71
 L7:
+  Const        r59, "items"
   Index        r72, r47, r54
   Index        r73, r72, r59
   Append       r74, r73, r51
   SetIndex     r72, r59, r74
+  Const        r61, "count"
   Index        r75, r72, r61
+  Const        r35, 1
   AddInt       r76, r75, r35
   SetIndex     r72, r61, r76
+  Const        r35, 1
   AddInt       r46, r46, r35
   Jump         L8
 L6:
+  Const        r10, 0
   Move         r77, r10
   Len          r78, r48
 L10:
@@ -142,8 +172,10 @@ L10:
   Move         r81, r80
   // select { c_count: g.key, custdist: count(g) }
   Const        r82, "c_count"
+  Const        r42, "key"
   Index        r83, r81, r42
   Const        r84, "custdist"
+  Const        r61, "count"
   Index        r85, r81, r61
   Move         r86, r82
   Move         r87, r83
@@ -151,14 +183,16 @@ L10:
   Move         r89, r85
   MakeMap      r90, 2, r86
   // sort by -g.key
-  Index        r91, r81, r42
-  Neg          r92, r91
-  Move         r93, r92
+  Const        r42, "key"
+  Index        r93, r81, r42
+  Neg          r94, r93
+  Move         r91, r94
   // from x in per_customer
-  Move         r94, r90
-  MakeList     r95, 2, r93
+  Move         r92, r90
+  MakeList     r95, 2, r91
   Append       r96, r41, r95
   Move         r41, r96
+  Const        r35, 1
   AddInt       r77, r77, r35
   Jump         L10
 L9:

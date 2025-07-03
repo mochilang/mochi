@@ -18,6 +18,7 @@ func main (regs=85)
   Const        r10, "l_partkey"
   // where l.l_shipdate >= start_date && l.l_shipdate < end_date
   Const        r11, "l_shipdate"
+  Const        r11, "l_shipdate"
   // is_promo: "PROMO" in p.p_type,
   Const        r12, "is_promo"
   Const        r13, "p_type"
@@ -39,14 +40,20 @@ L4:
   JumpIfFalse  r22, L1
   Index        r23, r7, r21
   Move         r24, r23
+  Const        r9, "p_partkey"
   Index        r25, r24, r9
+  Const        r10, "l_partkey"
   Index        r26, r20, r10
   Equal        r27, r25, r26
   JumpIfFalse  r27, L2
   // where l.l_shipdate >= start_date && l.l_shipdate < end_date
+  Const        r11, "l_shipdate"
   Index        r28, r20, r11
+  Const        r2, "1995-09-01"
   LessEq       r29, r2, r28
+  Const        r11, "l_shipdate"
   Index        r30, r20, r11
+  Const        r3, "1995-10-01"
   Less         r31, r30, r3
   Move         r32, r29
   JumpIfFalse  r32, L3
@@ -56,12 +63,15 @@ L3:
   // is_promo: "PROMO" in p.p_type,
   Const        r33, "is_promo"
   Const        r34, "PROMO"
+  Const        r13, "p_type"
   Index        r35, r24, r13
   In           r36, r34, r35
   // revenue: l.l_extendedprice * (1 - l.l_discount)
   Const        r37, "revenue"
+  Const        r15, "l_extendedprice"
   Index        r38, r20, r15
   Const        r39, 1
+  Const        r16, "l_discount"
   Index        r40, r20, r16
   Sub          r41, r39, r40
   Mul          r42, r38, r41
@@ -78,15 +88,19 @@ L3:
   Move         r4, r48
 L2:
   // join p in part on p.p_partkey == l.l_partkey
+  Const        r39, 1
   AddInt       r21, r21, r39
   Jump         L4
 L1:
   // from l in lineitem
+  Const        r39, 1
   AddInt       r17, r17, r39
   Jump         L5
 L0:
   // let promo_sum = sum(from x in filtered where x.is_promo select x.revenue)
   Const        r49, []
+  Const        r12, "is_promo"
+  Const        r14, "revenue"
   IterPrep     r50, r4
   Len          r51, r50
   Const        r53, 0
@@ -96,29 +110,36 @@ L8:
   JumpIfFalse  r54, L6
   Index        r55, r50, r52
   Move         r56, r55
+  Const        r12, "is_promo"
   Index        r57, r56, r12
   JumpIfFalse  r57, L7
+  Const        r14, "revenue"
   Index        r58, r56, r14
   Append       r59, r49, r58
   Move         r49, r59
 L7:
+  Const        r39, 1
   AddInt       r52, r52, r39
   Jump         L8
 L6:
   Sum          r60, r49
   // let total_sum = sum(from x in filtered select x.revenue)
   Const        r61, []
+  Const        r14, "revenue"
   IterPrep     r62, r4
   Len          r63, r62
+  Const        r53, 0
   Move         r64, r53
 L10:
   LessInt      r65, r64, r63
   JumpIfFalse  r65, L9
   Index        r66, r62, r64
   Move         r56, r66
+  Const        r14, "revenue"
   Index        r67, r56, r14
   Append       r68, r61, r67
   Move         r61, r68
+  Const        r39, 1
   AddInt       r64, r64, r39
   Jump         L10
 L9:
@@ -138,10 +159,11 @@ L9:
   Const        r77, 800.0
   Const        r78, 1700.0
   // let expected = 100.0 * promo / total  // ≈ 52.94
+  Const        r70, 100.0
   Const        r79, 900.0
-  Const        r80, 90000.0
+  MulFloat     r80, r70, r79
   Const        r81, 1700.0
-  Const        r82, 52.94117647058823
+  DivFloat     r82, r80, r81
   // expect result == expected
   Const        r83, 52.94117647058823
   EqualFloat   r84, r72, r83
