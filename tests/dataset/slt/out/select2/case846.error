@@ -1,7 +1,0 @@
-expect condition failed at :235: expect result == [1612, 1985, null, null, null, 2432, null, 2579, null, 2728, 2806, 2949, 3175, 3399, 3473, null, null]
-call graph: main
-stack trace:
-  main at :235
-    expect result == [1612, 1985, null, null, null, 2432, null, 2579, null, 2728, 2806, 2949, 3175, 3399, 3473, null, null]
-
-got: [814, 1612, 1521, 1985, 1610, 905, 1725, 2432, 1825, 2579, 1942, 2728, 2806, 2949, 2639, 3175, 3399, 3473, 2848, 1455]

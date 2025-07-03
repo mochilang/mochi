@@ -229,6 +229,7 @@ let sub0 = avg(from x in t1
 
 let result = from row in t1
   where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || row.a > row.b)
+  order by [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a - row.b), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
   select [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a - row.b), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
 var flatResult = []
 for row in result {
@@ -240,6 +241,6 @@ for x in flatResult {
   print(x)
 }
 test "case800" {
-  expect flatResult == [1050, 2, 333, 1300, 1, 333, 1450, 4, 444, 1510, 2, 333, 1580, 1, 333, 1600, 3, 444, 1670, 1, 333, 1700, 4, 444, 358, 4, 444, 364, 1, 333, 376, 2, 333, 398, 1, 333, 426, 2, 333, 458, 1, 333, 468, 2, 333, 2360, 3, 444, 486, 3, 444, 1120, null, 444, 1240, -3, 222, 1390, -1, 222, 1430, -1, 222, null, null, 444, 440, -3, 222, 490, -4, 111]
+  expect flatResult == [358, 4, 444, 364, 1, 333, 376, 2, 333, 398, 1, 333, 426, 2, 333, 440, -3, 222, 458, 1, 333, 468, 2, 333, 486, 3, 444, 490, -4, 111, 1050, 2, 333, 1120, null, 444, 1240, -3, 222, 1300, 1, 333, 1390, -1, 222, 1430, -1, 222, 1450, 4, 444, 1510, 2, 333, 1580, 1, 333, 1600, 3, 444, 1670, 1, 333, 1700, 4, 444, 2360, 3, 444, null, null, 444]
 }
 

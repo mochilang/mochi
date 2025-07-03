@@ -226,6 +226,9 @@ let t1 = [
 /* SELECT abs(a), (a+b+c+d+e)/5, a, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a-b FROM t1 WHERE (a>b-2 AND a<b+2) AND c BETWEEN b-2 AND d+2 AND b>c */
 let result = from row in t1
   where ((((row.a > (row.b - 2) && row.a < (row.b + 2))) && (row.c >= (row.b - 2) && row.c <= (row.d + 2))) && row.b > row.c)
+  order by [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.a, count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x), (row.a - row.b)]
   select [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.a, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (row.a - row.b)]

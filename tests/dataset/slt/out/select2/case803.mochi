@@ -229,6 +229,9 @@ let sub0 = avg(from x in t1
 
 let result = from row in t1
   where (null != 0 && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
+  order by [row.a, row.c, ((row.a + (row.b * 2)) + (row.c * 3)), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), count(from x in t1
+  where x.b < row.b
+  select x)]
   select [row.a, row.c, ((row.a + (row.b * 2)) + (row.c * 3)), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), count(from x in t1
   where x.b < row.b
   select x)]
@@ -242,6 +245,6 @@ for x in flatResult {
   print(x)
 }
 test "case803" {
-  expect flatResult == [107, 106, 635, 1050, 0, 127, 125, 760, 1290, 3, 163, 161, 966, 1600, 10, 216, 215, 1297, 432, 20, 234, 231, 1391, 468, 23, 115, 119, null, null, 0, 188, 187, 1121, 376, 15, 191, 193, 1158, 382, 16, 213, 214, 1277, 426, 19, 220, 224, 1338, 440, 21]
+  expect flatResult == [107, 106, 635, 1050, 0, 115, 119, null, null, 0, 127, 125, 760, 1290, 3, 163, 161, 966, 1600, 10, 188, 187, 1121, 376, 15, 191, 193, 1158, 382, 16, 213, 214, 1277, 426, 19, 216, 215, 1297, 432, 20, 220, 224, 1338, 440, 21, 234, 231, 1391, 468, 23]
 }
 
