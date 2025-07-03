@@ -1,7 +1,0 @@
-expect condition failed at :235: expect result == [579, 666, 743]
-call graph: main
-stack trace:
-  main at :235
-    expect result == [579, 666, 743]
-
-got: [224, 579, 666, 743]
