@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), d-e, abs(a), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2+c*3+d*4, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END FROM t1 WHERE (e>a AND e<b) OR (e>c OR e<d) */
-let result = from row in t1
+var result = from row in t1
   where (((row.e > row.a && row.e < row.b)) || ((row.e > row.c || row.e < row.d)))
   select [count(from x in t1
   where x.b < row.b
@@ -235,6 +235,9 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }

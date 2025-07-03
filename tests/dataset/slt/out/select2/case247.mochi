@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d-e, d, c, b-c FROM t1 WHERE a IS NULL AND b>c */
-let result = from row in t1
+var result = from row in t1
   where (row.a == null && row.b > row.c)
   select [(row.d - row.e), row.d, row.c, (row.b - row.c)]
 var flatResult = []
@@ -233,6 +233,9 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }

@@ -224,9 +224,12 @@ let t1 = [
 ]
 
 /* SELECT a FROM t1 WHERE b IS NOT NULL AND d>e AND e+d BETWEEN a+b-10 AND c+130 */
-let result = from row in t1
+var result = from row in t1
   where ((row.b != null && row.d > row.e) && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
   select row.a
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
