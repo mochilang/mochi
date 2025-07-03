@@ -169,8 +169,7 @@ func EvalCase(c Case) ([]string, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-	var flat []string
-	var buf bytes.Buffer
+	var rowsData [][]string
 	for rows.Next() {
 		vals := make([]any, len(cols))
 		ptrs := make([]any, len(cols))
@@ -180,13 +179,21 @@ func EvalCase(c Case) ([]string, string, error) {
 		if err := rows.Scan(ptrs...); err != nil {
 			return nil, "", err
 		}
+		line := make([]string, len(cols))
 		for i, v := range vals {
-			var s string
 			if v == nil {
-				s = "null"
+				line[i] = "null"
 			} else {
-				s = fmt.Sprint(v)
+				line[i] = fmt.Sprint(v)
 			}
+		}
+		rowsData = append(rowsData, line)
+	}
+
+	var flat []string
+	var buf bytes.Buffer
+	for _, row := range rowsData {
+		for i, s := range row {
 			flat = append(flat, s)
 			if i > 0 {
 				buf.WriteByte(' ')
