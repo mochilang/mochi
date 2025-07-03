@@ -162,8 +162,9 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				continue
 			}
 
-			// Allow comma separators in numbers.
+			// Allow comma and underscore separators in numbers.
 			sv = strings.ReplaceAll(sv, ",", "")
+			sv = strings.ReplaceAll(sv, "_", "")
 
 			if sv == "true" || sv == "t" || sv == "yes" || sv == "on" {
 				if t == "" || t == "bool" {
@@ -185,6 +186,28 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			}
 
 			clean := strings.TrimPrefix(strings.TrimPrefix(sv, "+"), "-")
+			// Support hexadecimal integer literals.
+			if strings.HasPrefix(clean, "0x") || strings.HasPrefix(clean, "0X") {
+				if v, err := strconv.ParseInt(clean[2:], 16, 64); err == nil {
+					if v == 0 {
+						seenZero = true
+					} else if v == 1 {
+						seenOne = true
+					} else {
+						boolLike = false
+					}
+					if t == "" {
+						t = "int"
+					} else if t != "int" {
+						if t == "float" {
+							// allow ints in float column
+						} else {
+							return "any"
+						}
+					}
+					continue
+				}
+			}
 			if f, err := strconv.ParseFloat(clean, 64); err == nil {
 				if f == math.Trunc(f) {
 					if t == "" {
