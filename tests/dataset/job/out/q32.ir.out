@@ -19,6 +19,7 @@ func main (regs=129)
   Const        r9, "first_movie"
   Const        r10, "title"
   Const        r11, "second_movie"
+  Const        r10, "title"
   // from k in keyword
   IterPrep     r12, r0
   Len          r13, r12
@@ -34,82 +35,156 @@ L12:
   Len          r20, r19
   Const        r21, "keyword_id"
   Const        r22, "id"
+  // where k.keyword == "10,000-mile-club"
+  Const        r6, "keyword"
+  // select { link_type: lt.link, first_movie: t1.title, second_movie: t2.title }
+  Const        r7, "link_type"
+  Const        r8, "link"
+  Const        r9, "first_movie"
+  Const        r10, "title"
+  Const        r11, "second_movie"
+  Const        r10, "title"
+  // join mk in movie_keyword on mk.keyword_id == k.id
+  Const        r15, 0
   Move         r23, r15
 L11:
   LessInt      r24, r23, r20
   JumpIfFalse  r24, L1
   Index        r25, r19, r23
   Move         r26, r25
+  Const        r21, "keyword_id"
   Index        r27, r26, r21
+  Const        r22, "id"
   Index        r28, r18, r22
   Equal        r29, r27, r28
   JumpIfFalse  r29, L2
   // join t1 in title on t1.id == mk.movie_id
   IterPrep     r30, r4
   Len          r31, r30
+  Const        r22, "id"
   Const        r32, "movie_id"
+  // where k.keyword == "10,000-mile-club"
+  Const        r6, "keyword"
+  // select { link_type: lt.link, first_movie: t1.title, second_movie: t2.title }
+  Const        r7, "link_type"
+  Const        r8, "link"
+  Const        r9, "first_movie"
+  Const        r10, "title"
+  Const        r11, "second_movie"
+  Const        r10, "title"
+  // join t1 in title on t1.id == mk.movie_id
+  Const        r15, 0
   Move         r33, r15
 L10:
   LessInt      r34, r33, r31
   JumpIfFalse  r34, L2
   Index        r35, r30, r33
   Move         r36, r35
+  Const        r22, "id"
   Index        r37, r36, r22
+  Const        r32, "movie_id"
   Index        r38, r26, r32
   Equal        r39, r37, r38
   JumpIfFalse  r39, L3
   // join ml in movie_link on ml.movie_id == t1.id
   IterPrep     r40, r3
   Len          r41, r40
+  Const        r32, "movie_id"
+  Const        r22, "id"
+  // where k.keyword == "10,000-mile-club"
+  Const        r6, "keyword"
+  // select { link_type: lt.link, first_movie: t1.title, second_movie: t2.title }
+  Const        r7, "link_type"
+  Const        r8, "link"
+  Const        r9, "first_movie"
+  Const        r10, "title"
+  Const        r11, "second_movie"
+  Const        r10, "title"
+  // join ml in movie_link on ml.movie_id == t1.id
+  Const        r15, 0
   Move         r42, r15
 L9:
   LessInt      r43, r42, r41
   JumpIfFalse  r43, L3
   Index        r44, r40, r42
   Move         r45, r44
+  Const        r32, "movie_id"
   Index        r46, r45, r32
+  Const        r22, "id"
   Index        r47, r36, r22
   Equal        r48, r46, r47
   JumpIfFalse  r48, L4
   // join t2 in title on t2.id == ml.linked_movie_id
   IterPrep     r49, r4
   Len          r50, r49
+  Const        r22, "id"
   Const        r51, "linked_movie_id"
+  // where k.keyword == "10,000-mile-club"
+  Const        r6, "keyword"
+  // select { link_type: lt.link, first_movie: t1.title, second_movie: t2.title }
+  Const        r7, "link_type"
+  Const        r8, "link"
+  Const        r9, "first_movie"
+  Const        r10, "title"
+  Const        r11, "second_movie"
+  Const        r10, "title"
+  // join t2 in title on t2.id == ml.linked_movie_id
+  Const        r15, 0
   Move         r52, r15
 L8:
   LessInt      r53, r52, r50
   JumpIfFalse  r53, L4
   Index        r54, r49, r52
   Move         r55, r54
+  Const        r22, "id"
   Index        r56, r55, r22
+  Const        r51, "linked_movie_id"
   Index        r57, r45, r51
   Equal        r58, r56, r57
   JumpIfFalse  r58, L5
   // join lt in link_type on lt.id == ml.link_type_id
   IterPrep     r59, r1
   Len          r60, r59
+  Const        r22, "id"
   Const        r61, "link_type_id"
+  // where k.keyword == "10,000-mile-club"
+  Const        r6, "keyword"
+  // select { link_type: lt.link, first_movie: t1.title, second_movie: t2.title }
+  Const        r7, "link_type"
+  Const        r8, "link"
+  Const        r9, "first_movie"
+  Const        r10, "title"
+  Const        r11, "second_movie"
+  Const        r10, "title"
+  // join lt in link_type on lt.id == ml.link_type_id
+  Const        r15, 0
   Move         r62, r15
 L7:
   LessInt      r63, r62, r60
   JumpIfFalse  r63, L5
   Index        r64, r59, r62
   Move         r65, r64
+  Const        r22, "id"
   Index        r66, r65, r22
+  Const        r61, "link_type_id"
   Index        r67, r45, r61
   Equal        r68, r66, r67
   JumpIfFalse  r68, L6
   // where k.keyword == "10,000-mile-club"
+  Const        r6, "keyword"
   Index        r69, r18, r6
   Const        r70, "10,000-mile-club"
   Equal        r71, r69, r70
   JumpIfFalse  r71, L6
   // select { link_type: lt.link, first_movie: t1.title, second_movie: t2.title }
   Const        r72, "link_type"
+  Const        r8, "link"
   Index        r73, r65, r8
   Const        r74, "first_movie"
+  Const        r10, "title"
   Index        r75, r36, r10
   Const        r76, "second_movie"
+  Const        r10, "title"
   Index        r77, r55, r10
   Move         r78, r72
   Move         r79, r73
@@ -128,39 +203,48 @@ L6:
   Jump         L7
 L5:
   // join t2 in title on t2.id == ml.linked_movie_id
+  Const        r86, 1
   Add          r52, r52, r86
   Jump         L8
 L4:
   // join ml in movie_link on ml.movie_id == t1.id
+  Const        r86, 1
   Add          r42, r42, r86
   Jump         L9
 L3:
   // join t1 in title on t1.id == mk.movie_id
+  Const        r86, 1
   Add          r33, r33, r86
   Jump         L10
 L2:
   // join mk in movie_keyword on mk.keyword_id == k.id
+  Const        r86, 1
   Add          r23, r23, r86
   Jump         L11
 L1:
   // from k in keyword
+  Const        r86, 1
   AddInt       r14, r14, r86
   Jump         L12
 L0:
   // link_type: min(from r in joined select r.link_type),
   Const        r87, "link_type"
   Const        r88, []
+  Const        r7, "link_type"
   IterPrep     r89, r5
   Len          r90, r89
+  Const        r15, 0
   Move         r91, r15
 L14:
   LessInt      r92, r91, r90
   JumpIfFalse  r92, L13
   Index        r93, r89, r91
   Move         r94, r93
+  Const        r7, "link_type"
   Index        r95, r94, r7
   Append       r96, r88, r95
   Move         r88, r96
+  Const        r86, 1
   AddInt       r91, r91, r86
   Jump         L14
 L13:
@@ -168,17 +252,21 @@ L13:
   // first_movie: min(from r in joined select r.first_movie),
   Const        r98, "first_movie"
   Const        r99, []
+  Const        r9, "first_movie"
   IterPrep     r100, r5
   Len          r101, r100
+  Const        r15, 0
   Move         r102, r15
 L16:
   LessInt      r103, r102, r101
   JumpIfFalse  r103, L15
   Index        r104, r100, r102
   Move         r94, r104
+  Const        r9, "first_movie"
   Index        r105, r94, r9
   Append       r106, r99, r105
   Move         r99, r106
+  Const        r86, 1
   AddInt       r102, r102, r86
   Jump         L16
 L15:
@@ -186,17 +274,21 @@ L15:
   // second_movie: min(from r in joined select r.second_movie)
   Const        r108, "second_movie"
   Const        r109, []
+  Const        r11, "second_movie"
   IterPrep     r110, r5
   Len          r111, r110
+  Const        r15, 0
   Move         r112, r15
 L18:
   LessInt      r113, r112, r111
   JumpIfFalse  r113, L17
   Index        r114, r110, r112
   Move         r94, r114
+  Const        r11, "second_movie"
   Index        r115, r94, r11
   Append       r116, r109, r115
   Move         r109, r116
+  Const        r86, 1
   AddInt       r112, r112, r86
   Jump         L18
 L17:

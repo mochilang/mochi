@@ -31,21 +31,36 @@ func main (regs=252)
   Const        r14, []
   // cct1.kind == "crew" &&
   Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
   // cn.country_code != "[us]" &&
   Const        r16, "country_code"
   // it1.info == "countries" &&
   Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
   // (k.keyword in allowed_keywords) &&
   Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
   // mc.note.contains("(USA)") == false &&
   Const        r19, "note"
   Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
   // t.production_year > 2000
   Const        r21, "production_year"
   // select { company: cn.name, rating: mi_idx.info, title: t.title }
   Const        r22, "company"
   Const        r23, "name"
   Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
   Const        r25, "title"
   // from cc in complete_cast
   IterPrep     r26, r1
@@ -62,27 +77,102 @@ L29:
   Len          r34, r33
   Const        r35, "id"
   Const        r36, "subject_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  Const        r29, 0
   Move         r37, r29
 L28:
   LessInt      r38, r37, r34
   JumpIfFalse  r38, L1
   Index        r39, r33, r37
   Move         r40, r39
+  Const        r35, "id"
   Index        r41, r40, r35
+  Const        r36, "subject_id"
   Index        r42, r32, r36
   Equal        r43, r41, r42
   JumpIfFalse  r43, L2
   // join cct2 in comp_cast_type on cct2.id == cc.status_id
   IterPrep     r44, r0
   Len          r45, r44
+  Const        r35, "id"
   Const        r46, "status_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join cct2 in comp_cast_type on cct2.id == cc.status_id
+  Const        r29, 0
   Move         r47, r29
 L27:
   LessInt      r48, r47, r45
   JumpIfFalse  r48, L2
   Index        r49, r44, r47
   Move         r50, r49
+  Const        r35, "id"
   Index        r51, r50, r35
+  Const        r46, "status_id"
   Index        r52, r32, r46
   Equal        r53, r51, r52
   JumpIfFalse  r53, L3
@@ -90,158 +180,584 @@ L27:
   IterPrep     r54, r4
   Len          r55, r54
   Const        r56, "movie_id"
+  Const        r56, "movie_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join mc in movie_companies on mc.movie_id == cc.movie_id
+  Const        r29, 0
   Move         r57, r29
 L26:
   LessInt      r58, r57, r55
   JumpIfFalse  r58, L3
   Index        r59, r54, r57
   Move         r60, r59
+  Const        r56, "movie_id"
   Index        r61, r60, r56
+  Const        r56, "movie_id"
   Index        r62, r32, r56
   Equal        r63, r61, r62
   JumpIfFalse  r63, L4
   // join cn in company_name on cn.id == mc.company_id
   IterPrep     r64, r2
   Len          r65, r64
+  Const        r35, "id"
   Const        r66, "company_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join cn in company_name on cn.id == mc.company_id
+  Const        r29, 0
   Move         r67, r29
 L25:
   LessInt      r68, r67, r65
   JumpIfFalse  r68, L4
   Index        r69, r64, r67
   Move         r70, r69
+  Const        r35, "id"
   Index        r71, r70, r35
+  Const        r66, "company_id"
   Index        r72, r60, r66
   Equal        r73, r71, r72
   JumpIfFalse  r73, L5
   // join ct in company_type on ct.id == mc.company_type_id
   IterPrep     r74, r3
   Len          r75, r74
+  Const        r35, "id"
   Const        r76, "company_type_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join ct in company_type on ct.id == mc.company_type_id
+  Const        r29, 0
   Move         r77, r29
 L24:
   LessInt      r78, r77, r75
   JumpIfFalse  r78, L5
   Index        r79, r74, r77
   Move         r80, r79
+  Const        r35, "id"
   Index        r81, r80, r35
+  Const        r76, "company_type_id"
   Index        r82, r60, r76
   Equal        r83, r81, r82
   JumpIfFalse  r83, L6
   // join mk in movie_keyword on mk.movie_id == cc.movie_id
   IterPrep     r84, r10
   Len          r85, r84
+  Const        r56, "movie_id"
+  Const        r56, "movie_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join mk in movie_keyword on mk.movie_id == cc.movie_id
+  Const        r29, 0
   Move         r86, r29
 L23:
   LessInt      r87, r86, r85
   JumpIfFalse  r87, L6
   Index        r88, r84, r86
   Move         r89, r88
+  Const        r56, "movie_id"
   Index        r90, r89, r56
+  Const        r56, "movie_id"
   Index        r91, r32, r56
   Equal        r92, r90, r91
   JumpIfFalse  r92, L7
   // join k in keyword on k.id == mk.keyword_id
   IterPrep     r93, r6
   Len          r94, r93
+  Const        r35, "id"
   Const        r95, "keyword_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join k in keyword on k.id == mk.keyword_id
+  Const        r29, 0
   Move         r96, r29
 L22:
   LessInt      r97, r96, r94
   JumpIfFalse  r97, L7
   Index        r98, r93, r96
   Move         r99, r98
+  Const        r35, "id"
   Index        r100, r99, r35
+  Const        r95, "keyword_id"
   Index        r101, r89, r95
   Equal        r102, r100, r101
   JumpIfFalse  r102, L8
   // join mi in movie_info on mi.movie_id == cc.movie_id
   IterPrep     r103, r8
   Len          r104, r103
+  Const        r56, "movie_id"
+  Const        r56, "movie_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join mi in movie_info on mi.movie_id == cc.movie_id
+  Const        r29, 0
   Move         r105, r29
 L21:
   LessInt      r106, r105, r104
   JumpIfFalse  r106, L8
   Index        r107, r103, r105
   Move         r108, r107
+  Const        r56, "movie_id"
   Index        r109, r108, r56
+  Const        r56, "movie_id"
   Index        r110, r32, r56
   Equal        r111, r109, r110
   JumpIfFalse  r111, L9
   // join it1 in info_type on it1.id == mi.info_type_id
   IterPrep     r112, r5
   Len          r113, r112
+  Const        r35, "id"
   Const        r114, "info_type_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join it1 in info_type on it1.id == mi.info_type_id
+  Const        r29, 0
   Move         r115, r29
 L20:
   LessInt      r116, r115, r113
   JumpIfFalse  r116, L9
   Index        r117, r112, r115
   Move         r118, r117
+  Const        r35, "id"
   Index        r119, r118, r35
+  Const        r114, "info_type_id"
   Index        r120, r108, r114
   Equal        r121, r119, r120
   JumpIfFalse  r121, L10
   // join mi_idx in movie_info_idx on mi_idx.movie_id == cc.movie_id
   IterPrep     r122, r9
   Len          r123, r122
+  Const        r56, "movie_id"
+  Const        r56, "movie_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join mi_idx in movie_info_idx on mi_idx.movie_id == cc.movie_id
+  Const        r29, 0
   Move         r124, r29
 L19:
   LessInt      r125, r124, r123
   JumpIfFalse  r125, L10
   Index        r126, r122, r124
   Move         r127, r126
+  Const        r56, "movie_id"
   Index        r128, r127, r56
+  Const        r56, "movie_id"
   Index        r129, r32, r56
   Equal        r130, r128, r129
   JumpIfFalse  r130, L11
   // join it2 in info_type on it2.id == mi_idx.info_type_id
   IterPrep     r131, r5
   Len          r132, r131
+  Const        r35, "id"
+  Const        r114, "info_type_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join it2 in info_type on it2.id == mi_idx.info_type_id
+  Const        r29, 0
   Move         r133, r29
 L18:
   LessInt      r134, r133, r132
   JumpIfFalse  r134, L11
   Index        r135, r131, r133
   Move         r136, r135
+  Const        r35, "id"
   Index        r137, r136, r35
+  Const        r114, "info_type_id"
   Index        r138, r127, r114
   Equal        r139, r137, r138
   JumpIfFalse  r139, L12
   // join t in title on t.id == cc.movie_id
   IterPrep     r140, r11
   Len          r141, r140
+  Const        r35, "id"
+  Const        r56, "movie_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join t in title on t.id == cc.movie_id
+  Const        r29, 0
   Move         r142, r29
 L17:
   LessInt      r143, r142, r141
   JumpIfFalse  r143, L12
   Index        r144, r140, r142
   Move         r145, r144
+  Const        r35, "id"
   Index        r146, r145, r35
+  Const        r56, "movie_id"
   Index        r147, r32, r56
   Equal        r148, r146, r147
   JumpIfFalse  r148, L13
   // join kt in kind_type on kt.id == t.kind_id
   IterPrep     r149, r7
   Len          r150, r149
+  Const        r35, "id"
   Const        r151, "kind_id"
+  // cct1.kind == "crew" &&
+  Const        r15, "kind"
+  // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
+  // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
+  // it1.info == "countries" &&
+  Const        r17, "info"
+  // it2.info == "rating" &&
+  Const        r17, "info"
+  // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
+  // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
+  // mc.note.contains("(USA)") == false &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // mc.note.contains("(200") &&
+  Const        r19, "note"
+  Const        r20, "contains"
+  // (mi.info in allowed_countries) &&
+  Const        r17, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r17, "info"
+  // t.production_year > 2000
+  Const        r21, "production_year"
+  // select { company: cn.name, rating: mi_idx.info, title: t.title }
+  Const        r22, "company"
+  Const        r23, "name"
+  Const        r24, "rating"
+  Const        r17, "info"
+  Const        r25, "title"
+  Const        r25, "title"
+  // join kt in kind_type on kt.id == t.kind_id
+  Const        r29, 0
   Move         r152, r29
 L16:
   LessInt      r153, r152, r150
   JumpIfFalse  r153, L13
   Index        r154, r149, r152
   Move         r155, r154
+  Const        r35, "id"
   Index        r156, r155, r35
+  Const        r151, "kind_id"
   Index        r157, r145, r151
   Equal        r158, r156, r157
   JumpIfFalse  r158, L14
   // cct1.kind == "crew" &&
+  Const        r15, "kind"
   Index        r159, r40, r15
   // mi_idx.info < 8.5 &&
+  Const        r17, "info"
   Index        r160, r127, r17
   Const        r161, 8.5
   LessFloat    r162, r160, r161
   // t.production_year > 2000
+  Const        r21, "production_year"
   Index        r163, r145, r21
   Const        r164, 2000
   Less         r165, r164, r163
@@ -249,20 +765,26 @@ L16:
   Const        r166, "crew"
   Equal        r167, r159, r166
   // cct2.kind != "complete+verified" &&
+  Const        r15, "kind"
   Index        r168, r50, r15
   Const        r169, "complete+verified"
   NotEqual     r170, r168, r169
   // cn.country_code != "[us]" &&
+  Const        r16, "country_code"
   Index        r171, r70, r16
   Const        r172, "[us]"
   NotEqual     r173, r171, r172
   // it1.info == "countries" &&
+  Const        r17, "info"
   Index        r174, r118, r17
   Const        r175, "countries"
   Equal        r176, r174, r175
   // it2.info == "rating" &&
+  Const        r17, "info"
   Index        r177, r136, r17
+  Const        r24, "rating"
   Equal        r178, r177, r24
+  Const        r19, "note"
   Index        r179, r60, r19
   // mc.note.contains("(USA)") == false &&
   Const        r180, "(USA)"
@@ -285,6 +807,7 @@ L16:
   // it2.info == "rating" &&
   JumpIfFalse  r184, L15
   // (k.keyword in allowed_keywords) &&
+  Const        r18, "keyword"
   Index        r185, r99, r18
   Const        r186, ["murder", "murder-in-title", "blood", "violence"]
   In           r187, r185, r186
@@ -293,6 +816,7 @@ L16:
   // (k.keyword in allowed_keywords) &&
   JumpIfFalse  r184, L15
   // (kt.kind in ["movie", "episode"]) &&
+  Const        r15, "kind"
   Index        r188, r155, r15
   Const        r189, ["movie", "episode"]
   In           r190, r188, r189
@@ -303,6 +827,7 @@ L16:
   Move         r184, r183
   // mc.note.contains("(USA)") == false &&
   JumpIfFalse  r184, L15
+  Const        r19, "note"
   Index        r191, r60, r19
   // mc.note.contains("(200") &&
   Const        r192, "(200"
@@ -312,6 +837,7 @@ L16:
   // mc.note.contains("(200") &&
   JumpIfFalse  r184, L15
   // (mi.info in allowed_countries) &&
+  Const        r17, "info"
   Index        r194, r108, r17
   Const        r195, ["Sweden", "Norway", "Germany", "Denmark", "Swedish", "Danish", "Norwegian", "German", "USA", "American"]
   In           r196, r194, r195
@@ -328,10 +854,13 @@ L15:
   JumpIfFalse  r184, L14
   // select { company: cn.name, rating: mi_idx.info, title: t.title }
   Const        r197, "company"
+  Const        r23, "name"
   Index        r198, r70, r23
   Const        r199, "rating"
+  Const        r17, "info"
   Index        r200, r127, r17
   Const        r201, "title"
+  Const        r25, "title"
   Index        r202, r145, r25
   Move         r203, r197
   Move         r204, r198
@@ -350,71 +879,88 @@ L14:
   Jump         L16
 L13:
   // join t in title on t.id == cc.movie_id
+  Const        r211, 1
   Add          r142, r142, r211
   Jump         L17
 L12:
   // join it2 in info_type on it2.id == mi_idx.info_type_id
+  Const        r211, 1
   Add          r133, r133, r211
   Jump         L18
 L11:
   // join mi_idx in movie_info_idx on mi_idx.movie_id == cc.movie_id
+  Const        r211, 1
   Add          r124, r124, r211
   Jump         L19
 L10:
   // join it1 in info_type on it1.id == mi.info_type_id
+  Const        r211, 1
   Add          r115, r115, r211
   Jump         L20
 L9:
   // join mi in movie_info on mi.movie_id == cc.movie_id
+  Const        r211, 1
   Add          r105, r105, r211
   Jump         L21
 L8:
   // join k in keyword on k.id == mk.keyword_id
+  Const        r211, 1
   Add          r96, r96, r211
   Jump         L22
 L7:
   // join mk in movie_keyword on mk.movie_id == cc.movie_id
+  Const        r211, 1
   Add          r86, r86, r211
   Jump         L23
 L6:
   // join ct in company_type on ct.id == mc.company_type_id
+  Const        r211, 1
   Add          r77, r77, r211
   Jump         L24
 L5:
   // join cn in company_name on cn.id == mc.company_id
+  Const        r211, 1
   Add          r67, r67, r211
   Jump         L25
 L4:
   // join mc in movie_companies on mc.movie_id == cc.movie_id
+  Const        r211, 1
   Add          r57, r57, r211
   Jump         L26
 L3:
   // join cct2 in comp_cast_type on cct2.id == cc.status_id
+  Const        r211, 1
   Add          r47, r47, r211
   Jump         L27
 L2:
   // join cct1 in comp_cast_type on cct1.id == cc.subject_id
+  Const        r211, 1
   Add          r37, r37, r211
   Jump         L28
 L1:
   // from cc in complete_cast
+  Const        r211, 1
   AddInt       r28, r28, r211
   Jump         L29
 L0:
   // movie_company: min(from x in matches select x.company),
   Const        r212, "movie_company"
   Const        r213, []
+  Const        r22, "company"
   IterPrep     r214, r14
   Len          r215, r214
+  Const        r29, 0
   Move         r216, r29
 L31:
   LessInt      r217, r216, r215
   JumpIfFalse  r217, L30
   Index        r218, r214, r216
   Move         r219, r218
+  Const        r22, "company"
   Index        r220, r219, r22
   Append       r221, r213, r220
   Move         r213, r221
+  Const        r211, 1
   AddInt       r216, r216, r211
   Jump         L31
 L30:
@@ -422,17 +968,21 @@ L30:
   // rating: min(from x in matches select x.rating),
   Const        r223, "rating"
   Const        r224, []
+  Const        r24, "rating"
   IterPrep     r225, r14
   Len          r226, r225
+  Const        r29, 0
   Move         r227, r29
 L33:
   LessInt      r228, r227, r226
   JumpIfFalse  r228, L32
   Index        r229, r225, r227
   Move         r219, r229
+  Const        r24, "rating"
   Index        r230, r219, r24
   Append       r231, r224, r230
   Move         r224, r231
+  Const        r211, 1
   AddInt       r227, r227, r211
   Jump         L33
 L32:
@@ -440,17 +990,21 @@ L32:
   // complete_euro_dark_movie: min(from x in matches select x.title)
   Const        r233, "complete_euro_dark_movie"
   Const        r234, []
+  Const        r25, "title"
   IterPrep     r235, r14
   Len          r236, r235
+  Const        r29, 0
   Move         r237, r29
 L35:
   LessInt      r238, r237, r236
   JumpIfFalse  r238, L34
   Index        r239, r235, r237
   Move         r219, r239
+  Const        r25, "title"
   Index        r240, r219, r25
   Append       r241, r234, r240
   Move         r234, r241
+  Const        r211, 1
   AddInt       r237, r237, r211
   Jump         L35
 L34:
