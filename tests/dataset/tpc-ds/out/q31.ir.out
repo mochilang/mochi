@@ -32,8 +32,10 @@ L4:
   JumpIfFalse  r20, L1
   Index        r21, r16, r18
   Move         r22, r21
+  Const        r13, "ca_county"
   Index        r23, r22, r13
   Equal        r24, r23, r11
+  Const        r14, "d_qoy"
   Index        r25, r22, r14
   Const        r26, 1
   Equal        r27, r25, r26
@@ -42,26 +44,34 @@ L4:
   Move         r28, r27
 L2:
   JumpIfFalse  r28, L3
+  Const        r15, "ss_ext_sales_price"
   Index        r29, r22, r15
   Append       r30, r12, r29
   Move         r12, r30
 L3:
+  Const        r26, 1
   AddInt       r18, r18, r26
   Jump         L4
 L1:
   Sum          r31, r12
   // let ss2 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 2 select s.ss_ext_sales_price)
   Const        r32, []
+  Const        r13, "ca_county"
+  Const        r14, "d_qoy"
+  Const        r15, "ss_ext_sales_price"
   IterPrep     r33, r0
   Len          r34, r33
+  Const        r19, 0
   Move         r35, r19
 L8:
   LessInt      r36, r35, r34
   JumpIfFalse  r36, L5
   Index        r37, r33, r35
   Move         r22, r37
+  Const        r13, "ca_county"
   Index        r38, r22, r13
   Equal        r39, r38, r11
+  Const        r14, "d_qoy"
   Index        r40, r22, r14
   Const        r41, 2
   Equal        r42, r40, r41
@@ -70,26 +80,34 @@ L8:
   Move         r43, r42
 L6:
   JumpIfFalse  r43, L7
+  Const        r15, "ss_ext_sales_price"
   Index        r44, r22, r15
   Append       r45, r32, r44
   Move         r32, r45
 L7:
+  Const        r26, 1
   AddInt       r35, r35, r26
   Jump         L8
 L5:
   Sum          r46, r32
   // let ss3 = sum(from s in store_sales where s.ca_county == county && s.d_qoy == 3 select s.ss_ext_sales_price)
   Const        r47, []
+  Const        r13, "ca_county"
+  Const        r14, "d_qoy"
+  Const        r15, "ss_ext_sales_price"
   IterPrep     r48, r0
   Len          r49, r48
+  Const        r19, 0
   Move         r50, r19
 L12:
   LessInt      r51, r50, r49
   JumpIfFalse  r51, L9
   Index        r52, r48, r50
   Move         r22, r52
+  Const        r13, "ca_county"
   Index        r53, r22, r13
   Equal        r54, r53, r11
+  Const        r14, "d_qoy"
   Index        r55, r22, r14
   Const        r56, 3
   Equal        r57, r55, r56
@@ -98,92 +116,120 @@ L12:
   Move         r58, r57
 L10:
   JumpIfFalse  r58, L11
+  Const        r15, "ss_ext_sales_price"
   Index        r59, r22, r15
   Append       r60, r47, r59
   Move         r47, r60
 L11:
+  Const        r26, 1
   AddInt       r50, r50, r26
   Jump         L12
 L9:
   Sum          r61, r47
   // let ws1 = sum(from w in web_sales where w.ca_county == county && w.d_qoy == 1 select w.ws_ext_sales_price)
   Const        r62, []
+  Const        r13, "ca_county"
+  Const        r14, "d_qoy"
   Const        r63, "ws_ext_sales_price"
   IterPrep     r64, r1
   Len          r65, r64
+  Const        r19, 0
   Move         r66, r19
 L16:
   LessInt      r67, r66, r65
   JumpIfFalse  r67, L13
   Index        r68, r64, r66
   Move         r69, r68
+  Const        r13, "ca_county"
   Index        r70, r69, r13
   Equal        r71, r70, r11
+  Const        r14, "d_qoy"
   Index        r72, r69, r14
+  Const        r26, 1
   Equal        r73, r72, r26
   Move         r74, r71
   JumpIfFalse  r74, L14
   Move         r74, r73
 L14:
   JumpIfFalse  r74, L15
+  Const        r63, "ws_ext_sales_price"
   Index        r75, r69, r63
   Append       r76, r62, r75
   Move         r62, r76
 L15:
+  Const        r26, 1
   AddInt       r66, r66, r26
   Jump         L16
 L13:
   Sum          r77, r62
   // let ws2 = sum(from w in web_sales where w.ca_county == county && w.d_qoy == 2 select w.ws_ext_sales_price)
   Const        r78, []
+  Const        r13, "ca_county"
+  Const        r14, "d_qoy"
+  Const        r63, "ws_ext_sales_price"
   IterPrep     r79, r1
   Len          r80, r79
+  Const        r19, 0
   Move         r81, r19
 L20:
   LessInt      r82, r81, r80
   JumpIfFalse  r82, L17
   Index        r83, r79, r81
   Move         r69, r83
+  Const        r13, "ca_county"
   Index        r84, r69, r13
   Equal        r85, r84, r11
+  Const        r14, "d_qoy"
   Index        r86, r69, r14
+  Const        r41, 2
   Equal        r87, r86, r41
   Move         r88, r85
   JumpIfFalse  r88, L18
   Move         r88, r87
 L18:
   JumpIfFalse  r88, L19
+  Const        r63, "ws_ext_sales_price"
   Index        r89, r69, r63
   Append       r90, r78, r89
   Move         r78, r90
 L19:
+  Const        r26, 1
   AddInt       r81, r81, r26
   Jump         L20
 L17:
   Sum          r91, r78
   // let ws3 = sum(from w in web_sales where w.ca_county == county && w.d_qoy == 3 select w.ws_ext_sales_price)
   Const        r92, []
+  Const        r13, "ca_county"
+  Const        r14, "d_qoy"
+  Const        r63, "ws_ext_sales_price"
   IterPrep     r93, r1
   Len          r94, r93
+  Const        r19, 0
   Move         r95, r19
 L24:
   LessInt      r96, r95, r94
   JumpIfFalse  r96, L21
   Index        r97, r93, r95
   Move         r69, r97
+  Const        r13, "ca_county"
   Index        r98, r69, r13
   Equal        r99, r98, r11
+  Const        r14, "d_qoy"
   Index        r100, r69, r14
+  Const        r56, 3
   Equal        r101, r100, r56
   Move         r102, r99
   JumpIfFalse  r102, L22
   Move         r102, r101
 L22:
   JumpIfFalse  r102, L23
+  Const        r63, "ws_ext_sales_price"
   Index        r103, r69, r63
   Append       r104, r92, r103
   Move         r92, r104
 L23:
+  Const        r26, 1
   AddInt       r95, r95, r26
   Jump         L24
 L21:

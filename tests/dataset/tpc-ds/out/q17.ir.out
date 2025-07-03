@@ -21,7 +21,10 @@ func main (regs=325)
   Const        r11, "csq"
   Const        r12, "cs_quantity"
   Const        r13, "i_item_id"
+  Const        r13, "i_item_id"
   Const        r14, "i_item_desc"
+  Const        r14, "i_item_desc"
+  Const        r15, "s_state"
   Const        r15, "s_state"
   // from ss in store_sales
   IterPrep     r16, r0
@@ -42,19 +45,40 @@ L21:
   Const        r28, "sr_item_sk"
   Const        r29, "ss_ticket_number"
   Const        r30, "sr_ticket_number"
+  // select { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }
+  Const        r7, "qty"
+  Const        r8, "ss_quantity"
+  Const        r9, "ret"
+  Const        r10, "sr_return_quantity"
+  Const        r11, "csq"
+  Const        r12, "cs_quantity"
+  Const        r13, "i_item_id"
+  Const        r13, "i_item_id"
+  Const        r14, "i_item_desc"
+  Const        r14, "i_item_desc"
+  Const        r15, "s_state"
+  Const        r15, "s_state"
+  // join sr in store_returns on ss.ss_customer_sk == sr.sr_customer_sk && ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number
+  Const        r19, 0
   Move         r31, r19
 L20:
   LessInt      r32, r31, r24
   JumpIfFalse  r32, L1
   Index        r33, r23, r31
   Move         r34, r33
+  Const        r25, "ss_customer_sk"
   Index        r35, r22, r25
+  Const        r26, "sr_customer_sk"
   Index        r36, r34, r26
   Equal        r37, r35, r36
+  Const        r27, "ss_item_sk"
   Index        r38, r22, r27
+  Const        r28, "sr_item_sk"
   Index        r39, r34, r28
   Equal        r40, r38, r39
+  Const        r29, "ss_ticket_number"
   Index        r41, r22, r29
+  Const        r30, "sr_ticket_number"
   Index        r42, r34, r30
   Equal        r43, r41, r42
   Move         r44, r37
@@ -67,18 +91,39 @@ L2:
   // join cs in catalog_sales on sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk
   IterPrep     r45, r2
   Len          r46, r45
+  Const        r26, "sr_customer_sk"
   Const        r47, "cs_bill_customer_sk"
+  Const        r28, "sr_item_sk"
   Const        r48, "cs_item_sk"
+  // select { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }
+  Const        r7, "qty"
+  Const        r8, "ss_quantity"
+  Const        r9, "ret"
+  Const        r10, "sr_return_quantity"
+  Const        r11, "csq"
+  Const        r12, "cs_quantity"
+  Const        r13, "i_item_id"
+  Const        r13, "i_item_id"
+  Const        r14, "i_item_desc"
+  Const        r14, "i_item_desc"
+  Const        r15, "s_state"
+  Const        r15, "s_state"
+  // join cs in catalog_sales on sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk
+  Const        r19, 0
   Move         r49, r19
 L19:
   LessInt      r50, r49, r46
   JumpIfFalse  r50, L3
   Index        r51, r45, r49
   Move         r52, r51
+  Const        r26, "sr_customer_sk"
   Index        r53, r34, r26
+  Const        r47, "cs_bill_customer_sk"
   Index        r54, r52, r47
   Equal        r55, r53, r54
+  Const        r28, "sr_item_sk"
   Index        r56, r34, r28
+  Const        r48, "cs_item_sk"
   Index        r57, r52, r48
   Equal        r58, r56, r57
   Move         r59, r55
@@ -92,15 +137,33 @@ L4:
   Const        r62, "ss_sold_date_sk"
   Const        r63, "d_date_sk"
   Const        r64, "d_quarter_name"
+  // select { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }
+  Const        r7, "qty"
+  Const        r8, "ss_quantity"
+  Const        r9, "ret"
+  Const        r10, "sr_return_quantity"
+  Const        r11, "csq"
+  Const        r12, "cs_quantity"
+  Const        r13, "i_item_id"
+  Const        r13, "i_item_id"
+  Const        r14, "i_item_desc"
+  Const        r14, "i_item_desc"
+  Const        r15, "s_state"
+  Const        r15, "s_state"
+  // join d1 in date_dim on ss.ss_sold_date_sk == d1.d_date_sk && d1.d_quarter_name == "1998Q1"
+  Const        r19, 0
   Move         r65, r19
 L18:
   LessInt      r66, r65, r61
   JumpIfFalse  r66, L5
   Index        r67, r60, r65
   Move         r68, r67
+  Const        r62, "ss_sold_date_sk"
   Index        r69, r22, r62
+  Const        r63, "d_date_sk"
   Index        r70, r68, r63
   Equal        r71, r69, r70
+  Const        r64, "d_quarter_name"
   Index        r72, r68, r64
   Const        r73, "1998Q1"
   Equal        r74, r72, r73
@@ -113,15 +176,35 @@ L6:
   IterPrep     r76, r3
   Len          r77, r76
   Const        r78, "sr_returned_date_sk"
+  Const        r63, "d_date_sk"
+  Const        r64, "d_quarter_name"
+  // select { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }
+  Const        r7, "qty"
+  Const        r8, "ss_quantity"
+  Const        r9, "ret"
+  Const        r10, "sr_return_quantity"
+  Const        r11, "csq"
+  Const        r12, "cs_quantity"
+  Const        r13, "i_item_id"
+  Const        r13, "i_item_id"
+  Const        r14, "i_item_desc"
+  Const        r14, "i_item_desc"
+  Const        r15, "s_state"
+  Const        r15, "s_state"
+  // join d2 in date_dim on sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name in ["1998Q1","1998Q2","1998Q3"]
+  Const        r19, 0
   Move         r79, r19
 L17:
   LessInt      r80, r79, r77
   JumpIfFalse  r80, L7
   Index        r81, r76, r79
   Move         r82, r81
+  Const        r78, "sr_returned_date_sk"
   Index        r83, r34, r78
+  Const        r63, "d_date_sk"
   Index        r84, r82, r63
   Equal        r85, r83, r84
+  Const        r64, "d_quarter_name"
   Index        r86, r82, r64
   Const        r87, ["1998Q1", "1998Q2", "1998Q3"]
   In           r88, r86, r87
@@ -134,15 +217,35 @@ L8:
   IterPrep     r90, r3
   Len          r91, r90
   Const        r92, "cs_sold_date_sk"
+  Const        r63, "d_date_sk"
+  Const        r64, "d_quarter_name"
+  // select { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }
+  Const        r7, "qty"
+  Const        r8, "ss_quantity"
+  Const        r9, "ret"
+  Const        r10, "sr_return_quantity"
+  Const        r11, "csq"
+  Const        r12, "cs_quantity"
+  Const        r13, "i_item_id"
+  Const        r13, "i_item_id"
+  Const        r14, "i_item_desc"
+  Const        r14, "i_item_desc"
+  Const        r15, "s_state"
+  Const        r15, "s_state"
+  // join d3 in date_dim on cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name in ["1998Q1","1998Q2","1998Q3"]
+  Const        r19, 0
   Move         r93, r19
 L16:
   LessInt      r94, r93, r91
   JumpIfFalse  r94, L9
   Index        r95, r90, r93
   Move         r96, r95
+  Const        r92, "cs_sold_date_sk"
   Index        r97, r52, r92
+  Const        r63, "d_date_sk"
   Index        r98, r96, r63
   Equal        r99, r97, r98
+  Const        r64, "d_quarter_name"
   Index        r100, r96, r64
   Const        r101, ["1998Q1", "1998Q2", "1998Q3"]
   In           r102, r100, r101
@@ -156,42 +259,83 @@ L10:
   Len          r105, r104
   Const        r106, "ss_store_sk"
   Const        r107, "s_store_sk"
+  // select { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }
+  Const        r7, "qty"
+  Const        r8, "ss_quantity"
+  Const        r9, "ret"
+  Const        r10, "sr_return_quantity"
+  Const        r11, "csq"
+  Const        r12, "cs_quantity"
+  Const        r13, "i_item_id"
+  Const        r13, "i_item_id"
+  Const        r14, "i_item_desc"
+  Const        r14, "i_item_desc"
+  Const        r15, "s_state"
+  Const        r15, "s_state"
+  // join s in store on ss.ss_store_sk == s.s_store_sk
+  Const        r19, 0
   Move         r108, r19
 L15:
   LessInt      r109, r108, r105
   JumpIfFalse  r109, L11
   Index        r110, r104, r108
   Move         r111, r110
+  Const        r106, "ss_store_sk"
   Index        r112, r22, r106
+  Const        r107, "s_store_sk"
   Index        r113, r111, r107
   Equal        r114, r112, r113
   JumpIfFalse  r114, L12
   // join i in item on ss.ss_item_sk == i.i_item_sk
   IterPrep     r115, r5
   Len          r116, r115
+  Const        r27, "ss_item_sk"
   Const        r117, "i_item_sk"
+  // select { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }
+  Const        r7, "qty"
+  Const        r8, "ss_quantity"
+  Const        r9, "ret"
+  Const        r10, "sr_return_quantity"
+  Const        r11, "csq"
+  Const        r12, "cs_quantity"
+  Const        r13, "i_item_id"
+  Const        r13, "i_item_id"
+  Const        r14, "i_item_desc"
+  Const        r14, "i_item_desc"
+  Const        r15, "s_state"
+  Const        r15, "s_state"
+  // join i in item on ss.ss_item_sk == i.i_item_sk
+  Const        r19, 0
   Move         r118, r19
 L14:
   LessInt      r119, r118, r116
   JumpIfFalse  r119, L12
   Index        r120, r115, r118
   Move         r121, r120
+  Const        r27, "ss_item_sk"
   Index        r122, r22, r27
+  Const        r117, "i_item_sk"
   Index        r123, r121, r117
   Equal        r124, r122, r123
   JumpIfFalse  r124, L13
   // select { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }
   Const        r125, "qty"
+  Const        r8, "ss_quantity"
   Index        r126, r22, r8
   Const        r127, "ret"
+  Const        r10, "sr_return_quantity"
   Index        r128, r34, r10
   Const        r129, "csq"
+  Const        r12, "cs_quantity"
   Index        r130, r52, r12
   Const        r131, "i_item_id"
+  Const        r13, "i_item_id"
   Index        r132, r121, r13
   Const        r133, "i_item_desc"
+  Const        r14, "i_item_desc"
   Index        r134, r121, r14
   Const        r135, "s_state"
+  Const        r15, "s_state"
   Index        r136, r111, r15
   Move         r137, r125
   Move         r138, r126
@@ -216,41 +360,66 @@ L13:
   Jump         L14
 L12:
   // join s in store on ss.ss_store_sk == s.s_store_sk
+  Const        r151, 1
   Add          r108, r108, r151
   Jump         L15
 L11:
   // join d3 in date_dim on cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name in ["1998Q1","1998Q2","1998Q3"]
+  Const        r151, 1
   Add          r93, r93, r151
   Jump         L16
 L9:
   // join d2 in date_dim on sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name in ["1998Q1","1998Q2","1998Q3"]
+  Const        r151, 1
   Add          r79, r79, r151
   Jump         L17
 L7:
   // join d1 in date_dim on ss.ss_sold_date_sk == d1.d_date_sk && d1.d_quarter_name == "1998Q1"
+  Const        r151, 1
   Add          r65, r65, r151
   Jump         L18
 L5:
   // join cs in catalog_sales on sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk
+  Const        r151, 1
   Add          r49, r49, r151
   Jump         L19
 L3:
   // join sr in store_returns on ss.ss_customer_sk == sr.sr_customer_sk && ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number
+  Const        r151, 1
   Add          r31, r31, r151
   Jump         L20
 L1:
   // from ss in store_sales
+  Const        r151, 1
   AddInt       r18, r18, r151
   Jump         L21
 L0:
   // from j in joined
   Const        r152, []
+  // group by { i_item_id: j.i_item_id, i_item_desc: j.i_item_desc, s_state: j.s_state } into g
+  Const        r13, "i_item_id"
+  Const        r13, "i_item_id"
+  Const        r14, "i_item_desc"
+  Const        r14, "i_item_desc"
+  Const        r15, "s_state"
+  Const        r15, "s_state"
   // i_item_id: g.key.i_item_id,
+  Const        r13, "i_item_id"
   Const        r153, "key"
+  Const        r13, "i_item_id"
+  // i_item_desc: g.key.i_item_desc,
+  Const        r14, "i_item_desc"
+  Const        r153, "key"
+  Const        r14, "i_item_desc"
+  // s_state: g.key.s_state,
+  Const        r15, "s_state"
+  Const        r153, "key"
+  Const        r15, "s_state"
   // store_sales_quantitycount: count(from _ in g select _),
   Const        r154, "store_sales_quantitycount"
   // store_sales_quantityave: avg(from x in g select x.qty),
   Const        r155, "store_sales_quantityave"
+  Const        r7, "qty"
   // store_sales_quantitystdev: 0.0,
   Const        r156, "store_sales_quantitystdev"
   // store_sales_quantitycov: 0.0,
@@ -259,6 +428,7 @@ L0:
   Const        r158, "store_returns_quantitycount"
   // store_returns_quantityave: avg(from x in g select x.ret),
   Const        r159, "store_returns_quantityave"
+  Const        r9, "ret"
   // store_returns_quantitystdev: 0.0,
   Const        r160, "store_returns_quantitystdev"
   // store_returns_quantitycov: 0.0,
@@ -267,6 +437,7 @@ L0:
   Const        r162, "catalog_sales_quantitycount"
   // catalog_sales_quantityave: avg(from x in g select x.csq),
   Const        r163, "catalog_sales_quantityave"
+  Const        r11, "csq"
   // catalog_sales_quantitystdev: 0.0,
   Const        r164, "catalog_sales_quantitystdev"
   // catalog_sales_quantitycov: 0.0
@@ -285,10 +456,13 @@ L24:
   Move         r174, r173
   // group by { i_item_id: j.i_item_id, i_item_desc: j.i_item_desc, s_state: j.s_state } into g
   Const        r175, "i_item_id"
+  Const        r13, "i_item_id"
   Index        r176, r174, r13
   Const        r177, "i_item_desc"
+  Const        r14, "i_item_desc"
   Index        r178, r174, r14
   Const        r179, "s_state"
+  Const        r15, "s_state"
   Index        r180, r174, r15
   Move         r181, r175
   Move         r182, r176
@@ -301,14 +475,17 @@ L24:
   In           r189, r188, r169
   JumpIfTrue   r189, L23
   // from j in joined
+  Const        r171, []
   Const        r190, "__group__"
   Const        r191, true
+  Const        r153, "key"
   // group by { i_item_id: j.i_item_id, i_item_desc: j.i_item_desc, s_state: j.s_state } into g
   Move         r192, r187
   // from j in joined
   Const        r193, "items"
   Move         r194, r171
   Const        r195, "count"
+  Const        r19, 0
   Move         r196, r190
   Move         r197, r191
   Move         r198, r153
@@ -322,16 +499,21 @@ L24:
   Append       r205, r170, r204
   Move         r170, r205
 L23:
+  Const        r193, "items"
   Index        r206, r169, r188
   Index        r207, r206, r193
   Append       r208, r207, r173
   SetIndex     r206, r193, r208
+  Const        r195, "count"
   Index        r209, r206, r195
+  Const        r151, 1
   AddInt       r210, r209, r151
   SetIndex     r206, r195, r210
+  Const        r151, 1
   AddInt       r168, r168, r151
   Jump         L24
 L22:
+  Const        r19, 0
   Move         r211, r19
   Len          r212, r170
 L38:
@@ -341,21 +523,28 @@ L38:
   Move         r215, r214
   // i_item_id: g.key.i_item_id,
   Const        r216, "i_item_id"
+  Const        r153, "key"
   Index        r217, r215, r153
+  Const        r13, "i_item_id"
   Index        r218, r217, r13
   // i_item_desc: g.key.i_item_desc,
   Const        r219, "i_item_desc"
+  Const        r153, "key"
   Index        r220, r215, r153
+  Const        r14, "i_item_desc"
   Index        r221, r220, r14
   // s_state: g.key.s_state,
   Const        r222, "s_state"
+  Const        r153, "key"
   Index        r223, r215, r153
+  Const        r15, "s_state"
   Index        r224, r223, r15
   // store_sales_quantitycount: count(from _ in g select _),
   Const        r225, "store_sales_quantitycount"
   Const        r226, []
   IterPrep     r227, r215
   Len          r228, r227
+  Const        r19, 0
   Move         r229, r19
 L27:
   LessInt      r230, r229, r228
@@ -364,6 +553,7 @@ L27:
   Move         r232, r231
   Append       r233, r226, r232
   Move         r226, r233
+  Const        r151, 1
   AddInt       r229, r229, r151
   Jump         L27
 L26:
@@ -371,17 +561,21 @@ L26:
   // store_sales_quantityave: avg(from x in g select x.qty),
   Const        r235, "store_sales_quantityave"
   Const        r236, []
+  Const        r7, "qty"
   IterPrep     r237, r215
   Len          r238, r237
+  Const        r19, 0
   Move         r239, r19
 L29:
   LessInt      r240, r239, r238
   JumpIfFalse  r240, L28
   Index        r241, r237, r239
   Move         r242, r241
+  Const        r7, "qty"
   Index        r243, r242, r7
   Append       r244, r236, r243
   Move         r236, r244
+  Const        r151, 1
   AddInt       r239, r239, r151
   Jump         L29
 L28:
@@ -391,11 +585,13 @@ L28:
   Const        r247, 0.0
   // store_sales_quantitycov: 0.0,
   Const        r248, "store_sales_quantitycov"
+  Const        r247, 0.0
   // store_returns_quantitycount: count(from _ in g select _),
   Const        r249, "store_returns_quantitycount"
   Const        r250, []
   IterPrep     r251, r215
   Len          r252, r251
+  Const        r19, 0
   Move         r253, r19
 L31:
   LessInt      r254, r253, r252
@@ -404,6 +600,7 @@ L31:
   Move         r232, r255
   Append       r256, r250, r232
   Move         r250, r256
+  Const        r151, 1
   AddInt       r253, r253, r151
   Jump         L31
 L30:
@@ -411,30 +608,37 @@ L30:
   // store_returns_quantityave: avg(from x in g select x.ret),
   Const        r258, "store_returns_quantityave"
   Const        r259, []
+  Const        r9, "ret"
   IterPrep     r260, r215
   Len          r261, r260
+  Const        r19, 0
   Move         r262, r19
 L33:
   LessInt      r263, r262, r261
   JumpIfFalse  r263, L32
   Index        r264, r260, r262
   Move         r242, r264
+  Const        r9, "ret"
   Index        r265, r242, r9
   Append       r266, r259, r265
   Move         r259, r266
+  Const        r151, 1
   AddInt       r262, r262, r151
   Jump         L33
 L32:
   Avg          r267, r259
   // store_returns_quantitystdev: 0.0,
   Const        r268, "store_returns_quantitystdev"
+  Const        r247, 0.0
   // store_returns_quantitycov: 0.0,
   Const        r269, "store_returns_quantitycov"
+  Const        r247, 0.0
   // catalog_sales_quantitycount: count(from _ in g select _),
   Const        r270, "catalog_sales_quantitycount"
   Const        r271, []
   IterPrep     r272, r215
   Len          r273, r272
+  Const        r19, 0
   Move         r274, r19
 L35:
   LessInt      r275, r274, r273
@@ -443,6 +647,7 @@ L35:
   Move         r232, r276
   Append       r277, r271, r232
   Move         r271, r277
+  Const        r151, 1
   AddInt       r274, r274, r151
   Jump         L35
 L34:
@@ -450,25 +655,31 @@ L34:
   // catalog_sales_quantityave: avg(from x in g select x.csq),
   Const        r279, "catalog_sales_quantityave"
   Const        r280, []
+  Const        r11, "csq"
   IterPrep     r281, r215
   Len          r282, r281
+  Const        r19, 0
   Move         r283, r19
 L37:
   LessInt      r284, r283, r282
   JumpIfFalse  r284, L36
   Index        r285, r281, r283
   Move         r242, r285
+  Const        r11, "csq"
   Index        r286, r242, r11
   Append       r287, r280, r286
   Move         r280, r287
+  Const        r151, 1
   AddInt       r283, r283, r151
   Jump         L37
 L36:
   Avg          r288, r280
   // catalog_sales_quantitystdev: 0.0,
   Const        r289, "catalog_sales_quantitystdev"
+  Const        r247, 0.0
   // catalog_sales_quantitycov: 0.0
   Const        r290, "catalog_sales_quantitycov"
+  Const        r247, 0.0
   // i_item_id: g.key.i_item_id,
   Move         r291, r216
   Move         r292, r218
@@ -519,6 +730,7 @@ L36:
   // from j in joined
   Append       r322, r152, r321
   Move         r152, r322
+  Const        r151, 1
   AddInt       r211, r211, r151
   Jump         L38
 L25:

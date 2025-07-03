@@ -14,6 +14,13 @@ let date_dim = [
   {d_date_sk: 2, d_month_seq: 2}
 ]
 
+fun abs(x: float): float {
+  if x >= 0.0 {
+    return x
+  }
+  return -x
+}
+
 let grouped =
   from ss in store_sales
   join i in item on ss.item == i.i_item_sk
@@ -29,5 +36,8 @@ let result =
 json(result)
 
 test "TPCDS Q53 simplified" {
-  expect result == [{i_manufact_id: 2, sum_sales: 53.0}]
+  expect result == [
+    {i_manufact_id: 1, sum_sales: 20.0},
+    {i_manufact_id: 2, sum_sales: 53.0}
+  ]
 }

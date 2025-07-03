@@ -1,33 +1,37 @@
-func main (regs=17)
-  // let t = [{id: 1, val: 58}]
-  Const        r0, [{"id": 1, "val": 58}]
-  // let tmp = lower("ignore")
-  Const        r1, "ignore"
-  // let vals = from r in t select r.val
-  Const        r2, []
-  Const        r3, "val"
-  IterPrep     r4, r0
-  Len          r5, r4
-  Const        r7, 0
-  Move         r6, r7
-L1:
-  LessInt      r8, r6, r5
-  JumpIfFalse  r8, L0
-  Index        r9, r4, r6
-  Move         r10, r9
-  Index        r11, r10, r3
-  Append       r12, r2, r11
-  Move         r2, r12
-  Const        r13, 1
-  AddInt       r6, r6, r13
-  Jump         L1
-L0:
-  // let result = first(vals)
-  First        r14, r2
+func main (regs=26)
+  // let ss_items = {item_id: 1, ss_item_rev: 50.0}
+  Const        r0, {"item_id": 1, "ss_item_rev": 50.0}
+  // let cs_items = {item_id: 1, cs_item_rev: 60.0}
+  Const        r1, {"cs_item_rev": 60.0, "item_id": 1}
+  // let ws_items = {item_id: 1, ws_item_rev: 64.0}
+  Const        r2, {"item_id": 1, "ws_item_rev": 64.0}
+  // let avg = (ss_items.ss_item_rev + cs_items.cs_item_rev + ws_items.ws_item_rev) / 3.0
+  Const        r3, "ss_item_rev"
+  Const        r4, 50.0
+  Const        r5, "cs_item_rev"
+  Const        r6, 60.0
+  Const        r7, 110.0
+  Const        r8, "ws_item_rev"
+  Const        r9, 64.0
+  Const        r10, 174.0
+  Const        r11, 3.0
+  Const        r12, 58.0
+  // let result = [{item_id: ss_items.item_id, average: avg}]
+  Const        r14, "item_id"
+  Const        r15, "item_id"
+  Const        r16, 1
+  Const        r17, "average"
+  Move         r18, r14
+  Move         r19, r16
+  Move         r20, r17
+  Move         r21, r12
+  MakeMap      r22, 2, r18
+  Move         r13, r22
+  MakeList     r23, 1, r13
   // json(result)
-  JSON         r14
-  // expect result == 58
-  Const        r15, 58
-  Equal        r16, r14, r15
-  Expect       r16
+  JSON         r23
+  // expect result == [{item_id: 1, average: 58.0}]
+  Const        r24, [{"average": 58.0, "item_id": 1}]
+  Equal        r25, r23, r24
+  Expect       r25
   Return       r0

@@ -1,5 +1,1 @@
-{"catalog_only":1,"store_and_catalog":1,"store_only":0}
-call graph: main
-stack trace:
-  main at /workspace/mochi/tests/dataset/tpc-ds/q97.mochi:35
-    expect result.store_only == 1 &&
+{"catalog_only":1,"store_and_catalog":1,"store_only":1}

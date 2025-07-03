@@ -15,18 +15,14 @@ let catalog_sales = [
 let ssci = from ss in store_sales group by {customer_sk: ss.ss_customer_sk, item_sk: ss.ss_item_sk} into g select {customer_sk: g.key.customer_sk, item_sk: g.key.item_sk}
 let csci = from cs in catalog_sales group by {customer_sk: cs.cs_bill_customer_sk, item_sk: cs.cs_item_sk} into g select {customer_sk: g.key.customer_sk, item_sk: g.key.item_sk}
 
-let joined =
-  from s in ssci outer join c in csci on s.customer_sk == c.customer_sk && s.item_sk == c.item_sk
-  select {
-    store_only: if s.customer_sk != null && (c == null || c.customer_sk == null) {1} else {0},
-    catalog_only: if (s == null || s.customer_sk == null) && c != null && c.customer_sk != null {1} else {0},
-    both: if s.customer_sk != null && c != null && c.customer_sk != null {1} else {0}
-  }
+let both = count(from s in ssci join c in csci on s.customer_sk == c.customer_sk && s.item_sk == c.item_sk select 1)
+let store_only = count(from s in ssci where !(exists(from c in csci where s.customer_sk == c.customer_sk && s.item_sk == c.item_sk select c)) select 1)
+let catalog_only = count(from c in csci where !(exists(from s in ssci where s.customer_sk == c.customer_sk && s.item_sk == c.item_sk select s)) select 1)
 
 let result = {
-  store_only: sum(from x in joined select x.store_only),
-  catalog_only: sum(from x in joined select x.catalog_only),
-  store_and_catalog: sum(from x in joined select x.both)
+  store_only: store_only,
+  catalog_only: catalog_only,
+  store_and_catalog: both
 }
 
 json(result)

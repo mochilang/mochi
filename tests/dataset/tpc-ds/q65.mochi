@@ -4,6 +4,17 @@ let store_sales = [
   {store: 1, item: 2, price: 60}
 ]
 
+fun average(xs: list<float>): float {
+  if len(xs) == 0 {
+    return 0.0
+  }
+  var sum = 0.0
+  for x in xs {
+    sum = sum + x
+  }
+  return sum / (len(xs) as float)
+}
+
 let item_revenue =
   from ss in store_sales
   group by {item: ss.item} into g

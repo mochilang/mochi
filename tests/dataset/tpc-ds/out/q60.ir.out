@@ -20,6 +20,7 @@ L1:
   JumpIfFalse  r11, L0
   Index        r12, r7, r9
   Move         r13, r12
+  Const        r6, "price"
   Index        r14, r13, r6
   Append       r15, r5, r14
   Move         r5, r15

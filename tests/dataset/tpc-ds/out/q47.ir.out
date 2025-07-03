@@ -1,4 +1,4 @@
-func main (regs=43)
+func main (regs=64)
   // let v2 = [
   Const        r0, [{"avg_monthly_sales": 100.0, "d_year": 2020, "item": "A", "sum_sales": 120.0}, {"avg_monthly_sales": 80.0, "d_year": 2020, "item": "B", "sum_sales": 70.0}, {"avg_monthly_sales": 50.0, "d_year": 2019, "item": "C", "sum_sales": 60.0}]
   // let year = 2020
@@ -7,10 +7,32 @@ func main (regs=43)
   Const        r2, "item"
   // from v in v2
   Const        r3, []
-  // where v.d_year == year && v.avg_monthly_sales > 0 && abs(v.sum_sales - v.avg_monthly_sales) / v.avg_monthly_sales > 0.1
+  // where v.d_year >= year - 1 && v.avg_monthly_sales > 0 &&
   Const        r4, "d_year"
   Const        r5, "avg_monthly_sales"
+  // v.sum_sales > v.avg_monthly_sales &&
   Const        r6, "sum_sales"
+  Const        r5, "avg_monthly_sales"
+  // abs(v.sum_sales - v.avg_monthly_sales) / v.avg_monthly_sales > 0.1
+  Const        r6, "sum_sales"
+  Const        r5, "avg_monthly_sales"
+  Const        r5, "avg_monthly_sales"
+  // d_year: v.d_year,
+  Const        r4, "d_year"
+  Const        r4, "d_year"
+  // item: v.item,
+  Const        r2, "item"
+  Const        r2, "item"
+  // avg_monthly_sales: v.avg_monthly_sales,
+  Const        r5, "avg_monthly_sales"
+  Const        r5, "avg_monthly_sales"
+  // sum_sales: v.sum_sales
+  Const        r6, "sum_sales"
+  Const        r6, "sum_sales"
+  // sort by [v.sum_sales - v.avg_monthly_sales, v.item]
+  Const        r6, "sum_sales"
+  Const        r5, "avg_monthly_sales"
+  Const        r2, "item"
   // from v in v2
   IterPrep     r7, r0
   Len          r8, r7
@@ -21,66 +43,123 @@ L3:
   JumpIfFalse  r11, L0
   Index        r12, r7, r9
   Move         r13, r12
-  // where v.d_year == year && v.avg_monthly_sales > 0 && abs(v.sum_sales - v.avg_monthly_sales) / v.avg_monthly_sales > 0.1
+  // where v.d_year >= year - 1 && v.avg_monthly_sales > 0 &&
+  Const        r4, "d_year"
   Index        r14, r13, r4
+  // abs(v.sum_sales - v.avg_monthly_sales) / v.avg_monthly_sales > 0.1
+  Const        r6, "sum_sales"
   Index        r16, r13, r6
+  Const        r5, "avg_monthly_sales"
   Index        r17, r13, r5
   Sub          r18, r16, r17
   Move         r15, r18
   Call         r19, abs, r15
+  Const        r5, "avg_monthly_sales"
   Index        r20, r13, r5
   Div          r21, r19, r20
-  Index        r22, r13, r5
-  Less         r23, r10, r22
-  Const        r24, 0.1
-  LessFloat    r25, r24, r21
-  Equal        r26, r14, r1
-  Move         r27, r26
-  JumpIfFalse  r27, L1
-  Move         r27, r23
-  JumpIfFalse  r27, L1
-  Move         r27, r25
+  // where v.d_year >= year - 1 && v.avg_monthly_sales > 0 &&
+  Const        r1, 2020
+  Const        r22, 1
+  SubInt       r23, r1, r22
+  LessEq       r24, r23, r14
+  Const        r5, "avg_monthly_sales"
+  Index        r25, r13, r5
+  Const        r10, 0
+  Less         r26, r10, r25
+  // v.sum_sales > v.avg_monthly_sales &&
+  Const        r6, "sum_sales"
+  Index        r27, r13, r6
+  Const        r5, "avg_monthly_sales"
+  Index        r28, r13, r5
+  Less         r29, r28, r27
+  // abs(v.sum_sales - v.avg_monthly_sales) / v.avg_monthly_sales > 0.1
+  Const        r30, 0.1
+  LessFloat    r31, r30, r21
+  // where v.d_year >= year - 1 && v.avg_monthly_sales > 0 &&
+  Move         r32, r24
+  JumpIfFalse  r32, L1
+  Move         r32, r26
+  JumpIfFalse  r32, L1
+  Move         r32, r29
+  // v.sum_sales > v.avg_monthly_sales &&
+  JumpIfFalse  r32, L1
+  Move         r32, r31
 L1:
-  JumpIfFalse  r27, L2
+  // where v.d_year >= year - 1 && v.avg_monthly_sales > 0 &&
+  JumpIfFalse  r32, L2
+  // d_year: v.d_year,
+  Const        r33, "d_year"
+  Const        r4, "d_year"
+  Index        r34, r13, r4
+  // item: v.item,
+  Const        r35, "item"
+  Const        r2, "item"
+  Index        r36, r13, r2
+  // avg_monthly_sales: v.avg_monthly_sales,
+  Const        r37, "avg_monthly_sales"
+  Const        r5, "avg_monthly_sales"
+  Index        r38, r13, r5
+  // sum_sales: v.sum_sales
+  Const        r39, "sum_sales"
+  Const        r6, "sum_sales"
+  Index        r40, r13, r6
+  // d_year: v.d_year,
+  Move         r41, r33
+  Move         r42, r34
+  // item: v.item,
+  Move         r43, r35
+  Move         r44, r36
+  // avg_monthly_sales: v.avg_monthly_sales,
+  Move         r45, r37
+  Move         r46, r38
+  // sum_sales: v.sum_sales
+  Move         r47, r39
+  Move         r48, r40
+  // select {
+  MakeMap      r49, 4, r41
   // sort by [v.sum_sales - v.avg_monthly_sales, v.item]
-  Index        r28, r13, r6
-  Index        r29, r13, r5
-  Sub          r30, r28, r29
-  Move         r31, r30
-  Index        r32, r13, r2
-  Move         r33, r32
-  MakeList     r34, 2, r31
-  Move         r35, r34
+  Const        r6, "sum_sales"
+  Index        r54, r13, r6
+  Const        r5, "avg_monthly_sales"
+  Index        r55, r13, r5
+  Sub          r56, r54, r55
+  Move         r52, r56
+  Const        r2, "item"
+  Index        r57, r13, r2
+  Move         r53, r57
+  MakeList     r58, 2, r52
+  Move         r50, r58
   // from v in v2
-  Move         r36, r13
-  MakeList     r37, 2, r35
-  Append       r38, r3, r37
-  Move         r3, r38
+  Move         r51, r49
+  MakeList     r59, 2, r50
+  Append       r60, r3, r59
+  Move         r3, r60
 L2:
-  Const        r39, 1
-  AddInt       r9, r9, r39
+  Const        r22, 1
+  AddInt       r9, r9, r22
   Jump         L3
 L0:
   // sort by [v.sum_sales - v.avg_monthly_sales, v.item]
-  Sort         r40, r3
+  Sort         r61, r3
   // from v in v2
-  Move         r3, r40
+  Move         r3, r61
   // json(result)
   JSON         r3
   // expect result == [
-  Const        r41, [{"avg_monthly_sales": 50.0, "d_year": 2019, "item": "C", "sum_sales": 60.0}, {"avg_monthly_sales": 100.0, "d_year": 2020, "item": "A", "sum_sales": 120.0}]
-  Equal        r42, r3, r41
-  Expect       r42
+  Const        r62, [{"avg_monthly_sales": 50.0, "d_year": 2019, "item": "C", "sum_sales": 60.0}, {"avg_monthly_sales": 100.0, "d_year": 2020, "item": "A", "sum_sales": 120.0}]
+  Equal        r63, r3, r62
+  Expect       r63
   Return       r0
 
   // fun abs(x: float): float {
 func abs (regs=4)
-  // if x >= 0.0 { x } else { -x }
+  // if x >= 0.0 {
   Const        r1, 0.0
   LessEqFloat  r2, r1, r0
   JumpIfFalse  r2, L0
-  Jump         L1
-L0:
-  Neg          r3, r0
-L1:
+  // return x
   Return       r0
+L0:
+  // return -x
+  Neg          r3, r0
+  Return       r3

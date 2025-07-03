@@ -17,8 +17,8 @@ let reason = [{r_reason_sk: 1, r_reason_desc: "ReasonA"}]
 let t =
   from ss in store_sales
   left join sr in store_returns on ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number
-  join r in reason on sr.sr_reason_sk == r.r_reason_sk
-  where r.r_reason_desc == "ReasonA"
+  left join r in reason on sr != null && sr.sr_reason_sk == r.r_reason_sk
+  where r == null || r.r_reason_desc == "ReasonA"
   select {
     ss_customer_sk: ss.ss_customer_sk,
     act_sales: if sr != null { (ss.ss_quantity - sr.sr_return_quantity) * ss.ss_sales_price } else { ss.ss_quantity * ss.ss_sales_price }

@@ -17,6 +17,7 @@ L1:
   JumpIfFalse  r9, L0
   Index        r10, r5, r7
   Move         r11, r10
+  Const        r4, "ws_ext_discount_amt"
   Index        r12, r11, r4
   Append       r13, r3, r12
   Move         r3, r13
@@ -27,17 +28,21 @@ L0:
   Sum          r15, r3
   // let avg_amt = avg(from ws in web_sales select ws.ws_ext_discount_amt)
   Const        r16, []
+  Const        r4, "ws_ext_discount_amt"
   IterPrep     r17, r0
   Len          r18, r17
+  Const        r8, 0
   Move         r19, r8
 L3:
   LessInt      r20, r19, r18
   JumpIfFalse  r20, L2
   Index        r21, r17, r19
   Move         r11, r21
+  Const        r4, "ws_ext_discount_amt"
   Index        r22, r11, r4
   Append       r23, r16, r22
   Move         r16, r23
+  Const        r14, 1
   AddInt       r19, r19, r14
   Jump         L3
 L2:

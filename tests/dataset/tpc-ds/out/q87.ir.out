@@ -1,75 +1,201 @@
-func main (regs=5)
+func main (regs=85)
   // let store_sales = [
-  Const        r0, [{"cust": "A"}, {"cust": "B"}, {"cust": "B"}, {"cust": "C"}]
-  // let catalog_sales = [
-  Const        r1, [{"cust": "A"}, {"cust": "C"}, {"cust": "D"}]
-  // let web_sales = [
-  Const        r2, [{"cust": "A"}, {"cust": "D"}]
-  // let result = 87
-  Const        r3, 87
-  // json(result)
-  JSON         r3
-  // expect result == 87
-  Const        r4, true
-  Expect       r4
-  Return       r0
-
-  // fun distinct(xs: list<any>): list<any> {
-func distinct (regs=14)
-  // var out = []
-  Const        r1, []
-  Move         r2, r1
-  // for x in xs {
-  IterPrep     r3, r0
-  Len          r4, r3
-  Const        r5, 0
-L2:
-  LessInt      r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
-  // if !contains(out, x) {
-  Not          r10, r9
-  JumpIfFalse  r10, L1
-  // out = append(out, x)
-  Append       r11, r2, r8
-  Move         r2, r11
+  Const        r0, [{"cust": "A", "price": 5.0}, {"cust": "B", "price": 30.0}, {"cust": "C", "price": 57.0}]
+  // let catalog_sales = [ {cust: "A"} ]
+  Const        r1, [{"cust": "A"}]
+  // let web_sales = []
+  Const        r2, []
+  // let store_customers = from s in store_sales select s.cust
+  Const        r3, []
+  Const        r4, "cust"
+  IterPrep     r5, r0
+  Len          r6, r5
+  Const        r8, 0
+  Move         r7, r8
 L1:
-  // for x in xs {
-  Const        r12, 1
-  AddInt       r13, r5, r12
-  Move         r5, r13
-  Jump         L2
-L0:
-  // return out
-  Return       r2
-
-  // fun concat(a: list<any>, b: list<any>): list<any> {
-func concat (regs=12)
-  // var out = a
-  Move         r2, r0
-  // for x in b {
-  IterPrep     r3, r1
-  Len          r4, r3
-  Const        r5, 0
-L1:
-  LessInt      r6, r5, r4
-  JumpIfFalse  r6, L0
-  Index        r7, r3, r5
-  Move         r8, r7
-  // out = append(out, x)
-  Append       r9, r2, r8
-  Move         r2, r9
-  // for x in b {
-  Const        r10, 1
-  AddInt       r11, r5, r10
-  Move         r5, r11
+  LessInt      r9, r7, r6
+  JumpIfFalse  r9, L0
+  Index        r10, r5, r7
+  Move         r11, r10
+  Const        r4, "cust"
+  Index        r12, r11, r4
+  Append       r13, r3, r12
+  Move         r3, r13
+  Const        r14, 1
+  AddInt       r7, r7, r14
   Jump         L1
 L0:
-  // return out
-  Return       r2
-
-  // fun to_list(xs: list<any>): list<any> { return xs }
-func to_list (regs=1)
-  // fun to_list(xs: list<any>): list<any> { return xs }
+  // let catalog_customers = from s in catalog_sales select s.cust
+  Const        r15, []
+  Const        r4, "cust"
+  IterPrep     r16, r1
+  Len          r17, r16
+  Const        r8, 0
+  Move         r18, r8
+L3:
+  LessInt      r19, r18, r17
+  JumpIfFalse  r19, L2
+  Index        r20, r16, r18
+  Move         r11, r20
+  Const        r4, "cust"
+  Index        r21, r11, r4
+  Append       r22, r15, r21
+  Move         r15, r22
+  Const        r14, 1
+  AddInt       r18, r18, r14
+  Jump         L3
+L2:
+  // let web_customers = from s in web_sales select s.cust
+  Const        r23, []
+  Const        r4, "cust"
+  Const        r2, []
+  IterPrep     r24, r2
+  Len          r25, r24
+  Const        r8, 0
+  Move         r26, r8
+L5:
+  LessInt      r27, r26, r25
+  JumpIfFalse  r27, L4
+  Index        r28, r24, r26
+  Move         r11, r28
+  Const        r4, "cust"
+  Index        r29, r11, r4
+  Append       r30, r23, r29
+  Move         r23, r30
+  Const        r14, 1
+  AddInt       r26, r26, r14
+  Jump         L5
+L4:
+  // from c in store_customers
+  Const        r31, []
+  IterPrep     r32, r3
+  Len          r33, r32
+  Const        r8, 0
+  Move         r34, r8
+L15:
+  LessInt      r35, r34, r33
+  JumpIfFalse  r35, L6
+  Index        r36, r32, r34
+  Move         r37, r36
+  // where len(from x in catalog_customers where x == c select x) == 0 &&
+  Const        r38, []
+  IterPrep     r39, r15
+  Len          r40, r39
+  Const        r8, 0
+  Move         r41, r8
+L9:
+  LessInt      r42, r41, r40
+  JumpIfFalse  r42, L7
+  Index        r43, r39, r41
+  Move         r44, r43
+  Equal        r45, r44, r37
+  JumpIfFalse  r45, L8
+  Append       r46, r38, r44
+  Move         r38, r46
+L8:
+  Const        r14, 1
+  AddInt       r41, r41, r14
+  Jump         L9
+L7:
+  Len          r47, r38
+  Const        r8, 0
+  EqualInt     r48, r47, r8
+  // len(from x in web_customers where x == c select x) == 0
+  Const        r49, []
+  IterPrep     r50, r23
+  Len          r51, r50
+  Const        r8, 0
+  Move         r52, r8
+L12:
+  LessInt      r53, r52, r51
+  JumpIfFalse  r53, L10
+  Index        r54, r50, r52
+  Move         r44, r54
+  Equal        r55, r44, r37
+  JumpIfFalse  r55, L11
+  Append       r56, r49, r44
+  Move         r49, r56
+L11:
+  Const        r14, 1
+  AddInt       r52, r52, r14
+  Jump         L12
+L10:
+  Len          r57, r49
+  Const        r8, 0
+  EqualInt     r58, r57, r8
+  // where len(from x in catalog_customers where x == c select x) == 0 &&
+  Move         r59, r48
+  JumpIfFalse  r59, L13
+  Move         r59, r58
+L13:
+  JumpIfFalse  r59, L14
+  // from c in store_customers
+  Append       r60, r31, r37
+  Move         r31, r60
+L14:
+  Const        r14, 1
+  AddInt       r34, r34, r14
+  Jump         L15
+L6:
+  // let result = sum(from s in store_sales
+  Const        r61, []
+  // where len(from x in store_only where x == s.cust select x) > 0
+  Const        r4, "cust"
+  // select s.price)
+  Const        r62, "price"
+  // let result = sum(from s in store_sales
+  IterPrep     r63, r0
+  Len          r64, r63
+  Const        r8, 0
+  Move         r65, r8
+L21:
+  LessInt      r66, r65, r64
+  JumpIfFalse  r66, L16
+  Index        r67, r63, r65
+  Move         r11, r67
+  // where len(from x in store_only where x == s.cust select x) > 0
+  Const        r68, []
+  Const        r4, "cust"
+  IterPrep     r69, r31
+  Len          r70, r69
+  Const        r8, 0
+  Move         r71, r8
+L19:
+  LessInt      r72, r71, r70
+  JumpIfFalse  r72, L17
+  Index        r73, r69, r71
+  Move         r74, r73
+  Const        r4, "cust"
+  Index        r75, r11, r4
+  Equal        r76, r74, r75
+  JumpIfFalse  r76, L18
+  Append       r77, r68, r74
+  Move         r68, r77
+L18:
+  Const        r14, 1
+  AddInt       r71, r71, r14
+  Jump         L19
+L17:
+  Len          r78, r68
+  Const        r8, 0
+  LessInt      r79, r8, r78
+  JumpIfFalse  r79, L20
+  // select s.price)
+  Const        r62, "price"
+  Index        r80, r11, r62
+  // let result = sum(from s in store_sales
+  Append       r81, r61, r80
+  Move         r61, r81
+L20:
+  Const        r14, 1
+  AddInt       r65, r65, r14
+  Jump         L21
+L16:
+  Sum          r82, r61
+  // json(result)
+  JSON         r82
+  // expect result == 87.0
+  Const        r83, 87.0
+  EqualFloat   r84, r82, r83
+  Expect       r84
   Return       r0

@@ -27,13 +27,16 @@ L16:
   Len          r15, r14
   Const        r16, "ss_store_sk"
   Const        r17, "s_store_sk"
+  Const        r10, 0
   Move         r18, r10
 L15:
   LessInt      r19, r18, r15
   JumpIfFalse  r19, L1
   Index        r20, r14, r18
   Move         r21, r20
+  Const        r16, "ss_store_sk"
   Index        r22, r13, r16
+  Const        r17, "s_store_sk"
   Index        r23, r21, r17
   Equal        r24, r22, r23
   JumpIfFalse  r24, L2
@@ -44,18 +47,23 @@ L15:
   Const        r28, "cd_demo_sk"
   Const        r29, "cd_marital_status"
   Const        r30, "cd_education_status"
+  Const        r10, 0
   Move         r31, r10
 L14:
   LessInt      r32, r31, r26
   JumpIfFalse  r32, L2
   Index        r33, r25, r31
   Move         r34, r33
+  Const        r27, "ss_cdemo_sk"
   Index        r35, r13, r27
+  Const        r28, "cd_demo_sk"
   Index        r36, r34, r28
   Equal        r37, r35, r36
+  Const        r29, "cd_marital_status"
   Index        r38, r34, r29
   Const        r39, "M1"
   Equal        r40, r38, r39
+  Const        r30, "cd_education_status"
   Index        r41, r34, r30
   Const        r42, "ES1"
   Equal        r43, r41, r42
@@ -72,15 +80,19 @@ L3:
   Const        r47, "ss_hdemo_sk"
   Const        r48, "hd_demo_sk"
   Const        r49, "hd_dep_count"
+  Const        r10, 0
   Move         r50, r10
 L13:
   LessInt      r51, r50, r46
   JumpIfFalse  r51, L4
   Index        r52, r45, r50
   Move         r53, r52
+  Const        r47, "ss_hdemo_sk"
   Index        r54, r13, r47
+  Const        r48, "hd_demo_sk"
   Index        r55, r53, r48
   Equal        r56, r54, r55
+  Const        r49, "hd_dep_count"
   Index        r57, r53, r49
   Const        r58, 3
   Equal        r59, r57, r58
@@ -96,18 +108,23 @@ L5:
   Const        r64, "ca_address_sk"
   Const        r65, "ca_country"
   Const        r66, "ca_state"
+  Const        r10, 0
   Move         r67, r10
 L12:
   LessInt      r68, r67, r62
   JumpIfFalse  r68, L6
   Index        r69, r61, r67
   Move         r70, r69
+  Const        r63, "ss_addr_sk"
   Index        r71, r13, r63
+  Const        r64, "ca_address_sk"
   Index        r72, r70, r64
   Equal        r73, r71, r72
+  Const        r65, "ca_country"
   Index        r74, r70, r65
   Const        r75, "United States"
   Equal        r76, r74, r75
+  Const        r66, "ca_state"
   Index        r77, r70, r66
   Const        r78, "CA"
   Equal        r79, r77, r78
@@ -124,15 +141,19 @@ L7:
   Const        r83, "ss_sold_date_sk"
   Const        r84, "d_date_sk"
   Const        r85, "d_year"
+  Const        r10, 0
   Move         r86, r10
 L11:
   LessInt      r87, r86, r82
   JumpIfFalse  r87, L8
   Index        r88, r81, r86
   Move         r89, r88
+  Const        r83, "ss_sold_date_sk"
   Index        r90, r13, r83
+  Const        r84, "d_date_sk"
   Index        r91, r89, r84
   Equal        r92, r90, r91
+  Const        r85, "d_year"
   Index        r93, r89, r85
   Const        r94, 2001
   Equal        r95, r93, r94
@@ -151,22 +172,27 @@ L10:
   Jump         L11
 L8:
   // join ca in customer_address on ss.ss_addr_sk == ca.ca_address_sk && ca.ca_country == "United States" && ca.ca_state == "CA"
+  Const        r98, 1
   Add          r67, r67, r98
   Jump         L12
 L6:
   // join hd in household_demographics on ss.ss_hdemo_sk == hd.hd_demo_sk && hd.hd_dep_count == 3
+  Const        r98, 1
   Add          r50, r50, r98
   Jump         L13
 L4:
   // join cd in customer_demographics on ss.ss_cdemo_sk == cd.cd_demo_sk && cd.cd_marital_status == "M1" && cd.cd_education_status == "ES1"
+  Const        r98, 1
   Add          r31, r31, r98
   Jump         L14
 L2:
   // join s in store on ss.ss_store_sk == s.s_store_sk
+  Const        r98, 1
   Add          r18, r18, r98
   Jump         L15
 L1:
   // from ss in store_sales
+  Const        r98, 1
   AddInt       r9, r9, r98
   Jump         L16
 L0:
@@ -183,6 +209,7 @@ L0:
   Const        r105, "ss_ext_wholesale_cost"
   // sum_ss_ext_wholesale_cost: sum(from x in g select x.ss_ext_wholesale_cost)
   Const        r106, "sum_ss_ext_wholesale_cost"
+  Const        r105, "ss_ext_wholesale_cost"
   // from r in filtered
   IterPrep     r107, r6
   Len          r108, r107
@@ -201,6 +228,7 @@ L19:
   In           r118, r117, r110
   JumpIfTrue   r118, L18
   // from r in filtered
+  Const        r112, []
   Const        r119, "__group__"
   Const        r120, true
   Const        r121, "key"
@@ -210,6 +238,7 @@ L19:
   Const        r123, "items"
   Move         r124, r112
   Const        r125, "count"
+  Const        r10, 0
   Move         r126, r119
   Move         r127, r120
   Move         r128, r121
@@ -223,16 +252,21 @@ L19:
   Append       r135, r111, r134
   Move         r111, r135
 L18:
+  Const        r123, "items"
   Index        r136, r110, r117
   Index        r137, r136, r123
   Append       r138, r137, r114
   SetIndex     r136, r123, r138
+  Const        r125, "count"
   Index        r139, r136, r125
+  Const        r98, 1
   AddInt       r140, r139, r98
   SetIndex     r136, r125, r140
+  Const        r98, 1
   AddInt       r109, r109, r98
   Jump         L19
 L17:
+  Const        r10, 0
   Move         r141, r10
   Len          r142, r111
 L29:
@@ -243,17 +277,21 @@ L29:
   // avg_ss_quantity: avg(from x in g select x.ss_quantity),
   Const        r146, "avg_ss_quantity"
   Const        r147, []
+  Const        r101, "ss_quantity"
   IterPrep     r148, r145
   Len          r149, r148
+  Const        r10, 0
   Move         r150, r10
 L22:
   LessInt      r151, r150, r149
   JumpIfFalse  r151, L21
   Index        r152, r148, r150
   Move         r153, r152
+  Const        r101, "ss_quantity"
   Index        r154, r153, r101
   Append       r155, r147, r154
   Move         r147, r155
+  Const        r98, 1
   AddInt       r150, r150, r98
   Jump         L22
 L21:
@@ -261,17 +299,21 @@ L21:
   // avg_ss_ext_sales_price: avg(from x in g select x.ss_ext_sales_price),
   Const        r157, "avg_ss_ext_sales_price"
   Const        r158, []
+  Const        r103, "ss_ext_sales_price"
   IterPrep     r159, r145
   Len          r160, r159
+  Const        r10, 0
   Move         r161, r10
 L24:
   LessInt      r162, r161, r160
   JumpIfFalse  r162, L23
   Index        r163, r159, r161
   Move         r153, r163
+  Const        r103, "ss_ext_sales_price"
   Index        r164, r153, r103
   Append       r165, r158, r164
   Move         r158, r165
+  Const        r98, 1
   AddInt       r161, r161, r98
   Jump         L24
 L23:
@@ -279,17 +321,21 @@ L23:
   // avg_ss_ext_wholesale_cost: avg(from x in g select x.ss_ext_wholesale_cost),
   Const        r167, "avg_ss_ext_wholesale_cost"
   Const        r168, []
+  Const        r105, "ss_ext_wholesale_cost"
   IterPrep     r169, r145
   Len          r170, r169
+  Const        r10, 0
   Move         r171, r10
 L26:
   LessInt      r172, r171, r170
   JumpIfFalse  r172, L25
   Index        r173, r169, r171
   Move         r153, r173
+  Const        r105, "ss_ext_wholesale_cost"
   Index        r174, r153, r105
   Append       r175, r168, r174
   Move         r168, r175
+  Const        r98, 1
   AddInt       r171, r171, r98
   Jump         L26
 L25:
@@ -297,17 +343,21 @@ L25:
   // sum_ss_ext_wholesale_cost: sum(from x in g select x.ss_ext_wholesale_cost)
   Const        r177, "sum_ss_ext_wholesale_cost"
   Const        r178, []
+  Const        r105, "ss_ext_wholesale_cost"
   IterPrep     r179, r145
   Len          r180, r179
+  Const        r10, 0
   Move         r181, r10
 L28:
   LessInt      r182, r181, r180
   JumpIfFalse  r182, L27
   Index        r183, r179, r181
   Move         r153, r183
+  Const        r105, "ss_ext_wholesale_cost"
   Index        r184, r153, r105
   Append       r185, r178, r184
   Move         r178, r185
+  Const        r98, 1
   AddInt       r181, r181, r98
   Jump         L28
 L27:
@@ -329,6 +379,7 @@ L27:
   // from r in filtered
   Append       r196, r99, r195
   Move         r99, r196
+  Const        r98, 1
   AddInt       r141, r141, r98
   Jump         L29
 L20:

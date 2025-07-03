@@ -15,6 +15,7 @@ L1:
   JumpIfFalse  r8, L0
   Index        r9, r4, r6
   Move         r10, r9
+  Const        r3, "profit"
   Index        r11, r10, r3
   Append       r12, r2, r11
   Move         r2, r12
@@ -24,17 +25,21 @@ L1:
 L0:
   Sum          r14, r2
   Const        r15, []
+  Const        r3, "profit"
   IterPrep     r16, r1
   Len          r17, r16
+  Const        r7, 0
   Move         r18, r7
 L3:
   LessInt      r19, r18, r17
   JumpIfFalse  r19, L2
   Index        r20, r16, r18
   Move         r21, r20
+  Const        r3, "profit"
   Index        r22, r21, r3
   Append       r23, r15, r22
   Move         r15, r23
+  Const        r13, 1
   AddInt       r18, r18, r13
   Jump         L3
 L2:

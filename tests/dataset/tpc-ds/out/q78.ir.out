@@ -11,15 +11,23 @@ func main (regs=415)
   Const        r4, "ws_qty"
   Const        r5, "cs_qty"
   Const        r6, "ss_sold_year"
+  // ss_sold_year: s.ss_sold_year,
+  Const        r6, "ss_sold_year"
+  Const        r6, "ss_sold_year"
   // ss_item_sk: s.ss_item_sk,
   Const        r7, "ss_item_sk"
+  Const        r7, "ss_item_sk"
   // ss_customer_sk: s.ss_customer_sk,
+  Const        r8, "ss_customer_sk"
   Const        r8, "ss_customer_sk"
   // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
   Const        r9, "ratio"
   Const        r10, "ss_qty"
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
   // store_qty: s.ss_qty,
   Const        r11, "store_qty"
+  Const        r10, "ss_qty"
   // store_wholesale_cost: s.ss_wc,
   Const        r12, "store_wholesale_cost"
   Const        r13, "ss_wc"
@@ -28,6 +36,8 @@ func main (regs=415)
   Const        r15, "ss_sp"
   // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
   Const        r16, "other_chan_qty"
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
   // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
   Const        r17, "other_chan_wholesale_cost"
   Const        r18, "ws_wc"
@@ -50,8 +60,52 @@ L22:
   IterPrep     r30, r1
   Len          r31, r30
   Const        r32, "ws_sold_year"
+  Const        r6, "ss_sold_year"
   Const        r33, "ws_item_sk"
+  Const        r7, "ss_item_sk"
   Const        r34, "ws_customer_sk"
+  Const        r8, "ss_customer_sk"
+  // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
+  Const        r6, "ss_sold_year"
+  // ss_sold_year: s.ss_sold_year,
+  Const        r6, "ss_sold_year"
+  Const        r6, "ss_sold_year"
+  // ss_item_sk: s.ss_item_sk,
+  Const        r7, "ss_item_sk"
+  Const        r7, "ss_item_sk"
+  // ss_customer_sk: s.ss_customer_sk,
+  Const        r8, "ss_customer_sk"
+  Const        r8, "ss_customer_sk"
+  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
+  Const        r9, "ratio"
+  Const        r10, "ss_qty"
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
+  // store_qty: s.ss_qty,
+  Const        r11, "store_qty"
+  Const        r10, "ss_qty"
+  // store_wholesale_cost: s.ss_wc,
+  Const        r12, "store_wholesale_cost"
+  Const        r13, "ss_wc"
+  // store_sales_price: s.ss_sp,
+  Const        r14, "store_sales_price"
+  Const        r15, "ss_sp"
+  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
+  Const        r16, "other_chan_qty"
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
+  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
+  Const        r17, "other_chan_wholesale_cost"
+  Const        r18, "ws_wc"
+  Const        r19, "cs_wc"
+  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
+  Const        r20, "other_chan_sales_price"
+  Const        r21, "ws_sp"
+  Const        r22, "cs_sp"
+  // left join w in ws on w.ws_sold_year == s.ss_sold_year && w.ws_item_sk == s.ss_item_sk && w.ws_customer_sk == s.ss_customer_sk
+  Const        r26, 0
   Move         r35, r26
 L12:
   LessInt      r36, r35, r31
@@ -59,13 +113,19 @@ L12:
   Index        r37, r30, r35
   Move         r38, r37
   Const        r39, false
+  Const        r32, "ws_sold_year"
   Index        r40, r38, r32
+  Const        r6, "ss_sold_year"
   Index        r41, r29, r6
   Equal        r42, r40, r41
+  Const        r33, "ws_item_sk"
   Index        r43, r38, r33
+  Const        r7, "ss_item_sk"
   Index        r44, r29, r7
   Equal        r45, r43, r44
+  Const        r34, "ws_customer_sk"
   Index        r46, r38, r34
+  Const        r8, "ss_customer_sk"
   Index        r47, r29, r8
   Equal        r48, r46, r47
   Move         r49, r42
@@ -80,8 +140,52 @@ L2:
   IterPrep     r50, r2
   Len          r51, r50
   Const        r52, "cs_sold_year"
+  Const        r6, "ss_sold_year"
   Const        r53, "cs_item_sk"
+  Const        r7, "ss_item_sk"
   Const        r54, "cs_customer_sk"
+  Const        r8, "ss_customer_sk"
+  // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
+  Const        r6, "ss_sold_year"
+  // ss_sold_year: s.ss_sold_year,
+  Const        r6, "ss_sold_year"
+  Const        r6, "ss_sold_year"
+  // ss_item_sk: s.ss_item_sk,
+  Const        r7, "ss_item_sk"
+  Const        r7, "ss_item_sk"
+  // ss_customer_sk: s.ss_customer_sk,
+  Const        r8, "ss_customer_sk"
+  Const        r8, "ss_customer_sk"
+  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
+  Const        r9, "ratio"
+  Const        r10, "ss_qty"
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
+  // store_qty: s.ss_qty,
+  Const        r11, "store_qty"
+  Const        r10, "ss_qty"
+  // store_wholesale_cost: s.ss_wc,
+  Const        r12, "store_wholesale_cost"
+  Const        r13, "ss_wc"
+  // store_sales_price: s.ss_sp,
+  Const        r14, "store_sales_price"
+  Const        r15, "ss_sp"
+  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
+  Const        r16, "other_chan_qty"
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
+  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
+  Const        r17, "other_chan_wholesale_cost"
+  Const        r18, "ws_wc"
+  Const        r19, "cs_wc"
+  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
+  Const        r20, "other_chan_sales_price"
+  Const        r21, "ws_sp"
+  Const        r22, "cs_sp"
+  // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
+  Const        r26, 0
   Move         r55, r26
 L9:
   LessInt      r56, r55, r51
@@ -89,13 +193,19 @@ L9:
   Index        r57, r50, r55
   Move         r58, r57
   Const        r59, false
+  Const        r52, "cs_sold_year"
   Index        r60, r58, r52
+  Const        r6, "ss_sold_year"
   Index        r61, r29, r6
   Equal        r62, r60, r61
+  Const        r53, "cs_item_sk"
   Index        r63, r58, r53
+  Const        r7, "ss_item_sk"
   Index        r64, r29, r7
   Equal        r65, r63, r64
+  Const        r54, "cs_customer_sk"
   Index        r66, r58, r54
+  Const        r8, "ss_customer_sk"
   Index        r67, r29, r8
   Equal        r68, r66, r67
   Move         r69, r62
@@ -109,17 +219,25 @@ L5:
   // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
   Const        r70, nil
   Equal        r71, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r72, r38, r4
   Select       73,71,26,72
+  Const        r26, 0
   Less         r74, r26, r73
+  Const        r70, nil
   Equal        r75, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r76, r58, r5
   Select       77,75,26,76
+  Const        r26, 0
   Less         r78, r26, r77
   Move         r79, r74
   JumpIfTrue   r79, L7
   Move         r79, r78
 L7:
+  Const        r6, "ss_sold_year"
   Index        r80, r29, r6
   Const        r81, 1998
   Equal        r82, r80, r81
@@ -130,58 +248,88 @@ L8:
   JumpIfFalse  r83, L6
   // ss_sold_year: s.ss_sold_year,
   Const        r84, "ss_sold_year"
+  Const        r6, "ss_sold_year"
   Index        r85, r29, r6
   // ss_item_sk: s.ss_item_sk,
   Const        r86, "ss_item_sk"
+  Const        r7, "ss_item_sk"
   Index        r87, r29, r7
   // ss_customer_sk: s.ss_customer_sk,
   Const        r88, "ss_customer_sk"
+  Const        r8, "ss_customer_sk"
   Index        r89, r29, r8
   // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
   Const        r90, "ratio"
+  Const        r10, "ss_qty"
   Index        r91, r29, r10
+  Const        r70, nil
   Equal        r92, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r93, r38, r4
   Select       94,92,26,93
+  Const        r70, nil
   Equal        r95, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r96, r58, r5
   Select       97,95,26,96
   Add          r98, r94, r97
   Div          r99, r91, r98
   // store_qty: s.ss_qty,
   Const        r100, "store_qty"
+  Const        r10, "ss_qty"
   Index        r101, r29, r10
   // store_wholesale_cost: s.ss_wc,
   Const        r102, "store_wholesale_cost"
+  Const        r13, "ss_wc"
   Index        r103, r29, r13
   // store_sales_price: s.ss_sp,
   Const        r104, "store_sales_price"
+  Const        r15, "ss_sp"
   Index        r105, r29, r15
   // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
   Const        r106, "other_chan_qty"
+  Const        r70, nil
   Equal        r107, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r108, r38, r4
   Select       109,107,26,108
+  Const        r70, nil
   Equal        r110, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r111, r58, r5
   Select       112,110,26,111
   Add          r113, r109, r112
   // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
   Const        r114, "other_chan_wholesale_cost"
+  Const        r70, nil
   Equal        r115, r38, r70
   Const        r116, 0.0
+  Const        r18, "ws_wc"
   Index        r117, r38, r18
   Select       118,115,116,117
+  Const        r70, nil
   Equal        r119, r58, r70
+  Const        r116, 0.0
+  Const        r19, "cs_wc"
   Index        r120, r58, r19
   Select       121,119,116,120
   Add          r122, r118, r121
   // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
   Const        r123, "other_chan_sales_price"
+  Const        r70, nil
   Equal        r124, r38, r70
+  Const        r116, 0.0
+  Const        r21, "ws_sp"
   Index        r125, r38, r21
   Select       126,124,116,125
+  Const        r70, nil
   Equal        r127, r58, r70
+  Const        r116, 0.0
+  Const        r22, "cs_sp"
   Index        r128, r58, r22
   Select       129,127,116,128
   Add          r130, r126, r129
@@ -228,21 +376,32 @@ L6:
 L4:
   Move         r154, r59
   JumpIfTrue   r154, L3
+  Const        r70, nil
   Move         r58, r70
   // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
+  Const        r70, nil
   Equal        r155, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r156, r38, r4
   Select       157,155,26,156
+  Const        r26, 0
   Less         r158, r26, r157
+  Const        r70, nil
   Equal        r159, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r160, r58, r5
   Select       161,159,26,160
+  Const        r26, 0
   Less         r162, r26, r161
   Move         r163, r158
   JumpIfTrue   r163, L10
   Move         r163, r162
 L10:
+  Const        r6, "ss_sold_year"
   Index        r164, r29, r6
+  Const        r81, 1998
   Equal        r165, r164, r81
   Move         r166, r163
   JumpIfFalse  r166, L11
@@ -251,57 +410,88 @@ L11:
   JumpIfFalse  r166, L3
   // ss_sold_year: s.ss_sold_year,
   Const        r167, "ss_sold_year"
+  Const        r6, "ss_sold_year"
   Index        r168, r29, r6
   // ss_item_sk: s.ss_item_sk,
   Const        r169, "ss_item_sk"
+  Const        r7, "ss_item_sk"
   Index        r170, r29, r7
   // ss_customer_sk: s.ss_customer_sk,
   Const        r171, "ss_customer_sk"
+  Const        r8, "ss_customer_sk"
   Index        r172, r29, r8
   // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
   Const        r173, "ratio"
+  Const        r10, "ss_qty"
   Index        r174, r29, r10
+  Const        r70, nil
   Equal        r175, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r176, r38, r4
   Select       177,175,26,176
+  Const        r70, nil
   Equal        r178, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r179, r58, r5
   Select       180,178,26,179
   Add          r181, r177, r180
   Div          r182, r174, r181
   // store_qty: s.ss_qty,
   Const        r183, "store_qty"
+  Const        r10, "ss_qty"
   Index        r184, r29, r10
   // store_wholesale_cost: s.ss_wc,
   Const        r185, "store_wholesale_cost"
+  Const        r13, "ss_wc"
   Index        r186, r29, r13
   // store_sales_price: s.ss_sp,
   Const        r187, "store_sales_price"
+  Const        r15, "ss_sp"
   Index        r188, r29, r15
   // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
   Const        r189, "other_chan_qty"
+  Const        r70, nil
   Equal        r190, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r191, r38, r4
   Select       192,190,26,191
+  Const        r70, nil
   Equal        r193, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r194, r58, r5
   Select       195,193,26,194
   Add          r196, r192, r195
   // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
   Const        r197, "other_chan_wholesale_cost"
+  Const        r70, nil
   Equal        r198, r38, r70
+  Const        r116, 0.0
+  Const        r18, "ws_wc"
   Index        r199, r38, r18
   Select       200,198,116,199
+  Const        r70, nil
   Equal        r201, r58, r70
+  Const        r116, 0.0
+  Const        r19, "cs_wc"
   Index        r202, r58, r19
   Select       203,201,116,202
   Add          r204, r200, r203
   // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
   Const        r205, "other_chan_sales_price"
+  Const        r70, nil
   Equal        r206, r38, r70
+  Const        r116, 0.0
+  Const        r21, "ws_sp"
   Index        r207, r38, r21
   Select       208,206,116,207
+  Const        r70, nil
   Equal        r209, r58, r70
+  Const        r116, 0.0
+  Const        r22, "cs_sp"
   Index        r210, r58, r22
   Select       211,209,116,210
   Add          r212, r208, r211
@@ -342,15 +532,64 @@ L11:
   Move         r3, r234
 L3:
   // left join w in ws on w.ws_sold_year == s.ss_sold_year && w.ws_item_sk == s.ss_item_sk && w.ws_customer_sk == s.ss_customer_sk
+  Const        r153, 1
   Add          r35, r35, r153
   Jump         L12
 L1:
   Move         r235, r39
   JumpIfTrue   r235, L13
+  Const        r70, nil
   Move         r38, r70
   // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
   IterPrep     r236, r2
   Len          r237, r236
+  Const        r52, "cs_sold_year"
+  Const        r6, "ss_sold_year"
+  Const        r53, "cs_item_sk"
+  Const        r7, "ss_item_sk"
+  Const        r54, "cs_customer_sk"
+  Const        r8, "ss_customer_sk"
+  // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
+  Const        r6, "ss_sold_year"
+  // ss_sold_year: s.ss_sold_year,
+  Const        r6, "ss_sold_year"
+  Const        r6, "ss_sold_year"
+  // ss_item_sk: s.ss_item_sk,
+  Const        r7, "ss_item_sk"
+  Const        r7, "ss_item_sk"
+  // ss_customer_sk: s.ss_customer_sk,
+  Const        r8, "ss_customer_sk"
+  Const        r8, "ss_customer_sk"
+  // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
+  Const        r9, "ratio"
+  Const        r10, "ss_qty"
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
+  // store_qty: s.ss_qty,
+  Const        r11, "store_qty"
+  Const        r10, "ss_qty"
+  // store_wholesale_cost: s.ss_wc,
+  Const        r12, "store_wholesale_cost"
+  Const        r13, "ss_wc"
+  // store_sales_price: s.ss_sp,
+  Const        r14, "store_sales_price"
+  Const        r15, "ss_sp"
+  // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
+  Const        r16, "other_chan_qty"
+  Const        r4, "ws_qty"
+  Const        r5, "cs_qty"
+  // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
+  Const        r17, "other_chan_wholesale_cost"
+  Const        r18, "ws_wc"
+  Const        r19, "cs_wc"
+  // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
+  Const        r20, "other_chan_sales_price"
+  Const        r21, "ws_sp"
+  Const        r22, "cs_sp"
+  // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
+  Const        r26, 0
   Move         r238, r26
 L19:
   LessInt      r239, r238, r237
@@ -358,13 +597,19 @@ L19:
   Index        r240, r236, r238
   Move         r58, r240
   Const        r241, false
+  Const        r52, "cs_sold_year"
   Index        r242, r58, r52
+  Const        r6, "ss_sold_year"
   Index        r243, r29, r6
   Equal        r244, r242, r243
+  Const        r53, "cs_item_sk"
   Index        r245, r58, r53
+  Const        r7, "ss_item_sk"
   Index        r246, r29, r7
   Equal        r247, r245, r246
+  Const        r54, "cs_customer_sk"
   Index        r248, r58, r54
+  Const        r8, "ss_customer_sk"
   Index        r249, r29, r8
   Equal        r250, r248, r249
   Move         r251, r244
@@ -376,19 +621,29 @@ L15:
   JumpIfFalse  r251, L16
   Const        r241, true
   // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
+  Const        r70, nil
   Equal        r252, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r253, r38, r4
   Select       254,252,26,253
+  Const        r26, 0
   Less         r255, r26, r254
+  Const        r70, nil
   Equal        r256, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r257, r58, r5
   Select       258,256,26,257
+  Const        r26, 0
   Less         r259, r26, r258
   Move         r260, r255
   JumpIfTrue   r260, L17
   Move         r260, r259
 L17:
+  Const        r6, "ss_sold_year"
   Index        r261, r29, r6
+  Const        r81, 1998
   Equal        r262, r261, r81
   Move         r263, r260
   JumpIfFalse  r263, L18
@@ -397,57 +652,88 @@ L18:
   JumpIfFalse  r263, L16
   // ss_sold_year: s.ss_sold_year,
   Const        r264, "ss_sold_year"
+  Const        r6, "ss_sold_year"
   Index        r265, r29, r6
   // ss_item_sk: s.ss_item_sk,
   Const        r266, "ss_item_sk"
+  Const        r7, "ss_item_sk"
   Index        r267, r29, r7
   // ss_customer_sk: s.ss_customer_sk,
   Const        r268, "ss_customer_sk"
+  Const        r8, "ss_customer_sk"
   Index        r269, r29, r8
   // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
   Const        r270, "ratio"
+  Const        r10, "ss_qty"
   Index        r271, r29, r10
+  Const        r70, nil
   Equal        r272, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r273, r38, r4
   Select       274,272,26,273
+  Const        r70, nil
   Equal        r275, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r276, r58, r5
   Select       277,275,26,276
   Add          r278, r274, r277
   Div          r279, r271, r278
   // store_qty: s.ss_qty,
   Const        r280, "store_qty"
+  Const        r10, "ss_qty"
   Index        r281, r29, r10
   // store_wholesale_cost: s.ss_wc,
   Const        r282, "store_wholesale_cost"
+  Const        r13, "ss_wc"
   Index        r283, r29, r13
   // store_sales_price: s.ss_sp,
   Const        r284, "store_sales_price"
+  Const        r15, "ss_sp"
   Index        r285, r29, r15
   // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
   Const        r286, "other_chan_qty"
+  Const        r70, nil
   Equal        r287, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r288, r38, r4
   Select       289,287,26,288
+  Const        r70, nil
   Equal        r290, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r291, r58, r5
   Select       292,290,26,291
   Add          r293, r289, r292
   // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
   Const        r294, "other_chan_wholesale_cost"
+  Const        r70, nil
   Equal        r295, r38, r70
+  Const        r116, 0.0
+  Const        r18, "ws_wc"
   Index        r296, r38, r18
   Select       297,295,116,296
+  Const        r70, nil
   Equal        r298, r58, r70
+  Const        r116, 0.0
+  Const        r19, "cs_wc"
   Index        r299, r58, r19
   Select       300,298,116,299
   Add          r301, r297, r300
   // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
   Const        r302, "other_chan_sales_price"
+  Const        r70, nil
   Equal        r303, r38, r70
+  Const        r116, 0.0
+  Const        r21, "ws_sp"
   Index        r304, r38, r21
   Select       305,303,116,304
+  Const        r70, nil
   Equal        r306, r58, r70
+  Const        r116, 0.0
+  Const        r22, "cs_sp"
   Index        r307, r58, r22
   Select       308,306,116,307
   Add          r309, r305, r308
@@ -488,26 +774,38 @@ L18:
   Move         r3, r331
 L16:
   // left join c in cs on c.cs_sold_year == s.ss_sold_year && c.cs_item_sk == s.ss_item_sk && c.cs_customer_sk == s.ss_customer_sk
+  Const        r153, 1
   Add          r238, r238, r153
   Jump         L19
 L14:
   Move         r332, r241
   JumpIfTrue   r332, L13
+  Const        r70, nil
   Move         r58, r70
   // where ((if w == null { 0 } else { w.ws_qty }) > 0 || (if c == null { 0 } else { c.cs_qty }) > 0) && s.ss_sold_year == 1998
+  Const        r70, nil
   Equal        r333, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r334, r38, r4
   Select       335,333,26,334
+  Const        r26, 0
   Less         r336, r26, r335
+  Const        r70, nil
   Equal        r337, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r338, r58, r5
   Select       339,337,26,338
+  Const        r26, 0
   Less         r340, r26, r339
   Move         r341, r336
   JumpIfTrue   r341, L20
   Move         r341, r340
 L20:
+  Const        r6, "ss_sold_year"
   Index        r342, r29, r6
+  Const        r81, 1998
   Equal        r343, r342, r81
   Move         r344, r341
   JumpIfFalse  r344, L21
@@ -516,57 +814,88 @@ L21:
   JumpIfFalse  r344, L13
   // ss_sold_year: s.ss_sold_year,
   Const        r345, "ss_sold_year"
+  Const        r6, "ss_sold_year"
   Index        r346, r29, r6
   // ss_item_sk: s.ss_item_sk,
   Const        r347, "ss_item_sk"
+  Const        r7, "ss_item_sk"
   Index        r348, r29, r7
   // ss_customer_sk: s.ss_customer_sk,
   Const        r349, "ss_customer_sk"
+  Const        r8, "ss_customer_sk"
   Index        r350, r29, r8
   // ratio: s.ss_qty / ((if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty })),
   Const        r351, "ratio"
+  Const        r10, "ss_qty"
   Index        r352, r29, r10
+  Const        r70, nil
   Equal        r353, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r354, r38, r4
   Select       355,353,26,354
+  Const        r70, nil
   Equal        r356, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r357, r58, r5
   Select       358,356,26,357
   Add          r359, r355, r358
   Div          r360, r352, r359
   // store_qty: s.ss_qty,
   Const        r361, "store_qty"
+  Const        r10, "ss_qty"
   Index        r362, r29, r10
   // store_wholesale_cost: s.ss_wc,
   Const        r363, "store_wholesale_cost"
+  Const        r13, "ss_wc"
   Index        r364, r29, r13
   // store_sales_price: s.ss_sp,
   Const        r365, "store_sales_price"
+  Const        r15, "ss_sp"
   Index        r366, r29, r15
   // other_chan_qty: (if w == null { 0 } else { w.ws_qty }) + (if c == null { 0 } else { c.cs_qty }),
   Const        r367, "other_chan_qty"
+  Const        r70, nil
   Equal        r368, r38, r70
+  Const        r26, 0
+  Const        r4, "ws_qty"
   Index        r369, r38, r4
   Select       370,368,26,369
+  Const        r70, nil
   Equal        r371, r58, r70
+  Const        r26, 0
+  Const        r5, "cs_qty"
   Index        r372, r58, r5
   Select       373,371,26,372
   Add          r374, r370, r373
   // other_chan_wholesale_cost: (if w == null { 0.0 } else { w.ws_wc }) + (if c == null { 0.0 } else { c.cs_wc }),
   Const        r375, "other_chan_wholesale_cost"
+  Const        r70, nil
   Equal        r376, r38, r70
+  Const        r116, 0.0
+  Const        r18, "ws_wc"
   Index        r377, r38, r18
   Select       378,376,116,377
+  Const        r70, nil
   Equal        r379, r58, r70
+  Const        r116, 0.0
+  Const        r19, "cs_wc"
   Index        r380, r58, r19
   Select       381,379,116,380
   Add          r382, r378, r381
   // other_chan_sales_price: (if w == null { 0.0 } else { w.ws_sp }) + (if c == null { 0.0 } else { c.cs_sp })
   Const        r383, "other_chan_sales_price"
+  Const        r70, nil
   Equal        r384, r38, r70
+  Const        r116, 0.0
+  Const        r21, "ws_sp"
   Index        r385, r38, r21
   Select       386,384,116,385
+  Const        r70, nil
   Equal        r387, r58, r70
+  Const        r116, 0.0
+  Const        r22, "cs_sp"
   Index        r388, r58, r22
   Select       389,387,116,388
   Add          r390, r386, r389
@@ -606,6 +935,7 @@ L21:
   Append       r412, r3, r411
   Move         r3, r412
 L13:
+  Const        r153, 1
   AddInt       r25, r25, r153
   Jump         L22
 L0:

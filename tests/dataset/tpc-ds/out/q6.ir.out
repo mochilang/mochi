@@ -27,9 +27,11 @@ L3:
   Index        r14, r9, r11
   Move         r15, r14
   // where d.d_year == 1999 && d.d_moy == 5
+  Const        r6, "d_year"
   Index        r16, r15, r6
   Const        r17, 1999
   Equal        r18, r16, r17
+  Const        r7, "d_moy"
   Index        r19, r15, r7
   Const        r20, 5
   Equal        r21, r19, r20
@@ -39,6 +41,7 @@ L3:
 L1:
   JumpIfFalse  r22, L2
   // select d.d_month_seq
+  Const        r8, "d_month_seq"
   Index        r23, r15, r8
   // from d in date_dim
   Append       r24, r5, r23
@@ -54,14 +57,21 @@ L0:
   Const        r27, []
   // group by a.ca_state into g
   Const        r28, "ca_state"
+  // where d.d_month_seq == target_month_seq &&
+  Const        r8, "d_month_seq"
   // i.i_current_price > 1.2 * avg(
   Const        r29, "i_current_price"
   // where j.i_category == i.i_category
   Const        r30, "i_category"
+  Const        r30, "i_category"
+  // select j.i_current_price
+  Const        r29, "i_current_price"
   // select { state: g.key, cnt: count(g) }
   Const        r31, "state"
   Const        r32, "key"
   Const        r33, "cnt"
+  // sort by [count(g), g.key]
+  Const        r32, "key"
   // from a in customer_address
   MakeMap      r34, 0, r0
   Const        r36, []
@@ -135,13 +145,21 @@ L15:
   Equal        r85, r82, r84
   JumpIfFalse  r85, L9
   // where d.d_month_seq == target_month_seq &&
+  Const        r8, "d_month_seq"
   Index        r86, r15, r8
   // i.i_current_price > 1.2 * avg(
   Const        r87, 1.2
   // from j in item
   Const        r88, []
+  // where j.i_category == i.i_category
+  Const        r30, "i_category"
+  Const        r30, "i_category"
+  // select j.i_current_price
+  Const        r29, "i_current_price"
+  // from j in item
   IterPrep     r89, r4
   Len          r90, r89
+  Const        r12, 0
   Move         r91, r12
 L12:
   LessInt      r92, r91, r90
@@ -149,22 +167,27 @@ L12:
   Index        r93, r89, r91
   Move         r94, r93
   // where j.i_category == i.i_category
+  Const        r30, "i_category"
   Index        r95, r94, r30
+  Const        r30, "i_category"
   Index        r96, r80, r30
   Equal        r97, r95, r96
   JumpIfFalse  r97, L11
   // select j.i_current_price
+  Const        r29, "i_current_price"
   Index        r98, r94, r29
   // from j in item
   Append       r99, r88, r98
   Move         r88, r99
 L11:
+  Const        r25, 1
   AddInt       r91, r91, r25
   Jump         L12
 L10:
   // i.i_current_price > 1.2 * avg(
   Avg          r100, r88
   MulFloat     r101, r87, r100
+  Const        r29, "i_current_price"
   Index        r102, r80, r29
   LessFloat    r103, r101, r102
   // where d.d_month_seq == target_month_seq &&
@@ -197,19 +220,23 @@ L13:
   Move         r125, r115
   MakeMap      r126, 5, r116
   // group by a.ca_state into g
+  Const        r28, "ca_state"
   Index        r127, r42, r28
   Str          r128, r127
   In           r129, r128, r34
   JumpIfTrue   r129, L14
   // from a in customer_address
+  Const        r36, []
   Const        r130, "__group__"
   Const        r131, true
+  Const        r32, "key"
   // group by a.ca_state into g
   Move         r132, r127
   // from a in customer_address
   Const        r133, "items"
   Move         r134, r36
   Const        r135, "count"
+  Const        r12, 0
   Move         r136, r130
   Move         r137, r131
   Move         r138, r32
@@ -223,34 +250,43 @@ L13:
   Append       r145, r35, r144
   Move         r35, r145
 L14:
+  Const        r133, "items"
   Index        r146, r34, r128
   Index        r147, r146, r133
   Append       r148, r147, r126
   SetIndex     r146, r133, r148
+  Const        r135, "count"
   Index        r149, r146, r135
+  Const        r25, 1
   AddInt       r150, r149, r25
   SetIndex     r146, r135, r150
 L9:
   // join i in item on s.ss_item_sk == i.i_item_sk
+  Const        r25, 1
   AddInt       r77, r77, r25
   Jump         L15
 L8:
   // join d in date_dim on s.ss_sold_date_sk == d.d_date_sk
+  Const        r25, 1
   AddInt       r67, r67, r25
   Jump         L16
 L7:
   // join s in store_sales on c.c_customer_sk == s.ss_customer_sk
+  Const        r25, 1
   AddInt       r56, r56, r25
   Jump         L17
 L6:
   // join c in customer on a.ca_address_sk == c.c_current_addr_sk
+  Const        r25, 1
   AddInt       r45, r45, r25
   Jump         L18
 L5:
   // from a in customer_address
+  Const        r25, 1
   AddInt       r39, r39, r25
   Jump         L19
 L4:
+  Const        r12, 0
   Move         r151, r12
   Len          r152, r35
 L21:
@@ -259,14 +295,17 @@ L21:
   Index        r154, r35, r151
   Move         r155, r154
   // having count(g) >= 10
+  Const        r135, "count"
   Index        r156, r155, r135
   Const        r157, 10
   LessEq       r158, r157, r156
   JumpIfFalse  r158, L20
   // select { state: g.key, cnt: count(g) }
   Const        r159, "state"
+  Const        r32, "key"
   Index        r160, r155, r32
   Const        r161, "cnt"
+  Const        r135, "count"
   Index        r162, r155, r135
   Move         r163, r159
   Move         r164, r160
@@ -274,17 +313,20 @@ L21:
   Move         r166, r162
   MakeMap      r167, 2, r163
   // sort by [count(g), g.key]
-  Index        r168, r155, r135
-  Move         r169, r168
-  Index        r170, r155, r32
-  Move         r171, r170
-  MakeList     r172, 2, r169
-  Move         r173, r172
+  Const        r135, "count"
+  Index        r172, r155, r135
+  Move         r170, r172
+  Const        r32, "key"
+  Index        r173, r155, r32
+  Move         r171, r173
+  MakeList     r174, 2, r170
+  Move         r168, r174
   // from a in customer_address
-  Move         r174, r167
-  MakeList     r175, 2, r173
+  Move         r169, r167
+  MakeList     r175, 2, r168
   Append       r176, r27, r175
   Move         r27, r176
+  Const        r25, 1
   AddInt       r151, r151, r25
   Jump         L21
 L20:

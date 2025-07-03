@@ -22,11 +22,13 @@ func main (regs=157)
   // group by ca.ca_zip into g
   Const        r10, "ca_zip"
   // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
+  Const        r10, "ca_zip"
   Const        r11, "i_item_id"
   // d.d_qoy == qoy && d.d_year == year
   Const        r12, "d_qoy"
   Const        r13, "d_year"
   // select { ca_zip: g.key, sum_ws_sales_price: sum(from x in g select x.ws.sales_price) }
+  Const        r10, "ca_zip"
   Const        r14, "key"
   Const        r15, "sum_ws_sales_price"
   Const        r16, "ws"
@@ -104,12 +106,14 @@ L9:
   Equal        r70, r67, r69
   JumpIfFalse  r70, L5
   // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
+  Const        r10, "ca_zip"
   Index        r71, r43, r10
   Const        r72, 0
   Const        r73, 5
   Slice        r74, r71, r72, r73
   Const        r75, ["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"]
   In           r76, r74, r75
+  Const        r11, "i_item_id"
   Index        r77, r54, r11
   Const        r78, ["I2"]
   In           r79, r77, r78
@@ -118,9 +122,13 @@ L9:
   Move         r80, r79
 L6:
   // d.d_qoy == qoy && d.d_year == year
+  Const        r12, "d_qoy"
   Index        r81, r65, r12
+  Const        r7, 1
   Equal        r82, r81, r7
+  Const        r13, "d_year"
   Index        r83, r65, r13
+  Const        r8, 2020
   Equal        r84, r83, r8
   // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
   Move         r85, r80
@@ -133,6 +141,7 @@ L7:
   // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
   JumpIfFalse  r85, L5
   // from ws in web_sales
+  Const        r16, "ws"
   Move         r86, r26
   Const        r87, "c"
   Move         r88, r32
@@ -154,19 +163,23 @@ L7:
   Move         r104, r94
   MakeMap      r105, 5, r95
   // group by ca.ca_zip into g
+  Const        r10, "ca_zip"
   Index        r106, r43, r10
   Str          r107, r106
   In           r108, r107, r18
   JumpIfTrue   r108, L8
   // from ws in web_sales
+  Const        r20, []
   Const        r109, "__group__"
   Const        r110, true
+  Const        r14, "key"
   // group by ca.ca_zip into g
   Move         r111, r106
   // from ws in web_sales
   Const        r112, "items"
   Move         r113, r20
   Const        r114, "count"
+  Const        r72, 0
   Move         r115, r109
   Move         r116, r110
   Move         r117, r14
@@ -180,34 +193,43 @@ L7:
   Append       r124, r19, r123
   Move         r19, r124
 L8:
+  Const        r112, "items"
   Index        r125, r18, r107
   Index        r126, r125, r112
   Append       r127, r126, r105
   SetIndex     r125, r112, r127
+  Const        r114, "count"
   Index        r128, r125, r114
+  Const        r7, 1
   AddInt       r129, r128, r7
   SetIndex     r125, r114, r129
 L5:
   // join d in date_dim on ws.sold_date_sk == d.d_date_sk
+  Const        r7, 1
   AddInt       r62, r62, r7
   Jump         L9
 L4:
   // join i in item on ws.item_sk == i.i_item_sk
+  Const        r7, 1
   AddInt       r51, r51, r7
   Jump         L10
 L3:
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  Const        r7, 1
   AddInt       r40, r40, r7
   Jump         L11
 L2:
   // join c in customer on ws.bill_customer_sk == c.c_customer_sk
+  Const        r7, 1
   AddInt       r29, r29, r7
   Jump         L12
 L1:
   // from ws in web_sales
+  Const        r7, 1
   AddInt       r23, r23, r7
   Jump         L13
 L0:
+  Const        r72, 0
   Move         r130, r72
   Len          r131, r19
 L17:
@@ -217,21 +239,28 @@ L17:
   Move         r134, r133
   // select { ca_zip: g.key, sum_ws_sales_price: sum(from x in g select x.ws.sales_price) }
   Const        r135, "ca_zip"
+  Const        r14, "key"
   Index        r136, r134, r14
   Const        r137, "sum_ws_sales_price"
   Const        r138, []
+  Const        r16, "ws"
+  Const        r17, "sales_price"
   IterPrep     r139, r134
   Len          r140, r139
+  Const        r72, 0
   Move         r141, r72
 L16:
   LessInt      r142, r141, r140
   JumpIfFalse  r142, L15
   Index        r143, r139, r141
   Move         r144, r143
+  Const        r16, "ws"
   Index        r145, r144, r16
+  Const        r17, "sales_price"
   Index        r146, r145, r17
   Append       r147, r138, r146
   Move         r138, r147
+  Const        r7, 1
   AddInt       r141, r141, r7
   Jump         L16
 L15:
@@ -244,6 +273,7 @@ L15:
   // from ws in web_sales
   Append       r154, r9, r153
   Move         r9, r154
+  Const        r7, 1
   AddInt       r130, r130, r7
   Jump         L17
 L14:

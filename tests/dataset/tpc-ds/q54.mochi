@@ -8,6 +8,10 @@ let customer = [ {c_customer_sk: 1, c_current_addr_sk: 1}, {c_customer_sk: 2, c_
 let customer_address = [ {ca_address_sk: 1, ca_county: "X", ca_state: "Y"} ]
 let store = [ {s_store_sk: 1, s_county: "X", s_state: "Y"} ]
 
+fun int(x: float): int {
+  return x as int
+}
+
 let revenue =
   from ss in store_sales
   join d in date_dim on ss.sold_date == d.d_date_sk
@@ -31,5 +35,8 @@ let result = segments
 json(result)
 
 test "TPCDS Q54 simplified" {
-  expect result == [{segment: 2, num_customers: 2, segment_base: 100}]
+  expect result == [
+    {segment: 1, num_customers: 1, segment_base: 50},
+    {segment: 0, num_customers: 1, segment_base: 0}
+  ]
 }

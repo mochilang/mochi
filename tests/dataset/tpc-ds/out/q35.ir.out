@@ -37,12 +37,16 @@ L4:
   JumpIfFalse  r20, L1
   Index        r21, r8, r19
   Move         r22, r21
+  Const        r10, "ss_sold_date_sk"
   Index        r23, r18, r10
+  Const        r11, "d_date_sk"
   Index        r24, r22, r11
   Equal        r25, r23, r24
   JumpIfFalse  r25, L2
   // where d.d_year == 2000 && d.d_qoy < 4
+  Const        r12, "d_year"
   Index        r26, r22, r12
+  Const        r13, "d_qoy"
   Index        r27, r22, r13
   Const        r28, 4
   Less         r29, r27, r28
@@ -54,6 +58,7 @@ L4:
 L3:
   JumpIfFalse  r32, L2
   // select ss.ss_customer_sk
+  Const        r14, "ss_customer_sk"
   Index        r33, r18, r14
   // from ss in store_sales
   Append       r34, r5, r33
@@ -65,6 +70,7 @@ L2:
   Jump         L4
 L1:
   // from ss in store_sales
+  Const        r35, 1
   AddInt       r15, r15, r35
   Jump         L5
 L0:
@@ -86,7 +92,29 @@ L0:
   // where c.c_customer_sk in purchased
   Const        r49, "c_customer_sk"
   // ca_state: g.key.state,
+  Const        r38, "ca_state"
   Const        r50, "key"
+  Const        r37, "state"
+  // cd_gender: g.key.gender,
+  Const        r40, "cd_gender"
+  Const        r50, "key"
+  Const        r39, "gender"
+  // cd_marital_status: g.key.marital,
+  Const        r42, "cd_marital_status"
+  Const        r50, "key"
+  Const        r41, "marital"
+  // cd_dep_count: g.key.dep,
+  Const        r44, "cd_dep_count"
+  Const        r50, "key"
+  Const        r43, "dep"
+  // cd_dep_employed_count: g.key.emp,
+  Const        r46, "cd_dep_employed_count"
+  Const        r50, "key"
+  Const        r45, "emp"
+  // cd_dep_college_count: g.key.col,
+  Const        r48, "cd_dep_college_count"
+  Const        r50, "key"
+  Const        r47, "col"
   // cnt: count(g)
   Const        r51, "cnt"
   // from c in customer
@@ -132,6 +160,7 @@ L11:
   Equal        r82, r79, r81
   JumpIfFalse  r82, L9
   // where c.c_customer_sk in purchased
+  Const        r49, "c_customer_sk"
   Index        r83, r60, r49
   In           r84, r83, r5
   JumpIfFalse  r84, L9
@@ -151,16 +180,22 @@ L11:
   MakeMap      r97, 3, r91
   // group by {state: ca.ca_state, gender: cd.cd_gender, marital: cd.cd_marital_status, dep: cd.cd_dep_count, emp: cd.cd_dep_employed_count, col: cd.cd_dep_college_count} into g
   Const        r98, "state"
+  Const        r38, "ca_state"
   Index        r99, r66, r38
   Const        r100, "gender"
+  Const        r40, "cd_gender"
   Index        r101, r77, r40
   Const        r102, "marital"
+  Const        r42, "cd_marital_status"
   Index        r103, r77, r42
   Const        r104, "dep"
+  Const        r44, "cd_dep_count"
   Index        r105, r77, r44
   Const        r106, "emp"
+  Const        r46, "cd_dep_employed_count"
   Index        r107, r77, r46
   Const        r108, "col"
+  Const        r48, "cd_dep_college_count"
   Index        r109, r77, r48
   Move         r110, r98
   Move         r111, r99
@@ -179,8 +214,10 @@ L11:
   In           r124, r123, r52
   JumpIfTrue   r124, L10
   // from c in customer
+  Const        r54, []
   Const        r125, "__group__"
   Const        r126, true
+  Const        r50, "key"
   // group by {state: ca.ca_state, gender: cd.cd_gender, marital: cd.cd_marital_status, dep: cd.cd_dep_count, emp: cd.cd_dep_employed_count, col: cd.cd_dep_college_count} into g
   Move         r127, r122
   // from c in customer
@@ -201,26 +238,33 @@ L11:
   Append       r141, r53, r140
   Move         r53, r141
 L10:
+  Const        r128, "items"
   Index        r142, r52, r123
   Index        r143, r142, r128
   Append       r144, r143, r97
   SetIndex     r142, r128, r144
+  Const        r130, "count"
   Index        r145, r142, r130
+  Const        r35, 1
   AddInt       r146, r145, r35
   SetIndex     r142, r130, r146
 L9:
   // join cd in customer_demographics on c.c_current_cdemo_sk == cd.cd_demo_sk
+  Const        r35, 1
   AddInt       r74, r74, r35
   Jump         L11
 L8:
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  Const        r35, 1
   AddInt       r63, r63, r35
   Jump         L12
 L7:
   // from c in customer
+  Const        r35, 1
   AddInt       r57, r57, r35
   Jump         L13
 L6:
+  Const        r131, 0
   Move         r147, r131
   Len          r148, r53
 L15:
@@ -230,30 +274,43 @@ L15:
   Move         r151, r150
   // ca_state: g.key.state,
   Const        r152, "ca_state"
+  Const        r50, "key"
   Index        r153, r151, r50
+  Const        r37, "state"
   Index        r154, r153, r37
   // cd_gender: g.key.gender,
   Const        r155, "cd_gender"
+  Const        r50, "key"
   Index        r156, r151, r50
+  Const        r39, "gender"
   Index        r157, r156, r39
   // cd_marital_status: g.key.marital,
   Const        r158, "cd_marital_status"
+  Const        r50, "key"
   Index        r159, r151, r50
+  Const        r41, "marital"
   Index        r160, r159, r41
   // cd_dep_count: g.key.dep,
   Const        r161, "cd_dep_count"
+  Const        r50, "key"
   Index        r162, r151, r50
+  Const        r43, "dep"
   Index        r163, r162, r43
   // cd_dep_employed_count: g.key.emp,
   Const        r164, "cd_dep_employed_count"
+  Const        r50, "key"
   Index        r165, r151, r50
+  Const        r45, "emp"
   Index        r166, r165, r45
   // cd_dep_college_count: g.key.col,
   Const        r167, "cd_dep_college_count"
+  Const        r50, "key"
   Index        r168, r151, r50
+  Const        r47, "col"
   Index        r169, r168, r47
   // cnt: count(g)
   Const        r170, "cnt"
+  Const        r130, "count"
   Index        r171, r151, r130
   // ca_state: g.key.state,
   Move         r172, r152
@@ -281,6 +338,7 @@ L15:
   // from c in customer
   Append       r187, r36, r186
   Move         r36, r187
+  Const        r35, 1
   AddInt       r147, r147, r35
   Jump         L15
 L14:
