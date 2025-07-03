@@ -227,6 +227,9 @@ let t1 = [
 var result = from row in t1
   where (((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 || row.b > row.c) || row.b != null)
   select [(row.d - row.e), (row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
