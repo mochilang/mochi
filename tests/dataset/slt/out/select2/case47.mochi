@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2, d, abs(b-c), e FROM t1 WHERE (c<=d-2 OR c>=d+2) AND d>e */
-let result = from row in t1
+var result = from row in t1
   where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && row.d > row.e)
   select [(row.a + (row.b * 2)), row.d, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.e]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case47" {
-  expect flatResult == [385, 128, 4, 126, 483, 164, 1, 162, 698, 233, 1, 230, 635, 212, 3, 210, 666, 222, 1, 221]
+  expect flatResult == [1, 1, 1, 126, 128, 162, 164, 210, 212, 221, 222, 230, 233, 3, 385, 4, 483, 635, 666, 698]
 }
 

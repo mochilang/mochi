@@ -224,12 +224,15 @@ let t1 = [
 ]
 
 /* SELECT e FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select row.e
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
 
 test "case60" {
-  expect result == [null, 109, 110, 117, null, 126, 132, 135, 144, 146, null, 157, 162, 165, 173, 177, 180, 189, 192, 197, 204, null, 210, 219, 221, 227, 230, 237, null, 246]
+  expect result == [109, 110, 117, 126, 132, 135, 144, 146, 157, 162, 165, 173, 177, 180, 189, 192, 197, 204, 210, 219, 221, 227, 230, 237, 246, null, null, null, null, null]
 }

@@ -224,9 +224,12 @@ let t1 = [
 ]
 
 /* SELECT a+b*2 FROM t1 WHERE (a>b-2 AND a<b+2) AND b IS NOT NULL AND a>b */
-let result = from row in t1
+var result = from row in t1
   where ((((row.a > (row.b - 2) && row.a < (row.b + 2))) && row.b != null) && row.a > row.b)
   select (row.a + (row.b * 2))
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }

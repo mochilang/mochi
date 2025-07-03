@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), abs(a) FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) OR e+d BETWEEN a+b-10 AND c+130 */
-let result = from row in t1
+var result = from row in t1
   where (count(from x in t1
   where x.b < row.b
   select x) > 0 || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
@@ -237,10 +237,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case96" {
-  expect flatResult == [1, null, 2, 121, 3, 127, 4, 131, 5, 138, 6, 142, 7, 149, 8, 153, 9, 159, 10, 163, 11, 168, 12, 174, 13, 179, 14, 182, 15, 188, 16, 191, 17, 199, 18, null, 19, 213, 20, 216, 21, 220, 22, 229, 23, 234, 24, 239, 25, 243, 26, 245, 0, 107]
+  expect flatResult == [0, 1, 10, 107, 11, 12, 121, 127, 13, 131, 138, 14, 142, 149, 15, 153, 159, 16, 163, 168, 17, 174, 179, 18, 182, 188, 19, 191, 199, 2, 20, 21, 213, 216, 22, 220, 229, 23, 234, 239, 24, 243, 245, 25, 26, 3, 4, 5, 6, 7, 8, 9, null, null]
 }
 
