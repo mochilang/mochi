@@ -226,6 +226,9 @@ let t1 = [
 /* SELECT a+b*2, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE b IS NOT NULL */
 let result = from row in t1
   where row.b != null
+  order by [(row.a + (row.b * 2)), count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x)]
   select [(row.a + (row.b * 2)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]

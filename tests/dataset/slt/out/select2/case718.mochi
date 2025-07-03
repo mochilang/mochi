@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT c-d FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where null != 0
+  order by (row.c - row.d)
   select (row.c - row.d)
 for x in result {
   print(x)

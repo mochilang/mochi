@@ -228,11 +228,12 @@ let result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0
+  order by row.b
   select row.b
 for x in result {
   print(x)
 }
 
 test "case789" {
-  expect result == [236, 249, 194, 143, 160, 198, 124, 170, 130, 139, 167, 129, 145, 228, 158, 181, 175, 240, 112, 211, 206, 232, 151, 186, 223, 218]
+  expect result == [112, 124, 129, 130, 139, 143, 145, 151, 158, 160, 167, 170, 175, 181, 186, 194, 198, 206, 211, 218, 223, 228, 232, 236, 240, 249]
 }

@@ -231,6 +231,7 @@ let result = from row in t1
   where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || count(from x in t1
   where x.b < row.b
   select x) > 0) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
+  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
   select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
 var flatResult = []
 for row in result {
@@ -242,6 +243,6 @@ for x in flatResult {
   print(x)
 }
 test "case741" {
-  expect flatResult == [null, 1120, null, 1, 555, 1226, 1240, -3, 1, 333, 1272, 1290, -2, 4, 333, 1325, 1300, 1, 4, 444, 1371, 1390, -1, 2, 111, 1411, 1430, -1, 2, 111, null, 1450, 4, 2, 555, null, 1510, 2, 1, 555, null, 1580, 1, 3, 555, 1622, 1600, 3, 1, 333, null, 1670, 1, 1, 555, 1714, 1700, 4, 2, 555, null, 358, 4, 1, 555, 1828, 364, 1, 3, 333, 1861, 376, 2, 1, 444, 1918, 382, -3, 1, 444, 1964, 398, 1, 3, 555, null, null, null, 2, 555, 2125, 426, 2, 3, 222, 2165, 432, -2, 3, 333, 2226, 440, -3, 1, 444, 2264, 458, 1, 3, 555, 2323, 468, 2, 1, 555, null, 2360, 3, null, 555, null, 486, 3, 4, 222, 2476, 490, -4, 2, 444, 1067, 1050, 2, 1, 333]
+  expect flatResult == [1067, 1050, 2, 1, 333, null, 1120, null, 1, 555, 1226, 1240, -3, 1, 333, 1272, 1290, -2, 4, 333, 1325, 1300, 1, 4, 444, 1371, 1390, -1, 2, 111, 1411, 1430, -1, 2, 111, null, 1450, 4, 2, 555, null, 1510, 2, 1, 555, null, 1580, 1, 3, 555, 1622, 1600, 3, 1, 333, null, 1670, 1, 1, 555, 1714, 1700, 4, 2, 555, null, 358, 4, 1, 555, 1828, 364, 1, 3, 333, 1861, 376, 2, 1, 444, 1918, 382, -3, 1, 444, 1964, 398, 1, 3, 555, null, null, null, 2, 555, 2125, 426, 2, 3, 222, 2165, 432, -2, 3, 333, 2226, 440, -3, 1, 444, 2264, 458, 1, 3, 555, 2323, 468, 2, 1, 555, null, 2360, 3, null, 555, null, 486, 3, 4, 222, 2476, 490, -4, 2, 444]
 }
 
