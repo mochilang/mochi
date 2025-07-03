@@ -227,8 +227,8 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
-  where (row.b != null && null != 0)
+var result = from row in t1
+  where (row.b != null && (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0)
   select [row.b, (row.b - row.c), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if row.a < 0 { -(row.a) } else { row.a }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
 var flatResult = []
 for row in result {
@@ -236,6 +236,9 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }

@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT abs(a), b-c, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, (a+b+c+d+e)/5, a-b, c, c-d FROM t1 WHERE a>b AND (a>b-2 AND a<b+2) AND c>d */
-let result = from row in t1
+var result = from row in t1
   where ((row.a > row.b && ((row.a > (row.b - 2) && row.a < (row.b + 2)))) && row.c > row.d)
   select [(if row.a < 0 { -(row.a) } else { row.a }), (row.b - row.c), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a - row.b), row.c, (row.c - row.d)]
 var flatResult = []
@@ -233,6 +233,9 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }

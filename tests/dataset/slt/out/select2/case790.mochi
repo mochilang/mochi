@@ -224,9 +224,12 @@ let t1 = [
 ]
 
 /* SELECT abs(a) FROM t1 WHERE b IS NOT NULL OR a>b */
-let result = from row in t1
+var result = from row in t1
   where (row.b != null || row.a > row.b)
   select (if row.a < 0 { -(row.a) } else { row.a })
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
