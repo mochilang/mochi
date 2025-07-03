@@ -1,6 +1,6 @@
 555
--102
-104
+null
+null
 333
 -1
 317
@@ -20,14 +20,11 @@
 -1
 560
 222
--202
-201
+null
+null
 222
 -3
 635
 555
 1
 698
-call graph: main
-stack trace:
-  main:240

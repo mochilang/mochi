@@ -9,10 +9,10 @@
 1411
 3
 333
-940
+null
 1
 333
-1000
+null
 -3
 333
 1828
@@ -22,6 +22,3 @@
 3
 333
 2264
-call graph: main
-stack trace:
-  main:240
