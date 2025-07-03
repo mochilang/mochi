@@ -232,5 +232,5 @@ for x in result {
 }
 
 test "case484" {
-  expect result == [-2, 1, <nil>, <nil>, <nil>, -3, <nil>, 1, <nil>, 1, 2, -1, 2, -1, -2, <nil>, <nil>]
+  expect result == [-2, 1, null, null, null, -3, null, 1, null, 1, 2, -1, 2, -1, -2, null, null]
 }
