@@ -403,8 +403,12 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				boolLike = false
 			}
 			if t == "bool" {
-				// allow numeric booleans mixed with true/false strings
-				break
+				if val == 0 || val == 1 || val == -1 {
+					// allow numeric booleans mixed with true/false strings
+					break
+				}
+				// previously typed as bool but encountered a non-boolean numeric value
+				t = ""
 			}
 			if t == "" || t == "float" || t == "int" {
 				if t == "" {
@@ -428,8 +432,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				boolLike = false
 			}
 			if t == "bool" {
-				// allow numeric booleans mixed with true/false strings
-				break
+				if val == 0 || val == 1 || val == -1 {
+					// allow numeric booleans mixed with true/false strings
+					break
+				}
+				t = ""
 			}
 			if t == "" {
 				t = "int"
