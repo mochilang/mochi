@@ -113,11 +113,10 @@ func formatValue(v any) string {
 	case int:
 		return fmt.Sprintf("%d", t)
 	case float64:
-		s := fmt.Sprintf("%g", t)
-		if !strings.ContainsRune(s, '.') {
-			s += ".0"
+		if t == math.Trunc(t) {
+			return fmt.Sprintf("%.0f", t)
 		}
-		return s
+		return fmt.Sprintf("%g", t)
 	default:
 		return fmt.Sprintf("%v", t)
 	}
@@ -281,7 +280,13 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 			// constant values.
 			return string(v.Val)
 		case sqlparser.FloatVal:
-			return string(v.Val)
+			s := string(v.Val)
+			if f, err := strconv.ParseFloat(s, 64); err == nil {
+				if f == math.Trunc(f) {
+					return fmt.Sprintf("%.0f", f)
+				}
+			}
+			return s
 		}
 	case *sqlparser.ColName:
 		name := v.Name.String()
