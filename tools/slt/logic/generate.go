@@ -516,6 +516,10 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	}
 
 	if hasNull {
+		if (t == "int" || t == "float") && boolLike && (seenZero || seenOne || seenNegOne) {
+			// Treat nullable 0/1 columns as bool to avoid type mismatches.
+			return "bool"
+		}
 		if t == "" {
 			return "any"
 		}
