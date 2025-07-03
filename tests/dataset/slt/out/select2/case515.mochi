@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT abs(a), abs(b-c), a FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 */
 let result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
+  order by [(if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.a]
   select [(if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.a]
 var flatResult = []
 for row in result {

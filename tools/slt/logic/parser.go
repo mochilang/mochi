@@ -30,6 +30,7 @@ type Case struct {
 	Expect   []string
 	Hash     string
 	HashRows int
+	RowSort  bool
 	Comments []string
 	Updates  []string
 	Line     int
@@ -90,6 +91,7 @@ func ParseFile(path string) ([]Case, error) {
 			comments = append(comments, stmt)
 		case strings.HasPrefix(line, "query"):
 			startLine := lineNo
+			rowSort := strings.Contains(line, "rowsort")
 			var parts []string
 			for scanner.Scan() {
 				lineNo++
@@ -130,6 +132,7 @@ func ParseFile(path string) ([]Case, error) {
 				Expect:   expect,
 				Hash:     hash,
 				HashRows: hashRows,
+				RowSort:  rowSort,
 				Comments: comments,
 				Updates:  append([]string(nil), updates...),
 				Line:     startLine,
