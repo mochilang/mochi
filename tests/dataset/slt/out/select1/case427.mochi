@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT abs(a), a+b*2+c*3, (a+b+c+d+e)/5, b-c FROM t1 WHERE (a>b-2 AND a<b+2) OR e+d BETWEEN a+b-10 AND c+130 ORDER BY 1,3,2,4 */
 let result = from row in t1
   where (((row.a > (row.b - 2) && row.a < (row.b + 2))) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), ((row.a + (row.b + row.b)) + (row.c * 3)), (row.b - row.c)]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), ((row.a + (row.b + row.b)) + (row.c * 3)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.b - row.c)]
+  order by [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), ((row.a + (row.b * 2)) + (row.c * 3)), (row.b - row.c)]
+  select [(if row.a < 0 { -(row.a) } else { row.a }), ((row.a + (row.b * 2)) + (row.c * 3)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.b - row.c)]
 var flatResult = []
 for row in result {
   for x in row {

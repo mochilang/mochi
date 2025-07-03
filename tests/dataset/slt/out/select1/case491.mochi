@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT c-d, e, a+b*2, b, abs(a) FROM t1 WHERE d NOT BETWEEN 110 AND 150 OR (e>c OR e<d) ORDER BY 2,5,3,1,4 */
 let result = from row in t1
   where ((row.d < 110 || row.d > 150) || ((row.e > row.c || row.e < row.d)))
-  order by [row.e, (if row.a < 0 { -(row.a) } else { row.a }), (row.a + (row.b + row.b)), (row.c - row.d), row.b]
-  select [(row.c - row.d), row.e, (row.a + (row.b + row.b)), row.b, (if row.a < 0 { -(row.a) } else { row.a })]
+  order by [row.e, (if row.a < 0 { -(row.a) } else { row.a }), (row.a + (row.b * 2)), (row.c - row.d), row.b]
+  select [(row.c - row.d), row.e, (row.a + (row.b * 2)), row.b, (if row.a < 0 { -(row.a) } else { row.a })]
 var flatResult = []
 for row in result {
   for x in row {
