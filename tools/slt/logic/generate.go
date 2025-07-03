@@ -144,13 +144,13 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	t := ""
 	floatIsInt := true
 	boolLike := true
-	seen := false
+	seenZero := false
+	seenOne := false
 	for _, row := range rows {
 		v := row[name]
 		if v == nil {
 			continue
 		}
-		seen = true
 		switch val := v.(type) {
 		case string:
 			// Attempt to infer numeric or boolean types when the
@@ -165,12 +165,22 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// Allow comma separators in numbers.
 			sv = strings.ReplaceAll(sv, ",", "")
 
-			if sv == "true" || sv == "false" || sv == "t" || sv == "f" || sv == "yes" || sv == "no" {
+			if sv == "true" || sv == "t" || sv == "yes" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
 					return "any"
 				}
+				seenOne = true
+				continue
+			}
+			if sv == "false" || sv == "f" || sv == "no" {
+				if t == "" || t == "bool" {
+					t = "bool"
+				} else {
+					return "any"
+				}
+				seenZero = true
 				continue
 			}
 
@@ -180,7 +190,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 					if t == "" {
 						t = "int"
 					}
-					if f != 0 && f != 1 {
+					if f == 0 {
+						seenZero = true
+					} else if f == 1 {
+						seenOne = true
+					} else {
 						boolLike = false
 					}
 					if strings.ContainsRune(clean, '.') {
@@ -192,7 +206,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 					} else {
 						return "any"
 					}
-					if f != 0 && f != 1 {
+					if f == 0 {
+						seenZero = true
+					} else if f == 1 {
+						seenOne = true
+					} else {
 						boolLike = false
 					}
 					floatIsInt = false
@@ -209,7 +227,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			if val != math.Trunc(val) {
 				floatIsInt = false
 			}
-			if val != 0 && val != 1 {
+			if val == 0 {
+				seenZero = true
+			} else if val == 1 {
+				seenOne = true
+			} else {
 				boolLike = false
 			}
 			if t == "" || t == "float" || t == "int" {
@@ -224,7 +246,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				return "any"
 			}
 		case int:
-			if val != 0 && val != 1 {
+			if val == 0 {
+				seenZero = true
+			} else if val == 1 {
+				seenOne = true
+			} else {
 				boolLike = false
 			}
 			if t == "" {
@@ -242,6 +268,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			} else {
 				return "any"
 			}
+			if val {
+				seenOne = true
+			} else {
+				seenZero = true
+			}
 		default:
 			return "any"
 		}
@@ -249,11 +280,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	if t == "float" && floatIsInt {
 		t = "int"
 	}
-	if t == "int" && boolLike {
+	if t == "int" && boolLike && seenZero && seenOne {
 		return "bool"
 	}
 	if t == "" {
-		if boolLike && seen {
+		if boolLike && seenZero && seenOne {
 			return "bool"
 		}
 		return "any"
