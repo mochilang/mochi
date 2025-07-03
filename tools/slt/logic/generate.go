@@ -454,8 +454,22 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 	switch v := e.(type) {
 	case *sqlparser.ComparisonExpr:
 		left := exprToMochiRow(v.Left, rowVar, outer, subs)
+		op := strings.ToLower(v.Operator)
+		// Handle `IN` and `NOT IN` expressions with a tuple of values.
+		if op == sqlparser.InStr || op == sqlparser.NotInStr {
+			if list, ok := v.Right.(sqlparser.ValTuple); ok {
+				vals := make([]string, len(list))
+				for i, expr := range list {
+					vals[i] = exprToMochiRow(expr, rowVar, outer, subs)
+				}
+				rhs := "[" + strings.Join(vals, ", ") + "]"
+				if op == sqlparser.InStr {
+					return fmt.Sprintf("(%s in %s)", left, rhs)
+				}
+				return fmt.Sprintf("(!( %s in %s))", left, rhs)
+			}
+		}
 		right := exprToMochiRow(v.Right, rowVar, outer, subs)
-		op := v.Operator
 		if op == "=" {
 			op = "=="
 		}
