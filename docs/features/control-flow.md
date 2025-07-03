@@ -10,6 +10,13 @@ if count > 0 {
 }
 ```
 
+`if` can also be used as an expression with `then` and `else` clauses:
+
+```mochi
+let msg = if count > 0 then "positive" else "non-positive"
+print(msg)
+```
+
 Numeric ranges are written with `start..end` and can be used directly in `for` loops:
 
 ```mochi

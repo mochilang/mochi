@@ -1,0 +1,18 @@
+func main (regs=10)
+  // let x = 8
+  Const        r0, 8
+  // let msg = if x > 10 then "big" else if x > 5 then "medium" else "small"
+  Const        r0, 8
+  Const        r1, 10
+  LessInt      r2, r1, r0
+  Const        r3, "big"
+  Const        r0, 8
+  Const        r4, 5
+  LessInt      r5, r4, r0
+  Const        r6, "medium"
+  Const        r7, "small"
+  Select       8,5,6,7
+  Select       9,2,3,8
+  // print(msg)
+  Print        r9
+  Return       r0
