@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d-e, a+b*2+c*3+d*4 FROM t1 WHERE (c<=d-2 OR c>=d+2) OR (e>c OR e<d) OR b>c */
-let result = from row in t1
+var result = from row in t1
   where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || ((row.e > row.c || row.e < row.d))) || row.b > row.c)
   select [(row.d - row.e), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case831" {
-  expect flatResult == [-1, 1067, 4, null, -1, null, null, 1226, 2, 1272, 1, 1325, 1, 1371, -4, 1411, null, null, null, null, 2, 1622, null, null, -2, 1714, null, null, 3, 1828, -4, 1861, -2, 1918, -1, 1964, -1, null, 2, 2125, -2, 2165, 1, 2226, -1, 2264, 3, 2323, 1, null, 2, 2476]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -4, -4, 1, 1, 1, 1, 1067, 1226, 1272, 1325, 1371, 1411, 1622, 1714, 1828, 1861, 1918, 1964, 2, 2, 2, 2, 2125, 2165, 2226, 2264, 2323, 2476, 3, 3, 4, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

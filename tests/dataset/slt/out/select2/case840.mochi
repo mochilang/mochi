@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), (a+b+c+d+e)/5, b FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [count(from x in t1
   where x.b < row.b
   select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.b]
@@ -234,10 +234,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case840" {
-  expect flatResult == [0, null, null, 0, 107, 105, 1, null, 112, 0, null, null, 2, null, 124, 3, 127, 129, 4, 132, 130, 5, 137, 139, 6, 142, 143, 7, null, 145, 8, null, 151, 9, null, 158, 10, 162, 160, 11, null, 167, 12, 172, 170, 13, null, 175, 14, 182, 181, 15, 187, 186, 16, 192, 194, 17, 197, 198, 0, null, null, 18, null, 206, 19, 212, 211, 20, 217, 218, 21, 222, 223, 22, 227, 228, 23, 232, 232, 24, null, 236, 25, null, 240, 26, 247, 249]
+  expect flatResult == [0, 0, 0, 0, 1, 10, 105, 107, 11, 112, 12, 124, 127, 129, 13, 130, 132, 137, 139, 14, 142, 143, 145, 15, 151, 158, 16, 160, 162, 167, 17, 170, 172, 175, 18, 181, 182, 186, 187, 19, 192, 194, 197, 198, 2, 20, 206, 21, 211, 212, 217, 218, 22, 222, 223, 227, 228, 23, 232, 232, 236, 24, 240, 247, 249, 25, 26, 3, 4, 5, 6, 7, 8, 9, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

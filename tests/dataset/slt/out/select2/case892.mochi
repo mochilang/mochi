@@ -224,18 +224,21 @@ let t1 = [
 ]
 
 /* SELECT a-b, c-d, (a+b+c+d+e)/5, a+b*2+c*3+d*4+e*5, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, d FROM t1 */
-let result = from row in t1
-  select [(row.a - row.b), (row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.d]
+var result = from row in t1
+  select [(row.a - row.b), (row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), row.d]
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case892" {
-  expect flatResult == [null, 1, null, null, 555, 101, 2, -2, 107, 1612, 333, 108, null, -1, null, null, 555, 114, null, 3, null, null, 333, 116, -3, 1, null, null, 333, 122, -2, -3, 127, 1902, 333, 128, 1, 1, 132, 1985, 444, 133, -1, 1, 137, 2046, 111, 136, -1, 1, 142, 2131, 111, 140, 4, null, null, null, 555, null, 2, null, null, null, 555, null, 1, null, null, null, 555, null, 3, -3, 162, 2432, 333, 164, 1, null, null, null, 555, null, 4, 1, 172, 2579, 555, 171, 4, null, null, null, 555, null, 1, 1, 182, 2728, 333, 183, 2, 2, 187, 2806, 444, 185, -3, 3, 192, 2878, 444, 190, 1, -1, 197, 2949, 555, 196, null, -1, null, null, 222, 203, null, 1, null, null, 555, 207, 2, 2, 212, 3175, 222, 212, -2, -2, 217, 3260, 333, 217, -3, 2, 222, 3331, 444, 222, 1, -1, 227, 3399, 555, 226, 2, -2, 232, 3473, 555, 233, 3, null, null, null, 555, 238, 3, null, null, null, 222, null, -4, -1, 247, 3706, 444, 248]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -3, -3, -3, -3, -3, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 101, 107, 108, 111, 111, 114, 116, 122, 127, 128, 132, 133, 136, 137, 140, 142, 1612, 162, 164, 171, 172, 182, 183, 185, 187, 190, 1902, 192, 196, 197, 1985, 2, 2, 2, 2, 2, 2, 2, 2, 203, 2046, 207, 212, 212, 2131, 217, 217, 222, 222, 222, 222, 222, 226, 227, 232, 233, 238, 2432, 247, 248, 2579, 2728, 2806, 2878, 2949, 3, 3, 3, 3, 3, 3175, 3260, 333, 333, 333, 333, 333, 333, 333, 3331, 3399, 3473, 3706, 4, 4, 4, 444, 444, 444, 444, 444, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

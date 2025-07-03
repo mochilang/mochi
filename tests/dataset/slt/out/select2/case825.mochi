@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), a+b*2, a+b*2+c*3+d*4+e*5, (a+b+c+d+e)/5, d-e, abs(b-c) FROM t1 WHERE b IS NOT NULL */
-let result = from row in t1
+var result = from row in t1
   where row.b != null
   select [count(from x in t1
   where x.b < row.b
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case825" {
-  expect flatResult == [0, 317, 1612, 107, -1, 1, 1, null, null, null, 4, 1, 2, 369, null, null, null, 1, 3, 385, 1902, 127, 2, 4, 4, 391, 1985, 132, 1, 4, 5, 416, 2046, 137, 1, 2, 6, 428, 2131, 142, -4, 2, 7, 439, null, null, null, 2, 8, 455, null, null, null, 1, 9, 475, null, null, null, 3, 10, 483, 2432, 162, 2, 1, 11, 502, null, null, null, 1, 12, 514, 2579, 172, -2, 2, 13, 529, null, null, null, 1, 14, 544, 2728, 182, 3, 3, 15, 560, 2806, 187, -4, 1, 16, 579, 2878, 192, -2, 1, 17, 595, 2949, 197, -1, 3, 18, null, null, null, null, 2, 19, 635, 3175, 212, 2, 3, 20, 652, 3260, 217, -2, 3, 21, 666, 3331, 222, 1, 1, 22, 685, 3399, 227, -1, 3, 23, 698, 3473, 232, 3, 1, 24, 711, null, null, 1, null, 25, 723, null, null, null, 4, 26, 743, 3706, 247, 2, 2]
+  expect flatResult == [-1, -1, -1, -2, -2, -2, -4, -4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 107, 11, 12, 127, 13, 132, 137, 14, 142, 15, 16, 1612, 162, 17, 172, 18, 182, 187, 19, 1902, 192, 197, 1985, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 20, 2046, 21, 212, 2131, 217, 22, 222, 227, 23, 232, 24, 2432, 247, 25, 2579, 26, 2728, 2806, 2878, 2949, 3, 3, 3, 3, 3, 3, 3, 3, 3, 317, 3175, 3260, 3331, 3399, 3473, 369, 3706, 385, 391, 4, 4, 4, 4, 4, 416, 428, 439, 455, 475, 483, 5, 502, 514, 529, 544, 560, 579, 595, 6, 635, 652, 666, 685, 698, 7, 711, 723, 743, 8, 9, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

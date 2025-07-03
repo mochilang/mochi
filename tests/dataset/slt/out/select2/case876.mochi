@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d, c-d, abs(b-c), b-c, a+b*2+c*3 FROM t1 WHERE b>c */
-let result = from row in t1
+var result = from row in t1
   where row.b > row.c
   select [row.d, (row.c - row.d), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.b - row.c), ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case876" {
-  expect flatResult == [122, 1, 1, 1, 738, 128, -3, 4, 4, 760, 136, 1, 2, 2, 827, 140, 1, 2, 2, 851, null, null, 1, 1, 905, null, null, 3, 3, 940, null, null, 1, 1, 1000, 190, 3, 1, 1, 1158, 196, -1, 3, 3, 1180, 217, -2, 3, 3, 1297, 226, -1, 3, 3, 1360, 233, -2, 1, 1, 1391, 248, -1, 2, 2, 1484]
+  expect flatResult == [-1, -1, -1, -2, -2, -3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1000, 1158, 1180, 122, 128, 1297, 136, 1360, 1391, 140, 1484, 190, 196, 2, 2, 2, 2, 2, 2, 217, 226, 233, 248, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 738, 760, 827, 851, 905, 940, null, null, null, null, null, null]
 }
 

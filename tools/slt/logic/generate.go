@@ -498,7 +498,8 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		if v.Expr != nil {
 			expr := exprToMochiRow(v.Expr, rowVar, outer, subs)
 			for i := len(v.Whens) - 1; i >= 0; i-- {
-				cond := fmt.Sprintf("%s == %s", expr, exprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs))
+				rhs := exprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs)
+				cond := fmt.Sprintf("(%s != null && %s != null && %s == %s)", expr, rhs, expr, rhs)
 				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer, subs)
 				out = fmt.Sprintf("(if %s { %s } else { %s })", cond, val, out)
 			}
@@ -617,8 +618,8 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 			}
 		}
 		right := exprToMochiRow(v.Right, rowVar, outer, subs)
-		if op == "=" {
-			op = "=="
+		if op == "=" || op == "==" {
+			return fmt.Sprintf("(%s != null && %s != null && %s == %s)", left, right, left, right)
 		}
 		return fmt.Sprintf("%s %s %s", left, op, right)
 	case *sqlparser.AndExpr:

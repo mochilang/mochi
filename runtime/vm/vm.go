@@ -842,9 +842,21 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpNotEqual:
 			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: !valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
 		case OpEqualInt:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(fr.regs[ins.B]) == toInt(fr.regs[ins.C])}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(b) == toInt(c)}
+			}
 		case OpEqualFloat:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) == toFloat(fr.regs[ins.C])}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(b) == toFloat(c)}
+			}
 		case OpLess:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
@@ -7335,17 +7347,17 @@ func pairVal(v Value) Value {
 }
 
 func valueLess(a, b Value) bool {
-        if a.Tag == ValueNull || b.Tag == ValueNull {
-                // When sorting, NULL values compare greater than any other
-                // value so that they appear last. Treat two NULLs as equal.
-                if a.Tag == ValueNull && b.Tag != ValueNull {
-                        return false
-                }
-                if a.Tag != ValueNull && b.Tag == ValueNull {
-                        return true
-                }
-                return false
-        }
+	if a.Tag == ValueNull || b.Tag == ValueNull {
+		// When sorting, NULL values compare greater than any other
+		// value so that they appear last. Treat two NULLs as equal.
+		if a.Tag == ValueNull && b.Tag != ValueNull {
+			return false
+		}
+		if a.Tag != ValueNull && b.Tag == ValueNull {
+			return true
+		}
+		return false
+	}
 	switch a.Tag {
 	case ValueInt:
 		switch b.Tag {
