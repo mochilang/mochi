@@ -1,7 +1,0 @@
-expect condition failed at :240: expect flatResult == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1067, 1226, 1272, 1325, 1371, 1411, 1612, 1622, 1714, 1828, 1861, 1902, 1918, 1964, 1985, 2, 2, 2, 2, 2, 2, 2046, 2125, 2131, 2165, 2226, 2264, 2323, 2432, 2476, 2579, 2728, 2806, 2878, 2949, 3, 3, 3, 3, 3, 3, 3175, 3260, 3331, 3399, 3473, 3706, 4, 4, 4, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
-call graph: main
-stack trace:
-  main at :240
-    expect flatResult == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1067, 1226, 1272, 1325, 1371, 1411, 1612, 1622, 1714, 1828, 1861, 1902, 1918, 1964, 1985, 2, 2, 2, 2, 2, 2, 2046, 2125, 2131, 2165, 2226, 2264, 2323, 2432, 2476, 2579, 2728, 2806, 2878, 2949, 3, 3, 3, 3, 3, 3, 3175, 3260, 3331, 3399, 3473, 3706, 4, 4, 4, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
-
-got: [null, null, null, 1612, 1067, 1, null, null, 1, null, null, null, null, 1226, 1, 1902, 1272, 4, 1985, 1325, 4, 2046, 1371, 2, 2131, 1411, 2, null, null, 2, null, null, 1, null, null, 3, 2432, 1622, 1, null, null, 1, 2579, 1714, 2, null, null, 1, 2728, 1828, 3, 2806, 1861, 1, 2878, 1918, 1, 2949, 1964, 3, null, null, null, null, null, 2, 3175, 2125, 3, 3260, 2165, 3, 3331, 2226, 1, 3399, 2264, 3, 3473, 2323, 1, null, null, null, null, null, 4, 3706, 2476, 2]

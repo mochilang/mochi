@@ -224,9 +224,12 @@ let t1 = [
 ]
 
 /* SELECT a+b*2 FROM t1 WHERE (c<=d-2 OR c>=d+2) AND e+d BETWEEN a+b-10 AND c+130 */
-let result = from row in t1
+var result = from row in t1
   where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
   select (row.a + (row.b * 2))
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
