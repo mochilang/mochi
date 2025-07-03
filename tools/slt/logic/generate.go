@@ -870,8 +870,6 @@ func Generate(c Case) string {
 		}
 		if len(sel.OrderBy) == 1 {
 			sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}, subs))
-		} else if c.RowSort {
-			sb.WriteString("\n  order by " + orderExprToMochi(ae.Expr, []*sqlparser.AliasedExpr{ae}, subs))
 		}
 		sb.WriteString("\n  select " + expr + "\n")
 		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
@@ -927,8 +925,6 @@ func Generate(c Case) string {
 				}
 				sb.WriteString("]")
 			}
-		} else if c.RowSort {
-			sb.WriteString("\n  order by [" + strings.Join(exprs, ", ") + "]")
 		}
 		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
 		sb.WriteString("var flatResult = []\n")
