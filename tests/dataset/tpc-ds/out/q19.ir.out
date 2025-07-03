@@ -26,9 +26,23 @@ func main (regs=222)
   Const        r15, "d_moy"
   Const        r16, "d_year"
   // select { i_brand: g.key.brand, i_brand_id: g.key.brand_id, i_manufact_id: g.key.man_id, i_manufact: g.key.man, ext_price: sum(from x in g select x.ss_ext_sales_price) }
+  Const        r8, "i_brand"
   Const        r17, "key"
+  Const        r7, "brand"
+  Const        r10, "i_brand_id"
+  Const        r17, "key"
+  Const        r9, "brand_id"
+  Const        r12, "i_manufact_id"
+  Const        r17, "key"
+  Const        r11, "man_id"
+  Const        r14, "i_manufact"
+  Const        r17, "key"
+  Const        r13, "man"
   Const        r18, "ext_price"
   Const        r19, "ss_ext_sales_price"
+  // sort by [g.key.brand]
+  Const        r17, "key"
+  Const        r7, "brand"
   // from d in date_dim
   MakeMap      r20, 0, r0
   Const        r22, []
@@ -36,6 +50,7 @@ func main (regs=222)
   IterPrep     r23, r1
   Len          r24, r23
   Const        r25, 0
+L16:
   LessInt      r26, r25, r24
   JumpIfFalse  r26, L0
   Index        r27, r23, r25
@@ -44,6 +59,7 @@ func main (regs=222)
   IterPrep     r29, r0
   Len          r30, r29
   Const        r31, 0
+L15:
   LessInt      r32, r31, r30
   JumpIfFalse  r32, L1
   Index        r33, r29, r31
@@ -58,6 +74,7 @@ func main (regs=222)
   IterPrep     r40, r2
   Len          r41, r40
   Const        r42, 0
+L14:
   LessInt      r43, r42, r41
   JumpIfFalse  r43, L2
   Index        r44, r40, r42
@@ -74,11 +91,13 @@ func main (regs=222)
   Move         r55, r50
   JumpIfFalse  r55, L3
   Move         r55, r54
+L3:
   JumpIfFalse  r55, L4
   // join c in customer on ss.ss_customer_sk == c.c_customer_sk
   IterPrep     r56, r3
   Len          r57, r56
   Const        r58, 0
+L13:
   LessInt      r59, r58, r57
   JumpIfFalse  r59, L4
   Index        r60, r56, r58
@@ -88,13 +107,12 @@ func main (regs=222)
   Const        r64, "c_customer_sk"
   Index        r65, r61, r64
   Equal        r66, r63, r65
-L3:
   JumpIfFalse  r66, L5
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
   IterPrep     r67, r4
   Len          r68, r67
   Const        r69, 0
-L10:
+L12:
   LessInt      r70, r69, r68
   JumpIfFalse  r70, L5
   Index        r71, r67, r69
@@ -109,6 +127,7 @@ L10:
   IterPrep     r78, r5
   Len          r79, r78
   Const        r80, 0
+L11:
   LessInt      r81, r80, r79
   JumpIfFalse  r81, L6
   Index        r82, r78, r80
@@ -122,15 +141,17 @@ L10:
   Index        r90, r72, r89
   Const        r91, 0
   Const        r92, 5
-L11:
   Slice        r93, r90, r91, r92
   Const        r94, "s_zip"
   Index        r95, r83, r94
+  Const        r91, 0
+  Const        r92, 5
   Slice        r96, r95, r91, r92
   NotEqual     r97, r93, r96
   Move         r98, r88
   JumpIfFalse  r98, L7
   Move         r98, r97
+L7:
   JumpIfFalse  r98, L8
   // where d.d_moy == 11 && d.d_year == 1999
   Const        r15, "d_moy"
@@ -144,11 +165,11 @@ L11:
   Move         r105, r101
   JumpIfFalse  r105, L9
   Move         r105, r104
+L9:
   JumpIfFalse  r105, L8
   // from d in date_dim
   Const        r106, "d"
   Move         r107, r28
-L7:
   Const        r108, "ss"
   Move         r109, r34
   Const        r110, "i"
@@ -161,7 +182,6 @@ L7:
   Move         r117, r83
   Move         r118, r106
   Move         r119, r107
-L9:
   Move         r120, r108
   Move         r121, r109
   Move         r122, r110
@@ -222,48 +242,74 @@ L9:
   SetIndex     r20, r148, r164
   Append       r165, r21, r164
   Move         r21, r165
+L10:
+  Const        r153, "items"
   Index        r166, r20, r148
   Index        r167, r166, r153
   Append       r168, r167, r130
   SetIndex     r166, r153, r168
+  Const        r155, "count"
   Index        r169, r166, r155
   Const        r170, 1
   AddInt       r171, r169, r170
   SetIndex     r166, r155, r171
+L8:
   // join s in store on ss.ss_store_sk == s.s_store_sk && substr(ca.ca_zip,0,5) != substr(s.s_zip,0,5)
+  Const        r170, 1
   AddInt       r80, r80, r170
   Jump         L11
-L8:
+L6:
+  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  Const        r170, 1
+  AddInt       r69, r69, r170
+  Jump         L12
+L5:
+  // join c in customer on ss.ss_customer_sk == c.c_customer_sk
+  Const        r170, 1
+  AddInt       r58, r58, r170
+  Jump         L13
+L4:
+  // join i in item on ss.ss_item_sk == i.i_item_sk && i.i_manager_id == 10
+  Const        r170, 1
+  AddInt       r42, r42, r170
+  Jump         L14
+L2:
+  // join ss in store_sales on ss.ss_sold_date_sk == d.d_date_sk
+  Const        r170, 1
+  AddInt       r31, r31, r170
+  Jump         L15
+L1:
   // from d in date_dim
+  Const        r170, 1
+  AddInt       r25, r25, r170
+  Jump         L16
+L0:
   Const        r91, 0
   Move         r172, r91
   Len          r173, r21
-L6:
+L20:
   LessInt      r174, r172, r173
-  JumpIfFalse  r174, L12
+  JumpIfFalse  r174, L17
   Index        r175, r21, r172
-L5:
   Move         r176, r175
   // select { i_brand: g.key.brand, i_brand_id: g.key.brand_id, i_manufact_id: g.key.man_id, i_manufact: g.key.man, ext_price: sum(from x in g select x.ss_ext_sales_price) }
   Const        r177, "i_brand"
   Const        r17, "key"
-L4:
   Index        r178, r176, r17
   Const        r7, "brand"
   Index        r179, r178, r7
-L2:
   Const        r180, "i_brand_id"
+  Const        r17, "key"
   Index        r181, r176, r17
   Const        r9, "brand_id"
-L1:
   Index        r182, r181, r9
   Const        r183, "i_manufact_id"
+  Const        r17, "key"
   Index        r184, r176, r17
-L0:
   Const        r11, "man_id"
   Index        r185, r184, r11
   Const        r186, "i_manufact"
-L14:
+  Const        r17, "key"
   Index        r187, r176, r17
   Const        r13, "man"
   Index        r188, r187, r13
@@ -274,8 +320,9 @@ L14:
   Len          r192, r191
   Const        r91, 0
   Move         r193, r91
+L19:
   LessInt      r194, r193, r192
-  JumpIfFalse  r194, L13
+  JumpIfFalse  r194, L18
   Index        r195, r191, r193
   Move         r196, r195
   Const        r19, "ss_ext_sales_price"
@@ -284,6 +331,18 @@ L14:
   Move         r190, r198
   Const        r170, 1
   AddInt       r193, r193, r170
+  Jump         L19
+L18:
+  Sum          r199, r190
+  Move         r200, r177
+  Move         r201, r179
+  Move         r202, r180
+  Move         r203, r182
+  Move         r204, r183
+  Move         r205, r185
+  Move         r206, r186
+  Move         r207, r188
+  Move         r208, r189
   Move         r209, r199
   MakeMap      r210, 5, r200
   // sort by [g.key.brand]
@@ -297,9 +356,20 @@ L14:
   // from d in date_dim
   Move         r212, r210
   MakeList     r217, 2, r211
-L13:
   Append       r218, r6, r217
   Move         r6, r218
   Const        r170, 1
   AddInt       r172, r172, r170
-  Jump         L14
+  Jump         L20
+L17:
+  // sort by [g.key.brand]
+  Sort         r219, r6
+  // from d in date_dim
+  Move         r6, r219
+  // json(result)
+  JSON         r6
+  // expect result == [ { i_brand: "B1", i_brand_id: 1, i_manufact_id: 1, i_manufact: "M1", ext_price: 100.0 } ]
+  Const        r220, [{"ext_price": 100.0, "i_brand": "B1", "i_brand_id": 1, "i_manufact": "M1", "i_manufact_id": 1}]
+  Equal        r221, r6, r220
+  Expect       r221
+  Return       r0

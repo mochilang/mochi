@@ -29,6 +29,7 @@ L3:
   // if inv.item == s.item {
   Const        r17, "item"
   Index        r18, r10, r17
+  Const        r17, "item"
   Index        r19, r16, r17
   Equal        r20, r18, r19
   JumpIfFalse  r20, L2
@@ -37,18 +38,21 @@ L3:
   Index        r22, r10, r21
   Add          r23, r4, r22
   Move         r4, r23
+L2:
   // for s in store_sales {
   Const        r24, 1
-L2:
   AddInt       r25, r13, r24
   Move         r13, r25
   Jump         L3
 L1:
   // for inv in inventory {
+  Const        r26, 1
   AddInt       r27, r7, r26
   Move         r7, r27
   Jump         L4
 L0:
+  // json(result)
+  JSON         r4
   // expect result == 82
   Const        r28, 82
   Equal        r29, r4, r28

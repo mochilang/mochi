@@ -104,9 +104,10 @@ L7:
   Const        r49, []
   IterPrep     r50, r23
   Len          r51, r50
+  Const        r8, 0
   Move         r52, r8
-  LessInt      r53, r52, r51
 L12:
+  LessInt      r53, r52, r51
   JumpIfFalse  r53, L10
   Index        r54, r50, r52
   Move         r44, r54
@@ -114,27 +115,30 @@ L12:
   JumpIfFalse  r55, L11
   Append       r56, r49, r44
   Move         r49, r56
-  Const        r14, 1
 L11:
+  Const        r14, 1
   AddInt       r52, r52, r14
   Jump         L12
 L10:
+  Len          r57, r49
   Const        r8, 0
   EqualInt     r58, r57, r8
   // where len(from x in catalog_customers where x == c select x) == 0 &&
   Move         r59, r48
   JumpIfFalse  r59, L13
   Move         r59, r58
-  JumpIfFalse  r59, L14
 L13:
+  JumpIfFalse  r59, L14
   // from c in store_customers
   Append       r60, r31, r37
   Move         r31, r60
-  Const        r14, 1
 L14:
+  Const        r14, 1
   AddInt       r34, r34, r14
   Jump         L15
 L6:
+  // let result = sum(from s in store_sales
+  Const        r61, []
   // where len(from x in store_only where x == s.cust select x) > 0
   Const        r4, "cust"
   // select s.price)
@@ -144,8 +148,8 @@ L6:
   Len          r64, r63
   Const        r8, 0
   Move         r65, r8
-  LessInt      r66, r65, r64
 L21:
+  LessInt      r66, r65, r64
   JumpIfFalse  r66, L16
   Index        r67, r63, r65
   Move         r11, r67
@@ -156,8 +160,8 @@ L21:
   Len          r70, r69
   Const        r8, 0
   Move         r71, r8
-  LessInt      r72, r71, r70
 L19:
+  LessInt      r72, r71, r70
   JumpIfFalse  r72, L17
   Index        r73, r69, r71
   Move         r74, r73
@@ -167,11 +171,12 @@ L19:
   JumpIfFalse  r76, L18
   Append       r77, r68, r74
   Move         r68, r77
-  Const        r14, 1
 L18:
+  Const        r14, 1
   AddInt       r71, r71, r14
   Jump         L19
 L17:
+  Len          r78, r68
   Const        r8, 0
   LessInt      r79, r8, r78
   JumpIfFalse  r79, L20
@@ -181,11 +186,12 @@ L17:
   // let result = sum(from s in store_sales
   Append       r81, r61, r80
   Move         r61, r81
-  Const        r14, 1
 L20:
+  Const        r14, 1
   AddInt       r65, r65, r14
   Jump         L21
 L16:
+  Sum          r82, r61
   // json(result)
   JSON         r82
   // expect result == 87.0
