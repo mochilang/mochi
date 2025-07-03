@@ -1,4 +1,4 @@
-101
+null
 1
 -1
 -2
@@ -6,7 +6,7 @@
 -1
 -1
 3
-122
+null
 1
 2
 -3
@@ -16,20 +16,20 @@
 1
 -4
 1
--146
-147
-0
-150
--157
-155
+null
+null
+null
+null
+null
+null
 2
 -3
--165
-166
+null
+null
 -2
 1
--177
-176
+null
+null
 3
 1
 -4
@@ -40,7 +40,7 @@
 -1
 -1
 -1
-207
+null
 1
 2
 2
@@ -53,11 +53,8 @@
 3
 -2
 1
--238
-0
-244
+null
+null
+null
 2
 -1
-call graph: main
-stack trace:
-  main:239
