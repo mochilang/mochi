@@ -224,9 +224,12 @@ let t1 = [
 ]
 
 /* SELECT d FROM t1 WHERE d NOT BETWEEN 110 AND 150 */
-let result = from row in t1
+var result = from row in t1
   where (row.d < 110 || row.d > 150)
   select row.d
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }

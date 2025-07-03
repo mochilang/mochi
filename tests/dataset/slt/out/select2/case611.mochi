@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT b-c, a+b*2 FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) */
-let result = from row in t1
+var result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case611" {
-  expect flatResult == [-1, null, 1, 369, 4, 385, -4, 391, 2, 416, 2, 428, -2, 439, 1, 455, 3, 475, -1, 483, 1, 502, -2, 514, -1, 529, -3, 544, -1, 560, 1, 579, 3, 595, -2, null, -3, 635, 3, 652, -1, 666, 3, 685, 1, 698, null, 711, -4, 723, 2, 743]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -3, -3, -4, -4, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 369, 385, 391, 4, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null, null]
 }
 

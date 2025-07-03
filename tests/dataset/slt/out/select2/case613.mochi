@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), e, (a+b+c+d+e)/5 FROM t1 WHERE (e>a AND e<b) OR a>b */
-let result = from row in t1
+var result = from row in t1
   where (((row.e > row.a && row.e < row.b)) || row.a > row.b)
   select [((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
   where x.b < row.b
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case613" {
-  expect flatResult == [635, 0, 109, 107, 793, 4, 132, 132, 880, 7, 146, null, 905, 8, null, null, 940, 9, 157, null, 966, 10, 162, 162, 1000, 11, 165, null, 1030, 12, 173, 172, 1057, 13, 177, null, 1096, 14, 180, 182, 1121, 15, 189, 187, 1158, 16, 192, 192, 1180, 17, 197, 197, 1277, 19, 210, 212, 1338, 21, 221, 222, 1360, 22, 227, 227, 1391, 23, 230, 232, null, 24, 237, null, 1455, 25, null, null, 1484, 26, 246, 247]
+  expect flatResult == [0, 10, 1000, 1030, 1057, 107, 109, 1096, 11, 1121, 1158, 1180, 12, 1277, 13, 132, 132, 1338, 1360, 1391, 14, 1455, 146, 1484, 15, 157, 16, 162, 162, 165, 17, 172, 173, 177, 180, 182, 187, 189, 19, 192, 192, 197, 197, 21, 210, 212, 22, 221, 222, 227, 227, 23, 230, 232, 237, 24, 246, 247, 25, 26, 4, 635, 7, 793, 8, 880, 9, 905, 940, 966, null, null, null, null, null, null, null, null, null, null]
 }
 
