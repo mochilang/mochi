@@ -226,10 +226,10 @@ let t1 = [
 /* SELECT a+b*2+c*3+d*4+e*5, a, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d, abs(b-c) FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND (e>a AND e<b) ORDER BY 1,3,5,4,2 */
 let result = from row in t1
   where ((row.d < 110 || row.d > 150) && ((row.e > row.a && row.e < row.b)))
-  order by [((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
+  order by [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d, row.a]
-  select [((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.a, count(from x in t1
+  select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.a, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), row.d, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
 var flatResult = []
