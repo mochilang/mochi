@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -201,6 +202,18 @@ func EvalCase(c Case) ([]string, string, error) {
 			buf.WriteString(s)
 		}
 		buf.WriteByte('\n')
+	}
+	if c.RowSort {
+		sort.SliceStable(flat, func(i, j int) bool {
+			ai, aj := flat[i], flat[j]
+			if ai == "null" && aj != "null" {
+				return false
+			}
+			if ai != "null" && aj == "null" {
+				return true
+			}
+			return ai < aj
+		})
 	}
 	hash := fmt.Sprintf("%x", md5.Sum(buf.Bytes()))
 	return flat, hash, nil
