@@ -226,12 +226,12 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3+d*4+e*5, a+b*2, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND a>b ORDER BY 3,4,2,1 */
 let result = from row in t1
   where ((row.d < 110 || row.d > 150) && row.a > row.b)
-  order by [row.a + row.b * 2, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, count(from x in t1
+  order by [(row.a + (row.b + row.b)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), ((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2, (if row.a + 1 == row.b { 111 } else { (if row.a + 1 == row.c { 222 } else { (if row.a + 1 == row.d { 333 } else { (if row.a + 1 == row.e { 444 } else { 555 }) }) }) })]
+  select x), ((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a + (row.b + row.b)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) })]
 var flatResult = []
 for row in result {
   for x in row {
