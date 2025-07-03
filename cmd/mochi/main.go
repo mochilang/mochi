@@ -349,7 +349,7 @@ func testFile(file string, cmd *TestCmd) error {
 
 	decls := make([]*parser.Statement, 0, len(prog.Statements))
 	for _, st := range prog.Statements {
-		if st.Fun != nil || st.Let != nil || st.Type != nil {
+		if st.Fun != nil || st.Let != nil || st.Var != nil || st.Type != nil {
 			decls = append(decls, st)
 		}
 	}
