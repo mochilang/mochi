@@ -366,6 +366,61 @@ func TestPyCompiler_SLTCases(t *testing.T) {
 	}
 }
 
+func TestPyCompiler_SLTQueries(t *testing.T) {
+	if _, err := exec.LookPath("python3"); err != nil {
+		t.Skip("python3 not installed")
+	}
+	root := findRepoRoot(t)
+	cases := []string{"case1", "case2", "case3"}
+	for _, base := range cases {
+		src := filepath.Join(root, "tests", "dataset", "slt", "out", "select1", base+".mochi")
+		codeWant := filepath.Join(root, "tests", "dataset", "slt", "compiler", "py", base+".py.out")
+		outWant := filepath.Join(root, "tests", "dataset", "slt", "compiler", "py", base+".out")
+		if _, err := os.Stat(codeWant); err != nil {
+			continue
+		}
+		t.Run(base, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := pycode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			wantCode, err := os.ReadFile(codeWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+				t.Errorf("generated code mismatch for %s.py.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, bytes.TrimSpace(wantCode))
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.py")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("python3", file)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("python run error: %v\n%s", err, out)
+			}
+			gotOut := bytes.TrimSpace(out)
+			wantOut, err := os.ReadFile(outWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, gotOut, bytes.TrimSpace(wantOut))
+			}
+		})
+	}
+}
+
 func findRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
