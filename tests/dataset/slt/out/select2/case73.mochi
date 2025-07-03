@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d-e, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b-c, e, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, abs(b-c) FROM t1 WHERE a IS NULL */
-let result = from row in t1
+var result = from row in t1
   where row.a == null
   select [(row.d - row.e), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.b - row.c), row.e, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case73" {
-  expect flatResult == [4, 555, -1, 110, 444, 1, null, 555, -2, null, 444, 2]
+  expect flatResult == [-1, -2, 1, 110, 2, 4, 444, 444, 555, 555, null, null]
 }
 

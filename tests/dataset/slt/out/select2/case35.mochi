@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT e, a+b*2, c, b-c FROM t1 WHERE a>b */
-let result = from row in t1
+var result = from row in t1
   where row.a > row.b
   select [row.e, (row.a + (row.b * 2)), row.c, (row.b - row.c)]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case35" {
-  expect flatResult == [109, 317, 106, -1, 132, 391, 134, -4, 146, 439, 147, -2, null, 455, 150, 1, 157, 475, 155, 3, 162, 483, 161, -1, 165, 502, 166, 1, 173, 514, 172, -2, 177, 529, 176, -1, 180, 544, 184, -3, 189, 560, 187, -1, 197, 595, 195, 3, 210, 635, 214, -3, 227, 685, 225, 3, 230, 698, 231, 1, 237, 711, null, null, null, 723, 244, -4]
+  expect flatResult == [-1, -1, -1, -1, -2, -2, -3, -3, -4, -4, 1, 1, 1, 106, 109, 132, 134, 146, 147, 150, 155, 157, 161, 162, 165, 166, 172, 173, 176, 177, 180, 184, 187, 189, 195, 197, 210, 214, 225, 227, 230, 231, 237, 244, 3, 3, 3, 317, 391, 439, 455, 475, 483, 502, 514, 529, 544, 560, 595, 635, 685, 698, 711, 723, null, null, null, null]
 }
 
