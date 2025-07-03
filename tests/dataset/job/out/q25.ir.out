@@ -25,33 +25,74 @@ func main (regs=213)
   Const        r11, "note"
   // it1.info == "genres" &&
   Const        r12, "info"
+  // it2.info == "votes" &&
+  Const        r12, "info"
   // (k.keyword in allowed_keywords) &&
   Const        r13, "keyword"
+  // mi.info == "Horror" &&
+  Const        r12, "info"
   // n.gender == "m" &&
   Const        r14, "gender"
   // t.id == mi.movie_id &&
   Const        r15, "id"
   Const        r16, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r15, "id"
+  Const        r16, "movie_id"
+  // t.id == ci.movie_id &&
+  Const        r15, "id"
+  Const        r16, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r15, "id"
+  Const        r16, "movie_id"
+  // ci.movie_id == mi.movie_id &&
+  Const        r16, "movie_id"
+  Const        r16, "movie_id"
+  // ci.movie_id == mi_idx.movie_id &&
+  Const        r16, "movie_id"
+  Const        r16, "movie_id"
+  // ci.movie_id == mk.movie_id &&
+  Const        r16, "movie_id"
+  Const        r16, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r16, "movie_id"
+  Const        r16, "movie_id"
+  // mi.movie_id == mk.movie_id &&
+  Const        r16, "movie_id"
+  Const        r16, "movie_id"
+  // mi_idx.movie_id == mk.movie_id &&
+  Const        r16, "movie_id"
+  Const        r16, "movie_id"
   // n.id == ci.person_id &&
+  Const        r15, "id"
   Const        r17, "person_id"
   // it1.id == mi.info_type_id &&
+  Const        r15, "id"
+  Const        r18, "info_type_id"
+  // it2.id == mi_idx.info_type_id &&
+  Const        r15, "id"
   Const        r18, "info_type_id"
   // k.id == mk.keyword_id
+  Const        r15, "id"
   Const        r19, "keyword_id"
   // budget: mi.info,
   Const        r20, "budget"
+  Const        r12, "info"
   // votes: mi_idx.info,
   Const        r21, "votes"
+  Const        r12, "info"
   // writer: n.name,
   Const        r22, "writer"
   Const        r23, "name"
   // title: t.title
+  Const        r24, "title"
   Const        r24, "title"
   // from ci in cast_info
   IterPrep     r25, r0
   Len          r26, r25
   Const        r28, 0
   Move         r27, r28
+L19:
   LessInt      r29, r27, r26
   JumpIfFalse  r29, L0
   Index        r30, r25, r27
@@ -61,6 +102,7 @@ func main (regs=213)
   Len          r33, r32
   Const        r28, 0
   Move         r34, r28
+L18:
   LessInt      r35, r34, r33
   JumpIfFalse  r35, L1
   Index        r36, r32, r34
@@ -70,6 +112,7 @@ func main (regs=213)
   Len          r39, r38
   Const        r28, 0
   Move         r40, r28
+L17:
   LessInt      r41, r40, r39
   JumpIfFalse  r41, L2
   Index        r42, r38, r40
@@ -79,6 +122,7 @@ func main (regs=213)
   Len          r45, r44
   Const        r28, 0
   Move         r46, r28
+L16:
   LessInt      r47, r46, r45
   JumpIfFalse  r47, L3
   Index        r48, r44, r46
@@ -88,6 +132,7 @@ func main (regs=213)
   Len          r51, r50
   Const        r28, 0
   Move         r52, r28
+L15:
   LessInt      r53, r52, r51
   JumpIfFalse  r53, L4
   Index        r54, r50, r52
@@ -97,6 +142,7 @@ func main (regs=213)
   Len          r57, r56
   Const        r28, 0
   Move         r58, r28
+L14:
   LessInt      r59, r58, r57
   JumpIfFalse  r59, L5
   Index        r60, r56, r58
@@ -106,6 +152,7 @@ func main (regs=213)
   Len          r63, r62
   Const        r28, 0
   Move         r64, r28
+L13:
   LessInt      r65, r64, r63
   JumpIfFalse  r65, L6
   Index        r66, r62, r64
@@ -115,6 +162,7 @@ func main (regs=213)
   Len          r69, r68
   Const        r28, 0
   Move         r70, r28
+L12:
   LessInt      r71, r70, r69
   JumpIfFalse  r71, L7
   Index        r72, r68, r70
@@ -124,6 +172,7 @@ func main (regs=213)
   Len          r75, r74
   Const        r28, 0
   Move         r76, r28
+L11:
   LessInt      r77, r76, r75
   JumpIfFalse  r77, L8
   Index        r78, r74, r76
@@ -139,10 +188,12 @@ func main (regs=213)
   Const        r84, "genres"
   Equal        r85, r83, r84
   // it2.info == "votes" &&
+  Const        r12, "info"
   Index        r86, r43, r12
   Const        r21, "votes"
   Equal        r87, r86, r21
   // mi.info == "Horror" &&
+  Const        r12, "info"
   Index        r88, r55, r12
   Const        r89, "Horror"
   Equal        r90, r88, r89
@@ -158,57 +209,79 @@ func main (regs=213)
   Index        r95, r55, r16
   Equal        r96, r94, r95
   // t.id == mi_idx.movie_id &&
+  Const        r15, "id"
   Index        r97, r79, r15
-L11:
+  Const        r16, "movie_id"
   Index        r98, r61, r16
   Equal        r99, r97, r98
   // t.id == ci.movie_id &&
+  Const        r15, "id"
   Index        r100, r79, r15
+  Const        r16, "movie_id"
   Index        r101, r31, r16
   Equal        r102, r100, r101
   // t.id == mk.movie_id &&
+  Const        r15, "id"
   Index        r103, r79, r15
+  Const        r16, "movie_id"
   Index        r104, r67, r16
   Equal        r105, r103, r104
   // ci.movie_id == mi.movie_id &&
+  Const        r16, "movie_id"
   Index        r106, r31, r16
+  Const        r16, "movie_id"
   Index        r107, r55, r16
   Equal        r108, r106, r107
   // ci.movie_id == mi_idx.movie_id &&
+  Const        r16, "movie_id"
   Index        r109, r31, r16
+  Const        r16, "movie_id"
   Index        r110, r61, r16
   Equal        r111, r109, r110
   // ci.movie_id == mk.movie_id &&
+  Const        r16, "movie_id"
   Index        r112, r31, r16
+  Const        r16, "movie_id"
   Index        r113, r67, r16
   Equal        r114, r112, r113
   // mi.movie_id == mi_idx.movie_id &&
+  Const        r16, "movie_id"
   Index        r115, r55, r16
+  Const        r16, "movie_id"
   Index        r116, r61, r16
   Equal        r117, r115, r116
   // mi.movie_id == mk.movie_id &&
+  Const        r16, "movie_id"
   Index        r118, r55, r16
+  Const        r16, "movie_id"
   Index        r119, r67, r16
   Equal        r120, r118, r119
   // mi_idx.movie_id == mk.movie_id &&
+  Const        r16, "movie_id"
   Index        r121, r61, r16
+  Const        r16, "movie_id"
   Index        r122, r67, r16
   Equal        r123, r121, r122
   // n.id == ci.person_id &&
+  Const        r15, "id"
   Index        r124, r73, r15
   Const        r17, "person_id"
   Index        r125, r31, r17
   Equal        r126, r124, r125
   // it1.id == mi.info_type_id &&
+  Const        r15, "id"
   Index        r127, r37, r15
   Const        r18, "info_type_id"
   Index        r128, r55, r18
   Equal        r129, r127, r128
   // it2.id == mi_idx.info_type_id &&
+  Const        r15, "id"
   Index        r130, r43, r15
+  Const        r18, "info_type_id"
   Index        r131, r61, r18
   Equal        r132, r130, r131
   // k.id == mk.keyword_id
+  Const        r15, "id"
   Index        r133, r49, r15
   Const        r19, "keyword_id"
   Index        r134, r67, r19
@@ -277,6 +350,7 @@ L11:
   // it2.id == mi_idx.info_type_id &&
   JumpIfFalse  r136, L9
   Move         r136, r135
+L9:
   // where (
   JumpIfFalse  r136, L10
   // budget: mi.info,
@@ -285,6 +359,7 @@ L11:
   Index        r141, r55, r12
   // votes: mi_idx.info,
   Const        r142, "votes"
+  Const        r12, "info"
   Index        r143, r61, r12
   // writer: n.name,
   Const        r144, "writer"
@@ -311,18 +386,63 @@ L11:
   // from ci in cast_info
   Append       r157, r10, r156
   Move         r10, r157
+L10:
   // from t in title
   Const        r158, 1
   AddInt       r76, r76, r158
   Jump         L11
-L9:
+L8:
+  // from n in name
+  Const        r158, 1
+  AddInt       r70, r70, r158
+  Jump         L12
+L7:
+  // from mk in movie_keyword
+  Const        r158, 1
+  AddInt       r64, r64, r158
+  Jump         L13
+L6:
+  // from mi_idx in movie_info_idx
+  Const        r158, 1
+  AddInt       r58, r58, r158
+  Jump         L14
+L5:
+  // from mi in movie_info
+  Const        r158, 1
+  AddInt       r52, r52, r158
+  Jump         L15
+L4:
+  // from k in keyword
+  Const        r158, 1
+  AddInt       r46, r46, r158
+  Jump         L16
+L3:
+  // from it2 in info_type
+  Const        r158, 1
+  AddInt       r40, r40, r158
+  Jump         L17
+L2:
+  // from it1 in info_type
+  Const        r158, 1
+  AddInt       r34, r34, r158
+  Jump         L18
+L1:
+  // from ci in cast_info
+  Const        r158, 1
+  AddInt       r27, r27, r158
+  Jump         L19
+L0:
   // movie_budget: min(from x in matches select x.budget),
+  Const        r160, "movie_budget"
+  Const        r161, []
+  Const        r20, "budget"
   IterPrep     r162, r10
   Len          r163, r162
   Const        r28, 0
   Move         r164, r28
+L21:
   LessInt      r165, r164, r163
-  JumpIfFalse  r165, L12
+  JumpIfFalse  r165, L20
   Index        r166, r162, r164
   Move         r167, r166
   Const        r20, "budget"
@@ -331,63 +451,81 @@ L9:
   Move         r161, r169
   Const        r158, 1
   AddInt       r164, r164, r158
-  Jump         L13
-L10:
+  Jump         L21
+L20:
+  Min          r170, r161
   // movie_votes: min(from x in matches select x.votes),
-  JumpIfFalse  r176, L14
+  Const        r171, "movie_votes"
+  Const        r172, []
+  Const        r21, "votes"
+  IterPrep     r173, r10
+  Len          r174, r173
+  Const        r28, 0
+  Move         r175, r28
+L23:
+  LessInt      r176, r175, r174
+  JumpIfFalse  r176, L22
   Index        r177, r173, r175
   Move         r167, r177
-L8:
   Const        r21, "votes"
   Index        r178, r167, r21
   Append       r179, r172, r178
-L7:
   Move         r172, r179
   Const        r158, 1
   AddInt       r175, r175, r158
-  Jump         L6
-L5:
+  Jump         L23
+L22:
+  Min          r180, r172
   // male_writer: min(from x in matches select x.writer),
+  Const        r181, "male_writer"
   Const        r182, []
   Const        r22, "writer"
   IterPrep     r183, r10
-L4:
   Len          r184, r183
   Const        r28, 0
   Move         r185, r28
-L3:
+L25:
   LessInt      r186, r185, r184
-  JumpIfFalse  r186, L15
+  JumpIfFalse  r186, L24
   Index        r187, r183, r185
-L2:
   Move         r167, r187
   Const        r22, "writer"
   Index        r188, r167, r22
-L1:
   Append       r189, r182, r188
   Move         r182, r189
   Const        r158, 1
-L0:
   AddInt       r185, r185, r158
-  Jump         L16
-L13:
+  Jump         L25
+L24:
+  Min          r190, r182
   // violent_movie_title: min(from x in matches select x.title)
+  Const        r191, "violent_movie_title"
+  Const        r192, []
+  Const        r24, "title"
+  IterPrep     r193, r10
   Len          r194, r193
   Const        r28, 0
   Move         r195, r28
+L27:
   LessInt      r196, r195, r194
-  JumpIfFalse  r196, L17
+  JumpIfFalse  r196, L26
   Index        r197, r193, r195
   Move         r167, r197
   Const        r24, "title"
   Index        r198, r167, r24
   Append       r199, r192, r198
   Move         r192, r199
-L12:
   Const        r158, 1
   AddInt       r195, r195, r158
-  Jump         L18
-L6:
+  Jump         L27
+L26:
+  Min          r200, r192
+  // movie_budget: min(from x in matches select x.budget),
+  Move         r201, r160
+  Move         r202, r170
+  // movie_votes: min(from x in matches select x.votes),
+  Move         r203, r171
+  Move         r204, r180
   // male_writer: min(from x in matches select x.writer),
   Move         r205, r181
   Move         r206, r190
@@ -405,5 +543,4 @@ L6:
   Const        r211, [{"male_writer": "Mike", "movie_budget": "Horror", "movie_votes": 100, "violent_movie_title": "Scary Movie"}]
   Equal        r212, r210, r211
   Expect       r212
-L14:
   Return       r0

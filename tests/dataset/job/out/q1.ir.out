@@ -18,7 +18,15 @@ func main (regs=135)
   // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
   Const        r8, "note"
   Const        r9, "contains"
+  // (mc.note.contains("(co-production)") || mc.note.contains("(presents)"))
+  Const        r8, "note"
+  Const        r9, "contains"
+  Const        r8, "note"
+  Const        r9, "contains"
   // select { note: mc.note, title: t.title, year: t.production_year }
+  Const        r8, "note"
+  Const        r8, "note"
+  Const        r10, "title"
   Const        r10, "title"
   Const        r11, "year"
   Const        r12, "production_year"
@@ -27,6 +35,7 @@ func main (regs=135)
   Len          r14, r13
   Const        r16, 0
   Move         r15, r16
+L12:
   LessInt      r17, r15, r14
   JumpIfFalse  r17, L0
   Index        r18, r13, r15
@@ -43,13 +52,22 @@ func main (regs=135)
   // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
   Const        r8, "note"
   Const        r9, "contains"
+  // (mc.note.contains("(co-production)") || mc.note.contains("(presents)"))
+  Const        r8, "note"
+  Const        r9, "contains"
+  Const        r8, "note"
+  Const        r9, "contains"
   // select { note: mc.note, title: t.title, year: t.production_year }
+  Const        r8, "note"
+  Const        r8, "note"
+  Const        r10, "title"
   Const        r10, "title"
   Const        r11, "year"
   Const        r12, "production_year"
   // join mc in movie_companies on ct.id == mc.company_type_id
   Const        r16, 0
   Move         r24, r16
+L11:
   LessInt      r25, r24, r21
   JumpIfFalse  r25, L1
   Index        r26, r20, r24
@@ -72,13 +90,22 @@ func main (regs=135)
   // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
   Const        r8, "note"
   Const        r9, "contains"
+  // (mc.note.contains("(co-production)") || mc.note.contains("(presents)"))
+  Const        r8, "note"
+  Const        r9, "contains"
+  Const        r8, "note"
+  Const        r9, "contains"
   // select { note: mc.note, title: t.title, year: t.production_year }
+  Const        r8, "note"
+  Const        r8, "note"
+  Const        r10, "title"
   Const        r10, "title"
   Const        r11, "year"
   Const        r12, "production_year"
   // join t in title on t.id == mc.movie_id
   Const        r16, 0
   Move         r34, r16
+L10:
   LessInt      r35, r34, r32
   JumpIfFalse  r35, L2
   Index        r36, r31, r34
@@ -101,13 +128,22 @@ func main (regs=135)
   // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
   Const        r8, "note"
   Const        r9, "contains"
+  // (mc.note.contains("(co-production)") || mc.note.contains("(presents)"))
+  Const        r8, "note"
+  Const        r9, "contains"
+  Const        r8, "note"
+  Const        r9, "contains"
   // select { note: mc.note, title: t.title, year: t.production_year }
+  Const        r8, "note"
+  Const        r8, "note"
+  Const        r10, "title"
   Const        r10, "title"
   Const        r11, "year"
   Const        r12, "production_year"
   // join mi in movie_info_idx on mi.movie_id == t.id
   Const        r16, 0
   Move         r43, r16
+L9:
   LessInt      r44, r43, r42
   JumpIfFalse  r44, L3
   Index        r45, r41, r43
@@ -130,13 +166,22 @@ func main (regs=135)
   // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
   Const        r8, "note"
   Const        r9, "contains"
+  // (mc.note.contains("(co-production)") || mc.note.contains("(presents)"))
+  Const        r8, "note"
+  Const        r9, "contains"
+  Const        r8, "note"
+  Const        r9, "contains"
   // select { note: mc.note, title: t.title, year: t.production_year }
+  Const        r8, "note"
+  Const        r8, "note"
+  Const        r10, "title"
   Const        r10, "title"
   Const        r11, "year"
   Const        r12, "production_year"
   // join it in info_type on it.id == mi.info_type_id
   Const        r16, 0
   Move         r53, r16
+L8:
   LessInt      r54, r53, r51
   JumpIfFalse  r54, L4
   Index        r55, r50, r53
@@ -180,14 +225,15 @@ func main (regs=135)
   In           r73, r72, r71
   Move         r74, r73
   JumpIfTrue   r74, L7
-L8:
   Const        r8, "note"
   Index        r75, r27, r8
   Const        r76, "(presents)"
   In           r77, r76, r75
   Move         r74, r77
+L7:
   // (!mc.note.contains("(as Metro-Goldwyn-Mayer Pictures)")) &&
   Move         r66, r74
+L6:
   // where ct.kind == "production companies" &&
   JumpIfFalse  r66, L5
   // select { note: mc.note, title: t.title, year: t.production_year }
@@ -210,22 +256,43 @@ L8:
   // from ct in company_type
   Append       r91, r5, r90
   Move         r5, r91
+L5:
   // join it in info_type on it.id == mi.info_type_id
   Const        r92, 1
   Add          r53, r53, r92
   Jump         L8
-L7:
+L4:
+  // join mi in movie_info_idx on mi.movie_id == t.id
+  Const        r92, 1
+  Add          r43, r43, r92
+  Jump         L9
+L3:
+  // join t in title on t.id == mc.movie_id
+  Const        r92, 1
+  Add          r34, r34, r92
+  Jump         L10
+L2:
+  // join mc in movie_companies on ct.id == mc.company_type_id
+  Const        r92, 1
+  Add          r24, r24, r92
+  Jump         L11
+L1:
+  // from ct in company_type
+  Const        r92, 1
+  AddInt       r15, r15, r92
+  Jump         L12
+L0:
   // production_note: min(from r in filtered select r.note),
   Const        r93, "production_note"
-L6:
   Const        r94, []
   Const        r8, "note"
   IterPrep     r95, r5
   Len          r96, r95
   Const        r16, 0
   Move         r97, r16
+L14:
   LessInt      r98, r97, r96
-  JumpIfFalse  r98, L9
+  JumpIfFalse  r98, L13
   Index        r99, r95, r97
   Move         r100, r99
   Const        r8, "note"
@@ -234,49 +301,60 @@ L6:
   Move         r94, r102
   Const        r92, 1
   AddInt       r97, r97, r92
-  Jump         L10
-L5:
+  Jump         L14
+L13:
+  Min          r103, r94
   // movie_title: min(from r in filtered select r.title),
+  Const        r104, "movie_title"
   Const        r105, []
   Const        r10, "title"
   IterPrep     r106, r5
-L4:
   Len          r107, r106
   Const        r16, 0
   Move         r108, r16
-L3:
+L16:
   LessInt      r109, r108, r107
-  JumpIfFalse  r109, L11
+  JumpIfFalse  r109, L15
   Index        r110, r106, r108
-L2:
   Move         r100, r110
   Const        r10, "title"
   Index        r111, r100, r10
-L1:
   Append       r112, r105, r111
   Move         r105, r112
   Const        r92, 1
-L0:
   AddInt       r108, r108, r92
-  Jump         L12
-L10:
+  Jump         L16
+L15:
+  Min          r113, r105
   // movie_year: min(from r in filtered select r.year)
+  Const        r114, "movie_year"
+  Const        r115, []
+  Const        r11, "year"
+  IterPrep     r116, r5
   Len          r117, r116
   Const        r16, 0
   Move         r118, r16
+L18:
   LessInt      r119, r118, r117
-  JumpIfFalse  r119, L13
+  JumpIfFalse  r119, L17
   Index        r120, r116, r118
   Move         r100, r120
   Const        r11, "year"
   Index        r121, r100, r11
   Append       r122, r115, r121
   Move         r115, r122
-L9:
   Const        r92, 1
   AddInt       r118, r118, r92
-  Jump         L14
-L12:
+  Jump         L18
+L17:
+  Min          r123, r115
+  // production_note: min(from r in filtered select r.note),
+  Move         r124, r93
+  Move         r125, r103
+  // movie_title: min(from r in filtered select r.title),
+  Move         r126, r104
+  Move         r127, r113
+  // movie_year: min(from r in filtered select r.year)
   Move         r128, r114
   Move         r129, r123
   // let result = {

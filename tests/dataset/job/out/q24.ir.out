@@ -33,13 +33,23 @@ func main (regs=273)
   Const        r15, "info"
   // k.keyword in ["hero", "martial-arts", "hand-to-hand-combat"] &&
   Const        r16, "keyword"
+  // mi.info != null &&
+  Const        r15, "info"
   // (mi.info.starts_with("Japan:") && mi.info.contains("201") ||
+  Const        r15, "info"
   Const        r17, "starts_with"
+  Const        r15, "info"
+  Const        r18, "contains"
+  // mi.info.starts_with("USA:") && mi.info.contains("201")) &&
+  Const        r15, "info"
+  Const        r17, "starts_with"
+  Const        r15, "info"
   Const        r18, "contains"
   // n.gender == "f" &&
   Const        r19, "gender"
   // n.name.contains("An") &&
   Const        r20, "name"
+  Const        r18, "contains"
   // rt.role == "actress" &&
   Const        r21, "role"
   // t.production_year > 2010 &&
@@ -47,22 +57,63 @@ func main (regs=273)
   // t.id == mi.movie_id &&
   Const        r23, "id"
   Const        r24, "movie_id"
+  // t.id == mc.movie_id &&
+  Const        r23, "id"
+  Const        r24, "movie_id"
+  // t.id == ci.movie_id &&
+  Const        r23, "id"
+  Const        r24, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r23, "id"
+  Const        r24, "movie_id"
+  // mc.movie_id == ci.movie_id &&
+  Const        r24, "movie_id"
+  Const        r24, "movie_id"
+  // mc.movie_id == mi.movie_id &&
+  Const        r24, "movie_id"
+  Const        r24, "movie_id"
+  // mc.movie_id == mk.movie_id &&
+  Const        r24, "movie_id"
+  Const        r24, "movie_id"
+  // mi.movie_id == ci.movie_id &&
+  Const        r24, "movie_id"
+  Const        r24, "movie_id"
+  // mi.movie_id == mk.movie_id &&
+  Const        r24, "movie_id"
+  Const        r24, "movie_id"
+  // ci.movie_id == mk.movie_id &&
+  Const        r24, "movie_id"
+  Const        r24, "movie_id"
   // cn.id == mc.company_id &&
+  Const        r23, "id"
   Const        r25, "company_id"
   // it.id == mi.info_type_id &&
+  Const        r23, "id"
   Const        r26, "info_type_id"
   // n.id == ci.person_id &&
+  Const        r23, "id"
   Const        r27, "person_id"
   // rt.id == ci.role_id &&
+  Const        r23, "id"
   Const        r28, "role_id"
+  // n.id == an.person_id &&
+  Const        r23, "id"
+  Const        r27, "person_id"
+  // ci.person_id == an.person_id &&
+  Const        r27, "person_id"
+  Const        r27, "person_id"
   // chn.id == ci.person_role_id &&
+  Const        r23, "id"
   Const        r29, "person_role_id"
   // k.id == mk.keyword_id
+  Const        r23, "id"
   Const        r30, "keyword_id"
   // voiced_char_name: chn.name,
   Const        r31, "voiced_char_name"
+  Const        r20, "name"
   // voicing_actress_name: n.name,
   Const        r32, "voicing_actress_name"
+  Const        r20, "name"
   // voiced_action_movie_jap_eng: t.title
   Const        r33, "voiced_action_movie_jap_eng"
   Const        r34, "title"
@@ -71,6 +122,7 @@ func main (regs=273)
   Len          r36, r35
   Const        r38, 0
   Move         r37, r38
+L32:
   LessInt      r39, r37, r36
   JumpIfFalse  r39, L0
   Index        r40, r35, r37
@@ -80,6 +132,7 @@ func main (regs=273)
   Len          r43, r42
   Const        r38, 0
   Move         r44, r38
+L31:
   LessInt      r45, r44, r43
   JumpIfFalse  r45, L1
   Index        r46, r42, r44
@@ -89,6 +142,7 @@ func main (regs=273)
   Len          r49, r48
   Const        r38, 0
   Move         r50, r38
+L30:
   LessInt      r51, r50, r49
   JumpIfFalse  r51, L2
   Index        r52, r48, r50
@@ -98,6 +152,7 @@ func main (regs=273)
   Len          r55, r54
   Const        r38, 0
   Move         r56, r38
+L29:
   LessInt      r57, r56, r55
   JumpIfFalse  r57, L3
   Index        r58, r54, r56
@@ -107,6 +162,7 @@ func main (regs=273)
   Len          r61, r60
   Const        r38, 0
   Move         r62, r38
+L28:
   LessInt      r63, r62, r61
   JumpIfFalse  r63, L4
   Index        r64, r60, r62
@@ -116,6 +172,7 @@ func main (regs=273)
   Len          r67, r66
   Const        r38, 0
   Move         r68, r38
+L27:
   LessInt      r69, r68, r67
   JumpIfFalse  r69, L5
   Index        r70, r66, r68
@@ -125,6 +182,7 @@ func main (regs=273)
   Len          r73, r72
   Const        r38, 0
   Move         r74, r38
+L26:
   LessInt      r75, r74, r73
   JumpIfFalse  r75, L6
   Index        r76, r72, r74
@@ -134,6 +192,7 @@ func main (regs=273)
   Len          r79, r78
   Const        r38, 0
   Move         r80, r38
+L25:
   LessInt      r81, r80, r79
   JumpIfFalse  r81, L7
   Index        r82, r78, r80
@@ -143,6 +202,7 @@ func main (regs=273)
   Len          r85, r84
   Const        r38, 0
   Move         r86, r38
+L24:
   LessInt      r87, r86, r85
   JumpIfFalse  r87, L8
   Index        r88, r84, r86
@@ -152,6 +212,7 @@ func main (regs=273)
   Len          r91, r90
   Const        r38, 0
   Move         r92, r38
+L23:
   LessInt      r93, r92, r91
   JumpIfFalse  r93, L9
   Index        r94, r90, r92
@@ -161,6 +222,7 @@ func main (regs=273)
   Len          r97, r96
   Const        r38, 0
   Move         r98, r38
+L22:
   LessInt      r99, r98, r97
   JumpIfFalse  r99, L10
   Index        r100, r96, r98
@@ -170,6 +232,7 @@ func main (regs=273)
   Len          r103, r102
   Const        r38, 0
   Move         r104, r38
+L21:
   LessInt      r105, r104, r103
   JumpIfFalse  r105, L11
   Index        r106, r102, r104
@@ -201,6 +264,7 @@ func main (regs=273)
   Const        r121, ["hero", "martial-arts", "hand-to-hand-combat"]
   In           r122, r120, r121
   // mi.info != null &&
+  Const        r15, "info"
   Index        r123, r83, r15
   Const        r124, nil
   NotEqual     r125, r123, r124
@@ -218,79 +282,106 @@ func main (regs=273)
   Const        r23, "id"
   Index        r132, r107, r23
   Const        r24, "movie_id"
-L16:
   Index        r133, r83, r24
   Equal        r134, r132, r133
   // t.id == mc.movie_id &&
+  Const        r23, "id"
   Index        r135, r107, r23
+  Const        r24, "movie_id"
   Index        r136, r77, r24
   Equal        r137, r135, r136
   // t.id == ci.movie_id &&
+  Const        r23, "id"
   Index        r138, r107, r23
+  Const        r24, "movie_id"
   Index        r139, r53, r24
   Equal        r140, r138, r139
   // t.id == mk.movie_id &&
+  Const        r23, "id"
   Index        r141, r107, r23
+  Const        r24, "movie_id"
   Index        r142, r89, r24
   Equal        r143, r141, r142
   // mc.movie_id == ci.movie_id &&
+  Const        r24, "movie_id"
   Index        r144, r77, r24
+  Const        r24, "movie_id"
   Index        r145, r53, r24
   Equal        r146, r144, r145
   // mc.movie_id == mi.movie_id &&
+  Const        r24, "movie_id"
   Index        r147, r77, r24
+  Const        r24, "movie_id"
   Index        r148, r83, r24
   Equal        r149, r147, r148
   // mc.movie_id == mk.movie_id &&
+  Const        r24, "movie_id"
   Index        r150, r77, r24
+  Const        r24, "movie_id"
   Index        r151, r89, r24
   Equal        r152, r150, r151
   // mi.movie_id == ci.movie_id &&
+  Const        r24, "movie_id"
   Index        r153, r83, r24
+  Const        r24, "movie_id"
   Index        r154, r53, r24
   Equal        r155, r153, r154
   // mi.movie_id == mk.movie_id &&
+  Const        r24, "movie_id"
   Index        r156, r83, r24
+  Const        r24, "movie_id"
   Index        r157, r89, r24
   Equal        r158, r156, r157
   // ci.movie_id == mk.movie_id &&
+  Const        r24, "movie_id"
   Index        r159, r53, r24
+  Const        r24, "movie_id"
   Index        r160, r89, r24
   Equal        r161, r159, r160
   // cn.id == mc.company_id &&
+  Const        r23, "id"
   Index        r162, r59, r23
   Const        r25, "company_id"
   Index        r163, r77, r25
   Equal        r164, r162, r163
   // it.id == mi.info_type_id &&
+  Const        r23, "id"
   Index        r165, r65, r23
   Const        r26, "info_type_id"
   Index        r166, r83, r26
   Equal        r167, r165, r166
   // n.id == ci.person_id &&
+  Const        r23, "id"
   Index        r168, r95, r23
   Const        r27, "person_id"
   Index        r169, r53, r27
   Equal        r170, r168, r169
   // rt.id == ci.role_id &&
+  Const        r23, "id"
   Index        r171, r101, r23
   Const        r28, "role_id"
   Index        r172, r53, r28
   Equal        r173, r171, r172
   // n.id == an.person_id &&
+  Const        r23, "id"
   Index        r174, r95, r23
+  Const        r27, "person_id"
   Index        r175, r41, r27
   Equal        r176, r174, r175
   // ci.person_id == an.person_id &&
+  Const        r27, "person_id"
   Index        r177, r53, r27
+  Const        r27, "person_id"
   Index        r178, r41, r27
   Equal        r179, r177, r178
   // chn.id == ci.person_role_id &&
+  Const        r23, "id"
   Index        r180, r47, r23
   Const        r29, "person_role_id"
   Index        r181, r53, r29
   Equal        r182, r180, r181
   // k.id == mk.keyword_id
+  Const        r23, "id"
   Index        r183, r71, r23
   Const        r30, "keyword_id"
   Index        r184, r89, r30
@@ -315,7 +406,7 @@ L16:
   // (mi.info.starts_with("Japan:") && mi.info.contains("201") ||
   Const        r188, "Japan:"
   Const        r189, 0
-  Const        r190, 6
+  Len          r190, r188
   Len          r191, r187
   LessEq       r192, r190, r191
   JumpIfFalse  r192, L13
@@ -324,9 +415,103 @@ L16:
   Move         r193, r195
   Jump         L14
 L13:
+  Const        r193, false
+L14:
+  Move         r196, r193
+  JumpIfFalse  r196, L15
+  Const        r15, "info"
+  Index        r197, r83, r15
+  Const        r198, "201"
+  In           r199, r198, r197
+  Move         r196, r199
+L15:
+  Const        r15, "info"
+  Index        r200, r83, r15
+  // mi.info.starts_with("USA:") && mi.info.contains("201")) &&
+  Const        r201, "USA:"
+  Const        r202, 0
+  Len          r203, r201
+  Len          r204, r200
+  LessEq       r205, r203, r204
+  JumpIfFalse  r205, L16
+  Slice        r207, r200, r202, r203
+  Equal        r208, r207, r201
+  Move         r206, r208
+  Jump         L17
+L16:
+  Const        r206, false
+L17:
+  Move         r209, r206
+  JumpIfFalse  r209, L18
+  Const        r15, "info"
+  Index        r210, r83, r15
+  Const        r198, "201"
+  In           r211, r198, r210
+  Move         r209, r211
+L18:
+  // (mi.info.starts_with("Japan:") && mi.info.contains("201") ||
+  Move         r212, r196
+  JumpIfTrue   r212, L19
+  Move         r212, r209
+L19:
+  // mi.info != null &&
+  Move         r186, r212
+  // mi.info.starts_with("USA:") && mi.info.contains("201")) &&
+  JumpIfFalse  r186, L12
+  Move         r186, r128
+  // n.gender == "f" &&
+  JumpIfFalse  r186, L12
+  Const        r20, "name"
+  Index        r213, r95, r20
+  // n.name.contains("An") &&
+  Const        r214, "An"
+  In           r215, r214, r213
+  // n.gender == "f" &&
+  Move         r186, r215
+  // n.name.contains("An") &&
+  JumpIfFalse  r186, L12
+  Move         r186, r131
+  // rt.role == "actress" &&
+  JumpIfFalse  r186, L12
+  Move         r186, r111
+  // t.production_year > 2010 &&
+  JumpIfFalse  r186, L12
+  Move         r186, r134
+  // t.id == mi.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r137
+  // t.id == mc.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r140
+  // t.id == ci.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r143
+  // t.id == mk.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r146
+  // mc.movie_id == ci.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r149
+  // mc.movie_id == mi.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r152
+  // mc.movie_id == mk.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r155
+  // mi.movie_id == ci.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r158
+  // mi.movie_id == mk.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r161
+  // ci.movie_id == mk.movie_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r164
+  // cn.id == mc.company_id &&
+  JumpIfFalse  r186, L12
+  Move         r186, r167
   // it.id == mi.info_type_id &&
   JumpIfFalse  r186, L12
-L14:
   Move         r186, r170
   // n.id == ci.person_id &&
   JumpIfFalse  r186, L12
@@ -343,14 +528,16 @@ L14:
   // chn.id == ci.person_role_id &&
   JumpIfFalse  r186, L12
   Move         r186, r185
+L12:
   // where (
-  JumpIfFalse  r186, L15
+  JumpIfFalse  r186, L20
   // voiced_char_name: chn.name,
   Const        r216, "voiced_char_name"
   Const        r20, "name"
   Index        r217, r47, r20
   // voicing_actress_name: n.name,
   Const        r218, "voicing_actress_name"
+  Const        r20, "name"
   Index        r219, r95, r20
   // voiced_action_movie_jap_eng: t.title
   Const        r220, "voiced_action_movie_jap_eng"
@@ -370,69 +557,151 @@ L14:
   // from an in aka_name
   Append       r229, r12, r228
   Move         r12, r229
+L20:
   // from t in title
   Const        r230, 1
   AddInt       r104, r104, r230
-  Jump         L16
-L12:
+  Jump         L21
+L11:
+  // from rt in role_type
+  Const        r230, 1
+  AddInt       r98, r98, r230
+  Jump         L22
+L10:
+  // from n in name
+  Const        r230, 1
+  AddInt       r92, r92, r230
+  Jump         L23
+L9:
+  // from mk in movie_keyword
+  Const        r230, 1
+  AddInt       r86, r86, r230
+  Jump         L24
+L8:
+  // from mi in movie_info
+  Const        r230, 1
+  AddInt       r80, r80, r230
+  Jump         L25
+L7:
+  // from mc in movie_companies
+  Const        r230, 1
+  AddInt       r74, r74, r230
+  Jump         L26
+L6:
+  // from k in keyword
+  Const        r230, 1
+  AddInt       r68, r68, r230
+  Jump         L27
+L5:
+  // from it in info_type
+  Const        r230, 1
+  AddInt       r62, r62, r230
+  Jump         L28
+L4:
+  // from cn in company_name
+  Const        r230, 1
+  AddInt       r56, r56, r230
+  Jump         L29
+L3:
+  // from ci in cast_info
+  Const        r230, 1
+  AddInt       r50, r50, r230
+  Jump         L30
+L2:
+  // from chn in char_name
+  Const        r230, 1
+  AddInt       r44, r44, r230
+  Jump         L31
+L1:
+  // from an in aka_name
+  Const        r230, 1
+  AddInt       r37, r37, r230
+  Jump         L32
+L0:
   // voiced_char_name: min(from x in matches select x.voiced_char_name),
+  Const        r232, "voiced_char_name"
+  Const        r233, []
+  Const        r31, "voiced_char_name"
+  IterPrep     r234, r12
+  Len          r235, r234
+  Const        r38, 0
+  Move         r236, r38
+L34:
+  LessInt      r237, r236, r235
+  JumpIfFalse  r237, L33
+  Index        r238, r234, r236
+  Move         r239, r238
+  Const        r31, "voiced_char_name"
+  Index        r240, r239, r31
+  Append       r241, r233, r240
   Move         r233, r241
   Const        r230, 1
   AddInt       r236, r236, r230
-  Jump         L17
-L15:
+  Jump         L34
+L33:
+  Min          r242, r233
   // voicing_actress_name: min(from x in matches select x.voicing_actress_name),
+  Const        r243, "voicing_actress_name"
+  Const        r244, []
+  Const        r32, "voicing_actress_name"
+  IterPrep     r245, r12
+  Len          r246, r245
+  Const        r38, 0
+  Move         r247, r38
+L36:
+  LessInt      r248, r247, r246
+  JumpIfFalse  r248, L35
+  Index        r249, r245, r247
+  Move         r239, r249
+  Const        r32, "voicing_actress_name"
+  Index        r250, r239, r32
+  Append       r251, r244, r250
   Move         r244, r251
   Const        r230, 1
   AddInt       r247, r247, r230
-  Jump         L11
-L10:
+  Jump         L36
+L35:
+  Min          r252, r244
   // voiced_action_movie_jap_eng: min(from x in matches select x.voiced_action_movie_jap_eng)
+  Const        r253, "voiced_action_movie_jap_eng"
   Const        r254, []
   Const        r33, "voiced_action_movie_jap_eng"
   IterPrep     r255, r12
-L9:
   Len          r256, r255
   Const        r38, 0
   Move         r257, r38
-L8:
+L38:
   LessInt      r258, r257, r256
-  JumpIfFalse  r258, L18
+  JumpIfFalse  r258, L37
   Index        r259, r255, r257
-L7:
   Move         r239, r259
   Const        r33, "voiced_action_movie_jap_eng"
   Index        r260, r239, r33
-L6:
   Append       r261, r254, r260
   Move         r254, r261
   Const        r230, 1
-L5:
   AddInt       r257, r257, r230
-  Jump         L19
-L4:
+  Jump         L38
+L37:
+  Min          r262, r254
   // voiced_char_name: min(from x in matches select x.voiced_char_name),
   Move         r263, r232
   Move         r264, r242
   // voicing_actress_name: min(from x in matches select x.voicing_actress_name),
   Move         r265, r243
-L3:
   Move         r266, r252
   // voiced_action_movie_jap_eng: min(from x in matches select x.voiced_action_movie_jap_eng)
   Move         r267, r253
   Move         r268, r262
-L2:
   // {
   MakeMap      r269, 3, r263
   Move         r231, r269
   // let result = [
   MakeList     r270, 1, r231
-L1:
   // json(result)
   JSON         r270
   // expect result == [
   Const        r271, [{"voiced_action_movie_jap_eng": "Heroic Adventure", "voiced_char_name": "Hero Character", "voicing_actress_name": "Ann Actress"}]
   Equal        r272, r270, r271
-L0:
   Expect       r272
   Return       r0
