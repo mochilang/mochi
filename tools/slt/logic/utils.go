@@ -14,6 +14,7 @@ import (
 	"time"
 
 	_ "github.com/marcboeker/go-duckdb"
+	sqlparser "github.com/xwb1989/sqlparser"
 	"mochi/parser"
 	mod "mochi/runtime/mod"
 	"mochi/runtime/vm"
@@ -160,7 +161,13 @@ func EvalCase(c Case) ([]string, string, error) {
 			}
 		}
 	}
-	rows, err := db.Query(c.Query)
+	q := c.Query
+	if node, err := sqlparser.Parse(q); err == nil {
+		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 {
+			q = strings.TrimSpace(q) + " ORDER BY rowid"
+		}
+	}
+	rows, err := db.Query(q)
 	if err != nil {
 		return nil, "", err
 	}
