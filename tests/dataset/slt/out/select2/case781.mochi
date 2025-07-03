@@ -226,7 +226,6 @@ let t1 = [
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a, e, a+b*2+c*3 FROM t1 WHERE (a>b-2 AND a<b+2) */
 let result = from row in t1
   where ((row.a > (row.b - 2) && row.a < (row.b + 2)))
-  order by [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.a, row.e, ((row.a + (row.b * 2)) + (row.c * 3))]
   select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.a, row.e, ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
 for row in result {
@@ -238,6 +237,6 @@ for x in flatResult {
   print(x)
 }
 test "case781" {
-  expect flatResult == [333, 131, 132, 793, 222, 138, 135, 827, 222, 142, 144, 851, 333, 159, 157, 940, 333, 168, 165, 1000, 333, 182, 180, 1096, 333, 199, 197, 1180, 333, 229, 227, 1360]
+  expect flatResult == [1000, 1096, 1180, 131, 132, 135, 1360, 138, 142, 144, 157, 159, 165, 168, 180, 182, 197, 199, 222, 222, 227, 229, 333, 333, 333, 333, 333, 333, 793, 827, 851, 940]
 }
 

@@ -226,9 +226,6 @@ let t1 = [
 /* SELECT abs(a), (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), a FROM t1 WHERE (e>a AND e<b) OR (e>c OR e<d) */
 let result = from row in t1
   where (((row.e > row.a && row.e < row.b)) || ((row.e > row.c || row.e < row.d)))
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
-  where x.b < row.b
-  select x), row.a]
   select [(if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
   where x.b < row.b
   select x), row.a]
@@ -242,6 +239,6 @@ for x in flatResult {
   print(x)
 }
 test "case724" {
-  expect flatResult == [107, 0, 107, null, 1, null, 127, 3, 127, 131, 4, 131, 138, 5, 138, 142, 6, 142, 159, 9, 159, 163, 10, 163, 174, 12, 174, 179, 13, 179, 182, 14, 182, 188, 15, 188, 191, 16, 191, 199, 17, 199, 201, 0, 201, 213, 19, 213, 216, 20, 216, 220, 21, 220, 229, 22, 229, 234, 23, 234, 239, 24, 239, 245, 26, 245]
+  expect flatResult == [0, 0, 1, 10, 107, 107, 12, 127, 127, 13, 131, 131, 138, 138, 14, 142, 142, 15, 159, 159, 16, 163, 163, 17, 174, 174, 179, 179, 182, 182, 188, 188, 19, 191, 191, 199, 199, 20, 201, 201, 21, 213, 213, 216, 216, 22, 220, 220, 229, 229, 23, 234, 234, 239, 239, 24, 245, 245, 26, 3, 4, 5, 6, 9, null, null]
 }
 

@@ -226,12 +226,11 @@ let t1 = [
 /* SELECT e FROM t1 WHERE a>b OR coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where (row.a > row.b || null != 0)
-  order by row.e
   select row.e
 for x in result {
   print(x)
 }
 
 test "case731" {
-  expect result == [null, 109, 110, 117, null, 126, 132, 135, 144, 146, null, 157, 162, 165, 173, 177, 180, 189, 192, 197, 204, null, 210, 219, 221, 227, 230, 237, null, 246]
+  expect result == [109, 110, 117, 126, 132, 135, 144, 146, 157, 162, 165, 173, 177, 180, 189, 192, 197, 204, 210, 219, 221, 227, 230, 237, 246, null, null, null, null, null]
 }

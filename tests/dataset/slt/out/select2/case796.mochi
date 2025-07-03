@@ -226,12 +226,11 @@ let t1 = [
 /* SELECT (a+b+c+d+e)/5 FROM t1 WHERE b IS NOT NULL AND b>c */
 let result = from row in t1
   where (row.b != null && row.b > row.c)
-  order by ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)
   select ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)
 for x in result {
   print(x)
 }
 
 test "case796" {
-  expect result == [null, 127, 137, 142, null, null, null, 192, 197, 217, 227, 232, 247]
+  expect result == [127, 137, 142, 192, 197, 217, 227, 232, 247, null, null, null, null]
 }

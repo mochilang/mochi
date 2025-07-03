@@ -226,7 +226,6 @@ let t1 = [
 /* SELECT b, a+b*2+c*3, (a+b+c+d+e)/5, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2+c*3+d*4, a+b*2, c FROM t1 WHERE d>e */
 let result = from row in t1
   where row.d > row.e
-  order by [row.b, ((row.a + (row.b * 2)) + (row.c * 3)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.a + (row.b * 2)), row.c]
   select [row.b, ((row.a + (row.b * 2)) + (row.c * 3)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.a + (row.b * 2)), row.c]
 var flatResult = []
 for row in result {
@@ -238,6 +237,6 @@ for x in flatResult {
   print(x)
 }
 test "case785" {
-  expect flatResult == [112, null, null, 444, null, null, 113, 129, 760, 127, 222, 1272, 385, 125, 130, 793, 132, 333, 1325, 391, 134, 139, 827, 137, 222, 1371, 416, 137, 160, 966, 162, 444, 1622, 483, 161, 181, 1096, 182, 333, 1828, 544, 184, 211, 1277, 212, 333, 2125, 635, 214, 223, 1338, 222, 222, 2226, 666, 224, 232, 1391, 232, 333, 2323, 698, 231, 236, null, null, 444, null, 711, null, 249, 1484, 247, 111, 2476, 743, 247]
+  expect flatResult == [1096, 111, 112, 113, 125, 127, 1272, 1277, 129, 130, 132, 1325, 1338, 134, 137, 137, 1371, 139, 1391, 1484, 160, 161, 162, 1622, 181, 182, 1828, 184, 211, 212, 2125, 214, 222, 222, 222, 222, 2226, 223, 224, 231, 232, 232, 2323, 236, 247, 247, 2476, 249, 333, 333, 333, 333, 385, 391, 416, 444, 444, 444, 483, 544, 635, 666, 698, 711, 743, 760, 793, 827, 966, null, null, null, null, null, null, null, null]
 }
 

@@ -226,7 +226,6 @@ let t1 = [
 /* SELECT b, a FROM t1 WHERE (a>b-2 AND a<b+2) */
 let result = from row in t1
   where ((row.a > (row.b - 2) && row.a < (row.b + 2)))
-  order by [row.b, row.a]
   select [row.b, row.a]
 var flatResult = []
 for row in result {
@@ -238,6 +237,6 @@ for x in flatResult {
   print(x)
 }
 test "case765" {
-  expect flatResult == [130, 131, 139, 138, 143, 142, 158, 159, 167, 168, 181, 182, 198, 199, 228, 229]
+  expect flatResult == [130, 131, 138, 139, 142, 143, 158, 159, 167, 168, 181, 182, 198, 199, 228, 229]
 }
 

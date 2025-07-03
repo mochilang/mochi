@@ -226,9 +226,6 @@ let t1 = [
 /* SELECT a+b*2, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE b IS NOT NULL */
 let result = from row in t1
   where row.b != null
-  order by [(row.a + (row.b * 2)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x)]
   select [(row.a + (row.b * 2)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
@@ -242,6 +239,6 @@ for x in flatResult {
   print(x)
 }
 test "case742" {
-  expect flatResult == [317, 0, null, 0, 369, 0, 385, 0, 391, 0, 416, 0, 428, 0, 439, 0, 455, 0, 475, 0, 483, 0, 502, 0, 514, 0, 529, 0, 544, 0, 560, 0, 579, 0, 595, 0, null, 0, 635, 0, 652, 0, 666, 0, 685, 0, 698, 0, 711, 0, 723, 0, 743, 0]
+  expect flatResult == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 317, 369, 385, 391, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null]
 }
 

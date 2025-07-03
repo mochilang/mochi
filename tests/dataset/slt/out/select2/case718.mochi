@@ -226,12 +226,11 @@ let t1 = [
 /* SELECT c-d FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where null != 0
-  order by (row.c - row.d)
   select (row.c - row.d)
 for x in result {
   print(x)
 }
 
 test "case718" {
-  expect result == [1, -2, -1, 3, 1, -3, 1, 1, 1, null, null, null, -3, null, 1, null, 1, 2, 3, -1, -1, 1, 2, -2, 2, -1, -2, null, null, -1]
+  expect result == [-1, -1, -1, -1, -1, -2, -2, -2, -3, -3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, null, null, null, null, null, null, null]
 }
