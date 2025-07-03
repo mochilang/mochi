@@ -165,7 +165,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// Allow comma separators in numbers.
 			sv = strings.ReplaceAll(sv, ",", "")
 
-			if sv == "true" || sv == "t" || sv == "yes" {
+			if sv == "true" || sv == "t" || sv == "yes" || sv == "on" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
@@ -174,7 +174,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				seenOne = true
 				continue
 			}
-			if sv == "false" || sv == "f" || sv == "no" {
+			if sv == "false" || sv == "f" || sv == "no" || sv == "off" {
 				if t == "" || t == "bool" {
 					t = "bool"
 				} else {
