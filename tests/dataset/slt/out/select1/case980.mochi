@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT a+b*2+c*3+d*4 FROM t1 WHERE (e>c OR e<d) AND c BETWEEN b-2 AND d+2 ORDER BY 1 */
 let result = from row in t1
   where (((row.e > row.c || row.e < row.d)) && (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
-  order by (((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4))
-  select (((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4))
+  order by (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))
+  select (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))
 for x in result {
   print(x)
 }

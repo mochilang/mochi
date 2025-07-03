@@ -361,6 +361,17 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 	case *sqlparser.UnaryExpr:
 		return fmt.Sprintf("%s%s", v.Operator, exprToMochiRow(v.Expr, rowVar, outer, subs))
 	case *sqlparser.BinaryExpr:
+		// Simplify repeated addition of the same column to a
+		// multiplication by 2. This helps avoid type mismatches
+		// when combining with other arithmetic.
+		if v.Operator == "+" {
+			if lc, ok := v.Left.(*sqlparser.ColName); ok {
+				if rc, ok2 := v.Right.(*sqlparser.ColName); ok2 && lc.Name.Equal(rc.Name) && lc.Qualifier.Name.String() == rc.Qualifier.Name.String() {
+					col := exprToMochiRow(v.Left, rowVar, outer, subs)
+					return fmt.Sprintf("(%s * 2)", col)
+				}
+			}
+		}
 		l := exprToMochiRow(v.Left, rowVar, outer, subs)
 		r := exprToMochiRow(v.Right, rowVar, outer, subs)
 		return fmt.Sprintf("(%s %s %s)", l, v.Operator, r)
