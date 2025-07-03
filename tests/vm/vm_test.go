@@ -410,6 +410,7 @@ func TestVM_SLT(t *testing.T) {
 	root := findRepoRoot(t)
 	patterns := []string{
 		filepath.Join(root, "tests/dataset/slt/out/select1", "*.mochi"),
+		filepath.Join(root, "tests/dataset/slt/out/select2", "*.mochi"),
 		filepath.Join(root, "tests/dataset/slt/out/evidence/slt_lang_update", "*.mochi"),
 	}
 	var files []string
