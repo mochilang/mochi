@@ -228,8 +228,8 @@ let result = from row in t1
   where (row.c > row.d || count(from x in t1
   where x.b < row.b
   select x) > 0)
-  order by [row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2 + row.c * 3, row.e, (if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c })]
-  select [(if row.b - row.c < 0 { -(row.b - row.c) } else { row.b - row.c }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2 + row.c * 3, row.e]
+  order by [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((row.a + (row.b * 2)) + (row.c * 3)), row.e, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((row.a + (row.b * 2)) + (row.c * 3)), row.e]
 var flatResult = []
 for row in result {
   for x in row {

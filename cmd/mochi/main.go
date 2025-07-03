@@ -347,10 +347,17 @@ func testFile(file string, cmd *TestCmd) error {
 		interpreter.FoldPureCalls(prog, env)
 	}
 
-	decls := make([]*parser.Statement, 0, len(prog.Statements))
+	// Prepare a list of statements that should run before each test case.
+	// Previously only function, let and type declarations were included
+	// which meant that top-level side effecting statements (like `var`
+	// declarations or loops) were skipped.  SQLLogicTest generated programs
+	// rely on those statements to populate variables used inside test
+	// blocks.  Include every statement except the tests themselves so that
+	// the program state is fully initialised before each test runs.
+	base := make([]*parser.Statement, 0, len(prog.Statements))
 	for _, st := range prog.Statements {
-		if st.Fun != nil || st.Let != nil || st.Type != nil {
-			decls = append(decls, st)
+		if st.Test == nil {
+			base = append(base, st)
 		}
 	}
 
@@ -362,7 +369,7 @@ func testFile(file string, cmd *TestCmd) error {
 		printTestStart(st.Test.Name)
 		childEnv := types.NewEnv(env)
 		start := time.Now()
-		testProg := &parser.Program{Statements: append([]*parser.Statement(nil), decls...)}
+		testProg := &parser.Program{Statements: append([]*parser.Statement(nil), base...)}
 		testProg.Statements = append(testProg.Statements, st.Test.Body...)
 		os.Setenv("MOCHI_ROOT", modRoot)
 		p, errc := vm.Compile(testProg, childEnv)

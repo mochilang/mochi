@@ -224,14 +224,15 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, a+b*2+c*3+d*4+e*5, a+b*2+c*3, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE c>d AND c BETWEEN b-2 AND d+2 AND (e>c OR e<d) ORDER BY 6,2,5,4,1,3 */
+let sub0 = avg(from x in t1
+  select x.c)
+
 let result = from row in t1
-  where ((row.c > row.d && (row.c >= row.b - 2 && row.c <= row.d + 2)) && ((row.e > row.c || row.e < row.d)))
+  where ((row.c > row.d && (row.c >= (row.b - 2) && row.c <= (row.d + 2))) && ((row.e > row.c || row.e < row.d)))
   order by [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), row.a + row.b * 2 + row.c * 3, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2 + row.c * 3 + row.d * 4, (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 })]
-  select [row.a + row.b * 2 + row.c * 3 + row.d * 4, (if row.a < row.b - 3 { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < row.b + 3 { 333 } else { 444 }) }) }), (if row.c > avg(from x in t1
-  select x.c) { row.a * 2 } else { row.b * 10 }), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2 + row.c * 3, count(from x in t1
+  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((row.a + (row.b * 2)) + (row.c * 3)), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
+  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
 var flatResult = []
