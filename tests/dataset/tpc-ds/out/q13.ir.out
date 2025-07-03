@@ -209,6 +209,7 @@ L0:
   Const        r105, "ss_ext_wholesale_cost"
   // sum_ss_ext_wholesale_cost: sum(from x in g select x.ss_ext_wholesale_cost)
   Const        r106, "sum_ss_ext_wholesale_cost"
+  Const        r105, "ss_ext_wholesale_cost"
   // from r in filtered
   IterPrep     r107, r6
   Len          r108, r107
@@ -216,8 +217,8 @@ L0:
   MakeMap      r110, 0, r0
   Const        r112, []
   Move         r111, r112
-  LessInt      r113, r109, r108
 L19:
+  LessInt      r113, r109, r108
   JumpIfFalse  r113, L17
   Index        r114, r107, r109
   Move         r115, r114
@@ -250,22 +251,29 @@ L19:
   SetIndex     r110, r117, r134
   Append       r135, r111, r134
   Move         r111, r135
-  Index        r136, r110, r117
 L18:
+  Const        r123, "items"
+  Index        r136, r110, r117
   Index        r137, r136, r123
   Append       r138, r137, r114
   SetIndex     r136, r123, r138
+  Const        r125, "count"
   Index        r139, r136, r125
   Const        r98, 1
   AddInt       r140, r139, r98
   SetIndex     r136, r125, r140
+  Const        r98, 1
   AddInt       r109, r109, r98
   Jump         L19
 L17:
+  Const        r10, 0
+  Move         r141, r10
+  Len          r142, r111
+L29:
+  LessInt      r143, r141, r142
   JumpIfFalse  r143, L20
   Index        r144, r111, r141
   Move         r145, r144
-L29:
   // avg_ss_quantity: avg(from x in g select x.ss_quantity),
   Const        r146, "avg_ss_quantity"
   Const        r147, []
@@ -274,11 +282,11 @@ L29:
   Len          r149, r148
   Const        r10, 0
   Move         r150, r10
+L22:
   LessInt      r151, r150, r149
   JumpIfFalse  r151, L21
   Index        r152, r148, r150
   Move         r153, r152
-L22:
   Const        r101, "ss_quantity"
   Index        r154, r153, r101
   Append       r155, r147, r154
@@ -287,16 +295,20 @@ L22:
   AddInt       r150, r150, r98
   Jump         L22
 L21:
+  Avg          r156, r147
   // avg_ss_ext_sales_price: avg(from x in g select x.ss_ext_sales_price),
+  Const        r157, "avg_ss_ext_sales_price"
+  Const        r158, []
+  Const        r103, "ss_ext_sales_price"
   IterPrep     r159, r145
   Len          r160, r159
   Const        r10, 0
   Move         r161, r10
+L24:
   LessInt      r162, r161, r160
   JumpIfFalse  r162, L23
   Index        r163, r159, r161
   Move         r153, r163
-L24:
   Const        r103, "ss_ext_sales_price"
   Index        r164, r153, r103
   Append       r165, r158, r164
@@ -305,16 +317,20 @@ L24:
   AddInt       r161, r161, r98
   Jump         L24
 L23:
+  Avg          r166, r158
   // avg_ss_ext_wholesale_cost: avg(from x in g select x.ss_ext_wholesale_cost),
+  Const        r167, "avg_ss_ext_wholesale_cost"
+  Const        r168, []
+  Const        r105, "ss_ext_wholesale_cost"
   IterPrep     r169, r145
   Len          r170, r169
   Const        r10, 0
   Move         r171, r10
+L26:
   LessInt      r172, r171, r170
   JumpIfFalse  r172, L25
   Index        r173, r169, r171
   Move         r153, r173
-L26:
   Const        r105, "ss_ext_wholesale_cost"
   Index        r174, r153, r105
   Append       r175, r168, r174
@@ -323,16 +339,20 @@ L26:
   AddInt       r171, r171, r98
   Jump         L26
 L25:
+  Avg          r176, r168
   // sum_ss_ext_wholesale_cost: sum(from x in g select x.ss_ext_wholesale_cost)
+  Const        r177, "sum_ss_ext_wholesale_cost"
+  Const        r178, []
+  Const        r105, "ss_ext_wholesale_cost"
   IterPrep     r179, r145
   Len          r180, r179
   Const        r10, 0
   Move         r181, r10
+L28:
   LessInt      r182, r181, r180
   JumpIfFalse  r182, L27
   Index        r183, r179, r181
   Move         r153, r183
-L28:
   Const        r105, "ss_ext_wholesale_cost"
   Index        r184, r153, r105
   Append       r185, r178, r184
@@ -341,7 +361,12 @@ L28:
   AddInt       r181, r181, r98
   Jump         L28
 L27:
+  Sum          r186, r178
+  // avg_ss_quantity: avg(from x in g select x.ss_quantity),
+  Move         r187, r146
+  Move         r188, r156
   // avg_ss_ext_sales_price: avg(from x in g select x.ss_ext_sales_price),
+  Move         r189, r157
   Move         r190, r166
   // avg_ss_ext_wholesale_cost: avg(from x in g select x.ss_ext_wholesale_cost),
   Move         r191, r167
@@ -358,4 +383,10 @@ L27:
   AddInt       r141, r141, r98
   Jump         L29
 L20:
+  // json(result)
+  JSON         r99
+  // expect result == [ { avg_ss_quantity: 10.0, avg_ss_ext_sales_price: 100.0, avg_ss_ext_wholesale_cost: 50.0, sum_ss_ext_wholesale_cost: 50.0 } ]
+  Const        r197, [{"avg_ss_ext_sales_price": 100.0, "avg_ss_ext_wholesale_cost": 50.0, "avg_ss_quantity": 10.0, "sum_ss_ext_wholesale_cost": 50.0}]
+  Equal        r198, r99, r197
+  Expect       r198
   Return       r0

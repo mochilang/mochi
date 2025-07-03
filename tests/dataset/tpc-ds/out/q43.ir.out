@@ -16,6 +16,7 @@ func main (regs=251)
   Const        r7, "d_year"
   // select { d_day_name: d.d_day_name, s_store_name: s.store_name, s_store_id: s.store_id, price: ss.sales_price }
   Const        r8, "d_day_name"
+  Const        r8, "d_day_name"
   Const        r9, "s_store_name"
   Const        r10, "store_name"
   Const        r11, "s_store_id"
@@ -25,10 +26,11 @@ func main (regs=251)
   // from d in date_dim
   IterPrep     r15, r0
   Len          r16, r15
+  Const        r4, 0
   Move         r17, r4
+L7:
   LessInt      r18, r17, r16
   JumpIfFalse  r18, L0
-L6:
   Index        r19, r15, r17
   Move         r20, r19
   // join ss in store_sales on ss.sold_date_sk == d.date_sk
@@ -41,6 +43,7 @@ L6:
   Const        r7, "d_year"
   // select { d_day_name: d.d_day_name, s_store_name: s.store_name, s_store_id: s.store_id, price: ss.sales_price }
   Const        r8, "d_day_name"
+  Const        r8, "d_day_name"
   Const        r9, "s_store_name"
   Const        r10, "store_name"
   Const        r11, "s_store_id"
@@ -50,6 +53,7 @@ L6:
   // join ss in store_sales on ss.sold_date_sk == d.date_sk
   Const        r4, 0
   Move         r25, r4
+L6:
   LessInt      r26, r25, r22
   JumpIfFalse  r26, L1
   Index        r27, r21, r25
@@ -64,10 +68,12 @@ L6:
   IterPrep     r32, r1
   Len          r33, r32
   Const        r34, "store_sk"
+  Const        r34, "store_sk"
   // where s.gmt_offset == gmt && d.d_year == year
   Const        r6, "gmt_offset"
   Const        r7, "d_year"
   // select { d_day_name: d.d_day_name, s_store_name: s.store_name, s_store_id: s.store_id, price: ss.sales_price }
+  Const        r8, "d_day_name"
   Const        r8, "d_day_name"
   Const        r9, "s_store_name"
   Const        r10, "store_name"
@@ -78,13 +84,14 @@ L6:
   // join s in store on ss.store_sk == s.store_sk
   Const        r4, 0
   Move         r35, r4
+L5:
   LessInt      r36, r35, r33
   JumpIfFalse  r36, L2
   Index        r37, r32, r35
   Move         r38, r37
   Const        r34, "store_sk"
-L5:
   Index        r39, r28, r34
+  Const        r34, "store_sk"
   Index        r40, r38, r34
   Equal        r41, r39, r40
   JumpIfFalse  r41, L3
@@ -100,6 +107,7 @@ L5:
   Move         r46, r43
   JumpIfFalse  r46, L4
   Move         r46, r45
+L4:
   JumpIfFalse  r46, L3
   // select { d_day_name: d.d_day_name, s_store_name: s.store_name, s_store_id: s.store_id, price: ss.sales_price }
   Const        r47, "d_day_name"
@@ -107,7 +115,6 @@ L5:
   Index        r48, r20, r8
   Const        r49, "s_store_name"
   Const        r10, "store_name"
-L4:
   Index        r50, r38, r10
   Const        r51, "s_store_id"
   Const        r12, "store_id"
@@ -127,43 +134,65 @@ L4:
   // from d in date_dim
   Append       r64, r5, r63
   Move         r5, r64
+L3:
   // join s in store on ss.store_sk == s.store_sk
   Const        r65, 1
   Add          r35, r35, r65
   Jump         L5
-L3:
+L2:
+  // join ss in store_sales on ss.sold_date_sk == d.date_sk
+  Const        r65, 1
+  Add          r25, r25, r65
+  Jump         L6
+L1:
   // from d in date_dim
   Const        r65, 1
   AddInt       r17, r17, r65
-  Jump         L6
-L2:
+  Jump         L7
+L0:
   // from r in records
   Const        r66, []
   // group by { name: r.s_store_name, id: r.s_store_id } into g
   Const        r67, "name"
   Const        r9, "s_store_name"
-L1:
   Const        r68, "id"
   Const        r11, "s_store_id"
   // s_store_name: g.key.name,
+  Const        r9, "s_store_name"
   Const        r69, "key"
-L0:
+  Const        r67, "name"
+  // s_store_id: g.key.id,
+  Const        r11, "s_store_id"
+  Const        r69, "key"
+  Const        r68, "id"
   // sun_sales: sum(from x in g select if x.d_day_name == "Sunday" { x.price } else { 0.0 }),
   Const        r70, "sun_sales"
   Const        r8, "d_day_name"
   Const        r13, "price"
   // mon_sales: sum(from x in g select if x.d_day_name == "Monday" { x.price } else { 0.0 }),
   Const        r71, "mon_sales"
+  Const        r8, "d_day_name"
+  Const        r13, "price"
   // tue_sales: sum(from x in g select if x.d_day_name == "Tuesday" { x.price } else { 0.0 }),
   Const        r72, "tue_sales"
+  Const        r8, "d_day_name"
+  Const        r13, "price"
   // wed_sales: sum(from x in g select if x.d_day_name == "Wednesday" { x.price } else { 0.0 }),
   Const        r73, "wed_sales"
+  Const        r8, "d_day_name"
+  Const        r13, "price"
   // thu_sales: sum(from x in g select if x.d_day_name == "Thursday" { x.price } else { 0.0 }),
   Const        r74, "thu_sales"
+  Const        r8, "d_day_name"
+  Const        r13, "price"
   // fri_sales: sum(from x in g select if x.d_day_name == "Friday" { x.price } else { 0.0 }),
   Const        r75, "fri_sales"
+  Const        r8, "d_day_name"
+  Const        r13, "price"
   // sat_sales: sum(from x in g select if x.d_day_name == "Saturday" { x.price } else { 0.0 })
   Const        r76, "sat_sales"
+  Const        r8, "d_day_name"
+  Const        r13, "price"
   // from r in records
   IterPrep     r77, r5
   Len          r78, r77
@@ -171,8 +200,9 @@ L0:
   MakeMap      r80, 0, r0
   Const        r82, []
   Move         r81, r82
+L10:
   LessInt      r83, r79, r78
-  JumpIfFalse  r83, L7
+  JumpIfFalse  r83, L8
   Index        r84, r77, r79
   Move         r85, r84
   // group by { name: r.s_store_name, id: r.s_store_id } into g
@@ -189,7 +219,7 @@ L0:
   MakeMap      r94, 2, r90
   Str          r95, r94
   In           r96, r95, r80
-  JumpIfTrue   r96, L8
+  JumpIfTrue   r96, L9
   // from r in records
   Const        r82, []
   Const        r97, "__group__"
@@ -197,7 +227,6 @@ L0:
   Const        r69, "key"
   // group by { name: r.s_store_name, id: r.s_store_id } into g
   Move         r99, r94
-L9:
   // from r in records
   Const        r100, "items"
   Move         r101, r82
@@ -215,18 +244,38 @@ L9:
   SetIndex     r80, r95, r111
   Append       r112, r81, r111
   Move         r81, r112
+L9:
+  Const        r100, "items"
   Index        r113, r80, r95
   Index        r114, r113, r100
   Append       r115, r114, r84
   SetIndex     r113, r100, r115
+  Const        r102, "count"
   Index        r116, r113, r102
   Const        r65, 1
   AddInt       r117, r116, r65
   SetIndex     r113, r102, r117
+  Const        r65, 1
   AddInt       r79, r79, r65
-  Jump         L9
+  Jump         L10
 L8:
+  Const        r4, 0
+  Move         r118, r4
+  Len          r119, r81
+L26:
+  LessInt      r120, r118, r119
+  JumpIfFalse  r120, L11
+  Index        r121, r81, r118
+  Move         r122, r121
+  // s_store_name: g.key.name,
+  Const        r123, "s_store_name"
+  Const        r69, "key"
+  Index        r124, r122, r69
+  Const        r67, "name"
+  Index        r125, r124, r67
   // s_store_id: g.key.id,
+  Const        r126, "s_store_id"
+  Const        r69, "key"
   Index        r127, r122, r69
   Const        r68, "id"
   Index        r128, r127, r68
@@ -239,13 +288,12 @@ L8:
   Len          r132, r131
   Const        r4, 0
   Move         r133, r4
+L13:
   LessInt      r134, r133, r132
-  JumpIfFalse  r134, L10
-L7:
+  JumpIfFalse  r134, L12
   Index        r135, r131, r133
   Move         r136, r135
   Const        r8, "d_day_name"
-L23:
   Index        r137, r136, r8
   Const        r138, "Sunday"
   Equal        r139, r137, r138
@@ -257,8 +305,21 @@ L23:
   Move         r130, r143
   Const        r65, 1
   AddInt       r133, r133, r65
+  Jump         L13
+L12:
+  Sum          r144, r130
   // mon_sales: sum(from x in g select if x.d_day_name == "Monday" { x.price } else { 0.0 }),
-  JumpIfFalse  r150, L11
+  Const        r145, "mon_sales"
+  Const        r146, []
+  Const        r8, "d_day_name"
+  Const        r13, "price"
+  IterPrep     r147, r122
+  Len          r148, r147
+  Const        r4, 0
+  Move         r149, r4
+L15:
+  LessInt      r150, r149, r148
+  JumpIfFalse  r150, L14
   Index        r151, r147, r149
   Move         r136, r151
   Const        r8, "d_day_name"
@@ -273,8 +334,9 @@ L23:
   Move         r146, r157
   Const        r65, 1
   AddInt       r149, r149, r65
-  Jump         L12
-L10:
+  Jump         L15
+L14:
+  Sum          r158, r146
   // tue_sales: sum(from x in g select if x.d_day_name == "Tuesday" { x.price } else { 0.0 }),
   Const        r159, "tue_sales"
   Const        r160, []
@@ -284,9 +346,9 @@ L10:
   Len          r162, r161
   Const        r4, 0
   Move         r163, r4
+L17:
   LessInt      r164, r163, r162
-L12:
-  JumpIfFalse  r164, L13
+  JumpIfFalse  r164, L16
   Index        r165, r161, r163
   Move         r136, r165
   Const        r8, "d_day_name"
@@ -301,8 +363,9 @@ L12:
   Move         r160, r171
   Const        r65, 1
   AddInt       r163, r163, r65
-  Jump         L14
-L11:
+  Jump         L17
+L16:
+  Sum          r172, r160
   // wed_sales: sum(from x in g select if x.d_day_name == "Wednesday" { x.price } else { 0.0 }),
   Const        r173, "wed_sales"
   Const        r174, []
@@ -312,9 +375,9 @@ L11:
   Len          r176, r175
   Const        r4, 0
   Move         r177, r4
+L19:
   LessInt      r178, r177, r176
-L14:
-  JumpIfFalse  r178, L15
+  JumpIfFalse  r178, L18
   Index        r179, r175, r177
   Move         r136, r179
   Const        r8, "d_day_name"
@@ -329,8 +392,9 @@ L14:
   Move         r174, r185
   Const        r65, 1
   AddInt       r177, r177, r65
-  Jump         L16
-L13:
+  Jump         L19
+L18:
+  Sum          r186, r174
   // thu_sales: sum(from x in g select if x.d_day_name == "Thursday" { x.price } else { 0.0 }),
   Const        r187, "thu_sales"
   Const        r188, []
@@ -340,9 +404,9 @@ L13:
   Len          r190, r189
   Const        r4, 0
   Move         r191, r4
+L21:
   LessInt      r192, r191, r190
-L16:
-  JumpIfFalse  r192, L17
+  JumpIfFalse  r192, L20
   Index        r193, r189, r191
   Move         r136, r193
   Const        r8, "d_day_name"
@@ -357,8 +421,9 @@ L16:
   Move         r188, r199
   Const        r65, 1
   AddInt       r191, r191, r65
-  Jump         L18
-L15:
+  Jump         L21
+L20:
+  Sum          r200, r188
   // fri_sales: sum(from x in g select if x.d_day_name == "Friday" { x.price } else { 0.0 }),
   Const        r201, "fri_sales"
   Const        r202, []
@@ -368,9 +433,9 @@ L15:
   Len          r204, r203
   Const        r4, 0
   Move         r205, r4
+L23:
   LessInt      r206, r205, r204
-L18:
-  JumpIfFalse  r206, L19
+  JumpIfFalse  r206, L22
   Index        r207, r203, r205
   Move         r136, r207
   Const        r8, "d_day_name"
@@ -385,8 +450,9 @@ L18:
   Move         r202, r213
   Const        r65, 1
   AddInt       r205, r205, r65
-  Jump         L20
-L17:
+  Jump         L23
+L22:
+  Sum          r214, r202
   // sat_sales: sum(from x in g select if x.d_day_name == "Saturday" { x.price } else { 0.0 })
   Const        r215, "sat_sales"
   Const        r216, []
@@ -396,9 +462,9 @@ L17:
   Len          r218, r217
   Const        r4, 0
   Move         r219, r4
+L25:
   LessInt      r220, r219, r218
-L20:
-  JumpIfFalse  r220, L21
+  JumpIfFalse  r220, L24
   Index        r221, r217, r219
   Move         r136, r221
   Const        r8, "d_day_name"
@@ -413,8 +479,9 @@ L20:
   Move         r216, r227
   Const        r65, 1
   AddInt       r219, r219, r65
-  Jump         L22
-L19:
+  Jump         L25
+L24:
+  Sum          r228, r216
   // s_store_name: g.key.name,
   Move         r229, r123
   Move         r230, r125
@@ -429,7 +496,6 @@ L19:
   Move         r236, r158
   // tue_sales: sum(from x in g select if x.d_day_name == "Tuesday" { x.price } else { 0.0 }),
   Move         r237, r159
-L22:
   Move         r238, r172
   // wed_sales: sum(from x in g select if x.d_day_name == "Wednesday" { x.price } else { 0.0 }),
   Move         r239, r173
@@ -450,9 +516,12 @@ L22:
   Move         r66, r248
   Const        r65, 1
   AddInt       r118, r118, r65
-  Jump         L23
-L21:
+  Jump         L26
+L11:
+  // json(result)
+  JSON         r66
   // expect result == [
+  Const        r249, [{"fri_sales": 60.0, "mon_sales": 20.0, "s_store_id": "S1", "s_store_name": "Main", "sat_sales": 70.0, "sun_sales": 10.0, "thu_sales": 50.0, "tue_sales": 30.0, "wed_sales": 40.0}]
   Equal        r250, r66, r249
   Expect       r250
   Return       r0

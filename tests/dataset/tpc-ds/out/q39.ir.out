@@ -19,7 +19,12 @@ func main (regs=247)
   // where d.d_year == 2000
   Const        r11, "d_year"
   // select {w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand)}
+  Const        r5, "w"
   Const        r12, "key"
+  Const        r5, "w"
+  Const        r7, "i"
+  Const        r12, "key"
+  Const        r7, "i"
   Const        r13, "qty"
   Const        r14, "inv_quantity_on_hand"
   // from inv in inventory
@@ -29,21 +34,21 @@ func main (regs=247)
   IterPrep     r18, r0
   Len          r19, r18
   Const        r20, 0
+L9:
   LessInt      r21, r20, r19
   JumpIfFalse  r21, L0
   Index        r22, r18, r20
   Move         r23, r22
   // join d in date_dim on inv.inv_date_sk == d.d_date_sk
   IterPrep     r24, r3
-L3:
   Len          r25, r24
   Const        r26, 0
+L8:
   LessInt      r27, r26, r25
   JumpIfFalse  r27, L1
   Index        r28, r24, r26
   Move         r29, r28
   Const        r30, "inv_date_sk"
-L4:
   Index        r31, r23, r30
   Const        r32, "d_date_sk"
   Index        r33, r29, r32
@@ -53,6 +58,7 @@ L4:
   IterPrep     r35, r1
   Len          r36, r35
   Const        r37, 0
+L7:
   LessInt      r38, r37, r36
   JumpIfFalse  r38, L2
   Index        r39, r35, r37
@@ -67,12 +73,12 @@ L4:
   IterPrep     r45, r2
   Len          r46, r45
   Const        r47, 0
+L6:
   LessInt      r48, r47, r46
   JumpIfFalse  r48, L3
   Index        r49, r45, r47
   Move         r50, r49
   Const        r51, "inv_warehouse_sk"
-L6:
   Index        r52, r23, r51
   Const        r6, "w_warehouse_sk"
   Index        r53, r50, r6
@@ -146,35 +152,54 @@ L6:
   SetIndex     r15, r86, r103
   Append       r104, r16, r103
   Move         r16, r104
+L5:
+  Const        r91, "items"
   Index        r105, r15, r86
   Index        r106, r105, r91
   Append       r107, r106, r72
   SetIndex     r105, r91, r107
+  Const        r93, "count"
   Index        r108, r105, r93
-L5:
   Const        r109, 1
   AddInt       r110, r108, r109
   SetIndex     r105, r93, r110
+L4:
   // join w in warehouse on inv.inv_warehouse_sk == w.w_warehouse_sk
+  Const        r109, 1
   AddInt       r47, r47, r109
   Jump         L6
+L3:
+  // join i in item on inv.inv_item_sk == i.i_item_sk
+  Const        r109, 1
+  AddInt       r37, r37, r109
+  Jump         L7
 L2:
-  // from inv in inventory
-  Len          r112, r16
-  LessInt      r113, r111, r112
-  JumpIfFalse  r113, L7
+  // join d in date_dim on inv.inv_date_sk == d.d_date_sk
+  Const        r109, 1
+  AddInt       r26, r26, r109
+  Jump         L8
 L1:
+  // from inv in inventory
+  Const        r109, 1
+  AddInt       r20, r20, r109
+  Jump         L9
+L0:
+  Const        r94, 0
+  Move         r111, r94
+  Len          r112, r16
+L13:
+  LessInt      r113, r111, r112
+  JumpIfFalse  r113, L10
   Index        r114, r16, r111
   Move         r115, r114
   // select {w: g.key.w, i: g.key.i, qty: sum(from x in g select x.inv_quantity_on_hand)}
   Const        r116, "w"
-L0:
   Const        r12, "key"
   Index        r117, r115, r12
   Const        r5, "w"
-L10:
   Index        r118, r117, r5
   Const        r119, "i"
+  Const        r12, "key"
   Index        r120, r115, r12
   Const        r7, "i"
   Index        r121, r120, r7
@@ -185,8 +210,9 @@ L10:
   Len          r125, r124
   Const        r94, 0
   Move         r126, r94
+L12:
   LessInt      r127, r126, r125
-  JumpIfFalse  r127, L8
+  JumpIfFalse  r127, L11
   Index        r128, r124, r126
   Move         r129, r128
   Const        r14, "inv_quantity_on_hand"
@@ -194,23 +220,42 @@ L10:
   Append       r131, r123, r130
   Move         r123, r131
   Const        r109, 1
-L9:
   AddInt       r126, r126, r109
-  Jump         L9
-L8:
+  Jump         L12
+L11:
+  Sum          r132, r123
+  Move         r133, r116
+  Move         r134, r118
+  Move         r135, r119
+  Move         r136, r121
+  Move         r137, r122
+  Move         r138, r132
+  MakeMap      r139, 3, r133
   // from inv in inventory
+  Append       r140, r4, r139
   Move         r4, r140
   Const        r109, 1
   AddInt       r111, r111, r109
-  Jump         L10
-L7:
+  Jump         L13
+L10:
+  // var grouped: map<string, map<string, any>> = {}
+  Const        r141, {}
+  Move         r142, r141
+  // for m in monthly {
+  IterPrep     r143, r4
+  Len          r144, r143
+  Const        r145, 0
+L17:
+  LessInt      r146, r145, r144
+  JumpIfFalse  r146, L14
+  Index        r147, r143, r145
+  Move         r148, r147
   // let key = str({w: m.w, i: m.i})
   Const        r149, "w"
   Const        r5, "w"
   Index        r150, r148, r5
   Const        r151, "i"
   Const        r7, "i"
-L13:
   Index        r152, r148, r7
   Move         r153, r149
   Move         r154, r150
@@ -220,7 +265,7 @@ L13:
   Str          r158, r157
   // if key in grouped {
   In           r159, r158, r142
-  JumpIfFalse  r159, L11
+  JumpIfFalse  r159, L15
   // let g = grouped[key]
   Index        r160, r142, r158
   // grouped[key] = {w: g.w, i: g.i, qtys: append(g.qtys, m.qty)}
@@ -245,9 +290,18 @@ L13:
   MakeMap      r176, 3, r170
   SetIndex     r142, r158, r176
   // if key in grouped {
-  Jump         L12
-L11:
+  Jump         L16
+L15:
   // grouped[key] = {w: m.w, i: m.i, qtys: [m.qty]}
+  Const        r177, "w"
+  Const        r5, "w"
+  Index        r178, r148, r5
+  Const        r179, "i"
+  Const        r7, "i"
+  Index        r180, r148, r7
+  Const        r181, "qtys"
+  Const        r13, "qty"
+  Index        r183, r148, r13
   Move         r182, r183
   MakeList     r184, 1, r182
   Move         r185, r177
@@ -258,16 +312,24 @@ L11:
   Move         r190, r184
   MakeMap      r191, 3, r185
   SetIndex     r142, r158, r191
+L16:
   // for m in monthly {
   Const        r192, 1
   AddInt       r193, r145, r192
   Move         r145, r193
-  Jump         L13
-L12:
+  Jump         L17
+L14:
+  // var summary = []
+  Const        r17, []
+  Move         r194, r17
   // for g in values(grouped) {
+  Const        r195, []
+  IterPrep     r196, r195
+  Len          r197, r196
   Const        r198, 0
+L22:
   LessInt      r199, r198, r197
-  JumpIfFalse  r199, L14
+  JumpIfFalse  r199, L18
   Index        r200, r196, r198
   Move         r115, r200
   // let mean = avg(g.qtys)
@@ -277,14 +339,15 @@ L12:
   // var sumsq = 0.0
   Const        r203, 0.0
   Move         r204, r203
-L18:
   // for q in g.qtys {
+  Const        r166, "qtys"
   Index        r205, r115, r166
   IterPrep     r206, r205
   Len          r207, r206
   Const        r208, 0
+L20:
   LessInt      r209, r208, r207
-  JumpIfFalse  r209, L15
+  JumpIfFalse  r209, L19
   Index        r210, r206, r208
   Move         r211, r210
   // sumsq = sumsq + (q - mean) * (q - mean)
@@ -295,17 +358,27 @@ L18:
   Move         r204, r215
   // for q in g.qtys {
   Const        r216, 1
-L16:
   AddInt       r217, r208, r216
   Move         r208, r217
-  Jump         L16
-L15:
+  Jump         L20
+L19:
+  // let variance = sumsq / (len(g.qtys) - 1)
+  Const        r166, "qtys"
+  Index        r218, r115, r166
+  Len          r219, r218
+  Const        r109, 1
+  SubInt       r220, r219, r109
+  DivFloat     r221, r204, r220
   // let cov = math.sqrt(variance) / mean
+  Const        r223, "sqrt"
+  Index        r224, r222, r223
+  Move         r225, r221
+  CallV        r226, r224, 1, r225
   DivFloat     r227, r226, r202
   // if cov > 1.5 {
   Const        r228, 1.5
   LessFloat    r229, r228, r227
-  JumpIfFalse  r229, L17
+  JumpIfFalse  r229, L21
   // summary = append(summary, {w_warehouse_sk: g.w, i_item_sk: g.i, cov: cov})
   Const        r230, "w_warehouse_sk"
   Const        r5, "w"
@@ -323,8 +396,17 @@ L15:
   MakeMap      r241, 3, r235
   Append       r242, r194, r241
   Move         r194, r242
+L21:
   // for g in values(grouped) {
   Const        r243, 1
   AddInt       r244, r198, r243
   Move         r198, r244
-  Jump         L18
+  Jump         L22
+L18:
+  // json(summary)
+  JSON         r194
+  // expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.5396007178390022}]
+  Const        r245, [{"cov": 1.539600717839002, "i_item_sk": 1, "w_warehouse_sk": 1}]
+  Equal        r246, r194, r245
+  Expect       r246
+  Return       r0

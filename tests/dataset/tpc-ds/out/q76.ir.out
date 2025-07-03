@@ -16,8 +16,12 @@ func main (regs=301)
   // select { channel: "store", col_name: ss.ss_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: ss.ss_ext_sales_price }
   Const        r7, "channel"
   Const        r8, "col_name"
+  Const        r6, "ss_customer_sk"
+  Const        r9, "d_year"
   Const        r9, "d_year"
   Const        r10, "d_qoy"
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
   Const        r11, "i_category"
   Const        r12, "ext_sales_price"
   Const        r13, "ss_ext_sales_price"
@@ -26,6 +30,7 @@ func main (regs=301)
   Len          r15, r14
   Const        r17, 0
   Move         r16, r17
+L6:
   LessInt      r18, r16, r15
   JumpIfFalse  r18, L0
   Index        r19, r14, r16
@@ -40,14 +45,19 @@ func main (regs=301)
   // select { channel: "store", col_name: ss.ss_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: ss.ss_ext_sales_price }
   Const        r7, "channel"
   Const        r8, "col_name"
+  Const        r6, "ss_customer_sk"
+  Const        r9, "d_year"
   Const        r9, "d_year"
   Const        r10, "d_qoy"
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
   Const        r11, "i_category"
   Const        r12, "ext_sales_price"
   Const        r13, "ss_ext_sales_price"
   // join i in item on i.i_item_sk == ss.ss_item_sk
   Const        r17, 0
   Move         r25, r17
+L5:
   LessInt      r26, r25, r22
   JumpIfFalse  r26, L1
   Index        r27, r21, r25
@@ -68,14 +78,19 @@ func main (regs=301)
   // select { channel: "store", col_name: ss.ss_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: ss.ss_ext_sales_price }
   Const        r7, "channel"
   Const        r8, "col_name"
+  Const        r6, "ss_customer_sk"
+  Const        r9, "d_year"
   Const        r9, "d_year"
   Const        r10, "d_qoy"
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
   Const        r11, "i_category"
   Const        r12, "ext_sales_price"
   Const        r13, "ss_ext_sales_price"
   // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
   Const        r17, 0
   Move         r36, r17
+L4:
   LessInt      r37, r36, r33
   JumpIfFalse  r37, L2
   Index        r38, r32, r36
@@ -89,7 +104,6 @@ func main (regs=301)
   // where ss.ss_customer_sk == null
   Const        r6, "ss_customer_sk"
   Index        r43, r20, r6
-L4:
   Const        r44, nil
   Equal        r45, r43, r44
   JumpIfFalse  r45, L3
@@ -127,28 +141,46 @@ L4:
   // from ss in store_sales
   Append       r71, r5, r70
   Move         r5, r71
+L3:
   // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
   Const        r72, 1
   Add          r36, r36, r72
   Jump         L4
-L3:
+L2:
+  // join i in item on i.i_item_sk == ss.ss_item_sk
+  Const        r72, 1
+  Add          r25, r25, r72
+  Jump         L5
+L1:
+  // from ss in store_sales
+  Const        r72, 1
+  AddInt       r16, r16, r72
+  Jump         L6
+L0:
+  // from ws in web_sales
+  Const        r73, []
+  // where ws.ws_bill_customer_sk == null
+  Const        r74, "ws_bill_customer_sk"
   // select { channel: "web", col_name: ws.ws_bill_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: ws.ws_ext_sales_price }
+  Const        r7, "channel"
   Const        r8, "col_name"
+  Const        r74, "ws_bill_customer_sk"
+  Const        r9, "d_year"
   Const        r9, "d_year"
   Const        r10, "d_qoy"
-L2:
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
   Const        r11, "i_category"
   Const        r12, "ext_sales_price"
   Const        r75, "ws_ext_sales_price"
-L1:
   // from ws in web_sales
   IterPrep     r76, r3
   Len          r77, r76
   Const        r17, 0
-L0:
   Move         r78, r17
+L13:
   LessInt      r79, r78, r77
-  JumpIfFalse  r79, L5
+  JumpIfFalse  r79, L7
   Index        r80, r76, r78
   Move         r81, r80
   // join i in item on i.i_item_sk == ws.ws_item_sk
@@ -161,16 +193,21 @@ L0:
   // select { channel: "web", col_name: ws.ws_bill_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: ws.ws_ext_sales_price }
   Const        r7, "channel"
   Const        r8, "col_name"
+  Const        r74, "ws_bill_customer_sk"
+  Const        r9, "d_year"
   Const        r9, "d_year"
   Const        r10, "d_qoy"
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
   Const        r11, "i_category"
   Const        r12, "ext_sales_price"
   Const        r75, "ws_ext_sales_price"
   // join i in item on i.i_item_sk == ws.ws_item_sk
   Const        r17, 0
   Move         r85, r17
+L12:
   LessInt      r86, r85, r83
-  JumpIfFalse  r86, L6
+  JumpIfFalse  r86, L8
   Index        r87, r82, r85
   Move         r28, r87
   Const        r23, "i_item_sk"
@@ -178,7 +215,7 @@ L0:
   Const        r84, "ws_item_sk"
   Index        r89, r81, r84
   Equal        r90, r88, r89
-  JumpIfFalse  r90, L7
+  JumpIfFalse  r90, L9
   // join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk
   IterPrep     r91, r0
   Len          r92, r91
@@ -189,16 +226,21 @@ L0:
   // select { channel: "web", col_name: ws.ws_bill_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: ws.ws_ext_sales_price }
   Const        r7, "channel"
   Const        r8, "col_name"
+  Const        r74, "ws_bill_customer_sk"
+  Const        r9, "d_year"
   Const        r9, "d_year"
   Const        r10, "d_qoy"
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
   Const        r11, "i_category"
   Const        r12, "ext_sales_price"
   Const        r75, "ws_ext_sales_price"
   // join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk
   Const        r17, 0
   Move         r94, r17
+L11:
   LessInt      r95, r94, r92
-  JumpIfFalse  r95, L7
+  JumpIfFalse  r95, L9
   Index        r96, r91, r94
   Move         r39, r96
   Const        r34, "d_date_sk"
@@ -206,13 +248,13 @@ L0:
   Const        r93, "ws_sold_date_sk"
   Index        r98, r81, r93
   Equal        r99, r97, r98
-  JumpIfFalse  r99, L8
+  JumpIfFalse  r99, L10
   // where ws.ws_bill_customer_sk == null
   Const        r74, "ws_bill_customer_sk"
   Index        r100, r81, r74
   Const        r44, nil
   Equal        r101, r100, r44
-  JumpIfFalse  r101, L8
+  JumpIfFalse  r101, L10
   // select { channel: "web", col_name: ws.ws_bill_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: ws.ws_ext_sales_price }
   Const        r102, "channel"
   Const        r103, "web"
@@ -223,7 +265,6 @@ L0:
   Const        r9, "d_year"
   Index        r107, r39, r9
   Const        r108, "d_qoy"
-L9:
   Const        r10, "d_qoy"
   Index        r109, r39, r10
   Const        r110, "i_category"
@@ -248,37 +289,73 @@ L9:
   // from ws in web_sales
   Append       r127, r73, r126
   Move         r73, r127
+L10:
   // join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk
   Const        r72, 1
   Add          r94, r94, r72
-  Jump         L9
+  Jump         L11
+L9:
+  // join i in item on i.i_item_sk == ws.ws_item_sk
+  Const        r72, 1
+  Add          r85, r85, r72
+  Jump         L12
 L8:
-  // from cs in catalog_sales
-  Index        r135, r131, r133
-  Move         r136, r135
-  // join i in item on i.i_item_sk == cs.cs_item_sk
-  IterPrep     r137, r1
+  // from ws in web_sales
+  Const        r72, 1
+  AddInt       r78, r78, r72
+  Jump         L13
 L7:
-  Len          r138, r137
-  Const        r23, "i_item_sk"
-  Const        r139, "cs_item_sk"
-L6:
+  // from cs in catalog_sales
+  Const        r128, []
   // where cs.cs_bill_customer_sk == null
   Const        r129, "cs_bill_customer_sk"
   // select { channel: "catalog", col_name: cs.cs_bill_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: cs.cs_ext_sales_price }
   Const        r7, "channel"
   Const        r8, "col_name"
-L5:
+  Const        r129, "cs_bill_customer_sk"
+  Const        r9, "d_year"
   Const        r9, "d_year"
   Const        r10, "d_qoy"
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
+  Const        r11, "i_category"
+  Const        r12, "ext_sales_price"
+  Const        r130, "cs_ext_sales_price"
+  // from cs in catalog_sales
+  IterPrep     r131, r4
+  Len          r132, r131
+  Const        r17, 0
+  Move         r133, r17
+L20:
+  LessInt      r134, r133, r132
+  JumpIfFalse  r134, L14
+  Index        r135, r131, r133
+  Move         r136, r135
+  // join i in item on i.i_item_sk == cs.cs_item_sk
+  IterPrep     r137, r1
+  Len          r138, r137
+  Const        r23, "i_item_sk"
+  Const        r139, "cs_item_sk"
+  // where cs.cs_bill_customer_sk == null
+  Const        r129, "cs_bill_customer_sk"
+  // select { channel: "catalog", col_name: cs.cs_bill_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: cs.cs_ext_sales_price }
+  Const        r7, "channel"
+  Const        r8, "col_name"
+  Const        r129, "cs_bill_customer_sk"
+  Const        r9, "d_year"
+  Const        r9, "d_year"
+  Const        r10, "d_qoy"
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
   Const        r11, "i_category"
   Const        r12, "ext_sales_price"
   Const        r130, "cs_ext_sales_price"
   // join i in item on i.i_item_sk == cs.cs_item_sk
   Const        r17, 0
   Move         r140, r17
+L19:
   LessInt      r141, r140, r138
-  JumpIfFalse  r141, L10
+  JumpIfFalse  r141, L15
   Index        r142, r137, r140
   Move         r28, r142
   Const        r23, "i_item_sk"
@@ -286,7 +363,7 @@ L5:
   Const        r139, "cs_item_sk"
   Index        r144, r136, r139
   Equal        r145, r143, r144
-  JumpIfFalse  r145, L11
+  JumpIfFalse  r145, L16
   // join d in date_dim on d.d_date_sk == cs.cs_sold_date_sk
   IterPrep     r146, r0
   Len          r147, r146
@@ -297,16 +374,21 @@ L5:
   // select { channel: "catalog", col_name: cs.cs_bill_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: cs.cs_ext_sales_price }
   Const        r7, "channel"
   Const        r8, "col_name"
+  Const        r129, "cs_bill_customer_sk"
+  Const        r9, "d_year"
   Const        r9, "d_year"
   Const        r10, "d_qoy"
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
   Const        r11, "i_category"
   Const        r12, "ext_sales_price"
   Const        r130, "cs_ext_sales_price"
   // join d in date_dim on d.d_date_sk == cs.cs_sold_date_sk
   Const        r17, 0
   Move         r149, r17
+L18:
   LessInt      r150, r149, r147
-  JumpIfFalse  r150, L11
+  JumpIfFalse  r150, L16
   Index        r151, r146, r149
   Move         r39, r151
   Const        r34, "d_date_sk"
@@ -314,13 +396,13 @@ L5:
   Const        r148, "cs_sold_date_sk"
   Index        r153, r136, r148
   Equal        r154, r152, r153
-  JumpIfFalse  r154, L12
+  JumpIfFalse  r154, L17
   // where cs.cs_bill_customer_sk == null
   Const        r129, "cs_bill_customer_sk"
   Index        r155, r136, r129
   Const        r44, nil
   Equal        r156, r155, r44
-  JumpIfFalse  r156, L12
+  JumpIfFalse  r156, L17
   // select { channel: "catalog", col_name: cs.cs_bill_customer_sk, d_year: d.d_year, d_qoy: d.d_qoy, i_category: i.i_category, ext_sales_price: cs.cs_ext_sales_price }
   Const        r157, "channel"
   Const        r158, "catalog"
@@ -343,7 +425,6 @@ L5:
   Move         r170, r158
   Move         r171, r159
   Move         r172, r160
-L13:
   Move         r173, r161
   Move         r174, r162
   Move         r175, r163
@@ -356,20 +437,90 @@ L13:
   // from cs in catalog_sales
   Append       r182, r128, r181
   Move         r128, r182
+L17:
   // join d in date_dim on d.d_date_sk == cs.cs_sold_date_sk
   Const        r72, 1
   Add          r149, r149, r72
-  Jump         L13
-L12:
+  Jump         L18
+L16:
+  // join i in item on i.i_item_sk == cs.cs_item_sk
+  Const        r72, 1
+  Add          r140, r140, r72
+  Jump         L19
+L15:
+  // from cs in catalog_sales
+  Const        r72, 1
+  AddInt       r133, r133, r72
+  Jump         L20
+L14:
+  // let all_rows = concat(store_part, web_part, catalog_part)
+  UnionAll     r183, r5, r73
+  UnionAll     r184, r183, r128
+  // from r in all_rows
+  Const        r185, []
   // group by { channel: r.channel, col_name: r.col_name, d_year: r.d_year, d_qoy: r.d_qoy, i_category: r.i_category } into g
+  Const        r7, "channel"
+  Const        r7, "channel"
+  Const        r8, "col_name"
+  Const        r8, "col_name"
+  Const        r9, "d_year"
+  Const        r9, "d_year"
+  Const        r10, "d_qoy"
+  Const        r10, "d_qoy"
+  Const        r11, "i_category"
+  Const        r11, "i_category"
+  // channel: g.key.channel,
+  Const        r7, "channel"
+  Const        r186, "key"
+  Const        r7, "channel"
+  // col_name: g.key.col_name,
+  Const        r8, "col_name"
+  Const        r186, "key"
+  Const        r8, "col_name"
+  // d_year: g.key.d_year,
+  Const        r9, "d_year"
+  Const        r186, "key"
+  Const        r9, "d_year"
+  // d_qoy: g.key.d_qoy,
+  Const        r10, "d_qoy"
+  Const        r186, "key"
+  Const        r10, "d_qoy"
+  // i_category: g.key.i_category,
+  Const        r11, "i_category"
+  Const        r186, "key"
+  Const        r11, "i_category"
+  // sales_cnt: count(g),
+  Const        r187, "sales_cnt"
+  // sales_amt: sum(from x in g select x.r.ext_sales_price)
+  Const        r188, "sales_amt"
+  Const        r189, "r"
+  Const        r12, "ext_sales_price"
+  // sort by g.key.channel
+  Const        r186, "key"
+  Const        r7, "channel"
+  // from r in all_rows
+  IterPrep     r190, r184
+  Len          r191, r190
+  Const        r192, 0
+  MakeMap      r193, 0, r0
+  Const        r195, []
+  Move         r194, r195
+L23:
+  LessInt      r196, r192, r191
+  JumpIfFalse  r196, L21
+  Index        r197, r190, r192
+  Move         r198, r197
+  // group by { channel: r.channel, col_name: r.col_name, d_year: r.d_year, d_qoy: r.d_qoy, i_category: r.i_category } into g
+  Const        r199, "channel"
+  Const        r7, "channel"
+  Index        r200, r198, r7
+  Const        r201, "col_name"
   Const        r8, "col_name"
   Index        r202, r198, r8
   Const        r203, "d_year"
-L11:
   Const        r9, "d_year"
   Index        r204, r198, r9
   Const        r205, "d_qoy"
-L10:
   Const        r10, "d_qoy"
   Index        r206, r198, r10
   Const        r207, "i_category"
@@ -388,7 +539,7 @@ L10:
   MakeMap      r219, 5, r209
   Str          r220, r219
   In           r221, r220, r193
-  JumpIfTrue   r221, L14
+  JumpIfTrue   r221, L22
   // from r in all_rows
   Const        r195, []
   Const        r222, "__group__"
@@ -413,21 +564,134 @@ L10:
   SetIndex     r193, r220, r236
   Append       r237, r194, r236
   Move         r194, r237
+L22:
+  Const        r225, "items"
   Index        r238, r193, r220
   Index        r239, r238, r225
   Append       r240, r239, r197
-L15:
   SetIndex     r238, r225, r240
+  Const        r227, "count"
   Index        r241, r238, r227
   Const        r72, 1
   AddInt       r242, r241, r72
   SetIndex     r238, r227, r242
+  Const        r72, 1
   AddInt       r192, r192, r72
-  Jump         L15
-L14:
+  Jump         L23
+L21:
+  Const        r17, 0
+  Move         r243, r17
+  Len          r244, r194
+L27:
+  LessInt      r245, r243, r244
+  JumpIfFalse  r245, L24
+  Index        r246, r194, r243
+  Move         r247, r246
+  // channel: g.key.channel,
+  Const        r248, "channel"
+  Const        r186, "key"
+  Index        r249, r247, r186
+  Const        r7, "channel"
+  Index        r250, r249, r7
+  // col_name: g.key.col_name,
+  Const        r251, "col_name"
+  Const        r186, "key"
+  Index        r252, r247, r186
+  Const        r8, "col_name"
+  Index        r253, r252, r8
+  // d_year: g.key.d_year,
+  Const        r254, "d_year"
+  Const        r186, "key"
+  Index        r255, r247, r186
+  Const        r9, "d_year"
+  Index        r256, r255, r9
+  // d_qoy: g.key.d_qoy,
+  Const        r257, "d_qoy"
+  Const        r186, "key"
+  Index        r258, r247, r186
+  Const        r10, "d_qoy"
+  Index        r259, r258, r10
+  // i_category: g.key.i_category,
+  Const        r260, "i_category"
+  Const        r186, "key"
+  Index        r261, r247, r186
+  Const        r11, "i_category"
+  Index        r262, r261, r11
+  // sales_cnt: count(g),
+  Const        r263, "sales_cnt"
+  Const        r227, "count"
+  Index        r264, r247, r227
   // sales_amt: sum(from x in g select x.r.ext_sales_price)
+  Const        r265, "sales_amt"
+  Const        r266, []
+  Const        r189, "r"
+  Const        r12, "ext_sales_price"
+  IterPrep     r267, r247
+  Len          r268, r267
+  Const        r17, 0
+  Move         r269, r17
+L26:
+  LessInt      r270, r269, r268
+  JumpIfFalse  r270, L25
+  Index        r271, r267, r269
+  Move         r272, r271
+  Const        r189, "r"
+  Index        r273, r272, r189
+  Const        r12, "ext_sales_price"
+  Index        r274, r273, r12
   Append       r275, r266, r274
   Move         r266, r275
   Const        r72, 1
   AddInt       r269, r269, r72
-  Jump         L16
+  Jump         L26
+L25:
+  Sum          r276, r266
+  // channel: g.key.channel,
+  Move         r277, r248
+  Move         r278, r250
+  // col_name: g.key.col_name,
+  Move         r279, r251
+  Move         r280, r253
+  // d_year: g.key.d_year,
+  Move         r281, r254
+  Move         r282, r256
+  // d_qoy: g.key.d_qoy,
+  Move         r283, r257
+  Move         r284, r259
+  // i_category: g.key.i_category,
+  Move         r285, r260
+  Move         r286, r262
+  // sales_cnt: count(g),
+  Move         r287, r263
+  Move         r288, r264
+  // sales_amt: sum(from x in g select x.r.ext_sales_price)
+  Move         r289, r265
+  Move         r290, r276
+  // select {
+  MakeMap      r291, 7, r277
+  // sort by g.key.channel
+  Const        r186, "key"
+  Index        r294, r247, r186
+  Const        r7, "channel"
+  Index        r295, r294, r7
+  Move         r292, r295
+  // from r in all_rows
+  Move         r293, r291
+  MakeList     r296, 2, r292
+  Append       r297, r185, r296
+  Move         r185, r297
+  Const        r72, 1
+  AddInt       r243, r243, r72
+  Jump         L27
+L24:
+  // sort by g.key.channel
+  Sort         r298, r185
+  // from r in all_rows
+  Move         r185, r298
+  // json(result)
+  JSON         r185
+  // expect result == [
+  Const        r299, [{"channel": "store", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatA", "sales_amt": 10.0, "sales_cnt": 1}, {"channel": "web", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatB", "sales_amt": 15.0, "sales_cnt": 1}, {"channel": "catalog", "col_name": nil, "d_qoy": 1, "d_year": 1998, "i_category": "CatC", "sales_amt": 20.0, "sales_cnt": 1}]
+  Equal        r300, r185, r299
+  Expect       r300
+  Return       r0
