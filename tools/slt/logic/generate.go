@@ -338,9 +338,14 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				}
 			}
 			if f, err := strconv.ParseFloat(orig, 64); err == nil {
+				hasDec := strings.ContainsAny(clean, ".eE")
 				if f == math.Trunc(f) {
 					if t == "" {
-						t = "int"
+						if hasDec {
+							t = "float"
+						} else {
+							t = "int"
+						}
 					}
 					if f == 0 {
 						seenZero = true
@@ -349,7 +354,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 					} else {
 						boolLike = false
 					}
-					if strings.ContainsRune(clean, '.') {
+					if hasDec {
 						floatIsInt = floatIsInt && f == math.Trunc(f)
 					}
 				} else {
