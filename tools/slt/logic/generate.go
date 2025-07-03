@@ -185,9 +185,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				continue
 			}
 
-			// Allow comma and underscore separators in numbers.
+			// Allow common separators in numbers.
 			sv = strings.ReplaceAll(sv, ",", "")
 			sv = strings.ReplaceAll(sv, "_", "")
+			sv = strings.ReplaceAll(sv, "'", "")
+			sv = strings.ReplaceAll(sv, " ", "")
 			if sv == "inf" || sv == "+inf" || sv == "-inf" || sv == "infinity" {
 				if t == "" || t == "float" {
 					t = "float"
