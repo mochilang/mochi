@@ -222,7 +222,20 @@ func applyStatement(stmt string, tables map[string]*Table) error {
 		for idx, row := range t.Rows {
 			if matchWhere(row, s.Where) {
 				for _, assign := range s.Exprs {
-					row[assign.Name.Name.String()] = evalExpr(assign.Expr, row, t)
+					col := assign.Name.Name.String()
+					row[col] = evalExpr(assign.Expr, row, t)
+					// Track new columns introduced by UPDATE statements.
+					found := false
+					for _, c := range t.Columns {
+						if c == col {
+							found = true
+							break
+						}
+					}
+					if !found {
+						t.Columns = append(t.Columns, col)
+						t.Types = append(t.Types, "")
+					}
 				}
 				t.Rows[idx] = row
 			}

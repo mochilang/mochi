@@ -266,6 +266,12 @@ func exprToMochi(e sqlparser.Expr, subs map[string]string) string {
 }
 
 func exprToMochiBare(e sqlparser.Expr) string {
+	if v, ok := e.(*sqlparser.SQLVal); ok && v.Type == sqlparser.StrVal {
+		sv := string(v.Val)
+		if sv == "true" || sv == "false" {
+			return fmt.Sprintf("\"%s\" + \"\"", sv)
+		}
+	}
 	s := exprToMochiRow(e, "row", "", nil)
 	return strings.ReplaceAll(s, "row.", "")
 }
@@ -441,7 +447,7 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 		if op == "=" {
 			op = "=="
 		}
-		return fmt.Sprintf("%s %s %s", left, op, right)
+		return fmt.Sprintf("(%s %s %s)", left, op, right)
 	case *sqlparser.AndExpr:
 		l := condExprToMochiRow(v.Left, rowVar, outer, subs)
 		r := condExprToMochiRow(v.Right, rowVar, outer, subs)
