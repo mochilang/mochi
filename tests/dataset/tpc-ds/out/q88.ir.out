@@ -24,13 +24,17 @@ func main (regs=69)
   Move         r15, r18
   Const        r19, 0
   Move         r16, r19
+  Const        r10, 30
   Move         r17, r10
   Call         r20, count_range, r13, r14, r15, r16, r17
   // let h9_30_to_10 = count_range(store_sales, time_dim, 9, 30, 60)
   Move         r21, r3
   Move         r22, r0
+  Const        r18, 9
   Move         r23, r18
+  Const        r10, 30
   Move         r24, r10
+  Const        r11, 60
   Move         r25, r11
   Call         r26, count_range, r21, r22, r23, r24, r25
   // let h10_to_10_30 = count_range(store_sales, time_dim, 10, 0, 30)
@@ -38,14 +42,19 @@ func main (regs=69)
   Move         r28, r0
   Const        r32, 10
   Move         r29, r32
+  Const        r19, 0
   Move         r30, r19
+  Const        r10, 30
   Move         r31, r10
   Call         r33, count_range, r27, r28, r29, r30, r31
   // let h10_30_to_11 = count_range(store_sales, time_dim, 10, 30, 60)
   Move         r34, r3
   Move         r35, r0
+  Const        r32, 10
   Move         r36, r32
+  Const        r10, 30
   Move         r37, r10
+  Const        r11, 60
   Move         r38, r11
   Call         r39, count_range, r34, r35, r36, r37, r38
   // let h11_to_11_30 = count_range(store_sales, time_dim, 11, 0, 30)
@@ -53,14 +62,19 @@ func main (regs=69)
   Move         r41, r0
   Const        r45, 11
   Move         r42, r45
+  Const        r19, 0
   Move         r43, r19
+  Const        r10, 30
   Move         r44, r10
   Call         r46, count_range, r40, r41, r42, r43, r44
   // let h11_30_to_12 = count_range(store_sales, time_dim, 11, 30, 60)
   Move         r47, r3
   Move         r48, r0
+  Const        r45, 11
   Move         r49, r45
+  Const        r10, 30
   Move         r50, r10
+  Const        r11, 60
   Move         r51, r11
   Call         r52, count_range, r47, r48, r49, r50, r51
   // let h12_to_12_30 = count_range(store_sales, time_dim, 12, 0, 30)
@@ -68,7 +82,9 @@ func main (regs=69)
   Move         r54, r0
   Const        r58, 12
   Move         r55, r58
+  Const        r19, 0
   Move         r56, r19
+  Const        r10, 30
   Move         r57, r10
   Call         r59, count_range, r53, r54, r55, r56, r57
   // let result = h8_30_to_9 + h9_to_9_30 + h9_30_to_10 + h10_to_10_30 +
@@ -117,6 +133,7 @@ L4:
   Const        r21, "minute"
   Index        r22, r18, r21
   LessEq       r23, r3, r22
+  Const        r21, "minute"
   Index        r24, r18, r21
   Less         r25, r24, r4
   Const        r26, "time_sk"
@@ -132,23 +149,25 @@ L4:
   Move         r32, r23
   JumpIfFalse  r32, L2
   Move         r32, r25
-  JumpIfFalse  r32, L3
 L2:
+  JumpIfFalse  r32, L3
   // total = total + ss.qty
   Const        r33, "qty"
   Index        r34, r12, r33
   AddFloat     r35, r6, r34
   Move         r6, r35
+L3:
   // for t in tdim {
   Const        r36, 1
-L3:
   AddInt       r37, r15, r36
   Move         r15, r37
   Jump         L4
 L1:
   // for ss in ssales {
+  Const        r38, 1
   AddInt       r39, r9, r38
   Move         r9, r39
   Jump         L5
 L0:
-  Return       r0
+  // return total
+  Return       r6

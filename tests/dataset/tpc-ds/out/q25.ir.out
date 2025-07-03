@@ -19,12 +19,32 @@ func main (regs=273)
   Const        r9, "item_desc"
   Const        r10, "i_item_desc"
   Const        r11, "s_store_id"
+  Const        r11, "s_store_id"
+  Const        r12, "s_store_name"
   Const        r12, "s_store_name"
   // where d1.d_moy == 4 && d1.d_year == 2000 && d2.d_moy >= 4 && d2.d_moy <= 10 && d3.d_moy >= 4 && d3.d_moy <= 10
   Const        r13, "d_moy"
   Const        r14, "d_year"
+  Const        r13, "d_moy"
+  Const        r13, "d_moy"
+  Const        r13, "d_moy"
+  Const        r13, "d_moy"
   // i_item_id: g.key.item_id,
+  Const        r8, "i_item_id"
   Const        r15, "key"
+  Const        r7, "item_id"
+  // i_item_desc: g.key.item_desc,
+  Const        r10, "i_item_desc"
+  Const        r15, "key"
+  Const        r9, "item_desc"
+  // s_store_id: g.key.s_store_id,
+  Const        r11, "s_store_id"
+  Const        r15, "key"
+  Const        r11, "s_store_id"
+  // s_store_name: g.key.s_store_name,
+  Const        r12, "s_store_name"
+  Const        r15, "key"
+  Const        r12, "s_store_name"
   // store_sales_profit: sum(from x in g select x.ss_net_profit),
   Const        r16, "store_sales_profit"
   Const        r17, "ss_net_profit"
@@ -41,6 +61,7 @@ func main (regs=273)
   IterPrep     r25, r0
   Len          r26, r25
   Const        r27, 0
+L20:
   LessInt      r28, r27, r26
   JumpIfFalse  r28, L0
   Index        r29, r25, r27
@@ -49,6 +70,7 @@ func main (regs=273)
   IterPrep     r31, r1
   Len          r32, r31
   Const        r33, 0
+L19:
   LessInt      r34, r33, r32
   JumpIfFalse  r34, L1
   Index        r35, r31, r33
@@ -66,11 +88,13 @@ func main (regs=273)
   Move         r47, r41
   JumpIfFalse  r47, L2
   Move         r47, r46
+L2:
   JumpIfFalse  r47, L3
   // join cs in catalog_sales on sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk
   IterPrep     r48, r2
   Len          r49, r48
   Const        r50, 0
+L18:
   LessInt      r51, r50, r49
   JumpIfFalse  r51, L3
   Index        r52, r48, r50
@@ -84,17 +108,17 @@ func main (regs=273)
   Index        r59, r36, r44
   Const        r60, "cs_item_sk"
   Index        r61, r53, r60
-L2:
   Equal        r62, r59, r61
   Move         r63, r58
   JumpIfFalse  r63, L4
   Move         r63, r62
-L12:
+L4:
   JumpIfFalse  r63, L5
   // join d1 in date_dim on d1.d_date_sk == ss.ss_sold_date_sk
   IterPrep     r64, r3
   Len          r65, r64
   Const        r66, 0
+L17:
   LessInt      r67, r66, r65
   JumpIfFalse  r67, L5
   Index        r68, r64, r66
@@ -109,7 +133,7 @@ L12:
   IterPrep     r75, r3
   Len          r76, r75
   Const        r77, 0
-L4:
+L16:
   LessInt      r78, r77, r76
   JumpIfFalse  r78, L6
   Index        r79, r75, r77
@@ -124,6 +148,7 @@ L4:
   IterPrep     r85, r3
   Len          r86, r85
   Const        r87, 0
+L15:
   LessInt      r88, r87, r86
   JumpIfFalse  r88, L7
   Index        r89, r85, r87
@@ -138,6 +163,7 @@ L4:
   IterPrep     r95, r4
   Len          r96, r95
   Const        r97, 0
+L14:
   LessInt      r98, r97, r96
   JumpIfFalse  r98, L8
   Index        r99, r95, r97
@@ -152,6 +178,7 @@ L4:
   IterPrep     r106, r5
   Len          r107, r106
   Const        r108, 0
+L13:
   LessInt      r109, r108, r107
   JumpIfFalse  r109, L9
   Index        r110, r106, r108
@@ -165,17 +192,23 @@ L4:
   // where d1.d_moy == 4 && d1.d_year == 2000 && d2.d_moy >= 4 && d2.d_moy <= 10 && d3.d_moy >= 4 && d3.d_moy <= 10
   Const        r13, "d_moy"
   Index        r116, r69, r13
+  Const        r13, "d_moy"
   Index        r117, r80, r13
   Const        r118, 4
   LessEq       r119, r118, r117
+  Const        r13, "d_moy"
   Index        r120, r80, r13
   Const        r121, 10
-L13:
   LessEq       r122, r120, r121
+  Const        r13, "d_moy"
   Index        r123, r90, r13
+  Const        r118, 4
   LessEq       r124, r118, r123
+  Const        r13, "d_moy"
   Index        r125, r90, r13
+  Const        r121, 10
   LessEq       r126, r125, r121
+  Const        r118, 4
   Equal        r127, r116, r118
   Const        r14, "d_year"
   Index        r128, r69, r14
@@ -192,6 +225,7 @@ L13:
   Move         r131, r124
   JumpIfFalse  r131, L11
   Move         r131, r126
+L11:
   JumpIfFalse  r131, L10
   // from ss in store_sales
   Const        r132, "ss"
@@ -217,7 +251,6 @@ L13:
   Move         r152, r136
   Move         r153, r137
   Move         r154, r138
-L11:
   Move         r155, r139
   Move         r156, r140
   Move         r157, r141
@@ -277,63 +310,101 @@ L11:
   SetIndex     r22, r182, r199
   Append       r200, r23, r199
   Move         r23, r200
+L12:
+  Const        r187, "items"
   Index        r201, r22, r182
   Index        r202, r201, r187
   Append       r203, r202, r164
   SetIndex     r201, r187, r203
+  Const        r189, "count"
   Index        r204, r201, r189
   Const        r205, 1
   AddInt       r206, r204, r205
   SetIndex     r201, r189, r206
+L10:
   // join i in item on i.i_item_sk == ss.ss_item_sk
+  Const        r205, 1
   AddInt       r108, r108, r205
   Jump         L13
-L10:
-  // from ss in store_sales
-  LessInt      r209, r207, r208
-  JumpIfFalse  r209, L14
-  Index        r210, r23, r207
 L9:
+  // join s in store on s.s_store_sk == ss.ss_store_sk
+  Const        r205, 1
+  AddInt       r97, r97, r205
+  Jump         L14
+L8:
+  // join d3 in date_dim on d3.d_date_sk == cs.cs_sold_date_sk
+  Const        r205, 1
+  AddInt       r87, r87, r205
+  Jump         L15
+L7:
+  // join d2 in date_dim on d2.d_date_sk == sr.sr_returned_date_sk
+  Const        r205, 1
+  AddInt       r77, r77, r205
+  Jump         L16
+L6:
+  // join d1 in date_dim on d1.d_date_sk == ss.ss_sold_date_sk
+  Const        r205, 1
+  AddInt       r66, r66, r205
+  Jump         L17
+L5:
+  // join cs in catalog_sales on sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk
+  Const        r205, 1
+  AddInt       r50, r50, r205
+  Jump         L18
+L3:
+  // join sr in store_returns on ss.ss_ticket_number == sr.sr_ticket_number && ss.ss_item_sk == sr.sr_item_sk
+  Const        r205, 1
+  AddInt       r33, r33, r205
+  Jump         L19
+L1:
+  // from ss in store_sales
+  Const        r205, 1
+  AddInt       r27, r27, r205
+  Jump         L20
+L0:
+  Const        r190, 0
+  Move         r207, r190
+  Len          r208, r23
+L28:
+  LessInt      r209, r207, r208
+  JumpIfFalse  r209, L21
+  Index        r210, r23, r207
   Move         r211, r210
   // i_item_id: g.key.item_id,
   Const        r212, "i_item_id"
   Const        r15, "key"
-L8:
   Index        r213, r211, r15
   Const        r7, "item_id"
   Index        r214, r213, r7
-L7:
   // i_item_desc: g.key.item_desc,
   Const        r215, "i_item_desc"
+  Const        r15, "key"
   Index        r216, r211, r15
   Const        r9, "item_desc"
-L6:
   Index        r217, r216, r9
   // s_store_id: g.key.s_store_id,
   Const        r218, "s_store_id"
+  Const        r15, "key"
   Index        r219, r211, r15
-L5:
   Const        r11, "s_store_id"
   Index        r220, r219, r11
   // s_store_name: g.key.s_store_name,
   Const        r221, "s_store_name"
-L3:
+  Const        r15, "key"
   Index        r222, r211, r15
   Const        r12, "s_store_name"
   Index        r223, r222, r12
-L1:
   // store_sales_profit: sum(from x in g select x.ss_net_profit),
   Const        r224, "store_sales_profit"
   Const        r225, []
   Const        r17, "ss_net_profit"
-L0:
   IterPrep     r226, r211
   Len          r227, r226
   Const        r190, 0
-L17:
   Move         r228, r190
+L23:
   LessInt      r229, r228, r227
-  JumpIfFalse  r229, L15
+  JumpIfFalse  r229, L22
   Index        r230, r226, r228
   Move         r231, r230
   Const        r17, "ss_net_profit"
@@ -342,7 +413,30 @@ L17:
   Move         r225, r233
   Const        r205, 1
   AddInt       r228, r228, r205
+  Jump         L23
+L22:
+  Sum          r234, r225
   // store_returns_loss: sum(from x in g select x.sr_net_loss),
+  Const        r235, "store_returns_loss"
+  Const        r236, []
+  Const        r19, "sr_net_loss"
+  IterPrep     r237, r211
+  Len          r238, r237
+  Const        r190, 0
+  Move         r239, r190
+L25:
+  LessInt      r240, r239, r238
+  JumpIfFalse  r240, L24
+  Index        r241, r237, r239
+  Move         r231, r241
+  Const        r19, "sr_net_loss"
+  Index        r242, r231, r19
+  Append       r243, r236, r242
+  Move         r236, r243
+  Const        r205, 1
+  AddInt       r239, r239, r205
+  Jump         L25
+L24:
   Sum          r244, r236
   // catalog_sales_profit: sum(from x in g select x.cs_net_profit)
   Const        r245, "catalog_sales_profit"
@@ -352,10 +446,10 @@ L17:
   Len          r248, r247
   Const        r190, 0
   Move         r249, r190
+L27:
   LessInt      r250, r249, r248
-  JumpIfFalse  r250, L16
+  JumpIfFalse  r250, L26
   Index        r251, r247, r249
-L15:
   Move         r231, r251
   Const        r21, "cs_net_profit"
   Index        r252, r231, r21
@@ -363,6 +457,43 @@ L15:
   Move         r246, r253
   Const        r205, 1
   AddInt       r249, r249, r205
+  Jump         L27
+L26:
+  Sum          r254, r246
+  // i_item_id: g.key.item_id,
+  Move         r255, r212
+  Move         r256, r214
+  // i_item_desc: g.key.item_desc,
+  Move         r257, r215
+  Move         r258, r217
+  // s_store_id: g.key.s_store_id,
+  Move         r259, r218
+  Move         r260, r220
+  // s_store_name: g.key.s_store_name,
+  Move         r261, r221
+  Move         r262, r223
+  // store_sales_profit: sum(from x in g select x.ss_net_profit),
+  Move         r263, r224
+  Move         r264, r234
+  // store_returns_loss: sum(from x in g select x.sr_net_loss),
+  Move         r265, r235
+  Move         r266, r244
+  // catalog_sales_profit: sum(from x in g select x.cs_net_profit)
+  Move         r267, r245
+  Move         r268, r254
+  // select {
+  MakeMap      r269, 7, r255
   // from ss in store_sales
+  Append       r270, r6, r269
+  Move         r6, r270
+  Const        r205, 1
   AddInt       r207, r207, r205
-  Jump         L17
+  Jump         L28
+L21:
+  // json(result)
+  JSON         r6
+  // expect result == [
+  Const        r271, [{"catalog_sales_profit": 30.0, "i_item_desc": "Desc1", "i_item_id": "ITEM1", "s_store_id": "S1", "s_store_name": "Store1", "store_returns_loss": 10.0, "store_sales_profit": 50.0}, {"catalog_sales_profit": 15.0, "i_item_desc": "Desc2", "i_item_id": "ITEM2", "s_store_id": "S1", "s_store_name": "Store1", "store_returns_loss": 5.0, "store_sales_profit": 20.0}]
+  Equal        r272, r6, r271
+  Expect       r272
+  Return       r0

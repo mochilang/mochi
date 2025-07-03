@@ -9,6 +9,8 @@ func main (regs=284)
   Const        r3, [{"ss_customer_sk": 1, "ss_sold_date_sk": 1}]
   // let web_sales = []
   Const        r4, []
+  // let catalog_sales = []
+  Const        r4, []
   // let date_dim = [ { d_date_sk: 1, d_year: 2000, d_moy: 2 } ]
   Const        r5, [{"d_date_sk": 1, "d_moy": 2, "d_year": 2000}]
   // from c in customer
@@ -22,14 +24,15 @@ func main (regs=284)
   Const        r11, "d_year"
   // d.d_moy >= 2 && d.d_moy <= 5
   Const        r12, "d_moy"
+  Const        r12, "d_moy"
   // from c in customer
   IterPrep     r13, r0
   Len          r14, r13
   Const        r16, 0
   Move         r15, r16
+L13:
   LessInt      r17, r15, r14
   JumpIfFalse  r17, L0
-L11:
   Index        r18, r13, r15
   Move         r19, r18
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk && ca.ca_county == "CountyA"
@@ -47,9 +50,11 @@ L11:
   Const        r11, "d_year"
   // d.d_moy >= 2 && d.d_moy <= 5
   Const        r12, "d_moy"
+  Const        r12, "d_moy"
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk && ca.ca_county == "CountyA"
   Const        r16, 0
   Move         r25, r16
+L12:
   LessInt      r26, r25, r21
   JumpIfFalse  r26, L1
   Index        r27, r20, r25
@@ -66,11 +71,11 @@ L11:
   Move         r35, r31
   JumpIfFalse  r35, L2
   Move         r35, r34
+L2:
   JumpIfFalse  r35, L3
   // join cd in customer_demographics on c.c_current_cdemo_sk == cd.cd_demo_sk
   IterPrep     r36, r2
   Len          r37, r36
-L2:
   Const        r38, "c_current_cdemo_sk"
   Const        r39, "cd_demo_sk"
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
@@ -82,14 +87,15 @@ L2:
   Const        r11, "d_year"
   // d.d_moy >= 2 && d.d_moy <= 5
   Const        r12, "d_moy"
+  Const        r12, "d_moy"
   // join cd in customer_demographics on c.c_current_cdemo_sk == cd.cd_demo_sk
   Const        r16, 0
   Move         r40, r16
+L11:
   LessInt      r41, r40, r37
   JumpIfFalse  r41, L3
   Index        r42, r36, r40
   Move         r43, r42
-L5:
   Const        r38, "c_current_cdemo_sk"
   Index        r44, r19, r38
   Const        r39, "cd_demo_sk"
@@ -111,21 +117,22 @@ L5:
   Const        r11, "d_year"
   // d.d_moy >= 2 && d.d_moy <= 5
   Const        r12, "d_moy"
+  Const        r12, "d_moy"
   // from ss in store_sales
   Const        r52, 0
+L10:
   LessInt      r53, r52, r49
   JumpIfFalse  r53, L5
   Index        r54, r48, r52
   Move         r55, r54
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
   Const        r56, 0
-L10:
+L9:
   LessInt      r57, r56, r51
   JumpIfFalse  r57, L6
   Index        r58, r50, r56
   Move         r59, r58
   Const        r7, "ss_sold_date_sk"
-L9:
   Index        r60, r55, r7
   Const        r8, "d_date_sk"
   Index        r61, r59, r8
@@ -139,6 +146,7 @@ L9:
   Index        r64, r59, r12
   Const        r65, 2
   LessEq       r66, r65, r64
+  Const        r12, "d_moy"
   Index        r67, r59, r12
   Const        r68, 5
   LessEq       r69, r67, r68
@@ -158,50 +166,55 @@ L9:
   // d.d_moy >= 2 && d.d_moy <= 5
   JumpIfFalse  r75, L8
   Move         r75, r69
+L8:
   // where ss.ss_customer_sk == c.c_customer_sk && d.d_year == 2000 &&
   JumpIfFalse  r75, L7
   // from ss in store_sales
   Append       r76, r47, r55
   Move         r47, r76
+L7:
   // join d in date_dim on ss.ss_sold_date_sk == d.d_date_sk
   Const        r77, 1
   AddInt       r56, r56, r77
   Jump         L9
-L8:
+L6:
   // from ss in store_sales
   Const        r77, 1
   AddInt       r52, r52, r77
   Jump         L10
-L7:
+L5:
   // where exists(
   Exists       r78, r47
   JumpIfFalse  r78, L4
   // from c in customer
   Append       r79, r6, r43
-L6:
   Move         r6, r79
+L4:
   // join cd in customer_demographics on c.c_current_cdemo_sk == cd.cd_demo_sk
   Const        r77, 1
   Add          r40, r40, r77
-  Jump         L5
-L4:
+  Jump         L11
+L3:
+  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk && ca.ca_county == "CountyA"
+  Const        r77, 1
+  Add          r25, r25, r77
+  Jump         L12
+L1:
   // from c in customer
   Const        r77, 1
   AddInt       r15, r15, r77
-  Jump         L11
-L3:
+  Jump         L13
+L0:
   // from a in active
   Const        r80, []
   // gender: a.cd_gender,
   Const        r81, "gender"
   Const        r82, "cd_gender"
-L1:
   // marital: a.cd_marital_status,
   Const        r83, "marital"
   Const        r84, "cd_marital_status"
   // education: a.cd_education_status,
   Const        r85, "education"
-L0:
   Const        r86, "cd_education_status"
   // purchase: a.cd_purchase_estimate,
   Const        r87, "purchase"
@@ -219,17 +232,47 @@ L0:
   Const        r95, "depcol"
   Const        r96, "cd_dep_college_count"
   // cd_gender: g.key.gender,
+  Const        r82, "cd_gender"
   Const        r97, "key"
+  Const        r81, "gender"
+  // cd_marital_status: g.key.marital,
+  Const        r84, "cd_marital_status"
+  Const        r97, "key"
+  Const        r83, "marital"
+  // cd_education_status: g.key.education,
+  Const        r86, "cd_education_status"
+  Const        r97, "key"
+  Const        r85, "education"
   // cnt1: count(from _ in g select _),
   Const        r98, "cnt1"
+  // cd_purchase_estimate: g.key.purchase,
+  Const        r88, "cd_purchase_estimate"
+  Const        r97, "key"
+  Const        r87, "purchase"
   // cnt2: count(from _ in g select _),
   Const        r99, "cnt2"
+  // cd_credit_rating: g.key.credit,
+  Const        r90, "cd_credit_rating"
+  Const        r97, "key"
+  Const        r89, "credit"
   // cnt3: count(from _ in g select _),
   Const        r100, "cnt3"
+  // cd_dep_count: g.key.dep,
+  Const        r92, "cd_dep_count"
+  Const        r97, "key"
+  Const        r91, "dep"
   // cnt4: count(from _ in g select _),
   Const        r101, "cnt4"
+  // cd_dep_employed_count: g.key.depemp,
+  Const        r94, "cd_dep_employed_count"
+  Const        r97, "key"
+  Const        r93, "depemp"
   // cnt5: count(from _ in g select _),
   Const        r102, "cnt5"
+  // cd_dep_college_count: g.key.depcol,
+  Const        r96, "cd_dep_college_count"
+  Const        r97, "key"
+  Const        r95, "depcol"
   // cnt6: count(from _ in g select _)
   Const        r103, "cnt6"
   // from a in active
@@ -239,8 +282,9 @@ L0:
   MakeMap      r107, 0, r0
   Const        r4, []
   Move         r108, r4
+L16:
   LessInt      r109, r106, r105
-  JumpIfFalse  r109, L12
+  JumpIfFalse  r109, L14
   Index        r110, r104, r106
   Move         r111, r110
   // gender: a.cd_gender,
@@ -277,7 +321,6 @@ L0:
   Index        r127, r111, r96
   // gender: a.cd_gender,
   Move         r128, r112
-L14:
   Move         r129, r113
   // marital: a.cd_marital_status,
   Move         r130, r114
@@ -304,7 +347,7 @@ L14:
   MakeMap      r144, 8, r128
   Str          r145, r144
   In           r146, r145, r107
-  JumpIfTrue   r146, L13
+  JumpIfTrue   r146, L15
   // from a in active
   Const        r4, []
   Const        r147, "__group__"
@@ -329,18 +372,46 @@ L14:
   SetIndex     r107, r145, r161
   Append       r162, r108, r161
   Move         r108, r162
+L15:
+  Const        r150, "items"
   Index        r163, r107, r145
   Index        r164, r163, r150
   Append       r165, r164, r110
   SetIndex     r163, r150, r165
+  Const        r152, "count"
   Index        r166, r163, r152
   Const        r77, 1
   AddInt       r167, r166, r77
   SetIndex     r163, r152, r167
+  Const        r77, 1
   AddInt       r106, r106, r77
-  Jump         L14
-L13:
+  Jump         L16
+L14:
+  Const        r16, 0
+  Move         r168, r16
+  Len          r169, r108
+L30:
+  LessInt      r170, r168, r169
+  JumpIfFalse  r170, L17
+  Index        r171, r108, r168
+  Move         r172, r171
+  // cd_gender: g.key.gender,
+  Const        r173, "cd_gender"
+  Const        r97, "key"
+  Index        r174, r172, r97
+  Const        r81, "gender"
+  Index        r175, r174, r81
+  // cd_marital_status: g.key.marital,
+  Const        r176, "cd_marital_status"
+  Const        r97, "key"
+  Index        r177, r172, r97
+  Const        r83, "marital"
+  Index        r178, r177, r83
   // cd_education_status: g.key.education,
+  Const        r179, "cd_education_status"
+  Const        r97, "key"
+  Index        r180, r172, r97
+  Const        r85, "education"
   Index        r181, r180, r85
   // cnt1: count(from _ in g select _),
   Const        r182, "cnt1"
@@ -349,17 +420,17 @@ L13:
   Len          r185, r184
   Const        r16, 0
   Move         r186, r16
+L19:
   LessInt      r187, r186, r185
-  JumpIfFalse  r187, L15
+  JumpIfFalse  r187, L18
   Index        r188, r184, r186
   Move         r189, r188
   Append       r190, r183, r189
   Move         r183, r190
-L12:
   Const        r77, 1
   AddInt       r186, r186, r77
-  Jump         L16
-L25:
+  Jump         L19
+L18:
   Count        r191, r183
   // cd_purchase_estimate: g.key.purchase,
   Const        r192, "cd_purchase_estimate"
@@ -374,17 +445,22 @@ L25:
   Len          r198, r197
   Const        r16, 0
   Move         r199, r16
+L21:
   LessInt      r200, r199, r198
-  JumpIfFalse  r200, L17
+  JumpIfFalse  r200, L20
   Index        r201, r197, r199
   Move         r189, r201
   Append       r202, r196, r189
   Move         r196, r202
   Const        r77, 1
   AddInt       r199, r199, r77
-  Jump         L18
-L16:
+  Jump         L21
+L20:
+  Count        r203, r196
   // cd_credit_rating: g.key.credit,
+  Const        r204, "cd_credit_rating"
+  Const        r97, "key"
+  Index        r205, r172, r97
   Const        r89, "credit"
   Index        r206, r205, r89
   // cnt3: count(from _ in g select _),
@@ -394,18 +470,22 @@ L16:
   Len          r210, r209
   Const        r16, 0
   Move         r211, r16
+L23:
   LessInt      r212, r211, r210
-L15:
-  JumpIfFalse  r212, L19
+  JumpIfFalse  r212, L22
   Index        r213, r209, r211
   Move         r189, r213
   Append       r214, r208, r189
   Move         r208, r214
   Const        r77, 1
   AddInt       r211, r211, r77
-  Jump         L20
-L18:
+  Jump         L23
+L22:
+  Count        r215, r208
   // cd_dep_count: g.key.dep,
+  Const        r216, "cd_dep_count"
+  Const        r97, "key"
+  Index        r217, r172, r97
   Const        r91, "dep"
   Index        r218, r217, r91
   // cnt4: count(from _ in g select _),
@@ -415,18 +495,22 @@ L18:
   Len          r222, r221
   Const        r16, 0
   Move         r223, r16
+L25:
   LessInt      r224, r223, r222
-L17:
-  JumpIfFalse  r224, L21
+  JumpIfFalse  r224, L24
   Index        r225, r221, r223
   Move         r189, r225
   Append       r226, r220, r189
   Move         r220, r226
   Const        r77, 1
   AddInt       r223, r223, r77
-  Jump         L22
-L20:
+  Jump         L25
+L24:
+  Count        r227, r220
   // cd_dep_employed_count: g.key.depemp,
+  Const        r228, "cd_dep_employed_count"
+  Const        r97, "key"
+  Index        r229, r172, r97
   Const        r93, "depemp"
   Index        r230, r229, r93
   // cnt5: count(from _ in g select _),
@@ -436,18 +520,22 @@ L20:
   Len          r234, r233
   Const        r16, 0
   Move         r235, r16
+L27:
   LessInt      r236, r235, r234
-L19:
-  JumpIfFalse  r236, L23
+  JumpIfFalse  r236, L26
   Index        r237, r233, r235
   Move         r189, r237
   Append       r238, r232, r189
   Move         r232, r238
   Const        r77, 1
   AddInt       r235, r235, r77
-  Jump         L24
-L22:
+  Jump         L27
+L26:
+  Count        r239, r232
   // cd_dep_college_count: g.key.depcol,
+  Const        r240, "cd_dep_college_count"
+  Const        r97, "key"
+  Index        r241, r172, r97
   Const        r95, "depcol"
   Index        r242, r241, r95
   // cnt6: count(from _ in g select _)
@@ -457,18 +545,23 @@ L22:
   Len          r246, r245
   Const        r16, 0
   Move         r247, r16
+L29:
   LessInt      r248, r247, r246
-L21:
-  JumpIfFalse  r248, L25
+  JumpIfFalse  r248, L28
   Index        r249, r245, r247
   Move         r189, r249
   Append       r250, r244, r189
   Move         r244, r250
   Const        r77, 1
   AddInt       r247, r247, r77
-  Jump         L26
-L24:
+  Jump         L29
+L28:
+  Count        r251, r244
+  // cd_gender: g.key.gender,
+  Move         r252, r173
+  Move         r253, r175
   // cd_marital_status: g.key.marital,
+  Move         r254, r176
   Move         r255, r178
   // cd_education_status: g.key.education,
   Move         r256, r179
@@ -482,7 +575,6 @@ L24:
   // cnt2: count(from _ in g select _),
   Move         r262, r195
   Move         r263, r203
-L23:
   // cd_credit_rating: g.key.credit,
   Move         r264, r204
   Move         r265, r206
@@ -501,7 +593,6 @@ L23:
   // cnt5: count(from _ in g select _),
   Move         r274, r231
   Move         r275, r239
-L26:
   // cd_dep_college_count: g.key.depcol,
   Move         r276, r240
   Move         r277, r242
@@ -515,4 +606,12 @@ L26:
   Move         r80, r281
   Const        r77, 1
   AddInt       r168, r168, r77
-  Jump         L25
+  Jump         L30
+L17:
+  // json(result)
+  JSON         r80
+  // expect result == [
+  Const        r282, [{"cd_credit_rating": "Good", "cd_dep_college_count": 0, "cd_dep_count": 1, "cd_dep_employed_count": 1, "cd_education_status": "College", "cd_gender": "F", "cd_marital_status": "M", "cd_purchase_estimate": 5000, "cnt1": 1, "cnt2": 1, "cnt3": 1, "cnt4": 1, "cnt5": 1, "cnt6": 1}]
+  Equal        r283, r80, r282
+  Expect       r283
+  Return       r0

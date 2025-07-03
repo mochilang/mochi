@@ -22,11 +22,13 @@ func main (regs=157)
   // group by ca.ca_zip into g
   Const        r10, "ca_zip"
   // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
+  Const        r10, "ca_zip"
   Const        r11, "i_item_id"
   // d.d_qoy == qoy && d.d_year == year
   Const        r12, "d_qoy"
   Const        r13, "d_year"
   // select { ca_zip: g.key, sum_ws_sales_price: sum(from x in g select x.ws.sales_price) }
+  Const        r10, "ca_zip"
   Const        r14, "key"
   Const        r15, "sum_ws_sales_price"
   Const        r16, "ws"
@@ -38,18 +40,18 @@ func main (regs=157)
   IterPrep     r21, r0
   Len          r22, r21
   Const        r23, 0
+L13:
   LessInt      r24, r23, r22
   JumpIfFalse  r24, L0
-L2:
   Index        r25, r21, r23
   Move         r26, r25
   // join c in customer on ws.bill_customer_sk == c.c_customer_sk
   IterPrep     r27, r1
   Len          r28, r27
   Const        r29, 0
+L12:
   LessInt      r30, r29, r28
   JumpIfFalse  r30, L1
-L3:
   Index        r31, r27, r29
   Move         r32, r31
   Const        r33, "bill_customer_sk"
@@ -62,9 +64,9 @@ L3:
   IterPrep     r38, r2
   Len          r39, r38
   Const        r40, 0
+L11:
   LessInt      r41, r40, r39
   JumpIfFalse  r41, L2
-L4:
   Index        r42, r38, r40
   Move         r43, r42
   Const        r44, "c_current_addr_sk"
@@ -77,9 +79,9 @@ L4:
   IterPrep     r49, r3
   Len          r50, r49
   Const        r51, 0
+L10:
   LessInt      r52, r51, r50
   JumpIfFalse  r52, L3
-L5:
   Index        r53, r49, r51
   Move         r54, r53
   Const        r55, "item_sk"
@@ -92,9 +94,9 @@ L5:
   IterPrep     r60, r4
   Len          r61, r60
   Const        r62, 0
+L9:
   LessInt      r63, r62, r61
   JumpIfFalse  r63, L4
-L9:
   Index        r64, r60, r62
   Move         r65, r64
   Const        r66, "sold_date_sk"
@@ -118,10 +120,10 @@ L9:
   Move         r80, r76
   JumpIfTrue   r80, L6
   Move         r80, r79
+L6:
   // d.d_qoy == qoy && d.d_year == year
   Const        r12, "d_qoy"
   Index        r81, r65, r12
-L6:
   Const        r7, 1
   Equal        r82, r81, r7
   Const        r13, "d_year"
@@ -135,11 +137,11 @@ L6:
   // d.d_qoy == qoy && d.d_year == year
   JumpIfFalse  r85, L7
   Move         r85, r84
+L7:
   // where (substr(ca.ca_zip, 0, 5) in zip_list || i.i_item_id in item_ids) &&
   JumpIfFalse  r85, L5
   // from ws in web_sales
   Const        r16, "ws"
-L7:
   Move         r86, r26
   Const        r87, "c"
   Move         r88, r32
@@ -190,29 +192,53 @@ L7:
   SetIndex     r18, r107, r123
   Append       r124, r19, r123
   Move         r19, r124
+L8:
+  Const        r112, "items"
   Index        r125, r18, r107
   Index        r126, r125, r112
-L8:
   Append       r127, r126, r105
   SetIndex     r125, r112, r127
+  Const        r114, "count"
   Index        r128, r125, r114
   Const        r7, 1
   AddInt       r129, r128, r7
   SetIndex     r125, r114, r129
+L5:
   // join d in date_dim on ws.sold_date_sk == d.d_date_sk
+  Const        r7, 1
   AddInt       r62, r62, r7
   Jump         L9
+L4:
+  // join i in item on ws.item_sk == i.i_item_sk
+  Const        r7, 1
+  AddInt       r51, r51, r7
+  Jump         L10
+L3:
+  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk
+  Const        r7, 1
+  AddInt       r40, r40, r7
+  Jump         L11
+L2:
+  // join c in customer on ws.bill_customer_sk == c.c_customer_sk
+  Const        r7, 1
+  AddInt       r29, r29, r7
+  Jump         L12
 L1:
   // from ws in web_sales
-  Len          r131, r19
-  LessInt      r132, r130, r131
-  JumpIfFalse  r132, L10
+  Const        r7, 1
+  AddInt       r23, r23, r7
+  Jump         L13
 L0:
+  Const        r72, 0
+  Move         r130, r72
+  Len          r131, r19
+L17:
+  LessInt      r132, r130, r131
+  JumpIfFalse  r132, L14
   Index        r133, r19, r130
   Move         r134, r133
   // select { ca_zip: g.key, sum_ws_sales_price: sum(from x in g select x.ws.sales_price) }
   Const        r135, "ca_zip"
-L13:
   Const        r14, "key"
   Index        r136, r134, r14
   Const        r137, "sum_ws_sales_price"
@@ -223,12 +249,12 @@ L13:
   Len          r140, r139
   Const        r72, 0
   Move         r141, r72
+L16:
   LessInt      r142, r141, r140
-  JumpIfFalse  r142, L11
+  JumpIfFalse  r142, L15
   Index        r143, r139, r141
   Move         r144, r143
   Const        r16, "ws"
-L12:
   Index        r145, r144, r16
   Const        r17, "sales_price"
   Index        r146, r145, r17
@@ -236,12 +262,25 @@ L12:
   Move         r138, r147
   Const        r7, 1
   AddInt       r141, r141, r7
-  Jump         L12
-L11:
+  Jump         L16
+L15:
+  Sum          r148, r138
+  Move         r149, r135
+  Move         r150, r136
+  Move         r151, r137
+  Move         r152, r148
   MakeMap      r153, 2, r149
   // from ws in web_sales
   Append       r154, r9, r153
   Move         r9, r154
   Const        r7, 1
   AddInt       r130, r130, r7
-  Jump         L13
+  Jump         L17
+L14:
+  // json(records)
+  JSON         r9
+  // expect records == [ { ca_zip: "85669", sum_ws_sales_price: 50.0 }, { ca_zip: "99999", sum_ws_sales_price: 30.0 } ]
+  Const        r155, [{"ca_zip": "85669", "sum_ws_sales_price": 50.0}, {"ca_zip": "99999", "sum_ws_sales_price": 30.0}]
+  Equal        r156, r9, r155
+  Expect       r156
+  Return       r0

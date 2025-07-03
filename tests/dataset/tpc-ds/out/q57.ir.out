@@ -17,7 +17,15 @@ func main (regs=256)
   Const        r9, "year"
   Const        r10, "d_year"
   // select {cat: g.key.cat, call: g.key.call, year: g.key.year, sum_sales: sum(from x in g select x.price)}
+  Const        r5, "cat"
   Const        r11, "key"
+  Const        r5, "cat"
+  Const        r7, "call"
+  Const        r11, "key"
+  Const        r7, "call"
+  Const        r9, "year"
+  Const        r11, "key"
+  Const        r9, "year"
   Const        r12, "sum_sales"
   Const        r13, "price"
   // from cs in catalog_sales
@@ -27,6 +35,7 @@ func main (regs=256)
   IterPrep     r17, r0
   Len          r18, r17
   Const        r19, 0
+L9:
   LessInt      r20, r19, r18
   JumpIfFalse  r20, L0
   Index        r21, r17, r19
@@ -35,8 +44,8 @@ func main (regs=256)
   IterPrep     r23, r1
   Len          r24, r23
   Const        r25, 0
+L8:
   LessInt      r26, r25, r24
-L4:
   JumpIfFalse  r26, L1
   Index        r27, r23, r25
   Move         r28, r27
@@ -50,6 +59,7 @@ L4:
   IterPrep     r34, r3
   Len          r35, r34
   Const        r36, 0
+L7:
   LessInt      r37, r36, r35
   JumpIfFalse  r37, L2
   Index        r38, r34, r36
@@ -64,6 +74,7 @@ L4:
   IterPrep     r45, r2
   Len          r46, r45
   Const        r47, 0
+L6:
   LessInt      r48, r47, r46
   JumpIfFalse  r48, L3
   Index        r49, r45, r47
@@ -72,7 +83,6 @@ L4:
   Index        r51, r22, r7
   Const        r52, "cc_call_center_sk"
   Index        r53, r50, r52
-L6:
   Equal        r54, r51, r53
   JumpIfFalse  r54, L4
   // from cs in catalog_sales
@@ -137,40 +147,59 @@ L6:
   SetIndex     r14, r85, r102
   Append       r103, r15, r102
   Move         r15, r103
+L5:
+  Const        r90, "items"
   Index        r104, r14, r85
   Index        r105, r104, r90
   Append       r106, r105, r71
   SetIndex     r104, r90, r106
+  Const        r92, "count"
   Index        r107, r104, r92
   Const        r108, 1
   AddInt       r109, r107, r108
   SetIndex     r104, r92, r109
-L5:
+L4:
   // join cc in call_center on cs.call == cc.cc_call_center_sk
+  Const        r108, 1
   AddInt       r47, r47, r108
   Jump         L6
 L3:
-  // from cs in catalog_sales
-  Len          r111, r15
-  LessInt      r112, r110, r111
-  JumpIfFalse  r112, L7
+  // join d in date_dim on cs.date == d.d_date_sk
+  Const        r108, 1
+  AddInt       r36, r36, r108
+  Jump         L7
 L2:
+  // join i in item on cs.item == i.i_item_sk
+  Const        r108, 1
+  AddInt       r25, r25, r108
+  Jump         L8
+L1:
+  // from cs in catalog_sales
+  Const        r108, 1
+  AddInt       r19, r19, r108
+  Jump         L9
+L0:
+  Const        r93, 0
+  Move         r110, r93
+  Len          r111, r15
+L13:
+  LessInt      r112, r110, r111
+  JumpIfFalse  r112, L10
   Index        r113, r15, r110
   Move         r114, r113
   // select {cat: g.key.cat, call: g.key.call, year: g.key.year, sum_sales: sum(from x in g select x.price)}
   Const        r115, "cat"
-L1:
   Const        r11, "key"
   Index        r116, r114, r11
   Const        r5, "cat"
-L0:
   Index        r117, r116, r5
   Const        r118, "call"
+  Const        r11, "key"
   Index        r119, r114, r11
-L9:
   Const        r7, "call"
   Index        r120, r119, r7
   Const        r121, "year"
+  Const        r11, "key"
   Index        r122, r114, r11
   Const        r9, "year"
   Index        r123, r122, r9
@@ -181,8 +210,9 @@ L9:
   Len          r127, r126
   Const        r93, 0
   Move         r128, r93
+L12:
   LessInt      r129, r128, r127
-  JumpIfFalse  r129, L8
+  JumpIfFalse  r129, L11
   Index        r130, r126, r128
   Move         r131, r130
   Const        r13, "price"
@@ -191,6 +221,10 @@ L9:
   Move         r125, r133
   Const        r108, 1
   AddInt       r128, r128, r108
+  Jump         L12
+L11:
+  Sum          r134, r125
+  Move         r135, r115
   Move         r136, r117
   Move         r137, r118
   Move         r138, r120
@@ -203,12 +237,35 @@ L9:
   Append       r144, r4, r143
   Move         r4, r144
   Const        r108, 1
-L8:
   AddInt       r110, r110, r108
-  Jump         L9
-L7:
+  Jump         L13
+L10:
   // from g in grouped
-  JumpIfFalse  r152, L10
+  Const        r145, []
+  // group by {cat: g.cat, call: g.call} into gg
+  Const        r5, "cat"
+  Const        r5, "cat"
+  Const        r7, "call"
+  Const        r7, "call"
+  // select {cat: gg.key.cat, call: gg.key.call, avg_sales: avg(from x in gg select x.sum_sales)}
+  Const        r5, "cat"
+  Const        r11, "key"
+  Const        r5, "cat"
+  Const        r7, "call"
+  Const        r11, "key"
+  Const        r7, "call"
+  Const        r146, "avg_sales"
+  Const        r12, "sum_sales"
+  // from g in grouped
+  IterPrep     r147, r4
+  Len          r148, r147
+  Const        r149, 0
+  MakeMap      r150, 0, r0
+  Const        r16, []
+  Move         r151, r16
+L16:
+  LessInt      r152, r149, r148
+  JumpIfFalse  r152, L14
   Index        r153, r147, r149
   Move         r114, r153
   // group by {cat: g.cat, call: g.call} into gg
@@ -225,11 +282,10 @@ L7:
   MakeMap      r162, 2, r158
   Str          r163, r162
   In           r164, r163, r150
-  JumpIfTrue   r164, L11
+  JumpIfTrue   r164, L15
   // from g in grouped
   Const        r16, []
   Const        r87, "__group__"
-L12:
   Const        r88, true
   Const        r11, "key"
   // group by {cat: g.cat, call: g.call} into gg
@@ -251,21 +307,37 @@ L12:
   SetIndex     r150, r163, r175
   Append       r176, r151, r175
   Move         r151, r176
+L15:
+  Const        r90, "items"
   Index        r177, r150, r163
   Index        r178, r177, r90
   Append       r179, r178, r153
   SetIndex     r177, r90, r179
+  Const        r92, "count"
   Index        r180, r177, r92
   Const        r108, 1
   AddInt       r181, r180, r108
   SetIndex     r177, r92, r181
+  Const        r108, 1
   AddInt       r149, r149, r108
-  Jump         L12
-L11:
+  Jump         L16
+L14:
+  Const        r93, 0
+  Move         r182, r93
+  Len          r183, r151
+L20:
+  LessInt      r184, r182, r183
+  JumpIfFalse  r184, L17
+  Index        r185, r151, r182
+  Move         r186, r185
   // select {cat: gg.key.cat, call: gg.key.call, avg_sales: avg(from x in gg select x.sum_sales)}
+  Const        r187, "cat"
+  Const        r11, "key"
+  Index        r188, r186, r11
   Const        r5, "cat"
   Index        r189, r188, r5
   Const        r190, "call"
+  Const        r11, "key"
   Index        r191, r186, r11
   Const        r7, "call"
   Index        r192, r191, r7
@@ -276,9 +348,9 @@ L11:
   Len          r196, r195
   Const        r93, 0
   Move         r197, r93
-L10:
+L19:
   LessInt      r198, r197, r196
-  JumpIfFalse  r198, L13
+  JumpIfFalse  r198, L18
   Index        r199, r195, r197
   Move         r131, r199
   Const        r12, "sum_sales"
@@ -287,6 +359,23 @@ L10:
   Move         r194, r201
   Const        r108, 1
   AddInt       r197, r197, r108
+  Jump         L19
+L18:
+  Avg          r202, r194
+  Move         r203, r187
+  Move         r204, r189
+  Move         r205, r190
+  Move         r206, r192
+  Move         r207, r193
+  Move         r208, r202
+  MakeMap      r209, 3, r203
+  // from g in grouped
+  Append       r210, r145, r209
+  Move         r145, r210
+  Const        r108, 1
+  AddInt       r182, r182, r108
+  Jump         L20
+L17:
   // from g in grouped
   Const        r211, []
   IterPrep     r212, r4
@@ -295,38 +384,49 @@ L10:
   IterPrep     r214, r145
   Len          r215, r214
   Const        r5, "cat"
+  Const        r5, "cat"
+  Const        r7, "call"
   Const        r7, "call"
   // where g.year == 2001 && a.avg_sales > 0 && abs(g.sum_sales - a.avg_sales)/a.avg_sales > 0.1
   Const        r9, "year"
   Const        r146, "avg_sales"
   Const        r12, "sum_sales"
+  Const        r146, "avg_sales"
+  Const        r146, "avg_sales"
   // select {i_category: g.cat, sum_sales: g.sum_sales}
   Const        r6, "i_category"
-L13:
+  Const        r5, "cat"
+  Const        r12, "sum_sales"
+  Const        r12, "sum_sales"
   // from g in grouped
   Const        r216, 0
+L27:
   LessInt      r217, r216, r213
-  JumpIfFalse  r217, L14
+  JumpIfFalse  r217, L21
   Index        r218, r212, r216
   Move         r114, r218
   // join a in avg_by_year on g.cat == a.cat && g.call == a.call
   Const        r219, 0
+L26:
   LessInt      r220, r219, r215
-  JumpIfFalse  r220, L15
+  JumpIfFalse  r220, L22
   Index        r221, r214, r219
   Move         r222, r221
   Const        r5, "cat"
   Index        r223, r114, r5
+  Const        r5, "cat"
   Index        r224, r222, r5
   Equal        r225, r223, r224
   Const        r7, "call"
   Index        r226, r114, r7
+  Const        r7, "call"
   Index        r227, r222, r7
   Equal        r228, r226, r227
   Move         r229, r225
-  JumpIfFalse  r229, L16
+  JumpIfFalse  r229, L23
   Move         r229, r228
-  JumpIfFalse  r229, L17
+L23:
+  JumpIfFalse  r229, L24
   // where g.year == 2001 && a.avg_sales > 0 && abs(g.sum_sales - a.avg_sales)/a.avg_sales > 0.1
   Const        r9, "year"
   Index        r230, r114, r9
@@ -337,22 +437,24 @@ L13:
   Sub          r234, r232, r233
   Move         r231, r234
   Call         r235, abs, r231
+  Const        r146, "avg_sales"
   Index        r236, r222, r146
   Div          r237, r235, r236
+  Const        r146, "avg_sales"
   Index        r238, r222, r146
   Const        r93, 0
   Less         r239, r93, r238
   Const        r240, 0.1
-L19:
   LessFloat    r241, r240, r237
   Const        r242, 2001
   Equal        r243, r230, r242
   Move         r244, r243
-  JumpIfFalse  r244, L18
+  JumpIfFalse  r244, L25
   Move         r244, r239
-  JumpIfFalse  r244, L18
+  JumpIfFalse  r244, L25
   Move         r244, r241
-  JumpIfFalse  r244, L17
+L25:
+  JumpIfFalse  r244, L24
   // select {i_category: g.cat, sum_sales: g.sum_sales}
   Const        r245, "i_category"
   Const        r5, "cat"
@@ -362,17 +464,30 @@ L19:
   Index        r248, r114, r12
   Move         r249, r245
   Move         r250, r246
-L16:
   Move         r251, r247
   Move         r252, r248
   MakeMap      r253, 2, r249
   // from g in grouped
   Append       r254, r211, r253
   Move         r211, r254
+L24:
   // join a in avg_by_year on g.cat == a.cat && g.call == a.call
   Const        r108, 1
   AddInt       r219, r219, r108
-  Jump         L19
+  Jump         L26
+L22:
+  // from g in grouped
+  Const        r108, 1
+  AddInt       r216, r216, r108
+  Jump         L27
+L21:
+  // json(result)
+  JSON         r211
+  // expect result == []
+  Const        r16, []
+  Equal        r255, r211, r16
+  Expect       r255
+  Return       r0
 
   // fun abs(x: float): float {
 func abs (regs=4)
