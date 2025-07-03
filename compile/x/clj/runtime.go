@@ -32,7 +32,7 @@ const (
     :else (throw (ex-info "count() expects list or group" {}))))
 `
 
-	helperAvg = `(defn _avg [v]
+        helperAvg = `(defn _avg [v]
   (let [lst (cond
               (and (map? v) (contains? v :Items)) (:Items v)
               (sequential? v) v
@@ -40,14 +40,16 @@ const (
     (if (empty? lst)
       0
       (/ (reduce + lst) (double (count lst)))))
+  )
 `
 
-	helperSum = `(defn _sum [v]
+        helperSum = `(defn _sum [v]
   (let [lst (cond
               (and (map? v) (contains? v :Items)) (:Items v)
               (sequential? v) v
               :else (throw (ex-info "sum() expects list or group" {})))]
     (reduce + 0 lst))
+  )
 `
 
 	helperMin = `(defn _min [v]
@@ -60,7 +62,7 @@ const (
       (reduce (fn [a b] (if (neg? (compare a b)) a b)) lst))))
 `
 
-	helperMax = `(defn _max [v]
+        helperMax = `(defn _max [v]
   (let [lst (cond
               (and (map? v) (contains? v :Items)) (:Items v)
               (sequential? v) v
@@ -68,6 +70,7 @@ const (
     (if (empty? lst)
       0
       (reduce (fn [a b] (if (pos? (compare a b)) a b)) lst)))
+  )
 `
 
 	helperGroup = `(defrecord _Group [key Items])

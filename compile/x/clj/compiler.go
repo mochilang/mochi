@@ -1147,17 +1147,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return expr, nil
-	case p.Match != nil:
-		expr, err := c.compileMatch(p.Match)
-		if err != nil {
-			return "", err
-		}
-		return expr, nil
-	case p.Selector != nil:
-		expr := sanitizeName(p.Selector.Root)
-		for _, s := range p.Selector.Tail {
-			expr = fmt.Sprintf("(:%s %s)", sanitizeName(s), expr)
-		}
+        case p.Match != nil:
+                expr, err := c.compileMatch(p.Match)
+                if err != nil {
+                        return "", err
+                }
+                return expr, nil
+       case p.If != nil:
+               expr, err := c.compileIfExpr(p.If)
+               if err != nil {
+                       return "", err
+               }
+               return expr, nil
+        case p.Selector != nil:
+                expr := sanitizeName(p.Selector.Root)
+                for _, s := range p.Selector.Tail {
+                        expr = fmt.Sprintf("(:%s %s)", sanitizeName(s), expr)
+                }
 		return expr, nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
@@ -1460,6 +1466,32 @@ func (c *Compiler) compileMatch(m *parser.MatchExpr) (string, error) {
 	}
 	b.WriteString("  ))")
 	return b.String(), nil
+}
+
+func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
+       cond, err := c.compileExpr(ie.Cond)
+       if err != nil {
+               return "", err
+       }
+       thenExpr, err := c.compileExpr(ie.Then)
+       if err != nil {
+               return "", err
+       }
+       elseExpr := "nil"
+       if ie.ElseIf != nil {
+               v, err := c.compileIfExpr(ie.ElseIf)
+               if err != nil {
+                       return "", err
+               }
+               elseExpr = v
+       } else if ie.Else != nil {
+               v, err := c.compileExpr(ie.Else)
+               if err != nil {
+                       return "", err
+               }
+               elseExpr = v
+       }
+       return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
