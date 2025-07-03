@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT c, a-b, a+b*2+c*3, abs(b-c), a+b*2+c*3+d*4 FROM t1 WHERE d NOT BETWEEN 110 AND 150 OR d>e OR a>b ORDER BY 5,3,2,4,1 */
 let result = from row in t1
   where (((row.d < 110 || row.d > 150) || row.d > row.e) || row.a > row.b)
-  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((row.a + (row.b * 2)) + (row.c * 3)), (row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c]
-  select [row.c, (row.a - row.b), ((row.a + (row.b * 2)) + (row.c * 3)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+  order by [(((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)), ((row.a + (row.b + row.b)) + (row.c * 3)), (row.a - row.b), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c]
+  select [row.c, (row.a - row.b), ((row.a + (row.b + row.b)) + (row.c * 3)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4))]
 var flatResult = []
 for row in result {
   for x in row {

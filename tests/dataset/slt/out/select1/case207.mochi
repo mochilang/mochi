@@ -228,8 +228,8 @@ let result = from row in t1
   where row.c > row.d
   order by [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.a, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
-  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.a, count(from x in t1
+  select x), (((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)), row.a, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+  select [(((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.a, count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
 var flatResult = []
