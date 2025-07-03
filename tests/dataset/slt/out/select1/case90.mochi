@@ -229,10 +229,10 @@ let sub0 = avg(from x in t1
 
 let result = from row in t1
   where ((row.c > row.d || ((row.a > (row.b - 2) && row.a < (row.b + 2)))) || row.b > row.c)
-  order by [(row.b - row.c), (if row.c > sub0 { (row.a + row.a) } else { (row.b * 10) }), (row.c - row.d), row.c, count(from x in t1
+  order by [(row.b - row.c), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.c - row.d), row.c, count(from x in t1
   where x.b < row.b
   select x)]
-  select [(row.b - row.c), row.c, (if row.c > sub0 { (row.a + row.a) } else { (row.b * 10) }), count(from x in t1
+  select [(row.b - row.c), row.c, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), count(from x in t1
   where x.b < row.b
   select x), (row.c - row.d)]
 var flatResult = []
