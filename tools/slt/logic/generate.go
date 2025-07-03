@@ -146,6 +146,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	boolLike := true
 	seenZero := false
 	seenOne := false
+	seenNegOne := false
 	for _, row := range rows {
 		v := row[name]
 		if v == nil {
@@ -280,6 +281,8 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				seenZero = true
 			} else if val == 1 {
 				seenOne = true
+			} else if val == -1 {
+				seenNegOne = true
 			} else {
 				boolLike = false
 			}
@@ -303,6 +306,8 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				seenZero = true
 			} else if val == 1 {
 				seenOne = true
+			} else if val == -1 {
+				seenNegOne = true
 			} else {
 				boolLike = false
 			}
@@ -338,12 +343,12 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		t = "int"
 	}
 
-	if t == "int" && boolLike && (seenZero || seenOne) {
+	if t == "int" && boolLike && (seenZero || seenOne || seenNegOne) {
 		return "bool"
 	}
 
 	if t == "" {
-		if boolLike && (seenZero || seenOne) {
+		if boolLike && (seenZero || seenOne || seenNegOne) {
 			return "bool"
 		}
 		return "any"
