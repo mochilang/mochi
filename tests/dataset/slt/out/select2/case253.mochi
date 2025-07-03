@@ -224,8 +224,8 @@ let t1 = [
 ]
 
 /* SELECT d, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
-let result = from row in t1
-  where null != 0
+var result = from row in t1
+  where (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0
   select [row.d, count(from x in t1
   where x.b < row.b
   select x)]
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case253" {
-  expect flatResult == [101, 0, 108, 0, 114, 1, 116, 0, 122, 2, 128, 3, 133, 4, 136, 5, 140, 6, null, 7, null, 8, null, 9, 164, 10, null, 11, 171, 12, null, 13, 183, 14, 185, 15, 190, 16, 196, 17, 203, 0, 207, 18, 212, 19, 217, 20, 222, 21, 226, 22, 233, 23, 238, 24, null, 25, 248, 26]
+  expect flatResult == [0, 0, 0, 0, 1, 10, 101, 108, 11, 114, 116, 12, 122, 128, 13, 133, 136, 14, 140, 15, 16, 164, 17, 171, 18, 183, 185, 19, 190, 196, 2, 20, 203, 207, 21, 212, 217, 22, 222, 226, 23, 233, 238, 24, 248, 25, 26, 3, 4, 5, 6, 7, 8, 9, null, null, null, null, null, null]
 }
 

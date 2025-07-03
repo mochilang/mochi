@@ -227,7 +227,7 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where ((((row.e > row.a && row.e < row.b)) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))) || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
   select [(row.a + (row.b * 2)), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where x.b < row.b
@@ -238,10 +238,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case220" {
-  expect flatResult == [317, -2, 1612, 0, 1050, 385, -3, 1902, 3, 1290, 483, -3, 2432, 10, 1600, 652, -2, 3260, 20, 432, 698, -2, 3473, 23, 468, null, 3, null, 0, null, 560, 2, 2806, 15, 376, 579, 3, 2878, 16, 382, 635, 2, 3175, 19, 426, 666, 2, 3331, 21, 440, 743, -1, 3706, 26, 490, null, -1, null, 1, 1120, 369, 1, null, 2, 1240, 416, 1, 2046, 5, 1390, 514, 1, 2579, 12, 1700, 544, 1, 2728, 14, 364, null, 1, null, 18, null, 391, 1, 1985, 4, 1300, 428, 1, 2131, 6, 1430]
+  expect flatResult == [-1, -1, -2, -2, -2, -3, -3, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 10, 1050, 1120, 12, 1240, 1290, 1300, 1390, 14, 1430, 15, 16, 1600, 1612, 1700, 18, 19, 1902, 1985, 2, 2, 2, 2, 20, 2046, 21, 2131, 23, 2432, 2579, 26, 2728, 2806, 2878, 3, 3, 3, 317, 3175, 3260, 3331, 3473, 364, 369, 3706, 376, 382, 385, 391, 4, 416, 426, 428, 432, 440, 468, 483, 490, 5, 514, 544, 560, 579, 6, 635, 652, 666, 698, 743, null, null, null, null, null, null, null, null, null]
 }
 

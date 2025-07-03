@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT d, c-d FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [row.d, (row.c - row.d)]
 var flatResult = []
 for row in result {
@@ -232,10 +232,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case223" {
-  expect flatResult == [101, 1, 108, -2, 114, -1, 116, 3, 122, 1, 128, -3, 133, 1, 136, 1, 140, 1, null, null, null, null, null, null, 164, -3, null, null, 171, 1, null, null, 183, 1, 185, 2, 190, 3, 196, -1, 203, -1, 207, 1, 212, 2, 217, -2, 222, 2, 226, -1, 233, -2, 238, null, null, null, 248, -1]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -3, -3, 1, 1, 1, 1, 1, 1, 1, 1, 101, 108, 114, 116, 122, 128, 133, 136, 140, 164, 171, 183, 185, 190, 196, 2, 2, 2, 203, 207, 212, 217, 222, 226, 233, 238, 248, 3, 3, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

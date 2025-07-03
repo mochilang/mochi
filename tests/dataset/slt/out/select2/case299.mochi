@@ -227,7 +227,7 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where ((((row.e > row.a && row.e < row.b)) || count(from x in t1
   where x.b < row.b
   select x) > 0) || row.a > row.b)
@@ -238,10 +238,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case299" {
-  expect flatResult == [null, 1120, null, 114, null, 1240, 738, 122, 127, 1290, 760, 128, 132, 1300, 793, 133, 137, 1390, 827, 136, 142, 1430, 851, 140, null, 1450, 880, null, null, 1510, 905, null, null, 1580, 940, null, 162, 1600, 966, 164, null, 1670, 1000, null, 172, 1700, 1030, 171, null, 358, 1057, null, 182, 364, 1096, 183, 187, 376, 1121, 185, 192, 382, 1158, 190, 197, 398, 1180, 196, null, null, null, 207, 212, 426, 1277, 212, 217, 432, 1297, 217, 222, 440, 1338, 222, 227, 458, 1360, 226, 232, 468, 1391, 233, null, 2360, null, 238, null, 486, 1455, null, 247, 490, 1484, 248, 107, 1050, 635, 108]
+  expect flatResult == [1000, 1030, 1050, 1057, 107, 108, 1096, 1120, 1121, 114, 1158, 1180, 122, 1240, 127, 1277, 128, 1290, 1297, 1300, 132, 133, 1338, 136, 1360, 137, 1390, 1391, 140, 142, 1430, 1450, 1455, 1484, 1510, 1580, 1600, 162, 164, 1670, 1700, 171, 172, 182, 183, 185, 187, 190, 192, 196, 197, 207, 212, 212, 217, 217, 222, 222, 226, 227, 232, 233, 2360, 238, 247, 248, 358, 364, 376, 382, 398, 426, 432, 440, 458, 468, 486, 490, 635, 738, 760, 793, 827, 851, 880, 905, 940, 966, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

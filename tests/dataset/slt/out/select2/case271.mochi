@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT abs(a), d-e, a+b*2+c*3 FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) AND (a>b-2 AND a<b+2) AND (e>c OR e<d) */
-let result = from row in t1
+var result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 && ((row.a > (row.b - 2) && row.a < (row.b + 2)))) && ((row.e > row.c || row.e < row.d)))
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case271" {
-  expect flatResult == [142, -4, 851, 199, -1, 1180, 131, 1, 793, 138, 1, 827, 229, -1, 1360, 159, null, 940, 182, 3, 1096]
+  expect flatResult == [-1, -1, -4, 1, 1, 1096, 1180, 131, 1360, 138, 142, 159, 182, 199, 229, 3, 793, 827, 851, 940, null]
 }
 

@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT e, b, (a+b+c+d+e)/5 FROM t1 WHERE (e>a AND e<b) OR b>c */
-let result = from row in t1
+var result = from row in t1
   where (((row.e > row.a && row.e < row.b)) || row.b > row.c)
   select [row.e, row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case273" {
-  expect flatResult == [null, 124, null, 126, 129, 127, 135, 139, 137, 144, 143, 142, null, 151, null, 157, 158, null, 165, 167, null, 192, 194, 192, 197, 198, 197, 219, 218, 217, 227, 228, 227, 230, 232, 232, 246, 249, 247, 221, 223, 222]
+  expect flatResult == [124, 126, 127, 129, 135, 137, 139, 142, 143, 144, 151, 157, 158, 165, 167, 192, 192, 194, 197, 197, 198, 217, 218, 219, 221, 222, 223, 227, 227, 228, 230, 232, 232, 246, 247, 249, null, null, null, null, null, null]
 }
 

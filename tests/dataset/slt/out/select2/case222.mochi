@@ -227,7 +227,7 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where row.a == null
   select [(row.c - row.d), count(from x in t1
   where x.b < row.b
@@ -240,10 +240,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case222" {
-  expect flatResult == [-1, 1, null, 0, 1120, 1, 18, null, 0, null]
+  expect flatResult == [-1, 0, 0, 1, 1, 1120, 18, null, null, null]
 }
 

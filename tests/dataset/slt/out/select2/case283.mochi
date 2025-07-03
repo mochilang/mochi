@@ -224,11 +224,14 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE c>d OR c BETWEEN b-2 AND d+2 */
-let result = from row in t1
+var result = from row in t1
   where (row.c > row.d || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
   select count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)
+result = from x in result
+  order by str(x)
+  select x
 for x in result {
   print(x)
 }
