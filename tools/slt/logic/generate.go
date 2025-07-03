@@ -191,6 +191,15 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				seenZero = true
 				continue
 			}
+			if sv == "inf" || sv == "+inf" || sv == "-inf" || sv == "infinity" || sv == "+infinity" || sv == "-infinity" || sv == "nan" {
+				if t == "" || t == "float" || t == "int" {
+					t = "float"
+				} else {
+					return "any"
+				}
+				boolLike = false
+				continue
+			}
 
 			clean := strings.ReplaceAll(strings.ReplaceAll(sv, ",", ""), "_", "")
 			orig := clean

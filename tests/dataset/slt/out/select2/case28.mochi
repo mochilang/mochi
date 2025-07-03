@@ -226,7 +226,7 @@ let t1 = [
 /* SELECT a-b, b-c, abs(a), abs(b-c), CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b, d-e FROM t1 WHERE b IS NOT NULL AND e+d BETWEEN a+b-10 AND c+130 AND c BETWEEN b-2 AND d+2 */
 var result = from row in t1
   where ((row.b != null && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) && (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
-  select [(row.a - row.b), (row.b - row.c), (if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.b, (row.d - row.e)]
+  select [(row.a - row.b), (row.b - row.c), (if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), row.b, (row.d - row.e)]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
