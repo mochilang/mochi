@@ -390,6 +390,15 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				return "any"
 			}
 		case float64:
+			if math.IsInf(val, 0) || math.IsNaN(val) {
+				boolLike = false
+				if t == "" || t == "float" || t == "int" {
+					t = "float"
+				} else {
+					return "any"
+				}
+				break
+			}
 			if val != math.Trunc(val) {
 				floatIsInt = false
 			}
