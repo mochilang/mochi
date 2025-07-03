@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT abs(a), (a+b+c+d+e)/5 FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND c BETWEEN b-2 AND d+2 AND d>e ORDER BY 2,1 */
 let result = from row in t1
-  where (((row.d < 110 || row.d > 150) && (row.c >= row.b - 2 && row.c <= row.d + 2)) && row.d > row.e)
-  order by [(row.a + row.b + row.c + row.d + row.e) / 5, (if row.a < 0 { -(row.a) } else { row.a })]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), (row.a + row.b + row.c + row.d + row.e) / 5]
+  where (((row.d < 110 || row.d > 150) && (row.c >= (row.b - 2) && row.c <= (row.d + 2))) && row.d > row.e)
+  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < 0 { -(row.a) } else { row.a })]
+  select [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
 var flatResult = []
 for row in result {
   for x in row {

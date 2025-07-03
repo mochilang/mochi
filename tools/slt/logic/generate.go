@@ -246,7 +246,10 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		}
 	}
 	if t == "float" && floatIsInt {
-		return "int"
+		t = "int"
+	}
+	if t == "int" && boolLike {
+		return "bool"
 	}
 	if t == "" {
 		if boolLike {
