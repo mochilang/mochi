@@ -227,8 +227,8 @@ let t1 = [
 let result = from row in t1
   order by [(if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
   where x.b < row.b
-  select x), row.c, (row.a + (row.b + row.b)), (row.d - row.e), row.a]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), row.a, row.c, (row.d - row.e), (row.a + (row.b + row.b)), count(from x in t1
+  select x), row.c, (row.a + (row.b * 2)), (row.d - row.e), row.a]
+  select [(if row.a < 0 { -(row.a) } else { row.a }), row.a, row.c, (row.d - row.e), (row.a + (row.b * 2)), count(from x in t1
   where x.b < row.b
   select x)]
 var flatResult = []
