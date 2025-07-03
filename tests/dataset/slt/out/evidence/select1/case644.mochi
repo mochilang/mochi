@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT a+b*2, a FROM t1 WHERE c BETWEEN b-2 AND d+2 OR (e>c OR e<d) OR (e>a AND e<b) ORDER BY 2,1 */
 let result = from row in t1
-  where (((row.c >= row.b - 2 && row.c <= row.d + 2) || ((row.e > row.c || row.e < row.d))) || ((row.e > row.a && row.e < row.b)))
-  order by [row.a, row.a + row.b * 2]
-  select [row.a + row.b * 2, row.a]
+  where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || ((row.e > row.c || row.e < row.d))) || ((row.e > row.a && row.e < row.b)))
+  order by [row.a, (row.a + (row.b * 2))]
+  select [(row.a + (row.b * 2)), row.a]
 var flatResult = []
 for row in result {
   for x in row {
