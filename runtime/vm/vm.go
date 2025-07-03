@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/alecthomas/participle/v2/lexer"
+	"mochi/ast"
 	"mochi/parser"
 	"mochi/runtime/data"
 	mhttp "mochi/runtime/http"
@@ -478,7 +479,17 @@ func (p *Program) Disassemble(src string) string {
 			case OpAvg, OpSum, OpMin, OpMax:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpExpect:
-				fmt.Fprintf(&b, "%s", formatReg(ins.A))
+				if ins.B >= 0 && ins.C >= 0 {
+					if ins.Val.Str != "" {
+						fmt.Fprintf(&b, "%s, %s, %s, %q", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C), ins.Val.Str)
+					} else {
+						fmt.Fprintf(&b, "%s, %s, %s", formatReg(ins.A), formatReg(ins.B), formatReg(ins.C))
+					}
+				} else if ins.Val.Str != "" {
+					fmt.Fprintf(&b, "%s, %q", formatReg(ins.A), ins.Val.Str)
+				} else {
+					fmt.Fprintf(&b, "%s", formatReg(ins.A))
+				}
 			case OpMakeClosure:
 				fmt.Fprintf(&b, "%s, %s, %d, %s", formatReg(ins.A), p.funcName(ins.B), ins.C, formatReg(ins.D))
 			case OpCall2:
@@ -1225,7 +1236,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpExpect:
 			val := fr.regs[ins.A]
 			if val.Tag != ValueBool || !val.Bool {
-				return Value{}, m.newError(fmt.Errorf("expect condition failed"), trace, ins.Line)
+				msg := ins.Val.Str
+				if msg == "" {
+					msg = "expect condition failed"
+				}
+				if ins.B >= 0 && ins.C >= 0 {
+					got := valueToString(fr.regs[ins.B])
+					want := valueToString(fr.regs[ins.C])
+					msg = fmt.Sprintf("%s\n  got: %s\n  want: %s", msg, got, want)
+				}
+				return Value{}, m.newError(fmt.Errorf("%s", msg), trace, ins.Line)
 			}
 		case OpSelect:
 			cond := fr.regs[ins.B]
@@ -2353,8 +2373,14 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		fc.popScope()
 		return nil
 	case s.Expect != nil:
-		r := fc.compileExpr(s.Expect.Value)
-		fc.emit(s.Expect.Pos, Instr{Op: OpExpect, A: r})
+		cond := fc.compileExpr(s.Expect.Value)
+		instr := Instr{Op: OpExpect, A: cond, B: -1, C: -1}
+		if b := s.Expect.Value.Binary; b != nil && len(b.Right) == 1 && b.Right[0].Op == "==" {
+			instr.B = fc.compileUnary(b.Left)
+			instr.C = fc.compilePostfix(b.Right[0].Right)
+		}
+		instr.Val = Value{Tag: ValueStr, Str: strings.TrimSpace(ast.FromExpr(s.Expect.Value).String())}
+		fc.emit(s.Expect.Pos, instr)
 		return nil
 	}
 	return nil
@@ -6912,9 +6938,9 @@ func valueToAny(v Value) any {
 			m[k] = valueToAny(x)
 		}
 		return m
-       default:
-               return "null"
-       }
+	default:
+		return "null"
+	}
 }
 
 func anyToValue(v any) Value {
