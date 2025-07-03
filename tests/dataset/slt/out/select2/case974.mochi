@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT e, a+b*2, c, d-e FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [row.e, (row.a + (row.b * 2)), row.c, (row.d - row.e)]
 var flatResult = []
 for row in result {
@@ -232,10 +232,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case974" {
-  expect flatResult == [null, null, 102, null, 109, 317, 106, -1, 110, null, 113, 4, 117, null, 119, -1, null, 369, 123, null, 126, 385, 125, 2, 132, 391, 134, 1, 135, 416, 137, 1, 144, 428, 141, -4, 146, 439, 147, null, null, 455, 150, null, 157, 475, 155, null, 162, 483, 161, 2, 165, 502, 166, null, 173, 514, 172, -2, 177, 529, 176, null, 180, 544, 184, 3, 189, 560, 187, -4, 192, 579, 193, -2, 197, 595, 195, -1, 204, null, 202, -1, null, null, 208, null, 210, 635, 214, 2, 219, 652, 215, -2, 221, 666, 224, 1, 227, 685, 225, -1, 230, 698, 231, 3, 237, 711, null, 1, null, 723, 244, null, 246, 743, 247, 2]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -4, -4, 1, 1, 1, 1, 102, 106, 109, 110, 113, 117, 119, 123, 125, 126, 132, 134, 135, 137, 141, 144, 146, 147, 150, 155, 157, 161, 162, 165, 166, 172, 173, 176, 177, 180, 184, 187, 189, 192, 193, 195, 197, 2, 2, 2, 2, 202, 204, 208, 210, 214, 215, 219, 221, 224, 225, 227, 230, 231, 237, 244, 246, 247, 3, 3, 317, 369, 385, 391, 4, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 
