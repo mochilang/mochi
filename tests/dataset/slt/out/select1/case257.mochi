@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT abs(b-c), a+b*2+c*3, a+b*2 FROM t1 ORDER BY 1,3,2 */
 let result = from row in t1
-  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.a + (row.b * 2)), ((row.a + (row.b * 2)) + (row.c * 3))]
-  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((row.a + (row.b * 2)) + (row.c * 3)), (row.a + (row.b * 2))]
+  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.a + (row.b + row.b)), ((row.a + (row.b + row.b)) + (row.c * 3))]
+  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((row.a + (row.b + row.b)) + (row.c * 3)), (row.a + (row.b + row.b))]
 var flatResult = []
 for row in result {
   for x in row {

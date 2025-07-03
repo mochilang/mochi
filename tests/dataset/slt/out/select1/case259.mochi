@@ -228,8 +228,8 @@ let result = from row in t1
   where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && count(from x in t1
   where x.b < row.b
   select x) > 0)
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.a, row.e, (row.a - row.b), (row.a + (row.b * 2))]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e, (row.a + (row.b * 2)), row.a, (row.a - row.b)]
+  order by [(if row.a < 0 { -(row.a) } else { row.a }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.a, row.e, (row.a - row.b), (row.a + (row.b + row.b))]
+  select [(if row.a < 0 { -(row.a) } else { row.a }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e, (row.a + (row.b + row.b)), row.a, (row.a - row.b)]
 var flatResult = []
 for row in result {
   for x in row {

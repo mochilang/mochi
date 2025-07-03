@@ -231,12 +231,12 @@ let result = from row in t1
   where (count(from x in t1
   where x.b < row.b
   select x) > 0 && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
-  order by [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.c, count(from x in t1
+  order by [(if row.c > sub0 { (row.a + row.a) } else { (row.b * 10) }), row.c, count(from x in t1
   where x.b < row.b
   select x)]
   select [count(from x in t1
   where x.b < row.b
-  select x), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.c]
+  select x), (if row.c > sub0 { (row.a + row.a) } else { (row.b * 10) }), row.c]
 var flatResult = []
 for row in result {
   for x in row {
