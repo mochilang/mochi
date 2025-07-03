@@ -1592,6 +1592,10 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				default:
 					return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
 				}
+			} else if isFloat(leftType) && (isInt(rightType) || isInt64(rightType)) {
+				right = fmt.Sprintf("float64(%s)", right)
+			} else if isFloat(rightType) && (isInt(leftType) || isInt64(leftType)) {
+				left = fmt.Sprintf("float64(%s)", left)
 			}
 			if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
 				return "", types.AnyType{}, fmt.Errorf("operator %q cannot be used on types %s and %s", op, leftType, rightType)
