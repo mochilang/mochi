@@ -280,15 +280,18 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	if t == "float" && floatIsInt {
 		t = "int"
 	}
-	if t == "int" && boolLike && seenZero && seenOne {
+
+	if t == "int" && boolLike && (seenZero || seenOne) {
 		return "bool"
 	}
+
 	if t == "" {
-		if boolLike && seenZero && seenOne {
+		if boolLike && (seenZero || seenOne) {
 			return "bool"
 		}
 		return "any"
 	}
+
 	return t
 }
 
