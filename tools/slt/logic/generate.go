@@ -145,11 +145,13 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 	t := ""
 	floatIsInt := true
 	boolLike := true
+	seen := false
 	for _, row := range rows {
 		v := row[name]
 		if v == nil {
 			continue
 		}
+		seen = true
 		switch val := v.(type) {
 		case string:
 			// Attempt to infer numeric or boolean types when the
@@ -249,7 +251,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		return "int"
 	}
 	if t == "" {
-		if boolLike {
+		if boolLike && seen {
 			return "bool"
 		}
 		return "any"
