@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT c-d, e FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
 var result = from row in t1
-  where null != 0
+  where (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0
   select [(row.c - row.d), row.e]
 var flatResult = []
 for row in result {
