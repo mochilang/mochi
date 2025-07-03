@@ -2190,18 +2190,9 @@ func constKey(v Value) (string, bool) {
 }
 
 func (fc *funcCompiler) constReg(pos lexer.Position, v Value) int {
-	if key, ok := constKey(v); ok {
-		if r, exists := fc.constRegs[key]; exists {
-			return r
-		}
-		r := fc.newReg()
-		fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
-		if fc.constRegs == nil {
-			fc.constRegs = map[string]int{}
-		}
-		fc.constRegs[key] = r
-		return r
-	}
+	// Avoid reusing constants defined later in the instruction stream since
+	// that may result in a use-before-definition when loops are involved.
+	// Deduplication isn't critical for tests, so always emit the constant.
 	r := fc.newReg()
 	fc.emit(pos, Instr{Op: OpConst, A: r, Val: v})
 	return r
