@@ -228,8 +228,8 @@ let result = from row in t1
   where ((((row.e > row.c || row.e < row.d)) || count(from x in t1
   where x.b < row.b
   select x) > 0) || ((row.e > row.a && row.e < row.b)))
-  order by row.a - row.b
-  select row.a - row.b
+  order by (row.a - row.b)
+  select (row.a - row.b)
 for x in result {
   print(x)
 }
