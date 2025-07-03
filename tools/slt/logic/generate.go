@@ -351,7 +351,7 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		if t == "" {
 			return "any"
 		}
-		return "any"
+		return t
 	}
 
 	if t == "int" && boolLike && (seenZero || seenOne || seenNegOne) {
