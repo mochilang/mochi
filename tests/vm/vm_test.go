@@ -406,6 +406,77 @@ func TestVM_JOB(t *testing.T) {
 	}
 }
 
+func TestVM_SLT(t *testing.T) {
+	root := findRepoRoot(t)
+	patterns := []string{
+		filepath.Join(root, "tests/dataset/slt/out/select1", "*.mochi"),
+		filepath.Join(root, "tests/dataset/slt/out/evidence/slt_lang_update", "*.mochi"),
+	}
+	var files []string
+	for _, p := range patterns {
+		list, err := filepath.Glob(p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		files = append(files, list...)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no slt source files")
+	}
+	for _, src := range files {
+		want := strings.TrimSuffix(src, ".mochi") + ".out"
+		if _, err := os.Stat(want); err != nil {
+			continue
+		}
+		name := filepath.Base(src)
+		t.Run(name, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			var out bytes.Buffer
+			m := vm.New(p, &out)
+			if err := m.Run(); err != nil {
+				t.Fatalf("run error: %v", err)
+			}
+			got := strings.TrimSpace(out.String())
+			data, err := os.ReadFile(want)
+			if err != nil {
+				if shouldUpdate() {
+					if writeErr := os.WriteFile(want, []byte(got+"\n"), 0644); writeErr == nil {
+						t.Logf("updated: %s", want)
+					} else {
+						t.Fatalf("write golden: %v", writeErr)
+					}
+				} else {
+					t.Fatalf("read golden: %v", err)
+				}
+			} else {
+				wantStr := strings.TrimSpace(string(data))
+				if got != wantStr {
+					if shouldUpdate() {
+						if writeErr := os.WriteFile(want, []byte(got+"\n"), 0644); writeErr == nil {
+							t.Logf("updated: %s", want)
+						} else {
+							t.Fatalf("write golden: %v", writeErr)
+						}
+					} else {
+						t.Errorf("%s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, wantStr)
+					}
+				}
+			}
+		})
+	}
+}
+
 func findRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
