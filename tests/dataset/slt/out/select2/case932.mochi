@@ -224,7 +224,8 @@ let t1 = [
 ]
 
 /* SELECT d-e, a-b, b-c FROM t1 */
-let result = from row in t1
+var result = from row in t1
+  order by [(row.d - row.e), (row.a - row.b), (row.b - row.c)]
   select [(row.d - row.e), (row.a - row.b), (row.b - row.c)]
 var flatResult = []
 for row in result {
@@ -232,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case932" {
-  expect flatResult == [null, null, null, -1, 2, -1, 4, null, -1, -1, null, null, null, -3, 1, 2, -2, 4, 1, 1, -4, 1, -1, 2, -4, -1, 2, null, 4, -2, null, 2, 1, null, 1, 3, 2, 3, -1, null, 1, 1, -2, 4, -2, null, 4, -1, 3, 1, -3, -4, 2, -1, -2, -3, 1, -1, 1, 3, -1, null, null, null, null, -2, 2, 2, -3, -2, -2, 3, 1, -3, -1, -1, 1, 3, 3, 2, 1, 1, 3, null, null, 3, -4, 2, -4, 2]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2, -2, -2, -3, -3, -3, -3, -3, -4, -4, -4, -4, -4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

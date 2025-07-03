@@ -224,13 +224,17 @@ let t1 = [
 ]
 
 /* SELECT a FROM t1 WHERE c>d */
-let result = from row in t1
+var result = from row in t1
   where row.c > row.d
+  order by row.a
   select row.a
+result = from x in result
+  sort by str(x)
+  select x
 for x in result {
   print(x)
 }
 
 test "case976" {
-  expect result == [104, 115, 121, 131, 138, 142, 174, 182, 188, 191, null, 213, 220]
+  expect result == [104, 115, 121, 131, 138, 142, 174, 182, 188, 191, 213, 220, null]
 }

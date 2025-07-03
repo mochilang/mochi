@@ -224,10 +224,13 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a-b, a+b*2+c*3+d*4+e*5, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), b FROM t1 WHERE d>e AND EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) */
-let result = from row in t1
+var result = from row in t1
   where (row.d > row.e && count(from x in t1
   where x.b < row.b
   select x) > 0)
+  order by [((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.a - row.b), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
+  where x.b < row.b
+  select x), row.b]
   select [((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.a - row.b), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
   where x.b < row.b
   select x), row.b]
@@ -237,10 +240,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case946" {
-  expect flatResult == [null, 444, 3, null, 24, 236, 1484, 111, -4, 3706, 26, 249, 966, 444, 3, 2432, 10, 160, 793, 333, 1, 1985, 4, 130, 827, 222, -1, 2046, 5, 139, 760, 222, -2, 1902, 3, 129, 1096, 333, 1, 2728, 14, 181, null, 444, null, null, 1, 112, 1277, 333, 2, 3175, 19, 211, 1391, 333, 2, 3473, 23, 232, 1338, 222, -3, 3331, 21, 223]
+  expect flatResult == [-1, -2, -3, -4, 1, 1, 1, 10, 1096, 111, 112, 1277, 129, 130, 1338, 139, 1391, 14, 1484, 160, 181, 19, 1902, 1985, 2, 2, 2046, 21, 211, 222, 222, 222, 223, 23, 232, 236, 24, 2432, 249, 26, 2728, 3, 3, 3, 3175, 333, 333, 333, 333, 3331, 3473, 3706, 4, 444, 444, 444, 5, 760, 793, 827, 966, null, null, null, null, null]
 }
 

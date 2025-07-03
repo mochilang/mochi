@@ -224,10 +224,11 @@ let t1 = [
 ]
 
 /* SELECT c-d, abs(a), a, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) OR b>c OR c>d */
-let result = from row in t1
+var result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 || row.b > row.c) || row.c > row.d)
+  order by [(row.c - row.d), (if row.a < 0 { -(row.a) } else { row.a }), row.a, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.b]
   select [(row.c - row.d), (if row.a < 0 { -(row.a) } else { row.a }), row.a, (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.b]
 var flatResult = []
 for row in result {
@@ -235,10 +236,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case952" {
-  expect flatResult == [-1, null, null, 555, 112, 1, 121, 121, 333, 124, -3, 127, 127, 333, 129, 1, 131, 131, 444, 130, 1, 138, 138, 111, 139, 1, 142, 142, 111, 143, null, 149, 149, 555, 145, null, 153, 153, 555, 151, null, 159, 159, 555, 158, -3, 163, 163, 333, 160, null, 168, 168, 555, 167, 1, 174, 174, 555, 170, null, 179, 179, 555, 175, 1, 182, 182, 333, 181, 2, 188, 188, 444, 186, 3, 191, 191, 444, 194, -1, 199, 199, 555, 198, 1, null, null, 555, 206, 2, 213, 213, 222, 211, -2, 216, 216, 333, 218, 2, 220, 220, 444, 223, -1, 229, 229, 555, 228, -2, 234, 234, 555, 232, null, 239, 239, 555, 236, null, 243, 243, 222, 240, -1, 245, 245, 444, 249, 1, 104, 104, 555, null, 3, 115, 115, 333, null]
+  expect flatResult == [-1, -1, -1, -1, -2, -2, -3, -3, 1, 1, 1, 1, 1, 1, 1, 1, 104, 104, 111, 111, 112, 115, 115, 121, 121, 124, 127, 127, 129, 130, 131, 131, 138, 138, 139, 142, 142, 143, 145, 149, 149, 151, 153, 153, 158, 159, 159, 160, 163, 163, 167, 168, 168, 170, 174, 174, 175, 179, 179, 181, 182, 182, 186, 188, 188, 191, 191, 194, 198, 199, 199, 2, 2, 2, 206, 211, 213, 213, 216, 216, 218, 220, 220, 222, 222, 223, 228, 229, 229, 232, 234, 234, 236, 239, 239, 240, 243, 243, 245, 245, 249, 3, 3, 333, 333, 333, 333, 333, 333, 444, 444, 444, 444, 444, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

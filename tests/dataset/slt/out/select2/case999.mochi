@@ -224,8 +224,9 @@ let t1 = [
 ]
 
 /* SELECT (a+b+c+d+e)/5, a+b*2+c*3+d*4+e*5, d-e, a+b*2, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, c FROM t1 WHERE c BETWEEN b-2 AND d+2 AND b>c AND a>b */
-let result = from row in t1
+var result = from row in t1
   where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) && row.b > row.c) && row.a > row.b)
+  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.d - row.e), (row.a + (row.b * 2)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.c]
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.d - row.e), (row.a + (row.b * 2)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), row.c]
 var flatResult = []
 for row in result {
@@ -233,10 +234,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case999" {
-  expect flatResult == [232, 3473, 3, 698, 555, 231]
+  expect flatResult == [231, 232, 3, 3473, 555, 698]
 }
 

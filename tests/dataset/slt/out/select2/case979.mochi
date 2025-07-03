@@ -224,8 +224,11 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), abs(a), b, a-b, a+b*2+c*3+d*4 FROM t1 WHERE (a>b-2 AND a<b+2) AND (e>c OR e<d) AND a>b */
-let result = from row in t1
+var result = from row in t1
   where ((((row.a > (row.b - 2) && row.a < (row.b + 2))) && ((row.e > row.c || row.e < row.d))) && row.a > row.b)
+  order by [count(from x in t1
+  where (x.c > row.c && x.d < row.d)
+  select x), (if row.a < 0 { -(row.a) } else { row.a }), row.b, (row.a - row.b), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x), (if row.a < 0 { -(row.a) } else { row.a }), row.b, (row.a - row.b), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
@@ -235,10 +238,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case979" {
-  expect flatResult == [0, 159, 158, 1, null, 0, 199, 198, 1, 1964, 0, 229, 228, 1, 2264, 0, 131, 130, 1, 1325, 0, 182, 181, 1, 1828]
+  expect flatResult == [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 130, 131, 1325, 158, 159, 181, 182, 1828, 1964, 198, 199, 2264, 228, 229, null]
 }
 

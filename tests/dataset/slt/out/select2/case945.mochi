@@ -227,8 +227,11 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   where row.c > row.d
+  order by [count(from x in t1
+  where x.b < row.b
+  select x), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, row.a, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
   select [count(from x in t1
   where x.b < row.b
   select x), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, row.a, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
@@ -238,10 +241,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case945" {
-  expect flatResult == [0, 555, null, 102, 104, 444, null, 0, 333, null, 119, 115, 444, null, 2, 333, null, 123, 121, 222, 1240, 4, 444, 132, 134, 131, 333, 1300, 5, 111, 137, 137, 138, 222, 1390, 6, 111, 142, 141, 142, 222, 1430, 12, 555, 172, 172, 174, 444, 1700, 14, 333, 182, 184, 182, 333, 364, 15, 444, 187, 187, 188, 333, 376, 16, 444, 192, 193, 191, 222, 382, 18, 555, null, 208, null, 444, null, 19, 222, 212, 214, 213, 333, 426, 21, 444, 222, 224, 220, 222, 440]
+  expect flatResult == [0, 0, 102, 104, 111, 111, 115, 119, 12, 121, 123, 1240, 1300, 131, 132, 134, 137, 137, 138, 1390, 14, 141, 142, 142, 1430, 15, 16, 1700, 172, 172, 174, 18, 182, 182, 184, 187, 187, 188, 19, 191, 192, 193, 2, 208, 21, 212, 213, 214, 220, 222, 222, 222, 222, 222, 222, 222, 224, 333, 333, 333, 333, 333, 333, 333, 364, 376, 382, 4, 426, 440, 444, 444, 444, 444, 444, 444, 444, 444, 5, 555, 555, 555, 6, null, null, null, null, null, null, null, null]
 }
 

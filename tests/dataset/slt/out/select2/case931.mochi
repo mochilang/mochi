@@ -224,8 +224,11 @@ let t1 = [
 ]
 
 /* SELECT a+b*2, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), c-d, a+b*2+c*3+d*4+e*5 FROM t1 WHERE (c<=d-2 OR c>=d+2) OR c BETWEEN b-2 AND d+2 */
-let result = from row in t1
+var result = from row in t1
   where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) || (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
+  order by [(row.a + (row.b * 2)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
+  where x.b < row.b
+  select x), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
   select [(row.a + (row.b * 2)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), count(from x in t1
   where x.b < row.b
   select x), (row.c - row.d), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
@@ -235,10 +238,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  sort by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case931" {
-  expect flatResult == [317, 333, 0, -2, 1612, 385, 333, 3, -3, 1902, 483, 333, 10, -3, 2432, 652, 333, 20, -2, 3260, 698, 555, 23, -2, 3473, null, 333, 0, 3, null, 560, 444, 15, 2, 2806, 579, 444, 16, 3, 2878, 635, 222, 19, 2, 3175, 666, 444, 21, 2, 3331, null, 555, 1, -1, null, 369, 333, 2, 1, null, 391, 444, 4, 1, 1985, 416, 111, 5, 1, 2046, 428, 111, 6, 1, 2131, 514, 555, 12, 1, 2579, 544, 333, 14, 1, 2728, null, 555, 18, 1, null, 743, 444, 26, -1, 3706]
+  expect flatResult == [-1, -1, -2, -2, -2, -3, -3, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 10, 111, 111, 12, 14, 15, 16, 1612, 18, 19, 1902, 1985, 2, 2, 2, 2, 20, 2046, 21, 2131, 222, 23, 2432, 2579, 26, 2728, 2806, 2878, 3, 3, 3, 317, 3175, 3260, 333, 333, 333, 333, 333, 333, 333, 3331, 3473, 369, 3706, 385, 391, 4, 416, 428, 444, 444, 444, 444, 444, 483, 5, 514, 544, 555, 555, 555, 555, 560, 579, 6, 635, 652, 666, 698, 743, null, null, null, null, null, null, null]
 }
 
