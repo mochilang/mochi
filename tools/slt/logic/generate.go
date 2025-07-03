@@ -284,11 +284,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		case sqlparser.StrVal:
 			return fmt.Sprintf("\"%s\"", string(v.Val))
 		case sqlparser.IntVal:
-			s := string(v.Val)
-			if !strings.ContainsRune(s, '.') {
-				s += ".0"
-			}
-			return s
+			return string(v.Val)
 		case sqlparser.FloatVal:
 			return string(v.Val)
 		}
