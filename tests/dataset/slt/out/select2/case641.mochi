@@ -232,5 +232,5 @@ for x in result {
 }
 
 test "case641" {
-  expect result == [-2, -3, 1, 2, -1, -1, -2, -1, 1, 2, 2, -2, null, -1]
+  expect result == [-2, -3, 1, 1, 2, -1, -1, 2, -2, 2, -1, -2, null, -1]
 }

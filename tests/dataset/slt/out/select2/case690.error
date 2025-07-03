@@ -1,7 +1,0 @@
-expect condition failed at :240: expect flatResult == [3331, 221, 3706, 246]
-call graph: main
-stack trace:
-  main at :240
-    expect flatResult == [3331, 221, 3706, 246]
-
-got: [1569, 110, 3331, 221, 3706, 246]
