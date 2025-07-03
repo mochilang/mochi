@@ -1,1 +1,7 @@
-expect condition failed
+expect condition failed at :240: expect flatResult == [null, 104, null, 115, -3, 121, 1, 131, -1, 138, -1, 142, 4, 174, 1, 182, 2, 188, -3, 191, null, null, 2, 213, -3, 220]
+call graph: main
+stack trace:
+  main at :240
+    expect flatResult == [null, 104, null, 115, -3, 121, 1, 131, -1, 138, -1, 142, 4, 174, 1, 182, 2, 188, -3, 191, null, null, 2, 213, -3, 220]
+
+got: [104, 104, 115, 115, -3, 121, 1, 131, -1, 138, -1, 142, 4, 149, 2, 153, 1, 159, 1, 168, 4, 174, 4, 179, 1, 182, 2, 188, -3, 191, -206, null, 2, 213, -3, 220, 3, 243]
