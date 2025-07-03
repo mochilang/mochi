@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b-c, a+b*2 FROM t1 WHERE c BETWEEN b-2 AND d+2 AND a>b */
-let result = from row in t1
+var result = from row in t1
   where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) && row.a > row.b)
   select [(if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.b - row.c), (row.a + (row.b * 2))]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case69" {
-  expect flatResult == [333, -1, 317, 444, -4, 391, 333, -1, 483, 555, -2, 514, 333, -3, 544, 444, -1, 560, 222, -3, 635, 555, 1, 698]
+  expect flatResult == [-1, -1, -1, -2, -3, -3, -4, 1, 222, 317, 333, 333, 333, 391, 444, 444, 483, 514, 544, 555, 555, 560, 635, 698]
 }
 

@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d-e FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR (a>b-2 AND a<b+2) */
-let result = from row in t1
+var result = from row in t1
   where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case5" {
-  expect flatResult == [0, 1, 0, 1, 0, -4, 0, null, 0, null, 0, 3, 0, -1, 0, -1, 0, 2, 0, -1]
+  expect flatResult == [-1, -1, -1, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 3, null, null]
 }
 
