@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -163,7 +164,7 @@ func EvalCase(c Case) ([]string, string, error) {
 	}
 	q := c.Query
 	if node, err := sqlparser.Parse(q); err == nil {
-		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 {
+		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && !c.RowSort {
 			q = strings.TrimSpace(q) + " ORDER BY rowid"
 		}
 	}
@@ -176,8 +177,7 @@ func EvalCase(c Case) ([]string, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-	var flat []string
-	var buf bytes.Buffer
+	var rowsVals [][]string
 	for rows.Next() {
 		vals := make([]any, len(cols))
 		ptrs := make([]any, len(cols))
@@ -187,13 +187,32 @@ func EvalCase(c Case) ([]string, string, error) {
 		if err := rows.Scan(ptrs...); err != nil {
 			return nil, "", err
 		}
+		row := make([]string, len(cols))
 		for i, v := range vals {
-			var s string
 			if v == nil {
-				s = "null"
+				row[i] = "null"
 			} else {
-				s = fmt.Sprint(v)
+				row[i] = fmt.Sprint(v)
 			}
+		}
+		rowsVals = append(rowsVals, row)
+	}
+	if c.RowSort && len(rowsVals) > 1 {
+		sort.Slice(rowsVals, func(i, j int) bool {
+			a, b := rowsVals[i], rowsVals[j]
+			for k := 0; k < len(a) && k < len(b); k++ {
+				if a[k] == b[k] {
+					continue
+				}
+				return a[k] < b[k]
+			}
+			return len(a) < len(b)
+		})
+	}
+	var flat []string
+	var buf bytes.Buffer
+	for _, row := range rowsVals {
+		for i, s := range row {
 			flat = append(flat, s)
 			if i > 0 {
 				buf.WriteByte(' ')
