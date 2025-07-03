@@ -84,8 +84,8 @@ func RunMochi(src string) (string, error) {
 	var runErr error
 	select {
 	case runErr = <-done:
-        case <-time.After(30 * time.Second):
-                runErr = fmt.Errorf("timeout")
+	case <-time.After(5 * time.Second):
+		runErr = fmt.Errorf("timeout")
 	}
 	out := strings.TrimSpace(buf.String())
 	if runErr != nil {
