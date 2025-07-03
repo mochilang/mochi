@@ -15,8 +15,6 @@ func main (regs=11)
   Const        r9, 64
   JSON         r9
   // expect result == 64
-  Const        r9, 64
-  Const        r9, 64
-  EqualInt     r10, r9, r9
+  Const        r10, true
   Expect       r10
   Return       r0

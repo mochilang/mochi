@@ -21,7 +21,7 @@ func main (regs=209)
   Len          r11, r10
   Const        r13, 0
   Move         r12, r13
-L12:
+L1:
   LessInt      r14, r12, r11
   JumpIfFalse  r14, L0
   Index        r15, r10, r12
@@ -39,7 +39,7 @@ L12:
   // join d in date_dim on ss.sold_date == d.d_date_sk
   Const        r13, 0
   Move         r21, r13
-L11:
+L2:
   LessInt      r22, r21, r18
   JumpIfFalse  r22, L1
   Index        r23, r17, r21
@@ -56,16 +56,14 @@ L11:
   Const        r6, "customer"
   Const        r7, "c_customer_sk"
   // select {customer: c.c_customer_sk, amt: ss.price}
-  Const        r6, "customer"
-  Const        r7, "c_customer_sk"
   Const        r8, "amt"
   Const        r9, "price"
   // join c in customer on ss.customer == c.c_customer_sk
   Const        r13, 0
   Move         r30, r13
-L10:
   LessInt      r31, r30, r29
   JumpIfFalse  r31, L2
+L3:
   Index        r32, r28, r30
   Move         r33, r32
   Const        r6, "customer"
@@ -89,9 +87,9 @@ L10:
   // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk && ca.ca_county == "X" && ca.ca_state == "Y"
   Const        r13, 0
   Move         r43, r13
-L9:
   LessInt      r44, r43, r38
   JumpIfFalse  r44, L3
+L5:
   Index        r45, r37, r43
   Move         r46, r45
   Const        r39, "c_current_addr_sk"
@@ -112,10 +110,10 @@ L9:
   Move         r56, r52
   JumpIfFalse  r56, L4
   Move         r56, r55
-L4:
   JumpIfFalse  r56, L5
   // join s in store on 1 == s.s_store_sk && ca.ca_county == s.s_county && ca.ca_state == s.s_state
   IterPrep     r57, r4
+L4:
   Len          r58, r57
   Const        r59, "s_store_sk"
   Const        r41, "ca_county"
@@ -130,9 +128,9 @@ L4:
   // join s in store on 1 == s.s_store_sk && ca.ca_county == s.s_county && ca.ca_state == s.s_state
   Const        r13, 0
   Move         r62, r13
-L8:
   LessInt      r63, r62, r58
   JumpIfFalse  r63, L5
+L7:
   Index        r64, r57, r62
   Move         r65, r64
   Const        r66, 1
@@ -154,10 +152,10 @@ L8:
   Move         r75, r71
   JumpIfFalse  r75, L6
   Move         r75, r74
-L6:
   JumpIfFalse  r75, L7
   // select {customer: c.c_customer_sk, amt: ss.price}
   Const        r76, "customer"
+L6:
   Const        r7, "c_customer_sk"
   Index        r77, r33, r7
   Const        r78, "amt"
@@ -171,38 +169,12 @@ L6:
   // from ss in store_sales
   Append       r85, r5, r84
   Move         r5, r85
-L7:
   // join s in store on 1 == s.s_store_sk && ca.ca_county == s.s_county && ca.ca_state == s.s_state
   Const        r66, 1
   Add          r62, r62, r66
-  Jump         L8
-L5:
-  // join ca in customer_address on c.c_current_addr_sk == ca.ca_address_sk && ca.ca_county == "X" && ca.ca_state == "Y"
-  Const        r66, 1
-  Add          r43, r43, r66
-  Jump         L9
-L3:
-  // join c in customer on ss.customer == c.c_customer_sk
-  Const        r66, 1
-  Add          r30, r30, r66
-  Jump         L10
-L2:
-  // join d in date_dim on ss.sold_date == d.d_date_sk
-  Const        r66, 1
-  Add          r21, r21, r66
-  Jump         L11
-L1:
-  // from ss in store_sales
-  Const        r66, 1
-  AddInt       r12, r12, r66
-  Jump         L12
+  Jump         L7
 L0:
-  // from r in revenue
-  Const        r86, []
-  // group by r.customer into g
-  Const        r6, "customer"
   // select {customer: g.key, revenue: sum(from x in g select x.amt)}
-  Const        r6, "customer"
   Const        r87, "key"
   Const        r88, "revenue"
   Const        r8, "amt"
@@ -213,17 +185,17 @@ L0:
   MakeMap      r92, 0, r0
   Const        r94, []
   Move         r93, r94
-L15:
   LessInt      r95, r91, r90
-  JumpIfFalse  r95, L13
+  JumpIfFalse  r95, L8
   Index        r96, r89, r91
+L10:
   Move         r97, r96
   // group by r.customer into g
   Const        r6, "customer"
   Index        r98, r97, r6
   Str          r99, r98
   In           r100, r99, r92
-  JumpIfTrue   r100, L14
+  JumpIfTrue   r100, L9
   // from r in revenue
   Const        r94, []
   Const        r101, "__group__"
@@ -248,32 +220,23 @@ L15:
   SetIndex     r92, r99, r115
   Append       r116, r93, r115
   Move         r93, r116
-L14:
-  Const        r104, "items"
   Index        r117, r92, r99
   Index        r118, r117, r104
   Append       r119, r118, r96
+L9:
   SetIndex     r117, r104, r119
-  Const        r106, "count"
   Index        r120, r117, r106
   Const        r66, 1
   AddInt       r121, r120, r66
   SetIndex     r117, r106, r121
-  Const        r66, 1
   AddInt       r91, r91, r66
-  Jump         L15
-L13:
-  Const        r13, 0
-  Move         r122, r13
-  Len          r123, r93
-L19:
-  LessInt      r124, r122, r123
-  JumpIfFalse  r124, L16
-  Index        r125, r93, r122
+  Jump         L10
+L8:
   Move         r126, r125
   // select {customer: g.key, revenue: sum(from x in g select x.amt)}
   Const        r127, "customer"
   Const        r87, "key"
+L13:
   Index        r128, r126, r87
   Const        r129, "revenue"
   Const        r130, []
@@ -282,155 +245,25 @@ L19:
   Len          r132, r131
   Const        r13, 0
   Move         r133, r13
-L18:
   LessInt      r134, r133, r132
-  JumpIfFalse  r134, L17
+  JumpIfFalse  r134, L11
   Index        r135, r131, r133
   Move         r136, r135
   Const        r8, "amt"
   Index        r137, r136, r8
+L12:
   Append       r138, r130, r137
   Move         r130, r138
   Const        r66, 1
   AddInt       r133, r133, r66
-  Jump         L18
-L17:
-  Sum          r139, r130
-  Move         r140, r127
-  Move         r141, r128
-  Move         r142, r129
-  Move         r143, r139
-  MakeMap      r144, 2, r140
+  Jump         L12
+L11:
   // from r in revenue
   Append       r145, r86, r144
   Move         r86, r145
   Const        r66, 1
   AddInt       r122, r122, r66
-  Jump         L19
-L16:
-  // from r in by_customer
-  Const        r146, []
-  // group by {seg: int(r.revenue / 50)} into g
-  Const        r147, "seg"
-  Const        r88, "revenue"
-  // select {segment: g.key.seg, num_customers: count(g), segment_base: g.key.seg * 50}
-  Const        r148, "segment"
-  Const        r87, "key"
-  Const        r147, "seg"
-  Const        r149, "num_customers"
-  Const        r150, "segment_base"
-  Const        r87, "key"
-  Const        r147, "seg"
-  // from r in by_customer
-  IterPrep     r151, r86
-  Len          r152, r151
-  Const        r153, 0
-  MakeMap      r154, 0, r0
-  Const        r94, []
-  Move         r155, r94
-L22:
-  LessInt      r156, r153, r152
-  JumpIfFalse  r156, L20
-  Index        r157, r151, r153
-  Move         r97, r157
-  // group by {seg: int(r.revenue / 50)} into g
-  Const        r158, "seg"
-  Const        r88, "revenue"
-  Index        r160, r97, r88
-  Const        r161, 50
-  Div          r162, r160, r161
-  Move         r159, r162
-  Call         r163, int, r159
-  Move         r164, r158
-  Move         r165, r163
-  MakeMap      r166, 1, r164
-  Str          r167, r166
-  In           r168, r167, r154
-  JumpIfTrue   r168, L21
-  // from r in by_customer
-  Const        r94, []
-  Const        r101, "__group__"
-  Const        r102, true
-  Const        r87, "key"
-  // group by {seg: int(r.revenue / 50)} into g
-  Move         r169, r166
-  // from r in by_customer
-  Const        r104, "items"
-  Move         r170, r94
-  Const        r106, "count"
-  Const        r13, 0
-  Move         r171, r101
-  Move         r172, r102
-  Move         r173, r87
-  Move         r174, r169
-  Move         r175, r104
-  Move         r176, r170
-  Move         r177, r106
-  Move         r178, r13
-  MakeMap      r179, 4, r171
-  SetIndex     r154, r167, r179
-  Append       r180, r155, r179
-  Move         r155, r180
-L21:
-  Const        r104, "items"
-  Index        r181, r154, r167
-  Index        r182, r181, r104
-  Append       r183, r182, r157
-  SetIndex     r181, r104, r183
-  Const        r106, "count"
-  Index        r184, r181, r106
-  Const        r66, 1
-  AddInt       r185, r184, r66
-  SetIndex     r181, r106, r185
-  Const        r66, 1
-  AddInt       r153, r153, r66
-  Jump         L22
-L20:
-  Const        r13, 0
-  Move         r186, r13
-  Len          r187, r155
-L24:
-  LessInt      r188, r186, r187
-  JumpIfFalse  r188, L23
-  Index        r189, r155, r186
-  Move         r126, r189
-  // select {segment: g.key.seg, num_customers: count(g), segment_base: g.key.seg * 50}
-  Const        r190, "segment"
-  Const        r87, "key"
-  Index        r191, r126, r87
-  Const        r147, "seg"
-  Index        r192, r191, r147
-  Const        r193, "num_customers"
-  Const        r106, "count"
-  Index        r194, r126, r106
-  Const        r195, "segment_base"
-  Const        r87, "key"
-  Index        r196, r126, r87
-  Const        r147, "seg"
-  Index        r197, r196, r147
-  Const        r161, 50
-  Mul          r198, r197, r161
-  Move         r199, r190
-  Move         r200, r192
-  Move         r201, r193
-  Move         r202, r194
-  Move         r203, r195
-  Move         r204, r198
-  MakeMap      r205, 3, r199
-  // from r in by_customer
-  Append       r206, r146, r205
-  Move         r146, r206
-  Const        r66, 1
-  AddInt       r186, r186, r66
-  Jump         L24
-L23:
-  // json(result)
-  JSON         r146
-  // expect result == [
-  Const        r207, [{"num_customers": 1, "segment": 1, "segment_base": 50}, {"num_customers": 1, "segment": 0, "segment_base": 0}]
-  Equal        r208, r146, r207
-  Expect       r208
-  Return       r0
+  Jump         L13
 
   // fun int(x: float): int {
 func int (regs=2)

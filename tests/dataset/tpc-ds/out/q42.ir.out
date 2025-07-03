@@ -16,11 +16,7 @@ func main (regs=166)
   Const        r7, "d_moy"
   Const        r8, "d_year"
   // select { d_year: dt.d_year, i_category_id: it.i_category_id, i_category: it.i_category, price: ss.ext_sales_price }
-  Const        r8, "d_year"
-  Const        r8, "d_year"
   Const        r9, "i_category_id"
-  Const        r9, "i_category_id"
-  Const        r10, "i_category"
   Const        r10, "i_category"
   Const        r11, "price"
   Const        r12, "ext_sales_price"
@@ -29,7 +25,6 @@ func main (regs=166)
   Len          r14, r13
   Const        r16, 0
   Move         r15, r16
-L7:
   LessInt      r17, r15, r14
   JumpIfFalse  r17, L0
   Index        r18, r13, r15
@@ -44,18 +39,13 @@ L7:
   Const        r7, "d_moy"
   Const        r8, "d_year"
   // select { d_year: dt.d_year, i_category_id: it.i_category_id, i_category: it.i_category, price: ss.ext_sales_price }
-  Const        r8, "d_year"
-  Const        r8, "d_year"
   Const        r9, "i_category_id"
-  Const        r9, "i_category_id"
-  Const        r10, "i_category"
   Const        r10, "i_category"
   Const        r11, "price"
   Const        r12, "ext_sales_price"
   // join ss in store_sales on ss.sold_date_sk == dt.d_date_sk
   Const        r16, 0
   Move         r24, r16
-L6:
   LessInt      r25, r24, r21
   JumpIfFalse  r25, L1
   Index        r26, r20, r24
@@ -76,18 +66,13 @@ L6:
   Const        r7, "d_moy"
   Const        r8, "d_year"
   // select { d_year: dt.d_year, i_category_id: it.i_category_id, i_category: it.i_category, price: ss.ext_sales_price }
-  Const        r8, "d_year"
-  Const        r8, "d_year"
   Const        r9, "i_category_id"
-  Const        r9, "i_category_id"
-  Const        r10, "i_category"
   Const        r10, "i_category"
   Const        r11, "price"
   Const        r12, "ext_sales_price"
   // join it in item on ss.item_sk == it.i_item_sk
   Const        r16, 0
   Move         r35, r16
-L5:
   LessInt      r36, r35, r32
   JumpIfFalse  r36, L2
   Index        r37, r31, r35
@@ -101,6 +86,7 @@ L5:
   // where it.i_manager_id == 1 && dt.d_moy == month && dt.d_year == year
   Const        r6, "i_manager_id"
   Index        r42, r38, r6
+L5:
   Const        r43, 1
   Equal        r44, r42, r43
   Const        r7, "d_moy"
@@ -116,7 +102,6 @@ L5:
   Move         r49, r46
   JumpIfFalse  r49, L4
   Move         r49, r48
-L4:
   JumpIfFalse  r49, L3
   // select { d_year: dt.d_year, i_category_id: it.i_category_id, i_category: it.i_category, price: ss.ext_sales_price }
   Const        r50, "d_year"
@@ -130,6 +115,7 @@ L4:
   Index        r55, r38, r10
   Const        r56, "price"
   Const        r12, "ext_sales_price"
+L4:
   Index        r57, r27, r12
   Move         r58, r50
   Move         r59, r51
@@ -143,56 +129,30 @@ L4:
   // from dt in date_dim
   Append       r67, r5, r66
   Move         r5, r67
-L3:
   // join it in item on ss.item_sk == it.i_item_sk
   Const        r43, 1
   Add          r35, r35, r43
   Jump         L5
-L2:
-  // join ss in store_sales on ss.sold_date_sk == dt.d_date_sk
-  Const        r43, 1
-  Add          r24, r24, r43
-  Jump         L6
-L1:
-  // from dt in date_dim
-  Const        r43, 1
-  AddInt       r15, r15, r43
-  Jump         L7
-L0:
-  // from r in records
-  Const        r68, []
+L3:
   // group by { d_year: r.d_year, i_category_id: r.i_category_id, i_category: r.i_category } into g
-  Const        r8, "d_year"
-  Const        r8, "d_year"
-  Const        r9, "i_category_id"
-  Const        r9, "i_category_id"
-  Const        r10, "i_category"
   Const        r10, "i_category"
   // d_year: g.key.d_year,
-  Const        r8, "d_year"
   Const        r69, "key"
-  Const        r8, "d_year"
-  // i_category_id: g.key.i_category_id,
-  Const        r9, "i_category_id"
-  Const        r69, "key"
-  Const        r9, "i_category_id"
-  // i_category: g.key.i_category,
-  Const        r10, "i_category"
-  Const        r69, "key"
-  Const        r10, "i_category"
   // sum_ss_ext_sales_price: sum(from x in g select x.price)
   Const        r70, "sum_ss_ext_sales_price"
+L2:
   Const        r11, "price"
   // from r in records
   IterPrep     r71, r5
   Len          r72, r71
+L1:
   Const        r73, 0
   MakeMap      r74, 0, r0
   Const        r76, []
+L0:
   Move         r75, r76
-L10:
   LessInt      r77, r73, r72
-  JumpIfFalse  r77, L8
+  JumpIfFalse  r77, L6
   Index        r78, r71, r73
   Move         r79, r78
   // group by { d_year: r.d_year, i_category_id: r.i_category_id, i_category: r.i_category } into g
@@ -214,7 +174,8 @@ L10:
   MakeMap      r92, 3, r86
   Str          r93, r92
   In           r94, r93, r74
-  JumpIfTrue   r94, L9
+  JumpIfTrue   r94, L7
+L8:
   // from r in records
   Const        r76, []
   Const        r95, "__group__"
@@ -239,44 +200,23 @@ L10:
   SetIndex     r74, r93, r109
   Append       r110, r75, r109
   Move         r75, r110
-L9:
-  Const        r98, "items"
   Index        r111, r74, r93
   Index        r112, r111, r98
   Append       r113, r112, r78
   SetIndex     r111, r98, r113
-  Const        r100, "count"
   Index        r114, r111, r100
   Const        r43, 1
   AddInt       r115, r114, r43
   SetIndex     r111, r100, r115
-  Const        r43, 1
   AddInt       r73, r73, r43
-  Jump         L10
-L8:
-  Const        r16, 0
-  Move         r116, r16
-  Len          r117, r75
-L14:
-  LessInt      r118, r116, r117
-  JumpIfFalse  r118, L11
-  Index        r119, r75, r116
-  Move         r120, r119
-  // d_year: g.key.d_year,
-  Const        r121, "d_year"
-  Const        r69, "key"
-  Index        r122, r120, r69
-  Const        r8, "d_year"
-  Index        r123, r122, r8
+  Jump         L8
+L7:
   // i_category_id: g.key.i_category_id,
-  Const        r124, "i_category_id"
-  Const        r69, "key"
   Index        r125, r120, r69
   Const        r9, "i_category_id"
   Index        r126, r125, r9
   // i_category: g.key.i_category,
   Const        r127, "i_category"
-  Const        r69, "key"
   Index        r128, r120, r69
   Const        r10, "i_category"
   Index        r129, r128, r10
@@ -287,10 +227,10 @@ L14:
   IterPrep     r132, r120
   Len          r133, r132
   Const        r16, 0
+L6:
   Move         r134, r16
-L13:
   LessInt      r135, r134, r133
-  JumpIfFalse  r135, L12
+  JumpIfFalse  r135, L9
   Index        r136, r132, r134
   Move         r137, r136
   Const        r11, "price"
@@ -299,48 +239,20 @@ L13:
   Move         r131, r139
   Const        r43, 1
   AddInt       r134, r134, r43
-  Jump         L13
-L12:
-  Sum          r140, r131
-  // d_year: g.key.d_year,
-  Move         r141, r121
-  Move         r142, r123
-  // i_category_id: g.key.i_category_id,
-  Move         r143, r124
-  Move         r144, r126
-  // i_category: g.key.i_category,
-  Move         r145, r127
-  Move         r146, r129
-  // sum_ss_ext_sales_price: sum(from x in g select x.price)
-  Move         r147, r130
-  Move         r148, r140
-  // select {
-  MakeMap      r149, 4, r141
-  // from r in records
-  Append       r150, r68, r149
-  Move         r68, r150
-  Const        r43, 1
-  AddInt       r116, r116, r43
-  Jump         L14
-L11:
-  // from g in grouped
-  Const        r151, []
-  // sort by -g.sum_ss_ext_sales_price
-  Const        r70, "sum_ss_ext_sales_price"
   // from g in grouped
   IterPrep     r152, r68
   Len          r153, r152
   Const        r16, 0
   Move         r154, r16
-L16:
   LessInt      r155, r154, r153
-  JumpIfFalse  r155, L15
+  JumpIfFalse  r155, L10
   Index        r156, r152, r154
   Move         r120, r156
   // sort by -g.sum_ss_ext_sales_price
   Const        r70, "sum_ss_ext_sales_price"
   Index        r159, r120, r70
   Neg          r160, r159
+L9:
   Move         r157, r160
   // from g in grouped
   Move         r158, r120
@@ -349,16 +261,4 @@ L16:
   Move         r151, r162
   Const        r43, 1
   AddInt       r154, r154, r43
-  Jump         L16
-L15:
-  // sort by -g.sum_ss_ext_sales_price
-  Sort         r163, r151
-  // from g in grouped
-  Move         r151, r163
-  // json(result)
-  JSON         r151
-  // expect result == [
-  Const        r164, [{"d_year": 2020, "i_category": "CatB", "i_category_id": 200, "sum_ss_ext_sales_price": 20.0}, {"d_year": 2020, "i_category": "CatA", "i_category_id": 100, "sum_ss_ext_sales_price": 10.0}]
-  Equal        r165, r151, r164
-  Expect       r165
-  Return       r0
+  Jump         L11

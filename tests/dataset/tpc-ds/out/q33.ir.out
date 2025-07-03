@@ -541,8 +541,6 @@ L20:
   Const        r189, "key"
   Const        r190, "total_sales"
   Const        r15, "price"
-  // sort by -sum(from x in g select x.price)
-  Const        r15, "price"
   // from s in union_sales
   IterPrep     r191, r187
   Len          r192, r191
@@ -550,8 +548,8 @@ L20:
   MakeMap      r194, 0, r0
   Const        r196, []
   Move         r195, r196
-L32:
   LessInt      r197, r193, r192
+L32:
   JumpIfFalse  r197, L30
   Index        r198, r191, r193
   Move         r199, r198
@@ -585,29 +583,22 @@ L32:
   SetIndex     r194, r201, r217
   Append       r218, r195, r217
   Move         r195, r218
-L31:
-  Const        r206, "items"
   Index        r219, r194, r201
+L31:
   Index        r220, r219, r206
   Append       r221, r220, r198
   SetIndex     r219, r206, r221
-  Const        r208, "count"
   Index        r222, r219, r208
   Const        r6, 1
   AddInt       r223, r222, r6
   SetIndex     r219, r208, r223
-  Const        r6, 1
   AddInt       r193, r193, r6
   Jump         L32
 L30:
-  Const        r20, 0
-  Move         r224, r20
-  Len          r225, r195
-L38:
-  LessInt      r226, r224, r225
   JumpIfFalse  r226, L33
   Index        r227, r195, r224
   Move         r228, r227
+L38:
   // select {i_manufact_id: g.key, total_sales: sum(from x in g select x.price)}
   Const        r229, "i_manufact_id"
   Const        r189, "key"
@@ -619,11 +610,11 @@ L38:
   Len          r234, r233
   Const        r20, 0
   Move         r235, r20
-L35:
   LessInt      r236, r235, r234
   JumpIfFalse  r236, L34
   Index        r237, r233, r235
   Move         r238, r237
+L35:
   Const        r15, "price"
   Index        r239, r238, r15
   Append       r240, r232, r239
@@ -632,10 +623,6 @@ L35:
   AddInt       r235, r235, r6
   Jump         L35
 L34:
-  Sum          r241, r232
-  Move         r242, r229
-  Move         r243, r230
-  Move         r244, r231
   Move         r245, r241
   MakeMap      r246, 2, r242
   // sort by -sum(from x in g select x.price)
@@ -645,11 +632,11 @@ L34:
   Len          r251, r250
   Const        r20, 0
   Move         r252, r20
-L37:
   LessInt      r253, r252, r251
   JumpIfFalse  r253, L36
   Index        r254, r250, r252
   Move         r238, r254
+L37:
   Const        r15, "price"
   Index        r255, r238, r15
   Append       r256, r249, r255
@@ -658,11 +645,7 @@ L37:
   AddInt       r252, r252, r6
   Jump         L37
 L36:
-  Sum          r257, r249
-  Neg          r258, r257
-  Move         r247, r258
   // from s in union_sales
-  Move         r248, r246
   MakeList     r259, 2, r247
   Append       r260, r188, r259
   Move         r188, r260
@@ -670,14 +653,7 @@ L36:
   AddInt       r224, r224, r6
   Jump         L38
 L33:
-  // sort by -sum(from x in g select x.price)
-  Sort         r261, r188
-  // from s in union_sales
-  Move         r188, r261
-  // json(result)
-  JSON         r188
   // expect result == [
-  Const        r262, [{"i_manufact_id": 1, "total_sales": 150.0}, {"i_manufact_id": 2, "total_sales": 50.0}]
   Equal        r263, r188, r262
   Expect       r263
   Return       r0

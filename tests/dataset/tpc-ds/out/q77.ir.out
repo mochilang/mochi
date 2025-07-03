@@ -18,13 +18,11 @@ func main (regs=846)
   // group by ss.s_store_sk into g
   Const        r8, "s_store_sk"
   // select { s_store_sk: g.key, sales: sum(from x in g select x.ss.ss_ext_sales_price), profit: sum(from x in g select x.ss.ss_net_profit) }
-  Const        r8, "s_store_sk"
   Const        r9, "key"
   Const        r10, "sales"
   Const        r11, "ss"
   Const        r12, "ss_ext_sales_price"
   Const        r13, "profit"
-  Const        r11, "ss"
   Const        r14, "ss_net_profit"
   // from ss in store_sales
   MakeMap      r15, 0, r0
@@ -33,18 +31,18 @@ func main (regs=846)
   IterPrep     r18, r1
   Len          r19, r18
   Const        r20, 0
-L5:
   LessInt      r21, r20, r19
   JumpIfFalse  r21, L0
+L2:
   Index        r22, r18, r20
   Move         r23, r22
   // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
   IterPrep     r24, r0
   Len          r25, r24
   Const        r26, 0
-L4:
   LessInt      r27, r26, r25
   JumpIfFalse  r27, L1
+L4:
   Index        r28, r24, r26
   Move         r29, r28
   Const        r30, "d_date_sk"
@@ -93,38 +91,29 @@ L4:
   SetIndex     r15, r44, r61
   Append       r62, r16, r61
   Move         r16, r62
-L3:
-  Const        r49, "items"
   Index        r63, r15, r44
   Index        r64, r63, r49
+L3:
   Append       r65, r64, r42
   SetIndex     r63, r49, r65
-  Const        r51, "count"
   Index        r66, r63, r51
   Const        r67, 1
   AddInt       r68, r66, r67
   SetIndex     r63, r51, r68
-L2:
   // join d in date_dim on d.d_date_sk == ss.ss_sold_date_sk
-  Const        r67, 1
   AddInt       r26, r26, r67
   Jump         L4
 L1:
   // from ss in store_sales
-  Const        r67, 1
-  AddInt       r20, r20, r67
-  Jump         L5
-L0:
-  Const        r52, 0
-  Move         r69, r52
   Len          r70, r16
-L11:
   LessInt      r71, r69, r70
-  JumpIfFalse  r71, L6
+  JumpIfFalse  r71, L5
+L0:
   Index        r72, r16, r69
   Move         r73, r72
   // select { s_store_sk: g.key, sales: sum(from x in g select x.ss.ss_ext_sales_price), profit: sum(from x in g select x.ss.ss_net_profit) }
   Const        r74, "s_store_sk"
+L10:
   Const        r9, "key"
   Index        r75, r73, r9
   Const        r76, "sales"
@@ -135,12 +124,12 @@ L11:
   Len          r79, r78
   Const        r52, 0
   Move         r80, r52
-L8:
   LessInt      r81, r80, r79
-  JumpIfFalse  r81, L7
+  JumpIfFalse  r81, L6
   Index        r82, r78, r80
   Move         r83, r82
   Const        r11, "ss"
+L7:
   Index        r84, r83, r11
   Const        r12, "ss_ext_sales_price"
   Index        r85, r84, r12
@@ -148,23 +137,18 @@ L8:
   Move         r77, r86
   Const        r67, 1
   AddInt       r80, r80, r67
-  Jump         L8
-L7:
-  Sum          r87, r77
-  Const        r88, "profit"
-  Const        r89, []
-  Const        r11, "ss"
-  Const        r14, "ss_net_profit"
+  Jump         L7
+L6:
   IterPrep     r90, r73
   Len          r91, r90
   Const        r52, 0
   Move         r92, r52
-L10:
   LessInt      r93, r92, r91
-  JumpIfFalse  r93, L9
+  JumpIfFalse  r93, L8
   Index        r94, r90, r92
   Move         r83, r94
   Const        r11, "ss"
+L9:
   Index        r95, r83, r11
   Const        r14, "ss_net_profit"
   Index        r96, r95, r14
@@ -172,13 +156,8 @@ L10:
   Move         r89, r97
   Const        r67, 1
   AddInt       r92, r92, r67
-  Jump         L10
-L9:
-  Sum          r98, r89
-  Move         r99, r74
-  Move         r100, r75
-  Move         r101, r76
-  Move         r102, r87
+  Jump         L9
+L8:
   Move         r103, r88
   Move         r104, r98
   MakeMap      r105, 3, r99
@@ -187,20 +166,11 @@ L9:
   Move         r7, r106
   Const        r67, 1
   AddInt       r69, r69, r67
-  Jump         L11
-L6:
-  // from sr in store_returns
-  Const        r107, []
-  // group by sr.s_store_sk into g
-  Const        r8, "s_store_sk"
+  Jump         L10
+L5:
   // select { s_store_sk: g.key, returns: sum(from x in g select x.sr.sr_return_amt), profit_loss: sum(from x in g select x.sr.sr_net_loss) }
-  Const        r8, "s_store_sk"
-  Const        r9, "key"
-  Const        r108, "returns"
-  Const        r109, "sr"
   Const        r110, "sr_return_amt"
   Const        r111, "profit_loss"
-  Const        r109, "sr"
   Const        r112, "sr_net_loss"
   // from sr in store_returns
   MakeMap      r113, 0, r0
@@ -209,26 +179,25 @@ L6:
   IterPrep     r115, r2
   Len          r116, r115
   Const        r117, 0
-L17:
   LessInt      r118, r117, r116
-  JumpIfFalse  r118, L12
+  JumpIfFalse  r118, L11
   Index        r119, r115, r117
   Move         r120, r119
   // join d in date_dim on d.d_date_sk == sr.sr_returned_date_sk
   IterPrep     r121, r0
   Len          r122, r121
   Const        r123, 0
-L16:
   LessInt      r124, r123, r122
-  JumpIfFalse  r124, L13
+  JumpIfFalse  r124, L12
   Index        r125, r121, r123
   Move         r126, r125
   Const        r30, "d_date_sk"
   Index        r127, r126, r30
   Const        r128, "sr_returned_date_sk"
+L15:
   Index        r129, r120, r128
   Equal        r130, r127, r129
-  JumpIfFalse  r130, L14
+  JumpIfFalse  r130, L13
   // from sr in store_returns
   Const        r109, "sr"
   Move         r131, r120
@@ -244,7 +213,7 @@ L16:
   Index        r138, r120, r8
   Str          r139, r138
   In           r140, r139, r113
-  JumpIfTrue   r140, L15
+  JumpIfTrue   r140, L14
   // from sr in store_returns
   Const        r17, []
   Const        r46, "__group__"
@@ -269,51 +238,40 @@ L16:
   SetIndex     r113, r139, r151
   Append       r152, r114, r151
   Move         r114, r152
-L15:
-  Const        r49, "items"
   Index        r153, r113, r139
   Index        r154, r153, r49
   Append       r155, r154, r137
   SetIndex     r153, r49, r155
-  Const        r51, "count"
   Index        r156, r153, r51
   Const        r67, 1
   AddInt       r157, r156, r67
-  SetIndex     r153, r51, r157
 L14:
+  SetIndex     r153, r51, r157
   // join d in date_dim on d.d_date_sk == sr.sr_returned_date_sk
-  Const        r67, 1
   AddInt       r123, r123, r67
-  Jump         L16
+  Jump         L15
 L13:
   // from sr in store_returns
-  Const        r67, 1
-  AddInt       r117, r117, r67
-  Jump         L17
-L12:
-  Const        r52, 0
-  Move         r158, r52
-  Len          r159, r114
-L23:
-  LessInt      r160, r158, r159
-  JumpIfFalse  r160, L18
+  JumpIfFalse  r160, L16
   Index        r161, r114, r158
   Move         r73, r161
+L12:
   // select { s_store_sk: g.key, returns: sum(from x in g select x.sr.sr_return_amt), profit_loss: sum(from x in g select x.sr.sr_net_loss) }
   Const        r162, "s_store_sk"
   Const        r9, "key"
   Index        r163, r73, r9
+L11:
   Const        r164, "returns"
   Const        r165, []
   Const        r109, "sr"
+L21:
   Const        r110, "sr_return_amt"
   IterPrep     r166, r73
   Len          r167, r166
   Const        r52, 0
   Move         r168, r52
-L20:
   LessInt      r169, r168, r167
-  JumpIfFalse  r169, L19
+  JumpIfFalse  r169, L17
   Index        r170, r166, r168
   Move         r83, r170
   Const        r109, "sr"
@@ -322,22 +280,12 @@ L20:
   Index        r172, r171, r110
   Append       r173, r165, r172
   Move         r165, r173
+L18:
   Const        r67, 1
   AddInt       r168, r168, r67
-  Jump         L20
-L19:
-  Sum          r174, r165
-  Const        r175, "profit_loss"
-  Const        r176, []
-  Const        r109, "sr"
-  Const        r112, "sr_net_loss"
-  IterPrep     r177, r73
-  Len          r178, r177
-  Const        r52, 0
-  Move         r179, r52
-L22:
-  LessInt      r180, r179, r178
-  JumpIfFalse  r180, L21
+  Jump         L18
+L17:
+  JumpIfFalse  r180, L19
   Index        r181, r177, r179
   Move         r83, r181
   Const        r109, "sr"
@@ -346,68 +294,44 @@ L22:
   Index        r183, r182, r112
   Append       r184, r176, r183
   Move         r176, r184
+L20:
   Const        r67, 1
   AddInt       r179, r179, r67
-  Jump         L22
-L21:
-  Sum          r185, r176
-  Move         r186, r162
-  Move         r187, r163
-  Move         r188, r164
-  Move         r189, r174
-  Move         r190, r175
-  Move         r191, r185
-  MakeMap      r192, 3, r186
+  Jump         L20
+L19:
   // from sr in store_returns
-  Append       r193, r107, r192
-  Move         r107, r193
   Const        r67, 1
   AddInt       r158, r158, r67
-  Jump         L23
-L18:
+  Jump         L21
+L16:
   // from cs in catalog_sales
-  Const        r194, []
-  // group by cs.cs_call_center_sk into g
-  Const        r195, "cs_call_center_sk"
-  // select { cs_call_center_sk: g.key, sales: sum(from x in g select x.cs.cs_ext_sales_price), profit: sum(from x in g select x.cs.cs_net_profit) }
-  Const        r195, "cs_call_center_sk"
-  Const        r9, "key"
-  Const        r10, "sales"
-  Const        r196, "cs"
-  Const        r197, "cs_ext_sales_price"
-  Const        r13, "profit"
-  Const        r196, "cs"
-  Const        r198, "cs_net_profit"
-  // from cs in catalog_sales
-  MakeMap      r199, 0, r0
-  Const        r17, []
   Move         r200, r17
   IterPrep     r201, r3
   Len          r202, r201
   Const        r203, 0
-L29:
   LessInt      r204, r203, r202
-  JumpIfFalse  r204, L24
+  JumpIfFalse  r204, L22
   Index        r205, r201, r203
   Move         r206, r205
   // join d in date_dim on d.d_date_sk == cs.cs_sold_date_sk
   IterPrep     r207, r0
   Len          r208, r207
   Const        r209, 0
-L28:
   LessInt      r210, r209, r208
-  JumpIfFalse  r210, L25
+  JumpIfFalse  r210, L23
   Index        r211, r207, r209
   Move         r212, r211
   Const        r30, "d_date_sk"
+L25:
   Index        r213, r212, r30
   Const        r214, "cs_sold_date_sk"
   Index        r215, r206, r214
   Equal        r216, r213, r215
-  JumpIfFalse  r216, L26
+  JumpIfFalse  r216, L24
   // from cs in catalog_sales
   Const        r196, "cs"
   Move         r217, r206
+L26:
   Const        r36, "d"
   Move         r218, r212
   Move         r219, r196
@@ -420,7 +344,7 @@ L28:
   Index        r224, r206, r195
   Str          r225, r224
   In           r226, r225, r199
-  JumpIfTrue   r226, L27
+  JumpIfTrue   r226, L25
   // from cs in catalog_sales
   Const        r17, []
   Const        r46, "__group__"
@@ -445,51 +369,33 @@ L28:
   SetIndex     r199, r225, r237
   Append       r238, r200, r237
   Move         r200, r238
-L27:
-  Const        r49, "items"
   Index        r239, r199, r225
   Index        r240, r239, r49
   Append       r241, r240, r223
   SetIndex     r239, r49, r241
-  Const        r51, "count"
   Index        r242, r239, r51
   Const        r67, 1
   AddInt       r243, r242, r67
   SetIndex     r239, r51, r243
-L26:
   // join d in date_dim on d.d_date_sk == cs.cs_sold_date_sk
-  Const        r67, 1
   AddInt       r209, r209, r67
-  Jump         L28
-L25:
-  // from cs in catalog_sales
-  Const        r67, 1
-  AddInt       r203, r203, r67
-  Jump         L29
+  Jump         L26
 L24:
-  Const        r52, 0
-  Move         r244, r52
-  Len          r245, r200
-L35:
-  LessInt      r246, r244, r245
-  JumpIfFalse  r246, L30
-  Index        r247, r200, r244
-  Move         r73, r247
   // select { cs_call_center_sk: g.key, sales: sum(from x in g select x.cs.cs_ext_sales_price), profit: sum(from x in g select x.cs.cs_net_profit) }
-  Const        r248, "cs_call_center_sk"
-  Const        r9, "key"
   Index        r249, r73, r9
   Const        r250, "sales"
   Const        r251, []
+L23:
   Const        r196, "cs"
   Const        r197, "cs_ext_sales_price"
   IterPrep     r252, r73
+L22:
   Len          r253, r252
   Const        r52, 0
   Move         r254, r52
-L32:
+L29:
   LessInt      r255, r254, r253
-  JumpIfFalse  r255, L31
+  JumpIfFalse  r255, L27
   Index        r256, r252, r254
   Move         r83, r256
   Const        r196, "cs"
@@ -500,10 +406,6 @@ L32:
   Move         r251, r259
   Const        r67, 1
   AddInt       r254, r254, r67
-  Jump         L32
-L31:
-  Sum          r260, r251
-  Const        r261, "profit"
   Const        r262, []
   Const        r196, "cs"
   Const        r198, "cs_net_profit"
@@ -511,23 +413,19 @@ L31:
   Len          r264, r263
   Const        r52, 0
   Move         r265, r52
-L34:
   LessInt      r266, r265, r264
-  JumpIfFalse  r266, L33
+  JumpIfFalse  r266, L28
   Index        r267, r263, r265
   Move         r83, r267
   Const        r196, "cs"
   Index        r268, r83, r196
+L27:
   Const        r198, "cs_net_profit"
   Index        r269, r268, r198
   Append       r270, r262, r269
   Move         r262, r270
   Const        r67, 1
   AddInt       r265, r265, r67
-  Jump         L34
-L33:
-  Sum          r271, r262
-  Move         r272, r248
   Move         r273, r249
   Move         r274, r250
   Move         r275, r260
@@ -539,20 +437,14 @@ L33:
   Move         r194, r279
   Const        r67, 1
   AddInt       r244, r244, r67
-  Jump         L35
-L30:
-  // from cr in catalog_returns
-  Const        r280, []
-  // group by cr.cr_call_center_sk into g
-  Const        r281, "cr_call_center_sk"
+  Jump         L29
+L28:
   // select { cr_call_center_sk: g.key, returns: sum(from x in g select x.cr.cr_return_amount), profit_loss: sum(from x in g select x.cr.cr_net_loss) }
-  Const        r281, "cr_call_center_sk"
   Const        r9, "key"
   Const        r108, "returns"
   Const        r282, "cr"
   Const        r283, "cr_return_amount"
   Const        r111, "profit_loss"
-  Const        r282, "cr"
   Const        r284, "cr_net_loss"
   // from cr in catalog_returns
   MakeMap      r285, 0, r0
@@ -561,18 +453,16 @@ L30:
   IterPrep     r287, r4
   Len          r288, r287
   Const        r289, 0
-L41:
   LessInt      r290, r289, r288
-  JumpIfFalse  r290, L36
+  JumpIfFalse  r290, L30
   Index        r291, r287, r289
   Move         r292, r291
   // join d in date_dim on d.d_date_sk == cr.cr_returned_date_sk
   IterPrep     r293, r0
   Len          r294, r293
   Const        r295, 0
-L40:
   LessInt      r296, r295, r294
-  JumpIfFalse  r296, L37
+  JumpIfFalse  r296, L31
   Index        r297, r293, r295
   Move         r298, r297
   Const        r30, "d_date_sk"
@@ -580,7 +470,7 @@ L40:
   Const        r300, "cr_returned_date_sk"
   Index        r301, r292, r300
   Equal        r302, r299, r301
-  JumpIfFalse  r302, L38
+  JumpIfFalse  r302, L32
   // from cr in catalog_returns
   Const        r282, "cr"
   Move         r303, r292
@@ -589,6 +479,7 @@ L40:
   Move         r305, r282
   Move         r306, r303
   Move         r307, r36
+L34:
   Move         r308, r304
   MakeMap      r309, 2, r305
   // group by cr.cr_call_center_sk into g
@@ -596,7 +487,7 @@ L40:
   Index        r310, r292, r281
   Str          r311, r310
   In           r312, r311, r285
-  JumpIfTrue   r312, L39
+  JumpIfTrue   r312, L33
   // from cr in catalog_returns
   Const        r17, []
   Const        r46, "__group__"
@@ -621,34 +512,20 @@ L40:
   SetIndex     r285, r311, r323
   Append       r324, r286, r323
   Move         r286, r324
-L39:
-  Const        r49, "items"
   Index        r325, r285, r311
   Index        r326, r325, r49
   Append       r327, r326, r309
   SetIndex     r325, r49, r327
-  Const        r51, "count"
   Index        r328, r325, r51
   Const        r67, 1
   AddInt       r329, r328, r67
   SetIndex     r325, r51, r329
-L38:
   // join d in date_dim on d.d_date_sk == cr.cr_returned_date_sk
-  Const        r67, 1
   AddInt       r295, r295, r67
-  Jump         L40
-L37:
+  Jump         L34
+L33:
   // from cr in catalog_returns
-  Const        r67, 1
-  AddInt       r289, r289, r67
-  Jump         L41
-L36:
-  Const        r52, 0
-  Move         r330, r52
-  Len          r331, r286
-L47:
-  LessInt      r332, r330, r331
-  JumpIfFalse  r332, L42
+  JumpIfFalse  r332, L35
   Index        r333, r286, r330
   Move         r73, r333
   // select { cr_call_center_sk: g.key, returns: sum(from x in g select x.cr.cr_return_amount), profit_loss: sum(from x in g select x.cr.cr_net_loss) }
@@ -659,16 +536,19 @@ L47:
   Const        r337, []
   Const        r282, "cr"
   Const        r283, "cr_return_amount"
+L32:
   IterPrep     r338, r73
   Len          r339, r338
   Const        r52, 0
+L31:
   Move         r340, r52
-L44:
   LessInt      r341, r340, r339
-  JumpIfFalse  r341, L43
+  JumpIfFalse  r341, L36
+L30:
   Index        r342, r338, r340
   Move         r83, r342
   Const        r282, "cr"
+L38:
   Index        r343, r83, r282
   Const        r283, "cr_return_amount"
   Index        r344, r343, r283
@@ -676,20 +556,10 @@ L44:
   Move         r337, r345
   Const        r67, 1
   AddInt       r340, r340, r67
-  Jump         L44
-L43:
-  Sum          r346, r337
-  Const        r347, "profit_loss"
-  Const        r348, []
-  Const        r282, "cr"
-  Const        r284, "cr_net_loss"
-  IterPrep     r349, r73
-  Len          r350, r349
   Const        r52, 0
   Move         r351, r52
-L46:
   LessInt      r352, r351, r350
-  JumpIfFalse  r352, L45
+  JumpIfFalse  r352, L37
   Index        r353, r349, r351
   Move         r83, r353
   Const        r282, "cr"
@@ -699,36 +569,18 @@ L46:
   Append       r356, r348, r355
   Move         r348, r356
   Const        r67, 1
+L36:
   AddInt       r351, r351, r67
-  Jump         L46
-L45:
-  Sum          r357, r348
-  Move         r358, r334
-  Move         r359, r335
-  Move         r360, r336
-  Move         r361, r346
-  Move         r362, r347
-  Move         r363, r357
   MakeMap      r364, 3, r358
   // from cr in catalog_returns
   Append       r365, r280, r364
   Move         r280, r365
   Const        r67, 1
   AddInt       r330, r330, r67
-  Jump         L47
-L42:
-  // from ws in web_sales
-  Const        r366, []
-  // group by ws.ws_web_page_sk into g
-  Const        r367, "ws_web_page_sk"
+  Jump         L38
+L37:
   // select { wp_web_page_sk: g.key, sales: sum(from x in g select x.ws.ws_ext_sales_price), profit: sum(from x in g select x.ws.ws_net_profit) }
-  Const        r368, "wp_web_page_sk"
-  Const        r9, "key"
-  Const        r10, "sales"
-  Const        r369, "ws"
-  Const        r370, "ws_ext_sales_price"
   Const        r13, "profit"
-  Const        r369, "ws"
   Const        r371, "ws_net_profit"
   // from ws in web_sales
   MakeMap      r372, 0, r0
@@ -737,18 +589,17 @@ L42:
   IterPrep     r374, r5
   Len          r375, r374
   Const        r376, 0
-L53:
   LessInt      r377, r376, r375
-  JumpIfFalse  r377, L48
+  JumpIfFalse  r377, L39
   Index        r378, r374, r376
   Move         r379, r378
   // join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk
   IterPrep     r380, r0
+L35:
   Len          r381, r380
   Const        r382, 0
-L52:
   LessInt      r383, r382, r381
-  JumpIfFalse  r383, L49
+  JumpIfFalse  r383, L40
   Index        r384, r380, r382
   Move         r385, r384
   Const        r30, "d_date_sk"
@@ -756,7 +607,7 @@ L52:
   Const        r387, "ws_sold_date_sk"
   Index        r388, r379, r387
   Equal        r389, r386, r388
-  JumpIfFalse  r389, L50
+  JumpIfFalse  r389, L41
   // from ws in web_sales
   Const        r369, "ws"
   Move         r390, r379
@@ -770,9 +621,10 @@ L52:
   // group by ws.ws_web_page_sk into g
   Const        r367, "ws_web_page_sk"
   Index        r397, r379, r367
+L43:
   Str          r398, r397
   In           r399, r398, r372
-  JumpIfTrue   r399, L51
+  JumpIfTrue   r399, L42
   // from ws in web_sales
   Const        r17, []
   Const        r46, "__group__"
@@ -797,38 +649,19 @@ L52:
   SetIndex     r372, r398, r410
   Append       r411, r373, r410
   Move         r373, r411
-L51:
-  Const        r49, "items"
   Index        r412, r372, r398
   Index        r413, r412, r49
   Append       r414, r413, r396
   SetIndex     r412, r49, r414
-  Const        r51, "count"
   Index        r415, r412, r51
   Const        r67, 1
   AddInt       r416, r415, r67
   SetIndex     r412, r51, r416
-L50:
   // join d in date_dim on d.d_date_sk == ws.ws_sold_date_sk
-  Const        r67, 1
   AddInt       r382, r382, r67
-  Jump         L52
-L49:
-  // from ws in web_sales
-  Const        r67, 1
-  AddInt       r376, r376, r67
-  Jump         L53
-L48:
-  Const        r52, 0
-  Move         r417, r52
-  Len          r418, r373
-L59:
-  LessInt      r419, r417, r418
-  JumpIfFalse  r419, L54
-  Index        r420, r373, r417
-  Move         r73, r420
+  Jump         L43
+L42:
   // select { wp_web_page_sk: g.key, sales: sum(from x in g select x.ws.ws_ext_sales_price), profit: sum(from x in g select x.ws.ws_net_profit) }
-  Const        r421, "wp_web_page_sk"
   Const        r9, "key"
   Index        r422, r73, r9
   Const        r423, "sales"
@@ -839,33 +672,22 @@ L59:
   Len          r426, r425
   Const        r52, 0
   Move         r427, r52
-L56:
+L41:
   LessInt      r428, r427, r426
-  JumpIfFalse  r428, L55
+  JumpIfFalse  r428, L44
   Index        r429, r425, r427
+L40:
   Move         r83, r429
   Const        r369, "ws"
   Index        r430, r83, r369
+L39:
   Const        r370, "ws_ext_sales_price"
   Index        r431, r430, r370
   Append       r432, r424, r431
+L46:
   Move         r424, r432
   Const        r67, 1
   AddInt       r427, r427, r67
-  Jump         L56
-L55:
-  Sum          r433, r424
-  Const        r434, "profit"
-  Const        r435, []
-  Const        r369, "ws"
-  Const        r371, "ws_net_profit"
-  IterPrep     r436, r73
-  Len          r437, r436
-  Const        r52, 0
-  Move         r438, r52
-L58:
-  LessInt      r439, r438, r437
-  JumpIfFalse  r439, L57
   Index        r440, r436, r438
   Move         r83, r440
   Const        r369, "ws"
@@ -876,10 +698,8 @@ L58:
   Move         r435, r443
   Const        r67, 1
   AddInt       r438, r438, r67
-  Jump         L58
-L57:
-  Sum          r444, r435
-  Move         r445, r421
+  Jump         L45
+L44:
   Move         r446, r422
   Move         r447, r423
   Move         r448, r433
@@ -890,797 +710,6 @@ L57:
   Append       r452, r366, r451
   Move         r366, r452
   Const        r67, 1
+L45:
   AddInt       r417, r417, r67
-  Jump         L59
-L54:
-  // from wr in web_returns
-  Const        r453, []
-  // group by wr.wr_web_page_sk into g
-  Const        r454, "wr_web_page_sk"
-  // select { wp_web_page_sk: g.key, returns: sum(from x in g select x.wr.wr_return_amt), profit_loss: sum(from x in g select x.wr.wr_net_loss) }
-  Const        r368, "wp_web_page_sk"
-  Const        r9, "key"
-  Const        r108, "returns"
-  Const        r455, "wr"
-  Const        r456, "wr_return_amt"
-  Const        r111, "profit_loss"
-  Const        r455, "wr"
-  Const        r457, "wr_net_loss"
-  // from wr in web_returns
-  MakeMap      r458, 0, r0
-  Const        r17, []
-  Move         r459, r17
-  IterPrep     r460, r6
-  Len          r461, r460
-  Const        r462, 0
-L65:
-  LessInt      r463, r462, r461
-  JumpIfFalse  r463, L60
-  Index        r464, r460, r462
-  Move         r465, r464
-  // join d in date_dim on d.d_date_sk == wr.wr_returned_date_sk
-  IterPrep     r466, r0
-  Len          r467, r466
-  Const        r468, 0
-L64:
-  LessInt      r469, r468, r467
-  JumpIfFalse  r469, L61
-  Index        r470, r466, r468
-  Move         r471, r470
-  Const        r30, "d_date_sk"
-  Index        r472, r471, r30
-  Const        r473, "wr_returned_date_sk"
-  Index        r474, r465, r473
-  Equal        r475, r472, r474
-  JumpIfFalse  r475, L62
-  // from wr in web_returns
-  Const        r455, "wr"
-  Move         r476, r465
-  Const        r36, "d"
-  Move         r477, r471
-  Move         r478, r455
-  Move         r479, r476
-  Move         r480, r36
-  Move         r481, r477
-  MakeMap      r482, 2, r478
-  // group by wr.wr_web_page_sk into g
-  Const        r454, "wr_web_page_sk"
-  Index        r483, r465, r454
-  Str          r484, r483
-  In           r485, r484, r458
-  JumpIfTrue   r485, L63
-  // from wr in web_returns
-  Const        r17, []
-  Const        r46, "__group__"
-  Const        r47, true
-  Const        r9, "key"
-  // group by wr.wr_web_page_sk into g
-  Move         r486, r483
-  // from wr in web_returns
-  Const        r49, "items"
-  Move         r487, r17
-  Const        r51, "count"
-  Const        r52, 0
-  Move         r488, r46
-  Move         r489, r47
-  Move         r490, r9
-  Move         r491, r486
-  Move         r492, r49
-  Move         r493, r487
-  Move         r494, r51
-  Move         r495, r52
-  MakeMap      r496, 4, r488
-  SetIndex     r458, r484, r496
-  Append       r497, r459, r496
-  Move         r459, r497
-L63:
-  Const        r49, "items"
-  Index        r498, r458, r484
-  Index        r499, r498, r49
-  Append       r500, r499, r482
-  SetIndex     r498, r49, r500
-  Const        r51, "count"
-  Index        r501, r498, r51
-  Const        r67, 1
-  AddInt       r502, r501, r67
-  SetIndex     r498, r51, r502
-L62:
-  // join d in date_dim on d.d_date_sk == wr.wr_returned_date_sk
-  Const        r67, 1
-  AddInt       r468, r468, r67
-  Jump         L64
-L61:
-  // from wr in web_returns
-  Const        r67, 1
-  AddInt       r462, r462, r67
-  Jump         L65
-L60:
-  Const        r52, 0
-  Move         r503, r52
-  Len          r504, r459
-L71:
-  LessInt      r505, r503, r504
-  JumpIfFalse  r505, L66
-  Index        r506, r459, r503
-  Move         r73, r506
-  // select { wp_web_page_sk: g.key, returns: sum(from x in g select x.wr.wr_return_amt), profit_loss: sum(from x in g select x.wr.wr_net_loss) }
-  Const        r507, "wp_web_page_sk"
-  Const        r9, "key"
-  Index        r508, r73, r9
-  Const        r509, "returns"
-  Const        r510, []
-  Const        r455, "wr"
-  Const        r456, "wr_return_amt"
-  IterPrep     r511, r73
-  Len          r512, r511
-  Const        r52, 0
-  Move         r513, r52
-L68:
-  LessInt      r514, r513, r512
-  JumpIfFalse  r514, L67
-  Index        r515, r511, r513
-  Move         r83, r515
-  Const        r455, "wr"
-  Index        r516, r83, r455
-  Const        r456, "wr_return_amt"
-  Index        r517, r516, r456
-  Append       r518, r510, r517
-  Move         r510, r518
-  Const        r67, 1
-  AddInt       r513, r513, r67
-  Jump         L68
-L67:
-  Sum          r519, r510
-  Const        r520, "profit_loss"
-  Const        r521, []
-  Const        r455, "wr"
-  Const        r457, "wr_net_loss"
-  IterPrep     r522, r73
-  Len          r523, r522
-  Const        r52, 0
-  Move         r524, r52
-L70:
-  LessInt      r525, r524, r523
-  JumpIfFalse  r525, L69
-  Index        r526, r522, r524
-  Move         r83, r526
-  Const        r455, "wr"
-  Index        r527, r83, r455
-  Const        r457, "wr_net_loss"
-  Index        r528, r527, r457
-  Append       r529, r521, r528
-  Move         r521, r529
-  Const        r67, 1
-  AddInt       r524, r524, r67
-  Jump         L70
-L69:
-  Sum          r530, r521
-  Move         r531, r507
-  Move         r532, r508
-  Move         r533, r509
-  Move         r534, r519
-  Move         r535, r520
-  Move         r536, r530
-  MakeMap      r537, 3, r531
-  // from wr in web_returns
-  Append       r538, r453, r537
-  Move         r453, r538
-  Const        r67, 1
-  AddInt       r503, r503, r67
-  Jump         L71
-L66:
-  // from s in ss left join r in sr on s.s_store_sk == r.s_store_sk select {
-  Const        r539, []
-  IterPrep     r540, r7
-  Len          r541, r540
-  IterPrep     r542, r107
-  Len          r543, r542
-  MakeMap      r544, 0, r0
-  Const        r545, 0
-L74:
-  LessInt      r546, r545, r543
-  JumpIfFalse  r546, L72
-  Index        r547, r542, r545
-  Move         r548, r547
-  Const        r8, "s_store_sk"
-  Index        r549, r548, r8
-  Index        r550, r544, r549
-  Const        r551, nil
-  NotEqual     r552, r550, r551
-  JumpIfTrue   r552, L73
-  MakeList     r553, 0, r0
-  SetIndex     r544, r549, r553
-L73:
-  Index        r550, r544, r549
-  Append       r554, r550, r547
-  SetIndex     r544, r549, r554
-  Const        r67, 1
-  AddInt       r545, r545, r67
-  Jump         L74
-L72:
-  Const        r555, 0
-L79:
-  LessInt      r556, r555, r541
-  JumpIfFalse  r556, L75
-  Index        r557, r540, r555
-  Move         r558, r557
-  Const        r8, "s_store_sk"
-  Index        r559, r558, r8
-  Index        r560, r544, r559
-  Const        r551, nil
-  NotEqual     r561, r560, r551
-  JumpIfFalse  r561, L76
-  Len          r562, r560
-  Const        r563, 0
-L77:
-  LessInt      r564, r563, r562
-  JumpIfFalse  r564, L76
-  Index        r565, r560, r563
-  Move         r548, r565
-  // channel: "store channel",
-  Const        r566, "channel"
-  Const        r567, "store channel"
-  // id: s.s_store_sk,
-  Const        r568, "id"
-  Const        r8, "s_store_sk"
-  Index        r569, r558, r8
-  // sales: s.sales,
-  Const        r570, "sales"
-  Const        r10, "sales"
-  Index        r571, r558, r10
-  // returns: if r == null { 0.0 } else { r.returns },
-  Const        r572, "returns"
-  Const        r551, nil
-  Equal        r573, r548, r551
-  Const        r574, 0.0
-  Const        r108, "returns"
-  Index        r575, r548, r108
-  Select       576,573,574,575
-  // profit: s.profit - (if r == null { 0.0 } else { r.profit_loss })
-  Const        r577, "profit"
-  Const        r13, "profit"
-  Index        r578, r558, r13
-  Const        r551, nil
-  Equal        r579, r548, r551
-  Const        r574, 0.0
-  Const        r111, "profit_loss"
-  Index        r580, r548, r111
-  Select       581,579,574,580
-  Sub          r582, r578, r581
-  // channel: "store channel",
-  Move         r583, r566
-  Move         r584, r567
-  // id: s.s_store_sk,
-  Move         r585, r568
-  Move         r586, r569
-  // sales: s.sales,
-  Move         r587, r570
-  Move         r588, r571
-  // returns: if r == null { 0.0 } else { r.returns },
-  Move         r589, r572
-  Move         r590, r576
-  // profit: s.profit - (if r == null { 0.0 } else { r.profit_loss })
-  Move         r591, r577
-  Move         r592, r582
-  // from s in ss left join r in sr on s.s_store_sk == r.s_store_sk select {
-  MakeMap      r593, 5, r583
-  Append       r594, r539, r593
-  Move         r539, r594
-  Const        r67, 1
-  AddInt       r563, r563, r67
-  Jump         L77
-L76:
-  JumpIfTrue   r561, L78
-  Const        r551, nil
-  Move         r548, r551
-  // channel: "store channel",
-  Const        r595, "channel"
-  Const        r567, "store channel"
-  // id: s.s_store_sk,
-  Const        r596, "id"
-  Const        r8, "s_store_sk"
-  Index        r597, r558, r8
-  // sales: s.sales,
-  Const        r598, "sales"
-  Const        r10, "sales"
-  Index        r599, r558, r10
-  // returns: if r == null { 0.0 } else { r.returns },
-  Const        r600, "returns"
-  Const        r551, nil
-  Equal        r601, r548, r551
-  Const        r574, 0.0
-  Const        r108, "returns"
-  Index        r602, r548, r108
-  Select       603,601,574,602
-  // profit: s.profit - (if r == null { 0.0 } else { r.profit_loss })
-  Const        r604, "profit"
-  Const        r13, "profit"
-  Index        r605, r558, r13
-  Const        r551, nil
-  Equal        r606, r548, r551
-  Const        r574, 0.0
-  Const        r111, "profit_loss"
-  Index        r607, r548, r111
-  Select       608,606,574,607
-  Sub          r609, r605, r608
-  // channel: "store channel",
-  Move         r610, r595
-  Move         r611, r567
-  // id: s.s_store_sk,
-  Move         r612, r596
-  Move         r613, r597
-  // sales: s.sales,
-  Move         r614, r598
-  Move         r615, r599
-  // returns: if r == null { 0.0 } else { r.returns },
-  Move         r616, r600
-  Move         r617, r603
-  // profit: s.profit - (if r == null { 0.0 } else { r.profit_loss })
-  Move         r618, r604
-  Move         r619, r609
-  // from s in ss left join r in sr on s.s_store_sk == r.s_store_sk select {
-  MakeMap      r620, 5, r610
-  Append       r621, r539, r620
-  Move         r539, r621
-L78:
-  Const        r67, 1
-  AddInt       r555, r555, r67
-  Jump         L79
-L75:
-  // from c in cs join r in cr on c.cs_call_center_sk == r.cr_call_center_sk select { channel: "catalog channel", id: c.cs_call_center_sk, sales: c.sales, returns: r.returns, profit: c.profit - r.profit_loss },
-  Const        r622, []
-  IterPrep     r623, r194
-  Len          r624, r623
-  IterPrep     r625, r280
-  Len          r626, r625
-  Const        r195, "cs_call_center_sk"
-  Const        r281, "cr_call_center_sk"
-  Const        r627, "channel"
-  Const        r628, "id"
-  Const        r195, "cs_call_center_sk"
-  Const        r10, "sales"
-  Const        r10, "sales"
-  Const        r108, "returns"
-  Const        r108, "returns"
-  Const        r13, "profit"
-  Const        r13, "profit"
-  Const        r111, "profit_loss"
-  Const        r629, 0
-L84:
-  LessInt      r630, r629, r624
-  JumpIfFalse  r630, L80
-  Index        r631, r623, r629
-  Move         r632, r631
-  Const        r633, 0
-L83:
-  LessInt      r634, r633, r626
-  JumpIfFalse  r634, L81
-  Index        r635, r625, r633
-  Move         r548, r635
-  Const        r195, "cs_call_center_sk"
-  Index        r636, r632, r195
-  Const        r281, "cr_call_center_sk"
-  Index        r637, r548, r281
-  Equal        r638, r636, r637
-  JumpIfFalse  r638, L82
-  Const        r639, "channel"
-  Const        r640, "catalog channel"
-  Const        r641, "id"
-  Const        r195, "cs_call_center_sk"
-  Index        r642, r632, r195
-  Const        r643, "sales"
-  Const        r10, "sales"
-  Index        r644, r632, r10
-  Const        r645, "returns"
-  Const        r108, "returns"
-  Index        r646, r548, r108
-  Const        r647, "profit"
-  Const        r13, "profit"
-  Index        r648, r632, r13
-  Const        r111, "profit_loss"
-  Index        r649, r548, r111
-  Sub          r650, r648, r649
-  Move         r651, r639
-  Move         r652, r640
-  Move         r653, r641
-  Move         r654, r642
-  Move         r655, r643
-  Move         r656, r644
-  Move         r657, r645
-  Move         r658, r646
-  Move         r659, r647
-  Move         r660, r650
-  MakeMap      r661, 5, r651
-  Append       r662, r622, r661
-  Move         r622, r662
-L82:
-  Const        r67, 1
-  AddInt       r633, r633, r67
-  Jump         L83
-L81:
-  Const        r67, 1
-  AddInt       r629, r629, r67
-  Jump         L84
-L80:
-  // concat(
-  UnionAll     r663, r539, r622
-  // from w in ws left join r in wr on w.wp_web_page_sk == r.wp_web_page_sk select {
-  Const        r664, []
-  IterPrep     r665, r366
-  Len          r666, r665
-  IterPrep     r667, r453
-  Len          r668, r667
-  MakeMap      r669, 0, r0
-  Const        r670, 0
-L87:
-  LessInt      r671, r670, r668
-  JumpIfFalse  r671, L85
-  Index        r672, r667, r670
-  Move         r548, r672
-  Const        r368, "wp_web_page_sk"
-  Index        r673, r548, r368
-  Index        r674, r669, r673
-  Const        r551, nil
-  NotEqual     r675, r674, r551
-  JumpIfTrue   r675, L86
-  MakeList     r676, 0, r0
-  SetIndex     r669, r673, r676
-L86:
-  Index        r674, r669, r673
-  Append       r677, r674, r672
-  SetIndex     r669, r673, r677
-  Const        r67, 1
-  AddInt       r670, r670, r67
-  Jump         L87
-L85:
-  Const        r678, 0
-L92:
-  LessInt      r679, r678, r666
-  JumpIfFalse  r679, L88
-  Index        r680, r665, r678
-  Move         r681, r680
-  Const        r368, "wp_web_page_sk"
-  Index        r682, r681, r368
-  Index        r683, r669, r682
-  Const        r551, nil
-  NotEqual     r684, r683, r551
-  JumpIfFalse  r684, L89
-  Len          r685, r683
-  Const        r686, 0
-L90:
-  LessInt      r687, r686, r685
-  JumpIfFalse  r687, L89
-  Index        r688, r683, r686
-  Move         r548, r688
-  // channel: "web channel",
-  Const        r689, "channel"
-  Const        r690, "web channel"
-  // id: w.wp_web_page_sk,
-  Const        r691, "id"
-  Const        r368, "wp_web_page_sk"
-  Index        r692, r681, r368
-  // sales: w.sales,
-  Const        r693, "sales"
-  Const        r10, "sales"
-  Index        r694, r681, r10
-  // returns: if r == null { 0.0 } else { r.returns },
-  Const        r695, "returns"
-  Const        r551, nil
-  Equal        r696, r548, r551
-  Const        r574, 0.0
-  Const        r108, "returns"
-  Index        r697, r548, r108
-  Select       698,696,574,697
-  // profit: w.profit - (if r == null { 0.0 } else { r.profit_loss })
-  Const        r699, "profit"
-  Const        r13, "profit"
-  Index        r700, r681, r13
-  Const        r551, nil
-  Equal        r701, r548, r551
-  Const        r574, 0.0
-  Const        r111, "profit_loss"
-  Index        r702, r548, r111
-  Select       703,701,574,702
-  Sub          r704, r700, r703
-  // channel: "web channel",
-  Move         r705, r689
-  Move         r706, r690
-  // id: w.wp_web_page_sk,
-  Move         r707, r691
-  Move         r708, r692
-  // sales: w.sales,
-  Move         r709, r693
-  Move         r710, r694
-  // returns: if r == null { 0.0 } else { r.returns },
-  Move         r711, r695
-  Move         r712, r698
-  // profit: w.profit - (if r == null { 0.0 } else { r.profit_loss })
-  Move         r713, r699
-  Move         r714, r704
-  // from w in ws left join r in wr on w.wp_web_page_sk == r.wp_web_page_sk select {
-  MakeMap      r715, 5, r705
-  Append       r716, r664, r715
-  Move         r664, r716
-  Const        r67, 1
-  AddInt       r686, r686, r67
-  Jump         L90
-L89:
-  JumpIfTrue   r684, L91
-  Const        r551, nil
-  Move         r548, r551
-  // channel: "web channel",
-  Const        r717, "channel"
-  Const        r690, "web channel"
-  // id: w.wp_web_page_sk,
-  Const        r718, "id"
-  Const        r368, "wp_web_page_sk"
-  Index        r719, r681, r368
-  // sales: w.sales,
-  Const        r720, "sales"
-  Const        r10, "sales"
-  Index        r721, r681, r10
-  // returns: if r == null { 0.0 } else { r.returns },
-  Const        r722, "returns"
-  Const        r551, nil
-  Equal        r723, r548, r551
-  Const        r574, 0.0
-  Const        r108, "returns"
-  Index        r724, r548, r108
-  Select       725,723,574,724
-  // profit: w.profit - (if r == null { 0.0 } else { r.profit_loss })
-  Const        r726, "profit"
-  Const        r13, "profit"
-  Index        r727, r681, r13
-  Const        r551, nil
-  Equal        r728, r548, r551
-  Const        r574, 0.0
-  Const        r111, "profit_loss"
-  Index        r729, r548, r111
-  Select       730,728,574,729
-  Sub          r731, r727, r730
-  // channel: "web channel",
-  Move         r732, r717
-  Move         r733, r690
-  // id: w.wp_web_page_sk,
-  Move         r734, r718
-  Move         r735, r719
-  // sales: w.sales,
-  Move         r736, r720
-  Move         r737, r721
-  // returns: if r == null { 0.0 } else { r.returns },
-  Move         r738, r722
-  Move         r739, r725
-  // profit: w.profit - (if r == null { 0.0 } else { r.profit_loss })
-  Move         r740, r726
-  Move         r741, r731
-  // from w in ws left join r in wr on w.wp_web_page_sk == r.wp_web_page_sk select {
-  MakeMap      r742, 5, r732
-  Append       r743, r664, r742
-  Move         r664, r743
-L91:
-  Const        r67, 1
-  AddInt       r678, r678, r67
-  Jump         L92
-L88:
-  // concat(
-  UnionAll     r744, r663, r664
-  // from p in per_channel
-  Const        r745, []
-  // group by { channel: p.channel, id: p.id } into g
-  Const        r627, "channel"
-  Const        r627, "channel"
-  Const        r628, "id"
-  Const        r628, "id"
-  // select { channel: g.key.channel, id: g.key.id, sales: sum(from x in g select x.p.sales), returns: sum(from x in g select x.p.returns), profit: sum(from x in g select x.p.profit) }
-  Const        r627, "channel"
-  Const        r9, "key"
-  Const        r627, "channel"
-  Const        r628, "id"
-  Const        r9, "key"
-  Const        r628, "id"
-  Const        r10, "sales"
-  Const        r746, "p"
-  Const        r10, "sales"
-  Const        r108, "returns"
-  Const        r746, "p"
-  Const        r108, "returns"
-  Const        r13, "profit"
-  Const        r746, "p"
-  Const        r13, "profit"
-  // sort by g.key.channel
-  Const        r9, "key"
-  Const        r627, "channel"
-  // from p in per_channel
-  IterPrep     r747, r744
-  Len          r748, r747
-  Const        r749, 0
-  MakeMap      r750, 0, r0
-  Const        r17, []
-  Move         r751, r17
-L95:
-  LessInt      r752, r749, r748
-  JumpIfFalse  r752, L93
-  Index        r753, r747, r749
-  Move         r754, r753
-  // group by { channel: p.channel, id: p.id } into g
-  Const        r755, "channel"
-  Const        r627, "channel"
-  Index        r756, r754, r627
-  Const        r757, "id"
-  Const        r628, "id"
-  Index        r758, r754, r628
-  Move         r759, r755
-  Move         r760, r756
-  Move         r761, r757
-  Move         r762, r758
-  MakeMap      r763, 2, r759
-  Str          r764, r763
-  In           r765, r764, r750
-  JumpIfTrue   r765, L94
-  // from p in per_channel
-  Const        r17, []
-  Const        r46, "__group__"
-  Const        r47, true
-  Const        r9, "key"
-  // group by { channel: p.channel, id: p.id } into g
-  Move         r766, r763
-  // from p in per_channel
-  Const        r49, "items"
-  Move         r767, r17
-  Const        r51, "count"
-  Const        r52, 0
-  Move         r768, r46
-  Move         r769, r47
-  Move         r770, r9
-  Move         r771, r766
-  Move         r772, r49
-  Move         r773, r767
-  Move         r774, r51
-  Move         r775, r52
-  MakeMap      r776, 4, r768
-  SetIndex     r750, r764, r776
-  Append       r777, r751, r776
-  Move         r751, r777
-L94:
-  Const        r49, "items"
-  Index        r778, r750, r764
-  Index        r779, r778, r49
-  Append       r780, r779, r753
-  SetIndex     r778, r49, r780
-  Const        r51, "count"
-  Index        r781, r778, r51
-  Const        r67, 1
-  AddInt       r782, r781, r67
-  SetIndex     r778, r51, r782
-  Const        r67, 1
-  AddInt       r749, r749, r67
-  Jump         L95
-L93:
-  Const        r52, 0
-  Move         r783, r52
-  Len          r784, r751
-L103:
-  LessInt      r785, r783, r784
-  JumpIfFalse  r785, L96
-  Index        r786, r751, r783
-  Move         r73, r786
-  // select { channel: g.key.channel, id: g.key.id, sales: sum(from x in g select x.p.sales), returns: sum(from x in g select x.p.returns), profit: sum(from x in g select x.p.profit) }
-  Const        r787, "channel"
-  Const        r9, "key"
-  Index        r788, r73, r9
-  Const        r627, "channel"
-  Index        r789, r788, r627
-  Const        r790, "id"
-  Const        r9, "key"
-  Index        r791, r73, r9
-  Const        r628, "id"
-  Index        r792, r791, r628
-  Const        r793, "sales"
-  Const        r794, []
-  Const        r746, "p"
-  Const        r10, "sales"
-  IterPrep     r795, r73
-  Len          r796, r795
-  Const        r52, 0
-  Move         r797, r52
-L98:
-  LessInt      r798, r797, r796
-  JumpIfFalse  r798, L97
-  Index        r799, r795, r797
-  Move         r83, r799
-  Const        r746, "p"
-  Index        r800, r83, r746
-  Const        r10, "sales"
-  Index        r801, r800, r10
-  Append       r802, r794, r801
-  Move         r794, r802
-  Const        r67, 1
-  AddInt       r797, r797, r67
-  Jump         L98
-L97:
-  Sum          r803, r794
-  Const        r804, "returns"
-  Const        r805, []
-  Const        r746, "p"
-  Const        r108, "returns"
-  IterPrep     r806, r73
-  Len          r807, r806
-  Const        r52, 0
-  Move         r808, r52
-L100:
-  LessInt      r809, r808, r807
-  JumpIfFalse  r809, L99
-  Index        r810, r806, r808
-  Move         r83, r810
-  Const        r746, "p"
-  Index        r811, r83, r746
-  Const        r108, "returns"
-  Index        r812, r811, r108
-  Append       r813, r805, r812
-  Move         r805, r813
-  Const        r67, 1
-  AddInt       r808, r808, r67
-  Jump         L100
-L99:
-  Sum          r814, r805
-  Const        r815, "profit"
-  Const        r816, []
-  Const        r746, "p"
-  Const        r13, "profit"
-  IterPrep     r817, r73
-  Len          r818, r817
-  Const        r52, 0
-  Move         r819, r52
-L102:
-  LessInt      r820, r819, r818
-  JumpIfFalse  r820, L101
-  Index        r821, r817, r819
-  Move         r83, r821
-  Const        r746, "p"
-  Index        r822, r83, r746
-  Const        r13, "profit"
-  Index        r823, r822, r13
-  Append       r824, r816, r823
-  Move         r816, r824
-  Const        r67, 1
-  AddInt       r819, r819, r67
-  Jump         L102
-L101:
-  Sum          r825, r816
-  Move         r826, r787
-  Move         r827, r789
-  Move         r828, r790
-  Move         r829, r792
-  Move         r830, r793
-  Move         r831, r803
-  Move         r832, r804
-  Move         r833, r814
-  Move         r834, r815
-  Move         r835, r825
-  MakeMap      r836, 5, r826
-  // sort by g.key.channel
-  Const        r9, "key"
-  Index        r839, r73, r9
-  Const        r627, "channel"
-  Index        r840, r839, r627
-  Move         r837, r840
-  // from p in per_channel
-  Move         r838, r836
-  MakeList     r841, 2, r837
-  Append       r842, r745, r841
-  Move         r745, r842
-  Const        r67, 1
-  AddInt       r783, r783, r67
-  Jump         L103
-L96:
-  // sort by g.key.channel
-  Sort         r843, r745
-  // from p in per_channel
-  Move         r745, r843
-  // json(result)
-  JSON         r745
-  // expect result == [
-  Const        r844, [{"channel": "catalog channel", "id": 1, "profit": 12.0, "returns": 7.0, "sales": 150.0}, {"channel": "store channel", "id": 1, "profit": 9.0, "returns": 5.0, "sales": 100.0}, {"channel": "web channel", "id": 1, "profit": 18.0, "returns": 10.0, "sales": 200.0}]
-  Equal        r845, r745, r844
-  Expect       r845
-  Return       r0
+  Jump         L46
