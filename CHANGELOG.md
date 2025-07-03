@@ -1,5 +1,23 @@
 # 📦 CHANGELOG.md
 
+## [0.10.12] – 2025-07-03T10:13:46+07:00
+
+### Added
+
+* SQL Logic Test generator covers select1 cases 1–1000 with update statement support across compilers
+* Real TPC-DS queries 50–59 included with updated examples
+
+### Changed
+
+* Improved SLT parsing of boolean strings, unary and parenthesis expressions
+* Deduplicated VM constant registers and fixed sorted query allocation
+* Normalized float constants with extended runner timeout and logging
+
+### Fixed
+
+* Subquery caching issues in SLT runs
+* Sorting value overwrite bug and miscellaneous generator fixes
+
 ## [0.10.11] – 2025-07-02T08:31:19+07:00
 
 ### Added
