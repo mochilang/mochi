@@ -657,7 +657,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpAdd:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if b.Tag == ValueStr && c.Tag == ValueStr {
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if b.Tag == ValueStr && c.Tag == ValueStr {
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: b.Str + c.Str}
 			} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}
@@ -665,61 +667,110 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) + toInt(c)}
 			}
 		case OpAddInt:
-			b := toInt(fr.regs[ins.B])
-			c := toInt(fr.regs[ins.C])
-			fr.regs[ins.A] = Value{Tag: ValueInt, Int: b + c}
+			vb := fr.regs[ins.B]
+			vc := fr.regs[ins.C]
+			if vb.Tag == ValueNull || vc.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				b := toInt(vb)
+				c := toInt(vc)
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b + c}
+			}
 		case OpAddFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}
+			}
 		case OpSub:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) - toInt(c)}
 			}
 		case OpSubInt:
-			b := toInt(fr.regs[ins.B])
-			c := toInt(fr.regs[ins.C])
-			fr.regs[ins.A] = Value{Tag: ValueInt, Int: b - c}
+			vb := fr.regs[ins.B]
+			vc := fr.regs[ins.C]
+			if vb.Tag == ValueNull || vc.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				b := toInt(vb)
+				c := toInt(vc)
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b - c}
+			}
 		case OpSubFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
+			}
 		case OpNeg:
 			b := fr.regs[ins.B]
-			if b.Tag == ValueFloat {
+			if b.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if b.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b.Int}
 			}
 		case OpNegInt:
-			b := toInt(fr.regs[ins.B])
-			fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b}
+			vb := fr.regs[ins.B]
+			if vb.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				b := toInt(vb)
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b}
+			}
 		case OpNegFloat:
 			b := fr.regs[ins.B]
-			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
+			if b.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
+			}
 		case OpMul:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			if b.Tag == ValueFloat || c.Tag == ValueFloat {
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) * toInt(c)}
 			}
 		case OpMulInt:
-			b := toInt(fr.regs[ins.B])
-			c := toInt(fr.regs[ins.C])
-			fr.regs[ins.A] = Value{Tag: ValueInt, Int: b * c}
+			vb := fr.regs[ins.B]
+			vc := fr.regs[ins.C]
+			if vb.Tag == ValueNull || vc.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				b := toInt(vb)
+				c := toInt(vc)
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: b * c}
+			}
 		case OpMulFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
-			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}
+			}
 		case OpDiv:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+				break
+			}
 			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
@@ -729,8 +780,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) / toInt(c)}
 			}
 		case OpDivInt:
-			b := toInt(fr.regs[ins.B])
-			c := toInt(fr.regs[ins.C])
+			vb := fr.regs[ins.B]
+			vc := fr.regs[ins.C]
+			if vb.Tag == ValueNull || vc.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+				break
+			}
+			b := toInt(vb)
+			c := toInt(vc)
 			if c == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
@@ -738,6 +795,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpDivFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+				break
+			}
 			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
@@ -745,6 +806,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpMod:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+				break
+			}
 			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
@@ -754,8 +819,14 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) % toInt(c)}
 			}
 		case OpModInt:
-			b := toInt(fr.regs[ins.B])
-			c := toInt(fr.regs[ins.C])
+			vb := fr.regs[ins.B]
+			vc := fr.regs[ins.C]
+			if vb.Tag == ValueNull || vc.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+				break
+			}
+			b := toInt(vb)
+			c := toInt(vc)
 			if c == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
@@ -763,6 +834,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpModFloat:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+				break
+			}
 			if toFloat(c) == 0 {
 				return Value{}, m.newError(fmt.Errorf("division by zero"), trace, ins.Line)
 			}
@@ -1533,7 +1608,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpAvg:
 			lst := fr.regs[ins.B]
 			if lst.Tag == ValueNull {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+				fr.regs[ins.A] = Value{Tag: ValueNull}
 				break
 			}
 			if lst.Tag == ValueMap {
@@ -1544,14 +1619,19 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("avg expects list")
 			}
-			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: 0}
-			} else {
-				var sum float64
-				for _, v := range lst.List {
-					sum += toFloat(v)
+			var sum float64
+			count := 0
+			for _, v := range lst.List {
+				if v.Tag == ValueNull {
+					continue
 				}
-				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: sum / float64(len(lst.List))}
+				sum += toFloat(v)
+				count++
+			}
+			if count == 0 {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: sum / float64(count)}
 			}
 		case OpSum:
 			lst := fr.regs[ins.B]
@@ -1571,6 +1651,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			var sumI int
 			allInt := true
 			for _, v := range lst.List {
+				if v.Tag == ValueNull {
+					continue
+				}
 				if v.Tag == ValueInt {
 					sumI += v.Int
 				} else {
@@ -1578,7 +1661,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					sumF += toFloat(v)
 				}
 			}
-			if allInt {
+			if sumI == 0 && sumF == 0 && allInt {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if allInt {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: sumI}
 			} else {
 				sumF += float64(sumI)
@@ -1598,20 +1683,26 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("min expects list")
 			}
-			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
-			} else if lst.List[0].Tag == ValueStr {
-				minStr := lst.List[0].Str
-				for _, v := range lst.List[1:] {
+			vals := []Value{}
+			for _, v := range lst.List {
+				if v.Tag != ValueNull {
+					vals = append(vals, v)
+				}
+			}
+			if len(vals) == 0 {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if vals[0].Tag == ValueStr {
+				minStr := vals[0].Str
+				for _, v := range vals[1:] {
 					if v.Tag == ValueStr && v.Str < minStr {
 						minStr = v.Str
 					}
 				}
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: minStr}
 			} else {
-				minVal := toFloat(lst.List[0])
-				isFloat := lst.List[0].Tag == ValueFloat
-				for _, v := range lst.List[1:] {
+				minVal := toFloat(vals[0])
+				isFloat := vals[0].Tag == ValueFloat
+				for _, v := range vals[1:] {
 					if v.Tag == ValueFloat {
 						isFloat = true
 					}
@@ -1640,20 +1731,26 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if lst.Tag != ValueList {
 				return Value{}, fmt.Errorf("max expects list")
 			}
-			if len(lst.List) == 0 {
-				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
-			} else if lst.List[0].Tag == ValueStr {
-				maxStr := lst.List[0].Str
-				for _, v := range lst.List[1:] {
+			vals := []Value{}
+			for _, v := range lst.List {
+				if v.Tag != ValueNull {
+					vals = append(vals, v)
+				}
+			}
+			if len(vals) == 0 {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if vals[0].Tag == ValueStr {
+				maxStr := vals[0].Str
+				for _, v := range vals[1:] {
 					if v.Tag == ValueStr && v.Str > maxStr {
 						maxStr = v.Str
 					}
 				}
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: maxStr}
 			} else {
-				maxVal := toFloat(lst.List[0])
-				isFloat := lst.List[0].Tag == ValueFloat
-				for _, v := range lst.List[1:] {
+				maxVal := toFloat(vals[0])
+				isFloat := vals[0].Tag == ValueFloat
+				for _, v := range vals[1:] {
 					if v.Tag == ValueFloat {
 						isFloat = true
 					}
