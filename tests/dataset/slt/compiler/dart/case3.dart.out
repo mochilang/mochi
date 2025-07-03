@@ -1,0 +1,116 @@
+import 'dart:io';
+
+Map<String, Function> _structParsers = {};
+
+class t1Row {
+  int a;
+  int b;
+  int c;
+  int d;
+  int e;
+  t1Row({required this.a, required this.b, required this.c, required this.d, required this.e});
+  factory t1Row.fromJson(Map<String,dynamic> m) {
+    return t1Row(a: m['a'] as int, b: m['b'] as int, c: m['c'] as int, d: m['d'] as int, e: m['e'] as int);
+  }
+}
+
+List<t1Row> t1 = [t1Row(a: 104, b: 100, c: 102, d: 101, e: 103), t1Row(a: 107, b: 105, c: 106, d: 108, e: 109), t1Row(a: 111, b: 112, c: 113, d: 114, e: 110), t1Row(a: 115, b: 118, c: 119, d: 116, e: 117), t1Row(a: 121, b: 124, c: 123, d: 122, e: 120), t1Row(a: 127, b: 129, c: 125, d: 128, e: 126), t1Row(a: 131, b: 130, c: 134, d: 133, e: 132), t1Row(a: 138, b: 139, c: 137, d: 136, e: 135), t1Row(a: 142, b: 143, c: 141, d: 140, e: 144), t1Row(a: 149, b: 145, c: 147, d: 148, e: 146), t1Row(a: 153, b: 151, c: 150, d: 154, e: 152), t1Row(a: 159, b: 158, c: 155, d: 156, e: 157), t1Row(a: 163, b: 160, c: 161, d: 164, e: 162), t1Row(a: 168, b: 167, c: 166, d: 169, e: 165), t1Row(a: 174, b: 170, c: 172, d: 171, e: 173), t1Row(a: 179, b: 175, c: 176, d: 178, e: 177), t1Row(a: 182, b: 181, c: 184, d: 183, e: 180), t1Row(a: 188, b: 186, c: 187, d: 185, e: 189), t1Row(a: 191, b: 194, c: 193, d: 190, e: 192), t1Row(a: 199, b: 198, c: 195, d: 196, e: 197), t1Row(a: 201, b: 200, c: 202, d: 203, e: 204), t1Row(a: 205, b: 206, c: 208, d: 207, e: 209), t1Row(a: 213, b: 211, c: 214, d: 212, e: 210), t1Row(a: 216, b: 218, c: 215, d: 217, e: 219), t1Row(a: 220, b: 223, c: 224, d: 222, e: 221), t1Row(a: 229, b: 228, c: 225, d: 226, e: 227), t1Row(a: 234, b: 232, c: 231, d: 233, e: 230), t1Row(a: 239, b: 236, c: 235, d: 238, e: 237), t1Row(a: 243, b: 240, c: 244, d: 241, e: 242), t1Row(a: 245, b: 249, c: 247, d: 248, e: 246)];
+
+List<List<int>> result = (() {
+  var _res = [];
+  for (var row in t1) {
+    if (!(((((((((row.e > row.c) || (row.e < row.d)))) && (row.d > row.e))) && (_count((() {
+  var _res = [];
+  for (var x in t1) {
+    if (!((x.b < row.b))) {
+      continue;
+    }
+    _res.add(x);
+  }
+  return _res;
+})()) > 0))))) {
+      continue;
+    }
+    _res.add([((((((((row.a + ((row.b * 2)))) + ((row.c * 3)))) + ((row.d * 4)))) + ((row.e * 5)))), (((row.a < ((row.b - 3))) ? 111 : (((row.a <= row.b) ? 222 : (((row.a < ((row.b + 3))) ? 333 : 444)))))), (((((row.b - row.c)) < 0) ? -(((row.b - row.c))) : ((row.b - row.c)))), (((((((((((row.a + row.b)) + row.c)) + row.d)) + row.e))) ~/ 5)), ((((row.a + ((row.b * 2)))) + ((row.c * 3))))]);
+  }
+  var items = List.from(_res);
+  items.sort((rowA, rowB) {
+    var row = rowA;
+    var keyA = [(((((((((((row.a + row.b)) + row.c)) + row.d)) + row.e))) ~/ 5)), (((row.a < ((row.b - 3))) ? 111 : (((row.a <= row.b) ? 222 : (((row.a < ((row.b + 3))) ? 333 : 444)))))), ((((((((row.a + ((row.b * 2)))) + ((row.c * 3)))) + ((row.d * 4)))) + ((row.e * 5)))), (((((row.b - row.c)) < 0) ? -(((row.b - row.c))) : ((row.b - row.c)))), ((((row.a + ((row.b * 2)))) + ((row.c * 3))))];
+    row = rowB;
+    var keyB = [(((((((((((row.a + row.b)) + row.c)) + row.d)) + row.e))) ~/ 5)), (((row.a < ((row.b - 3))) ? 111 : (((row.a <= row.b) ? 222 : (((row.a < ((row.b + 3))) ? 333 : 444)))))), ((((((((row.a + ((row.b * 2)))) + ((row.c * 3)))) + ((row.d * 4)))) + ((row.e * 5)))), (((((row.b - row.c)) < 0) ? -(((row.b - row.c))) : ((row.b - row.c)))), ((((row.a + ((row.b * 2)))) + ((row.c * 3))))];
+    return Comparable.compare(keyA, keyB);
+  });
+  _res = items;
+  return _res;
+})();
+
+List flatResult = [];
+
+void test_case3() {
+  if (!(_equal(flatResult, [1680, 222, 1, 112, 674, 1826, 222, 1, 122, 738, 1902, 222, 4, 127, 760, 1985, 333, 4, 132, 793, 2046, 222, 2, 137, 827, 2202, 444, 2, 147, 880, 2281, 333, 1, 152, 905, 2432, 444, 1, 162, 966, 2501, 333, 1, 167, 1000, 2654, 444, 1, 177, 1057, 2728, 333, 3, 182, 1096, 3175, 333, 3, 212, 1277, 3331, 222, 1, 222, 1338, 3473, 333, 1, 232, 1391, 3553, 444, 1, 237, 1416, 3706, 111, 2, 247, 1484]))) { throw Exception('expect failed'); }
+}
+
+void main() {
+  int failures = 0;
+  _structParsers['t1Row'] = (m) => t1Row.fromJson(m);
+  
+  for (var row in result) {
+    for (var x in row) {
+      flatResult = append(flatResult, x);
+    }
+  }
+  for (var x in flatResult) {
+    print(x);
+  }
+  if (!_runTest("case3", test_case3)) failures++;
+  if (failures > 0) {
+    print("\n[FAIL] $failures test(s) failed.");
+  }
+}
+
+int _count(dynamic v) {
+    if (v is String) return v.runes.length;
+    if (v is List) return v.length;
+    if (v is Map) return v.length;
+    try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
+    try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
+    return 0;
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+
+
