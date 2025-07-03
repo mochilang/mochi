@@ -59,7 +59,7 @@ func DownloadFile(url, path string) error {
 }
 
 // RunMochi compiles and executes a Mochi program and returns its output.
-func RunMochi(src string) (string, error) {
+func RunMochi(src string, timeout time.Duration) (string, error) {
 	prog, err := parser.ParseString(src)
 	if err != nil {
 		return "", err
@@ -82,10 +82,14 @@ func RunMochi(src string) (string, error) {
 	done := make(chan error, 1)
 	go func() { done <- m.Run() }()
 	var runErr error
-	select {
-	case runErr = <-done:
-	case <-time.After(5 * time.Second):
-		runErr = fmt.Errorf("timeout")
+	if timeout <= 0 {
+		runErr = <-done
+	} else {
+		select {
+		case runErr = <-done:
+		case <-time.After(timeout):
+			runErr = fmt.Errorf("timeout")
+		}
 	}
 	out := strings.TrimSpace(buf.String())
 	if runErr != nil {
@@ -258,7 +262,7 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 			}
 			fmt.Printf("generated %s\n", srcPath)
 			if run {
-				out, err := RunMochi(code)
+				out, err := RunMochi(code, 5*time.Second)
 				outPath := filepath.Join(testDir, c.Name+".out")
 				errPath := strings.TrimSuffix(outPath, ".out") + ".error"
 				if err != nil {

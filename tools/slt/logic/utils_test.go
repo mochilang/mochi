@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func TestGenerate(t *testing.T) {
@@ -39,7 +40,7 @@ func TestFindRepoRoot(t *testing.T) {
 }
 
 func TestRunMochi(t *testing.T) {
-	out, err := RunMochi("print(1 + 2)")
+	out, err := RunMochi("print(1 + 2)", time.Second)
 	if err != nil {
 		t.Fatalf("run mochi: %v", err)
 	}
