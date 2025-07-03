@@ -28,6 +28,7 @@ type Compiler struct {
 	handlerCount int
 	helpers      map[string]bool
 	models       bool
+	structRegs   []string
 }
 
 func containsStreamCode(stmts []*parser.Statement) bool {
@@ -110,7 +111,7 @@ func stmtHasStream(s *parser.Statement) bool {
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
 	return &Compiler{env: env, imports: make(map[string]bool), dartImports: make(map[string]string), packages: make(map[string]bool),
-		structs: make(map[string]bool), agents: make(map[string]bool), helpers: make(map[string]bool), models: false}
+		structs: make(map[string]bool), agents: make(map[string]bool), helpers: make(map[string]bool), models: false, structRegs: []string{}}
 }
 
 // initState resets compiler state before a compilation run.
@@ -124,6 +125,7 @@ func (c *Compiler) initState() {
 	c.helpers = make(map[string]bool)
 	c.handlerCount = 0
 	c.models = false
+	c.structRegs = nil
 }
 
 // Compile returns Dart source implementing prog.
@@ -139,6 +141,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		return nil, err
 	}
 	if err := c.compileFunDecls(prog.Statements); err != nil {
+		return nil, err
+	}
+	if err := c.compileGlobals(prog.Statements); err != nil {
 		return nil, err
 	}
 	if err := c.compileTestBlocks(prog.Statements); err != nil {
@@ -171,6 +176,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("Map<String, Map<String, dynamic>> _models = {};")
 		c.writeln("")
 	}
+	if len(c.structs) > 0 {
+		c.writeln("Map<String, Function> _structParsers = {};")
+		c.writeln("")
+	}
 	c.buf.Write(bodyBytes)
 	c.emitRuntime()
 	c.buf.WriteByte('\n')
@@ -194,6 +203,18 @@ func (c *Compiler) compileFunDecls(stmts []*parser.Statement) error {
 	for _, s := range stmts {
 		if s.Fun != nil {
 			if err := c.compileFun(s.Fun); err != nil {
+				return err
+			}
+			c.writeln("")
+		}
+	}
+	return nil
+}
+
+func (c *Compiler) compileGlobals(stmts []*parser.Statement) error {
+	for _, s := range stmts {
+		if s.Let != nil || s.Var != nil {
+			if err := c.compileStmt(s); err != nil {
 				return err
 			}
 			c.writeln("")
@@ -228,8 +249,14 @@ func (c *Compiler) compileMain(stmts []*parser.Statement, needsAsync bool) error
 	if hasTests {
 		c.writeln("int failures = 0;")
 	}
+	for _, r := range c.structRegs {
+		c.writeln(r)
+	}
+	if len(c.structRegs) > 0 {
+		c.writeln("")
+	}
 	for _, s := range stmts {
-		if s.Fun != nil || s.Type != nil || s.Test != nil {
+		if s.Fun != nil || s.Type != nil || s.Test != nil || s.Let != nil || s.Var != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -1321,7 +1348,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	c.writeln("}")
 	c.indent--
 	c.writeln("}")
-	c.writeln(fmt.Sprintf("_structParsers['%s'] = (m) => %s.fromJson(m);", name, name))
+	c.structRegs = append(c.structRegs, fmt.Sprintf("_structParsers['%s'] = (m) => %s.fromJson(m);", name, name))
 	c.writeln("")
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
@@ -1552,6 +1579,10 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
+	if c.structs == nil {
+		c.structs = map[string]bool{}
+	}
+	c.structs[name] = true
 	if len(t.Variants) > 0 {
 		c.writeln(fmt.Sprintf("abstract class %s {}", name))
 		for _, v := range t.Variants {
@@ -1634,7 +1665,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	}
 	c.indent--
 	c.writeln("}")
-	c.writeln(fmt.Sprintf("_structParsers['%s'] = (m) => %s.fromJson(m);", name, name))
+	c.structRegs = append(c.structRegs, fmt.Sprintf("_structParsers['%s'] = (m) => %s.fromJson(m);", name, name))
 	return nil
 }
 
