@@ -372,7 +372,7 @@ func TestTSCompiler_SLTQueries(t *testing.T) {
 		t.Skipf("deno not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	cases := []string{"case1", "case2", "case3"}
+    cases := []string{"case1", "case2", "case3", "case4", "case5"}
 	for _, base := range cases {
 		src := filepath.Join(root, "tests", "dataset", "slt", "out", "select1", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "slt", "compiler", "ts", base+".ts.out")
