@@ -222,7 +222,7 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 	}
 	dir := filepath.Join(root, "tests/dataset/slt")
 	if outDir == "" {
-		outDir = filepath.Join(dir, "out", "evidence")
+		outDir = filepath.Join(dir, "out")
 	}
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return err
