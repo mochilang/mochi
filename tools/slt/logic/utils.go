@@ -222,7 +222,7 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 	}
 	dir := filepath.Join(root, "tests/dataset/slt")
 	if outDir == "" {
-		outDir = filepath.Join(dir, "out", "evidence")
+		outDir = filepath.Join(dir, "out")
 	}
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return err
@@ -262,7 +262,7 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 			}
 			fmt.Printf("generated %s\n", srcPath)
 			if run {
-				out, err := RunMochi(code, 5*time.Second)
+				out, err := RunMochi(code, 120*time.Second)
 				outPath := filepath.Join(testDir, c.Name+".out")
 				errPath := strings.TrimSuffix(outPath, ".out") + ".error"
 				if err != nil {
