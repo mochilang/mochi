@@ -779,7 +779,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			var res bool
-			if b.Tag == ValueStr && c.Tag == ValueStr {
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				res = false
+			} else if b.Tag == ValueStr && c.Tag == ValueStr {
 				res = b.Str < c.Str
 			} else {
 				res = toFloat(b) < toFloat(c)
@@ -789,20 +791,38 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
 			var res bool
-			if b.Tag == ValueStr && c.Tag == ValueStr {
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				res = false
+			} else if b.Tag == ValueStr && c.Tag == ValueStr {
 				res = b.Str <= c.Str
 			} else {
 				res = toFloat(b) <= toFloat(c)
 			}
 			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: res}
 		case OpLessInt:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(fr.regs[ins.B]) < toInt(fr.regs[ins.C])}
+			if fr.regs[ins.B].Tag == ValueNull || fr.regs[ins.C].Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(fr.regs[ins.B]) < toInt(fr.regs[ins.C])}
+			}
 		case OpLessFloat:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) < toFloat(fr.regs[ins.C])}
+			if fr.regs[ins.B].Tag == ValueNull || fr.regs[ins.C].Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) < toFloat(fr.regs[ins.C])}
+			}
 		case OpLessEqInt:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(fr.regs[ins.B]) <= toInt(fr.regs[ins.C])}
+			if fr.regs[ins.B].Tag == ValueNull || fr.regs[ins.C].Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(fr.regs[ins.B]) <= toInt(fr.regs[ins.C])}
+			}
 		case OpLessEqFloat:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
+			if fr.regs[ins.B].Tag == ValueNull || fr.regs[ins.C].Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
+			}
 		case OpIn:
 			item := fr.regs[ins.B]
 			container := fr.regs[ins.C]
@@ -7237,9 +7257,8 @@ func pairVal(v Value) Value {
 
 func valueLess(a, b Value) bool {
 	if a.Tag == ValueNull || b.Tag == ValueNull {
-		if a.Tag == ValueNull && b.Tag != ValueNull {
-			return true
-		}
+		// SQL semantics treat comparisons with NULL as unknown. For the
+		// purposes of boolean conditions this evaluates to false.
 		return false
 	}
 	switch a.Tag {
