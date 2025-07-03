@@ -4,4 +4,4 @@ stack trace:
   main at :245
     expect flatResult == [1272, 1290]
 
-got: [1067, 1050, 1019, 1120, 1272, 1290, 1864, 0]
+got: [1067, 1050, null, 1120, 1272, 1290, null, null]

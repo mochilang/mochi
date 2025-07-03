@@ -1,0 +1,7 @@
+expect condition failed at :235: expect result == [-1]
+call graph: main
+stack trace:
+  main at :235
+    expect result == [-1]
+
+got: [-1, -2]
