@@ -601,6 +601,20 @@ func repeatedAddCol(e sqlparser.Expr) (*sqlparser.ColName, int, bool) {
 	return nil, 0, false
 }
 
+// binaryPrec returns a relative precedence for SQL binary operators. Higher
+// numbers bind more tightly. Only the operators used in the SLT queries are
+// handled here.
+func binaryPrec(op string) int {
+	switch op {
+	case "*", "/", "%":
+		return 3
+	case "+", "-":
+		return 2
+	default:
+		return 1
+	}
+}
+
 func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]string) string {
 	switch v := e.(type) {
 	case *sqlparser.SQLVal:
@@ -648,20 +662,26 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 			}
 		}
 		l := exprToMochiRow(v.Left, rowVar, outer, subs)
+		if lb, ok := v.Left.(*sqlparser.BinaryExpr); ok && binaryPrec(lb.Operator) < binaryPrec(v.Operator) {
+			l = "(" + l + ")"
+		}
 		r := exprToMochiRow(v.Right, rowVar, outer, subs)
-		return fmt.Sprintf("(%s %s %s)", l, v.Operator, r)
+		if rb, ok := v.Right.(*sqlparser.BinaryExpr); ok && binaryPrec(rb.Operator) <= binaryPrec(v.Operator) {
+			r = "(" + r + ")"
+		}
+		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
 	case *sqlparser.FuncExpr:
 		name := strings.ToLower(v.Name.String())
 		if name == "abs" && len(v.Exprs) == 1 {
 			arg := v.Exprs[0].(*sqlparser.AliasedExpr).Expr
 			ex := exprToMochiRow(arg, rowVar, outer, subs)
-			return fmt.Sprintf("(if %s < 0 { -(%s) } else { %s })", ex, ex, ex)
+			return fmt.Sprintf("if %s < 0 then -(%s) else %s", ex, ex, ex)
 		}
 		if name == "coalesce" && len(v.Exprs) > 0 {
 			out := exprToMochiRow(v.Exprs[len(v.Exprs)-1].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
 			for i := len(v.Exprs) - 2; i >= 0; i-- {
 				arg := exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
-				out = fmt.Sprintf("(if %s != null { %s } else { %s })", arg, arg, out)
+				out = fmt.Sprintf("if %s != null then %s else %s", arg, arg, out)
 			}
 			return out
 		}
@@ -685,7 +705,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 				rhs := exprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs)
 				cond := fmt.Sprintf("(%s != null && %s != null && %s == %s)", expr, rhs, expr, rhs)
 				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer, subs)
-				out = fmt.Sprintf("(if %s { %s } else { %s })", cond, val, out)
+				out = fmt.Sprintf("if %s then %s else %s", cond, val, out)
 			}
 		} else {
 			for i := len(v.Whens) - 1; i >= 0; i-- {
@@ -694,7 +714,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 				if cond == "" {
 					return "null"
 				}
-				out = fmt.Sprintf("(if %s { %s } else { %s })", cond, val, out)
+				out = fmt.Sprintf("if %s then %s else %s", cond, val, out)
 			}
 		}
 		return out
@@ -808,18 +828,24 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 		return fmt.Sprintf("%s %s %s", left, op, right)
 	case *sqlparser.AndExpr:
 		l := condExprToMochiRow(v.Left, rowVar, outer, subs)
+		if _, ok := v.Left.(*sqlparser.OrExpr); ok {
+			l = "(" + l + ")"
+		}
 		r := condExprToMochiRow(v.Right, rowVar, outer, subs)
+		if _, ok := v.Right.(*sqlparser.OrExpr); ok {
+			r = "(" + r + ")"
+		}
 		if l == "" || r == "" {
 			return ""
 		}
-		return fmt.Sprintf("(%s && %s)", l, r)
+		return l + " && " + r
 	case *sqlparser.OrExpr:
 		l := condExprToMochiRow(v.Left, rowVar, outer, subs)
 		r := condExprToMochiRow(v.Right, rowVar, outer, subs)
 		if l == "" || r == "" {
 			return ""
 		}
-		return fmt.Sprintf("(%s || %s)", l, r)
+		return l + " || " + r
 	case *sqlparser.RangeCond:
 		left := exprToMochiRow(v.Left, rowVar, outer, subs)
 		from := exprToMochiRow(v.From, rowVar, outer, subs)
