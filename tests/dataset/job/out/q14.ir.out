@@ -21,24 +21,53 @@ func main (regs=160)
   Const        r9, []
   // it1.info == "countries" &&
   Const        r10, "info"
+  // it2.info == "rating" &&
+  Const        r10, "info"
   // (k.keyword in allowed_keywords) &&
   Const        r11, "keyword"
   // kt.kind == "movie" &&
   Const        r12, "kind"
+  // (mi.info in allowed_countries) &&
+  Const        r10, "info"
+  // mi_idx.info < 8.5 &&
+  Const        r10, "info"
   // t.production_year > 2010 &&
   Const        r13, "production_year"
   // kt.id == t.kind_id &&
   Const        r14, "id"
   Const        r15, "kind_id"
   // t.id == mi.movie_id &&
+  Const        r14, "id"
+  Const        r16, "movie_id"
+  // t.id == mk.movie_id &&
+  Const        r14, "id"
+  Const        r16, "movie_id"
+  // t.id == mi_idx.movie_id &&
+  Const        r14, "id"
+  Const        r16, "movie_id"
+  // mk.movie_id == mi.movie_id &&
+  Const        r16, "movie_id"
+  Const        r16, "movie_id"
+  // mk.movie_id == mi_idx.movie_id &&
+  Const        r16, "movie_id"
+  Const        r16, "movie_id"
+  // mi.movie_id == mi_idx.movie_id &&
+  Const        r16, "movie_id"
   Const        r16, "movie_id"
   // k.id == mk.keyword_id &&
+  Const        r14, "id"
   Const        r17, "keyword_id"
   // it1.id == mi.info_type_id &&
+  Const        r14, "id"
+  Const        r18, "info_type_id"
+  // it2.id == mi_idx.info_type_id
+  Const        r14, "id"
   Const        r18, "info_type_id"
   // rating: mi_idx.info,
   Const        r19, "rating"
+  Const        r10, "info"
   // title: t.title
+  Const        r20, "title"
   Const        r20, "title"
   // from it1 in info_type
   IterPrep     r21, r0
@@ -53,6 +82,7 @@ L17:
   // from it2 in info_type
   IterPrep     r28, r0
   Len          r29, r28
+  Const        r24, 0
   Move         r30, r24
 L16:
   LessInt      r31, r30, r29
@@ -62,6 +92,7 @@ L16:
   // from k in keyword
   IterPrep     r34, r1
   Len          r35, r34
+  Const        r24, 0
   Move         r36, r24
 L15:
   LessInt      r37, r36, r35
@@ -71,6 +102,7 @@ L15:
   // from kt in kind_type
   IterPrep     r40, r2
   Len          r41, r40
+  Const        r24, 0
   Move         r42, r24
 L14:
   LessInt      r43, r42, r41
@@ -80,6 +112,7 @@ L14:
   // from mi in movie_info
   IterPrep     r46, r4
   Len          r47, r46
+  Const        r24, 0
   Move         r48, r24
 L13:
   LessInt      r49, r48, r47
@@ -89,6 +122,7 @@ L13:
   // from mi_idx in movie_info_idx
   IterPrep     r52, r5
   Len          r53, r52
+  Const        r24, 0
   Move         r54, r24
 L12:
   LessInt      r55, r54, r53
@@ -98,6 +132,7 @@ L12:
   // from mk in movie_keyword
   IterPrep     r58, r6
   Len          r59, r58
+  Const        r24, 0
   Move         r60, r24
 L11:
   LessInt      r61, r60, r59
@@ -107,6 +142,7 @@ L11:
   // from t in title
   IterPrep     r64, r3
   Len          r65, r64
+  Const        r24, 0
   Move         r66, r24
 L10:
   LessInt      r67, r66, r65
@@ -114,12 +150,15 @@ L10:
   Index        r68, r64, r66
   Move         r69, r68
   // it1.info == "countries" &&
+  Const        r10, "info"
   Index        r70, r27, r10
   // mi_idx.info < 8.5 &&
+  Const        r10, "info"
   Index        r71, r57, r10
   Const        r72, 8.5
   LessFloat    r73, r71, r72
   // t.production_year > 2010 &&
+  Const        r13, "production_year"
   Index        r74, r69, r13
   Const        r75, 2010
   Less         r76, r75, r74
@@ -127,50 +166,73 @@ L10:
   Const        r77, "countries"
   Equal        r78, r70, r77
   // it2.info == "rating" &&
+  Const        r10, "info"
   Index        r79, r33, r10
+  Const        r19, "rating"
   Equal        r80, r79, r19
   // kt.kind == "movie" &&
+  Const        r12, "kind"
   Index        r81, r45, r12
   Const        r82, "movie"
   Equal        r83, r81, r82
   // kt.id == t.kind_id &&
+  Const        r14, "id"
   Index        r84, r45, r14
+  Const        r15, "kind_id"
   Index        r85, r69, r15
   Equal        r86, r84, r85
   // t.id == mi.movie_id &&
+  Const        r14, "id"
   Index        r87, r69, r14
+  Const        r16, "movie_id"
   Index        r88, r51, r16
   Equal        r89, r87, r88
   // t.id == mk.movie_id &&
+  Const        r14, "id"
   Index        r90, r69, r14
+  Const        r16, "movie_id"
   Index        r91, r63, r16
   Equal        r92, r90, r91
   // t.id == mi_idx.movie_id &&
+  Const        r14, "id"
   Index        r93, r69, r14
+  Const        r16, "movie_id"
   Index        r94, r57, r16
   Equal        r95, r93, r94
   // mk.movie_id == mi.movie_id &&
+  Const        r16, "movie_id"
   Index        r96, r63, r16
+  Const        r16, "movie_id"
   Index        r97, r51, r16
   Equal        r98, r96, r97
   // mk.movie_id == mi_idx.movie_id &&
+  Const        r16, "movie_id"
   Index        r99, r63, r16
+  Const        r16, "movie_id"
   Index        r100, r57, r16
   Equal        r101, r99, r100
   // mi.movie_id == mi_idx.movie_id &&
+  Const        r16, "movie_id"
   Index        r102, r51, r16
+  Const        r16, "movie_id"
   Index        r103, r57, r16
   Equal        r104, r102, r103
   // k.id == mk.keyword_id &&
+  Const        r14, "id"
   Index        r105, r39, r14
+  Const        r17, "keyword_id"
   Index        r106, r63, r17
   Equal        r107, r105, r106
   // it1.id == mi.info_type_id &&
+  Const        r14, "id"
   Index        r108, r27, r14
+  Const        r18, "info_type_id"
   Index        r109, r51, r18
   Equal        r110, r108, r109
   // it2.id == mi_idx.info_type_id
+  Const        r14, "id"
   Index        r111, r33, r14
+  Const        r18, "info_type_id"
   Index        r112, r57, r18
   Equal        r113, r111, r112
   // it1.info == "countries" &&
@@ -180,6 +242,7 @@ L10:
   // it2.info == "rating" &&
   JumpIfFalse  r114, L8
   // (k.keyword in allowed_keywords) &&
+  Const        r11, "keyword"
   Index        r115, r39, r11
   Const        r116, ["murder", "murder-in-title", "blood", "violence"]
   In           r117, r115, r116
@@ -191,6 +254,7 @@ L10:
   // kt.kind == "movie" &&
   JumpIfFalse  r114, L8
   // (mi.info in allowed_countries) &&
+  Const        r10, "info"
   Index        r118, r51, r10
   Const        r119, ["Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German", "USA", "American"]
   In           r120, r118, r119
@@ -237,9 +301,11 @@ L8:
   JumpIfFalse  r114, L9
   // rating: mi_idx.info,
   Const        r121, "rating"
+  Const        r10, "info"
   Index        r122, r57, r10
   // title: t.title
   Const        r123, "title"
+  Const        r20, "title"
   Index        r124, r69, r20
   // rating: mi_idx.info,
   Move         r125, r121
@@ -259,47 +325,58 @@ L9:
   Jump         L10
 L7:
   // from mk in movie_keyword
+  Const        r131, 1
   AddInt       r60, r60, r131
   Jump         L11
 L6:
   // from mi_idx in movie_info_idx
+  Const        r131, 1
   AddInt       r54, r54, r131
   Jump         L12
 L5:
   // from mi in movie_info
+  Const        r131, 1
   AddInt       r48, r48, r131
   Jump         L13
 L4:
   // from kt in kind_type
+  Const        r131, 1
   AddInt       r42, r42, r131
   Jump         L14
 L3:
   // from k in keyword
+  Const        r131, 1
   AddInt       r36, r36, r131
   Jump         L15
 L2:
   // from it2 in info_type
+  Const        r131, 1
   AddInt       r30, r30, r131
   Jump         L16
 L1:
   // from it1 in info_type
+  Const        r131, 1
   AddInt       r23, r23, r131
   Jump         L17
 L0:
   // rating: min(from x in matches select x.rating),
   Const        r132, "rating"
   Const        r133, []
+  Const        r19, "rating"
   IterPrep     r134, r9
   Len          r135, r134
+  Const        r24, 0
   Move         r136, r24
 L19:
   LessInt      r137, r136, r135
   JumpIfFalse  r137, L18
   Index        r138, r134, r136
   Move         r139, r138
+  Const        r19, "rating"
   Index        r140, r139, r19
   Append       r141, r133, r140
   Move         r133, r141
+  Const        r131, 1
   AddInt       r136, r136, r131
   Jump         L19
 L18:
@@ -307,17 +384,21 @@ L18:
   // northern_dark_movie: min(from x in matches select x.title)
   Const        r143, "northern_dark_movie"
   Const        r144, []
+  Const        r20, "title"
   IterPrep     r145, r9
   Len          r146, r145
+  Const        r24, 0
   Move         r147, r24
 L21:
   LessInt      r148, r147, r146
   JumpIfFalse  r148, L20
   Index        r149, r145, r147
   Move         r139, r149
+  Const        r20, "title"
   Index        r150, r139, r20
   Append       r151, r144, r150
   Move         r144, r151
+  Const        r131, 1
   AddInt       r147, r147, r131
   Jump         L21
 L20:
