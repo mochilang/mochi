@@ -198,11 +198,21 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 				continue
 			}
 
-			if _, err := strconv.ParseFloat(sv, 64); err == nil {
-				if t == "" || t == "float" || t == "int" {
-					t = "float"
+			if f, err := strconv.ParseFloat(sv, 64); err == nil {
+				if math.Trunc(f) == f {
+					if t == "" {
+						t = "int"
+					} else if t == "float" {
+						// keep float when column was already float
+					} else if t != "int" {
+						return "any"
+					}
 				} else {
-					return "any"
+					if t == "" || t == "float" || t == "int" {
+						t = "float"
+					} else {
+						return "any"
+					}
 				}
 				continue
 			}
