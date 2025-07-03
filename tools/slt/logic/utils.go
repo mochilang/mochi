@@ -261,22 +261,26 @@ func GenerateFiles(files []string, outDir string, run bool, start, end int) erro
 				return err
 			}
 			fmt.Printf("generated %s\n", srcPath)
+
+			outPath := filepath.Join(testDir, c.Name+".out")
+			expectOut := strings.Join(exp, "\n") + "\n"
+			if err := os.WriteFile(outPath, []byte(expectOut), 0o644); err != nil {
+				return err
+			}
+
 			if run {
 				out, err := RunMochi(code, 5*time.Second)
-				outPath := filepath.Join(testDir, c.Name+".out")
 				errPath := strings.TrimSuffix(outPath, ".out") + ".error"
-				if err != nil {
-					_ = os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644)
+				if err != nil || strings.TrimSpace(out) != strings.TrimSpace(strings.Join(exp, "\n")) {
+					msg := out
+					if err != nil {
+						msg = err.Error()
+					}
+					_ = os.WriteFile(errPath, []byte(msg+"\n"), 0o644)
+					fmt.Printf("FAILED %s: %v\n", srcPath, msg)
 				} else {
 					_ = os.Remove(errPath)
 					_ = os.Remove(strings.TrimSuffix(outPath, ".out") + ".err")
-				}
-				if err := os.WriteFile(outPath, []byte(out+"\n"), 0o644); err != nil {
-					return err
-				}
-				if err != nil {
-					fmt.Printf("FAILED %s: %v\n", srcPath, err)
-				} else {
 					fmt.Printf("ran %s\n", srcPath)
 				}
 			}
