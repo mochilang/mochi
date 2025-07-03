@@ -1,7 +1,0 @@
-expect condition failed at :242: expect flatResult == [0, 0, 1, 2, null, null, null, null, null, null]
-call graph: main
-stack trace:
-  main at :242
-    expect flatResult == [0, 0, 1, 2, null, null, null, null, null, null]
-
-got: [null, 0, null, null, 1, null, 0, null, null, 2]
