@@ -234,5 +234,5 @@ for x in result {
 }
 
 test "case235" {
-  expect result == [161, 125, 214, 231, 187, 224, 215]
+  expect result == [125, 161, 187, 214, 215, 224, 231]
 }
