@@ -768,16 +768,44 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}
 		case OpEqual:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
+			lb := fr.regs[ins.B]
+			rb := fr.regs[ins.C]
+			if lb.Tag == ValueNull || rb.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: valuesEqual(lb, rb)}
+			}
 		case OpNotEqual:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: !valuesEqual(fr.regs[ins.B], fr.regs[ins.C])}
+			lb := fr.regs[ins.B]
+			rb := fr.regs[ins.C]
+			if lb.Tag == ValueNull || rb.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: !valuesEqual(lb, rb)}
+			}
 		case OpEqualInt:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(fr.regs[ins.B]) == toInt(fr.regs[ins.C])}
+			lb := fr.regs[ins.B]
+			rb := fr.regs[ins.C]
+			if lb.Tag == ValueNull || rb.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(lb) == toInt(rb)}
+			}
 		case OpEqualFloat:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) == toFloat(fr.regs[ins.C])}
+			lb := fr.regs[ins.B]
+			rb := fr.regs[ins.C]
+			if lb.Tag == ValueNull || rb.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(lb) == toFloat(rb)}
+			}
 		case OpLess:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+				break
+			}
 			var res bool
 			if b.Tag == ValueStr && c.Tag == ValueStr {
 				res = b.Str < c.Str
@@ -788,6 +816,10 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpLessEq:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+				break
+			}
 			var res bool
 			if b.Tag == ValueStr && c.Tag == ValueStr {
 				res = b.Str <= c.Str
@@ -796,13 +828,37 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: res}
 		case OpLessInt:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(fr.regs[ins.B]) < toInt(fr.regs[ins.C])}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(b) < toInt(c)}
+			}
 		case OpLessFloat:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) < toFloat(fr.regs[ins.C])}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(b) < toFloat(c)}
+			}
 		case OpLessEqInt:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(fr.regs[ins.B]) <= toInt(fr.regs[ins.C])}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toInt(b) <= toInt(c)}
+			}
 		case OpLessEqFloat:
-			fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(fr.regs[ins.B]) <= toFloat(fr.regs[ins.C])}
+			b := fr.regs[ins.B]
+			c := fr.regs[ins.C]
+			if b.Tag == ValueNull || c.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: false}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueBool, Bool: toFloat(b) <= toFloat(c)}
+			}
 		case OpIn:
 			item := fr.regs[ins.B]
 			container := fr.regs[ins.C]

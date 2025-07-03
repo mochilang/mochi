@@ -3,13 +3,13 @@
 128
 905
 905
-<nil>
+null
 1725
 940
-<nil>
+null
 1825
 1000
-<nil>
+null
 2878
 1158
 190
@@ -19,9 +19,3 @@
 3473
 1391
 233
-2848
-711
-238
-call graph: main
-stack trace:
-  main:240

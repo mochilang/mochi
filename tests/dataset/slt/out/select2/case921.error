@@ -1,0 +1,6 @@
+expect condition failed at :240: expect flatResult == [null, null]
+call graph: main
+stack trace:
+  main at :240
+    expect flatResult == [null, null]
+
