@@ -227,20 +227,26 @@ let t1 = [
 let sub0 = avg(from x in t1
   select x.c)
 
-let result = from row in t1
+var result = from row in t1
   select [(row.b - row.c), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.c - row.d), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case662" {
-  expect flatResult == [null, null, 1, null, 0, -1, 1050, -2, 1067, 0, -1, 1120, -1, null, 0, null, null, 3, null, 0, 1, 1240, 1, 1226, 0, 4, 1290, -3, 1272, 0, -4, 1300, 1, 1325, 0, 2, 1390, 1, 1371, 0, 2, 1430, 1, 1411, 0, -2, 1450, null, null, 0, 1, 1510, null, null, 0, 3, 1580, null, null, 0, -1, 1600, -3, 1622, 0, 1, 1670, null, null, 0, -2, 1700, 1, 1714, 0, -1, 358, null, null, 0, -3, 364, 1, 1828, 0, -1, 376, 2, 1861, 0, 1, 382, 3, 1918, 0, 3, 398, -1, 1964, 0, null, 402, -1, null, 0, -2, null, 1, null, 0, -3, 426, 2, 2125, 0, 3, 432, -2, 2165, 0, -1, 440, 2, 2226, 0, 3, 458, -1, 2264, 0, 1, 468, -2, 2323, 0, null, 2360, null, null, 0, -4, 486, null, null, 0, 2, 490, -1, 2476, 0]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2, -3, -3, -3, -3, -4, -4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1050, 1067, 1120, 1226, 1240, 1272, 1290, 1300, 1325, 1371, 1390, 1411, 1430, 1450, 1510, 1580, 1600, 1622, 1670, 1700, 1714, 1828, 1861, 1918, 1964, 2, 2, 2, 2, 2, 2, 2125, 2165, 2226, 2264, 2323, 2360, 2476, 3, 3, 3, 3, 3, 3, 358, 364, 376, 382, 398, 4, 402, 426, 432, 440, 458, 468, 486, 490, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

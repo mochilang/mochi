@@ -224,19 +224,25 @@ let t1 = [
 ]
 
 /* SELECT (a+b+c+d+e)/5, d, c FROM t1 WHERE b>c */
-let result = from row in t1
+var result = from row in t1
   where row.b > row.c
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d, row.c]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case656" {
-  expect flatResult == [null, 122, 123, 127, 128, 125, 137, 136, 137, 142, 140, 141, null, null, 150, null, null, 155, null, null, 166, 192, 190, 193, 197, 196, 195, 217, 217, 215, 227, 226, 225, 232, 233, 231, 247, 248, 247]
+  expect flatResult == [122, 123, 125, 127, 128, 136, 137, 137, 140, 141, 142, 150, 155, 166, 190, 192, 193, 195, 196, 197, 215, 217, 217, 225, 226, 227, 231, 232, 233, 247, 247, 248, null, null, null, null, null, null, null]
 }
 

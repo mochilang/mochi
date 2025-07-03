@@ -224,21 +224,27 @@ let t1 = [
 ]
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), c, c-d, a+b*2+c*3, abs(b-c) FROM t1 WHERE (e>a AND e<b) */
-let result = from row in t1
+var result = from row in t1
   where ((row.e > row.a && row.e < row.b))
   select [count(from x in t1
   where x.b < row.b
   select x), row.c, (row.c - row.d), ((row.a + (row.b * 2)) + (row.c * 3)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
 var flatResult = []
 for row in result {
   for x in row {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case694" {
-  expect flatResult == [16, 193, 3, 1158, 1, 21, 224, 2, 1338, 1, 26, 247, -1, 1484, 2]
+  expect flatResult == [-1, 1, 1, 1158, 1338, 1484, 16, 193, 2, 2, 21, 224, 247, 26, 3]
 }
 
