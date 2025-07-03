@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4+e*5, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, b-c, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), e, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.b - row.c), count(from x in t1
   where x.b < row.b
   select x), row.e, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
@@ -234,10 +234,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case925" {
-  expect flatResult == [null, 555, null, 0, null, 444, 1612, 333, -1, 0, 109, 333, null, 555, -1, 1, 110, 444, null, 333, null, 0, 117, 444, null, 333, 1, 2, null, 222, 1902, 333, 4, 3, 126, 222, 1985, 444, -4, 4, 132, 333, 2046, 111, 2, 5, 135, 222, 2131, 111, 2, 6, 144, 222, null, 555, -2, 7, 146, 444, null, 555, 1, 8, null, 333, null, 555, 3, 9, 157, 333, 2432, 333, -1, 10, 162, 444, null, 555, 1, 11, 165, 333, 2579, 555, -2, 12, 173, 444, null, 555, -1, 13, 177, 444, 2728, 333, -3, 14, 180, 333, 2806, 444, -1, 15, 189, 333, 2878, 444, 1, 16, 192, 222, 2949, 555, 3, 17, 197, 333, null, 222, null, 0, 204, 444, null, 555, -2, 18, null, 444, 3175, 222, -3, 19, 210, 333, 3260, 333, 3, 20, 219, 222, 3331, 444, -1, 21, 221, 222, 3399, 555, 3, 22, 227, 333, 3473, 555, 1, 23, 230, 333, null, 555, null, 24, 237, 444, null, 222, -4, 25, null, 444, 3706, 444, 2, 26, 246, 111]
+  expect flatResult == [-1, -1, -1, -1, -1, -1, -2, -2, -2, -3, -3, -4, -4, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 10, 109, 11, 110, 111, 111, 111, 117, 12, 126, 13, 132, 135, 14, 144, 146, 15, 157, 16, 1612, 162, 165, 17, 173, 177, 18, 180, 189, 19, 1902, 192, 197, 1985, 2, 2, 2, 2, 20, 204, 2046, 21, 210, 2131, 219, 22, 221, 222, 222, 222, 222, 222, 222, 222, 222, 222, 222, 227, 23, 230, 237, 24, 2432, 246, 25, 2579, 26, 2728, 2806, 2878, 2949, 3, 3, 3, 3, 3, 3175, 3260, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 3331, 3399, 3473, 3706, 4, 4, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 5, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 555, 6, 7, 8, 9, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

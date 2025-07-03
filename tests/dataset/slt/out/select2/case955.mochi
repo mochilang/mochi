@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4, (a+b+c+d+e)/5, abs(b-c) FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) OR (e>a AND e<b) OR d NOT BETWEEN 110 AND 150 */
-let result = from row in t1
+var result = from row in t1
   where ((count(from x in t1
   where x.b < row.b
   select x) > 0 || ((row.e > row.a && row.e < row.b))) || (row.d < 110 || row.d > 150))
@@ -235,10 +235,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case955" {
-  expect flatResult == [null, null, 1, 1226, null, 1, 1272, 127, 4, 1325, 132, 4, 1371, 137, 2, 1411, 142, 2, null, null, 2, null, null, 1, null, null, 3, 1622, 162, 1, null, null, 1, 1714, 172, 2, null, null, 1, 1828, 182, 3, 1861, 187, 1, 1918, 192, 1, 1964, 197, 3, null, null, 2, 2125, 212, 3, 2165, 217, 3, 2226, 222, 1, 2264, 227, 3, 2323, 232, 1, null, null, null, null, null, 4, 2476, 247, 2, null, null, null, 1067, 107, 1, null, null, null]
+  expect flatResult == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1067, 107, 1226, 127, 1272, 132, 1325, 137, 1371, 1411, 142, 162, 1622, 1714, 172, 182, 1828, 1861, 187, 1918, 192, 1964, 197, 2, 2, 2, 2, 2, 2, 212, 2125, 2165, 217, 222, 2226, 2264, 227, 232, 2323, 247, 2476, 3, 3, 3, 3, 3, 3, 4, 4, 4, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

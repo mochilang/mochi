@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT a+b*2+c*3+d*4, d-e, abs(a), a+b*2, c FROM t1 */
-let result = from row in t1
+var result = from row in t1
   select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.d - row.e), (if row.a < 0 { -(row.a) } else { row.a }), (row.a + (row.b * 2)), row.c]
 var flatResult = []
 for row in result {
@@ -232,10 +232,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case912" {
-  expect flatResult == [null, null, 104, null, 102, 1067, -1, 107, 317, 106, null, 4, null, null, 113, null, -1, 115, null, 119, 1226, null, 121, 369, 123, 1272, 2, 127, 385, 125, 1325, 1, 131, 391, 134, 1371, 1, 138, 416, 137, 1411, -4, 142, 428, 141, null, null, 149, 439, 147, null, null, 153, 455, 150, null, null, 159, 475, 155, 1622, 2, 163, 483, 161, null, null, 168, 502, 166, 1714, -2, 174, 514, 172, null, null, 179, 529, 176, 1828, 3, 182, 544, 184, 1861, -4, 188, 560, 187, 1918, -2, 191, 579, 193, 1964, -1, 199, 595, 195, null, -1, 201, null, 202, null, null, null, null, 208, 2125, 2, 213, 635, 214, 2165, -2, 216, 652, 215, 2226, 1, 220, 666, 224, 2264, -1, 229, 685, 225, 2323, 3, 234, 698, 231, null, 1, 239, 711, null, null, null, 243, 723, 244, 2476, 2, 245, 743, 247]
+  expect flatResult == [-1, -1, -1, -1, -1, -2, -2, -2, -4, -4, 1, 1, 1, 1, 102, 104, 106, 1067, 107, 113, 115, 119, 121, 1226, 123, 125, 127, 1272, 131, 1325, 134, 137, 1371, 138, 141, 1411, 142, 147, 149, 150, 153, 155, 159, 161, 1622, 163, 166, 168, 1714, 172, 174, 176, 179, 182, 1828, 184, 1861, 187, 188, 191, 1918, 193, 195, 1964, 199, 2, 2, 2, 2, 201, 202, 208, 2125, 213, 214, 215, 216, 2165, 220, 2226, 224, 225, 2264, 229, 231, 2323, 234, 239, 243, 244, 245, 247, 2476, 3, 3, 317, 369, 385, 391, 4, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, 635, 652, 666, 685, 698, 711, 723, 743, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
 }
 

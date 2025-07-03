@@ -224,7 +224,7 @@ let t1 = [
 ]
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, abs(a), a+b*2+c*3 FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
-let result = from row in t1
+var result = from row in t1
   where null != 0
   select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if row.a < 0 { -(row.a) } else { row.a }), ((row.a + (row.b * 2)) + (row.c * 3))]
 var flatResult = []
@@ -233,10 +233,13 @@ for row in result {
     flatResult = append(flatResult, x)
   }
 }
+flatResult = from x in flatResult
+  order by str(x)
+  select x
 for x in flatResult {
   print(x)
 }
 test "case978" {
-  expect flatResult == [444, 104, null, 333, 107, 635, 444, null, null, 444, 115, null, 222, 121, 738, 222, 127, 760, 333, 131, 793, 222, 138, 827, 222, 142, 851, 444, 149, 880, 333, 153, 905, 333, 159, 940, 444, 163, 966, 333, 168, 1000, 444, 174, 1030, 444, 179, 1057, 333, 182, 1096, 333, 188, 1121, 222, 191, 1158, 333, 199, 1180, 444, 201, null, 444, null, null, 333, 213, 1277, 222, 216, 1297, 222, 220, 1338, 333, 229, 1360, 333, 234, 1391, 444, 239, null, 444, 243, 1455, 111, 245, 1484]
+  expect flatResult == [1000, 1030, 104, 1057, 107, 1096, 111, 1121, 115, 1158, 1180, 121, 127, 1277, 1297, 131, 1338, 1360, 138, 1391, 142, 1455, 1484, 149, 153, 159, 163, 168, 174, 179, 182, 188, 191, 199, 201, 213, 216, 220, 222, 222, 222, 222, 222, 222, 222, 229, 234, 239, 243, 245, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 333, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 444, 635, 738, 760, 793, 827, 851, 880, 905, 940, 966, null, null, null, null, null, null, null, null]
 }
 
