@@ -165,13 +165,24 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 			// normalize case for comparison. Treat the literal
 			// string "null" or "nil" as a NULL value.
 			sv := strings.TrimSpace(strings.ToLower(val))
-			if sv == "null" || sv == "nil" {
+			if sv == "null" || sv == "nil" || sv == "none" || sv == "undefined" {
+				continue
+			}
+			if sv == "nan" || sv == "+nan" || sv == "-nan" {
 				continue
 			}
 
 			// Allow comma and underscore separators in numbers.
 			sv = strings.ReplaceAll(sv, ",", "")
 			sv = strings.ReplaceAll(sv, "_", "")
+			if sv == "inf" || sv == "+inf" || sv == "-inf" || sv == "infinity" {
+				if t == "" || t == "float" {
+					t = "float"
+				} else {
+					return "any"
+				}
+				continue
+			}
 
 			if sv == "true" || sv == "t" || sv == "yes" || sv == "y" || sv == "on" {
 				if t == "" || t == "bool" {
