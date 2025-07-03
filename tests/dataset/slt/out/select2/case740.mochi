@@ -225,6 +225,7 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, c, a+b*2 FROM t1 */
 let result = from row in t1
+  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, (row.a + (row.b * 2))]
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, (row.a + (row.b * 2))]
 var flatResult = []
 for row in result {

@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT e FROM t1 WHERE a>b OR coalesce(a,b,c,d,e)<>0 */
 let result = from row in t1
   where (row.a > row.b || null != 0)
+  order by row.e
   select row.e
 for x in result {
   print(x)

@@ -226,11 +226,12 @@ let t1 = [
 /* SELECT a+b*2 FROM t1 WHERE c>d OR a>b OR d>e */
 let result = from row in t1
   where ((row.c > row.d || row.a > row.b) || row.d > row.e)
+  order by (row.a + (row.b * 2))
   select (row.a + (row.b * 2))
 for x in result {
   print(x)
 }
 
 test "case729" {
-  expect result == [null, null, 369, 391, 416, 428, 514, 544, 560, 579, null, 635, 666, 317, 439, 455, 475, 483, 502, 529, 595, 685, 698, 711, 723, null, 385, 743]
+  expect result == [null, 317, null, null, 369, 385, 391, 416, 428, 439, 455, 475, 483, 502, 514, 529, 544, 560, 579, 595, null, 635, 666, 685, 698, 711, 723, 743]
 }

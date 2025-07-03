@@ -226,6 +226,9 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), a+b*2+c*3, a+b*2, a, a-b, b, e FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 */
 let result = from row in t1
   where ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))
+  order by [count(from x in t1
+  where x.b < row.b
+  select x), ((row.a + (row.b * 2)) + (row.c * 3)), (row.a + (row.b * 2)), row.a, (row.a - row.b), row.b, row.e]
   select [count(from x in t1
   where x.b < row.b
   select x), ((row.a + (row.b * 2)) + (row.c * 3)), (row.a + (row.b * 2)), row.a, (row.a - row.b), row.b, row.e]

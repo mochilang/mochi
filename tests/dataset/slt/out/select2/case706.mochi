@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT c-d, d FROM t1 WHERE (a>b-2 AND a<b+2) AND b>c */
 let result = from row in t1
   where (((row.a > (row.b - 2) && row.a < (row.b + 2))) && row.b > row.c)
+  order by [(row.c - row.d), row.d]
   select [(row.c - row.d), row.d]
 var flatResult = []
 for row in result {

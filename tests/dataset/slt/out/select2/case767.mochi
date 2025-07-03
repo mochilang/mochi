@@ -225,6 +225,7 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, abs(a), d-e, e, b FROM t1 */
 let result = from row in t1
+  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < 0 { -(row.a) } else { row.a }), (row.d - row.e), row.e, row.b]
   select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if row.a < 0 { -(row.a) } else { row.a }), (row.d - row.e), row.e, row.b]
 var flatResult = []
 for row in result {

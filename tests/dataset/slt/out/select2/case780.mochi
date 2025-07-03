@@ -226,6 +226,7 @@ let t1 = [
 /* SELECT a+b*2 FROM t1 WHERE a>b AND coalesce(a,b,c,d,e)<>0 AND a IS NULL */
 let result = from row in t1
   where ((row.a > row.b && null != 0) && row.a == null)
+  order by (row.a + (row.b * 2))
   select (row.a + (row.b * 2))
 for x in result {
   print(x)
