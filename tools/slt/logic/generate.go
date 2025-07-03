@@ -327,6 +327,28 @@ func exprToMochiBare(e sqlparser.Expr) string {
 	return strings.ReplaceAll(s, "row.", "")
 }
 
+// repeatedAddCol checks whether the expression is a chain of additions of the
+// same column. If so it returns that column and the number of repetitions.
+func repeatedAddCol(e sqlparser.Expr) (*sqlparser.ColName, int, bool) {
+	switch v := e.(type) {
+	case *sqlparser.ColName:
+		return v, 1, true
+	case *sqlparser.BinaryExpr:
+		if v.Operator != "+" {
+			return nil, 0, false
+		}
+		lcol, ln, lok := repeatedAddCol(v.Left)
+		rcol, rn, rok := repeatedAddCol(v.Right)
+		if !lok || !rok {
+			return nil, 0, false
+		}
+		if lcol.Name.Equal(rcol.Name) && lcol.Qualifier.Name.String() == rcol.Qualifier.Name.String() {
+			return lcol, ln + rn, true
+		}
+	}
+	return nil, 0, false
+}
+
 func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]string) string {
 	switch v := e.(type) {
 	case *sqlparser.SQLVal:
@@ -361,15 +383,16 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 	case *sqlparser.UnaryExpr:
 		return fmt.Sprintf("%s%s", v.Operator, exprToMochiRow(v.Expr, rowVar, outer, subs))
 	case *sqlparser.BinaryExpr:
-		// Simplify repeated addition of the same column to a
-		// multiplication by 2. This helps avoid type mismatches
-		// when combining with other arithmetic.
+		// Simplify repeated addition of the same column expression
+		// into a multiplication.  SQLLogicTest queries often use
+		// patterns like `a+a+a` which would otherwise result in
+		// deeply nested addition chains and type mismatches.  Any
+		// chain of `+` operations that references the exact same
+		// column is collapsed to `(col * N)`.
 		if v.Operator == "+" {
-			if lc, ok := v.Left.(*sqlparser.ColName); ok {
-				if rc, ok2 := v.Right.(*sqlparser.ColName); ok2 && lc.Name.Equal(rc.Name) && lc.Qualifier.Name.String() == rc.Qualifier.Name.String() {
-					col := exprToMochiRow(v.Left, rowVar, outer, subs)
-					return fmt.Sprintf("(%s * 2)", col)
-				}
+			if col, n, ok := repeatedAddCol(v); ok && n > 1 {
+				name := exprToMochiRow(col, rowVar, outer, subs)
+				return fmt.Sprintf("(%s * %d)", name, n)
 			}
 		}
 		l := exprToMochiRow(v.Left, rowVar, outer, subs)
