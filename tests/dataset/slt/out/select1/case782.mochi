@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT b, a-b, a+b*2+c*3+d*4+e*5, a+b*2+c*3, c, c-d FROM t1 WHERE (c<=d-2 OR c>=d+2) ORDER BY 5,3,4,6,1,2 */
 let result = from row in t1
   where ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))
-  order by [row.c, ((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((row.a + (row.b + row.b)) + (row.c * 3)), (row.c - row.d), row.b, (row.a - row.b)]
-  select [row.b, (row.a - row.b), ((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((row.a + (row.b + row.b)) + (row.c * 3)), row.c, (row.c - row.d)]
+  order by [row.c, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((row.a + (row.b * 2)) + (row.c * 3)), (row.c - row.d), row.b, (row.a - row.b)]
+  select [row.b, (row.a - row.b), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((row.a + (row.b * 2)) + (row.c * 3)), row.c, (row.c - row.d)]
 var flatResult = []
 for row in result {
   for x in row {

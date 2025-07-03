@@ -226,12 +226,12 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c, (a+b+c+d+e)/5, a+b*2, c-d FROM t1 WHERE (a>b-2 AND a<b+2) AND e+d BETWEEN a+b-10 AND c+130 AND d NOT BETWEEN 110 AND 150 ORDER BY 5,3,2,4,1 */
 let result = from row in t1
   where ((((row.a > (row.b - 2) && row.a < (row.b + 2))) && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) && (row.d < 110 || row.d > 150))
-  order by [(row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, (row.a + (row.b + row.b)), count(from x in t1
+  order by [(row.c - row.d), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, (row.a + (row.b * 2)), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), row.c, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a + (row.b + row.b)), (row.c - row.d)]
+  select x), row.c, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a + (row.b * 2)), (row.c - row.d)]
 var flatResult = []
 for row in result {
   for x in row {

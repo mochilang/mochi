@@ -230,10 +230,10 @@ let result = from row in t1
   select x) > 0
   order by [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), ((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.d - row.e), (((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4))]
+  select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.d - row.e), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
   select [count(from x in t1
   where (x.c > row.c && x.d < row.d)
-  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.d - row.e), ((((row.a + (row.b + row.b)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
+  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.d - row.e), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
 var flatResult = []
 for row in result {
   for x in row {

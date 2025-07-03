@@ -228,8 +228,8 @@ let result = from row in t1
   where (row.c > row.d || count(from x in t1
   where x.b < row.b
   select x) > 0)
-  order by [row.b, row.d, row.e, ((row.a + (row.b + row.b)) + (row.c * 3)), row.a]
-  select [row.e, row.a, ((row.a + (row.b + row.b)) + (row.c * 3)), row.b, row.d]
+  order by [row.b, row.d, row.e, ((row.a + (row.b * 2)) + (row.c * 3)), row.a]
+  select [row.e, row.a, ((row.a + (row.b * 2)) + (row.c * 3)), row.b, row.d]
 var flatResult = []
 for row in result {
   for x in row {
