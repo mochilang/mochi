@@ -1,7 +1,7 @@
 102
-<nil>
-410
-814
+null
+null
+null
 555
 6
 444
@@ -14,11 +14,8 @@
 333
 208
 206
-1036
-1864
-555
+null
+null
+444
 1
 111
-call graph: main
-stack trace:
-  main:242

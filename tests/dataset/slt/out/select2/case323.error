@@ -4,4 +4,4 @@ stack trace:
   main at :240
     expect flatResult == [107, 317, 127, 385]
 
-got: [61, 104, 107, 317, 89, 224, 93, 115, 127, 385, 124, 412]
+got: [null, null, 107, 317, null, null, null, null, 127, 385, null, null]
