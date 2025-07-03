@@ -1,5 +1,22 @@
 # 📦 CHANGELOG.md
 
+## [0.10.13] – 2025-07-03T20:54:57+07:00
+
+### Added
+
+* SQL Logic Test generator covers select2 cases 1–1000 with rowsort, coalesce and IS NULL support
+
+### Changed
+
+* Treated `nil` strings as null with improved boolean detection
+* Preserved column types when nulls are present and reformatted logs
+* Regenerated SLT outputs with cleaner errors
+
+### Fixed
+
+* Virtual machine now propagates nulls in arithmetic and `avg` operations
+* Corrected rowsort handling across test cases
+
 ## [0.10.12] – 2025-07-03T10:13:46+07:00
 
 ### Added
