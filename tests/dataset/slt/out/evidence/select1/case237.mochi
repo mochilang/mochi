@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT a, abs(a), (a+b+c+d+e)/5, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 ORDER BY 3,1,2,4 */
 let result = from row in t1
-  order by [(row.a + row.b + row.c + row.d + row.e) / 5, row.a, (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
+  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.a, (if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
-  select [row.a, (if row.a < 0 { -(row.a) } else { row.a }), (row.a + row.b + row.c + row.d + row.e) / 5, count(from x in t1
+  select [row.a, (if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
   where (x.c > row.c && x.d < row.d)
   select x)]
 var flatResult = []
