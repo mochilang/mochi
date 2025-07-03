@@ -1,0 +1,244 @@
+/*
+# line: 280
+*/
+
+type t1Row {
+  a: int
+  b: int
+  c: int
+  d: int
+  e: int
+}
+
+let t1 = [
+  t1Row {
+    a: 104,
+    b: null,
+    c: 102,
+    d: 101,
+    e: null,
+  },
+  t1Row {
+    a: 107,
+    b: 105,
+    c: 106,
+    d: 108,
+    e: 109,
+  },
+  t1Row {
+    a: null,
+    b: 112,
+    c: 113,
+    d: 114,
+    e: 110,
+  },
+  t1Row {
+    a: 115,
+    b: null,
+    c: 119,
+    d: 116,
+    e: 117,
+  },
+  t1Row {
+    a: 121,
+    b: 124,
+    c: 123,
+    d: 122,
+    e: null,
+  },
+  t1Row {
+    a: 127,
+    b: 129,
+    c: 125,
+    d: 128,
+    e: 126,
+  },
+  t1Row {
+    a: 131,
+    b: 130,
+    c: 134,
+    d: 133,
+    e: 132,
+  },
+  t1Row {
+    a: 138,
+    b: 139,
+    c: 137,
+    d: 136,
+    e: 135,
+  },
+  t1Row {
+    a: 142,
+    b: 143,
+    c: 141,
+    d: 140,
+    e: 144,
+  },
+  t1Row {
+    a: 149,
+    b: 145,
+    c: 147,
+    d: null,
+    e: 146,
+  },
+  t1Row {
+    a: 153,
+    b: 151,
+    c: 150,
+    d: null,
+    e: null,
+  },
+  t1Row {
+    a: 159,
+    b: 158,
+    c: 155,
+    d: null,
+    e: 157,
+  },
+  t1Row {
+    a: 163,
+    b: 160,
+    c: 161,
+    d: 164,
+    e: 162,
+  },
+  t1Row {
+    a: 168,
+    b: 167,
+    c: 166,
+    d: null,
+    e: 165,
+  },
+  t1Row {
+    a: 174,
+    b: 170,
+    c: 172,
+    d: 171,
+    e: 173,
+  },
+  t1Row {
+    a: 179,
+    b: 175,
+    c: 176,
+    d: null,
+    e: 177,
+  },
+  t1Row {
+    a: 182,
+    b: 181,
+    c: 184,
+    d: 183,
+    e: 180,
+  },
+  t1Row {
+    a: 188,
+    b: 186,
+    c: 187,
+    d: 185,
+    e: 189,
+  },
+  t1Row {
+    a: 191,
+    b: 194,
+    c: 193,
+    d: 190,
+    e: 192,
+  },
+  t1Row {
+    a: 199,
+    b: 198,
+    c: 195,
+    d: 196,
+    e: 197,
+  },
+  t1Row {
+    a: 201,
+    b: null,
+    c: 202,
+    d: 203,
+    e: 204,
+  },
+  t1Row {
+    a: null,
+    b: 206,
+    c: 208,
+    d: 207,
+    e: null,
+  },
+  t1Row {
+    a: 213,
+    b: 211,
+    c: 214,
+    d: 212,
+    e: 210,
+  },
+  t1Row {
+    a: 216,
+    b: 218,
+    c: 215,
+    d: 217,
+    e: 219,
+  },
+  t1Row {
+    a: 220,
+    b: 223,
+    c: 224,
+    d: 222,
+    e: 221,
+  },
+  t1Row {
+    a: 229,
+    b: 228,
+    c: 225,
+    d: 226,
+    e: 227,
+  },
+  t1Row {
+    a: 234,
+    b: 232,
+    c: 231,
+    d: 233,
+    e: 230,
+  },
+  t1Row {
+    a: 239,
+    b: 236,
+    c: null,
+    d: 238,
+    e: 237,
+  },
+  t1Row {
+    a: 243,
+    b: 240,
+    c: 244,
+    d: null,
+    e: null,
+  },
+  t1Row {
+    a: 245,
+    b: 249,
+    c: 247,
+    d: 248,
+    e: 246,
+  },
+]
+
+/* SELECT CASE WHEN c>(SELECT avg(c) FROM t1) THEN a*2 ELSE b*10 END, b, a+b*2+c*3+d*4, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, d-e, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, a-b FROM t1 */
+let sub0 = avg(from x in t1
+  select x.c)
+
+let result = from row in t1
+  select [(if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.b, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.d - row.e), (if (row.a + 1) == row.b { 111 } else { (if (row.a + 1) == row.c { 222 } else { (if (row.a + 1) == row.d { 333 } else { (if (row.a + 1) == row.e { 444 } else { 555 }) }) }) }), (row.a - row.b)]
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+for x in flatResult {
+  print(x)
+}
+test "case16" {
+  expect flatResult == [null, null, null, 444, null, 555, null, 1050, 105, 1067, 333, -1, 333, 2, 1120, 112, null, 444, 4, 555, null, null, null, null, 444, -1, 333, null, 1240, 124, 1226, 222, null, 333, -3, 1290, 129, 1272, 222, 2, 333, -2, 1300, 130, 1325, 333, 1, 444, 1, 1390, 139, 1371, 222, 1, 111, -1, 1430, 143, 1411, 222, -4, 111, -1, 1450, 145, null, 444, null, 555, 4, 1510, 151, null, 333, null, 555, 2, 1580, 158, null, 333, null, 555, 1, 1600, 160, 1622, 444, 2, 333, 3, 1670, 167, null, 333, null, 555, 1, 1700, 170, 1714, 444, -2, 555, 4, 358, 175, null, 444, null, 555, 4, 364, 181, 1828, 333, 3, 333, 1, 376, 186, 1861, 333, -4, 444, 2, 382, 194, 1918, 222, -2, 444, -3, 398, 198, 1964, 333, -1, 555, 1, 402, null, null, 444, -1, 222, null, null, 206, null, 444, null, 555, null, 426, 211, 2125, 333, 2, 222, 2, 432, 218, 2165, 222, -2, 333, -2, 440, 223, 2226, 222, 1, 444, -3, 458, 228, 2264, 333, -1, 555, 1, 468, 232, 2323, 333, 3, 555, 2, 2360, 236, null, 444, 1, 555, 3, 486, 240, null, 444, null, 222, 3, 490, 249, 2476, 111, 2, 444, -4]
+}
+
