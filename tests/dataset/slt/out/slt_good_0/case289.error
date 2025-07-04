@@ -1,0 +1,7 @@
+expect condition failed at :91: expect flatResult == [1888.75]
+call graph: main
+stack trace:
+  main at :91
+    expect flatResult == [1888.75]
+
+got: [1888]

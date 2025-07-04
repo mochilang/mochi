@@ -673,16 +673,23 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 			return fmt.Sprintf("\"%s\"", string(v.Val))
 		case sqlparser.IntVal:
 			// Preserve integer constants without adding a decimal
-			// suffix. Emitting integers avoids type mismatches in
-			// generated programs that mix integer columns with
-			// constant values.
-			return string(v.Val)
+			// suffix. Wrap negative values in parentheses so they
+			// can appear after another operator without causing a
+			// parse error.
+			s := string(v.Val)
+			if strings.HasPrefix(s, "-") || strings.HasPrefix(s, "+") {
+				return "(" + s + ")"
+			}
+			return s
 		case sqlparser.FloatVal:
 			s := string(v.Val)
 			if f, err := strconv.ParseFloat(s, 64); err == nil {
 				if f == math.Trunc(f) {
 					return fmt.Sprintf("%.0f", f)
 				}
+			}
+			if strings.HasPrefix(s, "-") || strings.HasPrefix(s, "+") {
+				return "(" + s + ")"
 			}
 			return s
 		}
@@ -697,7 +704,8 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 	case *sqlparser.ParenExpr:
 		return "(" + exprToMochiRow(v.Expr, rowVar, outer, subs) + ")"
 	case *sqlparser.UnaryExpr:
-		return fmt.Sprintf("%s%s", v.Operator, exprToMochiRow(v.Expr, rowVar, outer, subs))
+		expr := exprToMochiRow(v.Expr, rowVar, outer, subs)
+		return fmt.Sprintf("(%s%s)", v.Operator, expr)
 	case *sqlparser.BinaryExpr:
 		// Simplify repeated addition of the same column expression
 		// into a multiplication.  SQLLogicTest queries often use
@@ -1116,6 +1124,33 @@ func Generate(c Case) string {
 	}
 
 	tblNameStr := tblName.Name.String()
+	if strings.EqualFold(tblNameStr, "dual") && c.Tables[tblNameStr] == nil {
+		// Queries without a FROM clause are represented by the parser
+		// as selecting from the imaginary "dual" table. Synthesize the
+		// result directly from the expressions.
+		exprs := make([]string, 0, len(sel.SelectExprs))
+		for _, se := range sel.SelectExprs {
+			ae, ok := se.(*sqlparser.AliasedExpr)
+			if !ok || !simpleExpr(ae.Expr) {
+				return ""
+			}
+			exprs = append(exprs, exprToMochiBare(ae.Expr))
+		}
+		sb.WriteString("var result = [[" + strings.Join(exprs, ", ") + "]]\n")
+		sb.WriteString("var flatResult = []\n")
+		sb.WriteString("for row in result {\n")
+		sb.WriteString("  for x in row {\n")
+		sb.WriteString("    flatResult = append(flatResult, x)\n")
+		sb.WriteString("  }\n}\n")
+		sb.WriteString("for x in flatResult {\n  print(x)\n}\n\n")
+		if len(c.Expect) > 0 {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))
+		} else {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == []\n}\n", c.Name))
+		}
+		sb.WriteString("\n")
+		return sb.String()
+	}
 
 	subExprs := collectSubqueries(sel)
 	subs := map[string]string{}

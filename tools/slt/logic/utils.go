@@ -15,7 +15,6 @@ import (
 	"time"
 
 	_ "github.com/marcboeker/go-duckdb"
-	sqlparser "github.com/xwb1989/sqlparser"
 	"mochi/parser"
 	mod "mochi/runtime/mod"
 	"mochi/runtime/vm"
@@ -162,12 +161,12 @@ func EvalCase(c Case) ([]string, string, error) {
 			}
 		}
 	}
+	// DuckDB does not expose a hidden rowid column like SQLite. The
+	// SQLLogicTest suite often relies on ordering by rowid when no explicit
+	// ORDER BY clause is present. Instead of emulating this behaviour we
+	// simply execute the query as-is and record the resulting rows. This
+	// avoids binder errors on queries without a FROM clause.
 	q := c.Query
-	if node, err := sqlparser.Parse(q); err == nil {
-		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 {
-			q = strings.TrimSpace(q) + " ORDER BY rowid"
-		}
-	}
 	rows, err := db.Query(q)
 	if err != nil {
 		return nil, "", err
@@ -293,7 +292,10 @@ func GenerateFiles(files []string, outDir string, run bool, start, end, max int)
 			}
 			exp, _, err := EvalCase(c)
 			if err != nil {
-				return err
+				errPath := filepath.Join(testDir, c.Name+".error")
+				_ = os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644)
+				failed = append(failed, idx)
+				continue
 			}
 			c.Expect = exp
 			c.Hash = ""
