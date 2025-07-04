@@ -56,6 +56,8 @@ func ParseFile(path string) ([]Case, error) {
 	// query. They are applied to the in-memory tables only after the case is
 	// recorded so subsequent cases start from the correct state.
 	var updates []string
+	engine := "duckdb"
+	skipNext := false
 
 	for scanner.Scan() {
 		lineNo++
@@ -65,6 +67,18 @@ func ParseFile(path string) ([]Case, error) {
 			comments = append(comments, line)
 		case strings.HasPrefix(line, "skip"):
 			comments = append(comments, line)
+		case strings.HasPrefix(line, "onlyif"):
+			comments = append(comments, line)
+			fields := strings.Fields(line)
+			if len(fields) >= 2 && fields[1] != engine {
+				skipNext = true
+			}
+		case strings.HasPrefix(line, "skipif"):
+			comments = append(comments, line)
+			fields := strings.Fields(line)
+			if len(fields) >= 2 && fields[1] == engine {
+				skipNext = true
+			}
 		case strings.HasPrefix(line, "statement ok"):
 			if !scanner.Scan() {
 				break
@@ -124,19 +138,22 @@ func ParseFile(path string) ([]Case, error) {
 					expect = nil
 				}
 			}
-			count++
-			cases = append(cases, Case{
-				Name:     fmt.Sprintf("case%d", count),
-				Tables:   cloneTables(tables),
-				Query:    q,
-				Expect:   expect,
-				Hash:     hash,
-				HashRows: hashRows,
-				RowSort:  rowSort,
-				Comments: comments,
-				Updates:  append([]string(nil), updates...),
-				Line:     startLine,
-			})
+			if !skipNext {
+				count++
+				cases = append(cases, Case{
+					Name:     fmt.Sprintf("case%d", count),
+					Tables:   cloneTables(tables),
+					Query:    q,
+					Expect:   expect,
+					Hash:     hash,
+					HashRows: hashRows,
+					RowSort:  rowSort,
+					Comments: comments,
+					Updates:  append([]string(nil), updates...),
+					Line:     startLine,
+				})
+			}
+			skipNext = false
 			// apply pending updates so the next case sees them
 			for _, u := range updates {
 				if err := applyStatement(u, tables); err != nil {

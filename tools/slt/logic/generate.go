@@ -675,8 +675,13 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 			// Preserve integer constants without adding a decimal
 			// suffix. Emitting integers avoids type mismatches in
 			// generated programs that mix integer columns with
-			// constant values.
-			return string(v.Val)
+			// constant values. Wrap negative numbers in parentheses
+			// to avoid parsing issues.
+			s := string(v.Val)
+			if strings.HasPrefix(s, "-") {
+				return "(" + s + ")"
+			}
+			return s
 		case sqlparser.FloatVal:
 			s := string(v.Val)
 			if f, err := strconv.ParseFloat(s, 64); err == nil {
@@ -697,7 +702,11 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 	case *sqlparser.ParenExpr:
 		return "(" + exprToMochiRow(v.Expr, rowVar, outer, subs) + ")"
 	case *sqlparser.UnaryExpr:
-		return fmt.Sprintf("%s%s", v.Operator, exprToMochiRow(v.Expr, rowVar, outer, subs))
+		ex := exprToMochiRow(v.Expr, rowVar, outer, subs)
+		if v.Operator == "+" {
+			return ex
+		}
+		return fmt.Sprintf("%s(%s)", v.Operator, ex)
 	case *sqlparser.BinaryExpr:
 		// Simplify repeated addition of the same column expression
 		// into a multiplication.  SQLLogicTest queries often use
@@ -1168,14 +1177,25 @@ func Generate(c Case) string {
 		}
 		expr := exprToMochi(ae.Expr, subs)
 		cond := condToMochi(sel.Where, subs)
-		sb.WriteString("var result = from row in " + tblNameStr)
-		if cond != "" {
-			sb.WriteString("\n  where " + cond)
+		if len(sel.From) == 0 || (len(sel.From) == 1 && func() bool {
+			if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
+				if name, ok := tbl.Expr.(sqlparser.TableName); ok {
+					return strings.EqualFold(name.Name.String(), "dual")
+				}
+			}
+			return false
+		}()) {
+			sb.WriteString("var result = [" + expr + "]\n")
+		} else {
+			sb.WriteString("var result = from row in " + tblNameStr)
+			if cond != "" {
+				sb.WriteString("\n  where " + cond)
+			}
+			if len(sel.OrderBy) == 1 {
+				sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}, subs))
+			}
+			sb.WriteString("\n  select " + expr + "\n")
 		}
-		if len(sel.OrderBy) == 1 {
-			sb.WriteString("\n  order by " + orderExprToMochi(sel.OrderBy[0].Expr, []*sqlparser.AliasedExpr{ae}, subs))
-		}
-		sb.WriteString("\n  select " + expr + "\n")
 		if c.RowSort {
 			sb.WriteString("result = from x in result\n  order by str(x)\n  select x\n")
 		}
@@ -1214,26 +1234,37 @@ func Generate(c Case) string {
 			}
 		}
 		cond := condToMochi(sel.Where, subs)
-		sb.WriteString("var result = from row in " + tblNameStr)
-		if cond != "" {
-			sb.WriteString("\n  where " + cond)
-		}
-		if len(sel.OrderBy) > 0 {
-			sb.WriteString("\n  order by ")
-			if len(sel.OrderBy) == 1 {
-				sb.WriteString(orderExprToMochi(sel.OrderBy[0].Expr, aes, subs))
-			} else {
-				sb.WriteString("[")
-				for i, ob := range sel.OrderBy {
-					if i > 0 {
-						sb.WriteString(", ")
-					}
-					sb.WriteString(orderExprToMochi(ob.Expr, aes, subs))
+		if len(sel.From) == 0 || (len(sel.From) == 1 && func() bool {
+			if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
+				if name, ok := tbl.Expr.(sqlparser.TableName); ok {
+					return strings.EqualFold(name.Name.String(), "dual")
 				}
-				sb.WriteString("]")
 			}
+			return false
+		}()) {
+			sb.WriteString("var result = [[" + strings.Join(exprs, ", ") + "]]\n")
+		} else {
+			sb.WriteString("var result = from row in " + tblNameStr)
+			if cond != "" {
+				sb.WriteString("\n  where " + cond)
+			}
+			if len(sel.OrderBy) > 0 {
+				sb.WriteString("\n  order by ")
+				if len(sel.OrderBy) == 1 {
+					sb.WriteString(orderExprToMochi(sel.OrderBy[0].Expr, aes, subs))
+				} else {
+					sb.WriteString("[")
+					for i, ob := range sel.OrderBy {
+						if i > 0 {
+							sb.WriteString(", ")
+						}
+						sb.WriteString(orderExprToMochi(ob.Expr, aes, subs))
+					}
+					sb.WriteString("]")
+				}
+			}
+			sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
 		}
-		sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
 		if c.RowSort {
 			sb.WriteString("result = from row in result\n")
 			sb.WriteString("  order by join(from v in row select str(v), \" \" )\n")
@@ -1267,7 +1298,16 @@ func formatExpectList(xs []string) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(x)
+		if f, err := strconv.ParseFloat(x, 64); err == nil {
+			if strings.ContainsAny(x, "eE") {
+				x = strconv.FormatFloat(f, 'f', -1, 64)
+			}
+		}
+		if strings.HasPrefix(x, "-") {
+			sb.WriteString("(" + x + ")")
+		} else {
+			sb.WriteString(x)
+		}
 	}
 	sb.WriteString("]")
 	return sb.String()
