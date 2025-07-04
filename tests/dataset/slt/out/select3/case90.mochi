@@ -228,8 +228,8 @@ var result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0 && row.c > row.d && (row.e > row.c || row.e < row.d)
-  order by [(row.a + row.b + row.c + row.d + row.e) / 5, row.a]
-  select [row.a, (row.a + row.b + row.c + row.d + row.e) / 5, row.b]
+  order by [(1.0 * ((row.a + row.b + row.c + row.d + row.e))) / 5, row.a]
+  select [row.a, (1.0 * ((row.a + row.b + row.c + row.d + row.e))) / 5, row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
