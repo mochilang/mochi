@@ -9,6 +9,8 @@ import (
 	neturl "net/url"
 	"os"
 	"time"
+
+	"mochi/runtime/util"
 )
 
 // Fetch retrieves JSON from the given URL and unmarshals it into an
@@ -55,7 +57,7 @@ func FetchWith(url string, opts map[string]any) (any, error) {
 	if opts != nil {
 		if q, ok := opts["query"]; ok {
 			vals := u.Query()
-			for k, v := range toAnyMap(q) {
+			for k, v := range util.ToAnyMap(q) {
 				vals.Set(k, fmt.Sprint(v))
 			}
 			u.RawQuery = vals.Encode()
@@ -68,7 +70,7 @@ func FetchWith(url string, opts map[string]any) (any, error) {
 	}
 	if opts != nil {
 		if hs, ok := opts["headers"]; ok {
-			for k, v := range toAnyMap(hs) {
+			for k, v := range util.ToAnyMap(hs) {
 				if s, ok := v.(string); ok {
 					req.Header.Set(k, s)
 				}
@@ -107,19 +109,4 @@ func FetchWith(url string, opts map[string]any) (any, error) {
 		return nil, err
 	}
 	return out, nil
-}
-
-func toAnyMap(m any) map[string]any {
-	switch v := m.(type) {
-	case map[string]any:
-		return v
-	case map[string]string:
-		out := make(map[string]any, len(v))
-		for k, vv := range v {
-			out[k] = vv
-		}
-		return out
-	default:
-		return nil
-	}
 }

@@ -17,6 +17,7 @@ import (
 	"mochi/parser"
 	"mochi/runtime/data"
 	mhttp "mochi/runtime/http"
+	"mochi/runtime/util"
 	"mochi/types"
 )
 
@@ -1514,7 +1515,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			srcVal := fr.regs[ins.B]
 			path := fr.regs[ins.C].Str
 			opts := valueToAny(fr.regs[ins.D])
-			optMap := toAnyMap(opts)
+			optMap := util.ToAnyMap(opts)
 			format := "csv"
 			header := false
 			delim := ','
@@ -1529,7 +1530,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					delim = rune(d[0])
 				}
 			}
-			rows, ok := toMapSlice(valueToAny(srcVal))
+			rows, ok := util.ToMapSlice(valueToAny(srcVal))
 			if !ok {
 				return Value{}, m.newError(fmt.Errorf("save source must be list of maps"), trace, ins.Line)
 			}
@@ -1596,7 +1597,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				return Value{}, m.newError(fmt.Errorf("fetch URL must be string"), trace, ins.Line)
 			}
 			opts := valueToAny(fr.regs[ins.C])
-			optMap := toAnyMap(opts)
+			optMap := util.ToAnyMap(opts)
 			res, err := mhttp.FetchWith(urlVal.Str, optMap)
 			if err != nil {
 				return Value{}, m.newError(err, trace, ins.Line)
@@ -7639,47 +7640,9 @@ func castValue(t types.Type, v any) (any, error) {
 }
 
 func toAnyMap(m any) map[string]any {
-	switch v := m.(type) {
-	case map[string]any:
-		return v
-	case map[string]string:
-		out := make(map[string]any, len(v))
-		for k, vv := range v {
-			out[k] = vv
-		}
-		return out
-	case map[int]any:
-		out := make(map[string]any, len(v))
-		for k, vv := range v {
-			out[strconv.Itoa(k)] = vv
-		}
-		return out
-	case map[any]any:
-		out := make(map[string]any, len(v))
-		for kk, vv := range v {
-			out[fmt.Sprint(kk)] = vv
-		}
-		return out
-	default:
-		return nil
-	}
+	return util.ToAnyMap(m)
 }
 
 func toMapSlice(v any) ([]map[string]any, bool) {
-	switch rows := v.(type) {
-	case []map[string]any:
-		return rows, true
-	case []any:
-		out := make([]map[string]any, len(rows))
-		for i, item := range rows {
-			m, ok := item.(map[string]any)
-			if !ok {
-				return nil, false
-			}
-			out[i] = m
-		}
-		return out, true
-	default:
-		return nil, false
-	}
+	return util.ToMapSlice(v)
 }
