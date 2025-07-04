@@ -1018,8 +1018,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			case "len":
 				expr = fmt.Sprintf("(count %s)", args[0])
 			case "count":
-				c.use("_count")
-				expr = fmt.Sprintf("(_count %s)", args[0])
+				argT := c.exprType(p.Ops[i].Call.Args[0])
+				switch argT.(type) {
+				case types.ListType:
+					expr = fmt.Sprintf("(count %s)", args[0])
+				case types.GroupType:
+					expr = fmt.Sprintf("(count (:Items %s))", args[0])
+				default:
+					c.use("_count")
+					expr = fmt.Sprintf("(_count %s)", args[0])
+				}
 			case "avg":
 				c.use("_avg")
 				expr = fmt.Sprintf("(_avg %s)", args[0])
@@ -1147,23 +1155,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "", err
 		}
 		return expr, nil
-        case p.Match != nil:
-                expr, err := c.compileMatch(p.Match)
-                if err != nil {
-                        return "", err
-                }
-                return expr, nil
-       case p.If != nil:
-               expr, err := c.compileIfExpr(p.If)
-               if err != nil {
-                       return "", err
-               }
-               return expr, nil
-        case p.Selector != nil:
-                expr := sanitizeName(p.Selector.Root)
-                for _, s := range p.Selector.Tail {
-                        expr = fmt.Sprintf("(:%s %s)", sanitizeName(s), expr)
-                }
+	case p.Match != nil:
+		expr, err := c.compileMatch(p.Match)
+		if err != nil {
+			return "", err
+		}
+		return expr, nil
+	case p.If != nil:
+		expr, err := c.compileIfExpr(p.If)
+		if err != nil {
+			return "", err
+		}
+		return expr, nil
+	case p.Selector != nil:
+		expr := sanitizeName(p.Selector.Root)
+		for _, s := range p.Selector.Tail {
+			expr = fmt.Sprintf("(:%s %s)", sanitizeName(s), expr)
+		}
 		return expr, nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
@@ -1196,8 +1204,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "count":
 			if len(args) == 1 {
-				c.use("_count")
-				return "(_count " + args[0] + ")", nil
+				argT := c.exprType(p.Call.Args[0])
+				switch argT.(type) {
+				case types.ListType:
+					return "(count " + args[0] + ")", nil
+				case types.GroupType:
+					return "(count (:Items " + args[0] + "))", nil
+				default:
+					c.use("_count")
+					return "(_count " + args[0] + ")", nil
+				}
 			}
 		case "avg":
 			if len(args) == 1 {
@@ -1280,12 +1296,30 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	origEnv := c.env
 	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	var qElem types.Type = types.AnyType{}
+	if st := c.exprType(q.Source); st != nil {
+		if lt, ok := st.(types.ListType); ok {
+			qElem = lt.Elem
+		}
+	}
+	child.SetVar(q.Var, qElem, true)
 	for _, f := range q.Froms {
-		child.SetVar(f.Var, types.AnyType{}, true)
+		var fElem types.Type = types.AnyType{}
+		if ft := c.exprType(f.Src); ft != nil {
+			if lt, ok := ft.(types.ListType); ok {
+				fElem = lt.Elem
+			}
+		}
+		child.SetVar(f.Var, fElem, true)
 	}
 	for _, j := range q.Joins {
-		child.SetVar(j.Var, types.AnyType{}, true)
+		var jElem types.Type = types.AnyType{}
+		if jt := c.exprType(j.Src); jt != nil {
+			if lt, ok := jt.(types.ListType); ok {
+				jElem = lt.Elem
+			}
+		}
+		child.SetVar(j.Var, jElem, true)
 	}
 	c.env = child
 
@@ -1296,7 +1330,12 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		var gElem types.Type
+		gElem, _ = child.GetVar(q.Var)
+		if gElem == nil {
+			gElem = types.AnyType{}
+		}
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: gElem}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
@@ -1469,29 +1508,29 @@ func (c *Compiler) compileMatch(m *parser.MatchExpr) (string, error) {
 }
 
 func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
-       cond, err := c.compileExpr(ie.Cond)
-       if err != nil {
-               return "", err
-       }
-       thenExpr, err := c.compileExpr(ie.Then)
-       if err != nil {
-               return "", err
-       }
-       elseExpr := "nil"
-       if ie.ElseIf != nil {
-               v, err := c.compileIfExpr(ie.ElseIf)
-               if err != nil {
-                       return "", err
-               }
-               elseExpr = v
-       } else if ie.Else != nil {
-               v, err := c.compileExpr(ie.Else)
-               if err != nil {
-                       return "", err
-               }
-               elseExpr = v
-       }
-       return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
+	cond, err := c.compileExpr(ie.Cond)
+	if err != nil {
+		return "", err
+	}
+	thenExpr, err := c.compileExpr(ie.Then)
+	if err != nil {
+		return "", err
+	}
+	elseExpr := "nil"
+	if ie.ElseIf != nil {
+		v, err := c.compileIfExpr(ie.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		elseExpr = v
+	} else if ie.Else != nil {
+		v, err := c.compileExpr(ie.Else)
+		if err != nil {
+			return "", err
+		}
+		elseExpr = v
+	}
+	return fmt.Sprintf("(if %s %s %s)", cond, thenExpr, elseExpr), nil
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
@@ -1682,12 +1721,30 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 	}
 	origEnv := c.env
 	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	var qElem types.Type = types.AnyType{}
+	if st := c.exprType(q.Source); st != nil {
+		if lt, ok := st.(types.ListType); ok {
+			qElem = lt.Elem
+		}
+	}
+	child.SetVar(q.Var, qElem, true)
 	for _, f := range q.Froms {
-		child.SetVar(f.Var, types.AnyType{}, true)
+		var fElem types.Type = types.AnyType{}
+		if ft := c.exprType(f.Src); ft != nil {
+			if lt, ok := ft.(types.ListType); ok {
+				fElem = lt.Elem
+			}
+		}
+		child.SetVar(f.Var, fElem, true)
 	}
 	for _, j := range q.Joins {
-		child.SetVar(j.Var, types.AnyType{}, true)
+		var jElem types.Type = types.AnyType{}
+		if jt := c.exprType(j.Src); jt != nil {
+			if lt, ok := jt.(types.ListType); ok {
+				jElem = lt.Elem
+			}
+		}
+		child.SetVar(j.Var, jElem, true)
 	}
 	c.env = child
 
@@ -1818,7 +1875,12 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		b.WriteString(" })\n")
 		b.WriteString("      _groups (_group_by _rows (fn [" + allParams + "] " + groupKey + "))\n")
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		var gElem types.Type
+		gElem, _ = child.GetVar(q.Var)
+		if gElem == nil {
+			gElem = types.AnyType{}
+		}
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: gElem}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
