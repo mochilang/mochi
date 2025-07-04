@@ -2014,15 +2014,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			list := c.compileExpr(p.Call.Args[0])
 			fn := c.compileExpr(p.Call.Args[1])
 			init := c.compileExpr(p.Call.Args[2])
-			if isListFloatExpr(p.Call.Args[0], c.env) {
+			switch listElemType(p.Call.Args[0], c.env).(type) {
+			case types.FloatType:
 				c.need(needReduceFloat)
 				return fmt.Sprintf("_reduce_float(%s, %s, %s)", list, fn, init)
-			} else if isListStringExpr(p.Call.Args[0], c.env) {
+			case types.StringType:
 				c.need(needReduceString)
 				return fmt.Sprintf("_reduce_string(%s, %s, %s)", list, fn, init)
+			default:
+				c.need(needReduceInt)
+				return fmt.Sprintf("_reduce_int(%s, %s, %s)", list, fn, init)
 			}
-			c.need(needReduceInt)
-			return fmt.Sprintf("_reduce_int(%s, %s, %s)", list, fn, init)
 		} else if p.Call.Func == "str" {
 			arg := c.compileExpr(p.Call.Args[0])
 			name := c.newTemp()

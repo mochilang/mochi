@@ -158,6 +158,18 @@ func isMapStringType(t types.Type) bool {
 	return false
 }
 
+// listElemType returns the element type of e if it is a list expression with a
+// known element type in env.
+func listElemType(e *parser.Expr, env *types.Env) types.Type {
+	if env == nil || e == nil {
+		return nil
+	}
+	if lt, ok := types.ExprType(e, env).(types.ListType); ok {
+		return lt.Elem
+	}
+	return nil
+}
+
 func isListMapStringType(t types.Type) bool {
 	if lt, ok := t.(types.ListType); ok {
 		return isMapStringType(lt.Elem)
