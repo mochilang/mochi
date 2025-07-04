@@ -706,7 +706,11 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		if v.Operator == "+" {
 			return ex
 		}
-		return fmt.Sprintf("%s(%s)", v.Operator, ex)
+		// Wrap unary operators in an extra set of parentheses. The
+		// Mochi parser struggles with expressions like "* -(x)" when the
+		// unary operator directly follows another operator. Wrapping the
+		// whole expression avoids this parse ambiguity.
+		return fmt.Sprintf("(%s(%s))", v.Operator, ex)
 	case *sqlparser.BinaryExpr:
 		// Simplify repeated addition of the same column expression
 		// into a multiplication.  SQLLogicTest queries often use
