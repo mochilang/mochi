@@ -54,7 +54,7 @@ func subqueryToMochi(sub *sqlparser.Subquery, outer string) string {
 			}
 		} else if name == "avg" && len(fn.Exprs) == 1 {
 			if a, ok := fn.Exprs[0].(*sqlparser.AliasedExpr); ok {
-				val := exprToMochiRow(a.Expr, alias, outer, nil)
+				val := exprToMochiRow(a.Expr, alias, outer, nil, false)
 				cond := ""
 				if sel.Where != nil {
 					cond = condExprToMochiRow(sel.Where.Expr, alias, outer, nil)
@@ -621,11 +621,11 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 }
 
 func exprToMochi(e sqlparser.Expr, subs map[string]string) string {
-	return exprToMochiRow(e, "row", "", subs)
+	return exprToMochiRow(e, "row", "", subs, false)
 }
 
 func exprToMochiBare(e sqlparser.Expr) string {
-	s := exprToMochiRow(e, "row", "", nil)
+	s := exprToMochiRow(e, "row", "", nil, false)
 	return strings.ReplaceAll(s, "row.", "")
 }
 
@@ -665,7 +665,48 @@ func binaryPrec(op string) int {
 	}
 }
 
-func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]string) string {
+// isFloatExpr reports whether the expression contains a literal float or an operation
+// that is likely to produce a floating point result. Column references are
+// treated as integers since table type information isn't available here.
+func isFloatExpr(e sqlparser.Expr) bool {
+	switch v := e.(type) {
+	case *sqlparser.SQLVal:
+		return v.Type == sqlparser.FloatVal
+	case *sqlparser.UnaryExpr:
+		return isFloatExpr(v.Expr)
+	case *sqlparser.BinaryExpr:
+		return isFloatExpr(v.Left) || isFloatExpr(v.Right)
+	case *sqlparser.ParenExpr:
+		return isFloatExpr(v.Expr)
+	case *sqlparser.FuncExpr:
+		name := strings.ToLower(v.Name.String())
+		if name == "avg" {
+			return true
+		}
+		for _, ex := range v.Exprs {
+			if a, ok := ex.(*sqlparser.AliasedExpr); ok {
+				if isFloatExpr(a.Expr) {
+					return true
+				}
+			}
+		}
+	case *sqlparser.CaseExpr:
+		if v.Expr != nil && isFloatExpr(v.Expr) {
+			return true
+		}
+		for _, w := range v.Whens {
+			if isFloatExpr(w.Val) || isFloatExpr(w.Cond) {
+				return true
+			}
+		}
+		if v.Else != nil {
+			return isFloatExpr(v.Else)
+		}
+	}
+	return false
+}
+
+func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]string, inCoalesce bool) string {
 	switch v := e.(type) {
 	case *sqlparser.SQLVal:
 		switch v.Type {
@@ -700,9 +741,9 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		}
 		return fmt.Sprintf("%s.%s", rowVar, name)
 	case *sqlparser.ParenExpr:
-		return "(" + exprToMochiRow(v.Expr, rowVar, outer, subs) + ")"
+		return "(" + exprToMochiRow(v.Expr, rowVar, outer, subs, inCoalesce) + ")"
 	case *sqlparser.UnaryExpr:
-		ex := exprToMochiRow(v.Expr, rowVar, outer, subs)
+		ex := exprToMochiRow(v.Expr, rowVar, outer, subs, inCoalesce)
 		if v.Operator == "+" {
 			return ex
 		}
@@ -720,33 +761,35 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		// column is collapsed to `(col * N)`.
 		if v.Operator == "+" {
 			if col, n, ok := repeatedAddCol(v); ok && n > 1 {
-				name := exprToMochiRow(col, rowVar, outer, subs)
+				name := exprToMochiRow(col, rowVar, outer, subs, inCoalesce)
 				return fmt.Sprintf("(%s * %d)", name, n)
 			}
 		}
-		l := exprToMochiRow(v.Left, rowVar, outer, subs)
+		l := exprToMochiRow(v.Left, rowVar, outer, subs, inCoalesce)
 		if lb, ok := v.Left.(*sqlparser.BinaryExpr); ok && binaryPrec(lb.Operator) < binaryPrec(v.Operator) {
 			l = "(" + l + ")"
 		}
-		r := exprToMochiRow(v.Right, rowVar, outer, subs)
+		r := exprToMochiRow(v.Right, rowVar, outer, subs, inCoalesce)
 		if rb, ok := v.Right.(*sqlparser.BinaryExpr); ok && binaryPrec(rb.Operator) <= binaryPrec(v.Operator) {
 			r = "(" + r + ")"
 		}
 		if v.Operator == sqlparser.DivStr {
-			l = "(1.0 * (" + l + "))"
+			if !inCoalesce || isFloatExpr(v.Left) || isFloatExpr(v.Right) {
+				l = "(1.0 * (" + l + "))"
+			}
 		}
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
 	case *sqlparser.FuncExpr:
 		name := strings.ToLower(v.Name.String())
 		if name == "abs" && len(v.Exprs) == 1 {
 			arg := v.Exprs[0].(*sqlparser.AliasedExpr).Expr
-			ex := exprToMochiRow(arg, rowVar, outer, subs)
+			ex := exprToMochiRow(arg, rowVar, outer, subs, inCoalesce)
 			return fmt.Sprintf("if %s < 0 then -(%s) else %s", ex, ex, ex)
 		}
 		if name == "coalesce" && len(v.Exprs) > 0 {
-			out := exprToMochiRow(v.Exprs[len(v.Exprs)-1].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
+			out := exprToMochiRow(v.Exprs[len(v.Exprs)-1].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs, true)
 			for i := len(v.Exprs) - 2; i >= 0; i-- {
-				arg := exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
+				arg := exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs, true)
 				out = fmt.Sprintf("if %s != null then %s else %s", arg, arg, out)
 			}
 			return "(" + out + ")"
@@ -762,21 +805,21 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 	case *sqlparser.CaseExpr:
 		elseExpr := "null"
 		if v.Else != nil {
-			elseExpr = exprToMochiRow(v.Else, rowVar, outer, subs)
+			elseExpr = exprToMochiRow(v.Else, rowVar, outer, subs, inCoalesce)
 		}
 		out := elseExpr
 		if v.Expr != nil {
-			expr := exprToMochiRow(v.Expr, rowVar, outer, subs)
+			expr := exprToMochiRow(v.Expr, rowVar, outer, subs, inCoalesce)
 			for i := len(v.Whens) - 1; i >= 0; i-- {
-				rhs := exprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs)
+				rhs := exprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs, inCoalesce)
 				cond := fmt.Sprintf("(%s != null && %s != null && %s == %s)", expr, rhs, expr, rhs)
-				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer, subs)
+				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer, subs, inCoalesce)
 				out = fmt.Sprintf("if %s then %s else %s", cond, val, out)
 			}
 		} else {
 			for i := len(v.Whens) - 1; i >= 0; i-- {
 				cond := condExprToMochiRow(v.Whens[i].Cond, rowVar, outer, subs)
-				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer, subs)
+				val := exprToMochiRow(v.Whens[i].Val, rowVar, outer, subs, inCoalesce)
 				if cond == "" {
 					return "null"
 				}
@@ -871,7 +914,7 @@ func condToMochiBare(where *sqlparser.Where) string {
 func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]string) string {
 	switch v := e.(type) {
 	case *sqlparser.ComparisonExpr:
-		left := exprToMochiRow(v.Left, rowVar, outer, subs)
+		left := exprToMochiRow(v.Left, rowVar, outer, subs, false)
 		if !simpleExpr(v.Left) {
 			left = "(" + left + ")"
 		}
@@ -881,7 +924,7 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 			if list, ok := v.Right.(sqlparser.ValTuple); ok {
 				vals := make([]string, len(list))
 				for i, expr := range list {
-					vals[i] = exprToMochiRow(expr, rowVar, outer, subs)
+					vals[i] = exprToMochiRow(expr, rowVar, outer, subs, false)
 				}
 				rhs := "[" + strings.Join(vals, ", ") + "]"
 				if op == sqlparser.InStr {
@@ -890,7 +933,7 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 				return fmt.Sprintf("(!( %s in %s))", left, rhs)
 			}
 		}
-		right := exprToMochiRow(v.Right, rowVar, outer, subs)
+		right := exprToMochiRow(v.Right, rowVar, outer, subs, false)
 		if !simpleExpr(v.Right) {
 			right = "(" + right + ")"
 		}
@@ -919,9 +962,9 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 		}
 		return l + " || " + r
 	case *sqlparser.RangeCond:
-		left := exprToMochiRow(v.Left, rowVar, outer, subs)
-		from := exprToMochiRow(v.From, rowVar, outer, subs)
-		to := exprToMochiRow(v.To, rowVar, outer, subs)
+		left := exprToMochiRow(v.Left, rowVar, outer, subs, false)
+		from := exprToMochiRow(v.From, rowVar, outer, subs, false)
+		to := exprToMochiRow(v.To, rowVar, outer, subs, false)
 		switch strings.ToLower(v.Operator) {
 		case sqlparser.BetweenStr:
 			return fmt.Sprintf("(%s >= %s && %s <= %s)", left, from, left, to)
@@ -930,7 +973,7 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 		}
 		return ""
 	case *sqlparser.IsExpr:
-		left := exprToMochiRow(v.Expr, rowVar, outer, subs)
+		left := exprToMochiRow(v.Expr, rowVar, outer, subs, false)
 		switch strings.ToLower(v.Operator) {
 		case sqlparser.IsNullStr:
 			return fmt.Sprintf("%s == null", left)
