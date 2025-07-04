@@ -1,0 +1,4 @@
+print("--- Top products (excluding most expensive) ---")
+print("Smartphone costs $ 900")
+print("Tablet costs $ 600")
+print("Monitor costs $ 300")

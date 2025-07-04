@@ -1,0 +1,3 @@
+print("Enter first input:")
+print("Enter second input:")
+print("You entered: foo , bar")
