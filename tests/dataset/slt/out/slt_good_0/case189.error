@@ -1,5 +1,0 @@
-error[T013]: incompatible types in comparison
-  --> :88:17
-
-help:
-  Use comparable types like numbers or strings with `<`, `>`.

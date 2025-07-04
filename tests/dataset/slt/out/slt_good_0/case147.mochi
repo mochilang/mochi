@@ -3,6 +3,30 @@
 skipif mysql # not compatible
 */
 
+type tab0Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab0 = [
+  tab0Row {
+    col0: 97,
+    col1: 1,
+    col2: 99,
+  },
+  tab0Row {
+    col0: 15,
+    col1: 81,
+    col2: 47,
+  },
+  tab0Row {
+    col0: 87,
+    col1: 21,
+    col2: 10,
+  },
+]
+
 type tab1Row {
   col0: int
   col1: int
@@ -51,32 +75,8 @@ let tab2 = [
   },
 ]
 
-type tab0Row {
-  col0: int
-  col1: int
-  col2: int
-}
-
-let tab0 = [
-  tab0Row {
-    col0: 97,
-    col1: 1,
-    col2: 99,
-  },
-  tab0Row {
-    col0: 15,
-    col1: 81,
-    col2: 47,
-  },
-  tab0Row {
-    col0: 87,
-    col1: 21,
-    col2: 10,
-  },
-]
-
 /* SELECT - 38 * 21 + + 48 + + - 42 / + + 70 + - 6 */
-var result = [(-38) * 21 + 48 + (-42) / 70 + (-6)]
+var result = [(-38) * 21 + 48 + (1.0 * ((-42))) / 70 + (-6)]
 result = from x in result
   order by str(x)
   select x
