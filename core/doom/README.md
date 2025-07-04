@@ -28,4 +28,12 @@ let screen = doom.render(map, p, 40, 12)
 for line in screen { print(line) }
 ```
 
-Running this program prints a simple first‑person view of the scene. Move the player by updating `p.x`, `p.y`, and `p.angle` and calling `render` again.
+Running this program prints a simple first‑person view of the scene.
+You can move the player with `doom.move` and rotate with `doom.rotate`:
+
+```mochi
+p = doom.move(p, map, 1.0)
+p = doom.rotate(p, doom.PI / 2.0)
+```
+
+Both helpers perform basic collision detection and angle wrapping.

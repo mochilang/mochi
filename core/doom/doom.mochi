@@ -85,3 +85,25 @@ export fun render(map: list<string>, p: Player, width: int, height: int): list<s
   }
   return screen
 }
+
+// move advances the player forward by `dist` if no wall is hit.
+// Movement stops when the next tile would be a wall or outside the map.
+export fun move(p: Player, map: list<string>, dist: float): Player {
+  let nx = p.x + _cos(p.angle) * dist
+  let ny = p.y + _sin(p.angle) * dist
+  let rows = len(map)
+  let cols = len(map[0])
+  if int(ny) < 0 || int(ny) >= rows || int(nx) < 0 || int(nx) >= cols {
+    return p
+  }
+  if map[int(ny)][int(nx)] == '#' {
+    return p
+  }
+  return Player{ x: nx, y: ny, angle: p.angle }
+}
+
+// rotate adjusts the player's viewing angle and keeps it within [0, 2π).
+export fun rotate(p: Player, delta: float): Player {
+  let ang = _mod(p.angle + delta, TWO_PI)
+  return Player{ x: p.x, y: p.y, angle: ang }
+}
