@@ -218,7 +218,7 @@ func EvalCase(c Case) ([]string, string, error) {
 	}
 	q := c.Query
 	if node, err := sqlparser.Parse(q); err == nil {
-		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) > 0 {
+		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) == 1 {
 			if !isAggregateQuery(sel) {
 				if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
 					if name, ok := tbl.Expr.(sqlparser.TableName); ok {
