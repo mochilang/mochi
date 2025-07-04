@@ -239,6 +239,20 @@ const (
 		"    }\n" +
 		"}\n"
 
+	helperMinOrdered = "func _minOrdered[T constraints.Ordered](s []T) T {\n" +
+		"    if len(s) == 0 { var zero T; return zero }\n" +
+		"    m := s[0]\n" +
+		"    for _, v := range s[1:] { if v < m { m = v } }\n" +
+		"    return m\n" +
+		"}\n"
+
+	helperMaxOrdered = "func _maxOrdered[T constraints.Ordered](s []T) T {\n" +
+		"    if len(s) == 0 { var zero T; return zero }\n" +
+		"    m := s[0]\n" +
+		"    for _, v := range s[1:] { if v > m { m = v } }\n" +
+		"    return m\n" +
+		"}\n"
+
 	helperFirst = "func _first(v any) any {\n" +
 		"    if g, ok := v.(*data.Group); ok {\n" +
 		"        if len(g.Items) == 0 { return nil }\n" +
@@ -767,6 +781,8 @@ var helperMap = map[string]string{
 	"_sum":           helperSum,
 	"_min":           helperMin,
 	"_max":           helperMax,
+	"_minOrdered":    helperMinOrdered,
+	"_maxOrdered":    helperMaxOrdered,
 	"_first":         helperFirst,
 	"_input":         helperInput,
 	"_genText":       helperGenText,
@@ -817,6 +833,9 @@ func (c *Compiler) use(name string) {
 		c.imports["strings"] = true
 		c.imports["reflect"] = true
 		c.helpers["_equal"] = true
+	}
+	if name == "_minOrdered" || name == "_maxOrdered" {
+		c.imports["golang.org/x/exp/constraints"] = true
 	}
 }
 

@@ -3597,10 +3597,30 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", argStr), nil
 	case "min":
+		if len(call.Args) == 1 {
+			at := c.inferExprType(call.Args[0])
+			if lt, ok := at.(types.ListType); ok {
+				if isInt(lt.Elem) || isInt64(lt.Elem) || isFloat(lt.Elem) || isString(lt.Elem) {
+					c.use("_minOrdered")
+					elemGo := goType(lt.Elem)
+					return fmt.Sprintf("_minOrdered[%s](%s)", elemGo, args[0]), nil
+				}
+			}
+		}
 		c.imports["mochi/runtime/data"] = true
 		c.use("_min")
 		return fmt.Sprintf("_min(%s)", argStr), nil
 	case "max":
+		if len(call.Args) == 1 {
+			at := c.inferExprType(call.Args[0])
+			if lt, ok := at.(types.ListType); ok {
+				if isInt(lt.Elem) || isInt64(lt.Elem) || isFloat(lt.Elem) || isString(lt.Elem) {
+					c.use("_maxOrdered")
+					elemGo := goType(lt.Elem)
+					return fmt.Sprintf("_maxOrdered[%s](%s)", elemGo, args[0]), nil
+				}
+			}
+		}
 		c.imports["mochi/runtime/data"] = true
 		c.use("_max")
 		return fmt.Sprintf("_max(%s)", argStr), nil
