@@ -11,8 +11,8 @@ const (
 		"    }\n" +
 		"    return String.fromCharCode(runes[i]);\n" +
 		"}\n"
-	helperUnionAll = "List<dynamic> _unionAll(List<dynamic> a, List<dynamic> b) => [...a, ...b];\n"
-	helperUnion    = "List<dynamic> _union(List<dynamic> a, List<dynamic> b) {\n" +
+	helperUnionAll = "List<T> _unionAll<T>(List<T> a, List<T> b) => [...a, ...b];\n"
+	helperUnion    = "List<T> _union<T>(List<T> a, List<T> b) {\n" +
 		"    var res = [...a];\n" +
 		"    for (var it in b) {\n" +
 		"        if (!res.contains(it)) {\n" +
@@ -21,7 +21,7 @@ const (
 		"    }\n" +
 		"    return res;\n" +
 		"}\n"
-	helperExcept = "List<dynamic> _except(List<dynamic> a, List<dynamic> b) {\n" +
+	helperExcept = "List<T> _except<T>(List<T> a, List<T> b) {\n" +
 		"    var res = <dynamic>[];\n" +
 		"    for (var it in a) {\n" +
 		"        if (!b.contains(it)) {\n" +
@@ -30,7 +30,7 @@ const (
 		"    }\n" +
 		"    return res;\n" +
 		"}\n"
-	helperIntersect = "List<dynamic> _intersect(List<dynamic> a, List<dynamic> b) {\n" +
+	helperIntersect = "List<T> _intersect<T>(List<T> a, List<T> b) {\n" +
 		"    var res = <dynamic>[];\n" +
 		"    for (var it in a) {\n" +
 		"        if (b.contains(it) && !res.contains(it)) {\n" +
@@ -39,7 +39,7 @@ const (
 		"    }\n" +
 		"    return res;\n" +
 		"}\n"
-	helperDistinct = "List<dynamic> _distinct(List<dynamic> items) {\n" +
+	helperDistinct = "List<T> _distinct<T>(List<T> items) {\n" +
 		"    var res = <dynamic>[];\n" +
 		"    outer: for (var it in items) {\n" +
 		"        for (var r in res) { if (_equal(r, it)) continue outer; }\n" +

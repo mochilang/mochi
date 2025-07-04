@@ -270,7 +270,19 @@ func dartType(t types.Type) string {
 	case types.AnyType:
 		return "dynamic"
 	case types.FuncType:
-		return "dynamic"
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			pt := dartType(p)
+			if pt == "" {
+				pt = "dynamic"
+			}
+			params[i] = pt
+		}
+		ret := dartType(tt.Return)
+		if ret == "" {
+			ret = "dynamic"
+		}
+		return fmt.Sprintf("%s Function(%s)", ret, strings.Join(params, ", "))
 	default:
 		return "dynamic"
 	}
