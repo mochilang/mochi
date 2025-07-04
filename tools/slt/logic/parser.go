@@ -2,7 +2,9 @@ package logic
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"regexp"
 	"strconv"
@@ -416,9 +418,23 @@ func toFloat(v any) (float64, bool) {
 }
 
 func isInt(v any) bool {
-	switch v.(type) {
+	switch t := v.(type) {
 	case int:
 		return true
+	case float64:
+		return t == math.Trunc(t)
+	case string:
+		if f, err := strconv.ParseFloat(t, 64); err == nil {
+			return f == math.Trunc(f)
+		}
+	case json.Number:
+		if i, err := t.Int64(); err == nil {
+			_ = i
+			return true
+		}
+		if f, err := t.Float64(); err == nil {
+			return f == math.Trunc(f)
+		}
 	}
 	return false
 }

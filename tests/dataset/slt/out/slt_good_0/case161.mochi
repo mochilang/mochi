@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT + COALESCE ( - 98, + + ( - 68 ) ) AS col2 */
-var result = [((if (-98) != null then (-98) else ((-68))) as int)]
+var result = [((-98) as int)]
 result = from x in result
   order by str(x)
   select x

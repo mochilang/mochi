@@ -3,30 +3,6 @@
 skipif mysql # not compatible
 */
 
-type tab2Row {
-  col0: int
-  col1: int
-  col2: int
-}
-
-let tab2 = [
-  tab2Row {
-    col0: 64,
-    col1: 77,
-    col2: 40,
-  },
-  tab2Row {
-    col0: 75,
-    col1: 67,
-    col2: 58,
-  },
-  tab2Row {
-    col0: 46,
-    col1: 51,
-    col2: 23,
-  },
-]
-
 type tab0Row {
   col0: int
   col1: int
@@ -75,8 +51,32 @@ let tab1 = [
   },
 ]
 
+type tab2Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab2 = [
+  tab2Row {
+    col0: 64,
+    col1: 77,
+    col2: 40,
+  },
+  tab2Row {
+    col0: 75,
+    col1: 67,
+    col2: 58,
+  },
+  tab2Row {
+    col0: 46,
+    col1: 51,
+    col2: 23,
+  },
+]
+
 /* SELECT 64 * + 51 * - - 15 + 72 + - + 15 * + - 27 * + 54 * + COALESCE ( - + ( + 71 ), - 66 * + - 53 + + + 45, 4 / + 66 ) AS col2 */
-var result = [64 * 51 * 15 + 72 + (-15) * (-27) * 54 * (if (-((71))) != null then (-((71))) else if (-66) * (-53) + 45 != null then (-66) * (-53) + 45 else (1.0 * (4)) / 66)]
+var result = [64 * 51 * 15 + 72 + (-15) * (-27) * 54 * (-(71))]
 result = from x in result
   order by str(x)
   select x
