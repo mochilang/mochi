@@ -1228,6 +1228,65 @@ func Generate(c Case) string {
 		}
 	}
 
+	// Support simple GROUP BY without aggregates
+	if len(sel.GroupBy) > 0 && len(sel.SelectExprs) == 1 && len(sel.OrderBy) <= 1 {
+		ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr)
+		if !ok || hasAggExpr(ae.Expr) || !simpleExpr(ae.Expr) {
+			return ""
+		}
+		keyParts := make([]string, 0, len(sel.GroupBy))
+		keyMap := make(map[string]string)
+		singleCol := false
+		if len(sel.GroupBy) == 1 {
+			if col, ok := sel.GroupBy[0].(*sqlparser.ColName); ok {
+				singleCol = true
+				keyParts = append(keyParts, exprToMochiRow(col, "row", "", subs))
+				keyMap["row."+col.Name.String()] = "g.key"
+			}
+		}
+		if !singleCol {
+			for i, gexpr := range sel.GroupBy {
+				if !simpleExpr(gexpr) {
+					return ""
+				}
+				name := fmt.Sprintf("k%d", i)
+				keyParts = append(keyParts, fmt.Sprintf("%s: %s", name, exprToMochiRow(gexpr, "row", "", subs)))
+				if col, ok := gexpr.(*sqlparser.ColName); ok {
+					keyMap["row."+col.Name.String()] = fmt.Sprintf("g.key.%s", name)
+				}
+			}
+		}
+
+		cond := condToMochi(sel.Where, subs)
+		sb.WriteString("var result = from row in " + tblNameStr)
+		if cond != "" {
+			sb.WriteString("\n  where " + cond)
+		}
+		if singleCol {
+			sb.WriteString("\n  group by " + keyParts[0] + " into g")
+		} else {
+			sb.WriteString("\n  group by {" + strings.Join(keyParts, ", ") + "} into g")
+		}
+		expr := exprToMochi(ae.Expr, subs)
+		for old, new := range keyMap {
+			expr = strings.ReplaceAll(expr, old, new)
+		}
+		sb.WriteString("\n  select " + expr + "\n")
+		if sel.Distinct != "" {
+			sb.WriteString("result = from x in result\n  group by x into g\n  select g.key\n")
+		}
+		if c.RowSort {
+			sb.WriteString("result = from x in result\n  order by str(x)\n  select x\n")
+		}
+		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
+		if len(c.Expect) > 0 {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, formatExpectList(c.Expect)))
+		} else {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == []\n}\n", c.Name))
+		}
+		return sb.String()
+	}
+
 	// Support simple single-column selects
 	if len(sel.SelectExprs) == 1 && len(sel.OrderBy) <= 1 {
 		ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr)
