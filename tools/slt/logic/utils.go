@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -26,9 +27,12 @@ import (
 func hasAggExpr(e sqlparser.Expr) bool {
 	switch v := e.(type) {
 	case *sqlparser.FuncExpr:
-		if v.IsAggregate() {
+		name := strings.ToLower(v.Name.String())
+		if v.IsAggregate() || name == "group_concat" || name == "total" {
 			return true
 		}
+	case *sqlparser.GroupConcatExpr:
+		return true
 		for _, ex := range v.Exprs {
 			if ae, ok := ex.(*sqlparser.AliasedExpr); ok {
 				if hasAggExpr(ae.Expr) {
@@ -217,6 +221,9 @@ func EvalCase(c Case) ([]string, string, error) {
 		}
 	}
 	q := c.Query
+	reTotal := regexp.MustCompile(`(?i)total\s*\(([^)]*)\)`)
+	q = reTotal.ReplaceAllString(q, "coalesce(sum($1),0)")
+	q = strings.ReplaceAll(q, "NOT INDEXED", "")
 	if node, err := sqlparser.Parse(q); err == nil {
 		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) > 0 {
 			if !isAggregateQuery(sel) {

@@ -1,0 +1,33 @@
+/*
+# line: 38
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: true,
+  },
+  t1Row {
+    x: 0,
+    y: false,
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+]
+
+/* SELECT sum(DISTINCT x) FROM t1 */
+let result = sum(distinct(from row in t1
+  where row.x != null
+  select row.x))
+print(result)
+
+test "case3" {
+  expect result == 1
+}

@@ -1,0 +1,44 @@
+/*
+# line: 28
+CREATE TABLE t1( x INTEGER, y VARCHAR(8) )
+INSERT INTO t1 VALUES(1,'true')
+INSERT INTO t1 VALUES(0,'false')
+INSERT INTO t1 VALUES(NULL,'NULL')
+CREATE INDEX t1i1 ON t1(x)
+skipif sqlite
+# count(x), avg(x), sum(x), total(x), min(x), max(x)
+# group_concat(x), group_concat(x,y)
+# EVIDENCE-OF: R-00466-56349 In any aggregate function that takes a
+# single argument, that argument can be preceded by the keyword
+# DISTINCT.
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: true,
+  },
+  t1Row {
+    x: 0,
+    y: false,
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+]
+
+/* SELECT count(DISTINCT x) FROM t1 */
+let result = count(from row in t1
+  where row.x != null
+  select row)
+print(result)
+
+test "case1" {
+  expect result == 2
+}
