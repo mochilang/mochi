@@ -31,8 +31,9 @@ func hasAggExpr(e sqlparser.Expr) bool {
 		if v.IsAggregate() || name == "group_concat" || name == "total" {
 			return true
 		}
-	case *sqlparser.GroupConcatExpr:
-		return true
+		// Non-aggregate functions may still contain aggregates in their
+		// arguments (e.g. COALESCE(sum(x), 0)). Recursively inspect
+		// arguments to detect such cases.
 		for _, ex := range v.Exprs {
 			if ae, ok := ex.(*sqlparser.AliasedExpr); ok {
 				if hasAggExpr(ae.Expr) {
@@ -40,6 +41,8 @@ func hasAggExpr(e sqlparser.Expr) bool {
 				}
 			}
 		}
+	case *sqlparser.GroupConcatExpr:
+		return true
 	case *sqlparser.BinaryExpr:
 		return hasAggExpr(v.Left) || hasAggExpr(v.Right)
 	case *sqlparser.UnaryExpr:
@@ -361,11 +364,17 @@ func GenerateFiles(files []string, outDir string, run bool, start, end, max int)
 				break
 			}
 			exp, _, err := EvalCase(c)
-			if err != nil {
-				return err
+			if err == nil {
+				c.Expect = exp
+				c.Hash = ""
+			} else {
+				// Fall back to expectations parsed from the file
+				// when DuckDB cannot evaluate the query (for
+				// example due to unsupported syntax). This keeps
+				// generation running even if the reference
+				// engine rejects the statement.
+				fmt.Printf("duckdb error on %s case %d: %v\n", f, idx, err)
 			}
-			c.Expect = exp
-			c.Hash = ""
 			code := Generate(c)
 			if code == "" {
 				continue

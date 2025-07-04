@@ -370,6 +370,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: AnyType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("distinct", FuncType{
+		Params: []Type{AnyType{}},
+		Return: AnyType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("push", FuncType{
 		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
 		Return: ListType{Elem: AnyType{}},
@@ -2013,11 +2018,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 	child := NewEnv(env)
 	child.SetVar(q.Var, elemT, true)
 
-       for _, f := range q.Froms {
-               ft, err := checkExpr(f.Src, child)
-               if err != nil {
-                       return nil, err
-               }
+	for _, f := range q.Froms {
+		ft, err := checkExpr(f.Src, child)
+		if err != nil {
+			return nil, err
+		}
 		var fe Type
 		switch t := ft.(type) {
 		case ListType:
@@ -2030,11 +2035,11 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 		child.SetVar(f.Var, fe, true)
 	}
 
-       for _, j := range q.Joins {
-               jt, err := checkExpr(j.Src, child)
-               if err != nil {
-                       return nil, err
-               }
+	for _, j := range q.Joins {
+		jt, err := checkExpr(j.Src, child)
+		if err != nil {
+			return nil, err
+		}
 		var je Type
 		switch t := jt.(type) {
 		case ListType:
@@ -2260,6 +2265,7 @@ var builtinArity = map[string]int{
 	"str":       1,
 	"upper":     1,
 	"lower":     1,
+	"distinct":  1,
 	"reverse":   1,
 	"trim":      1,
 	"contains":  2,
@@ -2460,6 +2466,16 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return nil
 		default:
 			return fmt.Errorf("reverse() expects list or string, got %v", args[0])
+		}
+	case "distinct":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		switch args[0].(type) {
+		case ListType, GroupType, AnyType:
+			return nil
+		default:
+			return fmt.Errorf("distinct expects list, got %v", args[0])
 		}
 	case "substring":
 		if len(args) != 3 {

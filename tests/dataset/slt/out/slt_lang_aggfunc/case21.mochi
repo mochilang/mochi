@@ -1,0 +1,41 @@
+/*
+# line: 152
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: "NULL",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+]
+
+/* SELECT min(DISTINCT y) FROM t1 */
+let result = min(distinct(from row in t1
+  where row.y != null
+  select row.y))
+print(result)
+
+test "case21" {
+  expect result == NULL
+}

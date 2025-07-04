@@ -256,16 +256,14 @@ func evalExpr(expr sqlparser.Expr, row map[string]any, table *Table) any {
 	case *sqlparser.SQLVal:
 		switch v.Type {
 		case sqlparser.StrVal:
-			s := strings.TrimSpace(strings.ToLower(string(v.Val)))
-			if s == "true" {
-				return true
-			}
-			if s == "false" {
-				return false
-			}
-			if s == "null" || s == "nil" {
-				return nil
-			}
+			// Preserve quoted string literals as-is. Previous
+			// behaviour attempted to coerce values like "true" or
+			// "false" to booleans and "NULL" to nil which broke
+			// cases where the literal strings were inserted into a
+			// VARCHAR column. The SQL parser provides dedicated
+			// BoolVal and NullVal types for unquoted tokens, so
+			// string literals should never be interpreted as
+			// booleans or nil values here.
 			return string(v.Val)
 		case sqlparser.IntVal:
 			n, _ := strconv.Atoi(string(v.Val))

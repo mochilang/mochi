@@ -1278,9 +1278,11 @@ func Generate(c Case) string {
 						if fn.Distinct {
 							list = "distinct(" + list + ")"
 						}
-						sb.WriteString("let result = " + name + "(" + list + ")\n")
 						if name == "total" {
+							sb.WriteString("var result = sum(" + list + ")\n")
 							sb.WriteString("result = if result == null then 0.0 else (result as float)\n")
+						} else {
+							sb.WriteString("let result = " + name + "(" + list + ")\n")
 						}
 					}
 					sb.WriteString("print(result)\n\n")
