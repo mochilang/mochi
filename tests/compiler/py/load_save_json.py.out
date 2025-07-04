@@ -5,21 +5,6 @@ import dataclasses
 import typing
 
 
-@dataclasses.dataclass
-class Person:
-    name: str
-    age: int
-
-
-people = None
-
-
-def main():
-    global people
-    people = [Person(**_it) for _it in _load(None, dict({"format": "json"}))]
-    _save(people, None, dict({"format": "json"}))
-
-
 def _load(path, opts):
     import csv, json, sys
 
@@ -136,6 +121,21 @@ def _save(rows, path, opts):
     finally:
         if path is not None:
             f.close()
+
+
+@dataclasses.dataclass
+class Person:
+    name: str
+    age: int
+
+
+people = None
+
+
+def main():
+    global people
+    people = [Person(**_it) for _it in _load(None, dict({"format": "json"}))]
+    _save(people, None, dict({"format": "json"}))
 
 
 if __name__ == "__main__":

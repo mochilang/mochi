@@ -5,6 +5,29 @@ import dataclasses
 import typing
 
 
+def _get(obj, name):
+    if obj is None:
+        return None
+    if isinstance(obj, dict):
+        if name in obj:
+            return obj[name]
+    if hasattr(obj, name):
+        return getattr(obj, name)
+    if isinstance(obj, (list, tuple)):
+        for it in obj:
+            try:
+                return _get(it, name)
+            except Exception:
+                pass
+    raise Exception("field not found: " + name)
+
+
+def _sort_key(k):
+    if isinstance(k, (list, tuple, dict)):
+        return str(k)
+    return k
+
+
 @dataclasses.dataclass
 class Product:
     name: str
@@ -38,12 +61,16 @@ def main():
     expensive = [
         p
         for p in (
-            (sorted([p for p in products], key=lambda p: (-p.price)))[max(1, 0) :]
+            (
+                sorted(
+                    [p for p in products], key=lambda p: _sort_key((-_get(p, "price")))
+                )
+            )[max(1, 0) :]
         )[: max(3, 0)]
     ]
     print("--- Top products (excluding most expensive) ---")
     for item in expensive:
-        print(item.name, "costs $", item.price)
+        print(_get(item, "name"), "costs $", _get(item, "price"))
 
 
 if __name__ == "__main__":

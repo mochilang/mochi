@@ -3,6 +3,119 @@ from __future__ import annotations
 
 import json
 
+
+def _get(obj, name):
+    if obj is None:
+        return None
+    if isinstance(obj, dict):
+        if name in obj:
+            return obj[name]
+    if hasattr(obj, name):
+        return getattr(obj, name)
+    if isinstance(obj, (list, tuple)):
+        for it in obj:
+            try:
+                return _get(it, name)
+            except Exception:
+                pass
+    raise Exception("field not found: " + name)
+
+
+def _min(v):
+    if hasattr(v, "Items"):
+        v = v.Items
+    if not isinstance(v, list):
+        raise Exception("min() expects list or group")
+    vals = [it for it in v if it is not None]
+    if not vals:
+        return 0
+    return min(vals)
+
+
+def _query(src, joins, opts):
+    items = [[v] for v in src]
+    for j in joins:
+        joined = []
+        if j.get("right") and j.get("left"):
+            matched = [False] * len(j["items"])
+            for left in items:
+                m = False
+                for ri, right in enumerate(j["items"]):
+                    keep = True
+                    if j.get("on"):
+                        keep = j["on"](*left, right)
+                    if not keep:
+                        continue
+                    m = True
+                    matched[ri] = True
+                    joined.append(left + [right])
+                if not m:
+                    joined.append(left + [None])
+            for ri, right in enumerate(j["items"]):
+                if not matched[ri]:
+                    undef = [None] * (len(items[0]) if items else 0)
+                    joined.append(undef + [right])
+        elif j.get("right"):
+            for right in j["items"]:
+                m = False
+                for left in items:
+                    keep = True
+                    if j.get("on"):
+                        keep = j["on"](*left, right)
+                    if not keep:
+                        continue
+                    m = True
+                    joined.append(left + [right])
+                if not m:
+                    undef = [None] * (len(items[0]) if items else 0)
+                    joined.append(undef + [right])
+        else:
+            for left in items:
+                m = False
+                for right in j["items"]:
+                    keep = True
+                    if j.get("on"):
+                        keep = j["on"](*left, right)
+                    if not keep:
+                        continue
+                    m = True
+                    joined.append(left + [right])
+                if j.get("left") and not m:
+                    joined.append(left + [None])
+        items = joined
+    if opts.get("where"):
+        items = [r for r in items if opts["where"](*r)]
+    if opts.get("sortKey"):
+
+        def _key(it):
+            k = opts["sortKey"](*it)
+            if isinstance(k, (list, tuple, dict)):
+                return str(k)
+            return k
+
+        items.sort(key=_key)
+    if "skip" in opts:
+        n = opts["skip"]
+        if n < 0:
+            n = 0
+        items = items[n:] if n < len(items) else []
+    if "take" in opts:
+        n = opts["take"]
+        if n < 0:
+            n = 0
+        items = items[:n] if n < len(items) else items
+    res = []
+    for r in items:
+        res.append(opts["select"](*r))
+    return res
+
+
+def _sort_key(k):
+    if isinstance(k, (list, tuple, dict)):
+        return str(k)
+    return k
+
+
 region = None
 nation = None
 supplier = None
@@ -81,10 +194,13 @@ def main():
         [
             {
                 "items": nation,
-                "on": lambda r, n: ((n["n_regionkey"] == r["r_regionkey"])),
+                "on": lambda r, n: ((_get(n, "n_regionkey") == _get(r, "r_regionkey"))),
             }
         ],
-        {"select": lambda r, n: n, "where": lambda r, n: ((r["r_name"] == "EUROPE"))},
+        {
+            "select": lambda r, n: n,
+            "where": lambda r, n: ((_get(r, "r_name") == "EUROPE")),
+        },
     )
     global europe_suppliers
     europe_suppliers = _query(
@@ -92,14 +208,16 @@ def main():
         [
             {
                 "items": europe_nations,
-                "on": lambda s, n: ((s["s_nationkey"] == n["n_nationkey"])),
+                "on": lambda s, n: ((_get(s, "s_nationkey") == _get(n, "n_nationkey"))),
             }
         ],
         {"select": lambda s, n: {"s": s, "n": n}},
     )
     global target_parts
     target_parts = [
-        p for p in part if ((p["p_size"] == 15) and (p["p_type"] == "LARGE BRASS"))
+        p
+        for p in part
+        if ((_get(p, "p_size") == 15) and (_get(p, "p_type") == "LARGE BRASS"))
     ]
     global target_partsupp
     target_partsupp = _query(
@@ -107,130 +225,43 @@ def main():
         [
             {
                 "items": target_parts,
-                "on": lambda ps, p: ((ps["ps_partkey"] == p["p_partkey"])),
+                "on": lambda ps, p: ((_get(ps, "ps_partkey") == _get(p, "p_partkey"))),
             },
             {
                 "items": europe_suppliers,
-                "on": lambda ps, p, s: ((ps["ps_suppkey"] == s["s"]["s_suppkey"])),
+                "on": lambda ps, p, s: (
+                    (_get(ps, "ps_suppkey") == _get(_get(s, "s"), "s_suppkey"))
+                ),
             },
         ],
         {
             "select": lambda ps, p, s: {
-                "s_acctbal": s["s"]["s_acctbal"],
-                "s_name": s["s"]["s_name"],
-                "n_name": s["n"]["n_name"],
-                "p_partkey": p["p_partkey"],
-                "p_mfgr": p["p_mfgr"],
-                "s_address": s["s"]["s_address"],
-                "s_phone": s["s"]["s_phone"],
-                "s_comment": s["s"]["s_comment"],
-                "ps_supplycost": ps["ps_supplycost"],
+                "s_acctbal": _get(_get(s, "s"), "s_acctbal"),
+                "s_name": _get(_get(s, "s"), "s_name"),
+                "n_name": _get(_get(s, "n"), "n_name"),
+                "p_partkey": _get(p, "p_partkey"),
+                "p_mfgr": _get(p, "p_mfgr"),
+                "s_address": _get(_get(s, "s"), "s_address"),
+                "s_phone": _get(_get(s, "s"), "s_phone"),
+                "s_comment": _get(_get(s, "s"), "s_comment"),
+                "ps_supplycost": _get(ps, "ps_supplycost"),
             }
         },
     )
     global costs
-    costs = [x["ps_supplycost"] for x in target_partsupp]
+    costs = [_get(x, "ps_supplycost") for x in target_partsupp]
     global min_cost
     min_cost = _min(costs)
     global result
     result = [
         x
         for x in sorted(
-            [x for x in target_partsupp if (x["ps_supplycost"] == min_cost)],
-            key=lambda x: (-x["s_acctbal"]),
+            [x for x in target_partsupp if (_get(x, "ps_supplycost") == min_cost)],
+            key=lambda x: _sort_key((-_get(x, "s_acctbal"))),
         )
     ]
     print(json.dumps(result, default=lambda o: vars(o)))
     test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part()
-
-
-def _min(v):
-    if hasattr(v, "Items"):
-        v = v.Items
-    if not isinstance(v, list):
-        raise Exception("min() expects list or group")
-    if not v:
-        return 0
-    m = float(v[0])
-    is_float = isinstance(v[0], float)
-    for it in v[1:]:
-        if isinstance(it, float):
-            is_float = True
-        f = float(it)
-        if f < m:
-            m = f
-    return m if is_float else int(m)
-
-
-def _query(src, joins, opts):
-    items = [[v] for v in src]
-    for j in joins:
-        joined = []
-        if j.get("right") and j.get("left"):
-            matched = [False] * len(j["items"])
-            for left in items:
-                m = False
-                for ri, right in enumerate(j["items"]):
-                    keep = True
-                    if j.get("on"):
-                        keep = j["on"](*left, right)
-                    if not keep:
-                        continue
-                    m = True
-                    matched[ri] = True
-                    joined.append(left + [right])
-                if not m:
-                    joined.append(left + [None])
-            for ri, right in enumerate(j["items"]):
-                if not matched[ri]:
-                    undef = [None] * (len(items[0]) if items else 0)
-                    joined.append(undef + [right])
-        elif j.get("right"):
-            for right in j["items"]:
-                m = False
-                for left in items:
-                    keep = True
-                    if j.get("on"):
-                        keep = j["on"](*left, right)
-                    if not keep:
-                        continue
-                    m = True
-                    joined.append(left + [right])
-                if not m:
-                    undef = [None] * (len(items[0]) if items else 0)
-                    joined.append(undef + [right])
-        else:
-            for left in items:
-                m = False
-                for right in j["items"]:
-                    keep = True
-                    if j.get("on"):
-                        keep = j["on"](*left, right)
-                    if not keep:
-                        continue
-                    m = True
-                    joined.append(left + [right])
-                if j.get("left") and not m:
-                    joined.append(left + [None])
-        items = joined
-    if opts.get("where"):
-        items = [r for r in items if opts["where"](*r)]
-    if opts.get("sortKey"):
-        items.sort(key=lambda it: opts["sortKey"](*it))
-    if "skip" in opts:
-        n = opts["skip"]
-        if n < 0:
-            n = 0
-        items = items[n:] if n < len(items) else []
-    if "take" in opts:
-        n = opts["take"]
-        if n < 0:
-            n = 0
-        items = items[:n] if n < len(items) else items
-    res = []
-    for r in items:
-        res.append(opts["select"](*r))
-    return res
 
 
 if __name__ == "__main__":
