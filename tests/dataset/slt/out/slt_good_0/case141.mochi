@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT - - ( 84 ) AS col0, - 13 AS col2 */
-var result = [[-(-((84))), (-13)]]
+var result = [[(-((-((84))))), (-13)]]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

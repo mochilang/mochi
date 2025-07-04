@@ -12,6 +12,8 @@ import (
 	sqlparser "github.com/xwb1989/sqlparser"
 )
 
+var divExpectFloat bool
+
 // subqueryToMochi converts supported subqueries to Mochi source. The outer
 // parameter names the variable for the outer query row when handling correlated
 // predicates.
@@ -732,7 +734,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		if rb, ok := v.Right.(*sqlparser.BinaryExpr); ok && binaryPrec(rb.Operator) <= binaryPrec(v.Operator) {
 			r = "(" + r + ")"
 		}
-		if v.Operator == sqlparser.DivStr {
+		if v.Operator == sqlparser.DivStr && divExpectFloat {
 			l = "(1.0 * (" + l + "))"
 		}
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
@@ -1062,6 +1064,7 @@ func generateUpdate(stmt string) string {
 // Generate returns Mochi source code for the given Case.
 func Generate(c Case) string {
 	var sb strings.Builder
+	divExpectFloat = expectFloats(c.Expect)
 
 	if len(c.Comments) > 0 || c.Line > 0 {
 		sb.WriteString("/*\n")
@@ -1318,4 +1321,17 @@ func formatExpectList(xs []string) string {
 	}
 	sb.WriteString("]")
 	return sb.String()
+}
+
+func expectFloats(xs []string) bool {
+	for _, x := range xs {
+		if f, err := strconv.ParseFloat(x, 64); err == nil {
+			if f != math.Trunc(f) {
+				return true
+			}
+		} else if strings.ContainsAny(x, ".eE") {
+			return true
+		}
+	}
+	return false
 }

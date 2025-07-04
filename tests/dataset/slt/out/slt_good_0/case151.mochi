@@ -76,7 +76,7 @@ let tab2 = [
 ]
 
 /* SELECT 64 * + 51 * - - 15 + 72 + - + 15 * + - 27 * + 54 * + COALESCE ( - + ( + 71 ), - 66 * + - 53 + + + 45, 4 / + 66 ) AS col2 */
-var result = [64 * 51 * 15 + 72 + (-15) * (-27) * 54 * (if -((71)) != null then -((71)) else if (-66) * (-53) + 45 != null then (-66) * (-53) + 45 else 4 / 66)]
+var result = [64 * 51 * 15 + 72 + (-15) * (-27) * 54 * (if (-((71))) != null then (-((71))) else if (-66) * (-53) + 45 != null then (-66) * (-53) + 45 else 4 / 66)]
 result = from x in result
   order by str(x)
   select x
