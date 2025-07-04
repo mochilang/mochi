@@ -749,30 +749,30 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "input":
 		return "input()", nil
 	case "count":
-               if len(args) == 1 {
-                       t := c.inferExprType(call.Args[0])
-                       switch t.(type) {
-                       case types.ListType:
-                               return fmt.Sprintf("len(%s)", args[0]), nil
-                       case types.GroupType:
-                               return fmt.Sprintf("len(%s.Items)", args[0]), nil
-                       case types.MapType, types.StringType:
-                               return fmt.Sprintf("len(%s)", args[0]), nil
-                       }
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("len(%s)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("len(%s.Items)", args[0]), nil
+			case types.MapType, types.StringType:
+				return fmt.Sprintf("len(%s)", args[0]), nil
+			}
 		}
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "exists":
-               if len(args) == 1 {
-                       t := c.inferExprType(call.Args[0])
-                       switch t.(type) {
-                       case types.ListType:
-                               return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
-                       case types.GroupType:
-                               return fmt.Sprintf("(len(%s.Items) > 0)", args[0]), nil
-                       case types.MapType, types.StringType:
-                               return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
-                       }
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("(len(%s.Items) > 0)", args[0]), nil
+			case types.MapType, types.StringType:
+				return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
+			}
 		}
 		c.use("_exists")
 		return fmt.Sprintf("_exists(%s)", argStr), nil
@@ -847,9 +847,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("first expects 1 arg")
 		}
-		if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+		switch c.inferExprType(call.Args[0]).(type) {
+		case types.ListType:
 			arg := args[0]
 			return fmt.Sprintf("(%s[0] if len(%s) > 0 else None)", arg, arg), nil
+		case types.GroupType:
+			arg := args[0]
+			return fmt.Sprintf("(%s.Items[0] if len(%s.Items) > 0 else None)", arg, arg), nil
 		}
 		c.use("_first")
 		return fmt.Sprintf("_first(%s)", args[0]), nil
@@ -931,6 +935,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("(str(%s) in %s)", args[1], args[0]), nil
 		case types.MapType:
 			return fmt.Sprintf("(str(%s) in %s)", args[1], args[0]), nil
+		case types.GroupType:
+			return fmt.Sprintf("(%s in %s.Items)", args[1], args[0]), nil
 		}
 		c.use("_contains")
 		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil

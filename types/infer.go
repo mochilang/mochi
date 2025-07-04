@@ -581,21 +581,15 @@ func inferIfExprType(ie *parser.IfExpr, env *Env) Type {
 func ResultType(op string, left, right Type) Type {
 	switch op {
 	case "+", "-", "*", "/", "%":
-		if _, ok := left.(IntType); ok {
-			if _, ok := right.(IntType); ok {
-				return IntType{}
-			}
-		}
-		if _, ok := left.(FloatType); ok {
-			if _, ok := right.(FloatType); ok {
+		if isNumeric(left) && isNumeric(right) {
+			if isFloat(left) || isFloat(right) {
 				return FloatType{}
 			}
+			return IntType{}
 		}
 		if op == "+" {
-			if _, ok := left.(StringType); ok {
-				if _, ok := right.(StringType); ok {
-					return StringType{}
-				}
+			if isString(left) || isString(right) {
+				return StringType{}
 			}
 			if ll, ok := left.(ListType); ok {
 				if rl, ok := right.(ListType); ok {
@@ -608,7 +602,7 @@ func ResultType(op string, left, right Type) Type {
 			}
 		}
 		return AnyType{}
-	case "==", "!=", "<", "<=", ">", ">=":
+	case "==", "!=", "<", "<=", ">", ">=", "in", "&&", "||":
 		return BoolType{}
 	case "union", "union_all", "except", "intersect":
 		if llist, ok := left.(ListType); ok {
