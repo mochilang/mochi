@@ -1,0 +1,15 @@
+type Counter {
+  value: int
+
+  fun inc(x: int) {
+    value = value + x
+  }
+
+  fun get(): int {
+    return value
+  }
+}
+
+let c = Counter { value: 1 }
+c.inc(5)
+print(c.get())
