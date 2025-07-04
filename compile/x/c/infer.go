@@ -7,7 +7,10 @@ import (
 
 // exprType delegates to types.ExprType.
 func (c *Compiler) exprType(e *parser.Expr) types.Type {
-	return types.ExprType(e, c.env)
+	if c.env == nil {
+		return types.ExprType(e, nil)
+	}
+	return types.CheckExprType(e, c.env)
 }
 
 func (c *Compiler) unaryType(u *parser.Unary) types.Type {
@@ -15,7 +18,10 @@ func (c *Compiler) unaryType(u *parser.Unary) types.Type {
 		return types.AnyType{}
 	}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
-	return types.ExprType(expr, c.env)
+	if c.env == nil {
+		return types.ExprType(expr, nil)
+	}
+	return types.CheckExprType(expr, c.env)
 }
 
 func (c *Compiler) postfixType(p *parser.PostfixExpr) types.Type {
@@ -24,7 +30,10 @@ func (c *Compiler) postfixType(p *parser.PostfixExpr) types.Type {
 	}
 	unary := &parser.Unary{Value: p}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
-	return types.ExprType(expr, c.env)
+	if c.env == nil {
+		return types.ExprType(expr, nil)
+	}
+	return types.CheckExprType(expr, c.env)
 }
 
 func (c *Compiler) primaryType(p *parser.Primary) types.Type {
@@ -34,7 +43,10 @@ func (c *Compiler) primaryType(p *parser.Primary) types.Type {
 	postfix := &parser.PostfixExpr{Target: p}
 	unary := &parser.Unary{Value: postfix}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
-	return types.ExprType(expr, c.env)
+	if c.env == nil {
+		return types.ExprType(expr, nil)
+	}
+	return types.CheckExprType(expr, c.env)
 }
 
 func resultType(op string, left, right types.Type) types.Type {
