@@ -3,22 +3,9 @@ from __future__ import annotations
 
 import json
 
+from typing import Any, TypeVar
 
-def _get(obj, name):
-    if obj is None:
-        return None
-    if isinstance(obj, dict):
-        if name in obj:
-            return obj[name]
-    if hasattr(obj, name):
-        return getattr(obj, name)
-    if isinstance(obj, (list, tuple)):
-        for it in obj:
-            try:
-                return _get(it, name)
-            except Exception:
-                pass
-    raise Exception("field not found: " + name)
+T = TypeVar("T")
 
 
 def _min(v):
@@ -194,13 +181,10 @@ def main():
         [
             {
                 "items": nation,
-                "on": lambda r, n: ((_get(n, "n_regionkey") == _get(r, "r_regionkey"))),
+                "on": lambda r, n: ((n["n_regionkey"] == r["r_regionkey"])),
             }
         ],
-        {
-            "select": lambda r, n: n,
-            "where": lambda r, n: ((_get(r, "r_name") == "EUROPE")),
-        },
+        {"select": lambda r, n: n, "where": lambda r, n: ((r["r_name"] == "EUROPE"))},
     )
     global europe_suppliers
     europe_suppliers = _query(
@@ -208,16 +192,14 @@ def main():
         [
             {
                 "items": europe_nations,
-                "on": lambda s, n: ((_get(s, "s_nationkey") == _get(n, "n_nationkey"))),
+                "on": lambda s, n: ((s["s_nationkey"] == n["n_nationkey"])),
             }
         ],
         {"select": lambda s, n: {"s": s, "n": n}},
     )
     global target_parts
     target_parts = [
-        p
-        for p in part
-        if ((_get(p, "p_size") == 15) and (_get(p, "p_type") == "LARGE BRASS"))
+        p for p in part if ((p["p_size"] == 15) and (p["p_type"] == "LARGE BRASS"))
     ]
     global target_partsupp
     target_partsupp = _query(
@@ -225,39 +207,37 @@ def main():
         [
             {
                 "items": target_parts,
-                "on": lambda ps, p: ((_get(ps, "ps_partkey") == _get(p, "p_partkey"))),
+                "on": lambda ps, p: ((ps["ps_partkey"] == p["p_partkey"])),
             },
             {
                 "items": europe_suppliers,
-                "on": lambda ps, p, s: (
-                    (_get(ps, "ps_suppkey") == _get(_get(s, "s"), "s_suppkey"))
-                ),
+                "on": lambda ps, p, s: ((ps["ps_suppkey"] == s["s"]["s_suppkey"])),
             },
         ],
         {
             "select": lambda ps, p, s: {
-                "s_acctbal": _get(_get(s, "s"), "s_acctbal"),
-                "s_name": _get(_get(s, "s"), "s_name"),
-                "n_name": _get(_get(s, "n"), "n_name"),
-                "p_partkey": _get(p, "p_partkey"),
-                "p_mfgr": _get(p, "p_mfgr"),
-                "s_address": _get(_get(s, "s"), "s_address"),
-                "s_phone": _get(_get(s, "s"), "s_phone"),
-                "s_comment": _get(_get(s, "s"), "s_comment"),
-                "ps_supplycost": _get(ps, "ps_supplycost"),
+                "s_acctbal": s["s"]["s_acctbal"],
+                "s_name": s["s"]["s_name"],
+                "n_name": s["n"]["n_name"],
+                "p_partkey": p["p_partkey"],
+                "p_mfgr": p["p_mfgr"],
+                "s_address": s["s"]["s_address"],
+                "s_phone": s["s"]["s_phone"],
+                "s_comment": s["s"]["s_comment"],
+                "ps_supplycost": ps["ps_supplycost"],
             }
         },
     )
     global costs
-    costs = [_get(x, "ps_supplycost") for x in target_partsupp]
+    costs = [x["ps_supplycost"] for x in target_partsupp]
     global min_cost
     min_cost = _min(costs)
     global result
     result = [
         x
         for x in sorted(
-            [x for x in target_partsupp if (_get(x, "ps_supplycost") == min_cost)],
-            key=lambda x: _sort_key((-_get(x, "s_acctbal"))),
+            [x for x in target_partsupp if (x["ps_supplycost"] == min_cost)],
+            key=lambda x: _sort_key((-x["s_acctbal"])),
         )
     ]
     print(json.dumps(result, default=lambda o: vars(o)))

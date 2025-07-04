@@ -4,6 +4,10 @@ from __future__ import annotations
 import dataclasses
 import typing
 
+from typing import Any, TypeVar
+
+T = TypeVar("T")
+
 
 def _load(path, opts):
     import csv, json, sys

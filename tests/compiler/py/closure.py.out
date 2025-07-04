@@ -4,7 +4,7 @@ from __future__ import annotations
 import typing
 
 
-def makeAdder(n: int) -> typing.Callable:
+def makeAdder(n: int) -> typing.Callable[[int], int]:
     return lambda x: (x + n)
 
 

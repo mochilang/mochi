@@ -567,3 +567,30 @@ func whereEvalLevel(q *parser.QueryExpr) int {
 	}
 	return level
 }
+
+func unionFieldPathType(ut types.UnionType, tail []string) (types.Type, bool) {
+	var result types.Type
+	for _, variant := range ut.Variants {
+		cur := types.Type(variant)
+		for _, field := range tail {
+			st, ok := cur.(types.StructType)
+			if !ok {
+				return nil, false
+			}
+			ft, ok := st.Fields[field]
+			if !ok {
+				return nil, false
+			}
+			cur = ft
+		}
+		if result == nil {
+			result = cur
+		} else if !equalTypes(result, cur) {
+			return nil, false
+		}
+	}
+	if result == nil {
+		return nil, false
+	}
+	return result, true
+}
