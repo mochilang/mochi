@@ -761,6 +761,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("first expects 1 arg")
 		}
+		if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+			arg := args[0]
+			return fmt.Sprintf("(%s[0] if len(%s) > 0 else None)", arg, arg), nil
+		}
 		c.use("_first")
 		return fmt.Sprintf("_first(%s)", args[0]), nil
 	case "concat":

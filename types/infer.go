@@ -355,6 +355,14 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 			return IntType{}
 		case "avg":
 			return FloatType{}
+		case "first":
+			if len(p.Call.Args) == 1 {
+				t := ExprType(p.Call.Args[0], env)
+				if lt, ok := t.(ListType); ok {
+					return lt.Elem
+				}
+			}
+			return AnyType{}
 		case "reduce":
 			if len(p.Call.Args) == 3 {
 				return ExprType(p.Call.Args[2], env)
