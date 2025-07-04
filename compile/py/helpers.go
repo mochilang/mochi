@@ -182,7 +182,11 @@ func pyType(t types.Type) string {
 	case types.UnionType:
 		return sanitizeName(tt.Name)
 	case types.FuncType:
-		return "typing.Callable"
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = pyType(p)
+		}
+		return "typing.Callable[[" + strings.Join(params, ", ") + "], " + pyType(tt.Return) + "]"
 	case types.VoidType:
 		return "None"
 	case types.AnyType:
