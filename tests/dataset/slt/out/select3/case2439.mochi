@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT abs(a), d, a+b*2+c*3, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c FROM t1 WHERE c BETWEEN b-2 AND d+2 AND a>b AND c>d */
 var result = from row in t1
-  where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) && row.a > row.b) && row.c > row.d)
-  select [(if row.a < 0 { -(row.a) } else { row.a }), row.d, ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where (row.c >= row.b - 2 && row.c <= row.d + 2) && row.a > row.b && row.c > row.d
+  select [if row.a < 0 then -(row.a) else row.a, row.d, row.a + row.b * 2 + row.c * 3, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x), row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )

@@ -226,12 +226,12 @@ let t1 = [
 /* SELECT b-c, c-d, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), abs(b-c), b, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END FROM t1 WHERE d>e ORDER BY 2,7,4,3,6 */
 var result = from row in t1
   where row.d > row.e
-  order by [(row.c - row.d), (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), count(from x in t1
+  order by [row.c - row.d, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555, count(from x in t1
   where x.b < row.b
-  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.b]
-  select [(row.b - row.c), (row.c - row.d), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), count(from x in t1
+  select x), if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.b]
+  select [row.b - row.c, row.c - row.d, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, count(from x in t1
   where x.b < row.b
-  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.b, (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) })]
+  select x), if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.b, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

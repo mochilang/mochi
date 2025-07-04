@@ -226,7 +226,7 @@ let t1 = [
 /* SELECT d-e FROM t1 WHERE b>c */
 var result = from row in t1
   where row.b > row.c
-  select (row.d - row.e)
+  select row.d - row.e
 result = from x in result
   order by str(x)
   select x

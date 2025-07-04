@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT c, d, a FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND (c<=d-2 OR c>=d+2) */
 var result = from row in t1
-  where ((row.d < 110 || row.d > 150) && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
+  where (row.d < 110 || row.d > 150) && (row.c <= row.d - 2 || row.c >= row.d + 2)
   select [row.c, row.d, row.a]
 result = from row in result
   order by join(from v in row select str(v), " " )

@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT abs(a), abs(b-c) FROM t1 ORDER BY 1,2 */
 var result = from row in t1
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+  order by [if row.a < 0 then -(row.a) else row.a, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c]
+  select [if row.a < 0 then -(row.a) else row.a, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

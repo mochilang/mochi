@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a-b, d FROM t1 WHERE (a>b-2 AND a<b+2) ORDER BY 3,2 */
 var result = from row in t1
-  where ((row.a > (row.b - 2) && row.a < (row.b + 2)))
-  order by [row.d, (row.a - row.b)]
-  select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.a - row.b), row.d]
+  where (row.a > row.b - 2 && row.a < row.b + 2)
+  order by [row.d, row.a - row.b]
+  select [if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.a - row.b, row.d]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

@@ -225,13 +225,13 @@ let t1 = [
 
 /* SELECT CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3+d*4, a+b*2+c*3, c, (a+b+c+d+e)/5 FROM t1 WHERE (e>a AND e<b) OR (c<=d-2 OR c>=d+2) OR d>e ORDER BY 2,3 */
 var result = from row in t1
-  where ((((row.e > row.a && row.e < row.b)) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))) || row.d > row.e)
+  where (row.e > row.a && row.e < row.b) || (row.c <= row.d - 2 || row.c >= row.d + 2) || row.d > row.e
   order by [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
-  select [(if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((row.a + (row.b * 2)) + (row.c * 3)), row.c, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  where x.c > row.c && x.d < row.d
+  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4]
+  select [if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a + row.b * 2 + row.c * 3, row.c, (row.a + row.b + row.c + row.d + row.e) / 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

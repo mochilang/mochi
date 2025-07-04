@@ -225,11 +225,11 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d-e, a+b*2, a+b*2+c*3 FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 OR (c<=d-2 OR c>=d+2) ORDER BY 4,2,3 */
 var result = from row in t1
-  where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
-  order by [((row.a + (row.b * 2)) + (row.c * 3)), (row.d - row.e), (row.a + (row.b * 2))]
+  where (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) || (row.c <= row.d - 2 || row.c >= row.d + 2)
+  order by [row.a + row.b * 2 + row.c * 3, row.d - row.e, row.a + row.b * 2]
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.d - row.e), (row.a + (row.b * 2)), ((row.a + (row.b * 2)) + (row.c * 3))]
+  where x.c > row.c && x.d < row.d
+  select x), row.d - row.e, row.a + row.b * 2, row.a + row.b * 2 + row.c * 3]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
