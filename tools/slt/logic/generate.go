@@ -1136,7 +1136,13 @@ func Generate(c Case) string {
 		}
 	}
 
-	for name, t := range c.Tables {
+	names := make([]string, 0, len(c.Tables))
+	for n := range c.Tables {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		t := c.Tables[name]
 		kw := "let"
 		if mutated[name] {
 			kw = "var"
