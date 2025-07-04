@@ -164,8 +164,14 @@ func listElemType(e *parser.Expr, env *types.Env) types.Type {
 	if env == nil || e == nil {
 		return nil
 	}
-	if lt, ok := types.ExprType(e, env).(types.ListType); ok {
+	// First try the stricter checker to avoid falling back to `any`.
+	if lt, ok := types.CheckExprType(e, env).(types.ListType); ok && !types.ContainsAny(lt.Elem) {
 		return lt.Elem
+	}
+	if lt, ok := types.ExprType(e, env).(types.ListType); ok {
+		if !types.ContainsAny(lt.Elem) {
+			return lt.Elem
+		}
 	}
 	return nil
 }
