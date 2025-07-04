@@ -651,6 +651,42 @@ func repeatedAddCol(e sqlparser.Expr) (*sqlparser.ColName, int, bool) {
 	return nil, 0, false
 }
 
+// isIntLiteral reports whether the expression is an integer literal.
+func isIntLiteral(e sqlparser.Expr) bool {
+	switch v := e.(type) {
+	case *sqlparser.SQLVal:
+		return v.Type == sqlparser.IntVal
+	case *sqlparser.UnaryExpr:
+		if v.Operator == "+" || v.Operator == "-" {
+			return isIntLiteral(v.Expr)
+		}
+	}
+	return false
+}
+
+// intLiteralValue returns the integer value of e if it is an integer literal.
+func intLiteralValue(e sqlparser.Expr) (int64, bool) {
+	switch v := e.(type) {
+	case *sqlparser.SQLVal:
+		if v.Type == sqlparser.IntVal {
+			n, err := strconv.ParseInt(string(v.Val), 10, 64)
+			if err == nil {
+				return n, true
+			}
+		}
+	case *sqlparser.UnaryExpr:
+		if n, ok := intLiteralValue(v.Expr); ok {
+			switch v.Operator {
+			case "+":
+				return n, true
+			case "-":
+				return -n, true
+			}
+		}
+	}
+	return 0, false
+}
+
 // binaryPrec returns a relative precedence for SQL binary operators. Higher
 // numbers bind more tightly. Only the operators used in the SLT queries are
 // handled here.
@@ -733,7 +769,15 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 			r = "(" + r + ")"
 		}
 		if v.Operator == sqlparser.DivStr {
-			l = "(1.0 * (" + l + "))"
+			if a, okA := intLiteralValue(v.Left); okA {
+				if b, okB := intLiteralValue(v.Right); okB && b != 0 && a%b == 0 {
+					// result is integer, keep integer division
+				} else {
+					l = "(1.0 * (" + l + "))"
+				}
+			} else {
+				l = "(1.0 * (" + l + "))"
+			}
 		}
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
 	case *sqlparser.FuncExpr:
