@@ -138,6 +138,27 @@ func formatValue(v any) string {
 	}
 }
 
+// constNotNull reports whether e is a constant expression that is not NULL.
+// If so, the Mochi representation of the constant is returned.
+func constNotNull(e sqlparser.Expr) (string, bool) {
+	switch v := e.(type) {
+	case *sqlparser.NullVal:
+		return "", false
+	case *sqlparser.SQLVal:
+		return exprToMochiRow(v, "row", "", nil), true
+	case *sqlparser.ParenExpr:
+		return constNotNull(v.Expr)
+	case *sqlparser.UnaryExpr:
+		if s, ok := constNotNull(v.Expr); ok {
+			if v.Operator == "+" {
+				return s, true
+			}
+			return fmt.Sprintf("(%s(%s))", v.Operator, s), true
+		}
+	}
+	return "", false
+}
+
 func detectColumnType(rows []map[string]any, name string, declared []string, cols []string) string {
 	// First use declared type information if available.
 	for i, c := range cols {
@@ -723,6 +744,30 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 				name := exprToMochiRow(col, rowVar, outer, subs)
 				return fmt.Sprintf("(%s * %d)", name, n)
 			}
+			if u, ok := v.Right.(*sqlparser.UnaryExpr); ok && u.Operator == "-" {
+				r := exprToMochiRow(u.Expr, rowVar, outer, subs)
+				if rb, ok := u.Expr.(*sqlparser.BinaryExpr); ok && binaryPrec(rb.Operator) < binaryPrec(v.Operator) {
+					r = "(" + r + ")"
+				}
+				l := exprToMochiRow(v.Left, rowVar, outer, subs)
+				if lb, ok := v.Left.(*sqlparser.BinaryExpr); ok && binaryPrec(lb.Operator) < binaryPrec(v.Operator) {
+					l = "(" + l + ")"
+				}
+				return fmt.Sprintf("%s - %s", l, r)
+			}
+		}
+		if v.Operator == "-" {
+			if u, ok := v.Right.(*sqlparser.UnaryExpr); ok && u.Operator == "-" {
+				r := exprToMochiRow(u.Expr, rowVar, outer, subs)
+				if rb, ok := u.Expr.(*sqlparser.BinaryExpr); ok && binaryPrec(rb.Operator) < binaryPrec(v.Operator) {
+					r = "(" + r + ")"
+				}
+				l := exprToMochiRow(v.Left, rowVar, outer, subs)
+				if lb, ok := v.Left.(*sqlparser.BinaryExpr); ok && binaryPrec(lb.Operator) < binaryPrec(v.Operator) {
+					l = "(" + l + ")"
+				}
+				return fmt.Sprintf("%s + %s", l, r)
+			}
 		}
 		l := exprToMochiRow(v.Left, rowVar, outer, subs)
 		if lb, ok := v.Left.(*sqlparser.BinaryExpr); ok && binaryPrec(lb.Operator) < binaryPrec(v.Operator) {
@@ -744,6 +789,13 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 			return fmt.Sprintf("if %s < 0 then -(%s) else %s", ex, ex, ex)
 		}
 		if name == "coalesce" && len(v.Exprs) > 0 {
+			for _, ex := range v.Exprs {
+				if ae, ok := ex.(*sqlparser.AliasedExpr); ok {
+					if s, ok := constNotNull(ae.Expr); ok {
+						return s
+					}
+				}
+			}
 			out := exprToMochiRow(v.Exprs[len(v.Exprs)-1].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
 			for i := len(v.Exprs) - 2; i >= 0; i-- {
 				arg := exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
