@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT 80 * 6 AS col0 */
-var result = [80 * 6]
+var result = [(80 * 6 as int)]
 result = from x in result
   order by str(x)
   select x

@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT DISTINCT + 62 * + 36 */
-var result = [62 * 36]
+var result = [(62 * 36 as int)]
 result = from x in result
   order by str(x)
   select x

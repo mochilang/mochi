@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT DISTINCT - 8 col0 */
-var result = [(-8)]
+var result = [((-8) as int)]
 result = from x in result
   order by str(x)
   select x

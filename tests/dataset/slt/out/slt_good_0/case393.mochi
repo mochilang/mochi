@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT - 58 * + - 23 * + 7 * - + 12 AS col2 */
-var result = [(-58) * (-23) * 7 * (-12)]
+var result = [((-58) * (-23) * 7 * (-12) as int)]
 result = from x in result
   order by str(x)
   select x
