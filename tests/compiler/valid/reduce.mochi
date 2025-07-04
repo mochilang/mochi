@@ -1,0 +1,6 @@
+fun add(acc: int, v: int): int {
+  acc + v
+}
+
+let nums = [1, 2, 3, 4, 5]
+print(reduce(nums, add, 0))

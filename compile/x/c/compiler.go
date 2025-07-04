@@ -2010,6 +2010,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			c.need(needAvg)
 			return fmt.Sprintf("_avg(%s)", arg)
+		} else if p.Call.Func == "reduce" {
+			list := c.compileExpr(p.Call.Args[0])
+			fn := c.compileExpr(p.Call.Args[1])
+			init := c.compileExpr(p.Call.Args[2])
+			if isListFloatExpr(p.Call.Args[0], c.env) {
+				c.need(needReduceFloat)
+				return fmt.Sprintf("_reduce_float(%s, %s, %s)", list, fn, init)
+			} else if isListStringExpr(p.Call.Args[0], c.env) {
+				c.need(needReduceString)
+				return fmt.Sprintf("_reduce_string(%s, %s, %s)", list, fn, init)
+			}
+			c.need(needReduceInt)
+			return fmt.Sprintf("_reduce_int(%s, %s, %s)", list, fn, init)
 		} else if p.Call.Func == "str" {
 			arg := c.compileExpr(p.Call.Args[0])
 			name := c.newTemp()

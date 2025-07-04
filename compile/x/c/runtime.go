@@ -350,6 +350,18 @@ static list_group_pair_string _group_by_pair_string(list_pair_string src) {
     for (int i = 0; i < v.len; i++) sum += v.data[i];
     return sum / v.len;
 }`
+	helperReduceInt = `static int _reduce_int(list_int v, int (*fn)(int, int), int acc) {
+    for (int i = 0; i < v.len; i++) acc = fn(acc, v.data[i]);
+    return acc;
+}`
+	helperReduceFloat = `static double _reduce_float(list_float v, double (*fn)(double, double), double acc) {
+    for (int i = 0; i < v.len; i++) acc = fn(acc, v.data[i]);
+    return acc;
+}`
+	helperReduceString = `static char* _reduce_string(list_string v, char* (*fn)(char*, char*), char* acc) {
+    for (int i = 0; i < v.len; i++) acc = fn(acc, v.data[i]);
+    return acc;
+}`
 	helperContainsListInt = `static int contains_list_int(list_int v, int item) {
     for (int i = 0; i < v.len; i++) if (v.data[i] == item) return 1;
     return 0;
@@ -611,6 +623,9 @@ var helperCode = map[string]string{
 	needSumFloat:             helperSumFloat,
 	needAvg:                  helperAvg,
 	needAvgFloat:             helperAvgFloat,
+	needReduceInt:            helperReduceInt,
+	needReduceFloat:          helperReduceFloat,
+	needReduceString:         helperReduceString,
 	needInListInt:            helperContainsListInt,
 	needInListFloat:          helperContainsListFloat,
 	needInListString:         helperContainsListString,
@@ -669,6 +684,9 @@ var helperOrder = []string{
 	needSumFloat,
 	needAvg,
 	needAvgFloat,
+	needReduceInt,
+	needReduceFloat,
+	needReduceString,
 	needInListInt,
 	needInListFloat,
 	needInListString,
