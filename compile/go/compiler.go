@@ -1652,8 +1652,13 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				c.imports["encoding/json"] = true
 				itemExpr = fmt.Sprintf("_cast[%s](%s)", elemGo, left)
 			}
-			c.use("_contains")
-			expr = fmt.Sprintf("_contains(%s, %s)", right, itemExpr)
+			if !isAny(lt.Elem) && isComparableSimple(lt.Elem) {
+				c.imports["slices"] = true
+				expr = fmt.Sprintf("slices.Contains(%s, %s)", right, itemExpr)
+			} else {
+				c.use("_contains")
+				expr = fmt.Sprintf("_contains(%s, %s)", right, itemExpr)
+			}
 			next = types.BoolType{}
 		case types.StringType:
 			c.imports["strings"] = true

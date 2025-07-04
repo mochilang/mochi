@@ -204,6 +204,10 @@ func isString(t types.Type) bool {
 	return ok
 }
 
+func isComparableSimple(t types.Type) bool {
+	return isInt(t) || isInt64(t) || isFloat(t) || isBool(t) || isString(t)
+}
+
 func isList(t types.Type) bool {
 	_, ok := t.(types.ListType)
 	return ok
