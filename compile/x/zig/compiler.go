@@ -47,10 +47,19 @@ type Compiler struct {
 	tests             []string
 	globals           map[string]bool
 	labelCount        int
+	locals            map[string]types.Type
+	funcRet           types.Type
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, imports: map[string]string{}, structs: map[string]bool{}, tests: []string{}, globals: map[string]bool{}}
+	return &Compiler{
+		env:     env,
+		imports: map[string]string{},
+		structs: map[string]bool{},
+		tests:   []string{},
+		globals: map[string]bool{},
+		locals:  map[string]types.Type{},
+	}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -189,13 +198,39 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		prefix = "pub "
 	}
 	c.writeln(fmt.Sprintf("%sfn %s(%s) %s {", prefix, name, strings.Join(params, ", "), ret))
+
+	oldEnv := c.env
+	oldLocals := c.locals
+	oldRet := c.funcRet
+	c.locals = map[string]types.Type{}
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		for _, p := range fn.Params {
+			t := c.resolveTypeRef(p.Type)
+			child.SetVar(p.Name, t, true)
+			c.locals[p.Name] = t
+		}
+		c.env = child
+	}
+	c.funcRet = c.resolveTypeRef(fn.Return)
+
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st, true); err != nil {
+			if c.env != nil {
+				c.env = oldEnv
+			}
+			c.locals = oldLocals
+			c.funcRet = oldRet
 			return err
 		}
 	}
 	c.indent--
+	if c.env != nil {
+		c.env = oldEnv
+	}
+	c.locals = oldLocals
+	c.funcRet = oldRet
 	c.writeln("}")
 	return nil
 }
@@ -325,18 +360,25 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
 	c.buf.WriteString(") " + ret + " {\n")
 
 	origEnv := c.env
+	origLocals := c.locals
+	origRet := c.funcRet
+	c.locals = map[string]types.Type{}
 	if c.env != nil {
 		child := types.NewEnv(c.env)
 		if st, ok := c.env.GetStruct(structName); ok {
 			for fname, t := range st.Fields {
 				child.SetVar(fname, t, true)
+				c.locals[fname] = t
 			}
 		}
 		for _, p := range fn.Params {
-			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
+			t := c.resolveTypeRef(p.Type)
+			child.SetVar(p.Name, t, true)
+			c.locals[p.Name] = t
 		}
 		c.env = child
 	}
+	c.funcRet = c.resolveTypeRef(fn.Return)
 
 	c.indent++
 	for _, st := range fn.Body {
@@ -344,6 +386,8 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
 			if c.env != nil {
 				c.env = origEnv
 			}
+			c.locals = origLocals
+			c.funcRet = origRet
 			return err
 		}
 	}
@@ -351,6 +395,8 @@ func (c *Compiler) compileMethod(structName string, fn *parser.FunStmt) error {
 	if c.env != nil {
 		c.env = origEnv
 	}
+	c.locals = origLocals
+	c.funcRet = origRet
 	c.writeln("}")
 	return nil
 }
@@ -425,7 +471,7 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		c.writeln(fmt.Sprintf("const %s: %s = %s;", name, zigTypeOf(typ), val))
 		return nil
 	case s.Var != nil:
-		return c.compileVar(s.Var)
+		return c.compileVar(s.Var, inFun)
 	case s.Import != nil:
 		return c.addImport(s.Import)
 	case s.Assign != nil:
@@ -462,6 +508,12 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 			}
 			if stepExpr == nil {
 				c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, name))
+				if c.env != nil {
+					c.env.SetVar(s.For.Name, types.IntType{}, true)
+				}
+				if inFun {
+					c.locals[s.For.Name] = types.IntType{}
+				}
 				c.indent++
 				for _, st := range s.For.Body {
 					if err := c.compileStmt(st, inFun); err != nil {
@@ -478,6 +530,12 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 				iter := c.newTmp()
 				c.writeln(fmt.Sprintf("var %s = %s;", iter, start))
 				c.writeln(fmt.Sprintf("while (%s < %s) {", iter, end))
+				if c.env != nil {
+					c.env.SetVar(s.For.Name, types.IntType{}, true)
+				}
+				if inFun {
+					c.locals[s.For.Name] = types.IntType{}
+				}
 				c.indent++
 				c.writeln(fmt.Sprintf("const %s = %s;", name, iter))
 				for _, st := range s.For.Body {
@@ -501,15 +559,62 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 				return err
 			}
 			c.writeln(fmt.Sprintf("for (%s .. %s) |%s| {", start, end, name))
+			if c.env != nil {
+				c.env.SetVar(s.For.Name, types.IntType{}, true)
+			}
+			if inFun {
+				c.locals[s.For.Name] = types.IntType{}
+			}
 			c.indent++
 		} else if c.isMapExpr(s.For.Source) {
 			iter := c.newTmp()
 			c.writeln(fmt.Sprintf("var %s = %s.keyIterator();", iter, start))
 			c.writeln(fmt.Sprintf("while (%s.next()) |k_ptr| {", iter))
+			if c.env != nil {
+				if mt, ok := c.inferExprType(s.For.Source).(types.MapType); ok {
+					c.env.SetVar(s.For.Name, mt.Key, true)
+					if inFun {
+						c.locals[s.For.Name] = mt.Key
+					}
+				} else {
+					c.env.SetVar(s.For.Name, types.AnyType{}, true)
+					if inFun {
+						c.locals[s.For.Name] = types.AnyType{}
+					}
+				}
+			} else if inFun {
+				if mt, ok := c.inferExprType(s.For.Source).(types.MapType); ok {
+					c.locals[s.For.Name] = mt.Key
+				} else {
+					c.locals[s.For.Name] = types.AnyType{}
+				}
+			}
 			c.indent++
 			c.writeln(fmt.Sprintf("const %s = k_ptr.*;", name))
 		} else {
 			c.writeln(fmt.Sprintf("for (%s) |%s| {", start, name))
+			if lt, ok := c.inferExprType(s.For.Source).(types.ListType); ok {
+				if c.env != nil {
+					c.env.SetVar(s.For.Name, lt.Elem, true)
+				}
+				if inFun {
+					c.locals[s.For.Name] = lt.Elem
+				}
+			} else if _, ok := c.inferExprType(s.For.Source).(types.StringType); ok {
+				if c.env != nil {
+					c.env.SetVar(s.For.Name, types.StringType{}, true)
+				}
+				if inFun {
+					c.locals[s.For.Name] = types.StringType{}
+				}
+			} else {
+				if c.env != nil {
+					c.env.SetVar(s.For.Name, types.AnyType{}, true)
+				}
+				if inFun {
+					c.locals[s.For.Name] = types.AnyType{}
+				}
+			}
 			c.indent++
 		}
 		for _, st := range s.For.Body {
@@ -1082,7 +1187,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	return b.String(), nil
 }
 
-func (c *Compiler) compileVar(st *parser.VarStmt) error {
+func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 	name := sanitizeName(st.Name)
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
@@ -1094,6 +1199,9 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 			typ = old
 		}
 		c.env.SetVar(st.Name, typ, true)
+	}
+	if inFun {
+		c.locals[st.Name] = typ
 	}
 	if st.Value != nil && isEmptyListExpr(st.Value) {
 		elem := "i32"
@@ -1823,7 +1931,7 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
 		}
 	}
-	sub := &Compiler{env: child}
+	sub := &Compiler{env: child, locals: map[string]types.Type{}}
 	sub.indent = 1
 	if fn.ExprBody != nil {
 		expr, err := sub.compileExpr(fn.ExprBody, false)

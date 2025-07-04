@@ -7,10 +7,26 @@ import (
 
 // inferExprType delegates to types.ExprType.
 func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
-	return types.ExprType(e, c.env)
+	t := types.ExprType(e, c.env)
+	if types.ContainsAny(t) {
+		env := types.NewEnv(c.env)
+		for name, tt := range c.locals {
+			env.SetVar(name, tt, true)
+		}
+		t = types.CheckExprType(e, env)
+	}
+	return t
 }
 
 // inferExprTypeHint delegates to types.ExprTypeHint.
 func (c *Compiler) inferExprTypeHint(e *parser.Expr, hint types.Type) types.Type {
-	return types.ExprTypeHint(e, hint, c.env)
+	t := types.ExprTypeHint(e, hint, c.env)
+	if types.ContainsAny(t) {
+		env := types.NewEnv(c.env)
+		for name, tt := range c.locals {
+			env.SetVar(name, tt, true)
+		}
+		t = types.CheckExprType(e, env)
+	}
+	return t
 }
