@@ -1,5 +1,24 @@
 # 📦 CHANGELOG.md
 
+## [0.10.14] – 2025-07-04T10:49:16+07:00
+
+### Added
+
+* SQL Logic Test generator covers select3 cases 1–3320 with numeric separator support
+* Nested if-then-else golden tests
+* Documented case1400–case1499 generation
+
+### Changed
+
+* Regenerated select1 cases with improved type detection
+* Reduced parentheses in generated code
+
+### Fixed
+
+* Coalesce expressions now correctly parenthesized
+
+
+
 ## [0.10.13] – 2025-07-03T20:54:57+07:00
 
 ### Added
