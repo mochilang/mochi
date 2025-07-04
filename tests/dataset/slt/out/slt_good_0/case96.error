@@ -1,0 +1,7 @@
+expect condition failed at :88: expect result == [(-87)]
+call graph: main
+stack trace:
+  main at :88
+    expect result == [(-87)]
+
+got: [-87, -87, -87]
