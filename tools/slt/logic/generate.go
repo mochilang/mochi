@@ -701,12 +701,15 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		return fmt.Sprintf("%s.%s", rowVar, name)
 	case *sqlparser.ParenExpr:
 		return "(" + exprToMochiRow(v.Expr, rowVar, outer, subs) + ")"
-	case *sqlparser.UnaryExpr:
-		ex := exprToMochiRow(v.Expr, rowVar, outer, subs)
-		if v.Operator == "+" {
-			return ex
-		}
-		return fmt.Sprintf("%s(%s)", v.Operator, ex)
+       case *sqlparser.UnaryExpr:
+               ex := exprToMochiRow(v.Expr, rowVar, outer, subs)
+               if v.Operator == "+" {
+                       return ex
+               }
+               if v.Operator == "-" {
+                       return fmt.Sprintf("(0 - (%s))", ex)
+               }
+               return fmt.Sprintf("%s(%s)", v.Operator, ex)
 	case *sqlparser.BinaryExpr:
 		// Simplify repeated addition of the same column expression
 		// into a multiplication.  SQLLogicTest queries often use
