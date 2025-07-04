@@ -1172,7 +1172,11 @@ func Generate(c Case) string {
 	}
 
 	sb.WriteString(fmt.Sprintf("/* %s */\n", c.Query))
-	stmt, err := sqlparser.Parse(c.Query)
+	q := strings.TrimSpace(c.Query)
+	if strings.HasPrefix(strings.ToLower(q), "select all ") {
+		q = "SELECT " + q[len("select all "):]
+	}
+	stmt, err := sqlparser.Parse(q)
 	if err != nil {
 		return ""
 	}
