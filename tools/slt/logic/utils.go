@@ -164,8 +164,14 @@ func EvalCase(c Case) ([]string, string, error) {
 	}
 	q := c.Query
 	if node, err := sqlparser.Parse(q); err == nil {
-		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 {
-			q = strings.TrimSpace(q) + " ORDER BY rowid"
+		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) > 0 {
+			if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
+				if name, ok := tbl.Expr.(sqlparser.TableName); ok {
+					if !strings.EqualFold(name.Name.String(), "dual") {
+						q = strings.TrimSpace(q) + " ORDER BY rowid"
+					}
+				}
+			}
 		}
 	}
 	rows, err := db.Query(q)
