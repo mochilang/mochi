@@ -279,6 +279,12 @@ func isPrimitive(t string) bool {
 // mergeCppTypes combines two inferred C++ types into a single type if possible.
 // If the types are incompatible the result is "any".
 func mergeCppTypes(a, b string) string {
+	if a == "any" {
+		return b
+	}
+	if b == "any" {
+		return a
+	}
 	if a == b {
 		return a
 	}
