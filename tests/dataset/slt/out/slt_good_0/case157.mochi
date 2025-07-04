@@ -75,7 +75,7 @@ let tab0 = [
 ]
 
 /* SELECT + 44 * + 9 */
-var result = [44 * 9]
+var result = [(44 * 9 as int)]
 result = from x in result
   order by str(x)
   select x

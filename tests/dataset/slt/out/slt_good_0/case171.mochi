@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT + 68 + - + 54 + + - 23 + + 20 + 74 AS col2 */
-var result = [68 + (-54) + (-23) + 20 + 74]
+var result = [(68 + (-54) + (-23) + 20 + 74 as int)]
 result = from x in result
   order by str(x)
   select x

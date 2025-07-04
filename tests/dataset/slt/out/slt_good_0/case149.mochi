@@ -75,7 +75,7 @@ let tab1 = [
 ]
 
 /* SELECT - 13 - + + 6 */
-var result = [(-13) - 6]
+var result = [((-13) - 6 as int)]
 result = from x in result
   order by str(x)
   select x
