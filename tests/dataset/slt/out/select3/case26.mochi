@@ -229,8 +229,8 @@ let sub0 = avg(from x in t1
 
 var result = from row in t1
   where row.d > row.e || (row.c <= row.d - 2 || row.c >= row.d + 2)
-  order by [(row.a + row.b + row.c + row.d + row.e) / 5, row.e, row.d - row.e, if row.c > sub0 then row.a * 2 else row.b * 10, row.a]
-  select [row.e, row.a, if row.c > sub0 then row.a * 2 else row.b * 10, (row.a + row.b + row.c + row.d + row.e) / 5, row.d - row.e]
+  order by [(1.0 * ((row.a + row.b + row.c + row.d + row.e))) / 5, row.e, row.d - row.e, if row.c > sub0 then row.a * 2 else row.b * 10, row.a]
+  select [row.e, row.a, if row.c > sub0 then row.a * 2 else row.b * 10, (1.0 * ((row.a + row.b + row.c + row.d + row.e))) / 5, row.d - row.e]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
@@ -247,6 +247,6 @@ for x in flatResult {
   print(x)
 }
 test "case26" {
-  expect flatResult == [-1, -1, -2, -2, -4, 1, 1, 1, 1, 1050, 107, 107, 109, 110, 1120, 115, 117, 126, 127, 127, 1290, 1300, 131, 132, 132, 135, 137, 138, 1390, 1600, 162, 162, 163, 180, 182, 182, 187, 188, 189, 191, 192, 192, 2, 2, 2, 2, 210, 212, 213, 216, 217, 219, 220, 221, 222, 230, 232, 234, 2360, 237, 239, 245, 246, 247, 3, 3, 364, 376, 382, 4, 426, 432, 440, 468, 490, null, null, null, null, null]
+  expect flatResult == [(-1), (-1), (-2), (-2), (-4), 1, 1, 1, 1, 1050, 107, 107, 109, 110, 1120, 115, 117, 126, 127, 127, 1290, 1300, 131, 132, 132, 135, 137, 138, 1390, 1600, 162, 162, 163, 180, 182, 182, 187, 188, 189, 191, 192, 192, 2, 2, 2, 2, 210, 212, 213, 216, 217, 219, 220, 221, 222, 230, 232, 234, 2360, 237, 239, 245, 246, 247, 3, 3, 364, 376, 382, 4, 426, 432, 440, 468, 490, null, null, null, null, null]
 }
 

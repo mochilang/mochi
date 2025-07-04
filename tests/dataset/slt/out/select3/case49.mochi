@@ -226,7 +226,7 @@ let t1 = [
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, (a+b+c+d+e)/5, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), c-d, b-c, c FROM t1 WHERE c>d */
 var result = from row in t1
   where row.c > row.d
-  select [if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, (row.a + row.b + row.c + row.d + row.e) / 5, count(from x in t1
+  select [if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, (1.0 * ((row.a + row.b + row.c + row.d + row.e))) / 5, count(from x in t1
   where x.b < row.b
   select x), row.c - row.d, row.b - row.c, row.c]
 result = from row in result
@@ -245,6 +245,6 @@ for x in flatResult {
   print(x)
 }
 test "case49" {
-  expect flatResult == [-1, -1, -2, -2, -3, -3, -4, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 102, 119, 12, 123, 132, 134, 137, 137, 14, 141, 142, 15, 16, 172, 172, 18, 182, 184, 187, 187, 19, 192, 193, 2, 2, 2, 2, 2, 2, 208, 21, 212, 214, 222, 222, 222, 222, 222, 222, 224, 3, 3, 333, 333, 333, 333, 4, 444, 444, 444, 444, 5, 6, null, null, null, null, null, null]
+  expect flatResult == [(-1), (-1), (-2), (-2), (-3), (-3), (-4), 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 102, 119, 12, 123, 132, 134, 137, 137, 14, 141, 142, 15, 16, 172, 172, 18, 182, 184, 187, 187, 19, 192, 193, 2, 2, 2, 2, 2, 2, 208, 21, 212, 214, 222, 222, 222, 222, 222, 222, 224, 3, 3, 333, 333, 333, 333, 4, 444, 444, 444, 444, 5, 6, null, null, null, null, null, null]
 }
 
