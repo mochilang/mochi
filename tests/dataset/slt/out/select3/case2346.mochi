@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT abs(b-c), d, d-e, c-d, e FROM t1 WHERE a>b ORDER BY 4,1,5,2 */
 var result = from row in t1
   where row.a > row.b
-  order by [(row.c - row.d), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.e, row.d]
-  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d, (row.d - row.e), (row.c - row.d), row.e]
+  order by [row.c - row.d, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.e, row.d]
+  select [if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.d, row.d - row.e, row.c - row.d, row.e]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

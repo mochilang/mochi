@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT e, b-c, a-b FROM t1 ORDER BY 3,2 */
 var result = from row in t1
-  order by [(row.a - row.b), (row.b - row.c)]
-  select [row.e, (row.b - row.c), (row.a - row.b)]
+  order by [row.a - row.b, row.b - row.c]
+  select [row.e, row.b - row.c, row.a - row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

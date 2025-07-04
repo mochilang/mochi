@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT b-c, b, a-b, c-d, d-e, e FROM t1 WHERE b>c ORDER BY 3,1,4,2,6,5 */
 var result = from row in t1
   where row.b > row.c
-  order by [(row.a - row.b), (row.b - row.c), (row.c - row.d), row.b, row.e, (row.d - row.e)]
-  select [(row.b - row.c), row.b, (row.a - row.b), (row.c - row.d), (row.d - row.e), row.e]
+  order by [row.a - row.b, row.b - row.c, row.c - row.d, row.b, row.e, row.d - row.e]
+  select [row.b - row.c, row.b, row.a - row.b, row.c - row.d, row.d - row.e, row.e]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

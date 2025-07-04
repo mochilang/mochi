@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT e, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE a>b OR (e>a AND e<b) ORDER BY 1,2 */
 var result = from row in t1
-  where (row.a > row.b || ((row.e > row.a && row.e < row.b)))
+  where row.a > row.b || (row.e > row.a && row.e < row.b)
   order by [row.e, count(from x in t1
   where x.b < row.b
   select x)]

@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, b-c, a+b*2+c*3+d*4, a, abs(b-c) FROM t1 ORDER BY 2,4,1 */
 var result = from row in t1
-  order by [(row.b - row.c), row.a, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
-  select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.b - row.c), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.a, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+  order by [row.b - row.c, row.a, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444]
+  select [if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.b - row.c, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

@@ -225,13 +225,13 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), c-d, d FROM t1 WHERE c>d OR (e>c OR e<d) OR (a>b-2 AND a<b+2) ORDER BY 3,2,1 */
 var result = from row in t1
-  where ((row.c > row.d || ((row.e > row.c || row.e < row.d))) || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
-  order by [row.d, (row.c - row.d), count(from x in t1
+  where row.c > row.d || (row.e > row.c || row.e < row.d) || (row.a > row.b - 2 && row.a < row.b + 2)
+  order by [row.d, row.c - row.d, count(from x in t1
   where x.b < row.b
   select x)]
   select [count(from x in t1
   where x.b < row.b
-  select x), (row.c - row.d), row.d]
+  select x), row.c - row.d, row.d]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
