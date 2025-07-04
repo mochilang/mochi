@@ -210,7 +210,18 @@ func inferPostfixType(env *Env, p *parser.PostfixExpr) Type {
 			if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
 				switch sel.Tail[0] {
 				case "keys":
-					t = ListType{Elem: AnyType{}}
+					if mt, ok := t.(MapType); ok {
+						t = ListType{Elem: mt.Key}
+					} else {
+						t = ListType{Elem: AnyType{}}
+					}
+					continue
+				case "values":
+					if mt, ok := t.(MapType); ok {
+						t = ListType{Elem: mt.Value}
+					} else {
+						t = ListType{Elem: AnyType{}}
+					}
 					continue
 				}
 			}
@@ -349,12 +360,26 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 				return ExprType(p.Call.Args[2], env)
 			}
 			return AnyType{}
+		case "keys":
+			if len(p.Call.Args) == 1 {
+				argType := ExprType(p.Call.Args[0], env)
+				if mt, ok := argType.(MapType); ok {
+					return ListType{Elem: mt.Key}
+				}
+			}
+			return ListType{Elem: AnyType{}}
+		case "values":
+			if len(p.Call.Args) == 1 {
+				argType := ExprType(p.Call.Args[0], env)
+				if mt, ok := argType.(MapType); ok {
+					return ListType{Elem: mt.Value}
+				}
+			}
+			return ListType{Elem: AnyType{}}
 		case "now":
 			return Int64Type{}
 		case "to_json":
 			return StringType{}
-		case "keys":
-			return ListType{Elem: AnyType{}}
 		default:
 			if env != nil {
 				if t, err := env.GetVar(p.Call.Func); err == nil {
