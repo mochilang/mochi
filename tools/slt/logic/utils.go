@@ -33,13 +33,6 @@ func hasAggExpr(e sqlparser.Expr) bool {
 		}
 	case *sqlparser.GroupConcatExpr:
 		return true
-		for _, ex := range v.Exprs {
-			if ae, ok := ex.(*sqlparser.AliasedExpr); ok {
-				if hasAggExpr(ae.Expr) {
-					return true
-				}
-			}
-		}
 	case *sqlparser.BinaryExpr:
 		return hasAggExpr(v.Left) || hasAggExpr(v.Right)
 	case *sqlparser.UnaryExpr:
