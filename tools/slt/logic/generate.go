@@ -110,9 +110,9 @@ func formatValue(v any) string {
 	case string:
 		lower := strings.ToLower(t)
 		if lower == "true" || lower == "false" {
-			return fmt.Sprintf("\"%s\" + \"\"", t)
+			return strconv.Quote(t) + " + \"\""
 		}
-		return fmt.Sprintf("\"%s\"", t)
+		return strconv.Quote(t)
 	case bool:
 		if t {
 			return "true"
