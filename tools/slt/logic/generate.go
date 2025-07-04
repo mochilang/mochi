@@ -1207,17 +1207,82 @@ func Generate(c Case) string {
 		sb.WriteString("\n")
 	}
 
-	// Handle SELECT count(*)
+	// Handle aggregate functions
 	if len(sel.SelectExprs) == 1 {
 		if ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr); ok {
-			if fn, ok := ae.Expr.(*sqlparser.FuncExpr); ok && fn.Name.EqualString("count") && len(fn.Exprs) == 1 {
-				if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); ok {
-					cond := condToMochi(sel.Where, subs)
-					sb.WriteString("let result = count(from row in " + tblNameStr)
-					if cond != "" {
-						sb.WriteString("\n  where " + cond)
+			if fn, ok := ae.Expr.(*sqlparser.FuncExpr); ok {
+				name := strings.ToLower(fn.Name.String())
+				// COUNT(*) handled specially
+				if name == "count" && len(fn.Exprs) == 1 {
+					if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); ok {
+						cond := condToMochi(sel.Where, subs)
+						sb.WriteString("let result = count(from row in " + tblNameStr)
+						if cond != "" {
+							sb.WriteString("\n  where " + cond)
+						}
+						sb.WriteString("\n  select row)\n")
+						sb.WriteString("print(result)\n\n")
+						if len(c.Expect) > 0 {
+							sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
+						}
+						return sb.String()
 					}
-					sb.WriteString("\n  select row)\n")
+				}
+
+				// general single-arg aggregates
+				if len(fn.Exprs) >= 1 && len(fn.Exprs) <= 2 {
+					arg := fn.Exprs[0].(*sqlparser.AliasedExpr).Expr
+					expr := exprToMochi(arg, subs)
+					cond := condToMochi(sel.Where, subs)
+					if name == "count" {
+						if cond != "" {
+							cond += " && " + expr + " != null"
+						} else {
+							cond = expr + " != null"
+						}
+						sb.WriteString("let result = count(from row in " + tblNameStr)
+						if cond != "" {
+							sb.WriteString("\n  where " + cond)
+						}
+						sb.WriteString("\n  select row)\n")
+					} else if name == "group_concat" {
+						delim := strconv.Quote(",")
+						if len(fn.Exprs) == 2 {
+							delim = exprToMochi(fn.Exprs[1].(*sqlparser.AliasedExpr).Expr, subs)
+						}
+						if cond != "" {
+							cond += " && " + expr + " != null"
+						} else {
+							cond = expr + " != null"
+						}
+						list := "from row in " + tblNameStr
+						if cond != "" {
+							list += "\n  where " + cond
+						}
+						list += "\n  select str(" + expr + ")"
+						if fn.Distinct {
+							list = "distinct(" + list + ")"
+						}
+						sb.WriteString("let result = join(" + list + ", " + delim + ")\n")
+					} else {
+						if cond != "" {
+							cond += " && " + expr + " != null"
+						} else {
+							cond = expr + " != null"
+						}
+						list := "from row in " + tblNameStr
+						if cond != "" {
+							list += "\n  where " + cond
+						}
+						list += "\n  select " + expr
+						if fn.Distinct {
+							list = "distinct(" + list + ")"
+						}
+						sb.WriteString("let result = " + name + "(" + list + ")\n")
+						if name == "total" {
+							sb.WriteString("result = if result == null then 0.0 else (result as float)\n")
+						}
+					}
 					sb.WriteString("print(result)\n\n")
 					if len(c.Expect) > 0 {
 						sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
