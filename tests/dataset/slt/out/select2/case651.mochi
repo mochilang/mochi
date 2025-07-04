@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT a, c FROM t1 WHERE d>e AND b>c */
 var result = from row in t1
-  where (row.d > row.e && row.b > row.c)
+  where row.d > row.e && row.b > row.c
   select [row.a, row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )

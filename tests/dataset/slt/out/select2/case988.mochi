@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT a-b, (a+b+c+d+e)/5, abs(b-c), c, abs(a), e, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b) FROM t1 WHERE d NOT BETWEEN 110 AND 150 OR EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) OR a IS NULL */
 var result = from row in t1
-  where (((row.d < 110 || row.d > 150) || count(from x in t1
+  where (row.d < 110 || row.d > 150) || count(from x in t1
   where x.b < row.b
-  select x) > 0) || row.a == null)
-  select [(row.a - row.b), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.c, (if row.a < 0 { -(row.a) } else { row.a }), row.e, count(from x in t1
+  select x) > 0 || row.a == null
+  select [row.a - row.b, (row.a + row.b + row.c + row.d + row.e) / 5, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.c, if row.a < 0 then -(row.a) else row.a, row.e, count(from x in t1
   where x.b < row.b
   select x)]
 result = from row in result

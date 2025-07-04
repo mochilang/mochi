@@ -231,8 +231,8 @@ var result = from row in t1
   select [count(from x in t1
   where x.b < row.b
   select x), row.c, row.b, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  where x.c > row.c && x.d < row.d
+  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (row.a + row.b + row.c + row.d + row.e) / 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

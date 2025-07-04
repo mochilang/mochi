@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT a-b FROM t1 WHERE (e>a AND e<b) */
 var result = from row in t1
-  where ((row.e > row.a && row.e < row.b))
-  select (row.a - row.b)
+  where (row.e > row.a && row.e < row.b)
+  select row.a - row.b
 result = from x in result
   order by str(x)
   select x

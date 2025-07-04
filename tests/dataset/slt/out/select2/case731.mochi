@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT e FROM t1 WHERE a>b OR coalesce(a,b,c,d,e)<>0 */
 var result = from row in t1
-  where (row.a > row.b || (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0)
+  where row.a > row.b || (if row.a != null then row.a else if row.b != null then row.b else if row.c != null then row.c else if row.d != null then row.d else row.e) != 0
   select row.e
 result = from x in result
   order by str(x)

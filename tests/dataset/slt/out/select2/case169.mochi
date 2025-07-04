@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, (a+b+c+d+e)/5, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), b, c-d FROM t1 WHERE coalesce(a,b,c,d,e)<>0 */
 var result = from row in t1
-  where (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0
-  select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
+  where (if row.a != null then row.a else if row.b != null then row.b else if row.c != null then row.c else if row.d != null then row.d else row.e) != 0
+  select [if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, (row.a + row.b + row.c + row.d + row.e) / 5, count(from x in t1
   where x.b < row.b
-  select x), row.b, (row.c - row.d)]
+  select x), row.b, row.c - row.d]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

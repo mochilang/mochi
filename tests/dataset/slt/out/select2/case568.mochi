@@ -226,7 +226,7 @@ let t1 = [
 /* SELECT a+b*2+c*3 FROM t1 WHERE a IS NULL */
 var result = from row in t1
   where row.a == null
-  select ((row.a + (row.b * 2)) + (row.c * 3))
+  select row.a + row.b * 2 + row.c * 3
 result = from x in result
   order by str(x)
   select x

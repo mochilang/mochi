@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, c-d FROM t1 WHERE d>e AND c>d AND a IS NULL */
 var result = from row in t1
-  where ((row.d > row.e && row.c > row.d) && row.a == null)
-  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.c - row.d)]
+  where row.d > row.e && row.c > row.d && row.a == null
+  select [(row.a + row.b + row.c + row.d + row.e) / 5, row.c - row.d]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

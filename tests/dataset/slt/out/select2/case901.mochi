@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT d-e, a, d FROM t1 WHERE (e>c OR e<d) AND a IS NULL */
 var result = from row in t1
-  where (((row.e > row.c || row.e < row.d)) && row.a == null)
-  select [(row.d - row.e), row.a, row.d]
+  where (row.e > row.c || row.e < row.d) && row.a == null
+  select [row.d - row.e, row.a, row.d]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

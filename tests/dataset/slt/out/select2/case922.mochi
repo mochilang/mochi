@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT c-d, abs(b-c), a-b, a FROM t1 */
 var result = from row in t1
-  select [(row.c - row.d), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.a - row.b), row.a]
+  select [row.c - row.d, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.a - row.b, row.a]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

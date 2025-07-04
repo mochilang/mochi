@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT abs(b-c) FROM t1 */
 var result = from row in t1
-  select (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })
+  select if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c
 result = from x in result
   order by str(x)
   select x

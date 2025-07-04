@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT a FROM t1 WHERE a IS NULL OR b IS NOT NULL */
 var result = from row in t1
-  where (row.a == null || row.b != null)
+  where row.a == null || row.b != null
   select row.a
 result = from x in result
   order by str(x)

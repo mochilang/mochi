@@ -228,12 +228,12 @@ let sub0 = avg(from x in t1
   select x.c)
 
 var result = from row in t1
-  where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
+  where (row.c >= row.b - 2 && row.c <= row.d + 2) || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)
   select [row.a, row.e, count(from x in t1
   where x.b < row.b
-  select x), (if row.a < 0 { -(row.a) } else { row.a }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  select x), if row.a < 0 then -(row.a) else row.a, if row.c > sub0 then row.a * 2 else row.b * 10, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), (row.a + row.b + row.c + row.d + row.e) / 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

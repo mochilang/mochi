@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT abs(a), (a+b+c+d+e)/5, a, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a-b FROM t1 WHERE (a>b-2 AND a<b+2) AND c BETWEEN b-2 AND d+2 AND b>c */
 var result = from row in t1
-  where ((((row.a > (row.b - 2) && row.a < (row.b + 2))) && (row.c >= (row.b - 2) && row.c <= (row.d + 2))) && row.b > row.c)
-  select [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.a, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.a - row.b)]
+  where (row.a > row.b - 2 && row.a < row.b + 2) && (row.c >= row.b - 2 && row.c <= row.d + 2) && row.b > row.c
+  select [if row.a < 0 then -(row.a) else row.a, (row.a + row.b + row.c + row.d + row.e) / 5, row.a, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.a - row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

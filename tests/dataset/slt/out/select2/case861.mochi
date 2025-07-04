@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT d-e FROM t1 WHERE coalesce(a,b,c,d,e)<>0 AND e+d BETWEEN a+b-10 AND c+130 AND a IS NULL */
 var result = from row in t1
-  where (((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) && row.a == null)
-  select (row.d - row.e)
+  where (if row.a != null then row.a else if row.b != null then row.b else if row.c != null then row.c else if row.d != null then row.d else row.e) != 0 && (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) && row.a == null
+  select row.d - row.e
 result = from x in result
   order by str(x)
   select x

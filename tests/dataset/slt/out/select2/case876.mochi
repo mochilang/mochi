@@ -226,7 +226,7 @@ let t1 = [
 /* SELECT d, c-d, abs(b-c), b-c, a+b*2+c*3 FROM t1 WHERE b>c */
 var result = from row in t1
   where row.b > row.c
-  select [row.d, (row.c - row.d), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.b - row.c), ((row.a + (row.b * 2)) + (row.c * 3))]
+  select [row.d, row.c - row.d, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.b - row.c, row.a + row.b * 2 + row.c * 3]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

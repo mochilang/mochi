@@ -226,8 +226,8 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), abs(a), a+b*2, a FROM t1 */
 var result = from row in t1
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < 0 { -(row.a) } else { row.a }), (row.a + (row.b * 2)), row.a]
+  where x.c > row.c && x.d < row.d
+  select x), if row.a < 0 then -(row.a) else row.a, row.a + row.b * 2, row.a]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

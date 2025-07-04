@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT a-b, d-e, abs(b-c), e, a+b*2, b-c FROM t1 WHERE a IS NULL AND b>c AND (a>b-2 AND a<b+2) */
 var result = from row in t1
-  where ((row.a == null && row.b > row.c) && ((row.a > (row.b - 2) && row.a < (row.b + 2))))
-  select [(row.a - row.b), (row.d - row.e), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.e, (row.a + (row.b * 2)), (row.b - row.c)]
+  where row.a == null && row.b > row.c && (row.a > row.b - 2 && row.a < row.b + 2)
+  select [row.a - row.b, row.d - row.e, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.e, row.a + row.b * 2, row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT d-e, b-c, c FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 AND a>b AND a IS NULL */
 var result = from row in t1
-  where ((((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) && row.a > row.b) && row.a == null)
-  select [(row.d - row.e), (row.b - row.c), row.c]
+  where (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) && row.a > row.b && row.a == null
+  select [row.d - row.e, row.b - row.c, row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
