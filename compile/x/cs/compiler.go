@@ -409,17 +409,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		name := sanitizeName(s.Let.Name)
 		var typ string
+		var t types.Type = types.AnyType{}
 		if s.Let.Type != nil {
+			t = c.resolveTypeRef(s.Let.Type)
 			typ = csType(s.Let.Type)
 			if isEmptyListLiteral(s.Let.Value) {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
 		} else {
-			inferred := csTypeOf(c.inferExprType(s.Let.Value))
+			inferredT := c.inferExprType(s.Let.Value)
+			t = inferredT
+			inferred := csTypeOf(inferredT)
 			typ = inferred
 			if isEmptyListLiteral(s.Let.Value) && strings.HasSuffix(typ, "[]") {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
+		}
+		if c.env != nil {
+			c.env.SetVar(s.Let.Name, t, false)
 		}
 		if s.Let.Type != nil && isFetchExpr(s.Let.Value) && typ != "" {
 			c.use("_cast")
@@ -438,17 +445,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		name := sanitizeName(s.Var.Name)
 		var typ string
+		var t types.Type = types.AnyType{}
 		if s.Var.Type != nil {
+			t = c.resolveTypeRef(s.Var.Type)
 			typ = csType(s.Var.Type)
 			if isEmptyListLiteral(s.Var.Value) {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
 		} else {
-			inferred := csTypeOf(c.inferExprType(s.Var.Value))
+			inferredT := c.inferExprType(s.Var.Value)
+			t = inferredT
+			inferred := csTypeOf(inferredT)
 			typ = inferred
 			if isEmptyListLiteral(s.Var.Value) && strings.HasSuffix(typ, "[]") {
 				expr = fmt.Sprintf("new %s { }", typ)
 			}
+		}
+		if c.env != nil {
+			c.env.SetVar(s.Var.Name, t, true)
 		}
 		if s.Var.Type != nil && isFetchExpr(s.Var.Value) && typ != "" {
 			c.use("_cast")
