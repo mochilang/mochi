@@ -27,6 +27,7 @@ cover functionality such as:
 - Generic casting and conversion utilities (`_cast`, `_toAnyMap`, `_toAnySlice`)
 - List reduction with `_reduce`
 - Dataset querying through `_query`
+- Membership checks on typed lists use `slices.Contains` when possible
 
 The map of available helpers is defined near the end of `runtime.go`:
 
