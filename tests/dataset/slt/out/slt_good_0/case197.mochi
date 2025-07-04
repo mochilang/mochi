@@ -2,6 +2,30 @@
 # line: 1803
 */
 
+type tab0Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab0 = [
+  tab0Row {
+    col0: 97,
+    col1: 1,
+    col2: 99,
+  },
+  tab0Row {
+    col0: 15,
+    col1: 81,
+    col2: 47,
+  },
+  tab0Row {
+    col0: 87,
+    col1: 21,
+    col2: 10,
+  },
+]
+
 type tab1Row {
   col0: int
   col1: int
@@ -50,32 +74,8 @@ let tab2 = [
   },
 ]
 
-type tab0Row {
-  col0: int
-  col1: int
-  col2: int
-}
-
-let tab0 = [
-  tab0Row {
-    col0: 97,
-    col1: 1,
-    col2: 99,
-  },
-  tab0Row {
-    col0: 15,
-    col1: 81,
-    col2: 47,
-  },
-  tab0Row {
-    col0: 87,
-    col1: 21,
-    col2: 10,
-  },
-]
-
 /* SELECT - CASE + 97 WHEN 46 THEN 33 END * 10, + 90 AS col1 */
-var result = [[-(if (97 != null && 46 != null && 97 == 46) then 33 else null) * 10, 90]]
+var result = [[(-(if (97 != null && 46 != null && 97 == 46) then 33 else null)) * 10, 90]]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

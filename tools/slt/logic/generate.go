@@ -732,9 +732,6 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		if rb, ok := v.Right.(*sqlparser.BinaryExpr); ok && binaryPrec(rb.Operator) <= binaryPrec(v.Operator) {
 			r = "(" + r + ")"
 		}
-		if v.Operator == sqlparser.DivStr || v.Operator == "/" {
-			l = "(1.0 * (" + l + "))"
-		}
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
 	case *sqlparser.FuncExpr:
 		name := strings.ToLower(v.Name.String())

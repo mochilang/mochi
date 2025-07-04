@@ -76,7 +76,7 @@ let tab2 = [
 ]
 
 /* SELECT - 38 * 21 + + 48 + + - 42 / + + 70 + - 6 */
-var result = [(-38) * 21 + 48 + (1.0 * ((-42))) / 70 + (-6)]
+var result = [(-38) * 21 + 48 + (-42) / 70 + (-6)]
 result = from x in result
   order by str(x)
   select x
