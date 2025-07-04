@@ -1821,7 +1821,13 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		opts = fmt.Sprintf("Some (%s)", v)
 	}
 	c.use("_load")
-	return fmt.Sprintf("_load %s %s", path, opts), nil
+	expr := fmt.Sprintf("_load %s %s", path, opts)
+	if l.Type != nil {
+		c.use("_cast")
+		typ := fsType(l.Type)
+		expr = fmt.Sprintf("%s |> List.map (fun row -> _cast<%s>(row))", expr, typ)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {

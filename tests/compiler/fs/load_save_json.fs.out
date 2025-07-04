@@ -1,5 +1,12 @@
 open System
 
+let format = "format"
+let _cast<'T> (v: obj) : 'T =
+  match v with
+  | :? 'T as t -> t
+  | _ ->
+      let json = System.Text.Json.JsonSerializer.Serialize(v)
+      System.Text.Json.JsonSerializer.Deserialize<'T>(json)
 let _load (path: string option) (opts: Map<string,obj> option) : List<Map<string,obj>> =
   let format = opts |> Option.bind (Map.tryFind "format") |> Option.map string |> Option.defaultValue "csv"
   let header = opts |> Option.bind (Map.tryFind "header") |> Option.map unbox<bool> |> Option.defaultValue true
@@ -99,5 +106,5 @@ type Person =
         name: string;
         age: int
     }
-let people = _load None Some (Map.ofList [(format, "json")])
+let people = _load None Some (Map.ofList [(format, "json")]) |> List.map (fun row -> _cast<Person>(row))
 ignore (_save people None Some (Map.ofList [(format, "json")]))
