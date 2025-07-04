@@ -1363,7 +1363,13 @@ func Generate(c Case) string {
 						if fn.Distinct {
 							list = "distinct(" + list + ")"
 						}
-						sb.WriteString("let result = " + name + "(" + list + ")\n")
+						callName := name
+						decl := "let"
+						if name == "total" {
+							callName = "sum"
+							decl = "var"
+						}
+						sb.WriteString(decl + " result = " + callName + "(" + list + ")\n")
 						if name == "total" {
 							sb.WriteString("result = if result == null then 0.0 else (result as float)\n")
 						}

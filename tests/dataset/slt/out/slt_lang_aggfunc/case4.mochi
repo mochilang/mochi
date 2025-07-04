@@ -10,20 +10,20 @@ type t1Row {
 let t1 = [
   t1Row {
     x: 1,
-    y: true,
+    y: "true" + "",
   },
   t1Row {
     x: 0,
-    y: false,
+    y: "false" + "",
   },
   t1Row {
     x: null,
-    y: null,
+    y: "NULL",
   },
 ]
 
 /* SELECT total(DISTINCT x) FROM t1 */
-let result = total(distinct(from row in t1
+var result = sum(distinct(from row in t1
   where row.x != null
   select row.x))
 result = if result == null then 0.0 else (result as float)

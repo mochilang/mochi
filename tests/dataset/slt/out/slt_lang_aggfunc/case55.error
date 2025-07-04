@@ -1,0 +1,7 @@
+expect condition failed at :40: expect result == null
+call graph: main
+stack trace:
+  main at :40
+    expect result == null
+
+got: [0]

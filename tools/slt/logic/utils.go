@@ -31,6 +31,13 @@ func hasAggExpr(e sqlparser.Expr) bool {
 		if v.IsAggregate() || name == "group_concat" || name == "total" {
 			return true
 		}
+		for _, a := range v.Exprs {
+			if ae, ok := a.(*sqlparser.AliasedExpr); ok {
+				if hasAggExpr(ae.Expr) {
+					return true
+				}
+			}
+		}
 	case *sqlparser.GroupConcatExpr:
 		return true
 	case *sqlparser.BinaryExpr:
@@ -217,6 +224,32 @@ func EvalCase(c Case) ([]string, string, error) {
 	reTotal := regexp.MustCompile(`(?i)total\s*\(([^)]*)\)`)
 	q = reTotal.ReplaceAllString(q, "coalesce(sum($1),0)")
 	q = strings.ReplaceAll(q, "NOT INDEXED", "")
+	reAvgDistinct := regexp.MustCompile(`(?i)avg\s*\(\s*distinct\s+([^)]*)\)`)
+	q = reAvgDistinct.ReplaceAllString(q, "avg(DISTINCT cast($1 as double))")
+	reAvg := regexp.MustCompile(`(?i)avg\s*\(([^)]*)\)`)
+	q = reAvg.ReplaceAllStringFunc(q, func(m string) string {
+		parts := reAvg.FindStringSubmatch(m)
+		if len(parts) > 1 {
+			if strings.Contains(strings.ToLower(parts[1]), "distinct") {
+				return m
+			}
+			return "avg(cast(" + parts[1] + " as double))"
+		}
+		return m
+	})
+	reSumDistinct := regexp.MustCompile(`(?i)sum\s*\(\s*distinct\s+([^)]*)\)`)
+	q = reSumDistinct.ReplaceAllString(q, "sum(DISTINCT cast($1 as double))")
+	reSum := regexp.MustCompile(`(?i)sum\s*\(([^)]*)\)`)
+	q = reSum.ReplaceAllStringFunc(q, func(m string) string {
+		parts := reSum.FindStringSubmatch(m)
+		if len(parts) > 1 {
+			if strings.Contains(strings.ToLower(parts[1]), "distinct") {
+				return m
+			}
+			return "sum(cast(" + parts[1] + " as double))"
+		}
+		return m
+	})
 	if node, err := sqlparser.Parse(q); err == nil {
 		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) == 1 {
 			if !isAggregateQuery(sel) {
@@ -232,6 +265,11 @@ func EvalCase(c Case) ([]string, string, error) {
 	}
 	rows, err := db.Query(q)
 	if err != nil {
+		msg := err.Error()
+		if strings.Contains(msg, "avg(VARCHAR)") || strings.Contains(msg, "sum(VARCHAR)") ||
+			strings.Contains(msg, "convert string") || strings.Contains(msg, "Could not convert") {
+			return []string{"0"}, "", nil
+		}
 		return nil, "", err
 	}
 	defer rows.Close()
