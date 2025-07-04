@@ -214,6 +214,9 @@ func inferCppPrimaryType(env *types.Env, lookup CppVarLookup, p *parser.Primary)
 		if thenT == elseT || elseT == "" {
 			return thenT
 		}
+		if t := mergeCppTypes(thenT, elseT); t != "any" {
+			return t
+		}
 		return "any"
 	case p.Selector != nil:
 		typ := ""
@@ -276,6 +279,42 @@ func isPrimitive(t string) bool {
 		return true
 	}
 	return false
+}
+
+// mergeCppTypes combines two inferred C++ types into a single type if possible.
+// If the types are incompatible the result is "any".
+func mergeCppTypes(a, b string) string {
+	if a == b {
+		return a
+	}
+	if a == "" {
+		return b
+	}
+	if b == "" {
+		return a
+	}
+	// numeric promotions
+	if (a == "int" && b == "double") || (a == "double" && b == "int") {
+		return "double"
+	}
+	if strings.HasPrefix(a, "vector<") && strings.HasPrefix(b, "vector<") {
+		ae := strings.TrimSuffix(strings.TrimPrefix(a, "vector<"), ">")
+		be := strings.TrimSuffix(strings.TrimPrefix(b, "vector<"), ">")
+		elem := mergeCppTypes(ae, be)
+		if elem != "any" {
+			return "vector<" + elem + ">"
+		}
+	}
+	return "any"
+}
+
+// mergeTypeSet merges a set of type strings using mergeCppTypes.
+func mergeTypeSet(set map[string]struct{}) string {
+	out := ""
+	for t := range set {
+		out = mergeCppTypes(out, t)
+	}
+	return out
 }
 
 func getEmptyListLiteral(e *parser.Expr) *parser.ListLiteral {
