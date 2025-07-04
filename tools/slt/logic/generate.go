@@ -1103,7 +1103,17 @@ func Generate(c Case) string {
 		return ""
 	}
 	sel, ok := stmt.(*sqlparser.Select)
-	if !ok || len(sel.From) != 1 {
+	if !ok {
+		return ""
+	}
+	if len(sel.From) == 0 {
+		code := generateConstSelect(sel, c)
+		if code != "" {
+			sb.WriteString(code)
+		}
+		return sb.String()
+	}
+	if len(sel.From) != 1 {
 		return ""
 	}
 	tblExpr, ok := sel.From[0].(*sqlparser.AliasedTableExpr)
@@ -1116,6 +1126,13 @@ func Generate(c Case) string {
 	}
 
 	tblNameStr := tblName.Name.String()
+	if _, exists := c.Tables[tblNameStr]; !exists {
+		code := generateConstSelect(sel, c)
+		if code != "" {
+			sb.WriteString(code)
+		}
+		return sb.String()
+	}
 
 	subExprs := collectSubqueries(sel)
 	subs := map[string]string{}
@@ -1270,5 +1287,51 @@ func formatExpectList(xs []string) string {
 		sb.WriteString(x)
 	}
 	sb.WriteString("]")
+	return sb.String()
+}
+
+func generateConstSelect(sel *sqlparser.Select, c Case) string {
+	aes := make([]*sqlparser.AliasedExpr, 0, len(sel.SelectExprs))
+	for _, se := range sel.SelectExprs {
+		ae, ok := se.(*sqlparser.AliasedExpr)
+		if !ok || !simpleExpr(ae.Expr) {
+			return ""
+		}
+		aes = append(aes, ae)
+	}
+	var exprs []string
+	for _, ae := range aes {
+		exprs = append(exprs, exprToMochiBare(ae.Expr))
+	}
+	var sb strings.Builder
+	if len(exprs) == 1 {
+		sb.WriteString("var result = [" + exprs[0] + "]\n")
+		if c.RowSort {
+			sb.WriteString("result = from x in result\n  order by str(x)\n  select x\n")
+		}
+		sb.WriteString("for x in result {\n  print(x)\n}\n\n")
+		if len(c.Expect) > 0 {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, formatExpectList(c.Expect)))
+		} else {
+			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == []\n}\n", c.Name))
+		}
+		return sb.String()
+	}
+	sb.WriteString("var result = [[" + strings.Join(exprs, ", ") + "]]\n")
+	sb.WriteString("var flatResult = []\n")
+	sb.WriteString("for row in result {\n")
+	sb.WriteString("  for x in row {\n")
+	sb.WriteString("    flatResult = append(flatResult, x)\n")
+	sb.WriteString("  }\n}\n")
+	if c.RowSort {
+		sb.WriteString("flatResult = from x in flatResult\n  order by str(x)\n  select x\n")
+	}
+	sb.WriteString("for x in flatResult {\n  print(x)\n}\n")
+	if len(c.Expect) > 0 {
+		sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))
+	} else {
+		sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == []\n}\n", c.Name))
+	}
+	sb.WriteString("\n")
 	return sb.String()
 }

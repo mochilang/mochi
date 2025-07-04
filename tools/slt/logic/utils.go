@@ -165,7 +165,15 @@ func EvalCase(c Case) ([]string, string, error) {
 	q := c.Query
 	if node, err := sqlparser.Parse(q); err == nil {
 		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 {
-			q = strings.TrimSpace(q) + " ORDER BY rowid"
+			if len(sel.From) == 1 {
+				if tblExpr, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
+					if name, ok := tblExpr.Expr.(sqlparser.TableName); ok {
+						if !strings.EqualFold(name.Name.String(), "dual") {
+							q = strings.TrimSpace(q) + " ORDER BY rowid"
+						}
+					}
+				}
+			}
 		}
 	}
 	rows, err := db.Query(q)
@@ -293,12 +301,19 @@ func GenerateFiles(files []string, outDir string, run bool, start, end, max int)
 			}
 			exp, _, err := EvalCase(c)
 			if err != nil {
-				return err
+				errPath := filepath.Join(testDir, c.Name+".error")
+				_ = os.WriteFile(errPath, []byte(err.Error()+"\n"), 0o644)
+				fmt.Printf("FAILED to eval %s: %v\n", c.Name, err)
+				failed = append(failed, idx)
+				continue
 			}
 			c.Expect = exp
 			c.Hash = ""
 			code := Generate(c)
 			if code == "" {
+				errPath := filepath.Join(testDir, c.Name+".error")
+				_ = os.WriteFile(errPath, []byte("unsupported query\n"), 0o644)
+				failed = append(failed, idx)
 				continue
 			}
 			srcPath := filepath.Join(testDir, c.Name+".mochi")
