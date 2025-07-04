@@ -196,6 +196,15 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			return err
 		}
 		name := sanitizeName(s.Let.Name)
+		if c.env != nil {
+			var typ types.Type = types.AnyType{}
+			if s.Let.Type != nil {
+				typ = c.resolveTypeRef(s.Let.Type)
+			} else if s.Let.Value != nil {
+				typ = c.inferExprType(s.Let.Value)
+			}
+			c.env.SetVar(s.Let.Name, typ, false)
+		}
 		c.writeln(fmt.Sprintf("%s = %s", name, val))
 	case s.Var != nil:
 		return c.compileVar(s.Var)
@@ -342,33 +351,52 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		return err
 	}
 	t := c.inferExprType(stmt.Source)
+	var elemType types.Type = types.AnyType{}
 	if stmt.RangeEnd != nil {
 		end, err := c.compileExpr(stmt.RangeEnd)
 		if err != nil {
 			return err
 		}
 		srcExpr = fmt.Sprintf("%s..(%s - 1)", srcExpr, end)
+		elemType = types.IntType{}
 	} else if strings.HasPrefix(srcExpr, "\"") && strings.HasSuffix(srcExpr, "\"") {
 		srcExpr = fmt.Sprintf("String.graphemes(%s)", srcExpr)
+		elemType = types.StringType{}
 	} else {
-		if _, ok := t.(types.MapType); ok {
+		switch tt := t.(type) {
+		case types.MapType:
 			srcExpr = fmt.Sprintf("Map.keys(%s)", srcExpr)
-		} else if _, ok := t.(types.AnyType); ok {
+			elemType = tt.Key
+		case types.ListType:
+			elemType = tt.Elem
+		case types.GroupType:
+			srcExpr += ".items"
+			elemType = tt.Elem
+		case types.StringType:
+			srcExpr = fmt.Sprintf("String.graphemes(%s)", srcExpr)
+			elemType = types.StringType{}
+		case types.AnyType:
 			c.use("_iter")
 			srcExpr = fmt.Sprintf("_iter(%s)", srcExpr)
 		}
 	}
 
+	origEnv := c.env
+	if c.env != nil {
+		c.env.SetVar(stmt.Name, elemType, true)
+	}
 	if len(mutated) == 0 {
 		c.writeln(fmt.Sprintf("for %s <- %s do", sanitizeName(name), srcExpr))
 		c.indent++
 		for _, s := range stmt.Body {
 			if err := c.compileStmt(s); err != nil {
+				c.env = origEnv
 				return err
 			}
 		}
 		c.indent--
 		c.writeln("end")
+		c.env = origEnv
 		return nil
 	}
 
@@ -377,6 +405,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	c.indent++
 	for _, s := range stmt.Body {
 		if err := c.compileStmt(s); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
@@ -386,6 +415,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 	for _, v := range mutated {
 		c.writeln(fmt.Sprintf("_ = %s", v))
 	}
+	c.env = origEnv
 	return nil
 }
 
@@ -463,20 +493,24 @@ func (c *Compiler) compileUpdate(stmt *parser.UpdateStmt) error {
 func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	name := sanitizeName(stmt.Name)
 	value := "nil"
+	var typ types.Type = types.AnyType{}
 	if stmt.Value != nil {
 		v, err := c.compileExpr(stmt.Value)
 		if err != nil {
 			return err
 		}
 		value = v
+		typ = c.inferExprType(stmt.Value)
+	}
+	if stmt.Type != nil {
+		typ = c.resolveTypeRef(stmt.Type)
 	}
 	if c.env != nil {
-		if t, err := c.env.GetVar(stmt.Name); err == nil {
-			if st, ok := t.(types.StructType); ok {
-				c.ensureStruct(st)
-				c.use("_structify")
-				value = fmt.Sprintf("_structify(%s, %s)", sanitizeName(st.Name), value)
-			}
+		c.env.SetVar(stmt.Name, typ, true)
+		if st, ok := typ.(types.StructType); ok {
+			c.ensureStruct(st)
+			c.use("_structify")
+			value = fmt.Sprintf("_structify(%s, %s)", sanitizeName(st.Name), value)
 		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", name, value))
