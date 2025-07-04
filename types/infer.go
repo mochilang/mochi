@@ -113,23 +113,20 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 				var res Type
 				switch ops[i] {
 				case "+", "-", "*", "/", "%":
-					if isInt64(left) {
-						if isInt64(right) || isInt(right) {
-							res = Int64Type{}
-							break
-						}
+					if (isInt64(left) && (isInt64(right) || isInt(right))) ||
+						(isInt64(right) && isInt(left)) {
+						res = Int64Type{}
+						break
 					}
-					if _, ok := left.(IntType); ok {
-						if _, ok := right.(IntType); ok {
-							res = IntType{}
-							break
-						}
+					if (isFloat(left) || isFloat(right)) &&
+						(isInt(left) || isFloat(left) || isInt64(left)) &&
+						(isInt(right) || isFloat(right) || isInt64(right)) {
+						res = FloatType{}
+						break
 					}
-					if _, ok := left.(FloatType); ok {
-						if _, ok := right.(FloatType); ok {
-							res = FloatType{}
-							break
-						}
+					if isInt(left) && isInt(right) {
+						res = IntType{}
+						break
 					}
 					if ops[i] == "+" {
 						if ll, ok := left.(ListType); ok {
