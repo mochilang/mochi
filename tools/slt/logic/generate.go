@@ -1473,6 +1473,9 @@ func Generate(c Case) string {
 			}
 			sb.WriteString("\n  select " + expr + "\n")
 		}
+		if sel.Distinct != "" {
+			sb.WriteString("result = from x in result\n  group by x into g\n  select g.key\n")
+		}
 		if c.RowSort {
 			sb.WriteString("result = from x in result\n  order by str(x)\n  select x\n")
 		}
@@ -1541,6 +1544,9 @@ func Generate(c Case) string {
 				}
 			}
 			sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
+			if sel.Distinct != "" {
+				sb.WriteString("result = from row in result\n  group by row into g\n  select g.key\n")
+			}
 		}
 		if c.RowSort {
 			sb.WriteString("result = from row in result\n")
