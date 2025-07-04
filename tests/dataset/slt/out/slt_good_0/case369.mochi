@@ -75,7 +75,7 @@ let tab1 = [
 ]
 
 /* SELECT 60 * 30 AS col2 */
-var result = [60 * 30]
+var result = [1800]
 result = from x in result
   order by str(x)
   select x

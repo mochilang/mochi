@@ -330,6 +330,35 @@ func evalExpr(expr sqlparser.Expr, row map[string]any, table *Table) any {
 				}
 			}
 		}
+	case *sqlparser.FuncExpr:
+		name := strings.ToLower(v.Name.String())
+		switch name {
+		case "abs":
+			if len(v.Exprs) == 1 {
+				if ae, ok := v.Exprs[0].(*sqlparser.AliasedExpr); ok {
+					val := evalExpr(ae.Expr, row, table)
+					if f, ok := toFloat(val); ok {
+						if f < 0 {
+							f = -f
+						}
+						if isInt(val) {
+							return int(f)
+						}
+						return f
+					}
+				}
+			}
+		case "coalesce":
+			for _, a := range v.Exprs {
+				if ae, ok := a.(*sqlparser.AliasedExpr); ok {
+					val := evalExpr(ae.Expr, row, table)
+					if val != nil {
+						return val
+					}
+				}
+			}
+			return nil
+		}
 	}
 	return nil
 }

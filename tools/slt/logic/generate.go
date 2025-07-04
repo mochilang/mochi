@@ -138,6 +138,60 @@ func formatValue(v any) string {
 	}
 }
 
+// isConstExpr reports whether e is a constant expression that does not
+// reference table columns.
+func isConstExpr(e sqlparser.Expr) bool {
+	switch v := e.(type) {
+	case *sqlparser.SQLVal, *sqlparser.NullVal:
+		return true
+	case *sqlparser.ParenExpr:
+		return isConstExpr(v.Expr)
+	case *sqlparser.UnaryExpr:
+		return isConstExpr(v.Expr)
+	case *sqlparser.BinaryExpr:
+		return isConstExpr(v.Left) && isConstExpr(v.Right)
+	case *sqlparser.FuncExpr:
+		name := strings.ToLower(v.Name.String())
+		if name == "coalesce" || name == "abs" {
+			for _, a := range v.Exprs {
+				if ae, ok := a.(*sqlparser.AliasedExpr); ok {
+					if !isConstExpr(ae.Expr) {
+						return false
+					}
+				} else {
+					return false
+				}
+			}
+			return true
+		}
+		return false
+	case *sqlparser.CaseExpr:
+		if v.Expr != nil && !isConstExpr(v.Expr) {
+			return false
+		}
+		for _, w := range v.Whens {
+			if !isConstExpr(w.Cond) || !isConstExpr(w.Val) {
+				return false
+			}
+		}
+		if v.Else != nil && !isConstExpr(v.Else) {
+			return false
+		}
+		return true
+	default:
+		return false
+	}
+}
+
+// constExpr converts a constant SQL expression to Mochi source.
+func constExpr(e sqlparser.Expr) (string, bool) {
+	if !isConstExpr(e) {
+		return "", false
+	}
+	val := evalExpr(e, nil, nil)
+	return formatValue(val), true
+}
+
 func detectColumnType(rows []map[string]any, name string, declared []string, cols []string) string {
 	// First use declared type information if available.
 	for i, c := range cols {
@@ -666,6 +720,9 @@ func binaryPrec(op string) int {
 }
 
 func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]string) string {
+	if s, ok := constExpr(e); ok {
+		return s
+	}
 	switch v := e.(type) {
 	case *sqlparser.SQLVal:
 		switch v.Type {

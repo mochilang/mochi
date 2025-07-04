@@ -75,7 +75,7 @@ let tab1 = [
 ]
 
 /* SELECT DISTINCT - - 28 * + - 21 * 39 AS col1 */
-var result = [28 * (-21) * 39]
+var result = [-22932]
 result = from x in result
   order by str(x)
   select x

@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT DISTINCT - 38 AS col1 */
-var result = [(-38)]
+var result = [-38]
 result = from x in result
   order by str(x)
   select x
