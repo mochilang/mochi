@@ -716,16 +716,31 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		c.buf.WriteString(fmt.Sprintf("if (%s) {\n", cond))
 		c.indent++
 	}
-	for _, it := range u.Set.Items {
-		key, _ := identName(it.Key)
-		val, err := c.compileExpr(it.Value)
-		if err != nil {
-			c.env = orig
-			return err
-		}
-		c.writeIndent()
-		c.buf.WriteString(fmt.Sprintf("_item.%s = %s;\n", sanitizeName(key), val))
-	}
+        for _, it := range u.Set.Items {
+                if key, ok := identName(it.Key); ok {
+                        val, err := c.compileExpr(it.Value)
+                        if err != nil {
+                                c.env = orig
+                                return err
+                        }
+                        c.writeIndent()
+                        c.buf.WriteString(fmt.Sprintf("_item.%s = %s;\n", sanitizeName(key), val))
+                        continue
+                }
+
+                keyExpr, err := c.compileExpr(it.Key)
+                if err != nil {
+                        c.env = orig
+                        return err
+                }
+                valExpr, err := c.compileExpr(it.Value)
+                if err != nil {
+                        c.env = orig
+                        return err
+                }
+                c.writeIndent()
+                c.buf.WriteString(fmt.Sprintf("_item[%s] = %s;\n", keyExpr, valExpr))
+        }
 	if u.Where != nil {
 		c.indent--
 		c.writeIndent()
