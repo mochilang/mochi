@@ -3604,11 +3604,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("lower expects 1 arg")
 		}
+		at := c.inferExprType(call.Args[0])
+		if isString(at) {
+			c.imports["strings"] = true
+			return fmt.Sprintf("strings.ToLower(%s)", args[0]), nil
+		}
 		c.use("_lower")
 		return fmt.Sprintf("_lower(%s)", args[0]), nil
 	case "upper":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		at := c.inferExprType(call.Args[0])
+		if isString(at) {
+			c.imports["strings"] = true
+			return fmt.Sprintf("strings.ToUpper(%s)", args[0]), nil
 		}
 		c.use("_upper")
 		return fmt.Sprintf("_upper(%s)", args[0]), nil
