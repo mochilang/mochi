@@ -3,6 +3,30 @@
 skipif mysql # not compatible
 */
 
+type tab1Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab1 = [
+  tab1Row {
+    col0: 51,
+    col1: 14,
+    col2: 96,
+  },
+  tab1Row {
+    col0: 85,
+    col1: 5,
+    col2: 59,
+  },
+  tab1Row {
+    col0: 91,
+    col1: 47,
+    col2: 68,
+  },
+]
+
 type tab2Row {
   col0: int
   col1: int
@@ -48,30 +72,6 @@ let tab0 = [
     col0: 87,
     col1: 21,
     col2: 10,
-  },
-]
-
-type tab1Row {
-  col0: int
-  col1: int
-  col2: int
-}
-
-let tab1 = [
-  tab1Row {
-    col0: 51,
-    col1: 14,
-    col2: 96,
-  },
-  tab1Row {
-    col0: 85,
-    col1: 5,
-    col2: 59,
-  },
-  tab1Row {
-    col0: 91,
-    col1: 47,
-    col2: 68,
   },
 ]
 

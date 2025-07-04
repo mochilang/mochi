@@ -718,17 +718,28 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 		case OpNeg:
 			b := fr.regs[ins.B]
-			if b.Tag == ValueFloat {
+			if b.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if b.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b.Int}
 			}
 		case OpNegInt:
-			b := toInt(fr.regs[ins.B])
-			fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b}
+			bVal := fr.regs[ins.B]
+			if bVal.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				b := toInt(bVal)
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b}
+			}
 		case OpNegFloat:
 			b := fr.regs[ins.B]
-			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
+			if b.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
+			}
 		case OpMul:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
@@ -2646,13 +2657,8 @@ func (fc *funcCompiler) emitBinaryOp(pos lexer.Position, op string, all bool, le
 		return dst
 	case "/":
 		dst := fc.newReg()
-		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
-			fc.emit(pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
-		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
-			fc.emit(pos, Instr{Op: OpDivInt, A: dst, B: left, C: right})
-		} else {
-			fc.emit(pos, Instr{Op: OpDiv, A: dst, B: left, C: right})
-		}
+		// SQL division always produces a floating point value.
+		fc.emit(pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
 		return dst
 	case "%":
 		dst := fc.newReg()
@@ -6908,7 +6914,7 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 			return Value{Tag: ValueFloat, Float: toFloat(a) / toFloat(b)}, true
 		}
 		if a.Tag == ValueInt && b.Tag == ValueInt {
-			return Value{Tag: ValueInt, Int: a.Int / b.Int}, true
+			return Value{Tag: ValueFloat, Float: float64(a.Int) / float64(b.Int)}, true
 		}
 	case "%":
 		if (b.Tag == ValueInt && b.Int == 0) || (b.Tag == ValueFloat && b.Float == 0) {
