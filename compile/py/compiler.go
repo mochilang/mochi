@@ -380,9 +380,66 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 					}
 				}
 			case "union", "union_all", "except", "intersect":
-				c.use("_" + op)
-				expr = fmt.Sprintf("_%s(%s, %s)", op, lExpr, rExpr)
-				t = types.ListType{Elem: types.AnyType{}}
+				var elem types.Type = types.AnyType{}
+				switch lt := lType.(type) {
+				case types.ListType:
+					elem = lt.Elem
+				case types.GroupType:
+					elem = lt.Elem
+				}
+				switch rt := rType.(type) {
+				case types.ListType:
+					if isAny(elem) {
+						elem = rt.Elem
+					} else if !equalTypes(elem, rt.Elem) {
+						elem = types.AnyType{}
+					}
+				case types.GroupType:
+					if isAny(elem) {
+						elem = rt.Elem
+					} else if !equalTypes(elem, rt.Elem) {
+						elem = types.AnyType{}
+					}
+				}
+				switch op {
+				case "union_all":
+					if _, ok := lType.(types.ListType); ok {
+						if _, ok := rType.(types.ListType); ok {
+							expr = fmt.Sprintf("%s + %s", lExpr, rExpr)
+							t = types.ListType{Elem: elem}
+							break
+						}
+					}
+				case "except":
+					if _, ok := lType.(types.ListType); ok {
+						if _, ok := rType.(types.ListType); ok {
+							expr = fmt.Sprintf("[it for it in %s if it not in %s]", lExpr, rExpr)
+							t = types.ListType{Elem: elem}
+							break
+						}
+					}
+				case "union":
+					if _, ok := lType.(types.ListType); ok {
+						if _, ok := rType.(types.ListType); ok {
+							expr = fmt.Sprintf("list(dict.fromkeys(%s + %s))", lExpr, rExpr)
+							t = types.ListType{Elem: elem}
+							break
+						}
+					}
+				case "intersect":
+					if _, ok := lType.(types.ListType); ok {
+						if _, ok := rType.(types.ListType); ok {
+							expr = fmt.Sprintf("list(dict.fromkeys([it for it in %s if it in %s]))", lExpr, rExpr)
+							t = types.ListType{Elem: elem}
+							break
+						}
+					}
+				}
+				if expr == "" {
+					c.use("_" + op)
+					expr = fmt.Sprintf("_%s(%s, %s)", op, lExpr, rExpr)
+					t = types.ListType{Elem: elem}
+				}
 			case "+":
 				if isString(lType) || isString(rType) {
 					if !isString(lType) {
@@ -749,30 +806,30 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "input":
 		return "input()", nil
 	case "count":
-               if len(args) == 1 {
-                       t := c.inferExprType(call.Args[0])
-                       switch t.(type) {
-                       case types.ListType:
-                               return fmt.Sprintf("len(%s)", args[0]), nil
-                       case types.GroupType:
-                               return fmt.Sprintf("len(%s.Items)", args[0]), nil
-                       case types.MapType, types.StringType:
-                               return fmt.Sprintf("len(%s)", args[0]), nil
-                       }
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("len(%s)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("len(%s.Items)", args[0]), nil
+			case types.MapType, types.StringType:
+				return fmt.Sprintf("len(%s)", args[0]), nil
+			}
 		}
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "exists":
-               if len(args) == 1 {
-                       t := c.inferExprType(call.Args[0])
-                       switch t.(type) {
-                       case types.ListType:
-                               return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
-                       case types.GroupType:
-                               return fmt.Sprintf("(len(%s.Items) > 0)", args[0]), nil
-                       case types.MapType, types.StringType:
-                               return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
-                       }
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch t.(type) {
+			case types.ListType:
+				return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("(len(%s.Items) > 0)", args[0]), nil
+			case types.MapType, types.StringType:
+				return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
+			}
 		}
 		c.use("_exists")
 		return fmt.Sprintf("_exists(%s)", argStr), nil
