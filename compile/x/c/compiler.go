@@ -1060,8 +1060,19 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	item := c.newTemp()
 	c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, item, list, idx))
 	oldStruct := c.currentStruct
+	origEnv := c.env
 	if st, ok := elemType.(types.StructType); ok {
 		c.currentStruct = st.Name
+		c.compileStructType(st)
+		if c.env != nil {
+			child := types.NewEnv(c.env)
+			for _, f := range st.Order {
+				ft := st.Fields[f]
+				c.writeln(fmt.Sprintf("%s %s = %s.%s;", cTypeFromType(ft), sanitizeName(f), item, sanitizeName(f)))
+				child.SetVar(f, ft, true)
+			}
+			c.env = child
+		}
 	}
 	var cond string
 	if u.Where != nil {
@@ -1084,6 +1095,9 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		c.writeln("}")
 	}
 	c.writeln(fmt.Sprintf("%s.data[%s] = %s;", list, idx, item))
+	if origEnv != nil {
+		c.env = origEnv
+	}
 	c.currentStruct = oldStruct
 	c.indent--
 	c.writeln("}")
