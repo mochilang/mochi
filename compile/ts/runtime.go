@@ -22,7 +22,7 @@ const (
 		"  if (end < start) end = start;\n" +
 		"  return runes.slice(start, end).join('');\n" +
 		"}\n"
-	helperSlice = "function _slice(v: any, i: number, j: number): any[] {\n" +
+	helperSlice = "function _slice<T>(v: T[] | string, i: number, j: number): T[] | string {\n" +
 		"  if (typeof v === 'string') return _sliceString(v, i, j);\n" +
 		"  if (!Array.isArray(v)) return [];\n" +
 		"  let start = i;\n" +
@@ -153,11 +153,11 @@ const (
 		"  return v === null ? '' : v;\n" +
 		"}\n"
 
-	helperIter = "function _iter(v: any): any {\n" +
+	helperIter = "function _iter<T>(v: Iterable<T> | Record<string, T> | any): Iterable<T | string> {\n" +
 		"  if (v && typeof v === 'object' && !Array.isArray(v) && !(Symbol.iterator in v)) {\n" +
 		"    return Object.keys(v);\n" +
 		"  }\n" +
-		"  return v;\n" +
+		"  return v as Iterable<T>;\n" +
 		"}\n"
 
 	helperGenText = "function _gen_text(prompt: string, model: string | null, params: any | null): string {\n" +

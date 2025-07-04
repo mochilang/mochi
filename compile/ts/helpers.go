@@ -228,7 +228,16 @@ func tsType(t types.Type) string {
 	case types.UnionType:
 		return sanitizeName(tt.Name)
 	case types.FuncType:
-		return "any"
+		var args []string
+		for i, p := range tt.Params {
+			arg := fmt.Sprintf("p%d: %s", i, tsType(p))
+			if tt.Variadic && i == len(tt.Params)-1 {
+				arg = "..." + arg
+			}
+			args = append(args, arg)
+		}
+		ret := tsType(tt.Return)
+		return fmt.Sprintf("(%s) => %s", strings.Join(args, ", "), ret)
 	case types.VoidType:
 		return "void"
 	case types.AnyType:
