@@ -706,6 +706,27 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		if v.Operator == "+" {
 			return ex
 		}
+		if val, ok := v.Expr.(*sqlparser.SQLVal); ok {
+			if val.Type == sqlparser.IntVal || val.Type == sqlparser.FloatVal {
+				s := exprToMochiRow(v.Expr, rowVar, outer, subs)
+				if strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+					s = s[1 : len(s)-1]
+				}
+				return fmt.Sprintf("(%s%s)", v.Operator, s)
+			}
+		}
+		if p, ok := v.Expr.(*sqlparser.ParenExpr); ok {
+			if _, ok := p.Expr.(*sqlparser.SQLVal); ok {
+				s := exprToMochiRow(p.Expr, rowVar, outer, subs)
+				if strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+					s = s[1 : len(s)-1]
+				}
+				return fmt.Sprintf("(%s%s)", v.Operator, s)
+			}
+		}
+		if strings.HasPrefix(ex, "(") && strings.HasSuffix(ex, ")") {
+			return fmt.Sprintf("%s%s", v.Operator, ex)
+		}
 		return fmt.Sprintf("%s(%s)", v.Operator, ex)
 	case *sqlparser.BinaryExpr:
 		// Simplify repeated addition of the same column expression
@@ -727,6 +748,9 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		r := exprToMochiRow(v.Right, rowVar, outer, subs)
 		if rb, ok := v.Right.(*sqlparser.BinaryExpr); ok && binaryPrec(rb.Operator) <= binaryPrec(v.Operator) {
 			r = "(" + r + ")"
+		}
+		if v.Operator == "/" {
+			l = fmt.Sprintf("(1.0 * %s)", l)
 		}
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
 	case *sqlparser.FuncExpr:
