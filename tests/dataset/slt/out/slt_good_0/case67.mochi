@@ -1,5 +1,5 @@
 /*
-# line: 659
+# line: 645
 */
 
 type tab0Row {
@@ -74,8 +74,9 @@ let tab2 = [
   },
 ]
 
-/* SELECT DISTINCT - 41 + + 3 AS col2 */
-var result = [(-41) + 3]
+/* SELECT - + ( - + col0 ) * + - col1 - + - 64 AS col2 FROM tab2 cor0 */
+var result = from row in tab2
+  select ((-(((-(row.col0))))) * (-(row.col1)) - (-64) as int)
 result = from x in result
   order by str(x)
   select x
@@ -84,5 +85,5 @@ for x in result {
 }
 
 test "case67" {
-  expect result == [(-38)]
+  expect result == [(-2282), (-4864), (-4961)]
 }

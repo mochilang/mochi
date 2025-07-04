@@ -225,7 +225,7 @@ func EvalCase(c Case) ([]string, string, error) {
 	q = reTotal.ReplaceAllString(q, "coalesce(sum($1),0)")
 	q = strings.ReplaceAll(q, "NOT INDEXED", "")
 	if node, err := sqlparser.Parse(q); err == nil {
-		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) > 0 {
+		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) == 1 {
 			if !isAggregateQuery(sel) {
 				if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
 					if name, ok := tbl.Expr.(sqlparser.TableName); ok {

@@ -1,5 +1,5 @@
 /*
-# line: 457
+# line: 438
 */
 
 type tab0Row {
@@ -74,8 +74,9 @@ let tab2 = [
   },
 ]
 
-/* SELECT - 74 * - 3 * - 51 * - - 91 */
-var result = [(-74) * (-3) * (-51) * 91]
+/* SELECT 82 * + 4 AS col1 FROM tab2 AS cor0 */
+var result = from row in tab2
+  select (82 * 4 as int)
 result = from x in result
   order by str(x)
   select x
@@ -84,5 +85,5 @@ for x in result {
 }
 
 test "case46" {
-  expect result == [(-1030302)]
+  expect result == [328, 328, 328]
 }

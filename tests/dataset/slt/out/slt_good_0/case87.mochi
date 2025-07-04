@@ -1,5 +1,5 @@
 /*
-# line: 664
+# line: 827
 */
 
 type tab0Row {
@@ -10,19 +10,19 @@ type tab0Row {
 
 let tab0 = [
   tab0Row {
-    col0: 83,
-    col1: 0,
-    col2: 38,
+    col0: 97,
+    col1: 1,
+    col2: 99,
   },
   tab0Row {
-    col0: 26,
-    col1: 0,
-    col2: 79,
-  },
-  tab0Row {
-    col0: 43,
+    col0: 15,
     col1: 81,
-    col2: 24,
+    col2: 47,
+  },
+  tab0Row {
+    col0: 87,
+    col1: 21,
+    col2: 10,
   },
 ]
 
@@ -34,19 +34,19 @@ type tab1Row {
 
 let tab1 = [
   tab1Row {
-    col0: 22,
-    col1: 6,
-    col2: 8,
+    col0: 51,
+    col1: 14,
+    col2: 96,
   },
   tab1Row {
-    col0: 28,
-    col1: 57,
-    col2: 45,
+    col0: 85,
+    col1: 5,
+    col2: 59,
   },
   tab1Row {
-    col0: 82,
-    col1: 44,
-    col2: 71,
+    col0: 91,
+    col1: 47,
+    col2: 68,
   },
 ]
 
@@ -58,32 +58,41 @@ type tab2Row {
 
 let tab2 = [
   tab2Row {
-    col0: 15,
-    col1: 61,
-    col2: 87,
+    col0: 64,
+    col1: 77,
+    col2: 40,
   },
   tab2Row {
-    col0: 91,
-    col1: 59,
-    col2: 79,
-  },
-  tab2Row {
-    col0: 92,
-    col1: 41,
+    col0: 75,
+    col1: 67,
     col2: 58,
+  },
+  tab2Row {
+    col0: 46,
+    col1: 51,
+    col2: 23,
   },
 ]
 
-/* SELECT 50 FROM tab0 AS cor0 GROUP BY cor0.col0 */
-var result = from row in tab0
-  select (50 as int)
-result = from x in result
+/* SELECT DISTINCT - col0 * 26 AS col0, - col1 AS col0 FROM tab1 AS cor0 */
+var result = from row in tab1
+  select [(-(row.col0)) * 26, (-(row.col1))]
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+flatResult = from x in flatResult
   order by str(x)
   select x
-for x in result {
+for x in flatResult {
   print(x)
 }
-
 test "case87" {
-  expect result == [50, 50, 50]
+  expect flatResult == [(-1326), (-14), (-2210), (-2366), (-47), (-5)]
 }
+
