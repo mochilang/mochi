@@ -692,13 +692,28 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		c.indent++
 	}
 	for _, it := range u.Set.Items {
-		key, _ := identName(it.Key)
-		val, err := c.compileExpr(it.Value)
+		if st.Name != "" {
+			if key, ok := identName(it.Key); ok {
+				val, err := c.compileExpr(it.Value)
+				if err != nil {
+					c.env = origEnv
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s.%s = %s;", item, sanitizeName(key), val))
+				continue
+			}
+		}
+		keyExpr, err := c.compileExpr(it.Key)
 		if err != nil {
 			c.env = origEnv
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s.%s = %s;", item, sanitizeName(key), val))
+		valExpr, err := c.compileExpr(it.Value)
+		if err != nil {
+			c.env = origEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s[%s] = %s;", item, keyExpr, valExpr))
 	}
 	if u.Where != nil {
 		c.indent--
