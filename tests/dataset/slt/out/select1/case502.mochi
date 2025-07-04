@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT a-b, abs(a), a, e, b-c FROM t1 ORDER BY 2,4,3,1,5 */
 var result = from row in t1
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), row.e, row.a, (row.a - row.b), (row.b - row.c)]
-  select [(row.a - row.b), (if row.a < 0 { -(row.a) } else { row.a }), row.a, row.e, (row.b - row.c)]
+  order by [if row.a < 0 then -(row.a) else row.a, row.e, row.a, row.a - row.b, row.b - row.c]
+  select [row.a - row.b, if row.a < 0 then -(row.a) else row.a, row.a, row.e, row.b - row.c]
 var flatResult = []
 for row in result {
   for x in row {

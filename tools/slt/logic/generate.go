@@ -138,6 +138,12 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		if c == name && i < len(declared) {
 			typ := strings.ToLower(declared[i])
 			switch {
+			case strings.Contains(typ, "tinyint(1)"):
+				// MySQL often uses TINYINT(1) to represent booleans.
+				return "bool"
+			case strings.Contains(typ, "serial"):
+				// SERIAL/BIGSERIAL columns behave like integers.
+				return "int"
 			case strings.Contains(typ, "int"):
 				return "int"
 			case strings.Contains(typ, "real"), strings.Contains(typ, "float"), strings.Contains(typ, "double"), strings.Contains(typ, "numeric"), strings.Contains(typ, "decimal"):

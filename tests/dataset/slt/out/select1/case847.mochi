@@ -228,12 +228,12 @@ var result = from row in t1
   order by [row.e, count(from x in t1
   where x.b < row.b
   select x), row.b, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where x.c > row.c && x.d < row.d
   select x)]
   select [row.b, row.e, count(from x in t1
   where x.b < row.b
   select x), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where x.c > row.c && x.d < row.d
   select x)]
 var flatResult = []
 for row in result {

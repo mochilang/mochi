@@ -226,11 +226,11 @@ let t1 = [
 /* SELECT a+b*2+c*3, d-e, c, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE d NOT BETWEEN 110 AND 150 ORDER BY 1,2,4,3 */
 var result = from row in t1
   where (row.d < 110 || row.d > 150)
-  order by [((row.a + (row.b * 2)) + (row.c * 3)), (row.d - row.e), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  order by [row.a + row.b * 2 + row.c * 3, row.d - row.e, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x), row.c]
-  select [((row.a + (row.b * 2)) + (row.c * 3)), (row.d - row.e), row.c, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  select [row.a + row.b * 2 + row.c * 3, row.d - row.e, row.c, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x)]
 var flatResult = []
 for row in result {

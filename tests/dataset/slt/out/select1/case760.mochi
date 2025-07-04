@@ -226,11 +226,11 @@ let t1 = [
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), abs(a) FROM t1 ORDER BY 1,2 */
 var result = from row in t1
   order by [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < 0 { -(row.a) } else { row.a })]
+  where x.c > row.c && x.d < row.d
+  select x), if row.a < 0 then -(row.a) else row.a]
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < 0 { -(row.a) } else { row.a })]
+  where x.c > row.c && x.d < row.d
+  select x), if row.a < 0 then -(row.a) else row.a]
 var flatResult = []
 for row in result {
   for x in row {

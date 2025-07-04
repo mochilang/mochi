@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT b-c, e, c-d, a-b FROM t1 WHERE b>c OR c BETWEEN b-2 AND d+2 OR d NOT BETWEEN 110 AND 150 ORDER BY 4,1,2,3 */
 var result = from row in t1
-  where ((row.b > row.c || (row.c >= (row.b - 2) && row.c <= (row.d + 2))) || (row.d < 110 || row.d > 150))
-  order by [(row.a - row.b), (row.b - row.c), row.e, (row.c - row.d)]
-  select [(row.b - row.c), row.e, (row.c - row.d), (row.a - row.b)]
+  where row.b > row.c || (row.c >= row.b - 2 && row.c <= row.d + 2) || (row.d < 110 || row.d > 150)
+  order by [row.a - row.b, row.b - row.c, row.e, row.c - row.d]
+  select [row.b - row.c, row.e, row.c - row.d, row.a - row.b]
 var flatResult = []
 for row in result {
   for x in row {

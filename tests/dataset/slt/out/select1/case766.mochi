@@ -226,11 +226,11 @@ let t1 = [
 /* SELECT e, a+b*2+c*3, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE a>b ORDER BY 1,2,3 */
 var result = from row in t1
   where row.a > row.b
-  order by [row.e, ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  order by [row.e, row.a + row.b * 2 + row.c * 3, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x)]
-  select [row.e, ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  select [row.e, row.a + row.b * 2 + row.c * 3, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x)]
 var flatResult = []
 for row in result {

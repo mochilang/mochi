@@ -225,16 +225,16 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), d, a, a+b*2+c*3, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE c BETWEEN b-2 AND d+2 ORDER BY 2,5,3,1,4 */
 var result = from row in t1
-  where (row.c >= (row.b - 2) && row.c <= (row.d + 2))
+  where (row.c >= row.b - 2 && row.c <= row.d + 2)
   order by [row.d, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where x.c > row.c && x.d < row.d
   select x), row.a, count(from x in t1
   where x.b < row.b
-  select x), ((row.a + (row.b * 2)) + (row.c * 3))]
+  select x), row.a + row.b * 2 + row.c * 3]
   select [count(from x in t1
   where x.b < row.b
-  select x), row.d, row.a, ((row.a + (row.b * 2)) + (row.c * 3)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  select x), row.d, row.a, row.a + row.b * 2 + row.c * 3, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x)]
 var flatResult = []
 for row in result {

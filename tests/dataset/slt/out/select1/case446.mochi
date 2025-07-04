@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT a, c FROM t1 WHERE d>e OR b>c OR e+d BETWEEN a+b-10 AND c+130 ORDER BY 1,2 */
 var result = from row in t1
-  where ((row.d > row.e || row.b > row.c) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
+  where row.d > row.e || row.b > row.c || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)
   order by [row.a, row.c]
   select [row.a, row.c]
 var flatResult = []

@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT a-b, c, a+b*2, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, e, b-c, d-e FROM t1 ORDER BY 7,2,5,4,1,3,6 */
 var result = from row in t1
-  order by [(row.d - row.e), row.c, row.e, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (row.a - row.b), (row.a + (row.b * 2)), (row.b - row.c)]
-  select [(row.a - row.b), row.c, (row.a + (row.b * 2)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e, (row.b - row.c), (row.d - row.e)]
+  order by [row.d - row.e, row.c, row.e, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.a - row.b, row.a + row.b * 2, row.b - row.c]
+  select [row.a - row.b, row.c, row.a + row.b * 2, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.e, row.b - row.c, row.d - row.e]
 var flatResult = []
 for row in result {
   for x in row {

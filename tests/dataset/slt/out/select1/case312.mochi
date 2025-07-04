@@ -225,11 +225,11 @@ let t1 = [
 
 /* SELECT abs(b-c), (a+b+c+d+e)/5, d, b, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c FROM t1 ORDER BY 4,6,2,1,5,3 */
 var result = from row in t1
-  order by [row.b, row.c, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  order by [row.b, row.c, (row.a + row.b + row.c + row.d + row.e) / 5, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x), row.d]
-  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d, row.b, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  select [if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, (row.a + row.b + row.c + row.d + row.e) / 5, row.d, row.b, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x), row.c]
 var flatResult = []
 for row in result {

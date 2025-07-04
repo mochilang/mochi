@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT a+b*2+c*3+d*4, (a+b+c+d+e)/5, d, e, a+b*2 FROM t1 ORDER BY 2,3,4,1,5 */
 var result = from row in t1
-  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d, row.e, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.a + (row.b * 2))]
-  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d, row.e, (row.a + (row.b * 2))]
+  order by [(row.a + row.b + row.c + row.d + row.e) / 5, row.d, row.e, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.a + row.b * 2]
+  select [row.a + row.b * 2 + row.c * 3 + row.d * 4, (row.a + row.b + row.c + row.d + row.e) / 5, row.d, row.e, row.a + row.b * 2]
 var flatResult = []
 for row in result {
   for x in row {

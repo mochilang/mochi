@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT d-e FROM t1 WHERE a>b AND (c<=d-2 OR c>=d+2) ORDER BY 1 */
 var result = from row in t1
-  where (row.a > row.b && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
-  order by (row.d - row.e)
-  select (row.d - row.e)
+  where row.a > row.b && (row.c <= row.d - 2 || row.c >= row.d + 2)
+  order by row.d - row.e
+  select row.d - row.e
 for x in result {
   print(x)
 }
