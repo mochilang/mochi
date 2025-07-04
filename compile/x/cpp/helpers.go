@@ -199,19 +199,45 @@ func convertFromString(typ, expr string) string {
 
 // identName returns the identifier name if e is a simple variable reference.
 func identName(e *parser.Expr) (string, bool) {
-        if e == nil || len(e.Binary.Right) != 0 {
-                return "", false
-        }
-        u := e.Binary.Left
-        if len(u.Ops) != 0 {
-                return "", false
-        }
-        p := u.Value
-        if len(p.Ops) != 0 {
-                return "", false
-        }
-        if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
-                return p.Target.Selector.Root, true
-        }
-        return "", false
+	if e == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+		return p.Target.Selector.Root, true
+	}
+	return "", false
+}
+
+// simpleStringKey returns the string value of e if it is a simple identifier or
+// string literal expression.
+func simpleStringKey(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if name, ok := identName(e); ok {
+		return name, true
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
 }

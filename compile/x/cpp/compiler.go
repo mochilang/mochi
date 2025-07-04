@@ -654,8 +654,11 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	c.indent++
 	c.writeln(fmt.Sprintf("auto& _item = %s[_i];", list))
 	c.pushScope()
+
+	var elem types.Type
 	if typ, err := c.env.GetVar(u.Target); err == nil {
 		if lt, ok := typ.(types.ListType); ok {
+			elem = lt.Elem
 			if st, ok := lt.Elem.(types.StructType); ok {
 				for _, f := range st.Order {
 					c.writeln(fmt.Sprintf("auto %s = _item.%s;", f, f))
@@ -664,16 +667,32 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 			}
 		}
 	}
+
 	if u.Where != nil {
 		cond := c.compileExpr(u.Where)
 		c.writeln(fmt.Sprintf("if (%s) {", cond))
 		c.indent++
 	}
-	for _, it := range u.Set.Items {
-		key, _ := identName(it.Key)
-		val := c.compileExpr(it.Value)
-		c.writeln(fmt.Sprintf("_item.%s = %s;", key, val))
+
+	if _, ok := elem.(types.StructType); ok {
+		for _, it := range u.Set.Items {
+			key, _ := identName(it.Key)
+			val := c.compileExpr(it.Value)
+			c.writeln(fmt.Sprintf("_item.%s = %s;", key, val))
+		}
+	} else {
+		for _, it := range u.Set.Items {
+			var keyExpr string
+			if k, ok := simpleStringKey(it.Key); ok {
+				keyExpr = fmt.Sprintf("string(\"%s\")", k)
+			} else {
+				keyExpr = c.compileExpr(it.Key)
+			}
+			val := c.compileExpr(it.Value)
+			c.writeln(fmt.Sprintf("_item[%s] = %s;", keyExpr, val))
+		}
 	}
+
 	if u.Where != nil {
 		c.indent--
 		c.writeln("}")
