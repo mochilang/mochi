@@ -651,6 +651,26 @@ func repeatedAddCol(e sqlparser.Expr) (*sqlparser.ColName, int, bool) {
 	return nil, 0, false
 }
 
+func intVal(e sqlparser.Expr) (int64, bool) {
+	switch v := e.(type) {
+	case *sqlparser.SQLVal:
+		if v.Type == sqlparser.IntVal {
+			n, err := strconv.ParseInt(string(v.Val), 10, 64)
+			if err == nil {
+				return n, true
+			}
+		}
+	case *sqlparser.UnaryExpr:
+		if n, ok := intVal(v.Expr); ok {
+			if v.Operator == "-" {
+				return -n, true
+			}
+			return n, true
+		}
+	}
+	return 0, false
+}
+
 // binaryPrec returns a relative precedence for SQL binary operators. Higher
 // numbers bind more tightly. Only the operators used in the SLT queries are
 // handled here.
@@ -724,9 +744,25 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		if lb, ok := v.Left.(*sqlparser.BinaryExpr); ok && binaryPrec(lb.Operator) < binaryPrec(v.Operator) {
 			l = "(" + l + ")"
 		}
+		if _, ok := v.Left.(*sqlparser.UnaryExpr); ok {
+			l = "(" + l + ")"
+		}
+
 		r := exprToMochiRow(v.Right, rowVar, outer, subs)
 		if rb, ok := v.Right.(*sqlparser.BinaryExpr); ok && binaryPrec(rb.Operator) <= binaryPrec(v.Operator) {
 			r = "(" + r + ")"
+		}
+		if _, ok := v.Right.(*sqlparser.UnaryExpr); ok {
+			r = "(" + r + ")"
+		}
+
+		if v.Operator == "/" {
+			if lv, lok := intVal(v.Left); lok {
+				if rv, rok := intVal(v.Right); rok && rv != 0 && lv%rv == 0 {
+					return fmt.Sprintf("%s / %s", l, r)
+				}
+			}
+			return fmt.Sprintf("((1.0 * (%s)) / (1.0 * (%s)))", l, r)
 		}
 		return fmt.Sprintf("%s %s %s", l, v.Operator, r)
 	case *sqlparser.FuncExpr:
