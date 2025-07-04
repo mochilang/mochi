@@ -1010,19 +1010,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				typ = types.BoolType{}
 			case "union_all":
 				expr = fmt.Sprintf("lists:append(%s, %s)", l.expr, r.expr)
-				typ = types.ListType{Elem: types.AnyType{}}
+				typ = resultType(op, l.typ, r.typ)
 			case "union":
 				c.needSetOps = true
 				expr = fmt.Sprintf("mochi_union(%s, %s)", l.expr, r.expr)
-				typ = types.ListType{Elem: types.AnyType{}}
+				typ = resultType(op, l.typ, r.typ)
 			case "except":
 				c.needSetOps = true
 				expr = fmt.Sprintf("mochi_except(%s, %s)", l.expr, r.expr)
-				typ = types.ListType{Elem: types.AnyType{}}
+				typ = resultType(op, l.typ, r.typ)
 			case "intersect":
 				c.needSetOps = true
 				expr = fmt.Sprintf("mochi_intersect(%s, %s)", l.expr, r.expr)
-				typ = types.ListType{Elem: types.AnyType{}}
+				typ = resultType(op, l.typ, r.typ)
 			default:
 				return "", fmt.Errorf("unsupported operator %s", op)
 			}
