@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, c, d-e FROM t1 WHERE (e>a AND e<b) AND d NOT BETWEEN 110 AND 150 ORDER BY 3,2,1 */
 var result = from row in t1
-  where (((row.e > row.a && row.e < row.b)) && (row.d < 110 || row.d > 150))
-  order by [(row.d - row.e), row.c, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
-  select [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.c, (row.d - row.e)]
+  where (row.e > row.a && row.e < row.b) && (row.d < 110 || row.d > 150)
+  order by [row.d - row.e, row.c, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444]
+  select [if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.c, row.d - row.e]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

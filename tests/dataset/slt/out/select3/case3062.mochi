@@ -225,12 +225,12 @@ let t1 = [
 
 /* SELECT b, a+b*2, a+b*2+c*3, e, a+b*2+c*3+d*4, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE c BETWEEN b-2 AND d+2 AND d>e ORDER BY 5,6,3,1,2 */
 var result = from row in t1
-  where ((row.c >= (row.b - 2) && row.c <= (row.d + 2)) && row.d > row.e)
-  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), ((row.a + (row.b * 2)) + (row.c * 3)), row.b, (row.a + (row.b * 2))]
-  select [row.b, (row.a + (row.b * 2)), ((row.a + (row.b * 2)) + (row.c * 3)), row.e, (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where (row.c >= row.b - 2 && row.c <= row.d + 2) && row.d > row.e
+  order by [row.a + row.b * 2 + row.c * 3 + row.d * 4, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.a + row.b * 2 + row.c * 3, row.b, row.a + row.b * 2]
+  select [row.b, row.a + row.b * 2, row.a + row.b * 2 + row.c * 3, row.e, row.a + row.b * 2 + row.c * 3 + row.d * 4, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x)]
 result = from row in result
   order by join(from v in row select str(v), " " )

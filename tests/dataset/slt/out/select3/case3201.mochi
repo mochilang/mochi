@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT e, abs(a) FROM t1 */
 var result = from row in t1
-  select [row.e, (if row.a < 0 { -(row.a) } else { row.a })]
+  select [row.e, if row.a < 0 then -(row.a) else row.a]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

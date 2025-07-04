@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT a FROM t1 WHERE c BETWEEN b-2 AND d+2 AND e+d BETWEEN a+b-10 AND c+130 AND c>d */
 var result = from row in t1
-  where (((row.c >= (row.b - 2) && row.c <= (row.d + 2)) && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) && row.c > row.d)
+  where (row.c >= row.b - 2 && row.c <= row.d + 2) && (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) && row.c > row.d
   select row.a
 result = from x in result
   order by str(x)
