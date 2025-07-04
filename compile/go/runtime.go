@@ -253,6 +253,24 @@ const (
 		"    return m\n" +
 		"}\n"
 
+	helperAvgOrdered = "func _avgOrdered[T constraints.Integer | constraints.Float](s []T) float64 {\n" +
+		"    if len(s) == 0 { return 0 }\n" +
+		"    var sum float64\n" +
+		"    for _, v := range s { sum += float64(v) }\n" +
+		"    return sum / float64(len(s))\n" +
+		"}\n"
+
+	helperSumOrdered = "func _sumOrdered[T constraints.Integer | constraints.Float](s []T) float64 {\n" +
+		"    var sum float64\n" +
+		"    for _, v := range s { sum += float64(v) }\n" +
+		"    return sum\n" +
+		"}\n"
+
+	helperFirstSlice = "func _firstSlice[T any](s []T) T {\n" +
+		"    if len(s) == 0 { var zero T; return zero }\n" +
+		"    return s[0]\n" +
+		"}\n"
+
 	helperFirst = "func _first(v any) any {\n" +
 		"    if g, ok := v.(*data.Group); ok {\n" +
 		"        if len(g.Items) == 0 { return nil }\n" +
@@ -783,6 +801,9 @@ var helperMap = map[string]string{
 	"_max":           helperMax,
 	"_minOrdered":    helperMinOrdered,
 	"_maxOrdered":    helperMaxOrdered,
+	"_avgOrdered":    helperAvgOrdered,
+	"_sumOrdered":    helperSumOrdered,
+	"_firstSlice":    helperFirstSlice,
 	"_first":         helperFirst,
 	"_input":         helperInput,
 	"_genText":       helperGenText,
@@ -834,7 +855,7 @@ func (c *Compiler) use(name string) {
 		c.imports["reflect"] = true
 		c.helpers["_equal"] = true
 	}
-	if name == "_minOrdered" || name == "_maxOrdered" {
+	if name == "_minOrdered" || name == "_maxOrdered" || name == "_avgOrdered" || name == "_sumOrdered" {
 		c.imports["golang.org/x/exp/constraints"] = true
 	}
 }

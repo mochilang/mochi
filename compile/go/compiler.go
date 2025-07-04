@@ -3589,10 +3589,30 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_exists")
 		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":
+		if len(call.Args) == 1 {
+			at := c.inferExprType(call.Args[0])
+			if lt, ok := at.(types.ListType); ok {
+				if isInt(lt.Elem) || isInt64(lt.Elem) || isFloat(lt.Elem) {
+					c.use("_avgOrdered")
+					elemGo := goType(lt.Elem)
+					return fmt.Sprintf("_avgOrdered[%s](%s)", elemGo, args[0]), nil
+				}
+			}
+		}
 		c.imports["mochi/runtime/data"] = true
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
 	case "sum":
+		if len(call.Args) == 1 {
+			at := c.inferExprType(call.Args[0])
+			if lt, ok := at.(types.ListType); ok {
+				if isInt(lt.Elem) || isInt64(lt.Elem) || isFloat(lt.Elem) {
+					c.use("_sumOrdered")
+					elemGo := goType(lt.Elem)
+					return fmt.Sprintf("_sumOrdered[%s](%s)", elemGo, args[0]), nil
+				}
+			}
+		}
 		c.imports["mochi/runtime/data"] = true
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", argStr), nil
@@ -3644,16 +3664,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_reduce")
 		return fmt.Sprintf("_reduce[%s](%s, %s, %s)", elemGo, arg0, args[1], args[2]), nil
 	case "first":
-		c.imports["mochi/runtime/data"] = true
-		c.imports["reflect"] = true
-		c.use("_first")
 		if len(call.Args) == 1 {
 			at := c.inferExprType(call.Args[0])
-			if lt, ok := at.(types.ListType); ok && !isAny(lt.Elem) {
+			if lt, ok := at.(types.ListType); ok {
+				if !isAny(lt.Elem) {
+					c.use("_firstSlice")
+					elemGo := goType(lt.Elem)
+					return fmt.Sprintf("_firstSlice[%s](%s)", elemGo, args[0]), nil
+				}
 				c.use("_toAnySlice")
 				argStr = fmt.Sprintf("_toAnySlice(%s)", args[0])
 			}
 		}
+		c.imports["mochi/runtime/data"] = true
+		c.imports["reflect"] = true
+		c.use("_first")
 		return fmt.Sprintf("_first(%s)", argStr), nil
 	case "substr":
 		if len(call.Args) != 3 {
