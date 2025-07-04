@@ -1,5 +1,5 @@
 /*
-# line: 104
+# line: 110
 skipif mysql # not compatible
 */
 
@@ -75,8 +75,9 @@ let tab2 = [
   },
 ]
 
-/* SELECT 81 / + + 31 */
-var result = [(1.0 * (81)) / 31]
+/* SELECT DISTINCT - col2 / - 46 AS col1 FROM tab1 AS cor0 */
+var result = from row in tab1
+  select (1.0 * ((-(row.col2)))) / (-46)
 result = from x in result
   order by str(x)
   select x
@@ -85,5 +86,5 @@ for x in result {
 }
 
 test "case8" {
-  expect result == [2.6129032258064515]
+  expect result == [1.2826086956521738, 1.4782608695652173, 2.0869565217391304]
 }

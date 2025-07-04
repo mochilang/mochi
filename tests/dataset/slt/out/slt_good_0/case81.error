@@ -1,7 +1,0 @@
-expect condition failed at :88: expect result == [(-101), (-20)]
-call graph: main
-stack trace:
-  main at :88
-    expect result == [(-101), (-20)]
-
-got: [-101, -20, -20]
