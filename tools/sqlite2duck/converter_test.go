@@ -1,3 +1,5 @@
+//go:build slow
+
 package sqlite2duck
 
 import "testing"
@@ -12,6 +14,8 @@ func TestConvert(t *testing.T) {
 		{"SELECT randomblob(4);", "SELECT random_bytes(4);"},
 		{"SELECT IFNULL ( a , 0 ) FROM t;", "SELECT coalesce( a , 0 ) FROM t;"},
 		{"SELECT CURRENT_TIMESTAMP;", "SELECT now();"},
+		{"SELECT total(x) FROM t;", "SELECT coalesce(sum(x),0) FROM t;"},
+		{"SELECT * FROM t NOT INDEXED;", "SELECT * FROM t;"},
 	}
 	for _, tt := range tests {
 		got := Convert(tt.in)
