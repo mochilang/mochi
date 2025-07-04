@@ -665,6 +665,19 @@ func binaryPrec(op string) int {
 	}
 }
 
+// numericLiteral reports whether s is a string representation of an integer
+// literal, optionally wrapped in parentheses and with a leading sign.
+func numericLiteral(s string) bool {
+	if strings.HasPrefix(s, "(") && strings.HasSuffix(s, ")") {
+		s = strings.TrimPrefix(s, "(")
+		s = strings.TrimSuffix(s, ")")
+	}
+	s = strings.TrimPrefix(s, "+")
+	s = strings.TrimPrefix(s, "-")
+	_, err := strconv.Atoi(s)
+	return err == nil
+}
+
 func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]string) string {
 	switch v := e.(type) {
 	case *sqlparser.SQLVal:
@@ -706,6 +719,9 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		if v.Operator == "+" {
 			return ex
 		}
+		if strings.HasPrefix(ex, "(") && strings.HasSuffix(ex, ")") {
+			return fmt.Sprintf("%s%s", v.Operator, ex)
+		}
 		return fmt.Sprintf("%s(%s)", v.Operator, ex)
 	case *sqlparser.BinaryExpr:
 		// Simplify repeated addition of the same column expression
@@ -723,9 +739,13 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		l := exprToMochiRow(v.Left, rowVar, outer, subs)
 		if lb, ok := v.Left.(*sqlparser.BinaryExpr); ok && binaryPrec(lb.Operator) < binaryPrec(v.Operator) {
 			l = "(" + l + ")"
+		} else if _, ok := v.Left.(*sqlparser.UnaryExpr); ok {
+			l = "(" + l + ")"
 		}
 		r := exprToMochiRow(v.Right, rowVar, outer, subs)
 		if rb, ok := v.Right.(*sqlparser.BinaryExpr); ok && binaryPrec(rb.Operator) <= binaryPrec(v.Operator) {
+			r = "(" + r + ")"
+		} else if _, ok := v.Right.(*sqlparser.UnaryExpr); ok {
 			r = "(" + r + ")"
 		}
 		if v.Operator == sqlparser.DivStr {
@@ -740,9 +760,29 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 			return fmt.Sprintf("if %s < 0 then -(%s) else %s", ex, ex, ex)
 		}
 		if name == "coalesce" && len(v.Exprs) > 0 {
-			out := exprToMochiRow(v.Exprs[len(v.Exprs)-1].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
-			for i := len(v.Exprs) - 2; i >= 0; i-- {
-				arg := exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
+			parts := make([]string, len(v.Exprs))
+			needFloat := false
+			for i := range v.Exprs {
+				parts[i] = exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
+				if strings.Contains(parts[i], ".") {
+					needFloat = true
+				}
+			}
+			if needFloat {
+				for i, p := range parts {
+					if numericLiteral(p) && !strings.Contains(p, ".") {
+						if strings.HasPrefix(p, "(") && strings.HasSuffix(p, ")") {
+							inner := strings.TrimSuffix(strings.TrimPrefix(p, "("), ")")
+							parts[i] = "(" + inner + ".0)"
+						} else {
+							parts[i] = p + ".0"
+						}
+					}
+				}
+			}
+			out := parts[len(parts)-1]
+			for i := len(parts) - 2; i >= 0; i-- {
+				arg := parts[i]
 				out = fmt.Sprintf("if %s != null then %s else %s", arg, arg, out)
 			}
 			return "(" + out + ")"

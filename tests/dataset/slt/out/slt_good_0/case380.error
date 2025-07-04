@@ -1,1 +1,5 @@
-parse error: 79:20: unexpected token "-" (expected PostfixExpr)
+error[T013]: incompatible types in comparison
+  --> :88:17
+
+help:
+  Use comparable types like numbers or strings with `<`, `>`.

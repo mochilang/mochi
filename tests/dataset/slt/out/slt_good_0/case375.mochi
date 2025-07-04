@@ -2,30 +2,6 @@
 # line: 3468
 */
 
-type tab2Row {
-  col0: int
-  col1: int
-  col2: int
-}
-
-let tab2 = [
-  tab2Row {
-    col0: 64,
-    col1: 77,
-    col2: 40,
-  },
-  tab2Row {
-    col0: 75,
-    col1: 67,
-    col2: 58,
-  },
-  tab2Row {
-    col0: 46,
-    col1: 51,
-    col2: 23,
-  },
-]
-
 type tab0Row {
   col0: int
   col1: int
@@ -71,6 +47,30 @@ let tab1 = [
     col0: 91,
     col1: 47,
     col2: 68,
+  },
+]
+
+type tab2Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab2 = [
+  tab2Row {
+    col0: 64,
+    col1: 77,
+    col2: 40,
+  },
+  tab2Row {
+    col0: 75,
+    col1: 67,
+    col2: 58,
+  },
+  tab2Row {
+    col0: 46,
+    col1: 51,
+    col2: 23,
   },
 ]
 

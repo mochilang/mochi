@@ -76,7 +76,7 @@ let tab2 = [
 ]
 
 /* SELECT DISTINCT 96 + + - COALESCE ( ( + 22 ), - 9 / + 33 ) */
-var result = [96 + -((if (22) != null then (22) else (1.0 * ((-9))) / 33))]
+var result = [96 + (-(if (22.0) != null then (22.0) else (1.0 * ((-9))) / 33))]
 result = from x in result
   order by str(x)
   select x
