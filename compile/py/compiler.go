@@ -749,28 +749,96 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	case "input":
 		return "input()", nil
 	case "count":
+               if len(args) == 1 {
+                       t := c.inferExprType(call.Args[0])
+                       switch t.(type) {
+                       case types.ListType:
+                               return fmt.Sprintf("len(%s)", args[0]), nil
+                       case types.GroupType:
+                               return fmt.Sprintf("len(%s.Items)", args[0]), nil
+                       case types.MapType, types.StringType:
+                               return fmt.Sprintf("len(%s)", args[0]), nil
+                       }
+		}
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "exists":
+               if len(args) == 1 {
+                       t := c.inferExprType(call.Args[0])
+                       switch t.(type) {
+                       case types.ListType:
+                               return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
+                       case types.GroupType:
+                               return fmt.Sprintf("(len(%s.Items) > 0)", args[0]), nil
+                       case types.MapType, types.StringType:
+                               return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
+                       }
+		}
 		c.use("_exists")
 		return fmt.Sprintf("_exists(%s)", argStr), nil
 	case "avg":
+		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch tt := t.(type) {
+			case types.ListType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("(sum(%s)/len(%s) if %s else 0)", args[0], args[0], args[0]), nil
+				}
+			case types.GroupType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("(sum(%s.Items)/len(%s.Items) if %s.Items else 0)", args[0], args[0], args[0]), nil
+				}
+			}
+		}
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", argStr), nil
 	case "sum":
 		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch tt := t.(type) {
+			case types.ListType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("sum(%s)", args[0]), nil
+				}
+			case types.GroupType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("sum(%s.Items)", args[0]), nil
+				}
+			}
 			c.use("_sum")
 			return fmt.Sprintf("_sum(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("sum(%s)", argStr), nil
 	case "min":
 		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch tt := t.(type) {
+			case types.ListType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("(min([it for it in %s if it is not None]) if %s else 0)", args[0], args[0]), nil
+				}
+			case types.GroupType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("(min([it for it in %s.Items if it is not None]) if %s.Items else 0)", args[0], args[0]), nil
+				}
+			}
 			c.use("_min")
 			return fmt.Sprintf("_min(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("min(%s)", argStr), nil
 	case "max":
 		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			switch tt := t.(type) {
+			case types.ListType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("(max([it for it in %s if it is not None]) if %s else 0)", args[0], args[0]), nil
+				}
+			case types.GroupType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("(max([it for it in %s.Items if it is not None]) if %s.Items else 0)", args[0], args[0]), nil
+				}
+			}
 			c.use("_max")
 			return fmt.Sprintf("_max(%s)", args[0]), nil
 		}
@@ -789,15 +857,33 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) == 0 {
 			return "[]", nil
 		}
+		allLists := true
+		for _, a := range call.Args {
+			if _, ok := c.inferExprType(a).(types.ListType); !ok {
+				allLists = false
+				break
+			}
+		}
 		expr := args[0]
 		for _, a := range args[1:] {
-			c.use("_union_all")
-			expr = fmt.Sprintf("_union_all(%s, %s)", expr, a)
+			if allLists {
+				expr = fmt.Sprintf("%s + %s", expr, a)
+			} else {
+				c.use("_union_all")
+				expr = fmt.Sprintf("_union_all(%s, %s)", expr, a)
+			}
 		}
 		return expr, nil
 	case "substr", "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substr expects 3 args")
+		}
+		t := c.inferExprType(call.Args[0])
+		if _, ok := t.(types.StringType); ok {
+			return fmt.Sprintf("%s[%s:%s]", args[0], args[1], args[2]), nil
+		}
+		if _, ok := t.(types.ListType); ok {
+			return fmt.Sprintf("%s[%s:%s]", args[0], args[1], args[2]), nil
 		}
 		c.use("_slice")
 		return fmt.Sprintf("_slice(%s, %s, %s)", args[0], args[1], args[2]), nil
@@ -805,11 +891,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("reverse expects 1 arg")
 		}
+		t := c.inferExprType(call.Args[0])
+		switch t.(type) {
+		case types.ListType:
+			return fmt.Sprintf("list(reversed(%s))", args[0]), nil
+		case types.StringType:
+			return fmt.Sprintf("%s[::-1]", args[0]), nil
+		}
 		c.use("_reverse")
 		return fmt.Sprintf("_reverse(%s)", args[0]), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
+		}
+		if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+			return fmt.Sprintf("%s + [%s]", args[0], args[1]), nil
 		}
 		c.use("_append")
 		return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
@@ -827,11 +923,23 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 2 {
 			return "", fmt.Errorf("contains expects 2 args")
 		}
+		t := c.inferExprType(call.Args[0])
+		switch t.(type) {
+		case types.ListType:
+			return fmt.Sprintf("(%s in %s)", args[1], args[0]), nil
+		case types.StringType:
+			return fmt.Sprintf("(str(%s) in %s)", args[1], args[0]), nil
+		case types.MapType:
+			return fmt.Sprintf("(str(%s) in %s)", args[1], args[0]), nil
+		}
 		c.use("_contains")
 		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
+		}
+		if _, ok := c.inferExprType(call.Args[0]).(types.MapType); ok {
+			return fmt.Sprintf("list(%s.values())", args[0]), nil
 		}
 		c.use("_values")
 		return fmt.Sprintf("_values(%s)", args[0]), nil
