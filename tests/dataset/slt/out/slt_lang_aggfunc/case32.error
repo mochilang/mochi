@@ -1,0 +1,5 @@
+error[T013]: incompatible types in comparison
+  --> :37:52
+
+help:
+  Use comparable types like numbers or strings with `<`, `>`.

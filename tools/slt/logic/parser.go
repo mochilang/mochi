@@ -257,12 +257,6 @@ func evalExpr(expr sqlparser.Expr, row map[string]any, table *Table) any {
 		switch v.Type {
 		case sqlparser.StrVal:
 			s := strings.TrimSpace(strings.ToLower(string(v.Val)))
-			if s == "true" {
-				return true
-			}
-			if s == "false" {
-				return false
-			}
 			if s == "null" || s == "nil" {
 				return nil
 			}

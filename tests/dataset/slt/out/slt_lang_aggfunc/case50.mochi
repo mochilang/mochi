@@ -1,0 +1,42 @@
+/*
+# line: 375
+# EVIDENCE-OF: R-24943-34514 The sum() and total() aggregate functions
+# return the sum of all non-NULL values in the group.
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+]
+
+/* SELECT sum(x) FROM t1 */
+let result = sum(from row in t1
+  select row.x)
+print(result)
+
+test "case50" {
+  expect result == 5
+}

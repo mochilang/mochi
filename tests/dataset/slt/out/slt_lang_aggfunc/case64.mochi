@@ -1,0 +1,62 @@
+/*
+# line: 480
+# TBD-EVIDENCE-OF: R-08904-24719 Sum() will throw an "integer overflow"
+# exception if all inputs are integers or NULL and an integer overflow
+# occurs at any point during the computation.
+INSERT INTO t1 VALUES(1<<63,'true');
+INSERT INTO t1 VALUES(1<<63,'true');
+INSERT INTO t1 VALUES(-1,'true');
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 4,
+    y: "true" + "",
+  },
+  t1Row {
+    x: null,
+    y: "true" + "",
+  },
+  t1Row {
+    x: null,
+    y: "true" + "",
+  },
+  t1Row {
+    x: -1,
+    y: "true" + "",
+  },
+]
+
+/* SELECT sum(x) FROM t1 */
+let result = sum(from row in t1
+  select row.x)
+print(result)
+
+test "case64" {
+  expect result == 8
+}

@@ -1,0 +1,43 @@
+/*
+# line: 361
+# EVIDENCE-OF: R-10396-30188 Aggregate min() returns NULL if and only if
+# there are no non-NULL values in the group.
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+]
+
+/* SELECT min(x) FROM t1 WHERE y='null' */
+let result = min(from row in t1
+  where (row.y != null && "null" != null && row.y == "null")
+  select row.x)
+print(result)
+
+test "case48" {
+  expect result == null
+}

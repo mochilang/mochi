@@ -1207,17 +1207,33 @@ func Generate(c Case) string {
 		sb.WriteString("\n")
 	}
 
-	// Handle SELECT count(*)
-	if len(sel.SelectExprs) == 1 {
+	// Handle simple aggregate functions without GROUP BY
+	if len(sel.SelectExprs) == 1 && sel.GroupBy == nil {
 		if ae, ok := sel.SelectExprs[0].(*sqlparser.AliasedExpr); ok {
-			if fn, ok := ae.Expr.(*sqlparser.FuncExpr); ok && fn.Name.EqualString("count") && len(fn.Exprs) == 1 {
+			if fn, ok := ae.Expr.(*sqlparser.FuncExpr); ok && len(fn.Exprs) == 1 {
+				var param string
 				if _, ok := fn.Exprs[0].(*sqlparser.StarExpr); ok {
-					cond := condToMochi(sel.Where, subs)
-					sb.WriteString("let result = count(from row in " + tblNameStr)
+					param = "row"
+				} else if a, ok := fn.Exprs[0].(*sqlparser.AliasedExpr); ok {
+					param = exprToMochiRow(a.Expr, "row", "", subs)
+				} else if ex, ok := fn.Exprs[0].(sqlparser.Expr); ok {
+					param = exprToMochiRow(ex, "row", "", subs)
+				} else {
+					return ""
+				}
+				cond := condToMochi(sel.Where, subs)
+				name := strings.ToLower(fn.Name.String())
+				aggFuncs := map[string]string{"count": "count", "sum": "sum", "avg": "avg", "min": "min", "max": "max"}
+				if op, ok := aggFuncs[name]; ok {
+					sb.WriteString("let result = " + op + "(from row in " + tblNameStr)
 					if cond != "" {
 						sb.WriteString("\n  where " + cond)
 					}
-					sb.WriteString("\n  select row)\n")
+					sb.WriteString("\n  select ")
+					if fn.Distinct {
+						sb.WriteString("distinct ")
+					}
+					sb.WriteString(param + ")\n")
 					sb.WriteString("print(result)\n\n")
 					if len(c.Expect) > 0 {
 						sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))

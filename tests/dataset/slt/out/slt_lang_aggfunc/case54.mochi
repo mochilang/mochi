@@ -1,0 +1,43 @@
+/*
+# line: 399
+# EVIDENCE-OF: R-44223-43966 If there are no non-NULL input rows then
+# sum() returns NULL but total() returns 0.
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+]
+
+/* SELECT sum(x) FROM t1 WHERE y='null' */
+let result = sum(from row in t1
+  where (row.y != null && "null" != null && row.y == "null")
+  select row.x)
+print(result)
+
+test "case54" {
+  expect result == null
+}

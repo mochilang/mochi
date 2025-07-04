@@ -1,0 +1,43 @@
+/*
+# line: 173
+# EVIDENCE-OF: R-17177-10067 The result of avg() is always a floating
+# point value whenever there is at least one non-NULL input even if all
+# inputs are integers.
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+]
+
+/* SELECT avg(x) FROM t1 */
+let result = avg(from row in t1
+  select row.x)
+print(result)
+
+test "case24" {
+  expect result == 1.25
+}

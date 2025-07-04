@@ -1,0 +1,56 @@
+/*
+# line: 484
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 4,
+    y: "true" + "",
+  },
+  t1Row {
+    x: null,
+    y: "true" + "",
+  },
+  t1Row {
+    x: null,
+    y: "true" + "",
+  },
+  t1Row {
+    x: -1,
+    y: "true" + "",
+  },
+]
+
+/* SELECT sum(DISTINCT x) FROM t1 */
+let result = sum(from row in t1
+  select distinct row.x)
+print(result)
+
+test "case65" {
+  expect result == 6
+}

@@ -1,0 +1,42 @@
+/*
+# line: 280
+# EVIDENCE-OF: R-52585-35928 The max() aggregate function returns the
+# maximum value of all values in the group.
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+]
+
+/* SELECT max(x) FROM t1 */
+let result = max(from row in t1
+  select row.x)
+print(result)
+
+test "case38" {
+  expect result == 2
+}

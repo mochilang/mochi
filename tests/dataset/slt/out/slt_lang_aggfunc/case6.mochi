@@ -1,0 +1,32 @@
+/*
+# line: 53
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+]
+
+/* SELECT max(DISTINCT x) FROM t1 */
+let result = max(from row in t1
+  select distinct row.x)
+print(result)
+
+test "case6" {
+  expect result == 1
+}

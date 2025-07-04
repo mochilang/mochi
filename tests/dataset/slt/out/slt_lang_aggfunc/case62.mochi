@@ -1,0 +1,48 @@
+/*
+# line: 455
+# EVIDENCE-OF: R-33611-59266 If any input to sum() is neither an integer
+# nor a NULL, then sum() returns a floating point value which is an
+# approximation of the mathematical sum.
+INSERT INTO t1 VALUES(4.0,'true')
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: null,
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 4,
+    y: "true" + "",
+  },
+]
+
+/* SELECT sum(x) FROM t1 */
+let result = sum(from row in t1
+  select row.x)
+print(result)
+
+test "case62" {
+  expect result == 9
+}

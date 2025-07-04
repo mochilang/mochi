@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -108,6 +109,40 @@ func RunMochi(src string, timeout time.Duration) (string, error) {
 	return out, nil
 }
 
+// rewriteAggregates converts SQL functions not supported by DuckDB into
+// equivalent expressions.
+func rewriteAggregates(q string) string {
+	// total(x) -> coalesce(sum(x),0)
+	reTotal := regexp.MustCompile(`(?i)total\s*\(([^)]*)\)`) // capture args
+	q = reTotal.ReplaceAllString(q, "coalesce(sum($1),0)")
+
+	// group_concat(x) -> string_agg(x, ',')
+	reGC := regexp.MustCompile(`(?i)group_concat\s*\((distinct\s+)?([^,)]*)(?:,\s*([^)]*))?\)`)
+	q = reGC.ReplaceAllStringFunc(q, func(s string) string {
+		m := reGC.FindStringSubmatch(s)
+		if len(m) == 0 {
+			return s
+		}
+		distinct := m[1]
+		expr := strings.TrimSpace(m[2])
+		sep := "','"
+		if m[3] != "" {
+			sep = strings.TrimSpace(m[3])
+		}
+		if distinct != "" {
+			return "string_agg(DISTINCT " + expr + ", " + sep + ")"
+		}
+		return "string_agg(" + expr + ", " + sep + ")"
+	})
+
+	reNI := regexp.MustCompile(`(?i)\s+NOT\s+INDEXED`)
+	q = reNI.ReplaceAllString(q, "")
+	return q
+}
+
+// TestRewrite is exposed for debugging purposes.
+func TestRewrite(q string) string { return rewriteAggregates(q) }
+
 // EvalCase executes the SQL query of c using DuckDB and returns the
 // flattened result values as strings. Updates stored in c.Updates are
 // applied before running the query.
@@ -165,15 +200,34 @@ func EvalCase(c Case) ([]string, string, error) {
 	q := c.Query
 	if node, err := sqlparser.Parse(q); err == nil {
 		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) > 0 {
-			if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
-				if name, ok := tbl.Expr.(sqlparser.TableName); ok {
-					if !strings.EqualFold(name.Name.String(), "dual") {
-						q = strings.TrimSpace(q) + " ORDER BY rowid"
+			isAgg := len(sel.GroupBy) > 0
+			if !isAgg {
+				for _, se := range sel.SelectExprs {
+					ae, ok := se.(*sqlparser.AliasedExpr)
+					if !ok {
+						continue
+					}
+					if fn, ok := ae.Expr.(*sqlparser.FuncExpr); ok {
+						name := strings.ToLower(fn.Name.String())
+						switch name {
+						case "count", "sum", "avg", "min", "max", "total", "group_concat":
+							isAgg = true
+						}
+					}
+				}
+			}
+			if !isAgg {
+				if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
+					if name, ok := tbl.Expr.(sqlparser.TableName); ok {
+						if !strings.EqualFold(name.Name.String(), "dual") {
+							q = strings.TrimSpace(q) + " ORDER BY rowid"
+						}
 					}
 				}
 			}
 		}
 	}
+	q = rewriteAggregates(q)
 	rows, err := db.Query(q)
 	if err != nil {
 		return nil, "", err
@@ -299,9 +353,11 @@ func GenerateFiles(files []string, outDir string, run bool, start, end, max int)
 			}
 			exp, _, err := EvalCase(c)
 			if err != nil {
-				return err
+				fmt.Printf("eval case %s failed: %v\n", c.Name, err)
+				c.Expect = nil
+			} else {
+				c.Expect = exp
 			}
-			c.Expect = exp
 			c.Hash = ""
 			code := Generate(c)
 			if code == "" {
