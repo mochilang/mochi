@@ -658,8 +658,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	if st.Name != "" {
 		child := types.NewEnv(c.env)
 		for _, f := range st.Order {
-			c.use("_get")
-			c.writeln(fmt.Sprintf("%s = _get(%s, %q)", sanitizeName(f), itemVar, sanitizeName(f)))
+			c.writeln(fmt.Sprintf("%s = %s.%s", sanitizeName(f), itemVar, sanitizeName(f)))
 			child.SetVar(f, st.Fields[f], true)
 		}
 		orig = c.env
