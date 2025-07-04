@@ -226,9 +226,9 @@ let t1 = [
 /* SELECT abs(a), (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), d, (a+b+c+d+e)/5, abs(b-c) FROM t1 WHERE c>d */
 var result = from row in t1
   where row.c > row.d
-  select [(if row.a < 0 { -(row.a) } else { row.a }), count(from x in t1
+  select [if row.a < 0 then -(row.a) else row.a, count(from x in t1
   where x.b < row.b
-  select x), row.d, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+  select x), row.d, (row.a + row.b + row.c + row.d + row.e) / 5, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

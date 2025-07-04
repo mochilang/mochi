@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT b-c, a+b*2+c*3+d*4+e*5, a+b*2 FROM t1 WHERE (e>a AND e<b) AND (c<=d-2 OR c>=d+2) AND b>c */
 var result = from row in t1
-  where ((((row.e > row.a && row.e < row.b)) && ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))) && row.b > row.c)
-  select [(row.b - row.c), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.a + (row.b * 2))]
+  where (row.e > row.a && row.e < row.b) && (row.c <= row.d - 2 || row.c >= row.d + 2) && row.b > row.c
+  select [row.b - row.c, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

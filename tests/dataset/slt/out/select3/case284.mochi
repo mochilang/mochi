@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT c-d, b-c FROM t1 WHERE d>e OR a>b OR c>d ORDER BY 1,2 */
 var result = from row in t1
-  where ((row.d > row.e || row.a > row.b) || row.c > row.d)
-  order by [(row.c - row.d), (row.b - row.c)]
-  select [(row.c - row.d), (row.b - row.c)]
+  where row.d > row.e || row.a > row.b || row.c > row.d
+  order by [row.c - row.d, row.b - row.c]
+  select [row.c - row.d, row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

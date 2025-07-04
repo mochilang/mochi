@@ -225,11 +225,11 @@ let t1 = [
 
 /* SELECT b-c, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a, a+b*2+c*3+d*4+e*5, c FROM t1 WHERE b>c AND (e>c OR e<d) AND c BETWEEN b-2 AND d+2 ORDER BY 1,3 */
 var result = from row in t1
-  where ((row.b > row.c && ((row.e > row.c || row.e < row.d))) && (row.c >= (row.b - 2) && row.c <= (row.d + 2)))
-  order by [(row.b - row.c), row.a]
-  select [(row.b - row.c), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), row.a, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), row.c]
+  where row.b > row.c && (row.e > row.c || row.e < row.d) && (row.c >= row.b - 2 && row.c <= row.d + 2)
+  order by [row.b - row.c, row.a]
+  select [row.b - row.c, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.a, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
