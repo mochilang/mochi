@@ -76,7 +76,7 @@ let tab2 = [
 ]
 
 /* SELECT DISTINCT - 44 / - 16 + + - 23 * - + 82 AS col0 */
-var result = [(-44) / (-16) + (-23) * (-82)]
+var result = [(1.0 * ((-44))) / (-16) + (-23) * (-82)]
 result = from x in result
   order by str(x)
   select x
