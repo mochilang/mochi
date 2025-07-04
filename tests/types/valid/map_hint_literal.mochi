@@ -1,0 +1,2 @@
+fun foo(m: map<string, int>) {}
+foo({})
