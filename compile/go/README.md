@@ -25,6 +25,7 @@ cover functionality such as:
 - HTTP requests using `_fetch`
 - Data loading/saving with `_load` and `_save`
 - Generic casting and conversion utilities (`_cast`, `_toAnyMap`, `_toAnySlice`)
+- List reduction with `_reduce`
 - Dataset querying through `_query`
 
 The map of available helpers is defined near the end of `runtime.go`:
@@ -33,7 +34,12 @@ The map of available helpers is defined near the end of `runtime.go`:
 var helperMap = map[string]string{
     "_indexString":   helperIndexString,
     "_count":         helperCount,
+    "_exists":        helperExists,
     "_avg":           helperAvg,
+    "_sum":           helperSum,
+    "_min":           helperMin,
+    "_max":           helperMax,
+    "_first":         helperFirst,
     "_input":         helperInput,
     "_genText":       helperGenText,
     "_genEmbed":      helperGenEmbed,
@@ -42,16 +48,28 @@ var helperMap = map[string]string{
     "_toAnyMap":      helperToAnyMap,
     "_toAnySlice":    helperToAnySlice,
     "_convSlice":     helperConvSlice,
+    "_contains":      helperContains,
+    "_union_all":     helperUnionAll,
+    "_union":         helperUnion,
+    "_concat":        helperConcat,
+    "_reduce":        helperReduce,
+    "_reverseSlice":  helperReverseSlice,
+    "_reverseString": helperReverseString,
+    "_lower":         helperLower,
+    "_upper":         helperUpper,
+    "_except":        helperExcept,
+    "_intersect":     helperIntersect,
     "_cast":          helperCast,
     "_convertMapAny": helperConvertMapAny,
     "_equal":         helperEqual,
     "_query":         helperQuery,
+    "_paginate":      helperPaginate,
     "_load":          helperLoad,
     "_save":          helperSave,
     "_toMapSlice":    helperToMapSlice,
 }
 ```
-【F:compile/go/runtime.go†L417-L435】
+【F:compile/go/runtime.go†L761-L798】
 
 ## Supported Features
 
