@@ -1,4 +1,23 @@
 # 📦 CHANGELOG.md
+## [0.10.15] – 2025-07-04T22:41:30+07:00
+
+### Added
+
+* Map update statements across Go, C, C#, C++ and TypeScript
+* `reduce` builtin for Go and C backends with optimized count and exists
+* SQL Logic Test group-by, aggregate and expression cases
+* sqlite2duck conversion tool and tests
+
+### Changed
+
+* Typed helpers and improved type inference across Go, C++, Python and Zig
+* Inline helpers and case builtin optimizations
+* Deterministic table order for SQL Logic Test generation
+
+### Fixed
+
+* Numeric operation errors in the virtual machine
+
 
 ## [0.10.14] – 2025-07-04T10:49:16+07:00
 
