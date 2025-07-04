@@ -1,0 +1,9 @@
+import "core/doom/doom.mochi" as doom
+var p = doom.Player{ x:1.0, y:1.0, angle:0.0 }
+let map = [
+  "###",
+  "#.#",
+  "###",
+]
+p = doom.move(p, map, 1.0)
+p = doom.rotate(p, doom.PI)
