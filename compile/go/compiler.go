@@ -1181,6 +1181,22 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 			c.writeln(fmt.Sprintf("%s := %s.%s", fieldVar, itemVar, exportName(sanitizeName(f))))
 			child.SetVar(f, st.Fields[f], true)
 		}
+	} else if mt, ok := elemType.(types.MapType); ok && equalTypes(mt.Key, types.StringType{}) {
+		used := map[string]struct{}{}
+		if u.Where != nil {
+			collectIdents(u.Where, used)
+		}
+		for _, it := range u.Set.Items {
+			if key, ok2 := identName(it.Key); ok2 {
+				used[key] = struct{}{}
+			}
+			collectIdents(it.Value, used)
+		}
+		for f := range used {
+			fieldVar := sanitizeName(f)
+			c.writeln(fmt.Sprintf("%s := %s[%q]", fieldVar, itemVar, f))
+			child.SetVar(f, mt.Value, true)
+		}
 	}
 
 	c.env = child
