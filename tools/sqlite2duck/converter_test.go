@@ -17,6 +17,8 @@ func TestConvert(t *testing.T) {
 		{"SELECT total(x) FROM t;", "SELECT coalesce(sum(x),0) FROM t;"},
 		{"SELECT * FROM t NOT INDEXED;", "SELECT * FROM t;"},
 		{"SELECT char_length(name) FROM t;", "SELECT length(name) FROM t;"},
+		{"SELECT printf('%d', a) FROM t;", "SELECT format('%d', a) FROM t;"},
+		{"SELECT instr(a, b) FROM t;", "SELECT strpos(a, b) FROM t;"},
 		{"SELECT CURRENT_DATE;", "SELECT current_date;"},
 		{"SELECT CURRENT_TIME;", "SELECT current_time;"},
 	}
