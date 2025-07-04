@@ -2,7 +2,7 @@ package pycode
 
 import "sort"
 
-var helperPrelude = "from typing import Any, TypeVar\nT = TypeVar('T')\n"
+var helperPrelude = "from typing import Any, TypeVar, Generic, Callable\nT = TypeVar('T')\nK = TypeVar('K')\n"
 
 // Runtime helpers emitted by the Python compiler.
 
@@ -84,16 +84,16 @@ var helperMax = "def _max(v):\n" +
 	"        return 0\n" +
 	"    return max(vals)\n"
 
-var helperGroupClass = "class _Group:\n" +
-	"    def __init__(self, key):\n" +
+var helperGroupClass = "class _Group(Generic[K, T]):\n" +
+	"    def __init__(self, key: K):\n" +
 	"        self.key = key\n" +
-	"        self.Items = []\n" +
+	"        self.Items: list[T] = []\n" +
 	"    def __iter__(self):\n" +
 	"        return iter(self.Items)\n"
 
-var helperGroupBy = "def _group_by(src, keyfn):\n" +
-	"    groups = {}\n" +
-	"    order = []\n" +
+var helperGroupBy = "def _group_by(src: list[T], keyfn: Callable[[T], K]) -> list[_Group[K, T]]:\n" +
+	"    groups: dict[str, _Group[K, T]] = {}\n" +
+	"    order: list[str] = []\n" +
 	"    for it in src:\n" +
 	"        if isinstance(it, (list, tuple)):\n" +
 	"            key = keyfn(*it)\n" +
