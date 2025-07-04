@@ -225,12 +225,12 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c-d, d-e, c FROM t1 ORDER BY 3,2,1,4 */
 var result = from row in t1
-  order by [(row.d - row.e), (row.c - row.d), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  order by [row.d - row.e, row.c - row.d, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x), row.c]
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.c - row.d), (row.d - row.e), row.c]
+  where x.c > row.c && x.d < row.d
+  select x), row.c - row.d, row.d - row.e, row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

@@ -225,14 +225,14 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), c, b FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) OR d>e ORDER BY 2,1 */
 var result = from row in t1
-  where (count(from x in t1
+  where count(from x in t1
   where x.b < row.b
-  select x) > 0 || row.d > row.e)
+  select x) > 0 || row.d > row.e
   order by [row.c, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where x.c > row.c && x.d < row.d
   select x)]
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where x.c > row.c && x.d < row.d
   select x), row.c, row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )

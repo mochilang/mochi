@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT d, b-c, (a+b+c+d+e)/5 FROM t1 WHERE (c<=d-2 OR c>=d+2) AND (e>c OR e<d) AND d>e ORDER BY 1,2 */
 var result = from row in t1
-  where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && ((row.e > row.c || row.e < row.d))) && row.d > row.e)
-  order by [row.d, (row.b - row.c)]
-  select [row.d, (row.b - row.c), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  where (row.c <= row.d - 2 || row.c >= row.d + 2) && (row.e > row.c || row.e < row.d) && row.d > row.e
+  order by [row.d, row.b - row.c]
+  select [row.d, row.b - row.c, (row.a + row.b + row.c + row.d + row.e) / 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

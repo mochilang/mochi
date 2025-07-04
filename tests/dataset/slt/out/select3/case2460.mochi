@@ -225,13 +225,13 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), b, (a+b+c+d+e)/5, e FROM t1 WHERE (e>c OR e<d) OR e+d BETWEEN a+b-10 AND c+130 ORDER BY 1,4,3 */
 var result = from row in t1
-  where (((row.e > row.c || row.e < row.d)) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
+  where (row.e > row.c || row.e < row.d) || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)
   order by [count(from x in t1
   where x.b < row.b
-  select x), row.e, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  select x), row.e, (row.a + row.b + row.c + row.d + row.e) / 5]
   select [count(from x in t1
   where x.b < row.b
-  select x), row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.e]
+  select x), row.b, (row.a + row.b + row.c + row.d + row.e) / 5, row.e]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

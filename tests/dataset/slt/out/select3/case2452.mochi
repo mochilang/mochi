@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT d, abs(b-c), a+b*2 FROM t1 WHERE (e>c OR e<d) ORDER BY 3,1 */
 var result = from row in t1
-  where ((row.e > row.c || row.e < row.d))
-  order by [(row.a + (row.b * 2)), row.d]
-  select [row.d, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.a + (row.b * 2))]
+  where (row.e > row.c || row.e < row.d)
+  order by [row.a + row.b * 2, row.d]
+  select [row.d, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.a + row.b * 2]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT b-c, d, a+b*2+c*3+d*4+e*5, (a+b+c+d+e)/5, a+b*2, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a-b FROM t1 WHERE (c<=d-2 OR c>=d+2) AND d NOT BETWEEN 110 AND 150 AND b>c */
 var result = from row in t1
-  where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && (row.d < 110 || row.d > 150)) && row.b > row.c)
-  select [(row.b - row.c), row.d, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a + (row.b * 2)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.a - row.b)]
+  where (row.c <= row.d - 2 || row.c >= row.d + 2) && (row.d < 110 || row.d > 150) && row.b > row.c
+  select [row.b - row.c, row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, (row.a + row.b + row.c + row.d + row.e) / 5, row.a + row.b * 2, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.a - row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

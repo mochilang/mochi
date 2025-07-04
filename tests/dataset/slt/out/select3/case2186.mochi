@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT d-e, e FROM t1 WHERE (a>b-2 AND a<b+2) ORDER BY 2,1 */
 var result = from row in t1
-  where ((row.a > (row.b - 2) && row.a < (row.b + 2)))
-  order by [row.e, (row.d - row.e)]
-  select [(row.d - row.e), row.e]
+  where (row.a > row.b - 2 && row.a < row.b + 2)
+  order by [row.e, row.d - row.e]
+  select [row.d - row.e, row.e]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

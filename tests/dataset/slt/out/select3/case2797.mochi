@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT a+b*2+c*3+d*4 FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) AND e+d BETWEEN a+b-10 AND c+130 */
 var result = from row in t1
-  where (count(from x in t1
+  where count(from x in t1
   where x.b < row.b
-  select x) > 0 && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
-  select (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))
+  select x) > 0 && (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)
+  select row.a + row.b * 2 + row.c * 3 + row.d * 4
 result = from x in result
   order by str(x)
   select x
