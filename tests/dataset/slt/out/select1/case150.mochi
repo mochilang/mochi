@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT a+b*2+c*3 FROM t1 WHERE c BETWEEN b-2 AND d+2 ORDER BY 1 */
 var result = from row in t1
-  where (row.c >= (row.b - 2) && row.c <= (row.d + 2))
-  order by ((row.a + (row.b * 2)) + (row.c * 3))
-  select ((row.a + (row.b * 2)) + (row.c * 3))
+  where (row.c >= row.b - 2 && row.c <= row.d + 2)
+  order by row.a + row.b * 2 + row.c * 3
+  select row.a + row.b * 2 + row.c * 3
 for x in result {
   print(x)
 }

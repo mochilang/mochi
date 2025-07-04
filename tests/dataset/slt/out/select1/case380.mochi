@@ -227,10 +227,10 @@ let t1 = [
 var result = from row in t1
   order by [row.a, count(from x in t1
   where x.b < row.b
-  select x), (if row.a < 0 { -(row.a) } else { row.a }), (row.d - row.e)]
+  select x), if row.a < 0 then -(row.a) else row.a, row.d - row.e]
   select [count(from x in t1
   where x.b < row.b
-  select x), (row.d - row.e), row.a, (if row.a < 0 { -(row.a) } else { row.a })]
+  select x), row.d - row.e, row.a, if row.a < 0 then -(row.a) else row.a]
 var flatResult = []
 for row in result {
   for x in row {

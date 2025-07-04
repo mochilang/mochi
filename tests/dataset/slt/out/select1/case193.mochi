@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT b, d, CASE a+1 WHEN b THEN 111 WHEN c THEN 222 WHEN d THEN 333  WHEN e THEN 444 ELSE 555 END FROM t1 WHERE (e>c OR e<d) OR e+d BETWEEN a+b-10 AND c+130 OR a>b ORDER BY 3,2,1 */
 var result = from row in t1
-  where ((((row.e > row.c || row.e < row.d)) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130))) || row.a > row.b)
-  order by [(if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), row.d, row.b]
-  select [row.b, row.d, (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) })]
+  where (row.e > row.c || row.e < row.d) || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) || row.a > row.b
+  order by [if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555, row.d, row.b]
+  select [row.b, row.d, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555]
 var flatResult = []
 for row in result {
   for x in row {

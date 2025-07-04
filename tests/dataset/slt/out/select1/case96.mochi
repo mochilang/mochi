@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, a-b, b, a+b*2, a FROM t1 WHERE (a>b-2 AND a<b+2) AND (e>c OR e<d) AND d>e ORDER BY 4,2,5,3,1 */
 var result = from row in t1
-  where ((((row.a > (row.b - 2) && row.a < (row.b + 2))) && ((row.e > row.c || row.e < row.d))) && row.d > row.e)
-  order by [(row.a + (row.b * 2)), (row.a - row.b), row.a, row.b, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
-  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a - row.b), row.b, (row.a + (row.b * 2)), row.a]
+  where (row.a > row.b - 2 && row.a < row.b + 2) && (row.e > row.c || row.e < row.d) && row.d > row.e
+  order by [row.a + row.b * 2, row.a - row.b, row.a, row.b, (row.a + row.b + row.c + row.d + row.e) / 5]
+  select [(row.a + row.b + row.c + row.d + row.e) / 5, row.a - row.b, row.b, row.a + row.b * 2, row.a]
 var flatResult = []
 for row in result {
   for x in row {

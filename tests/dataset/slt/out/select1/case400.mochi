@@ -228,8 +228,8 @@ var result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0
-  order by (row.b - row.c)
-  select (row.b - row.c)
+  order by row.b - row.c
+  select row.b - row.c
 for x in result {
   print(x)
 }

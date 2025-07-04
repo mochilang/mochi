@@ -225,15 +225,15 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), abs(b-c), abs(a), a+b*2, a, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, e FROM t1 WHERE (e>a AND e<b) AND d NOT BETWEEN 110 AND 150 AND EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) ORDER BY 4,2,3,7,1,5,6 */
 var result = from row in t1
-  where ((((row.e > row.a && row.e < row.b)) && (row.d < 110 || row.d > 150)) && count(from x in t1
+  where (row.e > row.a && row.e < row.b) && (row.d < 110 || row.d > 150) && count(from x in t1
   where x.b < row.b
-  select x) > 0)
-  order by [(row.a + (row.b * 2)), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < 0 { -(row.a) } else { row.a }), row.e, count(from x in t1
+  select x) > 0
+  order by [row.a + row.b * 2, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, if row.a < 0 then -(row.a) else row.a, row.e, count(from x in t1
   where x.b < row.b
-  select x), row.a, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+  select x), row.a, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444]
   select [count(from x in t1
   where x.b < row.b
-  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (if row.a < 0 { -(row.a) } else { row.a }), (row.a + (row.b * 2)), row.a, (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e]
+  select x), if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, if row.a < 0 then -(row.a) else row.a, row.a + row.b * 2, row.a, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.e]
 var flatResult = []
 for row in result {
   for x in row {

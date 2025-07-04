@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT e, abs(a) FROM t1 ORDER BY 2,1 */
 var result = from row in t1
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), row.e]
-  select [row.e, (if row.a < 0 { -(row.a) } else { row.a })]
+  order by [if row.a < 0 then -(row.a) else row.a, row.e]
+  select [row.e, if row.a < 0 then -(row.a) else row.a]
 var flatResult = []
 for row in result {
   for x in row {

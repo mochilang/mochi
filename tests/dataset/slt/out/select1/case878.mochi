@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT d-e FROM t1 ORDER BY 1 */
 var result = from row in t1
-  order by (row.d - row.e)
-  select (row.d - row.e)
+  order by row.d - row.e
+  select row.d - row.e
 for x in result {
   print(x)
 }

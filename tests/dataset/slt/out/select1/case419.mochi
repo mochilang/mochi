@@ -228,15 +228,15 @@ let sub0 = avg(from x in t1
   select x.c)
 
 var result = from row in t1
-  where (row.d > row.e || row.a > row.b)
+  where row.d > row.e || row.a > row.b
   order by [count(from x in t1
   where x.b < row.b
-  select x), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.d - row.e), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  select x), if row.c > sub0 then row.a * 2 else row.b * 10, row.d - row.e, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x), row.c]
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.d - row.e), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.d - row.e, if row.c > sub0 then row.a * 2 else row.b * 10, count(from x in t1
   where x.b < row.b
   select x), row.c]
 var flatResult = []

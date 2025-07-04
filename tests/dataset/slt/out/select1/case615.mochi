@@ -225,12 +225,12 @@ let t1 = [
 
 /* SELECT c-d, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE (c<=d-2 OR c>=d+2) AND a>b AND (e>a AND e<b) ORDER BY 2,1 */
 var result = from row in t1
-  where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && row.a > row.b) && ((row.e > row.a && row.e < row.b)))
+  where (row.c <= row.d - 2 || row.c >= row.d + 2) && row.a > row.b && (row.e > row.a && row.e < row.b)
   order by [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.c - row.d)]
-  select [(row.c - row.d), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where x.c > row.c && x.d < row.d
+  select x), row.c - row.d]
+  select [row.c - row.d, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x)]
 var flatResult = []
 for row in result {

@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5 FROM t1 ORDER BY 1 */
 var result = from row in t1
-  order by ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)
-  select ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)
+  order by (row.a + row.b + row.c + row.d + row.e) / 5
+  select (row.a + row.b + row.c + row.d + row.e) / 5
 for x in result {
   print(x)
 }

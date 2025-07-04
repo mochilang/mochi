@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT abs(a) FROM t1 ORDER BY 1 */
 var result = from row in t1
-  order by (if row.a < 0 { -(row.a) } else { row.a })
-  select (if row.a < 0 { -(row.a) } else { row.a })
+  order by if row.a < 0 then -(row.a) else row.a
+  select if row.a < 0 then -(row.a) else row.a
 for x in result {
   print(x)
 }
