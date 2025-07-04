@@ -288,7 +288,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
-	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) || c.has(needIndexString) || c.has(needSliceString) {
+	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) {
 		c.writeln("#include <string.h>")
 	}
 	if c.has(needNow) {
@@ -1735,8 +1735,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				idx := c.compileExpr(op.Index.Start)
 				if isStr && op.Index.End == nil {
 					name := c.newTemp()
-					c.need(needIndexString)
-					c.writeln(fmt.Sprintf("char* %s = _index_string(%s, %s);", name, expr, idx))
+					c.need(needStringHeader)
+					c.writeln(fmt.Sprintf("char* %s = ({ int _len = strlen(%s); int _i = %s; if (_i < 0) _i += _len; if (_i < 0 || _i >= _len) { fprintf(stderr, \"index out of range\\n\"); exit(1); } char* _b = (char*)malloc(2); _b[0] = %s[_i]; _b[1] = '\\0'; _b; });", name, expr, idx, expr))
 					if c.env != nil {
 						c.env.SetVar(name, types.StringType{}, true)
 					}
@@ -1763,8 +1763,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				}
 				name := c.newTemp()
 				if isStr {
-					c.need(needSliceString)
-					c.writeln(fmt.Sprintf("char* %s = slice_string(%s, %s, %s);", name, expr, start, end))
+					c.need(needStringHeader)
+					c.writeln(fmt.Sprintf("char* %s = ({ int _len = strlen(%s); int _s = %s; int _e = %s; if (_s < 0) _s += _len; if (_e < 0) _e += _len; if (_s < 0) _s = 0; if (_e > _len) _e = _len; if (_s > _e) _s = _e; char* _b = (char*)malloc(_e - _s + 1); memcpy(_b, %s + _s, _e - _s); _b[_e - _s] = '\\0'; _b; });", name, expr, start, end, expr))
 					if c.env != nil {
 						c.env.SetVar(name, types.StringType{}, true)
 					}
