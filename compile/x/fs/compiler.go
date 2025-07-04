@@ -1373,14 +1373,12 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 					maps[i] = false
 					strs[i] = false
 				} else if op == "union_all" {
-					c.use("_union_all")
-					operands[i] = fmt.Sprintf("_union_all %s %s", left, right)
+					operands[i] = fmt.Sprintf("Array.append %s %s", left, right)
 					lists[i] = true
 					maps[i] = false
 					strs[i] = false
 				} else if op == "union" {
-					c.use("_union")
-					operands[i] = fmt.Sprintf("_union %s %s", left, right)
+					operands[i] = fmt.Sprintf("Array.append %s %s |> Array.distinct", left, right)
 					lists[i] = true
 					maps[i] = false
 					strs[i] = false
@@ -1673,20 +1671,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if c.isGroupExpr(call.Args[0]) {
 			return fmt.Sprintf("%s.size", args[0]), nil
 		}
-		c.use("_seq_helpers")
-		return fmt.Sprintf("count %s", args[0]), nil
+		return fmt.Sprintf("Seq.length %s", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
 		}
-		c.use("_seq_helpers")
-		return fmt.Sprintf("sum %s", args[0]), nil
+		return fmt.Sprintf("Seq.sum %s", args[0]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		c.use("_seq_helpers")
-		return fmt.Sprintf("avg %s", args[0]), nil
+		return fmt.Sprintf("Seq.average %s", args[0]), nil
 	case "substr":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substr expects 3 args")
@@ -1698,36 +1693,31 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("reverse expects 1 arg")
 		}
 		if c.isStringExpr(call.Args[0]) {
-			c.use("_reverse_string")
-			return fmt.Sprintf("_reverse_string %s", args[0]), nil
+			return fmt.Sprintf("(%s.ToCharArray() |> Array.rev |> System.String)", args[0]), nil
 		}
 		if c.isListExpr(call.Args[0]) {
-			c.use("_reverse_array")
-			return fmt.Sprintf("_reverse_array %s", args[0]), nil
+			return fmt.Sprintf("Array.rev %s", args[0]), nil
 		}
 		return "", fmt.Errorf("reverse expects string or list")
 	case "concat":
 		if len(args) < 2 {
 			return "", fmt.Errorf("concat expects at least 2 args")
 		}
-		c.use("_concat")
-		expr := fmt.Sprintf("_concat %s %s", args[0], args[1])
+		expr := fmt.Sprintf("Array.append %s %s", args[0], args[1])
 		for i := 2; i < len(args); i++ {
-			expr = fmt.Sprintf("_concat %s %s", expr, args[i])
+			expr = fmt.Sprintf("Array.append %s %s", expr, args[i])
 		}
 		return expr, nil
 	case "min":
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
 		}
-		c.use("_seq_helpers")
-		return fmt.Sprintf("_min %s", args[0]), nil
+		return fmt.Sprintf("Seq.min %s", args[0]), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
-		c.use("_seq_helpers")
-		return fmt.Sprintf("_max %s", args[0]), nil
+		return fmt.Sprintf("Seq.max %s", args[0]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")

@@ -189,26 +189,26 @@ const (
   if stop < start then stop <- start
   s.Substring(start, stop - start)`
 
-	helperReverseArray = `let _reverse_array (xs: 'T[]) : 'T[] =
+	helperReverseArray = `let inline _reverse_array (xs: 'T[]) : 'T[] =
   Array.rev xs`
 
-	helperReverseString = `let _reverse_string (s: string) : string =
+	helperReverseString = `let inline _reverse_string (s: string) : string =
   s.ToCharArray() |> Array.rev |> System.String`
 
-	helperConcat = `let _concat (a: 'T[]) (b: 'T[]) : 'T[] =
+	helperConcat = `let inline _concat (a: 'T[]) (b: 'T[]) : 'T[] =
   Array.append a b`
 
-	helperUnionAll = `let _union_all (a: 'T[]) (b: 'T[]) : 'T[] =
+	helperUnionAll = `let inline _union_all (a: 'T[]) (b: 'T[]) : 'T[] =
   Array.append a b`
 
-	helperUnion = `let _union (a: 'T[]) (b: 'T[]) : 'T[] =
+	helperUnion = `let inline _union (a: 'T[]) (b: 'T[]) : 'T[] =
   Array.append a b |> Array.distinct`
 
-	helperExcept = `let _except (a: 'T[]) (b: 'T[]) : 'T[] =
+	helperExcept = `let inline _except (a: 'T[]) (b: 'T[]) : 'T[] =
   let setB = Set.ofArray b
   Array.filter (fun x -> not (Set.contains x setB)) a`
 
-	helperIntersect = `let _intersect (a: 'T[]) (b: 'T[]) : 'T[] =
+	helperIntersect = `let inline _intersect (a: 'T[]) (b: 'T[]) : 'T[] =
   let setB = Set.ofArray b
   Array.filter (fun x -> Set.contains x setB) a |> Array.distinct`
 
