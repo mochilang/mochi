@@ -22,8 +22,9 @@ var wordConversions = []struct{ in, out string }{
 }
 
 const (
-	dtNow   = "datetime('now')"
-	dNow    = "date('now')"
+	dtNow   = "datetime('now'"
+	dNow    = "date('now'"
+	tNow    = "time('now'"
 	notIdx  = " not indexed"
 	totalFn = "total"
 )
@@ -106,8 +107,16 @@ func replaceDateTime(sql string) string {
 		if idx == -1 {
 			break
 		}
-		sql = sql[:idx] + "now()" + sql[idx+len(dtNow):]
-		lower = strings.ToLower(sql)
+		end := idx + len(dtNow)
+		for end < len(sql) && sql[end] != ')' {
+			end++
+		}
+		if end < len(sql) {
+			sql = sql[:idx] + "now()" + sql[end+1:]
+			lower = strings.ToLower(sql)
+			continue
+		}
+		break
 	}
 	return sql
 }
@@ -119,8 +128,37 @@ func replaceDate(sql string) string {
 		if idx == -1 {
 			break
 		}
-		sql = sql[:idx] + "current_date" + sql[idx+len(dNow):]
-		lower = strings.ToLower(sql)
+		end := idx + len(dNow)
+		for end < len(sql) && sql[end] != ')' {
+			end++
+		}
+		if end < len(sql) {
+			sql = sql[:idx] + "current_date" + sql[end+1:]
+			lower = strings.ToLower(sql)
+			continue
+		}
+		break
+	}
+	return sql
+}
+
+func replaceTime(sql string) string {
+	lower := strings.ToLower(sql)
+	for {
+		idx := strings.Index(lower, tNow)
+		if idx == -1 {
+			break
+		}
+		end := idx + len(tNow)
+		for end < len(sql) && sql[end] != ')' {
+			end++
+		}
+		if end < len(sql) {
+			sql = sql[:idx] + "current_time" + sql[end+1:]
+			lower = strings.ToLower(sql)
+			continue
+		}
+		break
 	}
 	return sql
 }
@@ -195,6 +233,7 @@ func Convert(sql string) string {
 	}
 	out = replaceDateTime(out)
 	out = replaceDate(out)
+	out = replaceTime(out)
 	out = removeNotIndexed(out)
 	out = replaceTotal(out)
 	return out
