@@ -225,12 +225,12 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a, (a+b+c+d+e)/5 FROM t1 ORDER BY 3,1 */
 var result = from row in t1
-  order by [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  order by [(row.a + row.b + row.c + row.d + row.e) / 5, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x)]
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), row.a, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  where x.c > row.c && x.d < row.d
+  select x), row.a, (row.a + row.b + row.c + row.d + row.e) / 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

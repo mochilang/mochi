@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT e FROM t1 WHERE b>c AND d NOT BETWEEN 110 AND 150 AND a>b ORDER BY 1 */
 var result = from row in t1
-  where ((row.b > row.c && (row.d < 110 || row.d > 150)) && row.a > row.b)
+  where row.b > row.c && (row.d < 110 || row.d > 150) && row.a > row.b
   order by row.e
   select row.e
 result = from x in result

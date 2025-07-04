@@ -228,9 +228,9 @@ var result = from row in t1
   where row.b > row.c
   select [row.e, count(from x in t1
   where x.b < row.b
-  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), (row.d - row.e), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  select x), if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555, row.d - row.e, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), (row.a + row.b + row.c + row.d + row.e) / 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT d, c-d, c, abs(a), a-b FROM t1 WHERE c>d AND a>b AND b>c ORDER BY 4,5,1,2,3 */
 var result = from row in t1
-  where ((row.c > row.d && row.a > row.b) && row.b > row.c)
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), (row.a - row.b), row.d, (row.c - row.d), row.c]
-  select [row.d, (row.c - row.d), row.c, (if row.a < 0 { -(row.a) } else { row.a }), (row.a - row.b)]
+  where row.c > row.d && row.a > row.b && row.b > row.c
+  order by [if row.a < 0 then -(row.a) else row.a, row.a - row.b, row.d, row.c - row.d, row.c]
+  select [row.d, row.c - row.d, row.c, if row.a < 0 then -(row.a) else row.a, row.a - row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

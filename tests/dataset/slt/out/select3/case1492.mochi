@@ -228,10 +228,10 @@ var result = from row in t1
   where row.d > row.e
   order by [count(from x in t1
   where x.b < row.b
-  select x), (if row.a < 0 { -(row.a) } else { row.a })]
+  select x), if row.a < 0 then -(row.a) else row.a]
   select [count(from x in t1
   where x.b < row.b
-  select x), (if row.a < 0 { -(row.a) } else { row.a })]
+  select x), if row.a < 0 then -(row.a) else row.a]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

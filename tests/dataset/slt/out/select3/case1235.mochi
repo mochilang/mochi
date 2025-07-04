@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT b, a+b*2+c*3+d*4+e*5 FROM t1 WHERE d>e AND EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) */
 var result = from row in t1
-  where (row.d > row.e && count(from x in t1
+  where row.d > row.e && count(from x in t1
   where x.b < row.b
-  select x) > 0)
-  select [row.b, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
+  select x) > 0
+  select [row.b, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

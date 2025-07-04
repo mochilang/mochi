@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT c, c-d, a-b, a+b*2+c*3, abs(a) FROM t1 ORDER BY 5,3,2,4,1 */
 var result = from row in t1
-  order by [(if row.a < 0 { -(row.a) } else { row.a }), (row.a - row.b), (row.c - row.d), ((row.a + (row.b * 2)) + (row.c * 3)), row.c]
-  select [row.c, (row.c - row.d), (row.a - row.b), ((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < 0 { -(row.a) } else { row.a })]
+  order by [if row.a < 0 then -(row.a) else row.a, row.a - row.b, row.c - row.d, row.a + row.b * 2 + row.c * 3, row.c]
+  select [row.c, row.c - row.d, row.a - row.b, row.a + row.b * 2 + row.c * 3, if row.a < 0 then -(row.a) else row.a]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

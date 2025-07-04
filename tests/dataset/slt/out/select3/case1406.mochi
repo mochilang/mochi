@@ -229,8 +229,8 @@ let sub0 = avg(from x in t1
 
 var result = from row in t1
   where (row.d < 110 || row.d > 150)
-  order by [(row.a + (row.b * 2)), (row.d - row.e), row.a, (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (row.b - row.c), (if row.a < 0 { -(row.a) } else { row.a })]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), (row.b - row.c), row.a, (row.d - row.e), (row.a + (row.b * 2)), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) })]
+  order by [row.a + row.b * 2, row.d - row.e, row.a, if row.c > sub0 then row.a * 2 else row.b * 10, row.b - row.c, if row.a < 0 then -(row.a) else row.a]
+  select [if row.a < 0 then -(row.a) else row.a, row.b - row.c, row.a, row.d - row.e, row.a + row.b * 2, if row.c > sub0 then row.a * 2 else row.b * 10]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

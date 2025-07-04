@@ -118,10 +118,16 @@ func formatValue(v any) string {
 			return "true"
 		}
 		return "false"
-	case int:
+	case int, int8, int16, int32, int64:
 		return fmt.Sprintf("%d", t)
-	case int64:
+	case uint, uint8, uint16, uint32, uint64:
 		return fmt.Sprintf("%d", t)
+	case float32:
+		f := float64(t)
+		if f == math.Trunc(f) {
+			return fmt.Sprintf("%.0f", f)
+		}
+		return fmt.Sprintf("%g", f)
 	case float64:
 		if t == math.Trunc(t) {
 			return fmt.Sprintf("%.0f", t)
@@ -388,6 +394,44 @@ func detectColumnType(rows []map[string]any, name string, declared []string, col
 		case []byte:
 			if t == "" || t == "string" {
 				t = "string"
+			} else {
+				return "any"
+			}
+		case float32:
+			f := float64(val)
+			if math.IsInf(f, 0) || math.IsNaN(f) {
+				boolLike = false
+				if t == "" || t == "float" || t == "int" {
+					t = "float"
+				} else {
+					return "any"
+				}
+				break
+			}
+			if f != math.Trunc(f) {
+				floatIsInt = false
+			}
+			if f == 0 {
+				seenZero = true
+			} else if f == 1 {
+				seenOne = true
+			} else if f == -1 {
+				seenNegOne = true
+			} else {
+				boolLike = false
+			}
+			if t == "bool" {
+				if f == 0 || f == 1 || f == -1 {
+					break
+				}
+				t = ""
+			}
+			if t == "" || t == "float" || t == "int" {
+				if t == "" {
+					t = "float"
+				} else if t == "int" && f != math.Trunc(f) {
+					t = "float"
+				}
 			} else {
 				return "any"
 			}
