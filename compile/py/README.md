@@ -71,6 +71,10 @@ var helperMap = map[string]string{
 ```
 【F:compile/py/runtime.go†L345-L364】
 
+Whenever possible the compiler now inlines simple operations like `count`,
+`exists` or `append` when the argument types are known. This reduces the number
+of runtime helpers bundled into generated programs.
+
 ## Building
 
 Compile a Mochi source file to Python using `mochi build`:
