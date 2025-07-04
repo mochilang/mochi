@@ -24,7 +24,12 @@ The converter currently handles the following patterns:
 - `printf()` -> `format()`
 - `instr()` -> `strpos()`
 - `datetime('now')` -> `now()`
+- `datetime('now','localtime')` -> `now()`
+- `datetime('now','utc')` -> `now()`
 - `date('now')` -> `current_date`
+- `date('now','localtime')` -> `current_date`
+- `date('now','utc')` -> `current_date`
+- `time('now')` -> `current_time`
 - `CURRENT_DATE` -> `current_date`
 - `CURRENT_TIME` -> `current_time`
 - `randomblob(n)` -> `random_bytes(n)`

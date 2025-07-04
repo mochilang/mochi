@@ -1,0 +1,9 @@
+SELECT count(*) FROM t1 WHERE x=3;
+SELECT count(*) FROM t1 WHERE x=1;
+SELECT count(*) FROM t1 WHERE x=4;
+SELECT count(*) FROM t1 WHERE x=3;
+SELECT count(*) FROM t1 WHERE x=4;
+SELECT count(*) FROM t1 WHERE x=5;
+SELECT count(*) FROM t1 WHERE y='unknown';
+SELECT count(*) FROM t1 WHERE y='unknown';
+SELECT count(*) FROM t1 WHERE x=4;
