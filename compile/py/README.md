@@ -32,6 +32,17 @@ var helperGenStruct = "def _gen_struct(cls, prompt, model=None, params=None):\n"
 ```
 【F:compile/py/runtime.go†L7-L19】
 
+Runtime helpers include type hints using `typing.TypeVar` to reduce
+`Any` usage. For example:
+
+```go
+var helperAppend = "def _append(lst: list[T] | None, v: T) -> list[T]:\n" +
+    "    out: list[T] = list(lst) if lst is not None else []\n" +
+    "    out.append(v)\n" +
+    "    return out\n"
+```
+
+
 Additional helpers cover data loading, saving and HTTP requests. They are referenced from a map used by `emitRuntime`:
 
 ```go

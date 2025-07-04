@@ -2,6 +2,8 @@ package pycode
 
 import "sort"
 
+var helperPrelude = "from typing import Any, TypeVar\nT = TypeVar('T')\n"
+
 // Runtime helpers emitted by the Python compiler.
 
 var helperGenText = "def _gen_text(prompt, model=None, params=None):\n" +
@@ -241,7 +243,7 @@ var helperSave = "def _save(rows, path, opts):\n" +
 	"        if path is not None:\n" +
 	"            f.close()\n"
 
-var helperSlice = "def _slice(obj, i, j):\n" +
+var helperSlice = "def _slice(obj: list[T] | str, i: int, j: int) -> list[T] | str:\n" +
 	"    start = i\n" +
 	"    end = j\n" +
 	"    n = len(obj)\n" +
@@ -257,36 +259,36 @@ var helperSlice = "def _slice(obj, i, j):\n" +
 	"        end = start\n" +
 	"    return obj[start:end]\n"
 
-var helperReverse = "def _reverse(obj):\n" +
+var helperReverse = "def _reverse(obj: list[T] | str) -> list[T] | str:\n" +
 	"    if isinstance(obj, list):\n" +
 	"        return list(reversed(obj))\n" +
 	"    if isinstance(obj, str):\n" +
 	"        return obj[::-1]\n" +
 	"    raise Exception('reverse expects list or string')\n"
 
-var helperFirst = "def _first(lst):\n" +
+var helperFirst = "def _first(lst: list[T]) -> T | None:\n" +
 	"    if not isinstance(lst, list):\n" +
 	"        raise Exception('first expects list')\n" +
 	"    return lst[0] if len(lst) > 0 else None\n"
 
-var helperUnionAll = "def _union_all(a, b):\n" +
+var helperUnionAll = "def _union_all(a: list[T], b: list[T]) -> list[T]:\n" +
 	"    return list(a) + list(b)\n"
 
-var helperUnion = "def _union(a, b):\n" +
+var helperUnion = "def _union(a: list[T], b: list[T]) -> list[T]:\n" +
 	"    res = list(a)\n" +
 	"    for it in b:\n" +
 	"        if it not in res:\n" +
 	"            res.append(it)\n" +
 	"    return res\n"
 
-var helperExcept = "def _except(a, b):\n" +
+var helperExcept = "def _except(a: list[T], b: list[T]) -> list[T]:\n" +
 	"    res = []\n" +
 	"    for it in a:\n" +
 	"        if it not in b:\n" +
 	"            res.append(it)\n" +
 	"    return res\n"
 
-var helperIntersect = "def _intersect(a, b):\n" +
+var helperIntersect = "def _intersect(a: list[T], b: list[T]) -> list[T]:\n" +
 	"    res = []\n" +
 	"    for it in a:\n" +
 	"        if it in b and it not in res:\n" +
@@ -314,12 +316,12 @@ var helperSortKey = "def _sort_key(k):\n" +
 	"        return str(k)\n" +
 	"    return k\n"
 
-var helperAppend = "def _append(lst, v):\n" +
-	"    out = list(lst) if lst is not None else []\n" +
+var helperAppend = "def _append(lst: list[T] | None, v: T) -> list[T]:\n" +
+	"    out: list[T] = list(lst) if lst is not None else []\n" +
 	"    out.append(v)\n" +
 	"    return out\n"
 
-var helperContains = "def _contains(c, v):\n" +
+var helperContains = "def _contains(c: list[T] | str | dict[str, T], v: T) -> bool:\n" +
 	"    if isinstance(c, list):\n" +
 	"        return v in c\n" +
 	"    if isinstance(c, str):\n" +
@@ -328,7 +330,7 @@ var helperContains = "def _contains(c, v):\n" +
 	"        return str(v) in c\n" +
 	"    return False\n"
 
-var helperValues = "def _values(m):\n" +
+var helperValues = "def _values(m: dict[str, T]) -> list[T]:\n" +
 	"    if isinstance(m, dict):\n" +
 	"        return list(m.values())\n" +
 	"    raise Exception('values() expects map')\n"
@@ -497,6 +499,9 @@ func (c *Compiler) emitRuntime() {
 		names = append(names, n)
 	}
 	sort.Strings(names)
+	if len(names) > 0 {
+		c.buf.WriteString(helperPrelude)
+	}
 	for _, n := range names {
 		c.buf.WriteString(helperMap[n])
 	}
