@@ -4,14 +4,6 @@ from __future__ import annotations
 import json
 import urllib.request
 
-data = None
-
-
-def main():
-    global data
-    data = _fetch("file:../../tests/compiler/py/fetch_builtin.json", None)
-    print(data["message"])
-
 
 def _fetch(url, opts):
     import urllib.request, urllib.parse, json
@@ -38,6 +30,15 @@ def _fetch(url, opts):
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         text = resp.read()
     return json.loads(text)
+
+
+data = None
+
+
+def main():
+    global data
+    data = _fetch("file:../../tests/compiler/py/fetch_builtin.json", None)
+    print(data["message"])
 
 
 if __name__ == "__main__":

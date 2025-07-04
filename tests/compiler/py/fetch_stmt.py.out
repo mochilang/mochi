@@ -7,23 +7,6 @@ import typing
 import urllib.request
 
 
-@dataclasses.dataclass
-class Todo:
-    userId: int
-    id: int
-    title: str
-    completed: bool
-
-
-todo = None
-
-
-def main():
-    global todo
-    todo = Todo(**(_fetch("https://jsonplaceholder.typicode.com/todos/1", None)))
-    print(str((todo.id > 0)).lower())
-
-
 def _fetch(url, opts):
     import urllib.request, urllib.parse, json
 
@@ -49,6 +32,40 @@ def _fetch(url, opts):
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         text = resp.read()
     return json.loads(text)
+
+
+def _get(obj, name):
+    if obj is None:
+        return None
+    if isinstance(obj, dict):
+        if name in obj:
+            return obj[name]
+    if hasattr(obj, name):
+        return getattr(obj, name)
+    if isinstance(obj, (list, tuple)):
+        for it in obj:
+            try:
+                return _get(it, name)
+            except Exception:
+                pass
+    raise Exception("field not found: " + name)
+
+
+@dataclasses.dataclass
+class Todo:
+    userId: int
+    id: int
+    title: str
+    completed: bool
+
+
+todo = None
+
+
+def main():
+    global todo
+    todo = Todo(**(_fetch("https://jsonplaceholder.typicode.com/todos/1", None)))
+    print(str((_get(todo, "id") > 0)).lower())
 
 
 if __name__ == "__main__":
