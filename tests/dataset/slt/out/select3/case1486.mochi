@@ -226,11 +226,11 @@ let t1 = [
 /* SELECT c-d, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, d FROM t1 ORDER BY 2,1 */
 var result = from row in t1
   order by [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.c - row.d)]
-  select [(row.c - row.d), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.d]
+  where x.c > row.c && x.d < row.d
+  select x), row.c - row.d]
+  select [row.c - row.d, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.d]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

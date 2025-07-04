@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT abs(a), d-e, a, a+b*2+c*3 FROM t1 */
 var result = from row in t1
-  select [(if row.a < 0 { -(row.a) } else { row.a }), (row.d - row.e), row.a, ((row.a + (row.b * 2)) + (row.c * 3))]
+  select [if row.a < 0 then -(row.a) else row.a, row.d - row.e, row.a, row.a + row.b * 2 + row.c * 3]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

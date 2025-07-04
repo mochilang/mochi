@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT abs(a), abs(b-c), d-e, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d) FROM t1 WHERE b>c AND c>d AND e+d BETWEEN a+b-10 AND c+130 */
 var result = from row in t1
-  where ((row.b > row.c && row.c > row.d) && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
-  select [(if row.a < 0 { -(row.a) } else { row.a }), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.d - row.e), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where row.b > row.c && row.c > row.d && (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)
+  select [if row.a < 0 then -(row.a) else row.a, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.d - row.e, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x)]
 result = from row in result
   order by join(from v in row select str(v), " " )

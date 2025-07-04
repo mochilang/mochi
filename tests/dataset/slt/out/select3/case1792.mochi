@@ -225,13 +225,13 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d-e, b-c, a+b*2+c*3+d*4 FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND b>c ORDER BY 2,1,4,3 */
 var result = from row in t1
-  where ((row.d < 110 || row.d > 150) && row.b > row.c)
-  order by [(row.d - row.e), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.b - row.c)]
+  where (row.d < 110 || row.d > 150) && row.b > row.c
+  order by [row.d - row.e, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4, row.b - row.c]
   select [count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.d - row.e), (row.b - row.c), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+  where x.c > row.c && x.d < row.d
+  select x), row.d - row.e, row.b - row.c, row.a + row.b * 2 + row.c * 3 + row.d * 4]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

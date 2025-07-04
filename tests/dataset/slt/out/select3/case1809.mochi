@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT e, a, (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), c-d, abs(a), d, b-c FROM t1 WHERE (c<=d-2 OR c>=d+2) AND (a>b-2 AND a<b+2) */
 var result = from row in t1
-  where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && ((row.a > (row.b - 2) && row.a < (row.b + 2))))
+  where (row.c <= row.d - 2 || row.c >= row.d + 2) && (row.a > row.b - 2 && row.a < row.b + 2)
   select [row.e, row.a, count(from x in t1
   where x.b < row.b
-  select x), (row.c - row.d), (if row.a < 0 { -(row.a) } else { row.a }), row.d, (row.b - row.c)]
+  select x), row.c - row.d, if row.a < 0 then -(row.a) else row.a, row.d, row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

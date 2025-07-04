@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT abs(a) FROM t1 WHERE c>d OR d>e OR d NOT BETWEEN 110 AND 150 ORDER BY 1 */
 var result = from row in t1
-  where ((row.c > row.d || row.d > row.e) || (row.d < 110 || row.d > 150))
-  order by (if row.a < 0 { -(row.a) } else { row.a })
-  select (if row.a < 0 { -(row.a) } else { row.a })
+  where row.c > row.d || row.d > row.e || (row.d < 110 || row.d > 150)
+  order by if row.a < 0 then -(row.a) else row.a
+  select if row.a < 0 then -(row.a) else row.a
 result = from x in result
   order by str(x)
   select x

@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT b-c, c-d, a+b*2 FROM t1 WHERE c>d OR d>e OR (e>a AND e<b) ORDER BY 3,1 */
 var result = from row in t1
-  where ((row.c > row.d || row.d > row.e) || ((row.e > row.a && row.e < row.b)))
-  order by [(row.a + (row.b * 2)), (row.b - row.c)]
-  select [(row.b - row.c), (row.c - row.d), (row.a + (row.b * 2))]
+  where row.c > row.d || row.d > row.e || (row.e > row.a && row.e < row.b)
+  order by [row.a + row.b * 2, row.b - row.c]
+  select [row.b - row.c, row.c - row.d, row.a + row.b * 2]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

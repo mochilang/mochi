@@ -225,15 +225,15 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), a+b*2, d, abs(b-c) FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) ORDER BY 4,2,3,1 */
 var result = from row in t1
-  where ((row.d < 110 || row.d > 150) && count(from x in t1
+  where (row.d < 110 || row.d > 150) && count(from x in t1
   where x.b < row.b
-  select x) > 0)
-  order by [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.a + (row.b * 2)), row.d, count(from x in t1
+  select x) > 0
+  order by [if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.a + row.b * 2, row.d, count(from x in t1
   where x.b < row.b
   select x)]
   select [count(from x in t1
   where x.b < row.b
-  select x), (row.a + (row.b * 2)), row.d, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })]
+  select x), row.a + row.b * 2, row.d, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

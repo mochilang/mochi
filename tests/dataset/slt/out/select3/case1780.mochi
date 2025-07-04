@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT b FROM t1 WHERE d>e OR (e>c OR e<d) ORDER BY 1 */
 var result = from row in t1
-  where (row.d > row.e || ((row.e > row.c || row.e < row.d)))
+  where row.d > row.e || (row.e > row.c || row.e < row.d)
   order by row.b
   select row.b
 result = from x in result

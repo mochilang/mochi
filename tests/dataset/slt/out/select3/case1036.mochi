@@ -227,8 +227,8 @@ let t1 = [
 var result = from row in t1
   order by [count(from x in t1
   where x.b < row.b
-  select x), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5))]
-  select [((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), count(from x in t1
+  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5]
+  select [row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, count(from x in t1
   where x.b < row.b
   select x)]
 result = from row in result

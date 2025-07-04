@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT d, a+b*2+c*3+d*4+e*5, a+b*2+c*3, CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END, a+b*2+c*3+d*4, c-d, a+b*2 FROM t1 WHERE (e>a AND e<b) OR (c<=d-2 OR c>=d+2) OR a>b */
 var result = from row in t1
-  where ((((row.e > row.a && row.e < row.b)) || ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))) || row.a > row.b)
-  select [row.d, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), ((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.c - row.d), (row.a + (row.b * 2))]
+  where (row.e > row.a && row.e < row.b) || (row.c <= row.d - 2 || row.c >= row.d + 2) || row.a > row.b
+  select [row.d, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.a + row.b * 2 + row.c * 3, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.c - row.d, row.a + row.b * 2]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

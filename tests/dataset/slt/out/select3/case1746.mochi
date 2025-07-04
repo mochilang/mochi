@@ -228,9 +228,9 @@ let sub0 = avg(from x in t1
   select x.c)
 
 var result = from row in t1
-  where ((row.a > row.b || row.d > row.e) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
-  order by [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.b - row.c), (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), row.e, (row.a - row.b)]
-  select [(row.b - row.c), (if row.a < 0 { -(row.a) } else { row.a }), (if ((row.a + 1) != null && row.b != null && (row.a + 1) == row.b) { 111 } else { (if ((row.a + 1) != null && row.c != null && (row.a + 1) == row.c) { 222 } else { (if ((row.a + 1) != null && row.d != null && (row.a + 1) == row.d) { 333 } else { (if ((row.a + 1) != null && row.e != null && (row.a + 1) == row.e) { 444 } else { 555 }) }) }) }), (row.a - row.b), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.e]
+  where row.a > row.b || row.d > row.e || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)
+  order by [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.b - row.c, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555, if row.c > sub0 then row.a * 2 else row.b * 10, row.e, row.a - row.b]
+  select [row.b - row.c, if row.a < 0 then -(row.a) else row.a, if (row.a + 1 != null && row.b != null && row.a + 1 == row.b) then 111 else if (row.a + 1 != null && row.c != null && row.a + 1 == row.c) then 222 else if (row.a + 1 != null && row.d != null && row.a + 1 == row.d) then 333 else if (row.a + 1 != null && row.e != null && row.a + 1 == row.e) then 444 else 555, row.a - row.b, if row.c > sub0 then row.a * 2 else row.b * 10, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.e]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

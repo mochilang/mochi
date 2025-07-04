@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT a-b, c FROM t1 */
 var result = from row in t1
-  select [(row.a - row.b), row.c]
+  select [row.a - row.b, row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

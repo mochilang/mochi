@@ -225,11 +225,11 @@ let t1 = [
 
 /* SELECT b-c, d-e, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), a+b*2+c*3, (a+b+c+d+e)/5, a-b FROM t1 WHERE (e>c OR e<d) ORDER BY 6,1,5 */
 var result = from row in t1
-  where ((row.e > row.c || row.e < row.d))
-  order by [(row.a - row.b), (row.b - row.c), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
-  select [(row.b - row.c), (row.d - row.e), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), ((row.a + (row.b * 2)) + (row.c * 3)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a - row.b)]
+  where (row.e > row.c || row.e < row.d)
+  order by [row.a - row.b, row.b - row.c, (row.a + row.b + row.c + row.d + row.e) / 5]
+  select [row.b - row.c, row.d - row.e, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.a + row.b * 2 + row.c * 3, (row.a + row.b + row.c + row.d + row.e) / 5, row.a - row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

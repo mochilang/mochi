@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT c, a+b*2+c*3+d*4+e*5, b-c, a FROM t1 WHERE a>b OR c>d OR e+d BETWEEN a+b-10 AND c+130 ORDER BY 4,3 */
 var result = from row in t1
-  where ((row.a > row.b || row.c > row.d) || ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
-  order by [row.a, (row.b - row.c)]
-  select [row.c, ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.b - row.c), row.a]
+  where row.a > row.b || row.c > row.d || (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)
+  order by [row.a, row.b - row.c]
+  select [row.c, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.b - row.c, row.a]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

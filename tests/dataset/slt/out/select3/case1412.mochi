@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT b-c, c, d-e, (a+b+c+d+e)/5 FROM t1 ORDER BY 1,2,4 */
 var result = from row in t1
-  order by [(row.b - row.c), row.c, ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
-  select [(row.b - row.c), row.c, (row.d - row.e), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  order by [row.b - row.c, row.c, (row.a + row.b + row.c + row.d + row.e) / 5]
+  select [row.b - row.c, row.c, row.d - row.e, (row.a + row.b + row.c + row.d + row.e) / 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
