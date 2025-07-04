@@ -22,6 +22,60 @@ import (
 	"mochi/types"
 )
 
+// hasAggExpr reports whether the expression contains an aggregate function.
+func hasAggExpr(e sqlparser.Expr) bool {
+	switch v := e.(type) {
+	case *sqlparser.FuncExpr:
+		if v.IsAggregate() {
+			return true
+		}
+		for _, ex := range v.Exprs {
+			if ae, ok := ex.(*sqlparser.AliasedExpr); ok {
+				if hasAggExpr(ae.Expr) {
+					return true
+				}
+			}
+		}
+	case *sqlparser.BinaryExpr:
+		return hasAggExpr(v.Left) || hasAggExpr(v.Right)
+	case *sqlparser.UnaryExpr:
+		return hasAggExpr(v.Expr)
+	case *sqlparser.ParenExpr:
+		return hasAggExpr(v.Expr)
+	case *sqlparser.CaseExpr:
+		if v.Expr != nil && hasAggExpr(v.Expr) {
+			return true
+		}
+		for _, w := range v.Whens {
+			if hasAggExpr(w.Cond) || hasAggExpr(w.Val) {
+				return true
+			}
+		}
+		if v.Else != nil && hasAggExpr(v.Else) {
+			return true
+		}
+	}
+	return false
+}
+
+// isAggregateQuery reports whether the SELECT query contains aggregates or a GROUP BY clause.
+func isAggregateQuery(sel *sqlparser.Select) bool {
+	if len(sel.GroupBy) > 0 {
+		return true
+	}
+	for _, expr := range sel.SelectExprs {
+		if ae, ok := expr.(*sqlparser.AliasedExpr); ok {
+			if hasAggExpr(ae.Expr) {
+				return true
+			}
+		}
+	}
+	if sel.Having != nil && hasAggExpr(sel.Having.Expr) {
+		return true
+	}
+	return false
+}
+
 // FindRepoRoot searches parent directories until go.mod is found.
 func FindRepoRoot() (string, error) {
 	dir, err := os.Getwd()
@@ -165,10 +219,12 @@ func EvalCase(c Case) ([]string, string, error) {
 	q := c.Query
 	if node, err := sqlparser.Parse(q); err == nil {
 		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) > 0 {
-			if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
-				if name, ok := tbl.Expr.(sqlparser.TableName); ok {
-					if !strings.EqualFold(name.Name.String(), "dual") {
-						q = strings.TrimSpace(q) + " ORDER BY rowid"
+			if !isAggregateQuery(sel) {
+				if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
+					if name, ok := tbl.Expr.(sqlparser.TableName); ok {
+						if !strings.EqualFold(name.Name.String(), "dual") {
+							q = strings.TrimSpace(q) + " ORDER BY rowid"
+						}
 					}
 				}
 			}
