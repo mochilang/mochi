@@ -706,7 +706,9 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 		if v.Operator == "+" {
 			return ex
 		}
-		return fmt.Sprintf("%s(%s)", v.Operator, ex)
+		// Wrap the unary expression in parentheses so that it can
+		// appear after a binary operator without causing a parse error.
+		return fmt.Sprintf("(%s(%s))", v.Operator, ex)
 	case *sqlparser.BinaryExpr:
 		// Simplify repeated addition of the same column expression
 		// into a multiplication.  SQLLogicTest queries often use
@@ -1275,9 +1277,8 @@ func Generate(c Case) string {
 		sb.WriteString("  for x in row {\n")
 		sb.WriteString("    flatResult = append(flatResult, x)\n")
 		sb.WriteString("  }\n}\n")
-		if c.RowSort {
-			sb.WriteString("flatResult = from x in flatResult\n  order by str(x)\n  select x\n")
-		}
+		// For ROWSORT queries we already sorted rows above. Do not sort
+		// individual column values to preserve row structure.
 		sb.WriteString("for x in flatResult {\n  print(x)\n}\n")
 		if len(c.Expect) > 0 {
 			sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect flatResult == %s\n}\n", c.Name, formatExpectList(c.Expect)))

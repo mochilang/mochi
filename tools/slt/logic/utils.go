@@ -297,12 +297,14 @@ func GenerateFiles(files []string, outDir string, run bool, start, end, max int)
 			if max > 0 && generated >= max {
 				break
 			}
-			exp, _, err := EvalCase(c)
-			if err != nil {
-				return err
+			if len(c.Expect) == 0 && c.Hash == "" {
+				exp, _, err := EvalCase(c)
+				if err != nil {
+					return err
+				}
+				c.Expect = exp
+				c.Hash = ""
 			}
-			c.Expect = exp
-			c.Hash = ""
 			code := Generate(c)
 			if code == "" {
 				continue
