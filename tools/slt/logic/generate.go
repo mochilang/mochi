@@ -1114,6 +1114,7 @@ func generateUpdate(stmt string) string {
 // Generate returns Mochi source code for the given Case.
 func Generate(c Case) string {
 	var sb strings.Builder
+	uniqueInserted := false
 
 	if len(c.Comments) > 0 || c.Line > 0 {
 		sb.WriteString("/*\n")
@@ -1264,6 +1265,27 @@ func Generate(c Case) string {
 			}
 			sb.WriteString("\n  select " + expr + "\n")
 		}
+		if sel.Distinct != "" {
+			if !uniqueInserted {
+				sb.WriteString("fun unique(xs: list<any>): list<any> {\n")
+				sb.WriteString("  var out = []\n")
+				sb.WriteString("  for x in xs {\n")
+				sb.WriteString("    var found = false\n")
+				sb.WriteString("    for y in out {\n")
+				sb.WriteString("      if x == y {\n")
+				sb.WriteString("        found = true\n")
+				sb.WriteString("        break\n")
+				sb.WriteString("      }\n")
+				sb.WriteString("    }\n")
+				sb.WriteString("    if !found {\n")
+				sb.WriteString("      out = append(out, x)\n")
+				sb.WriteString("    }\n")
+				sb.WriteString("  }\n")
+				sb.WriteString("  return out\n}\n\n")
+				uniqueInserted = true
+			}
+			sb.WriteString("result = unique(result)\n")
+		}
 		if c.RowSort {
 			sb.WriteString("result = from x in result\n  order by str(x)\n  select x\n")
 		}
@@ -1332,6 +1354,27 @@ func Generate(c Case) string {
 				}
 			}
 			sb.WriteString("\n  select [" + strings.Join(exprs, ", ") + "]\n")
+		}
+		if sel.Distinct != "" {
+			if !uniqueInserted {
+				sb.WriteString("fun unique(xs: list<any>): list<any> {\n")
+				sb.WriteString("  var out = []\n")
+				sb.WriteString("  for x in xs {\n")
+				sb.WriteString("    var found = false\n")
+				sb.WriteString("    for y in out {\n")
+				sb.WriteString("      if x == y {\n")
+				sb.WriteString("        found = true\n")
+				sb.WriteString("        break\n")
+				sb.WriteString("      }\n")
+				sb.WriteString("    }\n")
+				sb.WriteString("    if !found {\n")
+				sb.WriteString("      out = append(out, x)\n")
+				sb.WriteString("    }\n")
+				sb.WriteString("  }\n")
+				sb.WriteString("  return out\n}\n\n")
+				uniqueInserted = true
+			}
+			sb.WriteString("result = unique(result)\n")
 		}
 		if c.RowSort {
 			sb.WriteString("result = from row in result\n")

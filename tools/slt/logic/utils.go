@@ -22,6 +22,42 @@ import (
 	"mochi/types"
 )
 
+// hasAggFuncs reports whether the SELECT statement uses aggregate functions.
+func hasAggFuncs(sel *sqlparser.Select) bool {
+	var checkExpr func(sqlparser.Expr) bool
+	checkExpr = func(e sqlparser.Expr) bool {
+		switch v := e.(type) {
+		case *sqlparser.FuncExpr:
+			name := strings.ToLower(v.Name.String())
+			if name == "sum" || name == "avg" || name == "min" || name == "max" || name == "count" {
+				return true
+			}
+			for _, a := range v.Exprs {
+				if ae, ok := a.(*sqlparser.AliasedExpr); ok {
+					if checkExpr(ae.Expr) {
+						return true
+					}
+				}
+			}
+		case *sqlparser.BinaryExpr:
+			return checkExpr(v.Left) || checkExpr(v.Right)
+		case *sqlparser.UnaryExpr:
+			return checkExpr(v.Expr)
+		case *sqlparser.ParenExpr:
+			return checkExpr(v.Expr)
+		}
+		return false
+	}
+	for _, se := range sel.SelectExprs {
+		if ae, ok := se.(*sqlparser.AliasedExpr); ok {
+			if checkExpr(ae.Expr) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // FindRepoRoot searches parent directories until go.mod is found.
 func FindRepoRoot() (string, error) {
 	dir, err := os.Getwd()
@@ -164,7 +200,7 @@ func EvalCase(c Case) ([]string, string, error) {
 	}
 	q := c.Query
 	if node, err := sqlparser.Parse(q); err == nil {
-		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) > 0 {
+		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 && len(sel.From) == 1 && len(sel.GroupBy) == 0 && !hasAggFuncs(sel) {
 			if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
 				if name, ok := tbl.Expr.(sqlparser.TableName); ok {
 					if !strings.EqualFold(name.Name.String(), "dual") {

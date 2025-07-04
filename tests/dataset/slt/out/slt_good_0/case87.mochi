@@ -1,5 +1,5 @@
 /*
-# line: 830
+# line: 827
 */
 
 type tab0Row {
@@ -74,8 +74,27 @@ let tab2 = [
   },
 ]
 
-/* SELECT DISTINCT + ( 38 ) * - + 29 + - - 6 AS col1, ( - - ( 49 ) ) * + - 71 col2 */
-var result = [[(38) * (-29) + 6, ((-((-((49)))))) * (-71)]]
+/* SELECT DISTINCT - col0 * 26 AS col0, - col1 AS col0 FROM tab1 AS cor0 */
+var result = from row in tab1
+  select [(-(row.col0)) * 26, (-(row.col1))]
+fun unique(xs: list<any>): list<any> {
+  var out = []
+  for x in xs {
+    var found = false
+    for y in out {
+      if x == y {
+        found = true
+        break
+      }
+    }
+    if !found {
+      out = append(out, x)
+    }
+  }
+  return out
+}
+
+result = unique(result)
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
@@ -92,6 +111,6 @@ for x in flatResult {
   print(x)
 }
 test "case87" {
-  expect flatResult == [(-1096), (-3479)]
+  expect flatResult == [(-1326), (-14), (-2210), (-2366), (-47), (-5)]
 }
 

@@ -1,5 +1,5 @@
 /*
-# line: 836
+# line: 837
 */
 
 type tab0Row {
@@ -74,24 +74,16 @@ let tab2 = [
   },
 ]
 
-/* SELECT ( + 89 ) AS col0, + 55 + 86 AS col1 */
-var result = [[(89), 55 + 86]]
-result = from row in result
-  order by join(from v in row select str(v), " " )
-  select row
-var flatResult = []
-for row in result {
-  for x in row {
-    flatResult = append(flatResult, x)
-  }
-}
-flatResult = from x in flatResult
+/* SELECT + col1 + + - col2 FROM tab2 */
+var result = from row in tab2
+  select (row.col1 + (-(row.col2)) as int)
+result = from x in result
   order by str(x)
   select x
-for x in flatResult {
+for x in result {
   print(x)
 }
-test "case88" {
-  expect flatResult == [141, 89]
-}
 
+test "case88" {
+  expect result == [28, 37, 9]
+}

@@ -1,31 +1,7 @@
 /*
-# line: 654
+# line: 635
 skipif mysql # not compatible
 */
-
-type tab2Row {
-  col0: int
-  col1: int
-  col2: int
-}
-
-let tab2 = [
-  tab2Row {
-    col0: 64,
-    col1: 77,
-    col2: 40,
-  },
-  tab2Row {
-    col0: 75,
-    col1: 67,
-    col2: 58,
-  },
-  tab2Row {
-    col0: 46,
-    col1: 51,
-    col2: 23,
-  },
-]
 
 type tab0Row {
   col0: int
@@ -75,15 +51,67 @@ let tab1 = [
   },
 ]
 
-/* SELECT + + 5 * - - 97 / - 82 AS col0 */
-var result = [(1.0 * (5 * 97)) / (-82)]
-result = from x in result
-  order by str(x)
-  select x
-for x in result {
-  print(x)
+type tab2Row {
+  col0: int
+  col1: int
+  col2: int
 }
 
-test "case66" {
-  expect result == [(-5.914634146341464)]
+let tab2 = [
+  tab2Row {
+    col0: 64,
+    col1: 77,
+    col2: 40,
+  },
+  tab2Row {
+    col0: 75,
+    col1: 67,
+    col2: 58,
+  },
+  tab2Row {
+    col0: 46,
+    col1: 51,
+    col2: 23,
+  },
+]
+
+/* SELECT DISTINCT col0 / - col2, col0 FROM tab2 AS cor0 */
+var result = from row in tab2
+  select [(1.0 * (row.col0)) / (-(row.col2)), row.col0]
+fun unique(xs: list<any>): list<any> {
+  var out = []
+  for x in xs {
+    var found = false
+    for y in out {
+      if x == y {
+        found = true
+        break
+      }
+    }
+    if !found {
+      out = append(out, x)
+    }
+  }
+  return out
 }
+
+result = unique(result)
+result = from row in result
+  order by join(from v in row select str(v), " " )
+  select row
+var flatResult = []
+for row in result {
+  for x in row {
+    flatResult = append(flatResult, x)
+  }
+}
+flatResult = from x in flatResult
+  order by str(x)
+  select x
+for x in flatResult {
+  print(x)
+}
+test "case66" {
+  expect flatResult == [(-1.293103448275862), (-1.6), (-2), 46, 64, 75]
+}
+

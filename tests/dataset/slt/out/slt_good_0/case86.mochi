@@ -1,30 +1,7 @@
 /*
-# line: 825
+# line: 820
+skipif mysql # not compatible
 */
-
-type tab2Row {
-  col0: int
-  col1: int
-  col2: int
-}
-
-let tab2 = [
-  tab2Row {
-    col0: 64,
-    col1: 77,
-    col2: 40,
-  },
-  tab2Row {
-    col0: 75,
-    col1: 67,
-    col2: 58,
-  },
-  tab2Row {
-    col0: 46,
-    col1: 51,
-    col2: 23,
-  },
-]
 
 type tab0Row {
   col0: int
@@ -74,8 +51,33 @@ let tab1 = [
   },
 ]
 
-/* SELECT - 80 * + - 4 */
-var result = [(-80) * (-4)]
+type tab2Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab2 = [
+  tab2Row {
+    col0: 64,
+    col1: 77,
+    col2: 40,
+  },
+  tab2Row {
+    col0: 75,
+    col1: 67,
+    col2: 58,
+  },
+  tab2Row {
+    col0: 46,
+    col1: 51,
+    col2: 23,
+  },
+]
+
+/* SELECT - 62 + col1 / - + col0 FROM tab1 AS cor0 */
+var result = from row in tab1
+  select (-62) + (1.0 * (row.col1)) / (-(row.col0))
 result = from x in result
   order by str(x)
   select x
@@ -84,5 +86,5 @@ for x in result {
 }
 
 test "case86" {
-  expect result == [320]
+  expect result == [(-62.05882352941177), (-62.27450980392157), (-62.51648351648352)]
 }

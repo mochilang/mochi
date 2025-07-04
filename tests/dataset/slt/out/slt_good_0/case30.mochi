@@ -1,5 +1,6 @@
 /*
-# line: 294
+# line: 295
+skipif postgresql # PostgreSQL requires AS when renaming output columns
 */
 
 type tab0Row {
@@ -74,8 +75,10 @@ let tab2 = [
   },
 ]
 
-/* SELECT + - 92 */
-var result = [(-92)]
+/* SELECT + + col2 * - col0 + - col2 col2 FROM tab1 WHERE NULL > + - col0 + - 72 */
+var result = from row in tab1
+  where (null) > (-(row.col0)) + (-72)
+  select row.col2 * (-(row.col0)) - row.col2
 result = from x in result
   order by str(x)
   select x
@@ -84,5 +87,5 @@ for x in result {
 }
 
 test "case30" {
-  expect result == [(-92)]
+  expect result == []
 }

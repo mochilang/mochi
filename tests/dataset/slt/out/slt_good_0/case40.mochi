@@ -1,30 +1,6 @@
 /*
-# line: 395
+# line: 390
 */
-
-type tab2Row {
-  col0: int
-  col1: int
-  col2: int
-}
-
-let tab2 = [
-  tab2Row {
-    col0: 64,
-    col1: 77,
-    col2: 40,
-  },
-  tab2Row {
-    col0: 75,
-    col1: 67,
-    col2: 58,
-  },
-  tab2Row {
-    col0: 46,
-    col1: 51,
-    col2: 23,
-  },
-]
 
 type tab0Row {
   col0: int
@@ -74,8 +50,51 @@ let tab1 = [
   },
 ]
 
-/* SELECT DISTINCT + + 37 AS col0 */
-var result = [37]
+type tab2Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab2 = [
+  tab2Row {
+    col0: 64,
+    col1: 77,
+    col2: 40,
+  },
+  tab2Row {
+    col0: 75,
+    col1: 67,
+    col2: 58,
+  },
+  tab2Row {
+    col0: 46,
+    col1: 51,
+    col2: 23,
+  },
+]
+
+/* SELECT DISTINCT 99 * - + col2 AS col1 FROM tab2 AS cor0 */
+var result = from row in tab2
+  select (99 * (-(row.col2)) as int)
+fun unique(xs: list<any>): list<any> {
+  var out = []
+  for x in xs {
+    var found = false
+    for y in out {
+      if x == y {
+        found = true
+        break
+      }
+    }
+    if !found {
+      out = append(out, x)
+    }
+  }
+  return out
+}
+
+result = unique(result)
 result = from x in result
   order by str(x)
   select x
@@ -84,5 +103,5 @@ for x in result {
 }
 
 test "case40" {
-  expect result == [37]
+  expect result == [(-2277), (-3960), (-5742)]
 }
