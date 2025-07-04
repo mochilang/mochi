@@ -267,6 +267,7 @@ func GenerateFiles(files []string, outDir string, run bool, start, end, max int)
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return err
 	}
+	var failed []int
 	for _, f := range files {
 		local := filepath.Join(dir, f)
 		cases, err := ParseFile(local)
@@ -318,6 +319,7 @@ func GenerateFiles(files []string, outDir string, run bool, start, end, max int)
 						}
 					}
 					_ = os.WriteFile(errPath, []byte(msg+"\n"), 0o644)
+					failed = append(failed, idx)
 				} else {
 					_ = os.Remove(errPath)
 					_ = os.Remove(strings.TrimSuffix(outPath, ".out") + ".err")
@@ -333,6 +335,9 @@ func GenerateFiles(files []string, outDir string, run bool, start, end, max int)
 			}
 			generated++
 		}
+	}
+	if len(failed) > 0 {
+		fmt.Printf("failed cases: %v\n", failed)
 	}
 	return nil
 }

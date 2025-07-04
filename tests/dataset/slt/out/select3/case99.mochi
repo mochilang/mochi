@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT a+b*2+c*3, (a+b+c+d+e)/5 FROM t1 WHERE b>c AND (e>a AND e<b) AND a>b */
 var result = from row in t1
-  where ((row.b > row.c && ((row.e > row.a && row.e < row.b))) && row.a > row.b)
-  select [((row.a + (row.b * 2)) + (row.c * 3)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  where row.b > row.c && (row.e > row.a && row.e < row.b) && row.a > row.b
+  select [row.a + row.b * 2 + row.c * 3, (row.a + row.b + row.c + row.d + row.e) / 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT abs(a), a+b*2+c*3, a+b*2, e, b FROM t1 WHERE (c<=d-2 OR c>=d+2) AND d NOT BETWEEN 110 AND 150 ORDER BY 5,4,1,2,3 */
 var result = from row in t1
-  where (((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && (row.d < 110 || row.d > 150))
-  order by [row.b, row.e, (if row.a < 0 { -(row.a) } else { row.a }), ((row.a + (row.b * 2)) + (row.c * 3)), (row.a + (row.b * 2))]
-  select [(if row.a < 0 { -(row.a) } else { row.a }), ((row.a + (row.b * 2)) + (row.c * 3)), (row.a + (row.b * 2)), row.e, row.b]
+  where (row.c <= row.d - 2 || row.c >= row.d + 2) && (row.d < 110 || row.d > 150)
+  order by [row.b, row.e, if row.a < 0 then -(row.a) else row.a, row.a + row.b * 2 + row.c * 3, row.a + row.b * 2]
+  select [if row.a < 0 then -(row.a) else row.a, row.a + row.b * 2 + row.c * 3, row.a + row.b * 2, row.e, row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

@@ -225,13 +225,13 @@ let t1 = [
 
 /* SELECT abs(b-c), d, c-d, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), b-c FROM t1 WHERE (c<=d-2 OR c>=d+2) ORDER BY 2,5,1,4,3 */
 var result = from row in t1
-  where ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))
-  order by [row.d, (row.b - row.c), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.c - row.d)]
-  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), row.d, (row.c - row.d), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.b - row.c)]
+  where (row.c <= row.d - 2 || row.c >= row.d + 2)
+  order by [row.d, row.b - row.c, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.c - row.d]
+  select [if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.d, row.c - row.d, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

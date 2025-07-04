@@ -225,16 +225,16 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), d FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND d>e AND b>c ORDER BY 3,2,1 */
 var result = from row in t1
-  where (((row.d < 110 || row.d > 150) && row.d > row.e) && row.b > row.c)
+  where (row.d < 110 || row.d > 150) && row.d > row.e && row.b > row.c
   order by [row.d, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where x.c > row.c && x.d < row.d
   select x), count(from x in t1
   where x.b < row.b
   select x)]
   select [count(from x in t1
   where x.b < row.b
   select x), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  where x.c > row.c && x.d < row.d
   select x), row.d]
 result = from row in result
   order by join(from v in row select str(v), " " )

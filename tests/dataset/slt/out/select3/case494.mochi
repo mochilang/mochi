@@ -225,9 +225,9 @@ let t1 = [
 
 /* SELECT b-c FROM t1 WHERE (e>c OR e<d) OR d NOT BETWEEN 110 AND 150 ORDER BY 1 */
 var result = from row in t1
-  where (((row.e > row.c || row.e < row.d)) || (row.d < 110 || row.d > 150))
-  order by (row.b - row.c)
-  select (row.b - row.c)
+  where (row.e > row.c || row.e < row.d) || (row.d < 110 || row.d > 150)
+  order by row.b - row.c
+  select row.b - row.c
 result = from x in result
   order by str(x)
   select x

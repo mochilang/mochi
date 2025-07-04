@@ -225,13 +225,13 @@ let t1 = [
 
 /* SELECT (SELECT count(*) FROM t1 AS x WHERE x.b<t1.b), abs(b-c), (a+b+c+d+e)/5, a+b*2+c*3+d*4, d-e FROM t1 WHERE d NOT BETWEEN 110 AND 150 OR (a>b-2 AND a<b+2) ORDER BY 1,4 */
 var result = from row in t1
-  where ((row.d < 110 || row.d > 150) || ((row.a > (row.b - 2) && row.a < (row.b + 2))))
+  where (row.d < 110 || row.d > 150) || (row.a > row.b - 2 && row.a < row.b + 2)
   order by [count(from x in t1
   where x.b < row.b
-  select x), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4))]
+  select x), row.a + row.b * 2 + row.c * 3 + row.d * 4]
   select [count(from x in t1
   where x.b < row.b
-  select x), (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), (row.d - row.e)]
+  select x), if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, (row.a + row.b + row.c + row.d + row.e) / 5, row.a + row.b * 2 + row.c * 3 + row.d * 4, row.d - row.e]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

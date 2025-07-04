@@ -225,13 +225,13 @@ let t1 = [
 
 /* SELECT c, a, (SELECT count(*) FROM t1 AS x WHERE x.c>t1.c AND x.d<t1.d), (a+b+c+d+e)/5, a-b, a+b*2+c*3 FROM t1 WHERE (e>c OR e<d) OR c>d ORDER BY 5,3,6,1 */
 var result = from row in t1
-  where (((row.e > row.c || row.e < row.d)) || row.c > row.d)
-  order by [(row.a - row.b), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), ((row.a + (row.b * 2)) + (row.c * 3)), row.c]
+  where (row.e > row.c || row.e < row.d) || row.c > row.d
+  order by [row.a - row.b, count(from x in t1
+  where x.c > row.c && x.d < row.d
+  select x), row.a + row.b * 2 + row.c * 3, row.c]
   select [row.c, row.a, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a - row.b), ((row.a + (row.b * 2)) + (row.c * 3))]
+  where x.c > row.c && x.d < row.d
+  select x), (row.a + row.b + row.c + row.d + row.e) / 5, row.a - row.b, row.a + row.b * 2 + row.c * 3]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

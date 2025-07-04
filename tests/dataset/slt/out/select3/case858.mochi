@@ -225,11 +225,11 @@ let t1 = [
 
 /* SELECT e, a+b*2+c*3, abs(a), CASE WHEN a<b-3 THEN 111 WHEN a<=b THEN 222 WHEN a<b+3 THEN 333 ELSE 444 END FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 AND a>b AND EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) ORDER BY 4,1 */
 var result = from row in t1
-  where ((((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) && row.a > row.b) && count(from x in t1
+  where (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) && row.a > row.b && count(from x in t1
   where x.b < row.b
-  select x) > 0)
-  order by [(if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) }), row.e]
-  select [row.e, ((row.a + (row.b * 2)) + (row.c * 3)), (if row.a < 0 { -(row.a) } else { row.a }), (if row.a < (row.b - 3) { 111 } else { (if row.a <= row.b { 222 } else { (if row.a < (row.b + 3) { 333 } else { 444 }) }) })]
+  select x) > 0
+  order by [if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444, row.e]
+  select [row.e, row.a + row.b * 2 + row.c * 3, if row.a < 0 then -(row.a) else row.a, if row.a < row.b - 3 then 111 else if row.a <= row.b then 222 else if row.a < row.b + 3 then 333 else 444]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
