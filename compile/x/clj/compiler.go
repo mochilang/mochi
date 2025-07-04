@@ -832,6 +832,16 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	case "&&", "||":
 		return fmt.Sprintf("(%s %s %s)", opName, left, right), types.BoolType{}
 	case "in":
+		switch rightType.(type) {
+		case types.StringType:
+			if isString(leftType) {
+				return fmt.Sprintf("(clojure.string/includes? %s %s)", right, left), types.BoolType{}
+			}
+		case types.MapType:
+			return fmt.Sprintf("(contains? %s %s)", right, left), types.BoolType{}
+		case types.ListType:
+			return fmt.Sprintf("(some #(= %s %%) %s)", left, right), types.BoolType{}
+		}
 		c.use("_in")
 		return fmt.Sprintf("(_in %s %s)", left, right), types.BoolType{}
 	case "union_all":
@@ -1029,17 +1039,89 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("(_count %s)", args[0])
 				}
 			case "avg":
-				c.use("_avg")
-				expr = fmt.Sprintf("(_avg %s)", args[0])
+				argT := c.exprType(p.Ops[i].Call.Args[0])
+				switch at := argT.(type) {
+				case types.ListType:
+					if isNumber(at.Elem) {
+						expr = fmt.Sprintf("(let [xs %s] (if (empty? xs) 0 (/ (reduce + xs) (double (count xs)))))", args[0])
+					} else {
+						c.use("_avg")
+						expr = fmt.Sprintf("(_avg %s)", args[0])
+					}
+				case types.GroupType:
+					if isNumber(at.Elem) {
+						expr = fmt.Sprintf("(let [xs (:Items %s)] (if (empty? xs) 0 (/ (reduce + xs) (double (count xs)))))", args[0])
+					} else {
+						c.use("_avg")
+						expr = fmt.Sprintf("(_avg %s)", args[0])
+					}
+				default:
+					c.use("_avg")
+					expr = fmt.Sprintf("(_avg %s)", args[0])
+				}
 			case "sum":
-				c.use("_sum")
-				expr = fmt.Sprintf("(_sum %s)", args[0])
+				argT := c.exprType(p.Ops[i].Call.Args[0])
+				switch at := argT.(type) {
+				case types.ListType:
+					if isNumber(at.Elem) {
+						expr = fmt.Sprintf("(reduce + 0 %s)", args[0])
+					} else {
+						c.use("_sum")
+						expr = fmt.Sprintf("(_sum %s)", args[0])
+					}
+				case types.GroupType:
+					if isNumber(at.Elem) {
+						expr = fmt.Sprintf("(reduce + 0 (:Items %s))", args[0])
+					} else {
+						c.use("_sum")
+						expr = fmt.Sprintf("(_sum %s)", args[0])
+					}
+				default:
+					c.use("_sum")
+					expr = fmt.Sprintf("(_sum %s)", args[0])
+				}
 			case "min":
-				c.use("_min")
-				expr = fmt.Sprintf("(_min %s)", args[0])
+				argT := c.exprType(p.Ops[i].Call.Args[0])
+				switch at := argT.(type) {
+				case types.ListType:
+					if isNumber(at.Elem) {
+						expr = fmt.Sprintf("(apply min %s)", args[0])
+					} else {
+						c.use("_min")
+						expr = fmt.Sprintf("(_min %s)", args[0])
+					}
+				case types.GroupType:
+					if isNumber(at.Elem) {
+						expr = fmt.Sprintf("(apply min (:Items %s))", args[0])
+					} else {
+						c.use("_min")
+						expr = fmt.Sprintf("(_min %s)", args[0])
+					}
+				default:
+					c.use("_min")
+					expr = fmt.Sprintf("(_min %s)", args[0])
+				}
 			case "max":
-				c.use("_max")
-				expr = fmt.Sprintf("(_max %s)", args[0])
+				argT := c.exprType(p.Ops[i].Call.Args[0])
+				switch at := argT.(type) {
+				case types.ListType:
+					if isNumber(at.Elem) {
+						expr = fmt.Sprintf("(apply max %s)", args[0])
+					} else {
+						c.use("_max")
+						expr = fmt.Sprintf("(_max %s)", args[0])
+					}
+				case types.GroupType:
+					if isNumber(at.Elem) {
+						expr = fmt.Sprintf("(apply max (:Items %s))", args[0])
+					} else {
+						c.use("_max")
+						expr = fmt.Sprintf("(_max %s)", args[0])
+					}
+				default:
+					c.use("_max")
+					expr = fmt.Sprintf("(_max %s)", args[0])
+				}
 			case "input":
 				c.use("_input")
 				expr = "(_input)"
@@ -1217,21 +1299,65 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "avg":
 			if len(args) == 1 {
+				argT := c.exprType(p.Call.Args[0])
+				switch at := argT.(type) {
+				case types.ListType:
+					if isNumber(at.Elem) {
+						return "(let [xs " + args[0] + "] (if (empty? xs) 0 (/ (reduce + xs) (double (count xs)))))", nil
+					}
+				case types.GroupType:
+					if isNumber(at.Elem) {
+						return "(let [xs (:Items " + args[0] + ")] (if (empty? xs) 0 (/ (reduce + xs) (double (count xs)))))", nil
+					}
+				}
 				c.use("_avg")
 				return "(_avg " + args[0] + ")", nil
 			}
 		case "sum":
 			if len(args) == 1 {
+				argT := c.exprType(p.Call.Args[0])
+				switch at := argT.(type) {
+				case types.ListType:
+					if isNumber(at.Elem) {
+						return "(reduce + 0 " + args[0] + ")", nil
+					}
+				case types.GroupType:
+					if isNumber(at.Elem) {
+						return "(reduce + 0 (:Items " + args[0] + "))", nil
+					}
+				}
 				c.use("_sum")
 				return "(_sum " + args[0] + ")", nil
 			}
 		case "min":
 			if len(args) == 1 {
+				argT := c.exprType(p.Call.Args[0])
+				switch at := argT.(type) {
+				case types.ListType:
+					if isNumber(at.Elem) {
+						return "(apply min " + args[0] + ")", nil
+					}
+				case types.GroupType:
+					if isNumber(at.Elem) {
+						return "(apply min (:Items " + args[0] + "))", nil
+					}
+				}
 				c.use("_min")
 				return "(_min " + args[0] + ")", nil
 			}
 		case "max":
 			if len(args) == 1 {
+				argT := c.exprType(p.Call.Args[0])
+				switch at := argT.(type) {
+				case types.ListType:
+					if isNumber(at.Elem) {
+						return "(apply max " + args[0] + ")", nil
+					}
+				case types.GroupType:
+					if isNumber(at.Elem) {
+						return "(apply max (:Items " + args[0] + "))", nil
+					}
+				}
 				c.use("_max")
 				return "(_max " + args[0] + ")", nil
 			}
