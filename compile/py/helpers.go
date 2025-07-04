@@ -145,6 +145,10 @@ func isFloat(t types.Type) bool {
 	return ok
 }
 
+func isNumeric(t types.Type) bool {
+	return isInt(t) || isFloat(t)
+}
+
 func isBool(t types.Type) bool {
 	_, ok := t.(types.BoolType)
 	return ok
