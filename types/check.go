@@ -2344,9 +2344,21 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
 				return nil
 			}
+			if _, ok := a.Elem.(StringType); ok {
+				return nil
+			}
+			if _, ok := a.Elem.(BoolType); ok {
+				return nil
+			}
 			return errAvgOperand(pos, a.Elem)
 		case GroupType:
 			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
+				return nil
+			}
+			if _, ok := a.Elem.(StringType); ok {
+				return nil
+			}
+			if _, ok := a.Elem.(BoolType); ok {
 				return nil
 			}
 			return errAvgOperand(pos, a.Elem)
@@ -2364,9 +2376,21 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
 				return nil
 			}
+			if _, ok := a.Elem.(StringType); ok {
+				return nil
+			}
+			if _, ok := a.Elem.(BoolType); ok {
+				return nil
+			}
 			return errSumOperand(pos, a.Elem)
 		case GroupType:
 			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
+				return nil
+			}
+			if _, ok := a.Elem.(StringType); ok {
+				return nil
+			}
+			if _, ok := a.Elem.(BoolType); ok {
 				return nil
 			}
 			return errSumOperand(pos, a.Elem)
@@ -2384,9 +2408,21 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
 				return nil
 			}
+			if _, ok := a.Elem.(StringType); ok {
+				return nil
+			}
+			if _, ok := a.Elem.(BoolType); ok {
+				return nil
+			}
 			return fmt.Errorf("%s() expects numeric list", name)
 		case GroupType:
 			if _, ok := a.Elem.(AnyType); ok || isNumeric(a.Elem) {
+				return nil
+			}
+			if _, ok := a.Elem.(StringType); ok {
+				return nil
+			}
+			if _, ok := a.Elem.(BoolType); ok {
 				return nil
 			}
 			return fmt.Errorf("%s() expects numeric list", name)

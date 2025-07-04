@@ -1,5 +1,6 @@
-error[T002]: undefined variable: NULL
-  --> :40:20
+cannot cast string to float
+call graph: main
+stack trace:
+  main at :36
+    select (row.y as float)))
 
-help:
-  Check if the variable was declared in this scope.
