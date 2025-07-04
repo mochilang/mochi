@@ -305,6 +305,19 @@ func mergeCppTypes(a, b string) string {
 			return "vector<" + elem + ">"
 		}
 	}
+	if strings.HasPrefix(a, "unordered_map<") && strings.HasPrefix(b, "unordered_map<") {
+		ainside := strings.TrimSuffix(strings.TrimPrefix(a, "unordered_map<"), ">")
+		binside := strings.TrimSuffix(strings.TrimPrefix(b, "unordered_map<"), ">")
+		aparts := strings.SplitN(ainside, ",", 2)
+		bparts := strings.SplitN(binside, ",", 2)
+		if len(aparts) == 2 && len(bparts) == 2 {
+			k := mergeCppTypes(strings.TrimSpace(aparts[0]), strings.TrimSpace(bparts[0]))
+			v := mergeCppTypes(strings.TrimSpace(aparts[1]), strings.TrimSpace(bparts[1]))
+			if k != "any" && v != "any" {
+				return "unordered_map<" + k + ", " + v + ">"
+			}
+		}
+	}
 	return "any"
 }
 
