@@ -1,0 +1,5 @@
+print("---a---")
+print("1")
+print("2")
+print("---b---")
+print("0")
