@@ -150,19 +150,14 @@ func inferCppPrimaryType(env *types.Env, lookup CppVarLookup, p *parser.Primary)
 				}
 				val = InferCppExprType(it.Value, env, lookup)
 			} else {
-				if t := InferCppExprType(it.Value, env, lookup); t != val {
-					val = "any"
-				}
+				t := InferCppExprType(it.Value, env, lookup)
+				val = mergeCppTypes(val, t)
 			}
 		}
 		if val == "" {
 			valType = "any"
 		} else {
-			if val == "any" {
-				valType = "any"
-			} else {
-				valType = val
-			}
+			valType = val
 		}
 		if valType == "" {
 			valType = "any"
@@ -285,6 +280,12 @@ func isPrimitive(t string) bool {
 // If the types are incompatible the result is "any".
 func mergeCppTypes(a, b string) string {
 	if a == b {
+		return a
+	}
+	if a == "auto" {
+		return b
+	}
+	if b == "auto" {
 		return a
 	}
 	if a == "" {

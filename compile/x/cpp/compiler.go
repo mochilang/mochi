@@ -1041,8 +1041,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		}
 		elemType := "int"
 		if len(p.List.Elems) > 0 {
-			if t := InferCppExprType(p.List.Elems[0], c.env, c.getVar); t != "" {
-				elemType = t
+			et := ""
+			for _, e := range p.List.Elems {
+				t := InferCppExprType(e, c.env, c.getVar)
+				et = mergeCppTypes(et, t)
+			}
+			if et != "" {
+				elemType = et
 			}
 		}
 		return fmt.Sprintf("vector<%s>{%s}", elemType, strings.Join(elems, ", "))
@@ -1194,6 +1199,8 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 		}
 		if i == 0 {
 			keyType = kt
+		} else {
+			keyType = mergeCppTypes(keyType, kt)
 		}
 		vt := InferCppExprType(it.Value, c.env, c.getVar)
 		if vt == "" {
