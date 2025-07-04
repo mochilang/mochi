@@ -196,14 +196,21 @@ func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 		switch *t.Simple {
 		case "int":
 			return types.IntType{}
+		case "float":
+			return types.FloatType{}
 		case "string":
 			return types.StringType{}
 		case "bool":
 			return types.BoolType{}
+		case "void":
+			return types.VoidType{}
 		default:
 			if env != nil {
 				if st, ok := env.GetStruct(*t.Simple); ok {
 					return st
+				}
+				if ut, ok := env.GetUnion(*t.Simple); ok {
+					return ut
 				}
 			}
 		}

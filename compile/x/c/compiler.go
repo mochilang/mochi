@@ -1988,25 +1988,32 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if p.Call.Func == "count" {
 			t := c.exprType(p.Call.Args[0])
 			arg := c.compileExpr(p.Call.Args[0])
-			if _, ok := t.(types.GroupType); ok {
+			switch t.(type) {
+			case types.GroupType:
+				return fmt.Sprintf("%s.items.len", arg)
+			case types.ListType:
+				return fmt.Sprintf("%s.len", arg)
+			default:
 				c.need(needCount)
-				return fmt.Sprintf("_count(%s.items)", arg)
+				return fmt.Sprintf("_count(%s)", arg)
 			}
-			c.need(needCount)
-			return fmt.Sprintf("_count(%s)", arg)
 		} else if p.Call.Func == "sum" {
 			arg := c.compileExpr(p.Call.Args[0])
-			if isListFloatExpr(p.Call.Args[0], c.env) {
-				c.need(needSumFloat)
-				return fmt.Sprintf("_sum_float(%s)", arg)
+			switch listElemType(p.Call.Args[0], c.env).(type) {
+			case types.FloatType:
+				return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum; })", arg, arg)
+			case types.IntType, types.BoolType:
+				return fmt.Sprintf("({ int sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum; })", arg, arg)
 			}
 			c.need(needSumInt)
 			return fmt.Sprintf("_sum_int(%s)", arg)
 		} else if p.Call.Func == "avg" {
 			arg := c.compileExpr(p.Call.Args[0])
-			if isListFloatExpr(p.Call.Args[0], c.env) {
-				c.need(needAvgFloat)
-				return fmt.Sprintf("_avg_float(%s)", arg)
+			switch listElemType(p.Call.Args[0], c.env).(type) {
+			case types.FloatType:
+				return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum/%s.len; })", arg, arg, arg)
+			case types.IntType, types.BoolType:
+				return fmt.Sprintf("({ double sum=0; for(int i=0;i<%s.len;i++) sum+=%s.data[i]; sum/%s.len; })", arg, arg, arg)
 			}
 			c.need(needAvg)
 			return fmt.Sprintf("_avg(%s)", arg)
