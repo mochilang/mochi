@@ -463,6 +463,14 @@ const (
 		"    return string(r)\n" +
 		"}\n"
 
+	helperReduce = "func _reduce[T any](src []T, fn func(T, T) T, init T) T {\n" +
+		"    acc := init\n" +
+		"    for _, v := range src {\n" +
+		"        acc = fn(acc, v)\n" +
+		"    }\n" +
+		"    return acc\n" +
+		"}\n"
+
 	helperLower = "func _lower(v any) string {\n" +
 		"    if s, ok := v.(string); ok { return strings.ToLower(s) }\n" +
 		"    return strings.ToLower(fmt.Sprint(v))\n" +
@@ -772,6 +780,7 @@ var helperMap = map[string]string{
 	"_union_all":     helperUnionAll,
 	"_union":         helperUnion,
 	"_concat":        helperConcat,
+	"_reduce":        helperReduce,
 	"_reverseSlice":  helperReverseSlice,
 	"_reverseString": helperReverseString,
 	"_lower":         helperLower,
