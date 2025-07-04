@@ -918,13 +918,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					}
 				}
 			case ValueMap:
-				key := fmt.Sprint(valueToAny(item))
+				key := fmt.Sprint(item.ToAny())
 				_, found = container.Map[key]
 			case ValueStr:
 				if item.Tag == ValueStr {
 					found = strings.Contains(container.Str, item.Str)
 				} else {
-					found = strings.Contains(container.Str, fmt.Sprint(valueToAny(item)))
+					found = strings.Contains(container.Str, fmt.Sprint(item.ToAny()))
 				}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid 'in' operand"), trace, ins.Line)
@@ -1123,19 +1123,19 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fr.regs[ins.A] = Value{Tag: ValueMap, Map: mp}
 		case OpPrint:
-			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]))
+			fmt.Fprintln(m.writer, fr.regs[ins.A].ToAny())
 		case OpPrint2:
-			fmt.Fprintln(m.writer, valueToAny(fr.regs[ins.A]), valueToAny(fr.regs[ins.B]))
+			fmt.Fprintln(m.writer, fr.regs[ins.A].ToAny(), fr.regs[ins.B].ToAny())
 		case OpPrintN:
 			var sb strings.Builder
 			for i := 0; i < ins.B; i++ {
-				fmt.Fprintf(&sb, "%v ", valueToAny(fr.regs[ins.C+i]))
+				fmt.Fprintf(&sb, "%v ", fr.regs[ins.C+i].ToAny())
 			}
 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
 			fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
 		case OpJSON:
-			b, _ := json.Marshal(valueToAny(fr.regs[ins.A]))
+			b, _ := json.Marshal(fr.regs[ins.A].ToAny())
 			fmt.Fprintln(m.writer, string(b))
 		case OpAppend:
 			lst := fr.regs[ins.B]
@@ -1359,7 +1359,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = fr.regs[ins.D]
 			}
 		case OpStr:
-			fr.regs[ins.A] = Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(fr.regs[ins.B]))}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: fmt.Sprint(fr.regs[ins.B].ToAny())}
 		case OpUpper:
 			b := fr.regs[ins.B]
 			if b.Tag != ValueStr {
@@ -1371,7 +1371,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if b.Tag == ValueStr {
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(b.Str)}
 			} else {
-				fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(b)))}
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(b.ToAny()))}
 			}
 		case OpReverse:
 			val := fr.regs[ins.B]
@@ -1443,7 +1443,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 		case OpLoad:
 			path := fr.regs[ins.B].Str
-			opts := valueToAny(fr.regs[ins.C])
+			opts := fr.regs[ins.C].ToAny()
 			optMap, _ := opts.(map[string]any)
 			format := "csv"
 			header := true
@@ -1502,18 +1502,18 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					if err != nil {
 						return Value{}, m.newError(err, trace, ins.Line)
 					}
-					out[i] = anyToValue(cv)
+					out[i] = FromAny(cv)
 				}
 			} else {
 				for i, row := range rows {
-					out[i] = anyToValue(row)
+					out[i] = FromAny(row)
 				}
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpSave:
 			srcVal := fr.regs[ins.B]
 			path := fr.regs[ins.C].Str
-			opts := valueToAny(fr.regs[ins.D])
+			opts := fr.regs[ins.D].ToAny()
 			optMap := toAnyMap(opts)
 			format := "csv"
 			header := false
@@ -1529,7 +1529,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					delim = rune(d[0])
 				}
 			}
-			rows, ok := toMapSlice(valueToAny(srcVal))
+			rows, ok := toMapSlice(srcVal.ToAny())
 			if !ok {
 				return Value{}, m.newError(fmt.Errorf("save source must be list of maps"), trace, ins.Line)
 			}
@@ -1595,13 +1595,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			if urlVal.Tag != ValueStr {
 				return Value{}, m.newError(fmt.Errorf("fetch URL must be string"), trace, ins.Line)
 			}
-			opts := valueToAny(fr.regs[ins.C])
+			opts := fr.regs[ins.C].ToAny()
 			optMap := toAnyMap(opts)
 			res, err := mhttp.FetchWith(urlVal.Str, optMap)
 			if err != nil {
 				return Value{}, m.newError(err, trace, ins.Line)
 			}
-			fr.regs[ins.A] = anyToValue(res)
+			fr.regs[ins.A] = FromAny(res)
 		case OpCount:
 			lst := fr.regs[ins.B]
 			if lst.Tag == ValueNull {
@@ -1799,13 +1799,13 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fr.regs[ins.A] = Value{Tag: ValueList, List: vals}
 		case OpCast:
-			val := valueToAny(fr.regs[ins.B])
+			val := fr.regs[ins.B].ToAny()
 			typ := m.prog.Types[ins.C]
 			cv, err := castValue(typ, val)
 			if err != nil {
 				return Value{}, m.newError(err, trace, ins.Line)
 			}
-			fr.regs[ins.A] = anyToValue(cv)
+			fr.regs[ins.A] = FromAny(cv)
 		case OpMakeClosure:
 			caps := make([]Value, ins.C)
 			copy(caps, fr.regs[ins.D:ins.D+ins.C])
@@ -2372,7 +2372,7 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		r := fc.compileExpr(s.Let.Value)
 		fc.vars[s.Let.Name] = r
 		if v, ok := fc.evalConstExpr(s.Let.Value); ok {
-			fc.comp.env.SetValue(s.Let.Name, valueToAny(v), false)
+			fc.comp.env.SetValue(s.Let.Name, v.ToAny(), false)
 		}
 		return nil
 	case s.Var != nil:
@@ -6144,7 +6144,7 @@ func literalToValue(l *parser.Literal) (Value, bool) {
 }
 
 func valueToExpr(v Value) *parser.Expr {
-	anyVal := valueToAny(v)
+	anyVal := v.ToAny()
 	if lit := types.AnyToLiteral(anyVal); lit != nil {
 		return &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Lit: lit}}}}}
 	}
@@ -6396,7 +6396,7 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		}
 		if name, ok := identName(a); ok {
 			if val, err := fc.comp.env.GetValue(name); err == nil {
-				args[i] = anyToValue(val)
+				args[i] = FromAny(val)
 				continue
 			}
 		}
@@ -6427,7 +6427,7 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		if len(args) != 1 {
 			return Value{}, false
 		}
-		return Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(args[0]))}, true
+		return Value{Tag: ValueStr, Str: fmt.Sprint(args[0].ToAny())}, true
 	case "lower":
 		if len(args) != 1 {
 			return Value{}, false
@@ -6436,7 +6436,7 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		if v.Tag == ValueStr {
 			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true
 		}
-		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(v)))}, true
+		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(v.ToAny()))}, true
 	case "upper":
 		if len(args) != 1 {
 			return Value{}, false
@@ -6445,7 +6445,7 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 		if v.Tag == ValueStr {
 			return Value{Tag: ValueStr, Str: strings.ToUpper(v.Str)}, true
 		}
-		return Value{Tag: ValueStr, Str: strings.ToUpper(fmt.Sprint(valueToAny(v)))}, true
+		return Value{Tag: ValueStr, Str: strings.ToUpper(fmt.Sprint(v.ToAny()))}, true
 	case "reverse":
 		if len(args) != 1 {
 			return Value{}, false
@@ -6672,7 +6672,7 @@ func (fc *funcCompiler) evalPureFunc(name string, args []Value) (Value, bool) {
 	}
 	env := fc.comp.env.Copy()
 	for i, p := range fn.Params {
-		env.SetValue(p.Name, valueToAny(args[i]), false)
+		env.SetValue(p.Name, args[i].ToAny(), false)
 	}
 	tmpComp := &compiler{prog: fc.comp.prog, env: env}
 	tmpFC := &funcCompiler{comp: tmpComp, constRegs: map[string]int{}}
@@ -6788,11 +6788,11 @@ func (fc *funcCompiler) evalConstPostfix(p *parser.PostfixExpr) (Value, bool) {
 		switch {
 		case op.Cast != nil:
 			typ := resolveTypeRef(op.Cast.Type, fc.comp.env)
-			cv, err := castValue(typ, valueToAny(v))
+			cv, err := castValue(typ, v.ToAny())
 			if err != nil {
 				return Value{}, false
 			}
-			v = anyToValue(cv)
+			v = FromAny(cv)
 		case op.Call != nil || op.Index != nil || op.Field != nil:
 			return Value{}, false
 		}
@@ -6844,7 +6844,7 @@ func (fc *funcCompiler) evalConstPrimary(p *parser.Primary) (Value, bool) {
 	case p.Selector != nil:
 		if len(p.Selector.Tail) == 0 {
 			if val, err := fc.comp.env.GetValue(p.Selector.Root); err == nil {
-				return anyToValue(val), true
+				return FromAny(val), true
 			}
 		}
 		return Value{}, false
@@ -6950,7 +6950,7 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 			}
 			return Value{Tag: ValueBool, Bool: false}, true
 		case ValueMap:
-			key := fmt.Sprint(valueToAny(a))
+			key := fmt.Sprint(a.ToAny())
 			_, ok := b.Map[key]
 			return Value{Tag: ValueBool, Bool: ok}, true
 		case ValueStr:
@@ -7023,108 +7023,9 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 	return Value{}, false
 }
 
-func valueToAny(v Value) any {
-	switch v.Tag {
-	case ValueInt:
-		return v.Int
-	case ValueFloat:
-		return v.Float
-	case ValueBool:
-		return v.Bool
-	case ValueStr:
-		return v.Str
-	case ValueList:
-		out := make([]any, len(v.List))
-		for i, x := range v.List {
-			out[i] = valueToAny(x)
-		}
-		return out
-	case ValueMap:
-		m := make(map[string]any, len(v.Map))
-		for k, x := range v.Map {
-			m[k] = valueToAny(x)
-		}
-		return m
-	default:
-		return "null"
-	}
-}
+func valueToAny(v Value) any { return v.ToAny() }
 
-func anyToValue(v any) Value {
-	switch val := v.(type) {
-	case nil:
-		return Value{Tag: ValueNull}
-	case int:
-		return Value{Tag: ValueInt, Int: val}
-	case int64:
-		return Value{Tag: ValueInt, Int: int(val)}
-	case int32:
-		return Value{Tag: ValueInt, Int: int(val)}
-	case int16:
-		return Value{Tag: ValueInt, Int: int(val)}
-	case int8:
-		return Value{Tag: ValueInt, Int: int(val)}
-	case uint:
-		return Value{Tag: ValueInt, Int: int(val)}
-	case uint64:
-		return Value{Tag: ValueInt, Int: int(val)}
-	case uint32:
-		return Value{Tag: ValueInt, Int: int(val)}
-	case uint16:
-		return Value{Tag: ValueInt, Int: int(val)}
-	case uint8:
-		return Value{Tag: ValueInt, Int: int(val)}
-	case float64:
-		return Value{Tag: ValueFloat, Float: val}
-	case float32:
-		return Value{Tag: ValueFloat, Float: float64(val)}
-	case string:
-		return Value{Tag: ValueStr, Str: val}
-	case bool:
-		return Value{Tag: ValueBool, Bool: val}
-	case []any:
-		list := make([]Value, len(val))
-		for i, x := range val {
-			list[i] = anyToValue(x)
-		}
-		return Value{Tag: ValueList, List: list}
-	case map[string]any:
-		m := make(map[string]Value, len(val))
-		for k, x := range val {
-			m[k] = anyToValue(x)
-		}
-		return Value{Tag: ValueMap, Map: m}
-	case map[int]any:
-		m := make(map[string]Value, len(val))
-		for k, x := range val {
-			m[fmt.Sprintf("%d", k)] = anyToValue(x)
-		}
-		return Value{Tag: ValueMap, Map: m}
-	case map[any]any:
-		m := make(map[string]Value, len(val))
-		for k, x := range val {
-			m[fmt.Sprint(k)] = anyToValue(x)
-		}
-		return Value{Tag: ValueMap, Map: m}
-	default:
-		rv := reflect.ValueOf(v)
-		switch rv.Kind() {
-		case reflect.Slice, reflect.Array:
-			list := make([]Value, rv.Len())
-			for i := 0; i < rv.Len(); i++ {
-				list[i] = anyToValue(rv.Index(i).Interface())
-			}
-			return Value{Tag: ValueList, List: list}
-		case reflect.Map:
-			m := make(map[string]Value, rv.Len())
-			for _, key := range rv.MapKeys() {
-				m[fmt.Sprint(key.Interface())] = anyToValue(rv.MapIndex(key).Interface())
-			}
-			return Value{Tag: ValueMap, Map: m}
-		}
-		return Value{Tag: ValueNull}
-	}
-}
+func anyToValue(v any) Value { return FromAny(v) }
 
 func valueToString(v Value) string {
 	visited := map[uintptr]bool{}
@@ -7458,7 +7359,7 @@ func valueLess(a, b Value) bool {
 			return len(a.Map) < len(b.Map)
 		}
 	}
-	return fmt.Sprint(valueToAny(a)) < fmt.Sprint(valueToAny(b))
+	return fmt.Sprint(a.ToAny()) < fmt.Sprint(b.ToAny())
 }
 
 // resolveTypeRef converts a parsed type reference into a concrete type using env.
