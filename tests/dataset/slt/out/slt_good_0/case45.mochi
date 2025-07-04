@@ -78,6 +78,9 @@ let tab2 = [
 var result = from row in tab1
   select [row.col2 * 97 * (-54), (-(row.col2))]
 result = from row in result
+  group by row into g
+  select g.key
+result = from row in result
   order by join(from v in row select str(v), " " )
   select row
 var flatResult = []
