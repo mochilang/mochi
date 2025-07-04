@@ -622,12 +622,30 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				tail = tail[1:]
 			}
 		}
-		for _, s := range tail {
+		for i, s := range tail {
+			rest := tail[i:]
 			switch t := typ.(type) {
 			case types.MapType:
-				c.use("_get")
-				expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
+				expr = fmt.Sprintf("%s[%q]", expr, sanitizeName(s))
 				typ = t.Value
+			case types.StructType:
+				if ft, ok := t.Fields[s]; ok {
+					expr = fmt.Sprintf("%s.%s", expr, sanitizeName(s))
+					typ = ft
+				} else {
+					c.use("_get")
+					expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
+					typ = types.AnyType{}
+				}
+			case types.UnionType:
+				if ft, ok := unionFieldPathType(t, rest); ok {
+					expr = fmt.Sprintf("%s.%s", expr, sanitizeName(s))
+					typ = ft
+				} else {
+					c.use("_get")
+					expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
+					typ = types.AnyType{}
+				}
 			default:
 				c.use("_get")
 				expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))

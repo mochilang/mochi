@@ -5,23 +5,6 @@ import dataclasses
 import typing
 
 
-def _get(obj, name):
-    if obj is None:
-        return None
-    if isinstance(obj, dict):
-        if name in obj:
-            return obj[name]
-    if hasattr(obj, name):
-        return getattr(obj, name)
-    if isinstance(obj, (list, tuple)):
-        for it in obj:
-            try:
-                return _get(it, name)
-            except Exception:
-                pass
-    raise Exception("field not found: " + name)
-
-
 @dataclasses.dataclass
 class Person:
     name: str
@@ -44,7 +27,7 @@ def main():
         Person(name="Charlie", age=65),
     ]
     global names
-    names = [_get(p, "name") for p in people if (_get(p, "age") >= 18)]
+    names = [p.name for p in people if (p.age >= 18)]
     for n in names:
         print(n)
 

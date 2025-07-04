@@ -5,23 +5,6 @@ import dataclasses
 import typing
 
 
-def _get(obj, name):
-    if obj is None:
-        return None
-    if isinstance(obj, dict):
-        if name in obj:
-            return obj[name]
-    if hasattr(obj, name):
-        return getattr(obj, name)
-    if isinstance(obj, (list, tuple)):
-        for it in obj:
-            try:
-                return _get(it, name)
-            except Exception:
-                pass
-    raise Exception("field not found: " + name)
-
-
 class Tree:
     pass
 
@@ -44,7 +27,7 @@ t = Node(left=Leaf(), value=42, right=Leaf())
 def main():
     global t
     t = Node(left=Leaf(), value=42, right=Leaf())
-    print(_get(t, "value"))
+    print(t.value)
 
 
 if __name__ == "__main__":

@@ -5,23 +5,6 @@ import dataclasses
 import typing
 
 
-def _get(obj, name):
-    if obj is None:
-        return None
-    if isinstance(obj, dict):
-        if name in obj:
-            return obj[name]
-    if hasattr(obj, name):
-        return getattr(obj, name)
-    if isinstance(obj, (list, tuple)):
-        for it in obj:
-            try:
-                return _get(it, name)
-            except Exception:
-                pass
-    raise Exception("field not found: " + name)
-
-
 @dataclasses.dataclass
 class Num:
     val: int
@@ -36,9 +19,9 @@ def main():
     global items
     items = [Num(val=1), Num(val=2), Num(val=3)]
     global a
-    a = [_get(x, "val") for x in (([x for x in items])[max((-1), 0) :])[: max(2, 0)]]
+    a = [x.val for x in (([x for x in items])[max((-1), 0) :])[: max(2, 0)]]
     global b
-    b = [_get(x, "val") for x in (([x for x in items])[max(1, 0) :])[: max((-1), 0)]]
+    b = [x.val for x in (([x for x in items])[max(1, 0) :])[: max((-1), 0)]]
     print("---a---")
     for v in a:
         print(v)

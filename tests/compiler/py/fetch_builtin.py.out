@@ -4,6 +4,10 @@ from __future__ import annotations
 import json
 import urllib.request
 
+from typing import Any, TypeVar
+
+T = TypeVar("T")
+
 
 def _fetch(url, opts):
     import urllib.request, urllib.parse, json
