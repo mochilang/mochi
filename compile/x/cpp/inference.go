@@ -168,6 +168,40 @@ func inferCppPrimaryType(env *types.Env, lookup CppVarLookup, p *parser.Primary)
 			valType = "any"
 		}
 		return "unordered_map<" + keyType + ", " + valType + ">"
+	case p.Call != nil:
+		switch p.Call.Func {
+		case "len", "count", "now":
+			return "int"
+		case "str", "substr", "input", "json":
+			return "string"
+		case "sum", "avg":
+			return "double"
+		case "min":
+			if len(p.Call.Args) > 0 {
+				t := InferCppExprType(p.Call.Args[0], env, lookup)
+				if strings.HasPrefix(t, "vector<") {
+					return strings.TrimSuffix(strings.TrimPrefix(t, "vector<"), ">")
+				}
+			}
+			return "auto"
+		case "reverse", "concat":
+			if len(p.Call.Args) > 0 {
+				return InferCppExprType(p.Call.Args[0], env, lookup)
+			}
+			return "auto"
+		case "load":
+			return "vector<unordered_map<string,string>>"
+		case "fetch":
+			return "unordered_map<string,string>"
+		case "reduce":
+			if len(p.Call.Args) == 3 {
+				return InferCppExprType(p.Call.Args[2], env, lookup)
+			}
+			return "auto"
+		case "save":
+			return "void"
+		}
+		return "auto"
 	case p.If != nil:
 		thenT := InferCppExprType(p.If.Then, env, lookup)
 		elseT := ""
