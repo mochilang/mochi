@@ -1207,23 +1207,12 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 		v := c.compileExpr(it.Value)
 		items[i] = fmt.Sprintf("{%s, %s}", k, v)
 	}
-	castVals := false
-	if len(valTypes) == 1 {
-		for t := range valTypes {
-			valType = t
-		}
-		if valType == "auto" {
-			valType = "any"
-			castVals = true
-		}
-	} else {
-		valType = "any"
-		castVals = true
-	}
-	if valType == "" {
-		valType = "any"
-	}
+	valType = mergeTypeSet(valTypes)
+	castVals := valType == "any" || valType == "auto" || valType == ""
 	if castVals {
+		if valType == "auto" || valType == "" {
+			valType = "any"
+		}
 		for i, it := range m.Items {
 			k := c.compileExpr(it.Key)
 			if name, ok := selectorName(it.Key); ok {
@@ -1232,6 +1221,9 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) string {
 			v := c.compileExpr(it.Value)
 			items[i] = fmt.Sprintf("{%s, any(%s)}", k, v)
 		}
+	}
+	if valType == "" {
+		valType = "any"
 	}
 	return fmt.Sprintf("unordered_map<%s, %s>{%s}", keyType, valType, strings.Join(items, ", "))
 }
