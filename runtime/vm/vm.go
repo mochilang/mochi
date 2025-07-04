@@ -718,17 +718,27 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 		case OpNeg:
 			b := fr.regs[ins.B]
-			if b.Tag == ValueFloat {
+			if b.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else if b.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b.Int}
 			}
 		case OpNegInt:
-			b := toInt(fr.regs[ins.B])
-			fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b}
+			bVal := fr.regs[ins.B]
+			if bVal.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: -toInt(bVal)}
+			}
 		case OpNegFloat:
 			b := fr.regs[ins.B]
-			fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
+			if b.Tag == ValueNull {
+				fr.regs[ins.A] = Value{Tag: ValueNull}
+			} else {
+				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
+			}
 		case OpMul:
 			b := fr.regs[ins.B]
 			c := fr.regs[ins.C]
