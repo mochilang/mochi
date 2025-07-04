@@ -21,6 +21,8 @@ The converter currently handles the following patterns:
 - `substr()` -> `substring()`
 - `group_concat()` -> `string_agg()`
 - `char_length()` -> `length()`
+- `printf()` -> `format()`
+- `instr()` -> `strpos()`
 - `datetime('now')` -> `now()`
 - `date('now')` -> `current_date`
 - `CURRENT_DATE` -> `current_date`
