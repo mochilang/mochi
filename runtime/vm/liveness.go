@@ -780,7 +780,7 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 			return Value{Tag: ValueBool, Bool: !v.Bool}, true
 		}
 	case OpStr:
-		return Value{Tag: ValueStr, Str: fmt.Sprint(valueToAny(v))}, true
+		return Value{Tag: ValueStr, Str: fmt.Sprint(v.ToAny())}, true
 	case OpUpper:
 		if v.Tag == ValueStr {
 			return Value{Tag: ValueStr, Str: strings.ToUpper(v.Str)}, true
@@ -789,7 +789,7 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 		if v.Tag == ValueStr {
 			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true
 		}
-		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(valueToAny(v)))}, true
+		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(v.ToAny()))}, true
 	case OpFirst:
 		if lst, ok := toList(v); ok {
 			if len(lst) > 0 {
