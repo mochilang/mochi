@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT + 90 + 72 AS col0 */
-var result = [90 + 72]
+var result = [(90 + 72 as int)]
 result = from x in result
   order by str(x)
   select x

@@ -2,6 +2,30 @@
 # line: 1340
 */
 
+type tab2Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab2 = [
+  tab2Row {
+    col0: 64,
+    col1: 77,
+    col2: 40,
+  },
+  tab2Row {
+    col0: 75,
+    col1: 67,
+    col2: 58,
+  },
+  tab2Row {
+    col0: 46,
+    col1: 51,
+    col2: 23,
+  },
+]
+
 type tab0Row {
   col0: int
   col1: int
@@ -50,32 +74,8 @@ let tab1 = [
   },
 ]
 
-type tab2Row {
-  col0: int
-  col1: int
-  col2: int
-}
-
-let tab2 = [
-  tab2Row {
-    col0: 64,
-    col1: 77,
-    col2: 40,
-  },
-  tab2Row {
-    col0: 75,
-    col1: 67,
-    col2: 58,
-  },
-  tab2Row {
-    col0: 46,
-    col1: 51,
-    col2: 23,
-  },
-]
-
 /* SELECT DISTINCT - + 97 - - 55 AS col0 */
-var result = [(-97) - (-55)]
+var result = [((-97) - (-55) as int)]
 result = from x in result
   order by str(x)
   select x

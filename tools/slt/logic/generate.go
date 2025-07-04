@@ -1183,6 +1183,9 @@ func Generate(c Case) string {
 			return ""
 		}
 		expr := exprToMochi(ae.Expr, subs)
+		if expectAllInts(c.Expect) {
+			expr = "(" + expr + " as int)"
+		}
 		cond := condToMochi(sel.Where, subs)
 		if len(sel.From) == 0 || (len(sel.From) == 1 && func() bool {
 			if tbl, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
@@ -1318,4 +1321,16 @@ func formatExpectList(xs []string) string {
 	}
 	sb.WriteString("]")
 	return sb.String()
+}
+
+func expectAllInts(xs []string) bool {
+	if len(xs) == 0 {
+		return false
+	}
+	for _, s := range xs {
+		if _, err := strconv.Atoi(s); err != nil {
+			return false
+		}
+	}
+	return true
 }
