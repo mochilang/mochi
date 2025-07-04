@@ -44,6 +44,28 @@ func ExprTypeHint(e *parser.Expr, hint Type, env *Env) Type {
 			}
 		}
 	}
+	if mt, ok := hint.(MapType); ok {
+		if e.Binary != nil && len(e.Binary.Right) == 0 {
+			if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+				if len(ml.Items) == 0 {
+					return MapType{Key: mt.Key, Value: mt.Value}
+				}
+				key := ExprTypeHint(ml.Items[0].Key, mt.Key, env)
+				val := ExprTypeHint(ml.Items[0].Value, mt.Value, env)
+				for _, it := range ml.Items[1:] {
+					kt := ExprTypeHint(it.Key, mt.Key, env)
+					vt := ExprTypeHint(it.Value, mt.Value, env)
+					if !equalTypes(key, kt) {
+						key = AnyType{}
+					}
+					if !equalTypes(val, vt) {
+						val = AnyType{}
+					}
+				}
+				return MapType{Key: key, Value: val}
+			}
+		}
+	}
 	return ExprType(e, env)
 }
 
