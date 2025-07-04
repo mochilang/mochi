@@ -789,13 +789,6 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 			return fmt.Sprintf("if %s < 0 then -(%s) else %s", ex, ex, ex)
 		}
 		if name == "coalesce" && len(v.Exprs) > 0 {
-			for _, ex := range v.Exprs {
-				if ae, ok := ex.(*sqlparser.AliasedExpr); ok {
-					if s, ok := constNotNull(ae.Expr); ok {
-						return s
-					}
-				}
-			}
 			out := exprToMochiRow(v.Exprs[len(v.Exprs)-1].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
 			for i := len(v.Exprs) - 2; i >= 0; i-- {
 				arg := exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
@@ -1358,8 +1351,11 @@ func formatExpectList(xs []string) string {
 			sb.WriteString(", ")
 		}
 		if f, err := strconv.ParseFloat(x, 64); err == nil {
-			if strings.ContainsAny(x, "eE") {
+			if strings.ContainsAny(x, "eE") || strings.Contains(x, ".") {
 				x = strconv.FormatFloat(f, 'f', -1, 64)
+				if !strings.ContainsAny(x, ".eE") {
+					x += ".0"
+				}
 			}
 		}
 		if strings.HasPrefix(x, "-") {
