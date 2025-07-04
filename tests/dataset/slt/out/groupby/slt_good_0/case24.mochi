@@ -1,0 +1,90 @@
+/*
+# line: 200
+*/
+
+type tab0Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab0 = [
+  tab0Row {
+    col0: 83,
+    col1: 0,
+    col2: 38,
+  },
+  tab0Row {
+    col0: 26,
+    col1: 0,
+    col2: 79,
+  },
+  tab0Row {
+    col0: 43,
+    col1: 81,
+    col2: 24,
+  },
+]
+
+type tab1Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab1 = [
+  tab1Row {
+    col0: 22,
+    col1: 6,
+    col2: 8,
+  },
+  tab1Row {
+    col0: 28,
+    col1: 57,
+    col2: 45,
+  },
+  tab1Row {
+    col0: 82,
+    col1: 44,
+    col2: 71,
+  },
+]
+
+type tab2Row {
+  col0: int
+  col1: int
+  col2: int
+}
+
+let tab2 = [
+  tab2Row {
+    col0: 15,
+    col1: 61,
+    col2: 87,
+  },
+  tab2Row {
+    col0: 91,
+    col1: 59,
+    col2: 79,
+  },
+  tab2Row {
+    col0: 92,
+    col1: 41,
+    col2: 58,
+  },
+]
+
+/* SELECT 62 AS col1 FROM tab1 AS cor0 GROUP BY cor0.col0 */
+var result = from row in tab1
+  group by row.col0 into g
+  select 62
+result = from x in result
+  order by str(x)
+  select x
+for x in result {
+  print(x)
+}
+
+test "case24" {
+  expect result == [62, 62, 62]
+}
