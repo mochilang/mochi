@@ -1,0 +1,5 @@
+fun inc(x: int): int { return x + 1 }
+fun apply(f: fun(int): int, x: int): int { return f(x) }
+
+print(apply(inc, 5))
+print(apply(fun(y: int): int => y * 2, 7))

@@ -1,0 +1,22 @@
+type Person { id: int, name: string }
+type Purchase { id: int, personId: int, total: int }
+
+let people = [
+  Person { id: 1, name: "Alice" },
+  Person { id: 2, name: "Bob" }
+]
+
+let purchases = [
+  Purchase { id: 10, personId: 1, total: 100 },
+  Purchase { id: 11, personId: 2, total: 200 }
+]
+
+let result = from p in people
+             join o in purchases on p.id == o.personId
+             where p.id > 1
+             select { pid: p.id, amount: o.total }
+
+for r in result {
+  print(r.pid, r.amount)
+}
+

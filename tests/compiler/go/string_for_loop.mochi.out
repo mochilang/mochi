@@ -1,0 +1,3 @@
+for ch in "cat" {
+  print(ch)
+}

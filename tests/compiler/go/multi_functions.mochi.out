@@ -1,0 +1,7 @@
+fun add(x: int, y: int): int { return x + y }
+fun sub(x: int, y: int): int { return x - y }
+fun mul(x: int, y: int): int { return x * y }
+
+print(add(1,2))
+print(sub(10,3))
+print(mul(4,6))

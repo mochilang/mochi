@@ -1,0 +1,5 @@
+fun foo(m: map<string,int>) {
+  print(len(m))
+}
+
+foo({})
