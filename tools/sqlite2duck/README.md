@@ -20,8 +20,11 @@ The converter currently handles the following patterns:
 - `ifnull()` -> `coalesce()`
 - `substr()` -> `substring()`
 - `group_concat()` -> `string_agg()`
+- `char_length()` -> `length()`
 - `datetime('now')` -> `now()`
 - `date('now')` -> `current_date`
+- `CURRENT_DATE` -> `current_date`
+- `CURRENT_TIME` -> `current_time`
 - `randomblob(n)` -> `random_bytes(n)`
 - `total(x)` -> `coalesce(sum(x),0)`
 - remove `NOT INDEXED` clauses
