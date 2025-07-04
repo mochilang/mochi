@@ -13,11 +13,11 @@ type t1Row {
 let t1 = [
   t1Row {
     x: 1,
-    y: "true" + "",
+    y: "tru" + "e",
   },
   t1Row {
     x: 0,
-    y: "false" + "",
+    y: "fal" + "se",
   },
   t1Row {
     x: null,
@@ -25,11 +25,11 @@ let t1 = [
   },
   t1Row {
     x: 2,
-    y: "true" + "",
+    y: "tru" + "e",
   },
   t1Row {
     x: 2,
-    y: "true" + "",
+    y: "tru" + "e",
   },
 ]
 

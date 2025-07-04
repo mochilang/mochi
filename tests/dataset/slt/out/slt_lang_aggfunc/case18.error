@@ -1,7 +1,6 @@
-expect condition failed at :40: expect result == 0
+cannot cast string to float
 call graph: main
 stack trace:
-  main at :40
-    expect result == 0
+  main at :36
+    select (row.y as float)))
 
-got: [0.3333333333333333]

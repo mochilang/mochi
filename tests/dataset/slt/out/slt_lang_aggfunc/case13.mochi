@@ -10,11 +10,11 @@ type t1Row {
 let t1 = [
   t1Row {
     x: 1,
-    y: "true" + "",
+    y: "tru" + "e",
   },
   t1Row {
     x: 0,
-    y: "false" + "",
+    y: "fal" + "se",
   },
   t1Row {
     x: null,
@@ -22,18 +22,18 @@ let t1 = [
   },
   t1Row {
     x: 2,
-    y: "true" + "",
+    y: "tru" + "e",
   },
   t1Row {
     x: 2,
-    y: "true" + "",
+    y: "tru" + "e",
   },
 ]
 
 /* SELECT total(y) FROM t1 */
 var result = sum(from row in t1
   where row.y != null
-  select row.y)
+  select (row.y as float))
 result = if result == null then 0.0 else (result as float)
 print(result)
 

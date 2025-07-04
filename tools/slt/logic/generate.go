@@ -109,8 +109,11 @@ func formatValue(v any) string {
 		return "null"
 	case string:
 		lower := strings.ToLower(t)
-		if lower == "true" || lower == "false" {
-			return strconv.Quote(t) + " + \"\""
+		if lower == "true" {
+			return "\"tru\" + \"e\""
+		}
+		if lower == "false" {
+			return "\"fal\" + \"se\""
 		}
 		return strconv.Quote(t)
 	case bool:
@@ -1312,7 +1315,7 @@ func Generate(c Case) string {
 						sb.WriteString("\n  select row)\n")
 						sb.WriteString("print(result)\n\n")
 						if len(c.Expect) > 0 {
-							sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
+							sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, normalizeExpect(c.Expect[0])))
 						}
 						return sb.String()
 					}
@@ -1321,28 +1324,46 @@ func Generate(c Case) string {
 				// general single-arg aggregates
 				if len(fn.Exprs) >= 1 && len(fn.Exprs) <= 2 {
 					arg := fn.Exprs[0].(*sqlparser.AliasedExpr).Expr
-					expr := exprToMochi(arg, subs)
+					exprOrig := exprToMochi(arg, subs)
+					expr := exprOrig
+					if col, ok := arg.(*sqlparser.ColName); ok {
+						if t, ok := c.Tables[tblNameStr]; ok {
+							for i, ccol := range t.Columns {
+								if strings.EqualFold(ccol, col.Name.String()) {
+									typ := strings.ToLower(t.Types[i])
+									if strings.Contains(typ, "char") || strings.Contains(typ, "text") || strings.Contains(typ, "varchar") || strings.Contains(typ, "clob") {
+										expr = fmt.Sprintf("(%s as float)", exprOrig)
+									}
+									break
+								}
+							}
+						}
+					}
 					cond := condToMochi(sel.Where, subs)
 					if name == "count" {
 						if cond != "" {
-							cond += " && " + expr + " != null"
+							cond += " && " + exprOrig + " != null"
 						} else {
-							cond = expr + " != null"
+							cond = exprOrig + " != null"
 						}
-						sb.WriteString("let result = count(from row in " + tblNameStr)
+						list := "from row in " + tblNameStr
 						if cond != "" {
-							sb.WriteString("\n  where " + cond)
+							list += "\n  where " + cond
 						}
-						sb.WriteString("\n  select row)\n")
+						list += "\n  select row"
+						if fn.Distinct {
+							list = "distinct(" + list + ")"
+						}
+						sb.WriteString("let result = count(" + list + ")\n")
 					} else if name == "group_concat" {
 						delim := strconv.Quote(",")
 						if len(fn.Exprs) == 2 {
 							delim = exprToMochi(fn.Exprs[1].(*sqlparser.AliasedExpr).Expr, subs)
 						}
 						if cond != "" {
-							cond += " && " + expr + " != null"
+							cond += " && " + exprOrig + " != null"
 						} else {
-							cond = expr + " != null"
+							cond = exprOrig + " != null"
 						}
 						list := "from row in " + tblNameStr
 						if cond != "" {
@@ -1355,9 +1376,9 @@ func Generate(c Case) string {
 						sb.WriteString("let result = join(" + list + ", " + delim + ")\n")
 					} else {
 						if cond != "" {
-							cond += " && " + expr + " != null"
+							cond += " && " + exprOrig + " != null"
 						} else {
-							cond = expr + " != null"
+							cond = exprOrig + " != null"
 						}
 						list := "from row in " + tblNameStr
 						if cond != "" {
@@ -1380,7 +1401,7 @@ func Generate(c Case) string {
 					}
 					sb.WriteString("print(result)\n\n")
 					if len(c.Expect) > 0 {
-						sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, c.Expect[0]))
+						sb.WriteString(fmt.Sprintf("test \"%s\" {\n  expect result == %s\n}\n", c.Name, normalizeExpect(c.Expect[0])))
 					}
 					return sb.String()
 				}
@@ -1591,19 +1612,30 @@ func formatExpectList(xs []string) string {
 		if i > 0 {
 			sb.WriteString(", ")
 		}
-		if f, err := strconv.ParseFloat(x, 64); err == nil {
-			if strings.ContainsAny(x, "eE") {
-				x = strconv.FormatFloat(f, 'f', -1, 64)
-			}
-		}
-		if strings.HasPrefix(x, "-") {
-			sb.WriteString("(" + x + ")")
-		} else {
-			sb.WriteString(x)
-		}
+		sb.WriteString(normalizeExpect(x))
 	}
 	sb.WriteString("]")
 	return sb.String()
+}
+
+func normalizeExpect(x string) string {
+	if f, err := strconv.ParseFloat(x, 64); err == nil {
+		if strings.ContainsAny(x, "eE") {
+			x = strconv.FormatFloat(f, 'f', -1, 64)
+		}
+	}
+	switch strings.ToLower(x) {
+	case "null":
+		return "null"
+	case "true":
+		return "true"
+	case "false":
+		return "false"
+	}
+	if strings.HasPrefix(x, "-") {
+		return "(" + x + ")"
+	}
+	return x
 }
 
 func expectAllInts(xs []string) bool {

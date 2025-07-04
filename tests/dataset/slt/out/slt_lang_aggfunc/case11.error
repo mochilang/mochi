@@ -1,5 +1,6 @@
-error[T038]: avg() expects numeric list or group, got string
-  --> :34:14
+cannot cast string to float
+call graph: main
+stack trace:
+  main at :36
+    select (row.y as float))
 
-help:
-  Ensure the list or group contains numbers.

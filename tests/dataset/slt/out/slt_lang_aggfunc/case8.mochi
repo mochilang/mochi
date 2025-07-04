@@ -17,11 +17,11 @@ type t1Row {
 let t1 = [
   t1Row {
     x: 1,
-    y: "true" + "",
+    y: "tru" + "e",
   },
   t1Row {
     x: 0,
-    y: "false" + "",
+    y: "fal" + "se",
   },
   t1Row {
     x: null,
@@ -29,18 +29,18 @@ let t1 = [
   },
   t1Row {
     x: 2,
-    y: "true" + "",
+    y: "tru" + "e",
   },
   t1Row {
     x: 2,
-    y: "true" + "",
+    y: "tru" + "e",
   },
 ]
 
 /* SELECT count(DISTINCT x) FROM t1 */
-let result = count(from row in t1
+let result = count(distinct(from row in t1
   where row.x != null
-  select row)
+  select row))
 print(result)
 
 test "case8" {
