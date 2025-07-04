@@ -57,10 +57,26 @@ func ParseFile(path string) ([]Case, error) {
 	// recorded so subsequent cases start from the correct state.
 	var updates []string
 
+	skipQuery := false
 	for scanner.Scan() {
 		lineNo++
 		line := strings.TrimSpace(scanner.Text())
 		switch {
+		case strings.HasPrefix(strings.ToLower(line), "onlyif mysql"):
+			comments = append(comments, line)
+			// These scripts contain pairs of queries guarded by
+			// "onlyif mysql" and "skipif mysql" directives. When
+			// running against DuckDB we want to skip the MySQL
+			// specific variant. Record the directive as a comment
+			// and skip the next query.
+			skipQuery = true
+			continue
+		case strings.HasPrefix(strings.ToLower(line), "skipif mysql"):
+			comments = append(comments, line)
+			// The generic variant of the query follows a "skipif
+			// mysql" directive. We run it on DuckDB so do not skip.
+			skipQuery = false
+			continue
 		case strings.HasPrefix(line, "#"):
 			comments = append(comments, line)
 		case strings.HasPrefix(line, "skip"):
@@ -123,6 +139,18 @@ func ParseFile(path string) ([]Case, error) {
 					hash = m[2]
 					expect = nil
 				}
+			}
+			if skipQuery {
+				// Apply pending updates but do not record a case
+				for _, u := range updates {
+					if err := applyStatement(u, tables); err != nil {
+						return nil, err
+					}
+				}
+				comments = nil
+				updates = nil
+				skipQuery = false
+				continue
 			}
 			count++
 			cases = append(cases, Case{

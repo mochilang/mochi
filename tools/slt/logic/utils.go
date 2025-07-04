@@ -20,6 +20,7 @@ import (
 	mod "mochi/runtime/mod"
 	"mochi/runtime/vm"
 	"mochi/types"
+	_ "modernc.org/sqlite"
 )
 
 // FindRepoRoot searches parent directories until go.mod is found.
@@ -108,11 +109,11 @@ func RunMochi(src string, timeout time.Duration) (string, error) {
 	return out, nil
 }
 
-// EvalCase executes the SQL query of c using DuckDB and returns the
+// EvalCase executes the SQL query of c using SQLite and returns the
 // flattened result values as strings. Updates stored in c.Updates are
 // applied before running the query.
 func EvalCase(c Case) ([]string, string, error) {
-	db, err := sql.Open("duckdb", "")
+	db, err := sql.Open("sqlite", "file::memory:?cache=shared")
 	if err != nil {
 		return nil, "", err
 	}
@@ -165,7 +166,20 @@ func EvalCase(c Case) ([]string, string, error) {
 	q := c.Query
 	if node, err := sqlparser.Parse(q); err == nil {
 		if sel, ok := node.(*sqlparser.Select); ok && len(sel.OrderBy) == 0 {
-			q = strings.TrimSpace(q) + " ORDER BY rowid"
+			// DuckDB rejects ORDER BY rowid when there is no FROM clause.
+			// Skip injection when the query has no real table source (e.g. SELECT 1).
+			if len(sel.From) > 0 {
+				first := sel.From[0]
+				if tbl, ok := first.(*sqlparser.AliasedTableExpr); ok {
+					if name, ok := tbl.Expr.(sqlparser.TableName); ok {
+						if strings.ToLower(name.Name.String()) != "dual" {
+							q = strings.TrimSpace(q) + " ORDER BY rowid"
+						}
+					} else {
+						q = strings.TrimSpace(q) + " ORDER BY rowid"
+					}
+				}
+			}
 		}
 	}
 	rows, err := db.Query(q)

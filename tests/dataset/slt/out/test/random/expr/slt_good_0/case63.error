@@ -1,0 +1,5 @@
+error[T002]: undefined variable: dual
+  --> :78:26
+
+help:
+  Check if the variable was declared in this scope.
