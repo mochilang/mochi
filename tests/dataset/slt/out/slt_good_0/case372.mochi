@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT DISTINCT 73 + - + 22 AS col0 */
-var result = [73 + (-22)]
+var result = [(73 + (-22) as int)]
 result = from x in result
   order by str(x)
   select x

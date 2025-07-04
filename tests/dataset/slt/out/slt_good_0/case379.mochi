@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT 11 + + - 80 AS col1 */
-var result = [11 + (-80)]
+var result = [(11 + (-80) as int)]
 result = from x in result
   order by str(x)
   select x

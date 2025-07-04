@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT 76 * + - 71 */
-var result = [76 * (-71)]
+var result = [(76 * (-71) as int)]
 result = from x in result
   order by str(x)
   select x

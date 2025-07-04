@@ -75,7 +75,7 @@ let tab2 = [
 ]
 
 /* SELECT 30 + + 13 AS col0 */
-var result = [30 + 13]
+var result = [(30 + 13 as int)]
 result = from x in result
   order by str(x)
   select x
