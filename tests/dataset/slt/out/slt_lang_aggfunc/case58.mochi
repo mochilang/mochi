@@ -1,0 +1,44 @@
+/*
+# line: 423
+# EVIDENCE-OF: R-07734-01023 The result of total() is always a floating
+# point value.
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: "NULL",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+]
+
+/* SELECT total(x) FROM t1 */
+var result = sum(from row in t1
+  where row.x != null
+  select row.x)
+result = if result == null then 0.0 else (result as float)
+print(result)
+
+test "case58" {
+  expect result == 5
+}
