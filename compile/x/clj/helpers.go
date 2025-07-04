@@ -64,6 +64,10 @@ func isFloat(t types.Type) bool {
 	return ok
 }
 
+func isNumber(t types.Type) bool {
+	return isInt(t) || isFloat(t) || isInt64(t)
+}
+
 func isString(t types.Type) bool {
 	_, ok := t.(types.StringType)
 	return ok
