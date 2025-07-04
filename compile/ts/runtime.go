@@ -44,7 +44,7 @@ const (
 		"  return 0;\n" +
 		"}\n"
 
-	helperAppend = "function _append(lst: any[] | null, v: any): any[] {\n" +
+	helperAppend = "function _append<T>(lst: T[] | null, v: T): T[] {\n" +
 		"  const out = lst ? lst.slice() : [];\n" +
 		"  out.push(v);\n" +
 		"  return out;\n" +
@@ -141,7 +141,7 @@ const (
 		"  return false;\n" +
 		"}\n"
 
-	helperValues = "function _values(m: any): any[] {\n" +
+	helperValues = "function _values<T>(m: Record<string, T>): T[] {\n" +
 		"  if (m && typeof m === 'object' && !Array.isArray(m)) {\n" +
 		"    return Object.values(m);\n" +
 		"  }\n" +
@@ -232,29 +232,29 @@ const (
 		"  return m as Record<string, any>;\n" +
 		"}\n"
 
-	helperUnionAll = "function _union_all(a: any[], b: any[]): any[] {\n" +
+	helperUnionAll = "function _union_all<T>(a: T[], b: T[]): T[] {\n" +
 		"  return a.concat(b);\n" +
 		"}\n"
 
-	helperUnion = "function _union(a: any[], b: any[]): any[] {\n" +
-		"  const res: any[] = [];\n" +
-		"  const seen = new Set<any>();\n" +
+	helperUnion = "function _union<T>(a: T[], b: T[]): T[] {\n" +
+		"  const res: T[] = [];\n" +
+		"  const seen = new Set<T>();\n" +
 		"  for (const it of a) { if (!seen.has(it)) { seen.add(it); res.push(it); } }\n" +
 		"  for (const it of b) { if (!seen.has(it)) { seen.add(it); res.push(it); } }\n" +
 		"  return res;\n" +
 		"}\n"
 
-	helperExcept = "function _except(a: any[], b: any[]): any[] {\n" +
-		"  const remove = new Set<any>(b);\n" +
-		"  const res: any[] = [];\n" +
+	helperExcept = "function _except<T>(a: T[], b: T[]): T[] {\n" +
+		"  const remove = new Set<T>(b);\n" +
+		"  const res: T[] = [];\n" +
 		"  for (const it of a) { if (!remove.has(it)) res.push(it); }\n" +
 		"  return res;\n" +
 		"}\n"
 
-	helperIntersect = "function _intersect(a: any[], b: any[]): any[] {\n" +
-		"  const keep = new Set<any>(b);\n" +
-		"  const res: any[] = [];\n" +
-		"  const seen = new Set<any>();\n" +
+	helperIntersect = "function _intersect<T>(a: T[], b: T[]): T[] {\n" +
+		"  const keep = new Set<T>(b);\n" +
+		"  const res: T[] = [];\n" +
+		"  const seen = new Set<T>();\n" +
 		"  for (const it of a) { if (keep.has(it) && !seen.has(it)) { seen.add(it); res.push(it); } }\n" +
 		"  return res;\n" +
 		"}\n"
