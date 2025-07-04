@@ -23,6 +23,8 @@ The converter currently handles the following patterns:
 - `datetime('now')` -> `now()`
 - `date('now')` -> `current_date`
 - `randomblob(n)` -> `random_bytes(n)`
+- `total(x)` -> `coalesce(sum(x),0)`
+- remove `NOT INDEXED` clauses
 
 These rules cover the most common differences encountered when porting simple
 SQLite queries.
