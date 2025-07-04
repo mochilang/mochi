@@ -1,0 +1,41 @@
+/*
+# line: 211
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: "NULL",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+]
+
+/* SELECT count(x) FROM t1 WHERE y='false' */
+let result = count(from row in t1
+  where (row.y != null && "false" != null && row.y == "false") && row.x != null
+  select row)
+print(result)
+
+test "case30" {
+  expect result == 1
+}

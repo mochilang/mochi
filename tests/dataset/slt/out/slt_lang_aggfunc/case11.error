@@ -1,0 +1,5 @@
+error[T038]: avg() expects numeric list or group, got string
+  --> :34:14
+
+help:
+  Ensure the list or group contains numbers.

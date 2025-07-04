@@ -1,0 +1,41 @@
+/*
+# line: 178
+*/
+
+type t1Row {
+  x: int
+  y: string
+}
+
+let t1 = [
+  t1Row {
+    x: 1,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 0,
+    y: "false" + "",
+  },
+  t1Row {
+    x: null,
+    y: "NULL",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+  t1Row {
+    x: 2,
+    y: "true" + "",
+  },
+]
+
+/* SELECT avg(DISTINCT x) FROM t1 */
+let result = avg(distinct(from row in t1
+  where row.x != null
+  select row.x))
+print(result)
+
+test "case25" {
+  expect result == 1
+}

@@ -10,15 +10,15 @@ type t1Row {
 let t1 = [
   t1Row {
     x: 1,
-    y: true,
+    y: "true" + "",
   },
   t1Row {
     x: 0,
-    y: false,
+    y: "false" + "",
   },
   t1Row {
     x: null,
-    y: null,
+    y: "NULL",
   },
 ]
 

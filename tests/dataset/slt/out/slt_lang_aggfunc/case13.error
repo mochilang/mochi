@@ -1,0 +1,5 @@
+error[T041]: sum() expects numeric list or group, got string
+  --> :34:14
+
+help:
+  Ensure the list or group contains numbers.

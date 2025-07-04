@@ -256,16 +256,11 @@ func evalExpr(expr sqlparser.Expr, row map[string]any, table *Table) any {
 	case *sqlparser.SQLVal:
 		switch v.Type {
 		case sqlparser.StrVal:
-			s := strings.TrimSpace(strings.ToLower(string(v.Val)))
-			if s == "true" {
-				return true
-			}
-			if s == "false" {
-				return false
-			}
-			if s == "null" || s == "nil" {
-				return nil
-			}
+			// SQL string literals should always be treated as
+			// strings.  Previously values like 'true' or 'false'
+			// were converted to booleans which caused type
+			// mismatches when the underlying column type was a
+			// string.
 			return string(v.Val)
 		case sqlparser.IntVal:
 			n, _ := strconv.Atoi(string(v.Val))
@@ -274,6 +269,8 @@ func evalExpr(expr sqlparser.Expr, row map[string]any, table *Table) any {
 			f, _ := strconv.ParseFloat(string(v.Val), 64)
 			return f
 		}
+	case sqlparser.BoolVal:
+		return bool(v)
 	case *sqlparser.NullVal:
 		return nil
 	case *sqlparser.ColName:
