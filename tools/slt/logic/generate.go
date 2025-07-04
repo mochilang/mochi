@@ -689,7 +689,7 @@ func exprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]stri
 				arg := exprToMochiRow(v.Exprs[i].(*sqlparser.AliasedExpr).Expr, rowVar, outer, subs)
 				out = fmt.Sprintf("if %s != null then %s else %s", arg, arg, out)
 			}
-			return out
+			return "(" + out + ")"
 		}
 	case *sqlparser.Subquery:
 		expr := subqueryToMochi(v, rowVar)
@@ -812,6 +812,9 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 	switch v := e.(type) {
 	case *sqlparser.ComparisonExpr:
 		left := exprToMochiRow(v.Left, rowVar, outer, subs)
+		if !simpleExpr(v.Left) {
+			left = "(" + left + ")"
+		}
 		op := strings.ToLower(v.Operator)
 		// Handle `IN` and `NOT IN` expressions with a tuple of values.
 		if op == sqlparser.InStr || op == sqlparser.NotInStr {
@@ -828,6 +831,9 @@ func condExprToMochiRow(e sqlparser.Expr, rowVar, outer string, subs map[string]
 			}
 		}
 		right := exprToMochiRow(v.Right, rowVar, outer, subs)
+		if !simpleExpr(v.Right) {
+			right = "(" + right + ")"
+		}
 		if op == "=" || op == "==" {
 			return fmt.Sprintf("(%s != null && %s != null && %s == %s)", left, right, left, right)
 		}

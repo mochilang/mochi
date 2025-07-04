@@ -225,10 +225,10 @@ let t1 = [
 
 /* SELECT a+b*2+c*3 FROM t1 WHERE EXISTS(SELECT 1 FROM t1 AS x WHERE x.b<t1.b) AND a IS NULL AND coalesce(a,b,c,d,e)<>0 */
 var result = from row in t1
-  where ((count(from x in t1
+  where count(from x in t1
   where x.b < row.b
-  select x) > 0 && row.a == null) && (if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0)
-  select ((row.a + (row.b * 2)) + (row.c * 3))
+  select x) > 0 && row.a == null && (if row.a != null then row.a else if row.b != null then row.b else if row.c != null then row.c else if row.d != null then row.d else row.e) != 0
+  select row.a + row.b * 2 + row.c * 3
 result = from x in result
   order by str(x)
   select x

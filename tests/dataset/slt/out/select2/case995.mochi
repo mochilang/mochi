@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT abs(b-c) FROM t1 WHERE coalesce(a,b,c,d,e)<>0 AND b IS NOT NULL */
 var result = from row in t1
-  where ((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 && row.b != null)
-  select (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })
+  where (if row.a != null then row.a else if row.b != null then row.b else if row.c != null then row.c else if row.d != null then row.d else row.e) != 0 && row.b != null
+  select if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c
 result = from x in result
   order by str(x)
   select x

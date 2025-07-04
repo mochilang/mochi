@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT (a+b+c+d+e)/5, c, a+b*2 FROM t1 */
 var result = from row in t1
-  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.c, (row.a + (row.b * 2))]
+  select [(row.a + row.b + row.c + row.d + row.e) / 5, row.c, row.a + row.b * 2]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

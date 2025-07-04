@@ -227,8 +227,8 @@ let t1 = [
 var result = from row in t1
   where row.a > row.b
   select [row.a, count(from x in t1
-  where (x.c > row.c && x.d < row.d)
-  select x), (row.d - row.e)]
+  where x.c > row.c && x.d < row.d
+  select x), row.d - row.e]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

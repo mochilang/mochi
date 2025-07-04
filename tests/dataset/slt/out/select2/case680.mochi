@@ -225,7 +225,7 @@ let t1 = [
 
 /* SELECT c FROM t1 WHERE a IS NULL AND (c<=d-2 OR c>=d+2) AND c>d */
 var result = from row in t1
-  where ((row.a == null && ((row.c <= (row.d - 2) || row.c >= (row.d + 2)))) && row.c > row.d)
+  where row.a == null && (row.c <= row.d - 2 || row.c >= row.d + 2) && row.c > row.d
   select row.c
 result = from x in result
   order by str(x)

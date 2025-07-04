@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT d-e, a+b*2+c*3+d*4+e*5, b-c, a, d, b FROM t1 WHERE b IS NOT NULL OR d NOT BETWEEN 110 AND 150 */
 var result = from row in t1
-  where (row.b != null || (row.d < 110 || row.d > 150))
-  select [(row.d - row.e), ((((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)) + (row.e * 5)), (row.b - row.c), row.a, row.d, row.b]
+  where row.b != null || (row.d < 110 || row.d > 150)
+  select [row.d - row.e, row.a + row.b * 2 + row.c * 3 + row.d * 4 + row.e * 5, row.b - row.c, row.a, row.d, row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

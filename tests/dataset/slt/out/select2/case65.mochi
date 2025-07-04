@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT d-e, abs(a) FROM t1 WHERE (e>c OR e<d) */
 var result = from row in t1
-  where ((row.e > row.c || row.e < row.d))
-  select [(row.d - row.e), (if row.a < 0 { -(row.a) } else { row.a })]
+  where (row.e > row.c || row.e < row.d)
+  select [row.d - row.e, if row.a < 0 then -(row.a) else row.a]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

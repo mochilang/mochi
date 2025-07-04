@@ -226,7 +226,7 @@ let t1 = [
 /* SELECT a+b*2+c*3+d*4, e, a+b*2+c*3 FROM t1 WHERE a>b */
 var result = from row in t1
   where row.a > row.b
-  select [(((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), row.e, ((row.a + (row.b * 2)) + (row.c * 3))]
+  select [row.a + row.b * 2 + row.c * 3 + row.d * 4, row.e, row.a + row.b * 2 + row.c * 3]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

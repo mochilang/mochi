@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT b, a-b FROM t1 WHERE d NOT BETWEEN 110 AND 150 AND a>b AND d>e */
 var result = from row in t1
-  where (((row.d < 110 || row.d > 150) && row.a > row.b) && row.d > row.e)
-  select [row.b, (row.a - row.b)]
+  where (row.d < 110 || row.d > 150) && row.a > row.b && row.d > row.e
+  select [row.b, row.a - row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

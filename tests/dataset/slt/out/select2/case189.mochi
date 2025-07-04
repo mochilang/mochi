@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT abs(b-c), c-d, c, d-e, abs(a), b-c FROM t1 WHERE b IS NOT NULL OR (e>c OR e<d) OR d NOT BETWEEN 110 AND 150 */
 var result = from row in t1
-  where ((row.b != null || ((row.e > row.c || row.e < row.d))) || (row.d < 110 || row.d > 150))
-  select [(if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.c - row.d), row.c, (row.d - row.e), (if row.a < 0 { -(row.a) } else { row.a }), (row.b - row.c)]
+  where row.b != null || (row.e > row.c || row.e < row.d) || (row.d < 110 || row.d > 150)
+  select [if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.c - row.d, row.c, row.d - row.e, if row.a < 0 then -(row.a) else row.a, row.b - row.c]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

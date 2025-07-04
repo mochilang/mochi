@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT abs(b-c) FROM t1 WHERE b IS NOT NULL AND e+d BETWEEN a+b-10 AND c+130 */
 var result = from row in t1
-  where (row.b != null && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
-  select (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) })
+  where row.b != null && (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)
+  select if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c
 result = from x in result
   order by str(x)
   select x

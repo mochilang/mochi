@@ -226,7 +226,7 @@ let t1 = [
 /* SELECT a-b, a FROM t1 WHERE c>d */
 var result = from row in t1
   where row.c > row.d
-  select [(row.a - row.b), row.a]
+  select [row.a - row.b, row.a]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

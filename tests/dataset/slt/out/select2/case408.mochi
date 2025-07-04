@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT a+b*2, abs(a), b, c, d, a+b*2+c*3 FROM t1 WHERE (c<=d-2 OR c>=d+2) AND c BETWEEN b-2 AND d+2 AND b IS NOT NULL */
 var result = from row in t1
-  where ((((row.c <= (row.d - 2) || row.c >= (row.d + 2))) && (row.c >= (row.b - 2) && row.c <= (row.d + 2))) && row.b != null)
-  select [(row.a + (row.b * 2)), (if row.a < 0 { -(row.a) } else { row.a }), row.b, row.c, row.d, ((row.a + (row.b * 2)) + (row.c * 3))]
+  where (row.c <= row.d - 2 || row.c >= row.d + 2) && (row.c >= row.b - 2 && row.c <= row.d + 2) && row.b != null
+  select [row.a + row.b * 2, if row.a < 0 then -(row.a) else row.a, row.b, row.c, row.d, row.a + row.b * 2 + row.c * 3]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

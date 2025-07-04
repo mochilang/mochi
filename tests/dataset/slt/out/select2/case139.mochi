@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT abs(a), (a+b+c+d+e)/5, a+b*2, c, b, d FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 AND (c<=d-2 OR c>=d+2) */
 var result = from row in t1
-  where (((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) && ((row.c <= (row.d - 2) || row.c >= (row.d + 2))))
-  select [(if row.a < 0 { -(row.a) } else { row.a }), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.a + (row.b * 2)), row.c, row.b, row.d]
+  where (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) && (row.c <= row.d - 2 || row.c >= row.d + 2)
+  select [if row.a < 0 then -(row.a) else row.a, (row.a + row.b + row.c + row.d + row.e) / 5, row.a + row.b * 2, row.c, row.b, row.d]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

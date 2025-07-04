@@ -231,8 +231,8 @@ var result = from row in t1
   where count(from x in t1
   where x.b < row.b
   select x) > 0
-  select [(row.a - row.b), (row.d - row.e), (row.b - row.c), (if row.c > sub0 { (row.a * 2) } else { (row.b * 10) }), (((row.a + (row.b * 2)) + (row.c * 3)) + (row.d * 4)), count(from x in t1
-  where (x.c > row.c && x.d < row.d)
+  select [row.a - row.b, row.d - row.e, row.b - row.c, if row.c > sub0 then row.a * 2 else row.b * 10, row.a + row.b * 2 + row.c * 3 + row.d * 4, count(from x in t1
+  where x.c > row.c && x.d < row.d
   select x)]
 result = from row in result
   order by join(from v in row select str(v), " " )

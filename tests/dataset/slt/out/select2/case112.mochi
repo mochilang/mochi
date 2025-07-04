@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT a+b*2+c*3, d-e, (a+b+c+d+e)/5 FROM t1 WHERE coalesce(a,b,c,d,e)<>0 AND (e>c OR e<d) AND e+d BETWEEN a+b-10 AND c+130 */
 var result = from row in t1
-  where (((if row.a != null { row.a } else { (if row.b != null { row.b } else { (if row.c != null { row.c } else { (if row.d != null { row.d } else { row.e }) }) }) }) != 0 && ((row.e > row.c || row.e < row.d))) && ((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)))
-  select [((row.a + (row.b * 2)) + (row.c * 3)), (row.d - row.e), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5)]
+  where (if row.a != null then row.a else if row.b != null then row.b else if row.c != null then row.c else if row.d != null then row.d else row.e) != 0 && (row.e > row.c || row.e < row.d) && (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130)
+  select [row.a + row.b * 2 + row.c * 3, row.d - row.e, (row.a + row.b + row.c + row.d + row.e) / 5]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

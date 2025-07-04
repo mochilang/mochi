@@ -226,7 +226,7 @@ let t1 = [
 /* SELECT (a+b+c+d+e)/5, d FROM t1 WHERE b IS NOT NULL */
 var result = from row in t1
   where row.b != null
-  select [((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), row.d]
+  select [(row.a + row.b + row.c + row.d + row.e) / 5, row.d]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row

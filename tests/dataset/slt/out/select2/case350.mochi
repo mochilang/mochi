@@ -225,8 +225,8 @@ let t1 = [
 
 /* SELECT a+b*2+c*3, (a+b+c+d+e)/5, b-c, e, abs(b-c), c-d, b FROM t1 WHERE e+d BETWEEN a+b-10 AND c+130 AND (e>c OR e<d) AND b>c */
 var result = from row in t1
-  where ((((row.e + row.d) >= ((row.a + row.b) - 10) && (row.e + row.d) <= (row.c + 130)) && ((row.e > row.c || row.e < row.d))) && row.b > row.c)
-  select [((row.a + (row.b * 2)) + (row.c * 3)), ((((((row.a + row.b) + row.c) + row.d) + row.e)) / 5), (row.b - row.c), row.e, (if (row.b - row.c) < 0 { -((row.b - row.c)) } else { (row.b - row.c) }), (row.c - row.d), row.b]
+  where (row.e + row.d >= row.a + row.b - 10 && row.e + row.d <= row.c + 130) && (row.e > row.c || row.e < row.d) && row.b > row.c
+  select [row.a + row.b * 2 + row.c * 3, (row.a + row.b + row.c + row.d + row.e) / 5, row.b - row.c, row.e, if row.b - row.c < 0 then -(row.b - row.c) else row.b - row.c, row.c - row.d, row.b]
 result = from row in result
   order by join(from v in row select str(v), " " )
   select row
