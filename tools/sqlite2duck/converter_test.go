@@ -16,6 +16,9 @@ func TestConvert(t *testing.T) {
 		{"SELECT CURRENT_TIMESTAMP;", "SELECT now();"},
 		{"SELECT total(x) FROM t;", "SELECT coalesce(sum(x),0) FROM t;"},
 		{"SELECT * FROM t NOT INDEXED;", "SELECT * FROM t;"},
+		{"SELECT char_length(name) FROM t;", "SELECT length(name) FROM t;"},
+		{"SELECT CURRENT_DATE;", "SELECT current_date;"},
+		{"SELECT CURRENT_TIME;", "SELECT current_time;"},
 	}
 	for _, tt := range tests {
 		got := Convert(tt.in)

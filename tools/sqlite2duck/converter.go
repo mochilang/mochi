@@ -14,6 +14,9 @@ var conversions = []struct {
 	{regexp.MustCompile(`(?i)\bgroup_concat\s*\(`), "string_agg("},
 	{regexp.MustCompile(`(?i)\brandomblob\s*\(`), "random_bytes("},
 	{regexp.MustCompile(`(?i)\bcurrent_timestamp\b`), "now()"},
+	{regexp.MustCompile(`(?i)\bchar_length\s*\(`), "length("},
+	{regexp.MustCompile(`(?i)\bcurrent_date\b`), "current_date"},
+	{regexp.MustCompile(`(?i)\bcurrent_time\b`), "current_time"},
 }
 
 var (
