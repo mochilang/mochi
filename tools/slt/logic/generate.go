@@ -1177,13 +1177,98 @@ func Generate(c Case) string {
 		return ""
 	}
 	sel, ok := stmt.(*sqlparser.Select)
-	if !ok || len(sel.From) != 1 {
-		return ""
-	}
-	tblExpr, ok := sel.From[0].(*sqlparser.AliasedTableExpr)
 	if !ok {
 		return ""
 	}
+
+	tblExpr := func() *sqlparser.AliasedTableExpr {
+		if len(sel.From) == 1 {
+			if at, ok := sel.From[0].(*sqlparser.AliasedTableExpr); ok {
+				return at
+			}
+			return nil
+		}
+
+		// When multiple tables are present, attempt to detect if all
+		// column references originate from a single table. If so,
+		// treat the query as operating on that table only and ignore
+		// the rest. This allows handling of simple cross joins where
+		// additional tables are unused.
+		aliases := map[string]bool{}
+		collectAliases := func(e sqlparser.Expr) {}
+		collectAliases = func(e sqlparser.Expr) {
+			switch v := e.(type) {
+			case *sqlparser.ColName:
+				if q := v.Qualifier.Name.String(); q != "" {
+					aliases[q] = true
+				}
+			case *sqlparser.BinaryExpr:
+				collectAliases(v.Left)
+				collectAliases(v.Right)
+			case *sqlparser.UnaryExpr:
+				collectAliases(v.Expr)
+			case *sqlparser.FuncExpr:
+				for _, ex := range v.Exprs {
+					if ae, ok := ex.(*sqlparser.AliasedExpr); ok {
+						collectAliases(ae.Expr)
+					}
+				}
+			case *sqlparser.ParenExpr:
+				collectAliases(v.Expr)
+			case *sqlparser.CaseExpr:
+				if v.Expr != nil {
+					collectAliases(v.Expr)
+				}
+				for _, w := range v.Whens {
+					collectAliases(w.Cond)
+					collectAliases(w.Val)
+				}
+				if v.Else != nil {
+					collectAliases(v.Else)
+				}
+			}
+		}
+
+		for _, se := range sel.SelectExprs {
+			if ae, ok := se.(*sqlparser.AliasedExpr); ok {
+				collectAliases(ae.Expr)
+			}
+		}
+		for _, g := range sel.GroupBy {
+			collectAliases(g)
+		}
+		if sel.Where != nil {
+			collectAliases(sel.Where.Expr)
+		}
+
+		if len(aliases) != 1 {
+			return nil
+		}
+
+		var want string
+		for a := range aliases {
+			want = a
+		}
+
+		for _, te := range sel.From {
+			if at, ok := te.(*sqlparser.AliasedTableExpr); ok {
+				alias := at.As.String()
+				if alias == "" {
+					if tn, ok := at.Expr.(sqlparser.TableName); ok {
+						alias = tn.Name.String()
+					}
+				}
+				if alias == want {
+					return at
+				}
+			}
+		}
+		return nil
+	}()
+	if tblExpr == nil {
+		return ""
+	}
+
 	tblName, ok := tblExpr.Expr.(sqlparser.TableName)
 	if !ok {
 		return ""
