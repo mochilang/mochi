@@ -231,22 +231,7 @@ func inferCppPrimaryType(env *types.Env, lookup CppVarLookup, p *parser.Primary)
 			return ""
 		}
 		if len(p.Selector.Tail) > 0 {
-			if env != nil {
-				if st, ok := env.GetStruct(typ); ok {
-					if ft, ok := st.Fields[p.Selector.Tail[len(p.Selector.Tail)-1]]; ok {
-						typ = CppTypeRef(ft)
-					} else {
-						typ = "any"
-					}
-				} else if strings.HasPrefix(typ, "unordered_map<") {
-					inside := strings.TrimSuffix(strings.TrimPrefix(typ, "unordered_map<"), ">")
-					if parts := strings.SplitN(inside, ",", 2); len(parts) == 2 {
-						typ = strings.TrimSpace(parts[1])
-					} else {
-						typ = "any"
-					}
-				}
-			}
+			typ = followSelectorType(typ, p.Selector.Tail, env)
 		}
 		return typ
 	}
@@ -365,6 +350,33 @@ func inferElemType(e *parser.Expr, env *types.Env, lookup CppVarLookup) string {
 		}
 	}
 	return ""
+}
+
+// followSelectorType walks a selector chain starting with typ, returning the
+// resulting C++ type string. Unknown fields produce "any".
+func followSelectorType(typ string, tail []string, env *types.Env) string {
+	for _, name := range tail {
+		if env != nil {
+			if st, ok := env.GetStruct(typ); ok {
+				if ft, ok := st.Fields[name]; ok {
+					typ = CppTypeRef(ft)
+					continue
+				}
+				return "any"
+			}
+		}
+		if strings.HasPrefix(typ, "unordered_map<") {
+			inside := strings.TrimSuffix(strings.TrimPrefix(typ, "unordered_map<"), ">")
+			parts := strings.SplitN(inside, ",", 2)
+			if len(parts) == 2 {
+				typ = strings.TrimSpace(parts[1])
+				continue
+			}
+			return "any"
+		}
+		return "any"
+	}
+	return typ
 }
 
 func getStructLiteral(e *parser.Expr) *parser.StructLiteral {
