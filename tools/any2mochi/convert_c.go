@@ -77,6 +77,10 @@ func ConvertC(src string) ([]byte, error) {
 			out.WriteByte('\n')
 		case protocol.SymbolKindStruct, protocol.SymbolKindClass:
 			matched = true
+			isUnion := false
+			if s.Detail != nil && strings.TrimSpace(*s.Detail) == "union" {
+				isUnion = true
+			}
 			if len(s.Children) == 0 {
 				continue
 			}
@@ -94,19 +98,30 @@ func ConvertC(src string) ([]byte, error) {
 			}
 			out.WriteString("type ")
 			out.WriteString(name)
-			out.WriteString(" {\n")
+			if isUnion {
+				out.WriteString(" union {\n")
+			} else {
+				out.WriteString(" {\n")
+			}
 			for _, c := range s.Children {
 				if c.Kind != protocol.SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
 				out.WriteString(c.Name)
-				typ := ""
+				raw := ""
 				if c.Detail != nil {
-					typ = mapCType(*c.Detail)
+					raw = strings.TrimSpace(*c.Detail)
 				}
+				typ := mapCType(raw)
 				if typ == "" {
 					typ = cHoverFieldType(src, c, ls)
+				}
+				if strings.HasPrefix(s.Name, "list_") && c.Name == "data" {
+					inner := strings.TrimPrefix(s.Name, "list_")
+					if t := mapCType(inner); t != "" {
+						typ = "list<" + t + ">"
+					}
 				}
 				if typ != "" {
 					out.WriteString(": ")
