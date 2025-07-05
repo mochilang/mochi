@@ -211,6 +211,12 @@ func mapCobolType(t string) string {
 		return "string"
 	case strings.Contains(t, "comp-2"), strings.Contains(t, "float"), strings.Contains(t, "decimal"):
 		return "float"
+	case strings.Contains(t, "comp-5"), strings.Contains(t, "binary"):
+		return "int"
+	case strings.Contains(t, "comp-3"):
+		return "int"
+	case strings.Contains(t, "boolean"), strings.Contains(t, "bool"):
+		return "bool"
 	default:
 		return ""
 	}
@@ -220,6 +226,14 @@ func parseCobolType(detail string) string {
 	lower := strings.ToLower(detail)
 	if idx := strings.Index(lower, "pic"); idx != -1 {
 		rest := strings.TrimSpace(detail[idx+3:])
+		if f := strings.Fields(rest); len(f) > 0 {
+			if t := mapCobolType(f[0]); t != "" {
+				return t
+			}
+		}
+	}
+	if idx := strings.Index(lower, "usage is"); idx != -1 {
+		rest := strings.TrimSpace(detail[idx+8:])
 		if f := strings.Fields(rest); len(f) > 0 {
 			if t := mapCobolType(f[0]); t != "" {
 				return t
