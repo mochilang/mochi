@@ -10,27 +10,25 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-// ConvertKt converts Kotlin source code to Mochi using the language server. The
-// converter relies solely on LSP information and does not parse the source
-// directly.
+// ConvertKt converts Kotlin source code to Mochi. It first attempts to use a
+// configured language server if available and falls back to a simple regex
+// parser when the server is disabled or parsing fails.
 func ConvertKt(src string) ([]byte, error) {
 	ls := Servers["kt"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
-			return convertKtFallback(src)
+	if ls.Command != "" {
+		syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		if err == nil {
+			if len(diags) > 0 {
+				return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+			}
+			var out strings.Builder
+			writeKtSymbols(&out, nil, syms, src, ls)
+			if out.Len() > 0 {
+				return []byte(out.String()), nil
+			}
 		}
-		return nil, err
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-	var out strings.Builder
-	writeKtSymbols(&out, nil, syms, src, ls)
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
+	return convertKtRegex(src)
 }
 
 // ConvertKtFile reads the kt file and converts it to Mochi.
@@ -312,10 +310,10 @@ func splitGeneric(s string) []string {
 	return parts
 }
 
-// convertKtFallback performs a best-effort conversion when the Kotlin language server
-// is unavailable. It uses simple regex parsing to translate function declarations
-// and a limited set of statements.
-func convertKtFallback(src string) ([]byte, error) {
+// convertKtRegex performs a best-effort conversion of Kotlin code using regex
+// parsing. It handles simple function declarations and a limited set of
+// statements.
+func convertKtRegex(src string) ([]byte, error) {
 	sc := bufio.NewScanner(strings.NewReader(src))
 	var out strings.Builder
 	indent := 0
