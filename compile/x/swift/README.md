@@ -9,6 +9,15 @@ The Swift backend translates Mochi programs into Swift source code. It currently
 - `helpers.go` – small helpers for indentation and block formatting
 - `tools.go` – helper for installing the Swift toolchain during tests
 
+## Supported Features
+
+The Swift backend currently supports:
+
+- Basic statements, loops and conditionals
+- Lists and maps including negative indexing
+- Inner joins and simple dataset queries
+- Built‑in functions: `len`, `count`, `str`, `upper`, `lower`, `concat`, `avg`, `sum`, `min`, `max`, `now`, `json`, `input`, `abs`
+
 ## Compilation Flow
 
 `Compiler.Compile` walks the Mochi AST, emits function declarations and wraps remaining statements in a `main` function:
@@ -134,6 +143,9 @@ case "upper":
 case "lower":
         if len(args) != 1 { return "", fmt.Errorf("lower expects 1 arg") }
         return fmt.Sprintf("%s.lowercased()", args[0]), nil
+case "abs":
+        if len(args) != 1 { return "", fmt.Errorf("abs expects 1 arg") }
+        return fmt.Sprintf("abs(%s)", args[0]), nil
 case "avg":
         if len(args) != 1 { return "", fmt.Errorf("avg expects 1 arg") }
         c.useAvg = true
