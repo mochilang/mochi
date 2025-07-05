@@ -22,6 +22,9 @@ func TestConvertOther_Golden(t *testing.T) {
 	}{
 		{"c", "*.c.out", ConvertCFile, "c", ".c.mochi", ".c.error"},
 		{"cpp", "*.cpp.out", ConvertCppFile, "cpp", ".cpp.mochi", ".cpp.error"},
+		{"asm", "*.s.out", ConvertAsmFile, "asm", ".s.mochi", ".s.error"},
+		{"clj", "*.clj.out", ConvertCljFile, "clj", ".clj.mochi", ".clj.error"},
+		{"cobol", "*.cob.out", ConvertCobolFile, "cobol", ".cob.mochi", ".cob.error"},
 		{"cs", "*.cs.out", ConvertCsFile, "cs", ".cs.mochi", ".cs.error"},
 		{"hs", "*.hs.out", ConvertHsFile, "hs", ".hs.mochi", ".hs.error"},
 		{"kt", "*.kt.out", ConvertKtFile, "kt", ".kt.mochi", ".kt.error"},
