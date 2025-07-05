@@ -1,5 +1,5 @@
-let a
-let b
+let a: Literal[1]
+let b: Literal[2]
 fun test_first() {}
 fun test_second() {}
 fun main() {}
