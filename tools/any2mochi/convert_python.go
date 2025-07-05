@@ -3,39 +3,42 @@ package any2mochi
 import (
 	"fmt"
 	"os"
-	"os/exec"
-	"path/filepath"
+	"strings"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-// ConvertPython converts Python source code to Mochi using a lightweight
-// translator implemented in tools/any2mochi/py_simple.py.
+// ConvertPython converts Python source code to a minimal Mochi representation
+// using the Python language server.
 func ConvertPython(src string) ([]byte, error) {
-	tmp, err := os.CreateTemp("", "py-src-*.py")
+	ls := Servers["python"]
+	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := tmp.WriteString(src); err != nil {
-		tmp.Close()
-		os.Remove(tmp.Name())
-		return nil, err
+	if len(diags) > 0 {
+		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
-	tmp.Close()
-	defer os.Remove(tmp.Name())
-	return ConvertPythonFile(tmp.Name())
+	var out strings.Builder
+	for _, s := range syms {
+		if s.Kind != protocol.SymbolKindFunction {
+			continue
+		}
+		out.WriteString("fun ")
+		out.WriteString(s.Name)
+		out.WriteString("() {}\n")
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	return []byte(out.String()), nil
 }
 
-// ConvertPythonFile reads the Python file at path and converts it to Mochi using
-// the helper Python script. Any errors from the script are returned verbatim.
+// ConvertPythonFile reads the Python file at path and converts it to Mochi.
 func ConvertPythonFile(path string) ([]byte, error) {
-	root, err := repoRoot()
+	data, err := os.ReadFile(path)
 	if err != nil {
-		root = "."
+		return nil, err
 	}
-	script := filepath.Join(root, "tools", "any2mochi", "py_simple.py")
-	cmd := exec.Command("python3", script, path)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, fmt.Errorf("%s", out)
-	}
-	return out, nil
+	return ConvertPython(string(data))
 }
