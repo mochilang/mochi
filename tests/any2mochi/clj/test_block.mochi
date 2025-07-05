@@ -1,0 +1,6 @@
+let xs = [1, 2, 3]
+
+test "values" {
+  expect xs[0] == 1
+  print("done")
+}
