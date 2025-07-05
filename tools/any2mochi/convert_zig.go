@@ -118,6 +118,122 @@ func mapZigType(t string) string {
 	return t
 }
 
+func extractRange(src string, r protocol.Range) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {
+		line := lines[i]
+		if i == int(r.Start.Line) && int(r.Start.Character) < len(line) {
+			line = line[int(r.Start.Character):]
+		}
+		if i == int(r.End.Line) && int(r.End.Character) <= len(line) {
+			line = line[:int(r.End.Character)]
+		}
+		out.WriteString(line)
+		if i != int(r.End.Line) {
+			out.WriteByte('\n')
+		}
+	}
+	return out.String()
+}
+
+func convertZigExpr(expr string) string {
+	expr = strings.TrimSpace(expr)
+	for strings.Contains(expr, "@as(") {
+		start := strings.Index(expr, "@as(")
+		rest := expr[start+4:]
+		depth := 1
+		end := start + 4
+		for i := 0; i < len(rest); i++ {
+			switch rest[i] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+				if depth == 0 {
+					end = start + 4 + i
+					i = len(rest)
+				}
+			}
+		}
+		inner := expr[start+4 : end]
+		comma := strings.Index(inner, ",")
+		if comma == -1 {
+			break
+		}
+		innerExpr := strings.TrimSpace(inner[comma+1:])
+		expr = expr[:start] + innerExpr + expr[end+1:]
+	}
+	for strings.Contains(expr, "@intCast(") {
+		start := strings.Index(expr, "@intCast(")
+		rest := expr[start+9:]
+		depth := 1
+		end := start + 9
+		for i := 0; i < len(rest); i++ {
+			switch rest[i] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+				if depth == 0 {
+					end = start + 9 + i
+					i = len(rest)
+				}
+			}
+		}
+		inner := strings.TrimSpace(expr[start+9 : end])
+		expr = expr[:start] + inner + expr[end+1:]
+	}
+	expr = strings.ReplaceAll(expr, "std.debug.print", "print")
+	if strings.HasPrefix(expr, ".{") && strings.HasSuffix(expr, "}") {
+		expr = "[" + strings.TrimSpace(expr[2:len(expr)-1]) + "]"
+	}
+	return expr
+}
+
+func parseZigFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+	code := extractRange(src, sym.Range)
+	start := strings.Index(code, "{")
+	end := strings.LastIndex(code, "}")
+	if start == -1 || end == -1 || end <= start {
+		return nil
+	}
+	body := code[start+1 : end]
+	lines := strings.Split(body, "\n")
+	var out []string
+	for _, line := range lines {
+		l := strings.TrimSpace(line)
+		if l == "" {
+			continue
+		}
+		if strings.HasSuffix(l, ";") {
+			l = strings.TrimSuffix(l, ";")
+		}
+		switch {
+		case strings.HasPrefix(l, "return "):
+			expr := strings.TrimSpace(l[len("return "):])
+			out = append(out, "return "+convertZigExpr(expr))
+		case strings.HasPrefix(l, "var "):
+			parts := strings.SplitN(l[4:], "=", 2)
+			if len(parts) == 2 {
+				name := strings.Fields(parts[0])[0]
+				expr := convertZigExpr(parts[1])
+				out = append(out, "let "+name+" = "+expr)
+			}
+		case strings.HasPrefix(l, "const "):
+			parts := strings.SplitN(l[6:], "=", 2)
+			if len(parts) == 2 {
+				name := strings.Fields(parts[0])[0]
+				expr := convertZigExpr(parts[1])
+				out = append(out, "let "+name+" = "+expr)
+			}
+		default:
+			out = append(out, convertZigExpr(l))
+		}
+	}
+	return out
+}
+
 func writeZigSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
@@ -158,7 +274,18 @@ func writeZigSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			body := parseZigFunctionBody(src, s)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, stmt := range body {
+					out.WriteString("  ")
+					out.WriteString(stmt)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))

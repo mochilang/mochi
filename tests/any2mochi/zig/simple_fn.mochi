@@ -1,3 +1,7 @@
-fun id(x: int): int {}
-fun main() {}
-
+let std
+fun id(x: int): int {
+  return x
+}
+fun main() {
+  print("{any}\n", .{id(123)})
+}
