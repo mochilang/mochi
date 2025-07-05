@@ -144,26 +144,27 @@ constructs:
 - `if`, `for` and `while` control flow
 - Struct types and simple record literals
 - Function definitions and calls
- - List and map literals with indexing and slicing
- - Dataset helpers `fetch`, `load` and `save`
- - List set operations using `union all`
- - Built-in string helpers `substr` and `reverse`
- - Dataset queries with `from`/`where`/`select`, joins, sorting and pagination
- - Simple `group by` queries without filters or joins
- - Dataset updates using `update` with `set`/`where`
+- List and map literals with indexing and slicing
+- Dataset helpers `fetch`, `load` and `save`
+- List set operations using `union all`
+- Built-in string helpers `substr` and `reverse`
+- Dataset queries with `from`/`where`/`select`, joins, sorting and pagination
+- Simple `group by` queries without filters or joins
+- Dataset updates using `update` with `set`/`where`
 - Package declarations and importing of local packages
+- Enumerations and `match` expressions over them
+- Anonymous function literals
 
 ## Unsupported features
 
 The Pascal backend only implements a minimal subset of Mochi. Features not yet
 supported include:
 
-- Union types and `match` expressions
+- Union types with fields
 - Agents, streams and the `emit` keyword
 - Generative model blocks (`generate` and `model`)
 - The foreign function interface (`import`/`extern`)
 - Logic programming constructs (`fact`, `rule`, `query`)
-- Anonymous function literals (`fun` expressions)
 - Methods on types
 - Function types and first-class functions
 - Set operations (`union`, `except`, `intersect`)
