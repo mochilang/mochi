@@ -61,6 +61,9 @@ const datasetHelpers = `(define (_fetch url opts)
       (set! order (append order (list ks))))
     (set-_Group-Items! g (append (_Group-Items g) (list it))))
   (for/list ([ks order]) (hash-ref groups ks)))
+
+(define (_distinct xs)
+  (remove-duplicates xs))
 `
 
 const setOpsHelpers = `(define (union-all a b) (append (list->list a) (list->list b)))
@@ -1298,6 +1301,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		var sortExpr, skipExpr, takeExpr string
+		distinct := q.Distinct
 		if q.Sort != nil {
 			sortExpr, err = c.compileExpr(q.Sort)
 			if err != nil {
@@ -1349,6 +1353,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if takeExpr != "" {
 			b.WriteString(fmt.Sprintf("    (set! _res (take _res %s))\n", takeExpr))
+		}
+		if distinct {
+			b.WriteString("    (set! _res (_distinct _res))\n")
 		}
 		b.WriteString("    _res))")
 		return b.String(), nil
@@ -1419,6 +1426,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		var sortExpr, skipExpr, takeExpr string
+		distinct := q.Distinct
 		if q.Sort != nil {
 			sortExpr, err = c.compileExpr(q.Sort)
 			if err != nil {
@@ -1499,6 +1507,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if takeExpr != "" {
 			b.WriteString(fmt.Sprintf("    (set! _res (take _res %s))\n", takeExpr))
 		}
+		if distinct {
+			b.WriteString("    (set! _res (_distinct _res))\n")
+		}
 		b.WriteString("    _res))")
 		return b.String(), nil
 	}
@@ -1563,6 +1574,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	var whereExpr, sortExpr, skipExpr, takeExpr string
+	distinct := q.Distinct
 	if q.Where != nil {
 		whereExpr, err = c.compileExpr(q.Where)
 		if err != nil {
@@ -1650,6 +1662,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if takeExpr != "" {
 		b.WriteString(fmt.Sprintf("  (set! _res (take _res %s))\n", takeExpr))
+	}
+	if distinct {
+		b.WriteString("  (set! _res (_distinct _res))\n")
 	}
 	b.WriteString("  _res)")
 	return b.String(), nil
