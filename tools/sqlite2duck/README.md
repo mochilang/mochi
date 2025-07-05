@@ -39,6 +39,8 @@ The converter currently handles the following patterns:
 - `strftime(..., 'now')` -> `strftime(..., now())`
 - `zeroblob(n)` -> `repeat('\x00', n)`
 - `total(x)` -> `coalesce(sum(x),0)`
+- `hex(randomblob(n))` -> `hex(random_bytes(n))`
+- `TRUE`/`FALSE` -> `true`/`false`
 - remove `NOT INDEXED` clauses
 
 These rules cover the most common differences encountered when porting simple
