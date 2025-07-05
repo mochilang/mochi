@@ -135,8 +135,8 @@ defp _json(v), do: IO.puts(_to_json(v))
 		"    joined\n" +
 		"  end)\n" +
 		"  items = (if Map.has_key?(opts, :sortKey), do: Enum.sort_by(items, fn r -> apply(opts[:sortKey], r) end), else: items)\n" +
-		"  items = (if Map.has_key?(opts, :skip), do: (n = opts[:skip]; if n < length(items), do: Enum.drop(items, n), else: []), else: items)\n" +
-		"  items = (if Map.has_key?(opts, :take), do: (n = opts[:take]; if n < length(items), do: Enum.take(items, n), else: items), else: items)\n" +
+		"  items = (if Map.has_key?(opts, :skip), do: (n = opts[:skip]; (if n < length(items), do: Enum.drop(items, n), else: [])), else: items)\n" +
+		"  items = (if Map.has_key?(opts, :take), do: (n = opts[:take]; (if n < length(items), do: Enum.take(items, n), else: items)), else: items)\n" +
 		"  Enum.map(items, fn r -> apply(opts[:select], r) end)\n" +
 		"end\n"
 )
