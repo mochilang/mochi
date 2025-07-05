@@ -1,8 +1,11 @@
 package any2mochi
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -15,19 +18,21 @@ func ConvertCs(src string) ([]byte, error) {
 	ls := Servers["cs"]
 	// omnisharp requires the dotnet CLI which may not be installed
 	_ = cscode.EnsureDotnet()
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
+	if ls.Command != "" {
+		syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		if err == nil && len(diags) == 0 {
+			var out strings.Builder
+			writeCsSymbols(&out, nil, syms, src, ls)
+			if out.Len() > 0 {
+				return []byte(out.String()), nil
+			}
+		} else if err != nil {
+			return nil, err
+		} else if len(diags) > 0 {
+			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		}
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-	var out strings.Builder
-	writeCsSymbols(&out, nil, syms, src, ls)
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
+	return convertCsFallback(src)
 }
 
 // ConvertCsFile reads the cs file and converts it to Mochi.
@@ -458,4 +463,85 @@ func convertCsBody(src string, r protocol.Range) []string {
 		out = append(out, l)
 	}
 	return out
+}
+
+// convertCsFallback parses the source using a Node-based tree-sitter CLI and
+// converts simple `Console.WriteLine` calls to `print` statements. It is used
+// when no C# language server is available.
+func convertCsFallback(src string) ([]byte, error) {
+	ast, err := parseCsAST(src)
+	if err != nil {
+		return nil, err
+	}
+	var out strings.Builder
+	extractWriteLines(ast, &out)
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	return []byte(out.String()), nil
+}
+
+// csNode represents a parsed C# AST node returned by the tree-sitter CLI.
+type csNode struct {
+	Type     string   `json:"type"`
+	Text     string   `json:"text"`
+	Children []csNode `json:"children,omitempty"`
+}
+
+// parseCsAST invokes the Node-based parser script to obtain a JSON AST.
+func parseCsAST(src string) (*csNode, error) {
+	script := filepath.Join("tools", "cs_ast.js")
+	cmd := exec.Command("node", script)
+	cmd.Stdin = strings.NewReader(src)
+	out, err := cmd.Output()
+	if err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			return nil, fmt.Errorf("cs parser error: %s", string(ee.Stderr))
+		}
+		return nil, err
+	}
+	var root csNode
+	if err := json.Unmarshal(out, &root); err != nil {
+		return nil, err
+	}
+	return &root, nil
+}
+
+// extractWriteLines walks the AST and writes Mochi print statements for any
+// `Console.WriteLine` invocations it encounters.
+func extractWriteLines(n *csNode, out *strings.Builder) {
+	if n.Type == "invocation_expression" && len(n.Children) >= 2 {
+		call := &n.Children[0]
+		args := &n.Children[1]
+		if isWriteLine(call) && len(args.Children) > 0 {
+			arg := strings.TrimSpace(args.Children[0].Text)
+			out.WriteString("print(" + arg + ")\n")
+		}
+	}
+	for i := range n.Children {
+		extractWriteLines(&n.Children[i], out)
+	}
+}
+
+// isWriteLine checks if the given member access expression resolves to
+// Console.WriteLine or System.Console.WriteLine.
+func isWriteLine(n *csNode) bool {
+	path := memberPath(n)
+	if len(path) >= 2 && path[len(path)-2] == "Console" && path[len(path)-1] == "WriteLine" {
+		return true
+	}
+	return false
+}
+
+// memberPath flattens nested member_access_expression nodes into a slice of identifiers.
+func memberPath(n *csNode) []string {
+	if n.Type == "member_access_expression" && len(n.Children) == 2 {
+		left := memberPath(&n.Children[0])
+		right := memberPath(&n.Children[1])
+		return append(left, right...)
+	}
+	if n.Type == "identifier" {
+		return []string{n.Text}
+	}
+	return nil
 }
