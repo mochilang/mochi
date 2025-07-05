@@ -103,8 +103,18 @@ func convertParams(src string, n *node) []string {
 	for _, c := range n.children {
 		if c.kind == "PARAM" {
 			id := findChild(findChild(findChild(c, "IDENT_PAT"), "NAME"), "IDENT")
+			typNode := findChild(c, "PATH_TYPE")
+			if typNode == nil {
+				typNode = findChild(c, "REF_TYPE")
+			}
 			if id != nil {
-				params = append(params, strings.TrimSpace(src[id.start:id.end]))
+				name := strings.TrimSpace(src[id.start:id.end])
+				typ := convertRustType(src, typNode)
+				if typ != "any" {
+					params = append(params, fmt.Sprintf("%s: %s", name, typ))
+				} else {
+					params = append(params, name)
+				}
 			}
 		}
 		if c.kind == "SELF_PARAM" {
@@ -394,7 +404,22 @@ func convertFn(src string, n *node, level int) []string {
 		return nil
 	}
 	params := convertParams(src, findChild(n, "PARAM_LIST"))
-	out := []string{indent(level) + fmt.Sprintf("fun %s(%s) {", strings.TrimSpace(src[nameNode.start:nameNode.end]), strings.Join(params, ", "))}
+	ret := ""
+	if rt := findChild(n, "RET_TYPE"); rt != nil {
+		typNode := findChild(rt, "PATH_TYPE")
+		if typNode == nil {
+			typNode = findChild(rt, "REF_TYPE")
+		}
+		ret = convertRustType(src, typNode)
+		if ret == "()" {
+			ret = ""
+		}
+	}
+	header := fmt.Sprintf("fun %s(%s)", strings.TrimSpace(src[nameNode.start:nameNode.end]), strings.Join(params, ", "))
+	if ret != "" {
+		header += ": " + ret
+	}
+	out := []string{indent(level) + header + " {"}
 	body := findChild(findChild(n, "BLOCK_EXPR"), "STMT_LIST")
 	out = append(out, convertStmts(src, body, level+1)...)
 	out = append(out, indent(level)+"}")
