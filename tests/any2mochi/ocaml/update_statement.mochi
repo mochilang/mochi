@@ -1,0 +1,9 @@
+type Person {
+  name: string
+  age: int
+  status: string
+}
+fun decode_Person(json) {}
+fun test_update_adult_status() {}
+let people
+let people

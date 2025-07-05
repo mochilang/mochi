@@ -1438,7 +1438,90 @@ func (c *Compiler) compileFetchExprTyped(f *parser.FetchExpr, typ types.Type) (s
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
-	return "[]", nil
+	if q.Group != nil {
+		return c.compileGroupedQuery(q)
+	}
+	if len(q.Joins) > 0 || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return "", fmt.Errorf("unsupported query")
+	}
+	src, err := c.compileExpr(q.Source)
+	if err != nil {
+		return "", err
+	}
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			return "", err
+		}
+		fromSrcs[i] = fs
+	}
+	orig := c.env
+	child := types.NewEnv(orig)
+	child.SetVar(q.Var, types.AnyType{}, true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, types.AnyType{}, true)
+	}
+	c.env = child
+	selectExpr, err := c.compileExpr(q.Select)
+	if err != nil {
+		c.env = orig
+		return "", err
+	}
+	cond := ""
+	if q.Where != nil {
+		cond, err = c.compileExpr(q.Where)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+	}
+	c.env = orig
+	var b strings.Builder
+	b.WriteString("(let _res = ref [] in\n")
+	indent := "  "
+	b.WriteString(indent)
+	b.WriteString("List.iter (fun ")
+	b.WriteString(sanitizeName(q.Var))
+	b.WriteString(" ->\n")
+	indent += "  "
+	for i := range fromSrcs {
+		b.WriteString(indent)
+		b.WriteString("List.iter (fun ")
+		b.WriteString(sanitizeName(q.Froms[i].Var))
+		b.WriteString(" ->\n")
+		indent += "  "
+	}
+	if cond != "" {
+		b.WriteString(indent)
+		b.WriteString("if ")
+		b.WriteString(cond)
+		b.WriteString(" then (\n")
+		indent += "  "
+	}
+	b.WriteString(indent)
+	b.WriteString("_res := ")
+	b.WriteString(selectExpr)
+	b.WriteString(" :: !_res;\n")
+	if cond != "" {
+		indent = indent[:len(indent)-2]
+		b.WriteString(indent)
+		b.WriteString(") else ();\n")
+	}
+	for i := len(fromSrcs) - 1; i >= 0; i-- {
+		indent = indent[:len(indent)-2]
+		b.WriteString(indent)
+		b.WriteString(") ")
+		b.WriteString(fromSrcs[i])
+		b.WriteString(";\n")
+	}
+	indent = indent[:len(indent)-2]
+	b.WriteString(indent)
+	b.WriteString(") ")
+	b.WriteString(src)
+	b.WriteString(";\n")
+	b.WriteString("  List.rev !_res)")
+	return b.String(), nil
 }
 
 func (c *Compiler) compileGroupedQuery(q *parser.QueryExpr) (string, error) {

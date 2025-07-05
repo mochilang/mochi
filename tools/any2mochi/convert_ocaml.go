@@ -18,15 +18,48 @@ func ConvertOcaml(src string) ([]byte, error) {
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
-	lines := strings.Split(src, "\n")
 	var out strings.Builder
+	writeOcamlSymbols(&out, nil, syms, src, ls)
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	return []byte(out.String()), nil
+}
+
+// ConvertOcamlFile reads the ocaml file and converts it to Mochi.
+func ConvertOcamlFile(path string) ([]byte, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return ConvertOcaml(string(data))
+}
+
+func ocamlParamNames(sym protocol.DocumentSymbol) []string {
+	var names []string
+	start := sym.Range.Start.Line
+	for _, c := range sym.Children {
+		if c.Kind == protocol.SymbolKindVariable && c.Range.Start.Line == start {
+			names = append(names, c.Name)
+		}
+	}
+	return names
+}
+
+func writeOcamlSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
+		nameParts := prefix
+		if s.Name != "" {
+			nameParts = append(nameParts, s.Name)
+		}
 		switch s.Kind {
+		case protocol.SymbolKindNamespace, protocol.SymbolKindModule, protocol.SymbolKindPackage:
+			writeOcamlSymbols(out, nameParts, s.Children, src, ls)
 		case protocol.SymbolKindFunction:
-			names := parseOcamlParamNames(lines, s)
+			names := ocamlParamNames(s)
 			types, ret := ocamlHoverSignature(src, s, ls)
 			out.WriteString("fun ")
-			out.WriteString(s.Name)
+			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteByte('(')
 			for i, n := range names {
 				if i > 0 {
@@ -44,71 +77,48 @@ func ConvertOcaml(src string) ([]byte, error) {
 				out.WriteString(ret)
 			}
 			out.WriteString(" {}\n")
+		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			if len(s.Children) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, c := range s.Children {
+					if c.Kind != protocol.SymbolKindField && c.Kind != protocol.SymbolKindVariable {
+						continue
+					}
+					out.WriteString("  ")
+					out.WriteString(c.Name)
+					typ := ocamlHoverType(src, c, ls)
+					if typ != "" && typ != "unit" {
+						out.WriteString(": ")
+						out.WriteString(typ)
+					}
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
-			typ := ocamlHoverType(src, s, ls)
-			out.WriteString("let ")
-			out.WriteString(s.Name)
-			if typ != "" && typ != "unit" {
-				out.WriteString(": ")
-				out.WriteString(typ)
+			if len(prefix) == 0 {
+				typ := ocamlHoverType(src, s, ls)
+				out.WriteString("let ")
+				out.WriteString(strings.Join(nameParts, "."))
+				if typ != "" && typ != "unit" {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
+				out.WriteByte('\n')
 			}
-			out.WriteByte('\n')
+			if len(s.Children) > 0 {
+				writeOcamlSymbols(out, nameParts, s.Children, src, ls)
+			}
+		default:
+			if len(s.Children) > 0 {
+				writeOcamlSymbols(out, nameParts, s.Children, src, ls)
+			}
 		}
 	}
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
-}
-
-// ConvertOcamlFile reads the ocaml file and converts it to Mochi.
-func ConvertOcamlFile(path string) ([]byte, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	return ConvertOcaml(string(data))
-}
-
-func parseOcamlParamNames(lines []string, sym protocol.DocumentSymbol) []string {
-	start := posToOffset(lines, sym.SelectionRange.End)
-	src := strings.Join(lines, "\n")
-	rest := src[start:]
-	eq := strings.Index(rest, "=")
-	if eq == -1 {
-		eq = len(rest)
-	}
-	header := strings.TrimSpace(rest[:eq])
-	if idx := strings.LastIndex(header, ":"); idx != -1 {
-		if idx > strings.LastIndex(header, ")") {
-			header = strings.TrimSpace(header[:idx])
-		}
-	}
-	fields := strings.Fields(header)
-	var names []string
-	for _, f := range fields {
-		if strings.HasPrefix(f, "(") {
-			f = strings.TrimPrefix(f, "(")
-			if i := strings.Index(f, ")"); i != -1 {
-				f = f[:i]
-			}
-			if i := strings.Index(f, ":"); i != -1 {
-				f = f[:i]
-			}
-			f = strings.TrimSpace(f)
-			if f != "" {
-				names = append(names, f)
-			}
-		} else if strings.HasPrefix(f, ":") {
-			break
-		} else {
-			if i := strings.Index(f, ":"); i != -1 {
-				f = f[:i]
-			}
-			names = append(names, f)
-		}
-	}
-	return names
 }
 
 func ocamlHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]string, string) {
@@ -167,13 +177,4 @@ func mapOcamlType(t string) string {
 	default:
 		return t
 	}
-}
-
-func posToOffset(lines []string, pos protocol.Position) int {
-	off := 0
-	for i := 0; i < int(pos.Line); i++ {
-		off += len(lines[i]) + 1
-	}
-	off += int(pos.Character)
-	return off
 }
