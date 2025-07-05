@@ -1,0 +1,14 @@
+[
+  {
+    "name": "main",
+    "kind": 12,
+    "range": {"start": {"line": 0, "character": 0}, "end": {"line": 0, "character": 0}},
+    "selectionRange": {"start": {"line": 0, "character": 0}, "end": {"line": 0, "character": 0}}
+  },
+  {
+    "name": "_avg",
+    "kind": 12,
+    "range": {"start": {"line": 0, "character": 0}, "end": {"line": 0, "character": 0}},
+    "selectionRange": {"start": {"line": 0, "character": 0}, "end": {"line": 0, "character": 0}}
+  }
+]
