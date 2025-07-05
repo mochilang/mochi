@@ -50,6 +50,7 @@ The backend currently supports:
 - test blocks and `expect` statements
 - `load` and `save` for Erlang terms or plain text files with optional `filter`, `skip` and `take` options
 - HTTP `fetch` using `httpc` with method, headers, query, body and timeout options
+- unary `+` operator is accepted and has no effect
 
 ## Building
 
