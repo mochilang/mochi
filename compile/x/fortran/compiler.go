@@ -1472,6 +1472,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 		}
 		c.needsStrInt = true
 		return fmt.Sprintf("str_int(%s)", args[0]), nil
+	case "abs":
+		if len(args) != 1 {
+			return "", fmt.Errorf("abs expects 1 arg")
+		}
+		return fmt.Sprintf("abs(%s)", args[0]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
