@@ -1,5 +1,5 @@
-type error: error[T005]: parameter `_t0` is missing a type
-  --> :5:10
+type error: error[T000]: `let` requires a type or a value
+  --> :2:1
 
 help:
-  Add a type like `x: int` to this parameter.
+  Use `let x = ...` or `let x: int` to declare a variable.

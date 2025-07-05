@@ -1,1 +1,5 @@
-parse error: parse error: 8:22: lexer: invalid input text "? None\n         ..."
+type error: error[T000]: `let` requires a type or a value
+  --> :2:1
+
+help:
+  Use `let x = ...` or `let x: int` to declare a variable.

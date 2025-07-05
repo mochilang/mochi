@@ -1,5 +1,5 @@
-type error: error[T002]: undefined variable: math
-  --> :2:12
+type error: error[T000]: `let` requires a type or a value
+  --> :2:1
 
 help:
-  Check if the variable was declared in this scope.
+  Use `let x = ...` or `let x: int` to declare a variable.
