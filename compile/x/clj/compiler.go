@@ -316,11 +316,11 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		switch tt := t.(type) {
 		case types.StructType:
 			c.use("_cast_struct")
-			expr = fmt.Sprintf("(_cast_struct %s %s)", sanitizeName(tt.Name), expr)
+			expr = fmt.Sprintf("(_cast_struct #'%s %s)", sanitizeName(tt.Name), expr)
 		case types.ListType:
 			if stt, ok := tt.Elem.(types.StructType); ok {
 				c.use("_cast_struct_list")
-				expr = fmt.Sprintf("(_cast_struct_list %s %s)", sanitizeName(stt.Name), expr)
+				expr = fmt.Sprintf("(_cast_struct_list #'%s %s)", sanitizeName(stt.Name), expr)
 			}
 		}
 	}
@@ -351,11 +351,11 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		switch tt := t.(type) {
 		case types.StructType:
 			c.use("_cast_struct")
-			expr = fmt.Sprintf("(_cast_struct %s %s)", sanitizeName(tt.Name), expr)
+			expr = fmt.Sprintf("(_cast_struct #'%s %s)", sanitizeName(tt.Name), expr)
 		case types.ListType:
 			if stt, ok := tt.Elem.(types.StructType); ok {
 				c.use("_cast_struct_list")
-				expr = fmt.Sprintf("(_cast_struct_list %s %s)", sanitizeName(stt.Name), expr)
+				expr = fmt.Sprintf("(_cast_struct_list #'%s %s)", sanitizeName(stt.Name), expr)
 			}
 		}
 	}
@@ -1817,6 +1817,9 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		opts = v
 	}
 	c.use("_save")
+	if c.imports != nil {
+		c.imports["json"] = "clojure.data.json"
+	}
 	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
 }
 
@@ -2075,7 +2078,7 @@ func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
 			if c.imports != nil {
 				c.imports["json"] = "clojure.data.json"
 			}
-			return fmt.Sprintf("(_gen_struct %s %s %s %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
+			return fmt.Sprintf("(_gen_struct #'%s %s %s %s)", sanitizeName(g.Target), prompt, model, paramStr), nil
 		}
 	}
 	c.use("_gen_text")
