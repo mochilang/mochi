@@ -16,7 +16,7 @@ The Scheme backend converts a limited subset of Mochi programs into Scheme sourc
 - `if`, `for` and `while` statements
 - Lists and maps with literals, indexing, membership checks and mutation
 - String and list slicing
-- Built‑ins: `len`, `count`, `avg`, `str`, `push`, `keys`, `print`, `input`, `_fetch`, `_load`, `_save`
+- Built‑ins: `len`, `count`, `avg`, `sum`, `max`, `min`, `str`, `push`, `keys`, `print`, `input`, `_fetch`, `_load`, `_save`
 - Simple `test` blocks with `expect` assertions
 - List set operators `union`, `union_all`, `except` and `intersect`
 - Struct type declarations and methods
