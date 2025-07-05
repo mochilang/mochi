@@ -371,6 +371,21 @@ func parseCStatements(body string) []string {
 			} else {
 				out = append(out, strings.Repeat("  ", indent)+l)
 			}
+		case strings.HasPrefix(l, "while ") || strings.HasPrefix(l, "while("):
+			if strings.HasSuffix(l, "{") {
+				h := strings.TrimSpace(strings.TrimSuffix(l, "{"))
+				h = strings.TrimPrefix(h, "while")
+				h = strings.TrimSpace(h)
+				for strings.HasPrefix(h, "(") && strings.HasSuffix(h, ")") {
+					h = strings.TrimPrefix(h, "(")
+					h = strings.TrimSuffix(h, ")")
+					h = strings.TrimSpace(h)
+				}
+				out = append(out, strings.Repeat("  ", indent)+"while "+h+" {")
+				indent++
+			} else {
+				out = append(out, strings.Repeat("  ", indent)+l)
+			}
 		case strings.HasPrefix(l, "if ") || strings.HasPrefix(l, "if("):
 			if strings.HasSuffix(l, "{") {
 				h := strings.TrimSpace(strings.TrimSuffix(l, "{"))
@@ -404,15 +419,47 @@ func parseCStatements(body string) []string {
 			if strings.HasSuffix(l, ";") {
 				l = strings.TrimSuffix(l, ";")
 			}
-			if strings.HasPrefix(l, "int ") {
+			switch {
+			case strings.HasSuffix(l, "++"):
+				v := strings.TrimSpace(strings.TrimSuffix(l, "++"))
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" + 1")
+			case strings.HasSuffix(l, "--"):
+				v := strings.TrimSpace(strings.TrimSuffix(l, "--"))
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" - 1")
+			case strings.Contains(l, "+="):
+				parts := strings.SplitN(l, "+=", 2)
+				v := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" + "+val)
+			case strings.Contains(l, "-="):
+				parts := strings.SplitN(l, "-=", 2)
+				v := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" - "+val)
+			case strings.Contains(l, "*="):
+				parts := strings.SplitN(l, "*=", 2)
+				v := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" * "+val)
+			case strings.Contains(l, "/="):
+				parts := strings.SplitN(l, "/=", 2)
+				v := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" / "+val)
+			case strings.Contains(l, "%="):
+				parts := strings.SplitN(l, "%=", 2)
+				v := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				out = append(out, strings.Repeat("  ", indent)+v+" = "+v+" % "+val)
+			case strings.HasPrefix(l, "int "):
 				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[4:]))
-			} else if strings.HasPrefix(l, "float ") {
+			case strings.HasPrefix(l, "float "):
 				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[6:]))
-			} else if strings.HasPrefix(l, "double ") {
+			case strings.HasPrefix(l, "double "):
 				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[7:]))
-			} else if strings.HasPrefix(l, "char ") {
+			case strings.HasPrefix(l, "char "):
 				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[5:]))
-			} else {
+			default:
 				out = append(out, strings.Repeat("  ", indent)+l)
 			}
 		}

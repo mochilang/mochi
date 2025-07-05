@@ -28,15 +28,15 @@ fun main(): int {
       continue
     }
     if (_t7 < _t5 {
-      _t7++
+      _t7 = _t7 + 1
       continue
     }
     if (_t6 >= 0 && _t3 >= _t6 {
       break
     }
-    _t7++
+    _t7 = _t7 + 1
     _t2.data[_t3] = n
-    _t3++
+    _t3 = _t3 + 1
   }
   _t2.len = _t3
   list_int res = _t2
