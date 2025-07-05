@@ -45,6 +45,83 @@ func tsFunctionBody(src string) []string {
 				s = s[end:]
 			}
 			continue
+		case strings.HasPrefix(s, "let ") || strings.HasPrefix(s, "const ") || strings.HasPrefix(s, "var "):
+			end := strings.Index(s, ";")
+			if end == -1 {
+				end = len(s)
+			}
+			stmt := strings.TrimSpace(s[:end])
+			stmt = strings.TrimPrefix(stmt, "let ")
+			stmt = strings.TrimPrefix(stmt, "const ")
+			stmt = strings.TrimPrefix(stmt, "var ")
+			lines = append(lines, "let "+strings.TrimSuffix(stmt, ";"))
+			if end < len(s) {
+				s = s[end+1:]
+			} else {
+				s = ""
+			}
+			continue
+		case strings.HasPrefix(s, "if ("):
+			condEnd := findMatch(s, strings.Index(s, "("), '(', ')')
+			cond := strings.TrimSpace(s[strings.Index(s, "(")+1 : condEnd])
+			bodyStart := strings.Index(s[condEnd:], "{")
+			if bodyStart == -1 {
+				s = s[condEnd:]
+				continue
+			}
+			bodyStart += condEnd + 1
+			bodyEnd := findMatch(s, bodyStart-1, '{', '}')
+			bodyLines := tsFunctionBody(s[bodyStart:bodyEnd])
+			lines = append(lines, "if "+cond+" {")
+			for _, l := range bodyLines {
+				lines = append(lines, "  "+l)
+			}
+			lines = append(lines, "}")
+			s = strings.TrimSpace(s[bodyEnd+1:])
+			if strings.HasPrefix(s, "else {") {
+				elseStart := strings.Index(s, "{") + 1
+				elseEnd := findMatch(s, elseStart-1, '{', '}')
+				elseLines := tsFunctionBody(s[elseStart:elseEnd])
+				lines = append(lines, "else {")
+				for _, l := range elseLines {
+					lines = append(lines, "  "+l)
+				}
+				lines = append(lines, "}")
+				s = s[elseEnd+1:]
+			}
+			continue
+		case strings.HasPrefix(s, "for ("):
+			parenEnd := findMatch(s, strings.Index(s, "("), '(', ')')
+			clause := strings.TrimSpace(s[strings.Index(s, "(")+1 : parenEnd])
+			if strings.Contains(clause, " of ") {
+				parts := strings.SplitN(clause, " of ", 2)
+				iter := strings.TrimSpace(parts[0])
+				iter = strings.TrimPrefix(iter, "let ")
+				iter = strings.TrimPrefix(iter, "const ")
+				iter = strings.TrimPrefix(iter, "var ")
+				list := strings.TrimSpace(parts[1])
+				bodyStart := strings.Index(s[parenEnd:], "{")
+				if bodyStart == -1 {
+					s = s[parenEnd:]
+					continue
+				}
+				bodyStart += parenEnd + 1
+				bodyEnd := findMatch(s, bodyStart-1, '{', '}')
+				bodyLines := tsFunctionBody(s[bodyStart:bodyEnd])
+				lines = append(lines, "for "+iter+" in "+list+" {")
+				for _, l := range bodyLines {
+					lines = append(lines, "  "+l)
+				}
+				lines = append(lines, "}")
+				s = s[bodyEnd+1:]
+				continue
+			}
+			if idx := strings.Index(s, ";"); idx != -1 {
+				s = s[idx+1:]
+			} else {
+				s = ""
+			}
+			continue
 		default:
 			if idx := strings.Index(s, ";"); idx != -1 {
 				s = s[idx+1:]
@@ -72,4 +149,21 @@ func indexForPosition(src string, pos protocol.Position) int {
 		idx += int(pos.Character)
 	}
 	return idx
+}
+
+// findMatch returns the index of the matching closing delimiter for the opening
+// delimiter at openIdx. If no match is found it returns len(s).
+func findMatch(s string, openIdx int, open, close rune) int {
+	depth := 0
+	for i, r := range s[openIdx:] {
+		if r == open {
+			depth++
+		} else if r == close {
+			depth--
+			if depth == 0 {
+				return openIdx + i
+			}
+		}
+	}
+	return len(s)
 }
