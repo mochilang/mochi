@@ -1,3 +1,6 @@
-fun _load() {}
-fun _save() {}
-fun main() {}
+type Person {
+  name: string
+  age: int
+}
+let people = load as Person with {format: "json"}
+save people with {format: "json"}

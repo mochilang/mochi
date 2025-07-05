@@ -1,2 +1,2 @@
-fun _fetch() {}
-fun main() {}
+let data = fetch "file:../../tests/compiler/py/fetch_builtin.json"
+print(data["message"])

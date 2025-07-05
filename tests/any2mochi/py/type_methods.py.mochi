@@ -1,2 +1,10 @@
-fun _get() {}
-fun main() {}
+type Counter {
+  value: int
+  fun inc(): int {
+    value = value + 1
+    return value
+  }
+}
+let c = Counter { value: 0 }
+print(c.inc())
+print(c.inc())

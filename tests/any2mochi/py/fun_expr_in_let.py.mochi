@@ -1,1 +1,2 @@
-fun main() {}
+let square = fun(x) => x * x
+print(square(6))

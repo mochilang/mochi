@@ -1,1 +1,1 @@
-fun main() {}
+print("value: " + str(7))

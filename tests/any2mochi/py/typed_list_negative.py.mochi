@@ -1,2 +1,7 @@
-fun test_values() {}
-fun main() {}
+let xs = [-1, 0, 1]
+test "values" {
+  expect xs[0] == -1
+  expect xs[1] == 0
+  expect xs[2] == 1
+  print("done")
+}
