@@ -11,6 +11,7 @@ import (
 	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
 
+	protocol "github.com/tliron/glsp/protocol_3_16"
 	"mochi/tools/any2mochi"
 )
 
@@ -47,13 +48,17 @@ func parseCmd() *cobra.Command {
 					return err
 				}
 			}
-			syms, err := any2mochi.ParseText(parts[0], parts[1:], lang, string(data))
+			syms, diags, err := any2mochi.ParseText(parts[0], parts[1:], lang, string(data))
 			if err != nil {
 				return err
 			}
+			out := struct {
+				Symbols     []protocol.DocumentSymbol `json:"symbols"`
+				Diagnostics []protocol.Diagnostic     `json:"diagnostics"`
+			}{syms, diags}
 			enc := json.NewEncoder(cmd.OutOrStdout())
 			enc.SetIndent("", "  ")
-			return enc.Encode(syms)
+			return enc.Encode(out)
 		},
 	}
 	cmd.Flags().StringVar(&server, "server", "", "language server command")
