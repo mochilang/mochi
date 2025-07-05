@@ -3,40 +3,24 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-// ConvertErlang converts erlang source code to Mochi using the language server.
+// ConvertErlang converts Erlang source code to Mochi using simple regular
+// expression parsing. Type information is not extracted.
 func ConvertErlang(src string) ([]byte, error) {
-	ls := Servers["erlang"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
+	funcs := parseErlangFuncs(src)
 	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		var params []erlParam
-		var ret string
-		if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
-				params, ret = parseErlangHover(mc.Value)
-			}
-		}
-		if s.Name == "" {
-			s.Name = "fun"
-		}
+	for _, fn := range funcs {
 		out.WriteString("fun ")
-		out.WriteString(s.Name)
+		if fn.name == "" {
+			out.WriteString("fun")
+		} else {
+			out.WriteString(fn.name)
+		}
 		out.WriteByte('(')
-		for i, p := range params {
+		for i, p := range fn.params {
 			if i > 0 {
 				out.WriteString(", ")
 			}
@@ -47,16 +31,11 @@ func ConvertErlang(src string) ([]byte, error) {
 			}
 		}
 		out.WriteByte(')')
-		if ret != "" && ret != "ok" {
-			out.WriteString(": ")
-			out.WriteString(ret)
-		}
-		body := parseErlangBody(src, s.Range)
-		if len(body) == 0 {
+		if len(fn.body) == 0 {
 			out.WriteString(" {}\n")
 		} else {
 			out.WriteString(" {\n")
-			for _, line := range body {
+			for _, line := range fn.body {
 				out.WriteString(line)
 				out.WriteByte('\n')
 			}
@@ -100,23 +79,6 @@ func parseErlangParams(paramStr string) []erlParam {
 	return out
 }
 
-func parseErlangHover(sig string) ([]erlParam, string) {
-	sig = strings.ReplaceAll(sig, "\n", " ")
-	open := strings.Index(sig, "(")
-	close := strings.Index(sig, ")")
-	arrow := strings.Index(sig, "->")
-	if open == -1 || close == -1 || arrow == -1 || close < open || arrow < close {
-		return nil, ""
-	}
-	params := parseErlangParams(sig[open+1 : close])
-	ret := strings.TrimSpace(sig[arrow+2:])
-	if idx := strings.IndexAny(ret, ". "); idx >= 0 {
-		ret = strings.TrimSpace(ret[:idx])
-	}
-	ret = mapErlangType(ret)
-	return params, ret
-}
-
 func mapErlangType(t string) string {
 	switch strings.TrimSpace(t) {
 	case "integer()":
@@ -132,32 +94,9 @@ func mapErlangType(t string) string {
 	}
 }
 
-func offsetFromPosition(src string, pos protocol.Position) int {
-	lines := strings.Split(src, "\n")
-	if int(pos.Line) >= len(lines) {
-		return len(src)
-	}
-	off := 0
-	for i := 0; i < int(pos.Line); i++ {
-		off += len(lines[i]) + 1
-	}
-	col := int(pos.Character)
-	if col > len(lines[int(pos.Line)]) {
-		col = len(lines[int(pos.Line)])
-	}
-	return off + col
-}
-
-func parseErlangBody(src string, rng protocol.Range) []string {
-	start := offsetFromPosition(src, rng.Start)
-	end := offsetFromPosition(src, rng.End)
-	if start >= end || start < 0 || end > len(src) {
-		return nil
-	}
-	body := strings.TrimSpace(src[start:end])
-	if idx := strings.Index(body, "->"); idx >= 0 {
-		body = body[idx+2:]
-	}
+// parseErlangBodyText converts a comma separated list of Erlang expressions
+// into a slice of Mochi statements.
+func parseErlangBodyText(body string) []string {
 	body = strings.TrimSpace(body)
 	if strings.HasSuffix(body, ".") {
 		body = strings.TrimSuffix(body, ".")
@@ -182,6 +121,28 @@ func parseErlangBody(src string, rng protocol.Range) []string {
 		}
 	}
 	return out
+}
+
+type erlFunc struct {
+	name   string
+	params []erlParam
+	body   []string
+}
+
+var erlFuncRE = regexp.MustCompile(`(?ms)^([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*->\s*(.*?)\.`)
+
+// parseErlangFuncs finds simple top-level function definitions using regular
+// expressions. It ignores multiple clauses and only converts the first match for
+// each function name.
+func parseErlangFuncs(src string) []erlFunc {
+	matches := erlFuncRE.FindAllStringSubmatch(src, -1)
+	funcs := make([]erlFunc, 0, len(matches))
+	for _, m := range matches {
+		params := parseErlangParams(m[2])
+		body := parseErlangBodyText(m[3])
+		funcs = append(funcs, erlFunc{name: m[1], params: params, body: body})
+	}
+	return funcs
 }
 
 type erlParam struct {
