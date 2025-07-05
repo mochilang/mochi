@@ -1,3 +1,0 @@
-fun main() {}
-fun main.map() callback() {}
-fun main.people.filter() callback() {}

@@ -1,2 +1,6 @@
 fun _sliceString() {}
+let end: any
+let n: any
+let runes: any
+let start: any
 fun main() {}

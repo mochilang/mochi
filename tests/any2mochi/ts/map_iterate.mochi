@@ -1,1 +1,5 @@
+let m: any
 fun main() {}
+let k: any
+let kKey: any
+let sum: any

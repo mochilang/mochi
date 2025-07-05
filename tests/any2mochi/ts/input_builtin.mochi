@@ -1,2 +1,5 @@
 fun _input() {}
+let v: any
+let input1: any
+let input2: any
 fun main() {}

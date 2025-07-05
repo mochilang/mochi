@@ -1,2 +1,4 @@
 fun _indexString() {}
+let runes: any
 fun main() {}
+let text: any

@@ -1,2 +1,6 @@
+let _Node: any
+let Empty: any
+let Foo: any
 fun listit() {}
+let __name: any
 fun main() {}
