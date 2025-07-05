@@ -3,6 +3,7 @@ package hscode
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -1298,6 +1299,9 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	if len(t.Variants) > 0 {
+		if ut, ok := c.env.GetUnion(t.Name); ok {
+			c.compileUnionType(ut)
+		}
 		return nil
 	}
 	if st, ok := c.env.GetStruct(t.Name); ok {
@@ -1329,6 +1333,51 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
 			c.compileStructType(sub)
+		}
+	}
+}
+
+func (c *Compiler) compileUnionType(ut types.UnionType) {
+	name := sanitizeName(ut.Name)
+	if c.structs[name] {
+		return
+	}
+	c.structs[name] = true
+	c.writeln(fmt.Sprintf("data %s =", name))
+	c.indent++
+	keys := make([]string, 0, len(ut.Variants))
+	for k := range ut.Variants {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for i, k := range keys {
+		st := ut.Variants[k]
+		line := sanitizeName(k)
+		if len(st.Fields) > 0 {
+			line += " {"
+			for j, fn := range st.Order {
+				ft := st.Fields[fn]
+				line += fmt.Sprintf(" %s :: %s", sanitizeName(fn), c.hsType(ft))
+				if j < len(st.Order)-1 {
+					line += ","
+				}
+			}
+			line += " }"
+		}
+		if i < len(keys)-1 {
+			line += " |"
+		}
+		c.writeln(line)
+	}
+	c.indent--
+	c.writeln("  deriving (Show, Generic)")
+	c.writeln(fmt.Sprintf("instance Aeson.FromJSON %s", name))
+	c.writeln("")
+	for _, st := range ut.Variants {
+		for _, ft := range st.Fields {
+			if sub, ok := ft.(types.StructType); ok {
+				c.compileStructType(sub)
+			}
 		}
 	}
 }
