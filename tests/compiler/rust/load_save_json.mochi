@@ -2,7 +2,28 @@ type Person {
   name: string
   age: int
 }
-
-let people = load "people.json" as Person with { format: "json" }
-
-save people to "out.json" with { format: "json" }
+fun main() {
+  var people = _load::<Person>("people.json", std::collections::HashMap::from([("format".to_string(), "json")]))
+  _save(people, "out.json", std::collections::HashMap::from([("format".to_string(), "json")]))
+}
+fun _load(_path, _opts) {
+  var data = String::new()
+  if _path.is_empty() || _path == "-" {
+    std::io::stdin().read_to_string(&mut data).unwrap()
+  }
+  if let Ok(v) = serde_json::from_str::<Vec<T>>(&data) {
+    return v
+  }
+  if let Ok(v) = serde_json::from_str::<T>(&data) {
+    return vec![v]
+  }
+}
+fun _save(_src, _path, _opts) {
+  if let Ok(text) = serde_json::to_string(_src) {
+    if _path.is_empty() || _path == "-" {
+      print(text)
+    else {
+      std::fs::write(_path, text).unwrap()
+    }
+  }
+}

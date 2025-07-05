@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -20,7 +19,44 @@ type node struct {
 	children []*node
 }
 
-var lineRe = regexp.MustCompile(`^( *)([A-Z_]+)@(\d+)..(\d+)(?:\s+"(.*)")?$`)
+// parseLine parses a single line of rust-analyzer parse output. It returns the
+// indentation level, node kind and start/end offsets. The format is:
+// "  KIND@0..3" or "  KIND@0..3 \"tok\"".
+func parseLine(line string) (indent int, kind string, start, end int, ok bool) {
+	i := 0
+	for i < len(line) && line[i] == ' ' {
+		i++
+	}
+	indent = i / 2
+	rest := line[i:]
+	at := strings.IndexByte(rest, '@')
+	if at < 0 {
+		return
+	}
+	kind = rest[:at]
+	rest = rest[at+1:]
+	dots := strings.Index(rest, "..")
+	if dots < 0 {
+		return
+	}
+	if s, err := strconv.Atoi(rest[:dots]); err == nil {
+		start = s
+	} else {
+		return
+	}
+	rest = rest[dots+2:]
+	endStr := rest
+	if sp := strings.IndexByte(rest, ' '); sp >= 0 {
+		endStr = rest[:sp]
+	}
+	if e, err := strconv.Atoi(endStr); err == nil {
+		end = e
+	} else {
+		return
+	}
+	ok = true
+	return
+}
 
 // parseTree parses the rust-analyzer syntax tree output into a hierarchy of nodes.
 func parseTree(out string) *node {
@@ -30,14 +66,10 @@ func parseTree(out string) *node {
 		if strings.TrimSpace(line) == "" {
 			continue
 		}
-		m := lineRe.FindStringSubmatch(line)
-		if m == nil {
+		indent, kind, start, end, ok := parseLine(line)
+		if !ok {
 			continue
 		}
-		indent := len(m[1]) / 2
-		kind := m[2]
-		start, _ := strconv.Atoi(m[3])
-		end, _ := strconv.Atoi(m[4])
 		n := &node{kind: kind, start: start, end: end}
 		for len(stack) > indent+1 {
 			stack = stack[:len(stack)-1]
@@ -120,6 +152,8 @@ func convertStmt(src string, n *node, level int) []string {
 			return convertWhile(src, c, level)
 		case "IF_EXPR":
 			return convertIf(src, c, level)
+		case "MATCH_EXPR":
+			return convertMatch(src, c, level)
 		case "RETURN_EXPR":
 			code := strings.TrimSuffix(strings.TrimSpace(src[c.start:c.end]), ";")
 			return []string{idt + "return " + strings.TrimPrefix(code, "return ")}
@@ -133,6 +167,8 @@ func convertStmt(src string, n *node, level int) []string {
 		return convertWhile(src, n, level)
 	case "IF_EXPR":
 		return convertIf(src, n, level)
+	case "MATCH_EXPR":
+		return convertMatch(src, n, level)
 	case "RETURN_EXPR":
 		code := strings.TrimSuffix(strings.TrimSpace(src[n.start:n.end]), ";")
 		return []string{idt + code}
@@ -189,6 +225,25 @@ func convertIf(src string, n *node, level int) []string {
 	return out
 }
 
+func convertMatch(src string, n *node, level int) []string {
+	arms := findChild(n, "MATCH_ARM_LIST")
+	if arms == nil {
+		return nil
+	}
+	header := strings.TrimSpace(src[n.start:arms.start])
+	var out []string
+	out = append(out, indent(level)+header+" {")
+	for _, arm := range arms.children {
+		if arm.kind != "MATCH_ARM" {
+			continue
+		}
+		code := strings.TrimSpace(src[arm.start:arm.end])
+		out = append(out, indent(level+1)+code)
+	}
+	out = append(out, indent(level)+"}")
+	return out
+}
+
 func convertStmts(src string, list *node, level int) []string {
 	var out []string
 	if list == nil {
@@ -196,7 +251,7 @@ func convertStmts(src string, list *node, level int) []string {
 	}
 	for _, c := range list.children {
 		switch c.kind {
-		case "LET_STMT", "EXPR_STMT", "RETURN_EXPR", "FOR_EXPR", "WHILE_EXPR", "IF_EXPR":
+		case "LET_STMT", "EXPR_STMT", "RETURN_EXPR", "FOR_EXPR", "WHILE_EXPR", "IF_EXPR", "MATCH_EXPR":
 			out = append(out, convertStmt(src, c, level)...)
 		}
 	}

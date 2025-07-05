@@ -4,6 +4,18 @@ type Todo {
   title: string
   completed: bool
 }
-
-let todo: Todo = fetch "https://jsonplaceholder.typicode.com/todos/1"
-print(todo.title)
+fun main() {
+  var todo: Todo = _fetch::<Todo>("https://jsonplaceholder.typicode.com/todos/1", std::collections::HashMap::new())
+  print(todo.title)
+}
+fun _fetch(_url, _opts) {
+  var data = String::new()
+  if _url.starts_with("file://") {
+    if let Ok(text) = std::fs::read_to_string(&_url[7..]) {
+      data = text
+    }
+  else {
+    var out = Command::new("curl").arg("-s").arg(_url).output().unwrap()
+    data = String::from_utf8_lossy(&out.stdout).to_string()
+  }
+}

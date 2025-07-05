@@ -2,17 +2,17 @@ type Person {
   name: string
   age: int
 }
-
-let people = [
-  Person { name: "Alice", age: 30 },
-  Person { name: "Bob", age: 15 },
-  Person { name: "Charlie", age: 65 }
-]
-
-let names = from p in people
-            where p.age >= 18
-            select p.name
-
-for n in names {
-  print(n)
+fun main() {
+  var people = vec![Person { name: "Alice".to_string(), age: 30 }, Person { name: "Bob".to_string(), age: 15 }, Person { name: "Charlie".to_string(), age: 65 }]
+  var names = {
+    let mut _res = Vec::new();
+    for p in people {
+        if !(p.age >= 18) { continue; }
+        _res.push(p.name);
+    }
+    _res
+}
+  for n in names {
+    print(n)
+  }
 }

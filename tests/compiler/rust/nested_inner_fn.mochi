@@ -1,6 +1,6 @@
-fun outer(a: int): int {
-  fun inner(b: int): int { return a + b }
+fun outer(a) {
   return inner(10)
 }
-
-print(outer(5))
+fun main() {
+  print(outer(5))
+}

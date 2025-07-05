@@ -1,2 +1,4 @@
-let map = {"a": 1}
-print(map["a"])
+fun main() {
+  var map = std::collections::HashMap::from([("a".to_string(), 1)])
+  print(map["a"])
+}

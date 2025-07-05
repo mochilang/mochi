@@ -61,6 +61,17 @@ func EnsureServer(name string) error {
 	if _, err := exec.LookPath(name); err == nil {
 		return nil
 	}
+	if name == "rust-analyzer" {
+		if _, err := exec.LookPath("rustup"); err == nil {
+			cmd := exec.Command("rustup", "component", "add", "rust-analyzer")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath(name); err == nil {
+				return nil
+			}
+		}
+	}
 	installers := []struct {
 		bin  string
 		args []string

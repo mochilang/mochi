@@ -1,3 +1,5 @@
-let a = 10
-let b: int = 20
-print(a + b)
+fun main() {
+  var a = 10
+  var b: i64 = 20
+  print(a + b)
+}

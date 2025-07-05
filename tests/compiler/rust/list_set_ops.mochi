@@ -1,5 +1,31 @@
-let a = [1, 2, 3]
-let b = [3, 4]
-print(a union b)
-print(a except b)
-print(a intersect b)
+fun main() {
+  var a = vec![1, 2, 3]
+  var b = vec![3, 4]
+  print(_union(&a, &b).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "))
+  print(_except(&a, &b).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "))
+  print(_intersect(&a, &b).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "))
+}
+fun _except(a, b) {
+  var res = Vec::new()
+  for it in a {
+    if !b.contains(it) {
+      res.push(it.clone())
+    }
+  }
+}
+fun _intersect(a, b) {
+  var res = Vec::new()
+  for it in a {
+    if b.contains(it) && !res.contains(it) {
+      res.push(it.clone())
+    }
+  }
+}
+fun _union(a, b) {
+  var res = a.to_vec()
+  for it in b {
+    if !res.contains(it) {
+      res.push(it.clone())
+    }
+  }
+}

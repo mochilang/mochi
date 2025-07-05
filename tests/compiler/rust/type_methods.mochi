@@ -1,12 +1,14 @@
 type Counter {
   value: int
-
-  fun inc(): int {
-    value = value + 1
-    return value
+extend Counter {
+  fun inc() {
+    self.value = self.value + 1
+    return self.value
   }
 }
-
-let c = Counter { value: 0 }
-print(c.inc())
-print(c.inc())
+}
+fun main() {
+  var c = Counter { value: 0 }
+  print(c.inc())
+  print(c.inc())
+}
