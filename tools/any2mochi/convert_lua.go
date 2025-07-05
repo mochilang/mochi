@@ -36,9 +36,15 @@ func writeLuaSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
 			writeLuaFunc(out, strings.Join(nameParts, "."), s, src, ls)
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
-			out.WriteString("val ")
-			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteString(" = nil\n")
+			if len(prefix) == 0 {
+				out.WriteString("let ")
+				out.WriteString(strings.Join(nameParts, "."))
+				if typ := getLuaVarType(src, s.SelectionRange.Start, ls); typ != "" && typ != "Unknown" {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
+				out.WriteByte('\n')
+			}
 		}
 		if len(s.Children) > 0 {
 			writeLuaSymbols(out, nameParts, s.Children, src, ls)
@@ -118,6 +124,26 @@ func parseLuaSignature(sig string) ([]luaParam, string) {
 		}
 	}
 	return params, mapLuaType(ret)
+}
+
+func getLuaVarType(src string, pos protocol.Position, ls LanguageServer) string {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+	if err != nil {
+		return ""
+	}
+	sig := hoverString(hov)
+	return parseLuaVarType(sig)
+}
+
+func parseLuaVarType(hov string) string {
+	if i := strings.Index(hov, "\n"); i != -1 {
+		hov = hov[:i]
+	}
+	if colon := strings.Index(hov, ":"); colon != -1 {
+		typ := strings.TrimSpace(hov[colon+1:])
+		return mapLuaType(typ)
+	}
+	return ""
 }
 
 func mapLuaType(t string) string {

@@ -1,4 +1,5 @@
-convert failure: lua-language-server not found
+convert failure: Lua-Language-Server not found
 
 source snippet:
   1: function __print(...)
+
