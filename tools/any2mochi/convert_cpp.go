@@ -24,54 +24,7 @@ func ConvertCpp(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction && s.Kind != protocol.SymbolKindMethod {
-			continue
-		}
-		signature := ""
-		if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
-				lines := strings.Split(mc.Value, "\n")
-				for i := len(lines) - 1; i >= 0 && signature == ""; i-- {
-					l := strings.TrimSpace(lines[i])
-					if strings.Contains(l, "(") && strings.Contains(l, ")") {
-						signature = l
-					}
-				}
-			}
-		}
-		var params []cppParam
-		var ret string
-		if signature != "" {
-			params, ret = parseCppSignature(signature)
-		} else {
-			names, r := parseCppDetail(s.Detail)
-			ret = r
-			for _, n := range names {
-				params = append(params, cppParam{name: n})
-			}
-		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteByte('(')
-		for i, p := range params {
-			if i > 0 {
-				out.WriteString(", ")
-			}
-			out.WriteString(p.name)
-			if p.typ != "" {
-				out.WriteString(": ")
-				out.WriteString(p.typ)
-			}
-		}
-		out.WriteByte(')')
-		ret = mapCppType(ret)
-		if ret != "" && ret != "void" {
-			out.WriteString(": ")
-			out.WriteString(ret)
-		}
-		out.WriteString(" {}\n")
-	}
+	writeCppSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -85,6 +38,96 @@ func ConvertCppFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertCpp(string(data))
+}
+
+func writeCppSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+	for _, s := range syms {
+		nameParts := prefix
+		if s.Name != "" {
+			nameParts = append(nameParts, s.Name)
+		}
+		switch s.Kind {
+		case protocol.SymbolKindNamespace, protocol.SymbolKindModule, protocol.SymbolKindPackage:
+			writeCppSymbols(out, nameParts, s.Children, src, ls)
+		case protocol.SymbolKindClass, protocol.SymbolKindStruct:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindField {
+					continue
+				}
+				out.WriteString("  ")
+				out.WriteString(c.Name)
+				if c.Detail != nil {
+					t := mapCppType(*c.Detail)
+					if t != "" {
+						out.WriteString(": ")
+						out.WriteString(t)
+					}
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+			var childSyms []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindField {
+					childSyms = append(childSyms, c)
+				}
+			}
+			if len(childSyms) > 0 {
+				writeCppSymbols(out, nameParts, childSyms, src, ls)
+			}
+		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+			signature := ""
+			if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+				if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+					lines := strings.Split(mc.Value, "\n")
+					for i := len(lines) - 1; i >= 0 && signature == ""; i-- {
+						l := strings.TrimSpace(lines[i])
+						if strings.Contains(l, "(") && strings.Contains(l, ")") {
+							signature = l
+						}
+					}
+				}
+			}
+			var params []cppParam
+			var ret string
+			if signature != "" {
+				params, ret = parseCppSignature(signature)
+			} else {
+				names, r := parseCppDetail(s.Detail)
+				ret = r
+				for _, n := range names {
+					params = append(params, cppParam{name: n})
+				}
+			}
+			out.WriteString("fun ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteByte('(')
+			for i, p := range params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p.name)
+				if p.typ != "" {
+					out.WriteString(": ")
+					out.WriteString(p.typ)
+				}
+			}
+			out.WriteByte(')')
+			ret = mapCppType(ret)
+			if ret != "" && ret != "void" {
+				out.WriteString(": ")
+				out.WriteString(ret)
+			}
+			out.WriteString(" {}\n")
+		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			out.WriteString("let ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteByte('\n')
+		}
+	}
 }
 
 func parseCppDetail(detail *string) ([]string, string) {
