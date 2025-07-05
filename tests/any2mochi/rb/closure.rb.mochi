@@ -1,0 +1,5 @@
+fun makeAdder(n) {
+  ->(x) { (x + n) }
+}
+var add10 = makeAdder(10)
+print([add10.call(7)].join(" "))

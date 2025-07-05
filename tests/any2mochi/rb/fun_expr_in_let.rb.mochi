@@ -1,0 +1,2 @@
+var square = ->(x) { (x * x) }
+print([square.call(6)].join(" "))

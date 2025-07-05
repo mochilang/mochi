@@ -1,0 +1,19 @@
+require "ostruct"
+var nums = [1, 2]
+var letters = ["A", "B"]
+var bools = [true, false]
+var combos = (begin
+var _res = []
+for n in nums {
+  for l in letters {
+    for b in bools {
+      _res << OpenStruct.new(n: n, l: l, b: b)
+    }
+  }
+}
+_res
+end)
+print(["--- Cross Join of three lists ---"].join(" "))
+for c in combos {
+  print([c.n, c.l, c.b].join(" "))
+}

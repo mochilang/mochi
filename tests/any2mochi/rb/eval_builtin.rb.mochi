@@ -1,0 +1,4 @@
+fun _eval(code) {
+  eval(code)
+}
+print([_eval("1 + 2")].join(" "))

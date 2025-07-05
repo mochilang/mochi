@@ -1,0 +1,18 @@
+var Customer = Struct.new(:id, :name, keyword_init: true)
+var Order = Struct.new(:id, :customerId, :total, keyword_init: true)
+var PairInfo = Struct.new(:orderId, :orderCustomerId, :pairedCustomerName, :orderTotal, keyword_init: true)
+var customers = [Customer.new(id: 1, name: "Alice"), Customer.new(id: 2, name: "Bob"), Customer.new(id: 3, name: "Charlie")]
+var orders = [Order.new(id: 100, customerId: 1, total: 250), Order.new(id: 101, customerId: 2, total: 125), Order.new(id: 102, customerId: 1, total: 300)]
+var result = (begin
+var _res = []
+for o in orders {
+  for c in customers {
+    _res << PairInfo.new(orderId: o.id, orderCustomerId: o.customerId, pairedCustomerName: c.name, orderTotal: o.total)
+  }
+}
+_res
+end)
+print(["--- Cross Join: All order-customer pairs ---"].join(" "))
+for entry in result {
+  print(["Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName].join(" "))
+}

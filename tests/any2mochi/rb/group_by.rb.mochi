@@ -1,0 +1,37 @@
+require "ostruct"
+type MGroup {
+  include Enumerable
+  attr_accessor :key, :Items
+  fun initialize(k) {
+    let @key = k
+    let @Items = []
+  }
+  fun length() {
+    @Items.length
+  }
+  fun each(&block) {
+    @Items.each(&block)
+  }
+}
+fun _group_by(src, keyfn) {
+  let grouped = src.group_by do |it|
+  if it.is_a?(Array) {
+    keyfn.call(*it)
+  } else {
+    keyfn.call(it)
+  }
+}
+grouped.map do |k, items|
+var g = MGroup.new(k)
+for it in items {
+  let g.Items << if it.is_a?(Array) && it.length = = 1
+  it[0]
+} else {
+  it
+}
+g
+var xs = [1, 1, 2]
+var groups = _group_by(xs, ->(x) { x }).map { |g| OpenStruct.new(k: g.key, c: g.length) }
+for g in groups {
+  print([g.k, g.c].join(" "))
+}

@@ -1,0 +1,9 @@
+fun fib(n) {
+  if n <= 1 {
+    return n
+  }
+  (fib(n - 1) + fib(n - 2))
+}
+print([fib(0)].join(" "))
+print([fib(1)].join(" "))
+print([fib(6)].join(" "))

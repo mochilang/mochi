@@ -1,0 +1,10 @@
+module Foo; end
+type Empty {
+  include Foo
+}
+var Node = Struct.new(:child, keyword_init: true) do
+include Foo
+fun listit() {
+  [Empty.new]
+}
+print([listit.length].join(" "))

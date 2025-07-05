@@ -10,9 +10,9 @@ import (
 // rbIndent returns a string of two-space indents for the given level.
 func rbIndent(level int) string { return strings.Repeat("  ", level) }
 
-// ConvertRb converts Ruby source code to Mochi. The source is first parsed using
-// the configured Ruby language server to ensure it is valid. After successful
-// parsing, a very small set of Ruby constructs are translated directly in Go.
+// ConvertRb converts Ruby source code to Mochi. The source is validated using
+// the configured Ruby language server. After a successful parse a small subset
+// of Ruby constructs are translated directly in Go.
 func ConvertRb(src string) ([]byte, error) {
 	ls := Servers["rb"]
 	_, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
@@ -38,11 +38,23 @@ func translateRb(src string) []byte {
 	var out strings.Builder
 	sc := bufio.NewScanner(strings.NewReader(src))
 	level := 0
+	vars := map[string]bool{}
+
+	replaceMembership := func(s string) string {
+		if i := strings.Index(s, ".key?("); i != -1 && strings.HasSuffix(s, ")") {
+			key := strings.TrimSuffix(s[i+6:], ")")
+			m := strings.TrimSpace(s[:i])
+			return strings.TrimSpace(key) + " in " + m
+		}
+		return s
+	}
+
 	for sc.Scan() {
 		line := strings.TrimSpace(sc.Text())
 		if line == "" {
 			continue
 		}
+		line = strings.ReplaceAll(line, "...", "..")
 
 		switch {
 		case strings.HasPrefix(line, "puts(") && strings.HasSuffix(line, ")"):
@@ -54,6 +66,17 @@ func translateRb(src string) []byte {
 			out.WriteString("print(")
 			out.WriteString(arg)
 			out.WriteString(")\n")
+		case strings.Contains(line, ".each do |") && strings.HasSuffix(line, "|"):
+			parts := strings.SplitN(line, ".each do |", 2)
+			coll := strings.TrimSpace(parts[0])
+			varName := strings.TrimSpace(strings.TrimSuffix(parts[1], "|"))
+			out.WriteString(rbIndent(level))
+			out.WriteString("for ")
+			out.WriteString(varName)
+			out.WriteString(" in ")
+			out.WriteString(coll)
+			out.WriteString(" {\n")
+			level++
 		case strings.HasPrefix(line, "for ") && strings.Contains(line, " in "):
 			parts := strings.SplitN(strings.TrimPrefix(line, "for "), " in ", 2)
 			if len(parts) == 2 {
@@ -66,14 +89,14 @@ func translateRb(src string) []byte {
 				level++
 			}
 		case strings.HasPrefix(line, "while "):
-			cond := strings.TrimSpace(strings.TrimPrefix(line, "while "))
+			cond := replaceMembership(strings.TrimSpace(strings.TrimPrefix(line, "while ")))
 			out.WriteString(rbIndent(level))
 			out.WriteString("while ")
 			out.WriteString(cond)
 			out.WriteString(" {\n")
 			level++
 		case strings.HasPrefix(line, "if "):
-			cond := strings.TrimSpace(strings.TrimPrefix(line, "if "))
+			cond := replaceMembership(strings.TrimSpace(strings.TrimPrefix(line, "if ")))
 			out.WriteString(rbIndent(level))
 			out.WriteString("if ")
 			out.WriteString(cond)
@@ -84,7 +107,7 @@ func translateRb(src string) []byte {
 				level--
 				out.WriteString(rbIndent(level))
 				out.WriteString("} else if ")
-				out.WriteString(strings.TrimSpace(strings.TrimPrefix(line, "elsif ")))
+				out.WriteString(replaceMembership(strings.TrimSpace(strings.TrimPrefix(line, "elsif "))))
 				out.WriteString(" {\n")
 				level++
 			}
@@ -102,7 +125,7 @@ func translateRb(src string) []byte {
 				out.WriteString("}\n")
 			}
 		case strings.HasPrefix(line, "def "):
-			rest := strings.TrimSpace(strings.TrimPrefix(line, "def "))
+			rest := strings.TrimSpace(strings.TrimPrefix(line, "def"))
 			name := rest
 			params := ""
 			if open := strings.Index(rest, "("); open != -1 {
@@ -132,12 +155,21 @@ func translateRb(src string) []byte {
 		case strings.Contains(line, "="):
 			parts := strings.SplitN(line, "=", 2)
 			left := strings.TrimSpace(parts[0])
-			right := strings.TrimSpace(parts[1])
+			right := replaceMembership(strings.TrimSpace(parts[1]))
 			out.WriteString(rbIndent(level))
-			out.WriteString("let ")
+			kw := "let "
+			if level == 0 && !vars[left] {
+				vars[left] = true
+				kw = "var "
+			}
+			out.WriteString(kw)
 			out.WriteString(left)
 			out.WriteString(" = ")
 			out.WriteString(right)
+			out.WriteByte('\n')
+		default:
+			out.WriteString(rbIndent(level))
+			out.WriteString(replaceMembership(line))
 			out.WriteByte('\n')
 		}
 	}

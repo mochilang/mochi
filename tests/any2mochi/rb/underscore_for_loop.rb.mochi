@@ -1,0 +1,15 @@
+var c = 0
+for _ in 0..2 {
+  let c = (c + 1)
+}
+for _ in [1, 2] {
+  let c = (c + 1)
+}
+for _ in "ab".chars {
+  let c = (c + 1)
+}
+var m = {"x" => 1, "y" => 2}
+for _ in m.keys {
+  let c = (c + 1)
+}
+print([c].join(" "))

@@ -1,0 +1,5 @@
+print([(1 + 2)].join(" "))
+print([(5 - 3)].join(" "))
+print([(4 * 2)].join(" "))
+print([(8 / 2)].join(" "))
+print([(7 % 3)].join(" "))
