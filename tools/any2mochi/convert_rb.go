@@ -66,6 +66,33 @@ func translateRb(src string) []byte {
 			out.WriteString("print(")
 			out.WriteString(arg)
 			out.WriteString(")\n")
+		case strings.HasPrefix(line, "puts "):
+			arg := strings.TrimSpace(strings.TrimPrefix(line, "puts "))
+			if strings.HasPrefix(arg, "[") && strings.HasSuffix(arg, "].join(\" \"))") {
+				arg = strings.TrimSuffix(strings.TrimPrefix(arg, "["), "].join(\" \"))")
+			}
+			out.WriteString(rbIndent(level))
+			out.WriteString("print(")
+			out.WriteString(arg)
+			out.WriteString(")\n")
+		case strings.Contains(line, ".times do"):
+			parts := strings.SplitN(line, ".times do", 2)
+			count := strings.TrimSpace(parts[0])
+			varName := "_"
+			rest := strings.TrimSpace(parts[1])
+			if strings.HasPrefix(rest, "|") && strings.Contains(rest, "|") {
+				tmp := strings.TrimPrefix(rest, "|")
+				if idx := strings.Index(tmp, "|"); idx != -1 {
+					varName = strings.TrimSpace(tmp[:idx])
+				}
+			}
+			out.WriteString(rbIndent(level))
+			out.WriteString("for ")
+			out.WriteString(varName)
+			out.WriteString(" in 0..")
+			out.WriteString(count)
+			out.WriteString("-1 {\n")
+			level++
 		case strings.Contains(line, ".each do |") && strings.HasSuffix(line, "|"):
 			parts := strings.SplitN(line, ".each do |", 2)
 			coll := strings.TrimSpace(parts[0])

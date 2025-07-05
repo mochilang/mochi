@@ -207,8 +207,8 @@ validation before applying a light-weight transformation implemented in pure Go.
 
 ### Supported Features
 
-- `puts` statements are mapped to `print`
-- `for` loops and `each` blocks become Mochi `for` loops
+- `puts` statements (with or without parentheses) are mapped to `print`
+- `for` loops, `each` blocks and `n.times` loops become Mochi `for` loops
 - `while` loops including membership checks using `map.key?(k)`
 - Conditional blocks with `if`/`elsif`/`else`
 - Simple `def` and `class` declarations
