@@ -1,1 +1,3 @@
-
+fun inorder() {}
+fun inorder.<function>() {}
+fun main() {}

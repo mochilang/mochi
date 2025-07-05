@@ -1,1 +1,5 @@
-
+fun _fetch() {}
+fun _fetch.setTimeout() callback() {}
+fun _toAnyMap() {}
+fun _waitAll() {}
+fun main() {}

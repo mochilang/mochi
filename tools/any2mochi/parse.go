@@ -84,8 +84,18 @@ func ParseText(cmdName string, args []string, langID string, src string) ([]prot
 }
 
 func (c *client) initialize(ctx context.Context) error {
+	hierarchical := true
+	params := protocol.InitializeParams{
+		Capabilities: protocol.ClientCapabilities{
+			TextDocument: &protocol.TextDocumentClientCapabilities{
+				DocumentSymbol: &protocol.DocumentSymbolClientCapabilities{
+					HierarchicalDocumentSymbolSupport: &hierarchical,
+				},
+			},
+		},
+	}
 	var res protocol.InitializeResult
-	if err := c.conn.Call(ctx, "initialize", protocol.InitializeParams{}, &res); err != nil {
+	if err := c.conn.Call(ctx, "initialize", params, &res); err != nil {
 		return err
 	}
 	if err := c.conn.Notify(ctx, "initialized", struct{}{}); err != nil {

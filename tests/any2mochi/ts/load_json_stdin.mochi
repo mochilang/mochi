@@ -1,1 +1,14 @@
-
+fun _count() {}
+fun _load() {}
+fun _load.filter() callback() {}
+fun _load.items.filter() callback() {}
+fun _load.map() callback() {}
+fun _parseCSV() {}
+fun _parseCSV.map() callback() {}
+fun _readInput() {}
+fun _save() {}
+fun _save.headers.map() callback() {}
+fun _save.rows.map() callback() {}
+fun _toAnyMap() {}
+fun _writeOutput() {}
+fun main() {}

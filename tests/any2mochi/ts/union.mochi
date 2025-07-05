@@ -1,1 +1,7 @@
-
+fun _equal() {}
+fun depth() {}
+fun depth.<function>() {}
+fun depth.<function>.<function>() {}
+fun depth.<function>.<function>.<function>() {}
+fun depth.<function>.<function>.<function>.<function>() {}
+fun main() {}

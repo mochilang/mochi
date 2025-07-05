@@ -1,1 +1,15 @@
-
+fun _count() {}
+fun _equal() {}
+fun _query() {}
+fun _query.items.src.map() callback() {}
+fun _query.items.filter() callback() {}
+fun _query.pairs.items.map() callback() {}
+fun _query.pairs.map() callback() {}
+fun _query.pairs.sort() callback() {}
+fun main() {}
+fun main.<function>() {}
+fun main.<function>._items.on() {}
+fun main.<function>._items.select() {}
+fun main.<function>._itemsG._order.map() callback() {}
+fun main.<function>."count".g.items.filter() callback() {}
+fun main.<function>."count".map() callback() {}

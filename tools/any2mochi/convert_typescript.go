@@ -20,14 +20,7 @@ func ConvertTypeScript(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteString("() {}\n")
-	}
+	writeTSSymbols(&out, nil, syms)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -55,14 +48,7 @@ func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
 		return nil, nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteString("() {}\n")
-	}
+	writeTSSymbols(&out, nil, syms)
 	if out.Len() == 0 {
 		return nil, nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -78,4 +64,22 @@ func ConvertTypeScriptFileWithJSON(path string) ([]byte, []byte, error) {
 		return nil, nil, err
 	}
 	return ConvertTypeScriptWithJSON(string(data))
+}
+
+func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol) {
+	for _, s := range syms {
+		nameParts := prefix
+		if s.Name != "" {
+			nameParts = append(nameParts, s.Name)
+		}
+		switch s.Kind {
+		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+			out.WriteString("fun ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString("() {}\n")
+		}
+		if len(s.Children) > 0 {
+			writeTSSymbols(out, nameParts, s.Children)
+		}
+	}
 }

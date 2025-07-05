@@ -1,1 +1,5 @@
-
+fun fromList() {}
+fun fromList.helper() {}
+fun inorder() {}
+fun inorder.<function>() {}
+fun main() {}
