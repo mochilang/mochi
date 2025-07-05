@@ -1,0 +1,9 @@
+let left = [0,1,2,3]
+let right = [0,1,2,3]
+let res = from l in left
+          join from r in right on l == r
+          where l > 1
+          select l + r
+for v in res {
+  print(v)
+}
