@@ -3,7 +3,6 @@ package any2mochi
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -58,17 +57,19 @@ func convertScalaFunc(lines []string, sym protocol.DocumentSymbol) string {
 	header := strings.TrimSpace(seg[0])
 
 	name := sym.Name
-	params := ""
-	reHeader := regexp.MustCompile(fmt.Sprintf(`def\s+%s\(([^)]*)\)`, regexp.QuoteMeta(name)))
-	if m := reHeader.FindStringSubmatch(header); len(m) > 1 {
-		parts := strings.Split(m[1], ",")
-		for i, p := range parts {
-			fields := strings.Fields(strings.TrimSpace(p))
-			if len(fields) > 0 {
-				if i > 0 {
-					params += ", "
+	params, _ := parseScalaSignature(header, name)
+	if len(params) == 0 && sym.Detail != nil {
+		params, _ = parseScalaSignature(*sym.Detail, name)
+	}
+	if len(params) == 0 {
+		if hov, err := EnsureAndHover(Servers["scala"].Command, Servers["scala"].Args, Servers["scala"].LangID, strings.Join(lines, "\n"), sym.SelectionRange.Start); err == nil {
+			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+				for _, l := range strings.Split(mc.Value, "\n") {
+					if strings.Contains(l, name+"(") {
+						params, _ = parseScalaSignature(l, name)
+						break
+					}
 				}
-				params += fields[0]
 			}
 		}
 	}
@@ -76,8 +77,13 @@ func convertScalaFunc(lines []string, sym protocol.DocumentSymbol) string {
 	var b strings.Builder
 	b.WriteString("fun ")
 	b.WriteString(name)
-	b.WriteString("(")
-	b.WriteString(params)
+	b.WriteByte('(')
+	for i, p := range params {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		b.WriteString(p)
+	}
 	b.WriteString(") {\n")
 	for _, l := range seg[1:] {
 		l = strings.TrimSpace(l)
@@ -110,12 +116,61 @@ func convertScalaExpr(expr string) string {
 	if strings.HasSuffix(expr, ".toString()") {
 		expr = "str(" + strings.TrimSuffix(expr, ".toString()") + ")"
 	}
-	reArr := regexp.MustCompile(`scala\.collection\.mutable\.ArrayBuffer\((.*)\)`)
-	if m := reArr.FindStringSubmatch(expr); m != nil {
-		expr = "[" + m[1] + "]"
+	prefix := "scala.collection.mutable.ArrayBuffer("
+	if strings.HasPrefix(expr, prefix) && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, prefix), ")")
+		expr = "[" + inner + "]"
 	}
 	if strings.HasSuffix(expr, ".length") {
 		expr = "len(" + strings.TrimSuffix(expr, ".length") + ")"
 	}
 	return expr
+}
+
+// parseScalaSignature extracts parameter names and return type from a Scala
+// function signature string. The provided name is used to locate the opening
+// parenthesis when necessary.
+func parseScalaSignature(sig, name string) ([]string, string) {
+	sig = strings.ReplaceAll(sig, "\n", " ")
+	idx := strings.Index(sig, name+"(")
+	if idx == -1 {
+		idx = strings.Index(sig, "(")
+		if idx == -1 {
+			return nil, ""
+		}
+	} else {
+		idx += len(name)
+	}
+	open := strings.Index(sig[idx:], "(")
+	if open == -1 {
+		return nil, ""
+	}
+	open += idx
+	close := strings.Index(sig[open:], ")")
+	if close == -1 {
+		return nil, ""
+	}
+	close += open
+	paramsPart := sig[open+1 : close]
+	params := []string{}
+	for _, p := range strings.Split(paramsPart, ",") {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		if c := strings.Index(p, ":"); c != -1 {
+			p = p[:c]
+		}
+		params = append(params, strings.TrimSpace(p))
+	}
+	rest := strings.TrimSpace(sig[close+1:])
+	ret := ""
+	if strings.HasPrefix(rest, ":") {
+		rest = strings.TrimSpace(rest[1:])
+		if eq := strings.Index(rest, "="); eq != -1 {
+			rest = rest[:eq]
+		}
+		ret = strings.TrimSpace(rest)
+	}
+	return params, ret
 }
