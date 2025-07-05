@@ -1,6 +1,6 @@
 fun _input(): string {
   var s: string
-  fmt.Scanln(&s)
+  s = input()
   return s
 }
 print(str("Enter first input:"))

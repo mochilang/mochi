@@ -468,6 +468,20 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 }
 
 func (c *converter) translateExprStmt(es *ast.ExprStmt) (string, error) {
+	if call, ok := es.X.(*ast.CallExpr); ok {
+		if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
+			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" && sel.Sel.Name == "Scanln" {
+				if len(call.Args) == 1 {
+					if u, ok := call.Args[0].(*ast.UnaryExpr); ok && u.Op == token.AND {
+						if id, ok := u.X.(*ast.Ident); ok {
+							return fmt.Sprintf("%s = input()", id.Name), nil
+						}
+					}
+				}
+				return "", c.errorf(call, "unsupported Scanln args")
+			}
+		}
+	}
 	expr, err := c.translateExpr(es.X)
 	if err != nil {
 		return "", err
