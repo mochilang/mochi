@@ -1,0 +1,3 @@
+let people: (string, string) Hashtbl.t list
+let depts: (string, string) Hashtbl.t list
+let pairs: 'a list

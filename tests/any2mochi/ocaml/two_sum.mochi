@@ -1,0 +1,2 @@
+fun twoSum(nums: int list, target: int): int list {}
+let result: int list

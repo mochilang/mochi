@@ -1,0 +1,3 @@
+let set: (int, bool) Hashtbl.t ref
+let i: int ref
+let count: int ref
