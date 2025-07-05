@@ -1616,11 +1616,43 @@ func (c *Compiler) compileMatch(m *parser.MatchExpr) (string, error) {
 			hasDefault = true
 			continue
 		}
-		pat, err := c.compileExpr(cs.Pattern)
+		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
 		}
-		res, err := c.compileExpr(cs.Result)
+
+		if call, ok := callPattern(cs.Pattern); ok {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				names := []string{}
+				values := []string{}
+				for idx, arg := range call.Args {
+					if id, ok := identName(arg); ok && id != "_" {
+						names = append(names, sanitizeName(id))
+						field := sanitizeName(st.Order[idx])
+						values = append(values, fmt.Sprintf("(:%s t)", field))
+					}
+				}
+				if len(names) > 0 {
+					pairs := make([]string, 0, len(names)*2)
+					for i, n := range names {
+						pairs = append(pairs, fmt.Sprintf("%s %s", n, values[i]))
+					}
+					res = fmt.Sprintf("(let [%s] %s)", strings.Join(pairs, " "), res)
+				}
+				cond := fmt.Sprintf("(= (:__name t) \"%s\")", call.Func)
+				b.WriteString("    " + cond + " " + res + "\n")
+				continue
+			}
+		}
+		if ident, ok := identName(cs.Pattern); ok {
+			if _, ok := c.env.FindUnionByVariant(ident); ok {
+				cond := fmt.Sprintf("(= (:__name t) \"%s\")", ident)
+				b.WriteString("    " + cond + " " + res + "\n")
+				continue
+			}
+		}
+		pat, err := c.compileExpr(cs.Pattern)
 		if err != nil {
 			return "", err
 		}
