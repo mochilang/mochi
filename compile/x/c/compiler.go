@@ -2017,6 +2017,28 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 			c.need(needAvg)
 			return fmt.Sprintf("_avg(%s)", arg)
+		} else if p.Call.Func == "min" {
+			arg := c.compileExpr(p.Call.Args[0])
+			switch listElemType(p.Call.Args[0], c.env).(type) {
+			case types.FloatType:
+				return fmt.Sprintf("({ double m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]<m) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
+			case types.StringType:
+				c.need(needStringHeader)
+				return fmt.Sprintf("({ char* m=%s.len?%s.data[0]:\"\"; for(int i=1;i<%s.len;i++) if(strcmp(%s.data[i], m)<0) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
+			default:
+				return fmt.Sprintf("({ int m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]<m) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
+			}
+		} else if p.Call.Func == "max" {
+			arg := c.compileExpr(p.Call.Args[0])
+			switch listElemType(p.Call.Args[0], c.env).(type) {
+			case types.FloatType:
+				return fmt.Sprintf("({ double m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]>m) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
+			case types.StringType:
+				c.need(needStringHeader)
+				return fmt.Sprintf("({ char* m=%s.len?%s.data[0]:\"\"; for(int i=1;i<%s.len;i++) if(strcmp(%s.data[i], m)>0) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
+			default:
+				return fmt.Sprintf("({ int m=%s.len?%s.data[0]:0; for(int i=1;i<%s.len;i++) if(%s.data[i]>m) m=%s.data[i]; m; })", arg, arg, arg, arg, arg)
+			}
 		} else if p.Call.Func == "reduce" {
 			list := c.compileExpr(p.Call.Args[0])
 			fn := c.compileExpr(p.Call.Args[1])

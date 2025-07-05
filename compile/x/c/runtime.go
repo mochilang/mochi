@@ -350,6 +350,42 @@ static list_group_pair_string _group_by_pair_string(list_pair_string src) {
     for (int i = 0; i < v.len; i++) sum += v.data[i];
     return sum / v.len;
 }`
+	helperMinInt = `static int _min_int(list_int v) {
+    if (v.len == 0) return 0;
+    int m = v.data[0];
+    for (int i = 1; i < v.len; i++) if (v.data[i] < m) m = v.data[i];
+    return m;
+}`
+	helperMaxInt = `static int _max_int(list_int v) {
+    if (v.len == 0) return 0;
+    int m = v.data[0];
+    for (int i = 1; i < v.len; i++) if (v.data[i] > m) m = v.data[i];
+    return m;
+}`
+	helperMinFloat = `static double _min_float(list_float v) {
+    if (v.len == 0) return 0;
+    double m = v.data[0];
+    for (int i = 1; i < v.len; i++) if (v.data[i] < m) m = v.data[i];
+    return m;
+}`
+	helperMaxFloat = `static double _max_float(list_float v) {
+    if (v.len == 0) return 0;
+    double m = v.data[0];
+    for (int i = 1; i < v.len; i++) if (v.data[i] > m) m = v.data[i];
+    return m;
+}`
+	helperMinString = `static char* _min_string(list_string v) {
+    if (v.len == 0) return "";
+    char* m = v.data[0];
+    for (int i = 1; i < v.len; i++) if (strcmp(v.data[i], m) < 0) m = v.data[i];
+    return m;
+}`
+	helperMaxString = `static char* _max_string(list_string v) {
+    if (v.len == 0) return "";
+    char* m = v.data[0];
+    for (int i = 1; i < v.len; i++) if (strcmp(v.data[i], m) > 0) m = v.data[i];
+    return m;
+}`
 	helperReduceInt = `static int _reduce_int(list_int v, int (*fn)(int, int), int acc) {
     for (int i = 0; i < v.len; i++) acc = fn(acc, v.data[i]);
     return acc;
@@ -621,6 +657,12 @@ var helperCode = map[string]string{
 	needCount:                helperCount,
 	needSumInt:               helperSumInt,
 	needSumFloat:             helperSumFloat,
+	needMinInt:               helperMinInt,
+	needMinFloat:             helperMinFloat,
+	needMinString:            helperMinString,
+	needMaxInt:               helperMaxInt,
+	needMaxFloat:             helperMaxFloat,
+	needMaxString:            helperMaxString,
 	needAvg:                  helperAvg,
 	needAvgFloat:             helperAvgFloat,
 	needReduceInt:            helperReduceInt,
@@ -682,6 +724,12 @@ var helperOrder = []string{
 	needCount,
 	needSumInt,
 	needSumFloat,
+	needMinInt,
+	needMinFloat,
+	needMinString,
+	needMaxInt,
+	needMaxFloat,
+	needMaxString,
 	needAvg,
 	needAvgFloat,
 	needReduceInt,
