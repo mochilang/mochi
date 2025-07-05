@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -10,8 +11,12 @@ import (
 
 // ConvertPhp converts php source code to Mochi using the language server.
 func ConvertPhp(src string) ([]byte, error) {
+	return convertPhp(src, "")
+}
+
+func convertPhp(src, root string) ([]byte, error) {
 	ls := Servers["php"]
-	syms, _, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	syms, _, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +122,7 @@ func ConvertPhpFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ConvertPhp(string(data))
+	return convertPhp(string(data), filepath.Dir(path))
 }
 
 type phpParam struct {
@@ -192,6 +197,20 @@ func parsePhpVarType(s string) string {
 
 func mapPhpType(t string) string {
 	t = strings.TrimSpace(t)
+	if strings.HasSuffix(t, "[]") {
+		elem := mapPhpType(strings.TrimSuffix(t, "[]"))
+		if elem == "" {
+			elem = "any"
+		}
+		return "list<" + elem + ">"
+	}
+	if strings.HasPrefix(t, "array<") && strings.HasSuffix(t, ">") {
+		elem := mapPhpType(strings.TrimSuffix(strings.TrimPrefix(t, "array<"), ">"))
+		if elem == "" {
+			elem = "any"
+		}
+		return "list<" + elem + ">"
+	}
 	switch t {
 	case "int":
 		return "int"
