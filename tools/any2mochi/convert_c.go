@@ -58,7 +58,17 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			body := cFunctionBody(src, s)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, ln := range body {
+					out.WriteString(ln)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
 			matched = true
 			out.WriteString("let ")
@@ -319,4 +329,104 @@ func cHoverFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer)
 		}
 	}
 	return ""
+}
+
+func cFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+	lines := strings.Split(src, "\n")
+	start := cPosToOffset(lines, sym.Range.Start)
+	end := cPosToOffset(lines, sym.Range.End)
+	if start >= len(src) || end > len(src) || start >= end {
+		return nil
+	}
+	snippet := src[start:end]
+	open := strings.Index(snippet, "{")
+	close := strings.LastIndex(snippet, "}")
+	if open == -1 || close == -1 || close <= open {
+		return nil
+	}
+	body := snippet[open+1 : close]
+	return parseCStatements(body)
+}
+
+func parseCStatements(body string) []string {
+	var out []string
+	indent := 1
+	for _, line := range strings.Split(body, "\n") {
+		l := strings.TrimSpace(line)
+		if l == "" {
+			continue
+		}
+		switch {
+		case l == "{":
+			out = append(out, strings.Repeat("  ", indent)+"{")
+			indent++
+		case l == "}":
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+"}")
+		case strings.HasPrefix(l, "for ") || strings.HasPrefix(l, "for("):
+			if strings.HasSuffix(l, "{") {
+				h := strings.TrimSpace(strings.TrimSuffix(l, "{"))
+				out = append(out, strings.Repeat("  ", indent)+h+" {")
+				indent++
+			} else {
+				out = append(out, strings.Repeat("  ", indent)+l)
+			}
+		case strings.HasPrefix(l, "if ") || strings.HasPrefix(l, "if("):
+			if strings.HasSuffix(l, "{") {
+				h := strings.TrimSpace(strings.TrimSuffix(l, "{"))
+				h = strings.TrimPrefix(h, "if")
+				h = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(h, "("), ")"))
+				out = append(out, strings.Repeat("  ", indent)+"if "+h+" {")
+				indent++
+			} else {
+				out = append(out, strings.Repeat("  ", indent)+l)
+			}
+		case strings.HasPrefix(l, "else {"):
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+"else {")
+			indent++
+		case strings.HasPrefix(l, "return "):
+			expr := strings.TrimSuffix(strings.TrimPrefix(l, "return "), ";")
+			out = append(out, strings.Repeat("  ", indent)+"return "+expr)
+		case l == "continue;":
+			out = append(out, strings.Repeat("  ", indent)+"continue")
+		case l == "break;":
+			out = append(out, strings.Repeat("  ", indent)+"break")
+		case strings.HasPrefix(l, "printf("):
+			args := strings.TrimSuffix(strings.TrimPrefix(l, "printf("), ");")
+			parts := strings.SplitN(args, ",", 2)
+			arg := strings.TrimSpace(args)
+			if len(parts) == 2 {
+				arg = strings.TrimSpace(parts[1])
+			}
+			out = append(out, strings.Repeat("  ", indent)+"print("+arg+")")
+		default:
+			if strings.HasSuffix(l, ";") {
+				l = strings.TrimSuffix(l, ";")
+			}
+			if strings.HasPrefix(l, "int ") {
+				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[4:]))
+			} else if strings.HasPrefix(l, "float ") {
+				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[6:]))
+			} else if strings.HasPrefix(l, "double ") {
+				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[7:]))
+			} else if strings.HasPrefix(l, "char ") {
+				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[5:]))
+			} else {
+				out = append(out, strings.Repeat("  ", indent)+l)
+			}
+		}
+	}
+	return out
+}
+
+func cPosToOffset(lines []string, pos protocol.Position) int {
+	off := 0
+	for i := 0; i < int(pos.Line); i++ {
+		if i < len(lines) {
+			off += len(lines[i]) + 1
+		}
+	}
+	off += int(pos.Character)
+	return off
 }
