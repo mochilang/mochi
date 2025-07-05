@@ -68,18 +68,28 @@ type rawExpr struct {
 }
 
 // ConvertFile parses the TypeScript program at path and returns Mochi source.
+// ConvertFile parses the TypeScript program at path and returns the generated
+// Mochi source code.
 func ConvertFile(path string) ([]byte, error) {
-	prog, err := parseProgram(path)
-	if err != nil {
-		return nil, err
-	}
-	return formatProgram(prog), nil
+	code, _, err := ConvertFileWithJSON(path)
+	return code, err
 }
 
-func parseProgram(path string) (*Program, error) {
+// ConvertFileWithJSON parses the TypeScript program and also returns the parsed
+// AST in JSON form. The JSON is pretty-printed for readability.
+func ConvertFileWithJSON(path string) ([]byte, []byte, error) {
+	prog, astJSON, err := parseProgram(path)
+	if err != nil {
+		return nil, nil, err
+	}
+	code := formatProgram(prog)
+	return code, astJSON, nil
+}
+
+func parseProgram(path string) (*Program, []byte, error) {
 	root, err := repoRoot()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	script := filepath.Join(root, "tools", "ts2mochi", "ast.js")
 	cmd := exec.Command("node", script, path)
@@ -92,13 +102,14 @@ func parseProgram(path string) (*Program, error) {
 		if msg == "" {
 			msg = err.Error()
 		}
-		return nil, fmt.Errorf("node: %s", msg)
+		return nil, nil, fmt.Errorf("node: %s", msg)
 	}
 	var rp rawProgram
 	if err := json.Unmarshal(out.Bytes(), &rp); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return convertRawProgram(&rp), nil
+	pretty, _ := json.MarshalIndent(&rp, "", "  ")
+	return convertRawProgram(&rp), pretty, nil
 }
 
 func repoRoot() (string, error) {
