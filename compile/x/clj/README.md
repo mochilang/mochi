@@ -166,3 +166,26 @@ in the example programs. In particular:
 - `emit` statements for streams
 
 Programs relying on these features fail to compile with the Clojure backend.
+
+## Clojure to Mochi Converter
+
+The `any2mochi` tool can translate simple Clojure source files back into Mochi
+using `clojure-lsp`. The converter shares much of the infrastructure used by the
+compiler tests and is intended for experimentation only.
+
+### Supported Features
+
+- Function declarations with basic arithmetic and `println`
+- Simple variable definitions using `def`
+- The `loop` form emitted by the Mochi compiler for `for` and `while` loops
+- `return` handling via `throw (ex-info "return" ...)`
+
+### Unsupported Features
+
+- Macros or reader conditionals
+- Dynamic evaluation constructs
+- Advanced sequence operations and destructuring
+- Namespaces and multi-file projects
+
+The converter aims to recover Mochi syntax from the generated Clojure but covers
+only the subset of forms produced by the backend.
