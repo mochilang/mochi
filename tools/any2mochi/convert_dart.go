@@ -21,7 +21,7 @@ func ConvertDart(src string) ([]byte, error) {
 	}
 
 	var out strings.Builder
-	writeDartSymbols(&out, nil, syms)
+	writeDartSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -37,7 +37,12 @@ func ConvertDartFile(path string) ([]byte, error) {
 	return ConvertDart(string(data))
 }
 
-func parseDartDetail(detail string) ([]string, string) {
+type dartParam struct {
+	name string
+	typ  string
+}
+
+func parseDartDetail(detail string) ([]dartParam, string) {
 	open := strings.Index(detail, "(")
 	close := strings.LastIndex(detail, ")")
 	if open == -1 || close == -1 || close < open {
@@ -45,23 +50,52 @@ func parseDartDetail(detail string) ([]string, string) {
 	}
 	paramsPart := detail[open+1 : close]
 	retPart := strings.TrimSpace(detail[close+1:])
-	params := []string{}
+	if i := strings.Index(retPart, "→"); i != -1 {
+		retPart = strings.TrimSpace(retPart[i+len("→"):])
+	} else if i := strings.Index(retPart, "->"); i != -1 {
+		retPart = strings.TrimSpace(retPart[i+2:])
+	}
+	var params []dartParam
 	for _, p := range strings.Split(paramsPart, ",") {
-		p = strings.TrimSpace(p)
+		p = strings.TrimSpace(strings.Trim(p, "{}[]"))
 		if p == "" {
 			continue
 		}
-		fields := strings.FieldsFunc(p, func(r rune) bool { return unicode.IsSpace(r) || r == '=' })
+		p = strings.TrimPrefix(p, "required ")
+		if eq := strings.Index(p, "="); eq != -1 {
+			p = p[:eq]
+		}
+		fields := strings.FieldsFunc(p, func(r rune) bool { return unicode.IsSpace(r) || r == ':' })
 		if len(fields) == 0 {
 			continue
 		}
 		name := fields[len(fields)-1]
-		params = append(params, name)
+		if strings.HasPrefix(name, "this.") {
+			name = strings.TrimPrefix(name, "this.")
+		}
+		typ := ""
+		if len(fields) > 1 {
+			typ = strings.Join(fields[:len(fields)-1], " ")
+		}
+		params = append(params, dartParam{name: name, typ: typ})
 	}
 	return params, retPart
 }
 
-func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol) {
+func parseDartHover(h protocol.Hover) ([]dartParam, string) {
+	text := hoverString(h)
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(line)
+		if strings.Contains(line, "(") && strings.Contains(line, ")") {
+			if p, r := parseDartDetail(line); len(p) > 0 || r != "" {
+				return p, r
+			}
+		}
+	}
+	return nil, ""
+}
+
+func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -87,7 +121,7 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 			out.WriteString("}\n")
 			for _, c := range s.Children {
 				if c.Kind == protocol.SymbolKindMethod || c.Kind == protocol.SymbolKindConstructor || c.Kind == protocol.SymbolKindFunction {
-					writeDartSymbols(out, nameParts, []protocol.DocumentSymbol{c})
+					writeDartSymbols(out, nameParts, []protocol.DocumentSymbol{c}, src, ls)
 				}
 			}
 			continue
@@ -101,6 +135,26 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				}
 				out.WriteByte('\n')
 			}
+		case protocol.SymbolKindEnum:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindEnumMember {
+					fmt.Fprintf(out, "  %s\n", c.Name)
+				}
+			}
+			out.WriteString("}\n")
+			var rest []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindEnumMember {
+					rest = append(rest, c)
+				}
+			}
+			if len(rest) > 0 {
+				writeDartSymbols(out, nameParts, rest, src, ls)
+			}
+			continue
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -109,12 +163,23 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				detail = *s.Detail
 			}
 			params, ret := parseDartDetail(detail)
+			if len(params) == 0 && ret == "" {
+				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					if p, r := parseDartHover(hov); len(p) > 0 || r != "" {
+						params, ret = p, r
+					}
+				}
+			}
 			out.WriteByte('(')
 			for i, p := range params {
 				if i > 0 {
 					out.WriteString(", ")
 				}
-				out.WriteString(p)
+				out.WriteString(p.name)
+				if p.typ != "" && p.typ != "dynamic" {
+					out.WriteString(": ")
+					out.WriteString(p.typ)
+				}
 			}
 			out.WriteByte(')')
 			if ret != "" && ret != "void" && ret != "dynamic" {
@@ -125,7 +190,7 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 		}
 
 		if len(s.Children) > 0 {
-			writeDartSymbols(out, nameParts, s.Children)
+			writeDartSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
