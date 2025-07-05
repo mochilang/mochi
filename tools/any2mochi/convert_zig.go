@@ -8,6 +8,11 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+type zigParam struct {
+	name string
+	typ  string
+}
+
 // ConvertZig converts zig source code to Mochi using the language server.
 func ConvertZig(src string) ([]byte, error) {
 	ls := Servers["zig"]
@@ -30,9 +35,25 @@ func ConvertZig(src string) ([]byte, error) {
 			detail = *s.Detail
 		}
 		params, ret := parseZigDetail(detail)
+		if len(params) == 0 {
+			p, r := zigHoverSignature(src, s, ls)
+			if len(p) > 0 {
+				params = p
+			}
+			if r != "" {
+				ret = r
+			}
+		}
 		out.WriteByte('(')
-		if len(params) > 0 {
-			out.WriteString(strings.Join(params, ", "))
+		for i, p := range params {
+			if i > 0 {
+				out.WriteString(", ")
+			}
+			out.WriteString(p.name)
+			if p.typ != "" {
+				out.WriteString(": ")
+				out.WriteString(p.typ)
+			}
 		}
 		out.WriteByte(')')
 		if ret != "" && ret != "void" {
@@ -56,27 +77,30 @@ func ConvertZigFile(path string) ([]byte, error) {
 	return ConvertZig(string(data))
 }
 
-func parseZigParams(list string) []string {
+func parseZigParams(list string) []zigParam {
 	parts := strings.Split(list, ",")
-	params := make([]string, 0, len(parts))
+	params := make([]zigParam, 0, len(parts))
 	for _, p := range parts {
 		p = strings.TrimSpace(p)
 		if p == "" {
 			continue
 		}
-		fields := strings.Fields(p)
-		if len(fields) > 0 {
-			name := fields[0]
-			if strings.HasSuffix(name, ":") {
-				name = strings.TrimSuffix(name, ":")
-			}
-			params = append(params, name)
+		name := p
+		typ := ""
+		if colon := strings.Index(p, ":"); colon != -1 {
+			name = strings.TrimSpace(p[:colon])
+			typ = strings.TrimSpace(p[colon+1:])
+			typ = mapZigType(typ)
 		}
+		if strings.HasSuffix(name, ":") {
+			name = strings.TrimSuffix(name, ":")
+		}
+		params = append(params, zigParam{name: name, typ: typ})
 	}
 	return params
 }
 
-func parseZigDetail(detail string) ([]string, string) {
+func parseZigDetail(detail string) ([]zigParam, string) {
 	start := strings.Index(detail, "(")
 	end := strings.LastIndex(detail, ")")
 	if start == -1 || end == -1 || end < start {
@@ -85,5 +109,48 @@ func parseZigDetail(detail string) ([]string, string) {
 	paramsPart := detail[start+1 : end]
 	retPart := strings.TrimSpace(detail[end+1:])
 	params := parseZigParams(paramsPart)
-	return params, retPart
+	return params, mapZigType(retPart)
+}
+
+func zigHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]zigParam, string) {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err != nil {
+		return nil, ""
+	}
+	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+		lines := strings.Split(mc.Value, "\n")
+		for i := len(lines) - 1; i >= 0; i-- {
+			l := strings.TrimSpace(lines[i])
+			if strings.HasPrefix(l, "fn") && strings.Contains(l, "(") && strings.Contains(l, ")") {
+				return parseZigDetail(l)
+			}
+		}
+	}
+	return nil, ""
+}
+
+func mapZigType(t string) string {
+	t = strings.TrimSpace(t)
+	if t == "" || t == "void" {
+		return ""
+	}
+	switch t {
+	case "i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "usize", "isize":
+		return "int"
+	case "f16", "f32", "f64":
+		return "float"
+	case "bool":
+		return "bool"
+	}
+	if strings.HasPrefix(t, "[]const u8") || strings.HasPrefix(t, "[]u8") {
+		return "string"
+	}
+	if strings.HasPrefix(t, "[]") {
+		inner := mapZigType(strings.TrimPrefix(t, "[]"))
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
+	return t
 }
