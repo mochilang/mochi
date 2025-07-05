@@ -1,4 +1,4 @@
-//go:build tcc && libtcc
+//go:build tcc && libtcc && slow
 
 package tcc
 
