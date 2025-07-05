@@ -186,7 +186,17 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			body := parseDartFunctionBody(src, s)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, line := range body {
+					out.WriteString(line)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		}
 
 		if len(s.Children) > 0 {
