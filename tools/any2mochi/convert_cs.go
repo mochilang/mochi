@@ -47,12 +47,96 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {}\n")
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+			params, ret := parseCsSignature(s.Detail)
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteString("() {}\n")
+			out.WriteByte('(')
+			for i, p := range params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p)
+			}
+			out.WriteByte(')')
+			if ret != "" {
+				out.WriteString(": ")
+				out.WriteString(ret)
+			}
+			out.WriteString(" {}\n")
 		}
 		if len(s.Children) > 0 {
 			writeCsSymbols(out, nameParts, s.Children)
 		}
+	}
+}
+
+func parseCsSignature(detail *string) ([]string, string) {
+	if detail == nil {
+		return nil, ""
+	}
+	d := strings.TrimSpace(*detail)
+	if d == "" {
+		return nil, ""
+	}
+	open := strings.Index(d, "(")
+	close := strings.LastIndex(d, ")")
+	if open < 0 || close < open {
+		parts := strings.Fields(d)
+		if len(parts) > 0 {
+			return nil, mapCsType(parts[0])
+		}
+		return nil, ""
+	}
+	pre := strings.TrimSpace(d[:open])
+	parts := strings.Fields(pre)
+	ret := ""
+	if len(parts) >= 2 {
+		ret = mapCsType(parts[len(parts)-2])
+	} else if len(parts) == 1 {
+		ret = mapCsType(parts[0])
+	}
+	paramsPart := strings.TrimSpace(d[open+1 : close])
+	params := []string{}
+	if paramsPart != "" {
+		rawParams := strings.Split(paramsPart, ",")
+		for _, p := range rawParams {
+			p = strings.TrimSpace(p)
+			if p == "" {
+				continue
+			}
+			fields := strings.Fields(p)
+			if len(fields) == 0 {
+				continue
+			}
+			name := fields[len(fields)-1]
+			if eq := strings.Index(name, "="); eq != -1 {
+				name = name[:eq]
+			}
+			name = strings.Trim(name, "*&[]")
+			if name != "" {
+				params = append(params, name)
+			}
+		}
+	}
+	return params, ret
+}
+
+func mapCsType(t string) string {
+	for strings.HasSuffix(t, "[]") {
+		t = strings.TrimSuffix(t, "[]")
+	}
+	switch t {
+	case "void", "":
+		return ""
+	case "int", "long", "short", "uint", "ulong", "ushort", "byte", "sbyte":
+		return "int"
+	case "float", "double", "decimal":
+		return "float"
+	case "string", "char":
+		return "string"
+	case "bool":
+		return "bool"
+	default:
+		return ""
 	}
 }

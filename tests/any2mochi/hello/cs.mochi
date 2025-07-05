@@ -1,1 +1,2 @@
-fun main() {}
+type Program {}
+fun Program.Main() {}
