@@ -160,7 +160,29 @@ func writeTSFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol,
 		out.WriteString(": ")
 		out.WriteString(ret)
 	}
-	out.WriteString(" {}\n")
+	start := indexForPosition(src, sym.Range.Start)
+	end := indexForPosition(src, sym.Range.End)
+	body := ""
+	if start < end && end <= len(src) {
+		snippet := src[start:end]
+		if open := strings.Index(snippet, "{"); open != -1 {
+			if close := strings.LastIndex(snippet, "}"); close != -1 && close > open {
+				body = snippet[open+1 : close]
+			}
+		}
+	}
+	stmts := tsFunctionBody(body)
+	if len(stmts) == 0 {
+		out.WriteString(" {}\n")
+		return
+	}
+	out.WriteString(" {\n")
+	for _, line := range stmts {
+		out.WriteString("  ")
+		out.WriteString(line)
+		out.WriteByte('\n')
+	}
+	out.WriteString("}\n")
 }
 
 func tsHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]tsParam, string) {

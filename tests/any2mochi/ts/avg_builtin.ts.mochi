@@ -1,2 +1,5 @@
 fun _avg() {}
-fun main() {}
+
+fun main() {
+  print(_avg(xs))
+}
