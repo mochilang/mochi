@@ -34,11 +34,11 @@ func writeCljSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction:
+		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			params, ret := parseCljParams(s.Detail)
-			if len(params) == 0 {
+			if len(params) == 0 || ret == "" {
 				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
 					p, r := parseCljHoverSignature(hov)
 					if len(p) > 0 {
@@ -63,10 +63,15 @@ func writeCljSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {}\n")
-		case protocol.SymbolKindVariable:
+		case protocol.SymbolKindVariable, protocol.SymbolKindField, protocol.SymbolKindProperty, protocol.SymbolKindConstant:
 			out.WriteString("var ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString("\n")
+		case protocol.SymbolKindNamespace, protocol.SymbolKindModule, protocol.SymbolKindPackage:
+			if len(s.Children) > 0 {
+				writeCljSymbols(out, nameParts, s.Children, ls, src)
+			}
+			continue
 		}
 		if len(s.Children) > 0 {
 			writeCljSymbols(out, nameParts, s.Children, ls, src)

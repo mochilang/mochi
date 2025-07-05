@@ -347,6 +347,22 @@ func identName(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+// callPattern returns the call expression if e is a direct function call with no operators.
+func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target.Call == nil {
+		return nil, false
+	}
+	return p.Target.Call, true
+}
+
 // isListPushCall returns the variable name and argument if the expression is a
 // simple list.push(x) call.
 func isListPushCall(e *parser.Expr) (string, *parser.Expr, bool) {
