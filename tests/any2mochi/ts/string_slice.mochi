@@ -1,6 +1,10 @@
-fun _sliceString() {}
-let end: any
-let n: any
-let runes: any
-let start: any
-fun main() {}
+fun _sliceString(s: string, i: int, j: int): string {
+  let start = i
+  let end = j
+  let runes = Array.from(s)
+  let n = runes.length
+  return runes.slice(start, end).join("")
+}
+fun main() {
+  print(_sliceString("hello", 1, 4)
+}

@@ -1,0 +1,62 @@
+type _Node {
+  __name: "Node"
+  left: Tree
+  value: int
+  right: Tree
+}
+fun fromList(nums: list<int>): Tree {
+  return {
+      __name: "Node",
+      left: helper(lo, mid),
+      value: nums[mid],
+      right: helper(mid + 1, hi),
+    }
+}
+fun fromList.helper(local function) helper(lo: number, hi: number): Tree {
+  if (lo >= hi) {
+    return { __name: "Leaf" }
+  }
+  let mid: number = Math.trunc((lo + hi) / 2)
+  return {
+      __name: "Node",
+      left: helper(lo, mid),
+      value: nums[mid],
+      right: helper(mid + 1, hi),
+    }
+}
+fun inorder(t: Tree): list<int> {
+  return (() => {
+    const _t = t
+  if _t.__name === "Leaf" {
+    return ((l, v, r) => inorder(l).concat([v]).concat(inorder(r)))(
+        _t.left,
+        _t.value,
+        _t.right,
+      )
+  }
+  return undefined
+}
+fun inorder.<function>() {
+  let _t = t
+  if _t.__name === "Leaf" {
+    return ((l, v, r) => inorder(l).concat([v]).concat(inorder(r)))(
+        _t.left,
+        _t.value,
+        _t.right,
+      )
+  }
+  return undefined
+}
+type Leaf {
+  __name: "Leaf"
+}
+fun main() {
+  print(inorder(fromList([
+    -10,
+    -3,
+    0,
+    5,
+    9,
+  ])
+}
+type Tree = any

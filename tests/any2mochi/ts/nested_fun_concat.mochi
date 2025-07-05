@@ -1,0 +1,7 @@
+fun main() {
+  print(outer()
+}
+fun outer(): list<int> {}
+fun outer.inner(local function) inner(): list<int> {
+  return [1]
+}

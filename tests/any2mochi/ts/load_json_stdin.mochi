@@ -1,0 +1,72 @@
+fun _count(v): int {
+  if Array.isArray(v) {
+  }
+  return 0
+}
+fun _load(path: string, opts): list<any> {
+  let format = opts?.format ?? "csv"
+  let header = opts?.header ?? true
+  let delim = (opts?.delimiter ?? ",")[0]
+  let text = _readInput(path)
+  let items: any[]
+  break
+  break
+  break
+  break
+}
+fun _load.filter() callback() {}
+fun _load.items.filter() callback() {
+  for [k, v] in Object.entries(f) {
+  }
+  return true
+}
+fun _load.map() callback() {}
+fun _parseCSV(text: string, header: bool, delim: string): list<any> {
+  let lines = text.trim().split(/\r?\n/)
+  if lines.length === 0 {
+  }
+  let out: any[] = []
+  let parts = lines[i].split(delim)
+  let m: Record<string, any> = {}
+  if /^-?\d+$/.test(val) {
+  }
+}
+fun _parseCSV.map() callback() {}
+fun _readInput(path: string): string {
+  if !path || path === "-" {
+    let data = readAllSync(Deno.stdin)
+    return new TextDecoder().decode(data)
+  }
+  return Deno.readTextFileSync(path)
+}
+fun _save(rows: list<any>, path: string, opts) {
+  let format = opts?.format ?? "csv"
+  let header = opts?.header ?? false
+  let delim = (opts?.delimiter ?? ",")[0]
+  break
+  break
+  break
+  let lines: string[] = []
+  if header {
+  }
+}
+fun _save.headers.map() callback() {}
+fun _save.rows.map() callback() {}
+fun _toAnyMap(m): map<string,any> {
+  return m as Record<string, any>
+}
+fun _writeOutput(path: string, text: string) {
+  let data = new TextEncoder().encode(text)
+  if !path || path === "-" {
+  }
+  else {
+  }
+}
+fun main() {
+  print(_count(people)
+}
+let people: list<Person>
+type Person {
+  name: string
+  age: int
+}

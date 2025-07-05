@@ -1,3 +1,5 @@
 fun main() {}
-fun test_values() {}
-let xs: any
+fun test_values() {
+  print("done")
+}
+let xs: list<int>

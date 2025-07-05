@@ -1,0 +1,128 @@
+fun _count(v): int {
+  if Array.isArray(v) {
+  }
+  return 0
+}
+fun _equal(a, b): bool {
+  if Array.isArray(a) && Array.isArray(b) {
+    return true
+  }
+  if a && b && typeof a === "object" && typeof b === "object" {
+    let ak = Object.keys(a)
+    let bk = Object.keys(b)
+    if ak.length !== bk.length {
+      if !bk.includes(k) || !_equal((a as any)[k], (b as any)[k]) {
+        return false
+      }
+    }
+    return true
+  }
+  return a === b
+}
+fun _query(src: list<any>, joins: list<any>, opts) {
+  let items = src.map((v) => [v])
+  for j in joins {
+    let joined: any[] = []
+    if j.right && j.left {
+      let matched: boolean[] = new Array(j.items.length).fill(false)
+      for left in items {
+        let m = false
+        let keep = true
+      }
+    }
+    for left in items {
+      let keep = true
+    }
+    if !m {
+      let undef = Array(items[0]?.length || 0).fill(undefined)
+    }
+    for right in j.items {
+      let keep = true
+    }
+  }
+  if opts.where {
+    let pairs = items.map((it) => ({ item: it, key: opts.sortKey(...it) }))
+    let bk = b.key
+    if typeof ak === "number" && typeof bk === "number" {
+      return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+    }
+    return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+  }
+  if opts.skip !== undefined {
+    let n = opts.skip
+  }
+  if opts.take !== undefined {
+    let n = opts.take
+  }
+  let res = []
+  return res
+}
+fun _query.items.src.map() callback() {}
+fun _query.items.filter() callback() {}
+fun _query.pairs.items.map() callback() {}
+fun _query.pairs.map() callback() {}
+fun _query.pairs.sort() callback() {
+  let ak = a.key
+  let bk = b.key
+  if typeof ak === "number" && typeof bk === "number" {
+    return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+  }
+  return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+}
+let customers: list<map<string,any>>
+fun main() {
+  let _items = _query(_src, [
+      { items: orders, on: (c, o) => (_equal(o.customerId, c.id)), left: true },
+    ], { select: (c, o) => [c, o] })
+  let _map = new Map<string, any>()
+  let _order: string[] = []
+  for _r in _items {
+    let [c, o] = _r
+    let _key = c.name
+    let _ks = String(_key)
+    let _g = _map.get(_ks)
+    if !_g {
+    }
+  }
+  let _itemsG = _order.map((k) => _map.get(k)!)
+  let _res = []
+  for g in _itemsG {
+  }
+  return _res
+  print("--- Group Left Join ---")
+  for s in stats {
+    print(s.name, "orders:", s.count)
+  }
+}
+fun main.<function>() {
+  let _src = customers
+  let _items = _query(_src, [
+      { items: orders, on: (c, o) => (_equal(o.customerId, c.id)), left: true },
+    ], { select: (c, o) => [c, o] })
+  let _map = new Map<string, any>()
+  let _order: string[] = []
+  for _r in _items {
+    let [c, o] = _r
+    let _key = c.name
+    let _ks = String(_key)
+    let _g = _map.get(_ks)
+    if !_g {
+    }
+  }
+  let _itemsG = _order.map((k) => _map.get(k)!)
+  let _res = []
+  for g in _itemsG {
+  }
+  return _res
+}
+fun main.<function>._items.on(property) on: (c: any, o: any): bool {}
+fun main.<function>._items.select(property) select: (c: any, o: any): list<any> {}
+fun main.<function>._itemsG._order.map() callback() {}
+fun main.<function>."count".g.items.filter() callback() {}
+fun main.<function>."count".map() callback() {}
+let orders: list<map<string,int>>
+let stats: list<map<string,any>>

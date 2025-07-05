@@ -1,0 +1,33 @@
+fun _fetch(url: string, opts): Promise<any> {
+  if url.startsWith("file://") {
+    let path = url.slice(7)
+    if !path.startsWith("/") {
+    }
+    let text = Deno.readTextFileSync(path)
+  }
+  let init: RequestInit = { method: opts?.method ?? "GET" }
+  if opts?.headers {
+    let qs = new URLSearchParams()
+    for [k, v] in Object.entries(_toAnyMap(opts.query)) {
+    }
+    let sep = url.includes("?") ? "&" : "?"
+  }
+  let ctrl: AbortController | undefined
+  let id: any
+  if opts?.timeout {
+  }
+  let resp = await fetch(url, init)
+  if id {
+    return JSON.parse(text)
+  }
+}
+fun _fetch.setTimeout() callback() {}
+let _pending: list<Promise<any>>
+fun _toAnyMap(m): map<string,any> {
+  return m as Record<string, any>
+}
+fun _waitAll(): Promise<void> {}
+let body
+fun main(): Promise<void> {
+  print((Array.isArray(body)
+}

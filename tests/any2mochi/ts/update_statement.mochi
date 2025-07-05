@@ -1,38 +1,32 @@
-fun _equal() {}
-let ak: any
-let bk: any
-let i: any
-let k: any
-fun main() {}
-let _i: any
-let _item: any
-let age: any
-let age: any
-let age: any
-let age: any
-let age: any
-let name: any
-let name: any
-let name: any
-let name: any
-let name: any
-let status: any
-let status: any
-let status: any
-let status: any
-let status: any
-let people: any
-let Person: any
-fun test_update_adult_status() {}
-let age: any
-let age: any
-let age: any
-let age: any
-let name: any
-let name: any
-let name: any
-let name: any
-let status: any
-let status: any
-let status: any
-let status: any
+fun _equal(a, b): bool {
+  if Array.isArray(a) && Array.isArray(b) {
+    return true
+  }
+  if a && b && typeof a === "object" && typeof b === "object" {
+    let ak = Object.keys(a)
+    let bk = Object.keys(b)
+    if ak.length !== bk.length {
+      if !bk.includes(k) || !_equal((a as any)[k], (b as any)[k]) {
+        return false
+      }
+    }
+    return true
+  }
+  return a === b
+}
+fun main() {
+  let name = _item.name
+  let age = _item.age
+  let status = _item.status
+  if (age >= 18) {
+  }
+}
+let people: list<Person>
+type Person {
+  name: string
+  age: int
+  status: string
+}
+fun test_update_adult_status() {
+  print("ok")
+}

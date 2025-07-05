@@ -1,0 +1,46 @@
+type _Node {
+  __name: "Node"
+  left: Tree
+  value: int
+  right: Tree
+}
+fun inorder(t: Tree): list<int> {
+  return (() => {
+    const _t = t
+  if _t.__name === "Leaf" {
+    return ((l, v, r) => inorder(l).concat([v]).concat(inorder(r)))(
+        _t.left,
+        _t.value,
+        _t.right,
+      )
+  }
+  return undefined
+}
+fun inorder.<function>() {
+  let _t = t
+  if _t.__name === "Leaf" {
+    return ((l, v, r) => inorder(l).concat([v]).concat(inorder(r)))(
+        _t.left,
+        _t.value,
+        _t.right,
+      )
+  }
+  return undefined
+}
+type Leaf {
+  __name: "Leaf"
+}
+fun main() {
+  print(inorder({
+      __name: "Node",
+      left: { __name: "Leaf" },
+      value: 1,
+      right: {
+        __name: "Node",
+        left: { __name: "Leaf" },
+        value: 2,
+        right: { __name: "Leaf" },
+      },
+    })
+}
+type Tree = any

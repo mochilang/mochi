@@ -1,0 +1,79 @@
+fun _equal(a, b): bool {
+  if Array.isArray(a) && Array.isArray(b) {
+    return true
+  }
+  if a && b && typeof a === "object" && typeof b === "object" {
+    let ak = Object.keys(a)
+    let bk = Object.keys(b)
+    if ak.length !== bk.length {
+      if !bk.includes(k) || !_equal((a as any)[k], (b as any)[k]) {
+        return false
+      }
+    }
+    return true
+  }
+  return a === b
+}
+type _Node {
+  __name: "Node"
+  left: Tree
+  value: int
+  right: Tree
+}
+fun depth(t: Tree): int {
+  return (() => {
+    const _t = t
+  if _t.__name === "Leaf" {
+    return ((l, r) =>
+        (() => {
+          let dl: number = depth(l)
+    let dr: number = depth(r)
+    return (() => {
+            const _t = dl > dr
+    return (dr + 1)
+  }
+  return undefined
+}
+fun depth.<function>() {
+  let _t = t
+  if _t.__name === "Leaf" {
+    return ((l, r) =>
+        (() => {
+          let dl: number = depth(l)
+    let dr: number = depth(r)
+    return (() => {
+            const _t = dl > dr
+    return (dr + 1)
+  }
+  return undefined
+}
+fun depth.<function>.<function>() {
+  let dl: number = depth(l)
+  let dr: number = depth(r)
+  return (() => {
+            const _t = dl > dr
+  return (dr + 1)
+}
+fun depth.<function>.<function>.<function>() {
+  let dl: number = depth(l)
+  let dr: number = depth(r)
+  return (() => {
+            const _t = dl > dr
+  return (dr + 1)
+}
+fun depth.<function>.<function>.<function>.<function>() {
+  let _t = dl > dr
+  return (dr + 1)
+}
+type Leaf {
+  __name: "Leaf"
+}
+fun main() {
+  print(depth({
+      __name: "Node",
+      left: { __name: "Leaf" },
+      value: 1,
+      right: { __name: "Leaf" },
+    })
+}
+type Tree = any

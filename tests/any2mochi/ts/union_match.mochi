@@ -1,0 +1,28 @@
+type _Node {
+  __name: "Node"
+  left: Tree
+  value: int
+  right: Tree
+}
+fun isLeaf(t: Tree): bool {
+  return (() => {
+    const _t = t
+  return false
+}
+fun isLeaf.<function>() {
+  let _t = t
+  return false
+}
+type Leaf {
+  __name: "Leaf"
+}
+fun main() {
+  print(isLeaf({ __name: "Leaf" })
+  print(isLeaf({
+      __name: "Node",
+      left: { __name: "Leaf" },
+      value: 1,
+      right: { __name: "Leaf" },
+    })
+}
+type Tree = any

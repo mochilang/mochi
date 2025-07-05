@@ -1,1 +1,0 @@
-parse error: parse error: 3:5: unexpected token "age" (expected <ident> (":" TypeRef)? ("=" Expr)?)

@@ -1,3 +1,5 @@
-let groups: any
-let idx: any
-fun main() {}
+let groups: list<list<string>>
+let idx: int
+fun main() {
+  print(groups)
+}

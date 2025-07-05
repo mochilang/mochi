@@ -1,0 +1,14 @@
+fun main() {
+  print("3 + 5 =", sum)
+  print("4 squared =", sq)
+}
+let mathutils: {
+fun mathutils.<function>() {}
+fun mathutils.<function>.add(local function) add(a: number, b: number): int {
+  return (a + b)
+}
+fun mathutils.<function>.square(local function) square(x: int): int {
+  return (x * x)
+}
+let sq
+let sum

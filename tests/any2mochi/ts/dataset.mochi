@@ -1,0 +1,12 @@
+let adults: list<map<string,any>>
+fun main() {
+  for person in adults {
+    print(person.name, "is", person.age, "years old.")
+    if person.is_senior {
+      print(" (senior)
+    }
+  }
+}
+fun main.map() callback() {}
+fun main.people.filter() callback() {}
+let people: list<map<string,any>>

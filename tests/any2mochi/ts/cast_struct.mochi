@@ -1,0 +1,7 @@
+fun main() {
+  print(todo.title)
+}
+let todo: Todo
+type Todo {
+  title: string
+}

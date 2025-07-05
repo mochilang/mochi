@@ -1,0 +1,29 @@
+let bools: list<bool>
+let combos: list<map<string,any>>
+let letters: list<string>
+fun main() {
+  let _res = []
+  for n in _src {
+    for l in letters {
+      for b in bools {
+      }
+    }
+  }
+  return _res
+  print("--- Cross Join of three lists ---")
+  for c in combos {
+    print(c.n, c.l, c.b)
+  }
+}
+fun main.<function>() {
+  let _src = nums
+  let _res = []
+  for n in _src {
+    for l in letters {
+      for b in bools {
+      }
+    }
+  }
+  return _res
+}
+let nums: list<int>

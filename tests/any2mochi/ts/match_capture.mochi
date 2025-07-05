@@ -1,0 +1,33 @@
+type _Node {
+  __name: "Node"
+  left: Tree
+  value: int
+  right: Tree
+}
+fun depth(t: Tree): int {
+  return (() => {
+    const _t = t
+  if _t.__name === "Leaf" {
+    return ((l, r) => ((depth(l) + depth(r)) + 1))(_t.left, _t.right)
+  }
+  return undefined
+}
+fun depth.<function>() {
+  let _t = t
+  if _t.__name === "Leaf" {
+    return ((l, r) => ((depth(l) + depth(r)) + 1))(_t.left, _t.right)
+  }
+  return undefined
+}
+type Leaf {
+  __name: "Leaf"
+}
+fun main() {
+  print(depth({
+      __name: "Node",
+      left: { __name: "Leaf" },
+      value: 0,
+      right: { __name: "Leaf" },
+    })
+}
+type Tree = any

@@ -1,6 +1,11 @@
-fun _avg() {}
-let list: any
-let n: any
-let sum: any
-fun main() {}
-let xs: any
+fun _avg(v): int {
+  let list: any[] | null = null
+  if Array.isArray(v) {
+  }
+  let sum = 0
+  return sum / list.length
+}
+fun main() {
+  print(_avg(xs)
+}
+let xs: list<int>

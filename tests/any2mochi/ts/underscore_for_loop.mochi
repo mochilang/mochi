@@ -1,0 +1,7 @@
+let c: int
+let m: map<string,int>
+fun main() {
+  for _ in Object.keys(m) {
+  }
+  print(c)
+}

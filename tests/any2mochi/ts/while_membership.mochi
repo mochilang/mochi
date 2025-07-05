@@ -1,5 +1,14 @@
-let count: any
-let i: any
-fun main() {}
-let n: any
-let set: any
+let count: int
+let i: int
+fun main() {
+  for n in [
+      1,
+      2,
+      3,
+    ] {
+  }
+  while Object.prototype.hasOwnProperty.call(set, String(i)) {
+  }
+  print(count)
+}
+let set: map<int,bool>

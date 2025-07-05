@@ -1,2 +1,5 @@
-fun main() {}
-let ch: any
+fun main() {
+  for ch in "cat" {
+    print(ch)
+  }
+}

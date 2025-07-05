@@ -1,0 +1,45 @@
+type Customer {
+  id: int
+  name: string
+}
+let customers: list<Customer>
+fun main() {
+  let _res = []
+  for o in _src {
+    for c in customers {
+    }
+  }
+  return _res
+  print("--- Cross Join: All order-customer pairs ---")
+  for entry in result {
+    print("Order",
+      entry.orderId,
+      "(customerId:",
+      entry.orderCustomerId,
+      ", total: $",
+      entry.orderTotal,
+      ")
+  }
+}
+fun main.<function>() {
+  let _src = orders
+  let _res = []
+  for o in _src {
+    for c in customers {
+    }
+  }
+  return _res
+}
+type Order {
+  id: int
+  customerId: int
+  total: int
+}
+let orders: list<Order>
+type PairInfo {
+  orderId: int
+  orderCustomerId: int
+  pairedCustomerName: string
+  orderTotal: int
+}
+let result: list<PairInfo>
