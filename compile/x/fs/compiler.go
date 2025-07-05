@@ -1682,6 +1682,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		return fmt.Sprintf("Seq.average %s", args[0]), nil
+	case "upper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		return fmt.Sprintf("(%s.ToUpper())", args[0]), nil
+	case "lower":
+		if len(args) != 1 {
+			return "", fmt.Errorf("lower expects 1 arg")
+		}
+		return fmt.Sprintf("(%s.ToLower())", args[0]), nil
 	case "substr":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substr expects 3 args")
