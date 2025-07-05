@@ -1,1 +1,2 @@
-fun main() {}
+var scores = {"Alice": 10, "Bob": 15}
+print(str(scores["Bob"]))

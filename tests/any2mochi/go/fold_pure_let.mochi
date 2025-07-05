@@ -1,1 +1,6 @@
-
+fun sum(n: int): int {
+  return ((n * (n + 1)) / 2)
+}
+var n = 10
+print(str(55))
+print(str(n))
