@@ -1,6 +1,0 @@
-tests/compiler/go/string_slice.go.out:11: unsupported parameter list
->>> 10:    
-11:>>> func _sliceString(s string, i, j int) string {
-12:    start := i
-13:    end := j
-
