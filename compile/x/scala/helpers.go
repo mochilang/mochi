@@ -226,6 +226,37 @@ func isListExpr(e *parser.Expr, env *types.Env) bool {
 	return false
 }
 
+// isMapPrimary reports whether p is a variable or literal of map type.
+func isMapPrimary(p *parser.Primary, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	if p.Map != nil {
+		return true
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 && env != nil {
+		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.MapType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// isMapVar reports whether name refers to a map variable in env.
+func isMapVar(name string, env *types.Env) bool {
+	if env == nil {
+		return false
+	}
+	if t, err := env.GetVar(name); err == nil {
+		if _, ok := t.(types.MapType); ok {
+			return true
+		}
+	}
+	return false
+}
+
 func equalTypes(a, b types.Type) bool {
 	if _, ok := a.(types.AnyType); ok {
 		return true
