@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"strings"
 	"sync"
@@ -87,7 +88,11 @@ func ParseText(cmdName string, args []string, langID string, src string) ([]prot
 
 func (c *client) initialize(ctx context.Context) error {
 	hierarchical := true
+	pid := protocol.Integer(os.Getpid())
+	root := protocol.DocumentUri("file:///")
 	params := protocol.InitializeParams{
+		ProcessID: &pid,
+		RootURI:   &root,
 		Capabilities: protocol.ClientCapabilities{
 			TextDocument: &protocol.TextDocumentClientCapabilities{
 				DocumentSymbol: &protocol.DocumentSymbolClientCapabilities{
