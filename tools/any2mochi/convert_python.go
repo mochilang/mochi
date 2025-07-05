@@ -437,23 +437,119 @@ func parsePyFunctionBody(src string, sym protocol.DocumentSymbol) []string {
 	if indent == "" {
 		return nil
 	}
+	stmts, _ := parsePyLines(lines[1:], indent)
+	return stmts
+}
+
+func parsePyLines(lines []string, indent string) ([]string, int) {
 	var stmts []string
-	for _, l := range lines[1:] {
+	i := 0
+	step := indent + "    "
+	for i < len(lines) {
+		l := lines[i]
 		if !strings.HasPrefix(l, indent) {
 			if strings.TrimSpace(l) == "" {
+				i++
 				continue
 			}
 			break
 		}
 		s := strings.TrimSpace(l[len(indent):])
 		if s == "" || strings.HasPrefix(s, "global ") || s == "pass" {
+			i++
 			continue
 		}
 		switch {
 		case strings.HasPrefix(s, "return "):
 			stmts = append(stmts, "return "+strings.TrimSpace(s[len("return "):]))
+			i++
 		case strings.HasPrefix(s, "print("):
 			stmts = append(stmts, s)
+			i++
+		case strings.HasPrefix(s, "if ") && strings.HasSuffix(s, ":"):
+			cond := strings.TrimSpace(strings.TrimSuffix(s[3:], ":"))
+			body, n := parsePyLines(lines[i+1:], step)
+			i = i + 1 + n
+			var elseBody []string
+			if i < len(lines) {
+				nextLine := lines[i]
+				if strings.HasPrefix(nextLine, indent) {
+					nextLine = nextLine[len(indent):]
+				}
+				next := strings.TrimSpace(nextLine)
+				if strings.HasPrefix(next, "else:") {
+					var m int
+					elseBody, m = parsePyLines(lines[i+1:], step)
+					i = i + 1 + m
+				}
+			}
+			var b strings.Builder
+			b.WriteString("if ")
+			b.WriteString(cond)
+			if len(body) == 0 {
+				b.WriteString(" {}")
+			} else {
+				b.WriteString(" {")
+				for _, st := range body {
+					b.WriteString("\n  ")
+					b.WriteString(st)
+				}
+				b.WriteString("\n}")
+			}
+			if len(elseBody) > 0 {
+				b.WriteString(" else {")
+				for _, st := range elseBody {
+					b.WriteString("\n  ")
+					b.WriteString(st)
+				}
+				b.WriteString("\n}")
+			}
+			stmts = append(stmts, b.String())
+		case strings.HasPrefix(s, "for ") && strings.HasSuffix(s, ":"):
+			rest := strings.TrimSpace(strings.TrimSuffix(s[4:], ":"))
+			if idx := strings.Index(rest, " in "); idx != -1 {
+				varName := strings.TrimSpace(rest[:idx])
+				iterable := strings.TrimSpace(rest[idx+4:])
+				body, n := parsePyLines(lines[i+1:], step)
+				i = i + 1 + n
+				var b strings.Builder
+				b.WriteString("for ")
+				b.WriteString(varName)
+				b.WriteString(" in ")
+				b.WriteString(iterable)
+				if len(body) == 0 {
+					b.WriteString(" {}")
+				} else {
+					b.WriteString(" {")
+					for _, st := range body {
+						b.WriteString("\n  ")
+						b.WriteString(st)
+					}
+					b.WriteString("\n}")
+				}
+				stmts = append(stmts, b.String())
+			} else {
+				stmts = append(stmts, s)
+				i++
+			}
+		case strings.HasPrefix(s, "while ") && strings.HasSuffix(s, ":"):
+			cond := strings.TrimSpace(strings.TrimSuffix(s[6:], ":"))
+			body, n := parsePyLines(lines[i+1:], step)
+			i = i + 1 + n
+			var b strings.Builder
+			b.WriteString("while ")
+			b.WriteString(cond)
+			if len(body) == 0 {
+				b.WriteString(" {}")
+			} else {
+				b.WriteString(" {")
+				for _, st := range body {
+					b.WriteString("\n  ")
+					b.WriteString(st)
+				}
+				b.WriteString("\n}")
+			}
+			stmts = append(stmts, b.String())
 		default:
 			if idx := strings.Index(s, "="); idx != -1 && !strings.Contains(s[:idx], "==") {
 				name := strings.TrimSpace(s[:idx])
@@ -462,9 +558,10 @@ func parsePyFunctionBody(src string, sym protocol.DocumentSymbol) []string {
 			} else {
 				stmts = append(stmts, s)
 			}
+			i++
 		}
 	}
-	return stmts
+	return stmts, i
 }
 
 func pyExtractRange(src string, r protocol.Range) string {
