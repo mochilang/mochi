@@ -53,7 +53,18 @@ func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 				out.WriteString(": ")
 				out.WriteString(mt)
 			}
-			out.WriteString(" {}\n")
+			body := swiftFunctionBody(src, s)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, ln := range body {
+					out.WriteString("  ")
+					out.WriteString(ln)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindClass, protocol.SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -252,6 +263,90 @@ func parseSwiftSignature(sig string) ([]swiftParam, string) {
 		}
 	}
 	return params, ret
+}
+
+func swiftFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+	code := extractRangeText(src, sym.Range)
+	start := strings.Index(code, "{")
+	end := strings.LastIndex(code, "}")
+	if start == -1 || end == -1 || end <= start {
+		return nil
+	}
+	body := code[start+1 : end]
+	return parseSwiftStatements(body)
+}
+
+func parseSwiftStatements(body string) []string {
+	lines := strings.Split(body, "\n")
+	var out []string
+	indent := 1
+	for _, line := range lines {
+		l := strings.TrimSpace(line)
+		if l == "" {
+			continue
+		}
+		l = strings.TrimSuffix(l, ";")
+		switch {
+		case l == "}":
+			if indent > 0 {
+				indent--
+			}
+			out = append(out, strings.Repeat("  ", indent)+"}")
+		case strings.HasPrefix(l, "if ") && strings.HasSuffix(l, "{"):
+			cond := strings.TrimSpace(strings.TrimSuffix(l[3:], "{"))
+			out = append(out, strings.Repeat("  ", indent)+"if "+cond+" {")
+			indent++
+		case l == "else {":
+			if indent > 0 {
+				indent--
+			}
+			out = append(out, strings.Repeat("  ", indent)+"else {")
+			indent++
+		case strings.HasPrefix(l, "for ") && strings.HasSuffix(l, "{"):
+			head := strings.TrimSpace(strings.TrimSuffix(l[4:], "{"))
+			out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
+			indent++
+		case strings.HasPrefix(l, "return "):
+			expr := strings.TrimSpace(l[len("return "):])
+			out = append(out, strings.Repeat("  ", indent)+"return "+expr)
+		case strings.HasPrefix(l, "let ") || strings.HasPrefix(l, "var "):
+			decl := strings.TrimPrefix(l, "let ")
+			if decl == l {
+				decl = strings.TrimPrefix(l, "var ")
+			}
+			parts := strings.SplitN(decl, "=", 2)
+			if len(parts) == 2 {
+				name := strings.TrimSpace(parts[0])
+				if colon := strings.Index(name, ":"); colon != -1 {
+					name = strings.TrimSpace(name[:colon])
+				}
+				expr := strings.TrimSpace(parts[1])
+				out = append(out, strings.Repeat("  ", indent)+"let "+name+" = "+expr)
+			}
+		default:
+			out = append(out, strings.Repeat("  ", indent)+l)
+		}
+	}
+	return out
+}
+
+func extractRangeText(src string, r protocol.Range) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {
+		line := lines[i]
+		if i == int(r.Start.Line) && int(r.Start.Character) < len(line) {
+			line = line[int(r.Start.Character):]
+		}
+		if i == int(r.End.Line) && int(r.End.Character) <= len(line) {
+			line = line[:int(r.End.Character)]
+		}
+		out.WriteString(line)
+		if i != int(r.End.Line) {
+			out.WriteByte('\n')
+		}
+	}
+	return out.String()
 }
 
 // ConvertSwiftFile reads the swift file and converts it to Mochi.
