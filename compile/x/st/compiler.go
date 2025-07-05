@@ -256,7 +256,30 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		// union types not yet supported
+		c.writeln("!Main class methodsFor: 'types'!")
+		for _, v := range t.Variants {
+			fields := make([]string, len(v.Fields))
+			for i, f := range v.Fields {
+				fields[i] = f.Name
+			}
+			header := "new" + v.Name
+			if len(fields) > 0 {
+				header += ": " + fields[0]
+				for _, f := range fields[1:] {
+					header += " " + f + ": " + f
+				}
+			}
+			c.writeln(header + " | dict |")
+			c.indent++
+			c.writeln("dict := Dictionary new.")
+			c.writeln(fmt.Sprintf("dict at: '__name' put: '%s'.", v.Name))
+			for _, f := range fields {
+				c.writeln(fmt.Sprintf("dict at: '%s' put: %s.", f, f))
+			}
+			c.writeln("^ dict")
+			c.indent--
+			c.writelnNoIndent("!")
+		}
 		return nil
 	}
 	fields := make([]string, 0, len(t.Members))

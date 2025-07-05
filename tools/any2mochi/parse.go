@@ -143,10 +143,10 @@ func (c *client) initialize(ctx context.Context) error {
 func (c *client) initializeWithRoot(ctx context.Context, root string) error {
 	hierarchical := true
 	pid := protocol.Integer(os.Getpid())
-	root := protocol.DocumentUri("file:///")
+	rootURI := protocol.DocumentUri("file:///")
 	params := protocol.InitializeParams{
 		ProcessID: &pid,
-		RootURI:   &root,
+		RootURI:   &rootURI,
 		Capabilities: protocol.ClientCapabilities{
 			TextDocument: &protocol.TextDocumentClientCapabilities{
 				DocumentSymbol: &protocol.DocumentSymbolClientCapabilities{
