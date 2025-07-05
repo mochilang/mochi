@@ -105,8 +105,14 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 				}
 				return "", c.errorf(decl, "unsupported method declaration")
 			}
-
-			// skip non-main functions for now
+			code, err := c.translateFunc(decl)
+			if err != nil {
+				return "", err
+			}
+			if code != "" {
+				b.WriteString(code)
+				b.WriteByte('\n')
+			}
 			continue
 		case *ast.GenDecl:
 			if decl.Tok == token.IMPORT {
@@ -985,6 +991,8 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 	case *ast.CallExpr:
 		if idx, ok := ex.Fun.(*ast.IndexExpr); ok {
 			ex = &ast.CallExpr{Fun: idx.X, Args: ex.Args}
+		} else if idxList, ok := ex.Fun.(*ast.IndexListExpr); ok {
+			ex = &ast.CallExpr{Fun: idxList.X, Args: ex.Args}
 		}
 		if sel, ok := ex.Fun.(*ast.SelectorExpr); ok {
 			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" {
@@ -1082,6 +1090,15 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		}
 		if id, ok := ex.Fun.(*ast.Ident); ok {
 			switch id.Name {
+			case "make":
+				if len(ex.Args) >= 1 {
+					switch ex.Args[0].(type) {
+					case *ast.ArrayType:
+						return "[]", nil
+					case *ast.MapType:
+						return "{}", nil
+					}
+				}
 			case "append":
 				if len(ex.Args) < 2 {
 					return "", c.errorf(ex, "unsupported append args")
@@ -1143,6 +1160,13 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("%s[%s]", x, idx), nil
+	case *ast.IndexListExpr:
+		x, err := c.translateExpr(ex.X)
+		if err != nil {
+			return "", err
+		}
+		// ignore type arguments
+		return x, nil
 	case *ast.TypeAssertExpr:
 		if ex.Type == nil {
 			return "", c.errorf(ex, "unsupported expr %T", e)
