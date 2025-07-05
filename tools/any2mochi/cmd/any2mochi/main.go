@@ -170,11 +170,26 @@ func convertCmd() *cobra.Command {
 					return err
 				}
 			}
-			out, err := any2mochi.ConvertWithServer(ls.Command, ls.Args, ls.LangID, string(data))
+			syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, string(data))
 			if err != nil {
 				return err
 			}
-			_, err = cmd.OutOrStdout().Write(out)
+			if len(diags) > 0 {
+				return fmt.Errorf("%s", formatDiagnosticsLocal(string(data), diags))
+			}
+			var out strings.Builder
+			for _, s := range syms {
+				if s.Kind != protocol.SymbolKindFunction {
+					continue
+				}
+				out.WriteString("fun ")
+				out.WriteString(s.Name)
+				out.WriteString("() {}\n")
+			}
+			if out.Len() == 0 {
+				return fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippetLocal(string(data)))
+			}
+			_, err = cmd.OutOrStdout().Write([]byte(out.String()))
 			return err
 		},
 	}
@@ -182,6 +197,32 @@ func convertCmd() *cobra.Command {
 	cmd.Flags().StringVar(&server, "server", "", "language server command")
 	cmd.Flags().BoolVar(&ensure, "ensure", false, "install language server if missing")
 	return cmd
+}
+
+func numberedSnippetLocal(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func formatDiagnosticsLocal(src string, diags []protocol.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
 }
 
 func newRootCmd() *cobra.Command {

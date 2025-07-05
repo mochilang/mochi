@@ -1,68 +1,22 @@
 package any2mochi
 
 import (
-	"encoding/json"
 	"fmt"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 	"strings"
 )
 
-// ConvertWithServer converts source code using the provided language server configuration.
-func ConvertWithServer(cmd string, args []string, langID, src string) ([]byte, error) {
-	syms, diags, err := ParseAndEnsure(cmd, args, langID, src)
-	if err != nil {
-		return nil, fmt.Errorf("convert failure: %w\n\nsource snippet:\n%s", err, numberedSnippet(src))
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteString("() {}\n")
-	}
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
-}
-
-// ConvertWithServerJSON is like ConvertWithServer but also returns the parsed
-// symbols encoded as pretty JSON.
-func ConvertWithServerJSON(cmd string, args []string, langID, src string) ([]byte, []byte, error) {
-	syms, diags, err := ParseAndEnsure(cmd, args, langID, src)
-	if err != nil {
-		return nil, nil, fmt.Errorf("convert failure: %w\n\nsource snippet:\n%s", err, numberedSnippet(src))
-	}
-	if len(diags) > 0 {
-		return nil, nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteString("() {}\n")
-	}
-	if out.Len() == 0 {
-		return nil, nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	js, _ := json.MarshalIndent(syms, "", "  ")
-	return []byte(out.String()), js, nil
-}
-
-// ParseAndEnsure runs ParseText after ensuring the language server is installed.
-func ParseAndEnsure(cmd string, args []string, langID, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
+// EnsureAndParse runs ParseText after ensuring the language server is installed.
+// Any parsing errors are annotated with a short snippet of the source for easier debugging.
+func EnsureAndParse(cmd string, args []string, langID, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
 	if err := EnsureServer(cmd); err != nil {
 		return nil, nil, err
 	}
-	return ParseText(cmd, args, langID, src)
+	syms, diags, err := ParseText(cmd, args, langID, src)
+	if err != nil {
+		err = fmt.Errorf("parse failure: %w\n\nsource snippet:\n%s", err, numberedSnippet(src))
+	}
+	return syms, diags, err
 }
 
 func numberedSnippet(src string) string {
