@@ -1,6 +1,7 @@
 package any2mochi
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -19,14 +20,14 @@ func ConvertClj(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	writeCljSymbols(&out, nil, syms)
+	writeCljSymbols(&out, nil, syms, ls, src)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-func writeCljSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol) {
+func writeCljSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, ls LanguageServer, src string) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -37,6 +38,11 @@ func writeCljSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			params := parseCljParams(s.Detail)
+			if len(params) == 0 {
+				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					params = parseCljHoverParams(hov)
+				}
+			}
 			out.WriteByte('(')
 			if len(params) > 0 {
 				out.WriteString(strings.Join(params, ", "))
@@ -52,9 +58,66 @@ func writeCljSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 			out.WriteString("\n")
 		}
 		if len(s.Children) > 0 {
-			writeCljSymbols(out, nameParts, s.Children)
+			writeCljSymbols(out, nameParts, s.Children, ls, src)
 		}
 	}
+}
+
+func parseCljHoverParams(h protocol.Hover) []string {
+	var text string
+	switch c := h.Contents.(type) {
+	case protocol.MarkupContent:
+		text = c.Value
+	case protocol.MarkedString:
+		if b, err := json.Marshal(c); err == nil {
+			var m protocol.MarkedStringStruct
+			if json.Unmarshal(b, &m) == nil {
+				text = m.Value
+			} else {
+				json.Unmarshal(b, &text)
+			}
+		}
+	case []protocol.MarkedString:
+		if len(c) > 0 {
+			if b, err := json.Marshal(c[0]); err == nil {
+				var m protocol.MarkedStringStruct
+				if json.Unmarshal(b, &m) == nil {
+					text = m.Value
+				} else {
+					json.Unmarshal(b, &text)
+				}
+			}
+		}
+	case string:
+		text = c
+	}
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(line)
+		o := strings.Index(line, "[")
+		cidx := strings.Index(line, "]")
+		if o == -1 || cidx == -1 || cidx <= o {
+			continue
+		}
+		list := strings.TrimSpace(line[o+1 : cidx])
+		if list == "" {
+			continue
+		}
+		fields := strings.Fields(list)
+		params := make([]string, 0, len(fields))
+		for _, f := range fields {
+			if strings.HasPrefix(f, "&") {
+				f = strings.TrimPrefix(f, "&")
+			}
+			if i := strings.IndexAny(f, ":"); i != -1 {
+				f = f[:i]
+			}
+			params = append(params, f)
+		}
+		if len(params) > 0 {
+			return params
+		}
+	}
+	return nil
 }
 
 func parseCljParams(detail *string) []string {
