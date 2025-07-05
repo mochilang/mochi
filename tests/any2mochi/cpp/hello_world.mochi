@@ -1,1 +1,4 @@
-fun main(): int {}
+fun main(): int {
+  print((string("Hello, world")))
+  return 0
+}

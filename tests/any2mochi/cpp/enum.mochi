@@ -4,4 +4,3 @@ type Color {
   Blue
 }
 fun main(): int {}
-
