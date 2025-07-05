@@ -1,5 +1,4 @@
-tests/compiler/go/dataset_sort_take_limit.go.out:76: unsupported generics
->>> 75:    
-76:>>> func _paginate[T any](src []T, skip, take int) []T {
-77:    if skip > 0 {
-78:    if skip < len(src) {
+tests/compiler/go/dataset_sort_take_limit.go.out:38: unsupported assignment
+>>> 37:    sort.Slice(pairs, func(i, j int) bool {
+38:>>> a, b := pairs[i].key, pairs[j].key
+39:    switch av := a.(type) {
