@@ -13,6 +13,9 @@ func ConvertHs(src string) ([]byte, error) {
 	ls := Servers["hs"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
+		if out := parseSimpleHs(src); out != nil {
+			return out, nil
+		}
 		return nil, err
 	}
 	if len(diags) > 0 {
@@ -21,6 +24,9 @@ func ConvertHs(src string) ([]byte, error) {
 	var out strings.Builder
 	writeHsSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
+		if simple := parseSimpleHs(src); simple != nil {
+			return simple, nil
+		}
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
@@ -290,4 +296,57 @@ func parseHsVarSig(sig string) (string, bool) {
 		return "", false
 	}
 	return mapHsType(sig), true
+}
+
+// parseSimpleHs converts trivial Haskell programs without relying on
+// the language server. It handles single line function definitions and
+// very small "main" functions using "putStrLn".
+func parseSimpleHs(src string) []byte {
+	lines := strings.Split(src, "\n")
+	for i, line := range lines {
+		l := strings.TrimSpace(line)
+		if strings.HasPrefix(l, "main =") {
+			body := strings.TrimSpace(strings.TrimPrefix(l, "main ="))
+			if body == "do" && i+1 < len(lines) {
+				next := strings.TrimSpace(lines[i+1])
+				if strings.HasPrefix(next, "putStrLn") {
+					arg := strings.TrimSpace(strings.TrimPrefix(next, "putStrLn"))
+					arg = strings.Trim(arg, "()")
+					return []byte("print(" + arg + ")")
+				}
+			} else if strings.HasPrefix(body, "putStrLn") {
+				arg := strings.TrimSpace(strings.TrimPrefix(body, "putStrLn"))
+				arg = strings.Trim(arg, "()")
+				return []byte("print(" + arg + ")")
+			}
+		}
+
+		if parts := strings.SplitN(l, "=", 2); len(parts) == 2 {
+			left := strings.Fields(strings.TrimSpace(parts[0]))
+			if len(left) == 0 {
+				continue
+			}
+			name := left[0]
+			params := left[1:]
+			body := strings.TrimSpace(parts[1])
+			if strings.HasPrefix(body, "do") {
+				continue
+			}
+			var out strings.Builder
+			out.WriteString("fun ")
+			out.WriteString(name)
+			out.WriteByte('(')
+			for j, p := range params {
+				if j > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p)
+			}
+			out.WriteString(") { ")
+			out.WriteString(body)
+			out.WriteString(" }")
+			return []byte(out.String())
+		}
+	}
+	return nil
 }

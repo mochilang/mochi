@@ -37,7 +37,9 @@ include:
 - Grouped dataset queries with aggregates like `tpc-h/q1.mochi`
 - Test blocks with `expect` statements
 - Conversion from Haskell source with `any2mochi` supports extracting simple
-  function bodies defined with `=`
+  function bodies defined with `=`. When the Haskell language server is not
+  available `any2mochi` falls back to a tiny regex based parser to handle trivial
+  one-line definitions such as `main = putStrLn "hi"`.
 
 ## Unsupported Features
 
