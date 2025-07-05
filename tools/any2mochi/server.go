@@ -83,6 +83,9 @@ func EnsureServer(name string) error {
 		{"go", []string{"install", name + "@latest"}},
 		{"dotnet", []string{"tool", "install", "-g", name}},
 		{"dotnet", []string{"tool", "update", "-g", name}},
+		{"apt-get", []string{"install", "-y", name}},
+		{"brew", []string{"install", name}},
+		{"pacman", []string{"-Sy", name}},
 	}
 	for _, inst := range installers {
 		if _, err := exec.LookPath(inst.bin); err == nil {

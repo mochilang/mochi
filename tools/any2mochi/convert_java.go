@@ -47,12 +47,30 @@ func ConvertJava(src string) ([]byte, error) {
 		case strings.HasPrefix(line, "public class "):
 			// ignore
 			continue
+		case strings.HasPrefix(line, "public static class ") && strings.HasSuffix(line, "{"):
+			line = strings.TrimPrefix(line, "public ")
+			fallthrough
+		case strings.HasPrefix(line, "private static class ") && strings.HasSuffix(line, "{"):
+			line = strings.TrimPrefix(line, "private ")
+			fallthrough
+		case strings.HasPrefix(line, "protected static class ") && strings.HasSuffix(line, "{"):
+			line = strings.TrimPrefix(line, "protected ")
+			fallthrough
 		case strings.HasPrefix(line, "static class ") && strings.HasSuffix(line, "{"):
 			name := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(line, "static class "), "{"))
 			structFields[name] = []string{}
 			currentStruct = name
 			write("type " + name + " {")
 			indent++
+		case strings.HasPrefix(line, "public static ") && strings.HasSuffix(line, "{"):
+			line = strings.TrimPrefix(line, "public ")
+			fallthrough
+		case strings.HasPrefix(line, "private static ") && strings.HasSuffix(line, "{"):
+			line = strings.TrimPrefix(line, "private ")
+			fallthrough
+		case strings.HasPrefix(line, "protected static ") && strings.HasSuffix(line, "{"):
+			line = strings.TrimPrefix(line, "protected ")
+			fallthrough
 		case currentStruct != "" && line == "}":
 			indent--
 			write("}")
@@ -116,29 +134,49 @@ func ConvertJava(src string) ([]byte, error) {
 			indent--
 			write("else {")
 			indent++
-		case strings.HasPrefix(line, "while (") && strings.HasSuffix(line, ") {"):
-			cond := strings.TrimSuffix(strings.TrimPrefix(line, "while ("), ") {")
-			write("while " + convertJavaExpr(cond, structFields) + " {")
-			indent++
-		case strings.HasPrefix(line, "for (") && strings.HasSuffix(line, ") {"):
-			// support: for (int i = a; i < b; i++) {
-			re := regexp.MustCompile(`for \(int (\w+) = ([^;]+); \w+ < ([^;]+); \w+\+\+\) {`)
-			if m := re.FindStringSubmatch(line); m != nil {
-				write("for " + m[1] + " in " + convertJavaExpr(m[2], structFields) + ".." + convertJavaExpr(m[3], structFields) + " {")
-				indent++
-				continue
+		case strings.HasPrefix(line, "while") && strings.HasSuffix(line, "{"):
+			if open := strings.Index(line, "("); open >= 0 {
+				if close := strings.LastIndex(line, ") {"); close > open {
+					cond := strings.TrimSpace(line[open+1 : close])
+					write("while " + convertJavaExpr(cond, structFields) + " {")
+					indent++
+					continue
+				}
 			}
-			re = regexp.MustCompile(`for \(var ([^:]+) : ([^\)]+)\) {`)
-			if m := re.FindStringSubmatch(line); m != nil {
-				name := strings.TrimSpace(m[1])
+			return nil, fmt.Errorf("unsupported line: %s", line)
+		case strings.HasPrefix(line, "for (") && strings.HasSuffix(line, ") {"):
+			inner := strings.TrimSuffix(strings.TrimPrefix(line, "for ("), ") {")
+			if strings.Contains(inner, ":") {
+				parts := strings.SplitN(inner, ":", 2)
+				name := strings.TrimSpace(parts[0])
 				if strings.HasPrefix(name, "_") {
 					name = "_"
 				}
-				expr := convertJavaExpr(strings.TrimSpace(m[2]), structFields)
+				expr := convertJavaExpr(strings.TrimSpace(parts[1]), structFields)
 				expr = strings.TrimSuffix(expr, ".keySet()")
 				write("for " + name + " in " + expr + " {")
 				indent++
 				continue
+			}
+			if strings.HasPrefix(inner, "int ") && strings.Contains(inner, ";") {
+				segs := strings.SplitN(inner, ";", 3)
+				if len(segs) == 3 && strings.Contains(segs[2], "++") {
+					initParts := strings.SplitN(strings.TrimSpace(segs[0]), "=", 2)
+					if len(initParts) == 2 {
+						name := strings.Fields(initParts[0])[1]
+						start := convertJavaExpr(strings.TrimSpace(initParts[1]), structFields)
+						condParts := strings.Fields(strings.TrimSpace(segs[1]))
+						if len(condParts) == 3 && condParts[0] == name {
+							end := convertJavaExpr(strings.TrimSpace(condParts[2]), structFields)
+							if condParts[1] == "<=" {
+								end = end + "+1"
+							}
+							write("for " + name + " in " + start + ".." + end + " {")
+							indent++
+							continue
+						}
+					}
+				}
 			}
 			return nil, fmt.Errorf("unsupported for loop: %s", line)
 		case strings.HasPrefix(line, "System.out.println("):
