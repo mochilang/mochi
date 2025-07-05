@@ -59,12 +59,16 @@ func writeCppSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				}
 				out.WriteString("  ")
 				out.WriteString(c.Name)
+				t := ""
 				if c.Detail != nil {
-					t := mapCppType(*c.Detail)
-					if t != "" {
-						out.WriteString(": ")
-						out.WriteString(t)
-					}
+					t = mapCppType(*c.Detail)
+				}
+				if t == "" {
+					t = cppFieldType(src, c, ls)
+				}
+				if t != "" {
+					out.WriteString(": ")
+					out.WriteString(t)
 				}
 				out.WriteByte('\n')
 			}
@@ -77,6 +81,25 @@ func writeCppSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 			}
 			if len(childSyms) > 0 {
 				writeCppSymbols(out, nameParts, childSyms, src, ls)
+			}
+		case protocol.SymbolKindEnum:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindEnumMember || (c.Kind == protocol.SymbolKindEnum && len(c.Children) == 0) {
+					fmt.Fprintf(out, "  %s\n", c.Name)
+				}
+			}
+			out.WriteString("}\n")
+			var rest []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				if !(c.Kind == protocol.SymbolKindEnumMember || (c.Kind == protocol.SymbolKindEnum && len(c.Children) == 0)) {
+					rest = append(rest, c)
+				}
+			}
+			if len(rest) > 0 {
+				writeCppSymbols(out, nameParts, rest, src, ls)
 			}
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
 			signature := ""
@@ -215,6 +238,8 @@ func mapCppType(typ string) string {
 		return "int"
 	case "float", "double":
 		return "float"
+	case "bool":
+		return "bool"
 	case "char", "char16_t", "char32_t", "std::string", "string":
 		return "string"
 	}
@@ -226,4 +251,24 @@ func mapCppType(typ string) string {
 		return "list<" + inner + ">"
 	}
 	return typ
+}
+
+// cppFieldType attempts to determine the type of a field using hover information
+// from the language server when the document symbol does not include it.
+func cppFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err != nil {
+		return ""
+	}
+	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+		for _, line := range strings.Split(mc.Value, "\n") {
+			if idx := strings.Index(line, ":"); idx != -1 {
+				t := strings.TrimSpace(line[idx+1:])
+				if t != "" {
+					return mapCppType(t)
+				}
+			}
+		}
+	}
+	return ""
 }
