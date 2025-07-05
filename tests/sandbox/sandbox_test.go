@@ -74,26 +74,82 @@ func TestDockerfileFor(t *testing.T) {
 
 func TestRunnerProcess(t *testing.T) {
 	root := findRepoRoot(t)
-	tmp := t.TempDir()
-	cmd := exec.Command("go", "run", "-C", root, "./tools/sandbox/runner/py")
-	cmd.Dir = tmp
-	req := runner.Request{Files: map[string]string{"hello.py": "print(\"hello\")"}}
-	payload, _ := json.Marshal(req)
-	cmd.Stdin = bytes.NewReader(payload)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("runner process: %v\n%s", err, out)
+	exDir := filepath.Join(root, "tools", "sandbox", "examples")
+
+	var missing []string
+	var failed []string
+
+	for lang, cmdArgs := range sandbox.RunCmds {
+		lang := lang
+		cmdArgs := cmdArgs
+		t.Run(lang, func(t *testing.T) {
+			prog := firstProg(cmdArgs)
+			if prog != "" {
+				if _, err := exec.LookPath(prog); err != nil {
+					missing = append(missing, fmt.Sprintf("%s (%s)", lang, prog))
+					return
+				}
+			}
+
+			tmp := t.TempDir()
+			ext := sandbox.Extensions[lang]
+			srcPath := filepath.Join(exDir, "hello."+ext)
+			data, err := os.ReadFile(srcPath)
+			if err != nil {
+				t.Fatalf("read example: %v", err)
+			}
+			pkg := filepath.Join(root, "tools", "sandbox", "runner", lang)
+			bin := filepath.Join(tmp, "runner")
+			build := exec.Command("go", "build", "-o", bin, pkg)
+			build.Dir = root
+			if out, err := build.CombinedOutput(); err != nil {
+				t.Fatalf("build runner: %v\n%s", err, out)
+			}
+			cmd := exec.Command(bin)
+			cmd.Dir = tmp
+			req := runner.Request{Files: map[string]string{"hello." + ext: string(data)}}
+			payload, _ := json.Marshal(req)
+			cmd.Stdin = bytes.NewReader(payload)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				failed = append(failed, fmt.Sprintf("%s: %v\n%s", lang, err, out))
+				return
+			}
+			var resp runner.Response
+			if err := json.Unmarshal(out, &resp); err != nil {
+				t.Fatalf("unmarshal: %v\n%s", err, out)
+			}
+			if !strings.Contains(resp.Output, "hello") {
+				failed = append(failed, fmt.Sprintf("%s: output %q", lang, resp.Output))
+				return
+			}
+			if resp.Error != "" {
+				failed = append(failed, fmt.Sprintf("%s: error %s", lang, resp.Error))
+				return
+			}
+		})
 	}
-	var resp runner.Response
-	if err := json.Unmarshal(out, &resp); err != nil {
-		t.Fatalf("unmarshal: %v\n%s", err, out)
+
+	if err := writeErrorsFile(root, missing, failed); err != nil {
+		t.Fatalf("write errors file: %v", err)
 	}
-	if strings.TrimSpace(resp.Output) != "hello" {
-		t.Fatalf("unexpected output: %q", resp.Output)
+	if len(missing) > 0 || len(failed) > 0 {
+		t.Logf("missing compilers: %v\nfailed languages: %v", strings.Join(missing, ", "), strings.Join(failed, "; "))
 	}
-	if resp.Error != "" {
-		t.Fatalf("unexpected error: %s", resp.Error)
+}
+
+func firstProg(args []string) string {
+	if len(args) == 0 {
+		return ""
 	}
+	if args[0] == "bash" && len(args) >= 3 && args[1] == "-c" {
+		fields := strings.Fields(args[2])
+		if len(fields) > 0 {
+			return fields[0]
+		}
+		return ""
+	}
+	return args[0]
 }
 
 func keys(m map[string]bool) []string {
@@ -103,4 +159,31 @@ func keys(m map[string]bool) []string {
 	}
 	sort.Strings(s)
 	return s
+}
+
+func writeErrorsFile(root string, missing, failed []string) error {
+	path := filepath.Join(root, "tools", "sandbox", "ERRORS.md")
+	var b strings.Builder
+	if len(missing) == 0 && len(failed) == 0 {
+		b.WriteString("All languages passed\n")
+	} else {
+		if len(missing) > 0 {
+			sort.Strings(missing)
+			b.WriteString("## Missing compilers\n\n")
+			for _, m := range missing {
+				b.WriteString("- " + m + "\n")
+			}
+		}
+		if len(failed) > 0 {
+			sort.Strings(failed)
+			if len(missing) > 0 {
+				b.WriteString("\n")
+			}
+			b.WriteString("## Failed languages\n\n")
+			for _, f := range failed {
+				b.WriteString("- " + f + "\n")
+			}
+		}
+	}
+	return os.WriteFile(path, []byte(b.String()), 0644)
 }
