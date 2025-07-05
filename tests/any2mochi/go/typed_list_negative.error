@@ -1,5 +1,5 @@
-tests/compiler/go/typed_list_negative.go.out:16: unsupported statement *ast.SwitchStmt
->>> 15:    func formatDuration(d time.Duration) string {
-16:>>> switch {
-17:    case d < time.Microsecond:
-18:    return fmt.Sprintf("%dns", d.Nanoseconds())
+tests/compiler/go/typed_list_negative.go.out:47: unsupported declaration
+>>> 46:    
+47:>>> var xs []int = []int{(-1), 0, 1}
+48:    
+49:    func main() {
