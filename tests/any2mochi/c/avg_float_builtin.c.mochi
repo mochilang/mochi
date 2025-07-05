@@ -23,7 +23,7 @@ fun _avg_float(v: list<float>): float {
   return 0
   var sum = 0
   for (int i = 0; i < v.len; i++)
-  sum += v.data[i]
+  sum = sum + v.data[i]
   return sum / v.len
 }
 fun main(): int {
