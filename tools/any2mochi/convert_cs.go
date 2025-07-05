@@ -396,15 +396,65 @@ func convertCsBody(src string, r protocol.Range) []string {
 	var out []string
 	for _, l := range bodyLines {
 		l = strings.TrimSpace(l)
-		l = strings.TrimSuffix(l, ";")
 		if l == "" {
 			continue
 		}
-		if strings.HasPrefix(l, "Console.WriteLine(") {
-			l = "print(" + strings.TrimPrefix(strings.TrimSuffix(l, ")"), "Console.WriteLine(") + ")"
+		if strings.HasSuffix(l, ";") {
+			l = strings.TrimSuffix(l, ";")
 		}
-		l = strings.ReplaceAll(l, "long ", "")
-		l = strings.ReplaceAll(l, "int ", "")
+		switch {
+		case strings.HasPrefix(l, "Console.WriteLine("):
+			l = "print(" + strings.TrimPrefix(strings.TrimSuffix(l, ")"), "Console.WriteLine(") + ")"
+		case strings.HasPrefix(l, "return "):
+			l = "return " + strings.TrimSpace(strings.TrimPrefix(l, "return "))
+		case strings.HasPrefix(l, "for (") && strings.Contains(l, ";") && strings.Contains(l, ")"):
+			l = strings.TrimPrefix(l, "for (")
+			l = strings.TrimSuffix(l, ") {")
+			parts := strings.Split(l, ";")
+			if len(parts) >= 2 {
+				init := strings.TrimSpace(parts[0])
+				cond := strings.TrimSpace(parts[1])
+				if strings.HasPrefix(init, "var ") {
+					init = strings.TrimPrefix(init, "var ")
+				}
+				if eq := strings.Index(init, "="); eq != -1 {
+					name := strings.TrimSpace(init[:eq])
+					startVal := strings.TrimSpace(init[eq+1:])
+					startVal = strings.TrimSuffix(startVal, "L")
+					endVal := ""
+					if idx := strings.Index(cond, "<"); idx != -1 {
+						endVal = strings.TrimSpace(cond[idx+1:])
+						endVal = strings.TrimSuffix(endVal, "L")
+					}
+					l = fmt.Sprintf("for %s in %s..%s {", name, startVal, endVal)
+				}
+			}
+		case strings.HasPrefix(l, "while ("):
+			l = strings.TrimPrefix(l, "while (")
+			l = strings.TrimSuffix(l, ") {")
+			l = strings.ReplaceAll(l, "L", "")
+			l = "while " + l + " {"
+		case strings.HasPrefix(l, "if ("):
+			l = strings.TrimPrefix(l, "if (")
+			l = strings.TrimSuffix(l, ") {")
+			l = strings.ReplaceAll(l, "L", "")
+			l = "if " + l + " {"
+		case l == "}" || l == "} else {":
+			// keep as is
+		default:
+			for _, t := range []string{"long ", "int ", "float ", "double ", "string ", "bool "} {
+				if strings.HasPrefix(l, t) {
+					l = strings.TrimPrefix(l, t)
+					if strings.HasPrefix(t, "string") {
+						l = "var " + l
+					} else {
+						l = "var " + strings.ReplaceAll(l, "L", "")
+					}
+					break
+				}
+			}
+			l = strings.ReplaceAll(l, "L", "")
+		}
 		out = append(out, l)
 	}
 	return out
