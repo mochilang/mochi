@@ -35,6 +35,11 @@ func ConvertCsFile(path string) ([]byte, error) {
 	return ConvertCs(string(data))
 }
 
+type csParam struct {
+	name string
+	typ  string
+}
+
 func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
@@ -85,7 +90,11 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				if i > 0 {
 					out.WriteString(", ")
 				}
-				out.WriteString(p)
+				out.WriteString(p.name)
+				if p.typ != "" {
+					out.WriteString(": ")
+					out.WriteString(p.typ)
+				}
 			}
 			out.WriteByte(')')
 			if ret != "" {
@@ -132,7 +141,7 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 	}
 }
 
-func parseCsSignature(detail *string) ([]string, string) {
+func parseCsSignature(detail *string) ([]csParam, string) {
 	if detail == nil {
 		return nil, ""
 	}
@@ -158,34 +167,85 @@ func parseCsSignature(detail *string) ([]string, string) {
 		ret = mapCsType(parts[0])
 	}
 	paramsPart := strings.TrimSpace(d[open+1 : close])
-	params := []string{}
+	var params []csParam
 	if paramsPart != "" {
-		rawParams := strings.Split(paramsPart, ",")
+		rawParams := splitArgs(paramsPart)
 		for _, p := range rawParams {
-			p = strings.TrimSpace(p)
-			if p == "" {
-				continue
-			}
-			fields := strings.Fields(p)
-			if len(fields) == 0 {
-				continue
-			}
-			name := fields[len(fields)-1]
-			if eq := strings.Index(name, "="); eq != -1 {
-				name = name[:eq]
-			}
-			name = strings.Trim(name, "*&[]")
+			typ, name := parseCsParam(p)
 			if name != "" {
-				params = append(params, name)
+				params = append(params, csParam{name: name, typ: typ})
 			}
 		}
 	}
 	return params, ret
 }
 
+func parseCsParam(p string) (string, string) {
+	p = strings.TrimSpace(p)
+	if p == "" {
+		return "", ""
+	}
+	if eq := strings.Index(p, "="); eq != -1 {
+		p = strings.TrimSpace(p[:eq])
+	}
+	for {
+		switch {
+		case strings.HasPrefix(p, "ref "):
+			p = strings.TrimSpace(strings.TrimPrefix(p, "ref "))
+		case strings.HasPrefix(p, "out "):
+			p = strings.TrimSpace(strings.TrimPrefix(p, "out "))
+		case strings.HasPrefix(p, "in "):
+			p = strings.TrimSpace(strings.TrimPrefix(p, "in "))
+		case strings.HasPrefix(p, "params "):
+			p = strings.TrimSpace(strings.TrimPrefix(p, "params "))
+		case strings.HasPrefix(p, "this "):
+			p = strings.TrimSpace(strings.TrimPrefix(p, "this "))
+		default:
+			goto done
+		}
+	}
+done:
+	for strings.HasPrefix(p, "[") {
+		if idx := strings.Index(p, "]"); idx != -1 {
+			p = strings.TrimSpace(p[idx+1:])
+		} else {
+			break
+		}
+	}
+	typ, name := splitTypeName(p)
+	name = strings.Trim(name, "*&[]")
+	typ = mapCsType(typ)
+	return typ, name
+}
+
+func splitTypeName(s string) (string, string) {
+	depth := 0
+	for i := len(s) - 1; i >= 0; i-- {
+		switch s[i] {
+		case '>':
+			depth++
+		case '<':
+			depth--
+		case ' ':
+			if depth == 0 {
+				return strings.TrimSpace(s[:i]), strings.TrimSpace(s[i+1:])
+			}
+		}
+	}
+	return "", strings.TrimSpace(s)
+}
+
 func mapCsType(t string) string {
+	t = strings.TrimSpace(t)
 	for strings.HasSuffix(t, "[]") {
-		t = strings.TrimSuffix(t, "[]")
+		inner := mapCsType(strings.TrimSuffix(t, "[]"))
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
+	if idx := strings.LastIndex(t, "."); idx != -1 {
+		t = t[idx+1:]
 	}
 	switch t {
 	case "void", "":
@@ -198,7 +258,39 @@ func mapCsType(t string) string {
 		return "string"
 	case "bool":
 		return "bool"
-	default:
-		return ""
 	}
+	if strings.HasSuffix(t, ">") {
+		if open := strings.Index(t, "<"); open != -1 {
+			outer := t[:open]
+			inner := t[open+1 : len(t)-1]
+			args := splitArgs(inner)
+			switch outer {
+			case "List", "IEnumerable", "IList":
+				a := "any"
+				if len(args) > 0 {
+					if at := mapCsType(args[0]); at != "" {
+						a = at
+					}
+				}
+				return "list<" + a + ">"
+			case "Dictionary", "IDictionary":
+				if len(args) == 2 {
+					k := mapCsType(args[0])
+					if k == "" {
+						k = "any"
+					}
+					v := mapCsType(args[1])
+					if v == "" {
+						v = "any"
+					}
+					return "map<" + k + ", " + v + ">"
+				}
+			case "Nullable":
+				if len(args) == 1 {
+					return mapCsType(args[0])
+				}
+			}
+		}
+	}
+	return ""
 }
