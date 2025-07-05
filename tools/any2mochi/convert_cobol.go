@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -10,8 +11,12 @@ import (
 
 // ConvertCobol converts COBOL source code to Mochi using the language server.
 func ConvertCobol(src string) ([]byte, error) {
+	return convertCobol(src, "")
+}
+
+func convertCobol(src, root string) ([]byte, error) {
 	ls := Servers["cobol"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +38,7 @@ func ConvertCobolFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ConvertCobol(string(data))
+	return convertCobol(string(data), filepath.Dir(path))
 }
 
 func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, prefix []string, syms []protocol.DocumentSymbol) {
@@ -76,7 +81,7 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 			}
 			out.WriteString(" {}\n")
 
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty:
+		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty, protocol.SymbolKindEnumMember:
 			typ := ""
 			if s.Detail != nil {
 				typ = parseCobolType(*s.Detail)

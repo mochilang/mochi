@@ -27,24 +27,24 @@ type Compiler struct {
 	funcDecls     []string
 	currentFun    string
 	params        map[string]string
-        listLens      map[string]int
-        varFuncs      map[string]string
-        lambdaCounter int
-        dynamicLens   map[string]string
-       vars          map[string]string
+	listLens      map[string]int
+	varFuncs      map[string]string
+	lambdaCounter int
+	dynamicLens   map[string]string
+	vars          map[string]string
 }
 
 // New creates a new COBOL compiler instance.
 func New(env *types.Env) *Compiler {
-        return &Compiler{
-                env:         env,
-                funcs:       map[string]int{},
-                params:      map[string]string{},
-                listLens:    map[string]int{},
-                varFuncs:    map[string]string{},
-                dynamicLens: map[string]string{},
-               vars:        map[string]string{},
-        }
+	return &Compiler{
+		env:         env,
+		funcs:       map[string]int{},
+		params:      map[string]string{},
+		listLens:    map[string]int{},
+		varFuncs:    map[string]string{},
+		dynamicLens: map[string]string{},
+		vars:        map[string]string{},
+	}
 }
 
 // Compile translates prog into COBOL source code.
@@ -142,13 +142,13 @@ func (c *Compiler) compileNode(n *ast.Node) {
 	case "expect":
 		c.compileExpect(n)
 
-        case "test":
-                c.compileTest(n)
+	case "test":
+		c.compileTest(n)
 
-        case "update":
-                c.compileUpdate(n)
+	case "update":
+		c.compileUpdate(n)
 
-        }
+	}
 }
 
 func (c *Compiler) compileExpect(n *ast.Node) {
@@ -973,17 +973,17 @@ func (c *Compiler) expr(n *ast.Node) string {
 			return "1"
 		}
 		return "0"
-        case "selector":
-                full := selectorName(n)
-                if len(n.Children) == 0 {
-                        if v, ok := c.params[full]; ok {
-                                return v
-                        }
-                        if v, ok := c.vars[full]; ok {
-                                return v
-                        }
-                }
-                return full
+	case "selector":
+		full := selectorName(n)
+		if len(n.Children) == 0 {
+			if v, ok := c.params[full]; ok {
+				return v
+			}
+			if v, ok := c.vars[full]; ok {
+				return v
+			}
+		}
+		return full
 	case "struct":
 		return c.compileStructExpr(n)
 	case "load":
@@ -1173,6 +1173,20 @@ func (c *Compiler) expr(n *ast.Node) string {
 			c.writeln(fmt.Sprintf("    IF %s < 0", tmp))
 			c.indent++
 			c.writeln(fmt.Sprintf("ADD %d TO %s", l, tmp))
+			c.indent--
+			c.writeln("    END-IF")
+			idx = tmp
+		} else if lenVar, ok := c.dynamicLens[arr]; ok {
+			tmp := c.newTemp()
+			c.declare(fmt.Sprintf("01 %s PIC S9.", tmp))
+			if isSimpleExpr(n.Children[1]) {
+				c.writeln(fmt.Sprintf("    MOVE %s TO %s", idx, tmp))
+			} else {
+				c.writeln(fmt.Sprintf("    COMPUTE %s = %s", tmp, idx))
+			}
+			c.writeln(fmt.Sprintf("    IF %s < 0", tmp))
+			c.indent++
+			c.writeln(fmt.Sprintf("ADD %s TO %s", lenVar, tmp))
 			c.indent--
 			c.writeln("    END-IF")
 			idx = tmp

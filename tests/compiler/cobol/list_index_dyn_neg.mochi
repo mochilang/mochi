@@ -1,0 +1,2 @@
+let xs = from x in [1, 2, 3, 4] where x > 2 select x
+print(xs[-1])
