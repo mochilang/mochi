@@ -229,19 +229,14 @@ let count (xs: seq<'T>) : int =
   member this.size = this.Items.Count`
 
 	helperGroupBy = `let _group_by (src: 'T list) (keyfn: 'T -> obj) : _Group<'T> list =
-  let groups = System.Collections.Generic.Dictionary<string,_Group<'T>>()
-  let order = System.Collections.Generic.List<string>()
-  for it in src do
-    let key = keyfn it
-    let ks = string key
-    let mutable g = Unchecked.defaultof<_Group<'T>>
-    if groups.TryGetValue(ks, &g) then ()
-    else
-      g <- _Group<'T>(key)
-      groups[ks] <- g
-      order.Add(ks)
-    g.Items.Add(it)
-  [ for ks in order -> groups[ks] ]`
+  src
+  |> Seq.groupBy keyfn
+  |> Seq.map (fun (k, items) ->
+      let g = _Group<'T>(k)
+      for it in items do
+        g.Items.Add(it)
+      g)
+  |> Seq.toList`
 
 	helperLeftJoin = `let _left_join (a: 'L[]) (b: 'R[]) (pred: 'L -> 'R -> bool) : ('L option * 'R option)[] =
   [|
