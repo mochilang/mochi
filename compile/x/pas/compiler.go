@@ -506,7 +506,36 @@ func (c *Compiler) mustExpr(e *parser.Expr) string {
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
-		return fmt.Errorf("union types not supported")
+		hasFields := false
+		for _, v := range t.Variants {
+			if len(v.Fields) > 0 {
+				hasFields = true
+				break
+			}
+		}
+		if hasFields {
+			return fmt.Errorf("union types not supported")
+		}
+		name := sanitizeName(t.Name)
+		c.writeln(fmt.Sprintf("type %s = (", name))
+		for i, v := range t.Variants {
+			if i > 0 {
+				c.buf.WriteString(", ")
+			}
+			c.buf.WriteString(sanitizeName(v.Name))
+		}
+		c.writeln(");")
+		if c.env != nil {
+			variants := map[string]types.StructType{}
+			for _, v := range t.Variants {
+				st := types.StructType{Name: v.Name, Fields: map[string]types.Type{}, Order: []string{}}
+				variants[v.Name] = st
+				c.env.SetStruct(v.Name, st)
+				c.env.SetFuncType(v.Name, types.FuncType{Params: nil, Return: types.UnionType{Name: t.Name}})
+			}
+			c.env.SetUnion(t.Name, types.UnionType{Name: t.Name, Variants: variants})
+		}
+		return nil
 	}
 	name := sanitizeName(t.Name)
 	c.writeln(fmt.Sprintf("type %s = record", name))
@@ -747,6 +776,8 @@ func typeString(t types.Type) string {
 		mt := tt
 		return fmt.Sprintf("specialize TFPGMap<%s, %s>", typeString(mt.Key), typeString(mt.Value))
 	case types.StructType:
+		return sanitizeName(tt.Name)
+	case types.UnionType:
 		return sanitizeName(tt.Name)
 	case types.AnyType:
 		return "Variant"
@@ -1408,6 +1439,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.Struct != nil:
+		if ut, ok := c.expected.(types.UnionType); ok && len(p.Struct.Fields) == 0 {
+			if _, ok := ut.Variants[p.Struct.Name]; ok {
+				return sanitizeName(p.Struct.Name), nil
+			}
+		}
 		typ := sanitizeName(p.Struct.Name)
 		tmp := c.newTypedVar(typ)
 		for _, f := range p.Struct.Fields {

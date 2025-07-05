@@ -105,6 +105,28 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				}
 				out.WriteString("}\n")
 			}
+		case protocol.SymbolKindEnum:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindEnumMember {
+					out.WriteString("  ")
+					out.WriteString(c.Name)
+					out.WriteByte('\n')
+				}
+			}
+			out.WriteString("}\n")
+			var rest []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindEnumMember {
+					rest = append(rest, c)
+				}
+			}
+			if len(rest) > 0 {
+				writePasSymbols(out, nameParts, rest, src, ls)
+			}
+			continue
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
