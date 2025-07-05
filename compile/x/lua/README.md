@@ -48,6 +48,7 @@ Mochi stubs using the Lua language server.
 - Top-level functions and methods with parameter and return types
 - Top-level variables with types inferred from hover information
 - Simple `---@class` tables emitted as `type` declarations
+- Basic function bodies including assignments, conditionals and loops
 
 ### Unsupported
 
