@@ -1,0 +1,8 @@
+generated code does not match expected
+--- expected
++++ generated
+@@ -1,2 +1,2 @@
+-let square = fun(x: int): int => x * x
+-print(square(6))  // 36
++let square = fun(x) => x * x
++print(square(6))

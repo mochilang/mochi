@@ -12,6 +12,8 @@ class Converter(ast.NodeVisitor):
         self.dataclasses: set[str] = set()
         self.seen_assigns: set[str] = set()
         self.current_callable: tuple[list[str], str] | None = None
+        self.structs: dict[str, list[tuple[str, str]]] = {}
+        self.unions: dict[str, list[tuple[str, list[tuple[str, str]]]]] = {}
 
     def emit(self, line: str) -> None:
         self.lines.append("  " * self.indent + line)
@@ -148,6 +150,54 @@ class Converter(ast.NodeVisitor):
     # ----- visitors for statements -----
 
     def visit_Module(self, node: ast.Module) -> None:
+        # first collect dataclass information
+        for stmt in node.body:
+            if isinstance(stmt, ast.ClassDef):
+                dec_names = [
+                    getattr(d, "id", None) or getattr(d, "attr", None)
+                    for d in stmt.decorator_list
+                ]
+                if "dataclass" not in dec_names:
+                    continue
+                fields: list[tuple[str, str]] = []
+                for sub in stmt.body:
+                    if isinstance(sub, ast.AnnAssign) and isinstance(
+                        sub.target, ast.Name
+                    ):
+                        fields.append(
+                            (sub.target.id, self.convert_type(sub.annotation))
+                        )
+                base = stmt.bases[0].id if stmt.bases else None
+                self.dataclasses.add(stmt.name)
+                if base:
+                    self.unions.setdefault(base, []).append((stmt.name, fields))
+                else:
+                    self.structs[stmt.name] = fields
+
+        # emit structs
+        for name, fields in self.structs.items():
+            self.emit(f"type {name} {{")
+            self.indent += 1
+            for n, t in fields:
+                self.emit(f"{n}: {t}")
+            self.indent -= 1
+            self.emit("}")
+
+        # emit unions
+        for base, variants in self.unions.items():
+            self.emit(f"type {base} =")
+            self.indent += 1
+            for i, (name, fields) in enumerate(variants):
+                field_str = ", ".join(f"{n}: {t}" for n, t in fields)
+                if field_str:
+                    self.emit(
+                        f"{name}({field_str})" + (" |" if i < len(variants) - 1 else "")
+                    )
+                else:
+                    self.emit(f"{name} {{}}" + (" |" if i < len(variants) - 1 else ""))
+            self.indent -= 1
+
+        # now handle remaining statements
         for stmt in node.body:
             if (
                 isinstance(stmt, ast.If)
@@ -155,7 +205,6 @@ class Converter(ast.NodeVisitor):
                 and isinstance(stmt.test.left, ast.Name)
                 and stmt.test.left.id == "__name__"
             ):
-                # skip `if __name__ == "__main__":` blocks
                 continue
             if isinstance(stmt, ast.FunctionDef) and stmt.name == "main":
                 for sub in stmt.body:
@@ -163,7 +212,7 @@ class Converter(ast.NodeVisitor):
                         continue
                     self.visit(sub)
                 continue
-            if isinstance(stmt, (ast.ClassDef, ast.FunctionDef)):
+            if isinstance(stmt, ast.FunctionDef):
                 self.visit(stmt)
                 continue
 
