@@ -234,3 +234,14 @@ unsupported include:
 - Dataset queries with outer joins or complex aggregation
 
 Programs relying on these constructs will fail to compile.
+
+## COBOL to Mochi converter
+
+The repository also includes a minimal converter in `tools/any2mochi` that can
+translate simple COBOL programs back to Mochi using the language server. The
+converter currently understands only a handful of statements:
+
+- procedure bodies containing `DISPLAY` statements are mapped to `print` calls
+
+Additional COBOL constructs are ignored. The converter is intentionally
+lightweight and meant only as a demonstration.
