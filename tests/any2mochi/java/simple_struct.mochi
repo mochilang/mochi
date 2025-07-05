@@ -1,0 +1,9 @@
+type Person {
+  name: string
+  age: int
+}
+fun main() {
+  var p = Person { name: "Alice", age: 30 }
+  print(p.name)
+}
+
