@@ -47,6 +47,17 @@ func TestConvertCompile_Golden(t *testing.T) {
 		_ = gocode.EnsureGopls()
 		runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/go"), "*.go.out", ConvertGoFile, ".mochi.out", ".error")
 	})
+	t.Run("python", func(t *testing.T) {
+		_ = gocode.EnsureGopls()
+		_ = pycode.EnsurePyright()
+		runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/py"), "*.py.out", ConvertPythonFile, ".mochi.out", ".error")
+	})
+	t.Run("ts", func(t *testing.T) {
+		_ = gocode.EnsureGopls()
+		_ = tscode.EnsureTSLanguageServer()
+		runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertTypeScriptFile, ".mochi.out", ".error")
+		runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertTypeScriptFile, ".mochi.out", ".error")
+	})
 }
 
 func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), outExt, errExt string) {
@@ -58,7 +69,17 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 		t.Fatalf("no files: %s", filepath.Join(dir, pattern))
 	}
 	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+		var name string
+		switch {
+		case strings.HasSuffix(src, ".go.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".go.out")
+		case strings.HasSuffix(src, ".py.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".py.out")
+		case strings.HasSuffix(src, ".ts.out"):
+			name = strings.TrimSuffix(filepath.Base(src), ".ts.out")
+		default:
+			name = strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+		}
 		t.Run(name, func(t *testing.T) {
 			mochiSrc, err := convert(src)
 			root := rootDir(t)
@@ -105,7 +126,16 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 									if !bytes.Equal(gotNorm, normalizeOutput(rootDir(t), want)) {
 										t.Errorf("golden mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotNorm, want)
 									}
-									orig, oErr := os.ReadFile(strings.TrimSuffix(src, filepath.Ext(src)) + ".out")
+									base := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+									switch {
+									case strings.HasSuffix(src, ".go.out"):
+										base = strings.TrimSuffix(base, ".go")
+									case strings.HasSuffix(src, ".py.out"):
+										base = strings.TrimSuffix(base, ".py")
+									case strings.HasSuffix(src, ".ts.out"):
+										base = strings.TrimSuffix(base, ".ts")
+									}
+									orig, oErr := os.ReadFile(filepath.Join(filepath.Dir(src), base+".out"))
 									if oErr == nil {
 										wantOrig := normalizeOutput(rootDir(t), bytes.TrimSpace(orig))
 										if !bytes.Equal(gotNorm, wantOrig) {
