@@ -191,6 +191,73 @@ func convertZigExpr(expr string) string {
 	return expr
 }
 
+func parseZigBlockHeader(h string) string {
+	switch {
+	case strings.HasPrefix(h, "if "):
+		cond := strings.TrimSpace(strings.TrimPrefix(h, "if "))
+		cond = strings.Trim(cond, "()")
+		return "if " + convertZigExpr(cond)
+	case strings.HasPrefix(h, "else if "):
+		cond := strings.TrimSpace(strings.TrimPrefix(h, "else if "))
+		cond = strings.Trim(cond, "()")
+		return "else if " + convertZigExpr(cond)
+	case h == "else":
+		return "else"
+	case strings.HasPrefix(h, "while "):
+		cond := strings.TrimSpace(strings.TrimPrefix(h, "while "))
+		cond = strings.Trim(cond, "()")
+		return "while " + convertZigExpr(cond)
+	case strings.HasPrefix(h, "for "):
+		inner := strings.TrimSpace(strings.TrimPrefix(h, "for"))
+		if strings.HasPrefix(inner, "(") {
+			close := strings.Index(inner, ")")
+			if close != -1 {
+				coll := strings.TrimSpace(inner[1:close])
+				after := strings.TrimSpace(inner[close+1:])
+				name := "it"
+				if strings.HasPrefix(after, "|") {
+					if end := strings.Index(after[1:], "|"); end != -1 {
+						name = strings.TrimSpace(after[1 : 1+end])
+					}
+				}
+				return "for " + name + " in " + convertZigExpr(coll)
+			}
+		}
+		return convertZigExpr(h)
+	}
+	return convertZigExpr(h)
+}
+
+func parseZigStmt(l string) string {
+	if strings.HasSuffix(l, ";") {
+		l = strings.TrimSuffix(l, ";")
+	}
+	switch {
+	case strings.HasPrefix(l, "return "):
+		expr := strings.TrimSpace(l[len("return "):])
+		return "return " + convertZigExpr(expr)
+	case strings.HasPrefix(l, "var "):
+		parts := strings.SplitN(l[4:], "=", 2)
+		if len(parts) == 2 {
+			name := strings.Fields(parts[0])[0]
+			expr := convertZigExpr(parts[1])
+			return "let " + name + " = " + expr
+		}
+	case strings.HasPrefix(l, "const "):
+		parts := strings.SplitN(l[6:], "=", 2)
+		if len(parts) == 2 {
+			name := strings.Fields(parts[0])[0]
+			expr := convertZigExpr(parts[1])
+			return "let " + name + " = " + expr
+		}
+	case l == "break":
+		return "break"
+	case l == "continue":
+		return "continue"
+	}
+	return convertZigExpr(l)
+}
+
 func parseZigFunctionBody(src string, sym protocol.DocumentSymbol) []string {
 	code := extractRange(src, sym.Range)
 	start := strings.Index(code, "{")
@@ -201,35 +268,35 @@ func parseZigFunctionBody(src string, sym protocol.DocumentSymbol) []string {
 	body := code[start+1 : end]
 	lines := strings.Split(body, "\n")
 	var out []string
+	indent := 0
 	for _, line := range lines {
 		l := strings.TrimSpace(line)
 		if l == "" {
 			continue
 		}
-		if strings.HasSuffix(l, ";") {
-			l = strings.TrimSuffix(l, ";")
-		}
-		switch {
-		case strings.HasPrefix(l, "return "):
-			expr := strings.TrimSpace(l[len("return "):])
-			out = append(out, "return "+convertZigExpr(expr))
-		case strings.HasPrefix(l, "var "):
-			parts := strings.SplitN(l[4:], "=", 2)
-			if len(parts) == 2 {
-				name := strings.Fields(parts[0])[0]
-				expr := convertZigExpr(parts[1])
-				out = append(out, "let "+name+" = "+expr)
+		for strings.HasPrefix(l, "}") {
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+"}")
+			l = strings.TrimSpace(strings.TrimPrefix(l, "}"))
+			if l == "" {
+				break
 			}
-		case strings.HasPrefix(l, "const "):
-			parts := strings.SplitN(l[6:], "=", 2)
-			if len(parts) == 2 {
-				name := strings.Fields(parts[0])[0]
-				expr := convertZigExpr(parts[1])
-				out = append(out, "let "+name+" = "+expr)
-			}
-		default:
-			out = append(out, convertZigExpr(l))
 		}
+		if l == "" {
+			continue
+		}
+		if strings.HasSuffix(l, "{") {
+			hdr := strings.TrimSpace(strings.TrimSuffix(l, "{"))
+			out = append(out, strings.Repeat("  ", indent)+parseZigBlockHeader(hdr)+" {")
+			indent++
+			continue
+		}
+		if l == "}" {
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+"}")
+			continue
+		}
+		out = append(out, strings.Repeat("  ", indent)+parseZigStmt(l))
 	}
 	return out
 }
