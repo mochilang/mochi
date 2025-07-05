@@ -1,6 +1,19 @@
-fun main() {}
-fun plusOne() {}
-let carry: any
-let i: any
-let result: any
-let sum: any
+fun main() {
+  print(plusOne([
+    1,
+    2,
+    3,
+  ])
+}
+fun plusOne(digits: list<int>): list<int> {
+  let carry: number = 1
+  let i: number = digits.length - 1
+  let result: Array<number> = digits
+  while ((i >= 0) && (carry > 0)) {
+    let sum: number = result[i] + carry
+  }
+  if (carry > 0) {
+    return [carry].concat(result)
+  }
+  return result
+}

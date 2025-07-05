@@ -1,0 +1,105 @@
+fun _query(src: list<any>, joins: list<any>, opts) {
+  let items = src.map((v) => [v])
+  for j in joins {
+    let joined: any[] = []
+    if j.right && j.left {
+      let matched: boolean[] = new Array(j.items.length).fill(false)
+      for left in items {
+        let m = false
+        let keep = true
+      }
+    }
+    for left in items {
+      let keep = true
+    }
+    if !m {
+      let undef = Array(items[0]?.length || 0).fill(undefined)
+    }
+    for right in j.items {
+      let keep = true
+    }
+  }
+  if opts.where {
+    let pairs = items.map((it) => ({ item: it, key: opts.sortKey(...it) }))
+    let bk = b.key
+    if typeof ak === "number" && typeof bk === "number" {
+      return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+    }
+    return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+  }
+  if opts.skip !== undefined {
+    let n = opts.skip
+  }
+  if opts.take !== undefined {
+    let n = opts.take
+  }
+  let res = []
+  return res
+}
+fun _query.items.src.map() callback() {}
+fun _query.items.filter() callback() {}
+fun _query.pairs.items.map() callback() {}
+fun _query.pairs.map() callback() {}
+fun _query.pairs.sort() callback() {
+  let ak = a.key
+  let bk = b.key
+  if typeof ak === "number" && typeof bk === "number" {
+    return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+  }
+  return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+}
+type Customer {
+  id: int
+  name: string
+}
+let customers: list<Customer>
+fun main() {
+  return _query(_src, [
+      { items: customers, on: (o, c) => (o.customerId == c.id) },
+    ], {
+      select: (o, c) => ({
+        orderId: o.id,
+        customerName: c.name,
+        total: o.total,
+      }),
+    })
+  print("--- Orders with customer info ---")
+  for entry in result {
+    print("Order",
+      entry.orderId,
+      "by",
+      entry.customerName,
+      "- $",
+      entry.total,)
+  }
+}
+fun main.<function>() {
+  let _src = orders
+  return _query(_src, [
+      { items: customers, on: (o, c) => (o.customerId == c.id) },
+    ], {
+      select: (o, c) => ({
+        orderId: o.id,
+        customerName: c.name,
+        total: o.total,
+      }),
+    })
+}
+fun main.<function>.on(property) on: (o: any, c: any): bool {}
+fun main.<function>.select(property) select: (o: any, c: any): { {}
+type Order {
+  id: int
+  customerId: int
+  total: int
+}
+let orders: list<Order>
+type PairInfo {
+  orderId: int
+  customerName: string
+  total: int
+}
+let result: list<PairInfo>

@@ -1,0 +1,10 @@
+fun main() {
+  print(outer(3)
+}
+fun outer(n: int): list<int> {}
+fun outer.helper(local function) helper(acc: list<int>): list<int> {
+  if (acc.length == n) {
+    return acc
+  }
+  return helper(acc.concat([acc.length]))
+}

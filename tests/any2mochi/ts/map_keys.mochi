@@ -1,0 +1,5 @@
+let m: map<int,bool>
+fun main() {
+  print(Object.keys(m)
+}
+fun main.map() callback() {}

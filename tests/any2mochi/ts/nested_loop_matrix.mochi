@@ -1,5 +1,11 @@
-let i: any
-fun main() {}
-let j: any
-let row: any
-let matrix: any
+let i: int
+fun main() {
+  while (i < 2) {
+    let row: Array<number> = []
+    let j: number = 0
+    while (j < 2) {
+    }
+  }
+  print(matrix[1][1])
+}
+let matrix: list<list<int>>

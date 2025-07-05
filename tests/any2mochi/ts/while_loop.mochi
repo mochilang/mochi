@@ -1,2 +1,6 @@
-let i: any
-fun main() {}
+let i: int
+fun main() {
+  while (i < 3) {
+    print(i)
+  }
+}

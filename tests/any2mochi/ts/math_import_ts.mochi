@@ -1,3 +1,6 @@
-let base: any
-fun main() {}
-let p: any
+let base: string
+fun main() {
+  print("Joined path:", p)
+  print("Basename:", base)
+}
+let p: string

@@ -1,2 +1,4 @@
-fun main() {}
-let x: any
+fun main() {
+  print(String(x)
+}
+let x: int

@@ -1,18 +1,39 @@
-fun _except() {}
-let it: any
-let remove: any
-let res: any
-fun _intersect() {}
-let it: any
-let keep: any
-let res: any
-let seen: any
-fun _union() {}
-let it: any
-let it: any
-let res: any
-let seen: any
-fun _union_all() {}
-let a: any
-let b: any
-fun main() {}
+fun _except(a: list<any>, b: list<any>): list<any> {
+  let remove = new Set<any>(b)
+  let res: any[] = []
+  return res
+}
+fun _intersect(a: list<any>, b: list<any>): list<any> {
+  let keep = new Set<any>(b)
+  let res: any[] = []
+  let seen = new Set<any>()
+  for it in a {
+    if keep.has(it) && !seen.has(it) {
+    }
+  }
+  return res
+}
+fun _union(a: list<any>, b: list<any>): list<any> {
+  let res: any[] = []
+  let seen = new Set<any>()
+  for it in a {
+    if !seen.has(it) {
+    }
+  }
+  for it in b {
+    if !seen.has(it) {
+    }
+  }
+  return res
+}
+fun _union_all(a: list<any>, b: list<any>): list<any> {
+  return a.concat(b)
+}
+let a: list<int>
+let b: list<int>
+fun main() {
+  print(_union(a, b)
+  print(_union_all(a, b)
+  print(_except(a, b)
+  print(_intersect(a, b)
+}

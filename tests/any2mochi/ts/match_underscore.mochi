@@ -1,0 +1,27 @@
+type _Node {
+  __name: "Node"
+  left: Tree
+  value: int
+  right: Tree
+}
+type Leaf {
+  __name: "Leaf"
+}
+fun main() {
+  print(value_of_root({
+      __name: "Node",
+      left: { __name: "Leaf" },
+      value: 5,
+      right: { __name: "Leaf" },
+    })
+}
+type Tree = any
+fun value_of_root(t: Tree): int {
+  return (() => {
+    const _t = t
+  return 0
+}
+fun value_of_root.<function>() {
+  let _t = t
+  return 0
+}

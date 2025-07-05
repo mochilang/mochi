@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -15,15 +16,20 @@ func ConvertTypeScript(src string) ([]byte, error) {
 	_ = tscode.EnsureTSLanguageServer()
 	ls := Servers["typescript"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
 	var out strings.Builder
-	writeTSSymbols(&out, nil, syms, src, ls)
+	if err == nil && len(diags) == 0 {
+		writeTSSymbols(&out, nil, syms, src, ls)
+	}
 	if out.Len() == 0 {
+		parseTSFallback(&out, src)
+	}
+	if out.Len() == 0 {
+		if err != nil {
+			return nil, err
+		}
+		if len(diags) > 0 {
+			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		}
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
@@ -446,4 +452,110 @@ func tsToMochiType(t string) string {
 		return "map<" + key + "," + val + ">"
 	}
 	return t
+}
+
+func parseTSFallback(out *strings.Builder, src string) {
+	typeRe := regexp.MustCompile(`(?ms)type\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*{`)
+	for _, idx := range typeRe.FindAllStringSubmatchIndex(src, -1) {
+		name := src[idx[2]:idx[3]]
+		open := strings.Index(src[idx[0]:idx[1]], "{")
+		if open == -1 {
+			continue
+		}
+		open += idx[0]
+		close := findMatch(src, open, '{', '}')
+		if close <= open {
+			continue
+		}
+		body := src[open+1 : close]
+		out.WriteString("type ")
+		out.WriteString(name)
+		out.WriteString(" {\n")
+		for _, line := range strings.Split(body, "\n") {
+			l := strings.TrimSpace(strings.TrimSuffix(line, ";"))
+			if l == "" {
+				continue
+			}
+			if colon := strings.Index(l, ":"); colon != -1 {
+				field := strings.TrimSpace(l[:colon])
+				typ := tsToMochiType(strings.TrimSpace(l[colon+1:]))
+				out.WriteString("  ")
+				out.WriteString(field)
+				if typ != "" {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
+				out.WriteByte('\n')
+			}
+		}
+		out.WriteString("}\n")
+	}
+
+	varRe := regexp.MustCompile(`(?m)^(?:let|const|var)\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::\s*([^=;]+))?`)
+	for _, m := range varRe.FindAllStringSubmatch(src, -1) {
+		name := m[1]
+		typ := tsToMochiType(strings.TrimSpace(m[2]))
+		if name == "" {
+			continue
+		}
+		out.WriteString("let ")
+		out.WriteString(name)
+		if typ != "" {
+			out.WriteString(": ")
+			out.WriteString(typ)
+		}
+		out.WriteByte('\n')
+	}
+
+	funcRe := regexp.MustCompile(`(?ms)function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*(?::\s*([^{\n]+))?\s*\{`)
+	for _, idx := range funcRe.FindAllStringSubmatchIndex(src, -1) {
+		name := src[idx[2]:idx[3]]
+		paramsPart := src[idx[4]:idx[5]]
+		ret := strings.TrimSpace(src[idx[6]:idx[7]])
+		open := idx[1] - 1
+		close := findMatch(src, open, '{', '}')
+		body := ""
+		if close > open {
+			body = src[open+1 : close]
+		}
+		out.WriteString("fun ")
+		out.WriteString(name)
+		out.WriteByte('(')
+		params, _ := parseTSSignature("(" + paramsPart + ")" + funcReturnSig(ret))
+		for i, p := range params {
+			if i > 0 {
+				out.WriteString(", ")
+			}
+			out.WriteString(p.name)
+			if p.typ != "" {
+				out.WriteString(": ")
+				out.WriteString(p.typ)
+			}
+		}
+		out.WriteByte(')')
+		mappedRet := tsToMochiType(ret)
+		if mappedRet != "" && mappedRet != "void" {
+			out.WriteString(": ")
+			out.WriteString(mappedRet)
+		}
+		stmts := tsFunctionBody(body)
+		if len(stmts) == 0 {
+			out.WriteString(" {}\n")
+		} else {
+			out.WriteString(" {\n")
+			for _, l := range stmts {
+				out.WriteString("  ")
+				out.WriteString(l)
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		}
+	}
+}
+
+func funcReturnSig(ret string) string {
+	if ret == "" {
+		return ""
+	}
+	return ": " + ret
 }

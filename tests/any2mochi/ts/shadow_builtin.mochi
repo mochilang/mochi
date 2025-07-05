@@ -1,2 +1,4 @@
-let count: any
-fun main() {}
+let count: map<string,int>
+fun main() {
+  print(Object.prototype.hasOwnProperty.call(count, String("a")
+}

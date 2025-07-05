@@ -18,6 +18,30 @@ func tsFunctionBody(src string) []string {
 			break
 		}
 		switch {
+		case strings.HasPrefix(s, "break"):
+			end := strings.Index(s, ";")
+			if end == -1 {
+				end = len(s)
+			}
+			lines = append(lines, "break")
+			if end < len(s) {
+				s = s[end+1:]
+			} else {
+				s = ""
+			}
+			continue
+		case strings.HasPrefix(s, "continue"):
+			end := strings.Index(s, ";")
+			if end == -1 {
+				end = len(s)
+			}
+			lines = append(lines, "continue")
+			if end < len(s) {
+				s = s[end+1:]
+			} else {
+				s = ""
+			}
+			continue
 		case strings.HasPrefix(s, "return "):
 			end := strings.Index(s, ";")
 			if end == -1 {
@@ -121,6 +145,24 @@ func tsFunctionBody(src string) []string {
 			} else {
 				s = ""
 			}
+			continue
+		case strings.HasPrefix(s, "while ("):
+			parenEnd := findMatch(s, strings.Index(s, "("), '(', ')')
+			cond := strings.TrimSpace(s[strings.Index(s, "(")+1 : parenEnd])
+			bodyStart := strings.Index(s[parenEnd:], "{")
+			if bodyStart == -1 {
+				s = s[parenEnd:]
+				continue
+			}
+			bodyStart += parenEnd + 1
+			bodyEnd := findMatch(s, bodyStart-1, '{', '}')
+			bodyLines := tsFunctionBody(s[bodyStart:bodyEnd])
+			lines = append(lines, "while "+cond+" {")
+			for _, l := range bodyLines {
+				lines = append(lines, "  "+l)
+			}
+			lines = append(lines, "}")
+			s = s[bodyEnd+1:]
 			continue
 		default:
 			if idx := strings.Index(s, ";"); idx != -1 {

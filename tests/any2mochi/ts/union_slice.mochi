@@ -1,6 +1,14 @@
-let _Node: any
-let Empty: any
-let Foo: any
-fun listit() {}
-let __name: any
-fun main() {}
+type _Node {
+  __name: "Node"
+  child: Foo
+}
+type Empty {
+  __name: "Empty"
+}
+type Foo = any
+fun listit(): list<Foo> {
+  return [{ __name: "Empty" }]
+}
+fun main() {
+  print(listit()
+}

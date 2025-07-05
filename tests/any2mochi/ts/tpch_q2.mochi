@@ -1,0 +1,255 @@
+fun _equal(a, b): bool {
+  if Array.isArray(a) && Array.isArray(b) {
+    return true
+  }
+  if a && b && typeof a === "object" && typeof b === "object" {
+    let ak = Object.keys(a)
+    let bk = Object.keys(b)
+    if ak.length !== bk.length {
+      if !bk.includes(k) || !_equal((a as any)[k], (b as any)[k]) {
+        return false
+      }
+    }
+    return true
+  }
+  return a === b
+}
+fun _json(v): string {
+  if x && typeof x === "object" {
+    let keys = Object.keys(x).sort()
+    let o: any = {}
+    return o
+  }
+  return x
+}
+fun _json._sort(local function) _sort(x) {
+  if Array.isArray(x) {
+    let keys = Object.keys(x).sort()
+    let o: any = {}
+    return o
+  }
+  return x
+}
+fun _min(v): int {
+  let list: any[] | null = null
+  if Array.isArray(v) {
+  }
+  if !list || list.length === 0 {
+    let num = Number(n)
+  }
+  return m
+}
+fun _query(src: list<any>, joins: list<any>, opts) {
+  let items = src.map((v) => [v])
+  for j in joins {
+    let joined: any[] = []
+    if j.right && j.left {
+      let matched: boolean[] = new Array(j.items.length).fill(false)
+      for left in items {
+        let m = false
+        let keep = true
+      }
+    }
+    for left in items {
+      let keep = true
+    }
+    if !m {
+      let undef = Array(items[0]?.length || 0).fill(undefined)
+    }
+    for right in j.items {
+      let keep = true
+    }
+  }
+  if opts.where {
+    let pairs = items.map((it) => ({ item: it, key: opts.sortKey(...it) }))
+    let bk = b.key
+    if typeof ak === "number" && typeof bk === "number" {
+      return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+    }
+    return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+  }
+  if opts.skip !== undefined {
+    let n = opts.skip
+  }
+  if opts.take !== undefined {
+    let n = opts.take
+  }
+  let res = []
+  return res
+}
+fun _query.items.src.map() callback() {}
+fun _query.items.filter() callback() {}
+fun _query.pairs.items.map() callback() {}
+fun _query.pairs.map() callback() {}
+fun _query.pairs.sort() callback() {
+  let ak = a.key
+  let bk = b.key
+  if typeof ak === "number" && typeof bk === "number" {
+    return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+  }
+  return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+}
+let costs: list<any>
+let europe_nations: list<map<string,any>>
+let europe_suppliers: list<map<string,map<string,any>>>
+fun main() {
+  return _query(_src, [
+      { items: nation, on: (r, n) => (_equal(n.n_regionkey, r.r_regionkey)) },
+    ], { select: (r, n) => n, where: (r, n) => (_equal(r.r_name, "EUROPE")) })
+  return _query(_src, [
+      {
+        items: europe_nations,
+        on: (s, n) => (_equal(s.s_nationkey, n.n_nationkey)),
+      },
+    ], {
+      select: (s, n) => ({
+        "s": s,
+        "n": n,
+      }),
+    })
+  return _query(_src, [
+      {
+        items: target_parts,
+        on: (ps, p) => (_equal(ps.ps_partkey, p.p_partkey)),
+      },
+      {
+        items: europe_suppliers,
+        on: (ps, p, s) => (_equal(ps.ps_suppkey, s.s.s_suppkey)),
+      },
+    ], {
+      select: (ps, p, s) => ({
+        "s_acctbal": s.s.s_acctbal,
+        "s_name": s.s.s_name,
+        "n_name": s.n.n_name,
+        "p_partkey": p.p_partkey,
+        "p_mfgr": p.p_mfgr,
+        "s_address": s.s.s_address,
+        "s_phone": s.s.s_phone,
+        "s_comment": s.s.s_comment,
+        "ps_supplycost": ps.ps_supplycost,
+      }),
+    })
+  let _items = []
+  for x in _src {
+  }
+  let _pairs = _items.map((it) => {
+      const x = it
+  return { item: it, key: (-x.s_acctbal) }
+  let bk = b.key
+  if typeof ak === "number" && typeof bk === "number" {
+    return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+  }
+  return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+  let _res = []
+  for x in _items {
+  }
+  return _res
+  print(_json(result)
+}
+fun main.<function>() {
+  let _src = region
+  return _query(_src, [
+      { items: nation, on: (r, n) => (_equal(n.n_regionkey, r.r_regionkey)) },
+    ], { select: (r, n) => n, where: (r, n) => (_equal(r.r_name, "EUROPE")) })
+}
+fun main.<function>.on(property) on: (r: any, n: any): bool {}
+fun main.<function>.select(property) select: (r: any, n: any) {}
+fun main.<function>.where(property) where: (r: any, n: any): bool {}
+fun main.<function>() {
+  let _src = supplier
+  return _query(_src, [
+      {
+        items: europe_nations,
+        on: (s, n) => (_equal(s.s_nationkey, n.n_nationkey)),
+      },
+    ], {
+      select: (s, n) => ({
+        "s": s,
+        "n": n,
+      }),
+    })
+}
+fun main.<function>.on(property) on: (s: any, n: any): bool {}
+fun main.<function>.select(property) select: (s: any, n: any): { {}
+fun main.<function>() {
+  let _src = partsupp
+  return _query(_src, [
+      {
+        items: target_parts,
+        on: (ps, p) => (_equal(ps.ps_partkey, p.p_partkey)),
+      },
+      {
+        items: europe_suppliers,
+        on: (ps, p, s) => (_equal(ps.ps_suppkey, s.s.s_suppkey)),
+      },
+    ], {
+      select: (ps, p, s) => ({
+        "s_acctbal": s.s.s_acctbal,
+        "s_name": s.s.s_name,
+        "n_name": s.n.n_name,
+        "p_partkey": p.p_partkey,
+        "p_mfgr": p.p_mfgr,
+        "s_address": s.s.s_address,
+        "s_phone": s.s.s_phone,
+        "s_comment": s.s.s_comment,
+        "ps_supplycost": ps.ps_supplycost,
+      }),
+    })
+}
+fun main.<function>.on(property) on: (ps: any, p: any): bool {}
+fun main.<function>.on(property) on: (ps: any, p: any, s: any): bool {}
+fun main.<function>.select(property) select: (ps: any, p: any, s: any): { {}
+fun main.<function>() {
+  let _src = target_partsupp
+  let _items = []
+  for x in _src {
+  }
+  let _pairs = _items.map((it) => {
+      const x = it
+  return { item: it, key: (-x.s_acctbal) }
+  let bk = b.key
+  if typeof ak === "number" && typeof bk === "number" {
+    return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+  }
+  return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+  let _res = []
+  for x in _items {
+  }
+  return _res
+}
+fun main.<function>._pairs._items.map() callback() {
+  let x = it
+  return { item: it, key: (-x.s_acctbal) }
+}
+fun main.<function>._pairs.map() callback() {}
+fun main.<function>._pairs.sort() callback() {
+  let ak = a.key
+  let bk = b.key
+  if typeof ak === "number" && typeof bk === "number" {
+    return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+  }
+  return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+}
+fun main.map() callback() {}
+fun main.part.filter() callback() {}
+fun main.target_partsupp.map() callback() {}
+let min_cost
+let nation: list<map<string,any>>
+let part: list<map<string,any>>
+let partsupp: list<map<string,any>>
+let region: list<map<string,any>>
+let result: list<map<string,any>>
+let supplier: list<map<string,any>>
+let target_parts: list<map<string,any>>
+let target_partsupp: list<map<string,any>>
+fun test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() {}

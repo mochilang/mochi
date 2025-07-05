@@ -1,2 +1,7 @@
-let m: any
-fun main() {}
+let m: map<int,int>
+fun main() {
+  if Object.prototype.hasOwnProperty.call(m, String(1)) {
+    print(m[1])
+  }
+  print(m[2])
+}

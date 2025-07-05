@@ -1,0 +1,62 @@
+let expensive: list<Product>
+fun main() {
+  let _items = []
+  for p in _src {
+  }
+  let _pairs = _items.map((it) => {
+      const p = it
+  return { item: it, key: (-p.price) }
+  let bk = b.key
+  if typeof ak === "number" && typeof bk === "number" {
+    return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+  }
+  return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+  if _n < _items.length {
+  }
+  return _res
+  print("--- Top products (excluding most expensive)
+  for item in expensive {
+    print(item.name, "costs $", item.price)
+  }
+}
+fun main.<function>() {
+  let _src = products
+  let _items = []
+  for p in _src {
+  }
+  let _pairs = _items.map((it) => {
+      const p = it
+  return { item: it, key: (-p.price) }
+  let bk = b.key
+  if typeof ak === "number" && typeof bk === "number" {
+    return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+  }
+  return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+  if _n < _items.length {
+  }
+  return _res
+}
+fun main.<function>._pairs._items.map() callback() {
+  let p = it
+  return { item: it, key: (-p.price) }
+}
+fun main.<function>._pairs.map() callback() {}
+fun main.<function>._pairs.sort() callback() {
+  let ak = a.key
+  let bk = b.key
+  if typeof ak === "number" && typeof bk === "number" {
+    return ak < bk
+          ? -1
+          : (ak > bk ? 1 : 0)
+  }
+  return String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0)
+}
+type Product {
+  name: string
+  price: int
+}
+let products: list<Product>

@@ -1,7 +1,0 @@
-fun id(x: int): int {
-  return x
-}
-
-fun main() {
-  print(123)
-}

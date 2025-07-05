@@ -1,0 +1,4 @@
+fun main() {
+  print(map["a"])
+}
+let map: map<string,int>

@@ -1,6 +1,8 @@
-fun main() {}
-let result: any
-fun twoSum() {}
-let i: any
-let j: any
-let n: any
+fun main() {
+  print(result[0])
+  print(result[1])
+}
+let result: list<int>
+fun twoSum(nums: list<int>, target: int): list<int> {
+  let n: number = nums.length
+}

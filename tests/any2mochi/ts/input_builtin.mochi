@@ -1,5 +1,11 @@
-fun _input() {}
-let v: any
-let input1: any
-let input2: any
-fun main() {}
+fun _input(): string {
+  let v = prompt("")
+  return v === null ? "" : v
+}
+let input1: string
+let input2: string
+fun main() {
+  print("Enter first input:")
+  print("Enter second input:")
+  print("You entered:", input1, ",", input2)
+}

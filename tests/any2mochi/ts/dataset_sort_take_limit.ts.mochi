@@ -1,5 +1,0 @@
-fun main() {}
-fun <function>() {}
-fun _items.map() callback() {}
-fun _pairs.map() callback() {}
-fun _pairs.sort() callback() {}

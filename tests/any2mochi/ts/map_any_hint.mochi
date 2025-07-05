@@ -1,0 +1,15 @@
+fun _Node(left: map<string,any>, value: int, right: map<string,any>): map<string,any> {
+  return {
+    "__name": "Node",
+    "left": left,
+    "value": value,
+    "right": right,
+  }
+}
+fun Leaf(): map<string,any> {
+  return { "__name": "Leaf" }
+}
+fun main() {
+  print(tree["left"]["__name"])
+}
+let tree: map<string,any>

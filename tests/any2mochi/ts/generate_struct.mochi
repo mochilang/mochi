@@ -1,4 +1,8 @@
-fun _gen_struct() {}
-let info: any
-let Info: any
-fun main() {}
+fun _gen_struct(prompt: string, model: string, params): T {}
+let info: Info
+type Info {
+  msg: string
+}
+fun main() {
+  print(info.msg)
+}
