@@ -2,8 +2,9 @@ generated code does not match expected
 --- expected
 +++ generated
 @@ -1,13 +1,9 @@
--let a = 1
+ let a = 1
 -
++let b = 2
  test "first" {
    expect a == 1
  }
@@ -14,6 +15,4 @@ generated code does not match expected
    expect b == 2
  }
 -
-+let a = 1
-+let b = 2
  print("done")
