@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -95,25 +96,85 @@ func convertScalaFunc(lines []string, sym protocol.DocumentSymbol, root string) 
 		b.WriteString(ret)
 	}
 	b.WriteString(" {\n")
+
+	indent := 1
+	write := func(s string) {
+		b.WriteString(strings.Repeat("  ", indent))
+		b.WriteString(s)
+		b.WriteByte('\n')
+	}
+
+	reWhile := regexp.MustCompile(`^while\s*\((.*)\)\s*{`)
+	reFor := regexp.MustCompile(`^for \(([^<-]+)<-([^\)]+)\)\s*{`)
+	reIf := regexp.MustCompile(`^if\s*\((.*)\)\s*{`)
+	reElseIf := regexp.MustCompile(`^}\s*else\s*if\s*\((.*)\)\s*{`)
+	reElse := regexp.MustCompile(`^}\s*else\s*{`)
+
 	for _, l := range seg[1:] {
-		l = strings.TrimSpace(l)
-		if l == "}" {
-			break
+		line := strings.TrimSpace(l)
+		if line == "" {
+			continue
 		}
+		if line == "}" {
+			indent--
+			write("}")
+			if indent == 0 {
+				break
+			}
+			continue
+		}
+
+		if m := reElseIf.FindStringSubmatch(line); m != nil {
+			indent--
+			write("else if " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			indent++
+			continue
+		}
+		if reElse.MatchString(line) {
+			indent--
+			write("else {")
+			indent++
+			continue
+		}
+		if m := reWhile.FindStringSubmatch(line); m != nil {
+			write("while " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			indent++
+			continue
+		}
+		if m := reFor.FindStringSubmatch(line); m != nil {
+			name := strings.TrimSpace(m[1])
+			expr := convertScalaExpr(strings.TrimSpace(m[2]))
+			write("for " + name + " in " + expr + " {")
+			indent++
+			continue
+		}
+		if m := reIf.FindStringSubmatch(line); m != nil {
+			write("if " + convertScalaExpr(strings.TrimSpace(m[1])) + " {")
+			indent++
+			continue
+		}
+
 		switch {
-		case strings.HasPrefix(l, "println("):
-			expr := strings.TrimSuffix(strings.TrimPrefix(l, "println("), ")")
-			b.WriteString("  print(" + convertScalaExpr(expr) + ")\n")
-		case strings.HasPrefix(l, "return "):
-			expr := strings.TrimSpace(strings.TrimPrefix(l, "return "))
-			b.WriteString("  return " + convertScalaExpr(expr) + "\n")
-		case strings.HasPrefix(l, "var "):
-			b.WriteString("  var " + strings.TrimPrefix(l, "var ") + "\n")
-		case strings.HasPrefix(l, "val "):
-			if idx := strings.Index(l, "="); idx != -1 {
-				name := strings.Fields(strings.TrimSpace(l[4:idx]))[0]
-				expr := strings.TrimSpace(l[idx+1:])
-				b.WriteString("  let " + name + " = " + convertScalaExpr(expr) + "\n")
+		case strings.HasPrefix(line, "println("):
+			expr := strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")")
+			write("print(" + convertScalaExpr(expr) + ")")
+		case strings.HasPrefix(line, "return "):
+			expr := strings.TrimSpace(strings.TrimPrefix(line, "return "))
+			write("return " + convertScalaExpr(expr))
+		case strings.HasPrefix(line, "var "):
+			write("var " + strings.TrimPrefix(line, "var "))
+		case strings.HasPrefix(line, "val "):
+			if idx := strings.Index(line, "="); idx != -1 {
+				n := strings.Fields(strings.TrimSpace(line[4:idx]))[0]
+				expr := strings.TrimSpace(line[idx+1:])
+				write("let " + n + " = " + convertScalaExpr(expr))
+			}
+		case strings.Contains(line, "="):
+			parts := strings.SplitN(line, "=", 2)
+			left := strings.TrimSpace(parts[0])
+			right := strings.TrimSpace(parts[1])
+			if left != "" && right != "" {
+				write(left + " = " + convertScalaExpr(right))
 			}
 		}
 	}
@@ -133,6 +194,20 @@ func convertScalaExpr(expr string) string {
 	}
 	if strings.HasSuffix(expr, ".length") {
 		expr = "len(" + strings.TrimSuffix(expr, ".length") + ")"
+	}
+	if strings.HasPrefix(expr, "_indexList(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_indexList("), ")")
+		parts := splitArgsScala(inner)
+		if len(parts) == 2 {
+			return convertScalaExpr(parts[0]) + "[" + convertScalaExpr(parts[1]) + "]"
+		}
+	}
+	if strings.HasPrefix(expr, "_sliceString(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_sliceString("), ")")
+		parts := splitArgsScala(inner)
+		if len(parts) == 3 {
+			return convertScalaExpr(parts[0]) + "[" + convertScalaExpr(parts[1]) + ": " + convertScalaExpr(parts[2]) + "]"
+		}
 	}
 	return expr
 }
@@ -183,4 +258,45 @@ func parseScalaSignature(sig, name string) ([]string, string) {
 		ret = strings.TrimSpace(rest)
 	}
 	return params, ret
+}
+
+func splitArgsScala(s string) []string {
+	var parts []string
+	var b strings.Builder
+	depth := 0
+	inStr := false
+	for i := 0; i < len(s); i++ {
+		ch := s[i]
+		if inStr {
+			b.WriteByte(ch)
+			if ch == '"' {
+				inStr = false
+			}
+			continue
+		}
+		switch ch {
+		case '"':
+			inStr = true
+			b.WriteByte(ch)
+		case '(', '{', '[':
+			depth++
+			b.WriteByte(ch)
+		case ')', '}', ']':
+			depth--
+			b.WriteByte(ch)
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(b.String()))
+				b.Reset()
+			} else {
+				b.WriteByte(ch)
+			}
+		default:
+			b.WriteByte(ch)
+		}
+	}
+	if b.Len() > 0 {
+		parts = append(parts, strings.TrimSpace(b.String()))
+	}
+	return parts
 }
