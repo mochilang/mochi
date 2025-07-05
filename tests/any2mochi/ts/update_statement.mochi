@@ -1,4 +1,4 @@
-fun _equal() {}
+fun _equal(a: any, b: any) {}
 let ak: any
 let bk: any
 let i: any

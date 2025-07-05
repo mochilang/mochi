@@ -1,4 +1,4 @@
-fun _avg() {}
+fun _avg(v: any) {}
 let list: any
 let n: any
 let sum: any

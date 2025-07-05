@@ -1,5 +1,5 @@
 fun main() {}
-fun plusOne() {}
+fun plusOne(digits: any) {}
 let carry: any
 let i: any
 let result: any

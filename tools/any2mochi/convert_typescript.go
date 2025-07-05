@@ -12,7 +12,7 @@ import (
 // ConvertTypeScript converts TypeScript source code to a minimal Mochi representation using the language server.
 func ConvertTypeScript(src string) ([]byte, error) {
 	ls := Servers["typescript"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	syms, hovers, diags, err := ParseTextWithHover(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func ConvertTypeScript(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	writeTSSymbols(&out, nil, syms)
+	writeTSSymbols(&out, nil, syms, hovers)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -40,7 +40,7 @@ func ConvertTypeScriptFile(path string) ([]byte, error) {
 // symbols encoded as JSON.
 func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
 	ls := Servers["typescript"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	syms, hovers, diags, err := ParseTextWithHover(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -48,7 +48,7 @@ func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
 		return nil, nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	writeTSSymbols(&out, nil, syms)
+	writeTSSymbols(&out, nil, syms, hovers)
 	if out.Len() == 0 {
 		return nil, nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -66,7 +66,7 @@ func ConvertTypeScriptFileWithJSON(path string) ([]byte, []byte, error) {
 	return ConvertTypeScriptWithJSON(string(data))
 }
 
-func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol) {
+func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, hovers map[protocol.Range]protocol.Hover) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -86,10 +86,65 @@ func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteString("() {}\n")
+			params, _ := parseTSHover(hoverString(hovers[s.Range]))
+			out.WriteByte('(')
+			for i, p := range params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p)
+				out.WriteString(": any")
+			}
+			out.WriteByte(')')
+			out.WriteString(" {}\n")
 		}
 		if len(s.Children) > 0 {
-			writeTSSymbols(out, nameParts, s.Children)
+			writeTSSymbols(out, nameParts, s.Children, hovers)
 		}
 	}
+}
+
+func hoverString(h protocol.Hover) string {
+	if mc, ok := h.Contents.(protocol.MarkupContent); ok {
+		return mc.Value
+	}
+	return ""
+}
+
+func parseTSHover(v string) ([]string, string) {
+	v = strings.TrimSpace(v)
+	if strings.HasPrefix(v, "```") {
+		lines := strings.Split(v, "\n")
+		if len(lines) >= 2 {
+			v = strings.TrimSpace(lines[1])
+		}
+	}
+	open := strings.Index(v, "(")
+	close := strings.Index(v, ")")
+	if open == -1 || close == -1 || close < open {
+		return nil, ""
+	}
+	paramsPart := v[open+1 : close]
+	var params []string
+	for _, p := range strings.Split(paramsPart, ",") {
+		p = strings.TrimSpace(p)
+		if p == "" {
+			continue
+		}
+		if colon := strings.Index(p, ":"); colon != -1 {
+			p = p[:colon]
+		}
+		if eq := strings.Index(p, "?"); eq != -1 {
+			p = p[:eq]
+		}
+		params = append(params, strings.TrimSpace(p))
+	}
+	ret := ""
+	after := v[close+1:]
+	if i := strings.Index(after, "=>"); i != -1 {
+		ret = strings.TrimSpace(after[i+2:])
+	} else if i := strings.Index(after, ":"); i != -1 {
+		ret = strings.TrimSpace(after[i+1:])
+	}
+	return params, ret
 }

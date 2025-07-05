@@ -1,4 +1,4 @@
-fun _sliceString() {}
+fun _sliceString(s: any, i: any, j: any) {}
 let end: any
 let n: any
 let runes: any

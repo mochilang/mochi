@@ -1,4 +1,4 @@
-fun _indexString() {}
+fun _indexString(s: any, i: any) {}
 let runes: any
 fun main() {}
 let text: any

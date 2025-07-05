@@ -1,4 +1,4 @@
-fun _gen_struct() {}
+fun _gen_struct(prompt: any, model: any, params: any) {}
 let info: any
 let Info: any
 fun main() {}

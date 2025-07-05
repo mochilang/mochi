@@ -1,6 +1,6 @@
 fun main() {}
 let result: any
-fun twoSum() {}
+fun twoSum(nums: any, target: any) {}
 let i: any
 let j: any
 let n: any

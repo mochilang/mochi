@@ -1,5 +1,5 @@
 fun main() {}
-fun searchMatrix() {}
+fun searchMatrix(matrix: any, target: any) {}
 let col: any
 let left: any
 let m: any

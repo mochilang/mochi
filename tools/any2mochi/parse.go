@@ -124,3 +124,81 @@ func (p *pipe) Close() error {
 	p.w.Close()
 	return p.r.Close()
 }
+
+// ParseTextWithHover works like ParseText but also fetches hover information for
+// each document symbol. The returned hover map is keyed by the symbol range and
+// can be used to derive additional details such as parameter names.
+func ParseTextWithHover(cmdName string, args []string, langID string, src string) ([]protocol.DocumentSymbol, map[protocol.Range]protocol.Hover, []protocol.Diagnostic, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, cmdName, args...)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	if err := cmd.Start(); err != nil {
+		return nil, nil, nil, err
+	}
+
+	stream := jsonrpc2.NewBufferedStream(&pipe{r: stdout, w: stdin}, jsonrpc2.VSCodeObjectCodec{})
+	c := &client{cmd: cmd}
+	conn := jsonrpc2.NewConn(ctx, stream, jsonrpc2.HandlerWithError(func(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (interface{}, error) {
+		switch req.Method {
+		case "textDocument/publishDiagnostics":
+			var params protocol.PublishDiagnosticsParams
+			if err := json.Unmarshal(*req.Params, &params); err == nil {
+				c.mu.Lock()
+				c.diags = append(c.diags, params.Diagnostics...)
+				c.mu.Unlock()
+			}
+			return nil, nil
+		default:
+			return nil, nil
+		}
+	}))
+	c.conn = conn
+
+	if err := c.initialize(ctx); err != nil {
+		c.Close()
+		return nil, nil, nil, err
+	}
+	uri := protocol.DocumentUri("file:///input")
+	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
+		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
+	}); err != nil {
+		c.Close()
+		return nil, nil, nil, err
+	}
+	var syms []protocol.DocumentSymbol
+	if err := c.conn.Call(ctx, "textDocument/documentSymbol", protocol.DocumentSymbolParams{
+		TextDocument: protocol.TextDocumentIdentifier{URI: uri},
+	}, &syms); err != nil {
+		c.Close()
+		return nil, nil, nil, err
+	}
+	hovers := make(map[protocol.Range]protocol.Hover)
+	var collect func([]protocol.DocumentSymbol)
+	collect = func(list []protocol.DocumentSymbol) {
+		for _, s := range list {
+			var h protocol.Hover
+			_ = c.conn.Call(ctx, "textDocument/hover", protocol.HoverParams{
+				TextDocumentPositionParams: protocol.TextDocumentPositionParams{TextDocument: protocol.TextDocumentIdentifier{URI: uri}, Position: s.SelectionRange.Start},
+			}, &h)
+			hovers[s.Range] = h
+			if len(s.Children) > 0 {
+				collect(s.Children)
+			}
+		}
+	}
+	collect(syms)
+	c.Close()
+	c.mu.Lock()
+	diags := append([]protocol.Diagnostic(nil), c.diags...)
+	c.mu.Unlock()
+	return syms, hovers, diags, nil
+}

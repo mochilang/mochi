@@ -1,18 +1,18 @@
-fun _except() {}
+fun _except(a: any, b: any) {}
 let it: any
 let remove: any
 let res: any
-fun _intersect() {}
+fun _intersect(a: any, b: any) {}
 let it: any
 let keep: any
 let res: any
 let seen: any
-fun _union() {}
+fun _union(a: any, b: any) {}
 let it: any
 let it: any
 let res: any
 let seen: any
-fun _union_all() {}
+fun _union_all(a: any, b: any) {}
 let a: any
 let b: any
 fun main() {}
