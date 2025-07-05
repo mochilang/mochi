@@ -121,6 +121,24 @@ class Converter(ast.NodeVisitor):
             right = self.convert_expr(node.comparators[0])
             return f"{left} {op} {right}"
         if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Name):
+                if (
+                    node.func.id == "_get"
+                    and len(node.args) == 2
+                    and isinstance(node.args[1], ast.Constant)
+                    and isinstance(node.args[1].value, str)
+                ):
+                    obj = self.convert_expr(node.args[0])
+                    return f"{obj}.{node.args[1].value}"
+                if node.func.id == "_fetch" and len(node.args) >= 1:
+                    url = self.convert_expr(node.args[0])
+                    if len(node.args) > 1 and not (
+                        isinstance(node.args[1], ast.Constant)
+                        and node.args[1].value is None
+                    ):
+                        opts = self.convert_expr(node.args[1])
+                        return f"fetch {url} with {opts}"
+                    return f"fetch {url}"
             func = self.convert_expr(node.func)
             if func in self.dataclasses:
                 fields = [
@@ -128,7 +146,9 @@ class Converter(ast.NodeVisitor):
                 ]
                 return f"{func} {{ " + ", ".join(fields) + " }"
             args = [self.convert_expr(a) for a in node.args]
-            args += [f"{k.arg}: {self.convert_expr(k.value)}" for k in node.keywords if k.arg]
+            args += [
+                f"{k.arg}: {self.convert_expr(k.value)}" for k in node.keywords if k.arg
+            ]
             args += [self.convert_expr(k.value) for k in node.keywords if k.arg is None]
             return f"{func}(" + ", ".join(args) + ")"
         if isinstance(node, ast.Dict):
@@ -261,6 +281,8 @@ class Converter(ast.NodeVisitor):
                 and isinstance(stmt.test.left, ast.Name)
                 and stmt.test.left.id == "__name__"
             ):
+                continue
+            if isinstance(stmt, ast.FunctionDef) and stmt.name in {"_get", "_fetch"}:
                 continue
             if isinstance(stmt, ast.FunctionDef) and stmt.name == "main":
                 for sub in stmt.body:
@@ -410,9 +432,7 @@ def convert(path: str) -> str:
         lines = src.splitlines()
         start = max(e.lineno - 2, 0)
         end = min(e.lineno + 1, len(lines))
-        context = "\n".join(
-            f"{i + 1}: {lines[i]}" for i in range(start, end)
-        )
+        context = "\n".join(f"{i + 1}: {lines[i]}" for i in range(start, end))
         raise ConversionError(
             f"{e} at line {e.lineno}: {e.line}\n{context}", e.lineno, e.line
         )
