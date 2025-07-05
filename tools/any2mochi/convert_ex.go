@@ -3,16 +3,17 @@ package any2mochi
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
+	excode "mochi/compile/x/ex"
 )
 
 // ConvertEx converts Elixir source code to Mochi using the language server
 // for basic parsing. It supports a very small subset of Elixir consisting of
 // simple function definitions, assignments and IO.puts statements.
 func ConvertEx(src string) ([]byte, error) {
+	_ = excode.Ensure()
 	ls := Servers["ex"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
@@ -68,18 +69,18 @@ func convertExFunc(lines []string, sym protocol.DocumentSymbol) string {
 
 	name := sym.Name
 	params := ""
-	m := regexp.MustCompile(`def\s+` + regexp.QuoteMeta(name) + `\(([^)]*)\)?`).FindStringSubmatch(header)
-	if len(m) > 1 {
-		params = strings.TrimSpace(m[1])
+	prefix := "def " + name + "("
+	if strings.HasPrefix(header, prefix) {
+		rest := header[len(prefix):]
+		if i := strings.Index(rest, ")"); i >= 0 {
+			params = strings.TrimSpace(rest[:i])
+		}
 	}
 
 	var b strings.Builder
 	b.WriteString("fun " + name + "(" + params + "): any {\n")
 
-	assignRe := regexp.MustCompile(`^(\w+)\s*=\s*(.+)$`)
-	printRe := regexp.MustCompile(`^IO\.puts\((.*)\)$`)
-	retRe := regexp.MustCompile(`^throw\s*{\s*:?(?:return|RETURN),\s*(.*)}`)
-
+	retPrefix := "throw {:return,"
 	inTry := false
 	for _, l := range seg[1:] {
 		l = strings.TrimSpace(l)
@@ -89,14 +90,18 @@ func convertExFunc(lines []string, sym protocol.DocumentSymbol) string {
 		switch {
 		case strings.HasPrefix(l, "try do"):
 			inTry = true
-		case inTry && retRe.MatchString(l):
-			b.WriteString("  return " + retRe.FindStringSubmatch(l)[1] + "\n")
+		case inTry && strings.HasPrefix(l, retPrefix):
+			val := strings.TrimSuffix(strings.TrimSpace(l[len(retPrefix):]), "}")
+			b.WriteString("  return " + strings.TrimSpace(val) + "\n")
 			inTry = false
-		case printRe.MatchString(l):
-			b.WriteString("  print(" + printRe.FindStringSubmatch(l)[1] + ")\n")
-		case assignRe.MatchString(l):
-			m := assignRe.FindStringSubmatch(l)
-			b.WriteString("  let " + m[1] + " = " + m[2] + "\n")
+		case strings.HasPrefix(l, "IO.puts(") && strings.HasSuffix(l, ")"):
+			expr := strings.TrimSuffix(strings.TrimPrefix(l, "IO.puts("), ")")
+			b.WriteString("  print(" + strings.TrimSpace(expr) + ")\n")
+		case strings.Contains(l, "="):
+			parts := strings.SplitN(l, "=", 2)
+			left := strings.TrimSpace(parts[0])
+			right := strings.TrimSpace(parts[1])
+			b.WriteString("  let " + left + " = " + right + "\n")
 		}
 	}
 	b.WriteString("}")
