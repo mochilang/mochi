@@ -10,8 +10,11 @@ import (
 )
 
 // ConvertEx converts Elixir source code to Mochi using the language server
-// for basic parsing. It supports a very small subset of Elixir consisting of
-// simple function definitions, assignments and IO.puts statements.
+// for basic parsing. It supports a small subset of Elixir consisting of
+// simple function definitions. When the language server fails to provide
+// usable details the converter falls back to light-weight regex matching of
+// the source. Basic control flow such as `if`, `for` and `while` blocks is
+// recognized along with assignments and IO.puts statements.
 func ConvertEx(src string) ([]byte, error) {
 	_ = excode.Ensure()
 	ls := Servers["ex"]
@@ -92,27 +95,72 @@ func convertExFunc(lines []string, sym protocol.DocumentSymbol, params []string,
 	b.WriteString(" {\n")
 
 	retPrefix := "throw {:return,"
+	level := 1
 	inTry := false
 	for _, l := range seg[1:] {
 		l = strings.TrimSpace(l)
-		if l == "end" {
+		if l == "catch {:return, v} -> v end" {
 			break
 		}
 		switch {
-		case strings.HasPrefix(l, "try do"):
+		case l == "" || strings.HasPrefix(l, "try do"):
 			inTry = true
-		case inTry && strings.HasPrefix(l, retPrefix):
+			continue
+		case l == "end":
+			if level > 1 {
+				level--
+				b.WriteString(strings.Repeat("  ", level) + "}\n")
+			}
+			if !inTry && level == 1 {
+				continue
+			}
+		case l == "else":
+			if level > 1 {
+				level--
+				b.WriteString(strings.Repeat("  ", level) + "} else {\n")
+				level++
+			}
+		case strings.HasPrefix(l, "if ") && strings.HasSuffix(l, " do"):
+			cond := strings.TrimSuffix(strings.TrimPrefix(l, "if "), " do")
+			b.WriteString(strings.Repeat("  ", level) + "if " + cond + " {\n")
+			level++
+		case strings.HasPrefix(l, "for ") && strings.Contains(l, "<-") && strings.HasSuffix(l, " do"):
+			rest := strings.TrimSuffix(strings.TrimPrefix(l, "for "), " do")
+			parts := strings.SplitN(rest, "<-", 2)
+			if len(parts) == 2 {
+				v := strings.TrimSpace(parts[0])
+				coll := strings.TrimSpace(parts[1])
+				b.WriteString(strings.Repeat("  ", level) + "for " + v + " in " + coll + " {\n")
+				level++
+			}
+		case strings.HasPrefix(l, "while ") && strings.HasSuffix(l, " do"):
+			cond := strings.TrimSuffix(strings.TrimPrefix(l, "while "), " do")
+			b.WriteString(strings.Repeat("  ", level) + "while " + cond + " {\n")
+			level++
+		case strings.HasPrefix(l, retPrefix):
 			val := strings.TrimSuffix(strings.TrimSpace(l[len(retPrefix):]), "}")
-			b.WriteString("  return " + strings.TrimSpace(val) + "\n")
-			inTry = false
+			b.WriteString(strings.Repeat("  ", level) + "return " + strings.TrimSpace(val) + "\n")
+		case l == "throw :break":
+			b.WriteString(strings.Repeat("  ", level) + "break\n")
+		case l == "throw :continue":
+			b.WriteString(strings.Repeat("  ", level) + "continue\n")
+		case strings.HasPrefix(l, "IO.puts(Enum.join(Enum.map([") && strings.HasSuffix(l, "], &to_string(&1)), \" \"))"):
+			inner := strings.TrimSuffix(strings.TrimPrefix(l, "IO.puts(Enum.join(Enum.map(["), "], &to_string(&1)), \" \"))")
+			args := strings.Split(inner, ",")
+			for i, a := range args {
+				args[i] = strings.TrimSpace(a)
+			}
+			b.WriteString(strings.Repeat("  ", level) + "print(" + strings.Join(args, ", ") + ")\n")
 		case strings.HasPrefix(l, "IO.puts(") && strings.HasSuffix(l, ")"):
 			expr := strings.TrimSuffix(strings.TrimPrefix(l, "IO.puts("), ")")
-			b.WriteString("  print(" + strings.TrimSpace(expr) + ")\n")
+			b.WriteString(strings.Repeat("  ", level) + "print(" + strings.TrimSpace(expr) + ")\n")
 		case strings.Contains(l, "="):
 			parts := strings.SplitN(l, "=", 2)
 			left := strings.TrimSpace(parts[0])
 			right := strings.TrimSpace(parts[1])
-			b.WriteString("  let " + left + " = " + right + "\n")
+			b.WriteString(strings.Repeat("  ", level) + "let " + left + " = " + right + "\n")
+		default:
+			b.WriteString(strings.Repeat("  ", level) + l + "\n")
 		}
 	}
 	b.WriteString("}")
