@@ -77,3 +77,32 @@ func EnsureFormatter() error {
 // Ensure provides a simple entry point for other packages to verify
 // the TypeScript toolchain is available.
 func Ensure() error { return EnsureFormatter() }
+
+// EnsureTSLanguageServer installs the TypeScript language server if missing.
+// The implementation tries npm or pnpm.
+func EnsureTSLanguageServer() error {
+	if _, err := exec.LookPath("typescript-language-server"); err == nil {
+		return nil
+	}
+	installers := []struct {
+		bin  string
+		args []string
+	}{
+		{"npm", []string{"install", "-g", "typescript", "typescript-language-server"}},
+		{"pnpm", []string{"add", "-g", "typescript", "typescript-language-server"}},
+	}
+	for _, inst := range installers {
+		if _, err := exec.LookPath(inst.bin); err == nil {
+			fmt.Println("\U0001F985 Installing TS language server via", inst.bin, "...")
+			cmd := exec.Command(inst.bin, inst.args...)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			break
+		}
+	}
+	if _, err := exec.LookPath("typescript-language-server"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("typescript-language-server not found")
+}

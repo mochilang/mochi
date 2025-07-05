@@ -1,0 +1,4 @@
+fun main() {}
+fun <function>() {}
+fun add() {}
+fun square() {}

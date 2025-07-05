@@ -1,0 +1,3 @@
+fun test_first() {}
+fun test_second() {}
+fun main() {}
