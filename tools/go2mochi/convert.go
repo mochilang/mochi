@@ -483,6 +483,49 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		return "", nil
 	}
 	switch ex := e.(type) {
+	case *ast.FuncLit:
+		if ex.Type.TypeParams != nil {
+			return "", c.errorf(ex, "unsupported generics")
+		}
+		var b strings.Builder
+		b.WriteString("fun (")
+		if ex.Type.Params != nil {
+			for i, p := range ex.Type.Params.List {
+				if len(p.Names) != 1 {
+					return "", c.errorf(p, "unsupported parameter list")
+				}
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(p.Names[0].Name)
+				if p.Type != nil {
+					b.WriteString(": ")
+					b.WriteString(typeString(c.fset, p.Type))
+				}
+			}
+		}
+		b.WriteByte(')')
+		if ex.Type.Results != nil && len(ex.Type.Results.List) > 0 {
+			if len(ex.Type.Results.List) != 1 || len(ex.Type.Results.List[0].Names) != 0 {
+				return "", c.errorf(ex.Type.Results, "unsupported multiple return values")
+			}
+			b.WriteString(": ")
+			b.WriteString(typeString(c.fset, ex.Type.Results.List[0].Type))
+		}
+		b.WriteString(" {\n")
+		for _, st := range ex.Body.List {
+			line, err := c.translateStmt(st)
+			if err != nil {
+				return "", err
+			}
+			if line != "" {
+				b.WriteString("  ")
+				b.WriteString(line)
+				b.WriteByte('\n')
+			}
+		}
+		b.WriteString("}")
+		return b.String(), nil
 	case *ast.BasicLit:
 		return ex.Value, nil
 	case *ast.Ident:

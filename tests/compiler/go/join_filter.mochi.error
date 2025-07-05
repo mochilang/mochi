@@ -1,5 +1,1 @@
-tests/compiler/go/join_filter.go.out:22: unsupported expr *ast.FuncLit
->>> 21:    _ = purchases
-22:>>> var result []map[string]int = func() []map[string]int {
-23:    _res := []map[string]int{}
-24:    for _, p := range people {
+parse error: parse error: 13:42: unexpected token ">" (expected "<" TypeRef ("," TypeRef)* ">")

@@ -1,5 +1,1 @@
-tests/compiler/go/nested_inner_fn.go.out:8: unsupported expr *ast.FuncLit
->>> 7:    func outer(a int) int {
-8:>>> var inner = func(b int) int {
-9:    return (a + b)
-10:    }
+parse error: parse error: 2:33: unexpected token "{" (expected "<" TypeRef ("," TypeRef)* ">")

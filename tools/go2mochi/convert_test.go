@@ -67,7 +67,18 @@ func TestGo2Mochi_Golden(t *testing.T) {
 			outWant := filepath.Join(root, "tests", "compiler", "go", name+".out")
 			runOut, runErr := runMochi(code, src)
 			if runErr != nil {
-				t.Fatalf("run error: %v", runErr)
+				if *update {
+					os.WriteFile(errPath, normalizeOutput(root, []byte(runErr.Error())), 0644)
+					os.WriteFile(outPath, normalizeOutput(root, code), 0644)
+				}
+				want, readErr := os.ReadFile(errPath)
+				if readErr != nil {
+					t.Fatalf("missing golden error: %v", readErr)
+				}
+				if got := normalizeOutput(root, []byte(runErr.Error())); !bytes.Equal(got, normalizeOutput(root, want)) {
+					t.Errorf("runtime error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+				}
+				return
 			}
 			wantOut, err := os.ReadFile(outWant)
 			if err != nil {
