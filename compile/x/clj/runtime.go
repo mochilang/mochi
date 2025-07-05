@@ -32,7 +32,7 @@ const (
     :else (throw (ex-info "count() expects list or group" {}))))
 `
 
-        helperAvg = `(defn _avg [v]
+	helperAvg = `(defn _avg [v]
   (let [lst (cond
               (and (map? v) (contains? v :Items)) (:Items v)
               (sequential? v) v
@@ -43,7 +43,7 @@ const (
   )
 `
 
-        helperSum = `(defn _sum [v]
+	helperSum = `(defn _sum [v]
   (let [lst (cond
               (and (map? v) (contains? v :Items)) (:Items v)
               (sequential? v) v
@@ -62,7 +62,7 @@ const (
       (reduce (fn [a b] (if (neg? (compare a b)) a b)) lst))))
 `
 
-        helperMax = `(defn _max [v]
+	helperMax = `(defn _max [v]
   (let [lst (cond
               (and (map? v) (contains? v :Items)) (:Items v)
               (sequential? v) v
@@ -219,18 +219,21 @@ const (
 
 	helperGenStruct = `(defn _gen_struct [ctor prompt model params]
   (let [m (clojure.data.json/read-str prompt :key-fn keyword)
-        fields (first (:arglists (meta ctor)))
+        fields (some->> ctor meta :arglists first (map keyword))
         args (map #(get m %) fields)]
     (apply ctor args)))`
 
 	helperCastStruct = `(defn _cast_struct [ctor m]
-  (let [fields (first (:arglists (meta ctor)))]
+  (let [fields (or (some->> ctor meta :arglists first (map keyword))
+                   (keys m))]
     (apply ctor (map #(get m %) fields))))`
 
 	helperCastStructList = `(defn _cast_struct_list [ctor xs]
   (mapv #(_cast_struct ctor %) xs))`
 
 	helperFetch = `(defn _fetch [url opts]
+  ;; Ensure IPv4 is preferred to avoid network issues in some environments
+  (System/setProperty "java.net.preferIPv4Stack" "true")
   (let [method (get opts :method "GET")
         q      (get opts :query nil)
         url     (if q
@@ -242,22 +245,36 @@ const (
                                   q))
                          sep (if (clojure.string/includes? url "?") "&" "?")]
                      (str url sep qs))
-                   url)
-        builder (doto (java.net.http.HttpRequest/newBuilder (java.net.URI/create url))
-                  (.method method
-                          (if (contains? opts :body)
-                            (java.net.http.HttpRequest$BodyPublishers/ofString
-                              (clojure.data.json/write-str (:body opts)))
-                            (java.net.http.HttpRequest$BodyPublishers/noBody))))]
-    (when-let [hs (:headers opts)]
-      (doseq [[k v] hs]
-        (.header builder (name k) (str v))))
-    (when-let [t (:timeout opts)]
-      (.timeout builder (java.time.Duration/ofSeconds (long t))))
-    (let [client (java.net.http.HttpClient/newHttpClient)
-          resp (.send client (.build builder)
-                      (java.net.http.HttpResponse$BodyHandlers/ofString))]
-      (clojure.data.json/read-str (.body resp) :key-fn keyword))))`
+                   url)]
+    (cond
+      (or (clojure.string/starts-with? url "file://")
+          (clojure.string/starts-with? url "file:"))
+        (let [path (if (clojure.string/starts-with? url "file://")
+                     (subs url 7)
+                     (subs url 5))
+              txt  (try
+                     (slurp path)
+                     (catch java.io.FileNotFoundException _
+                       (let [alt (str "../../.." "/" path)]
+                         (slurp alt))))]
+          (clojure.data.json/read-str txt :key-fn keyword))
+      :else
+        (let [builder (doto (java.net.http.HttpRequest/newBuilder (java.net.URI/create url))
+                        (.method method
+                                (if (contains? opts :body)
+                                  (java.net.http.HttpRequest$BodyPublishers/ofString
+                                    (clojure.data.json/write-str (:body opts)))
+                                  (java.net.http.HttpRequest$BodyPublishers/noBody))))]
+          (when-let [hs (:headers opts)]
+            (doseq [[k v] hs]
+              (.header builder (name k) (str v))))
+          (when-let [t (:timeout opts)]
+            (.timeout builder (java.time.Duration/ofSeconds (long t))))
+          (let [client (java.net.http.HttpClient/newHttpClient)
+                resp (.send client (.build builder)
+                            (java.net.http.HttpResponse$BodyHandlers/ofString))]
+            (clojure.data.json/read-str (.body resp) :key-fn keyword)))))
+  )`
 
 	helperQuery = `(defn _query [src joins opts]
   (let [items (atom (mapv vector src))]
@@ -383,9 +400,10 @@ var helperOrder = []string{
 // helperDeps lists transitive helper dependencies.
 // When a helper is used, its dependencies are also emitted.
 var helperDeps = map[string][]string{
-	"_json":    {"_to_json"},
-	"_to_json": {"_escape_json"},
-	"_load":    {"_parse_csv"},
+	"_json":             {"_to_json"},
+	"_to_json":          {"_escape_json"},
+	"_load":             {"_parse_csv"},
+	"_cast_struct_list": {"_cast_struct"},
 }
 
 func (c *Compiler) use(name string) {
