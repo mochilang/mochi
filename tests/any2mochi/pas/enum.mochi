@@ -1,0 +1,8 @@
+type Color {
+  Red
+  Green
+  Blue
+}
+let c: Color
+c = Green
+print(c)
