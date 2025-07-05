@@ -138,9 +138,8 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 	if fn.Recv != nil {
 		return "", c.errorf(fn, "unsupported method declaration")
 	}
-	if fn.Type.TypeParams != nil {
-		return "", c.errorf(fn, "unsupported generics")
-	}
+	// Ignore generic type parameters so generic functions can be translated
+	// to regular Mochi functions for now.
 	var b strings.Builder
 	b.WriteString("fun ")
 	b.WriteString(fn.Name.Name)
@@ -548,9 +547,7 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 	}
 	switch ex := e.(type) {
 	case *ast.FuncLit:
-		if ex.Type.TypeParams != nil {
-			return "", c.errorf(ex, "unsupported generics")
-		}
+		// Generic parameters in function literals are ignored.
 		var b strings.Builder
 		b.WriteString("fun (")
 		if ex.Type.Params != nil {

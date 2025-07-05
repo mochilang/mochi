@@ -1,6 +1,5 @@
-tests/compiler/go/load_jsonl_stdin.go.out:28: unsupported generics
->>> 27:    
-28:>>> func _cast[T any](v any) T {
-29:    if tv, ok := v.(T); ok {
-30:    return tv
-
+tests/compiler/go/load_jsonl_stdin.go.out:33: unsupported statement *ast.TypeSwitchStmt
+>>> 32:    var out T
+33:>>> switch any(out).(type) {
+34:    case int:
+35:    switch vv := v.(type) {
