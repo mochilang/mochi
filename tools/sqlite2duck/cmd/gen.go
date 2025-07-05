@@ -23,7 +23,12 @@ func main() {
 			fmt.Fprintf(os.Stderr, "parse %s: %v\n", in, err)
 			os.Exit(1)
 		}
-		outPath := strings.TrimSuffix(filepath.Base(in), ".test") + ".sql"
+		base := strings.TrimSuffix(filepath.Base(in), ".test")
+		dir := filepath.Base(filepath.Dir(in))
+		outPath := base + ".sql"
+		if dir != "slt" && dir != "evidence" {
+			outPath = dir + "_" + base + ".sql"
+		}
 		f, err := os.Create(outPath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "create %s: %v\n", outPath, err)

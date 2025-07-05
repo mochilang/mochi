@@ -35,6 +35,9 @@ The converter currently handles the following patterns:
 - `CURRENT_TIME` -> `current_time`
 - `CURRENT_TIMESTAMP()` -> `now()`
 - `randomblob(n)` -> `random_bytes(n)`
+- `julianday('now')` -> `julianday(now())`
+- `strftime(..., 'now')` -> `strftime(..., now())`
+- `zeroblob(n)` -> `repeat('\x00', n)`
 - `total(x)` -> `coalesce(sum(x),0)`
 - remove `NOT INDEXED` clauses
 
