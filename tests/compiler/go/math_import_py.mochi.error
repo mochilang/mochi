@@ -1,1 +1,2 @@
-unsupported expr *ast.CallExpr
+tests/compiler/go/math_import_py.go.out:10: unsupported expr *ast.FuncLit
+>>> var area float64 = (func() float64 { v, _ := python.Attr("math", "pi"); return v.(float64) }() * func() float64 { v, _ := python.Attr("math", "pow", r, 2.0); return v.(float64) }())

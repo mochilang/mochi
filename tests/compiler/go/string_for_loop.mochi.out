@@ -1,0 +1,4 @@
+for r in "cat" {
+  let ch = string(r)
+  print(ch)
+}

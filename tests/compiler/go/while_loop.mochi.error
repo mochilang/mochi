@@ -1,1 +1,2 @@
-unsupported statement *ast.ForStmt
+tests/compiler/go/while_loop.go.out:11: unsupported statement *ast.BranchStmt
+>>> break

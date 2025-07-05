@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/dataset_sort_take_limit.go.out:8: unsupported declaration
+>>> type Product struct {

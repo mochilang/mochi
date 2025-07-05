@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/slice_remove.go.out:8: unsupported expr *ast.SliceExpr
+>>> return append(append([]int{}, nums[0:i]...), nums[(i+1):len(nums)]...)

@@ -1,1 +1,2 @@
-unsupported expr *ast.CompositeLit
+tests/compiler/go/break_continue.go.out:21: unsupported statement *ast.BranchStmt
+>>> continue

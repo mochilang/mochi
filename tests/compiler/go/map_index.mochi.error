@@ -1,1 +1,2 @@
-unsupported expr *ast.CompositeLit
+tests/compiler/go/map_index.go.out:9: unsupported expr *ast.IndexExpr
+>>> fmt.Println(scores["Bob"])

@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/union_slice.go.out:7: unsupported declaration
+>>> type Foo interface{ isFoo() }

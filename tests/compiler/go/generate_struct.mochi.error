@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/generate_struct.go.out:11: unsupported declaration
+>>> type Info struct {

@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/avg_builtin.go.out:13: unsupported var spec
+>>> var items []any

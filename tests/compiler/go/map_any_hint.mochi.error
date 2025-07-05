@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/map_any_hint.go.out:9: unsupported expr *ast.IndexExpr
+>>> return _cast[map[string]any](map[string]string{"__name": "Leaf"})

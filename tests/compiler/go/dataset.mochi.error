@@ -1,1 +1,2 @@
-unsupported expr *ast.CompositeLit
+tests/compiler/go/dataset.go.out:7: unsupported declaration
+>>> type Person struct {

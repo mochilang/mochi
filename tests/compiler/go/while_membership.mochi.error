@@ -1,1 +1,2 @@
-unsupported expr *ast.CompositeLit
+tests/compiler/go/while_membership.go.out:10: unsupported assignment lhs
+>>> set[n] = true

@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/two_sum.go.out:9: unsupported for clause
+>>> for i := 0; i < n; i++ {

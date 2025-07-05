@@ -1,1 +1,2 @@
-unsupported expr *ast.FuncLit
+tests/compiler/go/fun_expr_in_let.go.out:8: unsupported expr *ast.FuncLit
+>>> var square func(int) int = func(x int) int {

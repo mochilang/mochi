@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/load_save_json.go.out:11: unsupported declaration
+>>> type Person struct {

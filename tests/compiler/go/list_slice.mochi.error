@@ -1,1 +1,2 @@
-unsupported expr *ast.SliceExpr
+tests/compiler/go/list_slice.go.out:8: unsupported expr *ast.SliceExpr
+>>> fmt.Println([]int{

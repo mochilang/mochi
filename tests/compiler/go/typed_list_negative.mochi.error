@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/typed_list_negative.go.out:16: unsupported statement *ast.SwitchStmt
+>>> switch {

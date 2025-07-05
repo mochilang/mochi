@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/input_builtin.go.out:16: unsupported var spec
+>>> var s string

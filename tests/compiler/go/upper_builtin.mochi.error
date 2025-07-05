@@ -1,1 +1,2 @@
-unsupported expr *ast.CallExpr
+tests/compiler/go/upper_builtin.go.out:9: unsupported expr *ast.SelectorExpr
+>>> fmt.Println(strings.ToUpper("foo"))

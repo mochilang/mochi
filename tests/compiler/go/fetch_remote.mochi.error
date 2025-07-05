@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/fetch_remote.go.out:14: unsupported declaration
+>>> type Todo struct {

@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/struct_method.go.out:7: unsupported declaration
+>>> type Counter struct {

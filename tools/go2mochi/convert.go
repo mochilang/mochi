@@ -1,14 +1,38 @@
 package go2mochi
 
 import (
-	"errors"
+	"bytes"
 	"fmt"
 	"go/ast"
 	"go/parser"
+	"go/printer"
 	"go/token"
 	"os"
 	"strings"
 )
+
+type converter struct {
+	fset  *token.FileSet
+	src   []byte
+	lines []string
+}
+
+func (c *converter) snippet(pos token.Pos) string {
+	p := c.fset.Position(pos)
+	if p.Line-1 >= 0 && p.Line-1 < len(c.lines) {
+		return strings.TrimSpace(c.lines[p.Line-1])
+	}
+	return ""
+}
+
+func (c *converter) errorf(n ast.Node, format string, args ...interface{}) error {
+	msg := fmt.Sprintf(format, args...)
+	if n == nil {
+		return fmt.Errorf("%s", msg)
+	}
+	pos := c.fset.Position(n.Pos())
+	return fmt.Errorf("%s:%d: %s\n>>> %s", pos.Filename, pos.Line, msg, c.snippet(n.Pos()))
+}
 
 // Convert reads Go source from path and returns the corresponding Mochi code.
 // Only a tiny subset of Go is supported. If the program cannot be translated a
@@ -24,7 +48,8 @@ func Convert(path string) ([]byte, error) {
 		return nil, err
 	}
 
-	code, err := translateFile(file)
+	c := &converter{fset: fset, src: src, lines: strings.Split(string(src), "\n")}
+	code, err := c.translateFile(file)
 	if err != nil {
 		return nil, err
 	}
@@ -34,23 +59,39 @@ func Convert(path string) ([]byte, error) {
 // translateFile converts a parsed Go file into Mochi source. Only a very small
 // subset of Go is currently supported. Programs outside of this subset will
 // return an error so the caller can fall back to a pre-written Mochi file.
-func translateFile(f *ast.File) (string, error) {
+func (c *converter) translateFile(f *ast.File) (string, error) {
 	var mainFn *ast.FuncDecl
+	var b strings.Builder
 	for _, d := range f.Decls {
-		if fn, ok := d.(*ast.FuncDecl); ok {
-			if fn.Name.Name == "main" {
-				mainFn = fn
-			} else {
-				return "", errors.New("unsupported function declaration")
+		switch decl := d.(type) {
+		case *ast.FuncDecl:
+			if decl.Name.Name == "main" {
+				mainFn = decl
+				continue
 			}
+			code, err := c.translateFunc(decl)
+			if err != nil {
+				return "", err
+			}
+			if code != "" {
+				b.WriteString(code)
+				b.WriteByte('\n')
+			}
+		case *ast.GenDecl:
+			// ignore import declarations
+			if decl.Tok == token.IMPORT {
+				continue
+			}
+			return "", c.errorf(decl, "unsupported declaration")
+		default:
+			return "", c.errorf(decl, "unsupported declaration")
 		}
 	}
 	if mainFn == nil {
-		return "", errors.New("no main function")
+		return "", c.errorf(f, "no main function")
 	}
-	var b strings.Builder
 	for _, st := range mainFn.Body.List {
-		line, err := translateStmt(st)
+		line, err := c.translateStmt(st)
 		if err != nil {
 			return "", err
 		}
@@ -62,19 +103,72 @@ func translateFile(f *ast.File) (string, error) {
 	return strings.TrimSuffix(b.String(), "\n"), nil
 }
 
-func translateStmt(s ast.Stmt) (string, error) {
+func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
+	if fn.Recv != nil {
+		return "", c.errorf(fn, "unsupported method declaration")
+	}
+	var b strings.Builder
+	b.WriteString("fun ")
+	b.WriteString(fn.Name.Name)
+	b.WriteByte('(')
+	if fn.Type.Params != nil {
+		for i, p := range fn.Type.Params.List {
+			if len(p.Names) != 1 {
+				return "", c.errorf(p, "unsupported parameter list")
+			}
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(p.Names[0].Name)
+			if p.Type != nil {
+				b.WriteString(": ")
+				b.WriteString(nodeString(c.fset, p.Type))
+			}
+		}
+	}
+	b.WriteByte(')')
+	if fn.Type.Results != nil && len(fn.Type.Results.List) > 0 {
+		if len(fn.Type.Results.List) != 1 || len(fn.Type.Results.List[0].Names) != 0 {
+			return "", c.errorf(fn.Type.Results, "unsupported multiple return values")
+		}
+		b.WriteString(": ")
+		b.WriteString(nodeString(c.fset, fn.Type.Results.List[0].Type))
+	}
+	b.WriteString(" {\n")
+	for _, st := range fn.Body.List {
+		line, err := c.translateStmt(st)
+		if err != nil {
+			return "", err
+		}
+		if line != "" {
+			b.WriteString("  ")
+			b.WriteString(line)
+			b.WriteByte('\n')
+		}
+	}
+	b.WriteString("}")
+	return b.String(), nil
+}
+
+func nodeString(fset *token.FileSet, n ast.Node) string {
+	var buf bytes.Buffer
+	printer.Fprint(&buf, fset, n)
+	return buf.String()
+}
+
+func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 	switch st := s.(type) {
 	case *ast.ExprStmt:
-		return translateExprStmt(st)
+		return c.translateExprStmt(st)
 	case *ast.AssignStmt:
 		if len(st.Lhs) != 1 || len(st.Rhs) != 1 {
-			return "", errors.New("unsupported assignment")
+			return "", c.errorf(st, "unsupported assignment")
 		}
 		ident, ok := st.Lhs[0].(*ast.Ident)
 		if !ok {
-			return "", errors.New("unsupported assignment lhs")
+			return "", c.errorf(st.Lhs[0], "unsupported assignment lhs")
 		}
-		rhs, err := translateExpr(st.Rhs[0])
+		rhs, err := c.translateExpr(st.Rhs[0])
 		if err != nil {
 			return "", err
 		}
@@ -84,70 +178,261 @@ func translateStmt(s ast.Stmt) (string, error) {
 		case token.ASSIGN:
 			return fmt.Sprintf("%s = %s", ident.Name, rhs), nil
 		default:
-			return "", fmt.Errorf("unsupported assign op %s", st.Tok)
+			return "", c.errorf(st, "unsupported assign op %s", st.Tok)
 		}
 	case *ast.DeclStmt:
 		gen, ok := st.Decl.(*ast.GenDecl)
 		if !ok || gen.Tok != token.VAR || len(gen.Specs) != 1 {
-			return "", errors.New("unsupported declaration")
+			return "", c.errorf(st, "unsupported declaration")
 		}
 		vs, ok := gen.Specs[0].(*ast.ValueSpec)
 		if !ok || len(vs.Names) != 1 || len(vs.Values) != 1 {
-			return "", errors.New("unsupported var spec")
+			return "", c.errorf(st, "unsupported var spec")
 		}
-		rhs, err := translateExpr(vs.Values[0])
+		rhs, err := c.translateExpr(vs.Values[0])
 		if err != nil {
 			return "", err
 		}
 		return fmt.Sprintf("var %s = %s", vs.Names[0].Name, rhs), nil
-	default:
-		return "", fmt.Errorf("unsupported statement %T", s)
-	}
-}
-
-func translateExprStmt(es *ast.ExprStmt) (string, error) {
-	if call, ok := es.X.(*ast.CallExpr); ok {
-		if sel, ok := call.Fun.(*ast.SelectorExpr); ok {
-			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" && sel.Sel.Name == "Println" {
-				if len(call.Args) != 1 {
-					return "", errors.New("unsupported Println args")
-				}
-				arg, err := translateExpr(call.Args[0])
-				if err != nil {
-					return "", err
-				}
-				return fmt.Sprintf("print(%s)", arg), nil
+	case *ast.ReturnStmt:
+		if len(st.Results) == 0 {
+			return "return", nil
+		}
+		if len(st.Results) != 1 {
+			return "", c.errorf(st, "unsupported multiple return values")
+		}
+		r, err := c.translateExpr(st.Results[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("return %s", r), nil
+	case *ast.IfStmt:
+		cond, err := c.translateExpr(st.Cond)
+		if err != nil {
+			return "", err
+		}
+		var b strings.Builder
+		b.WriteString("if ")
+		b.WriteString(cond)
+		b.WriteString(" {\n")
+		for _, s2 := range st.Body.List {
+			line, err := c.translateStmt(s2)
+			if err != nil {
+				return "", err
+			}
+			if line != "" {
+				b.WriteString("  ")
+				b.WriteString(line)
+				b.WriteByte('\n')
 			}
 		}
+		b.WriteString("}")
+		if st.Else != nil {
+			switch e := st.Else.(type) {
+			case *ast.BlockStmt:
+				b.WriteString(" else {\n")
+				for _, s2 := range e.List {
+					line, err := c.translateStmt(s2)
+					if err != nil {
+						return "", err
+					}
+					if line != "" {
+						b.WriteString("  ")
+						b.WriteString(line)
+						b.WriteByte('\n')
+					}
+				}
+				b.WriteString("}")
+			default:
+				return "", c.errorf(st.Else, "unsupported else")
+			}
+		}
+		return b.String(), nil
+	case *ast.ForStmt:
+		if st.Init != nil || st.Post != nil {
+			return "", c.errorf(st, "unsupported for clause")
+		}
+		cond, err := c.translateExpr(st.Cond)
+		if err != nil {
+			return "", err
+		}
+		var b strings.Builder
+		b.WriteString("while ")
+		b.WriteString(cond)
+		b.WriteString(" {\n")
+		for _, s2 := range st.Body.List {
+			line, err := c.translateStmt(s2)
+			if err != nil {
+				return "", err
+			}
+			if line != "" {
+				b.WriteString("  ")
+				b.WriteString(line)
+				b.WriteByte('\n')
+			}
+		}
+		b.WriteString("}")
+		return b.String(), nil
+	case *ast.RangeStmt:
+		var b strings.Builder
+		b.WriteString("for ")
+		names := []string{}
+		if ident, ok := st.Key.(*ast.Ident); ok && ident.Name != "_" {
+			names = append(names, ident.Name)
+		}
+		if ident, ok := st.Value.(*ast.Ident); ok && ident.Name != "_" {
+			names = append(names, ident.Name)
+		}
+		if len(names) > 0 {
+			b.WriteString(strings.Join(names, ", "))
+			b.WriteString(" in ")
+		} else {
+			b.WriteString("_ in ")
+		}
+		expr, err := c.translateExpr(st.X)
+		if err != nil {
+			return "", err
+		}
+		b.WriteString(expr)
+		b.WriteString(" {\n")
+		for _, s2 := range st.Body.List {
+			line, err := c.translateStmt(s2)
+			if err != nil {
+				return "", err
+			}
+			if line != "" {
+				b.WriteString("  ")
+				b.WriteString(line)
+				b.WriteByte('\n')
+			}
+		}
+		b.WriteString("}")
+		return b.String(), nil
+	default:
+		return "", c.errorf(st, "unsupported statement %T", s)
 	}
-	return "", errors.New("unsupported expression statement")
 }
 
-func translateExpr(e ast.Expr) (string, error) {
+func (c *converter) translateExprStmt(es *ast.ExprStmt) (string, error) {
+	expr, err := c.translateExpr(es.X)
+	if err != nil {
+		return "", err
+	}
+	if expr == "" {
+		return "", c.errorf(es, "unsupported expression statement")
+	}
+	return expr, nil
+}
+
+func (c *converter) translateExpr(e ast.Expr) (string, error) {
+	if e == nil {
+		return "", nil
+	}
 	switch ex := e.(type) {
 	case *ast.BasicLit:
 		return ex.Value, nil
 	case *ast.Ident:
 		return ex.Name, nil
 	case *ast.BinaryExpr:
-		left, err := translateExpr(ex.X)
+		left, err := c.translateExpr(ex.X)
 		if err != nil {
 			return "", err
 		}
-		right, err := translateExpr(ex.Y)
+		right, err := c.translateExpr(ex.Y)
 		if err != nil {
 			return "", err
 		}
 		return fmt.Sprintf("%s %s %s", left, ex.Op.String(), right), nil
 	case *ast.UnaryExpr:
-		x, err := translateExpr(ex.X)
+		x, err := c.translateExpr(ex.X)
 		if err != nil {
 			return "", err
 		}
 		return fmt.Sprintf("%s%s", ex.Op.String(), x), nil
 	case *ast.ParenExpr:
-		return translateExpr(ex.X)
+		return c.translateExpr(ex.X)
+	case *ast.CallExpr:
+		if sel, ok := ex.Fun.(*ast.SelectorExpr); ok {
+			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" && sel.Sel.Name == "Println" {
+				if len(ex.Args) != 1 {
+					return "", c.errorf(ex, "unsupported Println args")
+				}
+				arg, err := c.translateExpr(ex.Args[0])
+				if err != nil {
+					return "", err
+				}
+				return fmt.Sprintf("print(%s)", arg), nil
+			}
+		}
+		if arr, ok := ex.Fun.(*ast.ArrayType); ok && len(ex.Args) == 1 {
+			// handle []rune("foo") -> "foo"
+			if id, ok := arr.Elt.(*ast.Ident); ok && id.Name == "rune" {
+				return c.translateExpr(ex.Args[0])
+			}
+		}
+		fun, err := c.translateExpr(ex.Fun)
+		if err != nil {
+			return "", err
+		}
+		args := make([]string, len(ex.Args))
+		for i, a := range ex.Args {
+			v, err := c.translateExpr(a)
+			if err != nil {
+				return "", err
+			}
+			args[i] = v
+		}
+		return fmt.Sprintf("%s(%s)", fun, strings.Join(args, ", ")), nil
+	case *ast.CompositeLit:
+		if _, ok := ex.Type.(*ast.ArrayType); ok {
+			items := make([]string, len(ex.Elts))
+			for i, el := range ex.Elts {
+				v, err := c.translateExpr(el)
+				if err != nil {
+					return "", err
+				}
+				items[i] = v
+			}
+			return "[" + strings.Join(items, ", ") + "]", nil
+		}
+		if mp, ok := ex.Type.(*ast.MapType); ok {
+			pairs := make([]string, len(ex.Elts))
+			for i, el := range ex.Elts {
+				kv, ok := el.(*ast.KeyValueExpr)
+				if !ok {
+					return "", c.errorf(el, "unsupported map element")
+				}
+				k, err := c.translateExpr(kv.Key)
+				if err != nil {
+					return "", err
+				}
+				v, err := c.translateExpr(kv.Value)
+				if err != nil {
+					return "", err
+				}
+				pairs[i] = fmt.Sprintf("%s: %s", k, v)
+			}
+			_ = mp // ignore types
+			return "{" + strings.Join(pairs, ", ") + "}", nil
+		}
+		if ident, ok := ex.Type.(*ast.Ident); ok {
+			fields := make([]string, len(ex.Elts))
+			for i, el := range ex.Elts {
+				kv, ok := el.(*ast.KeyValueExpr)
+				if !ok {
+					return "", c.errorf(el, "unsupported struct element")
+				}
+				k := kv.Key.(*ast.Ident).Name
+				v, err := c.translateExpr(kv.Value)
+				if err != nil {
+					return "", err
+				}
+				fields[i] = fmt.Sprintf("%s: %s", k, v)
+			}
+			return fmt.Sprintf("%s { %s }", ident.Name, strings.Join(fields, ", ")), nil
+		}
+		return "", c.errorf(ex, "unsupported composite literal")
 	default:
-		return "", fmt.Errorf("unsupported expr %T", e)
+		return "", c.errorf(ex, "unsupported expr %T", e)
 	}
 }
