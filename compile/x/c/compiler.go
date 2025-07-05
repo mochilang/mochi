@@ -1764,7 +1764,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				name := c.newTemp()
 				if isStr {
 					c.need(needStringHeader)
-					c.writeln(fmt.Sprintf("char* %s = ({ int _len = strlen(%s); int _s = %s; int _e = %s; if (_s < 0) _s += _len; if (_e < 0) _e += _len; if (_s < 0) _s = 0; if (_e > _len) _e = _len; if (_s > _e) _s = _e; char* _b = (char*)malloc(_e - _s + 1); memcpy(_b, %s + _s, _e - _s); _b[_e - _s] = '\\0'; _b; });", name, expr, start, end, expr))
+					c.need(needSliceString)
+					c.writeln(fmt.Sprintf("char* %s = slice_string(%s, %s, %s);", name, expr, start, end))
 					if c.env != nil {
 						c.env.SetVar(name, types.StringType{}, true)
 					}

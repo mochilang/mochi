@@ -33,6 +33,14 @@ func ConvertC(src string) ([]byte, error) {
 		case protocol.SymbolKindFunction:
 			matched = true
 			ret, params := parseCSignature(s.Detail)
+			if ret == "" && len(params) == 0 {
+				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					r, ps := parseCSignaturePtr(hoverString(hov))
+					if r != "" || len(ps) > 0 {
+						ret, params = r, ps
+					}
+				}
+			}
 
 			out.WriteString("fun ")
 			out.WriteString(s.Name)
@@ -95,6 +103,35 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
+		case protocol.SymbolKindEnum:
+			matched = true
+			out.WriteString("type ")
+			out.WriteString(s.Name)
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindEnumMember {
+					fmt.Fprintf(&out, "  %s\n", c.Name)
+				}
+			}
+			out.WriteString("}\n")
+		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			matched = true
+			typ := ""
+			if s.Detail != nil {
+				typ = mapCType(*s.Detail)
+			}
+			if typ == "" {
+				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					typ = mapCType(hoverString(hov))
+				}
+			}
+			out.WriteString("let ")
+			out.WriteString(s.Name)
+			if typ != "" {
+				out.WriteString(": ")
+				out.WriteString(typ)
+			}
+			out.WriteByte('\n')
 		}
 	}
 
@@ -116,6 +153,10 @@ func ConvertCFile(path string) ([]byte, error) {
 type cParam struct {
 	name string
 	typ  string
+}
+
+func parseCSignaturePtr(detail string) (string, []cParam) {
+	return parseCSignature(&detail)
 }
 
 func parseCSignature(detail *string) (string, []cParam) {
