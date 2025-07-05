@@ -30,7 +30,8 @@ func ConvertEx(src string) ([]byte, error) {
 		if s.Kind != protocol.SymbolKindFunction {
 			continue
 		}
-		code := convertExFunc(lines, s)
+		params, ret := getExSignature(src, s.SelectionRange.Start, ls)
+		code := convertExFunc(lines, s, params, ret)
 		if code == "" {
 			continue
 		}
@@ -58,7 +59,7 @@ func ConvertExFile(path string) ([]byte, error) {
 	return ConvertEx(string(data))
 }
 
-func convertExFunc(lines []string, sym protocol.DocumentSymbol) string {
+func convertExFunc(lines []string, sym protocol.DocumentSymbol, params []string, ret string) string {
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
 	if start < 0 || end >= len(lines) || start >= end {
@@ -68,17 +69,27 @@ func convertExFunc(lines []string, sym protocol.DocumentSymbol) string {
 	header := strings.TrimSpace(seg[0])
 
 	name := sym.Name
-	params := ""
-	prefix := "def " + name + "("
-	if strings.HasPrefix(header, prefix) {
-		rest := header[len(prefix):]
-		if i := strings.Index(rest, ")"); i >= 0 {
-			params = strings.TrimSpace(rest[:i])
+	paramStr := ""
+	if len(params) == 0 {
+		prefix := "def " + name + "("
+		if strings.HasPrefix(header, prefix) {
+			rest := header[len(prefix):]
+			if i := strings.Index(rest, ")"); i >= 0 {
+				paramStr = strings.TrimSpace(rest[:i])
+			}
 		}
+	} else {
+		paramStr = strings.Join(params, ", ")
 	}
 
 	var b strings.Builder
-	b.WriteString("fun " + name + "(" + params + "): any {\n")
+	b.WriteString("fun " + name + "(" + paramStr + ")")
+	if ret != "" {
+		b.WriteString(": " + ret)
+	} else {
+		b.WriteString(": any")
+	}
+	b.WriteString(" {\n")
 
 	retPrefix := "throw {:return,"
 	inTry := false
@@ -106,4 +117,63 @@ func convertExFunc(lines []string, sym protocol.DocumentSymbol) string {
 	}
 	b.WriteString("}")
 	return b.String()
+}
+
+func getExSignature(src string, pos protocol.Position, ls LanguageServer) ([]string, string) {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+	if err != nil {
+		return nil, ""
+	}
+	sig := hoverString(hov)
+	return parseExSignature(sig)
+}
+
+func parseExSignature(sig string) ([]string, string) {
+	sig = strings.ReplaceAll(sig, "\n", " ")
+	open := strings.Index(sig, "(")
+	close := strings.Index(sig, ")")
+	if open == -1 || close == -1 || close < open {
+		return nil, ""
+	}
+	paramsPart := strings.TrimSpace(sig[open+1 : close])
+	rest := sig[close+1:]
+	ret := ""
+	if idx := strings.Index(rest, "::"); idx != -1 {
+		ret = mapExType(strings.TrimSpace(rest[idx+2:]))
+	} else if idx := strings.Index(rest, "->"); idx != -1 {
+		ret = mapExType(strings.TrimSpace(rest[idx+2:]))
+	}
+	var params []string
+	if paramsPart != "" {
+		parts := strings.Split(paramsPart, ",")
+		for _, p := range parts {
+			p = strings.TrimSpace(p)
+			if p == "" {
+				continue
+			}
+			if i := strings.Index(p, "::"); i != -1 {
+				p = strings.TrimSpace(p[:i])
+			}
+			fields := strings.Fields(p)
+			if len(fields) > 0 {
+				params = append(params, fields[0])
+			}
+		}
+	}
+	return params, ret
+}
+
+func mapExType(t string) string {
+	switch t {
+	case "integer()":
+		return "int"
+	case "float()":
+		return "float"
+	case "binary()":
+		return "string"
+	case "boolean()":
+		return "bool"
+	default:
+		return t
+	}
 }
