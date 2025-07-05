@@ -1,4 +1,4 @@
-let xs
-let ys
-let res
+let xs: list[int]
+let ys: list[int]
+let res: None
 fun main() {}

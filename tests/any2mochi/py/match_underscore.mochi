@@ -7,4 +7,3 @@ type Node {
   right
 }
 fun main() {}
-

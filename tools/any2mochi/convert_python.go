@@ -56,6 +56,10 @@ func writePySymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
+				if typ := getPyVarType(src, s.SelectionRange.Start, ls); typ != "" && typ != "Unknown" {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
 				out.WriteString("\n")
 			}
 		}
@@ -215,4 +219,27 @@ func mapPyType(t string) string {
 	default:
 		return t
 	}
+}
+
+func getPyVarType(src string, pos protocol.Position, ls LanguageServer) string {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+	if err != nil {
+		return ""
+	}
+	mc, ok := hov.Contents.(protocol.MarkupContent)
+	if !ok {
+		return ""
+	}
+	return parsePyVarType(mc.Value)
+}
+
+func parsePyVarType(hov string) string {
+	if i := strings.Index(hov, "\n"); i != -1 {
+		hov = hov[:i]
+	}
+	if colon := strings.Index(hov, ":"); colon != -1 {
+		typ := strings.TrimSpace(hov[colon+1:])
+		return mapPyType(typ)
+	}
+	return ""
 }

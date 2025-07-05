@@ -1,8 +1,8 @@
-let T
-fun _get(obj, name) {}
+let T: type[T]
+fun _get(obj: Unknown, name: Unknown ) -> (Unknown | Any | None) {}
 type Counter {
   value
-  fun inc() {}
+  fun inc(): int {}
 }
-let c
+let c: Counter
 fun main() {}

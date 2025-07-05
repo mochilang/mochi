@@ -2,6 +2,6 @@ type Person {
   name
   age
 }
-let people
-let names
+let people: list[Person]
+let names: None
 fun main() {}

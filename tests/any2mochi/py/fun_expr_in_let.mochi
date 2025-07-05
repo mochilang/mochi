@@ -1,2 +1,2 @@
-let square
+let square: None
 fun main() {}

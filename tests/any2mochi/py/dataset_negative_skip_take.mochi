@@ -1,7 +1,7 @@
 type Num {
   val
 }
-let items
-let a
-let b
+let items: list[Num]
+let a: None
+let b: None
 fun main() {}
