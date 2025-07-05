@@ -1,2 +1,4 @@
-fun main() {}
-
+fun main() {
+  for i in 1..4 - 1 {
+    print(i)
+}

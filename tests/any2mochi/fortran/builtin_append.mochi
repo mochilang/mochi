@@ -1,4 +1,4 @@
 fun main() {
-  xs = [ [1, 2], 3 ]
+  xs = (/ (/1, 2/), 3 /)
   print(xs(modulo(2, size(xs)) + 1))
 }
