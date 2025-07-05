@@ -1,5 +1,0 @@
-convert failure: zls not found
-
-source snippet:
-  1: const std = @import("std");
-
