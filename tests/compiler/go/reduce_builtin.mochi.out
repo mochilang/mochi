@@ -1,5 +1,5 @@
 fun add(a: int, b: int): int {
-  return a + b
+  return (a + b)
 }
 fun _reduce(src: list<T>, fn: func(T, T) T, init: T): T {
   let acc = init
@@ -8,4 +8,4 @@ fun _reduce(src: list<T>, fn: func(T, T) T, init: T): T {
 }
   return acc
 }
-print(_reduce[int]([1, 2, 3], add, 0))
+print(str(_reduce([1, 2, 3], add, 0)))

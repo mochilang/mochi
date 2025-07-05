@@ -1,5 +1,8 @@
-tests/compiler/go/update_statement.go.out:16: unsupported statement *ast.SwitchStmt
->>> 15:    func formatDuration(d time.Duration) string {
-16:>>> switch {
-17:    case d < time.Microsecond:
-18:    return fmt.Sprintf("%dns", d.Nanoseconds())
+tests/compiler/go/update_statement.go.out:79: unsupported statement *ast.DeferStmt
+>>> 77:    var failed error
+78:    func() {
+79:>>> defer func() {
+80:    if r := recover(); r != nil {
+81:    failed = fmt.Errorf("%v", r)
+82:    }
+exit status 1
