@@ -21,6 +21,7 @@ The converter currently handles the following patterns:
 - `substr()` -> `substring()`
 - `group_concat()` -> `string_agg()`
 - `char_length()` -> `length()`
+- `character_length()` -> `length()`
 - `printf()` -> `format()`
 - `instr()` -> `strpos()`
 - `datetime('now')` -> `now()`
@@ -32,6 +33,7 @@ The converter currently handles the following patterns:
 - `time('now')` -> `current_time`
 - `CURRENT_DATE` -> `current_date`
 - `CURRENT_TIME` -> `current_time`
+- `CURRENT_TIMESTAMP()` -> `now()`
 - `randomblob(n)` -> `random_bytes(n)`
 - `total(x)` -> `coalesce(sum(x),0)`
 - remove `NOT INDEXED` clauses

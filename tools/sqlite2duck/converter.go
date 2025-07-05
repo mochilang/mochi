@@ -11,8 +11,12 @@ var funcConversions = []struct{ in, out string }{
 	{"group_concat", "string_agg("},
 	{"randomblob", "random_bytes("},
 	{"char_length", "length("},
+	{"character_length", "length("},
 	{"printf", "format("},
 	{"instr", "strpos("},
+	{"current_timestamp", "now("},
+	{"current_date", "current_date("},
+	{"current_time", "current_time("},
 }
 
 var wordConversions = []struct{ in, out string }{
@@ -222,6 +226,14 @@ func replaceTotal(sql string) string {
 	return out.String()
 }
 
+func removeEmptyParens(sql string, names ...string) string {
+	out := sql
+	for _, n := range names {
+		out = strings.ReplaceAll(out, n+"()", n)
+	}
+	return out
+}
+
 // Convert rewrites common SQLite syntax to DuckDB syntax.
 func Convert(sql string) string {
 	out := sql
@@ -236,5 +248,6 @@ func Convert(sql string) string {
 	out = replaceTime(out)
 	out = removeNotIndexed(out)
 	out = replaceTotal(out)
+	out = removeEmptyParens(out, "current_date", "current_time")
 	return out
 }

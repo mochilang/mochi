@@ -2,6 +2,7 @@ package sqlite2duck
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -60,11 +61,14 @@ func TestConvertGolden(t *testing.T) {
 				t.Fatalf("case count mismatch: %d != %d", len(lines), len(sltCases))
 			}
 			for i, sc := range sltCases {
-				got := Convert(sc.Query)
-				want := lines[i]
-				if got != want {
-					t.Fatalf("case %d\nconvert %q\nwant %q\n", i+1, got, want)
-				}
+				i, sc := i, sc
+				t.Run(fmt.Sprintf("query%d", i+1), func(t *testing.T) {
+					got := Convert(sc.Query)
+					want := lines[i]
+					if got != want {
+						t.Fatalf("convert %q\nwant %q", got, want)
+					}
+				})
 			}
 		})
 	}
