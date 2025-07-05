@@ -19,7 +19,7 @@ func ConvertCs(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	writeCsSymbols(&out, nil, syms)
+	writeCsSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -35,7 +35,7 @@ func ConvertCsFile(path string) ([]byte, error) {
 	return ConvertCs(string(data))
 }
 
-func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol) {
+func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -45,9 +45,39 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 		case protocol.SymbolKindClass, protocol.SymbolKindStruct, protocol.SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteString(" {}\n")
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindField || c.Kind == protocol.SymbolKindProperty {
+					fmt.Fprintf(out, "  %s: any\n", c.Name)
+				}
+			}
+			out.WriteString("}\n")
+			var rest []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindField && c.Kind != protocol.SymbolKindProperty {
+					rest = append(rest, c)
+				}
+			}
+			if len(rest) > 0 {
+				writeCsSymbols(out, nameParts, rest, src, ls)
+			}
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
 			params, ret := parseCsSignature(s.Detail)
+			if len(params) == 0 && ret == "" {
+				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+						for _, line := range strings.Split(mc.Value, "\n") {
+							l := strings.TrimSpace(line)
+							if strings.Contains(l, "(") && strings.Contains(l, ")") {
+								if p, r := parseCsSignature(&l); len(p) > 0 || r != "" {
+									params, ret = p, r
+									break
+								}
+							}
+						}
+					}
+				}
+			}
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteByte('(')
@@ -63,9 +93,41 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteString(ret)
 			}
 			out.WriteString(" {}\n")
-		}
-		if len(s.Children) > 0 {
-			writeCsSymbols(out, nameParts, s.Children)
+			if len(s.Children) > 0 {
+				writeCsSymbols(out, nameParts, s.Children, src, ls)
+			}
+		case protocol.SymbolKindField, protocol.SymbolKindProperty, protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			if len(prefix) == 0 {
+				out.WriteString("let ")
+				out.WriteString(strings.Join(nameParts, "."))
+				out.WriteByte('\n')
+			}
+			if len(s.Children) > 0 {
+				writeCsSymbols(out, nameParts, s.Children, src, ls)
+			}
+		case protocol.SymbolKindEnum:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindEnumMember {
+					fmt.Fprintf(out, "  %s\n", c.Name)
+				}
+			}
+			out.WriteString("}\n")
+			var rest []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindEnumMember {
+					rest = append(rest, c)
+				}
+			}
+			if len(rest) > 0 {
+				writeCsSymbols(out, nameParts, rest, src, ls)
+			}
+		default:
+			if len(s.Children) > 0 {
+				writeCsSymbols(out, nameParts, s.Children, src, ls)
+			}
 		}
 	}
 }
