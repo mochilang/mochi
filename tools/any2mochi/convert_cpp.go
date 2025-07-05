@@ -8,6 +8,11 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+type cppParam struct {
+	name string
+	typ  string
+}
+
 // ConvertCpp converts cpp source code to Mochi using the language server.
 func ConvertCpp(src string) ([]byte, error) {
 	ls := Servers["cpp"]
@@ -23,17 +28,44 @@ func ConvertCpp(src string) ([]byte, error) {
 		if s.Kind != protocol.SymbolKindFunction && s.Kind != protocol.SymbolKindMethod {
 			continue
 		}
+		signature := ""
+		if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+				lines := strings.Split(mc.Value, "\n")
+				for i := len(lines) - 1; i >= 0 && signature == ""; i-- {
+					l := strings.TrimSpace(lines[i])
+					if strings.Contains(l, "(") && strings.Contains(l, ")") {
+						signature = l
+					}
+				}
+			}
+		}
+		var params []cppParam
+		var ret string
+		if signature != "" {
+			params, ret = parseCppSignature(signature)
+		} else {
+			names, r := parseCppDetail(s.Detail)
+			ret = r
+			for _, n := range names {
+				params = append(params, cppParam{name: n})
+			}
+		}
 		out.WriteString("fun ")
 		out.WriteString(s.Name)
-		params, ret := parseCppDetail(s.Detail)
 		out.WriteByte('(')
 		for i, p := range params {
 			if i > 0 {
 				out.WriteString(", ")
 			}
-			out.WriteString(p)
+			out.WriteString(p.name)
+			if p.typ != "" {
+				out.WriteString(": ")
+				out.WriteString(p.typ)
+			}
 		}
 		out.WriteByte(')')
+		ret = mapCppType(ret)
 		if ret != "" && ret != "void" {
 			out.WriteString(": ")
 			out.WriteString(ret)
@@ -88,4 +120,67 @@ func parseCppDetail(detail *string) ([]string, string) {
 		params = append(params, name)
 	}
 	return params, ret
+}
+
+func parseCppSignature(sig string) ([]cppParam, string) {
+	sig = strings.TrimSpace(sig)
+	open := strings.Index(sig, "(")
+	close := strings.LastIndex(sig, ")")
+	if open == -1 || close == -1 || close < open {
+		return nil, mapCppType(sig)
+	}
+	header := strings.TrimSpace(sig[:open])
+	paramsPart := sig[open+1 : close]
+	parts := strings.Fields(header)
+	ret := ""
+	if len(parts) > 1 {
+		ret = mapCppType(strings.Join(parts[:len(parts)-1], " "))
+	}
+	paramsSplit := strings.Split(paramsPart, ",")
+	params := make([]cppParam, 0, len(paramsSplit))
+	for _, ps := range paramsSplit {
+		ps = strings.TrimSpace(ps)
+		if ps == "" || ps == "void" {
+			continue
+		}
+		f := strings.Fields(ps)
+		name := f[len(f)-1]
+		typ := ""
+		if len(f) > 1 {
+			typ = mapCppType(strings.Join(f[:len(f)-1], " "))
+		}
+		if eq := strings.Index(name, "="); eq != -1 {
+			name = name[:eq]
+		}
+		name = strings.Trim(name, "*&")
+		params = append(params, cppParam{name: name, typ: typ})
+	}
+	return params, ret
+}
+
+func mapCppType(typ string) string {
+	typ = strings.TrimSpace(typ)
+	for strings.HasSuffix(typ, "*") || strings.HasSuffix(typ, "&") {
+		typ = strings.TrimSpace(typ[:len(typ)-1])
+	}
+	typ = strings.TrimPrefix(typ, "const ")
+	typ = strings.TrimPrefix(typ, "unsigned ")
+	switch typ {
+	case "", "void":
+		return ""
+	case "int", "size_t", "long", "short":
+		return "int"
+	case "float", "double":
+		return "float"
+	case "char", "char16_t", "char32_t", "std::string", "string":
+		return "string"
+	}
+	if strings.HasPrefix(typ, "std::vector<") && strings.HasSuffix(typ, ">") {
+		inner := mapCppType(typ[len("std::vector<") : len(typ)-1])
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
+	return typ
 }

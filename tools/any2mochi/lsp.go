@@ -19,6 +19,18 @@ func EnsureAndParse(cmd string, args []string, langID, src string) ([]protocol.D
 	return syms, diags, err
 }
 
+// EnsureAndHover runs HoverAt after ensuring the language server is installed.
+func EnsureAndHover(cmd string, args []string, langID, src string, pos protocol.Position) (protocol.Hover, error) {
+	if err := EnsureServer(cmd); err != nil {
+		return protocol.Hover{}, err
+	}
+	hov, err := HoverAt(cmd, args, langID, src, pos)
+	if err != nil {
+		err = fmt.Errorf("hover failure: %w\n\nsource snippet:\n%s", err, numberedSnippet(src))
+	}
+	return hov, err
+}
+
 func numberedSnippet(src string) string {
 	lines := strings.Split(src, "\n")
 	if len(lines) > 10 {
