@@ -19,40 +19,83 @@ func ConvertC(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 
+	aliasForRange := make(map[protocol.Range]string)
+	for _, s := range syms {
+		if s.Detail != nil && *s.Detail == "type alias" {
+			aliasForRange[s.Range] = s.Name
+		}
+	}
+
 	var out strings.Builder
 	matched := false
 	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		matched = true
-		ret, params := parseCSignature(s.Detail)
+		switch s.Kind {
+		case protocol.SymbolKindFunction:
+			matched = true
+			ret, params := parseCSignature(s.Detail)
 
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteByte('(')
-		for i, p := range params {
-			if i > 0 {
-				out.WriteString(", ")
+			out.WriteString("fun ")
+			out.WriteString(s.Name)
+			out.WriteByte('(')
+			for i, p := range params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				name := p.name
+				if name == "" {
+					name = fmt.Sprintf("a%d", i)
+				}
+				if p.typ != "" {
+					out.WriteString(name)
+					out.WriteString(": ")
+					out.WriteString(p.typ)
+				} else {
+					out.WriteString(name)
+				}
 			}
-			name := p.name
-			if name == "" {
-				name = fmt.Sprintf("a%d", i)
-			}
-			if p.typ != "" {
-				out.WriteString(name)
+			out.WriteByte(')')
+			if ret != "" && ret != "void" {
 				out.WriteString(": ")
-				out.WriteString(p.typ)
-			} else {
-				out.WriteString(name)
+				out.WriteString(ret)
 			}
+			out.WriteString(" {}\n")
+		case protocol.SymbolKindStruct, protocol.SymbolKindClass:
+			matched = true
+			if len(s.Children) == 0 {
+				continue
+			}
+			name := s.Name
+			if name == "(anonymous struct)" {
+				for r, alias := range aliasForRange {
+					if r.Start.Line <= s.Range.Start.Line && r.End.Line >= s.Range.End.Line {
+						name = alias
+						break
+					}
+				}
+			}
+			if name == "" {
+				name = s.Name
+			}
+			out.WriteString("type ")
+			out.WriteString(name)
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindField {
+					continue
+				}
+				out.WriteString("  ")
+				out.WriteString(c.Name)
+				if c.Detail != nil {
+					t := mapCType(*c.Detail)
+					if t != "" {
+						out.WriteString(": ")
+						out.WriteString(t)
+					}
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
 		}
-		out.WriteByte(')')
-		if ret != "" && ret != "void" {
-			out.WriteString(": ")
-			out.WriteString(ret)
-		}
-		out.WriteString(" {}\n")
 	}
 
 	if !matched {
@@ -106,6 +149,9 @@ func parseCParam(p string) (string, string) {
 	if p == "" {
 		return "", ""
 	}
+	if p == "..." {
+		return "", ""
+	}
 	fields := strings.Fields(p)
 	if len(fields) == 1 {
 		return "", mapCType(fields[0])
@@ -127,11 +173,17 @@ func mapCType(typ string) string {
 	typ = strings.TrimPrefix(typ, "static")
 	typ = strings.TrimPrefix(strings.TrimSpace(typ), "const")
 	typ = strings.TrimPrefix(strings.TrimSpace(typ), "unsigned")
+	typ = strings.TrimPrefix(strings.TrimSpace(typ), "signed")
+	typ = strings.TrimPrefix(strings.TrimSpace(typ), "struct")
 	typ = strings.TrimSpace(typ)
 	switch typ {
 	case "", "void":
 		return ""
+	case "bool":
+		return "bool"
 	case "int", "size_t", "long", "short":
+		return "int"
+	case "long long":
 		return "int"
 	case "float", "double":
 		return "float"
