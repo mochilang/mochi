@@ -49,9 +49,11 @@ Mochi stubs using the Lua language server.
 - Top-level variables with types inferred from hover information
 - Simple `---@class` tables emitted as `type` declarations
 - Basic function bodies including assignments, conditionals and loops
+- Local function declarations
+- Table literals and indexing expressions
+- `repeat` loops and `break` statements
 
 ### Unsupported
 
-- Local definitions inside functions
 - Advanced metatable or module constructs
 - Projects spanning multiple files

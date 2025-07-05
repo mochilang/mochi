@@ -77,6 +77,9 @@ func writeLuaFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol
 	if len(params) == 0 && ret == "" {
 		params, ret = luaHoverSignature(src, sym, ls)
 	}
+	if len(params) == 0 && ret == "" {
+		params, ret = luaSourceSignature(src, sym)
+	}
 	out.WriteString("fun ")
 	out.WriteString(name)
 	out.WriteByte('(')
@@ -192,6 +195,33 @@ func parseLuaDetail(detail *string) ([]luaParam, string) {
 	return params, mapLuaType(ret)
 }
 
+func luaSourceSignature(src string, sym protocol.DocumentSymbol) ([]luaParam, string) {
+	lines := strings.Split(src, "\n")
+	if int(sym.Range.Start.Line) >= len(lines) {
+		return nil, ""
+	}
+	line := strings.TrimSpace(lines[sym.Range.Start.Line])
+	if !strings.HasPrefix(line, "function") {
+		return nil, ""
+	}
+	if open := strings.Index(line, "("); open != -1 {
+		if close := strings.Index(line, ")"); close > open {
+			paramsPart := strings.TrimSpace(line[open+1 : close])
+			var params []luaParam
+			if paramsPart != "" {
+				for _, p := range strings.Split(paramsPart, ",") {
+					p = strings.TrimSpace(p)
+					if p != "" {
+						params = append(params, luaParam{name: p})
+					}
+				}
+			}
+			return params, ""
+		}
+	}
+	return nil, ""
+}
+
 func parseLuaVarDetail(detail *string) string {
 	if detail == nil {
 		return ""
@@ -292,6 +322,12 @@ func collectLuaFuncs(stmts []luaast.Stmt, m map[int]*luaast.FunctionExpr) {
 			collectLuaFuncs(s.Stmts, m)
 		case *luaast.GenericForStmt:
 			collectLuaFuncs(s.Stmts, m)
+		case *luaast.LocalAssignStmt:
+			for _, e := range s.Exprs {
+				if fn, ok := e.(*luaast.FunctionExpr); ok {
+					m[e.Line()-1] = fn
+				}
+			}
 		}
 	}
 }
@@ -303,6 +339,14 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 		switch s := st.(type) {
 		case *luaast.LocalAssignStmt:
 			for i, n := range s.Names {
+				if i < len(s.Exprs) {
+					if fn, ok := s.Exprs[i].(*luaast.FunctionExpr); ok {
+						out = append(out, ind+"fun "+n+luaFuncSignature(fn)+" {")
+						out = append(out, convertLuaStmts(fn.Stmts, indent+1)...)
+						out = append(out, ind+"}")
+						continue
+					}
+				}
 				val := ""
 				if i < len(s.Exprs) {
 					val = luaExprString(s.Exprs[i])
@@ -332,6 +376,8 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 			}
 		case *luaast.FuncCallStmt:
 			out = append(out, ind+luaExprString(s.Expr))
+		case *luaast.BreakStmt:
+			out = append(out, ind+"break")
 		case *luaast.DoBlockStmt:
 			out = append(out, ind+"do {")
 			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
@@ -341,6 +387,11 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 			out = append(out, ind+"while "+cond+" {")
 			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
 			out = append(out, ind+"}")
+		case *luaast.RepeatStmt:
+			out = append(out, ind+"do {")
+			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
+			cond := luaExprString(s.Condition)
+			out = append(out, ind+"} while !("+cond+")")
 		case *luaast.IfStmt:
 			cond := luaExprString(s.Condition)
 			out = append(out, ind+"if "+cond+" {")
@@ -414,9 +465,40 @@ func luaExprString(e luaast.Expr) string {
 		}
 		return callee + "(" + strings.Join(args, ", ") + ")"
 	case *luaast.AttrGetExpr:
-		return luaExprString(v.Object) + "." + luaExprString(v.Key)
+		if k, ok := v.Key.(*luaast.StringExpr); ok {
+			return luaExprString(v.Object) + "[" + strconv.Quote(k.Value) + "]"
+		}
+		if _, ok := v.Key.(*luaast.IdentExpr); ok {
+			return luaExprString(v.Object) + "." + luaExprString(v.Key)
+		}
+		return luaExprString(v.Object) + "[" + luaExprString(v.Key) + "]"
+	case *luaast.TableExpr:
+		isMap := false
+		var items []string
+		for _, f := range v.Fields {
+			if f.Key != nil {
+				isMap = true
+				items = append(items, luaExprString(f.Key)+": "+luaExprString(f.Value))
+			} else {
+				items = append(items, luaExprString(f.Value))
+			}
+		}
+		if isMap {
+			return "{ " + strings.Join(items, ", ") + " }"
+		}
+		return "[" + strings.Join(items, ", ") + "]"
 	}
 	return ""
+}
+
+func luaFuncSignature(fn *luaast.FunctionExpr) string {
+	var params []string
+	if fn.ParList != nil {
+		for _, n := range fn.ParList.Names {
+			params = append(params, n)
+		}
+	}
+	return "(" + strings.Join(params, ", ") + ")"
 }
 
 // ConvertLuaFile reads the lua file and converts it to Mochi.
