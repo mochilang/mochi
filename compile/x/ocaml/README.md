@@ -41,6 +41,7 @@ mochi build --target ocaml main.mochi -o main.ml
 - dataset queries with `from`/`where`/`select` and optional `skip`, `take` and `sort by`
 - `fetch`, `load` and `save` expressions
 - test blocks and `expect` statements
+- struct and enum type declarations
 
 
 The output can be compiled with `ocamlc`:
@@ -72,7 +73,6 @@ These tests verify both the generated program output and the emitted `.ml` code.
  - Partial dataset queries (joins and grouping not implemented)
 - Comprehensive pattern matching and union types
 - Modules and `import` declarations
-- Struct and enum type declarations
 - `generate` expressions
 - Agent and model blocks
 - Concurrency primitives like `spawn` and channels
