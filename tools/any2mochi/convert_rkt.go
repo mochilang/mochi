@@ -1,18 +1,18 @@
 package any2mochi
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertRkt converts rkt source code using the language server. It extracts
-// function definitions from the LSP symbols and then parses the parameter list
-// from the corresponding source snippet using a small regex. This keeps the
-// converter lightweight while still supporting function parameters.
+// function definitions from the LSP symbols and obtains parameter information
+// from the symbol detail or hover text provided by the server. This keeps the
+// converter lightweight while relying solely on LSP output.
 func ConvertRkt(src string) ([]byte, error) {
 	ls := Servers["rkt"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
@@ -23,29 +23,22 @@ func ConvertRkt(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 
-	re := regexp.MustCompile(`(?m)\(define\s+\(([^\s)]+)([^)]*)\)`)
 	var out strings.Builder
 	for _, s := range syms {
 		if s.Kind != protocol.SymbolKindFunction {
 			continue
 		}
-		snippet := snippetFromRange(src, s.Range)
-		params := []string{}
-		if m := re.FindStringSubmatch(snippet); len(m) == 3 {
-			// override name from snippet to handle aliases
-			if m[1] != "" {
-				s.Name = m[1]
+		params := parseRktParams(s.Detail)
+		if len(params) == 0 {
+			if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+				params = parseRktHoverParams(hov)
 			}
-			params = strings.Fields(strings.TrimSpace(m[2]))
 		}
 		out.WriteString("fun ")
 		out.WriteString(s.Name)
 		out.WriteByte('(')
-		for i, p := range params {
-			if i > 0 {
-				out.WriteString(", ")
-			}
-			out.WriteString(p)
+		if len(params) > 0 {
+			out.WriteString(strings.Join(params, ", "))
 		}
 		out.WriteString(") {}\n")
 	}
@@ -64,32 +57,63 @@ func ConvertRktFile(path string) ([]byte, error) {
 	return ConvertRkt(string(data))
 }
 
-// snippetFromRange returns the substring of src defined by the given LSP range.
-// It is tolerant of out of bound positions and treats character offsets as
-// rune-based indices.
-func snippetFromRange(src string, r protocol.Range) string {
-	lines := strings.Split(src, "\n")
-	runeOffset := func(line, char int) int {
-		off := 0
-		for i := 0; i < line && i < len(lines); i++ {
-			off += len([]rune(lines[i])) + 1
-		}
-		if line < len(lines) {
-			runes := []rune(lines[line])
-			if char > len(runes) {
-				char = len(runes)
+func parseRktParams(detail *string) []string {
+	if detail == nil {
+		return nil
+	}
+	d := *detail
+	open := strings.Index(d, "(")
+	close := strings.Index(d, ")")
+	if open == -1 || close == -1 || close <= open {
+		return nil
+	}
+	list := strings.TrimSpace(d[open+1 : close])
+	if list == "" {
+		return nil
+	}
+	return strings.Fields(list)
+}
+
+func parseRktHoverParams(h protocol.Hover) []string {
+	var text string
+	switch c := h.Contents.(type) {
+	case protocol.MarkupContent:
+		text = c.Value
+	case protocol.MarkedString:
+		if b, err := json.Marshal(c); err == nil {
+			var m protocol.MarkedStringStruct
+			if json.Unmarshal(b, &m) == nil {
+				text = m.Value
+			} else {
+				json.Unmarshal(b, &text)
 			}
-			off += len(string(runes[:char]))
 		}
-		if off > len(src) {
-			off = len(src)
+	case []protocol.MarkedString:
+		if len(c) > 0 {
+			if b, err := json.Marshal(c[0]); err == nil {
+				var m protocol.MarkedStringStruct
+				if json.Unmarshal(b, &m) == nil {
+					text = m.Value
+				} else {
+					json.Unmarshal(b, &text)
+				}
+			}
 		}
-		return off
+	case string:
+		text = c
 	}
-	start := runeOffset(int(r.Start.Line), int(r.Start.Character))
-	end := runeOffset(int(r.End.Line), int(r.End.Character))
-	if start > end {
-		return ""
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(line)
+		open := strings.Index(line, "(")
+		close := strings.Index(line, ")")
+		if open == -1 || close == -1 || close <= open {
+			continue
+		}
+		list := strings.TrimSpace(line[open+1 : close])
+		if list == "" {
+			continue
+		}
+		return strings.Fields(list)
 	}
-	return src[start:end]
+	return nil
 }
