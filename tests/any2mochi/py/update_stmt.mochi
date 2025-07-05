@@ -1,9 +1,9 @@
 let T: type[T]
 fun _get(obj: Unknown, name: Unknown ) -> (Unknown | Any | None) {}
 type Person {
-  name
-  age
-  status
+  name: string
+  age: int
+  status: string
 }
 let people: list[Person]
 fun test_update_adult_status() {}

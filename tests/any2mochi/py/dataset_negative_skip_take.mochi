@@ -1,5 +1,5 @@
 type Num {
-  val
+  val: int
 }
 let items: list[Num]
 let a: None

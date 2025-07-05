@@ -1,7 +1,7 @@
 let T: type[T]
 fun _get(obj: Unknown, name: Unknown ) -> (Unknown | Any | None) {}
 type Counter {
-  value
+  value: int
   fun inc(): int {}
 }
 let c: Counter

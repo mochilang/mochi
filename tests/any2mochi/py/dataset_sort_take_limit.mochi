@@ -1,8 +1,8 @@
 let T: type[T]
 fun _sort_key(k: Unknown) -> (str | Unknown) {}
 type Product {
-  name
-  price
+  name: string
+  price: int
 }
 let products: list[Product]
 let expensive: None

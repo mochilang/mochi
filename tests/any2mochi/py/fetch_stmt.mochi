@@ -1,10 +1,10 @@
 let T: type[T]
 fun _fetch(url: Unknown, opts: Unknown): Any {}
 type Todo {
-  userId
-  id
-  title
-  completed
+  userId: int
+  id: int
+  title: string
+  completed: bool
 }
 let todo: None
 fun main() {}

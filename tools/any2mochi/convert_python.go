@@ -101,7 +101,7 @@ func writePyFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol,
 
 func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
 	name := strings.Join(prefix, ".")
-	fields := extractPyFields(sym)
+	fields := extractPyFields(sym, src, ls)
 	methods := make([]protocol.DocumentSymbol, 0)
 	for _, c := range sym.Children {
 		switch c.Kind {
@@ -118,7 +118,11 @@ func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSy
 	out.WriteString(" {\n")
 	for _, f := range fields {
 		out.WriteString("  ")
-		out.WriteString(f)
+		out.WriteString(f.name)
+		if f.typ != "" && f.typ != "Unknown" {
+			out.WriteString(": ")
+			out.WriteString(f.typ)
+		}
 		out.WriteByte('\n')
 	}
 	for _, m := range methods {
@@ -133,11 +137,17 @@ func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSy
 	out.WriteString("}\n")
 }
 
-func extractPyFields(sym protocol.DocumentSymbol) []string {
-	var fields []string
+type pyField struct {
+	name string
+	typ  string
+}
+
+func extractPyFields(sym protocol.DocumentSymbol, src string, ls LanguageServer) []pyField {
+	var fields []pyField
 	for _, c := range sym.Children {
 		if c.Kind == protocol.SymbolKindVariable || c.Kind == protocol.SymbolKindConstant {
-			fields = append(fields, c.Name)
+			typ := getPyVarType(src, c.SelectionRange.Start, ls)
+			fields = append(fields, pyField{name: c.Name, typ: typ})
 		}
 	}
 	return fields

@@ -2,8 +2,8 @@ fun depth(t: Tree): int {}
 type Tree {}
 type Leaf {}
 type Node {
-  left
-  value
-  right
+  left: Tree
+  value: int
+  right: Tree
 }
 fun main() {}
