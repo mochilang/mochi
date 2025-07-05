@@ -1,28 +1,11 @@
 package any2mochi
 
-import (
-	"os"
-	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
-)
+import "os"
 
 // ConvertTypeScript converts TypeScript source code to a minimal Mochi representation using the language server.
 func ConvertTypeScript(src string) ([]byte, error) {
-	syms, err := ParseText("typescript-language-server", []string{"--stdio"}, "typescript", src)
-	if err != nil {
-		return nil, err
-	}
-	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteString("() {}\n")
-	}
-	return []byte(out.String()), nil
+	ls := Servers["typescript"]
+	return ConvertWithServer(ls.Command, ls.Args, ls.LangID, src)
 }
 
 // ConvertTypeScriptFile reads the TS file and converts it to Mochi.
