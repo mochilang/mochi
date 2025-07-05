@@ -111,9 +111,15 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				if c.Kind == protocol.SymbolKindField || c.Kind == protocol.SymbolKindProperty || c.Kind == protocol.SymbolKindVariable {
 					out.WriteString("  ")
 					out.WriteString(c.Name)
-					if t := dartTypeFromDetail(c.Detail); t != "" && t != "dynamic" {
+					typ := dartTypeFromDetail(c.Detail)
+					if typ == "" || typ == "dynamic" {
+						if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, c.SelectionRange.Start); err == nil {
+							typ = dartTypeFromHoverLine(c.Name, hov)
+						}
+					}
+					if typ != "" && typ != "dynamic" {
 						out.WriteString(": ")
-						out.WriteString(t)
+						out.WriteString(typ)
 					}
 					out.WriteByte('\n')
 				}
@@ -200,4 +206,22 @@ func dartTypeFromDetail(d *string) string {
 		return ""
 	}
 	return strings.TrimSpace(*d)
+}
+
+func dartTypeFromHoverLine(name string, h protocol.Hover) string {
+	text := hoverString(h)
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.Contains(line, name) {
+			continue
+		}
+		fields := strings.Fields(line)
+		if len(fields) < 2 {
+			continue
+		}
+		if fields[len(fields)-1] == name {
+			return strings.Join(fields[:len(fields)-1], " ")
+		}
+	}
+	return ""
 }

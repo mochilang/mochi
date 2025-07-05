@@ -11,6 +11,15 @@ const (
 		"    }\n" +
 		"    return String.fromCharCode(runes[i]);\n" +
 		"}\n"
+	helperIndexList = "dynamic _indexList(List<dynamic> arr, int i) {\n" +
+		"    var idx = i;\n" +
+		"    var n = arr.length;\n" +
+		"    if (idx < 0) idx += n;\n" +
+		"    if (idx < 0 || idx >= n) {\n" +
+		"        throw RangeError('index out of range');\n" +
+		"    }\n" +
+		"    return arr[idx];\n" +
+		"}\n"
 	helperUnionAll = "List<dynamic> _unionAll(List<dynamic> a, List<dynamic> b) => [...a, ...b];\n"
 	helperUnion    = "List<dynamic> _union(List<dynamic> a, List<dynamic> b) {\n" +
 		"    var res = [...a];\n" +
@@ -424,6 +433,7 @@ const (
 
 var helperMap = map[string]string{
 	"_indexString":    helperIndexString,
+	"_indexList":      helperIndexList,
 	"_unionAll":       helperUnionAll,
 	"_union":          helperUnion,
 	"_except":         helperExcept,

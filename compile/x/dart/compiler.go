@@ -885,6 +885,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						idx = fmt.Sprintf("(%s).toInt()", idx)
 					}
 					expr = fmt.Sprintf("_indexString(%s, %s)", expr, idx)
+				} else if isListPrimary(c, p.Target) {
+					c.use("_indexList")
+					expr = fmt.Sprintf("_indexList(%s, %s)", expr, idx)
 				} else {
 					expr = fmt.Sprintf("%s[%s]", expr, idx)
 				}
@@ -2491,6 +2494,38 @@ func isStringPostfix(c *Compiler, p *parser.PostfixExpr) bool {
 	}
 	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}
 	return isStringExpr(c, e)
+}
+
+func isListExpr(c *Compiler, e *parser.Expr) bool {
+	if e == nil {
+		return false
+	}
+	if e.Binary != nil && len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Ops) == 0 {
+			if u.Value.Target.List != nil {
+				return true
+			}
+			if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+				if c.env != nil {
+					if t, err := c.env.GetVar(sel.Root); err == nil {
+						if _, ok := t.(types.ListType); ok {
+							return true
+						}
+					}
+				}
+			}
+		}
+	}
+	return false
+}
+
+func isListPrimary(c *Compiler, p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p}}}}
+	return isListExpr(c, e)
 }
 
 func isFloatExpr(c *Compiler, e *parser.Expr) bool {
