@@ -59,12 +59,15 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteByte('(')
-			if len(params) > 0 {
-				names := make([]string, len(params))
-				for i, p := range params {
-					names[i] = p.name
+			for i, p := range params {
+				if i > 0 {
+					out.WriteString(", ")
 				}
-				out.WriteString(strings.Join(names, ", "))
+				out.WriteString(p.name)
+				if p.typ != "" {
+					out.WriteString(": ")
+					out.WriteString(p.typ)
+				}
 			}
 			out.WriteByte(')')
 			if ret != "" && ret != "void" {
@@ -74,14 +77,66 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 			out.WriteString(" {}\n")
 
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty:
+			typ := ""
+			if s.Detail != nil {
+				typ = parseCobolType(*s.Detail)
+			}
+			if typ == "" {
+				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					typ = parseCobolType(hoverString(hov))
+				}
+			}
 			out.WriteString("var ")
 			out.WriteString(strings.Join(nameParts, "."))
+			if typ != "" {
+				out.WriteString(": ")
+				out.WriteString(typ)
+			}
 			out.WriteString(" = nil\n")
 
 		case protocol.SymbolKindClass, protocol.SymbolKindStruct, protocol.SymbolKindInterface, protocol.SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteString(" {}\n")
+			var fields []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				switch c.Kind {
+				case protocol.SymbolKindField, protocol.SymbolKindProperty, protocol.SymbolKindVariable:
+					fields = append(fields, c)
+				}
+			}
+			if len(fields) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, f := range fields {
+					typ := ""
+					if f.Detail != nil {
+						typ = parseCobolType(*f.Detail)
+					}
+					if typ == "" {
+						if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, f.SelectionRange.Start); err == nil {
+							typ = parseCobolType(hoverString(hov))
+						}
+					}
+					out.WriteString("  ")
+					out.WriteString(f.Name)
+					if typ != "" {
+						out.WriteString(": ")
+						out.WriteString(typ)
+					}
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
+			for _, c := range s.Children {
+				switch c.Kind {
+				case protocol.SymbolKindField, protocol.SymbolKindProperty, protocol.SymbolKindVariable:
+					continue
+				default:
+					writeCobolSymbols(out, ls, src, nameParts, []protocol.DocumentSymbol{c})
+				}
+			}
+			continue
 
 		case protocol.SymbolKindNamespace, protocol.SymbolKindPackage, protocol.SymbolKindModule:
 			if len(s.Children) > 0 {
@@ -96,7 +151,7 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 	}
 }
 
-func parseCobolParams(detail string) []string {
+func parseCobolParams(detail string) []cobolParam {
 	start := strings.Index(detail, "(")
 	end := strings.Index(detail, ")")
 	if start == -1 || end == -1 || end < start {
@@ -104,7 +159,7 @@ func parseCobolParams(detail string) []string {
 	}
 	list := detail[start+1 : end]
 	parts := strings.Split(list, ",")
-	params := make([]string, 0, len(parts))
+	params := make([]cobolParam, 0, len(parts))
 	for _, p := range parts {
 		p = strings.TrimSpace(p)
 		if p == "" {
@@ -120,12 +175,15 @@ func parseCobolParams(detail string) []string {
 		name = strings.TrimPrefix(name, "by")
 		name = strings.TrimPrefix(name, "value")
 		name = strings.TrimPrefix(name, "reference")
-		params = append(params, name)
+		params = append(params, cobolParam{name: name, typ: parseCobolType(p)})
 	}
 	return params
 }
 
-type cobolParam struct{ name string }
+type cobolParam struct {
+	name string
+	typ  string
+}
 
 func parseCobolSignature(detail string) ([]cobolParam, string) {
 	params := parseCobolParams(detail)
@@ -136,13 +194,12 @@ func parseCobolSignature(detail string) ([]cobolParam, string) {
 		r = strings.TrimSuffix(r, ".")
 		if f := strings.Fields(r); len(f) > 0 {
 			ret = mapCobolType(f[0])
+			if ret == "" {
+				ret = parseCobolType(r)
+			}
 		}
 	}
-	out := make([]cobolParam, len(params))
-	for i, p := range params {
-		out[i] = cobolParam{name: p}
-	}
-	return out, ret
+	return params, ret
 }
 
 func mapCobolType(t string) string {
@@ -157,4 +214,23 @@ func mapCobolType(t string) string {
 	default:
 		return ""
 	}
+}
+
+func parseCobolType(detail string) string {
+	lower := strings.ToLower(detail)
+	if idx := strings.Index(lower, "pic"); idx != -1 {
+		rest := strings.TrimSpace(detail[idx+3:])
+		if f := strings.Fields(rest); len(f) > 0 {
+			if t := mapCobolType(f[0]); t != "" {
+				return t
+			}
+		}
+	}
+	fields := strings.Fields(detail)
+	if len(fields) > 0 {
+		if t := mapCobolType(fields[0]); t != "" {
+			return t
+		}
+	}
+	return ""
 }
