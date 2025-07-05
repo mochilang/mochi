@@ -1,1 +1,60 @@
-conversion incomplete: unhandled expression
+generated code does not match expected
+--- expected
++++ generated
+@@ -3,27 +3,35 @@
+   age: int
+   status: string
+ }
+-
+-let people: list<Person> = [
+-  Person { name: "Alice", age: 17, status: "minor" },
+-  Person { name: "Bob", age: 25, status: "unknown" },
+-  Person { name: "Charlie", age: 18, status: "unknown" },
+-  Person { name: "Diana", age: 16, status: "minor" }
+-]
+-
+-update people
+-set {
+-  status: "adult",
+-  age: age + 1
++fun _get(obj: any, name: any): any {
++  if obj ? None {
++    return None
++  }
++  if isinstance(obj, dict) {
++    if name ? obj {
++      return obj[name]
++    }
++  }
++  if hasattr(obj, name) {
++    return getattr(obj, name)
++  }
++  if isinstance(obj, (list, tuple)) {
++    for it in obj {
++      return _get(it, name)
++    }
++  }
+ }
+-where age >= 18
+-
+-test "update adult status" {
+-  expect people == [
+-    Person { name: "Alice", age: 17, status: "minor" },
+-    Person { name: "Bob", age: 26, status: "adult" },
+-    Person { name: "Charlie", age: 19, status: "adult" },
+-    Person { name: "Diana", age: 16, status: "minor" }
+-  ]
++fun test_update_adult_status(): any {
++}
++let people = [Person { name: "Alice", age: 17, status: "minor" }, Person { name: "Bob", age: 25, status: "unknown" }, Person { name: "Charlie", age: 18, status: "unknown" }, Person { name: "Diana", age: 16, status: "minor" }]
++for (_i0, _it1) in enumerate(people) {
++  let name = _get(_it1, "name")
++  let age = _get(_it1, "age")
++  let status = _get(_it1, "status")
++  if age >= 18 {
++    setattr(_it1, "status", "adult")
++    setattr(_it1, "age", age + 1)
++  }
+ }
+ print("ok")
++test_update_adult_status()

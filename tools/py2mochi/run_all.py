@@ -15,20 +15,17 @@ for py_file in sorted(glob.glob(os.path.join(PY_DIR, "*.py.out"))):
     err_file = base + ".error"
 
     try:
-        code = subprocess.check_output(["python3", CONVERTER, py_file], text=True)
+        code = subprocess.check_output(
+            ["python3", CONVERTER, py_file], text=True, stderr=subprocess.STDOUT
+        )
     except subprocess.CalledProcessError as e:
         with open(err_file, "w") as f:
-            f.write(f"py2mochi failed: {e}\n")
+            f.write("py2mochi failed:\n")
+            f.write(e.output)
         if os.path.exists(out_file):
             os.remove(out_file)
         continue
 
-    if "<expr>" in code:
-        with open(err_file, "w") as f:
-            f.write("conversion incomplete: unhandled expression\n")
-        if os.path.exists(out_file):
-            os.remove(out_file)
-        continue
 
     expected = open(mochi_file, encoding="utf-8").read()
 
@@ -50,6 +47,7 @@ for py_file in sorted(glob.glob(os.path.join(PY_DIR, "*.py.out"))):
                 fromfile="expected",
                 tofile="generated",
                 lineterm="",
+                n=3,
             )
         )
         with open(err_file, "w", encoding="utf-8") as f:

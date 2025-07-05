@@ -1,1 +1,2 @@
-conversion incomplete: unhandled expression
+py2mochi failed:
+unhandled expression at line 30:                 {k: str(v) for k, v in dict(opts["query"]).items()}

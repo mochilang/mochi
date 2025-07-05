@@ -1,1 +1,2 @@
-conversion incomplete: unhandled expression
+py2mochi failed:
+unhandled expression at line 78:                     undef = [None] * (len(items[0]) if items else 0)

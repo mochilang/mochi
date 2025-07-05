@@ -1,1 +1,2 @@
-conversion incomplete: unhandled expression
+py2mochi failed:
+unhandled expression at line 24:     f = sys.stdin if path is None else open(path, "r")
