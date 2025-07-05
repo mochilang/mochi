@@ -1,0 +1,7 @@
+type Color =
+  Red
+  | Green
+  | Blue
+
+let c: Color = Green {}
+print(c)
