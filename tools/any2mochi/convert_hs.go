@@ -127,6 +127,27 @@ func mapHsType(t string) string {
 	return t
 }
 
+func extractHsBody(src string, sym protocol.DocumentSymbol) string {
+	lines := strings.Split(src, "\n")
+	start := int(sym.Range.Start.Line)
+	end := int(sym.Range.End.Line)
+	if start >= len(lines) {
+		return ""
+	}
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	snippet := strings.Join(lines[start:end+1], "\n")
+	if i := strings.Index(snippet, "="); i != -1 {
+		body := strings.TrimSpace(snippet[i+1:])
+		if j := strings.Index(body, "\n"); j != -1 {
+			body = strings.TrimSpace(body[:j])
+		}
+		return body
+	}
+	return ""
+}
+
 func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
@@ -155,7 +176,14 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			body := extractHsBody(src, s)
+			if body == "" {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" { ")
+				out.WriteString(body)
+				out.WriteString(" }\n")
+			}
 		case protocol.SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
