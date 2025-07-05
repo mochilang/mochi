@@ -25,60 +25,7 @@ func ConvertRkt(src string) ([]byte, error) {
 	}
 
 	var out strings.Builder
-	for _, s := range syms {
-		switch s.Kind {
-		case protocol.SymbolKindFunction:
-			params, ret := parseRktSignature(s.Detail)
-			if len(params) == 0 && ret == "" {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					params, ret = parseRktHoverSignature(hov)
-				}
-			}
-			out.WriteString("fun ")
-			out.WriteString(s.Name)
-			out.WriteByte('(')
-			if len(params) > 0 {
-				out.WriteString(strings.Join(params, ", "))
-			}
-			out.WriteByte(')')
-			if ret != "" && ret != "Void" {
-				out.WriteString(": ")
-				out.WriteString(ret)
-			}
-			out.WriteString(" {}\n")
-		case protocol.SymbolKindStruct, protocol.SymbolKindClass:
-			out.WriteString("type ")
-			out.WriteString(s.Name)
-			if len(s.Children) == 0 {
-				out.WriteString(" {}\n")
-				continue
-			}
-			out.WriteString(" {\n")
-			for _, f := range s.Children {
-				if f.Kind != protocol.SymbolKindField {
-					continue
-				}
-				out.WriteString("  ")
-				out.WriteString(f.Name)
-				if typ := parseRktVarType(f.Detail); typ != "" {
-					out.WriteString(": ")
-					out.WriteString(typ)
-				}
-				out.WriteByte('\n')
-			}
-			out.WriteString("}\n")
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
-			if len(s.Children) == 0 && s.Name != "" {
-				out.WriteString("let ")
-				out.WriteString(s.Name)
-				if typ := parseRktVarType(s.Detail); typ != "" {
-					out.WriteString(": ")
-					out.WriteString(typ)
-				}
-				out.WriteByte('\n')
-			}
-		}
-	}
+	writeRktSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -92,6 +39,103 @@ func ConvertRktFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertRkt(string(data))
+}
+
+func writeRktSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+	for _, s := range syms {
+		nameParts := prefix
+		if s.Name != "" {
+			nameParts = append(nameParts, s.Name)
+		}
+		switch s.Kind {
+		case protocol.SymbolKindNamespace, protocol.SymbolKindPackage, protocol.SymbolKindModule:
+			writeRktSymbols(out, nameParts, s.Children, src, ls)
+		case protocol.SymbolKindFunction:
+			params, ret := parseRktSignature(s.Detail)
+			if len(params) == 0 && ret == "" {
+				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+					params, ret = parseRktHoverSignature(hov)
+				}
+			}
+			out.WriteString("fun ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteByte('(')
+			if len(params) > 0 {
+				out.WriteString(strings.Join(params, ", "))
+			}
+			out.WriteByte(')')
+			if ret != "" && ret != "Void" {
+				out.WriteString(": ")
+				out.WriteString(ret)
+			}
+			out.WriteString(" {}\n")
+		case protocol.SymbolKindStruct, protocol.SymbolKindClass:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			if len(s.Children) == 0 {
+				out.WriteString(" {}\n")
+				continue
+			}
+			out.WriteString(" {\n")
+			for _, f := range s.Children {
+				if f.Kind != protocol.SymbolKindField {
+					continue
+				}
+				out.WriteString("  ")
+				out.WriteString(f.Name)
+				typ := parseRktVarType(f.Detail)
+				if typ == "" {
+					typ = getRktVarType(src, f.SelectionRange.Start, ls)
+				}
+				if typ != "" {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		case protocol.SymbolKindEnum:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindEnumMember {
+					fmt.Fprintf(out, "  %s\n", c.Name)
+				}
+			}
+			out.WriteString("}\n")
+			var rest []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindEnumMember {
+					rest = append(rest, c)
+				}
+			}
+			if len(rest) > 0 {
+				writeRktSymbols(out, nameParts, rest, src, ls)
+			}
+		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			if len(prefix) == 0 {
+				out.WriteString("let ")
+				out.WriteString(strings.Join(nameParts, "."))
+				typ := parseRktVarType(s.Detail)
+				if typ == "" {
+					typ = getRktVarType(src, s.SelectionRange.Start, ls)
+				}
+				if typ != "" {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
+				out.WriteByte('\n')
+			}
+			if len(s.Children) > 0 {
+				writeRktSymbols(out, nameParts, s.Children, src, ls)
+			}
+		default:
+			if len(s.Children) > 0 {
+				writeRktSymbols(out, nameParts, s.Children, src, ls)
+			}
+		}
+	}
 }
 
 func parseRktParams(detail *string) []string {
@@ -229,6 +273,48 @@ func parseRktVarType(detail *string) string {
 	}
 	if idx := strings.Index(*detail, ":"); idx != -1 {
 		return strings.TrimSpace((*detail)[idx+1:])
+	}
+	return ""
+}
+
+func getRktVarType(src string, pos protocol.Position, ls LanguageServer) string {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+	if err != nil {
+		return ""
+	}
+	return parseRktHoverVarType(hov)
+}
+
+func parseRktHoverVarType(h protocol.Hover) string {
+	var text string
+	switch c := h.Contents.(type) {
+	case protocol.MarkupContent:
+		text = c.Value
+	case protocol.MarkedString:
+		if b, err := json.Marshal(c); err == nil {
+			var m protocol.MarkedStringStruct
+			if json.Unmarshal(b, &m) == nil {
+				text = m.Value
+			} else {
+				json.Unmarshal(b, &text)
+			}
+		}
+	case []protocol.MarkedString:
+		if len(c) > 0 {
+			if b, err := json.Marshal(c[0]); err == nil {
+				var m protocol.MarkedStringStruct
+				if json.Unmarshal(b, &m) == nil {
+					text = m.Value
+				} else {
+					json.Unmarshal(b, &text)
+				}
+			}
+		}
+	case string:
+		text = c
+	}
+	if i := strings.Index(text, ":"); i != -1 {
+		return strings.TrimSpace(text[i+1:])
 	}
 	return ""
 }
