@@ -1,5 +1,0 @@
-tests/compiler/go/cross_join.go.out:29: unsupported expr *ast.FuncLit
->>> 28:    var orders []Order = []Order{Order{Id: 100, CustomerId: 1, Total: 250}, Order{Id: 101, CustomerId: 2, Total: 125}, Order{Id: 102, CustomerId: 1, Total: 300}}
-29:>>> var result []PairInfo = func() []PairInfo {
-30:    _res := []PairInfo{}
-31:    for _, o := range orders {
