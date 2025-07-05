@@ -202,7 +202,8 @@ generated code does not match expected
 +  }
 +  return k
 +}
-+fun test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part(): any {
++test "Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part" {
++  expect result == [{"s_acctbal": 1000, "s_name": "BestSupplier", "n_name": "FRANCE", "p_partkey": 1000, "p_mfgr": "M1", "s_address": "123 Rue", "s_phone": "123", "s_comment": "Fast and reliable", "ps_supplycost": 10}]
 +}
 +let region = [{"r_regionkey": 1, "r_name": "EUROPE"}, {"r_regionkey": 2, "r_name": "ASIA"}]
 +let nation = [{"n_nationkey": 10, "n_regionkey": 1, "n_name": "FRANCE"}, {"n_nationkey": 20, "n_regionkey": 2, "n_name": "CHINA"}]
@@ -223,4 +224,3 @@ generated code does not match expected
 +            select x, key: fun(x) => _sort_key(-x["s_acctbal"]))
 +            select x
 +print(json.dumps(result, default: fun(o) => vars(o)))
-+test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part()

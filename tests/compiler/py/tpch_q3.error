@@ -162,7 +162,8 @@ generated code does not match expected
 +  }
 +  return s
 +}
-+fun test_Q3_returns_revenue_per_order_with_correct_priority(): any {
++test "Q3_returns_revenue_per_order_with_correct_priority" {
++  expect order_line_join == [{"l_orderkey": 100, "revenue": 1000 * 0.95 + 500, "o_orderdate": "1995-03-14", "o_shippriority": 1}]
 +}
 +let customer = [{"c_custkey": 1, "c_mktsegment": "BUILDING"}, {"c_custkey": 2, "c_mktsegment": "AUTOMOBILE"}]
 +let orders = [{"o_orderkey": 100, "o_custkey": 1, "o_orderdate": "1995-03-14", "o_shippriority": 1}, {"o_orderkey": 200, "o_custkey": 2, "o_orderdate": "1995-03-10", "o_shippriority": 2}]
@@ -233,4 +234,3 @@ generated code does not match expected
 -    }
 -  ]
 -}
-+test_Q3_returns_revenue_per_order_with_correct_priority()
