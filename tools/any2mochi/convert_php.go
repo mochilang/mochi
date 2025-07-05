@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -61,9 +62,9 @@ func appendPhpSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				out.WriteString(ret)
 			}
 			body := extractPhpBody(src, s.Range)
-			if body != "" {
+			if len(body) > 0 {
 				out.WriteString(" {\n")
-				for _, line := range strings.Split(body, "\n") {
+				for _, line := range body {
 					out.WriteString("  ")
 					out.WriteString(line)
 					out.WriteByte('\n')
@@ -251,24 +252,122 @@ func mapPhpType(t string) string {
 // The language server provides the range for the entire function including
 // the body. This helper extracts the body lines and removes surrounding
 // braces. The returned string may span multiple lines but is not indented.
-func extractPhpBody(src string, r protocol.Range) string {
+func extractPhpBody(src string, r protocol.Range) []string {
 	lines := strings.Split(src, "\n")
 	start := int(r.Start.Line)
 	end := int(r.End.Line)
 	if start >= len(lines) || end >= len(lines) {
-		return ""
+		return nil
 	}
 	bodyLines := lines[start : end+1]
 	text := strings.Join(bodyLines, "\n")
 	open := strings.Index(text, "{")
 	close := strings.LastIndex(text, "}")
 	if open == -1 || close == -1 || close <= open {
-		return ""
+		return nil
 	}
 	body := strings.TrimSpace(text[open+1 : close])
-	outLines := make([]string, 0, len(strings.Split(body, "\n")))
-	for _, l := range strings.Split(body, "\n") {
-		outLines = append(outLines, strings.TrimSpace(l))
+	return parsePhpStatements(body)
+}
+
+func parsePhpStatements(body string) []string {
+	var out []string
+	indent := 1
+	vars := map[string]bool{}
+	for _, line := range strings.Split(body, "\n") {
+		l := strings.TrimSpace(line)
+		if l == "" {
+			continue
+		}
+		switch {
+		case l == "{":
+			out = append(out, strings.Repeat("  ", indent)+"{")
+			indent++
+			continue
+		case l == "}":
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+"}")
+			continue
+		case strings.HasPrefix(l, "foreach"):
+			re := regexp.MustCompile(`foreach\s*\(([^)]*)\s+as\s+(\$[A-Za-z_][A-Za-z0-9_]*)(\s*=>\s*(\$[A-Za-z_][A-Za-z0-9_]*))?\)`)
+			if m := re.FindStringSubmatch(l); m != nil {
+				src := phpExprToMochi(m[1])
+				if strings.Contains(src, "?") && strings.Contains(src, ":") {
+					parts := strings.SplitN(src, ":", 2)
+					src = strings.TrimSpace(parts[len(parts)-1])
+				}
+				if m[4] != "" {
+					key := phpNameToMochi(m[2])
+					val := phpNameToMochi(m[4])
+					out = append(out, strings.Repeat("  ", indent)+
+						fmt.Sprintf("for %s, %s in %s {", key, val, src))
+				} else {
+					val := phpNameToMochi(m[2])
+					out = append(out, strings.Repeat("  ", indent)+
+						fmt.Sprintf("for %s in %s {", val, src))
+				}
+				indent++
+				continue
+			}
+		case strings.HasPrefix(l, "if ") || strings.HasPrefix(l, "if("):
+			cond := strings.TrimPrefix(l, "if")
+			cond = strings.TrimSpace(strings.TrimSuffix(cond, "{"))
+			cond = strings.TrimSuffix(strings.TrimPrefix(cond, "("), ")")
+			cond = phpExprToMochi(cond)
+			out = append(out, strings.Repeat("  ", indent)+"if "+cond+" {")
+			indent++
+			continue
+		case strings.HasPrefix(l, "else"):
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+"else {")
+			indent++
+			continue
+		case strings.HasPrefix(l, "return "):
+			expr := strings.TrimSuffix(strings.TrimPrefix(l, "return "), ";")
+			expr = phpExprToMochi(expr)
+			out = append(out, strings.Repeat("  ", indent)+"return "+expr)
+			continue
+		case l == "continue;":
+			out = append(out, strings.Repeat("  ", indent)+"continue")
+			continue
+		case l == "break;":
+			out = append(out, strings.Repeat("  ", indent)+"break")
+			continue
+		case strings.HasPrefix(l, "echo "):
+			expr := strings.TrimSuffix(strings.TrimPrefix(l, "echo "), ";")
+			expr = phpExprToMochi(expr)
+			out = append(out, strings.Repeat("  ", indent)+"print("+expr+")")
+			continue
+		}
+		if m := regexp.MustCompile(`^\$([A-Za-z_][A-Za-z0-9_]*)(\[\])?\s*=\s*(.+);$`).FindStringSubmatch(l); m != nil {
+			name := phpNameToMochi("$" + m[1])
+			expr := phpExprToMochi(m[3])
+			if m[2] == "[]" {
+				out = append(out, strings.Repeat("  ", indent)+
+					fmt.Sprintf("%s = append(%s, %s)", name, name, expr))
+			} else {
+				if !vars[name] {
+					out = append(out, strings.Repeat("  ", indent)+
+						fmt.Sprintf("var %s = %s", name, expr))
+					vars[name] = true
+				} else {
+					out = append(out, strings.Repeat("  ", indent)+
+						fmt.Sprintf("%s = %s", name, expr))
+				}
+			}
+			continue
+		}
+		out = append(out, strings.Repeat("  ", indent)+phpExprToMochi(l))
 	}
-	return strings.Join(outLines, "\n")
+	return out
+}
+
+func phpNameToMochi(n string) string {
+	return strings.TrimPrefix(n, "$")
+}
+
+func phpExprToMochi(e string) string {
+	e = strings.ReplaceAll(e, "->", ".")
+	e = strings.ReplaceAll(e, "$", "")
+	return strings.TrimSpace(e)
 }

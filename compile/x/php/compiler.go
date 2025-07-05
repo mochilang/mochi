@@ -855,6 +855,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
 		return c.compileSaveExpr(p.Save)
+	case p.Generate != nil:
+		return c.compileGenerateExpr(p.Generate)
 	default:
 		return "", fmt.Errorf("unsupported expression")
 	}
@@ -1678,6 +1680,52 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	}
 	c.use("_fetch")
 	return fmt.Sprintf("_fetch(%s, %s)", urlStr, withStr), nil
+}
+
+func (c *Compiler) compileGenerateExpr(g *parser.GenerateExpr) (string, error) {
+	var prompt, text, model string
+	params := []string{}
+	for _, f := range g.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		switch f.Name {
+		case "prompt":
+			prompt = v
+		case "text":
+			text = v
+		case "model":
+			model = v
+		default:
+			params = append(params, fmt.Sprintf("'%s' => %s", f.Name, v))
+		}
+	}
+	if prompt == "" && g.Target != "embedding" {
+		prompt = "\"\""
+	}
+	if text == "" && g.Target == "embedding" {
+		text = "\"\""
+	}
+	paramStr := "null"
+	if len(params) > 0 {
+		paramStr = "[" + strings.Join(params, ", ") + "]"
+	}
+	if model == "" {
+		model = "null"
+	}
+	if g.Target == "embedding" {
+		c.use("_gen_embed")
+		return fmt.Sprintf("_gen_embed(%s, %s, %s)", text, model, paramStr), nil
+	}
+	if c.env != nil {
+		if _, ok := c.env.GetStruct(g.Target); ok {
+			c.use("_gen_struct")
+			return fmt.Sprintf("_gen_struct(%s, %s, %s)", prompt, model, paramStr), nil
+		}
+	}
+	c.use("_gen_text")
+	return fmt.Sprintf("_gen_text(%s, %s, %s)", prompt, model, paramStr), nil
 }
 
 func exprVarSet(e *parser.Expr) map[string]bool {

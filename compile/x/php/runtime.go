@@ -130,6 +130,21 @@ const helperPrint = "function _print(...$args) {\n" +
 	"    echo implode(' ', $parts), PHP_EOL;\n" +
 	"}\n"
 
+const helperGenText = "function _gen_text($prompt, $model, $params) {\n" +
+	"    return $prompt;\n" +
+	"}\n"
+
+const helperGenEmbed = "function _gen_embed($text, $model, $params) {\n" +
+	"    $out = [];\n" +
+	"    for ($i = 0; $i < strlen($text); $i++) { $out[] = ord($text[$i]); }\n" +
+	"    return $out;\n" +
+	"}\n"
+
+const helperGenStruct = "function _gen_struct($prompt, $model, $params) {\n" +
+	"    $data = json_decode($prompt, true);\n" +
+	"    return is_array($data) ? $data : [];\n" +
+	"}\n"
+
 const helperFetch = "function _fetch($url, $opts = null) {\n" +
 	"    $args = ['-s'];\n" +
 	"    $method = $opts['method'] ?? 'GET';\n" +
@@ -152,11 +167,14 @@ const helperFetch = "function _fetch($url, $opts = null) {\n" +
 	"}\n"
 
 var helperMap = map[string]string{
-	"_query":     helperQuery,
-	"_group":     helperGroupClass,
-	"_group_by":  helperGroupBy,
-	"_fetch":     helperFetch,
-	"_load_json": helperLoadJSON,
-	"_save_json": helperSaveJSON,
-	"_print":     helperPrint,
+	"_query":      helperQuery,
+	"_group":      helperGroupClass,
+	"_group_by":   helperGroupBy,
+	"_fetch":      helperFetch,
+	"_load_json":  helperLoadJSON,
+	"_save_json":  helperSaveJSON,
+	"_gen_text":   helperGenText,
+	"_gen_embed":  helperGenEmbed,
+	"_gen_struct": helperGenStruct,
+	"_print":      helperPrint,
 }
