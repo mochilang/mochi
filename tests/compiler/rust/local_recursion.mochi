@@ -1,10 +1,10 @@
 type Tree =
   Leaf
   | Node(left: Tree, value: int, right: Tree)
-fun fromList(nums) {
+fun fromList(nums: Vec) {
   return helper(0, nums.len() as i64)
 }
-fun inorder(t) {
+fun inorder(t: Tree) {
   return (|| {
     match t {
         Tree::Leaf => { vec![] },

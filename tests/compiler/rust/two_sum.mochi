@@ -1,4 +1,4 @@
-fun twoSum(nums, target) {
+fun twoSum(nums: Vec, target: int) {
   var n = nums.len() as i64
   for i in 0..n {
     for j in i + 1..n {

@@ -6,7 +6,7 @@ fun main() {
   print("ok")
   test_addition_works()
 }
-fun expect(cond) {
+fun expect(cond: bool) {
   if !cond {
     panic!("expect failed")
   }

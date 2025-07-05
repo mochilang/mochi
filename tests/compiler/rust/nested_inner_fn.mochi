@@ -1,4 +1,4 @@
-fun outer(a) {
+fun outer(a: int) {
   return inner(10)
 }
 fun main() {
