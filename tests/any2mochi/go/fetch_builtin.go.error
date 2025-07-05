@@ -1,0 +1,6 @@
+tests/compiler/go/fetch_builtin.go.out:24: unsupported generics
+>>> 23:    
+24:>>> func _cast[T any](v any) T {
+25:    if tv, ok := v.(T); ok {
+26:    return tv
+

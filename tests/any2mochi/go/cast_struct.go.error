@@ -1,0 +1,6 @@
+tests/compiler/go/cast_struct.go.out:18: unsupported generics
+>>> 17:    
+18:>>> func _cast[T any](v any) T {
+19:    if tv, ok := v.(T); ok {
+20:    return tv
+

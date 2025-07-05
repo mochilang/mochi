@@ -1,1 +1,1 @@
-fun main() {}
+print(str(len({"a": 1, "b": 2})))
