@@ -72,9 +72,20 @@ func EnsureServer(name string) error {
 		{"dotnet", []string{"tool", "install", "-g", name}},
 		{"dotnet", []string{"tool", "update", "-g", name}},
 	}
+
+	// Special cases where the Go install path differs from the binary name.
+	goModule := map[string]string{
+		"gopls": "golang.org/x/tools/gopls@latest",
+	}
 	for _, inst := range installers {
 		if _, err := exec.LookPath(inst.bin); err == nil {
-			cmd := exec.Command(inst.bin, inst.args...)
+			args := inst.args
+			if inst.bin == "go" {
+				if mod, ok := goModule[name]; ok {
+					args = []string{"install", mod}
+				}
+			}
+			cmd := exec.Command(inst.bin, args...)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
