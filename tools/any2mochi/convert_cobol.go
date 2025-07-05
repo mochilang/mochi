@@ -74,7 +74,19 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			bodyLines := linesInRange(src, s.Range)
+			stmts := parseCobolStatements(bodyLines)
+			if len(stmts) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, st := range stmts {
+					out.WriteString("  ")
+					out.WriteString(st)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty:
 			typ := ""
@@ -247,4 +259,37 @@ func parseCobolType(detail string) string {
 		}
 	}
 	return ""
+}
+
+// linesInRange returns the lines of src covered by r. If the range is outside
+// the bounds of src, it returns an empty slice.
+func linesInRange(src string, r protocol.Range) []string {
+	lines := strings.Split(src, "\n")
+	start := int(r.Start.Line)
+	end := int(r.End.Line)
+	if start >= len(lines) || start < 0 {
+		return nil
+	}
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	if end < start {
+		end = start
+	}
+	return lines[start : end+1]
+}
+
+// parseCobolStatements converts a list of COBOL statements to Mochi equivalents.
+// Only a very small subset used by the tests is recognised.
+func parseCobolStatements(lines []string) []string {
+	var out []string
+	for _, l := range lines {
+		ll := strings.TrimSpace(strings.TrimSuffix(l, "."))
+		switch {
+		case strings.HasPrefix(ll, "DISPLAY "):
+			expr := strings.TrimSpace(strings.TrimPrefix(ll, "DISPLAY "))
+			out = append(out, "print("+expr+")")
+		}
+	}
+	return out
 }
