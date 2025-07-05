@@ -2,35 +2,28 @@ package any2mochi
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-// ConvertKt converts Kotlin source code to Mochi using the language server. The
-// converter relies solely on LSP information and does not parse the source
-// directly.
+// ConvertKt converts Kotlin source code to Mochi. It first tries to parse the
+// source using the ktast CLI which outputs a JSON AST. If that fails, it
+// falls back to a regex based parser.
 func ConvertKt(src string) ([]byte, error) {
-	ls := Servers["kt"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
-			return convertKtFallback(src)
+	if ast, err := parseKtCLI(src); err == nil {
+		if out, err2 := convertKtAST(ast); err2 == nil {
+			return out, nil
 		}
-		return nil, err
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-	var out strings.Builder
-	writeKtSymbols(&out, nil, syms, src, ls)
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
+	return convertKtRegex(src)
 }
 
 // ConvertKtFile reads the kt file and converts it to Mochi.
@@ -312,10 +305,10 @@ func splitGeneric(s string) []string {
 	return parts
 }
 
-// convertKtFallback performs a best-effort conversion when the Kotlin language server
-// is unavailable. It uses simple regex parsing to translate function declarations
-// and a limited set of statements.
-func convertKtFallback(src string) ([]byte, error) {
+// convertKtRegex performs a best-effort conversion using regex parsing.
+// It does not rely on a language server and supports a small subset of Kotlin
+// syntax including simple function declarations and basic statements.
+func convertKtRegex(src string) ([]byte, error) {
 	sc := bufio.NewScanner(strings.NewReader(src))
 	var out strings.Builder
 	indent := 0
@@ -425,4 +418,144 @@ func parseSimpleParams(s string) []string {
 		out = append(out, strings.TrimSpace(p))
 	}
 	return out
+}
+
+type ktAST struct {
+	Functions []ktFunc `json:"functions"`
+}
+
+type ktFunc struct {
+	Name   string   `json:"name"`
+	Params []string `json:"params"`
+	Lines  []string `json:"lines"`
+}
+
+func parseKtCLI(src string) (*ktAST, error) {
+	root, err := repoRoot()
+	if err != nil {
+		return nil, err
+	}
+	tmp, err := os.CreateTemp("", "ktsrc_*.kt")
+	if err != nil {
+		return nil, err
+	}
+	if _, err := tmp.WriteString(src); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return nil, err
+	}
+	tmp.Close()
+	defer os.Remove(tmp.Name())
+	cmd := exec.Command("go", "run", filepath.Join(root, "tools", "ktast"), tmp.Name())
+	var out bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		msg := strings.TrimSpace(stderr.String())
+		if msg == "" {
+			msg = err.Error()
+		}
+		return nil, fmt.Errorf("ktast: %s", msg)
+	}
+	var ast ktAST
+	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
+		return nil, err
+	}
+	return &ast, nil
+}
+
+func convertKtAST(ast *ktAST) ([]byte, error) {
+	var out strings.Builder
+	indent := 0
+	ind := func() string { return strings.Repeat("  ", indent) }
+	for _, fn := range ast.Functions {
+		out.WriteString(ind())
+		out.WriteString("fun ")
+		out.WriteString(fn.Name)
+		out.WriteByte('(')
+		out.WriteString(strings.Join(fn.Params, ", "))
+		out.WriteByte(')')
+		out.WriteString(" {\n")
+		indent++
+		for _, line := range fn.Lines {
+			writeKtBodyLine(&out, strings.TrimSpace(line), &indent)
+		}
+		if indent > 0 {
+			indent--
+		}
+		out.WriteString(ind())
+		out.WriteString("}\n")
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(""))
+	}
+	return []byte(out.String()), nil
+}
+
+func writeKtBodyLine(out *strings.Builder, line string, indent *int) {
+	ind := func() string { return strings.Repeat("  ", *indent) }
+	switch {
+	case line == "}":
+		if *indent > 0 {
+			(*indent)--
+		}
+		out.WriteString(ind())
+		out.WriteString("}\n")
+	case strings.HasPrefix(line, "for (") && strings.Contains(line, " in "):
+		r := regexp.MustCompile(`for\s*\(([^ ]+)\s+in\s+([^)]+)\)`)
+		if m := r.FindStringSubmatch(line); m != nil {
+			out.WriteString(ind())
+			iter := strings.TrimSpace(strings.Replace(m[2], "until", "..", 1))
+			fmt.Fprintf(out, "for %s in %s {\n", m[1], iter)
+			(*indent)++
+			return
+		}
+		out.WriteString(ind())
+		out.WriteString(strings.TrimSuffix(line, ";"))
+		out.WriteByte('\n')
+	case strings.HasPrefix(line, "while "):
+		cond := strings.TrimPrefix(line, "while ")
+		cond = strings.Trim(cond, "(){} ")
+		out.WriteString(ind())
+		fmt.Fprintf(out, "while %s {\n", cond)
+		(*indent)++
+	case strings.HasPrefix(line, "if "):
+		cond := strings.TrimPrefix(line, "if ")
+		cond = strings.Trim(cond, "(){} ")
+		out.WriteString(ind())
+		fmt.Fprintf(out, "if %s {\n", cond)
+		(*indent)++
+	case line == "else {":
+		if *indent > 0 {
+			(*indent)--
+		}
+		out.WriteString(ind())
+		out.WriteString("} else {\n")
+		(*indent)++
+	case strings.HasPrefix(line, "val "):
+		out.WriteString(ind())
+		out.WriteString("let ")
+		out.WriteString(strings.TrimSuffix(strings.TrimPrefix(line, "val "), ";"))
+		out.WriteByte('\n')
+	case strings.HasPrefix(line, "var "):
+		out.WriteString(ind())
+		out.WriteString("var ")
+		out.WriteString(strings.TrimSuffix(strings.TrimPrefix(line, "var "), ";"))
+		out.WriteByte('\n')
+	case strings.HasPrefix(line, "return "):
+		out.WriteString(ind())
+		out.WriteString("return ")
+		out.WriteString(strings.TrimSuffix(strings.TrimPrefix(line, "return "), ";"))
+		out.WriteByte('\n')
+	case strings.HasPrefix(line, "println("):
+		out.WriteString(ind())
+		out.WriteString("print(")
+		out.WriteString(strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")"))
+		out.WriteString(")\n")
+	default:
+		out.WriteString(ind())
+		out.WriteString(strings.TrimSuffix(line, ";"))
+		out.WriteByte('\n')
+	}
 }
