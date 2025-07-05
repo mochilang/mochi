@@ -9,11 +9,12 @@ This directory contains golden files for converting Zig source code to Mochi.
 - Basic function body conversion including:
   - `return` statements
   - simple variable assignments
+  - `if`/`else` blocks
+  - `while` and `for` loops
   - call expressions with casts removed
 
 ## Unsupported Features
 
-- Complex control flow (loops, if/else)
 - Struct and union definitions beyond field declarations
 - Generic functions and advanced type features
 - Error handling and defer blocks
