@@ -1,6 +1,7 @@
 fun main() {
-  print((lambda_0)(2, 3))
+  print(lambda_0)(2, 3)
+}
 fun lambda_0() {
-    res = (a + b)
-  }
+  res = (a + b)
+  return
 }

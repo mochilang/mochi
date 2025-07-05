@@ -1,4 +1,1 @@
-fun main() {
-  people = load_json_Person('')
-  save_json_Person(people, '')
-}
+fun main() {}

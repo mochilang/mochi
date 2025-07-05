@@ -1,4 +1,4 @@
 fun main() {
-  xs = [1.5, 2.5]
+  xs = (/1.5, 2.5/)
   print(xs(modulo(0, size(xs)) + 1))
 }
