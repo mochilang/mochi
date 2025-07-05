@@ -3,7 +3,6 @@ package any2mochi
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -24,11 +23,9 @@ func ConvertHs(src string) ([]byte, error) {
 		if s.Kind != protocol.SymbolKindFunction && s.Kind != protocol.SymbolKindMethod {
 			continue
 		}
-		detail := ""
-		if s.Detail != nil {
-			detail = *s.Detail
-		}
-		params, ret := parseHsSig(src, s.Name, detail)
+		names := extractHsParams(s)
+		types, ret := getHsSignature(src, s, ls)
+		params := combineHsParams(names, types)
 		out.WriteString("fun ")
 		out.WriteString(s.Name)
 		out.WriteByte('(')
@@ -60,46 +57,64 @@ func ConvertHsFile(path string) ([]byte, error) {
 	return ConvertHs(string(data))
 }
 
-func parseHsSig(src, name, detail string) ([]string, string) {
-	sig := strings.TrimSpace(detail)
-	if sig != "" {
-		if strings.HasPrefix(sig, name) {
-			sig = strings.TrimSpace(strings.TrimPrefix(sig, name))
-		}
-		sig = strings.TrimSpace(strings.TrimPrefix(sig, "::"))
-	}
-
-	if sig == "" {
-		sigRe := regexp.MustCompile(`(?m)^` + regexp.QuoteMeta(name) + `\s*::\s*(.*)$`)
-		if m := sigRe.FindStringSubmatch(src); len(m) == 2 {
-			sig = strings.TrimSpace(m[1])
+func getHsSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]string, string) {
+	if sym.Detail != nil {
+		if params, ret := parseHsSigTypes(*sym.Detail); len(params) > 0 || ret != "" {
+			return params, ret
 		}
 	}
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err != nil {
+		return nil, ""
+	}
+	return parseHsSigTypes(hoverString(hov))
+}
 
-	var paramTypes []string
-	ret := ""
-	if sig != "" {
-		parts := strings.Split(sig, "->")
-		for i, p := range parts {
-			parts[i] = strings.TrimSpace(p)
-		}
-		if len(parts) > 0 {
-			ret = mapHsType(parts[len(parts)-1])
-			paramTypes = parts[:len(parts)-1]
+func parseHsSigTypes(sig string) ([]string, string) {
+	sig = strings.ReplaceAll(sig, "\n", " ")
+	if i := strings.Index(sig, "::"); i != -1 {
+		sig = strings.TrimSpace(sig[i+2:])
+	}
+	if i := strings.Index(sig, "=>"); i != -1 {
+		sig = strings.TrimSpace(sig[i+2:])
+	}
+	if strings.HasPrefix(sig, "forall") {
+		if i := strings.Index(sig, "."); i != -1 {
+			sig = strings.TrimSpace(sig[i+1:])
 		}
 	}
-
-	defRe := regexp.MustCompile(`(?m)^` + regexp.QuoteMeta(name) + `\s+([^=\n]*)=`)
-	var paramNames []string
-	if m := defRe.FindStringSubmatch(src); len(m) == 2 {
-		paramNames = strings.Fields(strings.TrimSpace(m[1]))
+	parts := strings.Split(sig, "->")
+	for i, p := range parts {
+		parts[i] = strings.TrimSpace(p)
 	}
+	if len(parts) == 0 {
+		return nil, ""
+	}
+	ret := mapHsType(parts[len(parts)-1])
+	params := make([]string, 0, len(parts)-1)
+	for _, p := range parts[:len(parts)-1] {
+		params = append(params, mapHsType(p))
+	}
+	return params, ret
+}
 
-	params := make([]string, 0, len(paramNames))
-	for i, n := range paramNames {
+func extractHsParams(sym protocol.DocumentSymbol) []string {
+	start := sym.Range.Start.Line
+	var params []string
+	for _, c := range sym.Children {
+		if c.Kind == protocol.SymbolKindVariable && c.Range.Start.Line == start {
+			params = append(params, c.Name)
+		}
+	}
+	return params
+}
+
+func combineHsParams(names, types []string) []string {
+	params := make([]string, 0, len(names))
+	for i, n := range names {
 		t := ""
-		if i < len(paramTypes) {
-			t = mapHsType(paramTypes[i])
+		if i < len(types) {
+			t = types[i]
 		}
 		if t != "" {
 			params = append(params, fmt.Sprintf("%s: %s", n, t))
@@ -107,7 +122,7 @@ func parseHsSig(src, name, detail string) ([]string, string) {
 			params = append(params, n)
 		}
 	}
-	return params, ret
+	return params
 }
 
 func mapHsType(t string) string {
