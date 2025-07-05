@@ -20,9 +20,11 @@ class Converter(ast.NodeVisitor):
         self.src_lines = src.splitlines()
         self.dataclasses: set[str] = set()
         self.seen_assigns: set[str] = set()
+        self.assign_values: dict[str, str] = {}
         self.current_callable: tuple[list[str], str] | None = None
-        self.structs: dict[str, list[tuple[str, str]]] = {}
+        self.structs: dict[str, tuple[list[tuple[str, str]], list[ast.FunctionDef]]] = {}
         self.unions: dict[str, list[tuple[str, list[tuple[str, str]]]]] = {}
+        self.name_map = {"_next": "next"}
 
     def emit(self, line: str) -> None:
         self.lines.append("  " * self.indent + line)
@@ -73,7 +75,7 @@ class Converter(ast.NodeVisitor):
                 return json.dumps(node.value)
             return str(node.value)
         if isinstance(node, ast.Name):
-            return node.id
+            return self.name_map.get(node.id, node.id)
         if isinstance(node, ast.Attribute):
             if (
                 node.attr == "lower"
@@ -83,6 +85,8 @@ class Converter(ast.NodeVisitor):
                 and len(node.value.args) == 1
             ):
                 return self.convert_expr(node.value.args[0])
+            if isinstance(node.value, ast.Name) and node.value.id == "self":
+                return node.attr
             return f"{self.convert_expr(node.value)}.{node.attr}"
         if isinstance(node, ast.Subscript):
             target = self.convert_expr(node.value)
@@ -399,6 +403,7 @@ class Converter(ast.NodeVisitor):
                 if "dataclass" not in dec_names:
                     continue
                 fields: list[tuple[str, str]] = []
+                methods: list[ast.FunctionDef] = []
                 for sub in stmt.body:
                     if isinstance(sub, ast.AnnAssign) and isinstance(
                         sub.target, ast.Name
@@ -406,19 +411,32 @@ class Converter(ast.NodeVisitor):
                         fields.append(
                             (sub.target.id, self.convert_type(sub.annotation))
                         )
+                    if isinstance(sub, ast.FunctionDef):
+                        methods.append(sub)
                 base = stmt.bases[0].id if stmt.bases else None
                 self.dataclasses.add(stmt.name)
                 if base:
                     self.unions.setdefault(base, []).append((stmt.name, fields))
                 else:
-                    self.structs[stmt.name] = fields
+                    self.structs[stmt.name] = (fields, methods)
 
         # emit structs
-        for name, fields in self.structs.items():
+        for name, (fields, methods) in self.structs.items():
             self.emit(f"type {name} {{")
             self.indent += 1
             for n, t in fields:
                 self.emit(f"{n}: {t}")
+            for m in methods:
+                args = [
+                    f"{a.arg}: {self.convert_type(a.annotation)}" for a in m.args.args[1:]
+                ]
+                ret = self.convert_type(m.returns)
+                self.emit(f"fun {m.name}({', '.join(args)}): {ret} {{")
+                self.indent += 1
+                for st in m.body:
+                    self.visit(st)
+                self.indent -= 1
+                self.emit("}")
             self.indent -= 1
             self.emit("}")
 
@@ -539,6 +557,7 @@ class Converter(ast.NodeVisitor):
             return
         target = node.targets[0]
         if isinstance(target, ast.Name):
+            name = self.name_map.get(target.id, target.id)
             if isinstance(node.value, ast.Constant) and node.value.value is None:
                 return
             if (
@@ -560,13 +579,26 @@ class Converter(ast.NodeVisitor):
             ):
                 typ = node.value.func.id
                 fetch_expr = self.convert_expr(node.value.keywords[0].value)
-                self.seen_assigns.add(target.id)
-                self.emit(f"let {target.id}: {typ} = ({fetch_expr}) as {typ}")
+                self.seen_assigns.add(name)
+                self.assign_values[name] = f"({fetch_expr}) as {typ}"
+                var_kw = "var" if name == "next" else "let"
+                self.emit(f"{var_kw} {name}: {typ} = ({fetch_expr}) as {typ}")
                 return
-            if target.id in self.seen_assigns:
+            expr = self.convert_expr(node.value)
+            if name in self.seen_assigns:
+                if self.assign_values.get(name) == expr:
+                    return
+                self.assign_values[name] = expr
+                self.emit(f"{name} = {expr}")
                 return
-            self.seen_assigns.add(target.id)
-            self.emit(f"let {target.id} = {self.convert_expr(node.value)}")
+            self.seen_assigns.add(name)
+            self.assign_values[name] = expr
+            var_kw = "var" if name == "next" else "let"
+            self.emit(f"{var_kw} {name} = {expr}")
+            return
+        if isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name) and target.value.id == "self":
+            self.emit(f"{target.attr} = {self.convert_expr(node.value)}")
+            return
 
     def visit_Pass(self, node: ast.Pass) -> None:
         pass
