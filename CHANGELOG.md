@@ -1,4 +1,30 @@
 # 📦 CHANGELOG.md
+## [0.10.16] – 2025-07-05T17:01:44+07:00
+
+### Added
+
+* Runner protocol with sandbox containers and unit tests
+* Any2mochi converts Python, Go and TypeScript with server support
+* Node-based ts2mochi and basic Python converter
+* C backend `min`/`max` builtins
+* SQL Logic Test group-by cases 300–499 and aggfunc support
+* sqlite2duck CLI with extended conversions
+* Doom example movement helpers
+
+### Changed
+
+* go2mochi and py2mochi handle more constructs with improved snippets
+* SQL Logic Test generator processes SELECT ALL and distinct cases
+* sqlite2duck conversions expanded with time/date and hex functions
+* Conversion tests consolidated across languages
+* Scala map field access and Fortran string builtins
+
+### Fixed
+
+* Clojure compiler errors and Deno tests
+* py2mochi list slice formatting
+* Miscellaneous converter issues
+
 ## [0.10.15] – 2025-07-04T22:41:30+07:00
 
 ### Added
