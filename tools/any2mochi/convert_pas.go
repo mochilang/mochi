@@ -67,7 +67,21 @@ func writePasSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			body := convertPasBody(src, s)
+			if body == "" {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, line := range strings.Split(body, "\n") {
+					if strings.TrimSpace(line) == "" {
+						continue
+					}
+					out.WriteString("  ")
+					out.WriteString(line)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -260,4 +274,59 @@ func pasToMochiType(t string) string {
 		return "list<" + inner + ">"
 	}
 	return t
+}
+
+// convertPasBody extracts the function body for sym from src and converts a few
+// basic statements into Mochi equivalents. Only very simple constructs like
+// assignments, returns and writeln calls are handled.
+func convertPasBody(src string, sym protocol.DocumentSymbol) string {
+	lines := strings.Split(src, "\n")
+	start := int(sym.Range.Start.Line)
+	end := int(sym.Range.End.Line)
+	if start >= len(lines) || end >= len(lines) {
+		return ""
+	}
+	bodyLines := lines[start : end+1]
+	beginIdx := -1
+	endIdx := -1
+	for i, l := range bodyLines {
+		if strings.TrimSpace(strings.ToLower(l)) == "begin" {
+			beginIdx = i + 1
+		}
+		if strings.TrimSpace(strings.ToLower(l)) == "end;" {
+			endIdx = i
+			break
+		}
+	}
+	if beginIdx == -1 || endIdx == -1 || beginIdx >= endIdx {
+		return ""
+	}
+	bodyLines = bodyLines[beginIdx:endIdx]
+	var out []string
+	for _, l := range bodyLines {
+		l = strings.TrimSpace(l)
+		if l == "" {
+			continue
+		}
+		lower := strings.ToLower(l)
+		switch {
+		case strings.HasPrefix(lower, "writeln("):
+			l = strings.TrimSuffix(strings.TrimPrefix(l, "writeln("), ");")
+			out = append(out, "print("+l+")")
+		case strings.HasPrefix(lower, "result :="):
+			expr := strings.TrimSpace(l[len("result :="):])
+			expr = strings.TrimSuffix(expr, ";")
+			out = append(out, "return "+expr)
+		case lower == "exit;":
+			out = append(out, "return")
+		case strings.Contains(l, ":="):
+			parts := strings.SplitN(l, ":=", 2)
+			name := strings.TrimSpace(parts[0])
+			expr := strings.TrimSpace(strings.TrimSuffix(parts[1], ";"))
+			out = append(out, name+" = "+expr)
+		default:
+			out = append(out, "// "+l)
+		}
+	}
+	return strings.Join(out, "\n")
 }
