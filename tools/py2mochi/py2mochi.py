@@ -206,17 +206,100 @@ class Converter(ast.NodeVisitor):
 
     def convert_list_comp(self, node: ast.ListComp) -> str:
         parts: list[str] = []
-        for gen in node.generators:
+
+        def parse_dataset_iter(it: ast.expr) -> tuple[str, str | None, str | None, str | None]:
+            sort = None
+            skip = None
+            take = None
+            cur = it
+
+            # handle take
+            if isinstance(cur, ast.Subscript) and isinstance(cur.slice, ast.Slice):
+                sl = cur.slice
+                if (
+                    sl.lower is None
+                    and sl.step is None
+                    and isinstance(sl.upper, ast.Call)
+                    and getattr(sl.upper.func, "id", None) == "max"
+                    and len(sl.upper.args) == 2
+                    and isinstance(sl.upper.args[1], ast.Constant)
+                    and sl.upper.args[1].value == 0
+                ):
+                    take = self.convert_expr(sl.upper.args[0])
+                    cur = cur.value
+
+            # handle skip
+            if isinstance(cur, ast.Subscript) and isinstance(cur.slice, ast.Slice):
+                sl = cur.slice
+                if (
+                    sl.upper is None
+                    and sl.step is None
+                    and isinstance(sl.lower, ast.Call)
+                    and getattr(sl.lower.func, "id", None) == "max"
+                    and len(sl.lower.args) == 2
+                    and isinstance(sl.lower.args[1], ast.Constant)
+                    and sl.lower.args[1].value == 0
+                ):
+                    skip = self.convert_expr(sl.lower.args[0])
+                    cur = cur.value
+
+            # handle sort
+            if isinstance(cur, ast.Call) and isinstance(cur.func, ast.Name) and cur.func.id == "sorted":
+                if cur.keywords:
+                    for kw in cur.keywords:
+                        if kw.arg == "key" and isinstance(kw.value, ast.Lambda):
+                            body = kw.value.body
+                            if (
+                                isinstance(body, ast.Call)
+                                and isinstance(body.func, ast.Name)
+                                and body.func.id == "_sort_key"
+                                and body.args
+                            ):
+                                sort = self.convert_expr(body.args[0])
+                            else:
+                                sort = self.convert_expr(body)
+                if cur.args:
+                    cur = cur.args[0]
+
+            # remove trivial list comp wrappers
+            if (
+                isinstance(cur, ast.ListComp)
+                and len(cur.generators) == 1
+                and isinstance(cur.generators[0].target, ast.Name)
+                and isinstance(cur.elt, ast.Name)
+                and cur.elt.id == cur.generators[0].target.id
+                and not cur.generators[0].ifs
+            ):
+                cur = cur.generators[0].iter
+
+            return self.convert_expr(cur), sort, skip, take
+
+        if not node.generators:
+            return "[]"
+
+        first = node.generators[0]
+        base_iter, sort, skip, take = parse_dataset_iter(first.iter)
+        parts.append(f"from {self.convert_expr(first.target)} in {base_iter}")
+
+        for gen in node.generators[1:]:
             parts.append(
                 f"from {self.convert_expr(gen.target)} in {self.convert_expr(gen.iter)}"
             )
+
         ifs: list[str] = []
         for gen in node.generators:
             for if_ in gen.ifs:
                 ifs.append(self.convert_expr(if_))
         if ifs:
             parts.append("where " + " and ".join(ifs))
+        if sort:
+            parts.append("sort by " + sort)
+        if skip:
+            parts.append("skip " + skip)
+        if take:
+            parts.append("take " + take)
         parts.append("select " + self.convert_expr(node.elt))
+
         result = parts[0]
         indent = "            "
         for part in parts[1:]:
@@ -282,7 +365,7 @@ class Converter(ast.NodeVisitor):
                 and stmt.test.left.id == "__name__"
             ):
                 continue
-            if isinstance(stmt, ast.FunctionDef) and stmt.name in {"_get", "_fetch"}:
+            if isinstance(stmt, ast.FunctionDef) and stmt.name in {"_get", "_fetch", "_sort_key"}:
                 continue
             if isinstance(stmt, ast.FunctionDef) and stmt.name == "main":
                 for sub in stmt.body:
