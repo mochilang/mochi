@@ -1,2 +1,0 @@
-tests/compiler/go/reserved_keyword_var.go.out:9: unsupported expr *ast.IndexExpr
->>> fmt.Println(_map["a"])

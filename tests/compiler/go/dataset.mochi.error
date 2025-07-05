@@ -1,2 +1,4 @@
 tests/compiler/go/dataset.go.out:7: unsupported declaration
->>> type Person struct {
+>>> 6:    
+7:>>> type Person struct {
+8:    Name string `json:"name"`

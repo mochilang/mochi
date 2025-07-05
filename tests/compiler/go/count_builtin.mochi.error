@@ -1,2 +1,4 @@
 tests/compiler/go/count_builtin.go.out:15: unsupported expr *ast.SelectorExpr
->>> return len(g.Items)
+>>> 14:    if g, ok := v.(*data.Group); ok {
+15:>>> return len(g.Items)
+16:    }

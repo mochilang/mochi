@@ -1,2 +1,4 @@
 tests/compiler/go/union_slice.go.out:7: unsupported declaration
->>> type Foo interface{ isFoo() }
+>>> 6:    
+7:>>> type Foo interface{ isFoo() }
+8:    type Empty struct {

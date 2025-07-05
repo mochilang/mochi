@@ -1,2 +1,4 @@
 tests/compiler/go/update_statement.go.out:16: unsupported statement *ast.SwitchStmt
->>> switch {
+>>> 15:    func formatDuration(d time.Duration) string {
+16:>>> switch {
+17:    case d < time.Microsecond:

@@ -1,2 +1,4 @@
 tests/compiler/go/join.go.out:7: unsupported declaration
->>> type Customer struct {
+>>> 6:    
+7:>>> type Customer struct {
+8:    Id   int    `json:"id"`

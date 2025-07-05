@@ -1,2 +1,0 @@
-tests/compiler/go/map_set.go.out:9: unsupported assignment lhs
->>> scores["b"] = 2

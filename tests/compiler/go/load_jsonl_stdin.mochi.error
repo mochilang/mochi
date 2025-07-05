@@ -1,2 +1,4 @@
 tests/compiler/go/load_jsonl_stdin.go.out:11: unsupported declaration
->>> type Person struct {
+>>> 10:    
+11:>>> type Person struct {
+12:    Name string `json:"name"`
