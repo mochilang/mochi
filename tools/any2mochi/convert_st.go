@@ -30,38 +30,85 @@ func ConvertSt(src string) ([]byte, error) {
 
 func appendStSymbols(out *strings.Builder, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
-		switch s.Kind {
-		case protocol.SymbolKindClass:
-			out.WriteString("type ")
-			out.WriteString(s.Name)
+		appendStSymbol(out, s, src, ls, parentNone)
+	}
+}
+
+const (
+	parentNone = iota
+	parentClass
+)
+
+func appendStSymbol(out *strings.Builder, s protocol.DocumentSymbol, src string, ls LanguageServer, parent int) {
+	switch s.Kind {
+	case protocol.SymbolKindClass:
+		fields, rest := splitStFields(s.Children)
+		out.WriteString("type ")
+		out.WriteString(s.Name)
+		if len(fields) == 0 && len(rest) == 0 {
 			out.WriteString(" {}\n")
-			if len(s.Children) > 0 {
-				appendStSymbols(out, s.Children, src, ls)
-			}
-		case protocol.SymbolKindMethod, protocol.SymbolKindConstructor, protocol.SymbolKindFunction:
-			out.WriteString("fun ")
-			out.WriteString(cleanStName(s.Name))
-			params := extractStParams(s)
-			if len(params) == 0 {
-				params = getStHoverParams(src, s.SelectionRange.Start, ls)
-			}
-			out.WriteByte('(')
-			for i, p := range params {
-				if i > 0 {
-					out.WriteString(", ")
-				}
-				out.WriteString(p)
-			}
-			out.WriteString(") {}\n")
-			if len(s.Children) > 0 {
-				appendStSymbols(out, s.Children, src, ls)
-			}
-		default:
-			if len(s.Children) > 0 {
-				appendStSymbols(out, s.Children, src, ls)
+			return
+		}
+		out.WriteString(" {\n")
+		for _, f := range fields {
+			out.WriteString("  ")
+			out.WriteString(f.Name)
+			out.WriteByte('\n')
+		}
+		for _, c := range rest {
+			var b strings.Builder
+			appendStSymbol(&b, c, src, ls, parentClass)
+			for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
+				out.WriteString("  ")
+				out.WriteString(line)
+				out.WriteByte('\n')
 			}
 		}
+		out.WriteString("}\n")
+	case protocol.SymbolKindMethod, protocol.SymbolKindConstructor, protocol.SymbolKindFunction:
+		out.WriteString("fun ")
+		out.WriteString(cleanStName(s.Name))
+		params := extractStParams(s)
+		if len(params) == 0 {
+			params = getStHoverParams(src, s.SelectionRange.Start, ls)
+		}
+		out.WriteByte('(')
+		for i, p := range params {
+			if i > 0 {
+				out.WriteString(", ")
+			}
+			out.WriteString(p)
+		}
+		out.WriteString(") {}\n")
+		for _, c := range s.Children {
+			appendStSymbol(out, c, src, ls, parent)
+		}
+	case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		if parent == parentClass {
+			out.WriteString(s.Name)
+			out.WriteByte('\n')
+		} else if parent == parentNone {
+			out.WriteString("let ")
+			out.WriteString(s.Name)
+			out.WriteByte('\n')
+		}
+	default:
+		for _, c := range s.Children {
+			appendStSymbol(out, c, src, ls, parent)
+		}
 	}
+}
+
+func splitStFields(syms []protocol.DocumentSymbol) (fields, rest []protocol.DocumentSymbol) {
+	for _, s := range syms {
+		switch s.Kind {
+		case protocol.SymbolKindField, protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			fields = append(fields, s)
+		default:
+			rest = append(rest, s)
+		}
+	}
+	return
 }
 
 func cleanStName(name string) string {
