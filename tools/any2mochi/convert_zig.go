@@ -24,44 +24,7 @@ func ConvertZig(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		detail := ""
-		if s.Detail != nil {
-			detail = *s.Detail
-		}
-		params, ret := parseZigDetail(detail)
-		if len(params) == 0 {
-			p, r := zigHoverSignature(src, s, ls)
-			if len(p) > 0 {
-				params = p
-			}
-			if r != "" {
-				ret = r
-			}
-		}
-		out.WriteByte('(')
-		for i, p := range params {
-			if i > 0 {
-				out.WriteString(", ")
-			}
-			out.WriteString(p.name)
-			if p.typ != "" {
-				out.WriteString(": ")
-				out.WriteString(p.typ)
-			}
-		}
-		out.WriteByte(')')
-		if ret != "" && ret != "void" {
-			out.WriteString(": ")
-			out.WriteString(ret)
-		}
-		out.WriteString(" {}\n")
-	}
+	writeZigSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -153,4 +116,86 @@ func mapZigType(t string) string {
 		return "list<" + inner + ">"
 	}
 	return t
+}
+
+func writeZigSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+	for _, s := range syms {
+		nameParts := prefix
+		if s.Name != "" {
+			nameParts = append(nameParts, s.Name)
+		}
+		switch s.Kind {
+		case protocol.SymbolKindFunction:
+			detail := ""
+			if s.Detail != nil {
+				detail = *s.Detail
+			}
+			params, ret := parseZigDetail(detail)
+			if len(params) == 0 {
+				p, r := zigHoverSignature(src, s, ls)
+				if len(p) > 0 {
+					params = p
+				}
+				if r != "" {
+					ret = r
+				}
+			}
+			out.WriteString("fun ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteByte('(')
+			for i, p := range params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p.name)
+				if p.typ != "" {
+					out.WriteString(": ")
+					out.WriteString(p.typ)
+				}
+			}
+			out.WriteByte(')')
+			if ret != "" && ret != "void" {
+				out.WriteString(": ")
+				out.WriteString(ret)
+			}
+			out.WriteString(" {}\n")
+		case protocol.SymbolKindStruct:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			if len(s.Children) == 0 {
+				out.WriteString(" {}\n")
+				break
+			}
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindField {
+					continue
+				}
+				out.WriteString("  ")
+				out.WriteString(c.Name)
+				if c.Detail != nil {
+					t := mapZigType(strings.TrimSpace(*c.Detail))
+					if t != "" {
+						out.WriteString(": ")
+						out.WriteString(t)
+					}
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			out.WriteString("let ")
+			out.WriteString(strings.Join(nameParts, "."))
+			if s.Detail != nil {
+				t := mapZigType(strings.TrimSpace(*s.Detail))
+				if t != "" {
+					out.WriteString(": ")
+					out.WriteString(t)
+				}
+			}
+			out.WriteByte('\n')
+		case protocol.SymbolKindNamespace, protocol.SymbolKindPackage, protocol.SymbolKindModule:
+			writeZigSymbols(out, nameParts, s.Children, src, ls)
+		}
+	}
 }
