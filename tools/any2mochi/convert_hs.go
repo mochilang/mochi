@@ -19,29 +19,7 @@ func ConvertHs(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction && s.Kind != protocol.SymbolKindMethod {
-			continue
-		}
-		names := extractHsParams(s)
-		types, ret := getHsSignature(src, s, ls)
-		params := combineHsParams(names, types)
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteByte('(')
-		for i, p := range params {
-			if i > 0 {
-				out.WriteString(", ")
-			}
-			out.WriteString(p)
-		}
-		out.WriteByte(')')
-		if ret != "" {
-			out.WriteString(": ")
-			out.WriteString(ret)
-		}
-		out.WriteString(" {}\n")
-	}
+	writeHsSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -147,4 +125,103 @@ func mapHsType(t string) string {
 		return "list<" + inner + ">"
 	}
 	return t
+}
+
+func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+	for _, s := range syms {
+		nameParts := prefix
+		if s.Name != "" {
+			nameParts = append(nameParts, s.Name)
+		}
+		switch s.Kind {
+		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+			names := extractHsParams(s)
+			types, ret := getHsSignature(src, s, ls)
+			params := combineHsParams(names, types)
+			out.WriteString("fun ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteByte('(')
+			for i, p := range params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p)
+			}
+			out.WriteByte(')')
+			if ret != "" {
+				out.WriteString(": ")
+				out.WriteString(ret)
+			}
+			out.WriteString(" {}\n")
+		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			if len(s.Children) == 0 {
+				out.WriteString(" {}\n")
+				break
+			}
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindField {
+					continue
+				}
+				out.WriteString("  ")
+				out.WriteString(c.Name)
+				if c.Detail != nil && strings.TrimSpace(*c.Detail) != "" {
+					out.WriteString(": ")
+					out.WriteString(mapHsType(strings.TrimSpace(*c.Detail)))
+				}
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			if len(prefix) == 0 {
+				out.WriteString("let ")
+				out.WriteString(strings.Join(nameParts, "."))
+				typ := getHsVarType(src, s, ls)
+				if typ != "" {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
+				out.WriteByte('\n')
+			}
+		}
+		if len(s.Children) > 0 && s.Kind != protocol.SymbolKindStruct && s.Kind != protocol.SymbolKindClass && s.Kind != protocol.SymbolKindInterface {
+			writeHsSymbols(out, nameParts, s.Children, src, ls)
+		}
+	}
+}
+
+func getHsVarType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+	if sym.Detail != nil {
+		if _, ret := parseHsSigTypes(*sym.Detail); ret != "" {
+			return ret
+		}
+	}
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err != nil {
+		return ""
+	}
+	typ, _ := parseHsVarSig(hoverString(hov))
+	return typ
+}
+
+func parseHsVarSig(sig string) (string, bool) {
+	sig = strings.ReplaceAll(sig, "\n", " ")
+	if i := strings.Index(sig, "::"); i != -1 {
+		sig = strings.TrimSpace(sig[i+2:])
+	}
+	if i := strings.Index(sig, "=>"); i != -1 {
+		sig = strings.TrimSpace(sig[i+2:])
+	}
+	if strings.HasPrefix(sig, "forall") {
+		if i := strings.Index(sig, "."); i != -1 {
+			sig = strings.TrimSpace(sig[i+1:])
+		}
+	}
+	sig = strings.TrimSpace(sig)
+	if sig == "" {
+		return "", false
+	}
+	return mapHsType(sig), true
 }
