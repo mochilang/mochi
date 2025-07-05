@@ -75,6 +75,8 @@ func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 		switch s.Kind {
 		case protocol.SymbolKindClass, protocol.SymbolKindInterface, protocol.SymbolKindStruct:
 			writeTSClass(out, nameParts, s, src, ls)
+		case protocol.SymbolKindEnum:
+			writeTSEnum(out, nameParts, s, src, ls)
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty:
 			if s.Name != "" && len(prefix) == 0 {
 				if fields, alias := tsAliasDef(src, s, ls); len(fields) > 0 || alias != "" {
@@ -266,6 +268,29 @@ func writeTSAlias(out *strings.Builder, name string, fields []tsField, alias str
 		out.WriteByte('\n')
 	}
 	out.WriteString("}\n")
+}
+
+func writeTSEnum(out *strings.Builder, nameParts []string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
+	out.WriteString("type ")
+	out.WriteString(strings.Join(nameParts, "."))
+	out.WriteString(" {\n")
+	for _, c := range sym.Children {
+		if c.Kind == protocol.SymbolKindEnumMember {
+			out.WriteString("  ")
+			out.WriteString(c.Name)
+			out.WriteByte('\n')
+		}
+	}
+	out.WriteString("}\n")
+	var rest []protocol.DocumentSymbol
+	for _, c := range sym.Children {
+		if c.Kind != protocol.SymbolKindEnumMember {
+			rest = append(rest, c)
+		}
+	}
+	if len(rest) > 0 {
+		writeTSSymbols(out, nameParts, rest, src, ls)
+	}
 }
 
 type tsParam struct {

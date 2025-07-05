@@ -16,7 +16,7 @@ func TestConvertTypeScript(t *testing.T) {
 	if err != nil {
 		t.Fatalf("convert: %v", err)
 	}
-	if string(out) != "fun add() {}\n" {
+	if string(out) != "fun add(x: int, y: int): int {}\n" {
 		t.Fatalf("unexpected output: %s", out)
 	}
 }
