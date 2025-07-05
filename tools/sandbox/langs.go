@@ -70,6 +70,6 @@ var RunCmds = map[string][]string{
 	"scheme":  {"bash", "-c", "scheme --script hello.scm"},
 	"st":      {"bash", "-c", "echo hello"},
 	"swift":   {"bash", "-c", "swiftc hello.swift -o hello && ./hello"},
-	"wasm":    {"bash", "-c", "wat2wasm hello.wat -o hello.wasm && wasmtime hello.wasm"},
+	"wasm":    {"bash", "-c", "wat2wasm hello.wat -o hello.wasm && wasmer run hello.wasm"},
 	"zig":     {"zig", "run", "hello.zig"},
 }
