@@ -83,3 +83,21 @@ These tests verify both the generated program output and the emitted `.ml` code.
 - Built-in functions `count` and `avg`
 - Logic programming constructs like `fact`, `rule` and `query`
 - Extern type or object declarations and package exports
+
+## OCaml to Mochi Conversion
+
+`tools/any2mochi` ships with a small OCaml converter. It primarily relies on
+`ocamllsp` for symbol information but falls back to regex parsing for standalone
+statements when no symbols are reported.
+
+### Supported Features
+
+- Top-level function definitions with parameter and return types
+- Variable bindings defined with `let`
+- Simple bodies containing assignments and `print_endline` calls
+
+### Unsupported Features
+
+- Pattern matching clauses and complex control flow
+- Module declarations and `open` statements
+- Advanced data structures or imperative features

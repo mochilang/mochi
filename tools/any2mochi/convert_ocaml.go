@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -21,6 +22,13 @@ func ConvertOcaml(src string) ([]byte, error) {
 	var out strings.Builder
 	lines := strings.Split(src, "\n")
 	writeOcamlSymbols(&out, nil, syms, lines, src, ls)
+	if out.Len() == 0 {
+		// fall back to a very small regex based parser for simple scripts
+		for _, l := range fallbackOcaml(lines) {
+			out.WriteString(l)
+			out.WriteByte('\n')
+		}
+	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -46,6 +54,7 @@ func writeOcamlSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
 			names := parseOcamlParamNames(lines, s)
 			types, ret := ocamlHoverSignature(src, s, ls)
+			body := parseOcamlBody(lines, s)
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteByte('(')
@@ -64,7 +73,17 @@ func writeOcamlSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, b := range body {
+					out.WriteString("  ")
+					out.WriteString(b)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
 			if len(prefix) == 0 {
 				typ := ocamlHoverType(src, s, ls)
@@ -232,4 +251,60 @@ func posToOffset(lines []string, pos protocol.Position) int {
 	}
 	off += int(pos.Character)
 	return off
+}
+
+func parseOcamlBody(lines []string, sym protocol.DocumentSymbol) []string {
+	start := posToOffset(lines, sym.SelectionRange.End)
+	end := posToOffset(lines, sym.Range.End)
+	src := strings.Join(lines, "\n")
+	if start >= len(src) {
+		return nil
+	}
+	if end > len(src) {
+		end = len(src)
+	}
+	body := src[start:end]
+	if idx := strings.Index(body, "="); idx != -1 {
+		body = body[idx+1:]
+	}
+	body = strings.TrimSpace(body)
+	body = strings.TrimSuffix(body, ";;")
+	body = strings.ReplaceAll(body, "print_endline", "print")
+	body = strings.ReplaceAll(body, "string_of_int", "str")
+	body = strings.ReplaceAll(body, "string_of_float", "str")
+	body = strings.ReplaceAll(body, "string_of_bool", "str")
+	body = strings.ReplaceAll(body, ":=", "=")
+	body = strings.ReplaceAll(body, "!", "")
+	body = strings.ReplaceAll(body, ";", "")
+	var out []string
+	for _, l := range strings.Split(body, "\n") {
+		l = strings.TrimSpace(l)
+		if l != "" {
+			out = append(out, l)
+		}
+	}
+	return out
+}
+
+func fallbackOcaml(lines []string) []string {
+	var out []string
+	reLet := regexp.MustCompile(`^let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)`)
+	for _, line := range lines {
+		t := strings.TrimSpace(line)
+		if m := reLet.FindStringSubmatch(t); m != nil {
+			expr := strings.TrimSuffix(m[2], ";;")
+			expr = strings.ReplaceAll(expr, ";", ",")
+			out = append(out, fmt.Sprintf("let %s = %s", m[1], strings.TrimSpace(expr)))
+			continue
+		}
+		if strings.HasPrefix(t, "print_endline") {
+			t = strings.ReplaceAll(t, "print_endline", "print")
+			t = strings.ReplaceAll(t, "string_of_int", "str")
+			t = strings.ReplaceAll(t, "string_of_float", "str")
+			t = strings.ReplaceAll(t, "string_of_bool", "str")
+			t = strings.TrimSuffix(t, ";;")
+			out = append(out, t)
+		}
+	}
+	return out
 }
