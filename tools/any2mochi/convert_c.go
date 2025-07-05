@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -12,11 +13,17 @@ import (
 func ConvertC(src string) ([]byte, error) {
 	ls := Servers["c"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+	if err != nil || len(syms) == 0 || len(diags) > 0 {
+		// try simple regex based fallback when language server fails
+		if out, ferr := fallbackConvertC(src); ferr == nil {
+			return out, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		if len(diags) > 0 {
+			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		}
 	}
 
 	aliasForRange := make(map[protocol.Range]string)
@@ -381,6 +388,20 @@ func parseCStatements(body string) []string {
 			} else {
 				out = append(out, strings.Repeat("  ", indent)+l)
 			}
+		case strings.HasPrefix(l, "while ") || strings.HasPrefix(l, "while("):
+			if strings.HasSuffix(l, "{") {
+				h := strings.TrimSpace(strings.TrimSuffix(l, "{"))
+				out = append(out, strings.Repeat("  ", indent)+h+" {")
+				indent++
+			} else {
+				out = append(out, strings.Repeat("  ", indent)+l)
+			}
+		case strings.HasPrefix(l, "do {"):
+			out = append(out, strings.Repeat("  ", indent)+"do {")
+			indent++
+		case strings.HasPrefix(l, "} while"):
+			indent--
+			out = append(out, strings.Repeat("  ", indent)+l)
 		case strings.HasPrefix(l, "else {"):
 			indent--
 			out = append(out, strings.Repeat("  ", indent)+"else {")
@@ -392,6 +413,16 @@ func parseCStatements(body string) []string {
 			out = append(out, strings.Repeat("  ", indent)+"continue")
 		case l == "break;":
 			out = append(out, strings.Repeat("  ", indent)+"break")
+		case strings.HasPrefix(l, "scanf("):
+			args := strings.TrimSuffix(strings.TrimPrefix(l, "scanf("), ");")
+			parts := strings.SplitN(args, ",", 2)
+			if len(parts) == 2 {
+				v := strings.TrimSpace(parts[1])
+				v = strings.TrimPrefix(v, "&")
+				out = append(out, strings.Repeat("  ", indent)+v+" = input()")
+			} else {
+				out = append(out, strings.Repeat("  ", indent)+"_ = input()")
+			}
 		case strings.HasPrefix(l, "printf("):
 			args := strings.TrimSuffix(strings.TrimPrefix(l, "printf("), ");")
 			parts := strings.SplitN(args, ",", 2)
@@ -429,4 +460,89 @@ func cPosToOffset(lines []string, pos protocol.Position) int {
 	}
 	off += int(pos.Character)
 	return off
+}
+
+// fallbackConvertC attempts a very small conversion without relying on a
+// language server. It scans the source for simple function definitions using
+// regular expressions and converts them to Mochi. Only function signatures and
+// basic statement translation are supported.
+func fallbackConvertC(src string) ([]byte, error) {
+	re := regexp.MustCompile(`(?m)^\s*([A-Za-z_][A-Za-z0-9_\s\*]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*\{`)
+	idxs := re.FindAllStringSubmatchIndex(src, -1)
+	if len(idxs) == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	var out strings.Builder
+	for _, m := range idxs {
+		full := strings.TrimSpace(src[m[0]:m[1]])
+		name := strings.TrimSpace(src[m[4]:m[5]])
+		sig := strings.TrimSpace(full[:strings.Index(full, "{")])
+		ret, params := parseCSignature(&sig)
+
+		out.WriteString("fun ")
+		out.WriteString(name)
+		out.WriteByte('(')
+		for i, p := range params {
+			if i > 0 {
+				out.WriteString(", ")
+			}
+			n := p.name
+			if n == "" {
+				n = fmt.Sprintf("a%d", i)
+			}
+			if p.typ != "" {
+				out.WriteString(n)
+				out.WriteString(": ")
+				out.WriteString(p.typ)
+			} else {
+				out.WriteString(n)
+			}
+		}
+		out.WriteByte(')')
+		if ret != "" && ret != "void" {
+			out.WriteString(": ")
+			out.WriteString(ret)
+		}
+
+		body, end := extractBlock(src[m[1]-1:])
+		if end == 0 {
+			out.WriteString(" {}\n")
+			continue
+		}
+		stmts := parseCStatements(body)
+		if len(stmts) == 0 {
+			out.WriteString(" {}\n")
+		} else {
+			out.WriteString(" {\n")
+			for _, ln := range stmts {
+				out.WriteString(ln)
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		}
+	}
+	return []byte(out.String()), nil
+}
+
+// extractBlock returns the contents of the first balanced { } block in src
+// starting at index 0. It returns the body without the outer braces and the
+// index just after the closing brace relative to src.
+func extractBlock(src string) (string, int) {
+	start := strings.Index(src, "{")
+	if start == -1 {
+		return "", 0
+	}
+	depth := 0
+	for i := start; i < len(src); i++ {
+		switch src[i] {
+		case '{':
+			depth++
+		case '}':
+			depth--
+			if depth == 0 {
+				return src[start+1 : i], i + 1
+			}
+		}
+	}
+	return "", 0
 }
