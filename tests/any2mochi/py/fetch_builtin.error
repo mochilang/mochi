@@ -1,0 +1,5 @@
+type error: error[T018]: type any does not support indexing
+  --> :2:7
+
+help:
+  Only `list<T>` and `map<K,V>` can be indexed.

@@ -1,0 +1,5 @@
+type error: error[T005]: parameter `_t0` is missing a type
+  --> :5:10
+
+help:
+  Add a type like `x: int` to this parameter.

@@ -1,3 +1,9 @@
-fun test_first() {}
-fun test_second() {}
-fun main() {}
+let a = 1
+let b = 2
+test "first" {
+  expect a == 1
+}
+test "second" {
+  expect b == 2
+}
+print("done")
