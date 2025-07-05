@@ -352,6 +352,97 @@ func HoverTextWithRoot(cmdName string, args []string, langID string, src string,
 	return hoverString(hover), diags, nil
 }
 
+// DefinitionAt opens a language server and returns definition locations for the
+// specified position in the source.
+func DefinitionAt(cmdName string, args []string, langID string, src string, pos protocol.Position) ([]protocol.Location, error) {
+	return DefinitionAtWithRoot(cmdName, args, langID, src, pos, "")
+}
+
+// DefinitionAtWithRoot is like DefinitionAt but allows specifying a workspace root.
+func DefinitionAtWithRoot(cmdName string, args []string, langID string, src string, pos protocol.Position, root string) ([]protocol.Location, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, cmdName, args...)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+
+	stream := jsonrpc2.NewBufferedStream(&pipe{r: stdout, w: stdin}, jsonrpc2.VSCodeObjectCodec{})
+	c := &client{cmd: cmd}
+	conn := jsonrpc2.NewConn(ctx, stream, jsonrpc2.HandlerWithError(func(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (interface{}, error) {
+		return nil, nil
+	}))
+	c.conn = conn
+
+	if err := c.initializeWithRoot(ctx, root); err != nil {
+		c.Close()
+		return nil, err
+	}
+	var uri protocol.DocumentUri
+	if root != "" {
+		abs, _ := filepath.Abs(root)
+		ext := ""
+		switch langID {
+		case "fortran":
+			ext = ".f90"
+		case "c":
+			ext = ".c"
+		case "cpp":
+			ext = ".cpp"
+		case "python":
+			ext = ".py"
+		case "typescript":
+			ext = ".ts"
+		case "cs":
+			ext = ".cs"
+		}
+		uri = protocol.DocumentUri("file://" + filepath.ToSlash(filepath.Join(abs, "input"+ext)))
+	} else {
+		uri = protocol.DocumentUri("file:///input")
+	}
+	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
+		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
+	}); err != nil {
+		c.Close()
+		return nil, err
+	}
+	var raw json.RawMessage
+	if err := c.conn.Call(ctx, "textDocument/definition", protocol.TextDocumentPositionParams{
+		TextDocument: protocol.TextDocumentIdentifier{URI: uri},
+		Position:     pos,
+	}, &raw); err != nil {
+		c.Close()
+		return nil, err
+	}
+	c.Close()
+
+	var locs []protocol.Location
+	if err := json.Unmarshal(raw, &locs); err == nil {
+		return locs, nil
+	}
+	var loc protocol.Location
+	if err := json.Unmarshal(raw, &loc); err == nil {
+		return []protocol.Location{loc}, nil
+	}
+	var links []protocol.LocationLink
+	if err := json.Unmarshal(raw, &links); err == nil {
+		for _, l := range links {
+			locs = append(locs, protocol.Location{URI: l.TargetURI, Range: l.TargetRange})
+		}
+		return locs, nil
+	}
+	return nil, fmt.Errorf("unexpected definition response")
+}
+
 func hoverString(h protocol.Hover) string {
 	switch v := h.Contents.(type) {
 	case protocol.MarkupContent:
