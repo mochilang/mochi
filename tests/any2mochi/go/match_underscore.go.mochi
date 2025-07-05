@@ -1,4 +1,6 @@
-fun value_of_root() {}
+fun isTree() {}
+fun isTree() {}
+fun value_of_root(t) {}
 fun main() {}
-fun _cast() {}
-fun _convertMapAny() {}
+fun _cast(v) {}
+fun _convertMapAny(m) {}

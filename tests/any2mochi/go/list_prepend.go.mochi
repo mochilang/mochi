@@ -1,2 +1,2 @@
-fun prepend() {}
+fun prepend(level, result) {}
 fun main() {}

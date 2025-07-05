@@ -1,2 +1,2 @@
-fun foo() {}
+fun foo(m) {}
 fun main() {}

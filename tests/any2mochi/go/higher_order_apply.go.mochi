@@ -1,3 +1,3 @@
-fun inc() {}
-fun apply() {}
+fun inc(x) {}
+fun apply(f, x) {}
 fun main() {}

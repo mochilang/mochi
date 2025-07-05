@@ -1,2 +1,2 @@
 fun main() {}
-fun _indexString() {}
+fun _indexString(s, i) {}

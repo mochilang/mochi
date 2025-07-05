@@ -1,3 +1,5 @@
+fun isFoo() {}
+fun isFoo() {}
 fun listit() {}
 fun main() {}
-fun _convSlice() {}
+fun _convSlice(s) {}

@@ -1,2 +1,2 @@
 fun main() {}
-fun _avg() {}
+fun _avg(v) {}

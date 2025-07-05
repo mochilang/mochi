@@ -1,4 +1,6 @@
-fun inorder() {}
+fun isTree() {}
+fun isTree() {}
+fun inorder(t) {}
 fun main() {}
-fun _cast() {}
-fun _convertMapAny() {}
+fun _cast(v) {}
+fun _convertMapAny(m) {}

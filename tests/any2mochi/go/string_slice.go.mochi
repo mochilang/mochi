@@ -1,2 +1,2 @@
 fun main() {}
-fun _sliceString() {}
+fun _sliceString(s, i, j) {}

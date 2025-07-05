@@ -1,2 +1,2 @@
 fun main() {}
-fun _genStruct() {}
+fun _genStruct(prompt, model, params) {}

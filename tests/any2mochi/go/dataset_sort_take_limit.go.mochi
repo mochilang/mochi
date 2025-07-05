@@ -1,2 +1,2 @@
 fun main() {}
-fun _paginate() {}
+fun _paginate(src, skip, take) {}

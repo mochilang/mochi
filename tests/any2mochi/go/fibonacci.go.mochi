@@ -1,2 +1,2 @@
-fun fib() {}
+fun fib(n) {}
 fun main() {}

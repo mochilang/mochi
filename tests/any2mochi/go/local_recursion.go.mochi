@@ -1,5 +1,7 @@
-fun fromList() {}
-fun inorder() {}
+fun isTree() {}
+fun isTree() {}
+fun fromList(nums) {}
+fun inorder(t) {}
 fun main() {}
-fun _convSlice() {}
-fun _toAnySlice() {}
+fun _convSlice(s) {}
+fun _toAnySlice(s) {}

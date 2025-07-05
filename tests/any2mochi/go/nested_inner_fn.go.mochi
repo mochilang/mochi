@@ -1,2 +1,2 @@
-fun outer() {}
+fun outer(a) {}
 fun main() {}

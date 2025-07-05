@@ -1,2 +1,2 @@
-fun remove() {}
+fun remove(nums, i) {}
 fun main() {}

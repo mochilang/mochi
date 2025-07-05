@@ -1,8 +1,8 @@
-fun expect() {}
-fun formatDuration() {}
-fun printTestStart() {}
-fun printTestPass() {}
-fun printTestFail() {}
+fun expect(cond) {}
+fun formatDuration(d) {}
+fun printTestStart(name) {}
+fun printTestPass(d) {}
+fun printTestFail(err, d) {}
 fun test_update_adult_status() {}
 fun main() {}
-fun _equal() {}
+fun _equal(a, b) {}

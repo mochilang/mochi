@@ -1,9 +1,9 @@
-fun expect() {}
-fun formatDuration() {}
-fun printTestStart() {}
-fun printTestPass() {}
-fun printTestFail() {}
+fun expect(cond) {}
+fun formatDuration(d) {}
+fun printTestStart(name) {}
+fun printTestPass(d) {}
+fun printTestFail(err, d) {}
 fun test_values() {}
 fun main() {}
-fun _cast() {}
-fun _convertMapAny() {}
+fun _cast(v) {}
+fun _convertMapAny(m) {}

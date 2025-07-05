@@ -1,2 +1,4 @@
-fun isLeaf() {}
+fun isTree() {}
+fun isTree() {}
+fun isLeaf(t) {}
 fun main() {}

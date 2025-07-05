@@ -1,7 +1,7 @@
 fun main() {}
-fun _cast() {}
-fun _convertMapAny() {}
-fun _count() {}
-fun _load() {}
-fun _toAnyMap() {}
-fun _toAnySlice() {}
+fun _cast(v) {}
+fun _convertMapAny(m) {}
+fun _count(v) {}
+fun _load(path, opts) {}
+fun _toAnyMap(m) {}
+fun _toAnySlice(s) {}

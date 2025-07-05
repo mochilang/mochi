@@ -1,2 +1,2 @@
-fun searchMatrix() {}
+fun searchMatrix(matrix, target) {}
 fun main() {}

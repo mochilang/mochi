@@ -3,7 +3,6 @@
 package any2mochi
 
 import (
-	"os/exec"
 	"testing"
 
 	pycode "mochi/compile/py"

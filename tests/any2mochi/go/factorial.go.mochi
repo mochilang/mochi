@@ -1,2 +1,2 @@
-fun factorial() {}
+fun factorial(n) {}
 fun main() {}

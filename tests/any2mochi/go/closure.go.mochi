@@ -1,2 +1,2 @@
-fun makeAdder() {}
+fun makeAdder(n) {}
 fun main() {}

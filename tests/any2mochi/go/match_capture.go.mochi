@@ -1,2 +1,4 @@
-fun depth() {}
+fun isTree() {}
+fun isTree() {}
+fun depth(t) {}
 fun main() {}

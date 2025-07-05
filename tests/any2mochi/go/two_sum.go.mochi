@@ -1,2 +1,2 @@
-fun twoSum() {}
+fun twoSum(nums, target) {}
 fun main() {}

@@ -1,2 +1,2 @@
-fun sum() {}
+fun sum(n) {}
 fun main() {}

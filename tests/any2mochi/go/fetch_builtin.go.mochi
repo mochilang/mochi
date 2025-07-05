@@ -1,5 +1,5 @@
 fun main() {}
-fun _cast() {}
-fun _convertMapAny() {}
-fun _fetch() {}
-fun _toAnyMap() {}
+fun _cast(v) {}
+fun _convertMapAny(m) {}
+fun _fetch(url, opts) {}
+fun _toAnyMap(m) {}

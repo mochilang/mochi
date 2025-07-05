@@ -1,4 +1,4 @@
-fun add() {}
-fun sub() {}
-fun mul() {}
+fun add(x, y) {}
+fun sub(x, y) {}
+fun mul(x, y) {}
 fun main() {}
