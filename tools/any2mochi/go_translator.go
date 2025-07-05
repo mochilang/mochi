@@ -315,6 +315,23 @@ func typeString(fset *token.FileSet, n ast.Expr) string {
 		return t.Name
 	case *ast.MapType:
 		return fmt.Sprintf("map<%s, %s>", typeString(fset, t.Key), typeString(fset, t.Value))
+	case *ast.FuncType:
+		var b strings.Builder
+		b.WriteString("fun(")
+		if t.Params != nil {
+			for i, p := range t.Params.List {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(typeString(fset, p.Type))
+			}
+		}
+		b.WriteString(")")
+		if t.Results != nil && len(t.Results.List) == 1 && len(t.Results.List[0].Names) == 0 {
+			b.WriteString(": ")
+			b.WriteString(typeString(fset, t.Results.List[0].Type))
+		}
+		return b.String()
 	default:
 		return nodeString(fset, n)
 	}
@@ -468,9 +485,8 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 		return c.translateExprStmt(st)
 	case *ast.AssignStmt:
 		if len(st.Lhs) == 2 && len(st.Rhs) == 1 {
-			// Handle map lookup with existence check: v, ok := m[k]
-			idx, ok := st.Rhs[0].(*ast.IndexExpr)
-			if ok {
+			if idx, ok := st.Rhs[0].(*ast.IndexExpr); ok {
+				// Handle map lookup with existence check: v, ok := m[k]
 				mapExpr, err := c.translateExpr(idx.X)
 				if err != nil {
 					return "", err
@@ -496,6 +512,23 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 						lines = append(lines, fmt.Sprintf("let %s = %s", id.Name, cond))
 					} else if st.Tok == token.ASSIGN {
 						lines = append(lines, fmt.Sprintf("%s = %s", id.Name, cond))
+					}
+				}
+				return strings.Join(lines, "\n"), nil
+			}
+			if call, ok := st.Rhs[0].(*ast.CallExpr); ok {
+				rhs, err := c.translateExpr(call)
+				if err != nil {
+					return "", err
+				}
+				var lines []string
+				if id, ok := st.Lhs[0].(*ast.Ident); ok && id.Name != "_" {
+					if st.Tok == token.DEFINE {
+						lines = append(lines, fmt.Sprintf("let %s = %s", id.Name, rhs))
+					} else if st.Tok == token.ASSIGN {
+						lines = append(lines, fmt.Sprintf("%s = %s", id.Name, rhs))
+					} else {
+						return "", c.errorf(st, "unsupported assign op %s", st.Tok)
 					}
 				}
 				return strings.Join(lines, "\n"), nil
@@ -946,6 +979,16 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("%s[%s]", x, idx), nil
+	case *ast.TypeAssertExpr:
+		if ex.Type == nil {
+			return "", c.errorf(ex, "unsupported expr %T", e)
+		}
+		x, err := c.translateExpr(ex.X)
+		if err != nil {
+			return "", err
+		}
+		typ := typeString(c.fset, ex.Type)
+		return fmt.Sprintf("%s as %s", x, typ), nil
 	case *ast.SliceExpr:
 		x, err := c.translateExpr(ex.X)
 		if err != nil {
