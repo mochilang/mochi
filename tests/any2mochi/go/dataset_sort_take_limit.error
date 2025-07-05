@@ -1,5 +1,5 @@
-tests/compiler/go/dataset_sort_take_limit.go.out:76: unsupported generics
->>> 75:    
-76:>>> func _paginate[T any](src []T, skip, take int) []T {
-77:    if skip > 0 {
-78:    if skip < len(src) {
+tests/compiler/go/dataset_sort_take_limit.go.out:28: unsupported declaration
+>>> 27:    }
+28:>>> type pair struct {
+29:    item Product
+30:    key  any
