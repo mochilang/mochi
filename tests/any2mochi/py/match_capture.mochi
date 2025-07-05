@@ -1,4 +1,4 @@
-fun depth(t) {}
+fun depth(t: Tree): int {}
 type Tree {}
 type Leaf {}
 type Node {
@@ -7,3 +7,4 @@ type Node {
   right
 }
 fun main() {}
+
