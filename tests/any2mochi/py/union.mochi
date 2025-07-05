@@ -5,5 +5,5 @@ type Node {
   value
   right
 }
-let t
+let t: Node
 fun main() {}

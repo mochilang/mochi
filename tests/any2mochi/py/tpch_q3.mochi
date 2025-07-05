@@ -1,23 +1,23 @@
-let T
-fun _get(obj, name) {}
+let T: type[T]
+fun _get(obj: Unknown, name: Unknown ) -> (Unknown | Any | None) {}
 type _Group {
   key
   Items
-  fun __init__(key) {}
-  fun __iter__() {}
+  fun __init__(key: Unknown) {}
+  fun __iter__(): Iterator[Unknown] {}
 }
-fun _group_by(src, keyfn) {}
-fun _query(src, joins, opts) {}
-fun _sort_key(k) {}
-fun _sum(v) {}
-let customer
-let orders
-let lineitem
-let cutoff
-let segment
-let building_customers
-let valid_orders
-let valid_lineitems
-let order_line_join
+fun _group_by(src: Unknown, keyfn: Unknown): list[Unknown] {}
+fun _query(src: Unknown, joins: Unknown, opts: Unknown): list[Unknown] {}
+fun _sort_key(k: Unknown) -> (str | Unknown) {}
+fun _sum(v: Unknown): float {}
+let customer: None
+let orders: None
+let lineitem: None
+let cutoff: Literal['1995-03-15']
+let segment: Literal['BUILDING']
+let building_customers: None
+let valid_orders: None
+let valid_lineitems: None
+let order_line_join: None
 fun test_Q3_returns_revenue_per_order_with_correct_priority() {}
 fun main() {}

@@ -1,4 +1,4 @@
-let T
-fun _fetch(url, opts) {}
-let data
+let T: type[T]
+fun _fetch(url: Unknown, opts: Unknown): Any {}
+let data: None
 fun main() {}

@@ -1,0 +1,9 @@
+let T: type[T]
+fun _load(path: Unknown, opts: Unknown ) -> (list[Unknown] | list[dict[Unknown, Unknown]] | list[Any]) {}
+fun _save(rows: Unknown, path: Unknown, opts: Unknown) {}
+type Person {
+  name
+  age
+}
+let people: None
+fun main() {}

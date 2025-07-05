@@ -1,5 +1,0 @@
-type error: error[T002]: undefined variable: val
-  --> :2:3
-
-help:
-  Check if the variable was declared in this scope.

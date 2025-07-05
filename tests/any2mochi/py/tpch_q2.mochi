@@ -1,18 +1,18 @@
-let T
-fun _min(v) {}
-fun _query(src, joins, opts) {}
-fun _sort_key(k) {}
-let region
-let nation
-let supplier
-let part
-let partsupp
-let europe_nations
-let europe_suppliers
-let target_parts
-let target_partsupp
-let costs
-let min_cost
-let result
+let T: type[T]
+fun _min(v: Unknown) -> (Unknown | Literal[0]) {}
+fun _query(src: Unknown, joins: Unknown, opts: Unknown): list[Unknown] {}
+fun _sort_key(k: Unknown) -> (str | Unknown) {}
+let region: None
+let nation: None
+let supplier: None
+let part: None
+let partsupp: None
+let europe_nations: None
+let europe_suppliers: None
+let target_parts: None
+let target_partsupp: None
+let costs: None
+let min_cost: None
+let result: None
 fun test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() {}
 fun main() {}

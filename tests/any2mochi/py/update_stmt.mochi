@@ -1,10 +1,10 @@
-let T
-fun _get(obj, name) {}
+let T: type[T]
+fun _get(obj: Unknown, name: Unknown ) -> (Unknown | Any | None) {}
 type Person {
   name
   age
   status
 }
-let people
+let people: list[Person]
 fun test_update_adult_status() {}
 fun main() {}
