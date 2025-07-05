@@ -37,6 +37,7 @@ Additional features include:
 - `if` expressions for conditional values
 - anonymous `fun` expressions (without captured variables) compiled to static functions
 - methods declared inside `type` blocks
+- enum declarations are recognized when converting C code using `any2mochi`
 
 ## Building
 

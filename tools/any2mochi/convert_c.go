@@ -115,6 +115,19 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
+		case protocol.SymbolKindEnum:
+			matched = true
+			out.WriteString("type ")
+			out.WriteString(s.Name)
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindEnumMember || (c.Kind == protocol.SymbolKindEnum && len(c.Children) == 0) {
+					out.WriteString("  ")
+					out.WriteString(c.Name)
+					out.WriteByte('\n')
+				}
+			}
+			out.WriteString("}\n")
 		}
 	}
 
@@ -201,6 +214,7 @@ func mapCType(typ string) string {
 	typ = strings.TrimPrefix(strings.TrimSpace(typ), "unsigned")
 	typ = strings.TrimPrefix(strings.TrimSpace(typ), "signed")
 	typ = strings.TrimPrefix(strings.TrimSpace(typ), "struct")
+	typ = strings.TrimPrefix(strings.TrimSpace(typ), "enum")
 	typ = strings.TrimSpace(typ)
 	switch typ {
 	case "", "void":
