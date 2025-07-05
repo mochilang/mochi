@@ -8,12 +8,21 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-// ConvertCobol converts COBOL source code to Mochi using the language server.
+// ConvertCobol converts COBOL source code to Mochi. It uses the configured
+// language server when available, otherwise falls back to a simple regex parser.
 func ConvertCobol(src string) ([]byte, error) {
 	ls := Servers["cobol"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
+	var syms []protocol.DocumentSymbol
+	var diags []protocol.Diagnostic
+	var err error
+	if ls.Command != "" {
+		syms, diags, err = EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		if err != nil {
+			syms = nil
+		}
+	}
+	if syms == nil {
+		syms = parseCobol(src)
 	}
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
