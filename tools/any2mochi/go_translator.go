@@ -146,17 +146,21 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 	b.WriteString(fn.Name.Name)
 	b.WriteByte('(')
 	if fn.Type.Params != nil {
-		for i, p := range fn.Type.Params.List {
-			if len(p.Names) != 1 {
+		idx := 0
+		for _, p := range fn.Type.Params.List {
+			if len(p.Names) == 0 {
 				return "", c.errorf(p, "unsupported parameter list")
 			}
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			b.WriteString(p.Names[0].Name)
-			if p.Type != nil {
-				b.WriteString(": ")
-				b.WriteString(typeString(c.fset, p.Type))
+			for _, name := range p.Names {
+				if idx > 0 {
+					b.WriteString(", ")
+				}
+				idx++
+				b.WriteString(name.Name)
+				if p.Type != nil {
+					b.WriteString(": ")
+					b.WriteString(typeString(c.fset, p.Type))
+				}
 			}
 		}
 	}
@@ -222,6 +226,57 @@ func typeString(fset *token.FileSet, n ast.Expr) string {
 	default:
 		return nodeString(fset, n)
 	}
+}
+
+func (c *converter) translateIfStmt(st *ast.IfStmt) (string, error) {
+	cond, err := c.translateExpr(st.Cond)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("if ")
+	b.WriteString(cond)
+	b.WriteString(" {\n")
+	for _, s2 := range st.Body.List {
+		line, err := c.translateStmt(s2)
+		if err != nil {
+			return "", err
+		}
+		if line != "" {
+			b.WriteString("  ")
+			b.WriteString(line)
+			b.WriteByte('\n')
+		}
+	}
+	b.WriteString("}")
+	if st.Else != nil {
+		switch e := st.Else.(type) {
+		case *ast.BlockStmt:
+			b.WriteString(" else {\n")
+			for _, s2 := range e.List {
+				line, err := c.translateStmt(s2)
+				if err != nil {
+					return "", err
+				}
+				if line != "" {
+					b.WriteString("  ")
+					b.WriteString(line)
+					b.WriteByte('\n')
+				}
+			}
+			b.WriteString("}")
+		case *ast.IfStmt:
+			elseIf, err := c.translateIfStmt(e)
+			if err != nil {
+				return "", err
+			}
+			b.WriteString(" else ")
+			b.WriteString(elseIf)
+		default:
+			return "", c.errorf(st.Else, "unsupported else")
+		}
+	}
+	return b.String(), nil
 }
 
 func (c *converter) translateStmt(s ast.Stmt) (string, error) {
@@ -334,47 +389,7 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 		}
 		return fmt.Sprintf("return %s", r), nil
 	case *ast.IfStmt:
-		cond, err := c.translateExpr(st.Cond)
-		if err != nil {
-			return "", err
-		}
-		var b strings.Builder
-		b.WriteString("if ")
-		b.WriteString(cond)
-		b.WriteString(" {\n")
-		for _, s2 := range st.Body.List {
-			line, err := c.translateStmt(s2)
-			if err != nil {
-				return "", err
-			}
-			if line != "" {
-				b.WriteString("  ")
-				b.WriteString(line)
-				b.WriteByte('\n')
-			}
-		}
-		b.WriteString("}")
-		if st.Else != nil {
-			switch e := st.Else.(type) {
-			case *ast.BlockStmt:
-				b.WriteString(" else {\n")
-				for _, s2 := range e.List {
-					line, err := c.translateStmt(s2)
-					if err != nil {
-						return "", err
-					}
-					if line != "" {
-						b.WriteString("  ")
-						b.WriteString(line)
-						b.WriteByte('\n')
-					}
-				}
-				b.WriteString("}")
-			default:
-				return "", c.errorf(st.Else, "unsupported else")
-			}
-		}
-		return b.String(), nil
+		return c.translateIfStmt(st)
 	case *ast.BranchStmt:
 		switch st.Tok {
 		case token.BREAK:
@@ -539,17 +554,21 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		var b strings.Builder
 		b.WriteString("fun (")
 		if ex.Type.Params != nil {
-			for i, p := range ex.Type.Params.List {
-				if len(p.Names) != 1 {
+			idx := 0
+			for _, p := range ex.Type.Params.List {
+				if len(p.Names) == 0 {
 					return "", c.errorf(p, "unsupported parameter list")
 				}
-				if i > 0 {
-					b.WriteString(", ")
-				}
-				b.WriteString(p.Names[0].Name)
-				if p.Type != nil {
-					b.WriteString(": ")
-					b.WriteString(typeString(c.fset, p.Type))
+				for _, name := range p.Names {
+					if idx > 0 {
+						b.WriteString(", ")
+					}
+					idx++
+					b.WriteString(name.Name)
+					if p.Type != nil {
+						b.WriteString(": ")
+						b.WriteString(typeString(c.fset, p.Type))
+					}
 				}
 			}
 		}
