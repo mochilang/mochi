@@ -25,15 +25,21 @@ func ConvertZig(src string) ([]byte, error) {
 		}
 		out.WriteString("fun ")
 		out.WriteString(s.Name)
-		out.WriteByte('(')
-		params := parseZigParams(s.Detail)
-		for i, p := range params {
-			if i > 0 {
-				out.WriteString(", ")
-			}
-			out.WriteString(p)
+		detail := ""
+		if s.Detail != nil {
+			detail = *s.Detail
 		}
-		out.WriteString(") {}\n")
+		params, ret := parseZigDetail(detail)
+		out.WriteByte('(')
+		if len(params) > 0 {
+			out.WriteString(strings.Join(params, ", "))
+		}
+		out.WriteByte(')')
+		if ret != "" && ret != "void" {
+			out.WriteString(": ")
+			out.WriteString(ret)
+		}
+		out.WriteString(" {}\n")
 	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
@@ -50,17 +56,7 @@ func ConvertZigFile(path string) ([]byte, error) {
 	return ConvertZig(string(data))
 }
 
-func parseZigParams(detail *string) []string {
-	if detail == nil {
-		return nil
-	}
-	d := *detail
-	start := strings.Index(d, "(")
-	end := strings.Index(d, ")")
-	if start == -1 || end == -1 || end <= start+1 {
-		return nil
-	}
-	list := d[start+1 : end]
+func parseZigParams(list string) []string {
 	parts := strings.Split(list, ",")
 	params := make([]string, 0, len(parts))
 	for _, p := range parts {
@@ -70,8 +66,24 @@ func parseZigParams(detail *string) []string {
 		}
 		fields := strings.Fields(p)
 		if len(fields) > 0 {
-			params = append(params, fields[0])
+			name := fields[0]
+			if strings.HasSuffix(name, ":") {
+				name = strings.TrimSuffix(name, ":")
+			}
+			params = append(params, name)
 		}
 	}
 	return params
+}
+
+func parseZigDetail(detail string) ([]string, string) {
+	start := strings.Index(detail, "(")
+	end := strings.LastIndex(detail, ")")
+	if start == -1 || end == -1 || end < start {
+		return nil, ""
+	}
+	paramsPart := detail[start+1 : end]
+	retPart := strings.TrimSpace(detail[end+1:])
+	params := parseZigParams(paramsPart)
+	return params, retPart
 }
