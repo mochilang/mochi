@@ -107,7 +107,14 @@ func appendPhpSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				}
 			}
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
-			// ignore local variables
+			if len(prefix) == 0 {
+				name := strings.TrimPrefix(s.Name, "$")
+				typ := phpFieldType(src, s.SelectionRange.Start, ls)
+				if typ == "" {
+					typ = "any"
+				}
+				fmt.Fprintf(out, "let %s: %s\n", name, typ)
+			}
 		default:
 			if len(s.Children) > 0 {
 				appendPhpSymbols(out, nameParts, s.Children, src, ls)
