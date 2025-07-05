@@ -26,6 +26,10 @@ func TestConvert(t *testing.T) {
 		{"SELECT instr(a, b) FROM t;", "SELECT strpos(a, b) FROM t;"},
 		{"SELECT CURRENT_DATE;", "SELECT current_date;"},
 		{"SELECT CURRENT_TIME;", "SELECT current_time;"},
+		{"SELECT character_length(name) FROM t;", "SELECT length(name) FROM t;"},
+		{"SELECT CURRENT_TIMESTAMP();", "SELECT now();"},
+		{"SELECT CURRENT_DATE();", "SELECT current_date;"},
+		{"SELECT CURRENT_TIME();", "SELECT current_time;"},
 	}
 	for _, tt := range tests {
 		got := Convert(tt.in)
