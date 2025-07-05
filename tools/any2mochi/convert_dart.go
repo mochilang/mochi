@@ -75,11 +75,11 @@ func parseDartDetail(detail string) ([]dartParam, string) {
 		}
 		typ := ""
 		if len(fields) > 1 {
-			typ = strings.Join(fields[:len(fields)-1], " ")
+			typ = dartToMochiType(strings.Join(fields[:len(fields)-1], " "))
 		}
 		params = append(params, dartParam{name: name, typ: typ})
 	}
-	return params, retPart
+	return params, dartToMochiType(retPart)
 }
 
 func parseDartHover(h protocol.Hover) ([]dartParam, string) {
@@ -111,7 +111,7 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				if c.Kind == protocol.SymbolKindField || c.Kind == protocol.SymbolKindProperty || c.Kind == protocol.SymbolKindVariable {
 					out.WriteString("  ")
 					out.WriteString(c.Name)
-					if t := dartTypeFromDetail(c.Detail); t != "" && t != "dynamic" {
+					if t := dartFieldType(src, c, ls); t != "" {
 						out.WriteString(": ")
 						out.WriteString(t)
 					}
@@ -129,7 +129,7 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 			if len(prefix) == 0 && s.Name != "" {
 				out.WriteString("let ")
 				out.WriteString(s.Name)
-				if t := dartTypeFromDetail(s.Detail); t != "" && t != "dynamic" {
+				if t := dartFieldType(src, s, ls); t != "" {
 					out.WriteString(": ")
 					out.WriteString(t)
 				}
@@ -176,13 +176,13 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 					out.WriteString(", ")
 				}
 				out.WriteString(p.name)
-				if p.typ != "" && p.typ != "dynamic" {
+				if p.typ != "" && p.typ != "any" {
 					out.WriteString(": ")
 					out.WriteString(p.typ)
 				}
 			}
 			out.WriteByte(')')
-			if ret != "" && ret != "void" && ret != "dynamic" {
+			if ret != "" && ret != "any" {
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
@@ -199,5 +199,121 @@ func dartTypeFromDetail(d *string) string {
 	if d == nil {
 		return ""
 	}
-	return strings.TrimSpace(*d)
+	return dartToMochiType(strings.TrimSpace(*d))
+}
+
+func dartFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+	if t := dartTypeFromDetail(sym.Detail); t != "" && t != "any" {
+		return t
+	}
+	return dartTypeFromHover(src, sym, ls)
+}
+
+func dartTypeFromHover(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err != nil {
+		return ""
+	}
+	text := hoverString(hov)
+	for _, line := range strings.Split(text, "\n") {
+		l := strings.TrimSpace(line)
+		if idx := strings.Index(l, ":"); idx != -1 {
+			t := strings.TrimSpace(l[idx+1:])
+			if t != "" {
+				return dartToMochiType(t)
+			}
+		}
+		if idx := strings.Index(l, "→"); idx != -1 {
+			t := strings.TrimSpace(l[idx+len("→"):])
+			if t != "" {
+				return dartToMochiType(t)
+			}
+		} else if idx := strings.Index(l, "->"); idx != -1 {
+			t := strings.TrimSpace(l[idx+2:])
+			if t != "" {
+				return dartToMochiType(t)
+			}
+		}
+	}
+	return ""
+}
+
+func splitDartArgs(s string) []string {
+	var parts []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '<':
+			depth++
+		case '>':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start < len(s) {
+		parts = append(parts, strings.TrimSpace(s[start:]))
+	}
+	return parts
+}
+
+func dartToMochiType(t string) string {
+	t = strings.TrimSpace(t)
+	if strings.HasSuffix(t, "?") {
+		t = strings.TrimSuffix(t, "?")
+	}
+	switch t {
+	case "", "dynamic", "Object":
+		return "any"
+	case "int":
+		return "int"
+	case "double", "num":
+		return "float"
+	case "bool":
+		return "bool"
+	case "String":
+		return "string"
+	case "void":
+		return ""
+	}
+	if strings.HasSuffix(t, ">") {
+		if open := strings.Index(t, "<"); open != -1 {
+			outer := strings.TrimSpace(t[:open])
+			inner := strings.TrimSuffix(t[open+1:], ">")
+			args := splitDartArgs(inner)
+			switch outer {
+			case "List", "Iterable", "Set":
+				a := "any"
+				if len(args) > 0 {
+					if at := dartToMochiType(args[0]); at != "" {
+						a = at
+					}
+				}
+				return "list<" + a + ">"
+			case "Map":
+				if len(args) == 2 {
+					k := dartToMochiType(args[0])
+					if k == "" {
+						k = "any"
+					}
+					v := dartToMochiType(args[1])
+					if v == "" {
+						v = "any"
+					}
+					return "map<" + k + ", " + v + ">"
+				}
+			case "Future":
+				if len(args) == 1 {
+					return dartToMochiType(args[0])
+				}
+			}
+		}
+	}
+	return t
 }
