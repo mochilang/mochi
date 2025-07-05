@@ -148,6 +148,7 @@ constructs:
 - Dataset helpers `fetch`, `load` and `save`
 - List set operations using `union all`
 - Built-in string helpers `substr` and `reverse`
+- Numeric absolute value via `abs`
 - Dataset queries with `from`/`where`/`select`, joins, sorting and pagination
 - Simple `group by` queries without filters or joins
 - Dataset updates using `update` with `set`/`where`

@@ -1387,6 +1387,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return fmt.Sprintf("Length(%s)", argStr), nil
 		case "print":
 			return fmt.Sprintf("writeln(%s)", argStr), nil
+		case "abs":
+			if len(args) != 1 {
+				return "", fmt.Errorf("abs expects 1 argument")
+			}
+			return fmt.Sprintf("Abs(%s)", args[0]), nil
 		case "str":
 			if len(args) == 1 {
 				t := typeString(types.TypeOfExpr(p.Call.Args[0], c.env))
