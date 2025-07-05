@@ -1,7 +1,8 @@
 type Person {
-  name
-  age
+  name: str
+  age: int
 }
-let people
+let people: list[Person]
 let names
 fun main() {}
+
