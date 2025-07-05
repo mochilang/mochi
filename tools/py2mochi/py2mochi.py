@@ -75,6 +75,14 @@ class Converter(ast.NodeVisitor):
         if isinstance(node, ast.Name):
             return node.id
         if isinstance(node, ast.Attribute):
+            if (
+                node.attr == "lower"
+                and isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name)
+                and node.value.func.id == "str"
+                and len(node.value.args) == 1
+            ):
+                return self.convert_expr(node.value.args[0])
             return f"{self.convert_expr(node.value)}.{node.attr}"
         if isinstance(node, ast.Subscript):
             target = self.convert_expr(node.value)
@@ -538,6 +546,22 @@ class Converter(ast.NodeVisitor):
                 and isinstance(node.value.func, ast.Name)
                 and node.value.func.id == "TypeVar"
             ):
+                return
+            if (
+                isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name)
+                and node.value.func.id in self.dataclasses
+                and not node.value.args
+                and len(node.value.keywords) == 1
+                and node.value.keywords[0].arg is None
+                and isinstance(node.value.keywords[0].value, ast.Call)
+                and isinstance(node.value.keywords[0].value.func, ast.Name)
+                and node.value.keywords[0].value.func.id == "_fetch"
+            ):
+                typ = node.value.func.id
+                fetch_expr = self.convert_expr(node.value.keywords[0].value)
+                self.seen_assigns.add(target.id)
+                self.emit(f"let {target.id}: {typ} = ({fetch_expr}) as {typ}")
                 return
             if target.id in self.seen_assigns:
                 return
