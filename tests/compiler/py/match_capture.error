@@ -1,2 +1,23 @@
-py2mochi failed:
-unhandled expression at line 11:             0
+generated code does not match expected
+--- expected
++++ generated
+@@ -1,12 +1,7 @@
+- type Tree =
+-   Leaf
+-   | Node(left: Tree, value: int, right: Tree)
+-
+- fun depth(t: Tree): int {
+-   return match t {
+-     Leaf => 0
+-     Node(l, _, r) => depth(l) + depth(r) + 1
+-   }
+- }
+-
+- print(depth(Node { left: Leaf {}, value: 0, right: Leaf {} }))
++type Tree =
++  Leaf {} |
++  Node(left: Tree, value: int, right: Tree)
++fun depth(t: Tree): int {
++  return fun(_t0) => if isinstance(_t0, Leaf) then 0 else if isinstance(_t0, Node) then fun(l, r) => depth(l) + depth(r) + 1(_t0.left, _t0.right) else None()
++}
++print(depth(Node { left: Leaf {  }, value: 0, right: Leaf {  } }))

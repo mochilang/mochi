@@ -100,6 +100,11 @@ class Converter(ast.NodeVisitor):
             else:
                 op = " or "
             return op.join(self.convert_expr(v) for v in node.values)
+        if isinstance(node, ast.IfExp):
+            test = self.convert_expr(node.test)
+            body = self.convert_expr(node.body)
+            orelse = self.convert_expr(node.orelse)
+            return f"if {test} then {body} else {orelse}"
         if isinstance(node, ast.Compare):
             op_map = {
                 ast.Gt: ">",
@@ -132,6 +137,15 @@ class Converter(ast.NodeVisitor):
                 for k, v in zip(node.keys, node.values)
             ]
             return "{" + ", ".join(items) + "}"
+        if isinstance(node, ast.DictComp):
+            parts = [f"{self.convert_expr(node.key)}: {self.convert_expr(node.value)}"]
+            for gen in node.generators:
+                target = self.convert_expr(gen.target)
+                iter_ = self.convert_expr(gen.iter)
+                parts.append(f"for {target} in {iter_}")
+                for if_ in gen.ifs:
+                    parts.append(f"if {self.convert_expr(if_)}")
+            return "{" + " ".join(parts) + "}"
         if isinstance(node, ast.Tuple):
             return "(" + ", ".join(self.convert_expr(e) for e in node.elts) + ")"
         if isinstance(node, ast.Starred):
@@ -363,7 +377,15 @@ def convert(path: str) -> str:
     try:
         conv.visit(tree)
     except ConversionError as e:
-        raise ConversionError(f"{e} at line {e.lineno}: {e.line}", e.lineno, e.line)
+        lines = src.splitlines()
+        start = max(e.lineno - 2, 0)
+        end = min(e.lineno + 1, len(lines))
+        context = "\n".join(
+            f"{i + 1}: {lines[i]}" for i in range(start, end)
+        )
+        raise ConversionError(
+            f"{e} at line {e.lineno}: {e.line}\n{context}", e.lineno, e.line
+        )
     return "\n".join(conv.lines) + ("\n" if conv.lines else "")
 
 
