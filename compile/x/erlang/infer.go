@@ -16,26 +16,17 @@ func (c *Compiler) exprTypeHint(e *parser.Expr, hint types.Type) types.Type {
 }
 
 func (c *Compiler) unaryType(u *parser.Unary) types.Type {
-	if u == nil {
-		return types.AnyType{}
-	}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
 	return types.ExprType(expr, c.env)
 }
 
 func (c *Compiler) postfixType(p *parser.PostfixExpr) types.Type {
-	if p == nil {
-		return types.AnyType{}
-	}
 	unary := &parser.Unary{Value: p}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
 	return types.ExprType(expr, c.env)
 }
 
 func (c *Compiler) primaryType(p *parser.Primary) types.Type {
-	if p == nil {
-		return types.AnyType{}
-	}
 	postfix := &parser.PostfixExpr{Target: p}
 	unary := &parser.Unary{Value: postfix}
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: unary}}
