@@ -1,7 +1,7 @@
 type Counter {
   value: int
 extend Counter {
-  fun inc() {
+  fun inc(): int {
     self.value = self.value + 1
     return self.value
   }

@@ -76,7 +76,7 @@ fun main() {
 
   json(result)
 }
-fun _avg(v) {
+fun _avg(v: [T]) {
   if v.is_empty() {
     return 0.0
   }
@@ -84,10 +84,12 @@ fun _avg(v) {
   for &it in v {
     sum += Into::<f64>::into(it)
   }
+  return sum / v.len() as f64
 }
-fun _count(v) {
+fun _count(v: [T]) {
+  return v.len() as i32
 }
-fun _sum(v) {
+fun _sum(v: [T]) {
   if v.is_empty() {
     return 0.0
   }
@@ -95,4 +97,5 @@ fun _sum(v) {
   for &it in v {
     sum += Into::<f64>::into(it)
   }
+  return sum
 }

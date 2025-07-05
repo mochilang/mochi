@@ -26,5 +26,6 @@ fun main() {
     print(g.k, g.c)
   }
 }
-fun _count(v) {
+fun _count(v: [T]) {
+  return v.len() as i32
 }

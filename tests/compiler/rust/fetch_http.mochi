@@ -8,7 +8,7 @@ fun main() {
   var todo: Todo = _fetch::<Todo>("https://jsonplaceholder.typicode.com/todos/1", std::collections::HashMap::new())
   print(todo.title)
 }
-fun _fetch(_url, _opts) {
+fun _fetch(_url: string, _opts: std::collections::HashMap) {
   var data = String::new()
   if _url.starts_with("file://") {
     if let Ok(text) = std::fs::read_to_string(&_url[7..]) {
@@ -18,4 +18,5 @@ fun _fetch(_url, _opts) {
     var out = Command::new("curl").arg("-s").arg(_url).output().unwrap()
     data = String::from_utf8_lossy(&out.stdout).to_string()
   }
+  return serde_json::from_str::<T>(&data).unwrap()
 }

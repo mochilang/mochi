@@ -1,7 +1,7 @@
 fun main() {
   print(_slice_string("hello", 1, 4))
 }
-fun _slice_string(s, start, end) {
+fun _slice_string(s: string, start: int, end: int) {
   var sidx = start
   var eidx = end
   var chars: Vec<char> = s.chars().collect()
@@ -21,4 +21,5 @@ fun _slice_string(s, start, end) {
   if eidx < sidx {
     eidx = sidx
   }
+  return chars[sidx as usize..eidx as usize].iter().collect()
 }

@@ -1,7 +1,7 @@
 fun main() {
   print(_avg(&vec![1, 2, 3]))
 }
-fun _avg(v) {
+fun _avg(v: [T]) {
   if v.is_empty() {
     return 0.0
   }
@@ -9,4 +9,5 @@ fun _avg(v) {
   for &it in v {
     sum += Into::<f64>::into(it)
   }
+  return sum / v.len() as f64
 }

@@ -1,4 +1,4 @@
-fun makeAdder(n) {
+fun makeAdder(n: int) {
   return Box::new(move |x: i64| x + n)
 }
 fun main() {

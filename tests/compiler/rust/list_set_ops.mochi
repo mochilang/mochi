@@ -5,27 +5,30 @@ fun main() {
   print(_except(&a, &b).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "))
   print(_intersect(&a, &b).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "))
 }
-fun _except(a, b) {
+fun _except(a: [T], b: [T]) {
   var res = Vec::new()
   for it in a {
     if !b.contains(it) {
       res.push(it.clone())
     }
   }
+  return res
 }
-fun _intersect(a, b) {
+fun _intersect(a: [T], b: [T]) {
   var res = Vec::new()
   for it in a {
     if b.contains(it) && !res.contains(it) {
       res.push(it.clone())
     }
   }
+  return res
 }
-fun _union(a, b) {
+fun _union(a: [T], b: [T]) {
   var res = a.to_vec()
   for it in b {
     if !res.contains(it) {
       res.push(it.clone())
     }
   }
+  return res
 }

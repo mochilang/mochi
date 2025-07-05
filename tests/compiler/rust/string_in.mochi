@@ -1,5 +1,6 @@
 fun main() {
   print(_in_string("hello", "lo"))
 }
-fun _in_string(s, sub) {
+fun _in_string(s: string, sub: string) {
+  return s.contains(sub)
 }

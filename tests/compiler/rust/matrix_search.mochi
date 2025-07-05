@@ -1,4 +1,4 @@
-fun searchMatrix(matrix, target) {
+fun searchMatrix(matrix: Vec, target: int) {
   var m = matrix.len() as i64
   if m == 0 {
     return false

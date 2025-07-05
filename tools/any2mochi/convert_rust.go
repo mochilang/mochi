@@ -259,10 +259,22 @@ func convertStmts(src string, list *node, level int) []string {
 	if list == nil {
 		return out
 	}
+	var lastExpr *node
 	for _, c := range list.children {
 		switch c.kind {
 		case "LET_STMT", "EXPR_STMT", "RETURN_EXPR", "FOR_EXPR", "WHILE_EXPR", "IF_EXPR", "MATCH_EXPR":
 			out = append(out, convertStmt(src, c, level)...)
+			lastExpr = nil
+		default:
+			if strings.Contains(c.kind, "EXPR") {
+				lastExpr = c
+			}
+		}
+	}
+	if lastExpr != nil {
+		expr := strings.TrimSpace(src[lastExpr.start:lastExpr.end])
+		if expr != "" {
+			out = append(out, indent(level)+"return "+expr)
 		}
 	}
 	return out
@@ -300,6 +312,9 @@ func convertRustType(src string, n *node) string {
 	t = strings.TrimPrefix(t, "mut ")
 	if strings.HasPrefix(t, "Box<") && strings.HasSuffix(t, ">") {
 		t = strings.TrimSuffix(strings.TrimPrefix(t, "Box<"), ">")
+	}
+	if i := strings.Index(t, "<"); i >= 0 {
+		t = t[:i]
 	}
 	switch t {
 	case "i64", "i32", "i16", "i8", "isize", "usize", "u64", "u32", "u16", "u8":
@@ -396,6 +411,41 @@ func convertEnum(src string, n *node) []string {
 		}
 	}
 	return out
+}
+
+func convertConst(src string, n *node) []string {
+	nameNode := findChild(n, "NAME")
+	valNode := findChild(n, "LITERAL")
+	if nameNode == nil || valNode == nil {
+		return nil
+	}
+	name := strings.TrimSpace(src[nameNode.start:nameNode.end])
+	val := strings.TrimSpace(src[valNode.start:valNode.end])
+	typNode := findChild(n, "PATH_TYPE")
+	if typNode == nil {
+		typNode = findChild(n, "REF_TYPE")
+	}
+	typ := convertRustType(src, typNode)
+	line := "const " + name
+	if typ != "any" {
+		line += ": " + typ
+	}
+	line += " = " + val
+	return []string{line}
+}
+
+func convertTypeAlias(src string, n *node) []string {
+	nameNode := findChild(n, "NAME")
+	typNode := findChild(n, "PATH_TYPE")
+	if typNode == nil {
+		typNode = findChild(n, "REF_TYPE")
+	}
+	if nameNode == nil || typNode == nil {
+		return nil
+	}
+	name := strings.TrimSpace(src[nameNode.start:nameNode.end])
+	typ := convertRustType(src, typNode)
+	return []string{fmt.Sprintf("type %s = %s", name, typ)}
 }
 
 func convertFn(src string, n *node, level int) []string {
@@ -497,6 +547,10 @@ func ConvertRust(src string) ([]byte, error) {
 			}
 		case "ENUM":
 			out = append(out, convertEnum(src, c)...)
+		case "CONST":
+			out = append(out, convertConst(src, c)...)
+		case "TYPE_ALIAS":
+			out = append(out, convertTypeAlias(src, c)...)
 		case "IMPL":
 			typNode := findChild(c, "PATH_TYPE")
 			if typNode != nil {
