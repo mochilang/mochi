@@ -1,0 +1,5 @@
+type Num {}
+let items
+let a
+let b
+fun main() {}

@@ -1,0 +1,5 @@
+fun value_of_root(t) {}
+type Tree {}
+type Leaf {}
+type Node {}
+fun main() {}

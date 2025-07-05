@@ -1,0 +1,4 @@
+let T
+fun _fetch(url, opts) {}
+let data
+fun main() {}

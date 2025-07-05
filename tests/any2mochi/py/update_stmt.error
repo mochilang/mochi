@@ -1,4 +1,0 @@
-line 65: Operator ">=" not supported for "None"
-  if age >= 18:
-line 67: Operator "+" not supported for "None"
-  setattr(_it1, "age", (age + 1))

@@ -1,0 +1,6 @@
+let T
+fun _load(path, opts) {}
+fun _save(rows, path, opts) {}
+type Person {}
+let people
+fun main() {}

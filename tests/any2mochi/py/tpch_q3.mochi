@@ -1,0 +1,22 @@
+let T
+fun _get(obj, name) {}
+type _Group {}
+fun _Group.__init__(key) {}
+fun _Group.__iter__() {}
+fun _group_by(src, keyfn) {}
+fun _query(src, joins, opts) {}
+fun _query._key(it) {}
+fun _sort_key(k) {}
+fun _sum(v) {}
+let customer
+let orders
+let lineitem
+let cutoff
+let segment
+let building_customers
+let valid_orders
+let valid_lineitems
+let order_line_join
+fun test_Q3_returns_revenue_per_order_with_correct_priority() {}
+fun main() {}
+fun main._q0() {}
