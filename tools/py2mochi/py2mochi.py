@@ -67,6 +67,15 @@ class Converter(ast.NodeVisitor):
             return node.id
         if isinstance(node, ast.Attribute):
             return f"{self.convert_expr(node.value)}.{node.attr}"
+        if isinstance(node, ast.Subscript):
+            target = self.convert_expr(node.value)
+            sl = node.slice
+            if isinstance(sl, ast.Slice):
+                start = self.convert_expr(sl.lower) if sl.lower else ""
+                stop = self.convert_expr(sl.upper) if sl.upper else ""
+                return f"{target}[{start}:{stop}]"
+            idx = getattr(sl, "value", sl)
+            return f"{target}[{self.convert_expr(idx)}]"
         if isinstance(node, ast.BinOp):
             op_map = {ast.Add: "+", ast.Sub: "-", ast.Mult: "*", ast.Div: "/"}
             op = op_map.get(type(node.op), "?")
@@ -75,6 +84,12 @@ class Converter(ast.NodeVisitor):
             )
         if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
             return "-" + self.convert_expr(node.operand)
+        if isinstance(node, ast.BoolOp):
+            if isinstance(node.op, ast.And):
+                op = " and "
+            else:
+                op = " or "
+            return op.join(self.convert_expr(v) for v in node.values)
         if isinstance(node, ast.Compare):
             op_map = {
                 ast.Gt: ">",
@@ -96,8 +111,19 @@ class Converter(ast.NodeVisitor):
                 ]
                 return f"{func} {{ " + ", ".join(fields) + " }"
             args = [self.convert_expr(a) for a in node.args]
-            args += [f"{k.arg}: {self.convert_expr(k.value)}" for k in node.keywords]
+            args += [f"{k.arg}: {self.convert_expr(k.value)}" for k in node.keywords if k.arg]
+            args += [self.convert_expr(k.value) for k in node.keywords if k.arg is None]
             return f"{func}(" + ", ".join(args) + ")"
+        if isinstance(node, ast.Dict):
+            items = [
+                f"{self.convert_expr(k)}: {self.convert_expr(v)}"
+                for k, v in zip(node.keys, node.values)
+            ]
+            return "{" + ", ".join(items) + "}"
+        if isinstance(node, ast.Tuple):
+            return "(" + ", ".join(self.convert_expr(e) for e in node.elts) + ")"
+        if isinstance(node, ast.Starred):
+            return self.convert_expr(node.value)
         if isinstance(node, ast.List):
             return "[" + ", ".join(self.convert_expr(e) for e in node.elts) + "]"
         if isinstance(node, ast.ListComp):
@@ -297,6 +323,23 @@ class Converter(ast.NodeVisitor):
             self.visit(stmt)
         self.indent -= 1
         self.emit("}")
+
+    def visit_If(self, node: ast.If) -> None:
+        test = self.convert_expr(node.test)
+        self.emit(f"if {test} {{")
+        self.indent += 1
+        for stmt in node.body:
+            self.visit(stmt)
+        self.indent -= 1
+        if node.orelse:
+            self.emit("} else {")
+            self.indent += 1
+            for stmt in node.orelse:
+                self.visit(stmt)
+            self.indent -= 1
+            self.emit("}")
+        else:
+            self.emit("}")
 
 
 def convert(path: str) -> str:
