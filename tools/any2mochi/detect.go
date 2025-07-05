@@ -54,6 +54,8 @@ func DetectLanguage(name, src string) string {
 		return "ocaml"
 	case ".pas":
 		return "pas"
+	case ".f90", ".f95", ".f", ".for":
+		return "fortran"
 	case ".pl":
 		return "pl"
 	case ".rkt":
@@ -66,6 +68,10 @@ func DetectLanguage(name, src string) string {
 		return "cobol"
 	case ".s":
 		return "asm"
+	case ".scm", ".ss":
+		return "scheme"
+	case ".st":
+		return "st"
 	case ".jvm":
 		return "jvm"
 	}
