@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -16,16 +17,72 @@ type cppParam struct {
 // ConvertCpp converts cpp source code to Mochi using the language server.
 func ConvertCpp(src string) ([]byte, error) {
 	ls := Servers["cpp"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
+	var syms []protocol.DocumentSymbol
+	var diags []protocol.Diagnostic
+	if ls.Command != "" {
+		if _, lookErr := exec.LookPath(ls.Command); lookErr == nil {
+			syms, diags, _ = ParseText(ls.Command, ls.Args, ls.LangID, src)
+		}
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
+
 	var out strings.Builder
-	writeCppSymbols(&out, nil, syms, src, ls)
+	if syms != nil {
+		writeCppSymbols(&out, nil, syms, src, ls)
+	}
 	if out.Len() == 0 {
+		funcs, enums, err := parseCppAST(src)
+		if err != nil {
+			enums = parseCppEnums(src)
+			funcs = parseCppFunctions(src)
+		}
+		for _, e := range enums {
+			out.WriteString("type ")
+			out.WriteString(e.name)
+			out.WriteString(" {\n")
+			for _, v := range e.variants {
+				out.WriteString("  ")
+				out.WriteString(v)
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		}
+		for _, f := range funcs {
+			out.WriteString("fun ")
+			out.WriteString(f.name)
+			out.WriteByte('(')
+			for i, p := range f.params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p.name)
+				if p.typ != "" {
+					out.WriteString(": ")
+					out.WriteString(p.typ)
+				}
+			}
+			out.WriteByte(')')
+			if f.ret != "" && f.ret != "void" {
+				out.WriteString(": ")
+				out.WriteString(f.ret)
+			}
+			body := convertCppBodyString(f.body)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, line := range body {
+					out.WriteString("  ")
+					out.WriteString(line)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
+		}
+	}
+	if out.Len() == 0 {
+		if len(diags) > 0 {
+			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		}
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
