@@ -1,0 +1,8 @@
+type Msg {
+  message: string
+}
+fun main() {
+  var data = _cast(Msg.class, _fetch("file://tests/compiler/java/fetch_builtin.json", null))
+  print(data.message)
+}
+

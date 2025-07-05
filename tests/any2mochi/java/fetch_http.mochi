@@ -1,0 +1,11 @@
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+fun main() {
+  var todo = _cast(Todo.class, _fetch("https://jsonplaceholder.typicode.com/todos/1", null))
+  print(todo.title)
+}
+

@@ -1,1 +1,2 @@
-unsupported function declaration: static class Product {
+unsupported line: Object[] expensive = (new java.util.function.Supplier<java.util.List<Object>>() {
+
