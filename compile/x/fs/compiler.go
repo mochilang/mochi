@@ -1718,6 +1718,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
 		return fmt.Sprintf("Seq.max %s", args[0]), nil
+	case "pow":
+		if len(args) != 2 {
+			return "", fmt.Errorf("pow expects 2 args")
+		}
+		return fmt.Sprintf("Math.Pow(float %s, float %s)", args[0], args[1]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")

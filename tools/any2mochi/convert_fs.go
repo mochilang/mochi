@@ -14,8 +14,13 @@ import (
 func ConvertFs(src string) ([]byte, error) {
 	ls := Servers["fs"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
+	if err != nil || len(syms) == 0 {
+		if out, ferr := convertFsFallback(src); ferr == nil {
+			return out, nil
+		}
+		if err != nil {
+			return nil, err
+		}
 	}
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
@@ -70,7 +75,18 @@ func writeFsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteString(": ")
 				out.WriteString(t)
 			}
-			out.WriteString(" {}\n")
+			body := fsFunctionBody(src, s)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, ln := range body {
+					out.WriteString("  ")
+					out.WriteString(ln)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField:
 			out.WriteString("let ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -168,4 +184,66 @@ func mapFsType(t string) string {
 		return "list<" + inner + ">"
 	}
 	return ""
+}
+
+func fsFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+	lines := strings.Split(src, "\n")
+	start := fsPosToOffset(lines, sym.Range.Start)
+	end := fsPosToOffset(lines, sym.Range.End)
+	if start >= len(src) || end > len(src) || start >= end {
+		return nil
+	}
+	snippet := src[start:end]
+	key := "raise (Return_" + sym.Name + " ("
+	idx := strings.Index(snippet, key)
+	if idx == -1 {
+		return nil
+	}
+	exprStart := idx + len(key)
+	depth := 1
+	i := exprStart
+	for i < len(snippet) && depth > 0 {
+		switch snippet[i] {
+		case '(':
+			depth++
+		case ')':
+			depth--
+		}
+		i++
+	}
+	if depth != 0 {
+		return nil
+	}
+	expr := strings.TrimSpace(snippet[exprStart : i-1])
+	return []string{"return " + expr}
+}
+
+func fsPosToOffset(lines []string, pos protocol.Position) int {
+	off := 0
+	for i := 0; i < int(pos.Line); i++ {
+		if i < len(lines) {
+			off += len(lines[i]) + 1
+		}
+	}
+	off += int(pos.Character)
+	return off
+}
+
+func convertFsFallback(src string) ([]byte, error) {
+	for _, line := range strings.Split(src, "\n") {
+		l := strings.TrimSpace(line)
+		if strings.HasPrefix(l, "ignore (printfn") {
+			open := strings.Index(l, "(")
+			close := strings.LastIndex(l, ")")
+			if open != -1 && close != -1 && close > open {
+				expr := strings.TrimSpace(l[open+1 : close])
+				parts := strings.Split(expr, ",")
+				if len(parts) > 1 {
+					expr = strings.Join(parts[1:], ",")
+				}
+				return []byte("print(" + strings.TrimSpace(expr) + ")\n"), nil
+			}
+		}
+	}
+	return nil, fmt.Errorf("unsupported")
 }
