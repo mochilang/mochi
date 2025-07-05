@@ -7,7 +7,11 @@ module is missing it is built automatically using `go build` and cached next to
 `mod.ts`.
 
 If the `deno` command is missing, run `make install` from the project root to
-download it.
+download it. To run the unit tests for this library execute:
+
+```bash
+deno test --allow-read --allow-write --allow-run --allow-env mod_test.ts
+```
 
 ## Usage
 

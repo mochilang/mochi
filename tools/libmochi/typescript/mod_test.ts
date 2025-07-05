@@ -23,5 +23,9 @@ denoTest('run file', async () => {
 });
 
 function denoTest(name: string, fn: () => Promise<void>) {
-  Deno.test(name, fn);
+  Deno.test({
+    name,
+    permissions: { write: true, read: true, run: true, env: true },
+    fn,
+  });
 }
