@@ -1,0 +1,4 @@
+convert failure: solargraph not found
+
+source snippet:
+  1: puts(["Hello, world"].join(" "))

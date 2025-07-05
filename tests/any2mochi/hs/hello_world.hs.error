@@ -1,0 +1,4 @@
+convert failure: haskell-language-server-wrapper not found
+
+source snippet:
+  1: {-# LANGUAGE DeriveGeneric #-}

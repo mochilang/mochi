@@ -1,0 +1,4 @@
+convert failure: jsonrpc2: connection is closed
+
+source snippet:
+  1: fn main() {
