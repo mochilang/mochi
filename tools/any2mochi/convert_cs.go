@@ -53,7 +53,11 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
 				if c.Kind == protocol.SymbolKindField || c.Kind == protocol.SymbolKindProperty {
-					fmt.Fprintf(out, "  %s: any\n", c.Name)
+					typ := csFieldType(src, c, ls)
+					if typ == "" {
+						typ = "any"
+					}
+					fmt.Fprintf(out, "  %s: %s\n", c.Name, typ)
 				}
 			}
 			out.WriteString("}\n")
@@ -68,18 +72,13 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			}
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
 			params, ret := parseCsSignature(s.Detail)
-			if len(params) == 0 && ret == "" {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
-						for _, line := range strings.Split(mc.Value, "\n") {
-							l := strings.TrimSpace(line)
-							if strings.Contains(l, "(") && strings.Contains(l, ")") {
-								if p, r := parseCsSignature(&l); len(p) > 0 || r != "" {
-									params, ret = p, r
-									break
-								}
-							}
-						}
+			if len(params) == 0 || ret == "" {
+				if p, r := csHoverSignature(src, s, ls); len(p) > 0 || r != "" {
+					if len(params) == 0 {
+						params = p
+					}
+					if ret == "" {
+						ret = r
 					}
 				}
 			}
@@ -109,6 +108,10 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
+				if typ := csFieldType(src, s, ls); typ != "" {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
 				out.WriteByte('\n')
 			}
 			if len(s.Children) > 0 {
@@ -288,6 +291,56 @@ func mapCsType(t string) string {
 			case "Nullable":
 				if len(args) == 1 {
 					return mapCsType(args[0])
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func csHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]csParam, string) {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err != nil {
+		return nil, ""
+	}
+	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+		for _, line := range strings.Split(mc.Value, "\n") {
+			l := strings.TrimSpace(line)
+			if strings.Contains(l, "(") && strings.Contains(l, ")") {
+				if p, r := parseCsSignature(&l); len(p) > 0 || r != "" {
+					return p, r
+				}
+			}
+		}
+	}
+	return nil, ""
+}
+
+func csFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+	if sym.Detail != nil {
+		if t := mapCsType(*sym.Detail); t != "" {
+			return t
+		}
+	}
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err != nil {
+		return ""
+	}
+	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+		for _, line := range strings.Split(mc.Value, "\n") {
+			l := strings.TrimSpace(line)
+			fields := strings.Fields(l)
+			if len(fields) >= 2 {
+				if t := mapCsType(fields[0]); t != "" {
+					return t
+				}
+				if t := mapCsType(fields[len(fields)-1]); t != "" {
+					return t
+				}
+			}
+			if idx := strings.Index(l, ":"); idx != -1 {
+				if t := mapCsType(strings.TrimSpace(l[idx+1:])); t != "" {
+					return t
 				}
 			}
 		}
