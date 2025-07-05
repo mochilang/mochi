@@ -329,14 +329,20 @@ Mochi language features are not yet implemented:
 ## any2mochi Converter
 
 `tools/any2mochi` includes a Prolog converter that uses `prolog-lsp` to generate
-stub Mochi functions from existing Prolog source files.
+Mochi code from existing Prolog source files. When the language server is not
+available, the converter falls back to a simple regex based parser.
 
 ### Supported Features
 
 - Extraction of predicate names and arity via document symbols.
 - Parameter names retrieved from hover information when available.
+- Basic parsing of predicate bodies to convert `write/1` calls and simple
+  assignments.
+- Regex fallback when `prolog-lsp` is missing.
 
 ### Unsupported Features
 
 - Type information or return values.
 - Directives and module metadata not reported by the language server.
+- Control flow constructs such as loops or conditionals.
+- Complex expressions and dataset helpers.
