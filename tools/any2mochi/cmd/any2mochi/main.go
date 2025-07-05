@@ -88,6 +88,27 @@ func convertGoCmd() *cobra.Command {
 	return cmd
 }
 
+func convertRustCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "convert-rust <file.rs>",
+		Short: "Convert Rust source to Mochi",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			data, err := os.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+			out, err := any2mochi.ConvertRust(string(data))
+			if err != nil {
+				return err
+			}
+			_, err = cmd.OutOrStdout().Write(out)
+			return err
+		},
+	}
+	return cmd
+}
+
 func convertPythonCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "convert-py <file.py>",
@@ -233,6 +254,7 @@ func newRootCmd() *cobra.Command {
 	cmd.AddCommand(
 		parseCmd(),
 		convertGoCmd(),
+		convertRustCmd(),
 		convertPythonCmd(),
 		convertTSCmd(),
 		convertCmd(),
