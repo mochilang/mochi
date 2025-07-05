@@ -3,52 +3,53 @@ object Main {
         val resp = _fetch("https://example.com", scala.collection.mutable.Map("method" -> "POST", "headers" -> scala.collection.mutable.Map("Content-Type" -> "application/json"), "query" -> scala.collection.mutable.Map("q" -> "test"), "body" -> scala.collection.mutable.Map("x" -> 1), "timeout" -> 5))
         println(resp)
     }
-}
-def _fetch(url: String, opts: Map[String, Any]): Any = {
-        import java.net.{HttpURLConnection, URL, URLEncoder}
-        import java.io.{BufferedWriter, OutputStreamWriter}
-        var u = url
-        if (opts != null && opts.contains("query")) {
-                val q = opts("query").asInstanceOf[scala.collection.Map[String, Any]]
-                val qs = q.map { case (k, v) =>
-                        URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(String.valueOf(v), "UTF-8")
-                }.mkString("&")
-                val sep = if (u.contains("?")) "&" else "?"
-                u = u + sep + qs
-        }
-        val conn = new URL(u).openConnection().asInstanceOf[HttpURLConnection]
-        var method = "GET"
-        if (opts != null && opts.contains("method")) {
-                method = opts("method").toString
-        }
-        conn.setRequestMethod(method)
-        if (opts != null && opts.contains("headers")) {
-                val hs = opts("headers").asInstanceOf[scala.collection.Map[String, Any]]
-                hs.foreach { case (k, v) => conn.setRequestProperty(k, v.toString) }
-        }
-        if (opts != null && opts.contains("timeout")) {
-                val t = opts("timeout") match {
-                        case i: Int => i.toDouble
-                        case l: Long => l.toDouble
-                        case f: Float => f.toDouble
-                        case d: Double => d
-                        case other => other.toString.toDouble
-                }
-                val ms = (t * 1000).toInt
-                conn.setConnectTimeout(ms)
-                conn.setReadTimeout(ms)
-        }
-        if (opts != null && opts.contains("body")) {
-                conn.setDoOutput(true)
-                val data = _to_json(opts("body"))
-                val w = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream))
-                w.write(data)
-                w.flush()
-                w.close()
-        }
-        val src = scala.io.Source.fromInputStream(conn.getInputStream)
-        try {
-                val data = src.mkString
-                scala.util.parsing.json.JSON.parseFull(data).getOrElse(data)
-        } finally src.close()
+    def _fetch(url: String, opts: Map[String, Any]): Any = {
+            import java.net.{HttpURLConnection, URL, URLEncoder}
+            import java.io.{BufferedWriter, OutputStreamWriter}
+            var u = url
+            if (opts != null && opts.contains("query")) {
+                    val q = opts("query").asInstanceOf[scala.collection.Map[String, Any]]
+                    val qs = q.map { case (k, v) =>
+                            URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(String.valueOf(v), "UTF-8")
+                    }.mkString("&")
+                    val sep = if (u.contains("?")) "&" else "?"
+                    u = u + sep + qs
+            }
+            val conn = new URL(u).openConnection().asInstanceOf[HttpURLConnection]
+            var method = "GET"
+            if (opts != null && opts.contains("method")) {
+                    method = opts("method").toString
+            }
+            conn.setRequestMethod(method)
+            if (opts != null && opts.contains("headers")) {
+                    val hs = opts("headers").asInstanceOf[scala.collection.Map[String, Any]]
+                    hs.foreach { case (k, v) => conn.setRequestProperty(k, v.toString) }
+            }
+            if (opts != null && opts.contains("timeout")) {
+                    val t = opts("timeout") match {
+                            case i: Int => i.toDouble
+                            case l: Long => l.toDouble
+                            case f: Float => f.toDouble
+                            case d: Double => d
+                            case other => other.toString.toDouble
+                    }
+                    val ms = (t * 1000).toInt
+                    conn.setConnectTimeout(ms)
+                    conn.setReadTimeout(ms)
+            }
+            if (opts != null && opts.contains("body")) {
+                    conn.setDoOutput(true)
+                    val data = _to_json(opts("body"))
+                    val w = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream))
+                    w.write(data)
+                    w.flush()
+                    w.close()
+            }
+            val src = scala.io.Source.fromInputStream(conn.getInputStream)
+            try {
+                    val data = src.mkString
+                    scala.util.parsing.json.JSON.parseFull(data).getOrElse(data)
+            } finally src.close()
+    }
+    
 }

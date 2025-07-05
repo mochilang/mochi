@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -10,8 +11,12 @@ import (
 
 // ConvertScala converts scala source code to Mochi using the language server.
 func ConvertScala(src string) ([]byte, error) {
+	return convertScala(src, "")
+}
+
+func convertScala(src, root string) ([]byte, error) {
 	ls := Servers["scala"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +30,7 @@ func ConvertScala(src string) ([]byte, error) {
 		if s.Kind != protocol.SymbolKindFunction {
 			continue
 		}
-		code := convertScalaFunc(lines, s)
+		code := convertScalaFunc(lines, s, root)
 		if code == "" {
 			continue
 		}
@@ -44,10 +49,10 @@ func ConvertScalaFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ConvertScala(string(data))
+	return convertScala(string(data), filepath.Dir(path))
 }
 
-func convertScalaFunc(lines []string, sym protocol.DocumentSymbol) string {
+func convertScalaFunc(lines []string, sym protocol.DocumentSymbol, root string) string {
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
 	if start < 0 || end >= len(lines) || start >= end {
@@ -57,16 +62,16 @@ func convertScalaFunc(lines []string, sym protocol.DocumentSymbol) string {
 	header := strings.TrimSpace(seg[0])
 
 	name := sym.Name
-	params, _ := parseScalaSignature(header, name)
+	params, ret := parseScalaSignature(header, name)
 	if len(params) == 0 && sym.Detail != nil {
-		params, _ = parseScalaSignature(*sym.Detail, name)
+		params, ret = parseScalaSignature(*sym.Detail, name)
 	}
 	if len(params) == 0 {
-		if hov, err := EnsureAndHover(Servers["scala"].Command, Servers["scala"].Args, Servers["scala"].LangID, strings.Join(lines, "\n"), sym.SelectionRange.Start); err == nil {
+		if hov, err := EnsureAndHoverWithRoot(Servers["scala"].Command, Servers["scala"].Args, Servers["scala"].LangID, strings.Join(lines, "\n"), sym.SelectionRange.Start, root); err == nil {
 			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
 				for _, l := range strings.Split(mc.Value, "\n") {
 					if strings.Contains(l, name+"(") {
-						params, _ = parseScalaSignature(l, name)
+						params, ret = parseScalaSignature(l, name)
 						break
 					}
 				}
@@ -84,7 +89,12 @@ func convertScalaFunc(lines []string, sym protocol.DocumentSymbol) string {
 		}
 		b.WriteString(p)
 	}
-	b.WriteString(") {\n")
+	b.WriteString(")")
+	if ret != "" && ret != "Unit" {
+		b.WriteString(": ")
+		b.WriteString(ret)
+	}
+	b.WriteString(" {\n")
 	for _, l := range seg[1:] {
 		l = strings.TrimSpace(l)
 		if l == "}" {

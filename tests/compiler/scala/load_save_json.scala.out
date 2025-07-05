@@ -2,50 +2,51 @@ case class Person(name: String, age: Int)
 
 object Main {
     def main(args: Array[String]): Unit = {
-        val people: scala.collection.mutable.ArrayBuffer[Any] = _load("", scala.collection.mutable.Map("format" -> "json")).map(_.asInstanceOf[Any])
+        val people: scala.collection.mutable.ArrayBuffer[Person] = _load("", scala.collection.mutable.Map("format" -> "json")).map(_.asInstanceOf[Person])
         _save(people, "", scala.collection.mutable.Map("format" -> "json"))
     }
+    def _load(path: String, opts: Map[String, Any]): Seq[Any] = {
+            val fmt = opts.getOrElse("format", "json").asInstanceOf[String]
+            val src = if (path == "" || path == "-") scala.io.Source.stdin else scala.io.Source.fromFile(path)
+            try {
+                    val data = src.mkString
+                    fmt match {
+                            case "jsonl" =>
+                                    data.split("\n").toSeq.filter(_.nonEmpty).map { line =>
+                                            scala.util.parsing.json.JSON.parseFull(line).getOrElse(line)
+                                    }
+                            case "json" =>
+                                    scala.util.parsing.json.JSON.parseFull(data) match {
+                                            case Some(xs: List[_]) => xs
+                                            case Some(m) => Seq(m)
+                                            case _ => Seq.empty
+                                    }
+                            case _ =>
+                                    scala.util.parsing.json.JSON.parseFull(data) match {
+                                            case Some(xs: List[_]) => xs
+                                            case Some(m) => Seq(m)
+                                            case _ => data.split("\n").toSeq
+                                    }
+                    }
+            } finally src.close()
+            }
+    
+    def _save(src: Any, path: String, opts: Map[String, Any]): Unit = {
+            val fmt = opts.getOrElse("format", "json").asInstanceOf[String]
+            val out = if (path == "" || path == "-") new java.io.PrintWriter(System.out) else new java.io.PrintWriter(new java.io.File(path))
+            try {
+                    fmt match {
+                            case "jsonl" =>
+                                    src.asInstanceOf[Seq[Any]].foreach(v => out.println(_to_json(v)))
+                            case "json" =>
+                                    out.println(_to_json(src))
+                            case _ =>
+                                    src match {
+                                            case seq: Seq[_] => seq.foreach(v => out.println(v.toString))
+                                            case other => out.println(other.toString)
+                                    }
+                    }
+            } finally if (path != "" && path != "-") out.close()
+            }
+    
 }
-def _load(path: String, opts: Map[String, Any]): Seq[Any] = {
-        val fmt = opts.getOrElse("format", "json").asInstanceOf[String]
-        val src = if (path == "" || path == "-") scala.io.Source.stdin else scala.io.Source.fromFile(path)
-        try {
-                val data = src.mkString
-                fmt match {
-                        case "jsonl" =>
-                                data.split("\n").toSeq.filter(_.nonEmpty).map { line =>
-                                        scala.util.parsing.json.JSON.parseFull(line).getOrElse(line)
-                                }
-                        case "json" =>
-                                scala.util.parsing.json.JSON.parseFull(data) match {
-                                        case Some(xs: List[_]) => xs
-                                        case Some(m) => Seq(m)
-                                        case _ => Seq.empty
-                                }
-                        case _ =>
-                                scala.util.parsing.json.JSON.parseFull(data) match {
-                                        case Some(xs: List[_]) => xs
-                                        case Some(m) => Seq(m)
-                                        case _ => data.split("\n").toSeq
-                                }
-                }
-        } finally src.close()
-        }
-
-def _save(src: Any, path: String, opts: Map[String, Any]): Unit = {
-        val fmt = opts.getOrElse("format", "json").asInstanceOf[String]
-        val out = if (path == "" || path == "-") new java.io.PrintWriter(System.out) else new java.io.PrintWriter(new java.io.File(path))
-        try {
-                fmt match {
-                        case "jsonl" =>
-                                src.asInstanceOf[Seq[Any]].foreach(v => out.println(_to_json(v)))
-                        case "json" =>
-                                out.println(_to_json(src))
-                        case _ =>
-                                src match {
-                                        case seq: Seq[_] => seq.foreach(v => out.println(v.toString))
-                                        case other => out.println(other.toString)
-                                }
-                }
-        } finally if (path != "" && path != "-") out.close()
-        }

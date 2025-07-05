@@ -8,7 +8,8 @@ object Main {
         println("ok")
         test_addition_works()
     }
-}
-def expect(cond: Boolean): Unit = {
-        if (!cond) throw new RuntimeException("expect failed")
+    def expect(cond: Boolean): Unit = {
+            if (!cond) throw new RuntimeException("expect failed")
+    }
+    
 }
