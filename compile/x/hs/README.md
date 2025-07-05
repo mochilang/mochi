@@ -30,6 +30,7 @@ The backend implements a small but practical subset of Mochi:
 - Lists and maps with literals, indexing and membership
 - Builtin helpers: `len`, `count`, `avg`, `str`, `push`, `keys`, `print`, `input`, `now`, `json`, `load` and `save`
 - User-defined struct types and literals
+- Enum type declarations
 - Dataset queries with `from`/`where`, sorting, skipping and taking
 - Grouped dataset queries with aggregates like `tpc-h/q1.mochi`
 - Test blocks with `expect` statements

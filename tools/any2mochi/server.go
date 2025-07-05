@@ -37,9 +37,9 @@ var Servers = map[string]LanguageServer{
 	"mlir":       {Command: "mlir-lsp-server", Args: nil, LangID: "mlir"},
 	"ocaml":      {Command: "ocamllsp", Args: nil, LangID: "ocaml"},
 	"pas":        {Command: "pasls", Args: nil, LangID: "pascal"},
-        "php":        {Command: "intelephense", Args: []string{"--stdio"}, LangID: "php"},
-       "prolog":     {Command: "prolog-lsp", Args: nil, LangID: "prolog"},
-        "pl":         {Command: "perlls", Args: nil, LangID: "perl"},
+	"php":        {Command: "intelephense", Args: []string{"--stdio"}, LangID: "php"},
+	"prolog":     {Command: "prolog-lsp", Args: nil, LangID: "prolog"},
+	"pl":         {Command: "perlls", Args: nil, LangID: "perl"},
 	"rb":         {Command: "solargraph", Args: []string{"stdio"}, LangID: "ruby"},
 	"rkt":        {Command: "racket-langserver", Args: nil, LangID: "racket"},
 	"rust":       {Command: "rust-analyzer", Args: nil, LangID: "rust"},
@@ -64,6 +64,38 @@ func EnsureServer(name string) error {
 	if name == "rust-analyzer" {
 		if _, err := exec.LookPath("rustup"); err == nil {
 			cmd := exec.Command("rustup", "component", "add", "rust-analyzer")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath(name); err == nil {
+				return nil
+			}
+		}
+	} else if name == "haskell-language-server-wrapper" {
+		if _, err := exec.LookPath("ghcup"); err == nil {
+			cmd := exec.Command("ghcup", "install", "hls")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath(name); err == nil {
+				return nil
+			}
+		}
+		if _, err := exec.LookPath("apt-get"); err == nil {
+			cmd := exec.Command("apt-get", "update")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			cmd = exec.Command("apt-get", "install", "-y", "haskell-language-server")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			if _, err := exec.LookPath(name); err == nil {
+				return nil
+			}
+		}
+		if _, err := exec.LookPath("brew"); err == nil {
+			cmd := exec.Command("brew", "install", "haskell-language-server")
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			_ = cmd.Run()
