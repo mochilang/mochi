@@ -1,0 +1,6 @@
+fun main() {
+  print(id(123))
+fun id() {
+    res = x
+  }
+}
