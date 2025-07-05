@@ -15,8 +15,9 @@ type LanguageServer struct {
 
 // Servers maps language names to their default language server configuration.
 var Servers = map[string]LanguageServer{
-	"go":         {Command: "gopls", Args: nil, LangID: "go"},
-	"python":     {Command: "pyright-langserver", Args: []string{"--stdio"}, LangID: "python"},
+	"go": {Command: "gopls", Args: nil, LangID: "go"},
+	// python language server disabled by default
+	"python":     {Command: "", Args: nil, LangID: "python"},
 	"typescript": {Command: "typescript-language-server", Args: []string{"--stdio"}, LangID: "typescript"},
 	"c":          {Command: "clangd", Args: []string{"--header-insertion=never"}, LangID: "c"},
 	"cpp":        {Command: "clangd", Args: []string{"--header-insertion=never"}, LangID: "cpp"},

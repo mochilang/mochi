@@ -1,35 +1,37 @@
 package any2mochi
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
+	"time"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 
 	pycode "mochi/compile/py"
 )
 
-// ConvertPython converts Python source code to a minimal Mochi representation
-// using the Python language server.
+// ConvertPython converts Python source code to a minimal Mochi representation.
+// It uses the configured language server when available, otherwise falls back to
+// a small parser that invokes Python to produce an AST as JSON.
 func ConvertPython(src string) ([]byte, error) {
-	_ = pycode.EnsurePyright()
 	ls := Servers["python"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
+	if ls.Command != "" {
+		_ = pycode.EnsurePyright()
+		syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		if err == nil && len(diags) == 0 {
+			var out strings.Builder
+			writePySymbols(&out, nil, syms, src, ls)
+			if out.Len() > 0 {
+				return []byte(out.String()), nil
+			}
+		}
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-
-	var out strings.Builder
-	writePySymbols(&out, nil, syms, src, ls)
-
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
+	return convertPythonFallback(src)
 }
 
 // ConvertPythonFile reads the Python file at path and converts it to Mochi.
@@ -637,4 +639,130 @@ func pyExtractRange(src string, r protocol.Range) string {
 		}
 	}
 	return out.String()
+}
+
+var pyCmd = "python3"
+
+// convertPythonFallback performs a very small subset conversion of Python
+// source without relying on a language server. Only top level function
+// definitions and simple variable assignments are handled.
+func convertPythonFallback(src string) ([]byte, error) {
+	items, err := runPyParse(src)
+	if err != nil {
+		return nil, err
+	}
+	var out strings.Builder
+	for _, it := range items {
+		switch it.Kind {
+		case "func":
+			out.WriteString("fun ")
+			out.WriteString(it.Name)
+			out.WriteByte('(')
+			out.WriteString(strings.Join(it.Params, ", "))
+			out.WriteByte(')')
+			body := extractPyBody(src, it.Start, it.End)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, st := range body {
+					out.WriteString("  ")
+					out.WriteString(st)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
+		case "assign":
+			out.WriteString("let ")
+			out.WriteString(it.Name)
+			if it.Value != "" {
+				out.WriteString(" = ")
+				out.WriteString(strings.ReplaceAll(it.Value, "\n", " "))
+			}
+			out.WriteByte('\n')
+		}
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	return []byte(out.String()), nil
+}
+
+func indentOf(s string) string {
+	i := 0
+	for i < len(s) && (s[i] == ' ' || s[i] == '\t') {
+		i++
+	}
+	return s[:i]
+}
+
+type pyItem struct {
+	Kind   string   `json:"kind"`
+	Name   string   `json:"name"`
+	Params []string `json:"params,omitempty"`
+	Start  int      `json:"start,omitempty"`
+	End    int      `json:"end,omitempty"`
+	Value  string   `json:"value,omitempty"`
+}
+
+const pyParseScript = `import ast, json, sys
+tree = ast.parse(sys.stdin.read())
+items = []
+for n in tree.body:
+    if isinstance(n, ast.FunctionDef):
+        items.append({"kind": "func", "name": n.name,
+                       "params": [a.arg for a in n.args.args if a.arg != "self"],
+                       "start": n.lineno, "end": n.end_lineno})
+    elif isinstance(n, ast.Assign):
+        if len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+            val = ""
+            try:
+                val = ast.unparse(n.value)
+            except Exception:
+                pass
+            items.append({"kind": "assign", "name": n.targets[0].id, "value": val})
+json.dump(items, sys.stdout)`
+
+func runPyParse(src string) ([]pyItem, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, pyCmd, "-c", pyParseScript)
+	cmd.Stdin = strings.NewReader(src)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return nil, err
+	}
+	var items []pyItem
+	if err := json.Unmarshal(out.Bytes(), &items); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+func extractPyBody(src string, startLine, endLine int) []string {
+	lines := strings.Split(src, "\n")
+	if startLine >= len(lines) {
+		return nil
+	}
+	if endLine > len(lines) {
+		endLine = len(lines)
+	}
+	if startLine < 0 {
+		startLine = 0
+	}
+	bodyLines := lines[startLine:endLine]
+	indent := ""
+	for _, l := range bodyLines {
+		t := strings.TrimSpace(l)
+		if t != "" {
+			indent = l[:len(l)-len(strings.TrimLeft(l, " \t"))]
+			break
+		}
+	}
+	if indent == "" {
+		return nil
+	}
+	stmts, _ := parsePyLines(bodyLines, indent)
+	return stmts
 }
