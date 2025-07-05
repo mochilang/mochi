@@ -1,3 +1,14 @@
 fun _equal() {}
+let ak
+let bk
+let i
+let k
 fun main() {}
+let _i
+let _item
+let age
+let name
+let status
+let people
+let Person
 fun test_update_adult_status() {}

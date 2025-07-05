@@ -1,4 +1,19 @@
 fun _fetch() {}
+let ctrl
+let id
+let init
+let k
+let path
+let qs
+let resp
+let sep
 fun setTimeout() callback() {}
+let t
+let text
+let text
+let v
+let _pending
 fun _waitAll() {}
+let data
 fun main() {}
+let Msg

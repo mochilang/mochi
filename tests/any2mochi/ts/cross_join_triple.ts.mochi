@@ -1,2 +1,12 @@
+let bools
+let combos
+let letters
 fun main() {}
 fun <function>() {}
+let _res
+let _src
+let b
+let l
+let n
+let c
+let nums

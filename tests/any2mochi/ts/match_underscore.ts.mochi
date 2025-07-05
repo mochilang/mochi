@@ -1,3 +1,7 @@
+let _Node
+let Leaf
 fun main() {}
+let Tree
 fun value_of_root() {}
 fun <function>() {}
+let _t

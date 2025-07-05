@@ -1,3 +1,6 @@
+let adults
 fun main() {}
 fun map() callback() {}
 fun people.filter() callback() {}
+let person
+let people

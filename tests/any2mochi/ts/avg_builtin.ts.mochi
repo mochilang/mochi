@@ -1,2 +1,6 @@
 fun _avg() {}
+let list
+let n
+let sum
 fun main() {}
+let xs

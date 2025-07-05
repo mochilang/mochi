@@ -93,6 +93,9 @@ func parseProgram(path string) (*Program, []byte, error) {
 	}
 	script := filepath.Join(root, "tools", "ts2mochi", "ast.js")
 	cmd := exec.Command("node", script, path)
+	if np := nodeModulePath(); np != "" {
+		cmd.Env = append(os.Environ(), "NODE_PATH="+np)
+	}
 	var out bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &out
@@ -242,4 +245,13 @@ func formatExpr(e Expr) string {
 	default:
 		return ""
 	}
+}
+
+func nodeModulePath() string {
+	cmd := exec.Command("npm", "root", "-g")
+	out, err := cmd.Output()
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(out))
 }

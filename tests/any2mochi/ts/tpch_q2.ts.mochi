@@ -1,22 +1,84 @@
 fun _equal() {}
+let ak
+let bk
+let i
+let k
 fun _json() {}
 fun _sort() {}
+let k
+let keys
+let o
 fun _min() {}
+let list
+let m
+let n
+let num
 fun _query() {}
+let items
 fun src.map() callback() {}
 fun items.filter() callback() {}
+let j
+let joined
+let keep
+let keep
+let keep
+let left
+let left
+let left
+let m
+let m
+let m
+let matched
+let n
+let n
+let pairs
 fun items.map() callback() {}
 fun pairs.map() callback() {}
 fun pairs.sort() callback() {}
+let ak
+let bk
+let r
+let res
+let ri
+let ri
+let right
+let right
+let right
+let undef
+let undef
+let costs
+let europe_nations
+let europe_suppliers
 fun main() {}
 fun <function>() {}
+let _src
 fun <function>() {}
+let _src
 fun <function>() {}
+let _src
 fun <function>() {}
+let _items
+let _pairs
 fun _items.map() callback() {}
+let x
 fun _pairs.map() callback() {}
 fun _pairs.sort() callback() {}
+let ak
+let bk
+let _res
+let _src
+let x
+let x
 fun map() callback() {}
 fun part.filter() callback() {}
 fun target_partsupp.map() callback() {}
+let min_cost
+let nation
+let part
+let partsupp
+let region
+let result
+let supplier
+let target_parts
+let target_partsupp
 fun test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() {}

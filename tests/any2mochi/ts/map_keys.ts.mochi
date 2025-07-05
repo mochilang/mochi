@@ -1,2 +1,3 @@
+let m
 fun main() {}
 fun map() callback() {}
