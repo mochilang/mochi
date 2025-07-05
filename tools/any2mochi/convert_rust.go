@@ -75,6 +75,10 @@ func convertParams(src string, n *node) []string {
 				params = append(params, strings.TrimSpace(src[id.start:id.end]))
 			}
 		}
+		if c.kind == "SELF_PARAM" {
+			// ignore self parameter in methods
+			continue
+		}
 	}
 	return params
 }
@@ -99,7 +103,7 @@ func convertStmt(src string, n *node, level int) []string {
 			if strings.HasPrefix(code, "println!") {
 				args := strings.TrimPrefix(code, "println!")
 				args = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(args, "("), ")"))
-				parts := splitArgs(args)
+				parts := splitRustArgs(args)
 				if len(parts) > 0 && strings.HasPrefix(strings.TrimSpace(parts[0]), "\"") {
 					if len(parts) == 1 {
 						return []string{idt + fmt.Sprintf("print(%s)", parts[0])}
@@ -199,7 +203,7 @@ func convertStmts(src string, list *node, level int) []string {
 	return out
 }
 
-func splitArgs(s string) []string {
+func splitRustArgs(s string) []string {
 	var args []string
 	depth := 0
 	start := 0
@@ -220,6 +224,155 @@ func splitArgs(s string) []string {
 		args = append(args, strings.TrimSpace(s[start:]))
 	}
 	return args
+}
+
+func convertRustType(src string, n *node) string {
+	if n == nil {
+		return "any"
+	}
+	t := strings.TrimSpace(src[n.start:n.end])
+	t = strings.TrimPrefix(t, "&")
+	t = strings.TrimPrefix(t, "mut ")
+	if strings.HasPrefix(t, "Box<") && strings.HasSuffix(t, ">") {
+		t = strings.TrimSuffix(strings.TrimPrefix(t, "Box<"), ">")
+	}
+	switch t {
+	case "i64", "i32", "i16", "i8", "isize", "usize", "u64", "u32", "u16", "u8":
+		return "int"
+	case "f64", "f32":
+		return "float"
+	case "bool":
+		return "bool"
+	case "String", "str":
+		return "string"
+	default:
+		return t
+	}
+}
+
+func convertStruct(src string, n *node) []string {
+	nameNode := findChild(n, "NAME")
+	if nameNode == nil {
+		return nil
+	}
+	name := strings.TrimSpace(src[nameNode.start:nameNode.end])
+	fields := findChild(n, "RECORD_FIELD_LIST")
+	var out []string
+	out = append(out, fmt.Sprintf("type %s {", name))
+	if fields != nil {
+		for _, f := range fields.children {
+			if f.kind != "RECORD_FIELD" {
+				continue
+			}
+			fnameNode := findChild(f, "NAME")
+			if fnameNode == nil {
+				continue
+			}
+			typNode := findChild(f, "PATH_TYPE")
+			if typNode == nil {
+				typNode = findChild(f, "REF_TYPE")
+			}
+			fname := strings.TrimSpace(src[fnameNode.start:fnameNode.end])
+			typ := convertRustType(src, typNode)
+			out = append(out, fmt.Sprintf("  %s: %s", fname, typ))
+		}
+	}
+	out = append(out, "}")
+	return out
+}
+
+func convertEnum(src string, n *node) []string {
+	nameNode := findChild(n, "NAME")
+	if nameNode == nil {
+		return nil
+	}
+	name := strings.TrimSpace(src[nameNode.start:nameNode.end])
+	variants := findChild(n, "VARIANT_LIST")
+	if variants == nil {
+		return nil
+	}
+	var out []string
+	out = append(out, fmt.Sprintf("type %s =", name))
+	first := true
+	for _, v := range variants.children {
+		if v.kind != "VARIANT" {
+			continue
+		}
+		linePrefix := "  "
+		if !first {
+			linePrefix = "  | "
+		}
+		first = false
+		vnameNode := findChild(v, "NAME")
+		if vnameNode == nil {
+			continue
+		}
+		vname := strings.TrimSpace(src[vnameNode.start:vnameNode.end])
+		if rfl := findChild(v, "RECORD_FIELD_LIST"); rfl != nil {
+			var fields []string
+			for _, rf := range rfl.children {
+				if rf.kind != "RECORD_FIELD" {
+					continue
+				}
+				fnameNode := findChild(rf, "NAME")
+				typNode := findChild(rf, "PATH_TYPE")
+				if typNode == nil {
+					typNode = findChild(rf, "REF_TYPE")
+				}
+				if fnameNode != nil {
+					fname := strings.TrimSpace(src[fnameNode.start:fnameNode.end])
+					typ := convertRustType(src, typNode)
+					fields = append(fields, fmt.Sprintf("%s: %s", fname, typ))
+				}
+			}
+			out = append(out, linePrefix+vname+"("+strings.Join(fields, ", ")+")")
+		} else {
+			out = append(out, linePrefix+vname)
+		}
+	}
+	return out
+}
+
+func convertFn(src string, n *node, level int) []string {
+	nameNode := findChild(findChild(n, "NAME"), "IDENT")
+	if nameNode == nil {
+		return nil
+	}
+	params := convertParams(src, findChild(n, "PARAM_LIST"))
+	out := []string{indent(level) + fmt.Sprintf("fun %s(%s) {", strings.TrimSpace(src[nameNode.start:nameNode.end]), strings.Join(params, ", "))}
+	body := findChild(findChild(n, "BLOCK_EXPR"), "STMT_LIST")
+	out = append(out, convertStmts(src, body, level+1)...)
+	out = append(out, indent(level)+"}")
+	return out
+}
+
+func convertImpl(src string, n *node) []string {
+	typNode := findChild(n, "PATH_TYPE")
+	if typNode == nil {
+		return nil
+	}
+	typeName := strings.TrimSpace(src[typNode.start:typNode.end])
+	itemList := findChild(n, "ASSOC_ITEM_LIST")
+	if itemList == nil {
+		return nil
+	}
+	var out []string
+	for _, it := range itemList.children {
+		if it.kind != "FN" {
+			continue
+		}
+		method := convertFn(src, it, 1)
+		if len(method) > 0 {
+			out = append(out, method...)
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	wrapped := []string{fmt.Sprintf("extend %s {", typeName)}
+	wrapped = append(wrapped, out...)
+	wrapped = append(wrapped, "}")
+	return wrapped
 }
 
 func runRustAnalyzerParse(cmd, src string) (string, error) {
@@ -250,20 +403,48 @@ func ConvertRust(src string) ([]byte, error) {
 		return nil, fmt.Errorf("parse failed")
 	}
 	var out []string
+	structs := make(map[string][]string)
+	order := []string{}
+	methods := make(map[string][]string)
 	for _, c := range tree.children {
-		if c.kind != "FN" {
-			continue
+		switch c.kind {
+		case "STRUCT":
+			nameNode := findChild(c, "NAME")
+			if nameNode != nil {
+				name := strings.TrimSpace(src[nameNode.start:nameNode.end])
+				structs[name] = convertStruct(src, c)
+				order = append(order, name)
+			}
+		case "ENUM":
+			out = append(out, convertEnum(src, c)...)
+		case "IMPL":
+			typNode := findChild(c, "PATH_TYPE")
+			if typNode != nil {
+				name := strings.TrimSpace(src[typNode.start:typNode.end])
+				methods[name] = append(methods[name], convertImpl(src, c)...)
+			}
+		case "FN":
+			nameNode := findChild(findChild(c, "NAME"), "IDENT")
+			if nameNode == nil {
+				continue
+			}
+			params := convertParams(src, findChild(c, "PARAM_LIST"))
+			out = append(out, fmt.Sprintf("fun %s(%s) {", strings.TrimSpace(src[nameNode.start:nameNode.end]), strings.Join(params, ", ")))
+			body := findChild(findChild(c, "BLOCK_EXPR"), "STMT_LIST")
+			out = append(out, convertStmts(src, body, 1)...)
+			out = append(out, "}")
 		}
-		nameNode := findChild(findChild(c, "NAME"), "IDENT")
-		if nameNode == nil {
-			continue
-		}
-		params := convertParams(src, findChild(c, "PARAM_LIST"))
-		out = append(out, fmt.Sprintf("fun %s(%s) {", strings.TrimSpace(src[nameNode.start:nameNode.end]), strings.Join(params, ", ")))
-		body := findChild(findChild(c, "BLOCK_EXPR"), "STMT_LIST")
-		out = append(out, convertStmts(src, body, 1)...)
-		out = append(out, "}")
 	}
+	var full []string
+	for _, name := range order {
+		lines := structs[name]
+		if m := methods[name]; len(m) > 0 {
+			lines = append(lines[:len(lines)-1], m...)
+			lines = append(lines, "}")
+		}
+		full = append(full, lines...)
+	}
+	out = append(full, out...)
 	if len(out) == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}

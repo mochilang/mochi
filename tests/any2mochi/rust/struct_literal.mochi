@@ -1,0 +1,12 @@
+type Person {
+  name: string
+  age: int
+}
+type Book {
+  title: string
+  author: Person
+}
+fun main() {
+  var book = Book { title: "Go".to_string(), author: Person { name: "Bob".to_string(), age: 42 } }
+  print(book.author.name)
+}
