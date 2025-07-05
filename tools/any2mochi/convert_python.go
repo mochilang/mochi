@@ -96,7 +96,13 @@ func writePyFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol,
 		out.WriteString(": ")
 		out.WriteString(ret)
 	}
-	out.WriteString(" {}\n")
+	out.WriteString(" {\n")
+	for _, line := range extractPyBody(src, sym) {
+		out.WriteString("  // ")
+		out.WriteString(strings.TrimSpace(line))
+		out.WriteByte('\n')
+	}
+	out.WriteString("}\n")
 }
 
 func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
@@ -395,4 +401,38 @@ func parsePyVarType(hov string) string {
 		return mapPyType(typ)
 	}
 	return ""
+}
+
+func extractPyBody(src string, sym protocol.DocumentSymbol) []string {
+	lines := strings.Split(src, "\n")
+	start := int(sym.Range.Start.Line) + 1
+	end := int(sym.Range.End.Line)
+	if start >= len(lines) || start > end {
+		return nil
+	}
+	if end >= len(lines) {
+		end = len(lines) - 1
+	}
+	body := make([]string, 0, end-start+1)
+	indent := 0
+	for i := start; i <= end; i++ {
+		l := lines[i]
+		if strings.TrimSpace(l) == "" {
+			body = append(body, "")
+			continue
+		}
+		if indent == 0 {
+			for j, r := range l {
+				if r != ' ' && r != '\t' {
+					indent = j
+					break
+				}
+			}
+		}
+		if len(l) >= indent {
+			l = l[indent:]
+		}
+		body = append(body, l)
+	}
+	return body
 }

@@ -1,4 +1,13 @@
-let xs: list[int]
-let ys: list[int]
-let res: None
-fun main() {}
+let xs: list<int>
+let ys: list<int>
+let res
+fun main() {
+  // global xs
+  // xs = [1, 2, 3, 4]
+  // global ys
+  // ys = [10, 20, 30]
+  // global res
+  // res = [(x + y) for x in xs if (x > 2) for y in ys]
+  // for v in res:
+  // print(v)
+}

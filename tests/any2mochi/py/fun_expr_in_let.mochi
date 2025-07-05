@@ -1,2 +1,6 @@
-let square: None
-fun main() {}
+let square
+fun main() {
+  // global square
+  // square = lambda x: (x * x)
+  // print(square(6))
+}

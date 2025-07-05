@@ -2,6 +2,17 @@ type Person {
   name: string
   age: int
 }
-let people: list[Person]
-let names: None
-fun main() {}
+let people: list<Person>
+let names
+fun main() {
+  // global people
+  // people = [
+  // Person(name="Alice", age=30),
+  // Person(name="Bob", age=15),
+  // Person(name="Charlie", age=65),
+  // ]
+  // global names
+  // names = [p.name for p in people if (p.age >= 18)]
+  // for n in names:
+  // print(n)
+}

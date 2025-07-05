@@ -1,3 +1,12 @@
-let xs: list[int]
-fun test_values() {}
-fun main() {}
+let xs: list<int>
+fun test_values() {
+  // assert xs[0] == ((-1))
+  // assert xs[1] == 0
+  // assert xs[2] == 1
+  // print("done")
+}
+fun main() {
+  // global xs
+  // xs = [((-1)), 0, 1]
+  // test_values()
+}

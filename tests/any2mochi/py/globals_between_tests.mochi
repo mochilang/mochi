@@ -1,5 +1,17 @@
 let a: Literal[1]
 let b: Literal[2]
-fun test_first() {}
-fun test_second() {}
-fun main() {}
+fun test_first() {
+  // assert a == 1
+}
+fun test_second() {
+  // assert b == 2
+}
+fun main() {
+  // global a
+  // a = 1
+  // global b
+  // b = 2
+  // print("done")
+  // test_first()
+  // test_second()
+}

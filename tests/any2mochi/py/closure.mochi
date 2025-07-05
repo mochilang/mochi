@@ -1,3 +1,9 @@
-fun makeAdder(n: int) -> ((int) -> int) {}
+fun makeAdder(n: int) -> ((int) -> int) {
+  // return lambda x: (x + n)
+}
 let add10
-fun main() {}
+fun main() {
+  // global add10
+  // add10 = makeAdder(10)
+  // print(add10(7))
+}
