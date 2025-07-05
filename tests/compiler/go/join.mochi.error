@@ -1,5 +1,5 @@
-tests/compiler/go/join.go.out:7: unsupported declaration
->>> 6:    
-7:>>> type Customer struct {
-8:    Id   int    `json:"id"`
-9:    Name string `json:"name"`
+tests/compiler/go/join.go.out:33: unsupported expr *ast.FuncLit
+>>> 32:    }
+33:>>> var result []PairInfo = func() []PairInfo {
+34:    _res := []PairInfo{}
+35:    for _, o := range orders {
