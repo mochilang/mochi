@@ -216,6 +216,32 @@ func parsePySignature(sig string) ([]pyParam, string) {
 }
 
 func mapPyType(t string) string {
+	t = strings.TrimSpace(t)
+	if t == "" || t == "None" || t == "Any" || t == "Unknown" {
+		return ""
+	}
+	if strings.Contains(t, "|") {
+		var parts []string
+		for _, p := range splitPyArgs(strings.ReplaceAll(t, "|", ",")) {
+			p = strings.TrimSpace(p)
+			if p == "None" || p == "" {
+				continue
+			}
+			if mp := mapPyType(p); mp != "" {
+				parts = append(parts, mp)
+			}
+		}
+		if len(parts) == 1 {
+			return parts[0]
+		}
+		if len(parts) > 1 {
+			return strings.Join(parts, " | ")
+		}
+		return ""
+	}
+	if idx := strings.LastIndex(t, "."); idx != -1 {
+		t = t[idx+1:]
+	}
 	switch t {
 	case "int":
 		return "int"
@@ -225,9 +251,127 @@ func mapPyType(t string) string {
 		return "string"
 	case "bool":
 		return "bool"
-	default:
-		return t
 	}
+	if strings.HasSuffix(t, "]") {
+		open := strings.Index(t, "[")
+		if open != -1 {
+			outer := strings.TrimSpace(t[:open])
+			inner := t[open+1 : len(t)-1]
+			args := splitPyArgs(inner)
+			switch outer {
+			case "list", "List", "Sequence", "Iterable":
+				innerType := "any"
+				if len(args) > 0 {
+					if a := mapPyType(args[0]); a != "" {
+						innerType = a
+					}
+				}
+				return "list<" + innerType + ">"
+			case "dict", "Dict", "Mapping":
+				key := "any"
+				val := "any"
+				if len(args) > 0 {
+					if k := mapPyType(args[0]); k != "" {
+						key = k
+					}
+				}
+				if len(args) > 1 {
+					if v := mapPyType(args[1]); v != "" {
+						val = v
+					}
+				}
+				return "map<" + key + ", " + val + ">"
+			case "set", "Set":
+				innerType := "any"
+				if len(args) > 0 {
+					if a := mapPyType(args[0]); a != "" {
+						innerType = a
+					}
+				}
+				return "set<" + innerType + ">"
+			case "tuple", "Tuple":
+				var mapped []string
+				for _, a := range args {
+					mt := mapPyType(a)
+					if mt == "" {
+						mt = "any"
+					}
+					mapped = append(mapped, mt)
+				}
+				if len(mapped) > 0 {
+					return "tuple<" + strings.Join(mapped, ", ") + ">"
+				}
+			case "Union":
+				var mapped []string
+				for _, a := range args {
+					mt := mapPyType(a)
+					if mt != "" {
+						mapped = append(mapped, mt)
+					}
+				}
+				if len(mapped) == 1 {
+					return mapped[0]
+				}
+				if len(mapped) > 1 {
+					return strings.Join(mapped, " | ")
+				}
+				return ""
+			case "Optional":
+				if len(args) == 1 {
+					mt := mapPyType(args[0])
+					if mt == "" {
+						mt = "any"
+					}
+					return mt + "?"
+				}
+			case "Callable":
+				if len(args) == 2 {
+					argList := strings.Trim(args[0], "[]")
+					ret := mapPyType(args[1])
+					var argTypes []string
+					if strings.TrimSpace(argList) != "" && argList != "..." {
+						for _, a := range splitPyArgs(argList) {
+							at := mapPyType(a)
+							if at == "" {
+								at = "any"
+							}
+							argTypes = append(argTypes, at)
+						}
+					}
+					if ret == "" {
+						ret = "any"
+					}
+					return "fun(" + strings.Join(argTypes, ", ") + "): " + ret
+				}
+			}
+		}
+	}
+	return t
+}
+
+func splitPyArgs(s string) []string {
+	var parts []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '[', '(', '<':
+			depth++
+		case ']', ')', '>':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start < len(s) {
+		parts = append(parts, strings.TrimSpace(s[start:]))
+	}
+	return parts
 }
 
 func getPyVarType(src string, pos protocol.Position, ls LanguageServer) string {

@@ -117,6 +117,16 @@ func EnsurePython() error {
 ```
 【F:compile/py/tools.go†L10-L42】
 
+## Supported Features
+
+The Python backend supports a large subset of Mochi. Highlights include:
+
+- Functions and variables with type inference
+- Classes with fields and methods (rendered as dataclasses)
+- Dataset queries and list/map operations
+- Stream handlers and agents with asynchronous execution
+- LLM helpers such as `gen_text` and `fetch`
+
 ## Unsupported Features
 
 The Python backend does not yet implement every language feature. Known
