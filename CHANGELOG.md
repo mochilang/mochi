@@ -1,4 +1,25 @@
 # 📦 CHANGELOG.md
+## [0.10.16] – 2025-07-05T16:16:38+07:00
+
+### Added
+
+* Cross-language `any2mochi` translator with server mode and JSON diagnostics
+* Python, TypeScript and Go converters with batch translation support
+* `min` and `max` builtins in the C backend and Fortran text helpers
+* Runner protocol with multi-stage sandbox containers
+* SQL Logic Test group-by cases 300–499 and stored conversions
+
+### Changed
+
+* SQLite-to-DuckDB script includes more conversions with CLI tests
+* Converters output clearer errors and optional JSON
+* SELECT ALL and aggregator support in SLT generator
+
+### Fixed
+
+* Clojure compiler map field access
+* Deno and Python converter tests
+
 ## [0.10.15] – 2025-07-04T22:41:30+07:00
 
 ### Added
