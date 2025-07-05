@@ -3,7 +3,6 @@
 package any2mochi
 
 import (
-	"os/exec"
 	"testing"
 
 	tscode "mochi/compile/ts"

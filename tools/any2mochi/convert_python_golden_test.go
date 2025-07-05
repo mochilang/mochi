@@ -20,5 +20,5 @@ func TestConvertPythonCompile_Golden(t *testing.T) {
 	root := findRepoRoot(t)
 	_ = pycode.EnsurePyright()
 	_ = gocode.EnsureGopls()
-	runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/py"), "*.py.out", ConvertPythonFile, "py", ".mochi.out", ".error")
+	runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/py"), "*.py.out", ConvertPythonFile, "py", ".mochi", ".error")
 }
