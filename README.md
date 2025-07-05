@@ -85,6 +85,19 @@ This installs `mochi` into `~/bin` and runs the full test suite.
 
 There is a VS Code extension under `tools/vscode` that bundles the Mochi language syntax. Run `npm install` and `npm run package` in that folder to build `mochi.vsix` for local installation.
 
+## Mochi Language Server
+
+Mochi includes a lightweight Language Server Protocol implementation used by the
+editor extension. Build it with:
+
+```bash
+go build ./cmd/mochi-lsp
+```
+
+Place the resulting `mochi-lsp` binary somewhere on your `PATH`. Any LSP
+compatible editor can then start the server using standard IO. The VS Code
+extension automatically launches it when available.
+
 You can also run Mochi as an [MCP server](https://github.com/modelcontext/protocol) inside **VS Code’s agent mode**.
 
 The easiest way is to use a `.vscode/mcp.json` config file in your project:
