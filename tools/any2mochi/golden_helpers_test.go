@@ -74,7 +74,7 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 			}
 
 			if *update {
-				os.WriteFile(errPath, nil, 0644)
+				os.Remove(errPath)
 				os.WriteFile(outPath, normalizeOutput(rootDir(t), mochiSrc), 0644)
 			}
 			want, readErr := os.ReadFile(outPath)
@@ -132,7 +132,7 @@ func runConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([
 			}
 
 			if *update {
-				os.WriteFile(errPath, nil, 0644)
+				os.Remove(errPath)
 				os.WriteFile(outPath, normalizeOutput(rootDir(t), out), 0644)
 			}
 			want, readErr := os.ReadFile(outPath)
