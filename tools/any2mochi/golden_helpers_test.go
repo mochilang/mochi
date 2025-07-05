@@ -1,5 +1,3 @@
-//go:build slow
-
 package any2mochi
 
 import (
@@ -13,54 +11,13 @@ import (
 	"testing"
 
 	gocode "mochi/compile/go"
-	pycode "mochi/compile/py"
-	tscode "mochi/compile/ts"
 	"mochi/parser"
 	"mochi/types"
 )
 
 var update = flag.Bool("update", false, "update golden files")
 
-func TestConvert_Golden(t *testing.T) {
-	root := findRepoRoot(t)
-
-	t.Run("go", func(t *testing.T) {
-		_ = gocode.EnsureGopls()
-		runConvertGolden(t, filepath.Join(root, "tests/compiler/go"), "*.go.out", ConvertGoFile, ".mochi.go.out", ".go.error")
-	})
-
-	t.Run("python", func(t *testing.T) {
-		_ = pycode.EnsurePyright()
-		runConvertGolden(t, filepath.Join(root, "tests/compiler/py"), "*.py.out", ConvertPythonFile, ".mochi.py.out", ".py.error")
-	})
-
-	t.Run("ts", func(t *testing.T) {
-		_ = tscode.EnsureTSLanguageServer()
-		runConvertGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertTypeScriptFile, ".mochi.ts.out", ".ts.error")
-		runConvertGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertTypeScriptFile, ".mochi.ts.out", ".ts.error")
-	})
-}
-
-func TestConvertCompile_Golden(t *testing.T) {
-	root := findRepoRoot(t)
-	t.Run("go", func(t *testing.T) {
-		_ = gocode.EnsureGopls()
-		runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/go"), "*.go.out", ConvertGoFile, ".mochi.out", ".error")
-	})
-	t.Run("python", func(t *testing.T) {
-		_ = gocode.EnsureGopls()
-		_ = pycode.EnsurePyright()
-		runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/py"), "*.py.out", ConvertPythonFile, ".mochi.out", ".error")
-	})
-	t.Run("ts", func(t *testing.T) {
-		_ = gocode.EnsureGopls()
-		_ = tscode.EnsureTSLanguageServer()
-		runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertTypeScriptFile, ".mochi.out", ".error")
-		runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertTypeScriptFile, ".mochi.out", ".error")
-	})
-}
-
-func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), outExt, errExt string) {
+func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
 	files, err := filepath.Glob(filepath.Join(dir, pattern))
 	if err != nil {
 		t.Fatal(err)
@@ -83,8 +40,8 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 		t.Run(name, func(t *testing.T) {
 			mochiSrc, err := convert(src)
 			root := rootDir(t)
-			outPath := filepath.Join(root, "tests/any2mochi", name+outExt)
-			errPath := filepath.Join(root, "tests/any2mochi", name+errExt)
+			outPath := filepath.Join(root, "tests/any2mochi", lang, name+outExt)
+			errPath := filepath.Join(root, "tests/any2mochi", lang, name+errExt)
 
 			if err == nil {
 				prog, pErr := parser.ParseString(string(mochiSrc))
