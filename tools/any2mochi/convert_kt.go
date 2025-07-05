@@ -117,7 +117,11 @@ func writeKtFunc(out *strings.Builder, sym protocol.DocumentSymbol, src string, 
 		if i > 0 {
 			out.WriteString(", ")
 		}
-		out.WriteString(p)
+		out.WriteString(p.name)
+		if p.typ != "" {
+			out.WriteString(": ")
+			out.WriteString(mapKtType(p.typ))
+		}
 	}
 	out.WriteByte(')')
 	if ret != "" && ret != "Unit" {
@@ -127,7 +131,7 @@ func writeKtFunc(out *strings.Builder, sym protocol.DocumentSymbol, src string, 
 	out.WriteString(" {}\n")
 }
 
-func ktHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]string, string) {
+func ktHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]ktParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
@@ -143,7 +147,7 @@ func ktHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer
 	return nil, ""
 }
 
-func parseKtSignature(detail *string) ([]string, string) {
+func parseKtSignature(detail *string) ([]ktParam, string) {
 	if detail == nil {
 		return nil, ""
 	}
@@ -157,7 +161,7 @@ func parseKtSignature(detail *string) ([]string, string) {
 		return nil, ""
 	}
 	paramsPart := sig[open+1 : close]
-	params := splitKtParams(paramsPart)
+	params := parseKtParams(paramsPart)
 	rest := strings.TrimSpace(sig[close+1:])
 	ret := ""
 	if strings.HasPrefix(rest, ":") {
@@ -166,7 +170,9 @@ func parseKtSignature(detail *string) ([]string, string) {
 	return params, ret
 }
 
-func splitKtParams(s string) []string {
+type ktParam struct{ name, typ string }
+
+func parseKtParams(s string) []ktParam {
 	var parts []string
 	depth := 0
 	start := 0
@@ -188,21 +194,24 @@ func splitKtParams(s string) []string {
 	if start < len(s) {
 		parts = append(parts, strings.TrimSpace(s[start:]))
 	}
-	names := make([]string, 0, len(parts))
+	params := make([]ktParam, 0, len(parts))
 	for _, p := range parts {
 		if eq := strings.Index(p, "="); eq != -1 {
 			p = strings.TrimSpace(p[:eq])
 		}
+		name := p
+		typ := ""
 		if colon := strings.Index(p, ":"); colon != -1 {
-			name := strings.TrimSpace(p[:colon])
-			if name != "" {
-				names = append(names, name)
-			}
+			name = strings.TrimSpace(p[:colon])
+			typ = strings.TrimSpace(p[colon+1:])
 		} else if fields := strings.Fields(p); len(fields) > 0 {
-			names = append(names, fields[len(fields)-1])
+			name = fields[len(fields)-1]
+		}
+		if name != "" {
+			params = append(params, ktParam{name: name, typ: typ})
 		}
 	}
-	return names
+	return params
 }
 
 func ktFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
@@ -226,6 +235,9 @@ func ktFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) str
 
 func mapKtType(t string) string {
 	t = strings.TrimSpace(t)
+	if strings.HasSuffix(t, "?") {
+		t = strings.TrimSuffix(t, "?")
+	}
 	switch t {
 	case "", "Unit", "Nothing":
 		return ""
@@ -252,5 +264,45 @@ func mapKtType(t string) string {
 		}
 		return "list<" + inner + ">"
 	}
+	if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
+		inner := t[4 : len(t)-1]
+		parts := splitGeneric(inner)
+		key := "any"
+		val := "any"
+		if len(parts) == 2 {
+			if k := mapKtType(parts[0]); k != "" {
+				key = k
+			}
+			if v := mapKtType(parts[1]); v != "" {
+				val = v
+			}
+		}
+		return "map<" + key + ", " + val + ">"
+	}
 	return t
+}
+
+func splitGeneric(s string) []string {
+	var parts []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '<':
+			depth++
+		case '>':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	if start < len(s) {
+		parts = append(parts, strings.TrimSpace(s[start:]))
+	}
+	return parts
 }
