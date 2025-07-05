@@ -17,23 +17,37 @@ func TestConvertOther_Golden(t *testing.T) {
 		pattern string
 		convert func(string) ([]byte, error)
 		name    string
-		extOut  string
-		extErr  string
 	}{
-		{"c", "*.c.out", ConvertCFile, "c", ".c.mochi", ".c.error"},
-		{"cpp", "*.cpp.out", ConvertCppFile, "cpp", ".cpp.mochi", ".cpp.error"},
-		{"asm", "*.s.out", ConvertAsmFile, "asm", ".s.mochi", ".s.error"},
-		{"clj", "*.clj.out", ConvertCljFile, "clj", ".clj.mochi", ".clj.error"},
-		{"cobol", "*.cob.out", ConvertCobolFile, "cobol", ".cob.mochi", ".cob.error"},
-		{"cs", "*.cs.out", ConvertCsFile, "cs", ".cs.mochi", ".cs.error"},
-		{"hs", "*.hs.out", ConvertHsFile, "hs", ".hs.mochi", ".hs.error"},
-		{"kt", "*.kt.out", ConvertKtFile, "kt", ".kt.mochi", ".kt.error"},
-		{"lua", "*.lua.out", ConvertLuaFile, "lua", ".lua.mochi", ".lua.error"},
-		{"rb", "*.rb.out", ConvertRbFile, "rb", ".rb.mochi", ".rb.error"},
-		{"rust", "*.rs.out", ConvertRustFile, "rust", ".rs.mochi", ".rs.error"},
+		{"asm", "*.s.out", ConvertAsmFile, "asm"},
+		{"c", "*.c.out", ConvertCFile, "c"},
+		{"clj", "*.clj.out", ConvertCljFile, "clj"},
+		{"cobol", "*.cob.out", ConvertCobolFile, "cobol"},
+		{"cpp", "*.cpp.out", ConvertCppFile, "cpp"},
+		{"cs", "*.cs.out", ConvertCsFile, "cs"},
+		{"dart", "*.dart.out", ConvertDartFile, "dart"},
+		{"erl", "*.erl.out", ConvertErlangFile, "erl"},
+		{"ex", "*.ex.out", ConvertExFile, "ex"},
+		{"fortran", "*.f90.out", ConvertFortranFile, "fortran"},
+		{"fs", "*.fs.out", ConvertFsFile, "fs"},
+		{"hs", "*.hs.out", ConvertHsFile, "hs"},
+		{"java", "*.java.out", ConvertJavaFile, "java"},
+		{"kt", "*.kt.out", ConvertKtFile, "kt"},
+		{"lua", "*.lua.out", ConvertLuaFile, "lua"},
+		{"ocaml", "*.ml.out", ConvertOcamlFile, "ocaml"},
+		{"pas", "*.pas.out", ConvertPasFile, "pas"},
+		{"php", "*.php.out", ConvertPhpFile, "php"},
+		{"pl", "*.pl.out", ConvertPlFile, "pl"},
+		{"rb", "*.rb.out", ConvertRbFile, "rb"},
+		{"rkt", "*.rkt.out", ConvertRktFile, "rkt"},
+		{"rust", "*.rs.out", ConvertRustFile, "rust"},
+		{"scala", "*.scala.out", ConvertScalaFile, "scala"},
+		{"scheme", "*.scm.out", ConvertSchemeFile, "scheme"},
+		{"st", "*.st.out", ConvertStFile, "st"},
+		{"swift", "*.swift.out", ConvertSwiftFile, "swift"},
+		{"zig", "*.zig.out", ConvertZigFile, "zig"},
 	}
 	for _, l := range langs {
 		dir := filepath.Join(root, "tests/compiler", l.dir)
-		runConvertGolden(t, dir, l.pattern, l.convert, l.name, l.extOut, l.extErr)
+		runConvertGolden(t, dir, l.pattern, l.convert, l.name, ".mochi", ".error")
 	}
 }
