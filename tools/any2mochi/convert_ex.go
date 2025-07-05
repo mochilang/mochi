@@ -18,9 +18,24 @@ import (
 func ConvertEx(src string) ([]byte, error) {
 	_ = excode.Ensure()
 	ls := Servers["ex"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
+
+	var funcs []exFuncInfo
+	var diags []protocol.Diagnostic
+	if ls.Command != "" {
+		syms, d, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		if err == nil {
+			diags = d
+			for _, s := range syms {
+				if s.Kind != protocol.SymbolKindFunction {
+					continue
+				}
+				params, ret := getExSignature(src, s.SelectionRange.Start, ls)
+				funcs = append(funcs, exFuncInfo{sym: s, params: params, ret: ret})
+			}
+		}
+	}
+	if len(funcs) == 0 {
+		funcs = parseExFunctions(src)
 	}
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
@@ -29,16 +44,12 @@ func ConvertEx(src string) ([]byte, error) {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	foundMain := false
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		params, ret := getExSignature(src, s.SelectionRange.Start, ls)
-		code := convertExFunc(lines, s, params, ret)
+	for _, f := range funcs {
+		code := convertExFunc(lines, f.sym, f.params, f.ret)
 		if code == "" {
 			continue
 		}
-		if s.Name == "main" {
+		if f.sym.Name == "main" {
 			foundMain = true
 		}
 		out.WriteString(code)
