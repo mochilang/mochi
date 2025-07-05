@@ -1,5 +1,1 @@
-tests/compiler/go/fun_expr_in_let.go.out:8: unsupported expr *ast.FuncLit
->>> 7:    func main() {
-8:>>> var square func(int) int = func(x int) int {
-9:    return (x * x)
-10:    }
+parse error: parse error: 1:32: unexpected token "{" (expected "<" TypeRef ("," TypeRef)* ">")

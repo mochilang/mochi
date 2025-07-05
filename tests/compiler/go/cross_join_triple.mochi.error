@@ -1,5 +1,1 @@
-tests/compiler/go/cross_join_triple.go.out:13: unsupported expr *ast.FuncLit
->>> 12:    _ = bools
-13:>>> var combos []map[string]any = func() []map[string]any {
-14:    _res := []map[string]any{}
-15:    for _, n := range nums {
+parse error: parse error: 6:42: unexpected token ">" (expected "<" TypeRef ("," TypeRef)* ">")
