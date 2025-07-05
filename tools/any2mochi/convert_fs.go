@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -70,7 +71,31 @@ func writeFsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteString(": ")
 				out.WriteString(t)
 			}
-			out.WriteString(" {}\n")
+			start := indexForPositionFs(src, s.Range.Start)
+			end := indexForPositionFs(src, s.Range.End)
+			body := ""
+			if start < end && end <= len(src) {
+				snippet := src[start:end]
+				if idx := strings.Index(snippet, "try"); idx != -1 {
+					snippet = snippet[idx+3:]
+				}
+				if close := strings.LastIndex(snippet, "with"); close != -1 {
+					snippet = snippet[:close]
+				}
+				body = snippet
+			}
+			stmts := fsFunctionBody(body)
+			if len(stmts) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, ln := range stmts {
+					out.WriteString("  ")
+					out.WriteString(ln)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField:
 			out.WriteString("let ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -168,4 +193,92 @@ func mapFsType(t string) string {
 		return "list<" + inner + ">"
 	}
 	return ""
+}
+
+var (
+	fsForRangeRE = regexp.MustCompile(`^for\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)\s+to\s+(.+)\s+do$`)
+	fsForInRE    = regexp.MustCompile(`^for\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+in\s+(.+)\s+do$`)
+	fsWhileRE    = regexp.MustCompile(`^while\s+(.+)\s+do$`)
+	fsIfRE       = regexp.MustCompile(`^if\s+(.+)\s+then$`)
+	fsLetMutRE   = regexp.MustCompile(`^let\s+mutable\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$`)
+	fsAssignRE   = regexp.MustCompile(`^([a-zA-Z_][a-zA-Z0-9_]*)\s*<-\s*(.+)$`)
+	fsPrintRE    = regexp.MustCompile(`^ignore \(printfn \\"%A\\" \((.+)\)\)$`)
+	fsReturnRE   = regexp.MustCompile(`raise \(Return_[^(]+\((.+)\)\)`)
+)
+
+func fsFunctionBody(src string) []string {
+	lines := strings.Split(src, "\n")
+	var out []string
+	var stack []int
+	for _, line := range lines {
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+		indent := len(line) - len(strings.TrimLeft(line, " \t"))
+		trimmed := strings.TrimSpace(line)
+		for len(stack) > 0 && indent < stack[len(stack)-1] {
+			stack = stack[:len(stack)-1]
+			out = append(out, "}")
+		}
+		switch {
+		case fsForRangeRE.MatchString(trimmed):
+			m := fsForRangeRE.FindStringSubmatch(trimmed)
+			out = append(out, fmt.Sprintf("for %s in %s..%s {", m[1], strings.TrimSpace(m[2]), strings.TrimSpace(m[3])))
+			stack = append(stack, indent+4)
+		case fsForInRE.MatchString(trimmed):
+			m := fsForInRE.FindStringSubmatch(trimmed)
+			out = append(out, fmt.Sprintf("for %s in %s {", m[1], strings.TrimSpace(m[2])))
+			stack = append(stack, indent+4)
+		case fsWhileRE.MatchString(trimmed):
+			m := fsWhileRE.FindStringSubmatch(trimmed)
+			out = append(out, fmt.Sprintf("while %s {", strings.TrimSpace(m[1])))
+			stack = append(stack, indent+4)
+		case fsIfRE.MatchString(trimmed):
+			m := fsIfRE.FindStringSubmatch(trimmed)
+			out = append(out, fmt.Sprintf("if %s {", strings.TrimSpace(m[1])))
+			stack = append(stack, indent+4)
+		case trimmed == "else":
+			if len(out) > 0 {
+				out[len(out)-1] = strings.TrimSuffix(out[len(out)-1], "{") + "}"
+			}
+			out = append(out, "else {")
+			stack = append(stack, indent+4)
+		case fsPrintRE.MatchString(trimmed):
+			m := fsPrintRE.FindStringSubmatch(trimmed)
+			out = append(out, fmt.Sprintf("print(%s)", strings.TrimSpace(m[1])))
+		case fsLetMutRE.MatchString(trimmed):
+			m := fsLetMutRE.FindStringSubmatch(trimmed)
+			out = append(out, fmt.Sprintf("let %s = %s", m[1], strings.TrimSpace(m[2])))
+		case fsAssignRE.MatchString(trimmed):
+			m := fsAssignRE.FindStringSubmatch(trimmed)
+			out = append(out, fmt.Sprintf("%s = %s", m[1], strings.TrimSpace(m[2])))
+		case fsReturnRE.MatchString(trimmed):
+			m := fsReturnRE.FindStringSubmatch(trimmed)
+			out = append(out, fmt.Sprintf("return %s", strings.TrimSpace(m[1])))
+		default:
+			// ignore other lines
+		}
+	}
+	for len(stack) > 0 {
+		stack = stack[:len(stack)-1]
+		out = append(out, "}")
+	}
+	return out
+}
+
+func indexForPositionFs(src string, pos protocol.Position) int {
+	lines := strings.Split(src, "\n")
+	if int(pos.Line) >= len(lines) {
+		return len(src)
+	}
+	idx := 0
+	for i := 0; i < int(pos.Line); i++ {
+		idx += len(lines[i]) + 1
+	}
+	if int(pos.Character) > len(lines[int(pos.Line)]) {
+		idx += len(lines[int(pos.Line)])
+	} else {
+		idx += int(pos.Character)
+	}
+	return idx
 }
