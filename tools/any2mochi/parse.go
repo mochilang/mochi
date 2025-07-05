@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -29,6 +30,20 @@ type client struct {
 func ParseText(cmdName string, args []string, langID string, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	ext := langID
+	switch langID {
+	case "fsharp":
+		ext = "fsx"
+	case "csharp":
+		ext = "cs"
+	}
+	tmp, err := os.CreateTemp("", "lsp-*."+ext)
+	if err == nil {
+		_ = tmp.Close()
+		_ = os.WriteFile(tmp.Name(), []byte(src), 0644)
+		defer os.Remove(tmp.Name())
+	}
 
 	cmd := exec.CommandContext(ctx, cmdName, args...)
 	stdin, err := cmd.StdinPipe()
@@ -61,11 +76,18 @@ func ParseText(cmdName string, args []string, langID string, src string) ([]prot
 	}))
 	c.conn = conn
 
-	if err := c.initialize(ctx); err != nil {
+	rootURI := protocol.DocumentUri("file:///")
+	if tmp != nil {
+		rootURI = protocol.DocumentUri("file://" + strings.TrimPrefix(filepath.ToSlash(filepath.Dir(tmp.Name())), "//"))
+	}
+	if err := c.initialize(ctx, rootURI); err != nil {
 		c.Close()
 		return nil, nil, err
 	}
 	uri := protocol.DocumentUri("file:///input")
+	if tmp != nil {
+		uri = protocol.DocumentUri("file://" + strings.TrimPrefix(filepath.ToSlash(tmp.Name()), "//"))
+	}
 	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
 		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
 	}); err != nil {
@@ -86,10 +108,9 @@ func ParseText(cmdName string, args []string, langID string, src string) ([]prot
 	return syms, diags, nil
 }
 
-func (c *client) initialize(ctx context.Context) error {
+func (c *client) initialize(ctx context.Context, root protocol.DocumentUri) error {
 	hierarchical := true
 	pid := protocol.Integer(os.Getpid())
-	root := protocol.DocumentUri("file:///")
 	params := protocol.InitializeParams{
 		ProcessID: &pid,
 		RootURI:   &root,
@@ -126,6 +147,20 @@ func HoverAt(cmdName string, args []string, langID string, src string, pos proto
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	ext := langID
+	switch langID {
+	case "fsharp":
+		ext = "fsx"
+	case "csharp":
+		ext = "cs"
+	}
+	tmp, err := os.CreateTemp("", "lsp-*."+ext)
+	if err == nil {
+		_ = tmp.Close()
+		_ = os.WriteFile(tmp.Name(), []byte(src), 0644)
+		defer os.Remove(tmp.Name())
+	}
+
 	cmd := exec.CommandContext(ctx, cmdName, args...)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -146,11 +181,18 @@ func HoverAt(cmdName string, args []string, langID string, src string, pos proto
 	}))
 	c.conn = conn
 
-	if err := c.initialize(ctx); err != nil {
+	rootURI := protocol.DocumentUri("file:///")
+	if tmp != nil {
+		rootURI = protocol.DocumentUri("file://" + strings.TrimPrefix(filepath.ToSlash(filepath.Dir(tmp.Name())), "//"))
+	}
+	if err := c.initialize(ctx, rootURI); err != nil {
 		c.Close()
 		return protocol.Hover{}, err
 	}
 	uri := protocol.DocumentUri("file:///input")
+	if tmp != nil {
+		uri = protocol.DocumentUri("file://" + strings.TrimPrefix(filepath.ToSlash(tmp.Name()), "//"))
+	}
 	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
 		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
 	}); err != nil {
@@ -188,6 +230,20 @@ func HoverText(cmdName string, args []string, langID string, src string, pos pro
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	ext := langID
+	switch langID {
+	case "fsharp":
+		ext = "fsx"
+	case "csharp":
+		ext = "cs"
+	}
+	tmp, err := os.CreateTemp("", "lsp-*."+ext)
+	if err == nil {
+		_ = tmp.Close()
+		_ = os.WriteFile(tmp.Name(), []byte(src), 0644)
+		defer os.Remove(tmp.Name())
+	}
+
 	cmd := exec.CommandContext(ctx, cmdName, args...)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -217,11 +273,18 @@ func HoverText(cmdName string, args []string, langID string, src string, pos pro
 	}))
 	c.conn = conn
 
-	if err := c.initialize(ctx); err != nil {
+	rootURI := protocol.DocumentUri("file:///")
+	if tmp != nil {
+		rootURI = protocol.DocumentUri("file://" + strings.TrimPrefix(filepath.ToSlash(filepath.Dir(tmp.Name())), "//"))
+	}
+	if err := c.initialize(ctx, rootURI); err != nil {
 		c.Close()
 		return "", nil, err
 	}
 	uri := protocol.DocumentUri("file:///input")
+	if tmp != nil {
+		uri = protocol.DocumentUri("file://" + strings.TrimPrefix(filepath.ToSlash(tmp.Name()), "//"))
+	}
 	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
 		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
 	}); err != nil {
