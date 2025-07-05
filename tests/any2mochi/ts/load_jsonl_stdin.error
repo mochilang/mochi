@@ -1,0 +1,5 @@
+node: unsupported syntax: TypeAliasDeclaration at tests/compiler/ts/load_jsonl_stdin.ts.out:3:1
+2: 
+3: type Person = {
+4:   name: string;
+exit status 1

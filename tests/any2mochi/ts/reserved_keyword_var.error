@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/reserved_keyword_var.ts.out:3:1
+2: 
+3: let map: Record<string, number>;
+4:
+exit status 1

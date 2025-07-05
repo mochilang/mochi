@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/shadow_builtin.ts.out:3:1
+2: 
+3: let count: Record<string, number>;
+4:
+exit status 1

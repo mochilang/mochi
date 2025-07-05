@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/plus_one.ts.out:4:3
+3: function plusOne(digits: Array<number>): Array<number> {
+4:   let carry: number = 1;
+5:   let i: number = digits.length - 1;
+exit status 1

@@ -1,0 +1,5 @@
+node: unsupported syntax: TypeAliasDeclaration at tests/compiler/ts/fetch_builtin.ts.out:3:1
+2: 
+3: type Msg = {
+4:   message: string;
+exit status 1

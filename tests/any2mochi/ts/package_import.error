@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/package_import.ts.out:3:1
+2: 
+3: const mathutils = (() => {
+4:   function add(a: number, b: number): number {
+exit status 1

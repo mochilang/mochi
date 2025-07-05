@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/while_membership.ts.out:3:1
+2: 
+3: let count: number;
+4: let i: number;
+exit status 1

@@ -1,1 +1,5 @@
+fun id(x: int): int {
+  return x
+}
 
+print(123)

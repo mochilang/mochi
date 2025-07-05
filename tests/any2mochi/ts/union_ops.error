@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/union_ops.ts.out:3:1
+2: 
+3: let a: Array<number>;
+4: let b: Array<number>;
+exit status 1

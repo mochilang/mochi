@@ -1,0 +1,5 @@
+node: unsupported syntax: BinaryExpression at tests/compiler/ts/slice_remove.ts.out:4:45
+3: function remove(nums: Array<number>, i: number): Array<number> {
+4:   return nums.slice(0, i).concat(nums.slice(i + 1, nums.length));
+5: }
+exit status 1

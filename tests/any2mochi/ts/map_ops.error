@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/map_ops.ts.out:3:1
+2: 
+3: let m: Record<number, number>;
+4:
+exit status 1

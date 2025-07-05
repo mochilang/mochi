@@ -1,81 +1,51 @@
 package any2mochi
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
-	"strings"
 
-	protocol "github.com/tliron/glsp/protocol_3_16"
+	"mochi/tools/ts2mochi"
 )
 
-// ConvertTypeScript converts TypeScript source code to a minimal Mochi representation using the language server.
+// ConvertTypeScript converts TypeScript source code to Mochi using the ts2mochi helper.
 func ConvertTypeScript(src string) ([]byte, error) {
-	ls := Servers["typescript"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	tmp, err := os.CreateTemp("", "ts-src-*.ts")
 	if err != nil {
 		return nil, err
 	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+	if _, err := tmp.WriteString(src); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return nil, err
 	}
-	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteString("() {}\n")
-	}
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
+	tmp.Close()
+	defer os.Remove(tmp.Name())
+	return ts2mochi.ConvertFile(tmp.Name())
 }
 
 // ConvertTypeScriptFile reads the TS file and converts it to Mochi.
 func ConvertTypeScriptFile(path string) ([]byte, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	return ConvertTypeScript(string(data))
+	return ts2mochi.ConvertFile(path)
 }
 
 // ConvertTypeScriptWithJSON converts the source and also returns the parsed
 // symbols encoded as JSON.
 func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
-	ls := Servers["typescript"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	tmp, err := os.CreateTemp("", "ts-src-*.ts")
 	if err != nil {
 		return nil, nil, err
 	}
-	if len(diags) > 0 {
-		return nil, nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+	if _, err := tmp.WriteString(src); err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return nil, nil, err
 	}
-	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
-		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteString("() {}\n")
-	}
-	if out.Len() == 0 {
-		return nil, nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	js, _ := json.MarshalIndent(syms, "", "  ")
-	return []byte(out.String()), js, nil
+	tmp.Close()
+	defer os.Remove(tmp.Name())
+	return ts2mochi.ConvertFileWithJSON(tmp.Name())
 }
 
 // ConvertTypeScriptFileWithJSON reads the TS file and converts it to Mochi
 // while also returning the parsed symbols as JSON.
 func ConvertTypeScriptFileWithJSON(path string) ([]byte, []byte, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, nil, err
-	}
-	return ConvertTypeScriptWithJSON(string(data))
+	return ts2mochi.ConvertFileWithJSON(path)
 }

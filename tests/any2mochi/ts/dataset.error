@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/dataset.ts.out:3:1
+2: 
+3: let adults: Array<Record<string, any>>;
+4: let people: Array<Record<string, any>>;
+exit status 1

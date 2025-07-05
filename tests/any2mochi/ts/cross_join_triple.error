@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/cross_join_triple.ts.out:3:1
+2: 
+3: let bools: Array<boolean>;
+4: let combos: Array<Record<string, any>>;
+exit status 1

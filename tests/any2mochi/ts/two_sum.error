@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/two_sum.ts.out:4:3
+3: function twoSum(nums: Array<number>, target: number): Array<number> {
+4:   let n: number = nums.length;
+5:   for (let i: number = 0; i < n; i++) {
+exit status 1

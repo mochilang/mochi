@@ -1,0 +1,5 @@
+node: unsupported syntax: FunctionExpression at tests/compiler/ts/closure.ts.out:4:10
+3: function makeAdder(n: number): any {
+4:   return function (x: number): number {
+5:     return (x + n);
+exit status 1

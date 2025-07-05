@@ -1,0 +1,5 @@
+node: unsupported syntax: TypeAliasDeclaration at tests/compiler/ts/dataset_pushdown.ts.out:3:1
+2: 
+3: type Person = {
+4:   name: string;
+exit status 1

@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/index_concat.ts.out:3:1
+2: 
+3: let groups: Array<Array<string>>;
+4: let idx: number;
+exit status 1

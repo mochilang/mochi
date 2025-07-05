@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/avg_builtin.ts.out:3:1
+2: 
+3: let xs: Array<number>;
+4:
+exit status 1

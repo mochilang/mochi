@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/nested_loop_matrix.ts.out:3:1
+2: 
+3: let i: number;
+4: let matrix: Array<Array<number>>;
+exit status 1

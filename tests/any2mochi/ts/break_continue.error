@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/break_continue.ts.out:3:1
+2: 
+3: let numbers: Array<number>;
+4:
+exit status 1

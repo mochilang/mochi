@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/matrix_search.ts.out:4:3
+3: function searchMatrix(matrix: Array<Array<number>>, target: number): boolean {
+4:   let m: number = matrix.length;
+5:   if ((m == 0)) {
+exit status 1

@@ -1,0 +1,5 @@
+node: unsupported syntax: TypeAliasDeclaration at tests/compiler/ts/generate_struct.ts.out:3:1
+2: 
+3: type Info = {
+4:   msg: string;
+exit status 1

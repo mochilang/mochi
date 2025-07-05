@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/group_by_left_join.ts.out:3:1
+2: 
+3: let customers: Array<Record<string, any>>;
+4: let orders: Array<Record<string, number>>;
+exit status 1

@@ -1,0 +1,5 @@
+node: unsupported syntax: ImportDeclaration at tests/compiler/ts/math_import_ts.ts.out:3:1
+2: 
+3: import * as path from "https://deno.land/std@0.224.0/path/mod.ts";
+4:
+exit status 1

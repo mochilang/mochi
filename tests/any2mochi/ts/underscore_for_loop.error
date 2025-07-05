@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/underscore_for_loop.ts.out:3:1
+2: 
+3: let c: number;
+4: let m: Record<string, number>;
+exit status 1

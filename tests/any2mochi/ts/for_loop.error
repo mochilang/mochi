@@ -1,0 +1,5 @@
+node: unsupported syntax: ForStatement at tests/compiler/ts/for_loop.ts.out:4:3
+3: function main(): void {
+4:   for (let i: number = 1; i < 4; i++) {
+5:     console.log(i);
+exit status 1

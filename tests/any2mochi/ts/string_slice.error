@@ -1,0 +1,5 @@
+node: unsupported syntax: StringLiteral at tests/compiler/ts/string_slice.ts.out:4:28
+3: function main(): void {
+4:   console.log(_sliceString("hello", 1, 4));
+5: }
+exit status 1

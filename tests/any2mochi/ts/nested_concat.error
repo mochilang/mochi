@@ -1,0 +1,5 @@
+node: unsupported syntax: FunctionDeclaration at tests/compiler/ts/nested_concat.ts.out:4:3
+3: function outer(n: number): Array<number> {
+4:   function helper(acc: Array<number>): Array<number> {
+5:     if ((acc.length == n)) {
+exit status 1

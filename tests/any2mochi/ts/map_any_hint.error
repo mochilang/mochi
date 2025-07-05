@@ -1,0 +1,5 @@
+node: unsupported syntax: ObjectLiteralExpression at tests/compiler/ts/map_any_hint.ts.out:4:10
+3: function Leaf(): Record<string, any> {
+4:   return { "__name": "Leaf" };
+5: }
+exit status 1

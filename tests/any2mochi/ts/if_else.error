@@ -1,0 +1,5 @@
+node: unsupported syntax: IfStatement at tests/compiler/ts/if_else.ts.out:4:3
+3: function foo(n: number): number {
+4:   if ((n < 0)) {
+5:     return (-1);
+exit status 1

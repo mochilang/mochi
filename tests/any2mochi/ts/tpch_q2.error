@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/tpch_q2.ts.out:3:1
+2: 
+3: let costs: Array<any>;
+4: let europe_nations: Array<Record<string, any>>;
+exit status 1

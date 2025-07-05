@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/fetch_options.ts.out:3:1
+2: 
+3: let body: any;
+4:
+exit status 1

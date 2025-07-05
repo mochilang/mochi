@@ -1,0 +1,5 @@
+node: unsupported syntax: ExpressionStatement at tests/compiler/ts/list_prepend.ts.out:7:3
+6: ): Array<Array<number>> {
+7:   result = [level].concat(result);
+8:   return result;
+exit status 1

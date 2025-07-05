@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/map_iterate.ts.out:3:1
+2: 
+3: let m: Record<number, boolean>;
+4: let sum: number;
+exit status 1

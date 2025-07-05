@@ -1,0 +1,5 @@
+node: unsupported syntax: FirstStatement at tests/compiler/ts/input_builtin.ts.out:3:1
+2: 
+3: let input1: string;
+4: let input2: string;
+exit status 1

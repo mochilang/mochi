@@ -1,0 +1,5 @@
+node: unsupported syntax: ForOfStatement at tests/compiler/ts/string_for_loop.ts.out:4:3
+3: function main(): void {
+4:   for (const ch of "cat") {
+5:     console.log(ch);
+exit status 1
