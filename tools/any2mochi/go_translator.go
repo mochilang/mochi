@@ -986,17 +986,69 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 			ex = &ast.CallExpr{Fun: idx.X, Args: ex.Args}
 		}
 		if sel, ok := ex.Fun.(*ast.SelectorExpr); ok {
-			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" && sel.Sel.Name == "Println" {
-				parts := make([]string, len(ex.Args))
-				for i, a := range ex.Args {
-					v, err := c.translateExpr(a)
-					if err != nil {
-						return "", err
+			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" {
+				if sel.Sel.Name == "Println" {
+					parts := make([]string, len(ex.Args))
+					for i, a := range ex.Args {
+						v, err := c.translateExpr(a)
+						if err != nil {
+							return "", err
+						}
+						parts[i] = fmt.Sprintf("str(%s)", v)
 					}
-					parts[i] = fmt.Sprintf("str(%s)", v)
+					join := strings.Join(parts, " + \" \" + ")
+					return fmt.Sprintf("print(%s)", join), nil
 				}
-				join := strings.Join(parts, " + \" \" + ")
-				return fmt.Sprintf("print(%s)", join), nil
+				if sel.Sel.Name == "Printf" {
+					if len(ex.Args) == 0 {
+						return "", c.errorf(ex, "unsupported Printf args")
+					}
+					lit, ok := ex.Args[0].(*ast.BasicLit)
+					if !ok || lit.Kind != token.STRING {
+						return "", c.errorf(ex, "unsupported Printf args")
+					}
+					format, _ := strconv.Unquote(lit.Value)
+					var parts []string
+					var text strings.Builder
+					argIdx := 1
+					for i := 0; i < len(format); i++ {
+						if format[i] == '%' && i+1 < len(format) && format[i+1] != '%' {
+							if argIdx >= len(ex.Args) {
+								return "", c.errorf(ex, "unsupported Printf args")
+							}
+							if text.Len() > 0 {
+								parts = append(parts, strconv.Quote(text.String()))
+								text.Reset()
+							}
+							v, err := c.translateExpr(ex.Args[argIdx])
+							if err != nil {
+								return "", err
+							}
+							parts = append(parts, fmt.Sprintf("str(%s)", v))
+							argIdx++
+							i++
+							continue
+						}
+						if format[i] == '%' && i+1 < len(format) && format[i+1] == '%' {
+							text.WriteByte('%')
+							i++
+							continue
+						}
+						text.WriteByte(format[i])
+					}
+					if text.Len() > 0 {
+						parts = append(parts, strconv.Quote(text.String()))
+					}
+					for ; argIdx < len(ex.Args); argIdx++ {
+						v, err := c.translateExpr(ex.Args[argIdx])
+						if err != nil {
+							return "", err
+						}
+						parts = append(parts, fmt.Sprintf("str(%s)", v))
+					}
+					join := strings.Join(parts, " + ")
+					return fmt.Sprintf("print(%s)", join), nil
+				}
 			}
 			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "strings" {
 				switch sel.Sel.Name {
