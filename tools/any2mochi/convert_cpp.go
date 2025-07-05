@@ -144,8 +144,22 @@ func writeCppSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			body := convertCppBody(src, s.Range)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, line := range body {
+					out.WriteString("  ")
+					out.WriteString(line)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			if strings.HasPrefix(s.Name, "using ") || strings.Contains(s.Name, " ") {
+				continue
+			}
 			out.WriteString("let ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteByte('\n')
@@ -271,4 +285,51 @@ func cppFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) st
 		}
 	}
 	return ""
+}
+
+// convertCppBody converts the body of a function defined by r in src into a slice
+// of Mochi statements. Only very basic constructs like prints, returns and
+// simple assignments are handled.
+func convertCppBody(src string, r protocol.Range) []string {
+	lines := strings.Split(src, "\n")
+	start := int(r.Start.Line)
+	end := int(r.End.Line)
+	if start >= len(lines) || end >= len(lines) {
+		return nil
+	}
+	bodyLines := lines[start : end+1]
+	if len(bodyLines) > 0 {
+		bodyLines = bodyLines[1:]
+	}
+	if len(bodyLines) > 0 {
+		bodyLines = bodyLines[:len(bodyLines)-1]
+	}
+	var out []string
+	for _, l := range bodyLines {
+		l = strings.TrimSpace(l)
+		l = strings.TrimSuffix(l, ";")
+		if l == "" {
+			continue
+		}
+		switch {
+		case strings.HasPrefix(l, "return"):
+			out = append(out, l)
+		case strings.Contains(l, "std::cout") || strings.HasPrefix(l, "cout <<"):
+			l = strings.TrimPrefix(l, "std::cout <<")
+			l = strings.TrimPrefix(l, "cout <<")
+			l = strings.TrimSuffix(l, "<< std::endl")
+			l = strings.TrimSuffix(l, "<< endl")
+			l = strings.TrimSpace(l)
+			out = append(out, "print("+l+")")
+		default:
+			for _, pre := range []string{"int ", "float ", "double ", "bool ", "std::string ", "string ", "auto "} {
+				if strings.HasPrefix(l, pre) {
+					l = strings.TrimPrefix(l, pre)
+					break
+				}
+			}
+			out = append(out, l)
+		}
+	}
+	return out
 }

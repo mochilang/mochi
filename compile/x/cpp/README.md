@@ -252,3 +252,22 @@ Some LeetCode solutions use language constructs that the C++ backend can't yet t
 * Automatic language imports (`import python "..." auto`)
 * Extern object declarations
 * Map helper functions like `keys()` and `values()`
+
+## C++ to Mochi converter
+
+The `any2mochi` tool can translate C++ code back into Mochi. It relies solely on
+information reported by `clangd` over LSP to build minimal Mochi stubs.
+
+### Supported features
+
+* Struct and enum declarations
+* Top-level variable bindings
+* Function definitions with basic bodies including assignments, returns and
+  `std::cout` statements
+
+### Unsupported features
+
+* Complex control flow such as `for` loops with initializers or range-based
+  loops
+* Templates and macros
+* Preprocessor directives
