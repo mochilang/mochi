@@ -37,3 +37,20 @@ This backend compiles Mochi programs to plain Lua source so that examples can ru
 - Concurrency primitives such as `spawn`, `stream`, `agent`, `on`/`emit` and `intent`
 - Package declarations are ignored; module imports use `require`
 - Some LeetCode solutions (`6`, `10`, `23`, `27`) currently fail when compiled to Lua
+
+## Lua to Mochi Conversion
+
+The `tools/any2mochi` package can also convert Lua source files into minimal
+Mochi stubs using the Lua language server.
+
+### Supported
+
+- Top-level functions and methods with parameter and return types
+- Top-level variables with types inferred from hover information
+- Simple `---@class` tables emitted as `type` declarations
+
+### Unsupported
+
+- Local definitions inside functions
+- Advanced metatable or module constructs
+- Projects spanning multiple files

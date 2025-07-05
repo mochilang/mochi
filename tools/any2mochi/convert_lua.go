@@ -35,11 +35,17 @@ func writeLuaSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 		switch s.Kind {
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
 			writeLuaFunc(out, strings.Join(nameParts, "."), s, src, ls)
+		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface:
+			writeLuaType(out, strings.Join(nameParts, "."), s, src, ls)
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
-				if typ := getLuaVarType(src, s.SelectionRange.Start, ls); typ != "" && typ != "Unknown" {
+				typ := parseLuaVarDetail(s.Detail)
+				if typ == "" {
+					typ = getLuaVarType(src, s.SelectionRange.Start, ls)
+				}
+				if typ != "" && typ != "Unknown" {
 					out.WriteString(": ")
 					out.WriteString(typ)
 				}
@@ -58,7 +64,10 @@ type luaParam struct {
 }
 
 func writeLuaFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
-	params, ret := luaHoverSignature(src, sym, ls)
+	params, ret := parseLuaDetail(sym.Detail)
+	if len(params) == 0 && ret == "" {
+		params, ret = luaHoverSignature(src, sym, ls)
+	}
 	out.WriteString("fun ")
 	out.WriteString(name)
 	out.WriteByte('(')
@@ -124,6 +133,92 @@ func parseLuaSignature(sig string) ([]luaParam, string) {
 		}
 	}
 	return params, mapLuaType(ret)
+}
+
+func parseLuaDetail(detail *string) ([]luaParam, string) {
+	if detail == nil {
+		return nil, ""
+	}
+	d := strings.TrimSpace(*detail)
+	if strings.HasPrefix(d, "function") {
+		d = strings.TrimSpace(d[len("function"):])
+	}
+	open := strings.Index(d, "(")
+	close := strings.LastIndex(d, ")")
+	if open == -1 || close == -1 || close < open {
+		return nil, mapLuaType(strings.TrimSpace(d))
+	}
+	paramsPart := strings.TrimSpace(d[open+1 : close])
+	rest := strings.TrimSpace(d[close+1:])
+	ret := ""
+	if strings.HasPrefix(rest, ":") {
+		ret = strings.TrimSpace(rest[1:])
+	} else if strings.HasPrefix(rest, "->") {
+		ret = strings.TrimSpace(rest[2:])
+	}
+	var params []luaParam
+	if paramsPart != "" {
+		for _, p := range strings.Split(paramsPart, ",") {
+			p = strings.TrimSpace(p)
+			if p == "" {
+				continue
+			}
+			name := p
+			typ := ""
+			if colon := strings.Index(p, ":"); colon != -1 {
+				name = strings.TrimSpace(p[:colon])
+				typ = mapLuaType(strings.TrimSpace(p[colon+1:]))
+			}
+			params = append(params, luaParam{name: name, typ: typ})
+		}
+	}
+	return params, mapLuaType(ret)
+}
+
+func parseLuaVarDetail(detail *string) string {
+	if detail == nil {
+		return ""
+	}
+	d := strings.TrimSpace(*detail)
+	if colon := strings.Index(d, ":"); colon != -1 {
+		return mapLuaType(strings.TrimSpace(d[colon+1:]))
+	}
+	return ""
+}
+
+func writeLuaType(out *strings.Builder, name string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
+	out.WriteString("type ")
+	out.WriteString(name)
+	if len(sym.Children) == 0 {
+		out.WriteString(" {}\n")
+		return
+	}
+	out.WriteString(" {\n")
+	for _, c := range sym.Children {
+		switch c.Kind {
+		case protocol.SymbolKindField, protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			out.WriteString("  ")
+			out.WriteString(c.Name)
+			typ := parseLuaVarDetail(c.Detail)
+			if typ == "" {
+				typ = getLuaVarType(src, c.SelectionRange.Start, ls)
+			}
+			if typ != "" && typ != "Unknown" {
+				out.WriteString(": ")
+				out.WriteString(typ)
+			}
+			out.WriteByte('\n')
+		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+			var b strings.Builder
+			writeLuaFunc(&b, c.Name, c, src, ls)
+			for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
+				out.WriteString("  ")
+				out.WriteString(line)
+				out.WriteByte('\n')
+			}
+		}
+	}
+	out.WriteString("}\n")
 }
 
 func getLuaVarType(src string, pos protocol.Position, ls LanguageServer) string {
