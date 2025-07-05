@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/match_underscore.go.out:8: unsupported declaration
+>>> type Tree interface{ isTree() }

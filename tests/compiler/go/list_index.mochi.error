@@ -1,1 +1,2 @@
-unsupported expr *ast.CompositeLit
+tests/compiler/go/list_index.go.out:9: unsupported expr *ast.IndexExpr
+>>> fmt.Println(xs[1])

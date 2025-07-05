@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/nested_inner_fn.go.out:8: unsupported expr *ast.FuncLit
+>>> var inner = func(b int) int {

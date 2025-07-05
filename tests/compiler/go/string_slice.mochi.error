@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/string_slice.go.out:11: unsupported parameter list
+>>> func _sliceString(s string, i, j int) string {

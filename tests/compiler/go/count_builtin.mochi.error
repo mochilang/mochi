@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/count_builtin.go.out:15: unsupported expr *ast.SelectorExpr
+>>> return len(g.Items)

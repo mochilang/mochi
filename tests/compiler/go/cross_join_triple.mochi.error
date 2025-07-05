@@ -1,1 +1,2 @@
-unsupported expr *ast.CompositeLit
+tests/compiler/go/cross_join_triple.go.out:13: unsupported expr *ast.FuncLit
+>>> var combos []map[string]any = func() []map[string]any {

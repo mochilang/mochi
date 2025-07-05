@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/string_negative_index.go.out:15: unsupported assign op +=
+>>> i += len(runes)

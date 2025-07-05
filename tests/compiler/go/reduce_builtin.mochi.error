@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/reduce_builtin.go.out:12: unsupported expr *ast.IndexExpr
+>>> fmt.Println(_reduce[int]([]int{1, 2, 3}, add, 0))

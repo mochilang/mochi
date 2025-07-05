@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/higher_order_apply.go.out:17: unsupported expr *ast.FuncLit
+>>> fmt.Println(apply(func(y int) int {

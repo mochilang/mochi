@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/matrix_search.go.out:12: unsupported expr *ast.IndexExpr
+>>> var n int = len(matrix[0])

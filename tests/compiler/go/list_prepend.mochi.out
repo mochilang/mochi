@@ -1,0 +1,5 @@
+fun prepend(level: []int, result: [][]int): [][]int {
+  result = append(append([], [level]), result)
+  return result
+}
+print(prepend([1, 2], [[3], [4]]))

@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/update_statement.go.out:16: unsupported statement *ast.SwitchStmt
+>>> switch {

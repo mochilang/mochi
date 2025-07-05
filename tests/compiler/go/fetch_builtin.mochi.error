@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/fetch_builtin.go.out:14: unsupported declaration
+>>> type Msg struct {

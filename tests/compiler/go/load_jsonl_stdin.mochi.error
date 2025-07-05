@@ -1,1 +1,2 @@
-unsupported function declaration
+tests/compiler/go/load_jsonl_stdin.go.out:11: unsupported declaration
+>>> type Person struct {
