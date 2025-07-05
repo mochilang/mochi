@@ -1,1 +1,5 @@
 fun main() {}
+let todo: Todo
+type Todo {
+  title: string
+}

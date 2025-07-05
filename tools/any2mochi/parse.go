@@ -27,7 +27,7 @@ type client struct {
 // It returns the document symbols reported by the server for the file.
 // The server must support the textDocument/documentSymbol request.
 func ParseText(cmdName string, args []string, langID string, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, cmdName, args...)
@@ -90,6 +90,13 @@ func (c *client) initialize(ctx context.Context) error {
 	hierarchical := true
 	pid := protocol.Integer(os.Getpid())
 	root := protocol.DocumentUri("file:///")
+	kinds := make([]protocol.SymbolKind, 26)
+	for i := range kinds {
+		kinds[i] = protocol.SymbolKind(i + 1)
+	}
+	sk := &struct {
+		ValueSet []protocol.SymbolKind `json:"valueSet,omitempty"`
+	}{ValueSet: kinds}
 	params := protocol.InitializeParams{
 		ProcessID: &pid,
 		RootURI:   &root,
@@ -97,6 +104,7 @@ func (c *client) initialize(ctx context.Context) error {
 			TextDocument: &protocol.TextDocumentClientCapabilities{
 				DocumentSymbol: &protocol.DocumentSymbolClientCapabilities{
 					HierarchicalDocumentSymbolSupport: &hierarchical,
+					SymbolKind:                        sk,
 				},
 			},
 		},
@@ -123,7 +131,7 @@ func (c *client) Close() error {
 // HoverAt opens a language server and returns hover information for the
 // provided position in the source.
 func HoverAt(cmdName string, args []string, langID string, src string, pos protocol.Position) (protocol.Hover, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, cmdName, args...)
@@ -185,7 +193,7 @@ func (p *pipe) Close() error {
 // for the specified position. Diagnostics produced by the server are also
 // returned.
 func HoverText(cmdName string, args []string, langID string, src string, pos protocol.Position) (string, []protocol.Diagnostic, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	cmd := exec.CommandContext(ctx, cmdName, args...)

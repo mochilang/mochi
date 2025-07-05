@@ -1,2 +1,20 @@
+type Customer {
+  id: int
+  name: string
+}
+let customers: list<Customer>
 fun main() {}
-fun <function>() {}
+fun main.<function>() {}
+type Order {
+  id: int
+  customerId: int
+  total: int
+}
+let orders: list<Order>
+type PairInfo {
+  orderId: int
+  orderCustomerId: int
+  pairedCustomerName: string
+  orderTotal: int
+}
+let result: list<PairInfo>

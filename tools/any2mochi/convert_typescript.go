@@ -9,6 +9,16 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+func sanitizeTSName(name string) string {
+	name = strings.TrimSpace(name)
+	if len(name) >= 2 {
+		if (name[0] == '"' && name[len(name)-1] == '"') || (name[0] == '\'' && name[len(name)-1] == '\'') {
+			return name[1 : len(name)-1]
+		}
+	}
+	return name
+}
+
 // ConvertTypeScript converts TypeScript source code to a minimal Mochi representation using the language server.
 func ConvertTypeScript(src string) ([]byte, error) {
 	ls := Servers["typescript"]
@@ -70,7 +80,7 @@ func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
-			nameParts = append(nameParts, s.Name)
+			nameParts = append(nameParts, sanitizeTSName(s.Name))
 		}
 		switch s.Kind {
 		case protocol.SymbolKindClass, protocol.SymbolKindInterface, protocol.SymbolKindStruct:
@@ -78,11 +88,11 @@ func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty:
 			if s.Name != "" && len(prefix) == 0 {
 				if fields, alias := tsAliasDef(src, s, ls); len(fields) > 0 || alias != "" {
-					writeTSAlias(out, s.Name, fields, alias)
+					writeTSAlias(out, sanitizeTSName(s.Name), fields, alias)
 				} else {
 					typ := tsFieldType(src, s, ls)
 					out.WriteString("let ")
-					out.WriteString(s.Name)
+					out.WriteString(sanitizeTSName(s.Name))
 					if typ != "" {
 						out.WriteString(": ")
 						out.WriteString(typ)
@@ -92,6 +102,8 @@ func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			}
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
 			writeTSFunc(out, strings.Join(nameParts, "."), s, src, ls)
+		case protocol.SymbolKindEnum:
+			writeTSEnum(out, strings.Join(nameParts, "."), s)
 		}
 		if len(s.Children) > 0 && s.Kind != protocol.SymbolKindClass && s.Kind != protocol.SymbolKindInterface && s.Kind != protocol.SymbolKindStruct {
 			writeTSSymbols(out, nameParts, s.Children, src, ls)
@@ -119,7 +131,7 @@ func writeTSClass(out *strings.Builder, nameParts []string, sym protocol.Documen
 	out.WriteString(" {\n")
 	for _, f := range fields {
 		out.WriteString("  ")
-		out.WriteString(f.Name)
+		out.WriteString(sanitizeTSName(f.Name))
 		if typ := tsFieldType(src, f, ls); typ != "" {
 			out.WriteString(": ")
 			out.WriteString(typ)
@@ -128,7 +140,7 @@ func writeTSClass(out *strings.Builder, nameParts []string, sym protocol.Documen
 	}
 	for _, m := range methods {
 		var b strings.Builder
-		writeTSFunc(&b, m.Name, m, src, ls)
+		writeTSFunc(&b, sanitizeTSName(m.Name), m, src, ls)
 		for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
 			out.WriteString("  ")
 			out.WriteString(line)
@@ -141,13 +153,13 @@ func writeTSClass(out *strings.Builder, nameParts []string, sym protocol.Documen
 func writeTSFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
 	params, ret := tsHoverSignature(src, sym, ls)
 	out.WriteString("fun ")
-	out.WriteString(name)
+	out.WriteString(sanitizeTSName(name))
 	out.WriteByte('(')
 	for i, p := range params {
 		if i > 0 {
 			out.WriteString(", ")
 		}
-		out.WriteString(p.name)
+		out.WriteString(sanitizeTSName(p.name))
 		if p.typ != "" {
 			out.WriteString(": ")
 			out.WriteString(p.typ)
@@ -159,6 +171,22 @@ func writeTSFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol,
 		out.WriteString(ret)
 	}
 	out.WriteString(" {}\n")
+}
+
+func writeTSEnum(out *strings.Builder, name string, sym protocol.DocumentSymbol) {
+	out.WriteString("type ")
+	out.WriteString(sanitizeTSName(name))
+	if len(sym.Children) == 0 {
+		out.WriteString(" = int\n")
+		return
+	}
+	out.WriteString(" = enum {\n")
+	for _, c := range sym.Children {
+		out.WriteString("  ")
+		out.WriteString(sanitizeTSName(c.Name))
+		out.WriteByte('\n')
+	}
+	out.WriteString("}\n")
 }
 
 func tsHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]tsParam, string) {
@@ -234,6 +262,7 @@ func tsAliasDef(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]t
 				l = strings.TrimSuffix(l, ";")
 				if idx := strings.Index(l, ":"); idx != -1 {
 					name := strings.TrimSpace(l[:idx])
+					name = sanitizeTSName(name)
 					typ := tsToMochiType(strings.TrimSpace(l[idx+1:]))
 					fields = append(fields, tsField{name: name, typ: typ})
 				}
@@ -258,7 +287,7 @@ func writeTSAlias(out *strings.Builder, name string, fields []tsField, alias str
 	out.WriteString(" {\n")
 	for _, f := range fields {
 		out.WriteString("  ")
-		out.WriteString(f.name)
+		out.WriteString(sanitizeTSName(f.name))
 		if f.typ != "" {
 			out.WriteString(": ")
 			out.WriteString(f.typ)
@@ -293,7 +322,7 @@ func parseTSSignature(sig string) ([]tsParam, string) {
 			name = strings.TrimSpace(p[:colon])
 			typ = strings.TrimSpace(p[colon+1:])
 		}
-		params = append(params, tsParam{name: name, typ: tsToMochiType(typ)})
+		params = append(params, tsParam{name: sanitizeTSName(name), typ: tsToMochiType(typ)})
 	}
 	rest := strings.TrimSpace(sig[close+1:])
 	if strings.HasPrefix(rest, ":") {
