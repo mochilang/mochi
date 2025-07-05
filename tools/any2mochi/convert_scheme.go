@@ -44,13 +44,19 @@ func writeSchemeSymbols(out *strings.Builder, prefix []string, syms []protocol.D
 		}
 		switch s.Kind {
 		case protocol.SymbolKindFunction:
-			params := parseSchemeParams(s.Detail)
+			params, ret := parseSchemeSignature(s.Detail)
 			if len(params) == 0 {
 				params = extractSchemeParams(s)
 			}
-			if len(params) == 0 {
+			if len(params) == 0 || ret == "" {
 				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					params = parseSchemeHoverParams(hov)
+					p, r := parseSchemeHoverSignature(hov)
+					if len(params) == 0 {
+						params = p
+					}
+					if ret == "" {
+						ret = r
+					}
 				}
 			}
 			out.WriteString("fun ")
@@ -59,7 +65,16 @@ func writeSchemeSymbols(out *strings.Builder, prefix []string, syms []protocol.D
 			if len(params) > 0 {
 				out.WriteString(strings.Join(params, ", "))
 			}
-			out.WriteString(") {}\n")
+			out.WriteByte(')')
+			if ret != "" && ret != "void" {
+				out.WriteString(": ")
+				out.WriteString(ret)
+			}
+			out.WriteString(" {}\n")
+		case protocol.SymbolKindClass, protocol.SymbolKindStruct:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {}\n")
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
@@ -78,6 +93,24 @@ func parseSchemeParams(detail *string) []string {
 		return nil
 	}
 	return parseSchemeParamString(*detail)
+}
+
+func parseSchemeSignature(detail *string) ([]string, string) {
+	if detail == nil {
+		return nil, ""
+	}
+	d := strings.TrimSpace(*detail)
+	params := parseSchemeParamString(d)
+	ret := ""
+	if idx := strings.LastIndex(d, ")"); idx != -1 && idx+1 < len(d) {
+		rest := strings.TrimSpace(d[idx+1:])
+		if strings.HasPrefix(rest, "->") {
+			ret = strings.TrimSpace(rest[2:])
+		} else if strings.HasPrefix(rest, ":") {
+			ret = strings.TrimSpace(rest[1:])
+		}
+	}
+	return params, ret
 }
 
 func extractSchemeParams(sym protocol.DocumentSymbol) []string {
@@ -128,6 +161,57 @@ func parseSchemeHoverParams(h protocol.Hover) []string {
 		}
 	}
 	return nil
+}
+
+func parseSchemeHoverSignature(h protocol.Hover) ([]string, string) {
+	var text string
+	switch c := h.Contents.(type) {
+	case protocol.MarkupContent:
+		text = c.Value
+	case protocol.MarkedString:
+		if b, err := json.Marshal(c); err == nil {
+			var m protocol.MarkedStringStruct
+			if json.Unmarshal(b, &m) == nil {
+				text = m.Value
+			} else {
+				json.Unmarshal(b, &text)
+			}
+		}
+	case []protocol.MarkedString:
+		if len(c) > 0 {
+			if b, err := json.Marshal(c[0]); err == nil {
+				var m protocol.MarkedStringStruct
+				if json.Unmarshal(b, &m) == nil {
+					text = m.Value
+				} else {
+					json.Unmarshal(b, &text)
+				}
+			}
+		}
+	case string:
+		text = c
+	}
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(line)
+		if !strings.Contains(line, "(") || !strings.Contains(line, ")") {
+			continue
+		}
+		params := parseSchemeParamString(line)
+		if params == nil {
+			continue
+		}
+		ret := ""
+		if idx := strings.LastIndex(line, ")"); idx != -1 && idx+1 < len(line) {
+			rest := strings.TrimSpace(line[idx+1:])
+			if strings.HasPrefix(rest, "->") {
+				ret = strings.TrimSpace(rest[2:])
+			} else if strings.HasPrefix(rest, ":") {
+				ret = strings.TrimSpace(rest[1:])
+			}
+		}
+		return params, ret
+	}
+	return nil, ""
 }
 
 func parseSchemeParamString(line string) []string {
