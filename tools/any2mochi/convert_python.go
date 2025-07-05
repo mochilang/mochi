@@ -60,6 +60,10 @@ func writePySymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 					out.WriteString(": ")
 					out.WriteString(typ)
 				}
+				if val := getPyVarValue(src, s); val != "" {
+					out.WriteString(" = ")
+					out.WriteString(val)
+				}
 				out.WriteString("\n")
 			}
 		}
@@ -96,7 +100,18 @@ func writePyFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol,
 		out.WriteString(": ")
 		out.WriteString(ret)
 	}
-	out.WriteString(" {}\n")
+	body := parsePyFunctionBody(src, sym)
+	if len(body) == 0 {
+		out.WriteString(" {}\n")
+		return
+	}
+	out.WriteString(" {\n")
+	for _, line := range body {
+		out.WriteString("  ")
+		out.WriteString(line)
+		out.WriteByte('\n')
+	}
+	out.WriteString("}\n")
 }
 
 func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSymbol, src string, ls LanguageServer) {
@@ -395,4 +410,78 @@ func parsePyVarType(hov string) string {
 		return mapPyType(typ)
 	}
 	return ""
+}
+
+func getPyVarValue(src string, sym protocol.DocumentSymbol) string {
+	code := pyExtractRange(src, sym.Range)
+	if idx := strings.Index(code, "="); idx != -1 {
+		return strings.TrimSpace(code[idx+1:])
+	}
+	return ""
+}
+
+func parsePyFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+	code := pyExtractRange(src, sym.Range)
+	lines := strings.Split(code, "\n")
+	if len(lines) < 2 {
+		return nil
+	}
+	indent := ""
+	for _, l := range lines[1:] {
+		t := strings.TrimSpace(l)
+		if t != "" {
+			indent = l[:len(l)-len(strings.TrimLeft(l, " \t"))]
+			break
+		}
+	}
+	if indent == "" {
+		return nil
+	}
+	var stmts []string
+	for _, l := range lines[1:] {
+		if !strings.HasPrefix(l, indent) {
+			if strings.TrimSpace(l) == "" {
+				continue
+			}
+			break
+		}
+		s := strings.TrimSpace(l[len(indent):])
+		if s == "" || strings.HasPrefix(s, "global ") || s == "pass" {
+			continue
+		}
+		switch {
+		case strings.HasPrefix(s, "return "):
+			stmts = append(stmts, "return "+strings.TrimSpace(s[len("return "):]))
+		case strings.HasPrefix(s, "print("):
+			stmts = append(stmts, s)
+		default:
+			if idx := strings.Index(s, "="); idx != -1 && !strings.Contains(s[:idx], "==") {
+				name := strings.TrimSpace(s[:idx])
+				expr := strings.TrimSpace(s[idx+1:])
+				stmts = append(stmts, "let "+name+" = "+expr)
+			} else {
+				stmts = append(stmts, s)
+			}
+		}
+	}
+	return stmts
+}
+
+func pyExtractRange(src string, r protocol.Range) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {
+		line := lines[i]
+		if i == int(r.Start.Line) && int(r.Start.Character) < len(line) {
+			line = line[int(r.Start.Character):]
+		}
+		if i == int(r.End.Line) && int(r.End.Character) <= len(line) {
+			line = line[:int(r.End.Character)]
+		}
+		out.WriteString(line)
+		if i != int(r.End.Line) {
+			out.WriteByte('\n')
+		}
+	}
+	return out.String()
 }

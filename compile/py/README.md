@@ -126,6 +126,9 @@ The Python backend supports a large subset of Mochi. Highlights include:
 - Dataset queries and list/map operations
 - Stream handlers and agents with asynchronous execution
 - LLM helpers such as `gen_text` and `fetch`
+- Basic round–tripping of Python source back to Mochi using the built in
+  `any2mochi` converter. Function bodies with simple assignments, `print`
+  calls and `return` statements are now parsed when converting from Python.
 
 ## Unsupported Features
 
@@ -135,6 +138,8 @@ limitations include:
 * `import` statements targeting a language other than Python
 * Error handling with `try`/`catch`
 * Concurrency primitives like `spawn` and channels
+* Complex Python constructs such as list comprehensions or nested control flow
+  are not yet converted back to Mochi
 
 ## Notes
 
