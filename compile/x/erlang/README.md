@@ -108,3 +108,21 @@ func EnsureFormatter() error { return ensureErlfmt() }
 - `load` and `save` support only text and Erlang term files
 
 Generated Erlang favors clarity over speed, mirroring Mochi constructs directly.
+
+## Erlang to Mochi Conversion
+
+The `any2mochi` tool can translate Erlang source back to Mochi. Function
+signatures are obtained from the language server and bodies are parsed for
+simple assignments and return expressions.
+
+### Supported Features
+
+- Top-level function declarations
+- Parameter and return types extracted from hover information
+- Basic statement bodies with variable assignments and a final return
+
+### Unsupported Features
+
+- Pattern matching clauses or guards
+- Complex control flow such as `case`, `try`, or list comprehensions
+- Macros and preprocessor directives
