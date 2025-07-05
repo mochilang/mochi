@@ -1,5 +1,0 @@
-print("Enter first input:")
-let input1 = input()
-print("Enter second input:")
-let input2 = input()
-print("You entered:", input1, ",", input2)

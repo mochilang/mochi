@@ -1,7 +1,0 @@
-type Tree =
-  Leaf {} |
-  Node(left: Tree, value: int, right: Tree)
-fun value_of_root(t: Tree): int {
-  return fun(_t0) => if isinstance(_t0, Node) then fun(v) => v(_t0.value) else 0()
-}
-print(value_of_root(Node { left: Leaf {  }, value: 5, right: Leaf {  } }))
