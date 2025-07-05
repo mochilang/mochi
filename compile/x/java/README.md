@@ -18,6 +18,8 @@ statements are present.
 - Primitive types (`int`, `float`, `bool`, `string`)
 - Lists and maps
 - Basic expressions and assignments
+- Variable declarations with `let` and `var`
+- Map updates using `put`
 - Anonymous `fun` expressions
 - Built-ins `print`, `len`, `str`, `input`, `count`, `avg`, `now`, `json` and `eval`
 - List operations `concat`, `union`, `union_all`, `except`, `intersect` and `slice`

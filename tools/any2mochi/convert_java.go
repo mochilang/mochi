@@ -3,7 +3,6 @@ package any2mochi
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 )
 
@@ -75,14 +74,10 @@ func ConvertJava(src string) ([]byte, error) {
 			indent--
 			write("}")
 			currentStruct = ""
-		case currentStruct != "" && regexp.MustCompile(`^[A-Za-z0-9_\.<>\[\]]+\s+\w+;`).MatchString(line):
-			re := regexp.MustCompile(`^([A-Za-z0-9_\.<>\[\]]+)\s+(\w+);$`)
-			if m := re.FindStringSubmatch(line); m != nil {
-				typ := mapJavaType(m[1])
-				field := m[2]
-				structFields[currentStruct] = append(structFields[currentStruct], field)
-				write(field + ": " + typ)
-			}
+		case currentStruct != "" && isFieldLine(line):
+			typ, field := parseFieldLine(line)
+			structFields[currentStruct] = append(structFields[currentStruct], field)
+			write(field + ": " + mapJavaType(typ))
 			continue
 		case strings.HasPrefix(line, "public static void main") && strings.HasSuffix(line, "{"):
 			write("fun main() {")
@@ -189,30 +184,24 @@ func ConvertJava(src string) ([]byte, error) {
 			write("break")
 		case strings.HasPrefix(line, "continue"):
 			write("continue")
-		case regexp.MustCompile(`^(?:static\s+)?[A-Za-z0-9_\.<>\[\]]+\s+\w+ =`).MatchString(line):
-			re := regexp.MustCompile(`^(?:static\s+)?[A-Za-z0-9_\.<>\[\]]+\s+(\w+) = (.*);`)
-			m := re.FindStringSubmatch(line)
-			if m == nil {
-				return nil, fmt.Errorf("unsupported declaration: %s", line)
-			}
-			if strings.HasPrefix(m[1], "_") {
+		case strings.Contains(line, "=") && strings.HasSuffix(line, ";") && isVarAssign(line):
+			name, expr := parseVarAssign(line)
+			if name == "" || strings.HasPrefix(name, "_") {
 				continue
 			}
-			write("var " + m[1] + " = " + convertJavaExpr(m[2], structFields))
-		case regexp.MustCompile(`^\w+\.put\(`).MatchString(line):
-			re := regexp.MustCompile(`^(\w+)\.put\(([^,]+),\s*(.*)\);$`)
-			m := re.FindStringSubmatch(line)
-			if m == nil {
+			write("var " + name + " = " + convertJavaExpr(expr, structFields))
+		case strings.Contains(line, ".put(") && strings.HasSuffix(line, ");"):
+			mname, key, val, ok := parseMapPut(line)
+			if !ok {
 				return nil, fmt.Errorf("unsupported statement: %s", line)
 			}
-			write(m[1] + "[" + convertJavaExpr(m[2], structFields) + "] = " + convertJavaExpr(m[3], structFields))
-		case regexp.MustCompile(`^\w+ =`).MatchString(line):
-			re := regexp.MustCompile(`^(\w+) = (.*);`)
-			m := re.FindStringSubmatch(line)
-			if m == nil {
+			write(mname + "[" + convertJavaExpr(key, structFields) + "] = " + convertJavaExpr(val, structFields))
+		case strings.Contains(line, "=") && strings.HasSuffix(line, ";"):
+			left, right, ok := parseSimpleAssign(line)
+			if !ok {
 				return nil, fmt.Errorf("unsupported statement: %s", line)
 			}
-			write(m[1] + " = " + convertJavaExpr(m[2], structFields))
+			write(left + " = " + convertJavaExpr(right, structFields))
 		default:
 			return nil, fmt.Errorf("unsupported line: %s", line)
 		}
@@ -232,70 +221,82 @@ func convertJavaExpr(expr string, structs map[string][]string) string {
 		expr = strings.TrimSpace(expr[1 : len(expr)-1])
 	}
 
-	reArray := regexp.MustCompile(`^new [^\[]+\[] \{(.*)\}$`)
-	if m := reArray.FindStringSubmatch(expr); m != nil {
-		items := splitArgs(m[1])
+	if strings.HasPrefix(expr, "new ") && strings.Contains(expr, "{") && strings.HasSuffix(expr, "}") {
+		open := strings.Index(expr, "{")
+		items := splitArgs(expr[open+1 : len(expr)-1])
 		for i, it := range items {
 			items[i] = convertJavaExpr(it, structs)
 		}
 		return "[" + strings.Join(items, ", ") + "]"
 	}
 
-	reMap := regexp.MustCompile(`new java\.util\.HashMap<>\(java\.util\.Map\.of\((.*)\)\)`)
-	if m := reMap.FindStringSubmatch(expr); m != nil {
-		return mapLiteral(m[1], structs)
+	if strings.HasPrefix(expr, "new java.util.HashMap<>(java.util.Map.of(") && strings.HasSuffix(expr, "))") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "new java.util.HashMap<>(java.util.Map.of("), "))")
+		return mapLiteral(inner, structs)
 	}
 
-	reStruct := regexp.MustCompile(`^new ([A-Za-z0-9_]+)\((.*)\)$`)
-	if m := reStruct.FindStringSubmatch(expr); m != nil {
-		name := m[1]
-		if fields, ok := structs[name]; ok {
-			args := splitArgs(m[2])
-			if len(args) == len(fields) {
-				for i, a := range args {
-					args[i] = fields[i] + ": " + convertJavaExpr(a, structs)
+	if strings.HasPrefix(expr, "new ") && strings.HasSuffix(expr, ")") {
+		open := strings.Index(expr, "(")
+		if open != -1 {
+			name := strings.TrimSpace(expr[4:open])
+			argsPart := expr[open+1 : len(expr)-1]
+			if fields, ok := structs[name]; ok {
+				args := splitArgs(argsPart)
+				if len(args) == len(fields) {
+					for i, a := range args {
+						args[i] = fields[i] + ": " + convertJavaExpr(a, structs)
+					}
+					return name + " { " + strings.Join(args, ", ") + " }"
 				}
-				return name + " { " + strings.Join(args, ", ") + " }"
 			}
+			args := splitArgs(argsPart)
+			for i, a := range args {
+				args[i] = convertJavaExpr(a, structs)
+			}
+			return name + "(" + strings.Join(args, ", ") + ")"
 		}
-		args := splitArgs(m[2])
-		for i, a := range args {
-			args[i] = convertJavaExpr(a, structs)
-		}
-		return name + "(" + strings.Join(args, ", ") + ")"
 	}
 
 	if strings.HasSuffix(expr, ".toCharArray()") {
 		return convertJavaExpr(strings.TrimSuffix(expr, ".toCharArray()"), structs)
 	}
 
-	reGet := regexp.MustCompile(`(\w+)\.get\((.*)\)$`)
-	if m := reGet.FindStringSubmatch(expr); m != nil {
-		return m[1] + "[" + convertJavaExpr(m[2], structs) + "]"
+	if idx := strings.Index(expr, ".get("); idx != -1 && strings.HasSuffix(expr, ")") {
+		name := expr[:idx]
+		inner := strings.TrimSuffix(expr[idx+5:], ")")
+		return name + "[" + convertJavaExpr(inner, structs) + "]"
 	}
 
-	reSize := regexp.MustCompile(`(\w+)\.size\(\)$`)
-	if m := reSize.FindStringSubmatch(expr); m != nil {
-		return "len(" + m[1] + ")"
+	if strings.HasSuffix(expr, ".size()") {
+		return "len(" + strings.TrimSuffix(expr, ".size()") + ")"
 	}
 
 	if strings.HasSuffix(expr, ".length") {
 		return "len(" + convertJavaExpr(strings.TrimSuffix(expr, ".length"), structs) + ")"
 	}
 
-	reIndex := regexp.MustCompile(`_indexString\(([^,]+),\s*(.*)\)`)
-	if m := reIndex.FindStringSubmatch(expr); m != nil {
-		return convertJavaExpr(m[1], structs) + "[" + convertJavaExpr(m[2], structs) + "]"
+	if strings.HasPrefix(expr, "_indexString(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_indexString("), ")")
+		parts := splitArgs(inner)
+		if len(parts) == 2 {
+			return convertJavaExpr(parts[0], structs) + "[" + convertJavaExpr(parts[1], structs) + "]"
+		}
 	}
 
-	reSlice := regexp.MustCompile(`_sliceString\(([^,]+),\s*([^,]+),\s*(.*)\)`)
-	if m := reSlice.FindStringSubmatch(expr); m != nil {
-		return convertJavaExpr(m[1], structs) + "[" + convertJavaExpr(m[2], structs) + ": " + convertJavaExpr(m[3], structs) + "]"
+	if strings.HasPrefix(expr, "_sliceString(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_sliceString("), ")")
+		parts := splitArgs(inner)
+		if len(parts) == 3 {
+			return convertJavaExpr(parts[0], structs) + "[" + convertJavaExpr(parts[1], structs) + ": " + convertJavaExpr(parts[2], structs) + "]"
+		}
 	}
 
-	reIn := regexp.MustCompile(`_in\(([^,]+),\s*(.*)\)`)
-	if m := reIn.FindStringSubmatch(expr); m != nil {
-		return convertJavaExpr(m[1], structs) + " in " + convertJavaExpr(m[2], structs)
+	if strings.HasPrefix(expr, "_in(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_in("), ")")
+		parts := splitArgs(inner)
+		if len(parts) == 2 {
+			return convertJavaExpr(parts[0], structs) + " in " + convertJavaExpr(parts[1], structs)
+		}
 	}
 
 	reBuiltin := []struct{ old, new string }{
@@ -386,6 +387,73 @@ func mapJavaType(t string) string {
 	default:
 		return t
 	}
+}
+
+func isVarAssign(line string) bool {
+	if !strings.HasSuffix(line, ";") {
+		return false
+	}
+	if !strings.Contains(line, "=") {
+		return false
+	}
+	left := strings.TrimSpace(strings.SplitN(line, "=", 2)[0])
+	return strings.Contains(left, " ")
+}
+
+func parseVarAssign(line string) (string, string) {
+	line = strings.TrimSuffix(line, ";")
+	parts := strings.SplitN(line, "=", 2)
+	if len(parts) != 2 {
+		return "", ""
+	}
+	left := strings.TrimSpace(parts[0])
+	expr := strings.TrimSpace(parts[1])
+	fields := strings.Fields(left)
+	if len(fields) == 0 {
+		return "", expr
+	}
+	name := fields[len(fields)-1]
+	return name, expr
+}
+
+func parseMapPut(line string) (string, string, string, bool) {
+	if !strings.Contains(line, ".put(") || !strings.HasSuffix(line, ");") {
+		return "", "", "", false
+	}
+	before := line[:strings.Index(line, ".put(")]
+	args := strings.TrimSuffix(line[strings.Index(line, ".put(")+5:], ");")
+	items := splitArgs(args)
+	if len(items) != 2 {
+		return "", "", "", false
+	}
+	return strings.TrimSpace(before), strings.TrimSpace(items[0]), strings.TrimSpace(items[1]), true
+}
+
+func parseSimpleAssign(line string) (string, string, bool) {
+	line = strings.TrimSuffix(line, ";")
+	parts := strings.SplitN(line, "=", 2)
+	if len(parts) != 2 {
+		return "", "", false
+	}
+	left := strings.TrimSpace(parts[0])
+	right := strings.TrimSpace(parts[1])
+	if left == "" || right == "" {
+		return "", "", false
+	}
+	return left, right, true
+}
+
+func isFieldLine(line string) bool {
+	return strings.HasSuffix(line, ";") && strings.Count(line, " ") >= 1
+}
+
+func parseFieldLine(line string) (string, string) {
+	line = strings.TrimSuffix(line, ";")
+	idx := strings.LastIndex(line, " ")
+	if idx == -1 {
+		return "", line
+	}
+	return strings.TrimSpace(line[:idx]), strings.TrimSpace(line[idx+1:])
 }
 
 // ConvertJavaFile reads the java file and converts it to Mochi.
