@@ -122,7 +122,7 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 			b.WriteString(p.Names[0].Name)
 			if p.Type != nil {
 				b.WriteString(": ")
-				b.WriteString(nodeString(c.fset, p.Type))
+				b.WriteString(typeString(c.fset, p.Type))
 			}
 		}
 	}
@@ -132,7 +132,7 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 			return "", c.errorf(fn.Type.Results, "unsupported multiple return values")
 		}
 		b.WriteString(": ")
-		b.WriteString(nodeString(c.fset, fn.Type.Results.List[0].Type))
+		b.WriteString(typeString(c.fset, fn.Type.Results.List[0].Type))
 	}
 	b.WriteString(" {\n")
 	for _, st := range fn.Body.List {
@@ -154,6 +154,19 @@ func nodeString(fset *token.FileSet, n ast.Node) string {
 	var buf bytes.Buffer
 	printer.Fprint(&buf, fset, n)
 	return buf.String()
+}
+
+func typeString(fset *token.FileSet, n ast.Expr) string {
+	switch t := n.(type) {
+	case *ast.ArrayType:
+		return fmt.Sprintf("list<%s>", typeString(fset, t.Elt))
+	case *ast.Ident:
+		return t.Name
+	case *ast.MapType:
+		return fmt.Sprintf("map<%s, %s>", typeString(fset, t.Key), typeString(fset, t.Value))
+	default:
+		return nodeString(fset, n)
+	}
 }
 
 func (c *converter) translateStmt(s ast.Stmt) (string, error) {
@@ -368,6 +381,46 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 			// handle []rune("foo") -> "foo"
 			if id, ok := arr.Elt.(*ast.Ident); ok && id.Name == "rune" {
 				return c.translateExpr(ex.Args[0])
+			}
+		}
+		if id, ok := ex.Fun.(*ast.Ident); ok {
+			switch id.Name {
+			case "append":
+				if len(ex.Args) < 2 {
+					return "", c.errorf(ex, "unsupported append args")
+				}
+				base, err := c.translateExpr(ex.Args[0])
+				if err != nil {
+					return "", err
+				}
+				items := make([]string, len(ex.Args)-1)
+				for i, a := range ex.Args[1:] {
+					v, err := c.translateExpr(a)
+					if err != nil {
+						return "", err
+					}
+					items[i] = v
+				}
+				if ex.Ellipsis != token.NoPos {
+					if len(items) != 1 {
+						return "", c.errorf(ex, "unsupported append ellipsis")
+					}
+					return fmt.Sprintf("concat(%s, %s)", base, items[0]), nil
+				}
+				out := base
+				for _, it := range items {
+					out = fmt.Sprintf("append(%s, %s)", out, it)
+				}
+				return out, nil
+			case "string":
+				if len(ex.Args) != 1 {
+					return "", c.errorf(ex, "unsupported string cast")
+				}
+				arg, err := c.translateExpr(ex.Args[0])
+				if err != nil {
+					return "", err
+				}
+				return fmt.Sprintf("str(%s)", arg), nil
 			}
 		}
 		fun, err := c.translateExpr(ex.Fun)

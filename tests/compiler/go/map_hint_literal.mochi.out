@@ -1,4 +1,4 @@
-fun foo(m: map[string]int) {
+fun foo(m: map<string, int>) {
   print(len(m))
 }
 foo({})
