@@ -1,0 +1,8 @@
+type Address {
+  street: string
+}
+type Person {
+  name: string
+  addr: Address
+}
+fun main(): int {}

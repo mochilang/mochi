@@ -1,0 +1,6 @@
+type Circle {
+  radius: float
+}
+fun Circle_area(self: Circle): float {}
+fun Circle_describe(self: Circle) {}
+fun main(): int {}
