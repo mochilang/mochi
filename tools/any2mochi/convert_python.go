@@ -460,6 +460,9 @@ func parsePyLines(lines []string, indent string) ([]string, int) {
 			continue
 		}
 		switch {
+		case s == "return":
+			stmts = append(stmts, "return")
+			i++
 		case strings.HasPrefix(s, "return "):
 			stmts = append(stmts, "return "+strings.TrimSpace(s[len("return "):]))
 			i++
@@ -481,6 +484,15 @@ func parsePyLines(lines []string, indent string) ([]string, int) {
 					var m int
 					elseBody, m = parsePyLines(lines[i+1:], step)
 					i = i + 1 + m
+				} else if strings.HasPrefix(next, "elif ") {
+					var m int
+					elifCond := strings.TrimSpace(strings.TrimSuffix(next[5:], ":"))
+					elifBody, m := parsePyLines(lines[i+1:], step)
+					i = i + 1 + m
+					bodyBlock := formatPyBlock(body)
+					elifBlock := formatPyBlock(elifBody)
+					stmts = append(stmts, "if "+cond+bodyBlock+" else if "+elifCond+elifBlock)
+					continue
 				}
 			}
 			var b strings.Builder
@@ -554,15 +566,59 @@ func parsePyLines(lines []string, indent string) ([]string, int) {
 			if idx := strings.Index(s, "="); idx != -1 && !strings.Contains(s[:idx], "==") {
 				name := strings.TrimSpace(s[:idx])
 				expr := strings.TrimSpace(s[idx+1:])
+				if !balanced(expr) {
+					j := i + 1
+					parts := []string{expr}
+					depth := bracketDelta(expr)
+					for j < len(lines) && depth > 0 {
+						ln := strings.TrimSpace(lines[j])
+						parts = append(parts, ln)
+						depth += bracketDelta(ln)
+						j++
+					}
+					expr = strings.Join(parts, " ")
+					i = j
+				} else {
+					i++
+				}
 				stmts = append(stmts, "let "+name+" = "+expr)
 			} else {
 				stmts = append(stmts, s)
+				i++
 			}
-			i++
 		}
 	}
 	return stmts, i
 }
+
+func formatPyBlock(lines []string) string {
+	if len(lines) == 0 {
+		return " {}"
+	}
+	var b strings.Builder
+	b.WriteString(" {")
+	for _, st := range lines {
+		b.WriteString("\n  ")
+		b.WriteString(st)
+	}
+	b.WriteString("\n}")
+	return b.String()
+}
+
+func bracketDelta(s string) int {
+	delta := 0
+	for _, r := range s {
+		switch r {
+		case '[', '(', '{':
+			delta++
+		case ']', ')', '}':
+			delta--
+		}
+	}
+	return delta
+}
+
+func balanced(s string) bool { return bracketDelta(s) == 0 }
 
 func pyExtractRange(src string, r protocol.Range) string {
 	lines := strings.Split(src, "\n")
