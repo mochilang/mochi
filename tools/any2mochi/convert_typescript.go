@@ -4,25 +4,45 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 	tscode "mochi/compile/ts"
 )
 
-// ConvertTypeScript converts TypeScript source code to a minimal Mochi representation using the language server.
+// TypeScriptUseLanguageServer controls whether the TypeScript language server is
+// used when converting. It defaults to false and can be enabled by consumers.
+var TypeScriptUseLanguageServer = false
+
+// ConvertTypeScript converts TypeScript source code to a minimal Mochi representation.
+// If TypeScriptUseLanguageServer is false the conversion relies solely on the
+// regex based fallback parser. When enabled, the language server is attempted
+// after the fallback if no symbols were discovered.
 func ConvertTypeScript(src string) ([]byte, error) {
-	_ = tscode.EnsureTSLanguageServer()
-	ls := Servers["typescript"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	var out strings.Builder
-	if err == nil && len(diags) == 0 {
-		writeTSSymbols(&out, nil, syms, src, ls)
-	}
-	if out.Len() == 0 {
+	if data, err := parseTSDeno(src); err == nil && len(data) > 0 {
+		out.Write(data)
+	} else {
 		parseTSFallback(&out, src)
 	}
+
+	var syms []protocol.DocumentSymbol
+	var diags []protocol.Diagnostic
+	var err error
+
+	if out.Len() == 0 && TypeScriptUseLanguageServer {
+		_ = tscode.EnsureTSLanguageServer()
+		ls := Servers["typescript"]
+		syms, diags, err = EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+		if err == nil && len(diags) == 0 {
+			writeTSSymbols(&out, nil, syms, src, ls)
+		}
+	}
+
 	if out.Len() == 0 {
 		if err != nil {
 			return nil, err
@@ -47,6 +67,18 @@ func ConvertTypeScriptFile(path string) ([]byte, error) {
 // ConvertTypeScriptWithJSON converts the source and also returns the parsed
 // symbols encoded as JSON.
 func ConvertTypeScriptWithJSON(src string) ([]byte, []byte, error) {
+	if !TypeScriptUseLanguageServer {
+		if data, err := parseTSDeno(src); err == nil && len(data) > 0 {
+			return data, nil, nil
+		}
+		var b strings.Builder
+		parseTSFallback(&b, src)
+		if b.Len() == 0 {
+			return nil, nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		}
+		return []byte(b.String()), nil, nil
+	}
+
 	ls := Servers["typescript"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
@@ -452,6 +484,31 @@ func tsToMochiType(t string) string {
 		return "map<" + key + "," + val + ">"
 	}
 	return t
+}
+
+func parseTSDeno(src string) ([]byte, error) {
+	if err := tscode.EnsureDeno(); err != nil {
+		return nil, err
+	}
+	_, file, _, _ := runtime.Caller(0)
+	script := filepath.Join(filepath.Dir(file), "convert_ts_deno.ts")
+	temp, err := os.CreateTemp("", "tsinput-*.ts")
+	if err != nil {
+		return nil, err
+	}
+	if _, err := temp.WriteString(src); err != nil {
+		os.Remove(temp.Name())
+		return nil, err
+	}
+	temp.Close()
+	defer os.Remove(temp.Name())
+	cmd := exec.Command("deno", "run", "--quiet", "--allow-read", script, temp.Name())
+	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("deno error: %w\n%s", err, out)
+	}
+	return out, nil
 }
 
 func parseTSFallback(out *strings.Builder, src string) {
