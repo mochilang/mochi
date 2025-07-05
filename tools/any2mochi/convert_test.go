@@ -3,7 +3,9 @@ package any2mochi
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -11,6 +13,8 @@ import (
 	gocode "mochi/compile/go"
 	pycode "mochi/compile/py"
 	tscode "mochi/compile/ts"
+	"mochi/parser"
+	"mochi/types"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -33,6 +37,105 @@ func TestConvert_Golden(t *testing.T) {
 		runConvertGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertTypeScriptFile, ".mochi.ts.out", ".ts.error")
 		runConvertGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertTypeScriptFile, ".mochi.ts.out", ".ts.error")
 	})
+}
+
+func TestConvertCompile_Golden(t *testing.T) {
+	root := findRepoRoot(t)
+	t.Run("go", func(t *testing.T) {
+		_ = gocode.EnsureGopls()
+		runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/go"), "*.go.out", ConvertGoFile, ".mochi.out", ".error")
+	})
+}
+
+func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), outExt, errExt string) {
+	files, err := filepath.Glob(filepath.Join(dir, pattern))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) == 0 {
+		t.Fatalf("no files: %s", filepath.Join(dir, pattern))
+	}
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
+		t.Run(name, func(t *testing.T) {
+			mochiSrc, err := convert(src)
+			root := rootDir(t)
+			outPath := filepath.Join(root, "tests/any2mochi", name+outExt)
+			errPath := filepath.Join(root, "tests/any2mochi", name+errExt)
+
+			if err == nil {
+				prog, pErr := parser.ParseString(string(mochiSrc))
+				if pErr != nil {
+					err = fmt.Errorf("parse error: %w", pErr)
+				} else {
+					env := types.NewEnv(nil)
+					if errs := types.Check(prog, env); len(errs) > 0 {
+						err = fmt.Errorf("type error: %v", errs[0])
+					} else {
+						code, cErr := gocode.New(env).Compile(prog)
+						if cErr != nil {
+							err = fmt.Errorf("compile error: %w", cErr)
+						} else {
+							tmp := t.TempDir()
+							file := filepath.Join(tmp, "main.go")
+							if wErr := os.WriteFile(file, code, 0644); wErr != nil {
+								err = fmt.Errorf("write error: %w", wErr)
+							} else {
+								cmd := exec.Command("go", "run", file)
+								cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
+								if data, inErr := os.ReadFile(strings.TrimSuffix(src, filepath.Ext(src)) + ".in"); inErr == nil {
+									cmd.Stdin = bytes.NewReader(data)
+								}
+								outBytes, runErr := cmd.CombinedOutput()
+								if runErr != nil {
+									err = fmt.Errorf("go run error: %w\n%s", runErr, outBytes)
+								} else {
+									got := bytes.TrimSpace(outBytes)
+									if *update {
+										os.WriteFile(errPath, nil, 0644)
+										os.WriteFile(outPath, normalizeOutput(rootDir(t), got), 0644)
+									}
+									want, readErr := os.ReadFile(outPath)
+									if readErr != nil {
+										t.Fatalf("missing golden output: %v", readErr)
+									}
+									gotNorm := normalizeOutput(rootDir(t), got)
+									if !bytes.Equal(gotNorm, normalizeOutput(rootDir(t), want)) {
+										t.Errorf("golden mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotNorm, want)
+									}
+									orig, oErr := os.ReadFile(strings.TrimSuffix(src, filepath.Ext(src)) + ".out")
+									if oErr == nil {
+										wantOrig := normalizeOutput(rootDir(t), bytes.TrimSpace(orig))
+										if !bytes.Equal(gotNorm, wantOrig) {
+											t.Errorf("output mismatch with original\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotNorm, wantOrig)
+										}
+									}
+									return
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if *update {
+				os.WriteFile(outPath, nil, 0644)
+				if err != nil {
+					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
+				}
+			}
+			want, readErr := os.ReadFile(errPath)
+			if readErr != nil {
+				t.Fatalf("missing golden error: %v", readErr)
+			}
+			if err == nil {
+				t.Fatalf("expected error, got nil")
+			}
+			if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+				t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+			}
+		})
+	}
 }
 
 func runConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), outExt, errExt string) {
