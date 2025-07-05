@@ -1,0 +1,4 @@
+fun id(x) {
+  x
+}
+print([id(123)].join(" "))

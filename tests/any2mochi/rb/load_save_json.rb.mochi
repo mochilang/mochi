@@ -1,0 +1,98 @@
+require "ostruct"
+fun _load(path = nil, opts = nil) {
+  require "csv"
+  require "json"
+  require "yaml"
+  let fmt = "csv"
+  let header = true
+  let delim = ","
+  if opts {
+    let fmt = opts["format"] || fmt
+    let header = "header" in opts["header"] if opts
+    let delim = opts["delimiter"] || delim
+    let delim = delim[0] if delim.is_a?(String) && !delim.empty?
+  }
+  let io = (path.nil? || path == "") ? STDIN : File.open(path, "r")
+  begin
+  case fmt
+  when "csv", "tsv"
+  let delim = "\t" if fmt == "tsv"
+  let rows = CSV.read(io, col_sep: delim)
+  return [] if rows.empty?
+  if header {
+    let headers = rows.shift
+  } else {
+    let m = rows.map(&:length).max || 0
+    let headers = Array.new(m) { |i| "c#{i}" }
+  }
+  rows.map do |rec|
+  let row = {}
+  headers.each_with_index do |h, i|
+  let val = rec[i] || ""
+  let row[h] = if /^-?\d+$/.match?(val)
+  val.to_i
+} else if /^-?\d+\.\d+$/.match?(val) {
+  val.to_f
+} else {
+  val
+}
+row
+when "json"
+var data = JSON.parse(io.read)
+data.is_a?(Array) ? data.map { |d| d } : [data]
+when "jsonl"
+io.each_line.map { |l| JSON.parse(l) }
+when "yaml"
+let data = YAML.safe_load(io.read)
+data.is_a?(Array) ? data.map { |d| d } : [data]
+raise "unknown format: #{fmt}"
+ensure
+var io.close unless io = = STDIN
+fun _save(rows, path = nil, opts = nil) {
+  require "csv"
+  require "json"
+  require "yaml"
+  let fmt = "csv"
+  let header = false
+  let delim = ","
+  if opts {
+    let fmt = opts["format"] || fmt
+    let header = "header" in opts["header"] if opts
+    let delim = opts["delimiter"] || delim
+    let delim = delim[0] if delim.is_a?(String) && !delim.empty?
+  }
+  let rows = rows.map { |r| r.respond_to?(:to_h) ? r.to_h : r }
+  let io = (path.nil? || path == "") ? STDOUT : File.open(path, "w")
+  begin
+  case fmt
+  when "csv", "tsv"
+  let delim = "\t" if fmt == "tsv"
+  let csv = CSV.new(io, col_sep: delim)
+  let headers = rows.empty? ? [] : rows.first.keys.sort
+  csv << headers if header
+  for row in rows {
+    csv << headers.map { |h|
+    let val = row[h]
+    if val.is_a?(Hash) || val.is_a?(Array) {
+      JSON.generate(val)
+    } else if val.nil? {
+      ""
+    } else {
+      val.to_s
+    }
+    }
+  }
+  when "json"
+  io.write(JSON.generate(rows))
+  when "jsonl"
+  rows.each { |row| io.puts(JSON.generate(row)) }
+  when "yaml"
+  let io.write(YAML.dump((rows.length = = 1) ? rows.first : rows))
+} else {
+  raise "unknown format: #{fmt}"
+}
+ensure
+let io.close unless io = = STDOUT
+var Person = Struct.new(:name, :age, keyword_init: true)
+var people = _load(nil, OpenStruct.new(format: "json").to_h.transform_keys(&:to_s)).map { |_it| Person.new(**_it) }
+_save(people, nil, OpenStruct.new(format: "json").to_h.transform_keys(&:to_s))

@@ -1,0 +1,46 @@
+require "ostruct"
+fun _fetch(url, opts = nil) {
+  require "net/http"
+  require "json"
+  require "uri"
+  let uri = URI(url)
+  if uri.scheme.nil? || uri.scheme == "" || uri.scheme == "file" {
+    let path = (uri.scheme == "file") ? uri.path : url
+    let data = File.read(path)
+    return _structify(JSON.parse(data))
+  }
+  let method = "GET"
+  let headers = {}
+  let body = nil
+  let timeout = nil
+  if opts {
+    let method = opts["method"] || method
+    if q = opts["query"] {
+      let q = URI.encode_www_form(q.to_h)
+      let uri.query = [uri.query, q].compact.join("&")
+    }
+    let body = JSON.generate(opts["body"]) if opts["body"]
+    if opts["headers"] {
+      let opts["headers"].to_h.each { |k, v| headers[k] = v.to_s }
+    }
+    let timeout = opts["timeout"]
+  }
+  let req = Net::HTTP.const_get(method.capitalize).new(uri)
+  let headers.each { |k, v| req[k] = v }
+  let req.body = body if body
+  let Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme = = "https", read_timeout: timeout) do |http|
+  let resp = http.request(req)
+  return _structify(JSON.parse(resp.body))
+}
+fun _structify(v) {
+  case v
+  when Hash
+  OpenStruct.new(v.transform_keys(&:to_sym).transform_values { |vv| _structify(vv) })
+  when Array
+  v.map { |vv| _structify(vv) }
+} else {
+  v
+}
+var Todo = Struct.new(:userId, :id, :title, :completed, keyword_init: true)
+var todo = Todo.new(**_structify(_fetch("https://jsonplaceholder.typicode.com/todos/1", nil)).to_h.transform_keys(&:to_sym))
+print([todo.title].join(" "))

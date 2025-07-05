@@ -1,0 +1,4 @@
+fun prepend(level, result) {
+  ([level] + result)
+}
+print([prepend([1, 2], [[3], [4]])].join(" "))

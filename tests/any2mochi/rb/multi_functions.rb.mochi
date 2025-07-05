@@ -1,0 +1,12 @@
+fun add(x, y) {
+  (x + y)
+}
+fun sub(x, y) {
+  (x - y)
+}
+fun mul(x, y) {
+  (x * y)
+}
+print([add(1, 2)].join(" "))
+print([sub(10, 3)].join(" "))
+print([mul(4, 6)].join(" "))

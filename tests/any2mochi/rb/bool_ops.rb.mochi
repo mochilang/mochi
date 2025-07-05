@@ -1,0 +1,3 @@
+print([false].join(" "))
+print([true || false].join(" "))
+print([!false].join(" "))

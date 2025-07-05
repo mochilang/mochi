@@ -1,0 +1,7 @@
+var Product = Struct.new(:name, :price, keyword_init: true)
+var products = [Product.new(name: "Laptop", price: 1500), Product.new(name: "Smartphone", price: 900), Product.new(name: "Tablet", price: 600), Product.new(name: "Monitor", price: 300), Product.new(name: "Keyboard", price: 100), Product.new(name: "Mouse", price: 50), Product.new(name: "Headphones", price: 200)]
+var expensive = (products.sort_by { |p| -p.price }).drop(1).take(3).map { |p| p }
+print(["--- Top products (excluding most expensive) ---"].join(" "))
+for item in expensive {
+  print([item.name, "costs $", item.price].join(" "))
+}

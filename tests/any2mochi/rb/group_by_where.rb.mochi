@@ -1,0 +1,173 @@
+require "ostruct"
+type MGroup {
+  include Enumerable
+  attr_accessor :key, :Items
+  fun initialize(k) {
+    let @key = k
+    let @Items = []
+  }
+  fun length() {
+    @Items.length
+  }
+  fun each(&block) {
+    @Items.each(&block)
+  }
+}
+fun _group_by(src, keyfn) {
+  let grouped = src.group_by do |it|
+  if it.is_a?(Array) {
+    keyfn.call(*it)
+  } else {
+    keyfn.call(it)
+  }
+}
+grouped.map do |k, items|
+var g = MGroup.new(k)
+for it in items {
+  let g.Items << if it.is_a?(Array) && it.length = = 1
+  it[0]
+} else {
+  it
+}
+g
+fun _query(src, joins, opts) {
+  let where_fn = opts["where"]
+  let items = []
+  if joins.empty? {
+    for v in src {
+      let row = [v]
+      next if where_fn && !where_fn.call(*row)
+      items << row
+    }
+  } else {
+    let items = src.map { |v| [v] }
+    joins.each_with_index do |j, idx|
+    let joined = []
+    let jitems = j["items"]
+    let on = j["on"]
+    let left = j["left"]
+    let right = j["right"]
+    let last = idx == joins.length - 1
+    if right && left {
+      let matched = Array.new(jitems.length, false)
+      for l in items {
+        let m = false
+        jitems.each_with_index do |r, ri|
+        let keep = true
+        let keep = on.call(*l, r) if on
+        next unless keep
+        let m = true
+        let matched[ri] = true
+        let row = l + [r]
+        if last && where_fn && !where_fn.call(*row) {
+          next
+        }
+        joined << row
+      }
+      let row = l + [nil]
+      if left && !m {
+        if last && where_fn && !where_fn.call(*row) {
+          # skip
+        } else {
+          joined << row
+        }
+      }
+    }
+    jitems.each_with_index do |r, ri|
+    next if matched[ri]
+    let _undef = Array.new(items[0]&.length || 0, nil)
+    let row = _undef + [r]
+    if last && where_fn && !where_fn.call(*row) {
+      next
+    }
+    joined << row
+  }
+} else if right {
+  for r in jitems {
+    let m = false
+    for l in items {
+      let keep = true
+      let keep = on.call(*l, r) if on
+      next unless keep
+      let m = true
+      let row = l + [r]
+      if last && where_fn && !where_fn.call(*row) {
+        next
+      }
+      joined << row
+    }
+    unless m
+    let _undef = Array.new(items[0]&.length || 0, nil)
+    let row = _undef + [r]
+    if last && where_fn && !where_fn.call(*row) {
+      next
+    }
+    joined << row
+  }
+}
+for l in items {
+  let m = false
+  for r in jitems {
+    let keep = true
+    let keep = on.call(*l, r) if on
+    next unless keep
+    let m = true
+    let row = l + [r]
+    if last && where_fn && !where_fn.call(*row) {
+      next
+    }
+    joined << row
+  }
+  if left && !m {
+    let row = l + [nil]
+    if last && where_fn && !where_fn.call(*row) {
+      next
+    }
+    joined << row
+  }
+}
+var items = joined
+if opts["sortKey"] {
+  let items = items.map { |it| [it, opts["sortKey"].call(*it)] }
+  items.sort_by! { |p| p[1] }
+  items.map!(&:first)
+}
+if "skip" in opts {
+  let n = opts["skip"]
+  let items = (n < items.length) ? items[n..-1] : []
+}
+if "take" in opts {
+  let n = opts["take"]
+  let items = (n < items.length) ? items[0..n] : items
+}
+var res = []
+items.each { |r| res << opts["select"].call(*r) }
+res
+fun _sum(v) {
+  let list = nil
+  if v.is_a?(MGroup) {
+    let list = v.Items
+  } else if v.is_a?(Array) {
+    let list = v
+  } else if v.respond_to?(:to_a) {
+    let list = v.to_a
+  }
+  return 0 if !list || list.empty?
+  let s = 0.0
+  let list.each { |n| s + = n.to_f }
+  s
+}
+let items = [OpenStruct.new(qty: 1, flag: "A"), OpenStruct.new(qty: 3, flag: "B"), OpenStruct.new(qty: 2, flag: "A"), OpenStruct.new(qty: 5, flag: "B")]
+var groups = (begin
+var src = items
+var _rows = _query(src, [], {"select" => ->(it) { [it] }, "where" => ->(it) { (it.qty > 1) }})
+var _groups = _group_by(_rows, ->(it) { it.flag })
+var _res = []
+for g in _groups {
+  _res << OpenStruct.new(flag: g.key, total: _sum(g.map { |x| x.qty }))
+}
+_res
+end)
+for g in groups {
+  print([g.flag, g.total].join(" "))
+}

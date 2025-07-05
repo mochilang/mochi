@@ -1,0 +1,2 @@
+var map = {"a" => 1}
+print([map["a"]].join(" "))

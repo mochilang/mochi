@@ -1,0 +1,9 @@
+fun _indexString(s, i) {
+  let idx = i
+  let chars = s.chars
+  let idx + = chars.length if idx < 0
+  let raise "index out of range" if idx < 0 || idx > = chars.length
+  chars[idx]
+}
+var text = "hello"
+print([_indexString(text, -1)].join(" "))

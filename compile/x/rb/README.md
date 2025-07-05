@@ -198,3 +198,26 @@ features include:
 - Variadic functions.
 - Agent initialization with field values.
 
+
+## Ruby to Mochi Converter
+
+The `any2mochi` tool ships with a basic converter that can translate small Ruby
+snippets into Mochi. It relies on the `solargraph` language server for syntax
+validation before applying a light-weight transformation implemented in pure Go.
+
+### Supported Features
+
+- `puts` statements are mapped to `print`
+- `for` loops and `each` blocks become Mochi `for` loops
+- `while` loops including membership checks using `map.key?(k)`
+- Conditional blocks with `if`/`elsif`/`else`
+- Simple `def` and `class` declarations
+- Variable assignments and `return` statements
+
+### Unsupported Features
+
+- Modules and `require` statements
+- Pattern matching and struct or union declarations
+- Blocks other than `each`
+- Exception handling and concurrency primitives
+- Metaprogramming constructs

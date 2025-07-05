@@ -1,0 +1,13 @@
+fun _sliceString(s, i, j) {
+  let start = i
+  let finish = j
+  let chars = s.chars
+  let n = chars.length
+  let start + = n if start < 0
+  let finish + = n if finish < 0
+  let start = 0 if start < 0
+  let finish = n if finish > n
+  let finish = start if finish < start
+  chars[start..finish].join
+}
+print([_sliceString("hello", 1, 4)].join(" "))

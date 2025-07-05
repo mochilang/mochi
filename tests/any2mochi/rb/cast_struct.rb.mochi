@@ -1,0 +1,3 @@
+var Todo = Struct.new(:title, keyword_init: true)
+var todo = Todo.new(**{"title" => "hi"}.transform_keys(&:to_sym))
+print([todo.title].join(" "))

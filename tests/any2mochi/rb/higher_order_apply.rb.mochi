@@ -1,0 +1,8 @@
+fun inc(x) {
+  (x + 1)
+}
+fun apply(f, x) {
+  f.call(x)
+}
+print([apply(method(:inc), 5)].join(" "))
+print([apply(->(y) { (y * 2) }, 7)].join(" "))

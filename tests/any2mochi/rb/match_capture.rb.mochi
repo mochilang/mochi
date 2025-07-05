@@ -1,0 +1,17 @@
+module Tree; end
+type Leaf {
+  include Tree
+}
+var Node = Struct.new(:left, :value, :right, keyword_init: true) do
+include Tree
+fun depth(t) {
+  (begin
+  let _t0 = t
+  if _t0.is_a?(Leaf) {
+    0
+  } else if _t0.is_a?(Node) {
+    ->(l, r) { ((depth(l) + depth(r)) + 1) }.call(_t0.left, _t0.right)
+  }
+  end)
+}
+print([depth(Node.new(left: Leaf.new, value: 0, right: Leaf.new))].join(" "))

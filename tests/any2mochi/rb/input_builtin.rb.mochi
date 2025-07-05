@@ -1,0 +1,5 @@
+print(["Enter first input:"].join(" "))
+var input1 = STDIN.gets.to_s.strip
+print(["Enter second input:"].join(" "))
+var input2 = STDIN.gets.to_s.strip
+print(["You entered:", input1, ",", input2].join(" "))

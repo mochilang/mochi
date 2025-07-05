@@ -1,0 +1,27 @@
+module Tree; end
+type Leaf {
+  include Tree
+}
+var Node = Struct.new(:left, :value, :right, keyword_init: true) do
+include Tree
+fun fromList(nums) {
+  let helper = ->(lo, hi) {
+  if lo >= hi {
+    return Leaf.new
+  }
+  let mid = (((lo + hi)) / 2)
+  Node.new(left: helper.call(lo, mid), value: nums[mid], right: helper.call(mid + 1, hi))
+  }
+  helper.call(0, nums.length)
+}
+fun inorder(t) {
+  (begin
+  let _t0 = t
+  if _t0.is_a?(Leaf) {
+    []
+  } else if _t0.is_a?(Node) {
+    ->(l, v, r) { ((inorder(l) + [v]) + inorder(r)) }.call(_t0.left, _t0.value, _t0.right)
+  }
+  end)
+}
+print([inorder(fromList([-10, -3, 0, 5, 9]))].join(" "))

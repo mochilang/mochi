@@ -1,0 +1,4 @@
+var Address = Struct.new(:city, :zip, keyword_init: true)
+var Person = Struct.new(:name, :home, keyword_init: true)
+var p = Person.new(name: "Alice", home: Address.new(city: "SF", zip: 94107))
+print([p.home.city].join(" "))

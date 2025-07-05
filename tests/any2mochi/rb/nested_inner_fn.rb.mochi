@@ -1,0 +1,7 @@
+fun outer(a) {
+  let inner = ->(b) {
+  (a + b)
+  }
+  inner.call(10)
+}
+print([outer(5)].join(" "))
