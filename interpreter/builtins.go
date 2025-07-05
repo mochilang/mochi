@@ -16,14 +16,29 @@ import (
 // builtinPrint implements the print(...) function.
 func builtinPrint(i *Interpreter, c *parser.CallExpr) (any, error) {
 	var sb strings.Builder
+	first := true
 	for _, arg := range c.Args {
 		val, err := i.evalExpr(arg)
 		if err != nil {
 			return nil, err
 		}
-		fmt.Fprintf(&sb, "%v ", val)
+		if list, ok := val.([]any); ok {
+			for i2, v := range list {
+				if !first || i2 > 0 {
+					sb.WriteByte(' ')
+				}
+				fmt.Fprint(&sb, v)
+			}
+			first = false
+			continue
+		}
+		if !first {
+			sb.WriteByte(' ')
+		}
+		fmt.Fprint(&sb, val)
+		first = false
 	}
-	_, err := fmt.Fprintln(i.env.Writer(), strings.TrimSpace(sb.String()))
+	_, err := fmt.Fprintln(i.env.Writer(), sb.String())
 	return nil, err
 }
 

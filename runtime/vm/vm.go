@@ -1134,7 +1134,19 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			fr.regs[ins.A] = Value{Tag: ValueMap, Map: mp}
 		case OpPrint:
-			fmt.Fprintln(m.writer, fr.regs[ins.A].ToAny())
+			v := fr.regs[ins.A]
+			if v.Tag == ValueList {
+				var sb strings.Builder
+				for i, x := range v.List {
+					if i > 0 {
+						sb.WriteByte(' ')
+					}
+					fmt.Fprint(&sb, x.ToAny())
+				}
+				fmt.Fprintln(m.writer, sb.String())
+			} else {
+				fmt.Fprintln(m.writer, v.ToAny())
+			}
 		case OpPrint2:
 			fmt.Fprintln(m.writer, fr.regs[ins.A].ToAny(), fr.regs[ins.B].ToAny())
 		case OpPrintN:

@@ -154,6 +154,9 @@ class Converter(ast.NodeVisitor):
             return "[" + ", ".join(self.convert_expr(e) for e in node.elts) + "]"
         if isinstance(node, ast.ListComp):
             return self.convert_list_comp(node)
+        if isinstance(node, ast.GeneratorExp):
+            fake = ast.ListComp(node.elt, node.generators)
+            return self.convert_list_comp(fake)
         if isinstance(node, ast.Lambda):
             return self.convert_lambda(node)
         line = self.src_lines[getattr(node, "lineno", 1) - 1]
@@ -263,6 +266,13 @@ class Converter(ast.NodeVisitor):
                 for sub in stmt.body:
                     if isinstance(sub, ast.Global):
                         continue
+                    if (
+                        isinstance(sub, ast.Expr)
+                        and isinstance(sub.value, ast.Call)
+                        and isinstance(sub.value.func, ast.Name)
+                        and sub.value.func.id.startswith("test_")
+                    ):
+                        continue
                     self.visit(sub)
                 continue
             if isinstance(stmt, ast.FunctionDef):
@@ -292,6 +302,17 @@ class Converter(ast.NodeVisitor):
                     continue
                 self.visit(stmt)
             return
+        if node.name.startswith("test_"):
+            name = node.name[5:]
+            self.emit(f'test "{name}" {{')
+            self.indent += 1
+            for stmt in node.body:
+                if isinstance(stmt, ast.Global):
+                    continue
+                self.visit(stmt)
+            self.indent -= 1
+            self.emit("}")
+            return
         args = [
             f"{arg.arg}: {self.convert_type(arg.annotation)}" for arg in node.args.args
         ]
@@ -303,6 +324,8 @@ class Converter(ast.NodeVisitor):
             self.current_callable = call_info
         self.indent += 1
         for stmt in node.body:
+            if isinstance(stmt, ast.Global):
+                continue
             self.visit(stmt)
         self.indent -= 1
         self.emit("}")
@@ -318,6 +341,10 @@ class Converter(ast.NodeVisitor):
         else:
             self.emit("return")
 
+    def visit_Assert(self, node: ast.Assert) -> None:
+        expr = self.convert_expr(node.test)
+        self.emit(f"expect {expr}")
+
     def visit_Assign(self, node: ast.Assign) -> None:
         if len(node.targets) != 1:
             return
@@ -329,6 +356,9 @@ class Converter(ast.NodeVisitor):
                 return
             self.seen_assigns.add(target.id)
             self.emit(f"let {target.id} = {self.convert_expr(node.value)}")
+
+    def visit_Pass(self, node: ast.Pass) -> None:
+        pass
 
     def visit_Expr(self, node: ast.Expr) -> None:
         if (

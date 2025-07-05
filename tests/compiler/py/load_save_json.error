@@ -1,5 +1,135 @@
-py2mochi failed:
-unhandled expression at line 37:                 m = max(len(r) for r in rows)
-36:             else:
-37:                 m = max(len(r) for r in rows)
-38:                 headers = [f"c{i}" for i in range(m)]
+generated code does not match expected
+--- expected
++++ generated
+@@ -1,6 +1,125 @@
+- type Person {
+-   name: string
+-   age: int
+- }
+- let people = load as Person with { format: "json" }
+- save people with { format: "json" }
++type Person {
++  name: string
++  age: int
++}
++fun _load(path: any, opts: any): any {
++  let fmt = "csv"
++  let header = True
++  let delim = ","
++  if opts {
++    if isinstance(delim, str) and delim {
++    }
++  }
++  let f = if path ? None then sys.stdin else open(path, "r")
++  if fmt == "tsv" {
++  }
++  if fmt == "csv" {
++    let rows = list(csv.reader(f, delimiter: delim))
++    if !rows {
++      return []
++    }
++    if header {
++      let headers = rows[0]
++    } else {
++      let m = max(from r in rows
++            select len(r))
++    }
++    let out = []
++    for rec in rows {
++      let row = {}
++      for (i, h) in enumerate(headers) {
++        let val = if i < len(rec) then rec[i] else ""
++        if val.isdigit() {
++        } else {
++        }
++      }
++      out.append(row)
++    }
++    return out
++  } else {
++    if fmt == "json" {
++      let data = json.load(f)
++      if isinstance(data, list) {
++        return from d in data
++            select dict(d)
++      }
++      if isinstance(data, dict) {
++        return [dict(data)]
++      }
++      return []
++    } else {
++      if fmt == "jsonl" {
++        return from line in f
++            where line.strip()
++            select json.loads(line)
++      } else {
++        if fmt == "yaml" {
++          if isinstance(data, list) {
++            return from d in data
++            select dict(d)
++          }
++          if isinstance(data, dict) {
++            return [dict(data)]
++          }
++          return []
++        } else {
++        }
++      }
++    }
++  }
++  if path ? None {
++    f.close()
++  }
++}
++fun _save(rows: any, path: any, opts: any): any {
++  if opts {
++    if isinstance(delim, str) and delim {
++    }
++  }
++  if fmt == "tsv" {
++  }
++  if fmt == "csv" {
++    let w = csv.writer(f, delimiter: delim)
++    if header {
++      w.writerow(headers)
++    }
++    for row in rows {
++      let rec = []
++      for h in headers {
++        if isinstance(val, (dict, list)) {
++          rec.append(json.dumps(val))
++        } else {
++          if val ? None {
++            rec.append("")
++          } else {
++            rec.append(str(val))
++          }
++        }
++      }
++      w.writerow(rec)
++    }
++    return
++  } else {
++    if fmt == "json" {
++      json.dump(rows, f)
++    } else {
++      if fmt == "jsonl" {
++        for row in rows {
++          f.write(json.dumps(row))
++          f.write("\n")
++        }
++      } else {
++        if fmt == "yaml" {
++          yaml.safe_dump(if len(rows) == 1 then rows[0] else rows, f)
++        } else {
++        }
++      }
++    }
++  }
++  if path ? None {
++    f.close()
++  }
++}
++let people = from _it in _load(None, dict({"format": "json"}))
++            select Person { None: _it }
++_save(people, None, dict({"format": "json"}))
