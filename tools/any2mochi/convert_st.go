@@ -20,7 +20,7 @@ func ConvertSt(src string) ([]byte, error) {
 	}
 
 	var out strings.Builder
-	appendStSymbols(&out, syms)
+	appendStSymbols(&out, syms, src, ls)
 
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
@@ -28,7 +28,7 @@ func ConvertSt(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func appendStSymbols(out *strings.Builder, syms []protocol.DocumentSymbol) {
+func appendStSymbols(out *strings.Builder, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		switch s.Kind {
 		case protocol.SymbolKindClass:
@@ -36,18 +36,29 @@ func appendStSymbols(out *strings.Builder, syms []protocol.DocumentSymbol) {
 			out.WriteString(s.Name)
 			out.WriteString(" {}\n")
 			if len(s.Children) > 0 {
-				appendStSymbols(out, s.Children)
+				appendStSymbols(out, s.Children, src, ls)
 			}
 		case protocol.SymbolKindMethod, protocol.SymbolKindConstructor, protocol.SymbolKindFunction:
 			out.WriteString("fun ")
 			out.WriteString(cleanStName(s.Name))
-			out.WriteString("() {}\n")
+			params := extractStParams(s)
+			if len(params) == 0 {
+				params = getStHoverParams(src, s.SelectionRange.Start, ls)
+			}
+			out.WriteByte('(')
+			for i, p := range params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p)
+			}
+			out.WriteString(") {}\n")
 			if len(s.Children) > 0 {
-				appendStSymbols(out, s.Children)
+				appendStSymbols(out, s.Children, src, ls)
 			}
 		default:
 			if len(s.Children) > 0 {
-				appendStSymbols(out, s.Children)
+				appendStSymbols(out, s.Children, src, ls)
 			}
 		}
 	}
@@ -58,6 +69,44 @@ func cleanStName(name string) string {
 		return name[:i]
 	}
 	return name
+}
+
+func extractStParams(sym protocol.DocumentSymbol) []string {
+	start := sym.Range.Start.Line
+	var params []string
+	for _, c := range sym.Children {
+		if c.Kind == protocol.SymbolKindVariable && c.Range.Start.Line == start {
+			if c.Name != "" {
+				params = append(params, c.Name)
+			}
+		}
+	}
+	return params
+}
+
+func getStHoverParams(src string, pos protocol.Position, ls LanguageServer) []string {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+	if err != nil {
+		return nil
+	}
+	text := hoverString(hov)
+	text = strings.ReplaceAll(text, "\n", " ")
+	parts := strings.Split(text, ":")
+	var params []string
+	for i := 1; i < len(parts); i++ {
+		sec := strings.TrimSpace(parts[i])
+		if sec == "" {
+			continue
+		}
+		fields := strings.Fields(sec)
+		if len(fields) > 0 {
+			p := strings.Trim(fields[0], "()|")
+			if p != "" {
+				params = append(params, p)
+			}
+		}
+	}
+	return params
 }
 
 // ConvertStFile reads the st file and converts it to Mochi.
