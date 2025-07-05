@@ -3,12 +3,21 @@ import argparse
 import ast
 import json
 import os
+import sys
+
+
+class ConversionError(Exception):
+    def __init__(self, msg: str, lineno: int, line: str):
+        super().__init__(msg)
+        self.lineno = lineno
+        self.line = line
 
 
 class Converter(ast.NodeVisitor):
-    def __init__(self):
+    def __init__(self, src: str):
         self.lines: list[str] = []
         self.indent = 0
+        self.src_lines = src.splitlines()
         self.dataclasses: set[str] = set()
         self.seen_assigns: set[str] = set()
         self.current_callable: tuple[list[str], str] | None = None
@@ -74,8 +83,7 @@ class Converter(ast.NodeVisitor):
                 start = self.convert_expr(sl.lower) if sl.lower else ""
                 stop = self.convert_expr(sl.upper) if sl.upper else ""
                 return f"{target}[{start}:{stop}]"
-            idx = getattr(sl, "value", sl)
-            return f"{target}[{self.convert_expr(idx)}]"
+            return f"{target}[{self.convert_expr(sl)}]"
         if isinstance(node, ast.BinOp):
             op_map = {ast.Add: "+", ast.Sub: "-", ast.Mult: "*", ast.Div: "/"}
             op = op_map.get(type(node.op), "?")
@@ -84,6 +92,8 @@ class Converter(ast.NodeVisitor):
             )
         if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
             return "-" + self.convert_expr(node.operand)
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+            return "!" + self.convert_expr(node.operand)
         if isinstance(node, ast.BoolOp):
             if isinstance(node.op, ast.And):
                 op = " and "
@@ -98,6 +108,8 @@ class Converter(ast.NodeVisitor):
                 ast.LtE: "<=",
                 ast.Eq: "==",
                 ast.NotEq: "!=",
+                ast.In: "?",
+                ast.NotIn: "!?",
             }
             left = self.convert_expr(node.left)
             op = op_map.get(type(node.ops[0]), "?")
@@ -130,7 +142,8 @@ class Converter(ast.NodeVisitor):
             return self.convert_list_comp(node)
         if isinstance(node, ast.Lambda):
             return self.convert_lambda(node)
-        return "<expr>"
+        line = self.src_lines[getattr(node, "lineno", 1) - 1]
+        raise ConversionError("unhandled expression", getattr(node, "lineno", 0), line)
 
     def convert_lambda(
         self,
@@ -346,8 +359,11 @@ def convert(path: str) -> str:
     with open(path, "r", encoding="utf-8") as f:
         src = f.read()
     tree = ast.parse(src)
-    conv = Converter()
-    conv.visit(tree)
+    conv = Converter(src)
+    try:
+        conv.visit(tree)
+    except ConversionError as e:
+        raise ConversionError(f"{e} at line {e.lineno}: {e.line}", e.lineno, e.line)
     return "\n".join(conv.lines) + ("\n" if conv.lines else "")
 
 
@@ -356,7 +372,11 @@ def main():
     ap.add_argument("file")
     ap.add_argument("-o", "--out")
     args = ap.parse_args()
-    code = convert(args.file)
+    try:
+        code = convert(args.file)
+    except ConversionError as e:
+        print(str(e), file=sys.stderr)
+        raise SystemExit(1)
     if args.out:
         with open(args.out, "w", encoding="utf-8") as f:
             f.write(code)

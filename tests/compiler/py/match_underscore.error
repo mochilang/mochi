@@ -1,1 +1,2 @@
-conversion incomplete: unhandled expression
+py2mochi failed:
+unhandled expression at line 9:     return (lambda _t0=t: (lambda v: v)(_t0.value) if isinstance(_t0, Node) else 0)()

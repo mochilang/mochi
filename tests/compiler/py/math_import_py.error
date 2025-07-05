@@ -1,1 +1,33 @@
-conversion incomplete: unhandled expression
+generated code does not match expected
+--- expected
++++ generated
+@@ -1,9 +1,21 @@
+-import python "math" as math
+-
+-extern fun math.pow(x: float, y: float): float
+-extern let math.pi: float
+-
+-let r = 3.0
+-let area = math.pi * math.pow(r, 2.0)
+-
++fun _get(obj: any, name: any): any {
++  if obj ? None {
++    return None
++  }
++  if isinstance(obj, dict) {
++    if name ? obj {
++      return obj[name]
++    }
++  }
++  if hasattr(obj, name) {
++    return getattr(obj, name)
++  }
++  if isinstance(obj, (list, tuple)) {
++    for it in obj {
++      return _get(it, name)
++    }
++  }
++}
++let r = 3
++let area = _get(math, "pi") * _get(math, "pow")(r, 2)
+ print("Area:", area)
