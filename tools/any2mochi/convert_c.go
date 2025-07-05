@@ -115,6 +115,27 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
+		case protocol.SymbolKindEnum:
+			matched = true
+			out.WriteString("type ")
+			out.WriteString(s.Name)
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindEnumMember {
+					fmt.Fprintf(&out, "  %s\n", c.Name)
+				}
+			}
+			out.WriteString("}\n")
+			var rest []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				if c.Kind != protocol.SymbolKindEnumMember {
+					rest = append(rest, c)
+				}
+			}
+			if len(rest) > 0 {
+				// recurse to handle any nested symbols
+				syms = append(syms, rest...)
+			}
 		}
 	}
 
@@ -184,7 +205,7 @@ func parseCParam(p string) (string, string) {
 	}
 	name := fields[len(fields)-1]
 	typ := strings.Join(fields[:len(fields)-1], " ")
-	if strings.ContainsAny(name, "*[]") {
+	if strings.ContainsAny(name, "*[]") || strings.Contains(name, "[") {
 		// likely part of the type
 		return "", mapCType(p)
 	}
@@ -193,6 +214,14 @@ func parseCParam(p string) (string, string) {
 
 func mapCType(typ string) string {
 	typ = strings.TrimSpace(typ)
+	if open := strings.Index(typ, "["); open != -1 && strings.HasSuffix(typ, "]") {
+		base := strings.TrimSpace(typ[:open])
+		inner := mapCType(base)
+		if inner == "" {
+			inner = "any"
+		}
+		return "list<" + inner + ">"
+	}
 	for strings.HasSuffix(typ, "*") {
 		typ = strings.TrimSpace(strings.TrimSuffix(typ, "*"))
 	}
@@ -268,9 +297,9 @@ func cHoverFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer)
 	}
 	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
 		for _, line := range strings.Split(mc.Value, "\n") {
-			fields := strings.Fields(strings.TrimSpace(line))
-			if len(fields) > 0 {
-				return mapCType(fields[0])
+			l := strings.TrimSpace(line)
+			if l != "" {
+				return mapCType(l)
 			}
 		}
 	}
