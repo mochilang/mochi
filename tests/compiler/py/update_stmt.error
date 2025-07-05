@@ -44,7 +44,8 @@ generated code does not match expected
 -    Person { name: "Charlie", age: 19, status: "adult" },
 -    Person { name: "Diana", age: 16, status: "minor" }
 -  ]
-+fun test_update_adult_status(): any {
++test "update_adult_status" {
++  expect people == [Person { name: "Alice", age: 17, status: "minor" }, Person { name: "Bob", age: 26, status: "adult" }, Person { name: "Charlie", age: 19, status: "adult" }, Person { name: "Diana", age: 16, status: "minor" }]
 +}
 +let people = [Person { name: "Alice", age: 17, status: "minor" }, Person { name: "Bob", age: 25, status: "unknown" }, Person { name: "Charlie", age: 18, status: "unknown" }, Person { name: "Diana", age: 16, status: "minor" }]
 +for (_i0, _it1) in enumerate(people) {
@@ -57,4 +58,3 @@ generated code does not match expected
 +  }
  }
  print("ok")
-+test_update_adult_status()

@@ -1,15 +1,14 @@
 generated code does not match expected
 --- expected
 +++ generated
-@@ -1,8 +1,5 @@
+@@ -1,8 +1,7 @@
 -let xs = [(-1), 0, 1] as list<int>
 -
--test "values" {
+ test "values" {
 -  expect xs[0] == (-1)
--  expect xs[1] == 0
--  expect xs[2] == 1
-+fun test_values(): any {
++  expect xs[0] == -1
+   expect xs[1] == 0
+   expect xs[2] == 1
    print("done")
  }
 +let xs = [-1, 0, 1]
-+test_values()
