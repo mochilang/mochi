@@ -1,1 +1,2 @@
+let i: any
 fun main() {}

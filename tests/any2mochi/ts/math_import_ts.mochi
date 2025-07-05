@@ -1,1 +1,3 @@
+let base: any
 fun main() {}
+let p: any

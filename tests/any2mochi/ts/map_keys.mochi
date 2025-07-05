@@ -1,2 +1,0 @@
-fun main() {}
-fun main.map() callback() {}

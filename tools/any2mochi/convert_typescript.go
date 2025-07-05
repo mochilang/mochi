@@ -73,6 +73,16 @@ func writeTSSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
+		case protocol.SymbolKindClass, protocol.SymbolKindInterface, protocol.SymbolKindStruct:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {}\n")
+		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty:
+			if s.Name != "" {
+				out.WriteString("let ")
+				out.WriteString(s.Name)
+				out.WriteString(": any\n")
+			}
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))

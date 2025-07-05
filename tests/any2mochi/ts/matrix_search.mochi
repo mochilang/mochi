@@ -1,2 +1,10 @@
 fun main() {}
 fun searchMatrix() {}
+let col: any
+let left: any
+let m: any
+let mid: any
+let n: any
+let right: any
+let row: any
+let value: any

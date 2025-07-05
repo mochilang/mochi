@@ -1,2 +1,3 @@
+let add10: any
 fun main() {}
 fun makeAdder() {}
