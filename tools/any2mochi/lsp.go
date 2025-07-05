@@ -41,6 +41,23 @@ func EnsureAndHoverWithRoot(cmd string, args []string, langID, src string, pos p
 	return hov, err
 }
 
+// EnsureAndDefinition runs DefinitionAt after ensuring the language server is installed.
+func EnsureAndDefinition(cmd string, args []string, langID, src string, pos protocol.Position) ([]protocol.Location, error) {
+	return EnsureAndDefinitionWithRoot(cmd, args, langID, src, pos, "")
+}
+
+// EnsureAndDefinitionWithRoot runs DefinitionAtWithRoot after ensuring the language server is installed.
+func EnsureAndDefinitionWithRoot(cmd string, args []string, langID, src string, pos protocol.Position, root string) ([]protocol.Location, error) {
+	if err := EnsureServer(cmd); err != nil {
+		return nil, err
+	}
+	locs, err := DefinitionAtWithRoot(cmd, args, langID, src, pos, root)
+	if err != nil {
+		err = fmt.Errorf("definition failure: %w\n\nsource snippet:\n%s", err, numberedSnippet(src))
+	}
+	return locs, err
+}
+
 func numberedSnippet(src string) string {
 	lines := strings.Split(src, "\n")
 	if len(lines) > 10 {

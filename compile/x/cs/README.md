@@ -163,6 +163,7 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Sorting and pagination with joins
 - Set operations on lists: `union`, `union all`, `except`, `intersect`
 - Built‑ins `print`, `len`, `count`, `avg`, `now` and `json`
+- C# collections like `IEnumerable<T>` and `ICollection<T>` map to Mochi `list<T>`
 - HTTP requests using `fetch`
 - Dataset helpers `_load` and `_save` supporting CSV, TSV, JSON, JSONL and YAML
 - Package declarations and imports

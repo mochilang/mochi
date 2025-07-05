@@ -268,7 +268,7 @@ func mapCsType(t string) string {
 			inner := t[open+1 : len(t)-1]
 			args := splitArgs(inner)
 			switch outer {
-			case "List", "IEnumerable", "IList":
+			case "List", "IEnumerable", "IList", "ICollection", "IReadOnlyList":
 				a := "any"
 				if len(args) > 0 {
 					if at := mapCsType(args[0]); at != "" {
@@ -323,24 +323,38 @@ func csFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) str
 		}
 	}
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
-	if err != nil {
-		return ""
-	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
-		for _, line := range strings.Split(mc.Value, "\n") {
-			l := strings.TrimSpace(line)
-			fields := strings.Fields(l)
-			if len(fields) >= 2 {
-				if t := mapCsType(fields[0]); t != "" {
-					return t
+	if err == nil {
+		if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+			for _, line := range strings.Split(mc.Value, "\n") {
+				l := strings.TrimSpace(line)
+				fields := strings.Fields(l)
+				if len(fields) >= 2 {
+					if t := mapCsType(fields[0]); t != "" {
+						return t
+					}
+					if t := mapCsType(fields[len(fields)-1]); t != "" {
+						return t
+					}
 				}
-				if t := mapCsType(fields[len(fields)-1]); t != "" {
-					return t
+				if idx := strings.Index(l, ":"); idx != -1 {
+					if t := mapCsType(strings.TrimSpace(l[idx+1:])); t != "" {
+						return t
+					}
 				}
 			}
-			if idx := strings.Index(l, ":"); idx != -1 {
-				if t := mapCsType(strings.TrimSpace(l[idx+1:])); t != "" {
-					return t
+		}
+	}
+	defs, err := EnsureAndDefinition(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err == nil && len(defs) > 0 {
+		pos := defs[0].Range.Start
+		hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+		if err == nil {
+			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+				for _, line := range strings.Split(mc.Value, "\n") {
+					l := strings.TrimSpace(line)
+					if t := mapCsType(l); t != "" {
+						return t
+					}
 				}
 			}
 		}
