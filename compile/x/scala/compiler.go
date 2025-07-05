@@ -1096,16 +1096,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "scala.collection.mutable.Map(" + strings.Join(items, ", ") + ")", nil
 	case p.Selector != nil:
-		parts := make([]string, 0, len(p.Selector.Tail)+1)
+		var expr string
 		if alias, ok := c.paramAlias[p.Selector.Root]; ok {
-			parts = append(parts, alias)
+			expr = alias
 		} else {
-			parts = append(parts, sanitizeName(p.Selector.Root))
+			expr = sanitizeName(p.Selector.Root)
 		}
-		for _, t := range p.Selector.Tail {
-			parts = append(parts, sanitizeName(t))
+		isMap := isMapVar(p.Selector.Root, c.env)
+		for i, t := range p.Selector.Tail {
+			if isMap && i == 0 {
+				expr = fmt.Sprintf("%s(%q)", expr, t)
+			} else {
+				expr = expr + "." + sanitizeName(t)
+			}
 		}
-		return strings.Join(parts, "."), nil
+		return expr, nil
 	case p.Group != nil:
 		expr, err := c.compileExpr(p.Group)
 		if err != nil {
