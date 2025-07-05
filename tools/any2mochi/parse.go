@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -26,6 +28,13 @@ type client struct {
 // It returns the document symbols reported by the server for the file.
 // The server must support the textDocument/documentSymbol request.
 func ParseText(cmdName string, args []string, langID string, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
+	return ParseTextWithRoot(cmdName, args, langID, src, "")
+}
+
+// ParseTextWithRoot is like ParseText but allows specifying a root directory
+// for the language server. Some servers (e.g. fortls) only return symbols when
+// initialized with a workspace root.
+func ParseTextWithRoot(cmdName string, args []string, langID, src, root string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -60,15 +69,53 @@ func ParseText(cmdName string, args []string, langID string, src string) ([]prot
 	}))
 	c.conn = conn
 
-	if err := c.initialize(ctx); err != nil {
+	tempDir := ""
+	if root == "" {
+		var err error
+		tempDir, err = os.MkdirTemp("", "lsp")
+		if err != nil {
+			return nil, nil, err
+		}
+		root = tempDir
+	}
+	if err := c.initializeWithRoot(ctx, root); err != nil {
 		c.Close()
+		if tempDir != "" {
+			os.RemoveAll(tempDir)
+		}
 		return nil, nil, err
 	}
-	uri := protocol.DocumentUri("file:///input")
+	absRoot, _ := filepath.Abs(root)
+	ext := ""
+	switch langID {
+	case "fortran":
+		ext = ".f90"
+	case "c":
+		ext = ".c"
+	case "cpp":
+		ext = ".cpp"
+	case "python":
+		ext = ".py"
+	case "typescript":
+		ext = ".ts"
+	}
+	filePath := filepath.Join(absRoot, "input"+ext)
+	if err := os.WriteFile(filePath, []byte(src), 0644); err != nil {
+		c.Close()
+		if tempDir != "" {
+			os.RemoveAll(tempDir)
+		}
+		return nil, nil, err
+	}
+	uri := protocol.DocumentUri("file://" + filepath.ToSlash(filePath))
 	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
 		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
 	}); err != nil {
 		c.Close()
+		os.Remove(filePath)
+		if tempDir != "" {
+			os.RemoveAll(tempDir)
+		}
 		return nil, nil, err
 	}
 	var syms []protocol.DocumentSymbol
@@ -79,6 +126,10 @@ func ParseText(cmdName string, args []string, langID string, src string) ([]prot
 		return nil, nil, err
 	}
 	c.Close()
+	os.Remove(filePath)
+	if tempDir != "" {
+		os.RemoveAll(tempDir)
+	}
 	c.mu.Lock()
 	diags := append([]protocol.Diagnostic(nil), c.diags...)
 	c.mu.Unlock()
@@ -86,6 +137,10 @@ func ParseText(cmdName string, args []string, langID string, src string) ([]prot
 }
 
 func (c *client) initialize(ctx context.Context) error {
+	return c.initializeWithRoot(ctx, "")
+}
+
+func (c *client) initializeWithRoot(ctx context.Context, root string) error {
 	hierarchical := true
 	params := protocol.InitializeParams{
 		Capabilities: protocol.ClientCapabilities{
@@ -95,6 +150,11 @@ func (c *client) initialize(ctx context.Context) error {
 				},
 			},
 		},
+	}
+	if root != "" {
+		abs, _ := filepath.Abs(root)
+		uri := protocol.DocumentUri("file://" + filepath.ToSlash(abs))
+		params.RootURI = &uri
 	}
 	var res protocol.InitializeResult
 	if err := c.conn.Call(ctx, "initialize", params, &res); err != nil {
@@ -118,6 +178,11 @@ func (c *client) Close() error {
 // HoverAt opens a language server and returns hover information for the
 // provided position in the source.
 func HoverAt(cmdName string, args []string, langID string, src string, pos protocol.Position) (protocol.Hover, error) {
+	return HoverAtWithRoot(cmdName, args, langID, src, pos, "")
+}
+
+// HoverAtWithRoot is like HoverAt but allows specifying a workspace root.
+func HoverAtWithRoot(cmdName string, args []string, langID string, src string, pos protocol.Position, root string) (protocol.Hover, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -141,11 +206,30 @@ func HoverAt(cmdName string, args []string, langID string, src string, pos proto
 	}))
 	c.conn = conn
 
-	if err := c.initialize(ctx); err != nil {
+	if err := c.initializeWithRoot(ctx, root); err != nil {
 		c.Close()
 		return protocol.Hover{}, err
 	}
-	uri := protocol.DocumentUri("file:///input")
+	var uri protocol.DocumentUri
+	if root != "" {
+		abs, _ := filepath.Abs(root)
+		ext := ""
+		switch langID {
+		case "fortran":
+			ext = ".f90"
+		case "c":
+			ext = ".c"
+		case "cpp":
+			ext = ".cpp"
+		case "python":
+			ext = ".py"
+		case "typescript":
+			ext = ".ts"
+		}
+		uri = protocol.DocumentUri("file://" + filepath.ToSlash(filepath.Join(abs, "input"+ext)))
+	} else {
+		uri = protocol.DocumentUri("file:///input")
+	}
 	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
 		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
 	}); err != nil {
@@ -180,6 +264,11 @@ func (p *pipe) Close() error {
 // for the specified position. Diagnostics produced by the server are also
 // returned.
 func HoverText(cmdName string, args []string, langID string, src string, pos protocol.Position) (string, []protocol.Diagnostic, error) {
+	return HoverTextWithRoot(cmdName, args, langID, src, pos, "")
+}
+
+// HoverTextWithRoot is like HoverText but allows specifying a root directory.
+func HoverTextWithRoot(cmdName string, args []string, langID string, src string, pos protocol.Position, root string) (string, []protocol.Diagnostic, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -212,11 +301,30 @@ func HoverText(cmdName string, args []string, langID string, src string, pos pro
 	}))
 	c.conn = conn
 
-	if err := c.initialize(ctx); err != nil {
+	if err := c.initializeWithRoot(ctx, root); err != nil {
 		c.Close()
 		return "", nil, err
 	}
-	uri := protocol.DocumentUri("file:///input")
+	var uri protocol.DocumentUri
+	if root != "" {
+		abs, _ := filepath.Abs(root)
+		ext := ""
+		switch langID {
+		case "fortran":
+			ext = ".f90"
+		case "c":
+			ext = ".c"
+		case "cpp":
+			ext = ".cpp"
+		case "python":
+			ext = ".py"
+		case "typescript":
+			ext = ".ts"
+		}
+		uri = protocol.DocumentUri("file://" + filepath.ToSlash(filepath.Join(abs, "input"+ext)))
+	} else {
+		uri = protocol.DocumentUri("file:///input")
+	}
 	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
 		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
 	}); err != nil {

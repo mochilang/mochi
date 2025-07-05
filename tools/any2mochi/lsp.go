@@ -9,10 +9,15 @@ import (
 // EnsureAndParse runs ParseText after ensuring the language server is installed.
 // Any parsing errors are annotated with a short snippet of the source for easier debugging.
 func EnsureAndParse(cmd string, args []string, langID, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
+	return EnsureAndParseWithRoot(cmd, args, langID, src, "")
+}
+
+// EnsureAndParseWithRoot runs ParseTextWithRoot after ensuring the language server is installed.
+func EnsureAndParseWithRoot(cmd string, args []string, langID, src, root string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
 	if err := EnsureServer(cmd); err != nil {
 		return nil, nil, err
 	}
-	syms, diags, err := ParseText(cmd, args, langID, src)
+	syms, diags, err := ParseTextWithRoot(cmd, args, langID, src, root)
 	if err != nil {
 		err = fmt.Errorf("parse failure: %w\n\nsource snippet:\n%s", err, numberedSnippet(src))
 	}
@@ -21,10 +26,15 @@ func EnsureAndParse(cmd string, args []string, langID, src string) ([]protocol.D
 
 // EnsureAndHover runs HoverAt after ensuring the language server is installed.
 func EnsureAndHover(cmd string, args []string, langID, src string, pos protocol.Position) (protocol.Hover, error) {
+	return EnsureAndHoverWithRoot(cmd, args, langID, src, pos, "")
+}
+
+// EnsureAndHoverWithRoot runs HoverAtWithRoot after ensuring the language server is installed.
+func EnsureAndHoverWithRoot(cmd string, args []string, langID, src string, pos protocol.Position, root string) (protocol.Hover, error) {
 	if err := EnsureServer(cmd); err != nil {
 		return protocol.Hover{}, err
 	}
-	hov, err := HoverAt(cmd, args, langID, src, pos)
+	hov, err := HoverAtWithRoot(cmd, args, langID, src, pos, root)
 	if err != nil {
 		err = fmt.Errorf("hover failure: %w\n\nsource snippet:\n%s", err, numberedSnippet(src))
 	}
