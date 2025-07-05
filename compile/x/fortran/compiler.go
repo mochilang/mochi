@@ -36,6 +36,8 @@ type Compiler struct {
 	needsMinString       bool
 	needsNow             bool
 	needsFetch           bool
+	needsUpper           bool
+	needsLower           bool
 	needsLoadJSON        bool
 	needsSaveJSON        bool
 	loadJSONTypes        map[string]bool
@@ -55,6 +57,8 @@ func New() *Compiler {
 		needsMinString:  false,
 		needsNow:        false,
 		needsFetch:      false,
+		needsUpper:      false,
+		needsLower:      false,
 		loadJSONTypes:   map[string]bool{},
 		saveJSONTypes:   map[string]bool{},
 		listStructTypes: map[string]string{},
@@ -77,6 +81,8 @@ func (c *Compiler) resetFeatures() {
 	c.needsMinString = false
 	c.needsNow = false
 	c.needsFetch = false
+	c.needsUpper = false
+	c.needsLower = false
 	c.needsLoadJSON = false
 	c.needsSaveJSON = false
 	c.loadJSONTypes = map[string]bool{}
@@ -1500,6 +1506,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr, recv string) (string, 
 			return fmt.Sprintf("merge(0_8, minval(%[1]s), size(%[1]s) == 0)", v), nil
 		}
 		return args[0], nil
+	case "upper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		c.needsUpper = true
+		return fmt.Sprintf("str_upper(%s)", args[0]), nil
+	case "lower":
+		if len(args) != 1 {
+			return "", fmt.Errorf("lower expects 1 arg")
+		}
+		c.needsLower = true
+		return fmt.Sprintf("str_lower(%s)", args[0]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects 0 args")
@@ -2140,6 +2158,54 @@ func (c *Compiler) writeHelpers() {
 		c.writeln("r = trim(buf)")
 		c.indent--
 		c.writeln("end function str_float")
+	}
+	if c.needsUpper {
+		c.blank()
+		c.writeln("function str_upper(v) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=*), intent(in) :: v")
+		c.writeln("character(len=len(v)) :: r")
+		c.writeln("integer :: i")
+		c.writeln("do i = 1, len(v)")
+		c.indent++
+		c.writeln("if ((iachar(v(i:i)) >= iachar('a')) .and. (iachar(v(i:i)) <= iachar('z'))) then")
+		c.indent++
+		c.writeln("r(i:i) = achar(iachar(v(i:i)) - 32)")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("r(i:i) = v(i:i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.indent--
+		c.writeln("end function str_upper")
+	}
+	if c.needsLower {
+		c.blank()
+		c.writeln("function str_lower(v) result(r)")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=*), intent(in) :: v")
+		c.writeln("character(len=len(v)) :: r")
+		c.writeln("integer :: i")
+		c.writeln("do i = 1, len(v)")
+		c.indent++
+		c.writeln("if ((iachar(v(i:i)) >= iachar('A')) .and. (iachar(v(i:i)) <= iachar('Z'))) then")
+		c.indent++
+		c.writeln("r(i:i) = achar(iachar(v(i:i)) + 32)")
+		c.indent--
+		c.writeln("else")
+		c.indent++
+		c.writeln("r(i:i) = v(i:i)")
+		c.indent--
+		c.writeln("end if")
+		c.indent--
+		c.writeln("end do")
+		c.indent--
+		c.writeln("end function str_lower")
 	}
 	if c.needsMinString {
 		c.blank()
