@@ -133,29 +133,77 @@ class Converter(ast.NodeVisitor):
                 if node.func.id == "_fetch" and len(node.args) >= 1:
                     url = self.convert_expr(node.args[0])
                     if len(node.args) > 1 and not (
-                        isinstance(node.args[1], ast.Constant)
-                        and node.args[1].value is None
+                        isinstance(node.args[1], ast.Constant) and node.args[1].value is None
                     ):
                         opts = self.convert_expr(node.args[1])
                         return f"fetch {url} with {opts}"
                     return f"fetch {url}"
+                if node.func.id == "_load" and len(node.args) >= 1:
+                    path = self.convert_expr(node.args[0])
+                    base = "load" if path == "None" else f"load {path}"
+                    if len(node.args) > 1 and not (
+                        isinstance(node.args[1], ast.Constant) and node.args[1].value is None
+                    ):
+                        opts = self.convert_expr(node.args[1])
+                        return f"{base} with {opts}"
+                    return base
+                if node.func.id == "_save" and len(node.args) >= 1:
+                    target = self.convert_expr(node.args[0])
+                    base = f"save {target}"
+                    opts_arg = None
+                    if len(node.args) > 2:
+                        opts_arg = node.args[2]
+                    elif len(node.args) > 1 and not (
+                        isinstance(node.args[1], ast.Constant) and node.args[1].value is None
+                    ):
+                        opts_arg = node.args[1]
+                    if opts_arg is not None and not (
+                        isinstance(opts_arg, ast.Constant) and opts_arg.value is None
+                    ):
+                        opts = self.convert_expr(opts_arg)
+                        return f"{base} with {opts}"
+                    return base
             func = self.convert_expr(node.func)
             if func in self.dataclasses:
+                if (
+                    not node.args
+                    and len(node.keywords) == 1
+                    and node.keywords[0].arg is None
+                ):
+                    kw = node.keywords[0].value
+                    if (
+                        isinstance(kw, ast.Call)
+                        and isinstance(kw.func, ast.Name)
+                        and kw.func.id == "_fetch"
+                    ):
+                        url = self.convert_expr(kw.args[0])
+                        if len(kw.args) > 1 and not (
+                            isinstance(kw.args[1], ast.Constant) and kw.args[1].value is None
+                        ):
+                            opts = self.convert_expr(kw.args[1])
+                            return f"fetch {url} with {opts} as {func}"
+                        return f"fetch {url} as {func}"
+                    if isinstance(kw, ast.Name):
+                        return f"{func} {{ {kw.id} }}"
                 fields = [
-                    f"{k.arg}: {self.convert_expr(k.value)}" for k in node.keywords
+                    f"{k.arg}: {self.convert_expr(k.value)}" for k in node.keywords if k.arg
                 ]
                 return f"{func} {{ " + ", ".join(fields) + " }"
             args = [self.convert_expr(a) for a in node.args]
             args += [
                 f"{k.arg}: {self.convert_expr(k.value)}" for k in node.keywords if k.arg
             ]
+            if func == "dict" and len(node.args) == 1 and not node.keywords and isinstance(node.args[0], ast.Dict):
+                return self.convert_expr(node.args[0])
             args += [self.convert_expr(k.value) for k in node.keywords if k.arg is None]
             return f"{func}(" + ", ".join(args) + ")"
         if isinstance(node, ast.Dict):
-            items = [
-                f"{self.convert_expr(k)}: {self.convert_expr(v)}"
-                for k, v in zip(node.keys, node.values)
-            ]
+            items = []
+            for k, v in zip(node.keys, node.values):
+                key = self.convert_expr(k)
+                if isinstance(k, ast.Constant) and isinstance(k.value, str):
+                    key = k.value
+                items.append(f"{key}: {self.convert_expr(v)}")
             return "{" + ", ".join(items) + "}"
         if isinstance(node, ast.DictComp):
             parts = [f"{self.convert_expr(node.key)}: {self.convert_expr(node.value)}"]
@@ -278,6 +326,30 @@ class Converter(ast.NodeVisitor):
             return "[]"
 
         first = node.generators[0]
+        # special case: [T(**it) for it in _load(...)] -> load ... as T
+        if (
+            len(node.generators) == 1
+            and isinstance(node.elt, ast.Call)
+            and isinstance(node.elt.func, ast.Name)
+            and node.elt.func.id in self.dataclasses
+            and not node.elt.args
+            and len(node.elt.keywords) == 1
+            and node.elt.keywords[0].arg is None
+            and isinstance(node.elt.keywords[0].value, ast.Name)
+            and isinstance(first.target, ast.Name)
+            and node.elt.keywords[0].value.id == first.target.id
+            and isinstance(first.iter, ast.Call)
+            and isinstance(first.iter.func, ast.Name)
+            and first.iter.func.id == "_load"
+        ):
+            load_expr = self.convert_expr(first.iter)
+            typ = node.elt.func.id
+            if load_expr.startswith("load"):
+                if " with " in load_expr:
+                    base, rest = load_expr.split(" with ", 1)
+                    return f"{base} as {typ} with {rest}"
+                return f"{load_expr} as {typ}"
+
         base_iter, sort, skip, take = parse_dataset_iter(first.iter)
         parts.append(f"from {self.convert_expr(first.target)} in {base_iter}")
 
@@ -365,7 +437,7 @@ class Converter(ast.NodeVisitor):
                 and stmt.test.left.id == "__name__"
             ):
                 continue
-            if isinstance(stmt, ast.FunctionDef) and stmt.name in {"_get", "_fetch", "_sort_key"}:
+            if isinstance(stmt, ast.FunctionDef) and stmt.name in {"_get", "_fetch", "_sort_key", "_load", "_save"}:
                 continue
             if isinstance(stmt, ast.FunctionDef) and stmt.name == "main":
                 for sub in stmt.body:
@@ -383,6 +455,10 @@ class Converter(ast.NodeVisitor):
             if isinstance(stmt, ast.FunctionDef):
                 self.visit(stmt)
                 continue
+            if isinstance(stmt, ast.ClassDef):
+                continue
+            if isinstance(stmt, ast.Assign):
+                self.visit(stmt)
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         dec_names = [
@@ -456,6 +532,12 @@ class Converter(ast.NodeVisitor):
         target = node.targets[0]
         if isinstance(target, ast.Name):
             if isinstance(node.value, ast.Constant) and node.value.value is None:
+                return
+            if (
+                isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name)
+                and node.value.func.id == "TypeVar"
+            ):
                 return
             if target.id in self.seen_assigns:
                 return
