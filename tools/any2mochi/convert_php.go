@@ -60,7 +60,18 @@ func appendPhpSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			body := extractPhpBody(src, s.Range)
+			if body != "" {
+				out.WriteString(" {\n")
+				for _, line := range strings.Split(body, "\n") {
+					out.WriteString("  ")
+					out.WriteString(line)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			} else {
+				out.WriteString(" {}\n")
+			}
 			if len(s.Children) > 0 {
 				appendPhpSymbols(out, nameParts, s.Children, src, ls)
 			}
@@ -234,4 +245,30 @@ func mapPhpType(t string) string {
 	default:
 		return t
 	}
+}
+
+// extractPhpBody returns the text inside the braces for the given range.
+// The language server provides the range for the entire function including
+// the body. This helper extracts the body lines and removes surrounding
+// braces. The returned string may span multiple lines but is not indented.
+func extractPhpBody(src string, r protocol.Range) string {
+	lines := strings.Split(src, "\n")
+	start := int(r.Start.Line)
+	end := int(r.End.Line)
+	if start >= len(lines) || end >= len(lines) {
+		return ""
+	}
+	bodyLines := lines[start : end+1]
+	text := strings.Join(bodyLines, "\n")
+	open := strings.Index(text, "{")
+	close := strings.LastIndex(text, "}")
+	if open == -1 || close == -1 || close <= open {
+		return ""
+	}
+	body := strings.TrimSpace(text[open+1 : close])
+	outLines := make([]string, 0, len(strings.Split(body, "\n")))
+	for _, l := range strings.Split(body, "\n") {
+		outLines = append(outLines, strings.TrimSpace(l))
+	}
+	return strings.Join(outLines, "\n")
 }
