@@ -1,2 +1,5 @@
 py2mochi failed:
-unhandled expression at line 24:     f = sys.stdin if path is None else open(path, "r")
+unhandled expression at line 37:                 m = max(len(r) for r in rows)
+36:             else:
+37:                 m = max(len(r) for r in rows)
+38:                 headers = [f"c{i}" for i in range(m)]

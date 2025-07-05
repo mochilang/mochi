@@ -1,2 +1,28 @@
-py2mochi failed:
-unhandled expression at line 28:                 {k: str(v) for k, v in dict(opts["query"]).items()}
+generated code does not match expected
+--- expected
++++ generated
+@@ -1,2 +1,23 @@
+-let data: map<string,string> = (fetch "file:../../tests/compiler/py/fetch_builtin.json") as map<string,string>
++fun _fetch(url: any, opts: any): any {
++  let method = "GET"
++  let headers = {}
++  if opts {
++    if "body" ? opts {
++      let data = json.dumps(opts["body"]).encode()
++    }
++    if "headers" ? opts {
++      for (k, v) in dict(opts["headers"]).items() {
++      }
++    }
++    if "query" ? opts {
++      let q = urllib.parse.urlencode({k: str(v) for (k, v) in dict(opts["query"]).items()})
++      let sep = if "?" ? url then "&" else "?"
++      let url = url + sep + q
++    }
++    let timeout = opts.get("timeout", None)
++  }
++  let req = urllib.request.Request(url, data: data, headers: headers, method: method)
++  let text = resp.read()
++  return json.loads(text)
++}
+ print(data["message"])
