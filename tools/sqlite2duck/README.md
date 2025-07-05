@@ -22,6 +22,7 @@ The converter currently handles the following patterns:
 - `group_concat()` -> `string_agg()`
 - `char_length()` -> `length()`
 - `character_length()` -> `length()`
+- `octet_length()` -> `length()`
 - `printf()` -> `format()`
 - `instr()` -> `strpos()`
 - `iif()` -> `if()`
