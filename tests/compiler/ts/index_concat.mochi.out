@@ -1,0 +1,4 @@
+var groups: list<list<string>> = [["eat"], ["bat"]]
+var idx = 0
+groups[idx] = groups[idx] + ["tea"]
+print(groups)

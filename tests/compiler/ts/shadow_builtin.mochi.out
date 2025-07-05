@@ -1,0 +1,2 @@
+var count: map<string, int> = {}
+print("a" in count)
