@@ -1,6 +1,6 @@
 type Person {
-  name
-  age
+  name: string
+  age: int
 }
 let people: list[Person]
 let names: None
