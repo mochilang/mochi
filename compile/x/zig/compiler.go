@@ -1652,6 +1652,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		}
 		return fmt.Sprintf("std.math.sqrt(%s)", arg), nil
 	}
+	if name == "abs" && len(call.Args) == 1 {
+		arg, err := c.compileExpr(call.Args[0], false)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("std.math.abs(%s)", arg), nil
+	}
 	if name == "lower" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
