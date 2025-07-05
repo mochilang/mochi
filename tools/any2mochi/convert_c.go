@@ -26,20 +26,23 @@ func ConvertC(src string) ([]byte, error) {
 			continue
 		}
 		matched = true
-		ret, paramTypes := parseCSignature(s.Detail)
+		ret, params := parseCSignature(s.Detail)
 
 		out.WriteString("fun ")
 		out.WriteString(s.Name)
 		out.WriteByte('(')
-		for i, t := range paramTypes {
+		for i, p := range params {
 			if i > 0 {
 				out.WriteString(", ")
 			}
-			name := fmt.Sprintf("a%d", i)
-			if t != "" {
+			name := p.name
+			if name == "" {
+				name = fmt.Sprintf("a%d", i)
+			}
+			if p.typ != "" {
 				out.WriteString(name)
 				out.WriteString(": ")
-				out.WriteString(t)
+				out.WriteString(p.typ)
 			} else {
 				out.WriteString(name)
 			}
@@ -67,7 +70,12 @@ func ConvertCFile(path string) ([]byte, error) {
 	return ConvertC(string(data))
 }
 
-func parseCSignature(detail *string) (string, []string) {
+type cParam struct {
+	name string
+	typ  string
+}
+
+func parseCSignature(detail *string) (string, []cParam) {
 	if detail == nil {
 		return "", nil
 	}
@@ -86,12 +94,29 @@ func parseCSignature(detail *string) (string, []string) {
 		return ret, nil
 	}
 	parts := strings.Split(paramsPart, ",")
-	out := make([]string, 0, len(parts))
+	out := make([]cParam, 0, len(parts))
 	for _, p := range parts {
-		t := mapCType(strings.TrimSpace(p))
-		out = append(out, t)
+		name, typ := parseCParam(strings.TrimSpace(p))
+		out = append(out, cParam{name: name, typ: typ})
 	}
 	return ret, out
+}
+
+func parseCParam(p string) (string, string) {
+	if p == "" {
+		return "", ""
+	}
+	fields := strings.Fields(p)
+	if len(fields) == 1 {
+		return "", mapCType(fields[0])
+	}
+	name := fields[len(fields)-1]
+	typ := strings.Join(fields[:len(fields)-1], " ")
+	if strings.ContainsAny(name, "*[]") {
+		// likely part of the type
+		return "", mapCType(p)
+	}
+	return name, mapCType(typ)
 }
 
 func mapCType(typ string) string {
@@ -119,6 +144,21 @@ func mapCType(typ string) string {
 				inner = "any"
 			}
 			return "list<" + inner + ">"
+		}
+		if strings.HasPrefix(typ, "map_") {
+			inner := strings.TrimPrefix(typ, "map_")
+			parts := strings.SplitN(inner, "_", 2)
+			if len(parts) == 2 {
+				k := mapCType(parts[0])
+				v := mapCType(parts[1])
+				if k == "" {
+					k = "any"
+				}
+				if v == "" {
+					v = "any"
+				}
+				return "map<" + k + ", " + v + ">"
+			}
 		}
 		return typ
 	}
