@@ -163,6 +163,19 @@ const groupHelpers = `(define (_count v)
                 (cdr lst)))
     m))
 
+(define (_min v)
+  (let ((lst (cond
+               ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))
+               ((list? v) v)
+               (else '())))
+        (m 0))
+    (when (not (null? lst))
+      (set! m (car lst))
+      (for-each (lambda (n)
+                  (when (< n m) (set! m n)))
+                (cdr lst)))
+    m))
+
 (define (_group_by src keyfn)
 
 (define (_group_by src keyfn)
@@ -1151,6 +1164,12 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		}
 		c.needGroup = true
 		return fmt.Sprintf("(_max %s)", args[0]), nil
+	case "min":
+		if len(args) != 1 {
+			return "", fmt.Errorf("min expects 1 arg")
+		}
+		c.needGroup = true
+		return fmt.Sprintf("(_min %s)", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")

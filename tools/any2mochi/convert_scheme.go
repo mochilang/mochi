@@ -74,11 +74,54 @@ func writeSchemeSymbols(out *strings.Builder, prefix []string, syms []protocol.D
 		case protocol.SymbolKindClass, protocol.SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteString(" {}\n")
+			fields := []protocol.DocumentSymbol{}
+			rest := []protocol.DocumentSymbol{}
+			for _, c := range s.Children {
+				switch c.Kind {
+				case protocol.SymbolKindField:
+					fields = append(fields, c)
+				default:
+					rest = append(rest, c)
+				}
+			}
+			if len(fields) == 0 && len(rest) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, f := range fields {
+					out.WriteString("  ")
+					out.WriteString(f.Name)
+					typ := parseSchemeVarType(f.Detail)
+					if typ == "" {
+						if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, f.SelectionRange.Start); err == nil {
+							typ = parseSchemeHoverVarType(hov)
+						}
+					}
+					if typ != "" {
+						out.WriteString(": ")
+						out.WriteString(typ)
+					}
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+				if len(rest) > 0 {
+					writeSchemeSymbols(out, nameParts, rest, src, ls)
+				}
+			}
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
+				typ := parseSchemeVarType(s.Detail)
+				if typ == "" {
+					if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+						typ = parseSchemeHoverVarType(hov)
+					}
+				}
+				if typ != "" {
+					out.WriteString(": ")
+					out.WriteString(typ)
+				}
 				out.WriteByte('\n')
 			}
 		}
@@ -247,6 +290,56 @@ func firstParenContent(s string) string {
 			depth--
 			if depth == 0 {
 				return s[start+1 : i]
+			}
+		}
+	}
+	return ""
+}
+
+func parseSchemeVarType(detail *string) string {
+	if detail == nil {
+		return ""
+	}
+	d := strings.TrimSpace(*detail)
+	if idx := strings.Index(d, ":"); idx != -1 && idx+1 < len(d) {
+		return strings.TrimSpace(d[idx+1:])
+	}
+	return ""
+}
+
+func parseSchemeHoverVarType(h protocol.Hover) string {
+	var text string
+	switch c := h.Contents.(type) {
+	case protocol.MarkupContent:
+		text = c.Value
+	case protocol.MarkedString:
+		if b, err := json.Marshal(c); err == nil {
+			var m protocol.MarkedStringStruct
+			if json.Unmarshal(b, &m) == nil {
+				text = m.Value
+			} else {
+				json.Unmarshal(b, &text)
+			}
+		}
+	case []protocol.MarkedString:
+		if len(c) > 0 {
+			if b, err := json.Marshal(c[0]); err == nil {
+				var m protocol.MarkedStringStruct
+				if json.Unmarshal(b, &m) == nil {
+					text = m.Value
+				} else {
+					json.Unmarshal(b, &text)
+				}
+			}
+		}
+	case string:
+		text = c
+	}
+	for _, line := range strings.Split(text, "\n") {
+		line = strings.TrimSpace(line)
+		if strings.Contains(line, ":") && !strings.Contains(line, "(") {
+			if idx := strings.Index(line, ":"); idx != -1 {
+				return strings.TrimSpace(line[idx+1:])
 			}
 		}
 	}
