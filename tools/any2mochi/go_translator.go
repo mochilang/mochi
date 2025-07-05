@@ -12,9 +12,10 @@ import (
 )
 
 type converter struct {
-	fset  *token.FileSet
-	src   []byte
-	lines []string
+	fset      *token.FileSet
+	src       []byte
+	lines     []string
+	recvIdent string
 }
 
 func (c *converter) snippet(pos token.Pos) string {
@@ -78,6 +79,9 @@ func convertGo(path string) ([]byte, error) {
 func (c *converter) translateFile(f *ast.File) (string, error) {
 	var mainFn *ast.FuncDecl
 	var b strings.Builder
+	methods := make(map[string][]*ast.FuncDecl)
+	var specs []*ast.TypeSpec
+
 	for _, d := range f.Decls {
 		switch decl := d.(type) {
 		case *ast.FuncDecl:
@@ -85,6 +89,22 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 				mainFn = decl
 				continue
 			}
+			if decl.Recv != nil {
+				if len(decl.Recv.List) == 1 && len(decl.Recv.List[0].Names) == 1 {
+					switch t := decl.Recv.List[0].Type.(type) {
+					case *ast.Ident:
+						methods[t.Name] = append(methods[t.Name], decl)
+						continue
+					case *ast.StarExpr:
+						if id, ok := t.X.(*ast.Ident); ok {
+							methods[id.Name] = append(methods[id.Name], decl)
+							continue
+						}
+					}
+				}
+				return "", c.errorf(decl, "unsupported method declaration")
+			}
+
 			code, err := c.translateFunc(decl)
 			if err != nil {
 				return "", err
@@ -94,7 +114,6 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 				b.WriteByte('\n')
 			}
 		case *ast.GenDecl:
-			// ignore import declarations
 			if decl.Tok == token.IMPORT {
 				continue
 			}
@@ -103,19 +122,23 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 				if !ok {
 					return "", c.errorf(decl, "unsupported declaration")
 				}
-				code, err := c.translateTypeDecl(spec)
-				if err != nil {
-					return "", err
-				}
-				if code != "" {
-					b.WriteString(code)
-					b.WriteByte('\n')
-				}
+				specs = append(specs, spec)
 				continue
 			}
 			return "", c.errorf(decl, "unsupported declaration")
 		default:
 			return "", c.errorf(decl, "unsupported declaration")
+		}
+	}
+
+	for _, spec := range specs {
+		code, err := c.translateTypeDecl(spec, methods[spec.Name.Name])
+		if err != nil {
+			return "", err
+		}
+		if code != "" {
+			b.WriteString(code)
+			b.WriteByte('\n')
 		}
 	}
 	if mainFn == nil {
@@ -188,7 +211,7 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 	return b.String(), nil
 }
 
-func (c *converter) translateTypeDecl(ts *ast.TypeSpec) (string, error) {
+func (c *converter) translateTypeDecl(ts *ast.TypeSpec, methods []*ast.FuncDecl) (string, error) {
 	st, ok := ts.Type.(*ast.StructType)
 	if !ok {
 		return "", c.errorf(ts, "unsupported type spec")
@@ -204,6 +227,79 @@ func (c *converter) translateTypeDecl(ts *ast.TypeSpec) (string, error) {
 		name := f.Names[0].Name
 		typ := typeString(c.fset, f.Type)
 		fmt.Fprintf(&b, "  %s: %s\n", name, typ)
+	}
+	for _, m := range methods {
+		code, err := c.translateMethod(m)
+		if err != nil {
+			return "", err
+		}
+		for _, line := range strings.Split(code, "\n") {
+			if line == "" {
+				continue
+			}
+			b.WriteString("  ")
+			b.WriteString(line)
+			b.WriteByte('\n')
+		}
+	}
+	b.WriteString("}")
+	return b.String(), nil
+}
+
+func (c *converter) translateMethod(fn *ast.FuncDecl) (string, error) {
+	if fn.Type.TypeParams != nil {
+		return "", c.errorf(fn, "unsupported generics")
+	}
+	recvName := ""
+	if fn.Recv != nil && len(fn.Recv.List) == 1 && len(fn.Recv.List[0].Names) == 1 {
+		recvName = fn.Recv.List[0].Names[0].Name
+	}
+	prev := c.recvIdent
+	c.recvIdent = recvName
+	defer func() { c.recvIdent = prev }()
+
+	var b strings.Builder
+	b.WriteString("fun ")
+	b.WriteString(fn.Name.Name)
+	b.WriteByte('(')
+	if fn.Type.Params != nil {
+		idx := 0
+		for _, p := range fn.Type.Params.List {
+			if len(p.Names) == 0 {
+				return "", c.errorf(p, "unsupported parameter list")
+			}
+			for _, name := range p.Names {
+				if idx > 0 {
+					b.WriteString(", ")
+				}
+				idx++
+				b.WriteString(name.Name)
+				if p.Type != nil {
+					b.WriteString(": ")
+					b.WriteString(typeString(c.fset, p.Type))
+				}
+			}
+		}
+	}
+	b.WriteByte(')')
+	if fn.Type.Results != nil && len(fn.Type.Results.List) > 0 {
+		if len(fn.Type.Results.List) != 1 || len(fn.Type.Results.List[0].Names) != 0 {
+			return "", c.errorf(fn.Type.Results, "unsupported multiple return values")
+		}
+		b.WriteString(": ")
+		b.WriteString(typeString(c.fset, fn.Type.Results.List[0].Type))
+	}
+	b.WriteString(" {\n")
+	for _, st := range fn.Body.List {
+		line, err := c.translateStmt(st)
+		if err != nil {
+			return "", err
+		}
+		if line != "" {
+			b.WriteString("  ")
+			b.WriteString(line)
+			b.WriteByte('\n')
+		}
 	}
 	b.WriteString("}")
 	return b.String(), nil
@@ -276,6 +372,97 @@ func (c *converter) translateIfStmt(st *ast.IfStmt) (string, error) {
 			return "", c.errorf(st.Else, "unsupported else")
 		}
 	}
+	return b.String(), nil
+}
+
+func (c *converter) translateSwitchStmt(st *ast.SwitchStmt) (string, error) {
+	if st.Tag == nil {
+		// translate switch on conditions to if/else chain
+		var b strings.Builder
+		for i, cc := range st.Body.List {
+			ccl := cc.(*ast.CaseClause)
+			if len(ccl.List) == 0 {
+				if i == 0 {
+					b.WriteString("if true {\n")
+				} else {
+					b.WriteString("else {\n")
+				}
+			} else {
+				conds := make([]string, len(ccl.List))
+				for j, e := range ccl.List {
+					ce, err := c.translateExpr(e)
+					if err != nil {
+						return "", err
+					}
+					conds[j] = ce
+				}
+				cond := strings.Join(conds, " || ")
+				if i == 0 {
+					b.WriteString("if ")
+				} else {
+					b.WriteString("else if ")
+				}
+				b.WriteString(cond)
+				b.WriteString(" {\n")
+			}
+			for _, s2 := range ccl.Body {
+				line, err := c.translateStmt(s2)
+				if err != nil {
+					return "", err
+				}
+				if line != "" {
+					b.WriteString("  ")
+					b.WriteString(line)
+					b.WriteByte('\n')
+				}
+			}
+			b.WriteString("}")
+			if i < len(st.Body.List)-1 {
+				b.WriteString(" ")
+			}
+		}
+		return b.String(), nil
+	}
+
+	tag, err := c.translateExpr(st.Tag)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("match ")
+	b.WriteString(tag)
+	b.WriteString(" {\n")
+	for _, cas := range st.Body.List {
+		cc := cas.(*ast.CaseClause)
+		pat := "_"
+		if len(cc.List) > 0 {
+			pats := make([]string, len(cc.List))
+			for i, e := range cc.List {
+				pe, err := c.translateExpr(e)
+				if err != nil {
+					return "", err
+				}
+				pats[i] = pe
+			}
+			pat = strings.Join(pats, " | ")
+		}
+		b.WriteString("  ")
+		b.WriteString(pat)
+		b.WriteString(" => {\n")
+		for _, st2 := range cc.Body {
+			line, err := c.translateStmt(st2)
+			if err != nil {
+				return "", err
+			}
+			if line != "" {
+				b.WriteString("    ")
+				b.WriteString(line)
+				b.WriteByte('\n')
+			}
+		}
+		b.WriteString("  }\n")
+	}
+	b.WriteString("}")
 	return b.String(), nil
 }
 
@@ -352,6 +539,21 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 				return "", c.errorf(st, "unsupported assign op %s", st.Tok)
 			}
 			return fmt.Sprintf("%s[%s] = %s", target, idx, rhs), nil
+		case *ast.SelectorExpr:
+			if id, ok := lhs.X.(*ast.Ident); ok && c.recvIdent != "" && id.Name == c.recvIdent {
+				if st.Tok != token.ASSIGN {
+					return "", c.errorf(st, "unsupported assign op %s", st.Tok)
+				}
+				return fmt.Sprintf("%s = %s", lhs.Sel.Name, rhs), nil
+			}
+			target, err := c.translateExpr(lhs.X)
+			if err != nil {
+				return "", err
+			}
+			if st.Tok != token.ASSIGN {
+				return "", c.errorf(st, "unsupported assign op %s", st.Tok)
+			}
+			return fmt.Sprintf("%s.%s = %s", target, lhs.Sel.Name, rhs), nil
 		default:
 			return "", c.errorf(lhs, "unsupported assignment lhs")
 		}
@@ -390,6 +592,8 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 		return fmt.Sprintf("return %s", r), nil
 	case *ast.IfStmt:
 		return c.translateIfStmt(st)
+	case *ast.SwitchStmt:
+		return c.translateSwitchStmt(st)
 	case *ast.BranchStmt:
 		switch st.Tok {
 		case token.BREAK:
@@ -599,6 +803,9 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 	case *ast.Ident:
 		return ex.Name, nil
 	case *ast.SelectorExpr:
+		if id, ok := ex.X.(*ast.Ident); ok && c.recvIdent != "" && id.Name == c.recvIdent {
+			return ex.Sel.Name, nil
+		}
 		x, err := c.translateExpr(ex.X)
 		if err != nil {
 			return "", err

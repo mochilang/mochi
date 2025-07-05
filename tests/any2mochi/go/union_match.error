@@ -1,5 +1,5 @@
-tests/compiler/go/union_match.go.out:7: unsupported type spec
->>> 6:    
-7:>>> type Tree interface{ isTree() }
-8:    type Leaf struct {
-9:    }
+tests/compiler/go/union_match.go.out:11: unsupported method declaration
+>>> 10:    
+11:>>> func (Leaf) isTree() {}
+12:    
+13:    type Node struct {
