@@ -98,9 +98,41 @@ func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
         let d = toDouble(it)
         if d < m { m = d }
     }
-    return isFloat ? m : Int(m)
+        return isFloat ? m : Int(m)
 }
 `
+	helperMax = `func _max(_ v: Any) -> Any {
+    var list: [Any]? = nil
+    if let g = v as? _Group { list = g.Items }
+    else if let arr = v as? [Any] { list = arr }
+    else if let arr = v as? [Int] { return arr.max() ?? 0 }
+    else if let arr = v as? [Double] { return arr.max() ?? 0.0 }
+    else if let arr = v as? [String] { return arr.max() ?? "" }
+    guard let items = list else { fatalError("max() expects list or group") }
+    if items.isEmpty { return 0 }
+    if let s = items[0] as? String {
+        var m = s
+        for it in items.dropFirst() {
+            if let v = it as? String, v > m { m = v }
+        }
+        return m
+    }
+    func toDouble(_ v: Any) -> Double {
+        if let i = v as? Int { return Double(i) }
+        if let d = v as? Double { return d }
+        if let f = v as? Float { return Double(f) }
+        if let i = v as? Int64 { return Double(i) }
+        return 0
+    }
+    var m = toDouble(items[0])
+    var isFloat = items[0] is Double || items[0] is Float
+    for it in items.dropFirst() {
+        if it is Double || it is Float { isFloat = true }
+        let d = toDouble(it)
+        if d > m { m = d }
+    }
+    return isFloat ? m : Int(m)
+}`
 	helperUnionAll = `func _union_all<T>(_ a: [T], _ b: [T]) -> [T] {
     var res = a
     res.append(contentsOf: b)
@@ -334,6 +366,7 @@ var helperMap = map[string]string{
 	"_avg":         helperAvg,
 	"_sum":         helperSum,
 	"_min":         helperMin,
+	"_max":         helperMax,
 	"_indexString": helperIndexString,
 	"_index":       helperIndex,
 	"_slice":       helperSlice,

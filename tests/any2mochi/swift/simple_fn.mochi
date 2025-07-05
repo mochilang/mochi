@@ -1,2 +1,2 @@
-fun id(x) {}
+fun id(x: int): int {}
 fun main() {}

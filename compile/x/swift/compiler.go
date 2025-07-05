@@ -964,6 +964,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			c.use("_min")
 			c.use("_Group")
 			return fmt.Sprintf("_min(%s)", args[0]), nil
+		case "max":
+			if len(args) != 1 {
+				return "", fmt.Errorf("max expects 1 arg")
+			}
+			c.use("_max")
+			c.use("_Group")
+			return fmt.Sprintf("_max(%s)", args[0]), nil
 		case "now":
 			if len(args) != 0 {
 				return "", fmt.Errorf("now expects 0 args")

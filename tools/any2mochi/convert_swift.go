@@ -36,7 +36,7 @@ func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
-			params := getSwiftParams(src, s.SelectionRange.Start, ls)
+			params, ret := getSwiftSignature(src, s.SelectionRange.Start, ls)
 			out.WriteByte('(')
 			for i, p := range params {
 				if i > 0 {
@@ -44,11 +44,43 @@ func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 				}
 				out.WriteString(p)
 			}
-			out.WriteString(") {}\n")
+			out.WriteByte(')')
+			if mt := swiftTypeToMochi(ret); mt != "" {
+				out.WriteString(": ")
+				out.WriteString(mt)
+			}
+			out.WriteString(" {}\n")
 		case protocol.SymbolKindClass, protocol.SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteString(" {}\n")
+			fields := []protocol.DocumentSymbol{}
+			rest := []protocol.DocumentSymbol{}
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindProperty || c.Kind == protocol.SymbolKindField {
+					fields = append(fields, c)
+				} else {
+					rest = append(rest, c)
+				}
+			}
+			if len(fields) == 0 && len(rest) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, f := range fields {
+					out.WriteString("  ")
+					typ := getSwiftVarType(src, f.SelectionRange.Start, ls)
+					out.WriteString(f.Name)
+					if mt := swiftTypeToMochi(typ); mt != "" {
+						out.WriteString(": ")
+						out.WriteString(mt)
+					}
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+				if len(rest) > 0 {
+					writeSwiftSymbols(out, nameParts, rest, src, ls)
+				}
+			}
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
@@ -63,16 +95,71 @@ func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 }
 
 func getSwiftParams(src string, pos protocol.Position, ls LanguageServer) []string {
+	params, _ := getSwiftSignature(src, pos, ls)
+	return params
+}
+
+func getSwiftSignature(src string, pos protocol.Position, ls LanguageServer) ([]string, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
-		return nil
+		return nil, ""
 	}
 	mc, ok := hov.Contents.(protocol.MarkupContent)
 	if !ok {
-		return nil
+		return nil, ""
 	}
-	params, _ := parseSwiftSignature(mc.Value)
-	return params
+	return parseSwiftSignature(mc.Value)
+}
+
+func getSwiftVarType(src string, pos protocol.Position, ls LanguageServer) string {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
+	if err != nil {
+		return ""
+	}
+	mc, ok := hov.Contents.(protocol.MarkupContent)
+	if !ok {
+		return ""
+	}
+	_, typ := parseSwiftVarDecl(mc.Value)
+	return typ
+}
+
+func parseSwiftVarDecl(sig string) (string, string) {
+	sig = strings.TrimSpace(sig)
+	if strings.HasPrefix(sig, "```swift") {
+		sig = strings.TrimPrefix(sig, "```swift")
+		if i := strings.LastIndex(sig, "```"); i != -1 {
+			sig = sig[:i]
+		}
+	}
+	sig = strings.TrimSpace(sig)
+	if strings.HasPrefix(sig, "var ") {
+		sig = sig[4:]
+	} else if strings.HasPrefix(sig, "let ") {
+		sig = sig[4:]
+	}
+	parts := strings.SplitN(sig, ":", 2)
+	if len(parts) != 2 {
+		return "", ""
+	}
+	name := strings.TrimSpace(parts[0])
+	typ := strings.TrimSpace(parts[1])
+	return name, typ
+}
+
+func swiftTypeToMochi(t string) string {
+	switch strings.TrimSpace(t) {
+	case "Int", "Int32", "Int64":
+		return "int"
+	case "Double", "Float":
+		return "float"
+	case "Bool":
+		return "bool"
+	case "String":
+		return "string"
+	default:
+		return ""
+	}
 }
 
 func parseSwiftSignature(sig string) ([]string, string) {
