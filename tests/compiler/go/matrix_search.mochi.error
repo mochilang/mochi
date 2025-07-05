@@ -1,5 +1,0 @@
-tests/compiler/go/matrix_search.go.out:25: unsupported else
->>> 24:    return true
-25:>>> } else if value < target {
-26:    left = (mid + 1)
-27:    } else {

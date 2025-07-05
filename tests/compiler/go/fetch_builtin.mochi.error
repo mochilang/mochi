@@ -1,5 +1,5 @@
-tests/compiler/go/fetch_builtin.go.out:24: unsupported generics
->>> 23:    
-24:>>> func _cast[T any](v any) T {
-25:    if tv, ok := v.(T); ok {
-26:    return tv
+tests/compiler/go/fetch_builtin.go.out:29: unsupported statement *ast.TypeSwitchStmt
+>>> 28:    var out T
+29:>>> switch any(out).(type) {
+30:    case int:
+31:    switch vv := v.(type) {

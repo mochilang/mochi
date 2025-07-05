@@ -1,5 +1,8 @@
-tests/compiler/go/dataset_sort_take_limit.go.out:76: unsupported generics
->>> 75:    
-76:>>> func _paginate[T any](src []T, skip, take int) []T {
-77:    if skip > 0 {
-78:    if skip < len(src) {
+tests/compiler/go/dataset_sort_take_limit.go.out:32: unsupported expr *ast.ArrayType
+>>> 30:    key  any
+31:    }
+32:>>> pairs := make([]pair, len(items))
+33:    for idx, it := range items {
+34:    p := it
+35:    pairs[idx] = pair{item: it, key: -p.Price}
+exit status 1

@@ -1,5 +1,0 @@
-tests/compiler/go/dataset.go.out:14: unsupported expr *ast.FuncLit
->>> 13:    var people []Person = []Person{Person{Name: "Alice", Age: 30}, Person{Name: "Bob", Age: 15}, Person{Name: "Charlie", Age: 65}}
-14:>>> var names []string = func() []string {
-15:    _res := []string{}
-16:    for _, p := range people {

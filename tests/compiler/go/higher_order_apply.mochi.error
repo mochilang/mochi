@@ -1,5 +1,0 @@
-tests/compiler/go/higher_order_apply.go.out:17: unsupported expr *ast.FuncLit
->>> 16:    fmt.Println(apply(inc, 5))
-17:>>> fmt.Println(apply(func(y int) int {
-18:    return (y * 2)
-19:    }, 7))
