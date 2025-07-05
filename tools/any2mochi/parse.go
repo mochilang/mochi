@@ -19,6 +19,67 @@ type client struct {
 	diags []protocol.Diagnostic
 }
 
+// parseTextWithClient is like ParseText but returns the active client without
+// closing the connection, allowing callers to perform additional LSP requests.
+func parseTextWithClient(cmdName string, args []string, langID string, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, *client, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, cmdName, args...)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	if err := cmd.Start(); err != nil {
+		return nil, nil, nil, err
+	}
+
+	stream := jsonrpc2.NewBufferedStream(&pipe{r: stdout, w: stdin}, jsonrpc2.VSCodeObjectCodec{})
+	c := &client{cmd: cmd}
+	conn := jsonrpc2.NewConn(ctx, stream, jsonrpc2.HandlerWithError(func(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (interface{}, error) {
+		switch req.Method {
+		case "textDocument/publishDiagnostics":
+			var params protocol.PublishDiagnosticsParams
+			if err := json.Unmarshal(*req.Params, &params); err == nil {
+				c.mu.Lock()
+				c.diags = append(c.diags, params.Diagnostics...)
+				c.mu.Unlock()
+			}
+			return nil, nil
+		default:
+			return nil, nil
+		}
+	}))
+	c.conn = conn
+
+	if err := c.initialize(ctx); err != nil {
+		c.Close()
+		return nil, nil, nil, err
+	}
+	uri := protocol.DocumentUri("file:///input")
+	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
+		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
+	}); err != nil {
+		c.Close()
+		return nil, nil, nil, err
+	}
+	var syms []protocol.DocumentSymbol
+	if err := c.conn.Call(ctx, "textDocument/documentSymbol", protocol.DocumentSymbolParams{
+		TextDocument: protocol.TextDocumentIdentifier{URI: uri},
+	}, &syms); err != nil {
+		c.Close()
+		return nil, nil, nil, err
+	}
+	c.mu.Lock()
+	diags := append([]protocol.Diagnostic(nil), c.diags...)
+	c.mu.Unlock()
+	return syms, diags, c, nil
+}
+
 // ParseText starts the language server command given by cmdName and
 // parses the provided source using the Language Server Protocol.
 // It returns the document symbols reported by the server for the file.

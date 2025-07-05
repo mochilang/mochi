@@ -1,0 +1,10 @@
+let T: type[T]
+fun _fetch(url, opts): Any {}
+type Todo {
+  userId: int
+  id: int
+  title: str
+  completed: bool
+}
+let todo: None
+fun main() {}

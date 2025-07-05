@@ -1,0 +1,7 @@
+let T: type[T]
+fun _get(obj, name): (Unknown | Any | None) {}
+type Counter {
+  value: int
+}
+let c: Counter
+fun main() {}

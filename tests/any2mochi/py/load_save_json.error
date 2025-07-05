@@ -1,5 +1,8 @@
-type error: error[T000]: `let` requires a type or a value
-  --> :2:1
-
-help:
-  Use `let x = ...` or `let x: int` to declare a variable.
+line 63: Import "yaml" could not be resolved from source
+  import yaml
+line 90: Argument of type "DataclassInstance | type[DataclassInstance]" cannot be assigned to parameter "obj" of type "DataclassInstance" in function "asdict"
+  Type "DataclassInstance | type[DataclassInstance]" is not assignable to type "DataclassInstance"
+    "__dataclass_fields__" is defined as a ClassVar in protocol
+  rows = [dataclasses.asdict(r) if dataclasses.is_dataclass(r) else r for r in rows]
+line 120: Import "yaml" could not be resolved from source
+  import yaml

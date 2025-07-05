@@ -1,0 +1,7 @@
+type Num {
+  val: int
+}
+let items: list[Num]
+let a: None
+let b: None
+fun main() {}

@@ -1,0 +1,5 @@
+let T: type[T]
+fun _get(obj, name): (Unknown | Any | None) {}
+let r: Literal[3]
+let area: None
+fun main() {}

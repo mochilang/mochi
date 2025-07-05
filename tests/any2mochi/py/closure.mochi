@@ -1,0 +1,3 @@
+fun makeAdder(n): ((int) -> int) {}
+let add10
+fun main() {}

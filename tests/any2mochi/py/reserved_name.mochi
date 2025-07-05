@@ -1,0 +1,2 @@
+let _next: Literal[0]
+fun main() {}

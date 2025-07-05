@@ -1,0 +1,3 @@
+let a: list[int]
+let sub: None
+fun main() {}

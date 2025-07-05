@@ -1,0 +1,3 @@
+let xs: list[int]
+fun test_values() {}
+fun main() {}

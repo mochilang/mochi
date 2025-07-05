@@ -1,0 +1,7 @@
+type Person {
+  name: str
+  age: int
+}
+let people: list[Person]
+let names: None
+fun main() {}

@@ -1,0 +1,11 @@
+type Tree {
+}
+type Leaf {
+}
+type Node {
+  left: Tree
+  value: int
+  right: Tree
+}
+let t: Node
+fun main() {}

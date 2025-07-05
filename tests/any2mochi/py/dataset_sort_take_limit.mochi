@@ -1,0 +1,9 @@
+let T: type[T]
+fun _sort_key(k): (str | Unknown) {}
+type Product {
+  name: str
+  price: int
+}
+let products: list[Product]
+let expensive: None
+fun main() {}
