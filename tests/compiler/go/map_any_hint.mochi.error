@@ -1,4 +1,5 @@
-tests/compiler/go/map_any_hint.go.out:9: unsupported generics
->>> 8:    func Leaf() map[string]any {
-9:>>> return _cast[map[string]any](map[string]string{"__name": "Leaf"})
-10:    }
+tests/compiler/go/map_any_hint.go.out:26: unsupported generics
+>>> 25:    
+26:>>> func _cast[T any](v any) T {
+27:    if tv, ok := v.(T); ok {
+28:    return tv

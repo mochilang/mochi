@@ -26,7 +26,7 @@ func (c *converter) snippet(pos token.Pos) string {
 	if start < 0 {
 		start = 0
 	}
-	end := p.Line + 1
+	end := p.Line + 2
 	if end > len(c.lines) {
 		end = len(c.lines)
 	}
@@ -122,6 +122,9 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 	if fn.Recv != nil {
 		return "", c.errorf(fn, "unsupported method declaration")
+	}
+	if fn.Type.TypeParams != nil {
+		return "", c.errorf(fn, "unsupported generics")
 	}
 	var b strings.Builder
 	b.WriteString("fun ")
@@ -476,8 +479,8 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 			return fmt.Sprintf("(%s)", inner), nil
 		}
 	case *ast.CallExpr:
-		if _, ok := ex.Fun.(*ast.IndexExpr); ok {
-			return "", c.errorf(ex, "unsupported generics")
+		if idx, ok := ex.Fun.(*ast.IndexExpr); ok {
+			ex = &ast.CallExpr{Fun: idx.X, Args: ex.Args}
 		}
 		if sel, ok := ex.Fun.(*ast.SelectorExpr); ok {
 			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" && sel.Sel.Name == "Println" {
@@ -488,7 +491,7 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				return fmt.Sprintf("print(%s)", arg), nil
+				return fmt.Sprintf("print(str(%s))", arg), nil
 			}
 		}
 		if arr, ok := ex.Fun.(*ast.ArrayType); ok && len(ex.Args) == 1 {

@@ -2,3 +2,4 @@ tests/compiler/go/fetch_builtin.go.out:14: unsupported declaration
 >>> 13:    
 14:>>> type Msg struct {
 15:    Message string `json:"message"`
+16:    }

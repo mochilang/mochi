@@ -4,6 +4,6 @@ fun fib(n: int): int {
 }
   return (fib((n - 1)) + fib((n - 2)))
 }
-print(fib(0))
-print(fib(1))
-print(fib(6))
+print(str(fib(0)))
+print(str(fib(1)))
+print(str(fib(6)))

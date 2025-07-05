@@ -2,3 +2,4 @@ tests/compiler/go/union_inorder.go.out:8: unsupported declaration
 >>> 7:    
 8:>>> type Tree interface{ isTree() }
 9:    type Leaf struct {
+10:    }

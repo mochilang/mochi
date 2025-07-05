@@ -2,3 +2,4 @@ tests/compiler/go/tpch_q2.go.out:19: unsupported statement *ast.SwitchStmt
 >>> 18:    func formatDuration(d time.Duration) string {
 19:>>> switch {
 20:    case d < time.Microsecond:
+21:    return fmt.Sprintf("%dns", d.Nanoseconds())

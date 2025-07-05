@@ -2,3 +2,4 @@ tests/compiler/go/closure.go.out:8: unsupported expr *ast.FuncLit
 >>> 7:    func makeAdder(n int) func(int) int {
 8:>>> return func(x int) int {
 9:    return (x + n)
+10:    }

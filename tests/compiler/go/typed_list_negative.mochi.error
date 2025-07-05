@@ -2,3 +2,4 @@ tests/compiler/go/typed_list_negative.go.out:16: unsupported statement *ast.Swit
 >>> 15:    func formatDuration(d time.Duration) string {
 16:>>> switch {
 17:    case d < time.Microsecond:
+18:    return fmt.Sprintf("%dns", d.Nanoseconds())

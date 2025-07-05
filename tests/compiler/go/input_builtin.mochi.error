@@ -2,3 +2,4 @@ tests/compiler/go/input_builtin.go.out:17: unsupported expr *ast.SelectorExpr
 >>> 16:    var s string
 17:>>> fmt.Scanln(&s)
 18:    return s
+19:    }

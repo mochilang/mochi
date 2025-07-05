@@ -1,2 +1,2 @@
 var _map = {"a": 1}
-print(_map["a"])
+print(str(_map["a"]))
