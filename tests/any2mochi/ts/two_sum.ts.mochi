@@ -1,2 +1,6 @@
 fun main() {}
+let result
 fun twoSum() {}
+let i
+let j
+let n

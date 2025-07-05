@@ -1,1 +1,5 @@
+let i
 fun main() {}
+let j
+let row
+let matrix

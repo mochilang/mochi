@@ -1,5 +1,18 @@
 fun _except() {}
+let it
+let remove
+let res
 fun _intersect() {}
+let it
+let keep
+let res
+let seen
 fun _union() {}
+let it
+let it
+let res
+let seen
 fun _union_all() {}
+let a
+let b
 fun main() {}

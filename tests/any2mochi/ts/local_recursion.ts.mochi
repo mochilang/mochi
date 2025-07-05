@@ -1,5 +1,10 @@
+let _Node
 fun fromList() {}
 fun helper() {}
+let mid
 fun inorder() {}
 fun <function>() {}
+let _t
+let Leaf
 fun main() {}
+let Tree

@@ -1,13 +1,61 @@
 fun _count() {}
 fun _equal() {}
+let ak
+let bk
+let i
+let k
 fun _query() {}
+let items
 fun src.map() callback() {}
 fun items.filter() callback() {}
+let j
+let joined
+let keep
+let keep
+let keep
+let left
+let left
+let left
+let m
+let m
+let m
+let matched
+let n
+let n
+let pairs
 fun items.map() callback() {}
 fun pairs.map() callback() {}
 fun pairs.sort() callback() {}
+let ak
+let bk
+let r
+let res
+let ri
+let ri
+let right
+let right
+let right
+let undef
+let undef
+let customers
 fun main() {}
 fun <function>() {}
+let _g
+let _items
+let _itemsG
 fun _order.map() callback() {}
+let _key
+let _ks
+let _map
+let _order
+let _r
+let _res
+let _src
+let c
 fun g.items.filter() callback() {}
 fun map() callback() {}
+let g
+let o
+let s
+let orders
+let stats

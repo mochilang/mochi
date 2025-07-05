@@ -1,1 +1,3 @@
+let groups
+let idx
 fun main() {}

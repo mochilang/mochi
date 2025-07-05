@@ -1,7 +1,18 @@
 fun _equal() {}
+let ak
+let bk
+let i
+let k
+let _Node
 fun depth() {}
 fun <function>() {}
+let _t
 fun <function>() {}
 fun <function>() {}
 fun <function>() {}
+let _t
+let dl
+let dr
+let Leaf
 fun main() {}
+let Tree

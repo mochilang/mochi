@@ -1,3 +1,7 @@
+let _Node
 fun isLeaf() {}
 fun <function>() {}
+let _t
+let Leaf
 fun main() {}
+let Tree

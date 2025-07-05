@@ -1,8 +1,43 @@
 fun _query() {}
+let items
 fun src.map() callback() {}
 fun items.filter() callback() {}
+let j
+let joined
+let keep
+let keep
+let keep
+let left
+let left
+let left
+let m
+let m
+let m
+let matched
+let n
+let n
+let pairs
 fun items.map() callback() {}
 fun pairs.map() callback() {}
 fun pairs.sort() callback() {}
+let ak
+let bk
+let r
+let res
+let ri
+let ri
+let right
+let right
+let right
+let undef
+let undef
+let Customer
+let customers
 fun main() {}
 fun <function>() {}
+let _src
+let entry
+let Order
+let orders
+let PairInfo
+let result

@@ -1,13 +1,45 @@
 fun _load() {}
+let d
+let delim
+let f
 fun filter() callback() {}
+let format
+let header
+let items
 fun items.filter() callback() {}
+let k
+let v
 fun map() callback() {}
+let n
+let n
+let start
+let text
+let y
 fun _parseCSV() {}
+let headers
+let i
+let j
+let lines
+let m
 fun map() callback() {}
+let out
+let parts
+let start
+let val
 fun _readInput() {}
+let data
 fun _save() {}
+let delim
+let format
+let header
+let headers
 fun headers.map() callback() {}
+let lines
+let row
 fun rows.map() callback() {}
 fun _toAnyMap() {}
 fun _writeOutput() {}
+let data
 fun main() {}
+let people
+let Person

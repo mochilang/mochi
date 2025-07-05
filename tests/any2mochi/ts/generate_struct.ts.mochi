@@ -1,2 +1,4 @@
 fun _gen_struct() {}
+let info
+let Info
 fun main() {}

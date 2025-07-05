@@ -1,2 +1,6 @@
 fun main() {}
 fun plusOne() {}
+let carry
+let i
+let result
+let sum

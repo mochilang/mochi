@@ -1,4 +1,7 @@
 fun main() {}
+let mathutils
 fun <function>() {}
 fun add() {}
 fun square() {}
+let sq
+let sum

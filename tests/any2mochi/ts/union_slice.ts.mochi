@@ -1,2 +1,5 @@
+let _Node
+let Empty
+let Foo
 fun listit() {}
 fun main() {}
