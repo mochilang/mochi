@@ -1,0 +1,3 @@
+fun main() {
+  print(count([1,2,3]))
+}
