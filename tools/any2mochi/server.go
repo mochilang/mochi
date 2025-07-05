@@ -25,7 +25,7 @@ var Servers = map[string]LanguageServer{
 	"cobol":      {Command: "cobol-lsp", Args: nil, LangID: "cobol"},
 	"jvm":        {Command: "jdtls", Args: nil, LangID: "jvm"},
 	"cs":         {Command: "omnisharp", Args: []string{"-lsp"}, LangID: "csharp"},
-	"dart":       {Command: "dart", Args: []string{"language-server"}, LangID: "dart"},
+	"dart":       {Command: "", Args: nil, LangID: "dart"},
 	"erlang":     {Command: "erlang_ls", Args: nil, LangID: "erlang"},
 	"ex":         {Command: "elixir-ls", Args: nil, LangID: "elixir"},
 	"fortran":    {Command: "fortls", Args: nil, LangID: "fortran"},

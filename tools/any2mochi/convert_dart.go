@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -11,21 +12,7 @@ import (
 
 // ConvertDart converts dart source code to Mochi.
 func ConvertDart(src string) ([]byte, error) {
-	ls := Servers["dart"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
-	}
-
-	var out strings.Builder
-	writeDartSymbols(&out, nil, syms, src, ls)
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
+	return convertDartFallback(src)
 }
 
 // ConvertDartFile reads the dart file and converts it to Mochi.
@@ -326,4 +313,120 @@ func dartToMochiType(t string) string {
 		}
 	}
 	return t
+}
+
+// convertDartFallback performs a best-effort conversion using simple regex
+// parsing when no language server is available. Only a small subset of Dart is
+// supported.
+func convertDartFallback(src string) ([]byte, error) {
+	stmts := dartSplitStatements(src)
+	var out strings.Builder
+	indent := 0
+	ind := func() string { return strings.Repeat("  ", indent) }
+
+	funcRE := regexp.MustCompile(`^(?:[A-Za-z0-9_<>,\[\]\?]+\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)$`)
+	fieldRE := regexp.MustCompile(`^(?:final\s+|var\s+)?([A-Za-z0-9_<>,\[\]\?]+)\s+(\w+)`)
+
+	parseParams := func(s string) []string {
+		var params []string
+		for _, p := range strings.Split(s, ",") {
+			p = strings.TrimSpace(p)
+			p = strings.TrimPrefix(p, "required ")
+			if eq := strings.Index(p, "="); eq != -1 {
+				p = p[:eq]
+			}
+			fields := strings.Fields(p)
+			if len(fields) == 0 {
+				continue
+			}
+			name := fields[len(fields)-1]
+			if strings.HasPrefix(name, "this.") {
+				name = strings.TrimPrefix(name, "this.")
+			}
+			params = append(params, name)
+		}
+		return params
+	}
+
+	for i := 0; i < len(stmts); i++ {
+		s := strings.TrimSpace(stmts[i])
+		if s == "" {
+			continue
+		}
+		switch s {
+		case "{":
+			out.WriteString(ind())
+			out.WriteString("{\n")
+			indent++
+			continue
+		case "}":
+			if indent > 0 {
+				indent--
+			}
+			out.WriteString(ind())
+			out.WriteString("}\n")
+			continue
+		}
+
+		nextBlock := i+1 < len(stmts) && stmts[i+1] == "{"
+
+		if nextBlock && strings.HasPrefix(s, "class ") {
+			name := strings.TrimSpace(strings.TrimPrefix(s, "class "))
+			out.WriteString(ind())
+			out.WriteString("type ")
+			out.WriteString(name)
+			out.WriteString(" {\n")
+			indent++
+			i += 2 // skip "{" token
+			for i < len(stmts) {
+				line := strings.TrimSpace(stmts[i])
+				if line == "}" {
+					indent--
+					out.WriteString(ind())
+					out.WriteString("}\n")
+					break
+				}
+				if m := fieldRE.FindStringSubmatch(line); m != nil {
+					out.WriteString(ind())
+					out.WriteString(m[2])
+					if typ := dartToMochiType(m[1]); typ != "" && typ != "any" {
+						out.WriteString(": ")
+						out.WriteString(typ)
+					}
+					out.WriteByte('\n')
+				}
+				i++
+			}
+			continue
+		}
+
+		if nextBlock && funcRE.MatchString(s) {
+			m := funcRE.FindStringSubmatch(s)
+			out.WriteString(ind())
+			out.WriteString("fun ")
+			out.WriteString(m[1])
+			params := parseParams(m[2])
+			out.WriteByte('(')
+			for j, p := range params {
+				if j > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p)
+			}
+			out.WriteString(") {\n")
+			indent++
+			continue
+		}
+
+		line := convertDartStmt(s)
+		if line != "" {
+			out.WriteString(ind())
+			out.WriteString(line)
+			out.WriteByte('\n')
+		}
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	return []byte(out.String()), nil
 }
