@@ -138,9 +138,8 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 	if fn.Recv != nil {
 		return "", c.errorf(fn, "unsupported method declaration")
 	}
-	if fn.Type.TypeParams != nil {
-		return "", c.errorf(fn, "unsupported generics")
-	}
+	// Ignore generic type parameters for now
+	// so generic functions can still be translated
 	var b strings.Builder
 	b.WriteString("fun ")
 	b.WriteString(fn.Name.Name)
@@ -462,6 +461,71 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 		}
 		b.WriteString("}")
 		return b.String(), nil
+	case *ast.SwitchStmt:
+		if st.Init != nil {
+			return "", c.errorf(st.Init, "unsupported switch init")
+		}
+		var tag string
+		var err error
+		if st.Tag != nil {
+			tag, err = c.translateExpr(st.Tag)
+			if err != nil {
+				return "", err
+			}
+		}
+		var b strings.Builder
+		for i, cl := range st.Body.List {
+			cc, ok := cl.(*ast.CaseClause)
+			if !ok {
+				return "", c.errorf(cl, "unsupported switch clause")
+			}
+			if i == 0 {
+				b.WriteString("if ")
+			} else {
+				if len(cc.List) == 0 {
+					b.WriteString("else {\n")
+				} else {
+					b.WriteString("else if ")
+				}
+			}
+			if len(cc.List) > 0 {
+				conds := make([]string, len(cc.List))
+				for j, e := range cc.List {
+					cnd, err := c.translateExpr(e)
+					if err != nil {
+						return "", err
+					}
+					if tag != "" {
+						conds[j] = fmt.Sprintf("%s == %s", tag, cnd)
+					} else {
+						conds[j] = cnd
+					}
+				}
+				b.WriteString(strings.Join(conds, " || "))
+				b.WriteString(" {\n")
+			} else if i == 0 {
+				b.WriteString("true {\n")
+			}
+			for _, st2 := range cc.Body {
+				if br, ok := st2.(*ast.BranchStmt); ok && br.Tok == token.FALLTHROUGH {
+					return "", c.errorf(br, "unsupported fallthrough")
+				}
+				line, err := c.translateStmt(st2)
+				if err != nil {
+					return "", err
+				}
+				if line != "" {
+					b.WriteString("  ")
+					b.WriteString(line)
+					b.WriteByte('\n')
+				}
+			}
+			b.WriteString("}")
+			if i < len(st.Body.List)-1 && len(cc.List) > 0 {
+				b.WriteString(" ")
+			}
+		}
+		return b.String(), nil
 	default:
 		return "", c.errorf(st, "unsupported statement %T", s)
 	}
@@ -498,9 +562,7 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 	}
 	switch ex := e.(type) {
 	case *ast.FuncLit:
-		if ex.Type.TypeParams != nil {
-			return "", c.errorf(ex, "unsupported generics")
-		}
+		// Ignore generic type parameters on function literals
 		var b strings.Builder
 		b.WriteString("fun (")
 		if ex.Type.Params != nil {
