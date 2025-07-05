@@ -1,1 +1,4 @@
-fun main() {}
+fun main(): any {
+  print("Hello, world")
+}
+main()
