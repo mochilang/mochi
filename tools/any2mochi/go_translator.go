@@ -161,9 +161,7 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 	if fn.Recv != nil {
 		return "", c.errorf(fn, "unsupported method declaration")
 	}
-	if fn.Type.TypeParams != nil {
-		return "", c.errorf(fn, "unsupported generics")
-	}
+	// ignore generic type parameters for now
 	var b strings.Builder
 	b.WriteString("fun ")
 	b.WriteString(fn.Name.Name)
@@ -247,9 +245,7 @@ func (c *converter) translateTypeDecl(ts *ast.TypeSpec, methods []*ast.FuncDecl)
 }
 
 func (c *converter) translateMethod(fn *ast.FuncDecl) (string, error) {
-	if fn.Type.TypeParams != nil {
-		return "", c.errorf(fn, "unsupported generics")
-	}
+	// ignore generic type parameters for now
 	recvName := ""
 	if fn.Recv != nil && len(fn.Recv.List) == 1 && len(fn.Recv.List[0].Names) == 1 {
 		recvName = fn.Recv.List[0].Names[0].Name
@@ -752,9 +748,7 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 	}
 	switch ex := e.(type) {
 	case *ast.FuncLit:
-		if ex.Type.TypeParams != nil {
-			return "", c.errorf(ex, "unsupported generics")
-		}
+		// ignore generic type parameters for now
 		var b strings.Builder
 		b.WriteString("fun (")
 		if ex.Type.Params != nil {

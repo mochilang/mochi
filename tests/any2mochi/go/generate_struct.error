@@ -1,5 +1,5 @@
-tests/compiler/go/generate_struct.go.out:21: unsupported generics
->>> 20:    
-21:>>> func _genStruct[T any](prompt string, model string, params map[string]any) T {
-22:    opts := []llm.Option{}
-23:    if model != "" {
+tests/compiler/go/generate_struct.go.out:29: unsupported assignment
+>>> 28:    }
+29:>>> resp, err := llm.Chat(context.Background(), []llm.Message{{Role: "user", Content: prompt}}, opts...)
+30:    if err != nil {
+31:    panic(err)
