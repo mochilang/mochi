@@ -25,6 +25,7 @@ The backend implements a minimal subset of Mochi:
 - `for` and `while` loops with `break` and `continue`
 - Functions with a single return value
 - Lists and maps with indexing, concatenation, and iteration
+- Class fields and global variables
 - Basic `type` declarations compiled to dictionaries with constructor helpers
 - Built-ins `print`, `len`, `str`, `count`, `avg`, `input`, `now`, `json`,
   `append`, `eval`, and `reduce`
