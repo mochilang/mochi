@@ -17,7 +17,7 @@ func ConvertWithServer(cmd string, args []string, langID, src string) ([]byte, e
 	}
 	var out strings.Builder
 	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
+		if s.Kind != protocol.SymbolKindFunction && s.Kind != protocol.SymbolKindMethod {
 			continue
 		}
 		out.WriteString("fun ")
