@@ -1,0 +1,6 @@
+let T
+fun _get(obj, name) {}
+type Person {}
+let people
+fun test_update_adult_status() {}
+fun main() {}

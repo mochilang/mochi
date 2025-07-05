@@ -1,0 +1,5 @@
+let T
+fun _fetch(url, opts) {}
+type Todo {}
+let todo
+fun main() {}

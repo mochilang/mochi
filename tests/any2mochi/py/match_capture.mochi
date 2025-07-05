@@ -1,0 +1,5 @@
+fun depth(t) {}
+type Tree {}
+type Leaf {}
+type Node {}
+fun main() {}

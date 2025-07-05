@@ -1,0 +1,5 @@
+let a
+let b
+fun test_first() {}
+fun test_second() {}
+fun main() {}

@@ -1,0 +1,4 @@
+let xs
+let ys
+let res
+fun main() {}
