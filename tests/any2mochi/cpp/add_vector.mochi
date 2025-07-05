@@ -1,0 +1,2 @@
+fun add(a: int, b: int): int {}
+fun foo(x: list<int>, y: int): list<int> {}

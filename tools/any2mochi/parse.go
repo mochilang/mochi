@@ -113,6 +113,55 @@ func (c *client) Close() error {
 	return c.cmd.Wait()
 }
 
+// HoverAt opens a language server and returns hover information for the
+// provided position in the source.
+func HoverAt(cmdName string, args []string, langID string, src string, pos protocol.Position) (protocol.Hover, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(ctx, cmdName, args...)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return protocol.Hover{}, err
+	}
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return protocol.Hover{}, err
+	}
+	if err := cmd.Start(); err != nil {
+		return protocol.Hover{}, err
+	}
+
+	stream := jsonrpc2.NewBufferedStream(&pipe{r: stdout, w: stdin}, jsonrpc2.VSCodeObjectCodec{})
+	c := &client{cmd: cmd}
+	conn := jsonrpc2.NewConn(ctx, stream, jsonrpc2.HandlerWithError(func(ctx context.Context, conn *jsonrpc2.Conn, req *jsonrpc2.Request) (interface{}, error) {
+		return nil, nil
+	}))
+	c.conn = conn
+
+	if err := c.initialize(ctx); err != nil {
+		c.Close()
+		return protocol.Hover{}, err
+	}
+	uri := protocol.DocumentUri("file:///input")
+	if err := c.conn.Notify(ctx, "textDocument/didOpen", protocol.DidOpenTextDocumentParams{
+		TextDocument: protocol.TextDocumentItem{URI: uri, LanguageID: langID, Version: 1, Text: src},
+	}); err != nil {
+		c.Close()
+		return protocol.Hover{}, err
+	}
+	var hover protocol.Hover
+	if err := c.conn.Call(ctx, "textDocument/hover", protocol.TextDocumentPositionParams{
+		TextDocument: protocol.TextDocumentIdentifier{URI: uri},
+		Position:     pos,
+	}, &hover); err != nil {
+		c.Close()
+		return protocol.Hover{}, err
+	}
+	c.Close()
+	return hover, nil
+}
+
 type pipe struct {
 	r io.ReadCloser
 	w io.WriteCloser
