@@ -1,4 +1,0 @@
-for r in "cat" {
-  let ch = str(r)
-  print(str(ch))
-}

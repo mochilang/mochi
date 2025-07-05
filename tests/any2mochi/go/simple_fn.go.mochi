@@ -1,4 +1,0 @@
-fun id(x: int): int {
-  return x
-}
-print(str(123))

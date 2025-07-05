@@ -1,6 +1,0 @@
-tests/compiler/go/fetch_remote.go.out:27: unsupported generics
->>> 26:    
-27:>>> func _cast[T any](v any) T {
-28:    if tv, ok := v.(T); ok {
-29:    return tv
-
