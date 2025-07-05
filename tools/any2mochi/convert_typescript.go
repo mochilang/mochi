@@ -7,10 +7,12 @@ import (
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
+	tscode "mochi/compile/ts"
 )
 
 // ConvertTypeScript converts TypeScript source code to a minimal Mochi representation using the language server.
 func ConvertTypeScript(src string) ([]byte, error) {
+	_ = tscode.EnsureTSLanguageServer()
 	ls := Servers["typescript"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {

@@ -11,12 +11,15 @@ round‑tripping compiler output.
   language server
 - `return` statements
 - `console.log` translated to `print`
+- Variable declarations (`let`, `const`, `var`)
+- `if` statements with optional `else` blocks
+- `for ... of` loops
 - Numeric literals and identifiers
 - Array literals
 - Simple call expressions
 
 ## Unsupported features
 
-The converter is intentionally small and does not understand most
-TypeScript syntax such as loops, conditionals, classes, generics or
-module systems. Unsupported statements in function bodies are ignored.
+The converter is intentionally small and does not understand advanced
+TypeScript syntax such as classes, generics or module systems. Unsupported
+statements in function bodies are ignored.
