@@ -29,6 +29,8 @@ const (
 	dtNow   = "datetime('now'"
 	dNow    = "date('now'"
 	tNow    = "time('now'"
+	jdNow   = "julianday('now'"
+	sfNow   = "strftime("
 	notIdx  = " not indexed"
 	totalFn = "total"
 )
@@ -167,6 +169,61 @@ func replaceTime(sql string) string {
 	return sql
 }
 
+func replaceJulianday(sql string) string {
+	lower := strings.ToLower(sql)
+	for {
+		idx := strings.Index(lower, jdNow)
+		if idx == -1 {
+			break
+		}
+		end := idx + len(jdNow)
+		for end < len(sql) && sql[end] != ')' {
+			end++
+		}
+		if end < len(sql) {
+			sql = sql[:idx] + "julianday(now())" + sql[end+1:]
+			lower = strings.ToLower(sql)
+			continue
+		}
+		break
+	}
+	return sql
+}
+
+func replaceStrftime(sql string) string {
+	lower := strings.ToLower(sql)
+	start := 0
+	for {
+		idx := strings.Index(lower[start:], "strftime(")
+		if idx == -1 {
+			break
+		}
+		idx += start
+		// find closing ')'
+		paren := idx + len("strftime(")
+		depth := 1
+		for paren < len(sql) && depth > 0 {
+			switch sql[paren] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+			}
+			paren++
+		}
+		if depth == 0 {
+			inner := sql[idx+len("strftime(") : paren-1]
+			repl := strings.ReplaceAll(inner, "'now'", "now()")
+			sql = sql[:idx+len("strftime(")] + repl + sql[paren-1:]
+			lower = strings.ToLower(sql)
+			start = paren
+			continue
+		}
+		break
+	}
+	return sql
+}
+
 func removeNotIndexed(sql string) string {
 	lower := strings.ToLower(sql)
 	for {
@@ -226,6 +283,52 @@ func replaceTotal(sql string) string {
 	return out.String()
 }
 
+func replaceZeroBlob(sql string) string {
+	lower := strings.ToLower(sql)
+	var out strings.Builder
+	i := 0
+	for i < len(sql) {
+		idx := strings.Index(lower[i:], "zeroblob")
+		if idx == -1 {
+			out.WriteString(sql[i:])
+			break
+		}
+		idx += i
+		out.WriteString(sql[i:idx])
+		if idx > 0 && isIdentChar(lower[idx-1]) {
+			out.WriteString(sql[idx : idx+1])
+			i = idx + 1
+			continue
+		}
+		j := idx + len("zeroblob")
+		if j < len(sql) && isIdentChar(lower[j]) {
+			out.WriteString(sql[idx:j])
+			i = j
+			continue
+		}
+		k := j
+		for k < len(sql) && unicode.IsSpace(rune(sql[k])) {
+			k++
+		}
+		if k < len(sql) && sql[k] == '(' {
+			start := k + 1
+			end := start
+			for end < len(sql) && sql[end] != ')' {
+				end++
+			}
+			if end < len(sql) {
+				inner := strings.TrimSpace(sql[start:end])
+				out.WriteString("repeat('\\x00', " + inner + ")")
+				i = end + 1
+				continue
+			}
+		}
+		out.WriteString(sql[idx:j])
+		i = j
+	}
+	return out.String()
+}
+
 func removeEmptyParens(sql string, names ...string) string {
 	out := sql
 	for _, n := range names {
@@ -246,8 +349,11 @@ func Convert(sql string) string {
 	out = replaceDateTime(out)
 	out = replaceDate(out)
 	out = replaceTime(out)
+	out = replaceJulianday(out)
+	out = replaceStrftime(out)
 	out = removeNotIndexed(out)
 	out = replaceTotal(out)
+	out = replaceZeroBlob(out)
 	out = removeEmptyParens(out, "current_date", "current_time")
 	return out
 }
