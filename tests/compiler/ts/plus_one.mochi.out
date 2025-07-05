@@ -1,0 +1,17 @@
+fun plusOne(digits: list<int>): list<int> {
+  var carry = 1
+  var i = len(digits) - 1
+  var result = digits
+  while i >= 0 && carry > 0 {
+    var sum = result[i] + carry
+    result[i] = sum % 10
+    carry = sum / 10
+    i = i - 1
+  }
+  if carry > 0 {
+    return [carry] + result
+  }
+  return result
+}
+
+print(plusOne([1,2,3]))

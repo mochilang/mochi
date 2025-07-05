@@ -1,0 +1,8 @@
+type Person {
+  name: string
+  age: int
+}
+let people = load as Person with {
+  format: "jsonl",
+}
+print(count(people))
