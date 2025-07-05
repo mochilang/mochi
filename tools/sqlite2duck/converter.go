@@ -23,6 +23,8 @@ var wordConversions = []struct{ in, out string }{
 	{"current_timestamp", "now()"},
 	{"current_date", "current_date"},
 	{"current_time", "current_time"},
+	{"true", "true"},
+	{"false", "false"},
 }
 
 const (
@@ -329,6 +331,39 @@ func replaceZeroBlob(sql string) string {
 	return out.String()
 }
 
+func replaceHexRandomBlob(sql string) string {
+	lower := strings.ToLower(sql)
+	pattern := "hex(randomblob("
+	for {
+		idx := strings.Index(lower, pattern)
+		if idx == -1 {
+			break
+		}
+		// find closing ')'
+		start := idx + len(pattern)
+		end := start
+		depth := 1
+		for end < len(sql) && depth > 0 {
+			switch sql[end] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+			}
+			end++
+		}
+		if depth == 0 {
+			inner := strings.TrimSpace(sql[start : end-1])
+			repl := "hex(random_bytes(" + inner + "))"
+			sql = sql[:idx] + repl + sql[end:]
+			lower = strings.ToLower(sql)
+			continue
+		}
+		break
+	}
+	return sql
+}
+
 func removeEmptyParens(sql string, names ...string) string {
 	out := sql
 	for _, n := range names {
@@ -354,6 +389,7 @@ func Convert(sql string) string {
 	out = removeNotIndexed(out)
 	out = replaceTotal(out)
 	out = replaceZeroBlob(out)
+	out = replaceHexRandomBlob(out)
 	out = removeEmptyParens(out, "current_date", "current_time")
 	return out
 }

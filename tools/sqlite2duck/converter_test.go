@@ -33,6 +33,9 @@ func TestConvert(t *testing.T) {
 		{"SELECT julianday('now');", "SELECT julianday(now());"},
 		{"SELECT strftime('%Y', 'now');", "SELECT strftime('%Y', now());"},
 		{"SELECT zeroblob(2);", "SELECT repeat('\\x00', 2);"},
+		{"SELECT hex(randomblob(2));", "SELECT hex(random_bytes(2));"},
+		{"SELECT TRUE;", "SELECT true;"},
+		{"SELECT FALSE;", "SELECT false;"},
 	}
 	for _, tt := range tests {
 		got := Convert(tt.in)
