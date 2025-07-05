@@ -79,11 +79,27 @@ func translateStmt(s ast.Stmt) (string, error) {
 			return "", err
 		}
 		switch st.Tok {
-		case token.DEFINE, token.ASSIGN:
+		case token.DEFINE:
 			return fmt.Sprintf("let %s = %s", ident.Name, rhs), nil
+		case token.ASSIGN:
+			return fmt.Sprintf("%s = %s", ident.Name, rhs), nil
 		default:
 			return "", fmt.Errorf("unsupported assign op %s", st.Tok)
 		}
+	case *ast.DeclStmt:
+		gen, ok := st.Decl.(*ast.GenDecl)
+		if !ok || gen.Tok != token.VAR || len(gen.Specs) != 1 {
+			return "", errors.New("unsupported declaration")
+		}
+		vs, ok := gen.Specs[0].(*ast.ValueSpec)
+		if !ok || len(vs.Names) != 1 || len(vs.Values) != 1 {
+			return "", errors.New("unsupported var spec")
+		}
+		rhs, err := translateExpr(vs.Values[0])
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("var %s = %s", vs.Names[0].Name, rhs), nil
 	default:
 		return "", fmt.Errorf("unsupported statement %T", s)
 	}
