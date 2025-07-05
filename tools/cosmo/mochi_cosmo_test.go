@@ -1,4 +1,4 @@
-//go:build cosmo
+//go:build cosmo && slow
 
 package cosmo
 

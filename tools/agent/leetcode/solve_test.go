@@ -1,4 +1,4 @@
-//go:build leetcode
+//go:build leetcode && slow
 
 package leetcode
 
