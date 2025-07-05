@@ -237,11 +237,31 @@ Programs relying on these constructs will fail to compile.
 
 ## COBOL to Mochi converter
 
-The repository also includes a minimal converter in `tools/any2mochi` that can
+The repository also includes a converter in `tools/any2mochi` that can
 translate simple COBOL programs back to Mochi using the language server. The
-converter currently understands only a handful of statements:
+converter now understands a small selection of statements:
 
-- procedure bodies containing `DISPLAY` statements are mapped to `print` calls
+- procedure bodies containing `DISPLAY` statements which become `print` calls
+- `MOVE` and `COMPUTE` assignments
+- increment operations such as `ADD 1 TO VAR`
+- basic `IF/ELSE` blocks
+- loops written with `PERFORM UNTIL` or `PERFORM VARYING`
 
-Additional COBOL constructs are ignored. The converter is intentionally
-lightweight and meant only as a demonstration.
+Any other COBOL constructs are ignored. The converter remains lightweight and
+is intended purely as a demonstration.
+
+### Supported features
+
+- `DISPLAY` statements converted to `print`
+- `MOVE`/`COMPUTE` assignments
+- `ADD ... TO` increments
+- Simple `IF/ELSE` blocks
+- `PERFORM UNTIL` and `PERFORM VARYING` loops
+
+### Unsupported features
+
+- File I/O and data sections
+- Procedure calls beyond simple loops
+- `GOTO`, `STOP RUN` and other control flow statements
+- Advanced arithmetic like `DIVIDE`, `MULTIPLY`
+- Anything not listed in supported features
