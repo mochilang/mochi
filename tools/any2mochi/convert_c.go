@@ -3,7 +3,6 @@ package any2mochi
 import (
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -20,17 +19,6 @@ func ConvertC(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 
-	// extract function signatures using a regex. clangd often omits
-	// parameter details so we parse the source ourselves.
-	fnRe := regexp.MustCompile(`(?m)([\w\*\s]+?)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]*)\)\s*{`)
-	sigs := make(map[string][]string)
-	rets := make(map[string]string)
-	for _, m := range fnRe.FindAllStringSubmatch(src, -1) {
-		name := strings.TrimSpace(m[2])
-		sigs[name] = parseCParams(m[3])
-		rets[name] = mapCType(m[1])
-	}
-
 	var out strings.Builder
 	matched := false
 	for _, s := range syms {
@@ -38,17 +26,23 @@ func ConvertC(src string) ([]byte, error) {
 			continue
 		}
 		matched = true
-		params := sigs[s.Name]
-		ret := rets[s.Name]
+		ret, paramTypes := parseCSignature(s.Detail)
 
 		out.WriteString("fun ")
 		out.WriteString(s.Name)
 		out.WriteByte('(')
-		for i, p := range params {
+		for i, t := range paramTypes {
 			if i > 0 {
 				out.WriteString(", ")
 			}
-			out.WriteString(p)
+			name := fmt.Sprintf("a%d", i)
+			if t != "" {
+				out.WriteString(name)
+				out.WriteString(": ")
+				out.WriteString(t)
+			} else {
+				out.WriteString(name)
+			}
 		}
 		out.WriteByte(')')
 		if ret != "" && ret != "void" {
@@ -73,28 +67,31 @@ func ConvertCFile(path string) ([]byte, error) {
 	return ConvertC(string(data))
 }
 
-func parseCParams(params string) []string {
-	params = strings.TrimSpace(params)
-	if params == "" || params == "void" {
-		return nil
+func parseCSignature(detail *string) (string, []string) {
+	if detail == nil {
+		return "", nil
 	}
-	parts := strings.Split(params, ",")
+	sig := strings.TrimSpace(*detail)
+	if sig == "" {
+		return "", nil
+	}
+	open := strings.Index(sig, "(")
+	close := strings.LastIndex(sig, ")")
+	if open < 0 || close < open {
+		return mapCType(sig), nil
+	}
+	ret := mapCType(strings.TrimSpace(sig[:open]))
+	paramsPart := strings.TrimSpace(sig[open+1 : close])
+	if paramsPart == "" || paramsPart == "void" {
+		return ret, nil
+	}
+	parts := strings.Split(paramsPart, ",")
 	out := make([]string, 0, len(parts))
 	for _, p := range parts {
-		fields := strings.Fields(strings.TrimSpace(p))
-		if len(fields) == 0 {
-			continue
-		}
-		name := fields[len(fields)-1]
-		typ := strings.Join(fields[:len(fields)-1], " ")
-		t := mapCType(typ)
-		if t == "" {
-			out = append(out, name)
-		} else {
-			out = append(out, fmt.Sprintf("%s: %s", name, t))
-		}
+		t := mapCType(strings.TrimSpace(p))
+		out = append(out, t)
 	}
-	return out
+	return ret, out
 }
 
 func mapCType(typ string) string {
