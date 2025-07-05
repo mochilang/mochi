@@ -1,2 +1,2 @@
-fun list_int_create() {}
-fun main() {}
+fun list_int_create(len: int): list<int> {}
+fun main(): int {}
