@@ -138,8 +138,13 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 	if fn.Recv != nil {
 		return "", c.errorf(fn, "unsupported method declaration")
 	}
+	generics := map[string]bool{}
 	if fn.Type.TypeParams != nil {
-		return "", c.errorf(fn, "unsupported generics")
+		for _, p := range fn.Type.TypeParams.List {
+			for _, n := range p.Names {
+				generics[n.Name] = true
+			}
+		}
 	}
 	var b strings.Builder
 	b.WriteString("fun ")
@@ -154,7 +159,7 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 				b.WriteString(", ")
 			}
 			b.WriteString(p.Names[0].Name)
-			if p.Type != nil {
+			if p.Type != nil && !containsGeneric(p.Type, generics) {
 				b.WriteString(": ")
 				b.WriteString(typeString(c.fset, p.Type))
 			}
@@ -165,8 +170,10 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 		if len(fn.Type.Results.List) != 1 || len(fn.Type.Results.List[0].Names) != 0 {
 			return "", c.errorf(fn.Type.Results, "unsupported multiple return values")
 		}
-		b.WriteString(": ")
-		b.WriteString(typeString(c.fset, fn.Type.Results.List[0].Type))
+		if !containsGeneric(fn.Type.Results.List[0].Type, generics) {
+			b.WriteString(": ")
+			b.WriteString(typeString(c.fset, fn.Type.Results.List[0].Type))
+		}
 	}
 	b.WriteString(" {\n")
 	for _, st := range fn.Body.List {
@@ -224,11 +231,46 @@ func typeString(fset *token.FileSet, n ast.Expr) string {
 	}
 }
 
+func containsGeneric(n ast.Expr, generics map[string]bool) bool {
+	switch t := n.(type) {
+	case *ast.Ident:
+		return generics[t.Name]
+	case *ast.ArrayType:
+		return containsGeneric(t.Elt, generics)
+	case *ast.MapType:
+		return containsGeneric(t.Key, generics) || containsGeneric(t.Value, generics)
+	}
+	return false
+}
+
 func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 	switch st := s.(type) {
 	case *ast.ExprStmt:
 		return c.translateExprStmt(st)
 	case *ast.AssignStmt:
+		if len(st.Lhs) == 2 && len(st.Rhs) == 1 {
+			if id, ok := st.Lhs[1].(*ast.Ident); ok {
+				if ident, ok2 := st.Lhs[0].(*ast.Ident); ok2 && ident.Name == "_" {
+					if idx, ok := st.Rhs[0].(*ast.IndexExpr); ok {
+						target, err := c.translateExpr(idx.X)
+						if err != nil {
+							return "", err
+						}
+						key, err := c.translateExpr(idx.Index)
+						if err != nil {
+							return "", err
+						}
+						op := fmt.Sprintf("%s in %s", key, target)
+						switch st.Tok {
+						case token.DEFINE:
+							return fmt.Sprintf("let %s = %s", id.Name, op), nil
+						case token.ASSIGN:
+							return fmt.Sprintf("%s = %s", id.Name, op), nil
+						}
+					}
+				}
+			}
+		}
 		if len(st.Lhs) != 1 || len(st.Rhs) != 1 {
 			return "", c.errorf(st, "unsupported assignment")
 		}
@@ -498,8 +540,13 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 	}
 	switch ex := e.(type) {
 	case *ast.FuncLit:
+		generics := map[string]bool{}
 		if ex.Type.TypeParams != nil {
-			return "", c.errorf(ex, "unsupported generics")
+			for _, p := range ex.Type.TypeParams.List {
+				for _, n := range p.Names {
+					generics[n.Name] = true
+				}
+			}
 		}
 		var b strings.Builder
 		b.WriteString("fun (")
@@ -512,7 +559,7 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 					b.WriteString(", ")
 				}
 				b.WriteString(p.Names[0].Name)
-				if p.Type != nil {
+				if p.Type != nil && !containsGeneric(p.Type, generics) {
 					b.WriteString(": ")
 					b.WriteString(typeString(c.fset, p.Type))
 				}
@@ -523,8 +570,10 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 			if len(ex.Type.Results.List) != 1 || len(ex.Type.Results.List[0].Names) != 0 {
 				return "", c.errorf(ex.Type.Results, "unsupported multiple return values")
 			}
-			b.WriteString(": ")
-			b.WriteString(typeString(c.fset, ex.Type.Results.List[0].Type))
+			if !containsGeneric(ex.Type.Results.List[0].Type, generics) {
+				b.WriteString(": ")
+				b.WriteString(typeString(c.fset, ex.Type.Results.List[0].Type))
+			}
 		}
 		b.WriteString(" {\n")
 		for _, st := range ex.Body.List {
