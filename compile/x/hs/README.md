@@ -22,7 +22,9 @@ The resulting `main.hs` can be executed with `runhaskell` or compiled with `ghc`
 
 ## Supported Features
 
-The backend implements a small but practical subset of Mochi:
+The backend implements a small but practical subset of Mochi. The `any2mochi`
+tool can also convert simple Haskell code back to Mochi. Supported features
+include:
 
 - Function definitions and variable bindings
 - Basic expressions including `if`/`else` and arithmetic operators
@@ -34,6 +36,8 @@ The backend implements a small but practical subset of Mochi:
 - Dataset queries with `from`/`where`, sorting, skipping and taking
 - Grouped dataset queries with aggregates like `tpc-h/q1.mochi`
 - Test blocks with `expect` statements
+- Conversion from Haskell source with `any2mochi` supports extracting simple
+  function bodies defined with `=`
 
 ## Unsupported Features
 
