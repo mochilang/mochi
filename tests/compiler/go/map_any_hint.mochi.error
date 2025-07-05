@@ -1,5 +1,5 @@
-tests/compiler/go/map_any_hint.go.out:26: unsupported generics
->>> 25:    
-26:>>> func _cast[T any](v any) T {
-27:    if tv, ok := v.(T); ok {
-28:    return tv
+tests/compiler/go/map_any_hint.go.out:31: unsupported statement *ast.TypeSwitchStmt
+>>> 30:    var out T
+31:>>> switch any(out).(type) {
+32:    case int:
+33:    switch vv := v.(type) {

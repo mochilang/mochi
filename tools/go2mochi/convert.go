@@ -138,25 +138,74 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 	if fn.Recv != nil {
 		return "", c.errorf(fn, "unsupported method declaration")
 	}
-	if fn.Type.TypeParams != nil {
-		return "", c.errorf(fn, "unsupported generics")
-	}
+	// Ignore generic type parameters. They are not currently represented in
+	// Mochi so we simply drop them during translation instead of failing.
 	var b strings.Builder
 	b.WriteString("fun ")
 	b.WriteString(fn.Name.Name)
 	b.WriteByte('(')
 	if fn.Type.Params != nil {
-		for i, p := range fn.Type.Params.List {
-			if len(p.Names) != 1 {
+		first := true
+		for _, p := range fn.Type.Params.List {
+			if len(p.Names) == 0 {
 				return "", c.errorf(p, "unsupported parameter list")
 			}
-			if i > 0 {
-				b.WriteString(", ")
+			for _, n := range p.Names {
+				if !first {
+					b.WriteString(", ")
+				}
+				first = false
+				b.WriteString(n.Name)
+				if p.Type != nil {
+					b.WriteString(": ")
+					b.WriteString(typeString(c.fset, p.Type))
+				}
 			}
-			b.WriteString(p.Names[0].Name)
-			if p.Type != nil {
-				b.WriteString(": ")
-				b.WriteString(typeString(c.fset, p.Type))
+		}
+	}
+	b.WriteByte(')')
+	if fn.Type.Results != nil && len(fn.Type.Results.List) > 0 {
+		if len(fn.Type.Results.List) != 1 || len(fn.Type.Results.List[0].Names) != 0 {
+			return "", c.errorf(fn.Type.Results, "unsupported multiple return values")
+		}
+		b.WriteString(": ")
+		b.WriteString(typeString(c.fset, fn.Type.Results.List[0].Type))
+	}
+	b.WriteString(" {\n")
+	for _, st := range fn.Body.List {
+		line, err := c.translateStmt(st)
+		if err != nil {
+			return "", err
+		}
+		if line != "" {
+			b.WriteString("  ")
+			b.WriteString(line)
+			b.WriteByte('\n')
+		}
+	}
+	b.WriteString("}")
+	return b.String(), nil
+}
+
+func (c *converter) translateFuncLit(fn *ast.FuncLit) (string, error) {
+	var b strings.Builder
+	b.WriteString("fun(")
+	if fn.Type.Params != nil {
+		first := true
+		for _, p := range fn.Type.Params.List {
+			if len(p.Names) == 0 {
+				return "", c.errorf(p, "unsupported parameter list")
+			}
+			for _, n := range p.Names {
+				if !first {
+					b.WriteString(", ")
+				}
+				first = false
+				b.WriteString(n.Name)
+				if p.Type != nil {
+					b.WriteString(": ")
+					b.WriteString(typeString(c.fset, p.Type))
+				}
 			}
 		}
 	}
@@ -335,6 +384,13 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 					}
 				}
 				b.WriteString("}")
+			case *ast.IfStmt:
+				line, err := c.translateStmt(e)
+				if err != nil {
+					return "", err
+				}
+				b.WriteString(" else ")
+				b.WriteString(line)
 			default:
 				return "", c.errorf(st.Else, "unsupported else")
 			}
@@ -487,6 +543,8 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		return ex.Value, nil
 	case *ast.Ident:
 		return ex.Name, nil
+	case *ast.FuncLit:
+		return c.translateFuncLit(ex)
 	case *ast.SelectorExpr:
 		x, err := c.translateExpr(ex.X)
 		if err != nil {
@@ -509,7 +567,7 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 			return "", err
 		}
 		switch ex.Op {
-		case token.NOT, token.SUB, token.ADD:
+		case token.NOT, token.SUB, token.ADD, token.AND:
 			return fmt.Sprintf("%s%s", ex.Op.String(), x), nil
 		default:
 			return "", c.errorf(ex, "unsupported unary op %s", ex.Op)
@@ -610,6 +668,21 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 				}
 				return fmt.Sprintf("str(%s)", arg), nil
 			}
+		}
+		if lit, ok := ex.Fun.(*ast.FuncLit); ok {
+			fun, err := c.translateFuncLit(lit)
+			if err != nil {
+				return "", err
+			}
+			args := make([]string, len(ex.Args))
+			for i, a := range ex.Args {
+				v, err := c.translateExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
+			}
+			return fmt.Sprintf("(%s)(%s)", fun, strings.Join(args, ", ")), nil
 		}
 		fun, err := c.translateExpr(ex.Fun)
 		if err != nil {

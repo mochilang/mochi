@@ -1,5 +1,0 @@
-tests/compiler/go/join.go.out:33: unsupported expr *ast.FuncLit
->>> 32:    }
-33:>>> var result []PairInfo = func() []PairInfo {
-34:    _res := []PairInfo{}
-35:    for _, o := range orders {
