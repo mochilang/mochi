@@ -36,6 +36,10 @@ const helperContains = "contains(Container, Item, Res) :-\n" +
 
 const helperInput = "input(S) :- read_line_to_string(user_input, S).\n\n"
 
+const helperStartsWith = "starts_with(Str, Prefix, Res) :-\n" +
+	"    string(Str), !, (sub_string(Str, 0, _, _, Prefix) -> Res = true ; Res = false).\n" +
+	"starts_with(_, _, false).\n\n"
+
 const helperCount = "count(V, R) :-\n" +
 	"    is_dict(V), !, get_dict('Items', V, Items), length(Items, R).\n" +
 	"count(V, R) :-\n" +

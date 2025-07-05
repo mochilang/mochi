@@ -277,6 +277,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (exprRes, error) {
 		if method == "contains" {
 			c.use("contains")
 		}
+		if method == "starts_with" {
+			c.use("starts_with")
+		}
 		code = append(code, fmt.Sprintf("%s(%s, %s),", sanitizeAtom(method), strings.Join(args, ", "), tmp))
 		res = exprRes{code: code, val: tmp}
 		ops = ops[1:]

@@ -152,6 +152,12 @@ func (c *Compiler) emitHelpers() {
 		}
 		c.writeln("")
 	}
+	if c.helpers["starts_with"] {
+		for _, line := range strings.Split(strings.TrimSuffix(helperStartsWith, "\n"), "\n") {
+			c.writeln(line)
+		}
+		c.writeln("")
+	}
 	if c.helpers["input"] {
 		for _, line := range strings.Split(strings.TrimSuffix(helperInput, "\n"), "\n") {
 			c.writeln(line)
