@@ -1,1 +1,4 @@
-
+fun main() {}
+fun mathutils.<function>() {}
+fun mathutils.<function>.add() {}
+fun mathutils.<function>.square() {}

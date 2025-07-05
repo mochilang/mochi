@@ -1,1 +1,10 @@
-
+fun _query() {}
+fun _query.items.src.map() callback() {}
+fun _query.items.filter() callback() {}
+fun _query.pairs.items.map() callback() {}
+fun _query.pairs.map() callback() {}
+fun _query.pairs.sort() callback() {}
+fun main() {}
+fun main.<function>() {}
+fun main.<function>.on() {}
+fun main.<function>.select() {}

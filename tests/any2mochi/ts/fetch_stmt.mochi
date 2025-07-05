@@ -1,1 +1,4 @@
-
+fun _fetch() {}
+fun _fetch.setTimeout() callback() {}
+fun _waitAll() {}
+fun main() {}
