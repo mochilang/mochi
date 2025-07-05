@@ -24,7 +24,7 @@ var Servers = map[string]LanguageServer{
 	"clj":        {Command: "clojure-lsp", Args: nil, LangID: "clojure"},
 	"cobol":      {Command: "cobol-lsp", Args: nil, LangID: "cobol"},
 	"jvm":        {Command: "jdtls", Args: nil, LangID: "jvm"},
-	"cs":         {Command: "omnisharp", Args: nil, LangID: "csharp"},
+	"cs":         {Command: "omnisharp", Args: []string{"-lsp"}, LangID: "csharp"},
 	"dart":       {Command: "dart", Args: []string{"language-server"}, LangID: "dart"},
 	"erlang":     {Command: "erlang_ls", Args: nil, LangID: "erlang"},
 	"ex":         {Command: "elixir-ls", Args: nil, LangID: "elixir"},
@@ -69,6 +69,8 @@ func EnsureServer(name string) error {
 		{"pip3", []string{"install", "--user", name}},
 		{"pip", []string{"install", "--user", name}},
 		{"go", []string{"install", name + "@latest"}},
+		{"dotnet", []string{"tool", "install", "-g", name}},
+		{"dotnet", []string{"tool", "update", "-g", name}},
 	}
 	for _, inst := range installers {
 		if _, err := exec.LookPath(inst.bin); err == nil {
