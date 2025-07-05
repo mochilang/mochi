@@ -29,7 +29,7 @@ var parseSnippets = map[string]string{
 	"php":     "<?php function main() {}",
 	"pl":      "sub main {}",
 	"rb":      "def main; end",
-	"rkt":     "(define (main) #t)",
+	"rkt":     "(define (main x y) #t)",
 	"rust":    "fn main() {}",
 	"scala":   "object Main { def main(args: Array[String]): Unit = {} }",
 	"scheme":  "(define (main) #t)",
