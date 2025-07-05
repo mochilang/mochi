@@ -58,8 +58,15 @@ func Convert(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	return ConvertSource(src)
+}
+
+// ConvertSource converts Go source provided as a byte slice to Mochi code.
+// Only a small subset of Go is supported. If translation fails an error is
+// returned so callers can fall back to other implementations.
+func ConvertSource(src []byte) ([]byte, error) {
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, path, src, parser.ParseComments)
+	file, err := parser.ParseFile(fset, "src.go", src, parser.ParseComments)
 	if err != nil {
 		return nil, err
 	}

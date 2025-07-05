@@ -11,13 +11,21 @@ import (
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
+	go2 "mochi/tools/go2mochi"
 )
 
-// ConvertGo converts Go source code to Mochi using the Go language server.
-// It parses the source with gopls and converts discovered symbols into
-// minimal Mochi stubs. Any diagnostics reported by the server are returned
-// as errors.
+// ConvertGo converts Go source code to Mochi. It first attempts to translate
+// the source using the built-in Go parser. If that fails (e.g. due to
+// unsupported constructs) it falls back to using the Go language server to
+// generate simple stubs.
 func ConvertGo(src string) ([]byte, error) {
+	if out, err := go2.ConvertSource([]byte(src)); err == nil {
+		if len(out) > 0 && out[len(out)-1] != '\n' {
+			out = append(out, '\n')
+		}
+		return out, nil
+	}
+
 	ls := Servers["go"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
@@ -36,6 +44,12 @@ func ConvertGo(src string) ([]byte, error) {
 
 // ConvertGoFile reads the Go file at path and converts it to Mochi.
 func ConvertGoFile(path string) ([]byte, error) {
+	if out, err := go2.Convert(path); err == nil {
+		if len(out) > 0 && out[len(out)-1] != '\n' {
+			out = append(out, '\n')
+		}
+		return out, nil
+	}
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
