@@ -1,5 +1,10 @@
 let T
 fun _fetch(url, opts) {}
-type Todo {}
+type Todo {
+  userId
+  id
+  title
+  completed
+}
 let todo
 fun main() {}

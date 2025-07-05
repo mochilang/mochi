@@ -1,6 +1,8 @@
 let T
 fun _get(obj, name) {}
-type Counter {}
-fun Counter.inc() {}
+type Counter {
+  value
+  fun inc() {}
+}
 let c
 fun main() {}

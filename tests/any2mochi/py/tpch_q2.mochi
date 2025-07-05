@@ -1,7 +1,6 @@
 let T
 fun _min(v) {}
 fun _query(src, joins, opts) {}
-fun _query._key(it) {}
 fun _sort_key(k) {}
 let region
 let nation

@@ -1,6 +1,10 @@
 let T
 fun _get(obj, name) {}
-type Person {}
+type Person {
+  name
+  age
+  status
+}
 let people
 fun test_update_adult_status() {}
 fun main() {}
