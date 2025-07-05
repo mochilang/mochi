@@ -22,11 +22,12 @@ object Main {
         println(_indexList(result, 0))
         println(_indexList(result, 1))
     }
-}
-def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {
-        var idx = i
-        val n = arr.length
-        if (idx < 0) idx += n
-        if (idx < 0 || idx >= n) throw new RuntimeException("index out of range")
-        arr(idx)
+    def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {
+            var idx = i
+            val n = arr.length
+            if (idx < 0) idx += n
+            if (idx < 0 || idx >= n) throw new RuntimeException("index out of range")
+            arr(idx)
+    }
+    
 }

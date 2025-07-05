@@ -27,11 +27,12 @@ object Main {
         println(searchMatrix(scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(1, 3, 5, 7), scala.collection.mutable.ArrayBuffer(10, 11, 16, 20), scala.collection.mutable.ArrayBuffer(23, 30, 34, 60)), 3))
         println(searchMatrix(scala.collection.mutable.ArrayBuffer(scala.collection.mutable.ArrayBuffer(1, 3, 5, 7), scala.collection.mutable.ArrayBuffer(10, 11, 16, 20), scala.collection.mutable.ArrayBuffer(23, 30, 34, 60)), 13))
     }
-}
-def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {
-        var idx = i
-        val n = arr.length
-        if (idx < 0) idx += n
-        if (idx < 0 || idx >= n) throw new RuntimeException("index out of range")
-        arr(idx)
+    def _indexList[T](arr: scala.collection.mutable.ArrayBuffer[T], i: Int): T = {
+            var idx = i
+            val n = arr.length
+            if (idx < 0) idx += n
+            if (idx < 0 || idx >= n) throw new RuntimeException("index out of range")
+            arr(idx)
+    }
+    
 }

@@ -1183,6 +1183,24 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 		if len(args) == 1 {
 			return args[0] + ".toString()", nil
 		}
+	case "int":
+		if len(args) != 1 {
+			return "", fmt.Errorf("int expects 1 arg")
+		}
+		c.use("_cast")
+		return fmt.Sprintf("_cast[Int](%s)", args[0]), nil
+	case "float":
+		if len(args) != 1 {
+			return "", fmt.Errorf("float expects 1 arg")
+		}
+		c.use("_cast")
+		return fmt.Sprintf("_cast[Double](%s)", args[0]), nil
+	case "bool":
+		if len(args) != 1 {
+			return "", fmt.Errorf("bool expects 1 arg")
+		}
+		c.use("_cast")
+		return fmt.Sprintf("_cast[Boolean](%s)", args[0]), nil
 	case "now":
 		if len(args) != 0 {
 			return "", fmt.Errorf("now expects no args")

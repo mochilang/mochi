@@ -4,42 +4,43 @@ case class Node(left: Any, value: Int, right: Any) extends Tree
 
 object Main {
     def inorder(t: Any): scala.collection.mutable.ArrayBuffer[Int] = {
-        return (t match {
+        return _cast[scala.collection.mutable.ArrayBuffer[Int]]((t match {
     case Leaf => _cast[scala.collection.mutable.ArrayBuffer[Int]](scala.collection.mutable.ArrayBuffer())
     case Node(l, v, r) => ((inorder(l) ++ scala.collection.mutable.ArrayBuffer(v)) + inorder(r))
-})
+}))
     }
     
     def main(args: Array[String]): Unit = {
         println(inorder(Node(left = Leaf(), value = 1, right = Node(left = Leaf(), value = 2, right = Leaf()))))
     }
-}
-def _cast[T](v: Any)(implicit ct: scala.reflect.ClassTag[T]): T = {
-        val cls = ct.runtimeClass
-        if (cls == classOf[Int]) v match {
-                case i: Int => i
-                case d: Double => d.toInt
-                case s: String => s.toInt
-                case _ => 0
-        } else if (cls == classOf[Double]) v match {
-                case d: Double => d
-                case i: Int => i.toDouble
-                case s: String => s.toDouble
-                case _ => 0.0
-        } else if (cls == classOf[Boolean]) v match {
-                case b: Boolean => b
-                case s: String => s == "true"
-                case _ => false
-        } else if (cls == classOf[String]) v.toString.asInstanceOf[T]
-        else if (cls.isInstance(v)) v.asInstanceOf[T]
-        else if (v.isInstanceOf[scala.collection.Map[_, _]]) {
-                val m = v.asInstanceOf[scala.collection.Map[String, Any]]
-                val ctor = cls.getConstructors.head
-                val params = ctor.getParameters.map { p =>
-                        m.getOrElse(p.getName, null).asInstanceOf[AnyRef]
-                }
-                ctor.newInstance(params: _*).asInstanceOf[T]
-        } else {
-                v.asInstanceOf[T]
-        }
+    def _cast[T](v: Any)(implicit ct: scala.reflect.ClassTag[T]): T = {
+            val cls = ct.runtimeClass
+            if (cls == classOf[Int]) v match {
+                    case i: Int => i
+                    case d: Double => d.toInt
+                    case s: String => s.toInt
+                    case _ => 0
+            } else if (cls == classOf[Double]) v match {
+                    case d: Double => d
+                    case i: Int => i.toDouble
+                    case s: String => s.toDouble
+                    case _ => 0.0
+            } else if (cls == classOf[Boolean]) v match {
+                    case b: Boolean => b
+                    case s: String => s == "true"
+                    case _ => false
+            } else if (cls == classOf[String]) v.toString.asInstanceOf[T]
+            else if (cls.isInstance(v)) v.asInstanceOf[T]
+            else if (v.isInstanceOf[scala.collection.Map[_, _]]) {
+                    val m = v.asInstanceOf[scala.collection.Map[String, Any]]
+                    val ctor = cls.getConstructors.head
+                    val params = ctor.getParameters.map { p =>
+                            m.getOrElse(p.getName, null).asInstanceOf[AnyRef]
+                    }
+                    ctor.newInstance(params: _*).asInstanceOf[T]
+            } else {
+                    v.asInstanceOf[T]
+            }
+    }
+    
 }
