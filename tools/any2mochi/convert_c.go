@@ -10,6 +10,10 @@ import (
 
 // ConvertC converts c source code to Mochi using the language server.
 func ConvertC(src string) ([]byte, error) {
+	if !UseLSP {
+		return convertCSimple(src)
+	}
+
 	ls := Servers["c"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
@@ -177,6 +181,55 @@ func ConvertCFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertC(string(data))
+}
+
+// convertCSimple converts C source code without using a language server.
+// It invokes clang to obtain a JSON AST and extracts top-level functions.
+func convertCSimple(src string) ([]byte, error) {
+	funcs, err := parseCFileClang(src)
+	if err != nil {
+		// fall back to regex parser if clang is unavailable
+		funcs = parseCFileSimple(src)
+	}
+	if len(funcs) == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	var out strings.Builder
+	for _, fn := range funcs {
+		out.WriteString("fun ")
+		out.WriteString(fn.name)
+		out.WriteByte('(')
+		for i, p := range fn.params {
+			if i > 0 {
+				out.WriteString(", ")
+			}
+			name := p.name
+			if name == "" {
+				name = fmt.Sprintf("a%d", i)
+			}
+			out.WriteString(name)
+			if p.typ != "" {
+				out.WriteString(": ")
+				out.WriteString(p.typ)
+			}
+		}
+		out.WriteByte(')')
+		if fn.ret != "" && fn.ret != "void" {
+			out.WriteString(": ")
+			out.WriteString(fn.ret)
+		}
+		if len(fn.body) == 0 {
+			out.WriteString(" {}\n")
+		} else {
+			out.WriteString(" {\n")
+			for _, ln := range fn.body {
+				out.WriteString(ln)
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		}
+	}
+	return []byte(out.String()), nil
 }
 
 type cParam struct {
