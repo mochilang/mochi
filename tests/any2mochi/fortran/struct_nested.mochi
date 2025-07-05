@@ -1,0 +1,6 @@
+fun main() {
+  p1 = Point(x=0, y=0)
+  p2 = Point(x=1, y=1)
+  line = Line(start=p1, end=p2)
+  print(line.start.x)
+}

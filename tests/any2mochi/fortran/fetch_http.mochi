@@ -1,0 +1,9 @@
+fun main() {
+  body = mochi_fetch('https://jsonplaceholder.typicode.com/todos/1')
+  print((len(body) > 0))
+fun mochi_fetch() {
+    cmd = 'curl -s -o mochi_fetch.tmp ' + trim(url)
+    execute_command_line(cmd)
+    execute_command_line('rm -f mochi_fetch.tmp')
+  }
+}

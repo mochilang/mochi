@@ -1,0 +1,4 @@
+fun main() {
+  text = 'hello'
+  print(text(modulo((-1), len(text)) + 1:modulo((-1), len(text)) + 1))
+}

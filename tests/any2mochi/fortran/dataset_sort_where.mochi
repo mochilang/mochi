@@ -1,0 +1,31 @@
+fun main() {
+  items = [Item(name='A', price=100), Item(name='B', price=50), Item(name='C', price=200), Item(name='D', price=80)]
+  cheap = lambda_0(items)
+  for i_c in 0..size(cheap)  {
+    c = cheap(modulo(i_c, size(cheap)) + 1)
+    print(c.name, c.price)
+  }
+fun lambda_0() {
+    n = 0
+    for i in 1..size(vsrc) {
+      it = vsrc(i)
+      if (it.price < 150) {
+        sort_key = it.price
+        n = n + 1
+      }
+    }
+    for i in 1..n  {
+      min_idx = i
+      for j in i + 1..n {
+        if tmpKey(j) < tmpKey(min_idx) {
+          min_idx = j
+        }
+      }
+      if min_idx /= i {
+        swap_key = tmpKey(i)
+        swap_item = tmp(i)
+      }
+    }
+    res = tmp(:n)
+  }
+}
