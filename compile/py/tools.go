@@ -166,6 +166,36 @@ func EnsureBlack() error {
 	return fmt.Errorf("black not found")
 }
 
+// EnsurePyright installs the Pyright language server if needed. It attempts
+// installation using npm or pip.
+func EnsurePyright() error {
+	if _, err := exec.LookPath("pyright-langserver"); err == nil {
+		return nil
+	}
+	installers := []struct {
+		bin  string
+		args []string
+	}{
+		{"npm", []string{"install", "-g", "pyright"}},
+		{"pip3", []string{"install", "--user", "pyright"}},
+		{"pip", []string{"install", "--user", "pyright"}},
+	}
+	for _, inst := range installers {
+		if _, err := exec.LookPath(inst.bin); err == nil {
+			fmt.Println("\U0001F40D Installing Pyright via", inst.bin, "...")
+			cmd := exec.Command(inst.bin, inst.args...)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			_ = cmd.Run()
+			break
+		}
+	}
+	if _, err := exec.LookPath("pyright-langserver"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("pyright-langserver not found")
+}
+
 // FormatPy formats Python source using Black if available.
 // If Black is not installed, the input is returned unchanged.
 func FormatPy(src []byte) []byte {

@@ -1,0 +1,8 @@
+fun expect() {}
+fun formatDuration() {}
+fun printTestStart() {}
+fun printTestPass() {}
+fun printTestFail() {}
+fun test_update_adult_status() {}
+fun main() {}
+fun _equal() {}

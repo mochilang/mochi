@@ -1,0 +1,5 @@
+fun _fetch() {}
+fun setTimeout() callback() {}
+fun _toAnyMap() {}
+fun _waitAll() {}
+fun main() {}

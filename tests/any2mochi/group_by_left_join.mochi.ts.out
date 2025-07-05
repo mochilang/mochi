@@ -1,0 +1,13 @@
+fun _count() {}
+fun _equal() {}
+fun _query() {}
+fun src.map() callback() {}
+fun items.filter() callback() {}
+fun items.map() callback() {}
+fun pairs.map() callback() {}
+fun pairs.sort() callback() {}
+fun main() {}
+fun <function>() {}
+fun _order.map() callback() {}
+fun g.items.filter() callback() {}
+fun map() callback() {}
