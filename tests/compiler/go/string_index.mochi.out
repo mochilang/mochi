@@ -9,4 +9,4 @@ fun _indexString(s: string, i: int): string {
   return str(runes[i])
 }
 var text = "hello"
-print(_indexString(text, 1))
+print(str(_indexString(text, 1)))

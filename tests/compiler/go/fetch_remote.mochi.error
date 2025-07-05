@@ -2,3 +2,4 @@ tests/compiler/go/fetch_remote.go.out:14: unsupported declaration
 >>> 13:    
 14:>>> type Todo struct {
 15:    UserId    int    `json:"userId"`
+16:    Id        int    `json:"id"`

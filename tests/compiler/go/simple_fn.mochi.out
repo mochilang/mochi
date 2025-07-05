@@ -1,4 +1,4 @@
 fun id(x: int): int {
   return x
 }
-print(123)
+print(str(123))

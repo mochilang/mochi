@@ -1,4 +1,4 @@
 fun foo(m: map<string, int>) {
-  print(len(m))
+  print(str(len(m)))
 }
 foo({})

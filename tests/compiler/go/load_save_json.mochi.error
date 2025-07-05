@@ -2,3 +2,4 @@ tests/compiler/go/load_save_json.go.out:11: unsupported declaration
 >>> 10:    
 11:>>> type Person struct {
 12:    Name  string `json:"name"`
+13:    Age   int    `json:"age"`

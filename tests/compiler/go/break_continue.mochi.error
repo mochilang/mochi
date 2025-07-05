@@ -2,3 +2,4 @@ tests/compiler/go/break_continue.go.out:26: unsupported Println args
 >>> 25:    }
 26:>>> fmt.Println("odd number:", n)
 27:    }
+28:    }

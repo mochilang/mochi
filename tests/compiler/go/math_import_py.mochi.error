@@ -2,3 +2,4 @@ tests/compiler/go/math_import_py.go.out:10: unsupported expr *ast.FuncLit
 >>> 9:    var r float64 = 3.0
 10:>>> var area float64 = (func() float64 { v, _ := python.Attr("math", "pi"); return v.(float64) }() * func() float64 { v, _ := python.Attr("math", "pow", r, 2.0); return v.(float64) }())
 11:    fmt.Println("Area:", area)
+12:    }

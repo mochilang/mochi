@@ -7,6 +7,6 @@ fun sub(x: int, y: int): int {
 fun mul(x: int, y: int): int {
   return (x * y)
 }
-print(3)
-print(7)
-print(24)
+print(str(3))
+print(str(7))
+print(str(24))

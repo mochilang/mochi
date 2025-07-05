@@ -2,3 +2,4 @@ tests/compiler/go/cast_struct.go.out:8: unsupported declaration
 >>> 7:    
 8:>>> type Todo struct {
 9:    Title string `json:"title"`
+10:    }

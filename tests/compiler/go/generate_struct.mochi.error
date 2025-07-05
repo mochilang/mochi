@@ -2,3 +2,4 @@ tests/compiler/go/generate_struct.go.out:11: unsupported declaration
 >>> 10:    
 11:>>> type Info struct {
 12:    Msg string `json:"msg"`
+13:    }

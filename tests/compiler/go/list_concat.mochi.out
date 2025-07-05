@@ -1,1 +1,1 @@
-print(concat(concat([], [1, 2]), [3, 4]))
+print(str(concat(concat([], [1, 2]), [3, 4])))
