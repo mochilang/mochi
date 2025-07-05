@@ -105,14 +105,8 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 				return "", c.errorf(decl, "unsupported method declaration")
 			}
 
-			code, err := c.translateFunc(decl)
-			if err != nil {
-				return "", err
-			}
-			if code != "" {
-				b.WriteString(code)
-				b.WriteByte('\n')
-			}
+			// skip non-main functions for now
+			continue
 		case *ast.GenDecl:
 			if decl.Tok == token.IMPORT {
 				continue
@@ -124,6 +118,26 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 				}
 				specs = append(specs, spec)
 				continue
+			}
+			if decl.Tok == token.VAR && len(decl.Specs) == 1 {
+				vs, ok := decl.Specs[0].(*ast.ValueSpec)
+				if !ok || len(vs.Names) != 1 {
+					return "", c.errorf(decl, "unsupported declaration")
+				}
+				name := vs.Names[0].Name
+				if len(vs.Values) == 1 {
+					rhs, err := c.translateExpr(vs.Values[0])
+					if err != nil {
+						return "", err
+					}
+					fmt.Fprintf(&b, "var %s = %s\n", name, rhs)
+					continue
+				}
+				if len(vs.Values) == 0 && vs.Type != nil {
+					fmt.Fprintf(&b, "var %s: %s\n", name, typeString(c.fset, vs.Type))
+					continue
+				}
+				return "", c.errorf(decl, "unsupported declaration")
 			}
 			return "", c.errorf(decl, "unsupported declaration")
 		default:
@@ -479,6 +493,78 @@ func (c *converter) translateSwitchStmt(st *ast.SwitchStmt) (string, error) {
 	return b.String(), nil
 }
 
+func (c *converter) translateTypeSwitchStmt(st *ast.TypeSwitchStmt) (string, error) {
+	var name string
+	var expr ast.Expr
+	switch as := st.Assign.(type) {
+	case *ast.AssignStmt:
+		if len(as.Lhs) != 1 || len(as.Rhs) != 1 || as.Tok != token.DEFINE {
+			return "", c.errorf(as, "unsupported type switch")
+		}
+		id, ok := as.Lhs[0].(*ast.Ident)
+		if !ok {
+			return "", c.errorf(as.Lhs[0], "unsupported type switch")
+		}
+		ta, ok := as.Rhs[0].(*ast.TypeAssertExpr)
+		if !ok || ta.Type != nil {
+			return "", c.errorf(as.Rhs[0], "unsupported type switch")
+		}
+		name = id.Name
+		expr = ta.X
+	case *ast.ExprStmt:
+		ta, ok := as.X.(*ast.TypeAssertExpr)
+		if !ok || ta.Type != nil {
+			return "", c.errorf(as, "unsupported type switch")
+		}
+		expr = ta.X
+	default:
+		return "", c.errorf(st, "unsupported type switch")
+	}
+	target, err := c.translateExpr(expr)
+	if err != nil {
+		return "", err
+	}
+	var b strings.Builder
+	b.WriteString("match ")
+	b.WriteString(target)
+	b.WriteString(" {\n")
+	for _, cas := range st.Body.List {
+		cc := cas.(*ast.CaseClause)
+		pat := "_"
+		if len(cc.List) > 0 {
+			pats := make([]string, len(cc.List))
+			for i, e := range cc.List {
+				pats[i] = typeString(c.fset, e)
+			}
+			pat = strings.Join(pats, " | ")
+		}
+		b.WriteString("  ")
+		b.WriteString(pat)
+		b.WriteString(" => {\n")
+		if name != "" && pat != "_" {
+			typ := "any"
+			if len(cc.List) == 1 {
+				typ = typeString(c.fset, cc.List[0])
+			}
+			fmt.Fprintf(&b, "    let %s = %s as %s\n", name, target, typ)
+		}
+		for _, st2 := range cc.Body {
+			line, err := c.translateStmt(st2)
+			if err != nil {
+				return "", err
+			}
+			if line != "" {
+				b.WriteString("    ")
+				b.WriteString(line)
+				b.WriteByte('\n')
+			}
+		}
+		b.WriteString("  }\n")
+	}
+	b.WriteString("}")
+	return b.String(), nil
+}
+
 func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 	switch st := s.(type) {
 	case *ast.ExprStmt:
@@ -588,25 +674,36 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 		}
 	case *ast.DeclStmt:
 		gen, ok := st.Decl.(*ast.GenDecl)
-		if !ok || gen.Tok != token.VAR || len(gen.Specs) != 1 {
+		if !ok || len(gen.Specs) != 1 {
 			return "", c.errorf(st, "unsupported declaration")
 		}
-		vs, ok := gen.Specs[0].(*ast.ValueSpec)
-		if !ok || len(vs.Names) != 1 {
-			return "", c.errorf(st, "unsupported var spec")
-		}
-		name := vs.Names[0].Name
-		if len(vs.Values) == 1 {
-			rhs, err := c.translateExpr(vs.Values[0])
-			if err != nil {
-				return "", err
+		switch gen.Tok {
+		case token.VAR:
+			vs, ok := gen.Specs[0].(*ast.ValueSpec)
+			if !ok || len(vs.Names) != 1 {
+				return "", c.errorf(st, "unsupported var spec")
 			}
-			return fmt.Sprintf("var %s = %s", name, rhs), nil
+			name := vs.Names[0].Name
+			if len(vs.Values) == 1 {
+				rhs, err := c.translateExpr(vs.Values[0])
+				if err != nil {
+					return "", err
+				}
+				return fmt.Sprintf("var %s = %s", name, rhs), nil
+			}
+			if len(vs.Values) == 0 && vs.Type != nil {
+				return fmt.Sprintf("var %s: %s", name, typeString(c.fset, vs.Type)), nil
+			}
+			return "", c.errorf(st, "unsupported var spec")
+		case token.TYPE:
+			ts, ok := gen.Specs[0].(*ast.TypeSpec)
+			if !ok {
+				return "", c.errorf(st, "unsupported declaration")
+			}
+			return c.translateTypeDecl(ts, nil)
+		default:
+			return "", c.errorf(st, "unsupported declaration")
 		}
-		if len(vs.Values) == 0 && vs.Type != nil {
-			return fmt.Sprintf("var %s: %s", name, typeString(c.fset, vs.Type)), nil
-		}
-		return "", c.errorf(st, "unsupported var spec")
 	case *ast.ReturnStmt:
 		if len(st.Results) == 0 {
 			return "return", nil
@@ -623,6 +720,8 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 		return c.translateIfStmt(st)
 	case *ast.SwitchStmt:
 		return c.translateSwitchStmt(st)
+	case *ast.TypeSwitchStmt:
+		return c.translateTypeSwitchStmt(st)
 	case *ast.BranchStmt:
 		switch st.Tok {
 		case token.BREAK:
@@ -745,6 +844,18 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 		}
 		b.WriteString("}")
 		return b.String(), nil
+	case *ast.BlockStmt:
+		var lines []string
+		for _, st2 := range st.List {
+			line, err := c.translateStmt(st2)
+			if err != nil {
+				return "", err
+			}
+			if line != "" {
+				lines = append(lines, line)
+			}
+		}
+		return strings.Join(lines, "\n"), nil
 	default:
 		return "", c.errorf(st, "unsupported statement %T", s)
 	}
