@@ -135,6 +135,14 @@ func parseGoDetail(detail *string) ([]goParam, string) {
 		return nil, ""
 	}
 	d := strings.TrimSpace(*detail)
+	if strings.HasPrefix(d, "```") {
+		d = strings.Trim(d, "`")
+		d = strings.TrimSpace(d)
+		if strings.HasPrefix(d, "go\n") {
+			d = strings.TrimPrefix(d, "go\n")
+			d = strings.TrimSpace(d)
+		}
+	}
 	if d == "" {
 		return nil, ""
 	}
