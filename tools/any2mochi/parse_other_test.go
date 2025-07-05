@@ -9,6 +9,10 @@ import (
 var parseSnippets = map[string]string{
 	"c":       "int main() { return 0; }",
 	"cpp":     "int main() { return 0; }",
+	"asm":     "main:\n  nop",
+	"clj":     "(defn main [] nil)",
+	"cobol":   "IDENTIFICATION DIVISION.\nPROGRAM-ID. HELLO.",
+	"jvm":     "method public static main()V\n  return\n.end method",
 	"cs":      "class Program { static void Main() {} }",
 	"dart":    "void main() {}",
 	"erlang":  "-module(main).\n-export([main/0]).\nmain() -> ok.",
