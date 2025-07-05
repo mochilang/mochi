@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -12,16 +13,50 @@ import (
 // ConvertScheme converts scheme source code to Mochi using the language server.
 func ConvertScheme(src string) ([]byte, error) {
 	ls := Servers["scheme"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-	if err != nil {
-		return nil, err
-	}
-	if len(diags) > 0 {
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+	var syms []protocol.DocumentSymbol
+	var diags []protocol.Diagnostic
+	if _, lookErr := exec.LookPath(ls.Command); lookErr == nil {
+		syms, diags, _ = ParseText(ls.Command, ls.Args, ls.LangID, src)
 	}
 	var out strings.Builder
-	writeSchemeSymbols(&out, nil, syms, src, ls)
+	if syms != nil {
+		writeSchemeSymbols(&out, nil, syms, src, ls)
+	}
 	if out.Len() == 0 {
+		// basic regex fallback for simple defines
+		lines := strings.Split(src, "\n")
+		for i, line := range lines {
+			line = strings.TrimSpace(line)
+			if strings.HasPrefix(line, "(define ") && strings.Contains(line, "(") {
+				nameStart := strings.Index(line, "(") + 1
+				nameEnd := strings.Index(line[nameStart:], " ")
+				if nameEnd != -1 {
+					name := line[nameStart : nameStart+nameEnd]
+					ds := protocol.DocumentSymbol{Kind: protocol.SymbolKindFunction, Name: name,
+						Range: protocol.Range{Start: protocol.Position{Line: uint32(i), Character: 0}, End: protocol.Position{Line: uint32(i), Character: 0}}}
+					body := parseSchemeFunctionBody(src, ds)
+					out.WriteString("fun ")
+					out.WriteString(name)
+					out.WriteString("()")
+					if len(body) == 0 {
+						out.WriteString(" {}\n")
+					} else {
+						out.WriteString(" {\n")
+						for _, b := range body {
+							out.WriteString("  ")
+							out.WriteString(b)
+							out.WriteByte('\n')
+						}
+						out.WriteString("}\n")
+					}
+				}
+			}
+		}
+	}
+	if out.Len() == 0 {
+		if len(diags) > 0 {
+			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		}
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
@@ -70,7 +105,18 @@ func writeSchemeSymbols(out *strings.Builder, prefix []string, syms []protocol.D
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			body := parseSchemeFunctionBody(src, s)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, ln := range body {
+					out.WriteString("  ")
+					out.WriteString(ln)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 		case protocol.SymbolKindClass, protocol.SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -344,4 +390,94 @@ func parseSchemeHoverVarType(h protocol.Hover) string {
 		}
 	}
 	return ""
+}
+
+func parseSchemeFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+	code := schemeRange(src, sym.Range)
+	// find the first closing parenthesis of the parameter list
+	idx := strings.Index(code, "(define")
+	if idx == -1 {
+		return nil
+	}
+	rest := code[idx+len("(define"):]
+	// skip name and params
+	if p := strings.Index(rest, ")"); p != -1 {
+		rest = strings.TrimSpace(rest[p+1:])
+	}
+	if strings.HasPrefix(rest, "(") && strings.HasSuffix(strings.TrimSpace(rest), ")") {
+		rest = strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(rest), "("), ")")
+	}
+	var out []string
+	lines := strings.Split(rest, "\n")
+	for i, line := range lines {
+		l := strings.TrimSpace(line)
+		if l == "" || strings.HasPrefix(l, ";") {
+			continue
+		}
+		switch {
+		case strings.HasPrefix(l, "(display"):
+			arg := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(l, "(display"), ")"))
+			out = append(out, "print("+convertSchemeExpr(arg)+")")
+		case strings.HasPrefix(l, "(set!"):
+			inner := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(l, "(set!"), ")"))
+			parts := strings.Fields(inner)
+			if len(parts) >= 2 {
+				out = append(out, parts[0]+" = "+convertSchemeExpr(strings.Join(parts[1:], " ")))
+			}
+		case strings.HasPrefix(l, "(define"):
+			inner := strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(l, "(define"), ")"))
+			parts := strings.Fields(inner)
+			if len(parts) >= 2 {
+				out = append(out, "let "+parts[0]+" = "+convertSchemeExpr(strings.Join(parts[1:], " ")))
+			}
+		default:
+			expr := convertSchemeExpr(l)
+			if i == len(lines)-1 {
+				out = append(out, "return "+expr)
+			} else {
+				out = append(out, expr)
+			}
+		}
+	}
+	return out
+}
+
+func convertSchemeExpr(expr string) string {
+	expr = strings.TrimSpace(expr)
+	if strings.HasPrefix(expr, "(") && strings.HasSuffix(expr, ")") {
+		inner := strings.TrimSpace(expr[1 : len(expr)-1])
+		parts := strings.Fields(inner)
+		if len(parts) == 0 {
+			return inner
+		}
+		switch parts[0] {
+		case "+", "-", "*", "/":
+			if len(parts) == 3 {
+				return parts[1] + " " + parts[0] + " " + parts[2]
+			}
+		case "display":
+			return "print(" + strings.Join(parts[1:], " ") + ")"
+		}
+		return inner
+	}
+	return expr
+}
+
+func schemeRange(src string, r protocol.Range) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {
+		line := lines[i]
+		if i == int(r.Start.Line) && int(r.Start.Character) < len(line) {
+			line = line[int(r.Start.Character):]
+		}
+		if i == int(r.End.Line) && int(r.End.Character) <= len(line) {
+			line = line[:int(r.End.Character)]
+		}
+		out.WriteString(line)
+		if i != int(r.End.Line) {
+			out.WriteByte('\n')
+		}
+	}
+	return out.String()
 }

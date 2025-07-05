@@ -66,3 +66,20 @@ go test ./compile/x/scheme -tags slow
 ```
 
 The tests are skipped if `chibi-scheme` is unavailable.
+
+## Scheme to Mochi Converter
+
+`tools/any2mochi` includes a lightweight converter for Scheme source. It relies
+on `scheme-langserver` when available and falls back to a simple parser.
+
+### Supported Features
+
+- Extraction of top‑level `define` forms
+- Parameter names and return types from language server hover text when present
+- Basic translation of function bodies with `display`, `set!` and arithmetic
+
+### Unsupported Features
+
+- Macros and advanced control flow
+- Continuations and nested `let` expressions
+- Comprehensive type information or module imports
