@@ -13,7 +13,10 @@ func ConvertSt(src string) ([]byte, error) {
 	ls := Servers["st"]
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
-		return nil, err
+		// fall back to a tiny regex based converter when the language
+		// server isn't available. this only handles very small
+		// programs consisting of assignments, prints and simple loops.
+		return convertStFallback(src)
 	}
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
@@ -23,7 +26,9 @@ func ConvertSt(src string) ([]byte, error) {
 	appendStSymbols(&out, syms, src, ls)
 
 	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		// try the lightweight fallback parser if the language server
+		// returned no symbols.
+		return convertStFallback(src)
 	}
 	return []byte(out.String()), nil
 }
@@ -79,7 +84,22 @@ func appendStSymbol(out *strings.Builder, s protocol.DocumentSymbol, src string,
 			}
 			out.WriteString(p)
 		}
-		out.WriteString(") {}\n")
+		out.WriteByte(')')
+		body := convertStBody(src, s)
+		if body == "" {
+			out.WriteString(" {}\n")
+		} else {
+			out.WriteString(" {\n")
+			for _, line := range strings.Split(body, "\n") {
+				if strings.TrimSpace(line) == "" {
+					continue
+				}
+				out.WriteString("  ")
+				out.WriteString(line)
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		}
 		for _, c := range s.Children {
 			appendStSymbol(out, c, src, ls, parent)
 		}
@@ -163,4 +183,125 @@ func ConvertStFile(path string) ([]byte, error) {
 		return nil, err
 	}
 	return ConvertSt(string(data))
+}
+
+// convertStBody extracts the body for the given symbol and converts a few simple
+// statements. Only assignments, prints and return expressions are handled.
+func convertStBody(src string, sym protocol.DocumentSymbol) string {
+	lines := strings.Split(src, "\n")
+	start := int(sym.Range.Start.Line)
+	end := int(sym.Range.End.Line)
+	if start < 0 || end >= len(lines) || start >= end {
+		return ""
+	}
+	seg := lines[start : end+1]
+	// skip method header
+	seg = seg[1:]
+	// drop trailing ! if present
+	if len(seg) > 0 && strings.TrimSpace(seg[len(seg)-1]) == "!" {
+		seg = seg[:len(seg)-1]
+	}
+	var stmts []string
+	for _, l := range seg {
+		l = strings.TrimSpace(strings.TrimSuffix(l, "."))
+		if l == "" || strings.HasPrefix(l, "|") {
+			continue
+		}
+		if s := convertStSimpleStmt(l); s != "" {
+			stmts = append(stmts, s)
+		} else {
+			stmts = append(stmts, "// "+l)
+		}
+	}
+	return strings.Join(stmts, "\n")
+}
+
+// convertStFallback performs a very small subset conversion of Smalltalk source
+// without relying on a language server. Only simple global statements are
+// supported: variable assignments, prints and basic loops.
+func convertStFallback(src string) ([]byte, error) {
+	lines := strings.Split(src, "\n")
+	start := -1
+	for i, l := range lines {
+		if strings.HasPrefix(strings.TrimSpace(l), "!!") {
+			start = i + 1
+			break
+		}
+	}
+	if start == -1 {
+		start = 0
+	}
+	var out strings.Builder
+	for i := start; i < len(lines); i++ {
+		l := strings.TrimSpace(lines[i])
+		if l == "" || l == "." {
+			continue
+		}
+		// while loop of the form [(cond)] whileTrue: [ body ]
+		if strings.Contains(l, "whileTrue:") {
+			condStart := strings.Index(l, "[")
+			condEnd := strings.Index(l, "]")
+			if condStart != -1 && condEnd != -1 && condEnd > condStart {
+				cond := strings.TrimSpace(l[condStart+1 : condEnd])
+				cond = strings.Trim(cond, "()")
+				body := ""
+				// body may start on same line after '[' or next lines until ']'
+				bodyParts := []string{}
+				rest := l[condEnd+1:]
+				if idx := strings.Index(rest, "["); idx != -1 {
+					rest = rest[idx+1:]
+					if id2 := strings.Index(rest, "]"); id2 != -1 {
+						bodyParts = append(bodyParts, strings.TrimSpace(rest[:id2]))
+					} else {
+						bodyParts = append(bodyParts, strings.TrimSpace(rest))
+						for j := i + 1; j < len(lines); j++ {
+							if k := strings.Index(lines[j], "]"); k != -1 {
+								bodyParts = append(bodyParts, strings.TrimSpace(lines[j][:k]))
+								i = j
+								break
+							}
+							bodyParts = append(bodyParts, strings.TrimSpace(lines[j]))
+						}
+					}
+				}
+				body = strings.Join(bodyParts, " ")
+				if b := convertStSimpleStmt(body); b != "" {
+					out.WriteString("while " + cond + " {\n  " + b + "\n}\n")
+				}
+				continue
+			}
+		}
+		if stmt := convertStSimpleStmt(strings.TrimSuffix(l, ".")); stmt != "" {
+			out.WriteString(stmt + "\n")
+		}
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+	}
+	return []byte(out.String()), nil
+}
+
+func convertStSimpleStmt(l string) string {
+	if strings.HasSuffix(l, "Transcript cr") {
+		l = strings.TrimSuffix(l, "Transcript cr")
+		l = strings.TrimSpace(strings.TrimSuffix(l, "."))
+	}
+	if strings.Contains(l, "displayOn: Transcript") {
+		parts := strings.Split(l, "displayOn: Transcript")
+		expr := strings.TrimSpace(parts[0])
+		expr = strings.Trim(expr, "()")
+		expr = strings.ReplaceAll(expr, "'", "\"")
+		return "print(" + expr + ")"
+	}
+	if strings.Contains(l, ":=") {
+		parts := strings.SplitN(l, ":=", 2)
+		left := strings.TrimSpace(parts[0])
+		right := strings.TrimSpace(parts[1])
+		right = strings.TrimSuffix(right, ".")
+		return left + " = " + right
+	}
+	if strings.HasPrefix(l, "^") {
+		return "return " + strings.TrimSpace(strings.TrimPrefix(l, "^"))
+	}
+	return ""
 }

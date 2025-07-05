@@ -15,6 +15,14 @@ Run the Smalltalk tests with:
 go test ./compile/st -tags slow
 ```
 
+### any2mochi converter
+
+The `tools/any2mochi` package includes a Smalltalk to Mochi converter. It uses
+the Squeak language server when available and falls back to a lightweight
+regex based parser for simple scripts. Supported constructs cover assignments,
+`print` statements, returns and basic `while` loops. More complex syntax is
+ignored or commented in the generated Mochi code.
+
 ## Supported features
 
 The backend implements a minimal subset of Mochi:
