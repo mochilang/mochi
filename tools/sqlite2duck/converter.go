@@ -14,6 +14,7 @@ var funcConversions = []struct{ in, out string }{
 	{"character_length", "length("},
 	{"printf", "format("},
 	{"instr", "strpos("},
+	{"iif", "if("},
 	{"current_timestamp", "now("},
 	{"current_date", "current_date("},
 	{"current_time", "current_time("},

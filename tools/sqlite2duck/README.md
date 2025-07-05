@@ -24,6 +24,7 @@ The converter currently handles the following patterns:
 - `character_length()` -> `length()`
 - `printf()` -> `format()`
 - `instr()` -> `strpos()`
+- `iif()` -> `if()`
 - `datetime('now')` -> `now()`
 - `datetime('now','localtime')` -> `now()`
 - `datetime('now','utc')` -> `now()`

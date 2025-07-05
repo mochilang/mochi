@@ -36,6 +36,7 @@ func TestConvert(t *testing.T) {
 		{"SELECT hex(randomblob(2));", "SELECT hex(random_bytes(2));"},
 		{"SELECT TRUE;", "SELECT true;"},
 		{"SELECT FALSE;", "SELECT false;"},
+		{"SELECT iif(a>b,1,0) FROM t;", "SELECT if(a>b,1,0) FROM t;"},
 	}
 	for _, tt := range tests {
 		got := Convert(tt.in)

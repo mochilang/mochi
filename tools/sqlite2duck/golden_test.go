@@ -53,6 +53,8 @@ func TestConvertGolden(t *testing.T) {
 			in = filepath.Join(root, "tests/dataset/slt/test/random/expr", strings.TrimPrefix(name, "expr_")+".test")
 		case strings.HasPrefix(base, "groupby_"):
 			in = filepath.Join(root, "tests/dataset/slt/test/random/groupby", strings.TrimPrefix(name, "groupby_")+".test")
+		case strings.HasPrefix(base, "extra_"):
+			in = filepath.Join(root, "tests/dataset/slt/test/extra", strings.TrimPrefix(name, "extra_")+".test")
 		default:
 			t.Fatalf("unknown golden file %s", base)
 		}
