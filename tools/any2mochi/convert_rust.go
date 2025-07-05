@@ -307,11 +307,30 @@ func convertRustType(src string, n *node) string {
 	if n == nil {
 		return "any"
 	}
-	t := strings.TrimSpace(src[n.start:n.end])
+	return convertRustTypeFromString(strings.TrimSpace(src[n.start:n.end]))
+}
+
+func convertRustTypeFromString(t string) string {
+	t = strings.TrimSpace(t)
 	t = strings.TrimPrefix(t, "&")
 	t = strings.TrimPrefix(t, "mut ")
 	if strings.HasPrefix(t, "Box<") && strings.HasSuffix(t, ">") {
 		t = strings.TrimSuffix(strings.TrimPrefix(t, "Box<"), ">")
+	}
+	if strings.HasPrefix(t, "Vec<") && strings.HasSuffix(t, ">") {
+		inner := t[4 : len(t)-1]
+		return "[" + convertRustTypeFromString(inner) + "]"
+	}
+	if strings.HasPrefix(t, "Option<") && strings.HasSuffix(t, ">") {
+		inner := t[7 : len(t)-1]
+		return convertRustTypeFromString(inner)
+	}
+	if strings.HasPrefix(t, "[") && strings.HasSuffix(t, "]") {
+		inner := t[1 : len(t)-1]
+		if idx := strings.Index(inner, ";"); idx >= 0 {
+			inner = inner[:idx]
+		}
+		return "[" + convertRustTypeFromString(inner) + "]"
 	}
 	if i := strings.Index(t, "<"); i >= 0 {
 		t = t[:i]
@@ -325,9 +344,11 @@ func convertRustType(src string, n *node) string {
 		return "bool"
 	case "String", "str":
 		return "string"
-	default:
-		return t
 	}
+	if len(t) <= 2 && t != "" && strings.ToUpper(t) == t {
+		return "any"
+	}
+	return t
 }
 
 func convertStruct(src string, n *node) []string {
@@ -470,9 +491,48 @@ func convertFn(src string, n *node, level int) []string {
 		header += ": " + ret
 	}
 	out := []string{indent(level) + header + " {"}
-	body := findChild(findChild(n, "BLOCK_EXPR"), "STMT_LIST")
-	out = append(out, convertStmts(src, body, level+1)...)
+	block := findChild(n, "BLOCK_EXPR")
+	body := findChild(block, "STMT_LIST")
+	if body != nil {
+		out = append(out, convertStmts(src, body, level+1)...)
+	} else if block != nil {
+		out = append(out, fallbackRustBody(src[block.start:block.end], level+1)...)
+	}
 	out = append(out, indent(level)+"}")
+	return out
+}
+
+func fallbackRustBody(body string, level int) []string {
+	body = strings.TrimSpace(body)
+	if strings.HasPrefix(body, "{") && strings.HasSuffix(body, "}") {
+		body = strings.TrimSpace(body[1 : len(body)-1])
+	}
+	var out []string
+	for _, line := range strings.Split(body, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		line = strings.TrimSuffix(line, ";")
+		line = strings.Replace(line, "let ", "var ", 1)
+		line = strings.Replace(line, "mut ", "", 1)
+		if strings.HasPrefix(line, "println!") {
+			args := strings.TrimPrefix(line, "println!")
+			args = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(args, "("), ")"))
+			parts := splitRustArgs(args)
+			if len(parts) > 0 && strings.HasPrefix(strings.TrimSpace(parts[0]), "\"") {
+				if len(parts) == 1 {
+					line = "print(" + parts[0] + ")"
+				} else {
+					parts = parts[1:]
+					line = "print(" + strings.Join(parts, ", ") + ")"
+				}
+			} else {
+				line = "print(" + strings.Join(parts, ", ") + ")"
+			}
+		}
+		out = append(out, indent(level)+line)
+	}
 	return out
 }
 

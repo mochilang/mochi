@@ -12,6 +12,9 @@ This directory contains Rust source snippets used to verify the `any2mochi` Rust
 - Basic macros like `println!`
 - Constant and type alias declarations
 - Trailing expressions at the end of functions
+- Generic functions (type parameters are ignored)
+- `Vec<T>` and slice types convert to Mochi lists
+- Basic `Option<T>` unwrap to the inner type
 
 ## Unsupported Features
 
