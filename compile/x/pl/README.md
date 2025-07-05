@@ -325,3 +325,18 @@ Mochi language features are not yet implemented:
 - Generative AI helpers (`generate`, `model`)
 - Embedding generation with `generate embedding`
 - Package imports and exports
+
+## any2mochi Converter
+
+`tools/any2mochi` includes a Prolog converter that uses `prolog-lsp` to generate
+stub Mochi functions from existing Prolog source files.
+
+### Supported Features
+
+- Extraction of predicate names and arity via document symbols.
+- Parameter names retrieved from hover information when available.
+
+### Unsupported Features
+
+- Type information or return values.
+- Directives and module metadata not reported by the language server.

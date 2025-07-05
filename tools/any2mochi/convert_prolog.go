@@ -3,6 +3,7 @@ package any2mochi
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -10,8 +11,12 @@ import (
 
 // ConvertProlog converts Prolog source code to Mochi using the language server.
 func ConvertProlog(src string) ([]byte, error) {
+	return convertProlog(src, "")
+}
+
+func convertProlog(src, root string) ([]byte, error) {
 	ls := Servers["prolog"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+	syms, diags, err := EnsureAndParseWithRoot(ls.Command, ls.Args, ls.LangID, src, root)
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +24,7 @@ func ConvertProlog(src string) ([]byte, error) {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
 	var out strings.Builder
-	writePrologSymbols(&out, ls, src, syms)
+	writePrologSymbols(&out, ls, src, syms, root)
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
@@ -32,17 +37,17 @@ func ConvertPrologFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ConvertProlog(string(data))
+	return convertProlog(string(data), filepath.Dir(path))
 }
 
-func writePrologSymbols(out *strings.Builder, ls LanguageServer, src string, syms []protocol.DocumentSymbol) {
+func writePrologSymbols(out *strings.Builder, ls LanguageServer, src string, syms []protocol.DocumentSymbol, root string) {
 	for _, s := range syms {
 		switch s.Kind {
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod,
 			protocol.SymbolKindVariable, protocol.SymbolKindConstant:
 			params := parsePrologSignature(s.Detail)
 			if len(params) == 0 {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
+				if hov, err := EnsureAndHoverWithRoot(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start, root); err == nil {
 					if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
 						params = parsePrologSignature(&mc.Value)
 					}
@@ -60,7 +65,7 @@ func writePrologSymbols(out *strings.Builder, ls LanguageServer, src string, sym
 			out.WriteString(") {}\n")
 		default:
 			if len(s.Children) > 0 {
-				writePrologSymbols(out, ls, src, s.Children)
+				writePrologSymbols(out, ls, src, s.Children, root)
 			}
 		}
 	}
