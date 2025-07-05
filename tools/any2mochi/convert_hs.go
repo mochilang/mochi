@@ -134,6 +134,9 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
+		case protocol.SymbolKindNamespace, protocol.SymbolKindModule, protocol.SymbolKindPackage:
+			writeHsSymbols(out, nameParts, s.Children, src, ls)
+			continue
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
 			names := extractHsParams(s)
 			types, ret := getHsSignature(src, s, ls)
@@ -153,6 +156,26 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteString(ret)
 			}
 			out.WriteString(" {}\n")
+		case protocol.SymbolKindEnum:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindEnumMember || (c.Kind == protocol.SymbolKindEnum && len(c.Children) == 0) {
+					fmt.Fprintf(out, "  %s\n", c.Name)
+				}
+			}
+			out.WriteString("}\n")
+			var rest []protocol.DocumentSymbol
+			for _, c := range s.Children {
+				if !(c.Kind == protocol.SymbolKindEnumMember || (c.Kind == protocol.SymbolKindEnum && len(c.Children) == 0)) {
+					rest = append(rest, c)
+				}
+			}
+			if len(rest) > 0 {
+				writeHsSymbols(out, nameParts, rest, src, ls)
+			}
+			continue
 		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -167,9 +190,10 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				}
 				out.WriteString("  ")
 				out.WriteString(c.Name)
-				if c.Detail != nil && strings.TrimSpace(*c.Detail) != "" {
+				typ := hsFieldType(src, c, ls)
+				if typ != "" {
 					out.WriteString(": ")
-					out.WriteString(mapHsType(strings.TrimSpace(*c.Detail)))
+					out.WriteString(typ)
 				}
 				out.WriteByte('\n')
 			}
@@ -204,6 +228,20 @@ func getHsVarType(src string, sym protocol.DocumentSymbol, ls LanguageServer) st
 	}
 	typ, _ := parseHsVarSig(hoverString(hov))
 	return typ
+}
+
+func hsFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+	if sym.Detail != nil && strings.TrimSpace(*sym.Detail) != "" {
+		if t, _ := parseHsVarSig(*sym.Detail); t != "" {
+			return t
+		}
+	}
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err != nil {
+		return ""
+	}
+	t, _ := parseHsVarSig(hoverString(hov))
+	return t
 }
 
 func parseHsVarSig(sig string) (string, bool) {
