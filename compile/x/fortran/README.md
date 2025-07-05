@@ -24,7 +24,7 @@ Run `go test ./compile/fortran -tags slow` to execute the golden tests. They wil
 - list operations: `union`, `union all`, `except` and `intersect` on integer, float and string lists
 - basic dataset queries with `from`/`where`/`select` and optional `skip`/`take`
 - struct types declared with `type` blocks and simple struct literals
-- built-ins: `len`, `append`, `count`, `avg`, `str`, `now`
+ - built-ins: `len`, `append`, `count`, `avg`, `str`, `abs`, `now`
 - printing via `print()`
 - `package` and `export` declarations (ignored during code generation)
 - `import` statements emit Fortran `include` lines
