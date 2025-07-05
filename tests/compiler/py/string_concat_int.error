@@ -1,0 +1,6 @@
+generated code does not match expected
+--- expected
++++ generated
+@@ -1 +1 @@
+-print("value: " + 7)
++print("value: " + str(7))
