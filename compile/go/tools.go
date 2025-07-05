@@ -89,6 +89,26 @@ func EnsureGo() error {
 	return fmt.Errorf("go not found")
 }
 
+// EnsureGopls installs gopls if it is not present in PATH.
+// It requires the Go toolchain to be available.
+func EnsureGopls() error {
+	if _, err := exec.LookPath("gopls"); err == nil {
+		return nil
+	}
+	if err := EnsureGo(); err != nil {
+		return err
+	}
+	fmt.Println("\U0001F527 Installing gopls...")
+	cmd := exec.Command("go", "install", "golang.org/x/tools/gopls@latest")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	_ = cmd.Run()
+	if _, err := exec.LookPath("gopls"); err == nil {
+		return nil
+	}
+	return fmt.Errorf("gopls not found")
+}
+
 // FormatGo formats the provided Go source. It first uses the standard library
 // formatter and then, if available, attempts to run `goimports` or `gofmt` for
 // additional cleanup. The input is returned with a trailing newline.
