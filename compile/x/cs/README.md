@@ -172,6 +172,13 @@ The C# backend focuses on fundamental features: functions, control flow, structs
 - Placeholder generative helpers `_genText`, `_genEmbed` and `_genStruct`
 - Test blocks with `expect`
 
+### Converter support
+
+The `any2mochi` tool can also translate simple C# programs back to Mochi.
+It relies solely on the OmniSharp language server.  Function bodies
+containing variable declarations, loops and `Console.WriteLine` calls are
+now parsed into equivalent Mochi statements.
+
 ### Unsupported features
 
 - The backend is still incomplete. Notable gaps include:

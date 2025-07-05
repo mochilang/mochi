@@ -6,11 +6,15 @@ import (
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
+
+	cscode "mochi/compile/x/cs"
 )
 
 // ConvertCs converts cs source code to Mochi using the language server.
 func ConvertCs(src string) ([]byte, error) {
 	ls := Servers["cs"]
+	// omnisharp requires the dotnet CLI which may not be installed
+	_ = cscode.EnsureDotnet()
 	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil {
 		return nil, err
@@ -100,7 +104,18 @@ func writeCsSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			out.WriteString(" {}\n")
+			body := convertCsBody(src, s.Range)
+			if len(body) == 0 {
+				out.WriteString(" {}\n")
+			} else {
+				out.WriteString(" {\n")
+				for _, line := range body {
+					out.WriteString("  ")
+					out.WriteString(line)
+					out.WriteByte('\n')
+				}
+				out.WriteString("}\n")
+			}
 			if len(s.Children) > 0 {
 				writeCsSymbols(out, nameParts, s.Children, src, ls)
 			}
@@ -360,4 +375,37 @@ func csFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) str
 		}
 	}
 	return ""
+}
+
+// convertCsBody returns a slice of Mochi statements for the given range.
+// It performs very light-weight translation of common C# statements.
+func convertCsBody(src string, r protocol.Range) []string {
+	lines := strings.Split(src, "\n")
+	start := int(r.Start.Line)
+	end := int(r.End.Line)
+	if start >= len(lines) || end >= len(lines) {
+		return nil
+	}
+	bodyLines := lines[start : end+1]
+	if len(bodyLines) > 0 {
+		bodyLines = bodyLines[1:]
+	}
+	if len(bodyLines) > 0 {
+		bodyLines = bodyLines[:len(bodyLines)-1]
+	}
+	var out []string
+	for _, l := range bodyLines {
+		l = strings.TrimSpace(l)
+		l = strings.TrimSuffix(l, ";")
+		if l == "" {
+			continue
+		}
+		if strings.HasPrefix(l, "Console.WriteLine(") {
+			l = "print(" + strings.TrimPrefix(strings.TrimSuffix(l, ")"), "Console.WriteLine(") + ")"
+		}
+		l = strings.ReplaceAll(l, "long ", "")
+		l = strings.ReplaceAll(l, "int ", "")
+		out = append(out, l)
+	}
+	return out
 }
