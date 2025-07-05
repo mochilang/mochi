@@ -16,6 +16,36 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
+func readGolden(path string, alts ...string) ([]byte, error) {
+	if data, err := os.ReadFile(path); err == nil {
+		return data, nil
+	}
+	for _, p := range alts {
+		if b, err := os.ReadFile(p); err == nil {
+			return b, nil
+		}
+	}
+	return nil, fmt.Errorf("missing golden file: %s", path)
+}
+
+func removeIfEmpty(path string) {
+	if info, err := os.Stat(path); err == nil && info.Size() == 0 {
+		os.Remove(path)
+	}
+}
+
+func renameLegacy(dir, lang, name, ext string) {
+	old := filepath.Join(dir, name+"."+lang+ext)
+	new := filepath.Join(dir, name+ext)
+	if _, err := os.Stat(old); err == nil {
+		if _, err2 := os.Stat(new); err2 == nil {
+			os.Remove(old)
+		} else {
+			os.Rename(old, new)
+		}
+	}
+}
+
 func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
 	files, err := filepath.Glob(filepath.Join(dir, pattern))
 	if err != nil {
@@ -39,8 +69,11 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 		t.Run(name, func(t *testing.T) {
 			mochiSrc, err := convert(src)
 			root := rootDir(t)
-			outPath := filepath.Join(root, "tests/any2mochi", lang, name+outExt)
-			errPath := filepath.Join(root, "tests/any2mochi", lang, name+errExt)
+			outDir := filepath.Join(root, "tests/any2mochi", lang)
+			outPath := filepath.Join(outDir, name+outExt)
+			errPath := filepath.Join(outDir, name+errExt)
+			renameLegacy(outDir, lang, name, outExt)
+			renameLegacy(outDir, lang, name, errExt)
 
 			if err == nil {
 				prog, pErr := parser.ParseString(string(mochiSrc))
@@ -63,7 +96,8 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 					os.WriteFile(outPath, nil, 0644)
 					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
 				}
-				want, readErr := os.ReadFile(errPath)
+				altErr := filepath.Join(outDir, name+"."+lang+errExt)
+				want, readErr := readGolden(errPath, altErr)
 				if readErr != nil {
 					t.Fatalf("missing golden error: %v", readErr)
 				}
@@ -75,9 +109,11 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 
 			if *update {
 				os.WriteFile(errPath, nil, 0644)
+				removeIfEmpty(errPath)
 				os.WriteFile(outPath, normalizeOutput(rootDir(t), mochiSrc), 0644)
 			}
-			want, readErr := os.ReadFile(outPath)
+			altOut := filepath.Join(outDir, name+"."+lang+outExt)
+			want, readErr := readGolden(outPath, altOut)
 			if readErr != nil {
 				t.Fatalf("missing golden output: %v", readErr)
 			}
@@ -115,13 +151,16 @@ func runConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([
 			os.MkdirAll(outDir, 0755)
 			outPath := filepath.Join(outDir, name+outExt)
 			errPath := filepath.Join(outDir, name+errExt)
+			renameLegacy(outDir, lang, name, outExt)
+			renameLegacy(outDir, lang, name, errExt)
 
 			if err != nil {
 				if *update {
 					os.WriteFile(outPath, nil, 0644)
 					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
 				}
-				want, readErr := os.ReadFile(errPath)
+				altErr := filepath.Join(outDir, name+"."+lang+errExt)
+				want, readErr := readGolden(errPath, altErr)
 				if readErr != nil {
 					t.Fatalf("missing golden error: %v", readErr)
 				}
@@ -133,9 +172,11 @@ func runConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([
 
 			if *update {
 				os.WriteFile(errPath, nil, 0644)
+				removeIfEmpty(errPath)
 				os.WriteFile(outPath, normalizeOutput(rootDir(t), out), 0644)
 			}
-			want, readErr := os.ReadFile(outPath)
+			altOut := filepath.Join(outDir, name+"."+lang+outExt)
+			want, readErr := readGolden(outPath, altOut)
 			if readErr != nil {
 				t.Fatalf("missing golden output: %v", readErr)
 			}
