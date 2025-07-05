@@ -1,2 +1,4 @@
 tests/compiler/go/upper_builtin.go.out:9: unsupported expr *ast.SelectorExpr
->>> fmt.Println(strings.ToUpper("foo"))
+>>> 8:    func main() {
+9:>>> fmt.Println(strings.ToUpper("foo"))
+10:    }

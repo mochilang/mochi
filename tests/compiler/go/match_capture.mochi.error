@@ -1,2 +1,4 @@
 tests/compiler/go/match_capture.go.out:7: unsupported declaration
->>> type Tree interface{ isTree() }
+>>> 6:    
+7:>>> type Tree interface{ isTree() }
+8:    type Leaf struct {

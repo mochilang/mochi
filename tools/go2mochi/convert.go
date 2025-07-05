@@ -19,10 +19,26 @@ type converter struct {
 
 func (c *converter) snippet(pos token.Pos) string {
 	p := c.fset.Position(pos)
-	if p.Line-1 >= 0 && p.Line-1 < len(c.lines) {
-		return strings.TrimSpace(c.lines[p.Line-1])
+	if p.Line <= 0 || p.Line > len(c.lines) {
+		return ""
 	}
-	return ""
+	start := p.Line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := p.Line + 1
+	if end > len(c.lines) {
+		end = len(c.lines)
+	}
+	var b strings.Builder
+	for i := start; i < end; i++ {
+		prefix := "    "
+		if i == p.Line-1 {
+			prefix = ">>> "
+		}
+		fmt.Fprintf(&b, "%d:%s%s\n", i+1, prefix, strings.TrimSpace(c.lines[i]))
+	}
+	return strings.TrimSuffix(b.String(), "\n")
 }
 
 func (c *converter) errorf(n ast.Node, format string, args ...interface{}) error {
@@ -177,21 +193,38 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 		if len(st.Lhs) != 1 || len(st.Rhs) != 1 {
 			return "", c.errorf(st, "unsupported assignment")
 		}
-		ident, ok := st.Lhs[0].(*ast.Ident)
-		if !ok {
-			return "", c.errorf(st.Lhs[0], "unsupported assignment lhs")
-		}
 		rhs, err := c.translateExpr(st.Rhs[0])
 		if err != nil {
 			return "", err
 		}
-		switch st.Tok {
-		case token.DEFINE:
-			return fmt.Sprintf("let %s = %s", ident.Name, rhs), nil
-		case token.ASSIGN:
-			return fmt.Sprintf("%s = %s", ident.Name, rhs), nil
+		switch lhs := st.Lhs[0].(type) {
+		case *ast.Ident:
+			switch st.Tok {
+			case token.DEFINE:
+				return fmt.Sprintf("let %s = %s", lhs.Name, rhs), nil
+			case token.ASSIGN:
+				return fmt.Sprintf("%s = %s", lhs.Name, rhs), nil
+			case token.ADD_ASSIGN, token.SUB_ASSIGN, token.MUL_ASSIGN, token.QUO_ASSIGN, token.REM_ASSIGN:
+				op := st.Tok.String()[:1]
+				return fmt.Sprintf("%s = %s %s %s", lhs.Name, lhs.Name, op, rhs), nil
+			default:
+				return "", c.errorf(st, "unsupported assign op %s", st.Tok)
+			}
+		case *ast.IndexExpr:
+			target, err := c.translateExpr(lhs.X)
+			if err != nil {
+				return "", err
+			}
+			idx, err := c.translateExpr(lhs.Index)
+			if err != nil {
+				return "", err
+			}
+			if st.Tok != token.ASSIGN {
+				return "", c.errorf(st, "unsupported assign op %s", st.Tok)
+			}
+			return fmt.Sprintf("%s[%s] = %s", target, idx, rhs), nil
 		default:
-			return "", c.errorf(st, "unsupported assign op %s", st.Tok)
+			return "", c.errorf(lhs, "unsupported assignment lhs")
 		}
 	case *ast.DeclStmt:
 		gen, ok := st.Decl.(*ast.GenDecl)
@@ -199,14 +232,21 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 			return "", c.errorf(st, "unsupported declaration")
 		}
 		vs, ok := gen.Specs[0].(*ast.ValueSpec)
-		if !ok || len(vs.Names) != 1 || len(vs.Values) != 1 {
+		if !ok || len(vs.Names) != 1 {
 			return "", c.errorf(st, "unsupported var spec")
 		}
-		rhs, err := c.translateExpr(vs.Values[0])
-		if err != nil {
-			return "", err
+		name := vs.Names[0].Name
+		if len(vs.Values) == 1 {
+			rhs, err := c.translateExpr(vs.Values[0])
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("var %s = %s", name, rhs), nil
 		}
-		return fmt.Sprintf("var %s = %s", vs.Names[0].Name, rhs), nil
+		if len(vs.Values) == 0 && vs.Type != nil {
+			return fmt.Sprintf("var %s: %s", name, typeString(c.fset, vs.Type)), nil
+		}
+		return "", c.errorf(st, "unsupported var spec")
 	case *ast.ReturnStmt:
 		if len(st.Results) == 0 {
 			return "return", nil
@@ -261,17 +301,79 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 			}
 		}
 		return b.String(), nil
+	case *ast.BranchStmt:
+		switch st.Tok {
+		case token.BREAK:
+			return "break", nil
+		case token.CONTINUE:
+			return "continue", nil
+		default:
+			return "", c.errorf(st, "unsupported branch %s", st.Tok)
+		}
 	case *ast.ForStmt:
-		if st.Init != nil || st.Post != nil {
+		if st.Init == nil && st.Post == nil {
+			cond := "true"
+			var err error
+			if st.Cond != nil {
+				cond, err = c.translateExpr(st.Cond)
+				if err != nil {
+					return "", err
+				}
+			}
+			var b strings.Builder
+			b.WriteString("while ")
+			b.WriteString(cond)
+			b.WriteString(" {\n")
+			for _, s2 := range st.Body.List {
+				line, err := c.translateStmt(s2)
+				if err != nil {
+					return "", err
+				}
+				if line != "" {
+					b.WriteString("  ")
+					b.WriteString(line)
+					b.WriteByte('\n')
+				}
+			}
+			b.WriteString("}")
+			return b.String(), nil
+		}
+		// try for i := a; i < b; i++ pattern
+		init, ok := st.Init.(*ast.AssignStmt)
+		if !ok || len(init.Lhs) != 1 || len(init.Rhs) != 1 || init.Tok != token.DEFINE {
 			return "", c.errorf(st, "unsupported for clause")
 		}
-		cond, err := c.translateExpr(st.Cond)
+		ivar, ok := init.Lhs[0].(*ast.Ident)
+		if !ok {
+			return "", c.errorf(init.Lhs[0], "unsupported for init")
+		}
+		be, ok := st.Cond.(*ast.BinaryExpr)
+		if !ok || be.Op != token.LSS {
+			return "", c.errorf(st.Cond, "unsupported for condition")
+		}
+		if xid, ok := be.X.(*ast.Ident); !ok || xid.Name != ivar.Name {
+			return "", c.errorf(be.X, "unsupported for condition")
+		}
+		inc, ok := st.Post.(*ast.IncDecStmt)
+		if !ok || inc.Tok != token.INC {
+			return "", c.errorf(st.Post, "unsupported for post")
+		}
+		if xid, ok := inc.X.(*ast.Ident); !ok || xid.Name != ivar.Name {
+			return "", c.errorf(inc.X, "unsupported for post")
+		}
+		start, err := c.translateExpr(init.Rhs[0])
+		if err != nil {
+			return "", err
+		}
+		end, err := c.translateExpr(be.Y)
 		if err != nil {
 			return "", err
 		}
 		var b strings.Builder
-		b.WriteString("while ")
-		b.WriteString(cond)
+		b.WriteString("for ")
+		b.WriteString(ivar.Name)
+		b.WriteString(" in ")
+		b.WriteString(fmt.Sprintf("%s..%s", start, end))
 		b.WriteString(" {\n")
 		for _, s2 := range st.Body.List {
 			line, err := c.translateStmt(s2)
@@ -363,8 +465,20 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		}
 		return fmt.Sprintf("%s%s", ex.Op.String(), x), nil
 	case *ast.ParenExpr:
-		return c.translateExpr(ex.X)
+		inner, err := c.translateExpr(ex.X)
+		if err != nil {
+			return "", err
+		}
+		switch ex.X.(type) {
+		case *ast.BasicLit, *ast.Ident:
+			return inner, nil
+		default:
+			return fmt.Sprintf("(%s)", inner), nil
+		}
 	case *ast.CallExpr:
+		if _, ok := ex.Fun.(*ast.IndexExpr); ok {
+			return "", c.errorf(ex, "unsupported generics")
+		}
 		if sel, ok := ex.Fun.(*ast.SelectorExpr); ok {
 			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" && sel.Sel.Name == "Println" {
 				if len(ex.Args) != 1 {
@@ -436,6 +550,35 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 			args[i] = v
 		}
 		return fmt.Sprintf("%s(%s)", fun, strings.Join(args, ", ")), nil
+	case *ast.IndexExpr:
+		x, err := c.translateExpr(ex.X)
+		if err != nil {
+			return "", err
+		}
+		idx, err := c.translateExpr(ex.Index)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s[%s]", x, idx), nil
+	case *ast.SliceExpr:
+		x, err := c.translateExpr(ex.X)
+		if err != nil {
+			return "", err
+		}
+		var low, high string
+		if ex.Low != nil {
+			low, err = c.translateExpr(ex.Low)
+			if err != nil {
+				return "", err
+			}
+		}
+		if ex.High != nil {
+			high, err = c.translateExpr(ex.High)
+			if err != nil {
+				return "", err
+			}
+		}
+		return fmt.Sprintf("%s[%s:%s]", x, low, high), nil
 	case *ast.CompositeLit:
 		if _, ok := ex.Type.(*ast.ArrayType); ok {
 			items := make([]string, len(ex.Elts))

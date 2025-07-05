@@ -1,2 +1,4 @@
 tests/compiler/go/struct_method.go.out:7: unsupported declaration
->>> type Counter struct {
+>>> 6:    
+7:>>> type Counter struct {
+8:    Value int `json:"value"`

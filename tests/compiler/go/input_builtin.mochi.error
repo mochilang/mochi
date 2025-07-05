@@ -1,2 +1,4 @@
-tests/compiler/go/input_builtin.go.out:16: unsupported var spec
->>> var s string
+tests/compiler/go/input_builtin.go.out:17: unsupported expr *ast.SelectorExpr
+>>> 16:    var s string
+17:>>> fmt.Scanln(&s)
+18:    return s

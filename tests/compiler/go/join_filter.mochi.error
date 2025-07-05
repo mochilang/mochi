@@ -1,2 +1,4 @@
 tests/compiler/go/join_filter.go.out:7: unsupported declaration
->>> type Person struct {
+>>> 6:    
+7:>>> type Person struct {
+8:    Id   int    `json:"id"`

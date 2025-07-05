@@ -1,2 +1,0 @@
-tests/compiler/go/for_loop.go.out:8: unsupported for clause
->>> for i := 1; i < 4; i++ {
