@@ -1,5 +1,0 @@
-tests/compiler/go/tpch_q2.go.out:62: unsupported declaration
->>> 61:    
-62:>>> var region []RegionItem = []RegionItem{RegionItem{
-63:    R_regionkey: 1,
-64:    R_name:      "EUROPE",

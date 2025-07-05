@@ -18,14 +18,15 @@ func ConvertCpp(src string) ([]byte, error) {
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
+	funcs := flattenSymbols(syms)
 	var out strings.Builder
-	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
+	for _, s := range funcs {
+		switch s.Kind {
+		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+			out.WriteString("fun ")
+			out.WriteString(s.Name)
+			out.WriteString("() {}\n")
 		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteString("() {}\n")
 	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))

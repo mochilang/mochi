@@ -1,5 +1,0 @@
-tests/compiler/go/match_capture.go.out:11: unsupported method declaration
->>> 10:    
-11:>>> func (Leaf) isTree() {}
-12:    
-13:    type Node struct {
