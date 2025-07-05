@@ -1,6 +1,0 @@
-tests/compiler/go/match_underscore.go.out:8: unsupported type spec
->>> 7:    
-8:>>> type Tree interface{ isTree() }
-9:    type Leaf struct {
-10:    }
-

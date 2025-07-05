@@ -1,5 +1,0 @@
-fun prepend(level: list<int>, result: list<list<int>>): list<list<int>> {
-  result = concat(concat([], [level]), result)
-  return result
-}
-print(str(prepend([1, 2], [[3], [4]])))

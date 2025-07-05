@@ -1,6 +1,0 @@
-tests/compiler/go/reduce_builtin.go.out:15: unsupported generics
->>> 14:    
-15:>>> func _reduce[T any](src []T, fn func(T, T) T, init T) T {
-16:    acc := init
-17:    for _, v := range src {
-

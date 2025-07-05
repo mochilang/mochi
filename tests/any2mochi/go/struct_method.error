@@ -1,0 +1,5 @@
+tests/compiler/go/struct_method.go.out:11: unsupported method declaration
+>>> 10:    
+11:>>> func (s *Counter) Inc(x int) {
+12:    s.Value = (s.Value + x)
+13:    }

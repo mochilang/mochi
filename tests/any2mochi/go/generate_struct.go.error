@@ -1,6 +1,0 @@
-tests/compiler/go/generate_struct.go.out:21: unsupported generics
->>> 20:    
-21:>>> func _genStruct[T any](prompt string, model string, params map[string]any) T {
-22:    opts := []llm.Option{}
-23:    if model != "" {
-
