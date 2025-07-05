@@ -16,6 +16,7 @@ php main.php
 The PHP compiler implements a subset of Mochi including:
 
 - variable declarations and assignments
+- top-level variables and constants
 - `if`, `for`, `while` and range loops
 - functions and closures
 - lists and maps with indexing and updates
