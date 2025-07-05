@@ -229,6 +229,41 @@ func (c *converter) translateStmt(s ast.Stmt) (string, error) {
 	case *ast.ExprStmt:
 		return c.translateExprStmt(st)
 	case *ast.AssignStmt:
+		if len(st.Lhs) == 2 && len(st.Rhs) == 1 {
+			// Handle map lookup with existence check: v, ok := m[k]
+			idx, ok := st.Rhs[0].(*ast.IndexExpr)
+			if ok {
+				mapExpr, err := c.translateExpr(idx.X)
+				if err != nil {
+					return "", err
+				}
+				keyExpr, err := c.translateExpr(idx.Index)
+				if err != nil {
+					return "", err
+				}
+				var lines []string
+				if id, ok := st.Lhs[0].(*ast.Ident); ok && id.Name != "_" {
+					target := fmt.Sprintf("%s[%s]", mapExpr, keyExpr)
+					if st.Tok == token.DEFINE {
+						lines = append(lines, fmt.Sprintf("let %s = %s", id.Name, target))
+					} else if st.Tok == token.ASSIGN {
+						lines = append(lines, fmt.Sprintf("%s = %s", id.Name, target))
+					} else {
+						return "", c.errorf(st, "unsupported assign op %s", st.Tok)
+					}
+				}
+				if id, ok := st.Lhs[1].(*ast.Ident); ok && id.Name != "_" {
+					cond := fmt.Sprintf("%s in %s", keyExpr, mapExpr)
+					if st.Tok == token.DEFINE {
+						lines = append(lines, fmt.Sprintf("let %s = %s", id.Name, cond))
+					} else if st.Tok == token.ASSIGN {
+						lines = append(lines, fmt.Sprintf("%s = %s", id.Name, cond))
+					}
+				}
+				return strings.Join(lines, "\n"), nil
+			}
+			return "", c.errorf(st, "unsupported assignment")
+		}
 		if len(st.Lhs) != 1 || len(st.Rhs) != 1 {
 			return "", c.errorf(st, "unsupported assignment")
 		}
