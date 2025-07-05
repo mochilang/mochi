@@ -32,7 +32,7 @@ func ConvertC(src string) ([]byte, error) {
 		switch s.Kind {
 		case protocol.SymbolKindFunction:
 			matched = true
-			ret, params := parseCSignature(s.Detail)
+			ret, params := cHoverSignature(src, s, ls)
 
 			out.WriteString("fun ")
 			out.WriteString(s.Name)
@@ -59,6 +59,22 @@ func ConvertC(src string) ([]byte, error) {
 				out.WriteString(ret)
 			}
 			out.WriteString(" {}\n")
+		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			matched = true
+			out.WriteString("let ")
+			out.WriteString(s.Name)
+			typ := ""
+			if s.Detail != nil {
+				typ = mapCType(*s.Detail)
+			}
+			if typ == "" {
+				typ = cHoverFieldType(src, s, ls)
+			}
+			if typ != "" {
+				out.WriteString(": ")
+				out.WriteString(typ)
+			}
+			out.WriteByte('\n')
 		case protocol.SymbolKindStruct, protocol.SymbolKindClass:
 			matched = true
 			if len(s.Children) == 0 {
@@ -85,12 +101,16 @@ func ConvertC(src string) ([]byte, error) {
 				}
 				out.WriteString("  ")
 				out.WriteString(c.Name)
+				typ := ""
 				if c.Detail != nil {
-					t := mapCType(*c.Detail)
-					if t != "" {
-						out.WriteString(": ")
-						out.WriteString(t)
-					}
+					typ = mapCType(*c.Detail)
+				}
+				if typ == "" {
+					typ = cHoverFieldType(src, c, ls)
+				}
+				if typ != "" {
+					out.WriteString(": ")
+					out.WriteString(typ)
 				}
 				out.WriteByte('\n')
 			}
@@ -131,7 +151,13 @@ func parseCSignature(detail *string) (string, []cParam) {
 	if open < 0 || close < open {
 		return mapCType(sig), nil
 	}
-	ret := mapCType(strings.TrimSpace(sig[:open]))
+	header := strings.TrimSpace(sig[:open])
+	ret := ""
+	if parts := strings.Fields(header); len(parts) > 1 {
+		ret = mapCType(strings.Join(parts[:len(parts)-1], " "))
+	} else {
+		ret = mapCType(header)
+	}
 	paramsPart := strings.TrimSpace(sig[open+1 : close])
 	if paramsPart == "" || paramsPart == "void" {
 		return ret, nil
@@ -214,4 +240,39 @@ func mapCType(typ string) string {
 		}
 		return typ
 	}
+}
+
+// cHoverSignature obtains the function signature via hover information.
+// It returns the return type and parameter list. If hover data is unavailable
+// it falls back to the symbol detail.
+func cHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) (string, []cParam) {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err == nil {
+		if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+			for _, line := range strings.Split(mc.Value, "\n") {
+				l := strings.TrimSpace(line)
+				if strings.Contains(l, "(") && strings.Contains(l, ")") {
+					return parseCSignature(&l)
+				}
+			}
+		}
+	}
+	return parseCSignature(sym.Detail)
+}
+
+// cHoverFieldType retrieves the type of a symbol using hover information.
+func cHoverFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	if err != nil {
+		return ""
+	}
+	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+		for _, line := range strings.Split(mc.Value, "\n") {
+			fields := strings.Fields(strings.TrimSpace(line))
+			if len(fields) > 0 {
+				return mapCType(fields[0])
+			}
+		}
+	}
+	return ""
 }
