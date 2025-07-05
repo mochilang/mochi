@@ -37,6 +37,7 @@ func TestConvert(t *testing.T) {
 		{"SELECT TRUE;", "SELECT true;"},
 		{"SELECT FALSE;", "SELECT false;"},
 		{"SELECT iif(a>b,1,0) FROM t;", "SELECT if(a>b,1,0) FROM t;"},
+		{"SELECT octet_length(name) FROM t;", "SELECT length(name) FROM t;"},
 	}
 	for _, tt := range tests {
 		got := Convert(tt.in)
