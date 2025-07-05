@@ -51,7 +51,17 @@ func ConvertErlang(src string) ([]byte, error) {
 			out.WriteString(": ")
 			out.WriteString(ret)
 		}
-		out.WriteString(" {}\n")
+		body := parseErlangBody(src, s.Range)
+		if len(body) == 0 {
+			out.WriteString(" {}\n")
+		} else {
+			out.WriteString(" {\n")
+			for _, line := range body {
+				out.WriteString(line)
+				out.WriteByte('\n')
+			}
+			out.WriteString("}\n")
+		}
 	}
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
@@ -120,6 +130,58 @@ func mapErlangType(t string) string {
 	default:
 		return strings.TrimSpace(t)
 	}
+}
+
+func offsetFromPosition(src string, pos protocol.Position) int {
+	lines := strings.Split(src, "\n")
+	if int(pos.Line) >= len(lines) {
+		return len(src)
+	}
+	off := 0
+	for i := 0; i < int(pos.Line); i++ {
+		off += len(lines[i]) + 1
+	}
+	col := int(pos.Character)
+	if col > len(lines[int(pos.Line)]) {
+		col = len(lines[int(pos.Line)])
+	}
+	return off + col
+}
+
+func parseErlangBody(src string, rng protocol.Range) []string {
+	start := offsetFromPosition(src, rng.Start)
+	end := offsetFromPosition(src, rng.End)
+	if start >= end || start < 0 || end > len(src) {
+		return nil
+	}
+	body := strings.TrimSpace(src[start:end])
+	if idx := strings.Index(body, "->"); idx >= 0 {
+		body = body[idx+2:]
+	}
+	body = strings.TrimSpace(body)
+	if strings.HasSuffix(body, ".") {
+		body = strings.TrimSuffix(body, ".")
+	}
+	stmts := strings.Split(body, ",")
+	var out []string
+	for i, s := range stmts {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		if eq := strings.Index(s, "="); eq >= 0 && !strings.Contains(s[:eq], " ") {
+			name := strings.TrimSpace(s[:eq])
+			expr := strings.TrimSpace(s[eq+1:])
+			out = append(out, "  var "+name+" = "+expr)
+			continue
+		}
+		if i == len(stmts)-1 {
+			out = append(out, "  return "+s)
+		} else {
+			out = append(out, "  "+s)
+		}
+	}
+	return out
 }
 
 type erlParam struct {
