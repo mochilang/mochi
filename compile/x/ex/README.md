@@ -212,6 +212,25 @@ Run them with:
 go test ./compile/ex -tags slow
 ```
 
+## Elixir to Mochi Conversion
+
+The `any2mochi` tool can also translate small Elixir programs back into Mochi
+source. It relies on the Elixir language server for symbol information and then
+parses function bodies with simple string matching.
+
+### Supported Features
+
+- Top-level function definitions with parameter and return types from hover data
+- `IO.puts` statements become `print` calls, including multi-argument forms
+- `if`, `for` and `while` blocks
+- Variable assignments and `return`, `break` and `continue`
+
+### Unsupported Features
+
+- Pattern matching clauses or multi-function heads
+- Macros, modules and protocol definitions
+- Complex comprehensions or dataset queries
+
 ## Unsupported Features
 
 The Elixir backend implements most core language features but still lacks support for several advanced constructs:
