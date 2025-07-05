@@ -1,6 +1,0 @@
-tests/compiler/go/map_ops.go.out:13: unsupported assignment
->>> 12:    _tmp1 := m
-13:>>> _, _tmp2 := _tmp1[_tmp0]
-14:    if _tmp2 {
-15:    fmt.Println(m[1])
-

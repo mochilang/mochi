@@ -1,6 +1,0 @@
-tests/compiler/go/while_membership.go.out:17: unsupported assignment
->>> 16:    _tmp1 := set
-17:>>> _, _tmp2 := _tmp1[_tmp0]
-18:    if !(_tmp2) {
-19:    break
-
