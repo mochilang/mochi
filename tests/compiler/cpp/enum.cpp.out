@@ -1,0 +1,2 @@
+enum Color { Red, Green, Blue };
+int main() { return 0; }

@@ -1,0 +1,7 @@
+type Color {
+  Red
+  Green
+  Blue
+}
+fun main(): int {}
+
