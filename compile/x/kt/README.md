@@ -23,6 +23,9 @@ The Kotlin backend converts Mochi programs into Kotlin source files so they can 
 - Map literals, indexing, membership checks with `in`, and iteration over keys in `for` loops
 - Kotlin to Mochi converter uses LSP data to extract functions, classes and
   properties including parameter and return types
+- When the language server is unavailable the converter falls back to regex
+  parsing and supports basic function bodies with loops, conditionals and
+  print statements
 
 ## Unsupported Features
 
@@ -47,7 +50,7 @@ The Kotlin backend still lacks several features available in other compilers:
 - Asynchronous functions (`async`/`await`)
 - Waiting for asynchronous stream handlers with `_waitAll`
 - Destructuring bindings in `let` and `var` statements
-- The Kotlin to Mochi converter does not translate function bodies or generics
+- The Kotlin to Mochi converter still lacks support for generics in signatures
 
 ## Building
 

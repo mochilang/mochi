@@ -1,4 +1,0 @@
-convert failure: kotlin-language-server not found
-
-source snippet:
-  1: fun main() {
