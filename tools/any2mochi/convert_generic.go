@@ -13,7 +13,7 @@ import (
 func ConvertWithServer(cmd string, args []string, langID, src string) ([]byte, error) {
 	syms, err := ParseAndEnsure(cmd, args, langID, src)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("convert failure: %w\n\nsource snippet:\n%s", err, numberedSnippet(src))
 	}
 	var out strings.Builder
 	for _, s := range syms {
@@ -23,6 +23,9 @@ func ConvertWithServer(cmd string, args []string, langID, src string) ([]byte, e
 		out.WriteString("fun ")
 		out.WriteString(s.Name)
 		out.WriteString("() {}\n")
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
 }
@@ -125,4 +128,15 @@ func ParseAndEnsure(cmd string, args []string, langID, src string) ([]protocol.D
 		return nil, err
 	}
 	return ParseText(cmd, args, langID, src)
+}
+
+func numberedSnippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
 }
