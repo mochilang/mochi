@@ -205,7 +205,7 @@ end`
   list.min
 end`
 
-        helperMax = `def _max(v)
+	helperMax = `def _max(v)
   list = nil
   if v.respond_to?(:Items)
     list = v.Items
@@ -218,7 +218,7 @@ end`
   list.max
 end`
 
-       helperFirst = `def _first(v)
+	helperFirst = `def _first(v)
   list = nil
   if v.respond_to?(:Items)
     list = v.Items
@@ -264,6 +264,16 @@ end`
   else
     raise 'reverse expects list or string'
   end
+end`
+
+	helperSplitString = `def _splitString(s, sep)
+  raise 'split expects string' unless s.is_a?(String)
+  s.split(sep)
+end`
+
+	helperJoinStrings = `def _joinStrings(parts, sep)
+  raise 'join expects list' unless parts.is_a?(Array)
+  parts.map(&:to_s).join(sep)
 end`
 
 	helperGroup = `class MGroup
@@ -432,9 +442,9 @@ var helperMap = map[string]string{
 	"_genStruct":   helperGenStruct,
 	"_json":        helperJSON,
 	"_min":         helperMin,
-       "_max":         helperMax,
-       "_first":       helperFirst,
-       "_sum":         helperSum,
+	"_max":         helperMax,
+	"_first":       helperFirst,
+	"_sum":         helperSum,
 	"_eval":        helperEval,
 	"_group":       helperGroup,
 	"_group_by":    helperGroupBy,
@@ -442,6 +452,8 @@ var helperMap = map[string]string{
 	"_indexString": helperIndexString,
 	"_sliceString": helperSliceString,
 	"_reverse":     helperReverse,
+	"_splitString": helperSplitString,
+	"_joinStrings": helperJoinStrings,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }

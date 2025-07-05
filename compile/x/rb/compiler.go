@@ -1645,6 +1645,18 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		}
 		c.use("_reverse")
 		return fmt.Sprintf("_reverse(%s)", args[0]), true, nil
+	case "split":
+		if len(args) != 2 {
+			return "", true, fmt.Errorf("split expects 2 args")
+		}
+		c.use("_splitString")
+		return fmt.Sprintf("_splitString(%s, %s)", args[0], args[1]), true, nil
+	case "join":
+		if len(args) != 2 {
+			return "", true, fmt.Errorf("join expects 2 args")
+		}
+		c.use("_joinStrings")
+		return fmt.Sprintf("_joinStrings(%s, %s)", args[0], args[1]), true, nil
 	case "str":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("str expects 1 arg")
@@ -1677,23 +1689,23 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		}
 		c.use("_min")
 		return fmt.Sprintf("_min(%s)", args[0]), true, nil
-        case "max":
-                if len(args) != 1 {
-                        return "", true, fmt.Errorf("max expects 1 arg")
-                }
-                c.use("_max")
-                return fmt.Sprintf("_max(%s)", args[0]), true, nil
-       case "first":
-               if len(args) != 1 {
-                       return "", true, fmt.Errorf("first expects 1 arg")
-               }
-               c.use("_first")
-               return fmt.Sprintf("_first(%s)", args[0]), true, nil
-        case "json":
-                if len(args) != 1 {
-                        return "", true, fmt.Errorf("json expects 1 arg")
-                }
-                c.use("_json")
+	case "max":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("max expects 1 arg")
+		}
+		c.use("_max")
+		return fmt.Sprintf("_max(%s)", args[0]), true, nil
+	case "first":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("first expects 1 arg")
+		}
+		c.use("_first")
+		return fmt.Sprintf("_first(%s)", args[0]), true, nil
+	case "json":
+		if len(args) != 1 {
+			return "", true, fmt.Errorf("json expects 1 arg")
+		}
+		c.use("_json")
 		return fmt.Sprintf("_json(%s)", args[0]), true, nil
 	case "input":
 		if len(args) != 0 {

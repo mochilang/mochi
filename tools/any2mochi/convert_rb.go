@@ -72,6 +72,29 @@ func translateRb(src string) []byte {
 			out.WriteString(cond)
 			out.WriteString(" {\n")
 			level++
+		case strings.HasPrefix(line, "if "):
+			cond := strings.TrimSpace(strings.TrimPrefix(line, "if "))
+			out.WriteString(rbIndent(level))
+			out.WriteString("if ")
+			out.WriteString(cond)
+			out.WriteString(" {\n")
+			level++
+		case strings.HasPrefix(line, "elsif "):
+			if level > 0 {
+				level--
+				out.WriteString(rbIndent(level))
+				out.WriteString("} else if ")
+				out.WriteString(strings.TrimSpace(strings.TrimPrefix(line, "elsif ")))
+				out.WriteString(" {\n")
+				level++
+			}
+		case line == "else":
+			if level > 0 {
+				level--
+				out.WriteString(rbIndent(level))
+				out.WriteString("} else {\n")
+				level++
+			}
 		case line == "end":
 			if level > 0 {
 				level--
@@ -94,6 +117,13 @@ func translateRb(src string) []byte {
 			out.WriteString("(")
 			out.WriteString(params)
 			out.WriteString(") {\n")
+			level++
+		case strings.HasPrefix(line, "class "):
+			name := strings.TrimSpace(strings.TrimPrefix(line, "class "))
+			out.WriteString(rbIndent(level))
+			out.WriteString("type ")
+			out.WriteString(name)
+			out.WriteString(" {\n")
 			level++
 		case strings.HasPrefix(line, "return "):
 			out.WriteString(rbIndent(level))
