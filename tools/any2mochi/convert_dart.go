@@ -67,7 +67,40 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
+
 		switch s.Kind {
+		case protocol.SymbolKindClass, protocol.SymbolKindInterface, protocol.SymbolKindStruct:
+			out.WriteString("type ")
+			out.WriteString(strings.Join(nameParts, "."))
+			out.WriteString(" {\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindField || c.Kind == protocol.SymbolKindProperty || c.Kind == protocol.SymbolKindVariable {
+					out.WriteString("  ")
+					out.WriteString(c.Name)
+					if t := dartTypeFromDetail(c.Detail); t != "" && t != "dynamic" {
+						out.WriteString(": ")
+						out.WriteString(t)
+					}
+					out.WriteByte('\n')
+				}
+			}
+			out.WriteString("}\n")
+			for _, c := range s.Children {
+				if c.Kind == protocol.SymbolKindMethod || c.Kind == protocol.SymbolKindConstructor || c.Kind == protocol.SymbolKindFunction {
+					writeDartSymbols(out, nameParts, []protocol.DocumentSymbol{c})
+				}
+			}
+			continue
+		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+			if len(prefix) == 0 && s.Name != "" {
+				out.WriteString("let ")
+				out.WriteString(s.Name)
+				if t := dartTypeFromDetail(s.Detail); t != "" && t != "dynamic" {
+					out.WriteString(": ")
+					out.WriteString(t)
+				}
+				out.WriteByte('\n')
+			}
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -84,14 +117,22 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				out.WriteString(p)
 			}
 			out.WriteByte(')')
-			if ret != "" && ret != "void" {
+			if ret != "" && ret != "void" && ret != "dynamic" {
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
 			out.WriteString(" {}\n")
 		}
+
 		if len(s.Children) > 0 {
 			writeDartSymbols(out, nameParts, s.Children)
 		}
 	}
+}
+
+func dartTypeFromDetail(d *string) string {
+	if d == nil {
+		return ""
+	}
+	return strings.TrimSpace(*d)
 }
