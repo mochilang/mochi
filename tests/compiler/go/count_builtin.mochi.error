@@ -1,5 +1,5 @@
-tests/compiler/go/count_builtin.go.out:15: unsupported expr *ast.SelectorExpr
->>> 14:    if g, ok := v.(*data.Group); ok {
-15:>>> return len(g.Items)
-16:    }
-17:    switch s := v.(type) {
+tests/compiler/go/count_builtin.go.out:17: unsupported statement *ast.TypeSwitchStmt
+>>> 16:    }
+17:>>> switch s := v.(type) {
+18:    case []any:
+19:    return len(s)

@@ -1,5 +1,5 @@
-tests/compiler/go/dataset_sort_take_limit.go.out:8: unsupported declaration
->>> 7:    
-8:>>> type Product struct {
-9:    Name  string `json:"name"`
-10:    Price int    `json:"price"`
+tests/compiler/go/dataset_sort_take_limit.go.out:76: unsupported generics
+>>> 75:    
+76:>>> func _paginate[T any](src []T, skip, take int) []T {
+77:    if skip > 0 {
+78:    if skip < len(src) {

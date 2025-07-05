@@ -98,6 +98,21 @@ func (c *converter) translateFile(f *ast.File) (string, error) {
 			if decl.Tok == token.IMPORT {
 				continue
 			}
+			if decl.Tok == token.TYPE && len(decl.Specs) == 1 {
+				spec, ok := decl.Specs[0].(*ast.TypeSpec)
+				if !ok {
+					return "", c.errorf(decl, "unsupported declaration")
+				}
+				code, err := c.translateTypeDecl(spec)
+				if err != nil {
+					return "", err
+				}
+				if code != "" {
+					b.WriteString(code)
+					b.WriteByte('\n')
+				}
+				continue
+			}
 			return "", c.errorf(decl, "unsupported declaration")
 		default:
 			return "", c.errorf(decl, "unsupported declaration")
@@ -164,6 +179,27 @@ func (c *converter) translateFunc(fn *ast.FuncDecl) (string, error) {
 			b.WriteString(line)
 			b.WriteByte('\n')
 		}
+	}
+	b.WriteString("}")
+	return b.String(), nil
+}
+
+func (c *converter) translateTypeDecl(ts *ast.TypeSpec) (string, error) {
+	st, ok := ts.Type.(*ast.StructType)
+	if !ok {
+		return "", c.errorf(ts, "unsupported type spec")
+	}
+	var b strings.Builder
+	b.WriteString("type ")
+	b.WriteString(ts.Name.Name)
+	b.WriteString(" {\n")
+	for _, f := range st.Fields.List {
+		if len(f.Names) != 1 {
+			return "", c.errorf(f, "unsupported field list")
+		}
+		name := f.Names[0].Name
+		typ := typeString(c.fset, f.Type)
+		fmt.Fprintf(&b, "  %s: %s\n", name, typ)
 	}
 	b.WriteString("}")
 	return b.String(), nil
@@ -451,6 +487,12 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		return ex.Value, nil
 	case *ast.Ident:
 		return ex.Name, nil
+	case *ast.SelectorExpr:
+		x, err := c.translateExpr(ex.X)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s.%s", x, ex.Sel.Name), nil
 	case *ast.BinaryExpr:
 		left, err := c.translateExpr(ex.X)
 		if err != nil {
@@ -466,7 +508,12 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("%s%s", ex.Op.String(), x), nil
+		switch ex.Op {
+		case token.NOT, token.SUB, token.ADD:
+			return fmt.Sprintf("%s%s", ex.Op.String(), x), nil
+		default:
+			return "", c.errorf(ex, "unsupported unary op %s", ex.Op)
+		}
 	case *ast.ParenExpr:
 		inner, err := c.translateExpr(ex.X)
 		if err != nil {
@@ -484,14 +531,38 @@ func (c *converter) translateExpr(e ast.Expr) (string, error) {
 		}
 		if sel, ok := ex.Fun.(*ast.SelectorExpr); ok {
 			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "fmt" && sel.Sel.Name == "Println" {
-				if len(ex.Args) != 1 {
-					return "", c.errorf(ex, "unsupported Println args")
+				parts := make([]string, len(ex.Args))
+				for i, a := range ex.Args {
+					v, err := c.translateExpr(a)
+					if err != nil {
+						return "", err
+					}
+					parts[i] = fmt.Sprintf("str(%s)", v)
 				}
-				arg, err := c.translateExpr(ex.Args[0])
-				if err != nil {
-					return "", err
+				join := strings.Join(parts, " + \" \" + ")
+				return fmt.Sprintf("print(%s)", join), nil
+			}
+			if pkg, ok := sel.X.(*ast.Ident); ok && pkg.Name == "strings" {
+				switch sel.Sel.Name {
+				case "ToLower":
+					if len(ex.Args) != 1 {
+						return "", c.errorf(ex, "unsupported ToLower args")
+					}
+					arg, err := c.translateExpr(ex.Args[0])
+					if err != nil {
+						return "", err
+					}
+					return fmt.Sprintf("lower(%s)", arg), nil
+				case "ToUpper":
+					if len(ex.Args) != 1 {
+						return "", c.errorf(ex, "unsupported ToUpper args")
+					}
+					arg, err := c.translateExpr(ex.Args[0])
+					if err != nil {
+						return "", err
+					}
+					return fmt.Sprintf("upper(%s)", arg), nil
 				}
-				return fmt.Sprintf("print(str(%s))", arg), nil
 			}
 		}
 		if arr, ok := ex.Fun.(*ast.ArrayType); ok && len(ex.Args) == 1 {
