@@ -1,5 +1,0 @@
-type Tree =
-  Leaf {} |
-  Node(left: Tree, value: int, right: Tree)
-let t = Node { left: Leaf {  }, value: 42, right: Leaf {  } }
-print(t.value)

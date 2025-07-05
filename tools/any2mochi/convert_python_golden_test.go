@@ -2,12 +2,17 @@
 
 package any2mochi
 
-import "testing"
+import (
+	"path/filepath"
+	"testing"
+)
 
 func TestConvertPython_Golden(t *testing.T) {
-	t.Skip("py2mochi translator required for full test suite")
+	root := findRepoRoot(t)
+	runConvertGolden(t, filepath.Join(root, "tests/compiler/py"), "*.py.out", ConvertPythonFile, "py", ".mochi", ".error")
 }
 
 func TestConvertPythonCompile_Golden(t *testing.T) {
-	t.Skip("py2mochi translator required for full test suite")
+	root := findRepoRoot(t)
+	runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/py"), "*.py.out", ConvertPythonFile, "py", ".mochi", ".error")
 }

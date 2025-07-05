@@ -16,7 +16,8 @@ func TestConvertPython(t *testing.T) {
 	if err != nil {
 		t.Fatalf("convert: %v", err)
 	}
-	if string(out) != "fun add() {}\n" {
+	expected := "fun add() {}\nlet x\nlet y\n"
+	if string(out) != expected {
 		t.Fatalf("unexpected output: %s", out)
 	}
 }

@@ -1,1 +1,4 @@
-parse error: parse error: 10:5: unexpected token "(" (expected <ident> "in" Expr (".." Expr)? "{" Statement* "}")
+line 65: Operator ">=" not supported for "None"
+  if age >= 18:
+line 67: Operator "+" not supported for "None"
+  setattr(_it1, "age", (age + 1))

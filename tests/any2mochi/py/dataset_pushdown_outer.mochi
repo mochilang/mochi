@@ -1,9 +1,0 @@
-let xs = [1, 2, 3, 4]
-let ys = [10, 20, 30]
-let res = from x in xs
-            from y in ys
-            where x > 2
-            select x + y
-for v in res {
-  print(v)
-}

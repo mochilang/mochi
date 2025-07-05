@@ -19,15 +19,25 @@ func ConvertPython(src string) ([]byte, error) {
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
+
 	var out strings.Builder
 	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
-			continue
+		switch s.Kind {
+		case protocol.SymbolKindFunction:
+			out.WriteString("fun ")
+			out.WriteString(s.Name)
+			out.WriteString("() {}\n")
+		case protocol.SymbolKindClass:
+			out.WriteString("type ")
+			out.WriteString(s.Name)
+			out.WriteString(" {}\n")
+		case protocol.SymbolKindVariable:
+			out.WriteString("let ")
+			out.WriteString(s.Name)
+			out.WriteString("\n")
 		}
-		out.WriteString("fun ")
-		out.WriteString(s.Name)
-		out.WriteString("() {}\n")
 	}
+
 	if out.Len() == 0 {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}

@@ -1,5 +1,5 @@
-type error: error[T004]: `` is not callable
-  --> :8:18
+type error: error[T000]: `let` requires a type or a value
+  --> :2:1
 
 help:
-  Use a function or closure in this position.
+  Use `let x = ...` or `let x: int` to declare a variable.
