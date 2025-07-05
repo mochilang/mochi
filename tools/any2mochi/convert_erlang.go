@@ -18,7 +18,6 @@ func ConvertErlang(src string) ([]byte, error) {
 	if len(diags) > 0 {
 		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 	}
-	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for _, s := range syms {
 		if s.Kind != protocol.SymbolKindFunction {
@@ -30,13 +29,6 @@ func ConvertErlang(src string) ([]byte, error) {
 			if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
 				params, ret = parseErlangHover(mc.Value)
 			}
-		}
-		if len(params) == 0 {
-			name, ps := extractErlangSig(lines, s)
-			if name != "" {
-				s.Name = name
-			}
-			params = ps
 		}
 		if s.Name == "" {
 			s.Name = "fun"
@@ -65,44 +57,6 @@ func ConvertErlang(src string) ([]byte, error) {
 		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
 	}
 	return []byte(out.String()), nil
-}
-
-// extractErlangSig attempts to parse the function name and parameters for the
-// given symbol from the source lines. It uses the symbol range to search for a
-// header of the form `name(P1, P2) ->` and returns the parsed name and
-// parameters.
-func extractErlangSig(lines []string, sym protocol.DocumentSymbol) (string, []erlParam) {
-	start := int(sym.Range.Start.Line)
-	if start < 0 || start >= len(lines) {
-		return sym.Name, nil
-	}
-	end := int(sym.Range.End.Line)
-	if end >= len(lines) {
-		end = len(lines) - 1
-	}
-	header := strings.TrimSpace(lines[start])
-	// include additional lines until we hit '->' just in case the header
-	// spans multiple lines
-	for i := start + 1; i <= end && !strings.Contains(header, "->"); i++ {
-		header += " " + strings.TrimSpace(lines[i])
-	}
-	// try to locate a header like `name(P1, P2) ->`
-	open := strings.Index(header, "(")
-	arrow := strings.Index(header, "->")
-	close := -1
-	if arrow != -1 {
-		close = strings.LastIndex(header[:arrow], ")")
-	}
-	if open == -1 || close == -1 || arrow == -1 || close < open {
-		open = strings.Index(header, "(")
-		close = strings.Index(header, ")")
-		if open == -1 || close == -1 || close < open {
-			return sym.Name, nil
-		}
-	}
-	name := strings.TrimSpace(header[:open])
-	params := parseErlangParams(header[open+1 : close])
-	return name, params
 }
 
 func parseErlangParams(paramStr string) []erlParam {

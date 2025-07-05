@@ -1051,6 +1051,8 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 			expr = "-" + expr
 		case "!":
 			expr = "not " + expr
+		case "+":
+			// unary plus has no effect
 		}
 	}
 	return expr, nil
