@@ -1,5 +1,9 @@
 fun value_of_root(t) {}
 type Tree {}
 type Leaf {}
-type Node {}
+type Node {
+  left
+  value
+  right
+}
 fun main() {}

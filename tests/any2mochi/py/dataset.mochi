@@ -1,4 +1,7 @@
-type Person {}
+type Person {
+  name
+  age
+}
 let people
 let names
 fun main() {}

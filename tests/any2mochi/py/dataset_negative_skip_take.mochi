@@ -1,4 +1,6 @@
-type Num {}
+type Num {
+  val
+}
 let items
 let a
 let b

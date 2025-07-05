@@ -1,6 +1,9 @@
 let T
 fun _sort_key(k) {}
-type Product {}
+type Product {
+  name
+  price
+}
 let products
 let expensive
 fun main() {}

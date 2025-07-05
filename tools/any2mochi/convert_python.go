@@ -49,21 +49,9 @@ func writePySymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 		}
 		switch s.Kind {
 		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
-			params := extractPyParams(s)
-			out.WriteString("fun ")
-			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteByte('(')
-			for i, p := range params {
-				if i > 0 {
-					out.WriteString(", ")
-				}
-				out.WriteString(p)
-			}
-			out.WriteString(") {}\n")
+			writePyFunc(out, strings.Join(nameParts, "."), s)
 		case protocol.SymbolKindClass:
-			out.WriteString("type ")
-			out.WriteString(strings.Join(nameParts, "."))
-			out.WriteString(" {}\n")
+			writePyClass(out, nameParts, s)
 		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
@@ -71,10 +59,65 @@ func writePySymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				out.WriteString("\n")
 			}
 		}
-		if len(s.Children) > 0 {
-			writePySymbols(out, nameParts, s.Children)
+	}
+}
+
+func writePyFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol) {
+	params := extractPyParams(sym)
+	out.WriteString("fun ")
+	out.WriteString(name)
+	out.WriteByte('(')
+	for i, p := range params {
+		if i > 0 {
+			out.WriteString(", ")
+		}
+		out.WriteString(p)
+	}
+	out.WriteString(") {}\n")
+}
+
+func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSymbol) {
+	name := strings.Join(prefix, ".")
+	fields := extractPyFields(sym)
+	methods := make([]protocol.DocumentSymbol, 0)
+	for _, c := range sym.Children {
+		switch c.Kind {
+		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+			methods = append(methods, c)
 		}
 	}
+	out.WriteString("type ")
+	out.WriteString(name)
+	if len(fields) == 0 && len(methods) == 0 {
+		out.WriteString(" {}\n")
+		return
+	}
+	out.WriteString(" {\n")
+	for _, f := range fields {
+		out.WriteString("  ")
+		out.WriteString(f)
+		out.WriteByte('\n')
+	}
+	for _, m := range methods {
+		var b strings.Builder
+		writePyFunc(&b, m.Name, m)
+		for _, line := range strings.Split(strings.TrimSuffix(b.String(), "\n"), "\n") {
+			out.WriteString("  ")
+			out.WriteString(line)
+			out.WriteByte('\n')
+		}
+	}
+	out.WriteString("}\n")
+}
+
+func extractPyFields(sym protocol.DocumentSymbol) []string {
+	var fields []string
+	for _, c := range sym.Children {
+		if c.Kind == protocol.SymbolKindVariable || c.Kind == protocol.SymbolKindConstant {
+			fields = append(fields, c.Name)
+		}
+	}
+	return fields
 }
 
 func extractPyParams(sym protocol.DocumentSymbol) []string {

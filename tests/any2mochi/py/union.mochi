@@ -1,5 +1,9 @@
 type Tree {}
 type Leaf {}
-type Node {}
+type Node {
+  left
+  value
+  right
+}
 let t
 fun main() {}

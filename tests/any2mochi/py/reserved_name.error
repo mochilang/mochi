@@ -1,0 +1,5 @@
+type error: error[T000]: `let` requires a type or a value
+  --> :1:1
+
+help:
+  Use `let x = ...` or `let x: int` to declare a variable.
