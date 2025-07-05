@@ -28,7 +28,7 @@ var Servers = map[string]LanguageServer{
 	"dart":       {Command: "dart", Args: []string{"language-server"}, LangID: "dart"},
 	"erlang":     {Command: "erlang_ls", Args: nil, LangID: "erlang"},
 	"ex":         {Command: "elixir-ls", Args: nil, LangID: "elixir"},
-	"fortran":    {Command: "fortls", Args: nil, LangID: "fortran"},
+	"fortran":    {Command: "", Args: nil, LangID: "fortran"},
 	"fs":         {Command: "fsautocomplete", Args: nil, LangID: "fsharp"},
 	"hs":         {Command: "haskell-language-server-wrapper", Args: nil, LangID: "haskell"},
 	"java":       {Command: "jdtls", Args: nil, LangID: "java"},
