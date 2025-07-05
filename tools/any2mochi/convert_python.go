@@ -118,7 +118,11 @@ func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSy
 	out.WriteString(" {\n")
 	for _, f := range fields {
 		out.WriteString("  ")
-		out.WriteString(f)
+		out.WriteString(f.name)
+		if typ := getPyVarType(src, f.sym.SelectionRange.Start, ls); typ != "" && typ != "Unknown" {
+			out.WriteString(": ")
+			out.WriteString(typ)
+		}
 		out.WriteByte('\n')
 	}
 	for _, m := range methods {
@@ -133,11 +137,16 @@ func writePyClass(out *strings.Builder, prefix []string, sym protocol.DocumentSy
 	out.WriteString("}\n")
 }
 
-func extractPyFields(sym protocol.DocumentSymbol) []string {
-	var fields []string
+type pyField struct {
+	name string
+	sym  protocol.DocumentSymbol
+}
+
+func extractPyFields(sym protocol.DocumentSymbol) []pyField {
+	var fields []pyField
 	for _, c := range sym.Children {
 		if c.Kind == protocol.SymbolKindVariable || c.Kind == protocol.SymbolKindConstant {
-			fields = append(fields, c.Name)
+			fields = append(fields, pyField{name: c.Name, sym: c})
 		}
 	}
 	return fields
