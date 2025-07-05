@@ -46,13 +46,52 @@ class Conv(ast.NodeVisitor):
         self.indent -= 1
         self.emit("}")
 
+    def visit_While(self, node):
+        self.emit(f"while {self.expr(node.test)} {{")
+        self.indent += 1
+        for s in node.body:
+            self.visit(s)
+        self.indent -= 1
+        self.emit("}")
+
+    def visit_If(self, node):
+        self.emit(f"if {self.expr(node.test)} {{")
+        self.indent += 1
+        for s in node.body:
+            self.visit(s)
+        self.indent -= 1
+        if node.orelse:
+            self.emit("} else {")
+            self.indent += 1
+            for s in node.orelse:
+                self.visit(s)
+            self.indent -= 1
+        self.emit("}")
+
+    def visit_Break(self, node):
+        self.emit("break")
+
+    def visit_Continue(self, node):
+        self.emit("continue")
+
     def expr(self, node):
         if isinstance(node, ast.Name):
             return node.id
         if isinstance(node, ast.Constant):
             return repr(node.value)
+        if isinstance(node, ast.UnaryOp):
+            return f"{self.uop(node.op)}{self.expr(node.operand)}"
+        if isinstance(node, ast.BoolOp):
+            op = ' and ' if isinstance(node.op, ast.And) else ' or '
+            return op.join(self.expr(v) for v in node.values)
         if isinstance(node, ast.BinOp):
             return f"{self.expr(node.left)} {self.op(node.op)} {self.expr(node.right)}"
+        if isinstance(node, ast.Compare):
+            left = self.expr(node.left)
+            parts = []
+            for o, c in zip(node.ops, node.comparators):
+                parts.append(f"{self.cmp(o)} {self.expr(c)}")
+            return f"{left} {' '.join(parts)}"
         if isinstance(node, ast.Call):
             args = ",".join(self.expr(a) for a in node.args)
             return f"{self.expr(node.func)}({args})"
@@ -69,6 +108,28 @@ class Conv(ast.NodeVisitor):
             return "/"
         if isinstance(op, ast.Mod):
             return "%"
+        return "?"
+
+    def uop(self, op):
+        if isinstance(op, ast.USub):
+            return "-"
+        if isinstance(op, ast.Not):
+            return "not "
+        return ""
+
+    def cmp(self, op):
+        if isinstance(op, ast.Eq):
+            return "=="
+        if isinstance(op, ast.NotEq):
+            return "!="
+        if isinstance(op, ast.Lt):
+            return "<"
+        if isinstance(op, ast.LtE):
+            return "<="
+        if isinstance(op, ast.Gt):
+            return ">"
+        if isinstance(op, ast.GtE):
+            return ">="
         return "?"
 
 src = open(sys.argv[1]).read()

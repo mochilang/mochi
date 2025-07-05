@@ -1,1 +1,10 @@
-
+fun sum_even(n): any {
+  let s = 0
+  while n > 0 {
+    if n % 2 == 0 {
+      let s = s + n
+    }
+    let n = n - 1
+  }
+  return s
+}
