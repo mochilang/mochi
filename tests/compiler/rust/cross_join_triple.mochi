@@ -3,15 +3,23 @@ type Combo {
   l: string
   b: bool
 }
-
-let nums = [1, 2]
-let letters = ["A", "B"]
-let bools = [true, false]
-let combos = from n in nums
-             from l in letters
-             from b in bools
-             select Combo { n: n, l: str(l), b: b }
-print("--- Cross Join of three lists ---")
-for c in combos {
-  print(c.n, c.l, c.b)
+fun main() {
+  var nums = vec![1, 2]
+  var letters = vec!["A".to_string(), "B".to_string()]
+  var bools = vec![true, false]
+  var combos = {
+    let mut _res = Vec::new();
+    for n in nums.clone() {
+        for l in letters.clone() {
+            for b in bools.clone() {
+                _res.push(Combo { n: n, l: format!("{}", l), b: b });
+            }
+        }
+    }
+    _res
+}
+  print("--- Cross Join of three lists ---")
+  for c in combos {
+    print(c.n, c.l, c.b)
+  }
 }

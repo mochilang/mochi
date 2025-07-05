@@ -1,27 +1,17 @@
-// Build BST from sorted list using nested recursive function
-
- type Tree =
-   Leaf
-   | Node(left: Tree, value: int, right: Tree)
-
- fun fromList(nums: list<int>): Tree {
-   fun helper(lo: int, hi: int): Tree {
-     if lo >= hi { return Leaf {} }
-     let mid = (lo + hi) / 2
-     return Node {
-       left: helper(lo, mid),
-       value: nums[mid],
-       right: helper(mid + 1, hi)
-     }
-   }
-   return helper(0, len(nums))
- }
-
- fun inorder(t: Tree): list<int> {
-   return match t {
-     Leaf => []
-     Node(l, v, r) => inorder(l) + [v] + inorder(r)
-   }
- }
-
- print(inorder(fromList([-10, -3, 0, 5, 9])))
+type Tree =
+  Leaf
+  | Node(left: Tree, value: int, right: Tree)
+fun fromList(nums) {
+  return helper(0, nums.len() as i64)
+}
+fun inorder(t) {
+  return (|| {
+    match t {
+        Tree::Leaf => { vec![] },
+        Tree::Node { left: l, value: v, right: r } => { { let a = &{ let a = &inorder(l); let b = &vec![v]; let mut res = Vec::with_capacity(a.len() + b.len()); res.extend_from_slice(a); res.extend_from_slice(b); res }; let b = &inorder(r); let mut res = Vec::with_capacity(a.len() + b.len()); res.extend_from_slice(a); res.extend_from_slice(b); res } },
+    }
+})()
+}
+fun main() {
+  print(inorder(fromList(vec![-10, -3, 0, 5, 9])).iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "))
+}

@@ -1,2 +1,4 @@
-let scores = {"Alice": 10, "Bob": 15}
-print(scores["Bob"])
+fun main() {
+  var scores = std::collections::HashMap::from([("Alice".to_string(), 10), ("Bob".to_string(), 15)])
+  print(scores["Bob"])
+}

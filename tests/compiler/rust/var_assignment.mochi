@@ -1,3 +1,5 @@
-var x = 1
-x = 2
-print(x)
+fun main() {
+  var x = 1
+  x = 2
+  print(x)
+}

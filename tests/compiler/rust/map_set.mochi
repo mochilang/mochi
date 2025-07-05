@@ -1,3 +1,5 @@
-var scores = {"a": 1}
-scores["b"] = 2
-print(scores["b"])
+fun main() {
+  var scores = std::collections::HashMap::from([("a".to_string(), 1)])
+  scores.insert("b".to_string(), 2)
+  print(scores["b"])
+}

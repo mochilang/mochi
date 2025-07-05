@@ -1,2 +1,4 @@
-let xs = [10, 20, 30]
-print(xs[1])
+fun main() {
+  var xs = vec![10, 20, 30]
+  print(xs[(1) as usize])
+}

@@ -1,6 +1,7 @@
-fun makeAdder(n: int): fun(int): int {
-  return fun(x: int): int => x + n
+fun makeAdder(n) {
+  return Box::new(move |x: i64| x + n)
 }
-
-let add10 = makeAdder(10)
-print(add10(7))  // 17
+fun main() {
+  var add10 = makeAdder(10)
+  print(add10(7))
+}

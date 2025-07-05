@@ -1,3 +1,6 @@
-for ch in "hi" {
-  print(ch)
+fun main() {
+  for ch_ch in "hi".chars() {
+    var ch = ch_ch.to_string()
+    print(ch)
+  }
 }

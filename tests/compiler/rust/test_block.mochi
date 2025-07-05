@@ -1,5 +1,13 @@
-test "addition works" {
-  let x = 1 + 2
-  expect x == 3
+fun test_addition_works() {
+  var x = 1 + 2
+  expect(x == 3)
 }
-print("ok")
+fun main() {
+  print("ok")
+  test_addition_works()
+}
+fun expect(cond) {
+  if !cond {
+    panic!("expect failed")
+  }
+}

@@ -1,6 +1,18 @@
 type Msg {
   message: string
 }
-
-let data: Msg = fetch "file://tests/compiler/rust/fetch_builtin.json"
-print(data.message)
+fun main() {
+  var data: Msg = _fetch::<Msg>("file://tests/compiler/rust/fetch_builtin.json", std::collections::HashMap::new())
+  print(data.message)
+}
+fun _fetch(_url, _opts) {
+  var data = String::new()
+  if _url.starts_with("file://") {
+    if let Ok(text) = std::fs::read_to_string(&_url[7..]) {
+      data = text
+    }
+  else {
+    var out = Command::new("curl").arg("-s").arg(_url).output().unwrap()
+    data = String::from_utf8_lossy(&out.stdout).to_string()
+  }
+}

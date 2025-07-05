@@ -1,1 +1,3 @@
-print(str(123))
+fun main() {
+  print(format!("{}", 123))
+}

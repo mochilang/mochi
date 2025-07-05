@@ -1,7 +1,7 @@
-print("Enter first input:")
-let input1 = input()
-
-print("Enter second input:")
-let input2 = input()
-
-print("You entered:", input1, ",", input2)
+fun main() {
+  print("Enter first input:")
+  var input1 = { use std::io::Read; let mut s = String::new(); std::io::stdin().read_line(&mut s).unwrap(); s.trim().to_string() }
+  print("Enter second input:")
+  var input2 = { use std::io::Read; let mut s = String::new(); std::io::stdin().read_line(&mut s).unwrap(); s.trim().to_string() }
+  print("You entered:", input1, ", ", input2)
+}
