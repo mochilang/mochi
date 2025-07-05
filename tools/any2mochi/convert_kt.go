@@ -44,7 +44,11 @@ func writeKtSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindClass, protocol.SymbolKindStruct, protocol.SymbolKindInterface:
+		case protocol.SymbolKindNamespace, protocol.SymbolKindPackage, protocol.SymbolKindModule:
+			if len(s.Children) > 0 {
+				writeKtSymbols(out, nameParts, s.Children, src, ls)
+			}
+		case protocol.SymbolKindClass, protocol.SymbolKindStruct, protocol.SymbolKindInterface, protocol.SymbolKindObject:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			fields := []protocol.DocumentSymbol{}

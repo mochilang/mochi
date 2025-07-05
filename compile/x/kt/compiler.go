@@ -1903,7 +1903,7 @@ func ktUnpackArgs(names []string, indent string, env *types.Env) string {
 			if t, err := env.GetVar(n); err == nil {
 				switch tt := t.(type) {
 				case types.MapType:
-					b.WriteString(" as MutableMap<" + ktType(tt.Key) + ", " + ktType(tt.Value) + ">")
+					b.WriteString(" as Map<" + ktType(tt.Key) + ", " + ktType(tt.Value) + ">")
 				case types.ListType:
 					b.WriteString(" as List<" + ktType(tt.Elem) + ">")
 				case types.StructType, types.UnionType:
