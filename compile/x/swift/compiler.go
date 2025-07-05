@@ -935,6 +935,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("lower expects 1 arg")
 			}
 			return fmt.Sprintf("%s.lowercased()", args[0]), nil
+		case "abs":
+			if len(args) != 1 {
+				return "", fmt.Errorf("abs expects 1 arg")
+			}
+			return fmt.Sprintf("abs(%s)", args[0]), nil
 		case "concat":
 			if len(args) < 2 {
 				return "", fmt.Errorf("concat expects at least 2 args")
