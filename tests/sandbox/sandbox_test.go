@@ -1,3 +1,5 @@
+//go:build slow
+
 package sandbox_test
 
 import (
