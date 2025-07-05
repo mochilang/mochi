@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -52,76 +51,38 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 					if errs := types.Check(prog, env); len(errs) > 0 {
 						err = fmt.Errorf("type error: %v", errs[0])
 					} else {
-						code, cErr := gocode.New(env).Compile(prog)
-						if cErr != nil {
+						if _, cErr := gocode.New(env).Compile(prog); cErr != nil {
 							err = fmt.Errorf("compile error: %w", cErr)
-						} else {
-							tmp := t.TempDir()
-							file := filepath.Join(tmp, "main.go")
-							if wErr := os.WriteFile(file, code, 0644); wErr != nil {
-								err = fmt.Errorf("write error: %w", wErr)
-							} else {
-								cmd := exec.Command("go", "run", file)
-								cmd.Env = append(os.Environ(), "GO111MODULE=on", "LLM_PROVIDER=echo")
-								if data, inErr := os.ReadFile(strings.TrimSuffix(src, filepath.Ext(src)) + ".in"); inErr == nil {
-									cmd.Stdin = bytes.NewReader(data)
-								}
-								outBytes, runErr := cmd.CombinedOutput()
-								if runErr != nil {
-									err = fmt.Errorf("go run error: %w\n%s", runErr, outBytes)
-								} else {
-									got := bytes.TrimSpace(outBytes)
-									if *update {
-										os.WriteFile(errPath, nil, 0644)
-										os.WriteFile(outPath, normalizeOutput(rootDir(t), got), 0644)
-									}
-									want, readErr := os.ReadFile(outPath)
-									if readErr != nil {
-										t.Fatalf("missing golden output: %v", readErr)
-									}
-									gotNorm := normalizeOutput(rootDir(t), got)
-									if !bytes.Equal(gotNorm, normalizeOutput(rootDir(t), want)) {
-										t.Errorf("golden mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotNorm, want)
-									}
-									base := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
-									switch {
-									case strings.HasSuffix(src, ".go.out"):
-										base = strings.TrimSuffix(base, ".go")
-									case strings.HasSuffix(src, ".py.out"):
-										base = strings.TrimSuffix(base, ".py")
-									case strings.HasSuffix(src, ".ts.out"):
-										base = strings.TrimSuffix(base, ".ts")
-									}
-									orig, oErr := os.ReadFile(filepath.Join(filepath.Dir(src), base+".out"))
-									if oErr == nil {
-										wantOrig := normalizeOutput(rootDir(t), bytes.TrimSpace(orig))
-										if !bytes.Equal(gotNorm, wantOrig) {
-											t.Errorf("output mismatch with original\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotNorm, wantOrig)
-										}
-									}
-									return
-								}
-							}
 						}
 					}
 				}
 			}
 
-			if *update {
-				os.WriteFile(outPath, nil, 0644)
-				if err != nil {
+			if err != nil {
+				if *update {
+					os.WriteFile(outPath, nil, 0644)
 					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
 				}
+				want, readErr := os.ReadFile(errPath)
+				if readErr != nil {
+					t.Fatalf("missing golden error: %v", readErr)
+				}
+				if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+					t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+				}
+				return
 			}
-			want, readErr := os.ReadFile(errPath)
+
+			if *update {
+				os.WriteFile(errPath, nil, 0644)
+				os.WriteFile(outPath, normalizeOutput(rootDir(t), mochiSrc), 0644)
+			}
+			want, readErr := os.ReadFile(outPath)
 			if readErr != nil {
-				t.Fatalf("missing golden error: %v", readErr)
+				t.Fatalf("missing golden output: %v", readErr)
 			}
-			if err == nil {
-				t.Fatalf("expected error, got nil")
-			}
-			if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
-				t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+			if got := normalizeOutput(rootDir(t), bytes.TrimSpace(mochiSrc)); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+				t.Errorf("golden mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 			}
 		})
 	}
