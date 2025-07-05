@@ -64,6 +64,21 @@ func (c *Compiler) newVar() string {
 	return c.newTypedVar("integer")
 }
 
+func isUnderscoreExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return false
+	}
+	return p.Target.Selector.Root == "_" && len(p.Target.Selector.Tail) == 0
+}
+
 func isListLiteral(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return false

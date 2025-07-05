@@ -1,0 +1,14 @@
+ type Color =
+   Red
+   | Green
+   | Blue
+ 
+ fun to_int(c: Color): int {
+   return match c {
+     Red => 1
+     Green => 2
+     Blue => 3
+   }
+ }
+ 
+ print(to_int(Green {}))

@@ -499,6 +499,65 @@ func (c *Compiler) compileIfExpr(expr *parser.IfExpr) (string, error) {
 	return tmp, nil
 }
 
+func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
+	typ := "integer"
+	if c.expected != nil {
+		typ = typeString(c.expected)
+	}
+	res := c.newTypedVar(typ)
+
+	target, err := c.compileExpr(m.Target)
+	if err != nil {
+		return "", err
+	}
+	ttype := typeString(types.TypeOfExpr(m.Target, c.env))
+	if name, ok := selectorName(m.Target); ok {
+		ttype = typeString(c.varType(name))
+	}
+	tv := c.newTypedVar(ttype)
+	c.writeln(fmt.Sprintf("%s := %s;", tv, target))
+
+	first := true
+	var defaultExpr *parser.Expr
+	for _, cs := range m.Cases {
+		if isUnderscoreExpr(cs.Pattern) {
+			defaultExpr = cs.Result
+			continue
+		}
+		condVal, err := c.compileExpr(cs.Pattern)
+		if err != nil {
+			return "", err
+		}
+		val, err := c.compileExprWith(parsePasType(typ), cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if first {
+			c.writeln(fmt.Sprintf("if %s = %s then", tv, condVal))
+			first = false
+		} else {
+			c.writeln(fmt.Sprintf("else if %s = %s then", tv, condVal))
+		}
+		c.writeln("begin")
+		c.indent++
+		c.writeln(fmt.Sprintf("%s := %s;", res, val))
+		c.indent--
+	}
+	if defaultExpr != nil {
+		c.writeln("else")
+		c.writeln("begin")
+		c.indent++
+		val, err := c.compileExprWith(parsePasType(typ), defaultExpr)
+		if err != nil {
+			return "", err
+		}
+		c.writeln(fmt.Sprintf("%s := %s;", res, val))
+		c.indent--
+	}
+	c.writeln("end;")
+	return res, nil
+}
+
 func (c *Compiler) mustExpr(e *parser.Expr) string {
 	s, _ := c.compileExpr(e)
 	return s
@@ -754,6 +813,9 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 			valT := c.typeRef(t.Generic.Args[1])
 			return fmt.Sprintf("specialize TFPGMap<%s, %s>", keyT, valT)
 		}
+	}
+	if t.Simple != nil {
+		return sanitizeName(*t.Simple)
 	}
 	return "integer"
 }
@@ -1439,8 +1501,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
 	case p.Struct != nil:
-		if ut, ok := c.expected.(types.UnionType); ok && len(p.Struct.Fields) == 0 {
-			if _, ok := ut.Variants[p.Struct.Name]; ok {
+		if len(p.Struct.Fields) == 0 {
+			if ut, ok := c.expected.(types.UnionType); ok {
+				if _, ok := ut.Variants[p.Struct.Name]; ok {
+					return sanitizeName(p.Struct.Name), nil
+				}
+			}
+			if _, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
 				return sanitizeName(p.Struct.Name), nil
 			}
 		}
@@ -1525,7 +1592,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:
-		return "", fmt.Errorf("match expressions not supported")
+		return c.compileMatchExpr(p.Match)
 	}
 	return "", fmt.Errorf("unsupported expression")
 }
