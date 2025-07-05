@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+// EnableLanguageServer determines whether language server features are used.
+// It defaults to false to avoid spawning external processes during tests.
+var EnableLanguageServer = false
+
 // EnsureAndParse runs ParseText after ensuring the language server is installed.
 // Any parsing errors are annotated with a short snippet of the source for easier debugging.
 func EnsureAndParse(cmd string, args []string, langID, src string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
@@ -14,6 +18,9 @@ func EnsureAndParse(cmd string, args []string, langID, src string) ([]protocol.D
 
 // EnsureAndParseWithRoot runs ParseTextWithRoot after ensuring the language server is installed.
 func EnsureAndParseWithRoot(cmd string, args []string, langID, src, root string) ([]protocol.DocumentSymbol, []protocol.Diagnostic, error) {
+	if !EnableLanguageServer {
+		return nil, nil, nil
+	}
 	if err := EnsureServer(cmd); err != nil {
 		return nil, nil, err
 	}
@@ -31,6 +38,9 @@ func EnsureAndHover(cmd string, args []string, langID, src string, pos protocol.
 
 // EnsureAndHoverWithRoot runs HoverAtWithRoot after ensuring the language server is installed.
 func EnsureAndHoverWithRoot(cmd string, args []string, langID, src string, pos protocol.Position, root string) (protocol.Hover, error) {
+	if !EnableLanguageServer {
+		return protocol.Hover{}, nil
+	}
 	if err := EnsureServer(cmd); err != nil {
 		return protocol.Hover{}, err
 	}
@@ -48,6 +58,9 @@ func EnsureAndDefinition(cmd string, args []string, langID, src string, pos prot
 
 // EnsureAndDefinitionWithRoot runs DefinitionAtWithRoot after ensuring the language server is installed.
 func EnsureAndDefinitionWithRoot(cmd string, args []string, langID, src string, pos protocol.Position, root string) ([]protocol.Location, error) {
+	if !EnableLanguageServer {
+		return nil, nil
+	}
 	if err := EnsureServer(cmd); err != nil {
 		return nil, err
 	}
