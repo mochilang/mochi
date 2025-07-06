@@ -1,2 +1,2 @@
-print(__contains("catch", "cat"))
-print(__contains("catch", "dog"))
+print(("cat" in "catch"))
+print(("dog" in "catch"))

@@ -1,0 +1,12 @@
+parse error: parse error: 3:11: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+
+  1| function __load(path, opts)
+  2|     local fmt = 'json'
+  3|     if opts and opts['format'] then fmt = opts['format'] end
+  4|     local f
+  5|     if not path or path == '' or path == '-' then
+  6|         f = io.stdin
+  7|     else
+  8|         local err; f, err = io.open(path, 'r'); if not f then error(err) end
+  9|     end
+ 10|     local data = f:read('*a')

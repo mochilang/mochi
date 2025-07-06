@@ -1,2 +1,0 @@
-let math = require("math")
-print(math["abs"](-3))

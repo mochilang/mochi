@@ -1,0 +1,12 @@
+parse error: parse error: 3:9: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+
+  1| function __gen_struct(prompt, model, params)
+  2|     local f = load('return ' .. prompt:gsub('"(%w+)"%s*:', '%1='))
+  3|     if f then
+  4|         local ok, res = pcall(f)
+  5|         if ok and type(res) == 'table' then return res end
+  6|     end
+  7|     return {}
+  8| end
+  9| function __print(...)
+ 10|     local args = {...}

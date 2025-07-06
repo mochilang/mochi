@@ -1,0 +1,16 @@
+type error: error[T001]: assignment to undeclared variable: text
+  --> :1:1
+
+help:
+  Declare `text` first using `let`.
+
+  1| function __index(obj, i)
+  2|     if type(obj) == 'string' then
+  3|         return __indexString(obj, i)
+  4|     elseif type(obj) == 'table' then
+  5|         if obj[1] ~= nil or #obj > 0 then
+  6|             return obj[(i)+1]
+  7|         else
+  8|             return obj[i]
+  9|         end
+ 10|     else

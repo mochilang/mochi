@@ -1,0 +1,16 @@
+type error: error[T005]: parameter `x` is missing a type
+  --> :1:1
+
+help:
+  Add a type like `x: int` to this parameter.
+
+  1| function __print(...)
+  2|     local args = {...}
+  3|     for i, a in ipairs(args) do
+  4|         if i > 1 then io.write(' ') end
+  5|         io.write(tostring(a))
+  6|     end
+  7|     io.write('\n')
+  8| end
+  9| function id(x)
+ 10|     return x

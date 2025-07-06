@@ -1,0 +1,12 @@
+parse error: parse error: 2:11: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+
+  1| _Group = {}
+  2| function _Group.new(k)
+  3|     return {key = k, items = {}}
+  4| end
+  5| function __group_by(src, keyfn)
+  6|     local groups = {}
+  7|     local order = {}
+  8|     for _, it in ipairs(src) do
+  9|         local key = keyfn(it)
+ 10|         local ks

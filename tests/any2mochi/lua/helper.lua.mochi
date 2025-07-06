@@ -1,3 +1,0 @@
-fun double(x) {
-  return x * 2
-}

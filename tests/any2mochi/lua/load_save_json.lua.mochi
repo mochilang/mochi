@@ -1,9 +1,0 @@
-Person = []
-Person["__index"] = Person
-fun Person["new"](o) {
-  o = o || []
-  setmetatable(o, Person)
-  return o
-}
-people = __load(null, { "format": "json" })
-__save(people, null, { "format": "json" })

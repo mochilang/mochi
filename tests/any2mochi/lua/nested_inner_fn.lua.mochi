@@ -1,7 +1,0 @@
-fun outer(a) {
-  fun inner(b) {
-    return __add(a, b)
-  }
-  return inner(10)
-}
-print(outer(5))

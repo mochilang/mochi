@@ -1,9 +1,0 @@
-Info = []
-Info["__index"] = Info
-fun Info["new"](o) {
-  o = o || []
-  setmetatable(o, Info)
-  return o
-}
-info = __gen_struct("{\"msg\": \"hello\"}", null, null)
-print(info["msg"])

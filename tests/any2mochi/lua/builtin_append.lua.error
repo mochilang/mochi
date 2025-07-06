@@ -1,0 +1,16 @@
+type error: error[T001]: assignment to undeclared variable: xs
+  --> :1:1
+
+help:
+  Declare `xs` first using `let`.
+
+  1| function __append(lst, v)
+  2|     local out = {}
+  3|     if lst then for i = 1, #lst do out[#out+1] = lst[i] end end
+  4|     out[#out+1] = v
+  5|     return out
+  6| end
+  7| function __index(obj, i)
+  8|     if type(obj) == 'string' then
+  9|         return __indexString(obj, i)
+ 10|     elseif type(obj) == 'table' then

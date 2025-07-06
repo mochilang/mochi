@@ -1,0 +1,12 @@
+parse error: parse error: 3:12: lexer: invalid input text "; i <= n - 1; i ..."
+
+  1| function __add(a, b)
+  2|     if type(a) == 'table' and type(b) == 'table' then
+  3|         local out = {}
+  4|         for i = 1, #a do out[#out+1] = a[i] end
+  5|         for i = 1, #b do out[#out+1] = b[i] end
+  6|         return out
+  7|     elseif type(a) == 'string' or type(b) == 'string' then
+  8|         return tostring(a) .. tostring(b)
+  9|     else
+ 10|         return a + b

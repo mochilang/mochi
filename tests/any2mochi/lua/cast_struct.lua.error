@@ -1,0 +1,12 @@
+parse error: parse error: 3:9: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+
+  1| function __print(...)
+  2|     local args = {...}
+  3|     for i, a in ipairs(args) do
+  4|         if i > 1 then io.write(' ') end
+  5|         io.write(tostring(a))
+  6|     end
+  7|     io.write('\n')
+  8| end
+  9| Todo = {}
+ 10| Todo.__index = Todo

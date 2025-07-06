@@ -1,9 +1,0 @@
-Item = []
-Item["__index"] = Item
-fun Item["new"](o) {
-  o = o || []
-  setmetatable(o, Item)
-  return o
-}
-items = __load(null, { "format": "yaml" })
-print(__count(items))

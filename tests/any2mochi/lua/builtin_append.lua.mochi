@@ -1,2 +1,0 @@
-xs = __append([1, 2], 3)
-print(__index(xs, 2))

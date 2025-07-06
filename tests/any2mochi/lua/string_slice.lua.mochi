@@ -1,1 +1,1 @@
-print(__slice("hello", 1, 4))
+print("hello"[1:4])

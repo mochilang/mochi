@@ -1,4 +1,0 @@
-fun remove(nums, i) {
-  return __add(__slice(nums, 0, i), __slice(nums, __add(i, 1), len(nums)))
-}
-print(remove([1, 2, 3, 4], 1))

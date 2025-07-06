@@ -1,0 +1,12 @@
+parse error: parse error: 3:13: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+
+  1| function __eq(a, b)
+  2|     if type(a) ~= type(b) then return false end
+  3|     if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
+  4|     if type(a) ~= 'table' then return a == b end
+  5|     if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
+  6|         if #a ~= #b then return false end
+  7|         for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
+  8|         return true
+  9|     end
+ 10|     for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end

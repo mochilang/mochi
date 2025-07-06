@@ -1,0 +1,12 @@
+parse error: parse error: 3:11: unexpected token "[" (expected "(" (Param ("," Param)*)? ")" (":" TypeRef)? "{" Statement* "}")
+
+  1| function __count(v)
+  2|     if type(v) == 'table' then
+  3|         if v.items ~= nil then return #v.items end
+  4|         if v[1] ~= nil or #v > 0 then return #v end
+  5|         local n = 0
+  6|         for _ in pairs(v) do n = n + 1 end
+  7|         return n
+  8|     elseif type(v) == 'string' then
+  9|         return #v
+ 10|     else
