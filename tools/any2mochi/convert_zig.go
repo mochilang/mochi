@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type zigParam struct {
@@ -75,12 +73,12 @@ func parseZigDetail(detail string) ([]zigParam, string) {
 	return params, mapZigType(retPart)
 }
 
-func zigHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]zigParam, string) {
+func zigHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]zigParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		lines := strings.Split(mc.Value, "\n")
 		for i := len(lines) - 1; i >= 0; i-- {
 			l := strings.TrimSpace(lines[i])
@@ -118,7 +116,7 @@ func mapZigType(t string) string {
 	return t
 }
 
-func extractRange(src string, r protocol.Range) string {
+func extractRange(src string, r Range) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {
@@ -258,7 +256,7 @@ func parseZigStmt(l string) string {
 	return convertZigExpr(l)
 }
 
-func parseZigFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+func parseZigFunctionBody(src string, sym DocumentSymbol) []string {
 	code := extractRange(src, sym.Range)
 	start := strings.Index(code, "{")
 	end := strings.LastIndex(code, "}")
@@ -301,14 +299,14 @@ func parseZigFunctionBody(src string, sym protocol.DocumentSymbol) []string {
 	return out
 }
 
-func writeZigSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeZigSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction:
+		case SymbolKindFunction:
 			detail := ""
 			if s.Detail != nil {
 				detail = *s.Detail
@@ -353,7 +351,7 @@ func writeZigSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindStruct:
+		case SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			if len(s.Children) == 0 {
@@ -362,7 +360,7 @@ func writeZigSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 			}
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindField {
+				if c.Kind != SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
@@ -377,7 +375,7 @@ func writeZigSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			out.WriteString("let ")
 			out.WriteString(strings.Join(nameParts, "."))
 			if s.Detail != nil {
@@ -388,7 +386,7 @@ func writeZigSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				}
 			}
 			out.WriteByte('\n')
-		case protocol.SymbolKindNamespace, protocol.SymbolKindPackage, protocol.SymbolKindModule:
+		case SymbolKindNamespace, SymbolKindPackage, SymbolKindModule:
 			writeZigSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}

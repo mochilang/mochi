@@ -5,8 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type cppParam struct {
@@ -17,8 +15,8 @@ type cppParam struct {
 // ConvertCpp converts cpp source code to Mochi using the language server.
 func ConvertCpp(src string) ([]byte, error) {
 	ls := Servers["cpp"]
-	var syms []protocol.DocumentSymbol
-	var diags []protocol.Diagnostic
+	var syms []DocumentSymbol
+	var diags []Diagnostic
 	if ls.Command != "" {
 		if _, lookErr := exec.LookPath(ls.Command); lookErr == nil {
 			syms, diags, _ = ParseText(ls.Command, ls.Args, ls.LangID, src)
@@ -96,21 +94,21 @@ func ConvertCppFile(path string) ([]byte, error) {
 	return ConvertCpp(string(data))
 }
 
-func writeCppSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeCppSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindNamespace, protocol.SymbolKindModule, protocol.SymbolKindPackage:
+		case SymbolKindNamespace, SymbolKindModule, SymbolKindPackage:
 			writeCppSymbols(out, nameParts, s.Children, src, ls)
-		case protocol.SymbolKindClass, protocol.SymbolKindStruct:
+		case SymbolKindClass, SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindField {
+				if c.Kind != SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
@@ -129,38 +127,38 @@ func writeCppSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
-			var childSyms []protocol.DocumentSymbol
+			var childSyms []DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindField {
+				if c.Kind != SymbolKindField {
 					childSyms = append(childSyms, c)
 				}
 			}
 			if len(childSyms) > 0 {
 				writeCppSymbols(out, nameParts, childSyms, src, ls)
 			}
-		case protocol.SymbolKindEnum:
+		case SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindEnumMember || (c.Kind == protocol.SymbolKindEnum && len(c.Children) == 0) {
+				if c.Kind == SymbolKindEnumMember || (c.Kind == SymbolKindEnum && len(c.Children) == 0) {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []protocol.DocumentSymbol
+			var rest []DocumentSymbol
 			for _, c := range s.Children {
-				if !(c.Kind == protocol.SymbolKindEnumMember || (c.Kind == protocol.SymbolKindEnum && len(c.Children) == 0)) {
+				if !(c.Kind == SymbolKindEnumMember || (c.Kind == SymbolKindEnum && len(c.Children) == 0)) {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
 				writeCppSymbols(out, nameParts, rest, src, ls)
 			}
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+		case SymbolKindFunction, SymbolKindMethod:
 			signature := ""
 			if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-				if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+				if mc, ok := hov.Contents.(MarkupContent); ok {
 					lines := strings.Split(mc.Value, "\n")
 					for i := len(lines) - 1; i >= 0 && signature == ""; i-- {
 						l := strings.TrimSpace(lines[i])
@@ -212,7 +210,7 @@ func writeCppSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if strings.HasPrefix(s.Name, "using ") || strings.Contains(s.Name, " ") {
 				continue
 			}
@@ -325,12 +323,12 @@ func mapCppType(typ string) string {
 
 // cppFieldType attempts to determine the type of a field using hover information
 // from the language server when the document symbol does not include it.
-func cppFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func cppFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		for _, line := range strings.Split(mc.Value, "\n") {
 			if idx := strings.Index(line, ":"); idx != -1 {
 				t := strings.TrimSpace(line[idx+1:])
@@ -346,7 +344,7 @@ func cppFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) st
 // convertCppBody converts the body of a function defined by r in src into a slice
 // of Mochi statements. Only very basic constructs like prints, returns and
 // simple assignments are handled.
-func convertCppBody(src string, r protocol.Range) []string {
+func convertCppBody(src string, r Range) []string {
 	lines := strings.Split(src, "\n")
 	start := int(r.Start.Line)
 	end := int(r.End.Line)

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertSwift converts swift source code to Mochi using the language server.
@@ -26,14 +24,14 @@ func ConvertSwift(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			params, ret := getSwiftSignature(src, s.SelectionRange.Start, ls)
@@ -65,13 +63,13 @@ func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindClass, protocol.SymbolKindStruct:
+		case SymbolKindClass, SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			fields := []protocol.DocumentSymbol{}
-			rest := []protocol.DocumentSymbol{}
+			fields := []DocumentSymbol{}
+			rest := []DocumentSymbol{}
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindProperty || c.Kind == protocol.SymbolKindField {
+				if c.Kind == SymbolKindProperty || c.Kind == SymbolKindField {
 					fields = append(fields, c)
 				} else {
 					rest = append(rest, c)
@@ -96,26 +94,26 @@ func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 					writeSwiftSymbols(out, nameParts, rest, src, ls)
 				}
 			}
-		case protocol.SymbolKindEnum:
+		case SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindEnumMember {
+				if c.Kind == SymbolKindEnumMember {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []protocol.DocumentSymbol
+			var rest []DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindEnumMember {
+				if c.Kind != SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
 				writeSwiftSymbols(out, nameParts, rest, src, ls)
 			}
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
@@ -133,7 +131,7 @@ func writeSwiftSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 	}
 }
 
-func getSwiftParams(src string, pos protocol.Position, ls LanguageServer) []string {
+func getSwiftParams(src string, pos Position, ls LanguageServer) []string {
 	params, _ := getSwiftSignature(src, pos, ls)
 	names := make([]string, len(params))
 	for i, p := range params {
@@ -142,24 +140,24 @@ func getSwiftParams(src string, pos protocol.Position, ls LanguageServer) []stri
 	return names
 }
 
-func getSwiftSignature(src string, pos protocol.Position, ls LanguageServer) ([]swiftParam, string) {
+func getSwiftSignature(src string, pos Position, ls LanguageServer) ([]swiftParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return nil, ""
 	}
-	mc, ok := hov.Contents.(protocol.MarkupContent)
+	mc, ok := hov.Contents.(MarkupContent)
 	if !ok {
 		return nil, ""
 	}
 	return parseSwiftSignature(mc.Value)
 }
 
-func getSwiftVarType(src string, pos protocol.Position, ls LanguageServer) string {
+func getSwiftVarType(src string, pos Position, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return ""
 	}
-	mc, ok := hov.Contents.(protocol.MarkupContent)
+	mc, ok := hov.Contents.(MarkupContent)
 	if !ok {
 		return ""
 	}
@@ -265,7 +263,7 @@ func parseSwiftSignature(sig string) ([]swiftParam, string) {
 	return params, ret
 }
 
-func swiftFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+func swiftFunctionBody(src string, sym DocumentSymbol) []string {
 	code := extractRangeText(src, sym.Range)
 	start := strings.Index(code, "{")
 	end := strings.LastIndex(code, "}")
@@ -330,7 +328,7 @@ func parseSwiftStatements(body string) []string {
 	return out
 }
 
-func extractRangeText(src string, r protocol.Range) string {
+func extractRangeText(src string, r Range) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {

@@ -6,8 +6,6 @@ import (
 	"os"
 	"regexp"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertRkt converts Racket source code using the language server. It extracts
@@ -43,16 +41,16 @@ func ConvertRktFile(path string) ([]byte, error) {
 	return ConvertRkt(string(data))
 }
 
-func writeRktSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeRktSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindNamespace, protocol.SymbolKindPackage, protocol.SymbolKindModule:
+		case SymbolKindNamespace, SymbolKindPackage, SymbolKindModule:
 			writeRktSymbols(out, nameParts, s.Children, src, ls)
-		case protocol.SymbolKindFunction:
+		case SymbolKindFunction:
 			params, ret := parseRktSignature(s.Detail)
 			if len(params) == 0 && ret == "" {
 				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
@@ -82,7 +80,7 @@ func writeRktSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindStruct, protocol.SymbolKindClass:
+		case SymbolKindStruct, SymbolKindClass:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			if len(s.Children) == 0 {
@@ -91,7 +89,7 @@ func writeRktSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 			}
 			out.WriteString(" {\n")
 			for _, f := range s.Children {
-				if f.Kind != protocol.SymbolKindField {
+				if f.Kind != SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
@@ -107,26 +105,26 @@ func writeRktSymbols(out *strings.Builder, prefix []string, syms []protocol.Docu
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
-		case protocol.SymbolKindEnum:
+		case SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindEnumMember {
+				if c.Kind == SymbolKindEnumMember {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []protocol.DocumentSymbol
+			var rest []DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindEnumMember {
+				if c.Kind != SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
 				writeRktSymbols(out, nameParts, rest, src, ls)
 			}
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
@@ -168,24 +166,24 @@ func parseRktParams(detail *string) []string {
 	return strings.Fields(list)
 }
 
-func parseRktHoverParams(h protocol.Hover) []string {
+func parseRktHoverParams(h Hover) []string {
 	var text string
 	switch c := h.Contents.(type) {
-	case protocol.MarkupContent:
+	case MarkupContent:
 		text = c.Value
-	case protocol.MarkedString:
+	case MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m protocol.MarkedStringStruct
+			var m MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []protocol.MarkedString:
+	case []MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m protocol.MarkedStringStruct
+				var m MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -231,24 +229,24 @@ func parseRktSignature(detail *string) ([]string, string) {
 	return params, ret
 }
 
-func parseRktHoverSignature(h protocol.Hover) ([]string, string) {
+func parseRktHoverSignature(h Hover) ([]string, string) {
 	var text string
 	switch c := h.Contents.(type) {
-	case protocol.MarkupContent:
+	case MarkupContent:
 		text = c.Value
-	case protocol.MarkedString:
+	case MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m protocol.MarkedStringStruct
+			var m MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []protocol.MarkedString:
+	case []MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m protocol.MarkedStringStruct
+				var m MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -290,7 +288,7 @@ func parseRktVarType(detail *string) string {
 	return ""
 }
 
-func getRktVarType(src string, pos protocol.Position, ls LanguageServer) string {
+func getRktVarType(src string, pos Position, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return ""
@@ -298,24 +296,24 @@ func getRktVarType(src string, pos protocol.Position, ls LanguageServer) string 
 	return parseRktHoverVarType(hov)
 }
 
-func parseRktHoverVarType(h protocol.Hover) string {
+func parseRktHoverVarType(h Hover) string {
 	var text string
 	switch c := h.Contents.(type) {
-	case protocol.MarkupContent:
+	case MarkupContent:
 		text = c.Value
-	case protocol.MarkedString:
+	case MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m protocol.MarkedStringStruct
+			var m MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []protocol.MarkedString:
+	case []MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m protocol.MarkedStringStruct
+				var m MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -421,7 +419,7 @@ func convertRktExpr(expr string) string {
 // rktFunctionBody extracts a very small subset of statements from the
 // function body so that common examples become runnable. Unsupported
 // statements are ignored.
-func rktFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+func rktFunctionBody(src string, sym DocumentSymbol) []string {
 	start := rktPosIndex(src, sym.Range.Start)
 	end := rktPosIndex(src, sym.Range.End)
 	if start >= len(src) || end > len(src) || start >= end {
@@ -453,7 +451,7 @@ func rktFunctionBody(src string, sym protocol.DocumentSymbol) []string {
 }
 
 // indexForPosition converts a protocol position to a byte offset in src.
-func rktPosIndex(src string, pos protocol.Position) int {
+func rktPosIndex(src string, pos Position) int {
 	lines := strings.Split(src, "\n")
 	if int(pos.Line) >= len(lines) {
 		return len(src)

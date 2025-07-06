@@ -5,8 +5,6 @@ import (
 	"os"
 	"strings"
 	"unicode"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertDart converts dart source code to Mochi.
@@ -82,7 +80,7 @@ func parseDartDetail(detail string) ([]dartParam, string) {
 	return params, dartToMochiType(retPart)
 }
 
-func parseDartHover(h protocol.Hover) ([]dartParam, string) {
+func parseDartHover(h Hover) ([]dartParam, string) {
 	text := hoverString(h)
 	for _, line := range strings.Split(text, "\n") {
 		line = strings.TrimSpace(line)
@@ -95,7 +93,7 @@ func parseDartHover(h protocol.Hover) ([]dartParam, string) {
 	return nil, ""
 }
 
-func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeDartSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -103,12 +101,12 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 		}
 
 		switch s.Kind {
-		case protocol.SymbolKindClass, protocol.SymbolKindInterface, protocol.SymbolKindStruct:
+		case SymbolKindClass, SymbolKindInterface, SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindField || c.Kind == protocol.SymbolKindProperty || c.Kind == protocol.SymbolKindVariable {
+				if c.Kind == SymbolKindField || c.Kind == SymbolKindProperty || c.Kind == SymbolKindVariable {
 					out.WriteString("  ")
 					out.WriteString(c.Name)
 					if t := dartFieldType(src, c, ls); t != "" {
@@ -120,12 +118,12 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 			}
 			out.WriteString("}\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindMethod || c.Kind == protocol.SymbolKindConstructor || c.Kind == protocol.SymbolKindFunction {
-					writeDartSymbols(out, nameParts, []protocol.DocumentSymbol{c}, src, ls)
+				if c.Kind == SymbolKindMethod || c.Kind == SymbolKindConstructor || c.Kind == SymbolKindFunction {
+					writeDartSymbols(out, nameParts, []DocumentSymbol{c}, src, ls)
 				}
 			}
 			continue
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 && s.Name != "" {
 				out.WriteString("let ")
 				out.WriteString(s.Name)
@@ -135,19 +133,19 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				}
 				out.WriteByte('\n')
 			}
-		case protocol.SymbolKindEnum:
+		case SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindEnumMember {
+				if c.Kind == SymbolKindEnumMember {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []protocol.DocumentSymbol
+			var rest []DocumentSymbol
 			for _, c := range s.Children {
-				if c.Kind != protocol.SymbolKindEnumMember {
+				if c.Kind != SymbolKindEnumMember {
 					rest = append(rest, c)
 				}
 			}
@@ -155,7 +153,7 @@ func writeDartSymbols(out *strings.Builder, prefix []string, syms []protocol.Doc
 				writeDartSymbols(out, nameParts, rest, src, ls)
 			}
 			continue
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			detail := ""
@@ -212,14 +210,14 @@ func dartTypeFromDetail(d *string) string {
 	return dartToMochiType(strings.TrimSpace(*d))
 }
 
-func dartFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func dartFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	if t := dartTypeFromDetail(sym.Detail); t != "" && t != "any" {
 		return t
 	}
 	return dartTypeFromHover(src, sym, ls)
 }
 
-func dartTypeFromHover(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func dartTypeFromHover(src string, sym DocumentSymbol, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
@@ -326,4 +324,63 @@ func dartToMochiType(t string) string {
 		}
 	}
 	return t
+}
+
+// parseDartFunctionBody extracts the body of a Dart function symbol.
+// It performs a very lightweight parsing and returns each line in Mochi
+// syntax. The implementation is intentionally simple and only handles
+// a small subset of statements.
+func parseDartFunctionBody(src string, sym DocumentSymbol) []string {
+	code := extractRangeText(src, sym.Range)
+	start := strings.Index(code, "{")
+	end := strings.LastIndex(code, "}")
+	if start == -1 || end == -1 || end <= start {
+		return nil
+	}
+	body := code[start+1 : end]
+	return parseDartStatements(body)
+}
+
+func parseDartStatements(body string) []string {
+	lines := strings.Split(body, "\n")
+	var out []string
+	indent := 1
+	for _, line := range lines {
+		l := strings.TrimSpace(line)
+		l = strings.TrimSuffix(l, ";")
+		if l == "" {
+			continue
+		}
+		switch {
+		case l == "}":
+			if indent > 0 {
+				indent--
+			}
+			out = append(out, strings.Repeat("  ", indent)+"}")
+		case strings.HasPrefix(l, "if ") && strings.HasSuffix(l, "{"):
+			cond := strings.TrimSpace(strings.TrimSuffix(l[3:], "{"))
+			out = append(out, strings.Repeat("  ", indent)+"if "+cond+" {")
+			indent++
+		case strings.HasPrefix(l, "for ") && strings.HasSuffix(l, "{"):
+			head := strings.TrimSpace(strings.TrimSuffix(l[4:], "{"))
+			out = append(out, strings.Repeat("  ", indent)+"for "+head+" {")
+			indent++
+		case strings.HasPrefix(l, "while ") && strings.HasSuffix(l, "{"):
+			cond := strings.TrimSpace(strings.TrimSuffix(l[6:], "{"))
+			out = append(out, strings.Repeat("  ", indent)+"while "+cond+" {")
+			indent++
+		case l == "else {":
+			if indent > 0 {
+				indent--
+			}
+			out = append(out, strings.Repeat("  ", indent)+"else {")
+			indent++
+		case strings.HasPrefix(l, "return "):
+			expr := strings.TrimSpace(l[len("return "):])
+			out = append(out, strings.Repeat("  ", indent)+"return "+expr)
+		default:
+			out = append(out, strings.Repeat("  ", indent)+l)
+		}
+	}
+	return out
 }

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertPl converts pl source code to Mochi using the language server.
@@ -20,7 +18,7 @@ func ConvertPl(src string) ([]byte, error) {
 	}
 	var out strings.Builder
 	for _, s := range syms {
-		if s.Kind != protocol.SymbolKindFunction {
+		if s.Kind != SymbolKindFunction {
 			continue
 		}
 		out.WriteString("fun ")

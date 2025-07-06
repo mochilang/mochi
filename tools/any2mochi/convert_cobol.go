@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertCobol converts COBOL source code to Mochi using the language server.
@@ -36,7 +34,7 @@ func ConvertCobolFile(path string) ([]byte, error) {
 	return ConvertCobol(string(data))
 }
 
-func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, prefix []string, syms []protocol.DocumentSymbol) {
+func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, prefix []string, syms []DocumentSymbol) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -44,7 +42,7 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 		}
 
 		switch s.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			detail := ""
 			if s.Detail != nil {
 				detail = *s.Detail
@@ -88,7 +86,7 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 				out.WriteString("}\n")
 			}
 
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty:
+		case SymbolKindVariable, SymbolKindConstant, SymbolKindField, SymbolKindProperty:
 			typ := ""
 			if s.Detail != nil {
 				typ = parseCobolType(*s.Detail)
@@ -106,13 +104,13 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 			}
 			out.WriteString(" = nil\n")
 
-		case protocol.SymbolKindClass, protocol.SymbolKindStruct, protocol.SymbolKindInterface, protocol.SymbolKindEnum:
+		case SymbolKindClass, SymbolKindStruct, SymbolKindInterface, SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			var fields []protocol.DocumentSymbol
+			var fields []DocumentSymbol
 			for _, c := range s.Children {
 				switch c.Kind {
-				case protocol.SymbolKindField, protocol.SymbolKindProperty, protocol.SymbolKindVariable:
+				case SymbolKindField, SymbolKindProperty, SymbolKindVariable:
 					fields = append(fields, c)
 				}
 			}
@@ -142,15 +140,15 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 			}
 			for _, c := range s.Children {
 				switch c.Kind {
-				case protocol.SymbolKindField, protocol.SymbolKindProperty, protocol.SymbolKindVariable:
+				case SymbolKindField, SymbolKindProperty, SymbolKindVariable:
 					continue
 				default:
-					writeCobolSymbols(out, ls, src, nameParts, []protocol.DocumentSymbol{c})
+					writeCobolSymbols(out, ls, src, nameParts, []DocumentSymbol{c})
 				}
 			}
 			continue
 
-		case protocol.SymbolKindNamespace, protocol.SymbolKindPackage, protocol.SymbolKindModule:
+		case SymbolKindNamespace, SymbolKindPackage, SymbolKindModule:
 			if len(s.Children) > 0 {
 				writeCobolSymbols(out, ls, src, nameParts, s.Children)
 			}
@@ -263,7 +261,7 @@ func parseCobolType(detail string) string {
 
 // linesInRange returns the lines of src covered by r. If the range is outside
 // the bounds of src, it returns an empty slice.
-func linesInRange(src string, r protocol.Range) []string {
+func linesInRange(src string, r Range) []string {
 	lines := strings.Split(src, "\n")
 	start := int(r.Start.Line)
 	end := int(r.End.Line)

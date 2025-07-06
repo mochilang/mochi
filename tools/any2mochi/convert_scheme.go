@@ -6,15 +6,13 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertScheme converts scheme source code to Mochi using the language server.
 func ConvertScheme(src string) ([]byte, error) {
 	ls := Servers["scheme"]
-	var syms []protocol.DocumentSymbol
-	var diags []protocol.Diagnostic
+	var syms []DocumentSymbol
+	var diags []Diagnostic
 	if _, lookErr := exec.LookPath(ls.Command); lookErr == nil {
 		syms, diags, _ = ParseText(ls.Command, ls.Args, ls.LangID, src)
 	}
@@ -40,14 +38,14 @@ func ConvertSchemeFile(path string) ([]byte, error) {
 	return ConvertScheme(string(data))
 }
 
-func writeSchemeSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeSchemeSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction:
+		case SymbolKindFunction:
 			params, ret := parseSchemeSignature(s.Detail)
 			if len(params) == 0 {
 				params = extractSchemeParams(s)
@@ -86,14 +84,14 @@ func writeSchemeSymbols(out *strings.Builder, prefix []string, syms []protocol.D
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindClass, protocol.SymbolKindStruct:
+		case SymbolKindClass, SymbolKindStruct:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			fields := []protocol.DocumentSymbol{}
-			rest := []protocol.DocumentSymbol{}
+			fields := []DocumentSymbol{}
+			rest := []DocumentSymbol{}
 			for _, c := range s.Children {
 				switch c.Kind {
-				case protocol.SymbolKindField:
+				case SymbolKindField:
 					fields = append(fields, c)
 				default:
 					rest = append(rest, c)
@@ -123,7 +121,7 @@ func writeSchemeSymbols(out *strings.Builder, prefix []string, syms []protocol.D
 					writeSchemeSymbols(out, nameParts, rest, src, ls)
 				}
 			}
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
@@ -171,35 +169,35 @@ func parseSchemeSignature(detail *string) ([]string, string) {
 	return params, ret
 }
 
-func extractSchemeParams(sym protocol.DocumentSymbol) []string {
+func extractSchemeParams(sym DocumentSymbol) []string {
 	var params []string
 	start := sym.Range.Start.Line
 	for _, c := range sym.Children {
-		if c.Kind == protocol.SymbolKindVariable && c.Range.Start.Line == start {
+		if c.Kind == SymbolKindVariable && c.Range.Start.Line == start {
 			params = append(params, c.Name)
 		}
 	}
 	return params
 }
 
-func parseSchemeHoverParams(h protocol.Hover) []string {
+func parseSchemeHoverParams(h Hover) []string {
 	var text string
 	switch c := h.Contents.(type) {
-	case protocol.MarkupContent:
+	case MarkupContent:
 		text = c.Value
-	case protocol.MarkedString:
+	case MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m protocol.MarkedStringStruct
+			var m MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []protocol.MarkedString:
+	case []MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m protocol.MarkedStringStruct
+				var m MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -221,24 +219,24 @@ func parseSchemeHoverParams(h protocol.Hover) []string {
 	return nil
 }
 
-func parseSchemeHoverSignature(h protocol.Hover) ([]string, string) {
+func parseSchemeHoverSignature(h Hover) ([]string, string) {
 	var text string
 	switch c := h.Contents.(type) {
-	case protocol.MarkupContent:
+	case MarkupContent:
 		text = c.Value
-	case protocol.MarkedString:
+	case MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m protocol.MarkedStringStruct
+			var m MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []protocol.MarkedString:
+	case []MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m protocol.MarkedStringStruct
+				var m MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -322,24 +320,24 @@ func parseSchemeVarType(detail *string) string {
 	return ""
 }
 
-func parseSchemeHoverVarType(h protocol.Hover) string {
+func parseSchemeHoverVarType(h Hover) string {
 	var text string
 	switch c := h.Contents.(type) {
-	case protocol.MarkupContent:
+	case MarkupContent:
 		text = c.Value
-	case protocol.MarkedString:
+	case MarkedString:
 		if b, err := json.Marshal(c); err == nil {
-			var m protocol.MarkedStringStruct
+			var m MarkedStringStruct
 			if json.Unmarshal(b, &m) == nil {
 				text = m.Value
 			} else {
 				json.Unmarshal(b, &text)
 			}
 		}
-	case []protocol.MarkedString:
+	case []MarkedString:
 		if len(c) > 0 {
 			if b, err := json.Marshal(c[0]); err == nil {
-				var m protocol.MarkedStringStruct
+				var m MarkedStringStruct
 				if json.Unmarshal(b, &m) == nil {
 					text = m.Value
 				} else {
@@ -361,7 +359,7 @@ func parseSchemeHoverVarType(h protocol.Hover) string {
 	return ""
 }
 
-func parseSchemeFunctionBody(src string, sym protocol.DocumentSymbol) []string {
+func parseSchemeFunctionBody(src string, sym DocumentSymbol) []string {
 	code := schemeRange(src, sym.Range)
 	// find the first closing parenthesis of the parameter list
 	idx := strings.Index(code, "(define")
@@ -432,7 +430,7 @@ func convertSchemeExpr(expr string) string {
 	return expr
 }
 
-func schemeRange(src string, r protocol.Range) string {
+func schemeRange(src string, r Range) string {
 	lines := strings.Split(src, "\n")
 	var out strings.Builder
 	for i := int(r.Start.Line); i <= int(r.End.Line) && i < len(lines); i++ {

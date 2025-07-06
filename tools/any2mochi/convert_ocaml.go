@@ -5,8 +5,6 @@ import (
 	"os"
 	"regexp"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertOcaml converts ocaml source code to Mochi using the language server.
@@ -44,14 +42,14 @@ func ConvertOcamlFile(path string) ([]byte, error) {
 	return ConvertOcaml(string(data))
 }
 
-func writeOcamlSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, lines []string, src string, ls LanguageServer) {
+func writeOcamlSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, lines []string, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+		case SymbolKindFunction, SymbolKindMethod:
 			names := parseOcamlParamNames(lines, s)
 			types, ret := ocamlHoverSignature(src, s, ls)
 			body := parseOcamlBody(lines, s)
@@ -84,7 +82,7 @@ func writeOcamlSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				typ := ocamlHoverType(src, s, ls)
 				out.WriteString("let ")
@@ -95,12 +93,12 @@ func writeOcamlSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 				}
 				out.WriteByte('\n')
 			}
-		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface, protocol.SymbolKindEnum:
+		case SymbolKindStruct, SymbolKindClass, SymbolKindInterface, SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			fields := []protocol.DocumentSymbol{}
+			fields := []DocumentSymbol{}
 			for _, c := range s.Children {
-				if c.Kind == protocol.SymbolKindField || c.Kind == protocol.SymbolKindProperty {
+				if c.Kind == SymbolKindField || c.Kind == SymbolKindProperty {
 					fields = append(fields, c)
 				}
 			}
@@ -119,16 +117,16 @@ func writeOcamlSymbols(out *strings.Builder, prefix []string, syms []protocol.Do
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindModule, protocol.SymbolKindNamespace:
+		case SymbolKindModule, SymbolKindNamespace:
 			writeOcamlSymbols(out, nameParts, s.Children, lines, src, ls)
 		}
-		if len(s.Children) > 0 && s.Kind != protocol.SymbolKindStruct && s.Kind != protocol.SymbolKindClass && s.Kind != protocol.SymbolKindInterface && s.Kind != protocol.SymbolKindEnum && s.Kind != protocol.SymbolKindModule && s.Kind != protocol.SymbolKindNamespace && s.Kind != protocol.SymbolKindVariable && s.Kind != protocol.SymbolKindConstant {
+		if len(s.Children) > 0 && s.Kind != SymbolKindStruct && s.Kind != SymbolKindClass && s.Kind != SymbolKindInterface && s.Kind != SymbolKindEnum && s.Kind != SymbolKindModule && s.Kind != SymbolKindNamespace && s.Kind != SymbolKindVariable && s.Kind != SymbolKindConstant {
 			writeOcamlSymbols(out, nameParts, s.Children, lines, src, ls)
 		}
 	}
 }
 
-func parseOcamlParamNames(lines []string, sym protocol.DocumentSymbol) []string {
+func parseOcamlParamNames(lines []string, sym DocumentSymbol) []string {
 	start := posToOffset(lines, sym.SelectionRange.End)
 	src := strings.Join(lines, "\n")
 	rest := src[start:]
@@ -169,12 +167,12 @@ func parseOcamlParamNames(lines []string, sym protocol.DocumentSymbol) []string 
 	return names
 }
 
-func ocamlHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]string, string) {
+func ocamlHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]string, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	mc, ok := hov.Contents.(protocol.MarkupContent)
+	mc, ok := hov.Contents.(MarkupContent)
 	if !ok {
 		return nil, ""
 	}
@@ -199,12 +197,12 @@ func ocamlHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageSer
 	return paramTypes, ret
 }
 
-func ocamlHoverType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func ocamlHoverType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		return mapOcamlType(strings.TrimSpace(mc.Value))
 	}
 	return ""
@@ -244,7 +242,7 @@ func mapOcamlType(t string) string {
 	return t
 }
 
-func posToOffset(lines []string, pos protocol.Position) int {
+func posToOffset(lines []string, pos Position) int {
 	off := 0
 	for i := 0; i < int(pos.Line); i++ {
 		off += len(lines[i]) + 1
@@ -253,7 +251,7 @@ func posToOffset(lines []string, pos protocol.Position) int {
 	return off
 }
 
-func parseOcamlBody(lines []string, sym protocol.DocumentSymbol) []string {
+func parseOcamlBody(lines []string, sym DocumentSymbol) []string {
 	start := posToOffset(lines, sym.SelectionRange.End)
 	end := posToOffset(lines, sym.Range.End)
 	src := strings.Join(lines, "\n")

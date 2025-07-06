@@ -1,7 +1,6 @@
 package any2mochi
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -10,8 +9,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertKt converts Kotlin source code to Mochi. It first tries to parse the
@@ -34,23 +31,23 @@ func ConvertKtFile(path string) ([]byte, error) {
 	return ConvertKt(string(data))
 }
 
-func writeKtSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func writeKtSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindClass, protocol.SymbolKindStruct, protocol.SymbolKindInterface:
+		case SymbolKindClass, SymbolKindStruct, SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			fields := []protocol.DocumentSymbol{}
-			methods := []protocol.DocumentSymbol{}
+			fields := []DocumentSymbol{}
+			methods := []DocumentSymbol{}
 			for _, c := range s.Children {
 				switch c.Kind {
-				case protocol.SymbolKindField, protocol.SymbolKindProperty:
+				case SymbolKindField, SymbolKindProperty:
 					fields = append(fields, c)
-				case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+				case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 					methods = append(methods, c)
 				}
 			}
@@ -78,9 +75,9 @@ func writeKtSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 				}
 				out.WriteString("}\n")
 			}
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod, protocol.SymbolKindConstructor:
+		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
 			writeKtFunc(out, s, src, ls, strings.Join(nameParts, "."))
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant, protocol.SymbolKindField, protocol.SymbolKindProperty:
+		case SymbolKindVariable, SymbolKindConstant, SymbolKindField, SymbolKindProperty:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
@@ -101,7 +98,7 @@ func writeKtSymbols(out *strings.Builder, prefix []string, syms []protocol.Docum
 	}
 }
 
-func writeKtFunc(out *strings.Builder, sym protocol.DocumentSymbol, src string, ls LanguageServer, name string) {
+func writeKtFunc(out *strings.Builder, sym DocumentSymbol, src string, ls LanguageServer, name string) {
 	params, ret := parseKtSignature(sym.Detail)
 	if len(params) == 0 && ret == "" {
 		p, r := ktHoverSignature(src, sym, ls)
@@ -128,12 +125,12 @@ func writeKtFunc(out *strings.Builder, sym protocol.DocumentSymbol, src string, 
 	out.WriteString(" {}\n")
 }
 
-func ktHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]ktParam, string) {
+func ktHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]ktParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		for _, line := range strings.Split(mc.Value, "\n") {
 			l := strings.TrimSpace(strings.Trim(line, "`"))
 			if strings.HasPrefix(l, "fun ") || strings.HasPrefix(l, "suspend fun ") {
@@ -211,12 +208,12 @@ func parseKtParams(s string) []ktParam {
 	return params
 }
 
-func ktFieldType(src string, sym protocol.DocumentSymbol, ls LanguageServer) string {
+func ktFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	if mc, ok := hov.Contents.(protocol.MarkupContent); ok {
+	if mc, ok := hov.Contents.(MarkupContent); ok {
 		for _, line := range strings.Split(mc.Value, "\n") {
 			l := strings.TrimSpace(line)
 			if idx := strings.Index(l, ":"); idx != -1 {

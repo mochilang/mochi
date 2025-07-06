@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	protocol "github.com/tliron/glsp/protocol_3_16"
 	luaast "github.com/yuin/gopher-lua/ast"
 	luaparse "github.com/yuin/gopher-lua/parse"
 )
@@ -34,19 +33,19 @@ func ConvertLua(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func writeLuaSymbols(out *strings.Builder, prefix []string, syms []protocol.DocumentSymbol, src string, ls LanguageServer, fns map[int]*luaast.FunctionExpr) {
+func writeLuaSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer, fns map[int]*luaast.FunctionExpr) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+		case SymbolKindFunction, SymbolKindMethod:
 			fn := fns[int(s.Range.Start.Line)]
 			writeLuaFunc(out, strings.Join(nameParts, "."), s, src, ls, fn)
-		case protocol.SymbolKindStruct, protocol.SymbolKindClass, protocol.SymbolKindInterface:
+		case SymbolKindStruct, SymbolKindClass, SymbolKindInterface:
 			writeLuaType(out, strings.Join(nameParts, "."), s, src, ls, fns)
-		case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindVariable, SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
@@ -72,7 +71,7 @@ type luaParam struct {
 	typ  string
 }
 
-func writeLuaFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol, src string, ls LanguageServer, fn *luaast.FunctionExpr) {
+func writeLuaFunc(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer, fn *luaast.FunctionExpr) {
 	params, ret := parseLuaDetail(sym.Detail)
 	if len(params) == 0 && ret == "" {
 		params, ret = luaHoverSignature(src, sym, ls)
@@ -109,7 +108,7 @@ func writeLuaFunc(out *strings.Builder, name string, sym protocol.DocumentSymbol
 	out.WriteString("}\n")
 }
 
-func luaHoverSignature(src string, sym protocol.DocumentSymbol, ls LanguageServer) ([]luaParam, string) {
+func luaHoverSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]luaParam, string) {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
@@ -195,7 +194,7 @@ func parseLuaDetail(detail *string) ([]luaParam, string) {
 	return params, mapLuaType(ret)
 }
 
-func luaSourceSignature(src string, sym protocol.DocumentSymbol) ([]luaParam, string) {
+func luaSourceSignature(src string, sym DocumentSymbol) ([]luaParam, string) {
 	lines := strings.Split(src, "\n")
 	if int(sym.Range.Start.Line) >= len(lines) {
 		return nil, ""
@@ -233,7 +232,7 @@ func parseLuaVarDetail(detail *string) string {
 	return ""
 }
 
-func writeLuaType(out *strings.Builder, name string, sym protocol.DocumentSymbol, src string, ls LanguageServer, fns map[int]*luaast.FunctionExpr) {
+func writeLuaType(out *strings.Builder, name string, sym DocumentSymbol, src string, ls LanguageServer, fns map[int]*luaast.FunctionExpr) {
 	out.WriteString("type ")
 	out.WriteString(name)
 	if len(sym.Children) == 0 {
@@ -243,7 +242,7 @@ func writeLuaType(out *strings.Builder, name string, sym protocol.DocumentSymbol
 	out.WriteString(" {\n")
 	for _, c := range sym.Children {
 		switch c.Kind {
-		case protocol.SymbolKindField, protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindField, SymbolKindVariable, SymbolKindConstant:
 			out.WriteString("  ")
 			out.WriteString(c.Name)
 			typ := parseLuaVarDetail(c.Detail)
@@ -255,7 +254,7 @@ func writeLuaType(out *strings.Builder, name string, sym protocol.DocumentSymbol
 				out.WriteString(typ)
 			}
 			out.WriteByte('\n')
-		case protocol.SymbolKindFunction, protocol.SymbolKindMethod:
+		case SymbolKindFunction, SymbolKindMethod:
 			var b strings.Builder
 			fn := fns[int(c.Range.Start.Line)]
 			writeLuaFunc(&b, c.Name, c, src, ls, fn)
@@ -269,7 +268,7 @@ func writeLuaType(out *strings.Builder, name string, sym protocol.DocumentSymbol
 	out.WriteString("}\n")
 }
 
-func getLuaVarType(src string, pos protocol.Position, ls LanguageServer) string {
+func getLuaVarType(src string, pos Position, ls LanguageServer) string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return ""

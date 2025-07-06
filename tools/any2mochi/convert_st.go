@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 // ConvertSt converts st source code to Mochi using the language server.
@@ -33,7 +31,7 @@ func ConvertSt(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-func appendStSymbols(out *strings.Builder, syms []protocol.DocumentSymbol, src string, ls LanguageServer) {
+func appendStSymbols(out *strings.Builder, syms []DocumentSymbol, src string, ls LanguageServer) {
 	for _, s := range syms {
 		appendStSymbol(out, s, src, ls, parentNone)
 	}
@@ -44,9 +42,9 @@ const (
 	parentClass
 )
 
-func appendStSymbol(out *strings.Builder, s protocol.DocumentSymbol, src string, ls LanguageServer, parent int) {
+func appendStSymbol(out *strings.Builder, s DocumentSymbol, src string, ls LanguageServer, parent int) {
 	switch s.Kind {
-	case protocol.SymbolKindClass:
+	case SymbolKindClass:
 		fields, rest := splitStFields(s.Children)
 		out.WriteString("type ")
 		out.WriteString(s.Name)
@@ -70,7 +68,7 @@ func appendStSymbol(out *strings.Builder, s protocol.DocumentSymbol, src string,
 			}
 		}
 		out.WriteString("}\n")
-	case protocol.SymbolKindMethod, protocol.SymbolKindConstructor, protocol.SymbolKindFunction:
+	case SymbolKindMethod, SymbolKindConstructor, SymbolKindFunction:
 		out.WriteString("fun ")
 		out.WriteString(cleanStName(s.Name))
 		params := extractStParams(s)
@@ -103,7 +101,7 @@ func appendStSymbol(out *strings.Builder, s protocol.DocumentSymbol, src string,
 		for _, c := range s.Children {
 			appendStSymbol(out, c, src, ls, parent)
 		}
-	case protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+	case SymbolKindVariable, SymbolKindConstant:
 		if parent == parentClass {
 			out.WriteString(s.Name)
 			out.WriteByte('\n')
@@ -119,10 +117,10 @@ func appendStSymbol(out *strings.Builder, s protocol.DocumentSymbol, src string,
 	}
 }
 
-func splitStFields(syms []protocol.DocumentSymbol) (fields, rest []protocol.DocumentSymbol) {
+func splitStFields(syms []DocumentSymbol) (fields, rest []DocumentSymbol) {
 	for _, s := range syms {
 		switch s.Kind {
-		case protocol.SymbolKindField, protocol.SymbolKindVariable, protocol.SymbolKindConstant:
+		case SymbolKindField, SymbolKindVariable, SymbolKindConstant:
 			fields = append(fields, s)
 		default:
 			rest = append(rest, s)
@@ -138,11 +136,11 @@ func cleanStName(name string) string {
 	return name
 }
 
-func extractStParams(sym protocol.DocumentSymbol) []string {
+func extractStParams(sym DocumentSymbol) []string {
 	start := sym.Range.Start.Line
 	var params []string
 	for _, c := range sym.Children {
-		if c.Kind == protocol.SymbolKindVariable && c.Range.Start.Line == start {
+		if c.Kind == SymbolKindVariable && c.Range.Start.Line == start {
 			if c.Name != "" {
 				params = append(params, c.Name)
 			}
@@ -151,7 +149,7 @@ func extractStParams(sym protocol.DocumentSymbol) []string {
 	return params
 }
 
-func getStHoverParams(src string, pos protocol.Position, ls LanguageServer) []string {
+func getStHoverParams(src string, pos Position, ls LanguageServer) []string {
 	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, pos)
 	if err != nil {
 		return nil
@@ -187,7 +185,7 @@ func ConvertStFile(path string) ([]byte, error) {
 
 // convertStBody extracts the body for the given symbol and converts a few simple
 // statements. Only assignments, prints and return expressions are handled.
-func convertStBody(src string, sym protocol.DocumentSymbol) string {
+func convertStBody(src string, sym DocumentSymbol) string {
 	lines := strings.Split(src, "\n")
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
