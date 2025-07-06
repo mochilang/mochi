@@ -186,6 +186,7 @@ function tsToMochiType(t: string): string {
 
 function tsFunctionBody(src: string): string[] {
   const lines: string[] = [];
+  const uninit: Record<string, boolean> = {};
   let s = src.trim();
   while (s.length > 0) {
     s = s.replace(/^\s*[;\n\r]*/, '');
@@ -225,7 +226,11 @@ function tsFunctionBody(src: string): string[] {
       const end = s.indexOf(';');
       let stmt = s.slice(0, end === -1 ? undefined : end).trim();
       stmt = stmt.replace(/^let\s+|^const\s+|^var\s+/, '');
-      lines.push(`let ${stmt.replace(/;$/, '')}`);
+      if (stmt.includes('=')) {
+        lines.push(`let ${stmt.replace(/;$/, '')}`);
+      } else {
+        uninit[stmt] = true;
+      }
       s = end === -1 ? '' : s.slice(end + 1);
       continue;
     }
@@ -288,6 +293,25 @@ function tsFunctionBody(src: string): string[] {
       s = s.slice(bodyEnd + 1);
       continue;
     }
+    if (s.includes('=')) {
+      const end = s.indexOf(';');
+      const stmt = s.slice(0, end === -1 ? undefined : end).trim();
+      const [lhs, rhsRaw] = stmt.split('=', 2);
+      let rhs = rhsRaw.trim().replace(/\n/g, ' ');
+      if (rhs.includes('.filter(') && rhs.includes('.map(')) {
+        const out = parseFilterMap(rhs, lhs.trim());
+        if (out.length) for (const l of out) lines.push(l);
+      } else {
+        if (uninit[lhs.trim()]) {
+          lines.push(`var ${lhs.trim()} = ${rhs}`);
+          delete uninit[lhs.trim()];
+        } else {
+          lines.push(`${lhs.trim()} = ${rhs}`);
+        }
+      }
+      s = end === -1 ? '' : s.slice(end + 1);
+      continue;
+    }
     const semi = s.indexOf(';');
     if (semi !== -1) s = s.slice(semi + 1);
     else s = '';
@@ -306,6 +330,32 @@ function findMatch(s: string, openIdx: number, open: string, close: string): num
     }
   }
   return s.length;
+}
+
+function parseFilterMap(expr: string, lhs: string): string[] {
+  const filterIdx = expr.indexOf('.filter(');
+  const mapIdx = expr.indexOf('.map(');
+  if (filterIdx === -1 || mapIdx === -1 || mapIdx < filterIdx) return [];
+  const list = expr.slice(0, filterIdx).trim();
+  let fStart = filterIdx + 8;
+  const fEnd = findMatch(expr, fStart - 1, '(', ')');
+  const fPart = expr.slice(fStart, fEnd);
+  const arrow = fPart.indexOf('=>');
+  if (arrow === -1) return [];
+  const iter = fPart.slice(0, arrow).replace(/^[()\s]+|[()\s]+$/g, '');
+  const cond = fPart.slice(arrow + 2).replace(/^[()\s]+|[()\s]+$/g, '');
+  fStart = mapIdx + 5;
+  const mEnd = findMatch(expr, fStart - 1, '(', ')');
+  const mPart = expr.slice(fStart, mEnd);
+  const arrow2 = mPart.indexOf('=>');
+  if (arrow2 === -1) return [];
+  const iter2 = mPart.slice(0, arrow2).replace(/^[()\s]+|[()\s]+$/g, '') || iter;
+  const body = mPart.slice(arrow2 + 2).replace(/^[()\s]+|[()\s]+$/g, '');
+  return [
+    `${lhs} = from ${iter2} in ${list}`,
+    `             where ${cond}`,
+    `             select ${body}`,
+  ];
 }
 
 export default { convert };
