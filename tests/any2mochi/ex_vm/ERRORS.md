@@ -41,17 +41,9 @@
 - json_builtin: parse error: parse error: 2:11: unexpected token "%" (expected PostfixExpr)
 - left_join: parse error: parse error: 21:5: lexer: invalid input text "&to_string(&1)\n ..."
 - left_join_multi: parse error: parse error: 2:20: unexpected token "%" (expected "]")
-- len_builtin: type error: error[T003]: unknown function: length
-  --> :2:9
-
-help:
-  Ensure the function is defined before it's called.
-- len_map: parse error: parse error: 2:16: unexpected token "%" (expected ")")
-- len_string: type error: error[T003]: unknown function: length
-  --> :2:9
-
-help:
-  Ensure the function is defined before it's called.
+- len_builtin: ok
+- len_map: parse error: parse error: 2:13: unexpected token "%" (expected ")")
+- len_string: ok
 - let_and_print: ok
 - list_assign: type error: error[T002]: undefined variable: Map
   --> :4:14
@@ -68,8 +60,8 @@ help:
 
 help:
   Check if the variable was declared in this scope.
-- list_set_ops: type error: error[T003]: unknown function: length
-  --> :5:9
+- list_set_ops: type error: error[T003]: unknown function: _union
+  --> :5:13
 
 help:
   Ensure the function is defined before it's called.
@@ -83,11 +75,7 @@ help:
 - map_nested_assign: parse error: parse error: 2:14: unexpected token "%" (expected PostfixExpr)
 - match_expr: parse error: parse error: 4:8: unexpected token ">" (expected PostfixExpr)
 - match_full: parse error: parse error: 3:4: unexpected token ":" (expected "}")
-- math_ops: type error: error[T003]: unknown function: rem
-  --> :4:9
-
-help:
-  Ensure the function is defined before it's called.
+- math_ops: ok
 - membership: parse error: parse error: 3:41: lexer: invalid input text "?(nums, 2), else..."
 - min_max_builtin: type error: error[T003]: unknown function: _min
   --> :3:9

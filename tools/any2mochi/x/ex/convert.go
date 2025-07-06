@@ -393,6 +393,19 @@ func translateExpr(expr string) string {
 		if len(parts) == 3 {
 			return parts[0] + "[" + parts[1] + ":" + parts[2] + "]"
 		}
+	case strings.HasPrefix(expr, "rem(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("rem(") : len(expr)-1])
+		if len(parts) == 2 {
+			return parts[0] + " % " + parts[1]
+		}
+	case strings.HasPrefix(expr, "length(String.graphemes(") && strings.HasSuffix(expr, "))"):
+		inner := expr[len("length(String.graphemes(") : len(expr)-2]
+		return "len(" + inner + ")"
+	case strings.HasPrefix(expr, "length(") && strings.HasSuffix(expr, ")"):
+		parts := splitArgs(expr[len("length(") : len(expr)-1])
+		if len(parts) == 1 {
+			return "len(" + parts[0] + ")"
+		}
 	}
 	return expr
 }
