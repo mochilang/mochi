@@ -1,4 +1,4 @@
-package any2mochi
+package c
 
 import (
 	"bytes"
@@ -33,7 +33,7 @@ type clangPos struct {
 }
 
 // parseCFileClang parses C source code using clang's JSON AST output.
-func parseCFileClang(src string) ([]cFunc, error) {
+func parseClangFile(src string) ([]function, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "clang", "-w", "-x", "c", "-", "-Xclang", "-ast-dump=json", "-fsyntax-only")
@@ -51,7 +51,7 @@ func parseCFileClang(src string) ([]cFunc, error) {
 	if err := json.Unmarshal(data, &root); err != nil {
 		return nil, err
 	}
-	var funcs []cFunc
+	var funcs []function
 	var walk func(n clangNode)
 	walk = func(n clangNode) {
 		if n.Kind == "FunctionDecl" && (n.IsImplicit == nil || !*n.IsImplicit) {
@@ -62,12 +62,12 @@ func parseCFileClang(src string) ([]cFunc, error) {
 			if n.Type != nil {
 				typ := n.Type.QualType
 				if open := strings.Index(typ, "("); open != -1 {
-					ret = mapCType(strings.TrimSpace(typ[:open]))
+					ret = mapType(strings.TrimSpace(typ[:open]))
 				} else {
-					ret = mapCType(typ)
+					ret = mapType(typ)
 				}
 			}
-			var params []cParam
+			var params []param
 			var body []string
 			for _, c := range n.Inner {
 				switch c.Kind {
@@ -75,19 +75,19 @@ func parseCFileClang(src string) ([]cFunc, error) {
 					name := c.Name
 					t := ""
 					if c.Type != nil {
-						t = mapCType(c.Type.QualType)
+						t = mapType(c.Type.QualType)
 					}
-					params = append(params, cParam{name: name, typ: t})
+					params = append(params, param{name: name, typ: t})
 				case "CompoundStmt":
 					start := c.Range.Begin.Offset
 					end := c.Range.End.Offset
 					if start >= 0 && end <= len(src) && end > start {
-						body = parseCStatements(src[start+1 : end])
+						body = parseStatements(src[start+1 : end])
 					}
 				}
 			}
 			if len(body) > 0 {
-				funcs = append(funcs, cFunc{name: n.Name, ret: ret, params: params, body: body})
+				funcs = append(funcs, function{name: n.Name, ret: ret, params: params, body: body})
 			}
 		}
 		for _, c := range n.Inner {
