@@ -23,10 +23,9 @@ var (
 func parseCmd() *cobra.Command {
 	var server string
 	var lang string
-	var ensure bool
 	cmd := &cobra.Command{
 		Use:   "parse [file]",
-		Short: "Parse source with a language server",
+		Short: "Parse source with external CLI",
 		Args:  cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if server == "" || lang == "" {
@@ -43,11 +42,6 @@ func parseCmd() *cobra.Command {
 				return err
 			}
 			parts := strings.Fields(server)
-			if ensure {
-				if err := any2mochi.EnsureServer(parts[0]); err != nil {
-					return err
-				}
-			}
 			syms, diags, err := any2mochi.ParseText(parts[0], parts[1:], lang, string(data))
 			if err != nil {
 				return err
@@ -61,9 +55,8 @@ func parseCmd() *cobra.Command {
 			return enc.Encode(out)
 		},
 	}
-	cmd.Flags().StringVar(&server, "server", "", "language server command")
+	cmd.Flags().StringVar(&server, "server", "", "parser CLI command")
 	cmd.Flags().StringVar(&lang, "lang", "", "language id")
-	cmd.Flags().BoolVar(&ensure, "ensure", false, "install language server if missing")
 	return cmd
 }
 

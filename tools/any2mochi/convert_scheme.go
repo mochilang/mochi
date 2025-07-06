@@ -23,37 +23,6 @@ func ConvertScheme(src string) ([]byte, error) {
 		writeSchemeSymbols(&out, nil, syms, src, ls)
 	}
 	if out.Len() == 0 {
-		// basic regex fallback for simple defines
-		lines := strings.Split(src, "\n")
-		for i, line := range lines {
-			line = strings.TrimSpace(line)
-			if strings.HasPrefix(line, "(define ") && strings.Contains(line, "(") {
-				nameStart := strings.Index(line, "(") + 1
-				nameEnd := strings.Index(line[nameStart:], " ")
-				if nameEnd != -1 {
-					name := line[nameStart : nameStart+nameEnd]
-					ds := protocol.DocumentSymbol{Kind: protocol.SymbolKindFunction, Name: name,
-						Range: protocol.Range{Start: protocol.Position{Line: uint32(i), Character: 0}, End: protocol.Position{Line: uint32(i), Character: 0}}}
-					body := parseSchemeFunctionBody(src, ds)
-					out.WriteString("fun ")
-					out.WriteString(name)
-					out.WriteString("()")
-					if len(body) == 0 {
-						out.WriteString(" {}\n")
-					} else {
-						out.WriteString(" {\n")
-						for _, b := range body {
-							out.WriteString("  ")
-							out.WriteString(b)
-							out.WriteByte('\n')
-						}
-						out.WriteString("}\n")
-					}
-				}
-			}
-		}
-	}
-	if out.Len() == 0 {
 		if len(diags) > 0 {
 			return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
 		}

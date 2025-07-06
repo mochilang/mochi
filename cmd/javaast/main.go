@@ -13,13 +13,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	lines, err := am.ParseJavaInternal(string(data))
-	if err != nil {
-		// print error and exit nonzero
-		os.Stderr.WriteString(err.Error())
-		os.Exit(1)
-	}
-	json.NewEncoder(os.Stdout).Encode(struct {
-		Lines []string `json:"lines"`
-	}{Lines: lines})
+	os.Stderr.WriteString("java parsing not supported\n")
+	os.Exit(1)
 }

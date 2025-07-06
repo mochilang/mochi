@@ -18,12 +18,11 @@ import (
 // source using the ktast CLI which outputs a JSON AST. If that fails, it
 // falls back to a regex based parser.
 func ConvertKt(src string) ([]byte, error) {
-	if ast, err := parseKtCLI(src); err == nil {
-		if out, err2 := convertKtAST(ast); err2 == nil {
-			return out, nil
-		}
+	ast, err := parseKtCLI(src)
+	if err != nil {
+		return nil, err
 	}
-	return convertKtRegex(src)
+	return convertKtAST(ast)
 }
 
 // ConvertKtFile reads the kt file and converts it to Mochi.
@@ -303,121 +302,6 @@ func splitGeneric(s string) []string {
 		parts = append(parts, strings.TrimSpace(s[start:]))
 	}
 	return parts
-}
-
-// convertKtRegex performs a best-effort conversion using regex parsing.
-// It does not rely on a language server and supports a small subset of Kotlin
-// syntax including simple function declarations and basic statements.
-func convertKtRegex(src string) ([]byte, error) {
-	sc := bufio.NewScanner(strings.NewReader(src))
-	var out strings.Builder
-	indent := 0
-	ind := func() string { return strings.Repeat("  ", indent) }
-
-	funRE := regexp.MustCompile(`^fun\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)`)
-	for sc.Scan() {
-		line := strings.TrimSpace(sc.Text())
-		if line == "" {
-			continue
-		}
-		switch {
-		case funRE.MatchString(line):
-			m := funRE.FindStringSubmatch(line)
-			name, params := m[1], m[2]
-			out.WriteString(ind())
-			out.WriteString("fun ")
-			out.WriteString(name)
-			if params != "" {
-				out.WriteByte('(')
-				out.WriteString(strings.Join(parseSimpleParams(params), ", "))
-				out.WriteByte(')')
-			} else {
-				out.WriteString("()")
-			}
-			out.WriteString(" {\n")
-			indent++
-		case line == "}":
-			if indent > 0 {
-				indent--
-			}
-			out.WriteString(ind())
-			out.WriteString("}\n")
-		case strings.HasPrefix(line, "for (") && strings.Contains(line, " in "):
-			r := regexp.MustCompile(`for\s*\(([^ ]+)\s+in\s+([^)]+)\)`)
-			if m := r.FindStringSubmatch(line); m != nil {
-				out.WriteString(ind())
-				iter := strings.TrimSpace(strings.Replace(m[2], "until", "..", 1))
-				fmt.Fprintf(&out, "for %s in %s {\n", m[1], iter)
-				indent++
-				continue
-			}
-			out.WriteString(ind())
-			out.WriteString(line)
-			out.WriteByte('\n')
-		case strings.HasPrefix(line, "while "):
-			cond := strings.TrimPrefix(line, "while ")
-			cond = strings.Trim(cond, "(){} ")
-			out.WriteString(ind())
-			fmt.Fprintf(&out, "while %s {\n", cond)
-			indent++
-		case strings.HasPrefix(line, "if "):
-			cond := strings.TrimPrefix(line, "if ")
-			cond = strings.Trim(cond, "(){} ")
-			out.WriteString(ind())
-			fmt.Fprintf(&out, "if %s {\n", cond)
-			indent++
-		case line == "else {":
-			if indent > 0 {
-				indent--
-			}
-			out.WriteString(ind())
-			out.WriteString("} else {\n")
-			indent++
-		case strings.HasPrefix(line, "val "):
-			out.WriteString(ind())
-			out.WriteString("let ")
-			out.WriteString(strings.TrimSuffix(strings.TrimPrefix(line, "val "), ";"))
-			out.WriteByte('\n')
-		case strings.HasPrefix(line, "var "):
-			out.WriteString(ind())
-			out.WriteString("var ")
-			out.WriteString(strings.TrimSuffix(strings.TrimPrefix(line, "var "), ";"))
-			out.WriteByte('\n')
-		case strings.HasPrefix(line, "return "):
-			out.WriteString(ind())
-			out.WriteString("return ")
-			out.WriteString(strings.TrimSuffix(strings.TrimPrefix(line, "return "), ";"))
-			out.WriteByte('\n')
-		case strings.HasPrefix(line, "println("):
-			out.WriteString(ind())
-			out.WriteString("print(")
-			out.WriteString(strings.TrimSuffix(strings.TrimPrefix(line, "println("), ")"))
-			out.WriteString(")\n")
-		default:
-			out.WriteString(ind())
-			out.WriteString(strings.TrimSuffix(line, ";"))
-			out.WriteByte('\n')
-		}
-	}
-	if out.Len() == 0 {
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
-	}
-	return []byte(out.String()), nil
-}
-
-func parseSimpleParams(s string) []string {
-	var out []string
-	for _, p := range strings.Split(s, ",") {
-		p = strings.TrimSpace(p)
-		if p == "" {
-			continue
-		}
-		if i := strings.Index(p, ":"); i != -1 {
-			p = p[:i]
-		}
-		out = append(out, strings.TrimSpace(p))
-	}
-	return out
 }
 
 type ktAST struct {

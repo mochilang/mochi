@@ -32,8 +32,7 @@ func ConvertCpp(src string) ([]byte, error) {
 	if out.Len() == 0 {
 		funcs, enums, err := parseCppAST(src)
 		if err != nil {
-			enums = parseCppEnums(src)
-			funcs = parseCppFunctions(src)
+			return nil, err
 		}
 		for _, e := range enums {
 			out.WriteString("type ")
