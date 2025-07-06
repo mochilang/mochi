@@ -8,15 +8,15 @@ import (
 	gocode "mochi/compile/go"
 )
 
-func TestConvertGo(t *testing.T) {
+func TestConvert(t *testing.T) {
 	_ = gocode.EnsureGopls()
 	requireBinary(t, "gopls")
-	src := "package foo\nfunc Add(x int, y int) int { return x + y }"
-	out, err := ConvertGo(src)
+	src := "package foo\nfunc Pair() (int, int) { return 1, 2 }"
+	out, err := Convert(src)
 	if err != nil {
 		t.Fatalf("convert: %v", err)
 	}
-	if string(out) != "fun Add() {}\n" {
+	if string(out) != "fun Pair(): (int, int) {}\n" {
 		t.Fatalf("unexpected output: %s", out)
 	}
 }

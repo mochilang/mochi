@@ -9,55 +9,55 @@ import (
 	"strings"
 )
 
-// GoAST represents a simplified Go AST suitable for JSON serialization.
-type GoAST struct {
-	Functions []GoASTFunc `json:"functions,omitempty"`
-	Types     []GoASTType `json:"types,omitempty"`
-	Vars      []GoASTVar  `json:"vars,omitempty"`
+// AST represents a simplified Go AST suitable for JSON serialization.
+type AST struct {
+	Functions []Func `json:"functions,omitempty"`
+	Types     []Type `json:"types,omitempty"`
+	Vars      []Var  `json:"vars,omitempty"`
 }
 
-type GoASTFunc struct {
-	Name   string       `json:"name"`
-	Recv   string       `json:"recv,omitempty"`
-	Params []GoASTParam `json:"params,omitempty"`
-	Result string       `json:"result,omitempty"`
+type Func struct {
+	Name    string   `json:"name"`
+	Recv    string   `json:"recv,omitempty"`
+	Params  []Param  `json:"params,omitempty"`
+	Results []string `json:"results,omitempty"`
 }
 
-type GoASTParam struct {
+type Param struct {
 	Name string `json:"name,omitempty"`
 	Type string `json:"type,omitempty"`
 }
 
-type GoASTType struct {
-	Name   string       `json:"name"`
-	Fields []GoASTField `json:"fields,omitempty"`
+type Type struct {
+	Name   string  `json:"name"`
+	Fields []Field `json:"fields,omitempty"`
 }
 
-type GoASTField struct {
+type Field struct {
 	Name string `json:"name,omitempty"`
 	Type string `json:"type,omitempty"`
 }
 
-type GoASTVar struct {
+type Var struct {
 	Name string `json:"name"`
 	Type string `json:"type,omitempty"`
 }
 
-// ParseGoAST parses Go source and returns the simplified AST.
-func ParseGoAST(src string) (*GoAST, error) {
+// ParseAST parses Go source and returns the simplified AST.
+func ParseAST(src string) (*AST, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "src.go", src, parser.SkipObjectResolution)
 	if err != nil {
 		return nil, err
 	}
-	out := &GoAST{}
+	out := &AST{}
 	for _, decl := range file.Decls {
 		switch d := decl.(type) {
 		case *ast.FuncDecl:
 			if d.Name == nil {
 				continue
 			}
-			fn := GoASTFunc{Name: d.Name.Name}
+			fn := Func{Name: d.Name.Name}
 			if d.Recv != nil && len(d.Recv.List) > 0 {
 				fn.Recv = exprString(fset, d.Recv.List[0].Type)
 			}
@@ -65,18 +65,27 @@ func ParseGoAST(src string) (*GoAST, error) {
 				for _, p := range d.Type.Params.List {
 					typ := exprString(fset, p.Type)
 					if len(p.Names) == 0 {
-						fn.Params = append(fn.Params, GoASTParam{Type: typ})
+						fn.Params = append(fn.Params, Param{Type: typ})
 						continue
 					}
 					for _, n := range p.Names {
-						fn.Params = append(fn.Params, GoASTParam{Name: n.Name, Type: typ})
+						fn.Params = append(fn.Params, Param{Name: n.Name, Type: typ})
 					}
 				}
 			}
-			if d.Type.Results != nil && len(d.Type.Results.List) == 1 && len(d.Type.Results.List[0].Names) == 0 {
-				ret := exprString(fset, d.Type.Results.List[0].Type)
-				if ret != "" && ret != "void" {
-					fn.Result = ret
+			if d.Type.Results != nil {
+				for _, r := range d.Type.Results.List {
+					typ := exprString(fset, r.Type)
+					if typ == "" || typ == "void" {
+						continue
+					}
+					n := len(r.Names)
+					if n == 0 {
+						n = 1
+					}
+					for i := 0; i < n; i++ {
+						fn.Results = append(fn.Results, typ)
+					}
 				}
 			}
 			out.Functions = append(out.Functions, fn)
@@ -89,15 +98,15 @@ func ParseGoAST(src string) (*GoAST, error) {
 						continue
 					}
 					if st, ok := ts.Type.(*ast.StructType); ok {
-						gt := GoASTType{Name: ts.Name.Name}
+						gt := Type{Name: ts.Name.Name}
 						for _, f := range st.Fields.List {
 							typ := exprString(fset, f.Type)
 							if len(f.Names) == 0 {
-								gt.Fields = append(gt.Fields, GoASTField{Type: typ})
+								gt.Fields = append(gt.Fields, Field{Type: typ})
 								continue
 							}
 							for _, n := range f.Names {
-								gt.Fields = append(gt.Fields, GoASTField{Name: n.Name, Type: typ})
+								gt.Fields = append(gt.Fields, Field{Name: n.Name, Type: typ})
 							}
 						}
 						out.Types = append(out.Types, gt)
@@ -114,7 +123,7 @@ func ParseGoAST(src string) (*GoAST, error) {
 						typ = exprString(fset, vs.Type)
 					}
 					for _, n := range vs.Names {
-						out.Vars = append(out.Vars, GoASTVar{Name: n.Name, Type: typ})
+						out.Vars = append(out.Vars, Var{Name: n.Name, Type: typ})
 					}
 				}
 			}
@@ -123,17 +132,17 @@ func ParseGoAST(src string) (*GoAST, error) {
 	return out, nil
 }
 
-// ParseGoASTFile reads a Go file and returns its simplified AST.
-func ParseGoASTFile(path string) (*GoAST, error) {
+// ParseFile reads a Go file and returns its simplified AST.
+func ParseFile(path string) (*AST, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ParseGoAST(string(data))
+	return ParseAST(string(data))
 }
 
-// ConvertGoAST converts a simplified Go AST to Mochi code.
-func ConvertGoAST(g *GoAST) []byte {
+// ConvertAST converts a simplified Go AST to Mochi code.
+func ConvertAST(g *AST) []byte {
 	var b strings.Builder
 	for _, t := range g.Types {
 		b.WriteString("type ")
@@ -188,27 +197,38 @@ func ConvertGoAST(g *GoAST) []byte {
 			}
 		}
 		b.WriteByte(')')
-		if fn.Result != "" && fn.Result != "void" {
-			b.WriteString(": ")
-			b.WriteString(fn.Result)
+		if len(fn.Results) == 1 {
+			if fn.Results[0] != "" && fn.Results[0] != "void" {
+				b.WriteString(": ")
+				b.WriteString(fn.Results[0])
+			}
+		} else if len(fn.Results) > 1 {
+			b.WriteString(": (")
+			for i, r := range fn.Results {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				b.WriteString(r)
+			}
+			b.WriteString(")")
 		}
 		b.WriteString(" {}\n")
 	}
 	return []byte(b.String())
 }
 
-// ConvertGoJSON converts the JSON encoding of a simplified Go AST to Mochi code.
-func ConvertGoJSON(data []byte) ([]byte, error) {
-	var g GoAST
+// ConvertJSON converts the JSON encoding of a simplified Go AST to Mochi code.
+func ConvertJSON(data []byte) ([]byte, error) {
+	var g AST
 	if err := json.Unmarshal(data, &g); err != nil {
 		return nil, err
 	}
-	return ConvertGoAST(&g), nil
+	return ConvertAST(&g), nil
 }
 
-// ConvertGoViaJSON parses Go source, encodes it to JSON, decodes back, and returns Mochi code.
-func ConvertGoViaJSON(src string) ([]byte, error) {
-	ast, err := ParseGoAST(src)
+// ConvertViaJSON parses Go source, encodes it to JSON, decodes back, and returns Mochi code.
+func ConvertViaJSON(src string) ([]byte, error) {
+	ast, err := ParseAST(src)
 	if err != nil {
 		return nil, err
 	}
@@ -216,14 +236,14 @@ func ConvertGoViaJSON(src string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ConvertGoJSON(data)
+	return ConvertJSON(data)
 }
 
-// ConvertGoViaJSONFile reads a file and converts it via JSON AST.
-func ConvertGoViaJSONFile(path string) ([]byte, error) {
+// ConvertViaJSONFile reads a file and converts it via JSON AST.
+func ConvertViaJSONFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertGoViaJSON(string(data))
+	return ConvertViaJSON(string(data))
 }
