@@ -1,0 +1,5 @@
+fun main() {
+  let map = mutableMapOf("a" to 1)
+  print(map["a"])
+}
+main()

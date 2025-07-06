@@ -1,0 +1,11 @@
+type Person {
+  name: string
+}
+fun greet() {
+  return ("hi " + name)
+}
+fun main() {
+  let p = Person(name = "Ada")
+  print(p.greet())
+}
+main()

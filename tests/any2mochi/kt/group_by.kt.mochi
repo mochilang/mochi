@@ -1,0 +1,32 @@
+type _Group {
+  key: Any
+}
+let Items = mutableListOf<Any?>()
+fun main() {
+  let xs = listOf(1, 1, 2)
+  let groups = _group_by(xs) { x -> x }.map { g -> mutableMapOf("k" to g.key, "c" to g.size) }
+  for g in groups {
+    print(g.k, g.c)
+  }
+}
+fun _group_by(src, keyfn) {
+  let groups = mutableMapOf<String, _Group>()
+  let order = mutableListOf<String>()
+  for it in src {
+    let key = keyfn(it)
+    let ks = key.toString()
+    var g = groups[ks]
+    if g == null {
+      g = _Group(key)
+      groups[ks] = g
+      order.add(ks)
+    }
+    if it is Array<*> && it.size == 1 {
+      g.Items.add(it[0])
+      } else {
+      g.Items.add(it)
+    }
+  }
+  return order.map { groups[it]!! }
+}
+main()

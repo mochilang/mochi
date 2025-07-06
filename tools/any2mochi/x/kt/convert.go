@@ -18,9 +18,13 @@ import (
 func Convert(src string) ([]byte, error) {
 	ast, err := parseCLI(src)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse error: %w\n\n%s", err, snippet(src))
 	}
-	return convertAST(ast)
+	out, err := convertAST(ast)
+	if err != nil {
+		return nil, fmt.Errorf("convert error: %w\n\n%s", err, snippet(src))
+	}
+	return out, nil
 }
 
 // ConvertFile reads the kt file and converts it to Mochi.
@@ -313,7 +317,26 @@ func splitGeneric(s string) []string {
 }
 
 type ast struct {
-	Functions []fn `json:"functions"`
+	Classes   []cls   `json:"classes"`
+	Functions []fn    `json:"functions"`
+	Vars      []vdecl `json:"vars"`
+}
+
+type cls struct {
+	Name    string  `json:"name"`
+	Fields  []field `json:"fields"`
+	Methods []fn    `json:"methods"`
+}
+
+type field struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+type vdecl struct {
+	Name  string `json:"name"`
+	Type  string `json:"type,omitempty"`
+	Value string `json:"value"`
 }
 
 type fn struct {
@@ -372,6 +395,9 @@ func parseCLI(src string) (*ast, error) {
 	if err := json.Unmarshal(out.Bytes(), &ast); err != nil {
 		return nil, err
 	}
+	if len(ast.Classes) == 0 && len(ast.Functions) == 0 && len(ast.Vars) == 0 {
+		return nil, fmt.Errorf("no symbols found")
+	}
 	return &ast, nil
 }
 
@@ -380,6 +406,68 @@ func convertAST(ast *ast) ([]byte, error) {
 	indent := 0
 	ind := func() string { return strings.Repeat("  ", indent) }
 	hasMain := false
+
+	for _, c := range ast.Classes {
+		out.WriteString(ind())
+		out.WriteString("type ")
+		out.WriteString(c.Name)
+		if len(c.Fields) == 0 {
+			out.WriteString(" {}\n")
+		} else {
+			out.WriteString(" {\n")
+			indent++
+			for _, f := range c.Fields {
+				out.WriteString(ind())
+				out.WriteString(f.Name)
+				if f.Type != "" {
+					out.WriteString(": ")
+					out.WriteString(mapType(f.Type))
+				}
+				out.WriteByte('\n')
+			}
+			indent--
+			out.WriteString(ind())
+			out.WriteString("}\n")
+		}
+		for _, m := range c.Methods {
+			out.WriteString(ind())
+			out.WriteString("fun ")
+			out.WriteString(c.Name + "." + m.Name)
+			out.WriteByte('(')
+			out.WriteString(strings.Join(m.Params, ", "))
+			out.WriteByte(')')
+			out.WriteString(" {\n")
+			indent++
+			for _, line := range m.Lines {
+				writeBodyLine(&out, strings.TrimSpace(line), &indent)
+			}
+			if indent > 0 {
+				indent--
+			}
+			out.WriteString(ind())
+			out.WriteString("}\n")
+		}
+	}
+
+	for _, v := range ast.Vars {
+		out.WriteString(ind())
+		if v.Type == "" {
+			out.WriteString("let ")
+		} else {
+			out.WriteString("let ")
+		}
+		out.WriteString(v.Name)
+		if v.Type != "" {
+			out.WriteString(": ")
+			out.WriteString(mapType(v.Type))
+		}
+		if v.Value != "" {
+			out.WriteString(" = ")
+			out.WriteString(strings.TrimSpace(v.Value))
+		}
+		out.WriteByte('\n')
+	}
+
 	for _, fn := range ast.Functions {
 		if fn.Name == "main" {
 			hasMain = true

@@ -1,0 +1,4 @@
+fun main() {
+  print(123.toString())
+}
+main()

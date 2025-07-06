@@ -1,0 +1,22 @@
+fun main() {
+  let nums = listOf(1, 2)
+  let letters = listOf("A", "B")
+  let bools = listOf(true, false)
+  let combos = run {
+  let _src = nums
+  let _res = mutableListOf<MutableMap<String, Any>>()
+  for n in _src {
+    for l in letters {
+      for b in bools {
+        _res.add(mutableMapOf("n" to n, "l" to l, "b" to b))
+      }
+    }
+  }
+  _res
+}
+print("--- Cross Join of three lists ---")
+for c in combos {
+  print(c.n, c.l, c.b)
+}
+}
+main()

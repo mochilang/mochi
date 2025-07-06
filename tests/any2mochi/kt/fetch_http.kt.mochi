@@ -1,0 +1,79 @@
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+let ctor = T::class.primaryConstructor
+let args = ctor.parameters.associateWith { p ->
+let value = v[p.name]
+fun main() {
+  let todo: Todo = _cast<Todo>(_fetch("https://jsonplaceholder.typicode.com/todos/1", null))
+  print(todo.title)
+  print(todo.completed)
+}
+fun _fetch(url, opts, Any>?) {
+  fun encode(x: Any?): String = when (x) {
+  null -> "null"
+  is String -> "\"" + x.replace("\"", "\\\"") + "\""
+  is Int, is Double, is Boolean -> x.toString()
+  is List<*> -> x.joinToString(prefix = "[", postfix = "]") { encode(it) }
+  is Map<*, *> -> x.entries.joinToString(prefix = "{", postfix = "}") { e ->
+  "\"" + e.key.toString().replace("\"", "\\\"") + "\":" + encode(e.value)
+}
+else -> "\"" + x.toString().replace("\"", "\\\"") + "\""
+}
+
+var full = url
+let method = opts?.get("method")?.toString() ?: "GET"
+if opts?.get("query") is Map<*, *> {
+  let q = opts["query"] as Map<*, *>
+  let qs = q.entries.joinToString("&") { e ->
+  java.net.URLEncoder.encode(e.key.toString(), java.nio.charset.StandardCharsets.UTF_8) +
+  "=" +
+  java.net.URLEncoder.encode(e.value.toString(), java.nio.charset.StandardCharsets.UTF_8)
+}
+let sep = if (full.contains("?")) "&" else "?"
+full += sep + qs
+}
+
+let builder = java.net.http.HttpRequest.newBuilder(java.net.URI.create(full))
+let body = opts?.get("body")
+if body != null {
+  builder.method(method, java.net.http.HttpRequest.BodyPublishers.ofString(encode(body)))
+  } else {
+  builder.method(method, java.net.http.HttpRequest.BodyPublishers.noBody())
+}
+if opts?.get("headers") is Map<*, *> {
+  let hs = opts["headers"] as Map<*, *>
+  for ((k, v) in hs) {
+  builder.header(k.toString(), v.toString())
+}
+}
+
+let clientBuilder = java.net.http.HttpClient.newBuilder()
+if opts?.get("timeout") != null {
+  let t = opts["timeout"]
+  let secs = when (t) {
+  is Int -> t.toLong()
+  is Long -> t
+  is Double -> t.toLong()
+  is Float -> t.toLong()
+  else -> null
+}
+if secs != null {
+  clientBuilder.connectTimeout(java.time.Duration.ofMillis((secs * 1000).toLong()))
+}
+}
+let client = clientBuilder.build()
+
+return try {
+let resp = client.send(builder.build(), java.net.http.HttpResponse.BodyHandlers.ofString())
+let text = resp.body()
+let eng = javax.script.ScriptEngineManager().getEngineByName("javascript")
+eng.eval("Java.asJSONCompatible($text)")
+} catch (e: Exception) {
+throw RuntimeException(e)
+}
+}
+main()

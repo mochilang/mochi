@@ -1,0 +1,18 @@
+fun main() {
+  var set: MutableMap<Int, Boolean> = mutableMapOf<Any, Any>()
+  for n in listOf(1, 2, 3 {
+    run {
+    let _tmp = set.toMutableMap()
+    _tmp[n] = true
+    set = _tmp
+  }
+}
+var i = 1
+var count = 0
+while set.contains(i {
+  i = (i + 1)
+  count = (count + 1)
+}
+print(count)
+}
+main()

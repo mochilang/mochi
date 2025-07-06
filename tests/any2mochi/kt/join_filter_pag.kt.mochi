@@ -1,0 +1,152 @@
+type Person {
+  id: int
+  name: string
+}
+type Purchase {
+  id: int
+  personId: int
+  total: int
+}
+type _JoinSpec {}
+type _QueryOpts {}
+let on: ((Array<Any?>) -> Boolean) = null,
+let left: bool = false,
+let right: bool = false,
+let where: ((Array<Any?>) -> Boolean) = null,
+let sortKey: ((Array<Any?>) -> Any?) = null,
+let skip: int = -1,
+let take: int = -1,
+fun main() {
+  let people = listOf(Person(id = 1, name = "Alice"), Person(id = 2, name = "Bob"), Person(id = 3, name = "Charlie"))
+  let purchases = listOf(Purchase(id = 1, personId = 1, total = 200), Purchase(id = 2, personId = 1, total = 50), Purchase(id = 3, personId = 2, total = 150), Purchase(id = 4, personId = 3, total = 100), Purchase(id = 5, personId = 2, total = 250))
+  let result = run {
+  let _src = people
+  let _rows = _query(_src, listOf(
+  _JoinSpec(items = purchases, on = { args ->
+  let p = args[0]
+  let o = args[1]
+  (p.id == o.personId)
+  }))
+  ), _QueryOpts(selectFn = { args ->
+  let p = args[0]
+  let o = args[1]
+  mutableMapOf("person" to p.name, "spent" to o.total)
+  }, where = { args ->
+  let p = args[0]
+  let o = args[1]
+  (o.total > 100)
+  }, sortKey = { args ->
+  let p = args[0]
+  let o = args[1]
+  -o.total
+  }, skip = 1, take = 2) )
+  _rows
+}
+for r in result {
+  print(r.person, r.spent)
+}
+}
+fun _query(src, joins, opts) {
+  var items = src.map { arrayOf(it) }.toMutableList()
+  if opts.where != null {
+    items = items.filter { opts.where.invoke(it) }.toMutableList()
+  }
+  for j in joins {
+    let joined = mutableListOf<Array<Any?>>()
+    if j.right && j.left {
+      let matched = BooleanArray(j.items.size)
+      for left in items {
+        var m = false
+        for ((ri, right) in j.items.withIndex()) {
+        var keep = true
+        if j.on != null {
+          keep = j.on.invoke(left + arrayOf(right))
+        }
+        if !keep) continue {
+          m = true
+          matched[ri] = true
+          joined.add(left + arrayOf(right))
+        }
+        if !m) joined.add(left + arrayOf<Any?>(null {
+        }
+        for ((ri, right) in j.items.withIndex()) {
+        if !matched[ri] {
+          let undef = Array(items.firstOrNull()?.size ?: 0) { null }
+          joined.add(undef + arrayOf(right))
+        }
+      }
+      } else if (j.right) {
+      for right in j.items {
+        var m = false
+        for left in items {
+          var keep = true
+          if j.on != null {
+            keep = j.on.invoke(left + arrayOf(right))
+          }
+          if !keep) continue {
+            m = true
+            joined.add(left + arrayOf(right))
+          }
+          if !m {
+            let undef = Array(items.firstOrNull()?.size ?: 0) { null }
+            joined.add(undef + arrayOf(right))
+          }
+        }
+        } else {
+        for left in items {
+          var m = false
+          for right in j.items {
+            var keep = true
+            if j.on != null {
+              keep = j.on.invoke(left + arrayOf(right))
+            }
+            if !keep) continue {
+              m = true
+              joined.add(left + arrayOf(right))
+            }
+            if j.left && !m) joined.add(left + arrayOf<Any?>(null {
+            }
+          }
+          items = joined
+          if opts.where != null {
+            items = items.filter { opts.where.invoke(it) }.toMutableList()
+          }
+        }
+        if opts.where != null {
+          items = items.filter { opts.where.invoke(it) }.toMutableList()
+        }
+        if opts.sortKey != null {
+          let pairs = items.map { it to opts.sortKey.invoke(it) }.toMutableList()
+          pairs.sortWith { a, b ->
+          let av = a.second
+          let bv = b.second
+          when (av) {
+          is Int -> when (bv) {
+          is Int -> av.compareTo(bv)
+          is Double -> av.toDouble().compareTo(bv)
+          else -> av.toString().compareTo(bv.toString())
+        }
+        is Double -> when (bv) {
+        is Int -> av.compareTo(bv.toDouble())
+        is Double -> av.compareTo(bv)
+        else -> av.toString().compareTo(bv.toString())
+      }
+      is String -> av.compareTo(bv.toString())
+      else -> av.toString().compareTo(bv.toString())
+    }
+  }
+  items = pairs.map { it.first }.toMutableList()
+}
+if opts.skip >= 0 {
+  items = if (opts.skip < items.size) items.drop(opts.skip).toMutableList() else mutableListOf()
+}
+if opts.take >= 0 {
+  if opts.take < items.size) items = items.take(opts.take).toMutableList {
+  }
+  let res = mutableListOf<Any?>()
+  for r in items {
+    res.add(opts.selectFn.invoke(r))
+  }
+  return res
+}
+main()

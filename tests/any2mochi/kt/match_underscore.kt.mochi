@@ -1,0 +1,22 @@
+type Leaf {}
+type Node {
+  left: Tree
+  value: int
+  right: Tree
+}
+fun value_of_root(t) {
+  return run {
+  let _t = t
+  when {
+  _t is Node -> {
+  let v = _t.value
+  v
+}
+else -> 0
+}
+}
+}
+fun main() {
+  print(value_of_root(Node(left = Leaf(), value = 5, right = Leaf())))
+}
+main()
