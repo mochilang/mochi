@@ -13,13 +13,17 @@ import (
 
 // ConvertError provides a detailed error suitable for golden tests.
 type ConvertError struct {
-	Line int
-	Msg  string
-	Snip string
+	Line   int
+	Column int
+	Msg    string
+	Snip   string
 }
 
 func (e *ConvertError) Error() string {
 	if e.Line > 0 {
+		if e.Column > 0 {
+			return fmt.Sprintf("line %d:%d: %s\n%s", e.Line, e.Column, e.Msg, e.Snip)
+		}
 		return fmt.Sprintf("line %d: %s\n%s", e.Line, e.Msg, e.Snip)
 	}
 	return fmt.Sprintf("%s\n%s", e.Msg, e.Snip)
@@ -208,6 +212,7 @@ func formatParseError(src string, err error) error {
 		pos := e.Pos
 		lines := strings.Split(src, "\n")
 		line := int(pos.Line)
+		col := int(pos.Column)
 		start := line - 2
 		if start < 0 {
 			start = 0
@@ -218,13 +223,12 @@ func formatParseError(src string, err error) error {
 		}
 		var snippet strings.Builder
 		for i := start; i < end; i++ {
-			marker := "   "
+			fmt.Fprintf(&snippet, "%4d| %s\n", i+1, lines[i])
 			if i == line-1 {
-				marker = ">>>"
+				snippet.WriteString("    | " + strings.Repeat(" ", col-1) + "^\n")
 			}
-			snippet.WriteString(fmt.Sprintf("%3d:%s %s\n", i+1, marker, lines[i]))
 		}
-		return &ConvertError{Line: line, Msg: e.Msg, Snip: strings.TrimRight(snippet.String(), "\n")}
+		return &ConvertError{Line: line, Column: col, Msg: e.Msg, Snip: strings.TrimRight(snippet.String(), "\n")}
 	}
 	return err
 }
