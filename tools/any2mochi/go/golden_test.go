@@ -7,16 +7,17 @@ import (
 	"testing"
 
 	gocode "mochi/compile/go"
+	"mochi/tools/any2mochi/testutil"
 )
 
 func TestConvertGo_Golden(t *testing.T) {
-	root := findRepoRoot(t)
+	root := testutil.FindRepoRoot(t)
 	_ = gocode.EnsureGopls()
-	runConvertGolden(t, filepath.Join(root, "tests/compiler/go"), "*.go.out", ConvertGoFile, "go", ".mochi", ".error")
+	testutil.RunConvertGolden(t, filepath.Join(root, "tests/compiler/go"), "*.go.out", ConvertGoFile, "go", ".mochi", ".error")
 }
 
 func TestConvertGoCompile_Golden(t *testing.T) {
-	root := findRepoRoot(t)
+	root := testutil.FindRepoRoot(t)
 	_ = gocode.EnsureGopls()
-	runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/go"), "*.go.out", ConvertGoFile, "go", ".mochi", ".error")
+	testutil.RunConvertCompileGolden(t, filepath.Join(root, "tests/compiler/go"), "*.go.out", ConvertGoFile, "go", ".mochi", ".error")
 }

@@ -8,19 +8,20 @@ import (
 
 	gocode "mochi/compile/go"
 	tscode "mochi/compile/ts"
+	"mochi/tools/any2mochi/testutil"
 )
 
 func TestConvert_Golden(t *testing.T) {
-	root := findRepoRoot(t)
+	root := testutil.FindRepoRoot(t)
 	_ = tscode.EnsureTSLanguageServer()
-	runConvertGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
-	runConvertGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
+	testutil.RunConvertGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
+	testutil.RunConvertGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
 }
 
 func TestConvertCompile_Golden(t *testing.T) {
-	root := findRepoRoot(t)
+	root := testutil.FindRepoRoot(t)
 	_ = gocode.EnsureGopls()
 	_ = tscode.EnsureTSLanguageServer()
-	runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
-	runConvertCompileGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
+	testutil.RunConvertCompileGolden(t, filepath.Join(root, "tests/compiler/ts"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
+	testutil.RunConvertCompileGolden(t, filepath.Join(root, "tests/compiler/ts_simple"), "*.ts.out", ConvertFile, "ts", ".mochi", ".error")
 }

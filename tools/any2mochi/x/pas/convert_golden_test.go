@@ -3,11 +3,12 @@
 package pas
 
 import (
+	"mochi/tools/any2mochi/testutil"
 	"path/filepath"
 	"testing"
 )
 
 func TestConvertPas_Golden(t *testing.T) {
-	root := findRepoRoot(t)
-	runConvertGolden(t, filepath.Join(root, "tests/compiler/pas"), "*.pas.out", ConvertFile, "pas", ".mochi", ".error")
+	root := testutil.FindRepoRoot(t)
+	testutil.RunConvertGolden(t, filepath.Join(root, "tests/compiler/pas"), "*.pas.out", ConvertFile, "pas", ".mochi", ".error")
 }

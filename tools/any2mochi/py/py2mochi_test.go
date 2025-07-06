@@ -12,13 +12,12 @@ import (
 
 	"mochi/interpreter"
 	"mochi/parser"
+	"mochi/tools/any2mochi/testutil"
 	"mochi/types"
 )
 
-var update = false
-
 func TestPy2Mochi(t *testing.T) {
-	root := findRepoRoot(t)
+	root := testutil.FindRepoRoot(t)
 	pattern := filepath.Join(root, "tests", "compiler", "py", "*.py.out")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
@@ -46,7 +45,7 @@ func TestPy2Mochi(t *testing.T) {
 			if err != nil {
 				t.Fatalf("py2mochi error: %v", err)
 			}
-			if update {
+			if *testutil.Update {
 				if err := os.WriteFile(goldenPath, mochiCode, 0644); err != nil {
 					t.Fatalf("write golden: %v", err)
 				}
@@ -101,23 +100,4 @@ func runMochi(code string, root string, inFile string) ([]byte, error) {
 		return nil, err
 	}
 	return bytes.TrimSpace(out.Bytes()), nil
-}
-
-func findRepoRoot(t *testing.T) string {
-	dir, err := os.Getwd()
-	if err != nil {
-		t.Fatal("cannot determine working directory")
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	t.Fatal("go.mod not found (not in Go module)")
-	return ""
 }

@@ -1,6 +1,6 @@
 //go:build slow
 
-package py
+package testutil
 
 import (
 	"bytes"
@@ -16,7 +16,8 @@ import (
 	"mochi/types"
 )
 
-var update = flag.Bool("update", false, "update golden files")
+// Update indicates whether golden files should be regenerated.
+var Update = flag.Bool("update", false, "update golden files")
 
 func readGolden(path string, alts ...string) ([]byte, error) {
 	if data, err := os.ReadFile(path); err == nil {
@@ -48,7 +49,7 @@ func renameLegacy(dir, lang, name, ext string) {
 	}
 }
 
-func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
+func RunConvertCompileGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
 	files, err := filepath.Glob(filepath.Join(dir, pattern))
 	if err != nil {
 		t.Fatal(err)
@@ -70,7 +71,7 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 		}
 		t.Run(name, func(t *testing.T) {
 			mochiSrc, err := convert(src)
-			root := rootDir(t)
+			root := RootDir(t)
 			outDir := filepath.Join(root, "tests/any2mochi", lang)
 			outPath := filepath.Join(outDir, name+outExt)
 			errPath := filepath.Join(outDir, name+errExt)
@@ -94,39 +95,39 @@ func runConvertCompileGolden(t *testing.T, dir, pattern string, convert func(str
 			}
 
 			if err != nil {
-				if *update {
+				if *Update {
 					os.WriteFile(outPath, nil, 0644)
-					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
+					os.WriteFile(errPath, NormalizeOutput(RootDir(t), []byte(err.Error())), 0644)
 				}
 				altErr := filepath.Join(outDir, name+"."+lang+errExt)
 				want, readErr := readGolden(errPath, altErr)
 				if readErr != nil {
 					t.Fatalf("missing golden error: %v", readErr)
 				}
-				if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+				if got := NormalizeOutput(RootDir(t), []byte(err.Error())); !bytes.Equal(got, NormalizeOutput(RootDir(t), want)) {
 					t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 				}
 				return
 			}
 
-			if *update {
+			if *Update {
 				os.WriteFile(errPath, nil, 0644)
 				removeIfEmpty(errPath)
-				os.WriteFile(outPath, normalizeOutput(rootDir(t), mochiSrc), 0644)
+				os.WriteFile(outPath, NormalizeOutput(RootDir(t), mochiSrc), 0644)
 			}
 			altOut := filepath.Join(outDir, name+"."+lang+outExt)
 			want, readErr := readGolden(outPath, altOut)
 			if readErr != nil {
 				t.Fatalf("missing golden output: %v", readErr)
 			}
-			if got := normalizeOutput(rootDir(t), bytes.TrimSpace(mochiSrc)); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+			if got := NormalizeOutput(RootDir(t), bytes.TrimSpace(mochiSrc)); !bytes.Equal(got, NormalizeOutput(RootDir(t), want)) {
 				t.Errorf("golden mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 			}
 		})
 	}
 }
 
-func runConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
+func RunConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([]byte, error), lang, outExt, errExt string) {
 	files, err := filepath.Glob(filepath.Join(dir, pattern))
 	if err != nil {
 		t.Fatal(err)
@@ -148,7 +149,7 @@ func runConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([
 		}
 		t.Run(name, func(t *testing.T) {
 			out, err := convert(src)
-			root := rootDir(t)
+			root := RootDir(t)
 			outDir := filepath.Join(root, "tests/any2mochi", lang)
 			os.MkdirAll(outDir, 0755)
 			outPath := filepath.Join(outDir, name+outExt)
@@ -157,41 +158,41 @@ func runConvertGolden(t *testing.T, dir, pattern string, convert func(string) ([
 			renameLegacy(outDir, lang, name, errExt)
 
 			if err != nil {
-				if *update {
+				if *Update {
 					os.WriteFile(outPath, nil, 0644)
-					os.WriteFile(errPath, normalizeOutput(rootDir(t), []byte(err.Error())), 0644)
+					os.WriteFile(errPath, NormalizeOutput(RootDir(t), []byte(err.Error())), 0644)
 				}
 				altErr := filepath.Join(outDir, name+"."+lang+errExt)
 				want, readErr := readGolden(errPath, altErr)
 				if readErr != nil {
 					t.Fatalf("missing golden error: %v", readErr)
 				}
-				if got := normalizeOutput(rootDir(t), []byte(err.Error())); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+				if got := NormalizeOutput(RootDir(t), []byte(err.Error())); !bytes.Equal(got, NormalizeOutput(RootDir(t), want)) {
 					t.Errorf("error mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 				}
 				return
 			}
 
-			if *update {
+			if *Update {
 				os.WriteFile(errPath, nil, 0644)
 				removeIfEmpty(errPath)
-				os.WriteFile(outPath, normalizeOutput(rootDir(t), out), 0644)
+				os.WriteFile(outPath, NormalizeOutput(RootDir(t), out), 0644)
 			}
 			altOut := filepath.Join(outDir, name+"."+lang+outExt)
 			want, readErr := readGolden(outPath, altOut)
 			if readErr != nil {
 				t.Fatalf("missing golden output: %v", readErr)
 			}
-			if got := normalizeOutput(rootDir(t), bytes.TrimSpace(out)); !bytes.Equal(got, normalizeOutput(rootDir(t), want)) {
+			if got := NormalizeOutput(RootDir(t), bytes.TrimSpace(out)); !bytes.Equal(got, NormalizeOutput(RootDir(t), want)) {
 				t.Errorf("golden mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
 			}
 		})
 	}
 }
 
-func rootDir(t *testing.T) string { return findRepoRoot(t) }
+func RootDir(t *testing.T) string { return FindRepoRoot(t) }
 
-func findRepoRoot(t *testing.T) string {
+func FindRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal("cannot determine working directory")
@@ -210,7 +211,7 @@ func findRepoRoot(t *testing.T) string {
 	return ""
 }
 
-func normalizeOutput(root string, b []byte) []byte {
+func NormalizeOutput(root string, b []byte) []byte {
 	out := string(b)
 	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
 	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
