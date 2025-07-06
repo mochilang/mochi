@@ -748,9 +748,42 @@ func writeBodyLine(out *strings.Builder, line string, indent *int) {
 		out.WriteString(")\n")
 	default:
 		out.WriteString(ind())
-		out.WriteString(strings.TrimSuffix(line, ";"))
+		converted := convertListOf(strings.TrimSuffix(line, ";"))
+		out.WriteString(converted)
 		out.WriteByte('\n')
 	}
+}
+
+// convertListOf replaces Kotlin listOf(...) expressions with Mochi list
+// literals to aid round-trip conversion.
+func convertListOf(line string) string {
+	for {
+		idx := strings.Index(line, "listOf(")
+		if idx == -1 {
+			break
+		}
+		start := idx + len("listOf(")
+		depth := 1
+		i := start
+		for ; i < len(line); i++ {
+			switch line[i] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+				if depth == 0 {
+					inner := line[start:i]
+					line = line[:idx] + "[" + inner + "]" + line[i+1:]
+					i = idx + len("[") + len(inner) + 1
+					break
+				}
+			}
+		}
+		if depth != 0 {
+			break
+		}
+	}
+	return line
 }
 
 func parseForLine(line string) (string, string, bool) {
