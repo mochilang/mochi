@@ -1,0 +1,19 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+var
+  _tmp0: specialize TFPGMap<string, integer>;
+  scores: specialize TFPGMap<string, integer>;
+
+begin
+  _tmp0 := specialize TFPGMap<string, integer>.Create;
+  _tmp0.AddOrSetData('Alice', 10);
+  _tmp0.AddOrSetData('Bob', 15);
+  scores := _tmp0;
+  writeln(scores.KeyData['Bob']);
+end.

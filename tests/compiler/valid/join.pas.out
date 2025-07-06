@@ -1,0 +1,81 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+type Customer = record
+  id: integer;
+  name: string;
+end;
+
+type Order = record
+  id: integer;
+  customerId: integer;
+  total: integer;
+end;
+
+type PairInfo = record
+  orderId: integer;
+  customerName: string;
+  total: integer;
+end;
+
+var
+  _tmp0: Customer;
+  _tmp1: Customer;
+  _tmp2: Customer;
+  _tmp3: Order;
+  _tmp4: Order;
+  _tmp5: Order;
+  _tmp6: Order;
+  _tmp7: PairInfo;
+  _tmp8: specialize TArray<PairInfo>;
+  customers: specialize TArray<Customer>;
+  entry: PairInfo;
+  o: Order;
+  orders: specialize TArray<Order>;
+  _result: specialize TArray<PairInfo>;
+
+begin
+  _tmp0.id := 1;
+  _tmp0.name := 'Alice';
+  _tmp1.id := 2;
+  _tmp1.name := 'Bob';
+  _tmp2.id := 3;
+  _tmp2.name := 'Charlie';
+  customers := specialize TArray<Customer>([_tmp0, _tmp1, _tmp2]);
+  _tmp3.id := 100;
+  _tmp3.customerId := 1;
+  _tmp3.total := 250;
+  _tmp4.id := 101;
+  _tmp4.customerId := 2;
+  _tmp4.total := 125;
+  _tmp5.id := 102;
+  _tmp5.customerId := 1;
+  _tmp5.total := 300;
+  _tmp6.id := 103;
+  _tmp6.customerId := 4;
+  _tmp6.total := 80;
+  orders := specialize TArray<Order>([_tmp3, _tmp4, _tmp5, _tmp6]);
+  _tmp7.orderId := o.id;
+  _tmp7.customerName := c.name;
+  _tmp7.total := o.total;
+  SetLength(_tmp8, 0);
+  for o in orders do
+    begin
+      for c in customers do
+        begin
+          if not ((o.customerId = c.id)) then continue;
+          _tmp8 := Concat(_tmp8, [_tmp7]);
+        end;
+    end;
+  _result := _tmp8;
+  writeln('--- Orders with customer info ---');
+  for entry in _result do
+    begin
+      writeln('Order', entry.orderId, 'by', entry.customerName, '- $', entry.total);
+    end;
+end.

@@ -5,6 +5,7 @@ package pascode_test
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	pascode "mochi/compile/x/pas"
 	"mochi/golden"
 	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 
@@ -85,7 +87,9 @@ func TestPascalCompiler_SubsetPrograms(t *testing.T) {
 		}
 		exe := filepath.Join(dir, "prog")
 		cmd := exec.Command(exe)
+		var inData []byte
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			inData = data
 			cmd.Stdin = bytes.NewReader(data)
 		}
 		out, err := cmd.CombinedOutput()
@@ -93,6 +97,24 @@ func TestPascalCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("❌ run error: %w\n%s", err, out)
 		}
 		res := bytes.TrimSpace(out)
+		// run with VM to compute expected output
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("❌ vm compile error: %w", err)
+		}
+		var vmIn io.Reader
+		if len(inData) > 0 {
+			vmIn = bytes.NewReader(inData)
+		}
+		var vmOut bytes.Buffer
+		m := vm.NewWithIO(p, vmIn, &vmOut)
+		if err := m.Run(); err != nil {
+			return nil, fmt.Errorf("❌ vm run error: %w", err)
+		}
+		want := bytes.TrimSpace(vmOut.Bytes())
+		if !bytes.Equal(normalizeOutput(repoRoot(), res), normalizeOutput(repoRoot(), want)) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- Pascal ---\n%s\n\n--- VM ---\n%s\n", res, want)
+		}
 		if res == nil {
 			res = []byte{}
 		}
@@ -190,4 +212,37 @@ func runExample(t *testing.T, id int) {
 			}
 		})
 	}
+}
+
+func normalizeOutput(root string, b []byte) []byte {
+	out := string(b)
+	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+	out = durRE.ReplaceAllString(out, "(X)")
+	out = strings.TrimSpace(out)
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return []byte(out)
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return dir
 }

@@ -1,0 +1,121 @@
+program main;
+{$mode objfpc}
+
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+
+type
+  generic TArray<T> = array of T;
+
+type Person = record
+  id: integer;
+  name: string;
+end;
+
+type Purchase = record
+  id: integer;
+  personId: integer;
+  total: integer;
+end;
+
+generic function _sliceList<T>(arr: specialize TArray<T>; i, j: integer): specialize TArray<T>;
+
+var start_, end_, n: integer;
+begin
+  start_ := i;
+  end_ := j;
+  n := Length(arr);
+  if start_ < 0 then start_ := n + start_;
+  if end_ < 0 then end_ := n + end_;
+  if start_ < 0 then start_ := 0;
+  if end_ > n then end_ := n;
+  if end_ < start_ then end_ := start_;
+  Result := Copy(arr, start_ + 1, end_ - start_);
+end;
+
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+
+var i,j: integer;
+  tmp: T;
+  k: Variant;
+begin
+  for i := 0 to High(arr) - 1 do
+    for j := i + 1 to High(arr) do
+      if keys[i] > keys[j] then
+        begin
+          tmp := arr[i];
+          arr[i] := arr[j];
+          arr[j] := tmp;
+          k := keys[i];
+          keys[i] := keys[j];
+          keys[j] := k;
+        end;
+end;
+
+var
+  _tmp0: Person;
+  _tmp1: Person;
+  _tmp10: specialize TArray<Variant>;
+  _tmp11: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp12: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp2: Person;
+  _tmp3: Purchase;
+  _tmp4: Purchase;
+  _tmp5: Purchase;
+  _tmp6: Purchase;
+  _tmp7: Purchase;
+  _tmp8: specialize TFPGMap<Variant, Variant>;
+  _tmp9: specialize TArray<specialize TFPGMap<string, Variant>>;
+  p: Person;
+  people: specialize TArray<Person>;
+  purchases: specialize TArray<Purchase>;
+  r: specialize TFPGMap<string, Variant>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+
+begin
+  _tmp0.id := 1;
+  _tmp0.name := 'Alice';
+  _tmp1.id := 2;
+  _tmp1.name := 'Bob';
+  _tmp2.id := 3;
+  _tmp2.name := 'Charlie';
+  people := specialize TArray<Person>([_tmp0, _tmp1, _tmp2]);
+  _tmp3.id := 1;
+  _tmp3.personId := 1;
+  _tmp3.total := 200;
+  _tmp4.id := 2;
+  _tmp4.personId := 1;
+  _tmp4.total := 50;
+  _tmp5.id := 3;
+  _tmp5.personId := 2;
+  _tmp5.total := 150;
+  _tmp6.id := 4;
+  _tmp6.personId := 3;
+  _tmp6.total := 100;
+  _tmp7.id := 5;
+  _tmp7.personId := 2;
+  _tmp7.total := 250;
+  purchases := specialize TArray<Purchase>([_tmp3, _tmp4, _tmp5, _tmp6, _tmp7]);
+  _tmp8 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp8.AddOrSetData('person', p.name);
+  _tmp8.AddOrSetData('spent', o.total);
+  SetLength(_tmp9, 0);
+  SetLength(_tmp10, 0);
+  for p in people do
+    begin
+      for o in purchases do
+        begin
+          if not ((p.id = o.personId)) then continue;
+          if not ((o.total > 100)) then continue;
+          _tmp9 := Concat(_tmp9, [_tmp8]);
+          _tmp10 := Concat(_tmp10, [-o.total]);
+        end;
+    end;
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp9, _tmp10);
+  _tmp11 := specialize _sliceList<specialize TFPGMap<string, Variant>>(_tmp9, 1, Length(_tmp9));
+  _tmp12 := specialize _sliceList<specialize TFPGMap<string, Variant>>(_tmp11, 0, 2);
+  _result := _tmp12;
+  for r in _result do
+    begin
+      writeln(r.person, r.spent);
+    end;
+end.
