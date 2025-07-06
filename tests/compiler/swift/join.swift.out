@@ -8,21 +8,21 @@ struct B {
   var id: Int
 }
 
-func main() {
-  let left: [A] = [A(id: 1), A(id: 2)]
-  let right: [B] = [B(id: 1), B(id: 3)]
-  let result: [Int] =
-    ({
-      var _res: [Int] = []
-      for a in left {
-        for b in right {
-          if !(a.id == b.id) { continue }
-          _res.append(a.id)
-        }
+let left: [A] = [A(id: 1), A(id: 2)]
+let right: [B] = [B(id: 1), B(id: 3)]
+let result: [Int] =
+  ({
+    var _res: [Int] = []
+    for a in left {
+      for b in right {
+        if !(a.id == b.id) { continue }
+        _res.append(a.id)
       }
-      var _items = _res
-      return _items
-    }())
+    }
+    var _items = _res
+    return _items
+  }())
+func main() {
   for r in result {
     print(r)
   }

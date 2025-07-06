@@ -61,8 +61,8 @@ struct Todo {
   var completed: Bool
 }
 
+let todo: Todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", nil)
 func main() {
-  let todo: Todo = _fetch("https://jsonplaceholder.typicode.com/todos/1", nil)
   print(todo.title)
 }
 main()

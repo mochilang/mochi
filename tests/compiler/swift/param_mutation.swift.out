@@ -7,12 +7,12 @@ func inc(_ x: Int) -> Int {
   return x
 }
 
-func main() {
-  let add1 = { (y: Int) -> Int in
-    let y = y
+let add1 = { (y: Int) -> Int in
+  let y = y
 
-    return y + 1
-  }
+  return y + 1
+}
+func main() {
   print(inc(5))
   print(add1(6))
 }

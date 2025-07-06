@@ -22,32 +22,18 @@ func TestSwiftCompiler_SubsetPrograms(t *testing.T) {
 		t.Skipf("swift not installed: %v", err)
 	}
 	golden.Run(t, "tests/compiler/swift", ".mochi", ".out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
+		swiftOut, err := compileAndRunSwift(src)
 		if err != nil {
-			return nil, fmt.Errorf("❌ parse error: %w", err)
+			return nil, err
 		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			return nil, fmt.Errorf("❌ type error: %v", errs[0])
-		}
-		code, err := swiftcode.New(env).Compile(prog)
+		vmOut, err := runMochiVM(src)
 		if err != nil {
-			return nil, fmt.Errorf("❌ compile error: %w", err)
+			return nil, fmt.Errorf("vm error: %w", err)
 		}
-		dir := t.TempDir()
-		file := filepath.Join(dir, "main.swift")
-		if err := os.WriteFile(file, code, 0644); err != nil {
-			return nil, fmt.Errorf("write error: %w", err)
+		if !bytes.Equal(bytes.TrimSpace(swiftOut), bytes.TrimSpace(vmOut)) {
+			return nil, fmt.Errorf("runtime mismatch\n-- swift --\n%s\n\n-- vm --\n%s\n", swiftOut, vmOut)
 		}
-		exe := filepath.Join(dir, "main")
-		if out, err := exec.Command("swiftc", file, "-o", exe).CombinedOutput(); err != nil {
-			return nil, fmt.Errorf("❌ swiftc error: %w\n%s", err, out)
-		}
-		out, err := exec.Command(exe).CombinedOutput()
-		if err != nil {
-			return nil, fmt.Errorf("❌ swift run error: %w\n%s", err, out)
-		}
-		return bytes.TrimSpace(out), nil
+		return bytes.TrimSpace(swiftOut), nil
 	})
 }
 

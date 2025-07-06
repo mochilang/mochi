@@ -1,7 +1,7 @@
 import Foundation
 
+var m: [Int: Int] = [:]
 func main() {
-  var m: [Int: Int] = [:]
   m[1] = 10
   m[2] = 20
   if m[1] != nil {

@@ -43,9 +43,17 @@ func runTPCHQuery(t *testing.T, q string) {
 		t.Errorf("generated code mismatch for %s.swift.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotCode, bytes.TrimSpace(want))
 	}
 
-	// The generated Swift currently fails to type check due to use of `Any`
-	// values. Once the compiler emits typed structs, this block can compile
-	// and execute the program to verify runtime results.
+	vmOut, err := runMochiVM(src)
+	if err != nil {
+		t.Fatalf("vm error: %v", err)
+	}
+	swiftOut, err := compileAndRunSwift(src)
+	if err != nil {
+		t.Fatalf("swift run error: %v", err)
+	}
+	if !bytes.Equal(bytes.TrimSpace(swiftOut), bytes.TrimSpace(vmOut)) {
+		t.Fatalf("runtime mismatch for %s\n-- swift --\n%s\n\n-- vm --\n%s", q, swiftOut, vmOut)
+	}
 }
 
 func TestSwiftCompiler_TPCHQ1_Golden(t *testing.T) {

@@ -58,8 +58,8 @@ struct Msg {
   var message: String
 }
 
+let data: Msg = _fetch("file://tests/compiler/swift/fetch_builtin.json", nil)
 func main() {
-  let data: Msg = _fetch("file://tests/compiler/swift/fetch_builtin.json", nil)
   print(data.message)
 }
 main()

@@ -1,20 +1,20 @@
 import Foundation
 
-func main() {
-  let nums: [Int] = [1, 2, 3]
-  let letters: [String] = ["A", "B"]
-  let pairs =
-    ({
-      var _res: [[Any: Any]] = []
-      for n in nums {
-        if !(n % 2 == 0) { continue }
-        for l in letters {
-          _res.append([String(describing: n): n, l: l])
-        }
+let nums: [Int] = [1, 2, 3]
+let letters: [String] = ["A", "B"]
+let pairs =
+  ({
+    var _res: [[String: Any]] = []
+    for n in nums {
+      if !(n % 2 == 0) { continue }
+      for l in letters {
+        _res.append(["n": n, "l": l])
       }
-      var _items = _res
-      return _items
-    }())
+    }
+    var _items = _res
+    return _items
+  }())
+func main() {
   print("--- Even pairs ---")
   for p in pairs {
     print(p["n"]!, p["l"]!)

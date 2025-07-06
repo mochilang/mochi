@@ -15,9 +15,9 @@ func _union<T: Equatable>(_ a: [T], _ b: [T]) -> [T] {
   for it in b { if !res.contains(it) { res.append(it) } }
   return res
 }
+let a: [Int] = [1, 2, 3]
+let b: [Int] = [3, 4]
 func main() {
-  let a: [Int] = [1, 2, 3]
-  let b: [Int] = [3, 4]
   print(_union(a, b))
   print(_except(a, b))
   print(_intersect(a, b))

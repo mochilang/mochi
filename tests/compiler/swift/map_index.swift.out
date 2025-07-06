@@ -1,7 +1,7 @@
 import Foundation
 
+let scores: [String: Int] = ["Alice": 10, "Bob": 15]
 func main() {
-  let scores: [String: Int] = ["Alice": 10, "Bob": 15]
   print(scores["Bob"]!)
 }
 main()
