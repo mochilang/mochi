@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -57,7 +58,11 @@ func TestExCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestExCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/ex", ".mochi", ".ex.out", func(src string) ([]byte, error) {
+	if err := excode.EnsureElixir(); err != nil {
+		t.Skipf("elixir not installed: %v", err)
+	}
+
+	runCompile := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -70,8 +75,46 @@ func TestExCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.exs")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("elixir", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ elixir run error: %w\n%s", err, out)
+		}
+		got := bytes.TrimSpace(out)
+		if got == nil {
+			got = []byte{}
+		}
+
+		vmOut, err := runVM(src)
+		if err != nil {
+			return nil, fmt.Errorf("vm error: %w", err)
+		}
+		if !bytes.Equal(got, vmOut) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- VM ---\n%s\n\n--- EX ---\n%s\n", vmOut, got)
+		}
+
+		outPath := strings.TrimSuffix(src, ".mochi") + ".out"
+		if want, err := os.ReadFile(outPath); err == nil {
+			root := repoRoot()
+			if !bytes.Equal(normalizeOutput(root, got), normalizeOutput(root, bytes.TrimSpace(want))) {
+				return nil, fmt.Errorf("runtime output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", got, want)
+			}
+		}
+
 		return bytes.TrimSpace(code), nil
-	})
+	}
+
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".ex.out", runCompile)
+	golden.Run(t, "tests/compiler/ex", ".mochi", ".ex.out", runCompile)
 }
 
 func runExample(t *testing.T, id int) {
@@ -348,4 +391,37 @@ func findRepoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found (not in Go module)")
 	return ""
+}
+
+func repoRoot() string {
+	dir, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	return dir
+}
+
+func normalizeOutput(root string, b []byte) []byte {
+	out := string(b)
+	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+	out = durRE.ReplaceAllString(out, "(X)")
+	out = strings.TrimSpace(out)
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return []byte(out)
 }
