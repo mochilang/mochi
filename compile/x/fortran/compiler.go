@@ -639,18 +639,20 @@ func (c *Compiler) compileStmt(s *parser.Statement, retVar string) error {
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	case s.Let != nil:
-		if _, ok := structLitName(s.Let.Value); ok {
-			val, err := c.compileExpr(s.Let.Value)
-			if err != nil {
-				return err
+		if s.Let.Value != nil {
+			if _, ok := structLitName(s.Let.Value); ok {
+				val, err := c.compileExpr(s.Let.Value)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
+			} else if !types.IsEmptyListLiteral(s.Let.Value) {
+				val, err := c.compileExpr(s.Let.Value)
+				if err != nil {
+					return err
+				}
+				c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
 			}
-			c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
-		} else if !types.IsEmptyListLiteral(s.Let.Value) {
-			val, err := c.compileExpr(s.Let.Value)
-			if err != nil {
-				return err
-			}
-			c.writeln(fmt.Sprintf("%s = %s", sanitizeName(s.Let.Name), val))
 		}
 	case s.Var != nil:
 		if s.Var.Value != nil {

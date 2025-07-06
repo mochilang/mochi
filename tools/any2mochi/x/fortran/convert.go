@@ -319,6 +319,15 @@ func cleanExpr(e string) string {
 	e = replacer.Replace(e)
 	reMod := regexp.MustCompile(`\bmod(?:ulo)?\(([^,]+),\s*([^\)]+)\)`)
 	e = reMod.ReplaceAllString(e, "($1 % $2)")
+	reList := regexp.MustCompile(`\(/\s*(.*?)\s*/\)`)
+	e = reList.ReplaceAllStringFunc(e, func(m string) string {
+		inner := strings.TrimSpace(m[2 : len(m)-2])
+		return "[" + inner + "]"
+	})
+	if strings.HasPrefix(e, "/") && strings.HasSuffix(e, "/") {
+		inner := strings.TrimSpace(e[1 : len(e)-1])
+		e = "[" + inner + "]"
+	}
 	return e
 }
 
