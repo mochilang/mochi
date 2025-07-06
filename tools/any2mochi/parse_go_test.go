@@ -5,8 +5,6 @@ package any2mochi
 import (
 	"os/exec"
 	"testing"
-
-	gocode "mochi/compile/go"
 )
 
 func requireBinary(t *testing.T, name string) {
@@ -17,7 +15,6 @@ func requireBinary(t *testing.T, name string) {
 }
 
 func TestParseGo(t *testing.T) {
-	_ = gocode.EnsureGopls()
 	requireBinary(t, "gopls")
 	src := "package foo\nfunc Add(x int, y int) int { return x + y }"
 	syms, diags, err := ParseText("gopls", nil, "go", src)

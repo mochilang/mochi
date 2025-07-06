@@ -2,14 +2,9 @@
 
 package any2mochi
 
-import (
-	"testing"
-
-	tscode "mochi/compile/ts"
-)
+import "testing"
 
 func TestParseTypeScript(t *testing.T) {
-	_ = tscode.EnsureTSLanguageServer()
 	requireBinary(t, "typescript-language-server")
 	src := "export function add(x: number, y: number): number { return x + y }"
 	syms, diags, err := ParseText("typescript-language-server", []string{"--stdio"}, "typescript", src)

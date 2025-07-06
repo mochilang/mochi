@@ -2,15 +2,9 @@
 
 package any2mochi
 
-import (
-	"testing"
-
-	gocode "mochi/compile/go"
-)
+import "testing"
 
 func TestConvertGo(t *testing.T) {
-	_ = gocode.EnsureGopls()
-	requireBinary(t, "gopls")
 	src := "package foo\nfunc Add(x int, y int) int { return x + y }"
 	out, err := ConvertGo(src)
 	if err != nil {

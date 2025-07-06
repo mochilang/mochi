@@ -2,14 +2,9 @@
 
 package any2mochi
 
-import (
-	"testing"
-
-	pycode "mochi/compile/py"
-)
+import "testing"
 
 func TestParsePython(t *testing.T) {
-	_ = pycode.EnsurePyright()
 	requireBinary(t, "pyright-langserver")
 	src := "def add(x,y):\n    return x + y"
 	syms, diags, err := ParseText("pyright-langserver", []string{"--stdio"}, "python", src)

@@ -2,14 +2,9 @@
 
 package any2mochi
 
-import (
-	"testing"
-
-	tscode "mochi/compile/ts"
-)
+import "testing"
 
 func TestConvertTypeScript(t *testing.T) {
-	_ = tscode.EnsureTSLanguageServer()
 	requireBinary(t, "typescript-language-server")
 	src := "export function add(x: number, y: number): number { return x + y }"
 	out, err := ConvertTypeScript(src)

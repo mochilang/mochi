@@ -11,26 +11,12 @@ import (
 	"time"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
-
-	pycode "mochi/compile/py"
 )
 
 // ConvertPython converts Python source code to a minimal Mochi representation.
-// It uses the configured language server when available, otherwise falls back to
-// a small parser that invokes Python to produce an AST as JSON.
+// The conversion is performed by invoking Python's AST parser via a small
+// helper script and translating the resulting JSON to Mochi.
 func ConvertPython(src string) ([]byte, error) {
-	ls := Servers["python"]
-	if ls.Command != "" {
-		_ = pycode.EnsurePyright()
-		syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
-		if err == nil && len(diags) == 0 {
-			var out strings.Builder
-			writePySymbols(&out, nil, syms, src, ls)
-			if out.Len() > 0 {
-				return []byte(out.String()), nil
-			}
-		}
-	}
 	return convertPythonFallback(src)
 }
 
