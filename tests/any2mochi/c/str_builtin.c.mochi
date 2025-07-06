@@ -1,0 +1,12 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+fun _str(v: int): string {
+  var *buf = malloc(32)
+  sprintf(buf, "%d", v)
+  return buf
+}
+var *_t1 = _str(123)
+print(_t1)

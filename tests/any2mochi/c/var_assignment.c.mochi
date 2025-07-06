@@ -1,0 +1,8 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+var x = 1
+x = 2
+print(x)

@@ -760,43 +760,47 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				c.writeln(fmt.Sprintf("%s %s = %s(%s, %s);", typ, name, fname, url, opts))
 			} else {
 				val := c.compileFetchExpr(f)
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			}
 		} else if isEmptyListLiteral(stmt.Value) {
 			if isListStringType(t) {
 				c.need(needListString)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListFloatType(t) {
 				c.need(needListFloat)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListListIntType(t) {
 				c.need(needListListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListIntType(t) {
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else {
 				val := c.compileExpr(stmt.Value)
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			}
 		} else {
 			val := c.compileExpr(stmt.Value)
-			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			c.writeln(formatFuncPtrDecl(typ, name, val))
 		}
 	} else {
-		c.writeln(fmt.Sprintf("%s %s;", typ, name))
+		decl := formatFuncPtrDecl(typ, name, "")
+		if strings.HasSuffix(decl, " = ;") { // remove "= ;" when no value
+			decl = strings.TrimSuffix(decl, " = ;") + ";"
+		}
+		c.writeln(decl)
 	}
 	if c.env != nil {
 		c.env.SetVar(stmt.Name, t, false)
@@ -863,40 +867,40 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				c.writeln(fmt.Sprintf("%s %s = %s(%s, %s);", typ, name, fname, url, opts))
 			} else {
 				val := c.compileFetchExpr(f)
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			}
 		} else if isEmptyListLiteral(stmt.Value) {
 			if isListStringType(t) {
 				c.need(needListString)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListFloatType(t) {
 				c.need(needListFloat)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListListIntType(t) {
 				c.need(needListListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListIntType(t) {
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(0);", val))
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else {
 				val := c.compileExpr(stmt.Value)
-				c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			}
 		} else {
 			val := c.compileExpr(stmt.Value)
-			c.writeln(fmt.Sprintf("%s %s = %s;", typ, name, val))
+			c.writeln(formatFuncPtrDecl(typ, name, val))
 		}
 	} else {
 		c.writeln(fmt.Sprintf("%s %s;", typ, name))

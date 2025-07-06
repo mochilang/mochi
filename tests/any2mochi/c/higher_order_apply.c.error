@@ -1,0 +1,42 @@
+line 18:24: expected ')'
+  17| 
+  18| int apply(int (*)(int) f, int x) { return f(x); }
+                            ^
+  19| 
+  20| int main() {
+line 18:43: call to undeclared function 'f'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  17| 
+  18| int apply(int (*)(int) f, int x) { return f(x); }
+                                               ^
+  19| 
+  20| int main() {
+line 18:45: use of undeclared identifier 'x'
+  17| 
+  18| int apply(int (*)(int) f, int x) { return f(x); }
+                                                 ^
+  19| 
+  20| int main() {
+line 21:29: too many arguments to function call, expected 1, have 2
+  20| int main() {
+  21|   printf("%d\n", apply(inc, 5));
+                                 ^
+  22|   printf("%d\n", apply(_lambda0, 7));
+  23|   return 0;
+line 22:34: too many arguments to function call, expected 1, have 2
+  21|   printf("%d\n", apply(inc, 5));
+  22|   printf("%d\n", apply(_lambda0, 7));
+                                      ^
+  23|   return 0;
+  24| }
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: 
+  4: typedef struct {
+  5:   int len;
+  6:   int *data;
+  7: } list_int;
+  8: static list_int list_int_create(int len) {
+  9:   list_int l;
+ 10:   l.len = len;

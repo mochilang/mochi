@@ -1,0 +1,20 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+type list_float {
+  len: int
+  *data: float
+}
+
+list_float _t1 = list_float_create(3)
+_t1.data[0] = 1.0
+_t1.data[1] = 2.0
+_t1.data[2] = 3.0
+print(({)
+var sum = 0
+for (int i = 0; i < _t1.len; i++)
+sum = sum + _t1.data[i]
+sum
+}))

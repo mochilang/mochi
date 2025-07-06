@@ -249,3 +249,11 @@ func identName(e *parser.Expr) (string, bool) {
 	}
 	return "", false
 }
+
+func formatFuncPtrDecl(typ, name, val string) string {
+	if strings.Contains(typ, "(*") {
+		typ = strings.Replace(typ, "(*", "(*"+name, 1)
+		return fmt.Sprintf("%s = %s;", typ, val)
+	}
+	return fmt.Sprintf("%s %s = %s;", typ, name, val)
+}

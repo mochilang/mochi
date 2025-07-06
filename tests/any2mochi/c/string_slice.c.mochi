@@ -1,0 +1,25 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+var *_t1 = ({
+var _len = strlen("hello")
+var _s = 1
+var _e = 4
+if (_s < 0)
+_s = _s + _len
+if (_e < 0)
+_e = _e + _len
+if (_s < 0)
+_s = 0
+if (_e > _len)
+_e = _len
+if (_s > _e)
+_s = _e
+var *_b = malloc(_e - _s + 1)
+memcpy(_b, "hello" + _s, _e - _s)
+_b[_e - _s] = '\0'
+_b
+})
+print(_t1)

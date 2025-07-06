@@ -1,0 +1,24 @@
+line 30:11: call to undeclared function 'equal_list_int'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  29|     for (int j = 0; j < idx; j++)
+  30|       if (equal_list_int(r.data[j], a.data[i])) {
+               ^
+  31|         found = 1;
+  32|         break;
+line 40:11: call to undeclared function 'equal_list_int'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  39|     for (int j = 0; j < idx; j++)
+  40|       if (equal_list_int(r.data[j], b.data[i])) {
+               ^
+  41|         found = 1;
+  42|         break;
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: 
+  4: typedef struct {
+  5:   int len;
+  6:   int *data;
+  7: } list_int;
+  8: static list_int list_int_create(int len) {
+  9:   list_int l;
+ 10:   l.len = len;

@@ -1,0 +1,9 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+fun contains_string(s: string, sub: string): int {
+  return strstr(s, sub) != NULL
+}
+print(contains_string("hello", "lo"))

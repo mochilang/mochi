@@ -1,0 +1,24 @@
+line 17:12: call to undeclared library function 'strdup' with type 'char *(const char *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  16|   if (!fgets(buf, sizeof(buf), stdin))
+  17|     return strdup("");
+                ^
+  18|   size_t len = strlen(buf);
+  19|   if (len > 0 && buf[len - 1] == '\n')
+line 18:16: call to undeclared library function 'strlen' with type 'unsigned long (const char *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  17|     return strdup("");
+  18|   size_t len = strlen(buf);
+                    ^
+  19|   if (len > 0 && buf[len - 1] == '\n')
+  20|     buf[len - 1] = '\0';
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: 
+  4: typedef struct {
+  5:   int len;
+  6:   int *data;
+  7: } list_int;
+  8: static list_int list_int_create(int len) {
+  9:   list_int l;
+ 10:   l.len = len;

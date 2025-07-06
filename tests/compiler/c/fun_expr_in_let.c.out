@@ -14,7 +14,7 @@ static list_int list_int_create(int len) {
 int _lambda0(int x) { return (x * x); }
 
 int main() {
-  int (*)(int) square = _lambda0;
+  int (*square)(int) = _lambda0;
   printf("%d\n", square(6));
   return 0;
 }

@@ -30,14 +30,14 @@ int main() {
   _t1.data[0] = (Person){.id = 1, .name = "Alice"};
   _t1.data[1] = (Person){.id = 2, .name = "Bob"};
   _t1.data[2] = (Person){.id = 3, .name = "Charlie"};
-  int people = _t1;
+  list_Person people = _t1;
   list_int _t2 = list_int_create(5);
   _t2.data[0] = (Purchase){.id = 1, .personId = 1, .total = 200};
   _t2.data[1] = (Purchase){.id = 2, .personId = 1, .total = 50};
   _t2.data[2] = (Purchase){.id = 3, .personId = 2, .total = 150};
   _t2.data[3] = (Purchase){.id = 4, .personId = 3, .total = 100};
   _t2.data[4] = (Purchase){.id = 5, .personId = 2, .total = 250};
-  int purchases = _t2;
+  list_Purchase purchases = _t2;
   list_int result = 0;
   for (int _t3 = 0; _t3 < result.len; _t3++) {
     int r = result.data[_t3];

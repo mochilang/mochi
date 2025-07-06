@@ -3,16 +3,13 @@ type list_int {
   *data: int
 }
 
-fun _avg(v: list<int>): float {
-  if (v.len == 0)
-  return 0
-  var sum = 0
-  for (int i = 0; i < v.len; i++)
-  sum = sum + v.data[i]
-  return sum / v.len
-}
 list_int _t1 = list_int_create(3)
 _t1.data[0] = 1
 _t1.data[1] = 2
 _t1.data[2] = 3
-print(_avg(_t1))
+print(({)
+var sum = 0
+for (int i = 0; i < _t1.len; i++)
+sum = sum + _t1.data[i]
+sum / _t1.len
+}))

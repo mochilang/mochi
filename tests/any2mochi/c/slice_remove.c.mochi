@@ -1,0 +1,72 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+type list_list_int {
+  len: int
+  *data: list<int>
+}
+
+fun __bswap_16(__bsx: __uint16_t): __uint16_t {
+  i)
+  list_int _t2 = slice_list_int(nums, (i + 1), nums.len)
+  list_int _t3 = concat_list_int(_t1, _t2)
+  retur
+}
+fun __uint16_identity(__x: __uint16_t): __uint16_t {
+  list_int _t2 =
+}
+fun __uint32_identity(__x: __uint32_t): __uint32_t {
+  ist_int(_t1, _t
+}
+fun __uint64_identity(__x: __uint64_t): __uint64_t {
+  (4)
+  _t4.data
+}
+fun concat_list_int(a: list<int>, b: list<int>): list<int> {
+  list_int r = list_int_create(a.len + b.len)
+  for (int i = 0; i < a.len; i++)
+  r.data[i] = a.data[i]
+  for (int i = 0; i < b.len; i++)
+  r.data[a.len + i] = b.data[i]
+  return r
+}
+fun slice_list_int(v: list<int>, start: int, end: int): list<int> {
+  if (start < 0)
+  start = start + v.len
+  if (end < 0)
+  end = end + v.len
+  if (start < 0)
+  start = 0
+  if (end > v.len)
+  end = v.len
+  if (start > end)
+  start = end
+  list_int r = list_int_create(end - start)
+  for (int i = 0; i < r.len; i++)
+  r.data[i] = v.data[start + i]
+  return r
+}
+fun _print_list_int(v: list<int>) {
+  print("[")
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+    print(" ")
+    print(v.data[i])
+  }
+  print("]")
+}
+fun _remove(nums: list<int>, i: int): list<int> {
+  list_int _t1 = slice_list_int(nums, 0, i)
+  list_int _t2 = slice_list_int(nums, (i + 1), nums.len)
+  list_int _t3 = concat_list_int(_t1, _t2)
+  return _t3
+}
+list_int _t4 = list_int_create(4)
+_t4.data[0] = 1
+_t4.data[1] = 2
+_t4.data[2] = 3
+_t4.data[3] = 4
+_print_list_int(_remove(_t4, 1))
+print("\n")
