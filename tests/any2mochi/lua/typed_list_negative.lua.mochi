@@ -1,3 +1,15 @@
+fun test_values() {
+  if !__eq(__index(xs, 0), -1) {
+    error("expect failed")
+  }
+  if !__eq(__index(xs, 1), 0) {
+    error("expect failed")
+  }
+  if !__eq(__index(xs, 2), 1) {
+    error("expect failed")
+  }
+  print("done")
+}
 xs = [-1, 0, 1]
 let __tests = [{ "name": "values", "fn": test_values }]
 __run_tests(__tests)

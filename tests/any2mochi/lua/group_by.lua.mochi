@@ -1,6 +1,18 @@
 _Group = []
+fun _Group["new"](k) {
+  return { "key": k, "items": [] }
+}
 xs = [1, 1, 2]
-groups = ()
+groups = fun() {
+    let _groups = __group_by(xs, fun(x) {
+    return x
+})
+    let _res = []
+    for _, g in ipairs(_groups) {
+      _res[len(_res) + 1] = { "k": g["key"], "c": __count(g) }
+    }
+    return _res
+}()
 for _, g in ipairs(groups) {
   print(g["k"], g["c"])
 }

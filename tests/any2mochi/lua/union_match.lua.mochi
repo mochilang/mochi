@@ -1,2 +1,11 @@
+fun isLeaf(t) {
+  return fun() {
+    let _t0 = t
+    if _t0["__name"] == "Leaf" {
+      return true
+    }
+    return false
+}()
+}
 print(isLeaf({ "__name": "Leaf" }))
 print(isLeaf({ "__name": "Node", "left": { "__name": "Leaf" }, "value": 1, "right": { "__name": "Leaf" } }))

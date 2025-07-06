@@ -1,2 +1,10 @@
+fun inc(x) {
+  return __add(x, 1)
+}
+fun apply(f, x) {
+  return f(x)
+}
 print(apply(inc, 5))
-print(apply(, 7))
+print(apply(fun(y) {
+    return y * 2
+}, 7))

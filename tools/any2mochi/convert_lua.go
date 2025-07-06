@@ -434,6 +434,22 @@ func convertLuaStmts(stmts []luaast.Stmt, indent int) []string {
 			out = append(out, ind+"for "+strings.Join(s.Names, ", ")+" in "+iter+" {")
 			out = append(out, convertLuaStmts(s.Stmts, indent+1)...)
 			out = append(out, ind+"}")
+		case *luaast.FuncDefStmt:
+			origName := ""
+			if id, ok := s.Name.Func.(*luaast.IdentExpr); ok {
+				origName = id.Value
+			}
+			name := luaExprString(s.Name.Func)
+			if s.Name.Method != "" {
+				recv := luaExprString(s.Name.Func)
+				name = recv + "." + s.Name.Method
+			}
+			if strings.HasPrefix(origName, "__") {
+				continue
+			}
+			out = append(out, ind+"fun "+name+luaFuncSignature(s.Func)+" {")
+			out = append(out, convertLuaStmts(s.Func.Stmts, indent+1)...)
+			out = append(out, ind+"}")
 		}
 	}
 	return out
@@ -493,10 +509,14 @@ func luaExprString(e luaast.Expr) string {
 			op = "||"
 		}
 		return luaExprString(v.Lhs) + " " + op + " " + luaExprString(v.Rhs)
+	case *luaast.RelationalOpExpr:
+		return luaExprString(v.Lhs) + " " + v.Operator + " " + luaExprString(v.Rhs)
 	case *luaast.UnaryMinusOpExpr:
 		return "-" + luaExprString(v.Expr)
 	case *luaast.UnaryNotOpExpr:
 		return "!" + luaExprString(v.Expr)
+	case *luaast.UnaryLenOpExpr:
+		return "len(" + luaExprString(v.Expr) + ")"
 	case *luaast.FuncCallExpr:
 		var args []string
 		for _, a := range v.Args {
@@ -507,6 +527,19 @@ func luaExprString(e luaast.Expr) string {
 			callee = luaExprString(v.Receiver) + "." + v.Method
 		}
 		return callee + "(" + strings.Join(args, ", ") + ")"
+	case *luaast.FunctionExpr:
+		var b strings.Builder
+		b.WriteString("fun")
+		b.WriteString(luaFuncSignature(v))
+		b.WriteString(" {")
+		for _, line := range convertLuaStmts(v.Stmts, 1) {
+			b.WriteByte('\n')
+			b.WriteString("  ")
+			b.WriteString(line)
+		}
+		b.WriteByte('\n')
+		b.WriteString("}")
+		return b.String()
 	case *luaast.AttrGetExpr:
 		if k, ok := v.Key.(*luaast.StringExpr); ok {
 			return luaExprString(v.Object) + "[" + strconv.Quote(k.Value) + "]"
@@ -604,7 +637,7 @@ func preprocessLuaSource(src string) string {
 // available.
 func writeLuaChunk(out *strings.Builder, chunk []luaast.Stmt) {
 	for _, line := range convertLuaStmts(chunk, 0) {
-		if strings.HasPrefix(line, "fun __print") {
+		if strings.HasPrefix(line, "fun __") {
 			continue
 		}
 		out.WriteString(line)

@@ -1,2 +1,7 @@
+fun makeAdder(n) {
+  return fun(x) {
+    return __add(x, n)
+}
+}
 add10 = makeAdder(10)
 print(add10(7))

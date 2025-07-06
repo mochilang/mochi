@@ -1,1 +1,12 @@
+fun value_of_root(t) {
+  return fun() {
+    let _t0 = t
+    if _t0["__name"] == "Node" {
+      return fun(v) {
+    return v
+}(_t0["value"])
+    }
+    return 0
+}()
+}
 print(value_of_root({ "__name": "Node", "left": { "__name": "Leaf" }, "value": 5, "right": { "__name": "Leaf" } }))
