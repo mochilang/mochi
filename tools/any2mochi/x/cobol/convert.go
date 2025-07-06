@@ -1,14 +1,16 @@
-package any2mochi
+package cobol
 
 import (
 	"fmt"
 	"os"
 	"strings"
+
+	a2m "mochi/tools/any2mochi"
 )
 
-// ConvertCobol converts COBOL source code to Mochi using the cobolast CLI.
-func ConvertCobol(src string) ([]byte, error) {
-	ast, err := parseCobolCLI(src)
+// Convert converts COBOL source code to Mochi using the cobol-go parser.
+func Convert(src string) ([]byte, error) {
+	ast, err := parse(src)
 	if err != nil {
 		return nil, err
 	}
@@ -40,16 +42,16 @@ func ConvertCobol(src string) ([]byte, error) {
 	return []byte(out.String()), nil
 }
 
-// ConvertCobolFile reads the COBOL file and converts it to Mochi.
-func ConvertCobolFile(path string) ([]byte, error) {
+// ConvertFile reads the COBOL file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertCobol(string(data))
+	return Convert(string(data))
 }
 
-func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, prefix []string, syms []DocumentSymbol) {
+func writeCobolSymbols(out *strings.Builder, ls a2m.LanguageServer, src string, prefix []string, syms []a2m.DocumentSymbol) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
@@ -57,15 +59,10 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 		}
 
 		switch s.Kind {
-		case SymbolKindFunction, SymbolKindMethod, SymbolKindConstructor:
+		case a2m.SymbolKindFunction, a2m.SymbolKindMethod, a2m.SymbolKindConstructor:
 			detail := ""
 			if s.Detail != nil {
 				detail = *s.Detail
-			}
-			if detail == "" {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					detail = hoverString(hov)
-				}
 			}
 			params, ret := parseCobolSignature(detail)
 
@@ -101,15 +98,10 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 				out.WriteString("}\n")
 			}
 
-		case SymbolKindVariable, SymbolKindConstant, SymbolKindField, SymbolKindProperty:
+		case a2m.SymbolKindVariable, a2m.SymbolKindConstant, a2m.SymbolKindField, a2m.SymbolKindProperty:
 			typ := ""
 			if s.Detail != nil {
 				typ = parseCobolType(*s.Detail)
-			}
-			if typ == "" {
-				if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, s.SelectionRange.Start); err == nil {
-					typ = parseCobolType(hoverString(hov))
-				}
 			}
 			out.WriteString("var ")
 			out.WriteString(strings.Join(nameParts, "."))
@@ -119,13 +111,13 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 			}
 			out.WriteString(" = nil\n")
 
-		case SymbolKindClass, SymbolKindStruct, SymbolKindInterface, SymbolKindEnum:
+		case a2m.SymbolKindClass, a2m.SymbolKindStruct, a2m.SymbolKindInterface, a2m.SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
-			var fields []DocumentSymbol
+			var fields []a2m.DocumentSymbol
 			for _, c := range s.Children {
 				switch c.Kind {
-				case SymbolKindField, SymbolKindProperty, SymbolKindVariable:
+				case a2m.SymbolKindField, a2m.SymbolKindProperty, a2m.SymbolKindVariable:
 					fields = append(fields, c)
 				}
 			}
@@ -137,11 +129,6 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 					typ := ""
 					if f.Detail != nil {
 						typ = parseCobolType(*f.Detail)
-					}
-					if typ == "" {
-						if hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, f.SelectionRange.Start); err == nil {
-							typ = parseCobolType(hoverString(hov))
-						}
 					}
 					out.WriteString("  ")
 					out.WriteString(f.Name)
@@ -155,15 +142,15 @@ func writeCobolSymbols(out *strings.Builder, ls LanguageServer, src string, pref
 			}
 			for _, c := range s.Children {
 				switch c.Kind {
-				case SymbolKindField, SymbolKindProperty, SymbolKindVariable:
+				case a2m.SymbolKindField, a2m.SymbolKindProperty, a2m.SymbolKindVariable:
 					continue
 				default:
-					writeCobolSymbols(out, ls, src, nameParts, []DocumentSymbol{c})
+					writeCobolSymbols(out, ls, src, nameParts, []a2m.DocumentSymbol{c})
 				}
 			}
 			continue
 
-		case SymbolKindNamespace, SymbolKindPackage, SymbolKindModule:
+		case a2m.SymbolKindNamespace, a2m.SymbolKindPackage, a2m.SymbolKindModule:
 			if len(s.Children) > 0 {
 				writeCobolSymbols(out, ls, src, nameParts, s.Children)
 			}
@@ -276,7 +263,7 @@ func parseCobolType(detail string) string {
 
 // linesInRange returns the lines of src covered by r. If the range is outside
 // the bounds of src, it returns an empty slice.
-func linesInRange(src string, r Range) []string {
+func linesInRange(src string, r a2m.Range) []string {
 	lines := strings.Split(src, "\n")
 	start := int(r.Start.Line)
 	end := int(r.End.Line)

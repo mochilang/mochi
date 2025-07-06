@@ -21,7 +21,7 @@ func TestConvertOther_Golden(t *testing.T) {
 		{"asm", "*.s.out", ConvertAsmFile, "asm"},
 		{"c", "*.c.out", ConvertCFile, "c"},
 		{"clj", "*.clj.out", ConvertCljFile, "clj"},
-		{"cobol", "*.cob.out", ConvertCobolFile, "cobol"},
+		{"cobol", "*.cob.out", ConvertFile, "cobol"},
 		{"cpp", "*.cpp.out", ConvertCppFile, "cpp"},
 		{"cs", "*.cs.out", ConvertCsFile, "cs"},
 		{"dart", "*.dart.out", ConvertDartFile, "dart"},
