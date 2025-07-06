@@ -1,0 +1,8 @@
+m = {}
+m[1] = true
+m[2] = true
+sum = 0
+for k in m.keys
+  sum = (sum + k)
+end
+puts([sum].join(" "))

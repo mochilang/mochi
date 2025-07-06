@@ -1,0 +1,14 @@
+x = 2
+label = (begin
+  _t0 = x
+  if _t0 == 1
+    "one"
+  elsif _t0 == 2
+    "two"
+  elsif _t0 == 3
+    "three"
+  else
+    "unknown"
+  end
+end)
+puts([label].join(" "))

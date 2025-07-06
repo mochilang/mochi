@@ -4,10 +4,12 @@ package rbcode_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"testing"
@@ -214,6 +216,109 @@ func TestRBCompiler_GoldenOutput(t *testing.T) {
 		}
 		return bytes.TrimSpace(code), nil
 	})
+}
+
+func TestRBCompiler_ValidGoldenOutput(t *testing.T) {
+	if err := rbcode.EnsureRuby(); err != nil {
+		t.Skipf("ruby not installed: %v", err)
+	}
+	runCompile := func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			return nil, fmt.Errorf("type error: %v", errs[0])
+		}
+		code, err := rbcode.New(env).Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("compile error: %w", err)
+		}
+
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.rb")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("ruby", file)
+		cmd.Dir = findRepoRoot(t)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		rubyOut, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("ruby run error: %w\n%s", err, rubyOut)
+		}
+
+		p, err := vm.Compile(prog, env)
+		if err != nil {
+			return nil, fmt.Errorf("vm compile error: %w", err)
+		}
+		var buf bytes.Buffer
+		m := vm.New(p, &buf)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			m = vm.NewWithIO(p, bytes.NewReader(data), &buf)
+		}
+		if err := m.Run(); err != nil {
+			if ve, ok := err.(*vm.VMError); ok {
+				return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+			}
+			return nil, fmt.Errorf("vm run error: %v", err)
+		}
+
+		root := findRepoRoot(t)
+		if !bytes.Equal(normalizeOutput(root, bytes.TrimSpace(rubyOut)), normalizeOutput(root, bytes.TrimSpace(buf.Bytes()))) {
+			return nil, fmt.Errorf("runtime output mismatch\n\n--- VM ---\n%s\n\n--- Ruby ---\n%s\n", buf.Bytes(), rubyOut)
+		}
+		return bytes.TrimSpace(code), nil
+	}
+
+	root := findRepoRoot(t)
+	pattern := filepath.Join(root, "tests", "compiler", "valid", "*.mochi")
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		t.Fatalf("glob error: %v", err)
+	}
+	skip := map[string]bool{
+		"generate_echo":      true,
+		"generate_embedding": true,
+		"test_block":         true,
+		"stream_on_emit":     true,
+		"local_recursion":    true,
+		"reduce":             true,
+		"union_inorder":      true,
+		"union_match":        true,
+	}
+	update := flag.Lookup("update") != nil && flag.Lookup("update").Value.String() == "true"
+	for _, src := range files {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		if skip[name] {
+			continue
+		}
+		wantPath := filepath.Join(root, "tests", "compiler", "valid", name+".rb.out")
+		t.Run(name, func(t *testing.T) {
+			out, err := runCompile(src)
+			if err != nil {
+				t.Fatalf("%v", err)
+			}
+			out = normalizeOutput(root, out)
+			if update {
+				if err := os.WriteFile(wantPath, out, 0644); err != nil {
+					t.Fatalf("write golden: %v", err)
+				}
+				t.Logf("updated: %s", wantPath)
+				return
+			}
+			want, err := os.ReadFile(wantPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(out, normalizeOutput(root, want)) {
+				t.Errorf("golden mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, out, want)
+			}
+		})
+	}
 }
 
 func TestRBCompiler_TPCHQ1(t *testing.T) {
@@ -489,4 +594,19 @@ func findRepoRoot(t *testing.T) string {
 	}
 	t.Fatal("go.mod not found (not in Go module)")
 	return ""
+}
+
+func normalizeOutput(root string, b []byte) []byte {
+	out := string(b)
+	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+	out = durRE.ReplaceAllString(out, "(X)")
+	out = strings.TrimSpace(out)
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return []byte(out)
 }

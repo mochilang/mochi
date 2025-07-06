@@ -1,0 +1,7 @@
+m = {}
+m[1] = 10
+m[2] = 20
+if m.key?(1)
+  puts([m[1]].join(" "))
+end
+puts([m[2]].join(" "))
