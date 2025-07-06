@@ -57,11 +57,14 @@ func tsFunctionBody(src string) []string {
 			}
 			continue
 		case strings.HasPrefix(s, "console.log("):
-			end := strings.Index(s, ")")
+			open := strings.Index(s, "(")
+			end := findMatch(s, open, '(', ')')
 			if end == -1 {
 				end = len(s)
 			}
 			expr := strings.TrimSpace(s[len("console.log("):end])
+			expr = strings.TrimSuffix(expr, ",")
+			expr = strings.TrimSpace(expr)
 			lines = append(lines, "print("+expr+")")
 			sem := strings.Index(s[end:], ";")
 			if sem != -1 {

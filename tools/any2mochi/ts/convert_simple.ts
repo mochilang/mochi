@@ -211,8 +211,10 @@ function tsFunctionBody(src: string): string[] {
       continue;
     }
     if (s.startsWith('console.log(')) {
-      const end = s.indexOf(')');
-      const expr = s.slice(12, end === -1 ? undefined : end).trim();
+      const open = s.indexOf('(');
+      const end = findMatch(s, open, '(', ')');
+      const exprRaw = s.slice(12, end === -1 ? undefined : end).trim();
+      const expr = exprRaw.replace(/,\s*$/, '').trim();
       lines.push(`print(${expr})`);
       const sem = s.slice(end).indexOf(';');
       if (sem !== -1) {
