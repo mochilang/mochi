@@ -1,1 +1,1 @@
-print(tostring(123))
+print("123")

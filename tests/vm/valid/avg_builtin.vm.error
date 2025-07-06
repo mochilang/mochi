@@ -1,5 +1,5 @@
-error[T003]: unknown function: __values
-  --> :2:7
+error[T003]: unknown function: float64
+  --> :7:15
 
 help:
   Ensure the function is defined before it's called.

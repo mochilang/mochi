@@ -1,18 +1,20 @@
-let nums = [1, 2]
-let letters = ["A", "B"]
-let bools = [true, false]
-let combos = fun() {
-    let _res = []
-    for _, n in ipairs(nums) {
-      for _, l in ipairs(letters) {
-        for _, b in ipairs(bools) {
-          _res[len(_res) + 1] = { "n": n, "l": l, "b": b }
-        }
-      }
-    }
-    return _res
+var nums = [1, 2]
+var letters = ["A", "B"]
+_ = letters
+var bools = [true, false]
+_ = bools
+var combos = fun (): list<map<string, any>> {
+  var _res = []
+  for n in nums {
+  for l in letters {
+  for b in bools {
+  _res = append(_res, {"n": n, "l": l, "b": b})
+}
+}
+}
+  return _res
 }()
 print("--- Cross Join of three lists ---")
-for _, c in ipairs(combos) {
-  print(c["n"], c["l"], c["b"])
+for c in combos {
+  print(str(c["n"]) + " " + str(c["l"]) + " " + str(c["b"]))
 }

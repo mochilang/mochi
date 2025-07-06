@@ -1,11 +1,13 @@
-let data = [1, 2]
-let flag = __exists(fun() {
-    let _res = []
-    for _, x in ipairs(data) {
-      if (x == 1) {
-        _res[len(_res) + 1] = x
-      }
-    }
-    return _res
-}())
+var data = [1, 2]
+var flag = len(fun (): list<int> {
+  var _res = []
+  for x in data {
+  if x == 1 {
+  if x == 1 {
+  _res = append(_res, x)
+}
+}
+}
+  return _res
+}()) > 0
 print(flag)
