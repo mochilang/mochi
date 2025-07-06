@@ -1,8 +1,8 @@
-fun twoSum(nums: any, target: any) {
+fun twoSum(nums: list<int>, target: int): list<int> {
   let n = len(nums)
   for i in 0..n {
     for j in i + 1..n {
-      if nums[i] + nums[j] == target {
+      if (nums[i] + nums[j] == target) {
         return [i, j]
       }
     }
@@ -14,3 +14,4 @@ fun main() {
   print(result[0])
   print(result[1])
 }
+
