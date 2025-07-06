@@ -3,11 +3,19 @@ package cs
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	cscode "mochi/compile/x/cs"
 	any2mochi "mochi/tools/any2mochi"
 )
+
+var (
+	longLit   = regexp.MustCompile(`\b([0-9]+)L\b`)
+	varDeclRE = regexp.MustCompile(`^([A-Za-z0-9_<>\[\]]+)\s+([A-Za-z_][A-Za-z0-9_]*)\s*=`)
+)
+
+func stripLong(s string) string { return longLit.ReplaceAllString(s, "$1") }
 
 // Convert converts C# source code to Mochi using the language server.
 func Convert(src string) ([]byte, error) {
@@ -120,11 +128,25 @@ func convertBodyLines(body []string) []string {
 		if strings.HasSuffix(l, ";") {
 			l = strings.TrimSuffix(l, ";")
 		}
+		l = stripLong(l)
 		switch {
 		case strings.HasPrefix(l, "Console.WriteLine("):
 			l = "print(" + strings.TrimPrefix(strings.TrimSuffix(l, ")"), "Console.WriteLine(") + ")"
 		case strings.HasPrefix(l, "return "):
 			l = "return " + strings.TrimSpace(strings.TrimPrefix(l, "return "))
+		case strings.HasPrefix(l, "foreach ("):
+			inner := strings.TrimPrefix(l, "foreach (")
+			inner = strings.TrimSuffix(inner, ") {")
+			parts := strings.SplitN(inner, " in ", 2)
+			if len(parts) == 2 {
+				varName := strings.TrimSpace(parts[0])
+				fs := strings.Fields(varName)
+				if len(fs) > 1 {
+					varName = fs[len(fs)-1]
+				}
+				iter := strings.TrimSpace(parts[1])
+				l = fmt.Sprintf("for %s in %s {", varName, iter)
+			}
 		case strings.HasPrefix(l, "for (") && strings.Contains(l, ";") && strings.Contains(l, ")"):
 			l = strings.TrimPrefix(l, "for (")
 			l = strings.TrimSuffix(l, ") {")
@@ -138,11 +160,11 @@ func convertBodyLines(body []string) []string {
 				if eq := strings.Index(init, "="); eq != -1 {
 					name := strings.TrimSpace(init[:eq])
 					startVal := strings.TrimSpace(init[eq+1:])
-					startVal = strings.TrimSuffix(startVal, "L")
+					startVal = stripLong(startVal)
 					endVal := ""
 					if idx := strings.Index(cond, "<"); idx != -1 {
 						endVal = strings.TrimSpace(cond[idx+1:])
-						endVal = strings.TrimSuffix(endVal, "L")
+						endVal = stripLong(endVal)
 					}
 					l = fmt.Sprintf("for %s in %s..%s {", name, startVal, endVal)
 				}
@@ -150,28 +172,34 @@ func convertBodyLines(body []string) []string {
 		case strings.HasPrefix(l, "while ("):
 			l = strings.TrimPrefix(l, "while (")
 			l = strings.TrimSuffix(l, ") {")
-			l = strings.ReplaceAll(l, "L", "")
+			l = stripLong(l)
 			l = "while " + l + " {"
 		case strings.HasPrefix(l, "if ("):
 			l = strings.TrimPrefix(l, "if (")
 			l = strings.TrimSuffix(l, ") {")
-			l = strings.ReplaceAll(l, "L", "")
+			l = stripLong(l)
 			l = "if " + l + " {"
 		case l == "}" || l == "} else {":
 			// keep as is
 		default:
-			for _, t := range []string{"long ", "int ", "float ", "double ", "string ", "bool "} {
-				if strings.HasPrefix(l, t) {
-					l = strings.TrimPrefix(l, t)
-					if strings.HasPrefix(t, "string") {
-						l = "var " + l
-					} else {
-						l = "var " + strings.ReplaceAll(l, "L", "")
+			if m := varDeclRE.FindStringSubmatch(l); m != nil {
+				name := m[2]
+				rest := strings.TrimSpace(l[len(m[0]):])
+				l = "var " + name + " = " + rest
+			} else {
+				for _, t := range []string{"long ", "int ", "float ", "double ", "string ", "bool "} {
+					if strings.HasPrefix(l, t) {
+						l = strings.TrimPrefix(l, t)
+						if strings.HasPrefix(t, "string") {
+							l = "var " + l
+						} else {
+							l = "var " + stripLong(l)
+						}
+						break
 					}
-					break
 				}
+				l = stripLong(l)
 			}
-			l = strings.ReplaceAll(l, "L", "")
 		}
 		out = append(out, l)
 	}
@@ -560,11 +588,25 @@ func convertBody(src string, r any2mochi.Range) []string {
 		if strings.HasSuffix(l, ";") {
 			l = strings.TrimSuffix(l, ";")
 		}
+		l = stripLong(l)
 		switch {
 		case strings.HasPrefix(l, "Console.WriteLine("):
 			l = "print(" + strings.TrimPrefix(strings.TrimSuffix(l, ")"), "Console.WriteLine(") + ")"
 		case strings.HasPrefix(l, "return "):
 			l = "return " + strings.TrimSpace(strings.TrimPrefix(l, "return "))
+		case strings.HasPrefix(l, "foreach ("):
+			inner := strings.TrimPrefix(l, "foreach (")
+			inner = strings.TrimSuffix(inner, ") {")
+			parts := strings.SplitN(inner, " in ", 2)
+			if len(parts) == 2 {
+				varName := strings.TrimSpace(parts[0])
+				fs := strings.Fields(varName)
+				if len(fs) > 1 {
+					varName = fs[len(fs)-1]
+				}
+				iter := strings.TrimSpace(parts[1])
+				l = fmt.Sprintf("for %s in %s {", varName, iter)
+			}
 		case strings.HasPrefix(l, "for (") && strings.Contains(l, ";") && strings.Contains(l, ")"):
 			l = strings.TrimPrefix(l, "for (")
 			l = strings.TrimSuffix(l, ") {")
@@ -578,11 +620,11 @@ func convertBody(src string, r any2mochi.Range) []string {
 				if eq := strings.Index(init, "="); eq != -1 {
 					name := strings.TrimSpace(init[:eq])
 					startVal := strings.TrimSpace(init[eq+1:])
-					startVal = strings.TrimSuffix(startVal, "L")
+					startVal = stripLong(startVal)
 					endVal := ""
 					if idx := strings.Index(cond, "<"); idx != -1 {
 						endVal = strings.TrimSpace(cond[idx+1:])
-						endVal = strings.TrimSuffix(endVal, "L")
+						endVal = stripLong(endVal)
 					}
 					l = fmt.Sprintf("for %s in %s..%s {", name, startVal, endVal)
 				}
@@ -590,28 +632,34 @@ func convertBody(src string, r any2mochi.Range) []string {
 		case strings.HasPrefix(l, "while ("):
 			l = strings.TrimPrefix(l, "while (")
 			l = strings.TrimSuffix(l, ") {")
-			l = strings.ReplaceAll(l, "L", "")
+			l = stripLong(l)
 			l = "while " + l + " {"
 		case strings.HasPrefix(l, "if ("):
 			l = strings.TrimPrefix(l, "if (")
 			l = strings.TrimSuffix(l, ") {")
-			l = strings.ReplaceAll(l, "L", "")
+			l = stripLong(l)
 			l = "if " + l + " {"
 		case l == "}" || l == "} else {":
 			// keep as is
 		default:
-			for _, t := range []string{"long ", "int ", "float ", "double ", "string ", "bool "} {
-				if strings.HasPrefix(l, t) {
-					l = strings.TrimPrefix(l, t)
-					if strings.HasPrefix(t, "string") {
-						l = "var " + l
-					} else {
-						l = "var " + strings.ReplaceAll(l, "L", "")
+			if m := varDeclRE.FindStringSubmatch(l); m != nil {
+				name := m[2]
+				rest := strings.TrimSpace(l[len(m[0]):])
+				l = "var " + name + " = " + rest
+			} else {
+				for _, t := range []string{"long ", "int ", "float ", "double ", "string ", "bool "} {
+					if strings.HasPrefix(l, t) {
+						l = strings.TrimPrefix(l, t)
+						if strings.HasPrefix(t, "string") {
+							l = "var " + l
+						} else {
+							l = "var " + stripLong(l)
+						}
+						break
 					}
-					break
 				}
+				l = stripLong(l)
 			}
-			l = strings.ReplaceAll(l, "L", "")
 		}
 		out = append(out, l)
 	}
