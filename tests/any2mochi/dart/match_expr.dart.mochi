@@ -1,6 +1,6 @@
 fun main() {
-  dynamic x = 2
-  dynamic label = (() {
+  let x = 2
+  let label = (() {
   let _t = x
   if (_t == 1) { return "one"; }
   if (_t == 2) { return "two"; }

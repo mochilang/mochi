@@ -1,5 +1,5 @@
 fun main() {
-  dynamic m = {}
+  let m = {}
   m[1] = 10
   m[2] = 20
   if ((m.containsKey(1))) {

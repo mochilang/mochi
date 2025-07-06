@@ -1,4 +1,4 @@
 fun main() {
-  dynamic todo = {"title": "hi"}
+  let todo = {"title": "hi"}
   print(todo.title)
 }

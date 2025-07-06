@@ -1,5 +1,5 @@
 fun main() {
-  String text = "hello"
+  let text: string = "hello"
   print(_indexString(text, (-1).toInt()))
 }
 fun _indexString(s: string, i: int): string {

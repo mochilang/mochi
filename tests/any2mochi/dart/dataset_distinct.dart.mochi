@@ -1,6 +1,6 @@
 fun main() {
-  List<int> nums = [1, 2, 2, 3, 1, 3]
-  List<int> unique = (() {
+  let nums: list<int> = [1, 2, 2, 3, 1, 3]
+  let unique: list<int> = (() {
   let _res = []
   for (var n in nums) {
     _res.add(n)

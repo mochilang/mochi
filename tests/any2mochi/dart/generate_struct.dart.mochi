@@ -1,4 +1,4 @@
 fun main() {
-  Info info = _genStruct<Info>("{\"msg\": \"hello\"}", "", null)
+  let info: Info = _genStruct<Info>("{\"msg\": \"hello\"}", "", null)
   print(info.msg)
 }

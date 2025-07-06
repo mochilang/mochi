@@ -4,7 +4,7 @@ fun helper(lo: any, hi: any): any {
   if ((lo >= hi)) {
     return Leaf()
   }
-  dynamic mid = (((lo + hi)) ~/ 2)
+  let mid = (((lo + hi)) ~/ 2)
   return Node(left: helper(lo, mid), value: nums[mid], right: helper((mid + 1), hi))
 }
 fun inorder(t: any): any {

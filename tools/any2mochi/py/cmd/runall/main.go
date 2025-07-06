@@ -59,16 +59,23 @@ func unifiedDiff(a, b string) string {
 	var buf bytes.Buffer
 	al := strings.Split(a, "\n")
 	bl := strings.Split(b, "\n")
-	for i := range al {
-		if i >= len(bl) || al[i] != bl[i] {
-			fmt.Fprintf(&buf, "- %s\n", al[i])
-			if i < len(bl) {
-				fmt.Fprintf(&buf, "+ %s\n", bl[i])
-			}
-		}
+	max := len(al)
+	if len(bl) > max {
+		max = len(bl)
 	}
-	for i := len(al); i < len(bl); i++ {
-		fmt.Fprintf(&buf, "+ %s\n", bl[i])
+	for i := 0; i < max; i++ {
+		av := ""
+		if i < len(al) {
+			av = al[i]
+		}
+		bv := ""
+		if i < len(bl) {
+			bv = bl[i]
+		}
+		if av != bv {
+			fmt.Fprintf(&buf, "-%3d| %s\n", i+1, av)
+			fmt.Fprintf(&buf, "+%3d| %s\n", i+1, bv)
+		}
 	}
 	return buf.String()
 }

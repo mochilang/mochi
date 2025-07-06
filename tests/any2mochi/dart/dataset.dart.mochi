@@ -1,6 +1,6 @@
 fun main() {
-  List<Person> people = [Person(name: "Alice", age: 30), Person(name: "Bob", age: 15), Person(name: "Charlie", age: 65)]
-  List<String> names = (() {
+  let people: list<Person> = [Person(name: "Alice", age: 30), Person(name: "Bob", age: 15), Person(name: "Charlie", age: 65)]
+  let names: list<string> = (() {
   let _res = []
   let _src = (people).where((p) => (p.age >= 18)).toList()
   for (var p in _src) {

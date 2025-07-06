@@ -1,4 +1,4 @@
 fun main() {
-  dynamic map = {"a": 1}
+  let map = {"a": 1}
   print(map["a"])
 }
