@@ -30,7 +30,18 @@ func snippetFromFile(path string) string {
 	return strings.Join(lines, "\n")
 }
 
-var update = flag.Bool("update", false, "update golden files")
+var update *bool
+
+func init() {
+	if flag.Lookup("update") == nil {
+		update = flag.Bool("update", false, "update golden files")
+	} else {
+		// fallback dummy flag to avoid redefinition panic when another
+		// package already defined the update flag
+		v := false
+		update = &v
+	}
+}
 
 func readGolden(path string, alts ...string) ([]byte, error) {
 	if data, err := os.ReadFile(path); err == nil {
