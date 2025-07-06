@@ -93,7 +93,11 @@ func TestTSCompiler_SubsetPrograms(t *testing.T) {
 }
 
 func TestTSCompiler_GoldenOutput(t *testing.T) {
-	golden.Run(t, "tests/compiler/valid", ".mochi", ".ts.out", func(src string) ([]byte, error) {
+	if err := tscode.EnsureDeno(); err != nil {
+		t.Skipf("deno not installed: %v", err)
+	}
+
+	compileRun := func(t *testing.T, src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -111,27 +115,38 @@ func TestTSCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ compile error: %w", err)
 		}
+
+		// Verify the emitted code can run correctly.
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.ts")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", file)
+		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("❌ deno run error: %w\n%s", err, out)
+		}
+		gotOut := bytes.TrimSpace(out)
+		wantOut, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".out")
+		if err == nil {
+			if want := bytes.TrimSpace(wantOut); !bytes.Equal(gotOut, want) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", filepath.Base(src), gotOut, want)
+			}
+		}
+
 		return bytes.TrimSpace(code), nil
+	}
+
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".ts.out", func(src string) ([]byte, error) {
+		return compileRun(t, src)
 	})
 	golden.Run(t, "tests/compiler/ts", ".mochi", ".ts.out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
-		if err != nil {
-			return nil, fmt.Errorf("❌ parse error: %w", err)
-		}
-		typeEnv := types.NewEnv(nil)
-		if errs := types.Check(prog, typeEnv); len(errs) > 0 {
-			return nil, fmt.Errorf("❌ type error: %v", errs[0])
-		}
-		modRoot, _ := mod.FindRoot(filepath.Dir(src))
-		if modRoot == "" {
-			modRoot = filepath.Dir(src)
-		}
-		c := tscode.New(typeEnv, modRoot)
-		code, err := c.Compile(prog)
-		if err != nil {
-			return nil, fmt.Errorf("❌ compile error: %w", err)
-		}
-		return bytes.TrimSpace(code), nil
+		return compileRun(t, src)
 	})
 }
 
@@ -372,7 +387,7 @@ func TestTSCompiler_SLTQueries(t *testing.T) {
 		t.Skipf("deno not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-    cases := []string{"case1", "case2", "case3", "case4", "case5"}
+	cases := []string{"case1", "case2", "case3", "case4", "case5"}
 	for _, base := range cases {
 		src := filepath.Join(root, "tests", "dataset", "slt", "out", "select1", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "slt", "compiler", "ts", base+".ts.out")
