@@ -423,7 +423,10 @@ func convertBody(src string, r any2mochi.Range) []string {
 			}
 		default:
 			decl := false
-			for _, pre := range []string{"int ", "float ", "double ", "bool ", "std::string ", "string ", "auto "} {
+			if strings.HasPrefix(l, "const ") {
+				l = strings.TrimPrefix(l, "const ")
+			}
+			for _, pre := range []string{"int ", "float ", "double ", "long ", "unsigned ", "bool ", "std::string ", "string ", "auto "} {
 				if strings.HasPrefix(l, pre) {
 					l = strings.TrimPrefix(l, pre)
 					decl = true
@@ -431,8 +434,8 @@ func convertBody(src string, r any2mochi.Range) []string {
 				}
 			}
 			if !decl {
-				// handle templated containers like vector<int> or map<string,int>
-				for _, pre := range []string{"std::vector<", "vector<", "std::map<", "std::unordered_map<", "map<", "unordered_map<", "std::set<", "set<"} {
+				// handle templated containers like vector<int> or map<string,int> or array<int, N>
+				for _, pre := range []string{"std::vector<", "vector<", "std::map<", "std::unordered_map<", "map<", "unordered_map<", "std::set<", "set<", "std::array<", "array<"} {
 					if strings.HasPrefix(l, pre) {
 						if idx := strings.Index(l, ">"); idx != -1 {
 							l = strings.TrimSpace(l[idx+1:])
