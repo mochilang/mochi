@@ -163,6 +163,53 @@ func TestLuaCompiler_GoldenOutput(t *testing.T) {
 			if err != nil {
 				return nil, fmt.Errorf("❌ compile error: %w", err)
 			}
+
+			tmp := t.TempDir()
+			file := filepath.Join(tmp, "main.lua")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				return nil, fmt.Errorf("write error: %w", err)
+			}
+
+			var input []byte
+			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				input = data
+			}
+
+			cmd := exec.Command("lua", file)
+			if len(input) > 0 {
+				cmd.Stdin = bytes.NewReader(input)
+			}
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				return nil, fmt.Errorf("lua run error: %w\n%s", err, out)
+			}
+			got := bytes.TrimSpace(out)
+
+			p, err := vm.Compile(prog, env)
+			if err != nil {
+				return nil, fmt.Errorf("vm compile error: %w", err)
+			}
+			var vmOut bytes.Buffer
+			m := vm.NewWithIO(p, bytes.NewReader(input), &vmOut)
+			if err := m.Run(); err != nil {
+				if ve, ok := err.(*vm.VMError); ok {
+					return nil, fmt.Errorf("vm run error:\n%s", ve.Format(p))
+				}
+				return nil, fmt.Errorf("vm run error: %v", err)
+			}
+			want := bytes.TrimSpace(vmOut.Bytes())
+
+			updateFlag := flag.Lookup("update")
+			update := updateFlag != nil && updateFlag.Value.String() == "true"
+			wantPath := filepath.Join(dir, strings.TrimSuffix(filepath.Base(src), ".mochi")+".out")
+			if update {
+				os.WriteFile(wantPath, want, 0644)
+			}
+
+			if !bytes.Equal(got, want) {
+				return nil, fmt.Errorf("output mismatch for %s\n\n--- VM ---\n%s\n\n--- Lua ---\n%s\n", filepath.Base(src), want, got)
+			}
+
 			return bytes.TrimSpace(code), nil
 		})
 	}
