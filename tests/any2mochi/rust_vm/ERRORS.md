@@ -111,16 +111,12 @@ help:
 - str_builtin: parse error: parse error: 2:15: unexpected token "!" (expected ")")
 - string_compare: ok
 - string_concat: parse error: parse error: 2:15: unexpected token "!" (expected ")")
-- string_contains: type error: error[T004]: `` is not callable
-  --> :2:28
+- string_contains: ok
+- string_in_operator: type error: error[T003]: unknown function: _in_string
+  --> :3:9
 
 help:
-  Use a function or closure in this position.
-- string_in_operator: type error: error[T004]: `` is not callable
-  --> :2:28
-
-help:
-  Use a function or closure in this position.
+  Ensure the function is defined before it's called.
 - string_index: parse error: parse error: 3:19: lexer: invalid input text "&s; let mut idx ..."
 - string_prefix_slice: parse error: parse error: 14:11: unexpected token "=" (expected PostfixExpr)
 - substring_builtin: ok
@@ -133,11 +129,7 @@ help:
 - typed_var: parse error: parse error: 2:23: unexpected token ":" (expected "}")
 - unary_neg: ok
 - update_stmt: compile error: unsupported statement at 14:1
-- user_type_literal: type error: error[T004]: `` is not callable
-  --> :10:42
-
-help:
-  Use a function or closure in this position.
+- user_type_literal: ok
 - values_builtin: parse error: parse error: 2:14: unexpected token ":" (expected "}")
 - var_assignment: ok
 - while_loop: ok

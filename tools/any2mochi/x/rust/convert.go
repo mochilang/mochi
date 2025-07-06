@@ -347,13 +347,38 @@ func convertBoxNew(code string) (string, bool) {
 }
 
 func sanitizeExpr(code string) string {
+	code = strings.TrimSpace(code)
+
+	// drop reference/deref prefixes often produced by the compiler
+	for {
+		changed := false
+		if strings.HasPrefix(code, "&") {
+			code = strings.TrimSpace(strings.TrimPrefix(code, "&"))
+			changed = true
+		}
+		if strings.HasPrefix(code, "mut ") {
+			code = strings.TrimSpace(strings.TrimPrefix(code, "mut "))
+			changed = true
+		}
+		if strings.HasPrefix(code, "*") {
+			code = strings.TrimSpace(strings.TrimPrefix(code, "*"))
+			changed = true
+		}
+		if !changed {
+			break
+		}
+	}
+
 	if v, ok := convertVecMacro(code); ok {
-		return v
+		code = v
+	} else if v, ok := convertBoxNew(code); ok {
+		code = v
 	}
-	if v, ok := convertBoxNew(code); ok {
-		return v
-	}
+
 	code = strings.ReplaceAll(code, ".to_vec()", "")
+	code = strings.ReplaceAll(code, ".clone()", "")
+	code = strings.ReplaceAll(code, ".to_string()", "")
+
 	return code
 }
 
@@ -565,6 +590,11 @@ func fallbackRustBody(body string, level int) []string {
 	for _, line := range strings.Split(body, "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" {
+			continue
+		}
+		if strings.HasPrefix(line, "#") {
+			// skip attributes and macros like #[derive(...)] that are
+			// not valid Mochi syntax
 			continue
 		}
 		line = strings.TrimSuffix(line, ";")
