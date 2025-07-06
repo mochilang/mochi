@@ -1,20 +1,20 @@
-package any2mochi
+package hs
 
 import "strings"
 
-// hsItem represents a minimal Haskell AST item produced by the hsast CLI.
-type hsItem struct {
+// Item represents a minimal Haskell AST item parsed from source code.
+type Item struct {
 	Kind   string   `json:"kind"`
 	Name   string   `json:"name,omitempty"`
 	Params []string `json:"params,omitempty"`
 	Body   string   `json:"body,omitempty"`
 }
 
-// ParseHsAST parses a very small subset of Haskell source and returns a slice
-// of hsItems describing top level declarations.
-func ParseHsAST(src string) []hsItem {
+// Parse parses a very small subset of Haskell source and returns a slice
+// of Items describing top level declarations.
+func Parse(src string) []Item {
 	lines := strings.Split(src, "\n")
-	var items []hsItem
+	var items []Item
 	for i, line := range lines {
 		l := strings.TrimSpace(line)
 		if strings.HasPrefix(l, "main =") {
@@ -24,14 +24,14 @@ func ParseHsAST(src string) []hsItem {
 				if strings.HasPrefix(next, "putStrLn") {
 					arg := strings.TrimSpace(strings.TrimPrefix(next, "putStrLn"))
 					arg = strings.Trim(arg, "()")
-					items = append(items, hsItem{Kind: "print", Body: arg})
+					items = append(items, Item{Kind: "print", Body: arg})
 				}
 				continue
 			}
 			if strings.HasPrefix(body, "putStrLn") {
 				arg := strings.TrimSpace(strings.TrimPrefix(body, "putStrLn"))
 				arg = strings.Trim(arg, "()")
-				items = append(items, hsItem{Kind: "print", Body: arg})
+				items = append(items, Item{Kind: "print", Body: arg})
 			}
 			continue
 		}
@@ -46,14 +46,14 @@ func ParseHsAST(src string) []hsItem {
 			if strings.HasPrefix(body, "do") {
 				continue
 			}
-			items = append(items, hsItem{Kind: "func", Name: name, Params: params, Body: body})
+			items = append(items, Item{Kind: "func", Name: name, Params: params, Body: body})
 		}
 	}
 	return items
 }
 
-// convertHsItems converts the Haskell AST items to Mochi source code.
-func convertHsItems(items []hsItem) []byte {
+// convertItems converts the Haskell AST items to Mochi source code.
+func convertItems(items []Item) []byte {
 	var out strings.Builder
 	for _, it := range items {
 		switch it.Kind {

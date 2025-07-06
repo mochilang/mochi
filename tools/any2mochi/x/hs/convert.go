@@ -1,99 +1,134 @@
-package any2mochi
+package hs
 
 import (
-	"bytes"
-	"context"
+	any2mochi "mochi/tools/any2mochi"
+
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
-	"time"
 )
 
-// ConvertHs converts hs source code to Mochi using the language server.
-func ConvertHs(src string) ([]byte, error) {
-	ls := Servers["hs"]
-	syms, diags, err := EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
+func snippet(src string) string {
+	lines := strings.Split(src, "\n")
+	if len(lines) > 10 {
+		lines = lines[:10]
+	}
+	for i, l := range lines {
+		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func diagnostics(src string, diags []any2mochi.Diagnostic) string {
+	lines := strings.Split(src, "\n")
+	var out strings.Builder
+	for _, d := range diags {
+		start := int(d.Range.Start.Line)
+		msg := d.Message
+		line := ""
+		if start < len(lines) {
+			line = strings.TrimSpace(lines[start])
+		}
+		out.WriteString(fmt.Sprintf("line %d: %s\n  %s\n", start+1, msg, line))
+	}
+	return strings.TrimSpace(out.String())
+}
+
+func hoverString(h any2mochi.Hover) string {
+	switch v := h.Contents.(type) {
+	case any2mochi.MarkupContent:
+		return v.Value
+	case any2mochi.MarkedString:
+		b, err := json.Marshal(v)
+		if err == nil {
+			var ms any2mochi.MarkedStringStruct
+			if err := json.Unmarshal(b, &ms); err == nil {
+				if ms.Value != "" {
+					return ms.Value
+				}
+			}
+			var s string
+			if err := json.Unmarshal(b, &s); err == nil {
+				return s
+			}
+		}
+		return ""
+	case []any2mochi.MarkedString:
+		parts := make([]string, 0, len(v))
+		for _, m := range v {
+			parts = append(parts, hoverString(any2mochi.Hover{Contents: m}))
+		}
+		return strings.Join(parts, "\n")
+	case string:
+		return v
+	default:
+		return fmt.Sprint(v)
+	}
+}
+
+// Convert converts Haskell source code to Mochi using the language server.
+func Convert(src string) ([]byte, error) {
+	ls := any2mochi.Servers["hs"]
+	syms, diags, err := any2mochi.EnsureAndParse(ls.Command, ls.Args, ls.LangID, src)
 	if err != nil || len(diags) > 0 {
-		if items, err2 := parseHsCLI(src); err2 == nil {
-			if out := convertHsItems(items); out != nil {
+		if items, err2 := parseCLI(src); err2 == nil {
+			if out := convertItems(items); out != nil {
 				return out, nil
 			}
 		}
-		if out := parseSimpleHs(src); out != nil {
+		if out := parseSimple(src); out != nil {
 			return out, nil
 		}
 		if err != nil {
 			return nil, err
 		}
-		return nil, fmt.Errorf("%s", formatDiagnostics(src, diags))
+		return nil, fmt.Errorf("%s", diagnostics(src, diags))
 	}
 	var out strings.Builder
-	writeHsSymbols(&out, nil, syms, src, ls)
+	writeSymbols(&out, nil, syms, src, ls)
 	if out.Len() == 0 {
-		if items, err2 := parseHsCLI(src); err2 == nil {
-			if res := convertHsItems(items); res != nil {
+		if items, err2 := parseCLI(src); err2 == nil {
+			if res := convertItems(items); res != nil {
 				return res, nil
 			}
 		}
-		if simple := parseSimpleHs(src); simple != nil {
+		if simple := parseSimple(src); simple != nil {
 			return simple, nil
 		}
-		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", numberedSnippet(src))
+		return nil, fmt.Errorf("no convertible symbols found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return []byte(out.String()), nil
 }
 
-// ConvertHsFile reads the hs file and converts it to Mochi.
-func ConvertHsFile(path string) ([]byte, error) {
+// ConvertFile reads the file and converts it to Mochi.
+func ConvertFile(path string) ([]byte, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return ConvertHs(string(data))
+	return Convert(string(data))
 }
 
-// parseHsCLI invokes the hsast CLI to parse the Haskell source into hsItems.
-func parseHsCLI(src string) ([]hsItem, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	path, err := exec.LookPath("hsast")
-	if err != nil {
-		path = "go"
-	}
-	var args []string
-	if path == "go" {
-		args = []string{"run", "./tools/any2mochi/cmd/hsast"}
-	}
-	cmd := exec.CommandContext(ctx, path, args...)
-	cmd.Stdin = strings.NewReader(src)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if err := cmd.Run(); err != nil {
-		return nil, err
-	}
-	var items []hsItem
-	if err := json.Unmarshal(out.Bytes(), &items); err != nil {
-		return nil, err
-	}
-	return items, nil
+// parseCLI parses the source using the built-in parser and returns the items.
+func parseCLI(src string) ([]Item, error) {
+	return Parse(src), nil
 }
 
-func getHsSignature(src string, sym DocumentSymbol, ls LanguageServer) ([]string, string) {
+func getSignature(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) ([]string, string) {
 	if sym.Detail != nil {
-		if params, ret := parseHsSigTypes(*sym.Detail); len(params) > 0 || ret != "" {
+		if params, ret := parseSigTypes(*sym.Detail); len(params) > 0 || ret != "" {
 			return params, ret
 		}
 	}
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return nil, ""
 	}
-	return parseHsSigTypes(hoverString(hov))
+	return parseSigTypes(hoverString(hov))
 }
 
-func parseHsSigTypes(sig string) ([]string, string) {
+func parseSigTypes(sig string) ([]string, string) {
 	sig = strings.ReplaceAll(sig, "\n", " ")
 	if i := strings.Index(sig, "::"); i != -1 {
 		sig = strings.TrimSpace(sig[i+2:])
@@ -113,26 +148,26 @@ func parseHsSigTypes(sig string) ([]string, string) {
 	if len(parts) == 0 {
 		return nil, ""
 	}
-	ret := mapHsType(parts[len(parts)-1])
+	ret := mapType(parts[len(parts)-1])
 	params := make([]string, 0, len(parts)-1)
 	for _, p := range parts[:len(parts)-1] {
-		params = append(params, mapHsType(p))
+		params = append(params, mapType(p))
 	}
 	return params, ret
 }
 
-func extractHsParams(sym DocumentSymbol) []string {
+func extractParams(sym any2mochi.DocumentSymbol) []string {
 	start := sym.Range.Start.Line
 	var params []string
 	for _, c := range sym.Children {
-		if c.Kind == SymbolKindVariable && c.Range.Start.Line == start {
+		if c.Kind == any2mochi.SymbolKindVariable && c.Range.Start.Line == start {
 			params = append(params, c.Name)
 		}
 	}
 	return params
 }
 
-func combineHsParams(names, types []string) []string {
+func combineParams(names, types []string) []string {
 	params := make([]string, 0, len(names))
 	for i, n := range names {
 		t := ""
@@ -148,7 +183,7 @@ func combineHsParams(names, types []string) []string {
 	return params
 }
 
-func mapHsType(t string) string {
+func mapType(t string) string {
 	t = strings.TrimSpace(t)
 	switch t {
 	case "", "()":
@@ -163,7 +198,7 @@ func mapHsType(t string) string {
 		return "bool"
 	}
 	if strings.HasPrefix(t, "[") && strings.HasSuffix(t, "]") {
-		inner := mapHsType(strings.TrimSuffix(strings.TrimPrefix(t, "["), "]"))
+		inner := mapType(strings.TrimSuffix(strings.TrimPrefix(t, "["), "]"))
 		if inner == "" {
 			inner = "any"
 		}
@@ -172,7 +207,7 @@ func mapHsType(t string) string {
 	return t
 }
 
-func extractHsBody(src string, sym DocumentSymbol) string {
+func extractBody(src string, sym any2mochi.DocumentSymbol) string {
 	lines := strings.Split(src, "\n")
 	start := int(sym.Range.Start.Line)
 	end := int(sym.Range.End.Line)
@@ -193,20 +228,20 @@ func extractHsBody(src string, sym DocumentSymbol) string {
 	return ""
 }
 
-func writeHsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol, src string, ls LanguageServer) {
+func writeSymbols(out *strings.Builder, prefix []string, syms []any2mochi.DocumentSymbol, src string, ls any2mochi.LanguageServer) {
 	for _, s := range syms {
 		nameParts := prefix
 		if s.Name != "" {
 			nameParts = append(nameParts, s.Name)
 		}
 		switch s.Kind {
-		case SymbolKindNamespace, SymbolKindModule, SymbolKindPackage:
-			writeHsSymbols(out, nameParts, s.Children, src, ls)
+		case any2mochi.SymbolKindNamespace, any2mochi.SymbolKindModule, any2mochi.SymbolKindPackage:
+			writeSymbols(out, nameParts, s.Children, src, ls)
 			continue
-		case SymbolKindFunction, SymbolKindMethod:
-			names := extractHsParams(s)
-			types, ret := getHsSignature(src, s, ls)
-			params := combineHsParams(names, types)
+		case any2mochi.SymbolKindFunction, any2mochi.SymbolKindMethod:
+			names := extractParams(s)
+			types, ret := getSignature(src, s, ls)
+			params := combineParams(names, types)
 			out.WriteString("fun ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteByte('(')
@@ -221,7 +256,7 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				out.WriteString(": ")
 				out.WriteString(ret)
 			}
-			body := extractHsBody(src, s)
+			body := extractBody(src, s)
 			if body == "" {
 				out.WriteString(" {}\n")
 			} else {
@@ -229,27 +264,27 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				out.WriteString(body)
 				out.WriteString(" }\n")
 			}
-		case SymbolKindEnum:
+		case any2mochi.SymbolKindEnum:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind == SymbolKindEnumMember || (c.Kind == SymbolKindEnum && len(c.Children) == 0) {
+				if c.Kind == any2mochi.SymbolKindEnumMember || (c.Kind == any2mochi.SymbolKindEnum && len(c.Children) == 0) {
 					fmt.Fprintf(out, "  %s\n", c.Name)
 				}
 			}
 			out.WriteString("}\n")
-			var rest []DocumentSymbol
+			var rest []any2mochi.DocumentSymbol
 			for _, c := range s.Children {
-				if !(c.Kind == SymbolKindEnumMember || (c.Kind == SymbolKindEnum && len(c.Children) == 0)) {
+				if !(c.Kind == any2mochi.SymbolKindEnumMember || (c.Kind == any2mochi.SymbolKindEnum && len(c.Children) == 0)) {
 					rest = append(rest, c)
 				}
 			}
 			if len(rest) > 0 {
-				writeHsSymbols(out, nameParts, rest, src, ls)
+				writeSymbols(out, nameParts, rest, src, ls)
 			}
 			continue
-		case SymbolKindStruct, SymbolKindClass, SymbolKindInterface:
+		case any2mochi.SymbolKindStruct, any2mochi.SymbolKindClass, any2mochi.SymbolKindInterface:
 			out.WriteString("type ")
 			out.WriteString(strings.Join(nameParts, "."))
 			if len(s.Children) == 0 {
@@ -258,12 +293,12 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 			}
 			out.WriteString(" {\n")
 			for _, c := range s.Children {
-				if c.Kind != SymbolKindField {
+				if c.Kind != any2mochi.SymbolKindField {
 					continue
 				}
 				out.WriteString("  ")
 				out.WriteString(c.Name)
-				typ := hsFieldType(src, c, ls)
+				typ := fieldType(src, c, ls)
 				if typ != "" {
 					out.WriteString(": ")
 					out.WriteString(typ)
@@ -271,11 +306,11 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				out.WriteByte('\n')
 			}
 			out.WriteString("}\n")
-		case SymbolKindVariable, SymbolKindConstant:
+		case any2mochi.SymbolKindVariable, any2mochi.SymbolKindConstant:
 			if len(prefix) == 0 {
 				out.WriteString("let ")
 				out.WriteString(strings.Join(nameParts, "."))
-				typ := getHsVarType(src, s, ls)
+				typ := getVarType(src, s, ls)
 				if typ != "" {
 					out.WriteString(": ")
 					out.WriteString(typ)
@@ -283,41 +318,41 @@ func writeHsSymbols(out *strings.Builder, prefix []string, syms []DocumentSymbol
 				out.WriteByte('\n')
 			}
 		}
-		if len(s.Children) > 0 && s.Kind != SymbolKindStruct && s.Kind != SymbolKindClass && s.Kind != SymbolKindInterface {
-			writeHsSymbols(out, nameParts, s.Children, src, ls)
+		if len(s.Children) > 0 && s.Kind != any2mochi.SymbolKindStruct && s.Kind != any2mochi.SymbolKindClass && s.Kind != any2mochi.SymbolKindInterface {
+			writeSymbols(out, nameParts, s.Children, src, ls)
 		}
 	}
 }
 
-func getHsVarType(src string, sym DocumentSymbol, ls LanguageServer) string {
+func getVarType(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) string {
 	if sym.Detail != nil {
-		if _, ret := parseHsSigTypes(*sym.Detail); ret != "" {
+		if _, ret := parseSigTypes(*sym.Detail); ret != "" {
 			return ret
 		}
 	}
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	typ, _ := parseHsVarSig(hoverString(hov))
+	typ, _ := parseVarSig(hoverString(hov))
 	return typ
 }
 
-func hsFieldType(src string, sym DocumentSymbol, ls LanguageServer) string {
+func fieldType(src string, sym any2mochi.DocumentSymbol, ls any2mochi.LanguageServer) string {
 	if sym.Detail != nil && strings.TrimSpace(*sym.Detail) != "" {
-		if t, _ := parseHsVarSig(*sym.Detail); t != "" {
+		if t, _ := parseVarSig(*sym.Detail); t != "" {
 			return t
 		}
 	}
-	hov, err := EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
+	hov, err := any2mochi.EnsureAndHover(ls.Command, ls.Args, ls.LangID, src, sym.SelectionRange.Start)
 	if err != nil {
 		return ""
 	}
-	t, _ := parseHsVarSig(hoverString(hov))
+	t, _ := parseVarSig(hoverString(hov))
 	return t
 }
 
-func parseHsVarSig(sig string) (string, bool) {
+func parseVarSig(sig string) (string, bool) {
 	sig = strings.ReplaceAll(sig, "\n", " ")
 	if i := strings.Index(sig, "::"); i != -1 {
 		sig = strings.TrimSpace(sig[i+2:])
@@ -334,13 +369,13 @@ func parseHsVarSig(sig string) (string, bool) {
 	if sig == "" {
 		return "", false
 	}
-	return mapHsType(sig), true
+	return mapType(sig), true
 }
 
-// parseSimpleHs converts trivial Haskell programs without relying on
+// parseSimple converts trivial Haskell programs without relying on
 // the language server. It handles single line function definitions and
 // very small "main" functions using "putStrLn".
-func parseSimpleHs(src string) []byte {
+func parseSimple(src string) []byte {
 	lines := strings.Split(src, "\n")
 	for i, line := range lines {
 		l := strings.TrimSpace(line)
