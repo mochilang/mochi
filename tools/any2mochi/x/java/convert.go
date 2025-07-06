@@ -134,13 +134,13 @@ func convertJavaExpr(expr string, structs map[string][]string) string {
 		}
 	}
 
-	if strings.HasPrefix(expr, "_sliceString(") && strings.HasSuffix(expr, ")") {
-		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_sliceString("), ")")
-		parts := splitArgs(inner)
-		if len(parts) == 3 {
-			return convertJavaExpr(parts[0], structs) + "[" + convertJavaExpr(parts[1], structs) + ": " + convertJavaExpr(parts[2], structs) + "]"
-		}
-	}
+       if strings.HasPrefix(expr, "_sliceString(") && strings.HasSuffix(expr, ")") {
+               inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_sliceString("), ")")
+               parts := splitArgs(inner)
+               if len(parts) == 3 {
+                       return convertJavaExpr(parts[0], structs) + "[" + convertJavaExpr(parts[1], structs) + ":" + convertJavaExpr(parts[2], structs) + "]"
+               }
+       }
 
 	if strings.HasPrefix(expr, "_in(") && strings.HasSuffix(expr, ")") {
 		inner := strings.TrimSuffix(strings.TrimPrefix(expr, "_in("), ")")
