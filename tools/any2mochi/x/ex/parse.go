@@ -1,17 +1,21 @@
 package ex
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
 	"regexp"
 	"strings"
 )
 
 // Func represents a parsed Elixir function.
 type Func struct {
-	Name   string   `json:"name"`
-	Params []string `json:"params"`
-	Body   []string `json:"body"`
+	Name      string   `json:"name"`
+	Params    []string `json:"params"`
+	Body      []string `json:"body"`
+	StartLine int      `json:"start"`
+	EndLine   int      `json:"end"`
 }
 
 // AST is a collection of functions in a source file.
@@ -36,8 +40,29 @@ func parseParams(paramStr string) []string {
 	return out
 }
 
+func validateWithElixir(src string) error {
+	if _, err := exec.LookPath("elixir"); err != nil {
+		return nil
+	}
+	cmd := exec.Command("elixir", "-e", "Code.string_to_quoted!(IO.read(:stdio, :eof))")
+	cmd.Stdin = strings.NewReader(src)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		out := strings.TrimSpace(stderr.String())
+		if out == "" {
+			return err
+		}
+		return fmt.Errorf("%s", out)
+	}
+	return nil
+}
+
 // Parse parses a subset of Elixir into an AST structure.
 func Parse(src string) (*AST, error) {
+	if err := validateWithElixir(src); err != nil {
+		return nil, err
+	}
 	lines := strings.Split(src, "\n")
 	ast := &AST{}
 	for i := 0; i < len(lines); i++ {
@@ -49,18 +74,21 @@ func Parse(src string) (*AST, error) {
 		name := m[1]
 		params := parseParams(m[2])
 		var body []string
+		startLine := i + 1
+		endLine := startLine
 		for j := i + 1; j < len(lines); j++ {
 			l := strings.TrimSpace(lines[j])
 			if l == "end" {
+				endLine = j + 1
 				i = j
 				break
 			}
 			body = append(body, l)
 		}
-		ast.Funcs = append(ast.Funcs, Func{Name: name, Params: params, Body: body})
+		ast.Funcs = append(ast.Funcs, Func{Name: name, Params: params, Body: body, StartLine: startLine, EndLine: endLine})
 	}
 	if len(ast.Funcs) == 0 {
-		return nil, fmt.Errorf("no functions found")
+		return nil, fmt.Errorf("no functions found\n\nsource snippet:\n%s", snippet(src))
 	}
 	return ast, nil
 }
