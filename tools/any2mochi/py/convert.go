@@ -685,8 +685,21 @@ func convertFallback(src string) ([]byte, error) {
 			out.WriteString("fun ")
 			out.WriteString(it.Name)
 			out.WriteByte('(')
-			out.WriteString(strings.Join(it.Params, ", "))
+			for i, p := range it.Params {
+				if i > 0 {
+					out.WriteString(", ")
+				}
+				out.WriteString(p.Name)
+				if p.Type != "" {
+					out.WriteString(": ")
+					out.WriteString(mapType(p.Type))
+				}
+			}
 			out.WriteByte(')')
+			if it.Ret != "" && it.Ret != "None" {
+				out.WriteString(": ")
+				out.WriteString(mapType(it.Ret))
+			}
 			body := extractBody(src, it.Start, it.End)
 			if len(body) == 0 {
 				out.WriteString(" {}\n")
@@ -783,23 +796,42 @@ type fieldItem struct {
 	Type string `json:"type,omitempty"`
 }
 
+type paramItem struct {
+	Name string `json:"name"`
+	Type string `json:"type,omitempty"`
+}
+
 type item struct {
 	Kind   string      `json:"kind"`
 	Name   string      `json:"name"`
 	Fields []fieldItem `json:"fields,omitempty"`
-	Params []string    `json:"params,omitempty"`
+	Params []paramItem `json:"params,omitempty"`
+	Ret    string      `json:"ret,omitempty"`
 	Start  int         `json:"start,omitempty"`
 	End    int         `json:"end,omitempty"`
 	Value  string      `json:"value,omitempty"`
 }
 
 const parseScript = `import ast, json, sys
+
+def ann(node):
+    if node is None:
+        return ""
+    try:
+        return ast.unparse(node)
+    except Exception:
+        return ""
+
 tree = ast.parse(sys.stdin.read())
 items = []
 for n in tree.body:
     if isinstance(n, ast.FunctionDef):
+        params = []
+        for a in n.args.args:
+            if a.arg != "self":
+                params.append({"name": a.arg, "type": ann(a.annotation)})
         items.append({"kind": "func", "name": n.name,
-                       "params": [a.arg for a in n.args.args if a.arg != "self"],
+                       "params": params, "ret": ann(n.returns),
                        "start": n.lineno, "end": n.end_lineno})
     elif isinstance(n, ast.Assign):
         if len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
