@@ -1,0 +1,17 @@
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+x = 12
+msg = (function()
+    if (x > 10) then
+        return "yes"
+    else
+        return "no"
+    end
+end)()
+__print(msg)

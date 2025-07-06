@@ -1,0 +1,27 @@
+let Person = []
+Person["__index"] = Person
+fun Person["new"](o) {
+  let o = o || []
+  setmetatable(o, Person)
+  return o
+}
+fun test_update_adult_status() {
+  if !(people == [{ "name": "Alice", "age": 17, "status": "minor" }, { "name": "Bob", "age": 26, "status": "adult" }, { "name": "Charlie", "age": 19, "status": "adult" }, { "name": "Diana", "age": 16, "status": "minor" }]) {
+    error("expect failed")
+  }
+}
+let people = [{ "name": "Alice", "age": 17, "status": "minor" }, { "name": "Bob", "age": 25, "status": "unknown" }, { "name": "Charlie", "age": 18, "status": "unknown" }, { "name": "Diana", "age": 16, "status": "minor" }]
+for _i0 = 1; _i0 <= len(people); _i0 += 1 {
+  let _it0 = people._i0
+  let name = _it0["name"]
+  let age = _it0["age"]
+  let status = _it0["status"]
+  if age >= 18 {
+    _it0["status"] = "adult"
+    _it0["age"] = (age + 1)
+  }
+  people._i0 = _it0
+}
+print("ok")
+let __tests = [{ "name": "update adult status", "fn": test_update_adult_status }]
+__run_tests(__tests)

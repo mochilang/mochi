@@ -1,8 +1,5 @@
-var i = 0
-while true {
-  if !(i < 3) {
-  break
-}
+let i = 0
+while i < 3 {
   print(i)
-  i = (i + 1)
+  let i = (i + 1)
 }

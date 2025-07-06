@@ -1,0 +1,16 @@
+function __append(lst, v)
+    local out = {}
+    if lst then for i = 1, #lst do out[#out+1] = lst[i] end end
+    out[#out+1] = v
+    return out
+end
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+a = {1, 2}
+__print(__append(a, 3))

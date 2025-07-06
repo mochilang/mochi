@@ -1,7 +1,7 @@
-fun outer(x: int): int {
-  var inner = fun (y: int): int {
-  return (x + y)
-}
+fun outer(x) {
+  fun inner(y) {
+    return (x + y)
+  }
   return inner(5)
 }
 print(outer(3))

@@ -1,0 +1,17 @@
+function __div(a, b)
+    if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+        return a // b
+    end
+    return a / b
+end
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+__print((6 * 7))
+__print(__div(7, 2))
+__print((7 % 2))

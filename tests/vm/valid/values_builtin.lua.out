@@ -1,0 +1,16 @@
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+function __values(m)
+    if type(m) ~= 'table' then error('values() expects map') end
+    local out = {}
+    for _, v in pairs(m) do out[#out+1] = v end
+    return out
+end
+m = {["a"]=1, ["b"]=2, ["c"]=3}
+__print(__values(m))

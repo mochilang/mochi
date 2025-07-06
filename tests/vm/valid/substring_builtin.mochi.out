@@ -1,1 +1,1 @@
-print("och")
+print(substring("mochi", 1, 4))

@@ -1,0 +1,17 @@
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+x = 2
+label = (function()
+    local _t0 = x
+    if _t0 == 1 then return "one" end
+    if _t0 == 2 then return "two" end
+    if _t0 == 3 then return "three" end
+    return "unknown"
+end)()
+__print(label)

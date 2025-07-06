@@ -1,0 +1,15 @@
+function __print(...)
+    local args = {...}
+    for i, a in ipairs(args) do
+        if i > 1 then io.write(' ') end
+        io.write(tostring(a))
+    end
+    io.write('\n')
+end
+function boom(a, b)
+    __print("boom")
+    return true
+end
+
+__print((false and boom(1, 2)))
+__print((true or boom(1, 2)))

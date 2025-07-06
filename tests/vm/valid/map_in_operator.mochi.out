@@ -1,0 +1,3 @@
+let m = { 1: "a", 2: "b" }
+print(m[1] ~= null)
+print(m[3] ~= null)
