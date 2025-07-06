@@ -1,0 +1,99 @@
+# Errors
+
+- append_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- avg_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- basic_compare: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- binary_precedence: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- bool_chain: parse error: parse error: 18:37: lexer: invalid input text "$)\nprint(1 < 2))..."
+- break_continue: parse error: parse error: 19:23: lexer: invalid input text "`mod` 2) == 0) t..."
+- cast_string_to_int: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- cast_struct: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- closure: parse error: parse error: 18:32: lexer: invalid input text "\\x(->, (x, +, n)..."
+- count_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- cross_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- cross_join_filter: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- cross_join_triple: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- dataset_sort_take_limit: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- dataset_where_filter: parse error: parse error: 19:315: lexer: invalid input text "\\person, ->, (fr..."
+- exists_builtin: parse error: parse error: 19:42: lexer: invalid input text "\\x, ->, (x, ==, ..."
+- for_list_collection: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- for_loop: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- for_map_collection: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- fun_call: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- fun_expr_in_let: parse error: parse error: 18:15: lexer: invalid input text "\\x(->, (x, *, x)..."
+- fun_three_args: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- group_by: parse error: parse error: 19:235: lexer: invalid input text "\\person, ->, fro..."
+- group_by_conditional_sum: parse error: parse error: 19:278: lexer: invalid input text "\\(i), ->, fromMa..."
+- group_by_having: parse error: parse error: 19:128: lexer: invalid input text "\\p, ->, fromMayb..."
+- group_by_join: parse error: parse error: 20:299: lexer: invalid input text "\\(o,, c), ->, fr..."
+- group_by_left_join: parse error: parse error: 20:110: lexer: invalid input text "\\r, ->, fromMayb..."
+- group_by_multi_join: parse error: parse error: 22:198: lexer: invalid input text "\\x, ->, fromMayb..."
+- group_by_multi_join_sort: parse error: parse error: 24:2067: lexer: invalid input text "\\(c,, o,, l,, n)..."
+- group_by_sort: parse error: parse error: 19:321: lexer: invalid input text "\\(i), ->, fromMa..."
+- group_items_iteration: parse error: parse error: 19:47: lexer: invalid input text "\\d, ->, fromMayb..."
+- if_else: compile error: unsupported statement in main
+- if_then_else: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- if_then_else_nested: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- in_operator: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- in_operator_extended: parse error: parse error: 19:28: lexer: invalid input text "\\x -> ((x % 2) =..."
+- inner_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- join_multi: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- json_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- left_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- left_join_multi: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- len_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- len_map: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- len_string: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- let_and_print: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- list_assign: compile error: unsupported statement in main
+- list_index: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- list_nested_assign: compile error: unsupported statement in main
+- list_set_ops: parse error: parse error: 19:24: lexer: invalid input text "\\, [2]))\nprint(L..."
+- load_yaml: parse error: parse error: 20:96: lexer: invalid input text "\\p, ->, (age, (p..."
+- map_assign: compile error: unsupported statement in main
+- map_in_operator: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- map_index: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- map_int_key: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- map_literal_dynamic: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- map_membership: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- map_nested_assign: compile error: unsupported statement in main
+- match_expr: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- match_full: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- math_ops: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- membership: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- min_max_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- nested_function: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- order_by_map: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- outer_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- partial_application: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- print_hello: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- pure_fold: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- pure_global_fold: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- query_sum_select: parse error: parse error: 19:41: lexer: invalid input text "\\n, ->, (n, >, 1..."
+- record_assign: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- right_join: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- save_jsonl_stdout: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- short_circuit: parse error: parse error: 18:53: lexer: invalid input text "$) }\nprint(false..."
+- slice: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- sort_stable: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- str_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- string_compare: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- string_concat: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- string_contains: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- string_in_operator: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- string_index: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- string_prefix_slice: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- substring_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- sum_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- tail_recursion: parse error: parse error: 18:53: lexer: invalid input text "$) }\nprint(sum_r..."
+- test_block: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- tree_sum: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- two-sum: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- typed_let: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- typed_var: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- unary_neg: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- update_stmt: compile error: unsupported statement in main
+- user_type_literal: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- values_builtin: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)
+- var_assignment: compile error: unsupported statement in main
+- while_loop: parse error: parse error: 1:32: unexpected token "|" (expected PostfixExpr)

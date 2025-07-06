@@ -392,13 +392,15 @@ func parseSimple(src string) []byte {
 			body := strings.TrimSpace(strings.TrimPrefix(l, "main ="))
 			if body == "do" && i+1 < len(lines) {
 				next := strings.TrimSpace(lines[i+1])
-				if strings.HasPrefix(next, "putStrLn") {
+				if strings.HasPrefix(next, "putStrLn") || strings.HasPrefix(next, "print") {
 					arg := strings.TrimSpace(strings.TrimPrefix(next, "putStrLn"))
+					arg = strings.TrimSpace(strings.TrimPrefix(arg, "print"))
 					arg = strings.Trim(arg, "()")
 					return []byte("print(" + arg + ")")
 				}
-			} else if strings.HasPrefix(body, "putStrLn") {
+			} else if strings.HasPrefix(body, "putStrLn") || strings.HasPrefix(body, "print") {
 				arg := strings.TrimSpace(strings.TrimPrefix(body, "putStrLn"))
+				arg = strings.TrimSpace(strings.TrimPrefix(arg, "print"))
 				arg = strings.Trim(arg, "()")
 				return []byte("print(" + arg + ")")
 			}
