@@ -84,13 +84,13 @@ type param struct {
 }
 
 type function struct {
-	Name   string
-	Params []param
-	Ret    string
-	Body   []string
-	Start  int
-	End    int
-	Doc    string
+	Name      string
+	Params    []param
+	Ret       string
+	Body      []string
+	StartLine int
+	EndLine   int
+	Doc       string
 }
 
 func parseDetail(detail string) ([]param, string) {

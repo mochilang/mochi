@@ -19,13 +19,14 @@ void main() async {
         }
       }
       final body = d.functionExpression.body.toSource();
-      final start = d.offset;
-      final end = d.end;
+      final start = unit.lineInfo.getLocation(d.offset).lineNumber;
+      final end = unit.lineInfo.getLocation(d.end).lineNumber;
+      final ret = d.returnType?.toSource() ?? '';
       final doc = d.documentationComment?.tokens.map((t) => t.toString().replaceFirst('///', '').trim()).join('\n') ?? '';
       funcs.add({
         'name': name,
         'params': params,
-        'ret': '',
+        'ret': ret,
         'body': body.split('\n'),
         'start': start,
         'end': end,

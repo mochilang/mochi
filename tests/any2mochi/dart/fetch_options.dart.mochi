@@ -1,0 +1,35 @@
+fun main() {
+  let data: Msg = await _fetch("file://tests/compiler/dart/fetch_options.json", {"method": "GET", "headers": {"User-Agent": "Mochi"}, "query": {"q": "foo"}, "body": {"foo": true}, "timeout": 5})
+  print(data.message)
+  await _waitAll()
+}
+fun _fetch(url: string, Map<String: any, opts: dynamic>): any {
+  let method = opts?['method']?.toString() ?? 'GET'
+  let uri: Uri = Uri.parse(url)
+  if (opts?['query'] != null) {
+    let q = (opts!['query'] as Map).map((k,v)=>MapEntry(k.toString(), v.toString()))
+    uri = uri.replace(queryParameters: {...uri.queryParameters, ...q})
+  }
+  let client = HttpClient()
+  if (opts?['timeout'] != null) {
+    let t = Duration(seconds: (opts!['timeout'] is num ? opts['timeout'].round() : int.parse(opts['timeout'].toString())))
+    client.connectionTimeout = t
+  }
+  let req = await client.openUrl(method, uri)
+  if (opts?['headers'] != null) {
+    for (var e in (opts!['headers'] as Map).entries) {
+      req.headers.set(e.key.toString(), e.value.toString())
+    }
+  }
+  if (opts != null && opts.containsKey('body')) {
+    req.headers.contentType = ContentType('application', 'json', charset: 'utf-8')
+    req.write(jsonEncode(opts['body']))
+  }
+  let resp = await req.close()
+  let text = await resp.transform(utf8.decoder).join()
+  client.close()
+  return jsonDecode(text)
+}
+fun _waitAll() {
+  await Future.wait(_pending)
+}
