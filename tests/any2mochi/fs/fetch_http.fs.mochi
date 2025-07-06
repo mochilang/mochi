@@ -1,0 +1,17 @@
+fun _fetch() {
+}
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+let todo = _fetch "https://jsonplaceholder.typicode.com/todos/1" None
+print("Title:", todo.title)
+print("Completed:", todo.completed)

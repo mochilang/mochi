@@ -1,0 +1,18 @@
+fun _cast() {
+}
+fun _fetch() {
+}
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
+let todo = _cast<Todo>((_fetch "https://jsonplaceholder.typicode.com/todos/1" None))
+print(todo.title)

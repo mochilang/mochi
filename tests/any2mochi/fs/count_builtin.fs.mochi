@@ -1,0 +1,7 @@
+fun sum() {
+}
+fun avg() {
+}
+fun count(): int {
+}
+print(count [|1; 2; 3|])

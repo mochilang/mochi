@@ -1,4 +1,0 @@
-unsupported syntax at line 11: if person.is_senior then
- 10:     ignore (printfn "%A" (person.name, "is", person.age, "years old."))
- 11:     if person.is_senior then
- 12:         ignore (printfn "%A" (" (senior)"))

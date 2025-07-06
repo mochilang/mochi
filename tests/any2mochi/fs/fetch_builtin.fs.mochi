@@ -1,0 +1,10 @@
+fun _fetch() {
+}
+type Msg {
+  message: string
+}
+type Msg {
+  message: string
+}
+let data = _fetch "file://tests/compiler/fs/fetch_builtin.json" None
+print(data.message)
