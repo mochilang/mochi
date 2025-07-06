@@ -217,6 +217,16 @@ func simpleExpr(n pnode.Node) (string, bool) {
 			return "", false
 		}
 		return "-" + val, true
+	case *expr.ArrayDimFetch:
+		base, ok := simpleExpr(v.Variable)
+		if !ok {
+			return "", false
+		}
+		dim, ok := simpleExpr(v.Dim)
+		if !ok {
+			return "", false
+		}
+		return fmt.Sprintf("%s[%s]", base, dim), true
 	case *expr.Array:
 		return arrayExpr(v.Items)
 	case *expr.ShortArray:
