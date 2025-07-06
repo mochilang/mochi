@@ -24,11 +24,25 @@ type funcJSON struct {
 	Doc       string      `json:"doc,omitempty"`
 }
 
-type ast struct {
-	Functions []funcJSON `json:"functions"`
+type fieldJSON struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 
-func parseCLI(src string) ([]function, error) {
+type classJSON struct {
+	Name      string      `json:"name"`
+	Fields    []fieldJSON `json:"fields"`
+	StartLine int         `json:"start"`
+	EndLine   int         `json:"end"`
+	Doc       string      `json:"doc,omitempty"`
+}
+
+type ast struct {
+	Functions []funcJSON  `json:"functions"`
+	Classes   []classJSON `json:"classes"`
+}
+
+func parseCLI(src string) ([]function, []class, error) {
 	if dartPath, err := exec.LookPath("dart"); err == nil {
 		root, rErr := repoRoot()
 		if rErr == nil {
@@ -40,7 +54,8 @@ func parseCLI(src string) ([]function, error) {
 			cmd.Stdout = &out
 			cmd.Stderr = &errBuf
 			if err := cmd.Run(); err == nil {
-				return decodeFuncs(out.Bytes())
+				f, c, dErr := decodeFuncs(out.Bytes())
+				return f, c, dErr
 			}
 		}
 	}
@@ -49,7 +64,7 @@ func parseCLI(src string) ([]function, error) {
 	if err != nil {
 		root, rErr := repoRoot()
 		if rErr != nil {
-			return nil, rErr
+			return nil, nil, rErr
 		}
 		cmd := exec.Command("go", "run", filepath.Join(root, "cmd", "dartast"))
 		cmd.Stdin = bytes.NewBufferString(src)
@@ -59,11 +74,12 @@ func parseCLI(src string) ([]function, error) {
 		cmd.Stderr = &errBuf
 		if runErr := cmd.Run(); runErr != nil {
 			if errBuf.Len() > 0 {
-				return nil, fmt.Errorf("%v: %s", runErr, errBuf.String())
+				return nil, nil, fmt.Errorf("%v: %s", runErr, errBuf.String())
 			}
-			return nil, runErr
+			return nil, nil, runErr
 		}
-		return decodeFuncs(out.Bytes())
+		f, c, dErr := decodeFuncs(out.Bytes())
+		return f, c, dErr
 	}
 	cmd := exec.Command(path)
 	cmd.Stdin = bytes.NewBufferString(src)
@@ -73,17 +89,18 @@ func parseCLI(src string) ([]function, error) {
 	cmd.Stderr = &errBuf
 	if err := cmd.Run(); err != nil {
 		if errBuf.Len() > 0 {
-			return nil, fmt.Errorf("%v: %s", err, errBuf.String())
+			return nil, nil, fmt.Errorf("%v: %s", err, errBuf.String())
 		}
-		return nil, err
+		return nil, nil, err
 	}
-	return decodeFuncs(out.Bytes())
+	f, c, dErr := decodeFuncs(out.Bytes())
+	return f, c, dErr
 }
 
-func decodeFuncs(data []byte) ([]function, error) {
+func decodeFuncs(data []byte) ([]function, []class, error) {
 	var raw ast
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	funcs := make([]function, 0, len(raw.Functions))
 	for _, f := range raw.Functions {
@@ -101,7 +118,15 @@ func decodeFuncs(data []byte) ([]function, error) {
 			Doc:       f.Doc,
 		})
 	}
-	return funcs, nil
+	classes := make([]class, 0, len(raw.Classes))
+	for _, c := range raw.Classes {
+		fields := make([]param, 0, len(c.Fields))
+		for _, p := range c.Fields {
+			fields = append(fields, param{name: p.Name, typ: toMochiType(p.Type)})
+		}
+		classes = append(classes, class{Name: c.Name, Fields: fields, StartLine: c.StartLine, EndLine: c.EndLine, Doc: c.Doc})
+	}
+	return funcs, classes, nil
 }
 
 func repoRoot() (string, error) {

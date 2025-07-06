@@ -6,8 +6,32 @@ void main() async {
   final src = await stdin.transform(utf8.decoder).join();
   final unit = parseString(content: src).unit;
   final funcs = <Map<String, dynamic>>[];
+  final classes = <Map<String, dynamic>>[];
   for (var d in unit.declarations) {
-    if (d is FunctionDeclaration) {
+    if (d is ClassDeclaration) {
+      final name = d.name.lexeme;
+      final fields = <Map<String, String>>[];
+      for (var m in d.members) {
+        if (m is FieldDeclaration) {
+          final type = m.fields.type?.toSource() ?? 'dynamic';
+          for (var v in m.fields.variables) {
+            fields.add({'name': v.name.lexeme, 'type': type});
+          }
+        }
+      }
+      final start = unit.lineInfo.getLocation(d.offset).lineNumber;
+      final end = unit.lineInfo.getLocation(d.end).lineNumber;
+      final doc = d.documentationComment?.tokens
+              .map((t) => t.toString().replaceFirst('///', '').trim())
+              .join('\n') ?? '';
+      classes.add({
+        'name': name,
+        'fields': fields,
+        'start': start,
+        'end': end,
+        'doc': doc,
+      });
+    } else if (d is FunctionDeclaration) {
       final name = d.name.lexeme;
       final params = <Map<String, String>>[];
       if (d.functionExpression.parameters != null) {
@@ -34,6 +58,6 @@ void main() async {
       });
     }
   }
-  final ast = {'functions': funcs};
+  final ast = {'functions': funcs, 'classes': classes};
   stdout.write(JsonEncoder.withIndent('', '  ').convert(ast));
 }

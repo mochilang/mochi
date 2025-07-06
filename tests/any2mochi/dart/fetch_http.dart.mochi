@@ -1,3 +1,9 @@
+type Todo {
+  userId: int
+  id: int
+  title: string
+  completed: bool
+}
 fun main() {
   let todo: Todo = Todo.fromJson((await _fetch("https://jsonplaceholder.typicode.com/todos/1", null)) as Map<String,dynamic>)
   print(todo.title)

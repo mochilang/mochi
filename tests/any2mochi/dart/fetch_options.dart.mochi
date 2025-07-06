@@ -1,3 +1,6 @@
+type Msg {
+  message: string
+}
 fun main() {
   let data: Msg = await _fetch("file://tests/compiler/dart/fetch_options.json", {"method": "GET", "headers": {"User-Agent": "Mochi"}, "query": {"q": "foo"}, "body": {"foo": true}, "timeout": 5})
   print(data.message)

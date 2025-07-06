@@ -1,3 +1,8 @@
+type Person {
+  name: string
+  age: int
+  email: string
+}
 fun main() {
   let people: list<Person> = _load("../tests/interpreter/valid/people.jsonl", {"format": "jsonl"})
   _save(people, "-", {"format": "csv", "header": true})

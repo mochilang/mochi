@@ -1,3 +1,7 @@
+type Sensor {
+  id: string
+  temperature: float
+}
 fun main() {
   class Sensor {
   let id: string

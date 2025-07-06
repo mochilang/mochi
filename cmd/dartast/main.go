@@ -26,8 +26,22 @@ type dartFunc struct {
 	Doc    string      `json:"doc,omitempty"`
 }
 
+type dartField struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+
+type dartClass struct {
+	Name   string      `json:"name"`
+	Fields []dartField `json:"fields"`
+	Start  int         `json:"start"`
+	End    int         `json:"end"`
+	Doc    string      `json:"doc,omitempty"`
+}
+
 type ast struct {
-	Functions []dartFunc `json:"functions"`
+	Functions []dartFunc  `json:"functions"`
+	Classes   []dartClass `json:"classes"`
 }
 
 func parseParams(s string) []dartParam {
@@ -179,6 +193,50 @@ func parse(src string) []dartFunc {
 	return funcs
 }
 
+func parseClasses(src string) []dartClass {
+	re := regexp.MustCompile(`(?m)^\s*class\s+([A-Za-z_][\w]*)\s*{`)
+	matches := re.FindAllStringSubmatchIndex(src, -1)
+	var classes []dartClass
+	for i, m := range matches {
+		name := re.FindStringSubmatch(src[m[0]:m[1]])[1]
+		start := m[1]
+		end := len(src)
+		if i+1 < len(matches) {
+			end = matches[i+1][0]
+		}
+		depth := 1
+		bodyEnd := end
+		for j := start; j < end; j++ {
+			if src[j] == '{' {
+				depth++
+			} else if src[j] == '}' {
+				depth--
+				if depth == 0 {
+					bodyEnd = j
+					break
+				}
+			}
+		}
+		body := src[start:bodyEnd]
+		fields := parseClassFields(body)
+		doc := docBefore(src, m[0])
+		startLine := strings.Count(src[:m[0]], "\n") + 1
+		endLine := strings.Count(src[:bodyEnd], "\n") + 1
+		classes = append(classes, dartClass{Name: name, Fields: fields, Start: startLine, End: endLine, Doc: doc})
+	}
+	return classes
+}
+
+func parseClassFields(body string) []dartField {
+	re := regexp.MustCompile(`(?m)^\s*(?:final|var)?\s*([A-Za-z_][A-Za-z0-9_<>\[\]\? ]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*;`)
+	matches := re.FindAllStringSubmatch(body, -1)
+	var fields []dartField
+	for _, m := range matches {
+		fields = append(fields, dartField{Name: m[2], Type: strings.TrimSpace(m[1])})
+	}
+	return fields
+}
+
 func docBefore(src string, idx int) string {
 	lines := strings.Split(src[:idx], "\n")
 	var doc []string
@@ -286,7 +344,8 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	a := ast{Functions: parse(string(data))}
+	src := string(data)
+	a := ast{Functions: parse(src), Classes: parseClasses(src)}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	if err := enc.Encode(a); err != nil {
