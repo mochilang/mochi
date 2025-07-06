@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
 	any2mochi "mochi/tools/any2mochi"
@@ -45,17 +46,19 @@ type variable struct {
 }
 
 type function struct {
-	Name   string   `json:"name"`
-	Params string   `json:"params"`
-	Ret    string   `json:"ret"`
-	Line   int      `json:"line"`
-	Lines  []string `json:"lines"`
+	Name    string   `json:"name"`
+	Params  string   `json:"params"`
+	Ret     string   `json:"ret"`
+	Line    int      `json:"line"`
+	EndLine int      `json:"endLine"`
+	Lines   []string `json:"lines"`
 }
 
 type structDef struct {
-	Name   string  `json:"name"`
-	Line   int     `json:"line"`
-	Fields []field `json:"fields"`
+	Name    string  `json:"name"`
+	Line    int     `json:"line"`
+	EndLine int     `json:"endLine"`
+	Fields  []field `json:"fields"`
 }
 
 type field struct {
@@ -73,6 +76,42 @@ func snippet(src string) string {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func arrowSnippet(src string, line int) string {
+	lines := strings.Split(src, "\n")
+	start := line - 2
+	if start < 0 {
+		start = 0
+	}
+	end := line + 1
+	if end > len(lines) {
+		end = len(lines)
+	}
+	var b strings.Builder
+	for i := start; i < end; i++ {
+		mark := "   "
+		if i+1 == line {
+			mark = ">>>"
+		}
+		fmt.Fprintf(&b, "%4d:%s %s\n", i+1, mark, lines[i])
+	}
+	return b.String()
+}
+
+func formatError(path, src string, err error) error {
+	if ce, ok := err.(*ConvertError); ok {
+		if ce.Line > 0 {
+			return fmt.Errorf("%s:%d: %s\n%s", path, ce.Line, ce.Msg, ce.Snip)
+		}
+		return fmt.Errorf("%s: %s\n%s", path, ce.Msg, ce.Snip)
+	}
+	re := regexp.MustCompile(`:(\d+):(\d+)?:`)
+	if m := re.FindStringSubmatch(err.Error()); m != nil {
+		line, _ := strconv.Atoi(m[1])
+		return fmt.Errorf("%s:%d: %v\n%s", path, line, err, arrowSnippet(src, line))
+	}
+	return fmt.Errorf("%s: %v", path, err)
 }
 
 func diagnostics(src string, diags []any2mochi.Diagnostic) string {
@@ -167,6 +206,11 @@ func parseCLI(src string) (*ast, error) {
 func convertAST(a *ast) ([]byte, error) {
 	var out strings.Builder
 	for _, st := range a.Structs {
+		if st.Line > 0 {
+			out.WriteString("// line ")
+			out.WriteString(fmt.Sprint(st.Line))
+			out.WriteByte('\n')
+		}
 		out.WriteString("type ")
 		out.WriteString(st.Name)
 		if len(st.Fields) == 0 {
@@ -187,6 +231,11 @@ func convertAST(a *ast) ([]byte, error) {
 	}
 	// ignore top-level variables since imports are not needed
 	for _, fn := range a.Functions {
+		if fn.Line > 0 {
+			out.WriteString("// line ")
+			out.WriteString(fmt.Sprint(fn.Line))
+			out.WriteByte('\n')
+		}
 		out.WriteString("fun ")
 		out.WriteString(fn.Name)
 		out.WriteByte('(')
@@ -234,6 +283,7 @@ func convertAST(a *ast) ([]byte, error) {
 func parseFunctionBodyLines(lines []string) []string {
 	var out []string
 	indent := 0
+	var post []string
 	for _, line := range lines {
 		l := strings.TrimSpace(line)
 		if l == "" {
@@ -241,6 +291,13 @@ func parseFunctionBodyLines(lines []string) []string {
 		}
 		for strings.HasPrefix(l, "}") {
 			indent--
+			if len(post) > 0 {
+				p := post[len(post)-1]
+				if p != "" {
+					out = append(out, strings.Repeat("  ", indent)+p)
+				}
+				post = post[:len(post)-1]
+			}
 			out = append(out, strings.Repeat("  ", indent)+"}")
 			l = strings.TrimSpace(strings.TrimPrefix(l, "}"))
 			if l == "" {
@@ -252,12 +309,21 @@ func parseFunctionBodyLines(lines []string) []string {
 		}
 		if strings.HasSuffix(l, "{") {
 			hdr := strings.TrimSpace(strings.TrimSuffix(l, "{"))
-			out = append(out, strings.Repeat("  ", indent)+parseBlockHeader(hdr)+" {")
+			head, p := parseBlockHeader(hdr)
+			out = append(out, strings.Repeat("  ", indent)+head+" {")
 			indent++
+			post = append(post, p)
 			continue
 		}
 		if l == "}" {
 			indent--
+			if len(post) > 0 {
+				p := post[len(post)-1]
+				if p != "" {
+					out = append(out, strings.Repeat("  ", indent)+p)
+				}
+				post = post[:len(post)-1]
+			}
 			out = append(out, strings.Repeat("  ", indent)+"}")
 			continue
 		}
@@ -293,7 +359,11 @@ func ConvertFile(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return Convert(string(data))
+	out, err := Convert(string(data))
+	if err != nil {
+		return nil, formatError(path, string(data), err)
+	}
+	return out, nil
 }
 
 func parseParams(list string) []param {
@@ -462,23 +532,30 @@ func convertExpr(expr string) string {
 	return expr
 }
 
-func parseBlockHeader(h string) string {
+func parseBlockHeader(h string) (string, string) {
 	switch {
 	case strings.HasPrefix(h, "if "):
 		cond := strings.TrimSpace(strings.TrimPrefix(h, "if "))
 		cond = trimOuterParens(cond)
-		return "if " + convertExpr(cond)
+		return "if " + convertExpr(cond), ""
 	case strings.HasPrefix(h, "else if "):
 		cond := strings.TrimSpace(strings.TrimPrefix(h, "else if "))
 		cond = trimOuterParens(cond)
-		return "else if " + convertExpr(cond)
+		return "else if " + convertExpr(cond), ""
 	case h == "else":
-		return "else"
+		return "else", ""
 	case strings.HasPrefix(h, "while "):
 		inner := strings.TrimSpace(strings.TrimPrefix(h, "while "))
 		parts := strings.SplitN(inner, ":", 2)
 		cond := trimOuterParens(strings.TrimSpace(parts[0]))
-		return "while " + convertExpr(cond)
+		post := ""
+		if len(parts) == 2 {
+			post = trimOuterParens(strings.TrimSpace(parts[1]))
+			if post != "" {
+				post = parseStmt(post)
+			}
+		}
+		return "while " + convertExpr(cond), post
 	case strings.HasPrefix(h, "for "):
 		inner := strings.TrimSpace(strings.TrimPrefix(h, "for"))
 		if strings.HasPrefix(inner, "(") {
@@ -492,12 +569,12 @@ func parseBlockHeader(h string) string {
 						name = strings.TrimSpace(after[1 : 1+end])
 					}
 				}
-				return "for " + name + " in " + convertExpr(coll)
+				return "for " + name + " in " + convertExpr(coll), ""
 			}
 		}
-		return convertExpr(h)
+		return convertExpr(h), ""
 	}
-	return convertExpr(h)
+	return convertExpr(h), ""
 }
 
 func parseStmt(l string) string {
@@ -559,6 +636,7 @@ func parseFunctionBody(src string, sym any2mochi.DocumentSymbol) []string {
 	lines := strings.Split(body, "\n")
 	var out []string
 	indent := 0
+	var post []string
 	for _, line := range lines {
 		l := strings.TrimSpace(line)
 		if l == "" {
@@ -566,6 +644,13 @@ func parseFunctionBody(src string, sym any2mochi.DocumentSymbol) []string {
 		}
 		for strings.HasPrefix(l, "}") {
 			indent--
+			if len(post) > 0 {
+				p := post[len(post)-1]
+				if p != "" {
+					out = append(out, strings.Repeat("  ", indent)+p)
+				}
+				post = post[:len(post)-1]
+			}
 			out = append(out, strings.Repeat("  ", indent)+"}")
 			l = strings.TrimSpace(strings.TrimPrefix(l, "}"))
 			if l == "" {
@@ -577,12 +662,21 @@ func parseFunctionBody(src string, sym any2mochi.DocumentSymbol) []string {
 		}
 		if strings.HasSuffix(l, "{") {
 			hdr := strings.TrimSpace(strings.TrimSuffix(l, "{"))
-			out = append(out, strings.Repeat("  ", indent)+parseBlockHeader(hdr)+" {")
+			head, p := parseBlockHeader(hdr)
+			out = append(out, strings.Repeat("  ", indent)+head+" {")
 			indent++
+			post = append(post, p)
 			continue
 		}
 		if l == "}" {
 			indent--
+			if len(post) > 0 {
+				p := post[len(post)-1]
+				if p != "" {
+					out = append(out, strings.Repeat("  ", indent)+p)
+				}
+				post = post[:len(post)-1]
+			}
 			out = append(out, strings.Repeat("  ", indent)+"}")
 			continue
 		}
