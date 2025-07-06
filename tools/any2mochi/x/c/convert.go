@@ -283,6 +283,7 @@ func convertSimple(src string) ([]byte, error) {
 }
 
 var castRE = regexp.MustCompile(`\([a-zA-Z_][a-zA-Z0-9_\s]*\*\)`) // matches C casts like (int *)
+var functionPtrRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_\s\*]*\(\*\)\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$`)
 
 func stripCasts(s string) string {
 	return castRE.ReplaceAllString(s, "")
@@ -546,6 +547,10 @@ func parseStatements(body string) []string {
 					h = strings.TrimSuffix(h, ")")
 					h = strings.TrimSpace(h)
 				}
+				if strings.HasPrefix(h, "!(") && strings.HasSuffix(h, ")") {
+					inner := strings.TrimSuffix(strings.TrimPrefix(h, "!("), ")")
+					h = "!" + strings.TrimSpace(inner)
+				}
 				out = append(out, strings.Repeat("  ", indent)+"if "+h+" {")
 				indent++
 			} else {
@@ -633,6 +638,14 @@ func parseStatements(body string) []string {
 				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[7:]))
 			case strings.HasPrefix(l, "char "):
 				out = append(out, strings.Repeat("  ", indent)+"var "+strings.TrimSpace(l[5:]))
+			case functionPtrRE.MatchString(l):
+				m := functionPtrRE.FindStringSubmatch(l)
+				name := strings.TrimSpace(m[1])
+				val := strings.TrimSpace(m[2])
+				if strings.HasSuffix(val, ";") {
+					val = strings.TrimSuffix(val, ";")
+				}
+				out = append(out, strings.Repeat("  ", indent)+"var "+name+" = "+val)
 			default:
 				out = append(out, strings.Repeat("  ", indent)+l)
 			}

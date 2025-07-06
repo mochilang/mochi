@@ -1,0 +1,120 @@
+line 20:3: typedef redefinition with different types ('struct Person' (aka 'Person') vs 'struct Person')
+  19|   char *status;
+  20| } Person;
+       ^
+  21| 
+  22| static void test_update_adult_status() {
+line 24:17: variable has incomplete type 'Person' (aka 'struct Person')
+  23|   list_int _t1 = list_int_create(4);
+  24|   _t1.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
+                     ^
+  25|   _t1.data[1] = (Person){.name = "Bob", .age = 26, .status = "adult"};
+  26|   _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
+line 25:17: variable has incomplete type 'Person' (aka 'struct Person')
+  24|   _t1.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
+  25|   _t1.data[1] = (Person){.name = "Bob", .age = 26, .status = "adult"};
+                     ^
+  26|   _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
+  27|   _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+line 26:17: variable has incomplete type 'Person' (aka 'struct Person')
+  25|   _t1.data[1] = (Person){.name = "Bob", .age = 26, .status = "adult"};
+  26|   _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
+                     ^
+  27|   _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+  28|   if (!((people == _t1))) {
+line 27:17: variable has incomplete type 'Person' (aka 'struct Person')
+  26|   _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
+  27|   _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+                     ^
+  28|   if (!((people == _t1))) {
+  29|     fprintf(stderr, "expect failed\n");
+line 28:10: use of undeclared identifier 'people'
+  27|   _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+  28|   if (!((people == _t1))) {
+              ^
+  29|     fprintf(stderr, "expect failed\n");
+  30|     exit(1);
+line 36:17: variable has incomplete type 'Person' (aka 'struct Person')
+  35|   list_int _t2 = list_int_create(4);
+  36|   _t2.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
+                     ^
+  37|   _t2.data[1] = (Person){.name = "Bob", .age = 25, .status = "unknown"};
+  38|   _t2.data[2] = (Person){.name = "Charlie", .age = 18, .status = "unknown"};
+line 37:17: variable has incomplete type 'Person' (aka 'struct Person')
+  36|   _t2.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
+  37|   _t2.data[1] = (Person){.name = "Bob", .age = 25, .status = "unknown"};
+                     ^
+  38|   _t2.data[2] = (Person){.name = "Charlie", .age = 18, .status = "unknown"};
+  39|   _t2.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+line 38:17: variable has incomplete type 'Person' (aka 'struct Person')
+  37|   _t2.data[1] = (Person){.name = "Bob", .age = 25, .status = "unknown"};
+  38|   _t2.data[2] = (Person){.name = "Charlie", .age = 18, .status = "unknown"};
+                     ^
+  39|   _t2.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+  40|   list_Person people = _t2;
+line 39:17: variable has incomplete type 'Person' (aka 'struct Person')
+  38|   _t2.data[2] = (Person){.name = "Charlie", .age = 18, .status = "unknown"};
+  39|   _t2.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+                     ^
+  40|   list_Person people = _t2;
+  41|   for (int _t3 = 0; _t3 < people.len; _t3++) {
+line 40:3: use of undeclared identifier 'list_Person'
+  39|   _t2.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+  40|   list_Person people = _t2;
+       ^
+  41|   for (int _t3 = 0; _t3 < people.len; _t3++) {
+  42|     Person _t4 = people.data[_t3];
+line 41:27: use of undeclared identifier 'people'
+  40|   list_Person people = _t2;
+  41|   for (int _t3 = 0; _t3 < people.len; _t3++) {
+                               ^
+  42|     Person _t4 = people.data[_t3];
+  43|     char *name = _t4.name;
+line 42:18: use of undeclared identifier 'people'
+  41|   for (int _t3 = 0; _t3 < people.len; _t3++) {
+  42|     Person _t4 = people.data[_t3];
+                      ^
+  43|     char *name = _t4.name;
+  44|     int age = _t4.age;
+line 42:12: variable has incomplete type 'Person' (aka 'struct Person')
+  41|   for (int _t3 = 0; _t3 < people.len; _t3++) {
+  42|     Person _t4 = people.data[_t3];
+                ^
+  43|     char *name = _t4.name;
+  44|     int age = _t4.age;
+line 46:11: redefinition of 'name'
+  45|     char *status = _t4.status;
+  46|     char *name = _t4.name;
+               ^
+  47|     int age = _t4.age;
+  48|     char *status = _t4.status;
+line 47:9: redefinition of 'age'
+  46|     char *name = _t4.name;
+  47|     int age = _t4.age;
+             ^
+  48|     char *status = _t4.status;
+  49|     if ((_t4.age >= 18)) {
+line 48:11: redefinition of 'status'
+  47|     int age = _t4.age;
+  48|     char *status = _t4.status;
+               ^
+  49|     if ((_t4.age >= 18)) {
+  50|       _t4.status = "adult";
+line 53:5: use of undeclared identifier 'people'
+  52|     }
+  53|     people.data[_t3] = _t4;
+         ^
+  54|   }
+  55|   test_update_adult_status();
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: 
+  4: typedef struct {
+  5:   int len;
+  6:   int *data;
+  7: } list_int;
+  8: static list_int list_int_create(int len) {
+  9:   list_int l;
+ 10:   l.len = len;

@@ -18,14 +18,14 @@ var _t6 = 2
 var _t7 = 0
 for (int _t4 = 0; _t4 < nums.len; _t4++) {
 var n = nums.data[_t4]
-if (!((n > 1)) {
+if !(n > 1) {
 continue
 }
-if (_t7 < _t5 {
+if _t7 < _t5 {
 _t7 = _t7 + 1
 continue
 }
-if (_t6 >= 0 && _t3 >= _t6 {
+if _t6 >= 0 && _t3 >= _t6 {
 break
 }
 _t7 = _t7 + 1

@@ -1,0 +1,9 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+fun _lambda0(a: int, b: int): int {
+  return (a + b)
+}
+print((_lambda0)(2, 3))

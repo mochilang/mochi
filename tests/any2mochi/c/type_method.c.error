@@ -1,0 +1,36 @@
+line 28:3: typedef redefinition with different types ('struct Person' (aka 'Person') vs 'struct Person')
+  27|   char *name;
+  28| } Person;
+       ^
+  29| char *Person_greet(Person *self) {
+  30|   char *_t1 = concat_string("hi ", self->name);
+line 30:40: incomplete definition of type 'Person' (aka 'struct Person')
+  29| char *Person_greet(Person *self) {
+  30|   char *_t1 = concat_string("hi ", self->name);
+                                            ^
+  31|   return _t1;
+  32| }
+line 35:14: variable has incomplete type 'Person' (aka 'struct Person')
+  34| int main() {
+  35|   Person p = (Person){.name = "Ada"};
+                  ^
+  36|   printf("%s\n", Person_greet(&p));
+  37|   return 0;
+line 35:10: variable has incomplete type 'Person' (aka 'struct Person')
+  34| int main() {
+  35|   Person p = (Person){.name = "Ada"};
+              ^
+  36|   printf("%s\n", Person_greet(&p));
+  37|   return 0;
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: #include <string.h>
+  4: 
+  5: typedef struct {
+  6:   int len;
+  7:   int *data;
+  8: } list_int;
+  9: static list_int list_int_create(int len) {
+ 10:   list_int l;

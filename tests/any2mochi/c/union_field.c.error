@@ -1,0 +1,72 @@
+line 19:3: typedef redefinition with different types ('struct Leaf' (aka 'Leaf') vs 'struct Leaf')
+  18| typedef struct {
+  19| } Leaf;
+       ^
+  20| typedef struct {
+  21|   Tree left;
+line 21:8: field has incomplete type 'Tree' (aka 'struct Tree')
+  20| typedef struct {
+  21|   Tree left;
+            ^
+  22|   int value;
+  23|   Tree right;
+line 23:8: field has incomplete type 'Tree' (aka 'struct Tree')
+  22|   int value;
+  23|   Tree right;
+            ^
+  24| } Node;
+  25| typedef struct {
+line 24:3: typedef redefinition with different types ('struct (unnamed struct at <stdin>:20:9)' vs 'struct Node')
+  23|   Tree right;
+  24| } Node;
+       ^
+  25| typedef struct {
+  26|   int tag;
+line 28:10: field has incomplete type 'Leaf' (aka 'struct Leaf')
+  27|   union {
+  28|     Leaf Leaf;
+              ^
+  29|     Node Node;
+  30|   } value;
+line 29:10: field has incomplete type 'Node' (aka 'struct Node')
+  28|     Leaf Leaf;
+  29|     Node Node;
+              ^
+  30|   } value;
+  31| } Tree;
+line 31:3: typedef redefinition with different types ('struct (unnamed struct at <stdin>:25:9)' vs 'struct Tree')
+  30|   } value;
+  31| } Tree;
+       ^
+  32| 
+  33| int main() {
+line 34:27: variable has incomplete type 'Leaf' (aka 'struct Leaf')
+  33| int main() {
+  34|   Node t = (Node){.left = (Leaf){}, .value = 42, .right = (Leaf){}};
+                               ^
+  35|   printf("%d\n", t.value);
+  36|   return 0;
+line 34:59: variable has incomplete type 'Leaf' (aka 'struct Leaf')
+  33| int main() {
+  34|   Node t = (Node){.left = (Leaf){}, .value = 42, .right = (Leaf){}};
+                                                               ^
+  35|   printf("%d\n", t.value);
+  36|   return 0;
+line 34:8: variable has incomplete type 'Node' (aka 'struct Node')
+  33| int main() {
+  34|   Node t = (Node){.left = (Leaf){}, .value = 42, .right = (Leaf){}};
+            ^
+  35|   printf("%d\n", t.value);
+  36|   return 0;
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: 
+  4: typedef struct {
+  5:   int len;
+  6:   int *data;
+  7: } list_int;
+  8: static list_int list_int_create(int len) {
+  9:   list_int l;
+ 10:   l.len = len;

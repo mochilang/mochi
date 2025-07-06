@@ -1,0 +1,21 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+var *text = "hello"
+var *_t1 = ({
+var _len = strlen(text)
+var _i = 1
+if (_i < 0)
+_i = _i + _len
+if _i < 0 || _i >= _len {
+fprintf(stderr, "index out of range\n")
+exit(1)
+}
+var *_b = malloc(2)
+_b[0] = text[_i]
+_b[1] = '\0'
+_b
+})
+print(_t1)

@@ -1,0 +1,31 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+type list_string {
+  len: int
+  **data: string
+}
+
+fun contains_list_int(v: list<int>, item: int): int {
+  for (int i = 0; i < v.len; i++)
+  if (v.data[i] == item)
+  return 1
+  return 0
+}
+fun contains_list_string(v: list<string>, item: string): int {
+  for (int i = 0; i < v.len; i++)
+  if (strcmp(v.data[i], item) == 0)
+  return 1
+  return 0
+}
+list_int _t1 = list_int_create(3)
+_t1.data[0] = 1
+_t1.data[1] = 2
+_t1.data[2] = 3
+print(contains_list_int(_t1, 2))
+list_string _t2 = list_string_create(2)
+_t2.data[0] = "a"
+_t2.data[1] = "b"
+print(contains_list_string(_t2, "b"))

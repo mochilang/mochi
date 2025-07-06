@@ -1,0 +1,48 @@
+line 60:3: typedef redefinition with different types ('struct map_int_bool_item' vs 'struct map_int_bool_item')
+  59|   int value;
+  60| } map_int_bool_item;
+       ^
+  61| static map_int_bool_item *map_int_bool_item_new(int key, int value) {
+  62|   map_int_bool_item *it =
+line 61:27: redefinition of 'map_int_bool_item_new'
+  60| } map_int_bool_item;
+  61| static map_int_bool_item *map_int_bool_item_new(int key, int value) {
+                               ^
+  62|   map_int_bool_item *it =
+  63|       (map_int_bool_item *)malloc(sizeof(map_int_bool_item));
+line 72:3: typedef redefinition with different types ('struct map_int_bool' vs 'struct map_int_bool')
+  71|   map_int_bool_item **data;
+  72| } map_int_bool;
+       ^
+  73| static map_int_bool map_int_bool_create(int cap) {
+  74|   map_int_bool m;
+line 73:21: redefinition of 'map_int_bool_create'
+  72| } map_int_bool;
+  73| static map_int_bool map_int_bool_create(int cap) {
+                         ^
+  74|   map_int_bool m;
+  75|   m.len = 0;
+line 81:13: redefinition of 'map_int_bool_put'
+  80| }
+  81| static void map_int_bool_put(map_int_bool *m, int key, int value) {
+                 ^
+  82|   for (int i = 0; i < m->len; i++)
+  83|     if (m->data[i]->key == key) {
+line 94:12: redefinition of 'map_int_bool_contains'
+  93| }
+  94| static int map_int_bool_contains(map_int_bool m, int key) {
+                ^
+  95|   for (int i = 0; i < m.len; i++)
+  96|     if (m.data[i]->key == key)
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: 
+  4: typedef struct {
+  5:   int len;
+  6:   int *data;
+  7: } list_int;
+  8: static list_int list_int_create(int len) {
+  9:   list_int l;
+ 10:   l.len = len;

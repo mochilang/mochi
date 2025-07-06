@@ -12,22 +12,22 @@ static list_int list_int_create(int len) {
   l.data = (int *)malloc(sizeof(int) * len);
   return l;
 }
-static char *_index_string(char *s, int i) {
-  int len = strlen(s);
-  if (i < 0)
-    i += len;
-  if (i < 0 || i >= len) {
-    fprintf(stderr, "index out of range\n");
-    exit(1);
-  }
-  char *buf = (char *)malloc(2);
-  buf[0] = s[i];
-  buf[1] = '\0';
-  return buf;
-}
 int main() {
   char *text = "hello";
-  char *_t1 = _index_string(text, 1);
+  char *_t1 = ({
+    int _len = strlen(text);
+    int _i = 1;
+    if (_i < 0)
+      _i += _len;
+    if (_i < 0 || _i >= _len) {
+      fprintf(stderr, "index out of range\n");
+      exit(1);
+    }
+    char *_b = (char *)malloc(2);
+    _b[0] = text[_i];
+    _b[1] = '\0';
+    _b;
+  });
   printf("%s\n", _t1);
   return 0;
 }

@@ -1,0 +1,9 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+fun id(x: int): int {
+  return x
+}
+print(id(123))

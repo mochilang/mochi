@@ -1,0 +1,30 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+fun twoSum(nums: list<int>, target: int): list<int> {
+  var n = nums.len
+  for (int i = 0; i < n; i++) {
+    for (int j = (i + 1); j < n; j++) {
+      if (nums.data[i] + nums.data[j]) == target {
+        list_int _t1 = list_int_create(2)
+        _t1.data[0] = i
+        _t1.data[1] = j
+        return _t1
+      }
+    }
+  }
+  list_int _t2 = list_int_create(2)
+  _t2.data[0] = (-1)
+  _t2.data[1] = (-1)
+  return _t2
+}
+list_int _t3 = list_int_create(4)
+_t3.data[0] = 2
+_t3.data[1] = 7
+_t3.data[2] = 11
+_t3.data[3] = 15
+list_int result = twoSum(_t3, 9)
+print(result.data[0])
+print(result.data[1])

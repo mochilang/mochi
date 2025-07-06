@@ -1,0 +1,17 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+type list_string {
+  len: int
+  **data: string
+}
+
+fun show(xs: list<string>) {
+  print(xs.len)
+}
+list_string _t1 = list_string_create(2)
+_t1.data[0] = "a"
+_t1.data[1] = "b"
+show(_t1)

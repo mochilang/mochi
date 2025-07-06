@@ -1,0 +1,7 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+var _struct = 1
+print(_struct)

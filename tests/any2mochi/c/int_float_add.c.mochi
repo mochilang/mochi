@@ -1,0 +1,6 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+print((1 + 2.5))

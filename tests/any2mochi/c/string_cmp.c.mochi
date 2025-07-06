@@ -1,0 +1,11 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+print((strcmp("a", "b") < 0))
+print((strcmp("a", "a") <= 0))
+print((strcmp("cat", "car") > 0))
+print((strcmp("dog", "dog") >= 0))
+print((strcmp("abc", "abc") == 0))
+print((strcmp("foo", "bar") != 0))

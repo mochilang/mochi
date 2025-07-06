@@ -1,0 +1,10 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+fun _lambda0(x: int): int {
+  return (x * x)
+}
+var (*square)(int) = _lambda0
+print(square(6))

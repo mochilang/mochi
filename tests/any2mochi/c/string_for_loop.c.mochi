@@ -1,0 +1,11 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+for (int _t1 = 0; "cat"[_t1] != '\0'; _t1++) {
+var ch[2]
+ch[0] = "cat"[_t1]
+ch[1] = '\0'
+print(ch)
+}

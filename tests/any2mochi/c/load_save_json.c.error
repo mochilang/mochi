@@ -1,0 +1,30 @@
+line 236:3: typedef redefinition with different types ('struct Person' (aka 'Person') vs 'struct Person')
+ 235|   int age;
+ 236| } Person;
+       ^
+ 237| 
+ 238| int main() {
+line 239:3: use of undeclared identifier 'list_Person'
+ 238| int main() {
+ 239|   list_Person people = _load_json("");
+       ^
+ 240|   _save_json(people, "");
+ 241|   return 0;
+line 240:14: use of undeclared identifier 'people'
+ 239|   list_Person people = _load_json("");
+ 240|   _save_json(people, "");
+                  ^
+ 241|   return 0;
+ 242| }
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: #include <string.h>
+  4: 
+  5: typedef struct {
+  6:   int len;
+  7:   int *data;
+  8: } list_int;
+  9: static list_int list_int_create(int len) {
+ 10:   list_int l;

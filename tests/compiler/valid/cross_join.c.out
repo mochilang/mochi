@@ -38,13 +38,13 @@ int main() {
   _t1.data[0] = (Customer){.id = 1, .name = "Alice"};
   _t1.data[1] = (Customer){.id = 2, .name = "Bob"};
   _t1.data[2] = (Customer){.id = 3, .name = "Charlie"};
-  int customers = _t1;
+  list_Customer customers = _t1;
   list_int _t2 = list_int_create(3);
   _t2.data[0] = (Order){.id = 100, .customerId = 1, .total = 250};
   _t2.data[1] = (Order){.id = 101, .customerId = 2, .total = 125};
   _t2.data[2] = (Order){.id = 102, .customerId = 1, .total = 300};
-  int orders = _t2;
-  int result = 0;
+  list_Order orders = _t2;
+  list_PairInfo result = 0;
   printf("%s\n", "--- Cross Join: All order-customer pairs ---");
   for (int _t3 = 0; _t3 < result.len; _t3++) {
     int entry = result.data[_t3];

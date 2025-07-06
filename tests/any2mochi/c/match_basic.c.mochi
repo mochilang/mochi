@@ -1,0 +1,10 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+fun label(x: int): string {
+  return (x == 1 ? "one" : (x == 2 ? "two" : "other"))
+}
+print(label(1))
+print(label(3))

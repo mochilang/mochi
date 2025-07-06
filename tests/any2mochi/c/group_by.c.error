@@ -1,0 +1,54 @@
+line 103:26: use of undeclared identifier 'k'
+ 102|   map_int_bool _t3 = map_int_bool_create(2);
+ 103|   map_int_bool_put(&_t3, k, g.key);
+                              ^
+ 104|   map_int_bool_put(&_t3, c, g.items.len);
+ 105|   list_int _t4 = list_int_create(_t2.len);
+line 103:29: use of undeclared identifier 'g'
+ 102|   map_int_bool _t3 = map_int_bool_create(2);
+ 103|   map_int_bool_put(&_t3, k, g.key);
+                                 ^
+ 104|   map_int_bool_put(&_t3, c, g.items.len);
+ 105|   list_int _t4 = list_int_create(_t2.len);
+line 104:26: use of undeclared identifier 'c'
+ 103|   map_int_bool_put(&_t3, k, g.key);
+ 104|   map_int_bool_put(&_t3, c, g.items.len);
+                              ^
+ 105|   list_int _t4 = list_int_create(_t2.len);
+ 106|   int _t5 = 0;
+line 104:29: use of undeclared identifier 'g'
+ 103|   map_int_bool_put(&_t3, k, g.key);
+ 104|   map_int_bool_put(&_t3, c, g.items.len);
+                                 ^
+ 105|   list_int _t4 = list_int_create(_t2.len);
+ 106|   int _t5 = 0;
+line 109:19: assigning to 'int' from incompatible type 'map_int_bool'
+ 108|     _GroupInt g = _t2.data[i];
+ 109|     _t4.data[_t5] = _t3;
+                       ^
+ 110|     _t5++;
+ 111|   }
+line 116:20: member reference base type 'int' is not a structure or union
+ 115|     int g = groups.data[_t6];
+ 116|     printf("%d ", g.k);
+                        ^
+ 117|     printf("%d\n", g.c);
+ 118|   }
+line 117:21: member reference base type 'int' is not a structure or union
+ 116|     printf("%d ", g.k);
+ 117|     printf("%d\n", g.c);
+                         ^
+ 118|   }
+ 119|   return 0;
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: 
+  4: typedef struct {
+  5:   int len;
+  6:   int *data;
+  7: } list_int;
+  8: static list_int list_int_create(int len) {
+  9:   list_int l;
+ 10:   l.len = len;

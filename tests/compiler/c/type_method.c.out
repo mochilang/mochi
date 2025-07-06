@@ -33,6 +33,6 @@ char *Person_greet(Person *self) {
 
 int main() {
   Person p = (Person){.name = "Ada"};
-  printf("%d\n", Person_greet(&p));
+  printf("%s\n", Person_greet(&p));
   return 0;
 }

@@ -1,0 +1,30 @@
+line 19:3: typedef redefinition with different types ('struct Pair' (aka 'Pair') vs 'struct Pair')
+  18|   int y;
+  19| } Pair;
+       ^
+  20| 
+  21| int main() {
+line 22:12: variable has incomplete type 'Pair' (aka 'struct Pair')
+  21| int main() {
+  22|   Pair p = (Pair){.x = 1, .y = 2};
+                ^
+  23|   printf("%d\n", p.x);
+  24|   printf("%d\n", p.y);
+line 22:8: variable has incomplete type 'Pair' (aka 'struct Pair')
+  21| int main() {
+  22|   Pair p = (Pair){.x = 1, .y = 2};
+            ^
+  23|   printf("%d\n", p.x);
+  24|   printf("%d\n", p.y);
+
+source snippet:
+  1: #include <stdio.h>
+  2: #include <stdlib.h>
+  3: 
+  4: typedef struct {
+  5:   int len;
+  6:   int *data;
+  7: } list_int;
+  8: static list_int list_int_create(int len) {
+  9:   list_int l;
+ 10:   l.len = len;

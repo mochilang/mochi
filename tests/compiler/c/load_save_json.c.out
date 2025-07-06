@@ -236,7 +236,7 @@ typedef struct {
 } Person;
 
 int main() {
-  int people = _load_json("");
+  list_Person people = _load_json("");
   _save_json(people, "");
   return 0;
 }

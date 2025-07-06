@@ -1,0 +1,16 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+list_int _t1 = list_int_create(3)
+_t1.data[0] = 3
+_t1.data[1] = 1
+_t1.data[2] = 2
+print(({)
+var m = _t1.len ? _t1.data[0] : 0
+for (int i = 1; i < _t1.len; i++)
+if (_t1.data[i] < m)
+m = _t1.data[i]
+m
+}))

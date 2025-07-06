@@ -1,0 +1,98 @@
+type list_int {
+  len: int
+  *data: int
+}
+
+type list_float {
+  len: int
+  *data: float
+}
+
+type list_string {
+  len: int
+  **data: string
+}
+
+type list_list_int {
+  len: int
+  *data: list<int>
+}
+
+fun __bswap_16(__bsx: __uint16_t): __uint16_t {
+  print(")
+  _json_float(v.data[i])
+}
+print("]")
+}
+static void _json_list_string(list_string v) {
+}
+fun __bswap_32(__bsx: __uint32_t): __uint32_t {
+  intf(",")
+  _json_list_int(v.data[i])
+}
+print("]")
+}
+var main() {
+print("{")
+_json_string("a")
+}
+fun __uint16_identity(__x: __uint16_t): __uint16_t {
+  ntf(",")
+  _
+}
+fun __uint32_identity(__x: __uint32_t): __uint32_t {
+  _string(list_st
+}
+fun __uint64_identity(__x: __uint64_t): __uint64_t {
+  f (i > 0)
+}
+fun _json_int(v: int) {
+  print(v)
+}
+fun _json_float(v: float) {
+  print(v)
+}
+fun _json_string(s: string) {
+  print(s)
+}
+fun _json_list_int(v: list<int>) {
+  print("[")
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+    print(")
+    _json_int(v.data[i])
+  }
+  print("]")
+}
+fun _json_list_float(v: list<float>) {
+  print("[")
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+    print(")
+    _json_float(v.data[i])
+  }
+  print("]")
+}
+fun _json_list_string(v: list<string>) {
+  print("[")
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+    print(")
+    _json_string(v.data[i])
+  }
+  print("]")
+}
+fun _json_list_list_int(v: list<list<int>>) {
+  print("[")
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+    print(")
+    _json_list_int(v.data[i])
+  }
+  print("]")
+}
+print("{")
+_json_string("a")
+print(":")
+_json_int(1)
+print("}\n")
