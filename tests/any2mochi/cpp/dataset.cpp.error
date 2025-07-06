@@ -1,0 +1,10 @@
+tests/compiler/cpp/dataset.cpp.out: clang++: exit status 1: <stdin>:14:33: error: 'auto' not allowed in template argument
+   14 |   auto names = ([&]() -> vector<auto> {
+      |                                 ^~~~
+<stdin>:15:12: error: 'auto' not allowed in template argument
+   15 |     vector<auto> _res;
+      |            ^~~~
+2 errors generated.
+
+14:>>>   auto names = ([&]() -> vector<auto> {
+15:        vector<auto> _res;
