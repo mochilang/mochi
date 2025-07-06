@@ -6,13 +6,13 @@ import (
 	"testing"
 )
 
-func TestConvertGoViaJSON(t *testing.T) {
-	src := "package foo\nfunc Add(x int, y int) int { return x + y }"
-	out, err := ConvertGoViaJSON(src)
+func TestConvertViaJSON(t *testing.T) {
+	src := "package foo\nfunc Pair() (int, int) { return 1, 2 }"
+	out, err := ConvertViaJSON(src)
 	if err != nil {
 		t.Fatalf("convert: %v", err)
 	}
-	want := "fun Add(x: int, y: int): int {}\n"
+	want := "fun Pair(): (int, int) {}\n"
 	if string(out) != want {
 		t.Fatalf("unexpected output: %s", out)
 	}
