@@ -1,0 +1,14 @@
+type Person {
+  name: string
+  age: int
+}
+type Program {
+}
+fun Program.Main() {
+  var people = new Person[] { new Person { name = "Alice", age = 30 }, new Person { name = "Bob", age = 15 }, new Person { name = "Charlie", age = 65 } }
+  var names = new List<dynamic>(people.Select(p => p.name))
+  for n in names {
+  print(n)
+  }
+}
+
