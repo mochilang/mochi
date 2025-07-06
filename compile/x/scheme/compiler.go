@@ -1207,6 +1207,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("input expects no args")
 		}
 		return "(read-line)", nil
+	case "pow":
+		if len(args) != 2 {
+			return "", fmt.Errorf("pow expects 2 args")
+		}
+		return fmt.Sprintf("(expt %s %s)", args[0], args[1]), nil
 	case "json":
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")

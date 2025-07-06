@@ -8,4 +8,12 @@ fun print-test-fail(err) {}
 fun run-test(name, thunk) {}
 fun new-Person(name, age, status) {}
 let people = [[cons('name, "Alice"), cons('age, 17), cons('status, "minor")], [cons('name, "Bob"), cons('age, 25), cons('status, "unknown")], [cons('name, "Charlie"), cons('age, 18), cons('status, "unknown")], [cons('name, "Diana"), cons('age, 16), cons('status, "minor")]]
+for item in people {
+  if age >= 18 {
+    item = map-set(item, 'status, "adult")
+  }
+}
 fun test_update_adult_status() {}
+if failures > 0 {
+  print("\n[FAIL] ")
+}

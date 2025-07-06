@@ -47,6 +47,8 @@ func convertNode(n Node) []string {
 		return convertBegin(n.List[1:])
 	case "if":
 		return convertIf(n)
+	case "when":
+		return convertWhen(n)
 	case "let":
 		if f := convertFor(n); f != nil {
 			return f
@@ -54,6 +56,8 @@ func convertNode(n Node) []string {
 		if w := convertWhile(n); w != nil {
 			return w
 		}
+	case "for-each":
+		return convertForEach(n)
 	}
 	return nil
 }
@@ -150,6 +154,18 @@ func convertIf(n Node) []string {
 	return out
 }
 
+func convertWhen(n Node) []string {
+	if len(n.List) < 3 {
+		return nil
+	}
+	cond := expr(n.List[1])
+	bodyLines := convertBegin([]Node{n.List[2]})
+	out := []string{"if " + cond + " {"}
+	out = append(out, indent(bodyLines)...)
+	out = append(out, "}")
+	return out
+}
+
 func convertFor(n Node) []string {
 	if len(n.List) != 4 || n.List[0].Atom != "let" || n.List[1].Atom == "" {
 		return nil
@@ -232,6 +248,27 @@ func convertWhile(n Node) []string {
 	lines := convertBegin(body.List[1 : len(body.List)-1])
 	out := []string{"while " + cond + " {"}
 	out = append(out, indent(lines)...)
+	out = append(out, "}")
+	return out
+}
+
+func convertForEach(n Node) []string {
+	if len(n.List) != 3 {
+		return nil
+	}
+	lam := n.List[1]
+	if lam.Atom != "" || len(lam.List) < 3 || lam.List[0].Atom != "lambda" {
+		return nil
+	}
+	params := lam.List[1].List
+	if len(params) != 1 || params[0].Atom == "" {
+		return nil
+	}
+	name := params[0].Atom
+	bodyLines := convertBegin([]Node{lam.List[2]})
+	src := expr(n.List[2])
+	out := []string{"for " + name + " in " + src + " {"}
+	out = append(out, indent(bodyLines)...)
 	out = append(out, "}")
 	return out
 }
