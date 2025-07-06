@@ -1,10 +1,3 @@
-fun idx(x, i) {}
-fun slice(x, s, e) {}
-fun count(x) {}
-fun avg(x) {}
-fun _add(a, b) {}
-fun _div(a, b) {}
-fun expect(cond) {}
 let a = 10
 let b = 20
 print(( _add a b ))

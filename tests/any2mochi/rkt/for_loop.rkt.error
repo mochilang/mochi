@@ -1,0 +1,13 @@
+no convertible symbols found
+
+source snippet:
+  1: #lang racket
+  2: (require racket/list)
+  3: 
+  4: (define (idx x i)
+  5:   (cond [(string? x) (let* ([n (string-length x)] [idx (if (< i 0) (+ i n) i)]) (char->integer (string-ref x idx)))]
+  6:         [(hash? x) (hash-ref x i)]
+  7:         [else (let* ([n (length x)] [idx (if (< i 0) (+ i n) i)]) (list-ref x idx))]))
+  8: (define (slice x s e)
+  9:   (if (string? x)
+ 10:       (let* ([n (string-length x)]
