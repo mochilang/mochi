@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 3: let _run_test (name: string) (f: unit -> unit) : bool =
+  2: 
+  3: let _run_test (name: string) (f: unit -> unit) : bool =
+  4:   printf "%s ... " name

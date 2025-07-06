@@ -1,1 +1,4 @@
-unsupported syntax at line 2:
+unsupported syntax at line 3: let _fetch (url: string) (opts: Map<string,obj> option) : Map<string,obj> =
+  2: 
+  3: let _fetch (url: string) (opts: Map<string,obj> option) : Map<string,obj> =
+  4:   if url.StartsWith("file://") then
