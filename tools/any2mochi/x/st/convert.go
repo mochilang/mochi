@@ -243,6 +243,26 @@ func convertFallback(src string) ([]byte, error) {
 		if l == "" || l == "." {
 			continue
 		}
+		// if statement of the form expr ifTrue: [ body ] [ifFalse: [ elseBody ]]
+		if idx := strings.Index(l, " ifTrue:"); idx != -1 {
+			cond := strings.TrimSpace(l[:idx])
+			cond = strings.Trim(cond, "()")
+			rest := l[idx+len(" ifTrue:"):]
+			body, remain := extractBracketBody(rest)
+			var elseBody string
+			if strings.Contains(remain, "ifFalse:") {
+				parts := strings.SplitN(remain, "ifFalse:", 2)
+				elseBody, _ = extractBracketBody(parts[1])
+			}
+			if thenStmt := convertSimpleStmt(body); thenStmt != "" {
+				out.WriteString("if (" + cond + ") {\n " + thenStmt + "\n}")
+				if elseStmt := convertSimpleStmt(elseBody); elseStmt != "" {
+					out.WriteString(" else {\n " + elseStmt + "\n}")
+				}
+				out.WriteByte('\n')
+				continue
+			}
+		}
 		// while loop of the form [(cond)] whileTrue: [ body ]
 		if strings.Contains(l, "whileTrue:") {
 			condStart := strings.Index(l, "[")
@@ -358,6 +378,19 @@ func numberedSnippet(src string) string {
 		lines[i] = fmt.Sprintf("%3d: %s", i+1, l)
 	}
 	return strings.Join(lines, "\n")
+}
+
+func extractBracketBody(src string) (body, rest string) {
+	s := strings.TrimSpace(src)
+	if !strings.HasPrefix(s, "[") {
+		return "", s
+	}
+	s = s[1:]
+	end := strings.Index(s, "]")
+	if end == -1 {
+		return strings.TrimSpace(s), ""
+	}
+	return strings.TrimSpace(s[:end]), strings.TrimSpace(s[end+1:])
 }
 
 func formatDiagnostics(src string, diags []any2mochi.Diagnostic) string {
